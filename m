@@ -2,81 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D44E7C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 02:06:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BC92C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 02:06:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352471AbiEWCG1 (ORCPT
+        id S1352464AbiEWCGf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 22 May 2022 22:06:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41436 "EHLO
+        Sun, 22 May 2022 22:06:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352954AbiEWCFO (ORCPT
+        with ESMTP id S1352879AbiEWCGG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 22 May 2022 22:05:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 849B23AA68;
-        Sun, 22 May 2022 19:04:44 -0700 (PDT)
+        Sun, 22 May 2022 22:06:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8909C3AA6F;
+        Sun, 22 May 2022 19:05:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B4874B80E9F;
-        Mon, 23 May 2022 02:04:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83D6AC385B8;
-        Mon, 23 May 2022 02:04:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CE96660FA0;
+        Mon, 23 May 2022 02:05:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9350FC385AA;
+        Mon, 23 May 2022 02:04:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653271481;
-        bh=rTzLhOpvvZpJruWau6VCJQYeR9hOuYTpsPWG63PoLQQ=;
+        s=k20201202; t=1653271501;
+        bh=mOev/69enkRscHDSqPhakFgIX2pvee0Rs93y2YtmFyw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LCMQncaxS7mqw4AlNOqaKccdANycL8nAHHdq617jwC+W396FbsH14/x5PaWcQNBI1
-         +XXbQMOGTQsnx02AeUSpNjNF57i/oArGRU242WyOBdmqyAmsS68r22JkRAVFAz2wgB
-         ak1XD7v7QOWW7HpZ0sBxIO/gNdVJlcKlSgmJZMpMJbyn9e1qVihSYsIU+uJqoUZ9pk
-         ySjdshl3wq0CHw/XOXpHBzsEA9GqfOspHm1Z31WU/i9SB6XjwEP7bMIegTaPwbA+nl
-         kxgLrpR8ebwDAwz5bsC+hOh8PhZlOXZ6Wi7dpRJjahrfEqZtmKOFfdOQ1ZFG4CIC7M
-         UK1YMjZJ1l/JA==
+        b=tWrnOkbSlZ7AR1LqTtfR28fqc5T8GUSiow8COluT2MsLM8/dctyg0ner2a2FOwoee
+         6t1ILV0wwzFa+7rEp61rwEVCNGpnikvmFxhyRiCLBxqx7H9RuTt75rECD9aaUPwG+P
+         8Zsue5BPuDgpnpP8Uq+hf88VionLblQ29bUmhdKqZuA7PIasjblebyLVy32DJjx6SC
+         /KmE5+9LyHLU3BGVBUR1oNunk+85mXxZgKEbOKfhTDVOzxOxp8AWzRZwwbR4T7TCCw
+         3ItIQduEQUQU6+s06LfWq91WI8wBoxqt2o0RcxfAEFm7zvQOYIl3WVDEA2VQiEPpoV
+         NliT/tpqP9Q8Q==
 From:   Miguel Ojeda <ojeda@kernel.org>
 To:     Linus Torvalds <torvalds@linux-foundation.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
         Jarkko Sakkinen <jarkko@kernel.org>,
         Miguel Ojeda <ojeda@kernel.org>,
+        Wedson Almeida Filho <wedsonaf@google.com>,
         Alex Gaynor <alex.gaynor@gmail.com>,
         Finn Behrens <me@kloenk.de>,
-        Adam Bratschi-Kaye <ark.email@gmail.com>,
-        Wedson Almeida Filho <wedsonaf@google.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
         Sven Van Asbroeck <thesven73@gmail.com>,
         Gary Guo <gary@garyguo.net>,
-        Boris-Chengbiao Zhou <bobo1239@web.de>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Douglas Su <d0u9.su@outlook.com>,
-        Dariusz Sosnowski <dsosnowski@dsosnowski.pl>,
-        Antonio Terceiro <antonio.terceiro@linaro.org>,
-        Daniel Xu <dxu@dxuuu.xyz>, Miguel Cano <macanroj@gmail.com>,
-        David Gow <davidgow@google.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>, linux-kbuild@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org,
-        linux-um@lists.infradead.org
-Subject: [PATCH v7 21/25] Kbuild: add Rust support
-Date:   Mon, 23 May 2022 04:01:34 +0200
-Message-Id: <20220523020209.11810-22-ojeda@kernel.org>
+        Wayne Campbell <wcampbell1995@gmail.com>,
+        =?UTF-8?q?Arve=20Hj=C3=B8nnev=C3=A5g?= <arve@android.com>,
+        Todd Kjos <tkjos@android.com>,
+        Martijn Coenen <maco@android.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Hridya Valsaraju <hridya@google.com>,
+        Suren Baghdasaryan <surenb@google.com>
+Subject: [PATCH v7 25/25] [RFC] drivers: android: Binder IPC in Rust
+Date:   Mon, 23 May 2022 04:01:38 +0200
+Message-Id: <20220523020209.11810-26-ojeda@kernel.org>
 In-Reply-To: <20220523020209.11810-1-ojeda@kernel.org>
 References: <20220523020209.11810-1-ojeda@kernel.org>
 MIME-Version: 1.0
@@ -85,2233 +63,3550 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Having all the new files in place, we now enable Rust support
-in the build system, including `Kconfig` entries related to Rust,
-the Rust configuration printer, the target specification
-generation script, the version detection script and a few
-other bits.
+From: Wedson Almeida Filho <wedsonaf@google.com>
+
+A port to Rust of the Android Binder IPC mechanism.
+
+This module is a work in progress and will be sent for review later
+on, as well as separately from the Rust support.
+
+However, it is included to show how an actual working module
+written in Rust may look like.
 
 Co-developed-by: Alex Gaynor <alex.gaynor@gmail.com>
 Signed-off-by: Alex Gaynor <alex.gaynor@gmail.com>
 Co-developed-by: Finn Behrens <me@kloenk.de>
 Signed-off-by: Finn Behrens <me@kloenk.de>
-Co-developed-by: Adam Bratschi-Kaye <ark.email@gmail.com>
-Signed-off-by: Adam Bratschi-Kaye <ark.email@gmail.com>
-Co-developed-by: Wedson Almeida Filho <wedsonaf@google.com>
-Signed-off-by: Wedson Almeida Filho <wedsonaf@google.com>
-Co-developed-by: Michael Ellerman <mpe@ellerman.id.au>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
 Co-developed-by: Sven Van Asbroeck <thesven73@gmail.com>
 Signed-off-by: Sven Van Asbroeck <thesven73@gmail.com>
 Co-developed-by: Gary Guo <gary@garyguo.net>
 Signed-off-by: Gary Guo <gary@garyguo.net>
-Co-developed-by: Boris-Chengbiao Zhou <bobo1239@web.de>
-Signed-off-by: Boris-Chengbiao Zhou <bobo1239@web.de>
-Co-developed-by: Boqun Feng <boqun.feng@gmail.com>
-Signed-off-by: Boqun Feng <boqun.feng@gmail.com>
-Co-developed-by: Douglas Su <d0u9.su@outlook.com>
-Signed-off-by: Douglas Su <d0u9.su@outlook.com>
-Co-developed-by: Dariusz Sosnowski <dsosnowski@dsosnowski.pl>
-Signed-off-by: Dariusz Sosnowski <dsosnowski@dsosnowski.pl>
-Co-developed-by: Antonio Terceiro <antonio.terceiro@linaro.org>
-Signed-off-by: Antonio Terceiro <antonio.terceiro@linaro.org>
-Co-developed-by: Daniel Xu <dxu@dxuuu.xyz>
-Signed-off-by: Daniel Xu <dxu@dxuuu.xyz>
-Co-developed-by: Miguel Cano <macanroj@gmail.com>
-Signed-off-by: Miguel Cano <macanroj@gmail.com>
-Co-developed-by: David Gow <davidgow@google.com>
-Signed-off-by: David Gow <davidgow@google.com>
+Co-developed-by: Wayne Campbell <wcampbell1995@gmail.com>
+Signed-off-by: Wayne Campbell <wcampbell1995@gmail.com>
+Signed-off-by: Wedson Almeida Filho <wedsonaf@google.com>
+Co-developed-by: Miguel Ojeda <ojeda@kernel.org>
 Signed-off-by: Miguel Ojeda <ojeda@kernel.org>
 ---
- .gitignore                                   |   5 +
- .rustfmt.toml                                |  12 +
- Makefile                                     | 175 +++++++-
- arch/Kconfig                                 |   6 +
- arch/arm/Kconfig                             |   1 +
- arch/arm64/Kconfig                           |   1 +
- arch/powerpc/Kconfig                         |   1 +
- arch/riscv/Kconfig                           |   1 +
- arch/riscv/Makefile                          |   5 +
- arch/um/Kconfig                              |   1 +
- arch/x86/Kconfig                             |   1 +
- arch/x86/Makefile                            |  14 +
- init/Kconfig                                 |  45 ++-
- lib/Kconfig.debug                            | 155 ++++++++
- rust/.gitignore                              |  10 +
- rust/Makefile                                | 398 +++++++++++++++++++
- rust/bindgen_parameters                      |  17 +
- scripts/.gitignore                           |   1 +
- scripts/Kconfig.include                      |   6 +-
- scripts/Makefile                             |   3 +
- scripts/Makefile.build                       |  60 +++
- scripts/Makefile.debug                       |  10 +
- scripts/Makefile.host                        |  34 +-
- scripts/Makefile.lib                         |  12 +
- scripts/Makefile.modfinal                    |   8 +-
- scripts/cc-version.sh                        |  12 +-
- scripts/generate_rust_target.rs              | 227 +++++++++++
- scripts/is_rust_module.sh                    |  13 +
- scripts/kconfig/confdata.c                   |  75 ++++
- scripts/min-tool-version.sh                  |   6 +
- scripts/rust-is-available-bindgen-libclang.h |   2 +
- scripts/rust-is-available.sh                 | 158 ++++++++
- 32 files changed, 1452 insertions(+), 23 deletions(-)
- create mode 100644 .rustfmt.toml
- create mode 100644 rust/.gitignore
- create mode 100644 rust/Makefile
- create mode 100644 rust/bindgen_parameters
- create mode 100644 scripts/generate_rust_target.rs
- create mode 100755 scripts/is_rust_module.sh
- create mode 100644 scripts/rust-is-available-bindgen-libclang.h
- create mode 100755 scripts/rust-is-available.sh
+ drivers/android/Kconfig             |   6 +
+ drivers/android/Makefile            |   2 +
+ drivers/android/allocation.rs       | 266 ++++++++
+ drivers/android/context.rs          |  80 +++
+ drivers/android/defs.rs             |  99 +++
+ drivers/android/node.rs             | 476 ++++++++++++++
+ drivers/android/process.rs          | 960 ++++++++++++++++++++++++++++
+ drivers/android/range_alloc.rs      | 189 ++++++
+ drivers/android/rust_binder.rs      | 111 ++++
+ drivers/android/thread.rs           | 870 +++++++++++++++++++++++++
+ drivers/android/transaction.rs      | 326 ++++++++++
+ include/uapi/linux/android/binder.h |  28 +-
+ 12 files changed, 3400 insertions(+), 13 deletions(-)
+ create mode 100644 drivers/android/allocation.rs
+ create mode 100644 drivers/android/context.rs
+ create mode 100644 drivers/android/defs.rs
+ create mode 100644 drivers/android/node.rs
+ create mode 100644 drivers/android/process.rs
+ create mode 100644 drivers/android/range_alloc.rs
+ create mode 100644 drivers/android/rust_binder.rs
+ create mode 100644 drivers/android/thread.rs
+ create mode 100644 drivers/android/transaction.rs
 
-diff --git a/.gitignore b/.gitignore
-index 7afd412dadd2..48c68948f476 100644
---- a/.gitignore
-+++ b/.gitignore
-@@ -37,6 +37,7 @@
- *.o
- *.o.*
- *.patch
-+*.rmeta
- *.s
- *.so
- *.so.dbg
-@@ -96,6 +97,7 @@ modules.order
- !.gitattributes
- !.gitignore
- !.mailmap
-+!.rustfmt.toml
+diff --git a/drivers/android/Kconfig b/drivers/android/Kconfig
+index 53b22e26266c..bc10eebd3ad3 100644
+--- a/drivers/android/Kconfig
++++ b/drivers/android/Kconfig
+@@ -20,6 +20,12 @@ config ANDROID_BINDER_IPC
+ 	  Android process, using Binder to identify, invoke and pass arguments
+ 	  between said processes.
  
- #
- # Generated include files
-@@ -161,3 +163,6 @@ x509.genkey
- 
- # Documentation toolchain
- sphinx_*/
++config ANDROID_BINDER_IPC_RUST
++	bool "Android Binder IPC Driver in Rust"
++	depends on MMU && RUST
++	help
++	  Implementation of the Binder IPC in Rust.
 +
-+# Rust analyzer configuration
-+/rust-project.json
-diff --git a/.rustfmt.toml b/.rustfmt.toml
+ config ANDROID_BINDERFS
+ 	bool "Android Binderfs filesystem"
+ 	depends on ANDROID_BINDER_IPC
+diff --git a/drivers/android/Makefile b/drivers/android/Makefile
+index c9d3d0c99c25..c428f2ce2f05 100644
+--- a/drivers/android/Makefile
++++ b/drivers/android/Makefile
+@@ -4,3 +4,5 @@ ccflags-y += -I$(src)			# needed for trace events
+ obj-$(CONFIG_ANDROID_BINDERFS)		+= binderfs.o
+ obj-$(CONFIG_ANDROID_BINDER_IPC)	+= binder.o binder_alloc.o
+ obj-$(CONFIG_ANDROID_BINDER_IPC_SELFTEST) += binder_alloc_selftest.o
++
++obj-$(CONFIG_ANDROID_BINDER_IPC_RUST) += rust_binder.o
+diff --git a/drivers/android/allocation.rs b/drivers/android/allocation.rs
 new file mode 100644
-index 000000000000..3de5cc497465
+index 000000000000..3ed7b649eeb7
 --- /dev/null
-+++ b/.rustfmt.toml
-@@ -0,0 +1,12 @@
-+edition = "2021"
-+newline_style = "Unix"
-+
-+# Unstable options that help catching some mistakes in formatting and that we may want to enable
-+# when they become stable.
-+#
-+# They are kept here since they are useful to run from time to time.
-+#format_code_in_doc_comments = true
-+#reorder_impl_items = true
-+#comment_width = 100
-+#wrap_comments = true
-+#normalize_comments = true
-diff --git a/Makefile b/Makefile
-index 7d5b0bfe7960..ce17ec71f89b 100644
---- a/Makefile
-+++ b/Makefile
-@@ -120,6 +120,15 @@ endif
- 
- export KBUILD_CHECKSRC
- 
-+# Enable "clippy" (a linter) as part of the Rust compilation.
-+#
-+# Use 'make CLIPPY=1' to enable it.
-+ifeq ("$(origin CLIPPY)", "command line")
-+  KBUILD_CLIPPY := $(CLIPPY)
-+endif
-+
-+export KBUILD_CLIPPY
-+
- # Use make M=dir or set the environment variable KBUILD_EXTMOD to specify the
- # directory of external module to build. Setting M= takes precedence.
- ifeq ("$(origin M)", "command line")
-@@ -267,7 +276,7 @@ no-dot-config-targets := $(clean-targets) \
- 			 cscope gtags TAGS tags help% %docs check% coccicheck \
- 			 $(version_h) headers headers_% archheaders archscripts \
- 			 %asm-generic kernelversion %src-pkg dt_binding_check \
--			 outputmakefile
-+			 outputmakefile rustavailable rustfmt rustfmtcheck
- # Installation targets should not require compiler. Unfortunately, vdso_install
- # is an exception where build artifacts may be updated. This must be fixed.
- no-compiler-targets := $(no-dot-config-targets) install dtbs_install \
-@@ -436,6 +445,7 @@ else
- HOSTCC	= gcc
- HOSTCXX	= g++
- endif
-+HOSTRUSTC = rustc
- 
- KBUILD_USERHOSTCFLAGS := -Wall -Wmissing-prototypes -Wstrict-prototypes \
- 			 -O2 -fomit-frame-pointer -std=gnu11 \
-@@ -443,8 +453,26 @@ KBUILD_USERHOSTCFLAGS := -Wall -Wmissing-prototypes -Wstrict-prototypes \
- KBUILD_USERCFLAGS  := $(KBUILD_USERHOSTCFLAGS) $(USERCFLAGS)
- KBUILD_USERLDFLAGS := $(USERLDFLAGS)
- 
-+# These flags apply to all Rust code in the tree, including the kernel and
-+# host programs.
-+export rust_common_flags := --edition=2021 \
-+			    -Zbinary_dep_depinfo=y \
-+			    -Dunsafe_op_in_unsafe_fn -Drust_2018_idioms \
-+			    -Dunreachable_pub -Dnon_ascii_idents \
-+			    -Wmissing_docs \
-+			    -Drustdoc::missing_crate_level_docs \
-+			    -Dclippy::correctness -Dclippy::style \
-+			    -Dclippy::suspicious -Dclippy::complexity \
-+			    -Dclippy::perf \
-+			    -Dclippy::let_unit_value -Dclippy::mut_mut \
-+			    -Dclippy::needless_bitwise_bool \
-+			    -Dclippy::needless_continue \
-+			    -Wclippy::dbg_macro
-+
- KBUILD_HOSTCFLAGS   := $(KBUILD_USERHOSTCFLAGS) $(HOST_LFS_CFLAGS) $(HOSTCFLAGS)
- KBUILD_HOSTCXXFLAGS := -Wall -O2 $(HOST_LFS_CFLAGS) $(HOSTCXXFLAGS)
-+KBUILD_HOSTRUSTFLAGS := $(rust_common_flags) -O -Cstrip=debuginfo \
-+			-Zallow-features= $(HOSTRUSTFLAGS)
- KBUILD_HOSTLDFLAGS  := $(HOST_LFS_LDFLAGS) $(HOSTLDFLAGS)
- KBUILD_HOSTLDLIBS   := $(HOST_LFS_LIBS) $(HOSTLDLIBS)
- 
-@@ -469,6 +497,12 @@ OBJDUMP		= $(CROSS_COMPILE)objdump
- READELF		= $(CROSS_COMPILE)readelf
- STRIP		= $(CROSS_COMPILE)strip
- endif
-+RUSTC		= rustc
-+RUSTDOC		= rustdoc
-+RUSTFMT		= rustfmt
-+CLIPPY_DRIVER	= clippy-driver
-+BINDGEN		= bindgen
-+CARGO		= cargo
- PAHOLE		= pahole
- RESOLVE_BTFIDS	= $(objtree)/tools/bpf/resolve_btfids/resolve_btfids
- LEX		= flex
-@@ -494,9 +528,11 @@ CHECKFLAGS     := -D__linux__ -Dlinux -D__STDC__ -Dunix -D__unix__ \
- 		  -Wbitwise -Wno-return-void -Wno-unknown-attribute $(CF)
- NOSTDINC_FLAGS :=
- CFLAGS_MODULE   =
-+RUSTFLAGS_MODULE =
- AFLAGS_MODULE   =
- LDFLAGS_MODULE  =
- CFLAGS_KERNEL	=
-+RUSTFLAGS_KERNEL =
- AFLAGS_KERNEL	=
- LDFLAGS_vmlinux =
- 
-@@ -525,15 +561,42 @@ KBUILD_CFLAGS   := -Wall -Wundef -Werror=strict-prototypes -Wno-trigraphs \
- 		   -Werror=return-type -Wno-format-security \
- 		   -std=gnu11
- KBUILD_CPPFLAGS := -D__KERNEL__
-+KBUILD_RUSTFLAGS := $(rust_common_flags) \
-+		    --target=$(objtree)/rust/target.json \
-+		    -Cpanic=abort -Cembed-bitcode=n -Clto=n \
-+		    -Cforce-unwind-tables=n -Ccodegen-units=1 \
-+		    -Csymbol-mangling-version=v0 \
-+		    -Crelocation-model=static \
-+		    -Zfunction-sections=n \
-+		    -Dclippy::float_arithmetic
-+
- KBUILD_AFLAGS_KERNEL :=
- KBUILD_CFLAGS_KERNEL :=
-+KBUILD_RUSTFLAGS_KERNEL :=
- KBUILD_AFLAGS_MODULE  := -DMODULE
- KBUILD_CFLAGS_MODULE  := -DMODULE
-+KBUILD_RUSTFLAGS_MODULE := --cfg MODULE
- KBUILD_LDFLAGS_MODULE :=
- KBUILD_LDFLAGS :=
- CLANG_FLAGS :=
- 
-+ifeq ($(KBUILD_CLIPPY),1)
-+	RUSTC_OR_CLIPPY_QUIET := CLIPPY
-+	RUSTC_OR_CLIPPY = $(CLIPPY_DRIVER)
-+else
-+	RUSTC_OR_CLIPPY_QUIET := RUSTC
-+	RUSTC_OR_CLIPPY = $(RUSTC)
-+endif
-+
-+ifdef RUST_LIB_SRC
-+	export RUST_LIB_SRC
-+endif
-+
-+export RUSTC_BOOTSTRAP := 1
-+
- export ARCH SRCARCH CONFIG_SHELL BASH HOSTCC KBUILD_HOSTCFLAGS CROSS_COMPILE LD CC
-+export RUSTC RUSTDOC RUSTFMT RUSTC_OR_CLIPPY_QUIET RUSTC_OR_CLIPPY BINDGEN CARGO
-+export HOSTRUSTC KBUILD_HOSTRUSTFLAGS
- export CPP AR NM STRIP OBJCOPY OBJDUMP READELF PAHOLE RESOLVE_BTFIDS LEX YACC AWK INSTALLKERNEL
- export PERL PYTHON3 CHECK CHECKFLAGS MAKE UTS_MACHINE HOSTCXX
- export KGZIP KBZIP2 KLZOP LZMA LZ4 XZ ZSTD
-@@ -542,9 +605,10 @@ export KBUILD_USERCFLAGS KBUILD_USERLDFLAGS
- 
- export KBUILD_CPPFLAGS NOSTDINC_FLAGS LINUXINCLUDE OBJCOPYFLAGS KBUILD_LDFLAGS
- export KBUILD_CFLAGS CFLAGS_KERNEL CFLAGS_MODULE
-+export KBUILD_RUSTFLAGS RUSTFLAGS_KERNEL RUSTFLAGS_MODULE
- export KBUILD_AFLAGS AFLAGS_KERNEL AFLAGS_MODULE
--export KBUILD_AFLAGS_MODULE KBUILD_CFLAGS_MODULE KBUILD_LDFLAGS_MODULE
--export KBUILD_AFLAGS_KERNEL KBUILD_CFLAGS_KERNEL
-+export KBUILD_AFLAGS_MODULE KBUILD_CFLAGS_MODULE KBUILD_RUSTFLAGS_MODULE KBUILD_LDFLAGS_MODULE
-+export KBUILD_AFLAGS_KERNEL KBUILD_CFLAGS_KERNEL KBUILD_RUSTFLAGS_KERNEL
- export PAHOLE_FLAGS
- 
- # Files to ignore in find ... statements
-@@ -725,7 +789,7 @@ $(KCONFIG_CONFIG):
- #
- # Do not use $(call cmd,...) here. That would suppress prompts from syncconfig,
- # so you cannot notice that Kconfig is waiting for the user input.
--%/config/auto.conf %/config/auto.conf.cmd %/generated/autoconf.h: $(KCONFIG_CONFIG)
-+%/config/auto.conf %/config/auto.conf.cmd %/generated/autoconf.h %/generated/rustc_cfg: $(KCONFIG_CONFIG)
- 	$(Q)$(kecho) "  SYNC    $@"
- 	$(Q)$(MAKE) -f $(srctree)/Makefile syncconfig
- else # !may-sync-config
-@@ -754,12 +818,28 @@ KBUILD_CFLAGS	+= $(call cc-disable-warning, address-of-packed-member)
- 
- ifdef CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE
- KBUILD_CFLAGS += -O2
-+KBUILD_RUSTFLAGS_OPT_LEVEL_MAP := 2
- else ifdef CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE_O3
- KBUILD_CFLAGS += -O3
-+KBUILD_RUSTFLAGS_OPT_LEVEL_MAP := 3
- else ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
- KBUILD_CFLAGS += -Os
-+KBUILD_RUSTFLAGS_OPT_LEVEL_MAP := s
- endif
- 
-+# Always set `debug-assertions` and `overflow-checks` because their default
-+# depends on `opt-level` and `debug-assertions`, respectively.
-+KBUILD_RUSTFLAGS += -Cdebug-assertions=$(if $(CONFIG_RUST_DEBUG_ASSERTIONS),y,n)
-+KBUILD_RUSTFLAGS += -Coverflow-checks=$(if $(CONFIG_RUST_OVERFLOW_CHECKS),y,n)
-+KBUILD_RUSTFLAGS += -Copt-level=$\
-+	$(if $(CONFIG_RUST_OPT_LEVEL_SIMILAR_AS_CHOSEN_FOR_C),$(KBUILD_RUSTFLAGS_OPT_LEVEL_MAP))$\
-+	$(if $(CONFIG_RUST_OPT_LEVEL_0),0)$\
-+	$(if $(CONFIG_RUST_OPT_LEVEL_1),1)$\
-+	$(if $(CONFIG_RUST_OPT_LEVEL_2),2)$\
-+	$(if $(CONFIG_RUST_OPT_LEVEL_3),3)$\
-+	$(if $(CONFIG_RUST_OPT_LEVEL_S),s)$\
-+	$(if $(CONFIG_RUST_OPT_LEVEL_Z),z)
-+
- # Tell gcc to never replace conditional load with a non-conditional one
- ifdef CONFIG_CC_IS_GCC
- # gcc-10 renamed --param=allow-store-data-races=0 to
-@@ -789,6 +869,9 @@ KBUILD_CFLAGS += $(stackp-flags-y)
- KBUILD_CFLAGS-$(CONFIG_WERROR) += -Werror
- KBUILD_CFLAGS += $(KBUILD_CFLAGS-y) $(CONFIG_CC_IMPLICIT_FALLTHROUGH)
- 
-+KBUILD_RUSTFLAGS-$(CONFIG_WERROR) += -Dwarnings
-+KBUILD_RUSTFLAGS += $(KBUILD_RUSTFLAGS-y)
-+
- ifdef CONFIG_CC_IS_CLANG
- KBUILD_CPPFLAGS += -Qunused-arguments
- # The kernel builds with '-std=gnu11' so use of GNU extensions is acceptable.
-@@ -806,12 +889,15 @@ KBUILD_CFLAGS += $(call cc-disable-warning, unused-const-variable)
- 
- ifdef CONFIG_FRAME_POINTER
- KBUILD_CFLAGS	+= -fno-omit-frame-pointer -fno-optimize-sibling-calls
-+KBUILD_RUSTFLAGS += -Cforce-frame-pointers=y
- else
- # Some targets (ARM with Thumb2, for example), can't be built with frame
- # pointers.  For those, we don't have FUNCTION_TRACER automatically
- # select FRAME_POINTER.  However, FUNCTION_TRACER adds -pg, and this is
- # incompatible with -fomit-frame-pointer with current GCC, so we don't use
- # -fomit-frame-pointer with FUNCTION_TRACER.
-+# In the Rust target specification, "frame-pointer" is set explicitly
-+# to "may-omit".
- ifndef CONFIG_FUNCTION_TRACER
- KBUILD_CFLAGS	+= -fomit-frame-pointer
- endif
-@@ -876,8 +962,10 @@ ifdef CONFIG_DEBUG_SECTION_MISMATCH
- KBUILD_CFLAGS += -fno-inline-functions-called-once
- endif
- 
-+# `rustc`'s `-Zfunction-sections` applies to data too (as of 1.59.0).
- ifdef CONFIG_LD_DEAD_CODE_DATA_ELIMINATION
- KBUILD_CFLAGS_KERNEL += -ffunction-sections -fdata-sections
-+KBUILD_RUSTFLAGS_KERNEL += -Zfunction-sections=y
- LDFLAGS_vmlinux += --gc-sections
- endif
- 
-@@ -1019,10 +1107,11 @@ include $(addprefix $(srctree)/, $(include-y))
- # Do not add $(call cc-option,...) below this line. When you build the kernel
- # from the clean source tree, the GCC plugins do not exist at this point.
- 
--# Add user supplied CPPFLAGS, AFLAGS and CFLAGS as the last assignments
-+# Add user supplied CPPFLAGS, AFLAGS, CFLAGS and RUSTFLAGS as the last assignments
- KBUILD_CPPFLAGS += $(KCPPFLAGS)
- KBUILD_AFLAGS   += $(KAFLAGS)
- KBUILD_CFLAGS   += $(KCFLAGS)
-+KBUILD_RUSTFLAGS += $(KRUSTFLAGS)
- 
- KBUILD_LDFLAGS_MODULE += --build-id=sha1
- LDFLAGS_vmlinux += --build-id=sha1
-@@ -1091,6 +1180,7 @@ export MODULES_NSDEPS := $(extmod_prefix)modules.nsdeps
- ifeq ($(KBUILD_EXTMOD),)
- core-y			+= kernel/ certs/ mm/ fs/ ipc/ security/ crypto/
- core-$(CONFIG_BLOCK)	+= block/
-+core-$(CONFIG_RUST)	+= rust/
- 
- vmlinux-dirs	:= $(patsubst %/,%,$(filter %/, \
- 		     $(core-y) $(core-m) $(drivers-y) $(drivers-m) \
-@@ -1195,6 +1285,10 @@ prepare0: archprepare
- 
- # All the preparing..
- prepare: prepare0
-+ifdef CONFIG_RUST
-+	$(Q)$(CONFIG_SHELL) $(srctree)/scripts/rust-is-available.sh -v
-+	$(Q)$(MAKE) $(build)=rust
-+endif
- 
- PHONY += remove-stale-files
- remove-stale-files:
-@@ -1483,7 +1577,7 @@ endif # CONFIG_MODULES
- # Directories & files removed with 'make clean'
- CLEAN_FILES += include/ksym vmlinux.symvers modules-only.symvers \
- 	       modules.builtin modules.builtin.modinfo modules.nsdeps \
--	       compile_commands.json .thinlto-cache
-+	       compile_commands.json .thinlto-cache rust/test rust/doc
- 
- # Directories & files removed with 'make mrproper'
- MRPROPER_FILES += include/config include/generated          \
-@@ -1494,7 +1588,8 @@ MRPROPER_FILES += include/config include/generated          \
- 		  certs/signing_key.pem \
- 		  certs/x509.genkey \
- 		  vmlinux-gdb.py \
--		  *.spec
-+		  *.spec \
-+		  rust/target.json rust/libmacros.so
- 
- # clean - Delete most, but leave enough to build external modules
- #
-@@ -1519,6 +1614,9 @@ $(mrproper-dirs):
- 
- mrproper: clean $(mrproper-dirs)
- 	$(call cmd,rmfiles)
-+	@find . $(RCS_FIND_IGNORE) \
-+		\( -name '*.rmeta' \) \
-+		-type f -print | xargs rm -f
- 
- # distclean
- #
-@@ -1606,6 +1704,23 @@ help:
- 	@echo  '  kselftest-merge   - Merge all the config dependencies of'
- 	@echo  '		      kselftest to existing .config.'
- 	@echo  ''
-+	@echo  'Rust targets:'
-+	@echo  '  rustavailable   - Checks whether the Rust toolchain is'
-+	@echo  '		    available and, if not, explains why.'
-+	@echo  '  rustfmt	  - Reformat all the Rust code in the kernel'
-+	@echo  '  rustfmtcheck	  - Checks if all the Rust code in the kernel'
-+	@echo  '		    is formatted, printing a diff otherwise.'
-+	@echo  '  rustdoc	  - Generate Rust documentation'
-+	@echo  '		    (requires kernel .config)'
-+	@echo  '  rusttest        - Runs the Rust tests'
-+	@echo  '                    (requires kernel .config; downloads external repos)'
-+	@echo  '  rust-analyzer	  - Generate rust-project.json rust-analyzer support file'
-+	@echo  '		    (requires kernel .config)'
-+	@echo  '  dir/file.[os]   - Build specified target only'
-+	@echo  '  dir/file.i      - Build macro expanded source, similar to C preprocessing'
-+	@echo  '                    (run with RUSTFMT=n to skip reformatting if needed)'
-+	@echo  '  dir/file.ll     - Build the LLVM assembly file'
-+	@echo  ''
- 	@$(if $(dtstree), \
- 		echo 'Devicetree:'; \
- 		echo '* dtbs             - Build device tree blobs for enabled boards'; \
-@@ -1677,6 +1792,52 @@ PHONY += $(DOC_TARGETS)
- $(DOC_TARGETS):
- 	$(Q)$(MAKE) $(build)=Documentation $@
- 
-+
-+# Rust targets
-+# ---------------------------------------------------------------------------
-+
-+# "Is Rust available?" target
-+PHONY += rustavailable
-+rustavailable:
-+	$(Q)$(CONFIG_SHELL) $(srctree)/scripts/rust-is-available.sh -v && echo >&2 "Rust is available!"
-+
-+# Documentation target
-+#
-+# Using the singular to avoid running afoul of `no-dot-config-targets`.
-+PHONY += rustdoc
-+rustdoc: prepare
-+	$(Q)$(MAKE) $(build)=rust $@
-+
-+# Testing target
-+PHONY += rusttest
-+rusttest: prepare
-+	$(Q)$(MAKE) $(build)=rust $@
-+
-+# Formatting targets
-+PHONY += rustfmt rustfmtcheck
-+
-+# We skip `rust/alloc` since we want to minimize the diff w.r.t. upstream.
-+#
-+# We match using absolute paths since `find` does not resolve them
-+# when matching, which is a problem when e.g. `srctree` is `..`.
-+# We `grep` afterwards in order to remove the directory entry itself.
-+rustfmt:
-+	$(Q)find $(abs_srctree) -type f -name '*.rs' \
-+		-o -path $(abs_srctree)/rust/alloc -prune \
-+		-o -path $(abs_objtree)/rust/test -prune \
-+		| grep -Fv $(abs_srctree)/rust/alloc \
-+		| grep -Fv $(abs_objtree)/rust/test \
-+		| grep -Fv generated \
-+		| xargs $(RUSTFMT) $(rustfmt_flags)
-+
-+rustfmtcheck: rustfmt_flags = --check
-+rustfmtcheck: rustfmt
-+
-+# IDE support targets
-+PHONY += rust-analyzer
-+rust-analyzer:
-+	$(Q)$(MAKE) $(build)=rust $@
-+
- # Misc
- # ---------------------------------------------------------------------------
- 
-diff --git a/arch/Kconfig b/arch/Kconfig
-index 31c4fdc4a4ba..89d27b2a86dd 100644
---- a/arch/Kconfig
-+++ b/arch/Kconfig
-@@ -344,6 +344,12 @@ config HAVE_RSEQ
- 	  This symbol should be selected by an architecture if it
- 	  supports an implementation of restartable sequences.
- 
-+config HAVE_RUST
-+	bool
-+	help
-+	  This symbol should be selected by an architecture if it
-+	  supports Rust.
-+
- config HAVE_FUNCTION_ARG_ACCESS_API
- 	bool
- 	help
-diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 2e8091e2d8a8..1d0005080aeb 100644
---- a/arch/arm/Kconfig
-+++ b/arch/arm/Kconfig
-@@ -116,6 +116,7 @@ config ARM
- 	select MMU_GATHER_RCU_TABLE_FREE if SMP && ARM_LPAE
- 	select HAVE_REGS_AND_STACK_ACCESS_API
- 	select HAVE_RSEQ
-+	select HAVE_RUST if CPU_32v6 || CPU_32v6K
- 	select HAVE_STACKPROTECTOR
- 	select HAVE_SYSCALL_TRACEPOINTS
- 	select HAVE_UID16
-diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 20ea89d9ac2f..308cff85f5cb 100644
---- a/arch/arm64/Kconfig
-+++ b/arch/arm64/Kconfig
-@@ -198,6 +198,7 @@ config ARM64
- 	select HAVE_FUNCTION_ARG_ACCESS_API
- 	select MMU_GATHER_RCU_TABLE_FREE
- 	select HAVE_RSEQ
-+	select HAVE_RUST
- 	select HAVE_STACKPROTECTOR
- 	select HAVE_SYSCALL_TRACEPOINTS
- 	select HAVE_KPROBES
-diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
-index 174edabb74fa..ffbad38204b9 100644
---- a/arch/powerpc/Kconfig
-+++ b/arch/powerpc/Kconfig
-@@ -239,6 +239,7 @@ config PPC
- 	select HAVE_REGS_AND_STACK_ACCESS_API
- 	select HAVE_RELIABLE_STACKTRACE
- 	select HAVE_RSEQ
-+	select HAVE_RUST			if PPC64 && CPU_LITTLE_ENDIAN
- 	select HAVE_SETUP_PER_CPU_AREA		if PPC64
- 	select HAVE_SOFTIRQ_ON_OWN_STACK
- 	select HAVE_STACKPROTECTOR		if PPC32 && $(cc-option,-mstack-protector-guard=tls -mstack-protector-guard-reg=r2)
-diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
-index 00fd9c548f26..63f7258984f3 100644
---- a/arch/riscv/Kconfig
-+++ b/arch/riscv/Kconfig
-@@ -101,6 +101,7 @@ config RISCV
- 	select HAVE_PERF_REGS
- 	select HAVE_PERF_USER_STACK_DUMP
- 	select HAVE_REGS_AND_STACK_ACCESS_API
-+	select HAVE_RUST if 64BIT
- 	select HAVE_FUNCTION_ARG_ACCESS_API
- 	select HAVE_STACKPROTECTOR
- 	select HAVE_SYSCALL_TRACEPOINTS
-diff --git a/arch/riscv/Makefile b/arch/riscv/Makefile
-index 7d81102cffd4..663ae53b5597 100644
---- a/arch/riscv/Makefile
-+++ b/arch/riscv/Makefile
-@@ -26,6 +26,8 @@ ifeq ($(CONFIG_ARCH_RV64I),y)
- 	KBUILD_CFLAGS += -mabi=lp64
- 	KBUILD_AFLAGS += -mabi=lp64
- 
-+	KBUILD_RUSTFLAGS += -Ctarget-cpu=generic-rv64
-+
- 	KBUILD_LDFLAGS += -melf64lriscv
- else
- 	BITS := 32
-@@ -33,6 +35,9 @@ else
- 
- 	KBUILD_CFLAGS += -mabi=ilp32
- 	KBUILD_AFLAGS += -mabi=ilp32
-+
-+	KBUILD_RUSTFLAGS += -Ctarget-cpu=generic-rv32
-+
- 	KBUILD_LDFLAGS += -melf32lriscv
- endif
- 
-diff --git a/arch/um/Kconfig b/arch/um/Kconfig
-index 4d398b80aea8..c9e76243c0b9 100644
---- a/arch/um/Kconfig
-+++ b/arch/um/Kconfig
-@@ -24,6 +24,7 @@ config UML
- 	select TRACE_IRQFLAGS_SUPPORT
- 	select TTY # Needed for line.c
- 	select HAVE_ARCH_VMAP_STACK
-+	select HAVE_RUST			if X86_64
- 
- config MMU
- 	bool
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 4bed3abf444d..8d4e30f07a7d 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -252,6 +252,7 @@ config X86
- 	select HAVE_STATIC_CALL_INLINE		if HAVE_STACK_VALIDATION
- 	select HAVE_PREEMPT_DYNAMIC_CALL
- 	select HAVE_RSEQ
-+	select HAVE_RUST			if X86_64
- 	select HAVE_SYSCALL_TRACEPOINTS
- 	select HAVE_UNSTABLE_SCHED_CLOCK
- 	select HAVE_USER_RETURN_NOTIFIER
-diff --git a/arch/x86/Makefile b/arch/x86/Makefile
-index 63d50f65b828..5ac9b324751d 100644
---- a/arch/x86/Makefile
-+++ b/arch/x86/Makefile
-@@ -21,6 +21,8 @@ ifdef CONFIG_CC_IS_CLANG
- RETPOLINE_CFLAGS	:= -mretpoline-external-thunk
- RETPOLINE_VDSO_CFLAGS	:= -mretpoline
- endif
-+RETPOLINE_RUSTFLAGS	:= -Ctarget-feature=+retpoline-external-thunk
-+
- export RETPOLINE_CFLAGS
- export RETPOLINE_VDSO_CFLAGS
- 
-@@ -61,6 +63,8 @@ export BITS
- #    https://gcc.gnu.org/bugzilla/show_bug.cgi?id=53383
- #
- KBUILD_CFLAGS += -mno-sse -mno-mmx -mno-sse2 -mno-3dnow -mno-avx
-+KBUILD_RUSTFLAGS += -Ctarget-feature=-mmx,-sse,-sse2,-sse3,-ssse3,-sse4.1,-sse4.2
-+KBUILD_RUSTFLAGS += -Ctarget-feature=-3dnow,-3dnowa,-avx,-avx2,+soft-float
- 
- ifeq ($(CONFIG_X86_KERNEL_IBT),y)
- #
-@@ -148,8 +152,17 @@ else
-         cflags-$(CONFIG_GENERIC_CPU)	+= -mtune=generic
-         KBUILD_CFLAGS += $(cflags-y)
- 
-+        rustflags-$(CONFIG_MK8)		+= -Ctarget-cpu=k8
-+        rustflags-$(CONFIG_MPSC)	+= -Ctarget-cpu=nocona
-+        rustflags-$(CONFIG_MCORE2)	+= -Ctarget-cpu=core2
-+        rustflags-$(CONFIG_MATOM)	+= -Ctarget-cpu=atom
-+        rustflags-$(CONFIG_GENERIC_CPU)	+= -Ztune-cpu=generic
-+        KBUILD_RUSTFLAGS += $(rustflags-y)
-+
-         KBUILD_CFLAGS += -mno-red-zone
-         KBUILD_CFLAGS += -mcmodel=kernel
-+        KBUILD_RUSTFLAGS += -Cno-redzone=y
-+        KBUILD_RUSTFLAGS += -Ccode-model=kernel
- endif
- 
- #
-@@ -185,6 +198,7 @@ ifdef CONFIG_RETPOLINE
-   ifndef CONFIG_CC_IS_CLANG
-     KBUILD_CFLAGS += -fno-jump-tables
-   endif
-+  KBUILD_RUSTFLAGS += $(RETPOLINE_RUSTFLAGS)
- endif
- 
- ifdef CONFIG_SLS
-diff --git a/init/Kconfig b/init/Kconfig
-index ddcbefe535e9..3457cf596588 100644
---- a/init/Kconfig
-+++ b/init/Kconfig
-@@ -60,6 +60,17 @@ config LLD_VERSION
- 	default $(ld-version) if LD_IS_LLD
- 	default 0
- 
-+config RUST_IS_AVAILABLE
-+	def_bool $(success,$(srctree)/scripts/rust-is-available.sh)
-+	help
-+	  This shows whether a suitable Rust toolchain is available (found).
-+
-+	  Please see Documentation/rust/quick-start.rst for instructions on how
-+	  to satify the build requirements of Rust support.
-+
-+	  In particular, the Makefile target 'rustavailable' is useful to check
-+	  why the Rust toolchain is not being detected.
-+
- config CC_CAN_LINK
- 	bool
- 	default $(success,$(srctree)/scripts/cc-can-link.sh $(CC) $(CLANG_FLAGS) $(USERCFLAGS) $(USERLDFLAGS) $(m64-flag)) if 64BIT
-@@ -146,7 +157,8 @@ config WERROR
- 	default COMPILE_TEST
- 	help
- 	  A kernel build should not cause any compiler warnings, and this
--	  enables the '-Werror' flag to enforce that rule by default.
-+	  enables the '-Werror' (for C) and '-Dwarnings' (for Rust) flags
-+	  to enforce that rule by default.
- 
- 	  However, if you have a new (or very old) compiler with odd and
- 	  unusual warnings, or you have some architecture with problems,
-@@ -2045,6 +2057,37 @@ config PROFILING
- 	  Say Y here to enable the extended profiling support mechanisms used
- 	  by profilers.
- 
-+config RUST
-+	bool "Rust support"
-+	depends on HAVE_RUST
-+	depends on RUST_IS_AVAILABLE
-+	depends on !MODVERSIONS
-+	depends on !GCC_PLUGINS
-+	depends on !DEBUG_INFO_BTF
-+	select CONSTRUCTORS
-+	help
-+	  Enables Rust support in the kernel.
-+
-+	  This allows other Rust-related options, like drivers written in Rust,
-+	  to be selected.
-+
-+	  It is also required to be able to load external kernel modules
-+	  written in Rust.
-+
-+	  See Documentation/rust/ for more information.
-+
-+	  If unsure, say N.
-+
-+config RUSTC_VERSION_TEXT
-+	string
-+	depends on RUST
-+	default $(shell,command -v $(RUSTC) >/dev/null 2>&1 && $(RUSTC) --version || echo n)
-+
-+config BINDGEN_VERSION_TEXT
-+	string
-+	depends on RUST
-+	default $(shell,command -v $(BINDGEN) >/dev/null 2>&1 && $(BINDGEN) --version || echo n)
-+
- #
- # Place an empty function call at each tracepoint site. Can be
- # dynamically changed for a probe function.
-diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
-index 075cd25363ac..bfc28f52b603 100644
---- a/lib/Kconfig.debug
-+++ b/lib/Kconfig.debug
-@@ -2760,6 +2760,161 @@ config HYPERV_TESTING
- 
- endmenu # "Kernel Testing and Coverage"
- 
-+menu "Rust hacking"
-+
-+config RUST_DEBUG_ASSERTIONS
-+	bool "Debug assertions"
-+	depends on RUST
-+	help
-+	  Enables rustc's `-Cdebug-assertions` codegen option.
-+
-+	  This flag lets you turn `cfg(debug_assertions)` conditional
-+	  compilation on or off. This can be used to enable extra debugging
-+	  code in development but not in production. For example, it controls
-+	  the behavior of the standard library's `debug_assert!` macro.
-+
-+	  Note that this will apply to all Rust code, including `core`.
-+
-+	  If unsure, say N.
-+
-+config RUST_OVERFLOW_CHECKS
-+	bool "Overflow checks"
-+	default y
-+	depends on RUST
-+	help
-+	  Enables rustc's `-Coverflow-checks` codegen option.
-+
-+	  This flag allows you to control the behavior of runtime integer
-+	  overflow. When overflow-checks are enabled, a Rust panic will occur
-+	  on overflow.
-+
-+	  Note that this will apply to all Rust code, including `core`.
-+
-+	  If unsure, say Y.
-+
-+choice
-+	prompt "Optimization level"
-+	default RUST_OPT_LEVEL_SIMILAR_AS_CHOSEN_FOR_C
-+	depends on RUST
-+	help
-+	  Controls rustc's `-Copt-level` codegen option.
-+
-+	  This flag controls the optimization level.
-+
-+	  If unsure, say "Similar as chosen for C".
-+
-+config RUST_OPT_LEVEL_SIMILAR_AS_CHOSEN_FOR_C
-+	bool "Similar as chosen for C"
-+	help
-+	  This choice will pick a similar optimization level as chosen in
-+	  the "Compiler optimization level" for C:
-+
-+	      -O2 is currently mapped to -Copt-level=2
-+	      -O3 is currently mapped to -Copt-level=3
-+	      -Os is currently mapped to -Copt-level=s
-+
-+	  The mapping may change over time to follow the intended semantics
-+	  of the choice for C as sensibly as possible.
-+
-+	  This is the default.
-+
-+config RUST_OPT_LEVEL_0
-+	bool "No optimizations (-Copt-level=0)"
-+	help
-+	  Not recommended for most purposes. It may come in handy for debugging
-+	  suspected optimizer bugs, unexpected undefined behavior, etc.
-+
-+	  Note that this level will *not* enable debug assertions nor overflow
-+	  checks on its own (like it happens when interacting with rustc
-+	  directly). Use the corresponding configuration options to control
-+	  that instead, orthogonally.
-+
-+	  Note this level may cause excessive stack usage, which can lead to stack
-+	  overflow and subsequent crashes.
-+
-+config RUST_OPT_LEVEL_1
-+	bool "Basic optimizations (-Copt-level=1)"
-+	help
-+	  Useful for debugging without getting too lost, but without
-+	  the overhead and boilerplate of no optimizations at all.
-+
-+	  Note this level may cause excessive stack usage, which can lead to stack
-+	  overflow and subsequent crashes.
-+
-+config RUST_OPT_LEVEL_2
-+	bool "Some optimizations (-Copt-level=2)"
-+	help
-+	  The sensible choice in most cases.
-+
-+config RUST_OPT_LEVEL_3
-+	bool "All optimizations (-Copt-level=3)"
-+	help
-+	  Yet more performance (hopefully).
-+
-+config RUST_OPT_LEVEL_S
-+	bool "Optimize for size (-Copt-level=s)"
-+	help
-+	  Smaller kernel, ideally without too much performance loss.
-+
-+config RUST_OPT_LEVEL_Z
-+	bool "Optimize for size, no loop vectorization (-Copt-level=z)"
-+	help
-+	  Like the previous level, but also turn off loop vectorization.
-+
-+endchoice
-+
-+choice
-+	prompt "Build-time assertions"
-+	default RUST_BUILD_ASSERT_ALLOW if RUST_OPT_LEVEL_0
-+	default RUST_BUILD_ASSERT_DENY if !RUST_OPT_LEVEL_0
-+	depends on RUST
-+	help
-+	  Controls how are `build_error!` and `build_assert!` handled during build.
-+
-+	  If calls to them exist in the binary, it may indicate a violated invariant
-+	  or that the optimizer failed to verify the invariant during compilation.
-+	  You can choose to abort compilation or ignore them during build and let the
-+	  check be carried to runtime.
-+
-+	  If optimizations are turned off, you cannot select "Deny".
-+
-+	  If unsure, say "Deny".
-+
-+config RUST_BUILD_ASSERT_ALLOW
-+	bool "Allow"
-+	help
-+	  Unoptimized calls to `build_error!` will be converted to `panic!`
-+	  and checked at runtime.
-+
-+config RUST_BUILD_ASSERT_WARN
-+	bool "Warn"
-+	help
-+	  Unoptimized calls to `build_error!` will be converted to `panic!`
-+	  and checked at runtime, but warnings will be generated when building.
-+
-+config RUST_BUILD_ASSERT_DENY
-+	bool "Deny"
-+	depends on !RUST_OPT_LEVEL_0
-+	help
-+	  Unoptimized calls to `build_error!` will abort compilation.
-+
-+endchoice
-+
-+config RUST_KERNEL_KUNIT_TEST
-+	bool "KUnit test for the `kernel` crate" if !KUNIT_ALL_TESTS
-+	depends on RUST && KUNIT=y
-+	default KUNIT_ALL_TESTS
-+	help
-+	  This builds the documentation tests of the `kernel` crate
-+	  as KUnit tests.
-+
-+	  For more information on KUnit and unit tests in general,
-+	  please refer to the KUnit documentation in Documentation/dev-tools/kunit/.
-+
-+	  If unsure, say N.
-+
-+endmenu # "Rust"
-+
- source "Documentation/Kconfig"
- 
- endmenu # Kernel hacking
-diff --git a/rust/.gitignore b/rust/.gitignore
-new file mode 100644
-index 000000000000..89b602d91109
---- /dev/null
-+++ b/rust/.gitignore
-@@ -0,0 +1,10 @@
-+# SPDX-License-Identifier: GPL-2.0
-+
-+target.json
-+bindings_generated.rs
-+bindings_helpers_generated.rs
-+exports_*_generated.h
-+doctests_kernel_generated.rs
-+doctests_kernel_generated_kunit.c
-+doc/
-+test/
-diff --git a/rust/Makefile b/rust/Makefile
-new file mode 100644
-index 000000000000..a7dc37027fe2
---- /dev/null
-+++ b/rust/Makefile
-@@ -0,0 +1,398 @@
-+# SPDX-License-Identifier: GPL-2.0
-+
-+always-$(CONFIG_RUST) += target.json
-+no-clean-files += target.json
-+
-+obj-$(CONFIG_RUST) += core.o compiler_builtins.o
-+always-$(CONFIG_RUST) += exports_core_generated.h
-+
-+# Missing prototypes are expected in the helpers since these are exported
-+# for Rust only, thus there is no header nor prototypes.
-+obj-$(CONFIG_RUST) += helpers.o
-+CFLAGS_REMOVE_helpers.o = -Wmissing-prototypes -Wmissing-declarations
-+
-+always-$(CONFIG_RUST) += libmacros.so
-+no-clean-files += libmacros.so
-+
-+always-$(CONFIG_RUST) += bindings_generated.rs bindings_helpers_generated.rs
-+obj-$(CONFIG_RUST) += alloc.o kernel.o
-+always-$(CONFIG_RUST) += exports_alloc_generated.h exports_kernel_generated.h
-+
-+ifdef CONFIG_RUST_BUILD_ASSERT_DENY
-+always-$(CONFIG_RUST) += build_error.o
-+else
-+obj-$(CONFIG_RUST) += build_error.o
-+endif
-+
-+obj-$(CONFIG_RUST) += exports.o
-+
-+obj-$(CONFIG_RUST_KERNEL_KUNIT_TEST) += doctests_kernel_generated.o
-+obj-$(CONFIG_RUST_KERNEL_KUNIT_TEST) += doctests_kernel_generated_kunit.o
-+
-+# Avoids running `$(RUSTC)` for the sysroot when it may not be available.
-+ifdef CONFIG_RUST
-+
-+# `$(rust_flags)` is passed in case the user added `--sysroot`.
-+rustc_sysroot := $(shell $(RUSTC) $(rust_flags) --print sysroot)
-+rustc_host_target := $(shell $(RUSTC) --version --verbose | grep -F 'host: ' | cut -d' ' -f2)
-+RUST_LIB_SRC ?= $(rustc_sysroot)/lib/rustlib/src/rust/library
-+
-+ifeq ($(quiet),silent_)
-+cargo_quiet=-q
-+rust_test_quiet=-q
-+rustdoc_test_quiet=--test-args -q
-+rustdoc_test_kernel_quiet=>/dev/null
-+else ifeq ($(quiet),quiet_)
-+rust_test_quiet=-q
-+rustdoc_test_quiet=--test-args -q
-+rustdoc_test_kernel_quiet=>/dev/null
-+else
-+cargo_quiet=--verbose
-+endif
-+
-+core-cfgs = \
-+    --cfg no_fp_fmt_parse
-+
-+alloc-cfgs = \
-+    --cfg no_global_oom_handling \
-+    --cfg no_rc \
-+    --cfg no_sync
-+
-+quiet_cmd_rustdoc = RUSTDOC $(if $(rustdoc_host),H, ) $<
-+      cmd_rustdoc = \
-+	OBJTREE=$(abspath $(objtree)) \
-+	$(RUSTDOC) $(if $(rustdoc_host),$(rust_common_flags),$(rust_flags)) \
-+		$(rustc_target_flags) -L$(objtree)/$(obj) \
-+		--output $(objtree)/$(obj)/doc \
-+		--crate-name $(subst rustdoc-,,$@) \
-+		@$(objtree)/include/generated/rustc_cfg $<
-+
-+# The `html_logo_url` and `html_favicon_url` forms of the `doc` attribute
-+# can be used to specify a custom logo. However:
-+#   - The given value is used as-is, thus it cannot be relative or a local file
-+#     (unlike the non-custom case) since the generated docs have subfolders.
-+#   - It requires adding it to every crate.
-+#   - It requires changing `core` which comes from the sysroot.
-+#
-+# Using `-Zcrate-attr` would solve the last two points, but not the first.
-+# The https://github.com/rust-lang/rfcs/pull/3226 RFC suggests two new
-+# command-like flags to solve the issue. Meanwhile, we use the non-custom case
-+# and then retouch the generated files.
-+rustdoc: rustdoc-core rustdoc-macros rustdoc-compiler_builtins \
-+    rustdoc-alloc rustdoc-kernel
-+	$(Q)cp $(srctree)/Documentation/logo.gif $(objtree)/$(obj)/doc
-+	$(Q)find $(objtree)/$(obj)/doc -name '*.html' -type f -print0 | xargs -0 sed -Ei \
-+		-e 's:rust-logo\.svg:logo.gif:g' \
-+		-e 's:rust-logo\.png:logo.gif:g' \
-+		-e 's:favicon\.svg:logo.gif:g' \
-+		-e 's:<link rel="alternate icon" type="image/png" href="[./]*favicon-(16x16|32x32)\.png">::g'
-+
-+rustdoc-macros: private rustdoc_host = yes
-+rustdoc-macros: private rustc_target_flags = --crate-type proc-macro \
-+    --extern proc_macro
-+rustdoc-macros: $(src)/macros/lib.rs FORCE
-+	$(call if_changed,rustdoc)
-+
-+rustdoc-core: private rustc_target_flags = $(core-cfgs)
-+rustdoc-core: $(RUST_LIB_SRC)/core/src/lib.rs FORCE
-+	$(call if_changed,rustdoc)
-+
-+rustdoc-compiler_builtins: $(src)/compiler_builtins.rs rustdoc-core FORCE
-+	$(call if_changed,rustdoc)
-+
-+# We need to allow `rustdoc::broken_intra_doc_links` because some
-+# `no_global_oom_handling` functions refer to non-`no_global_oom_handling`
-+# functions. Ideally `rustdoc` would have a way to distinguish broken links
-+# due to things that are "configured out" vs. entirely non-existing ones.
-+rustdoc-alloc: private rustc_target_flags = $(alloc-cfgs) \
-+    -Arustdoc::broken_intra_doc_links
-+rustdoc-alloc: $(src)/alloc/lib.rs rustdoc-core rustdoc-compiler_builtins FORCE
-+	$(call if_changed,rustdoc)
-+
-+rustdoc-kernel: private rustc_target_flags = --extern alloc \
-+    --extern build_error --extern macros=$(objtree)/$(obj)/libmacros.so
-+rustdoc-kernel: $(src)/kernel/lib.rs rustdoc-core rustdoc-macros \
-+    rustdoc-compiler_builtins rustdoc-alloc $(obj)/libmacros.so \
-+    $(obj)/bindings_generated.rs $(obj)/bindings_helpers_generated.rs FORCE
-+	$(call if_changed,rustdoc)
-+
-+quiet_cmd_rustc_test_library = RUSTC TL $<
-+      cmd_rustc_test_library = \
-+	OBJTREE=$(abspath $(objtree)) \
-+	$(RUSTC) $(rust_common_flags) \
-+		@$(objtree)/include/generated/rustc_cfg $(rustc_target_flags) \
-+		--crate-type $(if $(rustc_test_library_proc),proc-macro,rlib) \
-+		--out-dir $(objtree)/$(obj)/test --cfg testlib \
-+		--sysroot $(objtree)/$(obj)/test/sysroot \
-+		-L$(objtree)/$(obj)/test \
-+		--crate-name $(subst rusttest-,,$(subst rusttestlib-,,$@)) $<
-+
-+rusttestlib-build_error: $(src)/build_error.rs rusttest-prepare FORCE
-+	$(call if_changed,rustc_test_library)
-+
-+rusttestlib-macros: private rustc_target_flags = --extern proc_macro
-+rusttestlib-macros: private rustc_test_library_proc = yes
-+rusttestlib-macros: $(src)/macros/lib.rs rusttest-prepare FORCE
-+	$(call if_changed,rustc_test_library)
-+
-+quiet_cmd_rustdoc_test = RUSTDOC T $<
-+      cmd_rustdoc_test = \
-+	OBJTREE=$(abspath $(objtree)) \
-+	$(RUSTDOC) --test $(rust_common_flags) \
-+		@$(objtree)/include/generated/rustc_cfg \
-+		$(rustc_target_flags) $(rustdoc_test_target_flags) \
-+		--sysroot $(objtree)/$(obj)/test/sysroot $(rustdoc_test_quiet) \
-+		-L$(objtree)/$(obj)/test --output $(objtree)/$(obj)/doc \
-+		--crate-name $(subst rusttest-,,$@) $<
-+
-+quiet_cmd_rustdoc_test_kernel = RUSTDOC TK $<
-+      cmd_rustdoc_test_kernel = \
-+	rm -rf $(objtree)/$(obj)/test/doctests/kernel; \
-+	mkdir -p $(objtree)/$(obj)/test/doctests/kernel; \
-+	OBJTREE=$(abspath $(objtree)) \
-+	$(RUSTDOC) --test $(rust_flags) \
-+		@$(objtree)/include/generated/rustc_cfg \
-+		-L$(objtree)/$(obj) --extern alloc --extern kernel \
-+		--extern build_error --extern macros \
-+		--no-run --crate-name kernel -Zunstable-options \
-+		--test-builder $(srctree)/scripts/rustdoc_test_builder.py \
-+		$< $(rustdoc_test_kernel_quiet); \
-+	$(srctree)/scripts/rustdoc_test_gen.py
-+
-+%/doctests_kernel_generated.rs %/doctests_kernel_generated_kunit.c: $(src)/kernel/lib.rs $(obj)/kernel.o FORCE
-+	$(call if_changed,rustdoc_test_kernel)
-+
-+# We cannot use `-Zpanic-abort-tests` because some tests are dynamic,
-+# so for the moment we skip `-Cpanic=abort`.
-+quiet_cmd_rustc_test = RUSTC T  $<
-+      cmd_rustc_test = \
-+	OBJTREE=$(abspath $(objtree)) \
-+	$(RUSTC) --test $(rust_common_flags) \
-+		@$(objtree)/include/generated/rustc_cfg \
-+		$(rustc_target_flags) --out-dir $(objtree)/$(obj)/test \
-+		--sysroot $(objtree)/$(obj)/test/sysroot \
-+		-L$(objtree)/$(obj)/test \
-+		--crate-name $(subst rusttest-,,$@) $<; \
-+	$(objtree)/$(obj)/test/$(subst rusttest-,,$@) $(rust_test_quiet) \
-+		$(rustc_test_run_flags)
-+
-+rusttest: rusttest-macros rusttest-kernel
-+
-+# This prepares a custom sysroot with our custom `alloc` instead of
-+# the standard one.
-+#
-+# This requires several hacks:
-+#   - Unlike `core` and `alloc`, `std` depends on more than a dozen crates,
-+#     including third-party crates that need to be downloaded, plus custom
-+#     `build.rs` steps. Thus hardcoding things here is not maintainable.
-+#   - `cargo` knows how to build the standard library, but it is an unstable
-+#     feature so far (`-Zbuild-std`).
-+#   - `cargo` only considers the use case of building the standard library
-+#     to use it in a given package. Thus we need to create a dummy package
-+#     and pick the generated libraries from there.
-+#   - Since we only keep a subset of upstream `alloc` in-tree, we need
-+#     to recreate it on the fly by putting our sources on top.
-+#   - The usual ways of modifying the dependency graph in `cargo` do not seem
-+#     to apply for the `-Zbuild-std` steps, thus we have to mislead it
-+#     by modifying the sources in the sysroot.
-+#   - To avoid messing with the user's Rust installation, we create a clone
-+#     of the sysroot. However, `cargo` ignores `RUSTFLAGS` in the `-Zbuild-std`
-+#     steps, thus we use a wrapper binary passed via `RUSTC` to pass the flag.
-+#
-+# In the future, we hope to avoid the whole ordeal by either:
-+#   - Making the `test` crate not depend on `std` (either improving upstream
-+#     or having our own custom crate).
-+#   - Making the tests run in kernel space (requires the previous point).
-+#   - Making `std` and friends be more like a "normal" crate, so that
-+#     `-Zbuild-std` and related hacks are not needed.
-+quiet_cmd_rustsysroot = RUSTSYSROOT
-+      cmd_rustsysroot = \
-+	rm -rf $(objtree)/$(obj)/test; \
-+	mkdir -p $(objtree)/$(obj)/test; \
-+	cp -a $(rustc_sysroot) $(objtree)/$(obj)/test/sysroot; \
-+	cp -r $(srctree)/$(src)/alloc/* \
-+		$(objtree)/$(obj)/test/sysroot/lib/rustlib/src/rust/library/alloc/src; \
-+	echo '\#!/bin/sh' > $(objtree)/$(obj)/test/rustc_sysroot; \
-+	echo "$(RUSTC) --sysroot=$(abspath $(objtree)/$(obj)/test/sysroot) \"\$$@\"" \
-+		>> $(objtree)/$(obj)/test/rustc_sysroot; \
-+	chmod u+x $(objtree)/$(obj)/test/rustc_sysroot; \
-+	$(CARGO) -q new $(objtree)/$(obj)/test/dummy; \
-+	RUSTC=$(objtree)/$(obj)/test/rustc_sysroot $(CARGO) $(cargo_quiet) \
-+		test -Zbuild-std --target $(rustc_host_target) \
-+		--manifest-path $(objtree)/$(obj)/test/dummy/Cargo.toml; \
-+	rm $(objtree)/$(obj)/test/sysroot/lib/rustlib/$(rustc_host_target)/lib/*; \
-+	cp $(objtree)/$(obj)/test/dummy/target/$(rustc_host_target)/debug/deps/* \
-+		$(objtree)/$(obj)/test/sysroot/lib/rustlib/$(rustc_host_target)/lib
-+
-+rusttest-prepare: FORCE
-+	$(call if_changed,rustsysroot)
-+
-+rusttest-macros: private rustc_target_flags = --extern proc_macro
-+rusttest-macros: private rustdoc_test_target_flags = --crate-type proc-macro
-+rusttest-macros: $(src)/macros/lib.rs rusttest-prepare FORCE
-+	$(call if_changed,rustc_test)
-+	$(call if_changed,rustdoc_test)
-+
-+rusttest-kernel: private rustc_target_flags = --extern alloc \
-+    --extern build_error --extern macros
-+rusttest-kernel: private rustc_test_run_flags = --skip bindgen_test_layout_
-+rusttest-kernel: $(src)/kernel/lib.rs rusttest-prepare \
-+    rusttestlib-build_error rusttestlib-macros FORCE
-+	$(call if_changed,rustc_test)
-+	$(call if_changed,rustc_test_library)
-+
-+filechk_rust_target = $(objtree)/scripts/generate_rust_target < $<
-+
-+$(obj)/target.json: $(objtree)/include/config/auto.conf FORCE
-+	$(call filechk,rust_target)
-+
-+ifdef CONFIG_CC_IS_CLANG
-+bindgen_c_flags = $(c_flags)
-+else
-+# bindgen relies on libclang to parse C. Ideally, bindgen would support a GCC
-+# plugin backend and/or the Clang driver would be perfectly compatible with GCC.
-+#
-+# For the moment, here we are tweaking the flags on the fly. This is a hack,
-+# and some kernel configurations may not work (e.g. `GCC_PLUGIN_RANDSTRUCT`
-+# if we end up using one of those structs).
-+bindgen_skip_c_flags := -mno-fp-ret-in-387 -mpreferred-stack-boundary=% \
-+	-mskip-rax-setup -mgeneral-regs-only -msign-return-address=% \
-+	-mindirect-branch=thunk-extern -mindirect-branch-register \
-+	-mrecord-mcount -mabi=lp64 -mstack-protector-guard% -mtraceback=no \
-+	-mno-pointers-to-nested-functions -mno-string -mno-strict-align \
-+	-mstrict-align \
-+	-fconserve-stack -falign-jumps=% -falign-loops=% \
-+	-femit-struct-debug-baseonly -fno-ipa-cp-clone -fno-ipa-sra \
-+	-fno-partial-inlining -fplugin-arg-arm_ssp_per_task_plugin-% \
-+	-fno-reorder-blocks -fno-allow-store-data-races -fasan-shadow-offset=% \
-+	-fzero-call-used-regs=% -fno-stack-clash-protection \
-+	-fno-inline-functions-called-once \
-+	--param=% --param asan-%
-+
-+# Derived from `scripts/Makefile.clang`.
-+BINDGEN_TARGET_arm	:= arm-linux-gnueabi
-+BINDGEN_TARGET_arm64	:= aarch64-linux-gnu
-+BINDGEN_TARGET_powerpc	:= powerpc64le-linux-gnu
-+BINDGEN_TARGET_riscv	:= riscv64-linux-gnu
-+BINDGEN_TARGET_x86	:= x86_64-linux-gnu
-+BINDGEN_TARGET		:= $(BINDGEN_TARGET_$(SRCARCH))
-+
-+# All warnings are inhibited since GCC builds are very experimental,
-+# many GCC warnings are not supported by Clang, they may only appear in
-+# some configurations, with new GCC versions, etc.
-+bindgen_extra_c_flags = -w --target=$(BINDGEN_TARGET)
-+
-+bindgen_c_flags = $(filter-out $(bindgen_skip_c_flags), $(c_flags)) \
-+	$(bindgen_extra_c_flags)
-+endif
-+
-+ifdef CONFIG_LTO
-+bindgen_c_flags_lto = $(filter-out $(CC_FLAGS_LTO), $(bindgen_c_flags))
-+else
-+bindgen_c_flags_lto = $(bindgen_c_flags)
-+endif
-+
-+bindgen_c_flags_final = $(bindgen_c_flags_lto)
-+
-+quiet_cmd_bindgen = BINDGEN $@
-+      cmd_bindgen = \
-+	$(BINDGEN) $< $(bindgen_target_flags) \
-+		--use-core --with-derive-default --ctypes-prefix c_types \
-+		--no-debug '.*' \
-+		--size_t-is-usize -o $@ -- $(bindgen_c_flags_final) -DMODULE \
-+		$(bindgen_target_cflags) $(bindgen_target_extra)
-+
-+$(obj)/bindings_generated.rs: private bindgen_target_flags = \
-+    $(shell grep -v '^\#\|^$$' $(srctree)/$(src)/bindgen_parameters)
-+$(obj)/bindings_generated.rs: $(src)/kernel/bindings_helper.h \
-+    $(src)/bindgen_parameters FORCE
-+	$(call if_changed_dep,bindgen)
-+
-+# See `CFLAGS_REMOVE_helpers.o` above. In addition, Clang on C does not warn
-+# with `-Wmissing-declarations` (unlike GCC), so it is not strictly needed here
-+# given it is `libclang`; but for consistency, future Clang changes and/or
-+# a potential future GCC backend for `bindgen`, we disable it too.
-+$(obj)/bindings_helpers_generated.rs: private bindgen_target_flags = \
-+    --blacklist-type '.*' --whitelist-var '' \
-+    --whitelist-function 'rust_helper_.*'
-+$(obj)/bindings_helpers_generated.rs: private bindgen_target_cflags = \
-+    -I$(objtree)/$(obj) -Wno-missing-prototypes -Wno-missing-declarations
-+$(obj)/bindings_helpers_generated.rs: private bindgen_target_extra = ; \
-+    sed -Ei 's/pub fn rust_helper_([a-zA-Z0-9_]*)/#[link_name="rust_helper_\1"]\n    pub fn \1/g' $@
-+$(obj)/bindings_helpers_generated.rs: $(src)/helpers.c FORCE
-+	$(call if_changed_dep,bindgen)
-+
-+quiet_cmd_exports = EXPORTS $@
-+      cmd_exports = \
-+	$(NM) -p --defined-only $< \
-+		| grep -E ' (T|R|D) ' | cut -d ' ' -f 3 \
-+		| xargs -Isymbol \
-+		echo 'EXPORT_SYMBOL_RUST_GPL(symbol);' > $@
-+
-+$(obj)/exports_core_generated.h: $(obj)/core.o FORCE
-+	$(call if_changed,exports)
-+
-+$(obj)/exports_alloc_generated.h: $(obj)/alloc.o FORCE
-+	$(call if_changed,exports)
-+
-+$(obj)/exports_kernel_generated.h: $(obj)/kernel.o FORCE
-+	$(call if_changed,exports)
-+
-+quiet_cmd_rustc_procmacro = $(RUSTC_OR_CLIPPY_QUIET) P $@
-+      cmd_rustc_procmacro = \
-+	$(RUSTC_OR_CLIPPY) $(rust_common_flags) \
-+		--emit=dep-info,link --extern proc_macro \
-+		--crate-type proc-macro --out-dir $(objtree)/$(obj) \
-+		--crate-name $(patsubst lib%.so,%,$(notdir $@)) $<; \
-+	mv $(objtree)/$(obj)/$(patsubst lib%.so,%,$(notdir $@)).d $(depfile); \
-+	sed -i '/^\#/d' $(depfile)
-+
-+# Procedural macros can only be used with the `rustc` that compiled it.
-+# Therefore, to get `libmacros.so` automatically recompiled when the compiler
-+# version changes, we add `core.o` as a dependency (even if it is not needed).
-+$(obj)/libmacros.so: $(src)/macros/lib.rs $(obj)/core.o FORCE
-+	$(call if_changed_dep,rustc_procmacro)
-+
-+quiet_cmd_rustc_library = $(if $(skip_clippy),RUSTC,$(RUSTC_OR_CLIPPY_QUIET)) L $@
-+      cmd_rustc_library = \
-+	OBJTREE=$(abspath $(objtree)) \
-+	$(if $(skip_clippy),$(RUSTC),$(RUSTC_OR_CLIPPY)) \
-+		$(filter-out $(skip_flags),$(rust_flags) $(rustc_target_flags)) \
-+		--emit=dep-info,obj,metadata --crate-type rlib \
-+		--out-dir $(objtree)/$(obj) -L$(objtree)/$(obj) \
-+		--crate-name $(patsubst %.o,%,$(notdir $@)) $<; \
-+	mv $(objtree)/$(obj)/$(patsubst %.o,%,$(notdir $@)).d $(depfile); \
-+	sed -i '/^\#/d' $(depfile) \
-+	$(if $(rustc_objcopy),;$(OBJCOPY) $(rustc_objcopy) $@)
-+
-+rust-analyzer:
-+	$(Q)$(srctree)/scripts/generate_rust_analyzer.py $(srctree) $(objtree) \
-+		$(RUST_LIB_SRC) > $(objtree)/rust-project.json
-+
-+$(obj)/core.o: private skip_clippy = 1
-+$(obj)/core.o: private skip_flags = -Dunreachable_pub
-+$(obj)/core.o: private rustc_target_flags = $(core-cfgs)
-+$(obj)/core.o: $(RUST_LIB_SRC)/core/src/lib.rs $(obj)/target.json FORCE
-+	$(call if_changed_dep,rustc_library)
-+
-+$(obj)/compiler_builtins.o: private rustc_objcopy = -w -W '__*'
-+$(obj)/compiler_builtins.o: $(src)/compiler_builtins.rs $(obj)/core.o FORCE
-+	$(call if_changed_dep,rustc_library)
-+
-+$(obj)/alloc.o: private skip_clippy = 1
-+$(obj)/alloc.o: private skip_flags = -Dunreachable_pub
-+$(obj)/alloc.o: private rustc_target_flags = $(alloc-cfgs)
-+$(obj)/alloc.o: $(src)/alloc/lib.rs $(obj)/compiler_builtins.o FORCE
-+	$(call if_changed_dep,rustc_library)
-+
-+$(obj)/build_error.o: $(src)/build_error.rs $(obj)/compiler_builtins.o FORCE
-+	$(call if_changed_dep,rustc_library)
-+
-+$(obj)/kernel.o: private rustc_target_flags = --extern alloc \
-+    --extern build_error --extern macros
-+$(obj)/kernel.o: $(src)/kernel/lib.rs $(obj)/alloc.o $(obj)/build_error.o \
-+    $(obj)/libmacros.so $(obj)/bindings_generated.rs \
-+    $(obj)/bindings_helpers_generated.rs FORCE
-+	$(call if_changed_dep,rustc_library)
-+
-+endif # CONFIG_RUST
-diff --git a/rust/bindgen_parameters b/rust/bindgen_parameters
-new file mode 100644
-index 000000000000..6c77865e8345
---- /dev/null
-+++ b/rust/bindgen_parameters
-@@ -0,0 +1,17 @@
-+# SPDX-License-Identifier: GPL-2.0
-+
-+--opaque-type xregs_state
-+--opaque-type desc_struct
-+--opaque-type arch_lbr_state
-+--opaque-type local_apic
-+
-+# `try` is a reserved keyword since Rust 2018; solved in `bindgen` v0.59.2,
-+# commit 2aed6b021680 ("context: Escape the try keyword properly").
-+--opaque-type kunit_try_catch
-+
-+# If SMP is disabled, `arch_spinlock_t` is defined as a ZST which triggers a Rust
-+# warning. We don't need to peek into it anyway.
-+--opaque-type spinlock
-+
-+# `seccomp`'s comment gets understood as a doctest
-+--no-doc-comments
-diff --git a/scripts/.gitignore b/scripts/.gitignore
-index eed308bef604..b7aec8eb1bd4 100644
---- a/scripts/.gitignore
-+++ b/scripts/.gitignore
-@@ -1,6 +1,7 @@
- # SPDX-License-Identifier: GPL-2.0-only
- /asn1_compiler
- /bin2c
-+/generate_rust_target
- /insert-sys-cert
- /kallsyms
- /module.lds
-diff --git a/scripts/Kconfig.include b/scripts/Kconfig.include
-index 0496efd6e117..83e850321eb6 100644
---- a/scripts/Kconfig.include
-+++ b/scripts/Kconfig.include
-@@ -36,12 +36,12 @@ ld-option = $(success,$(LD) -v $(1))
- as-instr = $(success,printf "%b\n" "$(1)" | $(CC) $(CLANG_FLAGS) -c -x assembler -o /dev/null -)
- 
- # check if $(CC) and $(LD) exist
--$(error-if,$(failure,command -v $(CC)),compiler '$(CC)' not found)
-+$(error-if,$(failure,command -v $(CC)),C compiler '$(CC)' not found)
- $(error-if,$(failure,command -v $(LD)),linker '$(LD)' not found)
- 
--# Get the compiler name, version, and error out if it is not supported.
-+# Get the C compiler name, version, and error out if it is not supported.
- cc-info := $(shell,$(srctree)/scripts/cc-version.sh $(CC))
--$(error-if,$(success,test -z "$(cc-info)"),Sorry$(comma) this compiler is not supported.)
-+$(error-if,$(success,test -z "$(cc-info)"),Sorry$(comma) this C compiler is not supported.)
- cc-name := $(shell,set -- $(cc-info) && echo $1)
- cc-version := $(shell,set -- $(cc-info) && echo $2)
- 
-diff --git a/scripts/Makefile b/scripts/Makefile
-index ce5aa9030b74..a278345e7820 100644
---- a/scripts/Makefile
-+++ b/scripts/Makefile
-@@ -10,6 +10,9 @@ hostprogs-always-$(CONFIG_BUILDTIME_TABLE_SORT)		+= sorttable
- hostprogs-always-$(CONFIG_ASN1)				+= asn1_compiler
- hostprogs-always-$(CONFIG_MODULE_SIG_FORMAT)		+= sign-file
- hostprogs-always-$(CONFIG_SYSTEM_EXTRA_CERTIFICATE)	+= insert-sys-cert
-+hostprogs-always-$(CONFIG_RUST)				+= generate_rust_target
-+
-+generate_rust_target-rust := y
- 
- HOSTCFLAGS_sorttable.o = -I$(srctree)/tools/include
- HOSTLDLIBS_sorttable = -lpthread
-diff --git a/scripts/Makefile.build b/scripts/Makefile.build
-index 33c1ed581522..533631753b16 100644
---- a/scripts/Makefile.build
-+++ b/scripts/Makefile.build
-@@ -26,6 +26,7 @@ EXTRA_CPPFLAGS :=
- EXTRA_LDFLAGS  :=
- asflags-y  :=
- ccflags-y  :=
-+rustflags-y :=
- cppflags-y :=
- ldflags-y  :=
- 
-@@ -324,6 +325,65 @@ quiet_cmd_cc_lst_c = MKLST   $@
- $(obj)/%.lst: $(src)/%.c FORCE
- 	$(call if_changed_dep,cc_lst_c)
- 
-+# Compile Rust sources (.rs)
-+# ---------------------------------------------------------------------------
-+
-+rust_allowed_features := allocator_api,bench_black_box,concat_idents,generic_associated_types
-+
-+rust_common_cmd = \
-+	RUST_MODFILE=$(modfile) $(RUSTC_OR_CLIPPY) $(rust_flags) \
-+	-Zallow-features=$(rust_allowed_features) \
-+	-Zcrate-attr=no_std \
-+	-Zcrate-attr='feature($(rust_allowed_features))' \
-+	--extern alloc --extern kernel \
-+	--crate-type rlib --out-dir $(obj) -L $(objtree)/rust/ \
-+	--crate-name $(basename $(notdir $@))
-+
-+rust_handle_depfile = \
-+	mv $(obj)/$(basename $(notdir $@)).d $(depfile); \
-+	sed -i '/^\#/d' $(depfile)
-+
-+# `--emit=obj`, `--emit=asm` and `--emit=llvm-ir` imply a single codegen unit
-+# will be used. We explicitly request `-Ccodegen-units=1` in any case, and
-+# the compiler shows a warning if it is not 1. However, if we ever stop
-+# requesting it explicitly and we start using some other `--emit` that does not
-+# imply it (and for which codegen is performed), then we would be out of sync,
-+# i.e. the outputs we would get for the different single targets (e.g. `.ll`)
-+# would not match each other.
-+
-+quiet_cmd_rustc_o_rs = $(RUSTC_OR_CLIPPY_QUIET) $(quiet_modtag) $@
-+      cmd_rustc_o_rs = \
-+	$(rust_common_cmd) --emit=dep-info,obj $<; \
-+	$(rust_handle_depfile)
-+
-+$(obj)/%.o: $(src)/%.rs FORCE
-+	$(call if_changed_dep,rustc_o_rs)
-+
-+quiet_cmd_rustc_i_rs = $(RUSTC_OR_CLIPPY_QUIET) $(quiet_modtag) $@
-+      cmd_rustc_i_rs = \
-+	$(rust_common_cmd) --emit=dep-info -Zunpretty=expanded $< >$@; \
-+	command -v $(RUSTFMT) >/dev/null && $(RUSTFMT) $@; \
-+	$(rust_handle_depfile)
-+
-+$(obj)/%.i: $(src)/%.rs FORCE
-+	$(call if_changed_dep,rustc_i_rs)
-+
-+quiet_cmd_rustc_s_rs = $(RUSTC_OR_CLIPPY_QUIET) $(quiet_modtag) $@
-+      cmd_rustc_s_rs = \
-+	$(rust_common_cmd) --emit=dep-info,asm $<; \
-+	$(rust_handle_depfile)
-+
-+$(obj)/%.s: $(src)/%.rs FORCE
-+	$(call if_changed_dep,rustc_s_rs)
-+
-+quiet_cmd_rustc_ll_rs = $(RUSTC_OR_CLIPPY_QUIET) $(quiet_modtag) $@
-+      cmd_rustc_ll_rs = \
-+	$(rust_common_cmd) --emit=dep-info,llvm-ir $<; \
-+	$(rust_handle_depfile)
-+
-+$(obj)/%.ll: $(src)/%.rs FORCE
-+	$(call if_changed_dep,rustc_ll_rs)
-+
- # Compile assembler sources (.S)
- # ---------------------------------------------------------------------------
- 
-diff --git a/scripts/Makefile.debug b/scripts/Makefile.debug
-index 9f39b0130551..fe87389d52c0 100644
---- a/scripts/Makefile.debug
-+++ b/scripts/Makefile.debug
-@@ -1,4 +1,5 @@
- DEBUG_CFLAGS	:=
-+DEBUG_RUSTFLAGS	:=
- 
- ifdef CONFIG_DEBUG_INFO_SPLIT
- DEBUG_CFLAGS	+= -gsplit-dwarf
-@@ -10,6 +11,12 @@ ifndef CONFIG_AS_IS_LLVM
- KBUILD_AFLAGS	+= -Wa,-gdwarf-2
- endif
- 
-+ifdef CONFIG_DEBUG_INFO_REDUCED
-+DEBUG_RUSTFLAGS += -Cdebuginfo=1
-+else
-+DEBUG_RUSTFLAGS += -Cdebuginfo=2
-+endif
-+
- ifndef CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT
- dwarf-version-$(CONFIG_DEBUG_INFO_DWARF4) := 4
- dwarf-version-$(CONFIG_DEBUG_INFO_DWARF5) := 5
-@@ -31,3 +38,6 @@ endif
- 
- KBUILD_CFLAGS += $(DEBUG_CFLAGS)
- export DEBUG_CFLAGS
-+
-+KBUILD_RUSTFLAGS += $(DEBUG_RUSTFLAGS)
-+export DEBUG_RUSTFLAGS
-diff --git a/scripts/Makefile.host b/scripts/Makefile.host
-index 278b4d6ac945..da133780b751 100644
---- a/scripts/Makefile.host
-+++ b/scripts/Makefile.host
-@@ -22,6 +22,8 @@ $(obj)/%.tab.c $(obj)/%.tab.h: $(src)/%.y FORCE
- # to preprocess a data file.
- #
- # Both C and C++ are supported, but preferred language is C for such utilities.
-+# Rust is also supported, but it may only be used in scenarios where a Rust
-+# toolchain is required to be available (e.g. when  `CONFIG_RUST` is enabled).
- #
- # Sample syntax (see Documentation/kbuild/makefiles.rst for reference)
- # hostprogs := bin2hex
-@@ -37,15 +39,20 @@ $(obj)/%.tab.c $(obj)/%.tab.h: $(src)/%.y FORCE
- # qconf-objs      := menu.o
- # Will compile qconf as a C++ program, and menu as a C program.
- # They are linked as C++ code to the executable qconf
-+#
-+# hostprogs   := target
-+# target-rust := y
-+# Will compile `target` as a Rust program, using `target.rs` as the crate root.
-+# The crate may consist of several source files.
- 
- # C code
- # Executables compiled from a single .c file
- host-csingle	:= $(foreach m,$(hostprogs), \
--			$(if $($(m)-objs)$($(m)-cxxobjs),,$(m)))
-+			$(if $($(m)-objs)$($(m)-cxxobjs)$($(m)-rust),,$(m)))
- 
- # C executables linked based on several .o files
- host-cmulti	:= $(foreach m,$(hostprogs),\
--		   $(if $($(m)-cxxobjs),,$(if $($(m)-objs),$(m))))
-+		   $(if $($(m)-cxxobjs)$($(m)-rust),,$(if $($(m)-objs),$(m))))
- 
- # Object (.o) files compiled from .c files
- host-cobjs	:= $(sort $(foreach m,$(hostprogs),$($(m)-objs)))
-@@ -58,11 +65,17 @@ host-cxxmulti	:= $(foreach m,$(hostprogs),$(if $($(m)-cxxobjs),$(m)))
- # C++ Object (.o) files compiled from .cc files
- host-cxxobjs	:= $(sort $(foreach m,$(host-cxxmulti),$($(m)-cxxobjs)))
- 
-+# Rust code
-+# Executables compiled from a single Rust crate (which may consist of
-+# one or more .rs files)
-+host-rust	:= $(foreach m,$(hostprogs),$(if $($(m)-rust),$(m)))
-+
- host-csingle	:= $(addprefix $(obj)/,$(host-csingle))
- host-cmulti	:= $(addprefix $(obj)/,$(host-cmulti))
- host-cobjs	:= $(addprefix $(obj)/,$(host-cobjs))
- host-cxxmulti	:= $(addprefix $(obj)/,$(host-cxxmulti))
- host-cxxobjs	:= $(addprefix $(obj)/,$(host-cxxobjs))
-+host-rust	:= $(addprefix $(obj)/,$(host-rust))
- 
- #####
- # Handle options to gcc. Support building with separate output directory
-@@ -71,6 +84,8 @@ _hostc_flags   = $(KBUILD_HOSTCFLAGS)   $(HOST_EXTRACFLAGS)   \
-                  $(HOSTCFLAGS_$(target-stem).o)
- _hostcxx_flags = $(KBUILD_HOSTCXXFLAGS) $(HOST_EXTRACXXFLAGS) \
-                  $(HOSTCXXFLAGS_$(target-stem).o)
-+_hostrust_flags = $(KBUILD_HOSTRUSTFLAGS) $(HOST_EXTRARUSTFLAGS) \
-+                  $(HOSTRUSTFLAGS_$(target-stem))
- 
- # $(objtree)/$(obj) for including generated headers from checkin source files
- ifeq ($(KBUILD_EXTMOD),)
-@@ -82,6 +97,7 @@ endif
- 
- hostc_flags    = -Wp,-MMD,$(depfile) $(_hostc_flags)
- hostcxx_flags  = -Wp,-MMD,$(depfile) $(_hostcxx_flags)
-+hostrust_flags = $(_hostrust_flags)
- 
- #####
- # Compile programs on the host
-@@ -128,5 +144,17 @@ quiet_cmd_host-cxxobjs	= HOSTCXX $@
- $(host-cxxobjs): $(obj)/%.o: $(src)/%.cc FORCE
- 	$(call if_changed_dep,host-cxxobjs)
- 
-+# Create executable from a single Rust crate (which may consist of
-+# one or more `.rs` files)
-+# host-rust -> Executable
-+quiet_cmd_host-rust	= HOSTRUSTC $@
-+      cmd_host-rust	= \
-+	$(HOSTRUSTC) $(hostrust_flags) --emit=dep-info,link \
-+		--out-dir=$(obj)/ $<; \
-+	mv $(obj)/$(target-stem).d $(depfile); \
-+	sed -i '/^\#/d' $(depfile)
-+$(host-rust): $(obj)/%: $(src)/%.rs FORCE
-+	$(call if_changed_dep,host-rust)
-+
- targets += $(host-csingle) $(host-cmulti) $(host-cobjs) \
--	   $(host-cxxmulti) $(host-cxxobjs)
-+	   $(host-cxxmulti) $(host-cxxobjs) $(host-rust)
-diff --git a/scripts/Makefile.lib b/scripts/Makefile.lib
-index 9f69ecdd7977..f3e623f242df 100644
---- a/scripts/Makefile.lib
-+++ b/scripts/Makefile.lib
-@@ -8,6 +8,7 @@ ldflags-y  += $(EXTRA_LDFLAGS)
- # flags that take effect in current and sub directories
- KBUILD_AFLAGS += $(subdir-asflags-y)
- KBUILD_CFLAGS += $(subdir-ccflags-y)
-+KBUILD_RUSTFLAGS += $(subdir-rustflags-y)
- 
- # Figure out what we need to build from the various variables
- # ===========================================================================
-@@ -128,6 +129,10 @@ _c_flags       = $(filter-out $(CFLAGS_REMOVE_$(target-stem).o), \
-                      $(filter-out $(ccflags-remove-y), \
-                          $(KBUILD_CPPFLAGS) $(KBUILD_CFLAGS) $(ccflags-y)) \
-                      $(CFLAGS_$(target-stem).o))
-+_rust_flags    = $(filter-out $(RUSTFLAGS_REMOVE_$(target-stem).o), \
-+                     $(filter-out $(rustflags-remove-y), \
-+                         $(KBUILD_RUSTFLAGS) $(rustflags-y)) \
-+                     $(RUSTFLAGS_$(target-stem).o))
- _a_flags       = $(filter-out $(AFLAGS_REMOVE_$(target-stem).o), \
-                      $(filter-out $(asflags-remove-y), \
-                          $(KBUILD_CPPFLAGS) $(KBUILD_AFLAGS) $(asflags-y)) \
-@@ -202,6 +207,11 @@ modkern_cflags =                                          \
- 		$(KBUILD_CFLAGS_MODULE) $(CFLAGS_MODULE), \
- 		$(KBUILD_CFLAGS_KERNEL) $(CFLAGS_KERNEL) $(modfile_flags))
- 
-+modkern_rustflags =                                              \
-+	$(if $(part-of-module),                                   \
-+		$(KBUILD_RUSTFLAGS_MODULE) $(RUSTFLAGS_MODULE), \
-+		$(KBUILD_RUSTFLAGS_KERNEL) $(RUSTFLAGS_KERNEL))
-+
- modkern_aflags = $(if $(part-of-module),				\
- 			$(KBUILD_AFLAGS_MODULE) $(AFLAGS_MODULE),	\
- 			$(KBUILD_AFLAGS_KERNEL) $(AFLAGS_KERNEL))
-@@ -211,6 +221,8 @@ c_flags        = -Wp,-MMD,$(depfile) $(NOSTDINC_FLAGS) $(LINUXINCLUDE)     \
- 		 $(_c_flags) $(modkern_cflags)                           \
- 		 $(basename_flags) $(modname_flags)
- 
-+rust_flags     = $(_rust_flags) $(modkern_rustflags) @$(objtree)/include/generated/rustc_cfg
-+
- a_flags        = -Wp,-MMD,$(depfile) $(NOSTDINC_FLAGS) $(LINUXINCLUDE)     \
- 		 $(_a_flags) $(modkern_aflags)
- 
-diff --git a/scripts/Makefile.modfinal b/scripts/Makefile.modfinal
-index 7f39599e9fae..670d7997a38b 100644
---- a/scripts/Makefile.modfinal
-+++ b/scripts/Makefile.modfinal
-@@ -39,11 +39,13 @@ quiet_cmd_ld_ko_o = LD [M]  $@
- 
- quiet_cmd_btf_ko = BTF [M] $@
-       cmd_btf_ko = 							\
--	if [ -f vmlinux ]; then						\
-+	if [ ! -f vmlinux ]; then					\
-+		printf "Skipping BTF generation for %s due to unavailability of vmlinux\n" $@ 1>&2; \
-+	elif [ -n "$(CONFIG_RUST)" ] && $(srctree)/scripts/is_rust_module.sh $@; then 		\
-+		printf "Skipping BTF generation for %s because it's a Rust module\n" $@ 1>&2; \
-+	else								\
- 		LLVM_OBJCOPY="$(OBJCOPY)" $(PAHOLE) -J $(PAHOLE_FLAGS) --btf_base vmlinux $@; \
- 		$(RESOLVE_BTFIDS) -b vmlinux $@; 			\
--	else								\
--		printf "Skipping BTF generation for %s due to unavailability of vmlinux\n" $@ 1>&2; \
- 	fi;
- 
- # Same as newer-prereqs, but allows to exclude specified extra dependencies
-diff --git a/scripts/cc-version.sh b/scripts/cc-version.sh
-index f1952c522466..2401c86fcf53 100755
---- a/scripts/cc-version.sh
-+++ b/scripts/cc-version.sh
-@@ -1,13 +1,13 @@
- #!/bin/sh
- # SPDX-License-Identifier: GPL-2.0
- #
--# Print the compiler name and its version in a 5 or 6-digit form.
-+# Print the C compiler name and its version in a 5 or 6-digit form.
- # Also, perform the minimum version check.
- 
- set -e
- 
--# Print the compiler name and some version components.
--get_compiler_info()
-+# Print the C compiler name and some version components.
-+get_c_compiler_info()
- {
- 	cat <<- EOF | "$@" -E -P -x c - 2>/dev/null
- 	#if defined(__clang__)
-@@ -32,7 +32,7 @@ get_canonical_version()
- 
- # $@ instead of $1 because multiple words might be given, e.g. CC="ccache gcc".
- orig_args="$@"
--set -- $(get_compiler_info "$@")
-+set -- $(get_c_compiler_info "$@")
- 
- name=$1
- 
-@@ -52,7 +52,7 @@ ICC)
- 	min_version=$($min_tool_version icc)
- 	;;
- *)
--	echo "$orig_args: unknown compiler" >&2
-+	echo "$orig_args: unknown C compiler" >&2
- 	exit 1
- 	;;
- esac
-@@ -62,7 +62,7 @@ min_cversion=$(get_canonical_version $min_version)
- 
- if [ "$cversion" -lt "$min_cversion" ]; then
- 	echo >&2 "***"
--	echo >&2 "*** Compiler is too old."
-+	echo >&2 "*** C compiler is too old."
- 	echo >&2 "***   Your $name version:    $version"
- 	echo >&2 "***   Minimum $name version: $min_version"
- 	echo >&2 "***"
-diff --git a/scripts/generate_rust_target.rs b/scripts/generate_rust_target.rs
-new file mode 100644
-index 000000000000..c146a3407183
---- /dev/null
-+++ b/scripts/generate_rust_target.rs
-@@ -0,0 +1,227 @@
++++ b/drivers/android/allocation.rs
+@@ -0,0 +1,266 @@
 +// SPDX-License-Identifier: GPL-2.0
 +
-+//! The custom target specification file generator for `rustc`.
-+//!
-+//! To configure a target from scratch, a JSON-encoded file has to be passed
-+//! to `rustc` (introduced in [RFC 131]). These options and the file itself are
-+//! unstable. Eventually, `rustc` should provide a way to do this in a stable
-+//! manner. For instance, via command-line arguments. Therefore, this file
-+//! should avoid using keys which can be set via `-C` or `-Z` options.
-+//!
-+//! [RFC 131]: https://rust-lang.github.io/rfcs/0131-target-specification.html
-+
-+use std::{
-+    collections::HashMap,
-+    fmt::{Display, Formatter, Result},
-+    io::BufRead,
++use core::mem::{replace, size_of, MaybeUninit};
++use kernel::{
++    bindings, linked_list::List, pages::Pages, prelude::*, sync::Ref, user_ptr::UserSlicePtrReader,
 +};
 +
-+enum Value {
-+    Boolean(bool),
-+    Number(i32),
-+    String(String),
-+    Object(Object),
++use crate::{
++    defs::*,
++    node::NodeRef,
++    process::{AllocationInfo, Process},
++    thread::{BinderError, BinderResult},
++    transaction::FileInfo,
++};
++
++pub(crate) struct Allocation<'a> {
++    pub(crate) offset: usize,
++    size: usize,
++    pub(crate) ptr: usize,
++    pages: Ref<[Pages<0>]>,
++    pub(crate) process: &'a Process,
++    allocation_info: Option<AllocationInfo>,
++    free_on_drop: bool,
++    file_list: List<Box<FileInfo>>,
 +}
 +
-+type Object = Vec<(String, Value)>;
++impl<'a> Allocation<'a> {
++    pub(crate) fn new(
++        process: &'a Process,
++        offset: usize,
++        size: usize,
++        ptr: usize,
++        pages: Ref<[Pages<0>]>,
++    ) -> Self {
++        Self {
++            process,
++            offset,
++            size,
++            ptr,
++            pages,
++            allocation_info: None,
++            free_on_drop: true,
++            file_list: List::new(),
++        }
++    }
 +
-+/// Minimal "almost JSON" generator (e.g. no `null`s, no arrays, no escaping),
-+/// enough for this purpose.
-+impl Display for Value {
-+    fn fmt(&self, formatter: &mut Formatter<'_>) -> Result {
-+        match self {
-+            Value::Boolean(boolean) => write!(formatter, "{}", boolean),
-+            Value::Number(number) => write!(formatter, "{}", number),
-+            Value::String(string) => write!(formatter, "\"{}\"", string),
-+            Value::Object(object) => {
-+                formatter.write_str("{")?;
-+                if let [ref rest @ .., ref last] = object[..] {
-+                    for (key, value) in rest {
-+                        write!(formatter, "\"{}\": {},", key, value)?;
-+                    }
-+                    write!(formatter, "\"{}\": {}", last.0, last.1)?;
++    pub(crate) fn take_file_list(&mut self) -> List<Box<FileInfo>> {
++        replace(&mut self.file_list, List::new())
++    }
++
++    pub(crate) fn add_file_info(&mut self, file: Box<FileInfo>) {
++        self.file_list.push_back(file);
++    }
++
++    fn iterate<T>(&self, mut offset: usize, mut size: usize, mut cb: T) -> Result
++    where
++        T: FnMut(&Pages<0>, usize, usize) -> Result,
++    {
++        // Check that the request is within the buffer.
++        if offset.checked_add(size).ok_or(EINVAL)? > self.size {
++            return Err(EINVAL);
++        }
++        offset += self.offset;
++        let mut page_index = offset >> bindings::PAGE_SHIFT;
++        offset &= (1 << bindings::PAGE_SHIFT) - 1;
++        while size > 0 {
++            let available = core::cmp::min(size, (1 << bindings::PAGE_SHIFT) as usize - offset);
++            cb(&self.pages[page_index], offset, available)?;
++            size -= available;
++            page_index += 1;
++            offset = 0;
++        }
++        Ok(())
++    }
++
++    pub(crate) fn copy_into(
++        &self,
++        reader: &mut UserSlicePtrReader,
++        offset: usize,
++        size: usize,
++    ) -> Result {
++        self.iterate(offset, size, |page, offset, to_copy| {
++            page.copy_into_page(reader, offset, to_copy)
++        })
++    }
++
++    pub(crate) fn read<T>(&self, offset: usize) -> Result<T> {
++        let mut out = MaybeUninit::<T>::uninit();
++        let mut out_offset = 0;
++        self.iterate(offset, size_of::<T>(), |page, offset, to_copy| {
++            // SAFETY: Data buffer is allocated on the stack.
++            unsafe {
++                page.read(
++                    (out.as_mut_ptr() as *mut u8).add(out_offset),
++                    offset,
++                    to_copy,
++                )
++            }?;
++            out_offset += to_copy;
++            Ok(())
++        })?;
++        // SAFETY: We just initialised the data.
++        Ok(unsafe { out.assume_init() })
++    }
++
++    pub(crate) fn write<T>(&self, offset: usize, obj: &T) -> Result {
++        let mut obj_offset = 0;
++        self.iterate(offset, size_of::<T>(), |page, offset, to_copy| {
++            // SAFETY: The sum of `offset` and `to_copy` is bounded by the size of T.
++            let obj_ptr = unsafe { (obj as *const T as *const u8).add(obj_offset) };
++            // SAFETY: We have a reference to the object, so the pointer is valid.
++            unsafe { page.write(obj_ptr, offset, to_copy) }?;
++            obj_offset += to_copy;
++            Ok(())
++        })
++    }
++
++    pub(crate) fn keep_alive(mut self) {
++        self.process
++            .buffer_make_freeable(self.offset, self.allocation_info.take());
++        self.free_on_drop = false;
++    }
++
++    pub(crate) fn set_info(&mut self, info: AllocationInfo) {
++        self.allocation_info = Some(info);
++    }
++}
++
++impl Drop for Allocation<'_> {
++    fn drop(&mut self) {
++        if !self.free_on_drop {
++            return;
++        }
++
++        if let Some(info) = &self.allocation_info {
++            let offsets = info.offsets.clone();
++            let view = AllocationView::new(self, offsets.start);
++            for i in offsets.step_by(size_of::<usize>()) {
++                if view.cleanup_object(i).is_err() {
++                    pr_warn!("Error cleaning up object at offset {}\n", i)
 +                }
-+                formatter.write_str("}")
 +            }
++        }
++
++        self.process.buffer_raw_free(self.ptr);
++    }
++}
++
++pub(crate) struct AllocationView<'a, 'b> {
++    pub(crate) alloc: &'a mut Allocation<'b>,
++    limit: usize,
++}
++
++impl<'a, 'b> AllocationView<'a, 'b> {
++    pub(crate) fn new(alloc: &'a mut Allocation<'b>, limit: usize) -> Self {
++        AllocationView { alloc, limit }
++    }
++
++    pub(crate) fn read<T>(&self, offset: usize) -> Result<T> {
++        if offset.checked_add(size_of::<T>()).ok_or(EINVAL)? > self.limit {
++            return Err(EINVAL);
++        }
++        self.alloc.read(offset)
++    }
++
++    pub(crate) fn write<T>(&self, offset: usize, obj: &T) -> Result {
++        if offset.checked_add(size_of::<T>()).ok_or(EINVAL)? > self.limit {
++            return Err(EINVAL);
++        }
++        self.alloc.write(offset, obj)
++    }
++
++    pub(crate) fn transfer_binder_object<T>(
++        &self,
++        offset: usize,
++        strong: bool,
++        get_node: T,
++    ) -> BinderResult
++    where
++        T: FnOnce(&bindings::flat_binder_object) -> BinderResult<NodeRef>,
++    {
++        // TODO: Do we want this function to take a &mut self?
++        let obj = self.read::<bindings::flat_binder_object>(offset)?;
++        let node_ref = get_node(&obj)?;
++
++        if core::ptr::eq(&*node_ref.node.owner, self.alloc.process) {
++            // The receiving process is the owner of the node, so send it a binder object (instead
++            // of a handle).
++            let (ptr, cookie) = node_ref.node.get_id();
++            let newobj = bindings::flat_binder_object {
++                hdr: bindings::binder_object_header {
++                    type_: if strong {
++                        BINDER_TYPE_BINDER
++                    } else {
++                        BINDER_TYPE_WEAK_BINDER
++                    },
++                },
++                flags: obj.flags,
++                __bindgen_anon_1: bindings::flat_binder_object__bindgen_ty_1 { binder: ptr as _ },
++                cookie: cookie as _,
++            };
++            self.write(offset, &newobj)?;
++
++            // Increment the user ref count on the node. It will be decremented as part of the
++            // destruction of the buffer, when we see a binder or weak-binder object.
++            node_ref.node.update_refcount(true, strong);
++        } else {
++            // The receiving process is different from the owner, so we need to insert a handle to
++            // the binder object.
++            let handle = self
++                .alloc
++                .process
++                .insert_or_update_handle(node_ref, false)?;
++
++            let newobj = bindings::flat_binder_object {
++                hdr: bindings::binder_object_header {
++                    type_: if strong {
++                        BINDER_TYPE_HANDLE
++                    } else {
++                        BINDER_TYPE_WEAK_HANDLE
++                    },
++                },
++                flags: obj.flags,
++                // TODO: To avoid padding, we write to `binder` instead of `handle` here. We need a
++                // better solution though.
++                __bindgen_anon_1: bindings::flat_binder_object__bindgen_ty_1 {
++                    binder: handle as _,
++                },
++                ..bindings::flat_binder_object::default()
++            };
++            if self.write(offset, &newobj).is_err() {
++                // Decrement ref count on the handle we just created.
++                let _ = self.alloc.process.update_ref(handle, false, strong);
++                return Err(BinderError::new_failed());
++            }
++        }
++        Ok(())
++    }
++
++    fn cleanup_object(&self, index_offset: usize) -> Result {
++        let offset = self.alloc.read(index_offset)?;
++        let header = self.read::<bindings::binder_object_header>(offset)?;
++        // TODO: Handle other types.
++        match header.type_ {
++            BINDER_TYPE_WEAK_BINDER | BINDER_TYPE_BINDER => {
++                let obj = self.read::<bindings::flat_binder_object>(offset)?;
++                let strong = header.type_ == BINDER_TYPE_BINDER;
++                // SAFETY: The type is `BINDER_TYPE_{WEAK_}BINDER`, so the `binder` field is
++                // populated.
++                let ptr = unsafe { obj.__bindgen_anon_1.binder } as usize;
++                let cookie = obj.cookie as usize;
++                self.alloc.process.update_node(ptr, cookie, strong, false);
++                Ok(())
++            }
++            BINDER_TYPE_WEAK_HANDLE | BINDER_TYPE_HANDLE => {
++                let obj = self.read::<bindings::flat_binder_object>(offset)?;
++                let strong = header.type_ == BINDER_TYPE_HANDLE;
++                // SAFETY: The type is `BINDER_TYPE_{WEAK_}HANDLE`, so the `handle` field is
++                // populated.
++                let handle = unsafe { obj.__bindgen_anon_1.handle } as _;
++                self.alloc.process.update_ref(handle, false, strong)
++            }
++            _ => Ok(()),
++        }
++    }
++}
+diff --git a/drivers/android/context.rs b/drivers/android/context.rs
+new file mode 100644
+index 000000000000..2bb448df6641
+--- /dev/null
++++ b/drivers/android/context.rs
+@@ -0,0 +1,80 @@
++// SPDX-License-Identifier: GPL-2.0
++
++use kernel::{
++    bindings,
++    prelude::*,
++    security,
++    sync::{Mutex, Ref, UniqueRef},
++};
++
++use crate::{
++    node::NodeRef,
++    thread::{BinderError, BinderResult},
++};
++
++struct Manager {
++    node: Option<NodeRef>,
++    uid: Option<bindings::kuid_t>,
++}
++
++pub(crate) struct Context {
++    manager: Mutex<Manager>,
++}
++
++#[allow(clippy::non_send_fields_in_send_ty)]
++unsafe impl Send for Context {}
++unsafe impl Sync for Context {}
++
++impl Context {
++    pub(crate) fn new() -> Result<Ref<Self>> {
++        let mut ctx = Pin::from(UniqueRef::try_new(Self {
++            // SAFETY: Init is called below.
++            manager: unsafe {
++                Mutex::new(Manager {
++                    node: None,
++                    uid: None,
++                })
++            },
++        })?);
++
++        // SAFETY: `manager` is also pinned when `ctx` is.
++        let manager = unsafe { ctx.as_mut().map_unchecked_mut(|c| &mut c.manager) };
++        kernel::mutex_init!(manager, "Context::manager");
++
++        Ok(ctx.into())
++    }
++
++    pub(crate) fn set_manager_node(&self, node_ref: NodeRef) -> Result {
++        let mut manager = self.manager.lock();
++        if manager.node.is_some() {
++            return Err(EBUSY);
++        }
++        security::binder_set_context_mgr(&node_ref.node.owner.cred)?;
++
++        // TODO: Get the actual caller id.
++        let caller_uid = bindings::kuid_t::default();
++        if let Some(ref uid) = manager.uid {
++            if uid.val != caller_uid.val {
++                return Err(EPERM);
++            }
++        }
++
++        manager.node = Some(node_ref);
++        manager.uid = Some(caller_uid);
++        Ok(())
++    }
++
++    pub(crate) fn unset_manager_node(&self) {
++        let node_ref = self.manager.lock().node.take();
++        drop(node_ref);
++    }
++
++    pub(crate) fn get_manager_node(&self, strong: bool) -> BinderResult<NodeRef> {
++        self.manager
++            .lock()
++            .node
++            .as_ref()
++            .ok_or_else(BinderError::new_dead)?
++            .clone(strong)
++    }
++}
+diff --git a/drivers/android/defs.rs b/drivers/android/defs.rs
+new file mode 100644
+index 000000000000..ec2dde9b3dd8
+--- /dev/null
++++ b/drivers/android/defs.rs
+@@ -0,0 +1,99 @@
++// SPDX-License-Identifier: GPL-2.0
++
++use core::ops::{Deref, DerefMut};
++use kernel::{
++    bindings,
++    bindings::*,
++    io_buffer::{ReadableFromBytes, WritableToBytes},
++};
++
++macro_rules! pub_no_prefix {
++    ($prefix:ident, $($newname:ident),+) => {
++        $(pub(crate) const $newname: u32 = concat_idents!($prefix, $newname);)+
++    };
++}
++
++pub_no_prefix!(
++    binder_driver_return_protocol_,
++    BR_OK,
++    BR_ERROR,
++    BR_TRANSACTION,
++    BR_REPLY,
++    BR_DEAD_REPLY,
++    BR_TRANSACTION_COMPLETE,
++    BR_INCREFS,
++    BR_ACQUIRE,
++    BR_RELEASE,
++    BR_DECREFS,
++    BR_NOOP,
++    BR_SPAWN_LOOPER,
++    BR_DEAD_BINDER,
++    BR_CLEAR_DEATH_NOTIFICATION_DONE,
++    BR_FAILED_REPLY
++);
++
++pub_no_prefix!(
++    binder_driver_command_protocol_,
++    BC_TRANSACTION,
++    BC_REPLY,
++    BC_FREE_BUFFER,
++    BC_INCREFS,
++    BC_ACQUIRE,
++    BC_RELEASE,
++    BC_DECREFS,
++    BC_INCREFS_DONE,
++    BC_ACQUIRE_DONE,
++    BC_REGISTER_LOOPER,
++    BC_ENTER_LOOPER,
++    BC_EXIT_LOOPER,
++    BC_REQUEST_DEATH_NOTIFICATION,
++    BC_CLEAR_DEATH_NOTIFICATION,
++    BC_DEAD_BINDER_DONE
++);
++
++pub_no_prefix!(transaction_flags_, TF_ONE_WAY, TF_ACCEPT_FDS);
++
++pub(crate) use bindings::{
++    BINDER_TYPE_BINDER, BINDER_TYPE_FD, BINDER_TYPE_HANDLE, BINDER_TYPE_WEAK_BINDER,
++    BINDER_TYPE_WEAK_HANDLE, FLAT_BINDER_FLAG_ACCEPTS_FDS,
++};
++
++macro_rules! decl_wrapper {
++    ($newname:ident, $wrapped:ty) => {
++        #[derive(Copy, Clone, Default)]
++        pub(crate) struct $newname($wrapped);
++
++        // TODO: This must be justified by inspecting the type, so should live outside the macro or
++        // the macro should be somehow marked unsafe.
++        unsafe impl ReadableFromBytes for $newname {}
++        unsafe impl WritableToBytes for $newname {}
++
++        impl Deref for $newname {
++            type Target = $wrapped;
++            fn deref(&self) -> &Self::Target {
++                &self.0
++            }
++        }
++
++        impl DerefMut for $newname {
++            fn deref_mut(&mut self) -> &mut Self::Target {
++                &mut self.0
++            }
++        }
++    };
++}
++
++decl_wrapper!(BinderNodeDebugInfo, bindings::binder_node_debug_info);
++decl_wrapper!(BinderNodeInfoForRef, bindings::binder_node_info_for_ref);
++decl_wrapper!(FlatBinderObject, bindings::flat_binder_object);
++decl_wrapper!(BinderTransactionData, bindings::binder_transaction_data);
++decl_wrapper!(BinderWriteRead, bindings::binder_write_read);
++decl_wrapper!(BinderVersion, bindings::binder_version);
++
++impl BinderVersion {
++    pub(crate) fn current() -> Self {
++        Self(bindings::binder_version {
++            protocol_version: bindings::BINDER_CURRENT_PROTOCOL_VERSION as _,
++        })
++    }
++}
+diff --git a/drivers/android/node.rs b/drivers/android/node.rs
+new file mode 100644
+index 000000000000..1a46de1e736c
+--- /dev/null
++++ b/drivers/android/node.rs
+@@ -0,0 +1,476 @@
++// SPDX-License-Identifier: GPL-2.0
++
++use core::sync::atomic::{AtomicU64, Ordering};
++use kernel::{
++    io_buffer::IoBufferWriter,
++    linked_list::{GetLinks, Links, List},
++    prelude::*,
++    sync::{Guard, LockedBy, Mutex, Ref, SpinLock},
++    user_ptr::UserSlicePtrWriter,
++};
++
++use crate::{
++    defs::*,
++    process::{Process, ProcessInner},
++    thread::{BinderError, BinderResult, Thread},
++    DeliverToRead,
++};
++
++struct CountState {
++    count: usize,
++    has_count: bool,
++    is_biased: bool,
++}
++
++impl CountState {
++    fn new() -> Self {
++        Self {
++            count: 0,
++            has_count: false,
++            is_biased: false,
++        }
++    }
++
++    fn add_bias(&mut self) {
++        self.count += 1;
++        self.is_biased = true;
++    }
++}
++
++struct NodeInner {
++    strong: CountState,
++    weak: CountState,
++    death_list: List<Ref<NodeDeath>>,
++}
++
++struct NodeDeathInner {
++    dead: bool,
++    cleared: bool,
++    notification_done: bool,
++
++    /// Indicates whether the normal flow was interrupted by removing the handle. In this case, we
++    /// need behave as if the death notification didn't exist (i.e., we don't deliver anything to
++    /// the user.
++    aborted: bool,
++}
++
++pub(crate) struct NodeDeath {
++    node: Ref<Node>,
++    process: Ref<Process>,
++    // TODO: Make this private.
++    pub(crate) cookie: usize,
++    work_links: Links<dyn DeliverToRead>,
++    // TODO: Add the moment we're using this for two lists, which isn't safe because we want to
++    // remove from the list without knowing the list it's in. We need to separate this out.
++    death_links: Links<NodeDeath>,
++    inner: SpinLock<NodeDeathInner>,
++}
++
++impl NodeDeath {
++    /// Constructs a new node death notification object.
++    ///
++    /// # Safety
++    ///
++    /// The caller must call `NodeDeath::init` before using the notification object.
++    pub(crate) unsafe fn new(node: Ref<Node>, process: Ref<Process>, cookie: usize) -> Self {
++        Self {
++            node,
++            process,
++            cookie,
++            work_links: Links::new(),
++            death_links: Links::new(),
++            inner: unsafe {
++                SpinLock::new(NodeDeathInner {
++                    dead: false,
++                    cleared: false,
++                    notification_done: false,
++                    aborted: false,
++                })
++            },
++        }
++    }
++
++    pub(crate) fn init(self: Pin<&mut Self>) {
++        // SAFETY: `inner` is pinned when `self` is.
++        let inner = unsafe { self.map_unchecked_mut(|n| &mut n.inner) };
++        kernel::spinlock_init!(inner, "NodeDeath::inner");
++    }
++
++    /// Sets the cleared flag to `true`.
++    ///
++    /// It removes `self` from the node's death notification list if needed. It must only be called
++    /// once.
++    ///
++    /// Returns whether it needs to be queued.
++    pub(crate) fn set_cleared(self: &Ref<Self>, abort: bool) -> bool {
++        let (needs_removal, needs_queueing) = {
++            // Update state and determine if we need to queue a work item. We only need to do it
++            // when the node is not dead or if the user already completed the death notification.
++            let mut inner = self.inner.lock();
++            inner.cleared = true;
++            if abort {
++                inner.aborted = true;
++            }
++            (!inner.dead, !inner.dead || inner.notification_done)
++        };
++
++        // Remove death notification from node.
++        if needs_removal {
++            let mut owner_inner = self.node.owner.inner.lock();
++            let node_inner = self.node.inner.access_mut(&mut owner_inner);
++            unsafe { node_inner.death_list.remove(self) };
++        }
++
++        needs_queueing
++    }
++
++    /// Sets the 'notification done' flag to `true`.
++    ///
++    /// Returns whether it needs to be queued.
++    pub(crate) fn set_notification_done(self: Ref<Self>, thread: &Thread) {
++        let needs_queueing = {
++            let mut inner = self.inner.lock();
++            inner.notification_done = true;
++            inner.cleared
++        };
++
++        if needs_queueing {
++            let _ = thread.push_work_if_looper(self);
++        }
++    }
++
++    /// Sets the 'dead' flag to `true` and queues work item if needed.
++    pub(crate) fn set_dead(self: Ref<Self>) {
++        let needs_queueing = {
++            let mut inner = self.inner.lock();
++            if inner.cleared {
++                false
++            } else {
++                inner.dead = true;
++                true
++            }
++        };
++
++        if needs_queueing {
++            // Push the death notification to the target process. There is nothing else to do if
++            // it's already dead.
++            let process = self.process.clone();
++            let _ = process.push_work(self);
 +        }
 +    }
 +}
 +
-+struct TargetSpec(Object);
-+
-+impl TargetSpec {
-+    fn new() -> TargetSpec {
-+        TargetSpec(Vec::new())
++impl GetLinks for NodeDeath {
++    type EntryType = NodeDeath;
++    fn get_links(data: &NodeDeath) -> &Links<NodeDeath> {
++        &data.death_links
 +    }
 +}
 +
-+trait Push<T> {
-+    fn push(&mut self, key: &str, value: T);
-+}
-+
-+impl Push<bool> for TargetSpec {
-+    fn push(&mut self, key: &str, value: bool) {
-+        self.0.push((key.to_string(), Value::Boolean(value)));
-+    }
-+}
-+
-+impl Push<i32> for TargetSpec {
-+    fn push(&mut self, key: &str, value: i32) {
-+        self.0.push((key.to_string(), Value::Number(value)));
-+    }
-+}
-+
-+impl Push<String> for TargetSpec {
-+    fn push(&mut self, key: &str, value: String) {
-+        self.0.push((key.to_string(), Value::String(value)));
-+    }
-+}
-+
-+impl Push<&str> for TargetSpec {
-+    fn push(&mut self, key: &str, value: &str) {
-+        self.push(key, value.to_string());
-+    }
-+}
-+
-+impl Push<Object> for TargetSpec {
-+    fn push(&mut self, key: &str, value: Object) {
-+        self.0.push((key.to_string(), Value::Object(value)));
-+    }
-+}
-+
-+impl Display for TargetSpec {
-+    fn fmt(&self, formatter: &mut Formatter<'_>) -> Result {
-+        // We add some newlines for clarity.
-+        formatter.write_str("{\n")?;
-+        if let [ref rest @ .., ref last] = self.0[..] {
-+            for (key, value) in rest {
-+                write!(formatter, "    \"{}\": {},\n", key, value)?;
++impl DeliverToRead for NodeDeath {
++    fn do_work(self: Ref<Self>, _thread: &Thread, writer: &mut UserSlicePtrWriter) -> Result<bool> {
++        let done = {
++            let inner = self.inner.lock();
++            if inner.aborted {
++                return Ok(true);
 +            }
-+            write!(formatter, "    \"{}\": {}\n", last.0, last.1)?;
-+        }
-+        formatter.write_str("}")
++            inner.cleared && (!inner.dead || inner.notification_done)
++        };
++
++        let cookie = self.cookie;
++        let cmd = if done {
++            BR_CLEAR_DEATH_NOTIFICATION_DONE
++        } else {
++            let process = self.process.clone();
++            let mut process_inner = process.inner.lock();
++            let inner = self.inner.lock();
++            if inner.aborted {
++                return Ok(true);
++            }
++            // We're still holding the inner lock, so it cannot be aborted while we insert it into
++            // the delivered list.
++            process_inner.death_delivered(self.clone());
++            BR_DEAD_BINDER
++        };
++
++        writer.write(&cmd)?;
++        writer.write(&cookie)?;
++
++        // Mimic the original code: we stop processing work items when we get to a death
++        // notification.
++        Ok(cmd != BR_DEAD_BINDER)
++    }
++
++    fn get_links(&self) -> &Links<dyn DeliverToRead> {
++        &self.work_links
 +    }
 +}
 +
-+struct KernelConfig(HashMap<String, String>);
++pub(crate) struct Node {
++    pub(crate) global_id: u64,
++    ptr: usize,
++    cookie: usize,
++    pub(crate) flags: u32,
++    pub(crate) owner: Ref<Process>,
++    inner: LockedBy<NodeInner, Mutex<ProcessInner>>,
++    links: Links<dyn DeliverToRead>,
++}
 +
-+impl KernelConfig {
-+    /// Parses `include/config/auto.conf` from `stdin`.
-+    fn from_stdin() -> KernelConfig {
-+        let mut result = HashMap::new();
++impl Node {
++    pub(crate) fn new(ptr: usize, cookie: usize, flags: u32, owner: Ref<Process>) -> Self {
++        static NEXT_ID: AtomicU64 = AtomicU64::new(1);
++        let inner = LockedBy::new(
++            &owner.inner,
++            NodeInner {
++                strong: CountState::new(),
++                weak: CountState::new(),
++                death_list: List::new(),
++            },
++        );
++        Self {
++            global_id: NEXT_ID.fetch_add(1, Ordering::Relaxed),
++            ptr,
++            cookie,
++            flags,
++            owner,
++            inner,
++            links: Links::new(),
++        }
++    }
 +
-+        let stdin = std::io::stdin();
-+        let mut handle = stdin.lock();
-+        let mut line = String::new();
++    pub(crate) fn get_id(&self) -> (usize, usize) {
++        (self.ptr, self.cookie)
++    }
 +
++    pub(crate) fn next_death(
++        &self,
++        guard: &mut Guard<'_, Mutex<ProcessInner>>,
++    ) -> Option<Ref<NodeDeath>> {
++        self.inner.access_mut(guard).death_list.pop_front()
++    }
++
++    pub(crate) fn add_death(
++        &self,
++        death: Ref<NodeDeath>,
++        guard: &mut Guard<'_, Mutex<ProcessInner>>,
++    ) {
++        self.inner.access_mut(guard).death_list.push_back(death);
++    }
++
++    pub(crate) fn update_refcount_locked(
++        &self,
++        inc: bool,
++        strong: bool,
++        biased: bool,
++        owner_inner: &mut ProcessInner,
++    ) -> bool {
++        let inner = self.inner.access_from_mut(owner_inner);
++
++        // Get a reference to the state we'll update.
++        let state = if strong {
++            &mut inner.strong
++        } else {
++            &mut inner.weak
++        };
++
++        // Update biased state: if the count is not biased, there is nothing to do; otherwise,
++        // we're removing the bias, so mark the state as such.
++        if biased {
++            if !state.is_biased {
++                return false;
++            }
++
++            state.is_biased = false;
++        }
++
++        // Update the count and determine whether we need to push work.
++        // TODO: Here we may want to check the weak count being zero but the strong count being 1,
++        // because in such cases, we won't deliver anything to userspace, so we shouldn't queue
++        // either.
++        if inc {
++            state.count += 1;
++            !state.has_count
++        } else {
++            state.count -= 1;
++            state.count == 0 && state.has_count
++        }
++    }
++
++    pub(crate) fn update_refcount(self: &Ref<Self>, inc: bool, strong: bool) {
++        self.owner
++            .inner
++            .lock()
++            .update_node_refcount(self, inc, strong, false, None);
++    }
++
++    pub(crate) fn populate_counts(
++        &self,
++        out: &mut BinderNodeInfoForRef,
++        guard: &Guard<'_, Mutex<ProcessInner>>,
++    ) {
++        let inner = self.inner.access(guard);
++        out.strong_count = inner.strong.count as _;
++        out.weak_count = inner.weak.count as _;
++    }
++
++    pub(crate) fn populate_debug_info(
++        &self,
++        out: &mut BinderNodeDebugInfo,
++        guard: &Guard<'_, Mutex<ProcessInner>>,
++    ) {
++        out.ptr = self.ptr as _;
++        out.cookie = self.cookie as _;
++        let inner = self.inner.access(guard);
++        if inner.strong.has_count {
++            out.has_strong_ref = 1;
++        }
++        if inner.weak.has_count {
++            out.has_weak_ref = 1;
++        }
++    }
++
++    pub(crate) fn force_has_count(&self, guard: &mut Guard<'_, Mutex<ProcessInner>>) {
++        let inner = self.inner.access_mut(guard);
++        inner.strong.has_count = true;
++        inner.weak.has_count = true;
++    }
++
++    fn write(&self, writer: &mut UserSlicePtrWriter, code: u32) -> Result {
++        writer.write(&code)?;
++        writer.write(&self.ptr)?;
++        writer.write(&self.cookie)?;
++        Ok(())
++    }
++}
++
++impl DeliverToRead for Node {
++    fn do_work(self: Ref<Self>, _thread: &Thread, writer: &mut UserSlicePtrWriter) -> Result<bool> {
++        let mut owner_inner = self.owner.inner.lock();
++        let inner = self.inner.access_mut(&mut owner_inner);
++        let strong = inner.strong.count > 0;
++        let has_strong = inner.strong.has_count;
++        let weak = strong || inner.weak.count > 0;
++        let has_weak = inner.weak.has_count;
++        inner.weak.has_count = weak;
++        inner.strong.has_count = strong;
++
++        if !weak {
++            // Remove the node if there are no references to it.
++            owner_inner.remove_node(self.ptr);
++        } else {
++            if !has_weak {
++                inner.weak.add_bias();
++            }
++
++            if !has_strong && strong {
++                inner.strong.add_bias();
++            }
++        }
++
++        drop(owner_inner);
++
++        // This could be done more compactly but we write out all the posibilities for
++        // compatibility with the original implementation wrt the order of events.
++        if weak && !has_weak {
++            self.write(writer, BR_INCREFS)?;
++        }
++
++        if strong && !has_strong {
++            self.write(writer, BR_ACQUIRE)?;
++        }
++
++        if !strong && has_strong {
++            self.write(writer, BR_RELEASE)?;
++        }
++
++        if !weak && has_weak {
++            self.write(writer, BR_DECREFS)?;
++        }
++
++        Ok(true)
++    }
++
++    fn get_links(&self) -> &Links<dyn DeliverToRead> {
++        &self.links
++    }
++}
++
++pub(crate) struct NodeRef {
++    pub(crate) node: Ref<Node>,
++    strong_count: usize,
++    weak_count: usize,
++}
++
++impl NodeRef {
++    pub(crate) fn new(node: Ref<Node>, strong_count: usize, weak_count: usize) -> Self {
++        Self {
++            node,
++            strong_count,
++            weak_count,
++        }
++    }
++
++    pub(crate) fn absorb(&mut self, mut other: Self) {
++        self.strong_count += other.strong_count;
++        self.weak_count += other.weak_count;
++        other.strong_count = 0;
++        other.weak_count = 0;
++    }
++
++    pub(crate) fn clone(&self, strong: bool) -> BinderResult<NodeRef> {
++        if strong && self.strong_count == 0 {
++            return Err(BinderError::new_failed());
++        }
++
++        Ok(self
++            .node
++            .owner
++            .inner
++            .lock()
++            .new_node_ref(self.node.clone(), strong, None))
++    }
++
++    /// Updates (increments or decrements) the number of references held against the node. If the
++    /// count being updated transitions from 0 to 1 or from 1 to 0, the node is notified by having
++    /// its `update_refcount` function called.
++    ///
++    /// Returns whether `self` should be removed (when both counts are zero).
++    pub(crate) fn update(&mut self, inc: bool, strong: bool) -> bool {
++        if strong && self.strong_count == 0 {
++            return false;
++        }
++
++        let (count, other_count) = if strong {
++            (&mut self.strong_count, self.weak_count)
++        } else {
++            (&mut self.weak_count, self.strong_count)
++        };
++
++        if inc {
++            if *count == 0 {
++                self.node.update_refcount(true, strong);
++            }
++            *count += 1;
++        } else {
++            *count -= 1;
++            if *count == 0 {
++                self.node.update_refcount(false, strong);
++                return other_count == 0;
++            }
++        }
++
++        false
++    }
++}
++
++impl Drop for NodeRef {
++    fn drop(&mut self) {
++        if self.strong_count > 0 {
++            self.node.update_refcount(false, true);
++        }
++
++        if self.weak_count > 0 {
++            self.node.update_refcount(false, false);
++        }
++    }
++}
+diff --git a/drivers/android/process.rs b/drivers/android/process.rs
+new file mode 100644
+index 000000000000..e77cd09df50f
+--- /dev/null
++++ b/drivers/android/process.rs
+@@ -0,0 +1,960 @@
++// SPDX-License-Identifier: GPL-2.0
++
++use core::{convert::TryFrom, mem::take, ops::Range};
++use kernel::{
++    bindings,
++    cred::Credential,
++    file::{self, File, IoctlCommand, IoctlHandler, PollTable},
++    io_buffer::{IoBufferReader, IoBufferWriter},
++    linked_list::List,
++    mm,
++    pages::Pages,
++    prelude::*,
++    rbtree::RBTree,
++    sync::{Guard, Mutex, Ref, RefBorrow, UniqueRef},
++    task::Task,
++    user_ptr::{UserSlicePtr, UserSlicePtrReader},
++};
++
++use crate::{
++    allocation::Allocation,
++    context::Context,
++    defs::*,
++    node::{Node, NodeDeath, NodeRef},
++    range_alloc::RangeAllocator,
++    thread::{BinderError, BinderResult, Thread},
++    DeliverToRead, DeliverToReadListAdapter, Either,
++};
++
++// TODO: Review this:
++// Lock order: Process::node_refs -> Process::inner -> Thread::inner
++
++pub(crate) struct AllocationInfo {
++    /// Range within the allocation where we can find the offsets to the object descriptors.
++    pub(crate) offsets: Range<usize>,
++}
++
++struct Mapping {
++    address: usize,
++    alloc: RangeAllocator<AllocationInfo>,
++    pages: Ref<[Pages<0>]>,
++}
++
++impl Mapping {
++    fn new(address: usize, size: usize, pages: Ref<[Pages<0>]>) -> Result<Self> {
++        let alloc = RangeAllocator::new(size)?;
++        Ok(Self {
++            address,
++            alloc,
++            pages,
++        })
++    }
++}
++
++// TODO: Make this private.
++pub(crate) struct ProcessInner {
++    is_manager: bool,
++    is_dead: bool,
++    threads: RBTree<i32, Ref<Thread>>,
++    ready_threads: List<Ref<Thread>>,
++    work: List<DeliverToReadListAdapter>,
++    mapping: Option<Mapping>,
++    nodes: RBTree<usize, Ref<Node>>,
++
++    delivered_deaths: List<Ref<NodeDeath>>,
++
++    /// The number of requested threads that haven't registered yet.
++    requested_thread_count: u32,
++
++    /// The maximum number of threads used by the process thread pool.
++    max_threads: u32,
++
++    /// The number of threads the started and registered with the thread pool.
++    started_thread_count: u32,
++}
++
++impl ProcessInner {
++    fn new() -> Self {
++        Self {
++            is_manager: false,
++            is_dead: false,
++            threads: RBTree::new(),
++            ready_threads: List::new(),
++            work: List::new(),
++            mapping: None,
++            nodes: RBTree::new(),
++            requested_thread_count: 0,
++            max_threads: 0,
++            started_thread_count: 0,
++            delivered_deaths: List::new(),
++        }
++    }
++
++    fn push_work(&mut self, work: Ref<dyn DeliverToRead>) -> BinderResult {
++        // Try to find a ready thread to which to push the work.
++        if let Some(thread) = self.ready_threads.pop_front() {
++            // Push to thread while holding state lock. This prevents the thread from giving up
++            // (for example, because of a signal) when we're about to deliver work.
++            thread.push_work(work)
++        } else if self.is_dead {
++            Err(BinderError::new_dead())
++        } else {
++            // There are no ready threads. Push work to process queue.
++            self.work.push_back(work);
++
++            // Wake up polling threads, if any.
++            for thread in self.threads.values() {
++                thread.notify_if_poll_ready();
++            }
++            Ok(())
++        }
++    }
++
++    // TODO: Should this be private?
++    pub(crate) fn remove_node(&mut self, ptr: usize) {
++        self.nodes.remove(&ptr);
++    }
++
++    /// Updates the reference count on the given node.
++    // TODO: Decide if this should be private.
++    pub(crate) fn update_node_refcount(
++        &mut self,
++        node: &Ref<Node>,
++        inc: bool,
++        strong: bool,
++        biased: bool,
++        othread: Option<&Thread>,
++    ) {
++        let push = node.update_refcount_locked(inc, strong, biased, self);
++
++        // If we decided that we need to push work, push either to the process or to a thread if
++        // one is specified.
++        if push {
++            if let Some(thread) = othread {
++                thread.push_work_deferred(node.clone());
++            } else {
++                let _ = self.push_work(node.clone());
++                // Nothing to do: `push_work` may fail if the process is dead, but that's ok as in
++                // that case, it doesn't care about the notification.
++            }
++        }
++    }
++
++    // TODO: Make this private.
++    pub(crate) fn new_node_ref(
++        &mut self,
++        node: Ref<Node>,
++        strong: bool,
++        thread: Option<&Thread>,
++    ) -> NodeRef {
++        self.update_node_refcount(&node, true, strong, false, thread);
++        let strong_count = if strong { 1 } else { 0 };
++        NodeRef::new(node, strong_count, 1 - strong_count)
++    }
++
++    /// Returns an existing node with the given pointer and cookie, if one exists.
++    ///
++    /// Returns an error if a node with the given pointer but a different cookie exists.
++    fn get_existing_node(&self, ptr: usize, cookie: usize) -> Result<Option<Ref<Node>>> {
++        match self.nodes.get(&ptr) {
++            None => Ok(None),
++            Some(node) => {
++                let (_, node_cookie) = node.get_id();
++                if node_cookie == cookie {
++                    Ok(Some(node.clone()))
++                } else {
++                    Err(EINVAL)
++                }
++            }
++        }
++    }
++
++    /// Returns a reference to an existing node with the given pointer and cookie. It requires a
++    /// mutable reference because it needs to increment the ref count on the node, which may
++    /// require pushing work to the work queue (to notify userspace of 0 to 1 transitions).
++    fn get_existing_node_ref(
++        &mut self,
++        ptr: usize,
++        cookie: usize,
++        strong: bool,
++        thread: Option<&Thread>,
++    ) -> Result<Option<NodeRef>> {
++        Ok(self
++            .get_existing_node(ptr, cookie)?
++            .map(|node| self.new_node_ref(node, strong, thread)))
++    }
++
++    fn register_thread(&mut self) -> bool {
++        if self.requested_thread_count == 0 {
++            return false;
++        }
++
++        self.requested_thread_count -= 1;
++        self.started_thread_count += 1;
++        true
++    }
++
++    /// Finds a delivered death notification with the given cookie, removes it from the thread's
++    /// delivered list, and returns it.
++    fn pull_delivered_death(&mut self, cookie: usize) -> Option<Ref<NodeDeath>> {
++        let mut cursor = self.delivered_deaths.cursor_front_mut();
++        while let Some(death) = cursor.current() {
++            if death.cookie == cookie {
++                return cursor.remove_current();
++            }
++            cursor.move_next();
++        }
++        None
++    }
++
++    pub(crate) fn death_delivered(&mut self, death: Ref<NodeDeath>) {
++        self.delivered_deaths.push_back(death);
++    }
++}
++
++struct NodeRefInfo {
++    node_ref: NodeRef,
++    death: Option<Ref<NodeDeath>>,
++}
++
++impl NodeRefInfo {
++    fn new(node_ref: NodeRef) -> Self {
++        Self {
++            node_ref,
++            death: None,
++        }
++    }
++}
++
++struct ProcessNodeRefs {
++    by_handle: RBTree<u32, NodeRefInfo>,
++    by_global_id: RBTree<u64, u32>,
++}
++
++impl ProcessNodeRefs {
++    fn new() -> Self {
++        Self {
++            by_handle: RBTree::new(),
++            by_global_id: RBTree::new(),
++        }
++    }
++}
++
++pub(crate) struct Process {
++    ctx: Ref<Context>,
++
++    // The task leader (process).
++    pub(crate) task: Task,
++
++    // Credential associated with file when `Process` is created.
++    pub(crate) cred: ARef<Credential>,
++
++    // TODO: For now this a mutex because we have allocations in RangeAllocator while holding the
++    // lock. We may want to split up the process state at some point to use a spin lock for the
++    // other fields.
++    // TODO: Make this private again.
++    pub(crate) inner: Mutex<ProcessInner>,
++
++    // References are in a different mutex to avoid recursive acquisition when
++    // incrementing/decrementing a node in another process.
++    node_refs: Mutex<ProcessNodeRefs>,
++}
++
++#[allow(clippy::non_send_fields_in_send_ty)]
++unsafe impl Send for Process {}
++unsafe impl Sync for Process {}
++
++impl Process {
++    fn new(ctx: Ref<Context>, cred: ARef<Credential>) -> Result<Ref<Self>> {
++        let mut process = Pin::from(UniqueRef::try_new(Self {
++            ctx,
++            cred,
++            task: Task::current().group_leader().clone(),
++            // SAFETY: `inner` is initialised in the call to `mutex_init` below.
++            inner: unsafe { Mutex::new(ProcessInner::new()) },
++            // SAFETY: `node_refs` is initialised in the call to `mutex_init` below.
++            node_refs: unsafe { Mutex::new(ProcessNodeRefs::new()) },
++        })?);
++
++        // SAFETY: `inner` is pinned when `Process` is.
++        let pinned = unsafe { process.as_mut().map_unchecked_mut(|p| &mut p.inner) };
++        kernel::mutex_init!(pinned, "Process::inner");
++
++        // SAFETY: `node_refs` is pinned when `Process` is.
++        let pinned = unsafe { process.as_mut().map_unchecked_mut(|p| &mut p.node_refs) };
++        kernel::mutex_init!(pinned, "Process::node_refs");
++
++        Ok(process.into())
++    }
++
++    /// Attempts to fetch a work item from the process queue.
++    pub(crate) fn get_work(&self) -> Option<Ref<dyn DeliverToRead>> {
++        self.inner.lock().work.pop_front()
++    }
++
++    /// Attempts to fetch a work item from the process queue. If none is available, it registers the
++    /// given thread as ready to receive work directly.
++    ///
++    /// This must only be called when the thread is not participating in a transaction chain; when
++    /// it is, work will always be delivered directly to the thread (and not through the process
++    /// queue).
++    pub(crate) fn get_work_or_register<'a>(
++        &'a self,
++        thread: &'a Ref<Thread>,
++    ) -> Either<Ref<dyn DeliverToRead>, Registration<'a>> {
++        let mut inner = self.inner.lock();
++
++        // Try to get work from the process queue.
++        if let Some(work) = inner.work.pop_front() {
++            return Either::Left(work);
++        }
++
++        // Register the thread as ready.
++        Either::Right(Registration::new(self, thread, &mut inner))
++    }
++
++    fn get_thread(self: RefBorrow<'_, Self>, id: i32) -> Result<Ref<Thread>> {
++        // TODO: Consider using read/write locks here instead.
++        {
++            let inner = self.inner.lock();
++            if let Some(thread) = inner.threads.get(&id) {
++                return Ok(thread.clone());
++            }
++        }
++
++        // Allocate a new `Thread` without holding any locks.
++        let ta = Thread::new(id, self.into())?;
++        let node = RBTree::try_allocate_node(id, ta.clone())?;
++
++        let mut inner = self.inner.lock();
++
++        // Recheck. It's possible the thread was create while we were not holding the lock.
++        if let Some(thread) = inner.threads.get(&id) {
++            return Ok(thread.clone());
++        }
++
++        inner.threads.insert(node);
++        Ok(ta)
++    }
++
++    pub(crate) fn push_work(&self, work: Ref<dyn DeliverToRead>) -> BinderResult {
++        self.inner.lock().push_work(work)
++    }
++
++    fn set_as_manager(
++        self: RefBorrow<'_, Self>,
++        info: Option<FlatBinderObject>,
++        thread: &Thread,
++    ) -> Result {
++        let (ptr, cookie, flags) = if let Some(obj) = info {
++            (
++                // SAFETY: The object type for this ioctl is implicitly `BINDER_TYPE_BINDER`, so it
++                // is safe to access the `binder` field.
++                unsafe { obj.__bindgen_anon_1.binder },
++                obj.cookie,
++                obj.flags,
++            )
++        } else {
++            (0, 0, 0)
++        };
++        let node_ref = self.get_node(ptr as _, cookie as _, flags as _, true, Some(thread))?;
++        let node = node_ref.node.clone();
++        self.ctx.set_manager_node(node_ref)?;
++        self.inner.lock().is_manager = true;
++
++        // Force the state of the node to prevent the delivery of acquire/increfs.
++        let mut owner_inner = node.owner.inner.lock();
++        node.force_has_count(&mut owner_inner);
++        Ok(())
++    }
++
++    pub(crate) fn get_node(
++        self: RefBorrow<'_, Self>,
++        ptr: usize,
++        cookie: usize,
++        flags: u32,
++        strong: bool,
++        thread: Option<&Thread>,
++    ) -> Result<NodeRef> {
++        // Try to find an existing node.
++        {
++            let mut inner = self.inner.lock();
++            if let Some(node) = inner.get_existing_node_ref(ptr, cookie, strong, thread)? {
++                return Ok(node);
++            }
++        }
++
++        // Allocate the node before reacquiring the lock.
++        let node = Ref::try_new(Node::new(ptr, cookie, flags, self.into()))?;
++        let rbnode = RBTree::try_allocate_node(ptr, node.clone())?;
++
++        let mut inner = self.inner.lock();
++        if let Some(node) = inner.get_existing_node_ref(ptr, cookie, strong, thread)? {
++            return Ok(node);
++        }
++
++        inner.nodes.insert(rbnode);
++        Ok(inner.new_node_ref(node, strong, thread))
++    }
++
++    pub(crate) fn insert_or_update_handle(
++        &self,
++        node_ref: NodeRef,
++        is_mananger: bool,
++    ) -> Result<u32> {
++        {
++            let mut refs = self.node_refs.lock();
++
++            // Do a lookup before inserting.
++            if let Some(handle_ref) = refs.by_global_id.get(&node_ref.node.global_id) {
++                let handle = *handle_ref;
++                let info = refs.by_handle.get_mut(&handle).unwrap();
++                info.node_ref.absorb(node_ref);
++                return Ok(handle);
++            }
++        }
++
++        // Reserve memory for tree nodes.
++        let reserve1 = RBTree::try_reserve_node()?;
++        let reserve2 = RBTree::try_reserve_node()?;
++
++        let mut refs = self.node_refs.lock();
++
++        // Do a lookup again as node may have been inserted before the lock was reacquired.
++        if let Some(handle_ref) = refs.by_global_id.get(&node_ref.node.global_id) {
++            let handle = *handle_ref;
++            let info = refs.by_handle.get_mut(&handle).unwrap();
++            info.node_ref.absorb(node_ref);
++            return Ok(handle);
++        }
++
++        // Find id.
++        let mut target = if is_mananger { 0 } else { 1 };
++        for handle in refs.by_handle.keys() {
++            if *handle > target {
++                break;
++            }
++            if *handle == target {
++                target = target.checked_add(1).ok_or(ENOMEM)?;
++            }
++        }
++
++        // Ensure the process is still alive while we insert a new reference.
++        let inner = self.inner.lock();
++        if inner.is_dead {
++            return Err(ESRCH);
++        }
++        refs.by_global_id
++            .insert(reserve1.into_node(node_ref.node.global_id, target));
++        refs.by_handle
++            .insert(reserve2.into_node(target, NodeRefInfo::new(node_ref)));
++        Ok(target)
++    }
++
++    pub(crate) fn get_transaction_node(&self, handle: u32) -> BinderResult<NodeRef> {
++        // When handle is zero, try to get the context manager.
++        if handle == 0 {
++            self.ctx.get_manager_node(true)
++        } else {
++            self.get_node_from_handle(handle, true)
++        }
++    }
++
++    pub(crate) fn get_node_from_handle(&self, handle: u32, strong: bool) -> BinderResult<NodeRef> {
++        self.node_refs
++            .lock()
++            .by_handle
++            .get(&handle)
++            .ok_or(ENOENT)?
++            .node_ref
++            .clone(strong)
++    }
++
++    pub(crate) fn remove_from_delivered_deaths(&self, death: &Ref<NodeDeath>) {
++        let mut inner = self.inner.lock();
++        let removed = unsafe { inner.delivered_deaths.remove(death) };
++        drop(inner);
++        drop(removed);
++    }
++
++    pub(crate) fn update_ref(&self, handle: u32, inc: bool, strong: bool) -> Result {
++        if inc && handle == 0 {
++            if let Ok(node_ref) = self.ctx.get_manager_node(strong) {
++                if core::ptr::eq(self, &*node_ref.node.owner) {
++                    return Err(EINVAL);
++                }
++                let _ = self.insert_or_update_handle(node_ref, true);
++                return Ok(());
++            }
++        }
++
++        // To preserve original binder behaviour, we only fail requests where the manager tries to
++        // increment references on itself.
++        let mut refs = self.node_refs.lock();
++        if let Some(info) = refs.by_handle.get_mut(&handle) {
++            if info.node_ref.update(inc, strong) {
++                // Clean up death if there is one attached to this node reference.
++                if let Some(death) = info.death.take() {
++                    death.set_cleared(true);
++                    self.remove_from_delivered_deaths(&death);
++                }
++
++                // Remove reference from process tables.
++                let id = info.node_ref.node.global_id;
++                refs.by_handle.remove(&handle);
++                refs.by_global_id.remove(&id);
++            }
++        }
++        Ok(())
++    }
++
++    /// Decrements the refcount of the given node, if one exists.
++    pub(crate) fn update_node(&self, ptr: usize, cookie: usize, strong: bool, biased: bool) {
++        let mut inner = self.inner.lock();
++        if let Ok(Some(node)) = inner.get_existing_node(ptr, cookie) {
++            inner.update_node_refcount(&node, false, strong, biased, None);
++        }
++    }
++
++    pub(crate) fn inc_ref_done(&self, reader: &mut UserSlicePtrReader, strong: bool) -> Result {
++        let ptr = reader.read::<usize>()?;
++        let cookie = reader.read::<usize>()?;
++        self.update_node(ptr, cookie, strong, true);
++        Ok(())
++    }
++
++    pub(crate) fn buffer_alloc(&self, size: usize) -> BinderResult<Allocation<'_>> {
++        let mut inner = self.inner.lock();
++        let mapping = inner.mapping.as_mut().ok_or_else(BinderError::new_dead)?;
++
++        let offset = mapping.alloc.reserve_new(size)?;
++        Ok(Allocation::new(
++            self,
++            offset,
++            size,
++            mapping.address + offset,
++            mapping.pages.clone(),
++        ))
++    }
++
++    // TODO: Review if we want an Option or a Result.
++    pub(crate) fn buffer_get(&self, ptr: usize) -> Option<Allocation<'_>> {
++        let mut inner = self.inner.lock();
++        let mapping = inner.mapping.as_mut()?;
++        let offset = ptr.checked_sub(mapping.address)?;
++        let (size, odata) = mapping.alloc.reserve_existing(offset).ok()?;
++        let mut alloc = Allocation::new(self, offset, size, ptr, mapping.pages.clone());
++        if let Some(data) = odata {
++            alloc.set_info(data);
++        }
++        Some(alloc)
++    }
++
++    pub(crate) fn buffer_raw_free(&self, ptr: usize) {
++        let mut inner = self.inner.lock();
++        if let Some(ref mut mapping) = &mut inner.mapping {
++            if ptr < mapping.address
++                || mapping
++                    .alloc
++                    .reservation_abort(ptr - mapping.address)
++                    .is_err()
++            {
++                pr_warn!(
++                    "Pointer {:x} failed to free, base = {:x}\n",
++                    ptr,
++                    mapping.address
++                );
++            }
++        }
++    }
++
++    pub(crate) fn buffer_make_freeable(&self, offset: usize, data: Option<AllocationInfo>) {
++        let mut inner = self.inner.lock();
++        if let Some(ref mut mapping) = &mut inner.mapping {
++            if mapping.alloc.reservation_commit(offset, data).is_err() {
++                pr_warn!("Offset {} failed to be marked freeable\n", offset);
++            }
++        }
++    }
++
++    fn create_mapping(&self, vma: &mut mm::virt::Area) -> Result {
++        let size = core::cmp::min(vma.end() - vma.start(), bindings::SZ_4M as usize);
++        let page_count = size / kernel::PAGE_SIZE;
++
++        // Allocate and map all pages.
++        //
++        // N.B. If we fail halfway through mapping these pages, the kernel will unmap them.
++        let mut pages = Vec::new();
++        pages.try_reserve_exact(page_count)?;
++        let mut address = vma.start();
++        for _ in 0..page_count {
++            let page = Pages::<0>::new()?;
++            vma.insert_page(address, &page)?;
++            pages.try_push(page)?;
++            address += kernel::PAGE_SIZE;
++        }
++
++        let ref_pages = Ref::try_from(pages)?;
++
++        // Save pages for later.
++        let mut inner = self.inner.lock();
++        match &inner.mapping {
++            None => inner.mapping = Some(Mapping::new(vma.start(), size, ref_pages)?),
++            Some(_) => return Err(EBUSY),
++        }
++        Ok(())
++    }
++
++    fn version(&self, data: UserSlicePtr) -> Result {
++        data.writer().write(&BinderVersion::current())
++    }
++
++    pub(crate) fn register_thread(&self) -> bool {
++        self.inner.lock().register_thread()
++    }
++
++    fn remove_thread(&self, thread: Ref<Thread>) {
++        self.inner.lock().threads.remove(&thread.id);
++        thread.release();
++    }
++
++    fn set_max_threads(&self, max: u32) {
++        self.inner.lock().max_threads = max;
++    }
++
++    fn get_node_debug_info(&self, data: UserSlicePtr) -> Result {
++        let (mut reader, mut writer) = data.reader_writer();
++
++        // Read the starting point.
++        let ptr = reader.read::<BinderNodeDebugInfo>()?.ptr as usize;
++        let mut out = BinderNodeDebugInfo::default();
++
++        {
++            let inner = self.inner.lock();
++            for (node_ptr, node) in &inner.nodes {
++                if *node_ptr > ptr {
++                    node.populate_debug_info(&mut out, &inner);
++                    break;
++                }
++            }
++        }
++
++        writer.write(&out)
++    }
++
++    fn get_node_info_from_ref(&self, data: UserSlicePtr) -> Result {
++        let (mut reader, mut writer) = data.reader_writer();
++        let mut out = reader.read::<BinderNodeInfoForRef>()?;
++
++        if out.strong_count != 0
++            || out.weak_count != 0
++            || out.reserved1 != 0
++            || out.reserved2 != 0
++            || out.reserved3 != 0
++        {
++            return Err(EINVAL);
++        }
++
++        // Only the context manager is allowed to use this ioctl.
++        if !self.inner.lock().is_manager {
++            return Err(EPERM);
++        }
++
++        let node_ref = self
++            .get_node_from_handle(out.handle, true)
++            .or(Err(EINVAL))?;
++
++        // Get the counts from the node.
++        {
++            let owner_inner = node_ref.node.owner.inner.lock();
++            node_ref.node.populate_counts(&mut out, &owner_inner);
++        }
++
++        // Write the result back.
++        writer.write(&out)
++    }
++
++    pub(crate) fn needs_thread(&self) -> bool {
++        let mut inner = self.inner.lock();
++        let ret = inner.requested_thread_count == 0
++            && inner.ready_threads.is_empty()
++            && inner.started_thread_count < inner.max_threads;
++        if ret {
++            inner.requested_thread_count += 1
++        };
++        ret
++    }
++
++    pub(crate) fn request_death(
++        self: &Ref<Self>,
++        reader: &mut UserSlicePtrReader,
++        thread: &Thread,
++    ) -> Result {
++        let handle: u32 = reader.read()?;
++        let cookie: usize = reader.read()?;
++
++        // TODO: First two should result in error, but not the others.
++
++        // TODO: Do we care about the context manager dying?
++
++        // Queue BR_ERROR if we can't allocate memory for the death notification.
++        let death = UniqueRef::try_new_uninit().map_err(|err| {
++            thread.push_return_work(BR_ERROR);
++            err
++        })?;
++
++        let mut refs = self.node_refs.lock();
++        let info = refs.by_handle.get_mut(&handle).ok_or(EINVAL)?;
++
++        // Nothing to do if there is already a death notification request for this handle.
++        if info.death.is_some() {
++            return Ok(());
++        }
++
++        let death = {
++            let mut pinned = Pin::from(death.write(
++                // SAFETY: `init` is called below.
++                unsafe { NodeDeath::new(info.node_ref.node.clone(), self.clone(), cookie) },
++            ));
++            pinned.as_mut().init();
++            Ref::<NodeDeath>::from(pinned)
++        };
++
++        info.death = Some(death.clone());
++
++        // Register the death notification.
++        {
++            let mut owner_inner = info.node_ref.node.owner.inner.lock();
++            if owner_inner.is_dead {
++                drop(owner_inner);
++                let _ = self.push_work(death);
++            } else {
++                info.node_ref.node.add_death(death, &mut owner_inner);
++            }
++        }
++        Ok(())
++    }
++
++    pub(crate) fn clear_death(&self, reader: &mut UserSlicePtrReader, thread: &Thread) -> Result {
++        let handle: u32 = reader.read()?;
++        let cookie: usize = reader.read()?;
++
++        let mut refs = self.node_refs.lock();
++        let info = refs.by_handle.get_mut(&handle).ok_or(EINVAL)?;
++
++        let death = info.death.take().ok_or(EINVAL)?;
++        if death.cookie != cookie {
++            info.death = Some(death);
++            return Err(EINVAL);
++        }
++
++        // Update state and determine if we need to queue a work item. We only need to do it when
++        // the node is not dead or if the user already completed the death notification.
++        if death.set_cleared(false) {
++            let _ = thread.push_work_if_looper(death);
++        }
++
++        Ok(())
++    }
++
++    pub(crate) fn dead_binder_done(&self, cookie: usize, thread: &Thread) {
++        if let Some(death) = self.inner.lock().pull_delivered_death(cookie) {
++            death.set_notification_done(thread);
++        }
++    }
++}
++
++impl IoctlHandler for Process {
++    type Target<'a> = RefBorrow<'a, Process>;
++
++    fn write(
++        this: RefBorrow<'_, Process>,
++        _file: &File,
++        cmd: u32,
++        reader: &mut UserSlicePtrReader,
++    ) -> Result<i32> {
++        let thread = this.get_thread(Task::current().pid())?;
++        match cmd {
++            bindings::BINDER_SET_MAX_THREADS => this.set_max_threads(reader.read()?),
++            bindings::BINDER_SET_CONTEXT_MGR => this.set_as_manager(None, &thread)?,
++            bindings::BINDER_THREAD_EXIT => this.remove_thread(thread),
++            bindings::BINDER_SET_CONTEXT_MGR_EXT => {
++                this.set_as_manager(Some(reader.read()?), &thread)?
++            }
++            _ => return Err(EINVAL),
++        }
++        Ok(0)
++    }
++
++    fn read_write(
++        this: RefBorrow<'_, Process>,
++        file: &File,
++        cmd: u32,
++        data: UserSlicePtr,
++    ) -> Result<i32> {
++        let thread = this.get_thread(Task::current().pid())?;
++        match cmd {
++            bindings::BINDER_WRITE_READ => thread.write_read(data, file.is_blocking())?,
++            bindings::BINDER_GET_NODE_DEBUG_INFO => this.get_node_debug_info(data)?,
++            bindings::BINDER_GET_NODE_INFO_FOR_REF => this.get_node_info_from_ref(data)?,
++            bindings::BINDER_VERSION => this.version(data)?,
++            _ => return Err(EINVAL),
++        }
++        Ok(0)
++    }
++}
++
++impl file::Operations for Process {
++    type Data = Ref<Self>;
++    type OpenData = Ref<Context>;
++
++    kernel::declare_file_operations!(ioctl, compat_ioctl, mmap, poll);
++
++    fn open(ctx: &Ref<Context>, file: &File) -> Result<Self::Data> {
++        Self::new(ctx.clone(), file.cred().into())
++    }
++
++    fn release(obj: Self::Data, _file: &File) {
++        // Mark this process as dead. We'll do the same for the threads later.
++        obj.inner.lock().is_dead = true;
++
++        // If this process is the manager, unset it.
++        if obj.inner.lock().is_manager {
++            obj.ctx.unset_manager_node();
++        }
++
++        // TODO: Do this in a worker?
++
++        // Cancel all pending work items.
++        while let Some(work) = obj.get_work() {
++            work.cancel();
++        }
++
++        // Free any resources kept alive by allocated buffers.
++        let omapping = obj.inner.lock().mapping.take();
++        if let Some(mut mapping) = omapping {
++            let address = mapping.address;
++            let pages = mapping.pages.clone();
++            mapping.alloc.for_each(|offset, size, odata| {
++                let ptr = offset + address;
++                let mut alloc = Allocation::new(&obj, offset, size, ptr, pages.clone());
++                if let Some(data) = odata {
++                    alloc.set_info(data);
++                }
++                drop(alloc)
++            });
++        }
++
++        // Drop all references. We do this dance with `swap` to avoid destroying the references
++        // while holding the lock.
++        let mut refs = obj.node_refs.lock();
++        let mut node_refs = take(&mut refs.by_handle);
++        drop(refs);
++
++        // Remove all death notifications from the nodes (that belong to a different process).
++        for info in node_refs.values_mut() {
++            let death = if let Some(existing) = info.death.take() {
++                existing
++            } else {
++                continue;
++            };
++
++            death.set_cleared(false);
++        }
++
++        // Do similar dance for the state lock.
++        let mut inner = obj.inner.lock();
++        let threads = take(&mut inner.threads);
++        let nodes = take(&mut inner.nodes);
++        drop(inner);
++
++        // Release all threads.
++        for thread in threads.values() {
++            thread.release();
++        }
++
++        // Deliver death notifications.
++        for node in nodes.values() {
++            loop {
++                let death = {
++                    let mut inner = obj.inner.lock();
++                    if let Some(death) = node.next_death(&mut inner) {
++                        death
++                    } else {
++                        break;
++                    }
++                };
++
++                death.set_dead();
++            }
++        }
++    }
++
++    fn ioctl(this: RefBorrow<'_, Process>, file: &File, cmd: &mut IoctlCommand) -> Result<i32> {
++        cmd.dispatch::<Self>(this, file)
++    }
++
++    fn compat_ioctl(
++        this: RefBorrow<'_, Process>,
++        file: &File,
++        cmd: &mut IoctlCommand,
++    ) -> Result<i32> {
++        cmd.dispatch::<Self>(this, file)
++    }
++
++    fn mmap(this: RefBorrow<'_, Process>, _file: &File, vma: &mut mm::virt::Area) -> Result {
++        // We don't allow mmap to be used in a different process.
++        if !Task::current().group_leader().eq(&this.task) {
++            return Err(EINVAL);
++        }
++
++        if vma.start() == 0 {
++            return Err(EINVAL);
++        }
++
++        let mut flags = vma.flags();
++        use mm::virt::flags::*;
++        if flags & WRITE != 0 {
++            return Err(EPERM);
++        }
++
++        flags |= DONTCOPY | MIXEDMAP;
++        flags &= !MAYWRITE;
++        vma.set_flags(flags);
++
++        // TODO: Set ops. We need to learn when the user unmaps so that we can stop using it.
++        this.create_mapping(vma)
++    }
++
++    fn poll(this: RefBorrow<'_, Process>, file: &File, table: &PollTable) -> Result<u32> {
++        let thread = this.get_thread(Task::current().pid())?;
++        let (from_proc, mut mask) = thread.poll(file, table);
++        if mask == 0 && from_proc && !this.inner.lock().work.is_empty() {
++            mask |= bindings::POLLIN;
++        }
++        Ok(mask)
++    }
++}
++
++pub(crate) struct Registration<'a> {
++    process: &'a Process,
++    thread: &'a Ref<Thread>,
++}
++
++impl<'a> Registration<'a> {
++    fn new(
++        process: &'a Process,
++        thread: &'a Ref<Thread>,
++        guard: &mut Guard<'_, Mutex<ProcessInner>>,
++    ) -> Self {
++        guard.ready_threads.push_back(thread.clone());
++        Self { process, thread }
++    }
++}
++
++impl Drop for Registration<'_> {
++    fn drop(&mut self) {
++        let mut inner = self.process.inner.lock();
++        unsafe { inner.ready_threads.remove(self.thread) };
++    }
++}
+diff --git a/drivers/android/range_alloc.rs b/drivers/android/range_alloc.rs
+new file mode 100644
+index 000000000000..7b149048879b
+--- /dev/null
++++ b/drivers/android/range_alloc.rs
+@@ -0,0 +1,189 @@
++// SPDX-License-Identifier: GPL-2.0
++
++use core::ptr::NonNull;
++use kernel::{
++    linked_list::{CursorMut, GetLinks, Links, List},
++    prelude::*,
++};
++
++pub(crate) struct RangeAllocator<T> {
++    list: List<Box<Descriptor<T>>>,
++}
++
++#[derive(Debug, PartialEq, Eq)]
++enum DescriptorState {
++    Free,
++    Reserved,
++    Allocated,
++}
++
++impl<T> RangeAllocator<T> {
++    pub(crate) fn new(size: usize) -> Result<Self> {
++        let desc = Box::try_new(Descriptor::new(0, size))?;
++        let mut list = List::new();
++        list.push_back(desc);
++        Ok(Self { list })
++    }
++
++    fn find_best_match(&self, size: usize) -> Option<NonNull<Descriptor<T>>> {
++        // TODO: Use a binary tree instead of list for this lookup.
++        let mut best = None;
++        let mut best_size = usize::MAX;
++        let mut cursor = self.list.cursor_front();
++        while let Some(desc) = cursor.current() {
++            if desc.state == DescriptorState::Free {
++                if size == desc.size {
++                    return Some(NonNull::from(desc));
++                }
++
++                if size < desc.size && desc.size < best_size {
++                    best = Some(NonNull::from(desc));
++                    best_size = desc.size;
++                }
++            }
++
++            cursor.move_next();
++        }
++        best
++    }
++
++    pub(crate) fn reserve_new(&mut self, size: usize) -> Result<usize> {
++        let desc_ptr = match self.find_best_match(size) {
++            None => return Err(ENOMEM),
++            Some(found) => found,
++        };
++
++        // SAFETY: We hold the only mutable reference to list, so it cannot have changed.
++        let desc = unsafe { &mut *desc_ptr.as_ptr() };
++        if desc.size == size {
++            desc.state = DescriptorState::Reserved;
++            return Ok(desc.offset);
++        }
++
++        // We need to break up the descriptor.
++        let new = Box::try_new(Descriptor::new(desc.offset + size, desc.size - size))?;
++        unsafe { self.list.insert_after(desc_ptr, new) };
++        desc.state = DescriptorState::Reserved;
++        desc.size = size;
++        Ok(desc.offset)
++    }
++
++    fn free_with_cursor(cursor: &mut CursorMut<'_, Box<Descriptor<T>>>) -> Result {
++        let mut size = match cursor.current() {
++            None => return Err(EINVAL),
++            Some(ref mut entry) => {
++                match entry.state {
++                    DescriptorState::Free => return Err(EINVAL),
++                    DescriptorState::Allocated => return Err(EPERM),
++                    DescriptorState::Reserved => {}
++                }
++                entry.state = DescriptorState::Free;
++                entry.size
++            }
++        };
++
++        // Try to merge with the next entry.
++        if let Some(next) = cursor.peek_next() {
++            if next.state == DescriptorState::Free {
++                next.offset -= size;
++                next.size += size;
++                size = next.size;
++                cursor.remove_current();
++            }
++        }
++
++        // Try to merge with the previous entry.
++        if let Some(prev) = cursor.peek_prev() {
++            if prev.state == DescriptorState::Free {
++                prev.size += size;
++                cursor.remove_current();
++            }
++        }
++
++        Ok(())
++    }
++
++    fn find_at_offset(&mut self, offset: usize) -> Option<CursorMut<'_, Box<Descriptor<T>>>> {
++        let mut cursor = self.list.cursor_front_mut();
++        while let Some(desc) = cursor.current() {
++            if desc.offset == offset {
++                return Some(cursor);
++            }
++
++            if desc.offset > offset {
++                return None;
++            }
++
++            cursor.move_next();
++        }
++        None
++    }
++
++    pub(crate) fn reservation_abort(&mut self, offset: usize) -> Result {
++        // TODO: The force case is currently O(n), but could be made O(1) with unsafe.
++        let mut cursor = self.find_at_offset(offset).ok_or(EINVAL)?;
++        Self::free_with_cursor(&mut cursor)
++    }
++
++    pub(crate) fn reservation_commit(&mut self, offset: usize, data: Option<T>) -> Result {
++        // TODO: This is currently O(n), make it O(1).
++        let mut cursor = self.find_at_offset(offset).ok_or(ENOENT)?;
++        let desc = cursor.current().unwrap();
++        desc.state = DescriptorState::Allocated;
++        desc.data = data;
++        Ok(())
++    }
++
++    /// Takes an entry at the given offset from [`DescriptorState::Allocated`] to
++    /// [`DescriptorState::Reserved`].
++    ///
++    /// Returns the size of the existing entry and the data associated with it.
++    pub(crate) fn reserve_existing(&mut self, offset: usize) -> Result<(usize, Option<T>)> {
++        // TODO: This is currently O(n), make it O(log n).
++        let mut cursor = self.find_at_offset(offset).ok_or(ENOENT)?;
++        let desc = cursor.current().unwrap();
++        if desc.state != DescriptorState::Allocated {
++            return Err(ENOENT);
++        }
++        desc.state = DescriptorState::Reserved;
++        Ok((desc.size, desc.data.take()))
++    }
++
++    pub(crate) fn for_each<F: Fn(usize, usize, Option<T>)>(&mut self, callback: F) {
++        let mut cursor = self.list.cursor_front_mut();
++        while let Some(desc) = cursor.current() {
++            if desc.state == DescriptorState::Allocated {
++                callback(desc.offset, desc.size, desc.data.take());
++            }
++
++            cursor.move_next();
++        }
++    }
++}
++
++struct Descriptor<T> {
++    state: DescriptorState,
++    size: usize,
++    offset: usize,
++    links: Links<Descriptor<T>>,
++    data: Option<T>,
++}
++
++impl<T> Descriptor<T> {
++    fn new(offset: usize, size: usize) -> Self {
++        Self {
++            size,
++            offset,
++            state: DescriptorState::Free,
++            links: Links::new(),
++            data: None,
++        }
++    }
++}
++
++impl<T> GetLinks for Descriptor<T> {
++    type EntryType = Self;
++    fn get_links(desc: &Self) -> &Links<Self> {
++        &desc.links
++    }
++}
+diff --git a/drivers/android/rust_binder.rs b/drivers/android/rust_binder.rs
+new file mode 100644
+index 000000000000..d059077238ce
+--- /dev/null
++++ b/drivers/android/rust_binder.rs
+@@ -0,0 +1,111 @@
++// SPDX-License-Identifier: GPL-2.0
++
++//! Binder -- the Android IPC mechanism.
++//!
++//! TODO: This module is a work in progress.
++
++use kernel::{
++    io_buffer::IoBufferWriter,
++    linked_list::{GetLinks, GetLinksWrapped, Links},
++    miscdev::Registration,
++    prelude::*,
++    str::CStr,
++    sync::Ref,
++    user_ptr::UserSlicePtrWriter,
++};
++
++mod allocation;
++mod context;
++mod defs;
++mod node;
++mod process;
++mod range_alloc;
++mod thread;
++mod transaction;
++
++use {context::Context, thread::Thread};
++
++module! {
++    type: BinderModule,
++    name: b"rust_binder",
++    author: b"Wedson Almeida Filho",
++    description: b"Android Binder",
++    license: b"GPL",
++}
++
++enum Either<L, R> {
++    Left(L),
++    Right(R),
++}
++
++trait DeliverToRead {
++    /// Performs work. Returns true if remaining work items in the queue should be processed
++    /// immediately, or false if it should return to caller before processing additional work
++    /// items.
++    fn do_work(self: Ref<Self>, thread: &Thread, writer: &mut UserSlicePtrWriter) -> Result<bool>;
++
++    /// Cancels the given work item. This is called instead of [`DeliverToRead::do_work`] when work
++    /// won't be delivered.
++    fn cancel(self: Ref<Self>) {}
++
++    /// Returns the linked list links for the work item.
++    fn get_links(&self) -> &Links<dyn DeliverToRead>;
++}
++
++struct DeliverToReadListAdapter {}
++
++impl GetLinks for DeliverToReadListAdapter {
++    type EntryType = dyn DeliverToRead;
++
++    fn get_links(data: &Self::EntryType) -> &Links<Self::EntryType> {
++        data.get_links()
++    }
++}
++
++impl GetLinksWrapped for DeliverToReadListAdapter {
++    type Wrapped = Ref<dyn DeliverToRead>;
++}
++
++struct DeliverCode {
++    code: u32,
++    links: Links<dyn DeliverToRead>,
++}
++
++impl DeliverCode {
++    fn new(code: u32) -> Self {
++        Self {
++            code,
++            links: Links::new(),
++        }
++    }
++}
++
++impl DeliverToRead for DeliverCode {
++    fn do_work(self: Ref<Self>, _thread: &Thread, writer: &mut UserSlicePtrWriter) -> Result<bool> {
++        writer.write(&self.code)?;
++        Ok(true)
++    }
++
++    fn get_links(&self) -> &Links<dyn DeliverToRead> {
++        &self.links
++    }
++}
++
++const fn ptr_align(value: usize) -> usize {
++    let size = core::mem::size_of::<usize>() - 1;
++    (value + size) & !size
++}
++
++unsafe impl Sync for BinderModule {}
++
++struct BinderModule {
++    _reg: Pin<Box<Registration<process::Process>>>,
++}
++
++impl kernel::Module for BinderModule {
++    fn init(name: &'static CStr, _module: &'static kernel::ThisModule) -> Result<Self> {
++        let ctx = Context::new()?;
++        let reg = Registration::new_pinned(fmt!("{name}"), ctx)?;
++        Ok(Self { _reg: reg })
++    }
++}
+diff --git a/drivers/android/thread.rs b/drivers/android/thread.rs
+new file mode 100644
+index 000000000000..817fca0890a7
+--- /dev/null
++++ b/drivers/android/thread.rs
+@@ -0,0 +1,870 @@
++// SPDX-License-Identifier: GPL-2.0
++
++use core::{
++    alloc::AllocError,
++    mem::size_of,
++    sync::atomic::{AtomicU32, Ordering},
++};
++use kernel::{
++    bindings,
++    file::{File, PollTable},
++    io_buffer::{IoBufferReader, IoBufferWriter},
++    linked_list::{GetLinks, Links, List},
++    prelude::*,
++    security,
++    sync::{CondVar, Ref, SpinLock, UniqueRef},
++    user_ptr::{UserSlicePtr, UserSlicePtrWriter},
++};
++
++use crate::{
++    allocation::{Allocation, AllocationView},
++    defs::*,
++    process::{AllocationInfo, Process},
++    ptr_align,
++    transaction::{FileInfo, Transaction},
++    DeliverCode, DeliverToRead, DeliverToReadListAdapter, Either,
++};
++
++pub(crate) type BinderResult<T = ()> = core::result::Result<T, BinderError>;
++
++pub(crate) struct BinderError {
++    pub(crate) reply: u32,
++}
++
++impl BinderError {
++    pub(crate) fn new_failed() -> Self {
++        Self {
++            reply: BR_FAILED_REPLY,
++        }
++    }
++
++    pub(crate) fn new_dead() -> Self {
++        Self {
++            reply: BR_DEAD_REPLY,
++        }
++    }
++}
++
++impl From<Error> for BinderError {
++    fn from(_: Error) -> Self {
++        Self::new_failed()
++    }
++}
++
++impl From<AllocError> for BinderError {
++    fn from(_: AllocError) -> Self {
++        Self::new_failed()
++    }
++}
++
++const LOOPER_REGISTERED: u32 = 0x01;
++const LOOPER_ENTERED: u32 = 0x02;
++const LOOPER_EXITED: u32 = 0x04;
++const LOOPER_INVALID: u32 = 0x08;
++const LOOPER_WAITING: u32 = 0x10;
++const LOOPER_POLL: u32 = 0x20;
++
++struct InnerThread {
++    /// Determines the looper state of the thread. It is a bit-wise combination of the constants
++    /// prefixed with `LOOPER_`.
++    looper_flags: u32,
++
++    /// Determines if thread is dead.
++    is_dead: bool,
++
++    /// Work item used to deliver error codes to the thread that started a transaction. When set to
++    /// `Some(x)`, it will hold the only reference to the object so that it can update the error
++    /// code to be delivered before queuing it.
++    reply_work: Option<Ref<ThreadError>>,
++
++    /// Work item used to deliver error codes to the current thread. When set to `Some(x)`, it will
++    /// hold the only reference to the object so that it can update the error code to be delivered
++    /// before queuing.
++    return_work: Option<Ref<ThreadError>>,
++
++    /// Determines whether the work list below should be processed. When set to false, `work_list`
++    /// is treated as if it were empty.
++    process_work_list: bool,
++    work_list: List<DeliverToReadListAdapter>,
++    current_transaction: Option<Ref<Transaction>>,
++}
++
++impl InnerThread {
++    fn new() -> Self {
++        Self {
++            looper_flags: 0,
++            is_dead: false,
++            process_work_list: false,
++            work_list: List::new(),
++            current_transaction: None,
++            return_work: None,
++            reply_work: None,
++        }
++    }
++
++    fn set_reply_work(&mut self, reply_work: Ref<ThreadError>) {
++        self.reply_work = Some(reply_work);
++    }
++
++    fn push_reply_work(&mut self, code: u32) {
++        let work = self.reply_work.take();
++        self.push_existing_work(work, code);
++    }
++
++    fn set_return_work(&mut self, return_work: Ref<ThreadError>) {
++        self.return_work = Some(return_work);
++    }
++
++    fn push_return_work(&mut self, code: u32) {
++        let work = self.return_work.take();
++        self.push_existing_work(work, code);
++    }
++
++    fn push_existing_work(&mut self, owork: Option<Ref<ThreadError>>, code: u32) {
++        // TODO: Write some warning when the following fails. It should not happen, and
++        // if it does, there is likely something wrong.
++        if let Some(work) = owork {
++            // `error_code` is written to with relaxed semantics because the queue onto which it is
++            // being inserted is protected by a lock. The release barrier when the lock is released
++            // by the caller matches with the acquire barrier of the future reader to guarantee
++            // that `error_code` is visible.
++            work.error_code.store(code, Ordering::Relaxed);
++            self.push_work(work);
++        }
++    }
++
++    fn pop_work(&mut self) -> Option<Ref<dyn DeliverToRead>> {
++        if !self.process_work_list {
++            return None;
++        }
++
++        let ret = self.work_list.pop_front();
++        // Once the queue is drained, we stop processing it until a non-deferred item is pushed
++        // again onto it.
++        self.process_work_list = !self.work_list.is_empty();
++        ret
++    }
++
++    fn push_work_deferred(&mut self, work: Ref<dyn DeliverToRead>) {
++        self.work_list.push_back(work);
++    }
++
++    fn push_work(&mut self, work: Ref<dyn DeliverToRead>) {
++        self.push_work_deferred(work);
++        self.process_work_list = true;
++    }
++
++    fn has_work(&self) -> bool {
++        self.process_work_list && !self.work_list.is_empty()
++    }
++
++    /// Fetches the transaction the thread can reply to. If the thread has a pending transaction
++    /// (that it could respond to) but it has also issued a transaction, it must first wait for the
++    /// previously-issued transaction to complete.
++    fn pop_transaction_to_reply(&mut self, thread: &Thread) -> Result<Ref<Transaction>> {
++        let transaction = self.current_transaction.take().ok_or(EINVAL)?;
++
++        if core::ptr::eq(thread, transaction.from.as_ref()) {
++            self.current_transaction = Some(transaction);
++            return Err(EINVAL);
++        }
++
++        // Find a new current transaction for this thread.
++        self.current_transaction = transaction.find_from(thread);
++        Ok(transaction)
++    }
++
++    fn pop_transaction_replied(&mut self, transaction: &Ref<Transaction>) -> bool {
++        match self.current_transaction.take() {
++            None => false,
++            Some(old) => {
++                if !Ref::ptr_eq(transaction, &old) {
++                    self.current_transaction = Some(old);
++                    return false;
++                }
++                self.current_transaction = old.clone_next();
++                true
++            }
++        }
++    }
++
++    fn looper_enter(&mut self) {
++        self.looper_flags |= LOOPER_ENTERED;
++        if self.looper_flags & LOOPER_REGISTERED != 0 {
++            self.looper_flags |= LOOPER_INVALID;
++        }
++    }
++
++    fn looper_register(&mut self, valid: bool) {
++        self.looper_flags |= LOOPER_REGISTERED;
++        if !valid || self.looper_flags & LOOPER_ENTERED != 0 {
++            self.looper_flags |= LOOPER_INVALID;
++        }
++    }
++
++    fn looper_exit(&mut self) {
++        self.looper_flags |= LOOPER_EXITED;
++    }
++
++    /// Determines whether the thread is part of a pool, i.e., if it is a looper.
++    fn is_looper(&self) -> bool {
++        self.looper_flags & (LOOPER_ENTERED | LOOPER_REGISTERED) != 0
++    }
++
++    /// Determines whether the thread should attempt to fetch work items from the process queue
++    /// (when its own queue is empty). This is case when the thread is not part of a transaction
++    /// stack and it is registered as a looper.
++    fn should_use_process_work_queue(&self) -> bool {
++        self.current_transaction.is_none() && self.is_looper()
++    }
++
++    fn poll(&mut self) -> u32 {
++        self.looper_flags |= LOOPER_POLL;
++        if self.has_work() {
++            bindings::POLLIN
++        } else {
++            0
++        }
++    }
++}
++
++pub(crate) struct Thread {
++    pub(crate) id: i32,
++    pub(crate) process: Ref<Process>,
++    inner: SpinLock<InnerThread>,
++    work_condvar: CondVar,
++    links: Links<Thread>,
++}
++
++impl Thread {
++    pub(crate) fn new(id: i32, process: Ref<Process>) -> Result<Ref<Self>> {
++        let return_work = Ref::try_new(ThreadError::new(InnerThread::set_return_work))?;
++        let reply_work = Ref::try_new(ThreadError::new(InnerThread::set_reply_work))?;
++        let mut thread = Pin::from(UniqueRef::try_new(Self {
++            id,
++            process,
++            // SAFETY: `inner` is initialised in the call to `spinlock_init` below.
++            inner: unsafe { SpinLock::new(InnerThread::new()) },
++            // SAFETY: `work_condvar` is initialised in the call to `condvar_init` below.
++            work_condvar: unsafe { CondVar::new() },
++            links: Links::new(),
++        })?);
++
++        // SAFETY: `inner` is pinned when `thread` is.
++        let inner = unsafe { thread.as_mut().map_unchecked_mut(|t| &mut t.inner) };
++        kernel::spinlock_init!(inner, "Thread::inner");
++
++        // SAFETY: `work_condvar` is pinned when `thread` is.
++        let condvar = unsafe { thread.as_mut().map_unchecked_mut(|t| &mut t.work_condvar) };
++        kernel::condvar_init!(condvar, "Thread::work_condvar");
++
++        {
++            let mut inner = thread.inner.lock();
++            inner.set_reply_work(reply_work);
++            inner.set_return_work(return_work);
++        }
++
++        Ok(thread.into())
++    }
++
++    pub(crate) fn set_current_transaction(&self, transaction: Ref<Transaction>) {
++        self.inner.lock().current_transaction = Some(transaction);
++    }
++
++    /// Attempts to fetch a work item from the thread-local queue. The behaviour if the queue is
++    /// empty depends on `wait`: if it is true, the function waits for some work to be queued (or a
++    /// signal); otherwise it returns indicating that none is available.
++    fn get_work_local(self: &Ref<Self>, wait: bool) -> Result<Ref<dyn DeliverToRead>> {
++        // Try once if the caller does not want to wait.
++        if !wait {
++            return self.inner.lock().pop_work().ok_or(EAGAIN);
++        }
++
++        // Loop waiting only on the local queue (i.e., not registering with the process queue).
++        let mut inner = self.inner.lock();
 +        loop {
-+            line.clear();
++            if let Some(work) = inner.pop_work() {
++                return Ok(work);
++            }
 +
-+            if handle.read_line(&mut line).unwrap() == 0 {
++            inner.looper_flags |= LOOPER_WAITING;
++            let signal_pending = self.work_condvar.wait(&mut inner);
++            inner.looper_flags &= !LOOPER_WAITING;
++
++            if signal_pending {
++                return Err(ERESTARTSYS);
++            }
++        }
++    }
++
++    /// Attempts to fetch a work item from the thread-local queue, falling back to the process-wide
++    /// queue if none is available locally.
++    ///
++    /// This must only be called when the thread is not participating in a transaction chain. If it
++    /// is, the local version (`get_work_local`) should be used instead.
++    fn get_work(self: &Ref<Self>, wait: bool) -> Result<Ref<dyn DeliverToRead>> {
++        // Try to get work from the thread's work queue, using only a local lock.
++        {
++            let mut inner = self.inner.lock();
++            if let Some(work) = inner.pop_work() {
++                return Ok(work);
++            }
++        }
++
++        // If the caller doesn't want to wait, try to grab work from the process queue.
++        //
++        // We know nothing will have been queued directly to the thread queue because it is not in
++        // a transaction and it is not in the process' ready list.
++        if !wait {
++            return self.process.get_work().ok_or(EAGAIN);
++        }
++
++        // Get work from the process queue. If none is available, atomically register as ready.
++        let reg = match self.process.get_work_or_register(self) {
++            Either::Left(work) => return Ok(work),
++            Either::Right(reg) => reg,
++        };
++
++        let mut inner = self.inner.lock();
++        loop {
++            if let Some(work) = inner.pop_work() {
++                return Ok(work);
++            }
++
++            inner.looper_flags |= LOOPER_WAITING;
++            let signal_pending = self.work_condvar.wait(&mut inner);
++            inner.looper_flags &= !LOOPER_WAITING;
++
++            if signal_pending {
++                // A signal is pending. We need to pull the thread off the list, then check the
++                // state again after it's off the list to ensure that something was not queued in
++                // the meantime. If something has been queued, we just return it (instead of the
++                // error).
++                drop(inner);
++                drop(reg);
++                return self.inner.lock().pop_work().ok_or(ERESTARTSYS);
++            }
++        }
++    }
++
++    pub(crate) fn push_work(&self, work: Ref<dyn DeliverToRead>) -> BinderResult {
++        {
++            let mut inner = self.inner.lock();
++            if inner.is_dead {
++                return Err(BinderError::new_dead());
++            }
++            inner.push_work(work);
++        }
++        self.work_condvar.notify_one();
++        Ok(())
++    }
++
++    /// Attempts to push to given work item to the thread if it's a looper thread (i.e., if it's
++    /// part of a thread pool) and is alive. Otherwise, push the work item to the process instead.
++    pub(crate) fn push_work_if_looper(&self, work: Ref<dyn DeliverToRead>) -> BinderResult {
++        let mut inner = self.inner.lock();
++        if inner.is_looper() && !inner.is_dead {
++            inner.push_work(work);
++            Ok(())
++        } else {
++            drop(inner);
++            self.process.push_work(work)
++        }
++    }
++
++    pub(crate) fn push_work_deferred(&self, work: Ref<dyn DeliverToRead>) {
++        self.inner.lock().push_work_deferred(work);
++    }
++
++    fn translate_object(
++        &self,
++        index_offset: usize,
++        view: &mut AllocationView<'_, '_>,
++        allow_fds: bool,
++    ) -> BinderResult {
++        let offset = view.alloc.read(index_offset)?;
++        let header = view.read::<bindings::binder_object_header>(offset)?;
++        // TODO: Handle other types.
++        match header.type_ {
++            BINDER_TYPE_WEAK_BINDER | BINDER_TYPE_BINDER => {
++                let strong = header.type_ == BINDER_TYPE_BINDER;
++                view.transfer_binder_object(offset, strong, |obj| {
++                    // SAFETY: `binder` is a `binder_uintptr_t`; any bit pattern is a valid
++                    // representation.
++                    let ptr = unsafe { obj.__bindgen_anon_1.binder } as _;
++                    let cookie = obj.cookie as _;
++                    let flags = obj.flags as _;
++                    let node = self.process.as_ref_borrow().get_node(
++                        ptr,
++                        cookie,
++                        flags,
++                        strong,
++                        Some(self),
++                    )?;
++                    security::binder_transfer_binder(&self.process.cred, &view.alloc.process.cred)?;
++                    Ok(node)
++                })?;
++            }
++            BINDER_TYPE_WEAK_HANDLE | BINDER_TYPE_HANDLE => {
++                let strong = header.type_ == BINDER_TYPE_HANDLE;
++                view.transfer_binder_object(offset, strong, |obj| {
++                    // SAFETY: `handle` is a `u32`; any bit pattern is a valid representation.
++                    let handle = unsafe { obj.__bindgen_anon_1.handle } as _;
++                    let node = self.process.get_node_from_handle(handle, strong)?;
++                    security::binder_transfer_binder(&self.process.cred, &view.alloc.process.cred)?;
++                    Ok(node)
++                })?;
++            }
++            BINDER_TYPE_FD => {
++                if !allow_fds {
++                    return Err(BinderError::new_failed());
++                }
++
++                let obj = view.read::<bindings::binder_fd_object>(offset)?;
++                // SAFETY: `fd` is a `u32`; any bit pattern is a valid representation.
++                let fd = unsafe { obj.__bindgen_anon_1.fd };
++                let file = File::from_fd(fd)?;
++                security::binder_transfer_file(
++                    &self.process.cred,
++                    &view.alloc.process.cred,
++                    &file,
++                )?;
++                let field_offset =
++                    kernel::offset_of!(bindings::binder_fd_object, __bindgen_anon_1.fd) as usize;
++                let file_info = Box::try_new(FileInfo::new(file, offset + field_offset))?;
++                view.alloc.add_file_info(file_info);
++            }
++            _ => pr_warn!("Unsupported binder object type: {:x}\n", header.type_),
++        }
++        Ok(())
++    }
++
++    fn translate_objects(
++        &self,
++        alloc: &mut Allocation<'_>,
++        start: usize,
++        end: usize,
++        allow_fds: bool,
++    ) -> BinderResult {
++        let mut view = AllocationView::new(alloc, start);
++        for i in (start..end).step_by(size_of::<usize>()) {
++            if let Err(err) = self.translate_object(i, &mut view, allow_fds) {
++                alloc.set_info(AllocationInfo { offsets: start..i });
++                return Err(err);
++            }
++        }
++        alloc.set_info(AllocationInfo {
++            offsets: start..end,
++        });
++        Ok(())
++    }
++
++    pub(crate) fn copy_transaction_data<'a>(
++        &self,
++        to_process: &'a Process,
++        tr: &BinderTransactionData,
++        allow_fds: bool,
++    ) -> BinderResult<Allocation<'a>> {
++        let data_size = tr.data_size as _;
++        let adata_size = ptr_align(data_size);
++        let offsets_size = tr.offsets_size as _;
++        let aoffsets_size = ptr_align(offsets_size);
++
++        // This guarantees that at least `sizeof(usize)` bytes will be allocated.
++        let len = core::cmp::max(
++            adata_size.checked_add(aoffsets_size).ok_or(ENOMEM)?,
++            size_of::<usize>(),
++        );
++        let mut alloc = to_process.buffer_alloc(len)?;
++
++        // Copy raw data.
++        let mut reader = unsafe { UserSlicePtr::new(tr.data.ptr.buffer as _, data_size) }.reader();
++        alloc.copy_into(&mut reader, 0, data_size)?;
++
++        // Copy offsets if there are any.
++        if offsets_size > 0 {
++            let mut reader =
++                unsafe { UserSlicePtr::new(tr.data.ptr.offsets as _, offsets_size) }.reader();
++            alloc.copy_into(&mut reader, adata_size, offsets_size)?;
++
++            // Traverse the objects specified.
++            self.translate_objects(
++                &mut alloc,
++                adata_size,
++                adata_size + aoffsets_size,
++                allow_fds,
++            )?;
++        }
++
++        Ok(alloc)
++    }
++
++    fn unwind_transaction_stack(self: &Ref<Self>) {
++        let mut thread = self.clone();
++        while let Ok(transaction) = {
++            let mut inner = thread.inner.lock();
++            inner.pop_transaction_to_reply(thread.as_ref())
++        } {
++            let reply = Either::Right(BR_DEAD_REPLY);
++            if !transaction.from.deliver_single_reply(reply, &transaction) {
 +                break;
 +            }
 +
-+            if line.starts_with('#') {
-+                continue;
++            thread = transaction.from.clone();
++        }
++    }
++
++    pub(crate) fn deliver_reply(
++        &self,
++        reply: Either<Ref<Transaction>, u32>,
++        transaction: &Ref<Transaction>,
++    ) {
++        if self.deliver_single_reply(reply, transaction) {
++            transaction.from.unwind_transaction_stack();
++        }
++    }
++
++    /// Delivers a reply to the thread that started a transaction. The reply can either be a
++    /// reply-transaction or an error code to be delivered instead.
++    ///
++    /// Returns whether the thread is dead. If it is, the caller is expected to unwind the
++    /// transaction stack by completing transactions for threads that are dead.
++    fn deliver_single_reply(
++        &self,
++        reply: Either<Ref<Transaction>, u32>,
++        transaction: &Ref<Transaction>,
++    ) -> bool {
++        {
++            let mut inner = self.inner.lock();
++            if !inner.pop_transaction_replied(transaction) {
++                return false;
 +            }
 +
-+            let (key, value) = line.split_once('=').expect("Missing `=` in line.");
-+            result.insert(key.to_string(), value.trim_end_matches('\n').to_string());
++            if inner.is_dead {
++                return true;
++            }
++
++            match reply {
++                Either::Left(work) => inner.push_work(work),
++                Either::Right(code) => inner.push_reply_work(code),
++            }
 +        }
 +
-+        KernelConfig(result)
++        // Notify the thread now that we've released the inner lock.
++        self.work_condvar.notify_one();
++        false
 +    }
 +
-+    /// Does the option exist in the configuration (any value)?
-+    ///
-+    /// The argument must be passed without the `CONFIG_` prefix.
-+    /// This avoids repetition and it also avoids `fixdep` making us
-+    /// depend on it.
-+    fn has(&self, option: &str) -> bool {
-+        let option = "CONFIG_".to_owned() + option;
-+        self.0.contains_key(&option)
++    /// Determines if the given transaction is the current transaction for this thread.
++    fn is_current_transaction(&self, transaction: &Ref<Transaction>) -> bool {
++        let inner = self.inner.lock();
++        match &inner.current_transaction {
++            None => false,
++            Some(current) => Ref::ptr_eq(current, transaction),
++        }
 +    }
-+}
 +
-+fn main() {
-+    let cfg = KernelConfig::from_stdin();
-+    let mut ts = TargetSpec::new();
++    fn transaction<T>(self: &Ref<Self>, tr: &BinderTransactionData, inner: T)
++    where
++        T: FnOnce(&Ref<Self>, &BinderTransactionData) -> BinderResult,
++    {
++        if let Err(err) = inner(self, tr) {
++            self.inner.lock().push_return_work(err.reply);
++        }
++    }
 +
-+    // `llvm-target`s are taken from `scripts/Makefile.clang`.
-+    if cfg.has("ARM") {
-+        ts.push("arch", "arm");
-+        ts.push(
-+            "data-layout",
-+            "e-m:e-p:32:32-Fi8-i64:64-v128:64:128-a:0:32-n32-S64",
-+        );
-+        ts.push("features", "+strict-align,+v6");
-+        ts.push("llvm-target", "arm-linux-gnueabi");
-+        ts.push("max-atomic-width", 64);
-+        ts.push("target-mcount", "\\u0001__gnu_mcount_nc");
-+        ts.push("target-pointer-width", "32");
-+    } else if cfg.has("ARM64") {
-+        ts.push("arch", "aarch64");
-+        ts.push(
-+            "data-layout",
-+            "e-m:e-i8:8:32-i16:16:32-i64:64-i128:128-n32:64-S128",
-+        );
-+        ts.push("disable-redzone", true);
-+        ts.push("features", "+strict-align,-neon,-fp-armv8");
-+        ts.push("llvm-target", "aarch64-linux-gnu");
-+        ts.push("max-atomic-width", 128);
-+        ts.push("target-pointer-width", "64");
-+    } else if cfg.has("PPC") {
-+        ts.push("arch", "powerpc64");
-+        ts.push("code-model", "large");
-+        ts.push("data-layout", "e-m:e-i64:64-n32:64");
-+        ts.push("features", "-altivec,-vsx,-hard-float");
-+        ts.push("llvm-target", "powerpc64le-linux-gnu");
-+        ts.push("max-atomic-width", 64);
-+        ts.push("target-mcount", "_mcount");
-+        ts.push("target-pointer-width", "64");
-+    } else if cfg.has("RISCV") {
-+        if cfg.has("64BIT") {
-+            ts.push("arch", "riscv64");
-+            ts.push("data-layout", "e-m:e-p:64:64-i64:64-i128:128-n64-S128");
-+            ts.push("llvm-target", "riscv64-linux-gnu");
-+            ts.push("target-pointer-width", "64");
++    fn reply_inner(self: &Ref<Self>, tr: &BinderTransactionData) -> BinderResult {
++        let orig = self.inner.lock().pop_transaction_to_reply(self)?;
++        if !orig.from.is_current_transaction(&orig) {
++            return Err(BinderError::new_failed());
++        }
++
++        // We need to complete the transaction even if we cannot complete building the reply.
++        (|| -> BinderResult<_> {
++            let completion = Ref::try_new(DeliverCode::new(BR_TRANSACTION_COMPLETE))?;
++            let process = orig.from.process.clone();
++            let allow_fds = orig.flags & TF_ACCEPT_FDS != 0;
++            let reply = Transaction::new_reply(self, process, tr, allow_fds)?;
++            self.inner.lock().push_work(completion);
++            orig.from.deliver_reply(Either::Left(reply), &orig);
++            Ok(())
++        })()
++        .map_err(|mut err| {
++            // At this point we only return `BR_TRANSACTION_COMPLETE` to the caller, and we must let
++            // the sender know that the transaction has completed (with an error in this case).
++            let reply = Either::Right(BR_FAILED_REPLY);
++            orig.from.deliver_reply(reply, &orig);
++            err.reply = BR_TRANSACTION_COMPLETE;
++            err
++        })
++    }
++
++    /// Determines the current top of the transaction stack. It fails if the top is in another
++    /// thread (i.e., this thread belongs to a stack but it has called another thread). The top is
++    /// [`None`] if the thread is not currently participating in a transaction stack.
++    fn top_of_transaction_stack(&self) -> Result<Option<Ref<Transaction>>> {
++        let inner = self.inner.lock();
++        Ok(if let Some(cur) = &inner.current_transaction {
++            if core::ptr::eq(self, cur.from.as_ref()) {
++                return Err(EINVAL);
++            }
++            Some(cur.clone())
 +        } else {
-+            ts.push("arch", "riscv32");
-+            ts.push("data-layout", "e-m:e-p:32:32-i64:64-n32-S128");
-+            ts.push("llvm-target", "riscv32-linux-gnu");
-+            ts.push("target-pointer-width", "32");
-+        }
-+        ts.push("code-model", "medium");
-+        ts.push("disable-redzone", true);
-+        let mut features = "+m,+a".to_string();
-+        if cfg.has("RISCV_ISA_C") {
-+            features += ",+c";
-+        }
-+        ts.push("features", features);
-+    } else if cfg.has("X86_64") {
-+        ts.push("arch", "x86_64");
-+        ts.push(
-+            "data-layout",
-+            "e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16:32:64-S128",
-+        );
-+        ts.push("llvm-target", "x86_64-linux-gnu");
-+        ts.push("target-pointer-width", "64");
-+    } else {
-+        panic!("Unsupported architecture");
++            None
++        })
 +    }
 +
-+    ts.push("emit-debug-gdb-scripts", false);
-+    ts.push("frame-pointer", "may-omit");
-+    ts.push(
-+        "stack-probes",
-+        vec![("kind".to_string(), Value::String("none".to_string()))],
-+    );
-+
-+    // Everything else is LE, whether `CPU_LITTLE_ENDIAN` is declared or not
-+    // (e.g. x86). It is also `rustc`'s default.
-+    if cfg.has("CPU_BIG_ENDIAN") {
-+        ts.push("target-endian", "big");
++    fn oneway_transaction_inner(self: &Ref<Self>, tr: &BinderTransactionData) -> BinderResult {
++        let handle = unsafe { tr.target.handle };
++        let node_ref = self.process.get_transaction_node(handle)?;
++        security::binder_transaction(&self.process.cred, &node_ref.node.owner.cred)?;
++        let completion = Ref::try_new(DeliverCode::new(BR_TRANSACTION_COMPLETE))?;
++        let transaction = Transaction::new(node_ref, None, self, tr)?;
++        self.inner.lock().push_work(completion);
++        // TODO: Remove the completion on error?
++        transaction.submit()?;
++        Ok(())
 +    }
 +
-+    println!("{}", ts);
++    fn transaction_inner(self: &Ref<Self>, tr: &BinderTransactionData) -> BinderResult {
++        let handle = unsafe { tr.target.handle };
++        let node_ref = self.process.get_transaction_node(handle)?;
++        security::binder_transaction(&self.process.cred, &node_ref.node.owner.cred)?;
++        // TODO: We need to ensure that there isn't a pending transaction in the work queue. How
++        // could this happen?
++        let top = self.top_of_transaction_stack()?;
++        let completion = Ref::try_new(DeliverCode::new(BR_TRANSACTION_COMPLETE))?;
++        let transaction = Transaction::new(node_ref, top, self, tr)?;
++
++        // Check that the transaction stack hasn't changed while the lock was released, then update
++        // it with the new transaction.
++        {
++            let mut inner = self.inner.lock();
++            if !transaction.is_stacked_on(&inner.current_transaction) {
++                return Err(BinderError::new_failed());
++            }
++            inner.current_transaction = Some(transaction.clone());
++        }
++
++        // We push the completion as a deferred work so that we wait for the reply before returning
++        // to userland.
++        self.push_work_deferred(completion);
++        // TODO: Remove completion if submission fails?
++        transaction.submit()?;
++        Ok(())
++    }
++
++    fn write(self: &Ref<Self>, req: &mut BinderWriteRead) -> Result {
++        let write_start = req.write_buffer.wrapping_add(req.write_consumed);
++        let write_len = req.write_size - req.write_consumed;
++        let mut reader = unsafe { UserSlicePtr::new(write_start as _, write_len as _).reader() };
++
++        while reader.len() >= size_of::<u32>() && self.inner.lock().return_work.is_some() {
++            let before = reader.len();
++            match reader.read::<u32>()? {
++                BC_TRANSACTION => {
++                    let tr = reader.read::<BinderTransactionData>()?;
++                    if tr.flags & TF_ONE_WAY != 0 {
++                        self.transaction(&tr, Self::oneway_transaction_inner)
++                    } else {
++                        self.transaction(&tr, Self::transaction_inner)
++                    }
++                }
++                BC_REPLY => self.transaction(&reader.read()?, Self::reply_inner),
++                BC_FREE_BUFFER => drop(self.process.buffer_get(reader.read()?)),
++                BC_INCREFS => self.process.update_ref(reader.read()?, true, false)?,
++                BC_ACQUIRE => self.process.update_ref(reader.read()?, true, true)?,
++                BC_RELEASE => self.process.update_ref(reader.read()?, false, true)?,
++                BC_DECREFS => self.process.update_ref(reader.read()?, false, false)?,
++                BC_INCREFS_DONE => self.process.inc_ref_done(&mut reader, false)?,
++                BC_ACQUIRE_DONE => self.process.inc_ref_done(&mut reader, true)?,
++                BC_REQUEST_DEATH_NOTIFICATION => self.process.request_death(&mut reader, self)?,
++                BC_CLEAR_DEATH_NOTIFICATION => self.process.clear_death(&mut reader, self)?,
++                BC_DEAD_BINDER_DONE => self.process.dead_binder_done(reader.read()?, self),
++                BC_REGISTER_LOOPER => {
++                    let valid = self.process.register_thread();
++                    self.inner.lock().looper_register(valid);
++                }
++                BC_ENTER_LOOPER => self.inner.lock().looper_enter(),
++                BC_EXIT_LOOPER => self.inner.lock().looper_exit(),
++
++                // TODO: Add support for BC_TRANSACTION_SG and BC_REPLY_SG.
++                // BC_ATTEMPT_ACQUIRE and BC_ACQUIRE_RESULT are no longer supported.
++                _ => return Err(EINVAL),
++            }
++
++            // Update the number of write bytes consumed.
++            req.write_consumed += (before - reader.len()) as u64;
++        }
++        Ok(())
++    }
++
++    fn read(self: &Ref<Self>, req: &mut BinderWriteRead, wait: bool) -> Result {
++        let read_start = req.read_buffer.wrapping_add(req.read_consumed);
++        let read_len = req.read_size - req.read_consumed;
++        let mut writer = unsafe { UserSlicePtr::new(read_start as _, read_len as _) }.writer();
++        let (in_pool, getter) = {
++            let inner = self.inner.lock();
++            (
++                inner.is_looper(),
++                if inner.should_use_process_work_queue() {
++                    Self::get_work
++                } else {
++                    Self::get_work_local
++                },
++            )
++        };
++
++        // Reserve some room at the beginning of the read buffer so that we can send a
++        // BR_SPAWN_LOOPER if we need to.
++        if req.read_consumed == 0 {
++            writer.write(&BR_NOOP)?;
++        }
++
++        // Loop doing work while there is room in the buffer.
++        let initial_len = writer.len();
++        while writer.len() >= size_of::<u32>() {
++            match getter(self, wait && initial_len == writer.len()) {
++                Ok(work) => {
++                    if !work.do_work(self, &mut writer)? {
++                        break;
++                    }
++                }
++                Err(err) => {
++                    // Propagate the error if we haven't written anything else.
++                    if initial_len == writer.len() {
++                        return Err(err);
++                    } else {
++                        break;
++                    }
++                }
++            }
++        }
++
++        req.read_consumed += read_len - writer.len() as u64;
++
++        // Write BR_SPAWN_LOOPER if the process needs more threads for its pool.
++        if in_pool && self.process.needs_thread() {
++            let mut writer =
++                unsafe { UserSlicePtr::new(req.read_buffer as _, req.read_size as _) }.writer();
++            writer.write(&BR_SPAWN_LOOPER)?;
++        }
++
++        Ok(())
++    }
++
++    pub(crate) fn write_read(self: &Ref<Self>, data: UserSlicePtr, wait: bool) -> Result {
++        let (mut reader, mut writer) = data.reader_writer();
++        let mut req = reader.read::<BinderWriteRead>()?;
++
++        // TODO: `write(&req)` happens in all exit paths from here on. Find a better way to encode
++        // it.
++
++        // Go through the write buffer.
++        if req.write_size > 0 {
++            if let Err(err) = self.write(&mut req) {
++                req.read_consumed = 0;
++                writer.write(&req)?;
++                return Err(err);
++            }
++        }
++
++        // Go through the work queue.
++        let mut ret = Ok(());
++        if req.read_size > 0 {
++            ret = self.read(&mut req, wait);
++        }
++
++        // Write the request back so that the consumed fields are visible to the caller.
++        writer.write(&req)?;
++        ret
++    }
++
++    pub(crate) fn poll(&self, file: &File, table: &PollTable) -> (bool, u32) {
++        // SAFETY: `free_waiters` is called on release.
++        unsafe { table.register_wait(file, &self.work_condvar) };
++        let mut inner = self.inner.lock();
++        (inner.should_use_process_work_queue(), inner.poll())
++    }
++
++    pub(crate) fn notify_if_poll_ready(&self) {
++        // Determine if we need to notify. This requires the lock.
++        let inner = self.inner.lock();
++        let notify = inner.looper_flags & LOOPER_POLL != 0
++            && inner.should_use_process_work_queue()
++            && !inner.has_work();
++        drop(inner);
++
++        // Now that the lock is no longer held, notify the waiters if we have to.
++        if notify {
++            self.work_condvar.notify_one();
++        }
++    }
++
++    pub(crate) fn push_return_work(&self, code: u32) {
++        self.inner.lock().push_return_work(code)
++    }
++
++    pub(crate) fn release(self: &Ref<Self>) {
++        // Mark the thread as dead.
++        self.inner.lock().is_dead = true;
++
++        // Cancel all pending work items.
++        while let Ok(work) = self.get_work_local(false) {
++            work.cancel();
++        }
++
++        // Complete the transaction stack as far as we can.
++        self.unwind_transaction_stack();
++
++        // Remove epoll items if polling was ever used on the thread.
++        let poller = self.inner.lock().looper_flags & LOOPER_POLL != 0;
++        if poller {
++            self.work_condvar.free_waiters();
++
++            unsafe { bindings::synchronize_rcu() };
++        }
++    }
 +}
-diff --git a/scripts/is_rust_module.sh b/scripts/is_rust_module.sh
-new file mode 100755
-index 000000000000..277a64d07f22
---- /dev/null
-+++ b/scripts/is_rust_module.sh
-@@ -0,0 +1,13 @@
-+#!/bin/sh
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# is_rust_module.sh module.ko
-+#
-+# Returns `0` if `module.ko` is a Rust module, `1` otherwise.
 +
-+set -e
-+
-+# Using the `16_` prefix ensures other symbols with the same substring
-+# are not picked up (even if it would be unlikely). The last part is
-+# used just in case LLVM decides to use the `.` suffix.
-+${NM} "$*" | grep -qE '^[0-9a-fA-F]+ r _R[^[:space:]]+16___IS_RUST_MODULE[^[:space:]]*$'
-diff --git a/scripts/kconfig/confdata.c b/scripts/kconfig/confdata.c
-index c4340c90e172..b7c9f1dd5e42 100644
---- a/scripts/kconfig/confdata.c
-+++ b/scripts/kconfig/confdata.c
-@@ -216,6 +216,13 @@ static const char *conf_get_autoheader_name(void)
- 	return name ? name : "include/generated/autoconf.h";
- }
- 
-+static const char *conf_get_rustccfg_name(void)
-+{
-+	char *name = getenv("KCONFIG_RUSTCCFG");
-+
-+	return name ? name : "include/generated/rustc_cfg";
++impl GetLinks for Thread {
++    type EntryType = Thread;
++    fn get_links(data: &Thread) -> &Links<Thread> {
++        &data.links
++    }
 +}
 +
- static int conf_set_sym_val(struct symbol *sym, int def, int def_flags, char *p)
- {
- 	char *p2;
-@@ -605,6 +612,9 @@ static const struct comment_style comment_style_c = {
- 
- static void conf_write_heading(FILE *fp, const struct comment_style *cs)
- {
-+	if (!cs)
-+		return;
-+
- 	fprintf(fp, "%s\n", cs->prefix);
- 
- 	fprintf(fp, "%s Automatically generated file; DO NOT EDIT.\n",
-@@ -745,6 +755,65 @@ static void print_symbol_for_c(FILE *fp, struct symbol *sym)
- 	free(escaped);
- }
- 
-+static void print_symbol_for_rustccfg(FILE *fp, struct symbol *sym)
-+{
-+	const char *val;
-+	const char *val_prefix = "";
-+	char *val_prefixed = NULL;
-+	size_t val_prefixed_len;
-+	char *escaped = NULL;
-+
-+	if (sym->type == S_UNKNOWN)
-+		return;
-+
-+	val = sym_get_string_value(sym);
-+
-+	switch (sym->type) {
-+	case S_BOOLEAN:
-+	case S_TRISTATE:
-+		/*
-+		 * We do not care about disabled ones, i.e. no need for
-+		 * what otherwise are "comments" in other printers.
-+		 */
-+		if (*val == 'n')
-+			return;
-+
-+		/*
-+		 * To have similar functionality to the C macro `IS_ENABLED()`
-+		 * we provide an empty `--cfg CONFIG_X` here in both `y`
-+		 * and `m` cases.
-+		 *
-+		 * Then, the common `fprintf()` below will also give us
-+		 * a `--cfg CONFIG_X="y"` or `--cfg CONFIG_X="m"`, which can
-+		 * be used as the equivalent of `IS_BUILTIN()`/`IS_MODULE()`.
-+		 */
-+		fprintf(fp, "--cfg=%s%s\n", CONFIG_, sym->name);
-+		break;
-+	case S_HEX:
-+		if (val[0] != '0' || (val[1] != 'x' && val[1] != 'X'))
-+			val_prefix = "0x";
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	if (strlen(val_prefix) > 0) {
-+		val_prefixed_len = strlen(val) + strlen(val_prefix) + 1;
-+		val_prefixed = xmalloc(val_prefixed_len);
-+		snprintf(val_prefixed, val_prefixed_len, "%s%s", val_prefix, val);
-+		val = val_prefixed;
-+	}
-+
-+	/* All values get escaped: the `--cfg` option only takes strings */
-+	escaped = escape_string_value(val);
-+	val = escaped;
-+
-+	fprintf(fp, "--cfg=%s%s=%s\n", CONFIG_, sym->name, val);
-+
-+	free(escaped);
-+	free(val_prefixed);
++struct ThreadError {
++    error_code: AtomicU32,
++    return_fn: fn(&mut InnerThread, Ref<ThreadError>),
++    links: Links<dyn DeliverToRead>,
 +}
 +
- /*
-  * Write out a minimal config.
-  * All values that has default values are skipped as this is redundant.
-@@ -1132,6 +1201,12 @@ int conf_write_autoconf(int overwrite)
- 	if (ret)
- 		return ret;
- 
-+	ret = __conf_write_autoconf(conf_get_rustccfg_name(),
-+				    print_symbol_for_rustccfg,
-+				    NULL);
-+	if (ret)
-+		return ret;
++impl ThreadError {
++    fn new(return_fn: fn(&mut InnerThread, Ref<ThreadError>)) -> Self {
++        Self {
++            error_code: AtomicU32::new(BR_OK),
++            return_fn,
++            links: Links::new(),
++        }
++    }
++}
 +
- 	/*
- 	 * Create include/config/auto.conf. This must be the last step because
- 	 * Kbuild has a dependency on auto.conf and this marks the successful
-diff --git a/scripts/min-tool-version.sh b/scripts/min-tool-version.sh
-index 7c20252a90c6..53fe64856015 100755
---- a/scripts/min-tool-version.sh
-+++ b/scripts/min-tool-version.sh
-@@ -31,6 +31,12 @@ llvm)
- 		echo 11.0.0
- 	fi
- 	;;
-+rustc)
-+	echo 1.60.0
-+	;;
-+bindgen)
-+	echo 0.56.0
-+	;;
- *)
- 	echo "$1: unknown tool" >&2
- 	exit 1
-diff --git a/scripts/rust-is-available-bindgen-libclang.h b/scripts/rust-is-available-bindgen-libclang.h
++impl DeliverToRead for ThreadError {
++    fn do_work(self: Ref<Self>, thread: &Thread, writer: &mut UserSlicePtrWriter) -> Result<bool> {
++        // See `ThreadInner::push_existing_work` for the reason why `error_code` is up to date even
++        // though we use relaxed semantics.
++        let code = self.error_code.load(Ordering::Relaxed);
++
++        // Return the `ThreadError` to the thread.
++        (self.return_fn)(&mut *thread.inner.lock(), self);
++
++        // Deliver the error code to userspace.
++        writer.write(&code)?;
++        Ok(true)
++    }
++
++    fn get_links(&self) -> &Links<dyn DeliverToRead> {
++        &self.links
++    }
++}
+diff --git a/drivers/android/transaction.rs b/drivers/android/transaction.rs
 new file mode 100644
-index 000000000000..0ef6db10d674
+index 000000000000..8ddf6e21c9cd
 --- /dev/null
-+++ b/scripts/rust-is-available-bindgen-libclang.h
-@@ -0,0 +1,2 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#pragma message("clang version " __clang_version__)
-diff --git a/scripts/rust-is-available.sh b/scripts/rust-is-available.sh
-new file mode 100755
-index 000000000000..6bd395167d0f
---- /dev/null
-+++ b/scripts/rust-is-available.sh
-@@ -0,0 +1,158 @@
-+#!/bin/sh
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# Tests whether a suitable Rust toolchain is available.
-+#
-+# Pass `-v` for human output and more checks (as warnings).
++++ b/drivers/android/transaction.rs
+@@ -0,0 +1,326 @@
++// SPDX-License-Identifier: GPL-2.0
 +
-+set -e
++use core::sync::atomic::{AtomicBool, Ordering};
++use kernel::{
++    bindings,
++    file::{File, FileDescriptorReservation},
++    io_buffer::IoBufferWriter,
++    linked_list::List,
++    linked_list::{GetLinks, Links},
++    prelude::*,
++    sync::{Ref, SpinLock, UniqueRef},
++    user_ptr::UserSlicePtrWriter,
++    ScopeGuard,
++};
 +
-+min_tool_version=$(dirname $0)/min-tool-version.sh
++use crate::{
++    defs::*,
++    node::NodeRef,
++    process::Process,
++    ptr_align,
++    thread::{BinderResult, Thread},
++    DeliverToRead, Either,
++};
 +
-+# Convert the version string x.y.z to a canonical up-to-7-digits form.
-+#
-+# Note that this function uses one more digit (compared to other
-+# instances in other version scripts) to give a bit more space to
-+# `rustc` since it will reach 1.100.0 in late 2026.
-+get_canonical_version()
-+{
-+	IFS=.
-+	set -- $1
-+	echo $((100000 * $1 + 100 * $2 + $3))
++struct TransactionInner {
++    file_list: List<Box<FileInfo>>,
 +}
 +
-+# Check that the Rust compiler exists.
-+if ! command -v "$RUSTC" >/dev/null; then
-+	if [ "$1" = -v ]; then
-+		echo >&2 "***"
-+		echo >&2 "*** Rust compiler '$RUSTC' could not be found."
-+		echo >&2 "***"
-+	fi
-+	exit 1
-+fi
++pub(crate) struct Transaction {
++    inner: SpinLock<TransactionInner>,
++    // TODO: Node should be released when the buffer is released.
++    node_ref: Option<NodeRef>,
++    stack_next: Option<Ref<Transaction>>,
++    pub(crate) from: Ref<Thread>,
++    to: Ref<Process>,
++    free_allocation: AtomicBool,
++    code: u32,
++    pub(crate) flags: u32,
++    data_size: usize,
++    offsets_size: usize,
++    data_address: usize,
++    links: Links<dyn DeliverToRead>,
++}
 +
-+# Check that the Rust bindings generator exists.
-+if ! command -v "$BINDGEN" >/dev/null; then
-+	if [ "$1" = -v ]; then
-+		echo >&2 "***"
-+		echo >&2 "*** Rust bindings generator '$BINDGEN' could not be found."
-+		echo >&2 "***"
-+	fi
-+	exit 1
-+fi
++impl Transaction {
++    pub(crate) fn new(
++        node_ref: NodeRef,
++        stack_next: Option<Ref<Transaction>>,
++        from: &Ref<Thread>,
++        tr: &BinderTransactionData,
++    ) -> BinderResult<Ref<Self>> {
++        let allow_fds = node_ref.node.flags & FLAT_BINDER_FLAG_ACCEPTS_FDS != 0;
++        let to = node_ref.node.owner.clone();
++        let mut alloc = from.copy_transaction_data(&to, tr, allow_fds)?;
++        let data_address = alloc.ptr;
++        let file_list = alloc.take_file_list();
++        alloc.keep_alive();
++        let mut tr = Pin::from(UniqueRef::try_new(Self {
++            // SAFETY: `spinlock_init` is called below.
++            inner: unsafe { SpinLock::new(TransactionInner { file_list }) },
++            node_ref: Some(node_ref),
++            stack_next,
++            from: from.clone(),
++            to,
++            code: tr.code,
++            flags: tr.flags,
++            data_size: tr.data_size as _,
++            data_address,
++            offsets_size: tr.offsets_size as _,
++            links: Links::new(),
++            free_allocation: AtomicBool::new(true),
++        })?);
 +
-+# Check that the Rust compiler version is suitable.
-+#
-+# Non-stable and distributions' versions may have a version suffix, e.g. `-dev`.
-+rust_compiler_version=$( \
-+	LC_ALL=C "$RUSTC" --version 2>/dev/null \
-+		| head -n 1 \
-+		| grep -oE '[0-9]+\.[0-9]+\.[0-9]+' \
-+)
-+rust_compiler_min_version=$($min_tool_version rustc)
-+rust_compiler_cversion=$(get_canonical_version $rust_compiler_version)
-+rust_compiler_min_cversion=$(get_canonical_version $rust_compiler_min_version)
-+if [ "$rust_compiler_cversion" -lt "$rust_compiler_min_cversion" ]; then
-+	if [ "$1" = -v ]; then
-+		echo >&2 "***"
-+		echo >&2 "*** Rust compiler '$RUSTC' is too old."
-+		echo >&2 "***   Your version:    $rust_compiler_version"
-+		echo >&2 "***   Minimum version: $rust_compiler_min_version"
-+		echo >&2 "***"
-+	fi
-+	exit 1
-+fi
-+if [ "$1" = -v ] && [ "$rust_compiler_cversion" -gt "$rust_compiler_min_cversion" ]; then
-+	echo >&2 "***"
-+	echo >&2 "*** Rust compiler '$RUSTC' is too new. This may or may not work."
-+	echo >&2 "***   Your version:     $rust_compiler_version"
-+	echo >&2 "***   Expected version: $rust_compiler_min_version"
-+	echo >&2 "***"
-+fi
++        // SAFETY: `inner` is pinned when `tr` is.
++        let pinned = unsafe { tr.as_mut().map_unchecked_mut(|t| &mut t.inner) };
++        kernel::spinlock_init!(pinned, "Transaction::inner");
 +
-+# Check that the Rust bindings generator is suitable.
-+#
-+# Non-stable and distributions' versions may have a version suffix, e.g. `-dev`.
-+rust_bindings_generator_version=$( \
-+	LC_ALL=C "$BINDGEN" --version 2>/dev/null \
-+		| head -n 1 \
-+		| grep -oE '[0-9]+\.[0-9]+\.[0-9]+' \
-+)
-+rust_bindings_generator_min_version=$($min_tool_version bindgen)
-+rust_bindings_generator_cversion=$(get_canonical_version $rust_bindings_generator_version)
-+rust_bindings_generator_min_cversion=$(get_canonical_version $rust_bindings_generator_min_version)
-+if [ "$rust_bindings_generator_cversion" -lt "$rust_bindings_generator_min_cversion" ]; then
-+	if [ "$1" = -v ]; then
-+		echo >&2 "***"
-+		echo >&2 "*** Rust bindings generator '$BINDGEN' is too old."
-+		echo >&2 "***   Your version:    $rust_bindings_generator_version"
-+		echo >&2 "***   Minimum version: $rust_bindings_generator_min_version"
-+		echo >&2 "***"
-+	fi
-+	exit 1
-+fi
-+if [ "$1" = -v ] && [ "$rust_bindings_generator_cversion" -gt "$rust_bindings_generator_min_cversion" ]; then
-+	echo >&2 "***"
-+	echo >&2 "*** Rust bindings generator '$BINDGEN' is too new. This may or may not work."
-+	echo >&2 "***   Your version:     $rust_bindings_generator_version"
-+	echo >&2 "***   Expected version: $rust_bindings_generator_min_version"
-+	echo >&2 "***"
-+fi
++        Ok(tr.into())
++    }
 +
-+# Check that the `libclang` used by the Rust bindings generator is suitable.
-+bindgen_libclang_version=$( \
-+	LC_ALL=C "$BINDGEN" $(dirname $0)/rust-is-available-bindgen-libclang.h 2>&1 >/dev/null \
-+		| grep -F 'clang version ' \
-+		| grep -oE '[0-9]+\.[0-9]+\.[0-9]+' \
-+)
-+bindgen_libclang_min_version=$($min_tool_version llvm)
-+bindgen_libclang_cversion=$(get_canonical_version $bindgen_libclang_version)
-+bindgen_libclang_min_cversion=$(get_canonical_version $bindgen_libclang_min_version)
-+if [ "$bindgen_libclang_cversion" -lt "$bindgen_libclang_min_cversion" ]; then
-+	if [ "$1" = -v ]; then
-+		echo >&2 "***"
-+		echo >&2 "*** libclang (used by the Rust bindings generator '$BINDGEN') is too old."
-+		echo >&2 "***   Your version:    $bindgen_libclang_version"
-+		echo >&2 "***   Minimum version: $bindgen_libclang_min_version"
-+		echo >&2 "***"
-+	fi
-+	exit 1
-+fi
++    pub(crate) fn new_reply(
++        from: &Ref<Thread>,
++        to: Ref<Process>,
++        tr: &BinderTransactionData,
++        allow_fds: bool,
++    ) -> BinderResult<Ref<Self>> {
++        let mut alloc = from.copy_transaction_data(&to, tr, allow_fds)?;
++        let data_address = alloc.ptr;
++        let file_list = alloc.take_file_list();
++        alloc.keep_alive();
++        let mut tr = Pin::from(UniqueRef::try_new(Self {
++            // SAFETY: `spinlock_init` is called below.
++            inner: unsafe { SpinLock::new(TransactionInner { file_list }) },
++            node_ref: None,
++            stack_next: None,
++            from: from.clone(),
++            to,
++            code: tr.code,
++            flags: tr.flags,
++            data_size: tr.data_size as _,
++            data_address,
++            offsets_size: tr.offsets_size as _,
++            links: Links::new(),
++            free_allocation: AtomicBool::new(true),
++        })?);
 +
-+# If the C compiler is Clang, then we can also check whether its version
-+# matches the `libclang` version used by the Rust bindings generator.
-+#
-+# In the future, we might be able to perform a full version check, see
-+# https://github.com/rust-lang/rust-bindgen/issues/2138.
-+if [ "$1" = -v ]; then
-+	cc_name=$($(dirname $0)/cc-version.sh "$CC" | cut -f1 -d' ')
-+	if [ "$cc_name" = Clang ]; then
-+		clang_version=$( \
-+			LC_ALL=C "$CC" --version 2>/dev/null \
-+				| sed -nE '1s:.*version ([0-9]+\.[0-9]+\.[0-9]+).*:\1:p'
-+		)
-+		if [ "$clang_version" != "$bindgen_libclang_version" ]; then
-+			echo >&2 "***"
-+			echo >&2 "*** libclang (used by the Rust bindings generator '$BINDGEN') version does not match Clang's. This may be a problem."
-+			echo >&2 "***   libclang version: $bindgen_libclang_version"
-+			echo >&2 "***   Clang version:    $clang_version"
-+			echo >&2 "***"
-+		fi
-+	fi
-+fi
++        // SAFETY: `inner` is pinned when `tr` is.
++        let pinned = unsafe { tr.as_mut().map_unchecked_mut(|t| &mut t.inner) };
++        kernel::spinlock_init!(pinned, "Transaction::inner");
 +
-+# Check that the source code for the `core` standard library exists.
-+#
-+# `$KRUSTFLAGS` is passed in case the user added `--sysroot`.
-+rustc_sysroot=$("$RUSTC" $KRUSTFLAGS --print sysroot)
-+rustc_src=${RUST_LIB_SRC:-"$rustc_sysroot/lib/rustlib/src/rust/library"}
-+rustc_src_core="$rustc_src/core/src/lib.rs"
-+if [ ! -e "$rustc_src_core" ]; then
-+	if [ "$1" = -v ]; then
-+		echo >&2 "***"
-+		echo >&2 "*** Source code for the 'core' standard library could not be found"
-+		echo >&2 "*** at '$rustc_src_core'."
-+		echo >&2 "***"
-+	fi
-+	exit 1
-+fi
++        Ok(tr.into())
++    }
++
++    /// Determines if the transaction is stacked on top of the given transaction.
++    pub(crate) fn is_stacked_on(&self, onext: &Option<Ref<Self>>) -> bool {
++        match (&self.stack_next, onext) {
++            (None, None) => true,
++            (Some(stack_next), Some(next)) => Ref::ptr_eq(stack_next, next),
++            _ => false,
++        }
++    }
++
++    /// Returns a pointer to the next transaction on the transaction stack, if there is one.
++    pub(crate) fn clone_next(&self) -> Option<Ref<Self>> {
++        let next = self.stack_next.as_ref()?;
++        Some(next.clone())
++    }
++
++    /// Searches in the transaction stack for a thread that belongs to the target process. This is
++    /// useful when finding a target for a new transaction: if the node belongs to a process that
++    /// is already part of the transaction stack, we reuse the thread.
++    fn find_target_thread(&self) -> Option<Ref<Thread>> {
++        let process = &self.node_ref.as_ref()?.node.owner;
++
++        let mut it = &self.stack_next;
++        while let Some(transaction) = it {
++            if Ref::ptr_eq(&transaction.from.process, process) {
++                return Some(transaction.from.clone());
++            }
++            it = &transaction.stack_next;
++        }
++        None
++    }
++
++    /// Searches in the transaction stack for a transaction originating at the given thread.
++    pub(crate) fn find_from(&self, thread: &Thread) -> Option<Ref<Transaction>> {
++        let mut it = &self.stack_next;
++        while let Some(transaction) = it {
++            if core::ptr::eq(thread, transaction.from.as_ref()) {
++                return Some(transaction.clone());
++            }
++
++            it = &transaction.stack_next;
++        }
++        None
++    }
++
++    /// Submits the transaction to a work queue. Use a thread if there is one in the transaction
++    /// stack, otherwise use the destination process.
++    pub(crate) fn submit(self: Ref<Self>) -> BinderResult {
++        if let Some(thread) = self.find_target_thread() {
++            thread.push_work(self)
++        } else {
++            let process = self.to.clone();
++            process.push_work(self)
++        }
++    }
++
++    /// Prepares the file list for delivery to the caller.
++    fn prepare_file_list(&self) -> Result<List<Box<FileInfo>>> {
++        // Get list of files that are being transferred as part of the transaction.
++        let mut file_list = core::mem::replace(&mut self.inner.lock().file_list, List::new());
++
++        // If the list is non-empty, prepare the buffer.
++        if !file_list.is_empty() {
++            let alloc = self.to.buffer_get(self.data_address).ok_or(ESRCH)?;
++            let cleanup = ScopeGuard::new(|| {
++                self.free_allocation.store(false, Ordering::Relaxed);
++            });
++
++            let mut it = file_list.cursor_front_mut();
++            while let Some(file_info) = it.current() {
++                let reservation = FileDescriptorReservation::new(bindings::O_CLOEXEC)?;
++                alloc.write(file_info.buffer_offset, &reservation.reserved_fd())?;
++                file_info.reservation = Some(reservation);
++                it.move_next();
++            }
++
++            alloc.keep_alive();
++            cleanup.dismiss();
++        }
++
++        Ok(file_list)
++    }
++}
++
++impl DeliverToRead for Transaction {
++    fn do_work(self: Ref<Self>, thread: &Thread, writer: &mut UserSlicePtrWriter) -> Result<bool> {
++        /* TODO: Initialise the following fields from tr:
++            pub sender_pid: pid_t,
++            pub sender_euid: uid_t,
++        */
++        let send_failed_reply = ScopeGuard::new(|| {
++            if self.node_ref.is_some() && self.flags & TF_ONE_WAY == 0 {
++                let reply = Either::Right(BR_FAILED_REPLY);
++                self.from.deliver_reply(reply, &self);
++            }
++        });
++        let mut file_list = if let Ok(list) = self.prepare_file_list() {
++            list
++        } else {
++            // On failure to process the list, we send a reply back to the sender and ignore the
++            // transaction on the recipient.
++            return Ok(true);
++        };
++
++        let mut tr = BinderTransactionData::default();
++
++        if let Some(nref) = &self.node_ref {
++            let (ptr, cookie) = nref.node.get_id();
++            tr.target.ptr = ptr as _;
++            tr.cookie = cookie as _;
++        };
++
++        tr.code = self.code;
++        tr.flags = self.flags;
++        tr.data_size = self.data_size as _;
++        tr.data.ptr.buffer = self.data_address as _;
++        tr.offsets_size = self.offsets_size as _;
++        if tr.offsets_size > 0 {
++            tr.data.ptr.offsets = (self.data_address + ptr_align(self.data_size)) as _;
++        }
++
++        let code = if self.node_ref.is_none() {
++            BR_REPLY
++        } else {
++            BR_TRANSACTION
++        };
++
++        // Write the transaction code and data to the user buffer.
++        writer.write(&code)?;
++        writer.write(&tr)?;
++
++        // Dismiss the completion of transaction with a failure. No failure paths are allowed from
++        // here on out.
++        send_failed_reply.dismiss();
++
++        // Commit all files.
++        {
++            let mut it = file_list.cursor_front_mut();
++            while let Some(file_info) = it.current() {
++                if let Some(reservation) = file_info.reservation.take() {
++                    if let Some(file) = file_info.file.take() {
++                        reservation.commit(file);
++                    }
++                }
++
++                it.move_next();
++            }
++        }
++
++        // When `drop` is called, we don't want the allocation to be freed because it is now the
++        // user's reponsibility to free it.
++        //
++        // `drop` is guaranteed to see this relaxed store because `Ref` guarantess that everything
++        // that happens when an object is referenced happens-before the eventual `drop`.
++        self.free_allocation.store(false, Ordering::Relaxed);
++
++        // When this is not a reply and not an async transaction, update `current_transaction`. If
++        // it's a reply, `current_transaction` has already been updated appropriately.
++        if self.node_ref.is_some() && tr.flags & TF_ONE_WAY == 0 {
++            thread.set_current_transaction(self);
++        }
++
++        Ok(false)
++    }
++
++    fn cancel(self: Ref<Self>) {
++        let reply = Either::Right(BR_DEAD_REPLY);
++        self.from.deliver_reply(reply, &self);
++    }
++
++    fn get_links(&self) -> &Links<dyn DeliverToRead> {
++        &self.links
++    }
++}
++
++impl Drop for Transaction {
++    fn drop(&mut self) {
++        if self.free_allocation.load(Ordering::Relaxed) {
++            self.to.buffer_get(self.data_address);
++        }
++    }
++}
++
++pub(crate) struct FileInfo {
++    links: Links<FileInfo>,
++
++    /// The file for which a descriptor will be created in the recipient process.
++    file: Option<ARef<File>>,
++
++    /// The file descriptor reservation on the recipient process.
++    reservation: Option<FileDescriptorReservation>,
++
++    /// The offset in the buffer where the file descriptor is stored.
++    buffer_offset: usize,
++}
++
++impl FileInfo {
++    pub(crate) fn new(file: ARef<File>, buffer_offset: usize) -> Self {
++        Self {
++            file: Some(file),
++            reservation: None,
++            buffer_offset,
++            links: Links::new(),
++        }
++    }
++}
++
++impl GetLinks for FileInfo {
++    type EntryType = Self;
++
++    fn get_links(data: &Self::EntryType) -> &Links<Self::EntryType> {
++        &data.links
++    }
++}
+diff --git a/include/uapi/linux/android/binder.h b/include/uapi/linux/android/binder.h
+index 11157fae8a8e..a982c30dbbf5 100644
+--- a/include/uapi/linux/android/binder.h
++++ b/include/uapi/linux/android/binder.h
+@@ -236,19 +236,21 @@ struct binder_frozen_status_info {
+ 	__u32            async_recv;
+ };
+ 
+-#define BINDER_WRITE_READ		_IOWR('b', 1, struct binder_write_read)
+-#define BINDER_SET_IDLE_TIMEOUT		_IOW('b', 3, __s64)
+-#define BINDER_SET_MAX_THREADS		_IOW('b', 5, __u32)
+-#define BINDER_SET_IDLE_PRIORITY	_IOW('b', 6, __s32)
+-#define BINDER_SET_CONTEXT_MGR		_IOW('b', 7, __s32)
+-#define BINDER_THREAD_EXIT		_IOW('b', 8, __s32)
+-#define BINDER_VERSION			_IOWR('b', 9, struct binder_version)
+-#define BINDER_GET_NODE_DEBUG_INFO	_IOWR('b', 11, struct binder_node_debug_info)
+-#define BINDER_GET_NODE_INFO_FOR_REF	_IOWR('b', 12, struct binder_node_info_for_ref)
+-#define BINDER_SET_CONTEXT_MGR_EXT	_IOW('b', 13, struct flat_binder_object)
+-#define BINDER_FREEZE			_IOW('b', 14, struct binder_freeze_info)
+-#define BINDER_GET_FROZEN_INFO		_IOWR('b', 15, struct binder_frozen_status_info)
+-#define BINDER_ENABLE_ONEWAY_SPAM_DETECTION	_IOW('b', 16, __u32)
++enum {
++	BINDER_WRITE_READ		= _IOWR('b', 1, struct binder_write_read),
++	BINDER_SET_IDLE_TIMEOUT		= _IOW('b', 3, __s64),
++	BINDER_SET_MAX_THREADS		= _IOW('b', 5, __u32),
++	BINDER_SET_IDLE_PRIORITY	= _IOW('b', 6, __s32),
++	BINDER_SET_CONTEXT_MGR		= _IOW('b', 7, __s32),
++	BINDER_THREAD_EXIT		= _IOW('b', 8, __s32),
++	BINDER_VERSION			= _IOWR('b', 9, struct binder_version),
++	BINDER_GET_NODE_DEBUG_INFO	= _IOWR('b', 11, struct binder_node_debug_info),
++	BINDER_GET_NODE_INFO_FOR_REF	= _IOWR('b', 12, struct binder_node_info_for_ref),
++	BINDER_SET_CONTEXT_MGR_EXT	= _IOW('b', 13, struct flat_binder_object),
++	BINDER_FREEZE			= _IOW('b', 14, struct binder_freeze_info),
++	BINDER_GET_FROZEN_INFO		= _IOWR('b', 15, struct binder_frozen_status_info),
++	BINDER_ENABLE_ONEWAY_SPAM_DETECTION	= _IOW('b', 16, __u32),
++};
+ 
+ /*
+  * NOTE: Two special error codes you should check for when calling
 -- 
 2.36.1
 
