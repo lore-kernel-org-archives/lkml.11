@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32C2EC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A1E0C43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:28:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240961AbiEWR0N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:26:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41952 "EHLO
+        id S241310AbiEWR0l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:26:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240564AbiEWRQ3 (ORCPT
+        with ESMTP id S240216AbiEWRRc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:16:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F4AD71D9D;
-        Mon, 23 May 2022 10:15:48 -0700 (PDT)
+        Mon, 23 May 2022 13:17:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFCC569CEF;
+        Mon, 23 May 2022 10:17:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6BA54B811FF;
-        Mon, 23 May 2022 17:14:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92BA6C385A9;
-        Mon, 23 May 2022 17:14:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1C9A6B8121C;
+        Mon, 23 May 2022 17:15:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81529C385A9;
+        Mon, 23 May 2022 17:15:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326076;
-        bh=PtMOftg5FnU6hxsGIPr5YdOoW8FziP18jnoUCn4A8SA=;
+        s=korg; t=1653326117;
+        bh=riyIxm/6DV0D51V6qS4eIgtQ8gmXffvMp6/SrgHtugg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iaQzmdGXlE8c4OJSNNpFfd6ICc+0MBm7GsDKwvtOWBRx4RgHChPd5p4yMjTOBXpH5
-         tXwee94ArdwGVrPg3mhjbaSmL4oSvC2tK1hh11Q3uKL4L2rwaA3HMyLIAayAvRtHiJ
-         y3J4xRheNAzLJ5U2a89QscNAxtNgOb22SKSQdS8I=
+        b=Zhnelaajp4yDkd4ycE2hYvINNjzVR9L1vQhhoVxjZ1yKldvoovSaIg6fsKPPm7QOb
+         3ARTSQ6v9stH7tlI4XHSCXnez+x2mRXpqwvoQKe8xWVRa0nuXSG6QDZSbQ7Uew7Elx
+         QjjE+A7JR6++iVPWvsLd1mu/8QgVMvyxvA2V8DPY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 51/68] gpio: mvebu/pwm: Refuse requests with inverted polarity
-Date:   Mon, 23 May 2022 19:05:18 +0200
-Message-Id: <20220523165810.967849159@linuxfoundation.org>
+        stable@vger.kernel.org, Stefan Gottwald <gottwald@igel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>
+Subject: [PATCH 5.4 29/68] PCI/PM: Avoid putting Elo i2 PCIe Ports in D3cold
+Date:   Mon, 23 May 2022 19:04:56 +0200
+Message-Id: <20220523165807.394701006@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165802.500642349@linuxfoundation.org>
 References: <20220523165802.500642349@linuxfoundation.org>
@@ -51,37 +49,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-[ Upstream commit 3ecb10175b1f776f076553c24e2689e42953fef5 ]
+commit 92597f97a40bf661bebceb92e26ff87c76d562d4 upstream.
 
-The driver doesn't take struct pwm_state::polarity into account when
-configuring the hardware, so refuse requests for inverted polarity.
+If a Root Port on Elo i2 is put into D3cold and then back into D0, the
+downstream device becomes permanently inaccessible, so add a bridge D3 DMI
+quirk for that system.
 
-Fixes: 757642f9a584 ("gpio: mvebu: Add limited PWM support")
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+This was exposed by 14858dcc3b35 ("PCI: Use pci_update_current_state() in
+pci_enable_device_flags()"), but before that commit the Root Port in
+question had never been put into D3cold for real due to a mismatch between
+its power state retrieved from the PCI_PM_CTRL register (which was
+accessible even though the platform firmware indicated that the port was in
+D3cold) and the state of an ACPI power resource involved in its power
+management.
+
+BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=215715
+Link: https://lore.kernel.org/r/11980172.O9o76ZdvQC@kreacher
+Reported-by: Stefan Gottwald <gottwald@igel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Cc: stable@vger.kernel.org	# v5.15+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpio/gpio-mvebu.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/pci/pci.c |   10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/drivers/gpio/gpio-mvebu.c b/drivers/gpio/gpio-mvebu.c
-index 89a053b1d279..b5ae28fce9a8 100644
---- a/drivers/gpio/gpio-mvebu.c
-+++ b/drivers/gpio/gpio-mvebu.c
-@@ -697,6 +697,9 @@ static int mvebu_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 	unsigned long flags;
- 	unsigned int on, off;
- 
-+	if (state->polarity != PWM_POLARITY_NORMAL)
-+		return -EINVAL;
-+
- 	val = (unsigned long long) mvpwm->clk_rate * state->duty_cycle;
- 	do_div(val, NSEC_PER_SEC);
- 	if (val > UINT_MAX)
--- 
-2.35.1
-
+--- a/drivers/pci/pci.c
++++ b/drivers/pci/pci.c
+@@ -2613,6 +2613,16 @@ static const struct dmi_system_id bridge
+ 			DMI_MATCH(DMI_BOARD_VENDOR, "Gigabyte Technology Co., Ltd."),
+ 			DMI_MATCH(DMI_BOARD_NAME, "X299 DESIGNARE EX-CF"),
+ 		},
++		/*
++		 * Downstream device is not accessible after putting a root port
++		 * into D3cold and back into D0 on Elo i2.
++		 */
++		.ident = "Elo i2",
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "Elo Touch Solutions"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "Elo i2"),
++			DMI_MATCH(DMI_PRODUCT_VERSION, "RevB"),
++		},
+ 	},
+ #endif
+ 	{ }
 
 
