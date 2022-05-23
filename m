@@ -2,252 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7A3DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 14:25:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64C07C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 14:26:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237121AbiEWOZY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 10:25:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34298 "EHLO
+        id S237176AbiEWO0Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 10:26:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237117AbiEWOZR (ORCPT
+        with ESMTP id S237137AbiEWO0S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 10:25:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89C185A582;
-        Mon, 23 May 2022 07:25:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 17E7AB81100;
-        Mon, 23 May 2022 14:25:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBC4DC385A9;
-        Mon, 23 May 2022 14:25:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653315912;
-        bh=4vLh4ue1tMMosFDoK6263Dar2yYqNCg/G7FWJAgLPp8=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=r/qpw7GGCIz7a5LLJurI22VqpnfZPjCvUilv1WtvGhte7xO3Zl4zmE0M9g7GC3NGG
-         rGKDBc6/bHSkH6bE3mKH9G1LtslYjnqyyeptjtibGprZDPkKLueriLMdselH4vnA44
-         LPPPZHvmWc3AsbVqQ+gJNDiGFZYcrF4FJdbdJWrz9UBGg8ML7flJhJAYF7Gm2MCGjb
-         0ng2XYOQ6E4h+M91DkR5eoUZ+Y7dcnO4E0Cz7wEbwAT5sMXOSpRJxBKKhC2Xu1cfYT
-         SKH/4XHglOuFn16JEX3bNahmLeW37KB6Yu8BE2dTtsutcMO/YsOZNrd2p0LAzqiyGu
-         pR5o/ewDnTIMw==
-Received: by mail-ed1-f49.google.com with SMTP id g12so19369632edq.4;
-        Mon, 23 May 2022 07:25:12 -0700 (PDT)
-X-Gm-Message-State: AOAM530XevtgSa9wN2p6npVkyjHN21bseyPwEwAK96QFaZYSIN/AYgaH
-        W23PYC14X9A3+Ze/b8W1mEw0b6oJxgvGLiLT4g==
-X-Google-Smtp-Source: ABdhPJwoOeWMZ55frHI3XEH4l/rWGlWP0SKbPSv8LWz5GQV6XKBYerjQpqXQjeWUQavlCQXH9Ze9HnGb4cM8NySG3R4=
-X-Received: by 2002:a05:6402:1e93:b0:42b:5134:6bf6 with SMTP id
- f19-20020a0564021e9300b0042b51346bf6mr9903039edf.40.1653315911050; Mon, 23
- May 2022 07:25:11 -0700 (PDT)
+        Mon, 23 May 2022 10:26:18 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE134BC07;
+        Mon, 23 May 2022 07:26:17 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id a23-20020a17090acb9700b001df4e9f4870so13886724pju.1;
+        Mon, 23 May 2022 07:26:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Dm4TT13KSiuL77Kurdzbxn3sj9oOXf/UIrA5coHXgag=;
+        b=GaXl6eNDe8XGNmdTgpiGEZJ/TizJeO/k6QmaNcIbAa7uasdJZ+okio0BBCaKh6xvDE
+         zfhQQe+1tuK0Tdk6Q1CVL7M5syyKZBdWS/iMXNFEvtYLv1gp1SsSCWGQPh0hAXPJ9pGo
+         yap+LsSDvpd/PGJs54OJYqEU2UPH+8vnF0WsFQMIy/rbERBHM4vG5TPl3POptfqfgjOJ
+         8lxP+NjUHoOnRdPqu8AealGxAqMBH0oCoOqh0q3uOLX29AktfMl/5H1B/8a7/NlApG+d
+         al0xUIr87Zc/qXHkRdiKoHw96Xt5yDDDyaonR9dINE1bB3cHkE5VwEHA20NI8hU2jPNb
+         epag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Dm4TT13KSiuL77Kurdzbxn3sj9oOXf/UIrA5coHXgag=;
+        b=MXMYi+ggU9BJhf+Mo3PqRwDifmSG/FUuXnNdEaR301ocrRXfJDIRKXLncXxAi0ofQJ
+         Sx82/kOVIeUlGnvzHACNAmwP876QAfuYEBoDzT18j39M4sTBoJn/ppynCNS2RH5QqHU9
+         0aaxxZPYK5nnrEva2rP8TJ1YoufEaFxa8vdoJwNeNIXbxQTIUKR7s4ShkdJDsK4fPuBe
+         uOMDFrYao1/gOFzgJzdthPGWxdO9yggaktXHfaNVZsxnEMHyaR7EEemy6UJkFkYjcKp3
+         +RNrrBwBTytV464J7DvHqQLsuooPs/+1oRv8WgQzDF9Cb5O0O4oHUfUBm6p4LfR6vvBe
+         eh7w==
+X-Gm-Message-State: AOAM532FRYuhk+PDaP1nR9rGAPGM1miTIlJqucaTc9uiqd0x0BNw5LlR
+        O29YbjQeYVgwG1DdXLcujnnITJBkk4L5Ng==
+X-Google-Smtp-Source: ABdhPJyk9R7HqnqlxT8Cl7Ehi0YFLbFT2OX5ASTMtbuRUAmxERv9h5wOwqK/TkMQjIdrXJSKrTl9pg==
+X-Received: by 2002:a17:90b:1e0f:b0:1df:e6b4:1fa7 with SMTP id pg15-20020a17090b1e0f00b001dfe6b41fa7mr22360831pjb.29.1653315977392;
+        Mon, 23 May 2022 07:26:17 -0700 (PDT)
+Received: from localhost.localdomain ([202.120.234.246])
+        by smtp.googlemail.com with ESMTPSA id u2-20020aa78382000000b0050dc762818asm7266438pfm.100.2022.05.23.07.26.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 May 2022 07:26:17 -0700 (PDT)
+From:   Miaoqian Lin <linmq006@gmail.com>
+To:     Peter De Schrijver <pdeschrijver@nvidia.com>,
+        Prashant Gaikwad <pgaikwad@nvidia.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Rhyland Klein <rklein@nvidia.com>, linux-clk@vger.kernel.org,
+        linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     linmq006@gmail.com
+Subject: [PATCH] clk: tegra: Fix refcount leak in tegra210_clock_init
+Date:   Mon, 23 May 2022 18:26:08 +0400
+Message-Id: <20220523142608.65074-1-linmq006@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220509133947.20987-1-quic_jinlmao@quicinc.com>
- <20220509133947.20987-9-quic_jinlmao@quicinc.com> <beba5968-3115-3c09-cda6-67095ca55226@arm.com>
-In-Reply-To: <beba5968-3115-3c09-cda6-67095ca55226@arm.com>
-From:   Rob Herring <robh@kernel.org>
-Date:   Mon, 23 May 2022 09:24:57 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqK8Z_J2xaOsBM-U4hhHPgQCudd=SGmPqwdipArWmTXJYw@mail.gmail.com>
-Message-ID: <CAL_JsqK8Z_J2xaOsBM-U4hhHPgQCudd=SGmPqwdipArWmTXJYw@mail.gmail.com>
-Subject: Re: [PATCH v7 08/10] dt-bindings: arm: Adds CoreSight TPDA hardware definitions
-To:     Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Mao Jinlong <quic_jinlmao@quicinc.com>
-Cc:     Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Konrad Dybcio <konradybcio@gmail.com>,
-        Mike Leach <mike.leach@linaro.org>,
-        Leo Yan <leo.yan@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Coresight ML <coresight@lists.linaro.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Tingwei Zhang <quic_tingweiz@quicinc.com>,
-        Yuanfang Zhang <quic_yuanfang@quicinc.com>,
-        Tao Zhang <quic_taozha@quicinc.com>,
-        Trilok Soni <quic_tsoni@quicinc.com>,
-        Hao Zhang <quic_hazha@quicinc.com>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 23, 2022 at 4:44 AM Suzuki K Poulose <suzuki.poulose@arm.com> wrote:
->
-> Cc: Rob Herring
->
+of_find_matching_node() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not need anymore.
+Add missing of_node_put() to avoid refcount leak.
 
-Will or will not have any effect...
+Fixes: 6b301a059eb2 ("clk: tegra: Add support for Tegra210 clocks")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+---
+ drivers/clk/tegra/clk-tegra210.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Please use get_maintainers.pl and send your patches to the right
-lists/maintainers. DT patches only get reviewed if sent to DT list. So
-please resend to the DT list. But before you do, I can tell this
-binding hasn't been tested so fix all the warnings first.
+diff --git a/drivers/clk/tegra/clk-tegra210.c b/drivers/clk/tegra/clk-tegra210.c
+index b9099012dc7b..499f999e91e1 100644
+--- a/drivers/clk/tegra/clk-tegra210.c
++++ b/drivers/clk/tegra/clk-tegra210.c
+@@ -3748,6 +3748,7 @@ static void __init tegra210_clock_init(struct device_node *np)
+ 	}
+ 
+ 	pmc_base = of_iomap(node, 0);
++	of_node_put(node);
+ 	if (!pmc_base) {
+ 		pr_err("Can't map pmc registers\n");
+ 		WARN_ON(1);
+-- 
+2.25.1
 
-Rob
-
->
->
-> On 09/05/2022 14:39, Mao Jinlong wrote:
-> > Adds new coresight-tpda.yaml file describing the bindings required
-> > to define tpda in the device trees.
-> >
-> > Reviewed-by: Mike Leach <mike.leach@linaro.org>
-> > Signed-off-by: Tao Zhang <quic_taozha@quicinc.com>
-> > Signed-off-by: Mao Jinlong <quic_jinlmao@quicinc.com>
-> > ---
-> >   .../bindings/arm/coresight-tpda.yaml          | 119 ++++++++++++++++++
-> >   MAINTAINERS                                   |   1 +
-> >   2 files changed, 120 insertions(+)
-> >   create mode 100644 Documentation/devicetree/bindings/arm/coresight-tpda.yaml
-> >
-> > diff --git a/Documentation/devicetree/bindings/arm/coresight-tpda.yaml b/Documentation/devicetree/bindings/arm/coresight-tpda.yaml
-> > new file mode 100644
-> > index 000000000000..4948ac13e7f8
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/arm/coresight-tpda.yaml
-> > @@ -0,0 +1,119 @@
-> > +# SPDX-License-Identifier: GPL-2.0-only or BSD-2-Clause
-> > +# Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/arm/coresight-tpda.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: Trace, Profiling and Diagnostics Aggregator - TPDA
-> > +
-> > +description: |
-> > +  TPDAs are responsible for packetization and timestamping of data sets
-> > +  utilizing the MIPI STPv2 packet protocol. Pulling data sets from one or
-> > +  more attached TPDM and pushing the resultant (packetized) data out a
-> > +  master ATB interface. Performing an arbitrated ATB interleaving (funneling)
-> > +  task for free-flowing data from TPDM (i.e. CMB and DSB data set flows).
-> > +
-> > +maintainers:
-> > +  - Mao Jinlong <quic_jinlmao@quicinc.com>
-> > +  - Tao Zhang <quic_taozha@quicinc.com>
-> > +
-> > +properties:
-> > +  $nodename:
-> > +    pattern: "^tpda(@[0-9a-f]+)$"
-> > +  compatible:
-> > +    items:
-> > +      - const: qcom,coresight-tpda
-> > +      - const: arm,primecell
-> > +
-> > +  reg:
-> > +    maxItems: 1
-> > +
-> > +  clocks:
-> > +    maxItems: 1
-> > +
-> > +  clock-names:
-> > +    items:
-> > +      - const: apb_pclk
-> > +
-> > +  in-ports:
-> > +    type: object
-> > +    description: |
-> > +      Input connections from TPDM to TPDA
-> > +    $ref: /schemas/graph.yaml#/properties/ports
-> > +
->
-> --->8---
-> > +    properties:
-> > +      '#address-cells':
-> > +        const: 1
-> > +
-> > +      '#size-cells':
-> > +        const: 0
-> > +
-> > +    patternProperties:
-> > +      "^port@[0-9a-f]+$":
-> > +        type: object
-> > +        required:
-> > +          - reg
-> > +
-> > +    required:
-> > +      - '#size-cells'
-> > +      - '#address-cells'
->
-> ---8<---
->
-> I believe the above snippet is not needed and is covered by the generic
-> ports.
->
->
-> > +
-> > +  out-ports:
-> > +    type: object
-> > +    description: |
-> > +      Output connections from the TPDA to legacy CoreSight trace bus.
-> > +    $ref: /schemas/graph.yaml#/properties/ports
-> > +
-> > +    properties:
-> > +     port:
-> > +       description:
-> > +         Output connection from the TPDA to legacy CoreSight Trace bus.
-> > +       $ref: /schemas/graph.yaml#/properties/port
-> > +
-> > +required:
-> > +    - compatible
-> > +    - reg
-> > +    - clocks
-> > +    - clock-names
-> > +    - in-ports
-> > +    - out-ports
-> > +
-> > +additionalProperties: false
-> > +
-> > +examples:
-> > +  # minimum tpda definition.
-> > +  - |
-> > +    tpda@6004000 {
-> > +       compatible = "qcom,coresight-tpda", "arm,primecell";
-> > +       reg = <0x6004000 0x1000>;
-> > +
-> > +       qcom,tpda-atid = <65>;
-> > +
-> > +       clocks = <&aoss_qmp>;
-> > +       clock-names = "apb_pclk";
-> > +
-> > +       in-ports {
-> > +         #address-cells = <1>;
-> > +         #size-cells = <0>;
-> > +
-> > +        port@0 {
-> > +          reg = <0>;
-> > +          tpda_qdss_0_in_tpdm_dcc: endpoint {
-> > +            remote-endpoint =
-> > +              <&tpdm_dcc_out_tpda_qdss_0>;
-> > +            };
-> > +        };
-> > +      };
-> > +
-> > +       out-ports {
-> > +         port {
-> > +                 tpda_qdss_out_funnel_in0: endpoint {
-> > +                    remote-endpoint =
-> > +                    <&funnel_in0_in_tpda_qdss>;
-> > +                  };
-> > +          };
-> > +       };
-> > +    };
-> > +
-> > +...
-> > diff --git a/MAINTAINERS b/MAINTAINERS
-> > index 28d32b3f3f5c..5d2d8c0ee340 100644
-> > --- a/MAINTAINERS
-> > +++ b/MAINTAINERS
-> > @@ -1978,6 +1978,7 @@ T:      git git://git.kernel.org/pub/scm/linux/kernel/git/coresight/linux.git
-> >   F:  Documentation/ABI/testing/sysfs-bus-coresight-devices-*
-> >   F:  Documentation/devicetree/bindings/arm/coresight-cpu-debug.txt
-> >   F:  Documentation/devicetree/bindings/arm/coresight-cti.yaml
-> > +F:   Documentation/devicetree/bindings/arm/coresight-tpda.yaml
-> >   F:  Documentation/devicetree/bindings/arm/coresight-tpdm.yaml
-> >   F:  Documentation/devicetree/bindings/arm/coresight.txt
-> >   F:  Documentation/devicetree/bindings/arm/ete.yaml
->
-> Otherwise looks good to me.
->
-> Suzuki
