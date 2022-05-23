@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 285A3C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:15:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80FB6C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:15:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239755AbiEWRPH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:15:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34856 "EHLO
+        id S240011AbiEWRPR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:15:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240515AbiEWRMa (ORCPT
+        with ESMTP id S240531AbiEWRMb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:12:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45BEE62BCA;
-        Mon, 23 May 2022 10:11:41 -0700 (PDT)
+        Mon, 23 May 2022 13:12:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C458762CCB;
+        Mon, 23 May 2022 10:11:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 45A7DB811F6;
-        Mon, 23 May 2022 17:10:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AC49C385A9;
-        Mon, 23 May 2022 17:10:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2B47861509;
+        Mon, 23 May 2022 17:10:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E404C34118;
+        Mon, 23 May 2022 17:10:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653325832;
-        bh=8HqcDKgm30aIgAcb6f1MOQJAQLF0KAE4hGTUo6ovBM8=;
+        s=korg; t=1653325809;
+        bh=G9ZRHRw/SjKlN1Cm8RgRF6kGTUhjJSALMeiIry7VasE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yErxJKDBn5tLhXHvmsbUU1/69TFu8biRo2oE5Zw1mYevzc8GZx8zX89ggBispOvQa
-         XWlbeDPl59caCnHneiFyCIi6d/o2TarEZT2hzW97yAvYwON50b1Ya+8NKNlCI657lf
-         BX2bUdKZvvXgXXaR1UybAJ52ZLjXH7XasoTluDNQ=
+        b=0qKOAybkDRj3DRcDBWp6VXdpzjCvAuBs9PSdcs7NPV1f+/DX703bfjCguU337i3Lq
+         +fVttgc9PnTegps2jxDEEUl0PyR5Nn8+8Yvw+YWusL3YqzEc0WcBCg7NHrMO1APeph
+         tZjmeeLR8sAk2aOpqTUlq8t8o7VNLT7OSJcy7flo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 25/44] clk: at91: generated: consider range when calculating best rate
-Date:   Mon, 23 May 2022 19:05:09 +0200
-Message-Id: <20220523165757.738972522@linuxfoundation.org>
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: [PATCH 4.19 18/44] mmc: core: Specify timeouts for BKOPS and CACHE_FLUSH for eMMC
+Date:   Mon, 23 May 2022 19:05:02 +0200
+Message-Id: <20220523165756.536633554@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165752.797318097@linuxfoundation.org>
 References: <20220523165752.797318097@linuxfoundation.org>
@@ -51,42 +48,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+From: Ulf Hansson <ulf.hansson@linaro.org>
 
-[ Upstream commit d0031e6fbed955ff8d5f5bbc8fe7382482559cec ]
+commit 24ed3bd01d6a844fd5e8a75f48d0a3d10ed71bf9 upstream
 
-clk_generated_best_diff() helps in finding the parent and the divisor to
-compute a rate closest to the required one. However, it doesn't take into
-account the request's range for the new rate. Make sure the new rate
-is within the required range.
+The timeout values used while waiting for a CMD6 for BKOPS or a CACHE_FLUSH
+to complete, are not defined by the eMMC spec. However, a timeout of 10
+minutes as is currently being used, is just silly for both of these cases.
+Instead, let's specify more reasonable timeouts, 120s for BKOPS and 30s for
+CACHE_FLUSH.
 
-Fixes: 8a8f4bf0c480 ("clk: at91: clk-generated: create function to find best_diff")
-Signed-off-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
-Link: https://lore.kernel.org/r/20220413071318.244912-1-codrin.ciubotariu@microchip.com
-Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Signed-off-by: Stephen Boyd <sboyd@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Link: https://lore.kernel.org/r/20200122142747.5690-2-ulf.hansson@linaro.org
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/clk/at91/clk-generated.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/mmc/core/mmc_ops.c |    9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/clk/at91/clk-generated.c b/drivers/clk/at91/clk-generated.c
-index ea23002be4de..b397556c34d9 100644
---- a/drivers/clk/at91/clk-generated.c
-+++ b/drivers/clk/at91/clk-generated.c
-@@ -119,6 +119,10 @@ static void clk_generated_best_diff(struct clk_rate_request *req,
- 		tmp_rate = parent_rate;
- 	else
- 		tmp_rate = parent_rate / div;
-+
-+	if (tmp_rate < req->min_rate || tmp_rate > req->max_rate)
-+		return;
-+
- 	tmp_diff = abs(req->rate - tmp_rate);
+--- a/drivers/mmc/core/mmc_ops.c
++++ b/drivers/mmc/core/mmc_ops.c
+@@ -23,7 +23,9 @@
+ #include "host.h"
+ #include "mmc_ops.h"
  
- 	if (*best_diff < 0 || *best_diff > tmp_diff) {
--- 
-2.35.1
-
+-#define MMC_OPS_TIMEOUT_MS	(10 * 60 * 1000) /* 10 minute timeout */
++#define MMC_OPS_TIMEOUT_MS		(10 * 60 * 1000) /* 10min*/
++#define MMC_BKOPS_TIMEOUT_MS		(120 * 1000) /* 120s */
++#define MMC_CACHE_FLUSH_TIMEOUT_MS	(30 * 1000) /* 30s */
+ 
+ static const u8 tuning_blk_pattern_4bit[] = {
+ 	0xff, 0x0f, 0xff, 0x00, 0xff, 0xcc, 0xc3, 0xcc,
+@@ -947,7 +949,7 @@ void mmc_run_bkops(struct mmc_card *card
+ 	 * urgent levels by using an asynchronous background task, when idle.
+ 	 */
+ 	err = mmc_switch(card, EXT_CSD_CMD_SET_NORMAL,
+-			EXT_CSD_BKOPS_START, 1, MMC_OPS_TIMEOUT_MS);
++			 EXT_CSD_BKOPS_START, 1, MMC_BKOPS_TIMEOUT_MS);
+ 	if (err)
+ 		pr_warn("%s: Error %d starting bkops\n",
+ 			mmc_hostname(card->host), err);
+@@ -965,7 +967,8 @@ int mmc_flush_cache(struct mmc_card *car
+ 
+ 	if (mmc_cache_enabled(card->host)) {
+ 		err = mmc_switch(card, EXT_CSD_CMD_SET_NORMAL,
+-				EXT_CSD_FLUSH_CACHE, 1, 0);
++				 EXT_CSD_FLUSH_CACHE, 1,
++				 MMC_CACHE_FLUSH_TIMEOUT_MS);
+ 		if (err)
+ 			pr_err("%s: cache flush error %d\n",
+ 					mmc_hostname(card->host), err);
 
 
