@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5534C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00259C38A06
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:58:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244114AbiEWR5j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:57:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39104 "EHLO
+        id S244402AbiEWR6F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:58:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241137AbiEWRag (ORCPT
+        with ESMTP id S241317AbiEWR0l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:30:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3DEC54014;
-        Mon, 23 May 2022 10:26:39 -0700 (PDT)
+        Mon, 23 May 2022 13:26:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22BDD70936;
+        Mon, 23 May 2022 10:21:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1DD1B60919;
-        Mon, 23 May 2022 17:25:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E818C385A9;
-        Mon, 23 May 2022 17:25:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A634EB81201;
+        Mon, 23 May 2022 17:21:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB63CC385A9;
+        Mon, 23 May 2022 17:21:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326708;
-        bh=MyMO1r+t/9l7ZlDEEqZOpYQ/cN0Efzy960/m/gIuCQg=;
+        s=korg; t=1653326497;
+        bh=5oRlh7tuF7dVaXSfZaL8viUWBLDUMf14LLLak6DqBOE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0qObh/lOPHe6X8qbLpereKNU2fjbG4oUoPPdqua0UpUMmPCHRT7Pw+xD/XTqAGmSd
-         c/dxL92dNSooVjHGFdMAQafv2Kf3VH4rBqJK9sh31XIIhx5uas4estR+SCR2rzpD4V
-         y3DYipOMIjgM5am8lAYjjUTRSZnLsooT3E6RO1Mw=
+        b=2nhQjbM4waT8+JsrN3d4t3pAUzPzKD+KE43uD28p1usFr2fJ/EnZDcCLgvVeOvVWg
+         pL5lrXbLJ+tTP8y4BN6naHlXtRspwmpFYhEBWV9blL6yveUJMDXrfykZIDdwqZKTsk
+         Bh92MQp1HWLvT/YPHA9XvkDuMj5eTUQLirs8N4Lc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Richter <rrichter@amd.com>,
-        Terry Bowman <terry.bowman@amd.com>,
-        Jean Delvare <jdelvare@suse.de>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Mario Limonciello <Mario.Limonciello@amd.com>
-Subject: [PATCH 5.17 015/158] Watchdog: sp5100_tco: Enable Family 17h+ CPUs
-Date:   Mon, 23 May 2022 19:02:52 +0200
-Message-Id: <20220523165833.161809742@linuxfoundation.org>
+        stable@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 099/132] mptcp: Do TCP fallback on early DSS checksum failure
+Date:   Mon, 23 May 2022 19:05:08 +0200
+Message-Id: <20220523165839.836410309@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
-References: <20220523165830.581652127@linuxfoundation.org>
+In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
+References: <20220523165823.492309987@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,75 +50,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Terry Bowman <terry.bowman@amd.com>
+From: Mat Martineau <mathew.j.martineau@linux.intel.com>
 
-commit 826270373f17fd8ebd10753ca0a5fd2ceb1dc38e upstream.
+[ Upstream commit ae66fb2ba6c3dcaf8b9612b65aa949a1a4bed150 ]
 
-The driver currently uses a CPU family match of 17h to determine
-EFCH_PM_DECODEEN_WDT_TMREN register support. This family check will not
-support future AMD CPUs and instead will require driver updates to add
-support.
+RFC 8684 section 3.7 describes several opportunities for a MPTCP
+connection to "fall back" to regular TCP early in the connection
+process, before it has been confirmed that MPTCP options can be
+successfully propagated on all SYN, SYN/ACK, and data packets. If a peer
+acknowledges the first received data packet with a regular TCP header
+(no MPTCP options), fallback is allowed.
 
-Remove the family 17h family check and add a check for SMBus PCI
-revision ID 0x51 or greater. The MMIO access method has been available
-since at least SMBus controllers using PCI revision 0x51. This revision
-check will support family 17h and future AMD processors including EFCH
-functionality without requiring driver changes.
+If the recipient of that first data packet finds a MPTCP DSS checksum
+error, this provides an opportunity to fail gracefully with a TCP
+fallback rather than resetting the connection (as might happen if a
+checksum failure were detected later).
 
-Co-developed-by: Robert Richter <rrichter@amd.com>
-Signed-off-by: Robert Richter <rrichter@amd.com>
-Signed-off-by: Terry Bowman <terry.bowman@amd.com>
-Tested-by: Jean Delvare <jdelvare@suse.de>
-Reviewed-by: Jean Delvare <jdelvare@suse.de>
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
-Link: https://lore.kernel.org/r/20220202153525.1693378-5-terry.bowman@amd.com
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Wim Van Sebroeck <wim@linux-watchdog.org>
-Cc: Mario Limonciello <Mario.Limonciello@amd.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+This commit modifies the checksum failure code to attempt fallback on
+the initial subflow of a MPTCP connection, only if it's a failure in the
+first data mapping. In cases where the peer initiates the connection,
+requests checksums, is the first to send data, and the peer is sending
+incorrect checksums (see
+https://github.com/multipath-tcp/mptcp_net-next/issues/275), this allows
+the connection to proceed as TCP rather than reset.
+
+Fixes: dd8bcd1768ff ("mptcp: validate the data checksum")
+Acked-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/watchdog/sp5100_tco.c |   16 ++++------------
- drivers/watchdog/sp5100_tco.h |    1 +
- 2 files changed, 5 insertions(+), 12 deletions(-)
+ net/mptcp/protocol.h |  3 ++-
+ net/mptcp/subflow.c  | 21 ++++++++++++++++++---
+ 2 files changed, 20 insertions(+), 4 deletions(-)
 
---- a/drivers/watchdog/sp5100_tco.c
-+++ b/drivers/watchdog/sp5100_tco.c
-@@ -87,6 +87,10 @@ static enum tco_reg_layout tco_reg_layou
- 	    dev->revision < 0x40) {
- 		return sp5100;
- 	} else if (dev->vendor == PCI_VENDOR_ID_AMD &&
-+	    sp5100_tco_pci->device == PCI_DEVICE_ID_AMD_KERNCZ_SMBUS &&
-+	    sp5100_tco_pci->revision >= AMD_ZEN_SMBUS_PCI_REV) {
-+		return efch_mmio;
-+	} else if (dev->vendor == PCI_VENDOR_ID_AMD &&
- 	    ((dev->device == PCI_DEVICE_ID_AMD_HUDSON2_SMBUS &&
- 	     dev->revision >= 0x41) ||
- 	    (dev->device == PCI_DEVICE_ID_AMD_KERNCZ_SMBUS &&
-@@ -459,18 +463,6 @@ static int sp5100_tco_setupdevice(struct
- 		break;
- 	case efch:
- 		dev_name = SB800_DEVNAME;
--		/*
--		 * On Family 17h devices, the EFCH_PM_DECODEEN_WDT_TMREN bit of
--		 * EFCH_PM_DECODEEN not only enables the EFCH_PM_WDT_ADDR memory
--		 * region, it also enables the watchdog itself.
--		 */
--		if (boot_cpu_data.x86 == 0x17) {
--			val = sp5100_tco_read_pm_reg8(EFCH_PM_DECODEEN);
--			if (!(val & EFCH_PM_DECODEEN_WDT_TMREN)) {
--				sp5100_tco_update_pm_reg8(EFCH_PM_DECODEEN, 0xff,
--							  EFCH_PM_DECODEEN_WDT_TMREN);
--			}
--		}
- 		val = sp5100_tco_read_pm_reg8(EFCH_PM_DECODEEN);
- 		if (val & EFCH_PM_DECODEEN_WDT_TMREN)
- 			mmio_addr = EFCH_PM_WDT_ADDR;
---- a/drivers/watchdog/sp5100_tco.h
-+++ b/drivers/watchdog/sp5100_tco.h
-@@ -89,3 +89,4 @@
- #define EFCH_PM_ACPI_MMIO_PM_ADDR	(EFCH_PM_ACPI_MMIO_ADDR +	\
- 					 EFCH_PM_ACPI_MMIO_PM_OFFSET)
- #define EFCH_PM_ACPI_MMIO_PM_SIZE	8
-+#define AMD_ZEN_SMBUS_PCI_REV		0x51
+diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
+index 8d70e491139a..62ad31482644 100644
+--- a/net/mptcp/protocol.h
++++ b/net/mptcp/protocol.h
+@@ -437,7 +437,8 @@ struct mptcp_subflow_context {
+ 		can_ack : 1,        /* only after processing the remote a key */
+ 		disposable : 1,	    /* ctx can be free at ulp release time */
+ 		stale : 1,	    /* unable to snd/rcv data, do not use for xmit */
+-		local_id_valid : 1; /* local_id is correctly initialized */
++		local_id_valid : 1, /* local_id is correctly initialized */
++		valid_csum_seen : 1;        /* at least one csum validated */
+ 	enum mptcp_data_avail data_avail;
+ 	u32	remote_nonce;
+ 	u64	thmac;
+diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
+index 204dfb82f697..c52a824c0669 100644
+--- a/net/mptcp/subflow.c
++++ b/net/mptcp/subflow.c
+@@ -958,11 +958,14 @@ static enum mapping_status validate_data_csum(struct sock *ssk, struct sk_buff *
+ 				 subflow->map_data_csum);
+ 	if (unlikely(csum)) {
+ 		MPTCP_INC_STATS(sock_net(ssk), MPTCP_MIB_DATACSUMERR);
+-		subflow->send_mp_fail = 1;
+-		MPTCP_INC_STATS(sock_net(ssk), MPTCP_MIB_MPFAILTX);
++		if (subflow->mp_join || subflow->valid_csum_seen) {
++			subflow->send_mp_fail = 1;
++			MPTCP_INC_STATS(sock_net(ssk), MPTCP_MIB_MPFAILTX);
++		}
+ 		return subflow->mp_join ? MAPPING_INVALID : MAPPING_DUMMY;
+ 	}
+ 
++	subflow->valid_csum_seen = 1;
+ 	return MAPPING_OK;
+ }
+ 
+@@ -1144,6 +1147,18 @@ static void subflow_sched_work_if_closed(struct mptcp_sock *msk, struct sock *ss
+ 	}
+ }
+ 
++static bool subflow_can_fallback(struct mptcp_subflow_context *subflow)
++{
++	struct mptcp_sock *msk = mptcp_sk(subflow->conn);
++
++	if (subflow->mp_join)
++		return false;
++	else if (READ_ONCE(msk->csum_enabled))
++		return !subflow->valid_csum_seen;
++	else
++		return !subflow->fully_established;
++}
++
+ static bool subflow_check_data_avail(struct sock *ssk)
+ {
+ 	struct mptcp_subflow_context *subflow = mptcp_subflow_ctx(ssk);
+@@ -1221,7 +1236,7 @@ static bool subflow_check_data_avail(struct sock *ssk)
+ 		return true;
+ 	}
+ 
+-	if (subflow->mp_join || subflow->fully_established) {
++	if (!subflow_can_fallback(subflow)) {
+ 		/* fatal protocol error, close the socket.
+ 		 * subflow_error_report() will introduce the appropriate barriers
+ 		 */
+-- 
+2.35.1
+
 
 
