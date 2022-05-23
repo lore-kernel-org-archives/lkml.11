@@ -2,108 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC80CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:34:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AC63C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:34:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237738AbiEWSef (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:34:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37056 "EHLO
+        id S240699AbiEWSez (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:34:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240753AbiEWSeX (ORCPT
+        with ESMTP id S240753AbiEWSeh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 14:34:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0AF76164;
-        Mon, 23 May 2022 11:11:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 91C44B8121F;
-        Mon, 23 May 2022 18:09:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55D44C385AA;
-        Mon, 23 May 2022 18:09:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653329369;
-        bh=/MwJ0RsTlhSbXBrwd7tYkz8M733d9H6V2XdJlILNf8Q=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=Phwmp1vEOPEiL7zk1WAEJ3x7VejVumPfRqtUUbrAdO4pELa3BqOFexcE8mqp4qPoC
-         GzjR+mZGTyWfWt1TBJ+WOX3zzFcmpDIHXO3I/t41gRd1f3+7D15wRtXYk7H+FRP7mJ
-         lDy7jKxHEWamaL2PCEvYXvQ4ieijNd0LGqjq8ajeNb+YfMARbqkqh/qk7/QjAexY9h
-         7onAWBv5igv78yM9WwWR9oywFH5Dkk1N4yqJ/fhdDrsaFKmkzipvz/b5Yb7Wm4mpE8
-         krRukRocSlP4OVuSHdk1XcMWUBXbqWcVj6owMyz7K2G+RZtdens3Qm3VMpMiBeHSMw
-         0xfeFNZWHFSxg==
-Message-ID: <cb6bcf221e28deb8dcaf5c02fba6c2257586363e.camel@kernel.org>
-Subject: Re: [PATCH v5 1/2] fs/dcache: add d_compare() helper support
-From:   Jeff Layton <jlayton@kernel.org>
-To:     Luis Chamberlain <mcgrof@kernel.org>, Xiubo Li <xiubli@redhat.com>
-Cc:     idryomov@gmail.com, viro@zeniv.linux.org.uk, willy@infradead.org,
-        vshankar@redhat.com, ceph-devel@vger.kernel.org, arnd@arndb.de,
-        akpm@linux-foundation.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Mon, 23 May 2022 14:09:26 -0400
-In-Reply-To: <YovK86vEmOUUoBn6@bombadil.infradead.org>
-References: <20220519101847.87907-1-xiubli@redhat.com>
-         <20220519101847.87907-2-xiubli@redhat.com>
-         <YovK86vEmOUUoBn6@bombadil.infradead.org>
-Content-Type: text/plain; charset="ISO-8859-15"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.1 (3.44.1-1.fc36) 
+        Mon, 23 May 2022 14:34:37 -0400
+Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 722AF6CF69;
+        Mon, 23 May 2022 11:12:30 -0700 (PDT)
+Received: by mail-pl1-f180.google.com with SMTP id q18so13802279pln.12;
+        Mon, 23 May 2022 11:12:30 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=YcM2V9lJrQoILVWR8hE1O3AxcExnhJbF35MwvFVRNF0=;
+        b=HVcTY5h0SXw5cM3/Ek/o0D5DVjf/WsJlpNVHctMRLPp8t+zDxV01ifHwl3D7cQHWeR
+         zPpMiQGWGXkPCIQsy9ukBrpPfwcl2quH0andP5ZFcqzOaOZD64NMyl1X3nlx3ykj60iH
+         +2mfx5eUW3gRjuaW18Gv5x9Kghrbgf9EetwN4m9CYGg5ebw0ZQLDgE08a7sWv5L4Kyux
+         aSsiJukb8UnAzzUaaV0cL96KzvORKdve6cPhbTPda6ChALkUDN4IFb+ViESD9+feri6u
+         wEHOqAovvpmsnnucdxtXmYYre95Pmu3YGITH8Ke8rRMjTeFiig/FI8OQvWVgsQFB+Ath
+         NzDA==
+X-Gm-Message-State: AOAM532aeeTe0pdigX1wfrhBeL6O7hRa4JXauLVguew4Gvlg+Y9Z1QWC
+        G4FCX5XjoQTZKNxnvXsy8HI=
+X-Google-Smtp-Source: ABdhPJyM/CwxpvBVN9kqgJt3dUJYAsl5xQQzoLnJApp0k9u48+L0bdeBCHhzQQ+qLqqg/d0Knkk4fQ==
+X-Received: by 2002:a17:90a:8807:b0:1df:78c7:c215 with SMTP id s7-20020a17090a880700b001df78c7c215mr247975pjn.234.1653329485047;
+        Mon, 23 May 2022 11:11:25 -0700 (PDT)
+Received: from garbanzo (136-24-173-63.cab.webpass.net. [136.24.173.63])
+        by smtp.gmail.com with ESMTPSA id x3-20020a654143000000b003c14af50610sm5025690pgp.40.2022.05.23.11.11.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 May 2022 11:11:24 -0700 (PDT)
+Date:   Mon, 23 May 2022 11:11:22 -0700
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Pankaj Raghav <p.raghav@samsung.com>
+Cc:     axboe@kernel.dk, hch@lst.de, snitzer@redhat.com,
+        damien.lemoal@opensource.wdc.com, hare@suse.de,
+        Johannes.Thumshirn@wdc.com, linux-nvme@lists.infradead.org,
+        dm-devel@redhat.com, dsterba@suse.com, jiangbo.365@bytedance.com,
+        linux-kernel@vger.kernel.org, gost.dev@samsung.com,
+        linux-block@vger.kernel.org, jaegeuk@kernel.org,
+        Damien Le Moal <damien.lemoal@wdc.com>
+Subject: Re: [PATCH v5 6/7] null_blk: use zone_size_sects_shift for power of
+ 2 zoned devices
+Message-ID: <20220523181122.3vjizmsx7a2mpf6z@garbanzo>
+References: <20220523161601.58078-1-p.raghav@samsung.com>
+ <CGME20220523161612eucas1p102a76ba431c934230309042521018915@eucas1p1.samsung.com>
+ <20220523161601.58078-7-p.raghav@samsung.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220523161601.58078-7-p.raghav@samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-05-23 at 10:57 -0700, Luis Chamberlain wrote:
-> On Thu, May 19, 2022 at 06:18:45PM +0800, Xiubo Li wrote:
-> > Reviewed-by: Jeff Layton <jlayton@kernel.org>
-> > Signed-off-by: Xiubo Li <xiubli@redhat.com>
-> > ---
-> >  fs/dcache.c            | 15 +++++++++++++++
-> >  include/linux/dcache.h |  2 ++
-> >  2 files changed, 17 insertions(+)
-> >=20
-> > diff --git a/fs/dcache.c b/fs/dcache.c
-> > index 93f4f5ee07bf..95a72f92a94b 100644
-> > --- a/fs/dcache.c
-> > +++ b/fs/dcache.c
-> > @@ -2262,6 +2262,21 @@ static inline bool d_same_name(const struct dent=
-ry *dentry,
-> >  				       name) =3D=3D 0;
-> >  }
-> > =20
-> > +/**
-> > + * d_compare - compare dentry name with case-exact name
-> > + * @parent: parent dentry
-> > + * @dentry: the negative dentry that was passed to the parent's lookup=
- func
-> > + * @name:   the case-exact name to be associated with the returned den=
-try
-> > + *
-> > + * Return: 0 if names are same, or 1
-> > + */
-> > +bool d_compare(const struct dentry *parent, const struct dentry *dentr=
-y,
-> > +	       const struct qstr *name)
-> > +{
-> > +	return !d_same_name(dentry, parent, name);
->=20
-> What's wrong with d_same_name()? Why introduce a whole new operation
-> and export it when you the same prototype except first and second
-> argument moved with an even more confusing name?
->=20
+On Mon, May 23, 2022 at 06:16:00PM +0200, Pankaj Raghav wrote:
+> Instead of doing is_power_of_2 and ilog2 operation for every IO, cache
+> the zone_size_sects_shift variable and use it for power of 2 zoned
+> devices.
+> 
+> This variable will be set to zero for non power of 2 zoned devices.
+> 
+> Suggested-by: Damien Le Moal <damien.lemoal@wdc.com>
+> Signed-off-by: Pankaj Raghav <p.raghav@samsung.com>
 
-Agreed. That would be better.
+Reviewed-by: Luis Chamberlain <mcgrof@kernel.org>
 
-> > +}
-> > +EXPORT_SYMBOL(d_compare);
->=20
-> New symbols should go with EXPORT_SYMBOL_GPL() instead.
->=20
->   Luis
-
-In the past, Al has pushed back against that since EXPORT_SYMBOL_GPL has
-no clear legal meaning. He may have changed his opinion since, but I
-haven't heard that that was the case.
-
---=20
-Jeff Layton <jlayton@kernel.org>
+  Luis
