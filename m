@@ -2,80 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 322BFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 15:40:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5E64C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 15:40:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238076AbiEWPkg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 11:40:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43950 "EHLO
+        id S238087AbiEWPkp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 11:40:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238041AbiEWPka (ORCPT
+        with ESMTP id S238041AbiEWPkk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 11:40:30 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FD6C1C922
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 08:40:29 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1ntAAV-00086m-NM; Mon, 23 May 2022 17:40:27 +0200
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1ntAAV-0005nZ-A2; Mon, 23 May 2022 17:40:27 +0200
-Date:   Mon, 23 May 2022 17:40:27 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Mark Brown <broonie@kernel.org>
-Cc:     Fabio Estevam <festevam@gmail.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
-        NXP Linux Team <linux-imx@nxp.com>, kernel@pengutronix.de,
-        Shawn Guo <shawnguo@kernel.org>
-Subject: Re: [PATCH v1] spi: imx: mx51-ecspi: fix clk polarity and phase
- configuration for CS > 4
-Message-ID: <20220523154027.GD20227@pengutronix.de>
-References: <20220523073143.778664-1-o.rempel@pengutronix.de>
- <YouLs1xoxOCdyBlU@sirena.org.uk>
+        Mon, 23 May 2022 11:40:40 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93CE630556;
+        Mon, 23 May 2022 08:40:39 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 06B071F94B;
+        Mon, 23 May 2022 15:40:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1653320438; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=q5xW2MKLZ0PrcQXBC+W3LnvI90dAc7ovuM4CkEA4Lvg=;
+        b=Y1LwZxCcd+BtLUakYzp4wzLW0BBUNVSub2UJFXcsFvmVouyrkeG9mDeOh5+EjHDfcpGcBJ
+        JlBiJa+/r2W2Z7+s354N2eRlzj+ee1oG/kBL5VvoHuI3rISJvM8iRZq+sUR/hA7V0Nd9Us
+        OtiB+FSt/599nPDQSa9ZSvr0MOWXvuw=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1653320438;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=q5xW2MKLZ0PrcQXBC+W3LnvI90dAc7ovuM4CkEA4Lvg=;
+        b=X3mOtteHh3d677lIh5HDjfJ3KW/llpzhi+JtCZyalPmmFdK+HBkSlqi3EZQRtl4UZKxyL2
+        TyPIdO2w5R1c9jBQ==
+Received: from quack3.suse.cz (unknown [10.100.224.230])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id D0A3B2C141;
+        Mon, 23 May 2022 15:40:37 +0000 (UTC)
+Received: by quack3.suse.cz (Postfix, from userid 1000)
+        id CFF21A0632; Mon, 23 May 2022 17:40:36 +0200 (CEST)
+Date:   Mon, 23 May 2022 17:40:36 +0200
+From:   Jan Kara <jack@suse.cz>
+To:     Julia Lawall <Julia.Lawall@inria.fr>
+Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        kernel-janitors@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] writeback: fix typo in comment
+Message-ID: <20220523154036.uj2lpngyjswgurog@quack3.lan>
+References: <20220521111145.81697-32-Julia.Lawall@inria.fr>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YouLs1xoxOCdyBlU@sirena.org.uk>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 17:33:08 up 54 days,  4:02, 74 users,  load average: 0.23, 0.17,
- 0.11
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+In-Reply-To: <20220521111145.81697-32-Julia.Lawall@inria.fr>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 23, 2022 at 02:27:15PM +0100, Mark Brown wrote:
-> On Mon, May 23, 2022 at 09:31:43AM +0200, Oleksij Rempel wrote:
+On Sat 21-05-22 13:10:42, Julia Lawall wrote:
+> Spelling mistake (triple letters) in comment.
+> Detected with the help of Coccinelle.
 > 
-> > -	/* set chip select to use */
-> > -	ctrl |= MX51_ECSPI_CTRL_CS(spi->chip_select);
-> > +	if (spi->cs_gpiod) {
-> > +		chip_select = 0;
+> Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
+
+Thanks. I've taken the fix to my tree.
+
+								Honza
+
+
+> diff --git a/fs/fs-writeback.c b/fs/fs-writeback.c
+> index a1074a26e784..a21d8f1a56d1 100644
+> --- a/fs/fs-writeback.c
+> +++ b/fs/fs-writeback.c
+> @@ -738,7 +738,7 @@ EXPORT_SYMBOL_GPL(wbc_attach_and_unlock_inode);
+>   * incorrectly attributed).
+>   *
+>   * To resolve this issue, cgroup writeback detects the majority dirtier of
+> - * an inode and transfers the ownership to it.  To avoid unnnecessary
+> + * an inode and transfers the ownership to it.  To avoid unnecessary
+>   * oscillation, the detection mechanism keeps track of history and gives
+>   * out the switch verdict only if the foreign usage pattern is stable over
+>   * a certain amount of time and/or writeback attempts.
 > 
-> What if someone mixed GPIO and regular chip selects and 0 is one of the
-> in use chip selects?  Ideally we should check for an unused chip select
-> here, though the current change is still an improvement since we'll at
-> least only write in the chip select field.
-
-In case some HW variant has real issue with it, we will need to reduce
-amount of supported HW CS and use blacklisted one for GPIOs.
-
-Regards,
-Oleksij
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
