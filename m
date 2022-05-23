@@ -2,140 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21C31C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 07:33:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5406C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 07:33:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229838AbiEWHdS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 03:33:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40014 "EHLO
+        id S229955AbiEWHdY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 03:33:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230384AbiEWHch (ORCPT
+        with ESMTP id S230421AbiEWHcl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 03:32:37 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 624696353
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 00:31:52 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nt2XZ-0002vX-IP; Mon, 23 May 2022 09:31:45 +0200
-Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nt2XZ-0042OT-Mz; Mon, 23 May 2022 09:31:44 +0200
-Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nt2XX-003GZz-Qr; Mon, 23 May 2022 09:31:43 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Mark Brown <broonie@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Fabio Estevam <festevam@gmail.com>
-Subject: [PATCH v1] spi: imx: mx51-ecspi: fix clk polarity and phase configuration for CS > 4
-Date:   Mon, 23 May 2022 09:31:43 +0200
-Message-Id: <20220523073143.778664-1-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
+        Mon, 23 May 2022 03:32:41 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8454E2632
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 00:32:26 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id t11-20020a17090a6a0b00b001df6f318a8bso16708056pjj.4
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 00:32:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=v6pOY5u9Xf6A3Kt1uWvJSEsHw5j9g/fdOSLGZ65o8Gk=;
+        b=Rh0hMGETtsu517ry/T9riUCh0WoTh7KBsWj+R6HNHfWgM9d1YOzQb+++l8QEkM8TkT
+         BR7RRIPcOHw1PcE7o9WR+Yj7CrOh7NjAxTWAQSWabAWYUn1hnF1lPteRbwofFzxGfP6c
+         dlYvi7Qiwls3ttBnxiA8ZpKx/DfrUI7CjcmElj+glPYFa+fhbYJ45NnzMNjTDCFUd4LJ
+         L3vMyg2n4PGfOm6U6GEdxu+TqCxiZSmobMtb6ptRieRejzKHGROLhmQPYZylubnU8psE
+         Tz6ZG0R7pIOxV0swCRUXxRYy+q+1GOAE/TCqZNt1wGkZF808JPokiQ6QhvnAzEew1rj+
+         Gn6g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=v6pOY5u9Xf6A3Kt1uWvJSEsHw5j9g/fdOSLGZ65o8Gk=;
+        b=Tpbul1Oq/mhnuF6ZY1WBdPxllbLGOwuajzs9vvptJGYtbyClgID3a7h/a3tFjUoXHp
+         4ay77KCyoKPgjLYAWVd7kVIJ7v6U3LrOy7iX03CTVjClJgH1UddPtpK1LLp377uVf3kX
+         /W3Cthwy6MhzHL6iXVBo86sRIvMGeBEtsAzaKHUm1VF20ZGIQACBd9OwRKfppcjGtnQz
+         bSVBQIiV0RF8SXGqpOyOxChldk5SJ6elvroRrBsoRnX3bdF/uO4Q62RTeqlMaWJV+c7j
+         vH0BRzDcq0H0E926wjZvkB1ySYmq7S4v5IJWJQN1SWN6CD4y5EORXJAoxEoIW/q5iCRg
+         GNXw==
+X-Gm-Message-State: AOAM531o7lRlyten1Dwl99qflRQpFcOGUfRpuOBiAdeR4TKKeiWgnSMQ
+        CtaD6pY53Rdvc2Pvy79AaJWNb74hRDghZA==
+X-Google-Smtp-Source: ABdhPJxu2th6oFts/Ww2O/QBBPj+6FmL42fAW6DCdsthlSEOt/394d44jyeFuGSdOmTAnOuJ94NTsA==
+X-Received: by 2002:a17:902:bf45:b0:15c:df47:3d6 with SMTP id u5-20020a170902bf4500b0015cdf4703d6mr21373791pls.58.1653289132554;
+        Sun, 22 May 2022 23:58:52 -0700 (PDT)
+Received: from localhost ([122.162.234.2])
+        by smtp.gmail.com with ESMTPSA id z14-20020aa79f8e000000b0050dc762818bsm6417466pfr.101.2022.05.22.23.58.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 22 May 2022 23:58:52 -0700 (PDT)
+Date:   Mon, 23 May 2022 12:28:50 +0530
+From:   Viresh Kumar <viresh.kumar@linaro.org>
+To:     Zheng Bin <zhengbin13@huawei.com>
+Cc:     rafael@kernel.org, Pierre.Gondois@arm.com,
+        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        gaochao49@huawei.com
+Subject: Re: [PATCH -next] cpufreq: CPPC: Fix build error without
+ CONFIG_ACPI_CPPC_CPUFREQ_FIE
+Message-ID: <20220523065850.lhnpsc2u3dxzzwx7@vireshk-i7>
+References: <20220521032438.2504155-1-zhengbin13@huawei.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+In-Reply-To: <20220521032438.2504155-1-zhengbin13@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix support for boards with more then 4 chip select lines. Other wise if
-CS > 4 is used, we will write trash to the clk configuration register.
+On 21-05-22, 11:24, Zheng Bin wrote:
+> If CONFIG_ACPI_CPPC_CPUFREQ_FIE is not set, building fails:
+> 
+> drivers/cpufreq/cppc_cpufreq.c: In function ‘populate_efficiency_class’:
+> drivers/cpufreq/cppc_cpufreq.c:584:2: error: ‘cppc_cpufreq_driver’ undeclared (first use in this function); did you mean ‘cpufreq_driver’?
+>   cppc_cpufreq_driver.register_em = cppc_cpufreq_register_em;
+>   ^~~~~~~~~~~~~~~~~~~
+>   cpufreq_driver
+> 
+> Make declare of cppc_cpufreq_driver out of CONFIG_ACPI_CPPC_CPUFREQ_FIE
+> to fix this.
+> 
+> Fixes: 740fcdc2c20e ("cpufreq: CPPC: Register EM based on efficiency class information")
+> Signed-off-by: Zheng Bin <zhengbin13@huawei.com>
+> ---
+>  drivers/cpufreq/cppc_cpufreq.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
- drivers/spi/spi-imx.c | 37 +++++++++++++++++++++++++------------
- 1 file changed, 25 insertions(+), 12 deletions(-)
+Acked-by: Viresh Kumar <viresh.kumar@linaro.org>
 
-diff --git a/drivers/spi/spi-imx.c b/drivers/spi/spi-imx.c
-index b2dd0a4d2446..2d29b893e9e0 100644
---- a/drivers/spi/spi-imx.c
-+++ b/drivers/spi/spi-imx.c
-@@ -265,6 +265,7 @@ static bool spi_imx_can_dma(struct spi_master *master, struct spi_device *spi,
- #define MX51_ECSPI_CONFIG_SBBCTRL(cs)	(1 << ((cs) +  8))
- #define MX51_ECSPI_CONFIG_SSBPOL(cs)	(1 << ((cs) + 12))
- #define MX51_ECSPI_CONFIG_SCLKCTL(cs)	(1 << ((cs) + 20))
-+#define MX51_ECSPI_MAX_HW_CS		4
- 
- #define MX51_ECSPI_INT		0x10
- #define MX51_ECSPI_INT_TEEN		(1 <<  0)
-@@ -515,6 +516,7 @@ static int mx51_ecspi_prepare_message(struct spi_imx_data *spi_imx,
- 	u32 min_speed_hz = ~0U;
- 	u32 testreg, delay;
- 	u32 cfg = readl(spi_imx->base + MX51_ECSPI_CONFIG);
-+	int chip_select;
- 
- 	/* set Master or Slave mode */
- 	if (spi_imx->slave_mode)
-@@ -528,8 +530,19 @@ static int mx51_ecspi_prepare_message(struct spi_imx_data *spi_imx,
- 	if (spi->mode & SPI_READY)
- 		ctrl |= MX51_ECSPI_CTRL_DRCTL(spi_imx->spi_drctl);
- 
--	/* set chip select to use */
--	ctrl |= MX51_ECSPI_CTRL_CS(spi->chip_select);
-+	if (spi->cs_gpiod) {
-+		chip_select = 0;
-+	} else {
-+		if (spi->chip_select >= MX51_ECSPI_MAX_HW_CS) {
-+			dev_err(spi_imx->dev, "Native chip_select is out of supported range: %i\n",
-+				spi->chip_select);
-+			return -EINVAL;
-+		}
-+
-+		/* set HW chip select to use */
-+		ctrl |= MX51_ECSPI_CTRL_CS(spi->chip_select);
-+		chip_select = spi->chip_select;
-+	}
- 
- 	/*
- 	 * The ctrl register must be written first, with the EN bit set other
-@@ -550,27 +563,27 @@ static int mx51_ecspi_prepare_message(struct spi_imx_data *spi_imx,
- 	 * BURST_LENGTH + 1 bits are received
- 	 */
- 	if (spi_imx->slave_mode && is_imx53_ecspi(spi_imx))
--		cfg &= ~MX51_ECSPI_CONFIG_SBBCTRL(spi->chip_select);
-+		cfg &= ~MX51_ECSPI_CONFIG_SBBCTRL(chip_select);
- 	else
--		cfg |= MX51_ECSPI_CONFIG_SBBCTRL(spi->chip_select);
-+		cfg |= MX51_ECSPI_CONFIG_SBBCTRL(chip_select);
- 
- 	if (spi->mode & SPI_CPHA)
--		cfg |= MX51_ECSPI_CONFIG_SCLKPHA(spi->chip_select);
-+		cfg |= MX51_ECSPI_CONFIG_SCLKPHA(chip_select);
- 	else
--		cfg &= ~MX51_ECSPI_CONFIG_SCLKPHA(spi->chip_select);
-+		cfg &= ~MX51_ECSPI_CONFIG_SCLKPHA(chip_select);
- 
- 	if (spi->mode & SPI_CPOL) {
--		cfg |= MX51_ECSPI_CONFIG_SCLKPOL(spi->chip_select);
--		cfg |= MX51_ECSPI_CONFIG_SCLKCTL(spi->chip_select);
-+		cfg |= MX51_ECSPI_CONFIG_SCLKPOL(chip_select);
-+		cfg |= MX51_ECSPI_CONFIG_SCLKCTL(chip_select);
- 	} else {
--		cfg &= ~MX51_ECSPI_CONFIG_SCLKPOL(spi->chip_select);
--		cfg &= ~MX51_ECSPI_CONFIG_SCLKCTL(spi->chip_select);
-+		cfg &= ~MX51_ECSPI_CONFIG_SCLKPOL(chip_select);
-+		cfg &= ~MX51_ECSPI_CONFIG_SCLKCTL(chip_select);
- 	}
- 
- 	if (spi->mode & SPI_CS_HIGH)
--		cfg |= MX51_ECSPI_CONFIG_SSBPOL(spi->chip_select);
-+		cfg |= MX51_ECSPI_CONFIG_SSBPOL(chip_select);
- 	else
--		cfg &= ~MX51_ECSPI_CONFIG_SSBPOL(spi->chip_select);
-+		cfg &= ~MX51_ECSPI_CONFIG_SSBPOL(chip_select);
- 
- 	writel(cfg, spi_imx->base + MX51_ECSPI_CONFIG);
- 
 -- 
-2.30.2
-
+viresh
