@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D08D3C4707E
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:39:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA1A8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:39:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243560AbiEWRiS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:38:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43392 "EHLO
+        id S243959AbiEWRid (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:38:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241697AbiEWR1F (ORCPT
+        with ESMTP id S241780AbiEWR1G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:27:05 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71A7875208;
-        Mon, 23 May 2022 10:22:11 -0700 (PDT)
+        Mon, 23 May 2022 13:27:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21AFD76296;
+        Mon, 23 May 2022 10:22:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 6F982CE16D6;
-        Mon, 23 May 2022 17:21:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46315C385A9;
-        Mon, 23 May 2022 17:21:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1935460B35;
+        Mon, 23 May 2022 17:17:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A795C385AA;
+        Mon, 23 May 2022 17:17:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326500;
-        bh=dDgockUMxqkKVjLARpU37Xk0WcVS855EiS8jPh0QiFw=;
+        s=korg; t=1653326230;
+        bh=JZDfGwicm4UzRJBNTauQ/RxXh66EuHlgvHU7cppd+uk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Mle3TGWzZlGB03XXrgVTRpISCe1k2deoaUFrzB55W8/8/lRU8kLzW3gCDC1c+Zrsu
-         RZMUvf+YzcXwI+9izb5+VXVU0WGuOs4QGMXwYNCund2Ugy1/w162109/UNwxPfrFK2
-         M3BEe16MAoBySPjl3WzE1gl1VNUWY0+M0SUqpiuY=
+        b=H+9axquIQgY9W56KiK46UIKaj1nw/3JJbm9NUGN+E9G6vT7qHCe6OY5D5KTIGoWp6
+         JF/O6m9yticTfa+8aeDF2oyfZfcJ+H3b5wSt/Sz+FwB8b8DxLxnPv8lUpr2as1YlPo
+         dpxDuxIPLjRCRdO9qvGSAq8MyiT6ZKh9mkJve+xg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kevin Mitchell <kevmitch@arista.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>,
-        Gurucharan <gurucharanx.g@intel.com>
-Subject: [PATCH 5.15 100/132] igb: skip phy status check where unavailable
-Date:   Mon, 23 May 2022 19:05:09 +0200
-Message-Id: <20220523165840.005997703@linuxfoundation.org>
+        stable@vger.kernel.org, Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+        Marco Elver <elver@google.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Alexander Potapenko <glider@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH 5.15 017/132] mm/kfence: reset PG_slab and memcg_data before freeing __kfence_pool
+Date:   Mon, 23 May 2022 19:03:46 +0200
+Message-Id: <20220523165826.446123536@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
 References: <20220523165823.492309987@linuxfoundation.org>
@@ -51,46 +52,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kevin Mitchell <kevmitch@arista.com>
+From: Hyeonggon Yoo <42.hyeyoo@gmail.com>
 
-[ Upstream commit 942d2ad5d2e0df758a645ddfadffde2795322728 ]
+commit 2839b0999c20c9f6bf353849c69370e121e2fa1a upstream.
 
-igb_read_phy_reg() will silently return, leaving phy_data untouched, if
-hw->ops.read_reg isn't set. Depending on the uninitialized value of
-phy_data, this led to the phy status check either succeeding immediately
-or looping continuously for 2 seconds before emitting a noisy err-level
-timeout. This message went out to the console even though there was no
-actual problem.
+When kfence fails to initialize kfence pool, it frees the pool.  But it
+does not reset memcg_data and PG_slab flag.
 
-Instead, first check if there is read_reg function pointer. If not,
-proceed without trying to check the phy status register.
+Below is a BUG because of this. Let's fix it by resetting memcg_data
+and PG_slab flag before free.
 
-Fixes: b72f3f72005d ("igb: When GbE link up, wait for Remote receiver status condition")
-Signed-off-by: Kevin Mitchell <kevmitch@arista.com>
-Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+[    0.089149] BUG: Bad page state in process swapper/0  pfn:3d8e06
+[    0.089149] page:ffffea46cf638180 refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x3d8e06
+[    0.089150] memcg:ffffffff94a475d1
+[    0.089150] flags: 0x17ffffc0000200(slab|node=0|zone=2|lastcpupid=0x1fffff)
+[    0.089151] raw: 0017ffffc0000200 ffffea46cf638188 ffffea46cf638188 0000000000000000
+[    0.089152] raw: 0000000000000000 0000000000000000 00000000ffffffff ffffffff94a475d1
+[    0.089152] page dumped because: page still charged to cgroup
+[    0.089153] Modules linked in:
+[    0.089153] CPU: 0 PID: 0 Comm: swapper/0 Tainted: G    B   W         5.18.0-rc1+ #965
+[    0.089154] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-2 04/01/2014
+[    0.089154] Call Trace:
+[    0.089155]  <TASK>
+[    0.089155]  dump_stack_lvl+0x49/0x5f
+[    0.089157]  dump_stack+0x10/0x12
+[    0.089158]  bad_page.cold+0x63/0x94
+[    0.089159]  check_free_page_bad+0x66/0x70
+[    0.089160]  __free_pages_ok+0x423/0x530
+[    0.089161]  __free_pages_core+0x8e/0xa0
+[    0.089162]  memblock_free_pages+0x10/0x12
+[    0.089164]  memblock_free_late+0x8f/0xb9
+[    0.089165]  kfence_init+0x68/0x92
+[    0.089166]  start_kernel+0x789/0x992
+[    0.089167]  x86_64_start_reservations+0x24/0x26
+[    0.089168]  x86_64_start_kernel+0xa9/0xaf
+[    0.089170]  secondary_startup_64_no_verify+0xd5/0xdb
+[    0.089171]  </TASK>
+
+Link: https://lkml.kernel.org/r/YnPG3pQrqfcgOlVa@hyeyoo
+Fixes: 0ce20dd84089 ("mm: add Kernel Electric-Fence infrastructure")
+Fixes: 8f0b36497303 ("mm: kfence: fix objcgs vector allocation")
+Signed-off-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+Reviewed-by: Marco Elver <elver@google.com>
+Reviewed-by: Muchun Song <songmuchun@bytedance.com>
+Cc: Alexander Potapenko <glider@google.com>
+Cc: Dmitry Vyukov <dvyukov@google.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+[42.hyeyoo@gmail.com: backport - use struct page]
+Signed-off-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/igb/igb_main.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ mm/kfence/core.c |   11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-index bf8ef81f6c0e..b88303351484 100644
---- a/drivers/net/ethernet/intel/igb/igb_main.c
-+++ b/drivers/net/ethernet/intel/igb/igb_main.c
-@@ -5505,7 +5505,8 @@ static void igb_watchdog_task(struct work_struct *work)
- 				break;
- 			}
+--- a/mm/kfence/core.c
++++ b/mm/kfence/core.c
+@@ -510,6 +510,7 @@ static bool __init kfence_init_pool(void
+ 	unsigned long addr = (unsigned long)__kfence_pool;
+ 	struct page *pages;
+ 	int i;
++	char *p;
  
--			if (adapter->link_speed != SPEED_1000)
-+			if (adapter->link_speed != SPEED_1000 ||
-+			    !hw->phy.ops.read_reg)
- 				goto no_wait;
- 
- 			/* wait for Remote receiver status OK */
--- 
-2.35.1
-
+ 	if (!__kfence_pool)
+ 		return false;
+@@ -592,6 +593,16 @@ err:
+ 	 * fails for the first page, and therefore expect addr==__kfence_pool in
+ 	 * most failure cases.
+ 	 */
++	for (p = (char *)addr; p < __kfence_pool + KFENCE_POOL_SIZE; p += PAGE_SIZE) {
++		struct page *page = virt_to_page(p);
++
++		if (!PageSlab(page))
++			continue;
++#ifdef CONFIG_MEMCG
++		page->memcg_data = 0;
++#endif
++		__ClearPageSlab(page);
++	}
+ 	memblock_free_late(__pa(addr), KFENCE_POOL_SIZE - (addr - (unsigned long)__kfence_pool));
+ 	__kfence_pool = NULL;
+ 	return false;
 
 
