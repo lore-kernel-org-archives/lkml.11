@@ -2,121 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12C05C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 01:13:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3545C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 01:18:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242675AbiEWBNJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 22 May 2022 21:13:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42422 "EHLO
+        id S233265AbiEWBSo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 22 May 2022 21:18:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233042AbiEWBNF (ORCPT
+        with ESMTP id S230072AbiEWBSm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 22 May 2022 21:13:05 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08742377F9
-        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 18:13:04 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id r23so19186267wrr.2
-        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 18:13:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/H6FksuJpMo8QoRJSVxkZdGNLFn7WEdBNMVPknI1zCc=;
-        b=JUt8T6fbl6Th7kEeKaLn2/2ArJK5fVw0y9pO5ErspjNKXfJihcYko5H+uxiBaxBOEj
-         oWz5fZY2L+4+1EIDvUerBD26qp4SDlP+LP7PXib6LUclpa5BQ0ZUKppKAN9qlfupfmjw
-         +JTamby7bQYKRJKOtENFP+Su+AEFsjd03oRuBaGkYmSf4eyZZ1+ZxQgglSh2+H57x3AZ
-         gEiqdTaXwq2b6RAsWCG5woNaNJto8kcasufK+Oq3lFCDmC6LkAlBr97WS5PuXLXdjOtw
-         WSx8F17m2/2/DUx5UPuJXhh640klT1zkVKZSUQvNIqAsGEQq9G5ty6IZjMB2Yhw0uRpA
-         pWvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/H6FksuJpMo8QoRJSVxkZdGNLFn7WEdBNMVPknI1zCc=;
-        b=uyczi9xsL9Y8M7j6bJa59atidYIFnz4WCcrh+ALXzjYz6Y2lyQVELYDtX65ZxNOEgm
-         p1FtLhQh6HGpYZVQdM3fObMUeboLZYam+1Kq32BHYh3UfOiO0kk24EJx/FDw+bDA7rbu
-         6yknMEscK3odutlbGAKQI4B5vXMHqVXc9qdR6BobgzvgFHjg/6AeH8Dh13ZGpn8tQvZm
-         Qe70sFwWamas2ULghQg8t6jd28Gv/UeXUw5Bwf7iEut8E2Cso70i1/qGxxJc1Ea3loAW
-         5yg4mnV2AKQSwNlVrDVAj2KWpBmBBlXH9gM4FD8asBpCBxIOtMS/TlNDzzllgssG4zP1
-         x+gg==
-X-Gm-Message-State: AOAM530aaVANTsEyzT2Nh7IYuf7V+sG5MkmK2VJToFdm8YizxuILcuKm
-        28MEMcwhnloHA2r5kTHGukiWQMFMEIytl5ZAtN0=
-X-Google-Smtp-Source: ABdhPJwK/bhjXxNJEgSZV8LZfkfgLinCiFQdF/bzYTOp45Pz/r2/JOudOoBdnLt5nKBQvpO0C4Omhej8mXtuSfuOcrY=
-X-Received: by 2002:a5d:480c:0:b0:20e:6133:132 with SMTP id
- l12-20020a5d480c000000b0020e61330132mr17287906wrq.593.1653268382219; Sun, 22
- May 2022 18:13:02 -0700 (PDT)
+        Sun, 22 May 2022 21:18:42 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E491B63;
+        Sun, 22 May 2022 18:18:41 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.56])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4L5zvX1KQDz1JC5q;
+        Mon, 23 May 2022 09:17:12 +0800 (CST)
+Received: from dggpemm500014.china.huawei.com (7.185.36.153) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 23 May 2022 09:18:39 +0800
+Received: from [10.174.178.120] (10.174.178.120) by
+ dggpemm500014.china.huawei.com (7.185.36.153) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 23 May 2022 09:18:37 +0800
+Message-ID: <7a1ce182-343a-75f9-5447-f7ca12cb0c36@huawei.com>
+Date:   Mon, 23 May 2022 09:18:37 +0800
 MIME-Version: 1.0
-References: <20220512170008.1301613-1-xiehuan09@gmail.com> <20220512170008.1301613-3-xiehuan09@gmail.com>
- <20220522232216.bb1451fb6efc18c2bccc8d09@kernel.org>
-In-Reply-To: <20220522232216.bb1451fb6efc18c2bccc8d09@kernel.org>
-From:   Jeff Xie <xiehuan09@gmail.com>
-Date:   Mon, 23 May 2022 09:12:50 +0800
-Message-ID: <CAEr6+EAdrLg8ye=px4J30Kx6Rf_c43nrosyNJYWSNVdanCPRZw@mail.gmail.com>
-Subject: Re: [PATCH v10 2/4] trace/objtrace: Get the value of the object
-To:     Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     Steven Rostedt <rostedt@goodmis.org>, mingo@redhat.com,
-        Tom Zanussi <zanussi@kernel.org>, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH 0/2] Add support to relocate kernel image to mirrored
+ region
+To:     <ardb@kernel.org>
+CC:     <akpm@linux-foundation.org>, <catalin.marinas@arm.com>,
+        <will@kernel.org>, <corbet@lwn.net>, <tglx@linutronix.de>,
+        <mingo@redhat.com>, <bp@alien8.de>, <dave.hansen@linux.intel.com>,
+        <x86@kernel.org>, <dvhart@infradead.org>, <andy@infradead.org>,
+        <rppt@kernel.org>, <paulmck@kernel.org>, <peterz@infradead.org>,
+        <jroedel@suse.de>, <songmuchun@bytedance.com>, <macro@orcam.me.uk>,
+        <frederic@kernel.org>, <W_Armin@gmx.de>, <john.garry@huawei.com>,
+        <seanjc@google.com>, <tsbogend@alpha.franken.de>,
+        <anshuman.khandual@arm.com>, <chenhuacai@kernel.org>,
+        <david@redhat.com>, <gpiccoli@igalia.com>, <mark.rutland@arm.com>,
+        <wangkefeng.wang@huawei.com>, <linux-doc@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-efi@vger.kernel.org>, <linux-ia64@vger.kernel.org>,
+        <platform-driver-x86@vger.kernel.org>, <linux-mm@kvack.org>,
+        <mawupeng1@huawei.com>
+References: <CAMj1kXGSStDgj9ABmUaTLnBmpQFksh3wx4tx=mJohum4GQe3Gg@mail.gmail.com>
+ <20220419070150.254377-1-mawupeng1@huawei.com>
+ <CAMj1kXHr2RdYSPor1st1ZnL=O42c8N6e=bNG+eFhatfefWLUrw@mail.gmail.com>
+ <c65d22b4-f654-21aa-bd5f-d4f8b0939a25@huawei.com>
+ <7058b8d8-c0cb-108e-0db9-2fdf5fb154cf@huawei.com>
+ <CAMj1kXHnL12j6FPGtEeSQB2-kHzoVF+LJMUF9YBq43Yi1UntDg@mail.gmail.com>
+From:   mawupeng <mawupeng1@huawei.com>
+In-Reply-To: <CAMj1kXHnL12j6FPGtEeSQB2-kHzoVF+LJMUF9YBq43Yi1UntDg@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.178.120]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500014.china.huawei.com (7.185.36.153)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Masami,
 
-On Sun, May 22, 2022 at 10:22 PM Masami Hiramatsu <mhiramat@kernel.org> wrote:
->
-> Hi Jeff,
->
-> On Fri, 13 May 2022 01:00:06 +0800
-> Jeff Xie <xiehuan09@gmail.com> wrote:
->
-> [...]
-> > @@ -175,9 +271,27 @@ trace_object_trigger(struct event_trigger_data *data,
-> >
-> >       field = obj_data->field;
-> >       memcpy(&obj, rec + field->offset, sizeof(obj));
-> > -     set_trace_object(obj, tr);
-> > +     /* set the offset from the special object and the type size of the value*/
-> > +     set_trace_object(obj, obj_data->obj_offset,
-> > +                     obj_data->obj_value_type_size, tr);
-> >  }
-> >
-> > +static const struct objtrace_fetch_type objtrace_fetch_types[] = {
-> > +     {"u8", 1},
-> > +     {"s8", 1},
-> > +     {"x8", 1},
-> > +     {"u16", 2},
-> > +     {"s16", 2},
-> > +     {"x16", 2},
-> > +     {"u32", 4},
-> > +     {"s32", 4},
-> > +     {"x32", 4},
-> > +     {"u64", 8},
-> > +     {"s64", 8},
-> > +     {"x64", 8},
->
-> Hmm, as far as I can see, you don't distinguish the prefix 'u','s','x'.
-> If so, please support only 'x' at this moment. kprobe events supports
-> those types, and it distinguishes the types when printing the logged
-> data. E.g. 's16' shows '-1' for 0xffff, but 'x16' shows '0xffff'.
-> You can add another patch to support such different types afterwards.
 
-Thanks, I will add another patch to support it .
+在 2022/5/20 14:52, Ard Biesheuvel 写道:
+> On Thu, 19 May 2022 at 13:09, mawupeng <mawupeng1@huawei.com> wrote:
+>>
+>>
+>>
+>> 在 2022/5/7 17:28, mawupeng 写道:
+>>>
+>>>
+>>> 在 2022/5/3 17:58, Ard Biesheuvel 写道:
+>>>> On Tue, 19 Apr 2022 at 08:43, Wupeng Ma <mawupeng1@huawei.com> wrote:
+>>>>>
+>>>>> From: Ma Wupeng <mawupeng1@huawei.com>
+>>>>>
+>>>>> Now system image will perfer to be located to mirrored regions both KASLR
+>>>>> on and off.
+>>>>>
+>>>>
+>>>> Hello Ma Wupeng,
+>>>>
+>>>> I wonder if we could simplify this as follows:
+>>>> - ignore the non-KASLR case for now, and rely on the bootloader  > load the image into mirrored memory if it exists;
+>>>
+>>> In grub, memory for static image is allocated via the following path:
+>>>
+>>> grub_cmd_linux
+>>>     kernel = grub_malloc(filelen)
+>>>     kernel_alloc_addr = grub_efi_allocate_any_pages (kernel_alloc_pages)
+>>>     grub_memcpy (kernel_addr, kernel, grub_min(filelen, kernel_size))
+>>>      grub_loader_set (grub_linux_boot, grub_linux_unload, 0)
+>>>
+>>> Can we get memory from mirrored region by the following steps:
+>>> 1. get memory map by calling grub_efi_get_memory_map()
+>>> 2. iter all memory map to find a suitable mirrored memory area
+>>> 3. locate kernel image to this area
+>>>
+>>> So, if kaslr is not enabled
+>>>    - grub will load kernel into mirrored region
+>>> else
+>>>    - arm64-stub.c will relocate kernel image to mirrored region
+>>>
+>>> Is this feasible?
+>>
+>> Is this a feasible proposal to relocate the static kernel image itself
+>> into more reliable memory?
+>>
+> 
+> I'm not sure, it all depends on the firmware.
+> 
+> When GRUB calls LoadImage(), the firmware will reallocate the image
+> and unpack it there. So it is really the firmware's job to ensure that
+> the image is loaded into a suitable location.
+> 
+> I have some code here that implements a EFI based decompressor, and
+> which loads the kernel image into mirrored memory if it exists,
+> without the need to move it again. It could trivially be modified to
+> deal with non-randomized loads as well.
+> 
+> But the bottom line is that UEFI should expose the ability to target
+> mirrored memory, hacking around it like this is not a sustainable
+> approach.
 
-> > +     {}
->
-> If this array is null terminated, please explictly do that, like
->
->         {NULL, 0},
->
-> for readability.
+Since firmware is responsible for put kernel static image into mirrored
+region and kernel is responsible for relocate this image into mirrored
+region if kaslr is enabled. There is no conflict between these two.
 
-Thank you for your reminder.
+Can we integrate the kernel part(introduce mirrored support to arm64) first?
 
-> Thank you,
->
-> --
-> Masami Hiramatsu (Google) <mhiramat@kernel.org>
-
-Thanks,
-JeffXie
+> .
