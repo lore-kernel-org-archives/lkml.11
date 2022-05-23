@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BB04C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52D7EC4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:28:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240758AbiEWR0D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:26:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34002 "EHLO
+        id S241141AbiEWR0V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:26:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240570AbiEWRQ3 (ORCPT
+        with ESMTP id S240497AbiEWRQX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:16:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EC1A72212;
-        Mon, 23 May 2022 10:15:52 -0700 (PDT)
+        Mon, 23 May 2022 13:16:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 006F670905;
+        Mon, 23 May 2022 10:14:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 60EB7B8121F;
-        Mon, 23 May 2022 17:15:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAF17C385A9;
-        Mon, 23 May 2022 17:15:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 28CB7614EB;
+        Mon, 23 May 2022 17:13:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E9DFC385A9;
+        Mon, 23 May 2022 17:13:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326105;
-        bh=Em6VDN095tlB4mBZm4+ai7DDqRwvok4lEQCa+cyHyY4=;
+        s=korg; t=1653325982;
+        bh=U3MCaPU4KcqqPQx9TyAhzv+aeX5+rNSIakb60lLPjGQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aKZJIDl/FDDl1+Q5i0YE83a1xutycno35+JgxUYapdCm7nrVt4N+qj3uIEF4nfTpe
-         2QKMlivYPbwHFNugogwQmS4sg0ggYO5DAuF469c2whdCZOezYb0IUGPgn1Vp2dRfmD
-         MyG9ffayoGu1gXS/JH+RByknUpyOMqce87txGeYA=
+        b=wP8DzkCkWTJ6gOeU2FoUzycrAYAgMuyqlXetZbMqbIBfiWdwKDa0kUI2mzUVtU4x8
+         k2lIgUnK4U/jlx15Dd/AxaouVTdEQEovh1BO+Ur5uHrHEWm9dftRam+W5g9lmuqEBa
+         LD4rJP/1izq3657Kh61xaPS91nWGJqxTF6RuSFDE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        David Ahern <dsahern@kernel.org>,
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Yang Yingliang <yangyingliang@huawei.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 55/68] selftests: add ping test with ping_group_range tuned
-Date:   Mon, 23 May 2022 19:05:22 +0200
-Message-Id: <20220523165811.579043620@linuxfoundation.org>
+Subject: [PATCH 4.19 40/44] net: stmmac: fix missing pci_disable_device() on error in stmmac_pci_probe()
+Date:   Mon, 23 May 2022 19:05:24 +0200
+Message-Id: <20220523165800.666405391@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165802.500642349@linuxfoundation.org>
-References: <20220523165802.500642349@linuxfoundation.org>
+In-Reply-To: <20220523165752.797318097@linuxfoundation.org>
+References: <20220523165752.797318097@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,65 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit e71b7f1f44d3d88c677769c85ef0171caf9fc89f ]
+[ Upstream commit 0807ce0b010418a191e0e4009803b2d74c3245d5 ]
 
-The 'ping' utility is able to manage two kind of sockets (raw or icmp),
-depending on the sysctl ping_group_range. By default, ping_group_range is
-set to '1 0', which forces ping to use an ip raw socket.
+Switch to using pcim_enable_device() to avoid missing pci_disable_device().
 
-Let's replay the ping tests by allowing 'ping' to use the ip icmp socket.
-After the previous patch, ipv4 tests results are the same with both kinds
-of socket. For ipv6, there are a lot a new failures (the previous patch
-fixes only two cases).
-
-Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Reviewed-by: David Ahern <dsahern@kernel.org>
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Link: https://lore.kernel.org/r/20220510031316.1780409-1-yangyingliang@huawei.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/net/fcnal-test.sh | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/tools/testing/selftests/net/fcnal-test.sh b/tools/testing/selftests/net/fcnal-test.sh
-index 157822331954..d2ac09b35dcf 100755
---- a/tools/testing/selftests/net/fcnal-test.sh
-+++ b/tools/testing/selftests/net/fcnal-test.sh
-@@ -757,10 +757,16 @@ ipv4_ping()
- 	setup
- 	set_sysctl net.ipv4.raw_l3mdev_accept=1 2>/dev/null
- 	ipv4_ping_novrf
-+	setup
-+	set_sysctl net.ipv4.ping_group_range='0 2147483647' 2>/dev/null
-+	ipv4_ping_novrf
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
+index cc1e887e47b5..3dec109251ad 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
+@@ -261,7 +261,7 @@ static int stmmac_pci_probe(struct pci_dev *pdev,
+ 		return -ENOMEM;
  
- 	log_subsection "With VRF"
- 	setup "yes"
- 	ipv4_ping_vrf
-+	setup "yes"
-+	set_sysctl net.ipv4.ping_group_range='0 2147483647' 2>/dev/null
-+	ipv4_ping_vrf
+ 	/* Enable pci device */
+-	ret = pci_enable_device(pdev);
++	ret = pcim_enable_device(pdev);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "%s: ERROR: failed to enable device\n",
+ 			__func__);
+@@ -313,8 +313,6 @@ static void stmmac_pci_remove(struct pci_dev *pdev)
+ 		pcim_iounmap_regions(pdev, BIT(i));
+ 		break;
+ 	}
+-
+-	pci_disable_device(pdev);
  }
  
- ################################################################################
-@@ -2005,10 +2011,16 @@ ipv6_ping()
- 	log_subsection "No VRF"
- 	setup
- 	ipv6_ping_novrf
-+	setup
-+	set_sysctl net.ipv4.ping_group_range='0 2147483647' 2>/dev/null
-+	ipv6_ping_novrf
- 
- 	log_subsection "With VRF"
- 	setup "yes"
- 	ipv6_ping_vrf
-+	setup "yes"
-+	set_sysctl net.ipv4.ping_group_range='0 2147483647' 2>/dev/null
-+	ipv6_ping_vrf
- }
- 
- ################################################################################
+ static int __maybe_unused stmmac_pci_suspend(struct device *dev)
 -- 
 2.35.1
 
