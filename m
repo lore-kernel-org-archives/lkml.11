@@ -2,97 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 878A3C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 19:04:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81C5CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 19:09:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229748AbiEWTEF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 15:04:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47906 "EHLO
+        id S229490AbiEWTJU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 15:09:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235554AbiEWTAL (ORCPT
+        with ESMTP id S229498AbiEWTHG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 15:00:11 -0400
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F13239CF30;
-        Mon, 23 May 2022 11:42:31 -0700 (PDT)
-Received: by mail-pf1-x42f.google.com with SMTP id b135so2710223pfb.12;
-        Mon, 23 May 2022 11:42:31 -0700 (PDT)
+        Mon, 23 May 2022 15:07:06 -0400
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B41269A9BA
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 11:45:05 -0700 (PDT)
+Received: by mail-lj1-x22f.google.com with SMTP id r3so11393268ljd.7
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 11:45:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=fgKolKo2W9u+egkoBMmdYH2ux7YY09TR3IB+igLpG2c=;
-        b=STOsn+K+LqaIbQ3/N7nJeBjk7q/pHMyxd7sghc0rywCfK5W+38c9HtqLZ3V85YQTIf
-         D79CtNFN6LDGzlQcTwBLhbTM9EJN5n28lgkzQEwgV924qEhDtpRMZKayCPQT51T8a+DB
-         AYrHmdKgH3CR9Al9K+F4I8YCkUMQfkoH4XoDPXB6TSAPJWEMeCsgqhSKH2mXUAPfyqL/
-         FKr3DDQ3g2RjpqGEh2h0lPnUvys2MQWHpCdciEwN2h9f7Fz1gypXfnG+T+5v/QTmiabK
-         tmYYsgfJAkqQDjHb/LIYRx+tTutaFzcT9dyVoLDnRfnWEd1hV845cYeYwR2tV7VuJDzh
-         jvRQ==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=oOWZUBJqNcdlgAF3ozzceIWa1QLe3KoX8JwY9UNGHd4=;
+        b=UstXh4WwiSYrL1ybcoTWRmyZsv9hEjc6PjZMBIKnBZP0zhT7iTun1KvXZ8H17U8qSH
+         iz+7+bLHxdtL7wvkFkMIpdZu3lQ51hwOwKdx/wG4KzaJXykJmazsGwA7t4UGAtTePw/B
+         mK+BUuXVrIeuhZNDEKPHGY+iv6YBe6R27v/utPWafsuvsLf2TmGu2ewgAfZSdKBowv4l
+         LoP4BWbhRDtTjeIcpB3tIiVwfN42D2mxokpmBrGJMTT5Dd6TNpI3j9kQxH/bd3ESREMT
+         XevvqDcVtKuqvXq0zcj3Z/G0wAyCfCELfimVoPf+6+u9hcQLdRX4KGz8yIs0FLopHIeq
+         RhLw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=fgKolKo2W9u+egkoBMmdYH2ux7YY09TR3IB+igLpG2c=;
-        b=zxjaZiQWYJFRKlBGC+BdcH40AMufpN3DbGo4tg3weRxt6LT9HlPVvATR4h3yKl7NcS
-         +lDlXzMQVZ9emzip9++IQF0WF3ij9i6SF96JYUEjGa4M6SlF77EUr86lK/XniPL8XhuT
-         +h9WTqFcJ1jbbRzTSPJg0wjo4YtPyahWh1MNLGf4d07ZP0c+WyYMXd2YB/y+SW6i9NLB
-         v8NV45IEycLjJygQNVfrJ3JpMge4cnV3O/cuulNWiSb2iRHYGnJo0jGAe92nOIgqRaFC
-         xgckokmSKahgoT3Ka7jwiSH20sAHWKPyDTsAstueH+2iZ/C9EWiK2fRudN7k6HJj5gfv
-         TWxA==
-X-Gm-Message-State: AOAM530T/HiCyi2VduCSa+gyxYOi7yQNbJqIM9Tf6BhcJe9NFnF8vv3b
-        0VQH7OY+BX+jiSa2L0xJKJ4=
-X-Google-Smtp-Source: ABdhPJyk2Lrb1HpWnHNXReRUG4aDAML6PzDtEzBBJNXMSgc2YbMWr5FvOEpBFlmY2HIqlhhCltFztw==
-X-Received: by 2002:a63:1543:0:b0:3fa:8e73:d7a5 with SMTP id 3-20020a631543000000b003fa8e73d7a5mr2120735pgv.160.1653331351416;
-        Mon, 23 May 2022 11:42:31 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id f9-20020a170902ab8900b00161ccdc172dsm5490546plr.300.2022.05.23.11.42.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 May 2022 11:42:30 -0700 (PDT)
-Message-ID: <ac6ae3f6-1e04-7f7d-cc3a-d5b04c9dbd61@gmail.com>
-Date:   Mon, 23 May 2022 11:42:29 -0700
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=oOWZUBJqNcdlgAF3ozzceIWa1QLe3KoX8JwY9UNGHd4=;
+        b=HKT66azjPtcBauC5Jd5SEXp6ioThdR+2uyArZ/TSFrBZExsishvnVDH9RFkJQiPSWb
+         eVRbhSY8W6emt58K1r33a0+RG/XA5mchCfBobqQoCWw8FTCdvk94iogg2x+tXp9IO4bz
+         X13OIcsjIsb9ZEybgv/jm+D6YRVonxGH9oxOKyOXxHcmsa7WmGavIZv8+NQsYI44dco3
+         kLrAV6l7E+YyPvopht+I40E6RHeO11nOSCI6axclCppt+ASAakMyOLzp5R16fhlCRSG4
+         v3+r4UNAA6kZxiadCDYuYPwaP5Fa7AQHkjKF4T4Zg4Mq5pgEllZiNSZu46exUo0JCEed
+         rFSA==
+X-Gm-Message-State: AOAM530/6NQgttfLthEqC58pWVeuAqyYsSZ+JAVt+y3W/CeyLKSBhLYJ
+        Hp6MSEMEUUo4vXAREyW8Nl5NZvsXgAx4bIwDwiRVQw==
+X-Google-Smtp-Source: ABdhPJyqr3CCsMipzHURp2FsSWTJB3upstez3xIYqCFafcp/ENDyuWVgPX2GXxQPyyXKkJMEh1xX8mg+wI61pNqucdI=
+X-Received: by 2002:a2e:98cd:0:b0:253:df46:323e with SMTP id
+ s13-20020a2e98cd000000b00253df46323emr9603557ljj.295.1653331503220; Mon, 23
+ May 2022 11:45:03 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH 5.15 000/132] 5.15.42-rc1 review
-Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-References: <20220523165823.492309987@linuxfoundation.org>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220523020209.11810-1-ojeda@kernel.org> <20220523020209.11810-22-ojeda@kernel.org>
+In-Reply-To: <20220523020209.11810-22-ojeda@kernel.org>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Mon, 23 May 2022 11:44:51 -0700
+Message-ID: <CAKwvOdkTjxNEmCTnuH5f41WB50ef6ErBM2Kp2zJ-t9q_5U8rBA@mail.gmail.com>
+Subject: Re: [PATCH v7 21/25] Kbuild: add Rust support
+To:     Miguel Ojeda <ojeda@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Alex Gaynor <alex.gaynor@gmail.com>,
+        Finn Behrens <me@kloenk.de>,
+        Adam Bratschi-Kaye <ark.email@gmail.com>,
+        Wedson Almeida Filho <wedsonaf@google.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sven Van Asbroeck <thesven73@gmail.com>,
+        Gary Guo <gary@garyguo.net>,
+        Boris-Chengbiao Zhou <bobo1239@web.de>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Douglas Su <d0u9.su@outlook.com>,
+        Dariusz Sosnowski <dsosnowski@dsosnowski.pl>,
+        Antonio Terceiro <antonio.terceiro@linaro.org>,
+        Daniel Xu <dxu@dxuuu.xyz>, Miguel Cano <macanroj@gmail.com>,
+        David Gow <davidgow@google.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Russell King <linux@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>, linux-kbuild@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org,
+        linux-um@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/23/22 10:03, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.15.42 release.
-> There are 132 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Wed, 25 May 2022 16:56:55 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.42-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
+> +choice
+> +       prompt "Optimization level"
+> +       default RUST_OPT_LEVEL_SIMILAR_AS_CHOSEN_FOR_C
+> +       depends on RUST
+> +       help
+> +         Controls rustc's `-Copt-level` codegen option.
+> +
+> +         This flag controls the optimization level.
+> +
+> +         If unsure, say "Similar as chosen for C".
+> +
+> +config RUST_OPT_LEVEL_SIMILAR_AS_CHOSEN_FOR_C
+> +       bool "Similar as chosen for C"
+> +       help
+> +         This choice will pick a similar optimization level as chosen in
+> +         the "Compiler optimization level" for C:
+> +
+> +             -O2 is currently mapped to -Copt-level=2
+> +             -O3 is currently mapped to -Copt-level=3
+> +             -Os is currently mapped to -Copt-level=s
+> +
+> +         The mapping may change over time to follow the intended semantics
+> +         of the choice for C as sensibly as possible.
+> +
+> +         This is the default.
+> +
+> +config RUST_OPT_LEVEL_0
+> +       bool "No optimizations (-Copt-level=0)"
+> +       help
+> +         Not recommended for most purposes. It may come in handy for debugging
+> +         suspected optimizer bugs, unexpected undefined behavior, etc.
+> +
+> +         Note that this level will *not* enable debug assertions nor overflow
+> +         checks on its own (like it happens when interacting with rustc
+> +         directly). Use the corresponding configuration options to control
+> +         that instead, orthogonally.
+> +
+> +         Note this level may cause excessive stack usage, which can lead to stack
+> +         overflow and subsequent crashes.
+> +
+> +config RUST_OPT_LEVEL_1
+> +       bool "Basic optimizations (-Copt-level=1)"
+> +       help
+> +         Useful for debugging without getting too lost, but without
+> +         the overhead and boilerplate of no optimizations at all.
+> +
+> +         Note this level may cause excessive stack usage, which can lead to stack
+> +         overflow and subsequent crashes.
+> +
+> +config RUST_OPT_LEVEL_2
+> +       bool "Some optimizations (-Copt-level=2)"
+> +       help
+> +         The sensible choice in most cases.
+> +
+> +config RUST_OPT_LEVEL_3
+> +       bool "All optimizations (-Copt-level=3)"
+> +       help
+> +         Yet more performance (hopefully).
+> +
+> +config RUST_OPT_LEVEL_S
+> +       bool "Optimize for size (-Copt-level=s)"
+> +       help
+> +         Smaller kernel, ideally without too much performance loss.
+> +
+> +config RUST_OPT_LEVEL_Z
+> +       bool "Optimize for size, no loop vectorization (-Copt-level=z)"
+> +       help
+> +         Like the previous level, but also turn off loop vectorization.
 
-On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels:
-
-Tested-by: Florian Fainelli <f.fainelli@gmail.com>
+I'm super not into having the rust optimization level differ from the
+C optimization level.  This is just someone having too much fun
+wrapping every compiler flag in a kbuild option.  Either folks wan't
+smaller size or more optimizations. Allowing for RUST_OPT_LEVEL_S and
+CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE or RUST_OPT_LEVEL_3 and
+CONFIG_CC_OPTIMIZE_FOR_SIZE is just wacky nonsense that's going to
+make randconfig bug reports more confusing to tease out.
 -- 
-Florian
+Thanks,
+~Nick Desaulniers
