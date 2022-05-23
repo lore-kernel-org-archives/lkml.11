@@ -2,56 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1A5DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 08:23:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E369AC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 08:24:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231774AbiEWIXU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 04:23:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49406 "EHLO
+        id S231793AbiEWIYo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 04:24:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230212AbiEWIXR (ORCPT
+        with ESMTP id S231615AbiEWIYj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 04:23:17 -0400
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19240220F5
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 01:23:15 -0700 (PDT)
-Received: by mail-yb1-xb2c.google.com with SMTP id i11so24054545ybq.9
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 01:23:15 -0700 (PDT)
+        Mon, 23 May 2022 04:24:39 -0400
+Received: from mail-yw1-x1132.google.com (mail-yw1-x1132.google.com [IPv6:2607:f8b0:4864:20::1132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9E9D62EB
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 01:24:36 -0700 (PDT)
+Received: by mail-yw1-x1132.google.com with SMTP id 00721157ae682-2fffcc66fe2so13596157b3.0
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 01:24:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=UTcOGuIxOzrfJcXVclrxF1J8paB+UsOUzDwAJnZBxCw=;
-        b=Om1eS4LrLfjIeZEVD09q/hvEeaaaOAuHb7mlZ3HTSboDAjw8oakTY57guTKQEBGrlA
-         5EYmfzEfP2o1vUaq/GdqX4DWhMMaLZMgMnIUIbBlDqwID8hNwPerRzMznOzm2MqxgPaL
-         h9f6QaLW1qyo0wrKeOKgWB2sRwVd0/TUiAQGYoivnQenINLTVFHfSDL8Je8zHjaekmSb
-         clcvBJ+fZUY2fro8bTMMcGLOZZc1MJ9Uy4NT3PC9kmwk3Ihq6Rb63Nu6NTjPzgO+Au+6
-         bIt383T34CzIn/yiZS020gth2C05695pqFnWCQNy2f3TG+on2pRf48Y6MrcxS+RayX22
-         bE0Q==
+        bh=L1l8F8G/4aBFXvrvpU3F8ABVJ/BAoPux/2EGliQHK9E=;
+        b=kizfswkQ/MUhIu/fM+C6HlyJDTesukV5aFMyl6P4uRqJLlBTN3QiLsCxhlIZL7wyS0
+         JkGGcpTYZbHmGcO+0cPOQIXjFLf822qePB0TwRBaU/Z0y1sRevQa9Yr6qfGbHoVrV4fI
+         VbfvIRINQ4rAlewFBYrLT3I9mtk3cFZWFTP0vXREoEJSo0tbwTXK/zsCNoGpmGBML6rJ
+         tIrXmSzYvB6+mF3MkzGQL0RqsAFpKlt04+FLfxkRgRrWT2LKhaooRylXi+i4DNHnEug+
+         TV+gXG8+laxpjqEtamxbsi4Q/vBL0ND2hsEua51y+XpaFol99qPY3s4kEyacRNPVmahA
+         YSTA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=UTcOGuIxOzrfJcXVclrxF1J8paB+UsOUzDwAJnZBxCw=;
-        b=NJjQUYtZuvqb1V8/78ZlyZyJ9oTydB28lPdoltnA/xlWOSXBlnSR4ZSoGdvp07tyUK
-         VUzBQPbsrsxmamhoPyG7ErVTSPPIPoVf4wDUANFsVBSt/GYb3Z41Dq864ZjkRT4urG/S
-         4VsWLNXlQQgIAHFSZjyp+2F/LXNTnP663nRqZO20BlsonvD4iQyO+mAH3bZhch2YrdDc
-         +S3/D8x2ozHbK0wuDXqGB8nPfR+g2xZdwLbdhzvJn7AG067t/0/OIGZDyFnTYNpFVP7w
-         h6Oguw/++sHYhYJqkDlEIrJ6h9+6M8mnd3S2G9B9saKkKU3OA8dldtpZCWj3KwRfO9Hf
-         g/dg==
-X-Gm-Message-State: AOAM53388OBIZi4isgd1DLGY9Wr6wM+oHInAka/iNXPGdgVtbNcUIuku
-        EVOnmX8YFRs79RGcrcCozJz4NZNZHKh+dxmfd89g/Q==
-X-Google-Smtp-Source: ABdhPJy6cvTczDvpCgMLRVi68Dl2KEDEmWHBsDSjxv25IIzYMQNPJEh5wpFfDJpeRPxWYkV8OQWVROOrVe8ig99AbMY=
-X-Received: by 2002:a25:2d4b:0:b0:64d:a722:b4ae with SMTP id
- s11-20020a252d4b000000b0064da722b4aemr19995657ybe.87.1653294194134; Mon, 23
- May 2022 01:23:14 -0700 (PDT)
+        bh=L1l8F8G/4aBFXvrvpU3F8ABVJ/BAoPux/2EGliQHK9E=;
+        b=TeqEfpO09uS8lRuUuQV+WBKtYEhF+oB3h0z11E4R8abpXMsUH66bIUcMOzG1FuB2lY
+         HeYnoIEor62homX3MU7d6l+BPTP3jaBzAdiPY1ujkkL+fx+12HikNs5yjFbcsXgQJ3aO
+         DpPeD7e9GG64YZPPwJlE964XjguGaM4667QLgM7kG2G12YMkJB87dGai8UArhbkMRbiY
+         9mO6t5vhrF6HIM2g9hlVel6xQNUUPPuoCIhCQEY7hPMGlW3/N5zqtJEcfJhngSgl4ngx
+         tUO2R9b8BTxc1p9b7XV/va2q7fXVaarv3ONGTxC+WhsFhJEGYC6ni5NiNbcEKrz/tEDm
+         MAWw==
+X-Gm-Message-State: AOAM533d3gJcanojqsZoPjy2qPB/JdWkYSWaGWkKlvyM/Pp3q/2Av2Ex
+        YobOtTpPGHa/0zMYxrZhXc1APgWsmWytxIjPJiKdig==
+X-Google-Smtp-Source: ABdhPJx3U48zklgNqZHphc3Xt63U3bsbJLc7Pr5PXin48vh9cRHiJrnVrkio4VDqZUegppE5mkZYUJK2LtLbZXg18gI=
+X-Received: by 2002:a81:9b0c:0:b0:2f4:c522:7d3c with SMTP id
+ s12-20020a819b0c000000b002f4c5227d3cmr22494436ywg.316.1653294275634; Mon, 23
+ May 2022 01:24:35 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220523020051.141460-1-wangkefeng.wang@huawei.com> <20220523020051.141460-2-wangkefeng.wang@huawei.com>
-In-Reply-To: <20220523020051.141460-2-wangkefeng.wang@huawei.com>
+References: <20220523020051.141460-1-wangkefeng.wang@huawei.com> <20220523020051.141460-3-wangkefeng.wang@huawei.com>
+In-Reply-To: <20220523020051.141460-3-wangkefeng.wang@huawei.com>
 From:   Marco Elver <elver@google.com>
-Date:   Mon, 23 May 2022 10:22:38 +0200
-Message-ID: <CANpmjNMxmRsWVvqe=30JEhCqPdGvUcKUgLoe2VjfMbKfHwFyaA@mail.gmail.com>
-Subject: Re: [PATCH v3 1/2] asm-generic: Add memory barrier dma_mb()
+Date:   Mon, 23 May 2022 10:23:59 +0200
+Message-ID: <CANpmjNO=KKum3OcdwoDCf2hiCRW+Nr9tYuPyBCN+VmzAO7UR4Q@mail.gmail.com>
+Subject: Re: [PATCH v3 2/2] arm64: kcsan: Support detecting more missing
+ memory barriers
 To:     Kefeng Wang <wangkefeng.wang@huawei.com>
 Cc:     catalin.marinas@arm.com, will@kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
@@ -64,51 +65,58 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 On Mon, 23 May 2022 at 03:50, Kefeng Wang <wangkefeng.wang@huawei.com> wrote:
 >
-> The memory barrier dma_mb() is introduced by commit a76a37777f2c
-> ("iommu/arm-smmu-v3: Ensure queue is read after updating prod pointer"),
-> which is used to ensure that prior (both reads and writes) accesses
-> to memory by a CPU are ordered w.r.t. a subsequent MMIO write, this
-> is only defined on arm64, but it is a generic memory barrier, let's
-> add dma_mb() into documentation and include/asm-generic/barrier.h.
+> As "kcsan: Support detecting a subset of missing memory barriers"[1]
+> introduced KCSAN_STRICT/KCSAN_WEAK_MEMORY which make kcsan detects
+> more missing memory barrier, but arm64 don't have KCSAN instrumentation
+> for barriers, so the new selftest test_barrier() and test cases for
+> memory barrier instrumentation in kcsan_test module will fail, even
+> panic on selftest.
 >
+> Let's prefix all barriers with __ on arm64, as asm-generic/barriers.h
+> defined the final instrumented version of these barriers, which will
+> fix the above issues.
+>
+> Note, barrier instrumentation can be disabled via __no_kcsan with
+> appropriate compiler-support (and not just with objtool help), see
+> commit bd3d5bd1a0ad ("kcsan: Support WEAK_MEMORY with Clang where
+> no objtool support exists"), it adds disable_sanitizer_instrumentation
+> to __no_kcsan attribute for Clang which will remove all sanitizer
+> instrumentation fully (with Clang 14.0). Meanwhile, GCC does the
+> same thing with no_sanitize.
+>
+> [1] https://lore.kernel.org/linux-mm/20211130114433.2580590-1-elver@google.com/
 > Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+
+Acked-by: Marco Elver <elver@google.com>
+
 > ---
->  Documentation/memory-barriers.txt | 11 ++++++-----
->  include/asm-generic/barrier.h     |  8 ++++++++
->  2 files changed, 14 insertions(+), 5 deletions(-)
+>  arch/arm64/include/asm/barrier.h | 12 ++++++------
+>  1 file changed, 6 insertions(+), 6 deletions(-)
 >
-> diff --git a/Documentation/memory-barriers.txt b/Documentation/memory-barriers.txt
-> index b12df9137e1c..07a8b8e1b12a 100644
-> --- a/Documentation/memory-barriers.txt
-> +++ b/Documentation/memory-barriers.txt
-> @@ -1894,6 +1894,7 @@ There are some more advanced barrier functions:
+> diff --git a/arch/arm64/include/asm/barrier.h b/arch/arm64/include/asm/barrier.h
+> index 9f3e2c3d2ca0..2cfc4245d2e2 100644
+> --- a/arch/arm64/include/asm/barrier.h
+> +++ b/arch/arm64/include/asm/barrier.h
+> @@ -50,13 +50,13 @@
+>  #define pmr_sync()     do {} while (0)
+>  #endif
 >
->   (*) dma_wmb();
->   (*) dma_rmb();
-> + (*) dma_mb();
+> -#define mb()           dsb(sy)
+> -#define rmb()          dsb(ld)
+> -#define wmb()          dsb(st)
+> +#define __mb()         dsb(sy)
+> +#define __rmb()                dsb(ld)
+> +#define __wmb()                dsb(st)
 >
->       These are for use with consistent memory to guarantee the ordering
->       of writes or reads of shared memory accessible to both the CPU and a
-> @@ -1925,11 +1926,11 @@ There are some more advanced barrier functions:
->       The dma_rmb() allows us guarantee the device has released ownership
->       before we read the data from the descriptor, and the dma_wmb() allows
->       us to guarantee the data is written to the descriptor before the device
-> -     can see it now has ownership.  Note that, when using writel(), a prior
-> -     wmb() is not needed to guarantee that the cache coherent memory writes
-> -     have completed before writing to the MMIO region.  The cheaper
-> -     writel_relaxed() does not provide this guarantee and must not be used
-> -     here.
-> +     can see it now has ownership. The dma_mb() implies both a dma_rmb() and
-> +     a dma_wmb().  Note that, when using writel(), a prior wmb() is not needed
-> +     to guarantee that the cache coherent memory writes have completed before
-> +     writing to the MMIO region. The cheaper writel_relaxed() does not provide
-> +     this guarantee and must not be used here.
-
-It seems you've changed that spacing. This document uses 2 spaces
-after a sentence-ending '.'. (My original suggestion included the 2
-spaces after dots.)
-
-Otherwise it all looks fine to me.
-
-Thanks,
--- Marco
+> -#define dma_mb()       dmb(osh)
+> -#define dma_rmb()      dmb(oshld)
+> -#define dma_wmb()      dmb(oshst)
+> +#define __dma_mb()     dmb(osh)
+> +#define __dma_rmb()    dmb(oshld)
+> +#define __dma_wmb()    dmb(oshst)
+>
+>  #define io_stop_wc()   dgh()
+>
+> --
+> 2.35.3
+>
