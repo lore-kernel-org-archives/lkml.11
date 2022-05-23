@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A8CFC46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59528C35296
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:53:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244214AbiEWRv6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:51:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38416 "EHLO
+        id S241199AbiEWRw6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:52:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240343AbiEWR3z (ORCPT
+        with ESMTP id S241341AbiEWRaG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:29:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06E382657D;
-        Mon, 23 May 2022 10:26:30 -0700 (PDT)
+        Mon, 23 May 2022 13:30:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEA9942A0B;
+        Mon, 23 May 2022 10:26:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 967F761148;
-        Mon, 23 May 2022 17:26:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D092C385A9;
-        Mon, 23 May 2022 17:26:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0EBFE60B2C;
+        Mon, 23 May 2022 17:25:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01E21C385A9;
+        Mon, 23 May 2022 17:25:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326790;
-        bh=DOYeRWrBBQWdVD9Rx+PC9W95VT/yBtDywvBCWAM4ZbA=;
+        s=korg; t=1653326731;
+        bh=DhR6AeTKiLjq/3nWP2sq4FthZdkWvOrag8B25MAR0RQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Eq2GFFScDjn3xyppsFIaJY2088vo2q3Y8B6wKKDq9oYVaHtcQ86vNjPRUrijjF9e4
-         Xt/rmpEpNNuCPGXQfWfRm6IrsJ8p9f+avEgaHb/5OpaTIoGgEVOAbk6jujxSRelnRt
-         6Utgqcs0w87dJFcpEiQJ7sN0NxfYYLidKv+E5664=
+        b=NLijZWK6TZNMW2wa2ER9vw02yiNO+NUEi5/RDLiYLw0zaUrYM0s/oottocYmdq0+5
+         y+D3jXTJ6gUgiSWpo3yG5/b+KxKoYFWcKdKz7XoxRNq0rm8LcYJIruOFlzrfFG4xTb
+         oGu3rAYN9BmkbW+Mhus27ox3gpzKxIy9hQeDrGZo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Matthew Rosato <mjrosato@linux.ibm.com>,
-        Niklas Schnelle <schnelle@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
+        stable@vger.kernel.org, Tzung-Bi Shih <tzungbi@google.com>,
+        Guenter Roeck <groeck@google.com>,
+        Benson Leung <bleung@chromium.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 032/158] s390/pci: improve zpci_dev reference counting
-Date:   Mon, 23 May 2022 19:03:09 +0200
-Message-Id: <20220523165835.823918207@linuxfoundation.org>
+Subject: [PATCH 5.17 042/158] platform/chrome: cros_ec_debugfs: detach log reader wq from devm
+Date:   Mon, 23 May 2022 19:03:19 +0200
+Message-Id: <20220523165837.429985378@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
 References: <20220523165830.581652127@linuxfoundation.org>
@@ -50,137 +50,118 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Niklas Schnelle <schnelle@linux.ibm.com>
+From: Tzung-Bi Shih <tzungbi@google.com>
 
-[ Upstream commit c122383d221dfa2f41cfe5e672540595de986fde ]
+[ Upstream commit 0e8eb5e8acbad19ac2e1856b2fb2320184299b33 ]
 
-Currently zpci_dev uses kref based reference counting but only accounts
-for one original reference plus one reference from an added pci_dev to
-its underlying zpci_dev. Counting just the original reference worked
-until the pci_dev reference was added in commit 2a671f77ee49 ("s390/pci:
-fix use after free of zpci_dev") because once a zpci_dev goes away, i.e.
-enters the reserved state, it would immediately get released. However
-with the pci_dev reference this is no longer the case and the zpci_dev
-may still appear in multiple availability events indicating that it was
-reserved. This was solved by detecting when the zpci_dev is already on
-its way out but still hanging around. This has however shown some light
-on how unusual our zpci_dev reference counting is.
+Debugfs console_log uses devm memory (e.g. debug_info in
+cros_ec_console_log_poll()).  However, lifecycles of device and debugfs
+are independent.  An use-after-free issue is observed if userland
+program operates the debugfs after the memory has been freed.
 
-Improve upon this by modelling zpci_dev reference counting on pci_dev.
-Analogous to pci_get_slot() increment the reference count in
-get_zdev_by_fid(). Thus all users of get_zdev_by_fid() must drop the
-reference once they are done with the zpci_dev.
+The call trace:
+ do_raw_spin_lock
+ _raw_spin_lock_irqsave
+ remove_wait_queue
+ ep_unregister_pollwait
+ ep_remove
+ do_epoll_ctl
 
-Similar to pci_scan_single_device(), zpci_create_device() returns the
-device with an initial count of 1 and the device added to the zpci_list
-(analogous to the PCI bus' device_list). In turn users of
-zpci_create_device() must only drop the reference once the device is
-gone from the point of view of the zPCI subsystem, it might still be
-referenced by the common PCI subsystem though.
+A Python example to reproduce the issue:
+... import select
+... p = select.epoll()
+... f = open('/sys/kernel/debug/cros_scp/console_log')
+... p.register(f, select.POLLIN)
+... p.poll(1)
+[(4, 1)]                    # 4=fd, 1=select.POLLIN
 
-Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com>
-Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
-Signed-off-by: Vasily Gorbik <gor@linux.ibm.com>
+[ shutdown cros_scp at the point ]
+
+... p.poll(1)
+[(4, 16)]                   # 4=fd, 16=select.POLLHUP
+... p.unregister(f)
+
+An use-after-free issue raises here.  It called epoll_ctl with
+EPOLL_CTL_DEL which in turn to use the workqueue in the devm (i.e.
+log_wq).
+
+Detaches log reader's workqueue from devm to make sure it is persistent
+even if the device has been removed.
+
+Signed-off-by: Tzung-Bi Shih <tzungbi@google.com>
+Reviewed-by: Guenter Roeck <groeck@google.com>
+Link: https://lore.kernel.org/r/20220209051130.386175-1-tzungbi@google.com
+Signed-off-by: Benson Leung <bleung@chromium.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/s390/pci/pci.c       | 1 +
- arch/s390/pci/pci_bus.h   | 3 ++-
- arch/s390/pci/pci_clp.c   | 9 +++++++--
- arch/s390/pci/pci_event.c | 7 ++++++-
- 4 files changed, 16 insertions(+), 4 deletions(-)
+ drivers/platform/chrome/cros_ec_debugfs.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/arch/s390/pci/pci.c b/arch/s390/pci/pci.c
-index 792f8e0f2178..5bcd9228db5f 100644
---- a/arch/s390/pci/pci.c
-+++ b/arch/s390/pci/pci.c
-@@ -69,6 +69,7 @@ struct zpci_dev *get_zdev_by_fid(u32 fid)
- 	list_for_each_entry(tmp, &zpci_list, entry) {
- 		if (tmp->fid == fid) {
- 			zdev = tmp;
-+			zpci_zdev_get(zdev);
- 			break;
- 		}
- 	}
-diff --git a/arch/s390/pci/pci_bus.h b/arch/s390/pci/pci_bus.h
-index e359d2686178..ecef3a9e16c0 100644
---- a/arch/s390/pci/pci_bus.h
-+++ b/arch/s390/pci/pci_bus.h
-@@ -19,7 +19,8 @@ void zpci_bus_remove_device(struct zpci_dev *zdev, bool set_error);
- void zpci_release_device(struct kref *kref);
- static inline void zpci_zdev_put(struct zpci_dev *zdev)
- {
--	kref_put(&zdev->kref, zpci_release_device);
-+	if (zdev)
-+		kref_put(&zdev->kref, zpci_release_device);
- }
+diff --git a/drivers/platform/chrome/cros_ec_debugfs.c b/drivers/platform/chrome/cros_ec_debugfs.c
+index 272c89837d74..0dbceee87a4b 100644
+--- a/drivers/platform/chrome/cros_ec_debugfs.c
++++ b/drivers/platform/chrome/cros_ec_debugfs.c
+@@ -25,6 +25,9 @@
  
- static inline void zpci_zdev_get(struct zpci_dev *zdev)
-diff --git a/arch/s390/pci/pci_clp.c b/arch/s390/pci/pci_clp.c
-index be077b39da33..5011d27461fd 100644
---- a/arch/s390/pci/pci_clp.c
-+++ b/arch/s390/pci/pci_clp.c
-@@ -22,6 +22,8 @@
- #include <asm/clp.h>
- #include <uapi/asm/clp.h>
+ #define CIRC_ADD(idx, size, value)	(((idx) + (value)) & ((size) - 1))
  
-+#include "pci_bus.h"
++/* waitqueue for log readers */
++static DECLARE_WAIT_QUEUE_HEAD(cros_ec_debugfs_log_wq);
 +
- bool zpci_unique_uid;
+ /**
+  * struct cros_ec_debugfs - EC debugging information.
+  *
+@@ -33,7 +36,6 @@
+  * @log_buffer: circular buffer for console log information
+  * @read_msg: preallocated EC command and buffer to read console log
+  * @log_mutex: mutex to protect circular buffer
+- * @log_wq: waitqueue for log readers
+  * @log_poll_work: recurring task to poll EC for new console log data
+  * @panicinfo_blob: panicinfo debugfs blob
+  */
+@@ -44,7 +46,6 @@ struct cros_ec_debugfs {
+ 	struct circ_buf log_buffer;
+ 	struct cros_ec_command *read_msg;
+ 	struct mutex log_mutex;
+-	wait_queue_head_t log_wq;
+ 	struct delayed_work log_poll_work;
+ 	/* EC panicinfo */
+ 	struct debugfs_blob_wrapper panicinfo_blob;
+@@ -107,7 +108,7 @@ static void cros_ec_console_log_work(struct work_struct *__work)
+ 			buf_space--;
+ 		}
  
- void update_uid_checking(bool new)
-@@ -403,8 +405,11 @@ static void __clp_add(struct clp_fh_list_entry *entry, void *data)
- 		return;
- 
- 	zdev = get_zdev_by_fid(entry->fid);
--	if (!zdev)
--		zpci_create_device(entry->fid, entry->fh, entry->config_state);
-+	if (zdev) {
-+		zpci_zdev_put(zdev);
-+		return;
-+	}
-+	zpci_create_device(entry->fid, entry->fh, entry->config_state);
- }
- 
- int clp_scan_pci_devices(void)
-diff --git a/arch/s390/pci/pci_event.c b/arch/s390/pci/pci_event.c
-index 2e3e5b278925..ea9db5cea64e 100644
---- a/arch/s390/pci/pci_event.c
-+++ b/arch/s390/pci/pci_event.c
-@@ -269,7 +269,7 @@ static void __zpci_event_error(struct zpci_ccdf_err *ccdf)
- 	       pdev ? pci_name(pdev) : "n/a", ccdf->pec, ccdf->fid);
- 
- 	if (!pdev)
--		return;
-+		goto no_pdev;
- 
- 	switch (ccdf->pec) {
- 	case 0x003a: /* Service Action or Error Recovery Successful */
-@@ -286,6 +286,8 @@ static void __zpci_event_error(struct zpci_ccdf_err *ccdf)
- 		break;
+-		wake_up(&debug_info->log_wq);
++		wake_up(&cros_ec_debugfs_log_wq);
  	}
- 	pci_dev_put(pdev);
-+no_pdev:
-+	zpci_zdev_put(zdev);
- }
  
- void zpci_event_error(void *data)
-@@ -314,6 +316,7 @@ static void zpci_event_hard_deconfigured(struct zpci_dev *zdev, u32 fh)
- static void __zpci_event_availability(struct zpci_ccdf_avail *ccdf)
- {
- 	struct zpci_dev *zdev = get_zdev_by_fid(ccdf->fid);
-+	bool existing_zdev = !!zdev;
- 	enum zpci_state state;
+ 	mutex_unlock(&debug_info->log_mutex);
+@@ -141,7 +142,7 @@ static ssize_t cros_ec_console_log_read(struct file *file, char __user *buf,
  
- 	zpci_dbg(3, "avl fid:%x, fh:%x, pec:%x\n",
-@@ -378,6 +381,8 @@ static void __zpci_event_availability(struct zpci_ccdf_avail *ccdf)
- 	default:
- 		break;
- 	}
-+	if (existing_zdev)
-+		zpci_zdev_put(zdev);
- }
+ 		mutex_unlock(&debug_info->log_mutex);
  
- void zpci_event_availability(void *data)
+-		ret = wait_event_interruptible(debug_info->log_wq,
++		ret = wait_event_interruptible(cros_ec_debugfs_log_wq,
+ 					CIRC_CNT(cb->head, cb->tail, LOG_SIZE));
+ 		if (ret < 0)
+ 			return ret;
+@@ -173,7 +174,7 @@ static __poll_t cros_ec_console_log_poll(struct file *file,
+ 	struct cros_ec_debugfs *debug_info = file->private_data;
+ 	__poll_t mask = 0;
+ 
+-	poll_wait(file, &debug_info->log_wq, wait);
++	poll_wait(file, &cros_ec_debugfs_log_wq, wait);
+ 
+ 	mutex_lock(&debug_info->log_mutex);
+ 	if (CIRC_CNT(debug_info->log_buffer.head,
+@@ -377,7 +378,6 @@ static int cros_ec_create_console_log(struct cros_ec_debugfs *debug_info)
+ 	debug_info->log_buffer.tail = 0;
+ 
+ 	mutex_init(&debug_info->log_mutex);
+-	init_waitqueue_head(&debug_info->log_wq);
+ 
+ 	debugfs_create_file("console_log", S_IFREG | 0444, debug_info->dir,
+ 			    debug_info, &cros_ec_console_log_fops);
 -- 
 2.35.1
 
