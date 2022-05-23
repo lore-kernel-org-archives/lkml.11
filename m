@@ -2,175 +2,193 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B6A0C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 15:30:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED6D8C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 15:31:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237902AbiEWPaf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 11:30:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44042 "EHLO
+        id S238008AbiEWPbh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 11:31:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237865AbiEWPac (ORCPT
+        with ESMTP id S238155AbiEWPbc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 11:30:32 -0400
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BDD45FF1F
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 08:30:31 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id br17so13916626lfb.2
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 08:30:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=11tx15XOReGzewyuScT08wDXVdYnhOX55HUlYSxbVO4=;
-        b=I/gaifkPbRc3Ya6NQFwpk6ISV+74r16YxnkKExnrHD9IOzX28AQ+kmze2NkWbcajxc
-         rHv5gQJ/FdqRvV/VnJLO1m+Wq65NeJ5loZDsTILiCsV+vsO5PvBRb4dAJgDL0iLSKvoS
-         lwH00d024zvK+H4pvhqXRV1DuSqckrOl1deEwV5NBKp+SsgFonev9Rh5nzfhHu4bVffz
-         kdh7vdf76mU5/m8oAi7lTVKXdn1K0OT5IWwaQgFsqrMT7hl7TBlsM83gxD4/EEXnbVAw
-         1Ekt/995jl2/70M1BYGcUi0EzUGeIq1oLrVv0ObfSdovQG3LLkcYbkm0cZI6SR8aHt6u
-         ph3A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=11tx15XOReGzewyuScT08wDXVdYnhOX55HUlYSxbVO4=;
-        b=kEhCdv97m6Ol5XIYQh6Pjgpj0znjgorKpnuyXdQjrHTegzCwhzJH2o8olXQWsiFs35
-         R1JYYesvcCfKNXcSoQtgvqWoWGjFAEihsXJTyV8NlH95i4v0zcEKeKyoeJ4lnyJQL8ov
-         cf+z62WWKTZf5T6pOJZS+OaNs+Ip38TXfm8E6mbYoKclZ+TicqMJJzPvmVHHc8wjD3VN
-         hk8oyTl+RyCs4CdP0Qs8VyKLisqY4ox3IQkZ8vblGqealiqHPtGbm0b42czKjpQ2S0Sw
-         IkCY4O4Ktm5KQcf3br9lDDBVOIhVRDX9G143kphXPp7H9+YvCR05zEjze6BbKTk8iTi3
-         LgIQ==
-X-Gm-Message-State: AOAM532S8+cmJ7nHZQenMz2YSmS76JvBSXGOGVIGQrbreFfYQvnY7vge
-        MxdCcOEBh4HmHbeMHLFCLkBCIQ==
-X-Google-Smtp-Source: ABdhPJyJRlA+mwgV/0/+nj51fLL4x7OsYjBS85WmiP6FyM/mBP3cLnw06RZ5gqPSuvgLQC0gSa9pXQ==
-X-Received: by 2002:a19:7106:0:b0:478:68b5:86d9 with SMTP id m6-20020a197106000000b0047868b586d9mr6052561lfc.417.1653319829319;
-        Mon, 23 May 2022 08:30:29 -0700 (PDT)
-Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id z5-20020a056512308500b0047255d211e9sm1888943lfd.280.2022.05.23.08.30.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 May 2022 08:30:28 -0700 (PDT)
-Message-ID: <4f766cdb-a33b-2470-5b2e-3945c821ce6c@linaro.org>
-Date:   Mon, 23 May 2022 17:30:27 +0200
+        Mon, 23 May 2022 11:31:32 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4735626AFE;
+        Mon, 23 May 2022 08:31:31 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 215921F438C6
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1653319889;
+        bh=V2ecxk+Ic8I9lhk6UyREKjNhm0bjbq7zRjgV1eRfoPQ=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=iA8dbTtZduTsJ1u+r0/w4AwH+apYH0sXiICKHMKpnhE+3/4xtilH1NdmwrxZiQXIE
+         K05jpZSpUgvekYEMWKgjFPYRS1UV4NWoSjE4hJ9Ex77REtbwpW/sI4K0OJ+66yDTiI
+         Xnvn3rLjz+haR22S6jXsyCIYkTKjF+K7ufr8tiXuYKRw+ayvnKxpyOa/Nvz7ClOTeP
+         ChS2IYBg/a3avNT+QvsPG51xxy3dkyHz3cFIBPDb0WbZhhe9/Gs7NMkejsDITQGs0S
+         DYEoAfUx5EPIWLodJWvqoJ5jQc3ZxzBbZUBE5uFpqnznRwUe83WcDO0JAQbiaj//ub
+         LLjG85NOS00cw==
+Message-ID: <8a0f7ab0-e814-0908-d4b3-99540994db3e@collabora.com>
+Date:   Mon, 23 May 2022 17:31:25 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH 1/3] dt-bindings: leds: Add bindings for the TLC5925
- controller
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v16 3/4] dts: arm64: mt8183: add Mediatek MDP3 nodes
 Content-Language: en-US
-To:     Jean-Jacques Hiblot <jjhiblot@traphandler.com>,
-        Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>
-Cc:     linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220523084958.2723943-1-jjhiblot@traphandler.com>
- <20220523084958.2723943-2-jjhiblot@traphandler.com>
- <d12a0afc-c040-5615-fc0d-70a5c29bbf0a@linaro.org>
- <0e1e417a-6444-ddb5-5c48-c89bd78c5fe8@traphandler.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <0e1e417a-6444-ddb5-5c48-c89bd78c5fe8@traphandler.com>
-Content-Type: text/plain; charset=UTF-8
+To:     Moudy Ho <moudy.ho@mediatek.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Cc:     Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Rob Landley <rob@landley.net>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        linux-media@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Alexandre Courbot <acourbot@chromium.org>, tfiga@chromium.org,
+        drinkcat@chromium.org, pihsun@chromium.org, hsinyi@google.com,
+        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+        daoyuan huang <daoyuan.huang@mediatek.com>,
+        Ping-Hsun Wu <ping-hsun.wu@mediatek.com>,
+        allen-kh.cheng@mediatek.com, xiandong.wang@mediatek.com,
+        randy.wu@mediatek.com, jason-jh.lin@mediatek.com,
+        roy-cw.yeh@mediatek.com, river.cheng@mediatek.com,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        cellopoint.kai@gmail.com
+References: <20220520083006.27789-1-moudy.ho@mediatek.com>
+ <20220520083006.27789-4-moudy.ho@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220520083006.27789-4-moudy.ho@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 23/05/2022 17:16, Jean-Jacques Hiblot wrote:
+Il 20/05/22 10:30, Moudy Ho ha scritto:
+> Add device nodes for Media Data Path 3 (MDP3) modules.
 > 
-> On 23/05/2022 12:14, Krzysztof Kozlowski wrote:
->> On 23/05/2022 10:49, Jean-Jacques Hiblot wrote:
->>> Add bindings documentation for the TLC5925 LED controller.
->>>
->>> Signed-off-by: Jean-Jacques Hiblot <jjhiblot@traphandler.com>
->> Thank you for your patch. There is something to discuss/improve.
->>
->>> ---
->>> devicetree@vger.kernel.org
->>>   .../bindings/leds/leds-tlc5925.yaml           | 100 ++++++++++++++++++
->>>   1 file changed, 100 insertions(+)
->>>   create mode 100644 Documentation/devicetree/bindings/leds/leds-tlc5925.yaml
->>>
->>> diff --git a/Documentation/devicetree/bindings/leds/leds-tlc5925.yaml b/Documentation/devicetree/bindings/leds/leds-tlc5925.yaml
->>> new file mode 100644
->>> index 000000000000..156db599d5a1
->>> --- /dev/null
->>> +++ b/Documentation/devicetree/bindings/leds/leds-tlc5925.yaml
->> Filename: vendor,device
->> so "ti,tlc5925-leds.yaml" for example.
->>
->>
->>
->>> @@ -0,0 +1,100 @@
->>> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
->>> +%YAML 1.2
->>> +---
->>> +$id: http://devicetree.org/schemas/leds/leds-tlc5925.yaml#
->>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->>> +
->>> +title: LEDs connected to TI TLC5925 controller
->>> +
->>> +maintainers:
->>> +  - Jean-Jacques Hiblot <jjhiblot@traphandler.com>
->>> +
->>> +description: |
->>> +  The TLC5925 is a low-power 16-channel constant-current LED sink driver.
->>> +  It is controlled through a SPI interface.
->>> +  It is built around a shift register and latches which convert serial
->>> +  input data into a parallel output. Several TLC5925 can be chained to
->>> +  control more than 16 LEDs with a single chip-select.
->>> +  The brightness level cannot be controlled, each LED is either on or off.
->>> +
->>> +  Each LED is represented as a sub-node of the ti,tlc5925 device.
->>> +
->>> +properties:
->>> +  compatible:
->>> +    const: ti,tlc5925
->>> +
->>> +  shift_register_length:
->>> +    maxItems: 1
->> No...
->> 1. Did you test your bindings with dt_binding_check? This fails
->> obviously... please, do not send untested bindings.
->>
->> 2. vendor prefix, no underscores, proper type, maxItems look wrong here
->>
->>> +    description: |
->>> +      The length of the shift register. If several TLC5925 are chained,
->>> +      shift_register_length should be set to 16 times the number of TLC5925.
->>> +      The value must be a multiple of 8.
->>> +
->>> +  "#address-cells":
->>> +    const: 1
->>> +
->>> +  "#size-cells":
->>> +    const: 0
->>> +
->>> +  output-enable-b-gpios:
->>> +    description: |
->>> +      GPIO pins to enable/disable the parallel output. They describe the GPIOs
->>> +      connected to the OE/ pin of the TLC5925s.
->> maxItems
+> Signed-off-by: Moudy Ho <moudy.ho@mediatek.com>
+> ---
+>   arch/arm64/boot/dts/mediatek/mt8183.dtsi | 79 +++++++++++++++++++++++-
+>   1 file changed, 78 insertions(+), 1 deletion(-)
 > 
-> There is no limitation in the driver itself. The actual number of items 
-> here really depends on the number of chips and how they are wired.
+> diff --git a/arch/arm64/boot/dts/mediatek/mt8183.dtsi b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
+> index fc6ac2a46324..5b6c18f51787 100644
+> --- a/arch/arm64/boot/dts/mediatek/mt8183.dtsi
+> +++ b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
+> @@ -1389,6 +1389,50 @@
+>   			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0 0x1000>;
+>   		};
+>   
+> +		mdp3_rdma0: mdp3-rdma0@14001000 {
 
-So you could daisy chain 4 billion of devices? Because by not using any
-limit you claim that 4 billion is doable?
+Are these phandles necessary?
+I don't think that any machine will ever override these... and in case this will be
+needed in the future, we can always add them later.
 
-> 
->>
->>
->>> +
->>> +patternProperties:
->>> +  "@[a-f0-9]+$":
->> How many LEDs you can have here? Usually it is limited, so the pattern
->> should be narrowed.
-> 
-> There is no limitation here either. The chips can be chained to augment 
-> the number of LEDs.
-> 
-> The max number of LED is equal to the length of the shift-register.
+> +			compatible = "mediatek,mt8183-mdp3-rdma";
+> +			reg = <0 0x14001000 0 0x1000>;
+> +			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x1000 0x1000>;
+> +			power-domains = <&spm MT8183_POWER_DOMAIN_DISP>;
+> +			clocks = <&mmsys CLK_MM_MDP_RDMA0>,
+> +				 <&mmsys CLK_MM_MDP_RSZ1>;
+> +			iommus = <&iommu M4U_PORT_MDP_RDMA0>;
+> +			mboxes = <&gce 20 CMDQ_THR_PRIO_LOWEST 0>,
+> +				 <&gce 21 CMDQ_THR_PRIO_LOWEST 0>;
+> +		};
+> +
+> +		mdp3_rsz0: mdp3-rsz0@14003000 {
+> +			compatible = "mediatek,mt8183-mdp3-rsz";
+> +			reg = <0 0x14003000 0 0x1000>;
+> +			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x3000 0x1000>;
+> +			clocks = <&mmsys CLK_MM_MDP_RSZ0>;
+> +		};
+> +
+> +		mdp3_rsz1: mdp3-rsz1@14004000 {
+> +			compatible = "mediatek,mt8183-mdp3-rsz";
+> +			reg = <0 0x14004000 0 0x1000>;
+> +			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x4000 0x1000>;
+> +			clocks = <&mmsys CLK_MM_MDP_RSZ1>;
+> +		};
+> +
+> +		mdp3_wrot0: mdp3-wrot0@14005000 {
+> +			compatible = "mediatek,mt8183-mdp3-wrot";
+> +			reg = <0 0x14005000 0 0x1000>;
+> +			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x5000 0x1000>;
+> +			power-domains = <&spm MT8183_POWER_DOMAIN_DISP>;
+> +			clocks = <&mmsys CLK_MM_MDP_WROT0>;
+> +			iommus = <&iommu M4U_PORT_MDP_WROT0>;
+> +		};
+> +
+> +		mdp3_wdma: mdp3-wdma@14006000 {
+> +			compatible = "mediatek,mt8183-mdp3-wdma";
+> +			reg = <0 0x14006000 0 0x1000>;
+> +			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x6000 0x1000>;
+> +			power-domains = <&spm MT8183_POWER_DOMAIN_DISP>;
+> +			clocks = <&mmsys CLK_MM_MDP_WDMA0>;
+> +			iommus = <&iommu M4U_PORT_MDP_WDMA0>;
+> +		};
+> +
+>   		ovl0: ovl@14008000 {
+>   			compatible = "mediatek,mt8183-disp-ovl";
+>   			reg = <0 0x14008000 0 0x1000>;
+> @@ -1513,7 +1557,33 @@
+>   			interrupts = <GIC_SPI 217 IRQ_TYPE_LEVEL_LOW>;
+>   			power-domains = <&spm MT8183_POWER_DOMAIN_DISP>;
+>   			mediatek,gce-events = <CMDQ_EVENT_MUTEX_STREAM_DONE0>,
+> -					      <CMDQ_EVENT_MUTEX_STREAM_DONE1>;
+> +					      <CMDQ_EVENT_MUTEX_STREAM_DONE1>,
+> +					      <CMDQ_EVENT_MDP_RDMA0_SOF>,
+> +					      <CMDQ_EVENT_MDP_RDMA0_EOF>,
+> +					      <CMDQ_EVENT_MDP_RSZ0_SOF>,
+> +					      <CMDQ_EVENT_MDP_RSZ1_SOF>,
+> +					      <CMDQ_EVENT_MDP_TDSHP_SOF>,
+> +					      <CMDQ_EVENT_MDP_WROT0_SOF>,
+> +					      <CMDQ_EVENT_MDP_WROT0_EOF>,
+> +					      <CMDQ_EVENT_MDP_WDMA0_SOF>,
+> +					      <CMDQ_EVENT_MDP_WDMA0_EOF>,
+> +					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_0>,
+> +					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_1>,
+> +					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_2>,
+> +					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_3>,
+> +					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_4>,
+> +					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_5>,
+> +					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_6>,
+> +					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_7>,
+> +					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_8>,
+> +					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_9>,
+> +					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_10>,
+> +					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_11>,
+> +					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_12>,
+> +					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_13>,
+> +					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_14>,
+> +					      <CMDQ_EVENT_WPE_A_DONE>,
+> +					      <CMDQ_EVENT_SPE_B_DONE>;
+>   			mediatek,gce-client-reg = <&gce SUBSYS_1401XXXX 0x6000 0x1000>;
+>   		};
+>   
+> @@ -1538,6 +1608,13 @@
+>   			power-domains = <&spm MT8183_POWER_DOMAIN_DISP>;
+>   		};
+>   
+> +		mdp3_ccorr: mdp3-ccorr@1401c000 {
 
+Same comment applies here too.
 
+Cheers,
+Angelo
 
-Best regards,
-Krzysztof
+> +			compatible = "mediatek,mt8183-mdp3-ccorr";
+> +			reg = <0 0x1401c000 0 0x1000>;
+> +			mediatek,gce-client-reg = <&gce SUBSYS_1401XXXX 0xc000 0x1000>;
+> +			clocks = <&mmsys CLK_MM_MDP_CCORR>;
+> +		};
+> +
+>   		imgsys: syscon@15020000 {
+>   			compatible = "mediatek,mt8183-imgsys", "syscon";
+>   			reg = <0 0x15020000 0 0x1000>;
+
