@@ -2,98 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73564C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 20:17:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94259C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 20:18:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232671AbiEWURt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 16:17:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34120 "EHLO
+        id S232730AbiEWUSB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 16:18:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229889AbiEWURr (ORCPT
+        with ESMTP id S233018AbiEWUPy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 16:17:47 -0400
-Received: from mail-ot1-x32b.google.com (mail-ot1-x32b.google.com [IPv6:2607:f8b0:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DC89AF1D0;
-        Mon, 23 May 2022 13:17:46 -0700 (PDT)
-Received: by mail-ot1-x32b.google.com with SMTP id e11-20020a9d6e0b000000b0060afcbafa80so5380763otr.3;
-        Mon, 23 May 2022 13:17:46 -0700 (PDT)
+        Mon, 23 May 2022 16:15:54 -0400
+Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F53EA889F
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 13:14:44 -0700 (PDT)
+Received: by mail-io1-xd31.google.com with SMTP id y12so16470353ior.7
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 13:14:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9DUh6l8ZBN76lnS45q0wf6jiM8BayaXvjyPIbUUAWTA=;
-        b=R/AES/FlpFR4Wmbz51yvQ/jtXB3RgnmZ9r8MHiSzVwh62L5Oj6rGCFpXrvzOZ6MUoN
-         NJud8DwB0Kq3PwBJnPWnJZND/dRITJBxkz00GFyn0N6HLcOEJ9kMpvPuvXwdaLHio+U0
-         7uWAN8smybjlAD4Rjju8jBi4Sn4I+S5yVIdX4l1eQ2BjJiBUkM6W2V8Pyx3Ui275KdOn
-         Mb1xB9hUOzo2joQecY5CnJNDZsLwImfMrALeAr1cFQkOINceHcBqI92wD3a0D3our4UV
-         qiuvDuNR5kiBFXeqFAofGUaqibsL3JzaGqNLQWzVhnyz07v8/cAKJCim+h1qvvr/0IMa
-         TWqg==
+         :cc:content-transfer-encoding;
+        bh=2vp0MMS/nvxu6duSf/XEnD4yOQ25zTvmWT7ui8yftHI=;
+        b=EdZ3EoZNsBfIF3vb1gybA4QEABs1GgsVjZAOwUbNskNs6gqaa+1mGIdZsiVE3FWno9
+         RAdfS9kwfjSlmHdIz2H/oeCWvq6WF7SVHGywATmRIsSOSbcMalHoMxseo68lHAskg1ZN
+         rNJXRKMV18WA/dqlhvDFrjgqD41e0Rh7HqGPZvzaibysFy5K7GZfVPQwgyjdgyzX71T0
+         encoD5PY9rOu17eULUcVOyjbAKauaKhI+Q+eu7UP9oLA0K46GseesCox5CtiREtXR8Fh
+         rbuJ2xTvT/vnR+ONmFcpQ+0jgzQT5n2FiF78UWKT6WN8EIuvsncu5ELomMUqgaHu+cFh
+         ilrA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9DUh6l8ZBN76lnS45q0wf6jiM8BayaXvjyPIbUUAWTA=;
-        b=49VQKrrPmCMRTaYRiq8/ugLho7zveIuuK7l5cGACVh389JuEqWEadoKnssxy0y5iED
-         S2y7i5hndc+eTkAbvvQ3r5MxxnXK7a8Uzw3JDM4+QDphdbjeHFNUjgra1dJH9lLq03Xv
-         8GwrK/j4gF8htKGbU1kqy4cUtjuiRdhGVUxwgtwM9U/d41p4l3f8v9T3i8oUo+z2Qfnc
-         C9FC04MnQ5h59J0jzL1HOYt581UgyOe8KlVZ3JNdYnU/bKpuosC7d+B7XHiA5/duDuIL
-         0z+otiXuo77tRvwg+nHqurnt0dtIs5lzNIuICeIDpbzGTTuflm8LETyCfWpPLcJowiEm
-         Spuw==
-X-Gm-Message-State: AOAM5302qJ1oqhOQmR8YOxVSkkbDltLFNdbjbOQ2GsG6XxLOfBH5gjff
-        1G+XEE2gPKXYR78bg+0jSZJ2av2qH4o2+3UBMrs=
-X-Google-Smtp-Source: ABdhPJwVz/W2po1d5TwSlFiQ3ZLNrMa1hBA0NDPQZsBA4wCrc5SAYByfN9LWffY9S9XDU65c6eFAONAuiF4zTdWNZaE=
-X-Received: by 2002:a9d:6543:0:b0:605:e789:271e with SMTP id
- q3-20020a9d6543000000b00605e789271emr9333863otl.200.1653337065638; Mon, 23
- May 2022 13:17:45 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=2vp0MMS/nvxu6duSf/XEnD4yOQ25zTvmWT7ui8yftHI=;
+        b=e4MgP/ha+DfsemDejwW/PZ/9r8HcJuNfDwKV6jowWq107UqzGJxKWzGJdWrto3S2pD
+         HzpubYXavg5zd4eJesdFk+5rvllfd9FVdpljOg1jJFJG42+NgjBMdFXxckKeuzMZ3drZ
+         ohZexpaSFVEqfOkd6RRPrF6aKaOQmvQeQUYLlOW4yWrurRTZDHS+3wSYjsW4mMghNKuU
+         JuXxU+k50cMYH+3XwVpmWkAP3an84QajzWrdn5EeenpPvgkgbI9Nxk5o429Ywfapnczw
+         MtS0Mr+djXXdgwdBXben5SbMcIi0HA/tDCgZGSCsIggJe3sAOcSmLkRIq5ooyg5YfGT0
+         zCCg==
+X-Gm-Message-State: AOAM531e5M7MVFXqYcuO9x5mz6ByV4EkE5MjHjg2GDM4gqOH8EhxJxMV
+        q1lTBZxkoC9KXe4HOAU5o77NJNhS5aEXVaEoX8FuZw==
+X-Google-Smtp-Source: ABdhPJzXVZsMlIcsfTWmHEvgkX+Yekfi/Nst5WNbxO8+xV3NtL2uQPX45xtzoDCC87H6sQybG3k4+UaeXo/yeImQbr4=
+X-Received: by 2002:a02:90ce:0:b0:32e:e2ce:b17c with SMTP id
+ c14-20020a0290ce000000b0032ee2ceb17cmr615703jag.268.1653336883586; Mon, 23
+ May 2022 13:14:43 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220521111145.81697-74-Julia.Lawall@inria.fr>
-In-Reply-To: <20220521111145.81697-74-Julia.Lawall@inria.fr>
-From:   Alex Deucher <alexdeucher@gmail.com>
-Date:   Mon, 23 May 2022 16:17:34 -0400
-Message-ID: <CADnq5_NJq-b4UfF_PpwYc2PV8Nt++cj0RsC=yxkbCfQtJ+meJQ@mail.gmail.com>
-Subject: Re: [PATCH] drm/amdkfd: fix typo in comment
-To:     Julia Lawall <Julia.Lawall@inria.fr>
-Cc:     Felix Kuehling <Felix.Kuehling@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        kernel-janitors@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        Maling list - DRI developers 
-        <dri-devel@lists.freedesktop.org>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
+References: <20220521075736.1225397-1-zenczykowski@gmail.com> <CAADnVQJcDvyeQ3y=uVDj-7JfqtxE+nJk+d5oVQrBhhQpicYk6A@mail.gmail.com>
+In-Reply-To: <CAADnVQJcDvyeQ3y=uVDj-7JfqtxE+nJk+d5oVQrBhhQpicYk6A@mail.gmail.com>
+From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
+Date:   Mon, 23 May 2022 13:14:31 -0700
+Message-ID: <CANP3RGcn6ta7uZH7onuRwOzx_2UmizEtgOTMKvbMOL8FER0MXQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] bpf: print a little more info about maps via cat /sys/fs/bpf/pinned_name
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Linux Network Development Mailing List 
+        <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        BPF Mailing List <bpf@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Applied.  Thanks!
+On Mon, May 23, 2022 at 12:32 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Sat, May 21, 2022 at 12:57 AM Maciej =C5=BBenczykowski
+> <zenczykowski@gmail.com> wrote:
+> >
+> > From: Maciej =C5=BBenczykowski <maze@google.com>
+> >
+> > While this information can be fetched via bpftool,
+> > the cli tool itself isn't always available on more limited systems.
+> >
+> > From the information printed particularly the 'id' is useful since
+> > when combined with /proc/pid/fd/X and /proc/pid/fdinfo/X it allows
+> > tracking down which bpf maps a process has open (which can be
+> > useful for tracking down fd leaks).
+> >
+> > Signed-off-by: Maciej =C5=BBenczykowski <maze@google.com>
+> > ---
+> >  kernel/bpf/inode.c | 3 +++
+> >  1 file changed, 3 insertions(+)
+> >
+> > diff --git a/kernel/bpf/inode.c b/kernel/bpf/inode.c
+> > index 4f841e16779e..784266e258fe 100644
+> > --- a/kernel/bpf/inode.c
+> > +++ b/kernel/bpf/inode.c
+> > @@ -257,6 +257,9 @@ static int map_seq_show(struct seq_file *m, void *v=
+)
+> >         if (unlikely(v =3D=3D SEQ_START_TOKEN)) {
+> >                 seq_puts(m, "# WARNING!! The output is for debug purpos=
+e only\n");
+> >                 seq_puts(m, "# WARNING!! The output format will change\=
+n");
+> > +               seq_printf(m, "# type: %d, key_size: %d, value_size: %d=
+, max_entries: %d, id: %d\n",
+> > +                          map->map_type, map->key_size, map->value_siz=
+e, map->max_entries,
+> > +                          map->id);
+>
+> Maybe use cat /sys/fs/bpf/maps.debug instead?
+> It prints map id.
 
-Alex
-
-On Sat, May 21, 2022 at 7:12 AM Julia Lawall <Julia.Lawall@inria.fr> wrote:
->
-> Spelling mistake (triple letters) in comment.
-> Detected with the help of Coccinelle.
->
-> Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
->
-> ---
->  drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c |    2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c
-> index 8b5452a8d330..67abf8dcd30a 100644
-> --- a/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c
-> +++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c
-> @@ -1621,7 +1621,7 @@ int amdgpu_amdkfd_gpuvm_free_memory_of_gpu(
->
->         mutex_lock(&mem->lock);
->
-> -       /* Unpin MMIO/DOORBELL BO's that were pinnned during allocation */
-> +       /* Unpin MMIO/DOORBELL BO's that were pinned during allocation */
->         if (mem->alloc_flags &
->             (KFD_IOC_ALLOC_MEM_FLAGS_DOORBELL |
->              KFD_IOC_ALLOC_MEM_FLAGS_MMIO_REMAP)) {
->
+Is this something that was very recently added?
+I'm not seeing it on my 5.16 machine with bpffs mounted at /sys/fs/bpf.
