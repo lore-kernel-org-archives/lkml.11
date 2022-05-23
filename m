@@ -2,107 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82D50C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 05:56:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8A35C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 05:57:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231948AbiEWF4Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 01:56:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35988 "EHLO
+        id S230113AbiEWF5l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 01:57:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233218AbiEWF4Q (ORCPT
+        with ESMTP id S231765AbiEWF5h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 01:56:16 -0400
-X-Greylist: delayed 577 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 22 May 2022 22:56:13 PDT
-Received: from gimli.rothwell.id.au (unknown [IPv6:2404:9400:2:0:216:3eff:fee1:997a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DD716477;
-        Sun, 22 May 2022 22:56:12 -0700 (PDT)
-Received: from authenticated.rothwell.id.au (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.rothwell.id.au (Postfix) with ESMTPSA id 4L65t34C7Hzyt1;
-        Mon, 23 May 2022 15:46:19 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=rothwell.id.au;
-        s=201702; t=1653284785;
-        bh=Di2ytdI20hGLvdYTu+D5TDiSjO5bL6Fmj+Y5Mr1n9UI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=p61dwhfIqraUBvusDZjXVmhi1S7L//Wylp+fxffPmqR/t8rAr7feaNgrNRD2uhxSY
-         ISAtl1pbw0tkHh3v38L2pHOPFyqcSWLFbZmXuWmOJV9RJVpgMDlak62ilVdmr/IG/j
-         f3sgtyRTnWrJ9fuL5dl/ZwmKuR+RVZBpOusaefBEROuPlOuSCKPk0fywELzPtiIpl8
-         +ngkx8zKgTDghwL76Esj3UGwvUv7nOJLLW0tehUSTvpHVGboDXwq4G7j8US7ednldH
-         +STNua4Fmh9ChrJBEOYyFk/ZhaBw0QbOn3TGm7k1sJqeSi12c5ecU/Sr9a+1ZlXHWN
-         +ATLXj79MAoUA==
-Date:   Mon, 23 May 2022 15:46:18 +1000
-From:   Stephen Rothwell <sfr@rothwell.id.au>
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: manual merge of the tip tree with the kbuild tree
-Message-ID: <20220523154618.69c5f126@elm.ozlabs.ibm.com>
-In-Reply-To: <CAK7LNAQcRsuKrepsMiV20D+SSQQYWRqeoWqpo4UoQMtdW2A8SQ@mail.gmail.com>
-References: <20220523142431.10ff2f77@canb.auug.org.au>
-        <CAK7LNAQcRsuKrepsMiV20D+SSQQYWRqeoWqpo4UoQMtdW2A8SQ@mail.gmail.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/zluxm=Jzz5yePm7bHq5Ggbc";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+        Mon, 23 May 2022 01:57:37 -0400
+Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA51717061
+        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 22:57:25 -0700 (PDT)
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 20DEE1A172C;
+        Mon, 23 May 2022 07:57:17 +0200 (CEST)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id DE95B1A1734;
+        Mon, 23 May 2022 07:57:16 +0200 (CEST)
+Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 5FC28180031D;
+        Mon, 23 May 2022 13:57:15 +0800 (+08)
+From:   Shengjiu Wang <shengjiu.wang@nxp.com>
+To:     nicoleotsuka@gmail.com, Xiubo.Lee@gmail.com, festevam@gmail.com,
+        shengjiu.wang@gmail.com, lgirdwood@gmail.com, broonie@kernel.org,
+        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
+Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] ASoC: fsl_sai: Fix FSL_SAI_xDR/xFR definition
+Date:   Mon, 23 May 2022 13:44:21 +0800
+Message-Id: <1653284661-18964-1-git-send-email-shengjiu.wang@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/zluxm=Jzz5yePm7bHq5Ggbc
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+There are multiple xDR and xFR registers, the index is
+from 0 to 7. FSL_SAI_xDR and FSL_SAI_xFR is abandoned,
+replace them with FSL_SAI_xDR0 and FSL_SAI_xFR0.
 
-Hi Masahiro,
+Fixes: 4f7a0728b530 ("ASoC: fsl_sai: Add support for SAI new version")
+Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+---
+ sound/soc/fsl/fsl_sai.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-On Mon, 23 May 2022 14:37:28 +0900 Masahiro Yamada <masahiroy@kernel.org> w=
-rote:
->
-> On Mon, May 23, 2022 at 1:24 PM Stephen Rothwell <sfr@canb.auug.org.au> w=
-rote:
-> >
-> > I am not sure if I fixed this up correctly, please check the final resu=
-lt
-> > when linux-next is released.
->=20
-> I think you can fix up around line 420
-> of scripts/Makefile.build
->=20
->=20
-> $(multi-obj-m): objtool-enabled :=3D $(delay-objtool)
-> $(multi-obj-m): part-of-module :=3D y
-> $(multi-obj-m): linked-object :=3D y                        <--- Add this
-> $(multi-obj-m): %.o: %.mod FORCE
->         $(call if_changed_rule,ld_multi_m)
+diff --git a/sound/soc/fsl/fsl_sai.h b/sound/soc/fsl/fsl_sai.h
+index e4965efe6102..1c8f5ca07f9d 100644
+--- a/sound/soc/fsl/fsl_sai.h
++++ b/sound/soc/fsl/fsl_sai.h
+@@ -80,8 +80,8 @@
+ #define FSL_SAI_xCR3(tx, ofs)	(tx ? FSL_SAI_TCR3(ofs) : FSL_SAI_RCR3(ofs))
+ #define FSL_SAI_xCR4(tx, ofs)	(tx ? FSL_SAI_TCR4(ofs) : FSL_SAI_RCR4(ofs))
+ #define FSL_SAI_xCR5(tx, ofs)	(tx ? FSL_SAI_TCR5(ofs) : FSL_SAI_RCR5(ofs))
+-#define FSL_SAI_xDR(tx, ofs)	(tx ? FSL_SAI_TDR(ofs) : FSL_SAI_RDR(ofs))
+-#define FSL_SAI_xFR(tx, ofs)	(tx ? FSL_SAI_TFR(ofs) : FSL_SAI_RFR(ofs))
++#define FSL_SAI_xDR0(tx)	(tx ? FSL_SAI_TDR0 : FSL_SAI_RDR0)
++#define FSL_SAI_xFR0(tx)	(tx ? FSL_SAI_TFR0 : FSL_SAI_RFR0)
+ #define FSL_SAI_xMR(tx)		(tx ? FSL_SAI_TMR : FSL_SAI_RMR)
+ 
+ /* SAI Transmit/Receive Control Register */
+-- 
+2.17.1
 
-Yeah, I tried that, but it needed more - see my upcoming reply to
-myself ... (which is probably overkill, but gets rid of lots of
-warnings).
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/zluxm=Jzz5yePm7bHq5Ggbc
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmKLH6oACgkQAVBC80lX
-0Gx3Wwf9El+4lthpJcxPmPWOWxiTDTEIFti7XxteURAqXoTgatfFXY6pPEn6yxQq
-Gp4U/n4bsdfsquPlHF43ZzUwz96BgBbpRjztMu6daNNPvEjHYJcorFHylyfSBk2t
-inwIwTg0zdGIEe5phEIWGr+3VShRd8WE4jwafajze7bJb4G96wd/XHRTkXW/87Hv
-wpmQsD0OUzlnVX7c3Z9cn1BayjqkAYMzWeNRJ5R7lUIl5ozxrqbN9Wb5t2Gnmfsr
-K1xGFuueLCVYZoG1nUiza6WjOsceZvG5wG0pLrCW4uLXTTZKOBSO/na3iY/Ff/0+
-/T9NcoxvxyIII2SHqkIlzGSUYKdFWw==
-=8MpL
------END PGP SIGNATURE-----
-
---Sig_/zluxm=Jzz5yePm7bHq5Ggbc--
