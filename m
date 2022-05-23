@@ -2,89 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBFF3C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:14:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2F67C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:14:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240044AbiEWRO0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:14:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34920 "EHLO
+        id S239804AbiEWROe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:14:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240306AbiEWRL4 (ORCPT
+        with ESMTP id S240343AbiEWRL6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:11:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4745A1D0E9;
-        Mon, 23 May 2022 10:11:25 -0700 (PDT)
+        Mon, 23 May 2022 13:11:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D33F62F007;
+        Mon, 23 May 2022 10:11:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AA043614F8;
-        Mon, 23 May 2022 17:10:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADFEEC385A9;
-        Mon, 23 May 2022 17:10:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653325848;
-        bh=ji1Im4iMP1zrb13n0zdNsFPRXFoeXoozTfdnd8YO1CM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=biVQD0YKTm0UN0bv+cScO0tLl1KpTCwOg2FfoOqhmQl06dxvDCYe5J1zKTnLG3v/d
-         im0YIi/FnyOp+k24PohJPz14NEEP4XYH64EItjuE3fypNDMU1LsdjhOFxwh5aHpt9y
-         ifLtOa+LUnHEvPn2vcgthTujQpqoTZRrUfoer4ME=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 29/44] net: af_key: add check for pfkey_broadcast in function pfkey_process
-Date:   Mon, 23 May 2022 19:05:13 +0200
-Message-Id: <20220523165758.423249443@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165752.797318097@linuxfoundation.org>
-References: <20220523165752.797318097@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 69294614DA;
+        Mon, 23 May 2022 17:09:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F42DC34119;
+        Mon, 23 May 2022 17:09:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653325779;
+        bh=49TG0H75Ya9Io/9Ra/lmXTl1jm17VfmzpHpMWj3rv+E=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=b6xEBdre8qQxI4OPS0gvtMDU6OupCLO/qTN0Vdp+kRmb/+GNJjBaHIyrlHP14WTRN
+         2lN++TK4jQREtckUKH2NUto/WNrjF3u22KWjdyG5QZ3ptVF85LQqQcWR8HJyavvj9y
+         jYdoQxoRXO1X2PkTLqTbuvxNVwJALvnBfwOpjXTCUtffsQYXN8Qm/cflYXjBDXkVY2
+         P9FTgBolGOA95VyUeWovObgqdvfUhtAT4FD6eNdwCaUHf71zffDAih/Go/Bf6oXSvp
+         hnX5DoGCEvOugX/b6oXjNfeW8ZhOGscpvroLH2D6AMZIlZYDpNPdvknFAoxPn+TH0w
+         RTZdx64qsf5kg==
+Date:   Mon, 23 May 2022 19:09:31 +0200
+From:   Wolfram Sang <wsa@kernel.org>
+To:     Johan Hovold <johan@kernel.org>
+Cc:     frank zago <frank@zago.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        linux-usb@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org
+Subject: Re: [PATCH v5 3/3] i2c: ch341: add I2C MFD cell driver for the CH341
+Message-ID: <You/y4Go+7ZvXgTz@kunai>
+Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
+        Johan Hovold <johan@kernel.org>, frank zago <frank@zago.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        linux-usb@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org
+References: <20220401023306.79532-1-frank@zago.net>
+ <20220401023306.79532-4-frank@zago.net>
+ <YojVHBofkBOFVYap@shikoro>
+ <Youtgr7a3dw58KT0@hovoldconsulting.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="qOyTUoqo6Ka2qIM3"
+Content-Disposition: inline
+In-Reply-To: <Youtgr7a3dw58KT0@hovoldconsulting.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 4dc2a5a8f6754492180741facf2a8787f2c415d7 ]
-
-If skb_clone() returns null pointer, pfkey_broadcast() will
-return error.
-Therefore, it should be better to check the return value of
-pfkey_broadcast() and return error if fails.
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- net/key/af_key.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/net/key/af_key.c b/net/key/af_key.c
-index a416c0f90056..170960ef7e36 100644
---- a/net/key/af_key.c
-+++ b/net/key/af_key.c
-@@ -2836,8 +2836,10 @@ static int pfkey_process(struct sock *sk, struct sk_buff *skb, const struct sadb
- 	void *ext_hdrs[SADB_EXT_MAX];
- 	int err;
- 
--	pfkey_broadcast(skb_clone(skb, GFP_KERNEL), GFP_KERNEL,
--			BROADCAST_PROMISC_ONLY, NULL, sock_net(sk));
-+	err = pfkey_broadcast(skb_clone(skb, GFP_KERNEL), GFP_KERNEL,
-+			      BROADCAST_PROMISC_ONLY, NULL, sock_net(sk));
-+	if (err)
-+		return err;
- 
- 	memset(ext_hdrs, 0, sizeof(ext_hdrs));
- 	err = parse_exthdrs(skb, hdr, ext_hdrs);
--- 
-2.35.1
+--qOyTUoqo6Ka2qIM3
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
 
+> There's no (longer) any difference. See bf7fbeeae6db ("module: Cure the
+> MODULE_LICENSE "GPL" vs. "GPL v2" bogosity").
 
+Wow, cool. Thanks for the heads up! Sidenote: just from the title of
+this commit I guessed the author correctly ;)
+
+
+--qOyTUoqo6Ka2qIM3
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmKLv8cACgkQFA3kzBSg
+KbY4RQ/+Ieko2JdoUgZRAjmlX7cy2lxd8StL9yenYst/u9weA/o82dLUA//dpudn
+ym8yTzgPIA0my2AL3k4tC+WkSaWBiUTThJvOxwtaD5HrlvhAaP/zwnjWJQUnY1zu
+aOWscNepDIN1yXPda3osYeuTO/jq0pfKzO7k/4A8Kn4aFWlkozx4TiPhj6s72Puu
+IJGoDbwNbGcmLcoyMFCUalOYUI5mbVbR3Mle2w1uMFIuCR16wP+5TnOlW6GVqm4R
+7KBHa7efxQ09DgYzk11JmO5ztGbQ96taI5TSbUjdAaEUOrU4MDCISrLo9poniAB1
+ZgW4c1aWFKZvBl/MZ5IxcFK52DpwZWfk+WVNM281javS6gUvDh0tzAZmGzw1kOek
+pwnNDV9IzWvfGhlcawbtKjqV0yoYFAtzK1cQzpauS8TLj35piYkdJVnuCmj/6+yc
+qJYhXSM5Et8PGXPiWgxd1Umtt+YFwLgyxtas6dV2LUCDtBxRbxhdIg8L4MYBxd9n
+zVWZNIpELd3rD8E1HKDDtOaiF5N0wYH8rOzFxQXq9ObgCvxHeElXrSoROg7VQMId
+c8+21NWHYFJ0I024N/usdhrsPGxNpobgZhvhD15gF90R3hDQ80ySR7Y3MYRyCpWG
+BdvDMl8A4rC5JEaxLYESS/9Hy2kWH+83BkIjC6PZVJSvAZGaVAQ=
+=KYIA
+-----END PGP SIGNATURE-----
+
+--qOyTUoqo6Ka2qIM3--
