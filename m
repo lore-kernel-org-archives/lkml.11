@@ -2,85 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35A40C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 10:47:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B85B3C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 10:48:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234320AbiEWKrY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 06:47:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58702 "EHLO
+        id S234301AbiEWKsx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 06:48:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234317AbiEWKrQ (ORCPT
+        with ESMTP id S234283AbiEWKst (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 06:47:16 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E9EBD4C43B
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 03:47:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653302827;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Tufy4k9IUm7Dd+4tryigNXPHptoH5ASjzZkRMX/8R8c=;
-        b=hxmHKjkGD9lWdi7z0anGxA0fIzE9FGfPmzph0Q+IWPfzqjKlAczfnkplqCtwW+McUaEC3B
-        jD/PtnQsTdZk3O6ZfLdF3KidprcFd5T8udkEK9UI8Lcq1noAjArhdIY6PDXdO9gJXi9xwy
-        J0Tb7Bbn6UnwE7Re4H/c4fShBQxlWGc=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-212-KDjXxgU3PtSpCbc6xpsVuA-1; Mon, 23 May 2022 06:47:02 -0400
-X-MC-Unique: KDjXxgU3PtSpCbc6xpsVuA-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 78C7E3C222C5;
-        Mon, 23 May 2022 10:47:01 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.8])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8D71D1121314;
-        Mon, 23 May 2022 10:46:58 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <1b5daa4695b62795b617049e32c784052deabad4.camel@kernel.org>
-References: <1b5daa4695b62795b617049e32c784052deabad4.camel@kernel.org> <165305805651.4094995.7763502506786714216.stgit@warthog.procyon.org.uk>
-To:     Jeff Layton <jlayton@kernel.org>
-Cc:     dhowells@redhat.com, keescook@chromium.org,
-        Jonathan Corbet <corbet@lwn.net>,
-        Eric Van Hensbergen <ericvh@gmail.com>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        Dominique Martinet <asmadeus@codewreck.org>,
-        Christian Schoenebeck <linux_oss@crudebyte.com>,
-        Marc Dionne <marc.dionne@auristor.com>,
-        Xiubo Li <xiubli@redhat.com>,
-        Ilya Dryomov <idryomov@gmail.com>,
-        Steve French <smfrench@gmail.com>,
-        William Kucharski <william.kucharski@oracle.com>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        linux-doc@vger.kernel.org, v9fs-developer@lists.sourceforge.net,
-        linux-afs@lists.infradead.org, ceph-devel@vger.kernel.org,
-        linux-cifs@vger.kernel.org, samba-technical@lists.samba.org,
-        linux-fsdevel@vger.kernel.org, linux-hardening@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] netfs: Fix gcc-12 warning by embedding vfs inode in netfs_i_context
+        Mon, 23 May 2022 06:48:49 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 831044BFC5
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 03:48:48 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3D0AA11FB;
+        Mon, 23 May 2022 03:48:48 -0700 (PDT)
+Received: from FVFF77S0Q05N (unknown [10.57.9.63])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3C88A3F73D;
+        Mon, 23 May 2022 03:48:47 -0700 (PDT)
+Date:   Mon, 23 May 2022 11:48:43 +0100
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org, nslusarek@gmx.net,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: Re: [PATCH] perf: Fix sys_perf_event_open() race against self
+Message-ID: <Yotmi2kM3mm+iPPU@FVFF77S0Q05N>
+References: <20220520183806.GV2578@worktop.programming.kicks-ass.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <658390.1653302817.1@warthog.procyon.org.uk>
-Date:   Mon, 23 May 2022 11:46:57 +0100
-Message-ID: <658391.1653302817@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220520183806.GV2578@worktop.programming.kicks-ass.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Jeff Layton <jlayton@kernel.org> wrote:
+Hi Peter,
 
+On Fri, May 20, 2022 at 08:38:06PM +0200, Peter Zijlstra wrote:
 > 
-> Note that there are some conflicts between this patch and some of the
-> patches in the current ceph-client/testing branch. Depending on the
-> order of merge, one or the other will need to be fixed.
+> Norbert reported that it's possible to race sys_perf_event_open() such
+> that the looser ends up in another context from the group leader,
+> triggering many WARNs.
 
-Do you think it could be taken through the ceph tree?
+I'm hitting the same with my local arm64 Syzkaller instance, atop v5.18-rc6.
 
-David
+> The move_group case checks for races against itself, but the
+> !move_group case doesn't, seemingly relying on the previous
+> group_leader->ctx == ctx check. However, that check is racy due to not
+> holding any locks at that time.
+> 
+> Therefore, re-check the result after acquiring locks and bailing
+> if they no longer match.
+> 
+> Additionally, clarify the not_move_group case from the
+> move_group-vs-move_group race.
+> 
+> Fixes: f63a8daa5812 ("perf: Fix event->ctx locking")
+> Reported-by: Norbert Slusarek <nslusarek@gmx.net>
+> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+> ---
+>  kernel/events/core.c |   14 ++++++++++++++
+>  1 file changed, 14 insertions(+)
+> 
+> --- a/kernel/events/core.c
+> +++ b/kernel/events/core.c
+> @@ -12217,6 +12217,9 @@ SYSCALL_DEFINE5(perf_event_open,
+>  		 * Do not allow to attach to a group in a different task
+>  		 * or CPU context. If we're moving SW events, we'll fix
+>  		 * this up later, so allow that.
+> +		 *
+> +		 * Racy, not holding group_leader->ctx->mutex, see comment with
+> +		 * perf_event_ctx_lock().
+>  		 */
+>  		if (!move_group && group_leader->ctx != ctx)
+>  			goto err_context;
 
+I assume that given we say we're not holding the mutex that this is truly racy,
+and a concurrent write can happen at any time. If that's the case, shouldn't we
+be using *_ONCE() to manipulate perf_event::ctx?
+
+... or could we remove the racy read entirely, and just rely on the later
+check with ctx->mutex held? We can always reach that by chance anyway, so
+there's not a functional need to bail out early, and consistently using the
+later test removes some potential for introducing similar races in future.
+
+FWIW, with this patch as-is applied atop v5.18-rc6, I no longer see the issue
+in testing with the reproducer Syzkaller came up with. That would normally take
+a few seconds, but it now survives several minutes.
+
+For posterity, that reproducer was:
+
+----8<----
+r0 = perf_event_open$cgroup(&(0x7f0000000100)={0x1, 0x80, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, @perf_config_ext}, 0xffffffffffffffff, 0x0, 0xffffffffffffffff, 0x0)
+r1 = dup(r0)
+perf_event_open(&(0x7f00000001c0)={0x0, 0x80, 0x0, 0x0, 0x0, 0x0, 0x0, 0x2, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, @perf_bp={0x0}}, 0xffffffffffffffff, 0x0, r1, 0x0) (async)
+perf_event_open$cgroup(&(0x7f0000000100)={0x1, 0x80, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x10, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, @perf_bp={0x0, 0x5}, 0x0, 0x0, 0x0, 0x0, 0xfffffffffffffffe, 0x0, 0x0, 0x0, 0x0, 0x0, 0x200000000000000}, 0xffffffffffffffff, 0x0, r1, 0x0)
+---->8----
+
+Thanks,
+Mark.
+
+> @@ -12282,6 +12285,7 @@ SYSCALL_DEFINE5(perf_event_open,
+>  			} else {
+>  				perf_event_ctx_unlock(group_leader, gctx);
+>  				move_group = 0;
+> +				goto not_move_group;
+>  			}
+>  		}
+>  
+> @@ -12298,7 +12302,17 @@ SYSCALL_DEFINE5(perf_event_open,
+>  		}
+>  	} else {
+>  		mutex_lock(&ctx->mutex);
+> +
+> +		/*
+> +		 * Now that we hold ctx->lock, (re)validate group_leader->ctx == ctx,
+> +		 * see the group_leader && !move_group test earlier.
+> +		 */
+> +		if (group_leader && group_leader->ctx != ctx) {
+> +			err = -EINVAL;
+> +			goto err_locked;
+> +		}
+>  	}
+> +not_move_group:
+>  
+>  	if (ctx->task == TASK_TOMBSTONE) {
+>  		err = -ESRCH;
+> 
