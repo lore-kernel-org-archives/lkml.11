@@ -2,159 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0305C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:49:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D157C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:49:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242232AbiEWRtZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:49:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43900 "EHLO
+        id S242044AbiEWRtj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:49:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241890AbiEWR1T (ORCPT
+        with ESMTP id S240150AbiEWR2U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:27:19 -0400
-Received: from mail-oo1-xc33.google.com (mail-oo1-xc33.google.com [IPv6:2607:f8b0:4864:20::c33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DC897628A
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 10:22:23 -0700 (PDT)
-Received: by mail-oo1-xc33.google.com with SMTP id j25-20020a4ad199000000b0040e50cc687cso2179260oor.9
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 10:22:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Jyra7hAVNbxUBiQeSeny3J1iXMJn4cpxNxDSkBqSwwc=;
-        b=VHi49t2yJ8XZt3l4544whGRcgSG9/chQbJzw/Wb+5ioQ+fsmX3cRpBx6OQxRGk/Ap+
-         wPsNDHmdeGfiSYG4yhVoaP8kdesRh7Z3VHHegl8q1JSEQj0W1/AxEFXVJe2KlCYoWN13
-         25ePZeus2t/0M9W2csYI07b8jnWviHlnRWgHzXP6/J5XohAxHvEmdaxSNcoc7lfQnDsr
-         8T4k7IU1HI2NNx9aZZvGD+J0Egdg5hSd6Pb1Fq4vl+wFkF6Jrauch0gNhrXAGtT7m/+u
-         B9nF1ndDN2ey4SNsqLm4DJPsUNy/pqBr0mrYuds8wBJOa6h5x0I5D1XD3LaQVxke7Z+C
-         zY6A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Jyra7hAVNbxUBiQeSeny3J1iXMJn4cpxNxDSkBqSwwc=;
-        b=g2frVU4Gv8SMpYteB9x1jUz14j6SYL0ibzwbR1yINR7tsQrqwmyNk/kU7FNKHG2BiQ
-         N5VYkdrdvLuGiOM4Bm6YgkVqVd8mcLOoYrotDPzJ2u0ygINsVSlZdXkwYxylachgE735
-         dmZpA5/fj/irQ+RS4C1wgpiYXc+b1tubpgtlJLSMgQ8DePYOlYEbHJ+yGqU50L9lkePN
-         30AMSUkZpI6o5XMoXNmDmi59rtfjVcsdWHH0P6n2dz/t/q1zPEzYnLlkn+9NkZqBxCHR
-         E5gvpkLzU8Rp2bdSaYPUWrbCRn5ZT54N5P1kA/GDHB3cKebu5T/Ytoyx4WCHjMeR+4CJ
-         5efw==
-X-Gm-Message-State: AOAM530JCcZXG8jcH8PglrQXVSBN/O/IcVTj3Oen/DNagpmniVQYBsrY
-        +nLDZw+psq/cRjDwxj1fspYexhTQC/bd79ItKN3vUQ==
-X-Google-Smtp-Source: ABdhPJzHh/9qmSDYM9XAg5E0fgrqqHi95efq7cL0KZAg+w4CMPYF3qt7r4C+naxClkSjib2q5Q/h0H1EBI7lu9EI0tU=
-X-Received: by 2002:a4a:c90a:0:b0:40e:95bf:268d with SMTP id
- v10-20020a4ac90a000000b0040e95bf268dmr1156358ooq.85.1653326540061; Mon, 23
- May 2022 10:22:20 -0700 (PDT)
+        Mon, 23 May 2022 13:28:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAD0C8FD6F;
+        Mon, 23 May 2022 10:25:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 681ABB81205;
+        Mon, 23 May 2022 17:24:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6DA8C385A9;
+        Mon, 23 May 2022 17:24:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1653326689;
+        bh=kyCpt+kxit9oAreUT89imPW8qUa5FVx/lcfqw+8Zcqo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Yj5Kn19O7NOIthqc/Q8cEyfNKFenW3pGdlnYViALssmKEaPC8226U7u2hcPR+4Lb2
+         XPBKIRQGS0hB3SYbCwnyXtNM86G21ev0WoVx3SFkVJ8pVQA096CixXyfMpZlYyUdiT
+         Z5mrvw1lqdwAyEJYNbZ7Px15kvDzFlskMBFs+MQ0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Zheng Yongjun <zhengyongjun3@huawei.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 028/158] crypto: stm32 - fix reference leak in stm32_crc_remove
+Date:   Mon, 23 May 2022 19:03:05 +0200
+Message-Id: <20220523165835.163341896@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
+References: <20220523165830.581652127@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220427200314.276673-1-mlevitsk@redhat.com> <20220427200314.276673-3-mlevitsk@redhat.com>
- <YoZrG3n5fgMp4LQl@google.com> <e32f6c904c92e9e9efabcc697917a232f5e88881.camel@redhat.com>
- <CALMp9eSVji2CPW1AjFoSbWZ_b-r3y67HyatgdqXEqSyUaD1_BQ@mail.gmail.com> <65991ac329a32cf4128400b643d5b5ccf3918cfe.camel@redhat.com>
-In-Reply-To: <65991ac329a32cf4128400b643d5b5ccf3918cfe.camel@redhat.com>
-From:   Jim Mattson <jmattson@google.com>
-Date:   Mon, 23 May 2022 10:22:09 -0700
-Message-ID: <CALMp9eTS4MZPh4fwTPkNxnWgjT-xiqpxhMyVfdP8TZD0x81CMg@mail.gmail.com>
-Subject: Re: [RFC PATCH v3 02/19] KVM: x86: inhibit APICv/AVIC when the guest
- and/or host changes apic id/base from the defaults.
-To:     Maxim Levitsky <mlevitsk@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>, kvm@vger.kernel.org,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Zhenyu Wang <zhenyuw@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        David Airlie <airlied@linux.ie>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        intel-gfx@lists.freedesktop.org, Daniel Vetter <daniel@ffwll.ch>,
-        Borislav Petkov <bp@alien8.de>, Joerg Roedel <joro@8bytes.org>,
-        linux-kernel@vger.kernel.org, Zhi Wang <zhi.a.wang@intel.com>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        intel-gvt-dev@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, May 22, 2022 at 11:50 PM Maxim Levitsky <mlevitsk@redhat.com> wrote:
->
-> On Sun, 2022-05-22 at 07:47 -0700, Jim Mattson wrote:
-> > On Sun, May 22, 2022 at 2:03 AM Maxim Levitsky <mlevitsk@redhat.com> wrote:
-> > > On Thu, 2022-05-19 at 16:06 +0000, Sean Christopherson wrote:
-> > > > On Wed, Apr 27, 2022, Maxim Levitsky wrote:
-> > > > > Neither of these settings should be changed by the guest and it is
-> > > > > a burden to support it in the acceleration code, so just inhibit
-> > > > > it instead.
-> > > > >
-> > > > > Also add a boolean 'apic_id_changed' to indicate if apic id ever changed.
-> > > > >
-> > > > > Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
-> > > > > ---
-> > > > > +           return;
-> > > > > +
-> > > > > +   pr_warn_once("APIC ID change is unsupported by KVM");
-> > > >
-> > > > It's supported (modulo x2APIC shenanigans), otherwise KVM wouldn't need to disable
-> > > > APICv.
-> > >
-> > > Here, as I said, it would be nice to see that warning if someone complains.
-> > > Fact is that AVIC code was totally broken in this regard, and there are probably more,
-> > > so it would be nice to see if anybody complains.
-> > >
-> > > If you insist, I'll remove this warning.
-> >
-> > This may be fine for a hobbyist, but it's a terrible API in an
-> > enterprise environment. To be honest, I have no way of propagating
-> > this warning from /var/log/messages on a particular host to a
-> > potentially impacted customer. Worse, if they're not the first
-> > impacted customer since the last host reboot, there's no warning to
-> > propagate. I suppose I could just tell every later customer, "Your VM
-> > was scheduled to run on a host that previously reported, 'APIC ID
-> > change is unsupported by KVM.' If you notice any unusual behavior,
-> > that might be the reason for it," but that isn't going to inspire
-> > confidence. I could schedule a drain and reboot of the host, but that
-> > defeats the whole point of the "_once" suffix.
->
-> Mostly agree, and I read alrady few discussions about exactly this,
-> those warnings are mostly useless, but they are used in the
-> cases where we don't have the courage to just exit with KVM_EXIT_INTERNAL_ERROR.
->
-> I do not thing though that the warning is completely useless,
-> as we often have the kernel log of the target machine when things go wrong,
-> so *we* can notice it.
-> In other words a kernel warning is mostly useless but better that nothing.
+From: Zheng Yongjun <zhengyongjun3@huawei.com>
 
-I don't know how this works for you, but *we* are rarely involved when
-things go wrong. :-(
+[ Upstream commit e9a36feecee0ee5845f2e0656f50f9942dd0bed3 ]
 
-> About KVM_EXIT_WARNING, this is IMHO a very good idea, probably combined
-> with some form of taint flag, which could be read by qemu and then shown
-> over hmp/qmp interfaces.
->
-> Best regards,
->         Maxim levitsky
->
->
-> >
-> > I know that there's a long history of doing this in KVM, but I'd like
-> > to ask that we:
-> > a) stop piling on
-> > b) start fixing the existing uses
-> >
-> > If KVM cannot emulate a perfectly valid operation, an exit to
-> > userspace with KVM_EXIT_INTERNAL_ERROR is warranted. Perhaps for
-> > operations that we suspect KVM might get wrong, we should have a new
-> > userspace exit: KVM_EXIT_WARNING?
-> >
-> > I'm not saying that you should remove the warning. I'm just asking
-> > that it be augmented with a direct signal to userspace that KVM may no
-> > longer be reliable.
-> >
->
->
+pm_runtime_get_sync() will increment pm usage counter even it
+failed. Forgetting to call pm_runtime_put_noidle will result
+in reference leak in stm32_crc_remove, so we should fix it.
+
+Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/crypto/stm32/stm32-crc32.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/crypto/stm32/stm32-crc32.c b/drivers/crypto/stm32/stm32-crc32.c
+index be1bf39a317d..90a920e7f664 100644
+--- a/drivers/crypto/stm32/stm32-crc32.c
++++ b/drivers/crypto/stm32/stm32-crc32.c
+@@ -384,8 +384,10 @@ static int stm32_crc_remove(struct platform_device *pdev)
+ 	struct stm32_crc *crc = platform_get_drvdata(pdev);
+ 	int ret = pm_runtime_get_sync(crc->dev);
+ 
+-	if (ret < 0)
++	if (ret < 0) {
++		pm_runtime_put_noidle(crc->dev);
+ 		return ret;
++	}
+ 
+ 	spin_lock(&crc_list.lock);
+ 	list_del(&crc->list);
+-- 
+2.35.1
+
+
+
