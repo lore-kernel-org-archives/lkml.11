@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC1C4C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED98CC4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:13:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244498AbiEWSLP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:11:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38210 "EHLO
+        id S244827AbiEWSLr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:11:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242711AbiEWRhp (ORCPT
+        with ESMTP id S242295AbiEWRhc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:37:45 -0400
+        Mon, 23 May 2022 13:37:32 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DAA15BE52;
-        Mon, 23 May 2022 10:31:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32BD041F83;
+        Mon, 23 May 2022 10:31:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 299EB611CB;
-        Mon, 23 May 2022 17:28:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 265C8C34116;
-        Mon, 23 May 2022 17:28:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2372560BFA;
+        Mon, 23 May 2022 17:28:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B379C385AA;
+        Mon, 23 May 2022 17:28:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326931;
-        bh=flgFXLXgvcqitHLhOUjyuhNpWRTcqrdXR5m+Cf7zjE4=;
+        s=korg; t=1653326928;
+        bh=u42GP9FIxBLiQVUy+Zvlt236BnGmDPCoe9IJWjgsAAk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cy+NF8hOOMaSALvU0pnvTijh8pc85ziWAhvRZeUO04WrRLjo+y//xKr/eFZbv2rW/
-         c3GYaeLGq8pfHXCrG+vi9zqMbMwf8S/wcSEM8C2GaaqrChWoj8SNOHcylZ/5ibsmpH
-         hEN4YzLCZ/gdTqkaCuG79VfbaubZDq7QkMJyntEQ=
+        b=wZdgmEbQrGAwCOj6zrh1cyyNzDOTPiUrBiH8VkDygprxiJ8kXzscymPK92XOufail
+         1CVWNoTEU4LfxNsSNbrPqNo4F+tKJkDFfQTRFNRZGUp0Tbgu2KzfoA6qHqgyNpDdf9
+         /474Dh4ZOXfywaBE77lDrsy181LlzRh4rxmkI5jA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yevgeny Kliteynik <kliteyn@nvidia.com>,
-        Alex Vesker <valex@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 104/158] net/mlx5: DR, Ignore modify TTL on RX if device doesnt support it
-Date:   Mon, 23 May 2022 19:04:21 +0200
-Message-Id: <20220523165848.485323933@linuxfoundation.org>
+        stable@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        James Morse <james.morse@arm.com>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>,
+        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 095/158] arm64: kexec: load from kimage prior to clobbering
+Date:   Mon, 23 May 2022 19:04:12 +0200
+Message-Id: <20220523165847.094019976@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
 References: <20220523165830.581652127@linuxfoundation.org>
@@ -50,174 +51,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yevgeny Kliteynik <kliteyn@nvidia.com>
+From: Mark Rutland <mark.rutland@arm.com>
 
-[ Upstream commit 785d7ed295513bd3374095304b7034fd65c123b0 ]
+[ Upstream commit eb3d8ea3e1f03f4b0b72d8f5ed9eb7c3165862e8 ]
 
-When modifying TTL, packet's csum has to be recalculated.
-Due to HW issue in ConnectX-5, csum recalculation for modify
-TTL on RX is supported through a work-around that is specifically
-enabled by configuration.
-If the work-around isn't enabled, rather than adding an unsupported
-action the modify TTL action on RX should be ignored.
-Ignoring modify TTL action might result in zero actions, so in such
-cases we will not convert the match STE to modify STE, as it is done
-by FW in DMFS.
+In arm64_relocate_new_kernel() we load some fields out of the kimage
+structure after relocation has occurred. As the kimage structure isn't
+allocated to be relocation-safe, it may be clobbered during relocation,
+and we may load junk values out of the structure.
 
-This patch fixes an issue where modify TTL action was ignored both
-on RX and TX instead of only on RX.
+Due to this, kexec may fail when the kimage allocation happens to fall
+within a PA range that an object will be relocated to. This has been
+observed to occur for regular kexec on a QEMU TCG 'virt' machine with
+2GiB of RAM, where the PA range of the new kernel image overlaps the
+kimage structure.
 
-Fixes: 4ff725e1d4ad ("net/mlx5: DR, Ignore modify TTL if device doesn't support it")
-Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
-Reviewed-by: Alex Vesker <valex@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Avoid this by ensuring we load all values from the kimage structure
+prior to relocation.
+
+I've tested this atop v5.16 and v5.18-rc6.
+
+Fixes: 878fdbd70486 ("arm64: kexec: pass kimage as the only argument to relocation function")
+Signed-off-by: Mark Rutland <mark.rutland@arm.com>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: James Morse <james.morse@arm.com>
+Cc: Pasha Tatashin <pasha.tatashin@soleen.com>
+Cc: Will Deacon <will@kernel.org>
+Reviewed-by: Pasha Tatashin <pasha.tatashin@soleen.com>
+Link: https://lore.kernel.org/r/20220516160735.731404-1-mark.rutland@arm.com
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../mellanox/mlx5/core/steering/dr_action.c   | 65 +++++++++++++------
- .../mellanox/mlx5/core/steering/dr_ste_v0.c   |  4 +-
- 2 files changed, 48 insertions(+), 21 deletions(-)
+ arch/arm64/kernel/relocate_kernel.S | 22 +++++++++++++++-------
+ 1 file changed, 15 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
-index 5d1caf97a8fc..8622af6d6bf8 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
-@@ -530,6 +530,37 @@ static int dr_action_handle_cs_recalc(struct mlx5dr_domain *dmn,
- 	return 0;
- }
- 
-+static void dr_action_modify_ttl_adjust(struct mlx5dr_domain *dmn,
-+					struct mlx5dr_ste_actions_attr *attr,
-+					bool rx_rule,
-+					bool *recalc_cs_required)
-+{
-+	*recalc_cs_required = false;
+diff --git a/arch/arm64/kernel/relocate_kernel.S b/arch/arm64/kernel/relocate_kernel.S
+index f0a3df9e18a3..413f899e4ac6 100644
+--- a/arch/arm64/kernel/relocate_kernel.S
++++ b/arch/arm64/kernel/relocate_kernel.S
+@@ -37,6 +37,15 @@
+  * safe memory that has been set up to be preserved during the copy operation.
+  */
+ SYM_CODE_START(arm64_relocate_new_kernel)
++	/*
++	 * The kimage structure isn't allocated specially and may be clobbered
++	 * during relocation. We must load any values we need from it prior to
++	 * any relocation occurring.
++	 */
++	ldr	x28, [x0, #KIMAGE_START]
++	ldr	x27, [x0, #KIMAGE_ARCH_EL2_VECTORS]
++	ldr	x26, [x0, #KIMAGE_ARCH_DTB_MEM]
 +
-+	/* if device supports csum recalculation - no adjustment needed */
-+	if (mlx5dr_ste_supp_ttl_cs_recalc(&dmn->info.caps))
-+		return;
-+
-+	/* no adjustment needed on TX rules */
-+	if (!rx_rule)
-+		return;
-+
-+	if (!MLX5_CAP_ESW_FLOWTABLE(dmn->mdev, fdb_ipv4_ttl_modify)) {
-+		/* Ignore the modify TTL action.
-+		 * It is always kept as last HW action.
-+		 */
-+		attr->modify_actions--;
-+		return;
-+	}
-+
-+	if (dmn->type == MLX5DR_DOMAIN_TYPE_FDB)
-+		/* Due to a HW bug on some devices, modifying TTL on RX flows
-+		 * will cause an incorrect checksum calculation. In such cases
-+		 * we will use a FW table to recalculate the checksum.
-+		 */
-+		*recalc_cs_required = true;
-+}
-+
- static void dr_action_print_sequence(struct mlx5dr_domain *dmn,
- 				     struct mlx5dr_action *actions[],
- 				     int last_idx)
-@@ -649,8 +680,9 @@ int mlx5dr_actions_build_ste_arr(struct mlx5dr_matcher *matcher,
- 		case DR_ACTION_TYP_MODIFY_HDR:
- 			attr.modify_index = action->rewrite->index;
- 			attr.modify_actions = action->rewrite->num_of_actions;
--			recalc_cs_required = action->rewrite->modify_ttl &&
--					     !mlx5dr_ste_supp_ttl_cs_recalc(&dmn->info.caps);
-+			if (action->rewrite->modify_ttl)
-+				dr_action_modify_ttl_adjust(dmn, &attr, rx_rule,
-+							    &recalc_cs_required);
- 			break;
- 		case DR_ACTION_TYP_L2_TO_TNL_L2:
- 		case DR_ACTION_TYP_L2_TO_TNL_L3:
-@@ -737,12 +769,7 @@ int mlx5dr_actions_build_ste_arr(struct mlx5dr_matcher *matcher,
- 	*new_hw_ste_arr_sz = nic_matcher->num_of_builders;
- 	last_ste = ste_arr + DR_STE_SIZE * (nic_matcher->num_of_builders - 1);
+ 	/* Setup the list loop variables. */
+ 	ldr	x18, [x0, #KIMAGE_ARCH_ZERO_PAGE] /* x18 = zero page for BBM */
+ 	ldr	x17, [x0, #KIMAGE_ARCH_TTBR1]	/* x17 = linear map copy */
+@@ -72,21 +81,20 @@ SYM_CODE_START(arm64_relocate_new_kernel)
+ 	ic	iallu
+ 	dsb	nsh
+ 	isb
+-	ldr	x4, [x0, #KIMAGE_START]			/* relocation start */
+-	ldr	x1, [x0, #KIMAGE_ARCH_EL2_VECTORS]	/* relocation start */
+-	ldr	x0, [x0, #KIMAGE_ARCH_DTB_MEM]		/* dtb address */
+ 	turn_off_mmu x12, x13
  
--	/* Due to a HW bug in some devices, modifying TTL on RX flows will
--	 * cause an incorrect checksum calculation. In this case we will
--	 * use a FW table to recalculate.
--	 */
--	if (dmn->type == MLX5DR_DOMAIN_TYPE_FDB &&
--	    rx_rule && recalc_cs_required && dest_action) {
-+	if (recalc_cs_required && dest_action) {
- 		ret = dr_action_handle_cs_recalc(dmn, dest_action, &attr.final_icm_addr);
- 		if (ret) {
- 			mlx5dr_err(dmn,
-@@ -1562,12 +1589,6 @@ dr_action_modify_check_is_ttl_modify(const void *sw_action)
- 	return sw_field == MLX5_ACTION_IN_FIELD_OUT_IP_TTL;
- }
- 
--static bool dr_action_modify_ttl_ignore(struct mlx5dr_domain *dmn)
--{
--	return !mlx5dr_ste_supp_ttl_cs_recalc(&dmn->info.caps) &&
--	       !MLX5_CAP_ESW_FLOWTABLE(dmn->mdev, fdb_ipv4_ttl_modify);
--}
--
- static int dr_actions_convert_modify_header(struct mlx5dr_action *action,
- 					    u32 max_hw_actions,
- 					    u32 num_sw_actions,
-@@ -1579,6 +1600,7 @@ static int dr_actions_convert_modify_header(struct mlx5dr_action *action,
- 	const struct mlx5dr_ste_action_modify_field *hw_dst_action_info;
- 	const struct mlx5dr_ste_action_modify_field *hw_src_action_info;
- 	struct mlx5dr_domain *dmn = action->rewrite->dmn;
-+	__be64 *modify_ttl_sw_action = NULL;
- 	int ret, i, hw_idx = 0;
- 	__be64 *sw_action;
- 	__be64 hw_action;
-@@ -1591,8 +1613,14 @@ static int dr_actions_convert_modify_header(struct mlx5dr_action *action,
- 	action->rewrite->allow_rx = 1;
- 	action->rewrite->allow_tx = 1;
- 
--	for (i = 0; i < num_sw_actions; i++) {
--		sw_action = &sw_actions[i];
-+	for (i = 0; i < num_sw_actions || modify_ttl_sw_action; i++) {
-+		/* modify TTL is handled separately, as a last action */
-+		if (i == num_sw_actions) {
-+			sw_action = modify_ttl_sw_action;
-+			modify_ttl_sw_action = NULL;
-+		} else {
-+			sw_action = &sw_actions[i];
-+		}
- 
- 		ret = dr_action_modify_check_field_limitation(action,
- 							      sw_action);
-@@ -1601,10 +1629,9 @@ static int dr_actions_convert_modify_header(struct mlx5dr_action *action,
- 
- 		if (!(*modify_ttl) &&
- 		    dr_action_modify_check_is_ttl_modify(sw_action)) {
--			if (dr_action_modify_ttl_ignore(dmn))
--				continue;
--
-+			modify_ttl_sw_action = sw_action;
- 			*modify_ttl = true;
-+			continue;
- 		}
- 
- 		/* Convert SW action to HW action */
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v0.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v0.c
-index 2d62950f7a29..134c8484c901 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v0.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v0.c
-@@ -419,7 +419,7 @@ dr_ste_v0_set_actions_tx(struct mlx5dr_domain *dmn,
- 	 * encapsulation. The reason for that is that we support
- 	 * modify headers for outer headers only
- 	 */
--	if (action_type_set[DR_ACTION_TYP_MODIFY_HDR]) {
-+	if (action_type_set[DR_ACTION_TYP_MODIFY_HDR] && attr->modify_actions) {
- 		dr_ste_v0_set_entry_type(last_ste, DR_STE_TYPE_MODIFY_PKT);
- 		dr_ste_v0_set_rewrite_actions(last_ste,
- 					      attr->modify_actions,
-@@ -511,7 +511,7 @@ dr_ste_v0_set_actions_rx(struct mlx5dr_domain *dmn,
- 		}
- 	}
- 
--	if (action_type_set[DR_ACTION_TYP_MODIFY_HDR]) {
-+	if (action_type_set[DR_ACTION_TYP_MODIFY_HDR] && attr->modify_actions) {
- 		if (dr_ste_v0_get_entry_type(last_ste) == DR_STE_TYPE_MODIFY_PKT)
- 			dr_ste_v0_arr_init_next(&last_ste,
- 						added_stes,
+ 	/* Start new image. */
+-	cbz	x1, .Lel1
+-	mov	x1, x4				/* relocation start */
+-	mov	x2, x0				/* dtb address */
++	cbz	x27, .Lel1
++	mov	x1, x28				/* kernel entry point */
++	mov	x2, x26				/* dtb address */
+ 	mov	x3, xzr
+ 	mov	x4, xzr
+ 	mov     x0, #HVC_SOFT_RESTART
+ 	hvc	#0				/* Jumps from el2 */
+ .Lel1:
++	mov	x0, x26				/* dtb address */
++	mov	x1, xzr
+ 	mov	x2, xzr
+ 	mov	x3, xzr
+-	br	x4				/* Jumps from el1 */
++	br	x28				/* Jumps from el1 */
+ SYM_CODE_END(arm64_relocate_new_kernel)
 -- 
 2.35.1
 
