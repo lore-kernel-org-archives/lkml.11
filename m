@@ -2,179 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8849C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 15:47:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96DDCC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 15:49:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238249AbiEWPrm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 11:47:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34526 "EHLO
+        id S238214AbiEWPtO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 11:49:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238137AbiEWPrS (ORCPT
+        with ESMTP id S238162AbiEWPtL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 11:47:18 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A497D31DE4;
-        Mon, 23 May 2022 08:47:16 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id E1BC71F4398D
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1653320835;
-        bh=q7CgXLMmmst7qcf5ovl6lmGKMokfqNYlLyUDftNT0AE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Sgv7Inh2QKst1zBDmKWwef6g95so89X9bZV5UqYlMnM+eJqlU+j+V15pUDIBh1qdv
-         JOp7ACNuHGv9QrShjylidEb4tnnttskg0tt7X/5YPSSasXMvqTgyrIQBfNkymxhNeK
-         EqMP7IyLonyvOj7xJa23s1ZugiwMj6fI8ZnqxkVcgPFOn6dAwQLtnEBYzv90q3P+B4
-         jprIqC7BdRf8HEOgX7J2dinSRQqB1RdUqB8sQowVua8d4iDCpSFawiAD74FFhC1nz2
-         6uy39HImkJdBYx3gv5G7PITp2cegkJi2fosCv1cBZ8Rm4Lp+VbMldYVdJR7YHjjLz1
-         slqwYP7ff5szg==
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-To:     lgirdwood@gmail.com
-Cc:     broonie@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
-        angelogioacchino.delregno@collabora.com,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH v3 3/4] dt-bindings: regulator: Add bindings for MT6332 regulator
-Date:   Mon, 23 May 2022 17:47:08 +0200
-Message-Id: <20220523154709.118663-4-angelogioacchino.delregno@collabora.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220523154709.118663-1-angelogioacchino.delregno@collabora.com>
-References: <20220523154709.118663-1-angelogioacchino.delregno@collabora.com>
+        Mon, 23 May 2022 11:49:11 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E9C934B8B
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 08:49:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653320950; x=1684856950;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=8lhQ/KID3ztUPGBkFXjcOy6u1hxj1gnvDoqTjbmBCrI=;
+  b=We5q2IMW6ldaSKHwYn0WQj6NY168ek9oIlnggqKYikFQlzi5rJGEbJcp
+   g4NFqRrdVw7XsL55UH9YXKyvErb7RtxcqZP8Ruk/idRnmQJ/IW23IN9yV
+   9m2S5lKuM/IVf1yAaVzaXZR0D8PNmQpstbz+W9J0a0bX1A2qvC5l5ivCx
+   t+4803m3VUORtOO/e+dJPL2yWs5dI9P/tdzRzcsdbVYnn9cp+qrQWIw0+
+   i86KHM6AvdZoGfp3htPj2JGZubUE6RQoZD7NCZEd0f4J1L17DKg7oGT26
+   zpGJNFwIlv3CF3O8iNIaM4bzcxbfKgpXu6uImDX95pijhP1m75slXswow
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10356"; a="272984064"
+X-IronPort-AV: E=Sophos;i="5.91,246,1647327600"; 
+   d="scan'208";a="272984064"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2022 08:49:09 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,246,1647327600"; 
+   d="scan'208";a="577457627"
+Received: from lkp-server01.sh.intel.com (HELO db63a1be7222) ([10.239.97.150])
+  by fmsmga007.fm.intel.com with ESMTP; 23 May 2022 08:49:08 -0700
+Received: from kbuild by db63a1be7222 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1ntAIt-0001E2-H3;
+        Mon, 23 May 2022 15:49:07 +0000
+Date:   Mon, 23 May 2022 23:49:06 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [arm-integrator:kernel-in-vmalloc-v5.18-rc1 8/17] ld.lld: error:
+ undefined symbol: kernel_sec_start
+Message-ID: <202205232354.0am40aBc-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add devicetree bindings for the regulators found in the MT6332 PMIC.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-integrator.git kernel-in-vmalloc-v5.18-rc1
+head:   a9b76a04739b5b4dbad86664342c8945e83d8e95
+commit: 06f73703766c6f636c79d04aae9f83446f1b8ff2 [8/17] ARM: Compile the kernel into VMALLOC
+config: arm-randconfig-r021-20220522 (https://download.01.org/0day-ci/archive/20220523/202205232354.0am40aBc-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 10c9ecce9f6096e18222a331c5e7d085bd813f75)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm cross compiling tool for clang build
+        # apt-get install binutils-arm-linux-gnueabi
+        # https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-integrator.git/commit/?id=06f73703766c6f636c79d04aae9f83446f1b8ff2
+        git remote add arm-integrator https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-integrator.git
+        git fetch --no-tags arm-integrator kernel-in-vmalloc-v5.18-rc1
+        git checkout 06f73703766c6f636c79d04aae9f83446f1b8ff2
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
 
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- .../regulator/mediatek,mt6332-regulator.yaml  | 112 ++++++++++++++++++
- 1 file changed, 112 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/regulator/mediatek,mt6332-regulator.yaml
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-diff --git a/Documentation/devicetree/bindings/regulator/mediatek,mt6332-regulator.yaml b/Documentation/devicetree/bindings/regulator/mediatek,mt6332-regulator.yaml
-new file mode 100644
-index 000000000000..3218f43e6957
---- /dev/null
-+++ b/Documentation/devicetree/bindings/regulator/mediatek,mt6332-regulator.yaml
-@@ -0,0 +1,112 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/regulator/mediatek,mt6332-regulator.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: MT6332 Regulator from MediaTek Integrated
-+
-+maintainers:
-+  - AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-+
-+description: |
-+  The MT6332 Companion PMIC provides 6 BUCK and 4 LDO (Low Dropout)
-+  regulators and nodes are named according to the regulator type:
-+  buck-<name> and ldo-<name>.
-+  MT6332 regulators node should be sub node of the MT6397 MFD node.
-+
-+patternProperties:
-+  "^buck-v(dram|dvfs2|pa|rf18a|rf18b|sbst)$":
-+    type: object
-+    $ref: "regulator.yaml#"
-+
-+    properties:
-+      regulator-name:
-+        pattern: "^v(dram|dvfs2|pa|rf18a|rf18b|sbst)$"
-+
-+    unevaluatedProperties: false
-+
-+  "^ldo-v(bif28|dig18|sram|usb33)$":
-+    type: object
-+    $ref: "regulator.yaml#"
-+
-+    properties:
-+      regulator-name:
-+        pattern: "^v(bif28|dig18|sram|usb33)$"
-+
-+    unevaluatedProperties: false
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    pmic {
-+      regulators {
-+        mt6332_vdram_reg: buck-vdram {
-+          regulator-name = "vdram";
-+          regulator-min-microvolt = <700000>;
-+          regulator-max-microvolt = <1493750>;
-+          regulator-ramp-delay = <12500>;
-+          regulator-allowed-modes = <0 1>;
-+          regulator-always-on;
-+        };
-+        mt6332_vdvfs2_reg: buck-vdvfs2 {
-+          regulator-name = "vdvfs2";
-+          regulator-min-microvolt = <700000>;
-+          regulator-max-microvolt = <1312500>;
-+          regulator-ramp-delay = <12500>;
-+          regulator-enable-ramp-delay = <1>;
-+          regulator-allowed-modes = <0 1>;
-+        };
-+        mt6332_vpa_reg: buck-vpa {
-+          regulator-name = "vpa";
-+          regulator-min-microvolt = <500000>;
-+          regulator-max-microvolt = <3400000>;
-+        };
-+        mt6332_vrf18a_reg: buck-vrf18a {
-+          regulator-name = "vrf18a";
-+          regulator-min-microvolt = <1050000>;
-+          regulator-max-microvolt = <2240625>;
-+          regulator-allowed-modes = <0 1>;
-+        };
-+        mt6332_vrf18b_reg: buck-vrf18b {
-+          regulator-name = "vrf18b";
-+          regulator-min-microvolt = <1050000>;
-+          regulator-max-microvolt = <2240625>;
-+          regulator-allowed-modes = <0 1>;
-+        };
-+        mt6332_vsbst_reg: buck-vsbst {
-+          regulator-name = "vsbst";
-+          regulator-min-microvolt = <3500000>;
-+          regulator-max-microvolt = <7468750>;
-+        };
-+        mt6332_vauxb32_reg: ldo-vauxb32 {
-+          regulator-name = "vauxb32";
-+          regulator-min-microvolt = <2800000>;
-+          regulator-max-microvolt = <3200000>;
-+        };
-+        mt6332_vbif28_reg: ldo-vbif28 {
-+          regulator-name = "vbif28";
-+          regulator-min-microvolt = <2800000>;
-+          regulator-max-microvolt = <2800000>;
-+        };
-+        mt6332_vdig18_reg: ldo-vdig18 {
-+          regulator-name = "vdig18";
-+          regulator-min-microvolt = <1200000>;
-+          regulator-max-microvolt = <1800000>;
-+          regulator-always-on;
-+        };
-+        mt6332_vsram_reg: ldo-vsram {
-+          regulator-name = "vauxa32";
-+          regulator-min-microvolt = <700000>;
-+          regulator-max-microvolt = <1493750>;
-+          regulator-always-on;
-+        };
-+        mt6332_vusb33_reg: ldo-vusb33 {
-+          regulator-name = "vusb33";
-+          regulator-min-microvolt = <3300000>;
-+          regulator-max-microvolt = <3300000>;
-+        };
-+      };
-+    };
-+...
+All error/warnings (new ones prefixed by >>):
+
+>> ld.lld: error: undefined symbol: kernel_sec_start
+   >>> referenced by init.c
+   >>>               mm/init.o:(arm_memblock_init) in archive arch/arm/built-in.a
+   >>> referenced by init.c
+   >>>               mm/init.o:(arm_memblock_init) in archive arch/arm/built-in.a
+--
+>> mm/gup.c:1599:28: warning: incompatible integer to pointer conversion passing 'unsigned long' to parameter of type 'const void *' [-Wint-conversion]
+                           pages[i] = virt_to_page(start);
+                                                   ^~~~~
+   arch/arm/include/asm/memory.h:441:53: note: expanded from macro 'virt_to_page'
+   #define virt_to_page(kaddr)     pfn_to_page(virt_to_pfn(kaddr))
+                                                           ^~~~~
+   include/asm-generic/memory_model.h:18:41: note: expanded from macro '__pfn_to_page'
+   #define __pfn_to_page(pfn)      (mem_map + ((pfn) - ARCH_PFN_OFFSET))
+                                                ^~~
+   arch/arm/include/asm/memory.h:322:53: note: passing argument to parameter 'p' here
+   static inline unsigned long virt_to_pfn(const void *p)
+                                                       ^
+   1 warning generated.
+--
+>> mm/nommu.c:501:36: warning: incompatible integer to pointer conversion passing 'unsigned long' to parameter of type 'const void *' [-Wint-conversion]
+                   struct page *page = virt_to_page(from);
+                                                    ^~~~
+   arch/arm/include/asm/memory.h:441:53: note: expanded from macro 'virt_to_page'
+   #define virt_to_page(kaddr)     pfn_to_page(virt_to_pfn(kaddr))
+                                                           ^~~~~
+   include/asm-generic/memory_model.h:18:41: note: expanded from macro '__pfn_to_page'
+   #define __pfn_to_page(pfn)      (mem_map + ((pfn) - ARCH_PFN_OFFSET))
+                                                ^~~
+   arch/arm/include/asm/memory.h:322:53: note: passing argument to parameter 'p' here
+   static inline unsigned long virt_to_pfn(const void *p)
+                                                       ^
+   1 warning generated.
+
 -- 
-2.35.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
