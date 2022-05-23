@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 591BAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:13:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D8B9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:14:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243202AbiEWSN4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:13:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35136 "EHLO
+        id S243626AbiEWSOA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:14:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243840AbiEWRvt (ORCPT
+        with ESMTP id S243876AbiEWRvt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 23 May 2022 13:51:49 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 141DE63531;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13F225D5FC;
         Mon, 23 May 2022 10:38:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2FFAC60BD3;
-        Mon, 23 May 2022 17:30:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37859C385AA;
-        Mon, 23 May 2022 17:30:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9EFBC6090C;
+        Mon, 23 May 2022 17:29:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9520EC385A9;
+        Mon, 23 May 2022 17:29:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653327033;
-        bh=Qr88KDm+8w4ttAVeAg2P+FcF1zwbfkMRYuL+cGuyPro=;
+        s=korg; t=1653326995;
+        bh=LYnJcQJy1pId1GQSjCERvqnOJ4fRwclu+T581GZ7mHI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Rc85mjTaRL3AkTF2pO60q1i/ba71ShS+3n0CY2laCYnsb01DD0JCXRB1zPsHxOKXv
-         GE47p3w3zm7t4z2sYflPIsB962nOq2vh7c22LxjPw2CaYfnWayjmCxGCsylBE2G1Mi
-         4hACxPUzdTjg58TRJC+WHhJPTGBy4RIKDXUnQgNA=
+        b=sfyIMllZ258Q7By9F3XAtX/emWP7Gw6/5kw0cp3M93C5ro5eDJ9aRAU952FUHepaZ
+         eAZruaaLehyHPDlAHomuNFAYp6SqtdHNinZpLgpJTkoC+3JsdMa14jBEwW7xyfdcvp
+         CyIZTLR4NzWb/y3bMcCp670eG1I6AO3cTkApKQSs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Avri Altman <avri.altman@wdc.com>,
+        Daejun Park <daejun7.park@samsung.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 100/158] net/qla3xxx: Fix a test in ql_reset_work()
-Date:   Mon, 23 May 2022 19:04:17 +0200
-Message-Id: <20220523165847.975129356@linuxfoundation.org>
+Subject: [PATCH 5.17 123/158] scsi: ufs: core: Fix referencing invalid rsp field
+Date:   Mon, 23 May 2022 19:04:40 +0200
+Message-Id: <20220523165851.110975996@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
 References: <20220523165830.581652127@linuxfoundation.org>
@@ -50,46 +50,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Daejun Park <daejun7.park@samsung.com>
 
-[ Upstream commit 5361448e45fac6fb96738df748229432a62d78b6 ]
+[ Upstream commit d5d92b64408443e113b9742f8f1c35278910dd4d ]
 
-test_bit() tests if one bit is set or not.
-Here the logic seems to check of bit QL_RESET_PER_SCSI (i.e. 4) OR bit
-QL_RESET_START (i.e. 3) is set.
+Fix referencing sense data when it is invalid. When the length of the data
+segment is 0, there is no valid information in the rsp field, so
+ufshpb_rsp_upiu() is returned without additional operation.
 
-In fact, it checks if bit 7 (4 | 3 = 7) is set, that is to say
-QL_ADAPTER_UP.
-
-This looks harmless, because this bit is likely be set, and when the
-ql_reset_work() delayed work is scheduled in ql3xxx_isr() (the only place
-that schedule this work), QL_RESET_START or QL_RESET_PER_SCSI is set.
-
-This has been spotted by smatch.
-
-Fixes: 5a4faa873782 ("[PATCH] qla3xxx NIC driver")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Link: https://lore.kernel.org/r/80e73e33f390001d9c0140ffa9baddf6466a41a2.1652637337.git.christophe.jaillet@wanadoo.fr
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Link: https://lore.kernel.org/r/252651381.41652940482659.JavaMail.epsvc@epcpadp4
+Fixes: 4b5f49079c52 ("scsi: ufs: ufshpb: L2P map management for HPB read")
+Acked-by: Avri Altman <avri.altman@wdc.com>
+Signed-off-by: Daejun Park <daejun7.park@samsung.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/qlogic/qla3xxx.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/scsi/ufs/ufshpb.c | 19 +++++++------------
+ 1 file changed, 7 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/net/ethernet/qlogic/qla3xxx.c b/drivers/net/ethernet/qlogic/qla3xxx.c
-index b30589a135c2..06f4d9a9e938 100644
---- a/drivers/net/ethernet/qlogic/qla3xxx.c
-+++ b/drivers/net/ethernet/qlogic/qla3xxx.c
-@@ -3614,7 +3614,8 @@ static void ql_reset_work(struct work_struct *work)
- 		qdev->mem_map_registers;
- 	unsigned long hw_flags;
+diff --git a/drivers/scsi/ufs/ufshpb.c b/drivers/scsi/ufs/ufshpb.c
+index b34feba1f53d..8dc818b03939 100644
+--- a/drivers/scsi/ufs/ufshpb.c
++++ b/drivers/scsi/ufs/ufshpb.c
+@@ -1256,6 +1256,13 @@ void ufshpb_rsp_upiu(struct ufs_hba *hba, struct ufshcd_lrb *lrbp)
+ 	struct utp_hpb_rsp *rsp_field = &lrbp->ucd_rsp_ptr->hr;
+ 	int data_seg_len;
  
--	if (test_bit((QL_RESET_PER_SCSI | QL_RESET_START), &qdev->flags)) {
-+	if (test_bit(QL_RESET_PER_SCSI, &qdev->flags) ||
-+	    test_bit(QL_RESET_START, &qdev->flags)) {
- 		clear_bit(QL_LINK_MASTER, &qdev->flags);
++	data_seg_len = be32_to_cpu(lrbp->ucd_rsp_ptr->header.dword_2)
++		& MASK_RSP_UPIU_DATA_SEG_LEN;
++
++	/* If data segment length is zero, rsp_field is not valid */
++	if (!data_seg_len)
++		return;
++
+ 	if (unlikely(lrbp->lun != rsp_field->lun)) {
+ 		struct scsi_device *sdev;
+ 		bool found = false;
+@@ -1290,18 +1297,6 @@ void ufshpb_rsp_upiu(struct ufs_hba *hba, struct ufshcd_lrb *lrbp)
+ 		return;
+ 	}
  
- 		/*
+-	data_seg_len = be32_to_cpu(lrbp->ucd_rsp_ptr->header.dword_2)
+-		& MASK_RSP_UPIU_DATA_SEG_LEN;
+-
+-	/* To flush remained rsp_list, we queue the map_work task */
+-	if (!data_seg_len) {
+-		if (!ufshpb_is_general_lun(hpb->lun))
+-			return;
+-
+-		ufshpb_kick_map_work(hpb);
+-		return;
+-	}
+-
+ 	BUILD_BUG_ON(sizeof(struct utp_hpb_rsp) != UTP_HPB_RSP_SIZE);
+ 
+ 	if (!ufshpb_is_hpb_rsp_valid(hba, lrbp, rsp_field))
 -- 
 2.35.1
 
