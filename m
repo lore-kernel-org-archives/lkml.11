@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40C6CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:40:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30091C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:43:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241211AbiEWRkk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:40:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55522 "EHLO
+        id S242407AbiEWRkw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:40:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242407AbiEWR1n (ORCPT
+        with ESMTP id S242358AbiEWR1j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:27:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31FE87CB5C;
-        Mon, 23 May 2022 10:23:08 -0700 (PDT)
+        Mon, 23 May 2022 13:27:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CA037CB36;
+        Mon, 23 May 2022 10:22:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CF4CF60919;
-        Mon, 23 May 2022 17:23:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C10A7C385AA;
-        Mon, 23 May 2022 17:23:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4F8AC60919;
+        Mon, 23 May 2022 17:22:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B5D3C385A9;
+        Mon, 23 May 2022 17:22:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326587;
-        bh=bmNDXt0dhhCHvZC50SZNQe0bZ4XDsvewzFJ1e8Dm0K0=;
+        s=korg; t=1653326577;
+        bh=Z0yLV7OaN3ICxtsmf7PdR/dPOvR2eTHVeN76hlLFETA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RCpRHU0D2zoJKaB8Q4CY9MqZpiuB1/HSeqqAC9gxS0fnQiosYEdFzw6+ArFkAO7rT
-         5EIywzvamlL7OyNMV2B8LZGfhPc8Pl3bzhzPiCsGdhIdHHqDh9sGONJ7+uoeqPX4ZX
-         VNWoRVITQbkAvomWEQ7ecoFY/ZMTJbI8Czm8mNzE=
+        b=r9vjxL9l9oY7T+N1L/Wi/z4HBAhaQhD3VMD/nGtCdsPjX66gzZhlxvi8Kf/NmTl0l
+         YL8/oWIzp6yA31KdV3BRDD0HUnC137Ge7LW2i7XO3Ynd/Cl1R0xV01wI+Anxo89EmS
+         oxTLVeTjlwkK0pAgRdmuB1AWR3FgFdrPuoJUNCIw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shreyas K K <quic_shrekk@quicinc.com>,
-        Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
-        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 127/132] arm64: Enable repeat tlbi workaround on KRYO4XX gold CPUs
-Date:   Mon, 23 May 2022 19:05:36 +0200
-Message-Id: <20220523165844.724849103@linuxfoundation.org>
+        stable@vger.kernel.org, Grant Grundler <grundler@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 124/132] net: atlantic: reduce scope of is_rsc_complete
+Date:   Mon, 23 May 2022 19:05:33 +0200
+Message-Id: <20220523165844.146817007@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
 References: <20220523165823.492309987@linuxfoundation.org>
@@ -49,55 +49,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shreyas K K <quic_shrekk@quicinc.com>
+From: Grant Grundler <grundler@chromium.org>
 
-[ Upstream commit 51f559d66527e238f9a5f82027bff499784d4eac ]
+[ Upstream commit 79784d77ebbd3ec516b7a5ce555d979fb7946202 ]
 
-Add KRYO4XX gold/big cores to the list of CPUs that need the
-repeat TLBI workaround. Apply this to the affected
-KRYO4XX cores (rcpe to rfpe).
+Don't defer handling the err case outside the loop. That's pointless.
 
-The variant and revision bits are implementation defined and are
-different from the their Cortex CPU counterparts on which they are
-based on, i.e., (r0p0 to r3p0) is equivalent to (rcpe to rfpe).
+And since is_rsc_complete is only used inside this loop, declare
+it inside the loop to reduce it's scope.
 
-Signed-off-by: Shreyas K K <quic_shrekk@quicinc.com>
-Reviewed-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
-Link: https://lore.kernel.org/r/20220512110134.12179-1-quic_shrekk@quicinc.com
-Signed-off-by: Will Deacon <will@kernel.org>
+Signed-off-by: Grant Grundler <grundler@chromium.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/arm64/silicon-errata.rst | 3 +++
- arch/arm64/kernel/cpu_errata.c         | 2 ++
- 2 files changed, 5 insertions(+)
+ drivers/net/ethernet/aquantia/atlantic/aq_ring.c | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
-diff --git a/Documentation/arm64/silicon-errata.rst b/Documentation/arm64/silicon-errata.rst
-index d410a47ffa57..7c1750bcc5bd 100644
---- a/Documentation/arm64/silicon-errata.rst
-+++ b/Documentation/arm64/silicon-errata.rst
-@@ -163,6 +163,9 @@ stable kernels.
- +----------------+-----------------+-----------------+-----------------------------+
- | Qualcomm Tech. | Kryo4xx Silver  | N/A             | ARM64_ERRATUM_1024718       |
- +----------------+-----------------+-----------------+-----------------------------+
-+| Qualcomm Tech. | Kryo4xx Gold    | N/A             | ARM64_ERRATUM_1286807       |
-++----------------+-----------------+-----------------+-----------------------------+
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c b/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
+index 7cf5a48e9a7d..339efdfb1d49 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
+@@ -345,7 +345,6 @@ int aq_ring_rx_clean(struct aq_ring_s *self,
+ 		     int budget)
+ {
+ 	struct net_device *ndev = aq_nic_get_ndev(self->aq_nic);
+-	bool is_rsc_completed = true;
+ 	int err = 0;
+ 
+ 	for (; (self->sw_head != self->hw_head) && budget;
+@@ -365,6 +364,8 @@ int aq_ring_rx_clean(struct aq_ring_s *self,
+ 		if (!buff->is_eop) {
+ 			buff_ = buff;
+ 			do {
++				bool is_rsc_completed = true;
 +
- +----------------+-----------------+-----------------+-----------------------------+
- | Fujitsu        | A64FX           | E#010001        | FUJITSU_ERRATUM_010001      |
- +----------------+-----------------+-----------------+-----------------------------+
-diff --git a/arch/arm64/kernel/cpu_errata.c b/arch/arm64/kernel/cpu_errata.c
-index a33d7b8f3b93..c67c19d70159 100644
---- a/arch/arm64/kernel/cpu_errata.c
-+++ b/arch/arm64/kernel/cpu_errata.c
-@@ -208,6 +208,8 @@ static const struct arm64_cpu_capabilities arm64_repeat_tlbi_list[] = {
- #ifdef CONFIG_ARM64_ERRATUM_1286807
- 	{
- 		ERRATA_MIDR_RANGE(MIDR_CORTEX_A76, 0, 0, 3, 0),
-+		/* Kryo4xx Gold (rcpe to rfpe) => (r0p0 to r3p0) */
-+		ERRATA_MIDR_RANGE(MIDR_QCOM_KRYO_4XX_GOLD, 0xc, 0xe, 0xf, 0xe),
- 	},
- #endif
- 	{},
+ 				if (buff_->next >= self->size) {
+ 					err = -EIO;
+ 					goto err_exit;
+@@ -376,18 +377,16 @@ int aq_ring_rx_clean(struct aq_ring_s *self,
+ 							    next_,
+ 							    self->hw_head);
+ 
+-				if (unlikely(!is_rsc_completed))
+-					break;
++				if (unlikely(!is_rsc_completed)) {
++					err = 0;
++					goto err_exit;
++				}
+ 
+ 				buff->is_error |= buff_->is_error;
+ 				buff->is_cso_err |= buff_->is_cso_err;
+ 
+ 			} while (!buff_->is_eop);
+ 
+-			if (!is_rsc_completed) {
+-				err = 0;
+-				goto err_exit;
+-			}
+ 			if (buff->is_error ||
+ 			    (buff->is_lro && buff->is_cso_err)) {
+ 				buff_ = buff;
 -- 
 2.35.1
 
