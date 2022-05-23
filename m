@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BB99C46467
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:39:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7FF2C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:39:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242804AbiEWRhr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:37:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42112 "EHLO
+        id S243852AbiEWRi3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:38:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241610AbiEWR0z (ORCPT
+        with ESMTP id S241694AbiEWR1F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:26:55 -0400
+        Mon, 23 May 2022 13:27:05 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC08787A3B;
-        Mon, 23 May 2022 10:22:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C71C88A045;
+        Mon, 23 May 2022 10:22:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 15498B811FF;
-        Mon, 23 May 2022 17:20:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48F31C385A9;
-        Mon, 23 May 2022 17:20:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8B5D4B8121A;
+        Mon, 23 May 2022 17:21:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D03B1C385AA;
+        Mon, 23 May 2022 17:21:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326432;
-        bh=6k26SjaFnCznDwmheCoJw42qml7VXumn1egxh8v7ITI=;
+        s=korg; t=1653326494;
+        bh=Kc4i3TPZ58l7L+TwB9CQDQPQ0+tmBK4JCr259LvbiJg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EEBCWZhUv2cy5ayfIoaPynZ18X5c+ybM5stLPi9pGhgkDqzdKMIUk/IkwWWG+6TmB
-         NJLnh4FNKkLKYPvYxJ594PrQvxGwfybBLOlr42eqwmmi1w+RDMFs5x11AOUjvaY1/s
-         G/rGMlvJSkywjSj2v87XdmJMJoR8RAyYHMKGb5co=
+        b=PTljDQPUPdg7wXPHuBnzIDsqufTsbFn4daIm46RvaxIbMtoTFpNIVZaxDVeQ+SK3z
+         PYZ8ZDFCoPoRsdrkeIwmgwspfMAv2692RLbmIs5CqQ4OWTYCidvfVFB2PjqGyKfKJL
+         RKEYKUWbcxFOo8H1LWPUMQHfkqTXV7Vqsm2vGNvg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ilya Dryomov <idryomov@gmail.com>,
-        Xiubo Li <xiubli@redhat.com>, Jeff Layton <jlayton@kernel.org>
-Subject: [PATCH 5.15 056/132] libceph: fix potential use-after-free on linger ping and resends
-Date:   Mon, 23 May 2022 19:04:25 +0200
-Message-Id: <20220523165832.552673344@linuxfoundation.org>
+        stable@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 098/132] mptcp: strict local address ID selection
+Date:   Mon, 23 May 2022 19:05:07 +0200
+Message-Id: <20220523165839.636049226@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
 References: <20220523165823.492309987@linuxfoundation.org>
@@ -48,566 +50,224 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ilya Dryomov <idryomov@gmail.com>
+From: Paolo Abeni <pabeni@redhat.com>
 
-commit 75dbb685f4e8786c33ddef8279bab0eadfb0731f upstream.
+[ Upstream commit 4cf86ae84c718333928fd2d43168a1e359a28329 ]
 
-request_reinit() is not only ugly as the comment rightfully suggests,
-but also unsafe.  Even though it is called with osdc->lock held for
-write in all cases, resetting the OSD request refcount can still race
-with handle_reply() and result in use-after-free.  Taking linger ping
-as an example:
+The address ID selection for MPJ subflows created in response
+to incoming ADD_ADDR option is currently unreliable: it happens
+at MPJ socket creation time, when the local address could be
+unknown.
 
-    handle_timeout thread                     handle_reply thread
+Additionally, if the no local endpoint is available for the local
+address, a new dummy endpoint is created, confusing the user-land.
 
-                                              down_read(&osdc->lock)
-                                              req = lookup_request(...)
-                                              ...
-                                              finish_request(req)  # unregisters
-                                              up_read(&osdc->lock)
-                                              __complete_request(req)
-                                                linger_ping_cb(req)
+This change refactor the code to move the address ID selection inside
+the rebuild_header() helper, when the local address eventually
+selected by the route lookup is finally known. If the address used
+is not mapped by any endpoint - and thus can't be advertised/removed
+pick the id 0 instead of allocate a new endpoint.
 
-      # req->r_kref == 2 because handle_reply still holds its ref
-
-    down_write(&osdc->lock)
-    send_linger_ping(lreq)
-      req = lreq->ping_req  # same req
-      # cancel_linger_request is NOT
-      # called - handle_reply already
-      # unregistered
-      request_reinit(req)
-        WARN_ON(req->r_kref != 1)  # fires
-        request_init(req)
-          kref_init(req->r_kref)
-
-                   # req->r_kref == 1 after kref_init
-
-                                              ceph_osdc_put_request(req)
-                                                kref_put(req->r_kref)
-
-            # req->r_kref == 0 after kref_put, req is freed
-
-        <further req initialization/use> !!!
-
-This happens because send_linger_ping() always (re)uses the same OSD
-request for watch ping requests, relying on cancel_linger_request() to
-unregister it from the OSD client and rip its messages out from the
-messenger.  send_linger() does the same for watch/notify registration
-and watch reconnect requests.  Unfortunately cancel_request() doesn't
-guarantee that after it returns the OSD client would be completely done
-with the OSD request -- a ref could still be held and the callback (if
-specified) could still be invoked too.
-
-The original motivation for request_reinit() was inability to deal with
-allocation failures in send_linger() and send_linger_ping().  Switching
-to using osdc->req_mempool (currently only used by CephFS) respects that
-and allows us to get rid of request_reinit().
-
-Cc: stable@vger.kernel.org
-Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
-Reviewed-by: Xiubo Li <xiubli@redhat.com>
-Acked-by: Jeff Layton <jlayton@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/ceph/osd_client.h |    3 
- net/ceph/osd_client.c           |  302 +++++++++++++++-------------------------
- 2 files changed, 122 insertions(+), 183 deletions(-)
+ net/mptcp/pm_netlink.c | 13 --------
+ net/mptcp/protocol.c   |  3 ++
+ net/mptcp/protocol.h   |  3 +-
+ net/mptcp/subflow.c    | 67 ++++++++++++++++++++++++++++++++++++------
+ 4 files changed, 63 insertions(+), 23 deletions(-)
 
---- a/include/linux/ceph/osd_client.h
-+++ b/include/linux/ceph/osd_client.h
-@@ -287,6 +287,9 @@ struct ceph_osd_linger_request {
- 	rados_watcherrcb_t errcb;
- 	void *data;
- 
-+	struct ceph_pagelist *request_pl;
-+	struct page **notify_id_pages;
-+
- 	struct page ***preply_pages;
- 	size_t *preply_len;
- };
---- a/net/ceph/osd_client.c
-+++ b/net/ceph/osd_client.c
-@@ -537,43 +537,6 @@ static void request_init(struct ceph_osd
- 	target_init(&req->r_t);
+diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
+index cf0f700f46dd..e6b95d1cba70 100644
+--- a/net/mptcp/pm_netlink.c
++++ b/net/mptcp/pm_netlink.c
+@@ -86,16 +86,6 @@ static bool addresses_equal(const struct mptcp_addr_info *a,
+ 	return a->port == b->port;
  }
  
--/*
-- * This is ugly, but it allows us to reuse linger registration and ping
-- * requests, keeping the structure of the code around send_linger{_ping}()
-- * reasonable.  Setting up a min_nr=2 mempool for each linger request
-- * and dealing with copying ops (this blasts req only, watch op remains
-- * intact) isn't any better.
-- */
--static void request_reinit(struct ceph_osd_request *req)
+-static bool address_zero(const struct mptcp_addr_info *addr)
 -{
--	struct ceph_osd_client *osdc = req->r_osdc;
--	bool mempool = req->r_mempool;
--	unsigned int num_ops = req->r_num_ops;
--	u64 snapid = req->r_snapid;
--	struct ceph_snap_context *snapc = req->r_snapc;
--	bool linger = req->r_linger;
--	struct ceph_msg *request_msg = req->r_request;
--	struct ceph_msg *reply_msg = req->r_reply;
+-	struct mptcp_addr_info zero;
 -
--	dout("%s req %p\n", __func__, req);
--	WARN_ON(kref_read(&req->r_kref) != 1);
--	request_release_checks(req);
+-	memset(&zero, 0, sizeof(zero));
+-	zero.family = addr->family;
 -
--	WARN_ON(kref_read(&request_msg->kref) != 1);
--	WARN_ON(kref_read(&reply_msg->kref) != 1);
--	target_destroy(&req->r_t);
--
--	request_init(req);
--	req->r_osdc = osdc;
--	req->r_mempool = mempool;
--	req->r_num_ops = num_ops;
--	req->r_snapid = snapid;
--	req->r_snapc = snapc;
--	req->r_linger = linger;
--	req->r_request = request_msg;
--	req->r_reply = reply_msg;
+-	return addresses_equal(addr, &zero, true);
 -}
 -
- struct ceph_osd_request *ceph_osdc_alloc_request(struct ceph_osd_client *osdc,
- 					       struct ceph_snap_context *snapc,
- 					       unsigned int num_ops,
-@@ -918,14 +881,30 @@ EXPORT_SYMBOL(osd_req_op_xattr_init);
-  * @watch_opcode: CEPH_OSD_WATCH_OP_*
-  */
- static void osd_req_op_watch_init(struct ceph_osd_request *req, int which,
--				  u64 cookie, u8 watch_opcode)
-+				  u8 watch_opcode, u64 cookie, u32 gen)
+ static void local_address(const struct sock_common *skc,
+ 			  struct mptcp_addr_info *addr)
  {
- 	struct ceph_osd_req_op *op;
+@@ -954,9 +944,6 @@ int mptcp_pm_nl_get_local_id(struct mptcp_sock *msk, struct sock_common *skc)
+ 	if (addresses_equal(&msk_local, &skc_local, false))
+ 		return 0;
  
- 	op = osd_req_op_init(req, which, CEPH_OSD_OP_WATCH, 0);
- 	op->watch.cookie = cookie;
- 	op->watch.op = watch_opcode;
--	op->watch.gen = 0;
-+	op->watch.gen = gen;
+-	if (address_zero(&skc_local))
+-		return 0;
+-
+ 	pernet = net_generic(sock_net((struct sock *)msk), pm_nl_pernet_id);
+ 
+ 	rcu_read_lock();
+diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
+index d6def23b8cba..c293742fc461 100644
+--- a/net/mptcp/protocol.c
++++ b/net/mptcp/protocol.c
+@@ -115,6 +115,9 @@ static int __mptcp_socket_create(struct mptcp_sock *msk)
+ 	list_add(&subflow->node, &msk->conn_list);
+ 	sock_hold(ssock->sk);
+ 	subflow->request_mptcp = 1;
++
++	/* This is the first subflow, always with id 0 */
++	subflow->local_id_valid = 1;
+ 	mptcp_sock_graft(msk->first, sk->sk_socket);
+ 
+ 	return 0;
+diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
+index 72a259a74b57..8d70e491139a 100644
+--- a/net/mptcp/protocol.h
++++ b/net/mptcp/protocol.h
+@@ -436,7 +436,8 @@ struct mptcp_subflow_context {
+ 		rx_eof : 1,
+ 		can_ack : 1,        /* only after processing the remote a key */
+ 		disposable : 1,	    /* ctx can be free at ulp release time */
+-		stale : 1;	    /* unable to snd/rcv data, do not use for xmit */
++		stale : 1,	    /* unable to snd/rcv data, do not use for xmit */
++		local_id_valid : 1; /* local_id is correctly initialized */
+ 	enum mptcp_data_avail data_avail;
+ 	u32	remote_nonce;
+ 	u64	thmac;
+diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
+index 9c7deffe7cb6..204dfb82f697 100644
+--- a/net/mptcp/subflow.c
++++ b/net/mptcp/subflow.c
+@@ -483,6 +483,51 @@ static void subflow_finish_connect(struct sock *sk, const struct sk_buff *skb)
+ 	mptcp_subflow_reset(sk);
+ }
+ 
++static void subflow_set_local_id(struct mptcp_subflow_context *subflow, int local_id)
++{
++	subflow->local_id = local_id;
++	subflow->local_id_valid = 1;
 +}
 +
-+/*
-+ * prot_ver, timeout and notify payload (may be empty) should already be
-+ * encoded in @request_pl
-+ */
-+static void osd_req_op_notify_init(struct ceph_osd_request *req, int which,
-+				   u64 cookie, struct ceph_pagelist *request_pl)
++static int subflow_chk_local_id(struct sock *sk)
 +{
-+	struct ceph_osd_req_op *op;
++	struct mptcp_subflow_context *subflow = mptcp_subflow_ctx(sk);
++	struct mptcp_sock *msk = mptcp_sk(subflow->conn);
++	int err;
 +
-+	op = osd_req_op_init(req, which, CEPH_OSD_OP_NOTIFY, 0);
-+	op->notify.cookie = cookie;
++	if (likely(subflow->local_id_valid))
++		return 0;
 +
-+	ceph_osd_data_pagelist_init(&op->notify.request_data, request_pl);
-+	op->indata_len = request_pl->length;
- }
- 
- /*
-@@ -2727,10 +2706,13 @@ static void linger_release(struct kref *
- 	WARN_ON(!list_empty(&lreq->pending_lworks));
- 	WARN_ON(lreq->osd);
- 
--	if (lreq->reg_req)
--		ceph_osdc_put_request(lreq->reg_req);
--	if (lreq->ping_req)
--		ceph_osdc_put_request(lreq->ping_req);
-+	if (lreq->request_pl)
-+		ceph_pagelist_release(lreq->request_pl);
-+	if (lreq->notify_id_pages)
-+		ceph_release_page_vector(lreq->notify_id_pages, 1);
++	err = mptcp_pm_get_local_id(msk, (struct sock_common *)sk);
++	if (err < 0)
++		return err;
 +
-+	ceph_osdc_put_request(lreq->reg_req);
-+	ceph_osdc_put_request(lreq->ping_req);
- 	target_destroy(&lreq->t);
- 	kfree(lreq);
- }
-@@ -2999,6 +2981,12 @@ static void linger_commit_cb(struct ceph
- 	struct ceph_osd_linger_request *lreq = req->r_priv;
- 
- 	mutex_lock(&lreq->lock);
-+	if (req != lreq->reg_req) {
-+		dout("%s lreq %p linger_id %llu unknown req (%p != %p)\n",
-+		     __func__, lreq, lreq->linger_id, req, lreq->reg_req);
-+		goto out;
-+	}
++	subflow_set_local_id(subflow, err);
++	return 0;
++}
 +
- 	dout("%s lreq %p linger_id %llu result %d\n", __func__, lreq,
- 	     lreq->linger_id, req->r_result);
- 	linger_reg_commit_complete(lreq, req->r_result);
-@@ -3022,6 +3010,7 @@ static void linger_commit_cb(struct ceph
- 		}
- 	}
- 
-+out:
- 	mutex_unlock(&lreq->lock);
- 	linger_put(lreq);
- }
-@@ -3044,6 +3033,12 @@ static void linger_reconnect_cb(struct c
- 	struct ceph_osd_linger_request *lreq = req->r_priv;
- 
- 	mutex_lock(&lreq->lock);
-+	if (req != lreq->reg_req) {
-+		dout("%s lreq %p linger_id %llu unknown req (%p != %p)\n",
-+		     __func__, lreq, lreq->linger_id, req, lreq->reg_req);
-+		goto out;
-+	}
++static int subflow_rebuild_header(struct sock *sk)
++{
++	int err = subflow_chk_local_id(sk);
 +
- 	dout("%s lreq %p linger_id %llu result %d last_error %d\n", __func__,
- 	     lreq, lreq->linger_id, req->r_result, lreq->last_error);
- 	if (req->r_result < 0) {
-@@ -3053,46 +3048,64 @@ static void linger_reconnect_cb(struct c
- 		}
- 	}
- 
-+out:
- 	mutex_unlock(&lreq->lock);
- 	linger_put(lreq);
- }
- 
- static void send_linger(struct ceph_osd_linger_request *lreq)
- {
--	struct ceph_osd_request *req = lreq->reg_req;
--	struct ceph_osd_req_op *op = &req->r_ops[0];
-+	struct ceph_osd_client *osdc = lreq->osdc;
-+	struct ceph_osd_request *req;
-+	int ret;
- 
--	verify_osdc_wrlocked(req->r_osdc);
-+	verify_osdc_wrlocked(osdc);
-+	mutex_lock(&lreq->lock);
- 	dout("%s lreq %p linger_id %llu\n", __func__, lreq, lreq->linger_id);
- 
--	if (req->r_osd)
--		cancel_linger_request(req);
-+	if (lreq->reg_req) {
-+		if (lreq->reg_req->r_osd)
-+			cancel_linger_request(lreq->reg_req);
-+		ceph_osdc_put_request(lreq->reg_req);
-+	}
++	if (unlikely(err < 0))
++		return err;
 +
-+	req = ceph_osdc_alloc_request(osdc, NULL, 1, true, GFP_NOIO);
-+	BUG_ON(!req);
- 
--	request_reinit(req);
- 	target_copy(&req->r_t, &lreq->t);
- 	req->r_mtime = lreq->mtime;
- 
--	mutex_lock(&lreq->lock);
- 	if (lreq->is_watch && lreq->committed) {
--		WARN_ON(op->op != CEPH_OSD_OP_WATCH ||
--			op->watch.cookie != lreq->linger_id);
--		op->watch.op = CEPH_OSD_WATCH_OP_RECONNECT;
--		op->watch.gen = ++lreq->register_gen;
-+		osd_req_op_watch_init(req, 0, CEPH_OSD_WATCH_OP_RECONNECT,
-+				      lreq->linger_id, ++lreq->register_gen);
- 		dout("lreq %p reconnect register_gen %u\n", lreq,
--		     op->watch.gen);
-+		     req->r_ops[0].watch.gen);
- 		req->r_callback = linger_reconnect_cb;
- 	} else {
--		if (!lreq->is_watch)
-+		if (lreq->is_watch) {
-+			osd_req_op_watch_init(req, 0, CEPH_OSD_WATCH_OP_WATCH,
-+					      lreq->linger_id, 0);
-+		} else {
- 			lreq->notify_id = 0;
--		else
--			WARN_ON(op->watch.op != CEPH_OSD_WATCH_OP_WATCH);
++	return inet_sk_rebuild_header(sk);
++}
 +
-+			refcount_inc(&lreq->request_pl->refcnt);
-+			osd_req_op_notify_init(req, 0, lreq->linger_id,
-+					       lreq->request_pl);
-+			ceph_osd_data_pages_init(
-+			    osd_req_op_data(req, 0, notify, response_data),
-+			    lreq->notify_id_pages, PAGE_SIZE, 0, false, false);
-+		}
- 		dout("lreq %p register\n", lreq);
- 		req->r_callback = linger_commit_cb;
- 	}
--	mutex_unlock(&lreq->lock);
++#if IS_ENABLED(CONFIG_MPTCP_IPV6)
++static int subflow_v6_rebuild_header(struct sock *sk)
++{
++	int err = subflow_chk_local_id(sk);
 +
-+	ret = ceph_osdc_alloc_messages(req, GFP_NOIO);
-+	BUG_ON(ret);
- 
- 	req->r_priv = linger_get(lreq);
- 	req->r_linger = true;
-+	lreq->reg_req = req;
-+	mutex_unlock(&lreq->lock);
- 
- 	submit_request(req, true);
- }
-@@ -3102,6 +3115,12 @@ static void linger_ping_cb(struct ceph_o
- 	struct ceph_osd_linger_request *lreq = req->r_priv;
- 
- 	mutex_lock(&lreq->lock);
-+	if (req != lreq->ping_req) {
-+		dout("%s lreq %p linger_id %llu unknown req (%p != %p)\n",
-+		     __func__, lreq, lreq->linger_id, req, lreq->ping_req);
-+		goto out;
-+	}
++	if (unlikely(err < 0))
++		return err;
 +
- 	dout("%s lreq %p linger_id %llu result %d ping_sent %lu last_error %d\n",
- 	     __func__, lreq, lreq->linger_id, req->r_result, lreq->ping_sent,
- 	     lreq->last_error);
-@@ -3117,6 +3136,7 @@ static void linger_ping_cb(struct ceph_o
- 		     lreq->register_gen, req->r_ops[0].watch.gen);
- 	}
- 
-+out:
- 	mutex_unlock(&lreq->lock);
- 	linger_put(lreq);
- }
-@@ -3124,8 +3144,8 @@ static void linger_ping_cb(struct ceph_o
- static void send_linger_ping(struct ceph_osd_linger_request *lreq)
- {
- 	struct ceph_osd_client *osdc = lreq->osdc;
--	struct ceph_osd_request *req = lreq->ping_req;
--	struct ceph_osd_req_op *op = &req->r_ops[0];
-+	struct ceph_osd_request *req;
-+	int ret;
- 
- 	if (ceph_osdmap_flag(osdc, CEPH_OSDMAP_PAUSERD)) {
- 		dout("%s PAUSERD\n", __func__);
-@@ -3137,19 +3157,26 @@ static void send_linger_ping(struct ceph
- 	     __func__, lreq, lreq->linger_id, lreq->ping_sent,
- 	     lreq->register_gen);
- 
--	if (req->r_osd)
--		cancel_linger_request(req);
-+	if (lreq->ping_req) {
-+		if (lreq->ping_req->r_osd)
-+			cancel_linger_request(lreq->ping_req);
-+		ceph_osdc_put_request(lreq->ping_req);
-+	}
- 
--	request_reinit(req);
--	target_copy(&req->r_t, &lreq->t);
-+	req = ceph_osdc_alloc_request(osdc, NULL, 1, true, GFP_NOIO);
-+	BUG_ON(!req);
- 
--	WARN_ON(op->op != CEPH_OSD_OP_WATCH ||
--		op->watch.cookie != lreq->linger_id ||
--		op->watch.op != CEPH_OSD_WATCH_OP_PING);
--	op->watch.gen = lreq->register_gen;
-+	target_copy(&req->r_t, &lreq->t);
-+	osd_req_op_watch_init(req, 0, CEPH_OSD_WATCH_OP_PING, lreq->linger_id,
-+			      lreq->register_gen);
- 	req->r_callback = linger_ping_cb;
++	return inet6_sk_rebuild_header(sk);
++}
++#endif
 +
-+	ret = ceph_osdc_alloc_messages(req, GFP_NOIO);
-+	BUG_ON(ret);
-+
- 	req->r_priv = linger_get(lreq);
- 	req->r_linger = true;
-+	lreq->ping_req = req;
+ struct request_sock_ops mptcp_subflow_request_sock_ops;
+ EXPORT_SYMBOL_GPL(mptcp_subflow_request_sock_ops);
+ static struct tcp_request_sock_ops subflow_request_sock_ipv4_ops;
+@@ -1402,13 +1447,8 @@ int __mptcp_subflow_connect(struct sock *sk, const struct mptcp_addr_info *loc,
+ 		get_random_bytes(&subflow->local_nonce, sizeof(u32));
+ 	} while (!subflow->local_nonce);
  
- 	ceph_osdc_get_request(req);
- 	account_request(req);
-@@ -3165,12 +3192,6 @@ static void linger_submit(struct ceph_os
- 
- 	down_write(&osdc->lock);
- 	linger_register(lreq);
--	if (lreq->is_watch) {
--		lreq->reg_req->r_ops[0].watch.cookie = lreq->linger_id;
--		lreq->ping_req->r_ops[0].watch.cookie = lreq->linger_id;
--	} else {
--		lreq->reg_req->r_ops[0].notify.cookie = lreq->linger_id;
+-	if (!local_id) {
+-		err = mptcp_pm_get_local_id(msk, (struct sock_common *)ssk);
+-		if (err < 0)
+-			goto failed;
+-
+-		local_id = err;
 -	}
++	if (local_id)
++		subflow_set_local_id(subflow, local_id);
  
- 	calc_target(osdc, &lreq->t, false);
- 	osd = lookup_create_osd(osdc, lreq->t.osd, true);
-@@ -3202,9 +3223,9 @@ static void cancel_linger_map_check(stru
-  */
- static void __linger_cancel(struct ceph_osd_linger_request *lreq)
- {
--	if (lreq->is_watch && lreq->ping_req->r_osd)
-+	if (lreq->ping_req && lreq->ping_req->r_osd)
- 		cancel_linger_request(lreq->ping_req);
--	if (lreq->reg_req->r_osd)
-+	if (lreq->reg_req && lreq->reg_req->r_osd)
- 		cancel_linger_request(lreq->reg_req);
- 	cancel_linger_map_check(lreq);
- 	unlink_linger(lreq->osd, lreq);
-@@ -4653,43 +4674,6 @@ again:
- }
- EXPORT_SYMBOL(ceph_osdc_sync);
- 
--static struct ceph_osd_request *
--alloc_linger_request(struct ceph_osd_linger_request *lreq)
--{
--	struct ceph_osd_request *req;
--
--	req = ceph_osdc_alloc_request(lreq->osdc, NULL, 1, false, GFP_NOIO);
--	if (!req)
--		return NULL;
--
--	ceph_oid_copy(&req->r_base_oid, &lreq->t.base_oid);
--	ceph_oloc_copy(&req->r_base_oloc, &lreq->t.base_oloc);
--	return req;
--}
--
--static struct ceph_osd_request *
--alloc_watch_request(struct ceph_osd_linger_request *lreq, u8 watch_opcode)
--{
--	struct ceph_osd_request *req;
--
--	req = alloc_linger_request(lreq);
--	if (!req)
--		return NULL;
--
--	/*
--	 * Pass 0 for cookie because we don't know it yet, it will be
--	 * filled in by linger_submit().
--	 */
--	osd_req_op_watch_init(req, 0, 0, watch_opcode);
--
--	if (ceph_osdc_alloc_messages(req, GFP_NOIO)) {
--		ceph_osdc_put_request(req);
--		return NULL;
--	}
--
--	return req;
--}
--
- /*
-  * Returns a handle, caller owns a ref.
-  */
-@@ -4719,18 +4703,6 @@ ceph_osdc_watch(struct ceph_osd_client *
- 	lreq->t.flags = CEPH_OSD_FLAG_WRITE;
- 	ktime_get_real_ts64(&lreq->mtime);
- 
--	lreq->reg_req = alloc_watch_request(lreq, CEPH_OSD_WATCH_OP_WATCH);
--	if (!lreq->reg_req) {
--		ret = -ENOMEM;
--		goto err_put_lreq;
--	}
--
--	lreq->ping_req = alloc_watch_request(lreq, CEPH_OSD_WATCH_OP_PING);
--	if (!lreq->ping_req) {
--		ret = -ENOMEM;
--		goto err_put_lreq;
--	}
--
- 	linger_submit(lreq);
- 	ret = linger_reg_commit_wait(lreq);
- 	if (ret) {
-@@ -4768,8 +4740,8 @@ int ceph_osdc_unwatch(struct ceph_osd_cl
- 	ceph_oloc_copy(&req->r_base_oloc, &lreq->t.base_oloc);
- 	req->r_flags = CEPH_OSD_FLAG_WRITE;
- 	ktime_get_real_ts64(&req->r_mtime);
--	osd_req_op_watch_init(req, 0, lreq->linger_id,
--			      CEPH_OSD_WATCH_OP_UNWATCH);
-+	osd_req_op_watch_init(req, 0, CEPH_OSD_WATCH_OP_UNWATCH,
-+			      lreq->linger_id, 0);
- 
- 	ret = ceph_osdc_alloc_messages(req, GFP_NOIO);
- 	if (ret)
-@@ -4855,35 +4827,6 @@ out_put_req:
- }
- EXPORT_SYMBOL(ceph_osdc_notify_ack);
- 
--static int osd_req_op_notify_init(struct ceph_osd_request *req, int which,
--				  u64 cookie, u32 prot_ver, u32 timeout,
--				  void *payload, u32 payload_len)
--{
--	struct ceph_osd_req_op *op;
--	struct ceph_pagelist *pl;
--	int ret;
--
--	op = osd_req_op_init(req, which, CEPH_OSD_OP_NOTIFY, 0);
--	op->notify.cookie = cookie;
--
--	pl = ceph_pagelist_alloc(GFP_NOIO);
--	if (!pl)
--		return -ENOMEM;
--
--	ret = ceph_pagelist_encode_32(pl, 1); /* prot_ver */
--	ret |= ceph_pagelist_encode_32(pl, timeout);
--	ret |= ceph_pagelist_encode_32(pl, payload_len);
--	ret |= ceph_pagelist_append(pl, payload, payload_len);
--	if (ret) {
--		ceph_pagelist_release(pl);
--		return -ENOMEM;
--	}
--
--	ceph_osd_data_pagelist_init(&op->notify.request_data, pl);
--	op->indata_len = pl->length;
--	return 0;
--}
--
- /*
-  * @timeout: in seconds
-  *
-@@ -4902,7 +4845,6 @@ int ceph_osdc_notify(struct ceph_osd_cli
- 		     size_t *preply_len)
- {
- 	struct ceph_osd_linger_request *lreq;
--	struct page **pages;
- 	int ret;
- 
- 	WARN_ON(!timeout);
-@@ -4915,41 +4857,35 @@ int ceph_osdc_notify(struct ceph_osd_cli
- 	if (!lreq)
- 		return -ENOMEM;
- 
--	lreq->preply_pages = preply_pages;
--	lreq->preply_len = preply_len;
--
--	ceph_oid_copy(&lreq->t.base_oid, oid);
--	ceph_oloc_copy(&lreq->t.base_oloc, oloc);
--	lreq->t.flags = CEPH_OSD_FLAG_READ;
--
--	lreq->reg_req = alloc_linger_request(lreq);
--	if (!lreq->reg_req) {
-+	lreq->request_pl = ceph_pagelist_alloc(GFP_NOIO);
-+	if (!lreq->request_pl) {
- 		ret = -ENOMEM;
- 		goto out_put_lreq;
- 	}
- 
--	/*
--	 * Pass 0 for cookie because we don't know it yet, it will be
--	 * filled in by linger_submit().
--	 */
--	ret = osd_req_op_notify_init(lreq->reg_req, 0, 0, 1, timeout,
--				     payload, payload_len);
--	if (ret)
-+	ret = ceph_pagelist_encode_32(lreq->request_pl, 1); /* prot_ver */
-+	ret |= ceph_pagelist_encode_32(lreq->request_pl, timeout);
-+	ret |= ceph_pagelist_encode_32(lreq->request_pl, payload_len);
-+	ret |= ceph_pagelist_append(lreq->request_pl, payload, payload_len);
-+	if (ret) {
-+		ret = -ENOMEM;
- 		goto out_put_lreq;
-+	}
- 
- 	/* for notify_id */
--	pages = ceph_alloc_page_vector(1, GFP_NOIO);
--	if (IS_ERR(pages)) {
--		ret = PTR_ERR(pages);
-+	lreq->notify_id_pages = ceph_alloc_page_vector(1, GFP_NOIO);
-+	if (IS_ERR(lreq->notify_id_pages)) {
-+		ret = PTR_ERR(lreq->notify_id_pages);
-+		lreq->notify_id_pages = NULL;
- 		goto out_put_lreq;
- 	}
--	ceph_osd_data_pages_init(osd_req_op_data(lreq->reg_req, 0, notify,
--						 response_data),
--				 pages, PAGE_SIZE, 0, false, true);
- 
--	ret = ceph_osdc_alloc_messages(lreq->reg_req, GFP_NOIO);
--	if (ret)
--		goto out_put_lreq;
-+	lreq->preply_pages = preply_pages;
-+	lreq->preply_len = preply_len;
+ 	mptcp_pm_get_flags_and_ifindex_by_id(sock_net(sk), local_id,
+ 					     &flags, &ifindex);
+@@ -1431,7 +1471,6 @@ int __mptcp_subflow_connect(struct sock *sk, const struct mptcp_addr_info *loc,
+ 	pr_debug("msk=%p remote_token=%u local_id=%d remote_id=%d", msk,
+ 		 remote_token, local_id, remote_id);
+ 	subflow->remote_token = remote_token;
+-	subflow->local_id = local_id;
+ 	subflow->remote_id = remote_id;
+ 	subflow->request_join = 1;
+ 	subflow->request_bkup = !!(flags & MPTCP_PM_ADDR_FLAG_BACKUP);
+@@ -1734,15 +1773,22 @@ static void subflow_ulp_clone(const struct request_sock *req,
+ 		new_ctx->token = subflow_req->token;
+ 		new_ctx->ssn_offset = subflow_req->ssn_offset;
+ 		new_ctx->idsn = subflow_req->idsn;
 +
-+	ceph_oid_copy(&lreq->t.base_oid, oid);
-+	ceph_oloc_copy(&lreq->t.base_oloc, oloc);
-+	lreq->t.flags = CEPH_OSD_FLAG_READ;
++		/* this is the first subflow, id is always 0 */
++		new_ctx->local_id_valid = 1;
+ 	} else if (subflow_req->mp_join) {
+ 		new_ctx->ssn_offset = subflow_req->ssn_offset;
+ 		new_ctx->mp_join = 1;
+ 		new_ctx->fully_established = 1;
+ 		new_ctx->backup = subflow_req->backup;
+-		new_ctx->local_id = subflow_req->local_id;
+ 		new_ctx->remote_id = subflow_req->remote_id;
+ 		new_ctx->token = subflow_req->token;
+ 		new_ctx->thmac = subflow_req->thmac;
++
++		/* the subflow req id is valid, fetched via subflow_check_req()
++		 * and subflow_token_join_request()
++		 */
++		subflow_set_local_id(new_ctx, subflow_req->local_id);
+ 	}
+ }
  
- 	linger_submit(lreq);
- 	ret = linger_reg_commit_wait(lreq);
+@@ -1795,6 +1841,7 @@ void __init mptcp_subflow_init(void)
+ 	subflow_specific.conn_request = subflow_v4_conn_request;
+ 	subflow_specific.syn_recv_sock = subflow_syn_recv_sock;
+ 	subflow_specific.sk_rx_dst_set = subflow_finish_connect;
++	subflow_specific.rebuild_header = subflow_rebuild_header;
+ 
+ 	tcp_prot_override = tcp_prot;
+ 	tcp_prot_override.release_cb = tcp_release_cb_override;
+@@ -1807,6 +1854,7 @@ void __init mptcp_subflow_init(void)
+ 	subflow_v6_specific.conn_request = subflow_v6_conn_request;
+ 	subflow_v6_specific.syn_recv_sock = subflow_syn_recv_sock;
+ 	subflow_v6_specific.sk_rx_dst_set = subflow_finish_connect;
++	subflow_v6_specific.rebuild_header = subflow_v6_rebuild_header;
+ 
+ 	subflow_v6m_specific = subflow_v6_specific;
+ 	subflow_v6m_specific.queue_xmit = ipv4_specific.queue_xmit;
+@@ -1814,6 +1862,7 @@ void __init mptcp_subflow_init(void)
+ 	subflow_v6m_specific.net_header_len = ipv4_specific.net_header_len;
+ 	subflow_v6m_specific.mtu_reduced = ipv4_specific.mtu_reduced;
+ 	subflow_v6m_specific.net_frag_header_len = 0;
++	subflow_v6m_specific.rebuild_header = subflow_rebuild_header;
+ 
+ 	tcpv6_prot_override = tcpv6_prot;
+ 	tcpv6_prot_override.release_cb = tcp_release_cb_override;
+-- 
+2.35.1
+
 
 
