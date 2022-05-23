@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBFF4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:04:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6960BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:04:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239269AbiEWREp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:04:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45968 "EHLO
+        id S239286AbiEWREt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:04:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239233AbiEWREW (ORCPT
+        with ESMTP id S239247AbiEWREZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:04:22 -0400
+        Mon, 23 May 2022 13:04:25 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B4975DE5C;
-        Mon, 23 May 2022 10:04:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EB2154F80;
+        Mon, 23 May 2022 10:04:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 337D5B811ED;
-        Mon, 23 May 2022 17:04:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6340FC385A9;
-        Mon, 23 May 2022 17:04:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8FD36B811ED;
+        Mon, 23 May 2022 17:04:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA524C385A9;
+        Mon, 23 May 2022 17:04:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653325457;
-        bh=UodYB9RZCKj8YDl/NrPyDzZlEGObUwSATbKP+WigtdM=;
+        s=korg; t=1653325461;
+        bh=IjHjZKGjwLvPiD+iIO/uDEmcKN/6d7RzLUJBVizQgSo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jAV7YWXXYAoaHa94FkcAAPmyS3Eq2vtg7dPVR2F8imQhG1AKwo9ESHLBg5ePFwhEo
-         g20tqLZTMVRhXai66y1cthy3QL3FpShWxQ6s5qQvTPAtlBa7QsapwT1QI5/9svlaHo
-         J8l1RXzSenAeDGixvc9ltIONyw3CIJu9zy4qT8wk=
+        b=BTUZ8VaXNZuo96geB2RasYCSgIl7sEGIcdMx9uwGIpelhIE6vk1tOKkiYNmneubug
+         hXJOhXEhLQ0M/wPJGMf0s/SsKFZiHXJfyoyEQikQDRw01qRXnLaUkNEUX8kyp6FBEC
+         USlSNmBL3D0bjrz3nOVf9BPj/knLdULjYwf33wmY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
         "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 18/25] ARM: 9196/1: spectre-bhb: enable for Cortex-A15
-Date:   Mon, 23 May 2022 19:03:36 +0200
-Message-Id: <20220523165747.922316017@linuxfoundation.org>
+Subject: [PATCH 4.9 19/25] ARM: 9197/1: spectre-bhb: fix loop8 sequence for Thumb2
+Date:   Mon, 23 May 2022 19:03:37 +0200
+Message-Id: <20220523165748.114174640@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165743.398280407@linuxfoundation.org>
 References: <20220523165743.398280407@linuxfoundation.org>
@@ -51,32 +51,33 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Ard Biesheuvel <ardb@kernel.org>
 
-[ Upstream commit 0dc14aa94ccd8ba35eb17a0f9b123d1566efd39e ]
+[ Upstream commit 3cfb3019979666bdf33a1010147363cf05e0f17b ]
 
-The Spectre-BHB mitigations were inadvertently left disabled for
-Cortex-A15, due to the fact that cpu_v7_bugs_init() is not called in
-that case. So fix that.
+In Thumb2, 'b . + 4' produces a branch instruction that uses a narrow
+encoding, and so it does not jump to the following instruction as
+expected. So use W(b) instead.
 
-Fixes: b9baf5c8c5c3 ("ARM: Spectre-BHB workaround")
+Fixes: 6c7cb60bff7a ("ARM: fix Thumb2 regression with Spectre BHB")
 Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
 Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mm/proc-v7-bugs.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm/kernel/entry-armv.S | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/mm/proc-v7-bugs.c b/arch/arm/mm/proc-v7-bugs.c
-index 1b6e770bc1cd..8b78694d56b8 100644
---- a/arch/arm/mm/proc-v7-bugs.c
-+++ b/arch/arm/mm/proc-v7-bugs.c
-@@ -297,6 +297,7 @@ void cpu_v7_ca15_ibe(void)
- {
- 	if (check_spectre_auxcr(this_cpu_ptr(&spectre_warned), BIT(0)))
- 		cpu_v7_spectre_v2_init();
-+	cpu_v7_spectre_bhb_init();
- }
+diff --git a/arch/arm/kernel/entry-armv.S b/arch/arm/kernel/entry-armv.S
+index 77ec669fd5ee..247229e69322 100644
+--- a/arch/arm/kernel/entry-armv.S
++++ b/arch/arm/kernel/entry-armv.S
+@@ -1074,7 +1074,7 @@ vector_bhb_loop8_\name:
  
- void cpu_v7_bugs_init(void)
+ 	@ bhb workaround
+ 	mov	r0, #8
+-3:	b	. + 4
++3:	W(b)	. + 4
+ 	subs	r0, r0, #1
+ 	bne	3b
+ 	dsb
 -- 
 2.35.1
 
