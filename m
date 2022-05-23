@@ -2,112 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31E8CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 16:47:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24811C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 16:47:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239126AbiEWQru (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 12:47:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54704 "EHLO
+        id S239142AbiEWQr4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 12:47:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238871AbiEWQrp (ORCPT
+        with ESMTP id S238892AbiEWQrw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 12:47:45 -0400
-Received: from mx0a-002e3701.pphosted.com (mx0a-002e3701.pphosted.com [148.163.147.86])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFC02313B3;
-        Mon, 23 May 2022 09:47:41 -0700 (PDT)
-Received: from pps.filterd (m0134421.ppops.net [127.0.0.1])
-        by mx0b-002e3701.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24NG7i9Q020385;
-        Mon, 23 May 2022 16:47:03 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding; s=pps0720;
- bh=FzQNwTi13ARFCJVSGCYihZ8rVSZ+bSBFvx/V3quqw0c=;
- b=HNc6yecs4gSb53mS9wiGIWdJY8+MxfWJCveeh+dnhs6PVeiHQ7+Zc1gcd+6xDn6cUuc+
- 8E3GyLIe+Uv0s6o+//w78cgZnwQ0o71zrtcqP8A9GtrX2PnZM5mzIqNGJaNiarEKhXtj
- ySFGDL2UK/ExHmt5piVKfWaZjAKJ1GzG+h5xI8RzZYr4HrU4DQ7h4zBceHDs0Ih152gY
- V5rIx1GI1UIRZKhNDL8dq8GKbfixLFjrEQ+0UbtOr8CMDp4VmMRHyNLvSrRsJrbzhMCC
- qLzTKerP+IL7xDy3h+eDvIPWYKT37t0CTuUzGGpLCxGF5VRUwf56AUucYvpvO3tJODHA cA== 
-Received: from g9t5008.houston.hpe.com (g9t5008.houston.hpe.com [15.241.48.72])
-        by mx0b-002e3701.pphosted.com (PPS) with ESMTPS id 3g884f44q0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 23 May 2022 16:47:03 +0000
-Received: from g9t2301.houston.hpecorp.net (g9t2301.houston.hpecorp.net [16.220.97.129])
-        by g9t5008.houston.hpe.com (Postfix) with ESMTP id F33DC4F;
-        Mon, 23 May 2022 16:47:01 +0000 (UTC)
-Received: from dog.eag.rdlabs.hpecorp.net (dog.eag.rdlabs.hpecorp.net [128.162.243.181])
-        by g9t2301.houston.hpecorp.net (Postfix) with ESMTP id 5FF374C;
-        Mon, 23 May 2022 16:47:00 +0000 (UTC)
-From:   Mike Travis <mike.travis@hpe.com>
-To:     Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Steve Wahl <steve.wahl@hpe.com>, x86@kernel.org
-Cc:     Mike Travis <mike.travis@hpe.com>,
-        Dimitri Sivanich <dimitri.sivanich@hpe.com>,
-        stable@vger.kernel.org, Andy Shevchenko <andy@infradead.org>,
-        Darren Hart <dvhart@infradead.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Russ Anderson <russ.anderson@hpe.com>,
-        linux-kernel@vger.kernel.org, platform-driver-x86@vger.kernel.org
-Subject: [PATCH v2] x86/platform/uv: Dont use smp_processor_id while preemptible
-Date:   Mon, 23 May 2022 11:45:21 -0500
-Message-Id: <20220523164521.155872-1-mike.travis@hpe.com>
-X-Mailer: git-send-email 2.26.2
+        Mon, 23 May 2022 12:47:52 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D20A340D7
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 09:47:51 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id f9so30139628ejc.0
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 09:47:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=MEws4DwjHJownhbfu+ZS9DYpAvJAvD1xJi7PEnph5Es=;
+        b=DVN/LllFu0NRh49fsIEhd3xNw/x+qM841drkPE9Auic6RUQhHEOWbHU3m3h5ND4968
+         Sz8aznj0zITPihHiFfft7uES0P2bx2aP1FABmWIxcxJ6RIoEKpsN7IbvOnYIlFiKYOk8
+         MRcgi6G9XeMhnzg9hDKuj1hUVyFGUz/1fc5P0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=MEws4DwjHJownhbfu+ZS9DYpAvJAvD1xJi7PEnph5Es=;
+        b=2XtWtE6W5oMYfwxQE5/HNxS9B1RBUoObUu8kJfWZgCV8z2PXsQ0zlehIwx57JkEtWi
+         Sno7EmuH7dQOCVV2IkOd52CVhzL06lKbJ7YXS2+NP01Em/BIxEqkUXTnrqkr5+gcHzO4
+         3U/4mTpwxv1BqdTvYSTr/RLKb0X74vS3T1HxU+I2XoblFVSHgNh1VnATtMBrEWI0Zswm
+         R5vl2qTSugT9YHVnUvALRLsxHdJ+QoP78l6WqkVo92tF51L3NhEyidMb8Xu7m+UCbfEM
+         l7FozmTkivDwaJ5UPm+pHMKTAeMDBmsJWhvi0JPiRQ2uZoeOZogsc5xY5bcy8S6N9slF
+         aTbg==
+X-Gm-Message-State: AOAM530A51y7hwCfCjPlOyqtfT1kEnd3LsWBjTQMn2GBbs4FESA6NXCe
+        5ecGf7n3oViZoAka2AXHvOFUXdRqmpDUmH1vTCs=
+X-Google-Smtp-Source: ABdhPJxGGgt9e0NWtd3e/L0qhT0m/DeEteZ4GvADZKYl9iVU7YbMWHw6WgQrBZY4tyLztSg6nKQHhQ==
+X-Received: by 2002:a17:906:6985:b0:6fe:988b:d248 with SMTP id i5-20020a170906698500b006fe988bd248mr19086192ejr.226.1653324468939;
+        Mon, 23 May 2022 09:47:48 -0700 (PDT)
+Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com. [209.85.221.45])
+        by smtp.gmail.com with ESMTPSA id p3-20020a056402074300b0042617ba63a5sm8434965edy.47.2022.05.23.09.47.47
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 23 May 2022 09:47:47 -0700 (PDT)
+Received: by mail-wr1-f45.google.com with SMTP id t13so3046007wrg.9
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 09:47:47 -0700 (PDT)
+X-Received: by 2002:a5d:6483:0:b0:20f:d046:6382 with SMTP id
+ o3-20020a5d6483000000b0020fd0466382mr8111413wri.342.1653324466491; Mon, 23
+ May 2022 09:47:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-ORIG-GUID: AWsB_-ro9HKGeoA4AQdZCDpc7-9ZvM_B
-X-Proofpoint-GUID: AWsB_-ro9HKGeoA4AQdZCDpc7-9ZvM_B
-X-HPE-SCL: -1
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-23_07,2022-05-23_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
- priorityscore=1501 phishscore=0 clxscore=1011 mlxlogscore=999
- malwarescore=0 impostorscore=0 adultscore=0 spamscore=0 bulkscore=0
- mlxscore=0 lowpriorityscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2202240000 definitions=main-2205230094
+References: <20220523085745.276-1-gaochao49@huawei.com>
+In-Reply-To: <20220523085745.276-1-gaochao49@huawei.com>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Mon, 23 May 2022 09:47:32 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=VVZo+wsR0yPLvq-8jkZg12+Sw0NM0TkgQLHDCxCiFdGw@mail.gmail.com>
+Message-ID: <CAD=FV=VVZo+wsR0yPLvq-8jkZg12+Sw0NM0TkgQLHDCxCiFdGw@mail.gmail.com>
+Subject: Re: [PATCH -next] drm/panel: Fix build error when CONFIG_DRM_PANEL_SAMSUNG_ATNA33XC20=y
+ && CONFIG_DRM_DISPLAY_HELPER=m
+To:     gaochao <gaochao49@huawei.com>
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Sean Paul <seanpaul@chromium.org>, zhengbin13@huawei.com,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To avoid a "BUG: using smp_processor_id() in preemptible" debug
-warning message, disable preemption around use of the processor id.
+Hi,
 
-Signed-off-by: Mike Travis <mike.travis@hpe.com>
-Reviewed-by: Steve Wahl <steve.wahl@hpe.com>
-Reviewed-by: Dimitri Sivanich <dimitri.sivanich@hpe.com>
-Cc: stable@vger.kernel.org
----
-v2: Add Cc: stable tag
----
- arch/x86/platform/uv/uv_time.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+On Mon, May 23, 2022 at 1:58 AM gaochao <gaochao49@huawei.com> wrote:
+>
+> If CONFIG_DRM_PANEL_SAMSUNG_ATNA33XC20=y && CONFIG_DRM_DISPLAY_HELPER=m,
+> bulding fails:
+>
+> drivers/gpu/drm/panel/panel-samsung-atna33xc20.o: In function `atana33xc20_probe':
+> panel-samsung-atna33xc20.c:(.text+0x744): undefined reference to
+>  `drm_panel_dp_aux_backlight'
+> make: *** [vmlinux] Error 1
+>
+> Let CONFIG_DRM_PANEL_SAMSUNG_ATNA33XC20 select DRM_DISPLAY_DP_HELPER and
+> CONFIG_DRM_DISPLAY_HELPER to fix this error.
+>
+> Fixes: 32ce3b320343 ("drm/panel: atna33xc20: Introduce the Samsung ATNA33XC20 panel")
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: gaochao <gaochao49@huawei.com>
 
-diff --git a/arch/x86/platform/uv/uv_time.c b/arch/x86/platform/uv/uv_time.c
-index 54663f3e00cb..094190814a28 100644
---- a/arch/x86/platform/uv/uv_time.c
-+++ b/arch/x86/platform/uv/uv_time.c
-@@ -275,14 +275,17 @@ static int uv_rtc_unset_timer(int cpu, int force)
-  */
- static u64 uv_read_rtc(struct clocksource *cs)
- {
--	unsigned long offset;
-+	unsigned long offset, time;
-+	unsigned int cpu = get_cpu();
- 
- 	if (uv_get_min_hub_revision_id() == 1)
- 		offset = 0;
- 	else
--		offset = (uv_blade_processor_id() * L1_CACHE_BYTES) % PAGE_SIZE;
-+		offset = (uv_cpu_blade_processor_id(cpu) * L1_CACHE_BYTES) % PAGE_SIZE;
- 
--	return (u64)uv_read_local_mmr(UVH_RTC | offset);
-+	time = (u64)uv_read_local_mmr(UVH_RTC | offset);
-+	put_cpu();
-+	return time;
- }
- 
- /*
--- 
-2.26.2
+I think the author / Signed-off-by are supposed to be real names. Is
+"gaochao" your legal name?
 
+> ---
+>  drivers/gpu/drm/panel/Kconfig | 2 ++
+>  1 file changed, 2 insertions(+)
+
+Other than the Signed-off-by / Author issue:
+
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
