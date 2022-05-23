@@ -2,157 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01923C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 04:05:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74A1FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 04:16:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345546AbiEWEFg (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 00:05:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47884 "EHLO
+        id S229756AbiEWEPm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 00:15:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233803AbiEWEFc (ORCPT
+        with ESMTP id S229459AbiEWEPj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 00:05:32 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D19C5637B;
-        Sun, 22 May 2022 21:05:29 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4L63df6XHSz4xD7;
-        Mon, 23 May 2022 14:05:26 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1653278728;
-        bh=Fzn4hoMSmZbg4otScjy8jrN/eCp69Sk3KAuu65T0H78=;
-        h=Date:From:To:Cc:Subject:From;
-        b=np2nYaEFc7uz/Wfbg7Ku/8dpkEX2TSR3PdQBiQtPUE8o+HFiJQu4dWsJVggvDsJQr
-         nKp3eWSMLA5zuqxr6VjuDBWqNyXT1Nhj2rzqGGIrcmbQZPjvK6QN8Dbijp6ogWZUMo
-         qIKk6kFUTPcawFXKY04++2tzCSg+sjMLDz9j8CfWJYI6ux8QYq7+T0HI5pznRleu1W
-         zi9DDTmowz6jCEBoEDPNZeEq2QBFdorxxJd9n3n1qO03x0wrpY0sjAm9QZWrrRweDA
-         jK4sRMqIrFuKTxeyNm2Ni2q+z4wCc0n5WbWcIbxJAgUSeDfv9IzNZUmx5tZ6t9dkld
-         swUAjXqjAnHig==
-Date:   Mon, 23 May 2022 14:05:25 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Jassi Brar <jaswinder.singh@linaro.org>,
-        Rob Herring <robherring2@gmail.com>
-Cc:     David Heidelberg <david@ixit.cz>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Rob Herring <robh@kernel.org>
-Subject: linux-next: manual merge of the mailbox tree with the devicetree
- tree
-Message-ID: <20220523140525.4ad591d0@canb.auug.org.au>
+        Mon, 23 May 2022 00:15:39 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5763D140BC
+        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 21:15:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653279337;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=/4uq0rZJkoN6vEvVqkAPhz7EjjSM0bnK2nRK5G7D8m8=;
+        b=E06ZiPUoP/hqPw0e2teBzRZIyydDtVfLpTf8Z3IKyPsq/879GsvTtVsweXZRoA+XCg/9Nu
+        iRKGlAJv7JkyBL008TqvLFsGrd5zD4KLAYYJYlELwM53rf854pEk/MAwnAyA5qmyAjyydo
+        fjpwQClzulF91QkRPPHBjQ1mNW9Pj00=
+Received: from mail-lj1-f199.google.com (mail-lj1-f199.google.com
+ [209.85.208.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-550-7rVsvg41MA-alehKj2j6OQ-1; Mon, 23 May 2022 00:15:29 -0400
+X-MC-Unique: 7rVsvg41MA-alehKj2j6OQ-1
+Received: by mail-lj1-f199.google.com with SMTP id d2-20020a2e8902000000b00253bba7ce10so2564516lji.12
+        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 21:15:29 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/4uq0rZJkoN6vEvVqkAPhz7EjjSM0bnK2nRK5G7D8m8=;
+        b=yzA5kRxIZK5nB5WhLQpwoSvLeP49MvuwtvbcWI3dajUgkiP9XrG+g1Si+afQtALjb8
+         Al7WgESriXPT39OokDMOZP1wkPDE+h5gnetbbLevFuS+jPdJo6dnx+UVJRgY3liwc7UT
+         8KLbSny2A5GNGNos0fVaKfWUm38icMSsHLYUk1qB452jJkOxr79icyhK7nf1f1u/Q3xv
+         LT6dGXW88YYj1eYuwlIaR/PBkYoocP8ngu1CnGd0RiPOTHRbwZ5vPECLMzNerYR2rTFz
+         E5fQi5cdA4vLCIemxb8G482Y3eiO3lkO15eHsSjU18rSonvJSdJfCktAADE86gIS7a8Q
+         HulQ==
+X-Gm-Message-State: AOAM533/vI6daOGltvPtakXVOwVr+RdhM24762cdYQXT6zOxyVZCJehl
+        AhbG0u0fO3ksaoFCyqrM3mdCPvqJNXyS2IfzV1ve9ZRAGGcDAjEpHegBLX59nvPNhRDPJr9C1s+
+        YkuHLjSRuJTifAAizXxj4cfZFjXuWvnVgZMIwV7IO
+X-Received: by 2002:a05:6512:1395:b0:446:d382:79a5 with SMTP id p21-20020a056512139500b00446d38279a5mr14947651lfa.210.1653279328291;
+        Sun, 22 May 2022 21:15:28 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzWmvbbOnlzByyq0K7ST1/0Rig6zYncXxT7uN0bhy7BAXium/pYbfOxxsbqwsJyyqfJa8HBFvtAlbjEDB8k180=
+X-Received: by 2002:a05:6512:1395:b0:446:d382:79a5 with SMTP id
+ p21-20020a056512139500b00446d38279a5mr14947643lfa.210.1653279328132; Sun, 22
+ May 2022 21:15:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/=rAw.59tZ1cA61PxWG775Ar";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+References: <CAMhUBj=5jD5AjyaF8UmMXAZGFnMEgTruFM2KYL3GGZt-ABcHBQ@mail.gmail.com>
+In-Reply-To: <CAMhUBj=5jD5AjyaF8UmMXAZGFnMEgTruFM2KYL3GGZt-ABcHBQ@mail.gmail.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Mon, 23 May 2022 12:15:16 +0800
+Message-ID: <CACGkMEvgtzUXw9v=cMN3=Mqm9YTp_2bKmc4--q2+BREvgVdeLg@mail.gmail.com>
+Subject: Re: [BUG] vDPA/ifcvf: got a warning when removing the module
+To:     Zheyu Ma <zheyuma97@gmail.com>
+Cc:     mst <mst@redhat.com>, Zhu Lingshan <lingshan.zhu@intel.com>,
+        Yongji Xie <xieyongji@bytedance.com>,
+        Eli Cohen <elic@nvidia.com>, Parav Pandit <parav@nvidia.com>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: multipart/mixed; boundary="0000000000001188a805dfa6171f"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/=rAw.59tZ1cA61PxWG775Ar
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+--0000000000001188a805dfa6171f
+Content-Type: text/plain; charset="UTF-8"
 
-Hi all,
+On Sat, May 21, 2022 at 10:27 PM Zheyu Ma <zheyuma97@gmail.com> wrote:
+>
+> Hello,
+>
+> I found a bug in the ifcvf driver.
+> When removing the module, I got the following warning:
+>
+> [   14.478123] general protection fault, probably for non-canonical
+> address 0xdffffc0000000005: 0000 [#1] PREEMPT SMP KASAN PTI
+> [   14.478701] KASAN: null-ptr-deref in range
+> [0x0000000000000028-0x000000000000002f]
+> [   14.479922] RIP: 0010:vdpa_mgmtdev_unregister+0x39/0x150
+> [   14.484063] Call Trace:
+> [   14.484186]  <TASK>
+> [   14.484292]  ? _raw_spin_unlock_irqrestore+0x3d/0x60
+> [   14.484536]  ifcvf_remove+0x3a/0x50 [ifcvf]
+> [   14.484743]  pci_device_remove+0x92/0x240
+>
+> The reason is that the 'ifcvf_mgmt_dev' is zero which means that
+> ifcvf_vdpa_dev_add() was not executed.
+> Since I am not familiar with the driver, I cannot find a proper solution for it.
+>
 
-Today's linux-next merge of the mailbox tree got a conflict in:
+Looks like the drv data needs to be set in probe(). Could you pleas
+try to the attached patch? (compile test only).
 
-  Documentation/devicetree/bindings/mailbox/qcom-ipcc.yaml
+Thanks
 
-between commit:
+> Zheyu Ma
+>
 
-  b20eee62ee89 ("dt-bindings: mailbox: qcom-ipcc: add missing properties in=
-to example")
+--0000000000001188a805dfa6171f
+Content-Type: application/octet-stream; 
+	name="0001-vdpa-ifcvf-set-pci-driver-data-in-probe.patch"
+Content-Disposition: attachment; 
+	filename="0001-vdpa-ifcvf-set-pci-driver-data-in-probe.patch"
+Content-Transfer-Encoding: base64
+Content-ID: <f_l3i7tfc30>
+X-Attachment-Id: f_l3i7tfc30
 
-from the devicetree tree and commit:
+RnJvbSBjN2MwMzFkMWE1YzY0ZTBmNThlMDE1NzlmZjc4MjI0YTU4ZDZhNGZhIE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQpGcm9tOiBKYXNvbiBXYW5nIDxqYXNvd2FuZ0ByZWRoYXQuY29tPgpEYXRl
+OiBNb24sIDIzIE1heSAyMDIyIDEyOjEyOjAwICswODAwClN1YmplY3Q6IFtQQVRDSF0gdmRwYTog
+aWZjdmY6IHNldCBwY2kgZHJpdmVyIGRhdGEgaW4gcHJvYmUKQ29udGVudC10eXBlOiB0ZXh0L3Bs
+YWluCgpXZSBzaG91bGQgc2V0IHRoZSBwY2kgZHJpdmVyIGRhdGEgaW4gcHJvYmUgaW5zdGVhZCBv
+ZiB0aGUgdmRwYSBkZXZpY2UKYWRkaW5nIGNhbGxiYWNrLiBPdGhlcndpc2UgaWYgbm8gdkRQQSBk
+ZXZpY2UgaXMgY3JlYXRlZCB3ZSB3aWxsIGxvc2UKdGhlIHBvaW50ZXIgdG8gdGhlIG1hbmFnZW1l
+bnQgZGV2aWNlLgoKRml4ZXM6IDZiNWRmMzQ3YzY0ODIgKCJ2RFBBL2lmY3ZmOiBpbXBsZW1lbnQg
+bWFuYWdlbWVudCBuZXRsaW5rIGZyYW1ld29yayBmb3IgaWZjdmYiKQpTaWduZWQtb2ZmLWJ5OiBK
+YXNvbiBXYW5nIDxqYXNvd2FuZ0ByZWRoYXQuY29tPgotLS0KIGRyaXZlcnMvdmRwYS9pZmN2Zi9p
+ZmN2Zl9tYWluLmMgfCAzICsrLQogMSBmaWxlIGNoYW5nZWQsIDIgaW5zZXJ0aW9ucygrKSwgMSBk
+ZWxldGlvbigtKQoKZGlmZiAtLWdpdCBhL2RyaXZlcnMvdmRwYS9pZmN2Zi9pZmN2Zl9tYWluLmMg
+Yi9kcml2ZXJzL3ZkcGEvaWZjdmYvaWZjdmZfbWFpbi5jCmluZGV4IDQzNjYzMjBmYjY4ZC4uMTk3
+ZDUyZTdiODAxIDEwMDY0NAotLS0gYS9kcml2ZXJzL3ZkcGEvaWZjdmYvaWZjdmZfbWFpbi5jCisr
+KyBiL2RyaXZlcnMvdmRwYS9pZmN2Zi9pZmN2Zl9tYWluLmMKQEAgLTc2NSw3ICs3NjUsNiBAQCBz
+dGF0aWMgaW50IGlmY3ZmX3ZkcGFfZGV2X2FkZChzdHJ1Y3QgdmRwYV9tZ210X2RldiAqbWRldiwg
+Y29uc3QgY2hhciAqbmFtZSwKIAl9CiAKIAlpZmN2Zl9tZ210X2Rldi0+YWRhcHRlciA9IGFkYXB0
+ZXI7Ci0JcGNpX3NldF9kcnZkYXRhKHBkZXYsIGlmY3ZmX21nbXRfZGV2KTsKIAogCXZmID0gJmFk
+YXB0ZXItPnZmOwogCXZmLT5kZXZfdHlwZSA9IGdldF9kZXZfdHlwZShwZGV2KTsKQEAgLTg4MCw2
+ICs4NzksOCBAQCBzdGF0aWMgaW50IGlmY3ZmX3Byb2JlKHN0cnVjdCBwY2lfZGV2ICpwZGV2LCBj
+b25zdCBzdHJ1Y3QgcGNpX2RldmljZV9pZCAqaWQpCiAJCWdvdG8gZXJyOwogCX0KIAorCXBjaV9z
+ZXRfZHJ2ZGF0YShwZGV2LCBpZmN2Zl9tZ210X2Rldik7CisKIAlyZXR1cm4gMDsKIAogZXJyOgot
+LSAKMi4yNS4xCgo=
+--0000000000001188a805dfa6171f--
 
-  cd285535b8ee ("dt-bindings: mailbox: qcom-ipcc: simplify the example")
-
-from the mailbox tree.
-
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc Documentation/devicetree/bindings/mailbox/qcom-ipcc.yaml
-index 50f9aa72c670,dfdc72345a2a..000000000000
---- a/Documentation/devicetree/bindings/mailbox/qcom-ipcc.yaml
-+++ b/Documentation/devicetree/bindings/mailbox/qcom-ipcc.yaml
-@@@ -62,28 -61,14 +62,28 @@@ additionalProperties: fals
- =20
-  examples:
-    - |
--         #include <dt-bindings/interrupt-controller/arm-gic.h>
--         #include <dt-bindings/mailbox/qcom-ipcc.h>
-+     #include <dt-bindings/interrupt-controller/arm-gic.h>
-+     #include <dt-bindings/mailbox/qcom-ipcc.h>
- =20
--         mailbox@408000 {
--                 compatible =3D "qcom,sm8250-ipcc", "qcom,ipcc";
--                 reg =3D <0x408000 0x1000>;
--                 interrupts =3D <GIC_SPI 229 IRQ_TYPE_LEVEL_HIGH>;
--                 interrupt-controller;
--                 #interrupt-cells =3D <3>;
--                 #mbox-cells =3D <2>;
--         };
-+     mailbox@408000 {
-+         compatible =3D "qcom,sm8250-ipcc", "qcom,ipcc";
-+         reg =3D <0x408000 0x1000>;
-+         interrupts =3D <GIC_SPI 229 IRQ_TYPE_LEVEL_HIGH>;
-+         interrupt-controller;
-+         #interrupt-cells =3D <3>;
-+         #mbox-cells =3D <2>;
-+     };
- +
--         smp2p-modem {
--                 compatible =3D "qcom,smp2p";
--                 qcom,smem =3D <443>, <429>;
--                 interrupts-extended =3D <&ipcc IPCC_CLIENT_LPASS
--                                              IPCC_MPROC_SIGNAL_SMP2P
--                                              IRQ_TYPE_EDGE_RISING>;
--                 mboxes =3D <&ipcc IPCC_CLIENT_LPASS
--                                 IPCC_MPROC_SIGNAL_SMP2P>;
-++    smp2p-modem {
-++        compatible =3D "qcom,smp2p";
-++        qcom,smem =3D <443>, <429>;
-++        interrupts-extended =3D <&ipcc IPCC_CLIENT_LPASS
-++                                     IPCC_MPROC_SIGNAL_SMP2P
-++                                     IRQ_TYPE_EDGE_RISING>;
-++        mboxes =3D <&ipcc IPCC_CLIENT_LPASS
-++                        IPCC_MPROC_SIGNAL_SMP2P>;
- +
--                 qcom,local-pid =3D <0>;
--                 qcom,remote-pid =3D <2>;
--                 /* Other SMP2P fields */
--         };
-++        qcom,local-pid =3D <0>;
-++        qcom,remote-pid =3D <2>;
-++        /* Other SMP2P fields */
-++    };
-
---Sig_/=rAw.59tZ1cA61PxWG775Ar
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmKLCAUACgkQAVBC80lX
-0Gwojgf/cR82xL5ati0hnrmEAMdVEmCro6867KtJMJGl2PLJLd0Dbu3ddup8w1oI
-X45Ygca6jXzz2w5BYFO7IfkKVrYHa4nT2zy6vq7uZDUD/CczkoPCzsw3q6uU6bYO
-hrkIPjVsmHLliXV34JresvCKKZ1AoSjxOxO6PT1gDAJ4zwWcgEQFw3Q1juqmi1Q3
-/B2AClq38vYDdPSCPgezTqwNhAc3D9lwkbUqn8HzlVjzEtuD/dVg5P/bWpkFo5L7
-eTKnxVt6KqwyrLgd2TPzEtq+RUxY2T6ik5N5MGT0p9snJbPNKMgISnflXcbf1yGy
-wluyUqDDQ6BhzO7sqx87VDHGkswsxg==
-=J6Cr
------END PGP SIGNATURE-----
-
---Sig_/=rAw.59tZ1cA61PxWG775Ar--
