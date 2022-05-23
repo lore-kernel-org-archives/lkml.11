@@ -2,445 +2,534 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9D31C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE4DFC4321E
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:18:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244298AbiEWSQ1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:16:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34768 "EHLO
+        id S244565AbiEWSQ6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:16:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244661AbiEWR6L (ORCPT
+        with ESMTP id S244194AbiEWR55 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:58:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC6D094199;
-        Mon, 23 May 2022 10:43:30 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0276561226;
-        Mon, 23 May 2022 17:30:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB45CC385A9;
-        Mon, 23 May 2022 17:30:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653327043;
-        bh=rB9twHthhy+1I4CbI2xTfKeQ0WsyU8vWo13GNgf2yfo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rC23St0U//sNC/pgtpxNFQ/EnDZv93q8Z8bdm/c4Jn530KNaJBHgPWhpVEpNaD1QQ
-         ht59F3nRefnXEtttzexlP6xZXvLqAEEzBnrBEGg4T4PCpPoWKgyNzGT+bCyBfd9nMJ
-         WiOXOQgQX82bbCO8Dev0t1ZapVkO1JzoveW/XmS0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shay Drory <shayd@nvidia.com>,
-        Mark Bloch <mbloch@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 103/158] net/mlx5: Initialize flow steering during driver probe
-Date:   Mon, 23 May 2022 19:04:20 +0200
-Message-Id: <20220523165848.361460752@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
-References: <20220523165830.581652127@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Mon, 23 May 2022 13:57:57 -0400
+Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B781DC5E6D;
+        Mon, 23 May 2022 10:43:14 -0700 (PDT)
+X-IronPort-AV: E=Sophos;i="5.91,246,1647270000"; 
+   d="scan'208";a="121975212"
+Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
+  by relmlie6.idc.renesas.com with ESMTP; 24 May 2022 02:43:01 +0900
+Received: from localhost.localdomain (unknown [10.226.36.204])
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id A583E400E8FD;
+        Tue, 24 May 2022 02:42:55 +0900 (JST)
+From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+To:     Marc Zyngier <maz@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        linux-gpio@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        linux-renesas-soc@vger.kernel.org,
+        Phil Edworthy <phil.edworthy@renesas.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH v5 2/5] irqchip: Add RZ/G2L IA55 Interrupt Controller driver
+Date:   Mon, 23 May 2022 18:42:35 +0100
+Message-Id: <20220523174238.28942-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220523174238.28942-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+References: <20220523174238.28942-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shay Drory <shayd@nvidia.com>
+Add a driver for the Renesas RZ/G2L Interrupt Controller.
 
-[ Upstream commit b33886971dbc4a86d1ec5369a2aaefc60a7cd72d ]
+This supports external pins being used as interrupts. It supports
+one line for NMI, 8 external pins and 32 GPIO pins (out of 123)
+to be used as IRQ lines.
 
-Currently, software objects of flow steering are created and destroyed
-during reload flow. In case a device is unloaded, the following error
-is printed during grace period:
-
- mlx5_core 0000:00:0b.0: mlx5_fw_fatal_reporter_err_work:690:(pid 95):
-    Driver is in error state. Unloading
-
-As a solution to fix use-after-free bugs, where we try to access
-these objects, when reading the value of flow_steering_mode devlink
-param[1], let's split flow steering creation and destruction into two
-routines:
-    * init and cleanup: memory, cache, and pools allocation/free.
-    * create and destroy: namespaces initialization and cleanup.
-
-While at it, re-order the cleanup function to mirror the init function.
-
-[1]
-Kasan trace:
-
-[  385.119849 ] BUG: KASAN: use-after-free in mlx5_devlink_fs_mode_get+0x3b/0xa0
-[  385.119849 ] Read of size 4 at addr ffff888104b79308 by task bash/291
-[  385.119849 ]
-[  385.119849 ] CPU: 1 PID: 291 Comm: bash Not tainted 5.17.0-rc1+ #2
-[  385.119849 ] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.13.0-2.fc32 04/01/2014
-[  385.119849 ] Call Trace:
-[  385.119849 ]  <TASK>
-[  385.119849 ]  dump_stack_lvl+0x6e/0x91
-[  385.119849 ]  print_address_description.constprop.0+0x1f/0x160
-[  385.119849 ]  ? mlx5_devlink_fs_mode_get+0x3b/0xa0
-[  385.119849 ]  ? mlx5_devlink_fs_mode_get+0x3b/0xa0
-[  385.119849 ]  kasan_report.cold+0x83/0xdf
-[  385.119849 ]  ? devlink_param_notify+0x20/0x190
-[  385.119849 ]  ? mlx5_devlink_fs_mode_get+0x3b/0xa0
-[  385.119849 ]  mlx5_devlink_fs_mode_get+0x3b/0xa0
-[  385.119849 ]  devlink_nl_param_fill+0x18a/0xa50
-[  385.119849 ]  ? _raw_spin_lock_irqsave+0x8d/0xe0
-[  385.119849 ]  ? devlink_flash_update_timeout_notify+0xf0/0xf0
-[  385.119849 ]  ? __wake_up_common+0x4b/0x1e0
-[  385.119849 ]  ? preempt_count_sub+0x14/0xc0
-[  385.119849 ]  ? _raw_spin_unlock_irqrestore+0x28/0x40
-[  385.119849 ]  ? __wake_up_common_lock+0xe3/0x140
-[  385.119849 ]  ? __wake_up_common+0x1e0/0x1e0
-[  385.119849 ]  ? __sanitizer_cov_trace_const_cmp8+0x27/0x80
-[  385.119849 ]  ? __rcu_read_unlock+0x48/0x70
-[  385.119849 ]  ? kasan_unpoison+0x23/0x50
-[  385.119849 ]  ? __kasan_slab_alloc+0x2c/0x80
-[  385.119849 ]  ? memset+0x20/0x40
-[  385.119849 ]  ? __sanitizer_cov_trace_const_cmp4+0x25/0x80
-[  385.119849 ]  devlink_param_notify+0xce/0x190
-[  385.119849 ]  devlink_unregister+0x92/0x2b0
-[  385.119849 ]  remove_one+0x41/0x140
-[  385.119849 ]  pci_device_remove+0x68/0x140
-[  385.119849 ]  ? pcibios_free_irq+0x10/0x10
-[  385.119849 ]  __device_release_driver+0x294/0x3f0
-[  385.119849 ]  device_driver_detach+0x82/0x130
-[  385.119849 ]  unbind_store+0x193/0x1b0
-[  385.119849 ]  ? subsys_interface_unregister+0x270/0x270
-[  385.119849 ]  drv_attr_store+0x4e/0x70
-[  385.119849 ]  ? drv_attr_show+0x60/0x60
-[  385.119849 ]  sysfs_kf_write+0xa7/0xc0
-[  385.119849 ]  kernfs_fop_write_iter+0x23a/0x2f0
-[  385.119849 ]  ? sysfs_kf_bin_read+0x160/0x160
-[  385.119849 ]  new_sync_write+0x311/0x430
-[  385.119849 ]  ? new_sync_read+0x480/0x480
-[  385.119849 ]  ? _raw_spin_lock+0x87/0xe0
-[  385.119849 ]  ? __sanitizer_cov_trace_cmp4+0x25/0x80
-[  385.119849 ]  ? security_file_permission+0x94/0xa0
-[  385.119849 ]  vfs_write+0x4c7/0x590
-[  385.119849 ]  ksys_write+0xf6/0x1e0
-[  385.119849 ]  ? __x64_sys_read+0x50/0x50
-[  385.119849 ]  ? fpregs_assert_state_consistent+0x99/0xa0
-[  385.119849 ]  do_syscall_64+0x3d/0x90
-[  385.119849 ]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[  385.119849 ] RIP: 0033:0x7fc36ef38504
-[  385.119849 ] Code: 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff eb b3 0f 1f
-80 00 00 00 00 48 8d 05 f9 61 0d 00 8b 00 85 c0 75 13 b8 01 00 00 00 0f
-05 <48> 3d 00 f0 ff ff 77 54 c3 0f 1f 00 41 54 49 89 d4 55 48 89 f5 53
-[  385.119849 ] RSP: 002b:00007ffde0ff3d08 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
-[  385.119849 ] RAX: ffffffffffffffda RBX: 000000000000000c RCX: 00007fc36ef38504
-[  385.119849 ] RDX: 000000000000000c RSI: 00007fc370521040 RDI: 0000000000000001
-[  385.119849 ] RBP: 00007fc370521040 R08: 00007fc36f00b8c0 R09: 00007fc36ee4b740
-[  385.119849 ] R10: 0000000000000000 R11: 0000000000000246 R12: 00007fc36f00a760
-[  385.119849 ] R13: 000000000000000c R14: 00007fc36f005760 R15: 000000000000000c
-[  385.119849 ]  </TASK>
-[  385.119849 ]
-[  385.119849 ] Allocated by task 65:
-[  385.119849 ]  kasan_save_stack+0x1e/0x40
-[  385.119849 ]  __kasan_kmalloc+0x81/0xa0
-[  385.119849 ]  mlx5_init_fs+0x11b/0x1160
-[  385.119849 ]  mlx5_load+0x13c/0x220
-[  385.119849 ]  mlx5_load_one+0xda/0x160
-[  385.119849 ]  mlx5_recover_device+0xb8/0x100
-[  385.119849 ]  mlx5_health_try_recover+0x2f9/0x3a1
-[  385.119849 ]  devlink_health_reporter_recover+0x75/0x100
-[  385.119849 ]  devlink_health_report+0x26c/0x4b0
-[  385.275909 ]  mlx5_fw_fatal_reporter_err_work+0x11e/0x1b0
-[  385.275909 ]  process_one_work+0x520/0x970
-[  385.275909 ]  worker_thread+0x378/0x950
-[  385.275909 ]  kthread+0x1bb/0x200
-[  385.275909 ]  ret_from_fork+0x1f/0x30
-[  385.275909 ]
-[  385.275909 ] Freed by task 65:
-[  385.275909 ]  kasan_save_stack+0x1e/0x40
-[  385.275909 ]  kasan_set_track+0x21/0x30
-[  385.275909 ]  kasan_set_free_info+0x20/0x30
-[  385.275909 ]  __kasan_slab_free+0xfc/0x140
-[  385.275909 ]  kfree+0xa5/0x3b0
-[  385.275909 ]  mlx5_unload+0x2e/0xb0
-[  385.275909 ]  mlx5_unload_one+0x86/0xb0
-[  385.275909 ]  mlx5_fw_fatal_reporter_err_work.cold+0xca/0xcf
-[  385.275909 ]  process_one_work+0x520/0x970
-[  385.275909 ]  worker_thread+0x378/0x950
-[  385.275909 ]  kthread+0x1bb/0x200
-[  385.275909 ]  ret_from_fork+0x1f/0x30
-[  385.275909 ]
-[  385.275909 ] The buggy address belongs to the object at ffff888104b79300
-[  385.275909 ]  which belongs to the cache kmalloc-128 of size 128
-[  385.275909 ] The buggy address is located 8 bytes inside of
-[  385.275909 ]  128-byte region [ffff888104b79300, ffff888104b79380)
-[  385.275909 ] The buggy address belongs to the page:
-[  385.275909 ] page:00000000de44dd39 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x104b78
-[  385.275909 ] head:00000000de44dd39 order:1 compound_mapcount:0
-[  385.275909 ] flags: 0x8000000000010200(slab|head|zone=2)
-[  385.275909 ] raw: 8000000000010200 0000000000000000 dead000000000122 ffff8881000428c0
-[  385.275909 ] raw: 0000000000000000 0000000080200020 00000001ffffffff 0000000000000000
-[  385.275909 ] page dumped because: kasan: bad access detected
-[  385.275909 ]
-[  385.275909 ] Memory state around the buggy address:
-[  385.275909 ]  ffff888104b79200: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 fc fc
-[  385.275909 ]  ffff888104b79280: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-[  385.275909 ] >ffff888104b79300: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[  385.275909 ]                       ^
-[  385.275909 ]  ffff888104b79380: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-[  385.275909 ]  ffff888104b79400: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[  385.275909 ]]
-
-Fixes: e890acd5ff18 ("net/mlx5: Add devlink flow_steering_mode parameter")
-Signed-off-by: Shay Drory <shayd@nvidia.com>
-Reviewed-by: Mark Bloch <mbloch@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/fs_core.c | 131 ++++++++++--------
- .../net/ethernet/mellanox/mlx5/core/fs_core.h |   6 +-
- .../net/ethernet/mellanox/mlx5/core/main.c    |  15 +-
- 3 files changed, 91 insertions(+), 61 deletions(-)
+ drivers/irqchip/Kconfig             |   8 +
+ drivers/irqchip/Makefile            |   1 +
+ drivers/irqchip/irq-renesas-rzg2l.c | 425 ++++++++++++++++++++++++++++
+ 3 files changed, 434 insertions(+)
+ create mode 100644 drivers/irqchip/irq-renesas-rzg2l.c
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-index 537c82b9aa53..b6f58d16d145 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-@@ -2656,28 +2656,6 @@ static void cleanup_root_ns(struct mlx5_flow_root_namespace *root_ns)
- 	clean_tree(&root_ns->ns.node);
- }
+diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
+index 15edb9a6fcae..f3d071422f3b 100644
+--- a/drivers/irqchip/Kconfig
++++ b/drivers/irqchip/Kconfig
+@@ -242,6 +242,14 @@ config RENESAS_RZA1_IRQC
+ 	  Enable support for the Renesas RZ/A1 Interrupt Controller, to use up
+ 	  to 8 external interrupts with configurable sense select.
  
--void mlx5_cleanup_fs(struct mlx5_core_dev *dev)
--{
--	struct mlx5_flow_steering *steering = dev->priv.steering;
--
--	cleanup_root_ns(steering->root_ns);
--	cleanup_root_ns(steering->fdb_root_ns);
--	steering->fdb_root_ns = NULL;
--	kfree(steering->fdb_sub_ns);
--	steering->fdb_sub_ns = NULL;
--	cleanup_root_ns(steering->port_sel_root_ns);
--	cleanup_root_ns(steering->sniffer_rx_root_ns);
--	cleanup_root_ns(steering->sniffer_tx_root_ns);
--	cleanup_root_ns(steering->rdma_rx_root_ns);
--	cleanup_root_ns(steering->rdma_tx_root_ns);
--	cleanup_root_ns(steering->egress_root_ns);
--	mlx5_cleanup_fc_stats(dev);
--	kmem_cache_destroy(steering->ftes_cache);
--	kmem_cache_destroy(steering->fgs_cache);
--	mlx5_ft_pool_destroy(dev);
--	kfree(steering);
--}
--
- static int init_sniffer_tx_root_ns(struct mlx5_flow_steering *steering)
- {
- 	struct fs_prio *prio;
-@@ -3063,42 +3041,27 @@ static int init_egress_root_ns(struct mlx5_flow_steering *steering)
- 	return err;
- }
- 
--int mlx5_init_fs(struct mlx5_core_dev *dev)
-+void mlx5_fs_core_cleanup(struct mlx5_core_dev *dev)
- {
--	struct mlx5_flow_steering *steering;
--	int err = 0;
--
--	err = mlx5_init_fc_stats(dev);
--	if (err)
--		return err;
--
--	err = mlx5_ft_pool_init(dev);
--	if (err)
--		return err;
--
--	steering = kzalloc(sizeof(*steering), GFP_KERNEL);
--	if (!steering) {
--		err = -ENOMEM;
--		goto err;
--	}
--
--	steering->dev = dev;
--	dev->priv.steering = steering;
-+	struct mlx5_flow_steering *steering = dev->priv.steering;
- 
--	if (mlx5_fs_dr_is_supported(dev))
--		steering->mode = MLX5_FLOW_STEERING_MODE_SMFS;
--	else
--		steering->mode = MLX5_FLOW_STEERING_MODE_DMFS;
-+	cleanup_root_ns(steering->root_ns);
-+	cleanup_root_ns(steering->fdb_root_ns);
-+	steering->fdb_root_ns = NULL;
-+	kfree(steering->fdb_sub_ns);
-+	steering->fdb_sub_ns = NULL;
-+	cleanup_root_ns(steering->port_sel_root_ns);
-+	cleanup_root_ns(steering->sniffer_rx_root_ns);
-+	cleanup_root_ns(steering->sniffer_tx_root_ns);
-+	cleanup_root_ns(steering->rdma_rx_root_ns);
-+	cleanup_root_ns(steering->rdma_tx_root_ns);
-+	cleanup_root_ns(steering->egress_root_ns);
-+}
- 
--	steering->fgs_cache = kmem_cache_create("mlx5_fs_fgs",
--						sizeof(struct mlx5_flow_group), 0,
--						0, NULL);
--	steering->ftes_cache = kmem_cache_create("mlx5_fs_ftes", sizeof(struct fs_fte), 0,
--						 0, NULL);
--	if (!steering->ftes_cache || !steering->fgs_cache) {
--		err = -ENOMEM;
--		goto err;
--	}
-+int mlx5_fs_core_init(struct mlx5_core_dev *dev)
++config RENESAS_RZG2L_IRQC
++	bool "Renesas RZ/G2L (and alike SoC) IRQC support" if COMPILE_TEST
++	select GENERIC_IRQ_CHIP
++	select IRQ_DOMAIN_HIERARCHY
++	help
++	  Enable support for the Renesas RZ/G2L (and alike SoC) Interrupt Controller
++	  for external devices.
++
+ config SL28CPLD_INTC
+ 	bool "Kontron sl28cpld IRQ controller"
+ 	depends on MFD_SL28CPLD=y || COMPILE_TEST
+diff --git a/drivers/irqchip/Makefile b/drivers/irqchip/Makefile
+index 160a1d8ceaa9..eaa56eec2b23 100644
+--- a/drivers/irqchip/Makefile
++++ b/drivers/irqchip/Makefile
+@@ -51,6 +51,7 @@ obj-$(CONFIG_RDA_INTC)			+= irq-rda-intc.o
+ obj-$(CONFIG_RENESAS_INTC_IRQPIN)	+= irq-renesas-intc-irqpin.o
+ obj-$(CONFIG_RENESAS_IRQC)		+= irq-renesas-irqc.o
+ obj-$(CONFIG_RENESAS_RZA1_IRQC)		+= irq-renesas-rza1.o
++obj-$(CONFIG_RENESAS_RZG2L_IRQC)	+= irq-renesas-rzg2l.o
+ obj-$(CONFIG_VERSATILE_FPGA_IRQ)	+= irq-versatile-fpga.o
+ obj-$(CONFIG_ARCH_NSPIRE)		+= irq-zevio.o
+ obj-$(CONFIG_ARCH_VT8500)		+= irq-vt8500.o
+diff --git a/drivers/irqchip/irq-renesas-rzg2l.c b/drivers/irqchip/irq-renesas-rzg2l.c
+new file mode 100644
+index 000000000000..a846c6ee11d7
+--- /dev/null
++++ b/drivers/irqchip/irq-renesas-rzg2l.c
+@@ -0,0 +1,425 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Renesas RZ/G2L IRQC Driver
++ *
++ * Copyright (C) 2022 Renesas Electronics Corporation.
++ *
++ * Author: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
++ */
++
++#include <linux/bitfield.h>
++#include <linux/clk.h>
++#include <linux/err.h>
++#include <linux/io.h>
++#include <linux/irqchip.h>
++#include <linux/irqdomain.h>
++#include <linux/of_address.h>
++#include <linux/of_platform.h>
++#include <linux/pm_runtime.h>
++#include <linux/reset.h>
++#include <linux/spinlock.h>
++
++#define IRQC_IRQ_START			1
++#define IRQC_IRQ_COUNT			8
++#define IRQC_TINT_START			(IRQC_IRQ_START + IRQC_IRQ_COUNT)
++#define IRQC_TINT_COUNT			32
++#define IRQC_NUM_IRQ			(IRQC_TINT_START + IRQC_TINT_COUNT)
++
++#define ISCR				0x10
++#define IITSR				0x14
++#define TSCR				0x20
++#define TITSR0				0x24
++#define TITSR1				0x28
++#define TITSR0_MAX_INT			16
++#define TITSEL_WIDTH			0x2
++#define TSSR(n)				(0x30 + ((n) * 4))
++#define TIEN				BIT(7)
++#define TSSEL_SHIFT(n)			(8 * (n))
++#define TSSEL_MASK			GENMASK(7, 0)
++#define IRQ_MASK			0x3
++
++#define TSSR_OFFSET(n)			((n) % 4)
++#define TSSR_INDEX(n)			((n) / 4)
++
++#define TITSR_TITSEL_EDGE_RISING	0
++#define TITSR_TITSEL_EDGE_FALLING	1
++#define TITSR_TITSEL_LEVEL_HIGH		2
++#define TITSR_TITSEL_LEVEL_LOW		3
++
++#define IITSR_IITSEL(n, sense)		((sense) << ((n) * 2))
++#define IITSR_IITSEL_LEVEL_LOW		0
++#define IITSR_IITSEL_EDGE_FALLING	1
++#define IITSR_IITSEL_EDGE_RISING	2
++#define IITSR_IITSEL_EDGE_BOTH		3
++#define IITSR_IITSEL_MASK(n)		IITSR_IITSEL((n), 3)
++
++#define TINT_EXTRACT_HWIRQ(x)           FIELD_GET(GENMASK(15, 0), (x))
++#define TINT_EXTRACT_GPIOINT(x)         FIELD_GET(GENMASK(31, 16), (x))
++
++struct rzg2l_irqc_priv {
++	void __iomem *base;
++	struct of_phandle_args map[IRQC_NUM_IRQ];
++	raw_spinlock_t lock;
++};
++
++struct rzg2l_irqc_chip_data {
++	int tint;
++};
++
++static struct rzg2l_irqc_priv *irq_data_to_priv(struct irq_data *data)
 +{
-+	struct mlx5_flow_steering *steering = dev->priv.steering;
-+	int err = 0;
- 
- 	if ((((MLX5_CAP_GEN(dev, port_type) == MLX5_CAP_PORT_TYPE_ETH) &&
- 	      (MLX5_CAP_GEN(dev, nic_flow_table))) ||
-@@ -3157,8 +3120,64 @@ int mlx5_init_fs(struct mlx5_core_dev *dev)
- 	}
- 
- 	return 0;
-+
-+err:
-+	mlx5_fs_core_cleanup(dev);
-+	return err;
-+}
-+
-+void mlx5_fs_core_free(struct mlx5_core_dev *dev)
-+{
-+	struct mlx5_flow_steering *steering = dev->priv.steering;
-+
-+	kmem_cache_destroy(steering->ftes_cache);
-+	kmem_cache_destroy(steering->fgs_cache);
-+	kfree(steering);
-+	mlx5_ft_pool_destroy(dev);
-+	mlx5_cleanup_fc_stats(dev);
++	return data->domain->host_data;
 +}
 +
-+int mlx5_fs_core_alloc(struct mlx5_core_dev *dev)
++static void rzg2l_irq_eoi(struct irq_data *d)
 +{
-+	struct mlx5_flow_steering *steering;
-+	int err = 0;
++	unsigned int hw_irq = irqd_to_hwirq(d) - IRQC_IRQ_START;
++	struct rzg2l_irqc_priv *priv = irq_data_to_priv(d);
++	u32 bit = BIT(hw_irq);
++	u32 reg;
 +
-+	err = mlx5_init_fc_stats(dev);
-+	if (err)
-+		return err;
++	reg = readl_relaxed(priv->base + ISCR);
++	if (reg & bit)
++		writel_relaxed(reg & ~bit, priv->base + ISCR);
++}
 +
-+	err = mlx5_ft_pool_init(dev);
-+	if (err)
-+		goto err;
++static void rzg2l_tint_eoi(struct irq_data *d)
++{
++	unsigned int hw_irq = irqd_to_hwirq(d) - IRQC_TINT_START;
++	struct rzg2l_irqc_priv *priv = irq_data_to_priv(d);
++	u32 bit = BIT(hw_irq);
++	u32 reg;
 +
-+	steering = kzalloc(sizeof(*steering), GFP_KERNEL);
-+	if (!steering) {
-+		err = -ENOMEM;
-+		goto err;
++	reg = readl_relaxed(priv->base + TSCR);
++	if (reg & bit)
++		writel_relaxed(reg & ~bit, priv->base + TSCR);
++}
++
++static void rzg2l_irqc_eoi(struct irq_data *d)
++{
++	struct rzg2l_irqc_priv *priv = irq_data_to_priv(d);
++	unsigned int hw_irq = irqd_to_hwirq(d);
++
++	raw_spin_lock(&priv->lock);
++	if (hw_irq >= IRQC_IRQ_START && hw_irq <= IRQC_IRQ_COUNT)
++		rzg2l_irq_eoi(d);
++	else if (hw_irq >= IRQC_TINT_START && hw_irq < IRQC_NUM_IRQ)
++		rzg2l_tint_eoi(d);
++	raw_spin_unlock(&priv->lock);
++	irq_chip_eoi_parent(d);
++}
++
++static void rzg2l_irqc_irq_disable(struct irq_data *d)
++{
++	unsigned int hw_irq = irqd_to_hwirq(d);
++
++	if (hw_irq >= IRQC_TINT_START && hw_irq < IRQC_NUM_IRQ) {
++		struct rzg2l_irqc_priv *priv = irq_data_to_priv(d);
++		u32 offset = hw_irq - IRQC_TINT_START;
++		u32 tssr_offset = TSSR_OFFSET(offset);
++		u8 tssr_index = TSSR_INDEX(offset);
++		u32 reg;
++
++		raw_spin_lock(&priv->lock);
++		reg = readl_relaxed(priv->base + TSSR(tssr_index));
++		reg &= ~(TSSEL_MASK << tssr_offset);
++		writel_relaxed(reg, priv->base + TSSR(tssr_index));
++		raw_spin_unlock(&priv->lock);
++	}
++	irq_chip_disable_parent(d);
++}
++
++static void rzg2l_irqc_irq_enable(struct irq_data *d)
++{
++	unsigned int hw_irq = irqd_to_hwirq(d);
++
++	if (hw_irq >= IRQC_TINT_START && hw_irq < IRQC_NUM_IRQ) {
++		struct rzg2l_irqc_priv *priv = irq_data_to_priv(d);
++		unsigned long chip_data = *(unsigned long *)d->chip_data;
++		u32 offset = hw_irq - IRQC_TINT_START;
++		u32 tssr_offset = TSSR_OFFSET(offset);
++		u8 tssr_index = TSSR_INDEX(offset);
++		u32 reg;
++
++		raw_spin_lock(&priv->lock);
++		reg = readl_relaxed(priv->base + TSSR(tssr_index));
++		reg |= (TIEN | chip_data) << TSSEL_SHIFT(tssr_offset);
++		writel_relaxed(reg, priv->base + TSSR(tssr_index));
++		raw_spin_unlock(&priv->lock);
++	}
++	irq_chip_enable_parent(d);
++}
++
++static int rzg2l_irq_set_type(struct irq_data *d, unsigned int type)
++{
++	unsigned int hw_irq = irqd_to_hwirq(d) - IRQC_IRQ_START;
++	struct rzg2l_irqc_priv *priv = irq_data_to_priv(d);
++	u16 sense, tmp;
++
++	switch (type & IRQ_TYPE_SENSE_MASK) {
++	case IRQ_TYPE_LEVEL_LOW:
++		sense = IITSR_IITSEL_LEVEL_LOW;
++		break;
++
++	case IRQ_TYPE_EDGE_FALLING:
++		sense = IITSR_IITSEL_EDGE_FALLING;
++		break;
++
++	case IRQ_TYPE_EDGE_RISING:
++		sense = IITSR_IITSEL_EDGE_RISING;
++		break;
++
++	case IRQ_TYPE_EDGE_BOTH:
++		sense = IITSR_IITSEL_EDGE_BOTH;
++		break;
++
++	default:
++		return -EINVAL;
 +	}
 +
-+	steering->dev = dev;
-+	dev->priv.steering = steering;
++	raw_spin_lock(&priv->lock);
++	tmp = readl_relaxed(priv->base + IITSR);
++	tmp &= ~IITSR_IITSEL_MASK(hw_irq);
++	tmp |= IITSR_IITSEL(hw_irq, sense);
++	writel_relaxed(tmp, priv->base + IITSR);
++	raw_spin_unlock(&priv->lock);
 +
-+	if (mlx5_fs_dr_is_supported(dev))
-+		steering->mode = MLX5_FLOW_STEERING_MODE_SMFS;
-+	else
-+		steering->mode = MLX5_FLOW_STEERING_MODE_DMFS;
++	return 0;
++}
 +
-+	steering->fgs_cache = kmem_cache_create("mlx5_fs_fgs",
-+						sizeof(struct mlx5_flow_group), 0,
-+						0, NULL);
-+	steering->ftes_cache = kmem_cache_create("mlx5_fs_ftes", sizeof(struct fs_fte), 0,
-+						 0, NULL);
-+	if (!steering->ftes_cache || !steering->fgs_cache) {
-+		err = -ENOMEM;
-+		goto err;
++static int rzg2l_tint_set_edge(struct irq_data *d, unsigned int type)
++{
++	struct rzg2l_irqc_priv *priv = irq_data_to_priv(d);
++	unsigned int hwirq = irqd_to_hwirq(d);
++	u32 titseln = hwirq - IRQC_TINT_START;
++	u32 offset;
++	u8 sense;
++	u32 reg;
++
++	switch (type & IRQ_TYPE_SENSE_MASK) {
++	case IRQ_TYPE_EDGE_RISING:
++		sense = TITSR_TITSEL_EDGE_RISING;
++		break;
++
++	case IRQ_TYPE_EDGE_FALLING:
++		sense = TITSR_TITSEL_EDGE_FALLING;
++		break;
++
++	default:
++		return -EINVAL;
++	}
++
++	offset = TITSR0;
++	if (titseln >= TITSR0_MAX_INT) {
++		titseln -= TITSR0_MAX_INT;
++		offset = TITSR1;
++	}
++
++	raw_spin_lock(&priv->lock);
++	reg = readl_relaxed(priv->base + offset);
++	reg &= ~(IRQ_MASK << (titseln * TITSEL_WIDTH));
++	reg |= sense << (titseln * TITSEL_WIDTH);
++	writel_relaxed(reg, priv->base + offset);
++	raw_spin_unlock(&priv->lock);
++
++	return 0;
++}
++
++static int rzg2l_irqc_set_type(struct irq_data *d, unsigned int type)
++{
++	unsigned int hw_irq = irqd_to_hwirq(d);
++	int ret = -EINVAL;
++
++	if (hw_irq >= IRQC_IRQ_START && hw_irq <= IRQC_IRQ_COUNT)
++		ret = rzg2l_irq_set_type(d, type);
++	else if (hw_irq >= IRQC_TINT_START && hw_irq < IRQC_NUM_IRQ)
++		ret = rzg2l_tint_set_edge(d, type);
++	if (ret)
++		return ret;
++
++	return irq_chip_set_type_parent(d, IRQ_TYPE_LEVEL_HIGH);
++}
++
++static const struct irq_chip irqc_chip = {
++	.name			= "rzg2l-irqc",
++	.irq_eoi		= rzg2l_irqc_eoi,
++	.irq_mask		= irq_chip_mask_parent,
++	.irq_unmask		= irq_chip_unmask_parent,
++	.irq_disable		= rzg2l_irqc_irq_disable,
++	.irq_enable		= rzg2l_irqc_irq_enable,
++	.irq_get_irqchip_state	= irq_chip_get_parent_state,
++	.irq_set_irqchip_state	= irq_chip_set_parent_state,
++	.irq_retrigger		= irq_chip_retrigger_hierarchy,
++	.irq_set_type		= rzg2l_irqc_set_type,
++	.flags			= IRQCHIP_MASK_ON_SUSPEND |
++				  IRQCHIP_SET_TYPE_MASKED |
++				  IRQCHIP_SKIP_SET_WAKE,
++};
++
++static int rzg2l_irqc_alloc(struct irq_domain *domain, unsigned int virq,
++			    unsigned int nr_irqs, void *arg)
++{
++	struct rzg2l_irqc_priv *priv = domain->host_data;
++	unsigned long *chip_data = NULL;
++	struct irq_fwspec spec;
++	irq_hw_number_t hwirq;
++	int tint = -EINVAL;
++	unsigned int type;
++	unsigned int i;
++	int ret;
++
++	ret = irq_domain_translate_twocell(domain, arg, &hwirq, &type);
++	if (ret)
++		return ret;
++
++	/*
++	 * For TINT interrupts ie where pinctrl driver is child of irqc domain
++	 * the hwirq and TINT are encoded in fwspec->param[0].
++	 * hwirq for TINT range from 9-40, hwirq is embedded 0-15 bits and TINT
++	 * from 16-31 bits. TINT from the pinctrl driver needs to be programmed
++	 * in IRQC registers to enable a given gpio pin as interrupt.
++	 */
++	if (hwirq > IRQC_IRQ_COUNT) {
++		tint = TINT_EXTRACT_GPIOINT(hwirq);
++		hwirq = TINT_EXTRACT_HWIRQ(hwirq);
++
++		if (hwirq < IRQC_TINT_START)
++			return -EINVAL;
++	}
++
++	if (hwirq > (IRQC_NUM_IRQ - 1))
++		return -EINVAL;
++
++	chip_data = kzalloc(sizeof(*chip_data), GFP_KERNEL);
++	if (!chip_data)
++		return -ENOMEM;
++	*chip_data = tint;
++
++	ret = irq_domain_set_hwirq_and_chip(domain, virq, hwirq, &irqc_chip,
++					    chip_data);
++	if (ret) {
++		kfree(chip_data);
++		return ret;
++	}
++
++	spec.fwnode = domain->parent->fwnode;
++	spec.param_count = priv->map[hwirq].args_count;
++	for (i = 0; i < spec.param_count; i++)
++		spec.param[i] = priv->map[hwirq].args[i];
++
++	ret = irq_domain_alloc_irqs_parent(domain, virq, nr_irqs, &spec);
++	if (ret)
++		kfree(chip_data);
++
++	return ret;
++}
++
++static void rzg2l_irqc_domain_free(struct irq_domain *domain, unsigned int virq,
++				   unsigned int nr_irqs)
++{
++	struct irq_data *d;
++
++	d = irq_domain_get_irq_data(domain, virq);
++	if (d)
++		kfree(d->chip_data);
++
++	irq_domain_free_irqs_common(domain, virq, nr_irqs);
++}
++
++static const struct irq_domain_ops rzg2l_irqc_domain_ops = {
++	.alloc = rzg2l_irqc_alloc,
++	.free = rzg2l_irqc_domain_free,
++	.translate = irq_domain_translate_twocell,
++};
++
++static int rzg2l_irqc_parse_map(struct rzg2l_irqc_priv *priv,
++				struct device_node *np)
++{
++	unsigned int i;
++	int ret;
++
++	for (i = 0; i < IRQC_NUM_IRQ; i++) {
++		ret = of_irq_parse_one(np, i, &priv->map[i]);
++		if (ret)
++			return ret;
++	}
++
++	return 0;
++}
++
++static int rzg2l_irqc_init(struct device_node *node, struct device_node *parent)
++{
++	struct irq_domain *irq_domain, *parent_domain;
++	struct platform_device *pdev;
++	struct reset_control *resetn;
++	struct rzg2l_irqc_priv *priv;
++	int ret;
++
++	pdev = of_find_device_by_node(node);
++	if (!pdev)
++		return -ENODEV;
++
++	parent_domain = irq_find_host(parent);
++	if (!parent_domain) {
++		dev_err(&pdev->dev, "cannot find parent domain\n");
++		return -ENODEV;
++	}
++
++	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
++	if (!priv)
++		return -ENOMEM;
++
++	priv->base = devm_of_iomap(&pdev->dev, pdev->dev.of_node, 0, NULL);
++	if (IS_ERR(priv->base))
++		return PTR_ERR(priv->base);
++
++	ret = rzg2l_irqc_parse_map(priv, node);
++	if (ret) {
++		dev_err(&pdev->dev, "cannot parse interrupts: %d\n", ret);
++		return ret;
++	}
++
++	resetn = devm_reset_control_get_exclusive_by_index(&pdev->dev, 0);
++	if (IS_ERR(resetn))
++		return IS_ERR(resetn);
++
++	ret = reset_control_deassert(resetn);
++	if (ret) {
++		dev_err(&pdev->dev, "failed to deassert resetn pin, %d\n", ret);
++		return ret;
++	}
++
++	pm_runtime_enable(&pdev->dev);
++	ret = pm_runtime_resume_and_get(&pdev->dev);
++	if (ret < 0) {
++		dev_err(&pdev->dev, "pm_runtime_resume_and_get failed: %d\n", ret);
++		goto pm_disable;
++	}
++
++	raw_spin_lock_init(&priv->lock);
++
++	irq_domain = irq_domain_add_hierarchy(parent_domain, 0, IRQC_NUM_IRQ,
++					      node, &rzg2l_irqc_domain_ops,
++					      priv);
++	if (!irq_domain) {
++		dev_err(&pdev->dev, "failed to add irq domain\n");
++		ret = -ENOMEM;
++		goto pm_put;
 +	}
 +
 +	return 0;
 +
- err:
--	mlx5_cleanup_fs(dev);
-+	mlx5_fs_core_free(dev);
- 	return err;
- }
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.h b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.h
-index 5469b08d635f..6366bf50a564 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.h
-@@ -293,8 +293,10 @@ int mlx5_flow_namespace_set_peer(struct mlx5_flow_root_namespace *ns,
- int mlx5_flow_namespace_set_mode(struct mlx5_flow_namespace *ns,
- 				 enum mlx5_flow_steering_mode mode);
- 
--int mlx5_init_fs(struct mlx5_core_dev *dev);
--void mlx5_cleanup_fs(struct mlx5_core_dev *dev);
-+int mlx5_fs_core_alloc(struct mlx5_core_dev *dev);
-+void mlx5_fs_core_free(struct mlx5_core_dev *dev);
-+int mlx5_fs_core_init(struct mlx5_core_dev *dev);
-+void mlx5_fs_core_cleanup(struct mlx5_core_dev *dev);
- 
- int mlx5_fs_egress_acls_init(struct mlx5_core_dev *dev, int total_vports);
- void mlx5_fs_egress_acls_cleanup(struct mlx5_core_dev *dev);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-index bba72b220cc3..f1437b6d4418 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-@@ -939,6 +939,12 @@ static int mlx5_init_once(struct mlx5_core_dev *dev)
- 		goto err_sf_table_cleanup;
- 	}
- 
-+	err = mlx5_fs_core_alloc(dev);
-+	if (err) {
-+		mlx5_core_err(dev, "Failed to alloc flow steering\n");
-+		goto err_fs;
-+	}
++pm_put:
++	pm_runtime_put(&pdev->dev);
++pm_disable:
++	pm_runtime_disable(&pdev->dev);
++	reset_control_assert(resetn);
++	return ret;
++}
 +
- 	dev->dm = mlx5_dm_create(dev);
- 	if (IS_ERR(dev->dm))
- 		mlx5_core_warn(dev, "Failed to init device memory%d\n", err);
-@@ -949,6 +955,8 @@ static int mlx5_init_once(struct mlx5_core_dev *dev)
- 
- 	return 0;
- 
-+err_fs:
-+	mlx5_sf_table_cleanup(dev);
- err_sf_table_cleanup:
- 	mlx5_sf_hw_table_cleanup(dev);
- err_sf_hw_table_cleanup:
-@@ -986,6 +994,7 @@ static void mlx5_cleanup_once(struct mlx5_core_dev *dev)
- 	mlx5_hv_vhca_destroy(dev->hv_vhca);
- 	mlx5_fw_tracer_destroy(dev->tracer);
- 	mlx5_dm_cleanup(dev);
-+	mlx5_fs_core_free(dev);
- 	mlx5_sf_table_cleanup(dev);
- 	mlx5_sf_hw_table_cleanup(dev);
- 	mlx5_vhca_event_cleanup(dev);
-@@ -1192,7 +1201,7 @@ static int mlx5_load(struct mlx5_core_dev *dev)
- 		goto err_tls_start;
- 	}
- 
--	err = mlx5_init_fs(dev);
-+	err = mlx5_fs_core_init(dev);
- 	if (err) {
- 		mlx5_core_err(dev, "Failed to init flow steering\n");
- 		goto err_fs;
-@@ -1237,7 +1246,7 @@ static int mlx5_load(struct mlx5_core_dev *dev)
- err_vhca:
- 	mlx5_vhca_event_stop(dev);
- err_set_hca:
--	mlx5_cleanup_fs(dev);
-+	mlx5_fs_core_cleanup(dev);
- err_fs:
- 	mlx5_accel_tls_cleanup(dev);
- err_tls_start:
-@@ -1266,7 +1275,7 @@ static void mlx5_unload(struct mlx5_core_dev *dev)
- 	mlx5_ec_cleanup(dev);
- 	mlx5_sf_hw_table_destroy(dev);
- 	mlx5_vhca_event_stop(dev);
--	mlx5_cleanup_fs(dev);
-+	mlx5_fs_core_cleanup(dev);
- 	mlx5_accel_ipsec_cleanup(dev);
- 	mlx5_accel_tls_cleanup(dev);
- 	mlx5_fpga_device_stop(dev);
++IRQCHIP_PLATFORM_DRIVER_BEGIN(rzg2l_irqc)
++IRQCHIP_MATCH("renesas,rzg2l-irqc", rzg2l_irqc_init)
++IRQCHIP_PLATFORM_DRIVER_END(rzg2l_irqc)
++MODULE_AUTHOR("Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>");
++MODULE_DESCRIPTION("Renesas RZ/G2L IRQC Driver");
++MODULE_LICENSE("GPL");
 -- 
-2.35.1
-
-
+2.25.1
 
