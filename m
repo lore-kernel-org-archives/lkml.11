@@ -2,142 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1C73C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 07:25:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E962C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 07:25:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230319AbiEWHZr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 03:25:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59812 "EHLO
+        id S229926AbiEWHZm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 03:25:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229750AbiEWHYC (ORCPT
+        with ESMTP id S229920AbiEWHYI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 03:24:02 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44C823A1B8
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 00:17:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653290259; x=1684826259;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=RkBnlh49x7+Hp8WBycVg2h1xf0cxa9S/tNTkHWNfXo8=;
-  b=CLznKgNL7LIwbnzjvOgY+FWTvJDhYhhPjVi+5O7dYW/ZdN+xJQtfByxa
-   SFbTBQo6i1tv4mAC353Zi0UCKMgqBnZHZLq2mc6hGBs4E++oSHk8k6NBm
-   bFjY5KCz6hMDZdiAiyt/aV+eBomH/9LtaJVttgk1rQBsET4HSe0r24BUB
-   JRH+nXAexv4GIsfpryCSCR0Z2es8jKHzj5PfBOIfk1zsDpbUk670Xsvij
-   2oniKodbCby4uZY5Jdgp5r8rTQW3JS0k1WszzobckakrkF7S4BE3cN/zH
-   RdK2z6F8d5NmZD5rdM+xRws+gM4BZAq+02u/KyraK6jN5iVwpA4LaRe4y
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10355"; a="359525441"
-X-IronPort-AV: E=Sophos;i="5.91,245,1647327600"; 
-   d="scan'208";a="359525441"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2022 00:13:01 -0700
-X-IronPort-AV: E=Sophos;i="5.91,245,1647327600"; 
-   d="scan'208";a="571941238"
-Received: from jsun39-mobl.ccr.corp.intel.com (HELO [10.255.28.225]) ([10.255.28.225])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2022 00:12:57 -0700
-Message-ID: <316981d6-6b40-9e2a-09d3-b0d6f8687247@linux.intel.com>
-Date:   Mon, 23 May 2022 15:12:53 +0800
+        Mon, 23 May 2022 03:24:08 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 065383A70A
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 00:18:06 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id er5so17852751edb.12
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 00:18:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ZKmsQgynHPz6XZUH+OaLoKprNkWxD5xr7wLUims5Uew=;
+        b=ZH2nfbwzmcSMItt2ozCdR2C6oxHIor0iq36N2in/oR4yEgbh+eudgGLAx+ea9L3egz
+         jD1VNlarZRim2/v4nFpMz7Xv5EpRl6R7j7kaUUP4sF6sGbCFP9Za77PolNlY/X9/k2IA
+         ohqz8ocX6ibJlZmF6UUiaVGfC56LEDCTW84kY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ZKmsQgynHPz6XZUH+OaLoKprNkWxD5xr7wLUims5Uew=;
+        b=oLW++KE/e6cIf3z4OvgetKP/gh7xZQfwqalo45hOWsvySEyBTWPeJzwOh1r9cJ6etL
+         kwHzyi+Xf+/SaCvhR8tRH66sf37QmmMsabErduV7FRfbLjnMyHekBUk/ARB9sEflfFPC
+         Y/Hpf/mr3pW873a+JyVkpfBgiAdSTsAS7vytEUc8Zox/dSquo4wRBzS6yPitmjyCaWTa
+         ZX0UlPBWjDjKZdkaIs/NVmzC9VylrX4f4AOXv6yIqnNJlFdTySLTCk46Gh+EZ3r3Gi+y
+         0PNyK//AWcwyuu3KMbx6y7OEF9Uio4ATNDESwj6YYs36gHu+2l13PKPpGvqRL8KL/9s8
+         S+tA==
+X-Gm-Message-State: AOAM532norcz213RH5QOTA6idiVH6mVfP6/zz1vDvIF6upb9PFodB+aL
+        JhJHJkkw8jciDvQfD8mBsyoe9cGZOLsy9uRq9fKkiQ==
+X-Google-Smtp-Source: ABdhPJxm4iIXuOdQ2/oG1AGl+ysLJoT/7yQvP6EahZ2Gz296n7KCIMf8vvhjxppUwRqYgih0E8dqHJmCqEeNHwoCrqs=
+X-Received: by 2002:a05:6402:290e:b0:42a:e401:6a07 with SMTP id
+ ee14-20020a056402290e00b0042ae4016a07mr21850777edb.99.1653290284562; Mon, 23
+ May 2022 00:18:04 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Cc:     baolu.lu@linux.intel.com, Eric Auger <eric.auger@redhat.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: Re: [PATCH v7 03/10] iommu/sva: Add iommu_sva_domain support
-Content-Language: en-US
-To:     Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Vinod Koul <vkoul@kernel.org>
-References: <20220519072047.2996983-1-baolu.lu@linux.intel.com>
- <20220519072047.2996983-4-baolu.lu@linux.intel.com>
-From:   Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20220519072047.2996983-4-baolu.lu@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220422084720.959271-1-xji@analogixsemi.com> <20220422084720.959271-4-xji@analogixsemi.com>
+ <CAG3jFytWGSUM9mevHewdmEe-hq3JgB74s7_f0fsEQqkXr9VUHg@mail.gmail.com>
+ <CAG3jFyvEYbwkdGtiNR-6vFEXTLjcyT_viqp9qeVxFTu0PrJEVA@mail.gmail.com>
+ <CAGXv+5E1cCNWD98fMDjC38y2UztZd=PNQ+=G=wrBYfoXkswvHA@mail.gmail.com>
+ <20220425091419.GA967110@anxtwsw-Precision-3640-Tower> <CAG3jFyvTim7P_y2G1Br5j3Pwz4KzvRjWgci_qQ3m_YW=3Bog8A@mail.gmail.com>
+ <CAKMK7uFHyYTnGtP+vCzo2Uan90DW-QZpPFPn5S9bQ5aPiY=qzA@mail.gmail.com>
+ <CAKMK7uHFGsPMZf2SUF4HDXo3XuOLjP3-DLfyp=gB2qpKR964Eg@mail.gmail.com> <20220523031324.GA3738288@anxtwsw-Precision-3640-Tower>
+In-Reply-To: <20220523031324.GA3738288@anxtwsw-Precision-3640-Tower>
+From:   Chen-Yu Tsai <wenst@chromium.org>
+Date:   Mon, 23 May 2022 15:17:53 +0800
+Message-ID: <CAGXv+5EHghwSV+9Www9RvG74PkC7=AQuwn6sVG=cvCni-iwCyQ@mail.gmail.com>
+Subject: Re: [PATCH v2 4/4] drm/bridge: anx7625: Use DPI bus type
+To:     Xin Ji <xji@analogixsemi.com>
+Cc:     Daniel Vetter <daniel@ffwll.ch>,
+        Robert Foss <robert.foss@linaro.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        David Airlie <airlied@linux.ie>, qwen@analogixsemi.com,
+        Jonas Karlman <jonas@kwiboo.se>, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        bliang@analogixsemi.com,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/5/19 15:20, Lu Baolu wrote:
-> The iommu_sva_domain represents a hardware pagetable that the IOMMU
-> hardware could use for SVA translation. This adds some infrastructure
-> to support SVA domain in the iommu common layer. It includes:
-> 
-> - Add a new struct iommu_sva_domain and new IOMMU_DOMAIN_SVA domain
->    type.
-> - Add a new domain ops pointer in iommu_ops. The IOMMU drivers that
->    support SVA should provide the callbacks.
-> - Add helpers to allocate and free an SVA domain.
-> - Add helpers to set an SVA domain to a device and the reverse
->    operation.
-> 
-> Some buses, like PCI, route packets without considering the PASID value.
-> Thus a DMA target address with PASID might be treated as P2P if the
-> address falls into the MMIO BAR of other devices in the group. To make
-> things simple, the attach/detach interfaces only apply to devices
-> belonging to the singleton groups, and the singleton is immutable in
-> fabric i.e. not affected by hotplug.
-> 
-> The iommu_set/block_device_pasid() can be used for other purposes,
-> such as kernel DMA with pasid, mediation device, etc. Hence, it is put
-> in the iommu.c.
-> 
-> Suggested-by: Jean-Philippe Brucker<jean-philippe@linaro.org>
-> Suggested-by: Jason Gunthorpe<jgg@nvidia.com>
-> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
-> ---
->   include/linux/iommu.h         | 51 +++++++++++++++++++++++++
->   drivers/iommu/iommu-sva-lib.h | 15 ++++++++
->   drivers/iommu/iommu-sva-lib.c | 48 +++++++++++++++++++++++
->   drivers/iommu/iommu.c         | 71 +++++++++++++++++++++++++++++++++++
->   4 files changed, 185 insertions(+)
-> 
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 0c358b7c583b..e8cf82d46ce1 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -64,6 +64,9 @@ struct iommu_domain_geometry {
->   #define __IOMMU_DOMAIN_PT	(1U << 2)  /* Domain is identity mapped   */
->   #define __IOMMU_DOMAIN_DMA_FQ	(1U << 3)  /* DMA-API uses flush queue    */
->   
-> +#define __IOMMU_DOMAIN_SHARED	(1U << 4)  /* Page table shared from CPU  */
-> +#define __IOMMU_DOMAIN_HOST_VA	(1U << 5)  /* Host CPU virtual address */
-> +
->   /*
->    * This are the possible domain-types
->    *
-> @@ -86,6 +89,8 @@ struct iommu_domain_geometry {
->   #define IOMMU_DOMAIN_DMA_FQ	(__IOMMU_DOMAIN_PAGING |	\
->   				 __IOMMU_DOMAIN_DMA_API |	\
->   				 __IOMMU_DOMAIN_DMA_FQ)
-> +#define IOMMU_DOMAIN_SVA	(__IOMMU_DOMAIN_SHARED |	\
-> +				 __IOMMU_DOMAIN_HOST_VA)
->   
->   struct iommu_domain {
->   	unsigned type;
-> @@ -254,6 +259,7 @@ struct iommu_ops {
->   	int (*def_domain_type)(struct device *dev);
->   
->   	const struct iommu_domain_ops *default_domain_ops;
-> +	const struct iommu_domain_ops *sva_domain_ops;
+On Mon, May 23, 2022 at 11:13 AM Xin Ji <xji@analogixsemi.com> wrote:
+>
+> On Sat, May 21, 2022 at 06:28:42PM +0200, Daniel Vetter wrote:
+> > On Sat, 21 May 2022 at 18:07, Daniel Vetter <daniel@ffwll.ch> wrote:
+> > >
+> > > On Tue, 17 May 2022 at 18:09, Robert Foss <robert.foss@linaro.org> wrote:
+> > > >
+> > > > On Mon, 25 Apr 2022 at 11:14, Xin Ji <xji@analogixsemi.com> wrote:
+> > > > >
+> > > > > On Mon, Apr 25, 2022 at 04:24:50PM +0800, Chen-Yu Tsai wrote:
+> > > > > > On Fri, Apr 22, 2022 at 10:13 PM Robert Foss <robert.foss@linaro.org> wrote:
+> > > > > > >
+> > > > > > > On Fri, 22 Apr 2022 at 16:01, Robert Foss <robert.foss@linaro.org> wrote:
+> > > > > > > >
+> > > > > > > > On Fri, 22 Apr 2022 at 10:49, Xin Ji <xji@analogixsemi.com> wrote:
+> > > > > > > > >
+> > > > > > > > > As V4L2_FWNODE_BUS_TYPE_PARALLEL not properly descript for DPI
+> > > > > > > > > interface, this patch use new defined V4L2_FWNODE_BUS_TYPE_DPI for it.
+> > > > > > > > >
+> > > > > > > > > Fixes: fd0310b6fe7d ("drm/bridge: anx7625: add MIPI DPI input feature")
+> > > > > > > > > Signed-off-by: Xin Ji <xji@analogixsemi.com>
+> > > > > > > > > ---
+> > > > > > > > >  drivers/gpu/drm/bridge/analogix/anx7625.c | 8 ++++----
+> > > > > > > > >  1 file changed, 4 insertions(+), 4 deletions(-)
+> > > > > > > > >
+> > > > > > > > > diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.c b/drivers/gpu/drm/bridge/analogix/anx7625.c
+> > > > > > > > > index 376da01243a3..71df977e8f53 100644
+> > > > > > > > > --- a/drivers/gpu/drm/bridge/analogix/anx7625.c
+> > > > > > > > > +++ b/drivers/gpu/drm/bridge/analogix/anx7625.c
+> > > > > > > > > @@ -1623,14 +1623,14 @@ static int anx7625_parse_dt(struct device *dev,
+> > > > > > > > >
+> > > > > > > > >         anx7625_get_swing_setting(dev, pdata);
+> > > > > > > > >
+> > > > > > > > > -       pdata->is_dpi = 1; /* default dpi mode */
+> > > > > > > > > +       pdata->is_dpi = 0; /* default dsi mode */
+> > > > > > > > >         pdata->mipi_host_node = of_graph_get_remote_node(np, 0, 0);
+> > > > > > > > >         if (!pdata->mipi_host_node) {
+> > > > > > > > >                 DRM_DEV_ERROR(dev, "fail to get internal panel.\n");
+> > > > > > > > >                 return -ENODEV;
+> > > > > > > > >         }
+> > > > > > > > >
+> > > > > > > > > -       bus_type = V4L2_FWNODE_BUS_TYPE_PARALLEL;
+> > > > > > > > > +       bus_type = 0;
+> > > > > > > > >         mipi_lanes = MAX_LANES_SUPPORT;
+> > > > > > > > >         ep0 = of_graph_get_endpoint_by_regs(np, 0, 0);
+> > > > > > > > >         if (ep0) {
+> > > > > > > > > @@ -1640,8 +1640,8 @@ static int anx7625_parse_dt(struct device *dev,
+> > > > > > > > >                 mipi_lanes = of_property_count_u32_elems(ep0, "data-lanes");
+> > > > > > > > >         }
+> > > > > > > > >
+> > > > > > > > > -       if (bus_type == V4L2_FWNODE_BUS_TYPE_PARALLEL) /* bus type is Parallel(DSI) */
+> > > > > > > > > -               pdata->is_dpi = 0;
+> > > > > > > > > +       if (bus_type == V4L2_FWNODE_BUS_TYPE_DPI) /* bus type is DPI */
+> > > > > > > > > +               pdata->is_dpi = 1;
+> > > > > > > > >
+> > > > > > > > >         pdata->mipi_lanes = mipi_lanes;
+> > > > > > > > >         if (pdata->mipi_lanes > MAX_LANES_SUPPORT || pdata->mipi_lanes <= 0)
+> > > > > > > >
+> > > > > > > > Reviewed-by: Robert Foss <robert.foss@linaro.org>
+> > > > > > >
+> > > > > > > Acked-by: Robert Foss <robert.foss@linaro.org>
+> > > > > >
+> > > > > > Tested-by: Chen-Yu Tsai <wenst@chromium.org>
+> > > > > >
+> > > > > > Confirmed this fixes the display on Juniper (Acer Chromebook Spin 311) on
+> > > > > > mainline (next-20220422).
+> > > > > >
+> > > > > > Xin, in the future, please send the whole series to all recipients of
+> > > > > > all patches listed by get_maintainers.pl, not just the recipients of
+> > > > > > each patch. In the case of this series, they should have been sent
+> > > > > > to all of the mailing lists (media, devicetree, dri-devel) so that
+> > > > > > everyone has the same, full view of the patches.
+> > > > > Hi ChenYu, OK, I'll send to all media, devicetree, dri-devel next time.
+> > > > > Thanks,
+> > > > > Xin
+> > > > > >
+> > > > > > ChenYu
+> > > >
+> > > > Applied 3/4 + 4/4 to drm-misc-next.
+> > >
+> > > This patch doesn't even compile. Can you pls fix this up asap? Also
+> > > pls compile-test before pushing ...
+> >
+> > Marek says the prerequisite landed through linux-media, and that's why
+> > it compilers on linux-next but not in drm-misc-next.
+> >
+> > Don't do that.
+> >
+> > Instead:
+> > - merge all patches through one branch, with the foreign patches acked
+> > for that merge patch
+> > - wait until you can backmerge all the dependencies
+> > - do a topic branch
+> >
+> > This probably needs to be reverted here and instead merged through
+> > linux-media. Or you wait until -rc1 and then apply it to
+> > drm-misc-next.
+> > -Daniel
+> Hi Daniel, I use git send-email to upstream patch and automatically
+> generated reviewer list, so patch 1/4 and 2/4 send to linux-media, and
+> these 2 patches already merged in linux-media.
 
-Per Joerg's comment in anther thread,
+This is one of the reasons why you should always send the "full" series
+to all recipients. That way people, especially maintainers, are more
+likely to notice build time cross tree dependencies like this one, and
+work towards a common resolution.
 
-https://lore.kernel.org/linux-iommu/YodVJ7ervpIdWfg+@8bytes.org/
 
-adding a sva_domain_ops here is not the right way to go.
-
-If no objection, I will make the sva domain go through the
-generic domain_alloc/free() callbacks in the next version.
-
-Best regards,
-baolu
+ChenYu
