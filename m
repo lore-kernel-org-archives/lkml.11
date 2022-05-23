@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77654C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87404C433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:48:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242607AbiEWRqE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:46:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38810 "EHLO
+        id S242690AbiEWRqM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:46:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242800AbiEWR2F (ORCPT
+        with ESMTP id S242945AbiEWR2P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:28:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 744E08CB34;
-        Mon, 23 May 2022 10:24:28 -0700 (PDT)
+        Mon, 23 May 2022 13:28:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC13F8BD20;
+        Mon, 23 May 2022 10:24:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 395A6608C0;
-        Mon, 23 May 2022 17:23:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42429C385A9;
-        Mon, 23 May 2022 17:23:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7DCDA60B2C;
+        Mon, 23 May 2022 17:24:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85C1CC385A9;
+        Mon, 23 May 2022 17:24:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326615;
-        bh=P7ifuMvgfCQC7c5AuL095K8fyYyVN8m4teyXLs5ZboM=;
+        s=korg; t=1653326695;
+        bh=l+dweFhCBdHCnU3oBcjOgofbeTDxRhLUVlx7Mb2HFa0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cnlbLvvnw/IPzNWJlI870VHIgiiGGFde5dtSmqlevo/Yf3o0cknqD2E3MS6I6+it0
-         WHI0JYj/PdJgVjEZH8YqDpsRFS+zh+sMMhaxj0zJrHYayduTvD+QJUh6gb+BLtM+hV
-         VGJhvEVqRCfmNzRD1Hw+G1MRnrjIypl6ZpsciLZA=
+        b=oO6fZ+c0rF6LLPNNd2eBRPKDFyVX7MTIIbGKPW0wWe/upvn5qZ8+q2fPOSWuY73+5
+         vAphUa3kPdtsJxpUIu5X0Lzr93Ubnh6JMVFSXK6PHuw+K9azOa/ZLGty0ldYyRaETS
+         X+glKDriqnh76Fpfoa1UH2/FE5mISdYYV/arotAA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jae Hyun Yoo <quic_jaehyoo@quicinc.com>,
-        Rob Herring <robh@kernel.org>,
-        Andrew Jeffery <andrew@aj.id.au>, Joel Stanley <joel@jms.id.au>
-Subject: [PATCH 5.15 129/132] dt-bindings: pinctrl: aspeed-g6: remove FWQSPID group
-Date:   Mon, 23 May 2022 19:05:38 +0200
-Message-Id: <20220523165845.083615959@linuxfoundation.org>
+        stable@vger.kernel.org, Terry Bowman <terry.bowman@amd.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Jean Delvare <jdelvare@suse.de>, Wolfram Sang <wsa@kernel.org>,
+        Mario Limonciello <Mario.Limonciello@amd.com>
+Subject: [PATCH 5.17 011/158] i2c: piix4: Enable EFCH MMIO for Family 17h+
+Date:   Mon, 23 May 2022 19:02:48 +0200
+Message-Id: <20220523165832.457360822@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
-References: <20220523165823.492309987@linuxfoundation.org>
+In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
+References: <20220523165830.581652127@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,33 +50,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jae Hyun Yoo <quic_jaehyoo@quicinc.com>
+From: Terry Bowman <terry.bowman@amd.com>
 
-commit a29c96a4053dc3c1d39353b61089882f81c6b23d upstream.
+commit 6cf72f41808ab5db1d7718b999b3ff0166e67e45 upstream.
 
-FWQSPID is not a group of FWSPID so remove it.
+Enable EFCH MMIO using check for SMBus PCI revision ID value 0x51 or
+greater. This PCI revision ID check will enable family 17h and future
+AMD processors with the same EFCH SMBus controller HW.
 
-Fixes: 7488838f2315 ("dt-bindings: pinctrl: aspeed: Document AST2600 pinmux")
-Signed-off-by: Jae Hyun Yoo <quic_jaehyoo@quicinc.com>
-Acked-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Andrew Jeffery <andrew@aj.id.au>
-Link: https://lore.kernel.org/r/20220329173932.2588289-4-quic_jaehyoo@quicinc.com
-Signed-off-by: Joel Stanley <joel@jms.id.au>
+Signed-off-by: Terry Bowman <terry.bowman@amd.com>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Reviewed-by: Jean Delvare <jdelvare@suse.de>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Cc: Mario Limonciello <Mario.Limonciello@amd.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/devicetree/bindings/pinctrl/aspeed,ast2600-pinctrl.yaml |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/i2c/busses/i2c-piix4.c |   17 +++++++++++++++--
+ 1 file changed, 15 insertions(+), 2 deletions(-)
 
---- a/Documentation/devicetree/bindings/pinctrl/aspeed,ast2600-pinctrl.yaml
-+++ b/Documentation/devicetree/bindings/pinctrl/aspeed,ast2600-pinctrl.yaml
-@@ -58,7 +58,7 @@ patternProperties:
-           $ref: "/schemas/types.yaml#/definitions/string"
-           enum: [ ADC0, ADC1, ADC10, ADC11, ADC12, ADC13, ADC14, ADC15, ADC2,
-                   ADC3, ADC4, ADC5, ADC6, ADC7, ADC8, ADC9, BMCINT, EMMCG1, EMMCG4,
--                  EMMCG8, ESPI, ESPIALT, FSI1, FSI2, FWSPIABR, FWSPID, FWQSPID, FWSPIWP,
-+                  EMMCG8, ESPI, ESPIALT, FSI1, FSI2, FWSPIABR, FWSPID, FWSPIWP,
-                   GPIT0, GPIT1, GPIT2, GPIT3, GPIT4, GPIT5, GPIT6, GPIT7, GPIU0, GPIU1,
-                   GPIU2, GPIU3, GPIU4, GPIU5, GPIU6, GPIU7, HVI3C3, HVI3C4, I2C1, I2C10,
-                   I2C11, I2C12, I2C13, I2C14, I2C15, I2C16, I2C2, I2C3, I2C4, I2C5,
+--- a/drivers/i2c/busses/i2c-piix4.c
++++ b/drivers/i2c/busses/i2c-piix4.c
+@@ -229,6 +229,18 @@ static void piix4_sb800_region_release(s
+ 	release_region(SB800_PIIX4_SMB_IDX, SB800_PIIX4_SMB_MAP_SIZE);
+ }
+ 
++static bool piix4_sb800_use_mmio(struct pci_dev *PIIX4_dev)
++{
++	/*
++	 * cd6h/cd7h port I/O accesses can be disabled on AMD processors
++	 * w/ SMBus PCI revision ID 0x51 or greater. MMIO is supported on
++	 * the same processors and is the recommended access method.
++	 */
++	return (PIIX4_dev->vendor == PCI_VENDOR_ID_AMD &&
++		PIIX4_dev->device == PCI_DEVICE_ID_AMD_KERNCZ_SMBUS &&
++		PIIX4_dev->revision >= 0x51);
++}
++
+ static int piix4_setup(struct pci_dev *PIIX4_dev,
+ 		       const struct pci_device_id *id)
+ {
+@@ -339,7 +351,7 @@ static int piix4_setup_sb800_smba(struct
+ 	u8 smba_en_hi;
+ 	int retval;
+ 
+-	mmio_cfg.use_mmio = 0;
++	mmio_cfg.use_mmio = piix4_sb800_use_mmio(PIIX4_dev);
+ 	retval = piix4_sb800_region_request(&PIIX4_dev->dev, &mmio_cfg);
+ 	if (retval)
+ 		return retval;
+@@ -461,7 +473,7 @@ static int piix4_setup_sb800(struct pci_
+ 			piix4_port_shift_sb800 = SB800_PIIX4_PORT_IDX_SHIFT;
+ 		}
+ 	} else {
+-		mmio_cfg.use_mmio = 0;
++		mmio_cfg.use_mmio = piix4_sb800_use_mmio(PIIX4_dev);
+ 		retval = piix4_sb800_region_request(&PIIX4_dev->dev, &mmio_cfg);
+ 		if (retval) {
+ 			release_region(piix4_smba, SMBIOSIZE);
+@@ -944,6 +956,7 @@ static int piix4_add_adapter(struct pci_
+ 		return -ENOMEM;
+ 	}
+ 
++	adapdata->mmio_cfg.use_mmio = piix4_sb800_use_mmio(dev);
+ 	adapdata->smba = smba;
+ 	adapdata->sb800_main = sb800_main;
+ 	adapdata->port = port << piix4_port_shift_sb800;
 
 
