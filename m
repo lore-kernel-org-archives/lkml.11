@@ -2,39 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D541BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 09:35:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 562B1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 09:35:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233179AbiEWJfL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 05:35:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50920 "EHLO
+        id S233365AbiEWJfP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 05:35:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233260AbiEWJeI (ORCPT
+        with ESMTP id S233208AbiEWJeG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 05:34:08 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3F4549F89;
-        Mon, 23 May 2022 02:34:03 -0700 (PDT)
-X-UUID: 50954336da7648ed8445a24754e6de17-20220523
+        Mon, 23 May 2022 05:34:06 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAE1249F95;
+        Mon, 23 May 2022 02:33:59 -0700 (PDT)
+X-UUID: 1a3d776372e24a18ab83f4d270b1515e-20220523
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:f05a2095-2aab-4608-bc4e-4c123ca89930,OB:10,L
-        OB:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,AC
-        TION:release,TS:95
-X-CID-INFO: VERSION:1.1.5,REQID:f05a2095-2aab-4608-bc4e-4c123ca89930,OB:10,LOB
-        :0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,AC
-        TION:quarantine,TS:95
-X-CID-META: VersionHash:2a19b09,CLOUDID:b8f6477a-5ef6-470b-96c9-bdb8ced32786,C
+X-CID-O-INFO: VERSION:1.1.5,REQID:b3de3a9c-e656-4d21-b6ae-fc28b510e619,OB:0,LO
+        B:40,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,A
+        CTION:release,TS:90
+X-CID-INFO: VERSION:1.1.5,REQID:b3de3a9c-e656-4d21-b6ae-fc28b510e619,OB:0,LOB:
+        40,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,A
+        CTION:quarantine,TS:90
+X-CID-META: VersionHash:2a19b09,CLOUDID:4af6477a-5ef6-470b-96c9-bdb8ced32786,C
         OID:b76fb2c8b435,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
         RL:0,File:nil,QS:0,BEC:nil
-X-UUID: 50954336da7648ed8445a24754e6de17-20220523
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
+X-UUID: 1a3d776372e24a18ab83f4d270b1515e-20220523
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
         (envelope-from <rex-bc.chen@mediatek.com>)
         (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1127135092; Mon, 23 May 2022 17:33:52 +0800
+        with ESMTP id 2124217505; Mon, 23 May 2022 17:33:50 +0800
+Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Mon, 23 May 2022 17:33:49 +0800
 Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Mon, 23 May 2022 17:33:50 +0800
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Mon, 23 May 2022 17:33:49 +0800
 Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
  Transport; Mon, 23 May 2022 17:33:49 +0800
@@ -52,9 +55,9 @@ CC:     <p.zabel@pengutronix.de>,
         <linux-mediatek@lists.infradead.org>,
         <Project_Global_Chrome_Upstream_Group@mediatek.com>,
         Rex-BC Chen <rex-bc.chen@mediatek.com>
-Subject: [RESEND v8 13/19] dt-bindings: reset: mediatek: Add infra_ao reset index for MT8192/MT8195
-Date:   Mon, 23 May 2022 17:33:40 +0800
-Message-ID: <20220523093346.28493-14-rex-bc.chen@mediatek.com>
+Subject: [RESEND v8 09/19] clk: mediatek: reset: Change return type for clock reset register function
+Date:   Mon, 23 May 2022 17:33:36 +0800
+Message-ID: <20220523093346.28493-10-rex-bc.chen@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20220523093346.28493-1-rex-bc.chen@mediatek.com>
 References: <20220523093346.28493-1-rex-bc.chen@mediatek.com>
@@ -66,66 +69,92 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To support reset of infra_ao, add the index of infra_ao reset of
-thermal/svs/pcei for MT8192 and thermal/svs for MT8195.
+To deal with error handling, we change the function return type from
+void to int for mtk_clk_register_rst_ctrl().
 
 Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 Reviewed-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-[Nícolas: Test for MT8192]
 Tested-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
 ---
- include/dt-bindings/reset/mt8192-resets.h | 8 ++++++++
- include/dt-bindings/reset/mt8195-resets.h | 6 ++++++
- 2 files changed, 14 insertions(+)
+ drivers/clk/mediatek/reset.c | 15 +++++++++------
+ drivers/clk/mediatek/reset.h |  6 ++++--
+ 2 files changed, 13 insertions(+), 8 deletions(-)
 
-diff --git a/include/dt-bindings/reset/mt8192-resets.h b/include/dt-bindings/reset/mt8192-resets.h
-index 764ca9910fa9..12e2087c90a3 100644
---- a/include/dt-bindings/reset/mt8192-resets.h
-+++ b/include/dt-bindings/reset/mt8192-resets.h
-@@ -7,6 +7,7 @@
- #ifndef _DT_BINDINGS_RESET_CONTROLLER_MT8192
- #define _DT_BINDINGS_RESET_CONTROLLER_MT8192
+diff --git a/drivers/clk/mediatek/reset.c b/drivers/clk/mediatek/reset.c
+index 89e617ea6393..b9718f0f9d16 100644
+--- a/drivers/clk/mediatek/reset.c
++++ b/drivers/clk/mediatek/reset.c
+@@ -110,8 +110,8 @@ static int reset_xlate(struct reset_controller_dev *rcdev,
+ 	return data->desc->rst_idx_map[reset_spec->args[0]];
+ }
  
-+/* TOPRGU resets */
- #define MT8192_TOPRGU_MM_SW_RST					1
- #define MT8192_TOPRGU_MFG_SW_RST				2
- #define MT8192_TOPRGU_VENC_SW_RST				3
-@@ -30,4 +31,11 @@
- /* MMSYS resets */
- #define MT8192_MMSYS_SW0_RST_B_DISP_DSI0			15
+-void mtk_register_reset_controller(struct device_node *np,
+-				   const struct mtk_clk_rst_desc *desc)
++int mtk_register_reset_controller(struct device_node *np,
++				  const struct mtk_clk_rst_desc *desc)
+ {
+ 	struct regmap *regmap;
+ 	const struct reset_control_ops *rcops = NULL;
+@@ -120,7 +120,7 @@ void mtk_register_reset_controller(struct device_node *np,
  
-+/* INFRA resets */
-+#define MT8192_INFRA_RST0_THERM_CTRL_SWRST		0
-+#define MT8192_INFRA_RST2_PEXTP_PHY_SWRST		1
-+#define MT8192_INFRA_RST3_THERM_CTRL_PTP_SWRST	2
-+#define MT8192_INFRA_RST4_PCIE_TOP_SWRST		3
-+#define MT8192_INFRA_RST4_THERM_CTRL_MCU_SWRST	4
+ 	if (!desc) {
+ 		pr_err("mtk clock reset desc is NULL\n");
+-		return;
++		return -EINVAL;
+ 	}
+ 
+ 	switch (desc->version) {
+@@ -132,18 +132,18 @@ void mtk_register_reset_controller(struct device_node *np,
+ 		break;
+ 	default:
+ 		pr_err("Unknown reset version %d\n", desc->version);
+-		return;
++		return -EINVAL;
+ 	}
+ 
+ 	regmap = device_node_to_regmap(np);
+ 	if (IS_ERR(regmap)) {
+ 		pr_err("Cannot find regmap for %pOF: %pe\n", np, regmap);
+-		return;
++		return -EINVAL;
+ 	}
+ 
+ 	data = kzalloc(sizeof(*data), GFP_KERNEL);
+ 	if (!data)
+-		return;
++		return -ENOMEM;
+ 
+ 	data->desc = desc;
+ 	data->regmap = regmap;
+@@ -163,7 +163,10 @@ void mtk_register_reset_controller(struct device_node *np,
+ 	if (ret) {
+ 		pr_err("could not register reset controller: %d\n", ret);
+ 		kfree(data);
++		return ret;
+ 	}
 +
- #endif  /* _DT_BINDINGS_RESET_CONTROLLER_MT8192 */
-diff --git a/include/dt-bindings/reset/mt8195-resets.h b/include/dt-bindings/reset/mt8195-resets.h
-index a26bccc8b957..0b1937f14b36 100644
---- a/include/dt-bindings/reset/mt8195-resets.h
-+++ b/include/dt-bindings/reset/mt8195-resets.h
-@@ -7,6 +7,7 @@
- #ifndef _DT_BINDINGS_RESET_CONTROLLER_MT8195
- #define _DT_BINDINGS_RESET_CONTROLLER_MT8195
++	return 0;
+ }
  
-+/* TOPRGU resets */
- #define MT8195_TOPRGU_CONN_MCU_SW_RST          0
- #define MT8195_TOPRGU_INFRA_GRST_SW_RST        1
- #define MT8195_TOPRGU_APU_SW_RST               2
-@@ -26,4 +27,9 @@
+ MODULE_LICENSE("GPL");
+diff --git a/drivers/clk/mediatek/reset.h b/drivers/clk/mediatek/reset.h
+index cc847c67a2fc..260f25f27656 100644
+--- a/drivers/clk/mediatek/reset.h
++++ b/drivers/clk/mediatek/reset.h
+@@ -56,8 +56,10 @@ struct mtk_clk_rst_data {
+  * mtk_register_reset_controller - Register MediaTek clock reset controller
+  * @np: Pointer to device node.
+  * @desc: Constant pointer to description of clock reset.
++ *
++ * Return: 0 on success and errorno otherwise.
+  */
+-void mtk_register_reset_controller(struct device_node *np,
+-				   const struct mtk_clk_rst_desc *desc);
++int mtk_register_reset_controller(struct device_node *np,
++				  const struct mtk_clk_rst_desc *desc);
  
- #define MT8195_TOPRGU_SW_RST_NUM               16
- 
-+/* INFRA resets */
-+#define MT8195_INFRA_RST0_THERM_CTRL_SWRST     0
-+#define MT8195_INFRA_RST3_THERM_CTRL_PTP_SWRST 1
-+#define MT8195_INFRA_RST4_THERM_CTRL_MCU_SWRST 2
-+
- #endif  /* _DT_BINDINGS_RESET_CONTROLLER_MT8195 */
+ #endif /* __DRV_CLK_MTK_RESET_H */
 -- 
 2.18.0
 
