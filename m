@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 146A3C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:04:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBFF4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:04:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239215AbiEWREj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:04:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45898 "EHLO
+        id S239269AbiEWREp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:04:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239226AbiEWREU (ORCPT
+        with ESMTP id S239233AbiEWREW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:04:20 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAA215EBFB;
-        Mon, 23 May 2022 10:04:17 -0700 (PDT)
+        Mon, 23 May 2022 13:04:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B4975DE5C;
+        Mon, 23 May 2022 10:04:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 26829CE1702;
-        Mon, 23 May 2022 17:04:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA593C385A9;
-        Mon, 23 May 2022 17:04:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 337D5B811ED;
+        Mon, 23 May 2022 17:04:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6340FC385A9;
+        Mon, 23 May 2022 17:04:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653325454;
-        bh=a53XyWgxcHsItrYzpMjm/O/QH6M0PYqPnsWpncreaHs=;
+        s=korg; t=1653325457;
+        bh=UodYB9RZCKj8YDl/NrPyDzZlEGObUwSATbKP+WigtdM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gouc1jed6Ti1OfAdbzOZOD67wDfEQnW6nHuagDfBlXL/ErtgAbSjZPeGJA4sbcCsN
-         OxIpNX4I8Pj90gUKYjSglniRwCDvCGO3xkMOUIuwoowIgcr0g+dLGQzHpHkG9BELbA
-         jw5mnKFssxmmGM6Mtfx9lG33IarN9lw37PszAZ8w=
+        b=jAV7YWXXYAoaHa94FkcAAPmyS3Eq2vtg7dPVR2F8imQhG1AKwo9ESHLBg5ePFwhEo
+         g20tqLZTMVRhXai66y1cthy3QL3FpShWxQ6s5qQvTPAtlBa7QsapwT1QI5/9svlaHo
+         J8l1RXzSenAeDGixvc9ltIONyw3CIJu9zy4qT8wk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
+        stable@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 17/25] net: af_key: add check for pfkey_broadcast in function pfkey_process
-Date:   Mon, 23 May 2022 19:03:35 +0200
-Message-Id: <20220523165747.753367333@linuxfoundation.org>
+Subject: [PATCH 4.9 18/25] ARM: 9196/1: spectre-bhb: enable for Cortex-A15
+Date:   Mon, 23 May 2022 19:03:36 +0200
+Message-Id: <20220523165747.922316017@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165743.398280407@linuxfoundation.org>
 References: <20220523165743.398280407@linuxfoundation.org>
@@ -49,40 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Ard Biesheuvel <ardb@kernel.org>
 
-[ Upstream commit 4dc2a5a8f6754492180741facf2a8787f2c415d7 ]
+[ Upstream commit 0dc14aa94ccd8ba35eb17a0f9b123d1566efd39e ]
 
-If skb_clone() returns null pointer, pfkey_broadcast() will
-return error.
-Therefore, it should be better to check the return value of
-pfkey_broadcast() and return error if fails.
+The Spectre-BHB mitigations were inadvertently left disabled for
+Cortex-A15, due to the fact that cpu_v7_bugs_init() is not called in
+that case. So fix that.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Fixes: b9baf5c8c5c3 ("ARM: Spectre-BHB workaround")
+Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/key/af_key.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ arch/arm/mm/proc-v7-bugs.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/key/af_key.c b/net/key/af_key.c
-index c9cc9f75b099..776f94ecbfe6 100644
---- a/net/key/af_key.c
-+++ b/net/key/af_key.c
-@@ -2861,8 +2861,10 @@ static int pfkey_process(struct sock *sk, struct sk_buff *skb, const struct sadb
- 	void *ext_hdrs[SADB_EXT_MAX];
- 	int err;
+diff --git a/arch/arm/mm/proc-v7-bugs.c b/arch/arm/mm/proc-v7-bugs.c
+index 1b6e770bc1cd..8b78694d56b8 100644
+--- a/arch/arm/mm/proc-v7-bugs.c
++++ b/arch/arm/mm/proc-v7-bugs.c
+@@ -297,6 +297,7 @@ void cpu_v7_ca15_ibe(void)
+ {
+ 	if (check_spectre_auxcr(this_cpu_ptr(&spectre_warned), BIT(0)))
+ 		cpu_v7_spectre_v2_init();
++	cpu_v7_spectre_bhb_init();
+ }
  
--	pfkey_broadcast(skb_clone(skb, GFP_KERNEL), GFP_KERNEL,
--			BROADCAST_PROMISC_ONLY, NULL, sock_net(sk));
-+	err = pfkey_broadcast(skb_clone(skb, GFP_KERNEL), GFP_KERNEL,
-+			      BROADCAST_PROMISC_ONLY, NULL, sock_net(sk));
-+	if (err)
-+		return err;
- 
- 	memset(ext_hdrs, 0, sizeof(ext_hdrs));
- 	err = parse_exthdrs(skb, hdr, ext_hdrs);
+ void cpu_v7_bugs_init(void)
 -- 
 2.35.1
 
