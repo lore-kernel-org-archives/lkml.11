@@ -2,88 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF101C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:30:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF519C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:31:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236474AbiEWSaa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:30:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52006 "EHLO
+        id S240119AbiEWSbs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:31:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237447AbiEWS3x (ORCPT
+        with ESMTP id S240205AbiEWSam (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 14:29:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5768EAB89
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 11:04:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 36A0FB81210
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 18:03:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A80D1C385AA;
-        Mon, 23 May 2022 18:03:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653329019;
-        bh=Yb/JkZM658Z6MLcMI0IHk5BK/rh9v+MSZ1PRr3wJnv0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=AclNuXReOE8lhJhX5Dnq4OBTo2fIHyceusJLNbQJoawzNKkkQJX5Z/+IM+tJPUFvx
-         SEFLwnTws/41SkR3rMU4AdsJT3SUpn1y+PAH3XdSz+ED1eYUQa69pGT0ExB7upg5rm
-         oIjb6TqjhoNhYtm6ajCT0e/ZsLxQxWkQBRu2Ly4yU3cPHuOm9Hpeoh9IWqlWb3ZC3i
-         r8NYYVzR/Mh03nUuRWarCd9Lt41leQNQyWGcPPlEgMEUqWwa4DaDI9BQC0weohk4pQ
-         0mS8x141JZWY9n382fP4gxblQ6gten/fcv74HX9WIbJLVJAQY8/NLR9uE0O0mN8oww
-         TEc8BylmI7yFA==
-Date:   Mon, 23 May 2022 11:03:37 -0700
-From:   Jaegeuk Kim <jaegeuk@kernel.org>
-To:     Chao Yu <chao@kernel.org>
-Cc:     Daeho Jeong <daeho43@gmail.com>, linux-kernel@vger.kernel.org,
-        linux-f2fs-devel@lists.sourceforge.net, kernel-team@android.com,
-        Daeho Jeong <daehojeong@google.com>
-Subject: Re: [f2fs-dev] [PATCH v3] f2fs: change the current atomic write way
-Message-ID: <YovMeQO2n0XAxMhe@google.com>
-References: <20220428181809.2352352-1-daeho43@gmail.com>
- <dd1ea728-4cb6-e35d-dc76-a1d62bead69a@kernel.org>
+        Mon, 23 May 2022 14:30:42 -0400
+X-Greylist: delayed 470 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 23 May 2022 11:05:04 PDT
+Received: from cantor.telenet-ops.be (cantor.telenet-ops.be [IPv6:2a02:1800:120:4::f00:10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C601E64F4
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 11:05:03 -0700 (PDT)
+Received: from andre.telenet-ops.be (andre.telenet-ops.be [IPv6:2a02:1800:120:4::f00:15])
+        by cantor.telenet-ops.be (Postfix) with ESMTPS id 4L6Q4V0G5fz4x0WL
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 19:56:26 +0200 (CEST)
+Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed30:4593:272c:6293:e2cc])
+        by andre.telenet-ops.be with bizsmtp
+        id aHvN2700U2jQL2A01HvNXx; Mon, 23 May 2022 19:55:25 +0200
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1ntCH4-001MLx-1F; Mon, 23 May 2022 19:55:22 +0200
+Received: from geert by rox.of.borg with local (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1ntCH3-003z4C-A1; Mon, 23 May 2022 19:55:21 +0200
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+To:     Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>
+Cc:     Laurent Vivier <laurent@vivier.eu>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        linux-m68k@lists.linux-m68k.org, linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        noreply@ellerman.id.au
+Subject: [PATCH next] m68k: virt: Switch to new sys-off handler API
+Date:   Mon, 23 May 2022 19:55:20 +0200
+Message-Id: <20220523175520.949681-1-geert@linux-m68k.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <dd1ea728-4cb6-e35d-dc76-a1d62bead69a@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05/22, Chao Yu wrote:
-> On 2022/4/29 2:18, Daeho Jeong wrote:> +		*old_addr = dn.data_blkaddr;
-> > +		f2fs_truncate_data_blocks_range(&dn, 1);
-> > +		dec_valid_block_count(sbi, F2FS_I(inode)->cow_inode, count);
-> > +		inc_valid_block_count(sbi, inode, &count);
-> > +		f2fs_replace_block(sbi, &dn, dn.data_blkaddr, new_addr,
-> > +					ni.version, true, false);
-> 
-> My concern is, if cow_inode's data was persisted into previous checkpoint,
-> and then f2fs_replace_block() will update SSA from cow_inode to inode?
+On m68k with CONFIG_VIRT=y (e.g. virt_defconfig or allmodconfig):
 
-SSA for original file is intact, so we'll see the orignal file's block addresses
-and SSA, if we flush cow_inode's SSA after committing the atomic writes?
-It'd be good to flush any SSA for cow_inode, since we'll truncate
-cow_inode after powercut by the ohphan recovery?
+    arch/m68k/virt/config.c: In function ‘config_virt’:
+    arch/m68k/virt/config.c:129:2: error: ‘mach_power_off’ undeclared (first use in this function); did you mean ‘pm_power_off’?
+      129 |  mach_power_off = virt_halt;
+	  |  ^~~~~~~~~~~~~~
+	  |  pm_power_off
 
-> it will cause inconsistent status of last valid checkpoint? Or am I mssing
-> something?
-> 
-> > -		f2fs_submit_merged_write_cond(sbi, inode, NULL, 0, DATA);
-> > +			new = f2fs_kmem_cache_alloc(revoke_entry_slab, GFP_NOFS,
-> > +							true, NULL);
-> > +			if (!new) {
-> > +				f2fs_put_dnode(&dn);
-> > +				ret = -ENOMEM;
-> > +				goto out;
-> 
-> It doesn't need to handle failure of f2fs_kmem_cache_alloc()
-> due to nofail parameter is true.
-> 
-> Thanks,
-> 
-> 
-> _______________________________________________
-> Linux-f2fs-devel mailing list
-> Linux-f2fs-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/linux-f2fs-devel
+Commit 05d51e42df06f021 ("m68k: Introduce a virtual m68k machine")
+introduced a new user of mach_power_off.
+Convert it to the new sys-off handler API, too.
+
+Reported-by: noreply@ellerman.id.au
+Fixes: f0f7e5265b3b37b0 ("m68k: Switch to new sys-off handler API")
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+---
+ arch/m68k/virt/config.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/arch/m68k/virt/config.c b/arch/m68k/virt/config.c
+index 68d29c8b87e18840..632ba200ad425245 100644
+--- a/arch/m68k/virt/config.c
++++ b/arch/m68k/virt/config.c
+@@ -1,5 +1,6 @@
+ // SPDX-License-Identifier: GPL-2.0
+ 
++#include <linux/reboot.h>
+ #include <linux/serial_core.h>
+ #include <clocksource/timer-goldfish.h>
+ 
+@@ -126,5 +127,6 @@ void __init config_virt(void)
+ 	mach_get_model = virt_get_model;
+ 	mach_reset = virt_reset;
+ 	mach_halt = virt_halt;
+-	mach_power_off = virt_halt;
++
++	register_platform_power_off(virt_halt);
+ }
+-- 
+2.25.1
+
