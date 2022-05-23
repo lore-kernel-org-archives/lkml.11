@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46240C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:30:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8624CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:30:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241332AbiEWRaG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:30:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49506 "EHLO
+        id S240691AbiEWRaM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:30:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241291AbiEWRWO (ORCPT
+        with ESMTP id S241351AbiEWRWR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:22:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D202877F2E;
-        Mon, 23 May 2022 10:18:38 -0700 (PDT)
+        Mon, 23 May 2022 13:22:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4C8678913;
+        Mon, 23 May 2022 10:18:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A3CFCB81210;
-        Mon, 23 May 2022 17:17:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFE38C385A9;
-        Mon, 23 May 2022 17:17:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AD66460BFA;
+        Mon, 23 May 2022 17:17:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87B21C385A9;
+        Mon, 23 May 2022 17:17:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326249;
-        bh=VdZ3qN2N3rMjOlO5jRK39pc0DwqbAhKuawjvaF1x4mk=;
+        s=korg; t=1653326224;
+        bh=HYJvCzrRL8mx/moWrVn+AmAVKdhS3rpIkm0q464BD6w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jsHJuiU6dtfGawWn0CbHp0nzjfP26oAG6SAi1qT36oSBYALrI1gaHz+AMXj22VvMz
-         ms+EuA1m1REaMrQpYamAfbq/OWSSARCxXZ++5t3m4uO4UY/VW8GyS+IN9Zy2g1nIT0
-         7hUdXMlwKuGX8JfOYd3o/YIzzocPekuaqKOHuO5U=
+        b=hRgl2EwmsIz+3RF3e5rVek9bKHnd1tggcbVJt/cxAH/mCGrMVNMq21Z+dYU24ZM04
+         rGBC069wWBezHsO3LQHKSYkG9MDYJFqSN2sCwOAWtmFdaZTkyDvduEjbKDYzFPMkcZ
+         LLOKKWDjuqpsXogLU/TEc+uXVXKB30LCw9ALS5kM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Terry Bowman <terry.bowman@amd.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Jean Delvare <jdelvare@suse.de>, Wolfram Sang <wsa@kernel.org>,
+        stable@vger.kernel.org, Robert Richter <rrichter@amd.com>,
+        Terry Bowman <terry.bowman@amd.com>,
+        Jean Delvare <jdelvare@suse.de>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
         Mario Limonciello <Mario.Limonciello@amd.com>
-Subject: [PATCH 5.15 005/132] i2c: piix4: Replace hardcoded memory map size with a #define
-Date:   Mon, 23 May 2022 19:03:34 +0200
-Message-Id: <20220523165824.442712135@linuxfoundation.org>
+Subject: [PATCH 5.15 015/132] Watchdog: sp5100_tco: Add initialization using EFCH MMIO
+Date:   Mon, 23 May 2022 19:03:44 +0200
+Message-Id: <20220523165826.141439925@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
 References: <20220523165823.492309987@linuxfoundation.org>
@@ -52,87 +54,170 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Terry Bowman <terry.bowman@amd.com>
 
-commit 93102cb449780f7b4eecf713451627b78373ce49 upstream.
+commit 0578fff4aae5bce3f09875f58e68e9ffbab8daf5 upstream.
 
-Replace number constant with #define to improve readability and
-maintainability.
+cd6h/cd7h port I/O can be disabled on recent AMD hardware. Read
+accesses to disabled cd6h/cd7h port I/O will return F's and written
+data is dropped. It is recommended to replace the cd6h/cd7h
+port I/O with MMIO.
 
+Co-developed-by: Robert Richter <rrichter@amd.com>
+Signed-off-by: Robert Richter <rrichter@amd.com>
 Signed-off-by: Terry Bowman <terry.bowman@amd.com>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Tested-by: Jean Delvare <jdelvare@suse.de>
 Reviewed-by: Jean Delvare <jdelvare@suse.de>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+Link: https://lore.kernel.org/r/20220202153525.1693378-4-terry.bowman@amd.com
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Wim Van Sebroeck <wim@linux-watchdog.org>
 Cc: Mario Limonciello <Mario.Limonciello@amd.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/i2c/busses/i2c-piix4.c |   16 ++++++++++------
- 1 file changed, 10 insertions(+), 6 deletions(-)
+ drivers/watchdog/sp5100_tco.c |  100 +++++++++++++++++++++++++++++++++++++++++-
+ drivers/watchdog/sp5100_tco.h |    5 ++
+ 2 files changed, 104 insertions(+), 1 deletion(-)
 
---- a/drivers/i2c/busses/i2c-piix4.c
-+++ b/drivers/i2c/busses/i2c-piix4.c
-@@ -77,6 +77,7 @@
+--- a/drivers/watchdog/sp5100_tco.c
++++ b/drivers/watchdog/sp5100_tco.c
+@@ -48,7 +48,7 @@
+ /* internal variables */
  
- /* SB800 constants */
- #define SB800_PIIX4_SMB_IDX		0xcd6
-+#define SB800_PIIX4_SMB_MAP_SIZE	2
+ enum tco_reg_layout {
+-	sp5100, sb800, efch
++	sp5100, sb800, efch, efch_mmio
+ };
  
- #define KERNCZ_IMC_IDX			0x3e
- #define KERNCZ_IMC_DATA			0x3f
-@@ -290,7 +291,8 @@ static int piix4_setup_sb800(struct pci_
- 	else
- 		smb_en = (aux) ? 0x28 : 0x2c;
- 
--	if (!request_muxed_region(SB800_PIIX4_SMB_IDX, 2, "sb800_piix4_smb")) {
-+	if (!request_muxed_region(SB800_PIIX4_SMB_IDX, SB800_PIIX4_SMB_MAP_SIZE,
-+				  "sb800_piix4_smb")) {
- 		dev_err(&PIIX4_dev->dev,
- 			"SMB base address index region 0x%x already in use.\n",
- 			SB800_PIIX4_SMB_IDX);
-@@ -302,7 +304,7 @@ static int piix4_setup_sb800(struct pci_
- 	outb_p(smb_en + 1, SB800_PIIX4_SMB_IDX);
- 	smba_en_hi = inb_p(SB800_PIIX4_SMB_IDX + 1);
- 
--	release_region(SB800_PIIX4_SMB_IDX, 2);
-+	release_region(SB800_PIIX4_SMB_IDX, SB800_PIIX4_SMB_MAP_SIZE);
- 
- 	if (!smb_en) {
- 		smb_en_status = smba_en_lo & 0x10;
-@@ -371,7 +373,8 @@ static int piix4_setup_sb800(struct pci_
- 			piix4_port_shift_sb800 = SB800_PIIX4_PORT_IDX_SHIFT;
- 		}
- 	} else {
--		if (!request_muxed_region(SB800_PIIX4_SMB_IDX, 2,
-+		if (!request_muxed_region(SB800_PIIX4_SMB_IDX,
-+					  SB800_PIIX4_SMB_MAP_SIZE,
- 					  "sb800_piix4_smb")) {
- 			release_region(piix4_smba, SMBIOSIZE);
- 			return -EBUSY;
-@@ -384,7 +387,7 @@ static int piix4_setup_sb800(struct pci_
- 				       SB800_PIIX4_PORT_IDX;
- 		piix4_port_mask_sb800 = SB800_PIIX4_PORT_IDX_MASK;
- 		piix4_port_shift_sb800 = SB800_PIIX4_PORT_IDX_SHIFT;
--		release_region(SB800_PIIX4_SMB_IDX, 2);
-+		release_region(SB800_PIIX4_SMB_IDX, SB800_PIIX4_SMB_MAP_SIZE);
+ struct sp5100_tco {
+@@ -201,6 +201,8 @@ static void tco_timer_enable(struct sp51
+ 					  ~EFCH_PM_WATCHDOG_DISABLE,
+ 					  EFCH_PM_DECODEEN_SECOND_RES);
+ 		break;
++	default:
++		break;
  	}
- 
- 	dev_info(&PIIX4_dev->dev,
-@@ -682,7 +685,8 @@ static s32 piix4_access_sb800(struct i2c
- 	u8 port;
- 	int retval;
- 
--	if (!request_muxed_region(SB800_PIIX4_SMB_IDX, 2, "sb800_piix4_smb"))
-+	if (!request_muxed_region(SB800_PIIX4_SMB_IDX, SB800_PIIX4_SMB_MAP_SIZE,
-+				  "sb800_piix4_smb"))
- 		return -EBUSY;
- 
- 	/* Request the SMBUS semaphore, avoid conflicts with the IMC */
-@@ -758,7 +762,7 @@ static s32 piix4_access_sb800(struct i2c
- 		piix4_imc_wakeup();
- 
- release:
--	release_region(SB800_PIIX4_SMB_IDX, 2);
-+	release_region(SB800_PIIX4_SMB_IDX, SB800_PIIX4_SMB_MAP_SIZE);
- 	return retval;
  }
  
+@@ -299,6 +301,99 @@ static int sp5100_tco_timer_init(struct
+ 	return 0;
+ }
+ 
++static u8 efch_read_pm_reg8(void __iomem *addr, u8 index)
++{
++	return readb(addr + index);
++}
++
++static void efch_update_pm_reg8(void __iomem *addr, u8 index, u8 reset, u8 set)
++{
++	u8 val;
++
++	val = readb(addr + index);
++	val &= reset;
++	val |= set;
++	writeb(val, addr + index);
++}
++
++static void tco_timer_enable_mmio(void __iomem *addr)
++{
++	efch_update_pm_reg8(addr, EFCH_PM_DECODEEN3,
++			    ~EFCH_PM_WATCHDOG_DISABLE,
++			    EFCH_PM_DECODEEN_SECOND_RES);
++}
++
++static int sp5100_tco_setupdevice_mmio(struct device *dev,
++				       struct watchdog_device *wdd)
++{
++	struct sp5100_tco *tco = watchdog_get_drvdata(wdd);
++	const char *dev_name = SB800_DEVNAME;
++	u32 mmio_addr = 0, alt_mmio_addr = 0;
++	struct resource *res;
++	void __iomem *addr;
++	int ret;
++	u32 val;
++
++	res = request_mem_region_muxed(EFCH_PM_ACPI_MMIO_PM_ADDR,
++				       EFCH_PM_ACPI_MMIO_PM_SIZE,
++				       "sp5100_tco");
++
++	if (!res) {
++		dev_err(dev,
++			"Memory region 0x%08x already in use\n",
++			EFCH_PM_ACPI_MMIO_PM_ADDR);
++		return -EBUSY;
++	}
++
++	addr = ioremap(EFCH_PM_ACPI_MMIO_PM_ADDR, EFCH_PM_ACPI_MMIO_PM_SIZE);
++	if (!addr) {
++		dev_err(dev, "Address mapping failed\n");
++		ret = -ENOMEM;
++		goto out;
++	}
++
++	/*
++	 * EFCH_PM_DECODEEN_WDT_TMREN is dual purpose. This bitfield
++	 * enables sp5100_tco register MMIO space decoding. The bitfield
++	 * also starts the timer operation. Enable if not already enabled.
++	 */
++	val = efch_read_pm_reg8(addr, EFCH_PM_DECODEEN);
++	if (!(val & EFCH_PM_DECODEEN_WDT_TMREN)) {
++		efch_update_pm_reg8(addr, EFCH_PM_DECODEEN, 0xff,
++				    EFCH_PM_DECODEEN_WDT_TMREN);
++	}
++
++	/* Error if the timer could not be enabled */
++	val = efch_read_pm_reg8(addr, EFCH_PM_DECODEEN);
++	if (!(val & EFCH_PM_DECODEEN_WDT_TMREN)) {
++		dev_err(dev, "Failed to enable the timer\n");
++		ret = -EFAULT;
++		goto out;
++	}
++
++	mmio_addr = EFCH_PM_WDT_ADDR;
++
++	/* Determine alternate MMIO base address */
++	val = efch_read_pm_reg8(addr, EFCH_PM_ISACONTROL);
++	if (val & EFCH_PM_ISACONTROL_MMIOEN)
++		alt_mmio_addr = EFCH_PM_ACPI_MMIO_ADDR +
++			EFCH_PM_ACPI_MMIO_WDT_OFFSET;
++
++	ret = sp5100_tco_prepare_base(tco, mmio_addr, alt_mmio_addr, dev_name);
++	if (!ret) {
++		tco_timer_enable_mmio(addr);
++		ret = sp5100_tco_timer_init(tco);
++	}
++
++out:
++	if (addr)
++		iounmap(addr);
++
++	release_resource(res);
++
++	return ret;
++}
++
+ static int sp5100_tco_setupdevice(struct device *dev,
+ 				  struct watchdog_device *wdd)
+ {
+@@ -308,6 +403,9 @@ static int sp5100_tco_setupdevice(struct
+ 	u32 alt_mmio_addr = 0;
+ 	int ret;
+ 
++	if (tco->tco_reg_layout == efch_mmio)
++		return sp5100_tco_setupdevice_mmio(dev, wdd);
++
+ 	/* Request the IO ports used by this driver */
+ 	if (!request_muxed_region(SP5100_IO_PM_INDEX_REG,
+ 				  SP5100_PM_IOPORTS_SIZE, "sp5100_tco")) {
+--- a/drivers/watchdog/sp5100_tco.h
++++ b/drivers/watchdog/sp5100_tco.h
+@@ -83,4 +83,9 @@
+ #define EFCH_PM_ISACONTROL_MMIOEN	BIT(1)
+ 
+ #define EFCH_PM_ACPI_MMIO_ADDR		0xfed80000
++#define EFCH_PM_ACPI_MMIO_PM_OFFSET	0x00000300
+ #define EFCH_PM_ACPI_MMIO_WDT_OFFSET	0x00000b00
++
++#define EFCH_PM_ACPI_MMIO_PM_ADDR	(EFCH_PM_ACPI_MMIO_ADDR +	\
++					 EFCH_PM_ACPI_MMIO_PM_OFFSET)
++#define EFCH_PM_ACPI_MMIO_PM_SIZE	8
 
 
