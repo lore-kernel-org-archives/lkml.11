@@ -2,82 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5154AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 09:32:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02ACAC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 09:32:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233109AbiEWJcB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 05:32:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39942 "EHLO
+        id S233103AbiEWJcn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 05:32:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233203AbiEWJbx (ORCPT
+        with ESMTP id S233121AbiEWJcf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 05:31:53 -0400
-Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A521B167E9;
-        Mon, 23 May 2022 02:31:46 -0700 (PDT)
-Received: from uucp (helo=alpha)
-        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
-        id 1nt4Os-0001Pn-01; Mon, 23 May 2022 11:30:54 +0200
-Received: by alpha.franken.de (Postfix, from userid 1000)
-        id 154F5C02F4; Mon, 23 May 2022 11:19:17 +0200 (CEST)
-Date:   Mon, 23 May 2022 11:19:17 +0200
-From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-To:     =?utf-8?B?5ZGo55Cw5p2wIChaaG91IFlhbmppZSk=?= 
-        <zhouyanjie@wanyeetech.com>
-Cc:     paul@crapouillou.net, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-mips@vger.kernel.org,
-        dongsheng.qiu@ingenic.com, aric.pzqi@ingenic.com,
-        rick.tyliu@ingenic.com
-Subject: Re: [PATCH 0/3] Refresh device tree and defconfig for Ingenic SoCs
- and boards.
-Message-ID: <20220523091916.GF5069@alpha.franken.de>
-References: <1652384021-46309-1-git-send-email-zhouyanjie@wanyeetech.com>
+        Mon, 23 May 2022 05:32:35 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F19F286E6;
+        Mon, 23 May 2022 02:32:32 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 0A4861F42DBE
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1653298351;
+        bh=ZH48jvF0up+hCWZK5ypwMWTFHlSbfZaq2hSsrwUJGyw=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=VYgCeGVHMpNsdy8YVaOEe6io1q1onUzgTlJlgffHMUa3cVhgDBooaQjGRMCYJb4hy
+         fWsFmiPkEZsyZwrmRvECcT0NvOjnz1P7iVo0nIycEBX8QSnXNyhGLxsuhDlLqQLOTG
+         Gg5syFe5GXzK1k11GHoqEU2yhR+hosiul+EyjucubTJ8lWiRjU+fYrjbP2eVZvjymg
+         gxRLLyMH7L8Vs87RqqolD/UnFJv1AqaBjEEd+WMp66phr7ybmrv2LXLp6frDGmpzpD
+         XGq+FnLXjRarmnzZDNNC1FzkdZG1F8XQQgqNVif6k77QujkXloOpFkT0pZWz6+DNYb
+         bdssQlXDE2kyQ==
+Message-ID: <22b05750-6062-8c59-ac30-c7b342194ea8@collabora.com>
+Date:   Mon, 23 May 2022 11:32:27 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <1652384021-46309-1-git-send-email-zhouyanjie@wanyeetech.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v11 3/3] mmc: mediatek: add support for SDIO eint wakup
+ IRQ
+Content-Language: en-US
+To:     Axe Yang <axe.yang@mediatek.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Chaotian Jing <chaotian.jing@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Adrian Hunter <adrian.hunter@intel.com>
+Cc:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Satya Tangirala <satyat@google.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Lucas Stach <dev@lynxeye.de>,
+        Eric Biggers <ebiggers@google.com>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Kiwoong Kim <kwmad.kim@samsung.com>,
+        Yue Hu <huyue2@yulong.com>, Tian Tao <tiantao6@hisilicon.com>,
+        linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        Yong Mao <yong.mao@mediatek.com>
+References: <20220523074017.12649-1-axe.yang@mediatek.com>
+ <20220523074017.12649-4-axe.yang@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220523074017.12649-4-axe.yang@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 13, 2022 at 03:33:38AM +0800, 周琰杰 (Zhou Yanjie) wrote:
-> 1.Add PWM node for X1830 SoC from Ingenic.
-> 2.Add SSI nodes for X1000 SoC and X1830 SoC from Ingenic.
-> 3.Refresh SSI related nodes in CU1000-Neo and CU1830-Neo.
-> 4.The X1830 SoC used by the CU1830-Neo and the X1000 SoC
->   used by the CU1000-Neo are both single-core processors,
->   therefore the "OST_CLK_PERCPU_TIMER" ABI should not be
->   used in the OST nodes of the CU1830-Neo and CU1000-Neo,
->   it is just a coincidence that there is no problem now.
->   So replace the misused "OST_CLK_PERCPU_TIMER" ABI with
->   the correct "OST_CLK_EVENT_TIMER" ABI.
-> 5.Refresh the defconfig files of the CU1000-Neo board and
->   the CU1830-Neo board, remove the selection of SPI-GPIO,
->   and add the selection of SSI.
+Il 23/05/22 09:40, Axe Yang ha scritto:
+> Add support for eint IRQ when MSDC is used as an SDIO host. This
+> feature requires SDIO device support async IRQ function. With this
+> feature, SDIO host can be awakened by SDIO card in suspend state,
+> without additional pin.
 > 
-> 周琰杰 (Zhou Yanjie) (3):
->   MIPS: Ingenic: Add PWM nodes for X1830.
->   MIPS: Ingenic: Refresh device tree for Ingenic SoCs and boards.
->   MIPS: Ingenic: Refresh defconfig for CU1000-Neo and CU1830-Neo.
+> MSDC driver will time-share the SDIO DAT1 pin. During suspend, MSDC
+> turn off clock and switch SDIO DAT1 pin to GPIO mode. And during
+> resume, switch GPIO function back to DAT1 mode then turn on clock.
 > 
->  arch/mips/boot/dts/ingenic/cu1000-neo.dts | 77 ++++++++++++++++---------------
->  arch/mips/boot/dts/ingenic/cu1830-neo.dts | 76 +++++++++++++++---------------
->  arch/mips/boot/dts/ingenic/x1000.dtsi     | 20 ++++++++
->  arch/mips/boot/dts/ingenic/x1830.dtsi     | 53 +++++++++++++++++++++
->  arch/mips/configs/cu1000-neo_defconfig    |  2 +-
->  arch/mips/configs/cu1830-neo_defconfig    |  2 +-
->  6 files changed, 154 insertions(+), 76 deletions(-)
+> Some device tree property should be added or modified in MSDC node
+> to support SDIO eint IRQ. Pinctrls "state_eint" is mandatory. Since
+> this feature depends on asynchronous interrupts, "wakeup-source",
+> "keep-power-in-suspend" and "cap-sdio-irq" flags are necessary, and
+> the interrupts list should be extended(the interrupt named with
+> sdio_wakeup):
+>          &mmcX {
+> 		...
+> 		interrupt-names = "msdc", "sdio_wakeup";
+> 		interrupts-extended = <...>,
+>                                	      <&pio xxx IRQ_TYPE_LEVEL_LOW>;
+>                  ...
+>                  pinctrl-names = "default", "state_uhs", "state_eint";
+>                  ...
+>                  pinctrl-2 = <&mmc2_pins_eint>;
+>                  ...
+>                  cap-sdio-irq;
+> 		keep-power-in-suspend;
+> 		wakeup-source;
+>                  ...
+>          };
 > 
-> -- 
-> 2.7.4
+> Co-developed-by: Yong Mao <yong.mao@mediatek.com>
+> Signed-off-by: Yong Mao <yong.mao@mediatek.com>
+> Signed-off-by: Axe Yang <axe.yang@mediatek.com>
 
-seried applied to mips-next.
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
-Thomas.
 
--- 
-Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
-good idea.                                                [ RFC1925, 2.3 ]
