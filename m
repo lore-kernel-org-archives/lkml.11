@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 661BFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:10:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE77EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:10:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243577AbiEWSKN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:10:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35648 "EHLO
+        id S242613AbiEWSKV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:10:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243273AbiEWRiA (ORCPT
+        with ESMTP id S243295AbiEWRiF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:38:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F6AA8BD12;
-        Mon, 23 May 2022 10:32:16 -0700 (PDT)
+        Mon, 23 May 2022 13:38:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFB4D814BD;
+        Mon, 23 May 2022 10:32:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 818B261261;
-        Mon, 23 May 2022 17:31:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88D15C385A9;
-        Mon, 23 May 2022 17:31:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 60F45B81232;
+        Mon, 23 May 2022 17:30:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3471C385AA;
+        Mon, 23 May 2022 17:30:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653327062;
-        bh=E0vUSpxPLIELQGfG4YeyedZtqjlmxegQcKpK3CCbthE=;
+        s=korg; t=1653327024;
+        bh=jHgHNmA6N9MgKWp6UWM3cI1VoBGw2Rdn9KeuwCDLBFE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AnxiVdAXZqZUMYWVp5U8psj/GIaYqbsxP9toPrQm/uZtxUQ0ieno1zCjrhRqe6udG
-         XaCWGJr7zr+Tb1G62CwIjgpwPsHtCTD6SzyB2oxTVdlpsPugsaIBlZPepNZd069xxC
-         XXwm45Wies2mR2kAK13I5MNyMQl1hqKPl9385YYA=
+        b=FY4EA8gD5F+qUeZ/De/hvWOzoeYsuXp3P+ZHTl2INvI6EMmood1+2iMTPEpWJ+cTO
+         rmC7p+Pg6rgPiFBawQQjGpD0IbiDUr/lZRIbvTrucj4JPBnme0ZUlhMCIIvu1juBYt
+         u8F0T4cb29TrzpUKi/BV01YaJNU7vzJ9pJnY802A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Nicholas Kazlauskas <Nicholas.Kazlauskas@amd.com>,
-        Pavle Kotarac <Pavle.Kotarac@amd.com>,
-        Eric Yang <Eric.Yang2@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, Namhyung Kim <namhyung@gmail.com>,
+        Thomas Richter <tmricht@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Sumanth Korikkar <sumanthk@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 145/158] drm/amd/display: undo clearing of z10 related function pointers
-Date:   Mon, 23 May 2022 19:05:02 +0200
-Message-Id: <20220523165854.271190940@linuxfoundation.org>
+Subject: [PATCH 5.17 131/158] perf bench numa: Address compiler error on s390
+Date:   Mon, 23 May 2022 19:04:48 +0200
+Message-Id: <20220523165852.171449190@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
 References: <20220523165830.581652127@linuxfoundation.org>
@@ -52,40 +54,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Yang <Eric.Yang2@amd.com>
+From: Thomas Richter <tmricht@linux.ibm.com>
 
-[ Upstream commit 9b9bd3f640640f94272a461b2dfe558f91b322c5 ]
+[ Upstream commit f8ac1c478424a9a14669b8cef7389b1e14e5229d ]
 
-[Why]
-Z10 and S0i3 have some shared path. Previous code clean up ,
-incorrectly removed these pointers, which breaks s0i3 restore
+The compilation on s390 results in this error:
 
-[How]
-Do not clear the function pointers based on Z10 disable.
+  # make DEBUG=y bench/numa.o
+  ...
+  bench/numa.c: In function ‘__bench_numa’:
+  bench/numa.c:1749:81: error: ‘%d’ directive output may be truncated
+              writing between 1 and 11 bytes into a region of size between
+              10 and 20 [-Werror=format-truncation=]
+  1749 |        snprintf(tname, sizeof(tname), "process%d:thread%d", p, t);
+                                                               ^~
+  ...
+  bench/numa.c:1749:64: note: directive argument in the range
+                 [-2147483647, 2147483646]
+  ...
+  #
 
-Reviewed-by: Nicholas Kazlauskas <Nicholas.Kazlauskas@amd.com>
-Acked-by: Pavle Kotarac <Pavle.Kotarac@amd.com>
-Signed-off-by: Eric Yang <Eric.Yang2@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+The maximum length of the %d replacement is 11 characters because of the
+negative sign.  Therefore extend the array by two more characters.
+
+Output after:
+
+  # make  DEBUG=y bench/numa.o > /dev/null 2>&1; ll bench/numa.o
+  -rw-r--r-- 1 root root 418320 May 19 09:11 bench/numa.o
+  #
+
+Fixes: 3aff8ba0a4c9c919 ("perf bench numa: Avoid possible truncation when using snprintf()")
+Suggested-by: Namhyung Kim <namhyung@gmail.com>
+Signed-off-by: Thomas Richter <tmricht@linux.ibm.com>
+Cc: Heiko Carstens <hca@linux.ibm.com>
+Cc: Sumanth Korikkar <sumanthk@linux.ibm.com>
+Cc: Sven Schnelle <svens@linux.ibm.com>
+Cc: Vasily Gorbik <gor@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220520081158.2990006-1-tmricht@linux.ibm.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/display/dc/dcn31/dcn31_init.c | 5 -----
- 1 file changed, 5 deletions(-)
+ tools/perf/bench/numa.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_init.c b/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_init.c
-index d7559e5a99ce..e708f07fe75a 100644
---- a/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_init.c
-+++ b/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_init.c
-@@ -153,9 +153,4 @@ void dcn31_hw_sequencer_construct(struct dc *dc)
- 		dc->hwss.init_hw = dcn20_fpga_init_hw;
- 		dc->hwseq->funcs.init_pipes = NULL;
- 	}
--	if (dc->debug.disable_z10) {
--		/*hw not support z10 or sw disable it*/
--		dc->hwss.z10_restore = NULL;
--		dc->hwss.z10_save_init = NULL;
--	}
- }
+diff --git a/tools/perf/bench/numa.c b/tools/perf/bench/numa.c
+index f2640179ada9..c2c81567afa5 100644
+--- a/tools/perf/bench/numa.c
++++ b/tools/perf/bench/numa.c
+@@ -1672,7 +1672,7 @@ static int __bench_numa(const char *name)
+ 		"GB/sec,", "total-speed",	"GB/sec total speed");
+ 
+ 	if (g->p.show_details >= 2) {
+-		char tname[14 + 2 * 10 + 1];
++		char tname[14 + 2 * 11 + 1];
+ 		struct thread_data *td;
+ 		for (p = 0; p < g->p.nr_proc; p++) {
+ 			for (t = 0; t < g->p.nr_threads; t++) {
 -- 
 2.35.1
 
