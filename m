@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB403C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:33:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37D22C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:34:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240967AbiEWRdu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:33:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42532 "EHLO
+        id S241090AbiEWRd5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:33:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242178AbiEWRWz (ORCPT
+        with ESMTP id S242038AbiEWRWt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:22:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 868FF7C153;
-        Mon, 23 May 2022 10:20:06 -0700 (PDT)
+        Mon, 23 May 2022 13:22:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39FDB7CDEA;
+        Mon, 23 May 2022 10:19:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6E35AB8122A;
-        Mon, 23 May 2022 17:18:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8472FC34116;
-        Mon, 23 May 2022 17:18:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4916C60BD3;
+        Mon, 23 May 2022 17:18:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49EC8C34115;
+        Mon, 23 May 2022 17:18:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326323;
-        bh=GBc26s17BmQw9HacxvTdrlw6HMMuVI1jH1R6N3f3C/I=;
+        s=korg; t=1653326319;
+        bh=kyCpt+kxit9oAreUT89imPW8qUa5FVx/lcfqw+8Zcqo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NKUZg98pFd3jXDFRbqXTOrVGKULAF7Do/D6U6oOpmbQvZuaGKlzRaHS5uTJ8C+KAq
-         VI2ldGSeGvCSiVSkMRa9vZ19U/Uy2mOsej9J1M4F1CNWS2dOTj4u9EnjFFaZjSmOBt
-         vj6+Ha1K1mkTr9dP96Juh86Ou5LjiZfKbRqldnAw=
+        b=piEcDfu2V3h0XZxpUPJtUn2XwheKul96Gw5Btxz2SR9ifVsT066ar0cofLAJIw1Vd
+         BpP3CGM/3+nr653NappgFG7a/83QXJjdh29UQnCSH6JerhRZPjYnv9l+V1oo0EbdoU
+         X0XIVnVo3HpMfu5Hc4zdm7sA24Gqhxa4sBGBhe2o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.15 045/132] ALSA: wavefront: Proper check of get_user() error
-Date:   Mon, 23 May 2022 19:04:14 +0200
-Message-Id: <20220523165830.742137228@linuxfoundation.org>
+        stable@vger.kernel.org, Zheng Yongjun <zhengyongjun3@huawei.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 027/132] crypto: stm32 - fix reference leak in stm32_crc_remove
+Date:   Mon, 23 May 2022 19:03:56 +0200
+Message-Id: <20220523165828.036848815@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
 References: <20220523165823.492309987@linuxfoundation.org>
@@ -49,36 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Zheng Yongjun <zhengyongjun3@huawei.com>
 
-commit a34ae6c0660d3b96b0055f68ef74dc9478852245 upstream.
+[ Upstream commit e9a36feecee0ee5845f2e0656f50f9942dd0bed3 ]
 
-The antient ISA wavefront driver reads its sample patch data (uploaded
-over an ioctl) via __get_user() with no good reason; likely just for
-some performance optimizations in the past.  Let's change this to the
-standard get_user() and the error check for handling the fault case
-properly.
+pm_runtime_get_sync() will increment pm usage counter even it
+failed. Forgetting to call pm_runtime_put_noidle will result
+in reference leak in stm32_crc_remove, so we should fix it.
 
-Reported-by: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220510103626.16635-1-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/isa/wavefront/wavefront_synth.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/crypto/stm32/stm32-crc32.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/sound/isa/wavefront/wavefront_synth.c
-+++ b/sound/isa/wavefront/wavefront_synth.c
-@@ -1094,7 +1094,8 @@ wavefront_send_sample (snd_wavefront_t *
+diff --git a/drivers/crypto/stm32/stm32-crc32.c b/drivers/crypto/stm32/stm32-crc32.c
+index be1bf39a317d..90a920e7f664 100644
+--- a/drivers/crypto/stm32/stm32-crc32.c
++++ b/drivers/crypto/stm32/stm32-crc32.c
+@@ -384,8 +384,10 @@ static int stm32_crc_remove(struct platform_device *pdev)
+ 	struct stm32_crc *crc = platform_get_drvdata(pdev);
+ 	int ret = pm_runtime_get_sync(crc->dev);
  
- 			if (dataptr < data_end) {
- 		
--				__get_user (sample_short, dataptr);
-+				if (get_user(sample_short, dataptr))
-+					return -EFAULT;
- 				dataptr += skip;
- 		
- 				if (data_is_unsigned) { /* GUS ? */
+-	if (ret < 0)
++	if (ret < 0) {
++		pm_runtime_put_noidle(crc->dev);
+ 		return ret;
++	}
+ 
+ 	spin_lock(&crc_list.lock);
+ 	list_del(&crc->list);
+-- 
+2.35.1
+
 
 
