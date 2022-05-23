@@ -2,105 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34126C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 07:25:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1C73C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 07:25:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229901AbiEWHYy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 03:24:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58936 "EHLO
+        id S230319AbiEWHZr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 03:25:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230109AbiEWHXi (ORCPT
+        with ESMTP id S229750AbiEWHYC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 03:23:38 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57C77326D2;
-        Mon, 23 May 2022 00:16:06 -0700 (PDT)
+        Mon, 23 May 2022 03:24:02 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44C823A1B8
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 00:17:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653290166; x=1684826166;
-  h=message-id:date:mime-version:subject:to:cc:references:
+  t=1653290259; x=1684826259;
+  h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=3UbSzEjOzFt/9he+kuRwI8OUsAZ7HuOJpG17W7cZX9A=;
-  b=IqrIowFrL6ilW5KjsqiqqFli8Cdzflm9mvaVVBZrehyjdIgszaUE73X8
-   oQ/fZoXJqQJWOye0iOWy7aAn1ktyC3RO3EoeC4WE7rvMWPkslGD2T6X53
-   msiIHhqywaA6HmDbCIGTB4Lq0kodxBaKM+PdDxtzbFh4PFpEUChaX4wWe
-   8UqOWS1fdp/JAbbc7fYt7y4FXdmHlpgbgBOOcrHfTqB6JZ1012wtnhPYB
-   4jqfkkJSwk2UC9t255R3zmGOZdhPywTojdsDOhdubOXomiyFdxoNfElT9
-   bsmiMaImGXbvQjLwhx2Bt0uXt3JczKtIqzOEUyDDCvsf4Dbr70M4BfR0O
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10355"; a="298445337"
+  bh=RkBnlh49x7+Hp8WBycVg2h1xf0cxa9S/tNTkHWNfXo8=;
+  b=CLznKgNL7LIwbnzjvOgY+FWTvJDhYhhPjVi+5O7dYW/ZdN+xJQtfByxa
+   SFbTBQo6i1tv4mAC353Zi0UCKMgqBnZHZLq2mc6hGBs4E++oSHk8k6NBm
+   bFjY5KCz6hMDZdiAiyt/aV+eBomH/9LtaJVttgk1rQBsET4HSe0r24BUB
+   JRH+nXAexv4GIsfpryCSCR0Z2es8jKHzj5PfBOIfk1zsDpbUk670Xsvij
+   2oniKodbCby4uZY5Jdgp5r8rTQW3JS0k1WszzobckakrkF7S4BE3cN/zH
+   RdK2z6F8d5NmZD5rdM+xRws+gM4BZAq+02u/KyraK6jN5iVwpA4LaRe4y
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10355"; a="359525441"
 X-IronPort-AV: E=Sophos;i="5.91,245,1647327600"; 
-   d="scan'208";a="298445337"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2022 00:16:06 -0700
+   d="scan'208";a="359525441"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2022 00:13:01 -0700
 X-IronPort-AV: E=Sophos;i="5.91,245,1647327600"; 
-   d="scan'208";a="600489056"
-Received: from ahunter6-mobl1.ger.corp.intel.com (HELO [10.0.2.15]) ([10.252.56.27])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2022 00:16:00 -0700
-Message-ID: <a713f578-a31a-f02e-1f15-5e1d9c56ee2e@intel.com>
-Date:   Mon, 23 May 2022 10:15:56 +0300
+   d="scan'208";a="571941238"
+Received: from jsun39-mobl.ccr.corp.intel.com (HELO [10.255.28.225]) ([10.255.28.225])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2022 00:12:57 -0700
+Message-ID: <316981d6-6b40-9e2a-09d3-b0d6f8687247@linux.intel.com>
+Date:   Mon, 23 May 2022 15:12:53 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.9.1
-Subject: Re: [PATCH V6 5/5] mmc: cqhci: Capture eMMC and SD card errors
+ Thunderbird/91.8.1
+Cc:     baolu.lu@linux.intel.com, Eric Auger <eric.auger@redhat.com>,
+        Liu Yi L <yi.l.liu@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>
+Subject: Re: [PATCH v7 03/10] iommu/sva: Add iommu_sva_domain support
 Content-Language: en-US
-To:     Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>,
-        ulf.hansson@linaro.org, wsa+renesas@sang-engineering.com,
-        shawn.lin@rock-chips.com, yoshihiro.shimoda.uh@renesas.com,
-        digetx@gmail.com, quic_asutoshd@quicinc.com
-Cc:     linux-arm-msm@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, quic_rampraka@quicinc.com,
-        quic_pragalla@quicinc.com, quic_sartgarg@quicinc.com,
-        quic_nitirawa@quicinc.com, quic_sayalil@quicinc.com,
-        Liangliang Lu <quic_luliang@quicinc.com>,
-        "Bao D . Nguyen" <quic_nguyenb@quicinc.com>
-References: <1652857340-6040-1-git-send-email-quic_c_sbhanu@quicinc.com>
- <1652857340-6040-6-git-send-email-quic_c_sbhanu@quicinc.com>
-From:   Adrian Hunter <adrian.hunter@intel.com>
-Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
- Business Identity Code: 0357606 - 4, Domiciled in Helsinki
-In-Reply-To: <1652857340-6040-6-git-send-email-quic_c_sbhanu@quicinc.com>
-Content-Type: text/plain; charset=UTF-8
+To:     Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Vinod Koul <vkoul@kernel.org>
+References: <20220519072047.2996983-1-baolu.lu@linux.intel.com>
+ <20220519072047.2996983-4-baolu.lu@linux.intel.com>
+From:   Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20220519072047.2996983-4-baolu.lu@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 18/05/22 10:02, Shaik Sajida Bhanu wrote:
-> Add changes to capture eMMC and SD card errors.
-> This is useful for debug and testing.
+On 2022/5/19 15:20, Lu Baolu wrote:
+> The iommu_sva_domain represents a hardware pagetable that the IOMMU
+> hardware could use for SVA translation. This adds some infrastructure
+> to support SVA domain in the iommu common layer. It includes:
 > 
-> Signed-off-by: Liangliang Lu <quic_luliang@quicinc.com>
-> Signed-off-by: Sayali Lokhande <quic_sayalil@quicinc.com>
-> Signed-off-by: Bao D. Nguyen <quic_nguyenb@quicinc.com>
-> Signed-off-by: Ram Prakash Gupta <quic_rampraka@quicinc.com>
-> Signed-off-by: Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
-
-Acked-by: Adrian Hunter <adrian.hunter@intel.com>
-
+> - Add a new struct iommu_sva_domain and new IOMMU_DOMAIN_SVA domain
+>    type.
+> - Add a new domain ops pointer in iommu_ops. The IOMMU drivers that
+>    support SVA should provide the callbacks.
+> - Add helpers to allocate and free an SVA domain.
+> - Add helpers to set an SVA domain to a device and the reverse
+>    operation.
+> 
+> Some buses, like PCI, route packets without considering the PASID value.
+> Thus a DMA target address with PASID might be treated as P2P if the
+> address falls into the MMIO BAR of other devices in the group. To make
+> things simple, the attach/detach interfaces only apply to devices
+> belonging to the singleton groups, and the singleton is immutable in
+> fabric i.e. not affected by hotplug.
+> 
+> The iommu_set/block_device_pasid() can be used for other purposes,
+> such as kernel DMA with pasid, mediation device, etc. Hence, it is put
+> in the iommu.c.
+> 
+> Suggested-by: Jean-Philippe Brucker<jean-philippe@linaro.org>
+> Suggested-by: Jason Gunthorpe<jgg@nvidia.com>
+> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
 > ---
->  drivers/mmc/host/cqhci-core.c | 9 ++++++++-
->  1 file changed, 8 insertions(+), 1 deletion(-)
+>   include/linux/iommu.h         | 51 +++++++++++++++++++++++++
+>   drivers/iommu/iommu-sva-lib.h | 15 ++++++++
+>   drivers/iommu/iommu-sva-lib.c | 48 +++++++++++++++++++++++
+>   drivers/iommu/iommu.c         | 71 +++++++++++++++++++++++++++++++++++
+>   4 files changed, 185 insertions(+)
 > 
-> diff --git a/drivers/mmc/host/cqhci-core.c b/drivers/mmc/host/cqhci-core.c
-> index 31f8412..7f25cca 100644
-> --- a/drivers/mmc/host/cqhci-core.c
-> +++ b/drivers/mmc/host/cqhci-core.c
-> @@ -822,8 +822,15 @@ irqreturn_t cqhci_irq(struct mmc_host *mmc, u32 intmask, int cmd_error,
->  	pr_debug("%s: cqhci: IRQ status: 0x%08x\n", mmc_hostname(mmc), status);
->  
->  	if ((status & (CQHCI_IS_RED | CQHCI_IS_GCE | CQHCI_IS_ICCE)) ||
-> -	    cmd_error || data_error)
-> +	    cmd_error || data_error) {
-> +		if (status & CQHCI_IS_RED)
-> +			mmc_debugfs_err_stats_inc(mmc, MMC_ERR_CMDQ_RED);
-> +		if (status & CQHCI_IS_GCE)
-> +			mmc_debugfs_err_stats_inc(mmc, MMC_ERR_CMDQ_GCE);
-> +		if (status & CQHCI_IS_ICCE)
-> +			mmc_debugfs_err_stats_inc(mmc, MMC_ERR_CMDQ_ICCE);
->  		cqhci_error_irq(mmc, status, cmd_error, data_error);
-> +	}
->  
->  	if (status & CQHCI_IS_TCC) {
->  		/* read TCN and complete the request */
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 0c358b7c583b..e8cf82d46ce1 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -64,6 +64,9 @@ struct iommu_domain_geometry {
+>   #define __IOMMU_DOMAIN_PT	(1U << 2)  /* Domain is identity mapped   */
+>   #define __IOMMU_DOMAIN_DMA_FQ	(1U << 3)  /* DMA-API uses flush queue    */
+>   
+> +#define __IOMMU_DOMAIN_SHARED	(1U << 4)  /* Page table shared from CPU  */
+> +#define __IOMMU_DOMAIN_HOST_VA	(1U << 5)  /* Host CPU virtual address */
+> +
+>   /*
+>    * This are the possible domain-types
+>    *
+> @@ -86,6 +89,8 @@ struct iommu_domain_geometry {
+>   #define IOMMU_DOMAIN_DMA_FQ	(__IOMMU_DOMAIN_PAGING |	\
+>   				 __IOMMU_DOMAIN_DMA_API |	\
+>   				 __IOMMU_DOMAIN_DMA_FQ)
+> +#define IOMMU_DOMAIN_SVA	(__IOMMU_DOMAIN_SHARED |	\
+> +				 __IOMMU_DOMAIN_HOST_VA)
+>   
+>   struct iommu_domain {
+>   	unsigned type;
+> @@ -254,6 +259,7 @@ struct iommu_ops {
+>   	int (*def_domain_type)(struct device *dev);
+>   
+>   	const struct iommu_domain_ops *default_domain_ops;
+> +	const struct iommu_domain_ops *sva_domain_ops;
 
+Per Joerg's comment in anther thread,
+
+https://lore.kernel.org/linux-iommu/YodVJ7ervpIdWfg+@8bytes.org/
+
+adding a sva_domain_ops here is not the right way to go.
+
+If no objection, I will make the sva domain go through the
+generic domain_alloc/free() callbacks in the next version.
+
+Best regards,
+baolu
