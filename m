@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55780C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:00:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A466C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:00:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242663AbiEWSAa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:00:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39104 "EHLO
+        id S242843AbiEWSAk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:00:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240994AbiEWRck (ORCPT
+        with ESMTP id S241103AbiEWRcl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:32:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0C3575232;
-        Mon, 23 May 2022 10:27:21 -0700 (PDT)
+        Mon, 23 May 2022 13:32:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B0AB79825;
+        Mon, 23 May 2022 10:27:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 84EAAB81201;
-        Mon, 23 May 2022 17:27:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7850C385A9;
-        Mon, 23 May 2022 17:27:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 523B860919;
+        Mon, 23 May 2022 17:27:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50623C385A9;
+        Mon, 23 May 2022 17:27:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326838;
-        bh=f/gxUlTFfj5frVlRI3KJBmQ/F3Zpezwb6EMBb3DBUTw=;
+        s=korg; t=1653326847;
+        bh=z9KitDqnllZPX+NUcFczaCCn/qxRFGh1THplW/YBoOY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2B2Ms9YcNExZ6Z7GaQMmMq1xQxsGpVHBaBEsuUqsx0ghCGBQFLTO4E9GKqngje8KJ
-         0muF7APF6ia2lu9Zk0lRL/F0tWacjG4LSaI68CLjmEPPWNgWU23pv5DMG12+yXELIS
-         Mp9T6T/3eWMuLbzm2r6EV98Q/pDzOniocwPmJxgk=
+        b=XI+BuiScBJwhH+5+JAPCFdfTl+uFr0mLanvAPGdluYzfmHwi7WiSvXBlZqsj2KbE+
+         0YePvuLudonDVrZpJnhC6cXtpeHOipIX48FLKF5AnFYjx6ogfG6qvNrBXTVwrYwy9P
+         /JK9R6AuE5L80pchYV+hokykgh87RaQ5po5QhpWE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        kernel test robot <lkp@intel.com>,
-        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 075/158] ALSA: hda - fix unused Realtek function when PM is not enabled
-Date:   Mon, 23 May 2022 19:03:52 +0200
-Message-Id: <20220523165843.404303095@linuxfoundation.org>
+        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+        Ming Lei <ming.lei@redhat.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Bart Van Assche <bvanassche@acm.org>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 078/158] block/mq-deadline: Set the fifo_time member also if inserting at head
+Date:   Mon, 23 May 2022 19:03:55 +0200
+Message-Id: <20220523165843.956480333@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
 References: <20220523165830.581652127@linuxfoundation.org>
@@ -49,61 +51,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Bart Van Assche <bvanassche@acm.org>
 
-[ Upstream commit c3d9ca93f1e3bd3d1adfc4479a12c82fed424c87 ]
+[ Upstream commit 725f22a1477c9c15aa67ad3af96fe28ec4fe72d2 ]
 
-When CONFIG_PM is not enabled, alc_shutup() is not needed,
-so move it inside the #ifdef CONFIG_PM guard.
-Also drop some contiguous #endif / #ifdef CONFIG_PM for simplicity.
+Before commit 322cff70d46c the fifo_time member of requests on a dispatch
+list was not used. Commit 322cff70d46c introduces code that reads the
+fifo_time member of requests on dispatch lists. Hence this patch that sets
+the fifo_time member when adding a request to a dispatch list.
 
-Fixes this build warning:
-sound/pci/hda/patch_realtek.c:886:20: warning: unused function 'alc_shutup'
-
-Fixes: 08c189f2c552 ("ALSA: hda - Use generic parser codes for Realtek driver")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: kernel test robot <lkp@intel.com>
-Link: https://lore.kernel.org/r/20220430193318.29024-1-rdunlap@infradead.org
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: Ming Lei <ming.lei@redhat.com>
+Cc: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Fixes: 322cff70d46c ("block/mq-deadline: Prioritize high-priority requests")
+Signed-off-by: Bart Van Assche <bvanassche@acm.org>
+Link: https://lore.kernel.org/r/20220513171307.32564-1-bvanassche@acm.org
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/pci/hda/patch_realtek.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ block/mq-deadline.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-index 779205bf5862..e38acdbe1a3b 100644
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -937,6 +937,9 @@ static int alc_init(struct hda_codec *codec)
- 	return 0;
- }
+diff --git a/block/mq-deadline.c b/block/mq-deadline.c
+index 3ed5eaf3446a..6ed602b2f80a 100644
+--- a/block/mq-deadline.c
++++ b/block/mq-deadline.c
+@@ -742,6 +742,7 @@ static void dd_insert_request(struct blk_mq_hw_ctx *hctx, struct request *rq,
  
-+#define alc_free	snd_hda_gen_free
-+
-+#ifdef CONFIG_PM
- static inline void alc_shutup(struct hda_codec *codec)
- {
- 	struct alc_spec *spec = codec->spec;
-@@ -950,9 +953,6 @@ static inline void alc_shutup(struct hda_codec *codec)
- 		alc_shutup_pins(codec);
- }
+ 	if (at_head) {
+ 		list_add(&rq->queuelist, &per_prio->dispatch);
++		rq->fifo_time = jiffies;
+ 	} else {
+ 		deadline_add_rq_rb(per_prio, rq);
  
--#define alc_free	snd_hda_gen_free
--
--#ifdef CONFIG_PM
- static void alc_power_eapd(struct hda_codec *codec)
- {
- 	alc_auto_setup_eapd(codec, false);
-@@ -966,9 +966,7 @@ static int alc_suspend(struct hda_codec *codec)
- 		spec->power_hook(codec);
- 	return 0;
- }
--#endif
- 
--#ifdef CONFIG_PM
- static int alc_resume(struct hda_codec *codec)
- {
- 	struct alc_spec *spec = codec->spec;
 -- 
 2.35.1
 
