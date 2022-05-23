@@ -2,97 +2,184 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 765CCC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 09:16:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5662C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 09:17:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232823AbiEWJQe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 05:16:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34200 "EHLO
+        id S232813AbiEWJR0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 05:17:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232972AbiEWJQU (ORCPT
+        with ESMTP id S232795AbiEWJRS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 05:16:20 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8A4D12084;
-        Mon, 23 May 2022 02:16:17 -0700 (PDT)
-X-UUID: 9d5a8ad4d88244ea97d58ddca759765f-20220523
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:d3c554eb-3fc7-489c-a189-de57b1d6e816,OB:10,L
-        OB:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,AC
-        TION:release,TS:45
-X-CID-INFO: VERSION:1.1.5,REQID:d3c554eb-3fc7-489c-a189-de57b1d6e816,OB:10,LOB
-        :0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:45
-X-CID-META: VersionHash:2a19b09,CLOUDID:0f3c37e3-edbf-4bd4-8a34-dfc5f7bb086d,C
-        OID:b53ce567e68a,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:0,File:nil,QS:0,BEC:nil
-X-UUID: 9d5a8ad4d88244ea97d58ddca759765f-20220523
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 2070381702; Mon, 23 May 2022 17:16:12 +0800
-Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Mon, 23 May 2022 17:16:11 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n1.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
- Transport; Mon, 23 May 2022 17:16:11 +0800
-Message-ID: <22cd7cd3be53bdb671c9774431ce0b78aaeac9a9.camel@mediatek.com>
-Subject: Re: [PATCH v8 17/19] dt-bindings: reset: mediatek: Add infra_ao
- reset index for MT8186
-From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        <mturquette@baylibre.com>, <sboyd@kernel.org>,
-        <matthias.bgg@gmail.com>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>
-CC:     <p.zabel@pengutronix.de>, <nfraprado@collabora.com>,
-        <chun-jie.chen@mediatek.com>, <wenst@chromium.org>,
-        <runyang.chen@mediatek.com>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-clk@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Date:   Mon, 23 May 2022 17:16:11 +0800
-In-Reply-To: <be340e39-ffd4-63ec-ec91-ea4f7a475650@collabora.com>
-References: <20220523060056.24396-1-rex-bc.chen@mediatek.com>
-         <20220523060056.24396-18-rex-bc.chen@mediatek.com>
-         <be340e39-ffd4-63ec-ec91-ea4f7a475650@collabora.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Mon, 23 May 2022 05:17:18 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 06092457B5;
+        Mon, 23 May 2022 02:17:17 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id AEA55ED1;
+        Mon, 23 May 2022 02:17:16 -0700 (PDT)
+Received: from [10.57.34.201] (unknown [10.57.34.201])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D8AA83F73D;
+        Mon, 23 May 2022 02:17:13 -0700 (PDT)
+Message-ID: <7fd884ed-1255-5976-6fcc-7a19ad0eb04e@arm.com>
+Date:   Mon, 23 May 2022 10:17:12 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-MTK:  N
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.9.0
+Subject: Re: [PATCH v7 05/10] coresight-tpdm: Add integration test support
+To:     Mao Jinlong <quic_jinlmao@quicinc.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Konrad Dybcio <konradybcio@gmail.com>,
+        Mike Leach <mike.leach@linaro.org>
+Cc:     Leo Yan <leo.yan@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org,
+        Tingwei Zhang <quic_tingweiz@quicinc.com>,
+        Yuanfang Zhang <quic_yuanfang@quicinc.com>,
+        Tao Zhang <quic_taozha@quicinc.com>,
+        Trilok Soni <quic_tsoni@quicinc.com>,
+        Hao Zhang <quic_hazha@quicinc.com>,
+        linux-arm-msm@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+References: <20220509133947.20987-1-quic_jinlmao@quicinc.com>
+ <20220509133947.20987-6-quic_jinlmao@quicinc.com>
+From:   Suzuki K Poulose <suzuki.poulose@arm.com>
+In-Reply-To: <20220509133947.20987-6-quic_jinlmao@quicinc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-05-23 at 11:05 +0200, AngeloGioacchino Del Regno wrote:
-> Il 23/05/22 08:00, Rex-BC Chen ha scritto:
-> > To support reset of infra_ao, add the index of infra_ao reset of
-> > thermal/svs for MT8186.
-> > 
-> > Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-> > Acked-by: Rob Herring <robh@kernel.org>
-> > Reviewed-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-> > Tested-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+On 09/05/2022 14:39, Mao Jinlong wrote:
+> Integration test for tpdm can help to generate the data for
+> verification of the topology during TPDM software bring up.
 > 
-> Rex, sorry but you've probably misunderstood Nicolas' Tested-by... he
-> has
-> tested these on MT8192, so his T-b tag is not applicable to MT8186,
-> MT8195.
+> Sample:
+> echo 1 > /sys/bus/coresight/devices/tmc_etf0/enable_sink
+> echo 1 > /sys/bus/coresight/devices/tpdm0/enable_source
+> echo 1 > /sys/bus/coresight/devices/tpdm0/integration_test
+> echo 2 > /sys/bus/coresight/devices/tpdm0/integration_test
+> cat /dev/tmc_etf0 > /data/etf-tpdm0.bin
 > 
-> Anyway:
-> 
-> Reviewed-by: AngeloGioacchino Del Regno <
-> angelogioacchino.delregno@collabora.com>
-> 
+> Signed-off-by: Tao Zhang <quic_taozha@quicinc.com>
+> Signed-off-by: Mao Jinlong <quic_jinlmao@quicinc.com>
 
-oh..
-Sorry for this.
-I wil resend v8 to remove them.
+Please could we stick this under a sub-Kconfig entry, like
+we did for the CTI ?
 
-BRs,
-Rex
+CONFIG_CORESIGHT_TPMD_INTEGRATION_TEST
+
+> ---
+>   drivers/hwtracing/coresight/coresight-tpdm.c | 54 ++++++++++++++++++++
+>   drivers/hwtracing/coresight/coresight-tpdm.h | 14 +++++
+>   2 files changed, 68 insertions(+)
+> 
+> diff --git a/drivers/hwtracing/coresight/coresight-tpdm.c b/drivers/hwtracing/coresight/coresight-tpdm.c
+> index 70df888ac565..57e38aa7d2bd 100644
+> --- a/drivers/hwtracing/coresight/coresight-tpdm.c
+> +++ b/drivers/hwtracing/coresight/coresight-tpdm.c
+> @@ -123,6 +123,59 @@ static void tpdm_init_default_data(struct tpdm_drvdata *drvdata)
+>   	CS_LOCK(drvdata->base);
+>   }
+>   
+> +/*
+> + * value 1: 64 bits test data
+> + * value 2: 32 bits test data
+> + */
+> +static ssize_t integration_test_store(struct device *dev,
+> +					  struct device_attribute *attr,
+> +					  const char *buf,
+> +					  size_t size)
+> +{
+> +	int i, ret = 0;
+> +	unsigned long val;
+> +	struct tpdm_drvdata *drvdata = dev_get_drvdata(dev->parent);
+> +
+> +	ret = kstrtoul(buf, 10, &val);
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (val != 1 && val != 2)
+> +		return -EINVAL;
+> +
+> +	if (!drvdata->enable)
+> +		return -EINVAL;
+> +
+> +	if (val == 1)
+> +		val = ATBCNTRL_VAL_64;
+> +	else
+> +		val = ATBCNTRL_VAL_32;
+> +	CS_UNLOCK(drvdata->base);
+> +	writel_relaxed(0x1, drvdata->base + TPDM_ITCNTRL);
+> +
+> +	for (i = 1; i < INTEGRATION_TEST_CYCLE; i++)
+
+super minor nit : It is a bit un-natural, not to have i = 0;
+
+Rest looks fine to me .
+
+Suzuki
+
+
+> +		writel_relaxed(val, drvdata->base + TPDM_ITATBCNTRL);
+> +
+> +	writel_relaxed(0, drvdata->base + TPDM_ITCNTRL);
+> +	CS_LOCK(drvdata->base);
+> +	return size;
+> +}
+> +static DEVICE_ATTR_WO(integration_test);
+> +
+> +static struct attribute *tpdm_attrs[] = {
+> +	&dev_attr_integration_test.attr,
+> +	NULL,
+> +};
+> +
+> +static struct attribute_group tpdm_attr_grp = {
+> +	.attrs = tpdm_attrs,
+> +};
+> +
+> +static const struct attribute_group *tpdm_attr_grps[] = {
+> +	&tpdm_attr_grp,
+> +	NULL,
+> +};
+> +
+>   static int tpdm_probe(struct amba_device *adev, const struct amba_id *id)
+>   {
+>   	struct device *dev = &adev->dev;
+> @@ -157,6 +210,7 @@ static int tpdm_probe(struct amba_device *adev, const struct amba_id *id)
+>   	desc.ops = &tpdm_cs_ops;
+>   	desc.pdata = adev->dev.platform_data;
+>   	desc.dev = &adev->dev;
+> +	desc.groups = tpdm_attr_grps;
+>   	drvdata->csdev = coresight_register(&desc);
+>   	if (IS_ERR(drvdata->csdev))
+>   		return PTR_ERR(drvdata->csdev);
+> diff --git a/drivers/hwtracing/coresight/coresight-tpdm.h b/drivers/hwtracing/coresight/coresight-tpdm.h
+> index f95aaad9c653..4aa880794383 100644
+> --- a/drivers/hwtracing/coresight/coresight-tpdm.h
+> +++ b/drivers/hwtracing/coresight/coresight-tpdm.h
+> @@ -14,6 +14,20 @@
+>   /* Enable bit for DSB subunit */
+>   #define TPDM_DSB_CR_ENA		BIT(0)
+>   
+> +/* TPDM integration test registers */
+> +#define TPDM_ITATBCNTRL		(0xEF0)
+> +#define TPDM_ITCNTRL		(0xF00)
+> +
+> +/* Register value for integration test */
+> +#define ATBCNTRL_VAL_32		0xC00F1409
+> +#define ATBCNTRL_VAL_64		0xC01F1409
+> +
+> +/*
+> + * Number of cycles to write value when
+> + * integration test.
+> + */
+> +#define INTEGRATION_TEST_CYCLE	10
+> +
+>   /**
+>    * This enum is for PERIPHIDR0 register of TPDM.
+>    * The fields [6:0] of PERIPHIDR0 are used to determine what
 
