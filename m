@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41FA7C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:05:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8842DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:05:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243305AbiEWSFV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:05:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38206 "EHLO
+        id S243411AbiEWSF2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:05:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242952AbiEWRhv (ORCPT
+        with ESMTP id S242992AbiEWRhv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 23 May 2022 13:37:51 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99D606351C;
-        Mon, 23 May 2022 10:31:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB07362BE5;
+        Mon, 23 May 2022 10:31:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CD99B611E6;
-        Mon, 23 May 2022 17:30:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0CA0C385A9;
-        Mon, 23 May 2022 17:30:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 67ABC611C2;
+        Mon, 23 May 2022 17:29:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 279CCC385AA;
+        Mon, 23 May 2022 17:29:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653327040;
-        bh=JtVMK1J56BWXLZvCcn/YesZxEVRZCxup/GGdgk9PEC8=;
+        s=korg; t=1653326963;
+        bh=d6w+5UsSdjDcHDg9m5UaDK+DMi109APCcdCUrmrVj6w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aG5iBD5yaBYWY0ASydJP8L1YhcTitrTOeyhwS0eji/SImztfjDy5S2nSVJG9KGdC6
-         2jwhSvpWL3zNf452dkhTizW1m5dfGaa38KA8vEOeY30Lfn9VN2rAFsNh7ECwp6MQ9U
-         yohSOXWgHl7imNoaDuz8j4beDUA/AhPO4YuD1z4s=
+        b=yGBsk6LaboQ+It5oVs4y4RLBv3l61doXrW5nEXdmfgLkDnCUHzAhv00CAtabFKXhd
+         TWoZ92MOx7abFp+PLfXn7zG2vbDEQhgISVrKLB3/NsOn3V3iVaSzvaG9S6uAyy2MKk
+         kRLczDFiyiMz4MYbGn4jy8nT4fyqmDxmjzZ1PuAE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maor Dickman <maord@nvidia.com>,
-        Yevgeny Kliteynik <kliteyn@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 102/158] net/mlx5: DR, Fix missing flow_source when creating multi-destination FW table
-Date:   Mon, 23 May 2022 19:04:19 +0200
-Message-Id: <20220523165848.231649115@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
+        Michal Schmidt <mschmidt@redhat.com>,
+        Dave Cain <dcain@redhat.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        Gurucharan <gurucharanx.g@intel.com>
+Subject: [PATCH 5.17 096/158] ice: fix crash when writing timestamp on RX rings
+Date:   Mon, 23 May 2022 19:04:13 +0200
+Message-Id: <20220523165847.300118321@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
 References: <20220523165830.581652127@linuxfoundation.org>
@@ -50,127 +53,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maor Dickman <maord@nvidia.com>
+From: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
 
-[ Upstream commit 2c5fc6cd269ad3476da99dad02521d2af4a8e906 ]
+[ Upstream commit 4503cc7fdf9a84cd631b0cb8ecb3c9b1bdbf3594 ]
 
-In order to support multiple destination FTEs with SW steering
-FW table is created with single FTE with multiple actions and
-SW steering rule forward to it. When creating this table, flow
-source isn't set according to the original FTE.
+Do not allow to write timestamps on RX rings if PF is being configured.
+When PF is being configured RX rings can be freed or rebuilt. If at the
+same time timestamps are updated, the kernel will crash by dereferencing
+null RX ring pointer.
 
-Fix this by passing the original FTE flow source to the created
-FW table.
+PID: 1449   TASK: ff187d28ed658040  CPU: 34  COMMAND: "ice-ptp-0000:51"
+ #0 [ff1966a94a713bb0] machine_kexec at ffffffff9d05a0be
+ #1 [ff1966a94a713c08] __crash_kexec at ffffffff9d192e9d
+ #2 [ff1966a94a713cd0] crash_kexec at ffffffff9d1941bd
+ #3 [ff1966a94a713ce8] oops_end at ffffffff9d01bd54
+ #4 [ff1966a94a713d08] no_context at ffffffff9d06bda4
+ #5 [ff1966a94a713d60] __bad_area_nosemaphore at ffffffff9d06c10c
+ #6 [ff1966a94a713da8] do_page_fault at ffffffff9d06cae4
+ #7 [ff1966a94a713de0] page_fault at ffffffff9da0107e
+    [exception RIP: ice_ptp_update_cached_phctime+91]
+    RIP: ffffffffc076db8b  RSP: ff1966a94a713e98  RFLAGS: 00010246
+    RAX: 16e3db9c6b7ccae4  RBX: ff187d269dd3c180  RCX: ff187d269cd4d018
+    RDX: 0000000000000000  RSI: 0000000000000000  RDI: 0000000000000000
+    RBP: ff187d269cfcc644   R8: ff187d339b9641b0   R9: 0000000000000000
+    R10: 0000000000000002  R11: 0000000000000000  R12: ff187d269cfcc648
+    R13: ffffffff9f128784  R14: ffffffff9d101b70  R15: ff187d269cfcc640
+    ORIG_RAX: ffffffffffffffff  CS: 0010  SS: 0018
+ #8 [ff1966a94a713ea0] ice_ptp_periodic_work at ffffffffc076dbef [ice]
+ #9 [ff1966a94a713ee0] kthread_worker_fn at ffffffff9d101c1b
+ #10 [ff1966a94a713f10] kthread at ffffffff9d101b4d
+ #11 [ff1966a94a713f50] ret_from_fork at ffffffff9da0023f
 
-Fixes: 34583beea4b7 ("net/mlx5: DR, Create multi-destination table for SW-steering use")
-Signed-off-by: Maor Dickman <maord@nvidia.com>
-Reviewed-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Fixes: 77a781155a65 ("ice: enable receive hardware timestamping")
+Signed-off-by: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
+Reviewed-by: Michal Schmidt <mschmidt@redhat.com>
+Tested-by: Dave Cain <dcain@redhat.com>
+Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/ethernet/mellanox/mlx5/core/steering/dr_action.c    | 6 ++++--
- drivers/net/ethernet/mellanox/mlx5/core/steering/dr_fw.c    | 4 +++-
- drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h | 3 ++-
- drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c    | 4 +++-
- drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h   | 3 ++-
- 5 files changed, 14 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_ptp.c | 19 +++++++++++++++----
+ 1 file changed, 15 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
-index c61a5e83c78c..5d1caf97a8fc 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
-@@ -847,7 +847,8 @@ struct mlx5dr_action *
- mlx5dr_action_create_mult_dest_tbl(struct mlx5dr_domain *dmn,
- 				   struct mlx5dr_action_dest *dests,
- 				   u32 num_of_dests,
--				   bool ignore_flow_level)
-+				   bool ignore_flow_level,
-+				   u32 flow_source)
+diff --git a/drivers/net/ethernet/intel/ice/ice_ptp.c b/drivers/net/ethernet/intel/ice/ice_ptp.c
+index 45ae97b8b97d..836c67f1aa46 100644
+--- a/drivers/net/ethernet/intel/ice/ice_ptp.c
++++ b/drivers/net/ethernet/intel/ice/ice_ptp.c
+@@ -499,12 +499,19 @@ ice_ptp_read_src_clk_reg(struct ice_pf *pf, struct ptp_system_timestamp *sts)
+  * This function must be called periodically to ensure that the cached value
+  * is never more than 2 seconds old. It must also be called whenever the PHC
+  * time has been changed.
++ *
++ * Return:
++ * * 0 - OK, successfully updated
++ * * -EAGAIN - PF was busy, need to reschedule the update
+  */
+-static void ice_ptp_update_cached_phctime(struct ice_pf *pf)
++static int ice_ptp_update_cached_phctime(struct ice_pf *pf)
  {
- 	struct mlx5dr_cmd_flow_destination_hw_info *hw_dests;
- 	struct mlx5dr_action **ref_actions;
-@@ -919,7 +920,8 @@ mlx5dr_action_create_mult_dest_tbl(struct mlx5dr_domain *dmn,
- 				      reformat_req,
- 				      &action->dest_tbl->fw_tbl.id,
- 				      &action->dest_tbl->fw_tbl.group_id,
--				      ignore_flow_level);
-+				      ignore_flow_level,
-+				      flow_source);
- 	if (ret)
- 		goto free_action;
+ 	u64 systime;
+ 	int i;
  
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_fw.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_fw.c
-index 68a4c32d5f34..f05ef0cd54ba 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_fw.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_fw.c
-@@ -104,7 +104,8 @@ int mlx5dr_fw_create_md_tbl(struct mlx5dr_domain *dmn,
- 			    bool reformat_req,
- 			    u32 *tbl_id,
- 			    u32 *group_id,
--			    bool ignore_flow_level)
-+			    bool ignore_flow_level,
-+			    u32 flow_source)
++	if (test_and_set_bit(ICE_CFG_BUSY, pf->state))
++		return -EAGAIN;
++
+ 	/* Read the current PHC time */
+ 	systime = ice_ptp_read_src_clk_reg(pf, NULL);
+ 
+@@ -527,6 +534,9 @@ static void ice_ptp_update_cached_phctime(struct ice_pf *pf)
+ 			WRITE_ONCE(vsi->rx_rings[j]->cached_phctime, systime);
+ 		}
+ 	}
++	clear_bit(ICE_CFG_BUSY, pf->state);
++
++	return 0;
+ }
+ 
+ /**
+@@ -2322,17 +2332,18 @@ static void ice_ptp_periodic_work(struct kthread_work *work)
  {
- 	struct mlx5dr_cmd_create_flow_table_attr ft_attr = {};
- 	struct mlx5dr_cmd_fte_info fte_info = {};
-@@ -139,6 +140,7 @@ int mlx5dr_fw_create_md_tbl(struct mlx5dr_domain *dmn,
- 	fte_info.val = val;
- 	fte_info.dest_arr = dest;
- 	fte_info.ignore_flow_level = ignore_flow_level;
-+	fte_info.flow_context.flow_source = flow_source;
+ 	struct ice_ptp *ptp = container_of(work, struct ice_ptp, work.work);
+ 	struct ice_pf *pf = container_of(ptp, struct ice_pf, ptp);
++	int err;
  
- 	ret = mlx5dr_cmd_set_fte(dmn->mdev, 0, 0, &ft_info, *group_id, &fte_info);
- 	if (ret) {
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-index 55fcb751e24a..64f41e7938e1 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-@@ -1463,7 +1463,8 @@ int mlx5dr_fw_create_md_tbl(struct mlx5dr_domain *dmn,
- 			    bool reformat_req,
- 			    u32 *tbl_id,
- 			    u32 *group_id,
--			    bool ignore_flow_level);
-+			    bool ignore_flow_level,
-+			    u32 flow_source);
- void mlx5dr_fw_destroy_md_tbl(struct mlx5dr_domain *dmn, u32 tbl_id,
- 			      u32 group_id);
- #endif  /* _DR_TYPES_H_ */
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
-index 3f311462bedf..05393fe11132 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
-@@ -520,6 +520,7 @@ static int mlx5_cmd_dr_create_fte(struct mlx5_flow_root_namespace *ns,
- 	} else if (num_term_actions > 1) {
- 		bool ignore_flow_level =
- 			!!(fte->action.flags & FLOW_ACT_IGNORE_FLOW_LEVEL);
-+		u32 flow_source = fte->flow_context.flow_source;
+ 	if (!test_bit(ICE_FLAG_PTP, pf->flags))
+ 		return;
  
- 		if (num_actions == MLX5_FLOW_CONTEXT_ACTION_MAX ||
- 		    fs_dr_num_actions == MLX5_FLOW_CONTEXT_ACTION_MAX) {
-@@ -529,7 +530,8 @@ static int mlx5_cmd_dr_create_fte(struct mlx5_flow_root_namespace *ns,
- 		tmp_action = mlx5dr_action_create_mult_dest_tbl(domain,
- 								term_actions,
- 								num_term_actions,
--								ignore_flow_level);
-+								ignore_flow_level,
-+								flow_source);
- 		if (!tmp_action) {
- 			err = -EOPNOTSUPP;
- 			goto free_actions;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h b/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h
-index dfa223415fe2..74a7a2f4d50d 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h
-@@ -96,7 +96,8 @@ struct mlx5dr_action *
- mlx5dr_action_create_mult_dest_tbl(struct mlx5dr_domain *dmn,
- 				   struct mlx5dr_action_dest *dests,
- 				   u32 num_of_dests,
--				   bool ignore_flow_level);
-+				   bool ignore_flow_level,
-+				   u32 flow_source);
+-	ice_ptp_update_cached_phctime(pf);
++	err = ice_ptp_update_cached_phctime(pf);
  
- struct mlx5dr_action *mlx5dr_action_create_drop(void);
+ 	ice_ptp_tx_tstamp_cleanup(&pf->hw, &pf->ptp.port.tx);
  
+-	/* Run twice a second */
++	/* Run twice a second or reschedule if phc update failed */
+ 	kthread_queue_delayed_work(ptp->kworker, &ptp->work,
+-				   msecs_to_jiffies(500));
++				   msecs_to_jiffies(err ? 10 : 500));
+ }
+ 
+ /**
 -- 
 2.35.1
 
