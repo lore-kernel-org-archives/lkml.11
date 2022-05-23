@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6C46C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0023C35296
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:32:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241759AbiEWRbJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:31:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42818 "EHLO
+        id S241891AbiEWRbb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:31:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241781AbiEWRWg (ORCPT
+        with ESMTP id S241686AbiEWRWd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:22:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CD4D7CB24;
-        Mon, 23 May 2022 10:19:32 -0700 (PDT)
+        Mon, 23 May 2022 13:22:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D11087B9E3;
+        Mon, 23 May 2022 10:19:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EBFA060C21;
-        Mon, 23 May 2022 17:19:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0289CC385A9;
-        Mon, 23 May 2022 17:19:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 77487B81204;
+        Mon, 23 May 2022 17:17:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98226C385A9;
+        Mon, 23 May 2022 17:17:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326371;
-        bh=b6NFvtV05C67/m5JJ+rIvl1ZWELbS0fmHb1VDGSWuUk=;
+        s=korg; t=1653326243;
+        bh=xhmdDEoKotcUO/7eHbPi3dL9BFugG1l1EDjl/avpqzE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Puv2SpwCD6U9Xr74YUwQynyKMgW6ZznNV6W/Ot/uLry9es7B5kdUTwwJm4M/K1ypp
-         n1eM+shqbAAChVaTdwiETSyeLsIaVVrYjR14aGqgcQrUk8retUy2PsaIKWadMfxvn+
-         4z6K6uw7/crqIXjoicfCSzlVid1K2u3rPqLW4qMc=
+        b=qn+q4TQGhYrsXPNS0edZtEGcTM86WWHoYSBVr2bYKzix2fmVhgpc5gQgU4EKLMRpu
+         EsjYVA6LTQProwynVZl3bUp7Vc+zdKkUMHsn5RjQdxk6SqDuZyZ1Bi6RU6pZ8sxlDH
+         U11m+oN7bpgEzRDJOcsf2dvDAbf8GKFwxu/wscDg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Charan Teja Kalla <quic_charante@quicinc.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>
-Subject: [PATCH 5.15 061/132] dma-buf: ensure unique directory name for dmabuf stats
-Date:   Mon, 23 May 2022 19:04:30 +0200
-Message-Id: <20220523165833.397196931@linuxfoundation.org>
+        stable@vger.kernel.org, David Gow <davidgow@google.com>,
+        Richard Weinberger <richard@nod.at>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 021/132] um: Cleanup syscall_handler_t definition/cast, fix warning
+Date:   Mon, 23 May 2022 19:03:50 +0200
+Message-Id: <20220523165827.024179835@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
 References: <20220523165823.492309987@linuxfoundation.org>
@@ -49,71 +49,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charan Teja Kalla <quic_charante@quicinc.com>
+From: David Gow <davidgow@google.com>
 
-commit 370704e707a5f2d3c9a1d4ed8bd8cd67507d7bb5 upstream.
+[ Upstream commit f4f03f299a56ce4d73c5431e0327b3b6cb55ebb9 ]
 
-The dmabuf file uses get_next_ino()(through dma_buf_getfile() ->
-alloc_anon_inode()) to get an inode number and uses the same as a
-directory name under /sys/kernel/dmabuf/buffers/<ino>. This directory is
-used to collect the dmabuf stats and it is created through
-dma_buf_stats_setup(). At current, failure to create this directory
-entry can make the dma_buf_export() to fail.
+The syscall_handler_t type for x86_64 was defined as 'long (*)(void)',
+but always cast to 'long (*)(long, long, long, long, long, long)' before
+use. This now triggers a warning (see below).
 
-Now, as the get_next_ino() can definitely give a repetitive inode no
-causing the directory entry creation to fail with -EEXIST. This is a
-problem on the systems where dmabuf stats functionality is enabled on
-the production builds can make the dma_buf_export(), though the dmabuf
-memory is allocated successfully, to fail just because it couldn't
-create stats entry.
+Define syscall_handler_t as the latter instead, and remove the cast.
+This simplifies the code, and fixes the warning.
 
-This issue we are able to see on the snapdragon system within 13 days
-where there already exists a directory with inode no "122602" so
-dma_buf_stats_setup() failed with -EEXIST as it is trying to create
-the same directory entry.
+Warning:
+In file included from ../arch/um/include/asm/processor-generic.h:13
+                 from ../arch/x86/um/asm/processor.h:41
+                 from ../include/linux/rcupdate.h:30
+                 from ../include/linux/rculist.h:11
+                 from ../include/linux/pid.h:5
+                 from ../include/linux/sched.h:14
+                 from ../include/linux/ptrace.h:6
+                 from ../arch/um/kernel/skas/syscall.c:7:
+../arch/um/kernel/skas/syscall.c: In function ‘handle_syscall’:
+../arch/x86/um/shared/sysdep/syscalls_64.h:18:11: warning: cast between incompatible function types from ‘long int (*)(void)’ to ‘long int (*)(long int,  long int,  long int,  long int,  long int,  long int)’ [
+-Wcast-function-type]
+   18 |         (((long (*)(long, long, long, long, long, long)) \
+      |           ^
+../arch/x86/um/asm/ptrace.h:36:62: note: in definition of macro ‘PT_REGS_SET_SYSCALL_RETURN’
+   36 | #define PT_REGS_SET_SYSCALL_RETURN(r, res) (PT_REGS_AX(r) = (res))
+      |                                                              ^~~
+../arch/um/kernel/skas/syscall.c:46:33: note: in expansion of macro ‘EXECUTE_SYSCALL’
+   46 |                                 EXECUTE_SYSCALL(syscall, regs));
+      |                                 ^~~~~~~~~~~~~~~
 
-To make the dentry name as unique, use the dmabuf fs specific inode
-which is based on the simple atomic variable increment. There is tmpfs
-subsystem too which relies on its own inode generation rather than
-relying on the get_next_ino() for the same reason of avoiding the
-duplicate inodes[1].
-
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/patch/?id=e809d5f0b5c912fe981dce738f3283b2010665f0
-
-Signed-off-by: Charan Teja Kalla <quic_charante@quicinc.com>
-Cc: <stable@vger.kernel.org> # 5.15.x+
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Reviewed-by: Christian König <christian.koenig@amd.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/1652441296-1986-1-git-send-email-quic_charante@quicinc.com
-Signed-off-by: Christian König <christian.koenig@amd.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: David Gow <davidgow@google.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/dma-buf/dma-buf.c |    8 ++++++++
- 1 file changed, 8 insertions(+)
+ arch/x86/um/shared/sysdep/syscalls_64.h | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
---- a/drivers/dma-buf/dma-buf.c
-+++ b/drivers/dma-buf/dma-buf.c
-@@ -436,6 +436,7 @@ static inline int is_dma_buf_file(struct
+diff --git a/arch/x86/um/shared/sysdep/syscalls_64.h b/arch/x86/um/shared/sysdep/syscalls_64.h
+index 8a7d5e1da98e..1e6875b4ffd8 100644
+--- a/arch/x86/um/shared/sysdep/syscalls_64.h
++++ b/arch/x86/um/shared/sysdep/syscalls_64.h
+@@ -10,13 +10,12 @@
+ #include <linux/msg.h>
+ #include <linux/shm.h>
  
- static struct file *dma_buf_getfile(struct dma_buf *dmabuf, int flags)
- {
-+	static atomic64_t dmabuf_inode = ATOMIC64_INIT(0);
- 	struct file *file;
- 	struct inode *inode = alloc_anon_inode(dma_buf_mnt->mnt_sb);
+-typedef long syscall_handler_t(void);
++typedef long syscall_handler_t(long, long, long, long, long, long);
  
-@@ -445,6 +446,13 @@ static struct file *dma_buf_getfile(stru
- 	inode->i_size = dmabuf->size;
- 	inode_set_bytes(inode, dmabuf->size);
+ extern syscall_handler_t *sys_call_table[];
  
-+	/*
-+	 * The ->i_ino acquired from get_next_ino() is not unique thus
-+	 * not suitable for using it as dentry name by dmabuf stats.
-+	 * Override ->i_ino with the unique and dmabuffs specific
-+	 * value.
-+	 */
-+	inode->i_ino = atomic64_add_return(1, &dmabuf_inode);
- 	file = alloc_file_pseudo(inode, dma_buf_mnt, "dmabuf",
- 				 flags, &dma_buf_fops);
- 	if (IS_ERR(file))
+ #define EXECUTE_SYSCALL(syscall, regs) \
+-	(((long (*)(long, long, long, long, long, long)) \
+-	  (*sys_call_table[syscall]))(UPT_SYSCALL_ARG1(&regs->regs), \
++	(((*sys_call_table[syscall]))(UPT_SYSCALL_ARG1(&regs->regs), \
+ 		 		      UPT_SYSCALL_ARG2(&regs->regs), \
+ 				      UPT_SYSCALL_ARG3(&regs->regs), \
+ 				      UPT_SYSCALL_ARG4(&regs->regs), \
+-- 
+2.35.1
+
 
 
