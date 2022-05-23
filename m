@@ -2,118 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A228C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 07:35:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 667D0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 07:36:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230100AbiEWHfZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 03:35:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56230 "EHLO
+        id S229999AbiEWHgn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 03:36:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230098AbiEWHfV (ORCPT
+        with ESMTP id S230218AbiEWHgC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 03:35:21 -0400
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 396692A1
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 00:35:17 -0700 (PDT)
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com [209.85.218.69])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 239383FD85
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 06:17:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1653286620;
-        bh=YZt0gEcVBsDQZxJXupASTRYjSo4qyOuFuN84SJ8MkVo=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
-        b=b7QfKCNxCZrKklIEjNlcDfU9RJIUF1EHCFaYilhGN8pEU6WUMRS/dHSEFQY+7mCSF
-         GNG7WwZEGCsDqZxHUEMxnk4z1bEoie99icDOJkdG2Y5yIT+QZhvwduInl3gZQ1wWX+
-         jbFTArIDiF10Ajnucd+u/I47fTR3jqTChYMQ8tQe1Kh9NIG/V7Uj2zz0Kkha9QaEzR
-         EPyu8VukY1dvGty/Q0oa1w8Syo7z3hUBDGQYUblq4Yt5D93/edV8CkuuymHd46VZvN
-         g5G1Z2q4+ySmep09BiEAWsyGf/9eOr6r0/Bn9JPBHdGX46VeceKl2txN+PFP1I3EJR
-         1GSJSKXGIzPBA==
-Received: by mail-ej1-f69.google.com with SMTP id i7-20020a170906850700b006fec53a78c3so693899ejx.1
-        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 23:17:00 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=YZt0gEcVBsDQZxJXupASTRYjSo4qyOuFuN84SJ8MkVo=;
-        b=MdLvZHPID32bsScKv3hTXcTYS7L4BoPjNDsN0lPWlPuYpVLGlzrd/GyaQuXqPfry+Q
-         4lCWmEInhIsMn/tj7+XfJLTTzuPlHB8VloGvQtdIrEVpsqss5+f9ugRdCxfQ6UNJEkr/
-         tIwxN9yUYt0yoGst+MqJIMmcpbks+zFIerkyZzNmsupD0StkFkZXBXeksW4R43S8sFUg
-         75tBTjUiaqmDv3/rCMWFNIO9dJyC5UMlBqUZa/OoJ7aPnlnvpOictMJ2lnEwqMhG3GCf
-         4+5abY4Gb3WAJzd6iYXZVPWhej4ZFNAr/nakwXbYw0dN4BvJFaT4OX+3OBlKz2ZNpvLa
-         Gpgg==
-X-Gm-Message-State: AOAM533qWoeDlJFB1BImNkCZXu5VYjCn8zSV+oQU9veOUiS1vo14OEGs
-        Mj6P3WeZBT+TV0t35crGhewSdJ668/u7s/Iw71BFETmk5FqzKwwINAr7jH9pi4l7dBW8Jtp8nXU
-        W6dDnjeJqVbwRM2aRf4XlcaUWhaJadmIKFuKJCFsh0w==
-X-Received: by 2002:a17:907:6e15:b0:6fe:f8e8:69de with SMTP id sd21-20020a1709076e1500b006fef8e869demr152751ejc.512.1653286619882;
-        Sun, 22 May 2022 23:16:59 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxuBRNxF5Sb309hnzHZzQVoZYxgbW/gKFFlvPa+a0P7VHui/OmYp1mAtjTqMJvslvLV4OtKcQ==
-X-Received: by 2002:a17:907:6e15:b0:6fe:f8e8:69de with SMTP id sd21-20020a1709076e1500b006fef8e869demr152743ejc.512.1653286619702;
-        Sun, 22 May 2022 23:16:59 -0700 (PDT)
-Received: from gollum.fritz.box ([194.191.244.86])
-        by smtp.gmail.com with ESMTPSA id ci18-20020a170907267200b006fe8c831632sm5359135ejc.73.2022.05.22.23.16.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 22 May 2022 23:16:59 -0700 (PDT)
-From:   Juerg Haefliger <juerg.haefliger@canonical.com>
-X-Google-Original-From: Juerg Haefliger <juergh@canonical.com>
-To:     hsweeten@visionengravers.com, alexander.sverdlin@gmail.com,
-        linux@armlinux.org.uk, linux-arm-kernel@lists.infradead.org
-Cc:     linux-kernel@vger.kernel.org,
-        Juerg Haefliger <juergh@canonical.com>
-Subject: [PATCH] ARM: imx: Kconfig: Fix indentation
-Date:   Mon, 23 May 2022 08:16:57 +0200
-Message-Id: <20220523061657.9374-1-juergh@canonical.com>
-X-Mailer: git-send-email 2.32.0
+        Mon, 23 May 2022 03:36:02 -0400
+Received: from laurent.telenet-ops.be (laurent.telenet-ops.be [IPv6:2a02:1800:110:4::f00:19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABEE612D21
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 00:35:47 -0700 (PDT)
+Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed30:f842:c7a0:fa15:37ec])
+        by laurent.telenet-ops.be with bizsmtp
+        id a7bk2700418cKRz017bkDa; Mon, 23 May 2022 09:35:44 +0200
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1nt2bP-001Jwj-TJ
+        for linux-kernel@vger.kernel.org; Mon, 23 May 2022 09:35:43 +0200
+Received: from geert by rox.of.borg with local (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1nt2bP-00De6D-9u
+        for linux-kernel@vger.kernel.org; Mon, 23 May 2022 09:35:43 +0200
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+To:     linux-kernel@vger.kernel.org
+Subject: Build regressions/improvements in v5.18
+Date:   Mon, 23 May 2022 09:35:43 +0200
+Message-Id: <20220523073543.3252209-1-geert@linux-m68k.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <CAHk-=wjiqyoH6qntYvYTjR1F2L-pHtgX9esZMRS13iktCOJ1zA@mail.gmail.com>
+References: <CAHk-=wjiqyoH6qntYvYTjR1F2L-pHtgX9esZMRS13iktCOJ1zA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The convention for indentation seems to be a single tab. Help text is
-further indented by an additional two whitespaces. Fix the lines that
-violate these rules.
+Below is the list of build error/warning regressions/improvements in
+v5.18[1] compared to v5.17[2].
 
-While at it, replace separator tabs with whitespaces.
+Summarized:
+  - build errors: +15/-5
+  - build warnings: +36/-21
 
-Signed-off-by: Juerg Haefliger <juergh@canonical.com>
----
- arch/arm/mach-imx/Kconfig | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+JFYI, when comparing v5.18[1] to v5.18-rc7[3], the summaries are:
+  - build errors: +0/-1
+  - build warnings: +0/-0
 
-diff --git a/arch/arm/mach-imx/Kconfig b/arch/arm/mach-imx/Kconfig
-index c5a59158722b..e27232aa3d34 100644
---- a/arch/arm/mach-imx/Kconfig
-+++ b/arch/arm/mach-imx/Kconfig
-@@ -96,7 +96,7 @@ config SOC_IMX5
- 	select HAVE_IMX_SRC
- 	select MXC_TZIC
- 
--config	SOC_IMX50
-+config SOC_IMX50
- 	bool "i.MX50 support"
- 	select PINCTRL_IMX50
- 	select SOC_IMX5
-@@ -111,7 +111,7 @@ config SOC_IMX51
- 	help
- 	  This enables support for Freescale i.MX51 processor
- 
--config	SOC_IMX53
-+config SOC_IMX53
- 	bool "i.MX53 support"
- 	select PINCTRL_IMX53
- 	select SOC_IMX5
-@@ -216,7 +216,7 @@ config SOC_IMX7D
- 	select SOC_IMX7D_CM4 if ARM_SINGLE_ARMV7M
- 	select ARM_ERRATA_814220 if ARCH_MULTI_V7
- 	help
--		This enables support for Freescale i.MX7 Dual processor.
-+	  This enables support for Freescale i.MX7 Dual processor.
- 
- config SOC_IMX7ULP
- 	bool "i.MX7ULP support"
--- 
-2.32.0
+Note that there may be false regressions, as some logs are incomplete.
+Still, they're build errors/warnings.
 
+Happy fixing! ;-)
+
+Thanks to the linux-next team for providing the build service.
+
+[1] http://kisskb.ellerman.id.au/kisskb/branch/linus/head/4b0986a3613c92f4ec1bdc7f60ec66fea135991f/ (all 131 configs)
+[2] http://kisskb.ellerman.id.au/kisskb/branch/linus/head/f443e374ae131c168a065ea1748feac6b2e76613/ (96 out of 131 configs)
+[3] http://kisskb.ellerman.id.au/kisskb/branch/linus/head/42226c989789d8da4af1de0c31070c96726d990c/ (all 131 configs)
+
+
+*** ERRORS ***
+
+15 error regressions:
+  + /kisskb/src/arch/m68k/include/asm/bitops.h: error: array subscript 2 is above array bounds of 'long unsigned int[1]' [-Werror=array-bounds]:  => 329:20
+  + /kisskb/src/arch/sh/kernel/machvec.c: error: array subscript 'struct sh_machine_vector[0]' is partly outside array bounds of 'long int[1]' [-Werror=array-bounds]:  => 105:33
+  + /kisskb/src/arch/sparc/kernel/irq_32.c: error: array subscript [16, 79] is outside array bounds of 'struct tt_entry[1]' [-Werror=array-bounds]:  => 261:46, 259:14, 263:14, 262:14, 258:14
+  + /kisskb/src/drivers/gpu/drm/r128/r128_cce.c: error: case label does not reduce to an integer constant:  => 417:2, 418:2
+  + /kisskb/src/drivers/infiniband/hw/qib/qib_wc_x86_64.c: error: 'X86_VENDOR_AMD' undeclared (first use in this function):  => 149:37
+  + /kisskb/src/drivers/infiniband/hw/qib/qib_wc_x86_64.c: error: 'struct cpuinfo_um' has no member named 'x86_vendor':  => 149:22
+  + /kisskb/src/drivers/infiniband/hw/qib/qib_wc_x86_64.c: error: control reaches end of non-void function [-Werror=return-type]:  => 150:1
+  + /kisskb/src/drivers/infiniband/sw/rdmavt/qp.c: error: 'struct cpuinfo_um' has no member named 'x86_cache_size':  => 88:22
+  + /kisskb/src/drivers/infiniband/sw/rdmavt/qp.c: error: control reaches end of non-void function [-Werror=return-type]:  => 89:1
+  + /kisskb/src/drivers/infiniband/sw/rdmavt/qp.c: error: implicit declaration of function '__copy_user_nocache' [-Werror=implicit-function-declaration]:  => 100:2
+  + /kisskb/src/drivers/media/platform/nxp/imx-pxp.h: error: initializer element is not constant:  => 582:38
+  + /kisskb/src/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c: error: case label does not reduce to an integer constant:  => 4917:4
+  + /kisskb/src/drivers/scsi/aacraid/commsup.c: error: case label does not reduce to an integer constant:  => 1983:2
+  + /kisskb/src/include/linux/sh_intc.h: error: division 'sizeof (void *) / sizeof (void)' does not compute the number of array elements [-Werror=sizeof-pointer-div]:  => 100:63
+  + {standard input}: Error: branch to a symbol in another ISA mode:  => 1295
+
+5 error improvements:
+  - /kisskb/src/drivers/vfio/pci/vfio_pci_rdwr.c: error: assignment makes pointer from integer without a cast [-Werror=int-conversion]: 317:9, 324:9 => 
+  - /kisskb/src/drivers/vfio/pci/vfio_pci_rdwr.c: error: implicit declaration of function 'ioport_map' [-Werror=implicit-function-declaration]: 317:11 => 
+  - /kisskb/src/drivers/vfio/pci/vfio_pci_rdwr.c: error: implicit declaration of function 'ioport_unmap' [-Werror=implicit-function-declaration]: 338:15 => 
+  - error: arch/powerpc/kvm/book3s_64_entry.o: relocation truncated to fit: R_PPC64_REL14 (stub) against symbol `machine_check_common' defined in .text section in arch/powerpc/kernel/head_64.o: (.text+0x3e4) => 
+  - error: arch/powerpc/kvm/book3s_64_entry.o: relocation truncated to fit: R_PPC64_REL14 (stub) against symbol `system_reset_common' defined in .text section in arch/powerpc/kernel/head_64.o: (.text+0x3ec) => 
+
+
+*** WARNINGS ***
+
+36 warning regressions:
+  + ./.config.32r1_defconfig: warning: override: CPU_BIG_ENDIAN changes choice state:  => 94
+  + ./.config.32r2_defconfig: warning: override: CPU_BIG_ENDIAN changes choice state:  => 94
+  + ./.config.32r6_defconfig: warning: override: CPU_BIG_ENDIAN changes choice state:  => 96
+  + ./.config.64r1_defconfig: warning: override: CPU_BIG_ENDIAN changes choice state:  => 97
+  + ./.config.64r2_defconfig: warning: override: CPU_BIG_ENDIAN changes choice state:  => 97
+  + ./.config.64r6_defconfig: warning: override: CPU_BIG_ENDIAN changes choice state:  => 99
+  + ./.config.micro32r2_defconfig: warning: override: CPU_BIG_ENDIAN changes choice state:  => 95
+  + .config: warning: override: CPU_BIG_ENDIAN changes choice state:  => 98, 96, 94, 95, 93
+  + .config: warning: override: reassigning to symbol MIPS_CPS_NS16550_SHIFT: 13503, 13516 => 13758, 13769, 13763
+  + /kisskb/src/arch/m68k/include/asm/string.h: warning: '__builtin_memset' offset [0, 11] is out of the bounds [0, 0] [-Warray-bounds]:  => 68:25
+  + /kisskb/src/arch/sh/kernel/cpu/sh2/../../entry-common.S: Warning: overflow in branch to __restore_all; converted into longer instruction sequence:  => 85
+  + /kisskb/src/arch/sh/kernel/cpu/sh2/../../entry-common.S: Warning: overflow in branch to syscall_exit_work; converted into longer instruction sequence:  => 360, 357
+  + /kisskb/src/arch/sh/kernel/machvec.c: warning: array subscript 'struct sh_machine_vector[0]' is partly outside array bounds of 'long int[1]' [-Warray-bounds]:  => 105:33
+  + /kisskb/src/drivers/net/ethernet/i825xx/sun3_82586.c: warning: array subscript 1 is above array bounds of 'volatile struct transmit_cmd_struct *[1]' [-Warray-bounds]:  => 989:122, 989:108
+  + /kisskb/src/drivers/scsi/mpt3sas/mpt3sas_base.c: warning: array subscript 'Mpi2SasIOUnitPage1_t {aka struct _MPI2_CONFIG_PAGE_SASIOUNIT_1}[0]' is partly outside array bounds of 'unsigned char[20]' [-Warray-bounds]:  => 5403:43, 5396:40, 5400:40
+  + /kisskb/src/fs/ext4/readpage.c: warning: the frame size of 1136 bytes is larger than 1024 bytes [-Wframe-larger-than=]:  => 407:1
+  + /kisskb/src/fs/mpage.c: warning: the frame size of 1088 bytes is larger than 1024 bytes [-Wframe-larger-than=]:  => 303:1
+  + /kisskb/src/fs/mpage.c: warning: the frame size of 1148 bytes is larger than 1024 bytes [-Wframe-larger-than=]:  => 636:1
+  + /opt/cross/kisskb/korg/gcc-5.5.0-nolibc/aarch64-linux/bin/../lib/gcc/aarch64-linux/5.5.0/plugin/include/config/elfos.h: warning: invalid suffix on literal; C++11 requires a space between literal and string macro [-Wliteral-suffix]:  => 102:21, 170:24
+  + /opt/cross/kisskb/korg/gcc-5.5.0-nolibc/aarch64-linux/bin/../lib/gcc/aarch64-linux/5.5.0/plugin/include/defaults.h: warning: invalid suffix on literal; C++11 requires a space between literal and string macro [-Wliteral-suffix]:  => 126:24
+  + modpost: WARNING: modpost: EXPORT symbol "___rw_read_enter" [vmlinux] version generation failed, symbol will not be versioned.:  => N/A
+  + modpost: WARNING: modpost: EXPORT symbol "___rw_read_exit" [vmlinux] version generation failed, symbol will not be versioned.:  => N/A
+  + modpost: WARNING: modpost: EXPORT symbol "___rw_read_try" [vmlinux] version generation failed, symbol will not be versioned.:  => N/A
+  + modpost: WARNING: modpost: EXPORT symbol "___rw_write_enter" [vmlinux] version generation failed, symbol will not be versioned.:  => N/A
+  + modpost: WARNING: modpost: EXPORT symbol "__ashldi3" [vmlinux] version generation failed, symbol will not be versioned.:  => N/A
+  + modpost: WARNING: modpost: EXPORT symbol "__ashrdi3" [vmlinux] version generation failed, symbol will not be versioned.:  => N/A
+  + modpost: WARNING: modpost: EXPORT symbol "__copy_1page" [vmlinux] version generation failed, symbol will not be versioned.:  => N/A
+  + modpost: WARNING: modpost: EXPORT symbol "__divdi3" [vmlinux] version generation failed, symbol will not be versioned.:  => N/A
+  + modpost: WARNING: modpost: EXPORT symbol "__lshrdi3" [vmlinux] version generation failed, symbol will not be versioned.:  => N/A
+  + modpost: WARNING: modpost: EXPORT symbol "__muldi3" [vmlinux] version generation failed, symbol will not be versioned.:  => N/A
+  + modpost: WARNING: modpost: EXPORT symbol "__ndelay" [vmlinux] version generation failed, symbol will not be versioned.:  => N/A
+  + modpost: WARNING: modpost: EXPORT symbol "__udelay" [vmlinux] version generation failed, symbol will not be versioned.:  => N/A
+  + modpost: WARNING: modpost: EXPORT symbol "_mcount" [vmlinux] version generation failed, symbol will not be versioned.:  => N/A
+  + modpost: WARNING: modpost: EXPORT symbol "bzero_1page" [vmlinux] version generation failed, symbol will not be versioned.:  => N/A
+  + modpost: WARNING: modpost: EXPORT symbol "empty_zero_page" [vmlinux] version generation failed, symbol will not be versioned.:  => N/A
+  + modpost: WARNING: modpost: vmlinux.o(.text.unlikely+0x45d4): Section mismatch in reference from the function __trace_event_discard_commit() to the variable .init.data:initcall_level_names:  => N/A
+
+21 warning improvements:
+  - /kisskb/src/samples/seccomp/user-trap.c: warning: dereferencing type-punned pointer will break strict-aliasing rules [-Wstrict-aliasing]: 83:2, 50:2 => 
+  - /opt/cross/kisskb/br-aarch64-glibc-2016.08-613-ge98b4dd/bin/../lib/gcc/aarch64-buildroot-linux-gnu/5.4.0/plugin/include/config/elfos.h: warning: invalid suffix on literal; C++11 requires a space between literal and string macro [-Wliteral-suffix]: 170:24, 102:21 => 
+  - /opt/cross/kisskb/br-aarch64-glibc-2016.08-613-ge98b4dd/bin/../lib/gcc/aarch64-buildroot-linux-gnu/5.4.0/plugin/include/defaults.h: warning: invalid suffix on literal; C++11 requires a space between literal and string macro [-Wliteral-suffix]: 126:24 => 
+  - modpost: WARNING: modpost: EXPORT symbol "___rw_read_enter" [vmlinux] version ...: N/A => 
+  - modpost: WARNING: modpost: EXPORT symbol "___rw_read_exit" [vmlinux] version ...: N/A => 
+  - modpost: WARNING: modpost: EXPORT symbol "___rw_read_try" [vmlinux] version ...: N/A => 
+  - modpost: WARNING: modpost: EXPORT symbol "___rw_write_enter" [vmlinux] version ...: N/A => 
+  - modpost: WARNING: modpost: EXPORT symbol "__ashldi3" [vmlinux] version ...: N/A => 
+  - modpost: WARNING: modpost: EXPORT symbol "__ashrdi3" [vmlinux] version ...: N/A => 
+  - modpost: WARNING: modpost: EXPORT symbol "__copy_1page" [vmlinux] version ...: N/A => 
+  - modpost: WARNING: modpost: EXPORT symbol "__divdi3" [vmlinux] version ...: N/A => 
+  - modpost: WARNING: modpost: EXPORT symbol "__lshrdi3" [vmlinux] version ...: N/A => 
+  - modpost: WARNING: modpost: EXPORT symbol "__muldi3" [vmlinux] version ...: N/A => 
+  - modpost: WARNING: modpost: EXPORT symbol "__ndelay" [vmlinux] version ...: N/A => 
+  - modpost: WARNING: modpost: EXPORT symbol "__udelay" [vmlinux] version ...: N/A => 
+  - modpost: WARNING: modpost: EXPORT symbol "_mcount" [vmlinux] version ...: N/A => 
+  - modpost: WARNING: modpost: EXPORT symbol "bzero_1page" [vmlinux] version ...: N/A => 
+  - modpost: WARNING: modpost: EXPORT symbol "empty_zero_page" [vmlinux] version ...: N/A => 
+  - modpost: WARNING: modpost: vmlinux.o(.text.unlikely+0x4530): Section mismatch in reference from the function __trace_event_discard_commit() to the variable .init.data:initcall_level_names: N/A => 
+  - warning: LSE atomics not supported by binutils: N/A => 
+  - warning: ld does not support --fix-cortex-a53-843419; kernel may be susceptible to erratum: N/A => 
+
+Gr{oetje,eeting}s,
+
+						Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+							    -- Linus Torvalds
