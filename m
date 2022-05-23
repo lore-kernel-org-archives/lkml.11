@@ -2,126 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08A4FC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 16:10:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66FB8C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 16:10:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238592AbiEWQKH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 12:10:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44716 "EHLO
+        id S238615AbiEWQKW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 12:10:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238589AbiEWQKC (ORCPT
+        with ESMTP id S238554AbiEWQKR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 12:10:02 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2C1363507
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 09:10:00 -0700 (PDT)
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24NFUGXH022928;
-        Mon, 23 May 2022 16:09:47 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=GWi2svyv4xiTKuEkdoZOSj7G+LZzUVwd+iYBidPDUGU=;
- b=ZD0yAXI3NDFafBxw9P2NRSMwV30PmEiX2qNRVPao1IPEKL5HM+tjLqJmnGFvvMR9EaPd
- CXDdak0pB010MbHT/VSBoXefgESh2dhsBhtm4QTrWk2dltXOccnJYafppEHKEzyvU/Ps
- AYyifKRXC+6tERA5yq8uMaSaVAvDs/oWhY18ZT9+MCXy/jlOONMm+6cMcHG2ZaBK/mq+
- QDkE0CsL3ymm6H6SALO+YctA1TzlwK9X65/Vjtu1W6Wg2FSZBfBeqn3SIS8isnrppuX6
- BanEtEAfv/7gR1oq6kjA1ZC/T3KAieFmiIC6hZbolKUj+fWqbaSTga2PCcKzQiFw/1MK Lg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g8axj3x24-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 23 May 2022 16:09:46 +0000
-Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24NG9jvN005804;
-        Mon, 23 May 2022 16:09:46 GMT
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g8axj3x16-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 23 May 2022 16:09:46 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24NFwRmS028633;
-        Mon, 23 May 2022 16:09:43 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma03ams.nl.ibm.com with ESMTP id 3g6qq933jn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 23 May 2022 16:09:43 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24NG9fO246531026
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 23 May 2022 16:09:41 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 74A30A4051;
-        Mon, 23 May 2022 16:09:41 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 32C01A404D;
-        Mon, 23 May 2022 16:09:41 +0000 (GMT)
-Received: from [9.101.4.33] (unknown [9.101.4.33])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon, 23 May 2022 16:09:41 +0000 (GMT)
-Message-ID: <913bcf4d-dc78-dacb-4891-43a882f50017@linux.ibm.com>
-Date:   Mon, 23 May 2022 18:09:40 +0200
+        Mon, 23 May 2022 12:10:17 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DEFB264738
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 09:10:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653322215;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=uRKL91EqCGrYR3jhbmoJxjNS6DqoFl91Xh8EB9KpYsw=;
+        b=FeraEF1g+YYYTzXzWdV2CdrvuTx6W9IrB1PPEObu+PDoKrSrQBxB/mOgBz0of859YC/RZA
+        FvDdxeP1m6J+7hWqXaHdtsEq/Cma18zD6CmMrQWT2G8AyqHT/Bdp2Ff+MZbYvoNUn22/uu
+        K81PwAQblR7uwwyB3tk7k6THUnRlj6Q=
+Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
+ [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-611-CbY9HITmP8S5Dc7eNXS4OA-1; Mon, 23 May 2022 12:10:12 -0400
+X-MC-Unique: CbY9HITmP8S5Dc7eNXS4OA-1
+Received: by mail-qt1-f200.google.com with SMTP id a6-20020ac81086000000b002f65fd83048so11873883qtj.6
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 09:10:12 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=uRKL91EqCGrYR3jhbmoJxjNS6DqoFl91Xh8EB9KpYsw=;
+        b=muZZgDuT7A5Hmwl1m3a1WnX5t9OItqC5BfqlBBV8gQRGnS9oYZZKv4f0rYF8xymuph
+         fhN8F5MIzbvumzKDNrPzqlMW/EouNxioWKMx3qPbdRKq6bjoSFP8+mF9nXtKXzWoc9+C
+         H202FqhU9DbCHFqWn1EO+SvHez3QGWjneem6B0QfS95dSOHheIN7pftI7Xff9cSyox8q
+         SVJu2dStf3wkOuPoRBJvz/+fPbQXrYxIaXtSTNAaMPPmRyG/K2LyyMXFHw1YM6jv7Ibz
+         ZW53+TPUJkONMMezewPU37CJ2gj3YeW66y5m8hdJtnWWe0jGn+fkHOO1J4IidRuN8aki
+         wa8w==
+X-Gm-Message-State: AOAM532WMLDkotG0t+BYkLXAGWO6SvujS8kv3Do7VI4AllwX8GuYDiEa
+        uMBgVXxN0MQMULKmR/yZVIVfMyeKsyliT84v9DhNPW4par6obp+L/RUb8V78kB67Jw+LYWpgHX2
+        QozNCwV22QXVnJCmeaynheHqm
+X-Received: by 2002:a05:620a:178d:b0:6a4:61f1:742a with SMTP id ay13-20020a05620a178d00b006a461f1742amr691916qkb.523.1653322212137;
+        Mon, 23 May 2022 09:10:12 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJww1EFdhXdnjSHa1uTotEqVgJ5iYRqKpJaihahEbjr36wXhmpyPJZYwVC3c1eGAq35iKZ0Q1A==
+X-Received: by 2002:a05:620a:178d:b0:6a4:61f1:742a with SMTP id ay13-20020a05620a178d00b006a461f1742amr691896qkb.523.1653322211904;
+        Mon, 23 May 2022 09:10:11 -0700 (PDT)
+Received: from xps13 (c-98-239-145-235.hsd1.wv.comcast.net. [98.239.145.235])
+        by smtp.gmail.com with ESMTPSA id u3-20020a05622a198300b002f92a5a396esm4907505qtc.3.2022.05.23.09.10.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 May 2022 09:10:11 -0700 (PDT)
+Date:   Mon, 23 May 2022 12:10:10 -0400
+From:   Brian Masney <bmasney@redhat.com>
+To:     Harsh Agarwal <quic_harshq@quicinc.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Felipe Balbi <balbi@kernel.org>, linux-usb@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        quic_pkondeti@quicinc.com, quic_ppratap@quicinc.com
+Subject: Re: [RFC 2/2] usb: dwc3: Refactor PHY logic to support Multiport
+ Controller
+Message-ID: <Youx4uztX0RNRVkd@xps13>
+References: <1652963695-10109-1-git-send-email-quic_harshq@quicinc.com>
+ <1652963695-10109-3-git-send-email-quic_harshq@quicinc.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.9.0
-Subject: Re: [PATCH] powerpc/64s: Don't read H_BLOCK_REMOVE characteristics in
- radix mode
-Content-Language: en-US
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        "mpe@ellerman.id.au" <mpe@ellerman.id.au>,
-        "npiggin@gmail.com" <npiggin@gmail.com>
-Cc:     "aneesh.kumar@linux.ibm.com" <aneesh.kumar@linux.ibm.com>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20220520155721.10211-1-ldufour@linux.ibm.com>
- <d87cca6d-8cc9-3347-f74a-28f12889cfe1@csgroup.eu>
-From:   Laurent Dufour <ldufour@linux.ibm.com>
-In-Reply-To: <d87cca6d-8cc9-3347-f74a-28f12889cfe1@csgroup.eu>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: bWbvRjAI3Z_YOw8z6DsLYMrMT_ea3MZk
-X-Proofpoint-GUID: xMHkeSi2CqnMpaGYbyj0Zg262cyz_h7v
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-23_06,2022-05-23_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999 adultscore=0
- mlxscore=0 impostorscore=0 spamscore=0 phishscore=0 suspectscore=0
- bulkscore=0 priorityscore=1501 malwarescore=0 clxscore=1015
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2205230087
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1652963695-10109-3-git-send-email-quic_harshq@quicinc.com>
+User-Agent: Mutt/2.2.1 (2022-02-19)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 20/05/2022, 18:15:39, Christophe Leroy wrote:
-> 
-> 
-> Le 20/05/2022 à 17:57, Laurent Dufour a écrit :
->> There is no need to read the H_BLOCK_REMOVE characteristics when running in
->> Radix mode because this hcall is never called.
->>
->> Signed-off-by: Laurent Dufour <ldufour@linux.ibm.com>
->> ---
->>   arch/powerpc/platforms/pseries/setup.c | 3 ++-
->>   1 file changed, 2 insertions(+), 1 deletion(-)
->>
->> diff --git a/arch/powerpc/platforms/pseries/setup.c b/arch/powerpc/platforms/pseries/setup.c
->> index c9fcc30a0365..654d2b999c25 100644
->> --- a/arch/powerpc/platforms/pseries/setup.c
->> +++ b/arch/powerpc/platforms/pseries/setup.c
->> @@ -803,7 +803,8 @@ static void __init pSeries_setup_arch(void)
->>   
->>   	pseries_setup_security_mitigations();
->>   #ifdef CONFIG_PPC_64S_HASH_MMU
->> -	pseries_lpar_read_hblkrm_characteristics();
->> +	if (!radix_enabled())
->> +		pseries_lpar_read_hblkrm_characteristics();
->>   #endif
-> 
-> As far as I can see the function always exists so the #ifdef can be removed.
+On Thu, May 19, 2022 at 06:04:55PM +0530, Harsh Agarwal wrote:
+> -	dwc->usb3_generic_phy = devm_phy_get(dev, "usb3-phy");
+> -	if (IS_ERR(dwc->usb3_generic_phy)) {
+> -		ret = PTR_ERR(dwc->usb3_generic_phy);
+> -		if (ret == -ENOSYS || ret == -ENODEV)
+> -			dwc->usb3_generic_phy = NULL;
+> -		else
+> -			return dev_err_probe(dev, ret, "no usb3 phy configured\n");
+> +		if (IS_ERR(dwc->usb2_phy[0])) {
+> +			ret = PTR_ERR(dwc->usb2_phy[0]);
+> +			if (ret == -ENXIO || ret == -ENODEV)
+> +				dwc->usb2_phy[0] = NULL;
+> +			else
+> +				return dev_err_probe(dev, ret, "no usb2 phy configured\n");
+> +		}
+> +
+> +		if (IS_ERR(dwc->usb3_phy[0])) {
+> +			ret = PTR_ERR(dwc->usb3_phy[0]);
+> +			if (ret == -ENXIO || ret == -ENODEV)
+> +				dwc->usb3_phy[0] = NULL;
+> +			else
+> +				return dev_err_probe(dev, ret, "no usb3 phy configured\n");
+> +		}
+> +
+> +		dwc->usb2_generic_phy = devm_phy_get(dev, "usb2-phy");
+> +		if (IS_ERR(dwc->usb2_generic_phy)) {
+> +			ret = PTR_ERR(dwc->usb2_generic_phy);
+> +			if (ret == -ENOSYS || ret == -ENODEV)
+> +				dwc->usb2_generic_phy = NULL;
+> +			else
+> +				return dev_err_probe(dev, ret, "no usb2 phy configured\n");
+> +		}
 
-You're right, I'll do that in the v2
+I know that this block is a copy and paste move from above, but is the
+ENOSYS check really needed? It looks like the phy_get() only returns
+-ENODEV.
 
->>   
->>   	/* By default, only probe PCI (can be overridden by rtas_pci) */
+> @@ -1147,8 +1149,10 @@ struct dwc3 {
+>  
+>  	struct reset_control	*reset;
+>  
+> -	struct usb_phy		*usb2_phy;
+> -	struct usb_phy		*usb3_phy;
+> +	struct usb_phy		**usb2_phy;
+> +	struct usb_phy		**usb3_phy;
+> +	u32			num_hsphy;
+> +	u32			num_ssphy;
+
+Rename num_hsphy / num_ssphy to num_usb2_phy and num_usb3_phy so this is
+easier to audit.
+
+Brian
 
