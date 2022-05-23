@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9A00C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:10:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 661BFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:10:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243512AbiEWSKG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:10:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43036 "EHLO
+        id S243577AbiEWSKN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:10:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243260AbiEWRh7 (ORCPT
+        with ESMTP id S243273AbiEWRiA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:37:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFBC781982;
-        Mon, 23 May 2022 10:32:12 -0700 (PDT)
+        Mon, 23 May 2022 13:38:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F6AA8BD12;
+        Mon, 23 May 2022 10:32:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B5466B81222;
-        Mon, 23 May 2022 17:30:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07993C385AA;
-        Mon, 23 May 2022 17:30:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 818B261261;
+        Mon, 23 May 2022 17:31:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88D15C385A9;
+        Mon, 23 May 2022 17:31:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653327030;
-        bh=cAqRWU3u3Ae4nsofTj45RWHjoKKjbBp3mNcaKxMcVh4=;
+        s=korg; t=1653327062;
+        bh=E0vUSpxPLIELQGfG4YeyedZtqjlmxegQcKpK3CCbthE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vyb+6pG506OBRbccAGMLNu380RBt9OSbTrci+wTFA5D5jhcnKdehJ9fzF6O+XerYN
-         1b3S4LjcuQK4mA9FMaLr5/UrQA8LsNIcH1rlx125+gNsogrocpHbW/mzfaDaWmN6c6
-         BwoRiwRbGDXINi2vd1zulG3a2sqxHq5DAR2Q0SoM=
+        b=AnxiVdAXZqZUMYWVp5U8psj/GIaYqbsxP9toPrQm/uZtxUQ0ieno1zCjrhRqe6udG
+         XaCWGJr7zr+Tb1G62CwIjgpwPsHtCTD6SzyB2oxTVdlpsPugsaIBlZPepNZd069xxC
+         XXwm45Wies2mR2kAK13I5MNyMQl1hqKPl9385YYA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Stephen Boyd <sboyd@kernel.org>,
+        Nicholas Kazlauskas <Nicholas.Kazlauskas@amd.com>,
+        Pavle Kotarac <Pavle.Kotarac@amd.com>,
+        Eric Yang <Eric.Yang2@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 099/158] clk: at91: generated: consider range when calculating best rate
-Date:   Mon, 23 May 2022 19:04:16 +0200
-Message-Id: <20220523165847.846401304@linuxfoundation.org>
+Subject: [PATCH 5.17 145/158] drm/amd/display: undo clearing of z10 related function pointers
+Date:   Mon, 23 May 2022 19:05:02 +0200
+Message-Id: <20220523165854.271190940@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
 References: <20220523165830.581652127@linuxfoundation.org>
@@ -51,40 +52,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+From: Eric Yang <Eric.Yang2@amd.com>
 
-[ Upstream commit d0031e6fbed955ff8d5f5bbc8fe7382482559cec ]
+[ Upstream commit 9b9bd3f640640f94272a461b2dfe558f91b322c5 ]
 
-clk_generated_best_diff() helps in finding the parent and the divisor to
-compute a rate closest to the required one. However, it doesn't take into
-account the request's range for the new rate. Make sure the new rate
-is within the required range.
+[Why]
+Z10 and S0i3 have some shared path. Previous code clean up ,
+incorrectly removed these pointers, which breaks s0i3 restore
 
-Fixes: 8a8f4bf0c480 ("clk: at91: clk-generated: create function to find best_diff")
-Signed-off-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
-Link: https://lore.kernel.org/r/20220413071318.244912-1-codrin.ciubotariu@microchip.com
-Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Signed-off-by: Stephen Boyd <sboyd@kernel.org>
+[How]
+Do not clear the function pointers based on Z10 disable.
+
+Reviewed-by: Nicholas Kazlauskas <Nicholas.Kazlauskas@amd.com>
+Acked-by: Pavle Kotarac <Pavle.Kotarac@amd.com>
+Signed-off-by: Eric Yang <Eric.Yang2@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/at91/clk-generated.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/gpu/drm/amd/display/dc/dcn31/dcn31_init.c | 5 -----
+ 1 file changed, 5 deletions(-)
 
-diff --git a/drivers/clk/at91/clk-generated.c b/drivers/clk/at91/clk-generated.c
-index 23cc8297ec4c..d429ba52a719 100644
---- a/drivers/clk/at91/clk-generated.c
-+++ b/drivers/clk/at91/clk-generated.c
-@@ -117,6 +117,10 @@ static void clk_generated_best_diff(struct clk_rate_request *req,
- 		tmp_rate = parent_rate;
- 	else
- 		tmp_rate = parent_rate / div;
-+
-+	if (tmp_rate < req->min_rate || tmp_rate > req->max_rate)
-+		return;
-+
- 	tmp_diff = abs(req->rate - tmp_rate);
- 
- 	if (*best_diff < 0 || *best_diff >= tmp_diff) {
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_init.c b/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_init.c
+index d7559e5a99ce..e708f07fe75a 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_init.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_init.c
+@@ -153,9 +153,4 @@ void dcn31_hw_sequencer_construct(struct dc *dc)
+ 		dc->hwss.init_hw = dcn20_fpga_init_hw;
+ 		dc->hwseq->funcs.init_pipes = NULL;
+ 	}
+-	if (dc->debug.disable_z10) {
+-		/*hw not support z10 or sw disable it*/
+-		dc->hwss.z10_restore = NULL;
+-		dc->hwss.z10_save_init = NULL;
+-	}
+ }
 -- 
 2.35.1
 
