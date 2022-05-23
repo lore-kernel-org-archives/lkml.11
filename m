@@ -2,48 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46BECC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 02:05:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6A51C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 02:05:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352283AbiEWCFr (ORCPT
+        id S1352693AbiEWCFw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 22 May 2022 22:05:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41826 "EHLO
+        Sun, 22 May 2022 22:05:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243902AbiEWCFF (ORCPT
+        with ESMTP id S1352656AbiEWCFH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 22 May 2022 22:05:05 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 051AC39827;
-        Sun, 22 May 2022 19:04:15 -0700 (PDT)
+        Sun, 22 May 2022 22:05:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 379C339BAB;
+        Sun, 22 May 2022 19:04:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 3D7F4CE1161;
-        Mon, 23 May 2022 02:04:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7668C385AA;
-        Mon, 23 May 2022 02:04:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B245860F55;
+        Mon, 23 May 2022 02:04:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F191DC385B8;
+        Mon, 23 May 2022 02:04:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653271452;
-        bh=YCYGYrj2Hbg0E65pkY2Cf34iYeMHh07TqaJ8M1V31jk=;
+        s=k20201202; t=1653271459;
+        bh=CsSZhvE3G3qLTKQDekFf99My1SQN56i9We3vBz8ZUzY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gayW074tDH5UKdqMF2RpHmoeRPzTXYKJqEOlkDV3gcfAH/mU/sLL+ZgvoLSKEUuuV
-         NTKmy8rXLuyG5qquLyqFwW6ULFJC1VGRyaEXxblb2MtygL5FQJ8H9IfFR9xYuYTzgw
-         nAtBfDlsVS05+AfzEvvrwhFt5CZbSSaAPv70P5mTJmjVBbU4I17wiqud3uGh56mPJP
-         T3bY6W0WKt5R2injbdWgJhcTXVM3Xo72mugd9N2ElIRI1EtnnsNV7H0P1hhxoc7vqU
-         W+Ruxmd22OPRJZ+Tjnx7KWrARUEEFuf0Jy7JgHg/iU/dL83dc29ijWOqlhS4xgpz/c
-         +AfRDWxaaslhQ==
+        b=Y+ULEu+wDKHLqgGLK4cdE6kb9V+Keq0+mT0wNlb0q8Q3EX2+IAEERRr6U2C5qMdh8
+         nKJ7a93AXjeUuPG/4yXRhLgYWUp6KTc1+CaMyXCnsTFpHVeybMUzljP5xlwNsshhlP
+         T1c15aNE2W4ThpCWSJphXjExUuKQaxosjPIl9I+ZafK1E42bfGXqum8KcNRxajuy3a
+         IKL4+rnkdU2JiY5xN7d4TAB+GckJ3xzNvuyhHjm/EC9QXvHIZK4nVm0m5IR+3Hd1Tj
+         xTLpXfvdT4bMUGTRBoNJ3kVmEww2LZv5EI8qHjfs8OmrYq1b2PkS7w17ZPWADM1NcI
+         uZYOhwNUGXJuQ==
 From:   Miguel Ojeda <ojeda@kernel.org>
 To:     Linus Torvalds <torvalds@linux-foundation.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
         Jarkko Sakkinen <jarkko@kernel.org>,
         Miguel Ojeda <ojeda@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
         Alex Gaynor <alex.gaynor@gmail.com>,
         Wedson Almeida Filho <wedsonaf@google.com>
-Subject: [PATCH v7 17/25] scripts: add `rustdoc_test_{builder,gen}.py` scripts
-Date:   Mon, 23 May 2022 04:01:30 +0200
-Message-Id: <20220523020209.11810-18-ojeda@kernel.org>
+Subject: [PATCH v7 19/25] scripts: decode_stacktrace: demangle Rust symbols
+Date:   Mon, 23 May 2022 04:01:32 +0200
+Message-Id: <20220523020209.11810-20-ojeda@kernel.org>
 In-Reply-To: <20220523020209.11810-1-ojeda@kernel.org>
 References: <20220523020209.11810-1-ojeda@kernel.org>
 MIME-Version: 1.0
@@ -52,280 +53,135 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Rust documentation tests are typically examples of usage of any
-item (e.g. function, struct, module...). They are very convenient
-because they are just written alongside the documentation, e.g.:
+Recent versions of both Binutils (`c++filt`) and LLVM (`llvm-cxxfilt`)
+provide Rust v0 mangling support.
 
-    /// Sums two numbers.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// assert_eq!(mymod::f(10, 20), 30);
-    /// ```
-    pub fn f(a: i32, b: i32) -> i32 {
-        a + b
-    }
-
-These scripts are used to transform Rust documentation tests into
-KUnit tests, so that they can be run in-kernel. In turn, this allows
-us to run tests that use kernel APIs.
-
-In particular, the test builder receives `rustdoc`-generated tests,
-parses them and stores the result. Then, the test generator takes
-the saved results and generates a KUnit suite where each original
-documentation test is a test case.
-
-For the moment, this is only done for the `kernel` crate, but
-the plan is to generalize it for other crates and modules.
-
+Reviewed-by: Kees Cook <keescook@chromium.org>
 Co-developed-by: Alex Gaynor <alex.gaynor@gmail.com>
 Signed-off-by: Alex Gaynor <alex.gaynor@gmail.com>
 Co-developed-by: Wedson Almeida Filho <wedsonaf@google.com>
 Signed-off-by: Wedson Almeida Filho <wedsonaf@google.com>
 Signed-off-by: Miguel Ojeda <ojeda@kernel.org>
 ---
- scripts/rustdoc_test_builder.py |  59 ++++++++++++
- scripts/rustdoc_test_gen.py     | 164 ++++++++++++++++++++++++++++++++
- 2 files changed, 223 insertions(+)
- create mode 100755 scripts/rustdoc_test_builder.py
- create mode 100755 scripts/rustdoc_test_gen.py
+I would like to use this patch for discussing the demangling topic.
 
-diff --git a/scripts/rustdoc_test_builder.py b/scripts/rustdoc_test_builder.py
-new file mode 100755
-index 000000000000..d9b47a5c54fc
---- /dev/null
-+++ b/scripts/rustdoc_test_builder.py
-@@ -0,0 +1,59 @@
-+#!/usr/bin/env python3
-+# SPDX-License-Identifier: GPL-2.0
-+"""rustdoc_test_builder - Test builder for `rustdoc`-generated tests.
-+"""
+The last discussion took place in v6:
+
+    https://lore.kernel.org/lkml/20220507052451.12890-18-ojeda@kernel.org/
+
+The following discusses the different approaches we could take.
+
+
+# Leave demangling to userspace
+
+This is the easiest and less invasive approach, the one implemented
+by this patch.
+
+The `decode_stacktrace.sh` script is already needed to map
+the offsets to the source code. Therefore, we could also take
+the chance to demangle the symbols here.
+
+With this approach, we do not need to introduce any change in the
+`vsprintf` machinery and we minimize the risk of breaking user tools.
+
+Note that, if we take this approach, it is likely we want to ask
+for a minimum version of either of the tools (since there may be
+users of the script that do not have recent enough toolchains).
+
+
+# Demangling in kernelspace on-the-fly
+
+That is, at backtrace print time, we demangle the Rust symbols.
+
+The size of the code that would be needed is fairly small; around
+5 KiB using the "official" library (written in Rust), e.g.:
+
+    text    data    bss     dec      hex    filename
+    7799976 1689820 2129920 11619716 b14d84 vmlinux
+    7801111 1693916 2129920 11624947 b161f3 vmlinux + demangling
+
+We can remove a few bits from the official library, e.g. punycode
+support that we do not need (all our identifiers will be ASCII),
+but it does not make a substantial difference.
+
+The official library performs the demangling without requiring
+allocations. However, of course, it will increased our stack usage
+and complexity, specially considering a stack dump may be requested
+in not ideal conditions.
+
+Furthermore, this approach (and the ones below) likely require adding
+a new `%p` specifier (or a new modifier to existing ones) if we do
+not want to affect non-backtrace uses of the `B`/`S` ones. Also,
+it is unclear whether we should write the demangled versions in an
+extra, different line or replace the real symbol -- we could be
+breaking user tools relying on parsing backtraces (e.g. our own
+`decode_stacktrace.sh`). For instance, they could be relying on
+having real symbols there, or may break due to e.g. spaces.
+
+
+# Demangling at compile-time
+
+This implies having kallsyms demangle all the Rust symbols.
+
+The size of this data is around the same order of magnitude of the
+non-demangled ones. However, this is notably more than the demangling
+code (see previous point), e.g. 120 KiB (uncompressed) in a
+small kernel.
+
+This approach also brings the same concerns regarding modifying
+the backtrace printing (see previous point).
+
+
+# Demangling at compile-time and substituting symbols by hashes
+
+One variation of the previous alternative is avoiding the mangled
+names inside the kernel, by hashing them. This would avoid having
+to support "big symbols" and would also reduce the size of the
+kallsyms tables, while still allowing to link modules.
+
+However, if we do not have the real symbols around, then we do not
+have the possibility of providing both the mangled and demangled
+versions in the backtrace, which brings us back to the issues
+related to breaking userspace tools. There are also other places
+other than backtraces using "real" symbols that users may be
+relying on, such as `/proc/*/stack`.
+
+
+ scripts/decode_stacktrace.sh | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+diff --git a/scripts/decode_stacktrace.sh b/scripts/decode_stacktrace.sh
+index 5fbad61fe490..f3c7b506d440 100755
+--- a/scripts/decode_stacktrace.sh
++++ b/scripts/decode_stacktrace.sh
+@@ -8,6 +8,14 @@ usage() {
+ 	echo "	$0 -r <release> | <vmlinux> [<base path>|auto] [<modules path>]"
+ }
+ 
++# Try to find a Rust demangler
++if type llvm-cxxfilt >/dev/null 2>&1 ; then
++	cppfilt=llvm-cxxfilt
++elif type c++filt >/dev/null 2>&1 ; then
++	cppfilt=c++filt
++	cppfilt_opts=-i
++fi
 +
-+import json
-+import pathlib
-+import re
-+import sys
+ if [[ $1 == "-r" ]] ; then
+ 	vmlinux=""
+ 	basepath="auto"
+@@ -169,6 +177,12 @@ parse_symbol() {
+ 	# In the case of inlines, move everything to same line
+ 	code=${code//$'\n'/' '}
+ 
++	# Demangle if the name looks like a Rust symbol and if
++	# we got a Rust demangler
++	if [[ $name =~ ^_R && $cppfilt != "" ]] ; then
++		name=$("$cppfilt" "$cppfilt_opts" "$name")
++	fi
 +
-+RUST_DIR = pathlib.Path("rust")
-+TESTS_DIR = RUST_DIR / "test" / "doctests" / "kernel"
-+
-+# `[^\s]*` removes the prefix (e.g. `_doctest_main_`) plus any
-+# leading path (for `O=` builds).
-+MAIN_RE = re.compile(
-+    r"^"
-+    r"fn main\(\) { "
-+    r"#\[allow\(non_snake_case\)\] "
-+    r"fn ([^\s]*rust_kernel_([a-zA-Z0-9_]+))\(\) {"
-+    r"$"
-+)
-+
-+def main():
-+    found_main = False
-+    test_header = ""
-+    test_body = ""
-+    for line in sys.stdin.readlines():
-+        main_match = MAIN_RE.match(line)
-+        if main_match:
-+            if found_main:
-+                raise Exception("More than one `main` line found.")
-+            found_main = True
-+            function_name = main_match.group(1)
-+            test_name = f"rust_kernel_doctest_{main_match.group(2)}"
-+            continue
-+
-+        if found_main:
-+            test_body += line
-+        else:
-+            test_header += line
-+
-+    if not found_main:
-+        raise Exception("No `main` line found.")
-+
-+    call_line = f"}} {function_name}() }}"
-+    if not test_body.endswith(call_line):
-+        raise Exception("Unexpected end of test body.")
-+    test_body = test_body[:-len(call_line)]
-+
-+    with open(TESTS_DIR / f"{test_name}.json", "w") as fd:
-+        json.dump({
-+            "name": test_name,
-+            "header": test_header,
-+            "body": test_body,
-+        }, fd, sort_keys=True, indent=4)
-+
-+if __name__ == "__main__":
-+    main()
-diff --git a/scripts/rustdoc_test_gen.py b/scripts/rustdoc_test_gen.py
-new file mode 100755
-index 000000000000..ad9a94293ab5
---- /dev/null
-+++ b/scripts/rustdoc_test_gen.py
-@@ -0,0 +1,164 @@
-+#!/usr/bin/env python3
-+# SPDX-License-Identifier: GPL-2.0
-+"""rustdoc_test_gen - Generates KUnit tests from saved `rustdoc`-generated tests.
-+"""
-+
-+import json
-+import os
-+import pathlib
-+
-+RUST_DIR = pathlib.Path("rust")
-+TESTS_DIR = RUST_DIR / "test" / "doctests" / "kernel"
-+
-+RUST_FILE = RUST_DIR / "doctests_kernel_generated.rs"
-+C_FILE = RUST_DIR / "doctests_kernel_generated_kunit.c"
-+
-+RUST_TEMPLATE_TEST = """
-+/// Generated `{test_name}` KUnit test case from a Rust documentation test.
-+#[no_mangle]
-+pub fn {test_name}(__kunit_test: *mut kernel::bindings::kunit) {{
-+    /// Provides mutual exclusion (see `# Implementation` notes).
-+    static __KUNIT_TEST_MUTEX: kernel::sync::smutex::Mutex<()> =
-+        kernel::sync::smutex::Mutex::new(());
-+
-+    /// Saved argument (see `# Implementation` notes).
-+    static __KUNIT_TEST: core::sync::atomic::AtomicPtr<kernel::bindings::kunit> =
-+        core::sync::atomic::AtomicPtr::new(core::ptr::null_mut());
-+
-+    let __kunit_test_mutex_guard = __KUNIT_TEST_MUTEX.lock();
-+    __KUNIT_TEST.store(__kunit_test, core::sync::atomic::Ordering::SeqCst);
-+
-+    /// Overrides the usual [`assert!`] macro with one that calls KUnit instead.
-+    macro_rules! assert {{
-+        ($cond:expr $(,)?) => {{{{
-+            kernel::kunit_assert!(
-+                __KUNIT_TEST.load(core::sync::atomic::Ordering::SeqCst),
-+                $cond
-+            );
-+        }}}}
-+    }}
-+
-+    /// Overrides the usual [`assert_eq!`] macro with one that calls KUnit instead.
-+    macro_rules! assert_eq {{
-+        ($left:expr, $right:expr $(,)?) => {{{{
-+            kernel::kunit_assert_eq!(
-+                __KUNIT_TEST.load(core::sync::atomic::Ordering::SeqCst),
-+                $left,
-+                $right
-+            );
-+        }}}}
-+    }}
-+
-+    // Many tests need the prelude, so provide it by default.
-+    use kernel::prelude::*;
-+
-+    {test_body}
-+}}
-+"""
-+RUST_TEMPLATE = """// SPDX-License-Identifier: GPL-2.0
-+
-+//! `kernel` crate documentation tests.
-+
-+// # Implementation
-+//
-+// KUnit gives us a context in the form of the `kunit_test` parameter that one
-+// needs to pass back to other KUnit functions and macros.
-+//
-+// However, we want to keep this as an implementation detail because:
-+//
-+//   - Test code should not care about the implementation.
-+//
-+//   - Documentation looks worse if it needs to carry extra details unrelated
-+//     to the piece being described.
-+//
-+//   - Test code should be able to define functions and call them, without
-+//     having to carry the context (since functions cannot capture dynamic
-+//     environment).
-+//
-+//   - Later on, we may want to be able to test non-kernel code (e.g. `core`,
-+//     `alloc` or external crates) which likely use the standard library
-+//     `assert*!` macros.
-+//
-+// For this reason, `static`s are used in the generated code to save the
-+// argument which then gets read by the asserting macros. These macros then
-+// call back into KUnit, instead of panicking.
-+//
-+// To avoid depending on whether KUnit allows to run tests concurrently and/or
-+// reentrantly, we ensure mutual exclusion on our end. To ensure a single test
-+// being killed does not trigger failure of every other test (timing out),
-+// we provide different `static`s per test (which also allow for concurrent
-+// execution, though KUnit runs them sequentially).
-+//
-+// Furthermore, since test code may create threads and assert from them, we use
-+// an `AtomicPtr` to hold the context (though each test only writes once before
-+// threads may be created).
-+
-+{rust_header}
-+
-+const __LOG_PREFIX: &[u8] = b"rust_kernel_doctests\\0";
-+
-+{rust_tests}
-+"""
-+
-+C_TEMPLATE_TEST_DECLARATION = "void {test_name}(struct kunit *);\n"
-+C_TEMPLATE_TEST_CASE = "    KUNIT_CASE({test_name}),\n"
-+C_TEMPLATE = """// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * `kernel` crate documentation tests.
-+ */
-+
-+#include <kunit/test.h>
-+
-+{c_test_declarations}
-+
-+static struct kunit_case test_cases[] = {{
-+    {c_test_cases}
-+    {{ }}
-+}};
-+
-+static struct kunit_suite test_suite = {{
-+    .name = "rust_kernel_doctests",
-+    .test_cases = test_cases,
-+}};
-+
-+kunit_test_suite(test_suite);
-+
-+MODULE_LICENSE("GPL");
-+"""
-+
-+def main():
-+    rust_header = set()
-+    rust_tests = ""
-+    c_test_declarations = ""
-+    c_test_cases = ""
-+    for filename in sorted(os.listdir(TESTS_DIR)):
-+        with open(TESTS_DIR / filename, "r") as fd:
-+            test = json.load(fd)
-+            for line in test["header"].strip().split("\n"):
-+                rust_header.add(line)
-+            rust_tests += RUST_TEMPLATE_TEST.format(
-+                test_name = test["name"],
-+                test_body = test["body"]
-+            )
-+            c_test_declarations += C_TEMPLATE_TEST_DECLARATION.format(
-+                test_name = test["name"]
-+            )
-+            c_test_cases += C_TEMPLATE_TEST_CASE.format(
-+                test_name = test["name"]
-+            )
-+    rust_header = sorted(rust_header)
-+
-+    with open(RUST_FILE, "w") as fd:
-+        fd.write(RUST_TEMPLATE.format(
-+            rust_header = "\n".join(rust_header).strip(),
-+            rust_tests = rust_tests.strip(),
-+        ))
-+
-+    with open(C_FILE, "w") as fd:
-+        fd.write(C_TEMPLATE.format(
-+            c_test_declarations=c_test_declarations.strip(),
-+            c_test_cases=c_test_cases.strip(),
-+        ))
-+
-+if __name__ == "__main__":
-+    main()
+ 	# Replace old address with pretty line numbers
+ 	symbol="$segment$name ($code)"
+ }
 -- 
 2.36.1
 
