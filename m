@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7116C4167D
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:43:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18C01C35296
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:43:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244069AbiEWRnV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:43:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38726 "EHLO
+        id S244250AbiEWRna (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:43:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242619AbiEWR1t (ORCPT
+        with ESMTP id S242642AbiEWR1z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:27:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FEA1814A8;
-        Mon, 23 May 2022 10:23:43 -0700 (PDT)
+        Mon, 23 May 2022 13:27:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 372E081991;
+        Mon, 23 May 2022 10:23:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F24C861523;
-        Mon, 23 May 2022 17:13:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0989C385A9;
-        Mon, 23 May 2022 17:13:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 748816150D;
+        Mon, 23 May 2022 17:14:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76852C385A9;
+        Mon, 23 May 2022 17:14:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326008;
-        bh=EzwhwizX+Oc7mpCro2d+6Hzgld2XnK+PrPAtrQpl7UI=;
+        s=korg; t=1653326040;
+        bh=zwcO8lqTqAcSsX0UaXjLztxupOJ62iPjlXdzDDNc34s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HsuZBP40IhysrV0wMcmitjvUQBzN8v0Sth7bKJToMTJWodCtn7hVeIuMBBWkxbuGp
-         zfCYWNcrhTj0l+Qs04ioakKWXBmnqbKJNk6m/J+8oDEnaDWELxJAX7fCUnHx5FlPLW
-         dIUal5wYggovoNJvEfyHcJUJWT48TY4JotAmpGDg=
+        b=0e6uF1lttUbpwVMpMRWzofsNjXRiOpCoVDcmgNKHqMwLy2nPAK/heeipZm2rJQ+eL
+         Vk8eUcMgS1Rz4WGc7MVjPCQEJFxwGzZaYXF+FhHVH06lIpGDTQ/KnyJQES47NaYflh
+         C0TEIZbG9zR38HVFuoHxQsDzIrQ0iAQgL4rt5Ybs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
-        Zixuan Fu <r33s3n6@gmail.com>, Paolo Abeni <pabeni@redhat.com>,
+        stable@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 39/68] net: vmxnet3: fix possible NULL pointer dereference in vmxnet3_rq_cleanup()
-Date:   Mon, 23 May 2022 19:05:06 +0200
-Message-Id: <20220523165809.048498932@linuxfoundation.org>
+Subject: [PATCH 5.4 46/68] ARM: 9196/1: spectre-bhb: enable for Cortex-A15
+Date:   Mon, 23 May 2022 19:05:13 +0200
+Message-Id: <20220523165810.180099864@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165802.500642349@linuxfoundation.org>
 References: <20220523165802.500642349@linuxfoundation.org>
@@ -49,65 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zixuan Fu <r33s3n6@gmail.com>
+From: Ard Biesheuvel <ardb@kernel.org>
 
-[ Upstream commit edf410cb74dc612fd47ef5be319c5a0bcd6e6ccd ]
+[ Upstream commit 0dc14aa94ccd8ba35eb17a0f9b123d1566efd39e ]
 
-In vmxnet3_rq_create(), when dma_alloc_coherent() fails,
-vmxnet3_rq_destroy() is called. It sets rq->rx_ring[i].base to NULL. Then
-vmxnet3_rq_create() returns an error to its callers mxnet3_rq_create_all()
--> vmxnet3_change_mtu(). Then vmxnet3_change_mtu() calls
-vmxnet3_force_close() -> dev_close() in error handling code. And the driver
-calls vmxnet3_close() -> vmxnet3_quiesce_dev() -> vmxnet3_rq_cleanup_all()
--> vmxnet3_rq_cleanup(). In vmxnet3_rq_cleanup(),
-rq->rx_ring[ring_idx].base is accessed, but this variable is NULL, causing
-a NULL pointer dereference.
+The Spectre-BHB mitigations were inadvertently left disabled for
+Cortex-A15, due to the fact that cpu_v7_bugs_init() is not called in
+that case. So fix that.
 
-To fix this possible bug, an if statement is added to check whether
-rq->rx_ring[0].base is NULL in vmxnet3_rq_cleanup() and exit early if so.
-
-The error log in our fault-injection testing is shown as follows:
-
-[   65.220135] BUG: kernel NULL pointer dereference, address: 0000000000000008
-...
-[   65.222633] RIP: 0010:vmxnet3_rq_cleanup_all+0x396/0x4e0 [vmxnet3]
-...
-[   65.227977] Call Trace:
-...
-[   65.228262]  vmxnet3_quiesce_dev+0x80f/0x8a0 [vmxnet3]
-[   65.228580]  vmxnet3_close+0x2c4/0x3f0 [vmxnet3]
-[   65.228866]  __dev_close_many+0x288/0x350
-[   65.229607]  dev_close_many+0xa4/0x480
-[   65.231124]  dev_close+0x138/0x230
-[   65.231933]  vmxnet3_force_close+0x1f0/0x240 [vmxnet3]
-[   65.232248]  vmxnet3_change_mtu+0x75d/0x920 [vmxnet3]
-...
-
-Fixes: d1a890fa37f27 ("net: VMware virtual Ethernet NIC driver: vmxnet3")
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Zixuan Fu <r33s3n6@gmail.com>
-Link: https://lore.kernel.org/r/20220514050711.2636709-1-r33s3n6@gmail.com
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Fixes: b9baf5c8c5c3 ("ARM: Spectre-BHB workaround")
+Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/vmxnet3/vmxnet3_drv.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ arch/arm/mm/proc-v7-bugs.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
-index b71a019e9867..609f65530b9b 100644
---- a/drivers/net/vmxnet3/vmxnet3_drv.c
-+++ b/drivers/net/vmxnet3/vmxnet3_drv.c
-@@ -1586,6 +1586,10 @@ vmxnet3_rq_cleanup(struct vmxnet3_rx_queue *rq,
- 	u32 i, ring_idx;
- 	struct Vmxnet3_RxDesc *rxd;
+diff --git a/arch/arm/mm/proc-v7-bugs.c b/arch/arm/mm/proc-v7-bugs.c
+index 097ef85bb7f2..bcb9181601d9 100644
+--- a/arch/arm/mm/proc-v7-bugs.c
++++ b/arch/arm/mm/proc-v7-bugs.c
+@@ -301,6 +301,7 @@ void cpu_v7_ca15_ibe(void)
+ {
+ 	if (check_spectre_auxcr(this_cpu_ptr(&spectre_warned), BIT(0)))
+ 		cpu_v7_spectre_v2_init();
++	cpu_v7_spectre_bhb_init();
+ }
  
-+	/* ring has already been cleaned up */
-+	if (!rq->rx_ring[0].base)
-+		return;
-+
- 	for (ring_idx = 0; ring_idx < 2; ring_idx++) {
- 		for (i = 0; i < rq->rx_ring[ring_idx].size; i++) {
- #ifdef __BIG_ENDIAN_BITFIELD
+ void cpu_v7_bugs_init(void)
 -- 
 2.35.1
 
