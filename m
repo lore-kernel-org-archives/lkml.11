@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D45AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:55:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BD91C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:55:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242646AbiEWRzS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:55:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42814 "EHLO
+        id S242704AbiEWRzg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:55:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241116AbiEWR0S (ORCPT
+        with ESMTP id S241094AbiEWR0R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:26:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E459B5AA4B;
-        Mon, 23 May 2022 10:21:22 -0700 (PDT)
+        Mon, 23 May 2022 13:26:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FFF362122;
+        Mon, 23 May 2022 10:21:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 52F4360916;
-        Mon, 23 May 2022 17:19:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E1C4C385A9;
-        Mon, 23 May 2022 17:19:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BE425B81219;
+        Mon, 23 May 2022 17:21:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20811C385A9;
+        Mon, 23 May 2022 17:21:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326364;
-        bh=1YPWRqiatRImRhuaqwicVnhVovt5RkXaCgB9gKfRFLk=;
+        s=korg; t=1653326481;
+        bh=mqkDz9dWwDNFalE5Rbuyg+FfWCGLAoMOK3GmkLsN3a8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XjR0IFPTYdmnrfwYQ0QwA4HEAQOleWK0Hw2dp87gW1hoDXjfwYH0Cyiyb6gfmo7nn
-         2VVllR5912yJTe7yzV5egarwXQEl0HQ29J+gxKBOYoAvvTkUj/7MFnWe3c/XB1tp1g
-         MKOzwk+AL1M2X84qpVzrj4kXbdlB2is6apAlyQQI=
+        b=Ab7a5lbBOIzz/IxF7Py7xzHienSE3CdEYITPTIlcFavRdyLd5wEJTLaaMxBLYayxB
+         n0XC4PKQgiwCYgt/Q2gMG2i5DUrdvKOMKSlTt6HDmXQLC/KH0VTG+54ZQ+Wc/7A/dF
+         n25CbPSo/zBAG/KafyUbj7vr0RUtYJGsCwMNlXtg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
-        Lyude Paul <lyude@redhat.com>
-Subject: [PATCH 5.15 059/132] drm/dp/mst: fix a possible memory leak in fetch_monitor_name()
-Date:   Mon, 23 May 2022 19:04:28 +0200
-Message-Id: <20220523165833.061532981@linuxfoundation.org>
+        stable@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 094/132] ARM: 9197/1: spectre-bhb: fix loop8 sequence for Thumb2
+Date:   Mon, 23 May 2022 19:05:03 +0200
+Message-Id: <20220523165838.921730840@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
 References: <20220523165823.492309987@linuxfoundation.org>
@@ -48,32 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Ard Biesheuvel <ardb@kernel.org>
 
-commit 6e03b13cc7d9427c2c77feed1549191015615202 upstream.
+[ Upstream commit 3cfb3019979666bdf33a1010147363cf05e0f17b ]
 
-drm_dp_mst_get_edid call kmemdup to create mst_edid. So mst_edid need to be
-freed after use.
+In Thumb2, 'b . + 4' produces a branch instruction that uses a narrow
+encoding, and so it does not jump to the following instruction as
+expected. So use W(b) instead.
 
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Reviewed-by: Lyude Paul <lyude@redhat.com>
-Signed-off-by: Lyude Paul <lyude@redhat.com>
-Cc: stable@vger.kernel.org
-Link: https://patchwork.freedesktop.org/patch/msgid/20220516032042.13166-1-hbh25y@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 6c7cb60bff7a ("ARM: fix Thumb2 regression with Spectre BHB")
+Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/drm_dp_mst_topology.c |    1 +
- 1 file changed, 1 insertion(+)
+ arch/arm/kernel/entry-armv.S | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/drm_dp_mst_topology.c
-+++ b/drivers/gpu/drm/drm_dp_mst_topology.c
-@@ -4834,6 +4834,7 @@ static void fetch_monitor_name(struct dr
+diff --git a/arch/arm/kernel/entry-armv.S b/arch/arm/kernel/entry-armv.S
+index 46b697dfa4cf..68261a83b7ad 100644
+--- a/arch/arm/kernel/entry-armv.S
++++ b/arch/arm/kernel/entry-armv.S
+@@ -1038,7 +1038,7 @@ vector_bhb_loop8_\name:
  
- 	mst_edid = drm_dp_mst_get_edid(port->connector, mgr, port);
- 	drm_edid_get_monitor_name(mst_edid, name, namelen);
-+	kfree(mst_edid);
- }
- 
- /**
+ 	@ bhb workaround
+ 	mov	r0, #8
+-3:	b	. + 4
++3:	W(b)	. + 4
+ 	subs	r0, r0, #1
+ 	bne	3b
+ 	dsb
+-- 
+2.35.1
+
 
 
