@@ -2,116 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9094C35296
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:13:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A215C4707A
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:13:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245273AbiEWSM7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:12:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36832 "EHLO
+        id S245116AbiEWSMg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:12:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244333AbiEWRne (ORCPT
+        with ESMTP id S243327AbiEWRiJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:43:34 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0E009E9FA;
-        Mon, 23 May 2022 10:35:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653327319; x=1684863319;
-  h=message-id:subject:from:to:date:in-reply-to:references:
-   mime-version:content-transfer-encoding;
-  bh=Bmuxda2WSsU89OIt8CXTOK0joD5GKCcKnL7zGiZtR0g=;
-  b=ce0yjBbJZfpFyotEG9Bl8gXPka7WdaczdXvOp6di0JvzA35L5TYRgNcd
-   zqypa5Tfq58dCjWwhMvpZuzjF43mAeZ9paNEEAK5xZUtpeDAAfgfgL8BY
-   OEvk/7N/SyONY94EddsOBhDNh9sPaf/cDuBXT396EvabyHbRD2JsUt0wK
-   FX0S9ilTyCxQa3mhmuDw9mqwG38hDVSJCHq/arL6+fX8QvU40PPVQmtRd
-   sxleIL9QUumojnZATxd8iqWHPwHC0/wsVbuirtOgF4NjYPqvGsMqmwC9R
-   66rGJwwdwt42GOG9inChc6mVcTSciIzIRn4Fqmih5bzN6MMxtvjeJFHzO
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10356"; a="298614058"
-X-IronPort-AV: E=Sophos;i="5.91,246,1647327600"; 
-   d="scan'208";a="298614058"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2022 10:34:34 -0700
-X-IronPort-AV: E=Sophos;i="5.91,246,1647327600"; 
-   d="scan'208";a="744848043"
-Received: from ijgarcia-mobl.amr.corp.intel.com (HELO spandruv-desk1.amr.corp.intel.com) ([10.212.152.3])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2022 10:34:34 -0700
-Message-ID: <700214729a042ef80ea06b3f2c2b2399d63a84ae.camel@linux.intel.com>
-Subject: Re: [PATCH] thermal: int340x: Add Meteor Lake PCI device id
-From:   srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
-To:     Sumeet Pawnikar <sumeet.r.pawnikar@intel.com>, rafael@kernel.org,
-        daniel.lezcano@linaro.org, amitk@kernel.org, rui.zhang@intel.com,
-        atenart@kernel.org, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Mon, 23 May 2022 10:34:33 -0700
-In-Reply-To: <20220523172242.30378-1-sumeet.r.pawnikar@intel.com>
-References: <20220523172242.30378-1-sumeet.r.pawnikar@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        Mon, 23 May 2022 13:38:09 -0400
+Received: from mail-yb1-f180.google.com (mail-yb1-f180.google.com [209.85.219.180])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E01685ED9;
+        Mon, 23 May 2022 10:32:14 -0700 (PDT)
+Received: by mail-yb1-f180.google.com with SMTP id f16so26678650ybk.2;
+        Mon, 23 May 2022 10:32:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=b+WLDyB1KyiUyJgUsSoOS0+avgPWWtIIyr0okynq40k=;
+        b=OwTZPyphMH0ShclRWHmvVvmKKYRI8KRPtGaQ2imCrcIW8cAsyR98AxruB7fsfc+jAV
+         Bl8WBKI8LeKB+4GdKcfq5wePNKXKgbYipxtjW/MCLMznKjxm6PyzzeO5v3PYuYSwUTSD
+         KcHd7taZrbyq/eIn7XALueE8aGjU4zffJaz0GrMQC7LXa3kQ6FA0eGW4WNnBr43uYMwu
+         mvIV+hlDTYQxujYMkjGlSDRovcsJ8JYYBxgE4YDu8VXL9Dd9jtg/7uleR4ZIusqZ0Wao
+         BPtC6lfJfnp4Hy8Sfm1eclUTxaYFinWAYYHXnmTp13GMgFzy9ikeC2nSygT9MEJPsZn+
+         S/Bg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=b+WLDyB1KyiUyJgUsSoOS0+avgPWWtIIyr0okynq40k=;
+        b=HiFodHF+EQzcAWpVCi/r7iU+0MKAGS+qsYRU6n1sX1acKx1sPGXI+0G4YHkmRke1UJ
+         x/2D08lXpkZ813cY2UCByEvEeraq/ASEdetsPtIsUOXsgDgYhPjkhARGKgcZMB2ipff9
+         K5QmbS9zgc2VeYKvQJcjnr5NyZSnQ3QkC7UzpxzjsGzzrOGGEmHiXJiVaxVS+w2v92yg
+         pzEFR87Atgw2z+ZN/yhFCyrz49CbJyopeFSINQkJ7paxne8X99weHJg//OZFpBqonADb
+         Y2wzlo1Ir2bkA3PedO4Ka/zC8Ot59Kdv5m7VxH8RrIafbz4t6nP7l0KzAHcITcsdq/GI
+         Pobg==
+X-Gm-Message-State: AOAM533540tXeMdpHM0A/kmaZ8PO3tKaBi8uPlMapUy+kDOahFoTt3El
+        tqo2gU6VjF2nh650raArvzbxdbgcCc9yInQ11Qg=
+X-Google-Smtp-Source: ABdhPJyHekt3JIocbDUxFMK4GkF5t4CZsAZMk/LL+K9cKxPoQhDfyLRj9hy42RLDgOzDKMCGnmU0RH12f4UOjKh1fbk=
+X-Received: by 2002:a25:ab84:0:b0:64e:3d2:8a6f with SMTP id
+ v4-20020a25ab84000000b0064e03d28a6fmr21704797ybi.431.1653327001589; Mon, 23
+ May 2022 10:30:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220518192924.20948-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20220518192924.20948-7-prabhakar.mahadev-lad.rj@bp.renesas.com> <CAMuHMdXz7ZtC_63hUckrEeB3uocNG0iKbA4i3xDsuyL48m_7qQ@mail.gmail.com>
+In-Reply-To: <CAMuHMdXz7ZtC_63hUckrEeB3uocNG0iKbA4i3xDsuyL48m_7qQ@mail.gmail.com>
+From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
+Date:   Mon, 23 May 2022 18:29:35 +0100
+Message-ID: <CA+V-a8tU9tEdJSa+BJfAiWtCE5VAeD5EA-zMOdf8GjQaG8oc+w@mail.gmail.com>
+Subject: Re: [PATCH v4 6/7] dt-bindings: pinctrl: renesas,rzg2l-pinctrl:
+ Document the properties to handle GPIO IRQ
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        linux-tegra <linux-tegra@vger.kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Phil Edworthy <phil.edworthy@renesas.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-05-23 at 22:52 +0530, Sumeet Pawnikar wrote:
-> Add Meteor Lake PCI ID for processor thermal device.
-> 
-> Signed-off-by: Sumeet Pawnikar <sumeet.r.pawnikar@intel.com>
-> Signed-off-by: Srinivas Pandruvada
-> <srinivas.pandruvada@linux.intel.com>
-Replace Signed-off-by 
-Reviewed-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Hi Geert,
 
-> ---
->  drivers/thermal/intel/int340x_thermal/processor_thermal_device.h | 1
-> +
->  .../thermal/intel/int340x_thermal/processor_thermal_device_pci.c | 1
-> +
->  2 files changed, 2 insertions(+)
-> 
-> diff --git
-> a/drivers/thermal/intel/int340x_thermal/processor_thermal_device.h
-> b/drivers/thermal/intel/int340x_thermal/processor_thermal_device.h
-> index 49932a68abac..7d52fcff4937 100644
-> ---
-> a/drivers/thermal/intel/int340x_thermal/processor_thermal_device.h
-> +++
-> b/drivers/thermal/intel/int340x_thermal/processor_thermal_device.h
-> @@ -24,6 +24,7 @@
->  #define PCI_DEVICE_ID_INTEL_HSB_THERMAL        0x0A03
->  #define PCI_DEVICE_ID_INTEL_ICL_THERMAL        0x8a03
->  #define PCI_DEVICE_ID_INTEL_JSL_THERMAL        0x4E03
-> +#define PCI_DEVICE_ID_INTEL_MTLP_THERMAL       0x7D03
->  #define PCI_DEVICE_ID_INTEL_RPL_THERMAL        0xA71D
->  #define PCI_DEVICE_ID_INTEL_SKL_THERMAL        0x1903
->  #define PCI_DEVICE_ID_INTEL_TGL_THERMAL        0x9A03
-> diff --git
-> a/drivers/thermal/intel/int340x_thermal/processor_thermal_device_pci.
-> c
-> b/drivers/thermal/intel/int340x_thermal/processor_thermal_device_pci.
-> c
-> index ca40b0967cdd..c2dc4c158b9d 100644
-> ---
-> a/drivers/thermal/intel/int340x_thermal/processor_thermal_device_pci.
-> c
-> +++
-> b/drivers/thermal/intel/int340x_thermal/processor_thermal_device_pci.
-> c
-> @@ -358,6 +358,7 @@ static SIMPLE_DEV_PM_OPS(proc_thermal_pci_pm,
-> proc_thermal_pci_suspend,
->  
->  static const struct pci_device_id proc_thermal_pci_ids[] = {
->         { PCI_DEVICE_DATA(INTEL, ADL_THERMAL,
-> PROC_THERMAL_FEATURE_RAPL | PROC_THERMAL_FEATURE_FIVR |
-> PROC_THERMAL_FEATURE_DVFS | PROC_THERMAL_FEATURE_MBOX) },
-> +       { PCI_DEVICE_DATA(INTEL, MTLP_THERMAL,
-> PROC_THERMAL_FEATURE_RAPL | PROC_THERMAL_FEATURE_FIVR |
-> PROC_THERMAL_FEATURE_DVFS | PROC_THERMAL_FEATURE_MBOX) },
->         { PCI_DEVICE_DATA(INTEL, RPL_THERMAL,
-> PROC_THERMAL_FEATURE_RAPL | PROC_THERMAL_FEATURE_FIVR |
-> PROC_THERMAL_FEATURE_DVFS | PROC_THERMAL_FEATURE_MBOX) },
->         { },
->  };
+Thank you for the review.
 
+On Thu, May 19, 2022 at 1:01 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+>
+> Hi Prabhakar,
+>
+> On Wed, May 18, 2022 at 9:30 PM Lad Prabhakar
+> <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+> > Document the required properties to handle GPIO IRQ.
+> >
+> > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+>
+> Thanks for your patch!
+>
+> > --- a/Documentation/devicetree/bindings/pinctrl/renesas,rzg2l-pinctrl.yaml
+> > +++ b/Documentation/devicetree/bindings/pinctrl/renesas,rzg2l-pinctrl.yaml
+> > @@ -126,6 +139,9 @@ examples:
+> >              gpio-controller;
+> >              #gpio-cells = <2>;
+> >              gpio-ranges = <&pinctrl 0 0 392>;
+> > +            interrupt-controller;
+> > +            #interrupt-cells = <2>;
+> > +            interrupt-parent = <&irqc>;
+>
+> I think the "interrupt-parent" property can be dropped from the example.
+>
+Sure will drop it in the next version.
+
+Cheers,
+Prabhakar
+
+> >              clocks = <&cpg CPG_MOD R9A07G044_GPIO_HCLK>;
+> >              resets = <&cpg R9A07G044_GPIO_RSTN>,
+> >                       <&cpg R9A07G044_GPIO_PORT_RESETN>,
+>
+> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+>
+> Gr{oetje,eeting}s,
+>
+>                         Geert
+>
+> --
+> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+>
+> In personal conversations with technical people, I call myself a hacker. But
+> when I'm talking to journalists I just say "programmer" or something like that.
+>                                 -- Linus Torvalds
