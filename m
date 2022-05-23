@@ -2,104 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B8A5C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 19:40:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72E88C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 19:43:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231834AbiEWTke (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 15:40:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59706 "EHLO
+        id S231253AbiEWTnU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 15:43:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232222AbiEWTkG (ORCPT
+        with ESMTP id S230350AbiEWTm7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 15:40:06 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F289D134E0A;
-        Mon, 23 May 2022 12:32:35 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id f9so31006925ejc.0;
-        Mon, 23 May 2022 12:32:35 -0700 (PDT)
+        Mon, 23 May 2022 15:42:59 -0400
+Received: from mail-oi1-x22b.google.com (mail-oi1-x22b.google.com [IPv6:2607:f8b0:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 121911B1
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 12:42:58 -0700 (PDT)
+Received: by mail-oi1-x22b.google.com with SMTP id w130so19098218oig.0
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 12:42:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=chromium.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=QcfD7S9L5CIBMVb1EXolT17SGjXBlADQiPbIJB52IyA=;
-        b=IwZ9LYtC/kjVD1M6tbz12irq8Bjctuz41W9HahQfPjerRw/YW3YxnYkgh9UWZ4Quen
-         2yCj0v2J2VF1uay2M9DISR7FsEEe43CYFE3HuLSXeSIGCbEtOeq6/l3IuzmNXYjF+wu3
-         5Dg6gdg82OWGoIL7OpG7167WELitd6HW6crfAFMQa3hnDybjdRzq4v8LGAOEblHD4DY1
-         oi+DvdvcEHVTXsD46i6ySsJX7R4CpWE5AFAVhWhM64moe4CYrP4jBIZixN2KrdwW/w7q
-         qi3l1J2QYt0w9IFJQzFk5PWq3VBvwb8AQ6RU3s5jj1vZGCgcS7qmmj9uYDCE+yJSuUc7
-         CGcw==
+         :cc;
+        bh=Vr6T/UqgVGLQWoul1vnNoytTWzJsPkn14WICohkLY7I=;
+        b=Fs0S3Msok1ksTRe7NGFi2Ry+axura59LsvHOsYFwgudYlyVCr2tTvaiG818YWZuDf0
+         IZZwL+wqiL6MtCfFD0gPzV0afDz9zib5f4lVh48rMdFUVgj+K3yQKYmuvHWZ98c1Knvk
+         jDLi+BFuargstaoHS5pNBPjYIKTiAaoOaD3CI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=QcfD7S9L5CIBMVb1EXolT17SGjXBlADQiPbIJB52IyA=;
-        b=XLl2y+s0IG4GqiUF2lQf7/ThQYTGqRDA3AzcQ1WPBw2ppPr5nXYLOsW3kWZ6NelNwk
-         QpexuGEHVPi4aIcgVZbvPGXsrrvqaszhc3/GT7IoahegZKpWBuk98OKBQnmN3eQS81Ns
-         qv93BTUQEMckRle+UC9tBs1/2ARwM/BIo6AMkoga+B5sLN2RCuNVXVBSkYA63vUsA96k
-         sGVHgAvHR4jliYnz13iBlsGnPuFqPon4jUU8a87K0lh7aftvChqILi/IqEjFA3F9Oi/U
-         DCSnMoTj6syeTdnqgrnQo/uID6tDAHX87b0KXopzhgaJsdxWjU8TWk+5KM1/pUjoePZs
-         vrHQ==
-X-Gm-Message-State: AOAM531WXhu/5qiNhqMj0dfGhwoCFHrD9/ER13F3atizs5ug0iqiR/aN
-        fzmgrNPyeC47uGILoV65ZxBLbDWdwBjH7mbwoBQtAYJ0
-X-Google-Smtp-Source: ABdhPJxw9pwIsMqu/OAc7dTwPG7AWqN/ejln4mauKeqThFydT2EbigOI3GDPgwg+CT5OJiUmtTZOWBBeFZJ/4rvgLMA=
-X-Received: by 2002:a17:907:a427:b0:6fe:c73e:591c with SMTP id
- sg39-20020a170907a42700b006fec73e591cmr8651452ejc.676.1653334354327; Mon, 23
- May 2022 12:32:34 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=Vr6T/UqgVGLQWoul1vnNoytTWzJsPkn14WICohkLY7I=;
+        b=mXngLdtSs+/o/6SiqEpj2Hg2E5sICf8c/Wuful0tVa1nqkIzNw8PuW14tuLZoSdBBf
+         txFm5qB0uYeTpeQKZM08ZjSXbmsFq8Fb/az2fSQlRyN9Q91zqhuDFAosI4WLvhsOrQgj
+         BUFQDlIeJ1y3P/wbuonArqUadd9pFou6je2tCSTnAiXMTtu0kI8RM0+g58leVIYTHefS
+         FUJn6PVCCkdSabQv10Zy11hp0px8Wr/wJC9xrXPk5dpzC81g5A2j5jgTUsbv3WRGHZ8m
+         CnzSpEKgbl87qw2jcKFVQghriDW4om7OXDTy1UWvd6PURytkpiBxao5KOD3grDquEyNP
+         wf+Q==
+X-Gm-Message-State: AOAM533/zg5Pz/Xn6qu5iVokC0Dsjt2c28mSPPvxN2dPf2TtNmOq0cwJ
+        VZwRspfRhZ4w3oY6Mv3QcK0zN/jodLXvJA==
+X-Google-Smtp-Source: ABdhPJwaP5vB/86lkItxbhagXO0TXXeyCbjWCf1G+L7nzuoTQsTnCVD1C+q/+fJ8QX8JpXeTA1BjWw==
+X-Received: by 2002:a54:4f88:0:b0:325:a26e:5278 with SMTP id g8-20020a544f88000000b00325a26e5278mr394439oiy.76.1653334977115;
+        Mon, 23 May 2022 12:42:57 -0700 (PDT)
+Received: from mail-oi1-f179.google.com (mail-oi1-f179.google.com. [209.85.167.179])
+        by smtp.gmail.com with ESMTPSA id w2-20020acaad02000000b0032af1c6bf02sm4287407oie.45.2022.05.23.12.42.55
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 23 May 2022 12:42:56 -0700 (PDT)
+Received: by mail-oi1-f179.google.com with SMTP id w130so19098127oig.0
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 12:42:55 -0700 (PDT)
+X-Received: by 2002:a05:6808:140c:b0:326:cd8f:eb71 with SMTP id
+ w12-20020a056808140c00b00326cd8feb71mr341566oiv.257.1653334975556; Mon, 23
+ May 2022 12:42:55 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220521075736.1225397-1-zenczykowski@gmail.com>
-In-Reply-To: <20220521075736.1225397-1-zenczykowski@gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Mon, 23 May 2022 12:32:22 -0700
-Message-ID: <CAADnVQJcDvyeQ3y=uVDj-7JfqtxE+nJk+d5oVQrBhhQpicYk6A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] bpf: print a little more info about maps via cat /sys/fs/bpf/pinned_name
-To:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
-Cc:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Linux Network Development Mailing List 
-        <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        BPF Mailing List <bpf@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>
+References: <20220523052810.24767-1-duoming@zju.edu.cn> <87o7zoxrdf.fsf@email.froward.int.ebiederm.org>
+ <6a270950.2c659.180f1a46e8c.Coremail.duoming@zju.edu.cn>
+In-Reply-To: <6a270950.2c659.180f1a46e8c.Coremail.duoming@zju.edu.cn>
+From:   Brian Norris <briannorris@chromium.org>
+Date:   Mon, 23 May 2022 12:42:44 -0700
+X-Gmail-Original-Message-ID: <CA+ASDXNBeN6k6y+eY06FkheNTNWN02P2uT9bB09KtBok0LVFfQ@mail.gmail.com>
+Message-ID: <CA+ASDXNBeN6k6y+eY06FkheNTNWN02P2uT9bB09KtBok0LVFfQ@mail.gmail.com>
+Subject: Re: [PATCH v3] mwifiex: fix sleep in atomic context bugs caused by dev_coredumpv
+To:     Duoming Zhou <duoming@zju.edu.cn>
+Cc:     "Eric W. Biederman" <ebiederm@xmission.com>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        amit karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi017@gmail.com>,
+        Sharvari Harisangam <sharvari.harisangam@nxp.com>,
+        Xinming Hu <huxinming820@gmail.com>, kvalo@kernel.org,
+        "David S. Miller" <davem@davemloft.net>, edumazet@google.com,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>,
+        Linux Kernel <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Johannes Berg <johannes@sipsolutions.net>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, May 21, 2022 at 12:57 AM Maciej =C5=BBenczykowski
-<zenczykowski@gmail.com> wrote:
->
-> From: Maciej =C5=BBenczykowski <maze@google.com>
->
-> While this information can be fetched via bpftool,
-> the cli tool itself isn't always available on more limited systems.
->
-> From the information printed particularly the 'id' is useful since
-> when combined with /proc/pid/fd/X and /proc/pid/fdinfo/X it allows
-> tracking down which bpf maps a process has open (which can be
-> useful for tracking down fd leaks).
->
-> Signed-off-by: Maciej =C5=BBenczykowski <maze@google.com>
-> ---
->  kernel/bpf/inode.c | 3 +++
->  1 file changed, 3 insertions(+)
->
-> diff --git a/kernel/bpf/inode.c b/kernel/bpf/inode.c
-> index 4f841e16779e..784266e258fe 100644
-> --- a/kernel/bpf/inode.c
-> +++ b/kernel/bpf/inode.c
-> @@ -257,6 +257,9 @@ static int map_seq_show(struct seq_file *m, void *v)
->         if (unlikely(v =3D=3D SEQ_START_TOKEN)) {
->                 seq_puts(m, "# WARNING!! The output is for debug purpose =
-only\n");
->                 seq_puts(m, "# WARNING!! The output format will change\n"=
-);
-> +               seq_printf(m, "# type: %d, key_size: %d, value_size: %d, =
-max_entries: %d, id: %d\n",
-> +                          map->map_type, map->key_size, map->value_size,=
- map->max_entries,
-> +                          map->id);
+(I think people generally agreed on this approach, but please submit a
+new series, with separate patches)
 
-Maybe use cat /sys/fs/bpf/maps.debug instead?
-It prints map id.
+On Mon, May 23, 2022 at 12:27 PM <duoming@zju.edu.cn> wrote:
+> What's more, I move the operations that may sleep into a work item and use
+> schedule_work() to call a kernel thread to do the operations that may sleep.
+
+You end up with a timer that just exists to kick a work item. Eric
+suggested you just use a delayed_work, and then you don't need both a
+timer and a work struct.
+
+Brian
