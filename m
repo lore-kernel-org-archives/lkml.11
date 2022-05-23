@@ -2,97 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 493B3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:45:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C7EEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:46:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242544AbiEWSpM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:45:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44950 "EHLO
+        id S239893AbiEWSqv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:46:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244147AbiEWSnT (ORCPT
+        with ESMTP id S243784AbiEWSpb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 14:43:19 -0400
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A45401A29DD;
-        Mon, 23 May 2022 11:25:12 -0700 (PDT)
-Received: by mail-pg1-x52c.google.com with SMTP id h186so14372508pgc.3;
-        Mon, 23 May 2022 11:25:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=P47JAwPQpYZWJx3NuocPik+FecZ6O5gWjmmUCHKFYOw=;
-        b=Z4yQan/GQw/nRnKNwImMglfRAZ553d4P+FJ7bGqHCm+D/Ubt+4fPjmQGXS63ECFjH1
-         sjm6mMlXB8jHhhrUXTDgBKIQ+/GXkgtE2PJsH/mqTzMiiyu8oo96Kz4+GoIFmUo8/KVG
-         wFwNiX2YBbUrn1JYw4/zWZm62HZ6Gyo1Nb1D9NH5YoXaVYVGhwWdbHEZFENF9R0F/EQL
-         DEBiBApt7UZzB/Mdk9urry57bC7+Tu/tw8oqyc2+06P72hNcs1dCVq7zmnCUr8UX8Tni
-         gJeEYM//Kp8SrmdgoJmwYL9vbtvU5ZuIBY13D/Xuxno7u2bXMQfZMlle2WBl6qxvoGsh
-         v1sw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=P47JAwPQpYZWJx3NuocPik+FecZ6O5gWjmmUCHKFYOw=;
-        b=dfAn28oE9x4FBhk0UAvTaf7Az637Bxx8PPaDooEX2a8iB1g36Vk6UaDrLbWPsXRXgw
-         6fASRoMZvdbjmSzoJj1nZpPehK9r1m2FLlKxwuwyoJKarLpYiwcJw9bw5jq86nqAUZNa
-         fgZ71N3tibHshfl9pvkptf6jYDDu85SJe53ApBzjT0Nt9H3Tf+5YZrDUZV/Fd+YsVWit
-         ZGUi7Bsidkwt2Wwgx8Q1uKSpsmA1Jpi8zfkXyJ8xo/+7jCLaWSrWGNfUp05McC25btc2
-         38UiraF4NpcbRCrhgP5aKtJk0eFxBGI31Q5wc5VWBt3XIhmSEx3VbXFiyUH1QuuViwAI
-         vTsg==
-X-Gm-Message-State: AOAM533y6muqnkee+uzlpKtcGoEb1+ZxIr4UYV+pnr9Y17N6Jtq0V3bF
-        JWF0a67qWSpFa91UUTiXq0k=
-X-Google-Smtp-Source: ABdhPJywkV4NBFZtSXwlopIItBNekeVzcF+EtxiS5RrLN25OH5BBNGp0YnhAXBJFEnsZE4r/BlSsrA==
-X-Received: by 2002:a63:2406:0:b0:3f6:2513:5c63 with SMTP id k6-20020a632406000000b003f625135c63mr21006392pgk.550.1653330311924;
-        Mon, 23 May 2022 11:25:11 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id ki18-20020a17090ae91200b001dcf8960a13sm743pjb.40.2022.05.23.11.25.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 May 2022 11:25:11 -0700 (PDT)
-Message-ID: <f8ea5c75-5cb6-6dfe-bf3c-45ec01ccaf38@gmail.com>
-Date:   Mon, 23 May 2022 11:25:09 -0700
+        Mon, 23 May 2022 14:45:31 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A56F713277A
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 11:29:03 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: dmitry.osipenko)
+        with ESMTPSA id 146001F4350A
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1653328898;
+        bh=6xhghlXrddQfIGnulUahWYp9wL4WrqaYscxpR23LmXM=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=KJ+ydKSH5syI8xmeg0VHJToNfPgemgWqfP/M4SEWorawj4VoHJaBrZhl8qGqm0HjQ
+         qYeNUYwpFmwfreMVPxNQN8LUwJxDd3tJXvQOzDJ9IOsx+aK5eaKRUBlI2xaSWrBNUO
+         LieAI76yuamC7jiagn3zQi1i3qtK65Ogqi506SRt2s7wQfhv0vdzrlJs1U2OTC0S2g
+         lSm045ntOYSWweOCEE8OhJZkbKpLsFdIxpSx4Uin4SH0jjFv03CI1NVdshzSSeGNaN
+         74efk0LCPNMjbz+ixuzQjN3PQM6LJpq9K4R9nUz8jFfq/pAfoE9ujyojXv3iC/5Q47
+         Id9yLtJHR3p1g==
+Message-ID: <d51916d6-5be3-4bdb-ffba-39ad3ae2d5e4@collabora.com>
+Date:   Mon, 23 May 2022 21:01:35 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH 5.10 00/97] 5.10.118-rc1 review
+ Thunderbird/91.9.0
+Subject: Re: [PATCH next] m68k: virt: Switch to new sys-off handler API
 Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-References: <20220523165812.244140613@linuxfoundation.org>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220523165812.244140613@linuxfoundation.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+To:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>
+Cc:     Laurent Vivier <laurent@vivier.eu>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        linux-m68k@lists.linux-m68k.org, linux-kernel@vger.kernel.org,
+        noreply@ellerman.id.au
+References: <20220523175520.949681-1-geert@linux-m68k.org>
+From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
+In-Reply-To: <20220523175520.949681-1-geert@linux-m68k.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/23/22 10:05, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.10.118 release.
-> There are 97 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+On 5/23/22 20:55, Geert Uytterhoeven wrote:
+> On m68k with CONFIG_VIRT=y (e.g. virt_defconfig or allmodconfig):
 > 
-> Responses should be made by Wed, 25 May 2022 16:56:55 +0000.
-> Anything received after that time might be too late.
+>     arch/m68k/virt/config.c: In function ‘config_virt’:
+>     arch/m68k/virt/config.c:129:2: error: ‘mach_power_off’ undeclared (first use in this function); did you mean ‘pm_power_off’?
+>       129 |  mach_power_off = virt_halt;
+> 	  |  ^~~~~~~~~~~~~~
+> 	  |  pm_power_off
 > 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.118-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.10.y
-> and the diffstat can be found below.
+> Commit 05d51e42df06f021 ("m68k: Introduce a virtual m68k machine")
+> introduced a new user of mach_power_off.
+> Convert it to the new sys-off handler API, too.
 > 
-> thanks,
+> Reported-by: noreply@ellerman.id.au
+> Fixes: f0f7e5265b3b37b0 ("m68k: Switch to new sys-off handler API")
+> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+> ---
+>  arch/m68k/virt/config.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
 > 
-> greg k-h
+> diff --git a/arch/m68k/virt/config.c b/arch/m68k/virt/config.c
+> index 68d29c8b87e18840..632ba200ad425245 100644
+> --- a/arch/m68k/virt/config.c
+> +++ b/arch/m68k/virt/config.c
+> @@ -1,5 +1,6 @@
+>  // SPDX-License-Identifier: GPL-2.0
+>  
+> +#include <linux/reboot.h>
+>  #include <linux/serial_core.h>
+>  #include <clocksource/timer-goldfish.h>
+>  
+> @@ -126,5 +127,6 @@ void __init config_virt(void)
+>  	mach_get_model = virt_get_model;
+>  	mach_reset = virt_reset;
+>  	mach_halt = virt_halt;
+> -	mach_power_off = virt_halt;
+> +
+> +	register_platform_power_off(virt_halt);
+>  }
 
-On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels:
+Thanks, Geert! Indeed, I only compile-tested files that were directly
+affected by the core changes and haven't checked the whole m68k build,
+that was my oversight.
 
-Tested-by: Florian Fainelli <f.fainelli@gmail.com>
+Reviewed-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+
 -- 
-Florian
+Best regards,
+Dmitry
