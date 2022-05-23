@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E64A2C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04ADFC433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:03:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242669AbiEWSBD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:01:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35944 "EHLO
+        id S242906AbiEWSBJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:01:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241245AbiEWRct (ORCPT
+        with ESMTP id S239485AbiEWRc5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:32:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD7BD6345;
-        Mon, 23 May 2022 10:27:36 -0700 (PDT)
+        Mon, 23 May 2022 13:32:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A57C972226;
+        Mon, 23 May 2022 10:27:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 349D6B811FF;
-        Mon, 23 May 2022 17:27:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D36EC385A9;
-        Mon, 23 May 2022 17:27:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C373660919;
+        Mon, 23 May 2022 17:27:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5B9DC385A9;
+        Mon, 23 May 2022 17:27:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326854;
-        bh=BkwxpHcOxOEqZ97C+zcVcrK3VZuqEqDMwOlx6I9X0pU=;
+        s=korg; t=1653326857;
+        bh=vEwnCoTV8sEf0purtv7I8tz1p6UatV09CLsl4plOqKY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ECH6DjmY9fJEYWad2WRO8oqSK7zo2iOAr2bUBI6Ob35wCOTXs0yHVvXAhBAWSaoff
-         +nsKixAAKFUxu0pD4e6uuFoG7HMgVX53o588urqZBFpJRCt0I3mXy2zgBvQOEcuw+2
-         PlntQvNajMnII2fKvBBSKIx+Px60kbE6zq+SyGQc=
+        b=kcmZ9j3cXq/sADm+DPzjaP3x1JyFeVPV0dvgV6BT47Mllam7h1kL76oDSk3vdKkG4
+         mchgHLVqrAOgfikdiAtGavxV4VHEQJmhRKklXXdjAqSzorAuKCHHQFZG6TAOkuolmc
+         smFkORBJYUxgk19aXxyEsDbHU7y63WZqObQnxWMs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        stable@vger.kernel.org, Harini Katakam <harini.katakam@xilinx.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 079/158] mptcp: fix subflow accounting on close
-Date:   Mon, 23 May 2022 19:03:56 +0200
-Message-Id: <20220523165844.141773273@linuxfoundation.org>
+Subject: [PATCH 5.17 080/158] net: macb: Increment rx bd head after allocating skb and buffer
+Date:   Mon, 23 May 2022 19:03:57 +0200
+Message-Id: <20220523165844.315462395@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
 References: <20220523165830.581652127@linuxfoundation.org>
@@ -50,115 +52,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paolo Abeni <pabeni@redhat.com>
+From: Harini Katakam <harini.katakam@xilinx.com>
 
-[ Upstream commit 95d686517884a403412b000361cee2b08b2ed1e6 ]
+[ Upstream commit 9500acc631dbb8b73166e25700e656b11f6007b6 ]
 
-If the PM closes a fully established MPJ subflow or the subflow
-creation errors out in it's early stage the subflows counter is
-not bumped accordingly.
+In gem_rx_refill rx_prepared_head is incremented at the beginning of
+the while loop preparing the skb and data buffers. If the skb or data
+buffer allocation fails, this BD will be unusable BDs until the head
+loops back to the same BD (and obviously buffer allocation succeeds).
+In the unlikely event that there's a string of allocation failures,
+there will be an equal number of unusable BDs and an inconsistent RX
+BD chain. Hence increment the head at the end of the while loop to be
+clean.
 
-This change adds the missing accounting, additionally taking care
-of updating accordingly the 'accept_subflow' flag.
-
-Fixes: a88c9e496937 ("mptcp: do not block subflows creation on errors")
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Fixes: 4df95131ea80 ("net/macb: change RX path for GEM")
+Signed-off-by: Harini Katakam <harini.katakam@xilinx.com>
+Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Link: https://lore.kernel.org/r/20220512171900.32593-1-harini.katakam@xilinx.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mptcp/pm.c       |  5 ++---
- net/mptcp/protocol.h | 14 ++++++++++++++
- net/mptcp/subflow.c  | 12 +++++++++---
- 3 files changed, 25 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/cadence/macb_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/mptcp/pm.c b/net/mptcp/pm.c
-index 7bea318ac5f2..1eb83cbe8aae 100644
---- a/net/mptcp/pm.c
-+++ b/net/mptcp/pm.c
-@@ -178,14 +178,13 @@ void mptcp_pm_subflow_check_next(struct mptcp_sock *msk, const struct sock *ssk,
- 	struct mptcp_pm_data *pm = &msk->pm;
- 	bool update_subflows;
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index c4f4b13ac469..c1100af5666b 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -1217,7 +1217,6 @@ static void gem_rx_refill(struct macb_queue *queue)
+ 		/* Make hw descriptor updates visible to CPU */
+ 		rmb();
  
--	update_subflows = (ssk->sk_state == TCP_CLOSE) &&
--			  (subflow->request_join || subflow->mp_join);
-+	update_subflows = subflow->request_join || subflow->mp_join;
- 	if (!READ_ONCE(pm->work_pending) && !update_subflows)
- 		return;
+-		queue->rx_prepared_head++;
+ 		desc = macb_rx_desc(queue, entry);
  
- 	spin_lock_bh(&pm->lock);
- 	if (update_subflows)
--		pm->subflows--;
-+		__mptcp_pm_close_subflow(msk);
+ 		if (!queue->rx_skbuff[entry]) {
+@@ -1256,6 +1255,7 @@ static void gem_rx_refill(struct macb_queue *queue)
+ 			dma_wmb();
+ 			desc->addr &= ~MACB_BIT(RX_USED);
+ 		}
++		queue->rx_prepared_head++;
+ 	}
  
- 	/* Even if this subflow is not really established, tell the PM to try
- 	 * to pick the next ones, if possible.
-diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
-index 85317ce38e3f..a1c845eb47bd 100644
---- a/net/mptcp/protocol.h
-+++ b/net/mptcp/protocol.h
-@@ -835,6 +835,20 @@ unsigned int mptcp_pm_get_add_addr_accept_max(struct mptcp_sock *msk);
- unsigned int mptcp_pm_get_subflows_max(struct mptcp_sock *msk);
- unsigned int mptcp_pm_get_local_addr_max(struct mptcp_sock *msk);
- 
-+/* called under PM lock */
-+static inline void __mptcp_pm_close_subflow(struct mptcp_sock *msk)
-+{
-+	if (--msk->pm.subflows < mptcp_pm_get_subflows_max(msk))
-+		WRITE_ONCE(msk->pm.accept_subflow, true);
-+}
-+
-+static inline void mptcp_pm_close_subflow(struct mptcp_sock *msk)
-+{
-+	spin_lock_bh(&msk->pm.lock);
-+	__mptcp_pm_close_subflow(msk);
-+	spin_unlock_bh(&msk->pm.lock);
-+}
-+
- void mptcp_sockopt_sync(struct mptcp_sock *msk, struct sock *ssk);
- void mptcp_sockopt_sync_locked(struct mptcp_sock *msk, struct sock *ssk);
- 
-diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-index bea47a1180dc..1d4d84efe8f5 100644
---- a/net/mptcp/subflow.c
-+++ b/net/mptcp/subflow.c
-@@ -1380,20 +1380,20 @@ int __mptcp_subflow_connect(struct sock *sk, const struct mptcp_addr_info *loc,
- 	struct sockaddr_storage addr;
- 	int remote_id = remote->id;
- 	int local_id = loc->id;
-+	int err = -ENOTCONN;
- 	struct socket *sf;
- 	struct sock *ssk;
- 	u32 remote_token;
- 	int addrlen;
- 	int ifindex;
- 	u8 flags;
--	int err;
- 
- 	if (!mptcp_is_fully_established(sk))
--		return -ENOTCONN;
-+		goto err_out;
- 
- 	err = mptcp_subflow_create_socket(sk, &sf);
- 	if (err)
--		return err;
-+		goto err_out;
- 
- 	ssk = sf->sk;
- 	subflow = mptcp_subflow_ctx(ssk);
-@@ -1456,6 +1456,12 @@ int __mptcp_subflow_connect(struct sock *sk, const struct mptcp_addr_info *loc,
- failed:
- 	subflow->disposable = 1;
- 	sock_release(sf);
-+
-+err_out:
-+	/* we account subflows before the creation, and this failures will not
-+	 * be caught by sk_state_change()
-+	 */
-+	mptcp_pm_close_subflow(msk);
- 	return err;
- }
- 
+ 	/* Make descriptor updates visible to hardware */
 -- 
 2.35.1
 
