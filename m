@@ -2,131 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4241EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 09:42:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78EC1C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 09:42:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233553AbiEWJk2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 05:40:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40164 "EHLO
+        id S233722AbiEWJm1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 05:42:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233475AbiEWJkW (ORCPT
+        with ESMTP id S233429AbiEWJk5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 05:40:22 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AC421EED9;
-        Mon, 23 May 2022 02:40:19 -0700 (PDT)
-Received: from mail-yb1-f179.google.com ([209.85.219.179]) by
- mrelayeu.kundenserver.de (mreue107 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1MCayD-1o152Q2tDn-009keD; Mon, 23 May 2022 11:40:17 +0200
-Received: by mail-yb1-f179.google.com with SMTP id x2so24035398ybi.8;
-        Mon, 23 May 2022 02:40:17 -0700 (PDT)
-X-Gm-Message-State: AOAM533jYsDxsPXRyDKVdyfflbydYmIwRi4A/bU3dlBPnBtiArvpWuWn
-        PT6IYiRzFL4Slp6ai/6YYmEjSael8VOAdtFhr9w=
-X-Google-Smtp-Source: ABdhPJwPSWjf0+4YNJaSIgYV3+A8L+w17pCRPMTjSGU6t40/PC+JSliP4KqFNtyVOp/6cKrGh1RaU8G2YIBlaJLXrPQ=
-X-Received: by 2002:a25:c747:0:b0:64f:62fb:f55e with SMTP id
- w68-20020a25c747000000b0064f62fbf55emr13651825ybe.106.1653298805675; Mon, 23
- May 2022 02:40:05 -0700 (PDT)
+        Mon, 23 May 2022 05:40:57 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA84F2F01E;
+        Mon, 23 May 2022 02:40:47 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: usama.anjum)
+        with ESMTPSA id A46991F42DD9
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1653298845;
+        bh=V0M8DYvWpS0+hFL3tgf2bcMHWIfVb8jn4R+BMUFe68g=;
+        h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
+        b=O9ZVdiVM5v1oBXV+1BXIVW0M2VmQ+HfXjC+3XBYXhMWGwaziMJJ0rG9DRsseuYSV9
+         JzSbS7XMPnN3G/5WICA/JK/ENZgqOa62BTrOOrdanpuDbTSi+CvKIkPr8Wf5jPzmF+
+         J/UeZSQk8xU0UnqqOeJkM6uKTVrIY74HR1R0QL7ybH2mdi+l/VoX6myQ23BrhtwIRv
+         jU8cQmVLVfVaAXvL9aG1dZ+WBxMnAUL+sq+U/OdhgFpwSh9dFeElK4o63xCRpwsyzf
+         8lEtJdPgLftM0NesautwPWh+7McBB8olXPES6CyqmP2GL+qmwM/2KuD0gL9v2gvrae
+         iyiQoCHn9GjDA==
+Message-ID: <19f72a58-b80e-f6a8-842f-a924c4b94eeb@collabora.com>
+Date:   Mon, 23 May 2022 14:40:39 +0500
 MIME-Version: 1.0
-References: <20220522155046.260146-1-tmaimon77@gmail.com> <20220522155046.260146-19-tmaimon77@gmail.com>
-In-Reply-To: <20220522155046.260146-19-tmaimon77@gmail.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Mon, 23 May 2022 11:39:48 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a1LCkM-w_Oi2qUqgq_Qxsg64uoGg5aaz=X8pBENHBhj0A@mail.gmail.com>
-Message-ID: <CAK8P3a1LCkM-w_Oi2qUqgq_Qxsg64uoGg5aaz=X8pBENHBhj0A@mail.gmail.com>
-Subject: Re: [PATCH v1 18/19] arm64: dts: nuvoton: Add initial NPCM845 EVB
- device tree
-To:     Tomer Maimon <tmaimon77@gmail.com>
-Cc:     Avi Fishman <avifishman70@gmail.com>,
-        Tali Perry <tali.perry1@gmail.com>,
-        Joel Stanley <joel@jms.id.au>,
-        Patrick Venture <venture@google.com>,
-        Nancy Yuen <yuenn@google.com>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        gregkh <gregkh@linuxfoundation.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Olof Johansson <olof@lixom.net>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        robert.hancock@calian.com,
-        "nathan=20Neusch=C3=A4fer?=" <j.neuschaefer@gmx.net>,
-        Lubomir Rintel <lkundrak@v3.sk>, SoC Team <soc@kernel.org>,
-        DTML <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:n7zvqzJoyeIQrt0t+bbdn3QVYisX2S5bXfz3u0VUhVzjsm2+x+o
- 659/sfSLnFqNBG7X7VtbYSKUHJCRzLZl40EszBTEYhCu20ZCEsrGsEmNe7Ab7THLuGp+tMJ
- grFXdUbW4oucpYzpzItMge4A6IxrrQMX94YKma6DD8XWZYfzC70RbHiunite5+fqf89+eXN
- LIbl0pJkO4UAdKfAmCifw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:2Z5BTVOu2s8=:cPSYfOv2MjhdvbMxTorHlS
- rLOLv/JIQN8ZNLEEprUL4opOISkNGyOHPLhQKpnatFNPTFFK02SGwqdbwGA0rASndK3H8NgsF
- LZN/NZTFC3UWBK9dYkR+3nhaYyNEBsujW6GSyVgBo4qjC3thY8Y7VHbAbIq4yKL5TFmEejH/c
- rxSVFWZNU9ayduqPmLC0YauJf9eSOUEumcaGtfToKFbiLxH3PpzVdPP+mNqVH627ZJPcLyH1/
- pZWGY73x5YfhQOG8wH2pRENhz2XhpJGDtPYQdOPRI0qEQy9B3feuoXtBT8nk4vs0RthkhUjVG
- YTMcCHeG+PGuvjeq1PW7hCCppuC56oraAaein7sADyfAA/hkici9fEeglyVbU73OHFNqNrQqC
- o3QzyBh6ySmIZoIMOt0GNUm8i4QF+zHvhlYKDQb/Bs1WnMv7NIj36tNEJQx6SJ/x7kGE+/+oq
- n/QUiVPXGaEfRoxpLDRDxk6IYWCAVX0ZTbIryM7UUsH7ZWCpYlPXDmpGUBLDVxXRIMm59HZ1z
- Pt4zHYKLBv6RwUu/+ybaRsPbj+WCF8QeUz8E+57JEvpuHEuB8dhV3GX6tlUQr4WPzKecDqqz4
- T32am9CBSUCwexZ1cSPdYtC5Q/Trv951eX9cSIIaoujwBZAOQcvFLVj7djbC/M6ZNUgSm0WMe
- CRMLZxuiIRLiSk990cWjlHcSxnpkVyf3vjbUChAduqG+XGP2T3WYkoUq0APyG5N4yq1GQr6Tb
- mq6s0kHhLW6onkYm489d0lZtKdHS3W3AkyjFaMovTV7mqs5ywNjC/fIsp17D1OtR9M6boXjPy
- OO1nH20/LhOtiqXq99IR9CUpxNLN1GkRgqFVx9OQsVJWROkdKXtTn+ST8u8/5SCfR+l+8/pJs
- Rgkjp4U1VhoUWZ7g6s3dnRWuluTCjnnmNDLILdiVg=
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Cc:     usama.anjum@collabora.com, Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        KERNEL SELFTEST FRAMEWORK <linux-kselftest@vger.kernel.org>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "kernelci@groups.io" <kernelci@groups.io>,
+        Collabora Kernel ML <kernel@collabora.com>
+Subject: Re: [Bug Report] - kselftest build fails if output directory is first
+ level sub-directory
+Content-Language: en-US
+To:     Masahiro Yamada <masahiroy@kernel.org>,
+        Shuah Khan <shuah@kernel.org>
+References: <c25d7ea7-4f72-4a2b-d8c3-d317e64fcbbb@collabora.com>
+ <CAK7LNATL4nMmKgrjS8meavnpn=HisD30QxuPUKDqtWWgbGcSZw@mail.gmail.com>
+From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
+In-Reply-To: <CAK7LNATL4nMmKgrjS8meavnpn=HisD30QxuPUKDqtWWgbGcSZw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, May 22, 2022 at 5:50 PM Tomer Maimon <tmaimon77@gmail.com> wrote:
-> +/ {
-> +       model = "Nuvoton npcm845 Development Board (Device Tree)";
-> +       compatible = "nuvoton,npcm845";
-> +
-> +       aliases {
-> +               serial0 = &serial0;
-> +               serial1 = &serial1;
-> +               serial2 = &serial2;
-> +               serial3 = &serial3;
-> +       };
+On 5/22/22 10:15 PM, Masahiro Yamada wrote:
+> On Sat, May 21, 2022 at 3:44 PM Muhammad Usama Anjum
+> <usama.anjum@collabora.com> wrote:
+>>
+>> Hello,
+>>
+>> kselftest can be built using the kernel's top most Makefile without
+>> using kselftest's Makefile directly. But there is bug in the top most
+>> Makefile. The build fails if the specified output directory is first
+>> level sub-directory. Here is a example to reproduce this bug:
+>>
+>> make kselftest-all O=build
+>>
+>> "The Make is working in a wrong directory, that is why the relative path
+>> does not work." Masahiro Yamada. Feel free to fix it if someone pin the bug.
+>>
+>> It should be noted that the build works in some other combinations:
+>> make kselftest-all (works)
+>> make kselftest-all O=/tmp (works)
+>> make kselftest-all O=build/build2 (works)
+>>
+>> My unsuccessful attempt to fix this bug can be found here:
+>> https://lore.kernel.org/lkml/20220223191016.1658728-1-usama.anjum@collabora.com/
+>>
+>> Thanks,
+>> Muhammad Usama Anjum
+> 
+> 
+> This problem starts from the bad design of the kselftest framework.
+> I did some research before. I think I can fix the root cause but
+> currently I do not have enough time to do it.
+> 
+> 
+> KBUILD_ABS_SRCTREE is a user-interface to request
+> Kbuild to use the absolute path.
+> If it is forced in the top Makefile, users have no way to
+> negate it.
+> It is true that using the absolute path is a quick work-around
+> because you do not need to care about the current working directory.
+> 
+> If you insist on it,  just go ahead.  It is just two line changes.
+> Once the issue is fixed in a better way, your patch can be reverted easily.
+Thank you for replying. Lets merge it Shuah?
 
-> +               apb {
-> +                       serial0: serial@0 {
-> +                               status = "okay";
-> +                       };
-> +
-> +                       serial1: serial@1000 {
-> +                               status = "disabled";
-> +                       };
-> +
-> +                       serial2: serial@2000 {
-> +                               status = "disabled";
-> +                       };
-> +
-> +                       serial3: serial@3000 {
-> +                               status = "disabled";
-> +                       };
+> 
+> 
+> 
 
-Please drop the aliases for disabled uarts. It probably also makes
-sense to have the status="disabled" properties in the .dtsi file and
-only override them when you explicitly want to enable a uart for a
-board.
-
-       Arnd
+-- 
+Muhammad Usama Anjum
