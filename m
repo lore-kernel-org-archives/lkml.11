@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24F94C4167B
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:28:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32C2EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:28:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241441AbiEWR0q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:26:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48662 "EHLO
+        id S240961AbiEWR0N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:26:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240222AbiEWRRc (ORCPT
+        with ESMTP id S240564AbiEWRQ3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:17:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D63971A10;
-        Mon, 23 May 2022 10:17:20 -0700 (PDT)
+        Mon, 23 May 2022 13:16:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F4AD71D9D;
+        Mon, 23 May 2022 10:15:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7E50560919;
-        Mon, 23 May 2022 17:17:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62D28C385A9;
-        Mon, 23 May 2022 17:17:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6BA54B811FF;
+        Mon, 23 May 2022 17:14:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92BA6C385A9;
+        Mon, 23 May 2022 17:14:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326239;
-        bh=yC99/wYz6UhC2zfmoGGY9wbZug421pD2Jlmf8Cdzo/U=;
+        s=korg; t=1653326076;
+        bh=PtMOftg5FnU6hxsGIPr5YdOoW8FziP18jnoUCn4A8SA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ToqgX9ttx3tVM3OxZ8tM4VYkkZPzDMcCR/P1P1DiF3iu1z6znvmXWl3yte5voSk0F
-         ss/JqHvw4JLk4sKJZWjGy25OtYKISMfeCY4CheMFBy5N9MTKnZdcugJKsU/Aqgg//y
-         gFJTu/IheA74ls+OGhMSaQ2d0IdunF1bK8wF0kSM=
+        b=iaQzmdGXlE8c4OJSNNpFfd6ICc+0MBm7GsDKwvtOWBRx4RgHChPd5p4yMjTOBXpH5
+         tXwee94ArdwGVrPg3mhjbaSmL4oSvC2tK1hh11Q3uKL4L2rwaA3HMyLIAayAvRtHiJ
+         y3J4xRheNAzLJ5U2a89QscNAxtNgOb22SKSQdS8I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 020/132] rtc: pcf2127: fix bug when reading alarm registers
-Date:   Mon, 23 May 2022 19:03:49 +0200
-Message-Id: <20220523165826.874169570@linuxfoundation.org>
+Subject: [PATCH 5.4 51/68] gpio: mvebu/pwm: Refuse requests with inverted polarity
+Date:   Mon, 23 May 2022 19:05:18 +0200
+Message-Id: <20220523165810.967849159@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
-References: <20220523165823.492309987@linuxfoundation.org>
+In-Reply-To: <20220523165802.500642349@linuxfoundation.org>
+References: <20220523165802.500642349@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,43 +51,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-[ Upstream commit 73ce05302007eece23a6acb7dc124c92a2209087 ]
+[ Upstream commit 3ecb10175b1f776f076553c24e2689e42953fef5 ]
 
-The first bug is that reading the 5 alarm registers results in a read
-operation of 20 bytes. The reason is because the destination buffer is
-defined as an array of "unsigned int", and we use the sizeof()
-operator on this array to define the bulk read count.
+The driver doesn't take struct pwm_state::polarity into account when
+configuring the hardware, so refuse requests for inverted polarity.
 
-The second bug is that the read value is invalid, because we are
-indexing the destination buffer as integers (4 bytes), instead of
-indexing it as u8.
-
-Changing the destination buffer type to u8 fixes both problems.
-
-Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Link: https://lore.kernel.org/r/20220208162908.3182581-1-hugo@hugovil.com
+Fixes: 757642f9a584 ("gpio: mvebu: Add limited PWM support")
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/rtc/rtc-pcf2127.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/gpio/gpio-mvebu.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/rtc/rtc-pcf2127.c b/drivers/rtc/rtc-pcf2127.c
-index 56c58b055dff..43f801107095 100644
---- a/drivers/rtc/rtc-pcf2127.c
-+++ b/drivers/rtc/rtc-pcf2127.c
-@@ -374,7 +374,8 @@ static int pcf2127_watchdog_init(struct device *dev, struct pcf2127 *pcf2127)
- static int pcf2127_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alrm)
- {
- 	struct pcf2127 *pcf2127 = dev_get_drvdata(dev);
--	unsigned int buf[5], ctrl2;
-+	u8 buf[5];
-+	unsigned int ctrl2;
- 	int ret;
+diff --git a/drivers/gpio/gpio-mvebu.c b/drivers/gpio/gpio-mvebu.c
+index 89a053b1d279..b5ae28fce9a8 100644
+--- a/drivers/gpio/gpio-mvebu.c
++++ b/drivers/gpio/gpio-mvebu.c
+@@ -697,6 +697,9 @@ static int mvebu_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	unsigned long flags;
+ 	unsigned int on, off;
  
- 	ret = regmap_read(pcf2127->regmap, PCF2127_REG_CTRL2, &ctrl2);
++	if (state->polarity != PWM_POLARITY_NORMAL)
++		return -EINVAL;
++
+ 	val = (unsigned long long) mvpwm->clk_rate * state->duty_cycle;
+ 	do_div(val, NSEC_PER_SEC);
+ 	if (val > UINT_MAX)
 -- 
 2.35.1
 
