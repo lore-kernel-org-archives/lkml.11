@@ -2,97 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4003FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 20:05:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D396CC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 20:07:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232200AbiEWUFm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 16:05:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60610 "EHLO
+        id S232284AbiEWUH0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 16:07:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232169AbiEWUFi (ORCPT
+        with ESMTP id S232180AbiEWUHZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 16:05:38 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 544CF8BD21
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 13:05:34 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id ob14-20020a17090b390e00b001dff2a43f8cso347191pjb.1
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 13:05:34 -0700 (PDT)
+        Mon, 23 May 2022 16:07:25 -0400
+Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EECB954A3;
+        Mon, 23 May 2022 13:07:24 -0700 (PDT)
+Received: by mail-oi1-x231.google.com with SMTP id m25so19136653oih.2;
+        Mon, 23 May 2022 13:07:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language
-         :from:to:cc:references:in-reply-to:content-transfer-encoding;
-        bh=8nlcPdUIGG2cVtX3RxOVUlvfsw4FPYq0A3k29gmR/pU=;
-        b=T3D6yNJ37K7Afl1Tb0B+iS0pzL7eDNFeRj1lcKNj7dh/uPFFOGQYZBflz3r330WMWs
-         v8zJ4tt9zPGQDeMAWnS0eTaXNEQJ118SPRLPlFw5jOC3o9BxPhQyXmenCcMYwrqCk2A3
-         VePb6xiEgrKUqTVZbz0hLT80m/T/zqgLZ9FzW83kyK30815NArQk5bH2PQdH0vuymT/z
-         1wSIVhACFrJX5tdCStlbpXHi2ueWtTfw1i3i5YoxoSXC7agx/x5c+dft9Zn+qRwQOO1C
-         uzoPfjwKuB8LB+fp9jViGOvgCmVs8+svbJ/Q/DTIRlP89GJl6ptr1wNCMhfSLqELJ+OL
-         t80A==
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=5VgQT8K1FyKEoolAoPMmYXbF0kmo6XWGxV/7Bz8lAHU=;
+        b=nYbpPsvXC0KEE7WSIsSuO9pUrLaICdMYJH7MRhfnH4a5FklA1MGCb3fzVXapwc/07f
+         opBGExTn/KbDQSTOV2iQcuizp+m6qKz4ppJNSEzZal9RmUpke/itKeufO09fau//BgYd
+         HXyo/RUrTjP1CZ7Frs6J0pykjxDxK4mhWOw3MoTqplmSn5VrXTvvPHWczFQuX9H/Rsm3
+         wuIwmBUDwAQcmBkwBJdKhTLjxuJrbdRrHSLTgVx0aOO8BZxAhE6G7o/5jIaWAoGYK4tx
+         nOVAPZo1taKFtPhk0qCU7bpOKRD5eTqnV/912gyeFgf5DihU9E5HQkdnbYM2AP6pLYKD
+         jdUg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:from:to:cc:references:in-reply-to
-         :content-transfer-encoding;
-        bh=8nlcPdUIGG2cVtX3RxOVUlvfsw4FPYq0A3k29gmR/pU=;
-        b=5Ni0h+kCXyvsju++4qP/MZ7ykg7UxP85o6o1RnSNgSPpJ5QVgCW7ouNQoJof+zYMrW
-         Umhu5HOj2kH+DbqqZFgehrzb6htRP6UXQzs0De4t5WZU5Fz2MeTPG5iAGkh1g0h0IzLU
-         Fr8OV7JGHwemfP8TsYZ70bhQastGQCBahmvJnCxdf0wNPFifYA1MIZKkG3Jh1cBslmyc
-         V5GZsKQgJKcXVwgRYL/s3gyJ/KxqQXv8EJSUcY/7oC8Tne48wdaHEjaRDxFz/gDT6REF
-         aIDne9QylZNfplEWFF5xCrRzc5kcMwo0dpetAYQr5lIQfUJ2+hPIQMqLvtZ6sOEJdgGY
-         hSjQ==
-X-Gm-Message-State: AOAM533MiK80IFLJPN+WySY8NWow7A4+HORlZAshQvQCpqAdM0s45Nau
-        srSTAlNR9+E4kaeUEAQ3DZ0xiA==
-X-Google-Smtp-Source: ABdhPJw5jFG8elE6hgZ8FZveZNV3BjkMoKBiRXm9zUm5oqGpeDoeKe76siVSOtsPMKKhmzBClRVq+A==
-X-Received: by 2002:a17:90a:cc6:b0:1d2:9a04:d29e with SMTP id 6-20020a17090a0cc600b001d29a04d29emr679619pjt.136.1653336333432;
-        Mon, 23 May 2022 13:05:33 -0700 (PDT)
-Received: from [192.168.254.17] ([50.39.160.154])
-        by smtp.gmail.com with ESMTPSA id ge10-20020a17090b0e0a00b001d75aabe050sm83853pjb.34.2022.05.23.13.05.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 May 2022 13:05:32 -0700 (PDT)
-Message-ID: <e1f7a033-e1f2-bb52-536e-e7975ca93235@linaro.org>
-Date:   Mon, 23 May 2022 13:05:31 -0700
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :mime-version:content-disposition;
+        bh=5VgQT8K1FyKEoolAoPMmYXbF0kmo6XWGxV/7Bz8lAHU=;
+        b=ZGnBK0PS0EGGNcSgRBFT9RjWbm41Jax7LZLal80LyXXhKKAVWDJf8aWlJ00J6STPdY
+         qN8IlrYYYVc6CBsLmX3Rrcx+kDbCWtJqqsSs+RTKDdsBNzk1aab7a7FJUGSvI56C3V5/
+         1QBAlR9m2YQJ4J0qlt2kD64W3vxgKmOMX0ZncGgIvzRCcKtvr3WNqhURW1gmqoIDakCz
+         YKmNI4tnDBC7vPyHsvBtF9mlERadWdCFlfvb5moYKQFYkgLTR93exJJByuYDOYd1Df9z
+         gQd+4DZES9A7nBZ3WJdxoer6xzt7kNv58yl/KREqwkOSy1qMkqIOj2v0xExEi2thN+Jk
+         L0uA==
+X-Gm-Message-State: AOAM5333vFXhm5Bczh+rR9MB49Xc9wg1XsNTn1G8BWymAy7AoQVm946F
+        tneGhDgbuUYFQTIdfI/5lOQ=
+X-Google-Smtp-Source: ABdhPJxQ8/nPC9mzkYgT6gZ4xy/6uIcigaDtlBKE31YJwSM9DgkfBW3YxKzowPvxhxfXENnpYzEnWg==
+X-Received: by 2002:a05:6808:1a17:b0:32b:7ae1:e7e1 with SMTP id bk23-20020a0568081a1700b0032b7ae1e7e1mr403092oib.275.1653336443863;
+        Mon, 23 May 2022 13:07:23 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id i2-20020a056870344200b000f200155e06sm4157841oah.54.2022.05.23.13.07.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 May 2022 13:07:23 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Mon, 23 May 2022 13:07:22 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     kernel test robot <lkp@intel.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        linux-kbuild@vger.kernel.org,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: Re: [PATCH] gcc-plugins: Require utsrelease.h before scripts target
+Message-ID: <20220523200722.GA3879929@roeck-us.net>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH] cgroup: don't queue css_release_work if one already
- pending
-Content-Language: en-US
-From:   Tadeusz Struk <tadeusz.struk@linaro.org>
-To:     Tejun Heo <tj@kernel.org>
-Cc:     =?UTF-8?Q?Michal_Koutn=c3=bd?= <mkoutny@suse.com>,
-        Hillf Danton <hdanton@sina.com>, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org,
-        syzbot+e42ae441c3b10acf9e9d@syzkaller.appspotmail.com
-References: <20220412192459.227740-1-tadeusz.struk@linaro.org>
- <20220414164409.GA5404@blackbody.suse.cz> <YmHwOAdGY2Lwl+M3@slm.duckdns.org>
- <20220422100400.GA29552@blackbody.suse.cz>
- <20220519112319.2455-1-hdanton@sina.com>
- <25fb057a-077f-b601-dcb7-130071c733db@linaro.org>
- <YodNu2C5iHKW3UeZ@slm.duckdns.org>
- <489592f6-b783-7bdb-2cc8-0c8e35ebc674@linaro.org>
- <20220520164255.GB17335@blackbody.suse.cz>
- <6ac66e89-2063-c5e8-df15-f77b76befc05@linaro.org>
- <YovaKZV7IzQgCo9E@slm.duckdns.org>
- <7bbf2792-355b-65a7-e239-879b3f928384@linaro.org>
-In-Reply-To: <7bbf2792-355b-65a7-e239-879b3f928384@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/23/22 12:08, Tadeusz Struk wrote:
-> On 5/23/22 12:02, Tejun Heo wrote:
->> Can you try holding an extra ref in the killed path?
+On Mon, May 23, 2022 at 01:02:22PM -0700, Kees Cook wrote:
+> The "utsrelease.h" target was in parallel with the "scripts" target,
+> which meant -j1 or unlucky parallel builds from a distclean state would
+> fail to build the GCC plugins.
 > 
-> Yes, I can try that. Should that be with or without the extra work_struct?
+> Reported-by: kernel test robot <lkp@intel.com>
+> Link: https://lore.kernel.org/linux-mm/202205230239.EZxeZ3Fv-lkp@intel.com
+> Reported-by: Guenter Roeck <linux@roeck-us.net>
+> Link: https://lore.kernel.org/lkml/YouX6g1T7w3FDeM8@cmpxchg.org
+> Fixes: 61f60bac8c05 ("gcc-plugins: Change all version strings match kernel")
+> Cc: Guenter Roeck <linux@roeck-us.net>
+> Cc: Masahiro Yamada <masahiroy@kernel.org>
+> Cc: linux-kbuild@vger.kernel.org
+> Signed-off-by: Kees Cook <keescook@chromium.org>
 
-With this patch:
-https://syzkaller.appspot.com/text?tag=Patch&x=1264b23df00000
+I was able to reproduce the problem with the following change
+in Makefile.
 
-The issue still triggers:
-https://syzkaller.appspot.com/text?tag=CrashReport&x=162b5781f00000
+ include/generated/utsrelease.h: include/config/kernel.release FORCE
++       sleep 2
+        $(call filechk,utsrelease.h)
 
--- 
-Thanks,
-Tadeusz
+With this patch, the problem is gone.
+
+Tested-by: Guenter Roeck <linux@roeck-us.net>
+
+Guenter
+
+> ---
+>  Makefile                     | 2 +-
+>  scripts/gcc-plugins/Makefile | 2 +-
+>  2 files changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/Makefile b/Makefile
+> index 91c91fcf3c24..c04420d5aa3d 100644
+> --- a/Makefile
+> +++ b/Makefile
+> @@ -1175,7 +1175,7 @@ include/config/kernel.release: FORCE
+>  # Carefully list dependencies so we do not try to build scripts twice
+>  # in parallel
+>  PHONY += scripts
+> -scripts: scripts_basic scripts_dtc
+> +scripts: include/generated/utsrelease.h scripts_basic scripts_dtc
+>  	$(Q)$(MAKE) $(build)=$(@)
+>  
+>  # Things we need to do before we recursively start building the kernel
+> diff --git a/scripts/gcc-plugins/Makefile b/scripts/gcc-plugins/Makefile
+> index 6f0aecad5d67..c29334669a16 100644
+> --- a/scripts/gcc-plugins/Makefile
+> +++ b/scripts/gcc-plugins/Makefile
+> @@ -64,5 +64,5 @@ $(foreach m, $(notdir $(plugin-multi)), $(eval $(obj)/$m: $(addprefix $(obj)/, $
+>  quiet_cmd_plugin_cxx_o_c = HOSTCXX $@
+>        cmd_plugin_cxx_o_c = $(HOSTCXX) $(plugin_cxxflags) -c -o $@ $<
+>  
+> -$(plugin-objs): $(obj)/%.o: $(src)/%.c FORCE
+> +$(plugin-objs): $(obj)/%.o: $(src)/%.c $(objdir)/include/generated/utsrelease.h FORCE
+>  	$(call if_changed_dep,plugin_cxx_o_c)
+> -- 
+> 2.32.0
+> 
