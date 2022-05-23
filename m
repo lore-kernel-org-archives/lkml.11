@@ -2,88 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AE5BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 07:47:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AB35C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 07:49:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231247AbiEWHq5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 03:46:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59826 "EHLO
+        id S230477AbiEWHtS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 03:49:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230456AbiEWHqn (ORCPT
+        with ESMTP id S230456AbiEWHtP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 03:46:43 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7104B18B13;
-        Mon, 23 May 2022 00:46:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1653292001; x=1684828001;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=jkdxHplSLsDnOsD55YcH0JiIDuH9zEfIVpFV2KpIO/k=;
-  b=Z7YPNuz4DGKmYuWNLAjwoK6Q3JOGDSnDj0O1F1d966VBi4WVzEVgfdap
-   XQra6KCcjyVPkQN722hJ90t/9TxTM5cPWH6/h/pg22xBYuEkApNRsxFvW
-   TwsFqcdBvm2Ia93T2u4a9CHllSbtyHEkLOHWm6qlpDjgDWRQdDuw7yjun
-   c=;
-Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
-  by alexa-out.qualcomm.com with ESMTP; 23 May 2022 00:01:20 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2022 00:01:19 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 23 May 2022 00:01:19 -0700
-Received: from blr-ubuntu-87.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 23 May 2022 00:01:16 -0700
-From:   Sibi Sankar <quic_sibis@quicinc.com>
-To:     <bjorn.andersson@linaro.org>
-CC:     <agross@kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <robh+dt@kernel.org>,
-        <quic_psodagud@quicinc.com>, <eberman@codeaurora.org>,
-        Sibi Sankar <quic_sibis@quicinc.com>
-Subject: [RFC 1/3] dt-bindings: firmware: qcom-scm: Add interconnects property
-Date:   Mon, 23 May 2022 12:30:56 +0530
-Message-ID: <1653289258-17699-2-git-send-email-quic_sibis@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1653289258-17699-1-git-send-email-quic_sibis@quicinc.com>
-References: <1653289258-17699-1-git-send-email-quic_sibis@quicinc.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+        Mon, 23 May 2022 03:49:15 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D92C140EB;
+        Mon, 23 May 2022 00:49:13 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 4EE361F8CF;
+        Mon, 23 May 2022 07:49:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1653292152; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=XAg+6nx5PUs28DZ7+XHOM+CyCealxuvpvLVJpUXQk44=;
+        b=gDp2PyW5NIpyNPBkBZMOfhM01lfIgUpcc1/yahhhuOIRalyhwvrDZMR5y6ekuuFh/WeazF
+        k4vyV66abLWtYrF3Farb0tIvV4jnxYRcRieABtxXm1HxXtYvYl0vUlJrjxXuXX5i0CHRzz
+        LJE6emx0QVHMEgVtAl2u+FC8dX4YlYE=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1653292152;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=XAg+6nx5PUs28DZ7+XHOM+CyCealxuvpvLVJpUXQk44=;
+        b=nPYgmwnWMcMzTu1pFEiMckvlmuCFea5F+14LGYZ8yfIPmoTU4BUgXrZQGWNPZQxGOLkel+
+        ooVsBBwCF2TC9HAA==
+Received: from valkyrie.site.suse.de (unknown [10.163.18.242])
+        by relay2.suse.de (Postfix) with ESMTP id 190442C141;
+        Mon, 23 May 2022 07:49:12 +0000 (UTC)
+Date:   Mon, 23 May 2022 09:49:11 +0200
+Message-ID: <871qwkofig.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Julia Lawall <Julia.Lawall@inria.fr>
+Cc:     Jaya Kumar <jayakumar.alsa@gmail.com>,
+        kernel-janitors@vger.kernel.org, Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ALSA: cs5535audio: fix typo in comment
+In-Reply-To: <20220521111145.81697-1-Julia.Lawall@inria.fr>
+References: <20220521111145.81697-1-Julia.Lawall@inria.fr>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI/1.14.6 (Maruoka)
+ FLIM/1.14.9 (=?ISO-2022-JP-2?B?R29qGyQoRCtXGyhC?=) APEL/10.8 Emacs/27
+ (x86_64-suse-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI 1.14.6 - "Maruoka")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add interconnects as an optional property for SM8450 SoCs.
+On Sat, 21 May 2022 13:10:11 +0200,
+Julia Lawall wrote:
+> 
+> Spelling mistake (triple letters) in comment.
+> Detected with the help of Coccinelle.
+> 
+> Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
 
-Signed-off-by: Sibi Sankar <quic_sibis@quicinc.com>
----
+Thanks, applied.
 
-Since the interconnect requirements could either be specified in the
-individual remoteprocs or directly in the scm interface, will perform
-the yaml conversion in the next re-spin based on the consensus.
 
- Documentation/devicetree/bindings/firmware/qcom,scm.txt | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/Documentation/devicetree/bindings/firmware/qcom,scm.txt b/Documentation/devicetree/bindings/firmware/qcom,scm.txt
-index 0f4e5ab26477..4de3e055bc94 100644
---- a/Documentation/devicetree/bindings/firmware/qcom,scm.txt
-+++ b/Documentation/devicetree/bindings/firmware/qcom,scm.txt
-@@ -43,6 +43,7 @@ Required properties:
-   clock and "bus" for the bus clock per the requirements of the compatible.
- - qcom,dload-mode: phandle to the TCSR hardware block and offset of the
- 		   download mode control register (optional)
-+- interconnects: Specifies the bandwidth requirements of the SCM interface (optional)
- 
- Example for MSM8916:
- 
--- 
-2.7.4
-
+Takashi
