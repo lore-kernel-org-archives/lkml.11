@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE2FBC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:12:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF6D2C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:13:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244407AbiEWSLF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:11:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42384 "EHLO
+        id S244636AbiEWSLZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:11:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242768AbiEWRhq (ORCPT
+        with ESMTP id S242420AbiEWRhi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:37:46 -0400
+        Mon, 23 May 2022 13:37:38 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E29C59962;
-        Mon, 23 May 2022 10:31:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD94250020;
+        Mon, 23 May 2022 10:31:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C520F60B35;
-        Mon, 23 May 2022 17:28:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB343C385A9;
-        Mon, 23 May 2022 17:28:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2849261117;
+        Mon, 23 May 2022 17:28:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 151E5C385A9;
+        Mon, 23 May 2022 17:28:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326938;
-        bh=6SklDtGidVgIZZp/oP4XYbzfN+cbzLZbmoMisEZPbdo=;
+        s=korg; t=1653326909;
+        bh=ICOpqBu5adW1yGmT60gbTxzEdRQB8LpjWZum/HlBgtk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dId8sHd+2oQYEs5lgdpKMorTecin1Iwx3CrLKztB7yGTfMM1JrMTi9ojDRkMkUEqS
-         dJPb1YtqsXjj9Q+D/s6Giu5dT7ypRnC4m5AKhGdHsFozczdpQO9AibcCmejmcbKj7m
-         2uvKoQwBQJJRtK4dirrs/KecwKQX6+jR2DCsNskk=
+        b=zSt6422Zk3PKt6zaocPjQEfarHoRsTvSQDMZmKuS+XlUpPTySt18V83dU5iwQ0U8+
+         +T32kl7SS5iaF2rdDhA4YNsXZznUdCL6Ifv46z27mErfNsKSJ9WjCHf70GimxSf5Hx
+         v/O0ns5C7fn7TDvYOPly3OdygRJ1hU6NbhJEAezc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxim Mikityanskiy <maximmi@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 106/158] net/mlx5e: Properly block LRO when XDP is enabled
-Date:   Mon, 23 May 2022 19:04:23 +0200
-Message-Id: <20220523165848.759289169@linuxfoundation.org>
+        stable@vger.kernel.org, Lucas De Marchi <lucas.demarchi@intel.com>,
+        Anusha Srivatsa <anusha.srivatsa@intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+Subject: [PATCH 5.17 064/158] drm/i915/dmc: Add MMIO range restrictions
+Date:   Mon, 23 May 2022 19:03:41 +0200
+Message-Id: <20220523165841.466221014@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
 References: <20220523165830.581652127@linuxfoundation.org>
@@ -50,47 +49,122 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxim Mikityanskiy <maximmi@nvidia.com>
+From: Anusha Srivatsa <anusha.srivatsa@intel.com>
 
-[ Upstream commit cf6e34c8c22fba66bd21244b95ea47e235f68974 ]
+commit 54395a33718af1c04b5098203335b25382291a16 upstream.
 
-LRO is incompatible and mutually exclusive with XDP. However, the needed
-checks are only made when enabling XDP. If LRO is enabled when XDP is
-already active, the command will succeed, and XDP will be skipped in the
-data path, although still enabled.
+Bspec has added some steps that check forDMC MMIO range before
+programming them
 
-This commit fixes the bug by checking the XDP status in
-mlx5e_fix_features and disabling LRO if XDP is enabled.
+v2: Fix for CI
+v3: move register defines to .h (Anusha)
+- Check MMIO restrictions per pipe
+- Add MMIO restricton for v1 dmc header as well (Lucas)
+v4: s/_PICK/_PICK_EVEN and use it only for Pipe DMC scenario.
+- clean up sanity check logic.(Lucas)
+- Add MMIO range for RKL as well.(Anusha)
+v5: Use DISPLAY_VER instead of per platform check (Lucas)
 
-Fixes: 86994156c736 ("net/mlx5e: XDP fast RX drop bpf programs support")
-Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+BSpec: 49193
+
+Cc: stable@vger.kernel.org
+Cc: Lucas De Marchi <lucas.demarchi@intel.com>
+Signed-off-by: Anusha Srivatsa <anusha.srivatsa@intel.com>
+Reviewed-by: Lucas De Marchi <lucas.demarchi@intel.com>
+Signed-off-by: Lucas De Marchi <lucas.demarchi@intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220511000847.1068302-1-anusha.srivatsa@intel.com
+(cherry picked from commit 21c47196aec3a93f913a7515e1e7b30e6c54d6c6)
+Signed-off-by: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/gpu/drm/i915/display/intel_dmc.c |   44 +++++++++++++++++++++++++++++++
+ drivers/gpu/drm/i915/i915_reg.h          |   16 +++++++++++
+ 2 files changed, 60 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index d468daa7dc20..1f8fc8d77bc3 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -3865,6 +3865,13 @@ static netdev_features_t mlx5e_fix_features(struct net_device *netdev,
- 		}
+--- a/drivers/gpu/drm/i915/display/intel_dmc.c
++++ b/drivers/gpu/drm/i915/display/intel_dmc.c
+@@ -367,6 +367,44 @@ static void dmc_set_fw_offset(struct int
  	}
+ }
  
-+	if (params->xdp_prog) {
-+		if (features & NETIF_F_LRO) {
-+			netdev_warn(netdev, "LRO is incompatible with XDP\n");
-+			features &= ~NETIF_F_LRO;
-+		}
++static bool dmc_mmio_addr_sanity_check(struct intel_dmc *dmc,
++				       const u32 *mmioaddr, u32 mmio_count,
++				       int header_ver, u8 dmc_id)
++{
++	struct drm_i915_private *i915 = container_of(dmc, typeof(*i915), dmc);
++	u32 start_range, end_range;
++	int i;
++
++	if (dmc_id >= DMC_FW_MAX) {
++		drm_warn(&i915->drm, "Unsupported firmware id %u\n", dmc_id);
++		return false;
 +	}
 +
- 	if (MLX5E_GET_PFLAG(params, MLX5E_PFLAG_RX_CQE_COMPRESS)) {
- 		features &= ~NETIF_F_RXHASH;
- 		if (netdev->features & NETIF_F_RXHASH)
--- 
-2.35.1
-
++	if (header_ver == 1) {
++		start_range = DMC_MMIO_START_RANGE;
++		end_range = DMC_MMIO_END_RANGE;
++	} else if (dmc_id == DMC_FW_MAIN) {
++		start_range = TGL_MAIN_MMIO_START;
++		end_range = TGL_MAIN_MMIO_END;
++	} else if (DISPLAY_VER(i915) >= 13) {
++		start_range = ADLP_PIPE_MMIO_START;
++		end_range = ADLP_PIPE_MMIO_END;
++	} else if (DISPLAY_VER(i915) >= 12) {
++		start_range = TGL_PIPE_MMIO_START(dmc_id);
++		end_range = TGL_PIPE_MMIO_END(dmc_id);
++	} else {
++		drm_warn(&i915->drm, "Unknown mmio range for sanity check");
++		return false;
++	}
++
++	for (i = 0; i < mmio_count; i++) {
++		if (mmioaddr[i] < start_range || mmioaddr[i] > end_range)
++			return false;
++	}
++
++	return true;
++}
++
+ static u32 parse_dmc_fw_header(struct intel_dmc *dmc,
+ 			       const struct intel_dmc_header_base *dmc_header,
+ 			       size_t rem_size, u8 dmc_id)
+@@ -436,6 +474,12 @@ static u32 parse_dmc_fw_header(struct in
+ 		return 0;
+ 	}
+ 
++	if (!dmc_mmio_addr_sanity_check(dmc, mmioaddr, mmio_count,
++					dmc_header->header_ver, dmc_id)) {
++		drm_err(&i915->drm, "DMC firmware has Wrong MMIO Addresses\n");
++		return 0;
++	}
++
+ 	for (i = 0; i < mmio_count; i++) {
+ 		dmc_info->mmioaddr[i] = _MMIO(mmioaddr[i]);
+ 		dmc_info->mmiodata[i] = mmiodata[i];
+--- a/drivers/gpu/drm/i915/i915_reg.h
++++ b/drivers/gpu/drm/i915/i915_reg.h
+@@ -7938,6 +7938,22 @@ enum {
+ /* MMIO address range for DMC program (0x80000 - 0x82FFF) */
+ #define DMC_MMIO_START_RANGE	0x80000
+ #define DMC_MMIO_END_RANGE	0x8FFFF
++#define DMC_V1_MMIO_START_RANGE	0x80000
++#define TGL_MAIN_MMIO_START	0x8F000
++#define TGL_MAIN_MMIO_END	0x8FFFF
++#define _TGL_PIPEA_MMIO_START	0x92000
++#define _TGL_PIPEA_MMIO_END	0x93FFF
++#define _TGL_PIPEB_MMIO_START	0x96000
++#define _TGL_PIPEB_MMIO_END	0x97FFF
++#define ADLP_PIPE_MMIO_START	0x5F000
++#define ADLP_PIPE_MMIO_END	0x5FFFF
++
++#define TGL_PIPE_MMIO_START(dmc_id)	_PICK_EVEN(((dmc_id) - 1), _TGL_PIPEA_MMIO_START,\
++						_TGL_PIPEB_MMIO_START)
++
++#define TGL_PIPE_MMIO_END(dmc_id)	_PICK_EVEN(((dmc_id) - 1), _TGL_PIPEA_MMIO_END,\
++						_TGL_PIPEB_MMIO_END)
++
+ #define SKL_DMC_DC3_DC5_COUNT	_MMIO(0x80030)
+ #define SKL_DMC_DC5_DC6_COUNT	_MMIO(0x8002C)
+ #define BXT_DMC_DC3_DC5_COUNT	_MMIO(0x80038)
 
 
