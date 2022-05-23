@@ -2,115 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EB9AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 06:42:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDC8EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 06:42:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229765AbiEWGmF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 02:42:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50320 "EHLO
+        id S229839AbiEWGmR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 02:42:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229472AbiEWGmC (ORCPT
+        with ESMTP id S229472AbiEWGmM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 02:42:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D0734D61B;
-        Sun, 22 May 2022 23:41:16 -0700 (PDT)
+        Mon, 23 May 2022 02:42:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 296652C675;
+        Sun, 22 May 2022 23:41:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A45A9B80F00;
-        Mon, 23 May 2022 06:26:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B428C385A9;
-        Mon, 23 May 2022 06:26:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CAF57B80EF5;
+        Mon, 23 May 2022 06:31:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF416C385A9;
+        Mon, 23 May 2022 06:31:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653287179;
-        bh=yJL8uVkYFpCvvkQePY+koScMornVS7Wnyustin7mw/g=;
+        s=korg; t=1653287509;
+        bh=OENwoRgzLHLcoN90lXWyFeYPCL70W7UVzXr++rGaYzU=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ynj3tOGCvNqo72OBHX0D0hj+3UxSSIvV8VNH9O3Xf2U6A7vX/Vn0Otn7qof6go3Bb
-         2kGKsZ4IlTf3/qOVa2/Ehao5ArR+cTFAyVEma1RvVjTTNhfnwra1LCkDAjNrW+2GqY
-         MwJq8/+a2KIIdf3iFpb/h9IHmSIbI5qtctZlDxes=
-Date:   Mon, 23 May 2022 08:26:15 +0200
+        b=1QZ7sxf4fQVdnryaaxAxeoKMzG2cFlbm4EUHft6ORNDyzvN8d3Z0sdOdh1picrPSH
+         Y1wWzsJZOCGnZTfMiMOyj/WB4go0KIn/4BGSI8WRtf+nRrZnWLu6GntqbdoJHf9nTa
+         MqCShC8Lte63pYi8QtgLiWPYEK/dFIPO7WzdUoR0=
+Date:   Mon, 23 May 2022 08:31:46 +0200
 From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Dario Binacchi <dario.binacchi@amarulasolutions.com>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Michael Trimarchi <michael@amarulasolutions.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>, Vinod Koul <vkoul@kernel.org>,
-        dmaengine@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH] dmaengine: mxs: fix driver registering
-Message-ID: <YospB9JZdwVfkIhj@kroah.com>
-References: <20220522202223.1343109-1-dario.binacchi@amarulasolutions.com>
+To:     Duoming Zhou <duoming@zju.edu.cn>
+Cc:     linux-wireless@vger.kernel.org, amitkarwar@gmail.com,
+        ganapathi017@gmail.com, sharvari.harisangam@nxp.com,
+        huxinming820@gmail.com, kvalo@kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        rafael@kernel.org
+Subject: Re: [PATCH v3] mwifiex: fix sleep in atomic context bugs caused by
+ dev_coredumpv
+Message-ID: <YosqUjCYioGh3kBW@kroah.com>
+References: <20220523052810.24767-1-duoming@zju.edu.cn>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220522202223.1343109-1-dario.binacchi@amarulasolutions.com>
+In-Reply-To: <20220523052810.24767-1-duoming@zju.edu.cn>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, May 22, 2022 at 10:22:23PM +0200, Dario Binacchi wrote:
-> Driver registration fails on SOC imx8mn as its supplier, the clock
-> control module, is not ready. Since platform_driver_probe(), as
-> reported by its description, is incompatible with deferred probing,
-> we have to use platform_driver_register().
+On Mon, May 23, 2022 at 01:28:10PM +0800, Duoming Zhou wrote:
+> There are sleep in atomic context bugs when uploading device dump
+> data in mwifiex. The root cause is that dev_coredumpv could not
+> be used in atomic contexts, because it calls dev_set_name which
+> include operations that may sleep. The call tree shows execution
+> paths that could lead to bugs:
 > 
-> Fixes: a580b8c5429a ("dmaengine: mxs-dma: add dma support for i.MX23/28")
-> Co-developed-by: Michael Trimarchi <michael@amarulasolutions.com>
-> Signed-off-by: Michael Trimarchi <michael@amarulasolutions.com>
-> Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
+>    (Interrupt context)
+> fw_dump_timer_fn
+>   mwifiex_upload_device_dump
+>     dev_coredumpv(..., GFP_KERNEL)
+>       dev_coredumpm()
+>         kzalloc(sizeof(*devcd), gfp); //may sleep
+>         dev_set_name
+>           kobject_set_name_vargs
+>             kvasprintf_const(GFP_KERNEL, ...); //may sleep
+>             kstrdup(s, GFP_KERNEL); //may sleep
 > 
+> In order to let dev_coredumpv support atomic contexts, this patch
+> changes the gfp_t parameter of kvasprintf_const and kstrdup in
+> kobject_set_name_vargs from GFP_KERNEL to GFP_ATOMIC. What's more,
+> In order to mitigate bug, this patch changes the gfp_t parameter
+> of dev_coredumpv from GFP_KERNEL to GFP_ATOMIC.
+> 
+> Fixes: 57670ee882d4 ("mwifiex: device dump support via devcoredump framework")
+> Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
 > ---
+> Changes in v3:
+>   - Let dev_coredumpv support atomic contexts.
 > 
->  drivers/dma/mxs-dma.c | 11 ++++-------
->  1 file changed, 4 insertions(+), 7 deletions(-)
+>  drivers/net/wireless/marvell/mwifiex/main.c | 2 +-
+>  lib/kobject.c                               | 4 ++--
+>  2 files changed, 3 insertions(+), 3 deletions(-)
 > 
-> diff --git a/drivers/dma/mxs-dma.c b/drivers/dma/mxs-dma.c
-> index 994fc4d2aca4..b8a3e692330d 100644
-> --- a/drivers/dma/mxs-dma.c
-> +++ b/drivers/dma/mxs-dma.c
-> @@ -670,7 +670,7 @@ static enum dma_status mxs_dma_tx_status(struct dma_chan *chan,
->  	return mxs_chan->status;
->  }
+> diff --git a/drivers/net/wireless/marvell/mwifiex/main.c b/drivers/net/wireless/marvell/mwifiex/main.c
+> index ace7371c477..258906920a2 100644
+> --- a/drivers/net/wireless/marvell/mwifiex/main.c
+> +++ b/drivers/net/wireless/marvell/mwifiex/main.c
+> @@ -1116,7 +1116,7 @@ void mwifiex_upload_device_dump(struct mwifiex_adapter *adapter)
+>  	mwifiex_dbg(adapter, MSG,
+>  		    "== mwifiex dump information to /sys/class/devcoredump start\n");
+>  	dev_coredumpv(adapter->dev, adapter->devdump_data, adapter->devdump_len,
+> -		      GFP_KERNEL);
+> +		      GFP_ATOMIC);
+>  	mwifiex_dbg(adapter, MSG,
+>  		    "== mwifiex dump information to /sys/class/devcoredump end\n");
 >  
-> -static int __init mxs_dma_init(struct mxs_dma_engine *mxs_dma)
-> +static int mxs_dma_init(struct mxs_dma_engine *mxs_dma)
->  {
->  	int ret;
+> diff --git a/lib/kobject.c b/lib/kobject.c
+> index 5f0e71ab292..7672c54944c 100644
+> --- a/lib/kobject.c
+> +++ b/lib/kobject.c
+> @@ -254,7 +254,7 @@ int kobject_set_name_vargs(struct kobject *kobj, const char *fmt,
+>  	if (kobj->name && !fmt)
+>  		return 0;
 >  
-> @@ -741,7 +741,7 @@ static struct dma_chan *mxs_dma_xlate(struct of_phandle_args *dma_spec,
->  				     ofdma->of_node);
->  }
+> -	s = kvasprintf_const(GFP_KERNEL, fmt, vargs);
+> +	s = kvasprintf_const(GFP_ATOMIC, fmt, vargs);
+>  	if (!s)
+>  		return -ENOMEM;
 >  
-> -static int __init mxs_dma_probe(struct platform_device *pdev)
-> +static int mxs_dma_probe(struct platform_device *pdev)
->  {
->  	struct device_node *np = pdev->dev.of_node;
->  	const struct mxs_dma_type *dma_type;
-> @@ -839,10 +839,7 @@ static struct platform_driver mxs_dma_driver = {
->  		.name	= "mxs-dma",
->  		.of_match_table = mxs_dma_dt_ids,
->  	},
-> +	.probe = mxs_dma_probe,
->  };
+> @@ -267,7 +267,7 @@ int kobject_set_name_vargs(struct kobject *kobj, const char *fmt,
+>  	if (strchr(s, '/')) {
+>  		char *t;
 >  
-> -static int __init mxs_dma_module_init(void)
-> -{
-> -	return platform_driver_probe(&mxs_dma_driver, mxs_dma_probe);
-> -}
-> -subsys_initcall(mxs_dma_module_init);
-> +module_platform_driver(mxs_dma_driver);
-> -- 
-> 2.32.0
-> 
+> -		t = kstrdup(s, GFP_KERNEL);
+> +		t = kstrdup(s, GFP_ATOMIC);
+>  		kfree_const(s);
+>  		if (!t)
+>  			return -ENOMEM;
 
-<formletter>
+Please no, you are hurting the whole kernel because of one odd user.
+Please do not make these calls under atomic context.
 
-This is not the correct way to submit patches for inclusion in the
-stable kernel tree.  Please read:
-    https://www.kernel.org/doc/html/latest/process/stable-kernel-rules.html
-for how to do this properly.
+thanks,
 
-</formletter>
+greg k-h
