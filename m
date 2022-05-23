@@ -2,173 +2,297 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F409AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 13:13:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2CCBC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 13:14:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236002AbiEWNNi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 09:13:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35776 "EHLO
+        id S236157AbiEWNN5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 09:13:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235959AbiEWNMg (ORCPT
+        with ESMTP id S236008AbiEWNNU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 09:12:36 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2E642BB2C
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 06:12:34 -0700 (PDT)
+        Mon, 23 May 2022 09:13:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7571D3CFCB;
+        Mon, 23 May 2022 06:12:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id D11ECCE136A
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 13:12:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B844CC385A9;
-        Mon, 23 May 2022 13:12:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 267A9B810AD;
+        Mon, 23 May 2022 13:12:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90060C385A9;
+        Mon, 23 May 2022 13:12:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653311551;
-        bh=0fw8Lio2R1KT24divy6cchQMAkg5Ovz0dNaSYiBu9H0=;
+        s=k20201202; t=1653311570;
+        bh=kLr4V/v2wG0N32Fp8e129QAuzJ7u0W5YAfYJO0LuWZ8=;
         h=From:To:Cc:Subject:Date:From;
-        b=eNLX/fkTLhC/5eE9Sk91gBQsbDiQOUbZXwLN/TwqM/85LeiT991xO6OgGyBiROfGx
-         V+wQJJCU3vP2dhZ/ccML/vVpKNTzmG+Ktob+TP3b4QxfVv7pvthL8UYNPTF35ahSy0
-         oW09EHTbzyQyeJeXmTfo+DAr0te+Lsy5a06zOOs4p2nYUQ6gx8bi4Iw6ztFae+YBXV
-         WP3NQUYWb4HRR4fBHgsCWVGXMpanSNsJoAPxKZ8U3+X/b39mi5qneGALvsv6wCMXYD
-         3sLgYPwxmbLxiBXy8WpjfAlMUO+1zvQz03y86EGoxjYXGgiBIEzErdeNshHoyRbp3L
-         UUka4Mko88lIA==
+        b=VYntHnKTR+WugKEt/szd5upGIcrEUtbGXkxwkf+Ec+v5D98vNDK/lLmThU0MAk5yt
+         a/dKlXKxP19zJWabfKqyY47d1olru9VL0ejrz/m/XLhZxSa9RlZVY7eTArCkTHQZbP
+         RZYTUiYvQPElcKL2vd7LDRIAAfG47I9Vo2E2NnMhdQhknyI0pxj9IQvGTTy73ff2Om
+         SZDEcH1cxrc0zQwAcYw2m6ULj8fQak0rrNje8uT1VcuBFVj/GmtP4XP1T7oUIqTfif
+         b3EtykEexskuQ5ikUpZG5FRP+i7p2mXLyVGUIN7uRH4YzsvEyCWPaGDk/d/Kg//Xvi
+         K7RVNzEwyjaMg==
 From:   Mark Brown <broonie@kernel.org>
 To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Liam Girdwood <lgirdwood@gmail.com>, linux-kernel@vger.kernel.org,
+Cc:     linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org,
         Mark Brown <broonie@kernel.org>
-Subject: [GIT PULL] regulator updates for v5.19
-Date:   Mon, 23 May 2022 14:12:19 +0100
-Message-Id: <20220523131230.B844CC385A9@smtp.kernel.org>
+Subject: [GIT PULL] SPI updates for v5.19
+Date:   Mon, 23 May 2022 14:12:36 +0100
+Message-Id: <20220523131250.90060C385A9@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following changes since commit dfd2b37edf7ef469574ef7f36e3a1905ac9ead62:
+The following changes since commit 8c235cc25087495c4288d94f547e9d3061004991:
 
-  regulator: dt-bindings: Revise the rt5190a buck/ldo description (2022-04-22 12:37:22 +0100)
+  spi: atmel-quadspi: Fix the buswidth adjustment between spi-mem and controller (2022-04-13 16:43:12 +0100)
 
 are available in the Git repository at:
 
-  https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regulator.git tags/regulator-v5.19
+  https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git tags/spi-v5.19
 
-for you to fetch changes up to a5b8e4a5ceec0ab6453176bc7f5eceafa78bf8a9:
+for you to fetch changes up to 9c63b846e6df43e5b3d31263f7db545f32deeda3:
 
-  Merge remote-tracking branch 'regulator/for-5.19' into regulator-next (2022-05-17 16:59:05 +0100)
-
-----------------------------------------------------------------
-regulator: Updates for v5.19
-
-This is mostly a drivers update including a couple of new drivers but we
-do have some fixes and improvements to the core as well.
-
- - Make sure we don't log spuriously about uncontrollable regulators.
- - Don't use delays when we should use sleeps for regulators with
-   larger ramp times.
- - Support for MediaTek MT6358 and MT6366, Richtek RT5759 and Silicon
-   Mitus SM5703.
+  spi: spi-mem: Convert Aspeed SMC driver to spi-mem (2022-05-16 19:38:40 +0100)
 
 ----------------------------------------------------------------
-Andy Shevchenko (1):
-      regulator: rpi-panel-attiny: Get rid of duplicate of_node assignment
+spi: Updates for v5.19
 
-Brian Norris (2):
-      regulator: core: Rename _regulator_enable_delay()
-      regulator: core: Sleep (not delay) in set_voltage()
+This is quite a quiet release but some new drivers mean that the
+diffstat is fairly large, the new drivers include the aspeed driver
+which is migrated from MTD as part of the ongoing move of controllers
+with specialised support for SPI flashes into the SPI subsystem.
 
-ChiYuan Huang (2):
-      regulator: rt5759: Add support for Richtek RT5759 DCDC converter
-      regulator: Add binding for Richtek RT5759 DCDC converter
+ - Support for devices which flip CPHA during recieve only transfers
+   (eg, if MOSI and MISO have inverted polarity).
+ - Overhaul of the i.MX driver, including the addition of PIO support
+   for better performance on small transfers.
+ - Migration of the Aspeed driver from MTD.
+ - Support for Aspeed AST2400, Ingenic JZ4775 and X1/2000 and MediaTek
+   IPM and SFI.
 
-Johnson Wang (4):
-      regulator: mt6366: Add support for MT6366 regulator
-      regulator: Add BUCK and LDO document for MT6358 and MT6366
-      regulator: Add BUCK and LDO document for MT6358 and MT6366
-      regulator: mt6366: Add support for MT6366 regulator
+----------------------------------------------------------------
+Alexander Shiyan (1):
+      spi: clps711x: Use syscon_regmap_lookup_by_phandle
 
-Konrad Dybcio (1):
-      regulator: qcom_smd: Fix up PM8950 regulator configuration
+Amit Kumar Mahapatra (1):
+      spi: spi-cadence: Update ISR status variable type to irqreturn_t
 
-Krzysztof Kozlowski (7):
-      regulator: dt-bindings: richtek,rt4801: minor comments adjustments
-      regulator: dt-bindings: qcom,rpmh: document h and k ID
-      regulator: dt-bindings: richtek,rt4801: use existing ena_gpiod feature
-      regulator: richtek,rt4801: parse GPIOs per regulator
-      regulator: dt-bindings: qcom,rpmh: update maintainers
-      regulator: dt-bindings: qcom,rpmh: document supplies per variant
-      regulator: dt-bindings: qcom,rpmh: document vdd-l7-bob-supply on PMR735A
+Andrea Zanotti (1):
+      spi: omap2-mcspi: add support for interword delay
 
-Kunihiko Hayashi (2):
-      regulator: uniphier: Clean up clocks, resets, and their names using compatible string
-      regulator: uniphier: Use unevaluatedProperties
+Andy Shevchenko (3):
+      spi: spidev: Convert BUILD_BUG_ON() to static_assert()
+      spi: spidev: Replace ACPI specific code by device_get_match_data()
+      spi: spidev: Replace OF specific code by device property API
+
+AngeloGioacchino Del Regno (8):
+      spi: mt65xx: Simplify probe function with devm_spi_alloc_master
+      spi: mt65xx: Switch to device_get_match_data()
+      spi: mt65xx: Add and use pointer to struct device in mtk_spi_probe()
+      spi: mt65xx: Move clock parent setting to remove clock disable gotos
+      spi: mt65xx: Move pm_runtime_enable() call to remove all gotos
+      spi: mt65xx: Simplify probe function with dev_err_probe()
+      spi: mt65xx: Add kerneldoc for driver structures
+      spi: mt65xx: Fix definitions indentation
+
+Baruch Siach (3):
+      spi: add SPI_RX_CPHA_FLIP mode bit
+      spi: spidev: add SPI_RX_CPHA_FLIP
+      spi: spi-imx: add support for SPI_RX_CPHA_FLIP
+
+Biju Das (2):
+      spi: spi-rspi: Remove setting {src,dst}_{addr,addr_width} based on DMA direction
+      spi: dt-bindings: renesas,rspi: Document RZ/G2UL SoC
+
+Christophe Leroy (1):
+      spi: Prepare cleanup of powerpc's asm/prom.h
+
+Chuanhong Guo (4):
+      mtd: nand: make mtk_ecc.c a separated module
+      mtd: nand: mtk-ecc: also parse nand-ecc-engine if available
+      spi: add driver for MTK SPI NAND Flash Interface
+      spi: dt-bindings: add binding doc for spi-mtk-snfi
+
+Cédric Le Goater (7):
+      spi: Convert the Aspeed SMC controllers device tree binding
+      spi: spi-mem: Convert Aspeed SMC driver to spi-mem
+      spi: aspeed: Add support for direct mapping
+      spi: aspeed: Adjust direct mapping to device size
+      spi: aspeed: Workaround AST2500 limitations
+      spi: aspeed: Add support for the AST2400 SPI controller
+      spi: aspeed: Calibrate read timings
+
+Dan Carpenter (1):
+      spi: mtk-snfi: preserve dma_mapping_error() error codes
+
+Guo Zhengkui (1):
+      spi: spi-au1550: replace ternary operator with min()
+
+Ian Abbott (3):
+      spi: cadence-quadspi: fix Direct Access Mode disable for SoCFPGA
+      spi: cadence-quadspi: Add missing blank line in cqspi_request_mmap_dma()
+      spi: cadence-quadspi: remove unnecessary (void *) casts
+
+Jakob Koschel (1):
+      spi: spidev: replace usage of found with dedicated list iterator variable
+
+Kuldeep Singh (1):
+      spi: qcom-qspi: Add minItems to interconnect-names
+
+Leilk Liu (3):
+      spi: mediatek: add spi memory support for ipm design
+      spi: mediatek: support hclk
+      spi: support hclk
+
+Li-hao Kuo (1):
+      spi: remove spin_lock_irq and variable in the irq procress
+
+Luca Ceresoli (1):
+      spi: rockchip: fix missing error on unsupported SPI_CS_HIGH
+
+Marc Kleine-Budde (9):
+      spi: spi-imx: fix sparse warning: add identifier name to function definition
+      spi: spi-imx: avoid unnecessary line continuations
+      spi: spi-imx: mx51_ecspi_intctrl(): prefer 'unsigned int' to bare use of 'unsigned'
+      spi: spi-imx: spi_imx_buf_rx_swap_u32(): fix sparse warning: use swab32s() instead of cpu_to_be32()
+      spi: spi-imx: spi_imx_buf_rx_swap_u32(): replace open coded swahw32s()
+      spi: spi-imx: complete conversion from master -> controller
+      spi: spi-imx: replace struct spi_imx_data::bitbang by pointer to struct spi_controller
+      spi: spi-imx: add PIO polling support
+      spi: spi-imx: mx51_ecspi_prepare_message(): skip writing MX51_ECSPI_CONFIG register if unchanged
 
 Mark Brown (7):
-      regulator: fixed: Remove print on allocation failure
-      regulator: Flag uncontrollable regulators as always_on
-      regulator: Add support for MediaTek PMIC MT6366
-      Add support for MediaTek PMIC MT6366
-      regulator Add Richtek RT5759 buck converter support
-      regulator: dt-bindings: qcom,rpmh: minor cleanups and extend supplies
-      Merge remote-tracking branch 'regulator/for-5.19' into regulator-next
+      spi: mediatek: add single/quad mode support
+      spi: Pull in Atmel fix
+      MediaTek SPI controller cleanups and documentation
+      Improve SPI support for Ingenic SoCs.
+      spi: Pull Mediatek ECC changes
+      spi: stm32-qspi: flags management fixes
+      spi: spi-mem: Convert Aspeed SMC driver to spi-mem
 
-Markuss Broks (3):
-      dt-bindings: regulator: Add bindings for Silicon Mitus SM5703 regulators
-      regulator: sm5703-regulator: Add regulators support for SM5703 MFD
-      regulator: sm5703: Correct reference to the common regulator schema
+Matthias Schiffer (2):
+      spi: cadence-quadspi: drop cqspi_set_protocol()
+      spi: cadence-quadspi: allow operations with cmd/addr buswidth >1
 
-Miaoqian Lin (2):
-      regulator: pfuze100: Fix refcount leak in pfuze_parse_regulators_dt
-      regulator: scmi: Fix refcount leak in scmi_regulator_probe
+Miaoqian Lin (1):
+      spi: spi-ti-qspi: Fix return value handling of wait_for_completion_timeout
 
-Minghao Chi (1):
-      regulator: stm32-vrefbuf: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
+Michal Simek (1):
+      spi: spi-cadence: Fix kernel-doc format for resume/suspend
 
-Nícolas F. R. A. Prado (1):
-      regulator: mt6315: Enforce regulator-compatible, not name
+Mika Westerberg (2):
+      spi: intel: Fix typo in kernel-doc of intel_spi_probe()
+      spi: intel: Implement dirmap hooks
 
-Per-Daniel Olsson (2):
-      regulator: Add property for I2C level shifter
-      regulator: pca9450: Make I2C Level Translator configurable
+Minghao Chi (13):
+      spi: spi-stm32-qspi: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
+      spi: spi-cadence-quadspi: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
+      spi: spi-tegra114: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
+      spi: spi-ti-qspi: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
+      spi: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
+      spi: spi-sprd: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
+      spi: spi-imx: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
+      spi: mxs: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
+      spi: spi-omap2-mcspi: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
+      spi: spi-tegra20-sflash: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
+      spi: spi-tegra20-slink: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
+      spi: spi-cadence-quadspi: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
+      spi: stm32: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
 
-Rickard x Andersson (3):
-      regulator: Add property for WDOG_B warm reset
-      regulator: pca9450: Make warm reset on WDOG_B assertion
-      regulator: pca9450: Enable DVS control via PMIC_STBY_REQ
+Patrice Chotard (3):
+      spi: stm32-qspi: Fix wait_cmd timeout in APM mode
+      spi: stm32-qspi: Always check SR_TCF flags in stm32_qspi_wait_cmd()
+      spi: stm32-qspi: Remove SR_BUSY bit check before sending command
 
-Wei Yongjun (1):
-      regulator: da9121: Fix uninit-value in da9121_assign_chip_model()
+Paul Kocialkowski (2):
+      spi: core: Only check bits_per_word validity when explicitly provided
+      spi: core: Initialize returned status in spi_setup
 
-Zev Weiss (2):
-      regulator: core: Add error flags to sysfs attributes
-      regulator: core: Fix enable_count imbalance with EXCLUSIVE_GET
+Potin Lai (1):
+      mtd: spi-nor: aspeed: set the decoding size to at least 2MB for AST2600
 
- Documentation/ABI/testing/sysfs-class-regulator    |  81 +++++
- .../bindings/regulator/mt6315-regulator.yaml       |   2 +-
- .../bindings/regulator/mt6358-regulator.txt        |  22 +-
- .../bindings/regulator/nxp,pca9450-regulator.yaml  |  11 +
- .../bindings/regulator/qcom,rpmh-regulator.yaml    | 262 ++++++++++++++-
- .../regulator/richtek,rt4801-regulator.yaml        |  21 +-
- .../regulator/richtek,rt5759-regulator.yaml        |  90 +++++
- .../regulator/siliconmitus,sm5703-regulator.yaml   |  49 +++
- .../regulator/socionext,uniphier-regulator.yaml    |  57 +++-
- drivers/regulator/Kconfig                          |  17 +
- drivers/regulator/Makefile                         |   2 +
- drivers/regulator/core.c                           |  93 +++++-
- drivers/regulator/da9121-regulator.c               |   2 +
- drivers/regulator/fixed.c                          |   5 +-
- drivers/regulator/mt6358-regulator.c               | 213 +++++++++++-
- drivers/regulator/pca9450-regulator.c              |  27 +-
- drivers/regulator/pfuze100-regulator.c             |   2 +
- drivers/regulator/qcom_smd-regulator.c             |  35 +-
- drivers/regulator/rpi-panel-attiny-regulator.c     |   1 -
- drivers/regulator/rt4801-regulator.c               |  49 ++-
- drivers/regulator/rt5759-regulator.c               | 369 +++++++++++++++++++++
- drivers/regulator/scmi-regulator.c                 |   2 +-
- drivers/regulator/sm5703-regulator.c               | 167 ++++++++++
- drivers/regulator/stm32-vrefbuf.c                  |  30 +-
- include/linux/regulator/mt6358-regulator.h         |  45 +++
- include/linux/regulator/pca9450.h                  |   7 +
- 26 files changed, 1538 insertions(+), 123 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/regulator/richtek,rt5759-regulator.yaml
- create mode 100644 Documentation/devicetree/bindings/regulator/siliconmitus,sm5703-regulator.yaml
- create mode 100644 drivers/regulator/rt5759-regulator.c
- create mode 100644 drivers/regulator/sm5703-regulator.c
+Pratyush Yadav (1):
+      spi: spi-mem: check if data buffers are on stack
+
+Siddh Raman Pant (1):
+      spi: Doc fix - Describe add_lock and dma_map_dev in spi_controller
+
+Tudor Ambarus (1):
+      spi: atmel-quadspi: Remove duplicated DTR checks
+
+Vaishnav Achath (1):
+      spi: cadence-quadspi: Handle spi_unregister_master() in remove()
+
+Yang Yingliang (1):
+      spi: spi-fsl-qspi: check return value after calling platform_get_resource_byname()
+
+Zheng Yongjun (1):
+      spi: img-spfi: Fix pm_runtime_get_sync() error checking
+
+周琰杰 (Zhou Yanjie) (3):
+      spi: ingenic: Add support for use GPIO as chip select line.
+      spi: Add bindings for new Ingenic SoCs.
+      spi: ingenic: Add support for new Ingenic SoCs.
+
+ .../devicetree/bindings/mtd/aspeed-smc.txt         |   51 -
+ .../bindings/spi/aspeed,ast2600-fmc.yaml           |   82 ++
+ .../devicetree/bindings/spi/ingenic,spi.yaml       |    3 +
+ .../bindings/spi/mediatek,spi-mt65xx.yaml          |    4 +
+ .../bindings/spi/mediatek,spi-mtk-snfi.yaml        |   88 ++
+ .../bindings/spi/qcom,spi-qcom-qspi.yaml           |    1 +
+ .../devicetree/bindings/spi/renesas,rspi.yaml      |    2 +
+ MAINTAINERS                                        |   10 +
+ drivers/mtd/nand/Kconfig                           |    7 +
+ drivers/mtd/nand/Makefile                          |    1 +
+ drivers/mtd/nand/{raw/mtk_ecc.c => ecc-mtk.c}      |    8 +-
+ drivers/mtd/nand/raw/Kconfig                       |    1 +
+ drivers/mtd/nand/raw/Makefile                      |    2 +-
+ drivers/mtd/nand/raw/mtk_nand.c                    |    2 +-
+ drivers/mtd/spi-nor/controllers/Kconfig            |   10 -
+ drivers/mtd/spi-nor/controllers/Makefile           |    1 -
+ drivers/mtd/spi-nor/controllers/aspeed-smc.c       |  921 ------------
+ drivers/spi/Kconfig                                |   26 +-
+ drivers/spi/Makefile                               |    2 +
+ drivers/spi/atmel-quadspi.c                        |    6 -
+ drivers/spi/spi-aspeed-smc.c                       | 1210 ++++++++++++++++
+ drivers/spi/spi-au1550.c                           |    4 +-
+ drivers/spi/spi-cadence-quadspi.c                  |  159 +--
+ drivers/spi/spi-cadence.c                          |   11 +-
+ drivers/spi/spi-clps711x.c                         |    5 +-
+ drivers/spi/spi-fsl-qspi.c                         |    4 +
+ drivers/spi/spi-img-spfi.c                         |    2 +-
+ drivers/spi/spi-imx.c                              |  356 +++--
+ drivers/spi/spi-ingenic.c                          |   47 +-
+ drivers/spi/spi-intel.c                            |   51 +-
+ drivers/spi/spi-mem.c                              |   13 +-
+ drivers/spi/spi-mpc52xx-psc.c                      |    1 +
+ drivers/spi/spi-mpc52xx.c                          |    3 +
+ drivers/spi/spi-mt65xx.c                           |  702 +++++++---
+ drivers/spi/spi-mtk-snfi.c                         | 1472 ++++++++++++++++++++
+ drivers/spi/spi-mxs.c                              |    3 +-
+ drivers/spi/spi-omap2-mcspi.c                      |   19 +-
+ drivers/spi/spi-rockchip.c                         |    8 +
+ drivers/spi/spi-rspi.c                             |   15 +-
+ drivers/spi/spi-sprd.c                             |    3 +-
+ drivers/spi/spi-stm32-qspi.c                       |   41 +-
+ drivers/spi/spi-stm32.c                            |    3 +-
+ drivers/spi/spi-sunplus-sp7021.c                   |    6 -
+ drivers/spi/spi-tegra114.c                         |    9 +-
+ drivers/spi/spi-tegra20-sflash.c                   |    6 +-
+ drivers/spi/spi-tegra20-slink.c                    |    6 +-
+ drivers/spi/spi-ti-qspi.c                          |    8 +-
+ drivers/spi/spi.c                                  |   25 +-
+ drivers/spi/spidev.c                               |  104 +-
+ .../mtk_ecc.h => include/linux/mtd/nand-ecc-mtk.h  |    0
+ include/linux/spi/spi.h                            |    2 +
+ include/uapi/linux/spi/spi.h                       |    3 +-
+ 52 files changed, 3927 insertions(+), 1602 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/mtd/aspeed-smc.txt
+ create mode 100644 Documentation/devicetree/bindings/spi/aspeed,ast2600-fmc.yaml
+ create mode 100644 Documentation/devicetree/bindings/spi/mediatek,spi-mtk-snfi.yaml
+ rename drivers/mtd/nand/{raw/mtk_ecc.c => ecc-mtk.c} (98%)
+ delete mode 100644 drivers/mtd/spi-nor/controllers/aspeed-smc.c
+ create mode 100644 drivers/spi/spi-aspeed-smc.c
+ create mode 100644 drivers/spi/spi-mtk-snfi.c
+ rename drivers/mtd/nand/raw/mtk_ecc.h => include/linux/mtd/nand-ecc-mtk.h (100%)
