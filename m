@@ -2,75 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AC63C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:34:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D95A3C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:35:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240699AbiEWSez (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:34:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37592 "EHLO
+        id S241359AbiEWSfG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:35:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240753AbiEWSeh (ORCPT
+        with ESMTP id S239398AbiEWSen (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 14:34:37 -0400
-Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 722AF6CF69;
-        Mon, 23 May 2022 11:12:30 -0700 (PDT)
-Received: by mail-pl1-f180.google.com with SMTP id q18so13802279pln.12;
-        Mon, 23 May 2022 11:12:30 -0700 (PDT)
+        Mon, 23 May 2022 14:34:43 -0400
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 165BA12816C
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 11:12:36 -0700 (PDT)
+Received: by mail-pg1-x52f.google.com with SMTP id d38so338576pgm.4
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 11:12:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=KmemOOUEaDn+3pBgS68jUUDL7N3enFtsy+GPMY+Vi6U=;
+        b=n2tQcL8/YL1f/GBjKWuCzRSTzfyyvoQBKFNBDB+xRgnFzWa4d7UTVk37vTevUvPZaH
+         e5XQ+pAHnWvmnrApZzOvvjVtlikFGEhVHjPTCBblSSSRmhp3kA41OMO8ATckAMf7XMGm
+         cdck697O08Ae7rISm8i6/vBOT1Glq6HSPjcexp4qUwbcqSJ6JQ55E9ttT74IRp6OFtFE
+         40+R6gm9X9eT3+xsv791DFr1ZBu+AVqv3QyO+BuGH3J1Qr8BMV88GnnWZR3aiUHxvsS8
+         VVPGWN3FZpzlOPxgKvgGP4B0XN8tNVyg9VCudGxUdS1HMyc4z9bJbOQMS154YkQqsCQP
+         gw6g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=YcM2V9lJrQoILVWR8hE1O3AxcExnhJbF35MwvFVRNF0=;
-        b=HVcTY5h0SXw5cM3/Ek/o0D5DVjf/WsJlpNVHctMRLPp8t+zDxV01ifHwl3D7cQHWeR
-         zPpMiQGWGXkPCIQsy9ukBrpPfwcl2quH0andP5ZFcqzOaOZD64NMyl1X3nlx3ykj60iH
-         +2mfx5eUW3gRjuaW18Gv5x9Kghrbgf9EetwN4m9CYGg5ebw0ZQLDgE08a7sWv5L4Kyux
-         aSsiJukb8UnAzzUaaV0cL96KzvORKdve6cPhbTPda6ChALkUDN4IFb+ViESD9+feri6u
-         wEHOqAovvpmsnnucdxtXmYYre95Pmu3YGITH8Ke8rRMjTeFiig/FI8OQvWVgsQFB+Ath
-         NzDA==
-X-Gm-Message-State: AOAM532aeeTe0pdigX1wfrhBeL6O7hRa4JXauLVguew4Gvlg+Y9Z1QWC
-        G4FCX5XjoQTZKNxnvXsy8HI=
-X-Google-Smtp-Source: ABdhPJyM/CwxpvBVN9kqgJt3dUJYAsl5xQQzoLnJApp0k9u48+L0bdeBCHhzQQ+qLqqg/d0Knkk4fQ==
-X-Received: by 2002:a17:90a:8807:b0:1df:78c7:c215 with SMTP id s7-20020a17090a880700b001df78c7c215mr247975pjn.234.1653329485047;
-        Mon, 23 May 2022 11:11:25 -0700 (PDT)
-Received: from garbanzo (136-24-173-63.cab.webpass.net. [136.24.173.63])
-        by smtp.gmail.com with ESMTPSA id x3-20020a654143000000b003c14af50610sm5025690pgp.40.2022.05.23.11.11.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 May 2022 11:11:24 -0700 (PDT)
-Date:   Mon, 23 May 2022 11:11:22 -0700
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     Pankaj Raghav <p.raghav@samsung.com>
-Cc:     axboe@kernel.dk, hch@lst.de, snitzer@redhat.com,
-        damien.lemoal@opensource.wdc.com, hare@suse.de,
-        Johannes.Thumshirn@wdc.com, linux-nvme@lists.infradead.org,
-        dm-devel@redhat.com, dsterba@suse.com, jiangbo.365@bytedance.com,
-        linux-kernel@vger.kernel.org, gost.dev@samsung.com,
-        linux-block@vger.kernel.org, jaegeuk@kernel.org,
-        Damien Le Moal <damien.lemoal@wdc.com>
-Subject: Re: [PATCH v5 6/7] null_blk: use zone_size_sects_shift for power of
- 2 zoned devices
-Message-ID: <20220523181122.3vjizmsx7a2mpf6z@garbanzo>
-References: <20220523161601.58078-1-p.raghav@samsung.com>
- <CGME20220523161612eucas1p102a76ba431c934230309042521018915@eucas1p1.samsung.com>
- <20220523161601.58078-7-p.raghav@samsung.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=KmemOOUEaDn+3pBgS68jUUDL7N3enFtsy+GPMY+Vi6U=;
+        b=vgNsE23cGBswWuFZllVfP2SfbVEjPr5oI4a5QRkCwv6nYF5+Rr7qlZlXnHBB7EfAA2
+         nPgIYlnSDbOyC2fvLEzWtSeXHWDOV6hoA46aWD0idmtbY0yehBP4NKeHT6z5zAvwo0bN
+         oCEeM+6Utbz0wmT5PjIZQlJYgVbDtz5DSp4ikZmUFvYG0z/qH+wZYp/dnJtYFdAG/dqo
+         EnPClbIMTUq9gOleJVqS+nL1n/TbnHVqqN5zIz062tJaAWd/ffrwRrXv3uKBnIVIwJFz
+         qneoLvzrr3AEe3R82kfkSn8XmsrD/tDBYQbrWtRUsRauMx5y5iIWPtYCC3RAnAsa684t
+         kTiw==
+X-Gm-Message-State: AOAM530PD0bmbkjELHfl3QAimJMKEhf22rTD977nSHLzWRIfuzPXt79K
+        RqwzJTUVeBZSezCkNAbwfeZkOv4LSL0kHhrqAP8=
+X-Google-Smtp-Source: ABdhPJzBk+TiEQTYc5wMTDULGuOuR+VzwNW6gAFLt04HMW9UrLp26iJOSpNAUq+kU6cs7Ut54Kc3A8DGPEwpw0gryHg=
+X-Received: by 2002:a63:fc04:0:b0:3f6:4b2b:9d36 with SMTP id
+ j4-20020a63fc04000000b003f64b2b9d36mr18715962pgi.206.1653329551659; Mon, 23
+ May 2022 11:12:31 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220523161601.58078-7-p.raghav@samsung.com>
+References: <20220520211605.51473-1-shy828301@gmail.com> <20220520211605.51473-3-shy828301@gmail.com>
+ <20220521013954.2695-1-hdanton@sina.com>
+In-Reply-To: <20220521013954.2695-1-hdanton@sina.com>
+From:   Yang Shi <shy828301@gmail.com>
+Date:   Mon, 23 May 2022 11:12:18 -0700
+Message-ID: <CAHbLzkp7kr9QS3oByEmcD2msB1tQ0fA+fp8QPp-sjdQUtvW-OQ@mail.gmail.com>
+Subject: Re: [PATCH 2/7] mm: thp: introduce transhuge_vma_size_ok() helper
+To:     Hillf Danton <hdanton@sina.com>
+Cc:     Vlastimil Babka <vbabka@suse.cz>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux MM <linux-mm@kvack.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 23, 2022 at 06:16:00PM +0200, Pankaj Raghav wrote:
-> Instead of doing is_power_of_2 and ilog2 operation for every IO, cache
-> the zone_size_sects_shift variable and use it for power of 2 zoned
-> devices.
-> 
-> This variable will be set to zero for non power of 2 zoned devices.
-> 
-> Suggested-by: Damien Le Moal <damien.lemoal@wdc.com>
-> Signed-off-by: Pankaj Raghav <p.raghav@samsung.com>
+On Fri, May 20, 2022 at 6:40 PM Hillf Danton <hdanton@sina.com> wrote:
+>
+> On Fri, 20 May 2022 14:16:00 -0700 Yang Shi wrote:
+> > There are couple of places that check whether the vma size is ok for
+> > THP or not, they are open coded and duplicate, introduce
+> > transhuge_vma_size_ok() helper to do the job.
+> >
+> > Signed-off-by: Yang Shi <shy828301@gmail.com>
+> > ---
+> >  include/linux/huge_mm.h | 17 +++++++++++++++++
+> >  mm/huge_memory.c        |  5 +----
+> >  mm/khugepaged.c         | 12 ++++++------
+> >  3 files changed, 24 insertions(+), 10 deletions(-)
+> >
+> > diff --git a/include/linux/huge_mm.h b/include/linux/huge_mm.h
+> > index 648cb3ce7099..a8f61db47f2a 100644
+> > --- a/include/linux/huge_mm.h
+> > +++ b/include/linux/huge_mm.h
+> > @@ -116,6 +116,18 @@ extern struct kobj_attribute shmem_enabled_attr;
+> >
+> >  extern unsigned long transparent_hugepage_flags;
+> >
+> > +/*
+> > + * The vma size has to be large enough to hold an aligned HPAGE_PMD_SIZE area.
+> > + */
+> > +static inline bool transhuge_vma_size_ok(struct vm_area_struct *vma)
+> > +{
+> > +     if (round_up(vma->vm_start, HPAGE_PMD_SIZE) <
+> > +         (vma->vm_end & HPAGE_PMD_MASK))
+> > +             return true;
+> > +
+> > +     return false;
+> > +}
+> > +
+> >  static inline bool transhuge_vma_suitable(struct vm_area_struct *vma,
+> >               unsigned long addr)
+> >  {
+> > @@ -345,6 +357,11 @@ static inline bool transparent_hugepage_active(struct vm_area_struct *vma)
+> >       return false;
+> >  }
+> >
+> > +static inline bool transhuge_vma_size_ok(struct vm_area_struct *vma)
+> > +{
+> > +     return false;
+> > +}
+> > +
+> >  static inline bool transhuge_vma_suitable(struct vm_area_struct *vma,
+> >               unsigned long addr)
+> >  {
+> > diff --git a/mm/huge_memory.c b/mm/huge_memory.c
+> > index 80e8b58b4f39..d633f97452c1 100644
+> > --- a/mm/huge_memory.c
+> > +++ b/mm/huge_memory.c
+> > @@ -71,10 +71,7 @@ unsigned long huge_zero_pfn __read_mostly = ~0UL;
+> >
+> >  bool transparent_hugepage_active(struct vm_area_struct *vma)
+> >  {
+> > -     /* The addr is used to check if the vma size fits */
+> > -     unsigned long addr = (vma->vm_end & HPAGE_PMD_MASK) - HPAGE_PMD_SIZE;
+> > -
+> > -     if (!transhuge_vma_suitable(vma, addr))
+> > +     if (!transhuge_vma_size_ok(vma))
+> >               return false;
+>
+> Given the comment added in 4/7, this patch adds change in semantic.
+> If that is intened, add some words in log message for it.
 
-Reviewed-by: Luis Chamberlain <mcgrof@kernel.org>
+It should not change the semantic even with 4/7. The old comment says
+"The addr is used to check if the vma size fits", so the purpose of
+transhuge_vma_suitable() here is used to check if the vma size is ok
+or not.
 
-  Luis
+>
+> >       if (vma_is_anonymous(vma))
+> >               return __transparent_hugepage_enabled(vma);
+>
