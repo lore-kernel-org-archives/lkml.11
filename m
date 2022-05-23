@@ -2,114 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67C3CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:20:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84F6FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:25:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243295AbiEWSUZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:20:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55512 "EHLO
+        id S235918AbiEWSZo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:25:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237474AbiEWSSm (ORCPT
+        with ESMTP id S242545AbiEWSZb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 14:18:42 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8553AB82C3
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 10:57:22 -0700 (PDT)
-Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24NHSoR5011312;
-        Mon, 23 May 2022 17:56:10 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=hiK/gTSAe9vJ+0XObkVQlmijgj5clBKRz6adl2t2/qw=;
- b=VYAEjSu8KwzRdy9IzIXlbTSQQsay9BcrdK1+IEIEfFgUU+ZQS9cyMlrZiuy8zgIHgxeG
- BabzYCwC0dp1XWKtz3fVOlL6CWUv6+PqPWA2Qnqp+A84y0WvbevRNpEsIzOM0iczk7qn
- SvrYGOB+sRvIAavndvo+H8FOV57ZcBzDmNp6ThxP68iUS+dTNUjcvbvxPczEloqI6Q6y
- Et4fYKANHrhc1NYFFTr6q/STlwHPapPJHxOJqB3UemMEIY0m4zng1b6xZP9RcGWAz3SP
- GJAKRpJN8piFye+4ahqJh1O1NWYRKeF1Mq2ExgQfNhh8pOqUosN975QUS5P8Vd2Kr0YW qA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g8eq0retv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 23 May 2022 17:56:10 +0000
-Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24NHTNWv016791;
-        Mon, 23 May 2022 17:56:09 GMT
-Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g8eq0retd-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 23 May 2022 17:56:09 +0000
-Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
-        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24NHiN3D032732;
-        Mon, 23 May 2022 17:56:08 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma03fra.de.ibm.com with ESMTP id 3g6qq9anjd-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 23 May 2022 17:56:07 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24NHu5uO48300410
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 23 May 2022 17:56:05 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 9B39F5204E;
-        Mon, 23 May 2022 17:56:05 +0000 (GMT)
-Received: from li-c3569c4c-1ef8-11b2-a85c-ee139cda3133.ibm.com.com (unknown [9.43.16.198])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id B2BEE52051;
-        Mon, 23 May 2022 17:56:02 +0000 (GMT)
-From:   Sathvika Vasireddy <sv@linux.ibm.com>
-To:     linuxppc-dev@lists.ozlabs.org
-Cc:     linux-kernel@vger.kernel.org, jpoimboe@redhat.com,
-        peterz@infradead.org, mbenes@suse.cz, aik@ozlabs.ru,
-        mpe@ellerman.id.au, christophe.leroy@csgroup.eu,
-        rostedt@goodmis.org, naveen.n.rao@linux.vnet.ibm.com,
-        sv@linux.ibm.com
-Subject: [RFC PATCH 2/4] objtool: Enable objtool to run only on files with ftrace enabled
-Date:   Mon, 23 May 2022 23:25:46 +0530
-Message-Id: <20220523175548.922671-3-sv@linux.ibm.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220523175548.922671-1-sv@linux.ibm.com>
-References: <20220523175548.922671-1-sv@linux.ibm.com>
+        Mon, 23 May 2022 14:25:31 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D6EEA005F;
+        Mon, 23 May 2022 10:58:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653328693; x=1684864693;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=See9p7fez/HBRV0YvEYQHd38Yl91KOYmJwyLfKNrjK8=;
+  b=GjwYdJHgteANkGXGRxphMfPuhMSMrokVrdUeD6zifSr8xP/5tKVwe39E
+   1BeAvQUJ2O0cWG8MIXXJHavA/78YMLjyAu7e8+cZ6/mgSpnuEdsDcEPyv
+   8Nl+A2EElqXwgVu/BClfPrRs7ZqquOB3zUirTyKNEbM1qZ06E2bV+npMO
+   pabRbgTYAsUB0LSNY10mprj0d//VNPFvBZ86iTp9I75QiAf6h89550B7t
+   4Oj/2n8vG/QnFDyPBQEN5giEgfDqAp2X2Tkd3gnQmiizB/kU1RA9qI4Gr
+   nvTsU9WmgOIQFfFNtHdu9TM+gwBn4hsOMCcP9jqD9aX60thkaieLl0/X8
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10356"; a="273300244"
+X-IronPort-AV: E=Sophos;i="5.91,246,1647327600"; 
+   d="scan'208";a="273300244"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2022 10:58:06 -0700
+X-IronPort-AV: E=Sophos;i="5.91,246,1647327600"; 
+   d="scan'208";a="744857037"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.198.157])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2022 10:58:05 -0700
+Date:   Mon, 23 May 2022 11:01:58 -0700
+From:   Jacob Pan <jacob.jun.pan@linux.intel.com>
+To:     "Tian, Kevin" <kevin.tian@intel.com>
+Cc:     "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>,
+        Joerg Roedel <joro@8bytes.org>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>,
+        "Lu Baolu" <baolu.lu@linux.intel.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        "vkoul@kernel.org" <vkoul@kernel.org>,
+        "robin.murphy@arm.com" <robin.murphy@arm.com>,
+        "will@kernel.org" <will@kernel.org>,
+        "Liu, Yi L" <yi.l.liu@intel.com>,
+        "Jiang, Dave" <dave.jiang@intel.com>,
+        "Raj, Ashok" <ashok.raj@intel.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH v4 2/6] iommu: Add a helper to do PASID lookup from
+ domain
+Message-ID: <20220523110158.3382b5fd@jacob-builder>
+In-Reply-To: <BN9PR11MB5276622272BCA2ED982EE3C18CD49@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20220518182120.1136715-1-jacob.jun.pan@linux.intel.com>
+        <20220518182120.1136715-3-jacob.jun.pan@linux.intel.com>
+        <BN9PR11MB5276622272BCA2ED982EE3C18CD49@BN9PR11MB5276.namprd11.prod.outlook.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: zGqR_cdO5w9EzBEebYwZ_Glhya1ShdP7
-X-Proofpoint-GUID: bnWaIZ7VLab2xF1nO8dP-ejF7KjP8ACq
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-23_07,2022-05-23_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 clxscore=1015
- suspectscore=0 mlxlogscore=721 spamscore=0 priorityscore=1501 adultscore=0
- phishscore=0 bulkscore=0 lowpriorityscore=0 mlxscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2205230099
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch makes sure objtool runs only on the object files
-that have ftrace enabled, instead of running on all the object
-files.
+Hi Kevin,
 
-Signed-off-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
-Signed-off-by: Sathvika Vasireddy <sv@linux.ibm.com>
----
- scripts/Makefile.build | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+On Mon, 23 May 2022 09:14:04 +0000, "Tian, Kevin" <kevin.tian@intel.com>
+wrote:
 
-diff --git a/scripts/Makefile.build b/scripts/Makefile.build
-index 2e0c3f9c1459..06ceffd92921 100644
---- a/scripts/Makefile.build
-+++ b/scripts/Makefile.build
-@@ -258,8 +258,8 @@ else
- # 'OBJECT_FILES_NON_STANDARD_foo.o := 'y': skip objtool checking for a file
- # 'OBJECT_FILES_NON_STANDARD_foo.o := 'n': override directory skip for a file
- 
--$(obj)/%.o: objtool-enabled = $(if $(filter-out y%, \
--	$(OBJECT_FILES_NON_STANDARD_$(basetarget).o)$(OBJECT_FILES_NON_STANDARD)n),y)
-+$(obj)/%.o: objtool-enabled = $(and $(if $(filter-out y%, $(OBJECT_FILES_NON_STANDARD_$(basetarget).o)$(OBJECT_FILES_NON_STANDARD)n),y),        \
-+        $(if $(findstring $(strip $(CC_FLAGS_FTRACE)),$(_c_flags)),y),y)
- 
- endif
- 
--- 
-2.25.1
+> > From: Tian, Kevin
+> > Sent: Monday, May 23, 2022 3:55 PM
+> >   
+> > > From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > > +ioasid_t iommu_get_pasid_from_domain(struct device *dev, struct
+> > > iommu_domain *domain)
+> > > +{
+> > > +	struct iommu_domain *tdomain;
+> > > +	struct iommu_group *group;
+> > > +	unsigned long index;
+> > > +	ioasid_t pasid = INVALID_IOASID;
+> > > +
+> > > +	group = iommu_group_get(dev);
+> > > +	if (!group)
+> > > +		return pasid;
+> > > +
+> > > +	xa_for_each(&group->pasid_array, index, tdomain) {
+> > > +		if (domain == tdomain) {
+> > > +			pasid = index;
+> > > +			break;
+> > > +		}
+> > > +	}  
+> > 
+> > Don't we need to acquire the group lock here?
+> > 
+pasid_array is under RCU read lock so it is protected though may have stale
+data. It also used in atomic context for TLB flush, cannot take the
+group mutex. If the caller does detach_dev_pasid while doing TLB flush, it
+could result in extra flush but harmless.
 
+> > Btw the intention of this function is a bit confusing. Patch01 already
+> > stores the pasid under domain hence it's redundant to get it
+> > indirectly from xarray index. You could simply introduce a flag bit
+> > (e.g. dma_pasid_enabled) in device_domain_info and then directly
+> > use domain->dma_pasid once the flag is true.
+> >   
+> 
+> Just saw your discussion with Jason about v3. While it makes sense
+> to not specialize DMA domain in iommu driver, the use of this function
+> should only be that when the call chain doesn't pass down a pasid
+> value e.g. when doing cache invalidation for domain map/unmap. If
+> the upper interface already carries a pasid e.g. in detach_dev_pasid()
+> iommu driver can simply verify that the corresponding pasid xarray 
+> entry points to the specified domain instead of using this function to
+> loop xarray and then verify the returned pasid (as done in patch03/04).
+Excellent point, I could just use xa_load(pasid) to compare the domain
+instead of loop through xa.
+I will add another helper.
+
+bool iommu_is_pasid_domain_attached(struct device *dev, struct iommu_domain *domain, ioasid_t pasid)
+{
+	struct iommu_group *group;
+	bool ret = false;
+
+	group = iommu_group_get(dev);
+	if (WARN_ON(!group))
+		return false;
+
+	if (domain == xa_load(&group->pasid_array, pasid))
+		ret = true;
+
+	iommu_group_put(group);
+
+	return ret;
+}
+
+Thanks,
+
+Jacob
