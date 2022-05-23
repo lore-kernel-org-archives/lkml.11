@@ -2,110 +2,206 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40A74C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 12:50:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA50CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 12:50:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235638AbiEWMug (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 08:50:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43316 "EHLO
+        id S235673AbiEWMup (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 08:50:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232782AbiEWMue (ORCPT
+        with ESMTP id S235586AbiEWMun (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 08:50:34 -0400
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A73252B0D
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 05:50:33 -0700 (PDT)
-Received: by mail-pf1-x436.google.com with SMTP id i24so13596971pfa.7
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 05:50:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
-        bh=YfnB11KMaX602mBm0PnlrHM5pqQzJfF9oigF++xZ/Ks=;
-        b=UhKZbD+yQzdUWIBnTy9KAJYJYOuA2+70s+CqllAQ/sfA6KznKV5d+vWr5UMmThRA6t
-         CN/wUjyaha4lokAFaS2EjzviEqNjZKn481mxdq73xHsysOXsSs0lN1Ioj0d8S7H3frGY
-         zpktXvyQ8PNZz+rQJO4ONjCJNXfrpNMK+f+no0khs0tgm/GH/b91xMVDRll0IBzCL473
-         zAd5sg7DTmGDlZUtmyRCDEe0etu0zWfk6hyquG2VAKDuO7UsaWt1MrChSlzBqVYXwWfO
-         9T2NuBUhVpWS4KRU3807MP9VlUovGOrfaSusS7L6EAmlHxxZkvZhckWBlgh/VMaYpMIl
-         /86w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to;
-        bh=YfnB11KMaX602mBm0PnlrHM5pqQzJfF9oigF++xZ/Ks=;
-        b=ofjK4Q7109l9poti25Ia5PvJNz0Ih5ok/1445VxdUlWM8GtAFGMNG1YqVLJxNBj0Aa
-         CqYV3z/Guk0JOn4H4ALdoim5/gRUbKnsMFVaHhaGUwhZKrIhnissPCSM9y+wtWAb9de1
-         CTRhUE3KN35vQs1afk0ILXmhU26qpHSVs0j/jjQmmOiBuMdbDzw1E++tQOW032WHym69
-         TH54iVW9IXYU8xIxNzuVUTUaDqqh707FzaoQPUIjJ7DVs+8kxNgfz+5Kqcj2EHmA4MWG
-         nTRniSEdOFHERZb1CQ0oCPeMV8sBAH+lEN9g71DpuIRebrFYTOTPf/PGRw4iRB186KOy
-         uZvA==
-X-Gm-Message-State: AOAM531oM/9vbO18818+1VCitCf/GENNs0aUSnqTnxdSwqSXsdbRRh8X
-        vgd98FokVDvs3NMqRnuOlUGaxhhiuW2euqfJnkZrew==
-X-Google-Smtp-Source: ABdhPJwVH/O6Xo9nRgajes4j9eCZ5mpZVShQyUWGA9JFDSxnW70LHrFHFYzJSTkvaEFwySG6g2LXOgM+0tGd1nPpuRs=
-X-Received: by 2002:a63:6901:0:b0:3f9:caa5:cffc with SMTP id
- e1-20020a636901000000b003f9caa5cffcmr12543131pgc.324.1653310233085; Mon, 23
- May 2022 05:50:33 -0700 (PDT)
+        Mon, 23 May 2022 08:50:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E143A52B27;
+        Mon, 23 May 2022 05:50:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 952C7B810AC;
+        Mon, 23 May 2022 12:50:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB255C385A9;
+        Mon, 23 May 2022 12:50:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653310240;
+        bh=AFHTuwVEqGS1/GzxHMcy2QWyLwHy0DlBTWXVrK+J3rI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=tEsOA5OS8NuAMMznaqfFMZ4Ues2z0LRTVj+Ak9G6qS5ok+BSNMovLWnHdfPQHbMvi
+         wAW+jBgcxS7Jfaqngtzt6iOf7u1H+ZQprtymlK0P/7VDlzX4/bjH6ur8nrDIm7iG1I
+         KejpURNMIYLcSMpZdJB5Iay27/Rr2qN2UWkquEX47jNqdMHgkTBiwNgl3RB/SFDhE/
+         1LxPLj5BjVlKRxAlz67M39iKbr8L9coRoDvODsAUCPFFOdilFHs279yMYRsnBJ8dlS
+         XdPLhF0zx1LVwImbgelta1aqAhVgsZRIFFJLQeDflV36Wr9D/jyLPQ/MsehobF25Ys
+         DZE+LYq1J1c6g==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 100A4400B1; Mon, 23 May 2022 09:50:37 -0300 (-03)
+Date:   Mon, 23 May 2022 09:50:37 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Namhyung Kim <namhyung@kernel.org>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Ingo Molnar <mingo@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        linux-perf-users@vger.kernel.org
+Subject: Re: [PATCH 2/2] perf lock: Add -t/--thread option for report
+Message-ID: <YouDHRXZYqZSEutp@kernel.org>
+References: <20220521010811.932703-1-namhyung@kernel.org>
+ <20220521010811.932703-2-namhyung@kernel.org>
 MIME-Version: 1.0
-References: <20220523084615.13510-1-robert.foss@linaro.org>
-In-Reply-To: <20220523084615.13510-1-robert.foss@linaro.org>
-From:   Robert Foss <robert.foss@linaro.org>
-Date:   Mon, 23 May 2022 14:50:22 +0200
-Message-ID: <CAG3jFytkFcmYjj6AHye3imsTDyP1LxHQvAzjswuRBsVVHRTnKg@mail.gmail.com>
-Subject: Re: [PATCH v1 1/2] Revert "drm/bridge: anx7625: Use DPI bus type"
-To:     andrzej.hajda@intel.com, narmstrong@baylibre.com,
-        robert.foss@linaro.org, Laurent.pinchart@ideasonboard.com,
-        jonas@kwiboo.se, jernej.skrabec@gmail.com, airlied@linux.ie,
-        daniel@ffwll.ch, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, xji@analogixsemi.com,
-        hsinyi@chromium.org, sam@ravnborg.org, tzimmermann@suse.de,
-        maxime@cerno.tech, jose.exposito89@gmail.com,
-        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220521010811.932703-2-namhyung@kernel.org>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 23 May 2022 at 10:46, Robert Foss <robert.foss@linaro.org> wrote:
->
-> This reverts commit a77c2af0994e24ee36c7ffb6dc852770bdf06fb1.
-> ---
->  drivers/gpu/drm/bridge/analogix/anx7625.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
->
-> diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.c b/drivers/gpu/drm/bridge/analogix/anx7625.c
-> index 01f46d9189c1..53a5da6c49dd 100644
-> --- a/drivers/gpu/drm/bridge/analogix/anx7625.c
-> +++ b/drivers/gpu/drm/bridge/analogix/anx7625.c
-> @@ -1623,14 +1623,14 @@ static int anx7625_parse_dt(struct device *dev,
->
->         anx7625_get_swing_setting(dev, pdata);
->
-> -       pdata->is_dpi = 0; /* default dsi mode */
-> +       pdata->is_dpi = 1; /* default dpi mode */
->         pdata->mipi_host_node = of_graph_get_remote_node(np, 0, 0);
->         if (!pdata->mipi_host_node) {
->                 DRM_DEV_ERROR(dev, "fail to get internal panel.\n");
->                 return -ENODEV;
->         }
->
-> -       bus_type = 0;
-> +       bus_type = V4L2_FWNODE_BUS_TYPE_PARALLEL;
->         mipi_lanes = MAX_LANES_SUPPORT;
->         ep0 = of_graph_get_endpoint_by_regs(np, 0, 0);
->         if (ep0) {
-> @@ -1640,8 +1640,8 @@ static int anx7625_parse_dt(struct device *dev,
->                 mipi_lanes = of_property_count_u32_elems(ep0, "data-lanes");
->         }
->
-> -       if (bus_type == V4L2_FWNODE_BUS_TYPE_DPI) /* bus type is DPI */
-> -               pdata->is_dpi = 1;
-> +       if (bus_type == V4L2_FWNODE_BUS_TYPE_PARALLEL) /* bus type is Parallel(DSI) */
-> +               pdata->is_dpi = 0;
->
->         pdata->mipi_lanes = mipi_lanes;
->         if (pdata->mipi_lanes > MAX_LANES_SUPPORT || pdata->mipi_lanes <= 0)
-> --
-> 2.34.1
->
+Em Fri, May 20, 2022 at 06:08:11PM -0700, Namhyung Kim escreveu:
+> The -t option is to show per-thread lock stat like below:
+> 
+>   $ perf lock report -t -F acquired,contended,avg_wait
+> 
+>                 Name   acquired  contended   avg wait (ns)
+> 
+>                 perf     240569          9            5784
+>              swapper     106610         19             543
+>               :15789      17370          2           14538
+>         ContainerMgr       8981          6             874
+>                sleep       5275          1           11281
+>      ContainerThread       4416          4             944
+>      RootPressureThr       3215          5            1215
+>          rcu_preempt       2954          0               0
+>         ContainerMgr       2560          0               0
+>              unnamed       1873          0               0
+>      EventManager_De       1845          1             636
+>      futex-default-S       1609          0               0
+>   ...
 
-Signed-off-by: Robert Foss <robert.foss@linaro.org>
+Applied both and added this:
+
+⬢[acme@toolbox perf]$ git diff
+diff --git a/tools/perf/Documentation/perf-lock.txt b/tools/perf/Documentation/perf-lock.txt
+index b43222229807672c..656b537b2fba078f 100644
+--- a/tools/perf/Documentation/perf-lock.txt
++++ b/tools/perf/Documentation/perf-lock.txt
+@@ -64,6 +64,27 @@ REPORT OPTIONS
+ --combine-locks::
+        Merge lock instances in the same class (based on name).
+ 
++-t::
++--threads::
++    The -t option is to show per-thread lock stat like below:
++
++      $ perf lock report -t -F acquired,contended,avg_wait
++
++                    Name   acquired  contended   avg wait (ns)
++
++                    perf     240569          9            5784
++                 swapper     106610         19             543
++                  :15789      17370          2           14538
++            ContainerMgr       8981          6             874
++                   sleep       5275          1           11281
++         ContainerThread       4416          4             944
++         RootPressureThr       3215          5            1215
++             rcu_preempt       2954          0               0
++            ContainerMgr       2560          0               0
++                 unnamed       1873          0               0
++         EventManager_De       1845          1             636
++         futex-default-S       1609          0               0
++
+ INFO OPTIONS
+ ------------
+
+ 
+> Signed-off-by: Namhyung Kim <namhyung@kernel.org>
+> ---
+>  tools/perf/builtin-lock.c | 28 +++++++++++++++++++++++++++-
+>  1 file changed, 27 insertions(+), 1 deletion(-)
+> 
+> diff --git a/tools/perf/builtin-lock.c b/tools/perf/builtin-lock.c
+> index 7ceb12e30719..b1200b7340a6 100644
+> --- a/tools/perf/builtin-lock.c
+> +++ b/tools/perf/builtin-lock.c
+> @@ -118,6 +118,7 @@ struct thread_stat {
+>  static struct rb_root		thread_stats;
+>  
+>  static bool combine_locks;
+> +static bool show_thread_stats;
+>  
+>  static struct thread_stat *thread_stat_find(u32 tid)
+>  {
+> @@ -542,6 +543,10 @@ static int report_lock_acquire_event(struct evsel *evsel,
+>  	u64 addr = evsel__intval(evsel, sample, "lockdep_addr");
+>  	int flag = evsel__intval(evsel, sample, "flags");
+>  
+> +	/* abuse ls->addr for tid */
+> +	if (show_thread_stats)
+> +		addr = sample->tid;
+> +
+>  	ls = lock_stat_findnew(addr, name);
+>  	if (!ls)
+>  		return -ENOMEM;
+> @@ -611,6 +616,9 @@ static int report_lock_acquired_event(struct evsel *evsel,
+>  	const char *name = evsel__strval(evsel, sample, "name");
+>  	u64 addr = evsel__intval(evsel, sample, "lockdep_addr");
+>  
+> +	if (show_thread_stats)
+> +		addr = sample->tid;
+> +
+>  	ls = lock_stat_findnew(addr, name);
+>  	if (!ls)
+>  		return -ENOMEM;
+> @@ -670,6 +678,9 @@ static int report_lock_contended_event(struct evsel *evsel,
+>  	const char *name = evsel__strval(evsel, sample, "name");
+>  	u64 addr = evsel__intval(evsel, sample, "lockdep_addr");
+>  
+> +	if (show_thread_stats)
+> +		addr = sample->tid;
+> +
+>  	ls = lock_stat_findnew(addr, name);
+>  	if (!ls)
+>  		return -ENOMEM;
+> @@ -722,6 +733,9 @@ static int report_lock_release_event(struct evsel *evsel,
+>  	const char *name = evsel__strval(evsel, sample, "name");
+>  	u64 addr = evsel__intval(evsel, sample, "lockdep_addr");
+>  
+> +	if (show_thread_stats)
+> +		addr = sample->tid;
+> +
+>  	ls = lock_stat_findnew(addr, name);
+>  	if (!ls)
+>  		return -ENOMEM;
+> @@ -848,7 +862,17 @@ static void print_result(void)
+>  
+>  		if (strlen(st->name) < 20) {
+>  			/* output raw name */
+> -			pr_info("%20s ", st->name);
+> +			const char *name = st->name;
+> +
+> +			if (show_thread_stats) {
+> +				struct thread *t;
+> +
+> +				/* st->addr contains tid of thread */
+> +				t = perf_session__findnew(session, st->addr);
+> +				name = thread__comm_str(t);
+> +			}
+> +
+> +			pr_info("%20s ", name);
+>  		} else {
+>  			strncpy(cut_name, st->name, 16);
+>  			cut_name[16] = '.';
+> @@ -1125,6 +1149,8 @@ int cmd_lock(int argc, const char **argv)
+>  	/* TODO: type */
+>  	OPT_BOOLEAN('c', "combine-locks", &combine_locks,
+>  		    "combine locks in the same class"),
+> +	OPT_BOOLEAN('t', "threads", &show_thread_stats,
+> +		    "show per-thread lock stats"),
+>  	OPT_PARENT(lock_options)
+>  	};
+>  
+> -- 
+> 2.36.1.124.g0e6072fb45-goog
+
+-- 
+
+- Arnaldo
