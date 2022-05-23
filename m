@@ -2,142 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E897C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 07:26:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11217C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 07:27:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230520AbiEWHZu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 03:25:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50400 "EHLO
+        id S230519AbiEWH1N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 03:27:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230315AbiEWHZU (ORCPT
+        with ESMTP id S230493AbiEWH0u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 03:25:20 -0400
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 785EC4617B
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 00:21:15 -0700 (PDT)
-Received: by mail-lf1-x132.google.com with SMTP id j10so533751lfe.12
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 00:21:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=SEfmqDqkFEX696SZ2gTxY8Wvy6BNeXZ6T0MQiA7SKio=;
-        b=qIGf2F71X4+l3ZnR4VTUsUYTa4+nP1usaz9fXtcqUsBc+DxabJd0Pek3M+IJ1Q9WiV
-         kdvIGOOEnJFHCRUkR41HhjDFjY/OJjpOdSPnTpwgaad5yjmScNqjOO9tUYJXx3HTpyKV
-         76ui4a1JNwJX/yrVaif5FjIj4G2PL0b2/zAI2ijK/xJCqoeaJlizpfIFgLFA6x2kG/mm
-         C4qWRgmuRFqRmpifygp3pnWYhDhSzcRHwQlWnj1pzOuO7W+LT5IgUA/Z4pc8QvMINHea
-         4agHejBEy0Ll1+epo+y1v3PpZw9SUvyB3QuyKDVxtsTlAyR1GEI/eUNlSgMikcV/t+By
-         Sryg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=SEfmqDqkFEX696SZ2gTxY8Wvy6BNeXZ6T0MQiA7SKio=;
-        b=euDJ+cZbx6PCXzglpxQHtf2CJnY+z/WR70figOn5SZlNe1K8INf54WVpt0aQHywMRt
-         SPuTqhqOmebWD8P3VXWTt4x+vxASHPW22SqGfv9aEqpN8wcqOkpdOd6r5uJ13SqJpoEY
-         Fhb2nvFpQnWjGNiYmf/U13diapfvGC8J5Ktx+5Cmx7u61SCQbCT/FgdPzk52PNSdX49U
-         8HRgglzAgyPAnHMSNndsVtUNYlZIRvY2DfHLiInDDLlvuEDIU5WmAey7LQ9PhYztp/uZ
-         u5yJaBCWhWJevN/CwYAm6dXlMMU+/vXB7jo0PBe/ABM97XaYhoor0fKbKrgA82rt8Mgs
-         TGLA==
-X-Gm-Message-State: AOAM530Y/9rkJDkLgKAoR4b7IT/0iiX2xLWAWNrNb9qAsCLYXMZyI4sO
-        kuJ38JFhfc5KjSEFLNw7PRWKnA==
-X-Google-Smtp-Source: ABdhPJzySbuijwZ7sGwLLG5uguH3+PrkjAEfjkhpoIN1N2Ky3SeI9U+ELPWCH8rKPGQyNwITp/kjeA==
-X-Received: by 2002:a05:6512:280b:b0:477:b181:223d with SMTP id cf11-20020a056512280b00b00477b181223dmr15453250lfb.146.1653290473825;
-        Mon, 23 May 2022 00:21:13 -0700 (PDT)
-Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id 4-20020ac24824000000b0047255d211c8sm1821422lft.247.2022.05.23.00.21.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 May 2022 00:21:13 -0700 (PDT)
-Message-ID: <53d5999b-88ee-24db-fd08-ff9406e2b7b7@linaro.org>
-Date:   Mon, 23 May 2022 09:21:12 +0200
+        Mon, 23 May 2022 03:26:50 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86D9AB49A;
+        Mon, 23 May 2022 00:22:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653290567; x=1684826567;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=KWflf9hZ4EEzO/3N36rfafAnRxhbr/9bpirmiokHGHo=;
+  b=hxQ++Y1zPePcU7OZpmvThaDATJ7bGaHDa3eHdYyasSI5Ewdt5MWchVlI
+   aS/ZfgeVwJYt0K7E2mkOuZ3RlF7y4QsrhHU5dVb7Ome31IHXaHeE2Wind
+   ANqc7pVAtb255NKu4L1phZnVYG5w5F7LJS+tsFQ3n08EeNLHQ3EVSdKxE
+   FNkOWdJFJGbL8+XPent1GT1opVEVING6avsiA7XU76UKDW4/2hOav/KHu
+   zwViYKKxKXvziqIXN3Mk4Q34jaPk3Hwpoxnp0DVySaIjpI9lYZ0FtGVhv
+   3/gNMsu1IkYbYncocvPmcIVB02mCIYzZcrJDNw02Qfa2HiCG+tGwmAECZ
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10355"; a="260727359"
+X-IronPort-AV: E=Sophos;i="5.91,245,1647327600"; 
+   d="scan'208";a="260727359"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 May 2022 23:46:16 -0700
+X-IronPort-AV: E=Sophos;i="5.91,245,1647327600"; 
+   d="scan'208";a="600476753"
+Received: from cqiang-mobl.ccr.corp.intel.com (HELO [10.249.175.93]) ([10.249.175.93])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 May 2022 23:46:13 -0700
+Message-ID: <5c5a7597-d6e3-7a05-ead8-659c45aea222@intel.com>
+Date:   Mon, 23 May 2022 14:46:11 +0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: Removal of qcom,board-id and qcom,msm-id
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.9.0
+Subject: Re: [PATCH v6 2/3] KVM: selftests: Add a test to get/set triple fault
+ event
 Content-Language: en-US
-To:     Konrad Dybcio <konrad.dybcio@somainline.org>
-Cc:     agross@kernel.org, arnd@arndb.de, bjorn.andersson@linaro.org,
-        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, olof@lixom.net, robh@kernel.org,
-        sboyd@kernel.org
-References: <a3c932d1-a102-ce18-deea-18cbbd05ecab@linaro.org>
- <20220522195138.35943-1-konrad.dybcio@somainline.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220522195138.35943-1-konrad.dybcio@somainline.org>
-Content-Type: text/plain; charset=UTF-8
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Xiaoyao Li <xiaoyao.li@intel.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220421072958.16375-1-chenyi.qiang@intel.com>
+ <20220421072958.16375-3-chenyi.qiang@intel.com> <YoVHAIGcFgJit1qp@google.com>
+From:   Chenyi Qiang <chenyi.qiang@intel.com>
+In-Reply-To: <YoVHAIGcFgJit1qp@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 22/05/2022 21:51, Konrad Dybcio wrote:
-> Hi,
-> 
-> removing these properties will not bring almost any benefit (other than making
-> some checks happy any saving some <200 LoC) and will make the lives of almost
-> all people doing independent development for linux-on-msm harder. There are
-> almost unironically like 3 people outside Linaro and QUIC who have
-> non-vendor-fused development boards AND the sources to rebuild the
-> bootloader on their own. Making it harder to boot is only going to
-> discourage people from developing on these devices, which is already not
-> that pleasant, especially with newer platforms where you have to fight with
-> the oh-so-bright ideas of Android boot chain..
-> 
-> This only concerns devices released before sm8350, as the new ones will not
-> even boot with these properties present (or at least SONY Sagami, but I
-> doubt it's an isolated case), so other than completing support for older
-> devices, it won't be an issue going forward, anyway. But there are give
-> or take 50 locked down devices in mainline right now, and many more waiting
-> to be upstreamed in various downstream close-to-mainline trees that should
-> not be disregarded just because Qualcomm is far from the best at making
-> their BSP software stack clean.
-
-I actually wonder why do you need these properties for community work on
-such boards? You ship kernel with one concatenated DTB and the
-bootloader does not need the board-id/msm-id fields, doesn't it?
-
-Not mentioning that in the past bootloader was actually not using these
-properties at all, because it was the dtbTool who was parsing them. So
-in any case either your device works fine without these properties or
-you have to use dtbTool, right?
-
-> 
-> One solution is to chainload another, (n+1)-stage bootloader, but this is
-> not ideal, as:
-> 
-> 1) the stock bootloader can boot Linux just fine on most devices (except
-> for single exceptions, where beloved OEMs didn't implement arm64 booting or
-> something)
-> 
-> 2) the boot chain on MSM is already 3- or 4- stage and adding to that will
-> only create an unnecessary mess
-> 
-> 3) the job of kernel people is not to break userspace. If the
-> device can not even exit bootloader after a kernel upgrade, it's a big
-> failure.
-
-The job of kernel people is to follow bindings and since they were
-introduced 7 years ago, I would say there was plenty of time for that.
-
-If the dtbTool support for the bindings is there, then there is no
-breakage, because you had to use dtbTool before so you have to use now.
-
-> 
-> If you *really really really* want these either gone or documented, we can
-> for example use them in the SOCID driver, read the values from DTB and
-> compare against what SMEM has to say and for example print a warning when
-> there are inconsistencies or use it as a fallback when it fails for any
-> reason, such as using a newer SoC on an older kernel, without updates
-> for SOCID read (which are sometimes necessary, which was the case for 8450
-> recently, iirc).
-> 
-> My stance is to just leave them as is, as moving them anywhere, or removing
-> them at all will cause unnecessary mess and waste time that could have been
-> spent on more glaring issues..
-> 
-> Konrad
 
 
-Best regards,
-Krzysztof
+On 5/19/2022 3:20 AM, Sean Christopherson wrote:
+> On Thu, Apr 21, 2022, Chenyi Qiang wrote:
+>> +#ifndef __x86_64__
+>> +# error This test is 64-bit only
+> 
+> No need, all of KVM selftests are 64-bit only.
+> 
+>> +#endif
+>> +
+>> +#define VCPU_ID			0
+>> +#define ARBITRARY_IO_PORT	0x2000
+>> +
+>> +/* The virtual machine object. */
+>> +static struct kvm_vm *vm;
+>> +
+>> +static void l2_guest_code(void)
+>> +{
+>> +	/*
+>> +	 * Generate an exit to L0 userspace, i.e. main(), via I/O to an
+>> +	 * arbitrary port.
+>> +	 */
+> 
+> I think we can test a "real" triple fault without too much effort by abusing
+> vcpu->run->request_interrupt_window.  E.g. map the run struct into L2, clear
+> PIN_BASED_EXT_INTR_MASK in vmcs12, and then in l2_guest_code() do:
+> 
+> 	asm volatile("cli");
+> 
+> 	run->request_interrupt_window = true;
+> 
+
+Maybe, A GUEST_SYNC to main() to change the request_interrupt_window 
+also works.
+
+> 	asm volatile("sti; ud2");
+> 
+
+How does the "real" triple fault occur here? Through UD2?
+
+> 	asm volatile("inb %%dx, %%al"
+> 		     : : [port] "d" (ARBITRARY_IO_PORT) : "rax"); 	
+> 
+> The STI shadow will block the IRQ-window VM-Exit until after the ud2, i.e. until
+> after the triple fault is pending.
+> 
+> And then main() can
+> 
+>    1. verify it got KVM_EXIT_IRQ_WINDOW_OPEN with a pending triple fault
+>    2. clear the triple fault and re-enter L1+l2
+>    3. continue with the existing code, e.g. verify it got KVM_EXIT_IO, stuff a
+>       pending triple fault, etc...
+> 
+> That said, typing that out makes me think we should technically handle/prevent this
+> in KVM since triple fault / shutdown is kinda sorta just a special exception.
+> 
+> Heh, and a potentially bad/crazy idea would be to use a reserved/magic vector in
+> kvm_vcpu_events.exception to save/restore triple fault, e.g. we could steal
+> NMI_VECTOR.
+> 
+> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+> index f2d0ee9296b9..d58c0cfd3cd3 100644
+> --- a/arch/x86/kvm/x86.c
+> +++ b/arch/x86/kvm/x86.c
+> @@ -4743,7 +4743,8 @@ static int kvm_vcpu_ready_for_interrupt_injection(struct kvm_vcpu *vcpu)
+>          return (kvm_arch_interrupt_allowed(vcpu) &&
+>                  kvm_cpu_accept_dm_intr(vcpu) &&
+>                  !kvm_event_needs_reinjection(vcpu) &&
+> -               !vcpu->arch.exception.pending);
+> +               !vcpu->arch.exception.pending &&
+> +               !kvm_test_request(KVM_REQ_TRIPLE_FAULT, vcpu));
+>   }
+> 
+>   static int kvm_vcpu_ioctl_interrupt(struct kvm_vcpu *vcpu,
+> 
+> 
+> 
