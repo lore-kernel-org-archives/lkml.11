@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54357C4167E
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:28:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3671C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:28:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241799AbiEWR1I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:27:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37706 "EHLO
+        id S241032AbiEWR0P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:26:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240314AbiEWRQP (ORCPT
+        with ESMTP id S240521AbiEWRQZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:16:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E43F6D971;
-        Mon, 23 May 2022 10:12:56 -0700 (PDT)
+        Mon, 23 May 2022 13:16:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62AD56FA1E;
+        Mon, 23 May 2022 10:15:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D7411B811CC;
-        Mon, 23 May 2022 17:12:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35FF6C36AE3;
-        Mon, 23 May 2022 17:12:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 462AA6153C;
+        Mon, 23 May 2022 17:15:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44867C385A9;
+        Mon, 23 May 2022 17:15:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653325969;
-        bh=KxUHMxCtT1XT8i2oOCZgReXE0uqJrutH4S+iLI9/Svw=;
+        s=korg; t=1653326101;
+        bh=dc9g7pKCCXGPpvSZYkwOO+GtH7VnkiFJIONPj6O+gdk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=L2e23sNvXk6s6VX7Wj/idXzzUcXPGija2MfqHsic6psYjlpi80WDDK8ulXTroBFEt
-         xS3LRlDqlCZxs5uitfz75UAg00MJfagHoC5jNkHpWEwKUET4zdhYdHyxHDlCfd3rYO
-         vq7GQnY1MUoduXsRA05SP+WVQfi+G4SN9bAQJwmU=
+        b=YiCzndnzS5uoorZgC8sk2MqYLKFacLygMTF40aB6DbXU7wgKh/w8xz2a1Oqbc4DNS
+         2be/UkCzuySyZU/ImGEl7Y2GGm/kRsWcJslytL7EHsSKShhUGmg1KIPcV1qWY1vTR3
+         WagTEQgcqSYlePP6JnKt7eZKJ/cHGoqU0zcS2A2s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Felix Fietkau <nbd@nbd.name>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 38/44] mac80211: fix rx reordering with non explicit / psmp ack policy
-Date:   Mon, 23 May 2022 19:05:22 +0200
-Message-Id: <20220523165800.318947808@linuxfoundation.org>
+        stable@vger.kernel.org, Monish Kumar R <monish.kumar.r@intel.com>,
+        Christoph Hellwig <hch@lst.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 13/97] nvme-pci: add quirks for Samsung X5 SSDs
+Date:   Mon, 23 May 2022 19:05:17 +0200
+Message-Id: <20220523165814.453433514@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165752.797318097@linuxfoundation.org>
-References: <20220523165752.797318097@linuxfoundation.org>
+In-Reply-To: <20220523165812.244140613@linuxfoundation.org>
+References: <20220523165812.244140613@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,36 +48,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Felix Fietkau <nbd@nbd.name>
+From: Monish Kumar R <monish.kumar.r@intel.com>
 
-[ Upstream commit 5e469ed9764d4722c59562da13120bd2dc6834c5 ]
+[ Upstream commit bc360b0b1611566e1bd47384daf49af6a1c51837 ]
 
-When the QoS ack policy was set to non explicit / psmp ack, frames are treated
-as not being part of a BA session, which causes extra latency on reordering.
-Fix this by only bypassing reordering for packets with no-ack policy
+Add quirks to not fail the initialization and to have quick resume
+latency after cold/warm reboot.
 
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
-Link: https://lore.kernel.org/r/20220420105038.36443-1-nbd@nbd.name
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Monish Kumar R <monish.kumar.r@intel.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mac80211/rx.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/nvme/host/pci.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/net/mac80211/rx.c b/net/mac80211/rx.c
-index f30b732af61d..3598ebe52d08 100644
---- a/net/mac80211/rx.c
-+++ b/net/mac80211/rx.c
-@@ -1322,8 +1322,7 @@ static void ieee80211_rx_reorder_ampdu(struct ieee80211_rx_data *rx,
- 		goto dont_reorder;
- 
- 	/* not part of a BA session */
--	if (ack_policy != IEEE80211_QOS_CTL_ACK_POLICY_BLOCKACK &&
--	    ack_policy != IEEE80211_QOS_CTL_ACK_POLICY_NORMAL)
-+	if (ack_policy == IEEE80211_QOS_CTL_ACK_POLICY_NOACK)
- 		goto dont_reorder;
- 
- 	/* new, potentially un-ordered, ampdu frame - process it */
+diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+index 6939b03a16c5..a36db0701d17 100644
+--- a/drivers/nvme/host/pci.c
++++ b/drivers/nvme/host/pci.c
+@@ -3265,7 +3265,10 @@ static const struct pci_device_id nvme_id_table[] = {
+ 				NVME_QUIRK_128_BYTES_SQES |
+ 				NVME_QUIRK_SHARED_TAGS |
+ 				NVME_QUIRK_SKIP_CID_GEN },
+-
++	{ PCI_DEVICE(0x144d, 0xa808),   /* Samsung X5 */
++		.driver_data =  NVME_QUIRK_DELAY_BEFORE_CHK_RDY|
++				NVME_QUIRK_NO_DEEPEST_PS |
++				NVME_QUIRK_IGNORE_DEV_SUBNQN, },
+ 	{ PCI_DEVICE_CLASS(PCI_CLASS_STORAGE_EXPRESS, 0xffffff) },
+ 	{ 0, }
+ };
 -- 
 2.35.1
 
