@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2D34C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:13:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 483A8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:13:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239813AbiEWRNE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:13:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37766 "EHLO
+        id S239921AbiEWRNJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:13:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239797AbiEWRKt (ORCPT
+        with ESMTP id S239912AbiEWRL2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:10:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B9646C0C2;
-        Mon, 23 May 2022 10:10:30 -0700 (PDT)
+        Mon, 23 May 2022 13:11:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01FE66CA8A;
+        Mon, 23 May 2022 10:10:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D267FB811FF;
-        Mon, 23 May 2022 17:10:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2863EC385A9;
-        Mon, 23 May 2022 17:10:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B49AA6149F;
+        Mon, 23 May 2022 17:10:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5FCFC385A9;
+        Mon, 23 May 2022 17:10:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653325828;
-        bh=dyxp/OnlY0m1FU8iZJRv1ipNM6H0VBNRarR2JtfRlCE=;
+        s=korg; t=1653325816;
+        bh=PtTaFhuG/99yQe8PlTPphxsox6m92HMPQPi+TXuU2x4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GOn1DBM9irUNQ9kB/mySd8xMSEKXHpcjWt9NZYB+S/j4y6AubRpbqfFTCfElKV/hl
-         rzfkyRti2QKgoDHs5ckW+io/0XkT3rGjFssWaqpAWgxZosTOtEPDGN6n53AZQHlD45
-         RqCb8RKZWaxIblpMrugVzpgR4uacZb+KS+M9dcd8=
+        b=AlZhi7kyA5XB2d5KNZHTWTw20Ty3AR0PLVElgk5jtrKNFr7a+ujmvDP8p2wEYHdh4
+         hraav1bC3sX7SN3Gx/UmMASBjWsnmuNMFWGt6X0xgDGt/2XuNI+OJijbX4dCluUhCV
+         19uHDMxIly5iLNCnJakVpG8nJHfgYlzjiuIT3u/I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
-        Zixuan Fu <r33s3n6@gmail.com>, Paolo Abeni <pabeni@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 24/44] net: vmxnet3: fix possible NULL pointer dereference in vmxnet3_rq_cleanup()
-Date:   Mon, 23 May 2022 19:05:08 +0200
-Message-Id: <20220523165757.555117477@linuxfoundation.org>
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: [PATCH 4.19 20/44] mmc: core: Default to generic_cmd6_time as timeout in __mmc_switch()
+Date:   Mon, 23 May 2022 19:05:04 +0200
+Message-Id: <20220523165756.859950133@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165752.797318097@linuxfoundation.org>
 References: <20220523165752.797318097@linuxfoundation.org>
@@ -49,67 +48,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zixuan Fu <r33s3n6@gmail.com>
+From: Ulf Hansson <ulf.hansson@linaro.org>
 
-[ Upstream commit edf410cb74dc612fd47ef5be319c5a0bcd6e6ccd ]
+commit 533a6cfe08f96a7b5c65e06d20916d552c11b256 upstream
 
-In vmxnet3_rq_create(), when dma_alloc_coherent() fails,
-vmxnet3_rq_destroy() is called. It sets rq->rx_ring[i].base to NULL. Then
-vmxnet3_rq_create() returns an error to its callers mxnet3_rq_create_all()
--> vmxnet3_change_mtu(). Then vmxnet3_change_mtu() calls
-vmxnet3_force_close() -> dev_close() in error handling code. And the driver
-calls vmxnet3_close() -> vmxnet3_quiesce_dev() -> vmxnet3_rq_cleanup_all()
--> vmxnet3_rq_cleanup(). In vmxnet3_rq_cleanup(),
-rq->rx_ring[ring_idx].base is accessed, but this variable is NULL, causing
-a NULL pointer dereference.
+All callers of __mmc_switch() should now be specifying a valid timeout for
+the CMD6 command. However, just to be sure, let's print a warning and
+default to use the generic_cmd6_time in case the provided timeout_ms
+argument is zero.
 
-To fix this possible bug, an if statement is added to check whether
-rq->rx_ring[0].base is NULL in vmxnet3_rq_cleanup() and exit early if so.
+In this context, let's also simplify some of the corresponding code and
+clarify some related comments.
 
-The error log in our fault-injection testing is shown as follows:
-
-[   65.220135] BUG: kernel NULL pointer dereference, address: 0000000000000008
-...
-[   65.222633] RIP: 0010:vmxnet3_rq_cleanup_all+0x396/0x4e0 [vmxnet3]
-...
-[   65.227977] Call Trace:
-...
-[   65.228262]  vmxnet3_quiesce_dev+0x80f/0x8a0 [vmxnet3]
-[   65.228580]  vmxnet3_close+0x2c4/0x3f0 [vmxnet3]
-[   65.228866]  __dev_close_many+0x288/0x350
-[   65.229607]  dev_close_many+0xa4/0x480
-[   65.231124]  dev_close+0x138/0x230
-[   65.231933]  vmxnet3_force_close+0x1f0/0x240 [vmxnet3]
-[   65.232248]  vmxnet3_change_mtu+0x75d/0x920 [vmxnet3]
-...
-
-Fixes: d1a890fa37f27 ("net: VMware virtual Ethernet NIC driver: vmxnet3")
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Zixuan Fu <r33s3n6@gmail.com>
-Link: https://lore.kernel.org/r/20220514050711.2636709-1-r33s3n6@gmail.com
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Link: https://lore.kernel.org/r/20200122142747.5690-4-ulf.hansson@linaro.org
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/vmxnet3/vmxnet3_drv.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/mmc/core/mmc_ops.c |   16 +++++++---------
+ 1 file changed, 7 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
-index 1df67c899d4f..a57ea3914968 100644
---- a/drivers/net/vmxnet3/vmxnet3_drv.c
-+++ b/drivers/net/vmxnet3/vmxnet3_drv.c
-@@ -1586,6 +1586,10 @@ vmxnet3_rq_cleanup(struct vmxnet3_rx_queue *rq,
- 	u32 i, ring_idx;
- 	struct Vmxnet3_RxDesc *rxd;
+--- a/drivers/mmc/core/mmc_ops.c
++++ b/drivers/mmc/core/mmc_ops.c
+@@ -458,10 +458,6 @@ static int mmc_poll_for_busy(struct mmc_
+ 	bool expired = false;
+ 	bool busy = false;
  
-+	/* ring has already been cleaned up */
-+	if (!rq->rx_ring[0].base)
-+		return;
+-	/* We have an unspecified cmd timeout, use the fallback value. */
+-	if (!timeout_ms)
+-		timeout_ms = MMC_OPS_TIMEOUT_MS;
+-
+ 	/*
+ 	 * In cases when not allowed to poll by using CMD13 or because we aren't
+ 	 * capable of polling by using ->card_busy(), then rely on waiting the
+@@ -534,6 +530,12 @@ int __mmc_switch(struct mmc_card *card,
+ 
+ 	mmc_retune_hold(host);
+ 
++	if (!timeout_ms) {
++		pr_warn("%s: unspecified timeout for CMD6 - use generic\n",
++			mmc_hostname(host));
++		timeout_ms = card->ext_csd.generic_cmd6_time;
++	}
 +
- 	for (ring_idx = 0; ring_idx < 2; ring_idx++) {
- 		for (i = 0; i < rq->rx_ring[ring_idx].size; i++) {
- #ifdef __BIG_ENDIAN_BITFIELD
--- 
-2.35.1
-
+ 	/*
+ 	 * If the cmd timeout and the max_busy_timeout of the host are both
+ 	 * specified, let's validate them. A failure means we need to prevent
+@@ -542,7 +544,7 @@ int __mmc_switch(struct mmc_card *card,
+ 	 * which also means they are on their own when it comes to deal with the
+ 	 * busy timeout.
+ 	 */
+-	if (!(host->caps & MMC_CAP_NEED_RSP_BUSY) && timeout_ms &&
++	if (!(host->caps & MMC_CAP_NEED_RSP_BUSY) &&
+ 	    host->max_busy_timeout && (timeout_ms > host->max_busy_timeout))
+ 		use_r1b_resp = false;
+ 
+@@ -554,10 +556,6 @@ int __mmc_switch(struct mmc_card *card,
+ 	cmd.flags = MMC_CMD_AC;
+ 	if (use_r1b_resp) {
+ 		cmd.flags |= MMC_RSP_SPI_R1B | MMC_RSP_R1B;
+-		/*
+-		 * A busy_timeout of zero means the host can decide to use
+-		 * whatever value it finds suitable.
+-		 */
+ 		cmd.busy_timeout = timeout_ms;
+ 	} else {
+ 		cmd.flags |= MMC_RSP_SPI_R1 | MMC_RSP_R1;
 
 
