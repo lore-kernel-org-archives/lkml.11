@@ -2,255 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 839CFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 03:30:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DABF2C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 03:30:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355474AbiEWDaI (ORCPT
+        id S1355495AbiEWDaW convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 22 May 2022 23:30:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41610 "EHLO
+        Sun, 22 May 2022 23:30:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229683AbiEWDaG (ORCPT
+        with ESMTP id S1355479AbiEWDaR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 22 May 2022 23:30:06 -0400
-Received: from sender4-pp-o94.zoho.com (sender4-pp-o94.zoho.com [136.143.188.94])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 533D6338B5;
-        Sun, 22 May 2022 20:30:05 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1653276480; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=J9QGsss62X8txwCoJpTf7UEBug4//K4/lrCal76ttMeB9tsr7Jwf9OM+3kfPXbwOxMzGRD6CVeQS26thC+IAlbu20RBcG9owaF3jVFZBQcWUU7UbyD2GCo+ITVZc2GoVt4y98r7WruXPHQX5BMDjxWU0hqsSMopn7HQLyPmhEuE=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1653276480; h=Content-Type:Content-Transfer-Encoding:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=UlXrovz8Wqe8HXRNPOZSPGTS1/sjZPQNfVVq1dmIgNU=; 
-        b=YGUWQh2Q5b/riEASXX2ipVmyWj9Tp+uPw9P1oFgMm/fj+Emk2P2MtOIv8jogl7Qdb6i7MOhGUMdY4qF43uO357C+zVOX62E31IxLJSpAZvYH49l/WH/NPyYOLNZY9n913+3d9FZygmlZyqZq4TnS38ZhDqh4PuzoY+sjaw4E1DU=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=zohomail.com;
-        spf=pass  smtp.mailfrom=lchen.firstlove@zohomail.com;
-        dmarc=pass header.from=<lchen.firstlove@zohomail.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1653276480;
-        s=zm2022; d=zohomail.com; i=lchen.firstlove@zohomail.com;
-        h=Date:Date:From:From:To:To:Message-ID:In-Reply-To:References:Subject:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:Feedback-ID:Message-Id:Reply-To:Cc;
-        bh=UlXrovz8Wqe8HXRNPOZSPGTS1/sjZPQNfVVq1dmIgNU=;
-        b=EjRHlpAAkp3ABFQBlSlbZPRqriT6l91AcKMun2BNC8Ya3Ye2fTIBNGWKWBn1nrbY
-        2Px7gflDqSqk30qNnCbr3Y4HgVLQ9R0n3uvbqHRSc7rRtIvirf3BSO8EHu+c8zexEvg
-        pc0qsUGayOxq8I1vofJ/qY4Wl76xJPVFz9W+zutg=
-Received: from mail.zoho.com by mx.zohomail.com
-        with SMTP id 165327647915341.373408715519076; Sun, 22 May 2022 20:27:59 -0700 (PDT)
-Received: from  [45.12.140.94] by mail.zoho.com
-        with HTTP;Sun, 22 May 2022 20:27:59 -0700 (PDT)
-Date:   Sun, 22 May 2022 20:27:59 -0700
-From:   Li Chen <lchen.firstlove@zohomail.com>
-To:     "Mark Brown" <broonie@kernel.org>,
-        "linux-kernel" <linux-kernel@vger.kernel.org>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        "linux-gpio" <linux-gpio@vger.kernel.org>,
-        "Linus Walleij" <linus.walleij@linaro.org>,
-        "linux-arm-kernel" <linux-arm-kernel@lists.infradead.org>,
-        "Patrice Chotard" <patrice.chotard@foss.st.com>,
-        "linux-sunxi" <linux-sunxi@lists.linux.dev>,
-        "Liam Girdwood" <lgirdwood@gmail.com>,
-        "Jaroslav Kysela" <perex@perex.cz>,
-        "Takashi Iwai" <tiwai@suse.com>, "Chen-Yu Tsai" <wens@csie.org>,
-        "Jernej Skrabec" <jernej.skrabec@gmail.com>,
-        "Samuel Holland" <samuel@sholland.org>,
-        "Philipp Zabel" <p.zabel@pengutronix.de>
-Message-ID: <180eef50e96.cb7c34db60740.8898768158778553647@zohomail.com>
-In-Reply-To: <180eef39205.122d47c8260721.2430302798386025245@zohomail.com>
-References: <180e702a15f.e737e37e45859.3135149506136486394@zohomail.com> <180eef39205.122d47c8260721.2430302798386025245@zohomail.com>
-Subject: [PATCH v3 2/4] ASoC: sunxi: Use
-  {regmap/regmap_field}_{set/clear}_bits helpers
+        Sun, 22 May 2022 23:30:17 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAF0133A2B;
+        Sun, 22 May 2022 20:30:15 -0700 (PDT)
+Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4L62qK06nBzgY9k;
+        Mon, 23 May 2022 11:28:44 +0800 (CST)
+Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
+ kwepemi500013.china.huawei.com (7.221.188.120) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 23 May 2022 11:30:12 +0800
+Received: from dggpemm500006.china.huawei.com ([7.185.36.236]) by
+ dggpemm500006.china.huawei.com ([7.185.36.236]) with mapi id 15.01.2375.024;
+ Mon, 23 May 2022 11:30:12 +0800
+From:   "Gonglei (Arei)" <arei.gonglei@huawei.com>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        "dan.carpenter@oracle.com" <dan.carpenter@oracle.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        zhenwei pi <pizhenwei@bytedance.com>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>
+Subject: RE: [PATCH] virtio-crypto: Fix an error handling path in
+ virtio_crypto_alg_skcipher_close_session()
+Thread-Topic: [PATCH] virtio-crypto: Fix an error handling path in
+ virtio_crypto_alg_skcipher_close_session()
+Thread-Index: AQHYbdzohrRhPI6eNU6IurU5BTsS/K0rzrHw
+Date:   Mon, 23 May 2022 03:30:12 +0000
+Message-ID: <544dc03a02ff46dbb62587f3343ffd72@huawei.com>
+References: <068d2824cf592748cbd9b75cf4cb6c29600e213c.1653224817.git.christophe.jaillet@wanadoo.fr>
+In-Reply-To: <068d2824cf592748cbd9b75cf4cb6c29600e213c.1653224817.git.christophe.jaillet@wanadoo.fr>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.174.149.11]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Importance: Medium
-User-Agent: Zoho Mail
-X-Mailer: Zoho Mail
-Feedback-ID: rr08011226f655de26142796fa2c42475300003c0dde33378fbd1072b5212b92afbdfd07545a527c34dac9:zu08011227d7d38f61635345f6c9c0ab2a0000db84b2f818e0fb0fc62e83b187cdfe0cb0684ea744857ebd60:rf0801122c7d5dc77107287618665ec7610000aa340d988ecca301247683a1c483d40307339ed3f3ca1a4e520d7e35e968:ZohoMail
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Li Chen <lchen@ambarella.com>
 
-Appropriately change calls to {regmap/regmap_field}_update_bits()
-with {regmap/regmap_field}_set_bits()
-and {regmap/regmap_field}_clear_bits() for improved readability.
 
-Signed-off-by: Li Chen <lchen@ambarella.com>
----
- sound/soc/sunxi/sun4i-codec.c | 78 ++++++++++++++---------------------
- 1 file changed, 30 insertions(+), 48 deletions(-)
+> -----Original Message-----
+> From: Christophe JAILLET [mailto:christophe.jaillet@wanadoo.fr]
+> Sent: Sunday, May 22, 2022 9:07 PM
+> To: dan.carpenter@oracle.com; Gonglei (Arei) <arei.gonglei@huawei.com>;
+> Michael S. Tsirkin <mst@redhat.com>; Jason Wang <jasowang@redhat.com>;
+> Herbert Xu <herbert@gondor.apana.org.au>; David S. Miller
+> <davem@davemloft.net>; zhenwei pi <pizhenwei@bytedance.com>
+> Cc: linux-kernel@vger.kernel.org; kernel-janitors@vger.kernel.org; Christophe
+> JAILLET <christophe.jaillet@wanadoo.fr>;
+> virtualization@lists.linux-foundation.org; linux-crypto@vger.kernel.org
+> Subject: [PATCH] virtio-crypto: Fix an error handling path in
+> virtio_crypto_alg_skcipher_close_session()
+> 
+> Now that a private buffer is allocated (see commit in the Fixes tag), it must be
+> released in all error handling paths.
+> 
+> Add the missing goto to avoid a leak in the error handling path.
+> 
+> Fixes: 42e6ac99e417 ("virtio-crypto: use private buffer for control request")
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> ---
+>  drivers/crypto/virtio/virtio_crypto_skcipher_algs.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
 
-diff --git a/sound/soc/sunxi/sun4i-codec.c b/sound/soc/sunxi/sun4i-codec.c
-index 60712f24ade5..53e3f43816cc 100644
---- a/sound/soc/sunxi/sun4i-codec.c
-+++ b/sound/soc/sunxi/sun4i-codec.c
-@@ -250,37 +250,33 @@ struct sun4i_codec {
- static void sun4i_codec_start_playback(struct sun4i_codec *scodec)
- {
- 	/* Flush TX FIFO */
--	regmap_update_bits(scodec->regmap, SUN4I_CODEC_DAC_FIFOC,
--			   BIT(SUN4I_CODEC_DAC_FIFOC_FIFO_FLUSH),
--			   BIT(SUN4I_CODEC_DAC_FIFOC_FIFO_FLUSH));
-+	regmap_set_bits(scodec->regmap, SUN4I_CODEC_DAC_FIFOC,
-+			BIT(SUN4I_CODEC_DAC_FIFOC_FIFO_FLUSH));
- 
- 	/* Enable DAC DRQ */
--	regmap_update_bits(scodec->regmap, SUN4I_CODEC_DAC_FIFOC,
--			   BIT(SUN4I_CODEC_DAC_FIFOC_DAC_DRQ_EN),
--			   BIT(SUN4I_CODEC_DAC_FIFOC_DAC_DRQ_EN));
-+	regmap_set_bits(scodec->regmap, SUN4I_CODEC_DAC_FIFOC,
-+			BIT(SUN4I_CODEC_DAC_FIFOC_DAC_DRQ_EN));
- }
- 
- static void sun4i_codec_stop_playback(struct sun4i_codec *scodec)
- {
- 	/* Disable DAC DRQ */
--	regmap_update_bits(scodec->regmap, SUN4I_CODEC_DAC_FIFOC,
--			   BIT(SUN4I_CODEC_DAC_FIFOC_DAC_DRQ_EN),
--			   0);
-+	regmap_clear_bits(scodec->regmap, SUN4I_CODEC_DAC_FIFOC,
-+			  BIT(SUN4I_CODEC_DAC_FIFOC_DAC_DRQ_EN));
- }
- 
- static void sun4i_codec_start_capture(struct sun4i_codec *scodec)
- {
- 	/* Enable ADC DRQ */
--	regmap_field_update_bits(scodec->reg_adc_fifoc,
--				 BIT(SUN4I_CODEC_ADC_FIFOC_ADC_DRQ_EN),
--				 BIT(SUN4I_CODEC_ADC_FIFOC_ADC_DRQ_EN));
-+	regmap_field_set_bits(scodec->reg_adc_fifoc,
-+			      BIT(SUN4I_CODEC_ADC_FIFOC_ADC_DRQ_EN));
- }
- 
- static void sun4i_codec_stop_capture(struct sun4i_codec *scodec)
- {
- 	/* Disable ADC DRQ */
--	regmap_field_update_bits(scodec->reg_adc_fifoc,
--				 BIT(SUN4I_CODEC_ADC_FIFOC_ADC_DRQ_EN), 0);
-+	regmap_field_clear_bits(scodec->reg_adc_fifoc,
-+				 BIT(SUN4I_CODEC_ADC_FIFOC_ADC_DRQ_EN));
- }
- 
- static int sun4i_codec_trigger(struct snd_pcm_substream *substream, int cmd,
-@@ -323,8 +319,7 @@ static int sun4i_codec_prepare_capture(struct snd_pcm_substream *substream,
- 
- 
- 	/* Flush RX FIFO */
--	regmap_field_update_bits(scodec->reg_adc_fifoc,
--				 BIT(SUN4I_CODEC_ADC_FIFOC_FIFO_FLUSH),
-+	regmap_field_set_bits(scodec->reg_adc_fifoc,
- 				 BIT(SUN4I_CODEC_ADC_FIFOC_FIFO_FLUSH));
- 
- 
-@@ -365,8 +360,7 @@ static int sun4i_codec_prepare_playback(struct snd_pcm_substream *substream,
- 	u32 val;
- 
- 	/* Flush the TX FIFO */
--	regmap_update_bits(scodec->regmap, SUN4I_CODEC_DAC_FIFOC,
--			   BIT(SUN4I_CODEC_DAC_FIFOC_FIFO_FLUSH),
-+	regmap_set_bits(scodec->regmap, SUN4I_CODEC_DAC_FIFOC,
- 			   BIT(SUN4I_CODEC_DAC_FIFOC_FIFO_FLUSH));
- 
- 	/* Set TX FIFO Empty Trigger Level */
-@@ -386,9 +380,8 @@ static int sun4i_codec_prepare_playback(struct snd_pcm_substream *substream,
- 			   val);
- 
- 	/* Send zeros when we have an underrun */
--	regmap_update_bits(scodec->regmap, SUN4I_CODEC_DAC_FIFOC,
--			   BIT(SUN4I_CODEC_DAC_FIFOC_SEND_LASAT),
--			   0);
-+	regmap_clear_bits(scodec->regmap, SUN4I_CODEC_DAC_FIFOC,
-+			   BIT(SUN4I_CODEC_DAC_FIFOC_SEND_LASAT));
- 
- 	return 0;
- };
-@@ -485,33 +478,27 @@ static int sun4i_codec_hw_params_capture(struct sun4i_codec *scodec,
- 
- 	/* Set the number of channels we want to use */
- 	if (params_channels(params) == 1)
--		regmap_field_update_bits(scodec->reg_adc_fifoc,
--					 BIT(SUN4I_CODEC_ADC_FIFOC_MONO_EN),
-+		regmap_field_set_bits(scodec->reg_adc_fifoc,
- 					 BIT(SUN4I_CODEC_ADC_FIFOC_MONO_EN));
- 	else
--		regmap_field_update_bits(scodec->reg_adc_fifoc,
--					 BIT(SUN4I_CODEC_ADC_FIFOC_MONO_EN),
--					 0);
-+		regmap_field_clear_bits(scodec->reg_adc_fifoc,
-+					 BIT(SUN4I_CODEC_ADC_FIFOC_MONO_EN));
- 
- 	/* Set the number of sample bits to either 16 or 24 bits */
- 	if (hw_param_interval(params, SNDRV_PCM_HW_PARAM_SAMPLE_BITS)->min == 32) {
--		regmap_field_update_bits(scodec->reg_adc_fifoc,
--				   BIT(SUN4I_CODEC_ADC_FIFOC_RX_SAMPLE_BITS),
-+		regmap_field_set_bits(scodec->reg_adc_fifoc,
- 				   BIT(SUN4I_CODEC_ADC_FIFOC_RX_SAMPLE_BITS));
- 
--		regmap_field_update_bits(scodec->reg_adc_fifoc,
--				   BIT(SUN4I_CODEC_ADC_FIFOC_RX_FIFO_MODE),
--				   0);
-+		regmap_field_clear_bits(scodec->reg_adc_fifoc,
-+				   BIT(SUN4I_CODEC_ADC_FIFOC_RX_FIFO_MODE));
- 
- 		scodec->capture_dma_data.addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
- 	} else {
--		regmap_field_update_bits(scodec->reg_adc_fifoc,
--				   BIT(SUN4I_CODEC_ADC_FIFOC_RX_SAMPLE_BITS),
--				   0);
-+		regmap_field_clear_bits(scodec->reg_adc_fifoc,
-+				   BIT(SUN4I_CODEC_ADC_FIFOC_RX_SAMPLE_BITS));
- 
- 		/* Fill most significant bits with valid data MSB */
--		regmap_field_update_bits(scodec->reg_adc_fifoc,
--				   BIT(SUN4I_CODEC_ADC_FIFOC_RX_FIFO_MODE),
-+		regmap_field_set_bits(scodec->reg_adc_fifoc,
- 				   BIT(SUN4I_CODEC_ADC_FIFOC_RX_FIFO_MODE));
- 
- 		scodec->capture_dma_data.addr_width = DMA_SLAVE_BUSWIDTH_2_BYTES;
-@@ -543,24 +530,20 @@ static int sun4i_codec_hw_params_playback(struct sun4i_codec *scodec,
- 
- 	/* Set the number of sample bits to either 16 or 24 bits */
- 	if (hw_param_interval(params, SNDRV_PCM_HW_PARAM_SAMPLE_BITS)->min == 32) {
--		regmap_update_bits(scodec->regmap, SUN4I_CODEC_DAC_FIFOC,
--				   BIT(SUN4I_CODEC_DAC_FIFOC_TX_SAMPLE_BITS),
-+		regmap_set_bits(scodec->regmap, SUN4I_CODEC_DAC_FIFOC,
- 				   BIT(SUN4I_CODEC_DAC_FIFOC_TX_SAMPLE_BITS));
- 
- 		/* Set TX FIFO mode to padding the LSBs with 0 */
--		regmap_update_bits(scodec->regmap, SUN4I_CODEC_DAC_FIFOC,
--				   BIT(SUN4I_CODEC_DAC_FIFOC_TX_FIFO_MODE),
--				   0);
-+		regmap_clear_bits(scodec->regmap, SUN4I_CODEC_DAC_FIFOC,
-+				   BIT(SUN4I_CODEC_DAC_FIFOC_TX_FIFO_MODE));
- 
- 		scodec->playback_dma_data.addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
- 	} else {
--		regmap_update_bits(scodec->regmap, SUN4I_CODEC_DAC_FIFOC,
--				   BIT(SUN4I_CODEC_DAC_FIFOC_TX_SAMPLE_BITS),
--				   0);
-+		regmap_clear_bits(scodec->regmap, SUN4I_CODEC_DAC_FIFOC,
-+				   BIT(SUN4I_CODEC_DAC_FIFOC_TX_SAMPLE_BITS));
- 
- 		/* Set TX FIFO mode to repeat the MSB */
--		regmap_update_bits(scodec->regmap, SUN4I_CODEC_DAC_FIFOC,
--				   BIT(SUN4I_CODEC_DAC_FIFOC_TX_FIFO_MODE),
-+		regmap_set_bits(scodec->regmap, SUN4I_CODEC_DAC_FIFOC,
- 				   BIT(SUN4I_CODEC_DAC_FIFOC_TX_FIFO_MODE));
- 
- 		scodec->playback_dma_data.addr_width = DMA_SLAVE_BUSWIDTH_2_BYTES;
-@@ -624,8 +607,7 @@ static int sun4i_codec_startup(struct snd_pcm_substream *substream,
- 	 * Stop issuing DRQ when we have room for less than 16 samples
- 	 * in our TX FIFO
- 	 */
--	regmap_update_bits(scodec->regmap, SUN4I_CODEC_DAC_FIFOC,
--			   3 << SUN4I_CODEC_DAC_FIFOC_DRQ_CLR_CNT,
-+	regmap_set_bits(scodec->regmap, SUN4I_CODEC_DAC_FIFOC,
- 			   3 << SUN4I_CODEC_DAC_FIFOC_DRQ_CLR_CNT);
- 
- 	return clk_prepare_enable(scodec->clk_module);
--- 
-2.36.1
+Reviewed-by: Gonglei <arei.gonglei@huawei.com>
 
+Regards,
+-Gonglei
+
+> diff --git a/drivers/crypto/virtio/virtio_crypto_skcipher_algs.c
+> b/drivers/crypto/virtio/virtio_crypto_skcipher_algs.c
+> index e553ccadbcbc..e5876286828b 100644
+> --- a/drivers/crypto/virtio/virtio_crypto_skcipher_algs.c
+> +++ b/drivers/crypto/virtio/virtio_crypto_skcipher_algs.c
+> @@ -239,7 +239,8 @@ static int virtio_crypto_alg_skcipher_close_session(
+>  		pr_err("virtio_crypto: Close session failed status: %u, session_id:
+> 0x%llx\n",
+>  			ctrl_status->status, destroy_session->session_id);
+> 
+> -		return -EINVAL;
+> +		err = -EINVAL;
+> +		goto out;
+>  	}
+> 
+>  	err = 0;
+> --
+> 2.34.1
 
