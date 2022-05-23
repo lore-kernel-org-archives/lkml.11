@@ -2,226 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2CC4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 11:54:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46D9AC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 11:55:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235149AbiEWLyZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 07:54:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53288 "EHLO
+        id S235192AbiEWLy7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 07:54:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235122AbiEWLyU (ORCPT
+        with ESMTP id S235141AbiEWLyt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 07:54:20 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DEAF51587;
-        Mon, 23 May 2022 04:54:19 -0700 (PDT)
-Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24NBhnkE001648;
-        Mon, 23 May 2022 11:54:07 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : to : from : cc : subject : content-type :
- content-transfer-encoding; s=pp1;
- bh=m2M041NPkinmobUzSjYQMqGg1ZNgckVlTpZZMS9CAfk=;
- b=cDksBTLxb0VNOyHXwoEwAeDjY8BPMakKa+ERnd/3xfCv0Qv7LaNwZ+aeZskd6BBYhz4f
- SUJIgkLmP97lm9mBOLxQ+XtJ3sosKmoAQQQBc3DZ0aLTKR5ICIHT+gaIb4tj2qu+obPb
- lsLjECJHeNeh7zIwkAfDhl3MsQjc/f8D9EdbXtJZGuJj4SP5xlRddi5AxUyfPoN5J+ys
- kYhg/mLScDYKV+Z5DsnKgIS1KxG14Sv6B7HkiqZQi6uNwenUQvEXqGOpVBpM13fVTKgh
- WwsOmXqwMxOGNFPscVseldoZ2tvAQCzmN78mY4tNo9OYDffSSsFoz1TWLGsuU6Mj7S+p Iw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g89n485s8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 23 May 2022 11:54:07 +0000
-Received: from m0098413.ppops.net (m0098413.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24NBnUG1020797;
-        Mon, 23 May 2022 11:54:07 GMT
-Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g89n485rr-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 23 May 2022 11:54:06 +0000
-Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
-        by ppma01dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24NBAC7I025664;
-        Mon, 23 May 2022 11:54:05 GMT
-Received: from b01cxnp22034.gho.pok.ibm.com (b01cxnp22034.gho.pok.ibm.com [9.57.198.24])
-        by ppma01dal.us.ibm.com with ESMTP id 3g6qqabnpy-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 23 May 2022 11:54:05 +0000
-Received: from b01ledav003.gho.pok.ibm.com (b01ledav003.gho.pok.ibm.com [9.57.199.108])
-        by b01cxnp22034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24NBs4WW63177170
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 23 May 2022 11:54:04 GMT
-Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C40ECB2065;
-        Mon, 23 May 2022 11:54:04 +0000 (GMT)
-Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 8652AB205F;
-        Mon, 23 May 2022 11:54:00 +0000 (GMT)
-Received: from [9.43.92.112] (unknown [9.43.92.112])
-        by b01ledav003.gho.pok.ibm.com (Postfix) with ESMTP;
-        Mon, 23 May 2022 11:54:00 +0000 (GMT)
-Message-ID: <a1a2eaea-4483-68b0-352f-f7d357a4d14b@linux.vnet.ibm.com>
-Date:   Mon, 23 May 2022 17:23:26 +0530
+        Mon, 23 May 2022 07:54:49 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3684515B1;
+        Mon, 23 May 2022 04:54:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1653306888; x=1684842888;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=dZN1kRrWx/r2+ijq8bOfsSzbQOMIw0nqMbgQfjggyOo=;
+  b=cwX4NxvfoTKGAPuRtc/ibsDBZU68mBfP/rau18dbRu0x5kGZhqE4HjLa
+   ArjSI399t/6TqctBthY+z7e39dVc+qXkpzfw1xQaBMxOQ6JpFjJb6PGwx
+   mn4v3BpjKbNA7iCAelv8tKaWbXWlQhcqf136uOX+HCbERqOoOg/g8D1Fu
+   c=;
+Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 23 May 2022 04:54:48 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2022 04:54:47 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Mon, 23 May 2022 04:54:47 -0700
+Received: from [10.216.62.60] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 23 May
+ 2022 04:54:43 -0700
+Message-ID: <df0fb8cb-79bb-6941-5ce7-baaef2393797@quicinc.com>
+Date:   Mon, 23 May 2022 17:24:39 +0530
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [RFC 1/2] dt-bindings: usb: dwc3: Add support for multiport
+ related properties
 Content-Language: en-US
-To:     linux-kernel@vger.kernel.org
-From:   Tasmiya Nalatwad <tasmiya@linux.vnet.ibm.com>
-Cc:     keyrings@vger.kernel.org, Adam Langley <agl@google.com>,
-        David Howells <dhowells@redhat.com>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Kees Cook <keescook@chromium.org>,
-        Eric Biggers <ebiggers@kernel.org>,
-        abdhalee@linux.vnet.ibm.com, sachinp@linux.vnet.com,
-        mputtash@linux.vnet.com
-Subject: OpenSSL's ENGINE API is deprecated in OpenSSL v3.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Felipe Balbi <balbi@kernel.org>, <linux-usb@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <quic_pkondeti@quicinc.com>, <quic_ppratap@quicinc.com>
+References: <1652963695-10109-1-git-send-email-quic_harshq@quicinc.com>
+ <1652963695-10109-2-git-send-email-quic_harshq@quicinc.com>
+ <YohW/W3Mk0J0AKVt@ripper>
+From:   Harsh Agarwal <quic_harshq@quicinc.com>
+In-Reply-To: <YohW/W3Mk0J0AKVt@ripper>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: MtgIgFkQajuNsL1yPYvgq0uRGt9yelAs
-X-Proofpoint-GUID: GCgM9psdrN3pqKogPfwdqVCHEdeLHjhe
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-23_04,2022-05-23_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 spamscore=0
- clxscore=1011 mlxscore=0 lowpriorityscore=0 bulkscore=0 suspectscore=0
- malwarescore=0 priorityscore=1501 adultscore=0 phishscore=0
- mlxlogscore=526 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2205230063
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Greetings,
 
-OpenSSL's ENGINE API is deprecated in OpenSSL v3.0
+On 5/21/2022 8:35 AM, Bjorn Andersson wrote:
+> On Thu 19 May 05:34 PDT 2022, Harsh Agarwal wrote:
+>
+>> Added support for multiport, mport, num-ssphy and num-hsphy
+>> properties. These properties are used to support devices having
+>> a multiport controller.
+>>
+>> Signed-off-by: Harsh Agarwal <quic_harshq@quicinc.com>
+> Please do run dt_binding_check on your bindings, even though they are
+> RFCs.
+There was some dt_binding package issue so I could not run it.
+Thought to check this later since this is RFC.
+Sure, I will check this.
+>
+>> ---
+>>   .../devicetree/bindings/usb/snps,dwc3.yaml         | 55 ++++++++++++++++++++++
+>>   1 file changed, 55 insertions(+)
+>>
+>> diff --git a/Documentation/devicetree/bindings/usb/snps,dwc3.yaml b/Documentation/devicetree/bindings/usb/snps,dwc3.yaml
+>> index f4471f8..39c61483 100644
+>> --- a/Documentation/devicetree/bindings/usb/snps,dwc3.yaml
+>> +++ b/Documentation/devicetree/bindings/usb/snps,dwc3.yaml
+>> @@ -341,6 +341,35 @@ properties:
+>>         This port is used with the 'usb-role-switch' property  to connect the
+>>         dwc3 to type C connector.
+>>   
+>> +  multiport:
+> Why are you inventing an of_graph lookalike here?
 
-Console logs :
+Not really an of_graph lookalike, here we just wanted to add "multiport" 
+node which would have "mport" nodes for every port that it supports.
+We can treat this "multiport" like an object encapsulating other "mport" 
+objects.
 
-[console-expect]#make -j 17 -s && make modules && make modules_install 
-&& make install
-make -j 17 -s && make modules && make modules_install && make install
-scripts/sign-file.c: In function 'display_openssl_errors':
-scripts/sign-file.c:89:2: warning: 'ERR_get_error_line' is deprecated: 
-Since OpenSSL 3.0 [-Wdeprecated-declarations]
-   while ((e = ERR_get_error_line(&file, &line))) {
-   ^~~~~
-In file included from scripts/sign-file.c:29:0:
-/usr/include/openssl/err.h:411:15: note: declared here
-  unsigned long ERR_get_error_line(const char **file, int *line);
-                ^~~~~~~~~~~~~~~~~~
-scripts/sign-file.c: In function 'drain_openssl_errors':
-scripts/sign-file.c:102:2: warning: 'ERR_get_error_line' is deprecated: 
-Since OpenSSL 3.0 [-Wdeprecated-declarations]
-   while (ERR_get_error_line(&file, &line)) {}
-   ^~~~~
-In file included from scripts/sign-file.c:29:0:
-/usr/include/openssl/err.h:411:15: note: declared here
-  unsigned long ERR_get_error_line(const char **file, int *line);
-                ^~~~~~~~~~~~~~~~~~
-scripts/sign-file.c: In function 'read_private_key':
-scripts/sign-file.c:142:3: warning: 'ENGINE_load_builtin_engines' is 
-deprecated: Since OpenSSL 3.0 [-Wdeprecated-declarations]
-    ENGINE_load_builtin_engines();
-    ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-In file included from scripts/sign-file.c:30:0:
-/usr/include/openssl/engine.h:358:28: note: declared here
-  OSSL_DEPRECATEDIN_3_0 void ENGINE_load_builtin_engines(void);
-                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-scripts/sign-file.c:144:3: warning: 'ENGINE_by_id' is deprecated: Since 
-OpenSSL 3.0 [-Wdeprecated-declarations]
-    e = ENGINE_by_id("pkcs11");
-    ^
-In file included from scripts/sign-file.c:30:0:
-/usr/include/openssl/engine.h:336:31: note: declared here
-  OSSL_DEPRECATEDIN_3_0 ENGINE *ENGINE_by_id(const char *id);
-                                ^~~~~~~~~~~~
-scripts/sign-file.c:146:3: warning: 'ENGINE_init' is deprecated: Since 
-OpenSSL 3.0 [-Wdeprecated-declarations]
-    if (ENGINE_init(e))
-    ^~
-In file included from scripts/sign-file.c:30:0:
-/usr/include/openssl/engine.h:620:27: note: declared here
-  OSSL_DEPRECATEDIN_3_0 int ENGINE_init(ENGINE *e);
-                            ^~~~~~~~~~~
-scripts/sign-file.c:151:4: warning: 'ENGINE_ctrl_cmd_string' is 
-deprecated: Since OpenSSL 3.0 [-Wdeprecated-declarations]
-     ERR(!ENGINE_ctrl_cmd_string(e, "PIN", key_pass, 0),
-     ^~~
-In file included from scripts/sign-file.c:30:0:
-/usr/include/openssl/engine.h:479:5: note: declared here
-  int ENGINE_ctrl_cmd_string(ENGINE *e, const char *cmd_name, const char 
-*arg,
-      ^~~~~~~~~~~~~~~~~~~~~~
-scripts/sign-file.c:153:3: warning: 'ENGINE_load_private_key' is 
-deprecated: Since OpenSSL 3.0 [-Wdeprecated-declarations]
-    private_key = ENGINE_load_private_key(e, private_key_name,
-    ^~~~~~~~~~~
-In file included from scripts/sign-file.c:30:0:
-/usr/include/openssl/engine.h:638:11: note: declared here
-  EVP_PKEY *ENGINE_load_private_key(ENGINE *e, const char *key_id,
-            ^~~~~~~~~~~~~~~~~~~~~~~
-certs/extract-cert.c: In function 'display_openssl_errors':
-certs/extract-cert.c:46:2: warning: 'ERR_get_error_line' is deprecated: 
-Since OpenSSL 3.0 [-Wdeprecated-declarations]
-   while ((e = ERR_get_error_line(&file, &line))) {
-   ^~~~~
-In file included from certs/extract-cert.c:23:0:
-/usr/include/openssl/err.h:411:15: note: declared here
-  unsigned long ERR_get_error_line(const char **file, int *line);
-                ^~~~~~~~~~~~~~~~~~
-certs/extract-cert.c: In function 'drain_openssl_errors':
-certs/extract-cert.c:59:2: warning: 'ERR_get_error_line' is deprecated: 
-Since OpenSSL 3.0 [-Wdeprecated-declarations]
-   while (ERR_get_error_line(&file, &line)) {}
-   ^~~~~
-In file included from certs/extract-cert.c:23:0:
-/usr/include/openssl/err.h:411:15: note: declared here
-  unsigned long ERR_get_error_line(const char **file, int *line);
-                ^~~~~~~~~~~~~~~~~~
-certs/extract-cert.c: In function 'main':
-certs/extract-cert.c:124:3: warning: 'ENGINE_load_builtin_engines' is 
-deprecated: Since OpenSSL 3.0 [-Wdeprecated-declarations]
-    ENGINE_load_builtin_engines();
-    ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-In file included from certs/extract-cert.c:24:0:
-/usr/include/openssl/engine.h:358:28: note: declared here
-  OSSL_DEPRECATEDIN_3_0 void ENGINE_load_builtin_engines(void);
-                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-certs/extract-cert.c:126:3: warning: 'ENGINE_by_id' is deprecated: Since 
-OpenSSL 3.0 [-Wdeprecated-declarations]
-    e = ENGINE_by_id("pkcs11");
-    ^
-In file included from certs/extract-cert.c:24:0:
-/usr/include/openssl/engine.h:336:31: note: declared here
-  OSSL_DEPRECATEDIN_3_0 ENGINE *ENGINE_by_id(const char *id);
-                                ^~~~~~~~~~~~
-certs/extract-cert.c:128:3: warning: 'ENGINE_init' is deprecated: Since 
-OpenSSL 3.0 [-Wdeprecated-declarations]
-    if (ENGINE_init(e))
-    ^~
-In file included from certs/extract-cert.c:24:0:
-/usr/include/openssl/engine.h:620:27: note: declared here
-  OSSL_DEPRECATEDIN_3_0 int ENGINE_init(ENGINE *e);
-                            ^~~~~~~~~~~
-certs/extract-cert.c:133:4: warning: 'ENGINE_ctrl_cmd_string' is 
-deprecated: Since OpenSSL 3.0 [-Wdeprecated-declarations]
-     ERR(!ENGINE_ctrl_cmd_string(e, "PIN", key_pass, 0), "Set PKCS#11 PIN");
-     ^~~
-In file included from certs/extract-cert.c:24:0:
-/usr/include/openssl/engine.h:479:5: note: declared here
-  int ENGINE_ctrl_cmd_string(ENGINE *e, const char *cmd_name, const char 
-*arg,
-      ^~~~~~~~~~~~~~~~~~~~~~
-certs/extract-cert.c:134:3: warning: 'ENGINE_ctrl_cmd' is deprecated: 
-Since OpenSSL 3.0 [-Wdeprecated-declarations]
-    ENGINE_ctrl_cmd(e, "LOAD_CERT_CTRL", 0, &parms, NULL, 1);
-    ^~~~~~~~~~~~~~~
-In file included from certs/extract-cert.c:24:0:
-/usr/include/openssl/engine.h:450:27: note: declared here
-  OSSL_DEPRECATEDIN_3_0 int ENGINE_ctrl_cmd(ENGINE *e, const char *cmd_name,
-                            ^~~~~~~~~~~~~~~
+>
+>> +    description:
+>> +      If a single USB controller supports multiple ports, then it's referred to as
+>> +      a multiport controller. Each port of the multiport controller can support
+>> +      either High Speed or Super Speed or both and have their own PHY phandles. Each
+>> +      port is represented by "mport" node and all the "mport" nodes are grouped
+>> +      together inside the "multiport" node where individual "mport" node defines the
+>> +      PHYs supported by that port.
+>> +    required:
+>> +      - mport
+>> +
+>> +  num-hsphy:
+>> +    description: Total number of HS-PHYs defined by the multiport controller.
+>> +    $ref: /schemas/types.yaml#/definitions/uint32
+> I'm expecting that you wont' have any superspeed-only ports. As such
+> this number would imply be the number of ports listed under the node.
 
--- 
-Regards,
-Tasmiya Nalatwad
-IBM Linux Technology Center
+Yes we can say that num_hsphy is equal to the number of "mport" nodes as 
+every node will
+have a HSPHY.
+
+>
+>> +
+>> +  num-ssphy:
+>> +    description: Total number of SS-PHYs defined by the multiport controller.
+>> +    $ref: /schemas/types.yaml#/definitions/uint32
+> Can you please explain why it's necessary to specify usb_nop_phy?
+> Wouldn't it be possible to omit the phy in the case of a HS-only port?
+> In which case this could just be calculated as well.
+Yes we can ignore usb_nop_phy. It's not really necessary at places where 
+we don't have a proper PHY in place.
+>
+> Regards,
+> Bjorn
+>
+>> +
+>> +  mport:
+>> +    description: Each mport node represents one port of the multiport controller.
+>> +    patternProperties: "^mport@[0-9a-f]+$"
+>> +    oneOf:
+>> +       - required:
+>> +         - usb-phy
+>> +       - required:
+>> +          - phys
+>> +          - phy-names
+>> +
+>>   unevaluatedProperties: false
+>>   
+>>   required:
+>> @@ -369,4 +398,30 @@ examples:
+>>         snps,dis_u2_susphy_quirk;
+>>         snps,dis_enblslpm_quirk;
+>>       };
+>> +  - |
+>> +    usb@4a000000 {
+>> +      compatible = "snps,dwc3";
+>> +      reg = <0x4a000000 0xcfff>;
+>> +      interrupts = <0 92 4>;
+>> +
+>> +      multiport {
+>> +
+>> +	MP_1: mport@1 {
+>> +          usb-phy = <&usb2_phy0>, <&usb3_phy0>;
+>> +	};
+>> +
+>> +	MP_2: mport@2 {
+>> +          usb-phy = <&usb2_phy1>, <&usb3_phy1>;
+>> +	};
+>> +
+>> +	MP_3: mport@3 {
+>> +          usb-phy = <&usb2_phy2>, <&usb_nop_phy>;
+>> +	};
+>> +
+>> +	MP_4: mport@4 {
+>> +          usb-phy = <&usb2_phy3>, <&usb_nop_phy>;
+>> +	};
+>> +
+>> +      };
+>> +    };
+>>   ...
+>> -- 
+>> 2.7.4
+>>
