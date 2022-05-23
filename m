@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D209AC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:13:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49BC4C38A05
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:13:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242409AbiEWSNQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:13:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35002 "EHLO
+        id S242218AbiEWSNJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:13:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242996AbiEWRtT (ORCPT
+        with ESMTP id S242409AbiEWRsf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:49:19 -0400
+        Mon, 23 May 2022 13:48:35 -0400
 Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E63F491579;
-        Mon, 23 May 2022 10:37:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 297B4AEE1D;
+        Mon, 23 May 2022 10:37:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 79F09CE1710;
-        Mon, 23 May 2022 17:29:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87BD9C385A9;
-        Mon, 23 May 2022 17:29:32 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 3E35BCE1714;
+        Mon, 23 May 2022 17:29:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FE1BC385A9;
+        Mon, 23 May 2022 17:29:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326972;
-        bh=cQpomFHgV/i5oUPxEHXjmRFaSxhFYv4iq08asYDK0mc=;
+        s=korg; t=1653326944;
+        bh=XK2F6p7d/WIZRUdb45MDYHJw0InqyYcOPlFCpErby0w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dc2XZRVaylU/jL5mpGh619xsezQI9Ky+GJxmWpv+QVi4BVpiUVFjSFJJN7hbhF8zX
-         c+NIdUNfZDqQaIOOC7Fv9lmAoSqvcoUA/pbjdgz8uhQ+g4Cfr0LvfC/kxRqSt018og
-         iRdI/sTjQe5Tp7eOViOGPCd0cRQPi7Go/thdKDTA=
+        b=HlaHy+/SaxGWYk4aSfhf9vPH1Bg4sGhWo2twwNsh7U4ZlURtqsk+6XoAPfPq1g94H
+         bluuVyJ1Wgcg8eXJmrhJW7rjZmoR8lMyifpxbeU2jj9XjJckdbfdim9D2xsJHbfC1B
+         HQ0Iygc5iXDpZ+R4q4K4sEeJgyvBNBypGru2hjq8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kevin Mitchell <kevmitch@arista.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>,
-        Gurucharan <gurucharanx.g@intel.com>
-Subject: [PATCH 5.17 116/158] igb: skip phy status check where unavailable
-Date:   Mon, 23 May 2022 19:04:33 +0200
-Message-Id: <20220523165850.125527996@linuxfoundation.org>
+        stable@vger.kernel.org, Gal Pressman <gal@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 108/158] net/mlx5e: Remove HW-GRO from reported features
+Date:   Mon, 23 May 2022 19:04:25 +0200
+Message-Id: <20220523165849.017693297@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
 References: <20220523165830.581652127@linuxfoundation.org>
@@ -51,44 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kevin Mitchell <kevmitch@arista.com>
+From: Gal Pressman <gal@nvidia.com>
 
-[ Upstream commit 942d2ad5d2e0df758a645ddfadffde2795322728 ]
+[ Upstream commit 6bbd723035badafe4a8eb17ccdecd96eae7a96d5 ]
 
-igb_read_phy_reg() will silently return, leaving phy_data untouched, if
-hw->ops.read_reg isn't set. Depending on the uninitialized value of
-phy_data, this led to the phy status check either succeeding immediately
-or looping continuously for 2 seconds before emitting a noisy err-level
-timeout. This message went out to the console even though there was no
-actual problem.
+We got reports of certain HW-GRO flows causing kernel call traces, which
+might be related to firmware. To be on the safe side, disable the
+feature for now and re-enable it once a driver/firmware fix is found.
 
-Instead, first check if there is read_reg function pointer. If not,
-proceed without trying to check the phy status register.
-
-Fixes: b72f3f72005d ("igb: When GbE link up, wait for Remote receiver status condition")
-Signed-off-by: Kevin Mitchell <kevmitch@arista.com>
-Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 83439f3c37aa ("net/mlx5e: Add HW-GRO offload")
+Signed-off-by: Gal Pressman <gal@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/igb/igb_main.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-index c1e4ad65b02d..4e0abfe68cfd 100644
---- a/drivers/net/ethernet/intel/igb/igb_main.c
-+++ b/drivers/net/ethernet/intel/igb/igb_main.c
-@@ -5512,7 +5512,8 @@ static void igb_watchdog_task(struct work_struct *work)
- 				break;
- 			}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+index 4b83dd05afcd..3500faf08671 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+@@ -4828,10 +4828,6 @@ static void mlx5e_build_nic_netdev(struct net_device *netdev)
+ 	netdev->hw_features      |= NETIF_F_HW_VLAN_CTAG_FILTER;
+ 	netdev->hw_features      |= NETIF_F_HW_VLAN_STAG_TX;
  
--			if (adapter->link_speed != SPEED_1000)
-+			if (adapter->link_speed != SPEED_1000 ||
-+			    !hw->phy.ops.read_reg)
- 				goto no_wait;
- 
- 			/* wait for Remote receiver status OK */
+-	if (!!MLX5_CAP_GEN(mdev, shampo) &&
+-	    mlx5e_check_fragmented_striding_rq_cap(mdev))
+-		netdev->hw_features    |= NETIF_F_GRO_HW;
+-
+ 	if (mlx5e_tunnel_any_tx_proto_supported(mdev)) {
+ 		netdev->hw_enc_features |= NETIF_F_HW_CSUM;
+ 		netdev->hw_enc_features |= NETIF_F_TSO;
 -- 
 2.35.1
 
