@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18C01C35296
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:43:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2356DC43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:44:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244250AbiEWRna (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:43:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38926 "EHLO
+        id S242623AbiEWRnq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:43:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242642AbiEWR1z (ORCPT
+        with ESMTP id S242725AbiEWR16 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:27:55 -0400
+        Mon, 23 May 2022 13:27:58 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 372E081991;
-        Mon, 23 May 2022 10:23:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69A4F8B0B3;
+        Mon, 23 May 2022 10:24:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 748816150D;
-        Mon, 23 May 2022 17:14:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76852C385A9;
-        Mon, 23 May 2022 17:14:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 16CE560919;
+        Mon, 23 May 2022 17:24:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C6ABC385AA;
+        Mon, 23 May 2022 17:24:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326040;
-        bh=zwcO8lqTqAcSsX0UaXjLztxupOJ62iPjlXdzDDNc34s=;
+        s=korg; t=1653326647;
+        bh=LIXj9FZokEunEf4C4T6sv1gdibFULl/cAgkv3fPPJPo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0e6uF1lttUbpwVMpMRWzofsNjXRiOpCoVDcmgNKHqMwLy2nPAK/heeipZm2rJQ+eL
-         Vk8eUcMgS1Rz4WGc7MVjPCQEJFxwGzZaYXF+FhHVH06lIpGDTQ/KnyJQES47NaYflh
-         C0TEIZbG9zR38HVFuoHxQsDzIrQ0iAQgL4rt5Ybs=
+        b=zzRx/rwBPdWkAGQ1adPkEIuVL4KIlpRpZuPJNrWhhmOWB2hI+uikZBuApVEBtVDQ/
+         rxzL2Z1Fn177K5PmZTwm85luI/1eKvBPQ8F0DuL5FZHiR0xLOWeIiFkJEhnKkROMAl
+         +huw6KeSFTIgJxDxEO9zbmFm0RvLOhNwUeCp0zGI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 46/68] ARM: 9196/1: spectre-bhb: enable for Cortex-A15
-Date:   Mon, 23 May 2022 19:05:13 +0200
-Message-Id: <20220523165810.180099864@linuxfoundation.org>
+        stable@vger.kernel.org, Terry Bowman <terry.bowman@amd.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Jean Delvare <jdelvare@suse.de>, Wolfram Sang <wsa@kernel.org>,
+        Mario Limonciello <Mario.Limonciello@amd.com>
+Subject: [PATCH 5.17 008/158] i2c: piix4: Add EFCH MMIO support to region request and release
+Date:   Mon, 23 May 2022 19:02:45 +0200
+Message-Id: <20220523165831.943998905@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165802.500642349@linuxfoundation.org>
-References: <20220523165802.500642349@linuxfoundation.org>
+In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
+References: <20220523165830.581652127@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,36 +50,182 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ard Biesheuvel <ardb@kernel.org>
+From: Terry Bowman <terry.bowman@amd.com>
 
-[ Upstream commit 0dc14aa94ccd8ba35eb17a0f9b123d1566efd39e ]
+commit 7c148722d074c29fb998578eea5de3c14b9608c9 upstream.
 
-The Spectre-BHB mitigations were inadvertently left disabled for
-Cortex-A15, due to the fact that cpu_v7_bugs_init() is not called in
-that case. So fix that.
+EFCH cd6h/cd7h port I/O may no longer be available on later AMD
+processors and it is recommended to use MMIO instead. Update the
+request and release functions to support MMIO.
 
-Fixes: b9baf5c8c5c3 ("ARM: Spectre-BHB workaround")
-Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+MMIO request/release and mmapping require details during cleanup.
+Add a MMIO configuration structure containing resource and vaddress
+details for mapping the region, accessing the region, and releasing
+the region.
+
+Signed-off-by: Terry Bowman <terry.bowman@amd.com>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Reviewed-by: Jean Delvare <jdelvare@suse.de>
+[wsa: rebased after fixup in previous patch]
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Cc: Mario Limonciello <Mario.Limonciello@amd.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/mm/proc-v7-bugs.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/i2c/busses/i2c-piix4.c |   66 ++++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 58 insertions(+), 8 deletions(-)
 
-diff --git a/arch/arm/mm/proc-v7-bugs.c b/arch/arm/mm/proc-v7-bugs.c
-index 097ef85bb7f2..bcb9181601d9 100644
---- a/arch/arm/mm/proc-v7-bugs.c
-+++ b/arch/arm/mm/proc-v7-bugs.c
-@@ -301,6 +301,7 @@ void cpu_v7_ca15_ibe(void)
+--- a/drivers/i2c/busses/i2c-piix4.c
++++ b/drivers/i2c/busses/i2c-piix4.c
+@@ -98,6 +98,9 @@
+ #define SB800_PIIX4_PORT_IDX_MASK_KERNCZ	0x18
+ #define SB800_PIIX4_PORT_IDX_SHIFT_KERNCZ	3
+ 
++#define SB800_PIIX4_FCH_PM_ADDR			0xFED80300
++#define SB800_PIIX4_FCH_PM_SIZE			8
++
+ /* insmod parameters */
+ 
+ /* If force is set to anything different from 0, we forcibly enable the
+@@ -156,6 +159,12 @@ static const char *piix4_main_port_names
+ };
+ static const char *piix4_aux_port_name_sb800 = " port 1";
+ 
++struct sb800_mmio_cfg {
++	void __iomem *addr;
++	struct resource *res;
++	bool use_mmio;
++};
++
+ struct i2c_piix4_adapdata {
+ 	unsigned short smba;
+ 
+@@ -163,10 +172,40 @@ struct i2c_piix4_adapdata {
+ 	bool sb800_main;
+ 	bool notify_imc;
+ 	u8 port;		/* Port number, shifted */
++	struct sb800_mmio_cfg mmio_cfg;
+ };
+ 
+-static int piix4_sb800_region_request(struct device *dev)
++static int piix4_sb800_region_request(struct device *dev,
++				      struct sb800_mmio_cfg *mmio_cfg)
  {
- 	if (check_spectre_auxcr(this_cpu_ptr(&spectre_warned), BIT(0)))
- 		cpu_v7_spectre_v2_init();
-+	cpu_v7_spectre_bhb_init();
++	if (mmio_cfg->use_mmio) {
++		struct resource *res;
++		void __iomem *addr;
++
++		res = request_mem_region_muxed(SB800_PIIX4_FCH_PM_ADDR,
++					       SB800_PIIX4_FCH_PM_SIZE,
++					       "sb800_piix4_smb");
++		if (!res) {
++			dev_err(dev,
++				"SMBus base address memory region 0x%x already in use.\n",
++				SB800_PIIX4_FCH_PM_ADDR);
++			return -EBUSY;
++		}
++
++		addr = ioremap(SB800_PIIX4_FCH_PM_ADDR,
++			       SB800_PIIX4_FCH_PM_SIZE);
++		if (!addr) {
++			release_resource(res);
++			dev_err(dev, "SMBus base address mapping failed.\n");
++			return -ENOMEM;
++		}
++
++		mmio_cfg->res = res;
++		mmio_cfg->addr = addr;
++
++		return 0;
++	}
++
+ 	if (!request_muxed_region(SB800_PIIX4_SMB_IDX, SB800_PIIX4_SMB_MAP_SIZE,
+ 				  "sb800_piix4_smb")) {
+ 		dev_err(dev,
+@@ -178,8 +217,15 @@ static int piix4_sb800_region_request(st
+ 	return 0;
  }
  
- void cpu_v7_bugs_init(void)
--- 
-2.35.1
-
+-static void piix4_sb800_region_release(struct device *dev)
++static void piix4_sb800_region_release(struct device *dev,
++				       struct sb800_mmio_cfg *mmio_cfg)
+ {
++	if (mmio_cfg->use_mmio) {
++		iounmap(mmio_cfg->addr);
++		release_resource(mmio_cfg->res);
++		return;
++	}
++
+ 	release_region(SB800_PIIX4_SMB_IDX, SB800_PIIX4_SMB_MAP_SIZE);
+ }
+ 
+@@ -288,11 +334,13 @@ static int piix4_setup_sb800_smba(struct
+ 				  u8 *smb_en_status,
+ 				  unsigned short *piix4_smba)
+ {
++	struct sb800_mmio_cfg mmio_cfg;
+ 	u8 smba_en_lo;
+ 	u8 smba_en_hi;
+ 	int retval;
+ 
+-	retval = piix4_sb800_region_request(&PIIX4_dev->dev);
++	mmio_cfg.use_mmio = 0;
++	retval = piix4_sb800_region_request(&PIIX4_dev->dev, &mmio_cfg);
+ 	if (retval)
+ 		return retval;
+ 
+@@ -301,7 +349,7 @@ static int piix4_setup_sb800_smba(struct
+ 	outb_p(smb_en + 1, SB800_PIIX4_SMB_IDX);
+ 	smba_en_hi = inb_p(SB800_PIIX4_SMB_IDX + 1);
+ 
+-	piix4_sb800_region_release(&PIIX4_dev->dev);
++	piix4_sb800_region_release(&PIIX4_dev->dev, &mmio_cfg);
+ 
+ 	if (!smb_en) {
+ 		*smb_en_status = smba_en_lo & 0x10;
+@@ -328,6 +376,7 @@ static int piix4_setup_sb800(struct pci_
+ 	unsigned short piix4_smba;
+ 	u8 smb_en, smb_en_status, port_sel;
+ 	u8 i2ccfg, i2ccfg_offset = 0x10;
++	struct sb800_mmio_cfg mmio_cfg;
+ 	int retval;
+ 
+ 	/* SB800 and later SMBus does not support forcing address */
+@@ -407,7 +456,8 @@ static int piix4_setup_sb800(struct pci_
+ 			piix4_port_shift_sb800 = SB800_PIIX4_PORT_IDX_SHIFT;
+ 		}
+ 	} else {
+-		retval = piix4_sb800_region_request(&PIIX4_dev->dev);
++		mmio_cfg.use_mmio = 0;
++		retval = piix4_sb800_region_request(&PIIX4_dev->dev, &mmio_cfg);
+ 		if (retval) {
+ 			release_region(piix4_smba, SMBIOSIZE);
+ 			return retval;
+@@ -420,7 +470,7 @@ static int piix4_setup_sb800(struct pci_
+ 				       SB800_PIIX4_PORT_IDX;
+ 		piix4_port_mask_sb800 = SB800_PIIX4_PORT_IDX_MASK;
+ 		piix4_port_shift_sb800 = SB800_PIIX4_PORT_IDX_SHIFT;
+-		piix4_sb800_region_release(&PIIX4_dev->dev);
++		piix4_sb800_region_release(&PIIX4_dev->dev, &mmio_cfg);
+ 	}
+ 
+ 	dev_info(&PIIX4_dev->dev,
+@@ -731,7 +781,7 @@ static s32 piix4_access_sb800(struct i2c
+ 	u8 prev_port;
+ 	int retval;
+ 
+-	retval = piix4_sb800_region_request(&adap->dev);
++	retval = piix4_sb800_region_request(&adap->dev, &adapdata->mmio_cfg);
+ 	if (retval)
+ 		return retval;
+ 
+@@ -802,7 +852,7 @@ static s32 piix4_access_sb800(struct i2c
+ 		piix4_imc_wakeup();
+ 
+ release:
+-	piix4_sb800_region_release(&adap->dev);
++	piix4_sb800_region_release(&adap->dev, &adapdata->mmio_cfg);
+ 	return retval;
+ }
+ 
 
 
