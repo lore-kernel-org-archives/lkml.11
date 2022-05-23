@@ -2,168 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1903C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 12:36:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 706DAC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 12:36:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235658AbiEWMgs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 08:36:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45482 "EHLO
+        id S235684AbiEWMgu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 08:36:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235509AbiEWMft (ORCPT
+        with ESMTP id S235549AbiEWMfz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 08:35:49 -0400
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C726D49CBB;
-        Mon, 23 May 2022 05:35:24 -0700 (PDT)
-Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24N9xcs3026146;
-        Mon, 23 May 2022 14:34:51 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=qIqK8sKEylUqg49Cc+Izo93o3wEhAt3Jq4iiQrYTUbQ=;
- b=6PmZ9b6rKmjdRP4tdvYnyvxBnK6nHrMvYE2wr20DGpObItpskv+GN69bswIDXXVdfLt4
- WFXNY8YEhrBX6ZT/TLCcH+NrGaH4w80XSYp2irmLVpPquWcINhel53BlBSwmNEIkFbR3
- QENy0RM0AkAJoVSpIOSl513OCVsihsAfWToqnEVs8YrX3JkWOdVNh/O/OIpKtPmWjvYC
- obS4NLuJUwsIfmUtEta6n/Lf1OfPQNeShDtGaHQU/x1NtZ02n0M7cyuPIHmjOUDJGv+2
- 39RdwjCKdsfJ5llE4hs3erRbSpSfsyVy3kGLF5lGZmOM+i+KJ+LRfVQ7uyHMGBjtQFzx hQ== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3g6s02935u-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 23 May 2022 14:34:51 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 182A8100034;
-        Mon, 23 May 2022 14:34:51 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 03D2322789E;
-        Mon, 23 May 2022 14:34:51 +0200 (CEST)
-Received: from [10.201.20.168] (10.75.127.49) by SHFDAG1NODE1.st.com
- (10.75.129.69) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Mon, 23 May
- 2022 14:34:50 +0200
-Message-ID: <ceb2d1a3-dccd-865e-ed74-54444e49f349@foss.st.com>
-Date:   Mon, 23 May 2022 14:34:22 +0200
+        Mon, 23 May 2022 08:35:55 -0400
+Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDA8C4B40B
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 05:35:32 -0700 (PDT)
+Received: by mail-yb1-xb31.google.com with SMTP id v71so25115125ybi.4
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 05:35:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=jZl/fl0qeIvUdvyZE0jXdpw2d7CYxFND/Aqlck8hL7Y=;
+        b=g3QNKrPTU1y3Hrxty3WEbBcbkZxQCGaVdrI1t7cV6FoIHEh9ApyTyjigXadNjRuARd
+         WBsyRpJpm6CvGeg1/msOeMA1GJYcN27fAsKFCV4xQO/fRhTP2iDjT8bYzY93h8B+Nkib
+         JBFdE0ll5yFBll//1q9Be7OjXIdJe0O6nC8fDo1eIINQWobSNLsforLswaDJNel/hmwD
+         Xxsc/+qAQBGThqbn8YkDwke51gsJsgLlfeZCIUnuT3kh9WjLDs6WokwERf93TXAelLDt
+         q3Wjw0yC1wU1SCETaIoppFY5Mcn/wYzsfVrKegm6WRuj5DoO4cSBLYLOlXX6z/jtENFg
+         +g7Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=jZl/fl0qeIvUdvyZE0jXdpw2d7CYxFND/Aqlck8hL7Y=;
+        b=gojsrwQwNAecZjj0DNP2zCElQrYpI6AiXUFmdh6O/WtsYLnuQPdP2V/PqS1e2gYtjE
+         yWmFPYNV8LKoALGR+1tRb5qu7MeeRnKR6g4djC2vf6SdAwmZA3xxtMNBSRcqVADohlPs
+         2kMDS2UUIgOeEl76BcXKPltp+BnHXMQSjdZxKB7MiU/LLN0DWgxNzGHcNKtoeaB+hmxZ
+         QM1+FOoE6mUtzzcGb6OpolL8fMf+EMgaDD4ZRXxqNHWDx4t6ONyTEqxFNUT6+5KeaOGT
+         2/jUtzDzPPSyO2qBTauaKOiVfWDn693NPNk3IFpeph3ZeEmo1GjIea0mtOQ5ewMQm9Q6
+         vjRQ==
+X-Gm-Message-State: AOAM533J7KZUKIKGXLeWHsQPl9wD7Jf+6CrayqmPnSNNE2LQ1YyL/XhP
+        FnKdQ7sUh+4QAAORDKzgb2g+HpZLKvY+LDNBYMdwp3sG8k073A==
+X-Google-Smtp-Source: ABdhPJxe/lvuePKCeGxuB9+ABxg16S0q/9rDILB02Ubcpk7fvZjoqmGGH2zyZ9//gkOuI4bTXW0IMEtSpS2nkzeORqg=
+X-Received: by 2002:a05:6902:2c6:b0:64f:5b77:6869 with SMTP id
+ w6-20020a05690202c600b0064f5b776869mr15492879ybh.494.1653309332081; Mon, 23
+ May 2022 05:35:32 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH 2/6] dt-bindings: rtc: stm32: add alarm A out property to
- select output
-Content-Language: en-US
-To:     Alexandre Belloni <alexandre.belloni@bootlin.com>
-CC:     Alessandro Zummo <a.zummo@towertech.it>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Gabriel Fernandez <gabriel.fernandez@foss.st.com>,
-        Amelie Delaunay <amelie.delaunay@foss.st.com>,
-        <linux-rtc@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20220504130233.330983-1-valentin.caron@foss.st.com>
- <20220504130617.331290-1-valentin.caron@foss.st.com>
- <YnLhw+Y7m8G2xJpK@mail.local>
-From:   Valentin CARON <valentin.caron@foss.st.com>
-In-Reply-To: <YnLhw+Y7m8G2xJpK@mail.local>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.75.127.49]
-X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SHFDAG1NODE1.st.com
- (10.75.129.69)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-23_06,2022-05-23_01,2022-02-23_01
+References: <CA+G9fYt4+47GzfEYT1nV3dqbGa1YCwFm9XwC668D4PkK4BHFgQ@mail.gmail.com>
+ <55d49dea-1a67-d857-218e-ef2343251361@i2se.com>
+In-Reply-To: <55d49dea-1a67-d857-218e-ef2343251361@i2se.com>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Mon, 23 May 2022 18:05:20 +0530
+Message-ID: <CA+G9fYvF7HGmJQtk7ktmakwQNjjraK3EoBeiMr+3NuEvsixi6Q@mail.gmail.com>
+Subject: Re: WARNING: CPU: 2 PID: 3331 at drivers/firmware/raspberrypi.c:63 rpi_firmware_property_list
+To:     Stefan Wahren <stefan.wahren@i2se.com>
+Cc:     open list <linux-kernel@vger.kernel.org>,
+        linux-rpi-kernel@lists.infradead.org,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        lkft-triage@lists.linaro.org, regressions@lists.linux.dev,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Richard Fitzgerald <rf@opensource.cirrus.com>,
+        rcu <rcu@vger.kernel.org>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        linux-mmc <linux-mmc@vger.kernel.org>,
+        Phil Elwell <phil@raspberrypi.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Alexandre,
-
-On 5/4/22 22:27, Alexandre Belloni wrote:
-> Hello,
+On Mon, 23 May 2022 at 16:43, Stefan Wahren <stefan.wahren@i2se.com> wrote:
 >
-> On 04/05/2022 15:06:13+0200, Valentin Caron wrote:
->> STM32 RTC can pulse some SOC pins when an alarm of RTC expires.
->>
->> This patch adds property to activate alarm A output. The pulse can
->> output on three pins RTC_OUT1, RTC_OUT2, RTC_OUT2_RMP
->> (PC13, PB2, PI8 on stm32mp15) (PC13, PB2, PI1 on stm32mp13).
->>
->> Signed-off-by: Valentin Caron <valentin.caron@foss.st.com>
->> ---
->>   .../devicetree/bindings/rtc/st,stm32-rtc.yaml | 19 ++++++++++++++++++-
->>   1 file changed, 18 insertions(+), 1 deletion(-)
->>
->> diff --git a/Documentation/devicetree/bindings/rtc/st,stm32-rtc.yaml b/Documentation/devicetree/bindings/rtc/st,stm32-rtc.yaml
->> index 56d46ea35c5d..71e02604e8de 100644
->> --- a/Documentation/devicetree/bindings/rtc/st,stm32-rtc.yaml
->> +++ b/Documentation/devicetree/bindings/rtc/st,stm32-rtc.yaml
->> @@ -59,6 +59,13 @@ properties:
->>         Refer to <include/dt-bindings/rtc/rtc-stm32.h> for the supported values.
->>         Pinctrl state named "default" may be defined to reserve pin for RTC output.
->>   
->> +  st,alarm:
->> +    $ref: "/schemas/types.yaml#/definitions/uint32"
->> +    description: |
->> +      To select and enable RTC Alarm A output.
->> +      Refer to <include/dt-bindings/rtc/rtc-stm32.h> for the supported values.
->> +      Pinctrl state named "default" may be defined to reserve pin for RTC output.
->> +
->>   allOf:
->>     - if:
->>         properties:
->> @@ -75,6 +82,9 @@ allOf:
->>           st,lsco:
->>             maxItems: 0
->>   
->> +        st,alarm:
->> +          maxItems: 0
->> +
->>           clock-names: false
->>   
->>         required:
->> @@ -95,6 +105,9 @@ allOf:
->>           st,lsco:
->>             maxItems: 0
->>   
->> +        st,alarm:
->> +          maxItems: 0
->> +
->>         required:
->>           - clock-names
->>           - st,syscfg
->> @@ -117,6 +130,9 @@ allOf:
->>           st,lsco:
->>             maxItems: 1
->>   
->> +        st,alarm:
->> +          maxItems: 1
->> +
->>         required:
->>           - clock-names
->>   
->> @@ -153,8 +169,9 @@ examples:
->>         clocks = <&rcc RTCAPB>, <&rcc RTC>;
->>         clock-names = "pclk", "rtc_ck";
->>         interrupts = <GIC_SPI 3 IRQ_TYPE_LEVEL_HIGH>;
->> +      st,alarm = <RTC_OUT1>;
->>         st,lsco = <RTC_OUT2_RMP>;
-> Shouldn't that be exactly the opposite? You have two pins that can
-> output different functions. The property should be the pin and the value
-> the function. I'd go even further and I would say this is actually
-> pinmuxing.
+> Hi Naresh,
 >
-You're right, if the property is the pin and the value the function, 
-this looks like a pinctrl node.
-We choose to develop theses functionalities in the reverse order, to 
-avoid the complexity of adding
-the pinctrl framework to our driver. Moreover, LSCO and AlarmA may 
-haven't a peripheral client and
-this would probably require to also implement pinctrl hogging.
+> Am 23.05.22 um 11:04 schrieb Naresh Kamboju:
+> > The following kernel warning was noticed on raspberrypi4 device while
+> > running LTP controllers with Linus mainline kernel tree.
+> >
+> > Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+> >
+> > metadata:
+> >    git_ref: master
+> >    git_repo: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+> >    git_sha: 4b0986a3613c92f4ec1bdc7f60ec66fea135991f
+> >    git_describe: v5.18
+> >    kernel_version: 5.18.0
+> >    kernel-config: https://builds.tuxbuild.com/29XDpgnCMxtWJ6lVJ9M0x3hTNWu/config
+> >    artifact-location: https://builds.tuxbuild.com/29XDpgnCMxtWJ6lVJ9M0x3hTNWu
+> >    toolchain: gcc-11
+> >    System.map: https://builds.tuxbuild.com/29XDpgnCMxtWJ6lVJ9M0x3hTNWu/System.map
+> >    vmlinux.xz: https://builds.tuxbuild.com/29XDpgnCMxtWJ6lVJ9M0x3hTNWu/vmlinux.xz
+>
+> thanks for your report.
+>
+> Do you know this worked before (e.g. 5.17)?
 
-Is the implementation that we have proposed is acceptable regarding 
-theses elements ?
+Yes. it worked before.
 
-Thank you,
-Valentin
+> Am I correct that you are using GPU firmware 2021-02-25T12:10:40?
 
+Correct.
+
+- Naresh
