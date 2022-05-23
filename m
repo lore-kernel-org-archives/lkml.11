@@ -2,202 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 627E9C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 15:53:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36923C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 15:54:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238364AbiEWPxj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 11:53:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54976 "EHLO
+        id S238170AbiEWPx7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 11:53:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238275AbiEWPxL (ORCPT
+        with ESMTP id S238353AbiEWPxc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 11:53:11 -0400
-Received: from mail-wm1-x349.google.com (mail-wm1-x349.google.com [IPv6:2a00:1450:4864:20::349])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C15E403F5
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 08:52:48 -0700 (PDT)
-Received: by mail-wm1-x349.google.com with SMTP id v124-20020a1cac82000000b003948b870a8dso10764841wme.2
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 08:52:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=dVL5gjCgy3sq4Q5dk9TcMKWYTxrHdmNucgKBvsJek24=;
-        b=BOrsiDkKxALDfSj2WNpuv5UPGYZgdAkk16vX9KGXvIW1K2WMewlMJRMqzBixXQ562b
-         VYNaxeoEhROFQ/ydAmCPaZa17xTVOgwl7/E6tZfHcwpj69PTXpGq2fhpwyXJqGpkHe4z
-         eOypQmsvGq5WLhnIptnSBOEp69TUIxM7TVYHYkYW18+MAlxt9RcfNK6eQxoB7SejyGgU
-         dh1CDZHpWK3L3+u4ux6OkxqlwMkL66qpBi+yLmPCMyWzhH2o5QoCER9QnLk1vTHQLGWB
-         juMdG2jnC/euQrHfDAmzVg5jF9oWc/EIdRVUxbQoSHqxeufIW0cK4Dd352iwBI+eaFUQ
-         KvMQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=dVL5gjCgy3sq4Q5dk9TcMKWYTxrHdmNucgKBvsJek24=;
-        b=pZM7gN9jOlXv+vB2ccgVzu0nIFoA/zVRSTegeFaaY1tK2b+yYJqPgpdjugQesOFyFn
-         CbVbYf8ZAaEFfdOgFRB/K2qr0HUVjJDL60qVJFGqDMOHQYdgBz7yGSxnDCkKwuBYZiTl
-         B9g7EwSJcCVQ5d6LPh1lp6fRGCm7WYUnfgsWTaQ852iF9P9Xh/Nj6ZNytGKOGKzLoFbp
-         r2P+QLyHNCgZH0KweeK0+aiFi7xRDpqFc8sLeyRKw1EckD7Tcu6vs08bVWNQZeRqisuF
-         7XhXx/HpBEE6a4fjvvWFD3aFRsLUFiN86Hbr2GWB3xbP2MHxnQg+GjPE7HpMdg3d763A
-         kwuw==
-X-Gm-Message-State: AOAM531AQvCZsiBnZyiLHqcCORuQy+f4nJ2n8dY+wgF6M2fI0n4Z6ii7
-        lSKF15mbuYvGX07j4qDLfVNupIU/ZTrGL134
-X-Google-Smtp-Source: ABdhPJyR3TB+4hayhAcWaCKe/mCt7B4Zm6P7+7sMH42O3nHRlG34sIjBrhOkANX2qlPjWej/Mm23qjz52TWc2mlR
-X-Received: from vdonnefort.c.googlers.com ([fda3:e722:ac3:cc00:28:9cb1:c0a8:2eea])
- (user=vdonnefort job=sendgmr) by 2002:a05:600c:29d3:b0:397:4730:ee75 with
- SMTP id s19-20020a05600c29d300b003974730ee75mr7937400wmd.149.1653321166997;
- Mon, 23 May 2022 08:52:46 -0700 (PDT)
-Date:   Mon, 23 May 2022 16:51:40 +0100
-In-Reply-To: <20220523155140.2878563-1-vdonnefort@google.com>
-Message-Id: <20220523155140.2878563-8-vdonnefort@google.com>
-Mime-Version: 1.0
-References: <20220523155140.2878563-1-vdonnefort@google.com>
-X-Mailer: git-send-email 2.36.1.124.g0e6072fb45-goog
-Subject: [PATCH v9 7/7] sched/fair: Remove the energy margin in feec()
-From:   Vincent Donnefort <vdonnefort@google.com>
-To:     peterz@infradead.org, mingo@redhat.com, vincent.guittot@linaro.org
-Cc:     linux-kernel@vger.kernel.org, dietmar.eggemann@arm.com,
-        morten.rasmussen@arm.com, chris.redpath@arm.com,
-        qperret@google.com, tao.zhou@linux.dev, kernel-team@android.com,
-        vdonnefort@google.com,
-        Vincent Donnefort <vincent.donnefort@arm.com>
-Content-Type: text/plain; charset="UTF-8"
+        Mon, 23 May 2022 11:53:32 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6101060DBD
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 08:53:30 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: bbeckett)
+        with ESMTPSA id E6C261F43999
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1653321209;
+        bh=NzwdUWK14vQgJs3bT2nJXsIJw7vgrnGZ5jOEJKZH3V4=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=cSl8zy7n2eDm5whb81GyXjTw7qC/3a3Br6GIQSyiBLYqyJvRF7d9eOKpwJFYeviUw
+         ADqBnvYJfBhejzlUu6LRy35efOpT6TOvV//6Kzju3OJ76GfFmya5ddyCUWO18LwbZE
+         i26QQtWLmg5xFPnYdIE0o6WQegUvow1wpB/6cZo5Z06PRvC6StAfEycFD4EslPE2gF
+         OU65WIwuNEzCmm6XtePpiKgTQMD2nbhj9956j/DwvREc69MSdNqmH7zf5l/XKYXlXM
+         m3xvxnJ2wLtlnchWBF2OUHCpOTOeT+rpwbR29wp6BKOqnpOj/Ip2U9vU96iMBTT8of
+         4ow03fBArPfKg==
+Message-ID: <f42a3dc9-2a6f-2467-b2ff-b6487669ae48@collabora.com>
+Date:   Mon, 23 May 2022 16:53:26 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH 3/4] drm/i915: allow volatile buffers to use ttm pool
+ allocator
+Content-Language: en-US
+To:     =?UTF-8?Q?Thomas_Hellstr=c3=b6m?= 
+        <thomas.hellstrom@linux.intel.com>,
+        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+Cc:     Matthew Auld <matthew.auld@intel.com>, linux-kernel@vger.kernel.org
+References: <20220503191316.1145124-1-bob.beckett@collabora.com>
+ <20220503191316.1145124-4-bob.beckett@collabora.com>
+ <3ce81c514959e43f5afd7e74489dd5b89b1cd633.camel@linux.intel.com>
+From:   Robert Beckett <bob.beckett@collabora.com>
+In-Reply-To: <3ce81c514959e43f5afd7e74489dd5b89b1cd633.camel@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vincent Donnefort <vincent.donnefort@arm.com>
 
-find_energy_efficient_cpu() integrates a margin to protect tasks from
-bouncing back and forth from a CPU to another. This margin is set as being
-6% of the total current energy estimated on the system. This however does
-not work for two reasons:
 
-1. The energy estimation is not a good absolute value:
+On 11/05/2022 13:42, Thomas Hellström wrote:
+> Hi, Bob,
+> 
+> On Tue, 2022-05-03 at 19:13 +0000, Robert Beckett wrote:
+>> internal buffers should be shmem backed.
+>> if a volatile buffer is requested, allow ttm to use the pool
+>> allocator
+>> to provide volatile pages as backing
+>>
+>> Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
+>> ---
+>>   drivers/gpu/drm/i915/gem/i915_gem_ttm.c | 3 ++-
+>>   1 file changed, 2 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
+>> b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
+>> index 4c25d9b2f138..fdb3a1c18cb6 100644
+>> --- a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
+>> +++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
+>> @@ -309,7 +309,8 @@ static struct ttm_tt *i915_ttm_tt_create(struct
+>> ttm_buffer_object *bo,
+>>                  page_flags |= TTM_TT_FLAG_ZERO_ALLOC;
+>>   
+>>          caching = i915_ttm_select_tt_caching(obj);
+>> -       if (i915_gem_object_is_shrinkable(obj) && caching ==
+>> ttm_cached) {
+>> +       if (i915_gem_object_is_shrinkable(obj) && caching ==
+>> ttm_cached &&
+>> +           !i915_gem_object_is_volatile(obj)) {
+>>                  page_flags |= TTM_TT_FLAG_EXTERNAL |
+>>                                TTM_TT_FLAG_EXTERNAL_MAPPABLE;
+>>                  i915_tt->is_shmem = true;
+> 
+> While this is ok, I think it also needs adjustment in the i915_ttm
+> shrink callback. If someone creates a volatile smem object which then
+> hits the shrinker, I think we might hit asserts that it's a is_shem
+> ttm?
+> 
+> In this case, the shrink callback should just i915_ttm_purge().
 
-compute_energy() used in feec() is a good estimation for task placement as
-it allows to compare the energy with and without a task. The computed
-delta will give a good overview of the cost for a certain task placement.
-It, however, doesn't work as an absolute estimation for the total energy
-of the system. First it adds the contribution to idle CPUs into the
-energy, second it mixes util_avg with util_est values. util_avg contains
-the near history for a CPU usage, it doesn't tell at all what the current
-utilization is. A system that has been quite busy in the near past will
-hold a very high energy and then a high margin preventing any task
-migration to a lower capacity CPU, wasting energy. It even creates a
-negative feedback loop: by holding the tasks on a less efficient CPU, the
-margin contributes in keeping the energy high.
+agreed. nice catch.
+I'll fix for v2
 
-2. The margin handicaps small tasks:
+looks like we could maybe do with some extra shrinker testing too? looks 
+like nothing caught this during CI testing
 
-On a system where the workload is composed mostly of small tasks (which is
-often the case on Android), the overall energy will be high enough to
-create a margin none of those tasks can cross. On a Pixel4, a small
-utilization of 5% on all the CPUs creates a global estimated energy of 140
-joules, as per the Energy Model declaration of that same device. This
-means, after applying the 6% margin that any migration must save more than
-8 joules to happen. No task with a utilization lower than 40 would then be
-able to migrate away from the biggest CPU of the system.
-
-The 6% of the overall system energy was brought by the following patch:
-
- (eb92692b2544 sched/fair: Speed-up energy-aware wake-ups)
-
-It was previously 6% of the prev_cpu energy. Also, the following one
-made this margin value conditional on the clusters where the task fits:
-
- (8d4c97c105ca sched/fair: Only compute base_energy_pd if necessary)
-
-We could simply revert that margin change to what it was, but the original
-version didn't have strong grounds neither and as demonstrated in (1.) the
-estimated energy isn't a good absolute value. Instead, removing it
-completely. It is indeed, made possible by recent changes that improved
-energy estimation comparison fairness (sched/fair: Remove task_util from
-effective utilization in feec()) (PM: EM: Increase energy calculation
-precision) and task utilization stabilization (sched/fair: Decay task
-util_avg during migration)
-
-Without a margin, we could have feared bouncing between CPUs. But running
-LISA's eas_behaviour test coverage on three different platforms (Hikey960,
-RB-5 and DB-845) showed no issue.
-
-Removing the energy margin enables more energy-optimized placements for a
-more energy efficient system.
-
-Signed-off-by: Vincent Donnefort <vincent.donnefort@arm.com>
-Signed-off-by: Vincent Donnefort <vdonnefort@google.com>
-Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
-
-diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index 5586b6848858..92907b384265 100644
---- a/kernel/sched/fair.c
-+++ b/kernel/sched/fair.c
-@@ -6859,9 +6859,8 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
- {
- 	struct cpumask *cpus = this_cpu_cpumask_var_ptr(select_rq_mask);
- 	unsigned long prev_delta = ULONG_MAX, best_delta = ULONG_MAX;
--	int cpu, best_energy_cpu = prev_cpu, target = -1;
- 	struct root_domain *rd = this_rq()->rd;
--	unsigned long base_energy = 0;
-+	int cpu, best_energy_cpu, target = -1;
- 	struct sched_domain *sd;
- 	struct perf_domain *pd;
- 	struct energy_env eenv;
-@@ -6893,8 +6892,8 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
- 		unsigned long cpu_cap, cpu_thermal_cap, util;
- 		unsigned long cur_delta, max_spare_cap = 0;
- 		bool compute_prev_delta = false;
--		unsigned long base_energy_pd;
- 		int max_spare_cap_cpu = -1;
-+		unsigned long base_energy;
- 
- 		cpumask_and(cpus, perf_domain_span(pd), cpu_online_mask);
- 
-@@ -6949,16 +6948,15 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
- 
- 		eenv_pd_busy_time(&eenv, cpus, p);
- 		/* Compute the 'base' energy of the pd, without @p */
--		base_energy_pd = compute_energy(&eenv, pd, cpus, p, -1);
--		base_energy += base_energy_pd;
-+		base_energy = compute_energy(&eenv, pd, cpus, p, -1);
- 
- 		/* Evaluate the energy impact of using prev_cpu. */
- 		if (compute_prev_delta) {
- 			prev_delta = compute_energy(&eenv, pd, cpus, p,
- 						    prev_cpu);
--			if (prev_delta < base_energy_pd)
-+			if (prev_delta < base_energy)
- 				goto unlock;
--			prev_delta -= base_energy_pd;
-+			prev_delta -= base_energy;
- 			best_delta = min(best_delta, prev_delta);
- 		}
- 
-@@ -6966,9 +6964,9 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
- 		if (max_spare_cap_cpu >= 0) {
- 			cur_delta = compute_energy(&eenv, pd, cpus, p,
- 						   max_spare_cap_cpu);
--			if (cur_delta < base_energy_pd)
-+			if (cur_delta < base_energy)
- 				goto unlock;
--			cur_delta -= base_energy_pd;
-+			cur_delta -= base_energy;
- 			if (cur_delta < best_delta) {
- 				best_delta = cur_delta;
- 				best_energy_cpu = max_spare_cap_cpu;
-@@ -6977,12 +6975,7 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
- 	}
- 	rcu_read_unlock();
- 
--	/*
--	 * Pick the best CPU if prev_cpu cannot be used, or if it saves at
--	 * least 6% of the energy used by prev_cpu.
--	 */
--	if ((prev_delta == ULONG_MAX) ||
--	    (prev_delta - best_delta) > ((prev_delta + base_energy) >> 4))
-+	if (best_delta < prev_delta)
- 		target = best_energy_cpu;
- 
- 	return target;
--- 
-2.36.1.124.g0e6072fb45-goog
-
+> 
+> /Thomas
+> 
+> 
