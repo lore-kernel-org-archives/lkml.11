@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2FECC46467
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:43:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CE8FC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:43:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243570AbiEWRmK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:42:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37316 "EHLO
+        id S243689AbiEWRmY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:42:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242535AbiEWR1r (ORCPT
+        with ESMTP id S242589AbiEWR1r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 23 May 2022 13:27:47 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF18C7DE24;
-        Mon, 23 May 2022 10:23:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D90C482151;
+        Mon, 23 May 2022 10:23:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E1AEA61528;
-        Mon, 23 May 2022 17:14:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E56A6C385A9;
-        Mon, 23 May 2022 17:14:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 54D2861524;
+        Mon, 23 May 2022 17:14:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34F83C385AA;
+        Mon, 23 May 2022 17:14:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326063;
-        bh=jaBttUhe7e1U2JTkC+nmJw+Yb1tL2Jbpq5RqVccsWhI=;
+        s=korg; t=1653326085;
+        bh=RHTqA4UjpxePZjnuT4BtMnZfxrgsfURyE/cXMH/P16M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=v8h7DVmrS1od2xGP6DjxwyiwJqwSaEeIdcjYTQGGVsshvtkC8skVoyU2Vy03kd2vG
-         q0pM7s/3aqcmm4HcI38clEHGemhrmnYtJuJpg8UO7oHJfzlZOGSRnBU+gQCE1LwAEC
-         cLHRqMbmVhAXJRC0kRjUpP1fNNDg5+UD5I2in8vw=
+        b=yF0ILcXsMeIhWBQSwyQvZ1ZbAEQ+FzyvyMw2lGSdNcveYXqn6hGq0PoD7Tm4nLZLq
+         RvEf8y1+GkFIBZzUVPkhVBz/g5wfntSmZoZ+4AWArvByu3MEhsd9wIZhamBGerATsI
+         KxwG3gZ76w7dkjK/eXIbwFMcNWNUsXNggL1agcBk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Paolo Abeni <pabeni@redhat.com>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Tomasz=20Mo=C5=84?= <tomasz.mon@camlingroup.com>,
+        Jeff LaBundy <jeff@labundy.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 49/68] net: bridge: Clear offload_fwd_mark when passing frame up bridge interface.
-Date:   Mon, 23 May 2022 19:05:16 +0200
-Message-Id: <20220523165810.648913035@linuxfoundation.org>
+Subject: [PATCH 5.10 11/97] Input: add bounds checking to input_set_capability()
+Date:   Mon, 23 May 2022 19:05:15 +0200
+Message-Id: <20220523165814.161382050@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165802.500642349@linuxfoundation.org>
-References: <20220523165802.500642349@linuxfoundation.org>
+In-Reply-To: <20220523165812.244140613@linuxfoundation.org>
+References: <20220523165812.244140613@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,69 +51,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrew Lunn <andrew@lunn.ch>
+From: Jeff LaBundy <jeff@labundy.com>
 
-[ Upstream commit fbb3abdf2223cd0dfc07de85fe5a43ba7f435bdf ]
+[ Upstream commit 409353cbe9fe48f6bc196114c442b1cff05a39bc ]
 
-It is possible to stack bridges on top of each other. Consider the
-following which makes use of an Ethernet switch:
+Update input_set_capability() to prevent kernel panic in case the
+event code exceeds the bitmap for the given event type.
 
-       br1
-     /    \
-    /      \
-   /        \
- br0.11    wlan0
-   |
-   br0
- /  |  \
-p1  p2  p3
-
-br0 is offloaded to the switch. Above br0 is a vlan interface, for
-vlan 11. This vlan interface is then a slave of br1. br1 also has a
-wireless interface as a slave. This setup trunks wireless lan traffic
-over the copper network inside a VLAN.
-
-A frame received on p1 which is passed up to the bridge has the
-skb->offload_fwd_mark flag set to true, indicating that the switch has
-dealt with forwarding the frame out ports p2 and p3 as needed. This
-flag instructs the software bridge it does not need to pass the frame
-back down again. However, the flag is not getting reset when the frame
-is passed upwards. As a result br1 sees the flag, wrongly interprets
-it, and fails to forward the frame to wlan0.
-
-When passing a frame upwards, clear the flag. This is the Rx
-equivalent of br_switchdev_frame_unmark() in br_dev_xmit().
-
-Fixes: f1c2eddf4cb6 ("bridge: switchdev: Use an helper to clear forward mark")
-Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-Reviewed-by: Ido Schimmel <idosch@nvidia.com>
-Tested-by: Ido Schimmel <idosch@nvidia.com>
-Acked-by: Nikolay Aleksandrov <razor@blackwall.org>
-Link: https://lore.kernel.org/r/20220518005840.771575-1-andrew@lunn.ch
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Suggested-by: Tomasz Moń <tomasz.mon@camlingroup.com>
+Signed-off-by: Jeff LaBundy <jeff@labundy.com>
+Reviewed-by: Tomasz Moń <tomasz.mon@camlingroup.com>
+Link: https://lore.kernel.org/r/20220320032537.545250-1-jeff@labundy.com
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bridge/br_input.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/input/input.c | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
 
-diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
-index 09b1dd8cd853..464f6a619444 100644
---- a/net/bridge/br_input.c
-+++ b/net/bridge/br_input.c
-@@ -42,6 +42,13 @@ static int br_pass_frame_up(struct sk_buff *skb)
- 	u64_stats_update_end(&brstats->syncp);
+diff --git a/drivers/input/input.c b/drivers/input/input.c
+index 3cfd2c18eebd..49504dcd5dc6 100644
+--- a/drivers/input/input.c
++++ b/drivers/input/input.c
+@@ -47,6 +47,17 @@ static DEFINE_MUTEX(input_mutex);
  
- 	vg = br_vlan_group_rcu(br);
+ static const struct input_value input_value_sync = { EV_SYN, SYN_REPORT, 1 };
+ 
++static const unsigned int input_max_code[EV_CNT] = {
++	[EV_KEY] = KEY_MAX,
++	[EV_REL] = REL_MAX,
++	[EV_ABS] = ABS_MAX,
++	[EV_MSC] = MSC_MAX,
++	[EV_SW] = SW_MAX,
++	[EV_LED] = LED_MAX,
++	[EV_SND] = SND_MAX,
++	[EV_FF] = FF_MAX,
++};
 +
-+	/* Reset the offload_fwd_mark because there could be a stacked
-+	 * bridge above, and it should not think this bridge it doing
-+	 * that bridge's work forwarding out its ports.
-+	 */
-+	br_switchdev_frame_unmark(skb);
+ static inline int is_event_supported(unsigned int code,
+ 				     unsigned long *bm, unsigned int max)
+ {
+@@ -1976,6 +1987,14 @@ EXPORT_SYMBOL(input_get_timestamp);
+  */
+ void input_set_capability(struct input_dev *dev, unsigned int type, unsigned int code)
+ {
++	if (type < EV_CNT && input_max_code[type] &&
++	    code > input_max_code[type]) {
++		pr_err("%s: invalid code %u for type %u\n", __func__, code,
++		       type);
++		dump_stack();
++		return;
++	}
 +
- 	/* Bridge is just like any other port.  Make sure the
- 	 * packet is allowed except in promisc modue when someone
- 	 * may be running packet capture.
+ 	switch (type) {
+ 	case EV_KEY:
+ 		__set_bit(code, dev->keybit);
 -- 
 2.35.1
 
