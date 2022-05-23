@@ -2,242 +2,261 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CD0EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 16:32:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43943C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 16:32:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238916AbiEWQco (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 12:32:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47682 "EHLO
+        id S238925AbiEWQc4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 12:32:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238840AbiEWQcm (ORCPT
+        with ESMTP id S238911AbiEWQcx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 12:32:42 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B70B7E13
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 09:32:40 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id m20so29942448ejj.10
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 09:32:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=wVr/3Du+dEKTm/WatvPzvje+/imWStWqSp1bUdVRTw4=;
-        b=IgMMExdew0Z/1i8dN8gkq9EQxCCiVj4F34ugFjZWuTr0PzjD8NmKF2OrlQtUp7F1sd
-         tZa3GHYtnVO8IPwJsse7KSeNigyLocUWsA5vgh0oHEluTLQm/LyAVy1qCSz5CIgQ6n4X
-         AwVL6QRJsHeXHXA90j9x9kr6HU8kRJAatjNYJUBkQUhT0Pe3lbaok2xm0V87pK/o2S0Z
-         t/Hb7HLzm8Rvf/aRpxI+ms4vykx+YksXYFRKnFkVRdc4Hui4CDUC26ZL7FlBAwlQi1vI
-         kLaMVto39mO+eYNK6YViR+KMST0U6w+bSy4sM220Q0FC2QUABwFlp4a3EngMrvSNVP83
-         KKUA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :mime-version:content-disposition;
-        bh=wVr/3Du+dEKTm/WatvPzvje+/imWStWqSp1bUdVRTw4=;
-        b=YZeAwQlFcghmg/Oh13/w5O0ePDP70SfWQQEx4uiCsbXQodr3MWJ2qLYjSufPyV4pQJ
-         hMnf+HZKBLMfSnT7MA2fXGR5w4k7XoJSkb5bLbjEBoNP4+HrVpG2tvUyxuIkEo4I4XUA
-         e/ZW40fVkZa5MCGbHuauA4F2mD7GAuCfj7fSlfw00R98dixuEVrTEVQIN2EazoZN5IRh
-         JXhxA7JG75bZ1Y/h0ikUSS+DYR+L8fLJ3BYZ8lY1eC6k+xZvym4BIG7GCLHmR3y2wPxZ
-         vL2rCuldVRYhX2jfWurk5pcChZ0i2ymZZmxCPdIiL+3ri+l8Q+lVHjcqXXy3yYeOCUIq
-         WODg==
-X-Gm-Message-State: AOAM533M53EiPtquXwvtnKRe8bazxCH87D+7Y+6qRFG+C1KdTK74BDaT
-        GwpHyyMatENmUojkm3ewR7Q=
-X-Google-Smtp-Source: ABdhPJyJX61R2HQum21ZQnceqYFnXk2duVxJKf25BAjOfrcEGIQm79kP3/NctHjslqzQZBs/UpEvFw==
-X-Received: by 2002:a17:906:e11:b0:6fe:8d93:1ae7 with SMTP id l17-20020a1709060e1100b006fe8d931ae7mr19644440eji.745.1653323559275;
-        Mon, 23 May 2022 09:32:39 -0700 (PDT)
-Received: from gmail.com (84-236-113-78.pool.digikabel.hu. [84.236.113.78])
-        by smtp.gmail.com with ESMTPSA id kl4-20020a170907994400b006feb6438264sm3539281ejc.93.2022.05.23.09.32.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 May 2022 09:32:38 -0700 (PDT)
-Sender: Ingo Molnar <mingo.kernel.org@gmail.com>
-Date:   Mon, 23 May 2022 18:32:36 +0200
-From:   Ingo Molnar <mingo@kernel.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Borislav Petkov <bp@alien8.de>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [GIT PULL] objtool changes for v5.19
-Message-ID: <You3JC/BOIyEnmQj@gmail.com>
+        Mon, 23 May 2022 12:32:53 -0400
+Received: from relay5.mymailcheap.com (relay5.mymailcheap.com [159.100.248.207])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBF0D36B71
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 09:32:50 -0700 (PDT)
+Received: from relay4.mymailcheap.com (relay4.mymailcheap.com [137.74.80.155])
+        by relay5.mymailcheap.com (Postfix) with ESMTPS id 66456267CE
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 16:32:49 +0000 (UTC)
+Received: from filter1.mymailcheap.com (filter1.mymailcheap.com [149.56.130.247])
+        by relay4.mymailcheap.com (Postfix) with ESMTPS id 0C9B920057;
+        Mon, 23 May 2022 16:32:47 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+        by filter1.mymailcheap.com (Postfix) with ESMTP id 63ECC2A3ED;
+        Mon, 23 May 2022 16:32:46 +0000 (UTC)
+X-Virus-Scanned: Debian amavisd-new at filter1.mymailcheap.com
+Received: from filter1.mymailcheap.com ([127.0.0.1])
+        by localhost (filter1.mymailcheap.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id ovGxMFm9Hgml; Mon, 23 May 2022 16:32:45 +0000 (UTC)
+Received: from mail20.mymailcheap.com (mail20.mymailcheap.com [51.83.111.147])
+        (using TLSv1.2 with cipher ADH-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by filter1.mymailcheap.com (Postfix) with ESMTPS;
+        Mon, 23 May 2022 16:32:45 +0000 (UTC)
+Received: from 127.0.0.1 (unknown [64.225.114.122])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail20.mymailcheap.com (Postfix) with ESMTPSA id AE38240052;
+        Mon, 23 May 2022 16:32:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=aosc.io; s=default;
+        t=1653323564; bh=eMM2/LtD774HPGpt7c9+GCfHLaVlFZojZGyfHiFMXgc=;
+        h=Subject:From:To:Cc:In-Reply-To:References:Date:From;
+        b=rQP6QQMdXVt8a+M59gi/CGqj054PzWViKiKB+E2UK3QpNOb5azsnBVccs5pV9bTAF
+         EpLSLfeC3gM9CDU4RfvEE/0aIbSiMsfbA8odAmCq3TXiFFD3XVlvpWvibWtkSjQggZ
+         IVHrN8yGSMXC/j5+ViIn0Qh+QHJvJihInO2Wi1uE=
+Message-ID: <70b43ac2910ce9b3e3776d31eda7a791fbae5454.camel@aosc.io>
+Subject: Re: [PATCH] drm/sun4i: mixer: fix scanline for V3s and D1
+From:   Icenowy Zheng <icenowy@aosc.io>
+To:     Jernej =?gb2312?Q?=810=947krabec?= <jernej.skrabec@gmail.com>,
+        mripard@kernel.org, wens@csie.org, Genfu Pan <benlypan@gmail.com>
+Cc:     airlied@linux.ie, daniel@ffwll.ch, samuel@sholland.org,
+        dri-devel@lists.freedesktop.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <3173956.44csPzL39Z@jernej-laptop>
+References: <20220521133443.1114749-1-benlypan@gmail.com>
+         <3173956.44csPzL39Z@jernej-laptop>
+Content-Type: text/plain; charset="UTF-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Date:   Mon, 23 May 2022 21:14:45 +0800
+User-Agent: Evolution 3.40.4 
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Linus,
+在 2022-05-22星期日的 10:36 +0200，Jernej Škrabec写道：
+> Hi!
+> 
+> Dne sobota, 21. maj 2022 ob 15:34:43 CEST je Genfu Pan napisal(a):
+> > Accrording the SDK from Allwinner, the scanline value of yuv and
+> > rgb for
+> > V3s are both 1024.
+> 
+> s/scanline value/scanline length/
+> 
+> Which SDK? All SDKs that I have or found on internet don't mention
+> YUV nor RGB 
+> scanline limit. That doesn't mean there is none, I'm just unable to
+> verify 
+> your claim. Did you test this by yourself? Also, please make YUV
+> scanline 
+> change separate patch with fixes tag.
 
-Please pull the latest objtool/core git tree from:
+BTW I think chip manuals all say that the chip supports NxN resolution
+in DE2 chapter, e.g. the V3 datasheet says DE2 "Output size up to
+1024x1024".
 
-   git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git objtool-core-2022-05-23
+However there's no information about D1's second mixer.
 
-   # HEAD: 22682a07acc308ef78681572e19502ce8893c4d4 objtool: Fix objtool regression on x32 systems
+> 
+> > The is also the same for mixer 1 of D1. Currently the
+> > scanline value of rgb is hardcoded to 2048 for all SOCs.
+> > 
+> > Change the scanline_yuv property of V3s to 1024. > Add the
+> > scanline_rgb
+> > property to the mixer config and replace the hardcoded value with
+> > it before
+> > scaling.
+> 
+> I guess RGB scanline patch would also need fixes tag, since it fixes
+> existing 
+> bug.
+> 
+> > 
+> > Signed-off-by: Genfu Pan <benlypan@gmail.com>
+> > ---
+> >  drivers/gpu/drm/sun4i/sun8i_mixer.c    | 13 ++++++++++++-
+> >  drivers/gpu/drm/sun4i/sun8i_mixer.h    |  1 +
+> >  drivers/gpu/drm/sun4i/sun8i_vi_layer.c |  3 +--
+> >  3 files changed, 14 insertions(+), 3 deletions(-)
+> > 
+> > diff --git a/drivers/gpu/drm/sun4i/sun8i_mixer.c
+> > b/drivers/gpu/drm/sun4i/sun8i_mixer.c index 875a1156c..e64e08207
+> > 100644
+> > --- a/drivers/gpu/drm/sun4i/sun8i_mixer.c
+> > +++ b/drivers/gpu/drm/sun4i/sun8i_mixer.c
+> > @@ -567,6 +567,7 @@ static const struct sun8i_mixer_cfg
+> > sun8i_a83t_mixer0_cfg = { .ccsc         = CCSC_MIXER0_LAYOUT,
+> >         .scaler_mask    = 0xf,
+> >         .scanline_yuv   = 2048,
+> > +       .scanline_rgb   = 2048,
+> >         .ui_num         = 3,
+> >         .vi_num         = 1,
+> >  };
+> > @@ -575,6 +576,7 @@ static const struct sun8i_mixer_cfg
+> > sun8i_a83t_mixer1_cfg = { .ccsc         = CCSC_MIXER1_LAYOUT,
+> >         .scaler_mask    = 0x3,
+> >         .scanline_yuv   = 2048,
+> > +       .scanline_rgb   = 2048,
+> >         .ui_num         = 1,
+> >         .vi_num         = 1,
+> >  };
+> > @@ -584,6 +586,7 @@ static const struct sun8i_mixer_cfg
+> > sun8i_h3_mixer0_cfg
+> > = { .mod_rate   = 432000000,
+> >         .scaler_mask    = 0xf,
+> >         .scanline_yuv   = 2048,
+> > +       .scanline_rgb   = 2048,
+> >         .ui_num         = 3,
+> >         .vi_num         = 1,
+> >  };
+> > @@ -593,6 +596,7 @@ static const struct sun8i_mixer_cfg
+> > sun8i_r40_mixer0_cfg
+> > = { .mod_rate   = 297000000,
+> >         .scaler_mask    = 0xf,
+> >         .scanline_yuv   = 2048,
+> > +       .scanline_rgb   = 2048,
+> >         .ui_num         = 3,
+> >         .vi_num         = 1,
+> >  };
+> > @@ -602,6 +606,7 @@ static const struct sun8i_mixer_cfg
+> > sun8i_r40_mixer1_cfg
+> > = { .mod_rate   = 297000000,
+> >         .scaler_mask    = 0x3,
+> >         .scanline_yuv   = 2048,
+> > +       .scanline_rgb   = 2048,
+> >         .ui_num         = 1,
+> >         .vi_num         = 1,
+> >  };
+> > @@ -610,7 +615,8 @@ static const struct sun8i_mixer_cfg
+> > sun8i_v3s_mixer_cfg
+> > = { .vi_num = 2,
+> >         .ui_num = 1,
+> >         .scaler_mask = 0x3,
+> > -       .scanline_yuv = 2048,
+> > +       .scanline_yuv = 1024,
+> > +       .scanline_rgb = 1024,
+> >         .ccsc = CCSC_MIXER0_LAYOUT,
+> >         .mod_rate = 150000000,
+> >  };
+> > @@ -620,6 +626,7 @@ static const struct sun8i_mixer_cfg
+> > sun20i_d1_mixer0_cfg
+> > = { .mod_rate   = 297000000,
+> >         .scaler_mask    = 0x3,
+> >         .scanline_yuv   = 2048,
+> > +       .scanline_rgb   = 2048,
+> >         .ui_num         = 1,
+> >         .vi_num         = 1,
+> >  };
+> > @@ -629,6 +636,7 @@ static const struct sun8i_mixer_cfg
+> > sun20i_d1_mixer1_cfg
+> > = { .mod_rate   = 297000000,
+> >         .scaler_mask    = 0x1,
+> >         .scanline_yuv   = 1024,
+> > +       .scanline_rgb   = 1024,
+> >         .ui_num         = 0,
+> >         .vi_num         = 1,
+> >  };
+> > @@ -638,6 +646,7 @@ static const struct sun8i_mixer_cfg
+> > sun50i_a64_mixer0_cfg = { .mod_rate     = 297000000,
+> >         .scaler_mask    = 0xf,
+> >         .scanline_yuv   = 4096,
+> > +       .scanline_rgb   = 2048,
+> >         .ui_num         = 3,
+> >         .vi_num         = 1,
+> >  };
+> > @@ -647,6 +656,7 @@ static const struct sun8i_mixer_cfg
+> > sun50i_a64_mixer1_cfg = { .mod_rate     = 297000000,
+> >         .scaler_mask    = 0x3,
+> >         .scanline_yuv   = 2048,
+> > +       .scanline_rgb   = 2048,
+> >         .ui_num         = 1,
+> >         .vi_num         = 1,
+> >  };
+> > @@ -657,6 +667,7 @@ static const struct sun8i_mixer_cfg
+> > sun50i_h6_mixer0_cfg
+> > = { .mod_rate   = 600000000,
+> >         .scaler_mask    = 0xf,
+> >         .scanline_yuv   = 4096,
+> > +       .scanline_rgb   = 2048,
+> >         .ui_num         = 3,
+> >         .vi_num         = 1,
+> >  };
+> > diff --git a/drivers/gpu/drm/sun4i/sun8i_mixer.h
+> > b/drivers/gpu/drm/sun4i/sun8i_mixer.h index 85c94884f..c01b3e9d6
+> > 100644
+> > --- a/drivers/gpu/drm/sun4i/sun8i_mixer.h
+> > +++ b/drivers/gpu/drm/sun4i/sun8i_mixer.h
+> > @@ -172,6 +172,7 @@ struct sun8i_mixer_cfg {
+> >         unsigned long   mod_rate;
+> >         unsigned int    is_de3 : 1;
+> >         unsigned int    scanline_yuv;
+> > +       unsigned int    scanline_rgb;
+> 
+> This quirk needs to be documented above in the comment.
+> 
+> Best regards,
+> Jernej
+> 
+> >  };
+> > 
+> >  struct sun8i_mixer {
+> > diff --git a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
+> > b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c index f7d0b082d..30e6bde92
+> > 100644
+> > --- a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
+> > +++ b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
+> > @@ -188,8 +188,7 @@ static int sun8i_vi_layer_update_coord(struct
+> > sun8i_mixer *mixer, int channel, src_h = vn;
+> >                 }
+> > 
+> > -               /* it seems that every RGB scaler has buffer for
+> > 2048 
+> pixels */
+> > -               scanline = subsampled ? mixer->cfg->scanline_yuv : 
+> 2048;
+> > +               scanline = subsampled ? mixer->cfg->scanline_yuv :
+> > mixer->cfg->scanline_rgb;
+> > 
+> >                 if (src_w > scanline) {
+> >                         DRM_DEBUG_DRIVER("Using horizontal coarse 
+> scaling\n");
+> 
+> 
+> 
+> 
+> 
 
-Objtool changes for this cycle were:
-
- - Comprehensive interface overhaul:
-   =================================
-
-   Objtool's interface has some issues:
-
-     - Several features are done unconditionally, without any way to turn
-       them off.  Some of them might be surprising.  This makes objtool
-       tricky to use, and prevents porting individual features to other
-       arches.
-
-     - The config dependencies are too coarse-grained.  Objtool enablement is
-       tied to CONFIG_STACK_VALIDATION, but it has several other features
-       independent of that.
-
-     - The objtool subcmds ("check" and "orc") are clumsy: "check" is really
-       a subset of "orc", so it has all the same options.  The subcmd model
-       has never really worked for objtool, as it only has a single purpose:
-       "do some combination of things on an object file".
-
-     - The '--lto' and '--vmlinux' options are nonsensical and have
-       surprising behavior.
-
-   Overhaul the interface:
-
-      - get rid of subcmds
-
-      - make all features individually selectable
-
-      - remove and/or clarify confusing/obsolete options
-
-      - update the documentation
-
-      - fix some bugs found along the way
-
- - Fix x32 regression
-
- - Fix Kbuild cleanup bugs
-
- - Add scripts/objdump-func helper script to disassemble a single function from an object file.
-
- - Rewrite scripts/faddr2line to be section-aware, by basing it on 'readelf',
-   moving it away from 'nm', which doesn't handle multiple sections well,
-   which can result in decoding failure.
-
- - Rewrite & fix symbol handling - which had a number of bugs wrt. object files
-   that don't have global symbols - which is rare but possible. Also fix a
-   bunch of symbol handling bugs found along the way.
-
-Signed-off-by: Ingo Molnar <mingo@kernel.org>
- Thanks,
-
-	Ingo
-
------------------->
-Borislav Petkov (1):
-      x86/cpu: Load microcode during restore_processor_state()
-
-Dmitry Monakhov (1):
-      x86/unwind/orc: Recheck address range after stack info was updated
-
-Josh Poimboeuf (27):
-      MAINTAINERS: Add x86 unwinding entry
-      objtool: Enable unreachable warnings for CLANG LTO
-      x86/static_call: Add ANNOTATE_NOENDBR to static call trampoline
-      x86/retpoline: Add ANNOTATE_NOENDBR for retpolines
-      x86/uaccess: Add ENDBR to __put_user_nocheck*()
-      x86/xen: Add ANNOTATE_NOENDBR to startup_xen()
-      objtool: Print data address for "!ENDBR" data warnings
-      objtool: Use offstr() to print address of missing ENDBR
-      libsubcmd: Fix OPTION_GROUP sorting
-      objtool: Reorganize cmdline options
-      objtool: Ditch subcommands
-      objtool: Don't print parentheses in function addresses
-      objtool: Add option to print section addresses
-      objtool: Make stack validation optional
-      objtool: Rework ibt and extricate from stack validation
-      objtool: Extricate sls from stack validation
-      objtool: Add CONFIG_OBJTOOL
-      objtool: Make stack validation frame-pointer-specific
-      objtool: Make static call annotation optional
-      objtool: Make jump label hack optional
-      objtool: Make noinstr hacks optional
-      objtool: Rename "VMLINUX_VALIDATION" -> "NOINSTR_VALIDATION"
-      objtool: Add HAVE_NOINSTR_VALIDATION
-      objtool: Remove --lto and --vmlinux in favor of --link
-      objtool: Update documentation
-      scripts: Create objdump-func helper script
-      scripts/faddr2line: Fix overlapping text section failures
-
-Mikulas Patocka (1):
-      objtool: Fix objtool regression on x32 systems
-
-Nur Hussein (1):
-      x86/Kconfig: fix the spelling of 'becoming' in X86_KERNEL_IBT config
-
-Peter Zijlstra (5):
-      lib/strn*,objtool: Enforce user_access_begin() rules
-      x86,xen,objtool: Add UNWIND hint
-      x86,objtool: Mark cpu_startup_entry() __noreturn
-      x86,objtool: Explicitly mark idtentry_body()s tail REACHABLE
-      objtool: Fix symbol creation
-
-Tiezhu Yang (2):
-      objtool: Remove inat-tables.c when make clean
-      objtool: Remove libsubcmd.a when make clean
-
-Tony Luck (1):
-      x86/cpu: Add new Alderlake and Raptorlake CPU model numbers
-
-
- MAINTAINERS                                        |   9 +
- Makefile                                           |   2 +-
- arch/Kconfig                                       |  18 +-
- arch/x86/Kconfig                                   |  23 +-
- arch/x86/Kconfig.debug                             |   2 +-
- arch/x86/entry/entry_64.S                          |   3 +
- arch/x86/include/asm/intel-family.h                |   3 +
- arch/x86/include/asm/jump_label.h                  |   6 +-
- arch/x86/include/asm/microcode.h                   |   2 +
- arch/x86/include/asm/static_call.h                 |   1 +
- arch/x86/kernel/alternative.c                      |   6 +-
- arch/x86/kernel/cpu/microcode/core.c               |   6 +-
- arch/x86/kernel/unwind_orc.c                       |   8 +-
- arch/x86/lib/putuser.S                             |   4 +
- arch/x86/lib/retpoline.S                           |   2 +-
- arch/x86/platform/pvh/head.S                       |   1 +
- arch/x86/power/cpu.c                               |  10 +-
- arch/x86/xen/xen-head.S                            |   1 +
- include/linux/compiler.h                           |   6 +-
- include/linux/cpu.h                                |   2 +-
- include/linux/instrumentation.h                    |   6 +-
- include/linux/objtool.h                            |   6 +-
- kernel/trace/Kconfig                               |   1 +
- lib/Kconfig.debug                                  |  22 +-
- lib/Kconfig.kcsan                                  |   4 +-
- lib/Kconfig.ubsan                                  |   2 +-
- lib/strncpy_from_user.c                            |   2 +-
- lib/strnlen_user.c                                 |   2 +-
- scripts/Makefile.build                             |  23 +-
- scripts/faddr2line                                 | 150 ++++---
- scripts/link-vmlinux.sh                            |  66 +--
- scripts/objdump-func                               |  29 ++
- scripts/package/builddeb                           |   2 +-
- tools/include/linux/objtool.h                      |   6 +-
- tools/lib/subcmd/parse-options.c                   |  17 +-
- tools/objtool/Build                                |  12 +-
- .../{stack-validation.txt => objtool.txt}          | 122 +++++-
- tools/objtool/Makefile                             |  10 +-
- tools/objtool/arch/x86/decode.c                    |   2 +-
- tools/objtool/arch/x86/special.c                   |   2 +-
- tools/objtool/builtin-check.c                      | 156 +++++--
- tools/objtool/builtin-orc.c                        |  73 ----
- tools/objtool/check.c                              | 466 +++++++++++----------
- tools/objtool/elf.c                                | 211 ++++++----
- tools/objtool/include/objtool/builtin.h            |  34 +-
- tools/objtool/include/objtool/elf.h                |  16 +-
- tools/objtool/include/objtool/warn.h               |  35 +-
- tools/objtool/objtool.c                            | 103 +----
- tools/objtool/weak.c                               |   9 +-
- 49 files changed, 1004 insertions(+), 700 deletions(-)
- create mode 100755 scripts/objdump-func
- rename tools/objtool/Documentation/{stack-validation.txt => objtool.txt} (80%)
- delete mode 100644 tools/objtool/builtin-orc.c
 
