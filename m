@@ -2,160 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7E90C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:07:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E147BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:07:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239544AbiEWRH2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:07:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51026 "EHLO
+        id S239564AbiEWRHf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:07:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239383AbiEWRFp (ORCPT
+        with ESMTP id S239396AbiEWRFy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:05:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D3F96A033;
-        Mon, 23 May 2022 10:05:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 89CC7B811F8;
-        Mon, 23 May 2022 17:05:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C52C5C385A9;
-        Mon, 23 May 2022 17:05:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653325540;
-        bh=Ll2zT/Ukebt5P5omwc24AcztSigF+XyQC8s6gXohrEE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=T4lIS12raF3oDfL1NOmnjTdDCA4GdPBgsJ/UDGtl/pwHG5W08F+gMfAcQ61JzRTdu
-         sJ1Yq/WnAXSUExohdskR0rTXrc4bmAvzwnF6JDSbqI3mlQ2Poya65JI93DQkRK5uW/
-         JktHcotPfbLApr4fAE8QovOw26L4iC6aZOLkfAig=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Minh Yuan <yuanmingbuaa@gmail.com>,
-        Linus Torvalds <torvalds@linuxfoundation.org>,
-        Denis Efremov <efremov@linux.com>, Willy Tarreau <w@1wt.eu>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 4.19 01/44] floppy: use a statically allocated error counter
-Date:   Mon, 23 May 2022 19:04:45 +0200
-Message-Id: <20220523165753.770169487@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165752.797318097@linuxfoundation.org>
-References: <20220523165752.797318097@linuxfoundation.org>
-User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
+        Mon, 23 May 2022 13:05:54 -0400
+Received: from mail-oa1-f47.google.com (mail-oa1-f47.google.com [209.85.160.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC2A76A059;
+        Mon, 23 May 2022 10:05:53 -0700 (PDT)
+Received: by mail-oa1-f47.google.com with SMTP id 586e51a60fabf-d39f741ba0so19182100fac.13;
+        Mon, 23 May 2022 10:05:53 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=o14pKCAai8oO1v+9hK17Nc7y/3uZkxj9s6PMf7yQgR4=;
+        b=ct+BgoO5RJa1EPdeUQOQAgmVU+nQDwwTw3+c9IQz+y8F/N2nkE0wdER8AqnsiZn9Z8
+         /d9KkzVMNUbhRY/uOLyM7CJWQEKtFqQKvoDYV6zqsnUfqy4g0YP1t3s+4M+l2zEy5bms
+         MwVQr1Ir3S9bUBV66ldEUMAMYAsxC2jTGPCMjep6RY5ufaFMf34JBv5FejByVMBwqi9m
+         Z9JRU7hKKfQMm741+c/kLtBv6yLuKn6GryTI1N1jZclJ4q9xf8mw5pMxzFxEI8Rc9kvH
+         GU2c7i0iSYO3OW5irNVO0x3cU1rBLJ1ibVngNkfnnhaUXyaLl2KgETAtR0RP+f7x2dpZ
+         5exw==
+X-Gm-Message-State: AOAM533PdxeIAbs+dI/SaHkM0hq54ntTlZjY7XG+RJuTitOvXzI7vK39
+        vyphFAp2vH+S/yn0LtyEsg==
+X-Google-Smtp-Source: ABdhPJwc1Mn6hBzvABcwzRIkOO/6cuYfrk4xmpQBMDzFgzwQDP45aIoB6NwfWsmKFg8h/M6hKQ5McQ==
+X-Received: by 2002:a05:6870:538d:b0:de:aa91:898e with SMTP id h13-20020a056870538d00b000deaa91898emr22248oan.54.1653325552083;
+        Mon, 23 May 2022 10:05:52 -0700 (PDT)
+Received: from xps15.. (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.googlemail.com with ESMTPSA id y1-20020a4a9c01000000b0035eb4e5a6d3sm4521078ooj.41.2022.05.23.10.05.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 May 2022 10:05:51 -0700 (PDT)
+From:   Rob Herring <robh@kernel.org>
+To:     Robin van der Gracht <robin@protonic.nl>,
+        Miguel Ojeda <ojeda@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Olof Johansson <olof@lixom.net>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-input@vger.kernel.org
+Subject: [PATCH] dt-bindings: input: matrix-keymap: Add common 'linux,no-autorepeat' property
+Date:   Mon, 23 May 2022 12:04:49 -0500
+Message-Id: <20220523170449.1763039-1-robh@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Willy Tarreau <w@1wt.eu>
+'linux,no-autorepeat' is a common property used in multiple bindings,
+but doesn't have a common type definition nor description. Add a common
+definition and drop the now redundant description from
+holtek,ht16k33.yaml.
 
-commit f71f01394f742fc4558b3f9f4c7ef4c4cf3b07c8 upstream.
-
-Interrupt handler bad_flp_intr() may cause a UAF on the recently freed
-request just to increment the error count.  There's no point keeping
-that one in the request anyway, and since the interrupt handler uses a
-static pointer to the error which cannot be kept in sync with the
-pending request, better make it use a static error counter that's reset
-for each new request.  This reset now happens when entering
-redo_fd_request() for a new request via set_next_request().
-
-One initial concern about a single error counter was that errors on one
-floppy drive could be reported on another one, but this problem is not
-real given that the driver uses a single drive at a time, as that
-PC-compatible controllers also have this limitation by using shared
-signals.  As such the error count is always for the "current" drive.
-
-Reported-by: Minh Yuan <yuanmingbuaa@gmail.com>
-Suggested-by: Linus Torvalds <torvalds@linuxfoundation.org>
-Tested-by: Denis Efremov <efremov@linux.com>
-Signed-off-by: Willy Tarreau <w@1wt.eu>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Denis Efremov <efremov@linux.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Rob Herring <robh@kernel.org>
 ---
- drivers/block/floppy.c |   17 +++++++----------
- 1 file changed, 7 insertions(+), 10 deletions(-)
+ .../devicetree/bindings/auxdisplay/holtek,ht16k33.yaml        | 3 +--
+ Documentation/devicetree/bindings/input/matrix-keymap.yaml    | 4 ++++
+ 2 files changed, 5 insertions(+), 2 deletions(-)
 
---- a/drivers/block/floppy.c
-+++ b/drivers/block/floppy.c
-@@ -520,8 +520,8 @@ static unsigned long fdc_busy;
- static DECLARE_WAIT_QUEUE_HEAD(fdc_wait);
- static DECLARE_WAIT_QUEUE_HEAD(command_done);
+diff --git a/Documentation/devicetree/bindings/auxdisplay/holtek,ht16k33.yaml b/Documentation/devicetree/bindings/auxdisplay/holtek,ht16k33.yaml
+index fc4873deb76f..f4579e9f44a1 100644
+--- a/Documentation/devicetree/bindings/auxdisplay/holtek,ht16k33.yaml
++++ b/Documentation/devicetree/bindings/auxdisplay/holtek,ht16k33.yaml
+@@ -39,8 +39,7 @@ properties:
  
--/* Errors during formatting are counted here. */
--static int format_errors;
-+/* errors encountered on the current (or last) request */
-+static int floppy_errors;
+   linux,keymap: true
  
- /* Format request descriptor. */
- static struct format_descr format_req;
-@@ -541,7 +541,6 @@ static struct format_descr format_req;
- static char *floppy_track_buffer;
- static int max_buffer_sectors;
+-  linux,no-autorepeat:
+-    description: Disable keyrepeat
++  linux,no-autorepeat: true
  
--static int *errors;
- typedef void (*done_f)(int);
- static const struct cont_t {
- 	void (*interrupt)(void);
-@@ -1434,7 +1433,7 @@ static int interpret_errors(void)
- 			if (DP->flags & FTD_MSG)
- 				DPRINT("Over/Underrun - retrying\n");
- 			bad = 0;
--		} else if (*errors >= DP->max_errors.reporting) {
-+		} else if (floppy_errors >= DP->max_errors.reporting) {
- 			print_errors();
- 		}
- 		if (ST2 & ST2_WC || ST2 & ST2_BC)
-@@ -2054,7 +2053,7 @@ static void bad_flp_intr(void)
- 		if (!next_valid_format())
- 			return;
- 	}
--	err_count = ++(*errors);
-+	err_count = ++floppy_errors;
- 	INFBOUND(DRWE->badness, err_count);
- 	if (err_count > DP->max_errors.abort)
- 		cont->done(0);
-@@ -2199,9 +2198,8 @@ static int do_format(int drive, struct f
- 		return -EINVAL;
- 	}
- 	format_req = *tmp_format_req;
--	format_errors = 0;
- 	cont = &format_cont;
--	errors = &format_errors;
-+	floppy_errors = 0;
- 	ret = wait_til_done(redo_format, true);
- 	if (ret == -EINTR)
- 		return -EINTR;
-@@ -2684,7 +2682,7 @@ static int make_raw_rw_request(void)
- 		 */
- 		if (!direct ||
- 		    (indirect * 2 > direct * 3 &&
--		     *errors < DP->max_errors.read_track &&
-+		     floppy_errors < DP->max_errors.read_track &&
- 		     ((!probing ||
- 		       (DP->read_track & (1 << DRS->probed_format)))))) {
- 			max_size = blk_rq_sectors(current_req);
-@@ -2818,7 +2816,7 @@ static int set_next_request(void)
- 		if (q) {
- 			current_req = blk_fetch_request(q);
- 			if (current_req) {
--				current_req->error_count = 0;
-+				floppy_errors = 0;
- 				break;
- 			}
- 		}
-@@ -2880,7 +2878,6 @@ do_request:
- 		_floppy = floppy_type + DP->autodetect[DRS->probed_format];
- 	} else
- 		probing = 0;
--	errors = &(current_req->error_count);
- 	tmp = make_raw_rw_request();
- 	if (tmp < 2) {
- 		request_done(tmp);
-
+   default-brightness-level:
+     minimum: 1
+diff --git a/Documentation/devicetree/bindings/input/matrix-keymap.yaml b/Documentation/devicetree/bindings/input/matrix-keymap.yaml
+index 6699d5e32dca..9f703bb51e12 100644
+--- a/Documentation/devicetree/bindings/input/matrix-keymap.yaml
++++ b/Documentation/devicetree/bindings/input/matrix-keymap.yaml
+@@ -27,6 +27,10 @@ properties:
+       column and linux key-code. The 32-bit big endian cell is packed as:
+           row << 24 | column << 16 | key-code
+ 
++  linux,no-autorepeat:
++    type: boolean
++    description: Disable keyrepeat
++
+   keypad,num-rows:
+     $ref: /schemas/types.yaml#/definitions/uint32
+     description: Number of row lines connected to the keypad controller.
+-- 
+2.34.1
 
