@@ -2,151 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6E1FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 06:55:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0B51C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 07:02:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229623AbiEWGzC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 02:55:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48960 "EHLO
+        id S229636AbiEWHCE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 03:02:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229528AbiEWGyy (ORCPT
+        with ESMTP id S229560AbiEWHBy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 02:54:54 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D93CA54BF2
-        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 23:52:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653288637;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=6or0LDEr8+Nq81Rkj47r4fBHy8teKoRGQNGc1avEiUw=;
-        b=I68yrpQY6wYtrKyB1x4shDgHigNQItPovUo/6bFTrUQ9v24K5iO1EVn3k0zioDHWS1P0Vs
-        6CUaDrHMJDSeeYOgx+NVf9n/GNuJ3h2Mi5tWYASinVs/ekHgwYV6JZbe70tB6R3cv2ELFj
-        m2MDYoOocAXG8fmuBfvUXTA+Hro6ifQ=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-509-eUJsIwmcNCqspPyOcQzEDw-1; Mon, 23 May 2022 02:50:33 -0400
-X-MC-Unique: eUJsIwmcNCqspPyOcQzEDw-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 43A08801210;
-        Mon, 23 May 2022 06:50:32 +0000 (UTC)
-Received: from starship (unknown [10.40.192.55])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 2C58041047E8;
-        Mon, 23 May 2022 06:50:25 +0000 (UTC)
-Message-ID: <65991ac329a32cf4128400b643d5b5ccf3918cfe.camel@redhat.com>
-Subject: Re: [RFC PATCH v3 02/19] KVM: x86: inhibit APICv/AVIC when the
- guest and/or host changes apic id/base from the defaults.
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Jim Mattson <jmattson@google.com>
-Cc:     Sean Christopherson <seanjc@google.com>, kvm@vger.kernel.org,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Zhenyu Wang <zhenyuw@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        David Airlie <airlied@linux.ie>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        intel-gfx@lists.freedesktop.org, Daniel Vetter <daniel@ffwll.ch>,
-        Borislav Petkov <bp@alien8.de>, Joerg Roedel <joro@8bytes.org>,
-        linux-kernel@vger.kernel.org, Zhi Wang <zhi.a.wang@intel.com>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        intel-gvt-dev@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org
-Date:   Mon, 23 May 2022 09:50:24 +0300
-In-Reply-To: <CALMp9eSVji2CPW1AjFoSbWZ_b-r3y67HyatgdqXEqSyUaD1_BQ@mail.gmail.com>
-References: <20220427200314.276673-1-mlevitsk@redhat.com>
-         <20220427200314.276673-3-mlevitsk@redhat.com> <YoZrG3n5fgMp4LQl@google.com>
-         <e32f6c904c92e9e9efabcc697917a232f5e88881.camel@redhat.com>
-         <CALMp9eSVji2CPW1AjFoSbWZ_b-r3y67HyatgdqXEqSyUaD1_BQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        Mon, 23 May 2022 03:01:54 -0400
+Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-he1eur04on0709.outbound.protection.outlook.com [IPv6:2a01:111:f400:fe0d::709])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BF0760ABA;
+        Mon, 23 May 2022 00:00:05 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=TsEnZEMqvBf6CPTP+rO3emVIUSfTkoEK7DtEMNQ+t8p1H6GzCQN0413J2sWXONk6tQXfUN748S8L4Eo1588lsn7/Cg6ISRBcbSqh2MY8W6HNoQW5yV+7OfhEmLU2GWFVEWC/Loncsqt11g06p4/2RsA85b7GSM2qGVqEq+nVKkFLE08eI13ppyP3Wo3WROXeL7wi4OuzWU2QP71px8KKYYUqS64IJLDiMcktFWSQuQDEDGcKFujCZnYkREZkYZaQbT3L8PzoamHYXSP9owJK1xtBXDCFHV2tfOMaSCbYkFnffvKWDQG+6O+2ZbXak/2NBhh/xCR4LrlKp2tRkWPxhA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=7ekwVoXx/+aYjX3KlJSJLf75Avjb5+QFhAMoKN3Z/Tw=;
+ b=Q3auCJHa2GV0Ti/CcZt515+x1fjTYhWYwwjPdqgN2oB11epqJTkdq8bSbqG8KSweN+j2qwQDxX2Zl5sqZNtQJoBqHnc9COfFu6rdsvG5UmYdpUYemmyLL2wqJpuq4K9m7j2VAtTDgDttFv2dPYUn/bUToNCYK0Q+TBF1MDjLM7kzADuo47959LRsDq5sN2VtIAq9s3bmL2hw7jFpHG6gg+t2jdlx+x33zaCuoSO/vYXJ1eOzlEXxu5liSaZBUCZzJzd3YrVfo4t4kOjvEmxALw2l7RUk3KDRoZO3a6T+oENRgCQ6TfVU2NyW+mYHVgn7ByAZf3Yc4TxqZqEOq9e5Uw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 193.8.40.94) smtp.rcpttodomain=kernel.org
+ smtp.mailfrom=leica-geosystems.com.cn; dmarc=pass (p=quarantine sp=quarantine
+ pct=100) action=none header.from=leica-geosystems.com.cn; dkim=none (message
+ not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=leica-geosystems.com.cn; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7ekwVoXx/+aYjX3KlJSJLf75Avjb5+QFhAMoKN3Z/Tw=;
+ b=GtACg4SosHPnvwTZ2e+8n0QlcJci5cOzaeoye0CiayFAyVWiJqVJSXZT1DuoxsCoz8PyiZPmb/zxqKdWR/3GNW3erT5tlB0qz/O+28JpxqB6gkGQV1EJjk0dyQlyVQhdUcRCnI6B3G2KC0Bn1rE8r6kXFkox2nnigLKfWmuBIs4=
+Received: from OL1P279CA0056.NORP279.PROD.OUTLOOK.COM (2603:10a6:e10:15::7) by
+ VI1PR0602MB3599.eurprd06.prod.outlook.com (2603:10a6:803:b::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.21; Mon, 23 May
+ 2022 06:23:17 +0000
+Received: from HE1EUR02FT087.eop-EUR02.prod.protection.outlook.com
+ (2603:10a6:e10:15:cafe::9a) by OL1P279CA0056.outlook.office365.com
+ (2603:10a6:e10:15::7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.13 via Frontend
+ Transport; Mon, 23 May 2022 06:23:16 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 193.8.40.94)
+ smtp.mailfrom=leica-geosystems.com.cn; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=leica-geosystems.com.cn;
+Received-SPF: Pass (protection.outlook.com: domain of leica-geosystems.com.cn
+ designates 193.8.40.94 as permitted sender) receiver=protection.outlook.com;
+ client-ip=193.8.40.94; helo=aherlnxbspsrv01.lgs-net.com; pr=C
+Received: from aherlnxbspsrv01.lgs-net.com (193.8.40.94) by
+ HE1EUR02FT087.mail.protection.outlook.com (10.152.11.74) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5273.14 via Frontend Transport; Mon, 23 May 2022 06:23:16 +0000
+From:   LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
+To:     jic23@kernel.org, lars@metafoo.de, robh+dt@kernel.org,
+        tomas.melin@vaisala.com, andy.shevchenko@gmail.com,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Qing-wu.Li@leica-geosystems.com.cn
+Cc:     thomas.haemmerle@leica-geosystems.com, linux-iio@vger.kernel.org,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH V8 1/5] dt-bindings: iio: accel: sca3300: Document murata,scl3300
+Date:   Mon, 23 May 2022 06:23:08 +0000
+Message-Id: <20220523062312.1401944-2-Qing-wu.Li@leica-geosystems.com.cn>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220523062312.1401944-1-Qing-wu.Li@leica-geosystems.com.cn>
+References: <20220523062312.1401944-1-Qing-wu.Li@leica-geosystems.com.cn>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
+Content-Transfer-Encoding: 8bit
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+Content-Type: text/plain
+X-MS-Office365-Filtering-Correlation-Id: 5d5b592c-cbc8-45d3-009c-08da3c84b942
+X-MS-TrafficTypeDiagnostic: VI1PR0602MB3599:EE_
+X-Microsoft-Antispam-PRVS: <VI1PR0602MB35996E2B77D5AC990A1B665FD7D49@VI1PR0602MB3599.eurprd06.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: WDDiZpscahJbvcyz+i8Mi0fBbqWbqpXia/0VwLB/Nh89SFmGY7UM8IwcSNkxGxJNwjY8O5dyxhxRLhgRlX6sj/Bo0pPLMYNC03Onek2zPdi0hpAO4098oqK1MjSi39TTXodYpDTEDdXqSnHqUT+4+vtO+FC/MOTc0o8du62qr/KGvfqygx5GzpojOUsNGr3dyNvJgaOvWMpuQu5jhHbihxO5EIPL4KboapzDRIglX2hdbnjLjx2ElweH8SOCMJJhOENUUDqnXYLTbGRRVDEUuf4QVtCsriv5tr2xutCpwmmAx9rjNZfl/7QZO0U5GInAkV9Fpd2ZvhCBnaE97XTfdXI0CqC/94HvZ6TDvZtXoGyDsR+eQ8fMyrD1I9+0DuVckCy8sdOwvwAnXzmV029v3HH/5GAYMq6KVaR0YMQQK5oWszXladVg+x4hvWkpx4Cx1NiNeigZAS+OyEaKYLBf+T5pONiKj3A+68z6xlrokpVuThskUi0bKoThOwLDYwcsr0/c6xzoKND8Jevzj2t4nXA4nM1nYpo5hbbVNa/wZEdWhMLr9IQ1KP1/u45aNycv4N1MQ2NYdBMb4Cv1fn1fZv2u2gTHstdPjs/UsspTeb+Eotb3B4JyLPxvUkHWW6X4YCTEunuZYA8uYLdl1diDtrADhi7buaNdi8e2zav9+8sAtxs90R9hq6ze+W02J+lh
+X-Forefront-Antispam-Report: CIP:193.8.40.94;CTRY:CH;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:aherlnxbspsrv01.lgs-net.com;PTR:ahersrvdom50.leica-geosystems.com;CAT:NONE;SFS:(13230001)(4636009)(46966006)(40470700004)(36840700001)(6512007)(6666004)(6486002)(6506007)(26005)(356005)(81166007)(508600001)(36860700001)(186003)(2616005)(956004)(336012)(1076003)(47076005)(36736006)(82310400005)(5660300002)(4326008)(4744005)(8936002)(70586007)(70206006)(8676002)(36756003)(118246002)(2906002)(40460700003)(316002)(86362001);DIR:OUT;SFP:1102;
+X-OriginatorOrg: leica-geosystems.com.cn
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 May 2022 06:23:16.2720
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5d5b592c-cbc8-45d3-009c-08da3c84b942
+X-MS-Exchange-CrossTenant-Id: 1b16ab3e-b8f6-4fe3-9f3e-2db7fe549f6a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=1b16ab3e-b8f6-4fe3-9f3e-2db7fe549f6a;Ip=[193.8.40.94];Helo=[aherlnxbspsrv01.lgs-net.com]
+X-MS-Exchange-CrossTenant-AuthSource: HE1EUR02FT087.eop-EUR02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0602MB3599
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 2022-05-22 at 07:47 -0700, Jim Mattson wrote:
-> On Sun, May 22, 2022 at 2:03 AM Maxim Levitsky <mlevitsk@redhat.com> wrote:
-> > On Thu, 2022-05-19 at 16:06 +0000, Sean Christopherson wrote:
-> > > On Wed, Apr 27, 2022, Maxim Levitsky wrote:
-> > > > Neither of these settings should be changed by the guest and it is
-> > > > a burden to support it in the acceleration code, so just inhibit
-> > > > it instead.
-> > > > 
-> > > > Also add a boolean 'apic_id_changed' to indicate if apic id ever changed.
-> > > > 
-> > > > Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
-> > > > ---
-> > > > +           return;
-> > > > +
-> > > > +   pr_warn_once("APIC ID change is unsupported by KVM");
-> > > 
-> > > It's supported (modulo x2APIC shenanigans), otherwise KVM wouldn't need to disable
-> > > APICv.
-> > 
-> > Here, as I said, it would be nice to see that warning if someone complains.
-> > Fact is that AVIC code was totally broken in this regard, and there are probably more,
-> > so it would be nice to see if anybody complains.
-> > 
-> > If you insist, I'll remove this warning.
-> 
-> This may be fine for a hobbyist, but it's a terrible API in an
-> enterprise environment. To be honest, I have no way of propagating
-> this warning from /var/log/messages on a particular host to a
-> potentially impacted customer. Worse, if they're not the first
-> impacted customer since the last host reboot, there's no warning to
-> propagate. I suppose I could just tell every later customer, "Your VM
-> was scheduled to run on a host that previously reported, 'APIC ID
-> change is unsupported by KVM.' If you notice any unusual behavior,
-> that might be the reason for it," but that isn't going to inspire
-> confidence. I could schedule a drain and reboot of the host, but that
-> defeats the whole point of the "_once" suffix.
+Add DT bindings for Murata scl3300 inclinometer.
 
-Mostly agree, and I read alrady few discussions about exactly this,
-those warnings are mostly useless, but they are used in the
-cases where we don't have the courage to just exit with KVM_EXIT_INTERNAL_ERROR.
+Reviewed-by: Rob Herring <robh@kernel.org>
+Signed-off-by: LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
+---
+ Documentation/devicetree/bindings/iio/accel/murata,sca3300.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-I do not thing though that the warning is completely useless, 
-as we often have the kernel log of the target machine when things go wrong, 
-so *we* can notice it.
-In other words a kernel warning is mostly useless but better that nothing.
-
-About KVM_EXIT_WARNING, this is IMHO a very good idea, probably combined
-with some form of taint flag, which could be read by qemu and then shown
-over hmp/qmp interfaces.
-
-Best regards,
-	Maxim levitsky
-
-
-> 
-> I know that there's a long history of doing this in KVM, but I'd like
-> to ask that we:
-> a) stop piling on
-> b) start fixing the existing uses
-> 
-> If KVM cannot emulate a perfectly valid operation, an exit to
-> userspace with KVM_EXIT_INTERNAL_ERROR is warranted. Perhaps for
-> operations that we suspect KVM might get wrong, we should have a new
-> userspace exit: KVM_EXIT_WARNING?
-> 
-> I'm not saying that you should remove the warning. I'm just asking
-> that it be augmented with a direct signal to userspace that KVM may no
-> longer be reliable.
-> 
-
+diff --git a/Documentation/devicetree/bindings/iio/accel/murata,sca3300.yaml b/Documentation/devicetree/bindings/iio/accel/murata,sca3300.yaml
+index 55fd3548e3b6..f6e2a16a710b 100644
+--- a/Documentation/devicetree/bindings/iio/accel/murata,sca3300.yaml
++++ b/Documentation/devicetree/bindings/iio/accel/murata,sca3300.yaml
+@@ -17,6 +17,7 @@ properties:
+   compatible:
+     enum:
+       - murata,sca3300
++      - murata,scl3300
+ 
+   reg:
+     maxItems: 1
+-- 
+2.25.1
 
