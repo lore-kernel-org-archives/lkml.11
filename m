@@ -2,104 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 525C7C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 06:00:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A12EBC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 06:01:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229825AbiEWGAk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 02:00:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51454 "EHLO
+        id S233218AbiEWGBR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 02:01:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229634AbiEWGA0 (ORCPT
+        with ESMTP id S231643AbiEWGBG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 02:00:26 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96EB3340C2
-        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 23:00:24 -0700 (PDT)
-Received: from dggpeml500020.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4L668Z2CpDzgY8H;
-        Mon, 23 May 2022 13:58:54 +0800 (CST)
-Received: from [10.174.177.174] (10.174.177.174) by
- dggpeml500020.china.huawei.com (7.185.36.88) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 23 May 2022 14:00:21 +0800
-Message-ID: <c2f49973-e5be-475a-1b92-77fc6e86ba37@huawei.com>
-Date:   Mon, 23 May 2022 14:00:21 +0800
+        Mon, 23 May 2022 02:01:06 -0400
+Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13B8526FA;
+        Sun, 22 May 2022 23:01:02 -0700 (PDT)
+Received: from [192.168.0.6] (ip5f5aedde.dynamic.kabel-deutschland.de [95.90.237.222])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 749C961EA1928;
+        Mon, 23 May 2022 08:01:00 +0200 (CEST)
+Message-ID: <834bb0a6-3085-7725-d176-f83ec7912903@molgen.mpg.de>
+Date:   Mon, 23 May 2022 08:01:00 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH -next] jffs2: fix memory leak in jffs2_do_fill_super
-To:     <richard@nod.at>, <dwmw2@infradead.org>,
-        <linux-mtd@lists.infradead.org>, <linux-kernel@vger.kernel.org>
-CC:     <yukuai3@huawei.com>, Baokun Li <libaokun1@huawei.com>
-References: <20220412093816.2280678-1-libaokun1@huawei.com>
-From:   "libaokun (A)" <libaokun1@huawei.com>
-In-Reply-To: <20220412093816.2280678-1-libaokun1@huawei.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [Intel-wired-lan] [PATCH] drivers/net/ethernet/intel: fix typos
+ in comments
+Content-Language: en-US
+To:     Julia Lawall <julia.lawall@inria.fr>
+Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        intel-wired-lan@lists.osuosl.org, kernel-janitors@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>
+References: <20220521111145.81697-50-Julia.Lawall@inria.fr>
+ <71292e14-fe6c-f475-009d-1ea8cde0ea46@molgen.mpg.de>
+ <alpine.DEB.2.22.394.2205230736190.2777@hadrien>
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+In-Reply-To: <alpine.DEB.2.22.394.2205230736190.2777@hadrien>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.177.174]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpeml500020.china.huawei.com (7.185.36.88)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ping
-
-在 2022/4/12 17:38, Baokun Li 写道:
-> If jffs2_iget() or d_make_root() in jffs2_do_fill_super() returns
-> an error, we can observe the following kmemleak report:
->
-> --------------------------------------------
-> unreferenced object 0xffff888105a65340 (size 64):
->    comm "mount", pid 710, jiffies 4302851558 (age 58.239s)
->    hex dump (first 32 bytes):
->      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
->      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
->    backtrace:
->      [<ffffffff859c45e5>] kmem_cache_alloc_trace+0x475/0x8a0
->      [<ffffffff86160146>] jffs2_sum_init+0x96/0x1a0
->      [<ffffffff86140e25>] jffs2_do_mount_fs+0x745/0x2120
->      [<ffffffff86149fec>] jffs2_do_fill_super+0x35c/0x810
->      [<ffffffff8614aae9>] jffs2_fill_super+0x2b9/0x3b0
->      [...]
-> unreferenced object 0xffff8881bd7f0000 (size 65536):
->    comm "mount", pid 710, jiffies 4302851558 (age 58.239s)
->    hex dump (first 32 bytes):
->      bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb  ................
->      bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb  ................
->    backtrace:
->      [<ffffffff858579ba>] kmalloc_order+0xda/0x110
->      [<ffffffff85857a11>] kmalloc_order_trace+0x21/0x130
->      [<ffffffff859c2ed1>] __kmalloc+0x711/0x8a0
->      [<ffffffff86160189>] jffs2_sum_init+0xd9/0x1a0
->      [<ffffffff86140e25>] jffs2_do_mount_fs+0x745/0x2120
->      [<ffffffff86149fec>] jffs2_do_fill_super+0x35c/0x810
->      [<ffffffff8614aae9>] jffs2_fill_super+0x2b9/0x3b0
->      [...]
-> --------------------------------------------
->
-> This is because the resources allocated in jffs2_sum_init() are not
-> released. Call jffs2_sum_exit() to release these resources to solve
-> the problem.
->
-> Fixes: e631ddba5887 ("[JFFS2] Add erase block summary support (mount time improvement)")
-> Signed-off-by: Baokun Li <libaokun1@huawei.com>
-> ---
->   fs/jffs2/fs.c | 1 +
->   1 file changed, 1 insertion(+)
->
-> diff --git a/fs/jffs2/fs.c b/fs/jffs2/fs.c
-> index 71f03a5d36ed..f83a468b6488 100644
-> --- a/fs/jffs2/fs.c
-> +++ b/fs/jffs2/fs.c
-> @@ -604,6 +604,7 @@ int jffs2_do_fill_super(struct super_block *sb, struct fs_context *fc)
->   	jffs2_free_raw_node_refs(c);
->   	kvfree(c->blocks);
->   	jffs2_clear_xattr_subsystem(c);
-> +	jffs2_sum_exit(c);
->    out_inohash:
->   	kfree(c->inocache_list);
->    out_wbuf:
+Dear Julia,
 
 
+Am 23.05.22 um 07:40 schrieb Julia Lawall:
+
+> On Mon, 23 May 2022, Paul Menzel wrote:
+
+>> Thank you for your patch.
+>>
+>> I noticed, that the maintainer Tony wasn’t in the Cc: list.
+> 
+> get_maintainer reports him as a "supporter", and I think that my script
+> only takes people listed as "maintainer".
+
+     INTEL ETHERNET DRIVERS
+     M:      Jesse Brandeburg <jesse.brandeburg@intel.com>
+     M:      Tony Nguyen <anthony.l.nguyen@intel.com>
+
+For the changed files, both are listed as supporter by 
+`get_maintainer.pl`, but only Jesse was taken. Not important, just 
+wanted to mention it.
+
+> 
+>> Am 21.05.22 um 13:11 schrieb Julia Lawall:
+>>> Spelling mistakes (triple letters) in comments.
+>>> Detected with the help of Coccinelle.
+>>
+>> I’d be interested in the script you used.
+> 
+> Attached.  It should have a pretty low rate of false positives.  Mostly
+> things like Eeew and Wheee.
+
+Thank you.
+
+
+Kind regards,
+
+Paul
+
+
+>>> Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
+>>>
+>>
+>> Nit: One unneeded blank line.
+> 
+> OK, thanks.
+> 
+> julia
+> 
+>>> ---
+>>>    drivers/net/ethernet/intel/fm10k/fm10k_mbx.c   |    2 +-
+>>>    drivers/net/ethernet/intel/ice/ice_lib.c       |    2 +-
+>>>    drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c |    2 +-
+>>>    3 files changed, 3 insertions(+), 3 deletions(-)
+>>>
+>>> diff --git a/drivers/net/ethernet/intel/fm10k/fm10k_mbx.c
+>>> b/drivers/net/ethernet/intel/fm10k/fm10k_mbx.c
+>>> index 30ca9ee1900b..f2fba6e1d0f7 100644
+>>> --- a/drivers/net/ethernet/intel/fm10k/fm10k_mbx.c
+>>> +++ b/drivers/net/ethernet/intel/fm10k/fm10k_mbx.c
+>>> @@ -1825,7 +1825,7 @@ static void fm10k_sm_mbx_process_error(struct
+>>> fm10k_mbx_info *mbx)
+>>>    		fm10k_sm_mbx_connect_reset(mbx);
+>>>    		break;
+>>>    	case FM10K_STATE_CONNECT:
+>>> -		/* try connnecting at lower version */
+>>> +		/* try connecting at lower version */
+>>>    		if (mbx->remote) {
+>>>    			while (mbx->local > 1)
+>>>    				mbx->local--;
+>>> diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c
+>>> b/drivers/net/ethernet/intel/ice/ice_lib.c
+>>> index 454e01ae09b9..70961c0343e7 100644
+>>> --- a/drivers/net/ethernet/intel/ice/ice_lib.c
+>>> +++ b/drivers/net/ethernet/intel/ice/ice_lib.c
+>>> @@ -2403,7 +2403,7 @@ static void ice_set_agg_vsi(struct ice_vsi *vsi)
+>>>    				agg_id);
+>>>    			return;
+>>>    		}
+>>> -		/* aggregator node is created, store the neeeded info */
+>>> +		/* aggregator node is created, store the needed info */
+>>>    		agg_node->valid = true;
+>>>    		agg_node->agg_id = agg_id;
+>>>    	}
+>>> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
+>>> b/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
+>>> index 3e74ab82868b..3f5ef5269bb2 100644
+>>> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
+>>> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
+>>> @@ -77,7 +77,7 @@ static int __ixgbe_enable_sriov(struct ixgbe_adapter
+>>> *adapter,
+>>>    	IXGBE_WRITE_REG(hw, IXGBE_PFDTXGSWC, IXGBE_PFDTXGSWC_VT_LBEN);
+>>>    	adapter->bridge_mode = BRIDGE_MODE_VEB;
+>>>    -	/* limit trafffic classes based on VFs enabled */
+>>> +	/* limit traffic classes based on VFs enabled */
+>>>    	if ((adapter->hw.mac.type == ixgbe_mac_82599EB) && (num_vfs < 16)) {
+>>>    		adapter->dcb_cfg.num_tcs.pg_tcs = MAX_TRAFFIC_CLASS;
+>>>    		adapter->dcb_cfg.num_tcs.pfc_tcs = MAX_TRAFFIC_CLASS;
+>>
+>> Reviewed-by: Paul Menzel <pmenzel@molgen.mpg.de>
+>>
+>>
+>> Kind regards,
+>>
+>> Paul
+>>
