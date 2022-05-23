@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A12FC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51DDAC38A04
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:32:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241984AbiEWRbo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:31:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38088 "EHLO
+        id S242099AbiEWRb7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:31:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241871AbiEWRWl (ORCPT
+        with ESMTP id S241541AbiEWRW1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:22:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD0C17CB1F;
-        Mon, 23 May 2022 10:19:39 -0700 (PDT)
+        Mon, 23 May 2022 13:22:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3758671D83;
+        Mon, 23 May 2022 10:19:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EE088B811FB;
-        Mon, 23 May 2022 17:19:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 614CCC385AA;
-        Mon, 23 May 2022 17:19:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D4F61B81217;
+        Mon, 23 May 2022 17:17:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10960C385A9;
+        Mon, 23 May 2022 17:17:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326377;
-        bh=BxK7O4Gs2ObR0o2eB295lupu4Ic0VZFkTdV/DbE85ac=;
+        s=korg; t=1653326252;
+        bh=AbRLW6KpKD4tIN4tfMldWC0Y7qjHWvaSMDBU+t7g3Ps=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KYe/Iu3akst3h8cuDSttpKiO/5ysKzmJ+vKcwZKVL+rucVKl9w30V+2BcskFctyLm
-         bBzmvV2lRYXoiC4xmO1vprygFZL/XTpRpVGopdgtMDle4i5UvXNvjJV2u2uD9aGH23
-         phVvN26NsC+moyTwMngeiGIju81m92xkjKZnj9mw=
+        b=dXDwqoiIyvKzyTVX48Cz/PgqwqUb/rECvZeWH8YZd2dfxoYxR4j+15nvzrAeDT78V
+         j0dZvatb1IgDJ0605Has5xodJL4S3kgOc3dsNQa+WQQoRHoxZlZkmNcFxdVgojSZ0N
+         MqWLpboVMJbnedetQLDySa+jY6+HBPwl1+T8ef6g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jae Hyun Yoo <quic_jaehyoo@quicinc.com>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Joel Stanley <joel@jms.id.au>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 063/132] pinctrl: pinctrl-aspeed-g6: remove FWQSPID group in pinctrl
-Date:   Mon, 23 May 2022 19:04:32 +0200
-Message-Id: <20220523165833.727881581@linuxfoundation.org>
+        stable@vger.kernel.org, Zheng Yongjun <zhengyongjun3@huawei.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 023/132] Input: stmfts - fix reference leak in stmfts_input_open
+Date:   Mon, 23 May 2022 19:03:52 +0200
+Message-Id: <20220523165827.357141933@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
 References: <20220523165823.492309987@linuxfoundation.org>
@@ -49,69 +49,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jae Hyun Yoo <quic_jaehyoo@quicinc.com>
+From: Zheng Yongjun <zhengyongjun3@huawei.com>
 
-[ Upstream commit 3eef2f48ba0933ba995529f522554ad5c276c39b ]
+[ Upstream commit 26623eea0da3476446909af96c980768df07bbd9 ]
 
-FWSPIDQ2 and FWSPIDQ3 are not part of FWSPI18 interface so remove
-FWQSPID group in pinctrl. These pins must be used with the FWSPI
-pins that are dedicated for boot SPI interface which provides
-same 3.3v logic level.
+pm_runtime_get_sync() will increment pm usage counter even it
+failed. Forgetting to call pm_runtime_put_noidle will result
+in reference leak in stmfts_input_open, so we should fix it.
 
-Fixes: 2eda1cdec49f ("pinctrl: aspeed: Add AST2600 pinmux support")
-Signed-off-by: Jae Hyun Yoo <quic_jaehyoo@quicinc.com>
-Reviewed-by: Andrew Jeffery <andrew@aj.id.au>
-Link: https://lore.kernel.org/r/20220329173932.2588289-3-quic_jaehyoo@quicinc.com
-Signed-off-by: Joel Stanley <joel@jms.id.au>
+Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
+Link: https://lore.kernel.org/r/20220317131604.53538-1-zhengyongjun3@huawei.com
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/aspeed/pinctrl-aspeed-g6.c | 14 +++-----------
- 1 file changed, 3 insertions(+), 11 deletions(-)
+ drivers/input/touchscreen/stmfts.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/pinctrl/aspeed/pinctrl-aspeed-g6.c b/drivers/pinctrl/aspeed/pinctrl-aspeed-g6.c
-index a3fa03bcd9a3..54064714d73f 100644
---- a/drivers/pinctrl/aspeed/pinctrl-aspeed-g6.c
-+++ b/drivers/pinctrl/aspeed/pinctrl-aspeed-g6.c
-@@ -1236,18 +1236,12 @@ FUNC_GROUP_DECL(SALT8, AA12);
- FUNC_GROUP_DECL(WDTRST4, AA12);
+diff --git a/drivers/input/touchscreen/stmfts.c b/drivers/input/touchscreen/stmfts.c
+index bc11203c9cf7..72e0b767e1ba 100644
+--- a/drivers/input/touchscreen/stmfts.c
++++ b/drivers/input/touchscreen/stmfts.c
+@@ -339,11 +339,11 @@ static int stmfts_input_open(struct input_dev *dev)
  
- #define AE12 196
--SIG_EXPR_LIST_DECL_SEMG(AE12, FWSPIDQ2, FWQSPID, FWSPID,
--			SIG_DESC_SET(SCU438, 4));
- SIG_EXPR_LIST_DECL_SESG(AE12, GPIOY4, GPIOY4);
--PIN_DECL_(AE12, SIG_EXPR_LIST_PTR(AE12, FWSPIDQ2),
--	  SIG_EXPR_LIST_PTR(AE12, GPIOY4));
-+PIN_DECL_(AE12, SIG_EXPR_LIST_PTR(AE12, GPIOY4));
+ 	err = pm_runtime_get_sync(&sdata->client->dev);
+ 	if (err < 0)
+-		return err;
++		goto out;
  
- #define AF12 197
--SIG_EXPR_LIST_DECL_SEMG(AF12, FWSPIDQ3, FWQSPID, FWSPID,
--			SIG_DESC_SET(SCU438, 5));
- SIG_EXPR_LIST_DECL_SESG(AF12, GPIOY5, GPIOY5);
--PIN_DECL_(AF12, SIG_EXPR_LIST_PTR(AF12, FWSPIDQ3),
--	  SIG_EXPR_LIST_PTR(AF12, GPIOY5));
-+PIN_DECL_(AF12, SIG_EXPR_LIST_PTR(AF12, GPIOY5));
+ 	err = i2c_smbus_write_byte(sdata->client, STMFTS_MS_MT_SENSE_ON);
+ 	if (err)
+-		return err;
++		goto out;
  
- #define AC12 198
- SSSF_PIN_DECL(AC12, GPIOY6, FWSPIABR, SIG_DESC_SET(SCU438, 6));
-@@ -1520,9 +1514,8 @@ SIG_EXPR_LIST_DECL_SEMG(Y4, EMMCDAT7, EMMCG8, EMMC, SIG_DESC_SET(SCU404, 3));
- PIN_DECL_3(Y4, GPIO18E3, FWSPIDMISO, VBMISO, EMMCDAT7);
+ 	mutex_lock(&sdata->mutex);
+ 	sdata->running = true;
+@@ -366,7 +366,9 @@ static int stmfts_input_open(struct input_dev *dev)
+ 				 "failed to enable touchkey\n");
+ 	}
  
- GROUP_DECL(FWSPID, Y1, Y2, Y3, Y4);
--GROUP_DECL(FWQSPID, Y1, Y2, Y3, Y4, AE12, AF12);
- GROUP_DECL(EMMCG8, AB4, AA4, AC4, AA5, Y5, AB5, AB6, AC5, Y1, Y2, Y3, Y4);
--FUNC_DECL_2(FWSPID, FWSPID, FWQSPID);
-+FUNC_DECL_1(FWSPID, FWSPID);
- FUNC_GROUP_DECL(VB, Y1, Y2, Y3, Y4);
- FUNC_DECL_3(EMMC, EMMCG1, EMMCG4, EMMCG8);
- /*
-@@ -1918,7 +1911,6 @@ static const struct aspeed_pin_group aspeed_g6_groups[] = {
- 	ASPEED_PINCTRL_GROUP(FSI2),
- 	ASPEED_PINCTRL_GROUP(FWSPIABR),
- 	ASPEED_PINCTRL_GROUP(FWSPID),
--	ASPEED_PINCTRL_GROUP(FWQSPID),
- 	ASPEED_PINCTRL_GROUP(FWSPIWP),
- 	ASPEED_PINCTRL_GROUP(GPIT0),
- 	ASPEED_PINCTRL_GROUP(GPIT1),
+-	return 0;
++out:
++	pm_runtime_put_noidle(&sdata->client->dev);
++	return err;
+ }
+ 
+ static void stmfts_input_close(struct input_dev *dev)
 -- 
 2.35.1
 
