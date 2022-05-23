@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6F0BC4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED63FC41535
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:43:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244043AbiEWRnN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:43:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37534 "EHLO
+        id S244105AbiEWRnZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:43:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242623AbiEWR1u (ORCPT
+        with ESMTP id S242551AbiEWR1r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:27:50 -0400
+        Mon, 23 May 2022 13:27:47 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 879508AE49;
-        Mon, 23 May 2022 10:23:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1A5281995;
+        Mon, 23 May 2022 10:23:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9C38E614B8;
-        Mon, 23 May 2022 17:14:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 875C6C385AA;
-        Mon, 23 May 2022 17:14:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 69F886090C;
+        Mon, 23 May 2022 17:23:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72258C385A9;
+        Mon, 23 May 2022 17:23:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326044;
-        bh=8GWzTs85Pxk1rZUbXj+jCv4NPHgoEoM04ax8K/ETauY=;
+        s=korg; t=1653326621;
+        bh=qSmR5E7RYaAZaARo/MP2Fh7BsQDVD2MLFAr7or8Gw0E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MFBHMAjDzopDb+VJwKdTvCE6BfK/nRPVglkwAHc2NfcRyA4J+Rs6rJWPeJXYuNxbe
-         mURwG8pbq9E1/TwZV0ABrROpzfJgzULBhDQsAD3Wz5l96wUoeV9/oewkV+vjf+Y9On
-         v/hLZ/TqJop9cH3dm2Yqq582VgcPG1UBZ80Pfz7Y=
+        b=1xI6Z77lgoqKjmycHGrRf9Wh4ukFTnvyRI3tPFRrOnxYBg+9KeLsEkmzLfkc6I4uu
+         yxLzCHNhjCN22AC1UvMd8JIskpnwW61SWaoJOqruy6nkIJlb3Jhh866wGVHPeia9r9
+         Gdk4NS8HKcwnvaW/9c5ZDQ2clgd8XZEC2K+Vvhm8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sasha Neftin <sasha.neftin@intel.com>,
-        Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-Subject: [PATCH 5.10 05/97] igc: Remove _I_PHY_ID checking
-Date:   Mon, 23 May 2022 19:05:09 +0200
-Message-Id: <20220523165813.189873956@linuxfoundation.org>
+        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        Stefan Roese <sr@denx.de>, Wolfram Sang <wsa@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 131/132] i2c: mt7621: fix missing clk_disable_unprepare() on error in mtk_i2c_probe()
+Date:   Mon, 23 May 2022 19:05:40 +0200
+Message-Id: <20220523165845.453260433@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165812.244140613@linuxfoundation.org>
-References: <20220523165812.244140613@linuxfoundation.org>
+In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
+References: <20220523165823.492309987@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,77 +49,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sasha Neftin <sasha.neftin@intel.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-commit 7c496de538eebd8212dc2a3c9a468386b264d0d4 upstream.
+[ Upstream commit a2537c98a8a3b57002e54a262d180b9490bc7190 ]
 
-i225 devices have only one PHY vendor. There is no point checking
-_I_PHY_ID during the link establishment and auto-negotiation process.
-This patch comes to clean up these pointless checkings.
+Fix the missing clk_disable_unprepare() before return
+from mtk_i2c_probe() in the error handling case.
 
-Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
-Tested-by: Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: d04913ec5f89 ("i2c: mt7621: Add MediaTek MT7621/7628/7688 I2C driver")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Reviewed-by: Stefan Roese <sr@denx.de>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/igc/igc_base.c |   10 +---------
- drivers/net/ethernet/intel/igc/igc_main.c |    3 +--
- drivers/net/ethernet/intel/igc/igc_phy.c  |    6 ++----
- 3 files changed, 4 insertions(+), 15 deletions(-)
+ drivers/i2c/busses/i2c-mt7621.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
---- a/drivers/net/ethernet/intel/igc/igc_base.c
-+++ b/drivers/net/ethernet/intel/igc/igc_base.c
-@@ -187,15 +187,7 @@ static s32 igc_init_phy_params_base(stru
+diff --git a/drivers/i2c/busses/i2c-mt7621.c b/drivers/i2c/busses/i2c-mt7621.c
+index 45fe4a7fe0c0..901f0fb04fee 100644
+--- a/drivers/i2c/busses/i2c-mt7621.c
++++ b/drivers/i2c/busses/i2c-mt7621.c
+@@ -304,7 +304,8 @@ static int mtk_i2c_probe(struct platform_device *pdev)
  
- 	igc_check_for_copper_link(hw);
- 
--	/* Verify phy id and set remaining function pointers */
--	switch (phy->id) {
--	case I225_I_PHY_ID:
--		phy->type	= igc_phy_i225;
--		break;
--	default:
--		ret_val = -IGC_ERR_PHY;
--		goto out;
--	}
-+	phy->type = igc_phy_i225;
- 
- out:
- 	return ret_val;
---- a/drivers/net/ethernet/intel/igc/igc_main.c
-+++ b/drivers/net/ethernet/intel/igc/igc_main.c
-@@ -4189,8 +4189,7 @@ bool igc_has_link(struct igc_adapter *ad
- 		break;
+ 	if (i2c->bus_freq == 0) {
+ 		dev_warn(i2c->dev, "clock-frequency 0 not supported\n");
+-		return -EINVAL;
++		ret = -EINVAL;
++		goto err_disable_clk;
  	}
  
--	if (hw->mac.type == igc_i225 &&
--	    hw->phy.id == I225_I_PHY_ID) {
-+	if (hw->mac.type == igc_i225) {
- 		if (!netif_carrier_ok(adapter->netdev)) {
- 			adapter->flags &= ~IGC_FLAG_NEED_LINK_UPDATE;
- 		} else if (!(adapter->flags & IGC_FLAG_NEED_LINK_UPDATE)) {
---- a/drivers/net/ethernet/intel/igc/igc_phy.c
-+++ b/drivers/net/ethernet/intel/igc/igc_phy.c
-@@ -249,8 +249,7 @@ static s32 igc_phy_setup_autoneg(struct
- 			return ret_val;
- 	}
+ 	adap = &i2c->adap;
+@@ -322,10 +323,15 @@ static int mtk_i2c_probe(struct platform_device *pdev)
  
--	if ((phy->autoneg_mask & ADVERTISE_2500_FULL) &&
--	    hw->phy.id == I225_I_PHY_ID) {
-+	if (phy->autoneg_mask & ADVERTISE_2500_FULL) {
- 		/* Read the MULTI GBT AN Control Register - reg 7.32 */
- 		ret_val = phy->ops.read_reg(hw, (STANDARD_AN_REG_MASK <<
- 					    MMD_DEVADDR_SHIFT) |
-@@ -390,8 +389,7 @@ static s32 igc_phy_setup_autoneg(struct
- 		ret_val = phy->ops.write_reg(hw, PHY_1000T_CTRL,
- 					     mii_1000t_ctrl_reg);
+ 	ret = i2c_add_adapter(adap);
+ 	if (ret < 0)
+-		return ret;
++		goto err_disable_clk;
  
--	if ((phy->autoneg_mask & ADVERTISE_2500_FULL) &&
--	    hw->phy.id == I225_I_PHY_ID)
-+	if (phy->autoneg_mask & ADVERTISE_2500_FULL)
- 		ret_val = phy->ops.write_reg(hw,
- 					     (STANDARD_AN_REG_MASK <<
- 					     MMD_DEVADDR_SHIFT) |
+ 	dev_info(&pdev->dev, "clock %u kHz\n", i2c->bus_freq / 1000);
+ 
++	return 0;
++
++err_disable_clk:
++	clk_disable_unprepare(i2c->clk);
++
+ 	return ret;
+ }
+ 
+-- 
+2.35.1
+
 
 
