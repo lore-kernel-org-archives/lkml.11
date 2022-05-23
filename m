@@ -2,215 +2,271 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E18C4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 15:19:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39E46C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 15:20:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237706AbiEWPTM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 11:19:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46730 "EHLO
+        id S237692AbiEWPUK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 11:20:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237564AbiEWPTI (ORCPT
+        with ESMTP id S237573AbiEWPUI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 11:19:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96F534704A;
-        Mon, 23 May 2022 08:19:05 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 330F761291;
-        Mon, 23 May 2022 15:19:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97A49C34116;
-        Mon, 23 May 2022 15:19:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653319144;
-        bh=4fHAe4j+ojBMcjH5GhxAYVhFuKYrezHCFPgRSz6rx+w=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=i9oyXJLfyAFAPe8qWXJl7MAvnMXZcCcjmuACUabG9bdEnboEwJq2vTsc2PZsoP9wQ
-         wAYzS6o2zLlGbtGZTIf1b5BzN6tqR559SEa6+fH4IqOGCL8aY5v5UiMnLcQiJvScd8
-         8oDgjWbWvNHK6U0x4TtPQ5FPqtLwnrptY8q3I0uxMhgScUmIZWIXFOVUj5ZJsT/x87
-         C70+RGdRWyQGDDWkc6Lan9HUKhIlG7ixnK95isN/Yy+McxnQq+8+XqiOuYkgyTIkHV
-         Z6uNCJfP4QaVVPwTDlWMj+NvFXuq0K/8wB4Hyc5nPiiFqzMXuVjpAgWSkcmHSuT2zF
-         MYlIRpAZ1RoZQ==
-Received: by mail-vs1-f44.google.com with SMTP id h4so4319685vsr.13;
-        Mon, 23 May 2022 08:19:04 -0700 (PDT)
-X-Gm-Message-State: AOAM5326FF47dFvgoE6lRr7ksWZb/jPb0Xx6P1dz2TpmiEPF7fd0ySrS
-        171JQqiTD9DnMxR4O0IV4Nk/HD0IHWi3zo638WM=
-X-Google-Smtp-Source: ABdhPJz3x4FnU1xJIN5HGyrJz5hbsOQdssNQxOwdNEDN3TkyrDbRot8YxmpskB5AUverVzBjaEAbLsuwnBkdE/XlkDc=
-X-Received: by 2002:a05:6102:390b:b0:32d:5fc3:bd2c with SMTP id
- e11-20020a056102390b00b0032d5fc3bd2cmr8220616vsu.51.1653319143526; Mon, 23
- May 2022 08:19:03 -0700 (PDT)
+        Mon, 23 May 2022 11:20:08 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDAA75DA69;
+        Mon, 23 May 2022 08:20:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653319207; x=1684855207;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=PbNyLowZXXyeR9OxM1xpX367cO5XzR8kGQzWfh6uwwU=;
+  b=W/YY8/PECOJKL7iU21kDnCHLTzwA63tY8w9AnEEjlvuOlfPksgCzTXkS
+   A9BSyrpx8E5VyYsRhzBNmEyJ90Xd60hb7wMz5RfxTFsGwH4q9AeyGPCLH
+   7IsGxLK7wSH+vgwhXDhD2chjE2CNiFT7Ht5syXExJetPtdmOfh/eGvwg+
+   RHs4eJN8cxBqBWHOixVXWNHww+lG3EbIuxOLclqAnoSoMf3lj862hI94y
+   FtDhCTA7MvWbs8jbWR3YOUkrSMKUnSe7PqAxVHhk8LP6VkOODiZ7Z916m
+   O0nSZHIWqDbTlGp02xYcP486prLneYcj+KH/E5M4sXUr280miuS5uqH57
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10356"; a="333897855"
+X-IronPort-AV: E=Sophos;i="5.91,246,1647327600"; 
+   d="scan'208";a="333897855"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2022 08:20:07 -0700
+X-IronPort-AV: E=Sophos;i="5.91,246,1647327600"; 
+   d="scan'208";a="548021388"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.198.157])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2022 08:20:07 -0700
+Date:   Mon, 23 May 2022 08:23:59 -0700
+From:   Jacob Pan <jacob.jun.pan@linux.intel.com>
+To:     "Tian, Kevin" <kevin.tian@intel.com>
+Cc:     "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>,
+        Joerg Roedel <joro@8bytes.org>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>,
+        "Lu Baolu" <baolu.lu@linux.intel.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        "vkoul@kernel.org" <vkoul@kernel.org>,
+        "robin.murphy@arm.com" <robin.murphy@arm.com>,
+        "will@kernel.org" <will@kernel.org>,
+        "Liu, Yi L" <yi.l.liu@intel.com>,
+        "Jiang, Dave" <dave.jiang@intel.com>,
+        "Raj, Ashok" <ashok.raj@intel.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH v4 4/6] iommu: Add PASID support for DMA mapping API
+ users
+Message-ID: <20220523082359.74fb435b@jacob-builder>
+In-Reply-To: <BL1PR11MB5271E995E160E0C6A6C0C89A8CD49@BL1PR11MB5271.namprd11.prod.outlook.com>
+References: <20220518182120.1136715-1-jacob.jun.pan@linux.intel.com>
+        <20220518182120.1136715-5-jacob.jun.pan@linux.intel.com>
+        <BL1PR11MB5271E995E160E0C6A6C0C89A8CD49@BL1PR11MB5271.namprd11.prod.outlook.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20220322144003.2357128-1-guoren@kernel.org> <20220322144003.2357128-21-guoren@kernel.org>
- <20220523054550.GA1511899@roeck-us.net>
-In-Reply-To: <20220523054550.GA1511899@roeck-us.net>
-From:   Guo Ren <guoren@kernel.org>
-Date:   Mon, 23 May 2022 23:18:52 +0800
-X-Gmail-Original-Message-ID: <CAJF2gTSCcYif4DEpvrJ6d02no3CU_viyE+OkhhjCV3VsGmcT5Q@mail.gmail.com>
-Message-ID: <CAJF2gTSCcYif4DEpvrJ6d02no3CU_viyE+OkhhjCV3VsGmcT5Q@mail.gmail.com>
-Subject: Re: [PATCH V9 20/20] riscv: compat: Add COMPAT Kbuild skeletal support
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Palmer Dabbelt <palmer@dabbelt.com>, Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Christoph Hellwig <hch@lst.de>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        linux-csky@vger.kernel.org,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        sparclinux <sparclinux@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        Parisc List <linux-parisc@vger.kernel.org>,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        =?UTF-8?Q?Heiko_St=C3=BCbner?= <heiko@sntech.de>,
-        Guo Ren <guoren@linux.alibaba.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I tested Palmer's branch, it's okay:
-8810d7feee5a (HEAD -> for-next, palmer/for-next) riscv: Don't output a
-bogus mmu-type on a no MMU kernel
+Hi Kevin,
 
-I also tested linux-next, it's okay:
+On Mon, 23 May 2022 08:25:33 +0000, "Tian, Kevin" <kevin.tian@intel.com>
+wrote:
 
-rv64_rootfs:
-# uname -a
-Linux buildroot 5.18.0-next-20220523 #7 SMP Mon May 23 11:15:17 EDT
-2022 riscv64 GNU/Linux
-#
-#
-#
-# ls /lib
-ld-uClibc-1.0.39.so  libatomic.so.1       libgcc_s.so
-ld-uClibc.so.0       libatomic.so.1.2.0   libgcc_s.so.1
-ld-uClibc.so.1       libc.so.0            libuClibc-1.0.39.so
-libatomic.so         libc.so.1            modules
+> > From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > Sent: Thursday, May 19, 2022 2:21 AM
+> > 
+> > DMA mapping API is the de facto standard for in-kernel DMA. It operates
+> > on a per device/RID basis which is not PASID-aware.
+> > 
+> > Some modern devices such as Intel Data Streaming Accelerator, PASID is
+> > required for certain work submissions. To allow such devices use DMA
+> > mapping API, we need the following functionalities:
+> > 1. Provide device a way to retrieve a PASID for work submission within
+> > the kernel
+> > 2. Enable the kernel PASID on the IOMMU for the device
+> > 3. Attach the kernel PASID to the device's default DMA domain, let it
+> > be IOVA or physical address in case of pass-through.
+> > 
+> > This patch introduces a driver facing API that enables DMA API
+> > PASID usage. Once enabled, device drivers can continue to use DMA APIs
+> > as is. There is no difference in dma_handle between without PASID and
+> > with PASID.
+> > 
+> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > ---
+> >  drivers/iommu/dma-iommu.c | 114
+> > ++++++++++++++++++++++++++++++++++++++
+> >  include/linux/dma-iommu.h |   3 +
+> >  2 files changed, 117 insertions(+)
+> > 
+> > diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> > index 1ca85d37eeab..6ad7ba619ef0 100644
+> > --- a/drivers/iommu/dma-iommu.c
+> > +++ b/drivers/iommu/dma-iommu.c
+> > @@ -34,6 +34,8 @@ struct iommu_dma_msi_page {
+> >  	phys_addr_t		phys;
+> >  };
+> > 
+> > +static DECLARE_IOASID_SET(iommu_dma_pasid);
+> > +
+> >  enum iommu_dma_cookie_type {
+> >  	IOMMU_DMA_IOVA_COOKIE,
+> >  	IOMMU_DMA_MSI_COOKIE,
+> > @@ -370,6 +372,118 @@ void iommu_put_dma_cookie(struct
+> > iommu_domain *domain)
+> >  	domain->iova_cookie = NULL;
+> >  }
+> > 
+> > +/* Protect iommu_domain DMA PASID data */
+> > +static DEFINE_MUTEX(dma_pasid_lock);
+> > +/**
+> > + * iommu_attach_dma_pasid --Attach a PASID for in-kernel DMA. Use the
+> > device's
+> > + * DMA domain.
+> > + * @dev: Device to be enabled
+> > + * @pasid: The returned kernel PASID to be used for DMA
+> > + *
+> > + * DMA request with PASID will be mapped the same way as the legacy
+> > DMA.
+> > + * If the device is in pass-through, PASID will also pass-through. If
+> > the
+> > + * device is in IOVA, the PASID will point to the same IOVA page table.
+> > + *
+> > + * @return err code or 0 on success
+> > + */
+> > +int iommu_attach_dma_pasid(struct device *dev, ioasid_t *pasid)  
+> 
+> iommu_attach_dma_domain_pasid? 'dma_pasid' is too broad from
+> a API p.o.v.
+> 
+I agree dma_pasid is too broad, technically it is dma_api_pasid but seems
+too long.
+My concern with dma_domain_pasid is that the pasid can also be used for
+identity domain.
 
-rv32_rootfs:
-buildroot login: root
-# uname -a
-Linux buildroot 5.18.0-next-20220523 #7 SMP Mon May 23 11:15:17 EDT
-2022 riscv64 GNU/Linux
-# ls /lib
-ld-linux-riscv32-ilp32d.so.1  libm.so.6
-libanl.so.1                   libnss_dns.so.2
-libatomic.so                  libnss_files.so.2
-libatomic.so.1                libpthread.so.0
-libatomic.so.1.2.0            libresolv.so.2
-libc.so.6                     librt.so.1
-libcrypt.so.1                 libthread_db.so.1
-libdl.so.2                    libutil.so.1
-libgcc_s.so                   modules
-libgcc_s.so.1
+> > +{
+> > +	struct iommu_domain *dom;
+> > +	ioasid_t id, max;
+> > +	int ret = 0;
+> > +
+> > +	dom = iommu_get_domain_for_dev(dev);
+> > +	if (!dom || !dom->ops || !dom->ops->attach_dev_pasid)
+> > +		return -ENODEV;
+> > +
+> > +	/* Only support domain types that DMA API can be used */
+> > +	if (dom->type == IOMMU_DOMAIN_UNMANAGED ||
+> > +	    dom->type == IOMMU_DOMAIN_BLOCKED) {
+> > +		dev_warn(dev, "Invalid domain type %d", dom->type);
+> > +		return -EPERM;
+> > +	}  
+> 
+> WARN_ON.
+> 
+> and probably we can just check whether domain is default domain here.
+> 
+good point, I will just use
+struct iommu_domain *def_domain = iommu_get_dma_domain(dev);
 
-Here is my qemu version:
-commit 19f13a92cef8405052e0f73d5289f9e15474dad3 (HEAD ->
-riscv-to-apply.next, alistair/riscv-to-apply.next)
-Author: Tsukasa OI <research_trasio@irq.a4lg.com>
-Date:   Sun May 15 11:56:11 2022 +0900
+> > +
+> > +	mutex_lock(&dma_pasid_lock);
+> > +	id = dom->dma_pasid;
+> > +	if (!id) {
+> > +		/*
+> > +		 * First device to use PASID in its DMA domain,
+> > allocate
+> > +		 * a single PASID per DMA domain is all we need, it is
+> > also
+> > +		 * good for performance when it comes down to IOTLB
+> > flush.
+> > +		 */
+> > +		max = 1U << dev->iommu->pasid_bits;
+> > +		if (!max) {
+> > +			ret = -EINVAL;
+> > +			goto done_unlock;
+> > +		}
+> > +
+> > +		id = ioasid_alloc(&iommu_dma_pasid, 1, max, dev);
+> > +		if (id == INVALID_IOASID) {
+> > +			ret = -ENOMEM;
+> > +			goto done_unlock;
+> > +		}
+> > +
+> > +		dom->dma_pasid = id;
+> > +		atomic_set(&dom->dma_pasid_users, 1);  
+> 
+> this is always accessed with lock held hence no need to be atomic.
+> 
+good catch, will fix
 
-    target/riscv: Move/refactor ISA extension checks
-
-    We should separate "check" and "configure" steps as possible.
-    This commit separates both steps except vector/Zfinx-related checks.
-
-    Signed-off-by: Tsukasa OI <research_trasio@irq.a4lg.com>
-    Reviewed-by: Alistair Francis <alistair.francis@wdc.com>
-    Message-Id:
-<c3145fa37a529484cf3047c8cb9841e9effad4b0.1652583332.git.research_trasio@irq.a4lg.com>
-    Signed-off-by: Alistair Francis <alistair.francis@wdc.com>
-
-On Mon, May 23, 2022 at 1:45 PM Guenter Roeck <linux@roeck-us.net> wrote:
->
-> On Tue, Mar 22, 2022 at 10:40:03PM +0800, guoren@kernel.org wrote:
-> > From: Guo Ren <guoren@linux.alibaba.com>
-> >
-> > Adds initial skeletal COMPAT Kbuild (Running 32bit U-mode on
-> > 64bit S-mode) support.
-> >  - Setup kconfig & dummy functions for compiling.
-> >  - Implement compat_start_thread by the way.
-> >
-> > Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
-> > Signed-off-by: Guo Ren <guoren@kernel.org>
-> > Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-> > Tested-by: Heiko Stuebner <heiko@sntech.de>
-> > Cc: Palmer Dabbelt <palmer@dabbelt.com>
->
-> With this patch in linux-next, all my riscv64 emulations crash.
->
-> [   11.600082] Run /sbin/init as init process
-> [   11.628561] init[1]: unhandled signal 11 code 0x1 at 0x0000000000000000 in libc.so[ffffff8ad39000+a4000]
-> [   11.629398] CPU: 0 PID: 1 Comm: init Not tainted 5.18.0-rc7-next-20220520 #1
-> [   11.629462] Hardware name: riscv-virtio,qemu (DT)
-> [   11.629546] epc : 00ffffff8ada1100 ra : 00ffffff8ada13c8 sp : 00ffffffc58199f0
-> [   11.629586]  gp : 00ffffff8ad39000 tp : 00ffffff8ade0998 t0 : ffffffffffffffff
-> [   11.629598]  t1 : 00ffffffc5819fd0 t2 : 0000000000000000 s0 : 00ffffff8ade0cc0
-> [   11.629610]  s1 : 00ffffff8ade0cc0 a0 : 0000000000000000 a1 : 00ffffffc5819a00
-> [   11.629622]  a2 : 0000000000000001 a3 : 000000000000001e a4 : 00ffffffc5819b00
-> [   11.629634]  a5 : 00ffffffc5819b00 a6 : 0000000000000000 a7 : 0000000000000000
-> [   11.629645]  s2 : 00ffffff8ade0ac8 s3 : 00ffffff8ade0ec8 s4 : 00ffffff8ade0728
-> [   11.629656]  s5 : 00ffffff8ade0a90 s6 : 0000000000000000 s7 : 00ffffffc5819e40
-> [   11.629667]  s8 : 00ffffff8ade0ca0 s9 : 00ffffff8addba50 s10: 0000000000000000
-> [   11.629678]  s11: 0000000000000000 t3 : 0000000000000002 t4 : 0000000000000001
-> [   11.629688]  t5 : 0000000000020000 t6 : ffffffffffffffff
-> [   11.629699] status: 0000000000004020 badaddr: 0000000000000000 cause: 000000000000000d
-> [   11.633421] Kernel panic - not syncing: Attempted to kill init! exitcode=0x0000000b
-> [   11.633664] CPU: 0 PID: 1 Comm: init Not tainted 5.18.0-rc7-next-20220520 #1
-> [   11.633784] Hardware name: riscv-virtio,qemu (DT)
-> [   11.633881] Call Trace:
-> [   11.633960] [<ffffffff80005e72>] dump_backtrace+0x1c/0x24
-> [   11.634162] [<ffffffff809aa9ec>] show_stack+0x2c/0x38
-> [   11.634274] [<ffffffff809b8482>] dump_stack_lvl+0x60/0x8e
-> [   11.634386] [<ffffffff809b84c4>] dump_stack+0x14/0x1c
-> [   11.634491] [<ffffffff809aaca0>] panic+0x116/0x2e2
-> [   11.634596] [<ffffffff80015540>] do_exit+0x7ce/0x7d4
-> [   11.634707] [<ffffffff80015666>] do_group_exit+0x24/0x7c
-> [   11.634817] [<ffffffff80022294>] get_signal+0x7ee/0x830
-> [   11.634924] [<ffffffff800051c0>] do_notify_resume+0x6c/0x41c
-> [   11.635037] [<ffffffff80003ad4>] ret_from_exception+0x0/0x10
->
-> Guenter
->
-> ---
-> # bad: [18ecd30af1a8402c162cca1bd58771c0e5be7815] Add linux-next specific files for 20220520
-> # good: [42226c989789d8da4af1de0c31070c96726d990c] Linux 5.18-rc7
-> git bisect start 'HEAD' 'v5.18-rc7'
-> # bad: [f9b63740b666dd9887eb0282d21b5f65bb0cadd0] Merge branch 'master' of git://git.kernel.org/pub/scm/linux/kernel/git/herbert/cryptodev-2.6.git
-> git bisect bad f9b63740b666dd9887eb0282d21b5f65bb0cadd0
-> # bad: [7db97132097c5973ff77466d0ee681650af653de] Merge branch 'for-next' of git://git.kernel.org/pub/scm/linux/kernel/git/cel/linux
-> git bisect bad 7db97132097c5973ff77466d0ee681650af653de
-> # good: [2b7d17d4b7c1ff40f58b0d32be40fc0bb6c582fb] soc: document merges
-> git bisect good 2b7d17d4b7c1ff40f58b0d32be40fc0bb6c582fb
-> # good: [69c9668f853fdd409bb8abbb37d615785510b29a] Merge branch 'clk-next' of git://git.kernel.org/pub/scm/linux/kernel/git/clk/linux.git
-> git bisect good 69c9668f853fdd409bb8abbb37d615785510b29a
-> # bad: [1577f290aa0d4c5b29c03c46ef52e4952a21bfbb] Merge branch 'for-next' of git://git.kernel.org/pub/scm/linux/kernel/git/s390/linux.git
-> git bisect bad 1577f290aa0d4c5b29c03c46ef52e4952a21bfbb
-> # good: [34f0971f8ca73d7e5502b4cf299788a9402120f7] powerpc/powernv/flash: Check OPAL flash calls exist before using
-> git bisect good 34f0971f8ca73d7e5502b4cf299788a9402120f7
-> # good: [0349d7dfc70a26b3facd8ca97de34980d4b60954] Merge branch 'mips-next' of git://git.kernel.org/pub/scm/linux/kernel/git/mips/linux.git
-> git bisect good 0349d7dfc70a26b3facd8ca97de34980d4b60954
-> # bad: [20bfb54d3b121699674c17a854c5ebc7a8f97d81] Merge branch 'for-next' of git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git
-> git bisect bad 20bfb54d3b121699674c17a854c5ebc7a8f97d81
-> # bad: [9be8459298eadb39b9fe9974b890239e9c123107] riscv: compat: Add COMPAT Kbuild skeletal support
-> git bisect bad 9be8459298eadb39b9fe9974b890239e9c123107
-> # good: [01abdfeac81b5f56062d0a78f2cdc805db937a75] riscv: compat: Support TASK_SIZE for compat mode
-> git bisect good 01abdfeac81b5f56062d0a78f2cdc805db937a75
-> # good: [f4b395e6f1a588ed6c9a30474e58cf6b27b65783] riscv: compat: Add hw capability check for elf
-> git bisect good f4b395e6f1a588ed6c9a30474e58cf6b27b65783
-> # good: [3092eb45637573c5e435fbf5eaf9516316e5f9c6] riscv: compat: vdso: Add setup additional pages implementation
-> git bisect good 3092eb45637573c5e435fbf5eaf9516316e5f9c6
-> # good: [4608c159594fb40a5101357d4f614fdde9ce1fdb] riscv: compat: ptrace: Add compat_arch_ptrace implement
-> git bisect good 4608c159594fb40a5101357d4f614fdde9ce1fdb
-> # first bad commit: [9be8459298eadb39b9fe9974b890239e9c123107] riscv: compat: Add COMPAT Kbuild skeletal support
+> > +	}
+> > +
+> > +	ret = iommu_attach_device_pasid(dom, dev, id);
+> > +	if (!ret) {
+> > +		*pasid = id;
+> > +		atomic_inc(&dom->dma_pasid_users);
+> > +		goto done_unlock;
+> > +	}
+> > +
+> > +	if (atomic_dec_and_test(&dom->dma_pasid_users)) {
+> > +		ioasid_free(id);
+> > +		dom->dma_pasid = 0;
+> > +	}
+> > +done_unlock:
+> > +	mutex_unlock(&dma_pasid_lock);
+> > +	return ret;
+> > +}
+> > +EXPORT_SYMBOL(iommu_attach_dma_pasid);
+> > +
+> > +/**
+> > + * iommu_detach_dma_pasid --Disable in-kernel DMA request with PASID
+> > + * @dev:	Device's PASID DMA to be disabled
+> > + *
+> > + * It is the device driver's responsibility to ensure no more incoming
+> > DMA
+> > + * requests with the kernel PASID before calling this function. IOMMU
+> > driver
+> > + * ensures PASID cache, IOTLBs related to the kernel PASID are cleared
+> > and
+> > + * drained.
+> > + *
+> > + */
+> > +void iommu_detach_dma_pasid(struct device *dev)
+> > +{
+> > +	struct iommu_domain *dom;
+> > +	ioasid_t pasid;
+> > +
+> > +	dom = iommu_get_domain_for_dev(dev);
+> > +	if (WARN_ON(!dom || !dom->ops || !dom->ops->detach_dev_pasid))
+> > +		return;
+> > +
+> > +	/* Only support DMA API managed domain type */
+> > +	if (WARN_ON(dom->type == IOMMU_DOMAIN_UNMANAGED ||
+> > +		    dom->type == IOMMU_DOMAIN_BLOCKED))
+> > +		return;
+> > +
+> > +	mutex_lock(&dma_pasid_lock);
+> > +	pasid = iommu_get_pasid_from_domain(dev, dom);
+> > +	if (!pasid || pasid == INVALID_IOASID) {
+> > +		dev_err(dev, "No valid DMA PASID attached\n");
+> > +		mutex_unlock(&dma_pasid_lock);
+> > +		return;
+> > +	}  
+> 
+> here just use dom->dma_pasid and let iommu driver to figure out
+> underlying whether this device has been attached to the domain
+> with the said pasid.
+> 
+Yeah, I am checking the pasid matching in the iommu driver. My thinking is
+that here is a quick sanity check in the common code to rule out invalid value.
 
 
+Thanks a lot!
 
--- 
-Best Regards
- Guo Ren
 
-ML: https://lore.kernel.org/linux-csky/
+Jacob
