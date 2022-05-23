@@ -2,91 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D345C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 13:20:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E5D1C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 13:20:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236063AbiEWNUQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 09:20:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33544 "EHLO
+        id S236069AbiEWNUd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 09:20:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236015AbiEWNUL (ORCPT
+        with ESMTP id S236015AbiEWNU3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 09:20:11 -0400
-Received: from sender4-pp-o94.zoho.com (sender4-pp-o94.zoho.com [136.143.188.94])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C6A826AC0;
-        Mon, 23 May 2022 06:20:10 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1653311945; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=JeCbVuXy0u8G8Pa3wAqvVFfnYGYKmoKKpIYio+ur6pJKsyuautEUAyn5E+tUD26JMO6oA9NCIUDSYVT3R9zPeiJ47BqKVusvcNj+VI83EfsnVVZTZrPc+HbpRHLMJVsMbvQM4lxsNh1hOeGE6bzYzqFd4l0bFaUTkJYqTqg2/lo=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1653311945; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=Y5xsWt3tLYwb1E1F4wk9G1AMYoLyASq9njoU/+tcTAM=; 
-        b=WXo4rCLC6/rtHvKTwVGIbM0rq1hZjkVg3NTmZZuNTmvxuNH0HXjuxRvoDT2FEpiVVB8p6tGnJWxANZlfAfdKHo2JICo59Wk5pRtFStzz1IBzrAhDxI4XXPB2daJhWwDF7pf/LzEe7fCWPGQjpwf96PS1EQI2ShMlHF1lbBT3DbE=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=zohomail.com;
-        spf=pass  smtp.mailfrom=lchen.firstlove@zohomail.com;
-        dmarc=pass header.from=<lchen.firstlove@zohomail.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1653311945;
-        s=zm2022; d=zohomail.com; i=lchen.firstlove@zohomail.com;
-        h=Date:Date:From:From:To:To:Cc:Cc:Message-ID:In-Reply-To:References:Subject:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:Feedback-ID:Message-Id:Reply-To;
-        bh=Y5xsWt3tLYwb1E1F4wk9G1AMYoLyASq9njoU/+tcTAM=;
-        b=U/k6SNF3Q7Vq7SjwZZ4OEOqHHchD7guEe4cZQoUmMm1Yn+etLMUIPAZnUzogn7fr
-        95L1VNRfEWiVmaWD0ULUQE5WnzjZEaVYjmhzF1Uo91E8n+Q8ZeDt37YXJRf8esl/FI+
-        c4bll+NrlR3jD59giQjB7lditQ4hFt8U08AzdOs8=
-Received: from mail.zoho.com by mx.zohomail.com
-        with SMTP id 1653311941409685.4155842465059; Mon, 23 May 2022 06:19:01 -0700 (PDT)
-Received: from  [178.128.49.8] by mail.zoho.com
-        with HTTP;Mon, 23 May 2022 06:19:01 -0700 (PDT)
-Date:   Mon, 23 May 2022 06:19:01 -0700
-From:   Li Chen <lchen.firstlove@zohomail.com>
-To:     "Mark Brown" <broonie@kernel.org>
-Cc:     "linux-kernel" <linux-kernel@vger.kernel.org>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        "linux-gpio" <linux-gpio@vger.kernel.org>,
-        "Linus Walleij" <linus.walleij@linaro.org>,
-        "linux-arm-kernel" <linux-arm-kernel@lists.infradead.org>,
-        "Patrice Chotard" <patrice.chotard@foss.st.com>,
-        "linux-sunxi" <linux-sunxi@lists.linux.dev>,
-        "Liam Girdwood" <lgirdwood@gmail.com>,
-        "Jaroslav Kysela" <perex@perex.cz>,
-        "Takashi Iwai" <tiwai@suse.com>, "Chen-Yu Tsai" <wens@csie.org>,
-        "Jernej Skrabec" <jernej.skrabec@gmail.com>,
-        "Samuel Holland" <samuel@sholland.org>,
-        "Philipp Zabel" <p.zabel@pengutronix.de>
-Message-ID: <180f1122b08.e6446e1066781.7509618678223081484@zohomail.com>
-In-Reply-To: <YotygqDAkAXRRo9d@sirena.org.uk>
-References: <180e702a15f.e737e37e45859.3135149506136486394@zohomail.com>
- <180eeb93909.12110e2de60158.391061173597432851@zohomail.com> <YotygqDAkAXRRo9d@sirena.org.uk>
-Subject: Re: [PATCH v2 0/4] Add regmap_field helpers for simple bit
- operations
+        Mon, 23 May 2022 09:20:29 -0400
+Received: from mail-yw1-x1134.google.com (mail-yw1-x1134.google.com [IPv6:2607:f8b0:4864:20::1134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73FF12CE3B
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 06:20:27 -0700 (PDT)
+Received: by mail-yw1-x1134.google.com with SMTP id 00721157ae682-2fee9fe48c2so147901407b3.3
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 06:20:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=IEQmaNNUUGULv1/BZVbeKyFXlK9ef3Jq4e2jfX8ne/8=;
+        b=ITSEKXkNy+WkGjl07bzn1gW5tL8hFVuZo8CtHyHMxj15PrnXlzwJblUdMJq6Kw2A7I
+         dWxzl45wH+L3Yc+lAztbclYUd1sx65t9cGSABKZ224wmI+GWKh1WBmD2h23j+jr9lwNW
+         FreG9cvmggglYolcLKnAUHGgdx1VRBaoHb6g9WHO+X4ql5N7l380/Zt5bwHK4T/mhGNT
+         i4WXXUQlxOMDSanxAjHHeBJxssoK3aCEYx0BniRLdps+Xbi1h/3KjXUEBjBCfuRIJx3H
+         MwPbhYulG2vMVrmUKPD/U/uXHK/B00Aau3v6V6FkteTXR4pT94cVc1dvUqFYUC7YqN7j
+         yIIA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=IEQmaNNUUGULv1/BZVbeKyFXlK9ef3Jq4e2jfX8ne/8=;
+        b=NM4EJMzGc5zpeqJyq7qeandQIe3X/bh/cNlD/me7Wsvkc1jBo73Kpp9Uh28zHOKri8
+         WQzuoHzjZtdk/McAGgKhw916PrP1I6zjFhTx13pD46T/JA83GgNabyCaINbRmv/wGaAW
+         UCjKmP+Kl/ayI5KhH8aSpR3nU2//yRiUmptqMDdwZUEYKjACJn/J0TPkyXANU61JhWDx
+         cwTs1caBi/jv9v/14RGvUE+Or0YMQBwzIDTrSI/CNhho88rw6Nlkq0lpaw6ZyELV4akR
+         ypN4w/aPiLJ0G6zVfwAsK9n0o7GsD7xGnrSVKnNmB+CYB3u4UqX9IHCV9ygquyXMlDpy
+         fDGw==
+X-Gm-Message-State: AOAM531Y+bRs5BeYZ+b7a4rjGBPVRS6OWGPBflbWrzPDCt5sYhd5BpEw
+        TGTRqKM1xWv08jWOtp7uGCoGcBLV1phZZjdE2L4=
+X-Google-Smtp-Source: ABdhPJxzgVyBKiSG8eHjW62fuIdgWjXdW4+EOTHt2zpp1s5dpUfHDL0SFozE6xgD8N5bHMsrNr14bsQIN1FOmM0XWG0=
+X-Received: by 2002:a81:d4a:0:b0:2ff:1edb:7492 with SMTP id
+ 71-20020a810d4a000000b002ff1edb7492mr22660737ywn.58.1653312026778; Mon, 23
+ May 2022 06:20:26 -0700 (PDT)
 MIME-Version: 1.0
+References: <20220523130144.444225-1-net147@gmail.com> <868d010c-9fca-3fac-7657-faaa2f271c14@denx.de>
+In-Reply-To: <868d010c-9fca-3fac-7657-faaa2f271c14@denx.de>
+From:   Jonathan Liu <net147@gmail.com>
+Date:   Mon, 23 May 2022 23:20:15 +1000
+Message-ID: <CANwerB30qwH4pe1wMqAvRgi6gAntZX=AqAh67dEvg4+D1jcnfQ@mail.gmail.com>
+Subject: Re: [PATCH v2] drm: bridge: icn6211: Adjust clock phase using SYS_CTRL_1
+To:     Marek Vasut <marex@denx.de>
+Cc:     dri-devel <dri-devel@lists.freedesktop.org>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Jagan Teki <jagan@amarulasolutions.com>,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        linux-kernel <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Importance: Medium
-User-Agent: Zoho Mail
-X-Mailer: Zoho Mail
-Feedback-ID: rr08011226609f90866ffc175af022d0ab0000919cb4bbb101339a78166a92ad03d5e2e779eeecb8924159:zu08011227b3e435ea850177f73ae9ee41000050bfadb467b41bb49e225f013460c1833a5ef6e83a7c1fb2bc:rf0801122c01457621e0db0818ca91fc5c00006b539b79163fdcdee7cbcfdfd0e8cc2261fadfed13e4da4e20361c09864b:ZohoMail
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Mark
+Hi Marek,
 
- ---- On Mon, 23 May 2022 04:39:46 -0700 Mark Brown <broonie@kernel.org> wrote ----
- > On Sun, May 22, 2022 at 07:22:37PM -0700, Li Chen wrote:
- > > From: Li Chen <lchen@ambarella.com>
- > > 
- > > This series proposes to add simple bit operations for setting, clearing
- > > and testing specific bits with regmap_field.
- > 
- > Please don't send new patches in reply to old patches or serieses, this
- > makes it harder for both people and tools to understand what is going
- > on - it can bury things in mailboxes and make it difficult to keep track
- > of what current patches are, both for the new patches and the old ones.
- > 
+On Mon, 23 May 2022 at 23:15, Marek Vasut <marex@denx.de> wrote:
+>
+> On 5/23/22 15:01, Jonathan Liu wrote:
+> > The code from [1] sets SYS_CTRL_1 to different values depending on the
+> > desired clock phase (0, 1/4, 1/2 or 3/4). A clock phase of 0 aligns the
+> > positive edge of the clock with the pixel data while other values delay
+> > the clock by a fraction of the clock period. A clock phase of 1/2 aligns
+> > the negative edge of the clock with the pixel data.
+> >
+> > The driver currently hard codes SYS_CTRL_1 to 0x88 which corresponds to
+> > aligning the positive edge of the clock with the pixel data. This won't
+> > work correctly for panels that require aligning the negative edge of the
+> > clock with the pixel data.
+> >
+> > Adjust the clock phase to 0 if DRM_BUS_FLAG_PIXDATA_DRIVE_POSEDGE is
+> > present in bus_flags, otherwise adjust the clock phase to 1/2 as
+> > appropriate for DRM_BUS_FLAG_PIXDATA_DRIVE_NEGEDGE.
+> >
+> > [1] https://github.com/tdjastrzebski/ICN6211-Configurator
+> >
+> > Signed-off-by: Jonathan Liu <net147@gmail.com>
+> > ---
+> > V2: Use GENMASK and FIELD_PREP macros
+> > ---
+> >   drivers/gpu/drm/bridge/chipone-icn6211.c | 18 ++++++++++++++++--
+> >   1 file changed, 16 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/drivers/gpu/drm/bridge/chipone-icn6211.c b/drivers/gpu/drm/bridge/chipone-icn6211.c
+> > index 47dea657a752..f1538fb5f8a9 100644
+> > --- a/drivers/gpu/drm/bridge/chipone-icn6211.c
+> > +++ b/drivers/gpu/drm/bridge/chipone-icn6211.c
+> > @@ -9,6 +9,8 @@
+> >   #include <drm/drm_print.h>
+> >   #include <drm/drm_mipi_dsi.h>
+> >
+> > +#include <linux/bitfield.h>
+> > +#include <linux/bits.h>
+> >   #include <linux/delay.h>
+> >   #include <linux/gpio/consumer.h>
+> >   #include <linux/i2c.h>
+> > @@ -26,6 +28,11 @@
+> >   #define PD_CTRL(n)          (0x0a + ((n) & 0x3)) /* 0..3 */
+> >   #define RST_CTRL(n)         (0x0e + ((n) & 0x1)) /* 0..1 */
+> >   #define SYS_CTRL(n)         (0x10 + ((n) & 0x7)) /* 0..4 */
+> > +#define SYS_CTRL_1_CLK_PHASE_MSK     GENMASK(5, 4)
+>
+> This should be GENMASK(7, 6) , no ?
 
-Thanks for letting me know, I won't do this again.
+Clock phase 0 = 0b_1000_1000 = 0x88
+Clock phase 1/4 = 0b_1001_1000 = 0x98
+Clock phase 1/2 = 0b_1010_1000 = 0xA8
+Clock phase 3/4 = 0b_1011_1000 = 0xB8
+
+The clock phase bits are 5:4 not 7:6. The upper 2 bits and lower 4
+bits are unknown.
 
 Regards,
-Li
+Jonathan
