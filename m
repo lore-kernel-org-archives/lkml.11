@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91624C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:54:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4280CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:54:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241370AbiEWRy2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:54:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43006 "EHLO
+        id S242312AbiEWRyi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:54:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241376AbiEWR0o (ORCPT
+        with ESMTP id S241423AbiEWRap (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:26:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6D7B71A3C;
-        Mon, 23 May 2022 10:21:45 -0700 (PDT)
+        Mon, 23 May 2022 13:30:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A46AC6007A;
+        Mon, 23 May 2022 10:26:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E5546B811CE;
-        Mon, 23 May 2022 17:13:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3EB3FC385A9;
-        Mon, 23 May 2022 17:13:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 44B86611CB;
+        Mon, 23 May 2022 17:26:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4891EC385A9;
+        Mon, 23 May 2022 17:26:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326027;
-        bh=/GDkSZHAzbamarORSCxgSsnl12Nd3mgbPNSPPbVHg7c=;
+        s=korg; t=1653326764;
+        bh=RTDzHiDei7ULDBzcavq5W0If3VTGoCPC3qmIElAhzlc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Fes8fK5LbUrLEr7aim30OdLeOsGhYW5LFPCoJaLi8dHZsMF5lexDKgMV36fArRzXx
-         Hy/mqBFj+pSmEUXtsz69yu67iDE6zFPilRpC6mtxoaOLXDp6328QlVi+CNJUFZ8Fg9
-         ik8mR7HRsOCQp1PDmmkmyqwovp/27aIMQH8BEE3g=
+        b=AkNhqteeaR1KBnXBWYPOey8DfU4LK7bPWJxSecSnhPjrROZzpxfi2ArCxqFPXGDFt
+         5kVPfimcfwvVY6fGQWavEbLUYqYc1pK3asXYkquxXAtg7ay5bGf3ljq9cgUCEHbfCU
+         /tIQSC2OI7GkKdSNqriYhIVebIKEcWrCN0QUf4oQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxim Mikityanskiy <maximmi@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 44/68] net/mlx5e: Properly block LRO when XDP is enabled
-Date:   Mon, 23 May 2022 19:05:11 +0200
-Message-Id: <20220523165809.884987901@linuxfoundation.org>
+        stable@vger.kernel.org, Julian Orth <ju.orth@gmail.com>,
+        Paul Moore <paul@paul-moore.com>
+Subject: [PATCH 5.17 051/158] audit,io_uring,io-wq: call __audit_uring_exit for dummy contexts
+Date:   Mon, 23 May 2022 19:03:28 +0200
+Message-Id: <20220523165839.183895296@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165802.500642349@linuxfoundation.org>
-References: <20220523165802.500642349@linuxfoundation.org>
+In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
+References: <20220523165830.581652127@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,47 +48,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxim Mikityanskiy <maximmi@nvidia.com>
+From: Julian Orth <ju.orth@gmail.com>
 
-[ Upstream commit cf6e34c8c22fba66bd21244b95ea47e235f68974 ]
+commit 69e9cd66ae1392437234a63a3a1d60b6655f92ef upstream.
 
-LRO is incompatible and mutually exclusive with XDP. However, the needed
-checks are only made when enabling XDP. If LRO is enabled when XDP is
-already active, the command will succeed, and XDP will be skipped in the
-data path, although still enabled.
+Not calling the function for dummy contexts will cause the context to
+not be reset. During the next syscall, this will cause an error in
+__audit_syscall_entry:
 
-This commit fixes the bug by checking the XDP status in
-mlx5e_fix_features and disabling LRO if XDP is enabled.
+	WARN_ON(context->context != AUDIT_CTX_UNUSED);
+	WARN_ON(context->name_count);
+	if (context->context != AUDIT_CTX_UNUSED || context->name_count) {
+		audit_panic("unrecoverable error in audit_syscall_entry()");
+		return;
+	}
 
-Fixes: 86994156c736 ("net/mlx5e: XDP fast RX drop bpf programs support")
-Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+These problematic dummy contexts are created via the following call
+chain:
+
+       exit_to_user_mode_prepare
+    -> arch_do_signal_or_restart
+    -> get_signal
+    -> task_work_run
+    -> tctx_task_work
+    -> io_req_task_submit
+    -> io_issue_sqe
+    -> audit_uring_entry
+
+Cc: stable@vger.kernel.org
+Fixes: 5bd2182d58e9 ("audit,io_uring,io-wq: add some basic audit support to io_uring")
+Signed-off-by: Julian Orth <ju.orth@gmail.com>
+[PM: subject line tweaks]
+Signed-off-by: Paul Moore <paul@paul-moore.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ include/linux/audit.h |    2 +-
+ kernel/auditsc.c      |    6 ++++++
+ 2 files changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index 2465165cbea7..73291051808f 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -3980,6 +3980,13 @@ static netdev_features_t mlx5e_fix_features(struct net_device *netdev,
- 		}
- 	}
+--- a/include/linux/audit.h
++++ b/include/linux/audit.h
+@@ -339,7 +339,7 @@ static inline void audit_uring_entry(u8
+ }
+ static inline void audit_uring_exit(int success, long code)
+ {
+-	if (unlikely(!audit_dummy_context()))
++	if (unlikely(audit_context()))
+ 		__audit_uring_exit(success, code);
+ }
+ static inline void audit_syscall_entry(int major, unsigned long a0,
+--- a/kernel/auditsc.c
++++ b/kernel/auditsc.c
+@@ -1959,6 +1959,12 @@ void __audit_uring_exit(int success, lon
+ {
+ 	struct audit_context *ctx = audit_context();
  
-+	if (params->xdp_prog) {
-+		if (features & NETIF_F_LRO) {
-+			netdev_warn(netdev, "LRO is incompatible with XDP\n");
-+			features &= ~NETIF_F_LRO;
-+		}
++	if (ctx->dummy) {
++		if (ctx->context != AUDIT_CTX_URING)
++			return;
++		goto out;
 +	}
 +
- 	if (MLX5E_GET_PFLAG(params, MLX5E_PFLAG_RX_CQE_COMPRESS)) {
- 		features &= ~NETIF_F_RXHASH;
- 		if (netdev->features & NETIF_F_RXHASH)
--- 
-2.35.1
-
+ 	if (ctx->context == AUDIT_CTX_SYSCALL) {
+ 		/*
+ 		 * NOTE: See the note in __audit_uring_entry() about the case
 
 
