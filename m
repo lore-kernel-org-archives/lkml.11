@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F5D1C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85F5CC433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:53:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243445AbiEWRvg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:51:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38120 "EHLO
+        id S244367AbiEWRwC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:52:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240874AbiEWR3L (ORCPT
+        with ESMTP id S241422AbiEWR0q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:29:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 216531E3EF;
-        Mon, 23 May 2022 10:26:26 -0700 (PDT)
+        Mon, 23 May 2022 13:26:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BD5F737BA;
+        Mon, 23 May 2022 10:21:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5A526B81216;
-        Mon, 23 May 2022 17:14:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B47D4C385AA;
-        Mon, 23 May 2022 17:14:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0FB3461175;
+        Mon, 23 May 2022 17:20:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AE1FC385A9;
+        Mon, 23 May 2022 17:20:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326060;
-        bh=jydNrHBro0hUXzM5ccI1XyLjAw4x1Am2+1BWEGm+Jds=;
+        s=korg; t=1653326419;
+        bh=PStYNHifrHb/iPNvuKCDmvAMKGKOKHMZKdb3MQjoiAk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G9xm/fktKhkj3qagwEY74WnZjYHsnuiko4XPU5A9jN4304ejU/fs3FefBbnX6KboI
-         KiyFs4ytVtsz3MgobISuoZec0JHiLi8AgfQMg7/XwLFwQTz8/fcLmpcHIuSqSPGcdw
-         7pzEMnvgT3b25v8CQEZXQob48nF/+MInrElGHpLY=
+        b=DF/GsC+sPClTQnaB+yqUckTlJpQfEesUMflToZyp1pHi+kip1yfa8ahUMpwtPwKZg
+         P3pRQJC8wJWZtsvuPl4+YIkFSg1tBZG1M7DgGjKxYfeWmUbSr7yZUqy1L+oLsNjxa5
+         fivWye/OVCJ6vCvxWEgfcH8OPmWEoe2ALCdtNph0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Norbert Slusarek <nslusarek@gmx.net>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.4 27/68] perf: Fix sys_perf_event_open() race against self
-Date:   Mon, 23 May 2022 19:04:54 +0200
-Message-Id: <20220523165807.096871574@linuxfoundation.org>
+        stable@vger.kernel.org, David Matlack <dmatlack@google.com>,
+        Ben Gardon <bgardon@google.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.15 052/132] KVM: x86/mmu: Update number of zapped pages even if page list is stable
+Date:   Mon, 23 May 2022 19:04:21 +0200
+Message-Id: <20220523165831.865928845@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165802.500642349@linuxfoundation.org>
-References: <20220523165802.500642349@linuxfoundation.org>
+In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
+References: <20220523165823.492309987@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,71 +50,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Sean Christopherson <seanjc@google.com>
 
-commit 3ac6487e584a1eb54071dbe1212e05b884136704 upstream.
+commit b28cb0cd2c5e80a8c0feb408a0e4b0dbb6d132c5 upstream.
 
-Norbert reported that it's possible to race sys_perf_event_open() such
-that the looser ends up in another context from the group leader,
-triggering many WARNs.
+When zapping obsolete pages, update the running count of zapped pages
+regardless of whether or not the list has become unstable due to zapping
+a shadow page with its own child shadow pages.  If the VM is backed by
+mostly 4kb pages, KVM can zap an absurd number of SPTEs without bumping
+the batch count and thus without yielding.  In the worst case scenario,
+this can cause a soft lokcup.
 
-The move_group case checks for races against itself, but the
-!move_group case doesn't, seemingly relying on the previous
-group_leader->ctx == ctx check. However, that check is racy due to not
-holding any locks at that time.
+ watchdog: BUG: soft lockup - CPU#12 stuck for 22s! [dirty_log_perf_:13020]
+   RIP: 0010:workingset_activation+0x19/0x130
+   mark_page_accessed+0x266/0x2e0
+   kvm_set_pfn_accessed+0x31/0x40
+   mmu_spte_clear_track_bits+0x136/0x1c0
+   drop_spte+0x1a/0xc0
+   mmu_page_zap_pte+0xef/0x120
+   __kvm_mmu_prepare_zap_page+0x205/0x5e0
+   kvm_mmu_zap_all_fast+0xd7/0x190
+   kvm_mmu_invalidate_zap_pages_in_memslot+0xe/0x10
+   kvm_page_track_flush_slot+0x5c/0x80
+   kvm_arch_flush_shadow_memslot+0xe/0x10
+   kvm_set_memslot+0x1a8/0x5d0
+   __kvm_set_memory_region+0x337/0x590
+   kvm_vm_ioctl+0xb08/0x1040
 
-Therefore, re-check the result after acquiring locks and bailing
-if they no longer match.
-
-Additionally, clarify the not_move_group case from the
-move_group-vs-move_group race.
-
-Fixes: f63a8daa5812 ("perf: Fix event->ctx locking")
-Reported-by: Norbert Slusarek <nslusarek@gmx.net>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: fbb158cb88b6 ("KVM: x86/mmu: Revert "Revert "KVM: MMU: zap pages in batch""")
+Reported-by: David Matlack <dmatlack@google.com>
+Reviewed-by: Ben Gardon <bgardon@google.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20220511145122.3133334-1-seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/events/core.c |   14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ arch/x86/kvm/mmu/mmu.c |   10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
---- a/kernel/events/core.c
-+++ b/kernel/events/core.c
-@@ -11114,6 +11114,9 @@ SYSCALL_DEFINE5(perf_event_open,
- 		 * Do not allow to attach to a group in a different task
- 		 * or CPU context. If we're moving SW events, we'll fix
- 		 * this up later, so allow that.
-+		 *
-+		 * Racy, not holding group_leader->ctx->mutex, see comment with
-+		 * perf_event_ctx_lock().
- 		 */
- 		if (!move_group && group_leader->ctx != ctx)
- 			goto err_context;
-@@ -11181,6 +11184,7 @@ SYSCALL_DEFINE5(perf_event_open,
- 			} else {
- 				perf_event_ctx_unlock(group_leader, gctx);
- 				move_group = 0;
-+				goto not_move_group;
- 			}
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -5590,6 +5590,7 @@ static void kvm_zap_obsolete_pages(struc
+ {
+ 	struct kvm_mmu_page *sp, *node;
+ 	int nr_zapped, batch = 0;
++	bool unstable;
+ 
+ restart:
+ 	list_for_each_entry_safe_reverse(sp, node,
+@@ -5621,11 +5622,12 @@ restart:
+ 			goto restart;
  		}
  
-@@ -11197,7 +11201,17 @@ SYSCALL_DEFINE5(perf_event_open,
- 		}
- 	} else {
- 		mutex_lock(&ctx->mutex);
+-		if (__kvm_mmu_prepare_zap_page(kvm, sp,
+-				&kvm->arch.zapped_obsolete_pages, &nr_zapped)) {
+-			batch += nr_zapped;
++		unstable = __kvm_mmu_prepare_zap_page(kvm, sp,
++				&kvm->arch.zapped_obsolete_pages, &nr_zapped);
++		batch += nr_zapped;
 +
-+		/*
-+		 * Now that we hold ctx->lock, (re)validate group_leader->ctx == ctx,
-+		 * see the group_leader && !move_group test earlier.
-+		 */
-+		if (group_leader && group_leader->ctx != ctx) {
-+			err = -EINVAL;
-+			goto err_locked;
-+		}
++		if (unstable)
+ 			goto restart;
+-		}
  	}
-+not_move_group:
  
- 	if (ctx->task == TASK_TOMBSTONE) {
- 		err = -ESRCH;
+ 	/*
 
 
