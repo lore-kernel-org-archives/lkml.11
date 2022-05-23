@@ -2,94 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D994C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 14:03:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45907C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 14:03:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236823AbiEWODF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 10:03:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40668 "EHLO
+        id S236846AbiEWODd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 10:03:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236813AbiEWODC (ORCPT
+        with ESMTP id S236813AbiEWOD0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 10:03:02 -0400
-Received: from heian.cn.fujitsu.com (mail.cn.fujitsu.com [183.91.158.132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D315E2A705;
-        Mon, 23 May 2022 07:03:00 -0700 (PDT)
-IronPort-Data: =?us-ascii?q?A9a23=3AQOWf2qJUhBm7WJCwFE+RIZclxSXFcZb7ZxGrkP8?=
- =?us-ascii?q?bfHCw3Dor0DYEm2ofCm3XaPrZYzChethzOoS+/ExU7ZLXzINqS1BcGVNFFSwT8?=
- =?us-ascii?q?ZWfbTi6wuYcBwvLd4ubChsPA/w2MrEsF+hpCC+MzvuRGuK59yMkj/nRHuOU5NP?=
- =?us-ascii?q?sYUideyc1EU/Ntjozw4bVsqYw6TSIK1vlVeHa+qUzC3f5s9JACV/43orYwP9ZU?=
- =?us-ascii?q?FsejxtD1rA2TagjUFYzDBD5BrpHTU26ByOQroW5goeHq+j/ILGRpgs1/j8mDJW?=
- =?us-ascii?q?rj7T6blYXBLXVOGBiiFIPA+773EcE/Xd0j87XN9JFAatTozGIjdBwytREs7S+V?=
- =?us-ascii?q?AUoIrbR3u8aVnG0FgknZ/EapOGdcCbXXcu7iheun2HX6+92AUgsJooe+v56KW5?=
- =?us-ascii?q?L/P0cbjsKa3irlfO00qO5ELE03uwsKcDqOMUUvXQI5TPWAt4gX5HPQqyM7thdt?=
- =?us-ascii?q?B80h8ZTDbPdatAfZD5HchvNeVtMN00RBZZ4m/2n7lH7cjtFuBePqa8+y3bcwRY?=
- =?us-ascii?q?307X3NtfRPNuQSq1ocuywzo7d1z2hREhEa5rEknzYmk9AT9TnxUvTML/+3pXhn?=
- =?us-ascii?q?hKyvGCu+w=3D=3D?=
-IronPort-HdrOrdr: =?us-ascii?q?A9a23=3AwWEBaKDK0HjbsdTlHemQ55DYdb4zR+YMi2TD?=
- =?us-ascii?q?tnoBLSC9F/b0qynAppomPGDP4gr5NEtApTniAtjkfZq/z+8X3WB5B97LMzUO01?=
- =?us-ascii?q?HYTr2Kg7GD/xTQXwX69sN4kZxrarVCDrTLZmRSvILX5xaZHr8brOW6zA=3D=3D?=
-X-IronPort-AV: E=Sophos;i="5.88,333,1635177600"; 
-   d="scan'208";a="124446296"
-Received: from unknown (HELO cn.fujitsu.com) ([10.167.33.5])
-  by heian.cn.fujitsu.com with ESMTP; 23 May 2022 22:02:59 +0800
-Received: from G08CNEXMBPEKD04.g08.fujitsu.local (unknown [10.167.33.201])
-        by cn.fujitsu.com (Postfix) with ESMTP id 93DE04D68A22;
-        Mon, 23 May 2022 22:02:56 +0800 (CST)
-Received: from G08CNEXCHPEKD08.g08.fujitsu.local (10.167.33.83) by
- G08CNEXMBPEKD04.g08.fujitsu.local (10.167.33.201) with Microsoft SMTP Server
- (TLS) id 15.0.1497.23; Mon, 23 May 2022 22:02:58 +0800
-Received: from [192.168.122.212] (10.167.226.45) by
- G08CNEXCHPEKD08.g08.fujitsu.local (10.167.33.209) with Microsoft SMTP Server
- id 15.0.1497.23 via Frontend Transport; Mon, 23 May 2022 22:02:57 +0800
-Subject: Re: [PATCH] RDMA/rxe: Use kzalloc() to alloc map_set
-To:     Jason Gunthorpe <jgg@nvidia.com>
-CC:     Zhu Yanjun <zyjzyj2000@gmail.com>, <linux-rdma@vger.kernel.org>,
-        Bob Pearson <rpearsonhpe@gmail.com>,
-        <linux-kernel@vger.kernel.org>
-References: <20220518043725.771549-1-lizhijian@fujitsu.com>
- <20220520144511.GA2302907@nvidia.com>
-From:   "Li, Zhijian" <lizhijian@fujitsu.com>
-Message-ID: <d956bac8-36a6-0148-6f9c-fa43c8c272a7@fujitsu.com>
-Date:   Mon, 23 May 2022 22:02:56 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        Mon, 23 May 2022 10:03:26 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 250C72FFD0;
+        Mon, 23 May 2022 07:03:25 -0700 (PDT)
+Received: from dggpeml500020.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L6Jr8140fzQkCj;
+        Mon, 23 May 2022 22:00:24 +0800 (CST)
+Received: from huawei.com (10.175.127.227) by dggpeml500020.china.huawei.com
+ (7.185.36.88) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 23 May
+ 2022 22:03:22 +0800
+From:   Baokun Li <libaokun1@huawei.com>
+To:     <linux-ext4@vger.kernel.org>
+CC:     <tytso@mit.edu>, <adilger.kernel@dilger.ca>, <jack@suse.cz>,
+        <ritesh.list@gmail.com>, <lczerner@redhat.com>,
+        <linux-kernel@vger.kernel.org>, <yi.zhang@huawei.com>,
+        <yebin10@huawei.com>, <yukuai3@huawei.com>, <libaokun1@huawei.com>
+Subject: [PATCH v2 0/2] ext4: fix two bugs in ext4_mb_normalize_request
+Date:   Mon, 23 May 2022 22:16:56 +0800
+Message-ID: <20220523141658.2919003-1-libaokun1@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-In-Reply-To: <20220520144511.GA2302907@nvidia.com>
-Content-Type: text/plain; charset="gbk"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-yoursite-MailScanner-ID: 93DE04D68A22.ADC4F
-X-yoursite-MailScanner: Found to be clean
-X-yoursite-MailScanner-From: lizhijian@fujitsu.com
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpeml500020.china.huawei.com (7.185.36.88)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The logical block map reached before the problem stack was 1011.
+The estimated location of the size logical block of the inde plus
+the required allocation length 7, the size is 1018.
 
-on 2022/5/20 22:45, Jason Gunthorpe wrote:
-> On Wed, May 18, 2022 at 12:37:25PM +0800, Li Zhijian wrote:
->> Below call chains will alloc map_set without fully initializing map_set.
->> rxe_mr_init_fast()
->>   -> rxe_mr_alloc()
->>      -> rxe_mr_alloc_map_set()
->>
->> Uninitialized values inside struct rxe_map_set are possible to cause
->> kernel panic.
-> If the value is uninitialized then why is 0 an OK value?
->
-> Would be happier to know the exact value that is not initialized
+But the i_size of inode is 1299, so the size is 1299,
+the aligned size is 2048, and the end is 2048.
+Because of the restriction of ar -> pleft, start==648.
 
-Well, good question. After re-think of this issue, it seems this patch 
-wasn't the root cause though it made the crash disappear in some extent.
+EXT4_BLOCKS_PER_GROUP (ac- > ac_sb) is 256,
+so the size is 256 and the end is 904.
 
-I'm still working on the root cause :)
+It is not normal to truncate here, the end is less than 1299 of the
+target logical block, that is, the allocated range does not contain
+the target logical block.
 
-Thanks
+Then this new scope conflicts with the previous PA, as follows:
 
-Zhijian
+        pa_start-506        pa_end-759
+ |____________P________V_________P__________V_____________l________|
+ 0                 start-648             end-904    logical-1299   2048
+
+In this case, start is changed to pa_end, that is, 759.
+In this case, a bug_ON is reported in ext4_mb_mark_diskspace_used.
+
+The problem is caused by the truncation introduced in the
+cd648b8a8fd5 ("ext4: trim allocation requests to group size").
+The size must be smaller than or equal to EXT4_BLOCKS_PER_GROUP.
+However, the truncation method is incorrect. The group where the
+logical is located should be used for allocation. If the value of
+EXT4_BLOCKS_PER_GROUP is 256, size 2048 can be divided into eight
+groups. If the value of logical is 1299, the value of logical must be
+in the sixth group, that is,
+	start=1299/256*256=5*256=1280,
+	end=size+1280=1536.
+
+Then, the value range can be further narrowed down based on
+other restrictions.
+                              1024    1280     1536
+|_______|_______|_______|_______|_______|__l_____|_______|_______|
+0 group1  group2  group3  group4  group5  group6  group7  group8 2048 
 
 
->
-> Jason
+Baokun Li (2):
+  ext4: fix bug_on ext4_mb_use_inode_pa
+  ext4: correct the judgment of BUG in ext4_mb_normalize_request
 
+ fs/ext4/mballoc.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
+
+-- 
+2.31.1
 
