@@ -2,132 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FE62C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 13:29:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59F69C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 13:29:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236270AbiEWN3K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 09:29:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36248 "EHLO
+        id S236275AbiEWN3O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 09:29:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236225AbiEWN3G (ORCPT
+        with ESMTP id S236261AbiEWN3H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 09:29:06 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99233240AA
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 06:29:03 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id ds11so14094000pjb.0
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 06:29:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=C3bZbEaAq3Xu1O+OItJ+lvJSF2o3pyc0onzZAOeeJCk=;
-        b=mIybBL1U6Elcn4NFipNHc5oYx+P5Xk/K0gsj85ZVi5o0E3KwuASAj4EvcTaDp/36nj
-         jP1tJ4Jbnb4vasuwpfNDRsYJbfLxNA06dWhQ47QuAk/4RciDwvzHhvr4ZfEclYuY07jK
-         fyswcaPhtbpzv+HtgMjrpL14+hJxbjhHfys+P4F2FtOj+8fSuy/Ge9UahGkhgN3nyn5G
-         tcnNDsRQCe3AVMSUSp371ndlhVm2cueqcTjzWm4bmNxdo1wQse2nsxh9wEw/7THhxzz2
-         fsLXjpoEBx0WzKoOA3XUajKrGaIzhE1D5ZQ3bAfiHNHr18QdHkYwLtje3LghS5hTLHY5
-         8shw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=C3bZbEaAq3Xu1O+OItJ+lvJSF2o3pyc0onzZAOeeJCk=;
-        b=qpl0VdAWxq+HIrup4+RXBvSGLgp4fcmG+/7ZxKr3XDYlWICvPMItQlaQ+9xnovuCbB
-         4p8/qZ5oExNU/XnyqjxFwBmWnHVzkLgbi0/ETMZi/o6JqzEGJWdtkngrKTRtsmFWRTLh
-         GR758Zq8Mb6o7j5QbRGOjNZTd8gjLRJFREZUevNbZfFI4cGqyN5ItuDw6fexSJDLJVW1
-         BFL1YH4Gim8ZbiYJHY+lMu+TGoDHskFfLnGpFKJ6TrGsl4DBXjFrtf0Et9T2JikTO4FY
-         SxaP27x5OFOrltzmo7cz35s8QdXsLGjnAeZY2+/kkyMtuPsGK0eaUY68CRkAJEx8vp/B
-         L5aA==
-X-Gm-Message-State: AOAM530nGdT0SeRrMKpZt+6vOtGBSVfQ3PItt7QTXsf7s5zzUDMAq8lH
-        6hjHKwMrbymzTiOBDJ7Kw/KvvsIu3afWIA==
-X-Google-Smtp-Source: ABdhPJyb765pKTXIFpPUXz3mbvBfvf4qGd0h2/E1/qyzdrr0Bi3GVvZ4dyys9lszdqnXxEVrTyP2Dw==
-X-Received: by 2002:a17:902:e3d4:b0:162:23a7:a7e7 with SMTP id r20-20020a170902e3d400b0016223a7a7e7mr5406661ple.32.1653312542991;
+        Mon, 23 May 2022 09:29:07 -0400
+Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5F1C2A6;
         Mon, 23 May 2022 06:29:02 -0700 (PDT)
-Received: from [192.168.1.100] ([198.8.77.157])
-        by smtp.gmail.com with ESMTPSA id c2-20020a62f842000000b0051800111b2fsm7347132pfm.216.2022.05.23.06.29.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 May 2022 06:29:02 -0700 (PDT)
-Message-ID: <f1a08877-e27f-6520-272d-a3e6598f97b9@kernel.dk>
-Date:   Mon, 23 May 2022 07:29:00 -0600
+Received: from uucp (helo=alpha)
+        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
+        id 1nt87K-0002gG-00; Mon, 23 May 2022 15:29:02 +0200
+Received: by alpha.franken.de (Postfix, from userid 1000)
+        id EAD17C0311; Mon, 23 May 2022 15:28:52 +0200 (CEST)
+Date:   Mon, 23 May 2022 15:28:52 +0200
+From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+To:     Tiezhu Yang <yangtiezhu@loongson.cn>
+Cc:     Xuefeng Li <lixuefeng@loongson.cn>, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/3] MIPS: Modify early_parse_mem()
+Message-ID: <20220523132852.GA8289@alpha.franken.de>
+References: <1647615920-23103-1-git-send-email-yangtiezhu@loongson.cn>
+ <c3e2d39f-1691-4065-c1fb-06f4059c3e0c@loongson.cn>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH -next v5 0/3] support concurrent sync io for bfq on a
- specail occasion
-Content-Language: en-US
-To:     Yu Kuai <yukuai3@huawei.com>, paolo.valente@linaro.org
-Cc:     jack@suse.cz, tj@kernel.org, linux-block@vger.kernel.org,
-        cgroups@vger.kernel.org, linux-kernel@vger.kernel.org,
-        yi.zhang@huawei.com
-References: <20220428120837.3737765-1-yukuai3@huawei.com>
- <d50df657-d859-79cf-c292-412eaa383d2c@huawei.com>
- <61b67d5e-829c-8130-7bda-81615d654829@huawei.com>
- <81411289-e13c-20f5-df63-c059babca57a@huawei.com>
- <d5a90a08-1ac6-587a-e900-0436bd45543a@kernel.dk>
- <55919e29-1f22-e8aa-f3d2-08c57d9e1c22@huawei.com>
- <b32ed748-a141-862c-ed35-debb474962ed@kernel.dk>
- <1172d00f-0843-1d7c-721f-fdb60a0945cb@huawei.com>
- <dfd2ac0b-74da-85f4-ff66-2eb307578d93@kernel.dk>
- <8f0b5115-6a96-d5eb-5243-0be832cf121b@huawei.com>
-From:   Jens Axboe <axboe@kernel.dk>
-In-Reply-To: <8f0b5115-6a96-d5eb-5243-0be832cf121b@huawei.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c3e2d39f-1691-4065-c1fb-06f4059c3e0c@loongson.cn>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/23/22 6:58 AM, Yu Kuai wrote:
-> ? 2022/05/23 20:36, Jens Axboe ??:
->> On 5/23/22 2:18 AM, Yu Kuai wrote:
->>> ? 2022/05/23 9:24, Jens Axboe ??:
->>>> On 5/22/22 7:10 PM, yukuai (C) wrote:
->>>>> ? 2022/05/21 20:21, Jens Axboe ??:
->>>>>> On 5/21/22 1:22 AM, yukuai (C) wrote:
->>>>>>> ? 2022/05/14 17:29, yukuai (C) ??:
->>>>>>>> ? 2022/05/05 9:00, yukuai (C) ??:
->>>>>>>>> Hi, Paolo
->>>>>>>>>
->>>>>>>>> Can you take a look at this patchset? It has been quite a long time
->>>>>>>>> since we spotted this problem...
->>>>>>>>>
->>>>>>>>
->>>>>>>> friendly ping ...
->>>>>>> friendly ping ...
->>>>>>
->>>>>> I can't speak for Paolo, but I've mentioned before that the majority
->>>>>> of your messages end up in my spam. That's still the case, in fact
->>>>>> I just marked maybe 10 of them as not spam.
->>>>>>
->>>>>> You really need to get this issued sorted out, or you will continue
->>>>>> to have patches ignore because folks may simply not see them.
->>>>>>
->>>>> Hi,
->>>>>
->>>>> Thanks for your notice.
->>>>>
->>>>> Is it just me or do you see someone else's messages from *huawei.com
->>>>> end up in spam? I tried to seek help from our IT support, however, they
->>>>> didn't find anything unusual...
->>>>
->>>> Not sure, I think it's just you. It may be the name as well "yukuai (C)"
->>> Hi, Jens
->>>
->>> I just change this default name "yukuai (C)" to "Yu Kuai", can you
->>> please have a check if following emails still go to spam?
->>>
->>> https://lore.kernel.org/all/20220523082633.2324980-1-yukuai3@huawei.com/
->>
->> These did not go into spam, were delivered just fine.
->>
-> Cheers for solving this, I'll resend this patchset just in case they are
-> in spam for Paolo...
+On Mon, May 09, 2022 at 03:30:11PM +0800, Tiezhu Yang wrote:
+> 
+> 
+> On 03/18/2022 11:05 PM, Tiezhu Yang wrote:
+> > Tiezhu Yang (3):
+> >   MIPS: Return -EINVAL if mem parameter is empty in early_parse_mem()
+> >   MIPS: Return -EINVAL if mem parameter is invalid in early_parse_mem()
+> >   MIPS: Use memblock_add_node() in early_parse_mem() under CONFIG_NUMA
+> > 
+> >  arch/mips/kernel/setup.c | 35 +++++++++++++++++++++++++++++------
+> >  1 file changed, 29 insertions(+), 6 deletions(-)
+> > 
+> 
+> Hi Thomas,
+> 
+> Any comments? Are you OK with these changes?
 
-Let's hope it's solved, you never know with gmail... But that series did
-go through fine as well, fwiw.
+first and last patch are ok with me. The second patch changes semantics
+for mem=, which I don't want to change. Iirc the latest idea to solve
+your problem was to use mem=XX@ syntax to limit detected memory, which
+is the preferred way for me, too.
+
+If you want I'll take patch 1 and 3 out of this series.
+
+Thomas.
 
 -- 
-Jens Axboe
-
+Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
+good idea.                                                [ RFC1925, 2.3 ]
