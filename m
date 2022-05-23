@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05312C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:55:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D466C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:55:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242671AbiEWRzq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:55:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60060 "EHLO
+        id S242743AbiEWRzu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:55:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241468AbiEWRau (ORCPT
+        with ESMTP id S241119AbiEWR0S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:30:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55ECC62BFE;
-        Mon, 23 May 2022 10:26:44 -0700 (PDT)
+        Mon, 23 May 2022 13:26:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9074B62BFE;
+        Mon, 23 May 2022 10:21:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E0AE461148;
-        Mon, 23 May 2022 17:26:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D256CC385A9;
-        Mon, 23 May 2022 17:26:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CA4ECB811FE;
+        Mon, 23 May 2022 17:21:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 426FBC385A9;
+        Mon, 23 May 2022 17:21:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326799;
-        bh=8+o3Hx5eTayDCMgcyUWNu4xWsltvcPcFbmkjfd1IW/I=;
+        s=korg; t=1653326484;
+        bh=0iVyKruOZKZjO3IhGdC9lrTMP16QOLq3mphVI4fNs+A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OivLhasqraMmtyoOVf7fnSyqRctiBr8alBo3qn2l1dBvZjmcnYMY0r2H+gXodPmZB
-         VvAWegyiR2Pe7iKEFJYO8frilf+ClqNbyXiDtAVyNAElXT7y0yk34L3PC1zyUaLhHI
-         esGH09G14JgPf+1Ia+SnXQzLSqigqsmkvI6BUxg4=
+        b=dom9oQCmldkjKRsjZJdtbQSYXdPssJbQFAek8mhP+AdHCgoluzNgcKtun4yvV1WNo
+         gwmGyJKZXJItavWpwU3/5u58ZL5GARh7sQwD4C+MgdLBG5pX+UkjQ+/CKu2YGupiZB
+         r/5YcwTVZMXsjQzu3HryugU/V9dCp1rdiGDxa1Eo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Shyam Prasad N <sprasad@microsoft.com>,
-        Ronnie Sahlberg <lsahlber@redhat.com>,
-        Steve French <stfrench@microsoft.com>,
+        stable@vger.kernel.org, Geliang Tang <geliang.tang@suse.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 035/158] smb3: cleanup and clarify status of tree connections
-Date:   Mon, 23 May 2022 19:03:12 +0200
-Message-Id: <20220523165836.306315042@linuxfoundation.org>
+Subject: [PATCH 5.15 095/132] mptcp: change the parameter of __mptcp_make_csum
+Date:   Mon, 23 May 2022 19:05:04 +0200
+Message-Id: <20220523165839.111088948@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
-References: <20220523165830.581652127@linuxfoundation.org>
+In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
+References: <20220523165823.492309987@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,283 +50,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steve French <stfrench@microsoft.com>
+From: Geliang Tang <geliang.tang@suse.com>
 
-[ Upstream commit fdf59eb548e51bce81382c39f1a5fd4cb9403b78 ]
+[ Upstream commit c312ee219100e86143a1d3cc10b367bc43a0e0b8 ]
 
-Currently the way the tid (tree connection) status is tracked
-is confusing.  The same enum is used for structs cifs_tcon
-and cifs_ses and TCP_Server_info, but each of these three has
-different states that they transition among.  The current
-code also unnecessarily uses camelCase.
+This patch changed the type of the last parameter of __mptcp_make_csum()
+from __sum16 to __wsum. And export this function in protocol.h.
 
-Convert from use of statusEnum to a new tid_status_enum for
-tree connections.  The valid states for a tid are:
-
-        TID_NEW = 0,
-        TID_GOOD,
-        TID_EXITING,
-        TID_NEED_RECON,
-        TID_NEED_TCON,
-        TID_IN_TCON,
-        TID_NEED_FILES_INVALIDATE, /* unused, considering removing in future */
-        TID_IN_FILES_INVALIDATE
-
-It also removes CifsNeedTcon, CifsInTcon, CifsNeedFilesInvalidate and
-CifsInFilesInvalidate from the statusEnum used for session and
-TCP_Server_Info since they are not relevant for those.
-
-A follow on patch will fix the places where we use the
-tcon->need_reconnect flag to be more consistent with the tid->status.
-
-Also fixes a bug that was:
-Reported-by: kernel test robot <lkp@intel.com>
-Reviewed-by: Shyam Prasad N <sprasad@microsoft.com>
-Reviewed-by: Ronnie Sahlberg <lsahlber@redhat.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+Signed-off-by: Geliang Tang <geliang.tang@suse.com>
+Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/cifs/cifs_debug.c |  2 +-
- fs/cifs/cifsfs.c     |  4 ++--
- fs/cifs/cifsglob.h   | 18 +++++++++++++-----
- fs/cifs/cifssmb.c    | 11 +++++------
- fs/cifs/connect.c    | 32 ++++++++++++++++----------------
- fs/cifs/misc.c       |  2 +-
- fs/cifs/smb2pdu.c    |  4 ++--
- 7 files changed, 40 insertions(+), 33 deletions(-)
+ net/mptcp/options.c  | 8 ++++----
+ net/mptcp/protocol.h | 1 +
+ 2 files changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/fs/cifs/cifs_debug.c b/fs/cifs/cifs_debug.c
-index ea00e1a91250..9d334816eac0 100644
---- a/fs/cifs/cifs_debug.c
-+++ b/fs/cifs/cifs_debug.c
-@@ -94,7 +94,7 @@ static void cifs_debug_tcon(struct seq_file *m, struct cifs_tcon *tcon)
- 		   le32_to_cpu(tcon->fsDevInfo.DeviceCharacteristics),
- 		   le32_to_cpu(tcon->fsAttrInfo.Attributes),
- 		   le32_to_cpu(tcon->fsAttrInfo.MaxPathNameComponentLength),
--		   tcon->tidStatus);
-+		   tcon->status);
- 	if (dev_type == FILE_DEVICE_DISK)
- 		seq_puts(m, " type: DISK ");
- 	else if (dev_type == FILE_DEVICE_CD_ROM)
-diff --git a/fs/cifs/cifsfs.c b/fs/cifs/cifsfs.c
-index 10aa0fb94613..59d22261e082 100644
---- a/fs/cifs/cifsfs.c
-+++ b/fs/cifs/cifsfs.c
-@@ -701,14 +701,14 @@ static void cifs_umount_begin(struct super_block *sb)
- 	tcon = cifs_sb_master_tcon(cifs_sb);
+diff --git a/net/mptcp/options.c b/net/mptcp/options.c
+index e515ba9ccb5d..d158f53d3bc3 100644
+--- a/net/mptcp/options.c
++++ b/net/mptcp/options.c
+@@ -1214,7 +1214,7 @@ static void mptcp_set_rwin(const struct tcp_sock *tp)
+ 		WRITE_ONCE(msk->rcv_wnd_sent, ack_seq);
+ }
  
- 	spin_lock(&cifs_tcp_ses_lock);
--	if ((tcon->tc_count > 1) || (tcon->tidStatus == CifsExiting)) {
-+	if ((tcon->tc_count > 1) || (tcon->status == TID_EXITING)) {
- 		/* we have other mounts to same share or we have
- 		   already tried to force umount this and woken up
- 		   all waiting network requests, nothing to do */
- 		spin_unlock(&cifs_tcp_ses_lock);
- 		return;
- 	} else if (tcon->tc_count == 1)
--		tcon->tidStatus = CifsExiting;
-+		tcon->status = TID_EXITING;
- 	spin_unlock(&cifs_tcp_ses_lock);
- 
- 	/* cancel_brl_requests(tcon); */ /* BB mark all brl mids as exiting */
-diff --git a/fs/cifs/cifsglob.h b/fs/cifs/cifsglob.h
-index 48b343d03430..560ecc4ad87d 100644
---- a/fs/cifs/cifsglob.h
-+++ b/fs/cifs/cifsglob.h
-@@ -115,10 +115,18 @@ enum statusEnum {
- 	CifsInNegotiate,
- 	CifsNeedSessSetup,
- 	CifsInSessSetup,
--	CifsNeedTcon,
--	CifsInTcon,
--	CifsNeedFilesInvalidate,
--	CifsInFilesInvalidate
-+};
-+
-+/* associated with each tree connection to the server */
-+enum tid_status_enum {
-+	TID_NEW = 0,
-+	TID_GOOD,
-+	TID_EXITING,
-+	TID_NEED_RECON,
-+	TID_NEED_TCON,
-+	TID_IN_TCON,
-+	TID_NEED_FILES_INVALIDATE, /* currently unused */
-+	TID_IN_FILES_INVALIDATE
- };
- 
- enum securityEnum {
-@@ -1038,7 +1046,7 @@ struct cifs_tcon {
- 	char *password;		/* for share-level security */
- 	__u32 tid;		/* The 4 byte tree id */
- 	__u16 Flags;		/* optional support bits */
--	enum statusEnum tidStatus;
-+	enum tid_status_enum status;
- 	atomic_t num_smbs_sent;
- 	union {
- 		struct {
-diff --git a/fs/cifs/cifssmb.c b/fs/cifs/cifssmb.c
-index 071e2f21a7db..aca9338b0877 100644
---- a/fs/cifs/cifssmb.c
-+++ b/fs/cifs/cifssmb.c
-@@ -75,12 +75,11 @@ cifs_mark_open_files_invalid(struct cifs_tcon *tcon)
- 
- 	/* only send once per connect */
- 	spin_lock(&cifs_tcp_ses_lock);
--	if (tcon->ses->status != CifsGood ||
--	    tcon->tidStatus != CifsNeedReconnect) {
-+	if ((tcon->ses->status != CifsGood) || (tcon->status != TID_NEED_RECON)) {
- 		spin_unlock(&cifs_tcp_ses_lock);
- 		return;
- 	}
--	tcon->tidStatus = CifsInFilesInvalidate;
-+	tcon->status = TID_IN_FILES_INVALIDATE;
- 	spin_unlock(&cifs_tcp_ses_lock);
- 
- 	/* list all files open on tree connection and mark them invalid */
-@@ -100,8 +99,8 @@ cifs_mark_open_files_invalid(struct cifs_tcon *tcon)
- 	mutex_unlock(&tcon->crfid.fid_mutex);
- 
- 	spin_lock(&cifs_tcp_ses_lock);
--	if (tcon->tidStatus == CifsInFilesInvalidate)
--		tcon->tidStatus = CifsNeedTcon;
-+	if (tcon->status == TID_IN_FILES_INVALIDATE)
-+		tcon->status = TID_NEED_TCON;
- 	spin_unlock(&cifs_tcp_ses_lock);
- 
- 	/*
-@@ -136,7 +135,7 @@ cifs_reconnect_tcon(struct cifs_tcon *tcon, int smb_command)
- 	 * have tcon) are allowed as we start force umount
- 	 */
- 	spin_lock(&cifs_tcp_ses_lock);
--	if (tcon->tidStatus == CifsExiting) {
-+	if (tcon->status == TID_EXITING) {
- 		if (smb_command != SMB_COM_WRITE_ANDX &&
- 		    smb_command != SMB_COM_OPEN_ANDX &&
- 		    smb_command != SMB_COM_TREE_DISCONNECT) {
-diff --git a/fs/cifs/connect.c b/fs/cifs/connect.c
-index 532770c30415..c3a26f06fdaa 100644
---- a/fs/cifs/connect.c
-+++ b/fs/cifs/connect.c
-@@ -245,7 +245,7 @@ cifs_mark_tcp_ses_conns_for_reconnect(struct TCP_Server_Info *server,
- 
- 		list_for_each_entry(tcon, &ses->tcon_list, tcon_list) {
- 			tcon->need_reconnect = true;
--			tcon->tidStatus = CifsNeedReconnect;
-+			tcon->status = TID_NEED_RECON;
- 		}
- 		if (ses->tcon_ipc)
- 			ses->tcon_ipc->need_reconnect = true;
-@@ -2217,7 +2217,7 @@ cifs_get_smb_ses(struct TCP_Server_Info *server, struct smb3_fs_context *ctx)
- 
- static int match_tcon(struct cifs_tcon *tcon, struct smb3_fs_context *ctx)
+-static u16 __mptcp_make_csum(u64 data_seq, u32 subflow_seq, u16 data_len, __sum16 sum)
++u16 __mptcp_make_csum(u64 data_seq, u32 subflow_seq, u16 data_len, __wsum sum)
  {
--	if (tcon->tidStatus == CifsExiting)
-+	if (tcon->status == TID_EXITING)
- 		return 0;
- 	if (strncmp(tcon->treeName, ctx->UNC, MAX_TREE_SIZE))
- 		return 0;
-@@ -4498,12 +4498,12 @@ int cifs_tree_connect(const unsigned int xid, struct cifs_tcon *tcon, const stru
- 	/* only send once per connect */
- 	spin_lock(&cifs_tcp_ses_lock);
- 	if (tcon->ses->status != CifsGood ||
--	    (tcon->tidStatus != CifsNew &&
--	    tcon->tidStatus != CifsNeedTcon)) {
-+	    (tcon->status != TID_NEW &&
-+	    tcon->status != TID_NEED_TCON)) {
- 		spin_unlock(&cifs_tcp_ses_lock);
- 		return 0;
- 	}
--	tcon->tidStatus = CifsInTcon;
-+	tcon->status = TID_IN_TCON;
- 	spin_unlock(&cifs_tcp_ses_lock);
+ 	struct csum_pseudo_header header;
+ 	__wsum csum;
+@@ -1229,14 +1229,14 @@ static u16 __mptcp_make_csum(u64 data_seq, u32 subflow_seq, u16 data_len, __sum1
+ 	header.data_len = htons(data_len);
+ 	header.csum = 0;
  
- 	tree = kzalloc(MAX_TREE_SIZE, GFP_KERNEL);
-@@ -4544,13 +4544,13 @@ int cifs_tree_connect(const unsigned int xid, struct cifs_tcon *tcon, const stru
+-	csum = csum_partial(&header, sizeof(header), ~csum_unfold(sum));
++	csum = csum_partial(&header, sizeof(header), sum);
+ 	return (__force u16)csum_fold(csum);
+ }
  
- 	if (rc) {
- 		spin_lock(&cifs_tcp_ses_lock);
--		if (tcon->tidStatus == CifsInTcon)
--			tcon->tidStatus = CifsNeedTcon;
-+		if (tcon->status == TID_IN_TCON)
-+			tcon->status = TID_NEED_TCON;
- 		spin_unlock(&cifs_tcp_ses_lock);
- 	} else {
- 		spin_lock(&cifs_tcp_ses_lock);
--		if (tcon->tidStatus == CifsInTcon)
--			tcon->tidStatus = CifsGood;
-+		if (tcon->status == TID_IN_TCON)
-+			tcon->status = TID_GOOD;
- 		spin_unlock(&cifs_tcp_ses_lock);
- 		tcon->need_reconnect = false;
- 	}
-@@ -4566,24 +4566,24 @@ int cifs_tree_connect(const unsigned int xid, struct cifs_tcon *tcon, const stru
- 	/* only send once per connect */
- 	spin_lock(&cifs_tcp_ses_lock);
- 	if (tcon->ses->status != CifsGood ||
--	    (tcon->tidStatus != CifsNew &&
--	    tcon->tidStatus != CifsNeedTcon)) {
-+	    (tcon->status != TID_NEW &&
-+	    tcon->status != TID_NEED_TCON)) {
- 		spin_unlock(&cifs_tcp_ses_lock);
- 		return 0;
- 	}
--	tcon->tidStatus = CifsInTcon;
-+	tcon->status = TID_IN_TCON;
- 	spin_unlock(&cifs_tcp_ses_lock);
+ static u16 mptcp_make_csum(const struct mptcp_ext *mpext)
+ {
+ 	return __mptcp_make_csum(mpext->data_seq, mpext->subflow_seq, mpext->data_len,
+-				 mpext->csum);
++				 ~csum_unfold(mpext->csum));
+ }
  
- 	rc = ops->tree_connect(xid, tcon->ses, tcon->treeName, tcon, nlsc);
- 	if (rc) {
- 		spin_lock(&cifs_tcp_ses_lock);
--		if (tcon->tidStatus == CifsInTcon)
--			tcon->tidStatus = CifsNeedTcon;
-+		if (tcon->status == TID_IN_TCON)
-+			tcon->status = TID_NEED_TCON;
- 		spin_unlock(&cifs_tcp_ses_lock);
- 	} else {
- 		spin_lock(&cifs_tcp_ses_lock);
--		if (tcon->tidStatus == CifsInTcon)
--			tcon->tidStatus = CifsGood;
-+		if (tcon->status == TID_IN_TCON)
-+			tcon->status = TID_GOOD;
- 		spin_unlock(&cifs_tcp_ses_lock);
- 		tcon->need_reconnect = false;
- 	}
-diff --git a/fs/cifs/misc.c b/fs/cifs/misc.c
-index 56598f7dbe00..afaf59c22193 100644
---- a/fs/cifs/misc.c
-+++ b/fs/cifs/misc.c
-@@ -116,7 +116,7 @@ tconInfoAlloc(void)
- 	}
+ void mptcp_write_options(__be32 *ptr, const struct tcp_sock *tp,
+@@ -1368,7 +1368,7 @@ void mptcp_write_options(__be32 *ptr, const struct tcp_sock *tp,
+ 					   __mptcp_make_csum(opts->data_seq,
+ 							     opts->subflow_seq,
+ 							     opts->data_len,
+-							     opts->csum), ptr);
++							     ~csum_unfold(opts->csum)), ptr);
+ 		} else {
+ 			put_unaligned_be32(opts->data_len << 16 |
+ 					   TCPOPT_NOP << 8 | TCPOPT_NOP, ptr);
+diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
+index 82c5dc4d6b49..6bcdaf01f483 100644
+--- a/net/mptcp/protocol.h
++++ b/net/mptcp/protocol.h
+@@ -718,6 +718,7 @@ void mptcp_token_destroy(struct mptcp_sock *msk);
+ void mptcp_crypto_key_sha(u64 key, u32 *token, u64 *idsn);
  
- 	atomic_inc(&tconInfoAllocCount);
--	ret_buf->tidStatus = CifsNew;
-+	ret_buf->status = TID_NEW;
- 	++ret_buf->tc_count;
- 	INIT_LIST_HEAD(&ret_buf->openFileList);
- 	INIT_LIST_HEAD(&ret_buf->tcon_list);
-diff --git a/fs/cifs/smb2pdu.c b/fs/cifs/smb2pdu.c
-index f82d6fcb5c64..1704fd358b85 100644
---- a/fs/cifs/smb2pdu.c
-+++ b/fs/cifs/smb2pdu.c
-@@ -163,7 +163,7 @@ smb2_reconnect(__le16 smb2_command, struct cifs_tcon *tcon,
- 		return 0;
+ void mptcp_crypto_hmac_sha(u64 key1, u64 key2, u8 *msg, int len, void *hmac);
++u16 __mptcp_make_csum(u64 data_seq, u32 subflow_seq, u16 data_len, __wsum sum);
  
- 	spin_lock(&cifs_tcp_ses_lock);
--	if (tcon->tidStatus == CifsExiting) {
-+	if (tcon->status == TID_EXITING) {
- 		/*
- 		 * only tree disconnect, open, and write,
- 		 * (and ulogoff which does not have tcon)
-@@ -3865,7 +3865,7 @@ void smb2_reconnect_server(struct work_struct *work)
- 		goto done;
- 	}
- 
--	tcon->tidStatus = CifsGood;
-+	tcon->status = TID_GOOD;
- 	tcon->retry = false;
- 	tcon->need_reconnect = false;
- 
+ void __init mptcp_pm_init(void);
+ void mptcp_pm_data_init(struct mptcp_sock *msk);
 -- 
 2.35.1
 
