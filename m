@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05B67C41535
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:08:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB825C46467
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:08:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245037AbiEWSHc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:07:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35650 "EHLO
+        id S1343559AbiEWSIP (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:08:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243820AbiEWRi2 (ORCPT
+        with ESMTP id S243644AbiEWRiW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:38:28 -0400
+        Mon, 23 May 2022 13:38:22 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8C1673567;
-        Mon, 23 May 2022 10:32:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F6DC6EB02;
+        Mon, 23 May 2022 10:32:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7DE23B8122D;
-        Mon, 23 May 2022 17:30:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8F74C385AA;
-        Mon, 23 May 2022 17:30:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7BA6AB811F6;
+        Mon, 23 May 2022 17:31:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B27B8C385A9;
+        Mon, 23 May 2022 17:31:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653327027;
-        bh=RGM320wqGVhKSeycGOcLU5m9mfigPzUiOf7ABwtT81w=;
+        s=korg; t=1653327118;
+        bh=jpp7JaAjtpYcJypZTqEMC1XKrOHHdguJX9I0ndKgnbA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SYh/7k+67MQnfSOx9/x+FqZ+VviL3cv8RURCBGSLTQUJMBZbWHgLp3Yl95aMvGPvE
-         b8sYdtC0Ky7sMYY/aUgGoYAJYWp4flddsP+cPKmViXuKdoK3TuALAgw39gfyhXwSQl
-         FiGEkMjucxHoM97BhQ4KxVWoZaJyrheANgfhKwV0=
+        b=kyI5SN/7MG5bBYR9amS2kfYEyhVdpRgPxhnWWRe04SY4hvBVooR52ArULQ5OmP37q
+         4xeXHXx2/BvboZLdXeCxMQpRYozcGL2odx+07l/FZpUNRAzB6kDOmqCI+Mmcsybnzc
+         nmZ6cNiyhPeVI7UfXFor0HNvYvjxQiFLTn+DHvc4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Michal Wilczynski <michal.wilczynski@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        Gurucharan <gurucharanx.g@intel.com>
-Subject: [PATCH 5.17 098/158] ice: Fix interrupt moderation settings getting cleared
-Date:   Mon, 23 May 2022 19:04:15 +0200
-Message-Id: <20220523165847.710787622@linuxfoundation.org>
+        Kieran Frewen <kieran.frewen@morsemicro.com>,
+        Bassem Dawood <bassem@morsemicro.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 137/158] cfg80211: retrieve S1G operating channel number
+Date:   Mon, 23 May 2022 19:04:54 +0200
+Message-Id: <20220523165853.028366562@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
 References: <20220523165830.581652127@linuxfoundation.org>
@@ -51,114 +52,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michal Wilczynski <michal.wilczynski@intel.com>
+From: Kieran Frewen <kieran.frewen@morsemicro.com>
 
-[ Upstream commit bf13502ed5f941b0777b3fd1e24dac5d93f3886c ]
+[ Upstream commit e847ffe2d146cfd52980ca688d84358e024a6e70 ]
 
-Adaptive-rx and Adaptive-tx are interrupt moderation settings
-that can be enabled/disabled using ethtool:
-ethtool -C ethX adaptive-rx on/off adaptive-tx on/off
+When retrieving the S1G channel number from IEs, we should retrieve
+the operating channel instead of the primary channel. The S1G operation
+element specifies the main channel of operation as the oper channel,
+unlike for HT and HE which specify their main channel of operation as
+the primary channel.
 
-Unfortunately those settings are getting cleared after
-changing number of queues, or in ethtool world 'channels':
-ethtool -L ethX rx 1 tx 1
-
-Clearing was happening due to introduction of bit fields
-in ice_ring_container struct. This way only itr_setting
-bits were rebuilt during ice_vsi_rebuild_set_coalesce().
-
-Introduce an anonymous struct of bitfields and create a
-union to refer to them as a single variable.
-This way variable can be easily saved and restored.
-
-Fixes: 61dc79ced7aa ("ice: Restore interrupt throttle settings after VSI rebuild")
-Signed-off-by: Michal Wilczynski <michal.wilczynski@intel.com>
-Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Kieran Frewen <kieran.frewen@morsemicro.com>
+Signed-off-by: Bassem Dawood <bassem@morsemicro.com>
+Link: https://lore.kernel.org/r/20220420041321.3788789-1-kieran.frewen@morsemicro.com
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ice/ice_lib.c  | 16 ++++++++--------
- drivers/net/ethernet/intel/ice/ice_txrx.h | 11 ++++++++---
- 2 files changed, 16 insertions(+), 11 deletions(-)
+ net/wireless/scan.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
-index 15bb6f001a04..5f86cc1cfd09 100644
---- a/drivers/net/ethernet/intel/ice/ice_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_lib.c
-@@ -3207,8 +3207,8 @@ ice_vsi_rebuild_get_coalesce(struct ice_vsi *vsi,
- 	ice_for_each_q_vector(vsi, i) {
- 		struct ice_q_vector *q_vector = vsi->q_vectors[i];
+diff --git a/net/wireless/scan.c b/net/wireless/scan.c
+index 4a6d86432910..6d82bd9eaf8c 100644
+--- a/net/wireless/scan.c
++++ b/net/wireless/scan.c
+@@ -1829,7 +1829,7 @@ int cfg80211_get_ies_channel_number(const u8 *ie, size_t ielen,
+ 		if (tmp && tmp->datalen >= sizeof(struct ieee80211_s1g_oper_ie)) {
+ 			struct ieee80211_s1g_oper_ie *s1gop = (void *)tmp->data;
  
--		coalesce[i].itr_tx = q_vector->tx.itr_setting;
--		coalesce[i].itr_rx = q_vector->rx.itr_setting;
-+		coalesce[i].itr_tx = q_vector->tx.itr_settings;
-+		coalesce[i].itr_rx = q_vector->rx.itr_settings;
- 		coalesce[i].intrl = q_vector->intrl;
- 
- 		if (i < vsi->num_txq)
-@@ -3264,21 +3264,21 @@ ice_vsi_rebuild_set_coalesce(struct ice_vsi *vsi,
- 		 */
- 		if (i < vsi->alloc_rxq && coalesce[i].rx_valid) {
- 			rc = &vsi->q_vectors[i]->rx;
--			rc->itr_setting = coalesce[i].itr_rx;
-+			rc->itr_settings = coalesce[i].itr_rx;
- 			ice_write_itr(rc, rc->itr_setting);
- 		} else if (i < vsi->alloc_rxq) {
- 			rc = &vsi->q_vectors[i]->rx;
--			rc->itr_setting = coalesce[0].itr_rx;
-+			rc->itr_settings = coalesce[0].itr_rx;
- 			ice_write_itr(rc, rc->itr_setting);
+-			return s1gop->primary_ch;
++			return s1gop->oper_ch;
  		}
- 
- 		if (i < vsi->alloc_txq && coalesce[i].tx_valid) {
- 			rc = &vsi->q_vectors[i]->tx;
--			rc->itr_setting = coalesce[i].itr_tx;
-+			rc->itr_settings = coalesce[i].itr_tx;
- 			ice_write_itr(rc, rc->itr_setting);
- 		} else if (i < vsi->alloc_txq) {
- 			rc = &vsi->q_vectors[i]->tx;
--			rc->itr_setting = coalesce[0].itr_tx;
-+			rc->itr_settings = coalesce[0].itr_tx;
- 			ice_write_itr(rc, rc->itr_setting);
- 		}
- 
-@@ -3292,12 +3292,12 @@ ice_vsi_rebuild_set_coalesce(struct ice_vsi *vsi,
- 	for (; i < vsi->num_q_vectors; i++) {
- 		/* transmit */
- 		rc = &vsi->q_vectors[i]->tx;
--		rc->itr_setting = coalesce[0].itr_tx;
-+		rc->itr_settings = coalesce[0].itr_tx;
- 		ice_write_itr(rc, rc->itr_setting);
- 
- 		/* receive */
- 		rc = &vsi->q_vectors[i]->rx;
--		rc->itr_setting = coalesce[0].itr_rx;
-+		rc->itr_settings = coalesce[0].itr_rx;
- 		ice_write_itr(rc, rc->itr_setting);
- 
- 		vsi->q_vectors[i]->intrl = coalesce[0].intrl;
-diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.h b/drivers/net/ethernet/intel/ice/ice_txrx.h
-index b7b3bd4816f0..ec4733272034 100644
---- a/drivers/net/ethernet/intel/ice/ice_txrx.h
-+++ b/drivers/net/ethernet/intel/ice/ice_txrx.h
-@@ -379,9 +379,14 @@ struct ice_ring_container {
- 	/* this matches the maximum number of ITR bits, but in usec
- 	 * values, so it is shifted left one bit (bit zero is ignored)
- 	 */
--	u16 itr_setting:13;
--	u16 itr_reserved:2;
--	u16 itr_mode:1;
-+	union {
-+		struct {
-+			u16 itr_setting:13;
-+			u16 itr_reserved:2;
-+			u16 itr_mode:1;
-+		};
-+		u16 itr_settings;
-+	};
- 	enum ice_container_type type;
- };
- 
+ 	} else {
+ 		tmp = cfg80211_find_elem(WLAN_EID_DS_PARAMS, ie, ielen);
 -- 
 2.35.1
 
