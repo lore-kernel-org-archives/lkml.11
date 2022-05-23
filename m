@@ -2,77 +2,193 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9301C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 08:47:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 974F3C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 08:50:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232204AbiEWIro (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 04:47:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52288 "EHLO
+        id S232223AbiEWIuR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 04:50:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232177AbiEWIri (ORCPT
+        with ESMTP id S232177AbiEWIuN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 04:47:38 -0400
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB1CAE0C4
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 01:47:37 -0700 (PDT)
-Received: by mail-pl1-x630.google.com with SMTP id d22so12472069plr.9
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 01:47:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=IEAer1lH79NsmLj4b5VqaXj4C4eVbt1HjEg0g160lbI=;
-        b=RS52x6K8aaLtOUtyjhbX8/n06RZFlA/wnY/b4ugsdTB6rtCdZNckdrk+q+PSnDp/uZ
-         MjG1OsdMd4/vIVIN5q6m7rKNQ/a1CdmZgAQdbJ5gpUkv3ofEKhjnO4mgukUkChGYjA/P
-         uMjO+HEad9Siw0Zm62i+OiFRZDeIHIqhh8Ot1gDONcYgr4ueUcVKSMz4mnKNf6tNg6C3
-         8LAr2AATJlQLUzy3JhVDcvclNIsILd0ntm6IiXWS2XC1viFsYaNp1UDPViaiiXerHJ2b
-         BXe/iGOFtx3mDNvlwCSQFPatzSB8frjs2paelFNTBZZRIuOp6trWVAcZ5pN0+4g12+Tm
-         Ls8w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=IEAer1lH79NsmLj4b5VqaXj4C4eVbt1HjEg0g160lbI=;
-        b=F7baddthCWQC0g4IzJoTz83IUq5UyI5r6CwBPKAPONQ4ZjBWjU668EdUCblmaH3h7t
-         tu4mGuZbWtF6rDe01k4fG1f1WIdDRqslvR8ZJfMGEyx0L1E/4y7PqwHfs8TaHnMnPc+K
-         EbdzcR2ZGCz8T52Wr2AQb5L9iJ/OZKRF6R6uLGlbyMckIKh7HHHrysjYTx+62mNHpus5
-         UF/fsv0Bjmi8+bhDn4tBbIkcUJ733Rz9dS0322NI95npZqk+pUgY9U9hXFM0jBW8EHgZ
-         Hue05uEWseqggEHsEkJgbEqxcu/uNvOA4kwI0RnDmUPWnE8JdDB9+cQcIqIMo1AMlB0x
-         oWSQ==
-X-Gm-Message-State: AOAM530veuXDHc1lf3CIlusp7WsaxP4NfZ9/6siUr6CD7BGNitrGDgeB
-        YGjS/TL8qDajgZzoFqAf/PRgcSU+kK6dyPUSIEi4lg==
-X-Google-Smtp-Source: ABdhPJzq974GhyP1VI37htI/dS8x/+HyuWBzEzGCeT91yupIDi7F6pNhNwu6DXsKfT1W5hbpCB6kxmFzxG3qbFRdaJY=
-X-Received: by 2002:a17:902:ead4:b0:162:13e1:33f7 with SMTP id
- p20-20020a170902ead400b0016213e133f7mr7949190pld.21.1653295657262; Mon, 23
- May 2022 01:47:37 -0700 (PDT)
+        Mon, 23 May 2022 04:50:13 -0400
+Received: from smtpout1.mo3004.mail-out.ovh.net (smtpout1.mo3004.mail-out.ovh.net [79.137.123.219])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 159001131
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 01:50:11 -0700 (PDT)
+Received: from pro2.mail.ovh.net (unknown [10.108.4.109])
+        by mo3004.mail-out.ovh.net (Postfix) with ESMTPS id 03E2A243537;
+        Mon, 23 May 2022 08:50:10 +0000 (UTC)
+Received: from localhost.localdomain (88.161.25.233) by DAG1EX2.emp2.local
+ (172.16.2.2) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.9; Mon, 23 May
+ 2022 10:50:09 +0200
+From:   Jean-Jacques Hiblot <jjhiblot@traphandler.com>
+To:     Pavel Machek <pavel@ucw.cz>
+CC:     Jean-Jacques Hiblot <jjhiblot@traphandler.com>,
+        <linux-leds@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH 3/3] leds: tlc5925: Add support for non blocking operations
+Date:   Mon, 23 May 2022 10:49:57 +0200
+Message-ID: <20220523084958.2723943-4-jjhiblot@traphandler.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220523084958.2723943-1-jjhiblot@traphandler.com>
+References: <20220523084958.2723943-1-jjhiblot@traphandler.com>
 MIME-Version: 1.0
-References: <20220422084720.959271-1-xji@analogixsemi.com> <20220422084720.959271-4-xji@analogixsemi.com>
- <CAG3jFytWGSUM9mevHewdmEe-hq3JgB74s7_f0fsEQqkXr9VUHg@mail.gmail.com>
- <CAG3jFyvEYbwkdGtiNR-6vFEXTLjcyT_viqp9qeVxFTu0PrJEVA@mail.gmail.com>
- <CAGXv+5E1cCNWD98fMDjC38y2UztZd=PNQ+=G=wrBYfoXkswvHA@mail.gmail.com>
- <20220425091419.GA967110@anxtwsw-Precision-3640-Tower> <CAG3jFyvTim7P_y2G1Br5j3Pwz4KzvRjWgci_qQ3m_YW=3Bog8A@mail.gmail.com>
- <CAKMK7uFHyYTnGtP+vCzo2Uan90DW-QZpPFPn5S9bQ5aPiY=qzA@mail.gmail.com>
- <CAKMK7uHFGsPMZf2SUF4HDXo3XuOLjP3-DLfyp=gB2qpKR964Eg@mail.gmail.com>
- <20220523031324.GA3738288@anxtwsw-Precision-3640-Tower> <CAGXv+5EHghwSV+9Www9RvG74PkC7=AQuwn6sVG=cvCni-iwCyQ@mail.gmail.com>
- <CAG3jFysJLoQ2DMYw0oOfbQM3ifBmAhNLMxjPDEt12jq8sKCcSg@mail.gmail.com>
-In-Reply-To: <CAG3jFysJLoQ2DMYw0oOfbQM3ifBmAhNLMxjPDEt12jq8sKCcSg@mail.gmail.com>
-From:   Robert Foss <robert.foss@linaro.org>
-Date:   Mon, 23 May 2022 10:47:26 +0200
-Message-ID: <CAG3jFytVe3S4J4NzNVt5xkE-pM7+3e2cuUhe_vv1bETCpkbV=w@mail.gmail.com>
-Subject: Re: [PATCH v2 4/4] drm/bridge: anx7625: Use DPI bus type
-To:     Chen-Yu Tsai <wenst@chromium.org>
-Cc:     Xin Ji <xji@analogixsemi.com>, Daniel Vetter <daniel@ffwll.ch>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        David Airlie <airlied@linux.ie>, qwen@analogixsemi.com,
-        Jonas Karlman <jonas@kwiboo.se>, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        bliang@analogixsemi.com,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [88.161.25.233]
+X-ClientProxiedBy: DAG8EX2.emp2.local (172.16.2.82) To DAG1EX2.emp2.local
+ (172.16.2.2)
+X-Ovh-Tracer-Id: 5386868106753096155
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrjedtgddutdcutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkffojghfggfgtghisehtkeertdertddtnecuhfhrohhmpeflvggrnhdqlfgrtghquhgvshcujfhisghlohhtuceojhhjhhhisghlohhtsehtrhgrphhhrghnughlvghrrdgtohhmqeenucggtffrrghtthgvrhhnpeduteevleevvefggfdvueffffejhfehheeuiedtgedtjeeghfehueduudegfeefueenucfkpheptddrtddrtddrtddpkeekrdduiedurddvhedrvdeffeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhhouggvpehsmhhtphhouhhtpdhhvghlohepphhrohdvrdhmrghilhdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepjhhjhhhisghlohhtsehtrhgrphhhrghnughlvghrrdgtohhmpdhnsggprhgtphhtthhopedupdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhg
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-https://lore.kernel.org/all/20220523084615.13510-1-robert.foss@linaro.org/
+Settings multiple LEDs in a row can be a slow operation because of the
+time required to acquire the bus and prepare the transfer.
+And, in most cases, it is not required that the operation is synchronous.
+
+Implementing the non-blocking brightness_set() for such cases.
+A work queue is used to perform the actual SPI transfer.
+
+The blocking method is still available in case someone needs to perform
+this operation synchronously (ie by calling led_set_brightness_sync()).
+
+
+Signed-off-by: Jean-Jacques Hiblot <jjhiblot@traphandler.com>
+---
+ drivers/leds/leds-tlc5925.c | 76 +++++++++++++++++++++++++++++++++----
+ 1 file changed, 68 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/leds/leds-tlc5925.c b/drivers/leds/leds-tlc5925.c
+index f33eff8b7333..d7dd572eca69 100644
+--- a/drivers/leds/leds-tlc5925.c
++++ b/drivers/leds/leds-tlc5925.c
+@@ -18,6 +18,8 @@
+ #include <linux/property.h>
+ #include <linux/workqueue.h>
+ 
++#define BITS_PER_ATOMIC (sizeof(atomic_t) * 8)
++
+ struct single_led_priv {
+ 	int idx;
+ 	struct led_classdev cdev;
+@@ -25,12 +27,35 @@ struct single_led_priv {
+ 
+ struct tlc5925_leds_priv {
+ 	int max_num_leds;
+-	u8 *state;
++	int max_state;
++	atomic_t *state;
++	int *spi_buffer;
+ 	spinlock_t lock;
++	struct spi_device *spi;
++	struct work_struct xmit_work;
+ 	struct single_led_priv leds[];
+ };
+ 
+-static int tlc5925_brightness_set_blocking(struct led_classdev *cdev,
++static int xmit(struct tlc5925_leds_priv *priv)
++{
++	int i;
++
++	spin_lock(&priv->lock);
++	for (i = 0; i < priv->max_state / (sizeof(atomic_t) * 8) ; i++)
++		priv->spi_buffer[i] = atomic_read(&priv->state[i]);
++	spin_unlock(&priv->lock);
++
++	return spi_write(priv->spi, priv->spi_buffer, priv->max_num_leds / 8);
++}
++
++static void xmit_work(struct work_struct *ws)
++{
++	struct tlc5925_leds_priv *priv =
++		container_of(ws, struct tlc5925_leds_priv, xmit_work);
++	xmit(priv);
++};
++
++static void tlc5925_brightness_set(struct led_classdev *cdev,
+ 					    enum led_brightness brightness)
+ {
+ 	struct spi_device *spi = to_spi_device(cdev->dev->parent);
+@@ -40,16 +65,36 @@ static int tlc5925_brightness_set_blocking(struct led_classdev *cdev,
+ 						   cdev);
+ 	int index = led->idx;
+ 
+-	spin_lock(&priv->lock);
+ 	if (brightness)
+-		priv->state[index / 8] |= (1 << (index % 8));
++		atomic_or(1 << (index % BITS_PER_ATOMIC),
++			  &priv->state[index / BITS_PER_ATOMIC]);
+ 	else
+-		priv->state[index / 8] &= ~(1 << (index % 8));
+-	spin_unlock(&priv->lock);
++		atomic_and(~(1 << (index % BITS_PER_ATOMIC)),
++			   &priv->state[index / BITS_PER_ATOMIC]);
+ 
+-	return spi_write(spi, priv->state, priv->max_num_leds / 8);
++	schedule_work(&priv->xmit_work);
+ }
+ 
++static int tlc5925_brightness_set_blocking(struct led_classdev *cdev,
++					    enum led_brightness brightness)
++{
++	struct spi_device *spi = to_spi_device(cdev->dev->parent);
++	struct tlc5925_leds_priv *priv = spi_get_drvdata(spi);
++	struct single_led_priv *led = container_of(cdev,
++						   struct single_led_priv,
++						   cdev);
++	int index = led->idx;
++
++	if (brightness)
++		atomic_or(1 << (index % BITS_PER_ATOMIC),
++			  &priv->state[index / BITS_PER_ATOMIC]);
++	else
++		atomic_and(~(1 << (index % BITS_PER_ATOMIC)),
++			   &priv->state[index / BITS_PER_ATOMIC]);
++
++	cancel_work_sync(&priv->xmit_work);
++	return xmit(priv);
++}
+ 
+ static int tlc5925_probe(struct spi_device *spi)
+ {
+@@ -96,10 +141,24 @@ static int tlc5925_probe(struct spi_device *spi)
+ 
+ 	spin_lock_init(&priv->lock);
+ 
+-	priv->state = devm_kzalloc(dev, DIV_ROUND_UP(max_num_leds, 8), GFP_KERNEL);
++	priv->spi = spi;
++	INIT_WORK(&priv->xmit_work, xmit_work);
++
++	// Allocate the buffer used to hold the state of each LED
++	priv->max_state = round_up(max_num_leds, BITS_PER_ATOMIC);
++	priv->state = devm_kzalloc(dev,
++				   priv->max_state / 8,
++				   GFP_KERNEL);
+ 	if (!priv->state)
+ 		return -ENOMEM;
+ 
++	// Allocate a second buffer for the communication on the SPI bus
++	priv->spi_buffer = devm_kzalloc(dev,
++				   priv->max_state / 8,
++				   GFP_KERNEL);
++	if (!priv->spi_buffer)
++		return -ENOMEM;
++
+ 	priv->max_num_leds = max_num_leds;
+ 
+ 	device_for_each_child_node(dev, child) {
+@@ -120,6 +179,7 @@ static int tlc5925_probe(struct spi_device *spi)
+ 		cdev = &(priv->leds[count].cdev);
+ 		cdev->brightness = LED_OFF;
+ 		cdev->max_brightness = 1;
++		cdev->brightness_set = tlc5925_brightness_set;
+ 		cdev->brightness_set_blocking = tlc5925_brightness_set_blocking;
+ 
+ 		ret = devm_led_classdev_register_ext(dev, cdev, &init_data);
+-- 
+2.25.1
+
