@@ -2,165 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A953C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 09:46:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 891D3C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 09:46:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233550AbiEWJqm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 05:46:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48952 "EHLO
+        id S233578AbiEWJqv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 05:46:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233639AbiEWJoo (ORCPT
+        with ESMTP id S233446AbiEWJq3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 05:44:44 -0400
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 933911181D
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 02:44:37 -0700 (PDT)
-Received: by mail-lf1-x132.google.com with SMTP id bq30so24626008lfb.3
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 02:44:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language
-         :from:to:cc:references:in-reply-to:content-transfer-encoding;
-        bh=Jr9DBTyCpl+GzbgIiIftgJCFKadRgk6xEv2EUggf+lM=;
-        b=Zz+TzdaObs1cHcPhV0HoKPgF+Lt9QJKW/ttKpz8cQMaNK4iZN2MeLKXpvnxsk0jW0U
-         +nm7fIIO3W7gvFA6fS9yGRGz9+8RW2iTD8FieVIfPovi5EiAEDY/+guWnUNF3JyiaWc2
-         dNpdOtRyCv9rEx47g9SEVxls83cV/b9DKxJTvIVobgQzATDhXqa25fCmP+Wh8E8Wecfx
-         qM27C3n4PkuymuZ3t5QjH/B3uyVLti1oNanOMxQGxqBlXmV47H0QGomciRyrOccOjabw
-         fZingTxugI7SmVnGKiqqm89mvSNUPJnJw+MmquIHtFmz4tTCX9BF7BmbIIaTWMSLYrRP
-         o/+Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:from:to:cc:references:in-reply-to
-         :content-transfer-encoding;
-        bh=Jr9DBTyCpl+GzbgIiIftgJCFKadRgk6xEv2EUggf+lM=;
-        b=mnRvIR2xSrf3/cXSl1TOanYVc1+mcarcp9kkuzIjxp6gIE6zb9v9t62s8JQR0VrHov
-         Khk0UKXAaKn18PReR1WPmoAhOh2w9J9WgLT4osh76izMdbwYDUHcfBtHyMs/ujqmimlZ
-         xZQ157rEoLN5cefqAGWelYB/1OKXM+nILtssPYwZwhgcfrDbIlaF7kGvZu4lTn5hXCym
-         yYgDWkHjhsNPEuv0M/pB7GeLmlZ6MQM5XxBvdvWUUX0/ZjISr3EsOpVnHX/h0ZcMm0Qc
-         IMH2Vn9XFRX4Repm1xqWJtTUg9YTR41lwInP43a3jd0+kROasU9MFMq/P3DNeS6aa6Id
-         UeKQ==
-X-Gm-Message-State: AOAM533hkVcO0tbkM2g3R/WFn74cAZl/xx+2lFKTOWH/iTMgvF/UBjTC
-        MUD4Xk7eCm64nX6OkhI/hHsNnqdlvu8QQTdu
-X-Google-Smtp-Source: ABdhPJyC+OCnnGdP7t/jBMKBSvHk3d3Qn4wLxLsJYMvh8yH51hANgMTw/GvPFnBypPdZwRayCxNb+A==
-X-Received: by 2002:a05:6512:2204:b0:478:68d9:bb45 with SMTP id h4-20020a056512220400b0047868d9bb45mr5056697lfu.453.1653299075948;
-        Mon, 23 May 2022 02:44:35 -0700 (PDT)
-Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id z9-20020a056512376900b00477c164293csm1881182lft.79.2022.05.23.02.44.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 May 2022 02:44:35 -0700 (PDT)
-Message-ID: <9d9e04e9-463a-bd43-b116-a9488f6e154e@linaro.org>
-Date:   Mon, 23 May 2022 11:44:34 +0200
+        Mon, 23 May 2022 05:46:29 -0400
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on20618.outbound.protection.outlook.com [IPv6:2a01:111:f400:7e88::618])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0536710F6
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 02:46:28 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=gpwBDUTX76Gs//SzJeg5hR7OR4BbF4G3yLkhzCke9D+VE6mUfWHYQOtnujyF5GkWQhVSoCv+2v67dg735czaKSvZ/W0LqdrLMSC5V05qOSriCWlw6RNb9IEiArjAaBbBTWjK1EU0KFuW8vIKqf9Q0cPCUqtKBJ4TiLROog3UOE0gLd9XNMQ/0Hqy+FOODbKNzYhSj8TmzXEG4AcQiVdh0BBuzfLmmgmRtOIMnLOho0LjcLAaPm2uKfHq6i1WjawQyXQli04dKcasTk8vNQRJkX9B8QkTV/YL0JDgjxWLTEkYZzm7kH21y50vfaGBQ+wM/4bZ63zXD0bX7vk716uOMg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Bt7NtK4Vt9Okj6sNuFiU5SGCTOZMQN1fv7r4ZEQfhwI=;
+ b=WBlvK87ILxPkwSTyrmoIdv8d/YlIPkNMVgvBrmxgv4SFeMep4Fs7sLL6WonPaKPYJuWQUh57dd2lqCZ6LLbGue3MisOm/l8Oe7CKD5ML1QUGUSdLHwhXo7/r8dh6Srvh5lfT+SK2Fb6+8HUjXCugtQWV526/FS97wup870pFykmiB/lgGUcQCiJduFYift0RmnNqDyu01DvXhA74qW910fFh1bUgBWy65vrHB7Lrylb5fghbPGdRJQQQ/EGwV0DEmva+MkVPRoTr0oSaSk53xdoOn+tA+EDX0qL61l18aoO73ADixlrj0xY7AYUwgmjG8Xo71aktyRBWTEG9on+ipA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Bt7NtK4Vt9Okj6sNuFiU5SGCTOZMQN1fv7r4ZEQfhwI=;
+ b=1u2Gg2jksdRAEuwi2Ww7q5HjOHhrt8rtDQEkPhKuBXkhqgoDModFEdEnTsFhUitz8s4qC1ejE2usw5XsNWYjj4F4nEL2+nWBb3zwIvdJqbI09aablfo9+bsuHmeKACMlegtyvFY2InO0x/b6R7p5dY+yZG2w/mqYETfqldgW5FQ=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from BYAPR12MB3286.namprd12.prod.outlook.com (2603:10b6:a03:139::15)
+ by CH2PR12MB4069.namprd12.prod.outlook.com (2603:10b6:610:ac::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.14; Mon, 23 May
+ 2022 09:46:25 +0000
+Received: from BYAPR12MB3286.namprd12.prod.outlook.com
+ ([fe80::4ddb:baf3:4391:d58a]) by BYAPR12MB3286.namprd12.prod.outlook.com
+ ([fe80::4ddb:baf3:4391:d58a%7]) with mapi id 15.20.5273.023; Mon, 23 May 2022
+ 09:46:25 +0000
+Date:   Mon, 23 May 2022 15:16:11 +0530
+From:   "Gautham R. Shenoy" <gautham.shenoy@amd.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     frederic@kernel.org, paulmck@kernel.org, rjw@rjwysocki.net,
+        x86@kernel.org, linux-kernel@vger.kernel.org, jpoimboe@kernel.org
+Subject: Re: [RFC][PATCH 4/9] idle: Fix rcu_idle_*() usage
+Message-ID: <YotX4ywdUPJt0lNW@BLR-5CG11610CF.amd.com>
+References: <20220519212750.656413111@infradead.org>
+ <20220519213421.808983977@infradead.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220519213421.808983977@infradead.org>
+X-ClientProxiedBy: PN3PR01CA0080.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:c01:9a::22) To BYAPR12MB3286.namprd12.prod.outlook.com
+ (2603:10b6:a03:139::15)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v3 1/2] tpm: Add tpm_tis_i2c backend for tpm_tis_core
-Content-Language: en-US
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Alexander Steffen <Alexander.Steffen@infineon.com>,
-        jarkko@kernel.org, linux-kernel@vger.kernel.org,
-        linux-integrity@vger.kernel.org
-Cc:     peterhuewe@gmx.de, jgg@ziepe.ca, krzysztof.kozlowski+dt@linaro.org,
-        Johannes Holland <johannes.holland@infineon.com>,
-        Amir Mizinski <amirmizi6@gmail.com>
-References: <20220520172422.4309-1-Alexander.Steffen@infineon.com>
- <20220520172422.4309-2-Alexander.Steffen@infineon.com>
- <02596f22-3d19-8872-75fd-2a8f563c8270@linaro.org>
- <8f0d2098-8c7f-2347-3004-bf3e422de3a3@infineon.com>
- <d4ab965c-d193-3b4b-9b88-95b8b2b40f80@linaro.org>
-In-Reply-To: <d4ab965c-d193-3b4b-9b88-95b8b2b40f80@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d2fce3ea-9105-42a2-72c6-08da3ca119db
+X-MS-TrafficTypeDiagnostic: CH2PR12MB4069:EE_
+X-Microsoft-Antispam-PRVS: <CH2PR12MB4069AC95A183CFA338B4F64796D49@CH2PR12MB4069.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: MXAAPwhnz4v3CWGx6u/wQyMm0tlKj9e0/CQq/WVxo2e6HHJzWNTKki8G+1NeXLcfNvoPrWxHZEhe7euv/yf4tH/js6tEJ5nUPNGohJ+lKllXOQ2GN0eWmhvBDwr3/4o31f23yB3Fznjz0XsSB8ZfIApDEGnGMs/N3T64rsK3VshgWh6AYKPf8AeYGFEVEw3UZYrhJRA1KKhpENBIjZ7dClB7uVdJsWI6ObgfMwsts90GaKYeHJr7siJkwyOM3U2/W41rskXWs9Q+hYJ0dwQd+TZ43WXgl19cOYoAA2n5NwZW00tUXTLhjJrkNjKIHNasA9JFZGepOk4eVRyr8ttUKPB7g8Kl5Ul8SEEzdQHo7fhIqb9u696/qS4daBYxXwNAhQdBlW1Y7r8E31UEe95DlqfURyTv5NmQ9h2esYfnA7cOMygdutYS69HFOBAMlxsCmF3T67msxGv3dgz4bJdCL/KfARqvvKVvDnmvxx1w9oApp8XdaEN7PKumqBN1zzxM7FdfwYP5JbBg0KdyptRk84gvavKwIkfYOmTZ1kI0MqpLwJjmYTYzNLKAVm5MSUcTzrxnQtBCgQR0lQLpOwKPV8W8RMp16dI9Aoo0U4XD8soibqdtxqNALn8DujCOvgAzVtl+fP+EvP2aSE2RkKaGjg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR12MB3286.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(316002)(186003)(6916009)(2906002)(38100700002)(508600001)(6486002)(83380400001)(6666004)(6506007)(66946007)(66476007)(66556008)(8936002)(5660300002)(6512007)(26005)(8676002)(4326008)(86362001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?vPjrqCd8Lh4fAKaSP45TTxFFgaHfzDH+fwQK4wFJ1ioEpRPTgg2D29qX8MnF?=
+ =?us-ascii?Q?5MG76vdj+yujZh/oaLVvJzYIOgETIQgsy6BhhzEVSGo7MFxG3Mhvn1MUfI6j?=
+ =?us-ascii?Q?OhI0GtU59e09Ze4/TOuSLcY5L8GEqcQekWIUrJXGc8ueddQal+8k1Nli5LJr?=
+ =?us-ascii?Q?sP51bfkVsEoCNseMipMkDgWAzJpQdP4THCjbnzRoH5ELOzkptNwcag0s5Taz?=
+ =?us-ascii?Q?qQ4wx5g7fMLcc2/liKMBkYh2y4RmGM4JsJBMM2N/JbFqFSlST6FsA0XQWpNI?=
+ =?us-ascii?Q?TXlZt6hXF1gIvRjcnbOje4Wi5ZCt8cQgWRqJ2XmQWBptK9L9Gu1AVyy/AwlL?=
+ =?us-ascii?Q?EP+FefgZ7idrWFf55LlxQUZYFSQPAxDVLpHyy0GUkZJLUAiIv6DBqvsyQKLb?=
+ =?us-ascii?Q?asdc/PCvPxfs3YAfZWV5cpJ5zbd+EQg/r3UkfiJsfL5fKxL4CFdJreakYRxI?=
+ =?us-ascii?Q?/v96yf+kD0kH/JLJGgkaeO910LMe0I8aLHdh3G17oFyDqLXOnM0p+i8HLJOY?=
+ =?us-ascii?Q?SPQ4022caWrhxwWOBkig5DC7tQWtJWnA1vZeEEtutBeWWpJAua7f3N8L+Wsz?=
+ =?us-ascii?Q?lyksbZeQ53//Ue7SWP1IJ97nDj0oMaQh4RCCdilcaEdqSut8n+dVRVJ8anc+?=
+ =?us-ascii?Q?agCDNBEWOFQr+tKPMzBUUdy3GnJeT4++KSzjFNAFWUEQSRTRKXB50cs5SWVw?=
+ =?us-ascii?Q?kC6KTqcf/dV3jCWfk9yig40P2vXZT4/yFQCI0XsgM3I31lIAEVRBL9ttAet2?=
+ =?us-ascii?Q?yBHZNz3cKnKCXkZkxWinObC65gAV2ZlXjmU+W6vAm0N8S/qYsvToCfhdRccB?=
+ =?us-ascii?Q?whQFYi1HhVby1OD7111Sevc1un0Nw7EquyFbsfmeLdT+TzL6OpkBi3BteBeh?=
+ =?us-ascii?Q?lh6AjR4XlDEgMka7pruzLOZWvrh5vUAwP+6oIIeF5yLQMTbCnz8UWr8W9Pq3?=
+ =?us-ascii?Q?EQIAU1AmHJnJGeNgdVLu/0jx7TMU6+VjXODIoxrXHeRYGIz5lcfSiL/dyPNM?=
+ =?us-ascii?Q?vLSQcCP3YZt3g3vlCBbXDl2Tg2T23MwejMxxdKAYzggUVLWmTY1TCgI6Hvcz?=
+ =?us-ascii?Q?u7tmp24Kje71NfrrUy6Q4W9137m//jPLtU1aFTTFD9j9QWdJYs+dH9AaSjpG?=
+ =?us-ascii?Q?1V3QNg8JJFp1k4ABP6bb0Gpxvnz5kMfrCldcdWnZq4fIReFgWKeiOvfQxMKh?=
+ =?us-ascii?Q?pXLYD8lTazeZh940/lLxvdKUKI48tf+BmtcJ9WQG1Vs+Zn60GKrKJgqeWyWR?=
+ =?us-ascii?Q?DkLQev3c8LJlO64ZOZY4wl3/rOnOEhfZFEp16Ti/S9VuiTBAWkL3SHx0v2JR?=
+ =?us-ascii?Q?+eaoXik9YDK6RjPbooyEb1nwDAzKyfBtB2emspKv+3Y530aKkm7if/zMOFfh?=
+ =?us-ascii?Q?+j7uCTD0Vdw3J5EIT5nkzG5MwyowPLjzFvcO6mnE6I2dUuo6pcODCUlM0qzu?=
+ =?us-ascii?Q?8V3ZMEihCITC48B36sCzD4phe9idZSwUxb5sS03OmYCNURfq5pkwrtLophO2?=
+ =?us-ascii?Q?vwJ3KwZmsaOdU0vDhH5/Q+H/GYDMzBv5SQ+OnZ2TnjTRWFq1k9ItV3HbQUUn?=
+ =?us-ascii?Q?Zww4wZ9szORGcei99GMZ/c4sTDwk2fhRBItXOvDr/PMQO9L19EjkTs/3Lfpm?=
+ =?us-ascii?Q?C8cGSPfizVhQjOfBWjTLUpoTQa2m8ebIvMkXDan2F4E89lwqy4cPjDI5cuiq?=
+ =?us-ascii?Q?BBGqnPQ79fDYXhVzC2G5jkwF6VZRiWKqNbQ52PBeHvlJdjYA6bvKMO88dLv4?=
+ =?us-ascii?Q?k+0D+UNWEA=3D=3D?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d2fce3ea-9105-42a2-72c6-08da3ca119db
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR12MB3286.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 May 2022 09:46:25.0215
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: NiuKjuODbg+/5wJaaLAKcCVuNBnL85DOzASGrCZ7UPB8UOS/+9cZC/A6E4JOPgpeK4tGcsweMuMx+mrLKwXZlQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4069
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 23/05/2022 11:32, Krzysztof Kozlowski wrote:
-> On 23/05/2022 10:55, Alexander Steffen wrote:
->> On 22.05.22 10:30, Krzysztof Kozlowski wrote:
->>> On 20/05/2022 19:24, Alexander Steffen wrote:
->>>>
->>>> +MODULE_DEVICE_TABLE(i2c, tpm_tis_i2c_id);
->>>> +
->>>> +#ifdef CONFIG_OF
->>>> +static const struct of_device_id of_tis_i2c_match[] = {
->>>> +     { .compatible = "infineon,slb9673", },
->>>> +     { .compatible = "tcg,tpm_tis-i2c", },
->>>
->>> Please run checkpatch on your patches. You add undocumented compatibles.
->>
->> Sorry, the old infrastructure I had to do that automatically is not in 
->> place at the moment, so it slipped through.
->>
->>> Without bindings, new compatibles and properties cannot be accepted, so NAK.
->>
->> Could you be more specific as to what the correct solution is here? 
->> Usually, I'd just look at what the existing code does, but that is a 
->> little messy:
->>
->>
->>
->> * socionext,synquacer-tpm-mmio is documented only in 
->> Documentation/devicetree/bindings/trivial-devices.yaml
->>
->> * nuvoton,npct601 is documented in trivial-devices.yaml and is also 
->> mentioned in Documentation/devicetree/bindings/security/tpm/tpm-i2c.txt
->>
->> * nuvoton,npct650 is only mentioned in tpm-i2c.txt, but appears nowhere 
->> in the code
->>
->> * infineon,tpm_i2c_infineon appears only in tpm_i2c_infineon.c, but is 
->> documented nowhere
->>
->> * tpm_tis_spi_main.c has all its compatibles documented in 
->> tpm_tis_spi.txt, except google,cr50, which is documented in 
->> google,cr50.txt, even though it has the same properties
->>
->> * tpm_tis_i2c_cr50.c uses the exact same google,cr50, even though that 
->> is explicitly documented as a device "on SPI Bus" and lists 
->> spi-max-frequency as one of its required properties, which does not make 
->> any sense for an I2C device
->>
->> * According to the feedback in 
->> https://patchwork.kernel.org/project/linux-integrity/patch/20220404081835.495-4-johannes.holland@infineon.com/#24801807, 
->> the text format, that is currently used everywhere in 
->> Documentation/devicetree/bindings/security/tpm/, is deprecated anyway 
->> and should be replaced by YAML
->>
->>
->>
->> So would you be okay with just adding the compatibles from tpm_tis_i2c.c 
->> to trivial-devices.yaml, so that checkpatch does not complain anymore, 
->> and leave the cleanup of the mess above for later?
+On Thu, May 19, 2022 at 11:27:54PM +0200, Peter Zijlstra wrote:
+> The whole disable-RCU, enable-IRQS dance is very intricate since
+> changing IRQ state is traced, which depends on RCU.
 > 
-> To trivial-devices you should add only bindings really trivial devices,
-> which do not have any other properties, even when the bindings are
-> finished. This means you entirely fully the hardware and still have only
-> reg+compatible.
+> Add two helpers for the cpuidle case that mirror the entry code.
 > 
-> If this device fits such case - no other hardware properties than reg -
-> then, feel free to document it in trivial-devices. However I am not sure
-> that TPM devices are that trivial... For example tpm-i2c.txt defines
-> also interrupts and label.
-> 
-> If the device is not trivial, it should be documented in bindings,
-> either dedicated or some existing ones.
+> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+> ---
 
-It seems I lost few words in my message, so let me write it again, but
-maybe closer to English:
+[...]
+>  
+> --- a/drivers/cpuidle/cpuidle.c
+> +++ b/drivers/cpuidle/cpuidle.c
+> @@ -13,6 +13,7 @@
+>  #include <linux/mutex.h>
+>  #include <linux/sched.h>
+>  #include <linux/sched/clock.h>
+> +#include <linux/sched/idle.h>
+>  #include <linux/notifier.h>
+>  #include <linux/pm_qos.h>
+>  #include <linux/cpu.h>
+> @@ -150,12 +151,12 @@ static void enter_s2idle_proper(struct c
+>  	 */
+>  	stop_critical_timings();
+>  	if (!(target_state->flags & CPUIDLE_FLAG_RCU_IDLE))
+> -		rcu_idle_enter();
+> +		cpuidle_rcu_enter();
+>  	target_state->enter_s2idle(dev, drv, index);
+>  	if (WARN_ON_ONCE(!irqs_disabled()))
+> -		local_irq_disable();
+> +		raw_local_irq_disable();
+>  	if (!(target_state->flags & CPUIDLE_FLAG_RCU_IDLE))
+> -		rcu_idle_exit();
+> +		cpuidle_rcu_enter();
 
-To trivial-devices you should add only bindings of really trivial
-devices, which do not have any other properties, even when the bindings
-are finished. This means you describe fully the hardware and still have
-only reg+compatible.
+Shouldn't this be cpuidle_rcu_exit() ?
 
-If this device fits such case - no other hardware properties than reg -
-then, feel free to document it in trivial-devices. However I am not sure
-that TPM devices are that trivial... For example tpm-i2c.txt defines
-also interrupts and label.
 
-If the device is not trivial, it should be documented in bindings,
-either dedicated or some existing ones.
+>  	tick_unfreeze();
+>  	start_critical_timings();
+>  
 
-Best regards,
-Krzysztof
+--
+Thanks and Regards
+gautham.
