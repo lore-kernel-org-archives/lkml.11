@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ED9FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:34:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A780C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:34:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240973AbiEWReI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:34:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48972 "EHLO
+        id S241536AbiEWReU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:34:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241536AbiEWRW0 (ORCPT
+        with ESMTP id S240054AbiEWRX3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:22:26 -0400
+        Mon, 23 May 2022 13:23:29 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E3A872237;
-        Mon, 23 May 2022 10:19:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 652BB82179;
+        Mon, 23 May 2022 10:20:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1FD5D60C07;
-        Mon, 23 May 2022 17:17:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 234C9C385AA;
-        Mon, 23 May 2022 17:17:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 48CCE610E8;
+        Mon, 23 May 2022 17:19:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48273C385AA;
+        Mon, 23 May 2022 17:18:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326236;
-        bh=vtfdmjHYyYmA5vp7V1TIWM3kVm7ahhApIciXEJruAOs=;
+        s=korg; t=1653326339;
+        bh=92+NFS0k3PNxcxMEA45Y2iFX4nKAdzYI4g8D6reYW64=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SkSHVrmnwpw8t8z05J+XIb9nd2x76gWuGFHZs4De8meiHnDo3Al3OowNpp7N3EhOK
-         6XW0OlwC1WVe+B+bum3pysAzMy5FZkeDoZjeRyVjqTLH8e8tpXIV93eoNOrxeF61eg
-         rq5lAphnTEqb5X54fGUYPIEcKiJj3mQcssS3zbmA=
+        b=xfvq1/gnjwpO5H/W4UNwLalpxzVILti+vuIUZWPln1FJ3VA/fXnbCNPgwyfx/LtYD
+         7sMjX9UeADe3pscL18e9y3yOvxe6i0h1OC2Ddo8fWBG/h3dQkGkN/P47yXwSpPj9G3
+         lxAo/UwlLaZBtaBT+qGe36xyPdJLHGFWwxYD3dsE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        stable@vger.kernel.org, Matthew Rosato <mjrosato@linux.ibm.com>,
+        Niklas Schnelle <schnelle@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 019/132] rtc: fix use-after-free on device removal
-Date:   Mon, 23 May 2022 19:03:48 +0200
-Message-Id: <20220523165826.725167595@linuxfoundation.org>
+Subject: [PATCH 5.15 031/132] s390/pci: improve zpci_dev reference counting
+Date:   Mon, 23 May 2022 19:04:00 +0200
+Message-Id: <20220523165828.674238706@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
 References: <20220523165823.492309987@linuxfoundation.org>
@@ -50,78 +50,133 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vincent Whitchurch <vincent.whitchurch@axis.com>
+From: Niklas Schnelle <schnelle@linux.ibm.com>
 
-[ Upstream commit c8fa17d9f08a448184f03d352145099b5beb618e ]
+[ Upstream commit c122383d221dfa2f41cfe5e672540595de986fde ]
 
-If the irqwork is still scheduled or running while the RTC device is
-removed, a use-after-free occurs in rtc_timer_do_work().  Cleanup the
-timerqueue and ensure the work is stopped to fix this.
+Currently zpci_dev uses kref based reference counting but only accounts
+for one original reference plus one reference from an added pci_dev to
+its underlying zpci_dev. Counting just the original reference worked
+until the pci_dev reference was added in commit 2a671f77ee49 ("s390/pci:
+fix use after free of zpci_dev") because once a zpci_dev goes away, i.e.
+enters the reserved state, it would immediately get released. However
+with the pci_dev reference this is no longer the case and the zpci_dev
+may still appear in multiple availability events indicating that it was
+reserved. This was solved by detecting when the zpci_dev is already on
+its way out but still hanging around. This has however shown some light
+on how unusual our zpci_dev reference counting is.
 
- BUG: KASAN: use-after-free in mutex_lock+0x94/0x110
- Write of size 8 at addr ffffff801d846338 by task kworker/3:1/41
+Improve upon this by modelling zpci_dev reference counting on pci_dev.
+Analogous to pci_get_slot() increment the reference count in
+get_zdev_by_fid(). Thus all users of get_zdev_by_fid() must drop the
+reference once they are done with the zpci_dev.
 
- Workqueue: events rtc_timer_do_work
- Call trace:
-  mutex_lock+0x94/0x110
-  rtc_timer_do_work+0xec/0x630
-  process_one_work+0x5fc/0x1344
-  ...
+Similar to pci_scan_single_device(), zpci_create_device() returns the
+device with an initial count of 1 and the device added to the zpci_list
+(analogous to the PCI bus' device_list). In turn users of
+zpci_create_device() must only drop the reference once the device is
+gone from the point of view of the zPCI subsystem, it might still be
+referenced by the common PCI subsystem though.
 
- Allocated by task 551:
-  kmem_cache_alloc_trace+0x384/0x6e0
-  devm_rtc_allocate_device+0xf0/0x574
-  devm_rtc_device_register+0x2c/0x12c
-  ...
-
- Freed by task 572:
-  kfree+0x114/0x4d0
-  rtc_device_release+0x64/0x80
-  device_release+0x8c/0x1f4
-  kobject_put+0x1c4/0x4b0
-  put_device+0x20/0x30
-  devm_rtc_release_device+0x1c/0x30
-  devm_action_release+0x54/0x90
-  release_nodes+0x124/0x310
-  devres_release_group+0x170/0x240
-  i2c_device_remove+0xd8/0x314
-  ...
-
- Last potentially related work creation:
-  insert_work+0x5c/0x330
-  queue_work_on+0xcc/0x154
-  rtc_set_time+0x188/0x5bc
-  rtc_dev_ioctl+0x2ac/0xbd0
-  ...
-
-Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
-Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Link: https://lore.kernel.org/r/20211210160951.7718-1-vincent.whitchurch@axis.com
+Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com>
+Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+Signed-off-by: Vasily Gorbik <gor@linux.ibm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/rtc/class.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ arch/s390/pci/pci.c       | 1 +
+ arch/s390/pci/pci_bus.h   | 3 ++-
+ arch/s390/pci/pci_clp.c   | 9 +++++++--
+ arch/s390/pci/pci_event.c | 7 ++++++-
+ 4 files changed, 16 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/rtc/class.c b/drivers/rtc/class.c
-index f77bc089eb6b..0aef7df2ea70 100644
---- a/drivers/rtc/class.c
-+++ b/drivers/rtc/class.c
-@@ -26,6 +26,15 @@ struct class *rtc_class;
- static void rtc_device_release(struct device *dev)
+diff --git a/arch/s390/pci/pci.c b/arch/s390/pci/pci.c
+index b833155ce838..639924d98331 100644
+--- a/arch/s390/pci/pci.c
++++ b/arch/s390/pci/pci.c
+@@ -69,6 +69,7 @@ struct zpci_dev *get_zdev_by_fid(u32 fid)
+ 	list_for_each_entry(tmp, &zpci_list, entry) {
+ 		if (tmp->fid == fid) {
+ 			zdev = tmp;
++			zpci_zdev_get(zdev);
+ 			break;
+ 		}
+ 	}
+diff --git a/arch/s390/pci/pci_bus.h b/arch/s390/pci/pci_bus.h
+index e359d2686178..ecef3a9e16c0 100644
+--- a/arch/s390/pci/pci_bus.h
++++ b/arch/s390/pci/pci_bus.h
+@@ -19,7 +19,8 @@ void zpci_bus_remove_device(struct zpci_dev *zdev, bool set_error);
+ void zpci_release_device(struct kref *kref);
+ static inline void zpci_zdev_put(struct zpci_dev *zdev)
  {
- 	struct rtc_device *rtc = to_rtc_device(dev);
-+	struct timerqueue_head *head = &rtc->timerqueue;
-+	struct timerqueue_node *node;
-+
-+	mutex_lock(&rtc->ops_lock);
-+	while ((node = timerqueue_getnext(head)))
-+		timerqueue_del(head, node);
-+	mutex_unlock(&rtc->ops_lock);
-+
-+	cancel_work_sync(&rtc->irqwork);
+-	kref_put(&zdev->kref, zpci_release_device);
++	if (zdev)
++		kref_put(&zdev->kref, zpci_release_device);
+ }
  
- 	ida_simple_remove(&rtc_ida, rtc->id);
- 	mutex_destroy(&rtc->ops_lock);
+ static inline void zpci_zdev_get(struct zpci_dev *zdev)
+diff --git a/arch/s390/pci/pci_clp.c b/arch/s390/pci/pci_clp.c
+index be077b39da33..5011d27461fd 100644
+--- a/arch/s390/pci/pci_clp.c
++++ b/arch/s390/pci/pci_clp.c
+@@ -22,6 +22,8 @@
+ #include <asm/clp.h>
+ #include <uapi/asm/clp.h>
+ 
++#include "pci_bus.h"
++
+ bool zpci_unique_uid;
+ 
+ void update_uid_checking(bool new)
+@@ -403,8 +405,11 @@ static void __clp_add(struct clp_fh_list_entry *entry, void *data)
+ 		return;
+ 
+ 	zdev = get_zdev_by_fid(entry->fid);
+-	if (!zdev)
+-		zpci_create_device(entry->fid, entry->fh, entry->config_state);
++	if (zdev) {
++		zpci_zdev_put(zdev);
++		return;
++	}
++	zpci_create_device(entry->fid, entry->fh, entry->config_state);
+ }
+ 
+ int clp_scan_pci_devices(void)
+diff --git a/arch/s390/pci/pci_event.c b/arch/s390/pci/pci_event.c
+index 5b8d647523f9..6d57625b8ed9 100644
+--- a/arch/s390/pci/pci_event.c
++++ b/arch/s390/pci/pci_event.c
+@@ -62,10 +62,12 @@ static void __zpci_event_error(struct zpci_ccdf_err *ccdf)
+ 	       pdev ? pci_name(pdev) : "n/a", ccdf->pec, ccdf->fid);
+ 
+ 	if (!pdev)
+-		return;
++		goto no_pdev;
+ 
+ 	pdev->error_state = pci_channel_io_perm_failure;
+ 	pci_dev_put(pdev);
++no_pdev:
++	zpci_zdev_put(zdev);
+ }
+ 
+ void zpci_event_error(void *data)
+@@ -94,6 +96,7 @@ static void zpci_event_hard_deconfigured(struct zpci_dev *zdev, u32 fh)
+ static void __zpci_event_availability(struct zpci_ccdf_avail *ccdf)
+ {
+ 	struct zpci_dev *zdev = get_zdev_by_fid(ccdf->fid);
++	bool existing_zdev = !!zdev;
+ 	enum zpci_state state;
+ 
+ 	zpci_err("avail CCDF:\n");
+@@ -156,6 +159,8 @@ static void __zpci_event_availability(struct zpci_ccdf_avail *ccdf)
+ 	default:
+ 		break;
+ 	}
++	if (existing_zdev)
++		zpci_zdev_put(zdev);
+ }
+ 
+ void zpci_event_availability(void *data)
 -- 
 2.35.1
 
