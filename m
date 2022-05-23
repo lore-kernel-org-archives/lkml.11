@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0E8DC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A3E0C4321E
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:58:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244030AbiEWR5a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:57:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39268 "EHLO
+        id S243482AbiEWR5D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:57:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241899AbiEWRbe (ORCPT
+        with ESMTP id S241643AbiEWRbB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:31:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AF436CAB8;
-        Mon, 23 May 2022 10:26:59 -0700 (PDT)
+        Mon, 23 May 2022 13:31:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B9D065D3E;
+        Mon, 23 May 2022 10:26:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C45EA611E6;
-        Mon, 23 May 2022 17:26:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C19E8C385A9;
-        Mon, 23 May 2022 17:26:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 69DF0B81211;
+        Mon, 23 May 2022 17:26:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A331DC34115;
+        Mon, 23 May 2022 17:26:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326796;
-        bh=KRlYvPWMEKkubzqIFj6i84D49RI0Jy5hTL0Q+gTJ6io=;
+        s=korg; t=1653326809;
+        bh=u2udwhSZTeWHFosTEeRXpx2wintHjv8i2tYWDrM1eoU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Eye72EqhGPYYiJAASWrhkvZoHLSEmyjDTuzxkek+uosQJohnIlesWAkLZO3uoEdeC
-         4Mtb1COjZZNiDO3Rrh9rElCHmOxx/2FOLdUn+S+SA5QpMqrO7IV66GpzGl9fRpTre/
-         Bkp0YyGH/ozoMCnGAfKnLzZwFIZRtT1zFazy22ks=
+        b=le+Utb67XWs/LFNsfGRQH7rJkDbJCn24edbQShOoYH59j1tG/7reA8JfSDzi1PQ4x
+         DoDCF1dhwqN8V4hRK7DP28gdiGj+z0pRYcf06mMpes1qYznAHcib3Pw0wGQERKoQ0l
+         hTRt/lCozcwpcDXaWXPVcVFq+w5sPh8tK7BN2zNk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Matthew Wilcox <willy@infradead.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
+        stable@vger.kernel.org, Jinke Fan <fanjinke@hygon.cn>,
+        Mikhail Gavrilov <mikhail.v.gavrilov@gmail.com>,
+        Raul E Rangel <rrangel@chromium.org>,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 034/158] tools/virtio: compile with -pthread
-Date:   Mon, 23 May 2022 19:03:11 +0200
-Message-Id: <20220523165836.159659672@linuxfoundation.org>
+Subject: [PATCH 5.17 038/158] rtc: mc146818-lib: Fix the AltCentury for AMD platforms
+Date:   Mon, 23 May 2022 19:03:15 +0200
+Message-Id: <20220523165836.817034786@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
 References: <20220523165830.581652127@linuxfoundation.org>
@@ -49,36 +52,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael S. Tsirkin <mst@redhat.com>
+From: Mario Limonciello <mario.limonciello@amd.com>
 
-[ Upstream commit f03560a57c1f60db6ac23ffd9714e1c69e2f95c7 ]
+[ Upstream commit 3ae8fd41573af4fb3a490c9ed947fc936ba87190 ]
 
-When using pthreads, one has to compile and link with -lpthread,
-otherwise e.g. glibc is not guaranteed to be reentrant.
+Setting the century forward has been failing on AMD platforms.
+There was a previous attempt at fixing this for family 0x17 as part of
+commit 7ad295d5196a ("rtc: Fix the AltCentury value on AMD/Hygon
+platform") but this was later reverted due to some problems reported
+that appeared to stem from an FW bug on a family 0x17 desktop system.
 
-This replaces -lpthread.
+The same comments mentioned in the previous commit continue to apply
+to the newer platforms as well.
 
-Reported-by: Matthew Wilcox <willy@infradead.org>
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+```
+MC146818 driver use function mc146818_set_time() to set register
+RTC_FREQ_SELECT(RTC_REG_A)'s bit4-bit6 field which means divider stage
+reset value on Intel platform to 0x7.
+
+While AMD/Hygon RTC_REG_A(0Ah)'s bit4 is defined as DV0 [Reference]:
+DV0 = 0 selects Bank 0, DV0 = 1 selects Bank 1. Bit5-bit6 is defined
+as reserved.
+
+DV0 is set to 1, it will select Bank 1, which will disable AltCentury
+register(0x32) access. As UEFI pass acpi_gbl_FADT.century 0x32
+(AltCentury), the CMOS write will be failed on code:
+CMOS_WRITE(century, acpi_gbl_FADT.century).
+
+Correct RTC_REG_A bank select bit(DV0) to 0 on AMD/Hygon CPUs, it will
+enable AltCentury(0x32) register writing and finally setup century as
+expected.
+```
+
+However in closer examination the change previously submitted was also
+modifying bits 5 & 6 which are declared reserved in the AMD documentation.
+So instead modify just the DV0 bank selection bit.
+
+Being cognizant that there was a failure reported before, split the code
+change out to a static function that can also be used for exclusions if
+any regressions such as Mikhail's pop up again.
+
+Cc: Jinke Fan <fanjinke@hygon.cn>
+Cc: Mikhail Gavrilov <mikhail.v.gavrilov@gmail.com>
+Link: https://lore.kernel.org/all/CABXGCsMLob0DC25JS8wwAYydnDoHBSoMh2_YLPfqm3TTvDE-Zw@mail.gmail.com/
+Link: https://www.amd.com/system/files/TechDocs/51192_Bolton_FCH_RRG.pdf
+Signed-off-by: Raul E Rangel <rrangel@chromium.org>
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Link: https://lore.kernel.org/r/20220111225750.1699-1-mario.limonciello@amd.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/virtio/Makefile | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/rtc/rtc-mc146818-lib.c | 16 +++++++++++++++-
+ include/linux/mc146818rtc.h    |  2 ++
+ 2 files changed, 17 insertions(+), 1 deletion(-)
 
-diff --git a/tools/virtio/Makefile b/tools/virtio/Makefile
-index 0d7bbe49359d..1b25cc7c64bb 100644
---- a/tools/virtio/Makefile
-+++ b/tools/virtio/Makefile
-@@ -5,7 +5,8 @@ virtio_test: virtio_ring.o virtio_test.o
- vringh_test: vringh_test.o vringh.o virtio_ring.o
+diff --git a/drivers/rtc/rtc-mc146818-lib.c b/drivers/rtc/rtc-mc146818-lib.c
+index 562f99b664a2..522449b25921 100644
+--- a/drivers/rtc/rtc-mc146818-lib.c
++++ b/drivers/rtc/rtc-mc146818-lib.c
+@@ -176,6 +176,17 @@ int mc146818_get_time(struct rtc_time *time)
+ }
+ EXPORT_SYMBOL_GPL(mc146818_get_time);
  
- CFLAGS += -g -O2 -Werror -Wno-maybe-uninitialized -Wall -I. -I../include/ -I ../../usr/include/ -Wno-pointer-sign -fno-strict-overflow -fno-strict-aliasing -fno-common -MMD -U_FORTIFY_SOURCE -include ../../include/linux/kconfig.h
--LDFLAGS += -lpthread
-+CFLAGS += -pthread
-+LDFLAGS += -pthread
- vpath %.c ../../drivers/virtio ../../drivers/vhost
- mod:
- 	${MAKE} -C `pwd`/../.. M=`pwd`/vhost_test V=${V}
++/* AMD systems don't allow access to AltCentury with DV1 */
++static bool apply_amd_register_a_behavior(void)
++{
++#ifdef CONFIG_X86
++	if (boot_cpu_data.x86_vendor == X86_VENDOR_AMD ||
++	    boot_cpu_data.x86_vendor == X86_VENDOR_HYGON)
++		return true;
++#endif
++	return false;
++}
++
+ /* Set the current date and time in the real time clock. */
+ int mc146818_set_time(struct rtc_time *time)
+ {
+@@ -249,7 +260,10 @@ int mc146818_set_time(struct rtc_time *time)
+ 	save_control = CMOS_READ(RTC_CONTROL);
+ 	CMOS_WRITE((save_control|RTC_SET), RTC_CONTROL);
+ 	save_freq_select = CMOS_READ(RTC_FREQ_SELECT);
+-	CMOS_WRITE((save_freq_select|RTC_DIV_RESET2), RTC_FREQ_SELECT);
++	if (apply_amd_register_a_behavior())
++		CMOS_WRITE((save_freq_select & ~RTC_AMD_BANK_SELECT), RTC_FREQ_SELECT);
++	else
++		CMOS_WRITE((save_freq_select|RTC_DIV_RESET2), RTC_FREQ_SELECT);
+ 
+ #ifdef CONFIG_MACH_DECSTATION
+ 	CMOS_WRITE(real_yrs, RTC_DEC_YEAR);
+diff --git a/include/linux/mc146818rtc.h b/include/linux/mc146818rtc.h
+index 808bb4cee230..b0da04fe087b 100644
+--- a/include/linux/mc146818rtc.h
++++ b/include/linux/mc146818rtc.h
+@@ -86,6 +86,8 @@ struct cmos_rtc_board_info {
+    /* 2 values for divider stage reset, others for "testing purposes only" */
+ #  define RTC_DIV_RESET1	0x60
+ #  define RTC_DIV_RESET2	0x70
++   /* In AMD BKDG bit 5 and 6 are reserved, bit 4 is for select dv0 bank */
++#  define RTC_AMD_BANK_SELECT	0x10
+   /* Periodic intr. / Square wave rate select. 0=none, 1=32.8kHz,... 15=2Hz */
+ # define RTC_RATE_SELECT 	0x0F
+ 
 -- 
 2.35.1
 
