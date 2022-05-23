@@ -2,48 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11074C38A05
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ED78C38A2B
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:48:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243241AbiEWRqs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:46:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38258 "EHLO
+        id S244501AbiEWRsH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:48:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242666AbiEWR1z (ORCPT
+        with ESMTP id S243047AbiEWR2R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:27:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCC268720C;
-        Mon, 23 May 2022 10:23:58 -0700 (PDT)
+        Mon, 23 May 2022 13:28:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9ABA8E18C;
+        Mon, 23 May 2022 10:25:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E35FA60916;
-        Mon, 23 May 2022 17:23:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA4BCC385AA;
-        Mon, 23 May 2022 17:23:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CF347B811CE;
+        Mon, 23 May 2022 17:24:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2BFF2C385AA;
+        Mon, 23 May 2022 17:24:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326609;
-        bh=Q6WGn+T2IYOJX+pYvJtK4Xq4x5ALfQD1/9ZqxdvFrkU=;
+        s=korg; t=1653326666;
+        bh=q7EG8RQlTf/vrDYWRZ9DE57aKLz4WapfiR01tD+MV5Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uKYcyBmK29pg/AE0n8ybqE7U3LSQW0bJztv6wWkNWLxgXya5M2teKvSYVasggkOYW
-         1o2vlkeXV1NzQ0jf6tZgHbpaOtoDYBR5eB0RKc6e/jcBxFN0emGJQg8F8L/g8cOQKi
-         CiZZypge5odrXy5mbQEHjToRod0qTlV1syBxBr4A=
+        b=cfEiB0qjT90DcC2Dq33iNRE9buPtW8397AW3DeudItcor72bGVv3OY3jbSD4PQCmJ
+         JJXJpbxSGQEwydgg3uBEhFhX+WSz7FdASs/YWUbPGbhbWPtECvMHs2rDBDrnb0q79u
+         scXjsIzA4i6su5RLXD5Jy6gW667H2CJfIM89ebcU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hannes Reinecke <hare@suse.de>,
-        Krishna Kant <krishna.kant@purestorage.com>,
-        Seamus Connor <sconnor@purestorage.com>,
-        Brian Bunker <brian@purestorage.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, David Gow <davidgow@google.com>,
+        Richard Weinberger <richard@nod.at>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 112/132] scsi: scsi_dh_alua: Properly handle the ALUA transitioning state
-Date:   Mon, 23 May 2022 19:05:21 +0200
-Message-Id: <20220523165842.085007434@linuxfoundation.org>
+Subject: [PATCH 5.17 022/158] um: Cleanup syscall_handler_t definition/cast, fix warning
+Date:   Mon, 23 May 2022 19:02:59 +0200
+Message-Id: <20220523165834.271033720@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
-References: <20220523165823.492309987@linuxfoundation.org>
+In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
+References: <20220523165830.581652127@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,57 +49,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Brian Bunker <brian@purestorage.com>
+From: David Gow <davidgow@google.com>
 
-[ Upstream commit 6056a92ceb2a7705d61df7ec5370548e96aee258 ]
+[ Upstream commit f4f03f299a56ce4d73c5431e0327b3b6cb55ebb9 ]
 
-The handling of the ALUA transitioning state is currently broken. When a
-target goes into this state, it is expected that the target is allowed to
-stay in this state for the implicit transition timeout without a path
-failure. The handler has this logic, but it gets skipped currently.
+The syscall_handler_t type for x86_64 was defined as 'long (*)(void)',
+but always cast to 'long (*)(long, long, long, long, long, long)' before
+use. This now triggers a warning (see below).
 
-When the target transitions, there is in-flight I/O from the initiator. The
-first of these responses from the target will be a unit attention letting
-the initiator know that the ALUA state has changed.  The remaining
-in-flight I/Os, before the initiator finds out that the portal state has
-changed, will return not ready, ALUA state is transitioning. The portal
-state will change to SCSI_ACCESS_STATE_TRANSITIONING. This will lead to all
-new I/O immediately failing the path unexpectedly. The path failure happens
-in less than a second instead of the expected successes until the
-transition timer is exceeded.
+Define syscall_handler_t as the latter instead, and remove the cast.
+This simplifies the code, and fixes the warning.
 
-Allow I/Os to continue while the path is in the ALUA transitioning
-state. The handler already takes care of a target that stays in the
-transitioning state for too long by changing the state to ALUA state
-standby once the transition timeout is exceeded at which point the path
-will fail.
+Warning:
+In file included from ../arch/um/include/asm/processor-generic.h:13
+                 from ../arch/x86/um/asm/processor.h:41
+                 from ../include/linux/rcupdate.h:30
+                 from ../include/linux/rculist.h:11
+                 from ../include/linux/pid.h:5
+                 from ../include/linux/sched.h:14
+                 from ../include/linux/ptrace.h:6
+                 from ../arch/um/kernel/skas/syscall.c:7:
+../arch/um/kernel/skas/syscall.c: In function ‘handle_syscall’:
+../arch/x86/um/shared/sysdep/syscalls_64.h:18:11: warning: cast between incompatible function types from ‘long int (*)(void)’ to ‘long int (*)(long int,  long int,  long int,  long int,  long int,  long int)’ [
+-Wcast-function-type]
+   18 |         (((long (*)(long, long, long, long, long, long)) \
+      |           ^
+../arch/x86/um/asm/ptrace.h:36:62: note: in definition of macro ‘PT_REGS_SET_SYSCALL_RETURN’
+   36 | #define PT_REGS_SET_SYSCALL_RETURN(r, res) (PT_REGS_AX(r) = (res))
+      |                                                              ^~~
+../arch/um/kernel/skas/syscall.c:46:33: note: in expansion of macro ‘EXECUTE_SYSCALL’
+   46 |                                 EXECUTE_SYSCALL(syscall, regs));
+      |                                 ^~~~~~~~~~~~~~~
 
-Link: https://lore.kernel.org/r/CAHZQxy+4sTPz9+pY3=7VJH+CLUJsDct81KtnR2be8ycN5mhqTg@mail.gmail.com
-Reviewed-by: Hannes Reinecke <hare@suse.de>
-Acked-by: Krishna Kant <krishna.kant@purestorage.com>
-Acked-by: Seamus Connor <sconnor@purestorage.com>
-Signed-off-by: Brian Bunker <brian@purestorage.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: David Gow <davidgow@google.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/device_handler/scsi_dh_alua.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ arch/x86/um/shared/sysdep/syscalls_64.h | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/scsi/device_handler/scsi_dh_alua.c b/drivers/scsi/device_handler/scsi_dh_alua.c
-index 37d06f993b76..1d9be771f3ee 100644
---- a/drivers/scsi/device_handler/scsi_dh_alua.c
-+++ b/drivers/scsi/device_handler/scsi_dh_alua.c
-@@ -1172,9 +1172,8 @@ static blk_status_t alua_prep_fn(struct scsi_device *sdev, struct request *req)
- 	case SCSI_ACCESS_STATE_OPTIMAL:
- 	case SCSI_ACCESS_STATE_ACTIVE:
- 	case SCSI_ACCESS_STATE_LBA:
--		return BLK_STS_OK;
- 	case SCSI_ACCESS_STATE_TRANSITIONING:
--		return BLK_STS_AGAIN;
-+		return BLK_STS_OK;
- 	default:
- 		req->rq_flags |= RQF_QUIET;
- 		return BLK_STS_IOERR;
+diff --git a/arch/x86/um/shared/sysdep/syscalls_64.h b/arch/x86/um/shared/sysdep/syscalls_64.h
+index 48d6cd12f8a5..b6b997225841 100644
+--- a/arch/x86/um/shared/sysdep/syscalls_64.h
++++ b/arch/x86/um/shared/sysdep/syscalls_64.h
+@@ -10,13 +10,12 @@
+ #include <linux/msg.h>
+ #include <linux/shm.h>
+ 
+-typedef long syscall_handler_t(void);
++typedef long syscall_handler_t(long, long, long, long, long, long);
+ 
+ extern syscall_handler_t *sys_call_table[];
+ 
+ #define EXECUTE_SYSCALL(syscall, regs) \
+-	(((long (*)(long, long, long, long, long, long)) \
+-	  (*sys_call_table[syscall]))(UPT_SYSCALL_ARG1(&regs->regs), \
++	(((*sys_call_table[syscall]))(UPT_SYSCALL_ARG1(&regs->regs), \
+ 		 		      UPT_SYSCALL_ARG2(&regs->regs), \
+ 				      UPT_SYSCALL_ARG3(&regs->regs), \
+ 				      UPT_SYSCALL_ARG4(&regs->regs), \
 -- 
 2.35.1
 
