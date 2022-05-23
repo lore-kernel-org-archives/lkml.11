@@ -2,123 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5C06C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 07:50:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50C20C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 07:50:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230471AbiEWHuL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 03:50:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41648 "EHLO
+        id S231344AbiEWHuW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 03:50:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231389AbiEWHt6 (ORCPT
+        with ESMTP id S231331AbiEWHuR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 03:49:58 -0400
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E5B222B0B
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 00:49:50 -0700 (PDT)
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com [209.85.218.69])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 2EC743F1BA
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 06:22:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1653286977;
-        bh=vfrKW/A5HDmGcRcNkOTm1gnC8MOayzaLWlH/+N9bMYQ=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
-        b=dmtr/ggiaQW4TZUgNKdbkE1vKkptUlJhFnND4opcUHuvIIp6IYtVKlLWiZwzl/MX3
-         C5gYW7P9Pqu68XvzQUjdIeG88F3WYJiYHQX8bIXVuhsPT/DG6i6cMR8yLsa1nKIwtV
-         cJJPfHQi6FSoUMDa8DwrkAEOmb3ZV2z4O8+iClPA83LaFYVc1wT8XioLMAQoiHam32
-         Q3fmhw6Q/wdJ108UzgLRe2unE9LIXILsyipx5Cf7EDTZ3aXKh5ir0R5VgnGuES4SOq
-         tlserqJr6xC4uHvxtXPjHfsXk1gkP40jYf9tp+pZb6fTIsDVEuXgwyAX9amCM6adIL
-         tucR2LbAJMxKA==
-Received: by mail-ej1-f69.google.com with SMTP id qa15-20020a170907868f00b006f4c89bf2e3so5386663ejc.9
-        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 23:22:57 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vfrKW/A5HDmGcRcNkOTm1gnC8MOayzaLWlH/+N9bMYQ=;
-        b=O+xgw6nehlPWUlpQjCEKvFU9L2V7/oCQUpwaNJrulqojN4Q2kIYslcq0puKjpc0xqe
-         es4UUCxArpeF/VZtEetdNvdD3LB9gQKsieCajnlFuHFNyLitwASndWU5gqQtBJ54kj7Y
-         6a3Hv9FR05sC7zbjSI7xun8EIwCn1HTf6eqPdWBUcL7Hq3TsHzef/DyyomiPMS52sL4g
-         cuBhDDFKPgePQxxeh0m2fk6XKwE+YBYd7TizDbOb7FIlh+HYrmZwwYkEHCZn3qJeH1XE
-         MdJFrpRRXLiq6KpqxPfeBd8SCGTp7YFv1WMibvhqBIiZD7k1Y6Oz58caz9Mg4bWgIH9P
-         B6vg==
-X-Gm-Message-State: AOAM530voQju7ZBQEmSymJwDZxh41xr/XCDuOpaR7tljEXmZm6Hobuvo
-        lFxP2RDHvl+1r9u1L3gw/Su35dZ3frQXrN5ep/q/v/nuu64ZHaqGYRXWibgFnv+cKgfHzM8bgKB
-        Q8PCvXFTYynvQfqVKzsiq/fYaOJjVs7b/zrRuwmLm6A==
-X-Received: by 2002:a05:6402:390b:b0:42a:acb3:bb5 with SMTP id fe11-20020a056402390b00b0042aacb30bb5mr21543348edb.236.1653286976011;
-        Sun, 22 May 2022 23:22:56 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzkZGaoVm79irxOTj6+qyoiib2JpTyZ+j7Rses0mZa1rONxUwfDg6fZL7Y0JR1Ygaxypg5jmw==
-X-Received: by 2002:a05:6402:390b:b0:42a:acb3:bb5 with SMTP id fe11-20020a056402390b00b0042aacb30bb5mr21543339edb.236.1653286975859;
-        Sun, 22 May 2022 23:22:55 -0700 (PDT)
-Received: from gollum.fritz.box ([194.191.244.86])
-        by smtp.gmail.com with ESMTPSA id w7-20020aa7dcc7000000b0042617ba6383sm7793432edu.13.2022.05.22.23.22.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 22 May 2022 23:22:55 -0700 (PDT)
-From:   Juerg Haefliger <juerg.haefliger@canonical.com>
-X-Google-Original-From: Juerg Haefliger <juergh@canonical.com>
-To:     linux@armlinux.org.uk, shawnguo@kernel.org, s.hauer@pengutronix.de,
-        kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
-        linux-arm-kernel@lists.infradead.org
-Cc:     linux-kernel@vger.kernel.org,
-        Juerg Haefliger <juergh@canonical.com>
-Subject: [PATCH RESEND] ARM: imx: Kconfig: Fix indentation
-Date:   Mon, 23 May 2022 08:22:52 +0200
-Message-Id: <20220523062252.9710-1-juergh@canonical.com>
-X-Mailer: git-send-email 2.32.0
+        Mon, 23 May 2022 03:50:17 -0400
+Received: from xppmailspam11.itap.purdue.edu (xppmailspam11.itap.purdue.edu [128.210.1.215])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5C096356
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 00:50:04 -0700 (PDT)
+IronPort-SDR: nnbxmAp3WC2w9hxp4UzB735Hd5mv9U4/fEVDZqIBp1zykMV6eu9D2T+Z0TZmNWhqWva1O872n1
+ qEDrSkFFmUof2e5AvFAqgO4Fm64vuOOOY=
+X-Ironport-AuthID: liu3101@purdue.edu
+IronPort-Data: =?us-ascii?q?A9a23=3ASeMQq6MmfktlJivvrR2Nl8FynXyQoLVcMsEvi?=
+ =?us-ascii?q?/4bfWQNrUolhmEEyjMYWG+CaPyKN2Hwfoh+OYnlp0wBuJSExtI1QHM5pCpnJ?=
+ =?us-ascii?q?55oRWspJjg7wn8dt0p+F+WbJK6+x8lBONTGMu4uSXrQ+kWkPrT79CEuzbySS?=
+ =?us-ascii?q?qfxTuPIJ3kpFwNjTS4gjzNlmvI43t4z2ITpU1vVtIOgudDbNX+kxyVwbjAe5?=
+ =?us-ascii?q?ZWFpU49p//1oj4Z4gEzaKkT7l/TnnUYFrwFIqS1IyeqS4VYBLfiFf7e1r2k8?=
+ =?us-ascii?q?yXU8wp0UoGplbPyc0srRL/OPFTe0SMKC/j62hUb/348yKc2MvYYeHx7sTTRk?=
+ =?us-ascii?q?oAj0shJuLyxVRwtYv/GltMbXkQKCCp5J6BHpOLKLHXj48yey0rKLynlz/l0V?=
+ =?us-ascii?q?hlkPIsU674qR2pVs+QFMjwQY1aOi//vmOC3Texlh8ICKsj3Pd9P4Sg8nWGBV?=
+ =?us-ascii?q?ft2E4reR6jq5MND2GtijM55G/uDNdESbiBibUidbhATaE0bDokywLWhinXlK?=
+ =?us-ascii?q?WUKqVSZtPJqpWPIihRsyrTwPZzYdsHTHZdZmUORp2Tn+WXlA01Kb4XDmWrdq?=
+ =?us-ascii?q?n/81PXSmS7bWZ4JEOHq/PBdhlDOlHcYDwcbVAfmrPS04qJktwmzEGRJvHt3x?=
+ =?us-ascii?q?UQO3BbzFIOlAkfi+CTsUiM0ArK8LcVrsGlh9YKLu251NkBcJtJwQIROWP0eH?=
+ =?us-ascii?q?FTG5XfV9z/dPgGDhZXOIZ6r3urO8WniaXB9wVgqPkfoRSNdizXqTRpaYhjnF?=
+ =?us-ascii?q?r6PG4bt5jH59K2ZL5lncUEDa7svYc4jj81X/HjGhT69/sWPRRVz/hjNUn+oq?=
+ =?us-ascii?q?A51eeZJZaTxswidtK4Gdd3BCADf4xDomODHhAwKJZWMiXfUGLwlBKyz6+uId?=
+ =?us-ascii?q?jDQnDaDGrF9qW/2oCb/Jdk4DDZWYR0B3tw/UTP3cVLQvh1565hUM3+nK6RwZ?=
+ =?us-ascii?q?uqZAsIm16XxFtL7Utjba9NPZt56cwrv1DtpflKd03zFn08rnaQ+ItGca8nEJ?=
+ =?us-ascii?q?XMbD6tg5CC7S+cUzfkgwSVW7WDaXpn9ihiqz5KRY3maTboKKlyTdvt/56SBy?=
+ =?us-ascii?q?C3R8tBCJ46Jxg9ZXenWfCba68gQIEoMIHx9Aor5w+RTd/PYe1I/MHk8EfPMz?=
+ =?us-ascii?q?PUsd5ENokj/vo8k5Vm8XENJkAe5jmaBMRiQZm1uLr7jQP5CQbsAFXREFT6VN?=
+ =?us-ascii?q?7ILOO5DNJsiSqY=3D?=
+IronPort-HdrOrdr: =?us-ascii?q?A9a23=3AT6cH8q4Ny7Mp8E7PBwPXwHDXdLJyesId70?=
+ =?us-ascii?q?hD6qkRc3Nom6Oj5rmTdZggpGfJYXMqNk3I+urtBED/ewK7yXcd2+B4VotKNz?=
+ =?us-ascii?q?OKhILHFutfxLqn5DH8FiXi/qp00Kt6buxYANn9ZGIbse/KpC61Dtsp3dHC2q?=
+ =?us-ascii?q?Ghnvq29QYPcShaL4Zt8gpwFw7eOEh/XhNHCpoyHIed4M0vnUvERV0nKuO2G3?=
+ =?us-ascii?q?QMQuCGiNXOlJf3CCR2ZSIP2U2ogS6k4KPzVzmfxAp2aUIq/Z4StU/IjgHw+6?=
+ =?us-ascii?q?3miPe/xnbnpgjuxqUTv9f9x9NfDIi3htcYMTXwmm+TBbhcZw=3D=3D?=
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="5.91,245,1647316800"; 
+   d="scan'208";a="463330401"
+Received: from indy05.cs.purdue.edu ([128.10.130.167])
+  by xppmailspam11.itap.purdue.edu with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 23 May 2022 02:30:58 -0400
+From:   Congyu Liu <liu3101@purdue.edu>
+To:     dvyukov@google.com, andreyknvl@gmail.com, rostedt@goodmis.org,
+        mingo@redhat.com
+Cc:     kasan-dev@googlegroups.com, linux-kernel@vger.kernel.org,
+        Congyu Liu <liu3101@purdue.edu>
+Subject: [PATCH] tracing: disable kcov on trace_preemptirq.c
+Date:   Mon, 23 May 2022 06:30:33 +0000
+Message-Id: <20220523063033.1778974-1-liu3101@purdue.edu>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The convention for indentation seems to be a single tab. Help text is
-further indented by an additional two whitespaces. Fix the lines that
-violate these rules.
+Functions in trace_preemptirq.c could be invoked from early interrupt
+code that bypasses kcov trace function's in_task() check. Disable kcov
+on this file to reduce random code coverage.
 
-While at it, replace separator tabs with whitespaces.
-
-Signed-off-by: Juerg Haefliger <juergh@canonical.com>
+Signed-off-by: Congyu Liu <liu3101@purdue.edu>
 ---
-RESEND:
-  Use correct list of recipients.
-  
----
- arch/arm/mach-imx/Kconfig | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ kernel/trace/Makefile | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/arch/arm/mach-imx/Kconfig b/arch/arm/mach-imx/Kconfig
-index c5a59158722b..e27232aa3d34 100644
---- a/arch/arm/mach-imx/Kconfig
-+++ b/arch/arm/mach-imx/Kconfig
-@@ -96,7 +96,7 @@ config SOC_IMX5
- 	select HAVE_IMX_SRC
- 	select MXC_TZIC
+diff --git a/kernel/trace/Makefile b/kernel/trace/Makefile
+index d77cd8032213..0d261774d6f3 100644
+--- a/kernel/trace/Makefile
++++ b/kernel/trace/Makefile
+@@ -31,6 +31,10 @@ ifdef CONFIG_GCOV_PROFILE_FTRACE
+ GCOV_PROFILE := y
+ endif
  
--config	SOC_IMX50
-+config SOC_IMX50
- 	bool "i.MX50 support"
- 	select PINCTRL_IMX50
- 	select SOC_IMX5
-@@ -111,7 +111,7 @@ config SOC_IMX51
- 	help
- 	  This enables support for Freescale i.MX51 processor
++# Functions in this file could be invoked from early interrupt
++# code and produce random code coverage.
++KCOV_INSTRUMENT_trace_preemptirq.o := n
++
+ CFLAGS_bpf_trace.o := -I$(src)
  
--config	SOC_IMX53
-+config SOC_IMX53
- 	bool "i.MX53 support"
- 	select PINCTRL_IMX53
- 	select SOC_IMX5
-@@ -216,7 +216,7 @@ config SOC_IMX7D
- 	select SOC_IMX7D_CM4 if ARM_SINGLE_ARMV7M
- 	select ARM_ERRATA_814220 if ARCH_MULTI_V7
- 	help
--		This enables support for Freescale i.MX7 Dual processor.
-+	  This enables support for Freescale i.MX7 Dual processor.
- 
- config SOC_IMX7ULP
- 	bool "i.MX7ULP support"
+ CFLAGS_trace_benchmark.o := -I$(src)
 -- 
-2.32.0
+2.34.1
 
