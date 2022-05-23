@@ -2,258 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1E10C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 07:39:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5BD9C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 07:39:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230148AbiEWHjp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 03:39:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40282 "EHLO
+        id S230210AbiEWHj5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 03:39:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229952AbiEWHjg (ORCPT
+        with ESMTP id S229716AbiEWHjy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 03:39:36 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31155B7D7;
-        Mon, 23 May 2022 00:39:34 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        Mon, 23 May 2022 03:39:54 -0400
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 828E81ADB7
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 00:39:50 -0700 (PDT)
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com [209.85.218.69])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4L66zT4KDFz4xDK;
-        Mon, 23 May 2022 16:36:04 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1653287766;
-        bh=+0vivFk/Z067mjX8nd9BkvwUKAQ5iry4PW1fq/uku9o=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=SsoTGujOhHXaP3KkRyCCTMa3dTq9WxGjkSXpTPXv15OdMUiGAzZ/Ul13tm019YcwP
-         EDbOZJearfSHoyX0nf5rSPwTiInVNIfQ0JWDI69oMXom9v4yDPlIghkl++m1q3Gf7N
-         ntHvW9hD9WxrFaL+QOEvDn7c4/twwXHGddfKYe6oF+WrrEJKoyxj9LVIb98y56iz3e
-         zFZeT5jMFbwaoYJ+AoChc5RJWnsH86T62DnGx9429MHUZe5Ki9Uj59O8UtUFI5iqtj
-         /HqC1kLH0/UfuooaZYU/vGniCkCx6TAQrZkRSNqiHh+/Xh5lEilZEYnzReHEBCBZMG
-         XNj6oorXpIzGg==
-Date:   Mon, 23 May 2022 16:36:03 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Christoffer Dall <cdall@cs.columbia.edu>,
-        Marc Zyngier <maz@kernel.org>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Oliver Upton <oupton@google.com>, KVM <kvm@vger.kernel.org>
-Subject: Re: linux-next: manual merge of the kvm-arm tree with the arm64
- tree
-Message-ID: <20220523163603.580fddfa@canb.auug.org.au>
-In-Reply-To: <20220504143529.4060ab27@canb.auug.org.au>
-References: <20220504143529.4060ab27@canb.auug.org.au>
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 716BE3F175
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 06:45:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1653288321;
+        bh=Gs7nkhQpjKgLYfigMkBppO9/Q0SxQAi+BOTu7LkmDEk=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=Q3FRq/S64K3ocwrKVDP/h+7kTfyiPMbUDN5bLeEaQri7YW75k9+1LENny/7lAyqqh
+         gZR/trzltQiZBv0ZUTA/zA+qs/NNnSenDdQqwO7TR1V58vzwlFSz5RxqUG3xiShQE8
+         lpNEXRm0/SjI1sb97tBPtQC3oYD0/QVkxC/J8GIhlXRDXlVDeBsINVpZ2i8BRnPgyn
+         01t/kwngOkvfRR8WjEdAe4BJbx1y8VI/C3eooErlKAk6h4VRMsy9hWi2AKIDGKQIiV
+         CjtpP0Y36OFLRRjIDnN23NKxjSgrnFO/UnEpLQEu+AZZ8x1I9d/7XjPRt2ow9tGwBX
+         qylmI7CuxP4gg==
+Received: by mail-ej1-f69.google.com with SMTP id gs6-20020a170906f18600b006fe7a9ffacbso5422613ejb.3
+        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 23:45:21 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Gs7nkhQpjKgLYfigMkBppO9/Q0SxQAi+BOTu7LkmDEk=;
+        b=ae8suNJcAWaZYalZnH5nzKLdcfoHR/+jE/dWI244XHX21M0n2hYVbl8dQ+7HqzuJfi
+         dzHqto+jNj7BXB+6ChXzPLyys6huMFYOaRnLT8BaN/mR59SEWytioutJroxCNaqJ9Q/v
+         S0qoNCqCSgISkQuLZ7FOGYGtbkMWzQP4ysm1BY8XmpHPKLSUtX3oAB6wZPUhOHQRl2IK
+         AS79FYAJYDnkqqW08PbuhkhG2OfXR954qxO3jOO3H9v1k8XjSOF5479aQ9QN6pwk/gJG
+         B6prvfjRppLc8/Ih6/dDyG6Po/UybKWl+s87aRXqU7ooHIizaQ8JfXJYdL+cA3xZchVD
+         /XmQ==
+X-Gm-Message-State: AOAM530v3o/xKpgxpFez2T1uo2/4aXR3+QYcGNUk3vvAOFYGAkBGqm/u
+        WqCKRdLqSAmrMEI8TQc4eC0r2eGYCoWGKXB3frEN64NcnLlPeK8imMDeN6O3BOH1TCWQu8G+i/l
+        H7lpG6g2IKo/MdWJ5RnUg3KJ+RGv0T6xtpSDo8JA6XA==
+X-Received: by 2002:a17:906:5941:b0:6fe:9277:8fe with SMTP id g1-20020a170906594100b006fe927708femr18208133ejr.749.1653288321108;
+        Sun, 22 May 2022 23:45:21 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxxQ5t8hnZvZAibglgBrx6pCuhjRthEKjfwHqEG1khpI628VBjfFTFTpluxVJOUTUBtdAHrVA==
+X-Received: by 2002:a17:906:5941:b0:6fe:9277:8fe with SMTP id g1-20020a170906594100b006fe927708femr18208123ejr.749.1653288320946;
+        Sun, 22 May 2022 23:45:20 -0700 (PDT)
+Received: from gollum.fritz.box ([194.191.244.86])
+        by smtp.gmail.com with ESMTPSA id u15-20020a170906068f00b006febc86b8besm2366194ejb.117.2022.05.22.23.45.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 22 May 2022 23:45:20 -0700 (PDT)
+From:   Juerg Haefliger <juerg.haefliger@canonical.com>
+X-Google-Original-From: Juerg Haefliger <juergh@canonical.com>
+To:     linux@armlinux.org.uk, linux-arm-kernel@lists.infradead.org
+Cc:     linux-kernel@vger.kernel.org,
+        Juerg Haefliger <juergh@canonical.com>
+Subject: [PATCH] ARM: mm: Kconfig: Fix indentation
+Date:   Mon, 23 May 2022 08:45:18 +0200
+Message-Id: <20220523064518.12327-1-juergh@canonical.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/.hrk+MfNx9SbylaWUw_miKR";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/.hrk+MfNx9SbylaWUw_miKR
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+The convention for indentation seems to be a single tab. Help text is
+further indented by an additional two whitespaces. Fix the lines that
+violate these rules.
 
-Hi all,
+Signed-off-by: Juerg Haefliger <juergh@canonical.com>
+---
+ arch/arm/mm/Kconfig | 48 ++++++++++++++++++++++-----------------------
+ 1 file changed, 24 insertions(+), 24 deletions(-)
 
-On Wed, 4 May 2022 14:35:29 +1000 Stephen Rothwell <sfr@canb.auug.org.au> w=
-rote:
->
-> Today's linux-next merge of the kvm-arm tree got a conflict in:
->=20
->   arch/arm64/kvm/sys_regs.c
->=20
-> between commit:
->=20
->   0b12620fddb8 ("KVM: arm64: Treat ESR_EL2 as a 64-bit register")
->=20
-> from the arm64 tree and commits:
->=20
->   e65197666773 ("KVM: arm64: Wire up CP15 feature registers to their AArc=
-h64 equivalents")
->   9369bc5c5e35 ("KVM: arm64: Plumb cp10 ID traps through the AArch64 sysr=
-eg handler")
->=20
-> from the kvm-arm tree.
->=20
-> I fixed it up (see below) and can carry the fix as necessary. This
-> is now fixed as far as linux-next is concerned, but any non trivial
-> conflicts should be mentioned to your upstream maintainer when your tree
-> is submitted for merging.  You may also want to consider cooperating
-> with the maintainer of the conflicting tree to minimise any particularly
-> complex conflicts.
->=20
-> diff --cc arch/arm64/kvm/sys_regs.c
-> index a4ef986adb5e,031d913cd79e..000000000000
-> --- a/arch/arm64/kvm/sys_regs.c
-> +++ b/arch/arm64/kvm/sys_regs.c
-> @@@ -2351,6 -2355,123 +2355,123 @@@ static int kvm_handle_cp_64(struct kv=
-m_
->   	return 1;
->   }
->  =20
-> + static bool emulate_sys_reg(struct kvm_vcpu *vcpu, struct sys_reg_param=
-s *params);
-> +=20
-> + /*
-> +  * The CP10 ID registers are architecturally mapped to AArch64 feature
-> +  * registers. Abuse that fact so we can rely on the AArch64 handler for=
- accesses
-> +  * from AArch32.
-> +  */
->  -static bool kvm_esr_cp10_id_to_sys64(u32 esr, struct sys_reg_params *pa=
-rams)
-> ++static bool kvm_esr_cp10_id_to_sys64(u64 esr, struct sys_reg_params *pa=
-rams)
-> + {
-> + 	u8 reg_id =3D (esr >> 10) & 0xf;
-> + 	bool valid;
-> +=20
-> + 	params->is_write =3D ((esr & 1) =3D=3D 0);
-> + 	params->Op0 =3D 3;
-> + 	params->Op1 =3D 0;
-> + 	params->CRn =3D 0;
-> + 	params->CRm =3D 3;
-> +=20
-> + 	/* CP10 ID registers are read-only */
-> + 	valid =3D !params->is_write;
-> +=20
-> + 	switch (reg_id) {
-> + 	/* MVFR0 */
-> + 	case 0b0111:
-> + 		params->Op2 =3D 0;
-> + 		break;
-> + 	/* MVFR1 */
-> + 	case 0b0110:
-> + 		params->Op2 =3D 1;
-> + 		break;
-> + 	/* MVFR2 */
-> + 	case 0b0101:
-> + 		params->Op2 =3D 2;
-> + 		break;
-> + 	default:
-> + 		valid =3D false;
-> + 	}
-> +=20
-> + 	if (valid)
-> + 		return true;
-> +=20
-> + 	kvm_pr_unimpl("Unhandled cp10 register %s: %u\n",
-> + 		      params->is_write ? "write" : "read", reg_id);
-> + 	return false;
-> + }
-> +=20
-> + /**
-> +  * kvm_handle_cp10_id() - Handles a VMRS trap on guest access to a 'Med=
-ia and
-> +  *			  VFP Register' from AArch32.
-> +  * @vcpu: The vCPU pointer
-> +  *
-> +  * MVFR{0-2} are architecturally mapped to the AArch64 MVFR{0-2}_EL1 re=
-gisters.
-> +  * Work out the correct AArch64 system register encoding and reroute to=
- the
-> +  * AArch64 system register emulation.
-> +  */
-> + int kvm_handle_cp10_id(struct kvm_vcpu *vcpu)
-> + {
-> + 	int Rt =3D kvm_vcpu_sys_get_rt(vcpu);
->  -	u32 esr =3D kvm_vcpu_get_esr(vcpu);
-> ++	u64 esr =3D kvm_vcpu_get_esr(vcpu);
-> + 	struct sys_reg_params params;
-> +=20
-> + 	/* UNDEF on any unhandled register access */
-> + 	if (!kvm_esr_cp10_id_to_sys64(esr, &params)) {
-> + 		kvm_inject_undefined(vcpu);
-> + 		return 1;
-> + 	}
-> +=20
-> + 	if (emulate_sys_reg(vcpu, &params))
-> + 		vcpu_set_reg(vcpu, Rt, params.regval);
-> +=20
-> + 	return 1;
-> + }
-> +=20
-> + /**
-> +  * kvm_emulate_cp15_id_reg() - Handles an MRC trap on a guest CP15 acce=
-ss where
-> +  *			       CRn=3D0, which corresponds to the AArch32 feature
-> +  *			       registers.
-> +  * @vcpu: the vCPU pointer
-> +  * @params: the system register access parameters.
-> +  *
-> +  * Our cp15 system register tables do not enumerate the AArch32 feature
-> +  * registers. Conveniently, our AArch64 table does, and the AArch32 sys=
-tem
-> +  * register encoding can be trivially remapped into the AArch64 for the=
- feature
-> +  * registers: Append op0=3D3, leaving op1, CRn, CRm, and op2 the same.
-> +  *
-> +  * According to DDI0487G.b G7.3.1, paragraph "Behavior of VMSAv8-32 32-=
-bit
-> +  * System registers with (coproc=3D0b1111, CRn=3D=3Dc0)", read accesses=
- from this
-> +  * range are either UNKNOWN or RES0. Rerouting remains architectural as=
- we
-> +  * treat undefined registers in this range as RAZ.
-> +  */
-> + static int kvm_emulate_cp15_id_reg(struct kvm_vcpu *vcpu,
-> + 				   struct sys_reg_params *params)
-> + {
-> + 	int Rt =3D kvm_vcpu_sys_get_rt(vcpu);
-> +=20
-> + 	/* Treat impossible writes to RO registers as UNDEFINED */
-> + 	if (params->is_write) {
-> + 		unhandled_cp_access(vcpu, params);
-> + 		return 1;
-> + 	}
-> +=20
-> + 	params->Op0 =3D 3;
-> +=20
-> + 	/*
-> + 	 * All registers where CRm > 3 are known to be UNKNOWN/RAZ from AArch3=
-2.
-> + 	 * Avoid conflicting with future expansion of AArch64 feature registers
-> + 	 * and simply treat them as RAZ here.
-> + 	 */
-> + 	if (params->CRm > 3)
-> + 		params->regval =3D 0;
-> + 	else if (!emulate_sys_reg(vcpu, params))
-> + 		return 1;
-> +=20
-> + 	vcpu_set_reg(vcpu, Rt, params->regval);
-> + 	return 1;
-> + }
-> +=20
->   /**
->    * kvm_handle_cp_32 -- handles a mrc/mcr trap on a guest CP14/CP15 acce=
-ss
->    * @vcpu: The VCPU pointer
+diff --git a/arch/arm/mm/Kconfig b/arch/arm/mm/Kconfig
+index d30ee26ccc87..950f67220caf 100644
+--- a/arch/arm/mm/Kconfig
++++ b/arch/arm/mm/Kconfig
+@@ -123,13 +123,13 @@ config CPU_ARM925T
+ 	select CPU_PABRT_LEGACY
+ 	select CPU_THUMB_CAPABLE
+ 	select CPU_TLB_V4WBI if MMU
+- 	help
+- 	  The ARM925T is a mix between the ARM920T and ARM926T, but with
++	help
++	  The ARM925T is a mix between the ARM920T and ARM926T, but with
+ 	  different instruction and data caches. It is used in TI's OMAP
+- 	  device family.
++	  device family.
+ 
+- 	  Say Y if you want support for the ARM925T processor.
+- 	  Otherwise, say N.
++	  Say Y if you want support for the ARM925T processor.
++	  Otherwise, say N.
+ 
+ # ARM926T
+ config CPU_ARM926T
+@@ -838,19 +838,19 @@ config HARDEN_BRANCH_PREDICTOR
+ 	depends on CPU_SPECTRE
+ 	default y
+ 	help
+-	   Speculation attacks against some high-performance processors rely
+-	   on being able to manipulate the branch predictor for a victim
+-	   context by executing aliasing branches in the attacker context.
+-	   Such attacks can be partially mitigated against by clearing
+-	   internal branch predictor state and limiting the prediction
+-	   logic in some situations.
++	  Speculation attacks against some high-performance processors rely
++	  on being able to manipulate the branch predictor for a victim
++	  context by executing aliasing branches in the attacker context.
++	  Such attacks can be partially mitigated against by clearing
++	  internal branch predictor state and limiting the prediction
++	  logic in some situations.
+ 
+-	   This config option will take CPU-specific actions to harden
+-	   the branch predictor against aliasing attacks and may rely on
+-	   specific instruction sequences or control bits being set by
+-	   the system firmware.
++	  This config option will take CPU-specific actions to harden
++	  the branch predictor against aliasing attacks and may rely on
++	  specific instruction sequences or control bits being set by
++	  the system firmware.
+ 
+-	   If unsure, say Y.
++	  If unsure, say Y.
+ 
+ config HARDEN_BRANCH_HISTORY
+ 	bool "Harden Spectre style attacks against branch history" if EXPERT
+@@ -1005,14 +1005,14 @@ if CACHE_L2X0
+ config PL310_ERRATA_588369
+ 	bool "PL310 errata: Clean & Invalidate maintenance operations do not invalidate clean lines"
+ 	help
+-	   The PL310 L2 cache controller implements three types of Clean &
+-	   Invalidate maintenance operations: by Physical Address
+-	   (offset 0x7F0), by Index/Way (0x7F8) and by Way (0x7FC).
+-	   They are architecturally defined to behave as the execution of a
+-	   clean operation followed immediately by an invalidate operation,
+-	   both performing to the same memory location. This functionality
+-	   is not correctly implemented in PL310 prior to r2p0 (fixed in r2p0)
+-	   as clean lines are not invalidated as a result of these operations.
++	  The PL310 L2 cache controller implements three types of Clean &
++	  Invalidate maintenance operations: by Physical Address
++	  (offset 0x7F0), by Index/Way (0x7F8) and by Way (0x7FC).
++	  They are architecturally defined to behave as the execution of a
++	  clean operation followed immediately by an invalidate operation,
++	  both performing to the same memory location. This functionality
++	  is not correctly implemented in PL310 prior to r2p0 (fixed in r2p0)
++	  as clean lines are not invalidated as a result of these operations.
+ 
+ config PL310_ERRATA_727915
+ 	bool "PL310 errata: Background Clean & Invalidate by Way operation can cause data corruption"
+-- 
+2.32.0
 
-This is now a conflict between the kvm tree and the arm64 tree.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/.hrk+MfNx9SbylaWUw_miKR
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmKLK1MACgkQAVBC80lX
-0Gykrwf/TE/fMdxVa5FSwNyHf9GknoxlGKakukzHDMxelELHyc+Gf7pyr3lR+Yo8
-bfqsJAPJHPhm0hR0PYdPSSWLA3cIokKv4Lxw3VYsUnuqblPf+l5hSPUAukugW5IL
-OqUbWxOSFfTKtnZpYFk65u7xo+l/ih5k+Hbjp7rsBoWeCahiEeKsgNnAK+YmVydk
-y6juX8p0fY4svYEqwR1WtRZVlG2hsTbYosMTL+cA8SyiYx3qD4f4J9AsslMJR2Kp
-tUPieghcLHlNS5MPRdSzgdzx7rpiuyu4ex3OMmbAfb3r62pdn2oDgVO2UImqEa3G
-3tb2Ulc4HeX/H12ygh/gLVVipgZS+A==
-=PPU8
------END PGP SIGNATURE-----
-
---Sig_/.hrk+MfNx9SbylaWUw_miKR--
