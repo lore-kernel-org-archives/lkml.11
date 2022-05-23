@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9375BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 16:48:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE5F0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 16:48:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239193AbiEWQso (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 12:48:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58240 "EHLO
+        id S239190AbiEWQsq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 12:48:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239108AbiEWQsf (ORCPT
+        with ESMTP id S239093AbiEWQsf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 23 May 2022 12:48:35 -0400
 Received: from conuserg-09.nifty.com (conuserg-09.nifty.com [210.131.2.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC70D63BCE;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC32C633BA;
         Mon, 23 May 2022 09:48:28 -0700 (PDT)
 Received: from grover.sesame (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
-        by conuserg-09.nifty.com with ESMTP id 24NGlJD4027017;
-        Tue, 24 May 2022 01:47:22 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-09.nifty.com 24NGlJD4027017
+        by conuserg-09.nifty.com with ESMTP id 24NGlJD1027017;
+        Tue, 24 May 2022 01:47:20 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-09.nifty.com 24NGlJD1027017
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1653324442;
-        bh=rQdfqreay7lgMbfLRTWkn5/8R74gXvo8Abky+SCmAsU=;
+        s=dec2015msa; t=1653324440;
+        bh=lc+fo6j/ioCeXPDSmA+V4raO61i1wvnDNsz3Z956OcE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UL9GGHk5wvmGQsDaOymGQdu/M7wo/ocj2FRT8cWte8EzckRHK/E4v5r+7tIGMmXNW
-         Q5lDu7trmRlsLjX1DHBQH1CGw84wRdX7m/8mhGHXhDGfOinZ7uoBq7QJ+GAjKDnJWa
-         cexgiGKRX9Q824jMoGVgNMBjPn6iuhNWyQzVOvThFwGurC+Sf37+754inPnp/7SD9q
-         VJK3AzzBNAbUav8Yd8uPykNt1DPAsXWl1uLPkjAQEKSlgFZmyKMUBDGWF/0TpmNHOz
-         aQSrbx7nUqvPO0oKQwzxcjA/DaHH78X2k5Z6UXutSJq2O1ml6UYVCAl+ESMd6RdFOP
-         rPUyM2EcBR2vg==
+        b=Ayr1gMhnatRU5ootEInfCpUCIbW2afVk+iyRM+8y94EqrZLNOHH41gN7boKNGI9+X
+         /vdHbEgGeMzMrzQzSsqil4tuZ7IltBwR2Y33mbUsah7p4gku8aDqmK1BH+QfdtnXmD
+         f3zqanazqXGRjg58LQsF6aYCQfJO1ZCswFQefAekniYtq4e9KZlO0TzNmgVpG/iyzh
+         7s2irRYaV8SeMYn2z6nbt8ggP0Lde5MFnD0Cx47ouOCzgc8urZU7xDNm5u4tCd78L4
+         98oTY5l0jmij2uBvY0FILUvpXtuzWKExJGwix5hqJtCANq8eyl5gBDjKIjGMhAOkoz
+         nTkDHcnVT2qvg==
 X-Nifty-SrcIP: [133.32.177.133]
 From:   Masahiro Yamada <masahiroy@kernel.org>
 To:     linux-kbuild@vger.kernel.org
@@ -36,9 +36,9 @@ Cc:     linux-kernel@vger.kernel.org,
         Masahiro Yamada <masahiroy@kernel.org>,
         Michal Marek <michal.lkml@markovi.net>,
         Nick Desaulniers <ndesaulniers@google.com>
-Subject: [PATCH 5/5] modpost: squash if...else if in find_elf_symbol2()
-Date:   Tue, 24 May 2022 01:46:26 +0900
-Message-Id: <20220523164626.858340-5-masahiroy@kernel.org>
+Subject: [PATCH 2/5] modpost: remove the unused argument of check_sec_ref()
+Date:   Tue, 24 May 2022 01:46:23 +0900
+Message-Id: <20220523164626.858340-2-masahiroy@kernel.org>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220523164626.858340-1-masahiroy@kernel.org>
 References: <20220523164626.858340-1-masahiroy@kernel.org>
@@ -48,49 +48,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-    if ((addr - sym->st_value) < distance) {
-            distance = addr - sym->st_value;
-            near = sym;
-    } else if ((addr - sym->st_value) == distance) {
-            near = sym;
-    }
-
-is equivalent to:
-
-    if ((addr - sym->st_value) <= distance) {
-            distance = addr - sym->st_value;
-            near = sym;
-    }
-
-(The else-if part can overwrite 'distance' with the same value).
+check_sec_ref() does not use the first parameter 'mod'.
 
 Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 ---
 
- scripts/mod/modpost.c | 10 +++-------
- 1 file changed, 3 insertions(+), 7 deletions(-)
+ scripts/mod/modpost.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index 48a18b59f908..8c8d2a4bc0b0 100644
+index 845bc438ca49..843c64eebe8b 100644
 --- a/scripts/mod/modpost.c
 +++ b/scripts/mod/modpost.c
-@@ -1270,13 +1270,9 @@ static Elf_Sym *find_elf_symbol2(struct elf_info *elf, Elf_Addr addr,
- 			continue;
- 		if (!is_valid_name(elf, sym))
- 			continue;
--		if (sym->st_value <= addr) {
--			if ((addr - sym->st_value) < distance) {
--				distance = addr - sym->st_value;
--				near = sym;
--			} else if ((addr - sym->st_value) == distance) {
--				near = sym;
--			}
-+		if (sym->st_value <= addr && addr - sym->st_value <= distance) {
-+			distance = addr - sym->st_value;
-+			near = sym;
- 		}
+@@ -1883,8 +1883,7 @@ static void section_rel(const char *modname, struct elf_info *elf,
+  * to find all references to a section that reference a section that will
+  * be discarded and warns about it.
+  **/
+-static void check_sec_ref(struct module *mod, const char *modname,
+-			  struct elf_info *elf)
++static void check_sec_ref(const char *modname, struct elf_info *elf)
+ {
+ 	int i;
+ 	Elf_Shdr *sechdrs = elf->sechdrs;
+@@ -2069,7 +2068,7 @@ static void read_symbols(const char *modname)
+ 					     sym_get_data(&info, sym));
  	}
- 	return near;
+ 
+-	check_sec_ref(mod, modname, &info);
++	check_sec_ref(modname, &info);
+ 
+ 	if (!mod->is_vmlinux) {
+ 		version = get_modinfo(&info, "version");
 -- 
 2.32.0
 
