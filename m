@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 244F5C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 439CBC35296
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:43:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243224AbiEWRlm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:41:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38804 "EHLO
+        id S243275AbiEWRlu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:41:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242445AbiEWR1n (ORCPT
+        with ESMTP id S242517AbiEWR1q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:27:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 510BE7CDE7;
-        Mon, 23 May 2022 10:23:29 -0700 (PDT)
+        Mon, 23 May 2022 13:27:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 696658149D;
+        Mon, 23 May 2022 10:23:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0BF35B811FB;
-        Mon, 23 May 2022 17:23:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6515BC385A9;
-        Mon, 23 May 2022 17:23:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A510760919;
+        Mon, 23 May 2022 17:23:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7C86C385A9;
+        Mon, 23 May 2022 17:23:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326599;
-        bh=hKElF9otkgLbePNPxfSEj+iBFI7kjq0H8+dEpqV4T/w=;
+        s=korg; t=1653326606;
+        bh=jHgHNmA6N9MgKWp6UWM3cI1VoBGw2Rdn9KeuwCDLBFE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=khYrhC1az22OSCysuIXz9AfvbTsboDHQQR54swbKzGQNFlyc2cOaE2MWwg6bBx0la
-         JYYGZEMMqaERMoUHyBOIHcS1YGZu+RHWlejzB2Unl75Ly7b6kosMlS16lCk6XtmOqz
-         Xo4At3wKo2HGViNJsqNqGq/wX+fbw/iEQH+tnTbM=
+        b=G9GxEg5GDuSG5nTOVsHWRM+YwISNbCpwEOPwPHYsl2kp6d4BMTWyM186uSW0VJHvX
+         SL+FASZgCsc/ykvyQot4SoFLAJcnGbcP29/nd9jL92c2slST1YN/4v7fcB2W9bV3ce
+         vdNNFEqTE0fI4NNzxoC+c2wNHe/InmTCwsnh67T8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
+        stable@vger.kernel.org, Namhyung Kim <namhyung@gmail.com>,
+        Thomas Richter <tmricht@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Sumanth Korikkar <sumanthk@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 109/132] gpio: mvebu/pwm: Refuse requests with inverted polarity
-Date:   Mon, 23 May 2022 19:05:18 +0200
-Message-Id: <20220523165841.573244770@linuxfoundation.org>
+Subject: [PATCH 5.15 111/132] perf bench numa: Address compiler error on s390
+Date:   Mon, 23 May 2022 19:05:20 +0200
+Message-Id: <20220523165841.913873265@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
 References: <20220523165823.492309987@linuxfoundation.org>
@@ -51,35 +54,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+From: Thomas Richter <tmricht@linux.ibm.com>
 
-[ Upstream commit 3ecb10175b1f776f076553c24e2689e42953fef5 ]
+[ Upstream commit f8ac1c478424a9a14669b8cef7389b1e14e5229d ]
 
-The driver doesn't take struct pwm_state::polarity into account when
-configuring the hardware, so refuse requests for inverted polarity.
+The compilation on s390 results in this error:
 
-Fixes: 757642f9a584 ("gpio: mvebu: Add limited PWM support")
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
+  # make DEBUG=y bench/numa.o
+  ...
+  bench/numa.c: In function ‘__bench_numa’:
+  bench/numa.c:1749:81: error: ‘%d’ directive output may be truncated
+              writing between 1 and 11 bytes into a region of size between
+              10 and 20 [-Werror=format-truncation=]
+  1749 |        snprintf(tname, sizeof(tname), "process%d:thread%d", p, t);
+                                                               ^~
+  ...
+  bench/numa.c:1749:64: note: directive argument in the range
+                 [-2147483647, 2147483646]
+  ...
+  #
+
+The maximum length of the %d replacement is 11 characters because of the
+negative sign.  Therefore extend the array by two more characters.
+
+Output after:
+
+  # make  DEBUG=y bench/numa.o > /dev/null 2>&1; ll bench/numa.o
+  -rw-r--r-- 1 root root 418320 May 19 09:11 bench/numa.o
+  #
+
+Fixes: 3aff8ba0a4c9c919 ("perf bench numa: Avoid possible truncation when using snprintf()")
+Suggested-by: Namhyung Kim <namhyung@gmail.com>
+Signed-off-by: Thomas Richter <tmricht@linux.ibm.com>
+Cc: Heiko Carstens <hca@linux.ibm.com>
+Cc: Sumanth Korikkar <sumanthk@linux.ibm.com>
+Cc: Sven Schnelle <svens@linux.ibm.com>
+Cc: Vasily Gorbik <gor@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220520081158.2990006-1-tmricht@linux.ibm.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpio/gpio-mvebu.c | 3 +++
- 1 file changed, 3 insertions(+)
+ tools/perf/bench/numa.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpio/gpio-mvebu.c b/drivers/gpio/gpio-mvebu.c
-index ad8822da7c27..1448dc874dfc 100644
---- a/drivers/gpio/gpio-mvebu.c
-+++ b/drivers/gpio/gpio-mvebu.c
-@@ -707,6 +707,9 @@ static int mvebu_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 	unsigned long flags;
- 	unsigned int on, off;
+diff --git a/tools/perf/bench/numa.c b/tools/perf/bench/numa.c
+index f2640179ada9..c2c81567afa5 100644
+--- a/tools/perf/bench/numa.c
++++ b/tools/perf/bench/numa.c
+@@ -1672,7 +1672,7 @@ static int __bench_numa(const char *name)
+ 		"GB/sec,", "total-speed",	"GB/sec total speed");
  
-+	if (state->polarity != PWM_POLARITY_NORMAL)
-+		return -EINVAL;
-+
- 	val = (unsigned long long) mvpwm->clk_rate * state->duty_cycle;
- 	do_div(val, NSEC_PER_SEC);
- 	if (val > UINT_MAX + 1ULL)
+ 	if (g->p.show_details >= 2) {
+-		char tname[14 + 2 * 10 + 1];
++		char tname[14 + 2 * 11 + 1];
+ 		struct thread_data *td;
+ 		for (p = 0; p < g->p.nr_proc; p++) {
+ 			for (t = 0; t < g->p.nr_threads; t++) {
 -- 
 2.35.1
 
