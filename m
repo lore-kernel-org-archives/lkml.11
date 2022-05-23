@@ -2,109 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6037AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 16:09:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E631C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 16:09:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238464AbiEWQJU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 12:09:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43200 "EHLO
+        id S238561AbiEWQJ1 convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 12:09:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238387AbiEWQJQ (ORCPT
+        with ESMTP id S238491AbiEWQJZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 12:09:16 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD522186F8;
-        Mon, 23 May 2022 09:09:15 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 8C1AD21A64;
-        Mon, 23 May 2022 16:09:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1653322154; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=4ywoMr61UmNyulUm1OYgOzOzU4gEj3gsscFPBmvSZr0=;
-        b=d8CuZxzb28+AguRGeC9cq1qFeJlmern+8wNDOixtu6mV54Sm1yPmHWbOZcNRFCPwyNqaUc
-        NwUCvIuPcrwM6cOjmpMHXVsmg2N6xFHmwHjSgeD6URz49d0Fhbq2/7rlCIoh0FzZ6huKDI
-        kN0+gihk+pBzkZXziR51IXAAmia7ofY=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1653322154;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=4ywoMr61UmNyulUm1OYgOzOzU4gEj3gsscFPBmvSZr0=;
-        b=ZXFNWEdOKAJQ9umVco/MxuBshhf2jIW4d5YMy71n/AicE6eq39HIVKLhJ6QsSqRo7iaUh7
-        hUn6iz0amKmZuKDQ==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 2F856139F5;
-        Mon, 23 May 2022 16:09:14 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id RCj5CKqxi2KsKQAAMHmgww
-        (envelope-from <lhenriques@suse.de>); Mon, 23 May 2022 16:09:14 +0000
-Received: from localhost (brahms.olymp [local])
-        by brahms.olymp (OpenSMTPD) with ESMTPA id a98d69dc;
-        Mon, 23 May 2022 16:09:52 +0000 (UTC)
-From:   =?UTF-8?q?Lu=C3=ADs=20Henriques?= <lhenriques@suse.de>
-To:     Jeff Layton <jlayton@kernel.org>, Xiubo Li <xiubli@redhat.com>,
-        Ilya Dryomov <idryomov@gmail.com>
-Cc:     ceph-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Lu=C3=ADs=20Henriques?= <lhenriques@suse.de>
-Subject: [PATCH] ceph: fix decoding of client session messages flags
-Date:   Mon, 23 May 2022 17:09:51 +0100
-Message-Id: <20220523160951.8781-1-lhenriques@suse.de>
+        Mon, 23 May 2022 12:09:25 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8F20463BFC
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 09:09:24 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-312-qy4YyiMNMmOP33diHOjiWA-1; Mon, 23 May 2022 17:09:21 +0100
+X-MC-Unique: qy4YyiMNMmOP33diHOjiWA-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.36; Mon, 23 May 2022 17:09:20 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.036; Mon, 23 May 2022 17:09:20 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Petr Malat' <oss@malat.biz>
+CC:     "linux-mtd@lists.infradead.org" <linux-mtd@lists.infradead.org>,
+        "Joern Engel" <joern@lazybastard.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>
+Subject: RE: [PATCH] mtd: phram: Map RAM using memremap instead of ioremap
+Thread-Topic: [PATCH] mtd: phram: Map RAM using memremap instead of ioremap
+Thread-Index: AQHYbrHUf5tSa7gm6kqFegI33HIF660si3RA///5tQCAABqkgA==
+Date:   Mon, 23 May 2022 16:09:20 +0000
+Message-ID: <e33f91a3eacc4aa3a08e6465fef9265c@AcuMS.aculab.com>
+References: <20220523142825.3144904-1-oss@malat.biz>
+ <3cab9a7f4ed34ca0b742a62c2bdc3bce@AcuMS.aculab.com>
+ <Youn9AmqY6/EExDw@ntb.petris.klfree.czf>
+In-Reply-To: <Youn9AmqY6/EExDw@ntb.petris.klfree.czf>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The cephfs kernel client started to show  the message:
+From: Petr Malat
+> Sent: 23 May 2022 16:28
+> 
+> Hi!
+> 
+> On Mon, May 23, 2022 at 02:51:41PM +0000, David Laight wrote:
+> > From: Petr Malat
+> > > Sent: 23 May 2022 15:28
+> > >
+> > > One can't use memcpy on memory obtained by ioremap, because IO memory
+> > > may have different alignment and size access restriction than the system
+> > > memory. Use memremap as phram driver operates on RAM.
+> >
+> > Does that actually help?
+> > The memcpy() is still likely to issue unaligned accesses
+> > that the hardware can't handle.
+> 
+> Yes, it solves the issue. Memcpy can cause unaligned access only on
+> platforms, which can handle it. And on ARM64 it's handled only for
+> RAM and not for a device memory (__pgprot(PROT_DEVICE_*)).
 
- ceph: mds0 session blocklisted
+Does mapping it as memory cause it to be cached?
+So the hardware only sees cache line reads (which are aligned)
+and the cpu support for misaligned memory accesses then
+stop the faults?
 
-when mounting a filesystem.  This is due to the fact that the session
-messages are being incorrectly decoded: the skip needs to take into
-account the 'len'.
+On x86 (which I know a lot more about) memcpy() has a nasty
+habit of getting implemented as 'rep movsb' relying on the
+cpu to speed it up.
+But that doesn't happen for uncached addresses - so you get
+very slow byte copies.
+OTOH misaligned PCIe transfers generate TLP that have the
+correct byte enables for the end words.
+Provided the PCIe target isn't broken they are fine.
 
-While there, fixed some whitespaces too.
+	David
 
-Fixes: e1c9788cb397 ("ceph: don't rely on error_string to validate blocklisted session.")
-Signed-off-by: Luís Henriques <lhenriques@suse.de>
----
- fs/ceph/mds_client.c | 14 +++++++++-----
- 1 file changed, 9 insertions(+), 5 deletions(-)
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
-diff --git a/fs/ceph/mds_client.c b/fs/ceph/mds_client.c
-index 00c3de177dd6..1bd3e1bb0fdf 100644
---- a/fs/ceph/mds_client.c
-+++ b/fs/ceph/mds_client.c
-@@ -3375,13 +3375,17 @@ static void handle_session(struct ceph_mds_session *session,
- 	}
- 
- 	if (msg_version >= 5) {
--		u32 flags;
--		/* version >= 4, struct_v, struct_cv, len, metric_spec */
--	        ceph_decode_skip_n(&p, end, 2 + sizeof(u32) * 2, bad);
-+		u32 flags, len;
-+
-+		/* version >= 4 */
-+		ceph_decode_skip_16(&p, end, bad); /* struct_v, struct_cv */
-+		ceph_decode_32_safe(&p, end, len, bad); /* len */
-+		ceph_decode_skip_n(&p, end, len, bad); /* metric_spec */
-+
- 		/* version >= 5, flags   */
--                ceph_decode_32_safe(&p, end, flags, bad);
-+		ceph_decode_32_safe(&p, end, flags, bad);
- 		if (flags & CEPH_SESSION_BLOCKLISTED) {
--		        pr_warn("mds%d session blocklisted\n", session->s_mds);
-+			pr_warn("mds%d session blocklisted\n", session->s_mds);
- 			blocklisted = true;
- 		}
- 	}
