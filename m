@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35C8AC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56FB1C433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:17:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240199AbiEWRQH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:16:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35348 "EHLO
+        id S240281AbiEWRQN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:16:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240350AbiEWRL6 (ORCPT
+        with ESMTP id S240317AbiEWRL4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:11:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D338E1BE98;
-        Mon, 23 May 2022 10:11:27 -0700 (PDT)
+        Mon, 23 May 2022 13:11:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D68D0326F4;
+        Mon, 23 May 2022 10:11:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 963D1614E9;
-        Mon, 23 May 2022 17:09:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 949D3C385AA;
-        Mon, 23 May 2022 17:09:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AC9C4B81211;
+        Mon, 23 May 2022 17:11:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCAE1C385AA;
+        Mon, 23 May 2022 17:11:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653325776;
-        bh=uDIOecDU8Abr+cZEuvulgCr1RfQHBxfq9SyEzp2mV1U=;
+        s=korg; t=1653325886;
+        bh=MGqKrvHFvARdJt/JIi7NLnlI4gIIz7ipAPd2/3U30qk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mzNM2gXywURdWaPHZ0kSfVTm/ufRrFc2MOloT5T+Qs7n4EII6J62GOyzHt/FrgMvP
-         tSPN/U3z/f6UzZh0o5+1/LTMRWFqqgPhvI2E5sdGpKf3em+PPpFvr8ylvKlYOmRXiq
-         +mhkuljnTP6Fah1CtBajFwy/MAagLVX7Tt3pAYSk=
+        b=k3GxIH37WIN21GNlKqr0Dzqe8RGkCZJC259VuT6+jY4zhWqa3zdks3KWBc0ryV2g5
+         kt2p0AQ+dch3MMCn0Lvz5knaXTOzUAotesKhOQjuFrWyFh5iCFraqQuFcfpKZS8f1K
+         vDBo3BURdoYceRo8qqQoxQxJp2mArD3M5BrPuulY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
+        stable@vger.kernel.org, Peng Fan <peng.fan@nxp.com>,
+        Haibo Chen <haibo.chen@nxp.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 19/33] net: af_key: add check for pfkey_broadcast in function pfkey_process
-Date:   Mon, 23 May 2022 19:05:08 +0200
-Message-Id: <20220523165751.192947211@linuxfoundation.org>
+Subject: [PATCH 4.19 34/44] gpio: gpio-vf610: do not touch other bits when set the target bit
+Date:   Mon, 23 May 2022 19:05:18 +0200
+Message-Id: <20220523165759.390957581@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165746.957506211@linuxfoundation.org>
-References: <20220523165746.957506211@linuxfoundation.org>
+In-Reply-To: <20220523165752.797318097@linuxfoundation.org>
+References: <20220523165752.797318097@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,40 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Haibo Chen <haibo.chen@nxp.com>
 
-[ Upstream commit 4dc2a5a8f6754492180741facf2a8787f2c415d7 ]
+[ Upstream commit 9bf3ac466faa83d51a8fe9212131701e58fdef74 ]
 
-If skb_clone() returns null pointer, pfkey_broadcast() will
-return error.
-Therefore, it should be better to check the return value of
-pfkey_broadcast() and return error if fails.
+For gpio controller contain register PDDR, when set one target bit,
+current logic will clear all other bits, this is wrong. Use operator
+'|=' to fix it.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Fixes: 659d8a62311f ("gpio: vf610: add imx7ulp support")
+Reviewed-by: Peng Fan <peng.fan@nxp.com>
+Signed-off-by: Haibo Chen <haibo.chen@nxp.com>
+Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/key/af_key.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/gpio/gpio-vf610.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/net/key/af_key.c b/net/key/af_key.c
-index d7adac31b0fd..3d5a46080169 100644
---- a/net/key/af_key.c
-+++ b/net/key/af_key.c
-@@ -2834,8 +2834,10 @@ static int pfkey_process(struct sock *sk, struct sk_buff *skb, const struct sadb
- 	void *ext_hdrs[SADB_EXT_MAX];
- 	int err;
+diff --git a/drivers/gpio/gpio-vf610.c b/drivers/gpio/gpio-vf610.c
+index a9cb5571de54..f7692999df47 100644
+--- a/drivers/gpio/gpio-vf610.c
++++ b/drivers/gpio/gpio-vf610.c
+@@ -135,9 +135,13 @@ static int vf610_gpio_direction_output(struct gpio_chip *chip, unsigned gpio,
+ {
+ 	struct vf610_gpio_port *port = gpiochip_get_data(chip);
+ 	unsigned long mask = BIT(gpio);
++	u32 val;
  
--	pfkey_broadcast(skb_clone(skb, GFP_KERNEL), GFP_KERNEL,
--			BROADCAST_PROMISC_ONLY, NULL, sock_net(sk));
-+	err = pfkey_broadcast(skb_clone(skb, GFP_KERNEL), GFP_KERNEL,
-+			      BROADCAST_PROMISC_ONLY, NULL, sock_net(sk));
-+	if (err)
-+		return err;
+-	if (port->sdata && port->sdata->have_paddr)
+-		vf610_gpio_writel(mask, port->gpio_base + GPIO_PDDR);
++	if (port->sdata && port->sdata->have_paddr) {
++		val = vf610_gpio_readl(port->gpio_base + GPIO_PDDR);
++		val |= mask;
++		vf610_gpio_writel(val, port->gpio_base + GPIO_PDDR);
++	}
  
- 	memset(ext_hdrs, 0, sizeof(ext_hdrs));
- 	err = parse_exthdrs(skb, hdr, ext_hdrs);
+ 	vf610_gpio_set(chip, gpio, value);
+ 
 -- 
 2.35.1
 
