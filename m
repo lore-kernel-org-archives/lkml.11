@@ -2,180 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B89BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 05:40:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECF96C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 05:42:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355650AbiEWFk5 (ORCPT
+        id S1350496AbiEWFmO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 01:40:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38472 "EHLO
+        Mon, 23 May 2022 01:42:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231639AbiEWFkx (ORCPT
+        with ESMTP id S229611AbiEWFmJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 01:40:53 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D42C21267
-        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 22:40:53 -0700 (PDT)
-Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24N52Wd4003765;
-        Mon, 23 May 2022 05:39:27 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : subject :
- to : cc : references : in-reply-to : mime-version : message-id :
- content-type : content-transfer-encoding; s=pp1;
- bh=PFNuXZrAekHBAO/x4Z8zgaZi4fTp/DEHoG+j4VQcKoM=;
- b=XIPnWqkZhtO606ZAOOQ7Zto74Hiy76aIiAMCNnlvW6kzaDSGgJoW/NFPrzTCm1IyLx3n
- lUTrEIcaogdAc3UMOD7IEZAhJwRcRUoiVcK6UyfiHecfYQBNzxQbWFAQv/Lb/uI2dcYy
- yiQD9iLYJoL8T6fffvadnrRYjl3h95jr0Sf9afUvoe6krOxxq33CGlgHuBE7czgiYW5d
- yW4dvFbxE6I/mygQImciD94m1JyCx2V1crNDNMmtEvnjkb6F55VqbhIJqBV1lZgtCmOS
- vKL4Aitvgy5jI6bA+/ENmKZwl1KQ6t8Zgq9JDYMLsryfdoza8X1ROOxFjbjbwdFOhWdU YA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g79vrc7vu-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 23 May 2022 05:39:27 +0000
-Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24N5WCwG005307;
-        Mon, 23 May 2022 05:39:26 GMT
-Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g79vrc7v5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 23 May 2022 05:39:26 +0000
-Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
-        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24N5GOxB032557;
-        Mon, 23 May 2022 05:39:23 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma04fra.de.ibm.com with ESMTP id 3g6qq99uts-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 23 May 2022 05:39:23 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24N5cZBL32833982
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 23 May 2022 05:38:35 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 7094CA4051;
-        Mon, 23 May 2022 05:39:21 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 01F26A404D;
-        Mon, 23 May 2022 05:39:21 +0000 (GMT)
-Received: from localhost (unknown [9.43.111.79])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon, 23 May 2022 05:39:20 +0000 (GMT)
-Date:   Mon, 23 May 2022 11:09:19 +0530
-From:   "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>
-Subject: Re: [RFC PATCH 3/3] objtool/mcount: Add powerpc specific functions
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Sathvika Vasireddy <sv@linux.ibm.com>
-Cc:     "aik@ozlabs.ru" <aik@ozlabs.ru>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>
-References: <20220318105140.43914-1-sv@linux.ibm.com>
-        <20220318105140.43914-4-sv@linux.ibm.com>
-        <YjR6kHq4c/rjCTpr@hirez.programming.kicks-ass.net>
-        <0b55f122-4760-c1ba-840a-0911cefec2ad@csgroup.eu>
-        <20220328195920.dqlfra3lcardko6r@treble>
-        <b8fac6e2-c117-86cf-2901-5ae0852ca403@csgroup.eu>
-        <20220512151206.dphxz5jyeshwc4jb@treble>
-        <bedd240b-d5b1-72f9-156d-96d160f180d4@csgroup.eu>
-        <20220521105704.GE2578@worktop.programming.kicks-ass.net>
-In-Reply-To: <20220521105704.GE2578@worktop.programming.kicks-ass.net>
+        Mon, 23 May 2022 01:42:09 -0400
+Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DE9A1A82F
+        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 22:42:06 -0700 (PDT)
+Received: by mail-yb1-xb31.google.com with SMTP id d137so23455864ybc.13
+        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 22:42:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=2ce0c2vLV4sUxJ3tplGN0HOr0r8Zisa3HjuO2lTepL0=;
+        b=nU3WHf/uNoLdnh6e/fN3cHwHpncxXIGuGl8npuSPITaRM+jazkeWJRrntmBecWREdD
+         q9LuDuypasKmgTOTX4h8vRDx6Jty7G3x7Z+P3VpHhvfjOOHd3528yyObXNliG2WAmx+X
+         qOJfFVD4QWN/uvDDx0VjkJu79wIqE1d14JE8swaBoe37oDEu/DfwymFViFakVSR4BtLd
+         rCq0XJ6JsgxDYmRP/h+/U4s1NQFnVayTggL2c00aqVu6eoGfgS1KNM5joJCTmC/jtw5y
+         6y8ofgFqk97LCgZtepEeB4HtDSylf+rjwwWo1c7GIiQNX9lL5G62UgrDEPRR/vICZbhm
+         xW/g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2ce0c2vLV4sUxJ3tplGN0HOr0r8Zisa3HjuO2lTepL0=;
+        b=RmQb5jRL6cXt4EeM5rO2+7ph9uABW78t7N/H8o2gsLz/4E/OVuttbHoSP/98s5ruNO
+         iCSc/TziBFs4oxiW4o56N2qfziimynB0z67IrZoF3bLYgLzuYiGVun6QXzB/s+SHmj6h
+         6aeOEdx2Ih8s/vW65eciVKm8FVTEjGnEEIcX/ob8fbUJMQ6ObWDE4q+ZF6GOhucKeynx
+         vrqWNoTbasmJfpst66FfFtfsJ2WpYAALddvRZSnZtI19HDh/7rs67Yc8GQ6AVvCVq/dp
+         z3aqcXkvJX6qVq7k4l087CDrqspF5ajV9Q0lzPkvDe0i75nVAUv9jl1w29e55J1TFC6b
+         56Wg==
+X-Gm-Message-State: AOAM533EOQH2FmPoMKA5pPnbKhDsgCgVnLjhak0sOfoZxWVsbhTYMJUV
+        tkdk5iuCtJTL21XoTZD+HbQw02mmDMSFGbRFIz5Mbw==
+X-Google-Smtp-Source: ABdhPJwWI9ZKihp7w8I2OHZ6R+V09XAtRCWmqUzL7juIxAFOsmTHJBoFETmaUkRqtUvbFqep1Ij8CGItEmblXxOB1QI=
+X-Received: by 2002:a25:b10c:0:b0:64f:649b:622f with SMTP id
+ g12-20020a25b10c000000b0064f649b622fmr12826897ybj.253.1653284525322; Sun, 22
+ May 2022 22:42:05 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: astroid/4d6b06ad (https://github.com/astroidmail/astroid)
-Message-Id: <1653283961.ozxe2866nt.naveen@linux.ibm.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: Q4XrUBLp1vLNiLkxKy3NPUZ3a81A8eAR
-X-Proofpoint-GUID: TBiGA9AsHHO1NnovwnJFeyyoVBWOPvd6
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-23_01,2022-05-20_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 mlxscore=0
- malwarescore=0 spamscore=0 clxscore=1011 priorityscore=1501
- impostorscore=0 suspectscore=0 lowpriorityscore=0 bulkscore=0 phishscore=0
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2205230034
+References: <a3c932d1-a102-ce18-deea-18cbbd05ecab@linaro.org> <20220522195138.35943-1-konrad.dybcio@somainline.org>
+In-Reply-To: <20220522195138.35943-1-konrad.dybcio@somainline.org>
+From:   Amit Pundir <amit.pundir@linaro.org>
+Date:   Mon, 23 May 2022 11:11:29 +0530
+Message-ID: <CAMi1Hd161=vc2eLVsnYVeeU6mNH8Fx8XfiQMUe_K=LbjyetSZw@mail.gmail.com>
+Subject: Re: Removal of qcom,board-id and qcom,msm-id
+To:     krzysztof.kozlowski@linaro.org,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc:     agross@kernel.org, arnd@arndb.de, bjorn.andersson@linaro.org,
+        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, olof@lixom.net, robh@kernel.org,
+        sboyd@kernel.org, Konrad Dybcio <konrad.dybcio@somainline.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Peter Zijlstra wrote:
-> On Sat, May 21, 2022 at 09:38:35AM +0000, Christophe Leroy wrote:
->=20
->> I gave it a try this morning, I selected HAVE_OBJTOOL and=20
->> HAVE_OBJTOOL_MCOUNT from arch/powerpc/Kconfig
->>=20
->>=20
->> Seems like there are still some x86 arch specific stuff in common common=
-=20
->> code and I get the following errors.
->=20
-> I'm assuming there's a metric ton of x86 specific stuff in there.
-> That'll take a while to clean out.
->=20
-> Mostly Josh's rewrite was centered around splitting out the runtime
-> options, but objtool is still always build with all options included,
-> even the ones you're not using for your arch, which is what's triggering
-> the problems you see here, I suppose...
->=20
->> Also, is it normal to get those functions built allthough I have not=20
->> selected HAVE_STACK_VALIDATION ?
->>=20
->>    CC      /home/chleroy/linux-powerpc/tools/objtool/check.o
->> check.c: In function 'has_valid_stack_frame':
->> check.c:2369:30: error: 'CFI_BP' undeclared (first use in this=20
->> function); did you mean 'CFI_SP'?
->>   2369 |         if (cfi->cfa.base =3D=3D CFI_BP &&
->>        |                              ^~~~~~
->>        |                              CFI_SP
->> check.c:2369:30: note: each undeclared identifier is reported only once=20
->> for each function it appears in
->> check.c:2371:44: error: 'CFI_RA' undeclared (first use in this=20
->> function); did you mean 'CFI_R3'?
->>   2371 |             check_reg_frame_pos(&cfi->regs[CFI_RA],=20
->> -cfi->cfa.offset + 8))
->>        |                                            ^~~~~~
->>        |                                            CFI_R3
->> check.c: In function 'update_cfi_state':
->> check.c:2499:70: error: 'CFI_BP' undeclared (first use in this=20
->> function); did you mean 'CFI_SP'?
->>   2499 |                         if (op->src.reg =3D=3D CFI_SP &&=20
->> op->dest.reg =3D=3D CFI_BP &&
->>        |=20
->>        ^~~~~~
->>        |=20
->>        CFI_SP
->> make[3]: *** [/home/chleroy/linux-powerpc/tools/build/Makefile.build:97:=
-=20
->> /home/chleroy/linux-powerpc/tools/objtool/check.o] Error 1
->> make[2]: *** [Makefile:54:=20
->> /home/chleroy/linux-powerpc/tools/objtool/objtool-in.o] Error 2
->> make[1]: *** [Makefile:69: objtool] Error 2
->> make: *** [Makefile:1337: tools/objtool] Error 2
->>=20
->>=20
->> What would be the best approach to fix that ?
->=20
-> Define CFI_BP to your frame register (r2, afaict) I suppose. If you're
-> only using OBJTOOL_MCOUNT this code will never run, so all you have to
-> ensure is that it compiles, not that it makes sense (-:
+On Mon, 23 May 2022 at 01:22, Konrad Dybcio
+<konrad.dybcio@somainline.org> wrote:
+>
+> Hi,
+>
+> removing these properties will not bring almost any benefit (other than making
+> some checks happy any saving some <200 LoC) and will make the lives of almost
+> all people doing independent development for linux-on-msm harder. There are
+> almost unironically like 3 people outside Linaro and QUIC who have
+> non-vendor-fused development boards AND the sources to rebuild the
+> bootloader on their own. Making it harder to boot is only going to
+> discourage people from developing on these devices, which is already not
+> that pleasant, especially with newer platforms where you have to fight with
+> the oh-so-bright ideas of Android boot chain..
+>
+> This only concerns devices released before sm8350, as the new ones will not
+> even boot with these properties present (or at least SONY Sagami, but I
+> doubt it's an isolated case), so other than completing support for older
+> devices, it won't be an issue going forward, anyway. But there are give
+> or take 50 locked down devices in mainline right now, and many more waiting
+> to be upstreamed in various downstream close-to-mainline trees that should
+> not be disregarded just because Qualcomm is far from the best at making
+> their BSP software stack clean.
+>
+> One solution is to chainload another, (n+1)-stage bootloader, but this is
+> not ideal, as:
+>
+> 1) the stock bootloader can boot Linux just fine on most devices (except
+> for single exceptions, where beloved OEMs didn't implement arm64 booting or
+> something)
+>
+> 2) the boot chain on MSM is already 3- or 4- stage and adding to that will
+> only create an unnecessary mess
+>
+> 3) the job of kernel people is not to break userspace. If the
+> device can not even exit bootloader after a kernel upgrade, it's a big
+> failure.
+>
+> If you *really really really* want these either gone or documented, we can
+> for example use them in the SOCID driver, read the values from DTB and
+> compare against what SMEM has to say and for example print a warning when
+> there are inconsistencies or use it as a fallback when it fails for any
+> reason, such as using a newer SoC on an older kernel, without updates
+> for SOCID read (which are sometimes necessary, which was the case for 8450
+> recently, iirc).
+>
+> My stance is to just leave them as is, as moving them anywhere, or removing
+> them at all will cause unnecessary mess and waste time that could have been
+> spent on more glaring issues..
 
-Sathvika has been looking into this.
+I couldn't have put it better myself. I suggest we document these
+properties, if that is the blocker, and keep them. A lot has changed
+in the last 7 years, we now have dozens of devices booting upstream
+kernel using these properties.
 
->=20
-> The very long and complicated way would be to propagate the various
-> CONFIG_HAVE_* build time things to the objtool build and librally
-> sprinkle a lot of #ifdef around.
+And fwiw, I have not used dtbTool before, if anything I'd rather
+explore dtb overlays.
 
-I think there were just a couple of unrelated checks/warnings that were=20
-causing problems on powerpc. So, we likely won't need too many #ifdefs,=20
-at least for mcount purposes.
+Regards,
+Amit Pundir
 
-Sathvika,
-Can you post what you have?
-
-
-- Naveen
-
+>
+> Konrad
