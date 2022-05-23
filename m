@@ -2,94 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEA0AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 14:33:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E819C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 14:33:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237219AbiEWOdH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 10:33:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57670 "EHLO
+        id S237228AbiEWOdV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 10:33:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237181AbiEWOdE (ORCPT
+        with ESMTP id S237181AbiEWOdI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 10:33:04 -0400
-Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F50E33361;
-        Mon, 23 May 2022 07:33:03 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 25AC3201CF;
-        Mon, 23 May 2022 16:33:01 +0200 (CEST)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id Oeroqqsihyg4; Mon, 23 May 2022 16:33:00 +0200 (CEST)
-Received: from mailout2.secunet.com (mailout2.secunet.com [62.96.220.49])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id A013D200AC;
-        Mon, 23 May 2022 16:33:00 +0200 (CEST)
-Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
-        by mailout2.secunet.com (Postfix) with ESMTP id 97E3880004A;
-        Mon, 23 May 2022 16:33:00 +0200 (CEST)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 23 May 2022 16:32:58 +0200
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 23 May
- 2022 16:33:00 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id E9B5A3182B34; Mon, 23 May 2022 16:32:59 +0200 (CEST)
-Date:   Mon, 23 May 2022 16:32:59 +0200
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Michal Kubecek <mkubecek@suse.cz>
-CC:     Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: REGRESSION (?) (Re: [PATCH] net: af_key: add check for
- pfkey_broadcast in function pfkey_process)
-Message-ID: <20220523143259.GX680067@gauss3.secunet.de>
-References: <20220517094231.414168-1-jiasheng@iscas.ac.cn>
- <20220523022438.ofhehjievu2alj3h@lion.mk-sys.cz>
- <20220523083349.zzgdmoq2bzstxla6@lion.mk-sys.cz>
+        Mon, 23 May 2022 10:33:08 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB56D33A04
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 07:33:07 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id l7-20020a17090aaa8700b001dd1a5b9965so13895803pjq.2
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 07:33:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=o5VXWNPSZA3rC+8/IoRn3B39pVcambgp6FwS9mwBIhE=;
+        b=VGALFZc0nYQQoedtnupkwyTglseKhWTY2On5GWZjTBnVdfqeZRtT6V0EiUpJ4SUwsd
+         r9zRnVuzUcyDeEjRa1u++eT4aTIC52q/m+Q/fVKQ3QanGuFNW7G8l2O3IGcZdTJf9Ptj
+         vNJdha+QWBjmlb2h2upXjluOrjOKlA/5fjH+VuGtiQR8mnzvfFkot6ua1qompAvmKTP2
+         rsM61K6/prGiCKWrP1ZOyPEXy7YHuCvAioTCZowwRpVdsQ9hyzAaHmZZbUFHIKue0Jum
+         rInuwPcIRCPqJKhB2ASaMyZ7xevms3Vtn1jH86zuT5wA4Ado2Qk5+j7P/uwRR4EidLRf
+         k4Sg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=o5VXWNPSZA3rC+8/IoRn3B39pVcambgp6FwS9mwBIhE=;
+        b=74fQyzR5ioyieGcgwLRY4t9QsJugFBABFeNh/Xp92372Tyhp161RzPfAy5mYfTaBzc
+         G79SpFqATRmKTy9YUcmaY4A/ckh0HEZ5xb+xg5i2ttAsCclPeUvHpFBRxCm0+juJeO+P
+         pQi7JB+GQpkyVvSPnBgG4/6IhQEd1qJ5zBcwEjtgE7ieoBl573BbeH5yBK+gbiCDtih8
+         IVKWM5dCYvS9zZabVZqAHt56TZDzhZy2f/r0ZU4b+1DuQuZUVmJBbuW7yx8n/P9E0u/t
+         8l/LBpHZ8sjEO+WVA9ortsnPxnYllx9kDyGmUMiZ2c7XIqXvwf8jsdtzLFVJnBbwRqA2
+         YU0w==
+X-Gm-Message-State: AOAM533LVu817nDj13zsEHO7/lQifLy3X2EyPcuKMjWwRsql33vbXZzw
+        +Fg2mNyhsdaepqjfKKiekNc=
+X-Google-Smtp-Source: ABdhPJy22fsu+i3GK5N2DZ0aRKa6iZuZr30HkITvLYPMJ/oH+EPw7wfRAJ0866/BtpxvxVyX7CHwLg==
+X-Received: by 2002:a17:90a:6c66:b0:1df:9399:9189 with SMTP id x93-20020a17090a6c6600b001df93999189mr26896192pjj.179.1653316387168;
+        Mon, 23 May 2022 07:33:07 -0700 (PDT)
+Received: from localhost.localdomain ([202.120.234.246])
+        by smtp.googlemail.com with ESMTPSA id n18-20020a6563d2000000b003f655cf45c0sm4835848pgv.63.2022.05.23.07.33.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 May 2022 07:33:06 -0700 (PDT)
+From:   Miaoqian Lin <linmq006@gmail.com>
+To:     Linus Walleij <linus.walleij@linaro.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     linmq006@gmail.com
+Subject: [PATCH] mtd: maps: Fix refcount leak in ap_flash_init
+Date:   Mon, 23 May 2022 18:32:55 +0400
+Message-Id: <20220523143255.4376-1-linmq006@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220523083349.zzgdmoq2bzstxla6@lion.mk-sys.cz>
-X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 23, 2022 at 10:33:49AM +0200, Michal Kubecek wrote:
-> On Mon, May 23, 2022 at 04:24:38AM +0200, Michal Kubecek wrote:
-> > After upgrading from 5.18-rc7 to 5.18 final, my racoon daemon refuses to
-> > start because it cannot find some algorithms (it says "aes"). I have not
-> > finished the debugging completely but this patch, mainline commit
-> > 4dc2a5a8f675 ("net: af_key: add check for pfkey_broadcast in function
-> > pfkey_process"), seems to be the most promising candidate.
-> 
-> Tested now, reverting commit 4dc2a5a8f675 ("net: af_key: add check for
-> pfkey_broadcast in function pfkey_process") seems to fix the issue,
-> after rebuilding the af_key module with this commit reverted and
-> reloading it, racoon daemon starts and works and /proc/crypto shows
-> algrorithms it did not without the revert.
-> 
-> We might get away with changing the test to
-> 
-> 	if (err && err != -ESRCH)
-> 		return err;
-> 
-> but I'm not sure if bailing up on failed notification broadcast is
-> really what we want. Also, most other calling sites of pfkey_broadcast()
-> do not check the return value either so if we want to add the check, it
-> should probably be done more consistently. So for now, a revert is IMHO
-> more appropriate.
+of_find_matching_node() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not need anymore.
+Add missing of_node_put() to avoid refcount leak.
 
-Yes, let's just revert it. Maybe we should only accept serious security
-bugfixes for the pfkey interface and leave everyting else as it is. Noone
-really cares for the pfkey code anymore for more than 10 years. People
-should switch to the netlink interface.
+Fixes: b0afd44bc192 ("mtd: physmap_of: add a hook for Versatile write protection")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+---
+ drivers/mtd/maps/physmap-versatile.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/mtd/maps/physmap-versatile.c b/drivers/mtd/maps/physmap-versatile.c
+index ad7cd9cfaee0..6ba6a1dd127c 100644
+--- a/drivers/mtd/maps/physmap-versatile.c
++++ b/drivers/mtd/maps/physmap-versatile.c
+@@ -93,6 +93,7 @@ static int ap_flash_init(struct platform_device *pdev)
+ 		return -ENODEV;
+ 	}
+ 	ebi_base = of_iomap(ebi, 0);
++	of_node_put(ebi);
+ 	if (!ebi_base)
+ 		return -ENODEV;
+ 
+-- 
+2.25.1
+
