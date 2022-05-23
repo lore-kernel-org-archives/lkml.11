@@ -2,110 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94259C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 20:18:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59454C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 20:19:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232730AbiEWUSB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 16:18:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52420 "EHLO
+        id S232777AbiEWUTh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 16:19:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233018AbiEWUPy (ORCPT
+        with ESMTP id S229594AbiEWUTe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 16:15:54 -0400
-Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F53EA889F
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 13:14:44 -0700 (PDT)
-Received: by mail-io1-xd31.google.com with SMTP id y12so16470353ior.7
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 13:14:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=2vp0MMS/nvxu6duSf/XEnD4yOQ25zTvmWT7ui8yftHI=;
-        b=EdZ3EoZNsBfIF3vb1gybA4QEABs1GgsVjZAOwUbNskNs6gqaa+1mGIdZsiVE3FWno9
-         RAdfS9kwfjSlmHdIz2H/oeCWvq6WF7SVHGywATmRIsSOSbcMalHoMxseo68lHAskg1ZN
-         rNJXRKMV18WA/dqlhvDFrjgqD41e0Rh7HqGPZvzaibysFy5K7GZfVPQwgyjdgyzX71T0
-         encoD5PY9rOu17eULUcVOyjbAKauaKhI+Q+eu7UP9oLA0K46GseesCox5CtiREtXR8Fh
-         rbuJ2xTvT/vnR+ONmFcpQ+0jgzQT5n2FiF78UWKT6WN8EIuvsncu5ELomMUqgaHu+cFh
-         ilrA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=2vp0MMS/nvxu6duSf/XEnD4yOQ25zTvmWT7ui8yftHI=;
-        b=e4MgP/ha+DfsemDejwW/PZ/9r8HcJuNfDwKV6jowWq107UqzGJxKWzGJdWrto3S2pD
-         HzpubYXavg5zd4eJesdFk+5rvllfd9FVdpljOg1jJFJG42+NgjBMdFXxckKeuzMZ3drZ
-         ohZexpaSFVEqfOkd6RRPrF6aKaOQmvQeQUYLlOW4yWrurRTZDHS+3wSYjsW4mMghNKuU
-         JuXxU+k50cMYH+3XwVpmWkAP3an84QajzWrdn5EeenpPvgkgbI9Nxk5o429Ywfapnczw
-         MtS0Mr+djXXdgwdBXben5SbMcIi0HA/tDCgZGSCsIggJe3sAOcSmLkRIq5ooyg5YfGT0
-         zCCg==
-X-Gm-Message-State: AOAM531e5M7MVFXqYcuO9x5mz6ByV4EkE5MjHjg2GDM4gqOH8EhxJxMV
-        q1lTBZxkoC9KXe4HOAU5o77NJNhS5aEXVaEoX8FuZw==
-X-Google-Smtp-Source: ABdhPJzXVZsMlIcsfTWmHEvgkX+Yekfi/Nst5WNbxO8+xV3NtL2uQPX45xtzoDCC87H6sQybG3k4+UaeXo/yeImQbr4=
-X-Received: by 2002:a02:90ce:0:b0:32e:e2ce:b17c with SMTP id
- c14-20020a0290ce000000b0032ee2ceb17cmr615703jag.268.1653336883586; Mon, 23
- May 2022 13:14:43 -0700 (PDT)
+        Mon, 23 May 2022 16:19:34 -0400
+X-Greylist: delayed 2991 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 23 May 2022 13:19:32 PDT
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5369BC6C1;
+        Mon, 23 May 2022 13:19:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=BEjCKmEEMSSOtJMVmqVfIC+RkZgNI8u3xBenZK+hUro=; b=XRTrc4lAUy9jkpgVFOq2TSxezd
+        I3wKs11DSNWPt0smYy84y8nX4OQpi2ShTNU+G9tW+Yllwv6rMJhJQ7BXgKVp1vNon4qhiH1MqoODT
+        l/Z0+UcxTluUmD/IPXWAYoogG+L7bdnoCFn41igpJqE+Z0iBqPr6hgZahTLWZDS1Hs5bTMGfphH8F
+        XO5iqaxMoV2nZbBszT3k9ljMldkb1qdaL4+ZUE91w5xsku3P8VN18E/atgx0/LbcuB5y8eG65c+zb
+        8J/dPbRR92XSx0HQiulEuZ4Sjx1DrsRys+Q+UVF9bIaUIPS+JwEisoXZvd78Aoa+iG3xZ0t7m7ri2
+        Y+kik54w==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1ntCIl-005SSl-Cr; Mon, 23 May 2022 17:57:07 +0000
+Date:   Mon, 23 May 2022 10:57:07 -0700
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Xiubo Li <xiubli@redhat.com>
+Cc:     jlayton@kernel.org, idryomov@gmail.com, viro@zeniv.linux.org.uk,
+        willy@infradead.org, vshankar@redhat.com,
+        ceph-devel@vger.kernel.org, arnd@arndb.de,
+        akpm@linux-foundation.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 1/2] fs/dcache: add d_compare() helper support
+Message-ID: <YovK86vEmOUUoBn6@bombadil.infradead.org>
+References: <20220519101847.87907-1-xiubli@redhat.com>
+ <20220519101847.87907-2-xiubli@redhat.com>
 MIME-Version: 1.0
-References: <20220521075736.1225397-1-zenczykowski@gmail.com> <CAADnVQJcDvyeQ3y=uVDj-7JfqtxE+nJk+d5oVQrBhhQpicYk6A@mail.gmail.com>
-In-Reply-To: <CAADnVQJcDvyeQ3y=uVDj-7JfqtxE+nJk+d5oVQrBhhQpicYk6A@mail.gmail.com>
-From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
-Date:   Mon, 23 May 2022 13:14:31 -0700
-Message-ID: <CANP3RGcn6ta7uZH7onuRwOzx_2UmizEtgOTMKvbMOL8FER0MXQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] bpf: print a little more info about maps via cat /sys/fs/bpf/pinned_name
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Linux Network Development Mailing List 
-        <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        BPF Mailing List <bpf@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220519101847.87907-2-xiubli@redhat.com>
+Sender: Luis Chamberlain <mcgrof@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 23, 2022 at 12:32 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Sat, May 21, 2022 at 12:57 AM Maciej =C5=BBenczykowski
-> <zenczykowski@gmail.com> wrote:
-> >
-> > From: Maciej =C5=BBenczykowski <maze@google.com>
-> >
-> > While this information can be fetched via bpftool,
-> > the cli tool itself isn't always available on more limited systems.
-> >
-> > From the information printed particularly the 'id' is useful since
-> > when combined with /proc/pid/fd/X and /proc/pid/fdinfo/X it allows
-> > tracking down which bpf maps a process has open (which can be
-> > useful for tracking down fd leaks).
-> >
-> > Signed-off-by: Maciej =C5=BBenczykowski <maze@google.com>
-> > ---
-> >  kernel/bpf/inode.c | 3 +++
-> >  1 file changed, 3 insertions(+)
-> >
-> > diff --git a/kernel/bpf/inode.c b/kernel/bpf/inode.c
-> > index 4f841e16779e..784266e258fe 100644
-> > --- a/kernel/bpf/inode.c
-> > +++ b/kernel/bpf/inode.c
-> > @@ -257,6 +257,9 @@ static int map_seq_show(struct seq_file *m, void *v=
-)
-> >         if (unlikely(v =3D=3D SEQ_START_TOKEN)) {
-> >                 seq_puts(m, "# WARNING!! The output is for debug purpos=
-e only\n");
-> >                 seq_puts(m, "# WARNING!! The output format will change\=
-n");
-> > +               seq_printf(m, "# type: %d, key_size: %d, value_size: %d=
-, max_entries: %d, id: %d\n",
-> > +                          map->map_type, map->key_size, map->value_siz=
-e, map->max_entries,
-> > +                          map->id);
->
-> Maybe use cat /sys/fs/bpf/maps.debug instead?
-> It prints map id.
+On Thu, May 19, 2022 at 06:18:45PM +0800, Xiubo Li wrote:
+> Reviewed-by: Jeff Layton <jlayton@kernel.org>
+> Signed-off-by: Xiubo Li <xiubli@redhat.com>
+> ---
+>  fs/dcache.c            | 15 +++++++++++++++
+>  include/linux/dcache.h |  2 ++
+>  2 files changed, 17 insertions(+)
+> 
+> diff --git a/fs/dcache.c b/fs/dcache.c
+> index 93f4f5ee07bf..95a72f92a94b 100644
+> --- a/fs/dcache.c
+> +++ b/fs/dcache.c
+> @@ -2262,6 +2262,21 @@ static inline bool d_same_name(const struct dentry *dentry,
+>  				       name) == 0;
+>  }
+>  
+> +/**
+> + * d_compare - compare dentry name with case-exact name
+> + * @parent: parent dentry
+> + * @dentry: the negative dentry that was passed to the parent's lookup func
+> + * @name:   the case-exact name to be associated with the returned dentry
+> + *
+> + * Return: 0 if names are same, or 1
+> + */
+> +bool d_compare(const struct dentry *parent, const struct dentry *dentry,
+> +	       const struct qstr *name)
+> +{
+> +	return !d_same_name(dentry, parent, name);
 
-Is this something that was very recently added?
-I'm not seeing it on my 5.16 machine with bpffs mounted at /sys/fs/bpf.
+What's wrong with d_same_name()? Why introduce a whole new operation
+and export it when you the same prototype except first and second
+argument moved with an even more confusing name?
+
+> +}
+> +EXPORT_SYMBOL(d_compare);
+
+New symbols should go with EXPORT_SYMBOL_GPL() instead.
+
+  Luis
