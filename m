@@ -2,114 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4819BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 14:17:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 150E9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 14:18:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237062AbiEWOR1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 10:17:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41862 "EHLO
+        id S236978AbiEWOSV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 10:18:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236939AbiEWORZ (ORCPT
+        with ESMTP id S237054AbiEWOSQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 10:17:25 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B938359BA0;
-        Mon, 23 May 2022 07:17:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1653315443; x=1684851443;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=JI0lcN9SHVIzgJehontYp/EcHZi0BmK64pGfGXgA72E=;
-  b=Zj9miZlRKkO1Gr6cHEAKTFiWI0+4eIOsyjdcAgTnv6eHdOZHqYRyYS9F
-   tNp2E2rLrEby161sVsFzPqvElXrDeOMg8dCmAN2hShwSqUrqRTRBQSy6c
-   3/rPvoRYFx+KZ4s0wUrsGa6gO3vALgo7S5Pj8nXy3TZVkpWHgBFHS5mzx
-   6GnSZ+wOSUXTAx+vH8Y1/+Wp9gTHkIYoB+ygy2mQKrFXMYFZomQpW0Ybq
-   SKyE5o0j6upL4YDf5yxjupbYyFx226FtTZ/71EZNrec46g5aAXy7uqvSk
-   jsaf90S8GvRW4y0mkZDFxa1DGmt2U4hjouEKSyoxKextTvIiAiz48J5NO
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.91,246,1647327600"; 
-   d="scan'208";a="96932993"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 23 May 2022 07:17:13 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 23 May 2022 07:17:13 -0700
-Received: from ROB-ULT-M18282.microchip.com (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Mon, 23 May 2022 07:17:12 -0700
-From:   Eugen Hristev <eugen.hristev@microchip.com>
-To:     <linux-media@vger.kernel.org>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        Eugen Hristev <eugen.hristev@microchip.com>
-Subject: [PATCH] media: atmel: atmel-isc-base: move cropping settings outside start_dma
-Date:   Mon, 23 May 2022 17:17:05 +0300
-Message-ID: <20220523141705.98121-1-eugen.hristev@microchip.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 23 May 2022 10:18:16 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 465215A088;
+        Mon, 23 May 2022 07:18:15 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id AAC7D1063;
+        Mon, 23 May 2022 07:18:14 -0700 (PDT)
+Received: from FVFF77S0Q05N (unknown [10.57.9.63])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0904A3F70D;
+        Mon, 23 May 2022 07:18:12 -0700 (PDT)
+Date:   Mon, 23 May 2022 15:16:35 +0100
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Kefeng Wang <wangkefeng.wang@huawei.com>
+Cc:     elver@google.com, catalin.marinas@arm.com, will@kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
+        arnd@arndb.de
+Subject: Re: [PATCH v4 2/2] arm64: kcsan: Support detecting more missing
+ memory barriers
+Message-ID: <YouXQ+XX8CrgM5QX@FVFF77S0Q05N>
+References: <20220523113126.171714-1-wangkefeng.wang@huawei.com>
+ <20220523113126.171714-3-wangkefeng.wang@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220523113126.171714-3-wangkefeng.wang@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The cropping configuration of the Parallel Front Engine (PFE) can be done
-just once when the streaming starts. The ISC configuration is in place and
-will not be changed while streaming.
-It is not effective to keep rewriting the crop registers configuration
-everytime start_dma is called, as this can be called for each queued
-buffer.
-Thus we can configure the cropping at start_streaming time.
-This change moves the code to a dedicated function.
+On Mon, May 23, 2022 at 07:31:26PM +0800, Kefeng Wang wrote:
+> As "kcsan: Support detecting a subset of missing memory barriers"[1]
+> introduced KCSAN_STRICT/KCSAN_WEAK_MEMORY which make kcsan detects
+> more missing memory barrier, but arm64 don't have KCSAN instrumentation
+> for barriers, so the new selftest test_barrier() and test cases for
+> memory barrier instrumentation in kcsan_test module will fail, even
+> panic on selftest.
+> 
+> Let's prefix all barriers with __ on arm64, as asm-generic/barriers.h
+> defined the final instrumented version of these barriers, which will
+> fix the above issues.
+> 
+> Note, barrier instrumentation that can be disabled via __no_kcsan with
+> appropriate compiler-support (and not just with objtool help), see
+> commit bd3d5bd1a0ad ("kcsan: Support WEAK_MEMORY with Clang where no
+> objtool support exists"), it adds disable_sanitizer_instrumentation to
+> __no_kcsan attribute which will remove all sanitizer instrumentation fully
+> (with Clang 14.0). Meanwhile, GCC does the same thing with no_sanitize.
+> 
+> [1] https://lore.kernel.org/linux-mm/20211130114433.2580590-1-elver@google.com/
+> 
+> Acked-by: Marco Elver <elver@google.com>
+> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
 
-Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
----
- drivers/media/platform/atmel/atmel-isc-base.c | 14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
+Having built this with GCC 12.1.0 and LLVM 14.0.0, I think this patch itself
+doesn't introduce any new problems, and logically makes sense. With that in
+mind:
 
-diff --git a/drivers/media/platform/atmel/atmel-isc-base.c b/drivers/media/platform/atmel/atmel-isc-base.c
-index 894c22081397..01a2e7f626d0 100644
---- a/drivers/media/platform/atmel/atmel-isc-base.c
-+++ b/drivers/media/platform/atmel/atmel-isc-base.c
-@@ -127,12 +127,9 @@ static int isc_buffer_prepare(struct vb2_buffer *vb)
- 	return 0;
- }
- 
--static void isc_start_dma(struct isc_device *isc)
-+static void isc_crop_pfe(struct isc_device *isc)
- {
- 	struct regmap *regmap = isc->regmap;
--	u32 sizeimage = isc->fmt.fmt.pix.sizeimage;
--	u32 dctrl_dview;
--	dma_addr_t addr0;
- 	u32 h, w;
- 
- 	h = isc->fmt.fmt.pix.height;
-@@ -167,6 +164,14 @@ static void isc_start_dma(struct isc_device *isc)
- 	regmap_update_bits(regmap, ISC_PFE_CFG0,
- 			   ISC_PFE_CFG0_COLEN | ISC_PFE_CFG0_ROWEN,
- 			   ISC_PFE_CFG0_COLEN | ISC_PFE_CFG0_ROWEN);
-+}
-+
-+static void isc_start_dma(struct isc_device *isc)
-+{
-+	struct regmap *regmap = isc->regmap;
-+	u32 sizeimage = isc->fmt.fmt.pix.sizeimage;
-+	u32 dctrl_dview;
-+	dma_addr_t addr0;
- 
- 	addr0 = vb2_dma_contig_plane_dma_addr(&isc->cur_frm->vb.vb2_buf, 0);
- 	regmap_write(regmap, ISC_DAD0 + isc->offsets.dma, addr0);
-@@ -371,6 +376,7 @@ static int isc_start_streaming(struct vb2_queue *vq, unsigned int count)
- 					struct isc_buffer, list);
- 	list_del(&isc->cur_frm->list);
- 
-+	isc_crop_pfe(isc);
- 	isc_start_dma(isc);
- 
- 	spin_unlock_irqrestore(&isc->dma_queue_lock, flags);
--- 
-2.25.1
+  Acked-by: Mark Rutland <mark.rutland@arm.com>
 
+As an aside, having scanned the resulting vmlinux with objdump, there are
+plenty of latent issues where we get KCSAN instrumentation where we don't want
+it (e.g. early/late in arm64's entry-common.o). The bulk of those are due to
+missing `nonistr` or `__always_inline`, which we'll need to fix up.
+
+Thanks,
+Mark.
+
+> ---
+>  arch/arm64/include/asm/barrier.h | 12 ++++++------
+>  1 file changed, 6 insertions(+), 6 deletions(-)
+> 
+> diff --git a/arch/arm64/include/asm/barrier.h b/arch/arm64/include/asm/barrier.h
+> index 9f3e2c3d2ca0..2cfc4245d2e2 100644
+> --- a/arch/arm64/include/asm/barrier.h
+> +++ b/arch/arm64/include/asm/barrier.h
+> @@ -50,13 +50,13 @@
+>  #define pmr_sync()	do {} while (0)
+>  #endif
+>  
+> -#define mb()		dsb(sy)
+> -#define rmb()		dsb(ld)
+> -#define wmb()		dsb(st)
+> +#define __mb()		dsb(sy)
+> +#define __rmb()		dsb(ld)
+> +#define __wmb()		dsb(st)
+>  
+> -#define dma_mb()	dmb(osh)
+> -#define dma_rmb()	dmb(oshld)
+> -#define dma_wmb()	dmb(oshst)
+> +#define __dma_mb()	dmb(osh)
+> +#define __dma_rmb()	dmb(oshld)
+> +#define __dma_wmb()	dmb(oshst)
+>  
+>  #define io_stop_wc()	dgh()
+>  
+> -- 
+> 2.35.3
+> 
