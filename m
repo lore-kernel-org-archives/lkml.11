@@ -2,153 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8797C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:05:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41FA7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:05:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243723AbiEWSFN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:05:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35654 "EHLO
+        id S243305AbiEWSFV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:05:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242871AbiEWRht (ORCPT
+        with ESMTP id S242952AbiEWRhv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:37:49 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F7615DD32;
-        Mon, 23 May 2022 10:31:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653327112; x=1684863112;
-  h=from:to:cc:subject:date:message-id;
-  bh=1a6xvUVraNwPsJU4Rdg2VoIzY6z3cXUo5L9xyuMQW10=;
-  b=jZZ4Ss2cC9FdaYUiYD7eMciUNKwWofAf83XDg39+G+pLQdKr7UfIDN9M
-   NOZ5dO/pIEExNs0Q5Qe/7WhDsG0mkigC7xumOAZsnp8XX6ry1/hqqaJXY
-   krrRtjY+/tL5mVpzLFBQkARspOEYeiwZxHh+8ECCDD6T831NcpTeNqQ8g
-   325H4AE1/A1Sl1kQbC5maHrz9z1odexDxkaxdq3iPZREZH6ijuEqyL7t9
-   NLHukXG80s9R0v4i3Wz/5VWTg20ml8X9VBT8fp+D3Ab9vteLajrdB0T3p
-   V9A1U5OuTQLoC8ezi8Mqe+l+LNQRV9D964k8TLedNEY2nfeDybM/wOyMY
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10356"; a="272115807"
-X-IronPort-AV: E=Sophos;i="5.91,246,1647327600"; 
-   d="scan'208";a="272115807"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2022 10:30:17 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,246,1647327600"; 
-   d="scan'208";a="744846445"
-Received: from srpawnik.iind.intel.com ([10.99.123.68])
-  by orsmga005.jf.intel.com with ESMTP; 23 May 2022 10:30:14 -0700
-From:   Sumeet Pawnikar <sumeet.r.pawnikar@intel.com>
-To:     rafael@kernel.org, lenb@kernel.org,
-        srinivas.pandruvada@linux.intel.com, daniel.lezcano@linaro.org,
-        rui.zhang@intel.com, linux-acpi@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     sumeet.r.pawnikar@intel.com
-Subject: [PATCH] ACPI: DPTF: Support Meteor Lake
-Date:   Mon, 23 May 2022 22:57:24 +0530
-Message-Id: <20220523172724.30556-1-sumeet.r.pawnikar@intel.com>
-X-Mailer: git-send-email 2.17.1
+        Mon, 23 May 2022 13:37:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99D606351C;
+        Mon, 23 May 2022 10:31:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CD99B611E6;
+        Mon, 23 May 2022 17:30:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0CA0C385A9;
+        Mon, 23 May 2022 17:30:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1653327040;
+        bh=JtVMK1J56BWXLZvCcn/YesZxEVRZCxup/GGdgk9PEC8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=aG5iBD5yaBYWY0ASydJP8L1YhcTitrTOeyhwS0eji/SImztfjDy5S2nSVJG9KGdC6
+         2jwhSvpWL3zNf452dkhTizW1m5dfGaa38KA8vEOeY30Lfn9VN2rAFsNh7ECwp6MQ9U
+         yohSOXWgHl7imNoaDuz8j4beDUA/AhPO4YuD1z4s=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Maor Dickman <maord@nvidia.com>,
+        Yevgeny Kliteynik <kliteyn@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 102/158] net/mlx5: DR, Fix missing flow_source when creating multi-destination FW table
+Date:   Mon, 23 May 2022 19:04:19 +0200
+Message-Id: <20220523165848.231649115@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
+References: <20220523165830.581652127@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add Meteor Lake ACPI IDs for DPTF devices.
+From: Maor Dickman <maord@nvidia.com>
 
-Signed-off-by: Sumeet Pawnikar <sumeet.r.pawnikar@intel.com>
-Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+[ Upstream commit 2c5fc6cd269ad3476da99dad02521d2af4a8e906 ]
+
+In order to support multiple destination FTEs with SW steering
+FW table is created with single FTE with multiple actions and
+SW steering rule forward to it. When creating this table, flow
+source isn't set according to the original FTE.
+
+Fix this by passing the original FTE flow source to the created
+FW table.
+
+Fixes: 34583beea4b7 ("net/mlx5: DR, Create multi-destination table for SW-steering use")
+Signed-off-by: Maor Dickman <maord@nvidia.com>
+Reviewed-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/dptf/dptf_pch_fivr.c                       | 1 +
- drivers/acpi/dptf/dptf_power.c                          | 2 ++
- drivers/acpi/dptf/int340x_thermal.c                     | 6 ++++++
- drivers/acpi/fan.h                                      | 1 +
- drivers/thermal/intel/int340x_thermal/int3400_thermal.c | 1 +
- drivers/thermal/intel/int340x_thermal/int3403_thermal.c | 1 +
- 6 files changed, 12 insertions(+)
+ .../net/ethernet/mellanox/mlx5/core/steering/dr_action.c    | 6 ++++--
+ drivers/net/ethernet/mellanox/mlx5/core/steering/dr_fw.c    | 4 +++-
+ drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h | 3 ++-
+ drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c    | 4 +++-
+ drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h   | 3 ++-
+ 5 files changed, 14 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/acpi/dptf/dptf_pch_fivr.c b/drivers/acpi/dptf/dptf_pch_fivr.c
-index c0da24c9f8c3..4919e7abe93f 100644
---- a/drivers/acpi/dptf/dptf_pch_fivr.c
-+++ b/drivers/acpi/dptf/dptf_pch_fivr.c
-@@ -151,6 +151,7 @@ static int pch_fivr_remove(struct platform_device *pdev)
- static const struct acpi_device_id pch_fivr_device_ids[] = {
- 	{"INTC1045", 0},
- 	{"INTC1049", 0},
-+	{"INTC1064", 0},
- 	{"INTC10A3", 0},
- 	{"", 0},
- };
-diff --git a/drivers/acpi/dptf/dptf_power.c b/drivers/acpi/dptf/dptf_power.c
-index dc1f52a5b3f4..a5f29d061b37 100644
---- a/drivers/acpi/dptf/dptf_power.c
-+++ b/drivers/acpi/dptf/dptf_power.c
-@@ -231,6 +231,8 @@ static const struct acpi_device_id int3407_device_ids[] = {
- 	{"INTC1050", 0},
- 	{"INTC1060", 0},
- 	{"INTC1061", 0},
-+	{"INTC1065", 0},
-+	{"INTC1066", 0},
- 	{"INTC10A4", 0},
- 	{"INTC10A5", 0},
- 	{"", 0},
-diff --git a/drivers/acpi/dptf/int340x_thermal.c b/drivers/acpi/dptf/int340x_thermal.c
-index 42a556346548..b7113fa92fa6 100644
---- a/drivers/acpi/dptf/int340x_thermal.c
-+++ b/drivers/acpi/dptf/int340x_thermal.c
-@@ -27,6 +27,7 @@ static const struct acpi_device_id int340x_thermal_device_ids[] = {
- 	{"INT3532"},
- 	{"INTC1040"},
- 	{"INTC1041"},
-+	{"INTC1042"},
- 	{"INTC1043"},
- 	{"INTC1044"},
- 	{"INTC1045"},
-@@ -37,6 +38,11 @@ static const struct acpi_device_id int340x_thermal_device_ids[] = {
- 	{"INTC1050"},
- 	{"INTC1060"},
- 	{"INTC1061"},
-+	{"INTC1062"},
-+	{"INTC1063"},
-+	{"INTC1064"},
-+	{"INTC1065"},
-+	{"INTC1066"},
- 	{"INTC10A0"},
- 	{"INTC10A1"},
- 	{"INTC10A2"},
-diff --git a/drivers/acpi/fan.h b/drivers/acpi/fan.h
-index 44728529a5b6..e7b4b4e4a55e 100644
---- a/drivers/acpi/fan.h
-+++ b/drivers/acpi/fan.h
-@@ -14,6 +14,7 @@
- 	{"INT3404", }, /* Fan */ \
- 	{"INTC1044", }, /* Fan for Tiger Lake generation */ \
- 	{"INTC1048", }, /* Fan for Alder Lake generation */ \
-+	{"INTC1063", }, /* Fan for Meteor Lake generation */ \
- 	{"INTC10A2", }, /* Fan for Raptor Lake generation */ \
- 	{"PNP0C0B", } /* Generic ACPI fan */
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
+index c61a5e83c78c..5d1caf97a8fc 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
+@@ -847,7 +847,8 @@ struct mlx5dr_action *
+ mlx5dr_action_create_mult_dest_tbl(struct mlx5dr_domain *dmn,
+ 				   struct mlx5dr_action_dest *dests,
+ 				   u32 num_of_dests,
+-				   bool ignore_flow_level)
++				   bool ignore_flow_level,
++				   u32 flow_source)
+ {
+ 	struct mlx5dr_cmd_flow_destination_hw_info *hw_dests;
+ 	struct mlx5dr_action **ref_actions;
+@@ -919,7 +920,8 @@ mlx5dr_action_create_mult_dest_tbl(struct mlx5dr_domain *dmn,
+ 				      reformat_req,
+ 				      &action->dest_tbl->fw_tbl.id,
+ 				      &action->dest_tbl->fw_tbl.group_id,
+-				      ignore_flow_level);
++				      ignore_flow_level,
++				      flow_source);
+ 	if (ret)
+ 		goto free_action;
  
-diff --git a/drivers/thermal/intel/int340x_thermal/int3400_thermal.c b/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
-index 79931ddc582a..1ea861473cba 100644
---- a/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
-+++ b/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
-@@ -669,6 +669,7 @@ static const struct acpi_device_id int3400_thermal_match[] = {
- 	{"INT3400", 0},
- 	{"INTC1040", 0},
- 	{"INTC1041", 0},
-+	{"INTC1042", 0},
- 	{"INTC10A0", 0},
- 	{}
- };
-diff --git a/drivers/thermal/intel/int340x_thermal/int3403_thermal.c b/drivers/thermal/intel/int340x_thermal/int3403_thermal.c
-index 07e25321dfe3..71d084c4c456 100644
---- a/drivers/thermal/intel/int340x_thermal/int3403_thermal.c
-+++ b/drivers/thermal/intel/int340x_thermal/int3403_thermal.c
-@@ -285,6 +285,7 @@ static const struct acpi_device_id int3403_device_ids[] = {
- 	{"INT3403", 0},
- 	{"INTC1043", 0},
- 	{"INTC1046", 0},
-+	{"INTC1062", 0},
- 	{"INTC10A1", 0},
- 	{"", 0},
- };
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_fw.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_fw.c
+index 68a4c32d5f34..f05ef0cd54ba 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_fw.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_fw.c
+@@ -104,7 +104,8 @@ int mlx5dr_fw_create_md_tbl(struct mlx5dr_domain *dmn,
+ 			    bool reformat_req,
+ 			    u32 *tbl_id,
+ 			    u32 *group_id,
+-			    bool ignore_flow_level)
++			    bool ignore_flow_level,
++			    u32 flow_source)
+ {
+ 	struct mlx5dr_cmd_create_flow_table_attr ft_attr = {};
+ 	struct mlx5dr_cmd_fte_info fte_info = {};
+@@ -139,6 +140,7 @@ int mlx5dr_fw_create_md_tbl(struct mlx5dr_domain *dmn,
+ 	fte_info.val = val;
+ 	fte_info.dest_arr = dest;
+ 	fte_info.ignore_flow_level = ignore_flow_level;
++	fte_info.flow_context.flow_source = flow_source;
+ 
+ 	ret = mlx5dr_cmd_set_fte(dmn->mdev, 0, 0, &ft_info, *group_id, &fte_info);
+ 	if (ret) {
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
+index 55fcb751e24a..64f41e7938e1 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
+@@ -1463,7 +1463,8 @@ int mlx5dr_fw_create_md_tbl(struct mlx5dr_domain *dmn,
+ 			    bool reformat_req,
+ 			    u32 *tbl_id,
+ 			    u32 *group_id,
+-			    bool ignore_flow_level);
++			    bool ignore_flow_level,
++			    u32 flow_source);
+ void mlx5dr_fw_destroy_md_tbl(struct mlx5dr_domain *dmn, u32 tbl_id,
+ 			      u32 group_id);
+ #endif  /* _DR_TYPES_H_ */
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
+index 3f311462bedf..05393fe11132 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
+@@ -520,6 +520,7 @@ static int mlx5_cmd_dr_create_fte(struct mlx5_flow_root_namespace *ns,
+ 	} else if (num_term_actions > 1) {
+ 		bool ignore_flow_level =
+ 			!!(fte->action.flags & FLOW_ACT_IGNORE_FLOW_LEVEL);
++		u32 flow_source = fte->flow_context.flow_source;
+ 
+ 		if (num_actions == MLX5_FLOW_CONTEXT_ACTION_MAX ||
+ 		    fs_dr_num_actions == MLX5_FLOW_CONTEXT_ACTION_MAX) {
+@@ -529,7 +530,8 @@ static int mlx5_cmd_dr_create_fte(struct mlx5_flow_root_namespace *ns,
+ 		tmp_action = mlx5dr_action_create_mult_dest_tbl(domain,
+ 								term_actions,
+ 								num_term_actions,
+-								ignore_flow_level);
++								ignore_flow_level,
++								flow_source);
+ 		if (!tmp_action) {
+ 			err = -EOPNOTSUPP;
+ 			goto free_actions;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h b/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h
+index dfa223415fe2..74a7a2f4d50d 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h
+@@ -96,7 +96,8 @@ struct mlx5dr_action *
+ mlx5dr_action_create_mult_dest_tbl(struct mlx5dr_domain *dmn,
+ 				   struct mlx5dr_action_dest *dests,
+ 				   u32 num_of_dests,
+-				   bool ignore_flow_level);
++				   bool ignore_flow_level,
++				   u32 flow_source);
+ 
+ struct mlx5dr_action *mlx5dr_action_create_drop(void);
+ 
 -- 
-2.17.1
+2.35.1
+
+
 
