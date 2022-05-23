@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C19CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:05:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78152C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:05:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239318AbiEWRFX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:05:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47342 "EHLO
+        id S239351AbiEWRFZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:05:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239249AbiEWREq (ORCPT
+        with ESMTP id S239199AbiEWREu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:04:46 -0400
+        Mon, 23 May 2022 13:04:50 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 671116007B;
-        Mon, 23 May 2022 10:04:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B7155FF36;
+        Mon, 23 May 2022 10:04:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D27C614BC;
-        Mon, 23 May 2022 17:04:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1289C34116;
-        Mon, 23 May 2022 17:04:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C2AAB614C7;
+        Mon, 23 May 2022 17:04:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBA51C385A9;
+        Mon, 23 May 2022 17:04:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653325484;
-        bh=9r1To4cmU5c4mec6rBMYQpdcINHgYGrxktesEOKlJhI=;
+        s=korg; t=1653325487;
+        bh=w37guEZIi9YdWbu0gvfh8Afk2sCoA5rp+b+1nsLFmfQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oNvo0bJXVau787T/JczhFof+Dbzm40FnQ8D/hvkOFndgWi2pBaazBmJSxyEGoekSg
-         3HIzPmAe1AtmLnFKStGph8TJ8ltJEXSQpBpexyS08JDyFhvmqGYMINlWnLMLMylpki
-         9SeHAahBoQvQb0EYkNuvognGbwoGyeDbfMNDl5YA=
+        b=17iF5qZmUsv4paCXTMkB5iHRLtW0AjaP14M63i8tCG9Iku2xWlxJtk8D8ekIxl1aV
+         EIdfL4YE0lFy57+lU8r8MDPIJzsjHur+j6y2jroCrvIt5gtAIY8hiXag8mCALqU8r2
+         deWRFwxKvUNWVwcmNYu0F5Kv2AUkLRO/teOna10M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 25/25] net: stmmac: fix missing pci_disable_device() on error in stmmac_pci_probe()
-Date:   Mon, 23 May 2022 19:03:43 +0200
-Message-Id: <20220523165750.505021218@linuxfoundation.org>
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Kamal Dasu <kdasu.kdev@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: [PATCH 4.9 08/25] mmc: block: Use generic_cmd6_time when modifying INAND_CMD38_ARG_EXT_CSD
+Date:   Mon, 23 May 2022 19:03:26 +0200
+Message-Id: <20220523165746.128948726@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165743.398280407@linuxfoundation.org>
 References: <20220523165743.398280407@linuxfoundation.org>
@@ -50,45 +49,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Ulf Hansson <ulf.hansson@linaro.org>
 
-[ Upstream commit 0807ce0b010418a191e0e4009803b2d74c3245d5 ]
+commit ad91619aa9d78ab1c6d4a969c3db68bc331ae76c upstream
 
-Switch to using pcim_enable_device() to avoid missing pci_disable_device().
+The INAND_CMD38_ARG_EXT_CSD is a vendor specific EXT_CSD register, which is
+used to prepare an erase/trim operation. However, it doesn't make sense to
+use a timeout of 10 minutes while updating the register, which becomes the
+case when the timeout_ms argument for mmc_switch() is set to zero.
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Link: https://lore.kernel.org/r/20220510031316.1780409-1-yangyingliang@huawei.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Instead, let's use the generic_cmd6_time, as that seems like a reasonable
+timeout to use for these cases.
+
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Link: https://lore.kernel.org/r/20200122142747.5690-3-ulf.hansson@linaro.org
+Signed-off-by: Kamal Dasu <kdasu.kdev@gmail.com>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/mmc/card/block.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-index 49eaede34eea..9beb93479e28 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-@@ -183,7 +183,7 @@ static int stmmac_pci_probe(struct pci_dev *pdev,
- 		return -ENOMEM;
- 
- 	/* Enable pci device */
--	ret = pci_enable_device(pdev);
-+	ret = pcim_enable_device(pdev);
- 	if (ret) {
- 		dev_err(&pdev->dev, "%s: ERROR: failed to enable device\n",
- 			__func__);
-@@ -241,8 +241,6 @@ static void stmmac_pci_remove(struct pci_dev *pdev)
- 		pcim_iounmap_regions(pdev, BIT(i));
- 		break;
+--- a/drivers/mmc/card/block.c
++++ b/drivers/mmc/card/block.c
+@@ -1192,7 +1192,7 @@ retry:
+ 				 arg == MMC_TRIM_ARG ?
+ 				 INAND_CMD38_ARG_TRIM :
+ 				 INAND_CMD38_ARG_ERASE,
+-				 0);
++				 card->ext_csd.generic_cmd6_time);
+ 		if (err)
+ 			goto out;
  	}
--
--	pci_disable_device(pdev);
- }
- 
- static int stmmac_pci_suspend(struct device *dev)
--- 
-2.35.1
-
+@@ -1235,7 +1235,7 @@ retry:
+ 				 arg == MMC_SECURE_TRIM1_ARG ?
+ 				 INAND_CMD38_ARG_SECTRIM1 :
+ 				 INAND_CMD38_ARG_SECERASE,
+-				 0);
++				 card->ext_csd.generic_cmd6_time);
+ 		if (err)
+ 			goto out_retry;
+ 	}
+@@ -1251,7 +1251,7 @@ retry:
+ 			err = mmc_switch(card, EXT_CSD_CMD_SET_NORMAL,
+ 					 INAND_CMD38_ARG_EXT_CSD,
+ 					 INAND_CMD38_ARG_SECTRIM2,
+-					 0);
++					 card->ext_csd.generic_cmd6_time);
+ 			if (err)
+ 				goto out_retry;
+ 		}
 
 
