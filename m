@@ -2,51 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFEB2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 14:59:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CBB0C43219
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 15:03:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238508AbiEXO7L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 10:59:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52690 "EHLO
+        id S238517AbiEXPDH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 11:03:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238108AbiEXO7J (ORCPT
+        with ESMTP id S236693AbiEXPDE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 10:59:09 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA4068022A
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 07:59:08 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: alyssa)
-        with ESMTPSA id 740511F44568
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1653404347;
-        bh=2v1XmEozL7oSUbTJ0GKuAnaHJIef9ToTFHENZzxZSMo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=m3567lSqGv4eYVGfC1nFRndhtOvQvfaSkZCzTS09wkJv4kGcgOlIO2CIVmmzbfW6A
-         hBwcKhWUMBXgMBSig4h9G34hOJKXRxxola5XR+lykDzVtJ21TisLkaQ7yhW0T1rD8J
-         EiL+ZPM5oLDJkbBXbTzXa4PM8vxRSujjAuMrDPe+pPJ4zzbHLJxUijomu9svL4f+1I
-         s+TELtKHbxG5YzNZvNULgvFk+Ji/GE6jAkp/WPS5TjgqtAIU2SVKvGjGm8a0NDHMsR
-         WyRvGyx9wk6SFZyd8w17NzGeVdGvoasm8bEHNz+FZAXlwrFlgNnoduAEDqp4BD0DOh
-         xDD3RqfxdOeAw==
-Date:   Tue, 24 May 2022 10:58:59 -0400
-From:   Alyssa Rosenzweig <alyssa@collabora.com>
-To:     Steven Price <steven.price@arm.com>
-Cc:     Rob Herring <robh@kernel.org>,
-        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
-        Boris Brezillon <boris.brezillon@collabora.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] drm/panfrost: Job should reference MMU not file_priv
-Message-ID: <Yozys2n+hJmdknfg@maud>
-References: <20220519152003.81081-1-steven.price@arm.com>
+        Tue, 24 May 2022 11:03:04 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A761E8A339
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 08:03:03 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id rs12so24188915ejb.13
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 08:03:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=DlQEZ/gCc3QpUXehaN1GEEfOCVI81XCJ2rd4OltFdLY=;
+        b=CbNc1wxia4KBEnPojOwiwyFFW4lhBKRf4AQt/+oQ3TR8JoKODULUGG36Ybz8lklHLj
+         L6zd81OhoNFtQdzWk3JnSpvvQeD9/k+wmO7sOhIrSK0u/1YI/HJngN7SSxXuQ9A23p0/
+         PBjADz9nDQP9Py1zA+vYmC/eIvp1CfMTlYZN0zZ1Wxx+rIxWfIc6Umoo1SMLcZVFwvHL
+         +8Rg9i8OTAnChsU+N3sBsft+ZwPVVRVipal3rAR2RxAv0D+b1O9anbkY6UfjcMkyHzi0
+         zbrTbd7o8+x9SZDqISgByUttWLIFYko/kvdNsMpBgxE9GAw28KiuSo/i2w15EPbM1r4t
+         io9A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=DlQEZ/gCc3QpUXehaN1GEEfOCVI81XCJ2rd4OltFdLY=;
+        b=Uzsk5bqpubcWs9O0C1JUdhgUfVMPaVn1p11ba1pZHNOCdILjVyw8xsOESXkCVHByEr
+         x1KFmIObrZ2zv3qUVwb2ltNrX1T95D6cQqtZJq5Y/CYc11z9ME6TerQnwWFRAeSSiPG8
+         eOu0UdXvhcQFpSxiHrTH7lcCRpndeqX4lTUYgycNwBVXN48UQUfgGyapqJiOalDXlgGh
+         Dx2oXjUeXCvy7Le3IJxw+PVIsZuoGwvyqsZbHo8tEVR4eFAUaBub6oMISLxpWL/eKZu9
+         551/lPgZkuIa6gqLYiXpM1PcMVDvp/vGIYbYIf5kuZFgU4Yq7ouwuWuWpdb2ozJwhwLo
+         Ivxg==
+X-Gm-Message-State: AOAM531yJrzcaxGa5JA9j3gYfZ8906Va373MpHJ1sdNeIK1NQkaZ6W+f
+        8F/vqUc+0Cpd8Jya9RwMY+K5IyAo4DTsR/TBlwcdLsyXYgQEYg==
+X-Google-Smtp-Source: ABdhPJzT/FI/PkyFzW9TIbfxwAFTxWm8y8bCfFXrNT9T+t7BemqsE+qUfpfq2j+/xSzZ88zaoNI8smzlJkq8rYwpRc0=
+X-Received: by 2002:a17:906:974c:b0:6fa:8c68:62a8 with SMTP id
+ o12-20020a170906974c00b006fa8c6862a8mr25615119ejy.293.1653404582161; Tue, 24
+ May 2022 08:03:02 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220519152003.81081-1-steven.price@arm.com>
+References: <20170323055435.29197-1-bjorn.andersson@linaro.org> <20220523163038.GA9124@duo.ucw.cz>
+In-Reply-To: <20220523163038.GA9124@duo.ucw.cz>
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+Date:   Tue, 24 May 2022 10:02:51 -0500
+Message-ID: <CAOCOHw7N9EHcxSSe6n8828oy2fh6xNxRYf9OUXkY4SQh6gtVLw@mail.gmail.com>
+Subject: Re: [PATCH 1/2] leds: Add driver for Qualcomm LPG
+To:     Pavel Machek <pavel@ucw.cz>,
+        Marijn Suijten <marijn.suijten@somainline.org>
+Cc:     Richard Purdie <rpurdie@rpsys.net>,
+        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-leds@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Acked-by: Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>
+On Mon, May 23, 2022 at 11:30 AM Pavel Machek <pavel@ucw.cz> wrote:
+>
+> Hi!
+>
+> > The Light Pulse Generator (LPG) is a PWM-block found in a wide range of
+> > PMICs from Qualcomm. It can operate on fixed parameters or based on a
+> > lookup-table, altering the duty cycle over time - which provides the
+> > means for e.g. hardware assisted transitions of LED brightness.
+> >
+> > Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+>
+> I'd really like to see the patch fixing the pattern interface (or
+> disabling it). I don't want to push the tree to Linus with that bug.
+>
+
+Please find a proposed update to lpg_pattern_set() and the documentation at:
+https://lore.kernel.org/linux-arm-msm/20220523233719.1496297-1-bjorn.andersson@linaro.org/T/#u
+
+@Marijn, would love to get your input on this proposal.
+
+Regards,
+Bjorn
