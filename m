@@ -2,990 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4202C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 13:07:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3BADC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 13:11:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237568AbiEXNHw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 09:07:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56418 "EHLO
+        id S236988AbiEXNLq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 09:11:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231458AbiEXNHv (ORCPT
+        with ESMTP id S230325AbiEXNLl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 09:07:51 -0400
-Received: from mail-oa1-f53.google.com (mail-oa1-f53.google.com [209.85.160.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A34C5FF01;
-        Tue, 24 May 2022 06:07:46 -0700 (PDT)
-Received: by mail-oa1-f53.google.com with SMTP id 586e51a60fabf-f1eafa567cso18730004fac.8;
-        Tue, 24 May 2022 06:07:46 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=KWecMXQ2tw1qgTwkqTd2tU0RObK6bphtHkWGGAUME7M=;
-        b=luAfsIMOMNA6C5riNvvGNswCbJIGMdkD3EBZ53jqaQ1Mer4UeC9WnKnbdmNBB3MF4s
-         LJ9G3UzdfCApmEVc7cZTsgp88d2OzE1ue8pIgqqGw4Dos3m3v1W/lsT6JiB1jYa1Qfx7
-         EN98Pl++InqYnBgj6RUrgc7bQJbn+F98Wo8AA7ZncMH1h8xIIBzIJRZgtayK1NPljjA/
-         iRn5gVWU5lQBR5mLkmmxV5No9ZBfWaNN+30tmU6Br8KbkzxgwRbIjgj30kNbRFjK3L56
-         UgG+wV4SGCh7JFm2ET/YW/PK7eWd+P6t5hBbo+rF8KBlMh/sar/l1HI7MYkx1ZklOcch
-         b7qg==
-X-Gm-Message-State: AOAM533Lk6WsTZpM+fJeJtz1JUUFNsq0TJerPeL7y7Bqx4I7A1NZN6ZL
-        Ltwxei11RYTH4qJS0WPquw==
-X-Google-Smtp-Source: ABdhPJyjarnIC3le+10Y0LRQVjfSdLir1TXSseGHcLo9Gx3m0PehXCbzNgs73D+V5Z+blHKCGaKAqA==
-X-Received: by 2002:a05:6870:f149:b0:dd:f3b0:986d with SMTP id l9-20020a056870f14900b000ddf3b0986dmr2460460oac.148.1653397664940;
-        Tue, 24 May 2022 06:07:44 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id mm27-20020a0568700e9b00b000f29ff7d508sm386540oab.17.2022.05.24.06.07.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 May 2022 06:07:44 -0700 (PDT)
-Received: (nullmailer pid 3591120 invoked by uid 1000);
-        Tue, 24 May 2022 13:07:43 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Joy Zou <joy.zou@nxp.com>
-Cc:     linux-imx@nxp.com, dmaengine@vger.kernel.org,
-        kernel@pengutronix.de, shawnguo@kernel.org, shengjiu.wang@nxp.com,
-        festevam@gmail.com, linux-arm-kernel@lists.infradead.org,
-        robh+dt@kernel.org, devicetree@vger.kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-kernel@vger.kernel.org,
-        vkoul@kernel.org, s.hauer@pengutronix.de
-In-Reply-To: <20220524080337.1322240-1-joy.zou@nxp.com>
-References: <20220524080337.1322240-1-joy.zou@nxp.com>
-Subject: Re: [PATCH V2 1/2] bindings: fsl-imx-sdma: Document 'HDMI Audio' transfer
-Date:   Tue, 24 May 2022 08:07:43 -0500
-Message-Id: <1653397663.270345.3591119.nullmailer@robh.at.kernel.org>
+        Tue, 24 May 2022 09:11:41 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D17A1A07A;
+        Tue, 24 May 2022 06:11:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653397897; x=1684933897;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=DAhDI6GjyqETdXWl+Dy+y5irHu9wRTkAlq4aGCSkc28=;
+  b=R8vWXP2K95iUDbXcZjo87ZXDMmrBT26Kjunn6t2tiE34n4e0+Hb0KAhf
+   upEh4gnxhF4msqEdnIsfainf7vyWzE1P8T8cbQ0i8vzMiRcFqr3xXeu4M
+   uuv7hqoaBVX3Sp6MAGC1o5eSM17KP5tn2Y3CnjiHkuRaAc+M5PywefR7L
+   XckwthKborKJsXfRuDNClQBz78FNZ6ZuKouJliQPAFRbF7cgutYuIFgCf
+   XLGFtwijQj2j0VRhhjWDrhm8ebEqFIaGbAAE/7WNlP3G+TotAGKKzAvLg
+   klSWMYnXEJOZ49Bu+/J05KdFWfG9E5W5XrkWgjFegPR8Es7ri6tS4LxGb
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10356"; a="334172072"
+X-IronPort-AV: E=Sophos;i="5.91,248,1647327600"; 
+   d="scan'208";a="334172072"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 May 2022 06:11:36 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,248,1647327600"; 
+   d="scan'208";a="663904189"
+Received: from lkp-server01.sh.intel.com (HELO db63a1be7222) ([10.239.97.150])
+  by FMSMGA003.fm.intel.com with ESMTP; 24 May 2022 06:11:34 -0700
+Received: from kbuild by db63a1be7222 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1ntUJx-00024I-A5;
+        Tue, 24 May 2022 13:11:33 +0000
+Date:   Tue, 24 May 2022 21:10:36 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     hezhongkun <hezhongkun.hzk@bytedance.com>, hannes@cmpxchg.org,
+        mhocko@kernel.org, roman.gushchin@linux.dev
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        cgroups@vger.kernel.org, linux-mm@kvack.org,
+        lizefan.x@bytedance.com, Hezhongkun <hezhongkun.hzk@bytedance.com>
+Subject: Re: [PATCH] mm: memcontrol: add the mempolicy interface for cgroup
+ v2.
+Message-ID: <202205242108.pqUxw2OF-lkp@intel.com>
+References: <20220524103638.473-1-hezhongkun.hzk@bytedance.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220524103638.473-1-hezhongkun.hzk@bytedance.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 24 May 2022 16:03:37 +0800, Joy Zou wrote:
-> Add HDMI Audio transfer type.
-> 
-> convert the sdma bindings txt into yaml in v2.
-> 
-> Signed-off-by: Joy Zou <joy.zou@nxp.com>
-> ---
-> Changes since v1:
-> convert the sdma bindings txt into yaml in v2.
-> ---
->  .../devicetree/bindings/dma/fsl-imx-sdma.yaml | 135 ++++++++++++++++++
->  1 file changed, 135 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/dma/fsl-imx-sdma.yaml
-> 
+Hi hezhongkun,
 
-Running 'make dtbs_check' with the schema in this patch gives the
-following warnings. Consider if they are expected or the schema is
-incorrect. These may not be new warnings.
+Thank you for the patch! Yet something to improve:
 
-Note that it is not yet a requirement to have 0 warnings for dtbs_check.
-This will change in the future.
+[auto build test ERROR on linus/master]
+[also build test ERROR on v5.18 next-20220524]
+[cannot apply to akpm-mm/mm-everything]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-Full log is available here: https://patchwork.ozlabs.org/patch/
+url:    https://github.com/intel-lab-lkp/linux/commits/hezhongkun/mm-memcontrol-add-the-mempolicy-interface-for-cgroup-v2/20220524-183922
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 143a6252e1b8ab424b4b293512a97cca7295c182
+config: x86_64-defconfig (https://download.01.org/0day-ci/archive/20220524/202205242108.pqUxw2OF-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-1) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/6adb0a02c27c8811bee9783451ee25155baf490e
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review hezhongkun/mm-memcontrol-add-the-mempolicy-interface-for-cgroup-v2/20220524-183922
+        git checkout 6adb0a02c27c8811bee9783451ee25155baf490e
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All error/warnings (new ones prefixed by >>):
+
+>> mm/mempolicy.c:179:19: warning: no previous prototype for 'get_cgrp_or_task_policy' [-Wmissing-prototypes]
+     179 | struct mempolicy *get_cgrp_or_task_policy(struct task_struct *p)
+         |                   ^~~~~~~~~~~~~~~~~~~~~~~
+   mm/mempolicy.c: In function 'get_cgrp_or_task_policy':
+>> mm/mempolicy.c:182:36: error: implicit declaration of function 'mem_cgroup_from_task'; did you mean 'perf_cgroup_from_task'? [-Werror=implicit-function-declaration]
+     182 |         struct mem_cgroup *memcg = mem_cgroup_from_task(p);
+         |                                    ^~~~~~~~~~~~~~~~~~~~
+         |                                    perf_cgroup_from_task
+>> mm/mempolicy.c:182:36: warning: initialization of 'struct mem_cgroup *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
+>> mm/mempolicy.c:184:30: error: invalid use of undefined type 'struct mem_cgroup'
+     184 |         pol = (memcg && memcg->mempolicy) ? memcg->mempolicy : get_task_policy(p);
+         |                              ^~
+   mm/mempolicy.c:184:50: error: invalid use of undefined type 'struct mem_cgroup'
+     184 |         pol = (memcg && memcg->mempolicy) ? memcg->mempolicy : get_task_policy(p);
+         |                                                  ^~
+   mm/mempolicy.c: In function 'get_cgrp_or_vma_policy':
+   mm/mempolicy.c:1799:36: warning: initialization of 'struct mem_cgroup *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
+    1799 |         struct mem_cgroup *memcg = mem_cgroup_from_task(current);
+         |                                    ^~~~~~~~~~~~~~~~~~~~
+   mm/mempolicy.c:1801:30: error: invalid use of undefined type 'struct mem_cgroup'
+    1801 |         pol = (memcg && memcg->mempolicy) ? memcg->mempolicy : get_vma_policy(vma, addr);
+         |                              ^~
+   mm/mempolicy.c:1801:50: error: invalid use of undefined type 'struct mem_cgroup'
+    1801 |         pol = (memcg && memcg->mempolicy) ? memcg->mempolicy : get_vma_policy(vma, addr);
+         |                                                  ^~
+   cc1: some warnings being treated as errors
 
 
-dma-controller@20ec000: compatible:0: 'fsl,imx6sll-sdma' is not one of ['fsl,imx25-sdma', 'fsl,imx31-sdma', 'fsl,imx31-to1-sdma', 'fsl,imx31-to2-sdma', 'fsl,imx35-to1-sdma', 'fsl,imx35-to2-sdma', 'fsl,imx51-sdma', 'fsl,imx53-sdma', 'fsl,imx6q-sdma', 'fsl,imx7d-sdma', 'fsl,imx6sx-sdma', 'fsl,imx6ul-sdma', 'fsl,imx8mm-sdma', 'fsl,imx8mn-sdma', 'fsl,imx8mp-sdma']
-	arch/arm/boot/dts/imx6sll-evk.dtb
-	arch/arm/boot/dts/imx6sll-kobo-clarahd.dtb
-	arch/arm/boot/dts/imx6sll-kobo-librah2o.dtb
+vim +182 mm/mempolicy.c
 
-dma-controller@20ec000: compatible:1: 'fsl,imx6ul-sdma' is not one of ['fsl,imx35-sdma', 'fsl,imx8mq-sdma']
-	arch/arm/boot/dts/imx6sll-evk.dtb
-	arch/arm/boot/dts/imx6sll-kobo-clarahd.dtb
-	arch/arm/boot/dts/imx6sll-kobo-librah2o.dtb
+   178	
+ > 179	struct mempolicy *get_cgrp_or_task_policy(struct task_struct *p)
+   180	{
+   181		struct mempolicy *pol;
+ > 182		struct mem_cgroup *memcg = mem_cgroup_from_task(p);
+   183	
+ > 184		pol = (memcg && memcg->mempolicy) ? memcg->mempolicy : get_task_policy(p);
+   185		return pol;
+   186	}
+   187	
 
-sdma@20ec000: $nodename:0: 'sdma@20ec000' does not match '^dma-controller(@.*)?$'
-	arch/arm/boot/dts/imx6dl-alti6p.dtb
-	arch/arm/boot/dts/imx6dl-apf6dev.dtb
-	arch/arm/boot/dts/imx6dl-aristainetos2_4.dtb
-	arch/arm/boot/dts/imx6dl-aristainetos2_7.dtb
-	arch/arm/boot/dts/imx6dl-aristainetos_4.dtb
-	arch/arm/boot/dts/imx6dl-aristainetos_7.dtb
-	arch/arm/boot/dts/imx6dl-b105pv2.dtb
-	arch/arm/boot/dts/imx6dl-b105v2.dtb
-	arch/arm/boot/dts/imx6dl-b125pv2.dtb
-	arch/arm/boot/dts/imx6dl-b125v2.dtb
-	arch/arm/boot/dts/imx6dl-b155v2.dtb
-	arch/arm/boot/dts/imx6dl-colibri-eval-v3.dtb
-	arch/arm/boot/dts/imx6dl-colibri-v1_1-eval-v3.dtb
-	arch/arm/boot/dts/imx6dl-cubox-i.dtb
-	arch/arm/boot/dts/imx6dl-cubox-i-emmc-som-v15.dtb
-	arch/arm/boot/dts/imx6dl-cubox-i-som-v15.dtb
-	arch/arm/boot/dts/imx6dl-dfi-fs700-m60.dtb
-	arch/arm/boot/dts/imx6dl-dhcom-picoitx.dtb
-	arch/arm/boot/dts/imx6dl-eckelmann-ci4x10.dtb
-	arch/arm/boot/dts/imx6dl-emcon-avari.dtb
-	arch/arm/boot/dts/imx6dl-gw51xx.dtb
-	arch/arm/boot/dts/imx6dl-gw52xx.dtb
-	arch/arm/boot/dts/imx6dl-gw53xx.dtb
-	arch/arm/boot/dts/imx6dl-gw54xx.dtb
-	arch/arm/boot/dts/imx6dl-gw551x.dtb
-	arch/arm/boot/dts/imx6dl-gw552x.dtb
-	arch/arm/boot/dts/imx6dl-gw553x.dtb
-	arch/arm/boot/dts/imx6dl-gw560x.dtb
-	arch/arm/boot/dts/imx6dl-gw5903.dtb
-	arch/arm/boot/dts/imx6dl-gw5904.dtb
-	arch/arm/boot/dts/imx6dl-gw5907.dtb
-	arch/arm/boot/dts/imx6dl-gw5910.dtb
-	arch/arm/boot/dts/imx6dl-gw5912.dtb
-	arch/arm/boot/dts/imx6dl-gw5913.dtb
-	arch/arm/boot/dts/imx6dl-hummingboard2.dtb
-	arch/arm/boot/dts/imx6dl-hummingboard2-emmc-som-v15.dtb
-	arch/arm/boot/dts/imx6dl-hummingboard2-som-v15.dtb
-	arch/arm/boot/dts/imx6dl-hummingboard.dtb
-	arch/arm/boot/dts/imx6dl-hummingboard-emmc-som-v15.dtb
-	arch/arm/boot/dts/imx6dl-hummingboard-som-v15.dtb
-	arch/arm/boot/dts/imx6dl-icore.dtb
-	arch/arm/boot/dts/imx6dl-icore-mipi.dtb
-	arch/arm/boot/dts/imx6dl-icore-rqs.dtb
-	arch/arm/boot/dts/imx6dl-lanmcu.dtb
-	arch/arm/boot/dts/imx6dl-mamoj.dtb
-	arch/arm/boot/dts/imx6dl-mba6a.dtb
-	arch/arm/boot/dts/imx6dl-mba6b.dtb
-	arch/arm/boot/dts/imx6dl-nit6xlite.dtb
-	arch/arm/boot/dts/imx6dl-nitrogen6x.dtb
-	arch/arm/boot/dts/imx6dl-phytec-mira-rdk-nand.dtb
-	arch/arm/boot/dts/imx6dl-phytec-pbab01.dtb
-	arch/arm/boot/dts/imx6dl-pico-dwarf.dtb
-	arch/arm/boot/dts/imx6dl-pico-hobbit.dtb
-	arch/arm/boot/dts/imx6dl-pico-nymph.dtb
-	arch/arm/boot/dts/imx6dl-pico-pi.dtb
-	arch/arm/boot/dts/imx6dl-plybas.dtb
-	arch/arm/boot/dts/imx6dl-plym2m.dtb
-	arch/arm/boot/dts/imx6dl-prtmvt.dtb
-	arch/arm/boot/dts/imx6dl-prtrvt.dtb
-	arch/arm/boot/dts/imx6dl-prtvt7.dtb
-	arch/arm/boot/dts/imx6dl-rex-basic.dtb
-	arch/arm/boot/dts/imx6dl-riotboard.dtb
-	arch/arm/boot/dts/imx6dl-sabreauto.dtb
-	arch/arm/boot/dts/imx6dl-sabrelite.dtb
-	arch/arm/boot/dts/imx6dl-sabresd.dtb
-	arch/arm/boot/dts/imx6dl-savageboard.dtb
-	arch/arm/boot/dts/imx6dl-skov-revc-lt2.dtb
-	arch/arm/boot/dts/imx6dl-skov-revc-lt6.dtb
-	arch/arm/boot/dts/imx6dl-solidsense.dtb
-	arch/arm/boot/dts/imx6dl-ts4900.dtb
-	arch/arm/boot/dts/imx6dl-ts7970.dtb
-	arch/arm/boot/dts/imx6dl-tx6dl-comtft.dtb
-	arch/arm/boot/dts/imx6dl-tx6s-8034.dtb
-	arch/arm/boot/dts/imx6dl-tx6s-8034-mb7.dtb
-	arch/arm/boot/dts/imx6dl-tx6s-8035.dtb
-	arch/arm/boot/dts/imx6dl-tx6s-8035-mb7.dtb
-	arch/arm/boot/dts/imx6dl-tx6u-801x.dtb
-	arch/arm/boot/dts/imx6dl-tx6u-8033.dtb
-	arch/arm/boot/dts/imx6dl-tx6u-8033-mb7.dtb
-	arch/arm/boot/dts/imx6dl-tx6u-80xx-mb7.dtb
-	arch/arm/boot/dts/imx6dl-tx6u-811x.dtb
-	arch/arm/boot/dts/imx6dl-tx6u-81xx-mb7.dtb
-	arch/arm/boot/dts/imx6dl-udoo.dtb
-	arch/arm/boot/dts/imx6dl-victgo.dtb
-	arch/arm/boot/dts/imx6dl-vicut1.dtb
-	arch/arm/boot/dts/imx6dl-wandboard.dtb
-	arch/arm/boot/dts/imx6dl-wandboard-revb1.dtb
-	arch/arm/boot/dts/imx6dl-wandboard-revd1.dtb
-	arch/arm/boot/dts/imx6dl-yapp4-draco.dtb
-	arch/arm/boot/dts/imx6dl-yapp4-hydra.dtb
-	arch/arm/boot/dts/imx6dl-yapp4-orion.dtb
-	arch/arm/boot/dts/imx6dl-yapp4-ursa.dtb
-	arch/arm/boot/dts/imx6q-apalis-eval.dtb
-	arch/arm/boot/dts/imx6q-apalis-ixora.dtb
-	arch/arm/boot/dts/imx6q-apalis-ixora-v1.1.dtb
-	arch/arm/boot/dts/imx6q-apf6dev.dtb
-	arch/arm/boot/dts/imx6q-arm2.dtb
-	arch/arm/boot/dts/imx6q-b450v3.dtb
-	arch/arm/boot/dts/imx6q-b650v3.dtb
-	arch/arm/boot/dts/imx6q-b850v3.dtb
-	arch/arm/boot/dts/imx6q-cm-fx6.dtb
-	arch/arm/boot/dts/imx6q-cubox-i.dtb
-	arch/arm/boot/dts/imx6q-cubox-i-emmc-som-v15.dtb
-	arch/arm/boot/dts/imx6q-cubox-i-som-v15.dtb
-	arch/arm/boot/dts/imx6q-dfi-fs700-m60.dtb
-	arch/arm/boot/dts/imx6q-dhcom-pdk2.dtb
-	arch/arm/boot/dts/imx6q-display5-tianma-tm070-1280x768.dtb
-	arch/arm/boot/dts/imx6q-dmo-edmqmx6.dtb
-	arch/arm/boot/dts/imx6q-dms-ba16.dtb
-	arch/arm/boot/dts/imx6q-ds.dtb
-	arch/arm/boot/dts/imx6q-emcon-avari.dtb
-	arch/arm/boot/dts/imx6q-evi.dtb
-	arch/arm/boot/dts/imx6q-gk802.dtb
-	arch/arm/boot/dts/imx6q-gw51xx.dtb
-	arch/arm/boot/dts/imx6q-gw52xx.dtb
-	arch/arm/boot/dts/imx6q-gw53xx.dtb
-	arch/arm/boot/dts/imx6q-gw5400-a.dtb
-	arch/arm/boot/dts/imx6q-gw54xx.dtb
-	arch/arm/boot/dts/imx6q-gw551x.dtb
-	arch/arm/boot/dts/imx6q-gw552x.dtb
-	arch/arm/boot/dts/imx6q-gw553x.dtb
-	arch/arm/boot/dts/imx6q-gw560x.dtb
-	arch/arm/boot/dts/imx6q-gw5903.dtb
-	arch/arm/boot/dts/imx6q-gw5904.dtb
-	arch/arm/boot/dts/imx6q-gw5907.dtb
-	arch/arm/boot/dts/imx6q-gw5910.dtb
-	arch/arm/boot/dts/imx6q-gw5912.dtb
-	arch/arm/boot/dts/imx6q-gw5913.dtb
-	arch/arm/boot/dts/imx6q-h100.dtb
-	arch/arm/boot/dts/imx6q-hummingboard2.dtb
-	arch/arm/boot/dts/imx6q-hummingboard2-emmc-som-v15.dtb
-	arch/arm/boot/dts/imx6q-hummingboard2-som-v15.dtb
-	arch/arm/boot/dts/imx6q-hummingboard.dtb
-	arch/arm/boot/dts/imx6q-hummingboard-emmc-som-v15.dtb
-	arch/arm/boot/dts/imx6q-hummingboard-som-v15.dtb
-	arch/arm/boot/dts/imx6q-icore.dtb
-	arch/arm/boot/dts/imx6q-icore-mipi.dtb
-	arch/arm/boot/dts/imx6q-icore-ofcap10.dtb
-	arch/arm/boot/dts/imx6q-icore-ofcap12.dtb
-	arch/arm/boot/dts/imx6q-icore-rqs.dtb
-	arch/arm/boot/dts/imx6q-kp-tpc.dtb
-	arch/arm/boot/dts/imx6q-logicpd.dtb
-	arch/arm/boot/dts/imx6q-marsboard.dtb
-	arch/arm/boot/dts/imx6q-mba6a.dtb
-	arch/arm/boot/dts/imx6q-mba6b.dtb
-	arch/arm/boot/dts/imx6q-mccmon6.dtb
-	arch/arm/boot/dts/imx6q-nitrogen6_max.dtb
-	arch/arm/boot/dts/imx6q-nitrogen6_som2.dtb
-	arch/arm/boot/dts/imx6q-nitrogen6x.dtb
-	arch/arm/boot/dts/imx6q-novena.dtb
-	arch/arm/boot/dts/imx6q-phytec-mira-rdk-emmc.dtb
-	arch/arm/boot/dts/imx6q-phytec-mira-rdk-nand.dtb
-	arch/arm/boot/dts/imx6q-phytec-pbab01.dtb
-	arch/arm/boot/dts/imx6q-pico-dwarf.dtb
-	arch/arm/boot/dts/imx6q-pico-hobbit.dtb
-	arch/arm/boot/dts/imx6q-pico-nymph.dtb
-	arch/arm/boot/dts/imx6q-pico-pi.dtb
-	arch/arm/boot/dts/imx6q-pistachio.dtb
-	arch/arm/boot/dts/imx6qp-mba6b.dtb
-	arch/arm/boot/dts/imx6qp-nitrogen6_max.dtb
-	arch/arm/boot/dts/imx6qp-nitrogen6_som2.dtb
-	arch/arm/boot/dts/imx6qp-phytec-mira-rdk-nand.dtb
-	arch/arm/boot/dts/imx6qp-prtwd3.dtb
-	arch/arm/boot/dts/imx6q-prti6q.dtb
-	arch/arm/boot/dts/imx6q-prtwd2.dtb
-	arch/arm/boot/dts/imx6qp-sabreauto.dtb
-	arch/arm/boot/dts/imx6qp-sabresd.dtb
-	arch/arm/boot/dts/imx6qp-tx6qp-8037.dtb
-	arch/arm/boot/dts/imx6qp-tx6qp-8037-mb7.dtb
-	arch/arm/boot/dts/imx6qp-tx6qp-8137.dtb
-	arch/arm/boot/dts/imx6qp-tx6qp-8137-mb7.dtb
-	arch/arm/boot/dts/imx6qp-vicutp.dtb
-	arch/arm/boot/dts/imx6qp-wandboard-revd1.dtb
-	arch/arm/boot/dts/imx6qp-yapp4-crux-plus.dtb
-	arch/arm/boot/dts/imx6qp-zii-rdu2.dtb
-	arch/arm/boot/dts/imx6q-rex-pro.dtb
-	arch/arm/boot/dts/imx6q-sabreauto.dtb
-	arch/arm/boot/dts/imx6q-sabrelite.dtb
-	arch/arm/boot/dts/imx6q-sabresd.dtb
-	arch/arm/boot/dts/imx6q-savageboard.dtb
-	arch/arm/boot/dts/imx6q-sbc6x.dtb
-	arch/arm/boot/dts/imx6q-skov-revc-lt2.dtb
-	arch/arm/boot/dts/imx6q-skov-revc-lt6.dtb
-	arch/arm/boot/dts/imx6q-skov-reve-mi1010ait-1cp1.dtb
-	arch/arm/boot/dts/imx6q-solidsense.dtb
-	arch/arm/boot/dts/imx6q-tbs2910.dtb
-	arch/arm/boot/dts/imx6q-ts4900.dtb
-	arch/arm/boot/dts/imx6q-ts7970.dtb
-	arch/arm/boot/dts/imx6q-tx6q-1010-comtft.dtb
-	arch/arm/boot/dts/imx6q-tx6q-1010.dtb
-	arch/arm/boot/dts/imx6q-tx6q-1020-comtft.dtb
-	arch/arm/boot/dts/imx6q-tx6q-1020.dtb
-	arch/arm/boot/dts/imx6q-tx6q-1036.dtb
-	arch/arm/boot/dts/imx6q-tx6q-1036-mb7.dtb
-	arch/arm/boot/dts/imx6q-tx6q-10x0-mb7.dtb
-	arch/arm/boot/dts/imx6q-tx6q-1110.dtb
-	arch/arm/boot/dts/imx6q-tx6q-11x0-mb7.dtb
-	arch/arm/boot/dts/imx6q-udoo.dtb
-	arch/arm/boot/dts/imx6q-utilite-pro.dtb
-	arch/arm/boot/dts/imx6q-var-dt6customboard.dtb
-	arch/arm/boot/dts/imx6q-vicut1.dtb
-	arch/arm/boot/dts/imx6q-wandboard.dtb
-	arch/arm/boot/dts/imx6q-wandboard-revb1.dtb
-	arch/arm/boot/dts/imx6q-wandboard-revd1.dtb
-	arch/arm/boot/dts/imx6q-yapp4-crux.dtb
-	arch/arm/boot/dts/imx6q-zii-rdu2.dtb
-	arch/arm/boot/dts/imx6s-dhcom-drc02.dtb
-	arch/arm/boot/dts/imx6sl-evk.dtb
-	arch/arm/boot/dts/imx6sl-tolino-shine2hd.dtb
-	arch/arm/boot/dts/imx6sl-tolino-shine3.dtb
-	arch/arm/boot/dts/imx6sl-tolino-vision5.dtb
-	arch/arm/boot/dts/imx6sl-warp.dtb
-	arch/arm/boot/dts/imx6sx-nitrogen6sx.dtb
-	arch/arm/boot/dts/imx6sx-sabreauto.dtb
-	arch/arm/boot/dts/imx6sx-sdb.dtb
-	arch/arm/boot/dts/imx6sx-sdb-mqs.dtb
-	arch/arm/boot/dts/imx6sx-sdb-reva.dtb
-	arch/arm/boot/dts/imx6sx-sdb-sai.dtb
-	arch/arm/boot/dts/imx6sx-softing-vining-2000.dtb
-	arch/arm/boot/dts/imx6sx-udoo-neo-basic.dtb
-	arch/arm/boot/dts/imx6sx-udoo-neo-extended.dtb
-	arch/arm/boot/dts/imx6sx-udoo-neo-full.dtb
-	arch/arm/boot/dts/imx6ul-14x14-evk.dtb
-	arch/arm/boot/dts/imx6ul-ccimx6ulsbcexpress.dtb
-	arch/arm/boot/dts/imx6ul-ccimx6ulsbcpro.dtb
-	arch/arm/boot/dts/imx6ul-geam.dtb
-	arch/arm/boot/dts/imx6ul-isiot-emmc.dtb
-	arch/arm/boot/dts/imx6ul-isiot-nand.dtb
-	arch/arm/boot/dts/imx6ul-kontron-n6310-s-43.dtb
-	arch/arm/boot/dts/imx6ul-kontron-n6310-s.dtb
-	arch/arm/boot/dts/imx6ull-14x14-evk.dtb
-	arch/arm/boot/dts/imx6ull-colibri-emmc-eval-v3.dtb
-	arch/arm/boot/dts/imx6ull-colibri-eval-v3.dtb
-	arch/arm/boot/dts/imx6ull-colibri-wifi-eval-v3.dtb
-	arch/arm/boot/dts/imx6ul-liteboard.dtb
-	arch/arm/boot/dts/imx6ull-jozacp.dtb
-	arch/arm/boot/dts/imx6ull-myir-mys-6ulx-eval.dtb
-	arch/arm/boot/dts/imx6ull-opos6uldev.dtb
-	arch/arm/boot/dts/imx6ull-phytec-segin-ff-rdk-emmc.dtb
-	arch/arm/boot/dts/imx6ull-phytec-segin-ff-rdk-nand.dtb
-	arch/arm/boot/dts/imx6ull-phytec-segin-lc-rdk-nand.dtb
-	arch/arm/boot/dts/imx6ul-opos6uldev.dtb
-	arch/arm/boot/dts/imx6ul-phytec-segin-ff-rdk-emmc.dtb
-	arch/arm/boot/dts/imx6ul-phytec-segin-ff-rdk-nand.dtb
-	arch/arm/boot/dts/imx6ul-pico-dwarf.dtb
-	arch/arm/boot/dts/imx6ul-pico-hobbit.dtb
-	arch/arm/boot/dts/imx6ul-pico-pi.dtb
-	arch/arm/boot/dts/imx6ul-prti6g.dtb
-	arch/arm/boot/dts/imx6ul-tx6ul-0010.dtb
-	arch/arm/boot/dts/imx6ul-tx6ul-0011.dtb
-	arch/arm/boot/dts/imx6ul-tx6ul-mainboard.dtb
-	arch/arm/boot/dts/imx6ulz-14x14-evk.dtb
-	arch/arm/boot/dts/imx6ulz-bsh-smm-m2.dtb
-
-sdma@20ec000: compatible:0: 'fsl,imx6sl-sdma' is not one of ['fsl,imx25-sdma', 'fsl,imx31-sdma', 'fsl,imx31-to1-sdma', 'fsl,imx31-to2-sdma', 'fsl,imx35-to1-sdma', 'fsl,imx35-to2-sdma', 'fsl,imx51-sdma', 'fsl,imx53-sdma', 'fsl,imx6q-sdma', 'fsl,imx7d-sdma', 'fsl,imx6sx-sdma', 'fsl,imx6ul-sdma', 'fsl,imx8mm-sdma', 'fsl,imx8mn-sdma', 'fsl,imx8mp-sdma']
-	arch/arm/boot/dts/imx6sl-evk.dtb
-	arch/arm/boot/dts/imx6sl-tolino-shine2hd.dtb
-	arch/arm/boot/dts/imx6sl-tolino-shine3.dtb
-	arch/arm/boot/dts/imx6sl-tolino-vision5.dtb
-	arch/arm/boot/dts/imx6sl-warp.dtb
-
-sdma@20ec000: compatible:1: 'fsl,imx6q-sdma' is not one of ['fsl,imx35-sdma', 'fsl,imx8mq-sdma']
-	arch/arm/boot/dts/imx6sl-evk.dtb
-	arch/arm/boot/dts/imx6sl-tolino-shine2hd.dtb
-	arch/arm/boot/dts/imx6sl-tolino-shine3.dtb
-	arch/arm/boot/dts/imx6sl-tolino-vision5.dtb
-	arch/arm/boot/dts/imx6sl-warp.dtb
-	arch/arm/boot/dts/imx6sx-nitrogen6sx.dtb
-	arch/arm/boot/dts/imx6sx-sabreauto.dtb
-	arch/arm/boot/dts/imx6sx-sdb.dtb
-	arch/arm/boot/dts/imx6sx-sdb-mqs.dtb
-	arch/arm/boot/dts/imx6sx-sdb-reva.dtb
-	arch/arm/boot/dts/imx6sx-sdb-sai.dtb
-	arch/arm/boot/dts/imx6sx-softing-vining-2000.dtb
-	arch/arm/boot/dts/imx6sx-udoo-neo-basic.dtb
-	arch/arm/boot/dts/imx6sx-udoo-neo-extended.dtb
-	arch/arm/boot/dts/imx6sx-udoo-neo-full.dtb
-	arch/arm/boot/dts/imx6ul-14x14-evk.dtb
-	arch/arm/boot/dts/imx6ul-ccimx6ulsbcexpress.dtb
-	arch/arm/boot/dts/imx6ul-ccimx6ulsbcpro.dtb
-	arch/arm/boot/dts/imx6ul-geam.dtb
-	arch/arm/boot/dts/imx6ul-isiot-emmc.dtb
-	arch/arm/boot/dts/imx6ul-isiot-nand.dtb
-	arch/arm/boot/dts/imx6ul-kontron-n6310-s-43.dtb
-	arch/arm/boot/dts/imx6ul-kontron-n6310-s.dtb
-	arch/arm/boot/dts/imx6ull-14x14-evk.dtb
-	arch/arm/boot/dts/imx6ull-colibri-emmc-eval-v3.dtb
-	arch/arm/boot/dts/imx6ull-colibri-eval-v3.dtb
-	arch/arm/boot/dts/imx6ull-colibri-wifi-eval-v3.dtb
-	arch/arm/boot/dts/imx6ul-liteboard.dtb
-	arch/arm/boot/dts/imx6ull-jozacp.dtb
-	arch/arm/boot/dts/imx6ull-myir-mys-6ulx-eval.dtb
-	arch/arm/boot/dts/imx6ull-opos6uldev.dtb
-	arch/arm/boot/dts/imx6ull-phytec-segin-ff-rdk-emmc.dtb
-	arch/arm/boot/dts/imx6ull-phytec-segin-ff-rdk-nand.dtb
-	arch/arm/boot/dts/imx6ull-phytec-segin-lc-rdk-nand.dtb
-	arch/arm/boot/dts/imx6ul-opos6uldev.dtb
-	arch/arm/boot/dts/imx6ul-phytec-segin-ff-rdk-emmc.dtb
-	arch/arm/boot/dts/imx6ul-phytec-segin-ff-rdk-nand.dtb
-	arch/arm/boot/dts/imx6ul-pico-dwarf.dtb
-	arch/arm/boot/dts/imx6ul-pico-hobbit.dtb
-	arch/arm/boot/dts/imx6ul-pico-pi.dtb
-	arch/arm/boot/dts/imx6ul-prti6g.dtb
-	arch/arm/boot/dts/imx6ul-tx6ul-0010.dtb
-	arch/arm/boot/dts/imx6ul-tx6ul-0011.dtb
-	arch/arm/boot/dts/imx6ul-tx6ul-mainboard.dtb
-	arch/arm/boot/dts/imx6ulz-14x14-evk.dtb
-	arch/arm/boot/dts/imx6ulz-bsh-smm-m2.dtb
-
-sdma@20ec000: compatible: ['fsl,imx6ul-sdma', 'fsl,imx6q-sdma', 'fsl,imx35-sdma'] is too long
-	arch/arm/boot/dts/imx6ul-14x14-evk.dtb
-	arch/arm/boot/dts/imx6ul-ccimx6ulsbcexpress.dtb
-	arch/arm/boot/dts/imx6ul-ccimx6ulsbcpro.dtb
-	arch/arm/boot/dts/imx6ul-geam.dtb
-	arch/arm/boot/dts/imx6ul-isiot-emmc.dtb
-	arch/arm/boot/dts/imx6ul-isiot-nand.dtb
-	arch/arm/boot/dts/imx6ul-kontron-n6310-s-43.dtb
-	arch/arm/boot/dts/imx6ul-kontron-n6310-s.dtb
-	arch/arm/boot/dts/imx6ull-14x14-evk.dtb
-	arch/arm/boot/dts/imx6ull-colibri-emmc-eval-v3.dtb
-	arch/arm/boot/dts/imx6ull-colibri-eval-v3.dtb
-	arch/arm/boot/dts/imx6ull-colibri-wifi-eval-v3.dtb
-	arch/arm/boot/dts/imx6ul-liteboard.dtb
-	arch/arm/boot/dts/imx6ull-jozacp.dtb
-	arch/arm/boot/dts/imx6ull-myir-mys-6ulx-eval.dtb
-	arch/arm/boot/dts/imx6ull-opos6uldev.dtb
-	arch/arm/boot/dts/imx6ull-phytec-segin-ff-rdk-emmc.dtb
-	arch/arm/boot/dts/imx6ull-phytec-segin-ff-rdk-nand.dtb
-	arch/arm/boot/dts/imx6ull-phytec-segin-lc-rdk-nand.dtb
-	arch/arm/boot/dts/imx6ul-opos6uldev.dtb
-	arch/arm/boot/dts/imx6ul-phytec-segin-ff-rdk-emmc.dtb
-	arch/arm/boot/dts/imx6ul-phytec-segin-ff-rdk-nand.dtb
-	arch/arm/boot/dts/imx6ul-pico-dwarf.dtb
-	arch/arm/boot/dts/imx6ul-pico-hobbit.dtb
-	arch/arm/boot/dts/imx6ul-pico-pi.dtb
-	arch/arm/boot/dts/imx6ul-prti6g.dtb
-	arch/arm/boot/dts/imx6ul-tx6ul-0010.dtb
-	arch/arm/boot/dts/imx6ul-tx6ul-0011.dtb
-	arch/arm/boot/dts/imx6ul-tx6ul-mainboard.dtb
-	arch/arm/boot/dts/imx6ulz-14x14-evk.dtb
-	arch/arm/boot/dts/imx6ulz-bsh-smm-m2.dtb
-
-sdma@20ec000: Unevaluated properties are not allowed ('clock-names', 'clocks', 'compatible' were unexpected)
-	arch/arm/boot/dts/imx6sl-evk.dtb
-	arch/arm/boot/dts/imx6sl-tolino-shine2hd.dtb
-	arch/arm/boot/dts/imx6sl-tolino-shine3.dtb
-	arch/arm/boot/dts/imx6sl-tolino-vision5.dtb
-	arch/arm/boot/dts/imx6sl-warp.dtb
-	arch/arm/boot/dts/imx6sx-nitrogen6sx.dtb
-	arch/arm/boot/dts/imx6sx-sabreauto.dtb
-	arch/arm/boot/dts/imx6sx-sdb.dtb
-	arch/arm/boot/dts/imx6sx-sdb-mqs.dtb
-	arch/arm/boot/dts/imx6sx-sdb-reva.dtb
-	arch/arm/boot/dts/imx6sx-sdb-sai.dtb
-	arch/arm/boot/dts/imx6sx-softing-vining-2000.dtb
-	arch/arm/boot/dts/imx6sx-udoo-neo-basic.dtb
-	arch/arm/boot/dts/imx6sx-udoo-neo-extended.dtb
-	arch/arm/boot/dts/imx6sx-udoo-neo-full.dtb
-	arch/arm/boot/dts/imx6ul-14x14-evk.dtb
-	arch/arm/boot/dts/imx6ul-ccimx6ulsbcexpress.dtb
-	arch/arm/boot/dts/imx6ul-ccimx6ulsbcpro.dtb
-	arch/arm/boot/dts/imx6ul-geam.dtb
-	arch/arm/boot/dts/imx6ul-isiot-emmc.dtb
-	arch/arm/boot/dts/imx6ul-isiot-nand.dtb
-	arch/arm/boot/dts/imx6ul-kontron-n6310-s-43.dtb
-	arch/arm/boot/dts/imx6ul-kontron-n6310-s.dtb
-	arch/arm/boot/dts/imx6ull-14x14-evk.dtb
-	arch/arm/boot/dts/imx6ull-colibri-emmc-eval-v3.dtb
-	arch/arm/boot/dts/imx6ull-colibri-eval-v3.dtb
-	arch/arm/boot/dts/imx6ull-colibri-wifi-eval-v3.dtb
-	arch/arm/boot/dts/imx6ul-liteboard.dtb
-	arch/arm/boot/dts/imx6ull-jozacp.dtb
-	arch/arm/boot/dts/imx6ull-myir-mys-6ulx-eval.dtb
-	arch/arm/boot/dts/imx6ull-opos6uldev.dtb
-	arch/arm/boot/dts/imx6ull-phytec-segin-ff-rdk-emmc.dtb
-	arch/arm/boot/dts/imx6ull-phytec-segin-ff-rdk-nand.dtb
-	arch/arm/boot/dts/imx6ull-phytec-segin-lc-rdk-nand.dtb
-	arch/arm/boot/dts/imx6ul-opos6uldev.dtb
-	arch/arm/boot/dts/imx6ul-phytec-segin-ff-rdk-emmc.dtb
-	arch/arm/boot/dts/imx6ul-phytec-segin-ff-rdk-nand.dtb
-	arch/arm/boot/dts/imx6ul-pico-dwarf.dtb
-	arch/arm/boot/dts/imx6ul-pico-hobbit.dtb
-	arch/arm/boot/dts/imx6ul-pico-pi.dtb
-	arch/arm/boot/dts/imx6ul-prti6g.dtb
-	arch/arm/boot/dts/imx6ul-tx6ul-0010.dtb
-	arch/arm/boot/dts/imx6ul-tx6ul-0011.dtb
-	arch/arm/boot/dts/imx6ul-tx6ul-mainboard.dtb
-	arch/arm/boot/dts/imx6ulz-14x14-evk.dtb
-	arch/arm/boot/dts/imx6ulz-bsh-smm-m2.dtb
-
-sdma@20ec000: Unevaluated properties are not allowed ('clock-names', 'clocks' were unexpected)
-	arch/arm/boot/dts/imx6dl-alti6p.dtb
-	arch/arm/boot/dts/imx6dl-apf6dev.dtb
-	arch/arm/boot/dts/imx6dl-aristainetos2_4.dtb
-	arch/arm/boot/dts/imx6dl-aristainetos2_7.dtb
-	arch/arm/boot/dts/imx6dl-aristainetos_4.dtb
-	arch/arm/boot/dts/imx6dl-aristainetos_7.dtb
-	arch/arm/boot/dts/imx6dl-b105pv2.dtb
-	arch/arm/boot/dts/imx6dl-b105v2.dtb
-	arch/arm/boot/dts/imx6dl-b125pv2.dtb
-	arch/arm/boot/dts/imx6dl-b125v2.dtb
-	arch/arm/boot/dts/imx6dl-b155v2.dtb
-	arch/arm/boot/dts/imx6dl-colibri-eval-v3.dtb
-	arch/arm/boot/dts/imx6dl-colibri-v1_1-eval-v3.dtb
-	arch/arm/boot/dts/imx6dl-cubox-i.dtb
-	arch/arm/boot/dts/imx6dl-cubox-i-emmc-som-v15.dtb
-	arch/arm/boot/dts/imx6dl-cubox-i-som-v15.dtb
-	arch/arm/boot/dts/imx6dl-dfi-fs700-m60.dtb
-	arch/arm/boot/dts/imx6dl-dhcom-picoitx.dtb
-	arch/arm/boot/dts/imx6dl-eckelmann-ci4x10.dtb
-	arch/arm/boot/dts/imx6dl-emcon-avari.dtb
-	arch/arm/boot/dts/imx6dl-gw51xx.dtb
-	arch/arm/boot/dts/imx6dl-gw52xx.dtb
-	arch/arm/boot/dts/imx6dl-gw53xx.dtb
-	arch/arm/boot/dts/imx6dl-gw54xx.dtb
-	arch/arm/boot/dts/imx6dl-gw551x.dtb
-	arch/arm/boot/dts/imx6dl-gw552x.dtb
-	arch/arm/boot/dts/imx6dl-gw553x.dtb
-	arch/arm/boot/dts/imx6dl-gw560x.dtb
-	arch/arm/boot/dts/imx6dl-gw5903.dtb
-	arch/arm/boot/dts/imx6dl-gw5904.dtb
-	arch/arm/boot/dts/imx6dl-gw5907.dtb
-	arch/arm/boot/dts/imx6dl-gw5910.dtb
-	arch/arm/boot/dts/imx6dl-gw5912.dtb
-	arch/arm/boot/dts/imx6dl-gw5913.dtb
-	arch/arm/boot/dts/imx6dl-hummingboard2.dtb
-	arch/arm/boot/dts/imx6dl-hummingboard2-emmc-som-v15.dtb
-	arch/arm/boot/dts/imx6dl-hummingboard2-som-v15.dtb
-	arch/arm/boot/dts/imx6dl-hummingboard.dtb
-	arch/arm/boot/dts/imx6dl-hummingboard-emmc-som-v15.dtb
-	arch/arm/boot/dts/imx6dl-hummingboard-som-v15.dtb
-	arch/arm/boot/dts/imx6dl-icore.dtb
-	arch/arm/boot/dts/imx6dl-icore-mipi.dtb
-	arch/arm/boot/dts/imx6dl-icore-rqs.dtb
-	arch/arm/boot/dts/imx6dl-lanmcu.dtb
-	arch/arm/boot/dts/imx6dl-mamoj.dtb
-	arch/arm/boot/dts/imx6dl-mba6a.dtb
-	arch/arm/boot/dts/imx6dl-mba6b.dtb
-	arch/arm/boot/dts/imx6dl-nit6xlite.dtb
-	arch/arm/boot/dts/imx6dl-nitrogen6x.dtb
-	arch/arm/boot/dts/imx6dl-phytec-mira-rdk-nand.dtb
-	arch/arm/boot/dts/imx6dl-phytec-pbab01.dtb
-	arch/arm/boot/dts/imx6dl-pico-dwarf.dtb
-	arch/arm/boot/dts/imx6dl-pico-hobbit.dtb
-	arch/arm/boot/dts/imx6dl-pico-nymph.dtb
-	arch/arm/boot/dts/imx6dl-pico-pi.dtb
-	arch/arm/boot/dts/imx6dl-plybas.dtb
-	arch/arm/boot/dts/imx6dl-plym2m.dtb
-	arch/arm/boot/dts/imx6dl-prtmvt.dtb
-	arch/arm/boot/dts/imx6dl-prtrvt.dtb
-	arch/arm/boot/dts/imx6dl-prtvt7.dtb
-	arch/arm/boot/dts/imx6dl-rex-basic.dtb
-	arch/arm/boot/dts/imx6dl-riotboard.dtb
-	arch/arm/boot/dts/imx6dl-sabreauto.dtb
-	arch/arm/boot/dts/imx6dl-sabrelite.dtb
-	arch/arm/boot/dts/imx6dl-sabresd.dtb
-	arch/arm/boot/dts/imx6dl-savageboard.dtb
-	arch/arm/boot/dts/imx6dl-skov-revc-lt2.dtb
-	arch/arm/boot/dts/imx6dl-skov-revc-lt6.dtb
-	arch/arm/boot/dts/imx6dl-solidsense.dtb
-	arch/arm/boot/dts/imx6dl-ts4900.dtb
-	arch/arm/boot/dts/imx6dl-ts7970.dtb
-	arch/arm/boot/dts/imx6dl-tx6dl-comtft.dtb
-	arch/arm/boot/dts/imx6dl-tx6s-8034.dtb
-	arch/arm/boot/dts/imx6dl-tx6s-8034-mb7.dtb
-	arch/arm/boot/dts/imx6dl-tx6s-8035.dtb
-	arch/arm/boot/dts/imx6dl-tx6s-8035-mb7.dtb
-	arch/arm/boot/dts/imx6dl-tx6u-801x.dtb
-	arch/arm/boot/dts/imx6dl-tx6u-8033.dtb
-	arch/arm/boot/dts/imx6dl-tx6u-8033-mb7.dtb
-	arch/arm/boot/dts/imx6dl-tx6u-80xx-mb7.dtb
-	arch/arm/boot/dts/imx6dl-tx6u-811x.dtb
-	arch/arm/boot/dts/imx6dl-tx6u-81xx-mb7.dtb
-	arch/arm/boot/dts/imx6dl-udoo.dtb
-	arch/arm/boot/dts/imx6dl-victgo.dtb
-	arch/arm/boot/dts/imx6dl-vicut1.dtb
-	arch/arm/boot/dts/imx6dl-wandboard.dtb
-	arch/arm/boot/dts/imx6dl-wandboard-revb1.dtb
-	arch/arm/boot/dts/imx6dl-wandboard-revd1.dtb
-	arch/arm/boot/dts/imx6dl-yapp4-draco.dtb
-	arch/arm/boot/dts/imx6dl-yapp4-hydra.dtb
-	arch/arm/boot/dts/imx6dl-yapp4-orion.dtb
-	arch/arm/boot/dts/imx6dl-yapp4-ursa.dtb
-	arch/arm/boot/dts/imx6q-apalis-eval.dtb
-	arch/arm/boot/dts/imx6q-apalis-ixora.dtb
-	arch/arm/boot/dts/imx6q-apalis-ixora-v1.1.dtb
-	arch/arm/boot/dts/imx6q-apf6dev.dtb
-	arch/arm/boot/dts/imx6q-arm2.dtb
-	arch/arm/boot/dts/imx6q-b450v3.dtb
-	arch/arm/boot/dts/imx6q-b650v3.dtb
-	arch/arm/boot/dts/imx6q-b850v3.dtb
-	arch/arm/boot/dts/imx6q-cm-fx6.dtb
-	arch/arm/boot/dts/imx6q-cubox-i.dtb
-	arch/arm/boot/dts/imx6q-cubox-i-emmc-som-v15.dtb
-	arch/arm/boot/dts/imx6q-cubox-i-som-v15.dtb
-	arch/arm/boot/dts/imx6q-dfi-fs700-m60.dtb
-	arch/arm/boot/dts/imx6q-dhcom-pdk2.dtb
-	arch/arm/boot/dts/imx6q-display5-tianma-tm070-1280x768.dtb
-	arch/arm/boot/dts/imx6q-dmo-edmqmx6.dtb
-	arch/arm/boot/dts/imx6q-dms-ba16.dtb
-	arch/arm/boot/dts/imx6q-ds.dtb
-	arch/arm/boot/dts/imx6q-emcon-avari.dtb
-	arch/arm/boot/dts/imx6q-evi.dtb
-	arch/arm/boot/dts/imx6q-gk802.dtb
-	arch/arm/boot/dts/imx6q-gw51xx.dtb
-	arch/arm/boot/dts/imx6q-gw52xx.dtb
-	arch/arm/boot/dts/imx6q-gw53xx.dtb
-	arch/arm/boot/dts/imx6q-gw5400-a.dtb
-	arch/arm/boot/dts/imx6q-gw54xx.dtb
-	arch/arm/boot/dts/imx6q-gw551x.dtb
-	arch/arm/boot/dts/imx6q-gw552x.dtb
-	arch/arm/boot/dts/imx6q-gw553x.dtb
-	arch/arm/boot/dts/imx6q-gw560x.dtb
-	arch/arm/boot/dts/imx6q-gw5903.dtb
-	arch/arm/boot/dts/imx6q-gw5904.dtb
-	arch/arm/boot/dts/imx6q-gw5907.dtb
-	arch/arm/boot/dts/imx6q-gw5910.dtb
-	arch/arm/boot/dts/imx6q-gw5912.dtb
-	arch/arm/boot/dts/imx6q-gw5913.dtb
-	arch/arm/boot/dts/imx6q-h100.dtb
-	arch/arm/boot/dts/imx6q-hummingboard2.dtb
-	arch/arm/boot/dts/imx6q-hummingboard2-emmc-som-v15.dtb
-	arch/arm/boot/dts/imx6q-hummingboard2-som-v15.dtb
-	arch/arm/boot/dts/imx6q-hummingboard.dtb
-	arch/arm/boot/dts/imx6q-hummingboard-emmc-som-v15.dtb
-	arch/arm/boot/dts/imx6q-hummingboard-som-v15.dtb
-	arch/arm/boot/dts/imx6q-icore.dtb
-	arch/arm/boot/dts/imx6q-icore-mipi.dtb
-	arch/arm/boot/dts/imx6q-icore-ofcap10.dtb
-	arch/arm/boot/dts/imx6q-icore-ofcap12.dtb
-	arch/arm/boot/dts/imx6q-icore-rqs.dtb
-	arch/arm/boot/dts/imx6q-kp-tpc.dtb
-	arch/arm/boot/dts/imx6q-logicpd.dtb
-	arch/arm/boot/dts/imx6q-marsboard.dtb
-	arch/arm/boot/dts/imx6q-mba6a.dtb
-	arch/arm/boot/dts/imx6q-mba6b.dtb
-	arch/arm/boot/dts/imx6q-mccmon6.dtb
-	arch/arm/boot/dts/imx6q-nitrogen6_max.dtb
-	arch/arm/boot/dts/imx6q-nitrogen6_som2.dtb
-	arch/arm/boot/dts/imx6q-nitrogen6x.dtb
-	arch/arm/boot/dts/imx6q-novena.dtb
-	arch/arm/boot/dts/imx6q-phytec-mira-rdk-emmc.dtb
-	arch/arm/boot/dts/imx6q-phytec-mira-rdk-nand.dtb
-	arch/arm/boot/dts/imx6q-phytec-pbab01.dtb
-	arch/arm/boot/dts/imx6q-pico-dwarf.dtb
-	arch/arm/boot/dts/imx6q-pico-hobbit.dtb
-	arch/arm/boot/dts/imx6q-pico-nymph.dtb
-	arch/arm/boot/dts/imx6q-pico-pi.dtb
-	arch/arm/boot/dts/imx6q-pistachio.dtb
-	arch/arm/boot/dts/imx6qp-mba6b.dtb
-	arch/arm/boot/dts/imx6qp-nitrogen6_max.dtb
-	arch/arm/boot/dts/imx6qp-nitrogen6_som2.dtb
-	arch/arm/boot/dts/imx6qp-phytec-mira-rdk-nand.dtb
-	arch/arm/boot/dts/imx6qp-prtwd3.dtb
-	arch/arm/boot/dts/imx6q-prti6q.dtb
-	arch/arm/boot/dts/imx6q-prtwd2.dtb
-	arch/arm/boot/dts/imx6qp-sabreauto.dtb
-	arch/arm/boot/dts/imx6qp-sabresd.dtb
-	arch/arm/boot/dts/imx6qp-tx6qp-8037.dtb
-	arch/arm/boot/dts/imx6qp-tx6qp-8037-mb7.dtb
-	arch/arm/boot/dts/imx6qp-tx6qp-8137.dtb
-	arch/arm/boot/dts/imx6qp-tx6qp-8137-mb7.dtb
-	arch/arm/boot/dts/imx6qp-vicutp.dtb
-	arch/arm/boot/dts/imx6qp-wandboard-revd1.dtb
-	arch/arm/boot/dts/imx6qp-yapp4-crux-plus.dtb
-	arch/arm/boot/dts/imx6qp-zii-rdu2.dtb
-	arch/arm/boot/dts/imx6q-rex-pro.dtb
-	arch/arm/boot/dts/imx6q-sabreauto.dtb
-	arch/arm/boot/dts/imx6q-sabrelite.dtb
-	arch/arm/boot/dts/imx6q-sabresd.dtb
-	arch/arm/boot/dts/imx6q-savageboard.dtb
-	arch/arm/boot/dts/imx6q-sbc6x.dtb
-	arch/arm/boot/dts/imx6q-skov-revc-lt2.dtb
-	arch/arm/boot/dts/imx6q-skov-revc-lt6.dtb
-	arch/arm/boot/dts/imx6q-skov-reve-mi1010ait-1cp1.dtb
-	arch/arm/boot/dts/imx6q-solidsense.dtb
-	arch/arm/boot/dts/imx6q-tbs2910.dtb
-	arch/arm/boot/dts/imx6q-ts4900.dtb
-	arch/arm/boot/dts/imx6q-ts7970.dtb
-	arch/arm/boot/dts/imx6q-tx6q-1010-comtft.dtb
-	arch/arm/boot/dts/imx6q-tx6q-1010.dtb
-	arch/arm/boot/dts/imx6q-tx6q-1020-comtft.dtb
-	arch/arm/boot/dts/imx6q-tx6q-1020.dtb
-	arch/arm/boot/dts/imx6q-tx6q-1036.dtb
-	arch/arm/boot/dts/imx6q-tx6q-1036-mb7.dtb
-	arch/arm/boot/dts/imx6q-tx6q-10x0-mb7.dtb
-	arch/arm/boot/dts/imx6q-tx6q-1110.dtb
-	arch/arm/boot/dts/imx6q-tx6q-11x0-mb7.dtb
-	arch/arm/boot/dts/imx6q-udoo.dtb
-	arch/arm/boot/dts/imx6q-utilite-pro.dtb
-	arch/arm/boot/dts/imx6q-var-dt6customboard.dtb
-	arch/arm/boot/dts/imx6q-vicut1.dtb
-	arch/arm/boot/dts/imx6q-wandboard.dtb
-	arch/arm/boot/dts/imx6q-wandboard-revb1.dtb
-	arch/arm/boot/dts/imx6q-wandboard-revd1.dtb
-	arch/arm/boot/dts/imx6q-yapp4-crux.dtb
-	arch/arm/boot/dts/imx6q-zii-rdu2.dtb
-	arch/arm/boot/dts/imx6s-dhcom-drc02.dtb
-
-sdma@302c0000: $nodename:0: 'sdma@302c0000' does not match '^dma-controller(@.*)?$'
-	arch/arm64/boot/dts/freescale/imx8mq-evk.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-hummingboard-pulse.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-kontron-pitx-imx8m.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-librem5-devkit.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-librem5-r2.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-librem5-r3.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-librem5-r4.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-mnt-reform2.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-nitrogen.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-phanbell.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-pico-pi.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-thor96.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-tqma8mq-mba8mx.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-zii-ultra-rmb3.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-zii-ultra-zest.dtb
-
-sdma@302c0000: compatible:0: 'fsl,imx8mq-sdma' is not one of ['fsl,imx25-sdma', 'fsl,imx31-sdma', 'fsl,imx31-to1-sdma', 'fsl,imx31-to2-sdma', 'fsl,imx35-to1-sdma', 'fsl,imx35-to2-sdma', 'fsl,imx51-sdma', 'fsl,imx53-sdma', 'fsl,imx6q-sdma', 'fsl,imx7d-sdma', 'fsl,imx6sx-sdma', 'fsl,imx6ul-sdma', 'fsl,imx8mm-sdma', 'fsl,imx8mn-sdma', 'fsl,imx8mp-sdma']
-	arch/arm64/boot/dts/freescale/imx8mq-evk.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-hummingboard-pulse.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-kontron-pitx-imx8m.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-librem5-devkit.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-librem5-r2.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-librem5-r3.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-librem5-r4.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-mnt-reform2.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-nitrogen.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-phanbell.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-pico-pi.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-thor96.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-tqma8mq-mba8mx.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-zii-ultra-rmb3.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-zii-ultra-zest.dtb
-
-sdma@302c0000: compatible:1: 'fsl,imx7d-sdma' is not one of ['fsl,imx35-sdma', 'fsl,imx8mq-sdma']
-	arch/arm64/boot/dts/freescale/imx8mq-evk.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-hummingboard-pulse.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-kontron-pitx-imx8m.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-librem5-devkit.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-librem5-r2.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-librem5-r3.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-librem5-r4.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-mnt-reform2.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-nitrogen.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-phanbell.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-pico-pi.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-thor96.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-tqma8mq-mba8mx.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-zii-ultra-rmb3.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-zii-ultra-zest.dtb
-
-sdma@302c0000: Unevaluated properties are not allowed ('clock-names', 'clocks', 'compatible' were unexpected)
-	arch/arm64/boot/dts/freescale/imx8mq-evk.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-hummingboard-pulse.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-kontron-pitx-imx8m.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-librem5-devkit.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-librem5-r2.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-librem5-r3.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-librem5-r4.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-mnt-reform2.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-nitrogen.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-phanbell.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-pico-pi.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-thor96.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-tqma8mq-mba8mx.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-zii-ultra-rmb3.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-zii-ultra-zest.dtb
-
-sdma@30bd0000: $nodename:0: 'sdma@30bd0000' does not match '^dma-controller(@.*)?$'
-	arch/arm64/boot/dts/freescale/imx8mq-evk.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-hummingboard-pulse.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-kontron-pitx-imx8m.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-librem5-devkit.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-librem5-r2.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-librem5-r3.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-librem5-r4.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-mnt-reform2.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-nitrogen.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-phanbell.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-pico-pi.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-thor96.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-tqma8mq-mba8mx.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-zii-ultra-rmb3.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-zii-ultra-zest.dtb
-	arch/arm/boot/dts/imx7d-cl-som-imx7.dtb
-	arch/arm/boot/dts/imx7d-colibri-aster.dtb
-	arch/arm/boot/dts/imx7d-colibri-emmc-aster.dtb
-	arch/arm/boot/dts/imx7d-colibri-emmc-eval-v3.dtb
-	arch/arm/boot/dts/imx7d-colibri-eval-v3.dtb
-	arch/arm/boot/dts/imx7d-flex-concentrator.dtb
-	arch/arm/boot/dts/imx7d-flex-concentrator-mfg.dtb
-	arch/arm/boot/dts/imx7d-mba7.dtb
-	arch/arm/boot/dts/imx7d-meerkat96.dtb
-	arch/arm/boot/dts/imx7d-nitrogen7.dtb
-	arch/arm/boot/dts/imx7d-pico-dwarf.dtb
-	arch/arm/boot/dts/imx7d-pico-hobbit.dtb
-	arch/arm/boot/dts/imx7d-pico-nymph.dtb
-	arch/arm/boot/dts/imx7d-pico-pi.dtb
-	arch/arm/boot/dts/imx7d-remarkable2.dtb
-	arch/arm/boot/dts/imx7d-sbc-imx7.dtb
-	arch/arm/boot/dts/imx7d-sdb.dtb
-	arch/arm/boot/dts/imx7d-sdb-reva.dtb
-	arch/arm/boot/dts/imx7d-sdb-sht11.dtb
-	arch/arm/boot/dts/imx7d-zii-rmu2.dtb
-	arch/arm/boot/dts/imx7d-zii-rpu2.dtb
-	arch/arm/boot/dts/imx7s-colibri-aster.dtb
-	arch/arm/boot/dts/imx7s-colibri-eval-v3.dtb
-	arch/arm/boot/dts/imx7s-mba7.dtb
-	arch/arm/boot/dts/imx7s-warp.dtb
-
-sdma@30bd0000: compatible:0: 'fsl,imx8mq-sdma' is not one of ['fsl,imx25-sdma', 'fsl,imx31-sdma', 'fsl,imx31-to1-sdma', 'fsl,imx31-to2-sdma', 'fsl,imx35-to1-sdma', 'fsl,imx35-to2-sdma', 'fsl,imx51-sdma', 'fsl,imx53-sdma', 'fsl,imx6q-sdma', 'fsl,imx7d-sdma', 'fsl,imx6sx-sdma', 'fsl,imx6ul-sdma', 'fsl,imx8mm-sdma', 'fsl,imx8mn-sdma', 'fsl,imx8mp-sdma']
-	arch/arm64/boot/dts/freescale/imx8mq-evk.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-hummingboard-pulse.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-kontron-pitx-imx8m.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-librem5-devkit.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-librem5-r2.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-librem5-r3.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-librem5-r4.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-mnt-reform2.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-nitrogen.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-phanbell.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-pico-pi.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-thor96.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-tqma8mq-mba8mx.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-zii-ultra-rmb3.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-zii-ultra-zest.dtb
-
-sdma@30bd0000: compatible:1: 'fsl,imx7d-sdma' is not one of ['fsl,imx35-sdma', 'fsl,imx8mq-sdma']
-	arch/arm64/boot/dts/freescale/imx8mq-evk.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-hummingboard-pulse.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-kontron-pitx-imx8m.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-librem5-devkit.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-librem5-r2.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-librem5-r3.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-librem5-r4.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-mnt-reform2.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-nitrogen.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-phanbell.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-pico-pi.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-thor96.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-tqma8mq-mba8mx.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-zii-ultra-rmb3.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-zii-ultra-zest.dtb
-
-sdma@30bd0000: Unevaluated properties are not allowed ('clock-names', 'clocks', 'compatible' were unexpected)
-	arch/arm64/boot/dts/freescale/imx8mq-evk.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-hummingboard-pulse.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-kontron-pitx-imx8m.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-librem5-devkit.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-librem5-r2.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-librem5-r3.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-librem5-r4.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-mnt-reform2.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-nitrogen.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-phanbell.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-pico-pi.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-thor96.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-tqma8mq-mba8mx.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-zii-ultra-rmb3.dtb
-	arch/arm64/boot/dts/freescale/imx8mq-zii-ultra-zest.dtb
-
-sdma@30bd0000: Unevaluated properties are not allowed ('clock-names', 'clocks' were unexpected)
-	arch/arm/boot/dts/imx7d-cl-som-imx7.dtb
-	arch/arm/boot/dts/imx7d-colibri-aster.dtb
-	arch/arm/boot/dts/imx7d-colibri-emmc-aster.dtb
-	arch/arm/boot/dts/imx7d-colibri-emmc-eval-v3.dtb
-	arch/arm/boot/dts/imx7d-colibri-eval-v3.dtb
-	arch/arm/boot/dts/imx7d-flex-concentrator.dtb
-	arch/arm/boot/dts/imx7d-flex-concentrator-mfg.dtb
-	arch/arm/boot/dts/imx7d-mba7.dtb
-	arch/arm/boot/dts/imx7d-meerkat96.dtb
-	arch/arm/boot/dts/imx7d-nitrogen7.dtb
-	arch/arm/boot/dts/imx7d-pico-dwarf.dtb
-	arch/arm/boot/dts/imx7d-pico-hobbit.dtb
-	arch/arm/boot/dts/imx7d-pico-nymph.dtb
-	arch/arm/boot/dts/imx7d-pico-pi.dtb
-	arch/arm/boot/dts/imx7d-remarkable2.dtb
-	arch/arm/boot/dts/imx7d-sbc-imx7.dtb
-	arch/arm/boot/dts/imx7d-sdb.dtb
-	arch/arm/boot/dts/imx7d-sdb-reva.dtb
-	arch/arm/boot/dts/imx7d-sdb-sht11.dtb
-	arch/arm/boot/dts/imx7d-zii-rmu2.dtb
-	arch/arm/boot/dts/imx7d-zii-rpu2.dtb
-	arch/arm/boot/dts/imx7s-colibri-aster.dtb
-	arch/arm/boot/dts/imx7s-colibri-eval-v3.dtb
-	arch/arm/boot/dts/imx7s-mba7.dtb
-	arch/arm/boot/dts/imx7s-warp.dtb
-
-sdma@53fd4000: $nodename:0: 'sdma@53fd4000' does not match '^dma-controller(@.*)?$'
-	arch/arm/boot/dts/imx25-eukrea-mbimxsd25-baseboard-cmo-qvga.dtb
-	arch/arm/boot/dts/imx25-eukrea-mbimxsd25-baseboard.dtb
-	arch/arm/boot/dts/imx25-eukrea-mbimxsd25-baseboard-dvi-svga.dtb
-	arch/arm/boot/dts/imx25-eukrea-mbimxsd25-baseboard-dvi-vga.dtb
-	arch/arm/boot/dts/imx25-karo-tx25.dtb
-	arch/arm/boot/dts/imx25-pdk.dtb
-	arch/arm/boot/dts/imx31-bug.dtb
-	arch/arm/boot/dts/imx31-lite.dtb
-	arch/arm/boot/dts/imx35-eukrea-mbimxsd35-baseboard.dtb
-	arch/arm/boot/dts/imx35-pdk.dtb
-
-sdma@53fd4000: compatible:0: 'fsl,imx35-sdma' is not one of ['fsl,imx25-sdma', 'fsl,imx31-sdma', 'fsl,imx31-to1-sdma', 'fsl,imx31-to2-sdma', 'fsl,imx35-to1-sdma', 'fsl,imx35-to2-sdma', 'fsl,imx51-sdma', 'fsl,imx53-sdma', 'fsl,imx6q-sdma', 'fsl,imx7d-sdma', 'fsl,imx6sx-sdma', 'fsl,imx6ul-sdma', 'fsl,imx8mm-sdma', 'fsl,imx8mn-sdma', 'fsl,imx8mp-sdma']
-	arch/arm/boot/dts/imx35-eukrea-mbimxsd35-baseboard.dtb
-	arch/arm/boot/dts/imx35-pdk.dtb
-
-sdma@53fd4000: compatible: ['fsl,imx25-sdma'] is too short
-	arch/arm/boot/dts/imx25-eukrea-mbimxsd25-baseboard-cmo-qvga.dtb
-	arch/arm/boot/dts/imx25-eukrea-mbimxsd25-baseboard.dtb
-	arch/arm/boot/dts/imx25-eukrea-mbimxsd25-baseboard-dvi-svga.dtb
-	arch/arm/boot/dts/imx25-eukrea-mbimxsd25-baseboard-dvi-vga.dtb
-	arch/arm/boot/dts/imx25-karo-tx25.dtb
-	arch/arm/boot/dts/imx25-pdk.dtb
-
-sdma@53fd4000: compatible: ['fsl,imx31-sdma'] is too short
-	arch/arm/boot/dts/imx31-bug.dtb
-	arch/arm/boot/dts/imx31-lite.dtb
-
-sdma@53fd4000: compatible: ['fsl,imx35-sdma'] is too short
-	arch/arm/boot/dts/imx35-eukrea-mbimxsd35-baseboard.dtb
-	arch/arm/boot/dts/imx35-pdk.dtb
-
-sdma@53fd4000: Unevaluated properties are not allowed ('clock-names', 'clocks', 'compatible' were unexpected)
-	arch/arm/boot/dts/imx25-eukrea-mbimxsd25-baseboard-cmo-qvga.dtb
-	arch/arm/boot/dts/imx25-eukrea-mbimxsd25-baseboard.dtb
-	arch/arm/boot/dts/imx25-eukrea-mbimxsd25-baseboard-dvi-svga.dtb
-	arch/arm/boot/dts/imx25-eukrea-mbimxsd25-baseboard-dvi-vga.dtb
-	arch/arm/boot/dts/imx25-karo-tx25.dtb
-	arch/arm/boot/dts/imx25-pdk.dtb
-	arch/arm/boot/dts/imx31-bug.dtb
-	arch/arm/boot/dts/imx31-lite.dtb
-	arch/arm/boot/dts/imx35-eukrea-mbimxsd35-baseboard.dtb
-	arch/arm/boot/dts/imx35-pdk.dtb
-
-sdma@63fb0000: $nodename:0: 'sdma@63fb0000' does not match '^dma-controller(@.*)?$'
-	arch/arm/boot/dts/imx50-evk.dtb
-	arch/arm/boot/dts/imx50-kobo-aura.dtb
-	arch/arm/boot/dts/imx53-ard.dtb
-	arch/arm/boot/dts/imx53-cx9020.dtb
-	arch/arm/boot/dts/imx53-kp-ddc.dtb
-	arch/arm/boot/dts/imx53-kp-hsc.dtb
-	arch/arm/boot/dts/imx53-m53evk.dtb
-	arch/arm/boot/dts/imx53-m53menlo.dtb
-	arch/arm/boot/dts/imx53-mba53.dtb
-	arch/arm/boot/dts/imx53-ppd.dtb
-	arch/arm/boot/dts/imx53-qsb.dtb
-	arch/arm/boot/dts/imx53-qsrb.dtb
-	arch/arm/boot/dts/imx53-smd.dtb
-	arch/arm/boot/dts/imx53-tx53-x03x.dtb
-	arch/arm/boot/dts/imx53-tx53-x13x.dtb
-	arch/arm/boot/dts/imx53-usbarmory.dtb
-	arch/arm/boot/dts/imx53-voipac-bsb.dtb
-
-sdma@63fb0000: compatible:0: 'fsl,imx50-sdma' is not one of ['fsl,imx25-sdma', 'fsl,imx31-sdma', 'fsl,imx31-to1-sdma', 'fsl,imx31-to2-sdma', 'fsl,imx35-to1-sdma', 'fsl,imx35-to2-sdma', 'fsl,imx51-sdma', 'fsl,imx53-sdma', 'fsl,imx6q-sdma', 'fsl,imx7d-sdma', 'fsl,imx6sx-sdma', 'fsl,imx6ul-sdma', 'fsl,imx8mm-sdma', 'fsl,imx8mn-sdma', 'fsl,imx8mp-sdma']
-	arch/arm/boot/dts/imx50-evk.dtb
-	arch/arm/boot/dts/imx50-kobo-aura.dtb
-
-sdma@63fb0000: Unevaluated properties are not allowed ('clock-names', 'clocks', 'compatible' were unexpected)
-	arch/arm/boot/dts/imx50-evk.dtb
-	arch/arm/boot/dts/imx50-kobo-aura.dtb
-
-sdma@63fb0000: Unevaluated properties are not allowed ('clock-names', 'clocks' were unexpected)
-	arch/arm/boot/dts/imx53-ard.dtb
-	arch/arm/boot/dts/imx53-cx9020.dtb
-	arch/arm/boot/dts/imx53-kp-ddc.dtb
-	arch/arm/boot/dts/imx53-kp-hsc.dtb
-	arch/arm/boot/dts/imx53-m53evk.dtb
-	arch/arm/boot/dts/imx53-m53menlo.dtb
-	arch/arm/boot/dts/imx53-mba53.dtb
-	arch/arm/boot/dts/imx53-ppd.dtb
-	arch/arm/boot/dts/imx53-qsb.dtb
-	arch/arm/boot/dts/imx53-qsrb.dtb
-	arch/arm/boot/dts/imx53-smd.dtb
-	arch/arm/boot/dts/imx53-tx53-x03x.dtb
-	arch/arm/boot/dts/imx53-tx53-x13x.dtb
-	arch/arm/boot/dts/imx53-usbarmory.dtb
-	arch/arm/boot/dts/imx53-voipac-bsb.dtb
-
-sdma@83fb0000: $nodename:0: 'sdma@83fb0000' does not match '^dma-controller(@.*)?$'
-	arch/arm/boot/dts/imx51-apf51dev.dtb
-	arch/arm/boot/dts/imx51-apf51.dtb
-	arch/arm/boot/dts/imx51-babbage.dtb
-	arch/arm/boot/dts/imx51-digi-connectcore-jsk.dtb
-	arch/arm/boot/dts/imx51-eukrea-mbimxsd51-baseboard.dtb
-	arch/arm/boot/dts/imx51-ts4800.dtb
-	arch/arm/boot/dts/imx51-zii-rdu1.dtb
-	arch/arm/boot/dts/imx51-zii-scu2-mezz.dtb
-	arch/arm/boot/dts/imx51-zii-scu3-esb.dtb
-
-sdma@83fb0000: Unevaluated properties are not allowed ('clock-names', 'clocks' were unexpected)
-	arch/arm/boot/dts/imx51-apf51dev.dtb
-	arch/arm/boot/dts/imx51-apf51.dtb
-	arch/arm/boot/dts/imx51-babbage.dtb
-	arch/arm/boot/dts/imx51-digi-connectcore-jsk.dtb
-	arch/arm/boot/dts/imx51-eukrea-mbimxsd51-baseboard.dtb
-	arch/arm/boot/dts/imx51-ts4800.dtb
-	arch/arm/boot/dts/imx51-zii-rdu1.dtb
-	arch/arm/boot/dts/imx51-zii-scu2-mezz.dtb
-	arch/arm/boot/dts/imx51-zii-scu3-esb.dtb
-
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
