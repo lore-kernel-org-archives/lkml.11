@@ -2,70 +2,379 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B7AAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 08:38:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5F57C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 08:39:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232819AbiEXIiB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 04:38:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57054 "EHLO
+        id S232936AbiEXIjJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 04:39:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232377AbiEXIhy (ORCPT
+        with ESMTP id S230472AbiEXIjF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 04:37:54 -0400
-Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF3927E1DE
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 01:37:53 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R411e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=14;SR=0;TI=SMTPD_---0VEHJJLh_1653381467;
-Received: from localhost(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0VEHJJLh_1653381467)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Tue, 24 May 2022 16:37:50 +0800
-From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-To:     zhenyuw@linux.intel.com
-Cc:     zhi.a.wang@intel.com, jani.nikula@linux.intel.com,
-        joonas.lahtinen@linux.intel.com, rodrigo.vivi@intel.com,
-        tvrtko.ursulin@linux.intel.com, airlied@linux.ie, daniel@ffwll.ch,
-        intel-gvt-dev@lists.freedesktop.org,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org,
-        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: [PATCH 1/2] drm/i915/gvt: Fix kernel-doc
-Date:   Tue, 24 May 2022 16:37:33 +0800
-Message-Id: <20220524083733.67148-2-jiapeng.chong@linux.alibaba.com>
-X-Mailer: git-send-email 2.20.1.7.g153144c
-In-Reply-To: <20220524083733.67148-1-jiapeng.chong@linux.alibaba.com>
-References: <20220524083733.67148-1-jiapeng.chong@linux.alibaba.com>
+        Tue, 24 May 2022 04:39:05 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B0E27E1EC;
+        Tue, 24 May 2022 01:38:57 -0700 (PDT)
+X-UUID: 2957b3c3af1a46cbb03bdca6c9348708-20220524
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5,REQID:af136d66-dbc1-4ca0-a955-8251959bbd73,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:-5
+X-CID-META: VersionHash:2a19b09,CLOUDID:9f7d6e7a-5ef6-470b-96c9-bdb8ced32786,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
+        ,QS:0,BEC:nil
+X-UUID: 2957b3c3af1a46cbb03bdca6c9348708-20220524
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
+        (envelope-from <miles.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1635386091; Tue, 24 May 2022 16:38:53 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Tue, 24 May 2022 16:38:52 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
+ mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.792.3 via Frontend Transport; Tue, 24 May 2022 16:38:52 +0800
+From:   Miles Chen <miles.chen@mediatek.com>
+To:     Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+CC:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
+        Miles Chen <miles.chen@mediatek.com>,
+        <linux-clk@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH v2 3/7] clk: mediatek: mt6765: use mtk_clk_simple_probe to simplify driver
+Date:   Tue, 24 May 2022 16:38:36 +0800
+Message-ID: <20220524083843.9994-4-miles.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220524083843.9994-1-miles.chen@mediatek.com>
+References: <20220524083843.9994-1-miles.chen@mediatek.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix the following W=1 kernel warnings:
+mtk_clk_simple_probe was added by Chun-Jie to simply common flow
+of MediaTek clock drivers and ChenYu enhanced the error path of
+mtk_clk_simple_probe and added mtk_clk_simple_remove.
 
-drivers/gpu/drm/i915/gvt/handlers.c:3066: warning: expecting prototype
-for intel_t_default_mmio_write(). Prototype was for
-intel_vgpu_default_mmio_write() instead.
+Let's use mtk_clk_simple_probe and mtk_clk_simple_probe in other
+MediaTek clock drivers as well.
 
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Signed-off-by: Miles Chen <miles.chen@mediatek.com>
 ---
- drivers/gpu/drm/i915/gvt/handlers.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/clk/mediatek/clk-mt6765-audio.c  | 34 +++++++++---------------
+ drivers/clk/mediatek/clk-mt6765-cam.c    | 33 +++++++++--------------
+ drivers/clk/mediatek/clk-mt6765-img.c    | 33 +++++++++--------------
+ drivers/clk/mediatek/clk-mt6765-mipi0a.c | 34 +++++++++---------------
+ drivers/clk/mediatek/clk-mt6765-mm.c     | 33 +++++++++--------------
+ drivers/clk/mediatek/clk-mt6765-vcodec.c | 34 +++++++++---------------
+ 6 files changed, 72 insertions(+), 129 deletions(-)
 
-diff --git a/drivers/gpu/drm/i915/gvt/handlers.c b/drivers/gpu/drm/i915/gvt/handlers.c
-index beea5895e499..9c8dde079cb4 100644
---- a/drivers/gpu/drm/i915/gvt/handlers.c
-+++ b/drivers/gpu/drm/i915/gvt/handlers.c
-@@ -3052,7 +3052,7 @@ int intel_vgpu_default_mmio_read(struct intel_vgpu *vgpu, unsigned int offset,
- }
+diff --git a/drivers/clk/mediatek/clk-mt6765-audio.c b/drivers/clk/mediatek/clk-mt6765-audio.c
+index 9c6e9caad597..0aa6c0d352ca 100644
+--- a/drivers/clk/mediatek/clk-mt6765-audio.c
++++ b/drivers/clk/mediatek/clk-mt6765-audio.c
+@@ -64,33 +64,23 @@ static const struct mtk_gate audio_clks[] = {
+ 		    "audio_ck", 7),
+ };
  
- /**
-- * intel_t_default_mmio_write - default MMIO write handler
-+ * intel_vgpu_default_mmio_write() - default MMIO write handler
-  * @vgpu: a vGPU
-  * @offset: access offset
-  * @p_data: write data buffer
+-static int clk_mt6765_audio_probe(struct platform_device *pdev)
+-{
+-	struct clk_hw_onecell_data *clk_data;
+-	int r;
+-	struct device_node *node = pdev->dev.of_node;
+-
+-	clk_data = mtk_alloc_clk_data(CLK_AUDIO_NR_CLK);
+-
+-	mtk_clk_register_gates(node, audio_clks,
+-			       ARRAY_SIZE(audio_clks), clk_data);
+-
+-	r = of_clk_add_hw_provider(node, of_clk_hw_onecell_get, clk_data);
+-
+-	if (r)
+-		pr_err("%s(): could not register clock provider: %d\n",
+-		       __func__, r);
+-
+-	return r;
+-}
++static const struct mtk_clk_desc audio_desc = {
++	.clks = audio_clks,
++	.num_clks = ARRAY_SIZE(audio_clks),
++};
+ 
+ static const struct of_device_id of_match_clk_mt6765_audio[] = {
+-	{ .compatible = "mediatek,mt6765-audsys", },
+-	{}
++	{
++		.compatible = "mediatek,mt6765-audsys",
++		.data = &audio_desc,
++	}, {
++		/* sentinel */
++	}
+ };
+ 
+ static struct platform_driver clk_mt6765_audio_drv = {
+-	.probe = clk_mt6765_audio_probe,
++	.probe = mtk_clk_simple_probe,
++	.remove = mtk_clk_simple_remove,
+ 	.driver = {
+ 		.name = "clk-mt6765-audio",
+ 		.of_match_table = of_match_clk_mt6765_audio,
+diff --git a/drivers/clk/mediatek/clk-mt6765-cam.c b/drivers/clk/mediatek/clk-mt6765-cam.c
+index 2586d3ac4cd4..25f2bef38126 100644
+--- a/drivers/clk/mediatek/clk-mt6765-cam.c
++++ b/drivers/clk/mediatek/clk-mt6765-cam.c
+@@ -39,32 +39,23 @@ static const struct mtk_gate cam_clks[] = {
+ 	GATE_CAM(CLK_CAM_CCU, "cam_ccu", "mm_ck", 12),
+ };
+ 
+-static int clk_mt6765_cam_probe(struct platform_device *pdev)
+-{
+-	struct clk_hw_onecell_data *clk_data;
+-	int r;
+-	struct device_node *node = pdev->dev.of_node;
+-
+-	clk_data = mtk_alloc_clk_data(CLK_CAM_NR_CLK);
+-
+-	mtk_clk_register_gates(node, cam_clks, ARRAY_SIZE(cam_clks), clk_data);
+-
+-	r = of_clk_add_hw_provider(node, of_clk_hw_onecell_get, clk_data);
+-
+-	if (r)
+-		pr_err("%s(): could not register clock provider: %d\n",
+-		       __func__, r);
+-
+-	return r;
+-}
++static const struct mtk_clk_desc cam_desc = {
++	.clks = cam_clks,
++	.num_clks = ARRAY_SIZE(cam_clks),
++};
+ 
+ static const struct of_device_id of_match_clk_mt6765_cam[] = {
+-	{ .compatible = "mediatek,mt6765-camsys", },
+-	{}
++	{
++		.compatible = "mediatek,mt6765-camsys",
++		.data = &cam_desc,
++	}, {
++		/* sentinel */
++	}
+ };
+ 
+ static struct platform_driver clk_mt6765_cam_drv = {
+-	.probe = clk_mt6765_cam_probe,
++	.probe = mtk_clk_simple_probe,
++	.remove = mtk_clk_simple_remove,
+ 	.driver = {
+ 		.name = "clk-mt6765-cam",
+ 		.of_match_table = of_match_clk_mt6765_cam,
+diff --git a/drivers/clk/mediatek/clk-mt6765-img.c b/drivers/clk/mediatek/clk-mt6765-img.c
+index 8cc95b98921e..a62303ef4f41 100644
+--- a/drivers/clk/mediatek/clk-mt6765-img.c
++++ b/drivers/clk/mediatek/clk-mt6765-img.c
+@@ -35,32 +35,23 @@ static const struct mtk_gate img_clks[] = {
+ 	GATE_IMG(CLK_IMG_RSC, "img_rsc", "mm_ck", 5),
+ };
+ 
+-static int clk_mt6765_img_probe(struct platform_device *pdev)
+-{
+-	struct clk_hw_onecell_data *clk_data;
+-	int r;
+-	struct device_node *node = pdev->dev.of_node;
+-
+-	clk_data = mtk_alloc_clk_data(CLK_IMG_NR_CLK);
+-
+-	mtk_clk_register_gates(node, img_clks, ARRAY_SIZE(img_clks), clk_data);
+-
+-	r = of_clk_add_hw_provider(node, of_clk_hw_onecell_get, clk_data);
+-
+-	if (r)
+-		pr_err("%s(): could not register clock provider: %d\n",
+-		       __func__, r);
+-
+-	return r;
+-}
++static const struct mtk_clk_desc img_desc = {
++	.clks = img_clks,
++	.num_clks = ARRAY_SIZE(img_clks),
++};
+ 
+ static const struct of_device_id of_match_clk_mt6765_img[] = {
+-	{ .compatible = "mediatek,mt6765-imgsys", },
+-	{}
++	{
++		.compatible = "mediatek,mt6765-imgsys",
++		.data = &img_desc,
++	}, {
++		/* sentinel */
++	}
+ };
+ 
+ static struct platform_driver clk_mt6765_img_drv = {
+-	.probe = clk_mt6765_img_probe,
++	.probe = mtk_clk_simple_probe,
++	.remove = mtk_clk_simple_remove,
+ 	.driver = {
+ 		.name = "clk-mt6765-img",
+ 		.of_match_table = of_match_clk_mt6765_img,
+diff --git a/drivers/clk/mediatek/clk-mt6765-mipi0a.c b/drivers/clk/mediatek/clk-mt6765-mipi0a.c
+index c816e26a95f9..25c829fc3866 100644
+--- a/drivers/clk/mediatek/clk-mt6765-mipi0a.c
++++ b/drivers/clk/mediatek/clk-mt6765-mipi0a.c
+@@ -32,33 +32,23 @@ static const struct mtk_gate mipi0a_clks[] = {
+ 		    "mipi0a_csr_0a", "f_fseninf_ck", 1),
+ };
+ 
+-static int clk_mt6765_mipi0a_probe(struct platform_device *pdev)
+-{
+-	struct clk_hw_onecell_data *clk_data;
+-	int r;
+-	struct device_node *node = pdev->dev.of_node;
+-
+-	clk_data = mtk_alloc_clk_data(CLK_MIPI0A_NR_CLK);
+-
+-	mtk_clk_register_gates(node, mipi0a_clks,
+-			       ARRAY_SIZE(mipi0a_clks), clk_data);
+-
+-	r = of_clk_add_hw_provider(node, of_clk_hw_onecell_get, clk_data);
+-
+-	if (r)
+-		pr_err("%s(): could not register clock provider: %d\n",
+-		       __func__, r);
+-
+-	return r;
+-}
++static const struct mtk_clk_desc mipi0a_desc = {
++	.clks = mipi0a_clks,
++	.num_clks = ARRAY_SIZE(mipi0a_clks),
++};
+ 
+ static const struct of_device_id of_match_clk_mt6765_mipi0a[] = {
+-	{ .compatible = "mediatek,mt6765-mipi0a", },
+-	{}
++	{
++		.compatible = "mediatek,mt6765-mipi0a",
++		.data = &mipi0a_desc,
++	}, {
++		/* sentinel */
++	}
+ };
+ 
+ static struct platform_driver clk_mt6765_mipi0a_drv = {
+-	.probe = clk_mt6765_mipi0a_probe,
++	.probe = mtk_clk_simple_probe,
++	.remove = mtk_clk_simple_remove,
+ 	.driver = {
+ 		.name = "clk-mt6765-mipi0a",
+ 		.of_match_table = of_match_clk_mt6765_mipi0a,
+diff --git a/drivers/clk/mediatek/clk-mt6765-mm.c b/drivers/clk/mediatek/clk-mt6765-mm.c
+index ee6d3b859a6c..bda774668a36 100644
+--- a/drivers/clk/mediatek/clk-mt6765-mm.c
++++ b/drivers/clk/mediatek/clk-mt6765-mm.c
+@@ -61,32 +61,23 @@ static const struct mtk_gate mm_clks[] = {
+ 	GATE_MM(CLK_MM_F26M_HRTWT, "mm_hrtwt", "f_f26m_ck", 29),
+ };
+ 
+-static int clk_mt6765_mm_probe(struct platform_device *pdev)
+-{
+-	struct clk_hw_onecell_data *clk_data;
+-	int r;
+-	struct device_node *node = pdev->dev.of_node;
+-
+-	clk_data = mtk_alloc_clk_data(CLK_MM_NR_CLK);
+-
+-	mtk_clk_register_gates(node, mm_clks, ARRAY_SIZE(mm_clks), clk_data);
+-
+-	r = of_clk_add_hw_provider(node, of_clk_hw_onecell_get, clk_data);
+-
+-	if (r)
+-		pr_err("%s(): could not register clock provider: %d\n",
+-		       __func__, r);
+-
+-	return r;
+-}
++static const struct mtk_clk_desc mm_desc = {
++	.clks = mm_clks,
++	.num_clks = ARRAY_SIZE(mm_clks),
++};
+ 
+ static const struct of_device_id of_match_clk_mt6765_mm[] = {
+-	{ .compatible = "mediatek,mt6765-mmsys", },
+-	{}
++	{
++		.compatible = "mediatek,mt6765-mmsys",
++		.data = &mm_desc,
++	}, {
++		/* sentinel */
++	}
+ };
+ 
+ static struct platform_driver clk_mt6765_mm_drv = {
+-	.probe = clk_mt6765_mm_probe,
++	.probe = mtk_clk_simple_probe,
++	.remove = mtk_clk_simple_remove,
+ 	.driver = {
+ 		.name = "clk-mt6765-mm",
+ 		.of_match_table = of_match_clk_mt6765_mm,
+diff --git a/drivers/clk/mediatek/clk-mt6765-vcodec.c b/drivers/clk/mediatek/clk-mt6765-vcodec.c
+index d8045979d48a..2bc1fbde87da 100644
+--- a/drivers/clk/mediatek/clk-mt6765-vcodec.c
++++ b/drivers/clk/mediatek/clk-mt6765-vcodec.c
+@@ -34,33 +34,23 @@ static const struct mtk_gate venc_clks[] = {
+ 	GATE_VENC(CLK_VENC_SET3_VDEC, "venc_set3_vdec", "mm_ck", 12),
+ };
+ 
+-static int clk_mt6765_vcodec_probe(struct platform_device *pdev)
+-{
+-	struct clk_hw_onecell_data *clk_data;
+-	int r;
+-	struct device_node *node = pdev->dev.of_node;
+-
+-	clk_data = mtk_alloc_clk_data(CLK_VENC_NR_CLK);
+-
+-	mtk_clk_register_gates(node, venc_clks,
+-			       ARRAY_SIZE(venc_clks), clk_data);
+-
+-	r = of_clk_add_hw_provider(node, of_clk_hw_onecell_get, clk_data);
+-
+-	if (r)
+-		pr_err("%s(): could not register clock provider: %d\n",
+-		       __func__, r);
+-
+-	return r;
+-}
++static const struct mtk_clk_desc venc_desc = {
++	.clks = venc_clks,
++	.num_clks = ARRAY_SIZE(venc_clks),
++};
+ 
+ static const struct of_device_id of_match_clk_mt6765_vcodec[] = {
+-	{ .compatible = "mediatek,mt6765-vcodecsys", },
+-	{}
++	{
++		.compatible = "mediatek,mt6765-vcodecsys",
++		.data = &venc_desc,
++	}, {
++		/* sentinel */
++	}
+ };
+ 
+ static struct platform_driver clk_mt6765_vcodec_drv = {
+-	.probe = clk_mt6765_vcodec_probe,
++	.probe = mtk_clk_simple_probe,
++	.remove = mtk_clk_simple_remove,
+ 	.driver = {
+ 		.name = "clk-mt6765-vcodec",
+ 		.of_match_table = of_match_clk_mt6765_vcodec,
 -- 
-2.20.1.7.g153144c
+2.18.0
 
