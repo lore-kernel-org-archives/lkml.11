@@ -2,156 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0673C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 13:57:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25A7DC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 13:58:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237993AbiEXN5v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 09:57:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32774 "EHLO
+        id S238020AbiEXN6V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 09:58:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229704AbiEXN5r (ORCPT
+        with ESMTP id S231878AbiEXN6U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 09:57:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4646187A01;
-        Tue, 24 May 2022 06:57:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D6667615FD;
-        Tue, 24 May 2022 13:57:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E74FC385AA;
-        Tue, 24 May 2022 13:57:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653400663;
-        bh=7EPAVyGw4FJEo+Mq2KYGYXHGHQj1HBWBkXyw+Zrf6ZI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=WyjH87XhmyYaPHMnfIiS7A+kpm/hM+RKzsovZO1jOXTFgwzqkQJfzzoKfwYzm24v3
-         IWek3evaJdi1j5RKfLE2taJsalyjewq7F5NjTwdgvMEmmjq1DpHHLRaX9enic9J87O
-         MeD8p1t+4yREHV5oY/NqNx2caN6JMrv3yyxuz8dVw2oK691PPpGKGDXfWmvXiTqsx7
-         xDce7Kldw7/3y6iZSVO3mFGXL48DSDQFSCu+2+02VFGVKGbXskCwJ5KhK1hTpVx4qh
-         pHi6NMW+3bD0c4OgG55/A7b4mW210d/8SgTrcjsCKMkPoI9bE61UU8B9WZqp+nQTRT
-         xFHmOG+AabMhQ==
-Date:   Tue, 24 May 2022 19:27:35 +0530
-From:   Manivannan Sadhasivam <mani@kernel.org>
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Sibi Sankar <quic_sibis@quicinc.com>, bjorn.andersson@linaro.org,
-        jassisinghbrar@gmail.com, linux-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, agross@kernel.org,
-        Prasad Sodagudi <quic_psodagud@quicinc.com>
-Subject: Re: [PATCH v3] mailbox: qcom-ipcc: Log the pending interrupt during
- resume
-Message-ID: <20220524135735.GD5745@thinkpad>
-References: <1652784180-10142-1-git-send-email-quic_sibis@quicinc.com>
- <20220524134825.GA4188122@roeck-us.net>
+        Tue, 24 May 2022 09:58:20 -0400
+Received: from conuserg-10.nifty.com (conuserg-10.nifty.com [210.131.2.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D3041EAFF;
+        Tue, 24 May 2022 06:58:19 -0700 (PDT)
+Received: from grover.sesame (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
+        by conuserg-10.nifty.com with ESMTP id 24ODuUKh017802;
+        Tue, 24 May 2022 22:56:30 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-10.nifty.com 24ODuUKh017802
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1653400590;
+        bh=sjzxfQyA5cu7vCUn9H7rwWsrKIkATdI1T3gWr3+EvFM=;
+        h=From:To:Cc:Subject:Date:From;
+        b=GUY4tcCCIQYGrBcVGWciRSY8U7mlxzTBftlQnpLAwi6pKuI9k5rkoo0ywSWbefzRr
+         Y22j04/QpwYz9Rze2QXBBzhDa5kKOH8khZWnon1TgKLF6106GcZttWzQzQRFRD8V26
+         aHiE4WkJ5Mwk6EARm/KdgFicHD3xVI5h6aHhJK04/DDwk7nE1NojUapUe+ZXdLGtuX
+         GxYYzc446rfeSX6BmNQKuAZNmIZ1Bg4vGVjumSUIRVGgTNxULvsqTPy0jrWUyFm0rB
+         +J4q2QoyTJdwF/rVw5nNe6S0xxLZpvDqR4pQ/zp0i0MawT35B5V4iGZ15PcdSK4xUm
+         iuAJ0Ib/CSDjQ==
+X-Nifty-SrcIP: [133.32.177.133]
+From:   Masahiro Yamada <masahiroy@kernel.org>
+To:     linux-hardening@vger.kernel.org, Kees Cook <keescook@chromium.org>,
+        Guenter Roeck <linux@roeck-us.net>
+Cc:     Masahiro Yamada <masahiroy@kernel.org>,
+        linux-kbuild@vger.kernel.org,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        linux-kernel@vger.kernel.org, kernel test robot <lkp@intel.com>
+Subject: [PATCH] gcc-plugins: use KERNELVERSION for plugin version
+Date:   Tue, 24 May 2022 22:55:41 +0900
+Message-Id: <20220524135541.1453693-1-masahiroy@kernel.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220524134825.GA4188122@roeck-us.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 24, 2022 at 06:48:25AM -0700, Guenter Roeck wrote:
-> On Tue, May 17, 2022 at 04:13:00PM +0530, Sibi Sankar wrote:
-> > From: Prasad Sodagudi <quic_psodagud@quicinc.com>
-> > 
-> > Enable logging of the pending interrupt that triggered device wakeup. This
-> > logging information helps to debug IRQs that cause periodic device wakeups
-> > by printing the detailed information of pending IPCC interrupts.
-> > 
-> > Scenario: Device wakeup caused by Modem crash
-> > Logs:
-> > qcom-ipcc mailbox: virq: 182 triggered client-id: 2; signal-id: 2
-> > 
-> > >From the IPCC bindings it can further be understood that the client here is
-> > IPCC_CLIENT_MPSS and the signal was IPCC_MPROC_SIGNAL_SMP2P.
-> > 
-> > Reviewed-by: Manivannan Sadhasivam <mani@kernel.org>
-> > Signed-off-by: Prasad Sodagudi <quic_psodagud@quicinc.com>
-> > Signed-off-by: Sibi Sankar <quic_sibis@quicinc.com>
-> > ---
-> > 
-> > V3:
-> >  * Use pm_sleep_ptr and convert info to dbg [Mani]
-> 
-> Unfortunately, this results in
-> 
-> drivers/mailbox/qcom-ipcc.c:258:12: error: 'qcom_ipcc_pm_resume' defined but not used
-> 
-> on builds with PM disabled, as seen in next-20220524.
-> 
+Commit 61f60bac8c05 ("gcc-plugins: Change all version strings match
+kernel") broke parallel builds.
 
-Yep, I missed it during review :(
+Instead of adding the dependency between GCC plugins and utsrelease.h,
+let's use KERNELVERSION, which does not require any build artifact.
 
-But the fix has been submitted:
-https://patchwork.kernel.org/project/linux-arm-msm/patch/20220523224702.2002652-1-nathan@kernel.org/
+Another reason why I want to avoid utsrelease.h is because it depends
+on CONFIG_LOCALVERSION(_AUTO) and localversion* files.
 
-Thanks,
-Mani
+(include/generated/utsrelease.h depends on include/config/kernel.release,
+which is generated by scripts/setlocalversion)
 
-> Guenter
-> 
-> >  * Fixup commit message
-> > 
-> > V2:
-> >  * Fix build error when ipcc is a module [Kernel Test Bot]
-> > 
-> >  drivers/mailbox/qcom-ipcc.c | 23 +++++++++++++++++++++++
-> >  1 file changed, 23 insertions(+)
-> > 
-> > diff --git a/drivers/mailbox/qcom-ipcc.c b/drivers/mailbox/qcom-ipcc.c
-> > index c5d963222014..5a42bc2a1083 100644
-> > --- a/drivers/mailbox/qcom-ipcc.c
-> > +++ b/drivers/mailbox/qcom-ipcc.c
-> > @@ -254,6 +254,24 @@ static int qcom_ipcc_setup_mbox(struct qcom_ipcc *ipcc,
-> >  	return devm_mbox_controller_register(dev, mbox);
-> >  }
-> >  
-> > +static int qcom_ipcc_pm_resume(struct device *dev)
-> > +{
-> > +	struct qcom_ipcc *ipcc = dev_get_drvdata(dev);
-> > +	u32 hwirq;
-> > +	int virq;
-> > +
-> > +	hwirq = readl(ipcc->base + IPCC_REG_RECV_ID);
-> > +	if (hwirq == IPCC_NO_PENDING_IRQ)
-> > +		return 0;
-> > +
-> > +	virq = irq_find_mapping(ipcc->irq_domain, hwirq);
-> > +
-> > +	dev_dbg(dev, "virq: %d triggered client-id: %ld; signal-id: %ld\n", virq,
-> > +		FIELD_GET(IPCC_CLIENT_ID_MASK, hwirq), FIELD_GET(IPCC_SIGNAL_ID_MASK, hwirq));
-> > +
-> > +	return 0;
-> > +}
-> > +
-> >  static int qcom_ipcc_probe(struct platform_device *pdev)
-> >  {
-> >  	struct qcom_ipcc *ipcc;
-> > @@ -324,6 +342,10 @@ static const struct of_device_id qcom_ipcc_of_match[] = {
-> >  };
-> >  MODULE_DEVICE_TABLE(of, qcom_ipcc_of_match);
-> >  
-> > +static const struct dev_pm_ops qcom_ipcc_dev_pm_ops = {
-> > +	SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(NULL, qcom_ipcc_pm_resume)
-> > +};
-> > +
-> >  static struct platform_driver qcom_ipcc_driver = {
-> >  	.probe = qcom_ipcc_probe,
-> >  	.remove = qcom_ipcc_remove,
-> > @@ -331,6 +353,7 @@ static struct platform_driver qcom_ipcc_driver = {
-> >  		.name = "qcom-ipcc",
-> >  		.of_match_table = qcom_ipcc_of_match,
-> >  		.suppress_bind_attrs = true,
-> > +		.pm = pm_sleep_ptr(&qcom_ipcc_dev_pm_ops),
-> >  	},
-> >  };
-> >  
-> > -- 
-> > 2.7.4
-> > 
+I want to keep host tools independent of the kernel configuration.
 
+There is no good reason to rebuild GCC plugins just because of
+CONFIG_LOCALVERSION being changed.
+
+We just want to associate the plugin versions with the kernel source
+version. KERNELVERSION should be enough for our purpose.
+
+Fixes: 61f60bac8c05 ("gcc-plugins: Change all version strings match kernel")
+Reported-by: kernel test robot <lkp@intel.com>
+Link: https://lore.kernel.org/linux-mm/202205230239.EZxeZ3Fv-lkp@intel.com
+Reported-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+---
+
+ scripts/gcc-plugins/Makefile                  | 2 +-
+ scripts/gcc-plugins/latent_entropy_plugin.c   | 2 +-
+ scripts/gcc-plugins/randomize_layout_plugin.c | 2 +-
+ scripts/gcc-plugins/sancov_plugin.c           | 2 +-
+ scripts/gcc-plugins/stackleak_plugin.c        | 2 +-
+ scripts/gcc-plugins/structleak_plugin.c       | 2 +-
+ 6 files changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/scripts/gcc-plugins/Makefile b/scripts/gcc-plugins/Makefile
+index 6f0aecad5d67..b34d11e22636 100644
+--- a/scripts/gcc-plugins/Makefile
++++ b/scripts/gcc-plugins/Makefile
+@@ -28,7 +28,7 @@ GCC_PLUGINS_DIR = $(shell $(CC) -print-file-name=plugin)
+ 
+ plugin_cxxflags	= -Wp,-MMD,$(depfile) $(KBUILD_HOSTCXXFLAGS) -fPIC \
+ 		  -include $(srctree)/include/linux/compiler-version.h \
+-		  -include $(objtree)/include/generated/utsrelease.h \
++		  -DPLUGIN_VERSION=$(call stringify,$(KERNELVERSION)) \
+ 		  -I $(GCC_PLUGINS_DIR)/include -I $(obj) -std=gnu++11 \
+ 		  -fno-rtti -fno-exceptions -fasynchronous-unwind-tables \
+ 		  -ggdb -Wno-narrowing -Wno-unused-variable \
+diff --git a/scripts/gcc-plugins/latent_entropy_plugin.c b/scripts/gcc-plugins/latent_entropy_plugin.c
+index 5d415b2572a8..848918764174 100644
+--- a/scripts/gcc-plugins/latent_entropy_plugin.c
++++ b/scripts/gcc-plugins/latent_entropy_plugin.c
+@@ -82,7 +82,7 @@ __visible int plugin_is_GPL_compatible;
+ static GTY(()) tree latent_entropy_decl;
+ 
+ static struct plugin_info latent_entropy_plugin_info = {
+-	.version	= UTS_RELEASE,
++	.version	= PLUGIN_VERSION,
+ 	.help		= "disable\tturn off latent entropy instrumentation\n",
+ };
+ 
+diff --git a/scripts/gcc-plugins/randomize_layout_plugin.c b/scripts/gcc-plugins/randomize_layout_plugin.c
+index ea2aea570404..951b74ba1b24 100644
+--- a/scripts/gcc-plugins/randomize_layout_plugin.c
++++ b/scripts/gcc-plugins/randomize_layout_plugin.c
+@@ -34,7 +34,7 @@ __visible int plugin_is_GPL_compatible;
+ static int performance_mode;
+ 
+ static struct plugin_info randomize_layout_plugin_info = {
+-	.version	= UTS_RELEASE,
++	.version	= PLUGIN_VERSION,
+ 	.help		= "disable\t\t\tdo not activate plugin\n"
+ 			  "performance-mode\tenable cacheline-aware layout randomization\n"
+ };
+diff --git a/scripts/gcc-plugins/sancov_plugin.c b/scripts/gcc-plugins/sancov_plugin.c
+index f3d629555b84..b76cb9c42cec 100644
+--- a/scripts/gcc-plugins/sancov_plugin.c
++++ b/scripts/gcc-plugins/sancov_plugin.c
+@@ -26,7 +26,7 @@ __visible int plugin_is_GPL_compatible;
+ tree sancov_fndecl;
+ 
+ static struct plugin_info sancov_plugin_info = {
+-	.version	= UTS_RELEASE,
++	.version	= PLUGIN_VERSION,
+ 	.help		= "sancov plugin\n",
+ };
+ 
+diff --git a/scripts/gcc-plugins/stackleak_plugin.c b/scripts/gcc-plugins/stackleak_plugin.c
+index de817d54b8af..ff91885f9470 100644
+--- a/scripts/gcc-plugins/stackleak_plugin.c
++++ b/scripts/gcc-plugins/stackleak_plugin.c
+@@ -44,7 +44,7 @@ static bool verbose = false;
+ static GTY(()) tree track_function_decl;
+ 
+ static struct plugin_info stackleak_plugin_info = {
+-	.version = UTS_RELEASE,
++	.version = PLUGIN_VERSION,
+ 	.help = "track-min-size=nn\ttrack stack for functions with a stack frame size >= nn bytes\n"
+ 		"arch=target_arch\tspecify target build arch\n"
+ 		"disable\t\tdo not activate the plugin\n"
+diff --git a/scripts/gcc-plugins/structleak_plugin.c b/scripts/gcc-plugins/structleak_plugin.c
+index 86b608a24ec0..8bc04068ed39 100644
+--- a/scripts/gcc-plugins/structleak_plugin.c
++++ b/scripts/gcc-plugins/structleak_plugin.c
+@@ -37,7 +37,7 @@
+ __visible int plugin_is_GPL_compatible;
+ 
+ static struct plugin_info structleak_plugin_info = {
+-	.version	= UTS_RELEASE,
++	.version	= PLUGIN_VERSION,
+ 	.help		= "disable\tdo not activate plugin\n"
+ 			  "byref\tinit structs passed by reference\n"
+ 			  "byref-all\tinit anything passed by reference\n"
 -- 
-மணிவண்ணன் சதாசிவம்
+2.32.0
+
