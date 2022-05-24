@@ -2,134 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E37DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 14:32:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A87EC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 14:32:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238299AbiEXOcC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 10:32:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57324 "EHLO
+        id S236158AbiEXOcu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 10:32:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238217AbiEXOby (ORCPT
+        with ESMTP id S235943AbiEXOcj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 10:31:54 -0400
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCE7C42ED8
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 07:31:50 -0700 (PDT)
-Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24OD9lI2006610;
-        Tue, 24 May 2022 16:30:42 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=AQKsEZBpRPgvOP9pH7S/TD4toEUBrB462VVqfLm/lIg=;
- b=5vp8d10b91pQwCDM64drMqKGwHc5+FDSrh6uBPoLyCI0i42OlptsPwe+5J9lyYa8Dk1h
- GpVs+BkZVx4v3eb7QAELGQebfGvN8ZoiY+dP24PwjD2PlmtUmSEu4ZCOfdsdr+pxISC/
- TkPctLdGreD7CSfD9skaBTsCvrrNpTZz4x8wOziWNBjFI8aVY7VTT1Bne02vOcb593mF
- +3MxGBBbnchvs9YXFg5RKF+Mx/vtkCxedo+0cF/vWd0jmdGgMk74zEivMo7Xy3DZ4rdy
- vnT8pn7p10xwjQzcbkLlvC/SKsFcYGcI9AHKy5YpRvtdziEGpArWDaZgKMO+Yn6RenCf aA== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3g6rv6rfhk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 24 May 2022 16:30:41 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 9A8C110002A;
-        Tue, 24 May 2022 16:30:40 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 08D1323152E;
-        Tue, 24 May 2022 16:30:40 +0200 (CEST)
-Received: from [10.211.10.185] (10.75.127.46) by SHFDAG1NODE1.st.com
- (10.75.129.69) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Tue, 24 May
- 2022 16:30:39 +0200
-Message-ID: <d5ab354a-eb10-d31c-d55e-46a4c4d1a4ce@foss.st.com>
-Date:   Tue, 24 May 2022 16:30:38 +0200
+        Tue, 24 May 2022 10:32:39 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2134606FA
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 07:32:37 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.55])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4L6xVn01kZzDqKp;
+        Tue, 24 May 2022 22:32:32 +0800 (CST)
+Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 24 May 2022 22:32:35 +0800
+Received: from [10.174.177.243] (10.174.177.243) by
+ dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 24 May 2022 22:32:35 +0800
+Message-ID: <4c848b48-6ddf-664a-6296-d85ab49a694d@huawei.com>
+Date:   Tue, 24 May 2022 22:32:34 +0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH] ASoC: stm32: sai: Use of_device_get_match_data()
- tosimplify code
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH v3 4/6] mm: ioremap: Add arch_ioremap/iounmap()
 Content-Language: en-US
-To:     tangbin <tangbin@cmss.chinamobile.com>,
-        Mark Brown <broonie@kernel.org>
-CC:     <arnaud.pouliquen@foss.st.com>, <lgirdwood@gmail.com>,
-        <perex@perex.cz>, <tiwai@suse.com>, <mcoquelin.stm32@gmail.com>,
-        <alexandre.torgue@foss.st.com>, <alsa-devel@alsa-project.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20220519124235.21100-1-tangbin@cmss.chinamobile.com>
- <69d5cef3-57c0-9bc7-a83b-a85ef1c4cf29@foss.st.com>
- <YovZAf4S0XphBsco@sirena.org.uk>
- <3fb8d7f8-4506-3b28-22cb-863bda1f21c8@cmss.chinamobile.com>
-From:   Olivier MOYSAN <olivier.moysan@foss.st.com>
-In-Reply-To: <3fb8d7f8-4506-3b28-22cb-863bda1f21c8@cmss.chinamobile.com>
+To:     Arnd Bergmann <arnd@arndb.de>
+CC:     Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        "Christoph Hellwig" <hch@infradead.org>,
+        Anshuman Khandual <anshuman.khandual@arm.com>
+References: <20220519082552.117736-1-wangkefeng.wang@huawei.com>
+ <20220519082552.117736-5-wangkefeng.wang@huawei.com>
+ <CAK8P3a1DbNY6NzcwzjVFvd9yw6L3YBHQos_hmE=nG=6cuv1DAg@mail.gmail.com>
+From:   Kefeng Wang <wangkefeng.wang@huawei.com>
+In-Reply-To: <CAK8P3a1DbNY6NzcwzjVFvd9yw6L3YBHQos_hmE=nG=6cuv1DAg@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.75.127.46]
-X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SHFDAG1NODE1.st.com
- (10.75.129.69)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-24_07,2022-05-23_01,2022-02-23_01
+X-Originating-IP: [10.174.177.243]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemm500001.china.huawei.com (7.185.36.107)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Tang,
 
-On 5/24/22 03:44, tangbin wrote:
-> Hi Mark & Olivier：
-> 
-> On 2022/5/24 2:57, Mark Brown wrote:
->> On Mon, May 23, 2022 at 03:28:48PM +0200, Olivier MOYSAN wrote:
+On 2022/5/24 20:37, Arnd Bergmann wrote:
+> On Thu, May 19, 2022 at 10:25 AM Kefeng Wang <wangkefeng.wang@huawei.com> wrote:
+>> Add special hook for architecture to verify or setup addr, size
+>> or prot when ioremap() or iounmap(), which will make the generic
+>> ioremap more useful.
 >>
->>> The current patch requires a change in the driver.
->>> Either changing STM_SAI_x_ID enums, or replacing data by a struct.
->>> For instance:
->>> struct stm32_sai_comp_data {
->>>     unsigned int id;
->>> }
->>> struct stm32_sai_comp_data stm32_sai_comp_data_a = {
->>>     .id = STM_SAI_A_ID;
->>> }
->>> struct of_device_id stm32_sai_sub_ids[] = {
->>>     .data = &stm32_sai_comp_data_a},
->>> }
->> Either approach works for me (or a revert for that matter).
-> 
->      Thanks for your advice, I was thoughtless.
-> 
->      I think change the date of STM_SAI_x_ID maybe simple. But if we 
-> don't change the id,
-> 
-> what about add a "#define" like the line 47:
-> 
-> #define STM_SAI_IS_SUB(x) ((x)->id == STM_SAI_A_ID || (x)->id == 
-> STM_SAI_B_ID)
-> 
-> then in the judgement, wu use:
-> 
->      sai->id = (uintptr_t)of_device_get_match_data(&pdev->dev);
-> 
->      if (!STM_SAI_IS_SUB(sai))
-> 
->              return -EINVAL;
-> 
-> 
-> if you think that's ok, I will send patch v2 for you .
-> 
-
-If we allow null value in STM_SAI_IS_SUB(sai) check, we can miss real 
-NULL pointer error from of_device_get_match_data().
-
-The simplest way is to change STM_SAI_x_ID enums I think.
-But honnestly, I feel more comfortable to let the driver unchanged.
-
-BRs
-Olivier
-
-> Thanks
-> 
-> Tang Bin
-> 
-> 
+>>    arch_ioremap() return a pointer,
+>>      - IS_ERR means return an error
+>>      - NULL means continue to remap
+>>      - a non-NULL, non-IS_ERR pointer is directly returned
+>>    arch_iounmap() return a int value,
+>>      - 0 means continue to vunmap
+>>      - error code means skip vunmap and return directly
+>>
+>> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+> I don't really like interfaces that mix error pointers and NULL pointer
+> returns.
+>
+> Would it be possible to have a special error code other than NULL
+> for the fallback case?
+I don't find a good error code, maybe  ENOTSUPP, any better suggestion?
+>
+>         arnd
+>
+> .
