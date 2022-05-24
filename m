@@ -2,223 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BF4EC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 09:50:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B39C0C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 09:51:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235898AbiEXJua (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 05:50:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43216 "EHLO
+        id S230354AbiEXJvQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 05:51:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234309AbiEXJuX (ORCPT
+        with ESMTP id S235903AbiEXJvN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 05:50:23 -0400
-Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C1706F491
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 02:50:22 -0700 (PDT)
-Received: by mail-lj1-x22b.google.com with SMTP id 1so6886121ljh.8
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 02:50:22 -0700 (PDT)
+        Tue, 24 May 2022 05:51:13 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2085.outbound.protection.outlook.com [40.107.244.85])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD72511A2C;
+        Tue, 24 May 2022 02:51:11 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=fVsYoF7FPkcdvMqWbK4heghUaAayZYchMG15CnANB/xIYbAaxza0NMOC89YlmtfNUGwb3iWFcfXwRTL1KfYRjit3X1cPVyfeiHrVuhKxgTRFv85MUueChkbUTDoDSjHyMhtTb/gVJagOnNjrv67QV2pvzo//dXsGtIbHVZpI43Wf66K3XE/Jl1C9W4j1CDOD138RlW8DCvXzs+GYN6Mbi8AYrsPLpQdPWXw3ExM0hqfB/YTFWscJJxHEcL9/VmuCSPBVWqNuHX1VkNk82F4fyo016cxRb0JMimhcG2+Gq1r392rjXvBjLuBpGKET7bm7TDuy+08byF9JmcUWtvDUDg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=wc7Y9/yiSzssN7JXlWuSDw7Q3syTxyIFW+BWek2LhN8=;
+ b=aqKDz5lGJZUmFZCELOFNJoLT5ToaeTLWuiDqWJ+VvheuNt6PeIXl6LoYkdHRh8ok9uyUbqGZxdr5kRPAbXiYJE7bTXgUzhiwo9+R0QR3w0pl8VGlDRcdsfxASwosPiiGwC9b762XpIuJtB+MJ9sjPCjLRwUeVEi6vcwxYMbkokWS0Anhh+m4rq+b5QAweBFB/rxp30gjO/VSHa0DzrpIpEHolEjn1c2TBSys4yLZaOPAoDrdb1q9lXtxi1uy7XWPWp2P9050Nk1gQfe55lMt2JBM8ZxkRUVbsISs9tke7vdusizqZQRjyszrKw2DO0H2cZhiXYaeaihD1D9QEEMC0g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.62.198) smtp.rcpttodomain=kernel.org smtp.mailfrom=xilinx.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
+ dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=G5WlWLi6CTURLGag3t+5CNRf4lZCgCTJvDTMTbTzQ5s=;
-        b=M5ncORw3o6tH0W6GJp/VpORJZBt9q4377NZcTfDcKeo1/AQf38SDgEJiTum+C02xgc
-         r4QaJJ+obzajUh+DovgWFW42ZkroAxdOoffR7GZhttn1jnPQp3TV5ZWcpJfqYQrCFV6L
-         57BRFW0TbWj5Oc5tZNBBqfpwr7W6AAgPIBI2pS8LZnAtnE+MEpd4xGPt6NXBEIR9McxM
-         maGD+k8hr8IO056uwFRRKdMrsrk7dXrwIrpZQ0bokeNSqP+M3uMIsPiHmJ+FsyPUOiBL
-         NibYJZfMinCiQEXphf+a1ecq+yd7bfS4GmXu5raI7xcXYVJliT7pFVK5U9jyEgqkBtOZ
-         e7tg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=G5WlWLi6CTURLGag3t+5CNRf4lZCgCTJvDTMTbTzQ5s=;
-        b=2h/yNNuTqf6lD946Nt/zEeMT+StI8yy2sKeKQFsua2XOK7fGdzvRVUD9y33SHlX+z4
-         SL0P6sxNks6cqHkaca87BXQBT5JKPGV7KE+bi7h0/7XaUNczrD//bm27sFWHfkDM0WXK
-         6gD0r3SHWVMfUofXtu6Tkt6WCJN7fYw8c3RTtJOSpolQVgzO9I3cmQz0Yhno7b46c9vL
-         o6bdHCicBnoRKryZGh9sIIl6NnJjfXEbJbsvJWTtwfWKiqY17TaFabzPNWKkIyMrrgpM
-         YEGQIBHw9Yg0qfp9JwMUsQsdmwZfMDy3lDkQGvHgV1/H9uhzfuxySH/9jsUSt9XKSnot
-         bujA==
-X-Gm-Message-State: AOAM530tDH9VPAEgKWzkn59IB0sYXcx0bljURjyxfPOI687o5txOjXjJ
-        Nkn0X8Zt1oo0azWGv9nrzdDcQA==
-X-Google-Smtp-Source: ABdhPJzADTR5ZRgZ2CtrdOGOpAvEuXwgcWWGhbFMTvfVxCiP3KAzV1YJN8j3H75tLbWtQ/a5Bfw4zg==
-X-Received: by 2002:a2e:91d9:0:b0:253:d761:130 with SMTP id u25-20020a2e91d9000000b00253d7610130mr14134812ljg.7.1653385820828;
-        Tue, 24 May 2022 02:50:20 -0700 (PDT)
-Received: from [172.20.68.48] ([91.221.145.6])
-        by smtp.gmail.com with ESMTPSA id m10-20020a056512358a00b0047255d21152sm2441897lfr.129.2022.05.24.02.50.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 24 May 2022 02:50:20 -0700 (PDT)
-Message-ID: <a59707ea-0b58-0f3a-b39c-bc33d0625c8e@linaro.org>
-Date:   Tue, 24 May 2022 11:50:17 +0200
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=wc7Y9/yiSzssN7JXlWuSDw7Q3syTxyIFW+BWek2LhN8=;
+ b=erwcY1S7CFCzWW5m5xUJbuQ7tgVWceSWthzpY2Y3L2JBYmhpwykDuxvIjo+iczsrEdzCYMPzwqatVzDXFbXXDZqNgfF+Odq550nBH5/WxpisoslyZOYoU0PH6q3Vj/D4pKp6qHA4/BHTJUs2MGlGN+oDJzCFR/ICzcD/WoeEUMs=
+Received: from SN4PR0401CA0012.namprd04.prod.outlook.com
+ (2603:10b6:803:21::22) by MN2PR02MB6304.namprd02.prod.outlook.com
+ (2603:10b6:208:183::29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.14; Tue, 24 May
+ 2022 09:51:08 +0000
+Received: from SN1NAM02FT0035.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:803:21:cafe::70) by SN4PR0401CA0012.outlook.office365.com
+ (2603:10b6:803:21::22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.13 via Frontend
+ Transport; Tue, 24 May 2022 09:51:08 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
+ smtp.mailfrom=xilinx.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.62.198; helo=xsj-pvapexch01.xlnx.xilinx.com; pr=C
+Received: from xsj-pvapexch01.xlnx.xilinx.com (149.199.62.198) by
+ SN1NAM02FT0035.mail.protection.outlook.com (10.97.4.137) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5273.14 via Frontend Transport; Tue, 24 May 2022 09:51:08 +0000
+Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
+ xsj-pvapexch01.xlnx.xilinx.com (172.19.86.40) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Tue, 24 May 2022 02:51:03 -0700
+Received: from smtp.xilinx.com (172.19.127.95) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
+ 15.1.2176.14 via Frontend Transport; Tue, 24 May 2022 02:51:03 -0700
+Envelope-to: git@xilinx.com,
+ mdf@kernel.org,
+ hao.wu@intel.com,
+ yilun.xu@intel.com,
+ trix@redhat.com,
+ gregkh@linuxfoundation.org,
+ linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org,
+ linux-fpga@vger.kernel.org
+Received: from [10.140.6.60] (port=58200 helo=xhdnavam40.xilinx.com)
+        by smtp.xilinx.com with esmtp (Exim 4.90)
+        (envelope-from <nava.manne@xilinx.com>)
+        id 1ntR9E-0005Sf-5p; Tue, 24 May 2022 02:48:16 -0700
+From:   Nava kishore Manne <nava.manne@xilinx.com>
+To:     <michal.simek@xilinx.com>, <mdf@kernel.org>, <hao.wu@intel.com>,
+        <yilun.xu@intel.com>, <trix@redhat.com>,
+        <gregkh@linuxfoundation.org>, <ronak.jain@xilinx.com>,
+        <abhyuday.godhasara@xilinx.com>, <rajan.vaja@xilinx.com>,
+        <nava.manne@xilinx.com>, <lakshmi.sai.krishna.potthuri@xilinx.com>,
+        <piyush.mehta@xilinx.com>, <harsha.harsha@xilinx.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-fpga@vger.kernel.org>,
+        <git@xilinx.com>
+Subject: [PATCH 3/3] fpga: zynqmp-fpga: Adds status interface
+Date:   Tue, 24 May 2022 15:17:45 +0530
+Message-ID: <20220524094745.287002-4-nava.manne@xilinx.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220524094745.287002-1-nava.manne@xilinx.com>
+References: <20220524094745.287002-1-nava.manne@xilinx.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v2] arm64: dts: mt7986: add built-in Wi-Fi device nodes
-Content-Language: en-US
-To:     Peter Chiu <chui-hao.chiu@mediatek.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     devicetree@vger.kernel.org, Ryder Lee <ryder.Lee@mediatek.com>,
-        Evelyn Tsai <evelyn.tsai@mediatek.com>,
-        Sam Shih <sam.shih@mediatek.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220524032430.6261-1-chui-hao.chiu@mediatek.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220524032430.6261-1-chui-hao.chiu@mediatek.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 23a2f9bf-d073-428d-21bf-08da3d6aed84
+X-MS-TrafficTypeDiagnostic: MN2PR02MB6304:EE_
+X-Microsoft-Antispam-PRVS: <MN2PR02MB6304785EE4A698EAFBCFCBFDC2D79@MN2PR02MB6304.namprd02.prod.outlook.com>
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 4qH87UU8CpUgcsdf7F+F6If61ADfja5/WAtiSnKjTeFqDruX8FDcagBoBBnKMsliselyAz5D8Mg9vBQpS+emhClXXhlKRvpBDIxzO5HpRTGpAVvUhGRIPNONx1o5H8OElqdl3FR9rjUZYB7SBRx4/E9oKNOmclKNmBeAlQiz4wHVtsui6BSKQbyFnq04I/dH5lXezQOsnp+9sy9bGD7lVGwLW9tnfdKh5NBNl2b3CHQIwC+HwBro4AQughAAKmFe5SqkVEXKnGzLntLxTZy/hjhISMocKl3Z1czaenri+sEf2t/mXC0CxXA1/0f2zFvpXWaHqxf1mVpJJxWu7Hjor0XejLF0/L/mBgnHxEelbihGc56F1ImIaL5DJ82/LadDBckXLddtWTdgrLetbC3/XcOs540ae6pVdeImNcrb3xjPQ5YuAOszXnhIdGBjJ8FA9QHuCsCGZIvixVRl7kqrCbnFrFqMVH8YtzLXd/3Zvu7x5rzFJAyJjlqP5If2M5MG2yHPaeC7bs9cdNQASHOFRfiDaI7WZeiMYSGgOYC8PFWdiuAQW1IzBWcaRUSukIgdL1X4ejZEHDYw7GNP5D6EvtW9EX5/swlZNw2p1icgZNF9bZ+VKpTr7UuzRPcPGSvZwxRnpy3LKIMDuwW9otL+T0yuVJTXzVCnOM99WKpzeuaD3ca0ofAc87ppcESZdVrZinBLthPXKXw2xBOn0ZEVQO9jhxuvJ+qZVdlCkd5tWcKZ+ipvF7gZj/8lIFxa2UOz2jmfn9SnWJZrdjs4T6v+Zg==
+X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch01.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(5660300002)(7636003)(2616005)(8676002)(7696005)(6666004)(26005)(508600001)(40460700003)(8936002)(9786002)(2906002)(83380400001)(6636002)(316002)(921005)(356005)(110136005)(1076003)(186003)(36756003)(36860700001)(70586007)(70206006)(47076005)(82310400005)(426003)(336012)(102446001)(83996005)(2101003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 May 2022 09:51:08.6096
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 23a2f9bf-d073-428d-21bf-08da3d6aed84
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch01.xlnx.xilinx.com]
+X-MS-Exchange-CrossTenant-AuthSource: SN1NAM02FT0035.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR02MB6304
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 24/05/2022 05:24, Peter Chiu wrote:
-> This enables built-in 802.11ax Wi-Fi support.
-> 
-> Reviewed-by: Sam Shih <sam.shih@mediatek.com>
-> Reviewed-by: Ryder Lee <ryder.lee@mediatek.com>
-> Signed-off-by: Peter Chiu <chui-hao.chiu@mediatek.com>
-> ---
-> v2: add clocks and clock-names
-> ---
->  arch/arm64/boot/dts/mediatek/mt7986a-rfb.dts | 41 +++++++++++++++++++
->  arch/arm64/boot/dts/mediatek/mt7986a.dtsi    | 22 ++++++++++
->  arch/arm64/boot/dts/mediatek/mt7986b-rfb.dts | 43 ++++++++++++++++++++
->  3 files changed, 106 insertions(+)
-> 
-> diff --git a/arch/arm64/boot/dts/mediatek/mt7986a-rfb.dts b/arch/arm64/boot/dts/mediatek/mt7986a-rfb.dts
-> index 24c155c71f0d..359e14f8e9f1 100644
-> --- a/arch/arm64/boot/dts/mediatek/mt7986a-rfb.dts
-> +++ b/arch/arm64/boot/dts/mediatek/mt7986a-rfb.dts
-> @@ -57,6 +57,13 @@
->  	status = "okay";
->  };
->  
-> +&wmac {
-> +	status = "okay";
-> +	pinctrl-names = "default", "dbdc";
-> +	pinctrl-0 = <&wf_2g_5g_pins>;
-> +	pinctrl-1 = <&wf_dbdc_pins>;
-> +};
-> +
->  &pio {
->  	pcie_pins: pcie-pins {
->  		mux {
-> @@ -99,6 +106,40 @@
->  			groups = "jtag";
->  		};
->  	};
-> +
-> +	wf_2g_5g_pins: wf_2g_5g-pins {
-> +		mux {
-> +			function = "wifi";
-> +			groups = "wf_2g", "wf_5g";
-> +		};
-> +		conf {
-> +			pins = "WF0_HB1", "WF0_HB2", "WF0_HB3", "WF0_HB4",
-> +			       "WF0_HB0", "WF0_HB0_B", "WF0_HB5", "WF0_HB6",
-> +			       "WF0_HB7", "WF0_HB8", "WF0_HB9", "WF0_HB10",
-> +			       "WF0_TOP_CLK", "WF0_TOP_DATA", "WF1_HB1",
-> +			       "WF1_HB2", "WF1_HB3", "WF1_HB4", "WF1_HB0",
-> +			       "WF1_HB5", "WF1_HB6", "WF1_HB7", "WF1_HB8",
-> +			       "WF1_TOP_CLK", "WF1_TOP_DATA";
-> +			drive-strength = <4>;
-> +		};
-> +	};
-> +
-> +	wf_dbdc_pins: wf_dbdc-pins {
-> +		mux {
-> +			function = "wifi";
-> +			groups = "wf_dbdc";
-> +		};
-> +		conf {
-> +			pins = "WF0_HB1", "WF0_HB2", "WF0_HB3", "WF0_HB4",
-> +			       "WF0_HB0", "WF0_HB0_B", "WF0_HB5", "WF0_HB6",
-> +			       "WF0_HB7", "WF0_HB8", "WF0_HB9", "WF0_HB10",
-> +			       "WF0_TOP_CLK", "WF0_TOP_DATA", "WF1_HB1",
-> +			       "WF1_HB2", "WF1_HB3", "WF1_HB4", "WF1_HB0",
-> +			       "WF1_HB5", "WF1_HB6", "WF1_HB7", "WF1_HB8",
-> +			       "WF1_TOP_CLK", "WF1_TOP_DATA";
-> +			drive-strength = <4>;
-> +		};
-> +	};
->  };
->  
->  &spi0 {
-> diff --git a/arch/arm64/boot/dts/mediatek/mt7986a.dtsi b/arch/arm64/boot/dts/mediatek/mt7986a.dtsi
-> index 9663a0779416..47d719fb66fb 100644
-> --- a/arch/arm64/boot/dts/mediatek/mt7986a.dtsi
-> +++ b/arch/arm64/boot/dts/mediatek/mt7986a.dtsi
-> @@ -8,6 +8,7 @@
->  #include <dt-bindings/interrupt-controller/arm-gic.h>
->  #include <dt-bindings/clock/mt7986-clk.h>
->  #include <dt-bindings/phy/phy.h>
-> +#include <dt-bindings/reset/mt7986-resets.h>
->  
->  / {
->  	interrupt-parent = <&gic>;
-> @@ -80,6 +81,11 @@
->  			reg = <0 0x43000000 0 0x30000>;
->  			no-map;
->  		};
-> +
-> +		wmcpu_emi: wmcpu-reserved@4fc00000 {
-> +			no-map;
-> +			reg = <0 0x4fc00000 0 0x00100000>;
-> +		};
->  	};
->  
->  	timer {
-> @@ -381,6 +387,22 @@
->  			 #reset-cells = <1>;
->  		};
->  
-> +		wmac: wmac@18000000 {
+Adds status interface for zynqmp-fpga, It's a read only
+interface which allows the user to get the PL status.
 
-This is wifi, right? If so, then generic node name - wifi.
+Usage:
+To read the PL configuration status
+        cat /sys/class/fpga_manager/<fpga>/status
 
-> +			compatible = "mediatek,mt7986-wmac";
-> +			resets = <&watchdog MT7986_TOPRGU_CONSYS_SW_RST>;
-> +			reset-names = "consys";
-> +			clocks = <&topckgen CLK_TOP_CONN_MCUSYS_SEL>,
-> +				 <&topckgen CLK_TOP_AP2CNN_HOST_SEL>;
-> +			clock-names = "mcu", "ap2conn";
-> +			reg = <0 0x18000000 0 0x1000000>,
-> +			      <0 0x10003000 0 0x1000>,
-> +			      <0 0x11d10000 0 0x1000>;
-> +			interrupts = <GIC_SPI 213 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 214 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 215 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 216 IRQ_TYPE_LEVEL_HIGH>;
-> +			memory-region = <&wmcpu_emi>;
-> +		};
->  	};
->  
->  };
-> diff --git a/arch/arm64/boot/dts/mediatek/mt7986b-rfb.dts b/arch/arm64/boot/dts/mediatek/mt7986b-rfb.dts
-> index d4078feb4aad..f25312c9a289 100644
-> --- a/arch/arm64/boot/dts/mediatek/mt7986b-rfb.dts
-> +++ b/arch/arm64/boot/dts/mediatek/mt7986b-rfb.dts
-> @@ -97,3 +97,46 @@
->  &usb_phy {
->  	status = "okay";
->  };
-> +
-> +&wmac {
-> +	status = "okay";
-> +	pinctrl-names = "default", "dbdc";
-> +	pinctrl-0 = <&wf_2g_5g_pins>;
-> +	pinctrl-1 = <&wf_dbdc_pins>;
-> +};
-> +
-> +&pio {
-> +	wf_2g_5g_pins: wf_2g_5g-pins {
+Signed-off-by: Nava kishore Manne <nava.manne@xilinx.com>
+---
+ drivers/fpga/zynqmp-fpga.c | 52 ++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 52 insertions(+)
 
-No underscores in node names, unless binding requires them... but it
-should not as this is not allowed character.
+diff --git a/drivers/fpga/zynqmp-fpga.c b/drivers/fpga/zynqmp-fpga.c
+index c60f20949c47..07c7b7326726 100644
+--- a/drivers/fpga/zynqmp-fpga.c
++++ b/drivers/fpga/zynqmp-fpga.c
+@@ -14,6 +14,19 @@
+ 
+ /* Constant Definitions */
+ #define IXR_FPGA_DONE_MASK	BIT(3)
++#define READ_DMA_SIZE		256U
++
++/* Error Register */
++#define IXR_FPGA_ERR_CRC_ERR		BIT(0)
++#define IXR_FPGA_ERR_SECURITY_ERR	BIT(16)
++
++/* Signal Status Register. For details refer ug570 */
++#define IXR_FPGA_END_OF_STARTUP		BIT(4)
++#define IXR_FPGA_GST_CFG_B		BIT(5)
++#define IXR_FPGA_INIT_B_INTERNAL	BIT(11)
++#define IXR_FPGA_DONE_INTERNAL_SIGNAL	BIT(13)
++
++#define IXR_FPGA_CONFIG_STAT_OFFSET	7U
+ 
+ /**
+  * struct zynqmp_fpga_priv - Private data structure
+@@ -77,8 +90,47 @@ static enum fpga_mgr_states zynqmp_fpga_ops_state(struct fpga_manager *mgr)
+ 	return FPGA_MGR_STATE_UNKNOWN;
+ }
+ 
++static u64 zynqmp_fpga_ops_status(struct fpga_manager *mgr)
++{
++	unsigned int *buf, reg_val;
++	dma_addr_t dma_addr;
++	u64 status = 0;
++	int ret;
++
++	buf = dma_alloc_coherent(mgr->dev.parent, READ_DMA_SIZE,
++				 &dma_addr, GFP_KERNEL);
++	if (!buf)
++		return -ENOMEM;
++
++	ret = zynqmp_pm_fpga_read(IXR_FPGA_CONFIG_STAT_OFFSET, dma_addr,
++				  PM_FPGA_READ_CONFIG_REG, &reg_val);
++	if (ret) {
++		status = FPGA_MGR_STATUS_FIRMWARE_REQ_ERR;
++		goto free_dmabuf;
++	}
++
++	if (reg_val & IXR_FPGA_ERR_CRC_ERR)
++		status |= FPGA_MGR_STATUS_CRC_ERR;
++	if (reg_val & IXR_FPGA_ERR_SECURITY_ERR)
++		status |= FPGA_MGR_STATUS_SECURITY_ERR;
++	if (!(reg_val & IXR_FPGA_INIT_B_INTERNAL))
++		status |= FPGA_MGR_STATUS_DEVICE_INIT_ERR;
++	if (!(reg_val & IXR_FPGA_DONE_INTERNAL_SIGNAL))
++		status |= FPGA_MGR_STATUS_SIGNAL_ERR;
++	if (!(reg_val & IXR_FPGA_GST_CFG_B))
++		status |= FPGA_MGR_STATUS_HIGH_Z_STATE_ERR;
++	if (!(reg_val & IXR_FPGA_END_OF_STARTUP))
++		status |= FPGA_MGR_STATUS_EOS_ERR;
++
++free_dmabuf:
++	dma_free_coherent(mgr->dev.parent, READ_DMA_SIZE, buf, dma_addr);
++
++	return status;
++}
++
+ static const struct fpga_manager_ops zynqmp_fpga_ops = {
+ 	.state = zynqmp_fpga_ops_state,
++	.status = zynqmp_fpga_ops_status,
+ 	.write_init = zynqmp_fpga_ops_write_init,
+ 	.write = zynqmp_fpga_ops_write,
+ };
+-- 
+2.25.1
 
-
-Best regards,
-Krzysztof
