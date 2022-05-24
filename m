@@ -2,115 +2,196 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 583E1C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 19:51:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8213DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 19:52:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241040AbiEXTv5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 15:51:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36906 "EHLO
+        id S241057AbiEXTwY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 15:52:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240075AbiEXTvy (ORCPT
+        with ESMTP id S235969AbiEXTwT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 15:51:54 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D8D42BB1D;
-        Tue, 24 May 2022 12:51:53 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id n10so37467625ejk.5;
-        Tue, 24 May 2022 12:51:53 -0700 (PDT)
+        Tue, 24 May 2022 15:52:19 -0400
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B21352E52
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 12:52:18 -0700 (PDT)
+Received: by mail-pl1-x62e.google.com with SMTP id n18so16738226plg.5
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 12:52:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1DOFxqMaGUuRJeEsN0C0OkqduzwbXmrH3gQj+T82Log=;
-        b=CHJboM1wl7TpJH/i5KVC+sbAGyKD0yHuVZxVhLbJlOmipuSRcAex8DroB7MVKOdkSt
-         AYWR8RfhH14j7WourBRjYnVKrTTqMhC+6tB7woqv+CWwk3TwSV8qUEg5AbC9Nwx+3+Tl
-         byfJQF4gFRecuqOLwvTfIStphMGbhSy6f1okmLwTk9ch74Ba0mOArWi6U9kAaYC838fC
-         cHCp3suAitWiLALMB9fnBdnIYl8wqRRShSZyPyZgU2OfwpfNcpvOlbC2O+OYxiE5VD4G
-         wFoYpzAOzc/XVuJ8vj7C9xUZ3EUGYM2MoTZYuTbfIfNBHp5e4AawcrcQhyU2DB5A4Sh0
-         sS9g==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=jqoWghnRf4IApUvhfymreoEWbSDArTcoutoZjM72nXw=;
+        b=EO0wzmRiymk1VXgWWvRRc3IHLLstcNdXRpjX+Qa/zhBCeIa2SsovD9R4dbZnORQcKn
+         0PZkzsed6rURkYHuk1sc0+T3gfc+W2e9X472k+b53Yvdk84aAiZALjWq3FaN5kE2PsYu
+         7sH8pkQe344lomsZEo8R5RF/g6Z0uKDLmtsts=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1DOFxqMaGUuRJeEsN0C0OkqduzwbXmrH3gQj+T82Log=;
-        b=T9VTEgFnAIhSII+G90yhVTluTupUzOLn/KjHZKgWm97jBwXez4a91TXwapOWZm0feX
-         1s1sk40Z5I4TMg6CQ9NqEztaQpyBi8CkWImmg0jgQuiePz/sY67Lo5KdeD13FqOoZQAB
-         idvF3uih+4mNLbsXgWOLnH64EGoKE5qj2uxqvf+sgd9tvuKEers4m+bkQevYk3jqqz58
-         SqsaZRBcp/1Bq24i2ATzyZueoy/dLXThLXSgO1S7qC/HmgAqA2Plpenv8sR3vxNEVjXf
-         B2BT4YHuC00ygXMcagKpNG32Bkaamkl+jPDWGyLEyA/WBnVyVSE9zaiqwoTBTuq/UmFe
-         GMOg==
-X-Gm-Message-State: AOAM532ZUN+fkQR6NrAQ3x7YAi9BOR5V88UIc57+wcBvdXWzoCE8yeLk
-        er4NmPYNXFBYX+fQRaWBslK/sjbdkEkgGvTlJDo=
-X-Google-Smtp-Source: ABdhPJwtZYGdgX4z2ltjTKfzDUHn4PJ8nZTHlVIBOInrURZ90FbOTXpI8uqkaX4D2cktvAP3mpCdrqCs181v9OE+HtI=
-X-Received: by 2002:a17:907:6e04:b0:6f4:d6f3:c72a with SMTP id
- sd4-20020a1709076e0400b006f4d6f3c72amr25485859ejc.636.1653421911628; Tue, 24
- May 2022 12:51:51 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=jqoWghnRf4IApUvhfymreoEWbSDArTcoutoZjM72nXw=;
+        b=GxBmHaOCCKf3kJMl+nO28JaTFq12hA9GMBqjOFscT40HHW5r0M1dGttcnZu1ub7TkO
+         VeCRWzOyZXFqN7A/Y544ZfjaPvYvQOnwFbbqZe3TUi9T8TPnygQRzg7vEtSx8/cia9jD
+         XskW5l2RmewZB0yOYVp+HJpfefS3Rppg/TOOrvPlxVBL/SiHhEn8fbdDfBvF/4waauLE
+         wMMVJCSGjTWncIyTlj78TorSpH7/p+ZQnT8wmVKNshXGlc7KGbdIyiNIvBqJROlIiU6F
+         jq2q9uV15A6WPqG149RyriQzapBCARx8LvR6il7WUUapblXbZDcV8vvDm++JBA3VbS7F
+         2INw==
+X-Gm-Message-State: AOAM530LJXj2mK+gESmB3WlMv63pInk0/Be3iM9FS/+dhAtK0LaJ0xRU
+        gErxLA4Dkvkg4MHDIS3fz+WCbg==
+X-Google-Smtp-Source: ABdhPJxYA5tWQzLCi4DBahLvoLKWqro2fm9zEi8W+x+XadWNi0GLmwBwwM5KV4GMoCy0dGBpiZhVRg==
+X-Received: by 2002:a17:90b:4b90:b0:1e0:1b0:1a1 with SMTP id lr16-20020a17090b4b9000b001e001b001a1mr6348302pjb.70.1653421937516;
+        Tue, 24 May 2022 12:52:17 -0700 (PDT)
+Received: from localhost ([2620:15c:11a:202:d9e2:8472:9ac:8532])
+        by smtp.gmail.com with UTF8SMTPSA id t28-20020a62d15c000000b0050dc762815csm9767703pfl.54.2022.05.24.12.52.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 24 May 2022 12:52:17 -0700 (PDT)
+Date:   Tue, 24 May 2022 12:52:15 -0700
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Tzung-Bi Shih <tzungbi@kernel.org>
+Cc:     bleung@chromium.org, groeck@chromium.org, robh+dt@kernel.org,
+        chrome-platform@lists.linux.dev, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 5/5] platform/chrome: cros_kbd_led_backlight: support
+ EC PWM backend
+Message-ID: <Yo03b5GtGgF/kVb3@google.com>
+References: <20220321085547.1162312-1-tzungbi@kernel.org>
+ <20220321085547.1162312-6-tzungbi@kernel.org>
+ <YobHVST2Nfn+z8n6@google.com>
+ <YocewB/lLJhIAuQP@google.com>
+ <YoezzzLdVfb0K7Ak@google.com>
+ <Yosc/6izBDYYKpFC@google.com>
 MIME-Version: 1.0
-References: <20220524181150.9240-1-ddrokosov@sberdevices.ru> <20220524181150.9240-5-ddrokosov@sberdevices.ru>
-In-Reply-To: <20220524181150.9240-5-ddrokosov@sberdevices.ru>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 24 May 2022 21:51:15 +0200
-Message-ID: <CAHp75VdDJow59VQoDQa-Q0R7YCu63h5M5g82uc+fCrXJd_k15w@mail.gmail.com>
-Subject: Re: [PATCH v2 4/5] iio:chemical:ccs811: rearrange iio trigger get and register
-To:     Dmitry Rokosov <DDRokosov@sberdevices.ru>
-Cc:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "jic23@kernel.org" <jic23@kernel.org>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "lorenzo.bianconi83@gmail.com" <lorenzo.bianconi83@gmail.com>,
-        "srinivas.pandruvada@linux.intel.com" 
-        <srinivas.pandruvada@linux.intel.com>,
-        "teodora.baluta@intel.com" <teodora.baluta@intel.com>,
-        "narcisaanamaria12@gmail.com" <narcisaanamaria12@gmail.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <Yosc/6izBDYYKpFC@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 24, 2022 at 8:14 PM Dmitry Rokosov <DDRokosov@sberdevices.ru> wrote:
->
-> IIO trigger interface function iio_trigger_get() should be called after
-> iio_trigger_register() (or its devm analogue) strictly, because of
-> iio_trigger_get() acquires module refcnt based on the trigger->owner
-> pointer, which is initialized inside iio_trigger_register() to
-> THIS_MODULE.
-> If this call order is wrong, the next iio_trigger_put() (from sysfs
-> callback or "delete module" path) will dereference "default" module
-> refcnt, which is incorrect behaviour.
+On Mon, May 23, 2022 at 01:34:55PM +0800, Tzung-Bi Shih wrote:
+> On Fri, May 20, 2022 at 08:29:19AM -0700, Matthias Kaehlcke wrote:
+> > On Fri, May 20, 2022 at 12:53:20PM +0800, Tzung-Bi Shih wrote:
+> > > On Thu, May 19, 2022 at 03:40:21PM -0700, Matthias Kaehlcke wrote:
+> > > > On Mon, Mar 21, 2022 at 04:55:47PM +0800, Tzung-Bi Shih wrote:
+> > > > > +struct keyboard_led_private {
+> > > > 
+> > > > Why 'private', isn't this more a 'cros_ec_kdb_bl' or similar?
+> > > 
+> > > It is just drvdata.
+> > 
+> > The data structure represents an instance of the device, as such it
+> > is an important part of the driver, drvdata is just a way to attach
+> > it to the platform device.
+> > 
+> > > I would prefer to keep the original prefix "keyboard_led_" if you wouldn't
+> > > have strong opinion.
+> > 
+> > I'm fine with 'keyboard_led', but object to the 'private' part. In the
+> > kernel 'private' fields are typically used when a driver consists of a
+> > generic part and a device specific part. The driver has a 'private'
+> > void* field that points to a device specific data structure about which
+> > the generic driver is agnostic. This data structure is only used by the
+> > device specific implementation. That isn't the case here, so naming the
+> > structure anything 'private' is misleading.
+> 
+> The struct in the case is device specific.  I don't see a problem to name it
+> *private* as there are a lot of more existing examples.
+> 
+> $ grep -R 'struct .*_priv.* {' drivers/
+> drivers/pinctrl/bcm/pinctrl-bcm6358.c:struct bcm6358_priv {
+> 
+> $ grep -R 'struct .*_priv.* {' sound/soc/codecs/
+> sound/soc/codecs/rt286.c:struct rt286_priv {
+> 
+> I would get rid of the term "private" if it could be confusing.
 
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Ok, I hadn't come across that use of 'private' yet, but apparently it's not
+that uncommon. Personally I prefer variables with specific names, but maybe
+for others 'private' just spells out clearly what a struct is about ¯\_(ツ)_/¯
 
-> Fixes: f1f065d7ac30 ("iio: chemical: ccs811: Add support for data ready trigger")
-> Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
-> ---
->  drivers/iio/chemical/ccs811.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/iio/chemical/ccs811.c b/drivers/iio/chemical/ccs811.c
-> index 847194fa1e46..80ef1aa9aae3 100644
-> --- a/drivers/iio/chemical/ccs811.c
-> +++ b/drivers/iio/chemical/ccs811.c
-> @@ -499,11 +499,11 @@ static int ccs811_probe(struct i2c_client *client,
->
->                 data->drdy_trig->ops = &ccs811_trigger_ops;
->                 iio_trigger_set_drvdata(data->drdy_trig, indio_dev);
-> -               indio_dev->trig = data->drdy_trig;
-> -               iio_trigger_get(indio_dev->trig);
->                 ret = iio_trigger_register(data->drdy_trig);
->                 if (ret)
->                         goto err_poweroff;
-> +
-> +               indio_dev->trig = iio_trigger_get(data->drdy_trig);
->         }
->
->         ret = iio_triggered_buffer_setup(indio_dev, NULL,
-> --
-> 2.36.0
+> > > > > +static int keyboard_led_init_ec_pwm(struct platform_device *pdev)
+> > > > > +{
+> > > > > +	struct keyboard_led_private *private = platform_get_drvdata(pdev);
+> > > > > +
+> > > > > +	private->ec = dev_get_drvdata(pdev->dev.parent);
+> > > > > +	if (!private->ec) {
+> > > > > +		dev_err(&pdev->dev, "no parent EC device\n");
+> > > > > +		return -EINVAL;
+> > > > > +	}
+> > > > 
+> > > > The only thing this 'init' function does is assigning private->ec. Wouldn't
+> > > > it be clearer to do this directly in probe() from where callback is called?
+> > > > It could be with the condition that the device as a DT node.
+> > > 
+> > > No.  The probe() isn't aware of the device is from ACPI or OF.
+> > 
+> > But it could be:
+> > 
+> > 	if (pdev->dev.of_node)
+> > 		kbd_led->ec = dev_get_drvdata(pdev->dev.parent);
+> 
+> The 'init' callback isn't only for OF but also ACPI.  I would prefer to keep
+> the 'init' function and let probe() have no awareness about them.
 
+Ah ok, then it makes sense, I think my brain conflated this with the unnecessary
+keyboard_led_init_acpi_null stub.
 
+> > > > Is it actually possible that the keyboard backlight device gets instantiated
+> > > > if there is no EC parent?
+> > > 
+> > > It shouldn't be but just in case.
+> > 
+> > If this can only occur due to an error in common kernel frameworks then
+> > the check should be omitted IMO.
+> 
+> The check is referenced from [1].  I would prefer to keep it instead of
+> crashing kernel if anything went wrong.
+> 
+> [1]: https://elixir.bootlin.com/linux/v5.18-rc7/source/drivers/pwm/pwm-cros-ec.c#L244
 
--- 
-With Best Regards,
-Andy Shevchenko
+Ok, maybe there are cases where the EC parent could go away. Let's hope it
+doesn't happen after the keyboard backlight got probed :)
+
+> > 
+> > > > > +static const struct keyboard_led_drvdata keyboard_led_drvdata_ec_pwm = {
+> > > > > +	.init = keyboard_led_init_ec_pwm_null,
+> > > > 
+> > > > Is this really needed?
+> > > > 
+> > > > keyboard_led_probe() checks if .init is assigned before invoking the callback:
+> > > > 
+> > > > 	if (drvdata->init) {
+> > > > 		error = drvdata->init(pdev);
+> > > > 
+> > > > The whole 'else' branch could be eliminated if .of_match_table of the driver
+> > > > only is assigned when CONFIG_CROS_KBD_LED_BACKLIGHT_EC_PWM is set. IMO that
+> > > > would preferable over creating 'stubs'.
+> > > 
+> > > CONFIG_CROS_KBD_LED_BACKLIGHT_EC_PWM and CONFIG_OF are independent.  The stubs
+> > > were created to avoid compile errors if CONFIG_OF=y but
+> > > CONFIG_CROS_KBD_LED_BACKLIGHT_EC_PWM=n.
+> > 
+> > Is there functional version of the driver that uses instantiation through the
+> > device tree if CONFIG_CROS_KBD_LED_BACKLIGHT_EC_PWM=n? If not .of_match_table
+> > should not be assigned.
+> 
+> CONFIG_CROS_KBD_LED_BACKLIGHT_EC_PWM and CONFIG_OF are independent.
+> CONFIG_CROS_KBD_LED_BACKLIGHT_EC_PWM is also designed to work with CONFIG_ACPI.
+
+I understand that CONFIG_CROS_KBD_LED_BACKLIGHT_EC_PWM also works with
+CONFIG_ACPI, but in that case the driver uses .acpi_match_table, not
+.of_match_table. So you wouldn't have to define 'keyboard_led_of_match'
+if you did this:
+
+static struct platform_driver keyboard_led_driver = {
+        .driver         = {
+                .name   = "chromeos-keyboard-leds",
+                .acpi_match_table = ACPI_PTR(keyboard_led_acpi_match),
+#ifdef CONFIG_OF
+		.of_match_table = of_match_ptr(keyboard_led_of_match),
+#endif
+        },
+        .probe          = keyboard_led_probe,
+;
