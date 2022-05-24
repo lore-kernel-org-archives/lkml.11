@@ -2,85 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 478ACC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 00:50:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8F1BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 00:51:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232311AbiEXAuS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 20:50:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56266 "EHLO
+        id S232434AbiEXAvm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 20:51:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229543AbiEXAuO (ORCPT
+        with ESMTP id S232308AbiEXAvf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 20:50:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B670D7C153
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 17:50:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D597615A7
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 00:50:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 9D17DC36AE3;
-        Tue, 24 May 2022 00:50:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653353412;
-        bh=q+4XuDYRYjXM+ddv/G67liUYwdhEEPIpIxaOB/s9ggg=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=l1ilgWcjBpcPDzJBL0Se68C4bjdAlcZQD0fpABTAETSMvq2WjG31BxwuxG0XkeRZF
-         5D2jgHQ8NKt3CTMwShRF4nnCgQ8duB6QZp45P2PMm0nbsdjN0eO7/0rmWrGeDbWJsj
-         InLn5drVWOXIU8/m7AzAS60bifI48wwJIu+lrI/BS/K0zTSlQMLr+u4f28zZfFLsTN
-         M6ANUNzrgSPMOe4B0BsCja7Wi22VoOjO0u1iqtNvVJlfcEDlB8//t+nXSgbvzEzvJN
-         myhZw0DQgdOpnaYUmKQygXSUgPupHhQ7gRM+1JVCDCCAG0dWpOM6M1sDYQP+aYnWXp
-         mygBJkvv/5duA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 81FACF03938;
-        Tue, 24 May 2022 00:50:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Mon, 23 May 2022 20:51:35 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 40EEE1FCD7
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 17:51:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653353492;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=YYTIypUIAadfcSy41CGM20tQJDNF0c7lxi1JOJ+m/Z8=;
+        b=DfuAtgdGaAenDRRp4q9ByajuyWWKc9FvP9Go8PC8UDs/+bxryRfOpvEjfO8AYOEOWTdV1f
+        VzFyLI6DcVJrnfGyITJ1e3h7bve0sn3rbbkrkYU/3//yA2s6qh+bOGVZHW/b4ivsy1utat
+        vQk/AjKevr758u62s9oItF63BKl4SSw=
+Received: from mail-pg1-f197.google.com (mail-pg1-f197.google.com
+ [209.85.215.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-650-JybUJKo-Pq-550DFsFcpQw-1; Mon, 23 May 2022 20:51:31 -0400
+X-MC-Unique: JybUJKo-Pq-550DFsFcpQw-1
+Received: by mail-pg1-f197.google.com with SMTP id u8-20020a656708000000b003f70a43fe1eso5058771pgf.3
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 17:51:31 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=YYTIypUIAadfcSy41CGM20tQJDNF0c7lxi1JOJ+m/Z8=;
+        b=l69Ze2M9y+ktoOAaLTNa2mzBTPnCp/qW+9+mY54wLRy5Dhp/bXM4sm8Bk/m+lKGjc6
+         NzjW2ypNBwL5UW7t9/S0gmZxJJW7o08Pc20M7GIM0V3zog+pW9bKvtNJOgnwa4MjC8S2
+         6I7Fha3SQB2xVnIgZRslTWORXq4AQove/H5vCepXeMbfDkw1iMx8dx3AJNEikMSyxxCi
+         m6ron+2Ln2po7c6bElUNCl5oSdFJNRWikLPAKeAdbiPrUYtBbTc21wAJ6EUIszrfQvjC
+         gMVZIIzp8owuXQoG7EYoGoOkaanEu76pQDb/9wpp5zHTcm2WPdNdiFSIvO/t4yG9FZd7
+         kYhw==
+X-Gm-Message-State: AOAM530zeoxYrJmQRCBebEcoM4uhimsM1DA0lkKcDgOnYwuxXJQcaPAG
+        fQ+qADBkUO0T7xPX1vPJam75bP6UKDNJGxoDos6d06hLbvUG6mDUUq0yKtv/lF5y9uFkgUF0xvN
+        T8v+24J5w/I+HWYGm+Co/zRtqaq5iagUsHcSZ+xEreLbfUHlfvMxhpMwFgfenKmLXgpPxZrpDig
+        ==
+X-Received: by 2002:a63:fc08:0:b0:3f9:e159:b114 with SMTP id j8-20020a63fc08000000b003f9e159b114mr13011215pgi.526.1653353489819;
+        Mon, 23 May 2022 17:51:29 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwH5R8vSDYh7Qy+89u7KjwlPHBHVSXcTSiatpbqsu0in/KQMdoJAbWkmpNFUQY2OLjaEKOovA==
+X-Received: by 2002:a63:fc08:0:b0:3f9:e159:b114 with SMTP id j8-20020a63fc08000000b003f9e159b114mr13011200pgi.526.1653353489558;
+        Mon, 23 May 2022 17:51:29 -0700 (PDT)
+Received: from [10.72.12.81] ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id l13-20020a6542cd000000b003c619f3d086sm5367802pgp.2.2022.05.23.17.51.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 23 May 2022 17:51:28 -0700 (PDT)
+Subject: Re: [PATCH] MAINTAINERS: move myself from ceph "Maintainer" to
+ "Reviewer"
+To:     Jeff Layton <jlayton@kernel.org>, ceph-devel@vger.kernel.org
+Cc:     idryomov@gmail.com, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220523172209.141504-1-jlayton@kernel.org>
+From:   Xiubo Li <xiubli@redhat.com>
+Message-ID: <70a4bb14-cdb7-2368-1a67-ab69d3ed9317@redhat.com>
+Date:   Tue, 24 May 2022 08:51:22 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH 0/4] platform/chrome: cros_ec_proto: add initial Kunit tests
-From:   patchwork-bot+chrome-platform@kernel.org
-Message-Id: <165335341252.17704.18068101076229868652.git-patchwork-notify@kernel.org>
-Date:   Tue, 24 May 2022 00:50:12 +0000
-References: <20220518091814.2028579-1-tzungbi@kernel.org>
-In-Reply-To: <20220518091814.2028579-1-tzungbi@kernel.org>
-To:     Tzung-Bi Shih <tzungbi@kernel.org>
-Cc:     bleung@chromium.org, groeck@chromium.org,
-        chrome-platform@lists.linux.dev, linux-kernel@vger.kernel.org,
-        dianders@chromium.org
+In-Reply-To: <20220523172209.141504-1-jlayton@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
 
-This series was applied to chrome-platform/linux.git (for-kernelci)
-by Tzung-Bi Shih <tzungbi@kernel.org>:
+On 5/24/22 1:22 AM, Jeff Layton wrote:
+> Xiubo has graciously volunteered to take over for me as the Linux cephfs
+> client maintainer. Make it official by changing myself to be a
+> "Reviewer" for libceph and ceph.
+>
+> Signed-off-by: Jeff Layton <jlayton@kernel.org>
+> ---
+>   MAINTAINERS | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index d6d879cb0afd..39ec8fd2e996 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -4547,8 +4547,8 @@ F:	drivers/power/supply/cw2015_battery.c
+>   
+>   CEPH COMMON CODE (LIBCEPH)
+>   M:	Ilya Dryomov <idryomov@gmail.com>
+> -M:	Jeff Layton <jlayton@kernel.org>
+>   M:	Xiubo Li <xiubli@redhat.com>
+> +R:	Jeff Layton <jlayton@kernel.org>
+>   L:	ceph-devel@vger.kernel.org
+>   S:	Supported
+>   W:	http://ceph.com/
+> @@ -4558,9 +4558,9 @@ F:	include/linux/crush/
+>   F:	net/ceph/
+>   
+>   CEPH DISTRIBUTED FILE SYSTEM CLIENT (CEPH)
+> -M:	Jeff Layton <jlayton@kernel.org>
+>   M:	Xiubo Li <xiubli@redhat.com>
+>   M:	Ilya Dryomov <idryomov@gmail.com>
+> +R:	Jeff Layton <jlayton@kernel.org>
+>   L:	ceph-devel@vger.kernel.org
+>   S:	Supported
+>   W:	http://ceph.com/
 
-On Wed, 18 May 2022 17:18:10 +0800 you wrote:
-> The series adds some early Kunit tests for ChromeOS EC protocol.
-> 
-> The 2nd patch is a refactor.
-> 
-> The 3rd patch updates code comment.
-> 
-> The 1st and 4th patches add Kunit tests.
-> 
-> [...]
+Thanks Jeff.
 
-Here is the summary with links:
-  - [1/4] platform/chrome: cros_ec_proto: add Kunit tests for cros_ec_prepare_tx()
-    https://git.kernel.org/chrome-platform/c/c185ba01c945
-  - [2/4] platform/chrome: cros_ec_proto: factor legacy out from cros_ec_prepare_tx()
-    https://git.kernel.org/chrome-platform/c/103c883f4ace
-  - [3/4] platform/chrome: cros_ec_proto: update cros_ec_check_result() comment
-    https://git.kernel.org/chrome-platform/c/3cd0cacd4b64
-  - [4/4] platform/chrome: cros_ec_proto: add Kunit tests for cros_ec_check_result()
-    https://git.kernel.org/chrome-platform/c/3c470e42dd47
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+Acked-by: Xiubo Li <xiubli@redhat.com>
 
