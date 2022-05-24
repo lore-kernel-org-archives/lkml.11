@@ -2,46 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D83CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 10:54:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4449DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 10:54:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236402AbiEXKyD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 06:54:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42170 "EHLO
+        id S236412AbiEXKyH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 06:54:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236383AbiEXKyB (ORCPT
+        with ESMTP id S236400AbiEXKyC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 06:54:01 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 665F4579BD;
-        Tue, 24 May 2022 03:53:59 -0700 (PDT)
+        Tue, 24 May 2022 06:54:02 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 315FB4ECD6
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 03:54:02 -0700 (PDT)
 Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4L6rfX1zQrz4xbt;
-        Tue, 24 May 2022 20:53:56 +1000 (AEST)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4L6rfb6pcwz4ySl;
+        Tue, 24 May 2022 20:53:59 +1000 (AEST)
 From:   Michael Ellerman <patch-notifications@ellerman.id.au>
-To:     Bagas Sanjaya <bagasdotme@gmail.com>, linux-doc@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Anders Roxell <anders.roxell@linaro.org>,
-        stable@vger.kernel.org, Fabiano Rosas <farosas@linux.ibm.com>,
-        Alexey Kardashevskiy <aik@ozlabs.ru>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        linux-kernel@vger.kernel.org,
-        Suresh Warrier <warrier@linux.vnet.ibm.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        kvm@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        linuxppc-dev@lists.ozlabs.org
-In-Reply-To: <20220506070747.16309-1-bagasdotme@gmail.com>
-References: <20220506070747.16309-1-bagasdotme@gmail.com>
-Subject: Re: [PATCH RESEND] KVM: powerpc: remove extraneous asterisk from rm_host_ipi_action comment
-Message-Id: <165338950668.1711920.11760808136343682711.b4-ty@ellerman.id.au>
-Date:   Tue, 24 May 2022 20:51:46 +1000
+To:     mpe@ellerman.id.au, paulus@samba.org, benh@kernel.crashing.org,
+        Bo Liu <liubo03@inspur.com>
+Cc:     linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+In-Reply-To: <20220401065252.36472-1-liubo03@inspur.com>
+References: <20220401065252.36472-1-liubo03@inspur.com>
+Subject: Re: [PATCH] KVM: PPC: Book3S HV: fix the return value of kvm_age_rmapp()
+Message-Id: <165338950884.1711920.1652922231071058504.b4-ty@ellerman.id.au>
+Date:   Tue, 24 May 2022 20:51:48 +1000
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -49,20 +37,19 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 6 May 2022 14:07:47 +0700, Bagas Sanjaya wrote:
-> kernel test robot reported kernel-doc warning for rm_host_ipi_action():
+On Fri, 1 Apr 2022 02:52:52 -0400, Bo Liu wrote:
+> The return value type defined in the function kvm_age_rmapp() is
+> "bool", but the return value type defined in the implementation of the
+> function kvm_age_rmapp() is "int".
 > 
-> >> arch/powerpc/kvm/book3s_hv_rm_xics.c:887: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
->     * Host Operations poked by RM KVM
+> Change the return value type to "bool".
 > 
-> Since the function is static, remove the extraneous (second) asterisk at
-> the head of function comment.
 > 
 > [...]
 
 Applied to powerpc/topic/ppc-kvm.
 
-[1/1] KVM: powerpc: remove extraneous asterisk from rm_host_ipi_action comment
-      https://git.kernel.org/powerpc/c/d53c36e6c83863fde4a2748411c31bc4853a0936
+[1/1] KVM: PPC: Book3S HV: fix the return value of kvm_age_rmapp()
+      https://git.kernel.org/powerpc/c/15eb1b6afc3c73bcd44b5d265d43db666950b5af
 
 cheers
