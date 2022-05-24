@@ -2,77 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 666B9C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 08:40:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A52F7C43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 08:50:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233902AbiEXIj5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 04:39:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58896 "EHLO
+        id S233067AbiEXIuO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 04:50:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233279AbiEXIjq (ORCPT
+        with ESMTP id S229969AbiEXIuM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 04:39:46 -0400
-Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA15487A09
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 01:39:30 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0VEHDH-Y_1653381556;
-Received: from localhost(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0VEHDH-Y_1653381556)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Tue, 24 May 2022 16:39:28 +0800
-From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-To:     Larry.Finger@lwfinger.net
-Cc:     phil@philpotter.co.uk, gregkh@linuxfoundation.org,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: [PATCH] staging: r8188eu: Fix kernel-doc
-Date:   Tue, 24 May 2022 16:39:14 +0800
-Message-Id: <20220524083914.68736-1-jiapeng.chong@linux.alibaba.com>
-X-Mailer: git-send-email 2.20.1.7.g153144c
+        Tue, 24 May 2022 04:50:12 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 384C673544
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 01:50:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653382209;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=gdVfgoy4DMKIRrDCFm+NlF67nCZ7pRbEEsQazS020wI=;
+        b=iJGpYN/hHHkyGZRbGjHCB5V2rwQvsk59YYlcAYPZTzhA7s4zel80Qw2Sc5/gEUOM1NCtFw
+        s/2P6qqMVCeB51zU/erPylspVkd97kN0gQaoaYhtf93BOl24R1Q54MR7ZIh+33Qy/wngHf
+        DfkmE3T+VdKkdW9uISI4sVNcd1f00cY=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-628-EWW22bwSPRauIfAcf5QZwA-1; Tue, 24 May 2022 04:50:08 -0400
+X-MC-Unique: EWW22bwSPRauIfAcf5QZwA-1
+Received: by mail-wm1-f70.google.com with SMTP id bg13-20020a05600c3c8d00b003974d0ff917so989982wmb.3
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 01:50:08 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=gdVfgoy4DMKIRrDCFm+NlF67nCZ7pRbEEsQazS020wI=;
+        b=pFukcXK+jO2650XJdHuKj2OlTLUPUMVGAyjt6qLyle8BEBl3J4AnODnf4n61n5EenI
+         hD0Q+72/39f9ZQPyMMBv/KhSVmGYH33ca7niv2JEOrEboUDT39yYjGdJCRq5oTGUD7th
+         R1Mg04shuGAGP5Bi+9lRtIUkUtGCr3GccBSVq3nVGbRi+OZCPUzzTYuqPxVItQR992Dp
+         tIS2ES2Asq0TbwGv9KjzHHc+4pAhd3rXl5FlPth/2DUj+pMWBEmFKywHeSpTKcnx1yhS
+         kmgzC3Deqafi8NTfxxuWM2ZoXcoaN2/xgZZW1GGJxbagzrdEkt4I9/coBs2gUqdXL4r+
+         ud+Q==
+X-Gm-Message-State: AOAM53008UEMd7DiaeuAUErt272UduLeMIchIXQw9A7jBw8ZBl+5mRFM
+        B+TulakLiLApI/iZ4w9aedj18Vmg3C9kLK300Kp6k1M4UlieGSvVuMP65QXOfkrfhBtKHcHV4K2
+        ZkLnkwtjkRbXXj0+MI8G9aEu6
+X-Received: by 2002:a05:600c:4313:b0:397:26c9:dda1 with SMTP id p19-20020a05600c431300b0039726c9dda1mr2713407wme.184.1653382206479;
+        Tue, 24 May 2022 01:50:06 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwnlvbuROa+P4IBGkdAWKlHrWe7jd9IcsCGsLZeLRwKLCHZzMgVtKGw3WEXv9+5c7I00mtdCg==
+X-Received: by 2002:a05:600c:4313:b0:397:26c9:dda1 with SMTP id p19-20020a05600c431300b0039726c9dda1mr2713392wme.184.1653382206260;
+        Tue, 24 May 2022 01:50:06 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-112-184.dyn.eolo.it. [146.241.112.184])
+        by smtp.gmail.com with ESMTPSA id u25-20020adfae59000000b0020d106c0386sm12277805wrd.89.2022.05.24.01.50.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 24 May 2022 01:50:05 -0700 (PDT)
+Message-ID: <3090d3059e3493af2b0d69961eaa8584834f7a1a.camel@redhat.com>
+Subject: Re: [PATCH v2 net] Revert "net/smc: fix listen processing for
+ SMC-Rv2"
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     liuyacan@corp.netease.com
+Cc:     davem@davemloft.net, edumazet@google.com, kgraul@linux.ibm.com,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        ubraun@linux.ibm.com
+Date:   Tue, 24 May 2022 10:50:04 +0200
+In-Reply-To: <20220523153110.474996-1-liuyacan@corp.netease.com>
+References: <20220523150709.306731-1-liuyacan@corp.netease.com>
+         <20220523153110.474996-1-liuyacan@corp.netease.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix the following W=1 kernel warnings:
+On Mon, 2022-05-23 at 23:31 +0800, liuyacan@corp.netease.com wrote:
+> From: liuyacan <liuyacan@corp.netease.com>
+> 
+> This reverts commit 5ec8b414b4381e8714731415fc221ef50a4e7b14.
 
-drivers/staging/r8188eu/hal/rtl8188e_phycfg.c:291: warning: expecting
-prototype for Function(). Prototype was for rtl8188e_PHY_SetRFReg()
-instead.
+It looks like the correct hash is
+8c3b8dc5cc9bf6d273ebe18b16e2d6882bcfb36d
 
-drivers/staging/r8188eu/hal/rtl8188e_phycfg.c:257: warning: expecting
-prototype for Function(). Prototype was for rtl8188e_PHY_QueryRFReg()
-instead.
+> 
+> Some rollback issue will be fixed in other patches in the future.
 
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
----
- drivers/staging/r8188eu/hal/rtl8188e_phycfg.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/staging/r8188eu/hal/rtl8188e_phycfg.c b/drivers/staging/r8188eu/hal/rtl8188e_phycfg.c
-index 4864dafd887b..6342befec5e0 100644
---- a/drivers/staging/r8188eu/hal/rtl8188e_phycfg.c
-+++ b/drivers/staging/r8188eu/hal/rtl8188e_phycfg.c
-@@ -239,7 +239,7 @@ phy_RFSerialWrite(
- }
- 
- /**
--* Function:	PHY_QueryRFReg
-+* Function:	rtl8188e_PHY_QueryRFReg()
- *
- * OverView:	Query "Specific bits" to RF register (page 8~)
- *
-@@ -265,7 +265,7 @@ u32 rtl8188e_PHY_QueryRFReg(struct adapter *Adapter, u32 RegAddr, u32 BitMask)
- }
- 
- /**
--* Function:	PHY_SetRFReg
-+* Function:	rtl8188e_PHY_SetRFReg()
- *
- * OverView:	Write "Specific bits" to RF register (page 8~)
- *
--- 
-2.20.1.7.g153144c
+Additionally please add an explicit Fixes tag, it will make stable team
+life easier, thanks!
+
+Paolo
 
