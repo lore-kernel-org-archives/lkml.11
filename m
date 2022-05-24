@@ -2,48 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D086CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 16:03:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF304C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 16:03:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239494AbiEXQDG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 12:03:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46356 "EHLO
+        id S239573AbiEXQDK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 12:03:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239488AbiEXQCD (ORCPT
+        with ESMTP id S239353AbiEXQCJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 12:02:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3BFD10BA;
-        Tue, 24 May 2022 09:01:03 -0700 (PDT)
+        Tue, 24 May 2022 12:02:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C24364E2;
+        Tue, 24 May 2022 09:01:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A37AEB819DC;
-        Tue, 24 May 2022 16:01:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7013BC34116;
-        Tue, 24 May 2022 16:01:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1687B61763;
+        Tue, 24 May 2022 16:01:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78FBBC34113;
+        Tue, 24 May 2022 16:01:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653408061;
-        bh=UIvOGU9ezNqd/V+eh1/mLYA2MyU4xUyFduSUC7Zg0Ms=;
+        s=k20201202; t=1653408066;
+        bh=lFktN1E1t+rxFQGdQ28nXe9HkrtZhQdy6eSxkYzOlmM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uyB/ewAblBrYAoTZxXWVqxKfhZNkAheoeoeFv7TJyzlEt6QB4HsWqzLRBXx5KAAK+
-         Wo5B+1dtebAJOugl3c7OEJkIT7BiOqeDUBX2BmkGxj5v6K+4XYlLS4XvL8BHkZHTwz
-         xXskrCcWqi9sq65noE5g2ILuvjVn5+Q85PulH551D4F2woNgUY8Im3+869jpdd9PGO
-         wemf7DEdhr/ZYPolwoY7o/2BK7zpxB8D8nqBvazj/A457My49vzOZA3OrIWW+hT6Mn
-         PPaC7w00Gr0c6vaCrjCdyP3Xy4hsJdsdjfBsG5dYLyR8MSsAHH2kDTHvgjcWnU4UzD
-         w3ct/CPFaWMvQ==
+        b=NFKBYnYaJc2l3yrrdaw8y9n1ko51sL5t+BNDJddvMP/CS9x4Jobl/LssFcwTHhdQO
+         0oZgQ/mBvKX255oFtFkS/iDuw/UhKGa1dnNVVsXTShYqvJau/a9DUqUzJncDUnDvrM
+         w68lsps6UTrfRyXmwhaf33/lgxp11lGVKSuNrF6iDXgzSZMTQENbu0T18OMiUu+Wr8
+         +YB3VO7s/DNdCgXmtf/kpqXAZkzxl1zfLRCOHU4G6HVLuLkwgZjwgyinplfOspUY7H
+         oIV9cEXEPr3nSs46oMLhHy0cKZQh4YaZSCvMN6RFDRc4ZVTVsbyD+Vz+6h+INtDbI9
+         kle/ub8pnW2/g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Piyush Malgujar <pmalgujar@marvell.com>,
-        Szymon Balcerak <sbalcerak@marvell.com>,
-        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        rric@kernel.org, linux-i2c@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 8/8] drivers: i2c: thunderx: Allow driver to work with ACPI defined TWSI controllers
-Date:   Tue, 24 May 2022 12:00:35 -0400
-Message-Id: <20220524160035.827109-8-sashal@kernel.org>
+Cc:     Thomas Bartschies <thomas.bartschies@cvk.de>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 2/5] net: af_key: check encryption module availability consistency
+Date:   Tue, 24 May 2022 12:00:58 -0400
+Message-Id: <20220524160102.827227-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220524160035.827109-1-sashal@kernel.org>
-References: <20220524160035.827109-1-sashal@kernel.org>
+In-Reply-To: <20220524160102.827227-1-sashal@kernel.org>
+References: <20220524160102.827227-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,33 +53,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Piyush Malgujar <pmalgujar@marvell.com>
+From: Thomas Bartschies <thomas.bartschies@cvk.de>
 
-[ Upstream commit 03a35bc856ddc09f2cc1f4701adecfbf3b464cb3 ]
+[ Upstream commit 015c44d7bff3f44d569716117becd570c179ca32 ]
 
-Due to i2c->adap.dev.fwnode not being set, ACPI_COMPANION() wasn't properly
-found for TWSI controllers.
+Since the recent introduction supporting the SM3 and SM4 hash algos for IPsec, the kernel
+produces invalid pfkey acquire messages, when these encryption modules are disabled. This
+happens because the availability of the algos wasn't checked in all necessary functions.
+This patch adds these checks.
 
-Signed-off-by: Szymon Balcerak <sbalcerak@marvell.com>
-Signed-off-by: Piyush Malgujar <pmalgujar@marvell.com>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Signed-off-by: Thomas Bartschies <thomas.bartschies@cvk.de>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/busses/i2c-thunderx-pcidrv.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/key/af_key.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/i2c/busses/i2c-thunderx-pcidrv.c b/drivers/i2c/busses/i2c-thunderx-pcidrv.c
-index 12c90aa0900e..a77cd86fe75e 100644
---- a/drivers/i2c/busses/i2c-thunderx-pcidrv.c
-+++ b/drivers/i2c/busses/i2c-thunderx-pcidrv.c
-@@ -213,6 +213,7 @@ static int thunder_i2c_probe_pci(struct pci_dev *pdev,
- 	i2c->adap.bus_recovery_info = &octeon_i2c_recovery_info;
- 	i2c->adap.dev.parent = dev;
- 	i2c->adap.dev.of_node = pdev->dev.of_node;
-+	i2c->adap.dev.fwnode = dev->fwnode;
- 	snprintf(i2c->adap.name, sizeof(i2c->adap.name),
- 		 "Cavium ThunderX i2c adapter at %s", dev_name(dev));
- 	i2c_set_adapdata(&i2c->adap, i2c);
+diff --git a/net/key/af_key.c b/net/key/af_key.c
+index 2ac9560020f9..d8bceb8cf756 100644
+--- a/net/key/af_key.c
++++ b/net/key/af_key.c
+@@ -2902,7 +2902,7 @@ static int count_ah_combs(const struct xfrm_tmpl *t)
+ 			break;
+ 		if (!aalg->pfkey_supported)
+ 			continue;
+-		if (aalg_tmpl_set(t, aalg))
++		if (aalg_tmpl_set(t, aalg) && aalg->available)
+ 			sz += sizeof(struct sadb_comb);
+ 	}
+ 	return sz + sizeof(struct sadb_prop);
+@@ -2920,7 +2920,7 @@ static int count_esp_combs(const struct xfrm_tmpl *t)
+ 		if (!ealg->pfkey_supported)
+ 			continue;
+ 
+-		if (!(ealg_tmpl_set(t, ealg)))
++		if (!(ealg_tmpl_set(t, ealg) && ealg->available))
+ 			continue;
+ 
+ 		for (k = 1; ; k++) {
+@@ -2931,7 +2931,7 @@ static int count_esp_combs(const struct xfrm_tmpl *t)
+ 			if (!aalg->pfkey_supported)
+ 				continue;
+ 
+-			if (aalg_tmpl_set(t, aalg))
++			if (aalg_tmpl_set(t, aalg) && aalg->available)
+ 				sz += sizeof(struct sadb_comb);
+ 		}
+ 	}
 -- 
 2.35.1
 
