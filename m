@@ -2,139 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5AB9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 18:07:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71757C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 18:08:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240163AbiEXSHR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 14:07:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48542 "EHLO
+        id S240174AbiEXSIM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 14:08:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240150AbiEXSHO (ORCPT
+        with ESMTP id S231981AbiEXSIK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 14:07:14 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3269A6AA73
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 11:07:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653415633; x=1684951633;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=1vJoRflnMuivQzr+Yzjvj22XFCeDagG6hX+/69B4hjg=;
-  b=F16FwZ+eBzhUoPcNfwJO7pxfahQn371H9t5kCmRrqNLeiWsrc74p8Mwk
-   CBRTNlSREGfU2PigI2ANu90V717owAoedAez4LWMLyFlN1cpest+2lGRw
-   QoIHv6oGLRnfKkoHgnttDsMhp6JsxhjVZaNMF504MskwzKWEiHiZv3/WZ
-   Z5NAOH0TqCvA+JCeBikFwYKFX9OzzrBY5UwPgjkCSQ+tizVoaTrGYEOMF
-   /FmgYyH2gAnTxXmFACfWjMNAWfW7FystTUWmll3XnNN1AWcYeAcwyzFeE
-   TgVqp9kTB/suc008Df7EFkf8xeWLfJiqMesPaI8dddAwYE5GKXtJf6xBg
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10357"; a="298939476"
-X-IronPort-AV: E=Sophos;i="5.91,248,1647327600"; 
-   d="scan'208";a="298939476"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 May 2022 11:07:12 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,248,1647327600"; 
-   d="scan'208";a="548581882"
-Received: from lkp-server01.sh.intel.com (HELO db63a1be7222) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 24 May 2022 11:07:10 -0700
-Received: from kbuild by db63a1be7222 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ntYvx-0002K8-0I;
-        Tue, 24 May 2022 18:07:05 +0000
-Date:   Wed, 25 May 2022 02:06:27 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Martin =?utf-8?Q?Povi=C5=A1er?= <povik+lin@cutebit.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Hector Martin <marcan@marcan.st>
-Subject: [asahilinux:bits/070-audio 15/20] sound/soc/codecs/tas2764.c:683:20:
- warning: cast to smaller integer type 'enum tas2764_devid' from 'const void
- *'
-Message-ID: <202205250215.BQHYYJpH-lkp@intel.com>
+        Tue, 24 May 2022 14:08:10 -0400
+Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CC856B02B;
+        Tue, 24 May 2022 11:08:09 -0700 (PDT)
+Received: by mail-io1-xd35.google.com with SMTP id p74so15507503iod.8;
+        Tue, 24 May 2022 11:08:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=CCoZCqf5DZYvmFYZUo768NlduYJytxgbzyAhxTX5D1U=;
+        b=q2dwl0J2dE5Opv7iwInHFK6zBnH929Y3nD3A6TYfLHOnbC9AvRSf7PDJj7QYG6I75l
+         Oe82wo/Q91vqQ0OLGuTqXlgbuF8R4iCcGz6gIvUenR20l91PHKo7quUeDLTt1QoivWqm
+         ZSL5LUEQgRpqJBYCo3Iti7C/2Gb2deSsPqdedmJKeywIP4FOwZjMwXwV0++1jrLR7M64
+         hDblFWjeRmC9ycbkg0SFEgxiGjQxYY2+rK0KeqxUuq3CzHBLko+5krfiMUscD5WErVsG
+         TSGcWGfR9cO5n3x0u2Qdu9i/m9XY7j+cFqU4PbOT9ir+2GBaiX3lmyGPhtAR7N5Ge8Sw
+         lh6g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=CCoZCqf5DZYvmFYZUo768NlduYJytxgbzyAhxTX5D1U=;
+        b=h6NRsVSQ5KTU9NeJWo8qYXMV1+BnlP76hfGm42KhiNgL34QL9RhB9FGsN7uJsWWFWM
+         i1vSovRBShKRP7VW10nip+xK83wHFBskpc7hNEWV4bMI2s9tz6tVWYUbKEi83jGEOwsp
+         QzfKTuAnP/CCr1NfvoO1qi/qr5K78K2RoM+Wh69o01anzldI/Y3j5RmtZCy4iDkeTNIJ
+         d1Q+tp1hsJcEln7fa8g1QB3/eKWb0hsuQZ4UzkquebhOfADTPBZ2o+BU3onwT3Sy+GWq
+         RoWVHqGOrEhd0YwkdACEOkYMMAB6OS+G4g9VM0x+xWGhp4zpmkc7UiThGBQLomNOfTrT
+         vEUA==
+X-Gm-Message-State: AOAM5317hINu+kvCLsM8Wk2UZEUu+NJMqAmphk1e2ZO+rZdzgkbLGCPi
+        /VwWy14VjmjP/KW+QYcXXTYg0a9iISZAiACtEf17p8dN+eA=
+X-Google-Smtp-Source: ABdhPJwvMP45iKh6ctuzwjBEHsLMCZ2t2DJi6jHsM/Qh2syL2Byl+RUOpcjkYiO4u9890rA2qvaWtrRoh3wi4zvrHZk=
+X-Received: by 2002:a05:6638:22c3:b0:32e:ac50:aeb3 with SMTP id
+ j3-20020a05663822c300b0032eac50aeb3mr9147129jat.186.1653415688617; Tue, 24
+ May 2022 11:08:08 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20220523020209.11810-1-ojeda@kernel.org> <20220523020209.11810-4-ojeda@kernel.org>
+ <YovvIQeN3lmOYzJO@kernel.org>
+In-Reply-To: <YovvIQeN3lmOYzJO@kernel.org>
+From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Date:   Tue, 24 May 2022 20:07:57 +0200
+Message-ID: <CANiq72m6ttD9QpB3nW-5B+M1seknv0GZ4-DqtF85qTg6Lvxnhg@mail.gmail.com>
+Subject: Re: [PATCH v7 03/25] kallsyms: increase maximum kernel symbol length
+ to 512
+To:     Jarkko Sakkinen <jarkko@kernel.org>
+Cc:     Miguel Ojeda <ojeda@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        rust-for-linux <rust-for-linux@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Alex Gaynor <alex.gaynor@gmail.com>,
+        Wedson Almeida Filho <wedsonaf@google.com>,
+        Gary Guo <gary@garyguo.net>, Boqun Feng <boqun.feng@gmail.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        live-patching@vger.kernel.org, linux-perf-users@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/AsahiLinux/linux bits/070-audio
-head:   401ef594286e6abfe89c2d92664087bc5d6ca657
-commit: 732003ea9b5c8115c96e1e22272959bd74fcbd4a [15/20] ASoC: tas2764: Extend driver to SN012776
-config: x86_64-randconfig-a014 (https://download.01.org/0day-ci/archive/20220525/202205250215.BQHYYJpH-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 10c9ecce9f6096e18222a331c5e7d085bd813f75)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/AsahiLinux/linux/commit/732003ea9b5c8115c96e1e22272959bd74fcbd4a
-        git remote add asahilinux https://github.com/AsahiLinux/linux
-        git fetch --no-tags asahilinux bits/070-audio
-        git checkout 732003ea9b5c8115c96e1e22272959bd74fcbd4a
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash sound/soc/codecs/
+On Mon, May 23, 2022 at 10:33 PM Jarkko Sakkinen <jarkko@kernel.org> wrote:
+>
+> There's no description what the patch does.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+I am not sure what you mean. Both the subject and the last paragraph
+describe what the patch does, while the rest gives the rationale
+behind it.
 
-All warnings (new ones prefixed by >>):
-
->> sound/soc/codecs/tas2764.c:683:20: warning: cast to smaller integer type 'enum tas2764_devid' from 'const void *' [-Wvoid-pointer-to-enum-cast]
-                   tas2764->devid = (enum tas2764_devid) of_id->data;
-                                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   1 warning generated.
-
-
-vim +683 sound/soc/codecs/tas2764.c
-
-   666	
-   667	static int tas2764_i2c_probe(struct i2c_client *client,
-   668				const struct i2c_device_id *id)
-   669	{
-   670		struct tas2764_priv *tas2764;
-   671		const struct of_device_id *of_id = NULL;
-   672		int result;
-   673	
-   674		tas2764 = devm_kzalloc(&client->dev, sizeof(struct tas2764_priv),
-   675				       GFP_KERNEL);
-   676		if (!tas2764)
-   677			return -ENOMEM;
-   678	
-   679		if (client->dev.of_node)
-   680			of_id = of_match_device(tas2764_of_match, &client->dev);	
-   681	
-   682		if (of_id)
- > 683			tas2764->devid = (enum tas2764_devid) of_id->data;
-   684		else
-   685			tas2764->devid = DEVID_TAS2764;
-   686	
-   687		tas2764->dev = &client->dev;
-   688		i2c_set_clientdata(client, tas2764);
-   689		dev_set_drvdata(&client->dev, tas2764);
-   690	
-   691		tas2764->regmap = devm_regmap_init_i2c(client, &tas2764_i2c_regmap);
-   692		if (IS_ERR(tas2764->regmap)) {
-   693			result = PTR_ERR(tas2764->regmap);
-   694			dev_err(&client->dev, "Failed to allocate register map: %d\n",
-   695						result);
-   696			return result;
-   697		}
-   698	
-   699		if (client->dev.of_node) {
-   700			result = tas2764_parse_dt(&client->dev, tas2764);
-   701			if (result) {
-   702				dev_err(tas2764->dev, "%s: Failed to parse devicetree\n",
-   703					__func__);
-   704				return result;
-   705			}
-   706		}
-   707	
-   708		return devm_snd_soc_register_component(tas2764->dev,
-   709						       &soc_component_driver_tas2764,
-   710						       tas2764_dai_driver,
-   711						       ARRAY_SIZE(tas2764_dai_driver));
-   712	}
-   713	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Cheers,
+Miguel
