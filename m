@@ -2,68 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BC18C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 00:23:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B3C3C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 00:28:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230129AbiEXAXT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 20:23:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43524 "EHLO
+        id S231693AbiEXA2q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 20:28:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232307AbiEXAWw (ORCPT
+        with ESMTP id S229461AbiEXA2n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 20:22:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65E253700E
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 17:22:51 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 02A4A615B5
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 00:22:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 63834C385AA;
-        Tue, 24 May 2022 00:22:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653351770;
-        bh=gWs534bx6/1RwhKb6QYQLYeWDihrHcYTVgW7ksqzVR8=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=fKmFEn08Kpb3h3PYr58XtZLng2KOA5M5wVtS6p++I/tia4zW8Za9qUBA9N1MStM4x
-         TTYrgUWVR8NR1SaC7BMxmKuE8YVCKMkYIOGwvWNQ5Onz7s3CqCtOjnOre7l2acvRDC
-         6HtHoDfBovuZ3YKUaHQmnbceSIHDg885ZCIOo3i4NyvHpGvIjcsW9p+4hvchVM1wjo
-         80Z+MBBX9vH6nujK52tpLMyq2PbCb9Hu9OWKf4THCzUEjmJjtIVEBx2UiEVJBSR0Yo
-         Y30c4UIf8UPcGUFFkPPmDcH8n1DUlET3V1AYzK4yJ7RtyL8KkqhGuY+oB4TD5EEO0M
-         aoZWb2O29V/rw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 48CC4F03943;
-        Tue, 24 May 2022 00:22:50 +0000 (UTC)
-Subject: Re: [GIT pull] core/core for 5.19-rc1
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <165329267741.3801280.534077656528571075.tglx@xen13>
-References: <165329267741.3801280.534077656528571075.tglx@xen13>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <165329267741.3801280.534077656528571075.tglx@xen13>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git core-core-2022-05-23
-X-PR-Tracked-Commit-Id: 75d8cce128c516fe6cf4b8683e8fe1a59e919902
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 4b57dccc42a790cdf2a8cad110143feb8b35e563
-Message-Id: <165335177029.4476.7308781073626532346.pr-tracker-bot@kernel.org>
-Date:   Tue, 24 May 2022 00:22:50 +0000
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, x86@kernel.org
+        Mon, 23 May 2022 20:28:43 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11DF58AE41;
+        Mon, 23 May 2022 17:28:43 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id ob14-20020a17090b390e00b001dff2a43f8cso681327pjb.1;
+        Mon, 23 May 2022 17:28:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=BdqPu1HPMj+H8IaZVIz2FokWfX+Ex1sG3tG20G/V3C0=;
+        b=MdDX2JcEH7gtQONMR82aGNBa3VeZu1R0Ve0twvRjh67Ao16tvP0Yu/aePJlGnZHM4B
+         ymWGjKryHSU3xW501ydx4xWPX2D3RthaeCyNDW/Pc0thpvQy5tHqla3Yx+tcNLehoNRs
+         PvoCYyzLPeKLuQja49+PTFPbWcuromSzWo6iL/r3DaZvllOo7WcQK5zeRuptSpv9pEMd
+         LS0CeRxRsavYaMO5vNq6CSdfHKJJkkcJcuOjvSgBkvQgvOevdY+aIGra/toN79TCC4y4
+         jzhKf4Nn4ayK1V/v4XF00XKa44ikb9IQfH6W9nS5dacEN62q1wO1MQpY7IXTOQGHMPHY
+         zITg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=BdqPu1HPMj+H8IaZVIz2FokWfX+Ex1sG3tG20G/V3C0=;
+        b=iKWk4W7rRjKXrDQAztGL1ecs6kgv10yvoIbqS4hOEJQJMeSJ4nQs4VWVrQRsQD4BqX
+         h+bcvcSr1QPib3fx0UCE4qEYdIfUKh/pmV5nilbJK6XpSLhzK2gjKhGvp5RMGlO9A92s
+         IsKS2zbiEOCPbwsweEb4wwJG1AtD0+uWZoX+w8YisRCsXaoHCGYWdV+O6/08LOSX2TjG
+         hE4K3SrsBZrHywibdBB0+XF5jyuukC+2y41QHTsAsC1r0TWjvvlYKp7vQEyScULm8ae+
+         BJ6ucy7G3wFuomHSF3oTtomKZae+sP4q7rhPE7eLGhnW2XwjbwRUqoJfYeBtwMdGlQzM
+         t0ng==
+X-Gm-Message-State: AOAM533zs0OmAppHNL3QAvUdEnvSEDbcfS3t9HYpds8EXgjdj0In3BHO
+        whvvOOGjPIRTl/nvqCau5EVpBnsBqHZ6xmqxFTE=
+X-Google-Smtp-Source: ABdhPJzRS4sJAryFS/ZRwzCFIVs9l2otRn7s2vNmhg50MjjZNLwuRZ0UpZZ8XABNDXl/uT5Rf4nQpjrgIO7GCd5JVkw=
+X-Received: by 2002:a17:902:728c:b0:161:f216:4f3c with SMTP id
+ d12-20020a170902728c00b00161f2164f3cmr18992723pll.65.1653352122501; Mon, 23
+ May 2022 17:28:42 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220523165830.581652127@linuxfoundation.org>
+In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
+From:   Zan Aziz <zanaziz313@gmail.com>
+Date:   Mon, 23 May 2022 18:28:31 -0600
+Message-ID: <CAFU3qoaDVbor3raNLvK=EMOp+82Ac2=6yT5_vgwUT_LeSCC6Qw@mail.gmail.com>
+Subject: Re: [PATCH 5.17 000/158] 5.17.10-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Mon, 23 May 2022 10:02:03 +0200 (CEST):
+On Mon, May 23, 2022 at 11:08 AM Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> This is the start of the stable review cycle for the 5.17.10 release.
+> There are 158 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Wed, 25 May 2022 16:56:55 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.17.10-rc1.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.17.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
+Hi Greg,
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git core-core-2022-05-23
+Compiled and booted on my test system Lenovo P50s: Intel Core i7
+No emergency and critical messages in the dmesg
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/4b57dccc42a790cdf2a8cad110143feb8b35e563
+./perf bench sched all
+# Running sched/messaging benchmark...
+# 20 sender and receiver processes per group
+# 10 groups == 400 processes run
 
-Thank you!
+     Total time: 0.442 [sec]
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+# Running sched/pipe benchmark...
+# Executed 1000000 pipe operations between two processes
+
+     Total time: 7.127 [sec]
+
+       7.127568 usecs/op
+         140300 ops/sec
+
+Tested-by: Zan Aziz <zanaziz313@gmail.com>
+
+Thanks
+-Zan
