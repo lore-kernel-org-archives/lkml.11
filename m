@@ -2,77 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CBA6C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 07:26:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5234FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 07:27:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234507AbiEXH0t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 03:26:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35242 "EHLO
+        id S235005AbiEXH1M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 03:27:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234675AbiEXH0e (ORCPT
+        with ESMTP id S235207AbiEXH1G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 03:26:34 -0400
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A2771582F
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 00:26:33 -0700 (PDT)
-Received: by mail-yb1-xb33.google.com with SMTP id p190so2482581ybg.4
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 00:26:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=gJWKj2F93NghAWdlsPXaL6PXsu2REAfRhsHMxfDodds=;
-        b=GVa7L31SPkXGRtdqRY4xJ1bZ0GY6Y3XUnFaYwEvm1BNaY5qE1EHXs4O34BrzfBBLGT
-         kXKVxAh73GftnNjF8xA5GJUuhINikT3k5JRm3NRucHv8/ph+2rutnKYz2DEDAKWScwNf
-         Q28sXE/5q5iiU6hiY8gsxvG+k2rcLdKGkvz41SSnYDf4fkJkRyChk7hRS+CW9x4gQK8o
-         8aNkqnWhnSknzqam7R02yw4pDG1ALsm24e61kHewJuVdKJTrJQYzdUuoleBCCa8AiZ0y
-         EmoLeY0nDk6Q3kDWZWToeUTZW3H2dDIxrllKbG9CprvFc6ljJx04fovi1ukjyQvD4WYh
-         ssJQ==
+        Tue, 24 May 2022 03:27:06 -0400
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DE421FCF0
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 00:27:01 -0700 (PDT)
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com [209.85.208.71])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 39C473F1D3
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 07:27:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1653377220;
+        bh=shKDtZWbPRAYSxVbqGScFYHLBdbSbIz7UNIH95Lp9To=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=bl+cK1RZRTxQbyr2+hZsgoUV+PH5NxaoyA5VwrFp52DbYo1vzoXGUPlAq6XDTxsci
+         gXHxJUBYQhbLUCfzEIJVHhVdoNiXi7U7VS+72Emq/OhUMO/auh8WGSDPBRgkHd78wp
+         SBFNHUKBCHVHKFOTOqCFRDltm5C9MZu3TdcJhOPJPhL1zzibFJizYMzp81KbnTlmXQ
+         TvPXgghNR5i6xiUEgucF21dqjykjD7LyydmGMQhnhow81oYaS3U2mtEG/16lLELDKy
+         i+KkcwlnHR4jyjmp37h4szKFGTFxkZmYyDFH1CWJqVn/7KIZNXksriExTL4x4rKEng
+         cLIoDTKsvjj5w==
+Received: by mail-ed1-f71.google.com with SMTP id g10-20020a056402180a00b0042ab515d6c5so12053930edy.13
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 00:27:00 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=gJWKj2F93NghAWdlsPXaL6PXsu2REAfRhsHMxfDodds=;
-        b=TDyVLTlaxnEn8gr212dmGwcWgaFVCM/WNsdSilsUjfE3VzU3l3RmAkLvKo+WlO1xYk
-         7FxXvIDuFg0OzAjd8FexR2VEKNYKPSHhsSuSBuFM7f4iBGH66BGhmgWLgY7Ub0P6D2Gp
-         d7HPjzO1peFRMr1ha2zKl2OrO1HsKNxB4po2Bc4rgu5mWDZTj+d8btWkIdid2Qs7TU8E
-         WvUQnOkyCq+0h+DACyJz5bpu9cbpDQlDq0LcXh3mf9q3o2Bj53vjuV6KfB39R5hYACqr
-         OxcihyVbnfWvXnahT/USb+/UsUOPoHP7GUtVeLS8OCdKGxPhFCJEQaK+jJmokdOFIE8y
-         C8IA==
-X-Gm-Message-State: AOAM531UueZUS1MDCbcJl+yRWIR8byomsy+UBF3eeBB7Povb8ZL5B+PY
-        qDW/4bIzJetLP3zQFpUWoCkGwMm0X3Y4j814Exv37A==
-X-Google-Smtp-Source: ABdhPJzHKwBmWdk7X6ijDIcbH7VCh5ViEnNHyoGaOSsJkkOCwAPI7g5KLD8oEqJBq/k3mckknqmLtth1uFFb4CONS5k=
-X-Received: by 2002:a05:6902:526:b0:64d:b6ab:f91d with SMTP id
- y6-20020a056902052600b0064db6abf91dmr25689763ybs.295.1653377192575; Tue, 24
- May 2022 00:26:32 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=shKDtZWbPRAYSxVbqGScFYHLBdbSbIz7UNIH95Lp9To=;
+        b=W4WusxkKyRLAqvJlqoAOedJReHt8FddvKci5G0rjR4jhvwQ4K/CVCMEQPAoM4dd02c
+         7j0N1lmenLXzhxxgbdxP+6M4L/5JVdfuzqV/bToqLEbl9iulvQhYspUp2FLlYGEYHJsv
+         sBFPmh/OXgNkbzaga93Cy83CX2oHw7gs4Wx6NnMleYZGh2RIk5Tg/8ndXo8kP3WXTIVX
+         sIyRgysFqxvLHBp7fB9zVRTpujdYI/NzH6DjYciNyjXlHIYBWSGGu+YkI4PBgIrfcJIh
+         /jA2qcrm4ZJOju+AYFFymVlLOhqcdrrLSZb4Wi/m4P15t9JaZhadVBA+Plo1Hj6d4lfo
+         tvAQ==
+X-Gm-Message-State: AOAM532yS5OXh5s1z1q34QDkHzTpT51Z0roSEIifM8FrmpDEQC/mrgF9
+        GX4xThxqqUA8NjFB7/mpOMjTCXgmrzbz0/ciHv1fbrGUwMloB8wSiiLHMnfK0/5N4GdaZn9kxtr
+        BoNtWpUg6+FFKjbGhQEhO+mK96RGqM0qhGAh8Ktq9zA==
+X-Received: by 2002:a17:907:948c:b0:6f5:183f:eb6 with SMTP id dm12-20020a170907948c00b006f5183f0eb6mr22247273ejc.112.1653377219988;
+        Tue, 24 May 2022 00:26:59 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxT1vbxy1UAwwOsUFCu5M24qz9FKj3AUytk4VHpaciYfk2Y1MKhvLkbrk4yzFOCN+HMs8SrGQ==
+X-Received: by 2002:a17:907:948c:b0:6f5:183f:eb6 with SMTP id dm12-20020a170907948c00b006f5183f0eb6mr22247262ejc.112.1653377219832;
+        Tue, 24 May 2022 00:26:59 -0700 (PDT)
+Received: from gollum.fritz.box ([194.191.244.86])
+        by smtp.gmail.com with ESMTPSA id 17-20020a170906329100b006f3ef214dd2sm6924353ejw.56.2022.05.24.00.26.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 24 May 2022 00:26:59 -0700 (PDT)
+From:   Juerg Haefliger <juerg.haefliger@canonical.com>
+X-Google-Original-From: Juerg Haefliger <juergh@canonical.com>
+To:     ysato@users.sourceforge.jp, uclinux-h8-devel@lists.sourceforge.jp
+Cc:     linux-kernel@vger.kernel.org,
+        Juerg Haefliger <juergh@canonical.com>
+Subject: [PATCH 0/2] h8300: Kconfig: Style cleanups
+Date:   Tue, 24 May 2022 09:26:54 +0200
+Message-Id: <20220524072656.20152-1-juergh@canonical.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-References: <20220523143255.4376-1-linmq006@gmail.com>
-In-Reply-To: <20220523143255.4376-1-linmq006@gmail.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Tue, 24 May 2022 09:26:20 +0200
-Message-ID: <CACRpkdaJQUY_gaHFqyUtdq2RNry5oGdDxO3T9EjVa9bd40enMQ@mail.gmail.com>
-Subject: Re: [PATCH] mtd: maps: Fix refcount leak in ap_flash_init
-To:     Miaoqian Lin <linmq006@gmail.com>
-Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 23, 2022 at 4:33 PM Miaoqian Lin <linmq006@gmail.com> wrote:
+The majority of the Kconfig files use a single tab for basic indentation
+and a single tab followed by two whitespaces for help text indentation.
+Fix the lines that don't follow this convention.
 
-> of_find_matching_node() returns a node pointer with refcount
-> incremented, we should use of_node_put() on it when not need anymore.
-> Add missing of_node_put() to avoid refcount leak.
->
-> Fixes: b0afd44bc192 ("mtd: physmap_of: add a hook for Versatile write protection")
-> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Juerg Haefliger (2):
+  h8300: Kconfig: Fix indentation
+  h8300: Kconfig.cpu: Fix indentation
 
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+ arch/h8300/Kconfig     | 4 ++--
+ arch/h8300/Kconfig.cpu | 6 +++---
+ 2 files changed, 5 insertions(+), 5 deletions(-)
 
-Yours,
-Linus Walleij
+-- 
+2.32.0
+
