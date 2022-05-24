@@ -2,116 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47207C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 08:03:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 107BCC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 08:04:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230414AbiEXIDZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 04:03:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55594 "EHLO
+        id S229863AbiEXIEs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 04:04:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230354AbiEXIDT (ORCPT
+        with ESMTP id S229738AbiEXIEm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 04:03:19 -0400
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 833B393455
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 01:03:16 -0700 (PDT)
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com [209.85.128.72])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Tue, 24 May 2022 04:04:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A9289549C;
+        Tue, 24 May 2022 01:04:41 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 46E713F157
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 08:03:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1653379395;
-        bh=llXcMB27bzBY3jTzV9fPnL3rBPYYoIJI1kMb7QxoWZs=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
-        b=B9bqwFjDie1BebsjK6oFuRMw41YRvY9bNBRhtLoylGL7/urkydGPgAg1DhTSW0jv2
-         Lt1FcPSL1s0f9WswQhi4gK5EGvuUkrIbRK9MXPHkByBY9SJthMiNOHxPjcupfsYgYq
-         3/klFUnXCrwMdCpK335/oA+CohsApPZKQ+ZdS1SfcKNj6ZIVHXmmoodOp9DOep+9If
-         FpzDY1K3OCl6XUsl+hjyc+TeVRFrdCJkAoyKBm81vlp2V57CEseLMA5i/q+uQtO2yA
-         nN1lq9lXRBPOrwLp1kj0Pn+dk7sh/Ca6uxaNtFxtYbwkLcXcknLGVtDaeGEEhiXEZy
-         s457SGHeJqVug==
-Received: by mail-wm1-f72.google.com with SMTP id v124-20020a1cac82000000b003948b870a8dso939074wme.2
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 01:03:15 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=llXcMB27bzBY3jTzV9fPnL3rBPYYoIJI1kMb7QxoWZs=;
-        b=gAAUf7+ZEzpx3MKFSdxfHTLe5OwfovIuBDYNClZot88rrRcvcw0pHBjXyKrmbc05iP
-         ZZcUpwcme/PzhBLPPxCfUZO0BXUBXrQK0jP4u1qDoBpeiI1arrnxdf1Bg4aEyhKlqXYQ
-         bTYD2GI1Ai+u37vi+lXxdB17Smsda2hMcIEmYFKbPVPIKKji0smuGz1mrGRC/7yS0kDF
-         1JRLSsobJvLjPGaob2rk8yT0HW3WlMBqMYcZVHbxI9Fqmdm8XCI0bQnMi6cb6ro7f8Dy
-         9nnXsP+tk335h1RMQ71vVrce/Dqo2LohOuIXa75JsZpNyzh1+jRRt8oGHldX6JB8zNHS
-         uDFQ==
-X-Gm-Message-State: AOAM531bbg6dMAeX3TmnC7+ZiqSrVXGaEmcxqkMlbiP44GI38ml8rWB9
-        D5sv9/EtFBdFXX/p9HXH+v4D2E79vUxKmiJS1tGpxYp5nxz2gvrncXll+G6PQyzCvyP9tCu3bC+
-        UtTeAQqV9++DSs8QVR0f/Fb0WWVl1j1+M13qPYpc3Hg==
-X-Received: by 2002:a05:6000:1621:b0:20f:f723:ec49 with SMTP id v1-20020a056000162100b0020ff723ec49mr717742wrb.284.1653379395026;
-        Tue, 24 May 2022 01:03:15 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzWNw9OXR8ld6R1bAnCAZMWCeilUppYldTLCS0p1zIsVBDty0O40XQ4SsBaWhBThWVJe6AacQ==
-X-Received: by 2002:a05:6000:1621:b0:20f:f723:ec49 with SMTP id v1-20020a056000162100b0020ff723ec49mr717726wrb.284.1653379394819;
-        Tue, 24 May 2022 01:03:14 -0700 (PDT)
-Received: from gollum.fritz.box ([194.191.244.86])
-        by smtp.gmail.com with ESMTPSA id f9-20020adfc989000000b0020c5253d8e0sm11983117wrh.44.2022.05.24.01.03.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 May 2022 01:03:14 -0700 (PDT)
-From:   Juerg Haefliger <juerg.haefliger@canonical.com>
-X-Google-Original-From: Juerg Haefliger <juergh@canonical.com>
-To:     tsbogend@alpha.franken.de, linux-mips@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Juerg Haefliger <juergh@canonical.com>
-Subject: [PATCH] MIPS: Kconfig: Fix indentation and add endif comment
-Date:   Tue, 24 May 2022 10:03:11 +0200
-Message-Id: <20220524080311.22133-1-juergh@canonical.com>
-X-Mailer: git-send-email 2.32.0
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 41A0C615BB;
+        Tue, 24 May 2022 08:04:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C674C34100;
+        Tue, 24 May 2022 08:04:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653379480;
+        bh=xY+BlQ/hkKZ+ByV7JuikIcr/QSDcYMpzUNbuRSjiL1I=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=BRM14XhgWiKGMQWkvNoIT3iXdRuPDYPdTBl0K4v8pgPGNd4+7u8XObHKtfxHZ/QEI
+         a+PXq61xsP47BqW/hR5vabzmet7rhMcoHAjoQ+oi824i++eCypwYJ0X8K2kJG3N74q
+         Ug4cfbParqdNfYu57g3ChODAQiGHBRv0gXncDA/jWyfp/8q+3gX/K9yfw3lCJzyQ0M
+         /VDLVQBphxwaMzwaoQwiZVfRrV6LiScAbR6YwGAp0OumlPdCqzwhShbOX8Px4KBWiS
+         kBN863nMAioh0RhvYKW6zU76LY6tVtQ1AuO5ZVLEbHbvqzx9ka8ZX+LZdQ51xG0LP0
+         1Z2HbxemW015Q==
+Received: by mail-oi1-f182.google.com with SMTP id v9so15908431oie.5;
+        Tue, 24 May 2022 01:04:40 -0700 (PDT)
+X-Gm-Message-State: AOAM530AL/wo9MHLxXLI54I1j5K7jIh31lxPp2N9n4S2YCFET64wadNW
+        IRp63+miWCh0RYqtgbr5POmVQUc5bBZtZAyxd6k=
+X-Google-Smtp-Source: ABdhPJxWRVFHd81Y8Qy0y5ez2SEZN9ClH++9AXmB9OIM4dFNgLnIcklEciZfmLZvIOmsfWeCMwugqGYysgnRKS9zAQc=
+X-Received: by 2002:a05:6808:e8d:b0:322:bac0:2943 with SMTP id
+ k13-20020a0568080e8d00b00322bac02943mr1610679oil.126.1653379479738; Tue, 24
+ May 2022 01:04:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220516101635.1082132-1-yoan.picchi@arm.com> <20220516101635.1082132-3-yoan.picchi@arm.com>
+ <CAMj1kXGAiA-SkTFD5EgcacYao0RKT7oK0AxvxkR7Ho_KZSGXCw@mail.gmail.com> <20220518165512.3e07c4b3@donnerap.cambridge.arm.com>
+In-Reply-To: <20220518165512.3e07c4b3@donnerap.cambridge.arm.com>
+From:   Ard Biesheuvel <ardb@kernel.org>
+Date:   Tue, 24 May 2022 10:04:28 +0200
+X-Gmail-Original-Message-ID: <CAMj1kXEF6KV=3CXhaRKygBs9hvun7=bKRua5NbWOrksaZBgtCQ@mail.gmail.com>
+Message-ID: <CAMj1kXEF6KV=3CXhaRKygBs9hvun7=bKRua5NbWOrksaZBgtCQ@mail.gmail.com>
+Subject: Re: [RFC PATCH 2/2] Removes the x86 dependency on the QAT drivers
+To:     Andre Przywara <andre.przywara@arm.com>
+Cc:     yoan.picchi@arm.com, Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>,
+        qat-linux <qat-linux@intel.com>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The convention for indentation seems to be a single tab. Help text is
-further indented by an additional two whitespaces. Fix the lines that
-violate these rules.
+On Wed, 18 May 2022 at 17:55, Andre Przywara <andre.przywara@arm.com> wrote:
+>
+> On Tue, 17 May 2022 10:11:09 +0200
+> Ard Biesheuvel <ardb@kernel.org> wrote:
+>
+> Hi,
+>
+> > On Mon, 16 May 2022 at 12:16, <yoan.picchi@arm.com> wrote:
+> > >
+> > > From: Yoan Picchi <yoan.picchi@arm.com>
+> > >
+> > > This dependency looks outdated. After the previous patch, we have been able
+> > > to use this driver to encrypt some data and to create working VF on arm64.
+> > >
+> > > Signed-off-by: Yoan Picchi <yoan.picchi@arm.com>
+> >
+> > Are you sure the driver is safe for non-coherent DMA as well?
+>
+> That depends on your definition of "sure".
+> We indeed tested this only on a server with coherent PCIe.
+>
+> I skimmed through the driver, and it looks like to use the DMA API
+> correctly:
+> - I see dma_alloc_coherent() calls for DMA ring buffers.
+> - There are dma_map_single()/dma_unmap_single() pairs in other parts.
+> - Accesses to the BARs are capsuled via macros, using readl/writel.
+> - Access the the SRAM BAR is also only done via those macros.
+>
+> I didn't go through the driver systematically, and of course the
+> interesting parts are the ones you don't see easily, so I am eager to hear
+> any other opinions on this topic.
+>
+> Ard, do you have anything special in mind? Is there something to look out
+> for, specifically?
+>
 
-While add it, add a missing trailing endif comment.
+If it uses the DMA api consistently and correctly, and works as
+expected when running under a SMMU, things are probably fine
 
-Signed-off-by: Juerg Haefliger <juergh@canonical.com>
----
- arch/mips/Kconfig | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+> The few cards we have access to are in some server in the data centre, so
+> I can't easily walk in with, say a RockPro64, and test this there.
+>
 
-diff --git a/arch/mips/Kconfig b/arch/mips/Kconfig
-index de3b32a507d2..6e92ca97e479 100644
---- a/arch/mips/Kconfig
-+++ b/arch/mips/Kconfig
-@@ -1321,11 +1321,11 @@ config CPU_LOONGSON64
- 	select SWIOTLB
- 	select HAVE_KVM
- 	help
--		The Loongson GSx64(GS264/GS464/GS464E/GS464V) series of processor
--		cores implements the MIPS64R2 instruction set with many extensions,
--		including most 64-bit Loongson-2 (2H, 2K) and Loongson-3 (3A1000,
--		3B1000, 3B1500, 3A2000, 3A3000 and 3A4000) processors. However, old
--		Loongson-2E/2F is not covered here and will be removed in future.
-+	  The Loongson GSx64(GS264/GS464/GS464E/GS464V) series of processor
-+	  cores implements the MIPS64R2 instruction set with many extensions,
-+	  including most 64-bit Loongson-2 (2H, 2K) and Loongson-3 (3A1000,
-+	  3B1000, 3B1500, 3A2000, 3A3000 and 3A4000) processors. However, old
-+	  Loongson-2E/2F is not covered here and will be removed in future.
- 
- config LOONGSON3_ENHANCEMENT
- 	bool "New Loongson-3 CPU Enhancements"
-@@ -3255,7 +3255,7 @@ menu "CPU Power Management"
- 
- if CPU_SUPPORTS_CPUFREQ && MIPS_EXTERNAL_TIMER
- source "drivers/cpufreq/Kconfig"
--endif
-+endif # CPU_SUPPORTS_CPUFREQ && MIPS_EXTERNAL_TIMER
- 
- source "drivers/cpuidle/Kconfig"
- 
--- 
-2.32.0
+I suppose this implies that you have tested with SMMUs enabled.
 
+> >
+> > > ---
+> > >  drivers/crypto/qat/Kconfig | 14 +++++++-------
+> > >  1 file changed, 7 insertions(+), 7 deletions(-)
+> > >
+> > > diff --git a/drivers/crypto/qat/Kconfig b/drivers/crypto/qat/Kconfig
+> > > index 4b90c0f22b03..88df2cf4cac9 100644
+> > > --- a/drivers/crypto/qat/Kconfig
+> > > +++ b/drivers/crypto/qat/Kconfig
+> > > @@ -17,7 +17,7 @@ config CRYPTO_DEV_QAT
+> > >
+> > >  config CRYPTO_DEV_QAT_DH895xCC
+> > >         tristate "Support for Intel(R) DH895xCC"
+> > > -       depends on X86 && PCI
+> > > +       depends on PCI
+> > >         select CRYPTO_DEV_QAT
+> > >         help
+> > >           Support for Intel(R) DH895xcc with Intel(R) QuickAssist Technology
+> > > @@ -28,7 +28,7 @@ config CRYPTO_DEV_QAT_DH895xCC
+> > >
+> > >  config CRYPTO_DEV_QAT_C3XXX
+> > >         tristate "Support for Intel(R) C3XXX"
+> > > -       depends on X86 && PCI
+> > > +       depends on PCI
+> > >         select CRYPTO_DEV_QAT
+> > >         help
+> > >           Support for Intel(R) C3xxx with Intel(R) QuickAssist Technology
+> > > @@ -39,7 +39,7 @@ config CRYPTO_DEV_QAT_C3XXX
+> > >
+> > >  config CRYPTO_DEV_QAT_C62X
+> > >         tristate "Support for Intel(R) C62X"
+> > > -       depends on X86 && PCI
+> > > +       depends on PCI
+> > >         select CRYPTO_DEV_QAT
+> > >         help
+> > >           Support for Intel(R) C62x with Intel(R) QuickAssist Technology
+> > > @@ -50,7 +50,7 @@ config CRYPTO_DEV_QAT_C62X
+> > >
+> > >  config CRYPTO_DEV_QAT_4XXX
+> > >         tristate "Support for Intel(R) QAT_4XXX"
+> > > -       depends on X86 && PCI
+> > > +       depends on PCI
+> > >         select CRYPTO_DEV_QAT
+> > >         help
+> > >           Support for Intel(R) QuickAssist Technology QAT_4xxx
+> > > @@ -61,7 +61,7 @@ config CRYPTO_DEV_QAT_4XXX
+> > >
+> > >  config CRYPTO_DEV_QAT_DH895xCCVF
+> > >         tristate "Support for Intel(R) DH895xCC Virtual Function"
+> > > -       depends on X86 && PCI
+> > > +       depends on PCI
+> > >         select PCI_IOV
+> > >         select CRYPTO_DEV_QAT
+> > >
+> > > @@ -74,7 +74,7 @@ config CRYPTO_DEV_QAT_DH895xCCVF
+> > >
+> > >  config CRYPTO_DEV_QAT_C3XXXVF
+> > >         tristate "Support for Intel(R) C3XXX Virtual Function"
+> > > -       depends on X86 && PCI
+> > > +       depends on PCI
+> > >         select PCI_IOV
+> > >         select CRYPTO_DEV_QAT
+> > >         help
+> > > @@ -86,7 +86,7 @@ config CRYPTO_DEV_QAT_C3XXXVF
+> > >
+> > >  config CRYPTO_DEV_QAT_C62XVF
+> > >         tristate "Support for Intel(R) C62X Virtual Function"
+> > > -       depends on X86 && PCI
+> > > +       depends on PCI
+> > >         select PCI_IOV
+> > >         select CRYPTO_DEV_QAT
+> > >         help
+> > > --
+> > > 2.25.1
+> > >
+>
