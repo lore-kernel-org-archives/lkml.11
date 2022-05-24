@@ -2,121 +2,362 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75C54C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 22:31:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F3B9C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 22:32:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242281AbiEXWbE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 18:31:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50796 "EHLO
+        id S242331AbiEXWcJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 18:32:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242278AbiEXWbB (ORCPT
+        with ESMTP id S242333AbiEXWcE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 18:31:01 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46694366BD
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 15:30:59 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        Tue, 24 May 2022 18:32:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A420362CC3
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 15:32:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id ADA11221D4;
-        Wed, 25 May 2022 00:30:50 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1653431456;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=lhGQ7tI7wUakb4EC0eKrtQPP0/Pvguw0Yv+MToZjl2E=;
-        b=AkCfXPN7d5TXu1LEgNEP3517qTQIuyfHqvMT91ZTbkKaH6rNMxHCcV/2yKKm6zSKCeSMRj
-        IlubmWCkPfKRzqlldBgBuvH0jUa6gCoXlz9EUZdBhhcYVNM7iYuzPnErdIRGhh7O0govft
-        p6mbpfi1z7FNnPVFdDReNeE9+nAeNsc=
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0015C617DA
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 22:32:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8038C34100;
+        Tue, 24 May 2022 22:32:00 +0000 (UTC)
+Date:   Tue, 24 May 2022 18:31:59 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Linyu Yuan <quic_linyyuan@quicinc.com>
+Cc:     Ingo Molnar <mingo@redhat.com>, <linux-kernel@vger.kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Tom Zanussi <zanussi@kernel.org>
+Subject: Re: [PATCH 1/2] tracing/probes: auto generate events name when
+ create a group of events
+Message-ID: <20220524183159.21bac428@gandalf.local.home>
+In-Reply-To: <1651397651-30454-2-git-send-email-quic_linyyuan@quicinc.com>
+References: <1651397651-30454-1-git-send-email-quic_linyyuan@quicinc.com>
+        <1651397651-30454-2-git-send-email-quic_linyyuan@quicinc.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Date:   Wed, 25 May 2022 00:30:50 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Tom Fitzhenry <tom@tom-fitzhenry.me.uk>
-Cc:     Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Pratyush Yadav <p.yadav@ti.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Martijn Braam <martijn@brixit.nl>,
-        linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] mtd: spi-nor: gigadevice: add support for gd25lq128e
-In-Reply-To: <28d3925a-983a-fcb8-19af-6e6baf892d53@tom-fitzhenry.me.uk>
-References: <20220523055541.724422-1-tom@tom-fitzhenry.me.uk>
- <65339d49135ffb578b5cd5ae459cea8a@walle.cc>
- <28d3925a-983a-fcb8-19af-6e6baf892d53@tom-fitzhenry.me.uk>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <10c2bc96821e9a907e54ef1675dc4c60@walle.cc>
-X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 2022-05-24 22:50, schrieb Tom Fitzhenry:
-> On 23/5/22 18:03, Michael Walle wrote:
->> According to JEP106BC the vendor code 0x25 is Tristar. I'm
->> not sure what is going on here.
+
+[ Adding Masami (kprobe maintainer) and Tom (dynamic event maintainer) ]
+
+On Sun, 1 May 2022 17:34:10 +0800
+Linyu Yuan <quic_linyyuan@quicinc.com> wrote:
+
+> change traceprobe_parse_event_name() and return GRP/EVENT types,
+> TP_ENAME_GROUP_EVENT means user input GRP/EVENT format,
+> TP_ENAME_EVENT means user only input EVENT format,
+> TP_ENAME_GROUP means user only input GRP/ format,
 > 
-> Nor I! The board schematic[0] reports the use of GD25LQ128EWIGR
-> (vendor Gigadevices), but indeed the chip itself reports vendor
-> Tristar.
+> it allow no event name input when create a group of events,
+> and will auto generate event name according second argument.
+
+Sorry, but I can't understand the above. Can you reword it, and perhaps
+include an example of what this patch does.
+
+After reading the code, I guess you are trying to make it so that you can
+leave out the event name and only have the group name, if you add the slash.
+
+ echo 'p:group/  schedule' > kprobe_events
+
+And that will create a kprobe "schedule" event under the "group" system?
+
+Also, for some reason, patch 2 of the series never came to me. But it is in
+my LKML folder :-/
+
 > 
-> I will ask the community/vendor about this discrepancy.
-
-Yes that would be great. Could also be one of the other
-25h vendors, usually the continuation code is just ignored.
-I'd bet it some china SPI flash.
-
-I don't think it is a Gigadevice because the datasheet says its ID
-is c86018.
-
->> This flash supports SFDP, please provide an SFDP dump, see [1].
+> Signed-off-by: Linyu Yuan <quic_linyyuan@quicinc.com>
+> ---
+>  Documentation/trace/kprobetrace.rst  |  8 ++++----
+>  Documentation/trace/uprobetracer.rst |  8 ++++----
+>  kernel/trace/trace_dynevent.c        |  2 +-
+>  kernel/trace/trace_eprobe.c          | 19 +++++++++++--------
+>  kernel/trace/trace_kprobe.c          | 18 +++++++++++-------
+>  kernel/trace/trace_probe.c           |  9 ++++++++-
+>  kernel/trace/trace_probe.h           |  4 ++++
+>  kernel/trace/trace_uprobe.c          | 14 +++++++++-----
+>  8 files changed, 52 insertions(+), 30 deletions(-)
 > 
-> I will include this in my v2 patch. For posterity, here's the dump:
-> 
-> $ xxd -p /sys/bus/spi/devices/spi0.0/spi-nor/sfdp
-> 53464450060101ff00060110300000ff9d05010380000002ffffffffffff
-> ffffffffffffffffffffffffffffffffffffe520f9ffffffff0744eb086b
-> 083b80bbfeffffffffff00ffffff44eb0c200f5210d800ff234ac90082d8
-> 11c7cccd68467a757a75f7a2d55c4a422cfff030c080ffffffffffffffff
-> ffffffffffffffff501950169cf9c0648fecffff
-> $ md5sum /sys/bus/spi/devices/spi0.0/spi-nor/sfdp
-> de4d6be54e479d60859b0ca8a0ee9216  
-> /sys/bus/spi/devices/spi0.0/spi-nor/sfdp
-> $ cat /sys/bus/spi/devices/spi0.0/spi-nor/jedec_id
-> 257018
-> $ cat /sys/bus/spi/devices/spi0.0/spi-nor/partname
-> gd25lq128e
-> $ cat /sys/bus/spi/devices/spi0.0/spi-nor/manufacturer
-> gigadevice
+> diff --git a/Documentation/trace/kprobetrace.rst b/Documentation/trace/kprobetrace.rst
+> index b175d88..4274cc6 100644
+> --- a/Documentation/trace/kprobetrace.rst
+> +++ b/Documentation/trace/kprobetrace.rst
+> @@ -28,10 +28,10 @@ Synopsis of kprobe_events
+>  -------------------------
+>  ::
+>  
+> -  p[:[GRP/]EVENT] [MOD:]SYM[+offs]|MEMADDR [FETCHARGS]	: Set a probe
+> -  r[MAXACTIVE][:[GRP/]EVENT] [MOD:]SYM[+0] [FETCHARGS]	: Set a return probe
+> -  p:[GRP/]EVENT] [MOD:]SYM[+0]%return [FETCHARGS]	: Set a return probe
+> -  -:[GRP/]EVENT						: Clear a probe
+> +  p[:[GRP/][EVENT]] [MOD:]SYM[+offs]|MEMADDR [FETCHARGS]	: Set a probe
+> +  r[MAXACTIVE][:[GRP/][EVENT]] [MOD:]SYM[+0] [FETCHARGS]	: Set a return probe
+> +  p[:[GRP/][EVENT]] [MOD:]SYM[+0]%return [FETCHARGS]	: Set a return probe
+> +  -:[GRP/][EVENT]						: Clear a probe
+>  
+>   GRP		: Group name. If omitted, use "kprobes" for it.
+>   EVENT		: Event name. If omitted, the event name is generated
+> diff --git a/Documentation/trace/uprobetracer.rst b/Documentation/trace/uprobetracer.rst
+> index a8e5938..3a1797d7 100644
+> --- a/Documentation/trace/uprobetracer.rst
+> +++ b/Documentation/trace/uprobetracer.rst
+> @@ -26,10 +26,10 @@ Synopsis of uprobe_tracer
+>  -------------------------
+>  ::
+>  
+> -  p[:[GRP/]EVENT] PATH:OFFSET [FETCHARGS] : Set a uprobe
+> -  r[:[GRP/]EVENT] PATH:OFFSET [FETCHARGS] : Set a return uprobe (uretprobe)
+> -  p[:[GRP/]EVENT] PATH:OFFSET%return [FETCHARGS] : Set a return uprobe (uretprobe)
+> -  -:[GRP/]EVENT                           : Clear uprobe or uretprobe event
+> +  p[:[GRP/][EVENT]] PATH:OFFSET [FETCHARGS] : Set a uprobe
+> +  r[:[GRP/][EVENT]] PATH:OFFSET [FETCHARGS] : Set a return uprobe (uretprobe)
+> +  p[:[GRP/][EVENT]] PATH:OFFSET%return [FETCHARGS] : Set a return uprobe (uretprobe)
+> +  -:[GRP/][EVENT]                           : Clear uprobe or uretprobe event
+>  
+>    GRP           : Group name. If omitted, "uprobes" is the default value.
+>    EVENT         : Event name. If omitted, the event name is generated based
+> diff --git a/kernel/trace/trace_dynevent.c b/kernel/trace/trace_dynevent.c
+> index e34e8182..033248d 100644
+> --- a/kernel/trace/trace_dynevent.c
+> +++ b/kernel/trace/trace_dynevent.c
+> @@ -101,7 +101,7 @@ int dyn_event_release(const char *raw_command, struct dyn_event_operations *type
+>  		event = p + 1;
+>  		*p = '\0';
+>  	}
+> -	if (event[0] == '\0') {
+> +	if (!system && event[0] == '\0') {
+>  		ret = -EINVAL;
+>  		goto out;
+>  	}
+> diff --git a/kernel/trace/trace_eprobe.c b/kernel/trace/trace_eprobe.c
+> index 7d44785..b16e067 100644
+> --- a/kernel/trace/trace_eprobe.c
+> +++ b/kernel/trace/trace_eprobe.c
+> @@ -125,6 +125,7 @@ static bool eprobe_dyn_event_match(const char *system, const char *event,
+>  	 * We match the following:
+>  	 *  event only			- match all eprobes with event name
+>  	 *  system and event only	- match all system/event probes
+> +	 *  system only			- match all system probes
+>  	 *
+>  	 * The below has the above satisfied with more arguments:
+>  	 *
+> @@ -143,7 +144,7 @@ static bool eprobe_dyn_event_match(const char *system, const char *event,
+>  		return false;
+>  
+>  	/* Must match the event name */
+> -	if (strcmp(trace_probe_name(&ep->tp), event) != 0)
+> +	if (event[0] != '\0' && strcmp(trace_probe_name(&ep->tp), event) != 0)
+>  		return false;
+>  
+>  	/* No arguments match all */
+> @@ -848,7 +849,7 @@ static int __trace_eprobe_create(int argc, const char *argv[])
+>  {
+>  	/*
+>  	 * Argument syntax:
+> -	 *      e[:[GRP/]ENAME] SYSTEM.EVENT [FETCHARGS]
+> +	 *      e[:[GRP/][ENAME]] SYSTEM.EVENT [FETCHARGS]
+>  	 * Fetch args:
+>  	 *  <name>=$<field>[:TYPE]
+>  	 */
+> @@ -858,6 +859,7 @@ static int __trace_eprobe_create(int argc, const char *argv[])
+>  	struct trace_eprobe *ep = NULL;
+>  	char buf1[MAX_EVENT_NAME_LEN];
+>  	char buf2[MAX_EVENT_NAME_LEN];
+> +	char grp_buf[MAX_EVENT_NAME_LEN];
+>  	int ret = 0;
+>  	int i;
+>  
+> @@ -866,14 +868,16 @@ static int __trace_eprobe_create(int argc, const char *argv[])
+>  
+>  	trace_probe_log_init("event_probe", argc, argv);
+>  
+> +	ret = TP_ENAME_EMPTTY;
 
-Thanks.
+EMPTY is spelled wrong.
 
-> I have attached the parsed sfdp, according to
-> https://github.com/petris/sfdp-parser
-> 
->> Did you test locking?
-> 
-> No. The datasheet mentions Status Register locking, but I will look
-> into how to adequately test this.
+>  	event = strchr(&argv[0][1], ':');
+>  	if (event) {
+>  		event++;
+> -		ret = traceprobe_parse_event_name(&event, &group, buf1,
+> +		ret = traceprobe_parse_event_name(&event, &group, grp_buf,
+>  						  event - argv[0]);
+> -		if (ret)
+> +		if (ret < 0)
+>  			goto parse_error;
+> -	} else {
+> +	}
 
-Or just drop the locking flags for now if you like.
+add space.
 
->> As this flash supports SFDP, please use SNOR_ID3(0x257018)
->> and drop both the INFO() and the NO_SFDP_FLAGS(). You'll
->> need my SNOR_ID3() patches [2].
-> 
-> SGTM, will do.
+> +	if (ret == TP_ENAME_EMPTTY || ret == TP_ENAME_GROUP) {
+>  		strscpy(buf1, argv[1], MAX_EVENT_NAME_LEN);
+>  		sanitize_event_name(buf1);
+>  		event = buf1;
 
-If you don't find the vendor and don't need locking, there is
-also a generic SFDP flash driver [1]. You could give it a try
-and add a Tested-by there.
+I'd like to see Masami's and Tom's comments on this one.
 
--michael
+-- Steve
 
-[1] 
-https://lore.kernel.org/linux-mtd/20220513133520.3945820-1-michael@walle.cc/
+> @@ -882,9 +886,8 @@ static int __trace_eprobe_create(int argc, const char *argv[])
+>  		goto parse_error;
+>  
+>  	sys_event = argv[1];
+> -	ret = traceprobe_parse_event_name(&sys_event, &sys_name, buf2,
+> -					  sys_event - argv[1]);
+> -	if (ret || !sys_name)
+> +	ret = traceprobe_parse_event_name(&sys_event, &sys_name, buf2, 0);
+> +	if (ret != TP_ENAME_GROUP_EVENT)
+>  		goto parse_error;
+>  	if (!is_good_name(sys_event) || !is_good_name(sys_name))
+>  		goto parse_error;
+> diff --git a/kernel/trace/trace_kprobe.c b/kernel/trace/trace_kprobe.c
+> index 47cebef..2cd8ef9 100644
+> --- a/kernel/trace/trace_kprobe.c
+> +++ b/kernel/trace/trace_kprobe.c
+> @@ -163,7 +163,8 @@ static bool trace_kprobe_match(const char *system, const char *event,
+>  {
+>  	struct trace_kprobe *tk = to_trace_kprobe(ev);
+>  
+> -	return strcmp(trace_probe_name(&tk->tp), event) == 0 &&
+> +	return (event[0] == '\0' ||
+> +		strcmp(trace_probe_name(&tk->tp), event) == 0) &&
+>  	    (!system || strcmp(trace_probe_group_name(&tk->tp), system) == 0) &&
+>  	    trace_kprobe_match_command_head(tk, argc, argv);
+>  }
+> @@ -708,11 +709,11 @@ static int __trace_kprobe_create(int argc, const char *argv[])
+>  	/*
+>  	 * Argument syntax:
+>  	 *  - Add kprobe:
+> -	 *      p[:[GRP/]EVENT] [MOD:]KSYM[+OFFS]|KADDR [FETCHARGS]
+> +	 *      p[:[GRP/][EVENT]] [MOD:]KSYM[+OFFS]|KADDR [FETCHARGS]
+>  	 *  - Add kretprobe:
+> -	 *      r[MAXACTIVE][:[GRP/]EVENT] [MOD:]KSYM[+0] [FETCHARGS]
+> +	 *      r[MAXACTIVE][:[GRP/][EVENT]] [MOD:]KSYM[+0] [FETCHARGS]
+>  	 *    Or
+> -	 *      p:[GRP/]EVENT] [MOD:]KSYM[+0]%return [FETCHARGS]
+> +	 *      p[:[GRP/][EVENT]] [MOD:]KSYM[+0]%return [FETCHARGS]
+>  	 *
+>  	 * Fetch args:
+>  	 *  $retval	: fetch return value
+> @@ -739,6 +740,7 @@ static int __trace_kprobe_create(int argc, const char *argv[])
+>  	long offset = 0;
+>  	void *addr = NULL;
+>  	char buf[MAX_EVENT_NAME_LEN];
+> +	char grp_buf[MAX_EVENT_NAME_LEN];
+>  	unsigned int flags = TPARG_FL_KERNEL;
+>  
+>  	switch (argv[0][0]) {
+> @@ -832,12 +834,14 @@ static int __trace_kprobe_create(int argc, const char *argv[])
+>  	}
+>  
+>  	trace_probe_log_set_index(0);
+> +	ret = TP_ENAME_EMPTTY;
+>  	if (event) {
+> -		ret = traceprobe_parse_event_name(&event, &group, buf,
+> +		ret = traceprobe_parse_event_name(&event, &group, grp_buf,
+>  						  event - argv[0]);
+> -		if (ret)
+> +		if (ret < 0)
+>  			goto parse_error;
+> -	} else {
+> +	}
+> +	if (ret == TP_ENAME_EMPTTY || ret == TP_ENAME_GROUP) {
+>  		/* Make a new event name */
+>  		if (symbol)
+>  			snprintf(buf, MAX_EVENT_NAME_LEN, "%c_%s_%ld",
+> diff --git a/kernel/trace/trace_probe.c b/kernel/trace/trace_probe.c
+> index 80863c6..7fd50ab 100644
+> --- a/kernel/trace/trace_probe.c
+> +++ b/kernel/trace/trace_probe.c
+> @@ -257,6 +257,9 @@ int traceprobe_parse_event_name(const char **pevent, const char **pgroup,
+>  	}
+>  	len = strlen(event);
+>  	if (len == 0) {
+> +		if (slash)
+> +			return TP_ENAME_GROUP;
+> +
+>  		trace_probe_log_err(offset, NO_EVENT_NAME);
+>  		return -EINVAL;
+>  	} else if (len > MAX_EVENT_NAME_LEN) {
+> @@ -267,7 +270,11 @@ int traceprobe_parse_event_name(const char **pevent, const char **pgroup,
+>  		trace_probe_log_err(offset, BAD_EVENT_NAME);
+>  		return -EINVAL;
+>  	}
+> -	return 0;
+> +
+> +	if (slash)
+> +		return TP_ENAME_GROUP_EVENT;
+> +
+> +	return TP_ENAME_EVENT;
+>  }
+>  
+>  #define PARAM_MAX_STACK (THREAD_SIZE / sizeof(unsigned long))
+> diff --git a/kernel/trace/trace_probe.h b/kernel/trace/trace_probe.h
+> index 92cc149..d726769 100644
+> --- a/kernel/trace/trace_probe.h
+> +++ b/kernel/trace/trace_probe.h
+> @@ -364,6 +364,10 @@ extern void traceprobe_free_probe_arg(struct probe_arg *arg);
+>  extern int traceprobe_split_symbol_offset(char *symbol, long *offset);
+>  int traceprobe_parse_event_name(const char **pevent, const char **pgroup,
+>  				char *buf, int offset);
+> +#define TP_ENAME_GROUP_EVENT	0
+> +#define TP_ENAME_EVENT		1
+> +#define TP_ENAME_GROUP		2
+> +#define TP_ENAME_EMPTTY		3
+>  
+>  enum probe_print_type {
+>  	PROBE_PRINT_NORMAL,
+> diff --git a/kernel/trace/trace_uprobe.c b/kernel/trace/trace_uprobe.c
+> index 9711589..a935c08 100644
+> --- a/kernel/trace/trace_uprobe.c
+> +++ b/kernel/trace/trace_uprobe.c
+> @@ -312,7 +312,8 @@ static bool trace_uprobe_match(const char *system, const char *event,
+>  {
+>  	struct trace_uprobe *tu = to_trace_uprobe(ev);
+>  
+> -	return strcmp(trace_probe_name(&tu->tp), event) == 0 &&
+> +	return (event[0] == '\0' ||
+> +		strcmp(trace_probe_name(&tu->tp), event) == 0) &&
+>  	   (!system || strcmp(trace_probe_group_name(&tu->tp), system) == 0) &&
+>  	   trace_uprobe_match_command_head(tu, argc, argv);
+>  }
+> @@ -532,7 +533,7 @@ static int register_trace_uprobe(struct trace_uprobe *tu)
+>  
+>  /*
+>   * Argument syntax:
+> - *  - Add uprobe: p|r[:[GRP/]EVENT] PATH:OFFSET[%return][(REF)] [FETCHARGS]
+> + *  - Add uprobe: p|r[:[GRP/][EVENT]] PATH:OFFSET[%return][(REF)] [FETCHARGS]
+>   */
+>  static int __trace_uprobe_create(int argc, const char **argv)
+>  {
+> @@ -540,6 +541,7 @@ static int __trace_uprobe_create(int argc, const char **argv)
+>  	const char *event = NULL, *group = UPROBE_EVENT_SYSTEM;
+>  	char *arg, *filename, *rctr, *rctr_end, *tmp;
+>  	char buf[MAX_EVENT_NAME_LEN];
+> +	char grp_buf[MAX_EVENT_NAME_LEN];
+>  	enum probe_print_type ptype;
+>  	struct path path;
+>  	unsigned long offset, ref_ctr_offset;
+> @@ -644,12 +646,14 @@ static int __trace_uprobe_create(int argc, const char **argv)
+>  
+>  	/* setup a probe */
+>  	trace_probe_log_set_index(0);
+> +	ret = TP_ENAME_EMPTTY;
+>  	if (event) {
+> -		ret = traceprobe_parse_event_name(&event, &group, buf,
+> +		ret = traceprobe_parse_event_name(&event, &group, grp_buf,
+>  						  event - argv[0]);
+> -		if (ret)
+> +		if (ret < 0)
+>  			goto fail_address_parse;
+> -	} else {
+> +	}
+> +	if (ret == TP_ENAME_EMPTTY || ret == TP_ENAME_GROUP) {
+>  		char *tail;
+>  		char *ptr;
+>  
+
