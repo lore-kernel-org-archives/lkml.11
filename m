@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7798AC4321E
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 16:02:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86585C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 16:02:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239336AbiEXQB7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 12:01:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47224 "EHLO
+        id S233837AbiEXQCF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 12:02:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239509AbiEXQBB (ORCPT
+        with ESMTP id S239254AbiEXQAm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 12:01:01 -0400
+        Tue, 24 May 2022 12:00:42 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BE35A5ABF;
-        Tue, 24 May 2022 09:00:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 758F69BAE5;
+        Tue, 24 May 2022 09:00:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A86A56176A;
-        Tue, 24 May 2022 16:00:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3CAE4C36AEB;
-        Tue, 24 May 2022 16:00:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 92C5E61770;
+        Tue, 24 May 2022 16:00:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FE74C34113;
+        Tue, 24 May 2022 16:00:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653408035;
-        bh=UIvOGU9ezNqd/V+eh1/mLYA2MyU4xUyFduSUC7Zg0Ms=;
+        s=k20201202; t=1653408018;
+        bh=uNYcJ4Cr7Q5JHM1D51Lx3IAU4uaYLwTacB3qIeJzItk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g1zGljhOo8jVn/tBfySZ3gvkdqcZsVMiv4GkImfRjVRwqRfxkyQB+V6g95YQyvrC+
-         /vr9vJbZcKsslV/AKM7zLpF2oynVTTfrz8xD7ik1RndFNIn/Rv6bEo3aC0ouXoaiBy
-         bzkKJZi7CN5oj205+8ms22KK9Xg8ZQpU0gO0XOAlLcfs1KCtLqu+BcsXNgkrpjnJHb
-         BGyxPRkq3Ys3R2Sg4gwcYLZW8qW8t/EbsrqIXOzH/sTnLO6As+uMCdYhcx1+B+TKQI
-         Hj5lZ5g40Q2/zx/cPoD/o9ODfiCqe7LdIWmdx0ElgWXGdGNXNpcv7wyLHZ4oWe/nHM
-         dm9pXre678sJQ==
+        b=SEnhQXD2Z4o92P66/6rCcy6hhqEoV8iltJWeoFUGn+JwiSUk61ftdxF42VGPkIf7v
+         SAr4SmZktPo/rGWIEKlVucGVsJrxpR2ujZWCFN6yFU82VFg7/1QkCWIQTV2b01u7Kn
+         +irL30+CP9P7b5LCmCLGkDuANZSdR3gcJmRcY4Ir2zQr3wgrcROl00bsck5zD581N1
+         Wtz/VzpCkyztkOS1Efug+j/IBQhqB43B2Ma1kG6++yywlgoxcDuzb+s5muiV5MzEYx
+         l7QJyiesb0t8T1vN8s6FK8rOWqRFohQangUT50opMIN/2wPISC4UVRhHZbJ9FXRrCs
+         9b+/oPjAC97dQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Piyush Malgujar <pmalgujar@marvell.com>,
-        Szymon Balcerak <sbalcerak@marvell.com>,
-        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        rric@kernel.org, linux-i2c@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 10/10] drivers: i2c: thunderx: Allow driver to work with ACPI defined TWSI controllers
-Date:   Tue, 24 May 2022 12:00:07 -0400
-Message-Id: <20220524160009.826957-10-sashal@kernel.org>
+Cc:     John David Anglin <dave.anglin@bell.net>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
+        James.Bottomley@HansenPartnership.com, zhengqi.arch@bytedance.com,
+        akpm@linux-foundation.org, linux-parisc@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 04/10] parisc: Disable debug code regarding cache flushes in handle_nadtlb_fault()
+Date:   Tue, 24 May 2022 12:00:01 -0400
+Message-Id: <20220524160009.826957-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220524160009.826957-1-sashal@kernel.org>
 References: <20220524160009.826957-1-sashal@kernel.org>
@@ -52,33 +52,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Piyush Malgujar <pmalgujar@marvell.com>
+From: John David Anglin <dave.anglin@bell.net>
 
-[ Upstream commit 03a35bc856ddc09f2cc1f4701adecfbf3b464cb3 ]
+[ Upstream commit 67c35a3b646cc68598ff0bb28de5f8bd7b2e81b3 ]
 
-Due to i2c->adap.dev.fwnode not being set, ACPI_COMPANION() wasn't properly
-found for TWSI controllers.
+Change the "BUG" to "WARNING" and disable the message because it triggers
+occasionally in spite of the check in flush_cache_page_if_present.
 
-Signed-off-by: Szymon Balcerak <sbalcerak@marvell.com>
-Signed-off-by: Piyush Malgujar <pmalgujar@marvell.com>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+The pte value extracted for the "from" page in copy_user_highpage is racy and
+occasionally the pte is cleared before the flush is complete.  I assume that
+the page is simultaneously flushed by flush_cache_mm before the pte is cleared
+as nullifying the fdc doesn't seem to cause problems.
+
+I investigated various locking scenarios but I wasn't able to find a way to
+sequence the flushes.  This code is called for every COW break and locks impact
+performance.
+
+This patch is related to the bigger cache flush patch because we need the pte
+on PA8800/PA8900 to flush using the vma context.
+I have also seen this from copy_to_user_page and copy_from_user_page.
+
+The messages appear infrequently when enabled.
+
+Signed-off-by: John David Anglin <dave.anglin@bell.net>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/busses/i2c-thunderx-pcidrv.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/parisc/mm/fault.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/i2c/busses/i2c-thunderx-pcidrv.c b/drivers/i2c/busses/i2c-thunderx-pcidrv.c
-index 12c90aa0900e..a77cd86fe75e 100644
---- a/drivers/i2c/busses/i2c-thunderx-pcidrv.c
-+++ b/drivers/i2c/busses/i2c-thunderx-pcidrv.c
-@@ -213,6 +213,7 @@ static int thunder_i2c_probe_pci(struct pci_dev *pdev,
- 	i2c->adap.bus_recovery_info = &octeon_i2c_recovery_info;
- 	i2c->adap.dev.parent = dev;
- 	i2c->adap.dev.of_node = pdev->dev.of_node;
-+	i2c->adap.dev.fwnode = dev->fwnode;
- 	snprintf(i2c->adap.name, sizeof(i2c->adap.name),
- 		 "Cavium ThunderX i2c adapter at %s", dev_name(dev));
- 	i2c_set_adapdata(&i2c->adap, i2c);
+diff --git a/arch/parisc/mm/fault.c b/arch/parisc/mm/fault.c
+index 5faa3cff4738..2472780d4039 100644
+--- a/arch/parisc/mm/fault.c
++++ b/arch/parisc/mm/fault.c
+@@ -22,6 +22,8 @@
+ 
+ #include <asm/traps.h>
+ 
++#define DEBUG_NATLB 0
++
+ /* Various important other fields */
+ #define bit22set(x)		(x & 0x00000200)
+ #define bits23_25set(x)		(x & 0x000001c0)
+@@ -449,8 +451,8 @@ handle_nadtlb_fault(struct pt_regs *regs)
+ 		fallthrough;
+ 	case 0x380:
+ 		/* PDC and FIC instructions */
+-		if (printk_ratelimit()) {
+-			pr_warn("BUG: nullifying cache flush/purge instruction\n");
++		if (DEBUG_NATLB && printk_ratelimit()) {
++			pr_warn("WARNING: nullifying cache flush/purge instruction\n");
+ 			show_regs(regs);
+ 		}
+ 		if (insn & 0x20) {
 -- 
 2.35.1
 
