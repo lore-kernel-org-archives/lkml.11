@@ -2,158 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A26B7C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 13:48:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7A60C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 13:50:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237938AbiEXNsc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 09:48:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41706 "EHLO
+        id S237955AbiEXNuQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 09:50:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235103AbiEXNs2 (ORCPT
+        with ESMTP id S237945AbiEXNuN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 09:48:28 -0400
-Received: from mail-oa1-x36.google.com (mail-oa1-x36.google.com [IPv6:2001:4860:4864:20::36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9E59954B5;
-        Tue, 24 May 2022 06:48:27 -0700 (PDT)
-Received: by mail-oa1-x36.google.com with SMTP id 586e51a60fabf-f1d2ea701dso22268050fac.10;
-        Tue, 24 May 2022 06:48:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=HIJN4WlvQ8QM86SidPISiFp+9klwdRDZuztIBtO9yCQ=;
-        b=YkXTtDAHpRJOG4saAljaWG223jRutpWQfbqUDddF6sa4OEFbCIq8RjrXaskO35VdcA
-         bIO/6k6zUjc6FQoqmSj62PcpXAyofVM4scxxRGQ77x6soGoz+cfZmGWocukZjMzQvjZ2
-         lokEZtX4LYp3K/pNPmpIiZG5EYqa7g3aBofdcj4kXFGWBhwNn4am9MYPNu8XyT7s9zB2
-         5vvoJScxS1QDJLKFqiL1Ehd4dB+9XPGk1DjOOPiGfYfluv+mY0tnGkCuhQ9BNrkExw+7
-         9Ed6AcX3Bn7KDWzY8eD51cF9UURBxx9e4sQIAlmfJhzuiNum9Kt7z9kYSkP4D7MdKULv
-         4npg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=HIJN4WlvQ8QM86SidPISiFp+9klwdRDZuztIBtO9yCQ=;
-        b=bAvuETGbUvgJUx/r4NqrF059etCgD23oN4hXql5wnV86WIkfMtMo8w6hqf5OVATnLu
-         8PNYCArW6n2Zo8Z9SrsaZZ1ggY0xz6mVSqscnGpOWr5qh50vd67/HkHEVqQ7cReRnIcD
-         XiYLq0lumhzMUYirX+yfaFyDo8iz6far15uzxgGE2B07j1YVli+JjdFMFMLR0qJLRZe5
-         fbe/ko9lJOErCPv+oi1S5Z6fBwcz511t/X9Xv9h2uGu2o6rSr/x5IAD3qGfIhjdKFZlJ
-         Z+r6L7YNvD01hRKZu12vvtjLYyr4mT51lkwG9lvYtQ2WflimXiPxzVVI+xRKpeSR9yN6
-         XVlg==
-X-Gm-Message-State: AOAM530zwHwRVsCcHV2G5oZe/9F2DY3Ft3VvSYqDsuDtT81GdML4+7tS
-        mo4OdzEtnAkdu8m/v4BKUjY=
-X-Google-Smtp-Source: ABdhPJxUSG7pAcNVWyh+QKZTZ7LFUcm+tqCLRf/HjZrS14Tenfn2U0zmK3ijgdVUn8Ifmzjgi4IP0g==
-X-Received: by 2002:a05:6870:9686:b0:f1:8905:3210 with SMTP id o6-20020a056870968600b000f189053210mr2458651oaq.61.1653400107093;
-        Tue, 24 May 2022 06:48:27 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id m2-20020a4aab82000000b0035eb4e5a6bbsm5460752oon.17.2022.05.24.06.48.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 May 2022 06:48:26 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Tue, 24 May 2022 06:48:25 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Sibi Sankar <quic_sibis@quicinc.com>
-Cc:     bjorn.andersson@linaro.org, mani@kernel.org,
-        jassisinghbrar@gmail.com, linux-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, agross@kernel.org,
-        Prasad Sodagudi <quic_psodagud@quicinc.com>
-Subject: Re: [PATCH v3] mailbox: qcom-ipcc: Log the pending interrupt during
- resume
-Message-ID: <20220524134825.GA4188122@roeck-us.net>
-References: <1652784180-10142-1-git-send-email-quic_sibis@quicinc.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1652784180-10142-1-git-send-email-quic_sibis@quicinc.com>
+        Tue, 24 May 2022 09:50:13 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2356C95DD5;
+        Tue, 24 May 2022 06:50:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653400213; x=1684936213;
+  h=from:to:cc:subject:date:message-id;
+  bh=zDknRWoz/4PyOLzohzgxcN97VkyYE+Alkf3vq8P2JJE=;
+  b=SEVJonxntjcpDvaEXKNYvqWVH6L3Wpi/SHkP98lWIGyKcZFviW+Pb+G2
+   6oxCmJq32bq86nWHpvS5psRUiddkwyH8a7VoVBxCBEq9KvbiMP2XuvEYc
+   NYWXmKwYeB3dycNBUVEidXvhBjs6rhKFuer7N6ZqBd/yT+nLt8byG/XOk
+   NfApDYxj95SiEDR8FbWuFBdCn1N9N6gR0ifr/n0rLrsxvZwPqKfrUUmwJ
+   WODyBj7lHKCuy7fdkm5tU65i1mqWI4SrjsKvWVc3TcpCJSrl2rOfcKG5s
+   JzQRnO0CJC5WbB/6gXQLa0i1BbNsPZvgAVTo74Y3Mjgqib9jLUbUn9K6d
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10356"; a="272351824"
+X-IronPort-AV: E=Sophos;i="5.91,248,1647327600"; 
+   d="scan'208";a="272351824"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 May 2022 06:50:12 -0700
+X-IronPort-AV: E=Sophos;i="5.91,248,1647327600"; 
+   d="scan'208";a="601311965"
+Received: from chenyi-pc.sh.intel.com ([10.239.159.73])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 May 2022 06:50:10 -0700
+From:   Chenyi Qiang <chenyi.qiang@intel.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Xiaoyao Li <xiaoyao.li@intel.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v7 0/4] Introduce Notify VM exit
+Date:   Tue, 24 May 2022 21:56:20 +0800
+Message-Id: <20220524135624.22988-1-chenyi.qiang@intel.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 17, 2022 at 04:13:00PM +0530, Sibi Sankar wrote:
-> From: Prasad Sodagudi <quic_psodagud@quicinc.com>
-> 
-> Enable logging of the pending interrupt that triggered device wakeup. This
-> logging information helps to debug IRQs that cause periodic device wakeups
-> by printing the detailed information of pending IPCC interrupts.
-> 
-> Scenario: Device wakeup caused by Modem crash
-> Logs:
-> qcom-ipcc mailbox: virq: 182 triggered client-id: 2; signal-id: 2
-> 
-> >From the IPCC bindings it can further be understood that the client here is
-> IPCC_CLIENT_MPSS and the signal was IPCC_MPROC_SIGNAL_SMP2P.
-> 
-> Reviewed-by: Manivannan Sadhasivam <mani@kernel.org>
-> Signed-off-by: Prasad Sodagudi <quic_psodagud@quicinc.com>
-> Signed-off-by: Sibi Sankar <quic_sibis@quicinc.com>
-> ---
-> 
-> V3:
->  * Use pm_sleep_ptr and convert info to dbg [Mani]
+Virtual machines can exploit Intel ISA characterstics to cause
+functional denial of service to the VMM. This series introduces a new
+feature named Notify VM exit, which can help mitigate such kind of
+attacks.
 
-Unfortunately, this results in
+Patch 1: An extension of KVM_SET_VCPU_EVENTS ioctl to inject a
+synthesized shutdown event from user space. This is also a fix for other
+synthesized triple fault, e.g. the RSM patch or nested_vmx_abort(),
+which could get lost when exit to userspace to do migrate.
 
-drivers/mailbox/qcom-ipcc.c:258:12: error: 'qcom_ipcc_pm_resume' defined but not used
+Patch 2: A selftest about get/set triple fault event.
 
-on builds with PM disabled, as seen in next-20220524.
+Patch 3: Introduce struct kvm_caps to track misc global KVM cap/setting.
 
-Guenter
+Patch 4: The main patch to enable Notify VM exit.
 
->  * Fixup commit message
-> 
-> V2:
->  * Fix build error when ipcc is a module [Kernel Test Bot]
-> 
->  drivers/mailbox/qcom-ipcc.c | 23 +++++++++++++++++++++++
->  1 file changed, 23 insertions(+)
-> 
-> diff --git a/drivers/mailbox/qcom-ipcc.c b/drivers/mailbox/qcom-ipcc.c
-> index c5d963222014..5a42bc2a1083 100644
-> --- a/drivers/mailbox/qcom-ipcc.c
-> +++ b/drivers/mailbox/qcom-ipcc.c
-> @@ -254,6 +254,24 @@ static int qcom_ipcc_setup_mbox(struct qcom_ipcc *ipcc,
->  	return devm_mbox_controller_register(dev, mbox);
->  }
->  
-> +static int qcom_ipcc_pm_resume(struct device *dev)
-> +{
-> +	struct qcom_ipcc *ipcc = dev_get_drvdata(dev);
-> +	u32 hwirq;
-> +	int virq;
-> +
-> +	hwirq = readl(ipcc->base + IPCC_REG_RECV_ID);
-> +	if (hwirq == IPCC_NO_PENDING_IRQ)
-> +		return 0;
-> +
-> +	virq = irq_find_mapping(ipcc->irq_domain, hwirq);
-> +
-> +	dev_dbg(dev, "virq: %d triggered client-id: %ld; signal-id: %ld\n", virq,
-> +		FIELD_GET(IPCC_CLIENT_ID_MASK, hwirq), FIELD_GET(IPCC_SIGNAL_ID_MASK, hwirq));
-> +
-> +	return 0;
-> +}
-> +
->  static int qcom_ipcc_probe(struct platform_device *pdev)
->  {
->  	struct qcom_ipcc *ipcc;
-> @@ -324,6 +342,10 @@ static const struct of_device_id qcom_ipcc_of_match[] = {
->  };
->  MODULE_DEVICE_TABLE(of, qcom_ipcc_of_match);
->  
-> +static const struct dev_pm_ops qcom_ipcc_dev_pm_ops = {
-> +	SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(NULL, qcom_ipcc_pm_resume)
-> +};
-> +
->  static struct platform_driver qcom_ipcc_driver = {
->  	.probe = qcom_ipcc_probe,
->  	.remove = qcom_ipcc_remove,
-> @@ -331,6 +353,7 @@ static struct platform_driver qcom_ipcc_driver = {
->  		.name = "qcom-ipcc",
->  		.of_match_table = qcom_ipcc_of_match,
->  		.suppress_bind_attrs = true,
-> +		.pm = pm_sleep_ptr(&qcom_ipcc_dev_pm_ops),
->  	},
->  };
->  
-> -- 
-> 2.7.4
-> 
+---
+Change logs:
+v6 -> v7
+- Introduce a new cap KVM_CAP_TRIPLE_FAULT_EVENT to guard the extension
+  of get/set triple fault event. (Sean)
+- Add patch 3 from Sean to integrate misc kvm cap/settings. (Sean)
+- Add the kvm lock around the notify_window and flag setting. (Sean)
+- v6: https://lore.kernel.org/lkml/20220421072958.16375-1-chenyi.qiang@intel.com/
+
+v5 -> v6
+- Do some changes in document.
+- Add a selftest about get/set triple fault event. (Sean)
+- extend the argument to include both the notify window and some flags
+  when enabling KVM_CAP_X86_BUS_LOCK_EXIT CAP. (Sean)
+- Change to use KVM_VCPUEVENT_VALID_TRIPE_FAULT in flags field and add
+  pending_triple_fault field in struct kvm_vcpu_events, which allows
+  userspace to make/clear triple fault request. (Sean)
+- Add a flag in kvm_x86_ops to avoid the kvm_has_notify_vmexit global
+  varialbe and its export.(Sean)
+- v5: https://lore.kernel.org/lkml/20220318074955.22428-1-chenyi.qiang@intel.com/
+
+v4 -> v5
+- rename KVM_VCPUEVENTS_SHUTDOWN to KVM_VCPUEVENTS_TRIPLE_FAULT. Make it
+  bidirection and add it to get_vcpu_events. (Sean)
+- v4: https://lore.kernel.org/all/20220310084001.10235-1-chenyi.qiang@intel.com/
+
+v3 -> v4
+- Change this feature to per-VM scope. (Jim)
+- Once VM_CONTEXT_INVALID set in exit_qualification, exit to user space
+  notify this fatal case, especially the notify VM exit happens in L2.
+  (Jim)
+- extend KVM_SET_VCPU_EVENTS to allow user space to inject a shutdown
+  event. (Jim)
+- A minor code changes.
+- Add document for the new KVM capability.
+- v3: https://lore.kernel.org/lkml/20220223062412.22334-1-chenyi.qiang@intel.com/
+
+v2 -> v3
+- add a vcpu state notify_window_exits to record the number of
+  occurence as well as a pr_warn output. (Sean)
+- Add the handling in nested VM to prevent L1 bypassing the restriction
+  through launching a L2. (Sean)
+- Only kill L2 when L2 VM is context invalid, synthesize a
+  EXIT_REASON_TRIPLE_FAULT to L1 (Sean)
+- To ease the current implementation, make module parameter
+  notify_window read-only. (Sean)
+- Disable notify window exit by default.
+- v2: https://lore.kernel.org/lkml/20210525051204.1480610-1-tao3.xu@intel.com/
+
+v1 -> v2
+- Default set notify window to 0, less than 0 to disable.
+- Add more description in commit message.
+---
+
+Chenyi Qiang (2):
+  KVM: x86: Extend KVM_{G,S}ET_VCPU_EVENTS to support pending triple
+    fault
+  KVM: selftests: Add a test to get/set triple fault event
+
+Sean Christopherson (1):
+  KVM: x86: Introduce "struct kvm_caps" to track misc caps/settings
+
+Tao Xu (1):
+  KVM: VMX: Enable Notify VM exit
+
+ Documentation/virt/kvm/api.rst                |  57 +++++++
+ arch/x86/include/asm/kvm_host.h               |  24 ++-
+ arch/x86/include/asm/vmx.h                    |   7 +
+ arch/x86/include/asm/vmxfeatures.h            |   1 +
+ arch/x86/include/uapi/asm/kvm.h               |   6 +-
+ arch/x86/include/uapi/asm/vmx.h               |   4 +-
+ arch/x86/kvm/cpuid.c                          |   8 +-
+ arch/x86/kvm/debugfs.c                        |   4 +-
+ arch/x86/kvm/lapic.c                          |   2 +-
+ arch/x86/kvm/svm/nested.c                     |   4 +-
+ arch/x86/kvm/svm/svm.c                        |  13 +-
+ arch/x86/kvm/vmx/capabilities.h               |   6 +
+ arch/x86/kvm/vmx/nested.c                     |  12 +-
+ arch/x86/kvm/vmx/vmx.c                        |  62 ++++++--
+ arch/x86/kvm/x86.c                            | 140 +++++++++++-------
+ arch/x86/kvm/x86.h                            |  33 ++++-
+ include/uapi/linux/kvm.h                      |  11 ++
+ tools/testing/selftests/kvm/.gitignore        |   1 +
+ tools/testing/selftests/kvm/Makefile          |   1 +
+ .../kvm/x86_64/triple_fault_event_test.c      | 101 +++++++++++++
+ 20 files changed, 390 insertions(+), 107 deletions(-)
+ create mode 100644 tools/testing/selftests/kvm/x86_64/triple_fault_event_test.c
+
+-- 
+2.17.1
+
