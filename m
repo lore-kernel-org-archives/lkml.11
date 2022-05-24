@@ -2,78 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D7FAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 15:57:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83279C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 15:57:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239134AbiEXP5p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 11:57:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44312 "EHLO
+        id S239141AbiEXP56 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 11:57:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232287AbiEXP5n (ORCPT
+        with ESMTP id S239139AbiEXPz4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 11:57:43 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75D5D986D7;
-        Tue, 24 May 2022 08:57:42 -0700 (PDT)
+        Tue, 24 May 2022 11:55:56 -0400
+Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC2BD98096;
+        Tue, 24 May 2022 08:55:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
-        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:In-Reply-To:References;
-        bh=B8XT5WxddcuyBOpLYerWnhTOFuVD+zv031mAdqT881Y=; b=qnN3we4WI+oi/EwyaNHt8O2sCV
-        kHYyoy78xzATv6nYHAqOJz/lRBrRGh+1vbn83L7gWzIjQSWbwCV/v2v/H3O7IGkCOld/JYiecMtZa
-        LbK9ZWRWW3LcV+1WCu41UfNAS1tHHLEnaaFHDFiqGjgxI2J4dRe5+TsF+J8FFiiGFYoweeRdT5mVp
-        IYg8KuwK63VGm1bc2oSCsRRVpqmbKyTCtJYr5QtQ8UiR1U3j+A+pvK14wXcaVJpac/59NLvrmHDvk
-        6E+iZTW54PPVI4M4+6TvGDKQpGFR8U4wRZUVbBR4thmFIdqZahF66ENjamuDwN2UtLWdP2cJWGqQq
-        Z19JrGAA==;
-Received: from [2601:1c0:6280:3f0::aa0b] (helo=casper.infradead.org)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1ntWug-00HEa4-Ux; Tue, 24 May 2022 15:57:39 +0000
-From:   Randy Dunlap <rdunlap@infradead.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        kernel test robot <lkp@intel.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        linux-pm@vger.kernel.org, Dmitry Osipenko <digetx@gmail.com>,
-        Thierry Reding <treding@nvidia.com>
-Subject: [PATCH] cpuidle: tegra: honor ARCH_SUSPEND_POSSIBLE
-Date:   Tue, 24 May 2022 08:57:33 -0700
-Message-Id: <20220524155733.28262-1-rdunlap@infradead.org>
-X-Mailer: git-send-email 2.35.3
+        d=deltatee.com; s=20200525; h=Subject:In-Reply-To:From:References:Cc:To:
+        MIME-Version:Date:Message-ID:content-disposition;
+        bh=qMEBoG8lqFJvGve+K5m+z9fgN9hILK6ZisKxqQim1eM=; b=XFlcW/TpHW8e5ACmg+/YYTcud5
+        kFsXafcr7Cytf6qeJfc86HtV/G4yR5wGWRknuahG3h9Cx3mrMXB2ncbMui7tvMx+kliUcfOIQMtGI
+        ICGsOv6+XQyTAltzLG9aU+SDiIK83MgM6wdqtVo9hC1dnhncrRZF5Vr3QAiLVtU3kyeDbbRebGkQo
+        BBvxRnls9jKK7VVfkPrVuwZbgT5poxyEkZ5cx7ZQZY3IPMsuVVd43VAnSk+bqIr2sjcA72ZoQGpAb
+        3YBFrW/iRUAccGkbMIDLQkrx+kkEqVFGXnUtuvSPzopL3VddTeq99Cq7eI8Z+bdaiY74HxQfME4c3
+        tbepAB8w==;
+Received: from guinness.priv.deltatee.com ([172.16.1.162])
+        by ale.deltatee.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <logang@deltatee.com>)
+        id 1ntWsy-006R7q-R4; Tue, 24 May 2022 09:55:54 -0600
+Message-ID: <c22de8df-0599-0a86-146a-267f576f5500@deltatee.com>
+Date:   Tue, 24 May 2022 09:55:51 -0600
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Content-Language: en-CA
+To:     Donald Buczek <buczek@molgen.mpg.de>, linux-kernel@vger.kernel.org,
+        linux-raid@vger.kernel.org, Song Liu <song@kernel.org>
+Cc:     Christoph Hellwig <hch@infradead.org>,
+        Guoqing Jiang <guoqing.jiang@linux.dev>,
+        Xiao Ni <xni@redhat.com>, Stephen Bates <sbates@raithlin.com>,
+        Martin Oliveira <Martin.Oliveira@eideticom.com>,
+        David Sloan <David.Sloan@eideticom.com>
+References: <20220519191311.17119-1-logang@deltatee.com>
+ <20220519191311.17119-13-logang@deltatee.com>
+ <571344e2-6e43-a72f-bd12-04d650e669fd@molgen.mpg.de>
+From:   Logan Gunthorpe <logang@deltatee.com>
+In-Reply-To: <571344e2-6e43-a72f-bd12-04d650e669fd@molgen.mpg.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 172.16.1.162
+X-SA-Exim-Rcpt-To: buczek@molgen.mpg.de, linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org, song@kernel.org, hch@infradead.org, guoqing.jiang@linux.dev, xni@redhat.com, sbates@raithlin.com, Martin.Oliveira@eideticom.com, David.Sloan@eideticom.com
+X-SA-Exim-Mail-From: logang@deltatee.com
+Subject: Re: [PATCH v1 12/15] md/raid5-cache: Add RCU protection to conf->log
+ accesses
+X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
+X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When ARCH_SUSPEND_POSSIBLE is not enabled, selecting ARM_CPU_SUSPEND
-causes a Kconfig warning, so make ARM_TEGRA_CPUIDLE depend on
-ARCH_SUSPEND_POSSIBLE to prevent that warning.
 
-WARNING: unmet direct dependencies detected for ARM_CPU_SUSPEND
-  Depends on [n]: ARCH_SUSPEND_POSSIBLE [=n]
-  Selected by [y]:
-  - ARM_TEGRA_CPUIDLE [=y] && CPU_IDLE [=y] && (ARM [=y] || ARM64) && (ARCH_TEGRA [=n] || COMPILE_TEST [=y]) && !ARM64 && MMU [=y]
 
-Fixes: 860fbde438dc ("cpuidle: Refactor and move out NVIDIA Tegra20 driver into drivers/cpuidle")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: kernel test robot <lkp@intel.com>
-Cc: "Rafael J. Wysocki" <rafael@kernel.org>
-Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc: linux-pm@vger.kernel.org
-Cc: Dmitry Osipenko <digetx@gmail.com>
-Cc: Thierry Reding <treding@nvidia.com>
----
- drivers/cpuidle/Kconfig.arm |    1 +
- 1 file changed, 1 insertion(+)
+On 2022-05-22 01:32, Donald Buczek wrote:
+>>   /*
+>> @@ -703,7 +720,7 @@ static void r5c_disable_writeback_async(struct work_struct *work)
+>>   
+>>   	/* wait superblock change before suspend */
+>>   	wait_event(mddev->sb_wait,
+>> -		   conf->log == NULL ||
+>> +		   rcu_access_pointer(conf->log) ||
+> 
+> Reversed condition?
+> 
+> I think, some examples in Documentation/RCU/Design/Requirements/Requirements.rst are reversed, too.
 
---- a/drivers/cpuidle/Kconfig.arm
-+++ b/drivers/cpuidle/Kconfig.arm
-@@ -100,6 +100,7 @@ config ARM_MVEBU_V7_CPUIDLE
- 
- config ARM_TEGRA_CPUIDLE
- 	bool "CPU Idle Driver for NVIDIA Tegra SoCs"
-+	depends on ARCH_SUSPEND_POSSIBLE
- 	depends on (ARCH_TEGRA || COMPILE_TEST) && !ARM64 && MMU
- 	select ARCH_NEEDS_CPU_IDLE_COUPLED if SMP
- 	select ARM_CPU_SUSPEND
+Oops. Nice Catch!
+
+Thanks,
+
+Logan
