@@ -2,115 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 537E9C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 10:16:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 087C5C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 10:18:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234675AbiEXKP5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 06:15:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58554 "EHLO
+        id S234402AbiEXKSe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 06:18:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229543AbiEXKPx (ORCPT
+        with ESMTP id S230087AbiEXKSa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 06:15:53 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2896F7E1D1
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 03:15:52 -0700 (PDT)
-Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24OA6mHZ014857;
-        Tue, 24 May 2022 10:15:28 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : subject :
- to : cc : references : in-reply-to : mime-version : message-id :
- content-type : content-transfer-encoding; s=pp1;
- bh=2XZ1WUugb0+bzkv/oIVhLNr19Fk0qAaWlx4k0tucVUo=;
- b=CbdI0N6INX3IgU8qoH2aCnho8huUEdIQGCjRIZas9SzT7rM4yLHiK3Pk8nyy9h3PTXVP
- 8aqnX3CqWLXjzuqHuNiIfGQsGWdFLU/1buPqtfWH21hkB1ikwZ+FJBwdh1MUHbSxdb6M
- /9QkCdTWoINSZDnm3CR9/n3BcFKEAeKzRihASQxNHw7Eb4yTo5lQ7t2CDy9r2Tym5KCs
- Vm3fuVpwp38plo+u4cO211Dtv3eU67cdiftbUNPaNqSD7n9JssYIdniFw+OTAwlSRSaE
- G08feC/KaPysS6XAQbIajZZa5PhzaJ+t/b7HVkW58jB/xDFyWqojUf2TX2vqBie2W8m8 Nw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g8v6j1gdw-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 24 May 2022 10:15:27 +0000
-Received: from m0098413.ppops.net (m0098413.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24OA9pex024172;
-        Tue, 24 May 2022 10:15:27 GMT
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g8v6j1gd5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 24 May 2022 10:15:27 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24OA8KdI005623;
-        Tue, 24 May 2022 10:15:25 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma03ams.nl.ibm.com with ESMTP id 3g6qq948fa-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 24 May 2022 10:15:25 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24OAFMCp41877890
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 24 May 2022 10:15:23 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B39AB4204F;
-        Tue, 24 May 2022 10:15:22 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 4F0C042041;
-        Tue, 24 May 2022 10:15:22 +0000 (GMT)
-Received: from localhost (unknown [9.199.154.182])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue, 24 May 2022 10:15:22 +0000 (GMT)
-Date:   Tue, 24 May 2022 15:45:20 +0530
-From:   "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>
-Subject: Re: [RFC PATCH 1/4] objtool: Add --mnop as an option to --mcount
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        Sathvika Vasireddy <sv@linux.ibm.com>
-Cc:     "aik@ozlabs.ru" <aik@ozlabs.ru>,
-        "jpoimboe@redhat.com" <jpoimboe@redhat.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "mbenes@suse.cz" <mbenes@suse.cz>,
-        "mpe@ellerman.id.au" <mpe@ellerman.id.au>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>
-References: <20220523175548.922671-1-sv@linux.ibm.com>
-        <20220523175548.922671-2-sv@linux.ibm.com>
-        <26c7bfc8-3089-034a-70c0-8857d7cd3a99@csgroup.eu>
-In-Reply-To: <26c7bfc8-3089-034a-70c0-8857d7cd3a99@csgroup.eu>
+        Tue, 24 May 2022 06:18:30 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC85E114E
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 03:18:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653387509; x=1684923509;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=xSgj51pG5C3QFfOReMyZoIvSUtU6wGmpwG+rrptWICI=;
+  b=FaJewR6fQXZxt6b7UaG8FECvCWevopiZRLrYMM5V7J/vffrBeftoT25+
+   kMQI80VDkPEkPxF2kMF7MEA726TIKDBzivJbZrTVMW2P8yd5bWeM5peHD
+   zyTfgN4+jgIEIAWgsjZAqYuYI4ccPtQWI70oBswJmjle5YM6kRLTIU1L4
+   urVQF85hf8S1UDyQ+Gh/OGyE87CURaAc9zci6G1WR90hYA0OdZLR6dY4A
+   1auyYsSL9o+TPWcYkSom4DTKorDY8os39Lren2ZKaD/TU/STFJplQ0yTg
+   akxqSKil5D5dWRCCBnv9Z+lceXnL9oCMAwsr8qe20esKgOY0RFeb2IZqu
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10356"; a="273486197"
+X-IronPort-AV: E=Sophos;i="5.91,248,1647327600"; 
+   d="scan'208";a="273486197"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 May 2022 03:18:29 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,248,1647327600"; 
+   d="scan'208";a="820230569"
+Received: from lkp-server01.sh.intel.com (HELO db63a1be7222) ([10.239.97.150])
+  by fmsmga006.fm.intel.com with ESMTP; 24 May 2022 03:18:27 -0700
+Received: from kbuild by db63a1be7222 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1ntRcQ-0001xi-EV;
+        Tue, 24 May 2022 10:18:26 +0000
+Date:   Tue, 24 May 2022 18:17:57 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Bhanuprakash Modem <bhanuprakash.modem@intel.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Jani Nikula <jani.nikula@intel.com>,
+        Arun R Murthy <arun.r.murthy@intel.com>,
+        Harry Wentland <harry.wentland@amd.com>
+Subject: [drm-misc:drm-misc-next 1106/1116]
+ drivers/gpu/drm/amd/amdgpu/../display/amdgpu_dm/amdgpu_dm.c:6622:2: error:
+ call to undeclared function 'crtc_debugfs_init'; ISO C99 and later do not
+ support implicit function declarations
+Message-ID: <202205241843.8EWKesIA-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: astroid/4d6b06ad (https://github.com/astroidmail/astroid)
-Message-Id: <1653386854.o7nss9hzc9.naveen@linux.ibm.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: LcReRrfGxPgKstSwunxeCTJ3vHJvcc5b
-X-Proofpoint-ORIG-GUID: foRDD5U1AKCkYPI3EQhEuPv_b1KM-j40
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-24_06,2022-05-23_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
- impostorscore=0 priorityscore=1501 mlxscore=0 adultscore=0 mlxlogscore=828
- phishscore=0 suspectscore=0 bulkscore=0 lowpriorityscore=0 spamscore=0
- clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2205240051
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Christophe Leroy wrote:
->=20
->=20
-> Le 23/05/2022 =C3=A0 19:55, Sathvika Vasireddy a =C3=A9crit=C2=A0:
->> Architectures can select HAVE_NOP_MCOUNT if they choose
->> to nop out mcount call sites. If that config option is
->> selected, then --mnop is passed as an option to objtool,
->> along with --mcount.
->>=20
->=20
-> Is there a reason not to nop out mcount call sites on powerpc as well ?
+tree:   git://anongit.freedesktop.org/drm/drm-misc drm-misc-next
+head:   1a3b1ea111c44d9dce9f70ba032531a223395a15
+commit: 4cd79f614b501e496ee8e4181d528c0cc1cb4e18 [1106/1116] drm/amd/display: Move connector debugfs to drm
+config: arm64-randconfig-r001-20220524 (https://download.01.org/0day-ci/archive/20220524/202205241843.8EWKesIA-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 10c9ecce9f6096e18222a331c5e7d085bd813f75)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm64 cross compiling tool for clang build
+        # apt-get install binutils-aarch64-linux-gnu
+        git remote add drm-misc git://anongit.freedesktop.org/drm/drm-misc
+        git fetch --no-tags drm-misc drm-misc-next
+        git checkout 4cd79f614b501e496ee8e4181d528c0cc1cb4e18
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/gpu/drm/
 
-Yes, if there are functions that are out of range of _mcount(), then the=20
-linker would have inserted long branch trampolines. We detect such cases=20
-during boot. But, if we nop out the _mcount call sites during build=20
-time, we will need some other way to identify these.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-- Naveen
+All errors (new ones prefixed by >>):
 
+>> drivers/gpu/drm/amd/amdgpu/../display/amdgpu_dm/amdgpu_dm.c:6622:2: error: call to undeclared function 'crtc_debugfs_init'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+           crtc_debugfs_init(crtc);
+           ^
+   drivers/gpu/drm/amd/amdgpu/../display/amdgpu_dm/amdgpu_dm.c:9165:20: warning: variable 'abo' set but not used [-Wunused-but-set-variable]
+           struct amdgpu_bo *abo;
+                             ^
+   1 warning and 1 error generated.
+
+
+vim +/crtc_debugfs_init +6622 drivers/gpu/drm/amd/amdgpu/../display/amdgpu_dm/amdgpu_dm.c
+
+e7b07ceef2a650 Harry Wentland 2017-08-10  6619  
+e69231c4451ae0 Wayne Lin      2021-03-08  6620  static int amdgpu_dm_crtc_late_register(struct drm_crtc *crtc)
+86bc221918925a Wayne Lin      2021-03-02  6621  {
+86bc221918925a Wayne Lin      2021-03-02 @6622  	crtc_debugfs_init(crtc);
+86bc221918925a Wayne Lin      2021-03-02  6623  
+86bc221918925a Wayne Lin      2021-03-02  6624  	return 0;
+86bc221918925a Wayne Lin      2021-03-02  6625  }
+86bc221918925a Wayne Lin      2021-03-02  6626  
+
+:::::: The code at line 6622 was first introduced by commit
+:::::: 86bc221918925a0bbb49043e3936e898e009b43b drm/amd/display: Support crc on specific region
+
+:::::: TO: Wayne Lin <Wayne.Lin@amd.com>
+:::::: CC: Alex Deucher <alexander.deucher@amd.com>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
