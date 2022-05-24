@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED534C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 16:00:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD20DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 16:00:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238838AbiEXQAe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 12:00:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46470 "EHLO
+        id S239277AbiEXQAs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 12:00:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234435AbiEXQAO (ORCPT
+        with ESMTP id S239367AbiEXQAQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 12:00:14 -0400
+        Tue, 24 May 2022 12:00:16 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B264DA0052;
-        Tue, 24 May 2022 08:59:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC189A0D24;
+        Tue, 24 May 2022 09:00:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DF005B81A55;
-        Tue, 24 May 2022 15:59:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60088C34115;
-        Tue, 24 May 2022 15:59:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C8265B81785;
+        Tue, 24 May 2022 16:00:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49972C34113;
+        Tue, 24 May 2022 16:00:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653407995;
-        bh=wHaTodtD45mZ8oITybG8g60oCCAN8kY0JNM8000sTLE=;
+        s=k20201202; t=1653408003;
+        bh=g01vBZVStxAahFQTmtaV2HaIpT1FseCZakkCwgxe3N4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sr/R7Nm5lSFUpLm/0n4V1uK4JvufXt4dNfDz/R2AbQUsdZi6TTxwSgtn4sjdHRCLw
-         i+4SmwCnd0641tO8hpaeMtF27mwjofALhE42ehhBbV+qy+o+9DRQix+FhOZXPdMRsJ
-         IicsHEIckseKRY5A9rTbF9/0cZgB5jQbCItwevJpqBdyPjXMU6ybcRbgW9dTkEj2vk
-         4E0ZZ7ClCSDK6jQLF0OFLXPc195Nl37BdSbk5tzWSjNp3knSI4gwWkVKmrSZpyp9tR
-         k5SOJ74aoEFKfW5fjqxavoaJqpFiEiP04ot0ASLbwtX5XAoOTFLZ+tb7HCYMo5BUjq
-         V0JgCxILNR3ZQ==
+        b=eoc6kqvzhTMevu48p42rOmBR5X1xRmDZQr1/hTCqlnNBTxgmKl3ywbHFhfLxR8Db+
+         Gd6IqboOXlqrn+V56+TFJY8C9mzk3tRcFLL3G854Z7fFc58jhFkQ6WlLm4+bYgtFq7
+         1F7taFsgUaHOLfbbbrlO/IEfhnrQLmnVcXSJ4KNdDybqacyrJlXeQU4QE/8h9JCrpA
+         M+1zdHVnkuUqLLXWeIhswT9q+qR/fwctcMVHJmujhMXzxI8o8/rx+m/TDFAyilyjju
+         SxA9aOZIvVhDleRL8tnZRCxLFk9j1jr+MoPGrDs8WzTSW5tqR+Z0CKu4IPHv6ssmWL
+         b6o/LZj/f6pMg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lin Ma <linma@zju.edu.cn>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>,
-        krzysztof.kozlowski@linaro.org, dan.carpenter@oracle.com,
-        rikard.falkeborn@gmail.com, cyeaa@connect.ust.hk,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 09/12] nfc: pn533: Fix buggy cleanup order
-Date:   Tue, 24 May 2022 11:59:23 -0400
-Message-Id: <20220524155929.826793-9-sashal@kernel.org>
+Cc:     Mika Westerberg <mika.westerberg@linux.intel.com>,
+        "From : Andy Shevchenko" <andriy.shevchenko@linux.intel.com>,
+        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        seth.heasley@intel.com, nhorman@tuxdriver.com, bp@suse.de,
+        christophe.jaillet@wanadoo.fr, linux-i2c@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 11/12] i2c: ismt: Provide a DMA buffer for Interrupt Cause Logging
+Date:   Tue, 24 May 2022 11:59:25 -0400
+Message-Id: <20220524155929.826793-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220524155929.826793-1-sashal@kernel.org>
 References: <20220524155929.826793-1-sashal@kernel.org>
@@ -54,64 +53,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lin Ma <linma@zju.edu.cn>
+From: Mika Westerberg <mika.westerberg@linux.intel.com>
 
-[ Upstream commit b8cedb7093b2d1394cae9b86494cba4b62d3a30a ]
+[ Upstream commit 17a0f3acdc6ec8b89ad40f6e22165a4beee25663 ]
 
-When removing the pn533 device (i2c or USB), there is a logic error. The
-original code first cancels the worker (flush_delayed_work) and then
-destroys the workqueue (destroy_workqueue), leaving the timer the last
-one to be deleted (del_timer). This result in a possible race condition
-in a multi-core preempt-able kernel. That is, if the cleanup
-(pn53x_common_clean) is concurrently run with the timer handler
-(pn533_listen_mode_timer), the timer can queue the poll_work to the
-already destroyed workqueue, causing use-after-free.
+Before sending a MSI the hardware writes information pertinent to the
+interrupt cause to a memory location pointed by SMTICL register. This
+memory holds three double words where the least significant bit tells
+whether the interrupt cause of master/target/error is valid. The driver
+does not use this but we need to set it up because otherwise it will
+perform DMA write to the default address (0) and this will cause an
+IOMMU fault such as below:
 
-This patch reorder the cleanup: it uses the del_timer_sync to make sure
-the handler is finished before the routine will destroy the workqueue.
-Note that the timer cannot be activated by the worker again.
+  DMAR: DRHD: handling fault status reg 2
+  DMAR: [DMA Write] Request device [00:12.0] PASID ffffffff fault addr 0
+        [fault reason 05] PTE Write access is not set
 
-static void pn533_wq_poll(struct work_struct *work)
-...
- rc = pn533_send_poll_frame(dev);
- if (rc)
-   return;
+To prevent this from happening, provide a proper DMA buffer for this
+that then gets mapped by the IOMMU accordingly.
 
- if (cur_mod->len == 0 && dev->poll_mod_count > 1)
-   mod_timer(&dev->listen_timer, ...);
-
-That is, the mod_timer can be called only when pn533_send_poll_frame()
-returns no error, which is impossible because the device is detaching
-and the lower driver should return ENODEV code.
-
-Signed-off-by: Lin Ma <linma@zju.edu.cn>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+Reviewed-by: From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nfc/pn533/pn533.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/i2c/busses/i2c-ismt.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-diff --git a/drivers/nfc/pn533/pn533.c b/drivers/nfc/pn533/pn533.c
-index a491db46e3bd..d9f6367b9993 100644
---- a/drivers/nfc/pn533/pn533.c
-+++ b/drivers/nfc/pn533/pn533.c
-@@ -2787,13 +2787,14 @@ void pn53x_common_clean(struct pn533 *priv)
- {
- 	struct pn533_cmd *cmd, *n;
+diff --git a/drivers/i2c/busses/i2c-ismt.c b/drivers/i2c/busses/i2c-ismt.c
+index f4820fd3dc13..c01430ce103a 100644
+--- a/drivers/i2c/busses/i2c-ismt.c
++++ b/drivers/i2c/busses/i2c-ismt.c
+@@ -82,6 +82,7 @@
  
-+	/* delete the timer before cleanup the worker */
-+	del_timer_sync(&priv->listen_timer);
+ #define ISMT_DESC_ENTRIES	2	/* number of descriptor entries */
+ #define ISMT_MAX_RETRIES	3	/* number of SMBus retries to attempt */
++#define ISMT_LOG_ENTRIES	3	/* number of interrupt cause log entries */
+ 
+ /* Hardware Descriptor Constants - Control Field */
+ #define ISMT_DESC_CWRL	0x01	/* Command/Write Length */
+@@ -175,6 +176,8 @@ struct ismt_priv {
+ 	u8 head;				/* ring buffer head pointer */
+ 	struct completion cmp;			/* interrupt completion */
+ 	u8 buffer[I2C_SMBUS_BLOCK_MAX + 16];	/* temp R/W data buffer */
++	dma_addr_t log_dma;
++	u32 *log;
+ };
+ 
+ static const struct pci_device_id ismt_ids[] = {
+@@ -411,6 +414,9 @@ static int ismt_access(struct i2c_adapter *adap, u16 addr,
+ 	memset(desc, 0, sizeof(struct ismt_desc));
+ 	desc->tgtaddr_rw = ISMT_DESC_ADDR_RW(addr, read_write);
+ 
++	/* Always clear the log entries */
++	memset(priv->log, 0, ISMT_LOG_ENTRIES * sizeof(u32));
 +
- 	flush_delayed_work(&priv->poll_work);
- 	destroy_workqueue(priv->wq);
+ 	/* Initialize common control bits */
+ 	if (likely(pci_dev_msi_enabled(priv->pci_dev)))
+ 		desc->control = ISMT_DESC_INT | ISMT_DESC_FAIR;
+@@ -708,6 +714,8 @@ static void ismt_hw_init(struct ismt_priv *priv)
+ 	/* initialize the Master Descriptor Base Address (MDBA) */
+ 	writeq(priv->io_rng_dma, priv->smba + ISMT_MSTR_MDBA);
  
- 	skb_queue_purge(&priv->resp_q);
++	writeq(priv->log_dma, priv->smba + ISMT_GR_SMTICL);
++
+ 	/* initialize the Master Control Register (MCTRL) */
+ 	writel(ISMT_MCTRL_MEIE, priv->smba + ISMT_MSTR_MCTRL);
  
--	del_timer(&priv->listen_timer);
--
- 	list_for_each_entry_safe(cmd, n, &priv->cmd_queue, queue) {
- 		list_del(&cmd->queue);
- 		kfree(cmd);
+@@ -795,6 +803,12 @@ static int ismt_dev_init(struct ismt_priv *priv)
+ 	priv->head = 0;
+ 	init_completion(&priv->cmp);
+ 
++	priv->log = dmam_alloc_coherent(&priv->pci_dev->dev,
++					ISMT_LOG_ENTRIES * sizeof(u32),
++					&priv->log_dma, GFP_KERNEL);
++	if (!priv->log)
++		return -ENOMEM;
++
+ 	return 0;
+ }
+ 
 -- 
 2.35.1
 
