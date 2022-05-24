@@ -2,159 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1797C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 18:59:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4E81C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 18:59:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240518AbiEXS7T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 14:59:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52958 "EHLO
+        id S240543AbiEXS7Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 14:59:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233193AbiEXS7Q (ORCPT
+        with ESMTP id S240524AbiEXS7W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 14:59:16 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 197AB5B3E8
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 11:59:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653418754;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=/u3XlUG6KtQr1BQPpeDQC4OLmlAGTwSNLNWZkdYSkog=;
-        b=YfICYk1DtlgD5jQRw+BhJIfe4ve8rvI87YHCO9ZkdHxoUqiWfo7t7BI1nCWNNGn8l3jBul
-        pTOH0RV7onGljkYVZYO9ze2M7skLkS159PQb/yEfPrGfhjHhFjEdwC8q5i9rv/Vuwv17Cj
-        8pnj7q51Y8wNYptFE3S1EGJMxJ9je80=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-144-tC-OfNboMlCRdW6ksfwmtA-1; Tue, 24 May 2022 14:59:13 -0400
-X-MC-Unique: tC-OfNboMlCRdW6ksfwmtA-1
-Received: by mail-wm1-f72.google.com with SMTP id n25-20020a05600c3b9900b0039733081b4dso1635147wms.7
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 11:59:12 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=/u3XlUG6KtQr1BQPpeDQC4OLmlAGTwSNLNWZkdYSkog=;
-        b=n7DVlg1jFiRxnD7K0jTGkVu+I0QYLoR0xcrDErFZPvqKUdBTAp2i5EuzucYaBtlRtW
-         67YJnRlQymuzkVgVHLfIKdgx3ds24vjWn2RzoXXQboHvu0wGtFqxSz1k9otTFQKLtVPN
-         uLjUwxyyRp4ay5+dKCvUAjCY/RgEXSMljfgzwHAa5S9mE0l02YJf1O9J4egnmmOA+Pyp
-         H98TdMMVcXAi8sGOVS4Sf/T7RFGSQL4DSCmcSmjPDeM2+2a99LnThXl1g3FXo1Z3Vgzy
-         fhkuYFADYLFQcoAWvAkJ+RmFuwOOA/6W3KiM5AZRic7ogCQZufA8UmFKbtUXNNPfDngs
-         ZiJQ==
-X-Gm-Message-State: AOAM532Ka+RQdWK9+B5vQZpx5Hut7098IxGZnHe40fMw9TQM/QRzdF6O
-        m10bNpghESkHc35sEamHSTelXvX/KV2mhrImJB3UJxHZVKV2a5duc+GKKsFuZAVczyFkqf9q+T+
-        xOyjfELDSPW+c2jy1mqu0LLkR
-X-Received: by 2002:adf:c80a:0:b0:20c:ffa0:6a3 with SMTP id d10-20020adfc80a000000b0020cffa006a3mr23572796wrh.360.1653418751819;
-        Tue, 24 May 2022 11:59:11 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyGSz2pcp7eL3O58tziWOYGbUj4OEBI4+pd8yfPiv1mrR1trcb64B+iGECL8KJSWE+HJH27zw==
-X-Received: by 2002:adf:c80a:0:b0:20c:ffa0:6a3 with SMTP id d10-20020adfc80a000000b0020cffa006a3mr23572784wrh.360.1653418751530;
-        Tue, 24 May 2022 11:59:11 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c70a:5200:b78b:b654:3bbe:992? (p200300cbc70a5200b78bb6543bbe0992.dip0.t-ipconnect.de. [2003:cb:c70a:5200:b78b:b654:3bbe:992])
-        by smtp.gmail.com with ESMTPSA id r15-20020a056000014f00b0020e609dd274sm187544wrx.76.2022.05.24.11.59.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 24 May 2022 11:59:10 -0700 (PDT)
-Message-ID: <68a4a96b-9c66-6509-e75d-b1bea6cd55d1@redhat.com>
-Date:   Tue, 24 May 2022 20:59:09 +0200
+        Tue, 24 May 2022 14:59:22 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3C775BD3D;
+        Tue, 24 May 2022 11:59:21 -0700 (PDT)
+Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24OIebXe006353;
+        Tue, 24 May 2022 18:59:17 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : content-transfer-encoding : mime-version; s=pp1;
+ bh=bpiP7NsTBZVUMNg5kWMsnCx1uMxRVeES8SFoFrfSGtY=;
+ b=F/UzZ9ak5qxxtMFgA0Uk/ArFGdlRXvN0mCV+t2yTV5uIDBGgRRlCB0YWuEFcQjYTTL7c
+ dbCfkTQjuRgKyNNvRAbGnkh4nqcC1IStUFcboqv8Cf66owIO6IFTJb2MZYKhqtyB1mMw
+ ZRlVWoVYnvfuxmo9EUH7fu36BZmqWpncbW/dx0K0Oa/H0pBZzd9MX0lgo65hjZc1l/s+
+ EW+lAnuEHQ2/LPKIrqpA7NIhl1CIG80j0nI39zPHeD/uKAK7AbXKv2Sb0mL5xCRI31df
+ uLEchUOUY6gBbR5Ra+ACTY1Mm5zqiTLZ8lDEABbpNCf/9lcnCE7NA6nJorxFu/M04Jc3 +w== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g93vcsgnr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 24 May 2022 18:59:17 +0000
+Received: from m0098414.ppops.net (m0098414.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24OIgT0Q018127;
+        Tue, 24 May 2022 18:59:17 GMT
+Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g93vcsgng-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 24 May 2022 18:59:16 +0000
+Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
+        by ppma04dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24OIs7BD011479;
+        Tue, 24 May 2022 18:59:16 GMT
+Received: from b03cxnp08027.gho.boulder.ibm.com (b03cxnp08027.gho.boulder.ibm.com [9.17.130.19])
+        by ppma04dal.us.ibm.com with ESMTP id 3g93utrnua-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 24 May 2022 18:59:16 +0000
+Received: from b03ledav005.gho.boulder.ibm.com (b03ledav005.gho.boulder.ibm.com [9.17.130.236])
+        by b03cxnp08027.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24OIxEbG14418514
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 24 May 2022 18:59:14 GMT
+Received: from b03ledav005.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 6EBB7BE04F;
+        Tue, 24 May 2022 18:59:14 +0000 (GMT)
+Received: from b03ledav005.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 5A3E0BE053;
+        Tue, 24 May 2022 18:59:12 +0000 (GMT)
+Received: from li-c92d2ccc-254b-11b2-a85c-a700b5bfb098.ibm.com.com (unknown [9.163.3.233])
+        by b03ledav005.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Tue, 24 May 2022 18:59:12 +0000 (GMT)
+From:   Matthew Rosato <mjrosato@linux.ibm.com>
+To:     linux-s390@vger.kernel.org
+Cc:     alex.williamson@redhat.com, cohuck@redhat.com,
+        schnelle@linux.ibm.com, farman@linux.ibm.com, pmorel@linux.ibm.com,
+        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
+        svens@linux.ibm.com, frankja@linux.ibm.com, david@redhat.com,
+        imbrenda@linux.ibm.com, vneethv@linux.ibm.com,
+        oberpar@linux.ibm.com, freude@linux.ibm.com, thuth@redhat.com,
+        pasic@linux.ibm.com, pbonzini@redhat.com, corbet@lwn.net,
+        jgg@nvidia.com, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org
+Subject: [PATCH v8 00/22] KVM: s390: enable zPCI for interpretive execution
+Date:   Tue, 24 May 2022 14:58:45 -0400
+Message-Id: <20220524185907.140285-1-mjrosato@linux.ibm.com>
+X-Mailer: git-send-email 2.27.0
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: 6Vb2mFBDMqjEdg1QXwrBJMUcB8eZCMbW
+X-Proofpoint-ORIG-GUID: _eg9s0IbW3434w2HzOEBiD1AQIb82Eej
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH 0/3] recover hardware corrupted page by virtio balloon
-Content-Language: en-US
-To:     zhenwei pi <pizhenwei@bytedance.com>, akpm@linux-foundation.org,
-        naoya.horiguchi@nec.com, mst@redhat.com
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        jasowang@redhat.com, virtualization@lists.linux-foundation.org,
-        pbonzini@redhat.com, peterx@redhat.com, qemu-devel@nongnu.org
-References: <20220520070648.1794132-1-pizhenwei@bytedance.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <20220520070648.1794132-1-pizhenwei@bytedance.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-24_09,2022-05-23_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0
+ lowpriorityscore=0 adultscore=0 impostorscore=0 mlxscore=0 mlxlogscore=751
+ malwarescore=0 bulkscore=0 spamscore=0 suspectscore=0 priorityscore=1501
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2205240090
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 20.05.22 09:06, zhenwei pi wrote:
-> Hi,
-> 
-> I'm trying to recover hardware corrupted page by virtio balloon, the
-> workflow of this feature like this:
-> 
-> Guest              5.MF -> 6.RVQ FE    10.Unpoison page
->                     /           \            /
-> -------------------+-------------+----------+-----------
->                    |             |          |
->                 4.MCE        7.RVQ BE   9.RVQ Event
->  QEMU             /               \       /
->              3.SIGBUS              8.Remap
->                 /
-> ----------------+------------------------------------
->                 |
->             +--2.MF
->  Host       /
->        1.HW error
-> 
-> 1, HardWare page error occurs randomly.
-> 2, host side handles corrupted page by Memory Failure mechanism, sends
->    SIGBUS to the user process if early-kill is enabled.
-> 3, QEMU handles SIGBUS, if the address belongs to guest RAM, then:
-> 4, QEMU tries to inject MCE into guest.
-> 5, guest handles memory failure again.
-> 
-> 1-5 is already supported for a long time, the next steps are supported
-> in this patch(also related driver patch):
-> 
-> 6, guest balloon driver gets noticed of the corrupted PFN, and sends
->    request to host side by Recover VQ FrontEnd.
-> 7, QEMU handles request from Recover VQ BackEnd, then:
-> 8, QEMU remaps the corrupted HVA fo fix the memory failure, then:
-> 9, QEMU acks the guest side the result by Recover VQ.
-> 10, guest unpoisons the page if the corrupted page gets recoverd
->     successfully.
-> 
-> Test:
-> This patch set can be tested with QEMU(also in developing):
-> https://github.com/pizhenwei/qemu/tree/balloon-recover
-> 
-> Emulate MCE by QEMU(guest RAM normal page only, hugepage is not supported):
-> virsh qemu-monitor-command vm --hmp mce 0 9 0xbd000000000000c0 0xd 0x61646678 0x8c
-> 
-> The guest works fine(on Intel Platinum 8260):
->  mce: [Hardware Error]: Machine check events logged
->  Memory failure: 0x61646: recovery action for dirty LRU page: Recovered
->  virtio_balloon virtio5: recovered pfn 0x61646
->  Unpoison: Unpoisoned page 0x61646 by virtio-balloon
->  MCE: Killing stress:24502 due to hardware memory corruption fault at 7f5be2e5a010
-> 
-> And the 'HardwareCorrupted' in /proc/meminfo also shows 0 kB.
-> 
-> About the protocol of virtio balloon recover VQ, it's undefined and in
-> developing currently:
-> - 'struct virtio_balloon_recover' defines the structure which is used to
->   exchange message between guest and host.
-> - '__le32 corrupted_pages' in struct virtio_balloon_config is used in the next
->   step:
->   1, a VM uses RAM of 2M huge page, once a MCE occurs, the 2M becomes
->      unaccessible. Reporting 512 * 4K 'corrupted_pages' to the guest, the guest
->      has a chance to isolate the 512 pages ahead of time.
-> 
->   2, after migrating to another host, the corrupted pages are actually recovered,
->      once the guest gets the 'corrupted_pages' with 0, then the guest could
->      unpoison all the poisoned pages which are recorded in the balloon driver.
-> 
+Note: this version of the series is built on top of vfio -next:
+https://github.com/awilliam/linux-vfio/tree/next
+As it now depends on 'vfio: remove VFIO_GROUP_NOTIFY_SET_KVM' and its
+prereqs.
+Additionally, if you care to try testing this series on top of vfio -next
+you'll also want to pick up this fix:
+https://lore.kernel.org/kvm/20220519182929.581898-1-mjrosato@linux.ibm.com/
 
-Hi,
+---
 
-I'm still on vacation this week, I'll try to have a look when I'm back
-(and flushed out my overflowing inbox :D).
+Enable interpretive execution of zPCI instructions + adapter interruption
+forwarding for s390x KVM vfio-pci.  This is done by triggering a routine
+when the VFIO group is associated with the KVM guest, transmitting to
+firmware a special token (GISA designation) to enable that specific guest
+for interpretive execution on that zPCI device.  Load/store interpreation
+enablement is then controlled by userspace (based upon whether or not a
+SHM bit is placed in the virtual function handle).  Adapter Event
+Notification interpretation is controlled from userspace via a new KVM
+ioctl.
 
+By allowing intepretation of zPCI instructions and firmware delivery of
+interrupts to guests, we can reduce the frequency of guest SIE exits for
+zPCI.  
+
+From the perspective of guest configuration, you passthrough zPCI devices
+in the same manner as before, with intepretation support being used by
+default if available in kernel+qemu.
+
+Will follow up with a link an updated QEMU series.
+
+Changelog v7->v8:
+- Fix ioctl documentation (Thomas)
+- remove copy_to_user from ioctl, was from old version (Thomas)
+- KVM_S390_ZPCIOP_REG_AEN: fail on undefined flags (Thomas)
+- kvm_s390_pci_zpci_reg_aen: cleanup hostflag setting (Thomas) and
+  also fix an accidental bit inversion while at it
+- CONFIG_VFIO_PCI_ZDEV_KVM: add the 'say Y' that was accidentally left
+  out of the help text (Jason)
+- Restructure the vfio-pci-zdev pieces on top of 'vfio: remove
+  VFIO_GROUP_NOTIFY_SET_KVM' (Jason) - open_device/close_device will now
+  call the kvm registration routines directly.  Move the open_device call
+  to vfio_pci_core_enable so that errors can be propogated.  For parity,
+  move the close_device call to vfio_pci_core_disable.
+
+Matthew Rosato (22):
+  s390/sclp: detect the zPCI load/store interpretation facility
+  s390/sclp: detect the AISII facility
+  s390/sclp: detect the AENI facility
+  s390/sclp: detect the AISI facility
+  s390/airq: pass more TPI info to airq handlers
+  s390/airq: allow for airq structure that uses an input vector
+  s390/pci: externalize the SIC operation controls and routine
+  s390/pci: stash associated GISA designation
+  s390/pci: stash dtsm and maxstbl
+  vfio/pci: introduce CONFIG_VFIO_PCI_ZDEV_KVM
+  KVM: s390: pci: add basic kvm_zdev structure
+  KVM: s390: pci: do initial setup for AEN interpretation
+  KVM: s390: pci: enable host forwarding of Adapter Event Notifications
+  KVM: s390: mechanism to enable guest zPCI Interpretation
+  KVM: s390: pci: provide routines for enabling/disabling interrupt
+    forwarding
+  KVM: s390: pci: add routines to start/stop interpretive execution
+  vfio-pci/zdev: add open/close device hooks
+  vfio-pci/zdev: add function handle to clp base capability
+  vfio-pci/zdev: different maxstbl for interpreted devices
+  KVM: s390: add KVM_S390_ZPCI_OP to manage guest zPCI devices
+  KVM: s390: introduce CPU feature for zPCI Interpretation
+  MAINTAINERS: additional files related kvm s390 pci passthrough
+
+ Documentation/virt/kvm/api.rst   |  46 ++
+ MAINTAINERS                      |   1 +
+ arch/s390/include/asm/airq.h     |   7 +-
+ arch/s390/include/asm/kvm_host.h |  26 ++
+ arch/s390/include/asm/pci.h      |  13 +
+ arch/s390/include/asm/pci_clp.h  |   9 +-
+ arch/s390/include/asm/pci_insn.h |  29 +-
+ arch/s390/include/asm/sclp.h     |   4 +
+ arch/s390/include/asm/tpi.h      |  13 +
+ arch/s390/include/uapi/asm/kvm.h |   1 +
+ arch/s390/kvm/Makefile           |   1 +
+ arch/s390/kvm/interrupt.c        |  96 ++++-
+ arch/s390/kvm/kvm-s390.c         |  87 +++-
+ arch/s390/kvm/kvm-s390.h         |  10 +
+ arch/s390/kvm/pci.c              | 695 +++++++++++++++++++++++++++++++
+ arch/s390/kvm/pci.h              |  88 ++++
+ arch/s390/pci/pci.c              |  16 +
+ arch/s390/pci/pci_clp.c          |   7 +
+ arch/s390/pci/pci_insn.c         |   4 +-
+ arch/s390/pci/pci_irq.c          |  48 ++-
+ drivers/s390/char/sclp_early.c   |   4 +
+ drivers/s390/cio/airq.c          |  12 +-
+ drivers/s390/cio/qdio_thinint.c  |   6 +-
+ drivers/s390/crypto/ap_bus.c     |   9 +-
+ drivers/s390/virtio/virtio_ccw.c |   6 +-
+ drivers/vfio/pci/Kconfig         |  11 +
+ drivers/vfio/pci/Makefile        |   2 +-
+ drivers/vfio/pci/vfio_pci_core.c |  11 +-
+ drivers/vfio/pci/vfio_pci_zdev.c |  38 +-
+ include/linux/sched/user.h       |   3 +-
+ include/linux/vfio_pci_core.h    |  14 +-
+ include/uapi/linux/kvm.h         |  32 ++
+ include/uapi/linux/vfio_zdev.h   |   7 +
+ 33 files changed, 1300 insertions(+), 56 deletions(-)
+ create mode 100644 arch/s390/kvm/pci.c
+ create mode 100644 arch/s390/kvm/pci.h
 
 -- 
-Thanks,
-
-David / dhildenb
+2.27.0
 
