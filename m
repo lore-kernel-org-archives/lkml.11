@@ -2,175 +2,207 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1DCBC43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 10:33:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A255C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 10:34:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236243AbiEXKdz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 06:33:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39510 "EHLO
+        id S236253AbiEXKef (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 06:34:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229651AbiEXKdy (ORCPT
+        with ESMTP id S229651AbiEXKec (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 06:33:54 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94C786EC59;
-        Tue, 24 May 2022 03:33:52 -0700 (PDT)
+        Tue, 24 May 2022 06:34:32 -0400
+Received: from smtp1.axis.com (smtp1.axis.com [195.60.68.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94E9D6EC71
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 03:34:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1653388432; x=1684924432;
+  d=axis.com; q=dns/txt; s=axis-central1; t=1653388471;
+  x=1684924471;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=H9ufGJiDosermV/b0+6s0g+9qxl7kYPCxWRAZ6x7wH0=;
-  b=h7jxuXhCz3hK6bQDhIJYTz+neEnAXMM7saW9mFTBmlfEUqZdSu4AXJcP
-   5kyOrosJQtWnX/N2JHL9RoI+ac0ZZh+dFQuFBCyxWWk31dqy+yVvHUddb
-   2ZRaY11qPapBGsz9BSKYN5UhN0kV8clvPZTvHDWqcV4a+0xhKgCJmT4JQ
-   0=;
-Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 24 May 2022 03:33:52 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 May 2022 03:33:52 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 24 May 2022 03:33:50 -0700
-Received: from hu-pkondeti-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 24 May 2022 03:33:44 -0700
-Date:   Tue, 24 May 2022 16:03:40 +0530
-From:   Pavan Kondeti <quic_pkondeti@quicinc.com>
-To:     Krishna Kurapati <quic_kriskura@quicinc.com>
-CC:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Felipe Balbi <balbi@kernel.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Doug Anderson <dianders@chromium.org>,
-        "Matthias Kaehlcke" <mka@chromium.org>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        <devicetree@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-usb@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-pm@vger.kernel.org>, <quic_pkondeti@quicinc.com>,
-        <quic_ppratap@quicinc.com>, <quic_vpulyala@quicinc.com>,
-        Sandeep Maheswaram <quic_c_sanm@quicinc.com>
-Subject: Re: [PATCH v17 2/5] usb: dwc3: core: Host wake up support from
- system suspend
-Message-ID: <20220524103340.GL15121@hu-pkondeti-hyd.qualcomm.com>
-References: <1653387228-28110-1-git-send-email-quic_kriskura@quicinc.com>
- <1653387228-28110-3-git-send-email-quic_kriskura@quicinc.com>
+  bh=tTO9KlSLvwJ5fB+7S3O+zA2j/+7fp0U+77neSmOoPwU=;
+  b=T3EZslUqH0c1V09MbEht8LXAPbIDIrVwRokQ5O6qA8W7L54nQo2q8wqR
+   fmyV+YYa19oxxl7xmRm1bd2hYc4G3KXaMwJxcarEWG/bsp1TtaozPNTEY
+   R+f/pSZ1T1a9x0XIZ64qFN4LLliPhZF+s4ZWTlsPyMLxyspzVqIk5P4WV
+   Q8A5NWtWuJBzaVuMM5rmYy7q8R7xhlZ8ARRwXoxRHbNoSXcgLNHLbZJbY
+   RM6X9Mk41flu6q16ulE+3yhSGlksxtAPSjto+aXkTdf5ZXAcFIzRLCHk+
+   L4piO17CAqBegCWIjN4cJc9nB2TfaYmQHbtOgHDZ+5eH6D+tDY5k3NW3y
+   A==;
+Date:   Tue, 24 May 2022 12:34:28 +0200
+From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
+To:     Johannes Berg <johannes@sipsolutions.net>
+CC:     Patricia Alfonso <trishalfonso@google.com>,
+        Jeff Dike <jdike@addtoit.com>,
+        Richard Weinberger <richard@nod.at>,
+        <anton.ivanov@cambridgegreys.com>,
+        Andrey Ryabinin <aryabinin@virtuozzo.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        David Gow <davidgow@google.com>,
+        kasan-dev <kasan-dev@googlegroups.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        <linux-um@lists.infradead.org>
+Subject: Re: [PATCH] UML: add support for KASAN under x86_64
+Message-ID: <20220524103423.GA13239@axis.com>
+References: <20200226004608.8128-1-trishalfonso@google.com>
+ <CAKFsvULd7w21T_nEn8QiofQGMovFBmi94dq2W_-DOjxf5oD-=w@mail.gmail.com>
+ <4b8c1696f658b4c6c393956734d580593b55c4c0.camel@sipsolutions.net>
+ <CAKFsvULGSQRx3hL8HgbYbEt_8GOorZj96CoMVhx6sw=xWEwSwA@mail.gmail.com>
+ <1fb57ec2a830deba664379f3e0f480e08e6dec2f.camel@sipsolutions.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <1653387228-28110-3-git-send-email-quic_kriskura@quicinc.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+In-Reply-To: <1fb57ec2a830deba664379f3e0f480e08e6dec2f.camel@sipsolutions.net>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 24, 2022 at 03:43:45PM +0530, Krishna Kurapati wrote:
-> From: Sandeep Maheswaram <quic_c_sanm@quicinc.com>
+On Wed, Mar 11, 2020 at 11:44:37PM +0100, Johannes Berg wrote:
+> On Wed, 2020-03-11 at 15:32 -0700, Patricia Alfonso wrote:
+> > I'll need some time to investigate these all myself. Having just
+> > gotten my first module to run about an hour ago, any more information
+> > about how you got these errors would be helpful so I can try to
+> > reproduce them on my own.
 > 
-> Check wakeup-source property for dwc3 core node to set the
-> wakeup capability. Drop the device_init_wakeup call from
-> runtime suspend and resume.
+> See the other emails, I was basically just loading random modules. In my
+> case cfg80211, mac80211, mac80211-hwsim - those are definitely available
+> without any (virtio) hardware requirements, so you could use them.
 > 
-> If the dwc3 is wakeup capable, don't power down the USB PHY(s).
-> The glue drivers are expected to take care of configuring the
-> additional wakeup settings if needed based on the dwc3 wakeup
-> capability status. In some SOC designs, powering off the PHY is
-> resulting in higher leakage, so this patch save power on such boards.
-> 
-> Signed-off-by: Sandeep Maheswaram <quic_c_sanm@quicinc.com>
-> Signed-off-by: Krishna Kurapati <quic_kriskura@quicinc.com>
-> ---
->  drivers/usb/dwc3/core.c | 26 ++++++++++++--------------
->  1 file changed, 12 insertions(+), 14 deletions(-)
-> 
-> diff --git a/drivers/usb/dwc3/core.c b/drivers/usb/dwc3/core.c
-> index 5734219..4a7c82e 100644
-> --- a/drivers/usb/dwc3/core.c
-> +++ b/drivers/usb/dwc3/core.c
-> @@ -1782,6 +1782,7 @@ static int dwc3_probe(struct platform_device *pdev)
->  
->  	platform_set_drvdata(pdev, dwc);
->  	dwc3_cache_hwparams(dwc);
-> +	device_init_wakeup(&pdev->dev, of_property_read_bool(dev->of_node, "wakeup-source"));
->  
->  	spin_lock_init(&dwc->lock);
->  	mutex_init(&dwc->mutex);
-> @@ -1943,11 +1944,6 @@ static int dwc3_suspend_common(struct dwc3 *dwc, pm_message_t msg)
->  		dwc3_core_exit(dwc);
->  		break;
->  	case DWC3_GCTL_PRTCAP_HOST:
-> -		if (!PMSG_IS_AUTO(msg)) {
-> -			dwc3_core_exit(dwc);
-> -			break;
-> -		}
-> -
->  		/* Let controller to suspend HSPHY before PHY driver suspends */
->  		if (dwc->dis_u2_susphy_quirk ||
->  		    dwc->dis_enblslpm_quirk) {
-> @@ -1962,6 +1958,11 @@ static int dwc3_suspend_common(struct dwc3 *dwc, pm_message_t msg)
->  
->  		phy_pm_runtime_put_sync(dwc->usb2_generic_phy);
->  		phy_pm_runtime_put_sync(dwc->usb3_generic_phy);
-> +
-> +		if (!PMSG_IS_AUTO(msg)) {
-> +			if (!device_can_wakeup(dwc->dev))
-> +				dwc3_core_exit(dwc);
-> +		}
->  		break;
->  	case DWC3_GCTL_PRTCAP_OTG:
->  		/* do nothing during runtime_suspend */
-> @@ -2005,11 +2006,12 @@ static int dwc3_resume_common(struct dwc3 *dwc, pm_message_t msg)
->  		break;
->  	case DWC3_GCTL_PRTCAP_HOST:
->  		if (!PMSG_IS_AUTO(msg)) {
-> -			ret = dwc3_core_init_for_resume(dwc);
-> -			if (ret)
-> -				return ret;
-> -			dwc3_set_prtcap(dwc, DWC3_GCTL_PRTCAP_HOST);
-> -			break;
-> +			if (!device_can_wakeup(dwc->dev)) {
-> +				ret = dwc3_core_init_for_resume(dwc);
-> +				if (ret)
-> +					return ret;
-> +				dwc3_set_prtcap(dwc, DWC3_GCTL_PRTCAP_HOST);
-> +			}
->  		}
->  		/* Restore GUSB2PHYCFG bits that were modified in suspend */
->  		reg = dwc3_readl(dwc->regs, DWC3_GUSB2PHYCFG(0));
-> @@ -2081,8 +2083,6 @@ static int dwc3_runtime_suspend(struct device *dev)
->  	if (ret)
->  		return ret;
->  
-> -	device_init_wakeup(dev, true);
-> -
->  	return 0;
->  }
->  
-> @@ -2091,8 +2091,6 @@ static int dwc3_runtime_resume(struct device *dev)
->  	struct dwc3     *dwc = dev_get_drvdata(dev);
->  	int		ret;
->  
-> -	device_init_wakeup(dev, false);
-> -
->  	ret = dwc3_resume_common(dwc, PMSG_AUTO_RESUME);
->  	if (ret)
->  		return ret;
-> -- 
-> 2.7.4
-> 
+> Note that doing a bunch of vmalloc would likely result in similar
+> issues, since the module and vmalloc space is the same on UML.
 
-Looks good to me. Feel free to add
+Old thread, but I had a look at this the other day and I think I got it
+working.  Since the entire shadow area is mapped at init, we don't need
+to do any mappings later.
 
-Reviewed-by: Pavankumar Kondeti <quic_pkondeti@quicinc.com>
+It works both with and without KASAN_VMALLOC.  KASAN_STACK works too
+after I disabled sanitization of the stacktrace code.  All kasan kunit
+tests pass and the test_kasan.ko module works too.
 
-Thanks,
-Pavan
+Delta patch against Patricia's is below.  The CONFIG_UML checks need to
+be replaced with something more appropriate (new config? __weak
+functions?) and the free functions should probably be hooked up to
+madvise(MADV_DONTNEED) so we discard unused pages in the shadow mapping.
+
+Note that there's a KASAN stack-out-of-bounds splat on startup when just
+booting UML.  That looks like a real (17-year-old) bug, I've posted a
+fix for that:
+
+ https://lore.kernel.org/lkml/20220523140403.2361040-1-vincent.whitchurch@axis.com/
+
+8<-----------
+diff --git a/arch/um/Kconfig b/arch/um/Kconfig
+index a1bd8c07ce14..5f3a4d25d57e 100644
+--- a/arch/um/Kconfig
++++ b/arch/um/Kconfig
+@@ -12,6 +12,7 @@ config UML
+ 	select ARCH_NO_PREEMPT
+ 	select HAVE_ARCH_AUDITSYSCALL
+ 	select HAVE_ARCH_KASAN if X86_64
++	select HAVE_ARCH_KASAN_VMALLOC if HAVE_ARCH_KASAN
+ 	select HAVE_ARCH_SECCOMP_FILTER
+ 	select HAVE_ASM_MODVERSIONS
+ 	select HAVE_UID16
+@@ -223,7 +224,7 @@ config UML_TIME_TRAVEL_SUPPORT
+ config KASAN_SHADOW_OFFSET
+ 	hex
+ 	depends on KASAN
+-	default 0x7fff8000
++	default 0x100000000000
+ 	help
+ 	  This is the offset at which the ~2.25TB of shadow memory is
+ 	  mapped and used by KASAN for memory debugging. This can be any
+diff --git a/arch/um/kernel/Makefile b/arch/um/kernel/Makefile
+index 1c2d4b29a3d4..a089217e2f0e 100644
+--- a/arch/um/kernel/Makefile
++++ b/arch/um/kernel/Makefile
+@@ -27,6 +27,9 @@ obj-$(CONFIG_EARLY_PRINTK) += early_printk.o
+ obj-$(CONFIG_STACKTRACE) += stacktrace.o
+ obj-$(CONFIG_GENERIC_PCI_IOMAP) += ioport.o
+ 
++KASAN_SANITIZE_stacktrace.o := n
++KASAN_SANITIZE_sysrq.o := n
++
+ USER_OBJS := config.o
+ 
+ include arch/um/scripts/Makefile.rules
+diff --git a/arch/um/kernel/mem.c b/arch/um/kernel/mem.c
+index 7c3196c297f7..a32cfce53efb 100644
+--- a/arch/um/kernel/mem.c
++++ b/arch/um/kernel/mem.c
+@@ -33,7 +33,7 @@ void kasan_init(void)
+ }
+ 
+ static void (*kasan_init_ptr)(void)
+-__section(.kasan_init) __used
++__section(".kasan_init") __used
+ = kasan_init;
+ #endif
+ 
+diff --git a/lib/Kconfig.kasan b/lib/Kconfig.kasan
+index 1113cf5fea25..1f3e620188a2 100644
+--- a/lib/Kconfig.kasan
++++ b/lib/Kconfig.kasan
+@@ -152,7 +152,7 @@ config KASAN_STACK
+ 	bool "Enable stack instrumentation (unsafe)" if CC_IS_CLANG && !COMPILE_TEST
+ 	depends on KASAN_GENERIC || KASAN_SW_TAGS
+ 	depends on !ARCH_DISABLE_KASAN_INLINE
+-	default y if CC_IS_GCC && !UML
++	default y if CC_IS_GCC
+ 	help
+ 	  The LLVM stack address sanitizer has a know problem that
+ 	  causes excessive stack usage in a lot of functions, see
+diff --git a/mm/kasan/shadow.c b/mm/kasan/shadow.c
+index a4f07de21771..d8c518bd0e7d 100644
+--- a/mm/kasan/shadow.c
++++ b/mm/kasan/shadow.c
+@@ -295,8 +295,14 @@ int kasan_populate_vmalloc(unsigned long addr, unsigned long size)
+ 		return 0;
+ 
+ 	shadow_start = (unsigned long)kasan_mem_to_shadow((void *)addr);
+-	shadow_start = ALIGN_DOWN(shadow_start, PAGE_SIZE);
+ 	shadow_end = (unsigned long)kasan_mem_to_shadow((void *)addr + size);
++
++	if (IS_ENABLED(CONFIG_UML)) {
++		__memset(kasan_mem_to_shadow((void *)addr), KASAN_VMALLOC_INVALID, shadow_end - shadow_start);
++		return 0;
++	}
++
++	shadow_start = ALIGN_DOWN(shadow_start, PAGE_SIZE);
+ 	shadow_end = ALIGN(shadow_end, PAGE_SIZE);
+ 
+ 	ret = apply_to_page_range(&init_mm, shadow_start,
+@@ -466,6 +472,10 @@ void kasan_release_vmalloc(unsigned long start, unsigned long end,
+ 
+ 	if (shadow_end > shadow_start) {
+ 		size = shadow_end - shadow_start;
++		if (IS_ENABLED(CONFIG_UML)) {
++			__memset(shadow_start, KASAN_SHADOW_INIT, shadow_end - shadow_start);
++			return;
++		}
+ 		apply_to_existing_page_range(&init_mm,
+ 					     (unsigned long)shadow_start,
+ 					     size, kasan_depopulate_vmalloc_pte,
+@@ -531,6 +541,11 @@ int kasan_alloc_module_shadow(void *addr, size_t size, gfp_t gfp_mask)
+ 	if (WARN_ON(!PAGE_ALIGNED(shadow_start)))
+ 		return -EINVAL;
+ 
++	if (IS_ENABLED(CONFIG_UML)) {
++		__memset((void *)shadow_start, KASAN_SHADOW_INIT, shadow_size);
++		return 0;
++	}
++
+ 	ret = __vmalloc_node_range(shadow_size, 1, shadow_start,
+ 			shadow_start + shadow_size,
+ 			GFP_KERNEL,
+@@ -554,6 +569,9 @@ int kasan_alloc_module_shadow(void *addr, size_t size, gfp_t gfp_mask)
+ 
+ void kasan_free_module_shadow(const struct vm_struct *vm)
+ {
++	if (IS_ENABLED(CONFIG_UML))
++		return;
++
+ 	if (vm->flags & VM_KASAN)
+ 		vfree(kasan_mem_to_shadow(vm->addr));
+ }
