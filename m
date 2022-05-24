@@ -2,152 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3906C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 22:32:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E063EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 22:34:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242370AbiEXWci (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 18:32:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56274 "EHLO
+        id S242392AbiEXWeU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 18:34:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242361AbiEXWcc (ORCPT
+        with ESMTP id S229731AbiEXWeP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 18:32:32 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC086762B2
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 15:32:29 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id z15so3838625wrg.11
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 15:32:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/hjeyXIou+bR7sgCBUUS9KBiw7ITkpAtyGQPK8WkjHQ=;
-        b=E47CS0uk7HJ3B0+amVIKreQyHTGL6Id/MNM0NxjP7X6opvCgl1WcdBa5SnwKc3EDWw
-         V2RSBPZ5PBv0+cdx0NAoNLXYDyjDup9mou8/UiOBU++4DVMVZrHzrWd+ZVhZFW2K8uMW
-         p9b4jxU7DGV0i8n8hpbveKXjRPZjF7JZfelsg33lCxe6KvbM/3Kw2gy36RExYeMQcSnp
-         QyMMPOr6T3TA59Xk7ew90wKydoDBGM28Fu7tgOmM6JcjUpxvmSbhb9njgSwtUUkrwV/Z
-         SDvlO42njKkIejaVhIiCDGW4sF9Mf28i9mQR4sp9xyvJ2C1xtsrbm5Tfz8hGqHkzJQq/
-         IEHg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/hjeyXIou+bR7sgCBUUS9KBiw7ITkpAtyGQPK8WkjHQ=;
-        b=OGXXmwGdnWdyjOJJJ2JGCu/fS9sDy+JqFp5aiiDnuXvDQ3zcDg4QBf3wPPD/QK414g
-         N/BgsHtelCL1BeXdyM+rj5Lj7aAlkswUuJAyH/KLgBljZBJVE2vtzQEzMt0ZAA4Me/9X
-         0cfqfuEdwg7QqOO6Smb+u8SWJVnNQCFR2A6NvzumQgdgVtOok9yZDUjQPU+DjJiZIyaC
-         lVsVwvAPv5/GSdiMJwjXf9BMYh4UUnznk5IjcdBsRTpV404zujD8WhxGCTaxtakQpCCG
-         w8RsPuYA6ewu1013mxl4+j5nGGSTRV4BgCFAXnyXfYJzxSu9GLS9kNLFKIomwRby7k3T
-         G6Eg==
-X-Gm-Message-State: AOAM533WdgkjoAPrnWQadDVC2cZO55/85Pf0/QSQMdrXelo2zoqFqjZ1
-        B95h19wfJDVqeiABQ/niIlq08cGIIPA7cXy4hKUPeg==
-X-Google-Smtp-Source: ABdhPJxT4ExN63oIrXSw4yucGOE3FdTxLSSWhIsKQP4q3l+uXQdQtcsiB0ShXvD15pANNDgeH4cCwpElZhKEPpNgNxo=
-X-Received: by 2002:adf:fb05:0:b0:20a:e113:8f3f with SMTP id
- c5-20020adffb05000000b0020ae1138f3fmr25324902wrr.534.1653431548193; Tue, 24
- May 2022 15:32:28 -0700 (PDT)
+        Tue, 24 May 2022 18:34:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCAEE6D4C4
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 15:34:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7D744B81A52
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 22:34:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F28BC34100;
+        Tue, 24 May 2022 22:34:11 +0000 (UTC)
+Date:   Tue, 24 May 2022 18:34:03 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Linyu Yuan <quic_linyyuan@quicinc.com>
+Cc:     Ingo Molnar <mingo@redhat.com>, linux-kernel@vger.kernel.org,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Tom Zanussi <zanussi@kernel.org>
+Subject: Re: [PATCH 2/2] tracing/probes: make match function safe
+Message-ID: <Yo1dW2w1UIF+KZFw@home.goodmis.org>
+References: <1651397651-30454-1-git-send-email-quic_linyyuan@quicinc.com>
+ <1651397651-30454-3-git-send-email-quic_linyyuan@quicinc.com>
 MIME-Version: 1.0
-References: <20220429201131.3397875-1-yosryahmed@google.com>
- <20220429201131.3397875-2-yosryahmed@google.com> <87ilqoi77b.wl-maz@kernel.org>
- <CAJD7tkY7JF25XXUFq2mGroetMkfo-2zGOaQC94pjZE3D42+oaw@mail.gmail.com>
- <Yn2TGJ4vZ/fst+CY@cmpxchg.org> <Yn2YYl98Vhh/UL0w@google.com>
- <Yn5+OtZSSUZZgTQj@cmpxchg.org> <Yn6DeEGLyR4Q0cDp@google.com>
- <CALvZod6nERq4j=L0V+pc-rd5+QKi4yb_23tWV-1MF53xL5KE6Q@mail.gmail.com>
- <CAJD7tka-5+XRkthNV4qCg8woPCpjcwynQoRBame-3GP1L8y+WQ@mail.gmail.com> <YoeoLJNQTam5fJSu@cmpxchg.org>
-In-Reply-To: <YoeoLJNQTam5fJSu@cmpxchg.org>
-From:   Yosry Ahmed <yosryahmed@google.com>
-Date:   Tue, 24 May 2022 15:31:52 -0700
-Message-ID: <CAJD7tkYjcmwBeUx-=MTQeUf78uqFDvfpy7OuKy4OvoS7HiVO1Q@mail.gmail.com>
-Subject: Re: [PATCH v4 1/4] mm: add NR_SECONDARY_PAGETABLE to count secondary
- page table uses.
-To:     Johannes Weiner <hannes@cmpxchg.org>
-Cc:     Shakeel Butt <shakeelb@google.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Marc Zyngier <maz@kernel.org>, Tejun Heo <tj@kernel.org>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Oliver Upton <oupton@google.com>,
-        Cgroups <cgroups@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
-        kvm@vger.kernel.org, Linux-MM <linux-mm@kvack.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1651397651-30454-3-git-send-email-quic_linyyuan@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 20, 2022 at 7:39 AM Johannes Weiner <hannes@cmpxchg.org> wrote:
->
-> On Thu, May 19, 2022 at 06:56:54PM -0700, Yosry Ahmed wrote:
-> > On Fri, May 13, 2022 at 10:14 AM Shakeel Butt <shakeelb@google.com> wrote:
-> > >
-> > > On Fri, May 13, 2022 at 9:12 AM Sean Christopherson <seanjc@google.com> wrote:
-> > > >
-> > > [...]
-> > > >
-> > > > It was mostly an honest question, I too am trying to understand what userspace
-> > > > wants to do with this information.  I was/am also trying to understand the benefits
-> > > > of doing the tracking through page_state and not a dedicated KVM stat.  E.g. KVM
-> > > > already has specific stats for the number of leaf pages mapped into a VM, why not
-> > > > do the same for non-leaf pages?
-> > >
-> > > Let me answer why a more general stat is useful and the potential
-> > > userspace reaction:
-> > >
-> > > For a memory type which is significant enough, it is useful to expose
-> > > it in the general interfaces, so that the general data/stat collection
-> > > infra can collect them instead of having workload dependent stat
-> > > collectors. In addition, not necessarily that stat has to have a
-> > > userspace reaction in an online fashion. We do collect stats for
-> > > offline analysis which greatly influence the priority order of
-> > > optimization workitems.
-> > >
-> > > Next the question is do we really need a separate stat item
-> > > (secondary_pagetable instead of just plain pagetable) exposed in the
-> > > stable API? To me secondary_pagetable is general (not kvm specific)
-> > > enough and can be significant, so having a separate dedicated stat
-> > > should be ok. Though I am ok with lump it with pagetable stat for now
-> > > but we do want it to be accounted somewhere.
-> >
-> > Any thoughts on this? Johannes?
->
-> I agree that this memory should show up in vmstat/memory.stat in some
-> form or another.
->
-> The arguments on whether this should be part of NR_PAGETABLE or a
-> separate entry seem a bit vague to me. I was hoping somebody more
-> familiar with KVM could provide a better picture of memory consumption
-> in that area.
->
-> Sean had mentioned that these allocations already get tracked through
-> GFP_KERNEL_ACCOUNT. That's good, but if they are significant enough to
-> track, they should be represented in memory.stat in some form. Sean
-> also pointed out though that those allocations tend to scale rather
-> differently than the page tables, so it probably makes sense to keep
-> those two things separate at least.
->
-> Any thoughts on putting shadow page tables and iommu page tables into
-> the existing NR_PAGETABLE item? If not, what are the cons?
->
-> And creating (maybe later) a separate NR_VIRT for the other
-> GPF_KERNEL_ACCOUNT allocations in kvm?
+Masami and Tom, what are you thoughts on this?
 
-I agree with Sean that a NR_VIRT stat would be inaccurate by omission,
-unless we account for all KVM allocations under this stat. This might
-be an unnecessary burden according to what Sean said, as most other
-allocations scale linearly with the number of vCPUs or the memory
-assigned to the VM.
+-- Steve
 
-I don't have enough context to say whether we should piggyback KVM MMU
-pages to the existing NR_PAGETABLE item, but from a high level it
-seems like it would be more helpful if they are a separate stat.
-Anyway, I am willing to go with whatever Sean thinks is best.
+On Sun, May 01, 2022 at 05:34:11PM +0800, Linyu Yuan wrote:
+> When delete one kprobe/uprobe/eprobe event entry
+> using /sys/kernel/debug/tracing/dynamic_events file,
+> it will loop all dynamic envent entries,
+> as user will not input dyn_event_operations type,
+> when call the match function of kprobe/uprobe/eprobe,
+> the dynamic event may have different dyn_event_operations type,
+> but currently match function may return a match.
+> 
+> Fix by check dyn_event_operations type first.
+> 
+> Signed-off-by: Linyu Yuan <quic_linyyuan@quicinc.com>
+> ---
+>  kernel/trace/trace_eprobe.c | 31 +++++++++++++++++++++++--------
+>  kernel/trace/trace_kprobe.c |  3 +++
+>  kernel/trace/trace_uprobe.c |  3 +++
+>  3 files changed, 29 insertions(+), 8 deletions(-)
+> 
+> diff --git a/kernel/trace/trace_eprobe.c b/kernel/trace/trace_eprobe.c
+> index b16e067..0029840 100644
+> --- a/kernel/trace/trace_eprobe.c
+> +++ b/kernel/trace/trace_eprobe.c
+> @@ -19,6 +19,21 @@
+>  
+>  #define EPROBE_EVENT_SYSTEM "eprobes"
+>  
+> +static int eprobe_dyn_event_create(const char *raw_command);
+> +static int eprobe_dyn_event_show(struct seq_file *m, struct dyn_event *ev);
+> +static bool eprobe_dyn_event_is_busy(struct dyn_event *ev);
+> +static int eprobe_dyn_event_release(struct dyn_event *ev);
+> +static bool eprobe_dyn_event_match(const char *system, const char *event,
+> +			int argc, const char **argv, struct dyn_event *ev);
+> +
+> +static struct dyn_event_operations eprobe_dyn_event_ops = {
+> +	.create = eprobe_dyn_event_create,
+> +	.show = eprobe_dyn_event_show,
+> +	.is_busy = eprobe_dyn_event_is_busy,
+> +	.free = eprobe_dyn_event_release,
+> +	.match = eprobe_dyn_event_match,
+> +};
+> +
+>  struct trace_eprobe {
+>  	/* tracepoint system */
+>  	const char *event_system;
+> @@ -39,6 +54,11 @@ struct eprobe_data {
+>  
+>  static int __trace_eprobe_create(int argc, const char *argv[]);
+>  
+> +static bool is_trace_eprobe(struct dyn_event *ev)
+> +{
+> +	return ev->ops == &eprobe_dyn_event_ops;
+> +}
+> +
+>  static void trace_event_probe_cleanup(struct trace_eprobe *ep)
+>  {
+>  	if (!ep)
+> @@ -121,6 +141,9 @@ static bool eprobe_dyn_event_match(const char *system, const char *event,
+>  	struct trace_eprobe *ep = to_trace_eprobe(ev);
+>  	const char *slash;
+>  
+> +	if (!is_trace_eprobe(ev))
+> +		return false;
+> +
+>  	/*
+>  	 * We match the following:
+>  	 *  event only			- match all eprobes with event name
+> @@ -174,14 +197,6 @@ static bool eprobe_dyn_event_match(const char *system, const char *event,
+>  	return trace_probe_match_command_args(&ep->tp, argc, argv);
+>  }
+>  
+> -static struct dyn_event_operations eprobe_dyn_event_ops = {
+> -	.create = eprobe_dyn_event_create,
+> -	.show = eprobe_dyn_event_show,
+> -	.is_busy = eprobe_dyn_event_is_busy,
+> -	.free = eprobe_dyn_event_release,
+> -	.match = eprobe_dyn_event_match,
+> -};
+> -
+>  static struct trace_eprobe *alloc_event_probe(const char *group,
+>  					      const char *this_event,
+>  					      struct trace_event_call *event,
+> diff --git a/kernel/trace/trace_kprobe.c b/kernel/trace/trace_kprobe.c
+> index 2cd8ef9..f63abfa 100644
+> --- a/kernel/trace/trace_kprobe.c
+> +++ b/kernel/trace/trace_kprobe.c
+> @@ -163,6 +163,9 @@ static bool trace_kprobe_match(const char *system, const char *event,
+>  {
+>  	struct trace_kprobe *tk = to_trace_kprobe(ev);
+>  
+> +	if (!is_trace_kprobe(ev))
+> +		return false;
+> +
+>  	return (event[0] == '\0' ||
+>  		strcmp(trace_probe_name(&tk->tp), event) == 0) &&
+>  	    (!system || strcmp(trace_probe_group_name(&tk->tp), system) == 0) &&
+> diff --git a/kernel/trace/trace_uprobe.c b/kernel/trace/trace_uprobe.c
+> index a935c08..ee55ed0 100644
+> --- a/kernel/trace/trace_uprobe.c
+> +++ b/kernel/trace/trace_uprobe.c
+> @@ -312,6 +312,9 @@ static bool trace_uprobe_match(const char *system, const char *event,
+>  {
+>  	struct trace_uprobe *tu = to_trace_uprobe(ev);
+>  
+> +	if (!is_trace_uprobe(ev))
+> +		return false;
+> +
+>  	return (event[0] == '\0' ||
+>  		strcmp(trace_probe_name(&tu->tp), event) == 0) &&
+>  	   (!system || strcmp(trace_probe_group_name(&tu->tp), system) == 0) &&
+> -- 
+> 2.7.4
