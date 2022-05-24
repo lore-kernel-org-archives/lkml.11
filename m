@@ -2,54 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5664DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 11:32:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D65C8C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 11:32:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236680AbiEXLcx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 07:32:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59730 "EHLO
+        id S236710AbiEXLcz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 07:32:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233022AbiEXLcu (ORCPT
+        with ESMTP id S235844AbiEXLcu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 24 May 2022 07:32:50 -0400
 Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3E2C38BD28;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3E9B18BD31;
         Tue, 24 May 2022 04:32:47 -0700 (PDT)
 Received: from uucp (helo=alpha)
         by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
-        id 1ntSmM-0002HG-00; Tue, 24 May 2022 13:32:46 +0200
+        id 1ntSmM-0002HG-01; Tue, 24 May 2022 13:32:46 +0200
 Received: by alpha.franken.de (Postfix, from userid 1000)
-        id 4B522C031F; Tue, 24 May 2022 13:31:05 +0200 (CEST)
-Date:   Tue, 24 May 2022 13:31:05 +0200
+        id EE4CBC0325; Tue, 24 May 2022 13:31:24 +0200 (CEST)
+Date:   Tue, 24 May 2022 13:31:24 +0200
 From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-To:     Juerg Haefliger <juerg.haefliger@canonical.com>
-Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Juerg Haefliger <juergh@canonical.com>
-Subject: Re: [PATCH] MIPS: Kconfig: Fix indentation and add endif comment
-Message-ID: <20220524113105.GA7893@alpha.franken.de>
-References: <20220524080311.22133-1-juergh@canonical.com>
+To:     Tiezhu Yang <yangtiezhu@loongson.cn>
+Cc:     Xuefeng Li <lixuefeng@loongson.cn>, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 0/2] MIPS: Modify early_parse_mem()
+Message-ID: <20220524113124.GB7893@alpha.franken.de>
+References: <1653359270-27056-1-git-send-email-yangtiezhu@loongson.cn>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220524080311.22133-1-juergh@canonical.com>
+In-Reply-To: <1653359270-27056-1-git-send-email-yangtiezhu@loongson.cn>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 24, 2022 at 10:03:11AM +0200, Juerg Haefliger wrote:
-> The convention for indentation seems to be a single tab. Help text is
-> further indented by an additional two whitespaces. Fix the lines that
-> violate these rules.
+On Tue, May 24, 2022 at 10:27:48AM +0800, Tiezhu Yang wrote:
+> v2: drop patch #2 of v1 series.
 > 
-> While add it, add a missing trailing endif comment.
+> Tiezhu Yang (2):
+>   MIPS: Return -EINVAL if mem parameter is empty in early_parse_mem()
+>   MIPS: Use memblock_add_node() in early_parse_mem() under CONFIG_NUMA
 > 
-> Signed-off-by: Juerg Haefliger <juergh@canonical.com>
-> ---
->  arch/mips/Kconfig | 12 ++++++------
->  1 file changed, 6 insertions(+), 6 deletions(-)
+>  arch/mips/kernel/setup.c | 11 ++++++++++-
+>  1 file changed, 10 insertions(+), 1 deletion(-)
 
-applied to mips-next.
+series applied to mips-next.
 
 Thomas.
 
