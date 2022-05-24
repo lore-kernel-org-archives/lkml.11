@@ -2,99 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A2E2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 07:36:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2E22C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 07:36:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235311AbiEXHgc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 03:36:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56044 "EHLO
+        id S235338AbiEXHgi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 03:36:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233812AbiEXHgY (ORCPT
+        with ESMTP id S235322AbiEXHgb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 03:36:24 -0400
-Received: from mail-qv1-f54.google.com (mail-qv1-f54.google.com [209.85.219.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9A3A41611;
-        Tue, 24 May 2022 00:36:21 -0700 (PDT)
-Received: by mail-qv1-f54.google.com with SMTP id cv1so1528713qvb.5;
-        Tue, 24 May 2022 00:36:21 -0700 (PDT)
+        Tue, 24 May 2022 03:36:31 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 64852522C0
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 00:36:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653377787;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=uosxK4cQkjZjNxJr746xjmTAMJsu6zGR2xaVMuHwMwY=;
+        b=Qt1iBhOsZNcAsFMZbNB4VuLDJlvi/hl1gaXSms6RS/1z22oCqQRgEg5QC5ODww4s7I2REK
+        H00RD9N8XXi6V6RJfvZ+GgOHc2NAe+6lHs08x+ZFnaOcVxc5bmEe9ASm/txiuwvIYWTtuy
+        8HllEr1mLBzoVk5Nqsuhl1tZ6psYgwU=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-176-hWBNZWK9OjKd8JkIL-7Wqw-1; Tue, 24 May 2022 03:36:24 -0400
+X-MC-Unique: hWBNZWK9OjKd8JkIL-7Wqw-1
+Received: by mail-wr1-f70.google.com with SMTP id bu4-20020a056000078400b0020e61501044so4439531wrb.0
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 00:36:24 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hHz2dkZf9qf9PMGkX8HB6FwtvylKwYDKEt4PSRoOrRg=;
-        b=5604KnZJRPq7BHqRN+r0CdJrgPevS3I0gpY5ik8NHtpYCAk2x0tZGmO/6o6T1W76Yn
-         zV9Ua0cpCko3LoDH4MrsOF6DYfNCn9P4v9JvNInWeqn3ZZmT9/Q5v1KBEs3LujV8J4B4
-         2j1Ge8pS2BNjxbbJy7J5x15bi94iA11YiM+0AXGdZwRntqoSxskvbGH/UhFTCLlNkb6G
-         xbdTaKhdk9FMAVgmMPU85M49/p7R1wKK6owyNwJKkv55HbdOHmXfXGr0vh1uH6nugPmx
-         zbFBVubmxrK3WdEeFIGEe2Iza/c+3iXt/Ofd1pbtJm7jncBFoQuVxHkymF5qbZoiqCwX
-         XbDw==
-X-Gm-Message-State: AOAM5307JJYuKKVr+/bn5BNtbaqlecYWqjfs1HWwFh1R/mn/qkp8BVFl
-        63lB/AgivRGOeTaJMPowXafid0kyqKjohtRe
-X-Google-Smtp-Source: ABdhPJyUl/U3qUC3xs1tPrxczkJco8UcbDi7mKK1iFwhrt2cm4sV5otciSDdm9mSlzIfJgfdjP9uIA==
-X-Received: by 2002:ad4:5ba3:0:b0:462:1b10:e16e with SMTP id 3-20020ad45ba3000000b004621b10e16emr12994063qvq.40.1653377780983;
-        Tue, 24 May 2022 00:36:20 -0700 (PDT)
-Received: from mail-yb1-f180.google.com (mail-yb1-f180.google.com. [209.85.219.180])
-        by smtp.gmail.com with ESMTPSA id ey18-20020a05622a4c1200b002f937991969sm3015467qtb.24.2022.05.24.00.36.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 24 May 2022 00:36:20 -0700 (PDT)
-Received: by mail-yb1-f180.google.com with SMTP id p190so2517005ybg.4;
-        Tue, 24 May 2022 00:36:20 -0700 (PDT)
-X-Received: by 2002:a05:6902:120e:b0:634:6f29:6b84 with SMTP id
- s14-20020a056902120e00b006346f296b84mr25463870ybu.604.1653377780467; Tue, 24
- May 2022 00:36:20 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=uosxK4cQkjZjNxJr746xjmTAMJsu6zGR2xaVMuHwMwY=;
+        b=z+qVZMG5kI4Wq9EGedu2Daj49gsmrueYp12Giw9aXOte5iX8j/52zywR7TgvwLObPB
+         J+hFZn7vwIFkLHGbPlf6iKu8bzd+mrFLEB+5b2IRCbpz4zrZKs+DeOfbkdhSTOSwXm4W
+         IZ15G7tgWhHlVDR7M5j33fipN4HCkff22Wb8PXE8wngzYgdepaZudYut0hqUa0pnPaAd
+         AKALWz7ia5kRmD5O1TfuOdWaGuAzEXznrVeM9YJxok9fBkG5I3nSqN6s8s6x2AAuoVWw
+         REqendEHBz3sX4cVcXFZ+KojGUW24s/C3yc7O/HVVDXGUadd8+aMSz7/uD0bG3w6mFsI
+         /2IA==
+X-Gm-Message-State: AOAM530RLv6+tACMv5ANpWJnmbNSawNZWNtZJ1bZle5EmO9lPPNtviYA
+        sA2LRdvgT3i7VLMl1E3LmMdIwOWee0E75kNxzv71zMp5YfLrxKIyFasjf1kxDWo5NvKavlJ9/Zj
+        KSD9HXonA7dMMvGAHy07aNYaeJYRlc0rN+bFnSZbtm4I7+FoQjQwuE/KS0Ky/2zjEQwp+aQZusn
+        w=
+X-Received: by 2002:a7b:c2a9:0:b0:397:9a4:f66b with SMTP id c9-20020a7bc2a9000000b0039709a4f66bmr2454157wmk.128.1653377783466;
+        Tue, 24 May 2022 00:36:23 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJx/Cwz5jOogKed9CA8JaKkoHRc42pmAwU1T7LN2zbNsfSba8Fm0H5+hJzMmRKFlhnD9ie+/vQ==
+X-Received: by 2002:a7b:c2a9:0:b0:397:9a4:f66b with SMTP id c9-20020a7bc2a9000000b0039709a4f66bmr2454124wmk.128.1653377783103;
+        Tue, 24 May 2022 00:36:23 -0700 (PDT)
+Received: from minerva.home (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id f2-20020adfc982000000b0020c5253d927sm12202174wrh.115.2022.05.24.00.36.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 24 May 2022 00:36:22 -0700 (PDT)
+From:   Javier Martinez Canillas <javierm@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Chung-Chiang Cheng <cccheng@synology.com>,
+        Lennart Poettering <lennart@poettering.net>,
+        Colin Walters <walters@verbum.org>,
+        Peter Jones <pjones@redhat.com>,
+        Alexander Larsson <alexl@redhat.com>,
+        Alberto Ruiz <aruiz@redhat.com>,
+        Christian Kellner <ckellner@redhat.com>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>,
+        Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org
+Subject: [PATCH v2 0/3] fat: add support for the renameat2 RENAME_EXCHANGE flag
+Date:   Tue, 24 May 2022 09:36:01 +0200
+Message-Id: <20220524073604.247790-1-javierm@redhat.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-References: <c7ccee444dbc50a61a703cabeffe28e73de4cda7.1653375268.git.geert@linux-m68k.org>
- <f8a95dcd-4a9f-ddd2-b322-96720f666b37@redhat.com>
-In-Reply-To: <f8a95dcd-4a9f-ddd2-b322-96720f666b37@redhat.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 24 May 2022 09:36:08 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdU+fFaKoK0RYjGrkwadafjZ9MTzA-LSzD6pZnoB26HAsg@mail.gmail.com>
-Message-ID: <CAMuHMdU+fFaKoK0RYjGrkwadafjZ9MTzA-LSzD6pZnoB26HAsg@mail.gmail.com>
-Subject: Re: [PATCH] efi: EFI_DISABLE_RUNTIME should depend on EFI
-To:     Javier Martinez Canillas <javierm@redhat.com>
-Cc:     Ard Biesheuvel <ardb@kernel.org>,
-        linux-efi <linux-efi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Javier,
+Hello,
 
-On Tue, May 24, 2022 at 9:22 AM Javier Martinez Canillas
-<javierm@redhat.com> wrote:
-> On 5/24/22 08:54, Geert Uytterhoeven wrote:
-> > The EFI_DISABLE_RUNTIME config option controls the use of Extensible
-> > Firmware Interface (EFI) runtime services, which matters only if EFI
-> > support is enabled.
-> >
->
-> Indeed. Sorry for forgetting that dependency when adding the symbol.
->
-> > Hence add a dependency on EFI, to prevent asking the user about this
-> > control knob when configuring a kernel with EFI support.
-> >
->
-> I think you wanted to write here "without EFI support" ?
+This series add support for the renameat2 system call RENAME_EXCHANGE flag
+(which allows to atomically replace two paths) to the vfat filesystem code.
 
-Oops, sorry for that. Need... morning... coffee...
+There are many use cases for this, but we are particularly interested in
+making possible for vfat filesystems to be part of OSTree [0] deployments.
 
-> > Fixes: a031651ff2144a3d ("efi: Allow to enable EFI runtime services by default on RT")
-> > Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> > ---
->
-> Acked-by: Javier Martinez Canillas <javierm@redhat.com>
+Currently OSTree relies on symbolic links to make the deployment updates
+an atomic transactional operation. But RENAME_EXCHANGE could be used [1]
+to achieve a similar level of robustness when using a vfat filesystem.
 
-Thanks!
+Patch #1 is just a preparatory patch to introduce the RENAME_EXCHANGE
+support in patch #2 and finally patch #3 adds some kselftests to test it.
 
-Gr{oetje,eeting}s,
+This is a v2 that addresses issues pointed out in the first version that
+was posted as an RFC:
 
-                        Geert
+https://lore.kernel.org/lkml/20220519092343.2776414-1-javierm@redhat.com/
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+[0]: https://github.com/ostreedev/ostree
+[1]: https://github.com/ostreedev/ostree/issues/1649
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Changes in v2:
+- Only update the new_dir inode version and timestamps if != old_dir
+  (Alex Larsson).
+- Add some helper functions to avoid duplicating code (OGAWA Hirofumi).
+- Use braces for multi-lines blocks even if are one statement (OGAWA Hirofumi).
+- Mention in commit message that the operation is as transactional as possible
+  but within the vfat limitations of not having a journal (Colin Walters).
+- Call sync to flush the page cache before checking the file contents
+  (Alex Larsson).
+- Drop RFC prefix since the patches already got some review.
+
+Javier Martinez Canillas (3):
+  fat: add a vfat_rename2() and make existing .rename callback a helper
+  fat: add renameat2 RENAME_EXCHANGE flag support
+  selftests/filesystems: add a vfat RENAME_EXCHANGE test
+
+ MAINTAINERS                                   |   1 +
+ fs/fat/namei_vfat.c                           | 193 +++++++++++++++++-
+ tools/testing/selftests/Makefile              |   1 +
+ .../selftests/filesystems/fat/Makefile        |   7 +
+ .../testing/selftests/filesystems/fat/config  |   2 +
+ .../filesystems/fat/rename_exchange.c         |  37 ++++
+ .../filesystems/fat/run_fat_tests.sh          |  82 ++++++++
+ 7 files changed, 316 insertions(+), 7 deletions(-)
+ create mode 100644 tools/testing/selftests/filesystems/fat/Makefile
+ create mode 100644 tools/testing/selftests/filesystems/fat/config
+ create mode 100644 tools/testing/selftests/filesystems/fat/rename_exchange.c
+ create mode 100755 tools/testing/selftests/filesystems/fat/run_fat_tests.sh
+
+-- 
+2.36.1
+
