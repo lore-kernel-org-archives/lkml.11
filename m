@@ -2,123 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC6C8C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 15:10:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10F7FC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 15:12:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238394AbiEXPKx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 11:10:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43826 "EHLO
+        id S238770AbiEXPLg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 11:11:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235238AbiEXPKu (ORCPT
+        with ESMTP id S238749AbiEXPLL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 11:10:50 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 62A538B094
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 08:10:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653405036;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=XEo1NssAVGQZOfwlIMOHsifxPwTmlidTFKTUs0/1OgM=;
-        b=L7dDmUE4h7qchINggUWBPsW/PXLkUMQ+xM/7/SPh349wAzf24VaQVWZw5gbGtoFgPTqrO9
-        uut4jyr00R0MGwUmlSful/QZaK9X+w2jYyjx105SLg+00//2HbZ6TYJduPrVK9QTe1XpGb
-        qBIcdI++u7p/qMOZpDOBYS6GvRvtieE=
-Received: from mail-oi1-f198.google.com (mail-oi1-f198.google.com
- [209.85.167.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-447-bmIhUIT_NuKIzN2YWpP2Wg-1; Tue, 24 May 2022 11:09:09 -0400
-X-MC-Unique: bmIhUIT_NuKIzN2YWpP2Wg-1
-Received: by mail-oi1-f198.google.com with SMTP id f2-20020aca3802000000b0032b0a4dc9a8so4164016oia.12
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 08:09:09 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=XEo1NssAVGQZOfwlIMOHsifxPwTmlidTFKTUs0/1OgM=;
-        b=SFtg0TXjwJ5gInr9MLKZ+0dHeYie2pn0BFcrXVql8sl9jxwlGNrtfLCEcRIXzN8nyD
-         806686FEu9gc/gPPERDmOqCODPYd6I+1MgL5wyU3BlMw3SK08a/m7FxkonDgCMXFT+cp
-         cpEa6Ht39+Ooloy6t6amSC02zCR13Fd4wGkwxfLwWmF6XjUmj22KdNL4XHCNsV21BXua
-         S79AXv4t7Thrs57uWK1wLYnc3ZwlZYgC0rf8tpuc4gLGmyTNfx+kvt8tsudB6Kpd6H5c
-         oX9/R8BOEoUrEmq0Td2V8MM5cvIfF4jY1Lw5uBT+CgMxvkvowLtN+wIN4cuNGL2vNIlY
-         7TNg==
-X-Gm-Message-State: AOAM533nMsHcQOBNNIJ1+D5UREJbdfmFOx3D9cuFgG/qfobE/alk10+S
-        g4NnVr6Ey/Sb/0SgBxnC+WcIAwJ7MKM/265Hlut4mcNlGvFHcGsTEGGG+InqRtswt8AYpq6gzFL
-        2TaqJkd60pJrJoYj37lMwR0k1
-X-Received: by 2002:a9d:811:0:b0:60a:b6f2:ab85 with SMTP id 17-20020a9d0811000000b0060ab6f2ab85mr6516333oty.9.1653404948239;
-        Tue, 24 May 2022 08:09:08 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJy2Rrz8fDExW7WCjRqyXrFYjg5Q3G0iEtos25IWByh96ynkYINF5ql63GdcjlrT4RcCKJU4fg==
-X-Received: by 2002:a9d:811:0:b0:60a:b6f2:ab85 with SMTP id 17-20020a9d0811000000b0060ab6f2ab85mr6516299oty.9.1653404947414;
-        Tue, 24 May 2022 08:09:07 -0700 (PDT)
-Received: from localhost.localdomain (024-205-208-113.res.spectrum.com. [24.205.208.113])
-        by smtp.gmail.com with ESMTPSA id k17-20020a9d1991000000b0060b0b638583sm3021001otk.13.2022.05.24.08.09.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 24 May 2022 08:09:07 -0700 (PDT)
-Subject: Re: [PATCH] ath6kl: Use cc-disable-warning to disable
- -Wdangling-pointer
-To:     Nathan Chancellor <nathan@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Kalle Valo <kvalo@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
-        "kernelci.org bot" <bot@kernelci.org>
-References: <20220524145655.869822-1-nathan@kernel.org>
-From:   Tom Rix <trix@redhat.com>
-Message-ID: <c7a804ed-e00c-8a32-db21-c689312e0073@redhat.com>
-Date:   Tue, 24 May 2022 08:09:04 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        Tue, 24 May 2022 11:11:11 -0400
+Received: from qproxy3-pub.mail.unifiedlayer.com (qproxy3-pub.mail.unifiedlayer.com [67.222.38.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B7E61112
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 08:11:09 -0700 (PDT)
+Received: from gproxy3-pub.mail.unifiedlayer.com (gproxy3-pub.mail.unifiedlayer.com [69.89.30.42])
+        by qproxy3.mail.unifiedlayer.com (Postfix) with ESMTP id 60E2D802C88E
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 15:11:08 +0000 (UTC)
+Received: from cmgw14.mail.unifiedlayer.com (unknown [10.0.90.129])
+        by progateway5.mail.pro1.eigbox.com (Postfix) with ESMTP id E2B2910041C87
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 15:11:06 +0000 (UTC)
+Received: from box5620.bluehost.com ([162.241.219.59])
+        by cmsmtp with ESMTP
+        id tWBenUVuIhWk0tWBen9C00; Tue, 24 May 2022 15:11:06 +0000
+X-Authority-Reason: nr=8
+X-Authority-Analysis: v=2.4 cv=IrfbzJzg c=1 sm=1 tr=0 ts=628cf58a
+ a=30941lsx5skRcbJ0JMGu9A==:117 a=30941lsx5skRcbJ0JMGu9A==:17
+ a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=IkcTkHD0fZMA:10:nop_charset_1
+ a=oZkIemNP1mAA:10:nop_rcvd_month_year
+ a=-Ou01B_BuAIA:10:endurance_base64_authed_username_1 a=VwQbUJbxAAAA:8
+ a=HaFmDPmJAAAA:8 a=49j0FZ7RFL9ueZfULrUA:9 a=QEXdDO2ut3YA:10:nop_charset_2
+ a=AjGcO6oz07-iQ99wixmX:22 a=nmWuMzfKamIsx3l42hEX:22
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=w6rz.net;
+        s=default; h=Content-Transfer-Encoding:Content-Type:MIME-Version:Date:
+        Message-ID:From:In-Reply-To:References:Cc:To:Subject:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=/4PRRCzIYmFovzhV9h91jXS4xUn5BMOY30gBdRrVzRs=; b=hRCJXRYpd5MReNV4G+p88cv/lI
+        mFV2ukjc8I4m8EqhEKaGCYS1U1r0Nly2arsg6Qd5sHHabKToj45evN5Kh8xx0N8JyzMlotz9BF+3R
+        nxsXMHZodD4/c3NVJ+EMns5YBOaaPVp6S9KjJQ5mReK1oL13RdXaTYcfw0/SQSySdrILq7R/BKqUj
+        idVKeyHXp7yLIFnShNeF1cWa142xEFtapmwK95o5ll8BtSTh1uT1ANBxCjuEPevr5Ecm679LiYpjo
+        YwjpHBXLNb7CI3anzaFfxRwjG8K/FfCkTJelcJR2OgwfDlVaCN1Zu8QQ9v1PHzms/FVdMD1t9pGSZ
+        uxOsstCQ==;
+Received: from c-73-162-232-9.hsd1.ca.comcast.net ([73.162.232.9]:52054 helo=[10.0.1.48])
+        by box5620.bluehost.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <re@w6rz.net>)
+        id 1ntWBd-002RZH-GV; Tue, 24 May 2022 09:11:05 -0600
+Subject: Re: [PATCH 5.15 000/132] 5.15.42-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+References: <20220523165823.492309987@linuxfoundation.org>
+In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
+From:   Ron Economos <re@w6rz.net>
+Message-ID: <b650a007-66f4-2d6e-b40d-c14eadb8e7b1@w6rz.net>
+Date:   Tue, 24 May 2022 08:11:03 -0700
+User-Agent: Mozilla/5.0 (X11; Linux armv7l; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-In-Reply-To: <20220524145655.869822-1-nathan@kernel.org>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Content-Language: en-US
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - box5620.bluehost.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - w6rz.net
+X-BWhitelist: no
+X-Source-IP: 73.162.232.9
+X-Source-L: No
+X-Exim-ID: 1ntWBd-002RZH-GV
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: c-73-162-232-9.hsd1.ca.comcast.net ([10.0.1.48]) [73.162.232.9]:52054
+X-Source-Auth: re@w6rz.net
+X-Email-Count: 2
+X-Source-Cap: d3NpeHJ6bmU7d3NpeHJ6bmU7Ym94NTYyMC5ibHVlaG9zdC5jb20=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-On 5/24/22 7:56 AM, Nathan Chancellor wrote:
-> Clang does not support this option so the build fails:
+On 5/23/22 10:03 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.15.42 release.
+> There are 132 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 >
->    error: unknown warning option '-Wno-dangling-pointer' [-Werror,-Wunknown-warning-option]
+> Responses should be made by Wed, 25 May 2022 16:56:55 +0000.
+> Anything received after that time might be too late.
 >
-> Use cc-disable-warning so that the option is only added when it is
-> supported.
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.42-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
+> and the diffstat can be found below.
 >
-> Fixes: bd1d129daa3e ("wifi: ath6k: silence false positive -Wno-dangling-pointer warning on GCC 12")
-> Reported-by: "kernelci.org bot" <bot@kernelci.org>
-> Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-
-Reviewed-by: Tom Rix <trix@redhat.com>
-
-Thanks
-
-Tom
-
-> ---
->   drivers/net/wireless/ath/ath6kl/Makefile | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
+> thanks,
 >
-> diff --git a/drivers/net/wireless/ath/ath6kl/Makefile b/drivers/net/wireless/ath/ath6kl/Makefile
-> index 01cc0d50fee6..a75bfa9fd1cf 100644
-> --- a/drivers/net/wireless/ath/ath6kl/Makefile
-> +++ b/drivers/net/wireless/ath/ath6kl/Makefile
-> @@ -38,7 +38,7 @@ ath6kl_core-y += recovery.o
->   
->   # FIXME: temporarily silence -Wdangling-pointer on non W=1+ builds
->   ifndef KBUILD_EXTRA_WARN
-> -CFLAGS_htc_mbox.o += -Wno-dangling-pointer
-> +CFLAGS_htc_mbox.o += $(call cc-disable-warning, dangling-pointer)
->   endif
->   
->   ath6kl_core-$(CONFIG_NL80211_TESTMODE) += testmode.o
->
-> base-commit: 677fb7525331375ba2f90f4bc94a80b9b6e697a3
+> greg k-h
+
+Built and booted successfully on RISC-V RV64 (HiFive Unmatched).
+
+Tested-by: Ron Economos <re@w6rz.net>
 
