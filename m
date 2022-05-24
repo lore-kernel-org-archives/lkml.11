@@ -2,179 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D80B8C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 15:47:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BBE1C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 15:47:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239061AbiEXPq7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 11:46:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56522 "EHLO
+        id S239072AbiEXPrI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 11:47:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236171AbiEXPq5 (ORCPT
+        with ESMTP id S239065AbiEXPrG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 11:46:57 -0400
-X-Greylist: delayed 2197 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 24 May 2022 08:46:55 PDT
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 207E369CD4;
-        Tue, 24 May 2022 08:46:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-        ; s=x; h=Subject:Content-Transfer-Encoding:Content-Type:Mime-Version:
-        References:In-Reply-To:Message-Id:Cc:To:From:Date:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=T9kVwBVV655q2jjBqBTVTMqSm4y1htgJfQgySVDPZwA=; b=cqpbUo6/iaW2vwimgwGk1A2w6E
-        eUNVFPgjnZyOUhl+jzmlBAg9kYIk7E0H0BEDtSxzbP2dAF+eK78oKcrQANB/NJ5iXxMFqO1usG6Fi
-        HHCFDzdr+eq983CCGF5eE1DlKufzd++Lc7koKQUSm8SAm8naP4MoeBHd5M3WxzmkfW5k=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:50202 helo=pettiford)
-        by mail.hugovil.com with esmtpa (Exim 4.92)
-        (envelope-from <hugo@hugovil.com>)
-        id 1ntWAe-0005Ct-U1; Tue, 24 May 2022 11:10:12 -0400
-Date:   Tue, 24 May 2022 11:10:04 -0400
-From:   Hugo Villeneuve <hugo@hugovil.com>
-To:     Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc:     Alessandro Zummo <a.zummo@towertech.it>, linux-rtc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Message-Id: <20220524111004.7b0fd6c492c835e7f1ee22b7@hugovil.com>
-In-Reply-To: <YjNs4YykJWZi/t/z@piout.net>
-References: <20220309162301.61679-1-alexandre.belloni@bootlin.com>
-        <20220309162301.61679-11-alexandre.belloni@bootlin.com>
-        <20220310110918.41a681474f5a0e11abdedc39@hugovil.com>
-        <Yiplnqlz2DSXCvi8@piout.net>
-        <20220317112820.7617d0d68f50f24ad0c3739e@hugovil.com>
-        <YjNs4YykJWZi/t/z@piout.net>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 70.80.174.168
-X-SA-Exim-Mail-From: hugo@hugovil.com
-Subject: Re: [PATCH 11/29] rtc: pcf2127: set RTC_FEATURE_ALARM_RES_2S
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
+        Tue, 24 May 2022 11:47:06 -0400
+Received: from mail-oa1-f44.google.com (mail-oa1-f44.google.com [209.85.160.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2AB46D957;
+        Tue, 24 May 2022 08:47:05 -0700 (PDT)
+Received: by mail-oa1-f44.google.com with SMTP id 586e51a60fabf-f1eafa567cso19316622fac.8;
+        Tue, 24 May 2022 08:47:05 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Z//6WfrePUVSRJ8xvhdm8OGFD1fAIoJvz+KPrDeYZiU=;
+        b=W2DLnVyq8ImLujMtgFA5MPrqxzCbBNAuNm6ITdBVS7TvCH4fYGISd6Di48Frv6JuWw
+         Mh51NERR6odX9L8UJ0hY+Smrrx5FwbVK+5jMWP//QfwR8kVEysd5e58g/1kgD3ULSHIP
+         AtILP2HIO1Auog469Bmrc3bL1omzVQ/kifpfnCfx/CfvdAQszprkEJpmrOqjGW8DRD7z
+         93YjwEmmLtdZEThheWmlxq4c6XjJNQ2QWnE+rROzBJwzMua+usiOc2sE+XkEghbplnfF
+         tvOFUTa4QhQZeQaEM1HpZkfHaS00cAWYW1yQiL+7MsC82dj98HqF1gtfqmwzD5nF/5nQ
+         W8gA==
+X-Gm-Message-State: AOAM5313FyOgBQ0DClTfBmBSjS81DzkcRiUnIdNNrqxhbTwnMA60rG9N
+        F7e5FsepZI9ajpne97vesJE1ccS6ZA==
+X-Google-Smtp-Source: ABdhPJxGHjUK+uccKHWZgjUZy9Ltn4kUmiM2LhZTy6e+gub3ldkNmSr6OrRkD5zYtjUTOhUHJkgJLA==
+X-Received: by 2002:a05:6870:61ca:b0:f1:aaef:e2b9 with SMTP id b10-20020a05687061ca00b000f1aaefe2b9mr2834492oah.130.1653407224977;
+        Tue, 24 May 2022 08:47:04 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id j15-20020a9d7f0f000000b006060322124esm5100262otq.30.2022.05.24.08.47.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 24 May 2022 08:47:04 -0700 (PDT)
+Received: (nullmailer pid 3860327 invoked by uid 1000);
+        Tue, 24 May 2022 15:47:03 -0000
+Date:   Tue, 24 May 2022 10:47:03 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Shreeya Patel <shreeya.patel@collabora.com>
+Cc:     jic23@kernel.org, lars@metafoo.de, Zhigang.Shi@liteon.com,
+        krisman@collabora.com, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel@collabora.com, alvaro.soliverez@collabora.com,
+        Krzysztof Kozlowski <krzk@kernel.org>
+Subject: Re: [PATCH v4 1/3] dt-bindings: vendor-prefixes: Add 'ltr' as
+ deprecated vendor prefix
+Message-ID: <20220524154703.GD3730540-robh@kernel.org>
+References: <20220511094024.175994-1-shreeya.patel@collabora.com>
+ <20220511094024.175994-2-shreeya.patel@collabora.com>
+ <20220516170058.GA2825626-robh@kernel.org>
+ <83907dd2-2a53-2448-576b-ae26462d432a@collabora.com>
+ <20220518163255.GE3302100-robh@kernel.org>
+ <f37bccaf-233c-a244-3d81-849a988b1a92@collabora.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f37bccaf-233c-a244-3d81-849a988b1a92@collabora.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 17 Mar 2022 18:16:17 +0100
-Alexandre Belloni <alexandre.belloni@bootlin.com> wrote:
-
-> Hi,
+On Mon, May 23, 2022 at 08:27:56PM +0530, Shreeya Patel wrote:
 > 
-> On 17/03/2022 11:28:20-0400, Hugo Villeneuve wrote:
-> > On Thu, 10 Mar 2022 21:58:49 +0100
-> > Alexandre Belloni <alexandre.belloni@bootlin.com> wrote:
-> > 
-> > > On 10/03/2022 11:09:18-0500, Hugo Villeneuve wrote:
-> > > > On Wed,  9 Mar 2022 17:22:42 +0100
-> > > > Alexandre Belloni <alexandre.belloni@bootlin.com> wrote:
+> On 18/05/22 22:02, Rob Herring wrote:
+> > On Tue, May 17, 2022 at 04:07:33PM +0530, Shreeya Patel wrote:
+> > > On 16/05/22 22:30, Rob Herring wrote:
+> > > > On Wed, May 11, 2022 at 03:10:22PM +0530, Shreeya Patel wrote:
+> > > > > 'liteon' is the correct vendor prefix for devices released by
+> > > > > LITE-ON Technology Corp. But one of the released device which uses
+> > > > > ltr216a light sensor exposes the vendor prefix name as 'ltr' through
+> > > > > ACPI.
+> > > > ACPI? NAK.
 > > > > 
-> > > > > The PCF2127 doesn't support UIE because setting an alarm to fire every
-> > > > > second confuses the chip and the fastest we can go is an alarm every 2
-> > > > > seconds.
-> > > > 
-> > > > Hi Alexandre,
-> > > > can you describe what "confuses the chip" means?
-> > > > 
-> > > > In my experimental PCF2131 driver, I activated UIE and it seems to be working fine at 1s intervals, but since it is similar to PCF2127, maybe there is still a problem and I just didn't see it.
-> > > > 
+> > > > There are no cases of 'ltr' for DT, so fix ACPI.
+> > > Hi Rob,
 > > > 
-> > > Did you remove uie_unsupported? Else, you may have been using uie
-> > > emulation. In my tests last year, the pcf2127 was failing to reassert
-> > > the interrupt if an alarm was set every second. The same happens on
-> > > other NXP based RTCs (i.e. including microcrystal ones).
+> > > Yes, we understand there are no cases of 'ltr', but we have released devices
+> > > which uses this string for probing the ltrf216a light sensor driver ( x86
+> > > with DT )
+> > That's not what your commit message says.
+> > 
+> > Even if this is DT based, given an undocumented vendor string is used,
+> > it seems doubtful the rest of the binding would match upstream. What
+> > about the rest of the DTB? Got a pointer to it or want to publish it?
+> > 
+> > > If we don't document this in vendor-prefixes.yaml, then the following
+> > > warning
+> > > is generated.
 > > > 
-> > > I'm going to test again soon (and also reply to your series).
-> > 
-> > Hi,
-> > I have now access to a board with a PCF2129T.
-> > 
-> 
-> I actually did the test again this afternoon with a pcf2127...
-> 
-> > I have been able to test with it by sending ioctl RTC_UIE_ON and
-> > confirm that it exhibits the problem you reported. Basically, the
-> > first alarm triggers the IRQ after 1s, as expected, but the next
-> > configured alarm 1s into the future never triggers the IRQ again. But
-> > the time/date registers seem to be updating (incrementin) correctly
-> > after that.
-> > 
-> 
-> ...and so we agree on what we observe. My guess is that the alarm
-> comparator has a latch that triggers only every second update and so you
-> need 2 seconds between each alarms.
-> 
-> [...]
-> 
-> > I even did some tests where, in pcf2127_rtc_set_alarm(), I disabled
-> > all the alarm registers (set to 0x80), except for the SECONDS alarm
-> > register. In this case, I observed that the IRQ is triggered after
-> > 61s. This seems to indicate that the alarm detection circuitry is
-> > still somewhat operating (AF flag / INT pin), but there is probably a
-> > bug in the IC when the configured alarm is close to current time after
-> > AF is set once...
-> > 
-> > I also have done other tests by disabling then re-enabling AIE,
-> > stopping and restarting the oscillator (STOP bit), etc, but to no
-> > avail.
-> > 
-> > However, in pcf2127_rtc_set_alarm(), if I set the alarm 2s past the
-> > current time, instead of 1s, then the IRQ is always triggered after
-> > 2s.
-> > 
-> > I have opened a support case with NXP to investigate this strange
-> > behavior.
-> 
-> Let me know if you ever get a reply.
-
-Hi Alexandre,
-after two months and a lot of emails with NXP awful technical support, I was never able to have a valid answer to the problem, apart from "Use a new device as the PCF2127 is not recommended for new designs" :(
-
-On the other hand, have you had time to look at my patch series for the PCF2131 driver?
-
-Thank you, Hugo.
-
-
-> > > > > Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-> > > > > ---
-> > > > >  drivers/rtc/rtc-pcf2127.c | 1 +
-> > > > >  1 file changed, 1 insertion(+)
-> > > > > 
-> > > > > diff --git a/drivers/rtc/rtc-pcf2127.c b/drivers/rtc/rtc-pcf2127.c
-> > > > > index f8469b134411..63b275b014bd 100644
-> > > > > --- a/drivers/rtc/rtc-pcf2127.c
-> > > > > +++ b/drivers/rtc/rtc-pcf2127.c
-> > > > > @@ -656,6 +656,7 @@ static int pcf2127_probe(struct device *dev, struct regmap *regmap,
-> > > > >  	pcf2127->rtc->range_min = RTC_TIMESTAMP_BEGIN_2000;
-> > > > >  	pcf2127->rtc->range_max = RTC_TIMESTAMP_END_2099;
-> > > > >  	pcf2127->rtc->set_start_time = true; /* Sets actual start to 1970 */
-> > > > > +	set_bit(RTC_FEATURE_ALARM_RES_2S, pcf2127->rtc->features);
-> > > > >  	clear_bit(RTC_FEATURE_UPDATE_INTERRUPT, pcf2127->rtc->features);
-> > > > >  	clear_bit(RTC_FEATURE_ALARM, pcf2127->rtc->features);
-> > > > >  
-> > > > > -- 
-> > > > > 2.35.1
-> > > > > 
-> > > > 
-> > > > 
-> > > > -- 
-> > > > Hugo Villeneuve <hugo@hugovil.com>
+> > > WARNING: DT compatible string vendor "ltr" appears un-documented -- check
+> > > ./Documentation/devicetree/bindings/vendor-prefixes.yaml 364: FILE:
+> > > drivers/iio/light/ltrf216a.c:313: + { .compatible = "ltr,ltrf216a" },
 > > > 
-> > > -- 
-> > > Alexandre Belloni, co-owner and COO, Bootlin
-> > > Embedded Linux and Kernel engineering
-> > > https://bootlin.com
 > > > 
-> > 
-> > 
-> > -- 
-> > Hugo Villeneuve <hugo@hugovil.com>
+> > > Can you suggest us what would be the right way to fix this warning if not
+> > > documenting
+> > > in vendor-prefixes.yaml?
+> > Fix the DT. We don't accept bindings simply because they are already
+> > used in the field. If this was the only issue, it would be fine, but I
+> > suspect it's the tip of the iceberg.
 > 
-> -- 
-> Alexandre Belloni, co-owner and COO, Bootlin
-> Embedded Linux and Kernel engineering
-> https://bootlin.com
 > 
+> Hi Rob,
+> 
+> To make things more clear, following is the modalias info of the device.
+> 
+> (B+)(root@linux iio:device0)# cat
+> /sys/bus/i2c/devices/i2c-PRP0001\:01/modalias
+> of:NltrfTCltr,ltrf216a
+> 
+> It's a dt namespace on an ACPI based device. We used an of_device_id table
+> to be able to probe the driver
+> using the vendor prefix and compatible string.
+
+Again, it's ACPI so I don't care. If someone cares about using DT 
+bindings in ACPI they can step up and help maintain them. It's not a DT 
+vs. ACPI thing, but just that I can only maintain so much and have to 
+draw the line somewhere.
+
+> But when we compile the driver, we get the following warning and hence we
+> documented it in vendor-prefixes.yaml
+> and also added a complete device tree file [Patch 3/3] just to get rid of
+> the warning. In real life we are not using
+> the device tree file at all.
+> 
+> WARNING: DT compatible string vendor "ltr" appears un-documented -- check
+> ./Documentation/devicetree/bindings/vendor-prefixes.yaml 364: FILE:
+> drivers/iio/light/ltrf216a.c:313: + { .compatible = "ltr,ltrf216a" },
+
+So, is someone telling you to fix this?
 
 
--- 
-Hugo Villeneuve <hugo@hugovil.com>
+> There are many existing devices used by people which has the vendor prefix
+> name as 'ltr'
+> and it won't be possible to change that hence we are trying to upstream it.
+
+There are millions if not billions of DT based devices using 
+undocumented bindings. If those used "ltr,ltrf216a", I wouldn't accept 
+it either.
+
+Rob
