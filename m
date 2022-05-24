@@ -2,89 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DCBDC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 02:41:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63398C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 02:42:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233382AbiEXClS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 22:41:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45302 "EHLO
+        id S233381AbiEXCmC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 22:42:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232880AbiEXClO (ORCPT
+        with ESMTP id S232542AbiEXCl6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 22:41:14 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CA8FD100
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 19:41:13 -0700 (PDT)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L6dht0mTlzjWyy;
-        Tue, 24 May 2022 10:40:14 +0800 (CST)
-Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 24 May 2022 10:41:11 +0800
-Received: from localhost.localdomain.localdomain (10.175.113.25) by
- dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 24 May 2022 10:41:11 +0800
-From:   Kefeng Wang <wangkefeng.wang@huawei.com>
-To:     <linux@armlinux.org.uk>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>
-CC:     <robh@kernel.org>, Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH] amba: fix refcount underflow if amba_device_add() fails
-Date:   Tue, 24 May 2022 10:51:39 +0800
-Message-ID: <20220524025139.40212-1-wangkefeng.wang@huawei.com>
-X-Mailer: git-send-email 2.35.3
+        Mon, 23 May 2022 22:41:58 -0400
+Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE22E369DF
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 19:41:56 -0700 (PDT)
+Received: by mail-yb1-xb34.google.com with SMTP id b124so16622046ybg.12
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 19:41:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=EZK/LIj/HmIKuwXlrjzuY0xVYI4ZQoH/y1QWOLzPiDs=;
+        b=fDGfFSmM6IwKD9Bwy3Vbjs5q0zo++Yssf/Twwxbsj6rtaD4lf9KPR4hRKzRGxJu0Z/
+         GMTlLKofZv7ym+eDgCLHzWEx2+jjJn90uiGOvR6N6R8hHAVXOGXh+zQHUQ8zczlZvxzE
+         Jm253Or7yrL5QuDlq4Z+X9b6RVaUwb1Fwi8WJPgQN9WmlwPEBI7d2NwdPRDtevU2waT4
+         cAP2AmgytQPM3j1J7VMxImjt4eklby19Y935kh5mrCDQOQ6wjGaP4lVHBAz+HIiqHmNj
+         4EX8W8rDQYo84FDGKlHRYh6P1mDySLZ5nutESL0v6ngM1G86xpJYGxIJo4WBDcl1RiVv
+         jggA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=EZK/LIj/HmIKuwXlrjzuY0xVYI4ZQoH/y1QWOLzPiDs=;
+        b=v6FgXH0bab3VT10VdKdgs1DaqsWOpiteNWKbcyWY+8+xte7amBuN5SFPKpDqbH2DtW
+         BumoTjkrmc06SlBgVbt8QMGDJuicm2vQwFHWT8LX42o+5r9C21zH0srNxI/KdVD/0YIo
+         r+0uJhk4iRAvLQXxSUu1Bjvq3bvyJiY+DVtO5iyrUONstI5DuwY9KgMJ0e+GiK0FgKA+
+         seReAfWhAICdBa9yTdRpl4dwIJ7AQEpccw9guOUeGWTA+60R1O6A+1pE6t+/1k69vnu3
+         NCfscPNbzRTRi0+JyY7gm0tdETy4GykmQYt5i9f2MFhTcpm3hQGDhcoacnhdk7cMrb19
+         /67A==
+X-Gm-Message-State: AOAM530hY6TgPVV7XGbOS60NNXLMvlbENTcFvyv8pj4dp+oHHNNjg4/t
+        Ti28+7lXQkgw7TYtNVpoxBbqcYXKzMc/GSTx5ISMfuuIX7Q00Q==
+X-Google-Smtp-Source: ABdhPJyQiAgqee0mEcshKFUmX0Jszav+XGkGtIOWt3IFQhjkCvtAp6nxMN17Po35qVDTGKQ+LlLz81HpxbaQwQ+SUcQ=
+X-Received: by 2002:a25:3452:0:b0:64e:1776:ce90 with SMTP id
+ b79-20020a253452000000b0064e1776ce90mr24814077yba.261.1653360116001; Mon, 23
+ May 2022 19:41:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.113.25]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500001.china.huawei.com (7.185.36.107)
-X-CFilter-Loop: Reflected
+References: <20220522052624.21493-1-songmuchun@bytedance.com> <202205231233.EE3AB926@keescook>
+In-Reply-To: <202205231233.EE3AB926@keescook>
+From:   Muchun Song <songmuchun@bytedance.com>
+Date:   Tue, 24 May 2022 10:41:20 +0800
+Message-ID: <CAMZfGtWw6bnpDcdjgQnsW8MMPy0BmHTtHdnX4codMdqk1b5wJg@mail.gmail.com>
+Subject: Re: [PATCH v2] sysctl: handle table->maxlen properly for proc_dobool
+To:     Kees Cook <keescook@chromium.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Iurii Zaikin <yzaikin@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-"ARM: 9192/1: amba: fix memory leak in amba_device_try_add()" leads
-to a refcount underflow if amba_device_add() fails, which called by
-of_amba_device_create(), the of_amba_device_create() already exists
-the error handling, so amba_put_device() only need to be added into
-amba_deferred_retry().
+On Tue, May 24, 2022 at 3:33 AM Kees Cook <keescook@chromium.org> wrote:
+>
+> On Sun, May 22, 2022 at 01:26:24PM +0800, Muchun Song wrote:
+> > Setting ->proc_handler to proc_dobool at the same time setting ->maxlen
+> > to sizeof(int) is counter-intuitive, it is easy to make mistakes.  For
+> > robustness, fix it by reimplementing proc_dobool() properly.
+> >
+> > Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+> > Cc: Luis Chamberlain <mcgrof@kernel.org>
+> > Cc: Kees Cook <keescook@chromium.org>
+> > Cc: Iurii Zaikin <yzaikin@google.com>
+> > ---
+> > v2:
+> >  - Reimplementing proc_dobool().
+> >
+> >  fs/lockd/svc.c  |  2 +-
+> >  kernel/sysctl.c | 38 +++++++++++++++++++-------------------
+> >  2 files changed, 20 insertions(+), 20 deletions(-)
+> >
+> > diff --git a/fs/lockd/svc.c b/fs/lockd/svc.c
+> > index 59ef8a1f843f..6e48ee787f49 100644
+> > --- a/fs/lockd/svc.c
+> > +++ b/fs/lockd/svc.c
+> > @@ -496,7 +496,7 @@ static struct ctl_table nlm_sysctls[] = {
+> >       {
+> >               .procname       = "nsm_use_hostnames",
+> >               .data           = &nsm_use_hostnames,
+> > -             .maxlen         = sizeof(int),
+> > +             .maxlen         = sizeof(nsm_use_hostnames),
+> >               .mode           = 0644,
+> >               .proc_handler   = proc_dobool,
+> >       },
+>
+> This hunk is fine -- it's a reasonable fix-up.
+>
+> > diff --git a/kernel/sysctl.c b/kernel/sysctl.c
+> > index e52b6e372c60..50a2c29efc94 100644
+> > --- a/kernel/sysctl.c
+> > +++ b/kernel/sysctl.c
+> > @@ -423,21 +423,6 @@ static void proc_put_char(void **buf, size_t *size, char c)
+> >       }
+> >  }
+> >
+> > -static int do_proc_dobool_conv(bool *negp, unsigned long *lvalp,
+> > -                             int *valp,
+> > -                             int write, void *data)
+> > -{
+> > -     if (write) {
+> > -             *(bool *)valp = *lvalp;
+> > -     } else {
+> > -             int val = *(bool *)valp;
+> > -
+> > -             *lvalp = (unsigned long)val;
+> > -             *negp = false;
+> > -     }
+> > -     return 0;
+> > -}
+> > -
+> >  static int do_proc_dointvec_conv(bool *negp, unsigned long *lvalp,
+> >                                int *valp,
+> >                                int write, void *data)
+> > @@ -708,16 +693,31 @@ int do_proc_douintvec(struct ctl_table *table, int write,
+> >   * @lenp: the size of the user buffer
+> >   * @ppos: file position
+> >   *
+> > - * Reads/writes up to table->maxlen/sizeof(unsigned int) integer
+> > - * values from/to the user buffer, treated as an ASCII string.
+> > + * Reads/writes up to table->maxlen/sizeof(bool) bool values from/to
+> > + * the user buffer, treated as an ASCII string.
+> >   *
+> >   * Returns 0 on success.
+> >   */
+> >  int proc_dobool(struct ctl_table *table, int write, void *buffer,
+> >               size_t *lenp, loff_t *ppos)
+> >  {
+> > -     return do_proc_dointvec(table, write, buffer, lenp, ppos,
+> > -                             do_proc_dobool_conv, NULL);
+> > +     struct ctl_table tmp = *table;
+> > +     bool *data = table->data;
+> > +     unsigned int val = READ_ONCE(*data);
+> > +     int ret;
+> > +
+> > +     /* Do not support arrays yet. */
+> > +     if (table->maxlen != sizeof(bool))
+> > +             return -EINVAL;
+> > +
+> > +     tmp.maxlen = sizeof(val);
+> > +     tmp.data = &val;
+> > +     ret = do_proc_douintvec(&tmp, write, buffer, lenp, ppos, NULL, NULL);
+> > +     if (ret)
+> > +             return ret;
+> > +     if (write)
+> > +             WRITE_ONCE(*data, val ? true : false);
+> > +     return 0;
+> >  }
+>
+> This part I don't understand -- it just inlines do_proc_dobool_conv(),
+> and I think detracts from readability.
+>
 
-Reported-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
----
- drivers/amba/bus.c | 8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
+I think do_proc_dobool_conv() is an abuse of do_proc_dointvec()
+since do_proc_dointvec() expects a "int" type data instead of a "bool".
+As you can see, there is some cast from bool to int or int to bool
+in do_proc_dobool_conv().  And do_proc_dobool_conv() supports
+arrays, while proc_dobool() does not support. It is a little ugly to
+fix this in __do_proc_dointvec() (I have fixed it in v1 [1]).
 
-diff --git a/drivers/amba/bus.c b/drivers/amba/bus.c
-index 0e3ed5eb367b..0cb20324da16 100644
---- a/drivers/amba/bus.c
-+++ b/drivers/amba/bus.c
-@@ -493,13 +493,8 @@ static int amba_device_try_add(struct amba_device *dev, struct resource *parent)
- 		goto skip_probe;
- 
- 	ret = amba_read_periphid(dev);
--	if (ret) {
--		if (ret != -EPROBE_DEFER) {
--			amba_device_put(dev);
--			goto err_out;
--		}
-+	if (ret)
- 		goto err_release;
--	}
- 
- skip_probe:
- 	ret = device_add(&dev->dev);
-@@ -546,6 +541,7 @@ static int amba_deferred_retry(void)
- 			continue;
- 
- 		list_del_init(&ddev->node);
-+		amba_device_put(ddev->dev);
- 		kfree(ddev);
- 	}
- 
--- 
-2.35.3
+This version refers to proc_dou8vec_minmax(). For me, I think it
+is cleaner than v1, any thoughts?
 
+[1] https://lore.kernel.org/all/20220519125505.92400-1-songmuchun@bytedance.com/
