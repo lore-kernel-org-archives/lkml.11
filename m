@@ -2,92 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A96CBC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 06:53:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C060C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 06:55:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234311AbiEXGxr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 02:53:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37896 "EHLO
+        id S234327AbiEXGzF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 02:55:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229945AbiEXGxp (ORCPT
+        with ESMTP id S232414AbiEXGzE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 02:53:45 -0400
-Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B1F184A14;
-        Mon, 23 May 2022 23:53:44 -0700 (PDT)
-Received: by mail-il1-x132.google.com with SMTP id t13so4392537ilm.9;
-        Mon, 23 May 2022 23:53:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:in-reply-to:subject:to:cc
-         :content-transfer-encoding;
-        bh=1LOOK5eaUWqnI53NP5MJqFE5NFaX42KOH7g8Jj1sqQw=;
-        b=ZHMM8sUAT9TASkfd+Ti9J3EoyI6VZ/9R5zjTUbs/t0bN1xQzNDop6DQaHWSLNiYSyj
-         y9zvBXxvzc3UHDpY6YIAPW9TYv+/NALQqNmwSar7s7bKRvLsLi5q7M3bHWB5mLa0oMO8
-         vTdVz65oGsVlp4VgdjM5Cq68awx7zaWT78R69J48sPTY//KZ72ahgMqx/2rGMXKYRuk1
-         seOBCRNJzPZbZIUIwQyc5m+fonrxkSGW1IaY0rjU+NQ55wvVruoqwiMkWV8shsi1sWzk
-         o5CE/S2Bc62gbARaERJH+3Vk/162IajLVnBOE3aqCTfrbYfGZMmlYpN8NDKo4hZ/XGau
-         avAg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:in-reply-to:subject:to:cc
-         :content-transfer-encoding;
-        bh=1LOOK5eaUWqnI53NP5MJqFE5NFaX42KOH7g8Jj1sqQw=;
-        b=yev1uv0Fhm4SpUCifUt5wWwRSxDCFDdkb/g3KmPamQjFPYcI6TdwbQU/e6OT91TzA2
-         46A39X/bM3hq0yQXHxvXOFJiHZmkbzXo06Tz7b1VAE/Apb+Nfw+G4DTTQuz3TNcw4YqE
-         S3+UC2pYgGD7zpKPY/47zxGFrTEfYekswz1H/nGr86zX8lukaYmfUezxMVj6ZhOaq/Tv
-         1INVBufkF57Up8UHtrjJWGkVfiEhbePip3AqUxWV4j3z6I71hELI2IzNEyda/b8c7PYz
-         ppHiocBElp9f9RRI7ydxKruall+6YWQ9HjPQrwfAJITV+GJd4FBboBPV/Hg/nbPYcG6x
-         Y3/Q==
-X-Gm-Message-State: AOAM530VbwbCUvulz47yWknvIn+Ffa7VdUwfrcVQpi4CVZehxxbcfcT1
-        SNmhS/SJzyQxyv6iwEUTV3A+T2n+qQxIgOTouEM=
-X-Google-Smtp-Source: ABdhPJynTUdbvpklBINUlsc1/KShLCTZH+W6kPo9ma0vLoRiInjY7ag+TbSr/+2Hg1QWyhbE+YyHWQ==
-X-Received: by 2002:a92:c5d1:0:b0:2bd:fdca:18a8 with SMTP id s17-20020a92c5d1000000b002bdfdca18a8mr7448505ilt.320.1653375223385;
-        Mon, 23 May 2022 23:53:43 -0700 (PDT)
-Received: from cl-arch-kdev (cl-arch-kdev.xen.prgmr.com. [2605:2700:0:2:a800:ff:fed6:fc0d])
-        by smtp.gmail.com with ESMTPSA id 15-20020a92180f000000b002d1cb55be3bsm148084ily.29.2022.05.23.23.53.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 May 2022 23:53:42 -0700 (PDT)
-Message-ID: <628c80f6.1c69fb81.3c569.06f2@mx.google.com>
-Date:   Mon, 23 May 2022 23:53:42 -0700 (PDT)
-X-Google-Original-Date: Tue, 24 May 2022 06:53:41 GMT
-From:   Fox Chen <foxhlchen@gmail.com>
-In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
-Subject: RE: [PATCH 5.15 000/132] 5.15.42-rc1 review
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
-        Fox Chen <foxhlchen@gmail.com>
-Content-Transfer-Encoding: 7bit
+        Tue, 24 May 2022 02:55:04 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 179A293476
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 23:55:03 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <sha@pengutronix.de>)
+        id 1ntORP-0000Uo-HF; Tue, 24 May 2022 08:54:51 +0200
+Received: from sha by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <sha@pengutronix.de>)
+        id 1ntORN-0006Mn-Mh; Tue, 24 May 2022 08:54:49 +0200
+Date:   Tue, 24 May 2022 08:54:49 +0200
+From:   "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>
+To:     Ping-Ke Shih <pkshih@realtek.com>
+Cc:     "linux@ulli-kroll.de" <linux@ulli-kroll.de>,
+        "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        "neojou@gmail.com" <neojou@gmail.com>,
+        "kvalo@kernel.org" <kvalo@kernel.org>,
+        "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "martin.blumenstingl@googlemail.com" 
+        <martin.blumenstingl@googlemail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH 00/10] RTW88: Add support for USB variants
+Message-ID: <20220524065449.GR25578@pengutronix.de>
+References: <20220518082318.3898514-1-s.hauer@pengutronix.de>
+ <55f569899e4e894970b826548cd5439f5def2183.camel@ulli-kroll.de>
+ <20220523065348.GK25578@pengutronix.de>
+ <68a979f3fe3c80a460528605f03d85c2a265ff50.camel@realtek.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <68a979f3fe3c80a460528605f03d85c2a265ff50.camel@realtek.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 08:50:09 up 54 days, 19:19, 58 users,  load average: 0.26, 0.18,
+ 0.19
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: sha@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 23 May 2022 19:03:29 +0200, Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
-> This is the start of the stable review cycle for the 5.15.42 release.
-> There are 132 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+On Mon, May 23, 2022 at 11:39:49AM +0000, Ping-Ke Shih wrote:
+> On Mon, 2022-05-23 at 08:53 +0200, Sascha Hauer wrote:
+> > Hi Hans Ulli,
+> > 
+> > On Mon, May 23, 2022 at 06:07:16AM +0200, Hans Ulli Kroll wrote:
+> > > On Wed, 2022-05-18 at 10:23 +0200, Sascha Hauer wrote:
+> > > > This series adds support for the USB chip variants to the RTW88 driver.
+> > > > 
+> > > 
+> > > Hi Sascha
+> > > 
+> > > glad you found some *working* devices for rtw88 !
+> > 
+> > Well, not fully. I had to add [3] = RTW_DEF_RFE(8822c, 0, 0), to the
+> > rtw8822c_rfe_defs array.
+> > 
+> > > I spend some of the weekend testing your driver submission.
+> > > 
+> > > for rtl8821cu devices I get following output
+> > > 
+> > > some Logilink device
+> > > 
+> > > [ 1686.605567] usb 1-5.1.2: New USB device found, idVendor=0bda, idProduct=c811, bcdDevice=
+> > > 2.00
+> > > [ 1686.614186] usb 1-5.1.2: New USB device strings: Mfr=1, Product=2, SerialNumber=3
+> > > [ 1686.621721] usb 1-5.1.2: Product: 802.11ac NIC
+> > > [ 1686.626227] usb 1-5.1.2: Manufacturer: Realtek
+> > > [ 1686.630695] usb 1-5.1.2: SerialNumber: 123456
+> > > [ 1686.640480] rtw_8821cu 1-5.1.2:1.0: Firmware version 24.5.0, H2C version 12
+> > > [ 1686.932828] rtw_8821cu 1-5.1.2:1.0: failed to download firmware
+> > > [ 1686.945206] rtw_8821cu 1-5.1.2:1.0: failed to setup chip efuse info
+> > > [ 1686.951538] rtw_8821cu 1-5.1.2:1.0: failed to setup chip information
+> > > [ 1686.958402] rtw_8821cu: probe of 1-5.1.2:1.0 failed with error -22
+> > > 
+> > > above is same with some from Comfast
+> > > 
+> > > The worst in the list is one from EDUP
+> > > 
+> > > [ 1817.855704] rtw_8821cu 1-5.1.2:1.2: Firmware version 24.5.0, H2C version 12
+> > > [ 1818.153918] rtw_8821cu 1-5.1.2:1.2: rfe 255 isn't supported
+> > > [ 1818.165176] rtw_8821cu 1-5.1.2:1.2: failed to setup chip efuse info
+> > > [ 1818.171505] rtw_8821cu 1-5.1.2:1.2: failed to setup chip information
+> > 
+> > Do these chips work with your out of tree variant of this driver?
+> > 
+> > Is the efuse info completely 0xff or only the field indicating the rfe
+> > option?
 > 
-> Responses should be made by Wed, 25 May 2022 16:56:55 +0000.
-> Anything received after that time might be too late.
+> I check RFE allocation of 8821c. 255 isn't defined.
+> If efuse info isn't complete 0xff, try to force RFE 0 to see if it works.
 > 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.42-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
-> and the diffstat can be found below.
+> > 
+> > > rtl8822bu devices are working fine ...
+> > 
+> > Nice. Did you test a rtw8723du device as well?
+> > 
 > 
-> thanks,
+> I have a 8723DU module.
 > 
-> greg k-h
-> 
+> With this patchset, it can find AP, but can't estiablish connection.
+> I check air capture, but no TX packets found.
+> That says RX works, but TX doesn't.
 
-5.15.42-rc1 Successfully Compiled and booted on my Raspberry PI 4b (8g) (bcm2711)
-                
-Tested-by: Fox Chen <foxhlchen@gmail.com>
+The rtw88 repository has 8723DU support added with:
 
+	initial for RTW8723DU devices
+
+    	not tested, no Device
+	Hints are found in rtl8822bu code
+
+No active commits to this file since then, so it's probably not supposed
+to work.  Unless somebody comes up with fixes I'll remove support for
+this chip for now.
+
+Sascha
+
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
