@@ -2,90 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF050C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 20:58:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0228C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 20:58:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241313AbiEXU57 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 16:57:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33250 "EHLO
+        id S241815AbiEXU6w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 16:58:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241766AbiEXU4A (ORCPT
+        with ESMTP id S241776AbiEXU6t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 16:56:00 -0400
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C45987A2C
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 13:55:59 -0700 (PDT)
-Received: by mail-pf1-x435.google.com with SMTP id 202so10475442pfu.0
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 13:55:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=MjBnehvEwPZLzs4+i+dSICYOgzejGL+XMwwqgLCtq0s=;
-        b=SnIB/h6p4zajI9jK5p01v04JiMknxosV5tXu1PwEktHSgnIWXEpfHyR2S3Be+3UG28
-         yFauwPfd3tTs/f4FbQIlgs5Jc9knP3OFyCbTFABsuQZS9m7EYwJxdjWpxt934TFKM2s+
-         bZ3aF3I/mWXhcVIStndN+jv7z6i33Y6690bwZoyixkHIHZncsG6ii3+2uyDk6dY5N3Lz
-         BvQ1dgVKgqBVM0SatIkNhVrtyAljHCdpDGp27xJ5S+qUlIw8PPxUEz6TmV9UTVo6XycR
-         xvt7S/XVXLWY+ETb8VsgspdHFvOf/5ZRPJIvUIbRrnQPf8pDaLDlvG35MiAwUZ3vT2v4
-         78gQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=MjBnehvEwPZLzs4+i+dSICYOgzejGL+XMwwqgLCtq0s=;
-        b=MTuKreCkt6NAFIBSE3hYI3ky6mpCgDadC7YC3JzqhpFkZdtFi8UWt0hR/faPskc5wQ
-         G3VhHxyQEZIdy7mQVfjQ1Df7iwt4A41kRBJ/6YjyEBtnjwpSriYrKVCEVEzXltlPWDhl
-         VMxdcOXpXRn+rYDdB3PH64PMlgaGWyG86TppS7CGiaM/AUXC+ORUo80e++JSrDU5pAKg
-         Mqa1VXVwQW351m2hAwR+xKmEo8gwkPZFjzltKh2Mb2urwBxLS/ahXfE3cdPZzLEbKtU9
-         u/JoI5rrLvqIUBqv4zqM+uCDoGLv9reT7hMCSVn2HeF4CrdmsAb4YCf3ysp8zYFgA3gZ
-         QqUw==
-X-Gm-Message-State: AOAM533Pju+k1guayW9BMD9C5QQMzHnAEr6b9Ms/xCWuPim/12Kqovox
-        wK9T/3sN7cF8hOXMmDef4wEWpQ==
-X-Google-Smtp-Source: ABdhPJyItd5TkRoDL/PBRi8x67lR4NgEpz+M4QMVvCsc5IPE1+rTorq3tadhk7sNyXDFG+M53CQ1ig==
-X-Received: by 2002:a05:6a00:2391:b0:50a:3ea9:e84d with SMTP id f17-20020a056a00239100b0050a3ea9e84dmr29943750pfc.21.1653425758967;
-        Tue, 24 May 2022 13:55:58 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id z6-20020a170902708600b0015e8d4eb285sm561336plk.207.2022.05.24.13.55.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 May 2022 13:55:58 -0700 (PDT)
-Date:   Tue, 24 May 2022 20:55:55 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Lei Wang <lei4.wang@intel.com>
-Cc:     pbonzini@redhat.com, vkuznets@redhat.com, wanpengli@tencent.com,
-        jmattson@google.com, joro@8bytes.org, chenyi.qiang@intel.com,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v7 1/8] KVM: VMX: Introduce PKS VMCS fields
-Message-ID: <Yo1GW/7OuRooi3nT@google.com>
-References: <20220424101557.134102-1-lei4.wang@intel.com>
- <20220424101557.134102-2-lei4.wang@intel.com>
+        Tue, 24 May 2022 16:58:49 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EA334AE2D;
+        Tue, 24 May 2022 13:58:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 954D2CE1D57;
+        Tue, 24 May 2022 20:58:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97DA6C34100;
+        Tue, 24 May 2022 20:58:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653425925;
+        bh=co8rmso/X/9KSryJdR6dHk17tc5T5WiA0FcvA4bAgWo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=qxov/uCEnvuyYCwQB6yKH37c+PrG3ORg97DLE/3mRnqtSs68wwRDShxraD4nkZDqw
+         GEpL/5SYaiSzFvdam6vNCn0EI9qAIOwDlSyf2Op4PwxznHdshGcNEuKD5FemBcT3sx
+         qzZO8Ho4rnWPtv4STbswUgAkqFLr75SNrKEsPfwnLT++mqyAbrOThenAdUEOZaGu6l
+         EqlegieAVBuyv94I8FuakXb2EuB0YgHwuJIrtwWE5JYDKklbxzB8bHbj7A3ims7SAk
+         VMy/K3PQ4WG4icmqgOx9vqPzhIrUGmxkC8CFg/5EOmWqkq7xGpcStMq8V4YGElcFM/
+         lybtYoq5kHB/w==
+Date:   Tue, 24 May 2022 15:58:42 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Yicong Yang <yangyicong@hisilicon.com>
+Cc:     bhelgaas@google.com, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>
+Subject: Re: [RESEND PATCH v5] PCI: Make sure the bus bridge powered on when
+ scanning bus
+Message-ID: <20220524205842.GA269611@bhelgaas>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220424101557.134102-2-lei4.wang@intel.com>
+In-Reply-To: <20220517124319.47125-1-yangyicong@hisilicon.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Apr 24, 2022, Lei Wang wrote:
-> From: Chenyi Qiang <chenyi.qiang@intel.com>
-> 
-> PKS(Protection Keys for Supervisor Pages) is a feature that extends the
-> Protection Key architecture to support thread-specific permission
-> restrictions on supervisor pages.
-> 
-> A new PKS MSR(PKRS) is defined in kernel to support PKS, which holds a
-> set of permissions associated with each protection domain.
-> 
-> Two VMCS fields {HOST,GUEST}_IA32_PKRS are introduced in
-> {host,guest}-state area to store the respective values of PKRS.
-> 
-> Every VM exit saves PKRS into guest-state area.
+On Tue, May 17, 2022 at 08:43:19PM +0800, Yicong Yang wrote:
+> When the bus bridge is runtime suspended, we'll fail to rescan
+> the devices through sysfs as we cannot access the configuration
+> space correctly when the bridge is in D3hot.
 
-Uber nit, PKRS isn't saved if VMX doesn't support the entry control.
+Is the "D3hot" above a typo?  I think devices are supposed to respond
+to config accesses when in D3hot.  PCIe r6.0, sec 5.3.1.4.1:
 
-  Every VM exit saves PKRS into guest-state area if VM_ENTRY_LOAD_IA32_PKRS
-  is supported by the CPU.
+  Configuration and Message requests are the only TLPs accepted by a
+  Function in the D3Hot state. ...
 
-With that tweak,
+  Functions that are in D3Hot are permitted to be transitioned by
+  software (writing to their PMCSR PowerState field) to the D0active
+  state or the D0uninitialized state. Functions that are in D3Hot must
+  respond to Configuration Space accesses as long as power and clock
+  are supplied so that they can be returned to D0 by software.
 
-Reviewed-by: Sean Christopherson <seanjc@google.com>
+> It can be reproduced like:
+> 
+> $ echo 1 > /sys/bus/pci/devices/0000:80:00.0/0000:81:00.1/remove
+> $ echo 1 > /sys/bus/pci/devices/0000:80:00.0/pci_bus/0000:81/rescan
+> 
+> 0000:80:00.0 is a Root Port and it is runtime-suspended, so
+> 0000:81:00.1 is unreachable after a rescan.
+> 
+> Power up the bridge when scanning the child bus and allow it to
+> suspend again by adding pm_runtime_get_sync()/pm_runtime_put()
+> in pci_scan_child_bus_extend().
+> 
+> Cc: Rafael J. Wysocki <rafael@kernel.org>
+> Cc: Mika Westerberg <mika.westerberg@linux.intel.com>
+> Cc: Bjorn Helgaas <bhelgaas@google.com>
+> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
+> Reviewed-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+> ---
+>  drivers/pci/probe.c | 12 ++++++++++++
+>  1 file changed, 12 insertions(+)
+> 
+> diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+> index 17a969942d37..b108e72b6586 100644
+> --- a/drivers/pci/probe.c
+> +++ b/drivers/pci/probe.c
+> @@ -2859,11 +2859,20 @@ static unsigned int pci_scan_child_bus_extend(struct pci_bus *bus,
+>  	unsigned int used_buses, normal_bridges = 0, hotplug_bridges = 0;
+>  	unsigned int start = bus->busn_res.start;
+>  	unsigned int devfn, fn, cmax, max = start;
+> +	struct pci_dev *bridge = bus->self;
+>  	struct pci_dev *dev;
+>  	int nr_devs;
+>  
+>  	dev_dbg(&bus->dev, "scanning bus\n");
+>  
+> +	/*
+> +	 * Make sure the bus bridge is powered on, otherwise we may not be
+> +	 * able to scan the devices as we may fail to access the configuration
+> +	 * space of subordinates.
+> +	 */
+> +	if (bridge)
+> +		pm_runtime_get_sync(&bridge->dev);
+> +
+>  	/* Go find them, Rover! */
+>  	for (devfn = 0; devfn < 256; devfn += 8) {
+>  		nr_devs = pci_scan_slot(bus, devfn);
+> @@ -2976,6 +2985,9 @@ static unsigned int pci_scan_child_bus_extend(struct pci_bus *bus,
+>  		}
+>  	}
+>  
+> +	if (bridge)
+> +		pm_runtime_put(&bridge->dev);
+> +
+>  	/*
+>  	 * We've scanned the bus and so we know all about what's on
+>  	 * the other side of any bridges that may be on this bus plus
+> -- 
+> 2.24.0
+> 
