@@ -2,67 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B31BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 23:46:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BDAFC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 23:54:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242813AbiEXXqM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 19:46:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53816 "EHLO
+        id S242822AbiEXXyp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 19:54:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242847AbiEXXqF (ORCPT
+        with ESMTP id S233423AbiEXXyn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 19:46:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9073363BC6;
-        Tue, 24 May 2022 16:45:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2DC2B6181D;
-        Tue, 24 May 2022 23:45:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57964C34116;
-        Tue, 24 May 2022 23:45:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653435957;
-        bh=byHQabgQKp9TBTU8NO0iKwDveZDidiAcsR52qhBQFwo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=GEyct5OW9p3VE1LAHVcD1W1SSc8b4IC7tA4y2TfvmFXZBAGHDNyTvLxh/FYPmZDSY
-         BHVXH00xU9YOoNDeP+CX0Cf7/KbEK3gXV00JeLRdBXgUHqSc08CK6pJ9Abz4XHYZzp
-         9qfKEUo+YzyyW9MzpZF4jCyOTwY8GB2/uJtpVFhFDgLtAnUClC3ScPFP0WL3/Z+UiR
-         qLV63jVat/YdsK7qKMctOVPD4dQyOapBaZp8rWeRH8APzlNByeUIwNnnI9+RSZLq4g
-         ESMYAo2qT03aefzMGNQfS+PApvQ2vh+s3175+TfM3VI7ucpJMgQ3oYDxfoSAJdbFea
-         qallKaIe6/N8w==
-Date:   Tue, 24 May 2022 16:45:56 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Claudiu Beznea <claudiu.beznea@microchip.com>
-Cc:     <nicolas.ferre@microchip.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <pabeni@redhat.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next] net: macb: change return type for
- gem_ptp_set_one_step_sync()
-Message-ID: <20220524164556.5ff041d3@kernel.org>
-In-Reply-To: <20220524121951.1036697-1-claudiu.beznea@microchip.com>
-References: <20220524121951.1036697-1-claudiu.beznea@microchip.com>
+        Tue, 24 May 2022 19:54:43 -0400
+Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00C5C67D12
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 16:54:41 -0700 (PDT)
+Date:   Tue, 24 May 2022 16:54:29 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1653436480;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=B3ex7fouBs2nWyDrjcuMtV8BsfokIFm1NkzfQJuKMiw=;
+        b=VZNDt5rZcr47yLx7LWHhWAcblryVVE4AlHwuRKBn+DyOaoDECsV8BODUN+sYkXDXQkoqDQ
+        ZNnzvGZ2U42Z5R4c//nltLM+Vw8OW0ykAJS6Bm0w9w1kZ3NajEjp3NrWByPhfBXxCamyms
+        ONIwtgCxfWs/QJWpJrUXkd4pGf9tJcY=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Roman Gushchin <roman.gushchin@linux.dev>
+To:     Dave Chinner <dchinner@redhat.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org,
+        Kent Overstreet <kent.overstreet@gmail.com>,
+        Hillf Danton <hdanton@sina.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: Re: [PATCH v3 3/6] mm: shrinkers: provide shrinkers with names
+Message-ID: <Yo1wNXw8KJd3dnt6@carbon>
+References: <20220509183820.573666-1-roman.gushchin@linux.dev>
+ <20220509183820.573666-4-roman.gushchin@linux.dev>
+ <Yoq1lRlneWj59Mte@rh>
+ <YoxAboVWrONJZumm@carbon>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YoxAboVWrONJZumm@carbon>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 24 May 2022 15:19:51 +0300 Claudiu Beznea wrote:
-> gem_ptp_set_one_step_sync() always returns zero thus change its return
-> type to void.
+On Mon, May 23, 2022 at 07:18:27PM -0700, Roman Gushchin wrote:
+> On Mon, May 23, 2022 at 08:13:41AM +1000, Dave Chinner wrote:
+> > On Mon, May 09, 2022 at 11:38:17AM -0700, Roman Gushchin wrote:
+> > > Currently shrinkers are anonymous objects. For debugging purposes they
+> > > can be identified by count/scan function names, but it's not always
+> > > useful: e.g. for superblock's shrinkers it's nice to have at least
+> > > an idea of to which superblock the shrinker belongs.
+> > > 
+> > > This commit adds names to shrinkers. register_shrinker() and
+> > > prealloc_shrinker() functions are extended to take a format and
+> > > arguments to master a name.
+> > > 
+> > > In some cases it's not possible to determine a good name at the time
+> > > when a shrinker is allocated. For such cases shrinker_debugfs_rename()
+> > > is provided.
+> > > 
+> > > After this change the shrinker debugfs directory looks like:
+> > >   $ cd /sys/kernel/debug/shrinker/
+> > >   $ ls
+> > >     dqcache-16          sb-hugetlbfs-17  sb-rootfs-2      sb-tmpfs-50
+> > >     kfree_rcu-0         sb-hugetlbfs-33  sb-securityfs-6  sb-tracefs-13
+> > >     sb-aio-20           sb-iomem-12      sb-selinuxfs-22  sb-xfs:vda1-36
+> > >     sb-anon_inodefs-15  sb-mqueue-21     sb-sockfs-8      sb-zsmalloc-19
+> > >     sb-bdev-3           sb-nsfs-4        sb-sysfs-26      shadow-18
+> > >     sb-bpf-32           sb-pipefs-14     sb-tmpfs-1       thp_deferred_split-10
+> > >     sb-btrfs:vda2-24    sb-proc-25       sb-tmpfs-27      thp_zero-9
+> > >     sb-cgroup2-30       sb-proc-39       sb-tmpfs-29      xfs_buf-37
+> > >     sb-configfs-23      sb-proc-41       sb-tmpfs-35      xfs_inodegc-38
+> >                                                             ^^^^^^^^^^^^^^
+> > 
+> > These XFS shrinkers are also per-block device like the superblock.
+> > They need to read like "sb-xfs:vda1-36". and even though it is not
+> > in this list, the xfs dquot shrinker will need this as well.
 > 
-> Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+> Sure, will do in v4. Thanks!
+> 
+> > 
+> > 
+> > >     sb-dax-11           sb-proc-45       sb-tmpfs-40      zspool-34
+> > >     sb-debugfs-7        sb-proc-46       sb-tmpfs-42
+> > >     sb-devpts-28        sb-proc-47       sb-tmpfs-43
+> > >     sb-devtmpfs-5       sb-pstore-31     sb-tmpfs-44
+> > 
+> > The proc and tmpfs shrinkers have the same problem - what instance
+> > do they actually refer to?
+> 
+> Any ideas on how to name/identify them?
 
-# Form letter - net-next is closed
+I've looked a bit into it and realized I've no good idea:
+I naively thought that procfs sb's have different pid namespaces,
+but it's not true anymore. So I've no idea how to identify them.
 
-We have already sent the networking pull request for 5.19
-and therefore net-next is closed for new drivers, features,
-code refactoring and optimizations. We are currently accepting
-bug fixes only.
+The same applies to tmpfs instances, no simple id.
 
-Please repost when net-next reopens after 5.19-rc1 is cut.
+If somebody has any ideas, I'd appreciate. If not, we can enhance it later.
 
-RFC patches sent for review only are obviously welcome at any time.
+Thanks!
