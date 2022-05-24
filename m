@@ -2,103 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ED89C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 16:28:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CDAFC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 16:28:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239519AbiEXQ2o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 12:28:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51700 "EHLO
+        id S239667AbiEXQ2t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 12:28:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239407AbiEXQ2j (ORCPT
+        with ESMTP id S239453AbiEXQ2l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 12:28:39 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D556338D95
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 09:28:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653409716;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=tgYm45Tc+Uo0q6+4gAt4ZLxsiwtWeg9L52KfwWzhmrE=;
-        b=EVf4sVyuWj8DMiwotvpbnzYaRqXelmbCr+sBgvNlfFJ86cmsIMoop6oAT9S7sTjOOG+ekI
-        agc41qGj+EDqrAz8JcUR8z/UYZNfPgINLeJ4c6mjsWPl20Cb/MC37pBFlfGslGqn18f81r
-        DH1vDKSUJ04FNc5OgcoqdsqigH+0hkI=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-327-kuqjvOxXMMqGfl-AezKgcQ-1; Tue, 24 May 2022 12:28:33 -0400
-X-MC-Unique: kuqjvOxXMMqGfl-AezKgcQ-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Tue, 24 May 2022 12:28:41 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEDA2393CC;
+        Tue, 24 May 2022 09:28:38 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id D4DE3180074C;
-        Tue, 24 May 2022 16:28:30 +0000 (UTC)
-Received: from dhcp-27-174.brq.redhat.com (unknown [10.40.195.109])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 5ABA6404E4A2;
-        Tue, 24 May 2022 16:28:11 +0000 (UTC)
-Received: by dhcp-27-174.brq.redhat.com (nbSMTP-1.00) for uid 1000
-        oleg@redhat.com; Tue, 24 May 2022 18:28:30 +0200 (CEST)
-Date:   Tue, 24 May 2022 18:28:09 +0200
-From:   Oleg Nesterov <oleg@redhat.com>
-To:     "Eric W. Biederman" <ebiederm@xmission.com>
-Cc:     linux-kernel@vger.kernel.org, rjw@rjwysocki.net, mingo@kernel.org,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, mgorman@suse.de, bigeasy@linutronix.de,
-        Will Deacon <will@kernel.org>, tj@kernel.org,
-        linux-pm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        linux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
-        Jann Horn <jannh@google.com>, linux-ia64@vger.kernel.org,
-        Robert OCallahan <roc@pernos.co>, Kyle Huey <khuey@pernos.co>,
-        Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
-        Jason Wessel <jason.wessel@windriver.com>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Douglas Miller <dougmill@linux.vnet.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>
-Subject: Re: [PATCH 07/16] signal: Wake up the designated parent
-Message-ID: <20220524162808.GF14347@redhat.com>
-References: <871qwq5ucx.fsf_-_@email.froward.int.ebiederm.org>
- <20220518225355.784371-7-ebiederm@xmission.com>
- <20220524132553.GD14347@redhat.com>
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 1A7E71F91F;
+        Tue, 24 May 2022 16:28:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1653409717;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=tKhGa58SrsnUfyW/JWAjM50iyFwr8mDs6St37E4ZsaA=;
+        b=ENZrrts7jtluhJ2cFLrUUsqx0X7pb7T/QYrNHNTQqCwUhjvlJwAXPq3zDSQcRDf6Mmk8E7
+        Vt/7uxJZx3GXMxjo4R7eZWpz28TJF8LEeWNmpiIJB43HG58XhWwZtgeO+GekBRDD8VF1hi
+        g73wsvP4Wkun3ov9NP0d4joTnrZIV/U=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1653409717;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=tKhGa58SrsnUfyW/JWAjM50iyFwr8mDs6St37E4ZsaA=;
+        b=oJNVk9djcObIj4wMIPixF3qpfo6iIPcPGf8aeU2CMRZjxkI6s58TKRXSWF+/KfpwLMUfHq
+        2VGa8iTS4qAEyuBQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id CC6AE13ADF;
+        Tue, 24 May 2022 16:28:36 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id AMGEMLQHjWJ1WQAAMHmgww
+        (envelope-from <dsterba@suse.cz>); Tue, 24 May 2022 16:28:36 +0000
+Date:   Tue, 24 May 2022 18:24:14 +0200
+From:   David Sterba <dsterba@suse.cz>
+To:     Julia Lawall <Julia.Lawall@inria.fr>
+Cc:     Chris Mason <clm@fb.com>, kernel-janitors@vger.kernel.org,
+        Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>, linux-btrfs@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] btrfs: fix typos in comments
+Message-ID: <20220524162414.GU18596@twin.jikos.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz, Julia Lawall <Julia.Lawall@inria.fr>,
+        Chris Mason <clm@fb.com>, kernel-janitors@vger.kernel.org,
+        Josef Bacik <josef@toxicpanda.com>, David Sterba <dsterba@suse.com>,
+        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220521111145.81697-5-Julia.Lawall@inria.fr>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220524132553.GD14347@redhat.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
+In-Reply-To: <20220521111145.81697-5-Julia.Lawall@inria.fr>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05/24, Oleg Nesterov wrote:
->
-> I fail to understand this patch...
->
-> On 05/18, Eric W. Biederman wrote:
-> >
-> > Today if a process is ptraced only the ptracer will ever be woken up in
-> > wait
->
-> and why is this wrong?
->
-> > Fixes: 75b95953a569 ("job control: Add @for_ptrace to do_notify_parent_cldstop()")
->
-> how does this change fix 75b95953a569?
+On Sat, May 21, 2022 at 01:10:15PM +0200, Julia Lawall wrote:
+> Spelling mistakes (triple letters) in comments.
+> Detected with the help of Coccinelle.
 
-OK, I guess you mean the 2nd do_notify_parent_cldstop() in ptrace_stop(),
-the problematic case is current->ptrace == T. Right?
-
-I dislike this patch anyway, but let me think more about it.
-
-Oleg.
-
+The tool to check typos is codespell, however it does not catch either
+of the words you're fixing. We do typo fixing in bigger batches so I'd
+rather fix all of them, I found about 10 more.
