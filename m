@@ -2,77 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABD3BC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 09:37:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A411C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 09:37:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235725AbiEXJhx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 05:37:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54010 "EHLO
+        id S235752AbiEXJh5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 05:37:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231389AbiEXJhu (ORCPT
+        with ESMTP id S233250AbiEXJhu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 24 May 2022 05:37:50 -0400
-Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C626B64BF1;
-        Tue, 24 May 2022 02:37:47 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0VEHf2Gg_1653385055;
-Received: from localhost(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0VEHf2Gg_1653385055)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Tue, 24 May 2022 17:37:45 +0800
-From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-To:     davem@davemloft.net
-Cc:     edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: [PATCH] r8152: Return true/false (not 1/0) from bool functions
-Date:   Tue, 24 May 2022 17:37:33 +0800
-Message-Id: <20220524093733.9537-1-jiapeng.chong@linux.alibaba.com>
-X-Mailer: git-send-email 2.20.1.7.g153144c
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FEDE64703;
+        Tue, 24 May 2022 02:37:50 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id B48671F42BE6
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1653385069;
+        bh=qHa34R8f2dgn0S0aTujwYgvn8k0a6Ednt5C8zaOJtHE=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=Rbi97nHhxIbIYR01ryXjkpEsOOYmYxRBjOpv8gBgFlqcAJNu0iYeUXjUlBgvOSBDz
+         JMUDqtYfaufxibthmP3yLbdrJzcVBz42ptkJQlmcHoAKRmT36SKicme1prIYCDawEw
+         +QUBsNagovSXHlgBBScMriv3mnO1BNY7Dpll16KhY6L4L+knJtiNfgQ7MxkyGLKYhZ
+         5aazG1w7cSwCbc5MQg/FCrM2LorBLSe5BSW4z7ifVn3nxJh0wXzTyuLsU0FUwO9In7
+         qm6zVx/6yuc5vbhDtOatD2QmT36VRa3JXjYXVTNimA6oRtFjpIE7A1QxoHr3gDjyjP
+         lubz0MjIud3Og==
+Message-ID: <911c729a-b9dc-056a-7c83-718ddb52db95@collabora.com>
+Date:   Tue, 24 May 2022 11:37:46 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v2 7/7] clk: mediatek: mt8192: add mtk_clk_simple_remove
+Content-Language: en-US
+To:     Miles Chen <miles.chen@mediatek.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     Chen-Yu Tsai <wenst@chromium.org>,
+        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
+        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220524083843.9994-1-miles.chen@mediatek.com>
+ <20220524083843.9994-8-miles.chen@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220524083843.9994-8-miles.chen@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Return statements in functions returning bool should use true/false
-instead of 1/0.
+Il 24/05/22 10:38, Miles Chen ha scritto:
+> mt8192 is already using mtk_clk_simple_probe,
+> but not mtk_clk_simple_remove.
+> 
+> Let's add mtk_clk_simple_remove for mt8192.
+> 
+> Signed-off-by: Miles Chen <miles.chen@mediatek.com>
+> Reviewed-by: Chen-Yu Tsai <wenst@chromium.org>
 
-Clean the following coccicheck warning:
-
-./drivers/net/usb/r8152.c:9579:10-11: WARNING: return of 0/1 in function
-'rtl8152_supports_lenovo_macpassthru' with return type bool.
-
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
----
- drivers/net/usb/r8152.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
-index 7389d6ef8569..7b7704b4b500 100644
---- a/drivers/net/usb/r8152.c
-+++ b/drivers/net/usb/r8152.c
-@@ -9576,15 +9576,15 @@ static bool rtl8152_supports_lenovo_macpassthru(struct usb_device *udev)
- 		case DEVICE_ID_THINKPAD_USB_C_DOCK_GEN2:
- 		case DEVICE_ID_THINKPAD_USB_C_DOCK_GEN3:
- 		case DEVICE_ID_THINKPAD_USB_C_DONGLE:
--			return 1;
-+			return true;
- 		}
- 	} else if (vendor_id == VENDOR_ID_REALTEK && parent_vendor_id == VENDOR_ID_LENOVO) {
- 		switch (product_id) {
- 		case 0x8153:
--			return 1;
-+			return true;
- 		}
- 	}
--	return 0;
-+	return false;
- }
- 
- static int rtl8152_probe(struct usb_interface *intf,
--- 
-2.20.1.7.g153144c
+[For test on MT8192 Asurada Spherion]
+Tested-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
