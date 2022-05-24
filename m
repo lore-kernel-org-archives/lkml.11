@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C94CBC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F179C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 07:56:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235860AbiEXH4S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 03:56:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60542 "EHLO
+        id S235679AbiEXH4G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 03:56:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235508AbiEXHzd (ORCPT
+        with ESMTP id S235532AbiEXHz3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 03:55:33 -0400
+        Tue, 24 May 2022 03:55:29 -0400
 Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B7319969C
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 00:55:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D44139AE40
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 00:55:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653378932; x=1684914932;
+  t=1653378922; x=1684914922;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=TNeNmd2esqkfdaVy0Fn8Wkbz0YSayavr+PmJXOvHByw=;
-  b=GJdgMNoa+A/iudYK1BkXbZkhinKi/wyydXCuA9B5ZfYC0I1vvi8+CTmO
-   pw1ES6a1evL3uqpAG+M3IiPmUbkKmJte6cFVf7a3Wb2up+//pblB2p6FM
-   GGQ2JprKkwuBLRRwnQ8+J+RByttrNwW8t6tOSnfEsu30kiC5ooklFTIOY
-   vjaMbdjV6jB7qRWKHyP0CcU4C8wONg6yJ4YQZ9R0/zWH0Q7zTnR0rNrvb
-   w7ZkHEE4TISra/2n8K00I6jvP+BCB/o3bPKu2hvEMGzUjZm2f/5Mh/jLu
-   Be3qwipDdadqOqdbliJbk4WnCs9MAUl0uCzLyXgRbRfbJV2MfPmkwIbga
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10356"; a="273455507"
+  bh=WkixHFEAcC/ws5HZg3LcXnjXZ0DVFhKTdPNaiNysLrA=;
+  b=jENOSN0iBagYCMJUQClHZYClbKN8VmX5mjavjVwaktG/zy8HAOHYBeh9
+   UIdcprUybuLcepM87wOG0WW6RO/mIpIw2MBDOs6LIqiOYD2+Zac0BpEHP
+   c60Q03FG1au10xQGRVjyoGhF5q8i6nGDzSy1s0vMNqTHxKgfMPPdOg4Ed
+   k0bOxbcTJPj7rkMzRfe8qDgQwuii8AUpUhiMTMrRdCQn9v+g8Ke+6VAXz
+   To2m2dF9iWpUtDXqQqtJC3x5aq5e+3Z1ADXuPsEiG154WQUgmRXZRGPhW
+   KCCZm7dAAvfkaUt3jcR0qqhIZtPhI+Ft6tKD85PKQWGk4HOUMteoTYPqo
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10356"; a="273455476"
 X-IronPort-AV: E=Sophos;i="5.91,248,1647327600"; 
-   d="scan'208";a="273455507"
+   d="scan'208";a="273455476"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 May 2022 00:55:32 -0700
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 May 2022 00:55:22 -0700
 X-IronPort-AV: E=Sophos;i="5.91,248,1647327600"; 
-   d="scan'208";a="717072431"
+   d="scan'208";a="717072412"
 Received: from ahunter6-mobl1.ger.corp.intel.com (HELO ahunter-VirtualBox.home\044ger.corp.intel.com) ([10.252.52.210])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 May 2022 00:55:29 -0700
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 May 2022 00:55:20 -0700
 From:   Adrian Hunter <adrian.hunter@intel.com>
 To:     Arnaldo Carvalho de Melo <acme@kernel.org>
 Cc:     Jiri Olsa <jolsa@redhat.com>, Ian Rogers <irogers@google.com>,
         Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
         Namhyung Kim <namhyung@kernel.org>,
         Leo Yan <leo.yan@linaro.org>, linux-kernel@vger.kernel.org
-Subject: [PATCH V4 12/15] perf stat: Add requires_cpu flag for uncore
-Date:   Tue, 24 May 2022 10:54:33 +0300
-Message-Id: <20220524075436.29144-13-adrian.hunter@intel.com>
+Subject: [PATCH V4 08/15] perf intel-pt: Track sideband system-wide when needed
+Date:   Tue, 24 May 2022 10:54:29 +0300
+Message-Id: <20220524075436.29144-9-adrian.hunter@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220524075436.29144-1-adrian.hunter@intel.com>
 References: <20220524075436.29144-1-adrian.hunter@intel.com>
@@ -56,101 +56,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Uncore events require a CPU i.e. it cannot be -1.
-
-The evsel system_wide flag is intended for events that should be on every
-CPU, which does not make sense for uncore events because uncore events do
-not map one-to-one with CPUs.
-
-These 2 requirements are not exactly the same, so introduce a new flag
-'requires_cpu' for the uncore case.
+User space tasks can migrate between CPUs, so when tracing selected CPUs,
+sideband for all CPUs is still needed. This is in preparation for allowing
+system-wide events on all CPUs while the user requested events are on only
+user requested CPUs.
 
 Acked-by: Ian Rogers <irogers@google.com>
 Acked-by: Namhyung Kim <namhyung@kernel.org>
 Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
 ---
- tools/lib/perf/evlist.c                 | 4 +++-
- tools/lib/perf/include/internal/evsel.h | 1 +
- tools/perf/builtin-stat.c               | 5 +----
- tools/perf/util/evsel.c                 | 1 +
- tools/perf/util/parse-events.c          | 2 +-
- 5 files changed, 7 insertions(+), 6 deletions(-)
+ tools/perf/arch/x86/util/intel-pt.c | 18 ++++++++++--------
+ 1 file changed, 10 insertions(+), 8 deletions(-)
 
-diff --git a/tools/lib/perf/evlist.c b/tools/lib/perf/evlist.c
-index f51fdb899d19..1c801f8da44f 100644
---- a/tools/lib/perf/evlist.c
-+++ b/tools/lib/perf/evlist.c
-@@ -43,7 +43,9 @@ static void __perf_evlist__propagate_maps(struct perf_evlist *evlist,
- 	if (!evsel->own_cpus || evlist->has_user_cpus) {
- 		perf_cpu_map__put(evsel->cpus);
- 		evsel->cpus = perf_cpu_map__get(evlist->user_requested_cpus);
--	} else if (!evsel->system_wide && perf_cpu_map__empty(evlist->user_requested_cpus)) {
-+	} else if (!evsel->system_wide &&
-+		   !evsel->requires_cpu &&
-+		   perf_cpu_map__empty(evlist->user_requested_cpus)) {
- 		perf_cpu_map__put(evsel->cpus);
- 		evsel->cpus = perf_cpu_map__get(evlist->user_requested_cpus);
- 	} else if (evsel->cpus != evsel->own_cpus) {
-diff --git a/tools/lib/perf/include/internal/evsel.h b/tools/lib/perf/include/internal/evsel.h
-index cfc9ebd7968e..77fbb8b97e5c 100644
---- a/tools/lib/perf/include/internal/evsel.h
-+++ b/tools/lib/perf/include/internal/evsel.h
-@@ -50,6 +50,7 @@ struct perf_evsel {
- 	/* parse modifier helper */
- 	int			 nr_members;
- 	bool			 system_wide;
-+	bool			 requires_cpu;
- 	int			 idx;
- };
+diff --git a/tools/perf/arch/x86/util/intel-pt.c b/tools/perf/arch/x86/util/intel-pt.c
+index 0ee93894a0da..06c2cdfd8f2f 100644
+--- a/tools/perf/arch/x86/util/intel-pt.c
++++ b/tools/perf/arch/x86/util/intel-pt.c
+@@ -864,20 +864,22 @@ static int intel_pt_recording_options(struct auxtrace_record *itr,
  
-diff --git a/tools/perf/builtin-stat.c b/tools/perf/builtin-stat.c
-index 7e6cc8bdf061..4ce87a8eb7d7 100644
---- a/tools/perf/builtin-stat.c
-+++ b/tools/perf/builtin-stat.c
-@@ -382,9 +382,6 @@ static int read_counter_cpu(struct evsel *counter, struct timespec *rs, int cpu_
- 	if (!counter->supported)
- 		return -ENOENT;
+ 	/* Add dummy event to keep tracking */
+ 	if (opts->full_auxtrace) {
++		bool need_system_wide_tracking;
+ 		struct evsel *tracking_evsel;
  
--	if (counter->core.system_wide)
--		nthreads = 1;
+-		err = parse_events(evlist, "dummy:u", NULL);
+-		if (err)
+-			return err;
++		/*
++		 * User space tasks can migrate between CPUs, so when tracing
++		 * selected CPUs, sideband for all CPUs is still needed.
++		 */
++		need_system_wide_tracking = evlist->core.has_user_cpus &&
++					    !intel_pt_evsel->core.attr.exclude_user;
+ 
+-		tracking_evsel = evlist__last(evlist);
++		tracking_evsel = evlist__add_aux_dummy(evlist, need_system_wide_tracking);
++		if (!tracking_evsel)
++			return -ENOMEM;
+ 
+ 		evlist__set_tracking_event(evlist, tracking_evsel);
+ 
+-		tracking_evsel->core.attr.freq = 0;
+-		tracking_evsel->core.attr.sample_period = 1;
 -
- 	for (thread = 0; thread < nthreads; thread++) {
- 		struct perf_counts_values *count;
+-		tracking_evsel->no_aux_samples = true;
+ 		if (need_immediate)
+ 			tracking_evsel->immediate = true;
  
-@@ -2261,7 +2258,7 @@ static void setup_system_wide(int forks)
- 		struct evsel *counter;
- 
- 		evlist__for_each_entry(evsel_list, counter) {
--			if (!counter->core.system_wide &&
-+			if (!counter->core.requires_cpu &&
- 			    strcmp(counter->name, "duration_time")) {
- 				return;
- 			}
-diff --git a/tools/perf/util/evsel.c b/tools/perf/util/evsel.c
-index ef169ad15236..050b1c69a738 100644
---- a/tools/perf/util/evsel.c
-+++ b/tools/perf/util/evsel.c
-@@ -409,6 +409,7 @@ struct evsel *evsel__clone(struct evsel *orig)
- 	evsel->core.threads = perf_thread_map__get(orig->core.threads);
- 	evsel->core.nr_members = orig->core.nr_members;
- 	evsel->core.system_wide = orig->core.system_wide;
-+	evsel->core.requires_cpu = orig->core.requires_cpu;
- 
- 	if (orig->name) {
- 		evsel->name = strdup(orig->name);
-diff --git a/tools/perf/util/parse-events.c b/tools/perf/util/parse-events.c
-index 30a9d915853d..7ed235740431 100644
---- a/tools/perf/util/parse-events.c
-+++ b/tools/perf/util/parse-events.c
-@@ -365,7 +365,7 @@ __add_event(struct list_head *list, int *idx,
- 	(*idx)++;
- 	evsel->core.cpus = cpus;
- 	evsel->core.own_cpus = perf_cpu_map__get(cpus);
--	evsel->core.system_wide = pmu ? pmu->is_uncore : false;
-+	evsel->core.requires_cpu = pmu ? pmu->is_uncore : false;
- 	evsel->auto_merge_stats = auto_merge_stats;
- 
- 	if (name)
 -- 
 2.25.1
 
