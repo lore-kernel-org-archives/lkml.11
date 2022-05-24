@@ -2,65 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64EF0C43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 22:27:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F04E0C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 22:27:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242602AbiEXW1r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 18:27:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47510 "EHLO
+        id S242588AbiEXW1n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 18:27:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242577AbiEXW1k (ORCPT
+        with ESMTP id S242562AbiEXW1i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 18:27:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31BDD35DDD;
-        Tue, 24 May 2022 15:27:39 -0700 (PDT)
+        Tue, 24 May 2022 18:27:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48F2B35855
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 15:27:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C2BB2617C8;
-        Tue, 24 May 2022 22:27:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 335A6C34117;
-        Tue, 24 May 2022 22:27:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DC1D3617B3
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 22:27:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 4C610C36AE3;
+        Tue, 24 May 2022 22:27:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653431258;
-        bh=19ZvQfpIGV2ZftGlzIf7iu9jAwZ9Hq+cnlSjOEN3WGA=;
+        s=k20201202; t=1653431257;
+        bh=0/gdY3/qf3nt8CaGhYiLvknHYmLj9oilZf94ifwRrcw=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=BidN7tt8Pn6IctHZ0Bjl8fw087tw6KEdnDpCGHbLYXL5Ooq+8MhXWsA8RyA8VnEq6
-         x3xCHvFpDHEJzKQAc+Jcd1gQAWhriWDfT6KYcYb49luI0ZjLAM6T/5KljFFyI2+9K2
-         RDnGo+NuG7nBMxLE5s7bCNlJTtFomPY4Lg7En8qL1RY4mLmVeVu4LGH8e7akWWeDax
-         bWdM0D9nb86Q/+3AZbuv23XHgVZLUKPShhzuh1dRuNLerRDeJFM8stEQ+3d9+bKh2N
-         8pVwCsxYl3Bd1wby2D/vi1WrYRFLptb1IIoGm7w6Fp0hgVFP8GcOl2j/y2JP78k9B4
-         BPi7hy7yN0TJA==
+        b=npxK6HKQH3T7GmYI1wyOHNYj01zx3NQ5oB4vUe9gJXqxq3ga/CKlsjJ90cgJkFDaq
+         dXoH+Ew3pi3drWepkvXs+2MU4tqGe5V9wOd3yCvhMg48iQXerKt8ejzIhBAWefsczI
+         yX6ae5R/j0Zs/FFEIeOWXOkwkiWstz8xw2td4hgdskEVZx1EmvS4AV8EZ64wmMM9JD
+         +wFBLDsWO6NTjkloEnW31nidQNJOOb3rniiznI8aoNqb3XQ4QaW/czN2RQpY6i9JPW
+         GyVwfh3EcNRK5zo0sBDqXYiWYIgiupn8GVdQGbO0obYU7XBYfrpzXg34F4gMD5i5e9
+         58mfcW06hpj4A==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 2282AF03938;
-        Tue, 24 May 2022 22:27:38 +0000 (UTC)
-Subject: Re: [GIT PULL] hwmon patches for v5.19-rc1
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3B19CE8DD61;
+        Tue, 24 May 2022 22:27:37 +0000 (UTC)
+Subject: Re: [GIT PULL] mtd: Changes for 5.19
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220522211353.1003672-1-linux@roeck-us.net>
-References: <20220522211353.1003672-1-linux@roeck-us.net>
-X-PR-Tracked-List-Id: <linux-hwmon.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220522211353.1003672-1-linux@roeck-us.net>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/groeck/linux-staging.git hwmon-for-v5.19-rc1
-X-PR-Tracked-Commit-Id: 8877ecb0fc8d7662218a8e7ebb0650f320467935
+In-Reply-To: <20220523112459.29000c2d@xps-13>
+References: <20220523112459.29000c2d@xps-13>
+X-PR-Tracked-List-Id: Linux MTD discussion mailing list <linux-mtd.lists.infradead.org>
+X-PR-Tracked-Message-Id: <20220523112459.29000c2d@xps-13>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/mtd/linux.git tags/mtd/for-5.19
+X-PR-Tracked-Commit-Id: 2c51d0d88020b4d3c9bbe7d9df2796b2c2ce05b8
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 076f222a690e11b433d2b1e218dbd9bdb08fb190
-Message-Id: <165343125813.3997.17731533979701522120.pr-tracker-bot@kernel.org>
-Date:   Tue, 24 May 2022 22:27:38 +0000
-To:     Guenter Roeck <linux@roeck-us.net>
+X-PR-Merge-Commit-Id: d335371940179318df97d66baef13987ee6e796b
+Message-Id: <165343125723.3997.9953251172151290451.pr-tracker-bot@kernel.org>
+Date:   Tue, 24 May 2022 22:27:37 +0000
+To:     Miquel Raynal <miquel.raynal@bootlin.com>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org
+        linux-mtd@lists.infradead.org, Richard Weinberger <richard@nod.at>,
+        Tudor Ambarus <Tudor.Ambarus@microchip.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Frieder Schrempf <frieder.schrempf@kontron.de>,
+        Michael Walle <michael@walle.cc>,
+        Pratyush Yadav <p.yadav@ti.com>, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Sun, 22 May 2022 14:13:53 -0700:
+The pull request you sent on Mon, 23 May 2022 11:24:59 +0200:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/groeck/linux-staging.git hwmon-for-v5.19-rc1
+> git://git.kernel.org/pub/scm/linux/kernel/git/mtd/linux.git tags/mtd/for-5.19
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/076f222a690e11b433d2b1e218dbd9bdb08fb190
+https://git.kernel.org/torvalds/c/d335371940179318df97d66baef13987ee6e796b
 
 Thank you!
 
