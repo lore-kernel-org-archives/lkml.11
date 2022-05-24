@@ -2,133 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 901EBC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 12:19:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B79AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 12:21:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237294AbiEXMTc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 08:19:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58222 "EHLO
+        id S237303AbiEXMVL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 08:21:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234334AbiEXMTa (ORCPT
+        with ESMTP id S237337AbiEXMVF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 08:19:30 -0400
-Received: from outbound-smtp51.blacknight.com (outbound-smtp51.blacknight.com [46.22.136.235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0288F9346A
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 05:19:27 -0700 (PDT)
-Received: from mail.blacknight.com (pemlinmail02.blacknight.ie [81.17.254.11])
-        by outbound-smtp51.blacknight.com (Postfix) with ESMTPS id 9EE3EFB80F
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 13:19:26 +0100 (IST)
-Received: (qmail 8447 invoked from network); 24 May 2022 12:19:26 -0000
-Received: from unknown (HELO techsingularity.net) (mgorman@techsingularity.net@[84.203.198.246])
-  by 81.17.254.9 with ESMTPSA (AES256-SHA encrypted, authenticated); 24 May 2022 12:19:26 -0000
-Date:   Tue, 24 May 2022 13:19:24 +0100
-From:   Mel Gorman <mgorman@techsingularity.net>
-To:     Hugh Dickins <hughd@google.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Michal Hocko <mhocko@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>
-Subject: Re: [PATCH 5/6] mm/page_alloc: Protect PCP lists with a spinlock
-Message-ID: <20220524121924.GZ3441@techsingularity.net>
-References: <20220509130805.20335-1-mgorman@techsingularity.net>
- <20220509130805.20335-6-mgorman@techsingularity.net>
- <554f4cdf-e4d9-f547-d3bb-1bcc1c9eb1@google.com>
- <20220524121224.GY3441@techsingularity.net>
+        Tue, 24 May 2022 08:21:05 -0400
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2062.outbound.protection.outlook.com [40.107.92.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B484F7C;
+        Tue, 24 May 2022 05:21:02 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=W7HEhevGy7LYGanmOPB+G3szJ+t815oI/cY0i4rDjZXaew41rOH7T+iy8O2HxviDCDW9YTO0whBfLsBhdPk6uWQ7QlPyxUebTqMMlMS2bQOd+t/gcZ9tJ+p3GZ1E+HSbZbrJeKwXgBuEa2hIVtXN2faVHXimn1bxpjpxBYm7qmStjWwAwFr5VyV0uIp5agu65iYZRvhmDeVMXSgIQR4ggPRl5J8dBEgSjRwAlWMu/4U/0y7YnWaAxg5mZDKzahCk1Y2WTDMKPxkDrSB2aDG4JUZHdNFHk2djY/oixYj4UPHEDzTnZLOa1Js+7Sw6FPOeCT+lODb4tq4XPS1tXhfKpA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=UwAsKsKjSIlW32+M4OZDPCayWEKvwMWrA7D12OaW9Ss=;
+ b=SvTXwbHv2FzFj7pik3qJkojRo8x2sPEo9eFBXJcB8Gg3qDwqjMF3QeD4wcef7BdNB/HuOuHc9lwpvnaePsa8vVVRPWGja9hSanFFrthbDobFXx3xqRpmOf4CLJEsOdlNEc/8KPAg2AtA54hl9wS+8Isue/PwdCH3xn5zzmzLxX3Ia20cEkuyo6jpbEKocVy1X2N/X57sVQPj3gGPnKYuzW+hsIEooCDYk9uDMiZAlhpw89IKkrb+jdF+ILIQVg2USoITr5myTXuA8IPbRhmWLi3H4N2C+ywvUUvV/k8VY3lwfF8o6/Ga7ME6VDw0tH0DCv9jb7Y+UsxRNIP4D0rgdw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.62.198) smtp.rcpttodomain=towertech.it smtp.mailfrom=xilinx.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=UwAsKsKjSIlW32+M4OZDPCayWEKvwMWrA7D12OaW9Ss=;
+ b=X7GYadD/HCVzxwTbwuhofjbRNe5G7bUCsNS/obU6nzNubY8gJKJeXudsrSm8Bjdk1bJrYfz0bF/wA9+WrAgEwhN3NNYW323FIfEgrxcn4A5Fq6UJXSSGFae1nTZEZDxl4Jiq4rlbQQXbL4kzcOSw2Zmzv/WHQ3urQL5rb519jBY=
+Received: from DM5PR07CA0063.namprd07.prod.outlook.com (2603:10b6:4:ad::28) by
+ BYAPR02MB5671.namprd02.prod.outlook.com (2603:10b6:a03:9c::21) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5273.19; Tue, 24 May 2022 12:20:59 +0000
+Received: from DM3NAM02FT052.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:4:ad:cafe::62) by DM5PR07CA0063.outlook.office365.com
+ (2603:10b6:4:ad::28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.13 via Frontend
+ Transport; Tue, 24 May 2022 12:20:58 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
+ smtp.mailfrom=xilinx.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.62.198; helo=xsj-pvapexch02.xlnx.xilinx.com; pr=C
+Received: from xsj-pvapexch02.xlnx.xilinx.com (149.199.62.198) by
+ DM3NAM02FT052.mail.protection.outlook.com (10.13.5.134) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5273.14 via Frontend Transport; Tue, 24 May 2022 12:20:58 +0000
+Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Tue, 24 May 2022 05:20:57 -0700
+Received: from smtp.xilinx.com (172.19.127.96) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
+ 15.1.2176.14 via Frontend Transport; Tue, 24 May 2022 05:20:57 -0700
+Envelope-to: git@xilinx.com,
+ a.zummo@towertech.it,
+ alexandre.belloni@bootlin.com,
+ robh+dt@kernel.org,
+ krzysztof.kozlowski+dt@linaro.org,
+ devicetree@vger.kernel.org,
+ linux-rtc@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org
+Received: from [172.23.66.193] (port=41286 helo=xhdsneeli40u.xilinx.com)
+        by smtp.xilinx.com with esmtp (Exim 4.90)
+        (envelope-from <srinivas.neeli@xilinx.com>)
+        id 1ntTWy-000DAp-HF; Tue, 24 May 2022 05:20:56 -0700
+From:   Srinivas Neeli <srinivas.neeli@xilinx.com>
+To:     <a.zummo@towertech.it>, <alexandre.belloni@bootlin.com>,
+        <robh+dt@kernel.org>, <michal.simek@xilinx.com>,
+        <sgoud@xilinx.com>, <shubhraj@xilinx.com>
+CC:     <krzysztof.kozlowski+dt@linaro.org>, <devicetree@vger.kernel.org>,
+        <linux-rtc@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <git@xilinx.com>,
+        Srinivas Neeli <srinivas.neeli@xilinx.com>
+Subject: [PATCH V4 1/2] dt-bindings: rtc: zynqmp: Add clock information
+Date:   Tue, 24 May 2022 17:50:49 +0530
+Message-ID: <20220524122050.48553-1-srinivas.neeli@xilinx.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-15
-Content-Disposition: inline
-In-Reply-To: <20220524121224.GY3441@techsingularity.net>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 3c18fea3-4042-49f1-efef-08da3d7fdbf9
+X-MS-TrafficTypeDiagnostic: BYAPR02MB5671:EE_
+X-Microsoft-Antispam-PRVS: <BYAPR02MB5671739661795A2F34B68E09AFD79@BYAPR02MB5671.namprd02.prod.outlook.com>
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: QH4wnfoaaospvlzVo+LfJzImUHRUvpG6EndkRc1+GpLG8rWSRQIlnk3Xid689CynyW69H4qY39h8OQneBbW8PnT7vCS2GNGMyaHBINPWpIIUgrMzHB3yIKBFHw08sADNRzg6sFLhU5MR/vBoc74AfEIqFEX9kFYnS5eZpICweiLBeDYPfiyE6qciSkLeELAAWnCaIqwYqf1yIgaDmXXBygA+Rxe01OUm52r2xmx9HTdLuqTxsnLynOw9PrySdFWJNM4EgZBOnGTrYLrzbkK45AaQoDfT0Z2txJvTrtS9Sshf3a+IG8U2ubl8bB/vA3fxmP4gpPWP4B9h+FQDRrQlZslBg2iCXpL+FXdKOpjTMBCq6sem6fQr/4YZ6IHIPn/XL8OZ/UMBEevxY23ymRIx/VGVmtGVb40fYa5gzYaDWl/UrxNHF1fSpijNN5SUMvoD/7QHW9AxvaECwn1EWQv1z77UJEo862Sd+fqIqaxk6mH6FRbnWc7tdeAfO1yfsBq+8+lwXWfHxBAr6Jt1DaU1sySCbMYSrQb1691UlECyQ5swVrI1HCFB7JhaHfBp+nf0JYFjzkLk9D9YUxiGK6PkBA2PjUV4wgSTT+01FywzTZRdzMZwMIqdDcPmb2UhfdDKhReZtDM59Dx1EjpfLIQLJGRbSgr54+5xm619shtpgh/F8BnAFAoEVrrQWLjIu7Cz2Ao1/NDecbaXxpG49fcLYWhpiLL+72lKWEpooN1tDnM=
+X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch02.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(110136005)(5660300002)(36756003)(508600001)(2906002)(70206006)(70586007)(82310400005)(4326008)(40460700003)(356005)(6636002)(8676002)(54906003)(26005)(7636003)(9786002)(2616005)(1076003)(426003)(336012)(186003)(44832011)(316002)(47076005)(107886003)(83380400001)(36860700001)(8936002)(7696005)(6666004)(102446001)(2101003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 May 2022 12:20:58.6140
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3c18fea3-4042-49f1-efef-08da3d7fdbf9
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch02.xlnx.xilinx.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM3NAM02FT052.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR02MB5671
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 24, 2022 at 01:12:24PM +0100, Mel Gorman wrote:
-> On Sat, May 21, 2022 at 07:49:10PM -0700, Hugh Dickins wrote:
-> > On Mon, 9 May 2022, Mel Gorman wrote:
-> > 
-> > > Currently the PCP lists are protected by using local_lock_irqsave to
-> > > prevent migration and IRQ reentrancy but this is inconvenient. Remote
-> > > draining of the lists is impossible and a workqueue is required and
-> > > every task allocation/free must disable then enable interrupts which is
-> > > expensive.
-> > > 
-> > > As preparation for dealing with both of those problems, protect the
-> > > lists with a spinlock. The IRQ-unsafe version of the lock is used
-> > > because IRQs are already disabled by local_lock_irqsave. spin_trylock
-> > > is used in preparation for a time when local_lock could be used instead
-> > > of lock_lock_irqsave.
-> > 
-> > 8c580f60a145 ("mm/page_alloc: protect PCP lists with a spinlock")
-> > in next-20220520: I haven't looked up whether that comes from a
-> > stable or unstable suburb of akpm's tree.
-> > 
-> > Mel, the VM_BUG_ON(in_hardirq()) which this adds to free_unref_page_list() 
-> > is not valid.  I have no appreciation of how important it is to the whole
-> > scheme, but as it stands, it crashes; and when I change it to a warning
-> > 
-> 
-> Thanks Hugh. Sorry for the delay in responding, I was offline for a few
-> days. The context where free_unref_page_list is called from IRQ context
-> is safe and the VM_BUG_ON can be removed.
-> 
+Added clock information and deprecated calibration support.
 
-Version that has a more appropriate baseline, it'll cause a collision
-later in the series but it's trivially resolved.
+Signed-off-by: Srinivas Neeli <srinivas.neeli@xilinx.com>
+---
+Changes in V4:
+- Deprecated calibrtion support
+Changes in V3:
+- New patch
+---
+ .../devicetree/bindings/rtc/xlnx,zynqmp-rtc.yaml      | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
---8<--
-mm/page_alloc: Protect PCP lists with a spinlock -fix
-
-Hugh Dickins reported the following problem;
-
-[  256.167040] WARNING: CPU: 0 PID: 9842 at mm/page_alloc.c:3478 free_unref_page_list+0x92/0x343
-[  256.170031] CPU: 0 PID: 9842 Comm: cc1 Not tainted 5.18.0-rc7-n20 #3
-[  256.171285] Hardware name: LENOVO 20HQS0EG02/20HQS0EG02, BIOS N1MET54W (1.39 ) 04/16/2019
-[  256.172555] RIP: 0010:free_unref_page_list+0x92/0x343
-[  256.173820] Code: ff ff 49 8b 44 24 08 4d 89 e0 4c 8d 60 f8 eb b6 48 8b 03 48 39 c3 0f 84 af 02 00 00 65 8b 05 72 7f df 7e a9 00 00 0f 00 74 02 <0f> 0b 9c 41 5d fa 41 0f ba e5 09 73 05 e8 1f 0a f9 ff e8 46 90 7b
-[  256.175289] RSP: 0018:ffff88803ec07c80 EFLAGS: 00010006
-[  256.176683] RAX: 0000000080010000 RBX: ffff88803ec07cf8 RCX: 000000000000002c
-[  256.178122] RDX: 0000000000000000 RSI: ffff88803ec29d28 RDI: 0000000000000040
-[  256.179580] RBP: ffff88803ec07cc0 R08: ffff88803ec07cf0 R09: 00000000000a401d
-[  256.181031] R10: 0000000000000000 R11: ffff8880101891b8 R12: ffff88803f6dd600
-[  256.182501] R13: ffff88803ec07cf8 R14: 000000000000000f R15: 0000000000000000
-[  256.183957] FS:  00007ffff7fcfac0(0000) GS:ffff88803ec00000(0000) knlGS:0000000000000000
-[  256.185419] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  256.186911] CR2: 0000555555710cdc CR3: 00000000240b4004 CR4: 00000000003706f0
-[  256.188395] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[  256.189888] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[  256.191390] Call Trace:
-[  256.192844]  <IRQ>
-[  256.194253]  ? __mem_cgroup_uncharge_list+0x4e/0x57
-[  256.195715]  release_pages+0x26f/0x27e
-[  256.197150]  ? list_add_tail+0x39/0x39
-[  256.198603]  pagevec_lru_move_fn+0x95/0xa4
-
-The VM_BUG_ON was added as preparing for a time when the PCP was an IRQ-unsafe
-lock. The fundamental limitation is that free_unref_page_list() cannot be called
-with the PCP lock held when an IRQ is delivered. At the moment, this is impossible
-and even if PCP was an IRQ-unsafe lock, free_unref_page_list is not called from
-page allocator context in an unsafe manner. Remove the VM_BUG_ON.
-
-This is a fix to the mmotm patch
-mm-page_alloc-protect-pcp-lists-with-a-spinlock.patch
-
-Reported-by: Hugh Dickins <hughd@google.com>
-Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
-
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index e3a6aa97ad7a..52e7fe681483 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -3535,8 +3535,6 @@ void free_unref_page_list(struct list_head *list)
- 	if (list_empty(list))
- 		return;
+diff --git a/Documentation/devicetree/bindings/rtc/xlnx,zynqmp-rtc.yaml b/Documentation/devicetree/bindings/rtc/xlnx,zynqmp-rtc.yaml
+index bdb72d3ddf2a..de617707854e 100644
+--- a/Documentation/devicetree/bindings/rtc/xlnx,zynqmp-rtc.yaml
++++ b/Documentation/devicetree/bindings/rtc/xlnx,zynqmp-rtc.yaml
+@@ -23,6 +23,14 @@ properties:
+   reg:
+     maxItems: 1
  
--	VM_BUG_ON(in_hardirq());
--
- 	local_lock_irqsave(&pagesets.lock, flags);
++  clocks:
++    items:
++      - description: rtc_clk is the operating frequency of crystal.
++
++  clock-names:
++    items:
++      - const: "rtc_clk"
++
+   interrupts:
+     minItems: 2
  
- 	page = lru_to_page(list);
+@@ -39,6 +47,7 @@ properties:
+     minimum: 0x1
+     maximum: 0x1FFFFF
+     default: 0x198233
++    deprecated: true
+ 
+ required:
+   - compatible
+@@ -61,5 +70,7 @@ examples:
+         interrupts = <0 26 4>, <0 27 4>;
+         interrupt-names = "alarm", "sec";
+         calibration = <0x198233>;
++        clock-names = "rtc_clk";
++        clocks = <&rtc_clk>;
+       };
+     };
+-- 
+2.17.1
+
