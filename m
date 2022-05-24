@@ -2,38 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53885C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 23:17:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EFD6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 23:21:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242538AbiEXXR2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 19:17:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40652 "EHLO
+        id S242550AbiEXXVz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 19:21:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237123AbiEXXRY (ORCPT
+        with ESMTP id S242546AbiEXXVw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 19:17:24 -0400
+        Tue, 24 May 2022 19:21:52 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C488671A2A
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 16:17:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEE0B2B1B0;
+        Tue, 24 May 2022 16:21:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7BAB761800
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 23:17:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43F92C34117;
-        Tue, 24 May 2022 23:17:20 +0000 (UTC)
-Date:   Tue, 24 May 2022 19:17:18 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Chengming Zhou <zhouchengming@bytedance.com>
-Cc:     mark.rutland@arm.com, catalin.marinas@arm.com,
-        linux-kernel@vger.kernel.org, kbuild-all@lists.01.org,
-        lkp@intel.com
-Subject: Re: [PATCH] ftrace/fgraph: fix increased missing-prototypes
- warnings
-Message-ID: <20220524191718.5d906700@gandalf.local.home>
-In-Reply-To: <20220506032737.23375-1-zhouchengming@bytedance.com>
-References: <20220506032737.23375-1-zhouchengming@bytedance.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A92D617F1;
+        Tue, 24 May 2022 23:21:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 842DAC34100;
+        Tue, 24 May 2022 23:21:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653434510;
+        bh=jJRdmY226rcXG6WyLUQy/E35Pt/+iqJ5g9CtUu6UmQ8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=hd85dbavWBp+HBnV6V2bwpgrTg29e9JJCGJORcsMsqGHyM0h240qGrIqe55GLMUkx
+         DmjUJV2lFBrSJQEuJHAuCo0Wrkqj6qBv3cwK9k70y8Jcu4A8dveuvu+8B7zRya+lE5
+         Jtr35rJ1fAIG7IY9Ky13wk6IB8NMjTWZUXDgZhILxLa0t1nhY6Fit0UD/WlAx9Gm8i
+         q7K2JKgg9shZMxGmYBDLSrJDPs/2Jo3Kj6vQN9ARneg6GQmiGKPog+UYrgOcR42njv
+         A07+322mb6s8JpCj1rH8KEFYsq2F6lHriHMQvOmMOo7NGHtKtoT/PFQ1Zr8LskkN3H
+         RiPSbvHe4bDOg==
+Date:   Tue, 24 May 2022 16:21:49 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Marco Bonelli <marco@mebeim.net>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ethtool: Fix and optimize
+ ethtool_convert_link_mode_to_legacy_u32()
+Message-ID: <20220524162149.7789df7f@kernel.org>
+In-Reply-To: <20220524223818.259303-1-marco@mebeim.net>
+References: <20220524223818.259303-1-marco@mebeim.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -41,63 +50,27 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The change this fixes was merged into the ARM tree and I do not have that
-code, so I can not apply this.
+On Wed, 25 May 2022 00:38:19 +0200 Marco Bonelli wrote:
+> Fix the implementation of ethtool_convert_link_mode_to_legacy_u32(), which
+> is supposed to return false if src has bits higher than 31 set. The current
+> implementation uses the complement of bitmap_fill(ext, 32) to test high
+> bits of src, which is wrong as bitmap_fill() fills _with long granularity_,
+> and sizeof(long) can be > 4. No users of this function currently check the
+> return value, so the bug was dormant.
+> 
+> Also remove the check for __ETHTOOL_LINK_MODE_MASK_NBITS > 32, as the enum
+> ethtool_link_mode_bit_indices contains far beyond 32 values. Using
+> find_next_bit() to test the src bitmask works regardless of this anyway.
+> 
+> Signed-off-by: Marco Bonelli <marco@mebeim.net>
 
--- Steve
+# Form letter - net-next is closed
 
+We have already sent the networking pull request for 5.19
+and therefore net-next is closed for new drivers, features,
+code refactoring and optimizations. We are currently accepting
+bug fixes only.
 
-On Fri,  6 May 2022 11:27:37 +0800
-Chengming Zhou <zhouchengming@bytedance.com> wrote:
+Please repost when net-next reopens after 5.19-rc1 is cut.
 
-> After commit e999995c84c3 ("ftrace: cleanup ftrace_graph_caller enable
-> and disable") merged into the linux-next tree, the kernel test robot
-> (lkp@intel.com) has send out report that there are increased missing-prototypes
-> warnings caused by that commit.
-> 
-> COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 \
-> 	O=build_dir ARCH=sh SHELL=/bin/bash kernel/trace/
-> warning: no previous prototype for 'ftrace_enable_ftrace_graph_caller' [-Wmissing-prototypes]
-> warning: no previous prototype for 'ftrace_disable_ftrace_graph_caller' [-Wmissing-prototypes]
-> warning: no previous prototype for 'ftrace_return_to_handler' [-Wmissing-prototypes]
-> warning: no previous prototype for 'ftrace_graph_sleep_time_control' [-Wmissing-prototypes]
-> 
-> BTW there are so many missing-prototypes warnings if build kernel with "W=1".
-> 
-> The increased warnings for 'ftrace_[enable,disable]_ftrace_graph_caller'
-> is caused by CONFIG_FUNCTION_GRAPH_TRACER && !CONFIG_DYNAMIC_FTRACE,
-> so the declarations in <linux/ftrace.h> can't be seen in fgraph.c.
-> 
-> And this warning can't reproduce on x86_64 since x86_64 select
-> HAVE_FUNCTION_GRAPH_TRACER only when DYNAMIC_FTRACE, so fgraph.c will
-> always see the declarations in <linux/ftrace.h>.
-> 
-> This patch fix the increased warnings by put the definitions in
-> CONFIG_DYNAMIC_FTRACE although there are no real problems exist.
-> 
-> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
-> ---
->  kernel/trace/fgraph.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/kernel/trace/fgraph.c b/kernel/trace/fgraph.c
-> index 289311680c29..2cd374294be7 100644
-> --- a/kernel/trace/fgraph.c
-> +++ b/kernel/trace/fgraph.c
-> @@ -30,6 +30,7 @@ int ftrace_graph_active;
->  /* Both enabled by default (can be cleared by function_graph tracer flags */
->  static bool fgraph_sleep_time = true;
->  
-> +#ifdef CONFIG_DYNAMIC_FTRACE
->  /*
->   * archs can override this function if they must do something
->   * to enable hook for graph tracer.
-> @@ -47,6 +48,7 @@ int __weak ftrace_disable_ftrace_graph_caller(void)
->  {
->  	return 0;
->  }
-> +#endif
->  
->  /**
->   * ftrace_graph_stop - set to permanently disable function graph tracing
-
+RFC patches sent for review only are obviously welcome at any time.
