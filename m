@@ -2,195 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9426C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 20:49:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 925ECC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 20:50:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241709AbiEXUtU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 16:49:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51918 "EHLO
+        id S241722AbiEXUuK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 16:50:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241696AbiEXUtR (ORCPT
+        with ESMTP id S239028AbiEXUuH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 16:49:17 -0400
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A967737B9
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 13:49:16 -0700 (PDT)
-Received: by mail-pg1-x534.google.com with SMTP id g184so17269242pgc.1
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 13:49:16 -0700 (PDT)
+        Tue, 24 May 2022 16:50:07 -0400
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B041737A0
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 13:50:06 -0700 (PDT)
+Received: by mail-lf1-x12a.google.com with SMTP id w14so32760944lfl.13
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 13:50:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=e9ahkSLTtuvwLRoOkp0E00xXCsWuniaEqLjpRE+FmXM=;
-        b=AXCr0XgSkVrF9pCBmMIp3f38r3JJf2AjRX5w1UCFvFugMSOA8Se7MLQ1xl6emdyIx8
-         LeVkeS3aM38TUQ7nGBZOro8M5oQFFf+AWzi00HrtsjExVGtL7W9u/n55/660ncvC6u71
-         yFlf5B3NV8qkExYAo9G9O3AQ+mBqAJgEvCy1k=
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=xu6EHDS01LsOIawXUSDVH/r2oXuTsWqPdMuqTq7O8gE=;
+        b=Z2hxmeMr7k/9U4EfcQyebztkuf6MneNT2zAKD72w7RpTggD7ZjCpMMA+AG0iEZYZKM
+         nOv7+3nIHvnBr5jgJfjTANm4EXdEmDCo8F/IpMM9lU6y+ts6orITJzVAE8boMr5q+Eoa
+         ByPPQHu+fV51HhIJ8ProKLOEOz2Xtc7SmJo/AGhQGcfaeKUFha4vIjRO+ML3+eEZfL7V
+         q/J83Wecu938JJEhD81Z1yrhLoS8N0dkLwtyvSWexc3D+ObPIISMyWEpfg6lOtYCkh4c
+         aNwCpw7UoT3wICVZZlCRluqnisVWjS5dvL9P6H0hxrfkZk2Z3uD+2bzaO7XMNSuuZ/6C
+         jrSA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=e9ahkSLTtuvwLRoOkp0E00xXCsWuniaEqLjpRE+FmXM=;
-        b=E5UhYBN/+3DmUp8wlMJsCk4/KojaGCoz8ID2n7L4Oj4PuUoIpaC48cpTO/CLbM2zYc
-         ABRbW0+lniumbjKgnN7gp1tJLmU2GNUctXJhpQ+jtUwUHUD+L/uT4Ep/nxHtS6rtQ1dJ
-         J1XGjb5ejiXatJNnFNI4WL3GpWZ+kS4Y/brFxqKsRv7VkJgwbEwRGqDFoeRC3sMFTWr4
-         IGJh6WFofdNN3ZHSyMSRTIfjF2lURyBb8AvbLGHJ/Rv3ASpTwrJ2TFfDTUnzOD3nVbkQ
-         8W9UCZHLd3pKf7RkFxbr+AZtbXozcQmTuXOdks43frMjotAnNWt2NOV9ZriZSNi9YZAy
-         dsQA==
-X-Gm-Message-State: AOAM532nRk69pp7Dv1upCA3bjO/1IXxGJU6HxFgQzx4GPUsEvfwvbGOw
-        dgRkH9U6JYzSUw8wcgsePF/cLQ==
-X-Google-Smtp-Source: ABdhPJwCz55uI2qGOYgI22kmaw7O/6E1G/+i+42mFsW1jnbNomUOjxKNl3/aN6OfdEf3gmO/FAvfvQ==
-X-Received: by 2002:a63:4204:0:b0:3f6:4a4f:5a96 with SMTP id p4-20020a634204000000b003f64a4f5a96mr23128307pga.10.1653425355851;
-        Tue, 24 May 2022 13:49:15 -0700 (PDT)
-Received: from tictac2.mtv.corp.google.com ([2620:15c:202:201:e1fc:e14a:1559:6e05])
-        by smtp.gmail.com with ESMTPSA id n11-20020a65450b000000b003fa5b550303sm3988813pgq.68.2022.05.24.13.49.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 May 2022 13:49:15 -0700 (PDT)
-From:   Douglas Anderson <dianders@chromium.org>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Stephen Boyd <swboyd@chromium.org>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Andy Gross <agross@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] arm64: dts: qcom: sc7280: Add touchscreen to villager
-Date:   Tue, 24 May 2022 13:48:49 -0700
-Message-Id: <20220524134840.1.I80072b8815ac08c12af8f379a33cc2d83693dc51@changeid>
-X-Mailer: git-send-email 2.36.1.124.g0e6072fb45-goog
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=xu6EHDS01LsOIawXUSDVH/r2oXuTsWqPdMuqTq7O8gE=;
+        b=aDzlALbGo5Zaau97DI4PtiSOYGMZQeFRMleSMXQq2lNAWKhftWSeq3nBL5EQjDSC3f
+         0+4PxIB8yeD62gqZxbe+a7j/u1a943H5/0hZFmeOX5TnuGhoqFliBNn7rfMfgZBcKB3q
+         eXnWFMBcMNxDjht4NLUM7vv8E2K3Nl+QeGp7H2lNBvINlJJhPZCKhRy84TxJJTJHZJCW
+         jh1o7eqcnz9bKLD/p6UFt5pmK1dWsR1DvponJRAWCTpMjD0m9qzp2deQb1/DzEHuTd6Y
+         2KpykGrjjUfPPz2xYIjO6ut51yP+nr3u/5Ny894YeEcO25TmVt2HQHUbmQMTvJbBxX8o
+         9LMQ==
+X-Gm-Message-State: AOAM533XfXwrgZap4JmhDbHDdz/G/jrEKbbgqqsLqu/jmn8nlNO4q7+t
+        htSnAGafJFy1NAPr3k4ILT1nT6EB5X0in31gDJxT9nZgqvs=
+X-Google-Smtp-Source: ABdhPJyQjBwigtLjvLrVIrEOtKpFLfkTj0wS9QvXw6Cn04KWi9naGQql0vuzXi7YhavlMsx6rr6NzVNT2XkyQjqwJTY=
+X-Received: by 2002:a05:6512:ace:b0:478:9af3:d9cb with SMTP id
+ n14-20020a0565120ace00b004789af3d9cbmr1136279lfu.103.1653425404449; Tue, 24
+ May 2022 13:50:04 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220523164626.858340-1-masahiroy@kernel.org> <20220523164626.858340-4-masahiroy@kernel.org>
+In-Reply-To: <20220523164626.858340-4-masahiroy@kernel.org>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Tue, 24 May 2022 13:49:53 -0700
+Message-ID: <CAKwvOd=6GHg7z_0-2wsF0Z9Jk1Cb_j=Z4_roYBRpHvj-MCzwTw@mail.gmail.com>
+Subject: Re: [PATCH 4/5] modpost: reuse ARRAY_SIZE() macro for section_mismatch()
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Michal Marek <michal.lkml@markovi.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This adds the touchscreen to the sc7280-herobrine-villager device
-tree. Note that the touchscreen on villager actually uses the reset
-line and thus we use the more specific "elan,ekth6915" compatible
-which allows us to specify the reset.
+On Mon, May 23, 2022 at 9:48 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
+>
+> Move ARRAY_SIZE() from file2alias.c to modpost.h to reuse it in
+> section_mismatch().
+>
+> Also, move the variable 'check' inside the for-loop.
+>
+> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 
-The fact that villager's touchscreen uses the reset line can be
-contrasted against the touchscreen for CRD/herobrine-r1. On those
-boards, even though the touchscreen goes to the display, it's not
-hooked up to anything there.
+Thanks for the patch!
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
 
-In order to keep the line parked on herobrine/CRD, we'll move the
-pullup from the qcard.dtsi file to the specific boards. This allows us
-to disable the pullup in the villager device tree since the pin is an
-output.
+> ---
+>
+>  scripts/mod/file2alias.c | 2 --
+>  scripts/mod/modpost.c    | 7 +++----
+>  scripts/mod/modpost.h    | 3 +++
+>  3 files changed, 6 insertions(+), 6 deletions(-)
+>
+> diff --git a/scripts/mod/file2alias.c b/scripts/mod/file2alias.c
+> index 5258247d78ac..e8a9c6816fec 100644
+> --- a/scripts/mod/file2alias.c
+> +++ b/scripts/mod/file2alias.c
+> @@ -734,8 +734,6 @@ static int do_vio_entry(const char *filename, void *symval,
+>         return 1;
+>  }
+>
+> -#define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
+> -
+>  static void do_input(char *alias,
+>                      kernel_ulong_t *arr, unsigned int min, unsigned int max)
+>  {
+> diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
+> index 77c315dea1a3..48a18b59f908 100644
+> --- a/scripts/mod/modpost.c
+> +++ b/scripts/mod/modpost.c
+> @@ -1049,8 +1049,6 @@ static const struct sectioncheck *section_mismatch(
+>                 const char *fromsec, const char *tosec)
+>  {
+>         int i;
+> -       int elems = sizeof(sectioncheck) / sizeof(struct sectioncheck);
+> -       const struct sectioncheck *check = &sectioncheck[0];
+>
+>         /*
+>          * The target section could be the SHT_NUL section when we're
+> @@ -1061,14 +1059,15 @@ static const struct sectioncheck *section_mismatch(
+>         if (*tosec == '\0')
+>                 return NULL;
+>
+> -       for (i = 0; i < elems; i++) {
+> +       for (i = 0; i < ARRAY_SIZE(sectioncheck); i++) {
+> +               const struct sectioncheck *check = &sectioncheck[i];
+> +
+>                 if (match(fromsec, check->fromsec)) {
+>                         if (check->bad_tosec[0] && match(tosec, check->bad_tosec))
+>                                 return check;
+>                         if (check->good_tosec[0] && !match(tosec, check->good_tosec))
+>                                 return check;
+>                 }
+> -               check++;
+>         }
+>         return NULL;
+>  }
+> diff --git a/scripts/mod/modpost.h b/scripts/mod/modpost.h
+> index d9daeff07b83..044bdfb894b7 100644
+> --- a/scripts/mod/modpost.h
+> +++ b/scripts/mod/modpost.h
+> @@ -97,6 +97,9 @@ static inline void __endian(const void *src, void *dest, unsigned int size)
+>  #endif
+>
+>  #define NOFAIL(ptr)   do_nofail((ptr), #ptr)
+> +
+> +#define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
+> +
+>  void *do_nofail(void *ptr, const char *expr);
+>
+>  struct buffer {
+> --
+> 2.32.0
+>
 
-Signed-off-by: Douglas Anderson <dianders@chromium.org>
----
-This uses bindings introduced in the patch ("dt-bindings: HID:
-i2c-hid: elan: Introduce bindings for Elan eKTH6915") [1].
 
-[1] https://lore.kernel.org/r/20220523142257.v2.1.Iedc61f9ef220a89af6a031200a7850a27a440134@changeid
-
- .../boot/dts/qcom/sc7280-herobrine-crd.dts    | 11 ++++++++
- .../qcom/sc7280-herobrine-herobrine-r1.dts    | 11 ++++++++
- .../dts/qcom/sc7280-herobrine-villager-r0.dts | 25 +++++++++++++++++++
- arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi    |  1 -
- 4 files changed, 47 insertions(+), 1 deletion(-)
-
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts b/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts
-index a4ac33c4fd59..b79d84d7870a 100644
---- a/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts
-+++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts
-@@ -134,6 +134,17 @@ &sdhc_2 {
- 	status = "okay";
- };
- 
-+/* PINCTRL - ADDITIONS TO NODES IN PARENT DEVICE TREE FILES */
-+
-+/*
-+ * This pin goes to the display panel but then doesn't actually do anything
-+ * on the panel itself (it doesn't connect to the touchscreen controller).
-+ * We'll set a pullup here just to park the line.
-+ */
-+&ts_rst_conn {
-+	bias-pull-up;
-+};
-+
- /* PINCTRL - BOARD-SPECIFIC */
- 
- /*
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r1.dts b/arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r1.dts
-index b69ca09d9bfb..c1647a85a371 100644
---- a/arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r1.dts
-+++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r1.dts
-@@ -128,6 +128,17 @@ &sdhc_2 {
- 	status = "okay";
- };
- 
-+/* PINCTRL - ADDITIONS TO NODES IN PARENT DEVICE TREE FILES */
-+
-+/*
-+ * This pin goes to the display panel but then doesn't actually do anything
-+ * on the panel itself (it doesn't connect to the touchscreen controller).
-+ * We'll set a pullup here just to park the line.
-+ */
-+&ts_rst_conn {
-+	bias-pull-up;
-+};
-+
- /* PINCTRL - BOARD-SPECIFIC */
- 
- /*
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r0.dts b/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r0.dts
-index d3d6ffad4eff..950b69448109 100644
---- a/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r0.dts
-+++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r0.dts
-@@ -46,6 +46,25 @@ trackpad: trackpad@2c {
- 	};
- };
- 
-+ts_i2c: &i2c13 {
-+	status = "okay";
-+	clock-frequency = <400000>;
-+
-+	ap_ts: touchscreen@10 {
-+		compatible = "elan,ekth6915";
-+		reg = <0x10>;
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&ts_int_conn>, <&ts_rst_conn>;
-+
-+		interrupt-parent = <&tlmm>;
-+		interrupts = <55 IRQ_TYPE_LEVEL_LOW>;
-+
-+		reset-gpios = <&tlmm 54 GPIO_ACTIVE_LOW>;
-+
-+		vcc33-supply = <&ts_avdd>;
-+	};
-+};
-+
- &ap_sar_sensor_i2c {
- 	status = "okay";
- };
-@@ -81,6 +100,12 @@ &sdhc_1 {
- 	status = "okay";
- };
- 
-+/* PINCTRL - ADDITIONS TO NODES IN PARENT DEVICE TREE FILES */
-+
-+&ts_rst_conn {
-+	bias-disable;
-+};
-+
- /* PINCTRL - BOARD-SPECIFIC */
- 
- /*
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi b/arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi
-index d59002d4492e..404936c6bf20 100644
---- a/arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi
-@@ -604,7 +604,6 @@ ts_int_conn: ts-int-conn {
- 	ts_rst_conn: ts-rst-conn {
- 		pins = "gpio54";
- 		function = "gpio";
--		bias-pull-up;
- 		drive-strength = <2>;
- 	};
- };
 -- 
-2.36.1.124.g0e6072fb45-goog
-
+Thanks,
+~Nick Desaulniers
