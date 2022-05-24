@@ -2,52 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EADE8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 11:17:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 442B9C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 11:17:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236440AbiEXLRH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 07:17:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52050 "EHLO
+        id S236636AbiEXLRj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 07:17:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236578AbiEXLQH (ORCPT
+        with ESMTP id S236639AbiEXLRQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 07:16:07 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 065AE3EA9D
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 04:16:06 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4L6s852x09z4yTX;
-        Tue, 24 May 2022 21:16:05 +1000 (AEST)
-From:   Michael Ellerman <patch-notifications@ellerman.id.au>
-To:     paulus@samba.org, npiggin@gmail.com, linux-kernel@vger.kernel.org,
-        gregkh@linuxfoundation.org, benh@kernel.crashing.org,
-        haren@linux.ibm.com, mpe@ellerman.id.au,
-        linuxppc-dev@lists.ozlabs.org, Zheng Bin <zhengbin13@huawei.com>
-Cc:     gaochao49@huawei.com
-In-Reply-To: <20220511033507.2745992-1-zhengbin13@huawei.com>
-References: <20220511033507.2745992-1-zhengbin13@huawei.com>
-Subject: Re: [PATCH -next] powerpc/pseries/vas: Call misc_deregister if sysfs init fails
-Message-Id: <165339058660.1718562.17170565423375451543.b4-ty@ellerman.id.au>
-Date:   Tue, 24 May 2022 21:09:46 +1000
+        Tue, 24 May 2022 07:17:16 -0400
+Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84E65986ED
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 04:16:46 -0700 (PDT)
+Received: by mail-lj1-x22e.google.com with SMTP id m6so20499842ljb.2
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 04:16:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=xNw7LrBTg5witOvFihOmp1AXVpa1kkgs/O9ROK/zEZ4=;
+        b=so+P5zIvJb4xvcv4LtGNWVQOzHBkfikB2mojxL71HaNmFT32Gwy/TrJxGjXXNJ8X4X
+         gcGEzYp7IUPT4UYmGtjpICLxu25/V44WTnm2aLdi7r8k6U0gJi7eDZ+0btAIl0o7ZBAC
+         cdC5VXdcwI2/kBNI9Rdib9tsyCu+GsqwPCtbDF9coIW/nAqkkouzvIj/85dhNRAFRJgC
+         d2OzkotRYv00AT+/7DOUZLpbZ576Nfk5B/xzXPWf7D9A1tn2qrnTueAglVEip2b0H6Z5
+         QgkAMW/1cge883ssPfkSjkvVb2lB0ClQLHh14Ew1jR+RcljdvYpKXRpTLaE5MWNS+ANB
+         +bIA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=xNw7LrBTg5witOvFihOmp1AXVpa1kkgs/O9ROK/zEZ4=;
+        b=o7AdJT5zik2JiQC1JBETC+Emu1EI5UJnj3O3enxLWuGehGyPrLgE9JXoxe6tUoqLc9
+         EDt4nU8nqOXbywA5H2FP0hctPrcZsnXJV3Q/1VeaQhILUrtEUCsMk8pqG4xthF3aTm3R
+         JeRHVXihBItYswg9j0oMhtspKSBrtKZsY3A1XyE2gvMmj/PDUw2xukJYTLFjCa1QsfyN
+         Z07pw/VC3ju6UUzQq2DRYLrkIRWHW3z13jrTmAJWk0EnSlA/xbRxHwkcrF92ltA+bzB7
+         ktXdR75cR3uOX7yyT2TURfQeGm0pOWdqrBErztzOwRNuLju+F10gI4x6ezl7kAWPmxbZ
+         7NMw==
+X-Gm-Message-State: AOAM533ufCYcP7Y6++5drmwI4rKctJW5k390t+yzg+WtG8cF8hxx/nsT
+        GMPXdxjl+8rZ7jUZDv/zPzGSgg==
+X-Google-Smtp-Source: ABdhPJz+lx+iMVXCLSd0N+qqf6vPl237rq1dEPT3DWIOqNMRqpMCyclgt7wE8RtUgZVGeOnk1rv2bQ==
+X-Received: by 2002:a2e:1614:0:b0:253:d71b:cf6d with SMTP id w20-20020a2e1614000000b00253d71bcf6dmr14147086ljd.80.1653391004531;
+        Tue, 24 May 2022 04:16:44 -0700 (PDT)
+Received: from [172.20.68.48] ([91.221.145.6])
+        by smtp.gmail.com with ESMTPSA id u1-20020ac24c21000000b0047255d2118csm2486056lfq.187.2022.05.24.04.16.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 24 May 2022 04:16:44 -0700 (PDT)
+Message-ID: <027c4fd9-194d-79c9-2ebe-e7bd1824b313@linaro.org>
+Date:   Tue, 24 May 2022 13:16:40 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 1/7] dt-bindings: soc: add bindings for i.MX93 SRC
+Content-Language: en-US
+To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, sboyd@kernel.org,
+        mturquette@baylibre.com, shawnguo@kernel.org,
+        s.hauer@pengutronix.de
+Cc:     aisheng.dong@nxp.com, l.stach@pengutronix.de,
+        kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, Peng Fan <peng.fan@nxp.com>
+References: <20220523113029.842753-1-peng.fan@oss.nxp.com>
+ <20220523113029.842753-2-peng.fan@oss.nxp.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220523113029.842753-2-peng.fan@oss.nxp.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 11 May 2022 11:35:07 +0800, Zheng Bin wrote:
-> Undo effects of misc_register if sysfs init fails after
-> misc_register.
-> 
-> 
+On 23/05/2022 13:30, Peng Fan (OSS) wrote:
 
-Applied to powerpc/next.
+One more comment.
 
-[1/1] powerpc/pseries/vas: Call misc_deregister if sysfs init fails
-      https://git.kernel.org/powerpc/c/426e5805226358dbe9af233347c5bf3c81f2125c
+> diff --git a/include/dt-bindings/power/imx93-power.h b/include/dt-bindings/power/imx93-power.h
+> new file mode 100644
+> index 000000000000..27fb7df80f93
+> --- /dev/null
+> +++ b/include/dt-bindings/power/imx93-power.h
 
-cheers
+File name with vendor, so "fsl,imx93-power.h"
+
+> @@ -0,0 +1,11 @@
+> +/* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
+> +/*
+> + *  Copyright 2022 NXP
+> + */
+> +
+> +#ifndef __DT_BINDINGS_IMX93_POWER_H__
+> +#define __DT_BINDINGS_IMX93_POWER_H__
+> +
+> +#define IMX93_POWER_DOMAIN_MEDIAMIX		0
+> +
+> +#endif
+
+
+Best regards,
+Krzysztof
