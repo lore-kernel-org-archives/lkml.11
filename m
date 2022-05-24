@@ -2,128 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 297A0C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 10:55:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94C0DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 10:56:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234204AbiEXKy6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 06:54:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43494 "EHLO
+        id S234061AbiEXK4p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 06:56:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234268AbiEXKyw (ORCPT
+        with ESMTP id S229703AbiEXK4n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 06:54:52 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 090BC6D4DE
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 03:54:51 -0700 (PDT)
-Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24OADOaM015706;
-        Tue, 24 May 2022 10:54:04 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=Nrxgom3MLX6g50vXoEm8BIU2OPvNwgy5HT+9UXUTXg0=;
- b=lCxduZVsfaFjYR0TKJxBjWyyIYDe9tN5SjeE3KpNdYtsm/QAR5KjzriLtDtsVknhv8xz
- 3d/lQPt8OHiLcwmdzRe4AkC5XZlGyGAnluEgJF5y4L9eQEJfiXj6Eyp+tPu0kdMjADlI
- WrpRa+SYfoTZWCXQwBwSnXZud2Z2/rEmEyyVz7gHJg6fF06ygHgSCf9COMLbO40MBxRC
- 9dDw9//5P51zxGqwGFPBR/tiS4cKgPQTdbUTiNyylS65YTpTfRlDPI+bvcW0BBYiJPsz
- qQlUXH/KbQX/VdwHa5K8GHhe6HZlFfMc6NwQojXsBpsmKVn2YBBqClxSB0yjIsB75AQn yw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g8wdwgqa2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 24 May 2022 10:54:04 +0000
-Received: from m0098404.ppops.net (m0098404.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24OApVEa006456;
-        Tue, 24 May 2022 10:54:03 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g8wdwgq9p-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 24 May 2022 10:54:03 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24OAmC8O004605;
-        Tue, 24 May 2022 10:54:01 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma06ams.nl.ibm.com with ESMTP id 3g6qbjca82-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 24 May 2022 10:54:01 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24OArxDw26935622
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 24 May 2022 10:53:59 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 20BBE4203F;
-        Tue, 24 May 2022 10:53:59 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B03E142041;
-        Tue, 24 May 2022 10:53:56 +0000 (GMT)
-Received: from [9.109.198.201] (unknown [9.109.198.201])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue, 24 May 2022 10:53:56 +0000 (GMT)
-Message-ID: <d28a9bf0-65ac-797c-3640-8af7e0beec33@linux.vnet.ibm.com>
-Date:   Tue, 24 May 2022 16:23:55 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [RFC PATCH 2/4] objtool: Enable objtool to run only on files with
- ftrace enabled
-Content-Language: en-US
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "jpoimboe@redhat.com" <jpoimboe@redhat.com>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "mbenes@suse.cz" <mbenes@suse.cz>, "aik@ozlabs.ru" <aik@ozlabs.ru>,
-        "mpe@ellerman.id.au" <mpe@ellerman.id.au>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "naveen.n.rao@linux.vnet.ibm.com" <naveen.n.rao@linux.vnet.ibm.com>,
-        Sathvika Vasireddy <sv@linux.ibm.com>
-References: <20220523175548.922671-1-sv@linux.ibm.com>
- <20220523175548.922671-3-sv@linux.ibm.com>
- <89012c4c-e989-6092-d4f1-0dc4eca983f1@csgroup.eu>
-From:   Sathvika Vasireddy <sv@linux.vnet.ibm.com>
-In-Reply-To: <89012c4c-e989-6092-d4f1-0dc4eca983f1@csgroup.eu>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: AVhW1Dc3cEWdid4W_p3zdx0JILhb6MtW
-X-Proofpoint-ORIG-GUID: D9UunNa4rSX1eYO6WDOYT3CR6rkBFg7u
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Tue, 24 May 2022 06:56:43 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7275B183BC
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 03:56:42 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.56])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4L6rjd50SgzDqLZ;
+        Tue, 24 May 2022 18:56:37 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 24 May 2022 18:56:39 +0800
+Subject: Re: [PATCH v4 4/5] mm/shmem: fix infinite loop when swap in shmem
+ error at swapoff time
+To:     =?UTF-8?B?SE9SSUdVQ0hJIE5BT1lBKOWggOWPoyDnm7TkuZ8p?= 
+        <naoya.horiguchi@nec.com>
+CC:     "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "hughd@google.com" <hughd@google.com>,
+        "willy@infradead.org" <willy@infradead.org>,
+        "vbabka@suse.cz" <vbabka@suse.cz>,
+        "dhowells@redhat.com" <dhowells@redhat.com>,
+        "neilb@suse.de" <neilb@suse.de>,
+        "apopple@nvidia.com" <apopple@nvidia.com>,
+        "david@redhat.com" <david@redhat.com>,
+        "surenb@google.com" <surenb@google.com>,
+        "peterx@redhat.com" <peterx@redhat.com>,
+        "rcampbell@nvidia.com" <rcampbell@nvidia.com>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20220519125030.21486-1-linmiaohe@huawei.com>
+ <20220519125030.21486-5-linmiaohe@huawei.com>
+ <20220520063433.GA584983@hori.linux.bs1.fc.nec.co.jp>
+ <970aee34-c377-2b8c-c6bb-45e2a96e84b9@huawei.com>
+ <20220522235326.GA713751@hori.linux.bs1.fc.nec.co.jp>
+ <7269c0c4-7648-a9dc-10fa-3645da5be441@huawei.com>
+ <139b521b-f477-d108-79ed-4ea2bd76bdf3@huawei.com>
+ <20220524064416.GB774480@hori.linux.bs1.fc.nec.co.jp>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <f1af5390-70f1-a231-cc37-c1fc671729d8@huawei.com>
+Date:   Tue, 24 May 2022 18:56:39 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-24_06,2022-05-23_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 bulkscore=0
- suspectscore=0 adultscore=0 mlxscore=0 phishscore=0 impostorscore=0
- mlxlogscore=999 priorityscore=1501 lowpriorityscore=0 malwarescore=0
- clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2205240053
+In-Reply-To: <20220524064416.GB774480@hori.linux.bs1.fc.nec.co.jp>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Christophe,
+On 2022/5/24 14:44, HORIGUCHI NAOYA(堀口 直也) wrote:
+> On Mon, May 23, 2022 at 07:23:53PM +0800, Miaohe Lin wrote:
+> ...
+>>>
+>>> I reproduced the deadloop issues when swapin error occurs at swapoff time in my linux-next-next-20220520 env,
+>>> and I found this patch could solve the issue now with the fix in my another email.
+>>>
+>>> BTW: When I use dm-dust to inject the swapin IO error, I don't see non-uptodate folio when shmem_swapin_folio
+>>> and swapoff succeeds. There might be some issues around that module (so I resort to the another way to inject
+>>> the swapin error), but the patch itself works anyway. ;)
+>>
+>> Sorry, the reason I don't see non-uptodate folio when shmem_swapin_folio is that all the shmem pages are still
+>> in the swapcache. They're not read from disk so there is no really IO error. :) When they're indeed freed, the
+>> deadloop issue occurs.
+>>
+>> I am thinking about extending the function of MADV_PAGEOUT to free the swapcache page. The page resides in the
+>> swapcache does not save the system memory anyway. And this could help test the swapin behavior. But I'm not
+>> sure whether it's needed.
+> 
+> The extension make MADV_PAGEOUT free swapcaches makes sense to me,
+> so I'll support it if the original implementer agrees the change.
 
-On 24/05/22 14:27, Christophe Leroy wrote:
->
-> Le 23/05/2022 à 19:55, Sathvika Vasireddy a écrit :
->> This patch makes sure objtool runs only on the object files
->> that have ftrace enabled, instead of running on all the object
->> files.
-> Why do that ?
-This was done to address the issue discussed here:
-https://lore.kernel.org/all/b06bb9bc-22d1-acce-fe68-c7c4cb7c15b5@csgroup.eu/ 
+I'd like trying to do it when I have time. :) Thanks!
 
->
-> What about static_calls ? There may be files without ftrace but with
-> static calls.
-Yes, this prevents objtool from running on those files. We can
-restrict this change to FTRACE_MCOUNT_USE_OBJTOOL
->
-> By the way, it would be nice if we could use it only on C files.
-> I get the following errors for ASM files:
->
-> arch/powerpc/kernel/entry_32.o: warning: objtool: .text+0x1b4:
-> unannotated intra-function call
-
-I'm looking into ways to address this.
-
-- Sathvika
+> 
+> Thanks,
+> Naoya Horiguchi
+> 
 
