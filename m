@@ -2,73 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF132C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 19:54:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88B0BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 19:54:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241583AbiEXTyL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 15:54:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43854 "EHLO
+        id S241529AbiEXTyg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 15:54:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241367AbiEXTxf (ORCPT
+        with ESMTP id S241642AbiEXTyV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 15:53:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7952A7939A
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 12:53:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C1F6616E8
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 19:53:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 6D953C3411B;
-        Tue, 24 May 2022 19:53:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653422006;
-        bh=9QHRLZnH67ZRBIAjE4Bj6W9k2UmzugQn55IZ5C02oAk=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=Rl0ZK6yCaUhciY+rhJ6t2j9WHXSoDEVJkqiHu6E8xk0Kfh8+w1tNM9fCEMidUV8sv
-         I+KSclgkWGjFQxYLkQEZN1RB3y5i+HcnAXXlO/N2uPaWZnErCUFVU5vzGz35yTSGkF
-         hBVjmGHULMJUY8gVKZVZKTsT3HIr+5sJn/s4DZPXsGgRoDFK7MRkseoqR/Stkar1tc
-         TXquBF4JoZd5gtYJ19Dro2Ibf6/VWIpz/B/aWXSCRO5aIgnEhXuE71GB6/LxSgMaT7
-         fw09GiMH5eZIg443dJ1R+VFtw5K1Cu/7lF76gfdAOZFwLVRdhMaUnjSngMl6bQLNC4
-         h/3qWOtd7kQ9Q==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5A7F5F03943;
-        Tue, 24 May 2022 19:53:26 +0000 (UTC)
-Subject: Re: [GIT PULL] objtool changes for v5.19
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <You3JC/BOIyEnmQj@gmail.com>
-References: <You3JC/BOIyEnmQj@gmail.com>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <You3JC/BOIyEnmQj@gmail.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git objtool-core-2022-05-23
-X-PR-Tracked-Commit-Id: 22682a07acc308ef78681572e19502ce8893c4d4
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 22922deae13fc8d3769790c2eb388e9afce9771d
-Message-Id: <165342200636.18932.7813564120891653486.pr-tracker-bot@kernel.org>
-Date:   Tue, 24 May 2022 19:53:26 +0000
-To:     Ingo Molnar <mingo@kernel.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel@vger.kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Borislav Petkov <bp@alien8.de>,
-        Andrew Morton <akpm@linux-foundation.org>
+        Tue, 24 May 2022 15:54:21 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A1697CB20;
+        Tue, 24 May 2022 12:54:10 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id gi33so28978082ejc.3;
+        Tue, 24 May 2022 12:54:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=BM1TcEJ1rSjvHQ3DiiP4bMrjTXo3on1VRj5jI+ImT0c=;
+        b=nCBYghWbLbxT1ChNXklDtLZuce4dbmnHu4mmcoCKiXKulovNPkWF6cvFuz0npHmOHu
+         P6JoUKY3m46hiYVPUUpFXvyC1HWTxuErhziuokLysk//JdpZXUIUb/7k/9iZmc/LcsuC
+         c7SqApT0As3pqSCB7nsqDZz6GkKfZkhjLhDl3BkPVzNi4bQIm6W5CxuvjwubJNfzTEQo
+         /bfv0V4go7FpoYIn8m8aPPgrleSvI6HKX6bzvUZW0n3mbzUg7DpBnhLWqDwOiL/UkSJL
+         j7QC6rUolyr1AtXktjGgJOWNpci+LVv15/7ukGgCbSQdQHYC7v6S8Why7cbLYEydPykh
+         LHbw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=BM1TcEJ1rSjvHQ3DiiP4bMrjTXo3on1VRj5jI+ImT0c=;
+        b=jLdXFMDk0nVKV7Uf5SLVo8MQrWZXF5UfosU1L+oulPclhb5zpiPj6GARUGCgQYqvNg
+         Hega44erT2qhlWdm5+oKsn2q7oDAawF6tOpG1c9Ygu/1ETKetNqSrXrh0cjR1EtLM/ow
+         jVFrCciyAa7p5sL6ehei8VOnL2iC1qX4GNB4PCUETAicARJCkYAjrNQgB9yEFORFWlG0
+         bnvRWE2mJr573FHGfFz5lWhIWf25K95NXW7Nkmi6pJUe7CjtE6hhrMhhN6/x9K42YK6j
+         qalGwPdvBH5tUDKCGbFAx8TUX9tjd4Ywkn200EAxIEPuUNYyqvOZVgfFWgq9xueLdq0X
+         3ugQ==
+X-Gm-Message-State: AOAM533sI8VZjkqouKHdywNyp+AdXxGSVx76dRDBv08kWvp1pzMumDtE
+        FDLFAaPhYjr93i8w8x76NSB1J9Yv/1o5qPEiYK8=
+X-Google-Smtp-Source: ABdhPJzaOr1HrCCGCXVK5emjnaADAxldeFs8V//J5maGXkNHQVLCXsf5Lv3+INcjE2Vx4JJ8UDsszGRT5egoZfefRS8=
+X-Received: by 2002:a17:906:c115:b0:6ff:6e5:b4b1 with SMTP id
+ do21-20020a170906c11500b006ff06e5b4b1mr3780602ejc.497.1653422048613; Tue, 24
+ May 2022 12:54:08 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220524181150.9240-1-ddrokosov@sberdevices.ru> <20220524181150.9240-2-ddrokosov@sberdevices.ru>
+In-Reply-To: <20220524181150.9240-2-ddrokosov@sberdevices.ru>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 24 May 2022 21:53:32 +0200
+Message-ID: <CAHp75Vdyk0228iPX+-D12DcogS0mDBNzUmjAaO=VGT6brH0eyQ@mail.gmail.com>
+Subject: Re: [PATCH v2 1/5] iio:accel:bma180: rearrange iio trigger get and register
+To:     Dmitry Rokosov <DDRokosov@sberdevices.ru>
+Cc:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "jic23@kernel.org" <jic23@kernel.org>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "lorenzo.bianconi83@gmail.com" <lorenzo.bianconi83@gmail.com>,
+        "srinivas.pandruvada@linux.intel.com" 
+        <srinivas.pandruvada@linux.intel.com>,
+        "teodora.baluta@intel.com" <teodora.baluta@intel.com>,
+        "narcisaanamaria12@gmail.com" <narcisaanamaria12@gmail.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Mon, 23 May 2022 18:32:36 +0200:
+On Tue, May 24, 2022 at 8:14 PM Dmitry Rokosov <DDRokosov@sberdevices.ru> wrote:
+>
+> IIO trigger interface function iio_trigger_get() should be called after
+> iio_trigger_register() (or its devm analogue) strictly, because of
+> iio_trigger_get() acquires module refcnt based on the trigger->owner
+> pointer, which is initialized inside iio_trigger_register() to
+> THIS_MODULE.
+> If this call order is wrong, the next iio_trigger_put() (from sysfs
+> callback or "delete module" path) will dereference "default" module
+> refcnt, which is incorrect behaviour.
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git objtool-core-2022-05-23
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/22922deae13fc8d3769790c2eb388e9afce9771d
+> Fixes: 0668a4e4d297 ("iio: accel: bma180: Fix indio_dev->trig assignment")
+> Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
+> ---
+>  drivers/iio/accel/bma180.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
+> index d8a454c266d5..5d0bd0fc3018 100644
+> --- a/drivers/iio/accel/bma180.c
+> +++ b/drivers/iio/accel/bma180.c
+> @@ -1006,11 +1006,12 @@ static int bma180_probe(struct i2c_client *client,
+>
+>                 data->trig->ops = &bma180_trigger_ops;
+>                 iio_trigger_set_drvdata(data->trig, indio_dev);
+> -               indio_dev->trig = iio_trigger_get(data->trig);
+>
+>                 ret = iio_trigger_register(data->trig);
+>                 if (ret)
+>                         goto err_trigger_free;
+> +
+> +               indio_dev->trig = iio_trigger_get(data->trig);
+>         }
+>
+>         ret = iio_triggered_buffer_setup(indio_dev, NULL,
+> --
+> 2.36.0
 
-Thank you!
+
 
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+With Best Regards,
+Andy Shevchenko
