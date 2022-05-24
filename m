@@ -2,155 +2,230 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6F97C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 12:33:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B362C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 12:34:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237330AbiEXMdx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 08:33:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53812 "EHLO
+        id S237372AbiEXMee (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 08:34:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231975AbiEXMdv (ORCPT
+        with ESMTP id S232416AbiEXMec (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 08:33:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3BAB95A24;
-        Tue, 24 May 2022 05:33:50 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3E1A3614E9;
-        Tue, 24 May 2022 12:33:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 447DFC385AA;
-        Tue, 24 May 2022 12:33:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653395629;
-        bh=heV0a9xrTmX7M4bta874QuFE0tmsa1tM9Z4BIeX5GLo=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Y0hgziHb7ji8ubZON201KRqZwqq3eeyCghSKH3y/P6nTIqZDh4bZRI9kTOFtL9oIE
-         49TSjhzaEiIgVnSXsK0WEdyprd9dL3I3J2m2+e+mK3bFnsv3XH7o7wQBRfHQhABRbG
-         Oc9HLLI0i2ksJuzJWPvc1Tq94Loq+7kyCE6/L5kbsYLWi3b37tndaN7pRqkH+R/Ms4
-         HiaYt567r2ClIQCwUQUW7yVSwHNmUYHDH6YwdYA24PL+a1RtYM2KlDRP1TYlT3hzsC
-         cTn2xSJvjD5s591sMWhp6Mj7gBqIhzIFst/nhYpum9CwU3r/Z+m2HG8yGLPllhORKy
-         XLZ7XicYIN8/g==
-Received: by pali.im (Postfix)
-        id 62FE99ED; Tue, 24 May 2022 14:33:46 +0200 (CEST)
-From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
-To:     Bjorn Helgaas <bhelgaas@google.com>
-Cc:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] PCI: mvebu: Use devm_request_irq() for registering interrupt handler
-Date:   Tue, 24 May 2022 14:28:17 +0200
-Message-Id: <20220524122817.7199-1-pali@kernel.org>
-X-Mailer: git-send-email 2.20.1
+        Tue, 24 May 2022 08:34:32 -0400
+Received: from mail-yw1-x112a.google.com (mail-yw1-x112a.google.com [IPv6:2607:f8b0:4864:20::112a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EB3895A32
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 05:34:31 -0700 (PDT)
+Received: by mail-yw1-x112a.google.com with SMTP id 00721157ae682-2fee010f509so179779537b3.11
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 05:34:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=JJhwxfwW7n7VLkGPMvpANvwbmPIJmDkcwtkzvJnYyJk=;
+        b=biww96eDtZOSmJhMMIl0jKPsL5VhgecE1zdzoSokTJqL2yKrSOr2xVnEPWPH1VY4O2
+         P+fHfPP/calICpdhAf4RdlGk/ot6MKOLOgjnLxZM7CKwlW9G6gd3iBCshLFMGwMG/fM5
+         3P/ii6fpdR/JtE68MCJAXRbQeasPH4hMU2+Po+MlEy9QtRWNmllxrUGSXWqTDuGCjxq+
+         qO7QGxxBnkT4/bfqvJlL1Sz7dxpwQEk0ZiNE5qZV1cVWEO1UizcsdOEhrpnSuB5mEfJ5
+         kEILaOY46Lu8rwsGe25PQ5D1KzxWmKRQhG1vWE/cLcSWyihd+egdRaBxRwM6ToLBIsKw
+         TsVA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=JJhwxfwW7n7VLkGPMvpANvwbmPIJmDkcwtkzvJnYyJk=;
+        b=XnRxFMEvKxvaLW6dgnmaHwQ84NbedT1Y4qLJTlSKhJ3lbnuU1TbMZpe7q1sjwEyX+i
+         nBj+Ng5HJX6vueJ2g9VoBx+ZHNmxf/iMrQFhnQlGMOb92wdCDo1ZHg3Ej8WAuOL4UMWF
+         ya7bnfrCqv0SxPkJxr+DQvAoBHO5jLxFsfb0BDEQisDqHfzsqoeCgEkOdeo8n+FatjlZ
+         riklShfVQK3pa53hK+dQ2jpYfLEFjJwamwWIuiSpj8qYS+vMTHqm1VIrwvllVK0SCek2
+         OTRpTTcEZrBF9u6LxcdVfH28cGhJuAc5LQV/NBJP2oUY4hgM+w7/1rZThJTwQ98Ww6Sl
+         CTuQ==
+X-Gm-Message-State: AOAM533BpcaZzzr9x9VNKmv2L4FuhkQ2DisXStoOsTibYAfgqK3oTGa9
+        ju2w2yGly6eS5P4M+OKWrD8Mbr95FekG7tOuFuoeCy0W21+tiw==
+X-Google-Smtp-Source: ABdhPJw9XyKlYZWLxvVbRuzoifixIo/Au5GciofjDzJUooDwGxnk79ZQnTT5HbOkUkzNGZdIkXcrM4yISawI6me1ea0=
+X-Received: by 2002:a81:4c8e:0:b0:300:37ba:2c1e with SMTP id
+ z136-20020a814c8e000000b0030037ba2c1emr1445603ywa.141.1653395670220; Tue, 24
+ May 2022 05:34:30 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220523165752.797318097@linuxfoundation.org>
+In-Reply-To: <20220523165752.797318097@linuxfoundation.org>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Tue, 24 May 2022 18:04:18 +0530
+Message-ID: <CA+G9fYuj7-BSEcm8_+4DCjr5WgGdbKDkLn=hf1s6v6-bxAFOyw@mail.gmail.com>
+Subject: Re: [PATCH 4.19 00/44] 4.19.245-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Same as in commit a3b69dd0ad62 ("Revert "PCI: aardvark: Rewrite IRQ code to
-chained IRQ handler"") for pci-aardvark driver, use devm_request_irq()
-instead of chained IRQ handler in pci-mvebu.c driver.
+On Mon, 23 May 2022 at 22:35, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> This is the start of the stable review cycle for the 4.19.245 release.
+> There are 44 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Wed, 25 May 2022 16:56:55 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-=
+4.19.245-rc1.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
+-rc.git linux-4.19.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-This change fixes affinity support and allows to pin interrupts from
-different PCIe controllers to different CPU cores.
+Results from Linaro=E2=80=99s test farm.
+No regressions on arm64, arm, x86_64, and i386.
 
-Fixes: ec075262648f ("PCI: mvebu: Implement support for legacy INTx interrupts")
-Signed-off-by: Pali Rohár <pali@kernel.org>
----
-Hello Bjorn! This is basically same issue as for pci-aardvark.c:
-https://lore.kernel.org/linux-pci/20220515125815.30157-1-pali@kernel.org/#t
+Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
-I tested this patch with pci=nomsi in cmdline (to force kernel to use
-legacy intx instead of MSI) on A385 and checked that I can set affinity
-via /proc/irq/XX/smp_affinity file for every mvebu pcie controller to
-different CPU and legacy interrupts from different cards/controllers
-were handled by different CPUs.
+## Build
+* kernel: 4.19.245-rc1
+* git: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
+* git branch: linux-4.19.y
+* git commit: e88efc48b31fe3946b6e39d613eeae6d96ada4fb
+* git describe: v4.19.244-45-ge88efc48b31f
+* test details:
+https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-4.19.y/build/v4.19=
+.244-45-ge88efc48b31f
 
-I think that this is important on Armada XP platforms which have many
-independent PCIe controllers (IIRC up to 10) and many cores (up to 4).
----
- drivers/pci/controller/pci-mvebu.c | 30 +++++++++++++++++-------------
- 1 file changed, 17 insertions(+), 13 deletions(-)
+## Test Regressions (compared to v4.19.244)
+No test regressions found.
 
-diff --git a/drivers/pci/controller/pci-mvebu.c b/drivers/pci/controller/pci-mvebu.c
-index 8f76d4bda356..de67ea39fea5 100644
---- a/drivers/pci/controller/pci-mvebu.c
-+++ b/drivers/pci/controller/pci-mvebu.c
-@@ -1017,16 +1017,13 @@ static int mvebu_pcie_init_irq_domain(struct mvebu_pcie_port *port)
- 	return 0;
- }
- 
--static void mvebu_pcie_irq_handler(struct irq_desc *desc)
-+static irqreturn_t mvebu_pcie_irq_handler(int irq, void *arg)
- {
--	struct mvebu_pcie_port *port = irq_desc_get_handler_data(desc);
--	struct irq_chip *chip = irq_desc_get_chip(desc);
-+	struct mvebu_pcie_port *port = arg;
- 	struct device *dev = &port->pcie->pdev->dev;
- 	u32 cause, unmask, status;
- 	int i;
- 
--	chained_irq_enter(chip, desc);
--
- 	cause = mvebu_readl(port, PCIE_INT_CAUSE_OFF);
- 	unmask = mvebu_readl(port, PCIE_INT_UNMASK_OFF);
- 	status = cause & unmask;
-@@ -1040,7 +1037,7 @@ static void mvebu_pcie_irq_handler(struct irq_desc *desc)
- 			dev_err_ratelimited(dev, "unexpected INT%c IRQ\n", (char)i+'A');
- 	}
- 
--	chained_irq_exit(chip, desc);
-+	return status ? IRQ_HANDLED : IRQ_NONE;
- }
- 
- static int mvebu_pcie_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
-@@ -1490,9 +1487,20 @@ static int mvebu_pcie_probe(struct platform_device *pdev)
- 				mvebu_pcie_powerdown(port);
- 				continue;
- 			}
--			irq_set_chained_handler_and_data(irq,
--							 mvebu_pcie_irq_handler,
--							 port);
-+
-+			ret = devm_request_irq(dev, irq, mvebu_pcie_irq_handler,
-+					       IRQF_SHARED | IRQF_NO_THREAD,
-+					       port->name, port);
-+			if (ret) {
-+				dev_err(dev, "%s: cannot register interrupt handler: %d\n",
-+					port->name, ret);
-+				irq_domain_remove(port->intx_irq_domain);
-+				pci_bridge_emul_cleanup(&port->bridge);
-+				devm_iounmap(dev, port->base);
-+				port->base = NULL;
-+				mvebu_pcie_powerdown(port);
-+				continue;
-+			}
- 		}
- 
- 		/*
-@@ -1599,7 +1607,6 @@ static int mvebu_pcie_remove(struct platform_device *pdev)
- 
- 	for (i = 0; i < pcie->nports; i++) {
- 		struct mvebu_pcie_port *port = &pcie->ports[i];
--		int irq = port->intx_irq;
- 
- 		if (!port->base)
- 			continue;
-@@ -1615,9 +1622,6 @@ static int mvebu_pcie_remove(struct platform_device *pdev)
- 		/* Clear all interrupt causes. */
- 		mvebu_writel(port, ~PCIE_INT_ALL_MASK, PCIE_INT_CAUSE_OFF);
- 
--		if (irq > 0)
--			irq_set_chained_handler_and_data(irq, NULL, NULL);
--
- 		/* Remove IRQ domains. */
- 		if (port->intx_irq_domain)
- 			irq_domain_remove(port->intx_irq_domain);
--- 
-2.20.1
+## Metric Regressions (compared to v4.19.244)
+No metric regressions found.
 
+## Test Fixes (compared to v4.19.244)
+No test fixes found.
+
+## Metric Fixes (compared to v4.19.244)
+No metric fixes found.
+
+## Test result summary
+total: 85385, pass: 70036, fail: 859, skip: 12899, xfail: 1591
+
+## Build Summary
+* arm: 275 total, 275 passed, 0 failed
+* arm64: 39 total, 39 passed, 0 failed
+* i386: 18 total, 18 passed, 0 failed
+* mips: 27 total, 27 passed, 0 failed
+* powerpc: 55 total, 54 passed, 1 failed
+* s390: 12 total, 12 passed, 0 failed
+* sparc: 12 total, 12 passed, 0 failed
+* x86_64: 38 total, 38 passed, 0 failed
+
+## Test suites summary
+* fwts
+* igt-gpu-tools
+* kselftest-android
+* kselftest-arm64
+* kselftest-breakpoints
+* kselftest-capabilities
+* kselftest-cgroup
+* kselftest-clone3
+* kselftest-core
+* kselftest-cpu-hotplug
+* kselftest-cpufreq
+* kselftest-drivers
+* kselftest-efivarfs
+* kselftest-filesystems
+* kselftest-firmware
+* kselftest-fpu
+* kselftest-futex
+* kselftest-gpio
+* kselftest-intel_pstate
+* kselftest-ipc
+* kselftest-ir
+* kselftest-kcmp
+* kselftest-kexec
+* kselftest-kvm
+* kselftest-lib
+* kselftest-livepatch
+* kselftest-membarrier
+* kselftest-memfd
+* kselftest-memory-hotplug
+* kselftest-mincore
+* kselftest-mount
+* kselftest-mqueue
+* kselftest-net
+* kselftest-netfilter
+* kselftest-nsfs
+* kselftest-openat2
+* kselftest-pid_namespace
+* kselftest-pidfd
+* kselftest-proc
+* kselftest-pstore
+* kselftest-ptrace
+* kselftest-rseq
+* kselftest-rtc
+* kselftest-seccomp
+* kselftest-sigaltstack
+* kselftest-size
+* kselftest-splice
+* kselftest-static_keys
+* kselftest-sync
+* kselftest-sysctl
+* kselftest-tc-testing
+* kselftest-timens
+* kselftest-timers
+* kselftest-tmpfs
+* kselftest-tpm2
+* kselftest-user
+* kselftest-vm
+* kselftest-x86
+* kselftest-zram
+* kvm-unit-tests
+* libhugetlbfs
+* linux-log-parser
+* log-parser-boot
+* log-parser-test
+* ltp-cap_bounds-tests
+* ltp-commands-tests
+* ltp-containers-tests
+* ltp-controllers-tests
+* ltp-cpuhotplug-tests
+* ltp-crypto-tests
+* ltp-cve-tests
+* ltp-dio-tests
+* ltp-fcntl-locktests-tests
+* ltp-filecaps-tests
+* ltp-fs-tests
+* ltp-fs_bind-tests
+* ltp-fs_perms_simple-tests
+* ltp-fsx-tests
+* ltp-hugetlb-tests
+* ltp-io-tests
+* ltp-ipc-tests
+* ltp-math-tests
+* ltp-mm-tests
+* ltp-nptl-tests
+* ltp-open-posix-tests
+* ltp-pty-tests
+* ltp-sched-tests
+* ltp-securebits-tests
+* ltp-syscalls-tests
+* ltp-tracing-tests
+* network-basic-tests
+* packetdrill
+* rcutorture
+* ssuite
+* v4l2-compliance
+* vdso
+
+--
+Linaro LKFT
+https://lkft.linaro.org
