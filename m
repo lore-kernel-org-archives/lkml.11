@@ -2,65 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD811C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 19:57:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9CC9C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 20:02:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241267AbiEXT5w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 15:57:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51738 "EHLO
+        id S241228AbiEXUBA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 16:01:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241244AbiEXT5g (ORCPT
+        with ESMTP id S233450AbiEXUA6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 15:57:36 -0400
-Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9840E175BC
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 12:57:35 -0700 (PDT)
-Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
-        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 24OJqGUX030520;
-        Tue, 24 May 2022 14:52:16 -0500
-Received: (from segher@localhost)
-        by gate.crashing.org (8.14.1/8.14.1/Submit) id 24OJqGgw030519;
-        Tue, 24 May 2022 14:52:16 -0500
-X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
-Date:   Tue, 24 May 2022 14:52:16 -0500
-From:   Segher Boessenkool <segher@kernel.crashing.org>
-To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
-Cc:     Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] powerpc: e500: Fix compilation with gcc e500 compiler
-Message-ID: <20220524195216.GL25951@gate.crashing.org>
-References: <20220524093939.30927-1-pali@kernel.org> <20220524175955.GI25951@gate.crashing.org> <20220524181255.bmszzxmbwzv7zed7@pali> <20220524185247.GK25951@gate.crashing.org> <20220524191610.hnodzz2j7mlgthey@pali>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+        Tue, 24 May 2022 16:00:58 -0400
+Received: from mail-oa1-x34.google.com (mail-oa1-x34.google.com [IPv6:2001:4860:4864:20::34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5A6D5A2CC;
+        Tue, 24 May 2022 13:00:57 -0700 (PDT)
+Received: by mail-oa1-x34.google.com with SMTP id 586e51a60fabf-e93bbb54f9so23558222fac.12;
+        Tue, 24 May 2022 13:00:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=xdqMHHqBDBxG4fAcbv9a3pbuucj1HKocdtacUijQBY0=;
+        b=f3TW6LctIYA0rr2hs0QM9c05JYG/kaVoeAYYXwY1cQ+FtBFgQRazqvAM0u9gzOCAwP
+         ydLjZBp601qeTyqC1YX5RXS0iTWYEiUwtrmobikSy12YDaYkn9Q1zpclP17Z3Xcz3OUh
+         r4Bh3C19zoNsLGy/rWUZ4c/RfzN4hjAMu2s5KqeGTT4KSHoPha4FknAOeQR5mkG3LW2L
+         i3bGtY3d4U7Y/I9dteNvldkAjld5v57QfXT5j59KYfqin4s2cMscRmf99GzRgwan3xaK
+         P4vk1IwIX/hIvz4+TFBBsiClVheeJqUTRbsIpfSSyLHyrKy5cB6PVxc1HJsaVvU2zTiq
+         xGow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=xdqMHHqBDBxG4fAcbv9a3pbuucj1HKocdtacUijQBY0=;
+        b=g/c0eKlamRQERzhmdJfriMpyox/UGZAPR6RLOgjc7THRMjp55uUvwJG1NM+Vf7F5oR
+         qhwG5lgUXz179SGrF3RVMpT7tSfJdMTLwg/YJQJ1FOsJnXr+dUZFRIB5UufwBRZQ88o1
+         xQfCmxrtDUPRPkgDLJZE1MtVRtqRQ4jXXKVVDhyoOn2Gv0/P1TpELC2Vfsor4dpmXODz
+         8iBXdd6/p2sODEf3AAhnCRY9RcrWNCmz6n7OZftHpYKsVJ29wUXYTf4JCANVI+Apbr/X
+         65fDdd27FQeZ0SefvIKjyk27m3YUPdtR3aYhYP7Eut5qXBL2IQT6vDQjE+tZtGWIGADE
+         ocQg==
+X-Gm-Message-State: AOAM530JEM0KuJDl8xrTb4FKQPrMGg5FH2ZU4er4aBc2jxaA/Tq0varH
+        Yg+Xa8z9L5u3Z09KT5frDa8=
+X-Google-Smtp-Source: ABdhPJzsH4g80/KHIaZHGBEwZ3bJZKxpyWl1QV/M2QAcpyOpZc+6mDiBi3XcJ+Z4rrlbxESu26qdGQ==
+X-Received: by 2002:a05:6870:a117:b0:f1:bb16:4606 with SMTP id m23-20020a056870a11700b000f1bb164606mr3562835oae.174.1653422456953;
+        Tue, 24 May 2022 13:00:56 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id o83-20020acabe56000000b0032603df9d24sm5464564oif.47.2022.05.24.13.00.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 24 May 2022 13:00:56 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Tue, 24 May 2022 13:00:54 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Subject: Re: [PATCH 4.9 00/25] 4.9.316-rc1 review
+Message-ID: <20220524200054.GA3987156@roeck-us.net>
+References: <20220523165743.398280407@linuxfoundation.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220524191610.hnodzz2j7mlgthey@pali>
-User-Agent: Mutt/1.4.2.3i
+In-Reply-To: <20220523165743.398280407@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 24, 2022 at 09:16:10PM +0200, Pali Rohár wrote:
-> On Tuesday 24 May 2022 13:52:47 Segher Boessenkool wrote:
-> > Aha.  Right, because this config forces -mspe it requires one of these
-> > CPUs.
-> > 
-> > You can use a powerpc-linux compiler instead, and everything will just
-> > work.  These CPUs are still supported, in all of GCC 9 .. GCC 12 :-)
+On Mon, May 23, 2022 at 07:03:18PM +0200, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 4.9.316 release.
+> There are 25 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 > 
-> Ok. I can use different "generic" powerpc compiler (It should work fine
-> as you said, as it has also -mcpu=8540 option). But I think that
-> compilation of kernel should be supported also by that gcc 8.5.0 e500
-> compiler.
+> Responses should be made by Wed, 25 May 2022 16:56:55 +0000.
+> Anything received after that time might be too late.
+> 
 
-That linuxspe compiler you mean.  Sure, why not, the more the merrier,
-as long as it doesn't get in the way of other stuff, I won't protest.
+Build results:
+	total: 163 pass: 163 fail: 0
+Qemu test results:
+	total: 397 pass: 397 fail: 0
 
-But please don't confuse people: you are talking about a
-powerpc-linuxspe compiler, not e500, which is supported just fine by
-current GCC trunk still, and does not have such limitations :-)
+Tested-by: Guenter Roeck <linux@roeck-us.net>
 
-
-Segher
+Guenter
