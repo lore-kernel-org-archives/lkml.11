@@ -2,93 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B7D0C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 14:22:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98B4FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 14:25:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238151AbiEXOW5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 10:22:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44212 "EHLO
+        id S238162AbiEXOZA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 10:25:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236990AbiEXOWz (ORCPT
+        with ESMTP id S237061AbiEXOY7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 10:22:55 -0400
-Received: from mail.marcansoft.com (marcansoft.com [212.63.210.85])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7A8862237
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 07:22:53 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: hector@marcansoft.com)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id 684124228E;
-        Tue, 24 May 2022 14:22:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=marcan.st; s=default;
-        t=1653402171; bh=YeoPwINgF/K0Y1Y2RiM2xpjnuyhOyxS+KRYgH/Qk2Ng=;
-        h=From:To:Cc:Subject:Date;
-        b=Ybg3YcRtKyfMcYJvL+qv5KD8h6BYyPG31xTox/HctaoDPATqjeU8Vvry6cyahTcrx
-         FRMRfT+Y4YTZUduP5CtYem1pra+k63BOPP/lqDvpMd8/7bfm6+8vHMissaKcqV6lKx
-         wi5VckpbOsTAT3wOKtL0hhTK5yvgiBevPhMoPw3JrdAoQ0mOoVHeWdZ41QeGkZuYmN
-         4xHQ6R1+DIcu5meo0SYkgtclWrGTLtUu8rjwCnzqwhhENiOzC2k1Rf4CZZYeGZacpt
-         I4biLY0BXxFXYbEWWHZSQYfb9DQoLcqWreWq3qjK5J/tflLv43Qw9idrKTgQ0P0okI
-         UA2SuuuI3RVvA==
-From:   Hector Martin <marcan@marcan.st>
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Marc Zyngier <maz@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, asahi@lists.linux.dev,
-        Hector Martin <marcan@marcan.st>
-Subject: [PATCH] pinctrl: apple: Use a raw spinlock for the regmap
-Date:   Tue, 24 May 2022 23:22:06 +0900
-Message-Id: <20220524142206.18833-1-marcan@marcan.st>
-X-Mailer: git-send-email 2.35.1
+        Tue, 24 May 2022 10:24:59 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B0B75FF36;
+        Tue, 24 May 2022 07:24:58 -0700 (PDT)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4L6xK967grzjX04;
+        Tue, 24 May 2022 22:24:13 +0800 (CST)
+Received: from dggpemm500013.china.huawei.com (7.185.36.172) by
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 24 May 2022 22:24:56 +0800
+Received: from [127.0.0.1] (10.67.108.67) by dggpemm500013.china.huawei.com
+ (7.185.36.172) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 24 May
+ 2022 22:24:55 +0800
+Message-ID: <061a4299-114f-96e0-86a4-6ab255778498@huawei.com>
+Date:   Tue, 24 May 2022 22:24:55 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [RFC PATCH v2 00/20] arm64: livepatch: Use ORC for dynamic frame
+ pointer validation
+Content-Language: en-US
+To:     <madvenka@linux.microsoft.com>, <jpoimboe@redhat.com>,
+        <peterz@infradead.org>, <mark.rutland@arm.com>,
+        <broonie@kernel.org>, <nobuta.keiya@fujitsu.com>,
+        <sjitindarsingh@gmail.com>, <catalin.marinas@arm.com>,
+        <will@kernel.org>, <jamorris@linux.microsoft.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <live-patching@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <e81e773678f88f7c2ff7480e2eb096973ec198db>
+ <20220524001637.1707472-1-madvenka@linux.microsoft.com>
+From:   Chen Zhongjin <chenzhongjin@huawei.com>
+In-Reply-To: <20220524001637.1707472-1-madvenka@linux.microsoft.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.108.67]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpemm500013.china.huawei.com (7.185.36.172)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The irqchip ops are called with a raw spinlock held, so the subsequent
-regmap usage cannot use a plain spinlock.
+Hi Madvenka,
 
-spi-hid-apple-of spi0.0: spihid_apple_of_probe:74
+I have a brief look at your patch and the idea that using CFA metadata to
+validate FP is reasonable to me. And I found a problem when I used 'pv dump' to
+check the orc value and I replied your commit 11/20 for that.
 
-=============================
-[ BUG: Invalid wait context ]
-5.18.0-asahi-00176-g0fa3ab03bdea #1337 Not tainted
------------------------------
-kworker/u20:3/86 is trying to lock:
-ffff8000166b5018 (pinctrl_apple_gpio:462:(&regmap_config)->lock){....}-{3:3}, at: regmap_lock_spinlock+0x18/0x30
-other info that might help us debug this:
-context-{5:5}
-7 locks held by kworker/u20:3/86:
- #0: ffff800017725d48 ((wq_completion)events_unbound){+.+.}-{0:0}, at: process_one_work+0x1c8/0x670
- #1: ffff80001e33bdd0 (deferred_probe_work){+.+.}-{0:0}, at: process_one_work+0x1c8/0x670
- #2: ffff800017d629a0 (&dev->mutex){....}-{4:4}, at: __device_attach+0x30/0x17c
- #3: ffff80002414e618 (&ctlr->add_lock){+.+.}-{4:4}, at: spi_add_device+0x40/0x80
- #4: ffff800024116990 (&dev->mutex){....}-{4:4}, at: __device_attach+0x30/0x17c
- #5: ffff800022d4be58 (request_class){+.+.}-{4:4}, at: __setup_irq+0xa8/0x720
- #6: ffff800022d4bcc8 (lock_class){....}-{2:2}, at: __setup_irq+0xcc/0x720
+I think it's not necessary that you rewrite the arm64 decoder(there is already a
+decoder in my patch) and insn check(objtool check can just make it) by yourself.
+Especially it is too duplicated to have two check in objtool.
 
-Fixes: a0f160ffcb83 ("pinctrl: add pinctrl/GPIO driver for Apple SoCs")
-Signed-off-by: Hector Martin <marcan@marcan.st>
----
- drivers/pinctrl/pinctrl-apple-gpio.c | 1 +
- 1 file changed, 1 insertion(+)
+For me it's also a trouble that objtool runs too much unnecessary work. I advise
+that we should move some check for x86 as arch specific and refactor the cmdline
+options, they doesn't turn off everything perfectly now.
 
-diff --git a/drivers/pinctrl/pinctrl-apple-gpio.c b/drivers/pinctrl/pinctrl-apple-gpio.c
-index 3a33731b8cdb..b02dad2b2f69 100644
---- a/drivers/pinctrl/pinctrl-apple-gpio.c
-+++ b/drivers/pinctrl/pinctrl-apple-gpio.c
-@@ -72,6 +72,7 @@ struct regmap_config regmap_config = {
- 	.max_register = 512 * sizeof(u32),
- 	.num_reg_defaults_raw = 512,
- 	.use_relaxed_mmio = true,
-+	.use_raw_spinlock = true,
- };
- 
- /* No locking needed to mask/unmask IRQs as the interrupt mode is per pin-register. */
--- 
-2.35.1
+Other than that I have an advise: We only use orc for reliable stacktrace and
+normal FP unwind doesn't depends on it. Should we only load these data for
+livepatch (or other scenario needs reliable stacktrace)? It can save the memory
+and time consuming for kernel.
+
+That's all. And if you don't mind, can I incorporate some commit into my set?
+Appreciate for it.
+
+Best,
+Chen
 
