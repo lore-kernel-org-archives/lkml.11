@@ -2,188 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E364C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 12:18:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A420C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 12:18:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237277AbiEXMSr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 08:18:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57558 "EHLO
+        id S237292AbiEXMSy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 08:18:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233509AbiEXMSp (ORCPT
+        with ESMTP id S234334AbiEXMSv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 08:18:45 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 294288DDDB;
-        Tue, 24 May 2022 05:18:43 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id 759CF1F43F10
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1653394722;
-        bh=qL2zwEVTGyHx3qjDE2gF4fhdtuxKIJOmdMC0x5/fTok=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=JQ/tsavMoWUhJC7+r53CgL89tt+wgN9dKsUbLNgReY5V8a7Aos7c1EZ0Ox8KLUmuK
-         rjA/ZAdXfjCML/ZzbOeElopTUlqZPg08pOCyFDmDmCSeUEZ6/jlF29jltWhcAU7031
-         wxobtSG5g4sh+pudjAra1pOPwbYlU87ccTtoJ9UhDVJgj6YR8z/REy/IVbhXBn4klo
-         /Sz2022c8TNJD85AY5pdw6JEndg0FnTxWRvwXfScGpAxifmFt6CxSTR6YD6CzTVuEv
-         4x41a+rizq6hS0r8kFj9cx9XrFLdW2dytM6cSpE9hS2QaC7S0CyZpya/Pm8V3DtMiS
-         DI8bm98tL04Vg==
-Message-ID: <8d1411a7-0714-1667-ffd4-3de99732b1a3@collabora.com>
-Date:   Tue, 24 May 2022 14:18:38 +0200
+        Tue, 24 May 2022 08:18:51 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81AA09347F;
+        Tue, 24 May 2022 05:18:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1653394730; x=1684930730;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=nPz0elsgpG0Rgm6MSWEv4NaWObr+3SGeXQnA+z0CNRk=;
+  b=PPdftN4IsdVF+rKvI1OjlYp9Py686gtgd98YkqaPhyKUGvMBzmu7G6QN
+   r7zqmEsZemKNxPO8NnDPxJttfL8HPcjV4MsbhnFV4BweEwEX9uoROYsbT
+   yvgal1ec4j20+nI9DGk5ioDM7yNAXbdGxZTjmg5VewCVGWHqgHc/M11rZ
+   oU9kcS2MCOFXyvWsCw7jRatzmEqmQBPCbAtw0BKRubWjV9CicWfNq37q+
+   XtYZdLVJ1hh4s4fkIhjmbDMA/SAjPmmGTkr3nuFTR/AJcX/j5JuC6tXeM
+   5w+P43xmCk0pRKPij7yKQuPjP5FqjhapEFc7U3cFDp0p5RXT/Uda7gQn+
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.91,248,1647327600"; 
+   d="scan'208";a="165083481"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 24 May 2022 05:18:49 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Tue, 24 May 2022 05:18:48 -0700
+Received: from localhost.localdomain (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Tue, 24 May 2022 05:18:45 -0700
+From:   Claudiu Beznea <claudiu.beznea@microchip.com>
+To:     <nicolas.ferre@microchip.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>
+Subject: [PATCH net-next] net: macb: change return type for gem_ptp_set_one_step_sync()
+Date:   Tue, 24 May 2022 15:19:51 +0300
+Message-ID: <20220524121951.1036697-1-claudiu.beznea@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH] dt-bindings: mailbox: mtk-gce: Convert txt to json-schema
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        robh+dt@kernel.org
-Cc:     jassisinghbrar@gmail.com, krzysztof.kozlowski+dt@linaro.org,
-        matthias.bgg@gmail.com, houlong.wei@mediatek.com,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-References: <20220519101806.18097-1-angelogioacchino.delregno@collabora.com>
- <45e78390-5f91-7ac7-45d8-5796bc608234@linaro.org>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <45e78390-5f91-7ac7-45d8-5796bc608234@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 20/05/22 10:15, Krzysztof Kozlowski ha scritto:
-> On 19/05/2022 12:18, AngeloGioacchino Del Regno wrote:
->> Convert the mtk-gce documentation from freeform text format to a
->> json-schema.
->>
->> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
->> ---
->>   .../bindings/mailbox/mediatek,gce-mbox.yaml   | 114 ++++++++++++++++++
->>   .../devicetree/bindings/mailbox/mtk-gce.txt   |  82 -------------
->>   2 files changed, 114 insertions(+), 82 deletions(-)
->>   create mode 100644 Documentation/devicetree/bindings/mailbox/mediatek,gce-mbox.yaml
->>   delete mode 100644 Documentation/devicetree/bindings/mailbox/mtk-gce.txt
->>
->> diff --git a/Documentation/devicetree/bindings/mailbox/mediatek,gce-mbox.yaml b/Documentation/devicetree/bindings/mailbox/mediatek,gce-mbox.yaml
->> new file mode 100644
->> index 000000000000..750391b4038c
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/mailbox/mediatek,gce-mbox.yaml
->> @@ -0,0 +1,114 @@
->> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
->> +%YAML 1.2
->> +---
->> +$id: http://devicetree.org/schemas/mailbox/mediatek,gce-mbox.yaml#
->> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->> +
->> +title: MediaTek Global Command Engine (GCE) mailbox
->> +
->> +maintainers:
->> +  - Houlong Wei <houlong.wei@mediatek.com>
->> +
->> +description: |
->> +  The Global Command Engine (GCE) is used to help read/write registers
->> +  with critical time limitation, such as updating display configuration
->> +  during the vblank.
->> +  The GCE can be used to implement the Command Queue (CMDQ) driver.
-> 
-> Mention the headers in description.
-> 
+gem_ptp_set_one_step_sync() always returns zero thus change its return
+type to void.
 
-   Values for properties used by the GCE, such as sub-system IDs, thread
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+---
+ drivers/net/ethernet/cadence/macb_ptp.c | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
 
-   priority and event IDs are defined in 'dt-bindings/gce/<chip>-gce.h'.
-
-Would that be enough, or should I list all of the headers?
-
->> +
->> +properties:
->> +  compatible:
->> +    enum:
->> +      - mediatek,mt6779-gce
->> +      - mediatek,mt8173-gce
->> +      - mediatek,mt8183-gce
->> +      - mediatek,mt8186-gce
->> +      - mediatek,mt8192-gce
->> +      - mediatek,mt8195-gce
->> +
->> +  reg:
->> +    maxItems: 1
->> +
->> +  interrupts:
->> +    maxItems: 1
->> +
->> +  clocks:
->> +    maxItems: 1
->> +
->> +  clock-names:
->> +    items:
->> +      - const: gce
->> +
->> +  '#mbox-cells':
->> +    description: |
->> +      The first cell describes the mailbox channel, which is the GCE Thread ID;
->> +      The second cell describes the priority of the GCE thread.
->> +    const: 2
->> +
->> +required:
->> +  - compatible
->> +  - reg
->> +  - interrupts
->> +  - clocks
->> +  - clock-names
->> +  - '#mbox-cells'
->> +
->> +additionalProperties: false
->> +
->> +allOf:
->> +  - if:
->> +      properties:
->> +        compatible:
->> +          enum:
->> +            - mediatek,mt8195-gce
->> +    then:
->> +      properties:
->> +        clocks:
->> +          maxItems: 2
-> 
-> Are you sure this works on mt8195-gce?
-> 
-
-Thanks for that, I've just rechecked the driver and.. no, that won't
-work for MT8195: it's just one clock there (like the others) and the
-clock names aren't even enforced, as the driver is always taking the
-clock at index 0.
-
-I got confused because the driver uses a slightly different kind of
-logic when probing on SoCs with multiple mailboxes, specifically:
-  - For single mailbox, having a clock with name "gce" is enforced
-    as it's grabbing it with devm_clk_get(dev, clk_name), where the
-    clock name is declared in a string called "clk_name";
-  - For multiple mailboxes, it's looking for an of_alias, declared
-    in an array of strings called "clk_names" and getting the clock
-    with of_clk_get(node, 0).
-
-
-So there comes my confusion, recapping:
-
-static const char * const clk_name = "gce";
-                  <- this is a clock name
-static const char * const clk_names[] = { "gce0", "gce1" }; <- OF alias names
-
-
-At this point, I think that the best idea would be to fix this issue
-first... luckily there's no MT8195 devicetree upstream yet, so I would
-technically not be breaking any ABI by changing it to be the same as
-the others.
-
-Easier explanation: plan is to change the driver such that we won't
-need anything different from the others in this schema.
-
-New version coming soon, then....
-
-Regards,
-Angelo
+diff --git a/drivers/net/ethernet/cadence/macb_ptp.c b/drivers/net/ethernet/cadence/macb_ptp.c
+index 9559c16078f9..e6cb20aaa76a 100644
+--- a/drivers/net/ethernet/cadence/macb_ptp.c
++++ b/drivers/net/ethernet/cadence/macb_ptp.c
+@@ -434,7 +434,7 @@ int gem_get_hwtst(struct net_device *dev, struct ifreq *rq)
+ 		return 0;
+ }
+ 
+-static int gem_ptp_set_one_step_sync(struct macb *bp, u8 enable)
++static void gem_ptp_set_one_step_sync(struct macb *bp, u8 enable)
+ {
+ 	u32 reg_val;
+ 
+@@ -444,8 +444,6 @@ static int gem_ptp_set_one_step_sync(struct macb *bp, u8 enable)
+ 		macb_writel(bp, NCR, reg_val | MACB_BIT(OSSMODE));
+ 	else
+ 		macb_writel(bp, NCR, reg_val & ~MACB_BIT(OSSMODE));
+-
+-	return 0;
+ }
+ 
+ int gem_set_hwtst(struct net_device *dev, struct ifreq *ifr, int cmd)
+@@ -468,8 +466,7 @@ int gem_set_hwtst(struct net_device *dev, struct ifreq *ifr, int cmd)
+ 	case HWTSTAMP_TX_OFF:
+ 		break;
+ 	case HWTSTAMP_TX_ONESTEP_SYNC:
+-		if (gem_ptp_set_one_step_sync(bp, 1) != 0)
+-			return -ERANGE;
++		gem_ptp_set_one_step_sync(bp, 1);
+ 		tx_bd_control = TSTAMP_ALL_FRAMES;
+ 		break;
+ 	case HWTSTAMP_TX_ON:
+-- 
+2.34.1
 
