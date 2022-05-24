@@ -2,119 +2,202 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8F1BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 00:51:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88393C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 00:52:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232434AbiEXAvm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 20:51:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59094 "EHLO
+        id S232480AbiEXAwp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 20:52:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232308AbiEXAvf (ORCPT
+        with ESMTP id S230228AbiEXAwn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 20:51:35 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 40EEE1FCD7
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 17:51:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653353492;
+        Mon, 23 May 2022 20:52:43 -0400
+Received: from out0.migadu.com (out0.migadu.com [94.23.1.103])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA76282171;
+        Mon, 23 May 2022 17:52:41 -0700 (PDT)
+Subject: Re: [BUG report] security_inode_alloc return -ENOMEM let xfs shutdown
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1653353559;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=YYTIypUIAadfcSy41CGM20tQJDNF0c7lxi1JOJ+m/Z8=;
-        b=DfuAtgdGaAenDRRp4q9ByajuyWWKc9FvP9Go8PC8UDs/+bxryRfOpvEjfO8AYOEOWTdV1f
-        VzFyLI6DcVJrnfGyITJ1e3h7bve0sn3rbbkrkYU/3//yA2s6qh+bOGVZHW/b4ivsy1utat
-        vQk/AjKevr758u62s9oItF63BKl4SSw=
-Received: from mail-pg1-f197.google.com (mail-pg1-f197.google.com
- [209.85.215.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-650-JybUJKo-Pq-550DFsFcpQw-1; Mon, 23 May 2022 20:51:31 -0400
-X-MC-Unique: JybUJKo-Pq-550DFsFcpQw-1
-Received: by mail-pg1-f197.google.com with SMTP id u8-20020a656708000000b003f70a43fe1eso5058771pgf.3
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 17:51:31 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=YYTIypUIAadfcSy41CGM20tQJDNF0c7lxi1JOJ+m/Z8=;
-        b=l69Ze2M9y+ktoOAaLTNa2mzBTPnCp/qW+9+mY54wLRy5Dhp/bXM4sm8Bk/m+lKGjc6
-         NzjW2ypNBwL5UW7t9/S0gmZxJJW7o08Pc20M7GIM0V3zog+pW9bKvtNJOgnwa4MjC8S2
-         6I7Fha3SQB2xVnIgZRslTWORXq4AQove/H5vCepXeMbfDkw1iMx8dx3AJNEikMSyxxCi
-         m6ron+2Ln2po7c6bElUNCl5oSdFJNRWikLPAKeAdbiPrUYtBbTc21wAJ6EUIszrfQvjC
-         gMVZIIzp8owuXQoG7EYoGoOkaanEu76pQDb/9wpp5zHTcm2WPdNdiFSIvO/t4yG9FZd7
-         kYhw==
-X-Gm-Message-State: AOAM530zeoxYrJmQRCBebEcoM4uhimsM1DA0lkKcDgOnYwuxXJQcaPAG
-        fQ+qADBkUO0T7xPX1vPJam75bP6UKDNJGxoDos6d06hLbvUG6mDUUq0yKtv/lF5y9uFkgUF0xvN
-        T8v+24J5w/I+HWYGm+Co/zRtqaq5iagUsHcSZ+xEreLbfUHlfvMxhpMwFgfenKmLXgpPxZrpDig
-        ==
-X-Received: by 2002:a63:fc08:0:b0:3f9:e159:b114 with SMTP id j8-20020a63fc08000000b003f9e159b114mr13011215pgi.526.1653353489819;
-        Mon, 23 May 2022 17:51:29 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwH5R8vSDYh7Qy+89u7KjwlPHBHVSXcTSiatpbqsu0in/KQMdoJAbWkmpNFUQY2OLjaEKOovA==
-X-Received: by 2002:a63:fc08:0:b0:3f9:e159:b114 with SMTP id j8-20020a63fc08000000b003f9e159b114mr13011200pgi.526.1653353489558;
-        Mon, 23 May 2022 17:51:29 -0700 (PDT)
-Received: from [10.72.12.81] ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id l13-20020a6542cd000000b003c619f3d086sm5367802pgp.2.2022.05.23.17.51.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 May 2022 17:51:28 -0700 (PDT)
-Subject: Re: [PATCH] MAINTAINERS: move myself from ceph "Maintainer" to
- "Reviewer"
-To:     Jeff Layton <jlayton@kernel.org>, ceph-devel@vger.kernel.org
-Cc:     idryomov@gmail.com, linux-fsdevel@vger.kernel.org,
+        bh=hCV/Ckq4O2p5W7X5GbGmk3OnCZmzZP8cdc12qMa4RpE=;
+        b=fGNbOgTxC4upz17i5ocFOaBCDksXlvNQWxSSmfGoCNhpqtA2ew8ixNjPqOk2vV/LZP6zCI
+        Ni+xuWtp0EftBPtJ+OlDKVnLVOIWBslgIZj2FkByTPYiRQgFeT2NovY6ixhJYEtEMTljRo
+        upsPEpWbXCA4ywl267RZ3D1qjWyvrAQ=
+To:     Dave Chinner <david@fromorbit.com>,
+        liuzhengyuan <liuzhengyuan@kylinos.cn>,
+        =?UTF-8?B?6IOh5rW3?= <huhai@kylinos.cn>, zhangshida@kylinos.cn
+Cc:     darrick.wong@oracle.com, linux-xfs@vger.kernel.org,
         linux-kernel@vger.kernel.org
-References: <20220523172209.141504-1-jlayton@kernel.org>
-From:   Xiubo Li <xiubli@redhat.com>
-Message-ID: <70a4bb14-cdb7-2368-1a67-ab69d3ed9317@redhat.com>
-Date:   Tue, 24 May 2022 08:51:22 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+References: <5a3a9cdc-33c3-4196-b8f7-bfec485eae5b@linux.dev>
+ <20220523232009.GW1098723@dread.disaster.area>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Jackie Liu <liu.yun@linux.dev>
+Message-ID: <a05dfccc-33ff-4857-b68d-ddd64cae11d0@linux.dev>
+Date:   Tue, 24 May 2022 08:52:30 +0800
 MIME-Version: 1.0
-In-Reply-To: <20220523172209.141504-1-jlayton@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20220523232009.GW1098723@dread.disaster.area>
+Content-Type: text/plain; charset=gbk; format=flowed
 Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
-On 5/24/22 1:22 AM, Jeff Layton wrote:
-> Xiubo has graciously volunteered to take over for me as the Linux cephfs
-> client maintainer. Make it official by changing myself to be a
-> "Reviewer" for libceph and ceph.
->
-> Signed-off-by: Jeff Layton <jlayton@kernel.org>
-> ---
->   MAINTAINERS | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index d6d879cb0afd..39ec8fd2e996 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -4547,8 +4547,8 @@ F:	drivers/power/supply/cw2015_battery.c
->   
->   CEPH COMMON CODE (LIBCEPH)
->   M:	Ilya Dryomov <idryomov@gmail.com>
-> -M:	Jeff Layton <jlayton@kernel.org>
->   M:	Xiubo Li <xiubli@redhat.com>
-> +R:	Jeff Layton <jlayton@kernel.org>
->   L:	ceph-devel@vger.kernel.org
->   S:	Supported
->   W:	http://ceph.com/
-> @@ -4558,9 +4558,9 @@ F:	include/linux/crush/
->   F:	net/ceph/
->   
->   CEPH DISTRIBUTED FILE SYSTEM CLIENT (CEPH)
-> -M:	Jeff Layton <jlayton@kernel.org>
->   M:	Xiubo Li <xiubli@redhat.com>
->   M:	Ilya Dryomov <idryomov@gmail.com>
-> +R:	Jeff Layton <jlayton@kernel.org>
->   L:	ceph-devel@vger.kernel.org
->   S:	Supported
->   W:	http://ceph.com/
 
-Thanks Jeff.
+ÔÚ 2022/5/24 ÉÏÎç7:20, Dave Chinner Ð´µÀ:
+> On Mon, May 23, 2022 at 04:51:50PM +0800, Jackie Liu wrote:
+>> Hello Maintainer and developer.
+>>
+>>     Syzkaller report an filesystem shutdown for me, It's very easy to
+>> trigger and also exists on the latest kernel version 5.18-rc7.
+> 
+> Shutdown is a perfectly reasonable way to handle a failure that we
+> can't recover cleanly from.
+> 
+>> dmesg shows:
+>>
+>> [  285.725893] FAULT_INJECTION: forcing a failure.
+>>                 name failslab, interval 1, probability 0, space 0, times 0
+>> [  285.729625] CPU: 7 PID: 18034 Comm: syz-executor Not tainted 4.19.90-43+
+>> #7
+>> [  285.731420] Source Version: b62cabdd86181d386998660ebf34ca653addd6c9
+>> [  285.733051] Hardware name: QEMU KVM Virtual Machine, BIOS 0.0.0
+>> 02/06/2015
+>> [  285.734796] Call trace:
+>> [  285.735614]  dump_backtrace+0x0/0x3e0
+>> [  285.736609]  show_stack+0x2c/0x38
+>> [  285.737525]  dump_stack+0x164/0x1fc
+>> [  285.738489]  should_fail+0x5c0/0x688
+>> [  285.739555]  __should_failslab+0x118/0x180
+>> [  285.740725]  should_failslab+0x2c/0x78
+>> [  285.741808]  kmem_cache_alloc_trace+0x270/0x410
+>> [  285.743120]  security_inode_alloc+0x100/0x1a8
+>> [  285.744356]  inode_init_always+0x48c/0xa28
+>> [  285.745524]  xfs_iget_cache_hit+0x9c0/0x2f28
+>> [  285.746739]  xfs_iget+0x33c/0x9e0
+>> [  285.747708]  xfs_ialloc+0x218/0x11c0
+>> [  285.748752]  xfs_dir_ialloc+0xe8/0x480
+>> [  285.749832]  xfs_create+0x5bc/0x1220
+>> [  285.750871]  xfs_generic_create+0x42c/0x568
+>> [  285.752053]  xfs_vn_mknod+0x48/0x58
+>> [  285.753067]  xfs_vn_create+0x40/0x50
+>> [  285.754106]  lookup_open+0x960/0x1580
+>> [  285.755176]  do_last+0xd44/0x2180
+>> [  285.756149]  path_openat+0x1a0/0x6d0
+>> [  285.757187]  do_filp_open+0x14c/0x208
+>> [  285.758245]  do_sys_open+0x340/0x470
+>> [  285.759289]  __arm64_sys_openat+0x98/0xd8
+>> [  285.760438]  el0_svc_common+0x230/0x3f0
+>> [  285.761541]  el0_svc_handler+0x144/0x1a8
+>> [  285.762674]  el0_svc+0x8/0x1b0
+>> [  285.763737] security_inode_alloc:796
+>> [  285.764733] inode_init_always:202
+>> [  285.765669] xfs_create:1213
+>> [  285.766485] XFS (dm-0): Internal error xfs_trans_cancel at line 1046 of
+>> file fs/xfs/xfs_trans.c.  Caller xfs_create+0x700/0x1220
+>> [  285.769503] CPU: 7 PID: 18034 Comm: syz-executor Not tainted 4.19.90-43+
+>> #7
+>> [  285.771275] Source Version: b62cabdd86181d386998660ebf34ca653addd6c9
+>> [  285.772892] Hardware name: QEMU KVM Virtual Machine, BIOS 0.0.0
+>> 02/06/2015
+>> [  285.774625] Call trace:
+>> [  285.775335]  dump_backtrace+0x0/0x3e0
+>> [  285.776324]  show_stack+0x2c/0x38
+>> [  285.777236]  dump_stack+0x164/0x1fc
+>> [  285.778188]  xfs_error_report+0xdc/0xe0
+>> [  285.779292]  xfs_trans_cancel+0x490/0x878
+>> [  285.780439]  xfs_create+0x700/0x1220
+>> [  285.781477]  xfs_generic_create+0x42c/0x568
+>> [  285.782673]  xfs_vn_mknod+0x48/0x58
+>> [  285.783687]  xfs_vn_create+0x40/0x50
+>> [  285.784724]  lookup_open+0x960/0x1580
+>> [  285.785782]  do_last+0xd44/0x2180
+>> [  285.786760]  path_openat+0x1a0/0x6d0
+>> [  285.787791]  do_filp_open+0x14c/0x208
+>> [  285.788844]  do_sys_open+0x340/0x470
+>> [  285.789880]  __arm64_sys_openat+0x98/0xd8
+>> [  285.791039]  el0_svc_common+0x230/0x3f0
+>> [  285.792139]  el0_svc_handler+0x144/0x1a8
+>> [  285.793260]  el0_svc+0x8/0x1b0
+>> [  285.794283] XFS (dm-0): xfs_do_force_shutdown(0x8) called from line 1047
+>> of file fs/xfs/xfs_trans.c.  Return address = 00000000a4a366b9
+>> [  285.816187] XFS (dm-0): Corruption of in-memory data detected. Shutting
+>> down filesystem
+>> [  285.818476] XFS (dm-0): Please umount the filesystem and rectify the
+>> problem(s)
+> 
+> Yup, that's a shutdown with a dirty transaction because memory
+> allocation failed in the middle of a transaction. XFS can not
+> tolerate memory allocation failure within the scope of a dirty
+> transactions and, in practice, this almost never happens. Indeed,
+> I've never seen this allocation from security_inode_alloc():
+> 
+> int lsm_inode_alloc(struct inode *inode)
+> {
+>          if (!lsm_inode_cache) {
+>                  inode->i_security = NULL;
+>                  return 0;
+>          }
+> 
+>>>>>>    inode->i_security = kmem_cache_zalloc(lsm_inode_cache, GFP_NOFS);
+>          if (inode->i_security == NULL)
+>                  return -ENOMEM;
+>          return 0;
+> }
+> 
+> fail in all my OOM testing. Hence, to me, this is a theoretical
+> failure as I've never, ever seen this allocation fail in production
+> or test systems, even when driving them hard into OOM with excessive
+> inode allocation and triggering the OOM killer repeatedly until the
+> system kills init....
+> 
+> Hence I don't think there's anything we need to change here right
+> now. If users start hitting this, then we're going to have add new
+> memalloc_nofail_save/restore() functionality to XFS transaction
+> contexts. But until then, I don't think we need to worry about
+> syzkaller intentionally hitting this shutdown.
 
-Acked-by: Xiubo Li <xiubli@redhat.com>
+Thanks Dave.
 
+   In the actual test, the x86 or arm64 device test will trigger this 
+error more easily when FAILSLAB is turned on. After our internal 
+discussion, we can try again through such a patch. Anyway, thank you for 
+your reply.
+
+diff --git a/fs/xfs/xfs_icache.c b/fs/xfs/xfs_icache.c
+index ceee27b70384..360304409c0c 100644
+--- a/fs/xfs/xfs_icache.c
++++ b/fs/xfs/xfs_icache.c
+@@ -435,6 +435,7 @@ xfs_iget_cache_hit(
+                                 wake_up_bit(&ip->i_flags, __XFS_INEW_BIT);
+                         ASSERT(ip->i_flags & XFS_IRECLAIMABLE);
+                         trace_xfs_iget_reclaim_fail(ip);
++                       error = -EAGAIN;
+                         goto out_error;
+                 }
+
+@@ -503,7 +504,7 @@ xfs_iget_cache_miss(
+
+         ip = xfs_inode_alloc(mp, ino);
+         if (!ip)
+-               return -ENOMEM;
++               return -EAGAIN;
+
+         error = xfs_iread(mp, tp, ip, flags);
+         if (error)
+
+
+--
+BR, Jackie Liu
+
+> 
+> Cheers,
+> 
+> Dave.
+> 
