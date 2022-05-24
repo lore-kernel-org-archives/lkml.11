@@ -2,101 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5EACC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 18:15:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4716C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 18:17:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240306AbiEXSPT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 14:15:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34110 "EHLO
+        id S240122AbiEXSRM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 14:17:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240219AbiEXSPB (ORCPT
+        with ESMTP id S229726AbiEXSRK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 14:15:01 -0400
-Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26FE46C54F;
-        Tue, 24 May 2022 11:15:00 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id 644AB5FD0C;
-        Tue, 24 May 2022 21:14:56 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1653416096;
-        bh=k+4IFSFfBohrz26BOucBMVTZbZM85y1aZdQ3FK9koGs=;
-        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=ow8ZtzgKRarwjVUwlxZzJEjn7w8XqFa9mWwohNZYhGpB4WHTaEIADOLW+cd6y5quJ
-         vNQUIjWHaM1Ygcyg9xqPZcNhgPwNGMcxpAj3PEumDoZNQvxOlFumWslh/xCGRBax16
-         J+hoHpDAfNssOLFrAWFc17nWOLmKeNaI18m4G0gsn5lkzU8BazW7azlRUMQEbPKgVn
-         FGnishSUqkgj41mZPeI0te0nuJ94vQ8urtqRZdyQYhj0e8tfCEAw0EQoRS+zgg2X5A
-         80c9cA/7u7T8PfnWUGqLVPECPdbmG0Wn3P7J0dkEWgOIlAoe2LvzNfxrvkhsS0SgRa
-         L1DxDn7JVedjA==
-Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
-        by mail.sberdevices.ru (Postfix) with ESMTP;
-        Tue, 24 May 2022 21:14:45 +0300 (MSK)
-From:   Dmitry Rokosov <DDRokosov@sberdevices.ru>
-To:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "jic23@kernel.org" <jic23@kernel.org>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
-        "lorenzo.bianconi83@gmail.com" <lorenzo.bianconi83@gmail.com>,
-        "srinivas.pandruvada@linux.intel.com" 
-        <srinivas.pandruvada@linux.intel.com>,
-        "teodora.baluta@intel.com" <teodora.baluta@intel.com>,
-        "narcisaanamaria12@gmail.com" <narcisaanamaria12@gmail.com>
-CC:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Dmitry Rokosov <DDRokosov@sberdevices.ru>
-Subject: [PATCH v2 0/5] iio: treewide: rearrange iio trig get/register
-Thread-Topic: [PATCH v2 0/5] iio: treewide: rearrange iio trig get/register
-Thread-Index: AQHYb5ohywOA3ErtcUWaOWHlaX8a+Q==
-Date:   Tue, 24 May 2022 18:14:37 +0000
-Message-ID: <20220524181150.9240-1-ddrokosov@sberdevices.ru>
-Accept-Language: ru-RU, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.1.12]
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        Tue, 24 May 2022 14:17:10 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FF8C72212;
+        Tue, 24 May 2022 11:17:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653416229; x=1684952229;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=EBnyAxgG8VMP5VnxxAr+i+RhOOaMEQkB+M7uuFYWkuc=;
+  b=bI/9uEXkSQB7nCmz0HB7w68HgI0v5c8Uw4yDv5r+u40H9Dkn/cbbjYBW
+   PkUboddFrO5oRJZ0GQNCE9G6l64gPQYHCEturdBtI2fM7km57LmskExVf
+   W3IhrAAgw6Wchslegj5KqeiRL3FauVEpdQ/wPvv/tNuxB/vNDpqAYMyGB
+   Og3wyLNSztW5qvRNXt0CqIkDWi6nUppW1OAlhR+FZ9PcEwDBM2mrweO21
+   U19BlAc7DTjgJsB9VQwkytm8Gg9/83J74DQ+l9t4CHBbBilB4c1PcGR+e
+   fper/iAKB53C9FWCU/xKA25cksBfeZItW5STEe/VX9aMZdhkuL2SLAppa
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10357"; a="273614551"
+X-IronPort-AV: E=Sophos;i="5.91,248,1647327600"; 
+   d="scan'208";a="273614551"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 May 2022 11:17:08 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,248,1647327600"; 
+   d="scan'208";a="717281728"
+Received: from lkp-server01.sh.intel.com (HELO db63a1be7222) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 24 May 2022 11:17:05 -0700
+Received: from kbuild by db63a1be7222 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1ntZ5d-0002KY-4x;
+        Tue, 24 May 2022 18:17:05 +0000
+Date:   Wed, 25 May 2022 02:16:47 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Muchun Song <songmuchun@bytedance.com>, hannes@cmpxchg.org,
+        mhocko@kernel.org, roman.gushchin@linux.dev, shakeelb@google.com
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        cgroups@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, duanxiongchun@bytedance.com,
+        longman@redhat.com, Muchun Song <songmuchun@bytedance.com>
+Subject: Re: [PATCH v4 09/11] mm: memcontrol: use obj_cgroup APIs to charge
+ the LRU pages
+Message-ID: <202205250202.1JanYiVZ-lkp@intel.com>
+References: <20220524060551.80037-10-songmuchun@bytedance.com>
 MIME-Version: 1.0
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/05/24 14:34:00 #19560786
-X-KSMG-AntiVirus-Status: Clean, skipped
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220524060551.80037-10-songmuchun@bytedance.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following patchset resolves problems with iio_trigger_get() and
-iio_trigger_register() call order in the different IIO drivers.
+Hi Muchun,
 
-IIO trigger interface function iio_trigger_get() should be called after
-iio_trigger_register() (or its devm analogue) strictly, because of
-iio_trigger_get() acquires module refcnt based on the trigger->owner
-pointer, which is initialized inside iio_trigger_register() to
-THIS_MODULE.
-If this call order is wrong, the next iio_trigger_put() (from sysfs
-callback or "delete module" path) will dereference "default" module
-refcnt, which is incorrect behaviour.
+Thank you for the patch! Yet something to improve:
 
-Changes v1->v2:
-    - provide tag Fixes: for all patches
+[auto build test ERROR on 4b0986a3613c92f4ec1bdc7f60ec66fea135991f]
 
-Dmitry Rokosov (5):
-  iio:accel:bma180: rearrange iio trigger get and register
-  iio:accel:kxcjk-1013: rearrange iio trigger get and register
-  iio:accel:mxc4005: rearrange iio trigger get and register
-  iio:chemical:ccs811: rearrange iio trigger get and register
-  iio:humidity:hts221: rearrange iio trigger get and register
+url:    https://github.com/intel-lab-lkp/linux/commits/Muchun-Song/Use-obj_cgroup-APIs-to-charge-the-LRU-pages/20220524-143056
+base:   4b0986a3613c92f4ec1bdc7f60ec66fea135991f
+config: arm64-buildonly-randconfig-r005-20220524 (https://download.01.org/0day-ci/archive/20220525/202205250202.1JanYiVZ-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 10c9ecce9f6096e18222a331c5e7d085bd813f75)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm64 cross compiling tool for clang build
+        # apt-get install binutils-aarch64-linux-gnu
+        # https://github.com/intel-lab-lkp/linux/commit/bec0ae12106e0cf12dd4e0e21eb0754b99be0ba2
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Muchun-Song/Use-obj_cgroup-APIs-to-charge-the-LRU-pages/20220524-143056
+        git checkout bec0ae12106e0cf12dd4e0e21eb0754b99be0ba2
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash
 
- drivers/iio/accel/bma180.c           | 3 ++-
- drivers/iio/accel/kxcjk-1013.c       | 4 ++--
- drivers/iio/accel/mxc4005.c          | 4 ++--
- drivers/iio/chemical/ccs811.c        | 4 ++--
- drivers/iio/humidity/hts221_buffer.c | 5 ++++-
- 5 files changed, 12 insertions(+), 8 deletions(-)
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
---=20
-2.36.0
+All error/warnings (new ones prefixed by >>):
+
+>> mm/memcontrol.c:6826:10: error: call to undeclared function '__get_obj_cgroup_from_memcg'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+           objcg = __get_obj_cgroup_from_memcg(memcg);
+                   ^
+>> mm/memcontrol.c:6826:8: warning: incompatible integer to pointer conversion assigning to 'struct obj_cgroup *' from 'int' [-Wint-conversion]
+           objcg = __get_obj_cgroup_from_memcg(memcg);
+                 ^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   1 warning and 1 error generated.
+
+
+vim +/__get_obj_cgroup_from_memcg +6826 mm/memcontrol.c
+
+  6818	
+  6819	static int charge_memcg(struct folio *folio, struct mem_cgroup *memcg,
+  6820				gfp_t gfp)
+  6821	{
+  6822		struct obj_cgroup *objcg;
+  6823		long nr_pages = folio_nr_pages(folio);
+  6824		int ret = 0;
+  6825	
+> 6826		objcg = __get_obj_cgroup_from_memcg(memcg);
+  6827		/* Do not account at the root objcg level. */
+  6828		if (!obj_cgroup_is_root(objcg))
+  6829			ret = try_charge(memcg, gfp, nr_pages);
+  6830		if (ret)
+  6831			goto out;
+  6832	
+  6833		obj_cgroup_get(objcg);
+  6834		commit_charge(folio, objcg);
+  6835	
+  6836		local_irq_disable();
+  6837		mem_cgroup_charge_statistics(memcg, nr_pages);
+  6838		memcg_check_events(memcg, folio_nid(folio));
+  6839		local_irq_enable();
+  6840	out:
+  6841		obj_cgroup_put(objcg);
+  6842		return ret;
+  6843	}
+  6844	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
