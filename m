@@ -2,170 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DA8EC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 14:57:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A930C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 14:58:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236131AbiEXO5y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 10:57:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50270 "EHLO
+        id S238513AbiEXO6O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 10:58:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238562AbiEXO5r (ORCPT
+        with ESMTP id S238505AbiEXO6D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 10:57:47 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C97B954011;
-        Tue, 24 May 2022 07:57:46 -0700 (PDT)
-Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24OEgHxc014966;
-        Tue, 24 May 2022 14:57:18 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=29pST3gjXSTrS26v72BbeghZM9snaNLlt+14xpqeLd0=;
- b=lvnSoKnqSxaHtGZNv768VSXnFNTmyZZIffG2YxL4knuDDqwzLtU2a69tFd/pRloPlraV
- ygG8XBD0Tgh70gO0LlslQqyRsLT98AXBlbNl7sXJowE2l5NoVybeiZD9QH394M5tN1eJ
- +fC2zMjFc6wDOPM+KE+cAsHd3xbypVssueZMRPa0wz+za1KZOa+UtBE4xeVuxr1s7eAH
- OYzX6s/w20TuG+JgxiFA9eW/beeYYG5sm76JU/4gdYsf+w1ZMJLczaZJkSRP98tvBLsf
- 7UqSnlYLzUoHDt2vZINpfieUNnpU1CU7bdzkZgvQTbzFqQtF/mWjulGO0ux0KxjdcniC TA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g91bt89ts-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 24 May 2022 14:57:18 +0000
-Received: from m0098394.ppops.net (m0098394.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24OEgQL6015588;
-        Tue, 24 May 2022 14:57:17 GMT
-Received: from ppma05wdc.us.ibm.com (1b.90.2fa9.ip4.static.sl-reverse.com [169.47.144.27])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g91bt89t9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 24 May 2022 14:57:17 +0000
-Received: from pps.filterd (ppma05wdc.us.ibm.com [127.0.0.1])
-        by ppma05wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24OEjCFx023245;
-        Tue, 24 May 2022 14:57:16 GMT
-Received: from b03cxnp08028.gho.boulder.ibm.com (b03cxnp08028.gho.boulder.ibm.com [9.17.130.20])
-        by ppma05wdc.us.ibm.com with ESMTP id 3g6qqa0qxe-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 24 May 2022 14:57:16 +0000
-Received: from b03ledav002.gho.boulder.ibm.com (b03ledav002.gho.boulder.ibm.com [9.17.130.233])
-        by b03cxnp08028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24OEvExh27656644
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 24 May 2022 14:57:14 GMT
-Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id D2A05136053;
-        Tue, 24 May 2022 14:57:14 +0000 (GMT)
-Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A3A71136051;
-        Tue, 24 May 2022 14:57:13 +0000 (GMT)
-Received: from [9.47.158.152] (unknown [9.47.158.152])
-        by b03ledav002.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Tue, 24 May 2022 14:57:13 +0000 (GMT)
-Message-ID: <81730e47-21f4-b678-6585-f21e57620a60@linux.ibm.com>
-Date:   Tue, 24 May 2022 10:57:13 -0400
+        Tue, 24 May 2022 10:58:03 -0400
+Received: from mail-ot1-f49.google.com (mail-ot1-f49.google.com [209.85.210.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F88C9CF52;
+        Tue, 24 May 2022 07:58:01 -0700 (PDT)
+Received: by mail-ot1-f49.google.com with SMTP id t14-20020a9d66ce000000b0060af9ed4b87so7173975otm.9;
+        Tue, 24 May 2022 07:58:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=nkf+mvMwrjUruEFDYrxAVkAx6OHaDoDw1ld4EH6YiqY=;
+        b=48EfI1RnJlke9G5cehBsT23gqTpVScNueGkKTVp18pYseHOQld/OOlry8FTfAsUbTN
+         mvUqwC0UNOLZX7sVrDtgIm08XfvTrorT7PLCIyZXR7ysc2X/QWpf3mwddXKgWCHJXlRU
+         7W7tdQZb0wFPSBxm2tdMtBVE6OUBUTa6PEeEmaRjOsNC/BQtdW5Zbn5WWJVUe4Xzif0c
+         dmLy1a+L9GIp8Iauav9ZB+qTMF1XN7WOTH4Heva98VVNl5gXH6aJUwJ09aQBrad2YPVY
+         e9BdxwVvi0nOqJ/mCmVAMkXXclzgAk8rT4YpQbxC7V/1j6m36aW7mS3mN20JdpWlE6UV
+         BW7w==
+X-Gm-Message-State: AOAM5317+aRy/OhPZ2EKF6OA2bZ/uPX7c6lTRQjrulf11f1gHNDKtaet
+        4Jcwlm6NQgnjb+vBbBIWGg/f6wAjYA==
+X-Google-Smtp-Source: ABdhPJxSlaxF5FMo24zzHp9eAzq7uAZ6ra/ZXFH50nBDue68wirqOC+MwRr2fSlFqH39W7Vz+MTO3A==
+X-Received: by 2002:a05:6830:82:b0:60b:127e:d3fb with SMTP id a2-20020a056830008200b0060b127ed3fbmr3978825oto.259.1653404280302;
+        Tue, 24 May 2022 07:58:00 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id t22-20020a05687044d600b000f23989c532sm3427224oai.8.2022.05.24.07.57.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 24 May 2022 07:57:59 -0700 (PDT)
+Received: (nullmailer pid 3778981 invoked by uid 1000);
+        Tue, 24 May 2022 14:57:58 -0000
+Date:   Tue, 24 May 2022 09:57:58 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Serge Semin <fancer.lancer@gmail.com>
+Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Jens Axboe <axboe@kernel.dk>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH v3 01/23] dt-bindings: ata: ahci-platform: Drop
+ dma-coherent property declaration
+Message-ID: <20220524145758.GA3730540-robh@kernel.org>
+References: <20220511231810.4928-1-Sergey.Semin@baikalelectronics.ru>
+ <20220511231810.4928-2-Sergey.Semin@baikalelectronics.ru>
+ <20220517185841.GA1388602-robh@kernel.org>
+ <20220521092248.7i53lxf3gx26fmi5@mobilestation>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH v12 03/26] ima: Define ima_namespace struct and start
- moving variables into it
-Content-Language: en-US
-To:     "Serge E. Hallyn" <serge@hallyn.com>
-Cc:     linux-integrity@vger.kernel.org, zohar@linux.ibm.com,
-        christian.brauner@ubuntu.com, containers@lists.linux.dev,
-        dmitry.kasatkin@gmail.com, ebiederm@xmission.com,
-        krzysztof.struczynski@huawei.com, roberto.sassu@huawei.com,
-        mpeters@redhat.com, lhinds@redhat.com, lsturman@redhat.com,
-        puiterwi@redhat.com, jejb@linux.ibm.com, jamjoom@us.ibm.com,
-        linux-kernel@vger.kernel.org, paul@paul-moore.com, rgb@redhat.com,
-        linux-security-module@vger.kernel.org, jmorris@namei.org,
-        jpenumak@redhat.com, Christian Brauner <brauner@kernel.org>
-References: <20220420140633.753772-1-stefanb@linux.ibm.com>
- <20220420140633.753772-4-stefanb@linux.ibm.com>
- <20220521023351.GA9107@mail.hallyn.com>
-From:   Stefan Berger <stefanb@linux.ibm.com>
-In-Reply-To: <20220521023351.GA9107@mail.hallyn.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: IWXhtstDlKf4et679hp_5cgQyunjeAIG
-X-Proofpoint-GUID: 5PGx_nncF4HZMk5TgLnDKWSpD6YDy_Gr
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-24_07,2022-05-23_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 mlxlogscore=845
- bulkscore=0 adultscore=0 priorityscore=1501 impostorscore=0 clxscore=1015
- mlxscore=0 spamscore=0 suspectscore=0 lowpriorityscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2205240074
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220521092248.7i53lxf3gx26fmi5@mobilestation>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 5/20/22 22:33, Serge E. Hallyn wrote:
-
->> diff --git a/security/integrity/ima/ima_queue_keys.c b/security/integrity/ima/ima_queue_keys.c
->> index 93056c03bf5a..e366a21dd8be 100644
->> --- a/security/integrity/ima/ima_queue_keys.c
->> +++ b/security/integrity/ima/ima_queue_keys.c
->> @@ -10,6 +10,7 @@
->>   
->>   #include <linux/user_namespace.h>
->>   #include <linux/workqueue.h>
->> +#include <linux/ima.h>
->>   #include <keys/asymmetric-type.h>
->>   #include "ima.h"
->>   
->> @@ -42,7 +43,7 @@ static bool timer_expired;
->>   static void ima_keys_handler(struct work_struct *work)
->>   {
->>   	timer_expired = true;
->> -	ima_process_queued_keys();
->> +	ima_process_queued_keys(&init_ima_ns);
->>   }
->>   
->>   /*
->> @@ -130,11 +131,15 @@ bool ima_queue_key(struct key *keyring, const void *payload,
->>    * This function sets ima_process_keys to true and processes queued keys.
->>    * From here on keys will be processed right away (not queued).
->>    */
->> -void ima_process_queued_keys(void)
->> +void ima_process_queued_keys(struct ima_namespace *ns)
->>   {
->>   	struct ima_key_entry *entry, *tmp;
->>   	bool process = false;
->>   
->> +	/* only applies to init_ima_ns */
+On Sat, May 21, 2022 at 12:22:48PM +0300, Serge Semin wrote:
+> On Tue, May 17, 2022 at 01:58:41PM -0500, Rob Herring wrote:
+> > On Thu, May 12, 2022 at 02:17:48AM +0300, Serge Semin wrote:
+> > > It's redundant to have the 'dma-coherent' property explicitly specified in
+> > > the DT schema because it's a generic property described in the core
+> > > DT-schema by which the property is always evaluated.
+> > 
 > 
-> Hm, yes, it seems to, but it should be unreachable with
-> ns != &init_ima_ns, ever, right?
+> > It is not redundant.
+> > 
+> > The core schema defines the property (as a boolean), but this schema 
+> > defines it being used in this binding. Otherwise, it won't be allowed.
 > 
-> So it seems better to either not have this hunk at all, (both
-> here and at ima_keys_handler()) or to actually have a BUG_ON.
-> 
-> Or am I completely misreading the situation?
+> I thought that the generic properties like ranges, dma-ranges, etc
+> including the dma-coherent one due to being defined in the dt-core
+> schema are always evaluated. As such seeing the unevaluatedProperties
+> property is set to false here, they can be used in the DT-nodes with
+> no need to be explicitly specified in the DT node bindings. In
+> addition to that I tested this assumption by dropping the dma-coherent
+> property definition from the AHCI-common schema and executed the
+> DT-bindings check procedure. No error has been spotted:
 
-No, you are right. This function is only calledwith ns = &init_ima_ns at 
-the moment. How about changing it to this here?
+Those common properties are always applied, but not at the same time as 
+a device binding. IOW, it's 2 schemas that are applied to an instance 
+(node) independently. For things like 'reg', the common schema does type 
+checks and the device schema does size (number of entries) checks.
 
-if (WARN_ON(ns != &init_ima_ns))
-         return;
-
-
+There a few things always allowed like 'status', and those are added to 
+the device schema by the tools.
 
 > 
->> +	if (ns != &init_ima_ns)
->> +		return;
->> +
->>   	if (ima_process_keys)
->>   		return;
->>   
->> @@ -159,7 +164,7 @@ void ima_process_queued_keys(void)
->>   
->>   	list_for_each_entry_safe(entry, tmp, &ima_keys, list) {
->>   		if (!timer_expired)
->> -			process_buffer_measurement(&init_user_ns, NULL,
->> +			process_buffer_measurement(ns, &init_user_ns, NULL,
->>   						   entry->payload,
->>   						   entry->payload_len,
->>   						   entry->keyring_name,
->> -- 
->> 2.34.1
+> > [fancer@mobilestation] kernel $ cat Documentation/devicetree/bindings/ata/snps,dwc-ahci.yaml | grep dma-coherent
+> >        dma-coherent;
+> > [fancer@mobilestation] kernel $ make -j8 DT_SCHEMA_FILES=Documentation/devicetree/bindings/ata/snps,dwc-ahci.yaml dt_binding_check
+> >   LINT    Documentation/devicetree/bindings
+> >   DTEX    Documentation/devicetree/bindings/ata/snps,dwc-ahci.example.dts
+> >   CHKDT   Documentation/devicetree/bindings/processed-schema.json
+> >   SCHEMA  Documentation/devicetree/bindings/processed-schema.json
+> >   DTC     Documentation/devicetree/bindings/ata/snps,dwc-ahci.example.dtb
+> >   CHECK   Documentation/devicetree/bindings/ata/snps,dwc-ahci.example.dtb
+> > [fancer@mobilestation] kernel $ cat Documentation/devicetree/bindings/ata/snps,dwc-ahci.example.dts | grep dma-coherent
+> >           dma-coherent;
+> > [fancer@mobilestation] kernel $ echo $?
+> > 0
+> Due to that here are a few backward questions:
+> 1) Am I doing something wrong in the framework of the DT-bindings
+> evaluation? Really I even tried to specify unknown property in the
+> DT-bindings example like "bla-bla-bla;" and no evaluation error was
+> printed. Anyway If what you are saying was correct I would have got an
+> error during the DT-bindings evaluation, but as you can see there was
+> none.
+
+I think this is a known issue which has a pending fix. If a referenced 
+schema has 'additionalProperties: true' in it, then the referring schema 
+never has any unevaluated properties. The fix is pending because all 
+the schema examples that start failing have to be fixed and in a base 
+that people work on (i.e. rc1).
+
+> 2) Am I wrong in thinking that the unevaluatedProperties setting
+> concerns the generic properties defined in the DT-core schema? 
+
+You are wrong as explained above.
+
+> If it
+> doesn't concern the generic properties then does it work for the
+> $ref'ed schemas only? 
+
+Yes, except for the issue making it not work.
+
+> Getting back to the patch topic. We need to drop the dma-coherent
+> property from the schema anyway. AHCI-specification doesn't
+> regulate the DMA operations coherency. The dma-coherent property is
+> more specific to the particular controller implementation mainly
+> dependent on the platform settings. So I'll change the patch log, but
+> get to keep the patch in the series. What do you think?
+
+Intel wrote the spec, so they probably assume coherent. In DT, PPC is 
+default coherent and Arm is default non-coherent.
+
+You'll need to add it to whatever specific device schemas need it if you 
+remove it. Personally, I think it is fine where it is. dma-coherent is 
+valid on any DMA capable device and it's not really a property of the 
+device, but the system. If we could generically identify DMA capable 
+devices, then dma-coherent would be allowed on them automatically.
+
+Rob
