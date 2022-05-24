@@ -2,143 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 765F3C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 22:42:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0590C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 22:42:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242449AbiEXWl6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 18:41:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37774 "EHLO
+        id S242461AbiEXWmo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 18:42:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242484AbiEXWlP (ORCPT
+        with ESMTP id S239127AbiEXWml (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 18:41:15 -0400
-Received: from relay06.th.seeweb.it (relay06.th.seeweb.it [5.144.164.167])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 153A76552;
-        Tue, 24 May 2022 15:41:11 -0700 (PDT)
-Received: from [10.1.250.9] (riviera.nat.ds.pw.edu.pl [194.29.137.1])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Tue, 24 May 2022 18:42:41 -0400
+X-Greylist: delayed 203 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 24 May 2022 15:42:38 PDT
+Received: from h3.fbrelay.privateemail.com (h3.fbrelay.privateemail.com [131.153.2.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25B97546AE;
+        Tue, 24 May 2022 15:42:38 -0700 (PDT)
+Received: from MTA-15-4.privateemail.com (MTA-15-1.privateemail.com [198.54.118.208])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
         (No client certificate requested)
-        by m-r2.th.seeweb.it (Postfix) with ESMTPSA id 805993F734;
-        Wed, 25 May 2022 01:03:24 +0200 (CEST)
-Message-ID: <1d602bb6-d3a4-2ec0-e3e7-d9395edec416@somainline.org>
-Date:   Wed, 25 May 2022 00:41:09 +0200
+        by h3.fbrelay.privateemail.com (Postfix) with ESMTPS id 72E0318007EA;
+        Tue, 24 May 2022 18:39:14 -0400 (EDT)
+Received: from mta-15.privateemail.com (localhost [127.0.0.1])
+        by mta-15.privateemail.com (Postfix) with ESMTP id 336CB18001A5;
+        Tue, 24 May 2022 18:39:13 -0400 (EDT)
+Received: from warhead.local (unknown [10.20.151.140])
+        by mta-15.privateemail.com (Postfix) with ESMTPA id 3763F1800182;
+        Tue, 24 May 2022 18:39:04 -0400 (EDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=mebeim.net; s=default;
+        t=1653431953; bh=TnKjhqksMncdEY2RXthuQsk5fek7maCh5+VoEJsnvcw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=YtCpZeQuQNis7kL6O4IrA5AbMMpTqbBrPNgw5Wqq+c144yGtVQJ3tR8CTdy1Mq6/J
+         9hXuIEGDuv5hQizNGDsLqu+FtBUoc1sMtz5VG1+HgahgjEJ0399B3BaH+36Y/nuTzq
+         VGeQqlbjikU9G1WLtXN39e+fEuaFL7Qowm3ZHXT7WTdimBPM3ytJ7eEFdTxkALkqT8
+         FCA9yoUApBm3nA7560/tDilmx1QGFPGqi7bRnse2gRmBA/90ziwazJduLQZcypOzRV
+         oK8pkj/LybWdY4L1ZWWwqBJHdcfBcdWG02XVjzmqsxLmU/zNexvpQWT4titTE5WvTd
+         /7Mcf3y38MfbQ==
+From:   Marco Bonelli <marco@mebeim.net>
+To:     netdev@vger.kernel.org
+Cc:     Marco Bonelli <marco@mebeim.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
+Subject: [PATCH] ethtool: Fix and optimize ethtool_convert_link_mode_to_legacy_u32()
+Date:   Wed, 25 May 2022 00:38:19 +0200
+Message-Id: <20220524223818.259303-1-marco@mebeim.net>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.9.1
-Subject: Re: [PATCH] arm64: dts: qcom: sc7280: Add touchscreen to villager
-To:     Doug Anderson <dianders@chromium.org>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        Andy Gross <agross@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-References: <20220524134840.1.I80072b8815ac08c12af8f379a33cc2d83693dc51@changeid>
- <311a23c9-e31d-e20d-8ba9-80d3197e8d1d@somainline.org>
- <CAD=FV=WKgPWxEL+mhb9cCGOLObJEPtX_sHLQ1z3rz3usDG1m+Q@mail.gmail.com>
-From:   Konrad Dybcio <konrad.dybcio@somainline.org>
-In-Reply-To: <CAD=FV=WKgPWxEL+mhb9cCGOLObJEPtX_sHLQ1z3rz3usDG1m+Q@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Fix the implementation of ethtool_convert_link_mode_to_legacy_u32(), which
+is supposed to return false if src has bits higher than 31 set. The current
+implementation uses the complement of bitmap_fill(ext, 32) to test high
+bits of src, which is wrong as bitmap_fill() fills _with long granularity_,
+and sizeof(long) can be > 4. No users of this function currently check the
+return value, so the bug was dormant.
 
-On 25/05/2022 00:14, Doug Anderson wrote:
-> Hi,
->
-> On Tue, May 24, 2022 at 2:13 PM Konrad Dybcio
-> <konrad.dybcio@somainline.org> wrote:
->>
->> On 24/05/2022 22:48, Douglas Anderson wrote:
->>> This adds the touchscreen to the sc7280-herobrine-villager device
->>> tree. Note that the touchscreen on villager actually uses the reset
->>> line and thus we use the more specific "elan,ekth6915" compatible
->>> which allows us to specify the reset.
->>>
->>> The fact that villager's touchscreen uses the reset line can be
->>> contrasted against the touchscreen for CRD/herobrine-r1. On those
->>> boards, even though the touchscreen goes to the display, it's not
->>> hooked up to anything there.
->>>
->>> In order to keep the line parked on herobrine/CRD, we'll move the
->>> pullup from the qcard.dtsi file to the specific boards. This allows us
->>> to disable the pullup in the villager device tree since the pin is an
->>> output.
->>>
->>> Signed-off-by: Douglas Anderson <dianders@chromium.org>
->>> ---
->>> This uses bindings introduced in the patch ("dt-bindings: HID:
->>> i2c-hid: elan: Introduce bindings for Elan eKTH6915") [1].
->>>
->>> [1] https://lore.kernel.org/r/20220523142257.v2.1.Iedc61f9ef220a89af6a031200a7850a27a440134@changeid
->>>
->>>    .../boot/dts/qcom/sc7280-herobrine-crd.dts    | 11 ++++++++
->>>    .../qcom/sc7280-herobrine-herobrine-r1.dts    | 11 ++++++++
->>>    .../dts/qcom/sc7280-herobrine-villager-r0.dts | 25 +++++++++++++++++++
->>>    arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi    |  1 -
->>>    4 files changed, 47 insertions(+), 1 deletion(-)
->>>
->>> diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts b/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts
->>> index a4ac33c4fd59..b79d84d7870a 100644
->>> --- a/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts
->>> +++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts
->>> @@ -134,6 +134,17 @@ &sdhc_2 {
->>>        status = "okay";
->>>    };
->>>
->>> +/* PINCTRL - ADDITIONS TO NODES IN PARENT DEVICE TREE FILES */
->> Please drop this line, this isn't msm-3.4. It's immediately obvious that
->> if a pin is referenced by a label and it is not defined in this file
->> (because otherwise it wouldn't be both defined and referenced here..),
->> it comes from a previously included device tree.
-> In general these headings specify a change in sort ordering. Without
-> them then either we intersperse pinctrl overrides with other stuff,
-> which IMO is overall worse or people have no idea why the sort
-> ordering changes.
+Also remove the check for __ETHTOOL_LINK_MODE_MASK_NBITS > 32, as the enum
+ethtool_link_mode_bit_indices contains far beyond 32 values. Using
+find_next_bit() to test the src bitmask works regardless of this anyway.
 
-I get what you mean, but at the end of the day, the entire machine DT 
-specifies all machine-specific changes and only machine-specific 
-changes. They all are a part of a bigger picture, sometimes being 
-downstream from the SoC, sometimes downstream from a common board. I 
-don't think it brings much benefit if at all to separate them into 
-sections like these, if in the end they all correspond to modifications 
-present in the hardware. In its current form, the sorting is all over 
-the place, and ideally we could have labels sorted alphabetically.
+Signed-off-by: Marco Bonelli <marco@mebeim.net>
+---
+ net/ethtool/ioctl.c | 17 ++---------------
+ 1 file changed, 2 insertions(+), 15 deletions(-)
 
-The present solution, in my opinion, causes more disarray as you first 
-have to think about what is the change against and then find it in the 
-corresponding subsection instead of thinking of it as a complete 
-quote-on-quote diff against the parent DTSIs. Plus, most DTs don't split 
-it like that.
+diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
+index 326e14ee05db..7fb3f3fd6f3c 100644
+--- a/net/ethtool/ioctl.c
++++ b/net/ethtool/ioctl.c
+@@ -369,22 +369,9 @@ EXPORT_SYMBOL(ethtool_convert_legacy_u32_to_link_mode);
+ bool ethtool_convert_link_mode_to_legacy_u32(u32 *legacy_u32,
+ 					     const unsigned long *src)
+ {
+-	bool retval = true;
+-
+-	/* TODO: following test will soon always be true */
+-	if (__ETHTOOL_LINK_MODE_MASK_NBITS > 32) {
+-		__ETHTOOL_DECLARE_LINK_MODE_MASK(ext);
+-
+-		linkmode_zero(ext);
+-		bitmap_fill(ext, 32);
+-		bitmap_complement(ext, ext, __ETHTOOL_LINK_MODE_MASK_NBITS);
+-		if (linkmode_intersects(ext, src)) {
+-			/* src mask goes beyond bit 31 */
+-			retval = false;
+-		}
+-	}
+ 	*legacy_u32 = src[0];
+-	return retval;
++	return find_next_bit(src, __ETHTOOL_LINK_MODE_MASK_NBITS, 32) ==
++		__ETHTOOL_LINK_MODE_MASK_NBITS;
+ }
+ EXPORT_SYMBOL(ethtool_convert_link_mode_to_legacy_u32);
+ 
+-- 
+2.30.2
 
-
->
->>> @@ -604,7 +604,6 @@ ts_int_conn: ts-int-conn {
->>>        ts_rst_conn: ts-rst-conn {
->>>                pins = "gpio54";
->>>                function = "gpio";
->>> -             bias-pull-up;
->> If you overwrite it where it should be overwritten, wouldn't it make
->> more sense to leave bias-pull-up here as a default configuration for
->> boards that don't have a peculiar routed-but-NC line?
-> Yeah, it'd be nice.  ...but because of the way "bias" is specified in
-> the device tree it means an ugly "/delete-property" in places that
-> actually route the line. I believe that, style wise, the preference is
-> to avoid delete-property and move the bias toward board files in cases
-> like this. Bjorn can feel free to override me if he disagrees.
-
-Ok, totally fair, it somehow slipped my mind that you have to delete one 
-property to replace it with the other, I retract that comment then.
-
-
-Konrad
-
->
-> -Doug
