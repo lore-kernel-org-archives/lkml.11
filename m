@@ -2,121 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C773FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 15:59:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D14C0C43219
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 15:59:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239180AbiEXP7r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 11:59:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45640 "EHLO
+        id S239209AbiEXP7u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 11:59:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239163AbiEXP7j (ORCPT
+        with ESMTP id S239182AbiEXP7p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 11:59:39 -0400
-Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48845986DA;
-        Tue, 24 May 2022 08:59:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=deltatee.com; s=20200525; h=Subject:In-Reply-To:From:References:Cc:To:
-        MIME-Version:Date:Message-ID:content-disposition;
-        bh=IlWWOeHUyxI87/ZUi6NS9TFLsUJi3lbfeazdE29uhPk=; b=imemdAQIiSRD+gdiClRe4DzWb/
-        YiHPsg+seb3ku5EAdgvOL0M0uJXCBJMn0HD6abbC/k2c3FzHpAWoJruiwsP1lumXw2uAh0yzmvD2M
-        OSij1AM/47VXlq9dxn/9kN63aufFLnEVFLFBmrleegqL9RotRZ0cT3VQIj0aWyAtyd4ScIEL5Rjms
-        p6626v6FHEzo9lXf9Uy5zwo5ubha/PFBevop7luQPA0eY1MOLnwKX8N5JWfuu4w86T2fiGk3UuAPR
-        VuvtbU+XESWfe2k3axgOH3BtOIqkaC3YWY7yWAcdmN7eFSwrgTGgeo5CRuaB1vgySJQQxS/RH2ROr
-        YyiNEW4w==;
-Received: from guinness.priv.deltatee.com ([172.16.1.162])
-        by ale.deltatee.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <logang@deltatee.com>)
-        id 1ntWwV-006RAB-Da; Tue, 24 May 2022 09:59:32 -0600
-Message-ID: <f270d92d-7c34-2f58-89c5-ccb7a8a37872@deltatee.com>
-Date:   Tue, 24 May 2022 09:59:30 -0600
+        Tue, 24 May 2022 11:59:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1841A9968A;
+        Tue, 24 May 2022 08:59:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BD258B81A3A;
+        Tue, 24 May 2022 15:59:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B21DC34113;
+        Tue, 24 May 2022 15:59:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653407981;
+        bh=jN+1HIsiA3bRhuPvFKVuv5fZquiqYbHfsKIPAUjrDbU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ManMZzIA6Ikh7C3injz4DLATRPTGi8MAIMz0K+5JW+lnlbOXf5QnY3wHnJTZjkLBX
+         8mmsJnX1RV1jjaWAkx0ACmFOg3WPIZH1I5MiD01ELbjgamt7yOQBelHFH62IN2iB9y
+         sYwF93E3V+kGR3Ayyc3XXW5iPAXZoQy+h1s557iifPx6YQ7fZOYWW9F4mx2CU60vXs
+         dQ2DhO9XkhOsfVlKxOFil1mx7qas7o2x6tRePGOxe/t4nGMy+MtyJ68gkdsBWLYpxJ
+         bH9/6wSWeNq3nP0M8qqS3efLCaKKLoMwOtCcVzZi1HBp7S2Q8KoqOoMPNX/TsN27UY
+         e+5hmydhDVvZQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     "Dustin L. Howett" <dustin@howett.net>,
+        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>,
+        perex@perex.cz, tiwai@suse.com, jeremy.szu@canonical.com,
+        wse@tuxedocomputers.com, kai.heng.feng@canonical.com,
+        andy.chi@canonical.com, tanureal@opensource.cirrus.com,
+        cam@neo-zeon.de, kailang@realtek.com, yong.wu@mediatek.com,
+        alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.17 03/12] ALSA: hda/realtek: Add quirk for the Framework Laptop
+Date:   Tue, 24 May 2022 11:59:17 -0400
+Message-Id: <20220524155929.826793-3-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220524155929.826793-1-sashal@kernel.org>
+References: <20220524155929.826793-1-sashal@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Content-Language: en-CA
-To:     Song Liu <song@kernel.org>, Donald Buczek <buczek@molgen.mpg.de>
-Cc:     open list <linux-kernel@vger.kernel.org>,
-        linux-raid <linux-raid@vger.kernel.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Guoqing Jiang <guoqing.jiang@linux.dev>,
-        Xiao Ni <xni@redhat.com>, Stephen Bates <sbates@raithlin.com>,
-        Martin Oliveira <Martin.Oliveira@eideticom.com>,
-        David Sloan <David.Sloan@eideticom.com>
-References: <20220519191311.17119-1-logang@deltatee.com>
- <20220519191311.17119-13-logang@deltatee.com>
- <62b09487-9223-db3d-2165-789a51230060@molgen.mpg.de>
- <CAPhsuW5FKh7VKgU+=eU4_ad4btFMwU7ymMNMZ5TZVQbv82MaHg@mail.gmail.com>
-From:   Logan Gunthorpe <logang@deltatee.com>
-In-Reply-To: <CAPhsuW5FKh7VKgU+=eU4_ad4btFMwU7ymMNMZ5TZVQbv82MaHg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 172.16.1.162
-X-SA-Exim-Rcpt-To: song@kernel.org, buczek@molgen.mpg.de, linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org, hch@infradead.org, guoqing.jiang@linux.dev, xni@redhat.com, sbates@raithlin.com, Martin.Oliveira@eideticom.com, David.Sloan@eideticom.com
-X-SA-Exim-Mail-From: logang@deltatee.com
-Subject: Re: [PATCH v1 12/15] md/raid5-cache: Add RCU protection to conf->log
- accesses
-X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
-X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: "Dustin L. Howett" <dustin@howett.net>
 
+[ Upstream commit 309d7363ca3d9fcdb92ff2d958be14d7e8707f68 ]
 
-On 2022-05-23 00:47, Song Liu wrote:
->> A problem here is that `struct r5l_log` of `conf->log` is private to raid5-cache.c and gcc below version 10 (wrongly) regards the `typeof(*p) *local` declaration of __rcu_access_pointer as a dereference:
->>
->>    CC      drivers/md/raid5.o
->>
->> In file included from ./include/linux/rculist.h:11:0,
->>
->>                   from ./include/linux/dcache.h:8,
->>
->>                   from ./include/linux/fs.h:8,
->>
->>                   from ./include/linux/highmem.h:5,
->>
->>                   from ./include/linux/bvec.h:10,
->>
->>                   from ./include/linux/blk_types.h:10,
->>
->>                   from ./include/linux/blkdev.h:9,
->>
->>                   from drivers/md/raid5.c:38:
->>
->> drivers/md/raid5-log.h: In function ‘log_stripe’:
->>
->> ./include/linux/rcupdate.h:384:9: error: dereferencing pointer to incomplete type ‘struct r5l_log’
->>
->>    typeof(*p) *local = (typeof(*p) *__force)READ_ONCE(p); \
->>
->>           ^
->>
->> ./include/linux/rcupdate.h:495:31: note: in expansion of macro ‘__rcu_access_pointer’
->>
->>   #define rcu_access_pointer(p) __rcu_access_pointer((p), __UNIQUE_ID(rcu), __rcu)
->>
->>                                 ^~~~~~~~~~~~~~~~~~~~
->>
->> drivers/md/raid5-log.h:61:6: note: in expansion of macro ‘rcu_access_pointer’
->>
->>    if (rcu_access_pointer(conf->log)) {
->>
->>        ^~~~~~~~~~~~~~~~~~
->>
->> make[2]: *** [scripts/Makefile.build:288: drivers/md/raid5.o] Error 1
->>
->> make[1]: *** [scripts/Makefile.build:550: drivers/md] Error 2
->>
->> make: *** [Makefile:1834: drivers] Error 2
-> 
-> This is annoying.. And there are a few other cases in raid5-log.h and
-> raid5.c.
-> 
-> Maybe we should move the definition of r5l_log to raid5-log.h?
+Some board revisions of the Framework Laptop have an ALC295 with a
+disconnected or faulty headset mic presence detect.
 
-That's the only solution I can think of, and what I'll likely do for v2.
-If anyone has a better solution I'm open to it.
+The "dell-headset-multi" fixup addresses this issue, but also enables an
+inoperative "Headphone Mic" input device whenever a headset is
+connected.
 
-Logan
+Adding a new quirk chain specific to the Framework Laptop resolves this
+issue. The one introduced here is based on the System76 "no headphone
+mic" quirk chain.
+
+The VID:PID f111:0001 have been allocated to Framework Computer for this
+board revision.
+
+Revision history:
+- v2: Moved to a custom quirk chain to suppress the "Headphone Mic"
+  pincfg.
+
+Signed-off-by: Dustin L. Howett <dustin@howett.net>
+Link: https://lore.kernel.org/r/20220511010759.3554-1-dustin@howett.net
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ sound/pci/hda/patch_realtek.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
+index 8425eadf6873..18af98d18b6e 100644
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -7038,6 +7038,7 @@ enum {
+ 	ALC287_FIXUP_LEGION_16ACHG6,
+ 	ALC287_FIXUP_CS35L41_I2C_2,
+ 	ALC285_FIXUP_HP_SPEAKERS_MICMUTE_LED,
++	ALC295_FIXUP_FRAMEWORK_LAPTOP_MIC_NO_PRESENCE,
+ };
+ 
+ static const struct hda_fixup alc269_fixups[] = {
+@@ -8814,6 +8815,15 @@ static const struct hda_fixup alc269_fixups[] = {
+ 		.chained = true,
+ 		.chain_id = ALC269_FIXUP_DELL4_MIC_NO_PRESENCE,
+ 	},
++	[ALC295_FIXUP_FRAMEWORK_LAPTOP_MIC_NO_PRESENCE] = {
++		.type = HDA_FIXUP_PINS,
++		.v.pins = (const struct hda_pintbl[]) {
++			{ 0x19, 0x02a1112c }, /* use as headset mic, without its own jack detect */
++			{ }
++		},
++		.chained = true,
++		.chain_id = ALC269_FIXUP_HEADSET_MODE_NO_HP_MIC
++	},
+ };
+ 
+ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
+@@ -9286,6 +9296,7 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
+ 	SND_PCI_QUIRK(0x8086, 0x2074, "Intel NUC 8", ALC233_FIXUP_INTEL_NUC8_DMIC),
+ 	SND_PCI_QUIRK(0x8086, 0x2080, "Intel NUC 8 Rugged", ALC256_FIXUP_INTEL_NUC8_RUGGED),
+ 	SND_PCI_QUIRK(0x8086, 0x2081, "Intel NUC 10", ALC256_FIXUP_INTEL_NUC10),
++	SND_PCI_QUIRK(0xf111, 0x0001, "Framework Laptop", ALC295_FIXUP_FRAMEWORK_LAPTOP_MIC_NO_PRESENCE),
+ 
+ #if 0
+ 	/* Below is a quirk table taken from the old code.
+-- 
+2.35.1
+
