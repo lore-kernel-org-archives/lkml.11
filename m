@@ -2,111 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 541AAC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 22:10:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D473C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 22:10:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242058AbiEXWKf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 18:10:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42496 "EHLO
+        id S240251AbiEXWKi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 18:10:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242042AbiEXWK0 (ORCPT
+        with ESMTP id S242043AbiEXWK1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 18:10:26 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4054D819A3
+        Tue, 24 May 2022 18:10:27 -0400
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4706682145
         for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 15:10:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653430225; x=1684966225;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=KjUmR28PG6nuPU2mel4Olt+Fqotqsfe0DrqeDe68tw8=;
-  b=meNks6yjZ64+P80N4J/tSvwEl2Yuc4FiWNXI7JXRRqMhSStNdZ+mbnFw
-   EmeV6+qQ3ircE5eLnf0b4wsbY650ekXWWKXc4IeF/hpm4EFHxuDgshINw
-   VJmcrWtR/Or88Ab81EO4QS4+qQ04FldcJUAaklPivtJzgW+vXGPDbai8u
-   4e9nOqKwoQZB1UyeSpltwCfVj9yNLMGzii8lrLpAhbDxSiDlh5Zw3PXhm
-   GwCyXcR++p1Rhwcuzn8OvL0E4aanJ+vxHVO0ONMsk7hVlHZhwBkyhHhQk
-   fbd3Z/BtcP3f2xErHUX5exiA8HaBpsr8LL7OmKFAhf8W96+3Raw9Gvv2b
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10357"; a="273657963"
-X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
-   d="scan'208";a="273657963"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 May 2022 15:10:24 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
-   d="scan'208";a="664143791"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by FMSMGA003.fm.intel.com with ESMTP; 24 May 2022 15:10:21 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 1D779709; Wed, 25 May 2022 01:10:22 +0300 (EEST)
-From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org
-Cc:     ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
-        hpa@zytor.com, linux-kernel@vger.kernel.org,
-        sathyanarayanan.kuppuswamy@linux.intel.com, seanjc@google.com,
-        thomas.lendacky@amd.com, x86@kernel.org,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Subject: [PATCHv3 3/3] x86/tdx: Handle load_unaligned_zeropad() page-cross to a shared page
-Date:   Wed, 25 May 2022 01:10:12 +0300
-Message-Id: <20220524221012.62332-4-kirill.shutemov@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220524221012.62332-1-kirill.shutemov@linux.intel.com>
-References: <20220524221012.62332-1-kirill.shutemov@linux.intel.com>
+Received: by mail-pl1-x62f.google.com with SMTP id a17so938257plb.4
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 15:10:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Y7QkV8r/KLZMiTae8DdBEkpYYSnvZxhbdkPijh+HR0w=;
+        b=WGePzYWOS0TR2PwNiWKrPbOkDbWSJFzcli09MrtLdjM6gINy9pwQ7ML+/MSYlyfsfN
+         wj+piMgpir2ZDOJVYO3mHg1qZMUqIv+RAdIgb/vcFZgdejrhpZUpht2+viWpIsEuOb4h
+         5LyFFA3gByMPURP66ILdd8t9aYw4zEjxlEELk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Y7QkV8r/KLZMiTae8DdBEkpYYSnvZxhbdkPijh+HR0w=;
+        b=blhoqEvfkbKtPgxDeCc57Knx/q2dmLzNOEEQYU8TC4lLDv9P6Xx58NRzTq5DF8cjfa
+         FPIOgRaYsSgiCuLSIeHp0dUiIKBIMZ7+Jtgob21QM2WkWGu38fQ76xCUScZID1PXm9xo
+         4ZhY+ViVSyH3Je4v21dOFjk9zbKrMabOK3Gvqn0cLY4aTGyvSMJANtnPJ7wcI2SRzaV/
+         kwNxpRb9Rnj39+MVYoRAGgZqdldQwDcJH+w1onBPzvJ+ChsoDewzZbxL702k4/S0JuDG
+         ZLfepliHy0w8RY8Tyv+9IuqasX5x6F97XJE5HlW8InJe9l71Xausw7QjYe2hDj0362Ch
+         1Yyw==
+X-Gm-Message-State: AOAM530vdGd9kAQXHi4SU3Y3/ZsfldXMd9t4uvPenVImUkg+JfTs3PUS
+        Mq6dfuyJx/3OhM5GkZfELK+ugQ==
+X-Google-Smtp-Source: ABdhPJwwFaSFsAx87UW6m4AZL2Z81scAqlljR5FX8fSUBRTjAd0skm5/+NQYrCW4zuduzXs90Pblmw==
+X-Received: by 2002:a17:903:10c:b0:161:f1fb:fb18 with SMTP id y12-20020a170903010c00b00161f1fbfb18mr23230070plc.78.1653430224770;
+        Tue, 24 May 2022 15:10:24 -0700 (PDT)
+Received: from localhost ([2620:15c:11a:202:4d83:f549:9abd:427])
+        by smtp.gmail.com with UTF8SMTPSA id k6-20020a170902d58600b0015ea95948ebsm7683120plh.134.2022.05.24.15.10.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 24 May 2022 15:10:24 -0700 (PDT)
+Date:   Tue, 24 May 2022 15:10:22 -0700
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Krishna Kurapati <quic_kriskura@quicinc.com>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Doug Anderson <dianders@chromium.org>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org, quic_pkondeti@quicinc.com,
+        quic_ppratap@quicinc.com, quic_vpulyala@quicinc.com,
+        Sandeep Maheswaram <quic_c_sanm@quicinc.com>
+Subject: Re: [PATCH v17 4/5] usb: dwc3: qcom: Configure wakeup interrupts
+ during suspend
+Message-ID: <Yo1XzhTTxzRiNN8O@google.com>
+References: <1653387228-28110-1-git-send-email-quic_kriskura@quicinc.com>
+ <1653387228-28110-5-git-send-email-quic_kriskura@quicinc.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <1653387228-28110-5-git-send-email-quic_kriskura@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-load_unaligned_zeropad() can lead to unwanted loads across page boundaries.
-The unwanted loads are typically harmless. But, they might be made to
-totally unrelated or even unmapped memory. load_unaligned_zeropad()
-relies on exception fixup (#PF, #GP and now #VE) to recover from these
-unwanted loads.
+On Tue, May 24, 2022 at 03:43:47PM +0530, Krishna Kurapati wrote:
+> From: Sandeep Maheswaram <quic_c_sanm@quicinc.com>
+> 
+> Configure DP/DM line interrupts based on the USB2 device attached to
+> the root hub port. When HS/FS device is connected, configure the DP line
+> as falling edge to detect both disconnect and remote wakeup scenarios. When
+> LS device is connected, configure DM line as falling edge to detect both
+> disconnect and remote wakeup. When no device is connected, configure both
+> DP and DM lines as rising edge to detect HS/HS/LS device connect scenario.
+> 
+> Signed-off-by: Sandeep Maheswaram <quic_c_sanm@quicinc.com>
+> Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
 
-In TDX guests, the second page can be shared page and VMM may configure
-it to trigger #VE.
+With the addition of dwc3_qcom_update_usb2_speed() the patch has changed a
+bit since my review, I'm generally on board with the direction this is going,
+but please remove my R-B tag for now.
 
-Kernel assumes that #VE on a shared page is MMIO access and tries to
-decode instruction to handle it. In case of load_unaligned_zeropad() it
-may result in confusion as it is not MMIO access.
+> Signed-off-by: Krishna Kurapati <quic_kriskura@quicinc.com>
+> ---
+>  drivers/usb/dwc3/dwc3-qcom.c | 74 ++++++++++++++++++++++++++++++++++++++------
+>  1 file changed, 65 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/usb/dwc3/dwc3-qcom.c b/drivers/usb/dwc3/dwc3-qcom.c
+> index 7352124..5d5db62 100644
+> --- a/drivers/usb/dwc3/dwc3-qcom.c
+> +++ b/drivers/usb/dwc3/dwc3-qcom.c
+> @@ -20,7 +20,8 @@
+>  #include <linux/usb/of.h>
+>  #include <linux/reset.h>
+>  #include <linux/iopoll.h>
+> -
+> +#include <linux/usb/hcd.h>
+> +#include <linux/usb.h>
+>  #include "core.h"
+>  
+>  /* USB QSCRATCH Hardware registers */
+> @@ -296,11 +297,37 @@ static void dwc3_qcom_interconnect_exit(struct dwc3_qcom *qcom)
+>  	icc_put(qcom->icc_path_apps);
+>  }
+>  
+> -static void dwc3_qcom_enable_wakeup_irq(int irq)
+> +enum usb_device_speed dwc3_qcom_update_usb2_speed(struct dwc3_qcom *qcom)
+> +{
+> +	struct dwc3	*dwc = platform_get_drvdata(qcom->dwc3);
+> +	struct usb_hcd	*hcd = platform_get_drvdata(dwc->xhci);
+> +	struct usb_device *udev;
+> +	enum usb_device_speed usb2_speed;
 
-Fix it by detecting unaligned MMIO accesses (it includes page-crossings)
-and fail them. load_unaligned_zeropad() will recover using exception
-fixups.
+nit: dwc and hcd are indented to align, udev and usb2_speed not. Either align
+the indentation or not, but don't be inconsistent. My vote goes for removing
+the alignment.
 
-The issue was discovered by analysis. It was not triggered during the
-testing.
+> +
+> +	/*
+> +	 * It is possible to query the speed of all children of
+> +	 * USB2.0 root hub via usb_hub_for_each_child(). DWC3 code
+> +	 * currently supports only 1 port per controller. So
+> +	 * this is sufficient.
+> +	 */
+> +	udev = usb_hub_find_child(hcd->self.root_hub, 1);
+> +
+> +	if (udev)
+> +		usb2_speed = udev->speed;
+> +	else
+> +		usb2_speed = USB_SPEED_UNKNOWN;
+> +
+> +	return usb2_speed;
 
-Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
----
- arch/x86/coco/tdx/tdx.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+nit: you could get away without 'usb2_speed':
 
-diff --git a/arch/x86/coco/tdx/tdx.c b/arch/x86/coco/tdx/tdx.c
-index 94e447e7f103..4e566ed67db8 100644
---- a/arch/x86/coco/tdx/tdx.c
-+++ b/arch/x86/coco/tdx/tdx.c
-@@ -331,6 +331,17 @@ static int handle_mmio(struct pt_regs *regs, struct ve_info *ve)
- 			return -EINVAL;
- 	}
- 
-+	/*
-+	 * MMIO accesses suppose to be naturally aligned and therefore never
-+	 * cross a page boundary. Seeing unaligned accesses indicates a bug or
-+	 * load_unaligned_zeropad() that steps into unmapped shared page.
-+	 *
-+	 * In both cases fail the #VE handling. load_unaligned_zeropad() will
-+	 * recover using exception fixups.
-+	 */
-+	if ((unsigned long)insn_get_addr_ref(&insn, regs) % size)
-+		return -EFAULT;
-+
- 	/* Handle writes first */
- 	switch (mmio) {
- 	case MMIO_WRITE:
--- 
-2.35.1
+	if (!udev)
+		return USB_SPEED_UNKNOWN;
+
+	return udev->speed;
 
