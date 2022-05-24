@@ -2,132 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03EE9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 06:02:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 237CAC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 06:09:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234720AbiEXGCx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 02:02:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35512 "EHLO
+        id S234749AbiEXGJm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 02:09:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234260AbiEXGCd (ORCPT
+        with ESMTP id S234732AbiEXGJi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 02:02:33 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBEC862113
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 23:02:31 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id c10so21709807edr.2
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 23:02:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Nw23TS5XTec30rhvH0nb9YZUl+vCbv2UU1WiPCiZsMU=;
-        b=V8AqDG0hACi4K+uvmcUbHpgEMaTCH7TF5Ex6gWm7j4ZB1rwkDjGO1uMbU7iBYO/Q9e
-         CW/5NDyKW10LGRgUeNYfi/WJfqByLjwE1KyZIUtRkwEjIMixRlkwhKJ2Z4GYtLMgApap
-         eYOF0bOsnr7/l+V2qtd+5rlVirrfOm2pffEYLjyZMW7A7yTOTAmBj0X1qxKnQQCy5eWr
-         2j8TyVz3iS4ewfsOnnKasmBbLGkLEuyE3HpWeZ2KOnboHC3+QvWoKyWDVx0ByZZ/f//r
-         5JIAfdPGCsm0zvg9TNpTzkWUKvtygpV+d01vfaSuGUEej5MAdjPrl13Ck1cOkTmXBXBj
-         E6qA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=Nw23TS5XTec30rhvH0nb9YZUl+vCbv2UU1WiPCiZsMU=;
-        b=7Bscy/ceqxtfxTtGMwBQfnhrHvl7MljgBDe3n8gVeygG5gTAa//EArUiMVWvFHAqmO
-         C06Vnzh/WF7bvKwz3Q87CbgR3k4d+UMLyinnr6bMw7oR5/8XYb+PnfSXF1Tsgb8/NUcP
-         NcKBoK1qkmzdu+EkihSAWJ/9zIwoxX7YfBkafr7blMn8bTzWTHCqbYdpdLx2qZSrTqEh
-         1RX9Kf7vcEpb0x9Y6IZrqsGbtoCttexd+EgtPDPzO5rNzkyeSeeC+MDzfi5Adr8a0jiH
-         A3/ch240f0IjbIx07F+ZEkVtLL1VxIZnNl+xwk3Q2ye9cZJXDCFUX4BMRthv/P0QtKsD
-         d4Ew==
-X-Gm-Message-State: AOAM533+DZkXyZhozRtfB3pfS+XK73BDlZgvzsLHuA7XNb/fQKZERxiX
-        ehRUVaoUvg1qZ+En9JRePTY=
-X-Google-Smtp-Source: ABdhPJxRTStMwC9RaJeh4Ph3l6z0wF+oEk4fi2gamRfVkSe+JLi+Susi1MvcvXNjaggd6Gzn5i522g==
-X-Received: by 2002:a05:6402:75a:b0:42a:bbb9:504c with SMTP id p26-20020a056402075a00b0042abbb9504cmr27522865edy.348.1653372150387;
-        Mon, 23 May 2022 23:02:30 -0700 (PDT)
-Received: from gmail.com (84-236-113-78.pool.digikabel.hu. [84.236.113.78])
-        by smtp.gmail.com with ESMTPSA id d16-20020aa7d690000000b0042617ba63c0sm9323733edr.74.2022.05.23.23.02.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 May 2022 23:02:29 -0700 (PDT)
-Sender: Ingo Molnar <mingo.kernel.org@gmail.com>
-Date:   Tue, 24 May 2022 08:02:27 +0200
-From:   Ingo Molnar <mingo@kernel.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Borislav Petkov <bp@alien8.de>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [GIT PULL] objtool changes for v5.19
-Message-ID: <Yox088fRrhh4grBX@gmail.com>
-References: <You3JC/BOIyEnmQj@gmail.com>
- <Yoxucp7aUrCaV9uE@gmail.com>
+        Tue, 24 May 2022 02:09:38 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9805A6A438;
+        Mon, 23 May 2022 23:09:37 -0700 (PDT)
+Received: from dggpeml500020.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4L6kKd6wN7zjWvr;
+        Tue, 24 May 2022 14:08:53 +0800 (CST)
+Received: from [10.174.177.174] (10.174.177.174) by
+ dggpeml500020.china.huawei.com (7.185.36.88) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 24 May 2022 14:09:35 +0800
+Message-ID: <371b06da-e3e4-f717-234c-bfb32d323b5f@huawei.com>
+Date:   Tue, 24 May 2022 14:09:35 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yoxucp7aUrCaV9uE@gmail.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+From:   Baokun Li <libaokun1@huawei.com>
+Subject: Re: [PATCH 2/2] ext4: correct the judgment of BUG in
+ ext4_mb_normalize_request
+To:     Ritesh Harjani <ritesh.list@gmail.com>
+CC:     <linux-ext4@vger.kernel.org>, <tytso@mit.edu>,
+        <adilger.kernel@dilger.ca>, <jack@suse.cz>,
+        <linux-kernel@vger.kernel.org>, <yi.zhang@huawei.com>,
+        <yebin10@huawei.com>, <yukuai3@huawei.com>
+References: <20220521134217.312071-1-libaokun1@huawei.com>
+ <20220521134217.312071-3-libaokun1@huawei.com>
+ <20220523200844.fal3pmp7epid3rvv@riteshh-domain>
+In-Reply-To: <20220523200844.fal3pmp7epid3rvv@riteshh-domain>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.177.174]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpeml500020.china.huawei.com (7.185.36.88)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+在 2022/5/24 4:08, Ritesh Harjani 写道:
+> On 22/05/21 09:42PM, Baokun Li wrote:
+>> When either of the "start + size <= ac->ac_o_ex.fe_logical" or
+>> "start > ac->ac_o_ex.fe_logical" conditions is met, it indicates
+>> that the fe_logical is not in the allocated range.
+> Sounds about right to me based on the logic in ext4_mb_use_inode_pa().
+> We try to allocate/preallocate such that ac->ac_o_ex.fe_logical should fall
+> within the preallocated range. So if our start or start + size doesn't include
+> fe_logical then it is a bug in the ext4_mb_normalize_request() logic.
+Yes, exactly.
+> But should we be so harsh to hit a bug_on() or make it warn_on()?
+I don't think hit a bug_on() is a problem. BUG_ON is not triggered here 
+and will be triggered later.
+> Also did you run any fs tests with this change.
+Yes, I ran xfstests on ext3 and ext4 and found no problems.
+> Since it looks like this
+> logic existed since mballoc was introduced.
+>
+Yes, on our coverage report, those lines of code never seem to get there.
 
-* Ingo Molnar <mingo@kernel.org> wrote:
+>> In this case, it should be bug_ON.
+>>
+>> Fixes: dfe076c106f6 ("ext4: get rid of code duplication")
+> No, there is no issue with this patch. It correctly just removes the duplicate
+> logic.
+Okay, I'm going to remove this tag.
+>> Signed-off-by: Baokun Li<libaokun1@huawei.com>
+>> ---
+>>   fs/ext4/mballoc.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/fs/ext4/mballoc.c b/fs/ext4/mballoc.c
+>> index 32410b79b664..d0fb57970648 100644
+>> --- a/fs/ext4/mballoc.c
+>> +++ b/fs/ext4/mballoc.c
+>> @@ -4190,7 +4190,7 @@ ext4_mb_normalize_request(struct ext4_allocation_context *ac,
+>>   	}
+>>   	rcu_read_unlock();
+>>
+>> -	if (start + size <= ac->ac_o_ex.fe_logical &&
+>> +	if (start + size <= ac->ac_o_ex.fe_logical ||
+>>   			start > ac->ac_o_ex.fe_logical) {
+>>   		ext4_msg(ac->ac_sb, KERN_ERR,
+>>   			 "start %lu, size %lu, fe_logical %lu",
+>> --
+>> 2.31.1
+>>
+> .
 
->  34 files changed, 959 insertions(+), 684 deletions(-)
+-- 
+With Best Regards,
+Baokun Li
 
-Note that with your latest tree you'll get 3 new conflicts:
-
-  CONFLICT (content): Merge conflict in scripts/link-vmlinux.sh
-  CONFLICT (content): Merge conflict in scripts/Makefile.build
-  CONFLICT (content): Merge conflict in arch/x86/Kconfig
-
-If you want to double check, you can find our resolution in tip:x86/merge:
-
-  a1df7cc57786 Merge branch 'objtool/core' into x86/merge, to resolve conflicts
-
-At:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/merge # INTERNAL MERGE TREE, DO NOT PULL
-
-Here's the merge description:
-
- ===================
- The following commits between objtool/core and various x86 branches conflict:
-
-   968b493173ac x86/mm: Make DMA memory shared for TD guest
-   77a512e35db7 x86/boot: Avoid #VE during boot for TDX platforms
-   65fab5bc033a x86/tdx: Exclude shared bit from __PHYSICAL_MASK
-   41394e33f3a0 x86/tdx: Extend the confidential computing API to support TDX guests
-   59bd54a84d15 x86/tdx: Detect running as a TDX guest in early boot
-   dbae0a934f09 x86/cpu: Remove CONFIG_X86_SMAP and "nosmap"
-
- and:
-
-   753da4179d08 objtool: Remove --lto and --vmlinux in favor of --link
-   489e355b4225 objtool: Add HAVE_NOINSTR_VALIDATION
-   0f620cefd775 objtool: Rename "VMLINUX_VALIDATION" -> "NOINSTR_VALIDATION"
-   22102f4559be objtool: Make noinstr hacks optional
-   4ab7674f5951 objtool: Make jump label hack optional
-   26e176896a5b objtool: Make static call annotation optional
-   720644749647 objtool: Make stack validation frame-pointer-specific
-   03f16cd020eb objtool: Add CONFIG_OBJTOOL
-   7dce62041ac3 objtool: Make stack validation optional
-   b51277eb9775 objtool: Ditch subcommands
-   2daf7faba7de objtool: Reorganize cmdline options
-   4cdfc11b2836 x86/Kconfig: fix the spelling of 'becoming' in X86_KERNEL_IBT config
-   4a5de9b76fcb objtool: Enable unreachable warnings for CLANG LTO
-
- Resolve them:
-
-  - overlapping modifications
-  - modifying removed functionality
-
- Conflicts:
-	arch/x86/Kconfig
-	scripts/Makefile.build
-	scripts/link-vmlinux.sh
- ===================
-
-Thanks,
-
-	Ingo
