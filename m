@@ -2,97 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DC1AC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 01:28:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36FCBC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 01:30:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232357AbiEXB21 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 21:28:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37574 "EHLO
+        id S232688AbiEXBag (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 21:30:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230404AbiEXB2X (ORCPT
+        with ESMTP id S230404AbiEXBac (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 21:28:23 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AFE16FA11
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 18:28:22 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id q4so14570228plr.11
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 18:28:22 -0700 (PDT)
+        Mon, 23 May 2022 21:30:32 -0400
+Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DA106FD01;
+        Mon, 23 May 2022 18:30:31 -0700 (PDT)
+Received: by mail-io1-xd2c.google.com with SMTP id a10so17026542ioe.9;
+        Mon, 23 May 2022 18:30:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=sRdkO9LWoK6gu3O6tCs/6pS6ffPvexve2L+r8+1P1Mc=;
-        b=MR+QpekimCNHYVTg/y19FR/jbueG7WKak0RbDHffuGp91Uu9dUwWWsmwhZ1meXGDtH
-         u96NPpxkfqqQl5rlTbk9qVerNPjsyG9j0sJWbLBUm0UrNi5iSS27bDVBJBtRnksauOTm
-         K2hHqUZxln7S7HaaFH4vuNV38c4PL0lmy598DMZ3PA42tZNTn+ohVcPS2Wng03+EtV5A
-         5AEEnVEKtMSacNFdvAkti8NswhlkJtJwDSv+0ASp9KafpHpHfZh0MHqzubbWuvwAkcNq
-         tIy3FFCadANe4AiIpFQ4pjtAU5GV6U/NKOFLxtoe2VAXi14HvlCoKysEDynD/GE/ei3h
-         r8RQ==
+        bh=WWmcSlMLXyPAtUCAvd6HT22Q24cwWlGO+SKtL9DeqKU=;
+        b=g2y1NFt4Sseyx742KMl6xBdUityeBuD37EEwViwqBrkw+a2f6FepgoHeNqAcHs4pnS
+         0d1Nacm02K76ckrC3k60Cc4C8TIqbozizgZCpdm9jM366ElB583C3x0+qMEiKbQa79DU
+         YHDMuqpINrn+W61mvf7NC/5707+lHWwF+Tx1zT+xJQt83X08GyKfcGSLHmDD3wcDUyir
+         po18oBXtV7uTSIYeNHC59VElipZiBC9rlK0g45oJrdVu0oHLfbAF5/b+3h665gFYveW/
+         UjseAlbhaDpLGIt8CVLkZtoWQnBcZcOnoemVbm/5tZaLqXOTTdnmZXZGuhjPdA4Nr1ff
+         j5mA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=sRdkO9LWoK6gu3O6tCs/6pS6ffPvexve2L+r8+1P1Mc=;
-        b=rCMtuoOrFoePS2GjOjF1ppxJEMBOF6qQFKGVF+HewDT6TLPzVSJJ6euIYB5DIYHMLQ
-         Ek0sR6bvnIokyBe3ehQDlzZb8J1vSDkW5c6RiWkFOQDA4dvFAjGbMu6/tzBh1bcKMOtL
-         EdrTrKpDhZxIrRIVoIUMdUX7rTqXOHbC3r7/pmBNgg0Z8Ab/CWN07/VJhWmr9p1uJnto
-         Nmi4O7G5LYyHmbN2cu5nDqhi8bYPd/sRW3JGyNCmVwfAXL6uNuUxd2hFdmmPmIeSgU1D
-         Dr97TQ/4RkzQZ7oXWjozjFzW6wXM/PLSgmMafRV93fn6WGS+iDhB1fa0WB9tKJYbS0eq
-         p9ww==
-X-Gm-Message-State: AOAM533vRMVBoor1kgk9gudMVS1qYr8WR6YM0PmHb+bMEB7vbfWFSbsf
-        uo2N+ctF5vzoe9DsfHftCQwxRTXNLxI+OpeyAomRlg==
-X-Google-Smtp-Source: ABdhPJwD5caICs9kSETeFxAO9el0xMpeE855aAndFiUT36QQ7C+udGQBDWOTuISOgzhnsjSfpzdkzCz5zj3ruW6lPKo=
-X-Received: by 2002:a17:903:40d2:b0:161:a2d9:3230 with SMTP id
- t18-20020a17090340d200b00161a2d93230mr25125435pld.57.1653355701583; Mon, 23
- May 2022 18:28:21 -0700 (PDT)
+        bh=WWmcSlMLXyPAtUCAvd6HT22Q24cwWlGO+SKtL9DeqKU=;
+        b=ANCSUm8y4iPMs/k1ZgOeYd9zz5DtxYtFR11Ky0uYDfp6lOT9DPn63VA4o+Fos2UsKZ
+         x8thq+MWlYGvKMQh+E9ZKYoJU0m+r0vAywNdDlmCW1n4QlVMi6T1JQ3sZfBd/vPJaZ4A
+         JRTT4F0RM52fkMhSIHmThfswutA1OoF/N/yG/yjHkzKGOqe+ooZIGE5YL9ql6BdJ65G3
+         nIHzzeaRmUg8L7Sp9OGGWsCbzChBklpu2WFLYXfqxem7pZBCbXbDd8pOXRXQyGYmMpyh
+         7rRUQKPHeTgnP4Bb+Ltcduw83ynwpByJBuOANJ1LbhP0sFF9iMGedFmr8dwCBiVDJYYp
+         zkTQ==
+X-Gm-Message-State: AOAM5327Qs8gNlxvjDEtZ++tX+3qPGxVtCMwPJF+nZul+dfLxFZqwAlx
+        13UQGZcrFppArHfmhXDqwPHSuwA0QS7aSZJFXlA=
+X-Google-Smtp-Source: ABdhPJwJ0HxGpuHzjlxDM9gFmOF4eLOzadWHpqw1yyOV7Hg8tQXEiwNz+geTsT3zy8fXNVnYebhfAjqXReaLuaUp2N8=
+X-Received: by 2002:a05:6638:2393:b0:32e:319d:c7cc with SMTP id
+ q19-20020a056638239300b0032e319dc7ccmr12749526jat.103.1653355831019; Mon, 23
+ May 2022 18:30:31 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220523090822.3035189-1-tzungbi@kernel.org> <165335341249.17704.13803710194044994542.git-patchwork-notify@kernel.org>
-In-Reply-To: <165335341249.17704.13803710194044994542.git-patchwork-notify@kernel.org>
-From:   Tzung-Bi Shih <tzungbi@google.com>
-Date:   Tue, 24 May 2022 09:28:10 +0800
-Message-ID: <CA+Px+wU_pbmWOmB9wSOOWCHqsBAGVHy3w6ya_6fj4d0+VtTmBA@mail.gmail.com>
-Subject: Re: [PATCH v4 0/5] platform/chrome: cros_kbd_led_backlight: add EC
- PWM backend
-To:     patchwork-bot+chrome-platform@kernel.org
-Cc:     Tzung-Bi Shih <tzungbi@kernel.org>, bleung@chromium.org,
-        groeck@chromium.org, robh+dt@kernel.org,
-        chrome-platform@lists.linux.dev, linux-kernel@vger.kernel.org,
-        mka@chromium.org, devicetree@vger.kernel.org
+References: <20220520012133.1217211-1-yosryahmed@google.com>
+ <20220520012133.1217211-4-yosryahmed@google.com> <YodGI73xq8aIBrNM@slm.duckdns.org>
+ <CAJD7tkbvMcMWESMcWi6TtdCKLr6keBNGgZTnqcHZvBrPa1qWPw@mail.gmail.com>
+ <YodNLpxut+Zddnre@slm.duckdns.org> <73fd9853-5dab-8b59-24a0-74c0a6cae88e@fb.com>
+ <YofFli6UCX4J5YnU@slm.duckdns.org> <CA+khW7gjWVKrwCgDD-4ZdCf5CMcA4-YL0bLm6aWM74+qNQ4c0A@mail.gmail.com>
+ <CAJD7tkaJQjfSy+YARFRkqQ8m7OGJHO9v91mSk-cFeo9Z5UVJKg@mail.gmail.com>
+ <20220520221919.jnqgv52k4ajlgzcl@MBP-98dd607d3435.dhcp.thefacebook.com>
+ <Yogc0Kb5ZVDaQ0oU@slm.duckdns.org> <5b301151-0a65-df43-3a3a-6d57e10cfc2d@fb.com>
+ <CA+khW7gGrwTrDsfWp7wj=QaCg01FNj381a1QLs1ThsjAkW85eQ@mail.gmail.com>
+ <CAEf4BzbaHeyaHK1sChPMF=L4aQsaBGNtU+R3veqCOFz0A+svEA@mail.gmail.com> <CA+khW7h-fgo+X=OUxAWDe2sPMyWDXUmp574Kq_J884j9whoBfw@mail.gmail.com>
+In-Reply-To: <CA+khW7h-fgo+X=OUxAWDe2sPMyWDXUmp574Kq_J884j9whoBfw@mail.gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 23 May 2022 18:30:20 -0700
+Message-ID: <CAEf4BzZOE0zXnRs3rEiO4+KZix7Druu5TqkJH+xX01tgMfQOtQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v1 3/5] bpf: Introduce cgroup iter
+To:     Hao Luo <haoluo@google.com>
+Cc:     Yonghong Song <yhs@fb.com>, Tejun Heo <tj@kernel.org>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Yosry Ahmed <yosryahmed@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Michal Hocko <mhocko@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        David Rientjes <rientjes@google.com>,
+        Greg Thelen <gthelen@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Cgroups <cgroups@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 24, 2022 at 8:50 AM
-<patchwork-bot+chrome-platform@kernel.org> wrote:
+On Mon, May 23, 2022 at 5:53 PM Hao Luo <haoluo@google.com> wrote:
 >
-> Hello:
->
-> This series was applied to chrome-platform/linux.git (for-kernelci)
-> by Tzung-Bi Shih <tzungbi@kernel.org>:
->
-> On Mon, 23 May 2022 17:08:17 +0800 you wrote:
-> > The series adds EC PWM as an backend option for ChromeOS keyboard LED
-> > backlight.
+> On Mon, May 23, 2022 at 4:58 PM Andrii Nakryiko
+> <andrii.nakryiko@gmail.com> wrote:
 > >
-> > The 1st patch reorder the headers alphabetically.
+> > On Fri, May 20, 2022 at 7:35 PM Hao Luo <haoluo@google.com> wrote:
+> > >
+> > > On Fri, May 20, 2022 at 5:59 PM Yonghong Song <yhs@fb.com> wrote:
+> > > > On 5/20/22 3:57 PM, Tejun Heo wrote:
+> > > > > Hello,
+> > > > >
+> > > > > On Fri, May 20, 2022 at 03:19:19PM -0700, Alexei Starovoitov wrote:
+> > > > >> We have bpf_map iterator that walks all bpf maps.
+> > > > >> When map iterator is parametrized with map_fd the iterator walks
+> > > > >> all elements of that map.
+> > > > >> cgroup iterator should have similar semantics.
+> > > > >> When non-parameterized it will walk all cgroups and their descendent
+> > > > >> depth first way. I believe that's what Yonghong is proposing.
+> > > > >> When parametrized it will start from that particular cgroup and
+> > > > >> walk all descendant of that cgroup only.
+> > > > >> The bpf prog can stop the iteration right away with ret 1.
+> > > > >> Maybe we can add two parameters. One -> cgroup_fd to use and another ->
+> > > > >> the order of iteration css_for_each_descendant_pre vs _post.
+> > > > >> wdyt?
+> > > > >
+> > > > > Sounds perfectly reasonable to me.
+> > > >
+> > > > This works for me too. Thanks!
+> > > >
+> > >
+> > > This sounds good to me. Thanks. Let's try to do it in the next iteration.
 > >
-> > The 2nd patch separates the ACPI backend.
-> >
-> > [...]
+> > Can we, in addition to descendant_pre and descendant_post walk
+> > algorithms also add the one that does ascendants walk (i.e., start
+> > from specified cgroup and walk up to the root cgroup)? I don't have
+> > specific example, but it seems natural to include it for "cgroup
+> > iterator" in general. Hopefully it won't add much code to the
+> > implementation.
 >
-> Here is the summary with links:
->   - [v4,1/5] platform/chrome: cros_kbd_led_backlight: sort headers alphabetically
->     https://git.kernel.org/chrome-platform/c/a4da30150ab4
->   - [v4,2/5] platform/chrome: cros_kbd_led_backlight: separate ACPI backend
->     (no matching commit)
->   - [v4,3/5] dt-bindings: add google,cros-kbd-led-backlight
->     (no matching commit)
->   - [v4,4/5] platform/chrome: cros_kbd_led_backlight: support OF match
->     (no matching commit)
->   - [v4,5/5] platform/chrome: cros_kbd_led_backlight: support EC PWM backend
->     (no matching commit)
+> Yep. Sounds reasonable and doable. It's just adding a flag to specify
+> traversal order, like:
+>
+> {
+>   WALK_DESCENDANT_PRE,
+>   WALK_DESCENDANT_POST,
+>   WALK_PARENT_UP,
 
-No.  They haven't all got R-b tags and one of the commits was pushed
-mistakenly.  I have updated the for-kernelci branch again to fix it
-up.
+Probably something more like BPF_CG_WALK_DESCENDANT_PRE and so on?
+
+> };
+>
+> In bpf_iter's seq_next(), change the algorithm to yield the parent of
+> the current cgroup.
