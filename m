@@ -2,112 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8AFDC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 11:29:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F15DCC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 11:30:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235853AbiEXL3i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 07:29:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50892 "EHLO
+        id S236659AbiEXLaj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 07:30:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236638AbiEXL3g (ORCPT
+        with ESMTP id S235844AbiEXLaa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 07:29:36 -0400
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD815880C1
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 04:29:34 -0700 (PDT)
-Received: by mail-lf1-x129.google.com with SMTP id v8so28376214lfd.8
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 04:29:34 -0700 (PDT)
+        Tue, 24 May 2022 07:30:30 -0400
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BA7D880C3
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 04:30:28 -0700 (PDT)
+Received: by mail-wr1-x42b.google.com with SMTP id s28so25128967wrb.7
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 04:30:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=3emZod9jR3q6gCFyPwhXNHJRJq7F+FIV2jGAwBzwi58=;
-        b=PnUGqZ1pyposeXIbHLumD+wEv3S0Cs1Wpjjwnkxvb7fzp2T735cLUxZ+diQBX72rOj
-         mC+thfNM/6t90Vvel23DzqlzhPsVg3meCoI7/MhhGAOJiAlr+oUDgEtRBOnzNnivmbmr
-         zy8xa8X+cAtOOo/0gEqv1UpSdxgqPfs+zN7mZPfS2rJNbJ3tijxU5Z2yHMIzTaIAAn9t
-         VjTNPFK0t6Hsx3jj7T7eqNhW7lDK0pcFFzOe+dr0KGLpS02wjGhTkdvBS0gtl25dKQ17
-         zR4lAbnSbNtBAc2r00xrsEWHMGw6j+ZSjrbwMoWY0cJX5/Qjz4L6CCuSe0yjcjaZBt/p
-         lvMw==
+        d=brainfault-org.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=N2TjPYBfTxyr+DNrjNs2M1CQcfw6+WY+gUO3SgZbUV8=;
+        b=CQm5UAeg1hkuSSsutDNG5mlSigGV02SDoqjU1pCYNr5ah4YevJSWr4AlQwCQwgTADA
+         Rzxq6t0CYWD0MFIzFIMr8eEcThDGPSsKmJB+J43x5VewBMw0wOPN2v2sStD1uD0CcV+5
+         lMhPO2CuOIiIyfabVPzeLQkFQw3i4iUfhB6CvZq0HgMiLGJ9R+khlNSwcUZoVI1v6JQR
+         fTaGOLJvyrOqKxqeBpyObRLnv8m9iFNcnorpjp5Mljh3Ks4i8eq6kH09cHJ7FGZCKoAC
+         lcYTWNKaE1FjnBW/gzO2bfzncP4dWIxk6CQQa0GO/H2gXyL+cEaFFy6ge2aJgxMRwU0h
+         e4Uw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=3emZod9jR3q6gCFyPwhXNHJRJq7F+FIV2jGAwBzwi58=;
-        b=Ivo4xl8qInNSFyMLQTczp333vWe1lOXyo0v/PEcsDCgtpYnUqfEn4RAiyg/WKJm5NH
-         lIdhsfhL4yWxuSwf1xEEuPoJulMdoogj12TASPyiPyhjjNbO6dQU2jDlNXBLbzoUBu6M
-         J3FYsIZCGgzY4MczJanYuqsgwVWnC4ShSsO/2v1nyL4XRYR2asmhdu12BbHSbK0NI24w
-         YjmBLAHaPEq65ilxwJZ+aLTCKViJLTDfmXKehMNbE2XMlmRsbl6Sv5BSw7n5P5ZJsQCM
-         BJYb/vMurHveE01+lfpf5HQ1a1d3YibvKKOVlcX0jjkp/VJr3CcEC2p7mx7Z/5fF+Nka
-         STQA==
-X-Gm-Message-State: AOAM532K8t+t8jwbuW6kvwkY831jQDZGC8nsHIB0ZKnVmIBQ/rCo0JQf
-        O+EFDAc6XJNRfBSI77pR3pIpjg==
-X-Google-Smtp-Source: ABdhPJxOJolQvOT14QtdpEQ2d2/n0h6xMUoAUUyC7pPRF3QAELSY8PwJkQeSwOq0216GCHYbyanDHg==
-X-Received: by 2002:ac2:550f:0:b0:477:bc6e:9bcc with SMTP id j15-20020ac2550f000000b00477bc6e9bccmr19354559lfk.279.1653391773176;
-        Tue, 24 May 2022 04:29:33 -0700 (PDT)
-Received: from [172.20.68.48] ([91.221.145.6])
-        by smtp.gmail.com with ESMTPSA id b4-20020a056512218400b0047255d21177sm2486692lft.166.2022.05.24.04.29.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 24 May 2022 04:29:32 -0700 (PDT)
-Message-ID: <2f49aa26-23f7-833c-b01d-9dfb2603603c@linaro.org>
-Date:   Tue, 24 May 2022 13:28:24 +0200
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=N2TjPYBfTxyr+DNrjNs2M1CQcfw6+WY+gUO3SgZbUV8=;
+        b=lv0moLxP8iHADCOE6B9vqjZW8Xv0OENzMTxXz8YZnW/1IgAG6e8lXy1eSU/LBwBh5R
+         PDAbX5gNiIaeEnWuo1bl6NsWkOpM/YAJ4Nyf+a3NAWsn4GEZUC2YWEpyWx/ghgfzlPkt
+         w6MxOp2+qzFgmxpwYTbcjM6JfCstbKInw9CAoDnu1t7LNKWNX4vpoVqifoEajNKy6gX3
+         gAxyc/hHbiYG9wNQb8GMjDIHptUueO5vb1Cbn96uE+cE/YOHjoCVsgwVDnjhBdznRGtr
+         bRnaLO6Rj5fJaLaEzXiUfvMSDRRHBOT7IjqI2/CFEEmDbkPlJ4YYz3NdxueK+GtcvLOv
+         kH6A==
+X-Gm-Message-State: AOAM533ye11HBKJhEq3Y5WQ5fmUQcF0Qu2EgjjoOoIzYzvvqZ0MoGeXw
+        S4XQe4JdfzrJoKMqBng4+M300Ol2rUqpObOoaIgBCQ==
+X-Google-Smtp-Source: ABdhPJws54/M5QyP1Iw/wARcBHxmm+RAXDaP8SIQZviMCw/5pFWp7jBzGSkS9YpnQFEjlgFR7cqirFzWu6hfZyEmRI8=
+X-Received: by 2002:adf:f001:0:b0:20d:22b:183c with SMTP id
+ j1-20020adff001000000b0020d022b183cmr22457285wro.313.1653391826736; Tue, 24
+ May 2022 04:30:26 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH] dt-bindings: input: use generic node names
-Content-Language: en-US
-To:     Andreas Kemnade <andreas@kemnade.info>
-Cc:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jeff LaBundy <jeff@labundy.com>, linux-input@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220524093136.7980-1-krzysztof.kozlowski@linaro.org>
- <20220524131152.3d749a9d@aktux>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220524131152.3d749a9d@aktux>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220426185245.281182-1-atishp@rivosinc.com> <20220426185245.281182-4-atishp@rivosinc.com>
+In-Reply-To: <20220426185245.281182-4-atishp@rivosinc.com>
+From:   Anup Patel <anup@brainfault.org>
+Date:   Tue, 24 May 2022 17:00:15 +0530
+Message-ID: <CAAhSdy0wbokRNZrXYcARKx=DpGfQ5gFGJ_1K26U0W99-jZcM5g@mail.gmail.com>
+Subject: Re: [PATCH v3 3/4] RISC-V: Prefer sstc extension if available
+To:     Atish Patra <atishp@rivosinc.com>
+Cc:     "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>,
+        Atish Patra <atishp@atishpatra.org>,
+        Damien Le Moal <damien.lemoal@wdc.com>,
+        DTML <devicetree@vger.kernel.org>,
+        Jisheng Zhang <jszhang@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        KVM General <kvm@vger.kernel.org>,
+        "open list:KERNEL VIRTUAL MACHINE FOR RISC-V (KVM/riscv)" 
+        <kvm-riscv@lists.infradead.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Rob Herring <robh+dt@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 24/05/2022 13:11, Andreas Kemnade wrote:
-> Hi,
-> 
-> On Tue, 24 May 2022 11:31:36 +0200
-> Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
-> 
->> diff --git a/Documentation/devicetree/bindings/input/gpio-keys.yaml b/Documentation/devicetree/bindings/input/gpio-keys.yaml
->> index 7fe1966ea28a..93f601c58984 100644
->> --- a/Documentation/devicetree/bindings/input/gpio-keys.yaml
->> +++ b/Documentation/devicetree/bindings/input/gpio-keys.yaml
->> @@ -127,13 +127,13 @@ examples:
->>          compatible = "gpio-keys";
->>          autorepeat;
->>  
->> -        up {
->> +        key-up {
->>              label = "GPIO Key UP";
->>              linux,code = <103>;
->>              gpios = <&gpio1 0 1>;
->>          };
->>  
->> -        down {
->> +        key-down {
->>              label = "GPIO Key DOWN";
->>              linux,code = <108>;
->>              interrupts = <1 IRQ_TYPE_EDGE_FALLING>;
-> hmm, what about changing
-> patternProperties:
->   ".*":
-> 
-> to enforce this format instead of allowing anything?
+On Wed, Apr 27, 2022 at 12:23 AM Atish Patra <atishp@rivosinc.com> wrote:
+>
+> RISC-V ISA has sstc extension which allows updating the next clock event
+> via a CSR (stimecmp) instead of an SBI call. This should happen dynamically
+> if sstc extension is available. Otherwise, it will fallback to SBI call
+> to maintain backward compatibility.
+>
+> Signed-off-by: Atish Patra <atishp@rivosinc.com>
+> ---
+>  drivers/clocksource/timer-riscv.c | 21 ++++++++++++++++++++-
+>  1 file changed, 20 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/clocksource/timer-riscv.c b/drivers/clocksource/timer-riscv.c
+> index 1767f8bf2013..d9398ae84a20 100644
+> --- a/drivers/clocksource/timer-riscv.c
+> +++ b/drivers/clocksource/timer-riscv.c
+> @@ -23,11 +23,24 @@
 
-It will cause a lot, a lot of warnings, so first these would need to be
-fixed in every DTS. That's also doable, might help if these gpio-keys
-bindings need any other object like property.
+Add "#define pr_fmt(fmt)" here since you are using pr_info(...)
 
+>  #include <asm/sbi.h>
+>  #include <asm/timex.h>
+>
+> +static DEFINE_STATIC_KEY_FALSE(riscv_sstc_available);
+> +
+>  static int riscv_clock_next_event(unsigned long delta,
+>                 struct clock_event_device *ce)
+>  {
+> +       uint64_t next_tval = get_cycles64() + delta;
 
-Best regards,
-Krzysztof
+Use "u64" here to be consistent with other parts of the kernel.
+
+> +
+>         csr_set(CSR_IE, IE_TIE);
+> -       sbi_set_timer(get_cycles64() + delta);
+> +       if (static_branch_likely(&riscv_sstc_available)) {
+> +#if __riscv_xlen == 32
+
+Use CONFIG_32BIT here.
+
+> +               csr_write(CSR_STIMECMP, next_tval & 0xFFFFFFFF);
+> +               csr_write(CSR_STIMECMPH, next_tval >> 32);
+> +#else
+> +               csr_write(CSR_STIMECMP, next_tval);
+> +#endif
+> +       } else
+> +               sbi_set_timer(next_tval);
+> +
+>         return 0;
+>  }
+>
+> @@ -165,6 +178,12 @@ static int __init riscv_timer_init_dt(struct device_node *n)
+>         if (error)
+>                 pr_err("cpu hp setup state failed for RISCV timer [%d]\n",
+>                        error);
+> +
+> +       if (riscv_isa_extension_available(NULL, SSTC)) {
+> +               pr_info("Timer interrupt in S-mode is available via sstc extension\n");
+> +               static_branch_enable(&riscv_sstc_available);
+> +       }
+> +
+>         return error;
+>  }
+>
+> --
+> 2.25.1
+>
+
+Regards,
+Anup
