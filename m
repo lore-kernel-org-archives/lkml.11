@@ -2,68 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26FC0C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 02:53:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 324CDC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 02:53:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233620AbiEXCw6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 22:52:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34454 "EHLO
+        id S233682AbiEXCxG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 22:53:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233865AbiEXCvT (ORCPT
+        with ESMTP id S233626AbiEXCux (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 22:51:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91066255AF
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 19:51:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E41D061286
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 02:51:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id B3097C341D3;
-        Tue, 24 May 2022 02:51:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653360676;
-        bh=NfMy+rsRVRQuzd3KSZam7CprD4T2fgQdO1uqmTjoe7c=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=RyygdZvA9/6p7usqgy3rY6gCcOu1A6Nw1kecSSHnzxeewVgxJqwj8PdQslVjjM755
-         FBjuePeYKwEfmCGnnkH/JYfF2jgZqYK+UXBY4CniiVhbgx3K6tVZ7nrqA2xt4irNmR
-         yhm+RILOUIpuRmQkw3g9Jk/VxR2XY+lR0T/jehQf9LGdVNgcFKX8nC27fE/mQZ05xC
-         Ddj6rAQsvJVtO8xPSpBxRD+o7tH9E8uqRmI4ZaLgSE9BLwznUdgRdxcetSOrjo0bau
-         jI+uY8bBO8GjShMrfLpnUvtBBZ/zSnU0Y+m2imN0gg7zvAKsqOd1BEcUnyRtbP5svx
-         MeJvpqmqOZ4Bg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A192EEAC081;
-        Tue, 24 May 2022 02:51:16 +0000 (UTC)
-Subject: Re: [GIT PULL] x86/microcode for 5.19
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <YovrpkI/2id4tctB@zn.tnic>
-References: <YovrpkI/2id4tctB@zn.tnic>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <YovrpkI/2id4tctB@zn.tnic>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git tags/x86_microcode_for_v5.19_rc1
-X-PR-Tracked-Commit-Id: 9c55d99e099bd7aa6b91fce8718505c35d5dfc65
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 88699f8fbfd482167362a881d37156cc3e2b0475
-Message-Id: <165336067665.14181.17117838001422241325.pr-tracker-bot@kernel.org>
-Date:   Tue, 24 May 2022 02:51:16 +0000
-To:     Borislav Petkov <bp@suse.de>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        x86-ml <x86@kernel.org>, lkml <linux-kernel@vger.kernel.org>
+        Mon, 23 May 2022 22:50:53 -0400
+Received: from mail.meizu.com (edge01.meizu.com [14.29.68.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98A3E6EB11;
+        Mon, 23 May 2022 19:50:48 -0700 (PDT)
+Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail04.meizu.com
+ (172.16.1.16) with Microsoft SMTP Server (TLS) id 14.3.487.0; Tue, 24 May
+ 2022 10:50:46 +0800
+Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
+ (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Tue, 24 May
+ 2022 10:50:45 +0800
+From:   Haowen Bai <baihaowen@meizu.com>
+To:     Ard Biesheuvel <ardb@kernel.org>,
+        Huacai Chen <chenhuacai@kernel.org>
+CC:     Haowen Bai <baihaowen@meizu.com>, <linux-efi@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH] LoongArch: take size of pointed value, not pointer
+Date:   Tue, 24 May 2022 10:50:44 +0800
+Message-ID: <1653360644-28872-1-git-send-email-baihaowen@meizu.com>
+X-Mailer: git-send-email 2.7.4
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [172.16.137.70]
+X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
+ IT-EXMB-1-125.meizu.com (172.16.1.125)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Mon, 23 May 2022 22:16:38 +0200:
+Sizeof a pointer-typed expression returns the size of the pointer, not
+that of the pointed data.
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git tags/x86_microcode_for_v5.19_rc1
+Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+---
+ arch/loongarch/kernel/efi.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/88699f8fbfd482167362a881d37156cc3e2b0475
-
-Thank you!
-
+diff --git a/arch/loongarch/kernel/efi.c b/arch/loongarch/kernel/efi.c
+index f9fdeb1ae358..f0e5d0feffc2 100644
+--- a/arch/loongarch/kernel/efi.c
++++ b/arch/loongarch/kernel/efi.c
+@@ -180,7 +180,7 @@ void __init efi_init(void)
+ 	if (!efi_system_table)
+ 		return;
+ 
+-	efi_systab = (efi_system_table_t *)early_memremap_ro(efi_system_table, sizeof(efi_systab));
++	efi_systab = (efi_system_table_t *)early_memremap_ro(efi_system_table, sizeof(*efi_systab));
+ 	if (!efi_systab) {
+ 		pr_err("Can't find EFI system table.\n");
+ 		return;
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+2.7.4
+
