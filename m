@@ -2,100 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9879C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 11:15:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 342C9C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 11:15:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236139AbiEXLPE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 07:15:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50672 "EHLO
+        id S236409AbiEXLPg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 07:15:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231510AbiEXLPA (ORCPT
+        with ESMTP id S229824AbiEXLPc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 07:15:00 -0400
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBD976B09F
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 04:14:59 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id 10so12133124plj.0
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 04:14:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=0pUvN6bt+TgNvvMP17UzQ1BaC0HNVTnRNblPGeIqHng=;
-        b=Yz7WO4jheZ0Jfrn4FWM334iWi3ys9Sf6t2QZ5mSxa4rd0f66AGxvG+btJQNDnOJlPO
-         Kn4u+UFLgjsT6TIKWtNyZTH7mhcmH0RlO6BlWQxdA6H5XYJpHra/27i6fxbJUcgRc14c
-         0veUt7us4/l8rglyUyT2EzhQIyZ63j/qW9nAGRrVMOOor5FUZQBKcZpdT1Khhs0HiSzm
-         BBn96Av7Q92aA9IrSic0S65oYF5cgFgN8Ar85K/BSXiKWYmSMv0YBQbCoAWUgnfIYPbP
-         Mqvf5roGQzR5KiBbWL40MRfBl7zZidA7b1x34swpIv79zW0VS/Qa+wa8dFwKzA2kDEK/
-         dbpw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=0pUvN6bt+TgNvvMP17UzQ1BaC0HNVTnRNblPGeIqHng=;
-        b=hemiRcU6hfPsgcrhDvGE68fuF2Al16Rf0nJ2GBYGdseh8TabblF1YtNiip/PhqG5nb
-         Pq3uvl8QATyYbKZi2UDZOxtYGAy2Ot2bbaxV71/LVCToA+YstrAnh2bI+vrmEqFWvmwe
-         3eHdhCn3Vz8J8AnVLtlZWOslpzFw6K3F05TjnlCf9LmHTiypwsTeZ7VVnKrKVdmn4I1/
-         I5ueQpMVhNFsDuAS5q3mha7d2G8L06d6DjnsbvMvPuMWRtN31VFdiA34Ru3A5ks4geSh
-         eAjgIzmipPJNnEr2wGBu9DUHGgMedTsuQgPGJPH0S+sWU+yziI7ImEV2KC2VvHKRNYe2
-         x2CQ==
-X-Gm-Message-State: AOAM5302WVOoduPsBspXeN76lXUyYeFrzoeZm/RlgjEQ6bMJ/HO8CwqD
-        9UtgsPezgfSVONH/ZRHs16i9xw==
-X-Google-Smtp-Source: ABdhPJyG1LqQx40q0BW5eu2M8YMqPNyyYUzF5PI9k1p8tfTDINSgbwswsrqOtfU0unX9PdHG4AHPbw==
-X-Received: by 2002:a17:902:dad1:b0:161:a5b5:c8f4 with SMTP id q17-20020a170902dad100b00161a5b5c8f4mr26368673plx.169.1653390899400;
-        Tue, 24 May 2022 04:14:59 -0700 (PDT)
-Received: from localhost ([122.162.234.2])
-        by smtp.gmail.com with ESMTPSA id w15-20020a63b74f000000b003f26c2f583asm6275163pgt.61.2022.05.24.04.14.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 May 2022 04:14:58 -0700 (PDT)
-Date:   Tue, 24 May 2022 16:44:56 +0530
-From:   Viresh Kumar <viresh.kumar@linaro.org>
-To:     "Rafael J. Wysocki" <rafael@kernel.org>
-Cc:     Schspa Shi <schspa@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>
-Subject: Re: [PATCH v3] cpufreq: fix race on cpufreq online
-Message-ID: <20220524111456.hw4qugsvt4bm7reh@vireshk-i7>
-References: <20220510035259.5ep52sgahd2a6rie@vireshk-i7>
- <20220510154236.88753-1-schspa@gmail.com>
- <20220511043515.fn2gz6q3kcpdai5p@vireshk-i7>
- <CAMA88TpefB=rnqea2u1zEvNUJNE_kdj4mYito7SGCuMj-o071Q@mail.gmail.com>
- <20220511122114.wccgyur6g3qs6fps@vireshk-i7>
- <CAJZ5v0gN_yDFpvCXRXv8rN-i3TugCi-HKpBKK2z4eWU0Zm1GUg@mail.gmail.com>
- <CAJZ5v0id+7vkqMQEyVRe29oF_dRtzZ0EhoYUn8=yzeENDeABJw@mail.gmail.com>
- <20220512065623.q4aa6y52pst3zpxu@vireshk-i7>
- <CAJZ5v0jeYiZ6esdxnJbOyDztNqOAbjcjxmpca3JTFWRh+cwdBw@mail.gmail.com>
- <20220513042705.nbnd6vccuiu6lb7a@vireshk-i7>
+        Tue, 24 May 2022 07:15:32 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C43B6B03A
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 04:15:30 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4L6s7L641vz4xZ5;
+        Tue, 24 May 2022 21:15:26 +1000 (AEST)
+From:   Michael Ellerman <patch-notifications@ellerman.id.au>
+To:     tyreld@linux.ibm.com, Haowen Bai <baihaowen@meizu.com>
+Cc:     paulus@samba.org, linux-kernel@vger.kernel.org, oohall@gmail.com,
+        benh@kernel.crashing.org, ruscur@russell.cc, mpe@ellerman.id.au,
+        linuxppc-dev@lists.ozlabs.org
+In-Reply-To: <1652232476-9696-1-git-send-email-baihaowen@meizu.com>
+References: <08d9470c-20db-52b8-7015-84f0ed29ad0c@linux.ibm.com> <1652232476-9696-1-git-send-email-baihaowen@meizu.com>
+Subject: Re: [PATCH V2] powerpc/eeh: Drop redundant spinlock initialization
+Message-Id: <165339058873.1718562.5563457249542011872.b4-ty@ellerman.id.au>
+Date:   Tue, 24 May 2022 21:09:48 +1000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220513042705.nbnd6vccuiu6lb7a@vireshk-i7>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 13-05-22, 09:57, Viresh Kumar wrote:
-> On 12-05-22, 12:49, Rafael J. Wysocki wrote:
-> > > > Moreover, I'm not sure why the locking dance in store() is necessary.
-> > >
-> > > commit fdd320da84c6 ("cpufreq: Lock CPU online/offline in cpufreq_register_driver()")
-> > 
-> > I get that, but I'm wondering if locking CPU hotplug from store() is
-> > needed at all.  I mean, if we are in store(), we are holding an active
-> > reference to the policy kobject, so the policy cannot go away until we
-> > are done anyway.  Thus it should be sufficient to use the policy rwsem
-> > for synchronization.
+On Wed, 11 May 2022 09:27:56 +0800, Haowen Bai wrote:
+> slot_errbuf_lock has declared and initialized by DEFINE_SPINLOCK,
+> so we don't need to spin_lock_init again, drop it.
 > 
-> I think after the current patchset is applied and we have the inactive
-> policy check in store(), we won't required the dance after all.
+> 
 
-I was writing a patch for this and then thought maybe look at mails
-around this time, when you sent the patch, and found the reason why we
-need the locking dance :)
+Applied to powerpc/next.
 
-https://lore.kernel.org/lkml/20150729091136.GN7557@n2100.arm.linux.org.uk/
+[1/1] powerpc/eeh: Drop redundant spinlock initialization
+      https://git.kernel.org/powerpc/c/3def164a5cedad9117859dd4610cae2cc59cb6d2
 
-I will add a comment for this now.
-
--- 
-viresh
+cheers
