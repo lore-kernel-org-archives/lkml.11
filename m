@@ -2,69 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 698D0C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 20:53:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74B14C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 20:56:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241762AbiEXUxx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 16:53:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60562 "EHLO
+        id S241738AbiEXU4n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 16:56:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241671AbiEXUxv (ORCPT
+        with ESMTP id S233786AbiEXU4j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 16:53:51 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB391719C6;
-        Tue, 24 May 2022 13:53:50 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 2C66ECE1D61;
-        Tue, 24 May 2022 20:53:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 8AB63C34100;
-        Tue, 24 May 2022 20:53:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653425627;
-        bh=dGCERO7mHLWk8NHpeP7MAGHw4wAGAvs4eK9K6Atkh7k=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=cS0ni5CEwuQBFdAGYOzjpRXOzxZJ4+IvETT7alUKOViTq2vzWHpz0RGj9KYcNWvTq
-         6VoxVdPTF9hGXWvV2DAMsCtzS8bueO+7vPIzJ7YwG5l+qnrJz3jTSD/yQxX2nw/ZQe
-         HZSd+CIaVzgdYHTmuNwR+C8NaSOeiyzbmBZlwKyqO3tgCq6RCQ1DgwsN1hIvRCtP3u
-         sMBILjdoKx/bGj7IrzTu6VQKP4y4xQi9C77MUYr35wmA3zu0DR6xLS9n4Fs6/0qPW7
-         5pRbJaPlh735OAqut4DcyDZo50LDQiUjv5O4nJ34IwcAuMdhucIsB6UUOohGEEDWWc
-         zyMKjDqmJ8AWA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 731A9E8DD61;
-        Tue, 24 May 2022 20:53:47 +0000 (UTC)
-Subject: Re: [GIT PULL] integrity subsystem updates for v5.19
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <223e46039b44b2f31814be02a3c2b75e84af3823.camel@linux.ibm.com>
-References: <223e46039b44b2f31814be02a3c2b75e84af3823.camel@linux.ibm.com>
-X-PR-Tracked-List-Id: <linux-integrity.vger.kernel.org>
-X-PR-Tracked-Message-Id: <223e46039b44b2f31814be02a3c2b75e84af3823.camel@linux.ibm.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/zohar/linux-integrity.git tags/integrity-v5.19
-X-PR-Tracked-Commit-Id: 048ae41bb0806cde340f4e5d5030398037ab0be8
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 0350785b0a092c99c5ddd2ace0260dbe7b3f919f
-Message-Id: <165342562746.19576.15003303284276169248.pr-tracker-bot@kernel.org>
-Date:   Tue, 24 May 2022 20:53:47 +0000
-To:     Mimi Zohar <zohar@linux.ibm.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-integrity <linux-integrity@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
+        Tue, 24 May 2022 16:56:39 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1253B10FE2
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 13:56:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description;
+        bh=x0ETksflVZigcIVkU0HLK0p3rGL2Xh3mtq7gP4huqAE=; b=hdIfUeITUVqORPi1YsA7D4NGCv
+        ORWXPaSA9UJ7FXS3UBuv8cfxcE2S+Pml23zRWxsqq01js07dMWXAzQd32SFr6luJvD+FLZrXXKJdR
+        v6Q+ThWflMaJ2k7+41mMjJs5SmDhoQxfzYuKc1IxlufVnGjLKMZomibJj3pWQ7e8VFZdI0mKrT0ei
+        D2wpJgTVcB7gjgPDYI5VUVFJskbGZoT2FiqkcPp2gJw6iYrXBtuXf6TGsnq8SCCIsZa5Ym5PngbOQ
+        CzU2PS2jWv49xjTnsD5er+/DihoxO23xGHaXVag/XYB4jWLfoUTNDwwVH+b7NAIfVnPrC2+XT4ilQ
+        SDc9/tGw==;
+Received: from [2601:1c0:6280:3f0::aa0b]
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1ntbZk-00HPVt-3K; Tue, 24 May 2022 20:56:20 +0000
+Message-ID: <8aa4094d-2a15-bab4-13be-eb064beac942@infradead.org>
+Date:   Tue, 24 May 2022 13:56:16 -0700
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: arch/riscv/mm/init.c:782:83: warning: suggest braces around empty
+ body in an 'if' statement
+Content-Language: en-US
+To:     kernel test robot <lkp@intel.com>,
+        Qinglin Pan <panqinglin2020@iscas.ac.cn>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Palmer Dabbelt <palmer@rivosinc.com>
+References: <202205230554.bQhtkCTA-lkp@intel.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <202205230554.bQhtkCTA-lkp@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Tue, 24 May 2022 16:46:10 -0400:
+Hi Palmer,
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/zohar/linux-integrity.git tags/integrity-v5.19
+On 5/22/22 14:19, kernel test robot wrote:
+> Hi Qinglin,
+> 
+> FYI, the error/warning still remains.
+> 
+> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+> head:   4b0986a3613c92f4ec1bdc7f60ec66fea135991f
+> commit: 677b9eb8810edc6c616a699018a83e24ed0cccab riscv: mm: Prepare pt_ops helper functions for sv57
+> date:   3 months ago
+> config: riscv-randconfig-r042-20220522 (https://download.01.org/0day-ci/archive/20220523/202205230554.bQhtkCTA-lkp@intel.com/config)
+> compiler: riscv32-linux-gcc (GCC) 11.3.0
+> reproduce (this is a W=1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=677b9eb8810edc6c616a699018a83e24ed0cccab
+>         git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+>         git fetch --no-tags linus master
+>         git checkout 677b9eb8810edc6c616a699018a83e24ed0cccab
+>         # save the config file
+>         mkdir build_dir && cp config build_dir/.config
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash arch/riscv/mm/
+> 
+> If you fix the issue, kindly add following tag where applicable
+> Reported-by: kernel test robot <lkp@intel.com>
+> 
+> All warnings (new ones prefixed by >>):
+> 
+>    arch/riscv/mm/init.c: In function 'create_fdt_early_page_table':
+>>> arch/riscv/mm/init.c:782:83: warning: suggest braces around empty body in an 'if' statement [-Wempty-body]
+>      782 |                                    (uintptr_t)early_dtb_pud, P4D_SIZE, PAGE_TABLE);
+>          |                                                                                   ^
+>    arch/riscv/mm/init.c:786:83: warning: suggest braces around empty body in an 'if' statement [-Wempty-body]
+>      786 |                                    (uintptr_t)early_dtb_pmd, PUD_SIZE, PAGE_TABLE);
+>          |                                                                                   ^
+>    arch/riscv/mm/init.c: At top level:
+>    arch/riscv/mm/init.c:813:13: warning: no previous prototype for 'pt_ops_set_early' [-Wmissing-prototypes]
+>      813 | void __init pt_ops_set_early(void)
+>          |             ^~~~~~~~~~~~~~~~
+>    arch/riscv/mm/init.c:835:13: warning: no previous prototype for 'pt_ops_set_fixmap' [-Wmissing-prototypes]
+>      835 | void __init pt_ops_set_fixmap(void)
+>          |             ^~~~~~~~~~~~~~~~~
+>    arch/riscv/mm/init.c:853:13: warning: no previous prototype for 'pt_ops_set_late' [-Wmissing-prototypes]
+>      853 | void __init pt_ops_set_late(void)
+>          |             ^~~~~~~~~~~~~~~
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/0350785b0a092c99c5ddd2ace0260dbe7b3f919f
+What is the status of your patch for this build warning?
 
-Thank you!
+[PATCH v2 1/4] RISC-V: Avoid empty create_*_mapping definitions
+
+Thanks.
 
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+~Randy
