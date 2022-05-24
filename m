@@ -2,118 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC601C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 22:10:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CE68C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 22:10:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242039AbiEXWKU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 18:10:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42374 "EHLO
+        id S242066AbiEXWK3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 18:10:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232733AbiEXWKT (ORCPT
+        with ESMTP id S241885AbiEXWKZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 18:10:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AEA76D4FE
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 15:10:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A5FE7617B2
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 22:10:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 913D0C34100;
-        Tue, 24 May 2022 22:10:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1653430216;
-        bh=fZAWkq2j47J0eNsYpu0+vT/cRpk5mud27VEFXwZ+hJ4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=RZVj4kPJSLFHvGItWmpoIZ1bUOM1mqTRMc/1848nLMgNSdb4VvuJxfnHjvEPUPoPC
-         W/RKDcuyPwQidVRmUiGg4HdvQ0h/URJbP6AOvzk6oIBUyAINyZbVVXx8aGSZ8eJADK
-         jHHLBZSuPltGKrc0lfE+PI6Dlml1+1RMtvuFC2JY=
-Date:   Tue, 24 May 2022 15:10:14 -0700
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     Miaohe Lin <linmiaohe@huawei.com>
-Cc:     HORIGUCHI =?UTF-8?B?TkFPWUE=?= (=?UTF-8?B?5aCA5Y+jIOebtOS5nw==?=) 
-        <naoya.horiguchi@nec.com>, "hughd@google.com" <hughd@google.com>,
-        "willy@infradead.org" <willy@infradead.org>,
-        "vbabka@suse.cz" <vbabka@suse.cz>,
-        "dhowells@redhat.com" <dhowells@redhat.com>,
-        "neilb@suse.de" <neilb@suse.de>,
-        "apopple@nvidia.com" <apopple@nvidia.com>,
-        "david@redhat.com" <david@redhat.com>,
-        "surenb@google.com" <surenb@google.com>,
-        "peterx@redhat.com" <peterx@redhat.com>,
-        "rcampbell@nvidia.com" <rcampbell@nvidia.com>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v4 4/5] mm/shmem: fix infinite loop when swap in shmem
- error at swapoff time
-Message-Id: <20220524151014.4d16f01cbd1c04ef74e4db5e@linux-foundation.org>
-In-Reply-To: <0f6dc98b-88f4-c0c9-eb7b-5356ad0e08b1@huawei.com>
-References: <20220519125030.21486-1-linmiaohe@huawei.com>
-        <20220519125030.21486-5-linmiaohe@huawei.com>
-        <20220520063433.GA584983@hori.linux.bs1.fc.nec.co.jp>
-        <0f6dc98b-88f4-c0c9-eb7b-5356ad0e08b1@huawei.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+        Tue, 24 May 2022 18:10:25 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1E6C82140
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 15:10:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653430224; x=1684966224;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=F+feAdRIPxV0YvrrVp/PT8H8XfZ+9kRwvIudCvjphlU=;
+  b=TWjIstwPbcIKB9K6xYeJeaONim5DjD0C9oGzwAZQ/WRjHuuNzyasNQnm
+   CDN+963BU2R/80w8RzTbVNgxZmNr597wX4d1C/wD8dVFUD2HTAUeLVVP+
+   uzzUNYyL9B194OdcOWFm6/svfGW9eSfAjp/FFc4bXS9tjPnrAHpyJuJLs
+   y2wBWHlNxXEnwRGDJyFPWLHfZVwX3uqyu7odjV8yNejXun2iSTArxAdwn
+   vq2/ydpvh0ww0Mt+CKa/H/4we8lEsqOtRt4FlQGHp0vVISYyV7ENL03qY
+   I1fJ0cgqErTDRzm5wcP1PP6s0lxGp7vcvegxOlHEVl8Iip78D/y65iMC6
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10357"; a="271236769"
+X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
+   d="scan'208";a="271236769"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 May 2022 15:10:24 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
+   d="scan'208";a="676596686"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga002.fm.intel.com with ESMTP; 24 May 2022 15:10:20 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1000)
+        id EE0B8109; Wed, 25 May 2022 01:10:21 +0300 (EEST)
+From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org
+Cc:     ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
+        hpa@zytor.com, linux-kernel@vger.kernel.org,
+        sathyanarayanan.kuppuswamy@linux.intel.com, seanjc@google.com,
+        thomas.lendacky@amd.com, x86@kernel.org,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Subject: [PATCHv3 0/3] Fix for load_unaligned_zeropad() in TDX guest
+Date:   Wed, 25 May 2022 01:10:09 +0300
+Message-Id: <20220524221012.62332-1-kirill.shutemov@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
+MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 21 May 2022 17:34:28 +0800 Miaohe Lin <linmiaohe@huawei.com> wrote:
+An updated version of the load_unaligned_zeropad() fix.
 
-> On 2022/5/20 14:34, HORIGUCHI NAOYA(堀口 直也) wrote:
-> > On Thu, May 19, 2022 at 08:50:29PM +0800, Miaohe Lin wrote:
-> >> When swap in shmem error at swapoff time, there would be a infinite loop
-> >> in the while loop in shmem_unuse_inode(). It's because swapin error is
-> >> deliberately ignored now and thus info->swapped will never reach 0. So
-> >> we can't escape the loop in shmem_unuse().
-> >>
-> >> In order to fix the issue, swapin_error entry is stored in the mapping
-> >> when swapin error occurs. So the swapcache page can be freed and the
-> >> user won't end up with a permanently mounted swap because a sector is
-> >> bad. If the page is accessed later, the user process will be killed
-> >> so that corrupted data is never consumed. On the other hand, if the
-> >> page is never accessed, the user won't even notice it.
-> >>
-> >> Reported-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
-> >> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-> > 
-> > Hi Miaohe,
-> > 
-> > Thank you for the update.  I might miss something, but I still see the same
-> > problem (I checked it on mm-everything-2022-05-19-00-03 + this patchset).
-> 
-> Hi Naoya,
-> I reproduce the issue in the linux-next-next-20220520 version. And I found even if
-> I *do not inject the swapin error*, the deadloop still occurs. After investigating the
-> code for a long while, I found the root cause:
-> 
-> diff --git a/mm/shmem.c b/mm/shmem.c
-> index d55dd972023a..6d23ed4d23cb 100644
-> --- a/mm/shmem.c
-> +++ b/mm/shmem.c
-> @@ -1182,7 +1182,7 @@ static int shmem_find_swap_entries(struct address_space *mapping,
->                 if (swp_type(entry) != type)
->                         continue;
-> 
-> -               indices[ret] = xas.xa_index;
-> +               indices[ret++] = xas.xa_index;
->                 if (!folio_batch_add(fbatch, folio))
->                         break;
-> 
-> The origin code does not increment the ret value when a folio is found. I will send a patch
-> to fix this next week. Thanks! :)
+v3:
+ - Rework load_unaligned_zeropad() fix: fail misaligned MMIO accesses
+   instead of upfront exception fixups;
+ - Add ve_instr_len() helper to wrap access to ve->instr_len;
+ - Add Reviewed-by from Sathya;
+v2:
+ - Clarify RIP adjustments during #VE handling;
+ - Fix early #VE handling;
+ - Fix comment and commit message;
 
-So I'm thinking that with Hugh's "mm/shmem: fix shmem folio swapoff
-hang", this patchset is now looking OK, so
+Kirill A. Shutemov (3):
+  x86/tdx: Fix early #VE handling
+  x86/tdx: Clarify RIP adjustments in #VE handler
+  x86/tdx: Handle load_unaligned_zeropad() page-cross to a shared page
 
-mm-swapfile-unuse_pte-can-map-random-data-if-swap-read-fails.patch
-mm-swapfile-fix-lost-swap-bits-in-unuse_pte.patch
-mm-madvise-free-hwpoison-and-swapin-error-entry-in-madvise_free_pte_range.patch
-mm-shmem-fix-infinite-loop-when-swap-in-shmem-error-at-swapoff-time.patch
-mm-filter-out-swapin-error-entry-in-shmem-mapping.patch
-#
+ arch/x86/coco/tdx/tdx.c | 154 +++++++++++++++++++++++++++-------------
+ 1 file changed, 104 insertions(+), 50 deletions(-)
 
-are OK for merging into mainline?
+-- 
+2.35.1
+
