@@ -2,170 +2,230 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E60FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 17:43:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40E0EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 17:43:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240039AbiEXRm7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 13:42:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37008 "EHLO
+        id S240041AbiEXRnT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 13:43:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233954AbiEXRmz (ORCPT
+        with ESMTP id S230010AbiEXRnS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 13:42:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF2B45AA58;
-        Tue, 24 May 2022 10:42:53 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D6D96149A;
-        Tue, 24 May 2022 17:42:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7017C3411D;
-        Tue, 24 May 2022 17:42:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653414172;
-        bh=a0KoIi2fPbqzomWEDT9YQcs+q1CHLUgOEBXJTkEH8cM=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=kALxv/PPnk26Z8ikDdzTIoB+GhIHS8jEjEXNhCjRDLbNXkynkPcznBmc/uK3riyYt
-         SKfj7AX9eZtsUUAm0JnOK+gOlPnZezUMcpPqhPwLw57KblT7C5yaNcC8agFWtIqFGP
-         WnPtJ/2Vq12ut9C77+JkvEicEWDA6od6YRwNKQS4KIwC+Z0ke27WgzUyqbpBMW7e+H
-         tsbKQdVLsYB640o2HRPBWrwB1RIg+YPxg8dkcwKfJo1ay7Id3+7RB372d4ximZvGsp
-         12EA8rmBoMZaw9YrincHxHxfLyutGAnNVPFZfytBqA0Tufv/YFNx59E/5QMgNLBpup
-         cnXC3XobHfI+A==
-Received: by mail-vk1-f175.google.com with SMTP id x11so8311405vkn.11;
-        Tue, 24 May 2022 10:42:52 -0700 (PDT)
-X-Gm-Message-State: AOAM533rDIz/Rukkcyh7eTvVe6cHjIFyH6iUlvSLcB9bu4iOxd9X/Vai
-        fqND1P91+bCGCZ9pTBk/5DL8CQRdbfOZHGRxeMI=
-X-Google-Smtp-Source: ABdhPJzUixZLxc95ai4vd5dsN4NddOqbm1nObrjQCW5vPZJ2Mwf6I969jFM+TAJw6R9iVmVEV3oBthbJ8krjcpjTY3c=
-X-Received: by 2002:a1f:1f55:0:b0:357:a8d7:b76c with SMTP id
- f82-20020a1f1f55000000b00357a8d7b76cmr4075181vkf.35.1653414171489; Tue, 24
- May 2022 10:42:51 -0700 (PDT)
+        Tue, 24 May 2022 13:43:18 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 877D65AA58
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 10:43:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653414196; x=1684950196;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=sQ21hZ3NqO9CD0q8g7zCgOtuND/EpE6kaxWviayFF8Q=;
+  b=Ls/9Zs877y6uwzPSOcUonfL4UeZqAqm9mHyTayN1mC46PnrrR47j3zJ4
+   P9dmd/KzlwIrivysDtdaa2tnxwFCN8iEetZo2e0FmDrmf1JVxfEHzxTdA
+   QfB9yvGKJ5iSTM9SyYa2h97KX9OnMjAo0VLsJbWb4vcFYBYrw5T+lRjuA
+   65ozKF3Uq0yXiJLe41qS/+uVKaPp1mE+GTGn+O8xOgL6YqHNF7TV7DZmk
+   UOetEEUV8Em8d7fvCsFp1d/WB1CBJL9sVupeG09RZTBeGPLAXThlIRV5x
+   Ne1Ss/NvF073c+mo/oP5BtNd4STuYiSVIEPVpguBrSUxfzuJX6Vtx/CmK
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10357"; a="261213429"
+X-IronPort-AV: E=Sophos;i="5.91,248,1647327600"; 
+   d="scan'208";a="261213429"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 May 2022 10:36:04 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,248,1647327600"; 
+   d="scan'208";a="703564143"
+Received: from lkp-server01.sh.intel.com (HELO db63a1be7222) ([10.239.97.150])
+  by orsmga004.jf.intel.com with ESMTP; 24 May 2022 10:36:02 -0700
+Received: from kbuild by db63a1be7222 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1ntYRu-0002Ic-8d;
+        Tue, 24 May 2022 17:36:02 +0000
+Date:   Wed, 25 May 2022 01:35:42 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Hector Martin <marcan@marcan.st>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [asahilinux:bits/110-smc 11/15]
+ drivers/power/reset/macsmc-reboot.c:142:37: warning: 'struct power_off_data'
+ declared inside parameter list will not be visible outside of this
+ definition or declaration
+Message-ID: <202205250137.Na53MUGN-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220322144003.2357128-1-guoren@kernel.org> <20220322144003.2357128-21-guoren@kernel.org>
- <20220523054550.GA1511899@roeck-us.net>
-In-Reply-To: <20220523054550.GA1511899@roeck-us.net>
-From:   Guo Ren <guoren@kernel.org>
-Date:   Wed, 25 May 2022 01:42:40 +0800
-X-Gmail-Original-Message-ID: <CAJF2gTQ5RS8wGfSDPoB4JLtPBoM=ainuz_EJ9Tweq0mqPM=ALA@mail.gmail.com>
-Message-ID: <CAJF2gTQ5RS8wGfSDPoB4JLtPBoM=ainuz_EJ9Tweq0mqPM=ALA@mail.gmail.com>
-Subject: Re: [PATCH V9 20/20] riscv: compat: Add COMPAT Kbuild skeletal support
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Palmer Dabbelt <palmer@dabbelt.com>, Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Christoph Hellwig <hch@lst.de>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        linux-csky@vger.kernel.org,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        sparclinux <sparclinux@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        Parisc List <linux-parisc@vger.kernel.org>,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        =?UTF-8?Q?Heiko_St=C3=BCbner?= <heiko@sntech.de>,
-        Guo Ren <guoren@linux.alibaba.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 23, 2022 at 1:45 PM Guenter Roeck <linux@roeck-us.net> wrote:
->
-> On Tue, Mar 22, 2022 at 10:40:03PM +0800, guoren@kernel.org wrote:
-> > From: Guo Ren <guoren@linux.alibaba.com>
-> >
-> > Adds initial skeletal COMPAT Kbuild (Running 32bit U-mode on
-> > 64bit S-mode) support.
-> >  - Setup kconfig & dummy functions for compiling.
-> >  - Implement compat_start_thread by the way.
-> >
-> > Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
-> > Signed-off-by: Guo Ren <guoren@kernel.org>
-> > Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-> > Tested-by: Heiko Stuebner <heiko@sntech.de>
-> > Cc: Palmer Dabbelt <palmer@dabbelt.com>
->
-> With this patch in linux-next, all my riscv64 emulations crash.
->
-> [   11.600082] Run /sbin/init as init process
-> [   11.628561] init[1]: unhandled signal 11 code 0x1 at 0x0000000000000000 in libc.so[ffffff8ad39000+a4000]
-> [   11.629398] CPU: 0 PID: 1 Comm: init Not tainted 5.18.0-rc7-next-20220520 #1
-> [   11.629462] Hardware name: riscv-virtio,qemu (DT)
-> [   11.629546] epc : 00ffffff8ada1100 ra : 00ffffff8ada13c8 sp : 00ffffffc58199f0
-> [   11.629586]  gp : 00ffffff8ad39000 tp : 00ffffff8ade0998 t0 : ffffffffffffffff
-> [   11.629598]  t1 : 00ffffffc5819fd0 t2 : 0000000000000000 s0 : 00ffffff8ade0cc0
-> [   11.629610]  s1 : 00ffffff8ade0cc0 a0 : 0000000000000000 a1 : 00ffffffc5819a00
-> [   11.629622]  a2 : 0000000000000001 a3 : 000000000000001e a4 : 00ffffffc5819b00
-> [   11.629634]  a5 : 00ffffffc5819b00 a6 : 0000000000000000 a7 : 0000000000000000
-> [   11.629645]  s2 : 00ffffff8ade0ac8 s3 : 00ffffff8ade0ec8 s4 : 00ffffff8ade0728
-> [   11.629656]  s5 : 00ffffff8ade0a90 s6 : 0000000000000000 s7 : 00ffffffc5819e40
-> [   11.629667]  s8 : 00ffffff8ade0ca0 s9 : 00ffffff8addba50 s10: 0000000000000000
-> [   11.629678]  s11: 0000000000000000 t3 : 0000000000000002 t4 : 0000000000000001
-> [   11.629688]  t5 : 0000000000020000 t6 : ffffffffffffffff
-> [   11.629699] status: 0000000000004020 badaddr: 0000000000000000 cause: 000000000000000d
-> [   11.633421] Kernel panic - not syncing: Attempted to kill init! exitcode=0x0000000b
-> [   11.633664] CPU: 0 PID: 1 Comm: init Not tainted 5.18.0-rc7-next-20220520 #1
-> [   11.633784] Hardware name: riscv-virtio,qemu (DT)
-> [   11.633881] Call Trace:
-> [   11.633960] [<ffffffff80005e72>] dump_backtrace+0x1c/0x24
-> [   11.634162] [<ffffffff809aa9ec>] show_stack+0x2c/0x38
-> [   11.634274] [<ffffffff809b8482>] dump_stack_lvl+0x60/0x8e
-> [   11.634386] [<ffffffff809b84c4>] dump_stack+0x14/0x1c
-> [   11.634491] [<ffffffff809aaca0>] panic+0x116/0x2e2
-> [   11.634596] [<ffffffff80015540>] do_exit+0x7ce/0x7d4
-> [   11.634707] [<ffffffff80015666>] do_group_exit+0x24/0x7c
-> [   11.634817] [<ffffffff80022294>] get_signal+0x7ee/0x830
-> [   11.634924] [<ffffffff800051c0>] do_notify_resume+0x6c/0x41c
-> [   11.635037] [<ffffffff80003ad4>] ret_from_exception+0x0/0x10
-The problem is come from "__dls3's vdso decode part in musl's
-ldso/dynlink.c". The ehdr->e_phnum & ehdr->e_phentsize are wrong.
+tree:   https://github.com/AsahiLinux/linux bits/110-smc
+head:   0a0b49938a3205cb2b05078117b87673c37ed319
+commit: 233aeafea99e125604d8d5afa06a37c38cd0b93e [11/15] power: reset: macsmc-reboot: Add driver for rebooting via Apple SMC
+config: arc-allyesconfig (https://download.01.org/0day-ci/archive/20220525/202205250137.Na53MUGN-lkp@intel.com/config)
+compiler: arceb-elf-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/AsahiLinux/linux/commit/233aeafea99e125604d8d5afa06a37c38cd0b93e
+        git remote add asahilinux https://github.com/AsahiLinux/linux
+        git fetch --no-tags asahilinux bits/110-smc
+        git checkout 233aeafea99e125604d8d5afa06a37c38cd0b93e
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash drivers/input/misc/ drivers/power/reset/
 
-I think the root cause is from musl's implementation with the wrong
-elf parser. I would fix that soon.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-If you CONFIG_COMPAT=n, the bug would be bypassed.
+All warnings (new ones prefixed by >>):
 
->
-> Guenter
->
-> ---
-> # bad: [18ecd30af1a8402c162cca1bd58771c0e5be7815] Add linux-next specific files for 20220520
-> # good: [42226c989789d8da4af1de0c31070c96726d990c] Linux 5.18-rc7
-> git bisect start 'HEAD' 'v5.18-rc7'
-> # bad: [f9b63740b666dd9887eb0282d21b5f65bb0cadd0] Merge branch 'master' of git://git.kernel.org/pub/scm/linux/kernel/git/herbert/cryptodev-2.6.git
-> git bisect bad f9b63740b666dd9887eb0282d21b5f65bb0cadd0
-> # bad: [7db97132097c5973ff77466d0ee681650af653de] Merge branch 'for-next' of git://git.kernel.org/pub/scm/linux/kernel/git/cel/linux
-> git bisect bad 7db97132097c5973ff77466d0ee681650af653de
-> # good: [2b7d17d4b7c1ff40f58b0d32be40fc0bb6c582fb] soc: document merges
-> git bisect good 2b7d17d4b7c1ff40f58b0d32be40fc0bb6c582fb
-> # good: [69c9668f853fdd409bb8abbb37d615785510b29a] Merge branch 'clk-next' of git://git.kernel.org/pub/scm/linux/kernel/git/clk/linux.git
-> git bisect good 69c9668f853fdd409bb8abbb37d615785510b29a
-> # bad: [1577f290aa0d4c5b29c03c46ef52e4952a21bfbb] Merge branch 'for-next' of git://git.kernel.org/pub/scm/linux/kernel/git/s390/linux.git
-> git bisect bad 1577f290aa0d4c5b29c03c46ef52e4952a21bfbb
-> # good: [34f0971f8ca73d7e5502b4cf299788a9402120f7] powerpc/powernv/flash: Check OPAL flash calls exist before using
-> git bisect good 34f0971f8ca73d7e5502b4cf299788a9402120f7
-> # good: [0349d7dfc70a26b3facd8ca97de34980d4b60954] Merge branch 'mips-next' of git://git.kernel.org/pub/scm/linux/kernel/git/mips/linux.git
-> git bisect good 0349d7dfc70a26b3facd8ca97de34980d4b60954
-> # bad: [20bfb54d3b121699674c17a854c5ebc7a8f97d81] Merge branch 'for-next' of git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git
-> git bisect bad 20bfb54d3b121699674c17a854c5ebc7a8f97d81
-> # bad: [9be8459298eadb39b9fe9974b890239e9c123107] riscv: compat: Add COMPAT Kbuild skeletal support
-> git bisect bad 9be8459298eadb39b9fe9974b890239e9c123107
-> # good: [01abdfeac81b5f56062d0a78f2cdc805db937a75] riscv: compat: Support TASK_SIZE for compat mode
-> git bisect good 01abdfeac81b5f56062d0a78f2cdc805db937a75
-> # good: [f4b395e6f1a588ed6c9a30474e58cf6b27b65783] riscv: compat: Add hw capability check for elf
-> git bisect good f4b395e6f1a588ed6c9a30474e58cf6b27b65783
-> # good: [3092eb45637573c5e435fbf5eaf9516316e5f9c6] riscv: compat: vdso: Add setup additional pages implementation
-> git bisect good 3092eb45637573c5e435fbf5eaf9516316e5f9c6
-> # good: [4608c159594fb40a5101357d4f614fdde9ce1fdb] riscv: compat: ptrace: Add compat_arch_ptrace implement
-> git bisect good 4608c159594fb40a5101357d4f614fdde9ce1fdb
-> # first bad commit: [9be8459298eadb39b9fe9974b890239e9c123107] riscv: compat: Add COMPAT Kbuild skeletal support
+   drivers/power/reset/macsmc-reboot.c:54:32: error: field 'sys_off' has incomplete type
+      54 |         struct sys_off_handler sys_off;
+         |                                ^~~~~~~
+>> drivers/power/reset/macsmc-reboot.c:142:37: warning: 'struct power_off_data' declared inside parameter list will not be visible outside of this definition or declaration
+     142 | static void macsmc_power_off(struct power_off_data *data)
+         |                                     ^~~~~~~~~~~~~~
+   drivers/power/reset/macsmc-reboot.c: In function 'macsmc_power_off':
+   drivers/power/reset/macsmc-reboot.c:144:44: error: invalid use of undefined type 'struct power_off_data'
+     144 |         struct macsmc_reboot *reboot = data->cb_data;
+         |                                            ^~
+   drivers/power/reset/macsmc-reboot.c: At top level:
+>> drivers/power/reset/macsmc-reboot.c:156:35: warning: 'struct restart_data' declared inside parameter list will not be visible outside of this definition or declaration
+     156 | static void macsmc_restart(struct restart_data *data)
+         |                                   ^~~~~~~~~~~~
+   drivers/power/reset/macsmc-reboot.c: In function 'macsmc_restart':
+   drivers/power/reset/macsmc-reboot.c:158:44: error: invalid use of undefined type 'struct restart_data'
+     158 |         struct macsmc_reboot *reboot = data->cb_data;
+         |                                            ^~
+   drivers/power/reset/macsmc-reboot.c: At top level:
+>> drivers/power/reset/macsmc-reboot.c:170:42: warning: 'struct reboot_prep_data' declared inside parameter list will not be visible outside of this definition or declaration
+     170 | static void macsmc_reboot_prepare(struct reboot_prep_data *data)
+         |                                          ^~~~~~~~~~~~~~~~
+   drivers/power/reset/macsmc-reboot.c: In function 'macsmc_reboot_prepare':
+   drivers/power/reset/macsmc-reboot.c:172:44: error: invalid use of undefined type 'struct reboot_prep_data'
+     172 |         struct macsmc_reboot *reboot = data->cb_data;
+         |                                            ^~
+   drivers/power/reset/macsmc-reboot.c:176:21: error: invalid use of undefined type 'struct reboot_prep_data'
+     176 |         switch (data->mode) {
+         |                     ^~
+   drivers/power/reset/macsmc-reboot.c: In function 'macsmc_reboot_probe':
+   drivers/power/reset/macsmc-reboot.c:289:44: error: 'RESTART_PRIO_HIGH' undeclared (first use in this function)
+     289 |         reboot->sys_off.restart_priority = RESTART_PRIO_HIGH;
+         |                                            ^~~~~~~~~~~~~~~~~
+   drivers/power/reset/macsmc-reboot.c:289:44: note: each undeclared identifier is reported only once for each function it appears in
+   drivers/power/reset/macsmc-reboot.c:292:15: error: implicit declaration of function 'devm_register_sys_off_handler' [-Werror=implicit-function-declaration]
+     292 |         ret = devm_register_sys_off_handler(&pdev->dev, &reboot->sys_off);
+         |               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   cc1: some warnings being treated as errors
 
 
+vim +142 drivers/power/reset/macsmc-reboot.c
+
+   104	
+   105	static ssize_t macsmc_ac_power_mode_show(struct device *dev,
+   106						 struct device_attribute *attr, char *buf)
+   107	{
+   108		struct macsmc_reboot *reboot = dev_get_drvdata(dev);
+   109		int len = 0;
+   110		int i;
+   111		int mode = nvmem_cell_get_u8(reboot->nvm.pm_setting);
+   112	
+   113		if (mode < 0)
+   114			return mode;
+   115	
+   116		for (i = 0; i < ARRAY_SIZE(ac_power_mode_map); i++)
+   117			if (mode == ac_power_mode_map[i])
+   118				len += scnprintf(buf+len, PAGE_SIZE-len,
+   119						 "[%s] ", ac_power_modes[i]);
+   120			else
+   121				len += scnprintf(buf+len, PAGE_SIZE-len,
+   122						 "%s ", ac_power_modes[i]);
+   123		buf[len-1] = '\n';
+   124		return len;
+   125	}
+   126	static DEVICE_ATTR(ac_power_mode, 0644, macsmc_ac_power_mode_show,
+   127			   macsmc_ac_power_mode_store);
+   128	
+   129	/*
+   130	 * SMC 'MBSE' key actions:
+   131	 *
+   132	 * 'offw' - shutdown warning
+   133	 * 'slpw' - sleep warning
+   134	 * 'rest' - restart warning
+   135	 * 'off1' - shutdown (needs PMU bit set to stay on)
+   136	 * 'susp' - suspend
+   137	 * 'phra' - restart ("PE Halt Restart Action"?)
+   138	 * 'panb' - panic beginning
+   139	 * 'pane' - panic end
+   140	 */
+   141	
+ > 142	static void macsmc_power_off(struct power_off_data *data)
+   143	{
+   144		struct macsmc_reboot *reboot = data->cb_data;
+   145	
+   146		dev_info(reboot->dev, "Issuing power off (off1)\n");
+   147	
+   148		if (apple_smc_write_u32_atomic(reboot->smc, SMC_KEY(MBSE), SMC_KEY(off1)) < 0) {
+   149			dev_err(reboot->dev, "Failed to issue MBSE = off1 (power_off)\n");
+   150		} else {
+   151			mdelay(100);
+   152			WARN_ON(1);
+   153		}
+   154	}
+   155	
+ > 156	static void macsmc_restart(struct restart_data *data)
+   157	{
+   158		struct macsmc_reboot *reboot = data->cb_data;
+   159	
+   160		dev_info(reboot->dev, "Issuing restart (phra)\n");
+   161	
+   162		if (apple_smc_write_u32_atomic(reboot->smc, SMC_KEY(MBSE), SMC_KEY(phra)) < 0) {
+   163			dev_err(reboot->dev, "Failed to issue MBSE = phra (restart)\n");
+   164		} else {
+   165			mdelay(100);
+   166			WARN_ON(1);
+   167		}
+   168	}
+   169	
+ > 170	static void macsmc_reboot_prepare(struct reboot_prep_data *data)
+   171	{
+   172		struct macsmc_reboot *reboot = data->cb_data;
+   173		u32 val;
+   174		u8 shutdown_flag;
+   175	
+   176		switch (data->mode) {
+   177			case SYS_RESTART:
+   178				val = SMC_KEY(rest);
+   179				shutdown_flag = 0;
+   180				break;
+   181			case SYS_POWER_OFF:
+   182				val = SMC_KEY(offw);
+   183				shutdown_flag = 1;
+   184				break;
+   185			default:
+   186				return;
+   187		}
+   188	
+   189		dev_info(reboot->dev, "Preparing for reboot (%p4ch)\n", &val);
+   190	
+   191		/* On the Mac Mini, this will turn off the LED for power off */
+   192		if (apple_smc_write_u32(reboot->smc, SMC_KEY(MBSE), val) < 0)
+   193			dev_err(reboot->dev, "Failed to issue MBSE = %p4ch (reboot_prepare)\n", &val);
+   194	
+   195		/* Set the boot_stage to 0, which means we're doing a clean shutdown/reboot. */
+   196		if (reboot->nvm.boot_stage &&
+   197		    nvmem_cell_set_u8(reboot->nvm.boot_stage, BOOT_STAGE_SHUTDOWN) < 0)
+   198			dev_err(reboot->dev, "Failed to write boot_stage\n");
+   199	
+   200		/*
+   201		 * Set the PMU flag to actually reboot into the off state.
+   202		 * Without this, the device will just reboot. We make it optional in case it is no longer
+   203		 * necessary on newer hardware.
+   204		 */
+   205		if (reboot->nvm.shutdown_flag &&
+   206		    nvmem_cell_set_u8(reboot->nvm.shutdown_flag, shutdown_flag) < 0)
+   207			dev_err(reboot->dev, "Failed to write shutdown_flag\n");
+   208	
 
 -- 
-Best Regards
- Guo Ren
-
-ML: https://lore.kernel.org/linux-csky/
+0-DAY CI Kernel Test Service
+https://01.org/lkp
