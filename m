@@ -2,93 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FDBEC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 12:52:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEAC4C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 12:55:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237067AbiEYMwd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 08:52:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38052 "EHLO
+        id S243087AbiEYMzg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 08:55:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235210AbiEYMwb (ORCPT
+        with ESMTP id S232576AbiEYMze (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 08:52:31 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28BED2DD8
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 05:52:30 -0700 (PDT)
-Received: from zn.tnic (p200300ea97465795329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:9746:5795:329c:23ff:fea6:a903])
+        Wed, 25 May 2022 08:55:34 -0400
+X-Greylist: delayed 98148 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 25 May 2022 05:55:33 PDT
+Received: from box.indicandustries.com (hwsrv-970840.hostwindsdns.com [IPv6:2607:5501:3000:21a5::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF3025F40
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 05:55:32 -0700 (PDT)
+Received: from authenticated-user (box.indicandustries.com [104.168.149.109])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 5B84B1EC026E;
-        Wed, 25 May 2022 14:52:24 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1653483144;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=AOSTJBauf+qqXFyC6kg1/giRfPjYgn+7xUx+q+nWFvo=;
-        b=GjqTegaNU8V3ycIEJkTu2/vzCjwn5sKdGm3ueqy2k/DL1gvlyHWRWrj83+9qaFB9HtzWYH
-        vjNsrDamdLsoOHS48+v3TCtLhvz68ZKIcqAz6iTSUqWZRm+iJU4PmS5J0krr3+ws41jF9n
-        W7V0XpqmobnmVx9xQjn88z/VUF8V8+c=
-Date:   Wed, 25 May 2022 14:52:20 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     X86 ML <x86@kernel.org>, LKML <linux-kernel@vger.kernel.org>
-Subject: [RFC PATCH -v2] x86/microcode: Taint and warn on late loading
-Message-ID: <Yo4mhJPKKremrgYA@zn.tnic>
-References: <20220524185324.28395-1-bp@alien8.de>
- <20220524185324.28395-4-bp@alien8.de>
- <Yo3/CHaBb/0ULNML@hirez.programming.kicks-ass.net>
+        by box.indicandustries.com (Postfix) with ESMTPSA id 98F8E107DE0
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 03:25:29 -0600 (MDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+        d=box.indicandustries.com; s=mail; t=1653384330;
+        bh=V6VCn7WEbqHjVVQ20/+SYu6rwS1WmTHcxX88g+j430s=;
+        h=Reply-To:From:To:Subject:Date:From;
+        b=LaHm0IVak/DUNK8HXZgNyLMg7g4RZb52ii1fjmvlafYY4ZEl56X4ISRHp5IcJK9we
+         aINhCQSKbsfWoN6aArBs2Ny3Ozmj3gWjMQgu1BZGyXmuU7Kcgv9AhQHEb/JMt7O8YT
+         tB3FmNAoulE7HCrXMUD477edcj0yFlmytpMJOIZN5uwGSwY6HaSRMtCbx9A4g5cSOA
+         XwwhOdciTzy0tchKqoNMN3ESKLYAZN/qpXLEYPcXgQhY/8AjHucn1vzW0pzqZz97FG
+         yZOU7KVid1UK/1fPsDw26VgJlNHs19CSICWcXOJIHhbQ82jWFNlX6pEFZfag2avHyO
+         QxNe52Drt3VcQ==
+Reply-To: amjalia90@gmail.com
+From:   amjad.ali@box.indicandustries.com
+To:     linux-kernel@vger.kernel.org
+Subject: Hello Sir, I seek your urgent consideration.
+Date:   24 May 2022 11:25:29 +0200
+Message-ID: <20220524112529.F0B0526CE26C22F2@box.indicandustries.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <Yo3/CHaBb/0ULNML@hirez.programming.kicks-ass.net>
+Content-Type: text/plain;
+        charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 25, 2022 at 12:03:52PM +0200, Peter Zijlstra wrote:
-> Should we not warn *before* attempting the ucode update? Should the
-> whole thing come unstuck, you at least have some clue.
+Hello,
 
-Sure.
+Greetings? I am Amjad. I work with a leading Bio Firm.  Due to=20
+the setbacks of the pandemic, my company has opened a bid in=20
+search of new suppliers for basic raw materials needed in=20
+production.
 
-From: Borislav Petkov <bp@suse.de>
+I am seeking a representative=C2=A0as I am a staff, I can not be=20
+involved directly. It may not be your area of work but the=20
+profits are great and I will guide you through. I have already=20
+sourced a local supplier for this. I only need a reliable=20
+representative.
 
-Warn before it is attempted and taint the kernel.
+Please get back to me so I can explain this in full.
 
-Signed-off-by: Borislav Petkov <bp@suse.de>
----
- arch/x86/kernel/cpu/microcode/core.c | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/arch/x86/kernel/cpu/microcode/core.c b/arch/x86/kernel/cpu/microcode/core.c
-index c717db6b6856..801b44ac3851 100644
---- a/arch/x86/kernel/cpu/microcode/core.c
-+++ b/arch/x86/kernel/cpu/microcode/core.c
-@@ -493,6 +493,9 @@ static int microcode_reload_late(void)
- {
- 	int ret;
- 
-+	pr_err("Attempting late microcode loading - it is dangerous and taints the kernel.\n");
-+	pr_err("You should switch to early loading, if possible.\n");
-+
- 	atomic_set(&late_cpus_in,  0);
- 	atomic_set(&late_cpus_out, 0);
- 
-@@ -541,6 +544,8 @@ static ssize_t reload_store(struct device *dev,
- 	if (ret == 0)
- 		ret = size;
- 
-+	add_taint(TAINT_CPU_OUT_OF_SPEC, LOCKDEP_STILL_OK);
-+
- 	return ret;
- }
- 
--- 
-2.35.1
-
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+Amjad
