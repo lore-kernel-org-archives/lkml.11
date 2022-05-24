@@ -2,92 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E42C6C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 12:31:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6F97C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 12:33:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237384AbiEXMbF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 08:31:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44922 "EHLO
+        id S237330AbiEXMdx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 08:33:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237363AbiEXMbA (ORCPT
+        with ESMTP id S231975AbiEXMdv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 08:31:00 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F7E893981
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 05:30:57 -0700 (PDT)
-Received: from mail-yw1-f174.google.com ([209.85.128.174]) by
- mrelayeu.kundenserver.de (mreue106 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1N2VKr-1ni0xs2gxD-013wib for <linux-kernel@vger.kernel.org>; Tue, 24 May
- 2022 14:30:55 +0200
-Received: by mail-yw1-f174.google.com with SMTP id 00721157ae682-3003cb4e064so7202107b3.3
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 05:30:55 -0700 (PDT)
-X-Gm-Message-State: AOAM531tW1o/6bFNEZqeIqsPuddbKsqLq5N56rSqs5iTFlUK3o+sJnSL
-        QYZbHiQHSeGgf9lthGrU+/d/teLECLoovSk9UTk=
-X-Google-Smtp-Source: ABdhPJydwm9ZeQkJCZTDhTWemb3DUsSF1BiWMivHtJQfFJ6OjF0fBSQWMxFqbwtza36HGeAy93l3UAAU+B1mkG6N7Ok=
-X-Received: by 2002:a0d:efc2:0:b0:2fe:d2b7:da8 with SMTP id
- y185-20020a0defc2000000b002fed2b70da8mr27015519ywe.42.1653395454413; Tue, 24
- May 2022 05:30:54 -0700 (PDT)
+        Tue, 24 May 2022 08:33:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3BAB95A24;
+        Tue, 24 May 2022 05:33:50 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3E1A3614E9;
+        Tue, 24 May 2022 12:33:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 447DFC385AA;
+        Tue, 24 May 2022 12:33:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653395629;
+        bh=heV0a9xrTmX7M4bta874QuFE0tmsa1tM9Z4BIeX5GLo=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Y0hgziHb7ji8ubZON201KRqZwqq3eeyCghSKH3y/P6nTIqZDh4bZRI9kTOFtL9oIE
+         49TSjhzaEiIgVnSXsK0WEdyprd9dL3I3J2m2+e+mK3bFnsv3XH7o7wQBRfHQhABRbG
+         Oc9HLLI0i2ksJuzJWPvc1Tq94Loq+7kyCE6/L5kbsYLWi3b37tndaN7pRqkH+R/Ms4
+         HiaYt567r2ClIQCwUQUW7yVSwHNmUYHDH6YwdYA24PL+a1RtYM2KlDRP1TYlT3hzsC
+         cTn2xSJvjD5s591sMWhp6Mj7gBqIhzIFst/nhYpum9CwU3r/Z+m2HG8yGLPllhORKy
+         XLZ7XicYIN8/g==
+Received: by pali.im (Postfix)
+        id 62FE99ED; Tue, 24 May 2022 14:33:46 +0200 (CEST)
+From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
+To:     Bjorn Helgaas <bhelgaas@google.com>
+Cc:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] PCI: mvebu: Use devm_request_irq() for registering interrupt handler
+Date:   Tue, 24 May 2022 14:28:17 +0200
+Message-Id: <20220524122817.7199-1-pali@kernel.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <20220523150521.2947108-1-nathan@kernel.org>
-In-Reply-To: <20220523150521.2947108-1-nathan@kernel.org>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Tue, 24 May 2022 14:30:36 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a1pRmTeufSUOrRZx_B=VafmG33P1_vzn-YTpcSKDjfvVA@mail.gmail.com>
-Message-ID: <CAK8P3a1pRmTeufSUOrRZx_B=VafmG33P1_vzn-YTpcSKDjfvVA@mail.gmail.com>
-Subject: Re: [PATCH] misc: rtsx: Fix clang -Wsometimes-uninitialized in rts5261_init_from_hw()
-To:     Nathan Chancellor <nathan@kernel.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        clang-built-linux <llvm@lists.linux.dev>,
-        patches@lists.linux.dev, Dan Carpenter <dan.carpenter@oracle.com>,
-        kernel test robot <lkp@intel.com>, Tom Rix <trix@redhat.com>,
-        Ricky WU <ricky_wu@realtek.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:IPfEqANCpeGQT4I5vvTVLwjtt85tkfqzHGY3tMxzRWCh5ngXDUe
- DadM6NPrHrtcI2dSaLUTDm3tdTMcWNpVI5q3qzsCa4ZzJBupDAjexnudS+HO+rd4xaswM8N
- v39ULvqvrcyBZEinxuJVPRS/gMFYIjRnFnvEpSo6VHguCeUdJr7hfQapmTbt7hHXps3Zgnx
- fAm9QYSUN5SebA1Cme/RQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:jJPvRkR6LOo=:iypfv15fbHOkvJP9Pg/ITk
- +igaoCxxIOlpraVfvuwTypCjPK/H+Sd4HK++Up4juj+JI6zKOc61RoE/uuyQjiMt6GtaQEF0V
- UdXTKXhoPTlUS/ZhY/cTpjNG5XvOIO3bk+L1Inib7LVGiOCrYebV7r4Lz5DVNEuF9ErObcbA7
- IUzUGM3Q4fRwLVxuLsZ1IafyvRUemOxayRw+kefGuQofJETpqzcPzshf9V8lb+owGzclYsoKq
- NQw87Vp4osAS0pG+PQmN/UdNOper7JUYa9MlvuOyCLcCOJjwkC5hNtmlfFuvrdqa5Hz3k7MFG
- 9sLZBfvMjNFR8HPE4VbyfcDKtLdLhnzDnpHG25Wwsue3dU0lQjl6h6zTlsxH6Qo3KuCwc+NNc
- 6LtzY0hGfAPh0khgMQ8/md4QqMvL9XQj2FmO5jMI11s3BlZwC9JBTydhEHDCDjpJU98hwHAdk
- EZqcnMXRrztTBVw4G0l8cE5WFopIgLxqURvSsPA6Zu0GjKCTh9S08bhM6TSEHFljwx0rZLsCh
- guSV0uVtE6HQXVNZgfVxYUmwn10ng4pjkjWBHD4P+vw7MfNgIf56de5obKM9CNBTlKVqAP1L/
- 3Zwgc2VFVVX3xuRRGZl4JpwC8/iAZqNuRI90rPtpSPCh2eMpid0AJ+zD8FBYxvLH86INCVkva
- F2txdwdKmqHsd4wlB0n0UE9kGcp3Gzk46ExiJJf4VkGYr1w3AnA+DdkiTO9QrGbxzT5zSyBqw
- ZdrayQBoHmXc08bp5K7Bcg3ZMx7qW2e+iCxEmFfKDP/Wh6XVEduq2AlgfK+8HmV0MnGsm3/yB
- 5loxqnDq+7o/xNzl8n/TeqHPuucHbXSQzT57TEubMzQTTggMlfMeiB3cGxJnDwNZkwzHSufN5
- S/vYibcC2LsGKJP81EJA==
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 23, 2022 at 5:05 PM Nathan Chancellor <nathan@kernel.org> wrote:
->
-> Clang warns:
->
->   drivers/misc/cardreader/rts5261.c:406:13: error: variable 'setting_reg2' is used uninitialized whenever 'if' condition is false [-Werror,-Wsometimes-uninitialized]
->           } else if (efuse_valid == 0) {
->                      ^~~~~~~~~~~~~~~~
->   drivers/misc/cardreader/rts5261.c:412:30: note: uninitialized use occurs here
->           pci_read_config_dword(pdev, setting_reg2, &lval2);
->                                       ^~~~~~~~~~~~
->
-> efuse_valid == 1 is not a valid value so just return early from the
-> function to avoid using setting_reg2 uninitialized.
->
-> Fixes: b1c5f3085149 ("misc: rtsx: add rts5261 efuse function")
-> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-> Reported-by: kernel test robot <lkp@intel.com>
-> Reported-by: Tom Rix <trix@redhat.com>
-> Suggested-by: Ricky WU <ricky_wu@realtek.com>
-> Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Same as in commit a3b69dd0ad62 ("Revert "PCI: aardvark: Rewrite IRQ code to
+chained IRQ handler"") for pci-aardvark driver, use devm_request_irq()
+instead of chained IRQ handler in pci-mvebu.c driver.
 
-Looks good to me,
+This change fixes affinity support and allows to pin interrupts from
+different PCIe controllers to different CPU cores.
 
-Acked-by: Arnd Bergmann <arnd@arndb.de>
+Fixes: ec075262648f ("PCI: mvebu: Implement support for legacy INTx interrupts")
+Signed-off-by: Pali Rohár <pali@kernel.org>
+---
+Hello Bjorn! This is basically same issue as for pci-aardvark.c:
+https://lore.kernel.org/linux-pci/20220515125815.30157-1-pali@kernel.org/#t
+
+I tested this patch with pci=nomsi in cmdline (to force kernel to use
+legacy intx instead of MSI) on A385 and checked that I can set affinity
+via /proc/irq/XX/smp_affinity file for every mvebu pcie controller to
+different CPU and legacy interrupts from different cards/controllers
+were handled by different CPUs.
+
+I think that this is important on Armada XP platforms which have many
+independent PCIe controllers (IIRC up to 10) and many cores (up to 4).
+---
+ drivers/pci/controller/pci-mvebu.c | 30 +++++++++++++++++-------------
+ 1 file changed, 17 insertions(+), 13 deletions(-)
+
+diff --git a/drivers/pci/controller/pci-mvebu.c b/drivers/pci/controller/pci-mvebu.c
+index 8f76d4bda356..de67ea39fea5 100644
+--- a/drivers/pci/controller/pci-mvebu.c
++++ b/drivers/pci/controller/pci-mvebu.c
+@@ -1017,16 +1017,13 @@ static int mvebu_pcie_init_irq_domain(struct mvebu_pcie_port *port)
+ 	return 0;
+ }
+ 
+-static void mvebu_pcie_irq_handler(struct irq_desc *desc)
++static irqreturn_t mvebu_pcie_irq_handler(int irq, void *arg)
+ {
+-	struct mvebu_pcie_port *port = irq_desc_get_handler_data(desc);
+-	struct irq_chip *chip = irq_desc_get_chip(desc);
++	struct mvebu_pcie_port *port = arg;
+ 	struct device *dev = &port->pcie->pdev->dev;
+ 	u32 cause, unmask, status;
+ 	int i;
+ 
+-	chained_irq_enter(chip, desc);
+-
+ 	cause = mvebu_readl(port, PCIE_INT_CAUSE_OFF);
+ 	unmask = mvebu_readl(port, PCIE_INT_UNMASK_OFF);
+ 	status = cause & unmask;
+@@ -1040,7 +1037,7 @@ static void mvebu_pcie_irq_handler(struct irq_desc *desc)
+ 			dev_err_ratelimited(dev, "unexpected INT%c IRQ\n", (char)i+'A');
+ 	}
+ 
+-	chained_irq_exit(chip, desc);
++	return status ? IRQ_HANDLED : IRQ_NONE;
+ }
+ 
+ static int mvebu_pcie_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
+@@ -1490,9 +1487,20 @@ static int mvebu_pcie_probe(struct platform_device *pdev)
+ 				mvebu_pcie_powerdown(port);
+ 				continue;
+ 			}
+-			irq_set_chained_handler_and_data(irq,
+-							 mvebu_pcie_irq_handler,
+-							 port);
++
++			ret = devm_request_irq(dev, irq, mvebu_pcie_irq_handler,
++					       IRQF_SHARED | IRQF_NO_THREAD,
++					       port->name, port);
++			if (ret) {
++				dev_err(dev, "%s: cannot register interrupt handler: %d\n",
++					port->name, ret);
++				irq_domain_remove(port->intx_irq_domain);
++				pci_bridge_emul_cleanup(&port->bridge);
++				devm_iounmap(dev, port->base);
++				port->base = NULL;
++				mvebu_pcie_powerdown(port);
++				continue;
++			}
+ 		}
+ 
+ 		/*
+@@ -1599,7 +1607,6 @@ static int mvebu_pcie_remove(struct platform_device *pdev)
+ 
+ 	for (i = 0; i < pcie->nports; i++) {
+ 		struct mvebu_pcie_port *port = &pcie->ports[i];
+-		int irq = port->intx_irq;
+ 
+ 		if (!port->base)
+ 			continue;
+@@ -1615,9 +1622,6 @@ static int mvebu_pcie_remove(struct platform_device *pdev)
+ 		/* Clear all interrupt causes. */
+ 		mvebu_writel(port, ~PCIE_INT_ALL_MASK, PCIE_INT_CAUSE_OFF);
+ 
+-		if (irq > 0)
+-			irq_set_chained_handler_and_data(irq, NULL, NULL);
+-
+ 		/* Remove IRQ domains. */
+ 		if (port->intx_irq_domain)
+ 			irq_domain_remove(port->intx_irq_domain);
+-- 
+2.20.1
+
