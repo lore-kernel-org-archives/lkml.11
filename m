@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04E08C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 07:57:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03330C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 07:58:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235523AbiEXH4Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 03:56:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60578 "EHLO
+        id S234026AbiEXH6C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 03:58:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235484AbiEXHza (ORCPT
+        with ESMTP id S235584AbiEXHzh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 03:55:30 -0400
+        Tue, 24 May 2022 03:55:37 -0400
 Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1BB9994FD
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 00:55:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E30B09AE69
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 00:55:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653378929; x=1684914929;
+  t=1653378936; x=1684914936;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=BDCTe7xF9c6v8rIzCKhsjaAfG9qHgLaBeVd5M3iUjKo=;
-  b=glGJFIPDAFePC/a3CGJieSMBFwM402Uazzim2dgf36oZLZIjoZGCPlzK
-   p0qwHs4YXWaBEmiSJNegIFRWyPyLYiQuRkkXYRE1Yi/iCDKmEjrRYn7Pt
-   1msmBdOeY0TCRilg0YzszGsfhad15lb3L/fIRUvnsv/gm7s019YX0WpVp
-   0EiKGpQIYwgj0FZ89mYZgJqGoXaFKVld9DlF6EPjy+rU05siFW2L0oW3k
-   WyOZJrU6QFSNiZOlNfJ7b3LcRaol/CLlOKWxtDHOJyWhsvERA93VRAtgf
-   F23awwGcaElbIvTzP7DoEY23yy3stqq6VmNkEmftB1vjto64pfBdnVUMS
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10356"; a="273455499"
+  bh=5WAXWo1h0aqY2Iv7q1ww3egLlAZbpV98rj4lqxoJlOs=;
+  b=g/XRsUW048ohKYjknSZVYB9rXrSBJ1JuJ445iWY2w4soX4Y8qsB8TB7a
+   YSfw9xQkAkabm47+SwbIiVxfSpVrJ4pwQZDXW+otA3ynvOuoQ9t21ldC2
+   yBWhQgxtOIF5gK441sttXB+V8uPkZlPbcxWyW8xncpNhmESXkLzCZKAhE
+   WqJspqL5XA41oRzCvEFLv+C+L3YIR1yuo3dcw/5YtygCtY42oslFgJvRU
+   gi2wShL3N34OcXjQWDlmg+Q4tbwzEYLi4S8QaF+fJyLDcYk4USF0WPOxh
+   nXRLcBSgCSnY/Jd4jrRX8iaFBt3uilH31YYRlMg0xx/g4yksMn3GQT/Rv
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10356"; a="273455516"
 X-IronPort-AV: E=Sophos;i="5.91,248,1647327600"; 
-   d="scan'208";a="273455499"
+   d="scan'208";a="273455516"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 May 2022 00:55:29 -0700
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 May 2022 00:55:36 -0700
 X-IronPort-AV: E=Sophos;i="5.91,248,1647327600"; 
-   d="scan'208";a="717072426"
+   d="scan'208";a="717072442"
 Received: from ahunter6-mobl1.ger.corp.intel.com (HELO ahunter-VirtualBox.home\044ger.corp.intel.com) ([10.252.52.210])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 May 2022 00:55:27 -0700
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 May 2022 00:55:34 -0700
 From:   Adrian Hunter <adrian.hunter@intel.com>
 To:     Arnaldo Carvalho de Melo <acme@kernel.org>
 Cc:     Jiri Olsa <jolsa@redhat.com>, Ian Rogers <irogers@google.com>,
         Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
         Namhyung Kim <namhyung@kernel.org>,
         Leo Yan <leo.yan@linaro.org>, linux-kernel@vger.kernel.org
-Subject: [PATCH V4 11/15] libperf evlist: Check nr_mmaps is correct
-Date:   Tue, 24 May 2022 10:54:32 +0300
-Message-Id: <20220524075436.29144-12-adrian.hunter@intel.com>
+Subject: [PATCH V4 14/15] perf tools: Allow system-wide events to keep their own CPUs
+Date:   Tue, 24 May 2022 10:54:35 +0300
+Message-Id: <20220524075436.29144-15-adrian.hunter@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220524075436.29144-1-adrian.hunter@intel.com>
 References: <20220524075436.29144-1-adrian.hunter@intel.com>
@@ -56,70 +56,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Print an error message if the predetermined number of mmaps is
-incorrect.
+Currently, user_requested_cpus supplants system-wide CPUs when the evlist
+has_user_cpus. Change that so that system-wide events retain their own
+CPUs and they are added to all_cpus.
 
 Acked-by: Ian Rogers <irogers@google.com>
 Acked-by: Namhyung Kim <namhyung@kernel.org>
 Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
 ---
- tools/lib/perf/evlist.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ tools/lib/perf/evlist.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
 diff --git a/tools/lib/perf/evlist.c b/tools/lib/perf/evlist.c
-index eae1f6179dad..f51fdb899d19 100644
+index 1c801f8da44f..9a6801b53274 100644
 --- a/tools/lib/perf/evlist.c
 +++ b/tools/lib/perf/evlist.c
-@@ -23,6 +23,7 @@
- #include <perf/cpumap.h>
- #include <perf/threadmap.h>
- #include <api/fd/array.h>
-+#include "internal.h"
- 
- void perf_evlist__init(struct perf_evlist *evlist)
- {
-@@ -428,7 +429,7 @@ static void perf_evlist__set_mmap_first(struct perf_evlist *evlist, struct perf_
- static int
- mmap_per_evsel(struct perf_evlist *evlist, struct perf_evlist_mmap_ops *ops,
- 	       int idx, struct perf_mmap_param *mp, int cpu_idx,
--	       int thread, int *_output, int *_output_overwrite)
-+	       int thread, int *_output, int *_output_overwrite, int *nr_mmaps)
- {
- 	struct perf_cpu evlist_cpu = perf_cpu_map__cpu(evlist->all_cpus, cpu_idx);
- 	struct perf_evsel *evsel;
-@@ -484,6 +485,8 @@ mmap_per_evsel(struct perf_evlist *evlist, struct perf_evlist_mmap_ops *ops,
- 			if (ops->mmap(map, mp, *output, evlist_cpu) < 0)
- 				return -1;
- 
-+			*nr_mmaps += 1;
-+
- 			if (!idx)
- 				perf_evlist__set_mmap_first(evlist, map, overwrite);
- 		} else {
-@@ -518,6 +521,7 @@ mmap_per_cpu(struct perf_evlist *evlist, struct perf_evlist_mmap_ops *ops,
- {
- 	int nr_threads = perf_thread_map__nr(evlist->threads);
- 	int nr_cpus    = perf_cpu_map__nr(evlist->all_cpus);
-+	int nr_mmaps = 0;
- 	int cpu, thread;
- 
- 	for (cpu = 0; cpu < nr_cpus; cpu++) {
-@@ -526,11 +530,14 @@ mmap_per_cpu(struct perf_evlist *evlist, struct perf_evlist_mmap_ops *ops,
- 
- 		for (thread = 0; thread < nr_threads; thread++) {
- 			if (mmap_per_evsel(evlist, ops, cpu, mp, cpu,
--					   thread, &output, &output_overwrite))
-+					   thread, &output, &output_overwrite, &nr_mmaps))
- 				goto out_unmap;
- 		}
- 	}
- 
-+	if (nr_mmaps != evlist->nr_mmaps)
-+		pr_err("Miscounted nr_mmaps %d vs %d\n", nr_mmaps, evlist->nr_mmaps);
-+
- 	return 0;
- 
- out_unmap:
+@@ -40,12 +40,11 @@ static void __perf_evlist__propagate_maps(struct perf_evlist *evlist,
+ 	 * We already have cpus for evsel (via PMU sysfs) so
+ 	 * keep it, if there's no target cpu list defined.
+ 	 */
+-	if (!evsel->own_cpus || evlist->has_user_cpus) {
+-		perf_cpu_map__put(evsel->cpus);
+-		evsel->cpus = perf_cpu_map__get(evlist->user_requested_cpus);
+-	} else if (!evsel->system_wide &&
+-		   !evsel->requires_cpu &&
+-		   perf_cpu_map__empty(evlist->user_requested_cpus)) {
++	if (!evsel->own_cpus ||
++	    (!evsel->system_wide && evlist->has_user_cpus) ||
++	    (!evsel->system_wide &&
++	     !evsel->requires_cpu &&
++	     perf_cpu_map__empty(evlist->user_requested_cpus))) {
+ 		perf_cpu_map__put(evsel->cpus);
+ 		evsel->cpus = perf_cpu_map__get(evlist->user_requested_cpus);
+ 	} else if (evsel->cpus != evsel->own_cpus) {
 -- 
 2.25.1
 
