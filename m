@@ -2,84 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97C36C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 15:25:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12C58C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 15:26:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238685AbiEXPZn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 11:25:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43944 "EHLO
+        id S236212AbiEXP0n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 11:26:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233703AbiEXPZl (ORCPT
+        with ESMTP id S238859AbiEXP0e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 11:25:41 -0400
-Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C7C14C789;
-        Tue, 24 May 2022 08:25:39 -0700 (PDT)
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id 6F3521C0B82; Tue, 24 May 2022 17:25:37 +0200 (CEST)
-Date:   Tue, 24 May 2022 17:25:36 +0200
-From:   Pavel Machek <pavel@denx.de>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Subject: Re: [PATCH 5.10 00/97] 5.10.118-rc1 review
-Message-ID: <20220524152536.GA450@duo.ucw.cz>
-References: <20220523165812.244140613@linuxfoundation.org>
+        Tue, 24 May 2022 11:26:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B939C2E9CC
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 08:26:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 53E8D61716
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 15:26:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CBCAC34113;
+        Tue, 24 May 2022 15:26:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653405992;
+        bh=lXzHpD73ZNq/mGAnzxwqk68q+3cpJPWaCAtRV53tatI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=bQBRLUIB+CzIv9geGx/fXV1J6eBqxc8uSBz22ga34tMA74Tt6sznwf8zUq/13AD3g
+         pdGVCep8TGTDLVFsFsup31isXOho6wgY/+Q7cecYJW4bfL8ItsMkFwlpgkQ3ZMq4oG
+         5tVMDxUuYnY2Akhqw//Z6OkkPHiPqOs+3hdTszjVtvIuCh875iDjkFjTjaujORqKdG
+         KTofWputI5KayJewQ7P0ObQiZQIRQhM5kWEAxlEZA+yp/AoDk/Xa3+MKWg25TPAdxg
+         WI01dlqWihXad0nm824+pzM/hhnXzEElVIjFBQbYNo1TDOsFT2LGR59Ui0zVuhcVI5
+         08TvHm8JXTg2Q==
+Date:   Tue, 24 May 2022 08:26:30 -0700
+From:   Jaegeuk Kim <jaegeuk@kernel.org>
+To:     Chao Yu <chao@kernel.org>
+Cc:     Daeho Jeong <daeho43@gmail.com>, linux-kernel@vger.kernel.org,
+        linux-f2fs-devel@lists.sourceforge.net, kernel-team@android.com,
+        Daeho Jeong <daehojeong@google.com>
+Subject: Re: [f2fs-dev] [PATCH v3] f2fs: change the current atomic write way
+Message-ID: <Yoz5JteVWWfZmOBp@google.com>
+References: <20220428181809.2352352-1-daeho43@gmail.com>
+ <dd1ea728-4cb6-e35d-dc76-a1d62bead69a@kernel.org>
+ <YovMeQO2n0XAxMhe@google.com>
+ <227d10d5-2afe-acfa-7cfc-3a2f45331c6f@kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="fdj2RfSjLxBAspz7"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220523165812.244140613@linuxfoundation.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <227d10d5-2afe-acfa-7cfc-3a2f45331c6f@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 05/24, Chao Yu wrote:
+> On 2022/5/24 2:03, Jaegeuk Kim wrote:
+> > On 05/22, Chao Yu wrote:
+> > > On 2022/4/29 2:18, Daeho Jeong wrote:> +		*old_addr = dn.data_blkaddr;
+> > > > +		f2fs_truncate_data_blocks_range(&dn, 1);
+> > > > +		dec_valid_block_count(sbi, F2FS_I(inode)->cow_inode, count);
+> > > > +		inc_valid_block_count(sbi, inode, &count);
+> > > > +		f2fs_replace_block(sbi, &dn, dn.data_blkaddr, new_addr,
+> > > > +					ni.version, true, false);
+> > > 
+> > > My concern is, if cow_inode's data was persisted into previous checkpoint,
+> > > and then f2fs_replace_block() will update SSA from cow_inode to inode?
+> > 
+> > SSA for original file is intact, so we'll see the orignal file's block addresses
+> > and SSA, if we flush cow_inode's SSA after committing the atomic writes?
+> > It'd be good to flush any SSA for cow_inode, since we'll truncate
+> > cow_inode after powercut by the ohphan recovery?
+> 
+> I think it's safe for recovery flow, but before that, fsck will report inconsistent
+> status during checking orphan atomic_write inode.
 
---fdj2RfSjLxBAspz7
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+That should be fine as well, since it'll just drop that cow_inode.
 
-Hi!
+> 
+> Thanks,
+> 
+> > 
+> > > it will cause inconsistent status of last valid checkpoint? Or am I mssing
+> > > something?
+> > > 
+> > > > -		f2fs_submit_merged_write_cond(sbi, inode, NULL, 0, DATA);
+> > > > +			new = f2fs_kmem_cache_alloc(revoke_entry_slab, GFP_NOFS,
+> > > > +							true, NULL);
+> > > > +			if (!new) {
+> > > > +				f2fs_put_dnode(&dn);
+> > > > +				ret = -ENOMEM;
+> > > > +				goto out;
+> > > 
+> > > It doesn't need to handle failure of f2fs_kmem_cache_alloc()
+> > > due to nofail parameter is true.
 
-> This is the start of the stable review cycle for the 5.10.118 release.
-> There are 97 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+Let's get this by another patch. Could you please send one?
 
-CIP testing did not find any problems here:                                =
-                      =20
-                                                                           =
-                      =20
-https://gitlab.com/cip-project/cip-testing/linux-stable-rc-ci/-/tree/linux-=
-5.10.y                =20
-                                                                           =
-                      =20
-Tested-by: Pavel Machek (CIP) <pavel@denx.de>                              =
-                      =20
-                                                                           =
-                      =20
-Best regards,                                                              =
-                      =20
-                                                                Pavel      =
-                      =20
---=20
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-
---fdj2RfSjLxBAspz7
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYoz48AAKCRAw5/Bqldv6
-8pQYAJ91ybXnv5ASp7R9Fv4TrgDfH1EV/wCgoKOj65DDp8uEOkxLlELzBFrlsc4=
-=MQUR
------END PGP SIGNATURE-----
-
---fdj2RfSjLxBAspz7--
+> > > 
+> > > Thanks,
+> > > 
+> > > 
+> > > _______________________________________________
+> > > Linux-f2fs-devel mailing list
+> > > Linux-f2fs-devel@lists.sourceforge.net
+> > > https://lists.sourceforge.net/lists/listinfo/linux-f2fs-devel
