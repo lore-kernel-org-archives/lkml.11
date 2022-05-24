@@ -2,113 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69AD5C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 20:51:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 625C9C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 20:53:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238737AbiEXUvk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 16:51:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54902 "EHLO
+        id S241604AbiEXUx1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 16:53:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241809AbiEXUvd (ORCPT
+        with ESMTP id S235839AbiEXUx0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 16:51:33 -0400
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A93D31354
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 13:51:32 -0700 (PDT)
-Received: by mail-lf1-x131.google.com with SMTP id w14so32766548lfl.13
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 13:51:32 -0700 (PDT)
+        Tue, 24 May 2022 16:53:26 -0400
+Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27ECD77F27
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 13:53:25 -0700 (PDT)
+Received: by mail-lj1-x229.google.com with SMTP id g7so2935041lja.3
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 13:53:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=FmogMWNp0qvu2mm31zmFjP6h+axm+XxtnUaHfKWv+xM=;
-        b=RR6mv2dpN07ZtLDjgj/gqKwZLXyst5QN24l2SvqPkG15iuStCrKQ41Fl3l85Lg6Tdf
-         vo4zP0ogMNAYQkmt5LjmX2wvt9aMXCU9tI7A8BYlyHSJ3w0lGXEts6mPqi2wakkKfsAq
-         iBcQfmsq1u/dCBzyJ3eyDOwHDoWMIQbF0qe91RsjQ1jotJ9Klr82gRna/odaaQYjAV7p
-         LHIOtPbttOTW9Hcb8kEmiBcBI0HJiKQ+5r18GF5O5uLCzY8rr7PNDf5/Ad1BdnxtkDll
-         i3Eh0+X8VOOVyAfZ0SIC2bAZIkMnFNADAzOGmGOhWEJMWh52/l9sNRt4biSBxBs/AxUd
-         7UvA==
+        bh=bW5/8lI4JjFQ6Xag2meN8L4VITbIpxKq0yUGICqVrIc=;
+        b=WpvrEVmuTl2Kx5iqizXnztaJbRV6fnt43A0sf4YpzEgTzyvZ1jmLsw+fd6x4j/a5jl
+         ef9kOPZKrEXxbXKlOmkFFkqVl7qePJXkW7sSjczqRVU9eaK23gdLP0JzNRYvjPBeCGKX
+         50WAFccP6NrcY5s62BPW6EYi2JkzEq+oR9WH8GtAEN+UR6hNMHnarAv14tJGOAamIjU/
+         PPYIVS0QGSEcwQCslNS5imW4VKB/fVCyYLQFfNtMGuqhk9Rgu7dw2kuCJqw0tMwuqmbG
+         c9NemwHFdhnEzrKcWgeVh28uM39rBtJb2f+QyxtTKr/hEETDVVbwwEcJZugMGnPgPqR8
+         LKsw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=FmogMWNp0qvu2mm31zmFjP6h+axm+XxtnUaHfKWv+xM=;
-        b=O9BHVJDmcjqBty5HF4kYG/qQBA/P0siONo0r+slO+sN5lcIAAWTe2cUSgpmLD74y3b
-         P/HsFLzv+HN/1shX4RJV4T8XwmoftCF1Go/6mSqmghI8OpAUuOzUOZMwOcJVkpsDlmwG
-         qBu6Kdy3ZOP+A70buIz5pQnLzdLsU6HoMTWRGTxbMgICFh8e+3j7UnTTjMCuAun3LKV4
-         M4qMgdrDcYFLJRaQ97JhtFE8UMySHAepoJb9X/6KYY4UGexdU83Jbm5SZJei/m3Djyk/
-         y6hmxhi+agC08Lhy/yZtWoZxj/zvcgedMSrkqcotxU7ezgGw3EogVuqcLtUrq5Btrc6O
-         E65g==
-X-Gm-Message-State: AOAM5339sQOE6P0ApY/ZJeBTXRaWj4qbyY/TsR/isAhHG56IFOfzHgwP
-        +cZbV3cPSjQPMdnW8tf98lrv8xhgXbLD6jT2IUIx4+yYPW8=
-X-Google-Smtp-Source: ABdhPJzleqZnjuGchdQgqqN8WkUodSeI7NY6Jg+gW6AX7R8T4w34/0v35vDm+YNngitG5zX+TsGnV80HTTcpTjrvAUg=
-X-Received: by 2002:a05:6512:48e:b0:477:c024:1a1c with SMTP id
- v14-20020a056512048e00b00477c0241a1cmr21489946lfq.100.1653425490353; Tue, 24
- May 2022 13:51:30 -0700 (PDT)
+        bh=bW5/8lI4JjFQ6Xag2meN8L4VITbIpxKq0yUGICqVrIc=;
+        b=OgoPK74ZrYt4HHWEWEDR0CsWnAa816ayGt+WZEwugPLAz8MGPOaD6DkeHRk5okL3NA
+         6ub1ABGTNjlb+q+WerNJxzJzVqb7wnSwJVPqXVRno35PVI23ZMSo0z0JPicHPOW9XbyU
+         b/ZlUoRFkwPcPJwFq8aCgt7QJ5AikASaDFWZmc0ZLwSJ9jtpEjUgSAQK7z2EN+qcN/fS
+         0M+2UMaVvUJ+upezlNnkiWyw8VJFOYcyacSY8iWUu7n48Wu7ry2IpRJF5bXlLd9Oky9V
+         KrN6vhdSW5R3Ei1lT/BqS9Aaws9zLWx+n5e9jBoS0Rxw/RlK3fET+dMv41bpPcFwKe1N
+         DFCg==
+X-Gm-Message-State: AOAM530lR88Cjg/j/Hhk2bmi9bBcm7oVjgBFcJ6SIorArsGBthAlciS+
+        FFqwsX2QLKLyXossvRB/oURV9r4hJBf8pET7vOU9aA==
+X-Google-Smtp-Source: ABdhPJxk2brImsvQXheQLXj2NVwibLAuU32WQRqqGWEA2q1mzgCJ9lYctHlJTOcDFEPuy9bwxBxyAT2QBckrxuuAKwg=
+X-Received: by 2002:a2e:98c3:0:b0:253:e0e1:20 with SMTP id s3-20020a2e98c3000000b00253e0e10020mr11709312ljj.26.1653425603309;
+ Tue, 24 May 2022 13:53:23 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220523164626.858340-1-masahiroy@kernel.org> <20220523164626.858340-5-masahiroy@kernel.org>
-In-Reply-To: <20220523164626.858340-5-masahiroy@kernel.org>
+References: <20220523181503.1007987-1-masahiroy@kernel.org>
+In-Reply-To: <20220523181503.1007987-1-masahiroy@kernel.org>
 From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Tue, 24 May 2022 13:51:19 -0700
-Message-ID: <CAKwvOdn00NxJo+_SCHcBx2JO0doZQx9cL0TdFDfQAwMOXDMc8w@mail.gmail.com>
-Subject: Re: [PATCH 5/5] modpost: squash if...else if in find_elf_symbol2()
+Date:   Tue, 24 May 2022 13:53:12 -0700
+Message-ID: <CAKwvOdmrcmaR7vUP73UXCLaibqJ0-tiJUTL=tZQTY8buL3NwqQ@mail.gmail.com>
+Subject: Re: [PATCH] kbuild: replace $(if A,A,B) with $(or A,B) in scripts/Makefile.modpost
 To:     Masahiro Yamada <masahiroy@kernel.org>
 Cc:     linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Michal Marek <michal.lkml@markovi.net>
+        Michal Marek <michal.lkml@markovi.net>,
+        Nicolas Schier <nicolas@fjasle.eu>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 23, 2022 at 9:48 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
+On Mon, May 23, 2022 at 11:16 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
 >
->     if ((addr - sym->st_value) < distance) {
->             distance = addr - sym->st_value;
->             near = sym;
->     } else if ((addr - sym->st_value) == distance) {
->             near = sym;
->     }
->
-> is equivalent to:
->
->     if ((addr - sym->st_value) <= distance) {
->             distance = addr - sym->st_value;
->             near = sym;
->     }
->
-> (The else-if part can overwrite 'distance' with the same value).
+> Similar cleanup to commit 5c8166419acf ("kbuild: replace $(if A,A,B)
+> with $(or A,B)").
 >
 > Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 
-Sure, thanks for the patch!
+Thanks for the patch!
 Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
 
 > ---
 >
->  scripts/mod/modpost.c | 10 +++-------
->  1 file changed, 3 insertions(+), 7 deletions(-)
+>  scripts/Makefile.modpost | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 >
-> diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-> index 48a18b59f908..8c8d2a4bc0b0 100644
-> --- a/scripts/mod/modpost.c
-> +++ b/scripts/mod/modpost.c
-> @@ -1270,13 +1270,9 @@ static Elf_Sym *find_elf_symbol2(struct elf_info *elf, Elf_Addr addr,
->                         continue;
->                 if (!is_valid_name(elf, sym))
->                         continue;
-> -               if (sym->st_value <= addr) {
-> -                       if ((addr - sym->st_value) < distance) {
-> -                               distance = addr - sym->st_value;
-> -                               near = sym;
-> -                       } else if ((addr - sym->st_value) == distance) {
-> -                               near = sym;
-> -                       }
-> +               if (sym->st_value <= addr && addr - sym->st_value <= distance) {
-> +                       distance = addr - sym->st_value;
-> +                       near = sym;
->                 }
->         }
->         return near;
+> diff --git a/scripts/Makefile.modpost b/scripts/Makefile.modpost
+> index 7c3899182a4a..911606496341 100644
+> --- a/scripts/Makefile.modpost
+> +++ b/scripts/Makefile.modpost
+> @@ -84,7 +84,7 @@ obj := $(KBUILD_EXTMOD)
+>  src := $(obj)
+>
+>  # Include the module's Makefile to find KBUILD_EXTRA_SYMBOLS
+> -include $(if $(wildcard $(src)/Kbuild), $(src)/Kbuild, $(src)/Makefile)
+> +include $(or $(wildcard $(src)/Kbuild), $(src)/Makefile)
+>
+>  # modpost option for external modules
+>  MODPOST += -e
 > --
 > 2.32.0
 >
