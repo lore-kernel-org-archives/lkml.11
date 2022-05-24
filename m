@@ -2,135 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EC9AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 11:03:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A586C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 11:04:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236397AbiEXLDm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 07:03:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34072 "EHLO
+        id S236363AbiEXLEX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 07:04:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232964AbiEXLDi (ORCPT
+        with ESMTP id S235881AbiEXLEU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 07:03:38 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F85D74DE7;
-        Tue, 24 May 2022 04:03:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653390217; x=1684926217;
-  h=from:to:cc:subject:in-reply-to:references:date:
-   message-id:mime-version;
-  bh=CntG2zT79s+rUqc/RwF4HmNc6O2cBy1aTPUYDsYRjjE=;
-  b=dh2PDazC+Hias72hL+YjkQm+4NV8DToFrS9UKRxKmiS3wgYrkk72n1tB
-   4HB9DvustuCf75leTsWV2XTHhp/g+hpBKnjrdGuwzenebYvPq94XzybWQ
-   s1zPvooRPuxUqQc58hHj1Cq7cjoBqvpzVDjfb98Wbo4j8xSw5I9hLE9wb
-   tRHKJV2SdjpVuqjKnF7vHEArIBNa7kuAcpq7eJf2rKGc5fr5CAZ5dQyk1
-   VdQKcyihYFN9IuqXbLDzGRljMC7A+9nwHXaUA/KRi9xsK8iRezZJCDrWe
-   y61FScKe9PRfstwWtCrQcDW0AHHOXQVMLSQa0AVm+V4d3ZYUIquxtL5Bu
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10356"; a="273611125"
-X-IronPort-AV: E=Sophos;i="5.91,248,1647327600"; 
-   d="scan'208";a="273611125"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 May 2022 04:03:37 -0700
-X-IronPort-AV: E=Sophos;i="5.91,248,1647327600"; 
-   d="scan'208";a="745175110"
-Received: from zychseba-mobl.ger.corp.intel.com (HELO localhost) ([10.249.136.104])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 May 2022 04:03:33 -0700
-From:   Jani Nikula <jani.nikula@linux.intel.com>
-To:     Julia Lawall <Julia.Lawall@inria.fr>
-Cc:     kernel-janitors@vger.kernel.org,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] drm/i915: fix typos in comments
-In-Reply-To: <20220521111145.81697-90-Julia.Lawall@inria.fr>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-References: <20220521111145.81697-90-Julia.Lawall@inria.fr>
-Date:   Tue, 24 May 2022 14:03:29 +0300
-Message-ID: <87ee0jw5tq.fsf@intel.com>
+        Tue, 24 May 2022 07:04:20 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACBC374DE7
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 04:04:17 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id t25so30205129lfg.7
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 04:04:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=hPNoCC9bCYBSqlvmlNYnCR/CEL5z/MBO4GRQRBu2SQ4=;
+        b=dA4KevZFwM0GA6ikLM4CQSpLnMQZoHGlBfnsB4u4wf26cUuuFTFQ7Lmwehv5yWosP1
+         +erWYpxy1I6uy+YdTsSqf5HzY47VmUtyNZBzCM34NH1TQIjnXK2VVq6jGfTllnLlTxA1
+         w9Ky2l4IeFehM0AEjfpz+F8eJrEgswepUjtHnlwoksmNRbHum8BENMOVbYVmTkUIX/kG
+         CvOp1RGolCVyVjX9JZx0z54FP8xB+Wk/rBMJfoDUh1fBGqtK1MgOrUXGBdEhddDRbW2o
+         S+jgCSu5bJHprvsFz98itVCR0GJEi7zM+COaK4rmJk+WSfaQjII0DBA4XZ+cc4AKj6Sx
+         ANOw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=hPNoCC9bCYBSqlvmlNYnCR/CEL5z/MBO4GRQRBu2SQ4=;
+        b=4EV/9Y0cO1AH/Oe8u+iksTC1BMAC6L1H02/iMOe1oKxwwpPhbtT+HEjv50uXhijQMq
+         l+VchE62CIA+KHg/iSBHrWAQMfDhFKcXaxCIEkG5Yu/FHgJgl8vMPGDAvt7BdfnaeOFq
+         QLIfnAj7fyRsUSkigCqp9h6qdlrbISCavAFYgqUo+ewaE4hsc38+MG/R8myMLkh9wSnH
+         +SRFhSK5COK6utGem/fZasfkeDFJqoV4KHhtQmsi3Sw5BI88LvQJH9WtHG8ACPpU3TPM
+         IrT/1ys1qnEF1jV4btE8BSdFZl9MxtldQHV5H8HjIp40C6nxbewDkIZ/vZldaJ9q5iJ5
+         fOeA==
+X-Gm-Message-State: AOAM533DdGszMMnSTmrqRuTbhmpieOUoMbCL/+hxpvTTEYCEsN9OuaQC
+        r5LYntsKvSoJsyXq2am6E3F45w==
+X-Google-Smtp-Source: ABdhPJw2upydtAoXKYn4a3Gqa3QqfoUFFOC52J/y7lFhp6vDr43KdpAMMfe6F1biVkI4W6nLqT/LfQ==
+X-Received: by 2002:a05:6512:201a:b0:478:5adc:fbbb with SMTP id a26-20020a056512201a00b004785adcfbbbmr12704734lfb.687.1653390255946;
+        Tue, 24 May 2022 04:04:15 -0700 (PDT)
+Received: from [172.20.68.48] ([91.221.145.6])
+        by smtp.gmail.com with ESMTPSA id d22-20020a2e3316000000b00253deeaeb3dsm2313662ljc.131.2022.05.24.04.04.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 24 May 2022 04:04:15 -0700 (PDT)
+Message-ID: <2cf38dea-0754-e63b-4832-a0b2aa966c61@linaro.org>
+Date:   Tue, 24 May 2022 13:04:11 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] arm64: dts: Add support for Stratix 10 Software Virtual
+ Platform
+Content-Language: en-US
+To:     wen.ping.teh@intel.com, Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org,
+        Yves Vandervennet <yvanderv@opensource.altera.com>,
+        Dinh Nguyen <dinguyen@opensource.altera.com>
+References: <20220524102912.792968-1-wen.ping.teh@intel.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220524102912.792968-1-wen.ping.teh@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 21 May 2022, Julia Lawall <Julia.Lawall@inria.fr> wrote:
-> Spelling mistakes (triple letters) in comments.
-> Detected with the help of Coccinelle.
->
-> Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
-
-Thanks, pushed to drm-intel-next.
-
-BR,
-Jani.
-
->
+On 24/05/2022 12:29, wen.ping.teh@intel.com wrote:
+> From: Teh Wen Ping <wen.ping.teh@intel.com>
+> 
+> Add Stratix 10 Software Virtual Platform device tree
+> 
+> Signed-off-by: Yves Vandervennet <yvanderv@opensource.altera.com>
+> Signed-off-by: Dinh Nguyen <dinguyen@opensource.altera.com>
+> Signed-off-by: Teh Wen Ping <wen.ping.teh@intel.com>
 > ---
->  drivers/gpu/drm/i915/display/intel_color.c           |    2 +-
->  drivers/gpu/drm/i915/display/intel_pps.c             |    2 +-
->  drivers/gpu/drm/i915/gt/intel_execlists_submission.c |    2 +-
->  drivers/gpu/drm/i915/gt/uc/intel_guc_log.c           |    2 +-
->  4 files changed, 4 insertions(+), 4 deletions(-)
->
-> diff --git a/drivers/gpu/drm/i915/display/intel_color.c b/drivers/gpu/drm/i915/display/intel_color.c
-> index 34128c9c635c..a27ce874a9e8 100644
-> --- a/drivers/gpu/drm/i915/display/intel_color.c
-> +++ b/drivers/gpu/drm/i915/display/intel_color.c
-> @@ -1638,7 +1638,7 @@ static u32 icl_gamma_mode(const struct intel_crtc_state *crtc_state)
->  	/*
->  	 * Enable 10bit gamma for D13
->  	 * ToDo: Extend to Logarithmic Gamma once the new UAPI
-> -	 * is acccepted and implemented by a userspace consumer
-> +	 * is accepted and implemented by a userspace consumer
->  	 */
->  	else if (DISPLAY_VER(i915) >= 13)
->  		gamma_mode |= GAMMA_MODE_MODE_10BIT;
-> diff --git a/drivers/gpu/drm/i915/display/intel_pps.c b/drivers/gpu/drm/i915/display/intel_pps.c
-> index 5a598dd06039..4bc0563dde92 100644
-> --- a/drivers/gpu/drm/i915/display/intel_pps.c
-> +++ b/drivers/gpu/drm/i915/display/intel_pps.c
-> @@ -509,7 +509,7 @@ static void wait_panel_power_cycle(struct intel_dp *intel_dp)
+>  arch/arm64/Kconfig.platforms                  |   3 +-
+>  arch/arm64/boot/dts/altera/Makefile           |   3 +-
+>  .../dts/altera/socfpga_stratix10_swvp.dts     | 131 ++++++++++++++++++
+>  3 files changed, 135 insertions(+), 2 deletions(-)
+>  create mode 100644 arch/arm64/boot/dts/altera/socfpga_stratix10_swvp.dts
+> 
+> diff --git a/arch/arm64/Kconfig.platforms b/arch/arm64/Kconfig.platforms
+> index de9a18d3026f..48abe5dafaae 100644
+> --- a/arch/arm64/Kconfig.platforms
+> +++ b/arch/arm64/Kconfig.platforms
+> @@ -249,7 +249,8 @@ config ARCH_INTEL_SOCFPGA
+>  	bool "Intel's SoCFPGA ARMv8 Families"
+>  	help
+>  	  This enables support for Intel's SoCFPGA ARMv8 families:
+> -	  Stratix 10 (ex. Altera), Agilex and eASIC N5X.
+> +	  Stratix 10 (ex. Altera), Stratix10 Software Virtual Platform,
+> +	  Agilex and eASIC N5X.
 >  
->  	drm_dbg_kms(&i915->drm, "Wait for panel power cycle\n");
->  
-> -	/* take the difference of currrent time and panel power off time
-> +	/* take the difference of current time and panel power off time
->  	 * and then make panel wait for t11_t12 if needed. */
->  	panel_power_on_time = ktime_get_boottime();
->  	panel_power_off_duration = ktime_ms_delta(panel_power_on_time, intel_dp->pps.panel_power_off_time);
-> diff --git a/drivers/gpu/drm/i915/gt/intel_execlists_submission.c b/drivers/gpu/drm/i915/gt/intel_execlists_submission.c
-> index 86f7a9ac1c39..aa0d2bbbbcc4 100644
-> --- a/drivers/gpu/drm/i915/gt/intel_execlists_submission.c
-> +++ b/drivers/gpu/drm/i915/gt/intel_execlists_submission.c
-> @@ -1350,7 +1350,7 @@ static void execlists_dequeue(struct intel_engine_cs *engine)
->  			 * submission. If we don't cancel the timer now,
->  			 * we will see that the timer has expired and
->  			 * reschedule the tasklet; continually until the
-> -			 * next context switch or other preeemption event.
-> +			 * next context switch or other preemption event.
->  			 *
->  			 * Since we have decided to reschedule based on
->  			 * consumption of this timeslice, if we submit the
-> diff --git a/drivers/gpu/drm/i915/gt/uc/intel_guc_log.c b/drivers/gpu/drm/i915/gt/uc/intel_guc_log.c
-> index 78d2989fe917..02311ad90264 100644
-> --- a/drivers/gpu/drm/i915/gt/uc/intel_guc_log.c
-> +++ b/drivers/gpu/drm/i915/gt/uc/intel_guc_log.c
-> @@ -588,7 +588,7 @@ int intel_guc_log_relay_open(struct intel_guc_log *log)
->  	/*
->  	 * We require SSE 4.1 for fast reads from the GuC log buffer and
->  	 * it should be present on the chipsets supporting GuC based
-> -	 * submisssions.
-> +	 * submissions.
->  	 */
->  	if (!i915_has_memcpy_from_wc()) {
->  		ret = -ENXIO;
->
+>  config ARCH_SYNQUACER
+>  	bool "Socionext SynQuacer SoC Family"
+> diff --git a/arch/arm64/boot/dts/altera/Makefile b/arch/arm64/boot/dts/altera/Makefile
+> index 4db83fbeb115..1bf0c472f6b4 100644
+> --- a/arch/arm64/boot/dts/altera/Makefile
+> +++ b/arch/arm64/boot/dts/altera/Makefile
+> @@ -1,3 +1,4 @@
+>  # SPDX-License-Identifier: GPL-2.0-only
+>  dtb-$(CONFIG_ARCH_INTEL_SOCFPGA) += socfpga_stratix10_socdk.dtb \
+> -				socfpga_stratix10_socdk_nand.dtb
+> +				socfpga_stratix10_socdk_nand.dtb \
+> +				socfpga_stratix10_swvp.dtb
+> diff --git a/arch/arm64/boot/dts/altera/socfpga_stratix10_swvp.dts b/arch/arm64/boot/dts/altera/socfpga_stratix10_swvp.dts
+> new file mode 100644
+> index 000000000000..209e26d3611b
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/altera/socfpga_stratix10_swvp.dts
+> @@ -0,0 +1,131 @@
+> +// SPDX-License-Identifier:     GPL-2.0
 
--- 
-Jani Nikula, Intel Open Source Graphics Center
+No need for indentation before GPL.
+
+> +/*
+> + * Copyright (C) 2022, Intel Corporation
+> + */
+> +
+> +#include "socfpga_stratix10.dtsi"
+> +
+> +/ {
+> +	model = "SOCFPGA Stratix 10 SWVP";
+> +	compatible = "arm,foundation-aarch64", "arm,vexpress";
+
+Does not look like compatible for stratix at all... Please do not invent
+stuff but take a look at existing code and customize it.
+
+> +
+> +	aliases {
+> +		serial0 = &uart0;
+> +		serial1 = &uart1;
+> +
+> +		timer0 = &timer0;
+> +		timer1 = &timer1;
+> +		timer2 = &timer2;
+> +		timer3 = &timer3;
+> +
+> +		ethernet0 = &gmac0;
+> +		ethernet1 = &gmac1;
+> +		ethernet2 = &gmac2;
+> +	};
+> +
+> +	chosen {
+> +		bootargs = "rdinit=/sbin/init ip=dhcp mem=2048M";
+
+Bo bootargs,
+
+> +		stdout-path = "serial1:115200n8";
+> +		linux,initrd-start = <0x10000000>;
+> +		linux,initrd-end = <0x125c8324>;
+> +	};
+> +
+> +	memory {
+> +		device_type = "memory";
+> +		reg = <0x0 0x0 0x0 0x80000000>;
+> +	};
+> +
+> +	soc {
+> +		clocks {
+> +			osc1 {
+> +				clock-frequency = <25000000>;
+
+Override by label.
+
+> +			};
+> +		};
+> +
+
+
+Best regards,
+Krzysztof
