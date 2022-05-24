@@ -2,190 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BA96C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 13:42:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 177D6C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 13:43:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237658AbiEXNmq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 09:42:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58078 "EHLO
+        id S237900AbiEXNnc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 09:43:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231224AbiEXNmn (ORCPT
+        with ESMTP id S231224AbiEXNn0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 09:42:43 -0400
-Received: from conssluserg-01.nifty.com (conssluserg-01.nifty.com [210.131.2.80])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C111475226;
-        Tue, 24 May 2022 06:42:41 -0700 (PDT)
-Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175]) (authenticated)
-        by conssluserg-01.nifty.com with ESMTP id 24ODgDUG022736;
-        Tue, 24 May 2022 22:42:13 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-01.nifty.com 24ODgDUG022736
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1653399734;
-        bh=aNLlIgPVqKG5chGBjgSqnkX4433JxjcWB7yJEVQZ+Gg=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=vXA8HrUWNsrcMbb4jjxlOaE1UOW4nzjC8LOPdbOMXac6+lkDf8ercmWRWQ6PntFhp
-         lbAfJ7j+CQ2UH7nNTb2juSxDe9MRJtGGZ6aySjIrlfVlcX9sJSj0BVCm/FTEkEAEbw
-         A3FQPgOVjUU/yzKOkS2SqKMP52kVy5IEdmzSXSipe+inDpK4wNAA2xuR9MR32X2bYd
-         de/lBb9qz4JB5gK5mtbgS7x4URxRknF7H6BevFWGGucM4329GlHTvZRGpAN6u/qHt5
-         jRTks2KxEk9Lxq4w8hPRb/lid7BQBgy9Fo/YcgPj+aV9bw+6GW5vkSONg8kGGvsLzU
-         PIUGgvvPbp5RQ==
-X-Nifty-SrcIP: [209.85.214.175]
-Received: by mail-pl1-f175.google.com with SMTP id n8so15901205plh.1;
-        Tue, 24 May 2022 06:42:13 -0700 (PDT)
-X-Gm-Message-State: AOAM532fDD7fTgrP2PSZWbA+u73O7vrxW/J+2a+2RkvgM1c2OOfz5JLb
-        SyP6IgYnglXAMWGxmPBxAYDepk5z1FlvutCIXJo=
-X-Google-Smtp-Source: ABdhPJyTdv6DT7AK41vY70QzhcMH2A38iaGQn1upGmFmPJo+2BcK+NmA7eL9uIW06HJVa028vlOfajtpPNm4sy2hH34=
-X-Received: by 2002:a17:90a:e004:b0:1e0:7a66:fb3a with SMTP id
- u4-20020a17090ae00400b001e07a66fb3amr2891041pjy.119.1653399732689; Tue, 24
- May 2022 06:42:12 -0700 (PDT)
+        Tue, 24 May 2022 09:43:26 -0400
+Received: from mail-yb1-f182.google.com (mail-yb1-f182.google.com [209.85.219.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AC1174DFE;
+        Tue, 24 May 2022 06:43:26 -0700 (PDT)
+Received: by mail-yb1-f182.google.com with SMTP id i11so30929541ybq.9;
+        Tue, 24 May 2022 06:43:26 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=gF0TUV/f1EYPh7LzpbylOlyjLRvO0rS2Z8aSd7vESdM=;
+        b=rwc7InZVARa4UImFOH28MSER2NINZZvdPOS6LawmXEEdJm4suds/ImaINBQAfgJkvC
+         YoMCIWD6C3z+VQQ1mdWSuhxEkVi+uqBIMXfRAqN5orZBtl12zNFz/wGoAjQvu4BT06Ww
+         prntmf0f1VCUzA6KA9USF7BA+vlUm0ILWHjZMQrEGN3NOq9tFPyazLWUJtI5/dqV+og7
+         WPODhNggo5aVPvslr+01MNnC5V1P7K1f+4gzCK6IyeT16r5Hkp4ZLTuL9fbYV1Qqf0id
+         yGDda2umZ6krD93L6eaoqGhFyGm1z3wau9Om2Bl77ExP6eTjOvV1KjN1u4LPtCgNYJT/
+         qfIA==
+X-Gm-Message-State: AOAM533Iq2Q1sZnybdasilgS5xGizLqMgJ8BDUE1utBnPUa3WUDZBiPG
+        Mt7CgFa2oRUovA8hAPqfFFx2JX9IL0fzYJKOZz0=
+X-Google-Smtp-Source: ABdhPJxrx+4PyTpojs6STJF90N5O3lVotlMS1F5ewlefJhltMPRleCLQ6INTFZNdlhzglSskVKU04pl4oHllKVWle+Q=
+X-Received: by 2002:a05:6902:100a:b0:64f:44ec:13ff with SMTP id
+ w10-20020a056902100a00b0064f44ec13ffmr24477246ybt.137.1653399805346; Tue, 24
+ May 2022 06:43:25 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220209185752.1226407-1-alexandr.lobakin@intel.com>
- <20220209185752.1226407-2-alexandr.lobakin@intel.com> <CAK7LNAT3QTfkYLFTBKLxghY_gBQZmud3-4UJMK3tA9eOV4UeTg@mail.gmail.com>
- <20220524113337.4128239-1-alexandr.lobakin@intel.com>
-In-Reply-To: <20220524113337.4128239-1-alexandr.lobakin@intel.com>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Tue, 24 May 2022 22:40:51 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAQus0vcWLCgSdMZNcYKam4fKYj9c8Zrb3HggZ7dTBUrxQ@mail.gmail.com>
-Message-ID: <CAK7LNAQus0vcWLCgSdMZNcYKam4fKYj9c8Zrb3HggZ7dTBUrxQ@mail.gmail.com>
-Subject: Re: [PATCH v10 01/15] modpost: fix removing numeric suffixes
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc:     linux-hardening@vger.kernel.org, X86 ML <x86@kernel.org>,
-        Borislav Petkov <bp@alien8.de>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Kristen Carlson Accardi <kristen@linux.intel.com>,
-        Kees Cook <keescook@chromium.org>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Tony Luck <tony.luck@intel.com>,
-        Bruce Schlobohm <bruce.schlobohm@intel.com>,
-        Jessica Yu <jeyu@kernel.org>,
-        kernel test robot <lkp@intel.com>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Evgenii Shatokhin <eshatokhin@virtuozzo.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
+References: <20220509233235.995021-1-dmitry.osipenko@collabora.com>
+ <CAJZ5v0jhWs-8ChHddebTZcaH6kA05sLEMsXM9Op7kHWAQDxeYA@mail.gmail.com> <CAMuHMdVbWpgubaA0V_tau3O=czAb3RQV9AwJsoQ+LWjf-wjMkA@mail.gmail.com>
+In-Reply-To: <CAMuHMdVbWpgubaA0V_tau3O=czAb3RQV9AwJsoQ+LWjf-wjMkA@mail.gmail.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Tue, 24 May 2022 15:43:14 +0200
+Message-ID: <CAJZ5v0jar8GONkAZfLuRpKHuYRu1Y_0AecmGxayM00AHCJkYVg@mail.gmail.com>
+Subject: Re: [PATCH v8 00/27] Introduce power-off+restart call chain API
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Guo Ren <guoren@kernel.org>,
+        Greg Ungerer <gerg@linux-m68k.org>,
+        Joshua Thompson <funaho@jurai.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Sebastian Reichel <sre@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Greentime Hu <green.hu@gmail.com>,
+        Vincent Chen <deanbo422@gmail.com>,
+        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Rich Felker <dalias@libc.org>,
         Thomas Gleixner <tglx@linutronix.de>,
-        Will Deacon <will@kernel.org>, Ingo Molnar <mingo@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
         Dave Hansen <dave.hansen@linux.intel.com>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
         "H. Peter Anvin" <hpa@zytor.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Marios Pomonis <pomonis@google.com>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        "H.J. Lu" <hjl.tools@gmail.com>, Nicolas Pitre <nico@fluxnic.net>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Juergen Gross <jgross@suse.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Santosh Shilimkar <ssantosh@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>, Pavel Machek <pavel@ucw.cz>,
+        Lee Jones <lee.jones@linaro.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        =?UTF-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        live-patching@vger.kernel.org,
-        clang-built-linux <llvm@lists.linux.dev>
+        linux-csky@vger.kernel.org,
+        "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>,
+        linux-m68k <linux-m68k@lists.linux-m68k.org>,
+        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
+        Parisc List <linux-parisc@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        Linux-sh list <linux-sh@vger.kernel.org>,
+        xen-devel@lists.xenproject.org,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        linux-tegra <linux-tegra@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 24, 2022 at 8:34 PM Alexander Lobakin
-<alexandr.lobakin@intel.com> wrote:
+Hi Geert,
+
+On Mon, May 23, 2022 at 8:08 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
 >
-> From: Masahiro Yamada <masahiroy@kernel.org>
-> Date: Tue, 24 May 2022 03:04:00 +0900
+> Hi Rafael,
 >
-> > On Thu, Feb 10, 2022 at 3:59 AM Alexander Lobakin
-> > <alexandr.lobakin@intel.com> wrote:
-> > >
-> > > `-z unique-symbol` linker flag which is planned to use with FG-KASLR
-> > > to simplify livepatching (hopefully globally later on) triggers the
-> > > following:
-> > >
-> > > ERROR: modpost: "param_set_uint.0" [vmlinux] is a static EXPORT_SYMBOL
-> > >
-> > > The reason is that for now the condition from remove_dot():
-> > >
-> > > if (m && (s[n + m] == '.' || s[n + m] == 0))
-> > >
-> > > which was designed to test if it's a dot or a '\0' after the suffix
-> > > is never satisfied.
-> > > This is due to that `s[n + m]` always points to the last digit of a
-> > > numeric suffix, not on the symbol next to it (from a custom debug
-> > > print added to modpost):
-> > >
-> > > param_set_uint.0, s[n + m] is '0', s[n + m + 1] is '\0'
-> > >
-> > > So it's off-by-one and was like that since 2014.
-> > > Fix this for the sake of upcoming features, but don't bother
-> > > stable-backporting, as it's well hidden -- apart from that LD flag,
-> > > can be triggered only by GCC LTO which never landed upstream.
-> > >
-> > > Fixes: fcd38ed0ff26 ("scripts: modpost: fix compilation warning")
-> > > Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-> > > ---
-> > >  scripts/mod/modpost.c | 2 +-
-> > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > >
-> > > diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-> > > index 6bfa33217914..4648b7afe5cc 100644
-> > > --- a/scripts/mod/modpost.c
-> > > +++ b/scripts/mod/modpost.c
-> > > @@ -1986,7 +1986,7 @@ static char *remove_dot(char *s)
-> > >
-> > >         if (n && s[n]) {
-> > >                 size_t m = strspn(s + n + 1, "0123456789");
-> > > -               if (m && (s[n + m] == '.' || s[n + m] == 0))
-> > > +               if (m && (s[n + m + 1] == '.' || s[n + m + 1] == 0))
-> > >                         s[n] = 0;
-> > >
-> > >                 /* strip trailing .lto */
-> > > --
-> > > 2.34.1
-> > >
-> >
-> > This trivial patch has not been picked up yet.
-> >
-> > I can apply this to my tree, if you want.
+> On Wed, May 18, 2022 at 4:46 PM Rafael J. Wysocki <rafael@kernel.org> wrote:
+> > On Tue, May 10, 2022 at 1:33 AM Dmitry Osipenko
+> > <dmitry.osipenko@collabora.com> wrote:
 >
-> It's a good idea, I'd like to!
-> I don't use `-z unique-symbol` for FG-KALSR anymore*, but this fix
-> is not directly related to it and can be taken independently.
-> Should I change the commit message or it's ok to take it as it is?
-
-
-I am fine with either way.
-
-If you want to resubmit this with a fresh commit log,
-please send it to:
-  linux-kbuild@vger.kernel.org
-
-Then, I will take care of it in this MW.
-
-Thanks.
-
-
-
-
-> >
-> > Please let me know your thoughts.
-> >
-> >
-> > --
-> > Best Regards
-> > Masahiro Yamada
+> > >   m68k: Switch to new sys-off handler API
 >
-> * I'm planning to submit a new rev of FG-KASLR series soon, but
-> since I'm too busy with XDP for now, it will happen no sooner than
-> in a couple months =\
+> Sorry, I didn't realize this was going to interact with the new m68k
+> virtual machine support, which is included in the m68k pull request
+> for v5.19.
 >
-> Thanks!
-> Al
+> > However, I'm going to send a pull request with it in the second half
+> > of the merge window, after the majority of the other changes in the
+> > subsystems touched by it have been integrated.
+>
+> And presumably you will have to merge in v5.19-rc1, too?
 
+I will merge this series on top of the Linus' merges of my pull
+requests sent yesterday (assuming that he pulls them, that is).
 
+> I've sent a fix.  It should appear at
+> https://lore.kernel.org/r/20220523175520.949681-1-geert@linux-m68k.org
+> soon.
+>
+> Can you please include that in your PR?
 
--- 
-Best Regards
-Masahiro Yamada
+I will.
+
+Thanks!
