@@ -2,140 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 791E7C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 20:41:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2154CC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 20:41:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241605AbiEXUlh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 16:41:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34774 "EHLO
+        id S241613AbiEXUly (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 16:41:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241590AbiEXUle (ORCPT
+        with ESMTP id S241651AbiEXUlw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 16:41:34 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAB6F48305;
-        Tue, 24 May 2022 13:41:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653424893; x=1684960893;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=yIv8vgMmqMTj4IZXd8vqbLx0EuYjS2FZ1lkgJF4zRYM=;
-  b=NC1M3e2lwy0Ok9y9tSkyG22C6TRNER5cCUkUMK6ROof4fj6NslCFuUxS
-   c5pwk2E+UxzHlMtkyAb7udHg2LFYRcrK0wpeGQAhGBnicF52uvioP6PBq
-   cOMeiboXwt6EjlJdMVVrXlFw8/d42H3RcQfIySK1msTCavETU8OH0octZ
-   rgDuCqzddqQnVW255sS4X6JubMYaGU9HIpgmUze4RDEFQdSWoB4mtU+6N
-   5GwCF95vm+Iw4zoCGE2QjcwOkBY5pdGxqefCObE++kWykquhHWC0sEd1N
-   ELm++9xWw3TZBHIWsUrKKSlrKSULIkjtIjH6+rCc1nR9zW35Sv+XjvFgt
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10357"; a="273757095"
-X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
-   d="scan'208";a="273757095"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 May 2022 13:41:33 -0700
-X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
-   d="scan'208";a="745385856"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.198.157])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 May 2022 13:41:32 -0700
-Date:   Tue, 24 May 2022 13:45:26 -0700
-From:   Jacob Pan <jacob.jun.pan@linux.intel.com>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     iommu@lists.linux-foundation.org,
-        LKML <linux-kernel@vger.kernel.org>, dmaengine@vger.kernel.org,
-        Joerg Roedel <joro@8bytes.org>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Jean-Philippe Brucker <jean-philippe@linaro.com>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Christoph Hellwig <hch@infradead.org>, vkoul@kernel.org,
-        robin.murphy@arm.com, will@kernel.org, Yi Liu <yi.l.liu@intel.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        "Tian, Kevin" <kevin.tian@intel.com>,
-        Raj Ashok <ashok.raj@intel.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH v4 3/6] iommu/vt-d: Implement domain ops for
- attach_dev_pasid
-Message-ID: <20220524134526.409519ac@jacob-builder>
-In-Reply-To: <20220524180241.GY1343366@nvidia.com>
-References: <20220518182120.1136715-1-jacob.jun.pan@linux.intel.com>
-        <20220518182120.1136715-4-jacob.jun.pan@linux.intel.com>
-        <20220524135135.GV1343366@nvidia.com>
-        <20220524091235.6dddfab4@jacob-builder>
-        <20220524180241.GY1343366@nvidia.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        Tue, 24 May 2022 16:41:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35D9E562E6;
+        Tue, 24 May 2022 13:41:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D2176174E;
+        Tue, 24 May 2022 20:41:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07AFBC34100;
+        Tue, 24 May 2022 20:41:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653424910;
+        bh=vjQXFrW/4pQSmN/wiLeQFiNqCMCEP01hMakAH3EECAE=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=OO9tuR72VqbQdiyCYRImCA9LPZjvDJNIoZhUr0Dz3Cs8GwVnBaahWQ5jmGzg+Z1Po
+         D3XdOf6SHrwrHsSp4ETyYAs7IMNMnq+Pen2Lx7N42UAshqzwUcL1BYXpKSAheN5Em7
+         3qTukxn3RgwNAaJBSF+LITfw1ojKeUsUKwjOvsea9jJpsjKpIT8XbPNiwyxboFG9Fq
+         4yfu5gSYvNGjkW/MY7rovwRAVoMlzuSHOhODeak+grzO0YF2HYyW9Xxhmcb6rwvW9g
+         2MGt3DjO+yu9yCfz5MIJ/+CSCcfYNlf38HV+U7BYO8Nw4sUEs228y1uaQOlT4QZo4M
+         saCLRBeyS10+A==
+Received: by mail-ed1-f51.google.com with SMTP id n23so24627980edy.0;
+        Tue, 24 May 2022 13:41:49 -0700 (PDT)
+X-Gm-Message-State: AOAM530SiB/+MPIeJ7H2Kz/SWGkHYXY1xKjcoSV+WzEOFzKiCirn/Jsx
+        PWtThqnzkMeOqPoEknj4vWo28IJvSwZEGVpUnw==
+X-Google-Smtp-Source: ABdhPJwPT/cnj3XH0pgU4BNxBBinFvHRkEXNoG/EB11zsFXL1H5/aPWtujbL6r7dDcTJlLXtuIu8Tqdy38eMwbZusQs=
+X-Received: by 2002:a05:6402:4316:b0:42b:4d3d:c064 with SMTP id
+ m22-20020a056402431600b0042b4d3dc064mr16930879edc.194.1653424908200; Tue, 24
+ May 2022 13:41:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <Yo0soniFborDl7+C@google.com>
+In-Reply-To: <Yo0soniFborDl7+C@google.com>
+From:   Rob Herring <robh@kernel.org>
+Date:   Tue, 24 May 2022 15:41:36 -0500
+X-Gmail-Original-Message-ID: <CAL_JsqJh=d-B51b6yPBRq0tOwbChN=AFPr-a19U1QdQZAE7c1A@mail.gmail.com>
+Message-ID: <CAL_JsqJh=d-B51b6yPBRq0tOwbChN=AFPr-a19U1QdQZAE7c1A@mail.gmail.com>
+Subject: Re: Bug when mapping designware PCIe MSI msg
+To:     William McVicker <willmcvicker@google.com>
+Cc:     Jingoo Han <jingoohan1@gmail.com>,
+        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Vidya Sagar <vidyas@nvidia.com>,
+        PCI <linux-pci@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Android Kernel Team <kernel-team@android.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jason,
+On Tue, May 24, 2022 at 2:06 PM William McVicker
+<willmcvicker@google.com> wrote:
+>
+> Hi All,
+>
+> I've been debugging a PCIe dma mapping issue and I believe I have tracked the
+> bug down to how the designware PCIe host driver is mapping the MSI msg. In
+> commit 07940c369a6b ("PCI: dwc: Fix MSI page leakage in suspend/resume") [1],
+> the PCIe driver was re-worked to drop allocating a page for the MSI msg in
+> favor of using an address from the driver data. Then in commit 660c486590aa
+> ("PCI: dwc: Set 32-bit DMA mask for MSI target address allocation") [2],
+> a 32-bit DMA mask was enforced for this MSI msg address in order to support
+> both 32-bit and 64-bit MSI address capable hardware. Both of these changes
+> together expose a bug on hardware that supports an MSI address greather than
+> 32-bits. For example, the Pixel 6 supports a 36-bit MSI address and therefore
+> calls:
+>
+>   dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(36));
+>
+> Before [2], this was fine because getting an address for the driver data that
+> was less than or equal to 36-bits was common enough to not hit this issue, but
+> after [2] I started hitting the below DMA buffer overflow when the driver data
+> address was greater than 32-bits:
+>
+>   exynos-pcie-rc 14520000.pcie: DMA addr 0x000000088536d908+2 overflow (mask ffffffff, bus limit 0).
+>           : WARNING: CPU: 3 PID: 8 at kernel/dma/direct.h:99 dma_map_page_attrs+0x254/0x278
+>   ...
+>   Hardware name: Oriole DVT (DT)
+>   Workqueue: events_unbound deferred_probe_work_func
+>   pstate  : 60400005 (nZCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+>   pc      : dma_map_page_attrs+0x254/0x278
+>   lr      : dma_map_page_attrs+0x250/0x278
+>   sp      : ffffffc0080938b0
+>   ...
+>   Call trace:
+>           : dma_map_page_attrs+0x254/0x278
+>           : dma_map_single_attrs+0xdc/0x10c
+>           : dw_pcie_host_init+0x4a0/0x78c
+>           : exynos_pcie_rc_add_port+0x7c/0x104 [pcie_exynos_gs]
+>           : exynos_pcie_rc_probe+0x4c8/0x6ec [pcie_exynos_gs]
+>           : platform_probe+0x80/0x200
+>           : really_probe+0x1cc/0x458
+>           : __driver_probe_device+0x204/0x260
+>           : driver_probe_device+0x44/0x4b0
+>           : __device_attach_driver+0x200/0x308
+>           : __device_attach+0x20c/0x330
+>
+>
+> The underlying issue is that using the driver data (which can be a 64-bit
+> address) for the MSI msg mapping causes a DMA_MAPPING_ERROR when the dma mask
+> is less than 64-bits. I'm not familiar enough with the dma mapping code to
+> suggest a full-proof solution to solve this; however, I don't think reverting
+> [1] is a great solution since it addresses a valid issue and reverting [2]
+> doesn't actually solve the bug since the driver data address isn't restricted
+> by the dma mask.
+>
+> I hope that helps explain the issue. Please let me know your thoughts on how we
+> should address this.
 
-On Tue, 24 May 2022 15:02:41 -0300, Jason Gunthorpe <jgg@nvidia.com> wrote:
+I think the alloc for the msi_msg just needs a GFP_DMA32 flag.
+Unfortunately that is done in each driver and would be kind of odd.
 
-> On Tue, May 24, 2022 at 09:12:35AM -0700, Jacob Pan wrote:
-> > Hi Jason,
-> > 
-> > On Tue, 24 May 2022 10:51:35 -0300, Jason Gunthorpe <jgg@nvidia.com>
-> > wrote: 
-> > > On Wed, May 18, 2022 at 11:21:17AM -0700, Jacob Pan wrote:  
-> > > > On VT-d platforms with scalable mode enabled, devices issue DMA
-> > > > requests with PASID need to attach PASIDs to given IOMMU domains.
-> > > > The attach operation involves the following:
-> > > > - Programming the PASID into the device's PASID table
-> > > > - Tracking device domain and the PASID relationship
-> > > > - Managing IOTLB and device TLB invalidations
-> > > > 
-> > > > This patch add attach_dev_pasid functions to the default domain ops
-> > > > which is used by DMA and identity domain types. It could be
-> > > > extended to support other domain types whenever necessary.
-> > > > 
-> > > > Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> > > > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > > >  drivers/iommu/intel/iommu.c | 72
-> > > > +++++++++++++++++++++++++++++++++++-- 1 file changed, 70
-> > > > insertions(+), 2 deletions(-)
-> > > > 
-> > > > diff --git a/drivers/iommu/intel/iommu.c
-> > > > b/drivers/iommu/intel/iommu.c index 1c2c92b657c7..75615c105fdf
-> > > > 100644 +++ b/drivers/iommu/intel/iommu.c
-> > > > @@ -1556,12 +1556,18 @@ static void __iommu_flush_dev_iotlb(struct
-> > > > device_domain_info *info, u64 addr, unsigned int mask)
-> > > >  {
-> > > >  	u16 sid, qdep;
-> > > > +	ioasid_t pasid;
-> > > >  
-> > > >  	if (!info || !info->ats_enabled)
-> > > >  		return;
-> > > >  
-> > > >  	sid = info->bus << 8 | info->devfn;
-> > > >  	qdep = info->ats_qdep;
-> > > > +	pasid = iommu_get_pasid_from_domain(info->dev,
-> > > > &info->domain->domain);    
-> > > 
-> > > No, a simgple domain can be attached to multiple pasids, all need to
-> > > be flushed.
-> > >   
-> > Here is device TLB flush, why would I want to flush PASIDs other than my
-> > own device attached?  
-> 
-> Again, a domain can be attached to multiple PASID's *on the same
-> device*
-> 
-> The idea that there is only one PASID per domain per device is not
-> right.
-> 
-Got you, I was under the impression that there is no use case yet for
-multiple PASIDs per device-domain based on our early discussion.
-https://lore.kernel.org/lkml/20220315142216.GV11336@nvidia.com/
+The thing is I'm pretty sure the actual address doesn't matter. The
+MSI never actually writes to memory but is terminated by the MSI
+controller. It just can't be an address you would want to DMA to (such
+as driver data allocations). And it needs to account for any bus
+translations, which the DMA API conveniently handles.
 
-Perhaps I misunderstood. I will make the API more future proof and search
-through the pasid_array xa for *all* domain-device matches. Like you
-suggested earlier, may need to retrieve the xa in the first place and use
-xas_for_each to get a faster search.
+So maybe it needs to be its own alloc as before but avoiding the leak
+and also setting GFP_DMA32. Unless others have ideas.
 
-Thanks,
-
-Jacob
+Rob
