@@ -2,174 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7176EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 09:51:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31BE9C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 09:52:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235952AbiEXJvh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 05:51:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45418 "EHLO
+        id S235985AbiEXJv7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 05:51:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235903AbiEXJv1 (ORCPT
+        with ESMTP id S236000AbiEXJvp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 05:51:27 -0400
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2067.outbound.protection.outlook.com [40.107.223.67])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFFF419F95;
-        Tue, 24 May 2022 02:51:23 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=AOHroLCLmEUeac9GXdk2SBJMTQ8w4W4KhyjXBKCxwUH/dZps4BMsidKB1c7igcg6+1DFyu8BziFNULDWxDH+9/jrAauQr04duO6KO5GuIqY9bVavpek8hRTgCIXjQLn0Kary3ToEVnMhW3Ps83FTajehbXeeoV9S0Sc3GD7HaRlgUcElMl7jGW6wwlvLaEluL+q06cmlxiZASy0KZQqqyBPNOhr970DcgrwQXgPYtHpaSLlCDJoGX69URk6SwBBZfEJn9QM4NRwOCnxbVqSqtYlBc20ycxjn4mmzCOXfOfYh8muyUFkqZhX/0ZGlzXKR24sfYEiwj+4jeswh4i/KFQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=pvN2zfiIoDGL6ZikMfzyFtzOZejWwNrEE6cKzzhIlKc=;
- b=HMFtPVmtXNxi8WtIKFrHcvPFRASgvLHCsi2QScUGyhXujFqS+RxKQo80q6LO+BZ4vxQdjMmVNF9w0ibyALF6J9ZoLjLNJccgVhhd3p2LQQxdN1ghOfTgJyW3rh9HlHCwgL74hcX+WC6NAwp2zX7nEtVpQD0sItaTMxpj3k/ILHQ9K9PgybGKQZM4nyq4D8147TYS0LyP4ul87F6xkir7MWyoQjbQc2hpS4gHYurVvQRpMgCrxe/Oo0kI2xQ4DvzmuivpafVfLVFb7cKLaR/nt3F11nalrR06bsq/0Mswn+LE/d9OfYcaXkX5xdbvUOHhSu++yeWNzDJcI6JhEchUEg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 149.199.62.198) smtp.rcpttodomain=kernel.org smtp.mailfrom=xilinx.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pvN2zfiIoDGL6ZikMfzyFtzOZejWwNrEE6cKzzhIlKc=;
- b=frNUomNajYcilPJJb2/3718ar0Rvl2R0SEC67ozJwN3PinveT3ORvk5CDpfBzEoOJo7RAKiXPNDs/BJDyR5rQKxIz0wwYlyHEZCBqA7OYBmQdzKmkERjoPqRaskVuzwPTk9Juup1CLq2Z2exP59dN5CHovcPgM9+n0Tjq1dREdo=
-Received: from BN8PR03CA0027.namprd03.prod.outlook.com (2603:10b6:408:94::40)
- by SN6PR02MB5440.namprd02.prod.outlook.com (2603:10b6:805:e2::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.16; Tue, 24 May
- 2022 09:51:22 +0000
-Received: from BN1NAM02FT055.eop-nam02.prod.protection.outlook.com
- (2603:10b6:408:94:cafe::a1) by BN8PR03CA0027.outlook.office365.com
- (2603:10b6:408:94::40) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.14 via Frontend
- Transport; Tue, 24 May 2022 09:51:22 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
- smtp.mailfrom=xilinx.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=xilinx.com;
-Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
- 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
- client-ip=149.199.62.198; helo=xsj-pvapexch02.xlnx.xilinx.com; pr=C
-Received: from xsj-pvapexch02.xlnx.xilinx.com (149.199.62.198) by
- BN1NAM02FT055.mail.protection.outlook.com (10.13.2.163) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5273.14 via Frontend Transport; Tue, 24 May 2022 09:51:21 +0000
-Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
- xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Tue, 24 May 2022 02:51:03 -0700
-Received: from smtp.xilinx.com (172.19.127.95) by
- xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
- 15.1.2176.14 via Frontend Transport; Tue, 24 May 2022 02:51:03 -0700
-Envelope-to: git@xilinx.com,
- mdf@kernel.org,
- hao.wu@intel.com,
- yilun.xu@intel.com,
- trix@redhat.com,
- gregkh@linuxfoundation.org,
- linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org,
- linux-fpga@vger.kernel.org
-Received: from [10.140.6.60] (port=58200 helo=xhdnavam40.xilinx.com)
-        by smtp.xilinx.com with esmtp (Exim 4.90)
-        (envelope-from <nava.manne@xilinx.com>)
-        id 1ntR91-0005Sf-4x; Tue, 24 May 2022 02:48:03 -0700
-From:   Nava kishore Manne <nava.manne@xilinx.com>
-To:     <michal.simek@xilinx.com>, <mdf@kernel.org>, <hao.wu@intel.com>,
-        <yilun.xu@intel.com>, <trix@redhat.com>,
-        <gregkh@linuxfoundation.org>, <ronak.jain@xilinx.com>,
-        <abhyuday.godhasara@xilinx.com>, <rajan.vaja@xilinx.com>,
-        <nava.manne@xilinx.com>, <lakshmi.sai.krishna.potthuri@xilinx.com>,
-        <piyush.mehta@xilinx.com>, <harsha.harsha@xilinx.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-fpga@vger.kernel.org>,
-        <git@xilinx.com>
-Subject: [PATCH 1/3] fpga: mgr: Update the status for fpga-manager
-Date:   Tue, 24 May 2022 15:17:43 +0530
-Message-ID: <20220524094745.287002-2-nava.manne@xilinx.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220524094745.287002-1-nava.manne@xilinx.com>
-References: <20220524094745.287002-1-nava.manne@xilinx.com>
+        Tue, 24 May 2022 05:51:45 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 20E80186EE
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 02:51:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653385868;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=HROxCg3THyAWJg+stBN26H1YCc49DJ6h7IjqQesEu3w=;
+        b=fbxMy9vsoDUMqmDgCuN34L/e5yJOva+FSYOZX7H+PIKvAMpdF56/Lwj8N3AG4gMJaB5YpP
+        zZmFHg00Sp/OmqbytJEmBrT83h8HKrf2bIYLO5v1FQX45ps7+tHQesUntWkguk7+dlVbzO
+        p+xlkMwoplgorkHCfqIfa1jBnRrwVug=
+Received: from mail-pg1-f198.google.com (mail-pg1-f198.google.com
+ [209.85.215.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-499-xpxj-_HlPcqgu-S8-8i5oA-1; Tue, 24 May 2022 05:51:06 -0400
+X-MC-Unique: xpxj-_HlPcqgu-S8-8i5oA-1
+Received: by mail-pg1-f198.google.com with SMTP id x16-20020a63f710000000b003f6082673afso8459860pgh.15
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 02:51:06 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=HROxCg3THyAWJg+stBN26H1YCc49DJ6h7IjqQesEu3w=;
+        b=DAYfPdteXN1XCbVbO6uMwd8JA/nhr11r2uvrdOgD/BXv1TTkUgRmeNYEf4q5knfef3
+         LSZKK4qcWUX2tVD3E6k10nB+K0s8CJpRup1VOicoPq1ZribIfPWyMgPWxpcq202JrTNP
+         /HUoxhbKrmdbnRbz3O0tgkb7GJOZg3sJzVmUxkVaxHWfjNfG3tdOb15e9Jhe2/2vLuWE
+         jsXuJvlp9ET7r+NnFxSdEueY70LXpQe3YN+OMqepO83oeN0DlqL+ReNqqiOtilH0NkB9
+         +HzBT2GVwV8uJs+BHDmbWef80V6IZ/LbzwYW4Jh7J1GYUC6H2Uq7oHBBq60iFd2+iVRb
+         p5eA==
+X-Gm-Message-State: AOAM533uqI4urmqnon2LsnfXteokYK5U+Kx3RysmaC199fqA6MfctRVH
+        nWG8cc0kjX43KDF30TyIzcw1tC4dcdVuyln6VFJUyosuyycc0XOIq3iHUdrSjdlPUKwPN31RvhJ
+        tMGAZSdFm+RDwdf1rL4MuHDueL1oR9lRDdWrbNxB8hjkakby7SffW13ZxN5MUHF7rTMgcRx9ldg
+        ==
+X-Received: by 2002:a17:90a:c682:b0:1df:c4a8:5db6 with SMTP id n2-20020a17090ac68200b001dfc4a85db6mr3684413pjt.43.1653385865427;
+        Tue, 24 May 2022 02:51:05 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxdBOH+gVDMrgyZ041wJ5jZ+2lLXtmmTzIxw/fZE8mPGpSF9hC5I1Teh6Xt19AWnXqr7+s+0w==
+X-Received: by 2002:a17:90a:c682:b0:1df:c4a8:5db6 with SMTP id n2-20020a17090ac68200b001dfc4a85db6mr3684372pjt.43.1653385865116;
+        Tue, 24 May 2022 02:51:05 -0700 (PDT)
+Received: from [10.72.12.81] ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id z12-20020a17090a7b8c00b001df2f8f0a45sm1308834pjc.1.2022.05.24.02.50.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 24 May 2022 02:51:04 -0700 (PDT)
+Subject: Re: [PATCH v2] netfs: Fix gcc-12 warning by embedding vfs inode in
+ netfs_i_context
+To:     Jeff Layton <jlayton@kernel.org>,
+        David Howells <dhowells@redhat.com>
+Cc:     keescook@chromium.org, Jonathan Corbet <corbet@lwn.net>,
+        Eric Van Hensbergen <ericvh@gmail.com>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        Dominique Martinet <asmadeus@codewreck.org>,
+        Christian Schoenebeck <linux_oss@crudebyte.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        Ilya Dryomov <idryomov@gmail.com>,
+        Steve French <smfrench@gmail.com>,
+        William Kucharski <william.kucharski@oracle.com>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        linux-doc@vger.kernel.org, v9fs-developer@lists.sourceforge.net,
+        linux-afs@lists.infradead.org, ceph-devel@vger.kernel.org,
+        linux-cifs@vger.kernel.org, samba-technical@lists.samba.org,
+        linux-fsdevel@vger.kernel.org, linux-hardening@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <1b5daa4695b62795b617049e32c784052deabad4.camel@kernel.org>
+ <165305805651.4094995.7763502506786714216.stgit@warthog.procyon.org.uk>
+ <658391.1653302817@warthog.procyon.org.uk>
+ <e4fcdf88a9b35a9f1ca6e75fdf75ad469f824380.camel@kernel.org>
+From:   Xiubo Li <xiubli@redhat.com>
+Message-ID: <9945711f-c786-2300-9854-ee7734024a2c@redhat.com>
+Date:   Tue, 24 May 2022 17:50:54 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ea1e04e4-d56b-4909-6194-08da3d6af568
-X-MS-TrafficTypeDiagnostic: SN6PR02MB5440:EE_
-X-Microsoft-Antispam-PRVS: <SN6PR02MB5440C3713048BB27E056196AC2D79@SN6PR02MB5440.namprd02.prod.outlook.com>
-X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: tyTKJXnVC9z0/MWU7xlNI8lrg+HFwEG2/fx1ZyXYH6QynlTBz+FoIVHf6PI1vMoE5HrZfD5kPJ3qLGvDcZaI2tokk9uAWUAmmvemptaipouTMNd4tOzWe0h+GKa0QF2HWu0l9lD7kBq1iggACkyxHCOl0B72ZjMdJ4ML+NoHuxD9xwn/oL/md5kS1nNXnfaMag1ULdW01zL3opa/emW3w1ZWXFpl/BktA002Rtmc70J5upJRhhY0ZbeDkMFRBMx3KOXb5h+Ym+MMqaw1hW1EqN+hvD5FdLvJchqILDtptzaGuzZfpBnz7q+xYJG/PM/vhzsW/bs7RbpZPbwZhuL3k8ehDxxopm50OZ1VOJC5gDgwYhCe1QcTHq7m1sM+wM5lkxuIxiVY+eltmiRWAdy+5boESv0kERJWZUmIb/42rq7Sefjng5uUW01bFIDUU2KM/IKNdFWCemVIwoijJRNBQN9WNVNlAa0DMJJAR3SaA/UoBUeOVWKWd0gFxNjvWXz9V56HqQyYtqigH9+ONCFg+DekumZtcuB7Jr8lfquLGSmELZ954OHHPgC1621G4TDFsZaDfZCHlOLP+5C9cJ3gtbrca13/WtVJXiFQ3qjmJxAJAxnfxzmeUDqeIIR+2O2nPG7bzXpkmxatfrrv/l3wZt0ABkAF9FRpzRn+uVV9b5yHY3p/1qds6MH73ScB7gKNZj+N80swHabWbZFCpSLg8aRCHIbSj9T0y4CHesWzRsH8Sly1i0hTS0nIHwgNgP+gjcDgocrMzg/ADH7UN4uCnA==
-X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch02.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(46966006)(40470700004)(36840700001)(7696005)(336012)(426003)(15650500001)(70586007)(47076005)(6666004)(1076003)(9786002)(8936002)(82310400005)(8676002)(26005)(356005)(2906002)(7636003)(921005)(70206006)(5660300002)(186003)(36860700001)(36756003)(40460700003)(508600001)(83380400001)(110136005)(2616005)(316002)(6636002)(102446001)(2101003)(83996005);DIR:OUT;SFP:1101;
-X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 May 2022 09:51:21.8026
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: ea1e04e4-d56b-4909-6194-08da3d6af568
-X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch02.xlnx.xilinx.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN1NAM02FT055.eop-nam02.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR02MB5440
+In-Reply-To: <e4fcdf88a9b35a9f1ca6e75fdf75ad469f824380.camel@kernel.org>
+Content-Type: text/plain; charset=iso-8859-15; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch update the below status values for
-fpga-manager.
-	-Device Initialization error.
-	-Device internal signal error.
-	-All I/Os are placed in High-Z state.
-	-Device start-up sequence error.
-	-Firmware error.
 
-Signed-off-by: Nava kishore Manne <nava.manne@xilinx.com>
----
- drivers/fpga/fpga-mgr.c       | 13 +++++++++++++
- include/linux/fpga/fpga-mgr.h |  6 ++++++
- 2 files changed, 19 insertions(+)
+On 5/23/22 7:05 PM, Jeff Layton wrote:
+> On Mon, 2022-05-23 at 11:46 +0100, David Howells wrote:
+>> Jeff Layton <jlayton@kernel.org> wrote:
+>>
+>>> Note that there are some conflicts between this patch and some of the
+>>> patches in the current ceph-client/testing branch. Depending on the
+>>> order of merge, one or the other will need to be fixed.
+>> Do you think it could be taken through the ceph tree?
+>>
+>> David
+>>
+> Since this touches a lot of non-ceph code, it may be best to just plan
+> to merge it ASAP, and we'll just base our merge branch on top of it.
+>
+> Ilya/Xiubo, do you have an opinion here?
+>   
 
-diff --git a/drivers/fpga/fpga-mgr.c b/drivers/fpga/fpga-mgr.c
-index a3595ecc3f79..be693fd531ea 100644
---- a/drivers/fpga/fpga-mgr.c
-+++ b/drivers/fpga/fpga-mgr.c
-@@ -475,6 +475,19 @@ static ssize_t status_show(struct device *dev,
- 		len += sprintf(buf + len, "reconfig IP protocol error\n");
- 	if (status & FPGA_MGR_STATUS_FIFO_OVERFLOW_ERR)
- 		len += sprintf(buf + len, "reconfig fifo overflow error\n");
-+	if (status & FPGA_MGR_STATUS_SECURITY_ERR)
-+		len += sprintf(buf + len, "reconfig security error\n");
-+	if (status & FPGA_MGR_STATUS_DEVICE_INIT_ERR)
-+		len += sprintf(buf + len, "Device Initialization error\n");
-+	if (status & FPGA_MGR_STATUS_SIGNAL_ERR)
-+		len += sprintf(buf + len, "Device internal signal error\n");
-+	if (status & FPGA_MGR_STATUS_HIGH_Z_STATE_ERR)
-+		len += sprintf(buf + len,
-+			       "All I/Os are placed in High-Z state\n");
-+	if (status & FPGA_MGR_STATUS_EOS_ERR)
-+		len += sprintf(buf + len, "Device start-up sequence error\n");
-+	if (status & FPGA_MGR_STATUS_FIRMWARE_REQ_ERR)
-+		len += sprintf(buf + len, "firmware error\n");
- 
- 	return len;
- }
-diff --git a/include/linux/fpga/fpga-mgr.h b/include/linux/fpga/fpga-mgr.h
-index 0f9468771bb9..91accba14ba2 100644
---- a/include/linux/fpga/fpga-mgr.h
-+++ b/include/linux/fpga/fpga-mgr.h
-@@ -172,6 +172,12 @@ struct fpga_manager_ops {
- #define FPGA_MGR_STATUS_INCOMPATIBLE_IMAGE_ERR	BIT(2)
- #define FPGA_MGR_STATUS_IP_PROTOCOL_ERR		BIT(3)
- #define FPGA_MGR_STATUS_FIFO_OVERFLOW_ERR	BIT(4)
-+#define FPGA_MGR_STATUS_SECURITY_ERR		BIT(5)
-+#define FPGA_MGR_STATUS_DEVICE_INIT_ERR		BIT(6)
-+#define FPGA_MGR_STATUS_SIGNAL_ERR		BIT(7)
-+#define FPGA_MGR_STATUS_HIGH_Z_STATE_ERR	BIT(8)
-+#define FPGA_MGR_STATUS_EOS_ERR			BIT(9)
-+#define FPGA_MGR_STATUS_FIRMWARE_REQ_ERR	BIT(10)
- 
- /**
-  * struct fpga_manager - fpga manager structure
--- 
-2.25.1
+Yeah, agree with Jeff.
+
 
