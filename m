@@ -2,143 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FF5DC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 21:36:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 379A8C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 21:38:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241927AbiEXVgV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 17:36:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43750 "EHLO
+        id S241944AbiEXVi0 convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 17:38:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229710AbiEXVgT (ORCPT
+        with ESMTP id S241943AbiEXViU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 17:36:19 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9791E02C;
-        Tue, 24 May 2022 14:36:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653428178; x=1684964178;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=9jK8G9ag+81bcO5Ko8qhZ3SN8Fupy/S9GkA/3mPTsOI=;
-  b=deIq+mwioW3JsB9+Y80mOQ9R9K/hsTy/+1HQG0F1AXZBSBPrhcdumWYL
-   KTncHMQJvCLZpyfBHK5StZ8OLFZVHQPgWa9a2UrSU869+3N0IEsaq/dR8
-   J2XAzX3HQZ9dbCQKj02+4pHUeu2YZWg2NCtbx9DfQXpNwUWzLYgTEhRlM
-   SJiO1Hmh55l5hHBCNA//7pAwMFQRe9uWzO9kD3h2kJh/3og0TOuxf0r7A
-   tudBezPqqK0KC3u2Y6IzG1Ry4ZXhhaPCy+bmMcW/iY4fZsEOmIojWDM02
-   IfvMFEIZ/26yoXKkIQm56NXBJ+1/bkS/LXgdOzouodN9mWDEYN3TJSxUz
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10357"; a="273382969"
-X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
-   d="scan'208";a="273382969"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 May 2022 14:36:18 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
-   d="scan'208";a="745404583"
-Received: from lkp-server01.sh.intel.com (HELO db63a1be7222) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 24 May 2022 14:36:12 -0700
-Received: from kbuild by db63a1be7222 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ntcCJ-0002T6-UI;
-        Tue, 24 May 2022 21:36:11 +0000
-Date:   Wed, 25 May 2022 05:36:08 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Hans Schultz <schultz.hans@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        netdev@vger.kernel.org,
-        Hans Schultz <schultz.hans+netdev@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH V3 net-next 3/4] net: dsa: mv88e6xxx: mac-auth/MAB
- implementation
-Message-ID: <202205250511.beuDDi9L-lkp@intel.com>
-References: <20220524152144.40527-4-schultz.hans+netdev@gmail.com>
+        Tue, 24 May 2022 17:38:20 -0400
+X-Greylist: delayed 914 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 24 May 2022 14:38:19 PDT
+Received: from sender11-of-o53.zoho.eu (sender11-of-o53.zoho.eu [31.186.226.239])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C39647C173
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 14:38:19 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1653427341; cv=none; 
+        d=zohomail.eu; s=zohoarc; 
+        b=RDDY9bThuyuptIf+ctqCWHQ+TX2DXrCRDM475nm00NC9aIXdMxh8kCFdzYARvieGZjc1UbwDkHu8DK8hmH4cwhfBTIek/TxRuOHHOJCXECu2EaaFSpYA1bFEfZ8j+FnXWcD2lQOQlydnRAH90Mu0PmiEvPF6nqYA5DnAaB0BGks=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.eu; s=zohoarc; 
+        t=1653427341; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:MIME-Version:Message-ID:Subject:To; 
+        bh=eUsYtGvjMVMeiJbcfkFwYYtNYc+bXWXsUkZz7xnU2AE=; 
+        b=bx7m7ovII/BQ4+3ZQfx9WOO/sNeWbeEGaMPNItlzzN5+mm1hf5CxuMtuPyNSRGxnvF3tq/aoGLlFkIBdmXjNg5GQgvOEHs+lG86eyJK6XMQ76o7wSZAwKF6VoxioQRzAyRs3io4aMKhMY//taRESiiOf0UmifqLiwaQDkRe5cn8=
+ARC-Authentication-Results: i=1; mx.zohomail.eu;
+        spf=pass  smtp.mailfrom=hostmaster@neglo.de;
+        dmarc=pass header.from=<bage@debian.org>
+Received: from localhost.localdomain (port-92-194-239-176.dynamic.as20676.net [92.194.239.176]) by mx.zoho.eu
+        with SMTPS id 165342733992663.21335406305718; Tue, 24 May 2022 23:22:19 +0200 (CEST)
+From:   Bastian Germann <bage@debian.org>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kubakici@wp.pl>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Cc:     Bastian Germann <bage@debian.org>,
+        Vasily Khoruzhick <anarsoul@gmail.com>
+Message-ID: <20220524212155.16944-1-bage@debian.org>
+Subject: [PATCH v2 0/3] arm64: allwinner: a64: add bluetooth support for Pinebook
+Date:   Tue, 24 May 2022 23:21:51 +0200
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220524152144.40527-4-schultz.hans+netdev@gmail.com>
+Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=utf8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Hans,
+Pinebook uses RTL8723CS for WiFi and bluetooth. Unfortunately RTL8723CS
+has broken BT-4.1 support, so it requires a quirk.
 
-Thank you for the patch! Perhaps something to improve:
+Add a quirk, wire up 8723CS support in btrtl and enable bluetooth
+in Pinebook dts.
 
-[auto build test WARNING on net-next/master]
+This series was sent in July 2020 by Vasily Khoruzhick.
+This is a rebase on the current tree.
+I have tested it to work on the Pinebook.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Hans-Schultz/Extend-locked-port-feature-with-FDB-locked-flag-MAC-Auth-MAB/20220524-232455
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 677fb7525331375ba2f90f4bc94a80b9b6e697a3
-config: x86_64-randconfig-a005 (https://download.01.org/0day-ci/archive/20220525/202205250511.beuDDi9L-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 10c9ecce9f6096e18222a331c5e7d085bd813f75)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/5c2d731ec7670b3eb06906c64d66c6098c588a6a
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Hans-Schultz/Extend-locked-port-feature-with-FDB-locked-flag-MAC-Auth-MAB/20220524-232455
-        git checkout 5c2d731ec7670b3eb06906c64d66c6098c588a6a
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/net/dsa/mv88e6xxx/
+Changelog:
+v2:
+   * Rebase
+   * Add uart-has-rtscts to device tree as requested by reviewer
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Vasily Khoruzhick (3):
+  Bluetooth: Add new quirk for broken local ext features max_page
+  Bluetooth: btrtl: add support for the RTL8723CS
+  arm64: allwinner: a64: enable Bluetooth On Pinebook
 
-All warnings (new ones prefixed by >>):
-
->> drivers/net/dsa/mv88e6xxx/chip.c:2754:6: warning: variable 'err' is used uninitialized whenever 'if' condition is false [-Wsometimes-uninitialized]
-           if (!locked_found) {
-               ^~~~~~~~~~~~~
-   drivers/net/dsa/mv88e6xxx/chip.c:2759:9: note: uninitialized use occurs here
-           return err;
-                  ^~~
-   drivers/net/dsa/mv88e6xxx/chip.c:2754:2: note: remove the 'if' if its condition is always true
-           if (!locked_found) {
-           ^~~~~~~~~~~~~~~~~~~
-   drivers/net/dsa/mv88e6xxx/chip.c:2749:9: note: initialize the variable 'err' to silence this warning
-           int err;
-                  ^
-                   = 0
-   1 warning generated.
-
-
-vim +2754 drivers/net/dsa/mv88e6xxx/chip.c
-
-  2742	
-  2743	static int mv88e6xxx_port_fdb_del(struct dsa_switch *ds, int port,
-  2744					  const unsigned char *addr, u16 vid,
-  2745					  struct dsa_db db)
-  2746	{
-  2747		struct mv88e6xxx_chip *chip = ds->priv;
-  2748		bool locked_found = false;
-  2749		int err;
-  2750	
-  2751		if (mv88e6xxx_port_is_locked(chip, port, true))
-  2752			locked_found = mv88e6xxx_atu_locked_entry_find_purge(ds, port, addr, vid);
-  2753	
-> 2754		if (!locked_found) {
-  2755			mv88e6xxx_reg_lock(chip);
-  2756			err = mv88e6xxx_port_db_load_purge(chip, port, addr, vid, 0);
-  2757			mv88e6xxx_reg_unlock(chip);
-  2758		}
-  2759		return err;
-  2760	}
-  2761	
+ .../dts/allwinner/sun50i-a64-pinebook.dts     |  13 ++
+ drivers/bluetooth/btrtl.c                     | 120 +++++++++++++++++-
+ drivers/bluetooth/btrtl.h                     |   5 +
+ drivers/bluetooth/hci_h5.c                    |   4 +
+ include/net/bluetooth/hci.h                   |   7 +
+ net/bluetooth/hci_event.c                     |   4 +-
+ 6 files changed, 148 insertions(+), 5 deletions(-)
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.36.1
+
+
