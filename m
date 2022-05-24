@@ -2,106 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56AF9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 20:44:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B96B6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 20:46:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241520AbiEXUoY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 16:44:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41904 "EHLO
+        id S241677AbiEXUqX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 16:46:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238638AbiEXUoW (ORCPT
+        with ESMTP id S238638AbiEXUqS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 16:44:22 -0400
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B019712E6
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 13:44:20 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id br17so20484793lfb.2
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 13:44:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=huOMfVzBuyOiVvdK/MBgTa5e2DlFi34FRjwinoAWhQw=;
-        b=Leyfu+q2cQs4X+VAh9p7WyspRKKN9AajJaaq7iBUfrbCZulu0O4xpeTE64b8HnVfG8
-         j/21YiT8ew0xb5w01SCrsWNkESNi62Og5SzruUCLHoUEkglIUoB4dCF1/rMrQUFEVFqL
-         zI2gv8ybJRlKj051tfrHUr+1fF000YOYKH2XO1pp2yI+OMvZTee/FlRkkfu9QNPnI8Dv
-         +ifzCPUHnbEoPVNJffqxyJRbUXQenKiIbmUQyMegTUxdBQkJdjn+5pIgCnAwW138HSic
-         mfrUEeFSwJEFxT91eV2+vK8MmB1H6ek/Fhh6EehALQIfVbWZUjW4al+SabsE1u/vw2hw
-         1sBQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=huOMfVzBuyOiVvdK/MBgTa5e2DlFi34FRjwinoAWhQw=;
-        b=vro2LFnVqJM0v2UN9RfbcAtaSpclfJZEkQWuboC7AyGjlf/yi6w+nEGmO46LRNq3Ls
-         UyD+LHNuwX7LTrukpf81a0+6yxjJ3Sn8JLg5+53qN1h5rpU+KjnUp18OEkR7piH7frEc
-         oh5eLSsgGhQ/0pe0v6iAVklgKz3dVaPS+leqXADCUbHIk80YOZPS8uMh5fqpzqeWzuEv
-         PgggVHk8agRNkZ545EsS78+3O5sZ3guVrfpYIh9ILF5iGfm5jx+4egk2E2+cxsPw9SZt
-         Uqsbohx54OoXje9bMSFllj/Ufr0WjSSff26b5vcJZaxd2Zwv/57HW2ifPHCNmKLKUDVp
-         yyxA==
-X-Gm-Message-State: AOAM530mOBJI+nxG52f502ssQJmRq1bCv/voKTbkyOAzvhw4Xi19TL9X
-        9XHPoRMOdIuptUPLSe40UIJ7n7Spzlb4G08loS/XfQ==
-X-Google-Smtp-Source: ABdhPJy6wop+fJ1n1TfLcrlKDthzTmtCj1Moa3LBd4CNE7whT6h8sZrF+BORjFxjY5h93F1+C9hs16t8wpGpStygs7s=
-X-Received: by 2002:a05:6512:ace:b0:478:9af3:d9cb with SMTP id
- n14-20020a0565120ace00b004789af3d9cbmr1122823lfu.103.1653425058264; Tue, 24
- May 2022 13:44:18 -0700 (PDT)
+        Tue, 24 May 2022 16:46:18 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 922811D0EF;
+        Tue, 24 May 2022 13:46:17 -0700 (PDT)
+Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24OKfl3T023555;
+        Tue, 24 May 2022 20:46:16 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : content-type : content-transfer-encoding :
+ mime-version; s=pp1; bh=kH0Eo06/kOo+BFgEy06WUnmU7pV7b9nWWZ0T3lV3sls=;
+ b=s93vvosrGYeHDwUb3VX0O+PQsOHNmICHPUtLkuLs776pl7tUuWCSESaQdF+1hwRXrhI3
+ BRmracdPuq0eLTyHQvpRsh+Kl9UE9GQhh2E40zfEK63I2qcfVScdJDXswx6B2VNN58Mc
+ Pu8iNre24W8luPlFvB20gitu2MzwQ8AW15wyHQ4TgFrUGjQKZ7MooWOZPVi+qVDv8ogk
+ VkByd3c7uO2xgrU/F2CekoOhMkfW2eK6Z+UBVNbe0F0OHnTJn2ayY7p9khNvML4FOWqk
+ r9npnHwheFUrZD80fJe+nqKRFjvj7UrlhMcwLPCOMkZGDMuERwMWS22ITeEH20a4/J13 sQ== 
+Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g96mdg26b-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 24 May 2022 20:46:16 +0000
+Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
+        by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24OKaIwY006216;
+        Tue, 24 May 2022 20:46:14 GMT
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
+        by ppma05fra.de.ibm.com with ESMTP id 3g93wdr45x-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 24 May 2022 20:46:13 +0000
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24OKkBLA43778366
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 24 May 2022 20:46:11 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 944CDAE055;
+        Tue, 24 May 2022 20:46:11 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 03894AE053;
+        Tue, 24 May 2022 20:46:11 +0000 (GMT)
+Received: from sig-9-65-93-242.ibm.com (unknown [9.65.93.242])
+        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue, 24 May 2022 20:46:10 +0000 (GMT)
+Message-ID: <223e46039b44b2f31814be02a3c2b75e84af3823.camel@linux.ibm.com>
+Subject: [GIT PULL] integrity subsystem updates for v5.19
+From:   Mimi Zohar <zohar@linux.ibm.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     linux-integrity <linux-integrity@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Date:   Tue, 24 May 2022 16:46:10 -0400
+Content-Type: text/plain; charset="ISO-8859-15"
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: HT1jKMLOd69V4MaiH8x-Aywe2VI48iIR
+X-Proofpoint-ORIG-GUID: HT1jKMLOd69V4MaiH8x-Aywe2VI48iIR
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-References: <20220523164626.858340-1-masahiroy@kernel.org> <20220523164626.858340-2-masahiroy@kernel.org>
-In-Reply-To: <20220523164626.858340-2-masahiroy@kernel.org>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Tue, 24 May 2022 13:44:07 -0700
-Message-ID: <CAKwvOd=fZ=V52fOc47O1=0wy36b8q_LO54J0099_GkouzH0SZA@mail.gmail.com>
-Subject: Re: [PATCH 2/5] modpost: remove the unused argument of check_sec_ref()
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Michal Marek <michal.lkml@markovi.net>
-Content-Type: text/plain; charset="UTF-8"
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-24_10,2022-05-23_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 mlxlogscore=999
+ phishscore=0 adultscore=0 bulkscore=0 lowpriorityscore=0 suspectscore=0
+ clxscore=1011 spamscore=0 impostorscore=0 malwarescore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2205240101
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 23, 2022 at 9:48 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
->
-> check_sec_ref() does not use the first parameter 'mod'.
->
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Hi Linus,
 
-Perhaps we could enable some -W flags for scripts/mod/?
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+New is IMA support for including fs-verity file digests and signatures
+in the IMA
+measurement list as well as verifying the fs-verity file digest based
+signatures, both based on policy.
 
-> ---
->
->  scripts/mod/modpost.c | 5 ++---
->  1 file changed, 2 insertions(+), 3 deletions(-)
->
-> diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-> index 845bc438ca49..843c64eebe8b 100644
-> --- a/scripts/mod/modpost.c
-> +++ b/scripts/mod/modpost.c
-> @@ -1883,8 +1883,7 @@ static void section_rel(const char *modname, struct elf_info *elf,
->   * to find all references to a section that reference a section that will
->   * be discarded and warns about it.
->   **/
-> -static void check_sec_ref(struct module *mod, const char *modname,
-> -                         struct elf_info *elf)
-> +static void check_sec_ref(const char *modname, struct elf_info *elf)
->  {
->         int i;
->         Elf_Shdr *sechdrs = elf->sechdrs;
-> @@ -2069,7 +2068,7 @@ static void read_symbols(const char *modname)
->                                              sym_get_data(&info, sym));
->         }
->
-> -       check_sec_ref(mod, modname, &info);
-> +       check_sec_ref(modname, &info);
->
->         if (!mod->is_vmlinux) {
->                 version = get_modinfo(&info, "version");
-> --
-> 2.32.0
->
+In addition, are two bug fixes:
+- avoid reading UEFI variables, which cause a page fault, on Apple Macs
+with T2 chips.
+- remove the original "ima" template Kconfig option to address a boot
+command line ordering issue.
 
+The rest is a mixture of code/documentation cleanup.
 
--- 
-Thanks,
-~Nick Desaulniers
+thanks,
+
+Mimi
+
+The following changes since commit 3123109284176b1532874591f7c81f3837bbdc17:
+
+  Linux 5.18-rc1 (2022-04-03 14:08:21 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/zohar/linux-integrity.git tags/integrity-v5.19
+
+for you to fetch changes up to 048ae41bb0806cde340f4e5d5030398037ab0be8:
+
+  integrity: Fix sparse warnings in keyring_handler (2022-05-16 17:06:16 -0400)
+
+----------------------------------------------------------------
+integrity-v5.19
+
+----------------------------------------------------------------
+Aditya Garg (1):
+      efi: Do not import certificates from UEFI Secure Boot for T2 Macs
+
+Colin Ian King (1):
+      ima: remove redundant initialization of pointer 'file'.
+
+GUO Zihua (1):
+      ima: remove the IMA_TEMPLATE Kconfig option
+
+Mimi Zohar (8):
+      ima: fix 'd-ng' comments and documentation
+      ima: use IMA default hash algorithm for integrity violations
+      fs-verity: define a function to return the integrity protected file digest
+      ima: define a new template field named 'd-ngv2' and templates
+      ima: permit fsverity's file digests in the IMA measurement list
+      ima: support fs-verity file digest based version 3 signatures
+      fsverity: update the documentation
+      Merge branch 'next-integrity.fsverity-v9' into next-integrity
+
+Stefan Berger (3):
+      evm: Return INTEGRITY_PASS for enum integrity_status value '0'
+      evm: Clean up some variables
+      integrity: Fix sparse warnings in keyring_handler
+
+ Documentation/ABI/testing/ima_policy               |  45 +++++++-
+ Documentation/admin-guide/kernel-parameters.txt    |   3 +-
+ Documentation/filesystems/fsverity.rst             |  35 ++++---
+ Documentation/security/IMA-templates.rst           |  11 +-
+ fs/verity/Kconfig                                  |   1 +
+ fs/verity/fsverity_private.h                       |   7 --
+ fs/verity/measure.c                                |  43 ++++++++
+ include/linux/fsverity.h                           |  18 ++++
+ security/integrity/digsig.c                        |   3 +-
+ security/integrity/evm/evm.h                       |   3 -
+ security/integrity/evm/evm_crypto.c                |   2 +-
+ security/integrity/evm/evm_main.c                  |   2 +-
+ security/integrity/ima/Kconfig                     |  14 ++-
+ security/integrity/ima/ima_api.c                   |  47 ++++++++-
+ security/integrity/ima/ima_appraise.c              | 114 ++++++++++++++++++++-
+ security/integrity/ima/ima_main.c                  |   4 +-
+ security/integrity/ima/ima_policy.c                |  82 +++++++++++++--
+ security/integrity/ima/ima_template.c              |   4 +
+ security/integrity/ima/ima_template_lib.c          |  94 ++++++++++++++---
+ security/integrity/ima/ima_template_lib.h          |   4 +
+ security/integrity/integrity.h                     |  27 ++++-
+ .../integrity/platform_certs/keyring_handler.c     |   6 +-
+ .../integrity/platform_certs/keyring_handler.h     |   8 ++
+ security/integrity/platform_certs/load_uefi.c      |  33 ++++++
+ 24 files changed, 531 insertions(+), 79 deletions(-)
+
