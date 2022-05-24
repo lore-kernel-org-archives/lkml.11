@@ -2,108 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE86AC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 03:56:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CE66C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 03:59:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234070AbiEXD4g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 23:56:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58236 "EHLO
+        id S234092AbiEXD7t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 23:59:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233309AbiEXD4d (ORCPT
+        with ESMTP id S233309AbiEXD7r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 23:56:33 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D66AD12759;
-        Mon, 23 May 2022 20:56:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653364589; x=1684900589;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=2GwRieErle2Ktjkp3bIWr28e79fAT0Lf3K9OF5ujohM=;
-  b=NVnvoOxdc+XRNt/eSInxArVAGOAvHVTnpZimYRkDSPm5PHLFfvyUxuCm
-   79hWMW5fRPcGf1bDiL5eOymigj6Zu5nL827hh2hvfZhZdjwsy2HhAe3fT
-   ejqxuWB3tV7pwD5uUHPEuxuPvp8D86kcw6m6rfkNzIxK89Zc1SasSdayA
-   C8N+5h8KBobyLKwaiSDQhmkU2oOUKCfPvEmAaldm6Ek8bz1bhRw9C5Znz
-   yADceIxAz8fbBxbk4zv4sNK0jOezphOQWaZ7AgF/QBdvFOG+wjT0K6asV
-   AJy88z6gfmwoqQBjqTP0aXUC8s59rsDshMQMEMH7+ZO0JTlifZmzNvenP
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10356"; a="336477891"
-X-IronPort-AV: E=Sophos;i="5.91,248,1647327600"; 
-   d="scan'208";a="336477891"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2022 20:56:29 -0700
-X-IronPort-AV: E=Sophos;i="5.91,248,1647327600"; 
-   d="scan'208";a="577717613"
-Received: from samuelal-mobl.amr.corp.intel.com ([10.212.199.128])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2022 20:56:29 -0700
-Date:   Mon, 23 May 2022 20:56:28 -0700 (PDT)
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>
-Subject: Re: [PATCH 5.15 098/132] mptcp: strict local address ID selection
-In-Reply-To: <20220523165839.636049226@linuxfoundation.org>
-Message-ID: <15cf37fd-22a7-37b-c211-abbde3aee8d@linux.intel.com>
-References: <20220523165823.492309987@linuxfoundation.org> <20220523165839.636049226@linuxfoundation.org>
+        Mon, 23 May 2022 23:59:47 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CB0A4EA21;
+        Mon, 23 May 2022 20:59:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1653364786; x=1684900786;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=JtQtked8sKOZnAnbX7HvpbDPMaLU9/DINVcMbDa20Ac=;
+  b=YwwUePaTheA5QGBsEQoZrTlddgDvfmVzkh7S8XcFD66wjRvzCix6UEg/
+   F7kMM8lQOl7pDLdphPRzoUd0TEpu0O4m8CmnFpz9VlgyF51GMps4fmMgE
+   1LUwnEC1pWzwGpq1l7l6MAyJLrBzJe/rDqDa2JzjgTxp54R4BpaJMInnM
+   s=;
+Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
+  by alexa-out.qualcomm.com with ESMTP; 23 May 2022 20:59:46 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2022 20:59:46 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Mon, 23 May 2022 20:59:45 -0700
+Received: from [10.50.42.127] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 23 May
+ 2022 20:59:41 -0700
+Message-ID: <5544ba12-8a7a-3bc5-1416-c8c707500c9d@quicinc.com>
+Date:   Tue, 24 May 2022 09:29:38 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII; format=flowed
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCHv15 5/9] lib: Add register read/write tracing support
+Content-Language: en-US
+To:     <arnd@arndb.de>, <rostedt@goodmis.org>
+CC:     <gregkh@linuxfoundation.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <coresight@lists.linaro.org>, <suzuki.poulose@arm.com>,
+        <maz@kernel.org>, <quic_psodagud@quicinc.com>,
+        <quic_tsoni@quicinc.com>, <will@kernel.org>,
+        <catalin.marinas@arm.com>
+References: <cover.1652891705.git.quic_saipraka@quicinc.com>
+ <f6d1b9e9d70968b506bdfd1b77129cb751b9df9d.1652891705.git.quic_saipraka@quicinc.com>
+From:   Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+In-Reply-To: <f6d1b9e9d70968b506bdfd1b77129cb751b9df9d.1652891705.git.quic_saipraka@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 23 May 2022, Greg Kroah-Hartman wrote:
+Hi Steve,
 
-> From: Paolo Abeni <pabeni@redhat.com>
+On 5/18/2022 10:14 PM, Sai Prakash Ranjan wrote:
+> From: Prasad Sodagudi <psodagud@codeaurora.org>
 >
-> [ Upstream commit 4cf86ae84c718333928fd2d43168a1e359a28329 ]
+> Generic MMIO read/write i.e., __raw_{read,write}{b,l,w,q} accessors
+> are typically used to read/write from/to memory mapped registers
+> and can cause hangs or some undefined behaviour in following few
+> cases,
 >
-> The address ID selection for MPJ subflows created in response
-> to incoming ADD_ADDR option is currently unreliable: it happens
-> at MPJ socket creation time, when the local address could be
-> unknown.
+> * If the access to the register space is unclocked, for example: if
+>    there is an access to multimedia(MM) block registers without MM
+>    clocks.
 >
-> Additionally, if the no local endpoint is available for the local
-> address, a new dummy endpoint is created, confusing the user-land.
+> * If the register space is protected and not set to be accessible from
+>    non-secure world, for example: only EL3 (EL: Exception level) access
+>    is allowed and any EL2/EL1 access is forbidden.
 >
-> This change refactor the code to move the address ID selection inside
-> the rebuild_header() helper, when the local address eventually
-> selected by the route lookup is finally known. If the address used
-> is not mapped by any endpoint - and thus can't be advertised/removed
-> pick the id 0 instead of allocate a new endpoint.
+> * If xPU(memory/register protection units) is controlling access to
+>    certain memory/register space for specific clients.
 >
-> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-> Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> Signed-off-by: Sasha Levin <sashal@kernel.org>
+> and more...
+>
+> Such cases usually results in instant reboot/SErrors/NOC or interconnect
+> hangs and tracing these register accesses can be very helpful to debug
+> such issues during initial development stages and also in later stages.
+>
+> So use ftrace trace events to log such MMIO register accesses which
+> provides rich feature set such as early enablement of trace events,
+> filtering capability, dumping ftrace logs on console and many more.
+>
+> Sample output:
+>
+> rwmmio_write: __qcom_geni_serial_console_write+0x160/0x1e0 width=32 val=0xa0d5d addr=0xfffffbfffdbff700
+> rwmmio_post_write: __qcom_geni_serial_console_write+0x160/0x1e0 width=32 val=0xa0d5d addr=0xfffffbfffdbff700
+> rwmmio_read: qcom_geni_serial_poll_bit+0x94/0x138 width=32 addr=0xfffffbfffdbff610
+> rwmmio_post_read: qcom_geni_serial_poll_bit+0x94/0x138 width=32 val=0x0 addr=0xfffffbfffdbff610
+>
+> Signed-off-by: Prasad Sodagudi <psodagud@codeaurora.org>
+> Co-developed-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+> Signed-off-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
 > ---
-> net/mptcp/pm_netlink.c | 13 --------
-> net/mptcp/protocol.c   |  3 ++
-> net/mptcp/protocol.h   |  3 +-
-> net/mptcp/subflow.c    | 67 ++++++++++++++++++++++++++++++++++++------
-> 4 files changed, 63 insertions(+), 23 deletions(-)
->
+>   arch/Kconfig                  |  3 ++
+>   arch/arm64/Kconfig            |  1 +
+>   include/trace/events/rwmmio.h | 97 +++++++++++++++++++++++++++++++++++
+>   lib/Kconfig                   |  7 +++
+>   lib/Makefile                  |  2 +
+>   lib/trace_readwrite.c         | 47 +++++++++++++++++
+>   6 files changed, 157 insertions(+)
+>   create mode 100644 include/trace/events/rwmmio.h
+>   create mode 100644 lib/trace_readwrite.c
 
-Greg, Sasha -
-
-Same issue with this patch as
-
-[PATCH 5.17 114/158] mptcp: strict local address ID selection
-
-so hopefully you can drop this one but keep "mptcp: Do TCP fallback on 
-early DSS checksum failure".
-
-
-Details on the 5.17.10-rc1 thread:
-
-https://lore.kernel.org/stable/fa953ec-288f-7715-c6fb-47a222e85270@linux.intel.com/
-
+How does this version look?
 
 Thanks,
+Sai
 
---
-Mat Martineau
-Intel
