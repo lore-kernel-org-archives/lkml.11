@@ -2,83 +2,343 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3269C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 00:11:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F468C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 00:16:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231201AbiEXALi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 20:11:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49636 "EHLO
+        id S231383AbiEXAQw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 20:16:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229680AbiEXALc (ORCPT
+        with ESMTP id S229453AbiEXAQu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 20:11:32 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 509EB40E73
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 17:11:31 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id eg11so21031790edb.11
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 17:11:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=887/AtOOEOy4hdannnUAPSxRRvVEpBOXoWWcIcNFEig=;
-        b=LCKHw1SRAXq0+4j95+yp5/cEPn6eGn+sMOZYPX5M8L2wlQ6gP0hIuItmpUW7I/zJn9
-         iBM8cVkG1L8or0or2odW8yhIjb8hzAWXDEdL8bK/erzE5IdCrvkIuVEEI4cClm9gCqSC
-         gkmz4Yf9LDMjGbAAnag4QmVI5NoS/YLpdtOoo=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=887/AtOOEOy4hdannnUAPSxRRvVEpBOXoWWcIcNFEig=;
-        b=ZZ264udJyUVtkTvi2OUhsfqOt/f4RkUwVsefRMbc79Wd/bzDExiQNjbMCfJo+BfLNH
-         LpA09u0sJVm3E8XlKHwUWxIBxmEUadkXGMjG/BJplZutkf2i+3e4RmVkoGjcHKRBSzcd
-         LeSNfZWjsFamR3v2Yeu9Ne8eJrH5AAZ1x1AF9RqmUyOvS574D4/VUq7T60C8DTIYfCXx
-         Z0HkoUCT2ciWzTWdDBdfd5AA0Yrrba/eylFBNp+McHYTvhZw8XIzOryX4b7ss+Nc6yNL
-         APY9rRmKJeCXLZeSMcy5rMFjAoOW1BtyRCLnzCWcOP38iataVqoa/nwBkh8oyKNROTGb
-         1xFA==
-X-Gm-Message-State: AOAM532Abu+ylS3SPXXwdjqZZEWRQ1TcIkYyMkHgq3k4n+QQ+GrVJzTG
-        Iq19nSH2SG7UbTPKln6MzPxddLNHwWkyUNE1Vyw=
-X-Google-Smtp-Source: ABdhPJxBRa4EOteUepn3uwrfJ48x1d1laiwal7XPgCqPLCyNEA7iaWchyk8oC0NqDEyZLLIs8CyP0Q==
-X-Received: by 2002:a05:6402:2911:b0:42a:b141:b221 with SMTP id ee17-20020a056402291100b0042ab141b221mr25949115edb.138.1653351089647;
-        Mon, 23 May 2022 17:11:29 -0700 (PDT)
-Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com. [209.85.128.47])
-        by smtp.gmail.com with ESMTPSA id k24-20020a05640212d800b0042aaecf8707sm8710002edx.70.2022.05.23.17.11.28
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 May 2022 17:11:29 -0700 (PDT)
-Received: by mail-wm1-f47.google.com with SMTP id n124-20020a1c2782000000b003972dfca96cso473611wmn.4
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 17:11:28 -0700 (PDT)
-X-Received: by 2002:a05:600c:4f06:b0:394:836b:1552 with SMTP id
- l6-20020a05600c4f0600b00394836b1552mr1243280wmq.145.1653351088369; Mon, 23
- May 2022 17:11:28 -0700 (PDT)
+        Mon, 23 May 2022 20:16:50 -0400
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7B8B36BFE2;
+        Mon, 23 May 2022 17:16:48 -0700 (PDT)
+Received: from x64host.home (unknown [47.189.24.195])
+        by linux.microsoft.com (Postfix) with ESMTPSA id 69AFD20B6C7C;
+        Mon, 23 May 2022 17:16:47 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 69AFD20B6C7C
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1653351408;
+        bh=/tONLk1QXRDCTsXJLk+T4mjehc+6vK0E7p5YrpSTPtk=;
+        h=From:To:Subject:Date:In-Reply-To:References:From;
+        b=NtS0Q9D8QbZiGnNIvmshLwN+aeWRo/Unp38H0DrQs7OH58PS0FtYYPCjwFgHliFnp
+         YRh9KMzz+qaWjpyB6+aDgGoXPMC9H1DdzQIfj8RDD9Tdf8DZvEY7DMmj49rpiWPT6E
+         M9R40O6YRiI6c3DNueI5Lnw/B3tngTedfG2cNVhg=
+From:   madvenka@linux.microsoft.com
+To:     jpoimboe@redhat.com, peterz@infradead.org, chenzhongjin@huawei.com,
+        mark.rutland@arm.com, broonie@kernel.org, nobuta.keiya@fujitsu.com,
+        sjitindarsingh@gmail.com, catalin.marinas@arm.com, will@kernel.org,
+        jamorris@linux.microsoft.com, linux-arm-kernel@lists.infradead.org,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
+        madvenka@linux.microsoft.com
+Subject: [RFC PATCH v2 01/20] objtool: Reorganize CFI code
+Date:   Mon, 23 May 2022 19:16:18 -0500
+Message-Id: <20220524001637.1707472-2-madvenka@linux.microsoft.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220524001637.1707472-1-madvenka@linux.microsoft.com>
+References: <e81e773678f88f7c2ff7480e2eb096973ec198db>
+ <20220524001637.1707472-1-madvenka@linux.microsoft.com>
 MIME-Version: 1.0
-References: <165329267741.3801280.534077656528571075.tglx@xen13> <165329268338.3801280.15015388773053623832.tglx@xen13>
-In-Reply-To: <165329268338.3801280.15015388773053623832.tglx@xen13>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Mon, 23 May 2022 17:11:12 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wi0q-c95_OaHf9Eq16C7kURDNugdqBrE1wwXJf+yfX4Yw@mail.gmail.com>
-Message-ID: <CAHk-=wi0q-c95_OaHf9Eq16C7kURDNugdqBrE1wwXJf+yfX4Yw@mail.gmail.com>
-Subject: Re: [GIT pull] timers/core for 5.19-rc1
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "the arch/x86 maintainers" <x86@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 23, 2022 at 1:02 AM Thomas Gleixner <tglx@linutronix.de> wrote:
->
->    git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git timers-core-2022-05-23
+From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
 
-Hmm. My diffstat didn't match yours, and I couldn't figure out why,
-until I noticed that:
+check.c implements static stack validation. But the CFI code that it
+contains can be shared with other types of validation. E.g., dynamic FP
+validation. Move the CFI code to its own files - cfi.h and cfi.c.
 
-> Anna-Maria Behnsen (3):
->       timers: Fix warning condition in __run_timers()
+Signed-off-by: Madhavan T. Venkataraman <madvenka@linux.microsoft.com>
+---
+ tools/objtool/Build                 |   2 +
+ tools/objtool/cfi.c                 | 108 ++++++++++++++++++++++++++++
+ tools/objtool/check.c               |  96 -------------------------
+ tools/objtool/include/objtool/cfi.h |  12 ++++
+ 4 files changed, 122 insertions(+), 96 deletions(-)
+ create mode 100644 tools/objtool/cfi.c
 
-You had already sent this one to me as part of the timer fixes pull
-back in mid-April, so it was already in my tree. Apparently you hadn't
-updated upstream before doing the git request-pull script.
+diff --git a/tools/objtool/Build b/tools/objtool/Build
+index b7222d5cc7bc..695cfee5cfde 100644
+--- a/tools/objtool/Build
++++ b/tools/objtool/Build
+@@ -3,8 +3,10 @@ objtool-y += arch/$(SRCARCH)/
+ objtool-y += weak.o
+ 
+ objtool-$(SUBCMD_CHECK) += check.o
++objtool-$(SUBCMD_CHECK) += cfi.o
+ objtool-$(SUBCMD_CHECK) += special.o
+ objtool-$(SUBCMD_ORC) += check.o
++objtool-$(SUBCMD_ORC) += cfi.o
+ objtool-$(SUBCMD_ORC) += orc_gen.o
+ objtool-$(SUBCMD_ORC) += orc_dump.o
+ 
+diff --git a/tools/objtool/cfi.c b/tools/objtool/cfi.c
+new file mode 100644
+index 000000000000..d5de6df59d72
+--- /dev/null
++++ b/tools/objtool/cfi.c
+@@ -0,0 +1,108 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * Copyright (C) 2015-2017 Josh Poimboeuf <jpoimboe@redhat.com>
++ */
++
++#include <stdlib.h>
++#include <sys/mman.h>
++
++#include <objtool/cfi.h>
++#include <objtool/builtin.h>
++#include <objtool/warn.h>
++
++unsigned long nr_cfi, nr_cfi_reused, nr_cfi_cache;
++
++struct cfi_init_state initial_func_cfi;
++struct cfi_state init_cfi;
++struct cfi_state func_cfi;
++
++void init_cfi_state(struct cfi_state *cfi)
++{
++	int i;
++
++	for (i = 0; i < CFI_NUM_REGS; i++) {
++		cfi->regs[i].base = CFI_UNDEFINED;
++		cfi->vals[i].base = CFI_UNDEFINED;
++	}
++	cfi->cfa.base = CFI_UNDEFINED;
++	cfi->drap_reg = CFI_UNDEFINED;
++	cfi->drap_offset = -1;
++}
++
++static struct cfi_state *cfi_alloc(void)
++{
++	struct cfi_state *cfi = calloc(sizeof(struct cfi_state), 1);
++
++	if (!cfi) {
++		WARN("calloc failed");
++		exit(1);
++	}
++	nr_cfi++;
++	return cfi;
++}
++
++static int cfi_bits;
++static struct hlist_head *cfi_hash;
++
++bool cficmp(struct cfi_state *cfi1, struct cfi_state *cfi2)
++{
++	return memcmp((void *)cfi1 + sizeof(cfi1->hash),
++		      (void *)cfi2 + sizeof(cfi2->hash),
++		      sizeof(struct cfi_state) - sizeof(struct hlist_node));
++}
++
++static inline u32 cfi_key(struct cfi_state *cfi)
++{
++	return jhash((void *)cfi + sizeof(cfi->hash),
++		     sizeof(*cfi) - sizeof(cfi->hash), 0);
++}
++
++struct cfi_state *cfi_hash_find_or_add(struct cfi_state *cfi)
++{
++	struct hlist_head *head = &cfi_hash[hash_min(cfi_key(cfi), cfi_bits)];
++	struct cfi_state *obj;
++
++	hlist_for_each_entry(obj, head, hash) {
++		if (!cficmp(cfi, obj)) {
++			nr_cfi_cache++;
++			return obj;
++		}
++	}
++
++	obj = cfi_alloc();
++	*obj = *cfi;
++	hlist_add_head(&obj->hash, head);
++
++	return obj;
++}
++
++void cfi_hash_add(struct cfi_state *cfi)
++{
++	struct hlist_head *head = &cfi_hash[hash_min(cfi_key(cfi), cfi_bits)];
++
++	hlist_add_head(&cfi->hash, head);
++}
++
++void *cfi_hash_alloc(unsigned long size)
++{
++	cfi_bits = max(10, ilog2(size));
++	cfi_hash = mmap(NULL, sizeof(struct hlist_head) << cfi_bits,
++			PROT_READ|PROT_WRITE,
++			MAP_PRIVATE|MAP_ANON, -1, 0);
++	if (cfi_hash == (void *)-1L) {
++		WARN("mmap fail cfi_hash");
++		cfi_hash = NULL;
++	}  else if (stats) {
++		printf("cfi_bits: %d\n", cfi_bits);
++	}
++
++	return cfi_hash;
++}
++
++void set_func_state(struct cfi_state *state)
++{
++	state->cfa = initial_func_cfi.cfa;
++	memcpy(&state->regs, &initial_func_cfi.regs,
++	       CFI_NUM_REGS * sizeof(struct cfi_reg));
++	state->stack_size = initial_func_cfi.cfa.offset;
++}
+diff --git a/tools/objtool/check.c b/tools/objtool/check.c
+index 6de5085e3e5a..12acc9d329de 100644
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -27,12 +27,6 @@ struct alternative {
+ 	bool skip_orig;
+ };
+ 
+-static unsigned long nr_cfi, nr_cfi_reused, nr_cfi_cache;
+-
+-static struct cfi_init_state initial_func_cfi;
+-static struct cfi_state init_cfi;
+-static struct cfi_state func_cfi;
+-
+ struct instruction *find_insn(struct objtool_file *file,
+ 			      struct section *sec, unsigned long offset)
+ {
+@@ -249,19 +243,6 @@ static bool dead_end_function(struct objtool_file *file, struct symbol *func)
+ 	return __dead_end_function(file, func, 0);
+ }
+ 
+-static void init_cfi_state(struct cfi_state *cfi)
+-{
+-	int i;
+-
+-	for (i = 0; i < CFI_NUM_REGS; i++) {
+-		cfi->regs[i].base = CFI_UNDEFINED;
+-		cfi->vals[i].base = CFI_UNDEFINED;
+-	}
+-	cfi->cfa.base = CFI_UNDEFINED;
+-	cfi->drap_reg = CFI_UNDEFINED;
+-	cfi->drap_offset = -1;
+-}
+-
+ static void init_insn_state(struct insn_state *state, struct section *sec)
+ {
+ 	memset(state, 0, sizeof(*state));
+@@ -276,75 +257,6 @@ static void init_insn_state(struct insn_state *state, struct section *sec)
+ 		state->noinstr = sec->noinstr;
+ }
+ 
+-static struct cfi_state *cfi_alloc(void)
+-{
+-	struct cfi_state *cfi = calloc(sizeof(struct cfi_state), 1);
+-	if (!cfi) {
+-		WARN("calloc failed");
+-		exit(1);
+-	}
+-	nr_cfi++;
+-	return cfi;
+-}
+-
+-static int cfi_bits;
+-static struct hlist_head *cfi_hash;
+-
+-static inline bool cficmp(struct cfi_state *cfi1, struct cfi_state *cfi2)
+-{
+-	return memcmp((void *)cfi1 + sizeof(cfi1->hash),
+-		      (void *)cfi2 + sizeof(cfi2->hash),
+-		      sizeof(struct cfi_state) - sizeof(struct hlist_node));
+-}
+-
+-static inline u32 cfi_key(struct cfi_state *cfi)
+-{
+-	return jhash((void *)cfi + sizeof(cfi->hash),
+-		     sizeof(*cfi) - sizeof(cfi->hash), 0);
+-}
+-
+-static struct cfi_state *cfi_hash_find_or_add(struct cfi_state *cfi)
+-{
+-	struct hlist_head *head = &cfi_hash[hash_min(cfi_key(cfi), cfi_bits)];
+-	struct cfi_state *obj;
+-
+-	hlist_for_each_entry(obj, head, hash) {
+-		if (!cficmp(cfi, obj)) {
+-			nr_cfi_cache++;
+-			return obj;
+-		}
+-	}
+-
+-	obj = cfi_alloc();
+-	*obj = *cfi;
+-	hlist_add_head(&obj->hash, head);
+-
+-	return obj;
+-}
+-
+-static void cfi_hash_add(struct cfi_state *cfi)
+-{
+-	struct hlist_head *head = &cfi_hash[hash_min(cfi_key(cfi), cfi_bits)];
+-
+-	hlist_add_head(&cfi->hash, head);
+-}
+-
+-static void *cfi_hash_alloc(unsigned long size)
+-{
+-	cfi_bits = max(10, ilog2(size));
+-	cfi_hash = mmap(NULL, sizeof(struct hlist_head) << cfi_bits,
+-			PROT_READ|PROT_WRITE,
+-			MAP_PRIVATE|MAP_ANON, -1, 0);
+-	if (cfi_hash == (void *)-1L) {
+-		WARN("mmap fail cfi_hash");
+-		cfi_hash = NULL;
+-	}  else if (stats) {
+-		printf("cfi_bits: %d\n", cfi_bits);
+-	}
+-
+-	return cfi_hash;
+-}
+-
+ static unsigned long nr_insns;
+ static unsigned long nr_insns_visited;
+ 
+@@ -1866,14 +1778,6 @@ static int add_jump_table_alts(struct objtool_file *file)
+ 	return 0;
+ }
+ 
+-static void set_func_state(struct cfi_state *state)
+-{
+-	state->cfa = initial_func_cfi.cfa;
+-	memcpy(&state->regs, &initial_func_cfi.regs,
+-	       CFI_NUM_REGS * sizeof(struct cfi_reg));
+-	state->stack_size = initial_func_cfi.cfa.offset;
+-}
+-
+ static int read_unwind_hints(struct objtool_file *file)
+ {
+ 	struct cfi_state cfi = init_cfi;
+diff --git a/tools/objtool/include/objtool/cfi.h b/tools/objtool/include/objtool/cfi.h
+index f11d1ac1dadf..7d54f1058655 100644
+--- a/tools/objtool/include/objtool/cfi.h
++++ b/tools/objtool/include/objtool/cfi.h
+@@ -37,4 +37,16 @@ struct cfi_state {
+ 	bool end;
+ };
+ 
++void init_cfi_state(struct cfi_state *cfi);
++struct cfi_state *cfi_hash_find_or_add(struct cfi_state *cfi);
++void cfi_hash_add(struct cfi_state *cfi);
++void *cfi_hash_alloc(unsigned long size);
++bool cficmp(struct cfi_state *cfi1, struct cfi_state *cfi2);
++void set_func_state(struct cfi_state *state);
++
++extern unsigned long nr_cfi, nr_cfi_reused, nr_cfi_cache;
++extern struct cfi_init_state initial_func_cfi;
++extern struct cfi_state init_cfi;
++extern struct cfi_state func_cfi;
++
+ #endif /* _OBJTOOL_CFI_H */
+-- 
+2.25.1
 
-                   Linus
