@@ -2,66 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5EFAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 22:28:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3813CC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 22:28:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242676AbiEXW2G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 18:28:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47782 "EHLO
+        id S242612AbiEXW2L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 18:28:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242615AbiEXW1v (ORCPT
+        with ESMTP id S242622AbiEXW16 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 18:27:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 917CA4D9F0
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 15:27:50 -0700 (PDT)
+        Tue, 24 May 2022 18:27:58 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B947366BD
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 15:27:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8A5F4B81B89
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 22:27:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 4D50DC34118;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 645C6CE1B9A
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 22:27:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id A9DA0C34117;
         Tue, 24 May 2022 22:27:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1653431267;
-        bh=ez2Mn9nBsklTLdjMmmYlPXMJ7EyXKjpr2r6P2al3wj4=;
+        bh=4w6WU++Uvu5HDHBHlSaHvjJmIRg8lo1YnKXc4590qCE=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=bDpJKtyfylBWcl/ChcUis/Q8XHqsBkksJa8QhEPi03AMMLFO2Cuw1+EjA14lg6Dzx
-         5kmMVkmc2/83Z0arSWWuDY2X4gASjT3uc8OK/Mbsj2X20grFMdPMUDRpN9JzDVUb0+
-         4Q9MqtQq8WZ/KcUV+1yxJNi5tfAHp7F4EYlsHEML8v4H7O1b+E2rUM503nnUEUSLP6
-         fLbUiHO2k0vurIzJOqUNhvr0DkpceYRJR4i0cn4L31oce6Jzr3r6ctktwQJ7g1/av2
-         WNP12rgfHD3s8Sq+Rct+8rhT8TfLZR0+d3SZZSaSr39/f6YEn4Ak6YDo4cA5OBymt2
-         Q5rrFPBBpBwnA==
+        b=gr9t8b7XcF7UR+9fRFbNDxGNnnzR9avPhEKHXvmiakv4028R7fSNXpnR64Ge4A6h8
+         bShuRiflJWMTpkLUBNiI/uwy7pZPGzpbpG6v6CLl6upJ3XdKNMnCosCRFmRqGe4Ks2
+         4AbEEookxJ+hOMIfw7ByJda3Ay4HrLdW6DfCtoYBaM3freq85rUoGYuGPZJcNiCLu+
+         j8M1gqQpfWdRcFLtVvd+6nNb2m1mCRtAIYImuYyWTdz2NQoO+x5GALMO64K0tE8dZ7
+         KONQKcOMWPdl8Iks3C3hww9cKyr9yhQQptgF04PpgSF9xTvUyGXwu48kxk2qaFs7mh
+         LtD9emQJyvpsw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3AC85E8DD61;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 96DBEF03938;
         Tue, 24 May 2022 22:27:47 +0000 (UTC)
-Subject: Re: [GIT PULL] regulator updates for v5.19
+Subject: Re: [GIT PULL] HID for 5.19
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220523131230.B844CC385A9@smtp.kernel.org>
-References: <20220523131230.B844CC385A9@smtp.kernel.org>
+In-Reply-To: <nycvar.YFH.7.76.2205241107530.28985@cbobk.fhfr.pm>
+References: <nycvar.YFH.7.76.2205241107530.28985@cbobk.fhfr.pm>
 X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220523131230.B844CC385A9@smtp.kernel.org>
-X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regulator.git tags/regulator-v5.19
-X-PR-Tracked-Commit-Id: a5b8e4a5ceec0ab6453176bc7f5eceafa78bf8a9
+X-PR-Tracked-Message-Id: <nycvar.YFH.7.76.2205241107530.28985@cbobk.fhfr.pm>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/hid/hid.git tags/for-linus-2022052401
+X-PR-Tracked-Commit-Id: 07d17217c668d5b9974572b2d69c6736f60b9925
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 9b18d07ba3ae75fcb7a191fafe4e2954f07271be
-Message-Id: <165343126723.3997.6343294147814223549.pr-tracker-bot@kernel.org>
+X-PR-Merge-Commit-Id: aa051d36ce4ae23b488489f6b15abad68b59ca23
+Message-Id: <165343126761.3997.6527730865682987195.pr-tracker-bot@kernel.org>
 Date:   Tue, 24 May 2022 22:27:47 +0000
-To:     Mark Brown <broonie@kernel.org>
+To:     Jiri Kosina <jikos@kernel.org>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        linux-kernel@vger.kernel.org, Mark Brown <broonie@kernel.org>
+        linux-kernel@vger.kernel.org,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Mon, 23 May 2022 14:12:19 +0100:
+The pull request you sent on Tue, 24 May 2022 11:11:25 +0200 (CEST):
 
-> https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regulator.git tags/regulator-v5.19
+> git://git.kernel.org/pub/scm/linux/kernel/git/hid/hid.git tags/for-linus-2022052401
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/9b18d07ba3ae75fcb7a191fafe4e2954f07271be
+https://git.kernel.org/torvalds/c/aa051d36ce4ae23b488489f6b15abad68b59ca23
 
 Thank you!
 
