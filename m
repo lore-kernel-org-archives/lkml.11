@@ -2,100 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6E5CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 00:42:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69EC3C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 00:50:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232050AbiEXAmm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 20:42:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51500 "EHLO
+        id S232233AbiEXAuQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 20:50:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229543AbiEXAmg (ORCPT
+        with ESMTP id S229525AbiEXAuO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 20:42:36 -0400
-Received: from mail-oa1-x2c.google.com (mail-oa1-x2c.google.com [IPv6:2001:4860:4864:20::2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D2273EA8F;
-        Mon, 23 May 2022 17:42:35 -0700 (PDT)
-Received: by mail-oa1-x2c.google.com with SMTP id 586e51a60fabf-f1d5464c48so20510319fac.6;
-        Mon, 23 May 2022 17:42:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=8ETvvkhpQrw7shYB9haUbVAUaap8xo2ExD5sxPwIi74=;
-        b=MNmGJ+mct0/1TBw6ndmG1LtwQNJRV/NNa15sy8R0fVeN2H3v+3qoAmBKThwSSy+amV
-         eGWDwg8ndA4nhKGaJ8aNkmuezWRxdfBKwEHNG+TWeGqdwGgNTPPpx7j4ZNrDf2wWiRIc
-         eiuxRtClIcgJC35EuBaMVCHwpcPBI7hBbk8wBWaINepSKtVP+acrOXfkR/5xQCEaGlbN
-         9HnOVcwkuqhpgmtVShkKiIotIFLkdSLJKXXVeJAU31VQRxNqsPgSmUtGaHOVT2Q9Vdpb
-         /MvFa7S6SjpPEnmNt+GVkTxIrEsD6Lc4a/uqlBFr97ZLVYhH5DdaPUog2mqEwEYdvg2i
-         efjA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=8ETvvkhpQrw7shYB9haUbVAUaap8xo2ExD5sxPwIi74=;
-        b=FL1FtLpZOpxtQVxr2Vl8Sl2Sm/7WS3rSS7IhGv1YWs7n1rGWZ9kiz0kD+Qxve38Io6
-         PQtBHcr5g15QiO2wFPgHOjqT5Qkqri+gkNRj7S42WnJjw8jYHgufmtEu7DhXA31TGeHM
-         MBXMGeJHURQHqBHN+nGtxdsqBprAb/YmmTQsradTy/CLwXxFFgV2SRQH6F1cyX35qKyw
-         WNF1YjMX1cdePBxbksWIDxfjn7y2RoB15f41s+zWdUf6dtfjteaDi6Z7tbjBfuhSEcEh
-         qU9Bl8gXCrAUTq3HvLhTUt9puVU0dtJmebV7J/spyNcyXP5HhuGD+SVEg9pdUIh1bQeo
-         U4MA==
-X-Gm-Message-State: AOAM5307Decnz4YemMHzJlrXUjAH0UIHa/8ggH9YjnWdhc51KJGRms2j
-        a88Sc+MZGiNhLKtEXEjZDhOHdZk2vei4ew==
-X-Google-Smtp-Source: ABdhPJybhTbiHSkZOw8UXTfXdDBF6Py/eEU1EeoDYQHXJadEJGAa9mq/7CcGRKqFZX6rHGYSH0p3LA==
-X-Received: by 2002:a05:6870:58a4:b0:f2:2720:884d with SMTP id be36-20020a05687058a400b000f22720884dmr1076063oab.13.1653352954855;
-        Mon, 23 May 2022 17:42:34 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id y130-20020aca3288000000b0032b57087f86sm1233869oiy.23.2022.05.23.17.42.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 May 2022 17:42:34 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Mon, 23 May 2022 17:42:32 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Yu Zhe <yuzhe@nfschina.com>
-Cc:     sander@svanheule.net, wim@linux-watchdog.org,
-        linux-watchdog@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] watchdog: change "char *" string form to "char []"
-Message-ID: <20220524004232.GA241892@roeck-us.net>
-References: <20220524003335.64801-1-yuzhe@nfschina.com>
+        Mon, 23 May 2022 20:50:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1A307C152;
+        Mon, 23 May 2022 17:50:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B491615C1;
+        Tue, 24 May 2022 00:50:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 97144C385A9;
+        Tue, 24 May 2022 00:50:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653353412;
+        bh=sIp6djcrJ2pYPQ4fWtehEfwz6Acwa99SXz25tU5Ybq0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=JqB70igHpu9tVw5iItH/3qBJabFLpFmkX+okdUv5kk4zcPNsyHTuWDnmtjCZaHeIg
+         SvAfOfWQhuMlUFiJh2prc82gXvlY8KsVN0Lbzv85CiuBKrmrPXZ9PCNvnSaB+/nhoa
+         UWDexZKvzZ0oiJKgypXtMiEn4dff60u8bhM4gcLMCjmII1rSvco8U+pJuVxLtoiJb0
+         j3qgbIbE+0DzmY5zIjL6pD6+k3UESM0ECopvL2eT0OJApcwKLOBYCojvhnmep8aUlf
+         giPGLI1CaPWxPHpbjyrFAXZCDqNrBxEkzXEtaoPhrl8lCzRMB1OTZfLQ3AN5n4vpbr
+         I4qSXIu/Qd/Aw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 79E2EF03943;
+        Tue, 24 May 2022 00:50:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220524003335.64801-1-yuzhe@nfschina.com>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v4 0/5] platform/chrome: cros_kbd_led_backlight: add EC PWM
+ backend
+From:   patchwork-bot+chrome-platform@kernel.org
+Message-Id: <165335341249.17704.13803710194044994542.git-patchwork-notify@kernel.org>
+Date:   Tue, 24 May 2022 00:50:12 +0000
+References: <20220523090822.3035189-1-tzungbi@kernel.org>
+In-Reply-To: <20220523090822.3035189-1-tzungbi@kernel.org>
+To:     Tzung-Bi Shih <tzungbi@kernel.org>
+Cc:     bleung@chromium.org, groeck@chromium.org, robh+dt@kernel.org,
+        chrome-platform@lists.linux.dev, linux-kernel@vger.kernel.org,
+        mka@chromium.org, devicetree@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 23, 2022 at 05:33:35PM -0700, Yu Zhe wrote:
-> The string form of "char []" declares a single variable. It is better
-> than "char *" which creates two variables.
+Hello:
+
+This series was applied to chrome-platform/linux.git (for-kernelci)
+by Tzung-Bi Shih <tzungbi@kernel.org>:
+
+On Mon, 23 May 2022 17:08:17 +0800 you wrote:
+> The series adds EC PWM as an backend option for ChromeOS keyboard LED
+> backlight.
 > 
-
-Huh, what ? One is a character array, the other a pointer.
-It is still a single variable.
-
-I don't mind if you want to use [] in your own code, but please
-stop making such changes in other people's code. 
-
-Guenter
-
-> Signed-off-by: Yu Zhe <yuzhe@nfschina.com>
-> ---
->  drivers/watchdog/realtek_otto_wdt.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> The 1st patch reorder the headers alphabetically.
 > 
-> diff --git a/drivers/watchdog/realtek_otto_wdt.c b/drivers/watchdog/realtek_otto_wdt.c
-> index 60058a0c3ec4..c653ec73a999 100644
-> --- a/drivers/watchdog/realtek_otto_wdt.c
-> +++ b/drivers/watchdog/realtek_otto_wdt.c
-> @@ -265,7 +265,7 @@ static int otto_wdt_probe_clk(struct otto_wdt_ctrl *ctrl)
->  
->  static int otto_wdt_probe_reset_mode(struct otto_wdt_ctrl *ctrl)
->  {
-> -	static const char *mode_property = "realtek,reset-mode";
-> +	static const char mode_property[] = "realtek,reset-mode";
->  	const struct fwnode_handle *node = ctrl->dev->fwnode;
->  	int mode_count;
->  	u32 mode;
-> -- 
-> 2.25.1
+> The 2nd patch separates the ACPI backend.
 > 
+> [...]
+
+Here is the summary with links:
+  - [v4,1/5] platform/chrome: cros_kbd_led_backlight: sort headers alphabetically
+    https://git.kernel.org/chrome-platform/c/a4da30150ab4
+  - [v4,2/5] platform/chrome: cros_kbd_led_backlight: separate ACPI backend
+    (no matching commit)
+  - [v4,3/5] dt-bindings: add google,cros-kbd-led-backlight
+    (no matching commit)
+  - [v4,4/5] platform/chrome: cros_kbd_led_backlight: support OF match
+    (no matching commit)
+  - [v4,5/5] platform/chrome: cros_kbd_led_backlight: support EC PWM backend
+    (no matching commit)
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
