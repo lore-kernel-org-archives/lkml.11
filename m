@@ -2,175 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60ABCC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 13:28:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3124C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 13:28:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237868AbiEXN0W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 09:26:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58278 "EHLO
+        id S237808AbiEXN2l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 09:28:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237804AbiEXN0M (ORCPT
+        with ESMTP id S237785AbiEXN2i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 09:26:12 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4EFC34B9C;
-        Tue, 24 May 2022 06:26:11 -0700 (PDT)
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24ODBdAm029873;
-        Tue, 24 May 2022 13:25:35 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=hBbcMrX9s6JSpr08mbOB4SZ6XiS2E7eqbNX1M5D5MBY=;
- b=AAAByyi91dHEoGm6NYlZn+wRXYe74rFA7dWvXySO+ATU2V3bumZAlWRKf1gQzvp/8/jf
- hcpaxosyWSDnSokBRoM4uPK7lVeLDGhUUH9/RpySgvv5XLBP7We/g9IYkTsU4sIFOnK3
- f4bi/fvwXZpucg8S9TL43/a1aib1N0iYBTDWGFjO3yW74mIW0I2ASroV65+NkVvNZOvk
- P72SGcnLaQsHzdSxMldx+7Vb/1briIWwYJtJPwqX27MkfbxbPqJiS99MpqLVmDdHSCpA
- +X2/S8NZ2lQqhFzb9e60Vz4JLlntJdYOzngVACRgg680c7lV4j+WqgGKQEDB94frkeQR lA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g901ggasw-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 24 May 2022 13:25:35 +0000
-Received: from m0187473.ppops.net (m0187473.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24ODCcnT032838;
-        Tue, 24 May 2022 13:25:34 GMT
-Received: from ppma03dal.us.ibm.com (b.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.11])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g901ggasm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 24 May 2022 13:25:34 +0000
-Received: from pps.filterd (ppma03dal.us.ibm.com [127.0.0.1])
-        by ppma03dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24ODK0DZ013006;
-        Tue, 24 May 2022 13:25:33 GMT
-Received: from b03cxnp07027.gho.boulder.ibm.com (b03cxnp07027.gho.boulder.ibm.com [9.17.130.14])
-        by ppma03dal.us.ibm.com with ESMTP id 3g6qqa66wf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 24 May 2022 13:25:33 +0000
-Received: from b03ledav003.gho.boulder.ibm.com (b03ledav003.gho.boulder.ibm.com [9.17.130.234])
-        by b03cxnp07027.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24ODPWEL30277940
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 24 May 2022 13:25:32 GMT
-Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 0C65E6A054;
-        Tue, 24 May 2022 13:25:32 +0000 (GMT)
-Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 8B8466A04F;
-        Tue, 24 May 2022 13:25:30 +0000 (GMT)
-Received: from [9.47.158.152] (unknown [9.47.158.152])
-        by b03ledav003.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Tue, 24 May 2022 13:25:30 +0000 (GMT)
-Message-ID: <6c16b3b8-cd3f-4175-9269-2c542f7d4188@linux.ibm.com>
-Date:   Tue, 24 May 2022 09:25:30 -0400
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH v12 12/26] ima: Only accept AUDIT rules for
- non-init_ima_ns namespaces for now
+        Tue, 24 May 2022 09:28:38 -0400
+Received: from FRA01-PR2-obe.outbound.protection.outlook.com (mail-eopbgr120048.outbound.protection.outlook.com [40.107.12.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA4509A98F
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 06:28:36 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Sa+iDv8wo/1WUqF+8ErxZO5yHNhP/QwgKHrdivl2eBclpR2NGKZ5/ip10k/KxPwNdEgDT/SMWNY+leaRtNhk11dC3ruphFaDC6qgd1HM22k8GN9/HAmjucKfMa41oUeHHh0m6cEG3wSIDTOr06YJDvlv/QDgc+uX8Fp6AdCFcWrgBUpmRSiRpJpy5TB/dIfstKl6hivYpWfYdIXPbK5wvEl4iOGscUtN/EkOTh1xskPqvbeGZ7R5umXuEZYObrNxtc6hlejJH/ENbENd7vNjMeIblvFwiLuiqKUOBSvuR2fy3Edczxabh7T0s2oN5OG3DVJnQ5Vdh4wICrKV6sM4Pw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=u69MdDk2CpCr2//TMJBJI10tRlJIoEHmqfL6476CVbI=;
+ b=Y1JoUyIRVmxgZJGVe8KCYqBqyIBhw9GFepTXs2D59LIxb+n5KLaQUAR42YI+0C8l4LQ21usqfo8CZ80FSKKLWkg0HKkw0iix9N85hWOQZUaz5ZJRlvBa+n1i5y7O0FHLn5owK/N5qQ64/BtSj2vnUrlJoEH+Wr1cJKXtK1ioZkyvBC3mSYnq2cRdUSvrQxuzUL9VxflQ1Y6fCxx/hMXbJ0RNH1YRBR6My3BrYUHWGm2DsBAqmoOjvLFlXHs1GWKQF5oLEpD/+3FdSzvz7MA3f8J446a6+A8O6sDd9KU+qW61KfVhm2ORODxwmk/GlQLUWK0QZyu/NRC0jh9nOjTMUA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=csgroup.eu; dmarc=pass action=none header.from=csgroup.eu;
+ dkim=pass header.d=csgroup.eu; arc=none
+Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM (2603:10a6:501:31::15)
+ by PR1P264MB1664.FRAP264.PROD.OUTLOOK.COM (2603:10a6:102:1b2::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.14; Tue, 24 May
+ 2022 13:28:34 +0000
+Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
+ ([fe80::b15e:862f:adf7:5356]) by MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
+ ([fe80::b15e:862f:adf7:5356%5]) with mapi id 15.20.5273.023; Tue, 24 May 2022
+ 13:28:34 +0000
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Sathvika Vasireddy <sv@linux.vnet.ibm.com>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "jpoimboe@redhat.com" <jpoimboe@redhat.com>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "mbenes@suse.cz" <mbenes@suse.cz>, "aik@ozlabs.ru" <aik@ozlabs.ru>,
+        "mpe@ellerman.id.au" <mpe@ellerman.id.au>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "naveen.n.rao@linux.vnet.ibm.com" <naveen.n.rao@linux.vnet.ibm.com>,
+        Sathvika Vasireddy <sv@linux.ibm.com>
+Subject: Re: [RFC PATCH 2/4] objtool: Enable objtool to run only on files with
+ ftrace enabled
+Thread-Topic: [RFC PATCH 2/4] objtool: Enable objtool to run only on files
+ with ftrace enabled
+Thread-Index: AQHYbs5kDECg5GS16kaacJPiXFfVO60tuxeAgAAgbICAACs0gA==
+Date:   Tue, 24 May 2022 13:28:34 +0000
+Message-ID: <ce4d2b3c-5cd9-d33a-648c-7f294e9eb94f@csgroup.eu>
+References: <20220523175548.922671-1-sv@linux.ibm.com>
+ <20220523175548.922671-3-sv@linux.ibm.com>
+ <89012c4c-e989-6092-d4f1-0dc4eca983f1@csgroup.eu>
+ <d28a9bf0-65ac-797c-3640-8af7e0beec33@linux.vnet.ibm.com>
+In-Reply-To: <d28a9bf0-65ac-797c-3640-8af7e0beec33@linux.vnet.ibm.com>
+Accept-Language: fr-FR, en-US
 Content-Language: en-US
-To:     "Serge E. Hallyn" <serge@hallyn.com>
-Cc:     linux-integrity@vger.kernel.org, zohar@linux.ibm.com,
-        christian.brauner@ubuntu.com, containers@lists.linux.dev,
-        dmitry.kasatkin@gmail.com, ebiederm@xmission.com,
-        krzysztof.struczynski@huawei.com, roberto.sassu@huawei.com,
-        mpeters@redhat.com, lhinds@redhat.com, lsturman@redhat.com,
-        puiterwi@redhat.com, jejb@linux.ibm.com, jamjoom@us.ibm.com,
-        linux-kernel@vger.kernel.org, paul@paul-moore.com, rgb@redhat.com,
-        linux-security-module@vger.kernel.org, jmorris@namei.org,
-        jpenumak@redhat.com, Christian Brauner <brauner@kernel.org>
-References: <20220420140633.753772-1-stefanb@linux.ibm.com>
- <20220420140633.753772-13-stefanb@linux.ibm.com>
- <20220522173844.GA24519@mail.hallyn.com>
-From:   Stefan Berger <stefanb@linux.ibm.com>
-In-Reply-To: <20220522173844.GA24519@mail.hallyn.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: 6NFAnCdZijNoZg9U7nT1qmCrXylN8GWD
-X-Proofpoint-GUID: D-cNVwma8oNMshAs7sKX_m1vlca8muQM
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-24_06,2022-05-23_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 adultscore=0
- mlxscore=0 spamscore=0 priorityscore=1501 malwarescore=0
- lowpriorityscore=0 suspectscore=0 phishscore=0 clxscore=1015
- mlxlogscore=999 impostorscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2202240000 definitions=main-2205240066
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=csgroup.eu;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 245c6ff2-a865-4bf3-4899-08da3d894d4d
+x-ms-traffictypediagnostic: PR1P264MB1664:EE_
+x-microsoft-antispam-prvs: <PR1P264MB1664BC09D85C481F8F07FAD7EDD79@PR1P264MB1664.FRAP264.PROD.OUTLOOK.COM>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: iZfSHLL6ch6r+Wuwt3DcxhTlmD2UQqLtrONMBZHonrvKwiDeu9TeT6tI3mzmF3Remau4zZpPuRRySdRyLGxpEQxHPWoxmhSqcWdSDw3yJEU56SItb9gUbDbpPDQsAp/6rHzVAGO0ic0+EHmLQtr2cXE10ztTfS8gS58butq+9hKnH24WJQviNHeZraQMkFViLeQCqmA94LLsx3bdOPCR4Y7fXbCxMGQqtb9ztIDqYfa+Xt3Y1wGFgvGDumoRhA8a0cS09Tw/xmzK0FlPTFwx/fSKsapTUs8rskZQuZtlzWD/u8AI3ZOFUMywKUPY5h06EOUBlhyefP60uj7KsmMeL//zJeo0Rddo2IYEaclxuEiLbzQrDeKfbNfjnJ74DwFilhXTA5wFxAy5vhF5Y9/dBI2/1qnjAo6z3aYGzk6GaGNQOh9hvm3xvJc6BJ2tzRnqGYhRSTXkoWbE/AUi24kwOQ0LpuSCvNw7PpD7Vkz7xs+cpAWNNaiA2RCiHjifwVkWNOGe/O9ZWrJwQ66SGALh+QU2bkiD/8a/tDObRv5B4r1cWkL2eqCWlxlt4Ne9/iFrRHw5xMyvFvmRSBpgz6aHVWP9ZC6h+t8K4UahEl+YD5TBtCymbJI5mPja02za0I/eGrDkOSvSPfPV83IewmLcEB3VZOivmoJKBtjZ++cVDllFXakjMYy3h09zdNPzs/Mp3uMp7WZPj7U/DJiYtw8seAiw7cSKUP0PSAOrQd+c+7OYgliqwSXtB+tCXJJZZM93huRzsKtshB0UGZ/GWNzezAmLTLovtqqfcMmwFSbBuy3nHXfSNXTKtLc+j4sdpKd+NpvU2CzubvIUpXR0XCcv/J9Ijig+6BzP89/rzR6sIk4=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(66946007)(71200400001)(66446008)(64756008)(26005)(36756003)(122000001)(66556008)(83380400001)(66476007)(4326008)(76116006)(8676002)(5660300002)(6512007)(91956017)(38070700005)(38100700002)(2616005)(316002)(110136005)(31686004)(966005)(6486002)(54906003)(86362001)(8936002)(6506007)(508600001)(66574015)(186003)(2906002)(7416002)(44832011)(53546011)(31696002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?VXR6ejQ3d3EvYjhNKzhyUTBMWTFTUXZ3VWtPVHMzdnBwUXlmdHpHNU9YNDBw?=
+ =?utf-8?B?OTF4N3loOHhNajlYZm0ycStNU1QwSWFiS2xiTEtmQXdZRkcvU2FYTnl1WkFX?=
+ =?utf-8?B?ZWRhK3Jic05pb1lncUlXL3NKWFdDVTRKR253a09vaHVRQlJ4ZVJhS0tSdDRW?=
+ =?utf-8?B?VldwUFJZR04vS3BXR2UyMi8wMzM1RHdSVjIxTkRkSGhjTlYyUkl6MXZ0YzF1?=
+ =?utf-8?B?dHN6c0Jud3c1L21XWmlVWm4xcitmd0U0alNEK1VhSHQ5MFpJTkp2Zm42RDA0?=
+ =?utf-8?B?aXVBblBlRlcyRUJiRzZCaFNXT3hLVmFjc0cyblI4SUw5VUZVMHlzV0VxamF4?=
+ =?utf-8?B?WlZETkcyMmxicitsS2xhK3dpT0dKVjV2dC9FcnZjUnI4aFpKbUpubmlKMm4w?=
+ =?utf-8?B?VDYrMDE3OXVNMTZaQndDUThLWEFGM1BYa1lKVmcvM0k5ajlWSTMzUDNkdnFH?=
+ =?utf-8?B?SDAveEp4MXUvbEY0N1A5dEpMN0UwVmJlZDBsMGJBOHpxSkJvK1BQOWhyb013?=
+ =?utf-8?B?ZXg5cWMwMEZDZE5KMmFQWStFdkNvWk1XVWU2SjFsN3pOajJlMzVUcnpQN1hM?=
+ =?utf-8?B?QXQrMnJFc2o1bVh1MXZoZjM1cGJkZVU4NWF0Tmo1bHBjMXgrTi80ZG1vTDJ2?=
+ =?utf-8?B?Y2Z4bGRhTmZxYWN3TWFRU3Rqd1hZTGZ4dW5zT1pZVjR0MDlkbUpvcEIxblFL?=
+ =?utf-8?B?VHJYRkZTTWwwdHhZZXZyRHNGRGdKV3FuOWduaHEvWkR6WGlKYkF0TGRlMVpG?=
+ =?utf-8?B?ay9ORkFoUEF3dko3ejZXc1BWekg3Vzh4Z2RqTjhDVzlPanVlRG1nZSs5U2hB?=
+ =?utf-8?B?WThVM0s4Q09rTW5KYXhaVTJqZmtFQlhsQ3RISkRrVkNHR05GVmRKMlpWWVR0?=
+ =?utf-8?B?SHdGcTVJQmY3UXAxT2NmNmpQMTc5c21TWDhqVjlEai95TVpsRS8xaWp3b0Ft?=
+ =?utf-8?B?YWJkOUVQaEYya2FKUGU0d0IwTFJHZW1UU3hCYU1SM2dZaTFDcVI5WDBYMDhv?=
+ =?utf-8?B?VUR0T3owNWFzRkdBYk1KNDBjZjVlRnQ4NVdoeXRsM1l0dm5JYmpFT1Ftckk1?=
+ =?utf-8?B?eFNNODVNM1RjVnJrRzJnWjhRVG1xYWR4bUsxbkNUV1JTTnpkR1RLZUNQZjQ3?=
+ =?utf-8?B?b1piaitZNHhnWnNPMW9PaWlISUZNV0NqVlJhaTUwTCt2OTRobWlzYUpJckRC?=
+ =?utf-8?B?cUdCTC9SaGZZTHdjekVjSjg3ZGxHazdXa1BuM1cwZWc4Q0dIQzZoaDFwaURZ?=
+ =?utf-8?B?SmFkMzk3SEY5ekRGWWh2bXlvVmVGQjdqRDk4NHFzbnE0VTZVanFOZWlLRXBD?=
+ =?utf-8?B?c1BqSXNHdXVIcVN6di9yb1VnQU1SUnZlb2Q5WG5LdUdIMDRCUVhEUVNvVjl1?=
+ =?utf-8?B?dzRvVHE2clprbmhQam9hZGpNM0RZK1R2MzcrdVFkNGNrRjEzUmt1ZG9objFz?=
+ =?utf-8?B?Z3FQcy9pbXRtV1I3bVdnQzFCN3Rrc1lZT1VQakJvL0FVcDJIQXgra1ZjN3po?=
+ =?utf-8?B?WWxabDJ3S3ZuNGsxWGtPNmsrQUg3MW1weHljRndIK1kxWm5mRjhLckpXU2dj?=
+ =?utf-8?B?alhpaS8wYUFBWDBwem41L1BjTmd5aDJiL3V4eEp1MGx5TTgrcXdHR2xqYVhL?=
+ =?utf-8?B?VFlqc05CK29DeFpZVk12VlVuTzA0TU5zOU43MHZXa0EzY1hocFVJcXV2ZVcw?=
+ =?utf-8?B?VE9JcHMxRUhNZFlUOVU1cG01UnB4ZzBWL2U3UTlQZGhJUm5KRm9yS2dyYlRy?=
+ =?utf-8?B?Zk5zN3JvV3RGUDFINmVOZkZoK0JuWGl0OEd1RDQ5WHRiNWRhTEx3WFFtR285?=
+ =?utf-8?B?RXlzRkZHSVNROUkxY2dDYWg5SnlpVVE4aHNWbmNYcG1FRW12TUNhYmtZWU54?=
+ =?utf-8?B?UlhmQXFFeExaY21CMDRhdW5yMk94UmRYWHo2TEVvTW9TMERLQWRKOG9mMk9X?=
+ =?utf-8?B?T2VybUJLaWdRYkxrcVBCK09QeEQzQU5mVHpVbGRCVW5qK04xbmZ5aXdQSERi?=
+ =?utf-8?B?dnpNalVuWGV3ekZUdlJ6SEZuNktkNTlQVlk5a0NTb1A3bmNPNkpRS0F1QVhw?=
+ =?utf-8?B?cTJiSVhHOGw3ZkdxT1F1SVZwL3E5SkJZSHNRN0FiZHoxSnh2T1pBbis1WktY?=
+ =?utf-8?B?dmJZc0VyRmZOT2N5QmdMV2Z1MFlncytsS3NYWVQ0VTgwZFQyNlRoRjRBSWgv?=
+ =?utf-8?B?aFhHK2toenorTWYzb2k0MjE1NStOVS9aa0tEeS80ZExraWg3NGtEZU1qVkUz?=
+ =?utf-8?B?MUNFUTlWRVIwazhWQkgzRys3bTFDa1Jvb3NaQmNRQXh3dHhPS3dkQk5qb0dQ?=
+ =?utf-8?B?elV3MGdYV0pmWUdGSk42aGNqbWRRRUJab3UzenBEUGt5dTRDVVh0MTNZcWFR?=
+ =?utf-8?Q?39ZZqNtogpUYSP+Ajp48Fc48mkndggJvSzaTq?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <6EB17579976E1B489494DED33B913012@FRAP264.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: csgroup.eu
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: 245c6ff2-a865-4bf3-4899-08da3d894d4d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 24 May 2022 13:28:34.2914
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 9914def7-b676-4fda-8815-5d49fb3b45c8
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: +KwB2xNbLvsuVPATrNqHjUGijOoOc0DXEtgQEcV37P8mWMk1m/V+pN2PEH3/TVutkVcwGPMkL8XzD+kkNbO4M4lmk/tqxyqoe8AyACOcEXk=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PR1P264MB1664
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 5/22/22 13:38, Serge E. Hallyn wrote:
-> On Wed, Apr 20, 2022 at 10:06:19AM -0400, Stefan Berger wrote:
->> Only accept AUDIT rules for non-init_ima_ns namespaces for now. Reject
-> 
-> This sentence gives me trouble - i keep thinking you mean that you'll
-> reject AUDIT rules for init_ima_ns :)  Can you rephrase it as something
-> like
-> 
-> For non-init_ima_ns namespaces, only accept AUDIT rules for now.
-> 
-> :)
-> 
->> all rules that require support for measuring, appraisal, and hashing.
->
-
-I kept the title of the patch but the text now states:
-
-For non-init_ima_ns namespaces, only accept AUDIT rules for now. Reject
-all rules that require support for measuring, appraisal, and hashing.
-
-
-
->
->> Signed-off-by: Stefan Berger <stefanb@linux.ibm.com>
->> Acked-by: Christian Brauner <brauner@kernel.org>
->> Reviewed-by: Mimi Zohar <zohar@linux.ibm.com>
->>
->> ---
->> v9:
->>    - Jump to err_audit when unsupported rules are detected
->> ---
->>   security/integrity/ima/ima_policy.c | 12 ++++++++++++
->>   1 file changed, 12 insertions(+)
->>
->> diff --git a/security/integrity/ima/ima_policy.c b/security/integrity/ima/ima_policy.c
->> index 59e4ae5a6361..45a997709200 100644
->> --- a/security/integrity/ima/ima_policy.c
->> +++ b/security/integrity/ima/ima_policy.c
->> @@ -1812,6 +1812,17 @@ static int ima_parse_rule(struct ima_namespace *ns,
->>   			result = -EINVAL;
->>   			break;
->>   		}
->> +
->> +		/* IMA namespace only accepts AUDIT rules */
->> +		if (ns != &init_ima_ns && result == 0) {
->> +			switch (entry->action) {
->> +			case MEASURE:
->> +			case APPRAISE:
->> +			case HASH:
-> 
-> So... what about DONT_MEASURE and DONT_APPRAISE?
-
-They don't cause IMA to do anything that is not supported at this point 
-so I let them pass. If you set these you still don't get a measurements 
-or appraisal and that's good at this point..
-
-> 
->> +				result = -EINVAL;
->> +				goto err_audit;
->> +			}
->> +		}
->>   	}
->>   	if (!result && !ima_validate_rule(entry))
->>   		result = -EINVAL;
->> @@ -1824,6 +1835,7 @@ static int ima_parse_rule(struct ima_namespace *ns,
->>   		check_template_modsig(template_desc);
->>   	}
->>   
->> +err_audit:
->>   	audit_log_format(ab, "res=%d", !result);
->>   	audit_log_end(ab);
->>   	return result;
->> -- 
->> 2.34.1
+SGkgU2F0aHZpa2ENCg0KTGUgMjQvMDUvMjAyMiDDoCAxMjo1MywgU2F0aHZpa2EgVmFzaXJlZGR5
+IGEgw6ljcml0wqA6DQo+IFtWb3VzIG5lIHJlY2V2ZXogcGFzIHNvdXZlbnQgZGUgY291cnJpZXJz
+IGRlIGxhIHBhcnQgZGUgDQo+IHN2QGxpbnV4LnZuZXQuaWJtLmNvbS4gRMOpY291dnJleiBwb3Vy
+cXVvaSBjZWxhIHBldXQgw6p0cmUgaW1wb3J0YW50IMOgIA0KPiBs4oCZYWRyZXNzZSBodHRwczov
+L2FrYS5tcy9MZWFybkFib3V0U2VuZGVySWRlbnRpZmljYXRpb24uXQ0KPiANCj4gSGkgQ2hyaXN0
+b3BoZSwNCj4gDQo+IE9uIDI0LzA1LzIyIDE0OjI3LCBDaHJpc3RvcGhlIExlcm95IHdyb3RlOg0K
+Pj4NCj4+IExlIDIzLzA1LzIwMjIgw6AgMTk6NTUsIFNhdGh2aWthIFZhc2lyZWRkeSBhIMOpY3Jp
+dCA6DQo+Pj4gVGhpcyBwYXRjaCBtYWtlcyBzdXJlIG9ianRvb2wgcnVucyBvbmx5IG9uIHRoZSBv
+YmplY3QgZmlsZXMNCj4+PiB0aGF0IGhhdmUgZnRyYWNlIGVuYWJsZWQsIGluc3RlYWQgb2YgcnVu
+bmluZyBvbiBhbGwgdGhlIG9iamVjdA0KPj4+IGZpbGVzLg0KPj4gV2h5IGRvIHRoYXQgPw0KPiBU
+aGlzIHdhcyBkb25lIHRvIGFkZHJlc3MgdGhlIGlzc3VlIGRpc2N1c3NlZCBoZXJlOg0KPiBodHRw
+czovL2xvcmUua2VybmVsLm9yZy9hbGwvYjA2YmI5YmMtMjJkMS1hY2NlLWZlNjgtYzdjNGNiN2Mx
+NWI1QGNzZ3JvdXAuZXUvIA0KDQpBaCA/IE9rLg0KDQpCdXQgaG93IGRvZXMgeDg2IGRvIGl0IGF0
+IHRoZSBtb21lbnQgPyBTaG91bGRuJ3Qgd2UgdXNlIA0KT0JKRUNUX0ZJTEVTX05PTl9TVEFOREFS
+RCBpbnN0ZWFkID8NCg0KDQo+IA0KPiANCj4+DQo+PiBXaGF0IGFib3V0IHN0YXRpY19jYWxscyA/
+IFRoZXJlIG1heSBiZSBmaWxlcyB3aXRob3V0IGZ0cmFjZSBidXQgd2l0aA0KPj4gc3RhdGljIGNh
+bGxzLg0KPiBZZXMsIHRoaXMgcHJldmVudHMgb2JqdG9vbCBmcm9tIHJ1bm5pbmcgb24gdGhvc2Ug
+ZmlsZXMuIFdlIGNhbg0KPiByZXN0cmljdCB0aGlzIGNoYW5nZSB0byBGVFJBQ0VfTUNPVU5UX1VT
+RV9PQkpUT09MDQo+Pg0KPj4gQnkgdGhlIHdheSwgaXQgd291bGQgYmUgbmljZSBpZiB3ZSBjb3Vs
+ZCB1c2UgaXQgb25seSBvbiBDIGZpbGVzLg0KPj4gSSBnZXQgdGhlIGZvbGxvd2luZyBlcnJvcnMg
+Zm9yIEFTTSBmaWxlczoNCj4+DQo+PiBhcmNoL3Bvd2VycGMva2VybmVsL2VudHJ5XzMyLm86IHdh
+cm5pbmc6IG9ianRvb2w6IC50ZXh0KzB4MWI0Og0KPj4gdW5hbm5vdGF0ZWQgaW50cmEtZnVuY3Rp
+b24gY2FsbA0KPiANCj4gSSdtIGxvb2tpbmcgaW50byB3YXlzIHRvIGFkZHJlc3MgdGhpcy4NCj4g
+DQoNCk5pY2UuDQoNCkNocmlzdG9waGU=
