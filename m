@@ -2,99 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 583E6C43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 07:09:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00E25C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 07:10:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234755AbiEXHJ1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 03:09:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34490 "EHLO
+        id S234427AbiEXHKK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 03:10:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234622AbiEXHJW (ORCPT
+        with ESMTP id S229886AbiEXHKH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 03:09:22 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADAB891581
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 00:09:19 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id u3so24340085wrg.3
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 00:09:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=pCN2Ft9e801Kz2zGVwTqNShXZsBm3Xuy/IzHCpqum90=;
-        b=QHS3fNIZlm9bNSdTzgh3fGMY/SPIw+dw3SriYWos+fB49G2bs/sCPCHpL2rfit0yrQ
-         YwuHcqsymJf3OrCGb/axRIsIZP9hbzgtbKtuAwBpuQ1LylnCAft14+dUEN4wfu3eqY7C
-         fJdzIi9VW+vHTqTLAbomJeRQg2qXqp0y0WztBfFDT4nDQX48VwZQjUwy8xj3XKnV37Xz
-         QcOEn5MrXG2n8rs9FRjuD9MtJIG6DEzZx+C4yRd3QYXbmpfNzKVuKRHK3hrAi0J+c5qo
-         oeE88/NDbNcE+QSTal+ZGOiy4ZbnnJ0lyCepesGo5n/8RJtnVcfuNbkBMVQ/Whf7l6gf
-         MYZQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=pCN2Ft9e801Kz2zGVwTqNShXZsBm3Xuy/IzHCpqum90=;
-        b=R9Kbn3dEZISw1CQB73cDFGs+cAsFtiBz6SIqBED6lEVpzOxPhA+ZLe4kOJy1ofCG+X
-         Zh59xIJoLQfMk+45nQ+Va9KHQruYWONpDncAjG0Tv3sdinv8xEGceEaw8Aa+MXiaHGkF
-         2s3VeRAxPQgsk/dkvUKPWJBEhukSTtf2Y/S1HbK8cloDtmomUTOgf4peDi2EqO/0HrM8
-         2VoRKg0VlNE606+/1YcjByZCkRWyH0sFMkE1PP77br+2U0+zGGp0t3DOFHmjJ09Cpa18
-         X2sah//vksGiMHlyf//M5QrM5ys3FLLgG4T9dkOnw1bkvxqxleTwnmeYKlwIcH5TgHVe
-         gL1A==
-X-Gm-Message-State: AOAM533y4tI/e6n08qa6dO3Ejxe04TVPRK5vOz4DELnPeYvdpAVthtO/
-        JvaN+cxYuYAwLLfqAVt1TqRKDw==
-X-Google-Smtp-Source: ABdhPJwAIeikzYSP7x3rEzUOCiB/3OcDcsJtJa8W2504qGXi0ukRqtYqiqggrZ/NqjEteuINAg8jeA==
-X-Received: by 2002:a5d:458a:0:b0:20d:a92:73dd with SMTP id p10-20020a5d458a000000b0020d0a9273ddmr22098582wrq.170.1653376158275;
-        Tue, 24 May 2022 00:09:18 -0700 (PDT)
-Received: from localhost ([2a01:cb19:85e6:1900:de85:21d6:6f2:c7e3])
-        by smtp.gmail.com with ESMTPSA id m6-20020adfa3c6000000b0020fc4cd81f6sm9420673wrb.60.2022.05.24.00.09.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 May 2022 00:09:17 -0700 (PDT)
-From:   Mattijs Korpershoek <mkorpershoek@baylibre.com>
-To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        linux-input@vger.kernel.org
-Cc:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] Input: mtk-pmic-keys - allow compiling with COMPILE_TEST
-In-Reply-To: <YowG7BVsJTNd0ELi@google.com>
-References: <YowG7BVsJTNd0ELi@google.com>
-Date:   Tue, 24 May 2022 09:09:17 +0200
-Message-ID: <87zgj7e7aa.fsf@baylibre.com>
+        Tue, 24 May 2022 03:10:07 -0400
+Received: from baptiste.telenet-ops.be (baptiste.telenet-ops.be [IPv6:2a02:1800:120:4::f00:13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC4C885ED2
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 00:10:05 -0700 (PDT)
+Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed30:4593:272c:6293:e2cc])
+        by baptiste.telenet-ops.be with bizsmtp
+        id aXA22700g2jQL2A01XA20k; Tue, 24 May 2022 09:10:03 +0200
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1ntOg6-001Rds-Ij; Tue, 24 May 2022 09:10:02 +0200
+Received: from geert by rox.of.borg with local (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1ntORN-0046tw-LZ; Tue, 24 May 2022 08:54:49 +0200
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+To:     Ard Biesheuvel <ardb@kernel.org>,
+        Javier Martinez Canillas <javierm@redhat.com>
+Cc:     linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: [PATCH] efi: EFI_DISABLE_RUNTIME should depend on EFI
+Date:   Tue, 24 May 2022 08:54:48 +0200
+Message-Id: <c7ccee444dbc50a61a703cabeffe28e73de4cda7.1653375268.git.geert@linux-m68k.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On lun., mai 23, 2022 at 15:13, Dmitry Torokhov <dmitry.torokhov@gmail.com> wrote:
+The EFI_DISABLE_RUNTIME config option controls the use of Extensible
+Firmware Interface (EFI) runtime services, which matters only if EFI
+support is enabled.
 
-> There are no hard architecture dependencies in the driver, so to improve
-> compile test coverage let's enable the driver when COMPILE_TEST is
-> selected.
->
-> Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Hence add a dependency on EFI, to prevent asking the user about this
+control knob when configuring a kernel with EFI support.
 
-Reviewed-by: Mattijs Korpershoek <mkorpershoek@baylibre.com>
+Fixes: a031651ff2144a3d ("efi: Allow to enable EFI runtime services by default on RT")
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+---
+ drivers/firmware/efi/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-> ---
->  drivers/input/keyboard/Kconfig | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/input/keyboard/Kconfig b/drivers/input/keyboard/Kconfig
-> index 4ea79db8f134..a20ee693b22b 100644
-> --- a/drivers/input/keyboard/Kconfig
-> +++ b/drivers/input/keyboard/Kconfig
-> @@ -795,7 +795,7 @@ config KEYBOARD_MT6779
->  
->  config KEYBOARD_MTK_PMIC
->  	tristate "MediaTek PMIC keys support"
-> -	depends on MFD_MT6397
-> +	depends on MFD_MT6397 || COMPILE_TEST
->  	help
->  	  Say Y here if you want to use the pmic keys (powerkey/homekey).
->  
-> -- 
-> 2.36.1.124.g0e6072fb45-goog
->
->
-> -- 
-> Dmitry
+diff --git a/drivers/firmware/efi/Kconfig b/drivers/firmware/efi/Kconfig
+index 4720ba98cec312e7..ff6e7bfa8355cfc2 100644
+--- a/drivers/firmware/efi/Kconfig
++++ b/drivers/firmware/efi/Kconfig
+@@ -299,6 +299,7 @@ config EFI_CUSTOM_SSDT_OVERLAYS
+ 
+ config EFI_DISABLE_RUNTIME
+ 	bool "Disable EFI runtime services support by default"
++	depends on EFI
+ 	default y if PREEMPT_RT
+ 	help
+ 	  Allow to disable the EFI runtime services support by default. This can
+-- 
+2.25.1
+
