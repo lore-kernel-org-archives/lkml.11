@@ -2,105 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72243C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 07:59:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB877C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 08:01:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235665AbiEXH7o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 03:59:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44400 "EHLO
+        id S235712AbiEXIBs convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 04:01:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235644AbiEXH64 (ORCPT
+        with ESMTP id S235747AbiEXIB1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 03:58:56 -0400
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D878D87A30
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 00:58:54 -0700 (PDT)
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com [209.85.208.71])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 9DC703F1D3
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 07:58:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1653379133;
-        bh=YkatYCWfKUD+dq0NatM3KdWafpq2eW34NVcfW4Rx/e4=;
-        h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-         MIME-Version;
-        b=DDfDtfBIlO6PaYlF/P/fyMTHce1sJrx+zD6csTuBFECfJBjLhXHYujYBkNWPLqmnp
-         876WvEjgCNC8P+IXvefpMSy6jCStzfnumAn5g67b4BwujFllJ1wvx6XBjR24Zj9EYw
-         7WdoDk8xYQG7Ni8dPiYBfkna3xQkCVb/bdtaEA57ou0M1rAVYWChgtBXv3oBJa9Y6z
-         VBctrMtjGHCCQa9Sr/g5fmMgrdQdOV6UJSTBgiBizf1TJrnNoBklQaOX7B3HvSyzsR
-         azpNMgt9yLShOtZQps8k1bY8ikJuCOsyy+exSrwx92P2yb76GSYMlqbla6CrIfvejO
-         3v6HRKMbwBkEQ==
-Received: by mail-ed1-f71.google.com with SMTP id f20-20020a50d554000000b0042abba35e60so12238754edj.15
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 00:58:53 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=YkatYCWfKUD+dq0NatM3KdWafpq2eW34NVcfW4Rx/e4=;
-        b=MTEslN6jlMmagtyBT/cqqiUbtTQOgMPz/zpllDOriFdOmOHNS7kF+JUPrMKL6H9qF3
-         YD04tj5FQ6PLNolGa7bRVzoFrPtgnsAyYp5TCHTiHaYgPDNrGjy2S0sqQ2IL7l25Qq7v
-         PGjWqRqMcxFRzpSs8OkPByuygJx+KjYkwpjRzRe6IGFk1QvCynJKArQRf0Km1kqe2TZt
-         17tB1aNeZEtXoh/PSicawgRPJaupKdLZldPo7asd8z7LBjGfeAmm7/mR+m9uIkNfSVne
-         WCeBiH0xigtBpG5k+CxZO52xbloAm3uW/tk+vmB270J5MU4fyaHeAG8o5BnMFztDPw6i
-         EgVw==
-X-Gm-Message-State: AOAM5312c25rvwDylMGM4ZVThLH2fZxlqRN68p/YquH7FmXqX4GZtl9W
-        qPsZQ7HPisZt2W0BuIGTokMBoL3iWhmXqbKe4iyS29qb0qlcCl8KejSsJFAShoBQo5FFR+yphe4
-        D+Pq6PtBjK9/vdKuKv6IvuT3MUofdZW++bsuqu5AIZw==
-X-Received: by 2002:a17:907:948c:b0:6f5:183f:eb6 with SMTP id dm12-20020a170907948c00b006f5183f0eb6mr22333659ejc.112.1653379133411;
-        Tue, 24 May 2022 00:58:53 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJycn4+bffJu0IMZGuyBrDA4LtHrGYk2owpnSRt1Zex59BQpLb1KRtxI2BxfHOZVe908GghDIw==
-X-Received: by 2002:a17:907:948c:b0:6f5:183f:eb6 with SMTP id dm12-20020a170907948c00b006f5183f0eb6mr22333652ejc.112.1653379133273;
-        Tue, 24 May 2022 00:58:53 -0700 (PDT)
-Received: from gollum.fritz.box ([194.191.244.86])
-        by smtp.gmail.com with ESMTPSA id r17-20020a056402019100b0042abf2affebsm9142442edv.67.2022.05.24.00.58.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 May 2022 00:58:52 -0700 (PDT)
-From:   Juerg Haefliger <juerg.haefliger@canonical.com>
-X-Google-Original-From: Juerg Haefliger <juergh@canonical.com>
-To:     geert@linux-m68k.org, linux-m68k@lists.linux-m68k.org
-Cc:     linux-kernel@vger.kernel.org,
-        Juerg Haefliger <juergh@canonical.com>
-Subject: [PATCH 2/3] m68k: Kconfig.debug: Replace single quotes
-Date:   Tue, 24 May 2022 09:58:47 +0200
-Message-Id: <20220524075848.21684-3-juergh@canonical.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220524075848.21684-1-juergh@canonical.com>
-References: <20220524075848.21684-1-juergh@canonical.com>
+        Tue, 24 May 2022 04:01:27 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ABEF112D35
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 01:01:22 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-35-ppu1gej3NzGDz7Rk5zJVNA-1; Tue, 24 May 2022 09:01:19 +0100
+X-MC-Unique: ppu1gej3NzGDz7Rk5zJVNA-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.36; Tue, 24 May 2022 09:01:18 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.036; Tue, 24 May 2022 09:01:18 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Oleksandr Natalenko' <oleksandr@natalenko.name>,
+        Neal Cardwell <ncardwell@google.com>
+CC:     Yuchung Cheng <ycheng@google.com>,
+        Yousuk Seung <ysseung@google.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        Adithya Abraham Philip <abrahamphilip@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Paolo Abeni" <pabeni@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Konstantin Demin" <rockdrilla@gmail.com>
+Subject: RE: [RFC] tcp_bbr2: use correct 64-bit division
+Thread-Topic: [RFC] tcp_bbr2: use correct 64-bit division
+Thread-Index: AQHYbityIzPXZ3B6u0uaGlDnmUxgKq0tq8zw
+Date:   Tue, 24 May 2022 08:01:18 +0000
+Message-ID: <4bd84c983e77486fbc94dfa2a167afaa@AcuMS.aculab.com>
+References: <4740526.31r3eYUQgx@natalenko.name>
+In-Reply-To: <4740526.31r3eYUQgx@natalenko.name>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Replace single quotes in strings with double quotes to match the majority
-of the rest of the kernel's Kconfig files.
+From: Oleksandr Natalenko
+> Sent: 22 May 2022 23:30
+> To: Neal Cardwell <ncardwell@google.com>
+> 
+> Hello Neal.
+> 
+> It was reported to me [1] by Konstantin (in Cc) that BBRv2 code suffers from integer division issue on
+> 32 bit systems.
 
-Signed-off-by: Juerg Haefliger <juergh@canonical.com>
----
- arch/m68k/Kconfig.debug | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+Do any of these divisions ever actually have 64bit operands?
+Even on x86-64 64bit divide is significantly slower than 32bit divide.
 
-diff --git a/arch/m68k/Kconfig.debug b/arch/m68k/Kconfig.debug
-index 11b306bdd788..465e28be0ce4 100644
---- a/arch/m68k/Kconfig.debug
-+++ b/arch/m68k/Kconfig.debug
-@@ -1,11 +1,11 @@
- # SPDX-License-Identifier: GPL-2.0
- 
- config BOOTPARAM
--	bool 'Compiled-in Kernel Boot Parameter'
-+	bool "Compiled-in Kernel Boot Parameter"
- 
- config BOOTPARAM_STRING
--	string 'Kernel Boot Parameter'
--	default 'console=ttyS0,19200'
-+	string "Kernel Boot Parameter"
-+	default "console=ttyS0,19200"
- 	depends on BOOTPARAM
- 
- config EARLY_PRINTK
--- 
-2.32.0
+It is quite clear that x * 8 / 1000 is the same as x / (1000 / 8).
+So promoting to 64bit cannot be needed.
+
+	David
+
+> 
+> Konstantin suggested a solution available in the same linked merge request and copy-pasted by me below
+> for your convenience:
+> 
+> ```
+> diff --git a/net/ipv4/tcp_bbr.c b/net/ipv4/tcp_bbr.c
+> index 664c9e119787..fd3f89e3a8a6 100644
+> --- a/net/ipv4/tcp_bbr.c
+> +++ b/net/ipv4/tcp_bbr.c
+> @@ -312,7 +312,7 @@ static u32 bbr_tso_segs_generic(struct sock *sk, unsigned int mss_now,
+>  	bytes = sk->sk_pacing_rate >> sk->sk_pacing_shift;
+> 
+>  	bytes = min_t(u32, bytes, gso_max_size - 1 - MAX_TCP_HEADER);
+> -	segs = max_t(u32, bytes / mss_now, bbr_min_tso_segs(sk));
+> +	segs = max_t(u32, div_u64(bytes, mss_now), bbr_min_tso_segs(sk));
+>  	return segs;
+>  }
+> 
+> diff --git a/net/ipv4/tcp_bbr2.c b/net/ipv4/tcp_bbr2.c
+> index fa49e17c47ca..488429f0f3d0 100644
+> --- a/net/ipv4/tcp_bbr2.c
+> +++ b/net/ipv4/tcp_bbr2.c
+> @@ -588,7 +588,7 @@ static void bbr_debug(struct sock *sk, u32 acked,
+>  		 bbr_rate_kbps(sk, bbr_max_bw(sk)), /* bw: max bw */
+>  		 0ULL,				    /* lb: [obsolete] */
+>  		 0ULL,				    /* ib: [obsolete] */
+> -		 (u64)sk->sk_pacing_rate * 8 / 1000,
+> +		 div_u64((u64)sk->sk_pacing_rate * 8, 1000),
+>  		 acked,
+>  		 tcp_packets_in_flight(tp),
+>  		 rs->is_ack_delayed ? 'd' : '.',
+> @@ -698,7 +698,7 @@ static u32 bbr_tso_segs_generic(struct sock *sk, unsigned int mss_now,
+>  	}
+> 
+>  	bytes = min_t(u32, bytes, gso_max_size - 1 - MAX_TCP_HEADER);
+> -	segs = max_t(u32, bytes / mss_now, bbr_min_tso_segs(sk));
+> +	segs = max_t(u32, div_u64(bytes, mss_now), bbr_min_tso_segs(sk));
+>  	return segs;
+>  }
+> ```
+> 
+> Could you please evaluate this report and check whether it is correct, and also check whether the
+> suggested patch is acceptable?
+> 
+> Thanks.
+> 
+> [1] https://gitlab.com/post-factum/pf-kernel/-/merge_requests/6
+> 
+> --
+> Oleksandr Natalenko (post-factum)
+> 
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
