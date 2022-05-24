@@ -2,57 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EDCCC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 18:05:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2B0CC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 18:07:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240127AbiEXSFf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 14:05:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43154 "EHLO
+        id S240151AbiEXSHO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 14:07:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232721AbiEXSFa (ORCPT
+        with ESMTP id S240131AbiEXSHM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 14:05:30 -0400
-Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5642E1FCEE
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 11:05:28 -0700 (PDT)
-Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
-        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 24OHxu8g026332;
-        Tue, 24 May 2022 12:59:56 -0500
-Received: (from segher@localhost)
-        by gate.crashing.org (8.14.1/8.14.1/Submit) id 24OHxtwj026331;
-        Tue, 24 May 2022 12:59:55 -0500
-X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
-Date:   Tue, 24 May 2022 12:59:55 -0500
-From:   Segher Boessenkool <segher@kernel.crashing.org>
-To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
-Cc:     Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] powerpc: e500: Fix compilation with gcc e500 compiler
-Message-ID: <20220524175955.GI25951@gate.crashing.org>
-References: <20220524093939.30927-1-pali@kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+        Tue, 24 May 2022 14:07:12 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E01FE6AA73;
+        Tue, 24 May 2022 11:07:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653415631; x=1684951631;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=CKeS45IE/MpZvn0nyHNUsJygS/BGm2jLP5dhifZsips=;
+  b=kAmDEIJZwNZM0fjbJnuISS3AvKEzNFDQADJq2GDM8Ism4nVSs4OOuiqJ
+   bj5vUVcS3ZANi7oBKEHJuV3mgkjGu5yrF1LNsaLk9R6DVz3sydNAQpKb2
+   VcxVtThZe3s2zfXdstPdniJul2XJ+jylXQWMR9EIgoBirJOQkbaND2X70
+   kqZjDNE8gvM2m0dwa6YwG4mBBmr1gAzgvGbXZv+bT5u6xHIIsCBAkERrg
+   EiMjVcMU17yiQxuRYVBBwqQ3a54H9ioQDKOgJebVsN5ZgAwgJg2sSQaHj
+   /q9MTqVRg0jCdj4Wfk9ft2l31NOLLw2B6FrA8q6L4FZkvnN5z1kk2P4xl
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10357"; a="336670078"
+X-IronPort-AV: E=Sophos;i="5.91,248,1647327600"; 
+   d="scan'208";a="336670078"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 May 2022 11:07:10 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,248,1647327600"; 
+   d="scan'208";a="642044509"
+Received: from lkp-server01.sh.intel.com (HELO db63a1be7222) ([10.239.97.150])
+  by fmsmga004.fm.intel.com with ESMTP; 24 May 2022 11:07:05 -0700
+Received: from kbuild by db63a1be7222 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1ntYvx-0002KB-0m;
+        Tue, 24 May 2022 18:07:05 +0000
+Date:   Wed, 25 May 2022 02:06:29 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     longli@linuxonhyperv.com, "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Leon Romanovsky <leon@kernel.org>,
+        Ajay Sharma <sharmaajay@microsoft.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        netdev@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
+        Long Li <longli@microsoft.com>
+Subject: Re: [Patch v2 12/12] RDMA/mana_ib: Add a driver for Microsoft Azure
+ Network Adapter
+Message-ID: <202205250235.eGFUDpu1-lkp@intel.com>
+References: <1653382572-14788-13-git-send-email-longli@linuxonhyperv.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220524093939.30927-1-pali@kernel.org>
-User-Agent: Mutt/1.4.2.3i
+In-Reply-To: <1653382572-14788-13-git-send-email-longli@linuxonhyperv.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi!
+Hi,
 
-On Tue, May 24, 2022 at 11:39:39AM +0200, Pali Rohár wrote:
-> gcc e500 compiler does not support -mcpu=powerpc option. When it is
-> specified then gcc throws compile error:
-> 
->   gcc: error: unrecognized argument in option ‘-mcpu=powerpc’
->   gcc: note: valid arguments to ‘-mcpu=’ are: 8540 8548 native
+I love your patch! Yet something to improve:
 
-What?  Are you using some modified version of GCC, perhaps?  No version
-of GCC that isn't hamstrung can have this output.
+[auto build test ERROR on linus/master]
+[also build test ERROR on v5.18 next-20220524]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
+url:    https://github.com/intel-lab-lkp/linux/commits/longli-linuxonhyperv-com/Introduce-Microsoft-Azure-Network-Adapter-MANA-RDMA-driver/20220524-165958
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 143a6252e1b8ab424b4b293512a97cca7295c182
+config: i386-randconfig-a013 (https://download.01.org/0day-ci/archive/20220525/202205250235.eGFUDpu1-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 10c9ecce9f6096e18222a331c5e7d085bd813f75)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/e448735b8bdeab86ad3736ed37b5539bc2af2681
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review longli-linuxonhyperv-com/Introduce-Microsoft-Azure-Network-Adapter-MANA-RDMA-driver/20220524-165958
+        git checkout e448735b8bdeab86ad3736ed37b5539bc2af2681
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
 
-Segher
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   In file included from <built-in>:1:
+>> ./usr/include/rdma/mana-abi.h:12:10: fatal error: 'net/mana/mana.h' file not found
+   #include <net/mana/mana.h>
+            ^~~~~~~~~~~~~~~~~
+   1 error generated.
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
