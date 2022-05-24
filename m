@@ -2,84 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92B4BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 18:58:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1797C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 18:59:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240513AbiEXS6P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 14:58:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52388 "EHLO
+        id S240518AbiEXS7T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 14:59:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238576AbiEXS6N (ORCPT
+        with ESMTP id S233193AbiEXS7Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 14:58:13 -0400
-Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 514075B3C6
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 11:58:12 -0700 (PDT)
-Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
-        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 24OIqnf7028066;
-        Tue, 24 May 2022 13:52:49 -0500
-Received: (from segher@localhost)
-        by gate.crashing.org (8.14.1/8.14.1/Submit) id 24OIqmBx028065;
-        Tue, 24 May 2022 13:52:48 -0500
-X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
-Date:   Tue, 24 May 2022 13:52:47 -0500
-From:   Segher Boessenkool <segher@kernel.crashing.org>
-To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
-Cc:     Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] powerpc: e500: Fix compilation with gcc e500 compiler
-Message-ID: <20220524185247.GK25951@gate.crashing.org>
-References: <20220524093939.30927-1-pali@kernel.org> <20220524175955.GI25951@gate.crashing.org> <20220524181255.bmszzxmbwzv7zed7@pali>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220524181255.bmszzxmbwzv7zed7@pali>
-User-Agent: Mutt/1.4.2.3i
+        Tue, 24 May 2022 14:59:16 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 197AB5B3E8
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 11:59:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653418754;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=/u3XlUG6KtQr1BQPpeDQC4OLmlAGTwSNLNWZkdYSkog=;
+        b=YfICYk1DtlgD5jQRw+BhJIfe4ve8rvI87YHCO9ZkdHxoUqiWfo7t7BI1nCWNNGn8l3jBul
+        pTOH0RV7onGljkYVZYO9ze2M7skLkS159PQb/yEfPrGfhjHhFjEdwC8q5i9rv/Vuwv17Cj
+        8pnj7q51Y8wNYptFE3S1EGJMxJ9je80=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-144-tC-OfNboMlCRdW6ksfwmtA-1; Tue, 24 May 2022 14:59:13 -0400
+X-MC-Unique: tC-OfNboMlCRdW6ksfwmtA-1
+Received: by mail-wm1-f72.google.com with SMTP id n25-20020a05600c3b9900b0039733081b4dso1635147wms.7
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 11:59:12 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=/u3XlUG6KtQr1BQPpeDQC4OLmlAGTwSNLNWZkdYSkog=;
+        b=n7DVlg1jFiRxnD7K0jTGkVu+I0QYLoR0xcrDErFZPvqKUdBTAp2i5EuzucYaBtlRtW
+         67YJnRlQymuzkVgVHLfIKdgx3ds24vjWn2RzoXXQboHvu0wGtFqxSz1k9otTFQKLtVPN
+         uLjUwxyyRp4ay5+dKCvUAjCY/RgEXSMljfgzwHAa5S9mE0l02YJf1O9J4egnmmOA+Pyp
+         H98TdMMVcXAi8sGOVS4Sf/T7RFGSQL4DSCmcSmjPDeM2+2a99LnThXl1g3FXo1Z3Vgzy
+         fhkuYFADYLFQcoAWvAkJ+RmFuwOOA/6W3KiM5AZRic7ogCQZufA8UmFKbtUXNNPfDngs
+         ZiJQ==
+X-Gm-Message-State: AOAM532Ka+RQdWK9+B5vQZpx5Hut7098IxGZnHe40fMw9TQM/QRzdF6O
+        m10bNpghESkHc35sEamHSTelXvX/KV2mhrImJB3UJxHZVKV2a5duc+GKKsFuZAVczyFkqf9q+T+
+        xOyjfELDSPW+c2jy1mqu0LLkR
+X-Received: by 2002:adf:c80a:0:b0:20c:ffa0:6a3 with SMTP id d10-20020adfc80a000000b0020cffa006a3mr23572796wrh.360.1653418751819;
+        Tue, 24 May 2022 11:59:11 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyGSz2pcp7eL3O58tziWOYGbUj4OEBI4+pd8yfPiv1mrR1trcb64B+iGECL8KJSWE+HJH27zw==
+X-Received: by 2002:adf:c80a:0:b0:20c:ffa0:6a3 with SMTP id d10-20020adfc80a000000b0020cffa006a3mr23572784wrh.360.1653418751530;
+        Tue, 24 May 2022 11:59:11 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c70a:5200:b78b:b654:3bbe:992? (p200300cbc70a5200b78bb6543bbe0992.dip0.t-ipconnect.de. [2003:cb:c70a:5200:b78b:b654:3bbe:992])
+        by smtp.gmail.com with ESMTPSA id r15-20020a056000014f00b0020e609dd274sm187544wrx.76.2022.05.24.11.59.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 24 May 2022 11:59:10 -0700 (PDT)
+Message-ID: <68a4a96b-9c66-6509-e75d-b1bea6cd55d1@redhat.com>
+Date:   Tue, 24 May 2022 20:59:09 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH 0/3] recover hardware corrupted page by virtio balloon
+Content-Language: en-US
+To:     zhenwei pi <pizhenwei@bytedance.com>, akpm@linux-foundation.org,
+        naoya.horiguchi@nec.com, mst@redhat.com
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        jasowang@redhat.com, virtualization@lists.linux-foundation.org,
+        pbonzini@redhat.com, peterx@redhat.com, qemu-devel@nongnu.org
+References: <20220520070648.1794132-1-pizhenwei@bytedance.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <20220520070648.1794132-1-pizhenwei@bytedance.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 24, 2022 at 08:12:55PM +0200, Pali Rohár wrote:
-> On Tuesday 24 May 2022 12:59:55 Segher Boessenkool wrote:
-> > On Tue, May 24, 2022 at 11:39:39AM +0200, Pali Rohár wrote:
-> > > gcc e500 compiler does not support -mcpu=powerpc option. When it is
-> > > specified then gcc throws compile error:
-> > > 
-> > >   gcc: error: unrecognized argument in option ‘-mcpu=powerpc’
-> > >   gcc: note: valid arguments to ‘-mcpu=’ are: 8540 8548 native
-> > 
-> > What?  Are you using some modified version of GCC, perhaps?
+On 20.05.22 09:06, zhenwei pi wrote:
+> Hi,
 > 
-> Hello! I'm using official gcc version, no special modification.
+> I'm trying to recover hardware corrupted page by virtio balloon, the
+> workflow of this feature like this:
 > 
-> > No version of GCC that isn't hamstrung can have this output.
+> Guest              5.MF -> 6.RVQ FE    10.Unpoison page
+>                     /           \            /
+> -------------------+-------------+----------+-----------
+>                    |             |          |
+>                 4.MCE        7.RVQ BE   9.RVQ Event
+>  QEMU             /               \       /
+>              3.SIGBUS              8.Remap
+>                 /
+> ----------------+------------------------------------
+>                 |
+>             +--2.MF
+>  Host       /
+>        1.HW error
 > 
-> gcc for e500 cores has really this output when you pass -mcpu=powerpc.
+> 1, HardWare page error occurs randomly.
+> 2, host side handles corrupted page by Memory Failure mechanism, sends
+>    SIGBUS to the user process if early-kill is enabled.
+> 3, QEMU handles SIGBUS, if the address belongs to guest RAM, then:
+> 4, QEMU tries to inject MCE into guest.
+> 5, guest handles memory failure again.
 > 
-> Upstream gcc dropped support for e500 cores during development of
-> version 9.
-
-This isn't true.  The SPE instruction extension is no longer supported
-(because it wasn't maintained).  Everything else still works.
-
-> But you can still compile and install gcc 8.5.0 (last version
-> of gcc 8) which has this full e500 support.
+> 1-5 is already supported for a long time, the next steps are supported
+> in this patch(also related driver patch):
 > 
-> Really, you can easily try it. Debian 10 (Buster) has gcc 8.3.0 in its
-> default installation and also provides packages with cross compilers.
-> Just run 'sudo apt install gcc-powerpc-linux-gnuspe' on desktop amd64
-> version of Debian 10, it will install e500 cross compiler.
+> 6, guest balloon driver gets noticed of the corrupted PFN, and sends
+>    request to host side by Recover VQ FrontEnd.
+> 7, QEMU handles request from Recover VQ BackEnd, then:
+> 8, QEMU remaps the corrupted HVA fo fix the memory failure, then:
+> 9, QEMU acks the guest side the result by Recover VQ.
+> 10, guest unpoisons the page if the corrupted page gets recoverd
+>     successfully.
 > 
-> -mcpu=8540 specify e500v1 and -mcpu=8548 specify e500v2
+> Test:
+> This patch set can be tested with QEMU(also in developing):
+> https://github.com/pizhenwei/qemu/tree/balloon-recover
+> 
+> Emulate MCE by QEMU(guest RAM normal page only, hugepage is not supported):
+> virsh qemu-monitor-command vm --hmp mce 0 9 0xbd000000000000c0 0xd 0x61646678 0x8c
+> 
+> The guest works fine(on Intel Platinum 8260):
+>  mce: [Hardware Error]: Machine check events logged
+>  Memory failure: 0x61646: recovery action for dirty LRU page: Recovered
+>  virtio_balloon virtio5: recovered pfn 0x61646
+>  Unpoison: Unpoisoned page 0x61646 by virtio-balloon
+>  MCE: Killing stress:24502 due to hardware memory corruption fault at 7f5be2e5a010
+> 
+> And the 'HardwareCorrupted' in /proc/meminfo also shows 0 kB.
+> 
+> About the protocol of virtio balloon recover VQ, it's undefined and in
+> developing currently:
+> - 'struct virtio_balloon_recover' defines the structure which is used to
+>   exchange message between guest and host.
+> - '__le32 corrupted_pages' in struct virtio_balloon_config is used in the next
+>   step:
+>   1, a VM uses RAM of 2M huge page, once a MCE occurs, the 2M becomes
+>      unaccessible. Reporting 512 * 4K 'corrupted_pages' to the guest, the guest
+>      has a chance to isolate the 512 pages ahead of time.
+> 
+>   2, after migrating to another host, the corrupted pages are actually recovered,
+>      once the guest gets the 'corrupted_pages' with 0, then the guest could
+>      unpoison all the poisoned pages which are recorded in the balloon driver.
+> 
 
-Aha.  Right, because this config forces -mspe it requires one of these
-CPUs.
+Hi,
 
-You can use a powerpc-linux compiler instead, and everything will just
-work.  These CPUs are still supported, in all of GCC 9 .. GCC 12 :-)
+I'm still on vacation this week, I'll try to have a look when I'm back
+(and flushed out my overflowing inbox :D).
 
 
-Segher
+-- 
+Thanks,
+
+David / dhildenb
+
