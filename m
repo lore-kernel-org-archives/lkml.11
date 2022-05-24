@@ -2,258 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6C47C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 07:34:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A2E2C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 07:36:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235302AbiEXHec (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 03:34:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53724 "EHLO
+        id S235311AbiEXHgc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 03:36:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235294AbiEXHeY (ORCPT
+        with ESMTP id S233812AbiEXHgY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 03:34:24 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B1F062A20;
-        Tue, 24 May 2022 00:34:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1653377663; x=1684913663;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=Xf83HbWSewZOtUqxluU9V0XX91cw1noJDgM/vmgA17I=;
-  b=aNlNa7890SlpyEtINVyO7Qy7kBo7jgZMmQ5nVds5tV2ijdy8nZF2kDiV
-   1GZN6I95RvykA1aJd4CNoq/0r3uptroBAGzh4IJLyDFQjGjpz0imAgQg6
-   sClPihsT/EjY9t6asPoU7x87zUbzFjo3p2NZIPGbO7EnSxxBIun0A0Hwq
-   4=;
-Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
-  by alexa-out.qualcomm.com with ESMTP; 24 May 2022 00:34:23 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 May 2022 00:34:21 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 24 May 2022 00:34:20 -0700
-Received: from [10.239.133.9] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 24 May
- 2022 00:34:16 -0700
-Message-ID: <e253eff9-7eb2-e8ec-d27b-4727e853b07a@quicinc.com>
-Date:   Tue, 24 May 2022 15:34:15 +0800
+        Tue, 24 May 2022 03:36:24 -0400
+Received: from mail-qv1-f54.google.com (mail-qv1-f54.google.com [209.85.219.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9A3A41611;
+        Tue, 24 May 2022 00:36:21 -0700 (PDT)
+Received: by mail-qv1-f54.google.com with SMTP id cv1so1528713qvb.5;
+        Tue, 24 May 2022 00:36:21 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hHz2dkZf9qf9PMGkX8HB6FwtvylKwYDKEt4PSRoOrRg=;
+        b=5604KnZJRPq7BHqRN+r0CdJrgPevS3I0gpY5ik8NHtpYCAk2x0tZGmO/6o6T1W76Yn
+         zV9Ua0cpCko3LoDH4MrsOF6DYfNCn9P4v9JvNInWeqn3ZZmT9/Q5v1KBEs3LujV8J4B4
+         2j1Ge8pS2BNjxbbJy7J5x15bi94iA11YiM+0AXGdZwRntqoSxskvbGH/UhFTCLlNkb6G
+         xbdTaKhdk9FMAVgmMPU85M49/p7R1wKK6owyNwJKkv55HbdOHmXfXGr0vh1uH6nugPmx
+         zbFBVubmxrK3WdEeFIGEe2Iza/c+3iXt/Ofd1pbtJm7jncBFoQuVxHkymF5qbZoiqCwX
+         XbDw==
+X-Gm-Message-State: AOAM5307JJYuKKVr+/bn5BNtbaqlecYWqjfs1HWwFh1R/mn/qkp8BVFl
+        63lB/AgivRGOeTaJMPowXafid0kyqKjohtRe
+X-Google-Smtp-Source: ABdhPJyUl/U3qUC3xs1tPrxczkJco8UcbDi7mKK1iFwhrt2cm4sV5otciSDdm9mSlzIfJgfdjP9uIA==
+X-Received: by 2002:ad4:5ba3:0:b0:462:1b10:e16e with SMTP id 3-20020ad45ba3000000b004621b10e16emr12994063qvq.40.1653377780983;
+        Tue, 24 May 2022 00:36:20 -0700 (PDT)
+Received: from mail-yb1-f180.google.com (mail-yb1-f180.google.com. [209.85.219.180])
+        by smtp.gmail.com with ESMTPSA id ey18-20020a05622a4c1200b002f937991969sm3015467qtb.24.2022.05.24.00.36.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 24 May 2022 00:36:20 -0700 (PDT)
+Received: by mail-yb1-f180.google.com with SMTP id p190so2517005ybg.4;
+        Tue, 24 May 2022 00:36:20 -0700 (PDT)
+X-Received: by 2002:a05:6902:120e:b0:634:6f29:6b84 with SMTP id
+ s14-20020a056902120e00b006346f296b84mr25463870ybu.604.1653377780467; Tue, 24
+ May 2022 00:36:20 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH v7 08/10] dt-bindings: arm: Adds CoreSight TPDA hardware
- definitions
-Content-Language: en-US
-To:     Rob Herring <robh@kernel.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>
-CC:     Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Konrad Dybcio <konradybcio@gmail.com>,
-        Mike Leach <mike.leach@linaro.org>,
-        Leo Yan <leo.yan@linaro.org>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        Coresight ML <coresight@lists.linaro.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Tingwei Zhang <quic_tingweiz@quicinc.com>,
-        Yuanfang Zhang <quic_yuanfang@quicinc.com>,
-        Tao Zhang <quic_taozha@quicinc.com>,
-        Trilok Soni <quic_tsoni@quicinc.com>,
-        Hao Zhang <quic_hazha@quicinc.com>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-References: <20220509133947.20987-1-quic_jinlmao@quicinc.com>
- <20220509133947.20987-9-quic_jinlmao@quicinc.com>
- <beba5968-3115-3c09-cda6-67095ca55226@arm.com>
- <CAL_JsqK8Z_J2xaOsBM-U4hhHPgQCudd=SGmPqwdipArWmTXJYw@mail.gmail.com>
-From:   Jinlong Mao <quic_jinlmao@quicinc.com>
-In-Reply-To: <CAL_JsqK8Z_J2xaOsBM-U4hhHPgQCudd=SGmPqwdipArWmTXJYw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+References: <c7ccee444dbc50a61a703cabeffe28e73de4cda7.1653375268.git.geert@linux-m68k.org>
+ <f8a95dcd-4a9f-ddd2-b322-96720f666b37@redhat.com>
+In-Reply-To: <f8a95dcd-4a9f-ddd2-b322-96720f666b37@redhat.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 24 May 2022 09:36:08 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdU+fFaKoK0RYjGrkwadafjZ9MTzA-LSzD6pZnoB26HAsg@mail.gmail.com>
+Message-ID: <CAMuHMdU+fFaKoK0RYjGrkwadafjZ9MTzA-LSzD6pZnoB26HAsg@mail.gmail.com>
+Subject: Re: [PATCH] efi: EFI_DISABLE_RUNTIME should depend on EFI
+To:     Javier Martinez Canillas <javierm@redhat.com>
+Cc:     Ard Biesheuvel <ardb@kernel.org>,
+        linux-efi <linux-efi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Thanks Rob and Suzuki for the review.
+Hi Javier,
 
-I will fix the warning and update in next version.
+On Tue, May 24, 2022 at 9:22 AM Javier Martinez Canillas
+<javierm@redhat.com> wrote:
+> On 5/24/22 08:54, Geert Uytterhoeven wrote:
+> > The EFI_DISABLE_RUNTIME config option controls the use of Extensible
+> > Firmware Interface (EFI) runtime services, which matters only if EFI
+> > support is enabled.
+> >
+>
+> Indeed. Sorry for forgetting that dependency when adding the symbol.
+>
+> > Hence add a dependency on EFI, to prevent asking the user about this
+> > control knob when configuring a kernel with EFI support.
+> >
+>
+> I think you wanted to write here "without EFI support" ?
 
-On 5/23/2022 10:24 PM, Rob Herring wrote:
-> On Mon, May 23, 2022 at 4:44 AM Suzuki K Poulose <suzuki.poulose@arm.com> wrote:
->> Cc: Rob Herring
->>
-> Will or will not have any effect...
+Oops, sorry for that. Need... morning... coffee...
+
+> > Fixes: a031651ff2144a3d ("efi: Allow to enable EFI runtime services by default on RT")
+> > Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+> > ---
 >
-> Please use get_maintainers.pl and send your patches to the right
-> lists/maintainers. DT patches only get reviewed if sent to DT list. So
-> please resend to the DT list. But before you do, I can tell this
-> binding hasn't been tested so fix all the warnings first.
->
-> Rob
->
->>
->> On 09/05/2022 14:39, Mao Jinlong wrote:
->>> Adds new coresight-tpda.yaml file describing the bindings required
->>> to define tpda in the device trees.
->>>
->>> Reviewed-by: Mike Leach <mike.leach@linaro.org>
->>> Signed-off-by: Tao Zhang <quic_taozha@quicinc.com>
->>> Signed-off-by: Mao Jinlong <quic_jinlmao@quicinc.com>
->>> ---
->>>    .../bindings/arm/coresight-tpda.yaml          | 119 ++++++++++++++++++
->>>    MAINTAINERS                                   |   1 +
->>>    2 files changed, 120 insertions(+)
->>>    create mode 100644 Documentation/devicetree/bindings/arm/coresight-tpda.yaml
->>>
->>> diff --git a/Documentation/devicetree/bindings/arm/coresight-tpda.yaml b/Documentation/devicetree/bindings/arm/coresight-tpda.yaml
->>> new file mode 100644
->>> index 000000000000..4948ac13e7f8
->>> --- /dev/null
->>> +++ b/Documentation/devicetree/bindings/arm/coresight-tpda.yaml
->>> @@ -0,0 +1,119 @@
->>> +# SPDX-License-Identifier: GPL-2.0-only or BSD-2-Clause
->>> +# Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
->>> +%YAML 1.2
->>> +---
->>> +$id: http://devicetree.org/schemas/arm/coresight-tpda.yaml#
->>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->>> +
->>> +title: Trace, Profiling and Diagnostics Aggregator - TPDA
->>> +
->>> +description: |
->>> +  TPDAs are responsible for packetization and timestamping of data sets
->>> +  utilizing the MIPI STPv2 packet protocol. Pulling data sets from one or
->>> +  more attached TPDM and pushing the resultant (packetized) data out a
->>> +  master ATB interface. Performing an arbitrated ATB interleaving (funneling)
->>> +  task for free-flowing data from TPDM (i.e. CMB and DSB data set flows).
->>> +
->>> +maintainers:
->>> +  - Mao Jinlong <quic_jinlmao@quicinc.com>
->>> +  - Tao Zhang <quic_taozha@quicinc.com>
->>> +
->>> +properties:
->>> +  $nodename:
->>> +    pattern: "^tpda(@[0-9a-f]+)$"
->>> +  compatible:
->>> +    items:
->>> +      - const: qcom,coresight-tpda
->>> +      - const: arm,primecell
->>> +
->>> +  reg:
->>> +    maxItems: 1
->>> +
->>> +  clocks:
->>> +    maxItems: 1
->>> +
->>> +  clock-names:
->>> +    items:
->>> +      - const: apb_pclk
->>> +
->>> +  in-ports:
->>> +    type: object
->>> +    description: |
->>> +      Input connections from TPDM to TPDA
->>> +    $ref: /schemas/graph.yaml#/properties/ports
->>> +
->> --->8---
->>> +    properties:
->>> +      '#address-cells':
->>> +        const: 1
->>> +
->>> +      '#size-cells':
->>> +        const: 0
->>> +
->>> +    patternProperties:
->>> +      "^port@[0-9a-f]+$":
->>> +        type: object
->>> +        required:
->>> +          - reg
->>> +
->>> +    required:
->>> +      - '#size-cells'
->>> +      - '#address-cells'
->> ---8<---
->>
->> I believe the above snippet is not needed and is covered by the generic
->> ports.
->>
->>
->>> +
->>> +  out-ports:
->>> +    type: object
->>> +    description: |
->>> +      Output connections from the TPDA to legacy CoreSight trace bus.
->>> +    $ref: /schemas/graph.yaml#/properties/ports
->>> +
->>> +    properties:
->>> +     port:
->>> +       description:
->>> +         Output connection from the TPDA to legacy CoreSight Trace bus.
->>> +       $ref: /schemas/graph.yaml#/properties/port
->>> +
->>> +required:
->>> +    - compatible
->>> +    - reg
->>> +    - clocks
->>> +    - clock-names
->>> +    - in-ports
->>> +    - out-ports
->>> +
->>> +additionalProperties: false
->>> +
->>> +examples:
->>> +  # minimum tpda definition.
->>> +  - |
->>> +    tpda@6004000 {
->>> +       compatible = "qcom,coresight-tpda", "arm,primecell";
->>> +       reg = <0x6004000 0x1000>;
->>> +
->>> +       qcom,tpda-atid = <65>;
->>> +
->>> +       clocks = <&aoss_qmp>;
->>> +       clock-names = "apb_pclk";
->>> +
->>> +       in-ports {
->>> +         #address-cells = <1>;
->>> +         #size-cells = <0>;
->>> +
->>> +        port@0 {
->>> +          reg = <0>;
->>> +          tpda_qdss_0_in_tpdm_dcc: endpoint {
->>> +            remote-endpoint =
->>> +              <&tpdm_dcc_out_tpda_qdss_0>;
->>> +            };
->>> +        };
->>> +      };
->>> +
->>> +       out-ports {
->>> +         port {
->>> +                 tpda_qdss_out_funnel_in0: endpoint {
->>> +                    remote-endpoint =
->>> +                    <&funnel_in0_in_tpda_qdss>;
->>> +                  };
->>> +          };
->>> +       };
->>> +    };
->>> +
->>> +...
->>> diff --git a/MAINTAINERS b/MAINTAINERS
->>> index 28d32b3f3f5c..5d2d8c0ee340 100644
->>> --- a/MAINTAINERS
->>> +++ b/MAINTAINERS
->>> @@ -1978,6 +1978,7 @@ T:      git git://git.kernel.org/pub/scm/linux/kernel/git/coresight/linux.git
->>>    F:  Documentation/ABI/testing/sysfs-bus-coresight-devices-*
->>>    F:  Documentation/devicetree/bindings/arm/coresight-cpu-debug.txt
->>>    F:  Documentation/devicetree/bindings/arm/coresight-cti.yaml
->>> +F:   Documentation/devicetree/bindings/arm/coresight-tpda.yaml
->>>    F:  Documentation/devicetree/bindings/arm/coresight-tpdm.yaml
->>>    F:  Documentation/devicetree/bindings/arm/coresight.txt
->>>    F:  Documentation/devicetree/bindings/arm/ete.yaml
->> Otherwise looks good to me.
->>
->> Suzuki
+> Acked-by: Javier Martinez Canillas <javierm@redhat.com>
+
+Thanks!
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
