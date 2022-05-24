@@ -2,96 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8D21C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 07:27:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 582B5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 07:27:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235228AbiEXH1t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 03:27:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40650 "EHLO
+        id S235263AbiEXH0S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 03:26:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235227AbiEXH1q (ORCPT
+        with ESMTP id S233920AbiEXH0C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 03:27:46 -0400
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FC2C980BD
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 00:27:43 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id r71so15676474pgr.0
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 00:27:43 -0700 (PDT)
+        Tue, 24 May 2022 03:26:02 -0400
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1356B9548D
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 00:26:00 -0700 (PDT)
+Received: by mail-yb1-xb2f.google.com with SMTP id i187so27168167ybg.6
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 00:26:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=tsv75/jMSG9IE7z+FFdGkSFpTdlyLS1N1PmQi6VFqBI=;
-        b=wvLcdRoTzjduYLMmkssoeHZpDzj+D6Li3c0sGg6dhznKpbBFocVHCep91+LKPeyu6A
-         adf8V3sSKAOctotcch5S4mjMvRTbGhUus5+QA9diimFJsnt8A7i6RD2y60WXwsSGiVdh
-         bgwJnqToDTyrZHPGBmo0VfUmcmMllbbq6FQB+bPb997SkUODY+yapFzKf5qaekHLwqXu
-         +UX9XXuscTRgo2MU9b9/+1PWDINJRaRuHj42B7O7KiR1jhJSTJoTBSaL8gJ2Gt9CqoYy
-         eR7pDrcyhkAJYgcV8Nobpd9IwwO8hEcjkrUHmcHmfpQH8XlOqP3WIr1mmEMAnLuWDQDE
-         MRTw==
+        bh=f3ADQCREbWZJgoHzXNT4SqhngDOz5wX2IM0lbpMtxoc=;
+        b=izrk844FQF3CPJ39B7iE/hbTnzveN5okwNk4FqFu3T1zGffBMkch2CEh0DsNMudTj8
+         i86k+u6QavUQH7dqEokiALt3sjaUTnyuNdYas2IkOr2LYm9vYkVc2OOFa5F3zQqagyEe
+         nTGOIUMCXwZdIO1e6I68RYwTEntPwuvN9Ek0B+WWxBr8Br86FV3lOVH/gihGoBNdsUbW
+         K2G648t+WETJujvuYJq/6EGQgdT7YHmHCDZvR7kRUjz1d6rF/WmeVZ+zO92hvJp242v9
+         sDxBVlzYE4SQHrY06X+QbDLrZcZfMc5x5Uo4sDn+3+hnj7bqL1ygPdgqEaWDk/RwOQTx
+         M0jw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=tsv75/jMSG9IE7z+FFdGkSFpTdlyLS1N1PmQi6VFqBI=;
-        b=LZM3hIBtG7BLiEkA1q53NccFfCcmYMtdXSdBKAUtZpBgpZPDXmcUGmRwn7zkmdlqsv
-         xifol6JkJ40i9zhbjvni0es3CnciFjvcx39QLFia3NHAXCx0WyVD12ftta/0/ufJnW4H
-         zJ7KKPca0HFB+7ZBF/URJbOrELM7xdMcTEZqtF4T8uG72KgR4z8n1lhGGv36sBVCmooQ
-         be9nc/ewA83ETL/r8V0jx7IqMKfqr8stjUxeQHi6P8+ktwS2W4ng5Ea1Nzd5o0EiszMz
-         vANM+0NvPZlRoh1UrHs9X4uZOZogwPtrAk6Wd6+O4/NYiNvO2902fGXy4+nLEiZPzHWi
-         G2WA==
-X-Gm-Message-State: AOAM5326A/gK4MO9okA5zouBxEj9Zg34ur33cjOujYPpFnBlBiVOmsFl
-        Qz8XcMHHqcTrfa6kkWzj+E/bYNamuiFWslGhAM++Vw==
-X-Google-Smtp-Source: ABdhPJw3ORe/h7f5dIvOTqYeutYcfp1EKqFSPpJWeNvmseS55Kkvyhwnm9kIFnPx97OSfYOHlmOBlicekC0ETSFOvdM=
-X-Received: by 2002:a05:6a00:228c:b0:518:9533:4a1e with SMTP id
- f12-20020a056a00228c00b0051895334a1emr11198767pfe.79.1653377262793; Tue, 24
- May 2022 00:27:42 -0700 (PDT)
+        bh=f3ADQCREbWZJgoHzXNT4SqhngDOz5wX2IM0lbpMtxoc=;
+        b=TJMOqeILYCjN4OndvWt93Uh90eQipBWxKOkU/S8lOK9lSu8z18hxdZFrpMfgpqfjsZ
+         d3AVSCJjXjUReJ39PQ6ffmWieT/1Z8ngHuh6ma7G5dmCXLGOHf6pjRuMYltT0yZ0HSVr
+         Yrl/L4T8j0bPjcq612VFtZcUY1U8zQBv4s+vQIcnVyCgbFux9gPeFB7smY4xnLd/bkpQ
+         abOGGjGQ5ijYRYvPdfR44n+s9YhIg8P42C2lBq0O2jUOhMknYpAcxiziVoTLT0cMbqdp
+         JdsR1pW994rM00bTPyKaK+bwkKHTPACELB6po1r801W+ZgbDjMYGpLWDSdeZGJzoRKww
+         L6xA==
+X-Gm-Message-State: AOAM53214juZkMLwaBe6n1t1tOBSZZlA+ARlbKJOjF9b1+GZdoo38jJ5
+        ovBSWmVRlMMVLF+SGBPPuIzJTDPodXvS7GygXfluuw==
+X-Google-Smtp-Source: ABdhPJxqmGs4DGjpwlmXW5yjEYYSk4jao8NINHIFisXpg712mVqO78RiARrF6d7rCCgG9J7Lhpc+C/7YDrfXZkix8LI=
+X-Received: by 2002:a05:6902:704:b0:64d:f270:22b0 with SMTP id
+ k4-20020a056902070400b0064df27022b0mr24774879ybt.626.1653377159322; Tue, 24
+ May 2022 00:25:59 -0700 (PDT)
 MIME-Version: 1.0
-References: <MEYP282MB2374837FFCB18B12BFDEDE80FDCF9@MEYP282MB2374.AUSP282.PROD.OUTLOOK.COM>
-In-Reply-To: <MEYP282MB2374837FFCB18B12BFDEDE80FDCF9@MEYP282MB2374.AUSP282.PROD.OUTLOOK.COM>
-From:   Loic Poulain <loic.poulain@linaro.org>
-Date:   Tue, 24 May 2022 09:27:06 +0200
-Message-ID: <CAMZdPi8c1HqxgGW2woTF=0wUv_gV+pn5q088fYZ=KV0p=avJfA@mail.gmail.com>
-Subject: Re: [PATCH v2] bus: mhi: host: Add support for Quectel EM120 FCCL.
-To:     Yonglin Tan <yonglin.tan@outlook.com>
-Cc:     mani@kernel.org, gregkh@linuxfoundation.org,
-        quic_hemantk@quicinc.com, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, mhi@lists.linux.dev
+References: <20220523141009.52965-1-linmq006@gmail.com>
+In-Reply-To: <20220523141009.52965-1-linmq006@gmail.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Tue, 24 May 2022 09:25:48 +0200
+Message-ID: <CACRpkdb+-urzSHCuug0qa=oytNuyBZyFafBBJ+1D8Yatks7Qew@mail.gmail.com>
+Subject: Re: [PATCH] power/reset: arm-versatile: Fix refcount leak in versatile_reboot_probe
+To:     Miaoqian Lin <linmq006@gmail.com>
+Cc:     Sebastian Reichel <sre@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        linux-arm-kernel@lists.infradead.org, linux-pm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 16 May 2022 at 08:38, Yonglin Tan <yonglin.tan@outlook.com> wrote:
->
-> The product's enumeration align with previous
-> Quectel EM120R-GL, so the EM120 FCCL would use
-> the same config as Quectel EM120R-GL.
->
-> Signed-off-by: Yonglin Tan <yonglin.tan@outlook.com>
+On Mon, May 23, 2022 at 4:10 PM Miaoqian Lin <linmq006@gmail.com> wrote:
 
-Reviewed-by: Loic Poulain <loic.poulain@linaro.org>
+> of_find_matching_node_and_match() returns a node pointer with refcount
+> incremented, we should use of_node_put() on it when not need anymore.
+> Add missing of_node_put() to avoid refcount leak.
+>
+> Fixes: 0e545f57b708 ("power: reset: driver for the Versatile syscon reboot")
+> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
 
-> ---
->
-> V2:
-> Fixed the format errors in the patch description.
->
->  drivers/bus/mhi/host/pci_generic.c | 2 ++
->  1 file changed, 2 insertions(+)
->
-> diff --git a/drivers/bus/mhi/host/pci_generic.c b/drivers/bus/mhi/host/pci_generic.c
-> index 8416267..0a6469c 100644
-> --- a/drivers/bus/mhi/host/pci_generic.c
-> +++ b/drivers/bus/mhi/host/pci_generic.c
-> @@ -557,6 +557,8 @@ static const struct pci_device_id mhi_pci_id_table[] = {
->                 .driver_data = (kernel_ulong_t) &mhi_quectel_em1xx_info },
->         { PCI_DEVICE(0x1eac, 0x1002), /* EM160R-GL (sdx24) */
->                 .driver_data = (kernel_ulong_t) &mhi_quectel_em1xx_info },
-> +       { PCI_DEVICE(0x1eac, 0x2001), /* EM120R-GL for FCCL (sdx24) */
-> +               .driver_data = (kernel_ulong_t) &mhi_quectel_em1xx_info },
->         /* T99W175 (sdx55), Both for eSIM and Non-eSIM */
->         { PCI_DEVICE(PCI_VENDOR_ID_FOXCONN, 0xe0ab),
->                 .driver_data = (kernel_ulong_t) &mhi_foxconn_sdx55_info },
-> --
-> 2.7.4
->
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+
+Yours,
+Linus Walleij
