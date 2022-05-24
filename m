@@ -2,51 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D013C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 00:23:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E989AC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 00:23:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232355AbiEXAXD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 20:23:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43304 "EHLO
+        id S232152AbiEXAXH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 20:23:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232262AbiEXAWy (ORCPT
+        with ESMTP id S232311AbiEXAWy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 23 May 2022 20:22:54 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBDE542A30
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 17:22:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38E9A433B0
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 17:22:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 92E9DB816DA
+        by ams.source.kernel.org (Postfix) with ESMTPS id EA9F0B8170A
         for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 00:22:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 573BEC385A9;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 8CE82C3411C;
         Tue, 24 May 2022 00:22:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1653351770;
-        bh=r8QUEmjFqVC4EjExfAov+i6cm9Y6w72IKy0CN2K0J3E=;
+        bh=PRD2FZr37L8i3VgQXnnXLaCdI7OFmkH9eP0wJnOHZXo=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=iOnvIlSxhev1TjANldl2QfZ2YvsyD4hfmHvETNokGHIrLS/9tepu+HH3KVjNd7LrY
-         RUBFnskgkgBIdUPISN00xBDPAhx5yBK95aTtmf5DVz6Lw1+OcWdOtAjU4/dbQe6ZZ2
-         UgcW4f5ihrrEOAMwas0E0/skald1Mk7boy0NvFWD/U+k+YB4a9ExaiIMWv0Jx3WAkG
-         89mPCq2hgYpsCaeIuue0rcGmKDlEa+R2/lz8yAubwHFDUTx9+0FdvaQ3vf/LKCnZiG
-         +e4uBVb6BRuw5tY3NdKPp6bB4n43YF8pzAH08ORZ+KGO5vpdK1X/ppIVZI6m/bWUpA
-         kbURr96BtoIqw==
+        b=VyWYdChkmYUx5XtrpATcMtIQdifAXtNZt1KKsYYywrrb3C8ttuHq1KqV/3uL5H7Ch
+         Hr2TUqItjGkFNfE6sWuPDMj9jF+Yr/tpFNu9Fsy51+jNlzkNcbpi6T7+qtewv9tqfW
+         cGpnzKPsUH1/6m/4LN1VqRPEXWlrXKFMQ9hLaOjI8PBzxPRSoT7cGQ3Pq32n+HcuZF
+         Uk+lmIHo+sU7+X4D47uSJU5CGB0JXd3n8dx1ghd+fstbXRr/16o0lDYf1z2PXS3eKc
+         Np/DsYeJezPhLFchmgSHuhCQLQFgsVHGa/PHI/UxiqSVwIaAkl9M9vwzwamYJ+Hdvv
+         8CByu76SxsQ8w==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 37A96F03938;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 75792F03949;
         Tue, 24 May 2022 00:22:50 +0000 (UTC)
-Subject: Re: [GIT pull] smp/core for 5.19-rc1
+Subject: Re: [GIT pull] timers/core for 5.19-rc1
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <165329268192.3801280.7168389137324540940.tglx@xen13>
-References: <165329267741.3801280.534077656528571075.tglx@xen13> <165329268192.3801280.7168389137324540940.tglx@xen13>
+In-Reply-To: <165329268338.3801280.15015388773053623832.tglx@xen13>
+References: <165329267741.3801280.534077656528571075.tglx@xen13> <165329268338.3801280.15015388773053623832.tglx@xen13>
 X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <165329268192.3801280.7168389137324540940.tglx@xen13>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git smp-core-2022-05-23
-X-PR-Tracked-Commit-Id: d308077e5e4dc8c93f97f5ebc70274e7c7a92d49
+X-PR-Tracked-Message-Id: <165329268338.3801280.15015388773053623832.tglx@xen13>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git timers-core-2022-05-23
+X-PR-Tracked-Commit-Id: 317f29c14d0cca09952f1022491454b23455ebcb
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 28c8f9fe94c4e0b0c27383d48da3c85b0dc17081
-Message-Id: <165335177022.4476.1419070695119630090.pr-tracker-bot@kernel.org>
+X-PR-Merge-Commit-Id: 6e01f86fb2025111c77101254f1442ac137089cd
+Message-Id: <165335177047.4476.17071716908363684129.pr-tracker-bot@kernel.org>
 Date:   Tue, 24 May 2022 00:22:50 +0000
 To:     Thomas Gleixner <tglx@linutronix.de>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
@@ -55,12 +55,12 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Mon, 23 May 2022 10:02:08 +0200 (CEST):
+The pull request you sent on Mon, 23 May 2022 10:02:09 +0200 (CEST):
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git smp-core-2022-05-23
+> git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git timers-core-2022-05-23
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/28c8f9fe94c4e0b0c27383d48da3c85b0dc17081
+https://git.kernel.org/torvalds/c/6e01f86fb2025111c77101254f1442ac137089cd
 
 Thank you!
 
