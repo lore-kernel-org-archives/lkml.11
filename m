@@ -2,68 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97565C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 04:27:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBCA0C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 04:27:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234235AbiEXE1d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 00:27:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53144 "EHLO
+        id S233444AbiEXE1j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 00:27:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234607AbiEXE1Z (ORCPT
+        with ESMTP id S234637AbiEXE12 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 00:27:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 353C363BC9
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 21:27:24 -0700 (PDT)
+        Tue, 24 May 2022 00:27:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02E9067D1E;
+        Mon, 23 May 2022 21:27:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B31ED61363
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 04:27:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 204EAC36AE9;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D54E61403;
+        Tue, 24 May 2022 04:27:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 76148C34117;
         Tue, 24 May 2022 04:27:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1653366443;
-        bh=KOl0Xhflc+NhTubsN8i4aFZYkyaSYAbxwvvH0Ar5HnA=;
+        bh=4zLOAFfbiAxhbDahp8ye+sl/idxG12bo4dC4hk3tisY=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=tsOwKwCHHeQDsJ896lIsWkitMdbi14GZIQxTh7ZTfS0lnpFO0AKaCdYfdBUcsnFqf
-         xFcd1IOrRP82MP6eDAfoASF+VUTAtkQfTw8Mb6zLKQU0ATKH1CtCMb0tJG977lMRwO
-         Ff98VJgl6B9C+BvTKkaCp0luuw54q3qslpXCmgi//EwhEInLb7zRMDJD0ZhViPFfI8
-         2vhpHt31fJsUlK3XnSQpW012sSEAwG8dlSJR39k8z8v5faUvYon63KULV7eoIw3fe3
-         QErtwzhmkrj0LGcl261UiN7Myb9gjC6qScpeODZiXOYcuV5Yw4uekRrQqLm3UVehTJ
-         rWmysQVcC0RWg==
+        b=jlcsMGoE2nXCiB8/7f3GwvlYwvYkaHXxBXaTl9ZLKS6DaDCZYB+kSbrKNI9IIGYvX
+         X7OTCiLNqiXzyJVjSCl9HUdaRoW17uWd8bnISu9PAq9rBq8AhLtVgCbhYmSr5+98aC
+         c6WVNtP+pCij/Ifz0ZBXi7WRNGmZsuXAaM+Jp/euMTU4KzZ6it2c+b0/P8tzw8oQOj
+         00qGGm7oKUgKmY/kltgfiYRepL+ziX1Vn0aqcq0XjUChg9xPtXRldWxTYwETKJ2jxh
+         vcWS7WoOiKxaxW8m/eSDRbzHNI991xAvQezxeIV8zMRuE1TTDW2xjdWUhqeGSUYxzx
+         3K84PU/lzkGKg==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0E147E8DD61;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 63CC7E8DD61;
         Tue, 24 May 2022 04:27:23 +0000 (UTC)
-Subject: Re: [GIT PULL] m68k updates for v5.19
+Subject: Re: [GIT PULL] csky changes for v5.19-rc1
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220523092200.889682-1-geert@linux-m68k.org>
-References: <20220523092200.889682-1-geert@linux-m68k.org>
+In-Reply-To: <20220523160347.172358-1-guoren@kernel.org>
+References: <20220523160347.172358-1-guoren@kernel.org>
 X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220523092200.889682-1-geert@linux-m68k.org>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/geert/linux-m68k.git tags/m68k-for-v5.19-tag1
-X-PR-Tracked-Commit-Id: 30b5e6ef4a32ea4985b99200e06d6660a69f9246
+X-PR-Tracked-Message-Id: <20220523160347.172358-1-guoren@kernel.org>
+X-PR-Tracked-Remote: https://github.com/c-sky/csky-linux.git tags/csky-for-linus-5.19-rc1
+X-PR-Tracked-Commit-Id: 64d83f06774668081258bd7f3241267239bb9ab2
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: fdd8f6585cef1c8c0fac745c1baa687301d55a90
-Message-Id: <165336644305.29742.8792031862656031506.pr-tracker-bot@kernel.org>
+X-PR-Merge-Commit-Id: 67c642e0d9aa927c1340638e472f2467fefd1dbf
+Message-Id: <165336644340.29742.5932504374948415164.pr-tracker-bot@kernel.org>
 Date:   Tue, 24 May 2022 04:27:23 +0000
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Greg Ungerer <gerg@linux-m68k.org>,
-        linux-m68k@lists.linux-m68k.org, linux-kernel@vger.kernel.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>
+To:     guoren@kernel.org
+Cc:     torvalds@linux-foundation.org, arnd@arndb.de,
+        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
+        linux-csky@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Mon, 23 May 2022 11:22:00 +0200:
+The pull request you sent on Mon, 23 May 2022 12:03:47 -0400:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/geert/linux-m68k.git tags/m68k-for-v5.19-tag1
+> https://github.com/c-sky/csky-linux.git tags/csky-for-linus-5.19-rc1
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/fdd8f6585cef1c8c0fac745c1baa687301d55a90
+https://git.kernel.org/torvalds/c/67c642e0d9aa927c1340638e472f2467fefd1dbf
 
 Thank you!
 
