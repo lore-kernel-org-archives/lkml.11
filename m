@@ -2,96 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 849C7C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 22:37:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F741C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 22:40:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242172AbiEXWhW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 18:37:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35050 "EHLO
+        id S242446AbiEXWkd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 18:40:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229731AbiEXWhU (ORCPT
+        with ESMTP id S229731AbiEXWka (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 18:37:20 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50275338BE
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 15:37:18 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 53AF4221D4;
-        Wed, 25 May 2022 00:37:16 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1653431836;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=BCs0HAhZARemmsGo2G3uYjUYYZKrxsWqOtnmQSTd4i4=;
-        b=qPSxEn4u8PQszAO0bIWyhCcQ2fFkT1WRWKaFop4Ned9HNlrWohdTRSlwViw9Uw2wVywxYD
-        QA9m0ZXsWTsfY/HgMqkRqQesg5m2Ej4NQpUxSUhqGLoSPPf+RjlcYl8+MADAad+IFX/c3p
-        sOy3B/P1jOT4sO8fNi2cQ6ZhXg5xtBs=
+        Tue, 24 May 2022 18:40:30 -0400
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 791A57939A
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 15:40:29 -0700 (PDT)
+Received: by mail-il1-f198.google.com with SMTP id i15-20020a056e0212cf00b002cf3463ed24so11663479ilm.0
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 15:40:29 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=3Wu1WB361cVyVmWaFBDq59Mw0eDvd4l+pFg67au8VgE=;
+        b=PeZ7/bnL4RFoXiuL/pspRMc4hUfxE1+qQyxfY3UDpp+8kXnp9pUXQR+eYqnPiul+Mx
+         GltNkzg52LgQl/SyZYKPRZfLOkYdDVwLH4TjD9wOc9FKLLZhubcODiRClrhJhFCcyWd2
+         mHWUrc59D1umxLLU55ioDaU4AcQHvQzU3+4Z0zPFMurjZmNoDk+8ZEmub58iw+ebZXkC
+         bcwgn9AfOrF8YleZWa9MhePf1G6108XUeERDd8dHdS2TepI3y7Q0ekjIFPMkPVTGzOjP
+         0nBExxf76bBYvyWczuOWcYQeGV73vfDVB2CFV87NU05JbPOMlftKjUP8YrsSCcs3RdAK
+         bM8Q==
+X-Gm-Message-State: AOAM5327NK1KLYp7Hk5YV0WYH+QQMGxVqr6GDGSn+3l8wzRT1zBLVtLk
+        SdtME7efVRqhmpqPbcug9WRvmxLNzYMnPqAwDp/FRGvOPQjq
+X-Google-Smtp-Source: ABdhPJzSV6nT/ASn4hr8gK9r1/+GtK+/qzh6e8zmFmEYkLIDSP7S5sAPXOiKlM2cs0XqhR9VEbkpIPdiO1AXCM2VVjrChe+pK8SX
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Wed, 25 May 2022 00:37:16 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     chf.fritz@googlemail.com
-Cc:     Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Pratyush Yadav <p.yadav@ti.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        ClaudiuBeznea <claudiu.beznea@microchip.com>,
-        linux-mtd@lists.infradead.org,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] mtd: spi-nor: atmel: Add at25ql641 support
-In-Reply-To: <48b49de3712267780916b665d3b2a3323e6f10ce.camel@googlemail.com>
-References: <48b49de3712267780916b665d3b2a3323e6f10ce.camel@googlemail.com>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <0123ee0e70df13b340230a38cb44548f@walle.cc>
-X-Sender: michael@walle.cc
+X-Received: by 2002:a05:6e02:20e9:b0:2d1:d151:3c53 with SMTP id
+ q9-20020a056e0220e900b002d1d1513c53mr1815171ilv.220.1653432028356; Tue, 24
+ May 2022 15:40:28 -0700 (PDT)
+Date:   Tue, 24 May 2022 15:40:28 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000b5e80405dfc9a4f5@google.com>
+Subject: [syzbot] memory leak in dvb_usb_device_init
+From:   syzbot <syzbot+f66dd31987e6740657be@syzkaller.appspotmail.com>
+To:     linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        mchehab@kernel.org, mudongliangabcd@gmail.com, sean@mess.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Hello,
 
-Am 2022-05-24 21:20, schrieb Christoph Fritz:
-> This patch adds AT25QL641 to the list of supported nor flashs.
+syzbot found the following issue on:
 
-Please mention on which spi host controller this flash was
-tested.
+HEAD commit:    3d7285a335ed Merge tag 'v5.18-p2' of git://git.kernel.org/..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=13a2f289f00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=50f4d49cdcacc43c
+dashboard link: https://syzkaller.appspot.com/bug?extid=f66dd31987e6740657be
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=131c8871f00000
 
-> Signed-off-by: Christoph Fritz <chf.fritz@googlemail.com>
-> ---
->  drivers/mtd/spi-nor/atmel.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/mtd/spi-nor/atmel.c b/drivers/mtd/spi-nor/atmel.c
-> index 656dd80a0be7..dfbc12071093 100644
-> --- a/drivers/mtd/spi-nor/atmel.c
-> +++ b/drivers/mtd/spi-nor/atmel.c
-> @@ -186,6 +186,8 @@ static const struct flash_info atmel_nor_parts[] = 
-> {
->  		.fixups = &atmel_nor_global_protection_fixups },
->  	{ "at25sl321",	INFO(0x1f4216, 0, 64 * 1024, 64)
->  		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ) },
-> +	{ "at25ql641",	INFO(0x1f4317, 0, 64 * 1024, 128)
-> +		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ) },
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+f66dd31987e6740657be@syzkaller.appspotmail.com
 
-This flash supports SFDP, please use either SNOR_ID3() (you'll
-have to pick my pending patches first [1]) or use
-   { "at25ql641", INFO(0x1f4317, 0, 0, 0) PARSE_SFDP },
-which will then be replaced with SNOR_ID3() once it is available.
+BUG: memory leak
+unreferenced object 0xffff8881172f1a00 (size 512):
+  comm "kworker/0:2", pid 139, jiffies 4294994873 (age 10.960s)
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff844af012>] dvb_usb_adapter_init drivers/media/usb/dvb-usb/dvb-usb-init.c:75 [inline]
+    [<ffffffff844af012>] dvb_usb_init drivers/media/usb/dvb-usb/dvb-usb-init.c:184 [inline]
+    [<ffffffff844af012>] dvb_usb_device_init.cold+0x4e5/0x79e drivers/media/usb/dvb-usb/dvb-usb-init.c:308
+    [<ffffffff830db21d>] dib0700_probe+0x8d/0x1b0 drivers/media/usb/dvb-usb/dib0700_core.c:883
+    [<ffffffff82d3fdc7>] usb_probe_interface+0x177/0x370 drivers/usb/core/driver.c:396
+    [<ffffffff8274ab37>] call_driver_probe drivers/base/dd.c:542 [inline]
+    [<ffffffff8274ab37>] really_probe.part.0+0xe7/0x310 drivers/base/dd.c:621
+    [<ffffffff8274ae6c>] really_probe drivers/base/dd.c:583 [inline]
+    [<ffffffff8274ae6c>] __driver_probe_device+0x10c/0x1e0 drivers/base/dd.c:752
+    [<ffffffff8274af6a>] driver_probe_device+0x2a/0x120 drivers/base/dd.c:782
+    [<ffffffff8274b786>] __device_attach_driver+0xf6/0x140 drivers/base/dd.c:899
+    [<ffffffff82747c87>] bus_for_each_drv+0xb7/0x100 drivers/base/bus.c:427
+    [<ffffffff8274b352>] __device_attach+0x122/0x260 drivers/base/dd.c:970
+    [<ffffffff827498f6>] bus_probe_device+0xc6/0xe0 drivers/base/bus.c:487
+    [<ffffffff82745cdb>] device_add+0x5fb/0xdf0 drivers/base/core.c:3405
+    [<ffffffff82d3d202>] usb_set_configuration+0x8f2/0xb80 drivers/usb/core/message.c:2170
+    [<ffffffff82d4dbfc>] usb_generic_driver_probe+0x8c/0xc0 drivers/usb/core/generic.c:238
+    [<ffffffff82d3f49c>] usb_probe_device+0x5c/0x140 drivers/usb/core/driver.c:293
+    [<ffffffff8274ab37>] call_driver_probe drivers/base/dd.c:542 [inline]
+    [<ffffffff8274ab37>] really_probe.part.0+0xe7/0x310 drivers/base/dd.c:621
+    [<ffffffff8274ae6c>] really_probe drivers/base/dd.c:583 [inline]
+    [<ffffffff8274ae6c>] __driver_probe_device+0x10c/0x1e0 drivers/base/dd.c:752
 
->  	{ "at26f004",   INFO(0x1f0400, 0, 64 * 1024,  8)
->  		NO_SFDP_FLAGS(SECT_4K) },
->  	{ "at26df081a", INFO(0x1f4501, 0, 64 * 1024, 16)
 
--michael
 
-[1] https://lore.kernel.org/r/966de7ad5f563f9a29db91c5309a71c6@walle.cc/
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
