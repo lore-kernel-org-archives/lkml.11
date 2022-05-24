@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 395F6C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 16:02:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0A0CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 16:02:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234030AbiEXQCl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 12:02:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46476 "EHLO
+        id S238063AbiEXQCq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 12:02:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239349AbiEXQBh (ORCPT
+        with ESMTP id S239348AbiEXQBh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 24 May 2022 12:01:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C9E5A0D24;
-        Tue, 24 May 2022 09:00:44 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8737A7750;
+        Tue, 24 May 2022 09:00:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9D9B2B817F2;
-        Tue, 24 May 2022 16:00:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27AECC3411A;
-        Tue, 24 May 2022 16:00:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3B98A6175C;
+        Tue, 24 May 2022 16:00:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DE3DC3411A;
+        Tue, 24 May 2022 16:00:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653408042;
-        bh=uNYcJ4Cr7Q5JHM1D51Lx3IAU4uaYLwTacB3qIeJzItk=;
+        s=k20201202; t=1653408045;
+        bh=wWxUCVgmoyE9TpGdM86AqF4tu7PdSDYQTSN2Ki2Rw60=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NJT/7W5zuf8GQg8VeRKfviCplSiM/BQ440CvBns3DITo2tL3SNeWn+ygwyUq68TXT
-         J9FfQUPhDLZKMOHBuYN26x2158ZfXJtCjCrU3jm5KAXzJTmMiKHBmcKmKmz8lnY2eb
-         LjZnMeyMWCbHDYy3xiywnoSkX6FQIIIcwxHNmdZKF7TVDFOZVtK2PCJpeOybzlvZuS
-         yzGzH+BMLp5SPAPSdWlCSpL6e+AGOfp15nYjNdxx0mKxF6f+O4r2VFTXSOGUJtMD2l
-         eNPwlnmLOu4F8Q/zpnrgeDDYN3ZEIOSp29Esuxm7FmFTO3YB0xM+btoYUazjeaV8Xu
-         4IfpJomM8j6vA==
+        b=OYZSXiQbBl1CkHDYrbOlJcr/96cYJpz8Xx7xSniihXkH5kFCM2nCnRVRJzACTPzzI
+         HtwixR4NBVQkki8QGlpIl51zq83c5T2GG9oFR3uHTQNiZs8xOgGWb1M+5y1Stj6Fuh
+         TYIWvgobb0rMougN/7QGQKcxaPpLypiOpTbbHCAe1eMXBxoPvOfHIHSBK5S9TyGGFe
+         CJ5/3FIeir4bkr9vTNEM+aOU3ZXwYVKyY8B8I5hdhJUshBmchxfR7821YmH+1Ap8/M
+         21D1IydLVb7iDPCltavug+tDA4OuX93UCxniyaxR26UHqRA6Xo9EwLItPViB9sO3n4
+         M+4pg9JMUtedQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     John David Anglin <dave.anglin@bell.net>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
-        James.Bottomley@HansenPartnership.com, akpm@linux-foundation.org,
-        zhengqi.arch@bytedance.com, linux-parisc@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 2/8] parisc: Disable debug code regarding cache flushes in handle_nadtlb_fault()
-Date:   Tue, 24 May 2022 12:00:29 -0400
-Message-Id: <20220524160035.827109-2-sashal@kernel.org>
+Cc:     Thomas Bartschies <thomas.bartschies@cvk.de>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 4/8] net: af_key: check encryption module availability consistency
+Date:   Tue, 24 May 2022 12:00:31 -0400
+Message-Id: <20220524160035.827109-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220524160035.827109-1-sashal@kernel.org>
 References: <20220524160035.827109-1-sashal@kernel.org>
@@ -52,59 +53,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John David Anglin <dave.anglin@bell.net>
+From: Thomas Bartschies <thomas.bartschies@cvk.de>
 
-[ Upstream commit 67c35a3b646cc68598ff0bb28de5f8bd7b2e81b3 ]
+[ Upstream commit 015c44d7bff3f44d569716117becd570c179ca32 ]
 
-Change the "BUG" to "WARNING" and disable the message because it triggers
-occasionally in spite of the check in flush_cache_page_if_present.
+Since the recent introduction supporting the SM3 and SM4 hash algos for IPsec, the kernel
+produces invalid pfkey acquire messages, when these encryption modules are disabled. This
+happens because the availability of the algos wasn't checked in all necessary functions.
+This patch adds these checks.
 
-The pte value extracted for the "from" page in copy_user_highpage is racy and
-occasionally the pte is cleared before the flush is complete.  I assume that
-the page is simultaneously flushed by flush_cache_mm before the pte is cleared
-as nullifying the fdc doesn't seem to cause problems.
-
-I investigated various locking scenarios but I wasn't able to find a way to
-sequence the flushes.  This code is called for every COW break and locks impact
-performance.
-
-This patch is related to the bigger cache flush patch because we need the pte
-on PA8800/PA8900 to flush using the vma context.
-I have also seen this from copy_to_user_page and copy_from_user_page.
-
-The messages appear infrequently when enabled.
-
-Signed-off-by: John David Anglin <dave.anglin@bell.net>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Thomas Bartschies <thomas.bartschies@cvk.de>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/parisc/mm/fault.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ net/key/af_key.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/arch/parisc/mm/fault.c b/arch/parisc/mm/fault.c
-index 5faa3cff4738..2472780d4039 100644
---- a/arch/parisc/mm/fault.c
-+++ b/arch/parisc/mm/fault.c
-@@ -22,6 +22,8 @@
+diff --git a/net/key/af_key.c b/net/key/af_key.c
+index bd9b5c573b5a..ae466256ab8c 100644
+--- a/net/key/af_key.c
++++ b/net/key/af_key.c
+@@ -2902,7 +2902,7 @@ static int count_ah_combs(const struct xfrm_tmpl *t)
+ 			break;
+ 		if (!aalg->pfkey_supported)
+ 			continue;
+-		if (aalg_tmpl_set(t, aalg))
++		if (aalg_tmpl_set(t, aalg) && aalg->available)
+ 			sz += sizeof(struct sadb_comb);
+ 	}
+ 	return sz + sizeof(struct sadb_prop);
+@@ -2920,7 +2920,7 @@ static int count_esp_combs(const struct xfrm_tmpl *t)
+ 		if (!ealg->pfkey_supported)
+ 			continue;
  
- #include <asm/traps.h>
+-		if (!(ealg_tmpl_set(t, ealg)))
++		if (!(ealg_tmpl_set(t, ealg) && ealg->available))
+ 			continue;
  
-+#define DEBUG_NATLB 0
-+
- /* Various important other fields */
- #define bit22set(x)		(x & 0x00000200)
- #define bits23_25set(x)		(x & 0x000001c0)
-@@ -449,8 +451,8 @@ handle_nadtlb_fault(struct pt_regs *regs)
- 		fallthrough;
- 	case 0x380:
- 		/* PDC and FIC instructions */
--		if (printk_ratelimit()) {
--			pr_warn("BUG: nullifying cache flush/purge instruction\n");
-+		if (DEBUG_NATLB && printk_ratelimit()) {
-+			pr_warn("WARNING: nullifying cache flush/purge instruction\n");
- 			show_regs(regs);
+ 		for (k = 1; ; k++) {
+@@ -2931,7 +2931,7 @@ static int count_esp_combs(const struct xfrm_tmpl *t)
+ 			if (!aalg->pfkey_supported)
+ 				continue;
+ 
+-			if (aalg_tmpl_set(t, aalg))
++			if (aalg_tmpl_set(t, aalg) && aalg->available)
+ 				sz += sizeof(struct sadb_comb);
  		}
- 		if (insn & 0x20) {
+ 	}
 -- 
 2.35.1
 
