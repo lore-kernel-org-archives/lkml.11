@@ -2,136 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC5C4C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 14:45:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44266C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 14:47:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238097AbiEXOpa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 10:45:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53482 "EHLO
+        id S237332AbiEXOrk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 10:47:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234550AbiEXOpS (ORCPT
+        with ESMTP id S229967AbiEXOrh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 10:45:18 -0400
-Received: from JPN01-OS0-obe.outbound.protection.outlook.com (mail-os0jpn01on2108.outbound.protection.outlook.com [40.107.113.108])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19FBB6D841;
-        Tue, 24 May 2022 07:45:17 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Dz1ruLL+cw397yvZBDI3FoKljuLD7A6nZK6JZm32B0nctlAvGapMYqsug3sweUhp1/bjX/lwGb3CO/lEJK6hyBA6OMjzdRH8Z+9ZnrfwZS0FXjdqAPn3W69Fln4Ae8mj0omozsL3uh1XgMSxII4S1nIf45dLHbCERn8oKq3gyTRm1b7rWTFX/XW+L5bbLyOYjLu3wnxYfATtfGcuUM1vR4BlpPX7w1E9tNCMWxX2K7ipdCBf6qBjBwsslb6SdqvWn6p/ruURTAFGN3bsszQwjjHzO/KkllsiXxZ8Kya21DgX2qeQjRqoK4ICZmX/XxCq6VKvS/OxJM/teKYseKC1Lw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mqWEZUa1Ggwnqcw3vv6Idn46+T8th3T9rr1WoRcJwnY=;
- b=iWcobRCIujwBbtiG3km9I07uHJpXfBSFrPowr2EUiM/oUG3sdl0CK2APf03mDYcozyKBatCH1ujvpJzfrG5TqztCWY/UZtV/6VxB/Ht4Q+PngxplWCE5ILGtfPq3z94SScgCxM5CPcJMb6ejplOh78fRasILJ/VQEbdPwO/I46tz1EHPDcLngqnI8rMeJEttDjfX2TXG/X3YAPN4VyaCjBVmFTbmwSPo707lRuTRphiAa2b8wtmhfvthnkk+wkiNXwxJrUEsSWTgIKm9LbpeKqoKA4WSFkXFtr96O/ovJHeU6l1mxUdVFy7qXhBGNze9R7UVtT42xtNHxpDT9tanCg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
- dkim=pass header.d=renesas.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=renesas.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mqWEZUa1Ggwnqcw3vv6Idn46+T8th3T9rr1WoRcJwnY=;
- b=mHvqEDxe9BdITwaeZIwwlh3uSebvxOyV0+rRtn8593Bd57/Etu6WmYp5lX/6lPPHrESfeldokkZCn7DkdTB3LiRGOoy+EtjAEQGiDP4stHUUjSi7YM/r6rBRXKNgx5Aaovj6QJKacqHKPx5YOuaY+mud/PiMDjwdQXx1LrigX7k=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=renesas.com;
-Received: from OS3PR01MB6593.jpnprd01.prod.outlook.com (2603:1096:604:101::7)
- by TY2PR01MB2042.jpnprd01.prod.outlook.com (2603:1096:404:12::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.19; Tue, 24 May
- 2022 14:45:14 +0000
-Received: from OS3PR01MB6593.jpnprd01.prod.outlook.com
- ([fe80::89f3:ab98:2ab5:7dae]) by OS3PR01MB6593.jpnprd01.prod.outlook.com
- ([fe80::89f3:ab98:2ab5:7dae%7]) with mapi id 15.20.5273.023; Tue, 24 May 2022
- 14:45:14 +0000
-From:   Min Li <min.li.xe@renesas.com>
-To:     richardcochran@gmail.com, lee.jones@linaro.org
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Min Li <min.li.xe@renesas.com>
-Subject: [PATCH net v2] ptp: ptp_clockmatrix: fix is_single_shot
-Date:   Tue, 24 May 2022 10:45:01 -0400
-Message-Id: <1653403501-12621-1-git-send-email-min.li.xe@renesas.com>
-X-Mailer: git-send-email 2.7.4
-Content-Type: text/plain
-X-ClientProxiedBy: BN1PR13CA0028.namprd13.prod.outlook.com
- (2603:10b6:408:e2::33) To OS3PR01MB6593.jpnprd01.prod.outlook.com
- (2603:1096:604:101::7)
+        Tue, 24 May 2022 10:47:37 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 798127628D
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 07:47:36 -0700 (PDT)
+Received: from mail-yw1-f180.google.com ([209.85.128.180]) by
+ mrelayeu.kundenserver.de (mreue109 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1MBDvU-1nzXho2Lza-00Cm85 for <linux-kernel@vger.kernel.org>; Tue, 24 May
+ 2022 16:47:34 +0200
+Received: by mail-yw1-f180.google.com with SMTP id 00721157ae682-2ff7b90e635so118482687b3.5
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 07:47:34 -0700 (PDT)
+X-Gm-Message-State: AOAM533Ps7IurWXHDrwPho2KXyWrsqIGTgJWJv0+iZn0XBwKD0TDbGzr
+        p0OoWpI94DOT6jIwHHfCZ6wwGUCePP+6uB/ABIw=
+X-Google-Smtp-Source: ABdhPJztaIcIMWnqLP/suBLoexCji+3v0BT7iVjvVWSzoaliWtH4kcQa4bC92SqaCbiMIbBetuCzXWl9S2aiwfoPNdk=
+X-Received: by 2002:a81:ad7:0:b0:2e6:84de:3223 with SMTP id
+ 206-20020a810ad7000000b002e684de3223mr29295789ywk.209.1653403653308; Tue, 24
+ May 2022 07:47:33 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: aa0ecbc1-bc30-4842-2885-08da3d94030c
-X-MS-TrafficTypeDiagnostic: TY2PR01MB2042:EE_
-X-Microsoft-Antispam-PRVS: <TY2PR01MB20428800FF2AA7906730EC1ABAD79@TY2PR01MB2042.jpnprd01.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: xSMIpEbHgoPTCpXT/MPNhHvXkQRuFZPMoC1WuaDPZCoFHeyglHUXdg4XgeiWoXi/iaKYpI9JBmmarcPTk6zat/FjW3xOneB5MIpQFPiwRu7HNrNkBgAu4C/n+UWMgj08xJ215UcZg4e4QXo5VPO1ItQ7tNVkLtUqjmxWqXNIhNk3IPEPucfzMcHVuMLt5Wujt17al7ZcduUUkFFQrjdBDpLZU6REb1y2wPHjeyd5aHSUhcO0+li99gad0j01hSxsnhQMvHinKuFZplEGKgWV6LlBrPWfw5pR+TH5pXS8MXlOtPbw6PT/qg07gyfwfSIrnct0VpPsaOC1/zntaoyfLhIdPmkf4nnzwDZWlutuSqcdp3hcDZ5kiW+QqoEqiMImhgn8IszFA5qKApikiUjI+VYdzE+PAtRzMCOa/05B2IS2HbPLastQaMf84eMc1TE8J068Xxw5Ae7Gcq7tPc/sbSUzB+49JkAJq48TJnb6/l5MqMDeFPlGE4zRT8JouPq4h6W7eHLEkeXSMKMTl7H4OmKzURz4/Rpn8oPYnHr3x5dY7+6Q0cS4hxsnyODs+yLfH2KAYwyx7dIxaiwrcW1vt29F2xpaatx22+/GTfjBG5B/ChsIuujZD/qmYl/l0HzLPWxNj6x/tigQbv9TNckbrkKK/ckYf1F+79RTH1fzVaD17XtkhzDhCa5WRryKkU4FQEGUqV3Rzd0EqZHI8Qyocw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OS3PR01MB6593.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(2906002)(4326008)(86362001)(4744005)(5660300002)(83380400001)(186003)(38350700002)(508600001)(107886003)(8936002)(38100700002)(6486002)(316002)(2616005)(36756003)(52116002)(66476007)(66556008)(66946007)(26005)(6666004)(6512007)(6506007)(8676002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?0yUkZUKga1UACL9NmGV0h/gyWzFb1cGvGLlcCf3KwSvbdRQk2oxMBrjpGi0c?=
- =?us-ascii?Q?pN0310Fa03nms7XJhmzt64WNB5Z1mIsTuUBoh5Fg/29dm3dDq61GJXN5+If4?=
- =?us-ascii?Q?soemg4mlwdNq+1EI1qPfJlhWJ4F/MNbKOu7UGvJdvKRcRK1SHhaXvIIz0Jb0?=
- =?us-ascii?Q?ZjKyYayIW093PDnSJnm27x65kIRDFRdW5QlISLUMb2khBYAX4aF8LZQaaN2s?=
- =?us-ascii?Q?qfQMAs+A7n9U8Iz5LRg1AypEhfB8SgArOAPwt5c+RdMd37KEAYIucWp3fdHm?=
- =?us-ascii?Q?vrSlcOxEk057pnKIAtzOFtBsxTrFgktuF/nel7QTAGVz9Mb/G6xSITBTFEPX?=
- =?us-ascii?Q?mQNrbljh8dSiCBmKoZFODCHCwp0zFkat+Vr0uPtq8dLIy1j76m4kKvZJjk5Y?=
- =?us-ascii?Q?1e62xXJe5QlzAZ998DVssY2KM4phRANi45lVQwzXhMqCF+AjhyUaMljRZMzq?=
- =?us-ascii?Q?K8rd7WJORQ+kWjGRozSU1TpafNcL8kcPtyK6l4v4ydTIoB1XG0eB3OmUEPY3?=
- =?us-ascii?Q?WKix1VW2nCMa3fTIMVsEKllC1kOhvHdv046aa0onFM6j+bYVm5utWTXGlp6a?=
- =?us-ascii?Q?v0JgjoWwLX0d7CVcbXvZIPcTIxB/Hs+95HjprXJnAKHfgJmYLk5K70E6dedC?=
- =?us-ascii?Q?ONLwNZlHFeFwUb/WTyToscMaSIJ1juj027ZPBFpH7oZh5HCZiVGy6gR/t3ol?=
- =?us-ascii?Q?Df6dLGEtSZJhN9TmEy5RsUBEaEyyOG9ILaLzZP+HWTvDnOVP00IdJXGUngtO?=
- =?us-ascii?Q?JEJJbgfI6rB3I2/V1imBqzbz55QiqVBivQyQh+yU5FDkKSdr9hmhnrbVk7mk?=
- =?us-ascii?Q?m/YV6CBh6+HEn62t4tPhZ7DjQ61qbjVvgE+IK/gQuj8uBtSzGDMyc/ipA0dr?=
- =?us-ascii?Q?ExoU5mjEbJImPz0s4VfTG/5lVPUez4rgkRyvVbxcHsU8xSuP/6YGQEZM7XL8?=
- =?us-ascii?Q?tVX7hCncXeVel8Bp/QghU0+svyNwZ3IDzyqaDZamTKgbufyBcn9x0lejWpRj?=
- =?us-ascii?Q?uAPAsSCWeQrsAe6XUCHV9WlhI1a29qDrNslNxDVMmBcr1kQOwER9ug6OAeCc?=
- =?us-ascii?Q?3PlNxv17FZbH2rz/+cv3FpaibAIYuXXYHGdD5oNM0A7vneiom+34gFy5ulDG?=
- =?us-ascii?Q?DX/W6Qi/hbP152iBu8YV9t/Y5rm92mpofMVfyHKycVFJel2SpQIh995R0prA?=
- =?us-ascii?Q?RGCiLcfHqer8rl2O4InFDQdqExfPegPbqKt1DTJxJ0+pH/2ljOGMehDFoWMD?=
- =?us-ascii?Q?1/i0yM70IrpSB6NjWLROMW5xQs41CaYrc9FWgnqzWnzhjQTMoe4MdQbvOhB3?=
- =?us-ascii?Q?HlbZmcJ+1gI1W5XbiCTdvkgvpQlsfT7yVar3Rk3udc9BiLGLK/RNbVQd1fWn?=
- =?us-ascii?Q?49Rl7qEnKgP8UUpzP2A/Hw01qRnJtQ54vOx3VoEB4RmQtwGluWCIrr+60Ik5?=
- =?us-ascii?Q?tw4g0c14+eI4trdmf7rzolkQrkyKtnjhyfPMbGD07Wwh5miSwBmVixvZCm0t?=
- =?us-ascii?Q?VGZFZMZjK6JV2NFKU915ZHLc0EPsBgvxSMn0vHlIUMtQ7Kr/iscaiaFIgAiY?=
- =?us-ascii?Q?QmHFqb5ypVt8tbdqJsQdD4VCZ37WHXODkpDAYL1w5Dpae6NhCmgp6vdkyH8l?=
- =?us-ascii?Q?DKW6oyV1jSBCiRM8Ggk/zMaICv3CYIDRXFlobvSZCbVSYMyyogMuHFE3BGY0?=
- =?us-ascii?Q?ykE6Wrc3Ml4dpkM3ikvLCKpWIkqs2kJySqykZoeAsuUm+FRL00ohaleU7AEO?=
- =?us-ascii?Q?/i75AldnZJViFlCd53w02TF4SuzsrdM=3D?=
-X-OriginatorOrg: renesas.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: aa0ecbc1-bc30-4842-2885-08da3d94030c
-X-MS-Exchange-CrossTenant-AuthSource: OS3PR01MB6593.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 May 2022 14:45:14.6146
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: iTUz2srqQ81tHP0haR8mJGIGuME0kOF2r8pm+sW1XelBSzIjYQi12BVJho6aCedtM9q1SZPMCC1Qos0+4M8I7g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TY2PR01MB2042
+References: <20220519082552.117736-1-wangkefeng.wang@huawei.com>
+ <20220519082552.117736-5-wangkefeng.wang@huawei.com> <CAK8P3a1DbNY6NzcwzjVFvd9yw6L3YBHQos_hmE=nG=6cuv1DAg@mail.gmail.com>
+ <4c848b48-6ddf-664a-6296-d85ab49a694d@huawei.com>
+In-Reply-To: <4c848b48-6ddf-664a-6296-d85ab49a694d@huawei.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Tue, 24 May 2022 16:47:16 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a19S8CFxJKQo_8UXSKA0L8J40DsjL+u649oDhqUPHSW7A@mail.gmail.com>
+Message-ID: <CAK8P3a19S8CFxJKQo_8UXSKA0L8J40DsjL+u649oDhqUPHSW7A@mail.gmail.com>
+Subject: Re: [PATCH v3 4/6] mm: ioremap: Add arch_ioremap/iounmap()
+To:     Kefeng Wang <wangkefeng.wang@huawei.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Anshuman Khandual <anshuman.khandual@arm.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:kaTJBZ5VHVv+NdGJG/YeK5ApS4Sya1LuUUGGg2m8W8ROVcuexuz
+ mzAlGBdLjM4+B0qBThXwatOhfoPVfwvZXxFcMmSW4WkphVwb0eaEBaXD9kCbL6QRpaUIZHT
+ KNDZ3Lur3qPx5Fa4VaVPgy0oqA5nQuwGCaqOh9C1BIx5vJB0X5K2rr0iF52cU/tTCAja5CX
+ 9bspYoWfmlvs8hBpZjP/A==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:F8JyZP6UEVA=:km8znRQULAmSfpTaexmwYS
+ HGn8jL8RJsWWZdpd1Vj40HYPWaPCwY0FAq7lLcBD9gBdCLAnezRLW9VzxfzllIxZttI3s+h95
+ SD1TP9ECo9qYI/pEYnZcp7G2J2FBVeBeunRfgyrdx9xhnq8m0CM1Jsb+TCeEKVgZNh/fdd3HS
+ sKLBKsIpm9k3zqR1nE7DTXeGxvtA7rVp7YBTzFeXeDICqmt4gy2Sd8zoeMG8d+k+Eob6z1GNv
+ w3SBTxRNRpfhOuuPMvAW2YseeuVmh2mR0mQdS6eG4Bn3TOuceseai57dj6wpKcXgL93lbktkt
+ xv13y1VOuWBM2BeoGUFk4DlRtnIHjxNkDKomwGEQEu2v7kMRw5dDEmU7925bmVVx6BNa8ZnN+
+ DdkKEfkIpWLGytuesVoaAOs1zgcS4az2QswKdlVMtPBiRw6jQcsM+KRp/N7r5FuzSUFuD7rI8
+ KZZ4YDZelKigOJK/XOKmsWghuKMmNyCttaUd2mo5NqyxjZeBTbM+XUQ83gpRJl/WqgXPVlpmH
+ s1yGG2olO+8hwakr6k2QHpw+/lIZoBRRw7do7SUdzqT5bWIP3uwdVlrf5tzngmetJKBBT5cw/
+ fe8z5m0zildzxZGhsbVMsJQ46tNb2tVNeK9P4+kp38Ige+Jm5pEsmLJdgyq8m2/7TgGyiCIxU
+ tVZkzeiwtXnXEzQmaLjVxpFV/q7nwfL9aIePymVQNRKeH8+IWbX3RC/tzcOdzoLmflsDn4wVl
+ ciS5ryir/lI2bvjXUBmktjRg65N2dwHWzEt2ho2+xcn3h0jpjmgs0ZPXrrAOB6gvWFmDqWd4t
+ 8la0ytXB7ay4r4zYel7di4yPtCffM4gSaLHlAK5XG9bOkrG+l7V6k40IP4CQ3QPb6FfQ92Zb1
+ UvlV5ee/FF5WKvJ6csaA==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-is_single_shot should return false for the power_of_2 mask
+On Tue, May 24, 2022 at 4:32 PM Kefeng Wang <wangkefeng.wang@huawei.com> wrote:
+> On 2022/5/24 20:37, Arnd Bergmann wrote:
+> > On Thu, May 19, 2022 at 10:25 AM Kefeng Wang <wangkefeng.wang@huawei.com> wrote:
+> >> Add special hook for architecture to verify or setup addr, size
+> >> or prot when ioremap() or iounmap(), which will make the generic
+> >> ioremap more useful.
+> >>
+> >>    arch_ioremap() return a pointer,
+> >>      - IS_ERR means return an error
+> >>      - NULL means continue to remap
+> >>      - a non-NULL, non-IS_ERR pointer is directly returned
+> >>    arch_iounmap() return a int value,
+> >>      - 0 means continue to vunmap
+> >>      - error code means skip vunmap and return directly
+> >>
+> >> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+> > I don't really like interfaces that mix error pointers and NULL pointer
+> > returns.
+> >
+> > Would it be possible to have a special error code other than NULL
+> > for the fallback case?
+>
+> I don't find a good error code, maybe  ENOTSUPP, any better suggestion?
 
-Fixes: b95fcd0e776f ("ptp: ptp_clockmatrix: Add PTP_CLK_REQ_EXTTS support")
-Signed-off-by: Min Li <min.li.xe@renesas.com>
----
--Add Fixes tag
+I had another look at the resulting arm64 function, and it appears that
+you never actually return a non-error pointer here. If I didn't miss anything,
+I think the best way would be to change the return type to just indicate
+success or an error code, and drop the case of returning the actual result,
+and changing the function name accordingly.
 
- drivers/ptp/ptp_clockmatrix.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Would that work, or do you actually require returning an __iomem
+token from somewhere else?
 
-diff --git a/drivers/ptp/ptp_clockmatrix.c b/drivers/ptp/ptp_clockmatrix.c
-index cb258e1..c9d451b 100644
---- a/drivers/ptp/ptp_clockmatrix.c
-+++ b/drivers/ptp/ptp_clockmatrix.c
-@@ -267,7 +267,7 @@ static int arm_tod_read_trig_sel_refclk(struct idtcm_channel *channel, u8 ref)
- static bool is_single_shot(u8 mask)
- {
- 	/* Treat single bit ToD masks as continuous trigger */
--	return mask <= 8 && is_power_of_2(mask);
-+	return !(mask <= 8 && is_power_of_2(mask));
- }
- 
- static int idtcm_extts_enable(struct idtcm_channel *channel,
--- 
-2.7.4
-
+       Arnd
