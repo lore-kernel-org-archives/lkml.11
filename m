@@ -2,196 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8213DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 19:52:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C91C5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 19:52:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241057AbiEXTwY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 15:52:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39398 "EHLO
+        id S240009AbiEXTwc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 15:52:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235969AbiEXTwT (ORCPT
+        with ESMTP id S241072AbiEXTwa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 15:52:19 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B21352E52
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 12:52:18 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id n18so16738226plg.5
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 12:52:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=jqoWghnRf4IApUvhfymreoEWbSDArTcoutoZjM72nXw=;
-        b=EO0wzmRiymk1VXgWWvRRc3IHLLstcNdXRpjX+Qa/zhBCeIa2SsovD9R4dbZnORQcKn
-         0PZkzsed6rURkYHuk1sc0+T3gfc+W2e9X472k+b53Yvdk84aAiZALjWq3FaN5kE2PsYu
-         7sH8pkQe344lomsZEo8R5RF/g6Z0uKDLmtsts=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=jqoWghnRf4IApUvhfymreoEWbSDArTcoutoZjM72nXw=;
-        b=GxBmHaOCCKf3kJMl+nO28JaTFq12hA9GMBqjOFscT40HHW5r0M1dGttcnZu1ub7TkO
-         VeCRWzOyZXFqN7A/Y544ZfjaPvYvQOnwFbbqZe3TUi9T8TPnygQRzg7vEtSx8/cia9jD
-         XskW5l2RmewZB0yOYVp+HJpfefS3Rppg/TOOrvPlxVBL/SiHhEn8fbdDfBvF/4waauLE
-         wMMVJCSGjTWncIyTlj78TorSpH7/p+ZQnT8wmVKNshXGlc7KGbdIyiNIvBqJROlIiU6F
-         jq2q9uV15A6WPqG149RyriQzapBCARx8LvR6il7WUUapblXbZDcV8vvDm++JBA3VbS7F
-         2INw==
-X-Gm-Message-State: AOAM530LJXj2mK+gESmB3WlMv63pInk0/Be3iM9FS/+dhAtK0LaJ0xRU
-        gErxLA4Dkvkg4MHDIS3fz+WCbg==
-X-Google-Smtp-Source: ABdhPJxYA5tWQzLCi4DBahLvoLKWqro2fm9zEi8W+x+XadWNi0GLmwBwwM5KV4GMoCy0dGBpiZhVRg==
-X-Received: by 2002:a17:90b:4b90:b0:1e0:1b0:1a1 with SMTP id lr16-20020a17090b4b9000b001e001b001a1mr6348302pjb.70.1653421937516;
-        Tue, 24 May 2022 12:52:17 -0700 (PDT)
-Received: from localhost ([2620:15c:11a:202:d9e2:8472:9ac:8532])
-        by smtp.gmail.com with UTF8SMTPSA id t28-20020a62d15c000000b0050dc762815csm9767703pfl.54.2022.05.24.12.52.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 24 May 2022 12:52:17 -0700 (PDT)
-Date:   Tue, 24 May 2022 12:52:15 -0700
-From:   Matthias Kaehlcke <mka@chromium.org>
-To:     Tzung-Bi Shih <tzungbi@kernel.org>
-Cc:     bleung@chromium.org, groeck@chromium.org, robh+dt@kernel.org,
-        chrome-platform@lists.linux.dev, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 5/5] platform/chrome: cros_kbd_led_backlight: support
- EC PWM backend
-Message-ID: <Yo03b5GtGgF/kVb3@google.com>
-References: <20220321085547.1162312-1-tzungbi@kernel.org>
- <20220321085547.1162312-6-tzungbi@kernel.org>
- <YobHVST2Nfn+z8n6@google.com>
- <YocewB/lLJhIAuQP@google.com>
- <YoezzzLdVfb0K7Ak@google.com>
- <Yosc/6izBDYYKpFC@google.com>
+        Tue, 24 May 2022 15:52:30 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 399235AA53
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 12:52:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653421947;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=vsoL5BUtwGtn8srjaBAKLRmvlrQ5HvOClw2yb5AYOdQ=;
+        b=UBrCsITgFApKa9lSS0hQz0i47swfTVDu5GcxRNYGStigCl6ZTpnmSx1OfqlQFsUD0GDdQi
+        Vg1k0jFsrpZBUYRSWE89o55M8lWYacdCnj9cM0IQ8yeZIexOEjsh/CAFwQsYLtUvtTN26n
+        9z5WiC38cZ3lPr8v2pjiFzyL6pvyrAE=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-416--36m1xhvMhaLbWszLzkDTg-1; Tue, 24 May 2022 15:52:23 -0400
+X-MC-Unique: -36m1xhvMhaLbWszLzkDTg-1
+Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 11160185A7B2;
+        Tue, 24 May 2022 19:52:23 +0000 (UTC)
+Received: from [10.22.8.146] (unknown [10.22.8.146])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 876CE401E4C;
+        Tue, 24 May 2022 19:52:22 +0000 (UTC)
+Message-ID: <78de6197-7de6-9fe7-9567-1321c06c6e9b@redhat.com>
+Date:   Tue, 24 May 2022 15:52:22 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <Yosc/6izBDYYKpFC@google.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v4 04/11] mm: vmscan: rework move_pages_to_lru()
+Content-Language: en-US
+To:     Muchun Song <songmuchun@bytedance.com>, hannes@cmpxchg.org,
+        mhocko@kernel.org, roman.gushchin@linux.dev, shakeelb@google.com
+Cc:     cgroups@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, duanxiongchun@bytedance.com
+References: <20220524060551.80037-1-songmuchun@bytedance.com>
+ <20220524060551.80037-5-songmuchun@bytedance.com>
+From:   Waiman Long <longman@redhat.com>
+In-Reply-To: <20220524060551.80037-5-songmuchun@bytedance.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 23, 2022 at 01:34:55PM +0800, Tzung-Bi Shih wrote:
-> On Fri, May 20, 2022 at 08:29:19AM -0700, Matthias Kaehlcke wrote:
-> > On Fri, May 20, 2022 at 12:53:20PM +0800, Tzung-Bi Shih wrote:
-> > > On Thu, May 19, 2022 at 03:40:21PM -0700, Matthias Kaehlcke wrote:
-> > > > On Mon, Mar 21, 2022 at 04:55:47PM +0800, Tzung-Bi Shih wrote:
-> > > > > +struct keyboard_led_private {
-> > > > 
-> > > > Why 'private', isn't this more a 'cros_ec_kdb_bl' or similar?
-> > > 
-> > > It is just drvdata.
-> > 
-> > The data structure represents an instance of the device, as such it
-> > is an important part of the driver, drvdata is just a way to attach
-> > it to the platform device.
-> > 
-> > > I would prefer to keep the original prefix "keyboard_led_" if you wouldn't
-> > > have strong opinion.
-> > 
-> > I'm fine with 'keyboard_led', but object to the 'private' part. In the
-> > kernel 'private' fields are typically used when a driver consists of a
-> > generic part and a device specific part. The driver has a 'private'
-> > void* field that points to a device specific data structure about which
-> > the generic driver is agnostic. This data structure is only used by the
-> > device specific implementation. That isn't the case here, so naming the
-> > structure anything 'private' is misleading.
-> 
-> The struct in the case is device specific.  I don't see a problem to name it
-> *private* as there are a lot of more existing examples.
-> 
-> $ grep -R 'struct .*_priv.* {' drivers/
-> drivers/pinctrl/bcm/pinctrl-bcm6358.c:struct bcm6358_priv {
-> 
-> $ grep -R 'struct .*_priv.* {' sound/soc/codecs/
-> sound/soc/codecs/rt286.c:struct rt286_priv {
-> 
-> I would get rid of the term "private" if it could be confusing.
+On 5/24/22 02:05, Muchun Song wrote:
+> In the later patch, we will reparent the LRU pages. The pages moved to
+> appropriate LRU list can be reparented during the process of the
+> move_pages_to_lru(). So holding a lruvec lock by the caller is wrong, we
+> should use the more general interface of folio_lruvec_relock_irq() to
+> acquire the correct lruvec lock.
+>
+> Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+> ---
+>   mm/vmscan.c | 49 +++++++++++++++++++++++++------------------------
+>   1 file changed, 25 insertions(+), 24 deletions(-)
+>
+> diff --git a/mm/vmscan.c b/mm/vmscan.c
+> index 1678802e03e7..761d5e0dd78d 100644
+> --- a/mm/vmscan.c
+> +++ b/mm/vmscan.c
+> @@ -2230,23 +2230,28 @@ static int too_many_isolated(struct pglist_data *pgdat, int file,
+>    * move_pages_to_lru() moves pages from private @list to appropriate LRU list.
+>    * On return, @list is reused as a list of pages to be freed by the caller.
+>    *
+> - * Returns the number of pages moved to the given lruvec.
+> + * Returns the number of pages moved to the appropriate LRU list.
+> + *
+> + * Note: The caller must not hold any lruvec lock.
+>    */
+> -static unsigned int move_pages_to_lru(struct lruvec *lruvec,
+> -				      struct list_head *list)
+> +static unsigned int move_pages_to_lru(struct list_head *list)
+>   {
+> -	int nr_pages, nr_moved = 0;
+> +	int nr_moved = 0;
+> +	struct lruvec *lruvec = NULL;
+>   	LIST_HEAD(pages_to_free);
+> -	struct page *page;
+>   
+>   	while (!list_empty(list)) {
+> -		page = lru_to_page(list);
+> +		int nr_pages;
+> +		struct folio *folio = lru_to_folio(list);
+> +		struct page *page = &folio->page;
+> +
+> +		lruvec = folio_lruvec_relock_irq(folio, lruvec);
+>   		VM_BUG_ON_PAGE(PageLRU(page), page);
+>   		list_del(&page->lru);
+>   		if (unlikely(!page_evictable(page))) {
+> -			spin_unlock_irq(&lruvec->lru_lock);
+> +			unlock_page_lruvec_irq(lruvec);
+>   			putback_lru_page(page);
+> -			spin_lock_irq(&lruvec->lru_lock);
+> +			lruvec = NULL;
+>   			continue;
+>   		}
+>   
+> @@ -2267,20 +2272,16 @@ static unsigned int move_pages_to_lru(struct lruvec *lruvec,
+>   			__clear_page_lru_flags(page);
+>   
+>   			if (unlikely(PageCompound(page))) {
+> -				spin_unlock_irq(&lruvec->lru_lock);
+> +				unlock_page_lruvec_irq(lruvec);
+>   				destroy_compound_page(page);
+> -				spin_lock_irq(&lruvec->lru_lock);
+> +				lruvec = NULL;
+>   			} else
+>   				list_add(&page->lru, &pages_to_free);
+>   
+>   			continue;
+>   		}
+>   
+> -		/*
+> -		 * All pages were isolated from the same lruvec (and isolation
+> -		 * inhibits memcg migration).
+> -		 */
+> -		VM_BUG_ON_PAGE(!folio_matches_lruvec(page_folio(page), lruvec), page);
+> +		VM_BUG_ON_PAGE(!folio_matches_lruvec(folio, lruvec), page);
+>   		add_page_to_lru_list(page, lruvec);
+>   		nr_pages = thp_nr_pages(page);
+>   		nr_moved += nr_pages;
+> @@ -2288,6 +2289,8 @@ static unsigned int move_pages_to_lru(struct lruvec *lruvec,
+>   			workingset_age_nonresident(lruvec, nr_pages);
+>   	}
+>   
+> +	if (lruvec)
+> +		unlock_page_lruvec_irq(lruvec);
+>   	/*
+>   	 * To save our caller's stack, now use input list for pages to free.
+>   	 */
+> @@ -2359,16 +2362,16 @@ shrink_inactive_list(unsigned long nr_to_scan, struct lruvec *lruvec,
+>   
+>   	nr_reclaimed = shrink_page_list(&page_list, pgdat, sc, &stat, false);
+>   
+> -	spin_lock_irq(&lruvec->lru_lock);
+> -	move_pages_to_lru(lruvec, &page_list);
+> +	move_pages_to_lru(&page_list);
+>   
+> +	local_irq_disable();
+>   	__mod_node_page_state(pgdat, NR_ISOLATED_ANON + file, -nr_taken);
+>   	item = current_is_kswapd() ? PGSTEAL_KSWAPD : PGSTEAL_DIRECT;
+>   	if (!cgroup_reclaim(sc))
+>   		__count_vm_events(item, nr_reclaimed);
+>   	__count_memcg_events(lruvec_memcg(lruvec), item, nr_reclaimed);
+>   	__count_vm_events(PGSTEAL_ANON + file, nr_reclaimed);
+> -	spin_unlock_irq(&lruvec->lru_lock);
+> +	local_irq_enable();
+>   
+>   	lru_note_cost(lruvec, file, stat.nr_pageout);
+>   	mem_cgroup_uncharge_list(&page_list);
+> @@ -2498,18 +2501,16 @@ static void shrink_active_list(unsigned long nr_to_scan,
+>   	/*
+>   	 * Move pages back to the lru list.
+>   	 */
+> -	spin_lock_irq(&lruvec->lru_lock);
+> -
+> -	nr_activate = move_pages_to_lru(lruvec, &l_active);
+> -	nr_deactivate = move_pages_to_lru(lruvec, &l_inactive);
+> +	nr_activate = move_pages_to_lru(&l_active);
+> +	nr_deactivate = move_pages_to_lru(&l_inactive);
+>   	/* Keep all free pages in l_active list */
+>   	list_splice(&l_inactive, &l_active);
+>   
+> +	local_irq_disable();
+>   	__count_vm_events(PGDEACTIVATE, nr_deactivate);
+>   	__count_memcg_events(lruvec_memcg(lruvec), PGDEACTIVATE, nr_deactivate);
+> -
+>   	__mod_node_page_state(pgdat, NR_ISOLATED_ANON + file, -nr_taken);
+> -	spin_unlock_irq(&lruvec->lru_lock);
+> +	local_irq_enable();
+>   
+>   	mem_cgroup_uncharge_list(&l_active);
+>   	free_unref_page_list(&l_active);
 
-Ok, I hadn't come across that use of 'private' yet, but apparently it's not
-that uncommon. Personally I prefer variables with specific names, but maybe
-for others 'private' just spells out clearly what a struct is about ¯\_(ツ)_/¯
+Note that the RT engineers will likely change the 
+local_irq_disable()/local_irq_enable() to 
+local_lock_irq()/local_unlock_irq().
 
-> > > > > +static int keyboard_led_init_ec_pwm(struct platform_device *pdev)
-> > > > > +{
-> > > > > +	struct keyboard_led_private *private = platform_get_drvdata(pdev);
-> > > > > +
-> > > > > +	private->ec = dev_get_drvdata(pdev->dev.parent);
-> > > > > +	if (!private->ec) {
-> > > > > +		dev_err(&pdev->dev, "no parent EC device\n");
-> > > > > +		return -EINVAL;
-> > > > > +	}
-> > > > 
-> > > > The only thing this 'init' function does is assigning private->ec. Wouldn't
-> > > > it be clearer to do this directly in probe() from where callback is called?
-> > > > It could be with the condition that the device as a DT node.
-> > > 
-> > > No.  The probe() isn't aware of the device is from ACPI or OF.
-> > 
-> > But it could be:
-> > 
-> > 	if (pdev->dev.of_node)
-> > 		kbd_led->ec = dev_get_drvdata(pdev->dev.parent);
-> 
-> The 'init' callback isn't only for OF but also ACPI.  I would prefer to keep
-> the 'init' function and let probe() have no awareness about them.
+Cheers,
+Longman
 
-Ah ok, then it makes sense, I think my brain conflated this with the unnecessary
-keyboard_led_init_acpi_null stub.
-
-> > > > Is it actually possible that the keyboard backlight device gets instantiated
-> > > > if there is no EC parent?
-> > > 
-> > > It shouldn't be but just in case.
-> > 
-> > If this can only occur due to an error in common kernel frameworks then
-> > the check should be omitted IMO.
-> 
-> The check is referenced from [1].  I would prefer to keep it instead of
-> crashing kernel if anything went wrong.
-> 
-> [1]: https://elixir.bootlin.com/linux/v5.18-rc7/source/drivers/pwm/pwm-cros-ec.c#L244
-
-Ok, maybe there are cases where the EC parent could go away. Let's hope it
-doesn't happen after the keyboard backlight got probed :)
-
-> > 
-> > > > > +static const struct keyboard_led_drvdata keyboard_led_drvdata_ec_pwm = {
-> > > > > +	.init = keyboard_led_init_ec_pwm_null,
-> > > > 
-> > > > Is this really needed?
-> > > > 
-> > > > keyboard_led_probe() checks if .init is assigned before invoking the callback:
-> > > > 
-> > > > 	if (drvdata->init) {
-> > > > 		error = drvdata->init(pdev);
-> > > > 
-> > > > The whole 'else' branch could be eliminated if .of_match_table of the driver
-> > > > only is assigned when CONFIG_CROS_KBD_LED_BACKLIGHT_EC_PWM is set. IMO that
-> > > > would preferable over creating 'stubs'.
-> > > 
-> > > CONFIG_CROS_KBD_LED_BACKLIGHT_EC_PWM and CONFIG_OF are independent.  The stubs
-> > > were created to avoid compile errors if CONFIG_OF=y but
-> > > CONFIG_CROS_KBD_LED_BACKLIGHT_EC_PWM=n.
-> > 
-> > Is there functional version of the driver that uses instantiation through the
-> > device tree if CONFIG_CROS_KBD_LED_BACKLIGHT_EC_PWM=n? If not .of_match_table
-> > should not be assigned.
-> 
-> CONFIG_CROS_KBD_LED_BACKLIGHT_EC_PWM and CONFIG_OF are independent.
-> CONFIG_CROS_KBD_LED_BACKLIGHT_EC_PWM is also designed to work with CONFIG_ACPI.
-
-I understand that CONFIG_CROS_KBD_LED_BACKLIGHT_EC_PWM also works with
-CONFIG_ACPI, but in that case the driver uses .acpi_match_table, not
-.of_match_table. So you wouldn't have to define 'keyboard_led_of_match'
-if you did this:
-
-static struct platform_driver keyboard_led_driver = {
-        .driver         = {
-                .name   = "chromeos-keyboard-leds",
-                .acpi_match_table = ACPI_PTR(keyboard_led_acpi_match),
-#ifdef CONFIG_OF
-		.of_match_table = of_match_ptr(keyboard_led_of_match),
-#endif
-        },
-        .probe          = keyboard_led_probe,
-;
