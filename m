@@ -2,178 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A67E4C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 21:22:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BDA7C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 21:23:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241905AbiEXVWm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 17:22:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52580 "EHLO
+        id S241910AbiEXVXN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 17:23:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241906AbiEXVWk (ORCPT
+        with ESMTP id S235078AbiEXVXL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 17:22:40 -0400
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2082.outbound.protection.outlook.com [40.107.244.82])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 507937A81F
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 14:22:38 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XUhqT3dl4q8vrM/cGX6/fHA6vODfU1atNN9sZnx0N9hN+JWZCcbdiMGFxeNSsssG0/p7bmQRn8Yd20vEMj1WR7kscHtAR0sxppY3bBzZuIhTrsy6HZvh9ORB6HLj9PesmBu/GpogCfT8qFs4GPOWLg8yHsrno+9/b9vp51gYhbxwYb4qZlGJSUxamHBhp4p8N8BfHmhbsvd7KVwwp1kI7/oeb1JGHus5JqS97I7J6ULLzLC07czCk3TpN0gTvNWfiIo+sb9yIhJZAfwfRDJPfRWMhjR37svimTiwARZNw8WW0IMaXkGYP2STiCPlsFEIgutUAu78pdUPskITkcPsKg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=NO63I70VqYYwsU6EXYUGmnEVy5HV0QNGQOGXBjL1zaw=;
- b=mIkwDfkG8BoMTY+1IDhGkTb8Mhy6pcdYMIVUsrY3VVmeNGyjIWkZvXdsV0F2vU3gpwcYQvJ3P/CUM5NVy+bvI9DWvRzHofkP2Y0aAaiBYiZriJtSqg8kpmRjhtEz/WJIZMq87ojVRJPAifVcefAcNqDCVw/aSJLnACpqI+ax2Zb8ruq0/6bcWggZQErnVk9wsM6ZaXShsOgEcp1CV8m6RhFTfddAy/jUPfzJJZSPMF+XLzpBQ6Kf2QFKZG2q847aCH7n9J84UjiKO54NGzYL/KIAHUWHIQuy5Zy5CEVj7i+moAyfThWUtcTrLb3QeiRbbREwR2FRdxjQ35QQk1VbrA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NO63I70VqYYwsU6EXYUGmnEVy5HV0QNGQOGXBjL1zaw=;
- b=UAlFE3WGYeVXNoBoKLCg1oPohKWItyzciUY2spO9+0h9iXcLg5TJtejwMsr4YqBVElqvpF+32kqf8bXBWjp3Rc++A+nFO8l5kAowc9dkPyzXXy/0woS/1m7NKQexlWdW5dlUeJvLMRXRjYKT/UAZWxeRG0lWWiAx7Qbsq2AaYLk=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DM6PR12MB3370.namprd12.prod.outlook.com (2603:10b6:5:38::25) by
- MN2PR12MB4110.namprd12.prod.outlook.com (2603:10b6:208:1dd::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.14; Tue, 24 May
- 2022 21:22:35 +0000
-Received: from DM6PR12MB3370.namprd12.prod.outlook.com
- ([fe80::f85e:63df:8fde:b620]) by DM6PR12MB3370.namprd12.prod.outlook.com
- ([fe80::f85e:63df:8fde:b620%5]) with mapi id 15.20.5293.013; Tue, 24 May 2022
- 21:22:35 +0000
-Message-ID: <be333969-560d-36da-79cc-9d223ad675a2@amd.com>
-Date:   Tue, 24 May 2022 17:22:29 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH] drm/amdgpu/discovery: make amdgpu_discovery_get_mall_info
- static
-Content-Language: en-CA
-To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
-        alexander.deucher@amd.com
-Cc:     christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
-        daniel@ffwll.ch, Likun.Gao@amd.com, flora.cui@amd.com,
-        yifan1.zhang@amd.com, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Abaci Robot <abaci@linux.alibaba.com>
-References: <20220524081154.35061-1-jiapeng.chong@linux.alibaba.com>
-From:   Luben Tuikov <luben.tuikov@amd.com>
-In-Reply-To: <20220524081154.35061-1-jiapeng.chong@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: BL1P222CA0022.NAMP222.PROD.OUTLOOK.COM
- (2603:10b6:208:2c7::27) To DM6PR12MB3370.namprd12.prod.outlook.com
- (2603:10b6:5:38::25)
+        Tue, 24 May 2022 17:23:11 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57AEA71A24
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 14:23:10 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: dmitry.osipenko)
+        with ESMTPSA id 36DE91F44798
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1653427388;
+        bh=+4kY50wvvK8xnfpL7EAb+VQqUenC2VyyO6SNi5GVpOE=;
+        h=From:To:Cc:Subject:Date:From;
+        b=RyqEPqC7N8HkeMwEeJ5oYO9oIji6w9zMNumE8OwDsEls/1s1SLhXRonUSz2oCItTb
+         M0uKojoWMkkwjsxx3RfpQdpHCAaqQpuE/aS1UvYGnEpZrnVNjMtVOmAcQFB51ql7qm
+         SpEs/Qo0h2pceUDpyCqUQMednqVsNGcIpwzp46J/VZQQo5Xaozn365hlqK+t2r1189
+         TmPEZi8xhie3GjGY/Ke1JHN8IjsA79V3JfEqu1xmlEBnlG9roC9WFsHTGqBqPI8y4j
+         E0gzC5mBB8Zgo3d/aQlBhSuByw9QQNt2M/ZU5gQESXtt7jLPK5ph0G5cci2p7XLzyM
+         kK/cBYHqMRGsg==
+From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
+To:     "Rafael J . Wysocki" <rafael@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [PATCH v1] kernel/reboot: Change registration order of legacy power-off handler
+Date:   Wed, 25 May 2022 00:21:18 +0300
+Message-Id: <20220524212118.425702-1-dmitry.osipenko@collabora.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1919e209-3750-4eba-7586-08da3dcb8581
-X-MS-TrafficTypeDiagnostic: MN2PR12MB4110:EE_
-X-Microsoft-Antispam-PRVS: <MN2PR12MB41102E7C5DB15058F758155C99D79@MN2PR12MB4110.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: oFBvB/bSEuXagkJFHmoFBO6hDo6RM6Gv7UtAzyCd/jE2lWhF9edhAo9ttMJ5TgKIlxkqsY6JqveaZlkO0i9HnFAvYPeuyM+iDfJslFRkTIkGdr3k1JQ/SeTebMjaszf0Qz37gYxt2GpCE/u9+AuerOjoBOnaH4v7mn6HAMZ9AYp6/9JUXxIyhIqgztRMtXeCf1hG1zGtuI1g/kqUmEApZrrzueqYw38ssMwhqQUQE3X1os2bY5B9/NlNgkzwFPqnX2+TXPv/6GAftip7sOWNYTPiVJOl/CHoy9qPDBJYuK4n0jQGc9FrkPA8orv+aA57JXctcfP4bWHjB0lljwXSau6r48i5rFV/oPaWAuRBuoqHhxkdL0J1pqxqqJPB4B5J0oj/t4b/dwoFeXUlApMkCU5kqtlBDf2QQw7iOw1ckxq79NXZjbY8Kak4XK4VTgXbX661T/7rwg3eA8N5aSgQXc9OTXioE4XVbi/jLl5e0UW4umm5ywFDdkEYfxzhejc+jgd44zYn3PaIfR4haTueEMimgdYiZjIWkTzevWNRCVrWvsMDaeSmUIc6OwKSy8yDer8PFs5BOzIJdZkCb753gpl+BsAtOCMEGk6XcYPQJcjJKtjdmcgHBBHLKoOZkrhFyptLUsmhr2lMZQZe5Q+84R/BXhtKw4QR4I6+ZUxsjbxKNNU6/YJDU2YtDWsUjqfUNUBU7zGqsTfpTEYvyDgRMQ/kK36qKYbZK3OqaoqmV4o=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3370.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(2616005)(31686004)(36756003)(38100700002)(2906002)(66556008)(186003)(508600001)(5660300002)(4326008)(6486002)(316002)(53546011)(6636002)(8676002)(83380400001)(6666004)(31696002)(6512007)(6506007)(8936002)(26005)(86362001)(44832011)(66946007)(66476007)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?OW9UbTB3QnRHa0Yrd2kxT1NyaGdyVFU5bHQ2NmpSeGVzb2x4Q2l4VjZ3aVB0?=
- =?utf-8?B?cWJPZCtIOUZBNytKeVlrNUljUnVKNzN2VjZJU3I2VWZPM0RBTnBlVXpSZjFM?=
- =?utf-8?B?N3l1YUZFK29UTVNZZFBhM21ZZHpqcGkwZDNjenQyRmtYZ0NEZ2pIRjBUTEpi?=
- =?utf-8?B?QmExa2VBS0ZzUHVobE5SZ0xmdzR5RVFlVmJXSjF3R1lhWE5pdlZCa2xDcnRM?=
- =?utf-8?B?alovVTd2TjhDcnBQaHVxK3VYYWg3cmlOdjlPcXFhTHdxYmp3NWY2QmRZKzRC?=
- =?utf-8?B?aUNKM0FWdC9XK0JkZmFYeUJrdFpxZGhmNXdUSXZzZzVzbDNwVFVOeGNFS0wy?=
- =?utf-8?B?eUtSOVBFcjNOTFVOK2FoQThJUTNWUmxQVDV1NmVnMDlRdWtVL2F6RWZyYWpm?=
- =?utf-8?B?dUViUWZrZWc4UHhSQzlRWDRPaHMyWS9Fb0VaWEhwQUxTMXNvT2ptaTFDRW1y?=
- =?utf-8?B?SGtpazhIMU1UeUxTTGhrMXNvTFd4akRaVTFtM1RlSXZRTktFb1JnWXoyQ083?=
- =?utf-8?B?bTFaN1dPaWJFc1A1WjAyTVhyK3BIWjNyVTZibDhyRlVhb2sxN2NlL3BZMUZ0?=
- =?utf-8?B?OXdybEY0dXRDSWhhSk5uODBMdk5QeTQzNjhJRDM0bjdHdU5qMjYrTnB2eng0?=
- =?utf-8?B?TDREeHJScXI5VURNaFRkcnI3RkpmbHNnZEJDWnRHa0NpSVcrMHJDcFliSEdl?=
- =?utf-8?B?cWpQdlZiUGxUaW1DbGpaaEdGVk5ENWcrM251Q3M1WDVCMGdUTEVjT1FtSXpx?=
- =?utf-8?B?SXg2WVhaeU5tSXM4cGY3bGhaSjVHaWQ0MkgzTWVFVE1LcDNZblZqQlZFc0R6?=
- =?utf-8?B?aTAyV0hEejJ3Y3NQQ2tacngwbU55RCtPU0JuTFNkOVdhZWkrWlA5MDVaVmhl?=
- =?utf-8?B?ckpCdzBVMDF4TzNoaDFxTUpSN21zMkt6QUpJVHBSTGVURFMyQXRzV250Ukc1?=
- =?utf-8?B?Tm5vd3lQNEgxSU1yVjV6bWNqa01vWDdGcERHQWVwbWh0dGVJTmFsbmFDUmJF?=
- =?utf-8?B?VlMvZmZ3dE53U1hrU1lvNzRIc3Q2VHAyTndPcjJQUG5aWTZtZUVkWVpWZjQz?=
- =?utf-8?B?dTRvN3UrOElTd2hoVG9rTmFtRUkyRUdWMkRyRnIyaVR1b1R6elhGOUg4YWF4?=
- =?utf-8?B?NE5qQnhYMDBTOHhoSnFweXhEU3pZVnFQQ015WlY1azB6OEtWOXpwYlFYVFFO?=
- =?utf-8?B?MDJrTXg2OGhwVXRyUG9JZVdsek9JbHZkbGluZjRSRmhYdHRFckdSa1NHRHFF?=
- =?utf-8?B?cE9XWG9NSk5meCtneVN3ckV4MEJGQ21IdlV3U2swdEhhbG9iWDNiaHMrRURm?=
- =?utf-8?B?ZVdlWjVlUTZUWmxFWmpCMWhZS0FHN3pnMk9ZZ0NaVEFqMW5zVWdUSEVadkw4?=
- =?utf-8?B?T1VTZG1WYWQwSXBKeUM0OFV0aUUxVC9ZN3BEa2dPbXlteE92Y3lNNVZFbDNK?=
- =?utf-8?B?ZmhIaCtTTG12cEZhTHJvbjZscEJqT2drT3NHOTBUS0w5QU4yUWk1S0ZWdExs?=
- =?utf-8?B?eThpaXNsK3pRKzVjQlFCUi90V3lnbG5JRmUxanRtc2lXSnkrMnZ1SW1wVFpo?=
- =?utf-8?B?dkZCK0tmdnA1T2lrUlpWakhPYkpJb29rVlZwY2U3dFpWZkFiTEhrZStDN0U3?=
- =?utf-8?B?ajB5ZGpVNnNnYVZ5QUNodVhaeDRhQVJDVllWWWYyYytNZWpsaEVqKzBqa095?=
- =?utf-8?B?QStsUnhYWXRzeHlyWmJMUG43b3JnS1lmbE5YWmZDUXc1TVVuZjdLMG8wckxC?=
- =?utf-8?B?U2RmVTFUczJQMGRFNDBiemRVeUhQb0RlMk1rSmJzalphUjgrb3hScEl1Rzcv?=
- =?utf-8?B?YW5VdUVZd0VlNWpqSG5yQlJVUVhoc04zWnVnR1lkM3QrT2hDZzIyYTZOZlRG?=
- =?utf-8?B?cmRxRmpxeFh6dFRnMlp3RldwMGI5R3YrUlBlbDJjbTF4cDlsY29tbk1CRE1l?=
- =?utf-8?B?SFpzNDJsYSs3d2VpS2RtbmJZTS9mdmZ2bi9XQitXM0xxa3hhQnQ2MnZBUHJ5?=
- =?utf-8?B?ZSttazkrYTlrK0VGTWVlNU9ZR1k1RHBPaURwazMvdm5QcDNoa0JoT294ZjdG?=
- =?utf-8?B?QnR2eU1pYnBCTXYwMy9UejM2ekQ4RE9EV2FWSnlnNCsyYUhmekY4WkxTT2J0?=
- =?utf-8?B?TDArL3hjM2xRUW9RK1JDclBxZ2YxU3ozNGZqSkdxN1hGaVZIMzlaaStzNzY1?=
- =?utf-8?B?aFVXQzZuTjczYk5mdldJcGtpV2NiQUtwL0lBQk8rU1RPTkJUTWtHbFRkZ0JR?=
- =?utf-8?B?TW4wbjZHSi9JODJtMlRjaG9YcmhHSHBwMmVQUlYzZDB4NXZBb05HZUtCVDFR?=
- =?utf-8?B?Y0xOL2NlOFFrWmZxZUJpd0J2ZHM3WE9PdklmSWlqenhlcDBEYWZ1Zz09?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1919e209-3750-4eba-7586-08da3dcb8581
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3370.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 May 2022 21:22:35.5886
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: RBRKFvwvaTCRUu7dTvNMQGPIdJyztqKpgenOL3u+eZYCQeTjix7/Hwuh7tlx5bOZ
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4110
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is already static, in our local branch, from this commit:
+We're unconditionally registering sys-off handler for the legacy
+pm_power_off() callback, this causes problem for platforms that don't
+use power-off handlers at all and should be halted. Now reboot syscall
+assumes that there is a power-off handler installed and tries to power
+off system instead of halting it.
 
-commit 6852e61a0917a2
-Author: Evan Quan <evan.quan@amd.com>
-Date:   Thu May 19 17:28:12 2022 +0800
+To fix the trouble, move the handler's registration to the reboot syscall
+and check the pm_power_off() presence.
 
-    drm/amdgpu: suppress some compile warnings
-    
-    Suppress two compile warnings about "no previous prototype".
-    
-    Reported-by: kernel test robot <lkp@intel.com>
-    Signed-off-by: Evan Quan <evan.quan@amd.com>
-    Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+Fixes: 0e2110d2e910 ("kernel/reboot: Add kernel_can_power_off()")
+Reported-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+---
+ kernel/reboot.c | 33 +++++++++++++++++----------------
+ 1 file changed, 17 insertions(+), 16 deletions(-)
 
-Regards,
-Luben
-
-
-On 2022-05-24 04:11, Jiapeng Chong wrote:
-> This symbol is not used outside of amdgpu_discovery.c, so marks it static.
-> 
-> Fixes the following w1 warning:
-> 
-> drivers/gpu/drm/amd/amdgpu/amdgpu_discovery.c:1364:5: warning: no
-> previous prototype for ‘amdgpu_discovery_get_mall_info’
-> [-Wmissing-prototypes].
-> 
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-> ---
->  drivers/gpu/drm/amd/amdgpu/amdgpu_discovery.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_discovery.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_discovery.c
-> index 881570dced41..16cdfb30b013 100644
-> --- a/drivers/gpu/drm/amd/amdgpu/amdgpu_discovery.c
-> +++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_discovery.c
-> @@ -1361,7 +1361,7 @@ union mall_info {
->  	struct mall_info_v1_0 v1;
->  };
->  
-> -int amdgpu_discovery_get_mall_info(struct amdgpu_device *adev)
-> +static int amdgpu_discovery_get_mall_info(struct amdgpu_device *adev)
->  {
->  	struct binary_header *bhdr;
->  	union mall_info *mall_info;
-
-Regards,
+diff --git a/kernel/reboot.c b/kernel/reboot.c
+index 0bdc64ecf4f6..a091145ee710 100644
+--- a/kernel/reboot.c
++++ b/kernel/reboot.c
+@@ -569,22 +569,6 @@ static int legacy_pm_power_off(struct sys_off_data *data)
+ 	return NOTIFY_DONE;
+ }
+ 
+-/*
+- * Register sys-off handlers for legacy PM callbacks. This allows legacy
+- * PM callbacks co-exist with the new sys-off API.
+- *
+- * TODO: Remove legacy handlers once all legacy PM users will be switched
+- *       to the sys-off based APIs.
+- */
+-static int __init legacy_pm_init(void)
+-{
+-	register_sys_off_handler(SYS_OFF_MODE_POWER_OFF, SYS_OFF_PRIO_DEFAULT,
+-				 legacy_pm_power_off, NULL);
+-
+-	return 0;
+-}
+-core_initcall(legacy_pm_init);
+-
+ static void do_kernel_power_off_prepare(void)
+ {
+ 	blocking_notifier_call_chain(&power_off_prep_handler_list, 0, NULL);
+@@ -646,6 +630,7 @@ SYSCALL_DEFINE4(reboot, int, magic1, int, magic2, unsigned int, cmd,
+ 		void __user *, arg)
+ {
+ 	struct pid_namespace *pid_ns = task_active_pid_ns(current);
++	struct sys_off_handler *sys_off = NULL;
+ 	char buffer[256];
+ 	int ret = 0;
+ 
+@@ -670,6 +655,21 @@ SYSCALL_DEFINE4(reboot, int, magic1, int, magic2, unsigned int, cmd,
+ 	if (ret)
+ 		return ret;
+ 
++	/*
++	 * Register sys-off handlers for legacy PM callback. This allows
++	 * legacy PM callbacks temporary co-exist with the new sys-off API.
++	 *
++	 * TODO: Remove legacy handlers once all legacy PM users will be
++	 *       switched to the sys-off based APIs.
++	 */
++	if (pm_power_off) {
++		sys_off = register_sys_off_handler(SYS_OFF_MODE_POWER_OFF,
++						   SYS_OFF_PRIO_DEFAULT,
++						   legacy_pm_power_off, NULL);
++		if (IS_ERR(sys_off))
++			return PTR_ERR(sys_off);
++	}
++
+ 	/* Instead of trying to make the power_off code look like
+ 	 * halt when pm_power_off is not set do it the easy way.
+ 	 */
+@@ -727,6 +727,7 @@ SYSCALL_DEFINE4(reboot, int, magic1, int, magic2, unsigned int, cmd,
+ 		break;
+ 	}
+ 	mutex_unlock(&system_transition_mutex);
++	unregister_sys_off_handler(sys_off);
+ 	return ret;
+ }
+ 
 -- 
-Luben
+2.35.3
+
