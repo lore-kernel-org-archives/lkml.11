@@ -2,186 +2,218 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 473F9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 13:40:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 788CBC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 13:41:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237878AbiEXNkg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 09:40:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50646 "EHLO
+        id S237889AbiEXNlo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 09:41:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231971AbiEXNkd (ORCPT
+        with ESMTP id S231224AbiEXNlk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 09:40:33 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CC0E75221;
-        Tue, 24 May 2022 06:40:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653399633; x=1684935633;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=++vjas+PX+wlqfV344tFRyjKF322+YsDWlLQtLrpfxA=;
-  b=nac8nzMZe4txupb5zY20v5whw29f1e0K8K2l8ITByPBc6LyVzS/cFEkk
-   d+5tbnRbI4jI1GoE7HLkBYdFHKghSl8zS501/AaJUOPPmS98xrl9tA4NI
-   meGCvynpyPKzvdUxcHXlesenC7xwXRy2QHKpVROGTKQFpGNVW76ypQjjc
-   tpp4kvUNzBhmJa8zQ60uxl8nzzszqECnS50GZkIhS22dsFZ0fpOHnBqLM
-   aO7yWaUtwvYrMyapyLqVZFY8yQYvxBUu9Ju/CWiA5pjxbAeHtFYxstGPt
-   FDhrjvVaX2/9MfUtbEhvE2G2kz726c9dJGPMyT+fvqnGyl1CLeEsXRd1q
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10356"; a="273645326"
-X-IronPort-AV: E=Sophos;i="5.91,248,1647327600"; 
-   d="scan'208";a="273645326"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 May 2022 06:40:32 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,248,1647327600"; 
-   d="scan'208";a="526406089"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by orsmga003.jf.intel.com with ESMTP; 24 May 2022 06:40:29 -0700
-Received: from fmsmsx607.amr.corp.intel.com (10.18.126.87) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Tue, 24 May 2022 06:40:29 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx607.amr.corp.intel.com (10.18.126.87) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Tue, 24 May 2022 06:40:28 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Tue, 24 May 2022 06:40:28 -0700
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.108)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Tue, 24 May 2022 06:40:28 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jeAXRtd1KiIvH6xWi29bmD0LcaercpbKvyIjfC7s+BgEk0Ex3ZUIH+2lP+n43L3VP0vVhQIGRGX0qyDGwUleCMnI7ggTcSl9yQCd9RaEVDNqkqPs+jTBaYlk+Yyu1ViX1w0JCHZketc1e3mpFvyZ5dc/O/4kbPuuoO4eZCJrvCVqbjvtezUfv49Ss1Mg/tlq2xuj4DkCoS67vuR61UeY409E+GycDKbZlvHS5wUk8LuDzvbQ59abX1sSkB0k7t+2ZtrW9OJw9xr16ML/6GZ/C154omjYZ0HDBuL2PNSoSgMWktMOi+cqMEUF2TUPeXMOmz26qFfsx+JxQEgQR+8KIw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=rAfxoN75yPrvYNfcgpTDZNM0Nz8aEtz6xVVTu8aQ2CY=;
- b=oBCucRrPvczJ81SAxciw/mnKSA/y/2+Q9tf49q7+1EBSzcmCXlOEywlclnzROQW5lqLiEw+1ZGOJV68nc7cXnI8ITFsnzRgtErpvi5dEQpy9+9IPkfWC199bfZsemVJt47ofbZPSVTynSwd/kdfBFZ5Cz4SBOi8aXbqwVQVnex2Gd2/Crlb8WW3HGXa2cc0xWsfk2NXcGhs9M3zntnY+yNVjofExO2FwSNOTQuVulHpA8csYype7ukaSRCPe5WRf3L9fxXtLtec5+CQV/OgubHSrKwtoI1H6j6Ilmgh8OVeiKCqrkiohHEsV0Mvw1omp37rnlW8+iwFs/05E3clEww==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BYAPR11MB3367.namprd11.prod.outlook.com (2603:10b6:a03:79::29)
- by CH0PR11MB5475.namprd11.prod.outlook.com (2603:10b6:610:d6::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.13; Tue, 24 May
- 2022 13:40:27 +0000
-Received: from BYAPR11MB3367.namprd11.prod.outlook.com
- ([fe80::829:3da:fb91:c8e7]) by BYAPR11MB3367.namprd11.prod.outlook.com
- ([fe80::829:3da:fb91:c8e7%6]) with mapi id 15.20.5293.013; Tue, 24 May 2022
- 13:40:27 +0000
-From:   "G, GurucharanX" <gurucharanx.g@intel.com>
-To:     Bernard Zhao <zhaojunkui2008@126.com>,
-        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-CC:     "bernard@vivo.com" <bernard@vivo.com>
-Subject: RE: [Intel-wired-lan] [PATCH] intel/i40e: delete if NULL check before
- dev_kfree_skb
-Thread-Topic: [Intel-wired-lan] [PATCH] intel/i40e: delete if NULL check
- before dev_kfree_skb
-Thread-Index: AQHYZTzOQMmO4kPqPEi5xAu279lZRq0uHQYQ
-Date:   Tue, 24 May 2022 13:40:27 +0000
-Message-ID: <BYAPR11MB33672B20A0116900DAFCB8AFFCD79@BYAPR11MB3367.namprd11.prod.outlook.com>
-References: <20220511065451.655335-1-zhaojunkui2008@126.com>
-In-Reply-To: <20220511065451.655335-1-zhaojunkui2008@126.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: f2b30c96-7456-480d-f326-08da3d8af641
-x-ms-traffictypediagnostic: CH0PR11MB5475:EE_
-x-microsoft-antispam-prvs: <CH0PR11MB547500552777604C798FF11FFCD79@CH0PR11MB5475.namprd11.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: VTSW2sUM3RfDCKrld0mkbepgf4ZiH/QZcQkh1zNDGtXjxd1Nogy1QAM/95WaCamb0ZcRUvDxZixN+ZuEDj2X/XcOrmoK4F/uoAFMLEyYDXUhFy8//dh8Ni2IFmkwtDdvmbuywDC7mWrC5k8x3XqHgW5V3NdbNL/3YwAhgwvyWWR5q7LgI5RFyrUzJeOQGmlDS8MXA0uj5KQTzDdz9RMpXuo6he0WOAZY33Quj/JTjubzD7ZoM8i+X3Z2EVQQTHouz0PVm9WC68RNHc0IKsbUhAoLdjEGHp1/Bgqu5x2+9H8cN6ZB1kDkflRYHk58mIunfXIDSSfLZMnBg3jutFHmE7b1GyKVkOADbtMIe50cbjXJQsG1TrYmfPgJ5fRVxuqI9krUc5OmWPb2enUQk3dTQe1gG+djf1tQf3a4FwaVIWLH8c5+9sNEKEtLMKMmJoCg8nBTAn7bjILKoxvt6H/N2wUuIwcxYC9QFXX+tCb1sc/mxrqNFdRbmMUQzzVqAznebcNUHo2G0OdxnA0pInj4VgP5+oLttUTcZ1G10s02C1Nc8fNJXG6AunD6vCrfNIkNjYsZm5l68EzTVNlXLnsI82JlSMTQBkbYBbvBL0x+TXsdjRa/s8ecbeHi/HeDVFpq/gpMUJwaCd2KKkIctAOtRRSU+jQpkmN0hOeyJ8cJm4IJAjHMjbVFH1mzS/NkWqEm0ISepdKQsPamFrkT9CfrJgfdLPCu6g6+bH/IdJXaeYg=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR11MB3367.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(38100700002)(316002)(83380400001)(8936002)(122000001)(2906002)(110136005)(186003)(53546011)(38070700005)(66446008)(66476007)(66946007)(64756008)(66556008)(4326008)(8676002)(4744005)(55016003)(6506007)(7696005)(26005)(9686003)(921005)(82960400001)(86362001)(33656002)(508600001)(5660300002)(71200400001)(76116006)(52536014);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?V/vJQKJlfrOqKGNTesh2zDX8QH4i1d6j2kvDD4paLEokVAf7yokrUq3/tp3K?=
- =?us-ascii?Q?N3u8ITFAtZ2dUP79+YtJiHpxfhrstYtDqoKFXapqNCWo3G6LxbzHX0Y4l7Yj?=
- =?us-ascii?Q?GPvVOcXIGl18YhRB4f6Qyecq32Am6iwZRwwXpvsnxz8BNLORGG0ThG9jWIvp?=
- =?us-ascii?Q?z/ive7fgpAkAUa+KZfi9T/+kHbbH3uHTolHBiRbtUpjmSdZhuj5mjLRw1XMQ?=
- =?us-ascii?Q?CRBoHVw97azoxaJaUNDOoGlO2KqW5YucTVybxdNBtub8F+kNilswSg80nZ2D?=
- =?us-ascii?Q?ya/RkMZVFLjby4IyMe8fSU7feK7No5AyYXEY+FV5nyJCAiI5vUUH8ZAmoVrf?=
- =?us-ascii?Q?50GC2Mrg2PBWcFi0XrhkGm6mAsn9qgHDPHFpcm+LiVAj/RhRGduCtg+jmzMG?=
- =?us-ascii?Q?Hug6nwxbw8PBljkVKRwccy4QdSpLtIGTBmdRiBsx8IWywruMmNbh9LppA8QN?=
- =?us-ascii?Q?5WQrBqo3Yf5XGshOLq9DmIPZCidJml2cPdBJ3UmicURVj/qJtwgyl6yW1prA?=
- =?us-ascii?Q?q8adJvDlotZmjm0+RGsaLVJ2bq/ReX9a5QtXZO4M2CGVH0+sx5fqIkNK7eyA?=
- =?us-ascii?Q?se+dez30l9bLYM309256N3tZdWUTlotiM6VWKSGKbLafX33jrSJQq+O7b1O0?=
- =?us-ascii?Q?FmQFkerH+wvvrVgJSiBcs8lwsMNowg9KUQbEYSFSlNZy6dtWCezpY+/hYoZ1?=
- =?us-ascii?Q?GVxhGay/QC8JqL4GT8kV+3PxxfH0q67ix5moCkA8q0l/gPcFYZXoZpuKZ659?=
- =?us-ascii?Q?D8mXaLsrr+43hwLM8ysD5gy28NKflln42slAlvsSThbtAGVJRJVdVWvE6nVh?=
- =?us-ascii?Q?F1oVUg5cOh+oFfW6STrzD/GeU3GDrHoAL3EHLFlJQyUzoVD0VGI9sRs8O9co?=
- =?us-ascii?Q?gMbGXwJMyinCK4b5jAcMOMG8Bo2xAqp72APhD0lZg0KiHM0BzSSUAqqpzX1P?=
- =?us-ascii?Q?9tHF3RbXbzX08G6R5xeV7ueh+AClthQUODhIDg+RhSaayQdpj10WT8C25+xw?=
- =?us-ascii?Q?p+DpzNKJRyQE9oHelXOBe4ZahTNGfZrGRCsLlV7g8F6iX/oInZawkBiCii3g?=
- =?us-ascii?Q?S5SyQH1o/6VAZ33KhngL+KfxNdbxCqhPDHmSgke4CeI48h1M+S2CAzerUe9S?=
- =?us-ascii?Q?7lQZc6egzaOKPDJe65f0H82WItROFXy5gBP3aq2bbs+j9QwRsXyYpEnjgNbo?=
- =?us-ascii?Q?oCe11MY0ZIQeVNnXr+pcMTydOLZ9bkcRNwDzN/a9bE2pERkO7Eul1cpdXf2F?=
- =?us-ascii?Q?5w0nVl1Hvm+8z52wCXkn8mnLK8EnPkfw65GsiZTykJ3Pg4oHmY7+f4NmxMWC?=
- =?us-ascii?Q?v+Ry4uOWY7fn03nZsEl/74RTIMDcAv6HK9QfUP9LJWeaRxtiA2NA8CUpI+p2?=
- =?us-ascii?Q?g/FIxSGH9lqyIsi7hyufbBQSRZ6UABQ5DP3HnjMcZEbQlNfZOkZct5FB+k4R?=
- =?us-ascii?Q?HqqbEy/OZNvdylxyWXUFnzNN9+YKPYbSdUz9dgnjMDkSIiazmoqh6Q2JxUQ6?=
- =?us-ascii?Q?8B67qtCmqXlwDh1El4Ez+HLNO2k71wrul0pL4oT+8JvvyS9RPvHcw7FHfHrD?=
- =?us-ascii?Q?OEBv69rw6P+KS+Q/Pw4vqBTfq6g/gfFiYlN3EqALyMcUKabjER5ocwGfLKcr?=
- =?us-ascii?Q?O8e4xDK6jTo6nY7N3I/s8gO5wZu636ApdSdeqWBEREIea1LlUnI1tGu46xMK?=
- =?us-ascii?Q?cO6P9TEH7pxQGIC6xqJE0pZv94RofOA3ZZA6V9C82GlS7zrLfNkKnr6pE+U1?=
- =?us-ascii?Q?vguEqwEDkg=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Tue, 24 May 2022 09:41:40 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB4EF3205C;
+        Tue, 24 May 2022 06:41:38 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: dmitry.osipenko)
+        with ESMTPSA id DC3DB1F442E3
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1653399691;
+        bh=qpTUo3+rCDoRa3ZgqFQh1I4V9k0JzWGh76jPDBVw0m4=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=hRMXxgmEZeDfWxnLgiCfIjezbE8Yst9du0UI+7few0qFS4O6SzexhgUtNR81+UMa0
+         KYtGAP7WoJvvCbjb1r9vYJeBeLntuikTxHhQ2xX4GkSM65ZWF51SWtZtKkvG2GsFyp
+         ee6wNZ4HuinXH/33e8XTqRPnuFRbKCyO2LU4lEig5MXDWQ8Ifwaf0vGosGA3FpGoOu
+         ZY9sVSFR31S/Hc7aRsnDGFMQGEBGJznHN/aWQ9jbnVbO6PcOxcFGWQQ7E0fiyfa2yi
+         ZaixIuXh19f/Vi/OJQtn0gKlBU/bhD2aoxUDefuGeAsRvNKuYRcUhucApE0L9xde3E
+         WNH0ic23yweUA==
+Message-ID: <c4914e14-1882-55a1-bcbd-a905852b45a3@collabora.com>
+Date:   Tue, 24 May 2022 16:41:23 +0300
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR11MB3367.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f2b30c96-7456-480d-f326-08da3d8af641
-X-MS-Exchange-CrossTenant-originalarrivaltime: 24 May 2022 13:40:27.2019
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 2HeNLakLPECsdlblTeVN8rIGSBfMp6TEetODNapJpuNCBjx0/gpHDmpoB/0UkO4woBa2hrXfisj8P4DKP2x9JQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR11MB5475
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v8 07/27] kernel/reboot: Add kernel_can_power_off()
+Content-Language: en-US
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Guo Ren <guoren@kernel.org>,
+        Greg Ungerer <gerg@linux-m68k.org>,
+        Joshua Thompson <funaho@jurai.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Sebastian Reichel <sre@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Greentime Hu <green.hu@gmail.com>,
+        Vincent Chen <deanbo422@gmail.com>,
+        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Rich Felker <dalias@libc.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        the arch/x86 maintainers <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Juergen Gross <jgross@suse.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Santosh Shilimkar <ssantosh@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>, Pavel Machek <pavel@ucw.cz>,
+        Lee Jones <lee.jones@linaro.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        =?UTF-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-csky@vger.kernel.org,
+        "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>,
+        linux-m68k <linux-m68k@lists.linux-m68k.org>,
+        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
+        Parisc List <linux-parisc@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        Linux-sh list <linux-sh@vger.kernel.org>,
+        xen-devel@lists.xenproject.org,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        linux-tegra <linux-tegra@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>
+References: <20220509233235.995021-1-dmitry.osipenko@collabora.com>
+ <20220509233235.995021-8-dmitry.osipenko@collabora.com>
+ <CAMuHMdVGjeFe=Z_1Kr9ZaNZ7HUVH1usvubEB31WUQf0fg8E1kA@mail.gmail.com>
+From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
+In-Reply-To: <CAMuHMdVGjeFe=Z_1Kr9ZaNZ7HUVH1usvubEB31WUQf0fg8E1kA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 5/24/22 16:14, Geert Uytterhoeven wrote:
+> Hi Dmitry,
+> 
+> On Tue, May 10, 2022 at 1:33 AM Dmitry Osipenko
+> <dmitry.osipenko@collabora.com> wrote:
+>> Add kernel_can_power_off() helper that replaces open-coded checks of
+>> the global pm_power_off variable. This is a necessary step towards
+>> supporting chained power-off handlers.
+>>
+>> Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+> 
+> Thanks for your patch, which is now commit 0e2110d2e910e44c
+> ("kernel/reboot: Add kernel_can_power_off()") in pm/linux-next.
+> 
+> This causes the "poweroff" command (Debian nfsroot) to no longer
+> cleanly halt the system on arm32 systems, but fail with a panic
+> instead:
+> 
+> -reboot: System halted
+> +reboot: Power down
+> +Kernel panic - not syncing: Attempted to kill init! exitcode=0x00000000
+> +CPU: 0 PID: 1 Comm: systemd-shutdow Not tainted
+> 5.18.0-rc7-shmobile-00007-g0e2110d2e910 #1274
+> +Hardware name: Generic R-Car Gen2 (Flattened Device Tree)
+> + unwind_backtrace from show_stack+0x10/0x14
+> + show_stack from dump_stack_lvl+0x40/0x4c
+> + dump_stack_lvl from panic+0xf4/0x330
+> + panic from do_exit+0x1c8/0x8e4
+> + do_exit from __do_sys_reboot+0x174/0x1fc
+> + __do_sys_reboot from ret_fast_syscall+0x0/0x54
+> +Exception stack(0xf0815fa8 to 0xf0815ff0)
+> +5fa0:                   004e6954 00000000 fee1dead 28121969 4321fedc f0d94600
+> +5fc0: 004e6954 00000000 00000000 00000058 befa0c78 00000000 befa0c10 004e56f8
+> +5fe0: 00000058 befa0b6c b6ec8d45 b6e4a746
+> +---[ end Kernel panic - not syncing: Attempted to kill init!
+> exitcode=0x00000000 ]---
+> 
+> On arm64, "poweroff" causes a clean "reboot: Power down" before/after.
+> 
+> On both arm32 and arm64, the same handlers are registered:
+>   - SYS_OFF_MODE_POWER_OFF_PREPARE: legacy_pm_power_off_prepare
+>   - SYS_OFF_MODE_POWER_OFF: legacy_pm_power_off
+> 
+> On both arm32 and arm64, legacy_pm_power_off_prepare() is called.
+> On both arm32 and arm64, legacy_pm_power_off() does not seem to
+> be called.
+> 
+> On arm32, both pm_power_off_prepare and pm_power_off are NULL.
+> On arm64, pm_power_off_prepare is NULL, and
+> pm_power_off is psci_sys_poweroff.
+> 
+> Do you have a clue?
+> Thanks!
+
+Thank you, Geert! I see the problem, the kernel_can_power_off() checks whether power-off handler is registered, but it's always registered because legacy_pm_power_off is registered unconditionally. So it causes trouble for platforms that don't have power-off handler installed at all. All platforms that I tested have a power-off handler, so now wonder that I didn't notice this before.
+
+This change should fix the problem, please give it a try:
+
+--- 8< ---
+
+diff --git a/kernel/reboot.c b/kernel/reboot.c
+index 0bdc64ecf4f6..2d55b8bdb444 100644
+--- a/kernel/reboot.c
++++ b/kernel/reboot.c
+@@ -569,22 +569,6 @@ static int legacy_pm_power_off(struct sys_off_data *data)
+ 	return NOTIFY_DONE;
+ }
+ 
+-/*
+- * Register sys-off handlers for legacy PM callbacks. This allows legacy
+- * PM callbacks co-exist with the new sys-off API.
+- *
+- * TODO: Remove legacy handlers once all legacy PM users will be switched
+- *       to the sys-off based APIs.
+- */
+-static int __init legacy_pm_init(void)
+-{
+-	register_sys_off_handler(SYS_OFF_MODE_POWER_OFF, SYS_OFF_PRIO_DEFAULT,
+-				 legacy_pm_power_off, NULL);
+-
+-	return 0;
+-}
+-core_initcall(legacy_pm_init);
+-
+ static void do_kernel_power_off_prepare(void)
+ {
+ 	blocking_notifier_call_chain(&power_off_prep_handler_list, 0, NULL);
+@@ -670,6 +654,18 @@ SYSCALL_DEFINE4(reboot, int, magic1, int, magic2, unsigned int, cmd,
+ 	if (ret)
+ 		return ret;
+ 
++	/*
++	 * Register sys-off handler for the legacy PM callback. This allows
++	 * legacy PM callbacks co-exist with the new sys-off API.
++	 *
++	 * TODO: Remove legacy handler once all legacy PM users will be
++	 *       switched to the sys-off based APIs.
++	 */
++	if (pm_power_off)
++		register_sys_off_handler(SYS_OFF_MODE_POWER_OFF,
++					 SYS_OFF_PRIO_DEFAULT,
++					 legacy_pm_power_off, NULL);
++
+ 	/* Instead of trying to make the power_off code look like
+ 	 * halt when pm_power_off is not set do it the easy way.
+ 	 */
 
 
-> -----Original Message-----
-> From: Intel-wired-lan <intel-wired-lan-bounces@osuosl.org> On Behalf Of
-> Bernard Zhao
-> Sent: Wednesday, May 11, 2022 12:25 PM
-> To: Brandeburg, Jesse <jesse.brandeburg@intel.com>; Nguyen, Anthony L
-> <anthony.l.nguyen@intel.com>; David S. Miller <davem@davemloft.net>;
-> Jakub Kicinski <kuba@kernel.org>; Paolo Abeni <pabeni@redhat.com>;
-> intel-wired-lan@lists.osuosl.org; netdev@vger.kernel.org; linux-
-> kernel@vger.kernel.org
-> Cc: bernard@vivo.com; Bernard Zhao <zhaojunkui2008@126.com>
-> Subject: [Intel-wired-lan] [PATCH] intel/i40e: delete if NULL check befor=
-e
-> dev_kfree_skb
->=20
-> dev_kfree_skb check if the input parameter NULL and do the right thing,
-> there is no need to check again.
-> This change is to cleanup the code a bit.
->=20
-> Signed-off-by: Bernard Zhao <zhaojunkui2008@126.com>
-> ---
->  drivers/net/ethernet/intel/i40e/i40e_txrx.c | 6 ++----
->  1 file changed, 2 insertions(+), 4 deletions(-)
->=20
 
-Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Int=
-el)
+
+-- 
+Best regards,
+Dmitry
