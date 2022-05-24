@@ -2,87 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3A02C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 08:35:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5CF6C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 08:38:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232584AbiEXIfX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 04:35:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49726 "EHLO
+        id S232775AbiEXIh7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 04:37:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231989AbiEXIfT (ORCPT
+        with ESMTP id S232366AbiEXIhy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 04:35:19 -0400
-X-Greylist: delayed 477 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 24 May 2022 01:35:17 PDT
-Received: from xry111.site (xry111.site [89.208.246.23])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0F3E633AE;
-        Tue, 24 May 2022 01:35:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=xry111.site;
-        s=default; t=1653380839;
-        bh=f86+du3NLa/SaLRfDIDrohJYCgyKaooMgS3GQURiRxE=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=kruEWImlOIAaMsrf6ecSXnkopnnhQNB9Fygb9CS2ZNnu1BJdO2oY6yKbCPMkRJjwI
-         BTm8Ib0ZuDPkEm+g2a8xdV2cYTO0a7KRZrw108aTxMheezVj/dx+986hrEkb682nvD
-         SlqDR5UaOvmxS7cZJCXDzuxLJYHWF/SPGaJlEcA8=
-Received: from localhost.localdomain (xry111.site [IPv6:2001:470:683e::1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature ECDSA (P-384) server-digest SHA384)
-        (Client did not present a certificate)
-        (Authenticated sender: xry111@xry111.site)
-        by xry111.site (Postfix) with ESMTPSA id CE237668FE;
-        Tue, 24 May 2022 04:27:14 -0400 (EDT)
-Message-ID: <14f922495a09898017e4db3baed5b434acadac12.camel@xry111.site>
-Subject: Re: [PATCH V11 09/22] LoongArch: Add boot and setup routines
-From:   Xi Ruoyao <xry111@xry111.site>
-To:     Huacai Chen <chenhuacai@loongson.cn>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Airlie <airlied@linux.ie>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-arch@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Xuefeng Li <lixuefeng@loongson.cn>,
-        Yanteng Si <siyanteng@loongson.cn>,
-        Huacai Chen <chenhuacai@gmail.com>,
-        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        linux-efi@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>
-Date:   Tue, 24 May 2022 16:27:13 +0800
-In-Reply-To: <20220518092619.1269111-10-chenhuacai@loongson.cn>
-References: <20220518092619.1269111-1-chenhuacai@loongson.cn>
-         <20220518092619.1269111-10-chenhuacai@loongson.cn>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.1 
+        Tue, 24 May 2022 04:37:54 -0400
+Received: from out199-16.us.a.mail.aliyun.com (out199-16.us.a.mail.aliyun.com [47.90.199.16])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B1827E1D6
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 01:37:49 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R861e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=14;SR=0;TI=SMTPD_---0VEHJJIK_1653381456;
+Received: from localhost(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0VEHJJIK_1653381456)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Tue, 24 May 2022 16:37:45 +0800
+From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+To:     zhenyuw@linux.intel.com
+Cc:     zhi.a.wang@intel.com, jani.nikula@linux.intel.com,
+        joonas.lahtinen@linux.intel.com, rodrigo.vivi@intel.com,
+        tvrtko.ursulin@linux.intel.com, airlied@linux.ie, daniel@ffwll.ch,
+        intel-gvt-dev@lists.freedesktop.org,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: [PATCH 2/2] drm/i915/gvt: Fix kernel-doc
+Date:   Tue, 24 May 2022 16:37:32 +0800
+Message-Id: <20220524083733.67148-1-jiapeng.chong@linux.alibaba.com>
+X-Mailer: git-send-email 2.20.1.7.g153144c
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-05-18 at 17:26 +0800, Huacai Chen wrote:
-> Currently an existing interface between the kernel and the bootloader
-> is=C2=A0 implemented. Kernel gets 2 values from the bootloader, passed in
-> registers a0 and a1; a0 is an "EFI boot flag" distinguishing UEFI and
-> non-UEFI firmware, while a1 is a pointer to an FDT with systable,
-> memmap, cmdline and initrd information.
+Fix the following W=1 kernel warnings:
 
-If I understand this correctly, we can:
+drivers/gpu/drm/i915/gvt/mmio_context.c:560: warning: expecting
+prototype for intel_gvt_switch_render_mmio(). Prototype was for
+intel_gvt_switch_mmio() instead.
 
-- set a0 to 0
-- set a1 a pointer (virtual address or physical address?) to the FDT
-with these information
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+---
+ drivers/gpu/drm/i915/gvt/mmio_context.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-in the bootloader before invoking the kernel, then it will be possible
-to boot this kernel w/o firmware update?
+diff --git a/drivers/gpu/drm/i915/gvt/mmio_context.c b/drivers/gpu/drm/i915/gvt/mmio_context.c
+index c85bafe7539e..1c6e941c9666 100644
+--- a/drivers/gpu/drm/i915/gvt/mmio_context.c
++++ b/drivers/gpu/drm/i915/gvt/mmio_context.c
+@@ -546,7 +546,7 @@ static void switch_mmio(struct intel_vgpu *pre,
+ }
+ 
+ /**
+- * intel_gvt_switch_render_mmio - switch mmio context of specific engine
++ * intel_gvt_switch_mmio - switch mmio context of specific engine
+  * @pre: the last vGPU that own the engine
+  * @next: the vGPU to switch to
+  * @engine: the engine
+-- 
+2.20.1.7.g153144c
 
-I'd prefer to receive a firmware update anyway, but we need an
-alternative if some vendor just say "no way, our customized distro works
-fine and you should use it".  (I'm not accusing LoongArch: such annoying
-behavior is common among vendors of all architectures, and even worse
-with x86 because they often say "just use Windoge".)
---=20
-Xi Ruoyao <xry111@xry111.site>
-School of Aerospace Science and Technology, Xidian University
