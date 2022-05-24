@@ -2,24 +2,24 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D64CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 09:02:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FE1DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 09:02:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235173AbiEXJCK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 05:02:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39180 "EHLO
+        id S234878AbiEXJCQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 05:02:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234444AbiEXJBK (ORCPT
+        with ESMTP id S234457AbiEXJBK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 24 May 2022 05:01:10 -0400
 Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5517AF13
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 02:01:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FEF519C
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 02:01:07 -0700 (PDT)
 Received: from 162.sub194.ddfr.nl ([83.136.194.162] helo=martin-debian-2.paytec.ch)
         by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
         (Exim 4.89)
         (envelope-from <martin@kaiser.cx>)
-        id 1ntQPU-0006Y3-GM; Tue, 24 May 2022 11:01:00 +0200
+        id 1ntQPW-0006Y3-6j; Tue, 24 May 2022 11:01:02 +0200
 From:   Martin Kaiser <martin@kaiser.cx>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
@@ -28,9 +28,9 @@ Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
         Pavel Skripkin <paskripkin@gmail.com>,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Martin Kaiser <martin@kaiser.cx>
-Subject: [PATCH v2 10/12] staging: r8188eu: use ieee80211 to set addba capabilities
-Date:   Tue, 24 May 2022 11:00:27 +0200
-Message-Id: <20220524090029.242584-11-martin@kaiser.cx>
+Subject: [PATCH v2 12/12] staging: r8188eu: calculate the addba request length
+Date:   Tue, 24 May 2022 11:00:29 +0200
+Message-Id: <20220524090029.242584-13-martin@kaiser.cx>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220524090029.242584-1-martin@kaiser.cx>
 References: <20220521153824.218196-1-martin@kaiser.cx>
@@ -41,45 +41,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use the mgmt structure and defines from ieee80211.h to set the
-capabilities field of an addba request.
+When issue_action_BA compiles an addba request, it does not add any
+extensions. start_seq_num is the last field of the addba request.
 
-If issue_action_BA is called with action == WLAN_ACTION_ADDBA_REQ, the
-status parameter contains the tid.
+The length of the request is the offset of the end of start_seq_num in the
+struct ieee80211_mgmt that defines the message.
+
+Use offsetofend to calculate this offset and drop the intermediate pktlen
+increments as we add addba request components. (We have to keep the
+increments for other message types until we use offsetofend for them as
+well.)
 
 Signed-off-by: Martin Kaiser <martin@kaiser.cx>
 ---
- drivers/staging/r8188eu/core/rtw_mlme_ext.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ drivers/staging/r8188eu/core/rtw_mlme_ext.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/staging/r8188eu/core/rtw_mlme_ext.c b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
-index da0c0363eb4d..823c54837364 100644
+index 408aa0a28382..5446e19d8d09 100644
 --- a/drivers/staging/r8188eu/core/rtw_mlme_ext.c
 +++ b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
-@@ -5380,6 +5380,7 @@ void issue_action_BA(struct adapter *padapter, unsigned char *raddr, unsigned ch
- 	struct sta_priv *pstapriv = &padapter->stapriv;
- 	struct registry_priv *pregpriv = &padapter->registrypriv;
- 	struct ieee80211_mgmt *mgmt;
-+	u16 capab;
- 
- 	pmgntframe = alloc_mgtxmitframe(pxmitpriv);
- 	if (!pmgntframe)
-@@ -5419,9 +5420,12 @@ void issue_action_BA(struct adapter *padapter, unsigned char *raddr, unsigned ch
+@@ -5413,22 +5413,18 @@ void issue_action_BA(struct adapter *padapter, unsigned char *raddr, unsigned ch
+ 	switch (action) {
+ 	case WLAN_ACTION_ADDBA_REQ:
+ 		mgmt->u.action.u.addba_req.action_code = WLAN_ACTION_ADDBA_REQ;
+-		pattrib->pktlen++;
+ 		do {
+ 			pmlmeinfo->dialogToken++;
+ 		} while (pmlmeinfo->dialogToken == 0);
  		mgmt->u.action.u.addba_req.dialog_token = pmlmeinfo->dialogToken;
- 		pattrib->pktlen++;
+-		pattrib->pktlen++;
  
--		BA_para_set = (0x1002 | ((status & 0xf) << 2)); /* immediate ack & 64 buffer size */
--		le_tmp = cpu_to_le16(BA_para_set);
--		pframe = rtw_set_fixed_ie(pframe, 2, (unsigned char *)&le_tmp, &pattrib->pktlen);
-+		/* immediate ack & 64 buffer size */
-+		capab = u16_encode_bits(64, IEEE80211_ADDBA_PARAM_BUF_SIZE_MASK);
-+		capab |= u16_encode_bits(1, IEEE80211_ADDBA_PARAM_POLICY_MASK);
-+		capab |= u16_encode_bits(status, IEEE80211_ADDBA_PARAM_TID_MASK);
-+		mgmt->u.action.u.addba_req.capab = cpu_to_le16(capab);
-+		pattrib->pktlen += 2;
+ 		/* immediate ack & 64 buffer size */
+ 		capab = u16_encode_bits(64, IEEE80211_ADDBA_PARAM_BUF_SIZE_MASK);
+ 		capab |= u16_encode_bits(1, IEEE80211_ADDBA_PARAM_POLICY_MASK);
+ 		capab |= u16_encode_bits(status, IEEE80211_ADDBA_PARAM_TID_MASK);
+ 		mgmt->u.action.u.addba_req.capab = cpu_to_le16(capab);
+-		pattrib->pktlen += 2;
  
  		mgmt->u.action.u.addba_req.timeout = cpu_to_le16(5000); /* 5 ms */
- 		pattrib->pktlen += 2;
+-		pattrib->pktlen += 2;
+ 
+ 		psta = rtw_get_stainfo(pstapriv, raddr);
+ 		if (psta) {
+@@ -5439,7 +5435,9 @@ void issue_action_BA(struct adapter *padapter, unsigned char *raddr, unsigned ch
+ 			BA_starting_seqctrl = start_seq << 4;
+ 		}
+ 		mgmt->u.action.u.addba_req.start_seq_num = cpu_to_le16(BA_starting_seqctrl);
+-		pattrib->pktlen += 2;
++
++		pattrib->pktlen = offsetofend(struct ieee80211_mgmt,
++					      u.action.u.addba_req.start_seq_num);
+ 		break;
+ 	case WLAN_ACTION_ADDBA_RESP:
+ 		mgmt->u.action.u.addba_resp.action_code = WLAN_ACTION_ADDBA_RESP;
 -- 
 2.30.2
 
