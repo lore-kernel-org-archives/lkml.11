@@ -2,81 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40996C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 13:54:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0673C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 13:57:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238019AbiEXNy4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 09:54:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53916 "EHLO
+        id S237993AbiEXN5v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 09:57:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236290AbiEXNyx (ORCPT
+        with ESMTP id S229704AbiEXN5r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 09:54:53 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C66D89728E;
-        Tue, 24 May 2022 06:54:51 -0700 (PDT)
+        Tue, 24 May 2022 09:57:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4646187A01;
+        Tue, 24 May 2022 06:57:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 1D567CE1B57;
-        Tue, 24 May 2022 13:54:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70FC1C36AE5;
-        Tue, 24 May 2022 13:54:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D6667615FD;
+        Tue, 24 May 2022 13:57:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E74FC385AA;
+        Tue, 24 May 2022 13:57:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653400488;
-        bh=8gk1BM4Q1BDX3V8XDZBmAWQIJt29q+UopM2y8lNtbOE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BBwNijMXc2LMi8dhfbzHQDZKNwtbup7Mw+jy4ZxZECi51B68LzJlMgY1AfFlDN8/K
-         3y70fHazj/UtsyZgxMwRd2F/tlNWoP0MRaXPs0L9+IWC8U/wVTDCh63V3PlCO5raaP
-         z5ZMCHrFQomJ8EQ9vcCXdTybpEmJ56XcSNWlDAEb/f7mYDNkQQRr3GHtGVQnnEtJJK
-         5JMBYE5hPcYlvwA4DAmzNnL0Yj4ADbOhUefqAilHp9oqfix67cZui+OELQIs1Hj7yO
-         68Y90E2wVg+UQUA3G7wWIbNCTh2KbKQutUuQBwkrJQ7vqxXVTYR+myHWFiUToEvnRM
-         8ykLP8OVFffDA==
-From:   Dinh Nguyen <dinguyen@kernel.org>
-To:     jarkko.nikula@linux.intel.com
-Cc:     dinguyen@kernel.org, andriy.shevchenko@linux.intel.com,
-        mika.westerberg@linux.intel.com, robh+dt@kernel.org,
-        krzk+dt@kernel.org, linux-i2c@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCHv2 2/2] dt-bindings: i2c: dw: Add Intel's SoCFPGA I2C controller
-Date:   Tue, 24 May 2022 08:54:41 -0500
-Message-Id: <20220524135441.420600-2-dinguyen@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220524135441.420600-1-dinguyen@kernel.org>
-References: <20220524135441.420600-1-dinguyen@kernel.org>
+        s=k20201202; t=1653400663;
+        bh=7EPAVyGw4FJEo+Mq2KYGYXHGHQj1HBWBkXyw+Zrf6ZI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=WyjH87XhmyYaPHMnfIiS7A+kpm/hM+RKzsovZO1jOXTFgwzqkQJfzzoKfwYzm24v3
+         IWek3evaJdi1j5RKfLE2taJsalyjewq7F5NjTwdgvMEmmjq1DpHHLRaX9enic9J87O
+         MeD8p1t+4yREHV5oY/NqNx2caN6JMrv3yyxuz8dVw2oK691PPpGKGDXfWmvXiTqsx7
+         xDce7Kldw7/3y6iZSVO3mFGXL48DSDQFSCu+2+02VFGVKGbXskCwJ5KhK1hTpVx4qh
+         pHi6NMW+3bD0c4OgG55/A7b4mW210d/8SgTrcjsCKMkPoI9bE61UU8B9WZqp+nQTRT
+         xFHmOG+AabMhQ==
+Date:   Tue, 24 May 2022 19:27:35 +0530
+From:   Manivannan Sadhasivam <mani@kernel.org>
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     Sibi Sankar <quic_sibis@quicinc.com>, bjorn.andersson@linaro.org,
+        jassisinghbrar@gmail.com, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, agross@kernel.org,
+        Prasad Sodagudi <quic_psodagud@quicinc.com>
+Subject: Re: [PATCH v3] mailbox: qcom-ipcc: Log the pending interrupt during
+ resume
+Message-ID: <20220524135735.GD5745@thinkpad>
+References: <1652784180-10142-1-git-send-email-quic_sibis@quicinc.com>
+ <20220524134825.GA4188122@roeck-us.net>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220524134825.GA4188122@roeck-us.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The I2C pins on Intel's SoCFPGA platform are not connected to GPIOs and
-thus cannot be recovered by the standard GPIO method.
+On Tue, May 24, 2022 at 06:48:25AM -0700, Guenter Roeck wrote:
+> On Tue, May 17, 2022 at 04:13:00PM +0530, Sibi Sankar wrote:
+> > From: Prasad Sodagudi <quic_psodagud@quicinc.com>
+> > 
+> > Enable logging of the pending interrupt that triggered device wakeup. This
+> > logging information helps to debug IRQs that cause periodic device wakeups
+> > by printing the detailed information of pending IPCC interrupts.
+> > 
+> > Scenario: Device wakeup caused by Modem crash
+> > Logs:
+> > qcom-ipcc mailbox: virq: 182 triggered client-id: 2; signal-id: 2
+> > 
+> > >From the IPCC bindings it can further be understood that the client here is
+> > IPCC_CLIENT_MPSS and the signal was IPCC_MPROC_SIGNAL_SMP2P.
+> > 
+> > Reviewed-by: Manivannan Sadhasivam <mani@kernel.org>
+> > Signed-off-by: Prasad Sodagudi <quic_psodagud@quicinc.com>
+> > Signed-off-by: Sibi Sankar <quic_sibis@quicinc.com>
+> > ---
+> > 
+> > V3:
+> >  * Use pm_sleep_ptr and convert info to dbg [Mani]
+> 
+> Unfortunately, this results in
+> 
+> drivers/mailbox/qcom-ipcc.c:258:12: error: 'qcom_ipcc_pm_resume' defined but not used
+> 
+> on builds with PM disabled, as seen in next-20220524.
+> 
 
-Document the "intel,socfpga-i2c" binding.
+Yep, I missed it during review :(
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
----
-v2: Added Acked-by
----
- Documentation/devicetree/bindings/i2c/snps,designware-i2c.yaml | 2 ++
- 1 file changed, 2 insertions(+)
+But the fix has been submitted:
+https://patchwork.kernel.org/project/linux-arm-msm/patch/20220523224702.2002652-1-nathan@kernel.org/
 
-diff --git a/Documentation/devicetree/bindings/i2c/snps,designware-i2c.yaml b/Documentation/devicetree/bindings/i2c/snps,designware-i2c.yaml
-index d9293c57f573..a130059e97ab 100644
---- a/Documentation/devicetree/bindings/i2c/snps,designware-i2c.yaml
-+++ b/Documentation/devicetree/bindings/i2c/snps,designware-i2c.yaml
-@@ -33,6 +33,8 @@ properties:
-           - const: snps,designware-i2c
-       - description: Baikal-T1 SoC System I2C controller
-         const: baikal,bt1-sys-i2c
-+      - description: Intel's SoCFPGA I2C controller
-+        const: intel,socfpga-i2c
- 
-   reg:
-     minItems: 1
+Thanks,
+Mani
+
+> Guenter
+> 
+> >  * Fixup commit message
+> > 
+> > V2:
+> >  * Fix build error when ipcc is a module [Kernel Test Bot]
+> > 
+> >  drivers/mailbox/qcom-ipcc.c | 23 +++++++++++++++++++++++
+> >  1 file changed, 23 insertions(+)
+> > 
+> > diff --git a/drivers/mailbox/qcom-ipcc.c b/drivers/mailbox/qcom-ipcc.c
+> > index c5d963222014..5a42bc2a1083 100644
+> > --- a/drivers/mailbox/qcom-ipcc.c
+> > +++ b/drivers/mailbox/qcom-ipcc.c
+> > @@ -254,6 +254,24 @@ static int qcom_ipcc_setup_mbox(struct qcom_ipcc *ipcc,
+> >  	return devm_mbox_controller_register(dev, mbox);
+> >  }
+> >  
+> > +static int qcom_ipcc_pm_resume(struct device *dev)
+> > +{
+> > +	struct qcom_ipcc *ipcc = dev_get_drvdata(dev);
+> > +	u32 hwirq;
+> > +	int virq;
+> > +
+> > +	hwirq = readl(ipcc->base + IPCC_REG_RECV_ID);
+> > +	if (hwirq == IPCC_NO_PENDING_IRQ)
+> > +		return 0;
+> > +
+> > +	virq = irq_find_mapping(ipcc->irq_domain, hwirq);
+> > +
+> > +	dev_dbg(dev, "virq: %d triggered client-id: %ld; signal-id: %ld\n", virq,
+> > +		FIELD_GET(IPCC_CLIENT_ID_MASK, hwirq), FIELD_GET(IPCC_SIGNAL_ID_MASK, hwirq));
+> > +
+> > +	return 0;
+> > +}
+> > +
+> >  static int qcom_ipcc_probe(struct platform_device *pdev)
+> >  {
+> >  	struct qcom_ipcc *ipcc;
+> > @@ -324,6 +342,10 @@ static const struct of_device_id qcom_ipcc_of_match[] = {
+> >  };
+> >  MODULE_DEVICE_TABLE(of, qcom_ipcc_of_match);
+> >  
+> > +static const struct dev_pm_ops qcom_ipcc_dev_pm_ops = {
+> > +	SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(NULL, qcom_ipcc_pm_resume)
+> > +};
+> > +
+> >  static struct platform_driver qcom_ipcc_driver = {
+> >  	.probe = qcom_ipcc_probe,
+> >  	.remove = qcom_ipcc_remove,
+> > @@ -331,6 +353,7 @@ static struct platform_driver qcom_ipcc_driver = {
+> >  		.name = "qcom-ipcc",
+> >  		.of_match_table = qcom_ipcc_of_match,
+> >  		.suppress_bind_attrs = true,
+> > +		.pm = pm_sleep_ptr(&qcom_ipcc_dev_pm_ops),
+> >  	},
+> >  };
+> >  
+> > -- 
+> > 2.7.4
+> > 
+
 -- 
-2.25.1
-
+மணிவண்ணன் சதாசிவம்
