@@ -2,152 +2,213 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B498EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 19:00:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F597C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 19:00:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240650AbiEXTAa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 15:00:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54714 "EHLO
+        id S240849AbiEXTAi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 15:00:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240663AbiEXTAL (ORCPT
+        with ESMTP id S240697AbiEXTA2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 15:00:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B9D75D18B;
-        Tue, 24 May 2022 11:59:48 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2438A615D9;
-        Tue, 24 May 2022 18:59:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06077C34100;
-        Tue, 24 May 2022 18:59:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653418787;
-        bh=+h+ieYCTWkYVako7OctaUrToDWnh7uksB1QAVUpZpic=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=juO+rQ74GC8VC0mAtTo7BoGHdi+NZ5QVbJeSLyx2Ep1+1RqUgR1ZiYBGmDP5M3f84
-         N+wussL4mt8XimZG49naSJ09N4HHTh4S3A7xQb57SfyJzEsY9JU2wrAakv2XkdNM2S
-         Buwq3mWQTnqQXpeL0tQXNDzxEtLxsewy7mgfrW57PT2J1+FD4qNpmjIZBccIirVgGW
-         a0EVoXWK8a+xmsQXfRQ8nyqhrdN3QFufGkGBD588pjcBruvLM7H0xCnosngohuLuir
-         WTAuJ0VDPlZuPUVu/1fRCAWuZrau+hExu9I9RrcuzWyMYLDA/Wd+5YgLlBjio9iV6L
-         zlINC49r2Zz9Q==
-Date:   Tue, 24 May 2022 13:59:44 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, linuxarm@huawei.com,
-        mauro.chehab@huawei.com,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Songxiaowei <songxiaowei@hisilicon.com>,
-        Binghui Wang <wangbinghui@hisilicon.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Rob Herring <robh@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-pci@vger.kernel.org, Kishon Vijay Abraham I <kishon@ti.com>
-Subject: Re: [PATCH v14 04/11] PCI: kirin: Add support for bridge slot DT
- schema
-Message-ID: <20220524185944.GA260276@bhelgaas>
+        Tue, 24 May 2022 15:00:28 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CB818A32C;
+        Tue, 24 May 2022 11:59:52 -0700 (PDT)
+Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24OInGq1005915;
+        Tue, 24 May 2022 18:59:49 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=0P5EjARUrpuMBJlHWBCvjuTiKeGNCIwMQJyA+XJ1aIg=;
+ b=V1+5zsCzB1HIUFpluadcIyxZ0cS7TPLRa3B2WASF7X+gdw1R9HOmMTMaA7j8llm2Hm8j
+ XwNA1CqAPt60EX402xjBym1XydibjAM1y8CFoMeIh9zYLvBpF0sWX3+7+Ni6HPkrcAOX
+ OhMJD3KTIxNLUaApvJsNUPAmJr16CUNCHZWblYCXPtfwUkIPZa2TJDBe3KP0OLB3pw2l
+ /xBK45GjqjeMGGGUC2suRdCW1twIl5AXpuFMbnQH9+mGHjRY6H8lB/p328/NaIkUsvWI
+ F7T2pths1m4MaAH4s/qZ4UQsb7gG4Ul5bydTPoGAm8Qsk6VMu/ne57a//DLxyXgFZioj IQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g94yr05ba-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 24 May 2022 18:59:48 +0000
+Received: from m0098413.ppops.net (m0098413.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24OIomNQ012937;
+        Tue, 24 May 2022 18:59:48 GMT
+Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g94yr05ay-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 24 May 2022 18:59:48 +0000
+Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
+        by ppma03wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24OIqv0x007741;
+        Tue, 24 May 2022 18:59:47 GMT
+Received: from b03cxnp07029.gho.boulder.ibm.com (b03cxnp07029.gho.boulder.ibm.com [9.17.130.16])
+        by ppma03wdc.us.ibm.com with ESMTP id 3g93v8rh9c-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 24 May 2022 18:59:47 +0000
+Received: from b03ledav005.gho.boulder.ibm.com (b03ledav005.gho.boulder.ibm.com [9.17.130.236])
+        by b03cxnp07029.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24OIxkpJ18809246
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 24 May 2022 18:59:46 GMT
+Received: from b03ledav005.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 2CE78BE061;
+        Tue, 24 May 2022 18:59:46 +0000 (GMT)
+Received: from b03ledav005.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 0A1D5BE056;
+        Tue, 24 May 2022 18:59:44 +0000 (GMT)
+Received: from li-c92d2ccc-254b-11b2-a85c-a700b5bfb098.ibm.com.com (unknown [9.163.3.233])
+        by b03ledav005.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Tue, 24 May 2022 18:59:43 +0000 (GMT)
+From:   Matthew Rosato <mjrosato@linux.ibm.com>
+To:     linux-s390@vger.kernel.org
+Cc:     alex.williamson@redhat.com, cohuck@redhat.com,
+        schnelle@linux.ibm.com, farman@linux.ibm.com, pmorel@linux.ibm.com,
+        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
+        svens@linux.ibm.com, frankja@linux.ibm.com, david@redhat.com,
+        imbrenda@linux.ibm.com, vneethv@linux.ibm.com,
+        oberpar@linux.ibm.com, freude@linux.ibm.com, thuth@redhat.com,
+        pasic@linux.ibm.com, pbonzini@redhat.com, corbet@lwn.net,
+        jgg@nvidia.com, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org
+Subject: [PATCH v8 14/22] KVM: s390: mechanism to enable guest zPCI Interpretation
+Date:   Tue, 24 May 2022 14:58:59 -0400
+Message-Id: <20220524185907.140285-15-mjrosato@linux.ibm.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220524185907.140285-1-mjrosato@linux.ibm.com>
+References: <20220524185907.140285-1-mjrosato@linux.ibm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220524171947.GA255208@bhelgaas>
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: UoxjfEQMAP0KVaE9us4lqhgsAxEwc1bb
+X-Proofpoint-GUID: 612idAhD_suu41br2ozoaQiQdWImnw_f
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-24_09,2022-05-23_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
+ lowpriorityscore=0 suspectscore=0 mlxscore=0 priorityscore=1501
+ phishscore=0 adultscore=0 spamscore=0 bulkscore=0 mlxlogscore=999
+ clxscore=1015 malwarescore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2204290000 definitions=main-2205240090
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-[resending with updated address for Mauro]
+The guest must have access to certain facilities in order to allow
+interpretive execution of zPCI instructions and adapter event
+notifications.  However, there are some cases where a guest might
+disable interpretation -- provide a mechanism via which we can defer
+enabling the associated zPCI interpretation facilities until the guest
+indicates it wishes to use them.
 
-On Tue, May 24, 2022 at 12:19:50PM -0500, Bjorn Helgaas wrote:
-> On Tue, Oct 19, 2021 at 07:06:41AM +0100, Mauro Carvalho Chehab wrote:
-> > On HiKey970, there's a PEX 8606 PCI bridge on its PHY with
-> > 6 lanes. Only 4 lanes are connected:
-> > 
-> > 	lane 0 - connected to Kirin 970;
-> > 	lane 4 - M.2 slot;
-> > 	lane 5 - mini PCIe slot;
-> > 	lane 6 - in-board Ethernet controller.
-> > 
-> > Each lane has its own PERST# gpio pin, and needs a clock
-> > request.
-> > 
-> > Add support to parse a DT schema containing the above data.
-> > 
-> > Cc: Kishon Vijay Abraham I <kishon@ti.com>
-> > Acked-by: Xiaowei Song <songxiaowei@hisilicon.com>
-> > Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-> > ---
-> > 
-> > See [PATCH v14 00/11] at: https://lore.kernel.org/all/cover.1634622716.git.mchehab+huawei@kernel.org/
-> > 
-> >  drivers/pci/controller/dwc/pcie-kirin.c | 262 +++++++++++++++++++++---
-> >  1 file changed, 231 insertions(+), 31 deletions(-)
-> > 
-> > diff --git a/drivers/pci/controller/dwc/pcie-kirin.c b/drivers/pci/controller/dwc/pcie-kirin.c
-> > index 86c13661e02d..de375795a3b8 100644
-> > --- a/drivers/pci/controller/dwc/pcie-kirin.c
-> > +++ b/drivers/pci/controller/dwc/pcie-kirin.c
-> > @@ -52,6 +52,19 @@
-> >  #define PCIE_DEBOUNCE_PARAM	0xF0F400
-> >  #define PCIE_OE_BYPASS		(0x3 << 28)
-> >  
-> > +/*
-> > + * Max number of connected PCI slots at an external PCI bridge
-> > + *
-> > + * This is used on HiKey 970, which has a PEX 8606 bridge with has
-> > + * 4 connected lanes (lane 0 upstream, and the other tree lanes,
-> > + * one connected to an in-board Ethernet adapter and the other two
-> > + * connected to M.2 and mini PCI slots.
-> > + *
-> > + * Each slot has a different clock source and uses a separate PERST#
-> > + * pin.
-> > ...
-> 
-> > +static int kirin_pcie_add_bus(struct pci_bus *bus)
-> > +{
-> > +	struct dw_pcie *pci = to_dw_pcie_from_pp(bus->sysdata);
-> > +	struct kirin_pcie *kirin_pcie = to_kirin_pcie(pci);
-> > +	int i, ret;
-> > +
-> > +	if (!kirin_pcie->num_slots)
-> > +		return 0;
-> > +
-> > +	/* Send PERST# to each slot */
-> > +	for (i = 0; i < kirin_pcie->num_slots; i++) {
-> > +		ret = gpio_direction_output(kirin_pcie->gpio_id_reset[i], 1);
-> > +		if (ret) {
-> > +			dev_err(pci->dev, "PERST# %s error: %d\n",
-> > +				kirin_pcie->reset_names[i], ret);
-> > +		}
-> > +	}
-> > +	usleep_range(PERST_2_ACCESS_MIN, PERST_2_ACCESS_MAX);
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +
-> >  static struct pci_ops kirin_pci_ops = {
-> >  	.read = kirin_pcie_rd_own_conf,
-> >  	.write = kirin_pcie_wr_own_conf,
-> > +	.add_bus = kirin_pcie_add_bus,
-> 
-> This seems a little weird.  Can you educate me?
-> 
-> From [1], it looks like the topology here is:
-> 
->   00:00.0 Root Port
->   01:00.0 PEX 8606 Upstream Port
->   02:01.0 PEX 8606 Downstream Port
->   02:04.0 PEX 8606 Downstream Port
->   02:05.0 PEX 8606 Downstream Port
->   02:07.0 PEX 8606 Downstream Port
->   02:09.0 PEX 8606 Downstream Port
->   06:00.0 RTL8111/8168/8411 PCI Express Gigabit Ethernet Controller 
-> 
-> The .add_bus() callback will be called for *every* child bus we want
-> to enumerate.  So if any of those PEX 8606 Downstream Ports are
-> connected to another switch, when we enumerate the secondary buses of
-> that other switch, it looks like we'll send PERST# to all the slots
-> again, which doesn't sound right.  Am I missing something?
-> 
-> Bjorn
-> 
-> [1] https://lore.kernel.org/all/20210129173057.30288c9d@coco.lan/
+Reviewed-by: Christian Borntraeger <borntraeger@linux.ibm.com>
+Reviewed-by: Pierre Morel <pmorel@linux.ibm.com>
+Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
+---
+ arch/s390/include/asm/kvm_host.h |  4 ++++
+ arch/s390/kvm/kvm-s390.c         | 38 ++++++++++++++++++++++++++++++++
+ arch/s390/kvm/kvm-s390.h         | 10 +++++++++
+ 3 files changed, 52 insertions(+)
+
+diff --git a/arch/s390/include/asm/kvm_host.h b/arch/s390/include/asm/kvm_host.h
+index c1518a505060..8e381603b6a7 100644
+--- a/arch/s390/include/asm/kvm_host.h
++++ b/arch/s390/include/asm/kvm_host.h
+@@ -254,7 +254,10 @@ struct kvm_s390_sie_block {
+ #define ECB2_IEP	0x20
+ #define ECB2_PFMFI	0x08
+ #define ECB2_ESCA	0x04
++#define ECB2_ZPCI_LSI	0x02
+ 	__u8    ecb2;                   /* 0x0062 */
++#define ECB3_AISI	0x20
++#define ECB3_AISII	0x10
+ #define ECB3_DEA 0x08
+ #define ECB3_AES 0x04
+ #define ECB3_RI  0x01
+@@ -940,6 +943,7 @@ struct kvm_arch{
+ 	int use_cmma;
+ 	int use_pfmfi;
+ 	int use_skf;
++	int use_zpci_interp;
+ 	int user_cpu_state_ctrl;
+ 	int user_sigp;
+ 	int user_stsi;
+diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
+index 5a0fbfd19c4a..981c70f0c1fa 100644
+--- a/arch/s390/kvm/kvm-s390.c
++++ b/arch/s390/kvm/kvm-s390.c
+@@ -1031,6 +1031,42 @@ static int kvm_s390_vm_set_crypto(struct kvm *kvm, struct kvm_device_attr *attr)
+ 	return 0;
+ }
+ 
++static void kvm_s390_vcpu_pci_setup(struct kvm_vcpu *vcpu)
++{
++	/* Only set the ECB bits after guest requests zPCI interpretation */
++	if (!vcpu->kvm->arch.use_zpci_interp)
++		return;
++
++	vcpu->arch.sie_block->ecb2 |= ECB2_ZPCI_LSI;
++	vcpu->arch.sie_block->ecb3 |= ECB3_AISII + ECB3_AISI;
++}
++
++void kvm_s390_vcpu_pci_enable_interp(struct kvm *kvm)
++{
++	struct kvm_vcpu *vcpu;
++	unsigned long i;
++
++	lockdep_assert_held(&kvm->lock);
++
++	if (!kvm_s390_pci_interp_allowed())
++		return;
++
++	/*
++	 * If host is configured for PCI and the necessary facilities are
++	 * available, turn on interpretation for the life of this guest
++	 */
++	kvm->arch.use_zpci_interp = 1;
++
++	kvm_s390_vcpu_block_all(kvm);
++
++	kvm_for_each_vcpu(i, vcpu, kvm) {
++		kvm_s390_vcpu_pci_setup(vcpu);
++		kvm_s390_sync_request(KVM_REQ_VSIE_RESTART, vcpu);
++	}
++
++	kvm_s390_vcpu_unblock_all(kvm);
++}
++
+ static void kvm_s390_sync_request_broadcast(struct kvm *kvm, int req)
+ {
+ 	unsigned long cx;
+@@ -3340,6 +3376,8 @@ static int kvm_s390_vcpu_setup(struct kvm_vcpu *vcpu)
+ 
+ 	kvm_s390_vcpu_crypto_setup(vcpu);
+ 
++	kvm_s390_vcpu_pci_setup(vcpu);
++
+ 	mutex_lock(&vcpu->kvm->lock);
+ 	if (kvm_s390_pv_is_protected(vcpu->kvm)) {
+ 		rc = kvm_s390_pv_create_cpu(vcpu, &uvrc, &uvrrc);
+diff --git a/arch/s390/kvm/kvm-s390.h b/arch/s390/kvm/kvm-s390.h
+index 497d52a83c78..975cffaf13de 100644
+--- a/arch/s390/kvm/kvm-s390.h
++++ b/arch/s390/kvm/kvm-s390.h
+@@ -507,6 +507,16 @@ void kvm_s390_reinject_machine_check(struct kvm_vcpu *vcpu,
+  */
+ void kvm_s390_vcpu_crypto_reset_all(struct kvm *kvm);
+ 
++/**
++ * kvm_s390_vcpu_pci_enable_interp
++ *
++ * Set the associated PCI attributes for each vcpu to allow for zPCI Load/Store
++ * interpretation as well as adapter interruption forwarding.
++ *
++ * @kvm: the KVM guest
++ */
++void kvm_s390_vcpu_pci_enable_interp(struct kvm *kvm);
++
+ /**
+  * diag9c_forwarding_hz
+  *
+-- 
+2.27.0
+
