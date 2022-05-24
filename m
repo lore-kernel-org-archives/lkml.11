@@ -2,106 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C61BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 02:30:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2094CC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 02:33:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233300AbiEXCam (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 22:30:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56852 "EHLO
+        id S233317AbiEXCdh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 22:33:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229755AbiEXCai (ORCPT
+        with ESMTP id S233305AbiEXCde (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 22:30:38 -0400
-Received: from mail-yw1-x112a.google.com (mail-yw1-x112a.google.com [IPv6:2607:f8b0:4864:20::112a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEFEE69734
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 19:30:37 -0700 (PDT)
-Received: by mail-yw1-x112a.google.com with SMTP id 00721157ae682-2fee010f509so167641807b3.11
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 19:30:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=CycpGwBiJBgwi+f73aOw3lbD15pFJaKBVQ5aiRu4tBA=;
-        b=UbkAxVp5yJKwJ35iqqfZqbtkOuKY1nUlkOgUvQD8gv7Ls47I3zWM0m4494cI7jFBwv
-         pcekFt6ugKgTlrLNTuPtSZuvDYan1rYXvRPRpRU/maLiz8YoxwTC+BieUIHjY2EhI/GS
-         S/g3WWDdosXsfuHPQQRly2pZ/WO0myQZxub1lE2iw40Rb0jUKs+fwPswRhk+VXuakcXe
-         CpgcWMLWliLwQXzXnankOMpSLlOvAzN55gmBkAcYEYNh+1NveXhPo5o+MpOWm8Hw2AFy
-         7iMj5O2ZR9ldoVHAGw6qZeuMhT/gMqvQAp+xgh2xSv8pI8IkKPunQnC6N1QVwVMGjgTy
-         n+Pw==
+        Mon, 23 May 2022 22:33:34 -0400
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5351644EC
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 19:33:32 -0700 (PDT)
+Received: by mail-il1-f200.google.com with SMTP id g11-20020a056e021e0b00b002d1b5e8389bso2275307ila.2
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 19:33:32 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CycpGwBiJBgwi+f73aOw3lbD15pFJaKBVQ5aiRu4tBA=;
-        b=ji+AwluoegGi63CZW5nkKIxSv5TZJWfIaIRNQ1PoXyNf5tNvslp1esLMzl+DxjbDjY
-         URj5dee0kRjn2TJOTtP6VGJ8mioWfo0ZPOs4qThGdItN43waQkAMjSIiJkQSn2RLxTck
-         tx0NTE2EnYHiK7+oBaPxUTSIpN7bfxy3XHf6D5sJn5LzjthRHyxnXqXIIXF6EtH4dZr9
-         C+WwrFWPFui59iUxOdeBmBIidKdDjPEJi2kHKhxp1EKgi8PZ/Uc6U/dgf1/U3ZRZ5nl6
-         sZsxFV2xnquHwuvFfxPfkxPFCBZxXrPRigoHdCQxUoWbLMo5It4BeLXXD77LAgTXLpUb
-         glgg==
-X-Gm-Message-State: AOAM531DyMsE9KdGb5R93r2X1cNp0//+W3ju/puY3yzZNyV5j8QfyuSI
-        AmnHPtld/tJFK7kYyBMP8sH6xU+EQN7U8Gv7UhHL/g==
-X-Google-Smtp-Source: ABdhPJyHIll+0+i+XcuEqGsuD6J7hoPoe2z5uPVqircx+9g+baHLz+0K93AOYBD9aOc8xFpEGsw4TxihcI/H8AzH/gI=
-X-Received: by 2002:a81:1f84:0:b0:2f8:6138:de59 with SMTP id
- f126-20020a811f84000000b002f86138de59mr25946046ywf.31.1653359437183; Mon, 23
- May 2022 19:30:37 -0700 (PDT)
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=vS6L5CZCfKuHlo887Ie4nS6MPjUiFWIkQQaygVU2CR0=;
+        b=zpqoJuQeRPaybZEtf6OphM8wkA9qDEAVIzWdd/5LO1T/xa+R3k/mDfdSogrpIz5H7/
+         annLzSd5q6d0PXF3sFzG/h/ypCPgqpdOEr4Qurw/m7XgCwGavZssG7xzXONf1ypcb0/u
+         VXOEoo8+cmGv9jh0G9lZNMGUmnnS7OhHCt2n8Sio5ZinNOgK6blUuqNmhB6cBc+gGCVG
+         hRet3HVnJQl8fD6aO5Eb/8JcNctFslNNawYwy4mY7f7Qk07yPkkrl35YHwExsLzaAmLl
+         o6GttVTU6w49lOkEDs6ew6KZuD+ltoaFgiB4+/1embTwGFwywdlAX3F3Rf+4Xr0hp+ns
+         Lgkw==
+X-Gm-Message-State: AOAM5322c9wb7x/Ck7FX4fmHLVIWvUSzCv7lf5pPhEXGW+ButRloub/N
+        wUF45kp6R2JV44Ro+qLwgf3pFC465mXvo7jjqvJ1Kzd2CVWW
+X-Google-Smtp-Source: ABdhPJwRrOR8nOJzr7p0//h8TjcjW3s42hfBNljSSxITCqRErg/dJwiXLu99t1ee2rPoYEe0TWcS2FizJh/OAu2scMqA+8vpJlMq
 MIME-Version: 1.0
-References: <20220522052624.21493-1-songmuchun@bytedance.com> <YovECEBVeCZl79fi@bombadil.infradead.org>
-In-Reply-To: <YovECEBVeCZl79fi@bombadil.infradead.org>
-From:   Muchun Song <songmuchun@bytedance.com>
-Date:   Tue, 24 May 2022 10:30:01 +0800
-Message-ID: <CAMZfGtWfD62CRTPSesqKJALvcBLEOVWj7DyXrv05x+99seKTgA@mail.gmail.com>
-Subject: Re: [PATCH v2] sysctl: handle table->maxlen properly for proc_dobool
-To:     Luis Chamberlain <mcgrof@kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Kees Cook <keescook@chromium.org>,
-        Iurii Zaikin <yzaikin@google.com>
+X-Received: by 2002:a6b:3b54:0:b0:665:197:f1b0 with SMTP id
+ i81-20020a6b3b54000000b006650197f1b0mr2935908ioa.206.1653359612085; Mon, 23
+ May 2022 19:33:32 -0700 (PDT)
+Date:   Mon, 23 May 2022 19:33:32 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000005d4f6a05dfb8c85a@google.com>
+Subject: [syzbot] WARNING in trace_hardirqs_on (2)
+From:   syzbot <syzbot+0ccb59952c73777126bb@syzkaller.appspotmail.com>
+To:     linux-kernel@vger.kernel.org, mingo@redhat.com,
+        rostedt@goodmis.org, syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 24, 2022 at 1:27 AM Luis Chamberlain <mcgrof@kernel.org> wrote:
->
-> On Sun, May 22, 2022 at 01:26:24PM +0800, Muchun Song wrote:
-> > Setting ->proc_handler to proc_dobool at the same time setting ->maxlen
-> > to sizeof(int) is counter-intuitive, it is easy to make mistakes.  For
-> > robustness, fix it by reimplementing proc_dobool() properly.
-> >
-> > Signed-off-by: Muchun Song <songmuchun@bytedance.com>
-> > Cc: Luis Chamberlain <mcgrof@kernel.org>
-> > Cc: Kees Cook <keescook@chromium.org>
-> > Cc: Iurii Zaikin <yzaikin@google.com>
-> > ---
->
-> Thanks for your patch Muchun!
->
-> Does this fix an actualy issue? Because the comit log suggest so.
+Hello,
 
-Thanks for taking a look.
+syzbot found the following issue on:
 
-I think it is an improvement not a real bug fix. When I first use
-proc_dobool in my driver, I assign sizeof(variable) to table->maxlen.
-Then I found it was wrong, it should be sizeof(int) which was
-counter-intuitive. So it is very easy to make mistakes. Should I add
-those into the commit log?
+HEAD commit:    b015dcd62b86 Merge tag 'for-5.18/parisc-4' of git://git.ke..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=14562d45f00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=edaa7ad763884c40
+dashboard link: https://syzkaller.appspot.com/bug?extid=0ccb59952c73777126bb
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 
-Thanks.
+Unfortunately, I don't have any reproducer for this issue yet.
 
-> If so is there a bug which is known or a reproducer which can be
-> implemented to showcase that bug?
->
-> The reason I ask is that we have automatic scrapers for bug fixes,
-> and I tend to prefer to avoid giving those automatic scrapers
-> the idea that a patch is a fix for a kernel bug when it it is not.
-> If what you are change is an optimization then your commit log should
-> clarify that.
->
-> If you are fixing something then you must be clear about about the
-> details I mentioned. And then, if it does fix an issue, how long
-> has the issue been know, what are the consequences of it? And up
-> to what kernel is this issue present for?
->
->   Luis
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+0ccb59952c73777126bb@syzkaller.appspotmail.com
+
+------------[ cut here ]------------
+DEBUG_LOCKS_WARN_ON(!irqs_disabled())
+WARNING: CPU: 1 PID: 29602 at kernel/locking/lockdep.c:4275 lockdep_hardirqs_on_prepare kernel/locking/lockdep.c:4275 [inline]
+WARNING: CPU: 1 PID: 29602 at kernel/locking/lockdep.c:4275 lockdep_hardirqs_on_prepare+0x354/0x400 kernel/locking/lockdep.c:4246
+Modules linked in:
+CPU: 1 PID: 29602 Comm: syz-executor.1 Not tainted 5.18.0-rc7-syzkaller-00119-gb015dcd62b86 #0
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
+RIP: 0010:lockdep_hardirqs_on_prepare kernel/locking/lockdep.c:4275 [inline]
+RIP: 0010:lockdep_hardirqs_on_prepare+0x354/0x400 kernel/locking/lockdep.c:4246
+Code: 08 84 d2 0f 85 a9 00 00 00 8b 3d bf a5 5c 0c 85 ff 0f 85 50 fe ff ff 48 c7 c6 00 43 cc 89 48 c7 c7 40 43 cc 89 e8 7c c2 cb 07 <0f> 0b e9 36 fe ff ff e8 10 99 97 02 85 c0 0f 84 29 fe ff ff 48 c7
+RSP: 0018:ffffc90004c47a88 EFLAGS: 00010282
+RAX: 0000000000000000 RBX: ffffffff905c0940 RCX: 0000000000000000
+RDX: 0000000000040000 RSI: ffffffff815f4a18 RDI: fffff52000988f43
+RBP: ffffffff8970231f R08: 0000000000000000 R09: 0000000000000000
+R10: ffffffff815ef3ee R11: 0000000000000000 R12: ffff888026900540
+R13: ffff888026900338 R14: ffffffff8a017f40 R15: ffff888025ad4a00
+FS:  00007f0c85100700(0000) GS:ffff88802cb00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f0c85101000 CR3: 000000005ed20000 CR4: 0000000000150ee0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ trace_hardirqs_on+0x5b/0x1c0 kernel/trace/trace_preemptirq.c:49
+ __raw_spin_unlock_irq include/linux/spinlock_api_smp.h:159 [inline]
+ _raw_spin_unlock_irq+0x1f/0x40 kernel/locking/spinlock.c:202
+ spin_unlock_irq include/linux/spinlock.h:399 [inline]
+ clear_inode+0x6b/0x190 fs/inode.c:620
+ ntfs_evict_inode+0x5c/0xa0 fs/ntfs3/inode.c:1757
+ evict+0x2ed/0x6b0 fs/inode.c:664
+ iput_final fs/inode.c:1744 [inline]
+ iput.part.0+0x562/0x820 fs/inode.c:1770
+ iput+0x58/0x70 fs/inode.c:1760
+ ntfs_fill_super+0x2e08/0x37b0 fs/ntfs3/super.c:1178
+ get_tree_bdev+0x440/0x760 fs/super.c:1292
+ vfs_get_tree+0x89/0x2f0 fs/super.c:1497
+ do_new_mount fs/namespace.c:3040 [inline]
+ path_mount+0x1320/0x1fa0 fs/namespace.c:3370
+ do_mount fs/namespace.c:3383 [inline]
+ __do_sys_mount fs/namespace.c:3591 [inline]
+ __se_sys_mount fs/namespace.c:3568 [inline]
+ __x64_sys_mount+0x27f/0x300 fs/namespace.c:3568
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f0c8408a61a
+Code: 48 c7 c2 b8 ff ff ff f7 d8 64 89 02 b8 ff ff ff ff eb d2 e8 b8 04 00 00 0f 1f 84 00 00 00 00 00 49 89 ca b8 a5 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f0c850fff88 EFLAGS: 00000206 ORIG_RAX: 00000000000000a5
+RAX: ffffffffffffffda RBX: 0000000020000200 RCX: 00007f0c8408a61a
+RDX: 0000000020000000 RSI: 0000000020000100 RDI: 00007f0c850fffe0
+RBP: 00007f0c85100020 R08: 00007f0c85100020 R09: 0000000020000000
+R10: 0000000000000000 R11: 0000000000000206 R12: 0000000020000000
+R13: 0000000020000100 R14: 00007f0c850fffe0 R15: 000000002007aa80
+ </TASK>
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
