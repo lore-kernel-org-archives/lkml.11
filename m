@@ -2,128 +2,226 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BDA7C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 21:23:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78CC7C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 21:30:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241910AbiEXVXN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 17:23:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52978 "EHLO
+        id S241896AbiEXV36 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 17:29:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235078AbiEXVXL (ORCPT
+        with ESMTP id S230110AbiEXV34 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 17:23:11 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57AEA71A24
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 14:23:10 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: dmitry.osipenko)
-        with ESMTPSA id 36DE91F44798
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1653427388;
-        bh=+4kY50wvvK8xnfpL7EAb+VQqUenC2VyyO6SNi5GVpOE=;
-        h=From:To:Cc:Subject:Date:From;
-        b=RyqEPqC7N8HkeMwEeJ5oYO9oIji6w9zMNumE8OwDsEls/1s1SLhXRonUSz2oCItTb
-         M0uKojoWMkkwjsxx3RfpQdpHCAaqQpuE/aS1UvYGnEpZrnVNjMtVOmAcQFB51ql7qm
-         SpEs/Qo0h2pceUDpyCqUQMednqVsNGcIpwzp46J/VZQQo5Xaozn365hlqK+t2r1189
-         TmPEZi8xhie3GjGY/Ke1JHN8IjsA79V3JfEqu1xmlEBnlG9roC9WFsHTGqBqPI8y4j
-         E0gzC5mBB8Zgo3d/aQlBhSuByw9QQNt2M/ZU5gQESXtt7jLPK5ph0G5cci2p7XLzyM
-         kK/cBYHqMRGsg==
-From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
-To:     "Rafael J . Wysocki" <rafael@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [PATCH v1] kernel/reboot: Change registration order of legacy power-off handler
-Date:   Wed, 25 May 2022 00:21:18 +0300
-Message-Id: <20220524212118.425702-1-dmitry.osipenko@collabora.com>
-X-Mailer: git-send-email 2.35.3
+        Tue, 24 May 2022 17:29:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 414EF7A821;
+        Tue, 24 May 2022 14:29:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B168EB81BDB;
+        Tue, 24 May 2022 21:29:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 214A0C34100;
+        Tue, 24 May 2022 21:29:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653427792;
+        bh=AFWPUQLg3Lbg9QwCKuhXWThTOdPU5aKqp0hjACicNMM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=PgG98DMxQAVHzO+sjB04gDudV8hBwr42+EVh2JE+rr7R66sLxih4kroDcYWGFuxyi
+         y9UkL3Nqj/xB/hcFNTOTxkC7RHBKIYsA+H/H2/L0Iuhwj2npfa+FnH7+qX9mrpV1Hp
+         FqdnFr2nwMQIZ9gBBJr+9Nkzcm5Iu7mbqiAb+PPr5oTuslhyu7U9F4aJOqE+Wad+Yn
+         ZJPonpjUG6fLIYoXHYP48RzdL+7DYwFlZboPX/JVaQf5S1Q16Xrhj9HfJDzMet+81o
+         MmkapYfwS9Gw4qmB/mAQsUETpodamux2rVY5SG/xN63QP9SH+GWx7rrtBBDHz0zXMp
+         t5G98Yp9i+8jQ==
+Date:   Tue, 24 May 2022 16:29:50 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, linuxarm@huawei.com,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Songxiaowei <songxiaowei@hisilicon.com>,
+        Binghui Wang <wangbinghui@hisilicon.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Rob Herring <robh@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-pci@vger.kernel.org, Kishon Vijay Abraham I <kishon@ti.com>,
+        Yicong Yang <yangyicong@hisilicon.com>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Subject: Re: [PATCH v14 04/11] PCI: kirin: Add support for bridge slot DT
+ schema
+Message-ID: <20220524212950.GA269059@bhelgaas>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220524215507.16e97815@coco.lan>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We're unconditionally registering sys-off handler for the legacy
-pm_power_off() callback, this causes problem for platforms that don't
-use power-off handlers at all and should be halted. Now reboot syscall
-assumes that there is a power-off handler installed and tries to power
-off system instead of halting it.
+[+cc Yicong, Rafael, just FYI; trying to figure out how native host
+bridge drivers should do power management]
 
-To fix the trouble, move the handler's registration to the reboot syscall
-and check the pm_power_off() presence.
+On Tue, May 24, 2022 at 09:55:41PM +0200, Mauro Carvalho Chehab wrote:
+> Em Tue, 24 May 2022 12:19:47 -0500
+> Bjorn Helgaas <helgaas@kernel.org> escreveu:
+> > On Tue, Oct 19, 2021 at 07:06:41AM +0100, Mauro Carvalho Chehab wrote:
+> > > On HiKey970, there's a PEX 8606 PCI bridge on its PHY with
+> > > 6 lanes. Only 4 lanes are connected:
+> > > 
+> > > 	lane 0 - connected to Kirin 970;
+> > > 	lane 4 - M.2 slot;
+> > > 	lane 5 - mini PCIe slot;
+> > > 	lane 6 - in-board Ethernet controller.
+> > > 
+> > > Each lane has its own PERST# gpio pin, and needs a clock
+> > > request.
+> > > 
+> > > Add support to parse a DT schema containing the above data.
+> > > 
+> > > Cc: Kishon Vijay Abraham I <kishon@ti.com>
+> > > Acked-by: Xiaowei Song <songxiaowei@hisilicon.com>
+> > > Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+> > > ---
+> > > 
+> > > See [PATCH v14 00/11] at: https://lore.kernel.org/all/cover.1634622716.git.mchehab+huawei@kernel.org/
+> > > 
+> > >  drivers/pci/controller/dwc/pcie-kirin.c | 262 +++++++++++++++++++++---
+> > >  1 file changed, 231 insertions(+), 31 deletions(-)
+> > > 
+> > > diff --git a/drivers/pci/controller/dwc/pcie-kirin.c b/drivers/pci/controller/dwc/pcie-kirin.c
+> > > index 86c13661e02d..de375795a3b8 100644
+> > > --- a/drivers/pci/controller/dwc/pcie-kirin.c
+> > > +++ b/drivers/pci/controller/dwc/pcie-kirin.c
+> > > @@ -52,6 +52,19 @@
+> > >  #define PCIE_DEBOUNCE_PARAM	0xF0F400
+> > >  #define PCIE_OE_BYPASS		(0x3 << 28)
+> > >  
+> > > +/*
+> > > + * Max number of connected PCI slots at an external PCI bridge
+> > > + *
+> > > + * This is used on HiKey 970, which has a PEX 8606 bridge with has
+> > > + * 4 connected lanes (lane 0 upstream, and the other tree lanes,
+> > > + * one connected to an in-board Ethernet adapter and the other two
+> > > + * connected to M.2 and mini PCI slots.
+> > > + *
+> > > + * Each slot has a different clock source and uses a separate PERST#
+> > > + * pin.
+> > > ...  
+> > 
+> > > +static int kirin_pcie_add_bus(struct pci_bus *bus)
+> > > +{
+> > > +	struct dw_pcie *pci = to_dw_pcie_from_pp(bus->sysdata);
+> > > +	struct kirin_pcie *kirin_pcie = to_kirin_pcie(pci);
+> > > +	int i, ret;
+> > > +
+> > > +	if (!kirin_pcie->num_slots)
+> > > +		return 0;
+> > > +
+> > > +	/* Send PERST# to each slot */
+> > > +	for (i = 0; i < kirin_pcie->num_slots; i++) {
+> > > +		ret = gpio_direction_output(kirin_pcie->gpio_id_reset[i], 1);
+> > > +		if (ret) {
+> > > +			dev_err(pci->dev, "PERST# %s error: %d\n",
+> > > +				kirin_pcie->reset_names[i], ret);
+> > > +		}
+> > > +	}
+> > > +	usleep_range(PERST_2_ACCESS_MIN, PERST_2_ACCESS_MAX);
+> > > +
+> > > +	return 0;
+> > > +}
+> > > +
+> > > +
+> > >  static struct pci_ops kirin_pci_ops = {
+> > >  	.read = kirin_pcie_rd_own_conf,
+> > >  	.write = kirin_pcie_wr_own_conf,
+> > > +	.add_bus = kirin_pcie_add_bus,  
+> > 
+> > This seems a little weird.  Can you educate me?
+> > 
+> > From [1], it looks like the topology here is:
+> > 
+> >   00:00.0 Root Port
+> >   01:00.0 PEX 8606 Upstream Port
+> >   02:01.0 PEX 8606 Downstream Port
+> >   02:04.0 PEX 8606 Downstream Port
+> >   02:05.0 PEX 8606 Downstream Port
+> >   02:07.0 PEX 8606 Downstream Port
+> >   02:09.0 PEX 8606 Downstream Port
+> >   06:00.0 RTL8111/8168/8411 PCI Express Gigabit Ethernet Controller 
+> > 
+> > The .add_bus() callback will be called for *every* child bus we want
+> > to enumerate.  So if any of those PEX 8606 Downstream Ports are
+> > connected to another switch, when we enumerate the secondary buses of
+> > that other switch, it looks like we'll send PERST# to all the slots
+> > again, which doesn't sound right.  Am I missing something?
+> 
+> The implementation made on Kirin 960/970 for PCI is to not have a
+> PERST# bus. Instead, it has one independent GPIO driving the PERST#
+> signal for each single individual port that is physically connected.
+> 
+> See the schematics at:
+> 
+> 	- https://www.96boards.org/documentation/consumer/hikey/hikey970/hardware-docs/files/hikey970-schematics.pdf
+> 	- https://github.com/96boards/documentation/blob/master/consumer/hikey/hikey960/hardware-docs/HiKey960_Schematics.pdf
+> 
+> Yet, my first proposal were to send all GPIOs altogether. See, for
+> instance:
+> 
+> 	https://lore.kernel.org/all/3acf2c073e8ea67efaae91074dda0763bf7a2ab9.1626768323.git.mchehab+huawei@kernel.org/
+> 
+> There, the PERST# signals are initialized altogether, at the end
+> of hi3670_pcie_phy_power_on():
+> 
+> 	/* perst assert Endpoints */
+> 	usleep_range(21000, 23000);
+> 	for (i = 0; i < phy->n_gpio_resets; i++) {
+> 		ret = gpio_direction_output(phy->gpio_id_reset[i], 1);
+> 		if (ret)
+> 			return ret;
+> 	}
+> 	usleep_range(10000, 11000);
+> 
+> 	ret = is_pipe_clk_stable(phy);
+> 	if (!ret)
+> 		goto disable_clks;
+> 
+> 	hi3670_pcie_set_eyeparam(phy);
+> 
+> 	ret = hi3670_pcie_noc_power(phy, false);
+> 	if (ret)
+> 		goto disable_clks;
+> 
+> During the review process, I was requested to change it in order to do it
+> via .add_bus. 
 
-Fixes: 0e2110d2e910 ("kernel/reboot: Add kernel_can_power_off()")
-Reported-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
----
- kernel/reboot.c | 33 +++++++++++++++++----------------
- 1 file changed, 17 insertions(+), 16 deletions(-)
+I see Rob suggested .add_bus() at
+https://lore.kernel.org/all/CAL_JsqLA7Z908SQKkZpyEcCvpkWsW3pa42eajpxCSkbUy4rv9g@mail.gmail.com/
 
-diff --git a/kernel/reboot.c b/kernel/reboot.c
-index 0bdc64ecf4f6..a091145ee710 100644
---- a/kernel/reboot.c
-+++ b/kernel/reboot.c
-@@ -569,22 +569,6 @@ static int legacy_pm_power_off(struct sys_off_data *data)
- 	return NOTIFY_DONE;
- }
- 
--/*
-- * Register sys-off handlers for legacy PM callbacks. This allows legacy
-- * PM callbacks co-exist with the new sys-off API.
-- *
-- * TODO: Remove legacy handlers once all legacy PM users will be switched
-- *       to the sys-off based APIs.
-- */
--static int __init legacy_pm_init(void)
--{
--	register_sys_off_handler(SYS_OFF_MODE_POWER_OFF, SYS_OFF_PRIO_DEFAULT,
--				 legacy_pm_power_off, NULL);
--
--	return 0;
--}
--core_initcall(legacy_pm_init);
--
- static void do_kernel_power_off_prepare(void)
- {
- 	blocking_notifier_call_chain(&power_off_prep_handler_list, 0, NULL);
-@@ -646,6 +630,7 @@ SYSCALL_DEFINE4(reboot, int, magic1, int, magic2, unsigned int, cmd,
- 		void __user *, arg)
- {
- 	struct pid_namespace *pid_ns = task_active_pid_ns(current);
-+	struct sys_off_handler *sys_off = NULL;
- 	char buffer[256];
- 	int ret = 0;
- 
-@@ -670,6 +655,21 @@ SYSCALL_DEFINE4(reboot, int, magic1, int, magic2, unsigned int, cmd,
- 	if (ret)
- 		return ret;
- 
-+	/*
-+	 * Register sys-off handlers for legacy PM callback. This allows
-+	 * legacy PM callbacks temporary co-exist with the new sys-off API.
-+	 *
-+	 * TODO: Remove legacy handlers once all legacy PM users will be
-+	 *       switched to the sys-off based APIs.
-+	 */
-+	if (pm_power_off) {
-+		sys_off = register_sys_off_handler(SYS_OFF_MODE_POWER_OFF,
-+						   SYS_OFF_PRIO_DEFAULT,
-+						   legacy_pm_power_off, NULL);
-+		if (IS_ERR(sys_off))
-+			return PTR_ERR(sys_off);
-+	}
-+
- 	/* Instead of trying to make the power_off code look like
- 	 * halt when pm_power_off is not set do it the easy way.
- 	 */
-@@ -727,6 +727,7 @@ SYSCALL_DEFINE4(reboot, int, magic1, int, magic2, unsigned int, cmd,
- 		break;
- 	}
- 	mutex_unlock(&system_transition_mutex);
-+	unregister_sys_off_handler(sys_off);
- 	return ret;
- }
- 
--- 
-2.35.3
+This seems sort of similar to what Yicong is doing here:
+https://lore.kernel.org/r/20220517124319.47125-1-yangyicong@hisilicon.com
+but I don't know enough to put all the pieces together.
 
+> On my tests at the boards, I didn't see the same PERST#
+> signal to hit more than once, and the driver is working fine. 
+> So, this wasn't an actual issue, as far as I can tell. 
+
+Do you remember whether you tested with a switch below the PEX 8606?
+E.g., something like this:
+
+  00:00.0 Root Port                to [bus 01-ff]
+  01:00.0 PEX 8606 Upstream Port   to [bus 02-ff]
+  02:01.0 PEX 8606 Downstream Port to [bus 06-ff]
+  06:00.0 Switch Upstream Port     to [bus 07-ff]
+  07:01.0 Switch Downstream Port   to [bus 08]
+  08:00.0 Endpoint
+
+I think kirin_pcie_add_bus() will be called several times, probably
+once for each bus (00, 01, 02, 06, 07, 08), and it looks like it will
+do the same thing every time.  Do we reset the 8606 again when we're
+about to scan bus 08?  Surely not, because otherwise we would have
+reset the 8606 when scanning bus 06 in the original topology where the
+8606 is the only switch.
+
+I don't know enough about GPIOs to understand what happens here.  The
+doc suggests that gpio_direction_output() sets the direction (output)
+and the initial output value (1).  But I don't see any other reference
+to gpio_id_reset[i] that looks like it deasserts PERST#.
+
+Bjorn
