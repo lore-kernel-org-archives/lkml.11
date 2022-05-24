@@ -2,164 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25A7DC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 13:58:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC86FC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 13:58:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238020AbiEXN6V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 09:58:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33132 "EHLO
+        id S238025AbiEXN6m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 09:58:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231878AbiEXN6U (ORCPT
+        with ESMTP id S231878AbiEXN6k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 09:58:20 -0400
-Received: from conuserg-10.nifty.com (conuserg-10.nifty.com [210.131.2.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D3041EAFF;
-        Tue, 24 May 2022 06:58:19 -0700 (PDT)
-Received: from grover.sesame (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
-        by conuserg-10.nifty.com with ESMTP id 24ODuUKh017802;
-        Tue, 24 May 2022 22:56:30 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-10.nifty.com 24ODuUKh017802
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1653400590;
-        bh=sjzxfQyA5cu7vCUn9H7rwWsrKIkATdI1T3gWr3+EvFM=;
-        h=From:To:Cc:Subject:Date:From;
-        b=GUY4tcCCIQYGrBcVGWciRSY8U7mlxzTBftlQnpLAwi6pKuI9k5rkoo0ywSWbefzRr
-         Y22j04/QpwYz9Rze2QXBBzhDa5kKOH8khZWnon1TgKLF6106GcZttWzQzQRFRD8V26
-         aHiE4WkJ5Mwk6EARm/KdgFicHD3xVI5h6aHhJK04/DDwk7nE1NojUapUe+ZXdLGtuX
-         GxYYzc446rfeSX6BmNQKuAZNmIZ1Bg4vGVjumSUIRVGgTNxULvsqTPy0jrWUyFm0rB
-         +J4q2QoyTJdwF/rVw5nNe6S0xxLZpvDqR4pQ/zp0i0MawT35B5V4iGZ15PcdSK4xUm
-         iuAJ0Ib/CSDjQ==
-X-Nifty-SrcIP: [133.32.177.133]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     linux-hardening@vger.kernel.org, Kees Cook <keescook@chromium.org>,
-        Guenter Roeck <linux@roeck-us.net>
-Cc:     Masahiro Yamada <masahiroy@kernel.org>,
-        linux-kbuild@vger.kernel.org,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        linux-kernel@vger.kernel.org, kernel test robot <lkp@intel.com>
-Subject: [PATCH] gcc-plugins: use KERNELVERSION for plugin version
-Date:   Tue, 24 May 2022 22:55:41 +0900
-Message-Id: <20220524135541.1453693-1-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.32.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Tue, 24 May 2022 09:58:40 -0400
+Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 292211EAFF;
+        Tue, 24 May 2022 06:58:39 -0700 (PDT)
+X-IronPort-AV: E=Sophos;i="5.91,248,1647270000"; 
+   d="scan'208";a="120738317"
+Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
+  by relmlie5.idc.renesas.com with ESMTP; 24 May 2022 22:58:38 +0900
+Received: from localhost.localdomain (unknown [10.226.36.204])
+        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 8E2C1434C214;
+        Tue, 24 May 2022 22:58:35 +0900 (JST)
+From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        linux-input@vger.kernel.org
+Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Phil Edworthy <phil.edworthy@renesas.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH v2] Input: gpio-keys - Cancel delayed work only in case of GPIO
+Date:   Tue, 24 May 2022 14:58:22 +0100
+Message-Id: <20220524135822.14764-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit 61f60bac8c05 ("gcc-plugins: Change all version strings match
-kernel") broke parallel builds.
+gpio_keys module can either accept gpios or interrupts. The module
+initializes delayed work in case of gpios only and is only used if
+debounce timer is not used, so make sure cancel_delayed_work_sync()
+is called only when its gpio-backed and debounce_use_hrtimer is false.
 
-Instead of adding the dependency between GCC plugins and utsrelease.h,
-let's use KERNELVERSION, which does not require any build artifact.
+This fixes the issue seen below when the gpio_keys module is unloaded and
+an interrupt pin is used instead of GPIO:
 
-Another reason why I want to avoid utsrelease.h is because it depends
-on CONFIG_LOCALVERSION(_AUTO) and localversion* files.
+[  360.297569] ------------[ cut here ]------------
+[  360.302303] WARNING: CPU: 0 PID: 237 at kernel/workqueue.c:3066 __flush_work+0x414/0x470
+[  360.310531] Modules linked in: gpio_keys(-)
+[  360.314797] CPU: 0 PID: 237 Comm: rmmod Not tainted 5.18.0-rc5-arm64-renesas-00116-g73636105874d-dirty #166
+[  360.324662] Hardware name: Renesas SMARC EVK based on r9a07g054l2 (DT)
+[  360.331270] pstate: 60400005 (nZCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+[  360.338318] pc : __flush_work+0x414/0x470
+[  360.342385] lr : __cancel_work_timer+0x140/0x1b0
+[  360.347065] sp : ffff80000a7fba00
+[  360.350423] x29: ffff80000a7fba00 x28: ffff000012b9c5c0 x27: 0000000000000000
+[  360.357664] x26: ffff80000a7fbb80 x25: ffff80000954d0a8 x24: 0000000000000001
+[  360.364904] x23: ffff800009757000 x22: 0000000000000000 x21: ffff80000919b000
+[  360.372143] x20: ffff00000f5974e0 x19: ffff00000f5974e0 x18: ffff8000097fcf48
+[  360.379382] x17: 0000000000000000 x16: 0000000000000000 x15: 0000000000053f40
+[  360.386622] x14: ffff800009850e88 x13: 0000000000000002 x12: 000000000000a60c
+[  360.393861] x11: 000000000000a610 x10: 0000000000000000 x9 : 0000000000000008
+[  360.401100] x8 : 0101010101010101 x7 : 00000000a473c394 x6 : 0080808080808080
+[  360.408339] x5 : 0000000000000001 x4 : 0000000000000000 x3 : ffff80000919b458
+[  360.415578] x2 : ffff8000097577f0 x1 : 0000000000000001 x0 : 0000000000000000
+[  360.422818] Call trace:
+[  360.425299]  __flush_work+0x414/0x470
+[  360.429012]  __cancel_work_timer+0x140/0x1b0
+[  360.433340]  cancel_delayed_work_sync+0x10/0x18
+[  360.437931]  gpio_keys_quiesce_key+0x28/0x58 [gpio_keys]
+[  360.443327]  devm_action_release+0x10/0x18
+[  360.447481]  release_nodes+0x8c/0x1a0
+[  360.451194]  devres_release_all+0x90/0x100
+[  360.455346]  device_unbind_cleanup+0x14/0x60
+[  360.459677]  device_release_driver_internal+0xe8/0x168
+[  360.464883]  driver_detach+0x4c/0x90
+[  360.468509]  bus_remove_driver+0x54/0xb0
+[  360.472485]  driver_unregister+0x2c/0x58
+[  360.476462]  platform_driver_unregister+0x10/0x18
+[  360.481230]  gpio_keys_exit+0x14/0x828 [gpio_keys]
+[  360.486088]  __arm64_sys_delete_module+0x1e0/0x270
+[  360.490945]  invoke_syscall+0x40/0xf8
+[  360.494661]  el0_svc_common.constprop.3+0xf0/0x110
+[  360.499515]  do_el0_svc+0x20/0x78
+[  360.502877]  el0_svc+0x48/0xf8
+[  360.505977]  el0t_64_sync_handler+0x88/0xb0
+[  360.510216]  el0t_64_sync+0x148/0x14c
+[  360.513930] irq event stamp: 4306
+[  360.517288] hardirqs last  enabled at (4305): [<ffff8000080b0300>] __cancel_work_timer+0x130/0x1b0
+[  360.526359] hardirqs last disabled at (4306): [<ffff800008d194fc>] el1_dbg+0x24/0x88
+[  360.534204] softirqs last  enabled at (4278): [<ffff8000080104a0>] _stext+0x4a0/0x5e0
+[  360.542133] softirqs last disabled at (4267): [<ffff8000080932ac>] irq_exit_rcu+0x18c/0x1b0
+[  360.550591] ---[ end trace 0000000000000000 ]---
 
-(include/generated/utsrelease.h depends on include/config/kernel.release,
-which is generated by scripts/setlocalversion)
-
-I want to keep host tools independent of the kernel configuration.
-
-There is no good reason to rebuild GCC plugins just because of
-CONFIG_LOCALVERSION being changed.
-
-We just want to associate the plugin versions with the kernel source
-version. KERNELVERSION should be enough for our purpose.
-
-Fixes: 61f60bac8c05 ("gcc-plugins: Change all version strings match kernel")
-Reported-by: kernel test robot <lkp@intel.com>
-Link: https://lore.kernel.org/linux-mm/202205230239.EZxeZ3Fv-lkp@intel.com
-Reported-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 ---
+v1->v2
+* Fixed review comment suggested by Dmitry.
+---
+ drivers/input/keyboard/gpio_keys.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
- scripts/gcc-plugins/Makefile                  | 2 +-
- scripts/gcc-plugins/latent_entropy_plugin.c   | 2 +-
- scripts/gcc-plugins/randomize_layout_plugin.c | 2 +-
- scripts/gcc-plugins/sancov_plugin.c           | 2 +-
- scripts/gcc-plugins/stackleak_plugin.c        | 2 +-
- scripts/gcc-plugins/structleak_plugin.c       | 2 +-
- 6 files changed, 6 insertions(+), 6 deletions(-)
-
-diff --git a/scripts/gcc-plugins/Makefile b/scripts/gcc-plugins/Makefile
-index 6f0aecad5d67..b34d11e22636 100644
---- a/scripts/gcc-plugins/Makefile
-+++ b/scripts/gcc-plugins/Makefile
-@@ -28,7 +28,7 @@ GCC_PLUGINS_DIR = $(shell $(CC) -print-file-name=plugin)
+diff --git a/drivers/input/keyboard/gpio_keys.c b/drivers/input/keyboard/gpio_keys.c
+index d75a8b179a8a..a5dc4ab87fa1 100644
+--- a/drivers/input/keyboard/gpio_keys.c
++++ b/drivers/input/keyboard/gpio_keys.c
+@@ -131,7 +131,7 @@ static void gpio_keys_quiesce_key(void *data)
  
- plugin_cxxflags	= -Wp,-MMD,$(depfile) $(KBUILD_HOSTCXXFLAGS) -fPIC \
- 		  -include $(srctree)/include/linux/compiler-version.h \
--		  -include $(objtree)/include/generated/utsrelease.h \
-+		  -DPLUGIN_VERSION=$(call stringify,$(KERNELVERSION)) \
- 		  -I $(GCC_PLUGINS_DIR)/include -I $(obj) -std=gnu++11 \
- 		  -fno-rtti -fno-exceptions -fasynchronous-unwind-tables \
- 		  -ggdb -Wno-narrowing -Wno-unused-variable \
-diff --git a/scripts/gcc-plugins/latent_entropy_plugin.c b/scripts/gcc-plugins/latent_entropy_plugin.c
-index 5d415b2572a8..848918764174 100644
---- a/scripts/gcc-plugins/latent_entropy_plugin.c
-+++ b/scripts/gcc-plugins/latent_entropy_plugin.c
-@@ -82,7 +82,7 @@ __visible int plugin_is_GPL_compatible;
- static GTY(()) tree latent_entropy_decl;
- 
- static struct plugin_info latent_entropy_plugin_info = {
--	.version	= UTS_RELEASE,
-+	.version	= PLUGIN_VERSION,
- 	.help		= "disable\tturn off latent entropy instrumentation\n",
- };
- 
-diff --git a/scripts/gcc-plugins/randomize_layout_plugin.c b/scripts/gcc-plugins/randomize_layout_plugin.c
-index ea2aea570404..951b74ba1b24 100644
---- a/scripts/gcc-plugins/randomize_layout_plugin.c
-+++ b/scripts/gcc-plugins/randomize_layout_plugin.c
-@@ -34,7 +34,7 @@ __visible int plugin_is_GPL_compatible;
- static int performance_mode;
- 
- static struct plugin_info randomize_layout_plugin_info = {
--	.version	= UTS_RELEASE,
-+	.version	= PLUGIN_VERSION,
- 	.help		= "disable\t\t\tdo not activate plugin\n"
- 			  "performance-mode\tenable cacheline-aware layout randomization\n"
- };
-diff --git a/scripts/gcc-plugins/sancov_plugin.c b/scripts/gcc-plugins/sancov_plugin.c
-index f3d629555b84..b76cb9c42cec 100644
---- a/scripts/gcc-plugins/sancov_plugin.c
-+++ b/scripts/gcc-plugins/sancov_plugin.c
-@@ -26,7 +26,7 @@ __visible int plugin_is_GPL_compatible;
- tree sancov_fndecl;
- 
- static struct plugin_info sancov_plugin_info = {
--	.version	= UTS_RELEASE,
-+	.version	= PLUGIN_VERSION,
- 	.help		= "sancov plugin\n",
- };
- 
-diff --git a/scripts/gcc-plugins/stackleak_plugin.c b/scripts/gcc-plugins/stackleak_plugin.c
-index de817d54b8af..ff91885f9470 100644
---- a/scripts/gcc-plugins/stackleak_plugin.c
-+++ b/scripts/gcc-plugins/stackleak_plugin.c
-@@ -44,7 +44,7 @@ static bool verbose = false;
- static GTY(()) tree track_function_decl;
- 
- static struct plugin_info stackleak_plugin_info = {
--	.version = UTS_RELEASE,
-+	.version = PLUGIN_VERSION,
- 	.help = "track-min-size=nn\ttrack stack for functions with a stack frame size >= nn bytes\n"
- 		"arch=target_arch\tspecify target build arch\n"
- 		"disable\t\tdo not activate the plugin\n"
-diff --git a/scripts/gcc-plugins/structleak_plugin.c b/scripts/gcc-plugins/structleak_plugin.c
-index 86b608a24ec0..8bc04068ed39 100644
---- a/scripts/gcc-plugins/structleak_plugin.c
-+++ b/scripts/gcc-plugins/structleak_plugin.c
-@@ -37,7 +37,7 @@
- __visible int plugin_is_GPL_compatible;
- 
- static struct plugin_info structleak_plugin_info = {
--	.version	= UTS_RELEASE,
-+	.version	= PLUGIN_VERSION,
- 	.help		= "disable\tdo not activate plugin\n"
- 			  "byref\tinit structs passed by reference\n"
- 			  "byref-all\tinit anything passed by reference\n"
+ 	if (!bdata->gpiod)
+ 		hrtimer_cancel(&bdata->release_timer);
+-	if (bdata->debounce_use_hrtimer)
++	else if (bdata->debounce_use_hrtimer)
+ 		hrtimer_cancel(&bdata->debounce_timer);
+ 	else
+ 		cancel_delayed_work_sync(&bdata->work);
 -- 
-2.32.0
+2.17.1
 
