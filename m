@@ -2,71 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 901ACC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 19:53:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DC26C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 19:53:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241132AbiEXTxj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 15:53:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43856 "EHLO
+        id S241400AbiEXTxo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 15:53:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241129AbiEXTxf (ORCPT
+        with ESMTP id S240052AbiEXTx1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 15:53:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5480F79391
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 12:53:27 -0700 (PDT)
+        Tue, 24 May 2022 15:53:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D37C578935
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 12:53:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E599E616F3
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6F53A616E7
         for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 19:53:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 58985C34100;
-        Tue, 24 May 2022 19:53:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D4EA7C34118;
+        Tue, 24 May 2022 19:53:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653422006;
-        bh=Zv0X2xL4Ek62RYEFCF0TfB7RwB2WFZgRg+8fTL0PvZU=;
+        s=k20201202; t=1653422005;
+        bh=JOzntZWjokUzfIQzPasLQjKkxvWVj9aE7F07KQin7Us=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=t6lBhoRVEF2cZCSPSjMZRNQUcTxcGTY4S9gZ0sK0xRamRt0oSs550U/xUuc+AVYFN
-         /y+maBclQx7smoCnbk0tpjfBcfXSAA+gVBTA7KfhRVwN/m1MrEpfwkkK+OV6MhJ4J9
-         FHTeR2hvM8En6UMC9+lu0X/wBPBl3oHw/a/9JURYtHE6qps4o93w9ybTjhQqoCiIdo
-         GVsNDRo/k0WNBf1lSvWUhb+u9vv2sxvFGfKtZdiZT+54ahDHZxfuW5MZ7aKcupjnk+
-         lJnqradbqHBsiPUYNLEg37bOdnnHqBzwXFrb9JQyl+DwCmig7owruiWCe6fVvhNpvs
-         oXM9eA64yzuTg==
+        b=AQAtDd8pge7QEx/TL46i48yugZGvKYD/gm/8l2oljG5h0GAhvTJAWTqA0b0GNzdTW
+         osOlHnp08hCSqF7haXS1ljQINLIghXT1G+9HiEUuhvAHr7lHf+W5U0cOKw1zMnlPrr
+         lLMKW2Fv/XbUpG+xY/NYPdMQrO3k49aNUQvs7kLtJthbNXl77qkBchJCmnUv+XhWmA
+         Lrp1G4qRugceDUFw4CPUaaUaJtFmImeUhiHYwL9tNQTf9WMSlEPy0qw4P6IKwwNujl
+         OVwFjrhbFtlsoeGi4KbHP629vNskkFrGxEoMAeoc7y+QHZDPO5QcE4pibDag9jabNm
+         IE86W1/Q03xew==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 446B8F03938;
-        Tue, 24 May 2022 19:53:26 +0000 (UTC)
-Subject: Re: [GIT PULL] locking changes for v5.19
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id BE03AE8DD61;
+        Tue, 24 May 2022 19:53:25 +0000 (UTC)
+Subject: Re: [GIT PULL] random number generator updates for 5.19-rc1
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <YouzmQ23tV62Ni+F@gmail.com>
-References: <YouzmQ23tV62Ni+F@gmail.com>
+In-Reply-To: <20220522214457.37108-1-Jason@zx2c4.com>
+References: <20220522214457.37108-1-Jason@zx2c4.com>
 X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <YouzmQ23tV62Ni+F@gmail.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git locking-core-2022-05-23
-X-PR-Tracked-Commit-Id: 8491d1bdf5de152f27fc941e2dcdc4e66c950542
+X-PR-Tracked-Message-Id: <20220522214457.37108-1-Jason@zx2c4.com>
+X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/crng/random.git tags/random-5.19-rc1-for-linus
+X-PR-Tracked-Commit-Id: 1ce6c8d68f8ac587f54d0a271ac594d3d51f3efb
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 2319be135672f6e45aa937bceaae6c2668c7867c
-Message-Id: <165342200627.18932.12394472963878639897.pr-tracker-bot@kernel.org>
-Date:   Tue, 24 May 2022 19:53:26 +0000
-To:     Ingo Molnar <mingo@kernel.org>
+X-PR-Merge-Commit-Id: ac2ab99072cce553c78f326ea22d72856f570d88
+Message-Id: <165342200576.18932.1593043767652357259.pr-tracker-bot@kernel.org>
+Date:   Tue, 24 May 2022 19:53:25 +0000
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel@vger.kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        Waiman Long <longman@redhat.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Andrew Morton <akpm@linux-foundation.org>
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Mon, 23 May 2022 18:17:29 +0200:
+The pull request you sent on Sun, 22 May 2022 23:44:57 +0200:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git locking-core-2022-05-23
+> https://git.kernel.org/pub/scm/linux/kernel/git/crng/random.git tags/random-5.19-rc1-for-linus
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/2319be135672f6e45aa937bceaae6c2668c7867c
+https://git.kernel.org/torvalds/c/ac2ab99072cce553c78f326ea22d72856f570d88
 
 Thank you!
 
