@@ -2,61 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEA11C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 11:04:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0934C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 11:07:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236493AbiEXLE2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 07:04:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34634 "EHLO
+        id S235531AbiEXLHC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 07:07:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234063AbiEXLEV (ORCPT
+        with ESMTP id S233361AbiEXLHA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 07:04:21 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAAF490CD4
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 04:04:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=Y1TaiNqe+4oUo0hKcDCeioatpdaui+xyqgx5U5jgeMM=; b=UUhcPlM9X8LaJJQawZ8QATtHPP
-        sKmKYGtTaEDLG9C6BXdXkzwOwEDtwzaJ7k1XjqeBPGjo/cuwJj9MtzxyXMeCce/BReaxy4t1EARnE
-        dyE17dEVQdqAaus/hBv2a6skb2cza368zOxDoxko4/ux7bY+AMUTTMWUSBvqsicJWoq+q39V6ihp7
-        MC5miQGdgo/sGE2OU0G/npntpuUACCUrEacD/NQ9AlXQVOX1iz3qnxvamfqB6lyBEYI89/2YM23L2
-        3xkIICaaGfFyJr+l/IFtr6/uDbzmhaC1PU59aG9xkoixJRt6O4VU00ROZxmhbZNdq58+1RnRcoeD+
-        8F0XY5iA==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1ntSKY-001Ji0-PC; Tue, 24 May 2022 11:04:03 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 0EF7730003C;
-        Tue, 24 May 2022 13:04:01 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id D2DDE203DC9F0; Tue, 24 May 2022 13:04:01 +0200 (CEST)
-Date:   Tue, 24 May 2022 13:04:01 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Gavin Shan <gshan@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, mingo@redhat.com,
-        juri.lelli@redhat.com, vincent.guittot@linaro.org,
-        dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
-        mgorman@suse.de, bristot@redhat.com, shan.gavin@gmail.com,
-        zhenyzha@redhat.com
-Subject: Re: [PATCH] sched/topology: Fix typo in build_sched_domain()
-Message-ID: <Yoy7oUJeeNnMaxfO@hirez.programming.kicks-ass.net>
-References: <20220524080733.1362818-1-gshan@redhat.com>
+        Tue, 24 May 2022 07:07:00 -0400
+Received: from mail-oa1-x29.google.com (mail-oa1-x29.google.com [IPv6:2001:4860:4864:20::29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C27E6D4F3
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 04:06:59 -0700 (PDT)
+Received: by mail-oa1-x29.google.com with SMTP id 586e51a60fabf-f1d5464c48so21792320fac.6
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 04:06:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=daynix-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=VKKe+6qBQIm12lCUpH0Sxp4+NXI90A0uXZAqIc10ncY=;
+        b=HwVDCzwjATjlGAIJ3+JeU4cM+iRQQ0fGccnqZgJ7Dwvs7Q6IFYDh0GJqXRziKDGGJ+
+         H9tvhZs5mxuIKSyQC8CFDXsKX9ogyBkEB/C1aD8YRjrHCStbKZ1iVsKD1nOiQ0QWAPWV
+         JqX6sDB6TFi1tf4w85qQNxyJD6rUNFrzCCJoivsunDquhDIaodahgeZJjaW3QwR6inhe
+         ISTLZAj0L19EcmGbVQEmwkVQGCiok/ehKp4L+eIeGMrwa6PmU+sPKAop8VeTZlsy26CB
+         4Cjd11YnAUYOcDGo8S0E56AxsYEHrAr1H/kAB3H8yRT9WAX0cj6wDvMJ38vJpf/aqHA1
+         K9iQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=VKKe+6qBQIm12lCUpH0Sxp4+NXI90A0uXZAqIc10ncY=;
+        b=M+srL901mlcPNOdtRZvU7sqyx4frt0vYQZ56yo5k9iMGZHut1D9+jjKNXKSb6mRGnf
+         CMBFMBwNh008Pw7agdgBQfnUtI9R0iw01Whwk4pgAyZi3d1alw90/AaIORDSV5AsBOs3
+         zVn0sVe48Csv8nrvGyrluetoYeffufFY4/cN2xDtsoS80tPoefFZhQlNeACkkzcrx7xc
+         B14gB7RcskB292cJGzRKLjn9TOp7irKl8ddhsx3rAhaXaVMCN7vw9d96cdzbTju+/SYr
+         QTk3lWlJWoPDgUV64VUZFvpJFiIn17lTWV5xIBUxCDeMocb8SaGJOm/ekM5irgAg7czY
+         ydBQ==
+X-Gm-Message-State: AOAM5332r6qmPjcQQbPREpzhBCakfZ9D4uX0/OMaovc8u2fv2++txIPA
+        ihXkDPr4G7TTjUMmXlCzPRJwX4MKSTQfakJwUu5u/g==
+X-Google-Smtp-Source: ABdhPJzhl26EPYePCoZDxKKBpid3sxP95MD1D8lQQk/DlugmdrO4YT7uA/zZbc8AT4HaqELuAJenHw20CnIPSKMbeCQ=
+X-Received: by 2002:a05:6870:4184:b0:f1:97d2:6696 with SMTP id
+ y4-20020a056870418400b000f197d26696mr2104578oac.148.1653390417932; Tue, 24
+ May 2022 04:06:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220524080733.1362818-1-gshan@redhat.com>
+References: <20220512112347.18717-1-andrew@daynix.com> <CACGkMEvH1yE0CZYdstAK32DkEucejNO+V7PEAZD_641+rp2aKA@mail.gmail.com>
+In-Reply-To: <CACGkMEvH1yE0CZYdstAK32DkEucejNO+V7PEAZD_641+rp2aKA@mail.gmail.com>
+From:   Andrew Melnichenko <andrew@daynix.com>
+Date:   Tue, 24 May 2022 14:06:46 +0300
+Message-ID: <CABcq3pFJcsoj+dDf6tirT_hfTB6rj9+f6KNFafwg+usqYwTdDA@mail.gmail.com>
+Subject: Re: [RFC PATCH v2 0/5] TUN/VirtioNet USO features support.
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     davem <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, mst <mst@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        Yan Vugenfirer <yan@daynix.com>,
+        Yuri Benditovich <yuri.benditovich@daynix.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 24, 2022 at 04:07:33PM +0800, Gavin Shan wrote:
-> In build_sched_domain(), it seems that "borken" is misspelled. To
-> correct it with "broken".
+Hi all,
 
-I hereby award you the 'I cannot google' award.
+The issue is that host segments packets between guests on the same host.
+Tests show that it happens because SKB_GSO_DODGY skb offload in
+virtio_net_hdr_from_skb().
+To do segmentation you need to remove SKB_GSO_DODGY or add SKB_GSO_PARTIAL
+The solution with DODGY/PARTIAL offload looks like a dirty hack, so
+for now, I've lived it as it is for further investigation.
+
+
+On Tue, May 17, 2022 at 9:32 AM Jason Wang <jasowang@redhat.com> wrote:
+>
+> On Thu, May 12, 2022 at 7:33 PM Andrew Melnychenko <andrew@daynix.com> wrote:
+> >
+> > Added new offloads for TUN devices TUN_F_USO4 and TUN_F_USO6.
+> > Technically they enable NETIF_F_GSO_UDP_L4
+> > (and only if USO4 & USO6 are set simultaneously).
+> > It allows to transmission of large UDP packets.
+> >
+> > Different features USO4 and USO6 are required for qemu where Windows guests can
+> > enable disable USO receives for IPv4 and IPv6 separately.
+> > On the other side, Linux can't really differentiate USO4 and USO6, for now.
+> > For now, to enable USO for TUN it requires enabling USO4 and USO6 together.
+> > In the future, there would be a mechanism to control UDP_L4 GSO separately.
+> >
+> > Test it WIP Qemu https://github.com/daynix/qemu/tree/Dev_USOv2
+> >
+> > New types for VirtioNet already on mailing:
+> > https://lists.oasis-open.org/archives/virtio-comment/202110/msg00010.html
+> >
+> > Also, there is a known issue with transmitting packages between two guests.
+>
+> Could you explain this more? It looks like a bug. (Or any pointer to
+> the discussion)
+>
+> Thanks
+>
+> > Without hacks with skb's GSO - packages are still segmented on the host's postrouting.
+> >
+> > Andrew (5):
+> >   uapi/linux/if_tun.h: Added new offload types for USO4/6.
+> >   driver/net/tun: Added features for USO.
+> >   uapi/linux/virtio_net.h: Added USO types.
+> >   linux/virtio_net.h: Support USO offload in vnet header.
+> >   drivers/net/virtio_net.c: Added USO support.
+> >
+> >  drivers/net/tap.c               | 10 ++++++++--
+> >  drivers/net/tun.c               |  8 +++++++-
+> >  drivers/net/virtio_net.c        | 19 +++++++++++++++----
+> >  include/linux/virtio_net.h      |  9 +++++++++
+> >  include/uapi/linux/if_tun.h     |  2 ++
+> >  include/uapi/linux/virtio_net.h |  4 ++++
+> >  6 files changed, 45 insertions(+), 7 deletions(-)
+> >
+> > --
+> > 2.35.1
+> >
+>
