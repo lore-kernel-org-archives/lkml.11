@@ -2,74 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC12BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 08:14:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88258C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 08:16:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231862AbiEXIO1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 04:14:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47988 "EHLO
+        id S232093AbiEXIQV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 04:16:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231865AbiEXIOY (ORCPT
+        with ESMTP id S231997AbiEXIQL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 04:14:24 -0400
-Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAABF5DA76;
-        Tue, 24 May 2022 01:14:23 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R451e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=14;SR=0;TI=SMTPD_---0VEH.xWd_1653380055;
-Received: from localhost(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0VEH.xWd_1653380055)
+        Tue, 24 May 2022 04:16:11 -0400
+Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8A8D1140
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 01:16:10 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0VEHCnEO_1653380161;
+Received: from localhost(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0VEHCnEO_1653380161)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Tue, 24 May 2022 16:14:20 +0800
+          Tue, 24 May 2022 16:16:08 +0800
 From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-To:     robdclark@gmail.com
-Cc:     quic_abhinavk@quicinc.com, dmitry.baryshkov@linaro.org,
-        sean@poorly.run, airlied@linux.ie, daniel@ffwll.ch,
-        vkoul@kernel.org, quic_khsieh@quicinc.com,
-        linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        freedreno@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+To:     gregkh@linuxfoundation.org
+Cc:     arve@android.com, tkjos@android.com, maco@android.com,
+        joel@joelfernandes.org, brauner@kernel.org, hridya@google.com,
+        surenb@google.com, linux-kernel@vger.kernel.org,
         Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
         Abaci Robot <abaci@linux.alibaba.com>
-Subject: [PATCH] drm/msm/dpu: Remove unused code
-Date:   Tue, 24 May 2022 16:14:13 +0800
-Message-Id: <20220524081413.37895-1-jiapeng.chong@linux.alibaba.com>
+Subject: [PATCH] Android: binder: Fix kernel-doc
+Date:   Tue, 24 May 2022 16:16:00 +0800
+Message-Id: <20220524081600.39941-1-jiapeng.chong@linux.alibaba.com>
 X-Mailer: git-send-email 2.20.1.7.g153144c
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Eliminate the follow clang warning:
+Fix the following W=1 kernel warnings:
 
-drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c:544:33: warning: variable
-‘mode’ set but not used [-Wunused-but-set-variable].
+drivers/android/binder.c:362: warning: expecting prototype for
+binder_node_unlock(). Prototype was for binder_node_inner_unlock()
+instead.
 
 Reported-by: Abaci Robot <abaci@linux.alibaba.com>
 Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
 ---
- drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/android/binder.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
-index 52516eb20cb8..658171799b9a 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
-@@ -541,7 +541,6 @@ static int dpu_encoder_virt_atomic_check(
- 	struct dpu_encoder_virt *dpu_enc;
- 	struct msm_drm_private *priv;
- 	struct dpu_kms *dpu_kms;
--	const struct drm_display_mode *mode;
- 	struct drm_display_mode *adj_mode;
- 	struct msm_display_topology topology;
- 	struct dpu_global_state *global_state;
-@@ -559,7 +558,6 @@ static int dpu_encoder_virt_atomic_check(
+diff --git a/drivers/android/binder.c b/drivers/android/binder.c
+index 9e0982289dde..8ec8f43bf6c7 100644
+--- a/drivers/android/binder.c
++++ b/drivers/android/binder.c
+@@ -354,7 +354,7 @@ _binder_node_inner_lock(struct binder_node *node, int line)
+ }
  
- 	priv = drm_enc->dev->dev_private;
- 	dpu_kms = to_dpu_kms(priv->kms);
--	mode = &crtc_state->mode;
- 	adj_mode = &crtc_state->adjusted_mode;
- 	global_state = dpu_kms_get_global_state(crtc_state->state);
- 	if (IS_ERR(global_state))
+ /**
+- * binder_node_unlock() - Release node and inner locks
++ * binder_node_inner_unlock() - Release node and inner locks
+  * @node:         struct binder_node to acquire
+  *
+  * Release lock acquired via binder_node_lock()
 -- 
 2.20.1.7.g153144c
 
