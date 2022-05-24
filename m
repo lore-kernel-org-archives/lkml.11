@@ -2,35 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EDEFC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 18:15:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A6DEC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 18:15:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240280AbiEXSPE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 14:15:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33990 "EHLO
+        id S240274AbiEXSPG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 14:15:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233757AbiEXSO7 (ORCPT
+        with ESMTP id S238227AbiEXSO7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 24 May 2022 14:14:59 -0400
 Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA6F569702;
-        Tue, 24 May 2022 11:14:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7821B6CA8F;
+        Tue, 24 May 2022 11:14:55 -0700 (PDT)
 Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id A6E6B5FD08;
-        Tue, 24 May 2022 21:14:51 +0300 (MSK)
+        by mail.sberdevices.ru (Postfix) with ESMTP id A757C5FD0A;
+        Tue, 24 May 2022 21:14:53 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1653416091;
-        bh=wD7xCf5kPvxtcNl5Q5TxVB7RgfbUWeGyNLGzYEBaNHI=;
+        s=mail; t=1653416093;
+        bh=os6EAspX1ZzgEY1Q9Wl3TknUG4z4hWbD3e48SXn7EUU=;
         h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=CTOUnzjn/ACJVkoRa975ESziYQa1zuKoHYBFncmfreyqQv8h4KbmjZz6tO2KLA81h
-         8pO5BrB7YJkROPMl7IDWMwWHfspkqPe2Z4mmDuVVXsQYd7zQsUKiV94ybmI+yemrkD
-         B055bpRtvmx5/Aosl2NIP8lDkKtgs3LBBI3RRQQpuVHnGCNrmE1Pu1M/POEUvYSaIX
-         NDD4kzZDwmyTtgUFHsBV0sIKVUkweDHKmtSxHxPxuofI4gLVKalQo6DkQifQG7IQUj
-         4z8nqM5tleaJeKUrXgVhZdR+ozXjmtECKlnuo6tHyFyEcmJa/2UDOyWbOwAoDrWWCr
-         VJzn1WQv6gSfg==
+        b=N/VPJ9TmREnRmW8cYLn5Mchx1qALLGggqcrKBkHmK5X0veZC5DP3zaG3b9APH/VNj
+         /nBpneVlJyc1t8tZ0Vi7angseTpJokVXTTT7Qd7F8ay+QICY3pfGdQ75+Po3zYp6AG
+         sM7dsbej7gy4Ct6V8sbmE9SPpPwsMp4BD8HQ0r/cqkeMw414LUV2nVbbqLWVYrN1sk
+         3zYTr1lN/Ugn/ZWgHTQJ1qLfHBbMLFycpG63YpFauWU5TRAjn8jLh9k8Hu1DNv61Pa
+         Wox/qajk25j+I0b27b8ErvjkWPbWYB3qgv1/yUXq6xdgHyoFPi2FrVlReEHBwgarIA
+         gPZJuZrm5lzgg==
 Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
         by mail.sberdevices.ru (Postfix) with ESMTP;
-        Tue, 24 May 2022 21:14:51 +0300 (MSK)
+        Tue, 24 May 2022 21:14:53 +0300 (MSK)
 From:   Dmitry Rokosov <DDRokosov@sberdevices.ru>
 To:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
         "jic23@kernel.org" <jic23@kernel.org>,
@@ -45,13 +45,13 @@ CC:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
         kernel <kernel@sberdevices.ru>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         Dmitry Rokosov <DDRokosov@sberdevices.ru>
-Subject: [PATCH v2 3/5] iio:accel:mxc4005: rearrange iio trigger get and
+Subject: [PATCH v2 5/5] iio:humidity:hts221: rearrange iio trigger get and
  register
-Thread-Topic: [PATCH v2 3/5] iio:accel:mxc4005: rearrange iio trigger get and
- register
-Thread-Index: AQHYb5okhfALIwJfFkukmT/Sx6kzbg==
-Date:   Tue, 24 May 2022 18:14:43 +0000
-Message-ID: <20220524181150.9240-4-ddrokosov@sberdevices.ru>
+Thread-Topic: [PATCH v2 5/5] iio:humidity:hts221: rearrange iio trigger get
+ and register
+Thread-Index: AQHYb5omUbuzeC6UtE+2WwHgewDwHw==
+Date:   Tue, 24 May 2022 18:14:46 +0000
+Message-ID: <20220524181150.9240-6-ddrokosov@sberdevices.ru>
 References: <20220524181150.9240-1-ddrokosov@sberdevices.ru>
 In-Reply-To: <20220524181150.9240-1-ddrokosov@sberdevices.ru>
 Accept-Language: ru-RU, en-US
@@ -82,33 +82,31 @@ If this call order is wrong, the next iio_trigger_put() (from sysfs
 callback or "delete module" path) will dereference "default" module
 refcnt, which is incorrect behaviour.
 
-Fixes: 47196620c82f ("iio: mxc4005: add data ready trigger for mxc4005")
+Fixes: e4a70e3e7d84 ("iio: humidity: add support to hts221 rh/temp combo de=
+vice")
 Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
 ---
- drivers/iio/accel/mxc4005.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iio/humidity/hts221_buffer.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/accel/mxc4005.c b/drivers/iio/accel/mxc4005.c
-index b3afbf064915..df600d2917c0 100644
---- a/drivers/iio/accel/mxc4005.c
-+++ b/drivers/iio/accel/mxc4005.c
-@@ -456,8 +456,6 @@ static int mxc4005_probe(struct i2c_client *client,
+diff --git a/drivers/iio/humidity/hts221_buffer.c b/drivers/iio/humidity/ht=
+s221_buffer.c
+index f29692b9d2db..66b32413cf5e 100644
+--- a/drivers/iio/humidity/hts221_buffer.c
++++ b/drivers/iio/humidity/hts221_buffer.c
+@@ -135,9 +135,12 @@ int hts221_allocate_trigger(struct iio_dev *iio_dev)
 =20
- 		data->dready_trig->ops =3D &mxc4005_trigger_ops;
- 		iio_trigger_set_drvdata(data->dready_trig, indio_dev);
--		indio_dev->trig =3D data->dready_trig;
--		iio_trigger_get(indio_dev->trig);
- 		ret =3D devm_iio_trigger_register(&client->dev,
- 						data->dready_trig);
- 		if (ret) {
-@@ -465,6 +463,8 @@ static int mxc4005_probe(struct i2c_client *client,
- 				"failed to register trigger\n");
- 			return ret;
- 		}
+ 	iio_trigger_set_drvdata(hw->trig, iio_dev);
+ 	hw->trig->ops =3D &hts221_trigger_ops;
 +
-+		indio_dev->trig =3D iio_trigger_get(data->dready_trig);
- 	}
++	err =3D devm_iio_trigger_register(hw->dev, hw->trig);
++
+ 	iio_dev->trig =3D iio_trigger_get(hw->trig);
 =20
- 	return devm_iio_device_register(&client->dev, indio_dev);
+-	return devm_iio_trigger_register(hw->dev, hw->trig);
++	return err;
+ }
+=20
+ static int hts221_buffer_preenable(struct iio_dev *iio_dev)
 --=20
 2.36.0
