@@ -2,125 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDC0AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 06:28:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21F3AC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 24 May 2022 06:28:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235011AbiEXG2I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 02:28:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48466 "EHLO
+        id S234995AbiEXG2W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 02:28:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234985AbiEXG17 (ORCPT
+        with ESMTP id S235053AbiEXG2N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 02:27:59 -0400
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 813F172E1F
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 23:27:57 -0700 (PDT)
-Received: by mail-pg1-x52f.google.com with SMTP id a9so13513213pgv.12
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 23:27:57 -0700 (PDT)
+        Tue, 24 May 2022 02:28:13 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5395772211
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 23:28:09 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id er5so21695612edb.12
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 23:28:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=2mx9bPTY7AEcp+j24lhXXPGVls/yhivZ1agLRVxoLiw=;
-        b=v+S3AKD3IZY1715alsr8yTzbsVUYEJKe+49LFvD+HdqE9G/w+5EjzEN0EwaEDyGrgn
-         i9Ya3PVga4iPV58AJIeN1oTrMCpdjatANgHWEgSW8H8UHrlDSX4k0sGGqWcV7AXdFW13
-         EAk3nLfKEjQm6om5mFrDB7o4f02o242GQEXT/WIFEL4yR/3PpF7M5gtnBfzi+dSVbTxu
-         StmM8BZkmo2YtgyD2u3N/KxcgJyaZoQ5QI6XjNdjDbH/gX13NzTb6mqHMmzWnw0wjnjt
-         6G2U6k80RGyCUtx5VNIlrbZZrmZIkm6UOOp3C70ojMsYgXdvqPAfokDNwMjQRVy8THGC
-         Q/Ew==
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=N3jdbvgtlnw8zIaSv0DQqGc3caOnAXLJMAe+8f0UCS0=;
+        b=O5lAcyn/cym/3OrYhOLamVEgFGcZ2RXZc2FY/HnELt4FLoY5cU6Qzd1dh/CbLJMwNP
+         qKUgSM+Muoz1BLCPqw4YgLhVdAV7cvJn8lsQADC+YX0odK5WcxdVUpSqQIpNLI+vWSVR
+         bGYPWSffJOcjIzQxvLSsgg4r+doFWCFL4Ke0s=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=2mx9bPTY7AEcp+j24lhXXPGVls/yhivZ1agLRVxoLiw=;
-        b=AFCkqLzTMjh69gAuhKv01elZcabg6YuuvBgKYM+X3BgrlExUoER5jgI2GZyat4EYx+
-         XBgQ7hIXkZZUhoZKMt56Pj0C77SEjpqQzVHZJaI6s1VKFrjY78UwjX7TtdTxi7jh+nNW
-         LVK11KAB2F7d7KtclClldRbBP3sDFPUC8+9QnLNXuBqARnsja8olnv4uU8q05VMefwML
-         rvjtsykQdQqLMGfcqPqbHO6yFZuodWZfj6ZEOb6TtUvuUpNuAXKjgmy4TWFptPwkaz8R
-         u0FChzD5fc7kHaDySRzm0l5/1OdlmWYLPXGJhAc5ZMirdd2yWt99TxAQ4yYeuz9IWEtP
-         58/g==
-X-Gm-Message-State: AOAM530LzaPpFPyUTerh8MzsQyRRglUf/9v/FoCGCGEegf2DaFgJHA4j
-        ND8mH/dazOsJSyZDIu3zKf6KJg==
-X-Google-Smtp-Source: ABdhPJx7zUzEoXA0gBdm9ca0a2T/LuHVii8K0J7cqNEy85oapg7WfQ/2eJWO3OwS2W/T0/ARUmA1jA==
-X-Received: by 2002:a62:f901:0:b0:518:307a:b392 with SMTP id o1-20020a62f901000000b00518307ab392mr27007106pfh.44.1653373677075;
-        Mon, 23 May 2022 23:27:57 -0700 (PDT)
-Received: from FVFYT0MHHV2J.bytedance.net ([2408:8207:18da:2310:f940:af17:c2f5:8656])
-        by smtp.gmail.com with ESMTPSA id h5-20020a170902f54500b0016168e90f2dsm6254455plf.219.2022.05.23.23.27.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 May 2022 23:27:56 -0700 (PDT)
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     hannes@cmpxchg.org, mhocko@kernel.org, roman.gushchin@linux.dev,
-        shakeelb@google.com
-Cc:     cgroups@vger.kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, duanxiongchun@bytedance.com,
-        longman@redhat.com, Muchun Song <songmuchun@bytedance.com>
-Subject: [PATCH v4 06/11] mm: thp: make split queue lock safe when LRU pages are reparented
-Date:   Tue, 24 May 2022 14:05:46 +0800
-Message-Id: <20220524060551.80037-7-songmuchun@bytedance.com>
-X-Mailer: git-send-email 2.32.1 (Apple Git-133)
-In-Reply-To: <20220524060551.80037-1-songmuchun@bytedance.com>
-References: <20220524060551.80037-1-songmuchun@bytedance.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=N3jdbvgtlnw8zIaSv0DQqGc3caOnAXLJMAe+8f0UCS0=;
+        b=MV4N751V86XupXpLrF3DVC2+vixksPaZwZE3OMg2cb4TihS2Cyw7d06tZCLlUEJgRr
+         rBY2kgzlwkfh8RJA9E+lucJ99xcsCA71K7ABhuwPrnzNOvLGF2KgTuqhVZoF6YFeoO7S
+         V7L8jaTjNEMnTMiWi1B6qvtkCySSKrlMT0ISsa+FSYe88agfMisWofC9DFGQ7aVjL2Lj
+         ZHMKT+yEPxooe0T6trHgCmlmM2AcXnwbs5e8I9O+dBJAb/6yF5hiYNTHEovdwZ3OXwg2
+         Slq/aPFXHpel8MvikSi2EIuPqTzp976/MmXYKCWSx8UmWzsyaam2jHYd0NcbbDoeh6yD
+         Elug==
+X-Gm-Message-State: AOAM533MZrlc4sJFQJ8L+8O1oWvb82yuwPLNilCUTNl4ma8MJzyNaFvc
+        qGdy4afXICUS+I6uzGJkWhAZKRtAW+dFSHszRbfxh3nwaCM=
+X-Google-Smtp-Source: ABdhPJzBItlY43uGQ1di/pvyiuI5cG2uV8pK8/a3MYLK073piDHgVWBSg8bsrQX2VghdcQWs8SvYrgrhAjczS+pKxbA=
+X-Received: by 2002:a05:6402:d51:b0:42a:b2cc:33b2 with SMTP id
+ ec17-20020a0564020d5100b0042ab2cc33b2mr27392564edb.248.1653373687924; Mon, 23
+ May 2022 23:28:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220523102339.21927-1-matthias.bgg@kernel.org>
+In-Reply-To: <20220523102339.21927-1-matthias.bgg@kernel.org>
+From:   Chen-Yu Tsai <wenst@chromium.org>
+Date:   Tue, 24 May 2022 14:27:56 +0800
+Message-ID: <CAGXv+5Gx6oGvvL1aSWfZC8cpE7mFyr5g66c=AHm3jkNCuXzakg@mail.gmail.com>
+Subject: Re: [PATCH v3 0/2] Delete MT8192 msdc gate (was "clk: mediatek:
+ Delete MT8192 msdc gate")
+To:     matthias.bgg@kernel.org
+Cc:     mturquette@baylibre.com, sboyd@kernel.org,
+        allen-kh.cheng@mediatek.com, weiyi.lu@mediatek.com,
+        chun-jie.chen@mediatek.com, linux-kernel@vger.kernel.org,
+        ikjn@chromium.org, miles.chen@mediatek.com, robh+dt@kernel.org,
+        linux-mediatek@lists.infradead.org,
+        krzysztof.kozlowski+dt@linaro.org, linux-clk@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        angelogioacchino.delregno@collabora.com,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        devicetree@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Similar to the lruvec lock, we use the same approach to make the split
-queue lock safe when LRU pages are reparented.
+On Mon, May 23, 2022 at 7:19 PM <matthias.bgg@kernel.org> wrote:
+>
+> From: Matthias Brugger <matthias.bgg@gmail.com>
+>
+>
+> The mt8192-msdc clock is only a single clock gate. This gate is accessed
+> from the mmc driver directly. With
+> 4a1d1379ebf6 ("arm64: dts: mt8192: Add mmc device nodes")
+> the only consumer of this binding was deleted. Delete the binding
+> decription and the clock driver bound to it.
+>
+> Changes in v3:
+> - Update commit message to explain better why we do ABI breakage here
+> - add Reviewed-by tag
+>
+> Changes in v2:
+> - Delete compatible in binding descprition as well
+> - Add RvB tags
+> - add Reviewed-by tag
+>
+> Matthias Brugger (2):
+>   dt-bindings: ARM: Mediatek: Remove msdc binding of MT8192 clock
+>   clk: mediatek: Delete MT8192 msdc gate
 
-Signed-off-by: Muchun Song <songmuchun@bytedance.com>
----
- mm/huge_memory.c | 23 +++++++++++++++++++++++
- 1 file changed, 23 insertions(+)
+Whole series is
 
-diff --git a/mm/huge_memory.c b/mm/huge_memory.c
-index ea152bde441e..cc596034c487 100644
---- a/mm/huge_memory.c
-+++ b/mm/huge_memory.c
-@@ -543,9 +543,22 @@ static struct deferred_split *folio_split_queue_lock(struct folio *folio)
- {
- 	struct deferred_split *queue;
- 
-+	rcu_read_lock();
-+retry:
- 	queue = folio_split_queue(folio);
- 	spin_lock(&queue->split_queue_lock);
- 
-+	if (unlikely(folio_split_queue_memcg(folio, queue) != folio_memcg(folio))) {
-+		spin_unlock(&queue->split_queue_lock);
-+		goto retry;
-+	}
-+
-+	/*
-+	 * Preemption is disabled in the internal of spin_lock, which can serve
-+	 * as RCU read-side critical sections.
-+	 */
-+	rcu_read_unlock();
-+
- 	return queue;
- }
- 
-@@ -554,9 +567,19 @@ folio_split_queue_lock_irqsave(struct folio *folio, unsigned long *flags)
- {
- 	struct deferred_split *queue;
- 
-+	rcu_read_lock();
-+retry:
- 	queue = folio_split_queue(folio);
- 	spin_lock_irqsave(&queue->split_queue_lock, *flags);
- 
-+	if (unlikely(folio_split_queue_memcg(folio, queue) != folio_memcg(folio))) {
-+		spin_unlock_irqrestore(&queue->split_queue_lock, *flags);
-+		goto retry;
-+	}
-+
-+	/* See the comments in folio_split_queue_lock(). */
-+	rcu_read_unlock();
-+
- 	return queue;
- }
- 
--- 
-2.11.0
-
+Reviewed-by: Chen-Yu Tsai <wenst@chromium.org>
