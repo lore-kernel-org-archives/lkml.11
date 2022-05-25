@@ -2,86 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE330C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 17:48:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56941C43217
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 17:49:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343494AbiEYRs5 (ORCPT
+        id S1343522AbiEYRtD convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 13:48:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52668 "EHLO
+        Wed, 25 May 2022 13:49:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245754AbiEYRsx (ORCPT
+        with ESMTP id S245754AbiEYRs6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 13:48:53 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68A6322285
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 10:48:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653500932; x=1685036932;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=ZiIT7udcNT8M512D+GC+EBX7lAzUqW1nxd2x6iQxp44=;
-  b=OjCq26bW9IC2qL46wBDH++2MpZAC0E/EM45mk/wZvK9Fy1nEtTNlslxR
-   5QUi8dm/2QUrZrZzSeZtDSO/y7GZuaDi1dnu/OUwGJBvxxhxHNNfAJll0
-   tDd110SHkPWNxdm1gAdG406Fo/gx03dR2vlmtVdB+10npLmHXmt7c3z3F
-   n3JcnnLz5Vvxhx+dJpAWftxw7yGx5oaKKeE8y8PBafo30dqSvig+qY39I
-   FWXlLzdIv8x5PZf8nhog+yA1nPy37hLaCyZvYBYDTPC/e4EzVtb2FgKO+
-   sDbNvWQMKjivabtXCRlGgLdjYe6va4pQgPQ9g+FqCF7C0K7/+8Rl6TGVC
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10358"; a="273997789"
-X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
-   d="scan'208";a="273997789"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2022 10:43:04 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
-   d="scan'208";a="549123097"
-Received: from lkp-server01.sh.intel.com (HELO db63a1be7222) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 25 May 2022 10:43:03 -0700
-Received: from kbuild by db63a1be7222 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ntv2E-0003CW-U8;
-        Wed, 25 May 2022 17:43:02 +0000
-Date:   Thu, 26 May 2022 01:42:40 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Tzung-Bi Shih <tzungbi@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [tzungbi-chrome-platform:dev 25/25] cros_kunit_util.c:undefined
- reference to `kunit_kmalloc_array'
-Message-ID: <202205260106.u6TwOLMB-lkp@intel.com>
+        Wed, 25 May 2022 13:48:58 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.74])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CED4743EDE;
+        Wed, 25 May 2022 10:48:56 -0700 (PDT)
+Received: from mail-yb1-f171.google.com ([209.85.219.171]) by
+ mrelayeu.kundenserver.de (mreue107 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1M2fM1-1nqKtN3I7j-004Dtu; Wed, 25 May 2022 19:48:55 +0200
+Received: by mail-yb1-f171.google.com with SMTP id x2so37194248ybi.8;
+        Wed, 25 May 2022 10:48:54 -0700 (PDT)
+X-Gm-Message-State: AOAM532z4B2YsGkU8NqMTxoEHFwQiwnHVwNZYXi3Ob308zaQ5j+FnF0w
+        jni83HTZDNvGbs4RAq2ICINuaLpPa14NdBma8vI=
+X-Google-Smtp-Source: ABdhPJzuiHSmZ8nVYKAXx5dLxFxpNAHZXgLqBiamodT4boGdrCuJxzCCcnQVNo+mB/7OjTNGg0DOAvLa5X1IWqszNVY=
+X-Received: by 2002:a25:31c2:0:b0:641:660f:230f with SMTP id
+ x185-20020a2531c2000000b00641660f230fmr32038430ybx.472.1653500933346; Wed, 25
+ May 2022 10:48:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20220419211658.11403-1-apais@linux.microsoft.com>
+ <20220419211658.11403-2-apais@linux.microsoft.com> <CACRpkdZ2DFZRPHS1x0=M3_8zYvU-jpCG5Tm3863dXv51EhY+BA@mail.gmail.com>
+ <CAK8P3a0j_rziihsgHnG5bHMxmPbOkAhT6_+CCE4iFZy7HzQrLw@mail.gmail.com>
+ <9947cfa64667406996de191f07b9e8b9@AcuMS.aculab.com> <6E248F41-6687-4F2B-B847-DB5459BA1344@linux.microsoft.com>
+In-Reply-To: <6E248F41-6687-4F2B-B847-DB5459BA1344@linux.microsoft.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Wed, 25 May 2022 19:48:36 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a0mOEMW3N7HB7zTAbqKJMu_RusivjxwuU7_E+O1vGHOEw@mail.gmail.com>
+Message-ID: <CAK8P3a0mOEMW3N7HB7zTAbqKJMu_RusivjxwuU7_E+O1vGHOEw@mail.gmail.com>
+Subject: Re: [RFC 1/1] drivers/dma/*: replace tasklets with workqueue
+To:     Allen Pais <apais@linux.microsoft.com>
+Cc:     David Laight <David.Laight@aculab.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        "olivier.dautricourt@orolia.com" <olivier.dautricourt@orolia.com>,
+        Stefan Roese <sr@denx.de>, Vinod Koul <vkoul@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        "linux-hardening@vger.kernel.org" <linux-hardening@vger.kernel.org>,
+        Ludovic Desroches <ludovic.desroches@microchip.com>,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Paul Cercueil <paul@crapouillou.net>,
+        "Eugeniy.Paltsev@synopsys.com" <Eugeniy.Paltsev@synopsys.com>,
+        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Viresh Kumar <vireshk@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Leo Li <leoyang.li@nxp.com>,
+        "zw@zh-kernel.org" <zw@zh-kernel.org>,
+        Zhou Wang <wangzhou1@hisilicon.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Logan Gunthorpe <logang@deltatee.com>,
+        Sanjay R Mehta <sanju.mehta@amd.com>,
+        Daniel Mack <daniel@zonque.org>,
+        Haojian Zhuang <haojian.zhuang@gmail.com>,
+        Robert Jarzmik <robert.jarzmik@free.fr>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        "green.wan@sifive.com" <green.wan@sifive.com>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Baolin Wang <baolin.wang7@gmail.com>,
+        Lyra Zhang <zhang.lyra@gmail.com>,
+        Patrice CHOTARD <patrice.chotard@foss.st.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        =?UTF-8?Q?Jernej_=C5=A0krabec?= <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+X-Provags-ID: V03:K1:0oNKE+aYHXzvIhZnI05JLdbh19bMeWgQr7g/ZSVtzRDQ0Xy/8ho
+ UrKFc8cz+xgeYHXnF1gl1iiybnsWi0QqL/iQBfx7lhklR1sawXLchnDW+IMAnSffs4gBf3o
+ Uo6FCKD5LxF3o9guwwJ2lgZrkJMQcw2+hD/Y+EpCyymeLzupaaEdOmH2B/q7mf6ixsOsmtA
+ +vD8UYwxw9lqQe/GqUIKg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:rmvH/JoWJlA=:kUTYk+HrtMJMhbxax9LfL4
+ R4J+6jT3qQGVQRXv8YhKYIFA/pIfPn80fhaxobBKSKJtsCyunsNESdo+P0plc0e8Yp7zmctTf
+ QY3xVFRPOAb6jL09p5vOxZAMF0gXsm/Pg+Y5tfhn0lHvWDgLAtMcW2Gc4RvAKrtaaoNaZQ2wq
+ Sm0O+NSbO/uEfjRsBM06JxeFWehWXRylGD7MGF6+9OJDxg94C548F2F9EcVsO+yaPwEpdwa73
+ S/C99mW0h9Slaa/aDosOhWFBX/G1WpHuvV4Pg5jRe08UOmgC9eI6bf/ryE164p5SFtlU/hnIX
+ VwCP85wPNyMArDO50QYOsZR/wyU8jIOhoLkCys0VVNkVmMOBiRL3Um0aVs2vzAuj5JxLlvHJo
+ NxVbkdp1kcv2wy1niWJrMLX0E8otYhhpXmo3DD2LV+8vjK8hlV7dCkCHQi2ByOk3dD2c/RaK7
+ XinJkm61E5JNPpBs1lKmpaCEUfX6dVsoRLia3KSpMMtyEZkXH+uKmST7ywyxVtngIOHT3YLvo
+ 26PWqxyzPGlGqhhtG/XpmG1nXNE5HoD/rNSkRZF0Ibd+yCyR93rcBbtuqF43iMsG1a366LMAd
+ qRlyY66mmhdXvd2h2dWuj8kgDaUmyC3VjVJac6QaOL61MzSCSpD1KPvVeIz6+xKE6ma35O6z1
+ iTUGHkNIxw8TanpGDxbv6RwPyopwX0Rp6EsAwybTRgqWUOZyF5W9RWmfzpsDjeynB9NEyrmVz
+ 8Ir77Lg3Hh0oArE/epwry+GI3bDWl4rFtGzm4uNy7NQbwgxr5wcnd1+RNgkBO4ZMcNgq7HOTx
+ Gp/a84DbgEMF/TRGogdido+ObB6tSesdcyYLUBa4VW+lGUtvtjGqLBAmLoAW9lPdLXhgPho+Z
+ v4rP1Jf+ynDUBxrD5BRQ==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/tzungbi/chrome-platform.git dev
-head:   c8065f6d478990cfc385d1d579972a75fc29605b
-commit: c8065f6d478990cfc385d1d579972a75fc29605b [25/25] platform/chrome: cros_ec_proto: add Kunit tests for cros_ec_query_all()
-config: m68k-allmodconfig (https://download.01.org/0day-ci/archive/20220526/202205260106.u6TwOLMB-lkp@intel.com/config)
-compiler: m68k-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/tzungbi/chrome-platform.git/commit/?id=c8065f6d478990cfc385d1d579972a75fc29605b
-        git remote add tzungbi-chrome-platform https://git.kernel.org/pub/scm/linux/kernel/git/tzungbi/chrome-platform.git
-        git fetch --no-tags tzungbi-chrome-platform dev
-        git checkout c8065f6d478990cfc385d1d579972a75fc29605b
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash
+On Wed, May 25, 2022 at 6:56 PM Allen Pais <apais@linux.microsoft.com> wrote:
+>
+> Thank you Linus, Arnd, Vincent and David for the feedback.
+>
+> This is a lot more than a just conversion of API’s. I am in the process
+> Of replacing tasklets with threaded irq’s and hopefully that should be
+> A better solution than using workqueues.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+I don't think that is much better for the case of the DMA engine
+callbacks than the work queue, the problem I pointed out here
+is scheduling into task context, which may be too expensive
+in some cases, but whether it is or not depends on the slave
+driver, not the dmaengine driver.
 
-All errors (new ones prefixed by >>):
+Even if all the slave drivers are better off using task context
+(threaded irq or workqueue), you need to look at the slave
+drivers first before you can convert the dmaengine drivers.
 
-   m68k-linux-ld: drivers/platform/chrome/cros_kunit_util.o: in function `cros_kunit_ec_xfer_mock':
->> cros_kunit_util.c:(.text+0x7c): undefined reference to `kunit_kmalloc_array'
-   m68k-linux-ld: drivers/platform/chrome/cros_kunit_util.o: in function `cros_kunit_ec_xfer_mock_addx':
-   cros_kunit_util.c:(.text+0x12e): undefined reference to `kunit_kmalloc_array'
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+        Arnd
