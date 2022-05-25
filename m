@@ -2,117 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39838C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 15:57:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2F83C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 15:58:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244561AbiEYP5y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 11:57:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39134 "EHLO
+        id S244752AbiEYP6x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 11:58:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245218AbiEYP5t (ORCPT
+        with ESMTP id S233020AbiEYP6q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 11:57:49 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 852D564BDD;
-        Wed, 25 May 2022 08:57:47 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id F2374219F5;
-        Wed, 25 May 2022 15:57:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1653494266; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=M2rR0Mt9aNzbADhl4nuio4a0c9AH3DiINVqGdx50lWk=;
-        b=qy/BfGSwupZVQJgnZi4bTX+kIWc3p4f8hlVX9gW2w6zYBbhmKWS/MxcBrpcA0TY+uDxQ7z
-        5pFAzMWK2jqH2tqNZdXoJRwQfBTaKsyJlfUCiNiQ12JK5ov22e1Y81L9p+sSvEtLhHW0Td
-        YukST6h9DdaKGLmlvMXyhxeCvBxxAis=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1653494266;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=M2rR0Mt9aNzbADhl4nuio4a0c9AH3DiINVqGdx50lWk=;
-        b=FE3miYJiqnMi5CaTZwTot5BCSM2V85L9RHDM+2vsB9YaPMKlG9E64G1CzVTVMw97UgjDt3
-        nuWKmso6QpJQhoAw==
-Received: from quack3.suse.cz (unknown [10.100.224.230])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 8C5DE2C141;
-        Wed, 25 May 2022 15:57:45 +0000 (UTC)
-Received: by quack3.suse.cz (Postfix, from userid 1000)
-        id 9E70AA0632; Wed, 25 May 2022 17:57:42 +0200 (CEST)
-Date:   Wed, 25 May 2022 17:57:42 +0200
-From:   Jan Kara <jack@suse.cz>
-To:     Ritesh Harjani <ritesh.list@gmail.com>
-Cc:     Jan Kara <jack@suse.cz>, Ye Bin <yebin10@huawei.com>,
-        tytso@mit.edu, adilger.kernel@dilger.ca,
-        linux-ext4@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH -next] ext4: fix super block checksum incorrect after
- mount
-Message-ID: <20220525155742.gcqoeidcyii7mzx6@quack3.lan>
-References: <20220525012904.1604737-1-yebin10@huawei.com>
- <20220525075123.rx5v7fe6ocn354wn@riteshh-domain>
- <20220525115400.kr3urpp3cf3hybvi@quack3.lan>
- <20220525151612.an7xysp242urynbp@riteshh-domain>
+        Wed, 25 May 2022 11:58:46 -0400
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBB1D6A046
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 08:58:44 -0700 (PDT)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4L7bMk5qvPz9tFR;
+        Wed, 25 May 2022 17:58:42 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id 2O8vcyPTfIX6; Wed, 25 May 2022 17:58:42 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4L7bMk4tMYz9t16;
+        Wed, 25 May 2022 17:58:42 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 947B78B77C;
+        Wed, 25 May 2022 17:58:42 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id SmFiMGNToGgI; Wed, 25 May 2022 17:58:42 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.203.180])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 261198B763;
+        Wed, 25 May 2022 17:58:42 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 24PFwQaT419148
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Wed, 25 May 2022 17:58:26 +0200
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 24PFwQ9b419147;
+        Wed, 25 May 2022 17:58:26 +0200
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>, peterz@infradead.org,
+        aik@ozlabs.ru, sv@linux.ibm.com, rostedt@goodmis.org,
+        jpoimboe@redhat.com, naveen.n.rao@linux.vnet.ibm.com,
+        mbenes@suse.cz
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Subject: [RFC PATCH v1 3/4] static_call: Call static_call_init() from start_kernel()
+Date:   Wed, 25 May 2022 17:58:16 +0200
+Message-Id: <95dbf2912ac97daf08cfb64c554cfa83266968e6.1653494186.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <cover.1653494186.git.christophe.leroy@csgroup.eu>
+References: <cover.1653494186.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1653494295; l=790; s=20211009; h=from:subject:message-id; bh=JzHIizpKfjchzDO1PsEP9DpZzJ+lqwPqnOitXNRQVTI=; b=nBMV3Uel9aQS/GlB1HytDds3N2bnIEJCF4jGC2uO/yQJ0Hf8WtaF/mleEpLn0R5mvmbPXf2db0qa P+uIyLXQB/ZNEO58F+Evn2onb/axf+7ZurUpEnPYoB9NPpW3K2+K
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220525151612.an7xysp242urynbp@riteshh-domain>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed 25-05-22 20:46:12, Ritesh Harjani wrote:
-> On 22/05/25 01:54PM, Jan Kara wrote:
-> > On Wed 25-05-22 13:21:23, Ritesh Harjani wrote:
-> > > On 22/05/25 09:29AM, Ye Bin wrote:
-> > > > We got issue as follows:
-> > > > [home]# mount  /dev/sda  test
-> > > > EXT4-fs (sda): warning: mounting fs with errors, running e2fsck is recommended
-> > > > [home]# dmesg
-> > > > EXT4-fs (sda): warning: mounting fs with errors, running e2fsck is recommended
-> > > > EXT4-fs (sda): Errors on filesystem, clearing orphan list.
-> > > > EXT4-fs (sda): recovery complete
-> > > > EXT4-fs (sda): mounted filesystem with ordered data mode. Quota mode: none.
-> > > > [home]# debugfs /dev/sda
-> > > > debugfs 1.46.5 (30-Dec-2021)
-> > > > Checksum errors in superblock!  Retrying...
-> > > >
-> > > > Reason is ext4_orphan_cleanup will reset ‘s_last_orphan’ but not update
-> > > > super block checksum.
-> > > > To solve above issue, defer update super block checksum after ext4_orphan_cleanup.
-> > >
-> > > I agree with the analysis. However after [1], I think all updates to superblock
-> > > (including checksum computation) should be done within buffer lock.
-> > > (lock_buffer(), unlock_buffer()).
-> > >
-> > > [1]: https://lore.kernel.org/all/20201216101844.22917-4-jack@suse.cz/
-> >
-> > So technically you're right that we should hold buffer lock all the time
-> > from before we modify superblock buffer until we recompute the checksum (so
-> > that we avoid writing superblock with mismatched checksum). To do this we'd
-> > have to put checksum recomputations and superblock buffer locking into
-> > ext4_orphan_cleanup() around setting of es->s_last_orphan (in three places
-> > there AFAICS). A bit tedious but it would actually also fix a (theoretical)
-> > race that someone decides to write out superblock after we set
-> > s_last_orphan but before we set the checksum.
-> 
-> Ok. Although (I think) it can still be done at just one place before returning
-> from ext4_orphan_cleanup().
-> But I agree it is mostly a theoretical race (in fact since this is happening
-> during mount, I am not sure if it is even possible?) and there might not
-> be any value addition in doing so by complicating it too much.
+Call static_call_init() just after jump_label_init().
 
-Well, what could presumably happen is that if someone dirtied superblock
-(say while processing orphan list), then flush worker could come just after
-we set s_last_orphan and before we update the checksum. Now I don't think
-we currently dirty superblock during orphan cleanup but it is certainly
-slightly fragile to rely on this.
+x86 already called it from setup_arch(). This is not a
+problem as static_call_init() is guarded from double call.
 
-								Honza
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+---
+ init/main.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/init/main.c b/init/main.c
+index 98182c3c2c4b..b6c49c18ec5d 100644
+--- a/init/main.c
++++ b/init/main.c
+@@ -962,6 +962,7 @@ asmlinkage __visible void __init __no_sanitize_address start_kernel(void)
+ 	pr_notice("Kernel command line: %s\n", saved_command_line);
+ 	/* parameters may set static keys */
+ 	jump_label_init();
++	static_call_init();
+ 	parse_early_param();
+ 	after_dashes = parse_args("Booting kernel",
+ 				  static_command_line, __start___param,
 -- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+2.35.3
+
