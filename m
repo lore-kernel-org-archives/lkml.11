@@ -2,175 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BB08C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 10:46:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36B76C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 10:46:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242947AbiEYKqd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 06:46:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52494 "EHLO
+        id S242700AbiEYKqm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 06:46:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242360AbiEYKqD (ORCPT
+        with ESMTP id S242740AbiEYKqa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 06:46:03 -0400
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC7299AE6A
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 03:46:01 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id s14so18214128plk.8
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 03:46:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=2Ofo/7h9jTqDyo9qc7SprA/31bAIMjSHKkGlFIJBjtU=;
-        b=TeUELpsl0qygv6an9+IanVzO/AhwABBrwsmA/RI7ueZ/CeYY3B1AOxvpqAJobMZsAt
-         x6vNP4zOYGH+sIE+GQHuf3wZwpvHZ07KZ+//P/0tQQJ3mS7M8H/OdOAO9xbMGZOhPzGX
-         UdZqFteuTa9gn6NpDkrVNlr0Ytm4a9RgDbyao=
+        Wed, 25 May 2022 06:46:30 -0400
+Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CE4D3883;
+        Wed, 25 May 2022 03:46:17 -0700 (PDT)
+Received: by mail-wr1-f42.google.com with SMTP id s28so29406746wrb.7;
+        Wed, 25 May 2022 03:46:17 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=2Ofo/7h9jTqDyo9qc7SprA/31bAIMjSHKkGlFIJBjtU=;
-        b=ZmoAo5sm6kUOhou5Wx5+J9YJVOnKc4k7QLCHvke+N3CXtYSOXr2wPt/BOAsG2G8C2X
-         sz+M8jYYiXzA+S12tDQaUK892CjXvduZBBbewAMfCtfY+q/X0sBNMvAA6bo/r2BU3aYk
-         Tdo+tWIgrJgZkgha/ibPG98i1iDfokC38t527v++ymWAWzjDv1WbdCd7Mp7R/gfD0cGY
-         ED9FXRf0B6AKKwdxcqATbBJjdqE58aBSQKoguRsiu5geevbILLEyBpkzkAAY8/d5IR5Y
-         LyYWs5I6HVYp0ZpY3UqlQ8XFzIVNrQaWwzclpKa1F+AbM4mflSZVE6VneqWGsnFtWQI3
-         y7YA==
-X-Gm-Message-State: AOAM533Nbl6/4oAxrs4f7IQpK9wNv/9JLYZo/YIpyYGDjr9XqMqB8PFs
-        C0Nwn4jwWSs8tzu9NkFr1vdqv6XNgQnZqw==
-X-Google-Smtp-Source: ABdhPJxFWtMiLdt3inmv5SF2An7nZ6tXfMV4+KvuSSv6gpk5/webo18YWqJH1RqSyHuynlDm1DYb1w==
-X-Received: by 2002:a17:902:b90b:b0:15f:bd0:18b5 with SMTP id bf11-20020a170902b90b00b0015f0bd018b5mr32864403plb.97.1653475561444;
-        Wed, 25 May 2022 03:46:01 -0700 (PDT)
-Received: from localhost (174.71.80.34.bc.googleusercontent.com. [34.80.71.174])
-        by smtp.gmail.com with UTF8SMTPSA id b8-20020a6541c8000000b003f64036e699sm8155876pgq.24.2022.05.25.03.45.59
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=q9O1OGub18poRLHhomCuCLAnpIgun6gCJciHoCwZhXQ=;
+        b=wA/YoIextkItkfmZItfuS7mejwxz8PsmEAKDT4vZx8EpiRHx1TE8gFkLmtX9xheRc3
+         lK5I0eUiyUKznBvKrM7SH+UgwyXhcoyIB6XIcIUvO/ziJGM2c98Gt+1q+F3U7g3gRgJ8
+         LVYhMIAUUK4PVtoICjP224JC6a9m+RR3JJPS+DzwQ+2YDdQrTAUWL1tTGDQxh9WTBnVQ
+         vwLTo/ozhziXa95gH/K2rFR21SnYalChKlM3KNvAXoRDKA893YMhTOUiPUwuFRhHNE0M
+         1+HbRL4weXl26dZWHv2GekwdHogexfuZWuLgxFZayXrPO/OXY+VnjafyXDRPeikKjtFG
+         OMlQ==
+X-Gm-Message-State: AOAM532XuZTFeb+6kIXgOGq5zzgN1ZyWYcaujBL86lVNcZy0yy5Ufgsf
+        3X3iaXxPlcGixlH+Q8kDmzg=
+X-Google-Smtp-Source: ABdhPJwhLX2ksgGaO2ZVtVM7fwP7bpSx5WD8AGN1rT0/bqTlC+CbpGatSQsTaU+IqjT+1iHA5Laoig==
+X-Received: by 2002:adf:e0c3:0:b0:20c:5672:9577 with SMTP id m3-20020adfe0c3000000b0020c56729577mr26101094wri.466.1653475575536;
+        Wed, 25 May 2022 03:46:15 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id u19-20020a05600c19d300b003975c7058bfsm1895136wmq.12.2022.05.25.03.46.14
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 25 May 2022 03:46:01 -0700 (PDT)
-From:   Joseph Hwang <josephsih@chromium.org>
-To:     linux-bluetooth@vger.kernel.org, marcel@holtmann.org,
-        luiz.dentz@gmail.com, pali@kernel.org
-Cc:     josephsih@google.com, chromeos-bluetooth-upstreaming@chromium.org,
-        Joseph Hwang <josephsih@chromium.org>,
-        Archie Pusaka <apusaka@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH v5 3/5] Bluetooth: hci_event: Add vendor functions to handle vendor events
-Date:   Wed, 25 May 2022 18:45:43 +0800
-Message-Id: <20220525184510.v5.3.I63681490281b2392aa1ac05dff91a126394ab649@changeid>
-X-Mailer: git-send-email 2.36.1.124.g0e6072fb45-goog
-In-Reply-To: <20220525104545.2314653-1-josephsih@chromium.org>
-References: <20220525104545.2314653-1-josephsih@chromium.org>
+        Wed, 25 May 2022 03:46:15 -0700 (PDT)
+Message-ID: <e17cab70-66cf-492a-fb8a-dca091768345@kernel.org>
+Date:   Wed, 25 May 2022 12:46:14 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [GIT PULL for v5.18-rc1] media updates
+Content-Language: en-US
+To:     Sean Young <sean@mess.org>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20220322101406.459e2950@coco.lan>
+ <a0470450-ecfd-2918-e04a-7b57c1fd7694@kernel.org>
+ <Yo3ddVHgBBlvJEdh@gofer.mess.org>
+ <8093277c-5098-e5e3-f606-486de5b2f67b@kernel.org>
+ <Yo3yfIim58IWf64z@gofer.mess.org>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <Yo3yfIim58IWf64z@gofer.mess.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch adds vendor_get_prefix and vendor_evt in the evt_prefixes
-table so that any vendor driver can set up the functions to handle
-particular vendor events.
+On 25. 05. 22, 11:10, Sean Young wrote:
+> On Wed, May 25, 2022 at 10:09:38AM +0200, Jiri Slaby wrote:
+>> I don't understand how inability to build software is not an uapi breakage
+>> -- care to elaborate?
+> 
+> So here is a good compromise suggested by Mauro.
+> 
+> 1. We add the following to the lirc.h uapi header.
+> 
+> #define LIRC_CAN_NOTIFY_DECODE 0
+> #define LIRC_CAN_SET_REC_FILTER 0
 
-The hci_vendor_evt function checks if a vendor event matches
-the vendor prefix returned by vendor_get_prefix. If yes, the
-event is pushed down to the driver's vendor_evt function to handle.
-The driver function will call hdev->hci_recv_quality_report to
-pass data through mgmt if needed.
+The code would do "if (x & 0)" or alike, so I'm not sure this won't 
+result in a warning. But as soon as that thing compiles, I don't really 
+care much. If it produces no warning, in fact, the code could be 
+optimized away out thanks to "& 0".
 
-Signed-off-by: Joseph Hwang <josephsih@chromium.org>
-Reviewed-by: Archie Pusaka <apusaka@chromium.org>
----
+Just looked up those defs in the debian code search, only lirc and 
+v4l-utils care about the defines. ANd the latter seems to define their 
+own copies.
 
-Changes in v5:
-- Use vendor_get_ext_prefix and vendor_evt to invoke callbacks from
-  drivers to handle vendor events.
-- Use hdev->hci_recv_quality_report to pass vendor event data
-  from drivers back to the kernel. The mgmt_quality_report is then
-  used to surface the data through the mgmt socket.
-- Remove the unnecessary "void *data" portion from vendor_evt.
-- The Intel specifics are pushed down to the driver and are
-  implemented in a separate subsequent patch.
+> 2. Since lirc daemon is unmaintained, I am happy to take on maintainership.
+> 
+> This may require forking, depending on what the maintainer says.
+> 
+> How does that sound?
 
-Changes in v3:
-- Move intel_vendor_evt() from hci_event.c to the btintel driver.
+Great.
 
-Changes in v2:
-- Drop the pull_quality_report_data function from hci_dev.
-  Do not bother hci_dev with it. Do not bleed the details
-  into the core.
-
- include/net/bluetooth/hci_core.h |  5 +++++
- net/bluetooth/hci_core.c         |  1 +
- net/bluetooth/hci_event.c        | 19 +++++++++++++++++++
- 3 files changed, 25 insertions(+)
-
-diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
-index f89738c6b973..9e48d606591e 100644
---- a/include/net/bluetooth/hci_core.h
-+++ b/include/net/bluetooth/hci_core.h
-@@ -642,6 +642,11 @@ struct hci_dev {
- 	void (*cmd_timeout)(struct hci_dev *hdev);
- 	bool (*wakeup)(struct hci_dev *hdev);
- 	int (*set_quality_report)(struct hci_dev *hdev, bool enable);
-+	struct ext_vendor_prefix *(*vendor_get_ext_prefix)(
-+							struct hci_dev *hdev);
-+	void (*vendor_evt)(struct hci_dev *hdev, struct sk_buff *skb);
-+	int (*hci_recv_quality_report)(struct hci_dev *hdev, void *data,
-+				       u32 data_len, u8 quality_spec);
- 	int (*get_data_path_id)(struct hci_dev *hdev, __u8 *data_path);
- 	int (*get_codec_config_data)(struct hci_dev *hdev, __u8 type,
- 				     struct bt_codec *codec, __u8 *vnd_len,
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index ad4f4ab0afca..3e22b4b452f1 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -2650,6 +2650,7 @@ int hci_register_dev(struct hci_dev *hdev)
- 
- 	idr_init(&hdev->adv_monitors_idr);
- 	msft_register(hdev);
-+	hdev->hci_recv_quality_report = mgmt_quality_report;
- 
- 	return id;
- 
-diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index c2c6725678ec..f9b03d7b4a22 100644
---- a/net/bluetooth/hci_event.c
-+++ b/net/bluetooth/hci_event.c
-@@ -4260,6 +4260,20 @@ static void hci_num_comp_blocks_evt(struct hci_dev *hdev, void *data,
- 	queue_work(hdev->workqueue, &hdev->tx_work);
- }
- 
-+static struct ext_vendor_prefix *vendor_get_ext_prefix(struct hci_dev *hdev)
-+{
-+	if (hdev->vendor_get_ext_prefix)
-+		return hdev->vendor_get_ext_prefix(hdev);
-+
-+	return NULL;
-+}
-+
-+static void vendor_evt(struct hci_dev *hdev, struct sk_buff *skb)
-+{
-+	if (hdev->vendor_evt)
-+		hdev->vendor_evt(hdev, skb);
-+}
-+
- /* Every distinct vendor specification must have a well-defined vendor
-  * event prefix to determine if a vendor event meets the specification.
-  * Some vendor prefixes are fixed values while some other vendor prefixes
-@@ -4276,6 +4290,11 @@ struct ext_vendor_event_prefix {
- 	{ aosp_get_ext_prefix, aosp_vendor_evt },
- 	{ msft_get_ext_prefix, msft_vendor_evt },
- 
-+	/* Any vendor driver that handles particular vendor events should set
-+	 * up hdev->vendor_get_prefix and hdev->vendor_evt callbacks in driver.
-+	 */
-+	{ vendor_get_ext_prefix, vendor_evt },
-+
- 	/* end with a null entry */
- 	{},
- };
+thanks,
 -- 
-2.36.1.124.g0e6072fb45-goog
-
+js
+suse labs
