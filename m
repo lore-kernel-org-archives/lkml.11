@@ -2,108 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82962C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 13:42:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53195C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 13:42:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244466AbiEYNmW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 09:42:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41154 "EHLO
+        id S244478AbiEYNmZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 09:42:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233713AbiEYNmU (ORCPT
+        with ESMTP id S236921AbiEYNmV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 09:42:20 -0400
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B738560D86
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 06:42:19 -0700 (PDT)
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com [209.85.128.71])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Wed, 25 May 2022 09:42:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 970A6633B4
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 06:42:20 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 5AF133F208
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 13:42:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1653486137;
-        bh=+VxdaNpJpgbuyYbGPWQ3j6iLwWVMldqSArRiIGoG5Ck=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
-        b=MNrR5li2xhugiDoapM5rYXU6WGz2N/CdpT/TSQhRaZjvW/diQsDLN2Zh2IfZVK4Az
-         13qyqVhOxnvlSIRhh1kI5lPcZL6jn6MWlVK7r01zILX+EutXr/8QVABARzV1wF6GF3
-         2nRULvx8ZGLKZZ/h0KMoM0LSOLgBWudLhDxvgGWSOqJ7olQsMKGyJtswu2F1dBGO7R
-         INm4ifOO8iCv9NL9/9jsY7+x6LUZl5XMx6nQwayzBe92Ktq43dmHDK91ejKXtWBj1t
-         hXQDeMJb/A1k9a6IAn8MYukhACo4Dpn2LhE5MSu1MDtTVpI/cGKMzK/uyaJ54aJc7l
-         /Llyzmrvyb6Fg==
-Received: by mail-wm1-f71.google.com with SMTP id o23-20020a05600c511700b0039743cd8093so2870543wms.6
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 06:42:17 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=+VxdaNpJpgbuyYbGPWQ3j6iLwWVMldqSArRiIGoG5Ck=;
-        b=rLVlKfhsbvSextZQm3GfUIuDh3ex4fkREAPbnWd/XFc1X9mscnUWnyVRGzHVfwSU7j
-         +118xROEiS+L6U8zioj3b37t65VPB5UP9Kf53ptWGpWOicvWEqD7rWfECBUvwabvPYtN
-         uRf76dsTkl2Zm9L0JaMnGfTWkmdGVRy9Erld212FuoOkCuh3ZafsRkyt0f+I42G2B+0C
-         BYkkXyUvatBuX5FjJVLL6xoJqfHdmxckYQ14Thai5vmojww/T/xkoz0rG65YijH1vqWG
-         6yllJ9VKtQFtCMAA+2jPNc6aeAABZGEM6ZTTLIzLJmSM9rC6yLWbB5l6Og0xrl5xV2Qr
-         CTqA==
-X-Gm-Message-State: AOAM532EVTuf596yn7f0RsRvy/U/2NR+0Li9/O2U3ul6c/x01wb8WQrF
-        K1Er4kNE9BtfauOXvr8gNfhE8P0i08gscL7M9tKMGbK1Fo5xi9CPXiXjgutcqG3Afh4Xp50H8Dr
-        H25kUiCMDMOMYCxU4XxYgWta4mKPc+HlfHdTuKuWmog==
-X-Received: by 2002:a5d:5885:0:b0:20f:f390:c47e with SMTP id n5-20020a5d5885000000b0020ff390c47emr6442932wrf.133.1653486134742;
-        Wed, 25 May 2022 06:42:14 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyChDi8V4mTkhBMNVYiG8rb/JvRySCfyubTMbdjD4OIepvluuW4yJL5Nxe4jz+VCB0K8Q0+zA==
-X-Received: by 2002:a5d:5885:0:b0:20f:f390:c47e with SMTP id n5-20020a5d5885000000b0020ff390c47emr6442915wrf.133.1653486134522;
-        Wed, 25 May 2022 06:42:14 -0700 (PDT)
-Received: from gollum.fritz.box ([194.191.244.86])
-        by smtp.gmail.com with ESMTPSA id g5-20020a5d64e5000000b0020d0c9c95d3sm2151947wri.77.2022.05.25.06.42.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 May 2022 06:42:13 -0700 (PDT)
-From:   Juerg Haefliger <juerg.haefliger@canonical.com>
-To:     richard@nod.at, anton.ivanov@cambridgegreys.com,
-        johannes@sipsolutions.net, tglx@linutronix.de, mingo@redhat.com,
-        bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
-        hpa@zytor.com, linux-um@lists.infradead.org
-Cc:     linux-kernel@vger.kernel.org,
-        Juerg Haefliger <juerg.haefliger@canonical.com>
-Subject: [PATCH] x86/um: Kconfig: Fix indentation
-Date:   Wed, 25 May 2022 15:42:11 +0200
-Message-Id: <20220525134211.54417-1-juerg.haefliger@canonical.com>
-X-Mailer: git-send-email 2.32.0
+        by ams.source.kernel.org (Postfix) with ESMTPS id 589D4B81DA8
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 13:42:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7707C385B8;
+        Wed, 25 May 2022 13:42:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653486138;
+        bh=2qPbWRcSRsl4LlFjbtIBkM7PQ9cUCKoA7Q1w7x4JsG8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=g32X/wmOcFhk3gydR4eQIpEK9yC6yh6BhsAwB+Bei9id1+rTaE0pBnl4YQ5zG9HAk
+         uixuL892t//cAiE1g+7rsa8PXGaLIl9HJhNNQ8YJ7wJEFPF5/I/5x4MskCP//+h4/j
+         +kCPBr20/Hcnvcbo/aUaWk7bZiKAJnHuBkEDt9QEXqZojmuaX92nJoQ37z0ua2T+el
+         ZXDSEXU41qi/ofBq0EK5g4ct9JAYxs5NulkPjiB7D43V6DX/VDJP/w6ADMtTiX4Qw4
+         rXTBUN59EJEjQOphiuAgDBm12opD3Qd5kyKpWfbWf+/P6oLNcSsC29YTMiOOI/t5R5
+         2GdYKGZeq5i0w==
+Date:   Wed, 25 May 2022 21:33:39 +0800
+From:   Jisheng Zhang <jszhang@kernel.org>
+To:     Guo Ren <guoren@kernel.org>
+Cc:     Liao Chang <liaochang1@huawei.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Naveen Rao <naveen.n.rao@linux.vnet.ibm.com>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2] riscv/kprobe: reclaim insn_slot on kprobe
+ unregistration
+Message-ID: <Yo4wM8qvD/xTfRK1@xhacker>
+References: <20220525014424.20717-1-liaochang1@huawei.com>
+ <CAJF2gTS9_1D+K-ok2vxQpbq6B7zxv1K-t8cfcu1hFjF=7a5yxQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <CAJF2gTS9_1D+K-ok2vxQpbq6B7zxv1K-t8cfcu1hFjF=7a5yxQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The convention for indentation seems to be a single tab. Help text is
-further indented by an additional two whitespaces. Fix the lines that
-violate these rules.
+On Wed, May 25, 2022 at 02:23:50PM +0800, Guo Ren wrote:
+> On Wed, May 25, 2022 at 9:46 AM Liao Chang <liaochang1@huawei.com> wrote:
+> >
+> > On kprobe registration kernel allocate one insn_slot for new kprobe,
+> > but it forget to reclaim the insn_slot on unregistration, leading to a
+> > potential leakage.
+> >
+> > Reported-by: Chen Guokai <chenguokai17@mails.ucas.ac.cn>
+> > Signed-off-by: Liao Chang <liaochang1@huawei.com>
 
-Signed-off-by: Juerg Haefliger <juerg.haefliger@canonical.com>
----
- arch/x86/um/Kconfig | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
-
-diff --git a/arch/x86/um/Kconfig b/arch/x86/um/Kconfig
-index 1bcd42c53039..186f13268401 100644
---- a/arch/x86/um/Kconfig
-+++ b/arch/x86/um/Kconfig
-@@ -32,12 +32,12 @@ config 3_LEVEL_PGTABLES
- 	bool "Three-level pagetables" if !64BIT
- 	default 64BIT
- 	help
--	Three-level pagetables will let UML have more than 4G of physical
--	memory.  All the memory that can't be mapped directly will be treated
--	as high memory.
-+	  Three-level pagetables will let UML have more than 4G of physical
-+	  memory.  All the memory that can't be mapped directly will be treated
-+	  as high memory.
- 
--	However, this it experimental on 32-bit architectures, so if unsure say
--	N (on x86-64 it's automatically enabled, instead, as it's safe there).
-+	  However, this it experimental on 32-bit architectures, so if unsure say
-+	  N (on x86-64 it's automatically enabled, instead, as it's safe there).
- 
- config ARCH_HAS_SC_SIGNALS
- 	def_bool !64BIT
--- 
-2.32.0
-
+Reviewed-by: Jisheng Zhang <jszhang@kernel.org>
+> > ---
+> > v2:
+> >   Add Reported-by tag
+> >
+> >  arch/riscv/kernel/probes/kprobes.c | 4 ++++
+> >  1 file changed, 4 insertions(+)
+> >
+> > diff --git a/arch/riscv/kernel/probes/kprobes.c b/arch/riscv/kernel/probes/kprobes.c
+> > index e6e950b7cf32..f12eb1fbb52c 100644
+> > --- a/arch/riscv/kernel/probes/kprobes.c
+> > +++ b/arch/riscv/kernel/probes/kprobes.c
+> > @@ -110,6 +110,10 @@ void __kprobes arch_disarm_kprobe(struct kprobe *p)
+> >
+> >  void __kprobes arch_remove_kprobe(struct kprobe *p)
+> >  {
+> > +       if (p->ainsn.api.insn) {
+> > +               free_insn_slot(p->ainsn.api.insn, 0);
+> > +               p->ainsn.api.insn = NULL;
+> > +       }
+> Thx reviewed-by: Guo Ren <guoren@kernel.org>
+> 
+> You also could give a fixup patch to csky, thx:
+> 
+> diff --git a/arch/csky/kernel/probes/kprobes.c
+> b/arch/csky/kernel/probes/kprobes.c
+> index 42920f25e73c..661da54b418f 100644
+> --- a/arch/csky/kernel/probes/kprobes.c
+> +++ b/arch/csky/kernel/probes/kprobes.c
+> @@ -124,6 +124,10 @@ void __kprobes arch_disarm_kprobe(struct kprobe *p)
+> 
+>  void __kprobes arch_remove_kprobe(struct kprobe *p)
+>  {
+> +       if (p->ainsn.api.insn) {
+> +               free_insn_slot(p->ainsn.api.insn, 0);
+> +               p->ainsn.api.insn = NULL;
+> +       }
+>  }
+> 
+>  static void __kprobes save_previous_kprobe(struct kprobe_ctlblk *kcb)
+> 
+> >  }
+> >
+> >  static void __kprobes save_previous_kprobe(struct kprobe_ctlblk *kcb)
+> > --
+> > 2.17.1
+> >
+> 
+> 
+> -- 
+> Best Regards
+>  Guo Ren
+> 
+> ML: https://lore.kernel.org/linux-csky/
