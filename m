@@ -2,36 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92D2DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 13:21:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4971DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 13:22:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233701AbiEYNV4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 09:21:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52058 "EHLO
+        id S244058AbiEYNWA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 09:22:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229621AbiEYNVm (ORCPT
+        with ESMTP id S232303AbiEYNVm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 25 May 2022 09:21:42 -0400
 Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2982427FF8;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29B6327FFE;
         Wed, 25 May 2022 06:21:38 -0700 (PDT)
-Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.200])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4L7Wsr5bJbz67Q1X;
-        Wed, 25 May 2022 21:21:04 +0800 (CST)
+Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.201])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4L7Wnl1gpnz681Yv;
+        Wed, 25 May 2022 21:17:31 +0800 (CST)
 Received: from roberto-ThinkStation-P620.huawei.com (10.204.63.22) by
  fraeml714-chm.china.huawei.com (10.206.15.33) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 25 May 2022 15:21:35 +0200
+ 15.1.2375.24; Wed, 25 May 2022 15:21:36 +0200
 From:   Roberto Sassu <roberto.sassu@huawei.com>
 To:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
         <kpsingh@kernel.org>
 CC:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
         <linux-kselftest@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         Roberto Sassu <roberto.sassu@huawei.com>
-Subject: [PATCH 0/3] bpf: Add support for maps with authenticated values
-Date:   Wed, 25 May 2022 15:21:12 +0200
-Message-ID: <20220525132115.896698-1-roberto.sassu@huawei.com>
+Subject: [PATCH 2/3] bpf: Introduce bpf_map_verified_data_size() helper
+Date:   Wed, 25 May 2022 15:21:14 +0200
+Message-ID: <20220525132115.896698-3-roberto.sassu@huawei.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220525132115.896698-1-roberto.sassu@huawei.com>
+References: <20220525132115.896698-1-roberto.sassu@huawei.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
@@ -43,72 +45,118 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-One of the desirable features in security is the ability to restrict import
-of data to a given system based on data authenticity. If data import can be
-restricted, it would be possible to enforce a system-wide policy based on
-the signing keys the system owner trusts.
+Introduce the bpf_map_verified_data_size() helper to get the verified data
+size from a signed map value, as parsed by the kernel with
+bpf_map_verify_value_sig().
 
-This feature is widely used in the kernel. For example, if the restriction
-is enabled, kernel modules can be plugged in only if they are signed with a
-key whose public part is in the primary or secondary keyring.
+The same information might be provided by user space tools as well without
+any helper, for example by adding a second unsigned integer after the
+verified data+sig size field.
 
-For eBPF, it can be useful as well. For example, it might be useful to
-authenticate data an eBPF program makes security decisions on.
+However, this alternative seems to increase the code complexity: the kernel
+has to parse two unsigned integers and check their consistency; user space
+tools have to parse the module-style appended signature to get the verified
+data size.
 
-The initial idea for this feature was to provide an helper that eBPF
-programs might call to authenticate data whenever necessary. However, this
-restricts the ability to use that helper only in sleepable programs (due to
-crypto operations). Furthermore, data authentication would have been
-responsibility of eBPF programs.
+Alternatively, each eBPF program could parse the module-style signature by
+itself, but this would cause duplication of the code.
 
-The proposed implementation instead shifts the responsibility of data
-authentication to the eBPF subsystem, upon request by the users. Whenever
-the users desire such feature, they just have to set a new map flag called
-BPF_F_VERIFY_ELEM. The eBPF subsystem ensures that only authenticated data
-can be added to the map. The check is performed during the execution of the
-bpf() system call when the commands are BPF_MAP_UPDATE_ELEM or
-BPF_MAP_UPDATE_BATCH. Since memory regions are not verified, usage of the
-BPF_F_MMAPABLE map flag is forbidden when BPF_F_VERIFY_ELEM is set.
+Adding a new helper seems the best choice, it only needs to call the
+existing function bpf_map_verify_value_sig() and pass the result to the
+caller.
 
-An advantage of shifting the responsibility of data authentication to the
-eBPF subsystem is that it can be offered to any kind of eBPF programs, not
-only the sleepable ones.
+Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
+---
+ include/uapi/linux/bpf.h       |  8 ++++++++
+ kernel/bpf/helpers.c           | 15 +++++++++++++++
+ tools/include/uapi/linux/bpf.h |  8 ++++++++
+ 3 files changed, 31 insertions(+)
 
-When the new map flag BPF_F_VERIFY_ELEM is set, users have to provide a map
-value in the following format:
-
-+-------------------------------+---------------+-----+-----------------+
-| verified data+sig size (be32) | verified data | sig | unverified data |
-+-------------------------------+---------------+-----+-----------------+
-
-This is mostly the same format adopted for kernel modules, with the
-exception of the first field, as the size cannot be determined otherwise
-due to the fixed map value size. More details can be found in patch 1.
-
-Since the kernel already parses the format above, it was convenient to
-introduce also a new helper, called bpf_map_verified_data_size(), to
-return the size of verified data to the caller. This is done in patch 2.
-
-Finally, the added functionality is tested in patch 3.
-
-Roberto Sassu (3):
-  bpf: Add BPF_F_VERIFY_ELEM to require signature verification on map
-    values
-  bpf: Introduce bpf_map_verified_data_size() helper
-  bpf: Add tests for signed map values
-
- include/linux/bpf.h                           |   7 +
- include/uapi/linux/bpf.h                      |  11 +
- kernel/bpf/arraymap.c                         |   2 +-
- kernel/bpf/helpers.c                          |  15 ++
- kernel/bpf/syscall.c                          |  70 ++++++
- tools/include/uapi/linux/bpf.h                |  11 +
- .../bpf/prog_tests/test_map_value_sig.c       | 212 ++++++++++++++++++
- .../selftests/bpf/progs/map_value_sig.c       |  50 +++++
- 8 files changed, 377 insertions(+), 1 deletion(-)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/test_map_value_sig.c
- create mode 100644 tools/testing/selftests/bpf/progs/map_value_sig.c
-
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index a8e7803d2593..4a05caa49419 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -5252,6 +5252,13 @@ union bpf_attr {
+  *		Pointer to the underlying dynptr data, NULL if the dynptr is
+  *		read-only, if the dynptr is invalid, or if the offset and length
+  *		is out of bounds.
++ *
++ * long bpf_map_verified_data_size(const void *value, u32 value_size)
++ *	Description
++ *		Parse signed map value in *value* with size *value_size*.
++ *	Return
++ *		The size of verified data on success, or a negative error in
++ *		case of failure.
+  */
+ #define __BPF_FUNC_MAPPER(FN)		\
+ 	FN(unspec),			\
+@@ -5458,6 +5465,7 @@ union bpf_attr {
+ 	FN(dynptr_read),		\
+ 	FN(dynptr_write),		\
+ 	FN(dynptr_data),		\
++	FN(bpf_map_verified_data_size),	\
+ 	/* */
+ 
+ /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
+index 225806a02efb..78c29c4e5d3f 100644
+--- a/kernel/bpf/helpers.c
++++ b/kernel/bpf/helpers.c
+@@ -1575,6 +1575,19 @@ const struct bpf_func_proto bpf_dynptr_data_proto = {
+ 	.arg3_type	= ARG_CONST_ALLOC_SIZE_OR_ZERO,
+ };
+ 
++BPF_CALL_2(bpf_map_verified_data_size, const void *, value, u32, value_size)
++{
++	return bpf_map_verify_value_sig(value, value_size, false);
++}
++
++const struct bpf_func_proto bpf_map_verified_data_size_proto = {
++	.func         = bpf_map_verified_data_size,
++	.gpl_only     = false,
++	.ret_type     = RET_INTEGER,
++	.arg1_type    = ARG_PTR_TO_MEM,
++	.arg2_type    = ARG_CONST_SIZE_OR_ZERO,
++};
++
+ const struct bpf_func_proto bpf_get_current_task_proto __weak;
+ const struct bpf_func_proto bpf_get_current_task_btf_proto __weak;
+ const struct bpf_func_proto bpf_probe_read_user_proto __weak;
+@@ -1643,6 +1656,8 @@ bpf_base_func_proto(enum bpf_func_id func_id)
+ 		return &bpf_dynptr_write_proto;
+ 	case BPF_FUNC_dynptr_data:
+ 		return &bpf_dynptr_data_proto;
++	case BPF_FUNC_bpf_map_verified_data_size:
++		return &bpf_map_verified_data_size_proto;
+ 	default:
+ 		break;
+ 	}
+diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+index a8e7803d2593..4a05caa49419 100644
+--- a/tools/include/uapi/linux/bpf.h
++++ b/tools/include/uapi/linux/bpf.h
+@@ -5252,6 +5252,13 @@ union bpf_attr {
+  *		Pointer to the underlying dynptr data, NULL if the dynptr is
+  *		read-only, if the dynptr is invalid, or if the offset and length
+  *		is out of bounds.
++ *
++ * long bpf_map_verified_data_size(const void *value, u32 value_size)
++ *	Description
++ *		Parse signed map value in *value* with size *value_size*.
++ *	Return
++ *		The size of verified data on success, or a negative error in
++ *		case of failure.
+  */
+ #define __BPF_FUNC_MAPPER(FN)		\
+ 	FN(unspec),			\
+@@ -5458,6 +5465,7 @@ union bpf_attr {
+ 	FN(dynptr_read),		\
+ 	FN(dynptr_write),		\
+ 	FN(dynptr_data),		\
++	FN(bpf_map_verified_data_size),	\
+ 	/* */
+ 
+ /* integer value in 'imm' field of BPF_CALL instruction selects which helper
 -- 
 2.25.1
 
