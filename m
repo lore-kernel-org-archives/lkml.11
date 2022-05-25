@@ -2,111 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7032C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 12:40:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D39CC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 12:40:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233122AbiEYMk2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 08:40:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57742 "EHLO
+        id S243382AbiEYMkd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 08:40:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238927AbiEYMkU (ORCPT
+        with ESMTP id S241607AbiEYMkW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 08:40:20 -0400
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB2B87CB19
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 05:40:19 -0700 (PDT)
+        Wed, 25 May 2022 08:40:22 -0400
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 555DF7A821
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 05:40:21 -0700 (PDT)
 Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com [209.85.208.71])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 7DB903FD8F
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 12:40:18 +0000 (UTC)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 793823F044
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 12:40:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1653482418;
-        bh=wxP3HgqlZutRyZ4be1K5ovWzoc7v+dNBukvYrue+SPk=;
-        h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-         MIME-Version;
-        b=urCriZisG0M774CjGi17JsZLvaX0CibGJb6r2h7fDycAFaql9ydbqjgjjAMcDVaHa
-         wPiZO1Skf2pNEx8Li7uqrKP8n1vHhLgUM/FCW6s8XIsgrZcbEBfoREpvCnFY+Uh2vV
-         GPTy+5ebtwf83qjgmbvyMuvZJHh8O1mbCDpt8T5usZYZXZbANiUdZea2CQUUvH+mBg
-         RGTayfv+C6Kp2B8/+OtCkfQR1g5x0hsc8d5fCkLXVIErz2W5hUV6yAd3Bm4H2f7jxz
-         o1RVFau5OKWqfSyd0fGhjWskZ0HAc5HRdHN89HjzVLpv93wxvIpobyssROmJjIbQ3q
-         g+E8uSjaelALw==
-Received: by mail-ed1-f71.google.com with SMTP id r10-20020aa7c14a000000b0042bcc99e4cdso810927edp.18
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 05:40:18 -0700 (PDT)
+        s=20210705; t=1653482415;
+        bh=iyJ1o3EKMPaP9U9I8uxiOxxTU+2g3bHGq6iXs/oFCNA=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=voPXEwGnHf0i3Pp7JHn3osGA4M9rEiS2PVVxjhXNOkEi1/f0PVQOPuQ9p1Y8crB1c
+         Azqdn3X1VkvQ3lDh8UNOcS22rqOjLjvQcJ+wh0bWy11NVmqozxCxgr/A3sZTkBGfnT
+         RyZIlsgWq+qnb4Y0qKe+UGYv6THifAH5prW9i4HnQIPa1AQrYkNDDPR4IKsMlfU0rh
+         1nBFKa+zKFiUoNkruFMCKzf+jtS40kGXSfHaFnU4sDile0FAiqJFyC2HhIM0Xtft1R
+         YAlQBWJ4l3RnwfjIyl6+haFBEZRFBPqohr4fBmFyA6yCR3fDem/90fSUUGAYqZbYjO
+         K+FzDEFapAaGg==
+Received: by mail-ed1-f71.google.com with SMTP id ay24-20020a056402203800b0042a96a76ba5so14825840edb.20
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 05:40:15 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=wxP3HgqlZutRyZ4be1K5ovWzoc7v+dNBukvYrue+SPk=;
-        b=BCr0QLQTmwXlwt+WBAEBCJCrnVdJF9H2qYq5dIEhmgdb7yqR7/oeLYOcZ6vUt70buM
-         ZCXkR2Eh6WkBEtLTGtSJMtNtr5EK85Ic3s38YZs/jVgv3LgTaspcIr7KfA+Ty1pF/6rK
-         2IY+VOFX0KYn4B8qT93k8xLDmh3Kskus2GX07pm93y4KpmX5OtJL10nauGRUvOCwyCKf
-         N3TRuiJcms1GSNcasi5rZ3HhiD/9yKQy0Nah7rOzYHKy5xFYs/sqQ92fYFd60vxBWXbY
-         mhbSmnDnAC91whs8HoaQwACdmt8IshogUUL8erWnMqzLqMzHy0t4w20sJDK6lNb5QhyN
-         P8Ng==
-X-Gm-Message-State: AOAM533mBkZSQLQZwDoF0xfnuJA5czW4yrWML0CnNULEwwF+uSon2Ce2
-        igLtg3reP1ZCTb+zkyhXeC9XPbwaUd/FN94NpnBo0M6zGHYnD/uETCtv2+0xSsIE3Y1ECSf6XhX
-        axd2DCcjGEq82I2r7W2usckajEXoKo0lhAGjOm58xVQ==
-X-Received: by 2002:a05:6402:190a:b0:42b:60b:592b with SMTP id e10-20020a056402190a00b0042b060b592bmr31295063edz.127.1653482418293;
-        Wed, 25 May 2022 05:40:18 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwIMAXsEqufeY6FOCVF5hwJzfTKb6LKPU2BWrQTsIhu4mtSwZ/E8Ri0gjrQfdHvSRWC1/8qFw==
-X-Received: by 2002:a05:6402:190a:b0:42b:60b:592b with SMTP id e10-20020a056402190a00b0042b060b592bmr31295046edz.127.1653482418107;
-        Wed, 25 May 2022 05:40:18 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=iyJ1o3EKMPaP9U9I8uxiOxxTU+2g3bHGq6iXs/oFCNA=;
+        b=RmOXFVgHZhc3XICC+wSoNbiL5170NJ2pWt/PTLocUfOm3DzcFYgb8DGOQi1rnAbvla
+         vVAgfjBJrUON+BdrPsllRgI6xb3lEJY0/4y7wU3rll3axT3IhZzLxVI8SOFa1h+UyVsv
+         CRMHFDiCcEoJhrEacIguKpcUz8danGbQPrOnb5B+9nQL9M2qKC6rM6oyQ/9ONB6lqwFL
+         WEOTsQw5uzHxNQ2JV4IcwLdZUTDPLoAdGg5A+BRRxEp00ZAPcOAcqBdqk6wt4sTYBFk9
+         3wmCC4rq4t/WlWEvTWumpJRjK2F5l57P4hOkc2OR24Tr0ig1M+i94xZdaETIRUZvbM5u
+         rheg==
+X-Gm-Message-State: AOAM5312TbQ80Gp+ki/HGJ22WAJquVNXEmEeipELzVNpX+kGyQNhdNwX
+        X9q/QrQPM43XzxlqHoAXYRHqTzc8Hy7b70xXKOOfUy5N9zlnw0MoOTxwYFLihrVERCdXjqHTTKv
+        jT9iVoY+F8nDTpfxHOaFg7D1d3VwYTsTllylR5yEDBQ==
+X-Received: by 2002:a17:906:7953:b0:6fe:dcc0:356f with SMTP id l19-20020a170906795300b006fedcc0356fmr14554446ejo.75.1653482414692;
+        Wed, 25 May 2022 05:40:14 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJx83tUQ8lAH/eJDzSXN4oqG7jrKL0YqzLNVQoUp9dVB4Penplu8F9OeFkvKXkIq0sU0eOIrMg==
+X-Received: by 2002:a17:906:7953:b0:6fe:dcc0:356f with SMTP id l19-20020a170906795300b006fedcc0356fmr14554432ejo.75.1653482414484;
+        Wed, 25 May 2022 05:40:14 -0700 (PDT)
 Received: from gollum.fritz.box ([194.191.244.86])
-        by smtp.gmail.com with ESMTPSA id y20-20020a50eb94000000b0042617ba63c4sm10632614edr.78.2022.05.25.05.40.17
+        by smtp.gmail.com with ESMTPSA id y20-20020a50eb94000000b0042617ba63c4sm10632614edr.78.2022.05.25.05.40.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 May 2022 05:40:17 -0700 (PDT)
+        Wed, 25 May 2022 05:40:13 -0700 (PDT)
 From:   Juerg Haefliger <juerg.haefliger@canonical.com>
 To:     ysato@users.sourceforge.jp, dalias@libc.org,
         linux-sh@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org,
         Juerg Haefliger <juerg.haefliger@canonical.com>
-Subject: [PATCH 4/4] sh/mm: Kconfig: Fix indentation
-Date:   Wed, 25 May 2022 14:40:07 +0200
-Message-Id: <20220525124007.45328-5-juerg.haefliger@canonical.com>
+Subject: [PATCH 0/4] sh: Kconfig: Style cleanups
+Date:   Wed, 25 May 2022 14:40:03 +0200
+Message-Id: <20220525124007.45328-1-juerg.haefliger@canonical.com>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220525124007.45328-1-juerg.haefliger@canonical.com>
-References: <20220525124007.45328-1-juerg.haefliger@canonical.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The convention for indentation seems to be a single tab. Help text is
-further indented by an additional two whitespaces. Fix the lines that
-violate these rules.
+The majority of the Kconfig files use a single tab for basic indentation
+and a single tab followed by two whitespaces for help text indentation.
+Fix the lines that don't follow this convention.
 
-Signed-off-by: Juerg Haefliger <juerg.haefliger@canonical.com>
----
- arch/sh/mm/Kconfig | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+Juerg Haefliger (4):
+  sh: Kconfig: Fix indentation
+  sh: Kconfig.cpu: Fix indentation
+  sh/boards: Kconfig: Fix indentation
+  sh/mm: Kconfig: Fix indentation
 
-diff --git a/arch/sh/mm/Kconfig b/arch/sh/mm/Kconfig
-index ba569cfb4368..a563211aeb63 100644
---- a/arch/sh/mm/Kconfig
-+++ b/arch/sh/mm/Kconfig
-@@ -2,7 +2,7 @@
- menu "Memory management options"
- 
- config MMU
--        bool "Support for memory management hardware"
-+	bool "Support for memory management hardware"
- 	depends on !CPU_SH2
- 	default y
- 	help
-@@ -141,8 +141,8 @@ config ARCH_MEMORY_PROBE
- 	depends on MEMORY_HOTPLUG
- 
- config IOREMAP_FIXED
--       def_bool y
--       depends on X2TLB
-+	def_bool y
-+	depends on X2TLB
- 
- config UNCACHED_MAPPING
- 	bool
+ arch/sh/Kconfig        | 24 ++++++++++++------------
+ arch/sh/Kconfig.cpu    |  2 +-
+ arch/sh/boards/Kconfig | 12 ++++++------
+ arch/sh/mm/Kconfig     |  6 +++---
+ 4 files changed, 22 insertions(+), 22 deletions(-)
+
 -- 
 2.32.0
 
