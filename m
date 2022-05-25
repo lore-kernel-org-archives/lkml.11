@@ -2,516 +2,393 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0DCCC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 01:32:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DBC4C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 01:34:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243265AbiEYBcz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 21:32:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55488 "EHLO
+        id S240376AbiEYBeF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 21:34:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243247AbiEYBcq (ORCPT
+        with ESMTP id S231519AbiEYBeE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 21:32:46 -0400
-Received: from mo-csw.securemx.jp (mo-csw1116.securemx.jp [210.130.202.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34B9F57B23;
-        Tue, 24 May 2022 18:32:43 -0700 (PDT)
-Received: by mo-csw.securemx.jp (mx-mo-csw1116) id 24P1W7Th014821; Wed, 25 May 2022 10:32:07 +0900
-X-Iguazu-Qid: 2wHHHyKX0lbFiMi8LA
-X-Iguazu-QSIG: v=2; s=0; t=1653442327; q=2wHHHyKX0lbFiMi8LA; m=S8PfbmJQXHhgrjiAJLK0y3OE7Y40IWRMiFuRZYu1Dso=
-Received: from imx12-a.toshiba.co.jp (imx12-a.toshiba.co.jp [61.202.160.135])
-        by relay.securemx.jp (mx-mr1110) id 24P1W6Qs016219
-        (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 25 May 2022 10:32:06 +0900
-From:   Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-To:     Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     yuji2.ishikawa@toshiba.co.jp, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-Subject: [PATCH 1/3] iommu: Add Visconti5 IOMMU driver
-Date:   Wed, 25 May 2022 10:31:45 +0900
-X-TSB-HOP2: ON
-Message-Id: <20220525013147.2215355-2-nobuhiro1.iwamatsu@toshiba.co.jp>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220525013147.2215355-1-nobuhiro1.iwamatsu@toshiba.co.jp>
-References: <20220525013147.2215355-1-nobuhiro1.iwamatsu@toshiba.co.jp>
+        Tue, 24 May 2022 21:34:04 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCC1057B23
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 18:34:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1653442442; x=1684978442;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=wIOqV4vcSNGDglpw//NyTrazomrcCAIhTLxzQg+s6KA=;
+  b=B2KO5dQXTlKxcmx5ue+QxH0uANzFEL14vQ9VWV9CY+vhg6rl1Z99rNUA
+   F9HygWI+YFOhzP/9g4mhrFXSbwEsw6py+7MPM24HaJ68z6zZZq5sf/3eR
+   ZasIXaKDeVI+0DA76gu8qNz+vHGg1u9jEneWkMGdpxu2q6YXLntiFcSYN
+   g=;
+Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 24 May 2022 18:34:02 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 May 2022 18:34:02 -0700
+Received: from nalasex01b.na.qualcomm.com (10.47.209.197) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 24 May 2022 18:34:01 -0700
+Received: from [10.253.12.88] (10.80.80.8) by nalasex01b.na.qualcomm.com
+ (10.47.209.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 24 May
+ 2022 18:33:59 -0700
+Message-ID: <b29dc02f-2319-b9d4-84fe-9342a7e4fb4a@quicinc.com>
+Date:   Wed, 25 May 2022 09:33:57 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH 1/2] tracing/probes: auto generate events name when create
+ a group of events
+Content-Language: en-US
+To:     Steven Rostedt <rostedt@goodmis.org>
+CC:     Ingo Molnar <mingo@redhat.com>, <linux-kernel@vger.kernel.org>,
+        "Masami Hiramatsu" <mhiramat@kernel.org>,
+        Tom Zanussi <zanussi@kernel.org>
+References: <1651397651-30454-1-git-send-email-quic_linyyuan@quicinc.com>
+ <1651397651-30454-2-git-send-email-quic_linyyuan@quicinc.com>
+ <20220524183159.21bac428@gandalf.local.home>
+From:   Linyu Yuan <quic_linyyuan@quicinc.com>
+In-Reply-To: <20220524183159.21bac428@gandalf.local.home>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01b.na.qualcomm.com (10.47.209.197)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add IOMMU (ATU) driver can bse used for Visconti5's multimedia IPs, such as
-DCNN (Deep Convolutional Neural Network), VIIF(Video Input), VOIF(Video
-output), and others.
 
-Signed-off-by: Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
----
- drivers/iommu/Kconfig        |   7 +
- drivers/iommu/Makefile       |   1 +
- drivers/iommu/visconti-atu.c | 426 +++++++++++++++++++++++++++++++++++
- 3 files changed, 434 insertions(+)
- create mode 100644 drivers/iommu/visconti-atu.c
+On 5/25/2022 6:31 AM, Steven Rostedt wrote:
+> [ Adding Masami (kprobe maintainer) and Tom (dynamic event maintainer) ]
+>
+> On Sun, 1 May 2022 17:34:10 +0800
+> Linyu Yuan <quic_linyyuan@quicinc.com> wrote:
+>
+>> change traceprobe_parse_event_name() and return GRP/EVENT types,
+>> TP_ENAME_GROUP_EVENT means user input GRP/EVENT format,
+>> TP_ENAME_EVENT means user only input EVENT format,
+>> TP_ENAME_GROUP means user only input GRP/ format,
+>>
+>> it allow no event name input when create a group of events,
+>> and will auto generate event name according second argument.
+> Sorry, but I can't understand the above. Can you reword it, and perhaps
+> include an example of what this patch does.
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index c79a0df090c0..8a4351020b7f 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -486,4 +486,11 @@ config SPRD_IOMMU
- 
- 	  Say Y here if you want to use the multimedia devices listed above.
- 
-+config VISCONTI_ATU
-+	tristate "Toshiba Visconti5 IOMMU Support"
-+	depends on ARCH_VISCONTI || COMPILE_TEST
-+	select IOMMU_API
-+	help
-+	  Support for the IOMMU API for Toshiba Visconti5 ARM SoCs.
-+
- endif # IOMMU_SUPPORT
-diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-index 44475a9b3eea..077189f908ea 100644
---- a/drivers/iommu/Makefile
-+++ b/drivers/iommu/Makefile
-@@ -30,3 +30,4 @@ obj-$(CONFIG_VIRTIO_IOMMU) += virtio-iommu.o
- obj-$(CONFIG_IOMMU_SVA) += iommu-sva-lib.o io-pgfault.o
- obj-$(CONFIG_SPRD_IOMMU) += sprd-iommu.o
- obj-$(CONFIG_APPLE_DART) += apple-dart.o
-+obj-$(CONFIG_VISCONTI_ATU) += visconti-atu.o
-diff --git a/drivers/iommu/visconti-atu.c b/drivers/iommu/visconti-atu.c
-new file mode 100644
-index 000000000000..269c912ad4c9
---- /dev/null
-+++ b/drivers/iommu/visconti-atu.c
-@@ -0,0 +1,426 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Toshiba Visconti5 IOMMU (ATU) driver
-+ *
-+ * (C) Copyright 2022 Toshiba Electronic Devices & Storage Corporation
-+ * (C) Copyright 2022 Toshiba CORPORATION
-+ *
-+ * Author: Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-+ */
-+
-+#include <linux/dma-iommu.h>
-+#include <linux/dma-mapping.h>
-+#include <linux/io.h>
-+#include <linux/module.h>
-+#include <linux/of_platform.h>
-+#include <linux/platform_device.h>
-+#include <linux/sizes.h>
-+#include <linux/slab.h>
-+
-+/* Regsiter address */
-+#define ATU_AT_EN		0x0000
-+#define ATU_AT_ENTRY_EN		0x0020
-+
-+#define ATU_AT_BLADDR		0x0030
-+#define ATU_AT_ELADDR		0x0038
-+#define ATU_AT_BGADDR0		0x0040
-+#define ATU_AT_BGADDR1		0x0044
-+#define ATU_AT_CONF		0x0048
-+#define ATU_AT_REG(n, reg)	(0x20 * n + reg)
-+
-+#define ATU_INT_START		0x0440
-+#define ATU_INT_MASKED_STAT	0x0444
-+#define ATU_INT_MASK		0x0448
-+#define ATU_RP_CONF		0x0450
-+#define ATU_ERR_ADDR		0x0454
-+#define ATU_ERR_CLR		0x045C
-+#define ATU_STAT		0x0460
-+
-+#define ATU_BGADDR_MASK GENMASK(31, 0)
-+
-+#define ATU_IOMMU_PGSIZE_BITMAP	0x7ffff000 /* SZ_1G - SZ_4K */
-+#define ATU_MAX_IOMMU_ENTRY	32
-+
-+struct visconti_atu_device {
-+	struct device *dev;
-+	void __iomem *base;
-+	struct iommu_device iommu;
-+	struct iommu_group *group;
-+
-+	unsigned int num_entry;
-+	unsigned int num_map_entry;
-+	unsigned int enable_entry;
-+	unsigned long iova[ATU_MAX_IOMMU_ENTRY];
-+	phys_addr_t paddr[ATU_MAX_IOMMU_ENTRY];
-+	size_t size[ATU_MAX_IOMMU_ENTRY];
-+
-+	spinlock_t lock;
-+};
-+
-+struct visconti_atu_domain {
-+	struct visconti_atu_device *atu;
-+	struct iommu_domain io_domain;
-+	struct mutex mutex;
-+};
-+
-+static const struct iommu_ops visconti_atu_ops;
-+
-+static struct visconti_atu_domain *to_atu_domain(struct iommu_domain *domain)
-+{
-+	return container_of(domain, struct visconti_atu_domain, io_domain);
-+}
-+
-+static inline void visconti_atu_write(struct visconti_atu_device *atu, u32 reg,
-+				      u32 val)
-+{
-+	writel_relaxed(val, atu->base + reg);
-+}
-+
-+static inline u32 visconti_atu_read(struct visconti_atu_device *atu, u32 reg)
-+{
-+	return readl_relaxed(atu->base + reg);
-+}
-+
-+static void visconti_atu_enable_entry(struct visconti_atu_device *atu,
-+				      int num)
-+{
-+	dev_dbg(atu->dev, "enable ATU: %d\n", atu->enable_entry);
-+
-+	visconti_atu_write(atu, ATU_AT_EN, 0);
-+	if (atu->enable_entry & BIT(num)) {
-+		visconti_atu_write(atu,
-+				   ATU_AT_REG(num, ATU_AT_BLADDR),
-+				   atu->iova[num]);
-+		visconti_atu_write(atu,
-+				   ATU_AT_REG(num, ATU_AT_ELADDR),
-+				   atu->iova[num] + atu->size[num] - 1);
-+		visconti_atu_write(atu,
-+				   ATU_AT_REG(num, ATU_AT_BGADDR0),
-+				   atu->iova[num] & ATU_BGADDR_MASK);
-+		visconti_atu_write(atu,
-+				   ATU_AT_REG(num, ATU_AT_BGADDR1),
-+				   (atu->iova[num] >> 32) & ATU_BGADDR_MASK);
-+	}
-+	visconti_atu_write(atu, ATU_AT_ENTRY_EN, atu->enable_entry);
-+	visconti_atu_write(atu, ATU_AT_EN, 1);
-+}
-+
-+static void visconti_atu_disable_entry(struct visconti_atu_device *atu)
-+{
-+	dev_dbg(atu->dev, "disable ATU: %d\n", atu->enable_entry);
-+
-+	visconti_atu_write(atu, ATU_AT_EN, 0);
-+	visconti_atu_write(atu, ATU_AT_ENTRY_EN, atu->enable_entry);
-+	visconti_atu_write(atu, ATU_AT_EN, 1);
-+}
-+
-+static int visconti_atu_attach_device(struct iommu_domain *io_domain,
-+				      struct device *dev)
-+{
-+	struct visconti_atu_domain *domain = to_atu_domain(io_domain);
-+	struct visconti_atu_device *atu = dev_iommu_priv_get(dev);
-+	int ret = 0;
-+
-+	if (!atu) {
-+		dev_err(dev, "Cannot attach to ATU\n");
-+		return -ENXIO;
-+	}
-+
-+	mutex_lock(&domain->mutex);
-+
-+	if (!domain->atu) {
-+		domain->atu = atu;
-+	} else if (domain->atu != atu) {
-+		dev_err(dev, "Can't attach ATU %s to domain on ATU %s\n",
-+			dev_name(atu->dev), dev_name(domain->atu->dev));
-+		ret = -EINVAL;
-+	} else {
-+		dev_warn(dev, "Reusing ATU context\n");
-+	}
-+
-+	mutex_unlock(&domain->mutex);
-+
-+	return ret;
-+}
-+
-+static void visconti_atu_detach_device(struct iommu_domain *io_domain,
-+				       struct device *dev)
-+{
-+	struct visconti_atu_domain *domain = to_atu_domain(io_domain);
-+	struct visconti_atu_device *atu = dev_iommu_priv_get(dev);
-+
-+	if (domain->atu != atu)
-+		return;
-+
-+	domain->atu = NULL;
-+}
-+
-+static int visconti_atu_map(struct iommu_domain *io_domain,
-+			    unsigned long iova,
-+			    phys_addr_t paddr,
-+			    size_t size, int prot, gfp_t gfp)
-+{
-+	struct visconti_atu_domain *domain = to_atu_domain(io_domain);
-+	struct visconti_atu_device *atu = domain->atu;
-+	unsigned long flags;
-+	unsigned int i;
-+
-+	if (!domain)
-+		return -ENODEV;
-+
-+	spin_lock_irqsave(&atu->lock, flags);
-+	for (i = 0; i < atu->num_map_entry; i++) {
-+		if (!(atu->enable_entry & BIT(i))) {
-+			atu->enable_entry |= BIT(i);
-+			atu->iova[i] = iova;
-+			atu->paddr[i] = paddr;
-+			atu->size[i] = size;
-+
-+			visconti_atu_enable_entry(atu, i);
-+			break;
-+		}
-+	}
-+	spin_unlock_irqrestore(&atu->lock, flags);
-+
-+	if (i == atu->num_map_entry) {
-+		dev_err(atu->dev, "map: not enough entry.\n");
-+		return -ENOMEM;
-+	}
-+
-+	return 0;
-+}
-+
-+static size_t visconti_atu_unmap(struct iommu_domain *io_domain,
-+				 unsigned long iova,
-+				 size_t size,
-+				 struct iommu_iotlb_gather *iotlb_gather)
-+{
-+	struct visconti_atu_domain *domain = to_atu_domain(io_domain);
-+	struct visconti_atu_device *atu = domain->atu;
-+	size_t tmp_size = size;
-+	unsigned long flags;
-+	unsigned int i;
-+
-+	spin_lock_irqsave(&atu->lock, flags);
-+
-+	while (tmp_size != 0) {
-+		for (i = 0; i < atu->num_map_entry; i++) {
-+			if (atu->iova[i] != iova)
-+				continue;
-+
-+			atu->enable_entry &= ~BIT(i);
-+			iova += atu->size[i];
-+			tmp_size -= atu->size[i];
-+
-+			visconti_atu_disable_entry(atu);
-+
-+			break;
-+		}
-+		if (i == atu->num_map_entry) {
-+			dev_err(atu->dev, "unmap: not found entry.\n");
-+			size = 0;
-+			goto out;
-+		}
-+	}
-+
-+	if (!atu->num_map_entry)
-+		visconti_atu_write(atu, ATU_AT_EN, 0);
-+out:
-+	spin_unlock_irqrestore(&atu->lock, flags);
-+	return size;
-+}
-+
-+static phys_addr_t visconti_atu_iova_to_phys(struct iommu_domain *io_domain,
-+					     dma_addr_t iova)
-+{
-+	struct visconti_atu_domain *domain = to_atu_domain(io_domain);
-+	struct visconti_atu_device *atu = domain->atu;
-+	phys_addr_t paddr = 0;
-+	unsigned int i;
-+
-+	for (i = 0; i < atu->num_map_entry; i++) {
-+		if (!(atu->enable_entry & BIT(i)))
-+			continue;
-+		if (atu->iova[i] <= iova && iova < (atu->iova[i] + atu->size[i])) {
-+			paddr = atu->paddr[i];
-+			paddr += iova & (atu->size[i] - 1);
-+			break;
-+		}
-+	}
-+
-+	dev_dbg(atu->dev, "iova_to_phys: %llx -> %llx\n", iova, paddr);
-+
-+	return paddr;
-+}
-+
-+static int visconti_atu_of_xlate(struct device *dev, struct of_phandle_args *args)
-+{
-+	if (!dev_iommu_priv_get(dev)) {
-+		struct platform_device *pdev;
-+
-+		pdev = of_find_device_by_node(args->np);
-+		dev_iommu_priv_set(dev, platform_get_drvdata(pdev));
-+		platform_device_put(pdev);
-+	}
-+
-+	return 0;
-+}
-+
-+static struct iommu_domain *visconti_atu_domain_alloc(unsigned int type)
-+{
-+	struct visconti_atu_domain *domain;
-+
-+	if (type != IOMMU_DOMAIN_UNMANAGED && type != IOMMU_DOMAIN_DMA)
-+		return NULL;
-+
-+	domain = kzalloc(sizeof(*domain), GFP_KERNEL);
-+	if (!domain)
-+		return NULL;
-+
-+	mutex_init(&domain->mutex);
-+
-+	domain->io_domain.geometry.aperture_start = 0;
-+	domain->io_domain.geometry.aperture_end = DMA_BIT_MASK(32);
-+	domain->io_domain.geometry.force_aperture = true;
-+
-+	return &domain->io_domain;
-+}
-+
-+static void visconti_atu_domain_free(struct iommu_domain *io_domain)
-+{
-+	struct visconti_atu_domain *domain = to_atu_domain(io_domain);
-+
-+	kfree(domain);
-+}
-+
-+static struct iommu_device *visconti_atu_probe_device(struct device *dev)
-+{
-+	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
-+	struct visconti_atu_device *atu;
-+
-+	if (!fwspec || fwspec->ops != &visconti_atu_ops)
-+		return ERR_PTR(-ENODEV);
-+
-+	atu = dev_iommu_priv_get(dev);
-+	return &atu->iommu;
-+}
-+
-+static void visconti_atu_release_device(struct device *dev)
-+{
-+	struct visconti_atu_device *atu = dev_iommu_priv_get(dev);
-+
-+	if (!atu)
-+		return;
-+
-+	iommu_fwspec_free(dev);
-+}
-+
-+static const struct iommu_ops visconti_atu_ops = {
-+	.domain_alloc = visconti_atu_domain_alloc,
-+	.probe_device = visconti_atu_probe_device,
-+	.release_device = visconti_atu_release_device,
-+	.device_group = generic_device_group,
-+	.of_xlate = visconti_atu_of_xlate,
-+	.pgsize_bitmap = ATU_IOMMU_PGSIZE_BITMAP,
-+	.default_domain_ops = &(const struct iommu_domain_ops) {
-+		.attach_dev = visconti_atu_attach_device,
-+		.detach_dev = visconti_atu_detach_device,
-+		.map = visconti_atu_map,
-+		.unmap = visconti_atu_unmap,
-+		.iova_to_phys = visconti_atu_iova_to_phys,
-+		.free = visconti_atu_domain_free,
-+	}
-+};
-+
-+static int visconti_atu_probe(struct platform_device *pdev)
-+{
-+	struct visconti_atu_device *atu;
-+	struct device *dev = &pdev->dev;
-+	struct resource *res;
-+	u32 reserved_entry;
-+	int ret;
-+
-+	atu = devm_kzalloc(&pdev->dev, sizeof(*atu), GFP_KERNEL);
-+	if (!atu)
-+		return -ENOMEM;
-+
-+	ret = of_property_read_u32(dev->of_node, "toshiba,max-entry",
-+				   &atu->num_entry);
-+	if (ret < 0) {
-+		dev_err(dev, "cannot get max-entry data\n");
-+		return ret;
-+	}
-+
-+	ret = of_property_read_u32(dev->of_node, "toshiba,reserved-entry",
-+				   &reserved_entry);
-+	if (ret < 0)
-+		reserved_entry = 0;
-+
-+	if (atu->num_entry < reserved_entry)
-+		return -EINVAL;
-+
-+	atu->num_map_entry = atu->num_entry - reserved_entry;
-+	atu->enable_entry = 0;
-+	atu->dev = dev;
-+
-+	atu->group = iommu_group_alloc();
-+	if (IS_ERR(atu->group)) {
-+		ret = PTR_ERR(atu->group);
-+		goto out;
-+	}
-+
-+	spin_lock_init(&atu->lock);
-+
-+	atu->base = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
-+	if (IS_ERR(atu->base)) {
-+		ret = PTR_ERR(atu->base);
-+		goto out;
-+	}
-+
-+	ret = iommu_device_sysfs_add(&atu->iommu, dev, NULL, dev_name(dev));
-+	if (ret)
-+		goto out;
-+
-+	ret = iommu_device_register(&atu->iommu, &visconti_atu_ops, dev);
-+	if (ret)
-+		goto remove_sysfs;
-+
-+	if (!iommu_present(&platform_bus_type))
-+		bus_set_iommu(&platform_bus_type, &visconti_atu_ops);
-+	platform_set_drvdata(pdev, atu);
-+
-+	return 0;
-+
-+remove_sysfs:
-+	iommu_device_sysfs_remove(&atu->iommu);
-+out:
-+	return ret;
-+}
-+
-+static int visconti_atu_remove(struct platform_device *pdev)
-+{
-+	struct visconti_atu_device *atu = platform_get_drvdata(pdev);
-+
-+	iommu_device_sysfs_remove(&atu->iommu);
-+	iommu_device_unregister(&atu->iommu);
-+
-+	return 0;
-+}
-+
-+static const struct of_device_id visconti_atu_of_match[] = {
-+	{ .compatible = "toshiba,visconti-atu", },
-+	{ /* sentinel */ }
-+};
-+MODULE_DEVICE_TABLE(of, visconti_atu_of_match);
-+
-+static struct platform_driver visconti_atu_driver = {
-+	.driver = {
-+		.name = "visconti-atu",
-+		.of_match_table = visconti_atu_of_match,
-+		.suppress_bind_attrs = true,
-+	},
-+	.probe = visconti_atu_probe,
-+	.remove = visconti_atu_remove,
-+};
-+
-+builtin_platform_driver(visconti_atu_driver);
--- 
-2.36.0
+thanks, will try to update after Masai and Tom comment
+
+>
+> After reading the code, I guess you are trying to make it so that you can
+> leave out the event name and only have the group name, if you add the slash.
+>
+>   echo 'p:group/  schedule' > kprobe_events
+>
+> And that will create a kprobe "schedule" event under the "group" system?
+
+that's right
+
+>
+> Also, for some reason, patch 2 of the series never came to me. But it is in
+> my LKML folder :-/
+>
+>> Signed-off-by: Linyu Yuan <quic_linyyuan@quicinc.com>
+>> ---
+>>   Documentation/trace/kprobetrace.rst  |  8 ++++----
+>>   Documentation/trace/uprobetracer.rst |  8 ++++----
+>>   kernel/trace/trace_dynevent.c        |  2 +-
+>>   kernel/trace/trace_eprobe.c          | 19 +++++++++++--------
+>>   kernel/trace/trace_kprobe.c          | 18 +++++++++++-------
+>>   kernel/trace/trace_probe.c           |  9 ++++++++-
+>>   kernel/trace/trace_probe.h           |  4 ++++
+>>   kernel/trace/trace_uprobe.c          | 14 +++++++++-----
+>>   8 files changed, 52 insertions(+), 30 deletions(-)
+>>
+>> diff --git a/Documentation/trace/kprobetrace.rst b/Documentation/trace/kprobetrace.rst
+>> index b175d88..4274cc6 100644
+>> --- a/Documentation/trace/kprobetrace.rst
+>> +++ b/Documentation/trace/kprobetrace.rst
+>> @@ -28,10 +28,10 @@ Synopsis of kprobe_events
+>>   -------------------------
+>>   ::
+>>   
+>> -  p[:[GRP/]EVENT] [MOD:]SYM[+offs]|MEMADDR [FETCHARGS]	: Set a probe
+>> -  r[MAXACTIVE][:[GRP/]EVENT] [MOD:]SYM[+0] [FETCHARGS]	: Set a return probe
+>> -  p:[GRP/]EVENT] [MOD:]SYM[+0]%return [FETCHARGS]	: Set a return probe
+>> -  -:[GRP/]EVENT						: Clear a probe
+>> +  p[:[GRP/][EVENT]] [MOD:]SYM[+offs]|MEMADDR [FETCHARGS]	: Set a probe
+>> +  r[MAXACTIVE][:[GRP/][EVENT]] [MOD:]SYM[+0] [FETCHARGS]	: Set a return probe
+>> +  p[:[GRP/][EVENT]] [MOD:]SYM[+0]%return [FETCHARGS]	: Set a return probe
+>> +  -:[GRP/][EVENT]						: Clear a probe
+>>   
+>>    GRP		: Group name. If omitted, use "kprobes" for it.
+>>    EVENT		: Event name. If omitted, the event name is generated
+>> diff --git a/Documentation/trace/uprobetracer.rst b/Documentation/trace/uprobetracer.rst
+>> index a8e5938..3a1797d7 100644
+>> --- a/Documentation/trace/uprobetracer.rst
+>> +++ b/Documentation/trace/uprobetracer.rst
+>> @@ -26,10 +26,10 @@ Synopsis of uprobe_tracer
+>>   -------------------------
+>>   ::
+>>   
+>> -  p[:[GRP/]EVENT] PATH:OFFSET [FETCHARGS] : Set a uprobe
+>> -  r[:[GRP/]EVENT] PATH:OFFSET [FETCHARGS] : Set a return uprobe (uretprobe)
+>> -  p[:[GRP/]EVENT] PATH:OFFSET%return [FETCHARGS] : Set a return uprobe (uretprobe)
+>> -  -:[GRP/]EVENT                           : Clear uprobe or uretprobe event
+>> +  p[:[GRP/][EVENT]] PATH:OFFSET [FETCHARGS] : Set a uprobe
+>> +  r[:[GRP/][EVENT]] PATH:OFFSET [FETCHARGS] : Set a return uprobe (uretprobe)
+>> +  p[:[GRP/][EVENT]] PATH:OFFSET%return [FETCHARGS] : Set a return uprobe (uretprobe)
+>> +  -:[GRP/][EVENT]                           : Clear uprobe or uretprobe event
+>>   
+>>     GRP           : Group name. If omitted, "uprobes" is the default value.
+>>     EVENT         : Event name. If omitted, the event name is generated based
+>> diff --git a/kernel/trace/trace_dynevent.c b/kernel/trace/trace_dynevent.c
+>> index e34e8182..033248d 100644
+>> --- a/kernel/trace/trace_dynevent.c
+>> +++ b/kernel/trace/trace_dynevent.c
+>> @@ -101,7 +101,7 @@ int dyn_event_release(const char *raw_command, struct dyn_event_operations *type
+>>   		event = p + 1;
+>>   		*p = '\0';
+>>   	}
+>> -	if (event[0] == '\0') {
+>> +	if (!system && event[0] == '\0') {
+>>   		ret = -EINVAL;
+>>   		goto out;
+>>   	}
+>> diff --git a/kernel/trace/trace_eprobe.c b/kernel/trace/trace_eprobe.c
+>> index 7d44785..b16e067 100644
+>> --- a/kernel/trace/trace_eprobe.c
+>> +++ b/kernel/trace/trace_eprobe.c
+>> @@ -125,6 +125,7 @@ static bool eprobe_dyn_event_match(const char *system, const char *event,
+>>   	 * We match the following:
+>>   	 *  event only			- match all eprobes with event name
+>>   	 *  system and event only	- match all system/event probes
+>> +	 *  system only			- match all system probes
+>>   	 *
+>>   	 * The below has the above satisfied with more arguments:
+>>   	 *
+>> @@ -143,7 +144,7 @@ static bool eprobe_dyn_event_match(const char *system, const char *event,
+>>   		return false;
+>>   
+>>   	/* Must match the event name */
+>> -	if (strcmp(trace_probe_name(&ep->tp), event) != 0)
+>> +	if (event[0] != '\0' && strcmp(trace_probe_name(&ep->tp), event) != 0)
+>>   		return false;
+>>   
+>>   	/* No arguments match all */
+>> @@ -848,7 +849,7 @@ static int __trace_eprobe_create(int argc, const char *argv[])
+>>   {
+>>   	/*
+>>   	 * Argument syntax:
+>> -	 *      e[:[GRP/]ENAME] SYSTEM.EVENT [FETCHARGS]
+>> +	 *      e[:[GRP/][ENAME]] SYSTEM.EVENT [FETCHARGS]
+>>   	 * Fetch args:
+>>   	 *  <name>=$<field>[:TYPE]
+>>   	 */
+>> @@ -858,6 +859,7 @@ static int __trace_eprobe_create(int argc, const char *argv[])
+>>   	struct trace_eprobe *ep = NULL;
+>>   	char buf1[MAX_EVENT_NAME_LEN];
+>>   	char buf2[MAX_EVENT_NAME_LEN];
+>> +	char grp_buf[MAX_EVENT_NAME_LEN];
+>>   	int ret = 0;
+>>   	int i;
+>>   
+>> @@ -866,14 +868,16 @@ static int __trace_eprobe_create(int argc, const char *argv[])
+>>   
+>>   	trace_probe_log_init("event_probe", argc, argv);
+>>   
+>> +	ret = TP_ENAME_EMPTTY;
+> EMPTY is spelled wrong.
 
 
+sorry, will wait comment from  maintainer of V1,  will fix it in V2 if 
+V1 is not reject.
+
+
+>>   	event = strchr(&argv[0][1], ':');
+>>   	if (event) {
+>>   		event++;
+>> -		ret = traceprobe_parse_event_name(&event, &group, buf1,
+>> +		ret = traceprobe_parse_event_name(&event, &group, grp_buf,
+>>   						  event - argv[0]);
+>> -		if (ret)
+>> +		if (ret < 0)
+>>   			goto parse_error;
+>> -	} else {
+>> +	}
+> add space.
+
+sure, thanks.
+
+>
+>> +	if (ret == TP_ENAME_EMPTTY || ret == TP_ENAME_GROUP) {
+>>   		strscpy(buf1, argv[1], MAX_EVENT_NAME_LEN);
+>>   		sanitize_event_name(buf1);
+>>   		event = buf1;
+> I'd like to see Masami's and Tom's comments on this one.
+>
+> -- Steve
+>
+>> @@ -882,9 +886,8 @@ static int __trace_eprobe_create(int argc, const char *argv[])
+>>   		goto parse_error;
+>>   
+>>   	sys_event = argv[1];
+>> -	ret = traceprobe_parse_event_name(&sys_event, &sys_name, buf2,
+>> -					  sys_event - argv[1]);
+>> -	if (ret || !sys_name)
+>> +	ret = traceprobe_parse_event_name(&sys_event, &sys_name, buf2, 0);
+>> +	if (ret != TP_ENAME_GROUP_EVENT)
+>>   		goto parse_error;
+>>   	if (!is_good_name(sys_event) || !is_good_name(sys_name))
+>>   		goto parse_error;
+>> diff --git a/kernel/trace/trace_kprobe.c b/kernel/trace/trace_kprobe.c
+>> index 47cebef..2cd8ef9 100644
+>> --- a/kernel/trace/trace_kprobe.c
+>> +++ b/kernel/trace/trace_kprobe.c
+>> @@ -163,7 +163,8 @@ static bool trace_kprobe_match(const char *system, const char *event,
+>>   {
+>>   	struct trace_kprobe *tk = to_trace_kprobe(ev);
+>>   
+>> -	return strcmp(trace_probe_name(&tk->tp), event) == 0 &&
+>> +	return (event[0] == '\0' ||
+>> +		strcmp(trace_probe_name(&tk->tp), event) == 0) &&
+>>   	    (!system || strcmp(trace_probe_group_name(&tk->tp), system) == 0) &&
+>>   	    trace_kprobe_match_command_head(tk, argc, argv);
+>>   }
+>> @@ -708,11 +709,11 @@ static int __trace_kprobe_create(int argc, const char *argv[])
+>>   	/*
+>>   	 * Argument syntax:
+>>   	 *  - Add kprobe:
+>> -	 *      p[:[GRP/]EVENT] [MOD:]KSYM[+OFFS]|KADDR [FETCHARGS]
+>> +	 *      p[:[GRP/][EVENT]] [MOD:]KSYM[+OFFS]|KADDR [FETCHARGS]
+>>   	 *  - Add kretprobe:
+>> -	 *      r[MAXACTIVE][:[GRP/]EVENT] [MOD:]KSYM[+0] [FETCHARGS]
+>> +	 *      r[MAXACTIVE][:[GRP/][EVENT]] [MOD:]KSYM[+0] [FETCHARGS]
+>>   	 *    Or
+>> -	 *      p:[GRP/]EVENT] [MOD:]KSYM[+0]%return [FETCHARGS]
+>> +	 *      p[:[GRP/][EVENT]] [MOD:]KSYM[+0]%return [FETCHARGS]
+>>   	 *
+>>   	 * Fetch args:
+>>   	 *  $retval	: fetch return value
+>> @@ -739,6 +740,7 @@ static int __trace_kprobe_create(int argc, const char *argv[])
+>>   	long offset = 0;
+>>   	void *addr = NULL;
+>>   	char buf[MAX_EVENT_NAME_LEN];
+>> +	char grp_buf[MAX_EVENT_NAME_LEN];
+>>   	unsigned int flags = TPARG_FL_KERNEL;
+>>   
+>>   	switch (argv[0][0]) {
+>> @@ -832,12 +834,14 @@ static int __trace_kprobe_create(int argc, const char *argv[])
+>>   	}
+>>   
+>>   	trace_probe_log_set_index(0);
+>> +	ret = TP_ENAME_EMPTTY;
+>>   	if (event) {
+>> -		ret = traceprobe_parse_event_name(&event, &group, buf,
+>> +		ret = traceprobe_parse_event_name(&event, &group, grp_buf,
+>>   						  event - argv[0]);
+>> -		if (ret)
+>> +		if (ret < 0)
+>>   			goto parse_error;
+>> -	} else {
+>> +	}
+>> +	if (ret == TP_ENAME_EMPTTY || ret == TP_ENAME_GROUP) {
+>>   		/* Make a new event name */
+>>   		if (symbol)
+>>   			snprintf(buf, MAX_EVENT_NAME_LEN, "%c_%s_%ld",
+>> diff --git a/kernel/trace/trace_probe.c b/kernel/trace/trace_probe.c
+>> index 80863c6..7fd50ab 100644
+>> --- a/kernel/trace/trace_probe.c
+>> +++ b/kernel/trace/trace_probe.c
+>> @@ -257,6 +257,9 @@ int traceprobe_parse_event_name(const char **pevent, const char **pgroup,
+>>   	}
+>>   	len = strlen(event);
+>>   	if (len == 0) {
+>> +		if (slash)
+>> +			return TP_ENAME_GROUP;
+>> +
+>>   		trace_probe_log_err(offset, NO_EVENT_NAME);
+>>   		return -EINVAL;
+>>   	} else if (len > MAX_EVENT_NAME_LEN) {
+>> @@ -267,7 +270,11 @@ int traceprobe_parse_event_name(const char **pevent, const char **pgroup,
+>>   		trace_probe_log_err(offset, BAD_EVENT_NAME);
+>>   		return -EINVAL;
+>>   	}
+>> -	return 0;
+>> +
+>> +	if (slash)
+>> +		return TP_ENAME_GROUP_EVENT;
+>> +
+>> +	return TP_ENAME_EVENT;
+>>   }
+>>   
+>>   #define PARAM_MAX_STACK (THREAD_SIZE / sizeof(unsigned long))
+>> diff --git a/kernel/trace/trace_probe.h b/kernel/trace/trace_probe.h
+>> index 92cc149..d726769 100644
+>> --- a/kernel/trace/trace_probe.h
+>> +++ b/kernel/trace/trace_probe.h
+>> @@ -364,6 +364,10 @@ extern void traceprobe_free_probe_arg(struct probe_arg *arg);
+>>   extern int traceprobe_split_symbol_offset(char *symbol, long *offset);
+>>   int traceprobe_parse_event_name(const char **pevent, const char **pgroup,
+>>   				char *buf, int offset);
+>> +#define TP_ENAME_GROUP_EVENT	0
+>> +#define TP_ENAME_EVENT		1
+>> +#define TP_ENAME_GROUP		2
+>> +#define TP_ENAME_EMPTTY		3
+>>   
+>>   enum probe_print_type {
+>>   	PROBE_PRINT_NORMAL,
+>> diff --git a/kernel/trace/trace_uprobe.c b/kernel/trace/trace_uprobe.c
+>> index 9711589..a935c08 100644
+>> --- a/kernel/trace/trace_uprobe.c
+>> +++ b/kernel/trace/trace_uprobe.c
+>> @@ -312,7 +312,8 @@ static bool trace_uprobe_match(const char *system, const char *event,
+>>   {
+>>   	struct trace_uprobe *tu = to_trace_uprobe(ev);
+>>   
+>> -	return strcmp(trace_probe_name(&tu->tp), event) == 0 &&
+>> +	return (event[0] == '\0' ||
+>> +		strcmp(trace_probe_name(&tu->tp), event) == 0) &&
+>>   	   (!system || strcmp(trace_probe_group_name(&tu->tp), system) == 0) &&
+>>   	   trace_uprobe_match_command_head(tu, argc, argv);
+>>   }
+>> @@ -532,7 +533,7 @@ static int register_trace_uprobe(struct trace_uprobe *tu)
+>>   
+>>   /*
+>>    * Argument syntax:
+>> - *  - Add uprobe: p|r[:[GRP/]EVENT] PATH:OFFSET[%return][(REF)] [FETCHARGS]
+>> + *  - Add uprobe: p|r[:[GRP/][EVENT]] PATH:OFFSET[%return][(REF)] [FETCHARGS]
+>>    */
+>>   static int __trace_uprobe_create(int argc, const char **argv)
+>>   {
+>> @@ -540,6 +541,7 @@ static int __trace_uprobe_create(int argc, const char **argv)
+>>   	const char *event = NULL, *group = UPROBE_EVENT_SYSTEM;
+>>   	char *arg, *filename, *rctr, *rctr_end, *tmp;
+>>   	char buf[MAX_EVENT_NAME_LEN];
+>> +	char grp_buf[MAX_EVENT_NAME_LEN];
+>>   	enum probe_print_type ptype;
+>>   	struct path path;
+>>   	unsigned long offset, ref_ctr_offset;
+>> @@ -644,12 +646,14 @@ static int __trace_uprobe_create(int argc, const char **argv)
+>>   
+>>   	/* setup a probe */
+>>   	trace_probe_log_set_index(0);
+>> +	ret = TP_ENAME_EMPTTY;
+>>   	if (event) {
+>> -		ret = traceprobe_parse_event_name(&event, &group, buf,
+>> +		ret = traceprobe_parse_event_name(&event, &group, grp_buf,
+>>   						  event - argv[0]);
+>> -		if (ret)
+>> +		if (ret < 0)
+>>   			goto fail_address_parse;
+>> -	} else {
+>> +	}
+>> +	if (ret == TP_ENAME_EMPTTY || ret == TP_ENAME_GROUP) {
+>>   		char *tail;
+>>   		char *ptr;
+>>   
