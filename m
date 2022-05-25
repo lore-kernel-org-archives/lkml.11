@@ -2,87 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E004FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 15:59:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B83ACC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 16:01:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234760AbiEYP7n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 11:59:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48898 "EHLO
+        id S234832AbiEYQBP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 12:01:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230242AbiEYP7k (ORCPT
+        with ESMTP id S229869AbiEYQBL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 11:59:40 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 590AB6A045;
-        Wed, 25 May 2022 08:59:39 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 107DD1424;
-        Wed, 25 May 2022 08:59:39 -0700 (PDT)
-Received: from [10.1.25.169] (e127744.cambridge.arm.com [10.1.25.169])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id CD0373F73D;
-        Wed, 25 May 2022 08:59:35 -0700 (PDT)
-Subject: Re: [PATCH v3 1/5] perf tools: arm64: Use perf's copy of kernel
- headers
-To:     James Clark <james.clark@arm.com>, linux-kernel@vger.kernel.org,
-        linux-perf-users@vger.kernel.org, acme@kernel.org
-Cc:     broonie@kernel.org, leo.yan@linaro.org, mathieu.poirier@linaro.org,
-        john.garry@huawei.com, Will Deacon <will@kernel.org>,
-        Mike Leach <mike.leach@linaro.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        linux-arm-kernel@lists.infradead.org
-References: <20220525154114.718321-1-james.clark@arm.com>
- <20220525154114.718321-2-james.clark@arm.com>
-From:   German Gomez <german.gomez@arm.com>
-Message-ID: <b6cf9d34-313e-6b7d-3781-a8a5af203cd6@arm.com>
-Date:   Wed, 25 May 2022 16:59:30 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Wed, 25 May 2022 12:01:11 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15CD56B7FC
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 09:01:08 -0700 (PDT)
+Received: from zn.tnic (p200300ea97465795329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:9746:5795:329c:23ff:fea6:a903])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 08F681EC059D;
+        Wed, 25 May 2022 18:01:02 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1653494463;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=HZ5l5c5oFQU562TJ+oAgCesJ7Z1kou0lEyO+acuK3iM=;
+        b=OocEOzI588LRLyT/n9RapoNWuVXVIK9A7BX+4ahTwYj22NgF9QNVgODf+et/ZEHxDrkASy
+        XG6Hn+NQBd4XbiTr9jMPNnZxBtvgni/HOFgSxrcm54qwTm9ReejlwKYVKeglRWCH90jlbs
+        7E9uyJDFycbLzqX/BUZuK14tak3IWKU=
+Date:   Wed, 25 May 2022 18:00:58 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     "Luck, Tony" <tony.luck@intel.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>, X86 ML <x86@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC PATCH 3/3] x86/microcode: Taint and warn on late loading
+Message-ID: <Yo5SupgZjT/a1p5m@zn.tnic>
+References: <20220524185324.28395-1-bp@alien8.de>
+ <20220524185324.28395-4-bp@alien8.de>
+ <Yo2ASBAElqrQvzh3@agluck-desk3.sc.intel.com>
+ <20220525065940.GF2578@worktop.programming.kicks-ass.net>
+ <Yo3cpb1yZhwhHEga@zn.tnic>
+ <4644ff0530ba40948ed1f0e2e45a24d8@intel.com>
+ <Yo5LAenZIsYmM9Ie@zn.tnic>
+ <c40151ec88db4b7aa7dcadf6428b019e@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20220525154114.718321-2-james.clark@arm.com>
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <c40151ec88db4b7aa7dcadf6428b019e@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, May 25, 2022 at 03:40:50PM +0000, Luck, Tony wrote:
+> That's very 1990's thinking. We have Unicode available now.
+> We could start using Emoji like U+1F4A9 as a taint character :-)
 
-On 25/05/2022 16:41, James Clark wrote:
-> Fix this include path to use perf's copy of the kernel header
-> rather than the one from the root of the repo.
->
-> This fixes build errors when only applying the perf tools
-> part of a patchset rather than both sides.
->
-> Reported-by: German Gomez <german.gomez@arm.com>
-> Signed-off-by: James Clark <james.clark@arm.com>
+LOL: U+1F4A9 PILE OF POO. Some fancy terminals might even show it
+properly.
 
-Without this change "make -C tools/perf" was failing if kernel-side changes weren't applied
+And sounds about the right one in this case.
 
-Tested-by: German Gomez <german.gomez@arm.com>
+> That sounds better than a string of Emoji (also better than the
+> current string of upper case characters).
 
-Thanks,
-German
+Yeah, we need to think about it. I would be lying if I said I had never
+wondered before where a taint flag got set. Saving the address has a
+problem when multiple times the same flag gets set - only the last
+address will be there.
 
-> ---
->  tools/perf/util/libunwind/arm64.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/tools/perf/util/libunwind/arm64.c b/tools/perf/util/libunwind/arm64.c
-> index 15f60fd09424..014d82159656 100644
-> --- a/tools/perf/util/libunwind/arm64.c
-> +++ b/tools/perf/util/libunwind/arm64.c
-> @@ -24,7 +24,7 @@
->  #include "unwind.h"
->  #include "libunwind-aarch64.h"
->  #define perf_event_arm_regs perf_event_arm64_regs
-> -#include <../../../../arch/arm64/include/uapi/asm/perf_regs.h>
-> +#include <../../../arch/arm64/include/uapi/asm/perf_regs.h>
->  #undef perf_event_arm_regs
->  #include "../../arch/arm64/util/unwind-libunwind.c"
->  
+But I guess we can try it.
+
+/me puts on todo.
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
