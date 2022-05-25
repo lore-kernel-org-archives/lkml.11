@@ -2,678 +2,247 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99046C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 12:09:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74B96C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 12:10:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238273AbiEYMJf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 08:09:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34288 "EHLO
+        id S242788AbiEYMK5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 08:10:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230511AbiEYMJb (ORCPT
+        with ESMTP id S230511AbiEYMKy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 08:09:31 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 507CF30F77;
-        Wed, 25 May 2022 05:09:23 -0700 (PDT)
-X-UUID: 4b20b311be034717978db219a7d04001-20220525
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:e44d855c-4ffe-4fa2-8938-9e1e01456e08,OB:0,LO
-        B:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:51,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:56
-X-CID-INFO: VERSION:1.1.5,REQID:e44d855c-4ffe-4fa2-8938-9e1e01456e08,OB:0,LOB:
-        0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:51,FILE:0,RULE:Release_Ham,ACTIO
-        N:release,TS:56
-X-CID-META: VersionHash:2a19b09,CLOUDID:792a7047-4fb1-496b-8f1d-39e733fed1ea,C
-        OID:0a6be1c9623c,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:1,File:nil,QS:0,BEC:nil
-X-UUID: 4b20b311be034717978db219a7d04001-20220525
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
-        (envelope-from <johnson.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1501048418; Wed, 25 May 2022 20:09:20 +0800
-Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Wed, 25 May 2022 20:09:19 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 25 May 2022 20:09:19 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n2.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
- Transport; Wed, 25 May 2022 20:09:19 +0800
-Message-ID: <13d3028b3d8cc4e3e0d9bec3d2494d264392b532.camel@mediatek.com>
-Subject: Re: [PATCH v5 2/2] PM / devfreq: mediatek: Introduce MediaTek CCI
- devfreq driver
-From:   Johnson Wang <johnson.wang@mediatek.com>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-CC:     <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <cw00.choi@samsung.com>, <devicetree@vger.kernel.org>,
-        <jia-wei.chang@mediatek.com>, <khilman@kernel.org>,
-        <krzk+dt@kernel.org>, <kyungmin.park@samsung.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>, <linux-pm@vger.kernel.org>,
-        <robh+dt@kernel.org>
-Date:   Wed, 25 May 2022 20:09:19 +0800
-In-Reply-To: <3844186b-aba7-d5e2-dbd1-813a624cf210@wanadoo.fr>
-References: <20220520131956.31150-1-johnson.wang@mediatek.com>
-         <20220520131956.31150-3-johnson.wang@mediatek.com>
-         <3844186b-aba7-d5e2-dbd1-813a624cf210@wanadoo.fr>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Wed, 25 May 2022 08:10:54 -0400
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2126.outbound.protection.outlook.com [40.107.20.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3B96326E7;
+        Wed, 25 May 2022 05:10:52 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZwgMrwCbGaMMHWGt4hrxDoddueDC/pQundjwZ87F+KYj6jwdmtoNgKz1lUG0/XXiOk0NR0hHK5m960XK1M+rFtD4Pw3PRS8lfzHX/tZu6TacgrsZwFZfRBxmDuORYa77EwpybzZEBJQNLe4bJ1tZnQVbga/2JUQqS56aBmDi2pws70UZjajPcJ8NH0cRHsEaX1pxxvGbfFtG6p4ka2XTOdyO1rC4N2Kq+sHuWS/CtYP4uBeVgqjbOiMe5ZnCvoYq0pCGy43qwwopgw2VaMShwRRiDEk/4cNXSE8y03IgGLIEtDJtYD5V95W6EKoAAu5Js1Fw2VXA3ruN0/Mq6QGnyw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Z/oWZ/jvCbIQLKlwtiAukqc4yINNXweiXNHqy43By3g=;
+ b=LAz00SKQPGA0mo5hxZ3B/PPycL5GDp4lfRJGlTXJJSeXhUxF/QTEY3jhOYD8HU8d1hgfxv7dBiAN342qPP4mu2MlhOhJjYzwrbMFdvuewM7LnXSezeor4L72Zy/2k2BLpCDZMx0ELYix2L5do+XmxA6+OPBb4FxDQe+S2ksPiqXYSxJM0Jpo/XoOdMCr44PBaTAsWPXqY8IVRyewdlAoxYl/bScT4EChqaR35mAhXmvZV9G8sCWGeFjR75w0Fa5ze320G1KkiZOOnxneh0+rCLJkbfH37oXRQzgPXvo5kYmayfhpohhugB6Sv813ZYbpCAjSQoM4CX0OObIOgJrwew==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=syrmia.com; dmarc=pass action=none header.from=syrmia.com;
+ dkim=pass header.d=syrmia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=syrmia.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Z/oWZ/jvCbIQLKlwtiAukqc4yINNXweiXNHqy43By3g=;
+ b=vT+v8fEvkZh8IfiAokdkvf3ycQl2tPEQoCV0+GcSFGk1Lv0evyKlyZK9bjQQQ7fBNIWdp0f3b79xncVssBsSSR1GcTDy3ZSW/1+LC/od6ULmXmyF8VwmsY4HkE7URSAmwPiyx0G4aLoTw98ml8OOUTCXddTkWA7AuI2SKHY8Huo=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=syrmia.com;
+Received: from VI1PR03MB4208.eurprd03.prod.outlook.com (2603:10a6:803:51::25)
+ by AS8PR03MB7859.eurprd03.prod.outlook.com (2603:10a6:20b:342::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.13; Wed, 25 May
+ 2022 12:10:50 +0000
+Received: from VI1PR03MB4208.eurprd03.prod.outlook.com
+ ([fe80::cca9:49b6:f568:ecd9]) by VI1PR03MB4208.eurprd03.prod.outlook.com
+ ([fe80::cca9:49b6:f568:ecd9%5]) with mapi id 15.20.5293.013; Wed, 25 May 2022
+ 12:10:50 +0000
+From:   Dragan Mladjenovic <Dragan.Mladjenovic@syrmia.com>
+To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Cc:     Chao-ying Fu <cfu@wavecomp.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Greg Ungerer <gerg@kernel.org>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
+        Marc Zyngier <maz@kernel.org>,
+        Paul Burton <paulburton@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Tiezhu Yang <yangtiezhu@loongson.cn>,
+        Dragan Mladjenovic <dragan.mladjenovic@syrmia.com>
+Subject: [PATCH v2 01/12] MIPS: CPS: Add a couple of multi-cluster utility functions
+Date:   Wed, 25 May 2022 14:10:19 +0200
+Message-Id: <20220525121030.16054-2-Dragan.Mladjenovic@syrmia.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220525121030.16054-1-Dragan.Mladjenovic@syrmia.com>
+References: <20220525121030.16054-1-Dragan.Mladjenovic@syrmia.com>
+Content-Type: text/plain
+X-ClientProxiedBy: VE1PR08CA0031.eurprd08.prod.outlook.com
+ (2603:10a6:803:104::44) To VI1PR03MB4208.eurprd03.prod.outlook.com
+ (2603:10a6:803:51::25)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-MTK:  N
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d27d64dd-5084-4509-a430-08da3e479b89
+X-MS-TrafficTypeDiagnostic: AS8PR03MB7859:EE_
+X-Microsoft-Antispam-PRVS: <AS8PR03MB78592DBADCB13BD74D220B37EFD69@AS8PR03MB7859.eurprd03.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: xqwllonDIYK1TI39o0jQdqkw0pu1yWwScNTEkCP9Gk0a7clMzJrThdp1SSKdHiF0LS2+yGigdDwUkV8pJwPpM+Uccd1nObpaX9pGt/GbI0h2/9umk+5lO5pf3LGO/qnHsYjXEYDDiK9J4V6RPHgyhsKgIhgdzHn5nctIjraanWA/4TM0SOByqxNIWf6rJQ2my6uPQJTGiAY8U0U+IVzYOob1E4RnyZATFTwoApbORrFv1EzcVu9vXnqc3J7h2krb69qgRgF3LNKLLyH34hb7iP09nrOkwTpUlPVOPPlIBkAi4PuTaPp7djZXxObnPWkZuu8Cago+DhmvbjXBkUW5dMSGgulT388JneNDbVmb3KTeyv7B96zvw3nuaUHcyWwDIymJMOpzAAHjakIDIzA4TN6rNKHuDgI+BfKqKC4iiuxVBvRysfX18vG20i3RI3tdD0G4rKuGhElaibzh6QaBJzPQSw4rf4eltfKO8zHNeq+AkvjjmTbkRWh+mpGjSmx9+6mXaB2ASBkBEzr8QI4RF2v7tpQl5k391diFALfh4Tyu7y4QdfPWhS0oTirs4Ztk/kmU6nTEIcmj8zzZC8DWzBsD2T2/buH78dc1Jyh28UIzcCeiTSAHVWTiFTnWlMDKttG/j3v9m6dPPG0bCdtLLBdourPG2HQgcoInTVzYziPI5e9E/VrztZ9wp2TChEpHAWB4z3RVmUIZc+aTVGALgg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR03MB4208.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(396003)(136003)(39830400003)(376002)(346002)(8676002)(4326008)(66476007)(8936002)(66556008)(66946007)(83380400001)(54906003)(6916009)(316002)(36756003)(7416002)(5660300002)(6666004)(1076003)(26005)(186003)(6486002)(508600001)(86362001)(38100700002)(41300700001)(107886003)(2616005)(38350700002)(6506007)(2906002)(6512007)(52116002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?iUk2ozzNV5HeC6PX0cticKjqx1Lm/KSiKIfZgECfbRUP078jma1/ZDNXuFLe?=
+ =?us-ascii?Q?Qt0Rt3YBunJmE5PI+g2mKowIDQPiBkNmDNVlruuukSeUmhLYF9KkrGpXWyUr?=
+ =?us-ascii?Q?ioCVuGPhX5fPK5PmFFnIgWcST3w31H68MvfDWrxxHvVfZfoQgaPfDnoDxqCA?=
+ =?us-ascii?Q?6KyMIiNmkIf+RR4q+mfh84gDZpopuGsTk6TJOUTh2ZBOkUh/83vWCfMDAur0?=
+ =?us-ascii?Q?VrHt+JNC+kz1dFeUX+jI4Jo7diSHqUbhBAOdlSSNlq03k4P7tKGdLljnPcrm?=
+ =?us-ascii?Q?Kt+ZzmtRLmXYrM4TzZyxUgQeC07EQJ9tOHwC6lEVJcaZhuKAonpUMWJJOsa8?=
+ =?us-ascii?Q?S5jM3PzHSWnhcLB/1Zslw9m1g8NQfcnu0l9fGIJQlQLmJbE7mja/9nuGggzO?=
+ =?us-ascii?Q?wtU28ZUVcTcA8ZF7MgnYFh9wFbSrPxjl2XVxYSoTxJoBOQbNn1hN2qmbh5s+?=
+ =?us-ascii?Q?tiyk91UTOsOOTxYRAC9z/cge6J2QbAzmzHT6Vp1qQmG1vQkBJuGvKTukf/rn?=
+ =?us-ascii?Q?HUnJMGA446wj9bsPZKX+b+R9e0I/+Y0GARHx2FzLnuJYYb7AKOFtPLlUEIK9?=
+ =?us-ascii?Q?ceKlmEFNSIf9Yc54xwMlT2brPimAZ4CzQL2QAcOPqK4aQrPPN+BBLhZvv795?=
+ =?us-ascii?Q?YSDby4FaxSDeR7/bF2V2Zi2C3SAadj+lLu2fHRfu/gVxbuerncC8MIxEk8DB?=
+ =?us-ascii?Q?u5Alqkk5n4o7+2C7E0CfqFhR2XtHp0lOfEhJTsoHJ5l3jjMfPe8fqL+sPYiI?=
+ =?us-ascii?Q?3BVA6/AHiUiEoU1Nbxc2gr7RKs4eMLFaY5CsuKVZ3/0YftAQdcjV6JN2XA4X?=
+ =?us-ascii?Q?8W6wBLubN348oRWhA8UxVX472nqeiBMN/sBGK5mKAA1Q6QP5qtGZQXZGAOyg?=
+ =?us-ascii?Q?mGFFjtWDWz3L3xdu0sIp+pb0em3moM+5avjZYgYl3lgGWorv6JOpr45eDQoW?=
+ =?us-ascii?Q?iXI8oqsl3x70zmuQXbqjKZn5j5I/d7LOOHZMBUVeXY5Qvhn4jEBwna81ScBA?=
+ =?us-ascii?Q?L2SfVKo5lyHSNIuNtcffbqmgz2fuo6Sqf6hSRFVG8hTlybRRatZQBIDXck4L?=
+ =?us-ascii?Q?zIGkQ+ZDVTjI2aY7ej0H3oX500JE8nzC2+1Rours2lIqN35ZpOgS4OSU6ixt?=
+ =?us-ascii?Q?YZI3ZM7FQHTd2ADqw4PTJeaKJoEY7CllUoPdfa6KLnah0n3qe0Kpxit3zsrl?=
+ =?us-ascii?Q?3uU1CpCY9dQZd95f5HbMjNiorifJmQk9leNcM63KkrRcZ5Lb2Z7iv6SPTFKr?=
+ =?us-ascii?Q?RVddtJEsdFTGL7aTRPlhjCCnJekrrI+yS0D123Z5jUqmh+dwoDP34K8KDRzD?=
+ =?us-ascii?Q?oyYC1f6RbkWMdxr3QwhGRCxbvKtRtstsPGXNEamqVWHEJx7vpQBkBqghyPXO?=
+ =?us-ascii?Q?F1Y6T2tDsmQWQiW8n9qKK2yWNAnpxGUXJ0GHK9EZ9NfoV7Gl9aHKcXu8ieU0?=
+ =?us-ascii?Q?a1WRRKgJ8ZQ7tbQMijjAke6yOXU77A+7umHCnrrISopRNJXPMYsSEnfNfS9W?=
+ =?us-ascii?Q?619lwh+d8UbPd73RJnUH9S5HH+tmdAVUohaXwuMgX+IkWtD5JXz5bF9OaaC7?=
+ =?us-ascii?Q?L3H+uoblfaX7EYwomEQvv/thDp0cQbmtX2X2fVNAeM2DIaQPDRbYeUrkTl6G?=
+ =?us-ascii?Q?pC4B41eRsfV0xRzWjK+VeYdL+5QFhpcR/xQfnp2B57caglHPFn0a9lOSivYC?=
+ =?us-ascii?Q?eWe7BPZTz8moKS7w1VZ5b6VTmyJNxE54nojwa5S7QpvR3j/6NtTjr4wDb4AV?=
+ =?us-ascii?Q?g8ZrOIClNgqbUy5lIbKfrR+5LjkSsqM=3D?=
+X-OriginatorOrg: syrmia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d27d64dd-5084-4509-a430-08da3e479b89
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR03MB4208.eurprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 May 2022 12:10:50.1154
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 19214a73-c1ab-4e19-8f59-14bdcb09a66e
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: JZ3QCfr9iiUrJsD/1mM36jbwAvOHRoSYJj1FgWZgG+JQ0VaczWqcom0M9xn9ePQSABFttkVdbWiNIESXMwGf/39hZ7rzxLemIhaw28NbL3M=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR03MB7859
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-05-20 at 15:46 +0200, Christophe JAILLET wrote:
-> Hi,
-> 
-> Should there be a v6, below a few nitpicks.
-> 
-> just my 2c.
-> 
-> CJ
-> 
-> Le 20/05/2022 à 15:19, Johnson Wang a écrit :
-> > We introduce a devfreq driver for the MediaTek Cache Coherent
-> > Interconnect
-> > (CCI) used by some MediaTek SoCs.
-> > 
-> > In this driver, we use the passive devfreq driver to get target
-> > frequencies
-> > and adjust voltages accordingly. In MT8183 and MT8186, the MediaTek
-> > CCI
-> > is supplied by the same regulators with the little core CPUs.
-> > 
-> > Signed-off-by: Jia-Wei Chang <
-> > jia-wei.chang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-> > Signed-off-by: Johnson Wang <
-> > johnson.wang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-> > Acked-by: Chanwoo Choi <
-> > cw00.choi-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-> > ---
-> > This patch depends on "devfreq-testing"[1].
-> > [1]
-> > https://urldefense.com/v3/__https://git.kernel.org/pub/scm/linux/kernel/git/chanwoo/linux.git/log/?h=devfreq-testing__;!!CTRNKA9wMg0ARbw!2b72S6ItcAh5WYWrdSYl8RdvSZnPx_oWPF2agvZ3GtKWNthEgFhpXT_RCScRUxeMMuxK$
-> >  
-> > ---
-> >   drivers/devfreq/Kconfig           |  10 +
-> >   drivers/devfreq/Makefile          |   1 +
-> >   drivers/devfreq/mtk-cci-devfreq.c | 447
-> > ++++++++++++++++++++++++++++++
-> >   3 files changed, 458 insertions(+)
-> >   create mode 100644 drivers/devfreq/mtk-cci-devfreq.c
-> > 
-> > diff --git a/drivers/devfreq/Kconfig b/drivers/devfreq/Kconfig
-> > index 87eb2b837e68..9754d8b31621 100644
-> > --- a/drivers/devfreq/Kconfig
-> > +++ b/drivers/devfreq/Kconfig
-> > @@ -120,6 +120,16 @@ config ARM_TEGRA_DEVFREQ
-> >   	  It reads ACTMON counters of memory controllers and adjusts
-> > the
-> >   	  operating frequencies and voltages with OPP support.
-> >   
-> > +config ARM_MEDIATEK_CCI_DEVFREQ
-> > +	tristate "MEDIATEK CCI DEVFREQ Driver"
-> > +	depends on ARM_MEDIATEK_CPUFREQ || COMPILE_TEST
-> > +	select DEVFREQ_GOV_PASSIVE
-> > +	help
-> > +	  This adds a devfreq driver for MediaTek Cache Coherent
-> > Interconnect
-> > +	  which is shared the same regulators with the cpu cluster. It
-> > can track
-> > +	  buck voltages and update a proper CCI frequency. Use the
-> > notification
-> > +	  to get the regulator status.
-> > +
-> >   config ARM_RK3399_DMC_DEVFREQ
-> >   	tristate "ARM RK3399 DMC DEVFREQ Driver"
-> >   	depends on (ARCH_ROCKCHIP && HAVE_ARM_SMCCC) || \
-> > diff --git a/drivers/devfreq/Makefile b/drivers/devfreq/Makefile
-> > index 0b6be92a25d9..bf40d04928d0 100644
-> > --- a/drivers/devfreq/Makefile
-> > +++ b/drivers/devfreq/Makefile
-> > @@ -11,6 +11,7 @@ obj-$(CONFIG_DEVFREQ_GOV_PASSIVE)	+=
-> > governor_passive.o
-> >   obj-$(CONFIG_ARM_EXYNOS_BUS_DEVFREQ)	+= exynos-bus.o
-> >   obj-$(CONFIG_ARM_IMX_BUS_DEVFREQ)	+= imx-bus.o
-> >   obj-$(CONFIG_ARM_IMX8M_DDRC_DEVFREQ)	+= imx8m-ddrc.o
-> > +obj-$(CONFIG_ARM_MEDIATEK_CCI_DEVFREQ)	+= mtk-cci-devfreq.o
-> >   obj-$(CONFIG_ARM_RK3399_DMC_DEVFREQ)	+= rk3399_dmc.o
-> >   obj-$(CONFIG_ARM_SUN8I_A33_MBUS_DEVFREQ)	+= sun8i-a33-mbus.o
-> >   obj-$(CONFIG_ARM_TEGRA_DEVFREQ)		+= tegra30-devfreq.o
-> > diff --git a/drivers/devfreq/mtk-cci-devfreq.c
-> > b/drivers/devfreq/mtk-cci-devfreq.c
-> > new file mode 100644
-> > index 000000000000..2eaff24fb487
-> > --- /dev/null
-> > +++ b/drivers/devfreq/mtk-cci-devfreq.c
-> > @@ -0,0 +1,447 @@
-> > +// SPDX-License-Identifier: GPL-2.0-only
-> > +/*
-> > + * Copyright (C) 2022 MediaTek Inc.
-> > + */
-> > +
-> > +#include <linux/clk.h>
-> > +#include <linux/devfreq.h>
-> > +#include <linux/minmax.h>
-> > +#include <linux/module.h>
-> > +#include <linux/of.h>
-> > +#include <linux/of_device.h>
-> > +#include <linux/platform_device.h>
-> > +#include <linux/pm_opp.h>
-> > +#include <linux/regulator/consumer.h>
-> > +
-> > +struct mtk_ccifreq_platform_data {
-> > +	int min_volt_shift;
-> > +	int max_volt_shift;
-> > +	int proc_max_volt;
-> > +	int sram_min_volt;
-> > +	int sram_max_volt;
-> > +};
-> > +
-> > +struct mtk_ccifreq_drv {
-> > +	struct device *dev;
-> > +	struct devfreq *devfreq;
-> > +	struct regulator *proc_reg;
-> > +	struct regulator *sram_reg;
-> > +	struct clk *cci_clk;
-> > +	struct clk *inter_clk;
-> > +	int inter_voltage;
-> > +	unsigned long pre_freq;
-> > +	/* Avoid race condition for regulators between notify and
-> > policy */
-> > +	struct mutex reg_lock;
-> > +	struct notifier_block opp_nb;
-> > +	const struct mtk_ccifreq_platform_data *soc_data;
-> > +	int vtrack_max;
-> > +};
-> > +
-> > +static int mtk_ccifreq_set_voltage(struct mtk_ccifreq_drv *drv,
-> > int new_voltage)
-> > +{
-> > +	const struct mtk_ccifreq_platform_data *soc_data = drv-
-> > >soc_data;
-> > +	struct device *dev = drv->dev;
-> > +	int pre_voltage, pre_vsram, new_vsram, vsram, voltage, ret;
-> > +	int retry_max = drv->vtrack_max;
-> > +
-> > +	if (!drv->sram_reg) {
-> > +		ret = regulator_set_voltage(drv->proc_reg, new_voltage,
-> > +					    drv->soc_data-
-> > >proc_max_volt);
-> > +		return ret;
-> > +	}
-> > +
-> > +	pre_voltage = regulator_get_voltage(drv->proc_reg);
-> > +	if (pre_voltage < 0) {
-> > +		dev_err(dev, "invalid vproc value: %d\n", pre_voltage);
-> > +		return pre_voltage;
-> > +	}
-> > +
-> > +	pre_vsram = regulator_get_voltage(drv->sram_reg);
-> > +	if (pre_vsram < 0) {
-> > +		dev_err(dev, "invalid vsram value: %d\n", pre_vsram);
-> > +		return pre_vsram;
-> > +	}
-> > +
-> > +	new_vsram = clamp(new_voltage + soc_data->min_volt_shift,
-> > +			  soc_data->sram_min_volt, soc_data-
-> > >sram_max_volt);
-> > +
-> > +	do {
-> > +		if (pre_voltage <= new_voltage) {
-> > +			vsram = clamp(pre_voltage + soc_data-
-> > >max_volt_shift,
-> > +				      soc_data->sram_min_volt,
-> > new_vsram);
-> > +			ret = regulator_set_voltage(drv->sram_reg,
-> > vsram,
-> > +						    soc_data-
-> > >sram_max_volt);
-> > +			if (ret)
-> > +				return ret;
-> > +
-> > +			if (vsram == soc_data->sram_max_volt ||
-> > +			    new_vsram == soc_data->sram_min_volt)
-> > +				voltage = new_voltage;
-> > +			else
-> > +				voltage = vsram - soc_data-
-> > >min_volt_shift;
-> > +
-> > +			ret = regulator_set_voltage(drv->proc_reg,
-> > voltage,
-> > +						    soc_data-
-> > >proc_max_volt);
-> > +			if (ret) {
-> > +				regulator_set_voltage(drv->sram_reg,
-> > pre_vsram,
-> > +						      soc_data-
-> > >sram_max_volt);
-> > +				return ret;
-> > +			}
-> > +		} else if (pre_voltage > new_voltage) {
-> > +			voltage = max(new_voltage,
-> > +				      pre_vsram - soc_data-
-> > >max_volt_shift);
-> > +			ret = regulator_set_voltage(drv->proc_reg,
-> > voltage,
-> > +						    soc_data-
-> > >proc_max_volt);
-> > +			if (ret)
-> > +				return ret;
-> > +
-> > +			if (voltage == new_voltage)
-> > +				vsram = new_vsram;
-> > +			else
-> > +				vsram = max(new_vsram,
-> > +					    voltage + soc_data-
-> > >min_volt_shift);
-> > +
-> > +			ret = regulator_set_voltage(drv->sram_reg,
-> > vsram,
-> > +						    soc_data-
-> > >sram_max_volt);
-> > +			if (ret) {
-> > +				regulator_set_voltage(drv->proc_reg,
-> > pre_voltage,
-> > +						      soc_data-
-> > >proc_max_volt);
-> > +				return ret;
-> > +			}
-> > +		}
-> > +
-> > +		pre_voltage = voltage;
-> > +		pre_vsram = vsram;
-> > +
-> > +		if (--retry_max < 0) {
-> > +			dev_err(dev,
-> > +				"over loop count, failed to set
-> > voltage\n");
-> > +			return -EINVAL;
-> > +		}
-> > +	} while (voltage != new_voltage || vsram != new_vsram);
-> > +
-> > +	return ret;
-> 
-> 'return 0;' would be more explicit. (it looks like 'ret' is always 0
-> if 
-> we arrive here)
-> 
-> 
-> > +}
-> > +
-> > +static int mtk_ccifreq_target(struct device *dev, unsigned long
-> > *freq,
-> > +			      u32 flags)
-> > +{
-> > +	struct mtk_ccifreq_drv *drv = dev_get_drvdata(dev);
-> > +	struct clk *cci_pll = clk_get_parent(drv->cci_clk);
-> > +	struct dev_pm_opp *opp;
-> > +	unsigned long opp_rate;
-> > +	int voltage, pre_voltage, inter_voltage, target_voltage, ret;
-> > +
-> > +	if (!drv)
-> > +		return -EINVAL;
-> > +
-> > +	if (drv->pre_freq == *freq)
-> > +		return 0;
-> > +
-> > +	inter_voltage = drv->inter_voltage;
-> > +
-> > +	opp_rate = *freq;
-> > +	opp = devfreq_recommended_opp(dev, &opp_rate, 1);
-> > +	if (IS_ERR(opp)) {
-> > +		dev_err(dev, "failed to find opp for freq: %ld\n",
-> > opp_rate);
-> > +		return PTR_ERR(opp);
-> > +	}
-> > +
-> > +	mutex_lock(&drv->reg_lock);
-> > +
-> > +	voltage = dev_pm_opp_get_voltage(opp);
-> > +	dev_pm_opp_put(opp);
-> > +
-> > +	pre_voltage = regulator_get_voltage(drv->proc_reg);
-> > +	if (pre_voltage < 0) {
-> > +		dev_err(dev, "invalid vproc value: %d\n", pre_voltage);
-> > +		ret = pre_voltage;
-> > +		goto out_unlock;
-> > +	}
-> > +
-> > +	/* scale up: set voltage first then freq. */
-> > +	target_voltage = max(inter_voltage, voltage);
-> > +	if (pre_voltage <= target_voltage) {
-> > +		ret = mtk_ccifreq_set_voltage(drv, target_voltage);
-> > +		if (ret) {
-> > +			dev_err(dev, "failed to scale up voltage\n");
-> > +			goto out_restore_voltage;
-> > +		}
-> > +	}
-> > +
-> > +	/* switch the cci clock to intermediate clock source. */
-> > +	ret = clk_set_parent(drv->cci_clk, drv->inter_clk);
-> > +	if (ret) {
-> > +		dev_err(dev, "failed to re-parent cci clock\n");
-> > +		goto out_restore_voltage;
-> > +	}
-> > +
-> > +	/* set the original clock to target rate. */
-> > +	ret = clk_set_rate(cci_pll, *freq);
-> > +	if (ret) {
-> > +		dev_err(dev, "failed to set cci pll rate: %d\n", ret);
-> > +		clk_set_parent(drv->cci_clk, cci_pll);
-> > +		goto out_restore_voltage;
-> > +	}
-> > +
-> > +	/* switch the cci clock back to the original clock source. */
-> > +	ret = clk_set_parent(drv->cci_clk, cci_pll);
-> > +	if (ret) {
-> > +		dev_err(dev, "failed to re-parent cci clock\n");
-> > +		mtk_ccifreq_set_voltage(drv, inter_voltage);
-> > +		goto out_unlock;
-> > +	}
-> > +
-> > +	/*
-> > +	 * If the new voltage is lower than the intermediate voltage or
-> > the
-> > +	 * original voltage, scale down to the new voltage.
-> > +	 */
-> > +	if (voltage < inter_voltage || voltage < pre_voltage) {
-> > +		ret = mtk_ccifreq_set_voltage(drv, voltage);
-> > +		if (ret) {
-> > +			dev_err(dev, "failed to scale down voltage\n");
-> > +			goto out_unlock;
-> > +		}
-> > +	}
-> > +
-> > +	drv->pre_freq = *freq;
-> > +	mutex_unlock(&drv->reg_lock);
-> > +
-> > +	return 0;
-> > +
-> > +out_restore_voltage:
-> > +	mtk_ccifreq_set_voltage(drv, pre_voltage);
-> > +
-> > +out_unlock:
-> > +	mutex_unlock(&drv->reg_lock);
-> > +	return ret;
-> > +}
-> > +
-> > +static int mtk_ccifreq_opp_notifier(struct notifier_block *nb,
-> > +				    unsigned long event, void *data)
-> > +{
-> > +	struct dev_pm_opp *opp = data;
-> > +	struct mtk_ccifreq_drv *drv;
-> > +	unsigned long freq, volt;
-> > +
-> > +	drv = container_of(nb, struct mtk_ccifreq_drv, opp_nb);
-> > +
-> > +	if (event == OPP_EVENT_ADJUST_VOLTAGE) {
-> > +		freq = dev_pm_opp_get_freq(opp);
-> > +
-> > +		mutex_lock(&drv->reg_lock);
-> > +		/* current opp item is changed */
-> > +		if (freq == drv->pre_freq) {
-> > +			volt = dev_pm_opp_get_voltage(opp);
-> > +			mtk_ccifreq_set_voltage(drv, volt);
-> > +		}
-> > +		mutex_unlock(&drv->reg_lock);
-> > +	}
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static struct devfreq_dev_profile mtk_ccifreq_profile = {
-> > +	.target = mtk_ccifreq_target,
-> > +};
-> > +
-> > +static int mtk_ccifreq_probe(struct platform_device *pdev)
-> > +{
-> > +	struct device *dev = &pdev->dev;
-> > +	struct mtk_ccifreq_drv *drv;
-> > +	struct devfreq_passive_data *passive_data;
-> > +	struct dev_pm_opp *opp;
-> > +	unsigned long rate, opp_volt;
-> > +	int ret;
-> > +
-> > +	drv = devm_kzalloc(dev, sizeof(*drv), GFP_KERNEL);
-> > +	if (!drv)
-> > +		return -ENOMEM;
-> > +
-> > +	drv->dev = dev;
-> > +	drv->soc_data = (const struct mtk_ccifreq_platform_data *)
-> > +				of_device_get_match_data(&pdev->dev);
-> > +	mutex_init(&drv->reg_lock);
-> > +	platform_set_drvdata(pdev, drv);
-> > +
-> > +	drv->cci_clk = devm_clk_get(dev, "cci");
-> > +	if (IS_ERR(drv->cci_clk)) {
-> > +		ret = PTR_ERR(drv->cci_clk);
-> > +		return dev_err_probe(dev, ret,
-> > +				     "failed to get cci clk: %d\n",
-> > ret);
-> > +	}
-> > +
-> > +	drv->inter_clk = devm_clk_get(dev, "intermediate");
-> > +	if (IS_ERR(drv->inter_clk)) {
-> > +		ret = PTR_ERR(drv->inter_clk);
-> > +		dev_err_probe(dev, ret,
-> > +			      "failed to get intermediate clk: %d\n",
-> > ret);
-> > +		goto out_free_resources;
-> 
-> Could be a direct return, nothing to undo in the error handling path.
-> 
-> > +	}
-> > +
-> > +	drv->proc_reg = devm_regulator_get_optional(dev, "proc");
-> > +	if (IS_ERR(drv->proc_reg)) {
-> > +		ret = PTR_ERR(drv->proc_reg);
-> > +		dev_err_probe(dev, ret,
-> > +			      "failed to get proc regulator: %d\n",
-> > ret);
-> > +		goto out_free_resources;
-> 
-> Could be a direct return, nothing to undo in the error handling path.
-> 
-> > +	}
-> > +
-> > +	ret = regulator_enable(drv->proc_reg);
-> > +	if (ret) {
-> > +		dev_err(dev, "failed to enable proc regulator\n");
-> > +		goto out_free_resources;
-> 
-> Could be a direct return, nothing to undo in the error handling path.
-> 
-> > +	}
-> > +
-> > +	drv->sram_reg = devm_regulator_get_optional(dev, "sram");
-> > +	if (IS_ERR(drv->sram_reg))
-> > +		drv->sram_reg = NULL;
-> > +	else {
-> > +		ret = regulator_enable(drv->sram_reg);
-> > +		if (ret) {
-> > +			dev_err(dev, "failed to enable sram
-> > regulator\n");
-> > +			goto out_free_resources;
-> > +		}
-> > +	}
-> > +
-> > +	/*
-> > +	 * We assume min voltage is 0 and tracking target voltage using
-> > +	 * min_volt_shift for each iteration.
-> > +	 * The retry_max is 3 times of expected iteration count.
-> > +	 */
-> > +	drv->vtrack_max = 3 * DIV_ROUND_UP(max(drv->soc_data-
-> > >sram_max_volt,
-> > +					       drv->soc_data-
-> > >proc_max_volt),
-> > +					   drv->soc_data-
-> > >min_volt_shift);
-> > +
-> > +	ret = clk_prepare_enable(drv->cci_clk);
-> > +	if (ret)
-> > +		goto out_free_resources;
-> > +
-> > +	ret = dev_pm_opp_of_add_table(dev);
-> > +	if (ret) {
-> > +		dev_err(dev, "failed to add opp table: %d\n", ret);
-> > +		goto out_disable_cci_clk;
-> > +	}
-> > +
-> > +	rate = clk_get_rate(drv->inter_clk);
-> > +	opp = dev_pm_opp_find_freq_ceil(dev, &rate);
-> > +	if (IS_ERR(opp)) {
-> > +		ret = PTR_ERR(opp);
-> > +		dev_err(dev, "failed to get intermediate opp: %d\n",
-> > ret);
-> > +		goto out_remove_opp_table;
-> > +	}
-> > +	drv->inter_voltage = dev_pm_opp_get_voltage(opp);
-> > +	dev_pm_opp_put(opp);
-> > +
-> > +	rate = U32_MAX;
-> > +	opp = dev_pm_opp_find_freq_floor(drv->dev, &rate);
-> > +	if (IS_ERR(opp)) {
-> > +		dev_err(dev, "failed to get opp\n");
-> > +		ret = PTR_ERR(opp);
-> > +		goto out_remove_opp_table;
-> > +	}
-> > +
-> > +	opp_volt = dev_pm_opp_get_voltage(opp);
-> > +	dev_pm_opp_put(opp);
-> > +	ret = mtk_ccifreq_set_voltage(drv, opp_volt);
-> > +	if (ret) {
-> > +		dev_err(dev, "failed to scale to highest voltage %lu in
-> > proc_reg\n",
-> > +			opp_volt);
-> > +		goto out_remove_opp_table;
-> > +	}
-> > +
-> > +	passive_data = devm_kzalloc(dev, sizeof(struct
-> > devfreq_passive_data),
-> > +				    GFP_KERNEL);
-> 
-> sizeof(*passive_data) could maybe save 1 LoC.
-> 
-> > +	if (!passive_data) {
-> > +		ret = -ENOMEM;
-> > +		goto out_remove_opp_table;
-> > +	}
-> > +
-> > +	passive_data->parent_type = CPUFREQ_PARENT_DEV;
-> > +	drv->devfreq = devm_devfreq_add_device(dev,
-> > &mtk_ccifreq_profile,
-> > +					       DEVFREQ_GOV_PASSIVE,
-> > +					       passive_data);
-> > +	if (IS_ERR(drv->devfreq)) {
-> > +		ret = -EPROBE_DEFER;
-> > +		dev_err(dev, "failed to add devfreq device: %ld\n",
-> > +			PTR_ERR(drv->devfreq));
-> > +		goto out_remove_opp_table;
-> > +	}
-> > +
-> > +	drv->opp_nb.notifier_call = mtk_ccifreq_opp_notifier;
-> > +	ret = dev_pm_opp_register_notifier(dev, &drv->opp_nb);
-> > +	if (ret) {
-> > +		dev_err(dev, "failed to register opp notifier: %d\n",
-> > ret);
-> > +		goto out_remove_devfreq_device;
-> > +	}
-> > +	return 0;
-> > +
-> > +out_remove_devfreq_device:
-> > +	devm_devfreq_remove_device(dev, drv->devfreq);
-> 
-> Why is this needed? Should'nt devm_devfreq_add_device() already do
-> it?
-> It is also not in the remove function.
-> 
-> CJ
-> 
-> > +
-> > +out_remove_opp_table:
-> > +	dev_pm_opp_of_remove_table(dev);
-> > +
-> > +out_disable_cci_clk:
-> > +	clk_disable_unprepare(drv->cci_clk);
-> > +
-> > +out_free_resources:
-> > +	if (regulator_is_enabled(drv->proc_reg))
-> > +		regulator_disable(drv->proc_reg);
-> > +	if (drv->sram_reg && regulator_is_enabled(drv->sram_reg))
-> > +		regulator_disable(drv->sram_reg);
-> > +
-> > +	return ret;
-> > +}
-> > +
-> > +static int mtk_ccifreq_remove(struct platform_device *pdev)
-> > +{
-> > +	struct device *dev = &pdev->dev;
-> > +	struct mtk_ccifreq_drv *drv;
-> > +
-> > +	drv = platform_get_drvdata(pdev);
-> > +
-> > +	dev_pm_opp_unregister_notifier(dev, &drv->opp_nb);
-> > +	dev_pm_opp_of_remove_table(dev);
-> > +	clk_disable_unprepare(drv->cci_clk);
-> > +	regulator_disable(drv->proc_reg);
-> > +	if (drv->sram_reg)
-> > +		regulator_disable(drv->sram_reg);
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static const struct mtk_ccifreq_platform_data mt8183_platform_data
-> > = {
-> > +	.min_volt_shift = 100000,
-> > +	.max_volt_shift = 200000,
-> > +	.proc_max_volt = 1150000,
-> > +};
-> > +
-> > +static const struct mtk_ccifreq_platform_data mt8186_platform_data
-> > = {
-> > +	.min_volt_shift = 100000,
-> > +	.max_volt_shift = 250000,
-> > +	.proc_max_volt = 1118750,
-> > +	.sram_min_volt = 850000,
-> > +	.sram_max_volt = 1118750,
-> > +};
-> > +
-> > +static const struct of_device_id mtk_ccifreq_machines[] = {
-> > +	{ .compatible = "mediatek,mt8183-cci", .data =
-> > &mt8183_platform_data },
-> > +	{ .compatible = "mediatek,mt8186-cci", .data =
-> > &mt8186_platform_data },
-> > +	{ },
-> > +};
-> > +MODULE_DEVICE_TABLE(of, mtk_ccifreq_machines);
-> > +
-> > +static struct platform_driver mtk_ccifreq_platdrv = {
-> > +	.probe	= mtk_ccifreq_probe,
-> > +	.remove	= mtk_ccifreq_remove,
-> > +	.driver = {
-> > +		.name = "mtk-ccifreq",
-> > +		.of_match_table = mtk_ccifreq_machines,
-> > +	},
-> > +};
-> > +module_platform_driver(mtk_ccifreq_platdrv);
-> > +
-> > +MODULE_DESCRIPTION("MediaTek CCI devfreq driver");
-> > +MODULE_AUTHOR("Jia-Wei Chang <
-> > jia-wei.chang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>");
-> > +MODULE_LICENSE("GPL v2");
-> 
-> 
-Hi CJ,
+From: Paul Burton <paulburton@kernel.org>
 
-Thanks for your suggestion.
-I'll modify them in the next version.
+This patch introduces a couple of utility functions which help later
+patches with introducing support for multi-cluster systems.
 
-BRs,
-Johnson Wang
+ - mips_cps_multicluster_cpus() allows its caller to determine whether
+   the system includes CPUs spread across multiple clusters. This is
+   useful because in some cases behaviour can be more optimal taking
+   this knowledge into account. The means by which we check this is
+   dependent upon the way we probe CPUs & assign their numbers, so
+   keeping this knowledge confined here in arch/mips/ seems appropriate.
+
+ - mips_cps_first_online_in_cluster() allows its caller to determine
+   whether it is running upon the first CPU online within its cluster.
+   This information is useful in cases where some cluster-wide
+   configuration may need to occur, but should not be repeated if
+   another CPU in the cluster is already online. Similarly to the above
+   this is determined based upon knowledge of CPU numbering so it makes
+   sense to keep that knowledge in arch/mips/. The function is defined
+   in mips-cm.c rather than in asm/mips-cps.h in order to allow us to
+   use asm/cpu-info.h & linux/smp.h without encountering an include
+   nightmare.
+
+Signed-off-by: Paul Burton <paulburton@kernel.org>
+Signed-off-by: Chao-ying Fu <cfu@wavecomp.com>
+Signed-off-by: Dragan Mladjenovic <dragan.mladjenovic@syrmia.com>
+
+diff --git a/arch/mips/include/asm/mips-cps.h b/arch/mips/include/asm/mips-cps.h
+index c077e8d100f5..fa71cf3a25d7 100644
+--- a/arch/mips/include/asm/mips-cps.h
++++ b/arch/mips/include/asm/mips-cps.h
+@@ -228,4 +228,42 @@ static inline unsigned int mips_cps_numvps(unsigned int cluster, unsigned int co
+ 	return FIELD_GET(CM_GCR_Cx_CONFIG_PVPE, cfg + 1);
+ }
+ 
++/**
++ * mips_cps_multicluster_cpus() - Detect whether CPUs are in multiple clusters
++ *
++ * Determine whether the system includes CPUs in multiple clusters - ie.
++ * whether we can treat the system as single or multi-cluster as far as CPUs
++ * are concerned. Note that this is slightly different to simply checking
++ * whether multiple clusters are present - it is possible for there to be
++ * clusters which contain no CPUs, which this function will effectively ignore.
++ *
++ * Returns true if CPUs are spread across multiple clusters, else false.
++ */
++static inline bool mips_cps_multicluster_cpus(void)
++{
++	unsigned int first_cl, last_cl;
++
++	/*
++	 * CPUs are numbered sequentially by cluster - ie. CPUs 0..X will be in
++	 * cluster 0, CPUs X+1..Y in cluster 1, CPUs Y+1..Z in cluster 2 etc.
++	 *
++	 * Thus we can detect multiple clusters trivially by checking whether
++	 * the first & last CPUs belong to the same cluster.
++	 */
++	first_cl = cpu_cluster(&boot_cpu_data);
++	last_cl = cpu_cluster(&cpu_data[nr_cpu_ids - 1]);
++	return first_cl != last_cl;
++}
++
++/**
++ * mips_cps_first_online_in_cluster() - Detect if CPU is first online in cluster
++ *
++ * Determine whether the local CPU is the first to be brought online in its
++ * cluster - that is, whether there are any other online CPUs in the local
++ * cluster.
++ *
++ * Returns true if this CPU is first online, else false.
++ */
++extern unsigned int mips_cps_first_online_in_cluster(void);
++
+ #endif /* __MIPS_ASM_MIPS_CPS_H__ */
+diff --git a/arch/mips/kernel/mips-cm.c b/arch/mips/kernel/mips-cm.c
+index b4f7d950c846..5b843c2ff077 100644
+--- a/arch/mips/kernel/mips-cm.c
++++ b/arch/mips/kernel/mips-cm.c
+@@ -513,3 +513,40 @@ void mips_cm_error_report(void)
+ 	/* reprime cause register */
+ 	write_gcr_error_cause(cm_error);
+ }
++
++unsigned int mips_cps_first_online_in_cluster(void)
++{
++	unsigned int local_cl;
++	int i;
++
++	local_cl = cpu_cluster(&current_cpu_data);
++
++	/*
++	 * We rely upon knowledge that CPUs are numbered sequentially by
++	 * cluster - ie. CPUs 0..X will be in cluster 0, CPUs X+1..Y in cluster
++	 * 1, CPUs Y+1..Z in cluster 2 etc. This means that CPUs in the same
++	 * cluster will immediately precede or follow one another.
++	 *
++	 * First we scan backwards, until we find an online CPU in the cluster
++	 * or we move on to another cluster.
++	 */
++	for (i = smp_processor_id() - 1; i >= 0; i--) {
++		if (cpu_cluster(&cpu_data[i]) != local_cl)
++			break;
++		if (!cpu_online(i))
++			continue;
++		return false;
++	}
++
++	/* Then do the same for higher numbered CPUs */
++	for (i = smp_processor_id() + 1; i < nr_cpu_ids; i++) {
++		if (cpu_cluster(&cpu_data[i]) != local_cl)
++			break;
++		if (!cpu_online(i))
++			continue;
++		return false;
++	}
++
++	/* We found no online CPUs in the local cluster */
++	return true;
++}
+-- 
+2.17.1
 
