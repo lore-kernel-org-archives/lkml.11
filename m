@@ -2,100 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5476C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 14:59:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04CB1C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 14:59:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235729AbiEYO7T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 10:59:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36550 "EHLO
+        id S245039AbiEYO71 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 10:59:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242610AbiEYO7B (ORCPT
+        with ESMTP id S244934AbiEYO6a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 10:59:01 -0400
-Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64CA5AF1C7;
-        Wed, 25 May 2022 07:58:59 -0700 (PDT)
-Received: (Authenticated sender: foss@0leil.net)
-        by mail.gandi.net (Postfix) with ESMTPSA id 2660F1BF216;
-        Wed, 25 May 2022 14:58:54 +0000 (UTC)
-From:   Quentin Schulz <foss+kernel@0leil.net>
-Cc:     shawnx.tu@intel.com, mchehab@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-media@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        foss+kernel@0leil.net,
-        Quentin Schulz <quentin.schulz@theobroma-systems.com>,
-        Jacopo Mondi <jacopo@jmondi.org>
-Subject: [PATCH v5 3/4] media: i2c: ov5675: parse and register V4L2 device tree properties
-Date:   Wed, 25 May 2022 16:58:32 +0200
-Message-Id: <20220525145833.1165437-3-foss+kernel@0leil.net>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220525145833.1165437-1-foss+kernel@0leil.net>
-References: <20220525145833.1165437-1-foss+kernel@0leil.net>
+        Wed, 25 May 2022 10:58:30 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D23AAF1ED
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 07:58:23 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: alyssa)
+        with ESMTPSA id 6D1E11F450F4
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1653490702;
+        bh=iIq4Z4OE65fY1MUJxJmt36vci/mo0TrqzqbRmhmVVVQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ALVw3IlJ0zZ35sYa98XF05tNlJeyYalTzDhzbUAQ+yPCPe5EpdyligBS3ytbL5P2X
+         ESgtBI6h821tZqo54pybiiWG7A6cFyHdgLOWrd9UmcT4ZDkv5KVg0qJ58FEXWKJVr2
+         m2lXcGK++3Z5qX1eJ8WG6MMVDk6/Xm9UB+dyw7u4/zsrjlE3X2c7VqfGON92hnXtTs
+         r0YYA62UPBZuDI3wrHNbQ5FUzkEtlily8FMHfNgKG4FrNyEIkykhig7v0EkcmALZNh
+         bx3R8osuxeZYDkcBSReCZLDPWM+hDCTiHYkhfPSTl+QoAyjZh6x3DfWDd3MwYEhC1s
+         XeHBXPsth+t6w==
+From:   Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>
+To:     dri-devel@lists.freedesktop.org
+Cc:     Rob Herring <robh@kernel.org>,
+        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+        Steven Price <steven.price@arm.com>,
+        Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        =?UTF-8?q?N=C3=ADcolas=20F=20=2E=20R=20=2E=20A=20=2E=20Prado?= 
+        <nfraprado@collabora.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 6/9] drm/panfrost: Add "clean only safe" feature bit
+Date:   Wed, 25 May 2022 10:57:51 -0400
+Message-Id: <20220525145754.25866-7-alyssa.rosenzweig@collabora.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220525145754.25866-1-alyssa.rosenzweig@collabora.com>
+References: <20220525145754.25866-1-alyssa.rosenzweig@collabora.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Quentin Schulz <quentin.schulz@theobroma-systems.com>
+Add the HW_FEATURE_CLEAN_ONLY_SAFE bit based on kbase. When I actually
+tried to port the logic from kbase, trivial jobs raised Data Invalid
+Faults, so this may depend on other coherency details. It's still useful
+to have the bit to record the feature bit when adding new models.
 
-Parse V4L2 device tree properties and register controls for them.
-
-Reviewed-by: Jacopo Mondi <jacopo@jmondi.org>
-Signed-off-by: Quentin Schulz <quentin.schulz@theobroma-systems.com>
+Signed-off-by: Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>
+Reviewed-by: Steven Price <steven.price@arm.com>
 ---
+ drivers/gpu/drm/panfrost/panfrost_features.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-v3:
- - reverse-xmas-tree-ordered in ov5675_init_controls,
-
- drivers/media/i2c/ov5675.c | 18 +++++++++++++++++-
- 1 file changed, 17 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/media/i2c/ov5675.c b/drivers/media/i2c/ov5675.c
-index ea801edb8e408..c1f3c387afde0 100644
---- a/drivers/media/i2c/ov5675.c
-+++ b/drivers/media/i2c/ov5675.c
-@@ -779,12 +779,14 @@ static const struct v4l2_ctrl_ops ov5675_ctrl_ops = {
+diff --git a/drivers/gpu/drm/panfrost/panfrost_features.h b/drivers/gpu/drm/panfrost/panfrost_features.h
+index 36fadcf9634e..1a8bdebc86a3 100644
+--- a/drivers/gpu/drm/panfrost/panfrost_features.h
++++ b/drivers/gpu/drm/panfrost/panfrost_features.h
+@@ -21,6 +21,7 @@ enum panfrost_hw_feature {
+ 	HW_FEATURE_TLS_HASHING,
+ 	HW_FEATURE_THREAD_GROUP_SPLIT,
+ 	HW_FEATURE_IDVS_GROUP_SIZE,
++	HW_FEATURE_CLEAN_ONLY_SAFE,
+ 	HW_FEATURE_3BIT_EXT_RW_L2_MMU_CONFIG,
+ };
  
- static int ov5675_init_controls(struct ov5675 *ov5675)
- {
-+	struct i2c_client *client = v4l2_get_subdevdata(&ov5675->sd);
-+	struct v4l2_fwnode_device_properties props;
- 	struct v4l2_ctrl_handler *ctrl_hdlr;
- 	s64 exposure_max, h_blank;
- 	int ret;
- 
- 	ctrl_hdlr = &ov5675->ctrl_handler;
--	ret = v4l2_ctrl_handler_init(ctrl_hdlr, 8);
-+	ret = v4l2_ctrl_handler_init(ctrl_hdlr, 10);
- 	if (ret)
- 		return ret;
- 
-@@ -838,9 +840,23 @@ static int ov5675_init_controls(struct ov5675 *ov5675)
- 	if (ctrl_hdlr->error)
- 		return ctrl_hdlr->error;
- 
-+	ret = v4l2_fwnode_device_parse(&client->dev, &props);
-+	if (ret)
-+		goto error;
-+
-+	ret = v4l2_ctrl_new_fwnode_properties(ctrl_hdlr, &ov5675_ctrl_ops,
-+					      &props);
-+	if (ret)
-+		goto error;
-+
- 	ov5675->sd.ctrl_handler = ctrl_hdlr;
- 
- 	return 0;
-+
-+error:
-+	v4l2_ctrl_handler_free(ctrl_hdlr);
-+
-+	return ret;
- }
- 
- static void ov5675_update_pad_format(const struct ov5675_mode *mode,
 -- 
-2.36.1
+2.35.1
 
