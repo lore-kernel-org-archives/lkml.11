@@ -2,147 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2E2AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 16:40:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E871AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 16:44:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241537AbiEYQkf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 12:40:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48700 "EHLO
+        id S245076AbiEYQoJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 12:44:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231173AbiEYQk3 (ORCPT
+        with ESMTP id S233939AbiEYQoA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 12:40:29 -0400
-Received: from mx1.riseup.net (mx1.riseup.net [198.252.153.129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8143656434;
-        Wed, 25 May 2022 09:40:28 -0700 (PDT)
-Received: from fews1.riseup.net (fews1-pn.riseup.net [10.0.1.83])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256
-         client-signature RSA-PSS (2048 bits) client-digest SHA256)
-        (Client CN "mail.riseup.net", Issuer "R3" (not verified))
-        by mx1.riseup.net (Postfix) with ESMTPS id 4L7cHv6WRZzDq99;
-        Wed, 25 May 2022 09:40:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=riseup.net; s=squak;
-        t=1653496828; bh=wu6xEaXOL0trEsdjhmzYXfb4lvQfG+o2d5deXcMtdk4=;
-        h=From:To:Cc:Subject:Date:From;
-        b=hHFroYoT8tqG8q/7QwK5LNT5bE59m2cUsjw3LMOiFDammb5yNZYOLA4OkGKhOqUZg
-         kxbSKTAlaw9e0okNCotspDQ0qXphieOq17JXAPbof91qedu76oVSW2omplUqOelaEZ
-         MI5vwN3STBmVUm5rQOWWtfpJzIDI0sQWIreC0dRc=
-X-Riseup-User-ID: 5B2B0250F4591D8626F9B624C116C1ECA5390A76FCD21044D81EAEB0BB4E6A36
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-         by fews1.riseup.net (Postfix) with ESMTPSA id 4L7cHr1PN4z5vXK;
-        Wed, 25 May 2022 09:40:23 -0700 (PDT)
-From:   Nia Espera <a5b6@riseup.net>
-To:     Alim Akhtar <alim.akhtar@samsung.com>,
-        Avri Altman <avri.altman@wdc.com>,
-        "James E . J . Bottomley" <jejb@linux.ibm.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Nia Espera <a5b6@riseup.net>
-Subject: [RESEND PATCH] scsi: ufs: sysfs: support writing boot_lun attr
-Date:   Wed, 25 May 2022 19:40:13 +0300
-Message-Id: <20220525164013.93748-1-a5b6@riseup.net>
+        Wed, 25 May 2022 12:44:00 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B2E2F5B0;
+        Wed, 25 May 2022 09:43:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=vQwYgNKDRgS2qpTyQs3mbz3qErcGxI+LPqEWaO92rGE=; b=n2pZBM60IWPdwz6eOBvZDj4IzM
+        2G/vH6A7fion2Y2H0CO8QiYZwTa4ZkjQWoymkrecPQTBZoulZ4zRXE2jD24dmQMx5O5FULR7Fy/I5
+        QNBJ568Bxr3tVC2KYMGczArz7q+0Bej5Yg3h0mZ9/n+D7EKdErCWF7yZwT6RMCz/Y5l6/+qvk1bkF
+        YkXhLAsIPoqUHWYP7aQONL1yzYWuDD/VBgkLqg6UBy/GCGZQkZuiqfl+o8FSPQ9eFwfBKc+HqUK8D
+        v5+SVGfDyoOp1QJYL8KhwJZpZyiMAHSK5L9chqo55Otl6Iu23Ri9goRXZ7Sz0jk4gMdMqIIUCmQpy
+        WP+WtZ8g==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1ntu6v-00Bsgf-HW; Wed, 25 May 2022 16:43:49 +0000
+Date:   Wed, 25 May 2022 09:43:49 -0700
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Richard Fontana <fontana@sharpeleven.org>
+Cc:     tj@kernel.org, gregkh@linuxfoundation.org,
+        akpm@linux-foundation.org, jeyu@kernel.org, shuah@kernel.org,
+        bvanassche@acm.org, dan.j.williams@intel.com, joe@perches.com,
+        keescook@chromium.org, rostedt@goodmis.org, minchan@kernel.org,
+        linux-spdx@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Goldwyn Rodrigues <rgoldwyn@suse.com>,
+        Kuno Woudt <kuno@frob.nl>,
+        copyleft-next@lists.fedorahosted.org,
+        Ciaran Farrell <Ciaran.Farrell@suse.com>,
+        Christopher De Nicolo <Christopher.DeNicolo@suse.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Thorsten Leemhuis <linux@leemhuis.info>
+Subject: Re: [PATCH v9 1/6] LICENSES: Add the copyleft-next-0.3.1 license
+Message-ID: <Yo5cxWghV/v2Fnzf@bombadil.infradead.org>
+References: <20211029184500.2821444-1-mcgrof@kernel.org>
+ <20211029184500.2821444-2-mcgrof@kernel.org>
+ <87bkvo0wjd.ffs@tglx>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87bkvo0wjd.ffs@tglx>
+Sender: Luis Chamberlain <mcgrof@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Expands sysfs boot_lun attribute to be writable. Necessary to enable
-proper support for LUN switching on some UFS devices.
+On Mon, May 23, 2022 at 11:27:34PM +0200, Thomas Gleixner wrote:
+> On Fri, Oct 29 2021 at 11:44, Luis Chamberlain wrote:
+> > +    "FSF-Free" means classified as 'free' by the Free Software Foundation.
+> > +
+> > +    "OSI-Approved" means approved as 'Open Source' by the Open Source
+> > +    Initiative.
+> 
+> copyleft-next is neither nor. Confused...
 
-Signed-off-by: Nia Espera <a5b6@riseup.net>
----
- drivers/scsi/ufs/ufs-sysfs.c | 67 +++++++++++++++++++++++++++++++++++-
- 1 file changed, 66 insertions(+), 1 deletion(-)
+The terms are used in two clauses:
 
-diff --git a/drivers/scsi/ufs/ufs-sysfs.c b/drivers/scsi/ufs/ufs-sysfs.c
-index 5c405ff7b6ea..7bf5d6c3d0ec 100644
---- a/drivers/scsi/ufs/ufs-sysfs.c
-+++ b/drivers/scsi/ufs/ufs-sysfs.c
-@@ -1047,6 +1047,71 @@ static inline bool ufshcd_is_wb_attrs(enum attr_idn idn)
- 		idn <= QUERY_ATTR_IDN_CURR_WB_BUFF_SIZE;
- }
- 
-+static ssize_t boot_lun_enabled_show(struct device *dev,
-+				     struct device_attribute *attr, char *buf)
-+{
-+	struct ufs_hba *hba = dev_get_drvdata(dev);
-+	u32 slot;
-+	int ret;
-+	u8 index = 0;
-+
-+	down(&hba->host_sem);
-+	if (!ufshcd_is_user_access_allowed(hba)) {
-+		up(&hba->host_sem);
-+		return -EBUSY;
-+	}
-+	if (ufshcd_is_wb_attrs(QUERY_ATTR_IDN_BOOT_LU_EN))
-+		index = ufshcd_wb_get_query_index(hba);
-+	ufshcd_rpm_get_sync(hba);
-+
-+	ret = ufshcd_query_attr(hba, UPIU_QUERY_OPCODE_READ_ATTR,
-+		QUERY_ATTR_IDN_BOOT_LU_EN, index, 0, &slot);
-+
-+	ufshcd_rpm_put_sync(hba);
-+	if (ret) {
-+		ret = -EINVAL;
-+		goto out;
-+	}
-+
-+	ret = sysfs_emit(buf, "0x%08X\n", slot);
-+out:
-+	up(&hba->host_sem);
-+	return ret;
-+}
-+
-+static ssize_t boot_lun_enabled_store(struct device *dev,
-+				      struct device_attribute *attr,
-+				      const char *buf, size_t count)
-+{
-+	struct ufs_hba *hba = dev_get_drvdata(dev);
-+	u32 slot;
-+	int ret;
-+	u8 index = 0;
-+
-+	if (kstrtouint(buf, 0, &slot) < 0)
-+		return -EINVAL;
-+
-+	down(&hba->host_sem);
-+	if (!ufshcd_is_user_access_allowed(hba)) {
-+		up(&hba->host_sem);
-+		return -EBUSY;
-+	}
-+	if (ufshcd_is_wb_attrs(QUERY_ATTR_IDN_BOOT_LU_EN))
-+		index = ufshcd_wb_get_query_index(hba);
-+	ufshcd_rpm_get_sync(hba);
-+
-+	ret = ufshcd_query_attr_retry(hba, UPIU_QUERY_OPCODE_WRITE_ATTR,
-+				      QUERY_ATTR_IDN_BOOT_LU_EN, index, 0, &slot);
-+	ufshcd_rpm_put_sync(hba);
-+	if (ret) {
-+		ret = -EINVAL;
-+		goto out;
-+	}
-+out:
-+	up(&hba->host_sem);
-+	return ret ? ret : count;
-+}
-+
- #define UFS_ATTRIBUTE(_name, _uname)					\
- static ssize_t _name##_show(struct device *dev,				\
- 	struct device_attribute *attr, char *buf)			\
-@@ -1077,8 +1142,8 @@ out:									\
- 	return ret;							\
- }									\
- static DEVICE_ATTR_RO(_name)
-+static DEVICE_ATTR_RW(boot_lun_enabled);
- 
--UFS_ATTRIBUTE(boot_lun_enabled, _BOOT_LU_EN);
- UFS_ATTRIBUTE(max_data_size_hpb_single_cmd, _MAX_HPB_SINGLE_CMD);
- UFS_ATTRIBUTE(current_power_mode, _POWER_MODE);
- UFS_ATTRIBUTE(active_icc_level, _ACTIVE_ICC_LVL);
--- 
-2.36.1
+4. Condition Against Further Restrictions; Inbound License Compatibility
+7. Nullification of Copyleft/Proprietary Dual Licensing
 
+IANAL but at least as per my reading, in both cases it is used to refer to
+"other licenses", not itself, so I see no issue with that use. If there
+is an issue it would be nice to hear more details about it, so that
+perhaps new versions of the license can make this clearer somehow, if
+not already.
+
+  Luis
