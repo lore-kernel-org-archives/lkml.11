@@ -2,80 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF15CC43217
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 13:05:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7AFBC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 13:08:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243783AbiEYNFR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 09:05:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44064 "EHLO
+        id S243826AbiEYNIi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 09:08:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243902AbiEYNFF (ORCPT
+        with ESMTP id S229843AbiEYNIg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 09:05:05 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A46142E9D5;
-        Wed, 25 May 2022 06:05:03 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id 098BF1F44E8C
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1653483902;
-        bh=gViAEDYmrng0CSzEk780jnUimbEF/5qLDHyneG+N2y0=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=l1YD1DbCcvxx0b2C9BAQPdR3sMaZT6pjm6m0/b9f9Z53w11xMF/QGKDJdQu4/dO+8
-         Ddj4Wvok1u9FMBprtouSjtEb1qRwZo3tKrnTgJ9ZJG6+bbPtQsrmOnyRs61TuCcFtA
-         JPe3ei96GsuPKoIr9igulzhrqsJCh9+Ie3I5+qTVA8As9U+HjdJpPmu3KPGfmyuFxC
-         NtVRDyRnENOxfwqvpxkopl+p4LDlvsUaQHCnSSsp0iR0FHweY9ZaqME94NXDUQidC8
-         jnUp6b2Wankw5/iPlTSEleo90ERD5EpGQpw0pKy2k2TtVBUyYcdsgidMzBiqLRS6No
-         4OJr/vKoGaM/Q==
-Message-ID: <5cc99fd7-1401-511d-37c3-77f18b08e597@collabora.com>
-Date:   Wed, 25 May 2022 15:04:59 +0200
+        Wed, 25 May 2022 09:08:36 -0400
+Received: from gofer.mess.org (gofer.mess.org [88.97.38.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78B994BB97;
+        Wed, 25 May 2022 06:08:31 -0700 (PDT)
+Received: by gofer.mess.org (Postfix, from userid 1000)
+        id 86AD8101CCD; Wed, 25 May 2022 14:08:30 +0100 (BST)
+Date:   Wed, 25 May 2022 14:08:30 +0100
+From:   Sean Young <sean@mess.org>
+To:     Jiri Slaby <jirislaby@kernel.org>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: [PATCH] media: lirc: revert removal of unused feature flags
+Message-ID: <Yo4qTnYYT+55vlQ9@gofer.mess.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH v10 19/21] drm/mediatek: Add mt8195 External DisplayPort
- support
-Content-Language: en-US
-To:     Guillaume Ranquet <granquet@baylibre.com>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Chunfeng Yun <chunfeng.yun@mediatek.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>, Helge Deller <deller@gmx.de>,
-        CK Hu <ck.hu@mediatek.com>, Jitao shi <jitao.shi@mediatek.com>
-Cc:     dri-devel@lists.freedesktop.org,
-        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-phy@lists.infradead.org, linux-fbdev@vger.kernel.org
-References: <20220523104758.29531-1-granquet@baylibre.com>
- <20220523104758.29531-20-granquet@baylibre.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220523104758.29531-20-granquet@baylibre.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 23/05/22 12:47, Guillaume Ranquet ha scritto:
-> This patch adds External DisplayPort support to the mt8195 eDP driver.
-> 
-> Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
-> ---
->   drivers/gpu/drm/mediatek/mtk_dp.c | 104 +++++++++++++++++++++++-------
->   1 file changed, 81 insertions(+), 23 deletions(-)
-> 
+commit b2a90f4fcb14 ("media: lirc: remove unused lirc features") removed
+feature flags which were never implemented, but they are still used by
+the lirc daemon went built from source.
 
-Your patch [18/21], contained in this series, introduces mtk_dp.c.
-This patch [19/21] cannot be applied cleanly on top of 18/21.
+Reinstate these symbols in order not to break the lirc build.
 
-What happened here?!?
+Cc: Jiri Slaby <jirislaby@kernel.org>
+Link: https://lkml.org/lkml/2022/5/25/58
+Fixes: b2a90f4fcb14 ("media: lirc: remove unused lirc features")
+Signed-off-by: Sean Young <sean@mess.org>
+---
+ include/uapi/linux/lirc.h | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/include/uapi/linux/lirc.h b/include/uapi/linux/lirc.h
+index 23b0f2c8ba81..8d7ca7c6af42 100644
+--- a/include/uapi/linux/lirc.h
++++ b/include/uapi/linux/lirc.h
+@@ -84,6 +84,13 @@
+ #define LIRC_CAN_SEND(x) ((x)&LIRC_CAN_SEND_MASK)
+ #define LIRC_CAN_REC(x) ((x)&LIRC_CAN_REC_MASK)
+ 
++/*
++ * Unused features. These features were never implemented, in tree or
++ * out of tree. These definitions are here so not to break the lircd build.
++ */
++#define LIRC_CAN_SET_REC_FILTER		0
++#define LIRC_CAN_NOTIFY_DECODE		0
++
+ /*** IOCTL commands for lirc driver ***/
+ 
+ #define LIRC_GET_FEATURES              _IOR('i', 0x00000000, __u32)
+-- 
+2.36.1
+
