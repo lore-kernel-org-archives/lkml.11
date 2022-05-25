@@ -2,119 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52F3EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 16:05:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB87CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 16:05:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245363AbiEYQFb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 12:05:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57844 "EHLO
+        id S233745AbiEYQFe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 12:05:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245374AbiEYQFP (ORCPT
+        with ESMTP id S245187AbiEYQF1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 12:05:15 -0400
-Received: from mail-il1-x12c.google.com (mail-il1-x12c.google.com [IPv6:2607:f8b0:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E2B5B41D7
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 09:05:14 -0700 (PDT)
-Received: by mail-il1-x12c.google.com with SMTP id j6so738359ilk.11
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 09:05:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=WniLzB5SiRVqHzMZUCEbBv/kb3dmETbEX6p4Sn4Jrug=;
-        b=cTa6aTwIXDVE5TRe6Qutp+ruroH5hAjEPMipG9ObxavNkGtrvXeGz3CHRE0RiRNypT
-         g5bcFQj1rQo7GETNNu6Oi+qLi3ZhffzsRFLW51cfiG2dJ9Zwf/ywTwzXPQuirzfi0+tP
-         Oq2G6ZHlT7xd/IIPTAuUhY62o7d70tqnsEvDY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=WniLzB5SiRVqHzMZUCEbBv/kb3dmETbEX6p4Sn4Jrug=;
-        b=HHuqotxHEacvX8ZMBVNZauQnrdfKI6PuJB6Jmintg+RZZkJarVbCPcrIHQHkju99Zx
-         gvAQu3FMmUC5PQBQGbtiJQzXMfSy0oQ7pyIo+epacCz278eSxQmjnqMlTO/GQr0YijHM
-         ZxNA6ykvHXLQdQojCcwWF7jvSMp29dlFB1SDxAvzvPjNLYJVfeEjDq/N2wKiaetjSLOM
-         ZrBpBWeuC2pc7arXMJ0VvKOWjLm0pqnDQ9vyrERw/caE54us6DJ/GTdmWCdPLqlAllBi
-         ixOdHseJ2WBZwSwAc8F/NHIMbTog6WfyYm9Em2zBRENpmFXZ87i+kWcSzJHjVdmfEbwg
-         esDA==
-X-Gm-Message-State: AOAM530UzaPNkVBaZVhka793Az+Sf7VYDYbuimkn040KxnKnGE13IsZB
-        5hEZJ9E43huXPSCFMzGJ03Aepw==
-X-Google-Smtp-Source: ABdhPJxPVFqJ+rxPJ/rSNc6KMtA5495jM0Ok6y/rfEw/mHFvhZlHY7xyDacOZBhSkKetr3O3vJ5dcA==
-X-Received: by 2002:a92:ca0d:0:b0:2d1:aa92:4da6 with SMTP id j13-20020a92ca0d000000b002d1aa924da6mr8792361ils.107.1653494713626;
-        Wed, 25 May 2022 09:05:13 -0700 (PDT)
-Received: from [192.168.1.128] ([38.15.45.1])
-        by smtp.gmail.com with ESMTPSA id c17-20020a023b11000000b0032e6f0d3796sm4209055jaa.145.2022.05.25.09.05.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 25 May 2022 09:05:13 -0700 (PDT)
-Subject: Re: [PATCH V7 2/4] cpufreq: amd-pstate: Add test module for
- amd-pstate driver
-To:     Meng Li <li.meng@amd.com>, Huang Rui <ray.huang@amd.com>,
-        linux-pm@vger.kernel.org
-Cc:     "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
-        Nathan Fontenot <nathan.fontenot@amd.com>,
-        Deepak Sharma <deepak.sharma@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Mario Limonciello <mario.limonciello@amd.com>,
-        Jinzhou Su <Jinzhou.Su@amd.com>,
-        Perry Yuan <Perry.Yuan@amd.com>,
-        Xiaojian Du <Xiaojian.Du@amd.com>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Borislav Petkov <bp@alien8.de>, linux-kernel@vger.kernel.org,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20220522115423.1147282-1-li.meng@amd.com>
- <20220522115423.1147282-3-li.meng@amd.com>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <6e3cdf37-299a-98df-1143-c3392e9acec0@linuxfoundation.org>
-Date:   Wed, 25 May 2022 10:05:12 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        Wed, 25 May 2022 12:05:27 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51C89B41E8
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 09:05:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653494720; x=1685030720;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=XacTBAWaGoPSK7ToURQLq4UISvcQ3WYB1UZRddunuSM=;
+  b=AGxnkzonfLJAU+CIrFvGwbUP3RAYg7dwVMFGPqKK03YqyGIsDqf7Oy6U
+   VWmTDkE3pSe9vrWvp9ZNymYau1twFXyRhLsdnKxTC7N4Xg3z1HIxnBRrp
+   Tyc9uInhabfKCQ7Ppqr7dnVxDV4Tw3jS4hDofhqIonesrmaQvd/yEz45X
+   b4fhdNeleaCGykli8vB66iGZaQjI+TWoeoi1M3P2tNWTlnh3Zu7jPbG/L
+   Nt+CEOdolg4SmVgrsRVwYUBggsAGxwe0C6Zc5NjV1R2pKI/1DDp+7PFGf
+   W+G5UAsPIuymYKkP/I0mU77DMoEKbPLRZhNxGP5JTgPBX2gvubb2JgD7G
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10358"; a="273854939"
+X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
+   d="scan'208";a="273854939"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2022 09:02:51 -0700
+X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
+   d="scan'208";a="717812096"
+Received: from hdovel-mobl2.amr.corp.intel.com (HELO [10.212.167.109]) ([10.212.167.109])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2022 09:02:50 -0700
+Message-ID: <89f55141-a71c-1fd8-e1be-96355c63c03a@intel.com>
+Date:   Wed, 25 May 2022 09:02:48 -0700
 MIME-Version: 1.0
-In-Reply-To: <20220522115423.1147282-3-li.meng@amd.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCHv3 2/3] x86/tdx: Clarify RIP adjustments in #VE handler
 Content-Language: en-US
+To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        luto@kernel.org, peterz@infradead.org
+Cc:     ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
+        hpa@zytor.com, linux-kernel@vger.kernel.org,
+        sathyanarayanan.kuppuswamy@linux.intel.com, seanjc@google.com,
+        thomas.lendacky@amd.com, x86@kernel.org
+References: <20220524221012.62332-1-kirill.shutemov@linux.intel.com>
+ <20220524221012.62332-3-kirill.shutemov@linux.intel.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <20220524221012.62332-3-kirill.shutemov@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/22/22 5:54 AM, Meng Li wrote:
-> Add amd-pstate-ut module, which is conceptually out-of-tree module
-
-I didn't notice this before. Let's get rid of "out-of-tree" workding.
-
-> and provides ways for selftests/amd-pstate driver to test various
-> kernel module-related functionality. This module will be expected by
-> some of selftests to be present and loaded.
-> 
-
-What does "various kernel module-related functionality" mean. Can we
-rephrase this to say "this module is used by kselftest to unit test
-amd-pstate functionality" ?
-
-> Signed-off-by: Meng Li <li.meng@amd.com>
-> Acked-by: Huang Rui <ray.huang@amd.com>
-> ---
-
-[snip]
-
+On 5/24/22 15:10, Kirill A. Shutemov wrote:
+> +static int ve_instr_len(struct ve_info *ve)
+> +{
+> +	/*
+> +	 * If the #VE happened due to instruction execution, GET_VEINFO
+> +	 * provides info on the instruction.
+> +	 *
+> +	 * For #VE due to EPT violation, info provided by GET_VEINFO not usable
+> +	 * and kernel has to decode instruction manually to find out its
+> +	 * length. Catch such cases.
+> +	 */
+> +	if (WARN_ON_ONCE(ve->exit_reason == EXIT_REASON_EPT_VIOLATION))
+> +		return 0;
 > +
-> +module_init(amd_pstate_ut_init);
-> +module_exit(amd_pstate_ut_exit);
-> +
-> +MODULE_AUTHOR("Meng Li <li.meng@amd.com>");
-> +MODULE_DESCRIPTION("Kselftest for AMD P-state driver");
+> +	return ve->instr_len;
+> +}
 
-Change this to "AMD P-state driver Test module"
+I'm not super happy with how this comment ended up.  First, let's put
+the comment next to the code to which it applies, like:
 
-Having Kselftest in the name is confusing. It is a test driver
-that kselftest amd_pstate_test depends on.
+	/*
+	 * ve->instr_len is not defined for EPT violations.  For those,
+	 * the kernel must decode instructions manually and should not
+	 * be using this function.
+	 */
+	if (WARN_ON_ONCE(ve->exit_reason == EXIT_REASON_EPT_VIOLATION))
+		return 0;
 
-> +MODULE_LICENSE("GPL");
-> 
+	/*
+	 * Assume that the #VE occurred due to instruction execution.
+	 */
+	return ve->instr_len;
 
-With these above changes:
+Second, there also needs to be *something* here to link this back to the
+TDX module spec and the VMCS documentation.  To make actual sense of
+this, you need to tie together something like three or four pieces of
+disparate information scattered across two massive documents.
 
-Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
-
-thanks,
--- Shuah
+Intel really made this quite the scavenger hunt.  Time to atone for the
+sins of your colleagues by tying all of those things together in one place.
