@@ -2,95 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EEE7C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 15:12:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7E5AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 15:12:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245101AbiEYPMT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 11:12:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47850 "EHLO
+        id S245108AbiEYPM1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 11:12:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245045AbiEYPLv (ORCPT
+        with ESMTP id S245075AbiEYPLu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 11:11:51 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 828B8B0D17
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 08:11:43 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id x2-20020a17090a1f8200b001e07a64c461so1912517pja.4
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 08:11:43 -0700 (PDT)
+        Wed, 25 May 2022 11:11:50 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8085FB0D04
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 08:11:41 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id cs3-20020a17090af50300b001e0808b5838so4425040pjb.1
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 08:11:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=JyixjUdddf6I90XP9MdFK6+higCWyl5KeV+gVWtp6WU=;
-        b=f20Va32dKRJKc/hg0L61Ym/jpgUK0f5vPl1fJoIrhHp4ZYZ651lh4oqGY4DK+jeg4J
-         j/5F1rr/CFGPSwCgQSnzLJcizT05k7U/pFvaGcJ5lkhZrGqDWv9IscCatZuGe25yR9q2
-         gcabwG6JEe6AnZbUxaBC1uMGDPQd6VHlNYBrs=
+        d=ventanamicro.com; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=qOKTXeNWDM3OWSCFHqvRVjau9Hc7oDvh7tjC+k8jq/o=;
+        b=UBPZWH+TATz2VkNVjv3l2uIGgs0f1hNmfKu7UsCQSpxOzNfX5uqFHquZe8kNsXXQt3
+         BBCLl7nupfFq0WQFWWHfPkBOiIa9/ew/QhkawAL+2nW1czDfTbqXjob/WnYtw5XrT+jg
+         B1xb4KceFpgK1vSRD9I1CLCGHyHo03oThdHhNh8BuL19b7UyfuhcqLvsfTNVoKdHuw7z
+         U7dYiJnG03VkJJdBriok+RoqEbdYmn/kJ8GgPr/WvK3g51iR00AhGx385tiqh/+cShSw
+         l0MgmcAbdSlv76GMNFW5D0zhfaUPWjXU7Hq5cZ2nuurJFE+SiUluGvCiOSRw4kON6eaV
+         dtzg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=JyixjUdddf6I90XP9MdFK6+higCWyl5KeV+gVWtp6WU=;
-        b=VUoAzKOWsXQo60JEUgJSM7kLR9cY+kg+kswGFQOtikalBXdTl4PP3lsu8GtrWylXsF
-         WvS4Q1FBaNRG8RfmGdm4JeRaeFZyhfNELfYo+z6fdDqH+4CZkVN8HvVGnFbfTsMEsrov
-         ZIvtYiY1hBsNOtXboeRm7ZcIQZt6SYVXqQoAw6Tj0mjxt7/DYajGJ32AFl+EoTbXnnK8
-         xnnKT3+AzRjRopzI0cEQvg2v7KC+X1JZYoGQ4LaHv4nfqiN8kc4RewBnXhmXQVjirb1z
-         /b+eQPSvBLxooEMA2dkb/szmwXgo3upmx5aYnvoOAociq5Tw3jho6KPyRsb1jVeijZJu
-         sdvQ==
-X-Gm-Message-State: AOAM530bhWUowF1b5K+SXqrb7xvO4HRZU1sKO5ngui+qqWmv9fFT82qs
-        IENHRFdF65gGqSZuPq+ea0eCPA==
-X-Google-Smtp-Source: ABdhPJxgS1VuqYEu6r9Y57sGqJnQIEGTKr/QvLaXom2H7c4IuIt24COlf9Rl55IoJgxqziOXj1S5PA==
-X-Received: by 2002:a17:90a:6487:b0:1df:7e0f:c93e with SMTP id h7-20020a17090a648700b001df7e0fc93emr10975351pjj.77.1653491502589;
-        Wed, 25 May 2022 08:11:42 -0700 (PDT)
-Received: from localhost ([2620:15c:11a:202:4d83:f549:9abd:427])
-        by smtp.gmail.com with UTF8SMTPSA id a21-20020a637055000000b003c14af505fesm8581222pgn.22.2022.05.25.08.11.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 25 May 2022 08:11:42 -0700 (PDT)
-Date:   Wed, 25 May 2022 08:11:40 -0700
-From:   Matthias Kaehlcke <mka@chromium.org>
-To:     Tzung-Bi Shih <tzungbi@kernel.org>
-Cc:     bleung@chromium.org, groeck@chromium.org, robh+dt@kernel.org,
-        chrome-platform@lists.linux.dev, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [PATCH v4 4/5] platform/chrome: cros_kbd_led_backlight: support
- OF match
-Message-ID: <Yo5HLJs81/KoXSBT@google.com>
-References: <20220523090822.3035189-1-tzungbi@kernel.org>
- <20220523090822.3035189-5-tzungbi@kernel.org>
- <Yo07IDqYuQUzeL+N@google.com>
- <Yo2jhTpsa5Vw4+61@google.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=qOKTXeNWDM3OWSCFHqvRVjau9Hc7oDvh7tjC+k8jq/o=;
+        b=GkBhhdWadJTeQP3WupKp/740JRbIWZQb9NNCdqfKMXVxUwvVFYS28fc7YwtMt/Zz6u
+         /0aeqr1mUwMJQthKchKD3NN3olaSgeyKZPJJSXhmr0v+/vNrFhxsMOkyPmeJcGn67H6h
+         zkgV758/nrMaoheeySJOxwIaN241eKWpRYLdj04lr32Na/lhgnozeVfNUefGB6G6+gBz
+         B70srG62WXcVjY4HBXnLPubKEgZV1dqUPLgyWvdAwl7W6wkBtIwr4HM4APc60Apya+Sq
+         MVieGXAj8ylDIXjBEav0FDUZ+ItzF1SFUBWYK2Rs44exxP3E4UUE/1Pu/AHL6DkupLEN
+         PzwA==
+X-Gm-Message-State: AOAM531Lapf06JReaZFJWoWS9xlI/Fdshz4AY9LHiafUuLtoriqk72Cz
+        KQYaHI8TmpL7tbt9LM94G8IjAgsxN7g5Lw==
+X-Google-Smtp-Source: ABdhPJzFV9KXkmRnt8/Y7g7Ea3f3WGAs/0un5724uAJwdas6wB2yfb1D/0UbPM5JfoAR9HFPwLVd2g==
+X-Received: by 2002:a17:902:d707:b0:15f:42a:bc62 with SMTP id w7-20020a170902d70700b0015f042abc62mr33373118ply.98.1653491500360;
+        Wed, 25 May 2022 08:11:40 -0700 (PDT)
+Received: from kerodipc.Dlink ([49.206.9.238])
+        by smtp.gmail.com with ESMTPSA id q16-20020a170902eb9000b00161b50c3db4sm9383129plg.94.2022.05.25.08.11.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 25 May 2022 08:11:40 -0700 (PDT)
+From:   Sunil V L <sunilvl@ventanamicro.com>
+To:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Marc Zyngier <maz@kernel.org>,
+        Atish Patra <atishp@rivosinc.com>,
+        Heinrich Schuchardt <heinrich.schuchardt@canonical.com>,
+        Anup Patel <apatel@ventanamicro.com>
+Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-efi@vger.kernel.org, Sunil V L <sunil.vl@gmail.com>,
+        Sunil V L <sunilvl@ventanamicro.com>
+Subject: [PATCH 5/5] riscv/efi_stub: Support for 64bit boot-hartid
+Date:   Wed, 25 May 2022 20:41:06 +0530
+Message-Id: <20220525151106.2176147-6-sunilvl@ventanamicro.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220525151106.2176147-1-sunilvl@ventanamicro.com>
+References: <20220525151106.2176147-1-sunilvl@ventanamicro.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <Yo2jhTpsa5Vw4+61@google.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 25, 2022 at 11:33:25AM +0800, Tzung-Bi Shih wrote:
-> On Tue, May 24, 2022 at 01:08:00PM -0700, Matthias Kaehlcke wrote:
-> > On Mon, May 23, 2022 at 05:08:21PM +0800, Tzung-Bi Shih wrote:
-> > > +#ifdef CONFIG_OF
-> > > +static const struct of_device_id keyboard_led_of_match[] = {
-> > > +	{
-> > > +		.compatible = "google,cros-kbd-led-backlight",
-> > > +	},
-> > > +	{}
-> > > +};
-> > > +MODULE_DEVICE_TABLE(of, keyboard_led_of_match);
-> > > +#endif
-> > > +
-> > >  static struct platform_driver keyboard_led_driver = {
-> > >  	.driver		= {
-> > >  		.name	= "chromeos-keyboard-leds",
-> > >  		.acpi_match_table = ACPI_PTR(keyboard_led_acpi_match),
-> > > +		.of_match_table = of_match_ptr(keyboard_led_of_match),
-> > 
-> > You need to put this assignment inside an '#ifdef CONFIG_OF' block,
-> > otherwise the compiler won't find 'keyboard_led_of_match' when
-> > CONFIG_OF isn't set.
-> 
-> It doesn't need as of_match_ptr() already guarded it.
+The boot-hartid can be a 64bit value on RV64 platforms. Currently,
+the "boot-hartid" in DT is assumed to be 32bit only. This patch
+detects the size of the "boot-hartid" and uses 32bit or 64bit
+FDT reads appropriately.
 
-I learned something new today :)
+Signed-off-by: Sunil V L <sunilvl@ventanamicro.com>
+---
+ drivers/firmware/efi/libstub/riscv-stub.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
-Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
+diff --git a/drivers/firmware/efi/libstub/riscv-stub.c b/drivers/firmware/efi/libstub/riscv-stub.c
+index 9e85e58d1f27..d748533f1329 100644
+--- a/drivers/firmware/efi/libstub/riscv-stub.c
++++ b/drivers/firmware/efi/libstub/riscv-stub.c
+@@ -29,7 +29,7 @@ static int get_boot_hartid_from_fdt(void)
+ {
+ 	const void *fdt;
+ 	int chosen_node, len;
+-	const fdt32_t *prop;
++	const void *prop;
+ 
+ 	fdt = get_efi_config_table(DEVICE_TREE_GUID);
+ 	if (!fdt)
+@@ -40,10 +40,16 @@ static int get_boot_hartid_from_fdt(void)
+ 		return -EINVAL;
+ 
+ 	prop = fdt_getprop((void *)fdt, chosen_node, "boot-hartid", &len);
+-	if (!prop || len != sizeof(u32))
++	if (!prop)
++		return -EINVAL;
++
++	if (len == sizeof(u32))
++		hartid = (unsigned long) fdt32_to_cpu(*(fdt32_t *)prop);
++	else if (len == sizeof(u64))
++		hartid = (unsigned long) fdt64_to_cpu(*(fdt64_t *)prop);
++	else
+ 		return -EINVAL;
+ 
+-	hartid = fdt32_to_cpu(*prop);
+ 	return 0;
+ }
+ 
+-- 
+2.25.1
+
