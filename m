@@ -2,139 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 323EEC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 19:52:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8450EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 19:56:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344785AbiEYTwq (ORCPT
+        id S1344903AbiEYTy7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 15:52:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48504 "EHLO
+        Wed, 25 May 2022 15:54:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239643AbiEYTw2 (ORCPT
+        with ESMTP id S1344460AbiEYTyt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 15:52:28 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B4F3113F15
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 12:52:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653508345;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=MoWVBq/Srp3PM5Qk/nZzvo63HOw5jDODOMMJjoSaqDU=;
-        b=XIogzBMRNbL7IAItWb489/xhAY/DRfpWOgXH2PzBzsq30Dp/YUJcRHk3zdoJUgTXFywNnx
-        aF5Rca5WaV3Q0ldCe1MP+/eXfxs+NGAhlipZPZc1CwebkapbC1ZYLjehscCZq46d95DKyP
-        4FNTQDMMOw7ER1vJBgKlGBQdYxQbPgs=
-Received: from mail-il1-f197.google.com (mail-il1-f197.google.com
- [209.85.166.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-378-mAT3p7_lO1mqkSQ4BefgLw-1; Wed, 25 May 2022 15:52:24 -0400
-X-MC-Unique: mAT3p7_lO1mqkSQ4BefgLw-1
-Received: by mail-il1-f197.google.com with SMTP id p12-20020a056e02144c00b002d196a4d73eso7301006ilo.18
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 12:52:24 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=MoWVBq/Srp3PM5Qk/nZzvo63HOw5jDODOMMJjoSaqDU=;
-        b=f2Tcxw19sSEraA4VXD7dzYeaKfBc/mvPyvQtTAbKEdls4DqymFgSy3WM33JHl+iNWn
-         TBtELcLABHPuU9nZldmh9+5zkXGBntci/eVlbjXTyHJmJV/bViBLNbSivjL8E9PFzWhw
-         mlOBfJYPXkZJzkokXnB9wPOnAK+1qEV+7HMatPW9CVW/gpb5HeFx/9svu16G8hEIc9IV
-         RZ0m85DGYG2MsnxutYDasNs3gjCL4hSAGcQuW6UK8qtjrMsuWalTSfZGe5atN0NhaJv0
-         Jq4s4MTzECjQ+sjjqIltKxaaP6mhCJJaaRLcSgeuXFJLXLnJdIfdnoJrJ0xqtAuG5Xp3
-         KkzQ==
-X-Gm-Message-State: AOAM5304svxPFQCdX7uaQWaR0sxhu890aO4X6pmi68+rFwXuAHXQpmOu
-        SLoGbyldi8glz8WcBZZPNrLufIcgMU1EXryceOKBJ/pK7lVXPXz+iBGup/B+OrrG7rLJuHI7+My
-        RbX3xuQIPdvnAkbHYJTFEXfNPp4l1eByAXMc81eXJzAbLeX3od1jCBI1VW3Vnb7s70Y1ueCjffg
-        ==
-X-Received: by 2002:a05:6602:29ce:b0:609:4f60:59cb with SMTP id z14-20020a05660229ce00b006094f6059cbmr15759286ioq.183.1653508343121;
-        Wed, 25 May 2022 12:52:23 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJy9bqdjvCpdaS834IY1vu+Cs+k6e6lxk4WTcV42PxlupTWCvf9TA9JPzqBYXGpZnofQU3rNkQ==
-X-Received: by 2002:a05:6602:29ce:b0:609:4f60:59cb with SMTP id z14-20020a05660229ce00b006094f6059cbmr15759276ioq.183.1653508342846;
-        Wed, 25 May 2022 12:52:22 -0700 (PDT)
-Received: from localhost.localdomain (cpec09435e3e0ee-cmc09435e3e0ec.cpe.net.cable.rogers.com. [99.241.198.116])
-        by smtp.gmail.com with ESMTPSA id n25-20020a02a199000000b0032e31eeebc1sm4352021jah.170.2022.05.25.12.52.21
-        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Wed, 25 May 2022 12:52:22 -0700 (PDT)
-From:   Peter Xu <peterx@redhat.com>
-To:     linux-kernel@vger.kernel.org, linux-mm@kvack.org
-Cc:     Andrew Morton <akpm@linux-foundation.org>, peterx@redhat.com,
-        Mike Kravetz <mike.kravetz@oracle.com>
-Subject: [PATCH] mm/x86: Remove dead code for hugetlbpage.c
-Date:   Wed, 25 May 2022 15:52:20 -0400
-Message-Id: <20220525195220.10241-1-peterx@redhat.com>
-X-Mailer: git-send-email 2.32.0
+        Wed, 25 May 2022 15:54:49 -0400
+X-Greylist: delayed 1803 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 25 May 2022 12:54:48 PDT
+Received: from sender4-of-o54.zoho.com (sender4-of-o54.zoho.com [136.143.188.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C329366F96
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 12:54:48 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1653505760; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=bgLDYqaveJdzb2Qx0GE9mfATAHdQWjJAq8Ak78bUrrCuMTgFH/SQwSSIBXg7fkNNK3vpbx/Wek+u26om4F4IW5g0ksqhXNjkbnFM874fHkMl8SeRXXT8PCA3fPvBrNuW/GdHVwp6xeOhhLh+7WJKaK1ugAR3surC3X958GY/J8A=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1653505760; h=Content-Transfer-Encoding:Cc:Date:From:MIME-Version:Message-ID:Subject:To; 
+        bh=VKYnTaOCGfhBc578jkFhugpweFkbGpTsCSjATGWkyhw=; 
+        b=NoXWxYoVP2LGAYMg5j3yIe99tbYG+75YUQ4wliVM6fII36Fk8dFdieMkfdBApBJHP/Qv8JBlW7ODu2NwdLH0LExol0fc+Tk5XMQNFbDsHEbEB91bh5Q/trO4157it2GakWfco8PJkpqkdH1n6TVcufzthiAcGCkfaPGBckn5OC0=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=mitchellaugustin.com;
+        spf=pass  smtp.mailfrom=kernel@mitchellaugustin.com;
+        dmarc=pass header.from=<kernel@mitchellaugustin.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1653505760;
+        s=zoho; d=mitchellaugustin.com; i=kernel@mitchellaugustin.com;
+        h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Date:Message-Id:Message-Id:MIME-Version:Content-Transfer-Encoding:Reply-To;
+        bh=VKYnTaOCGfhBc578jkFhugpweFkbGpTsCSjATGWkyhw=;
+        b=hUmu8a1QYmKsKXARKUzyVpWlvy+wqWAXkyJfY14WU2KxFZQ6YyTEDiw6ZAAjbyKA
+        m+d2DiGvIfG69dB/2Jalr7WHuPQdj8G/XglEaJW7ViP6GwxiShHFcwZfLNlXjce0z1i
+        xQZxYdMuXE71OQ56eoPz7UHP9JA72DHRcM7pwGYE=
+Received: from localhost.localdomain (static-68-235-50-228.cust.tzulo.com [68.235.50.228]) by mx.zohomail.com
+        with SMTPS id 1653505759009259.68636689044604; Wed, 25 May 2022 12:09:19 -0700 (PDT)
+From:   Mitchell Augustin <kernel@mitchellaugustin.com>
+To:     alexander.deucher@amd.com, christian.koenig@amd.com,
+        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
+        sumit.semwal@linaro.org, andrey.grodzovsky@amd.com,
+        guchun.chen@amd.com, evan.quan@amd.com, kevin1.wang@amd.com,
+        lang.yu@amd.com, shaoyun.liu@amd.com
+Cc:     amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        linaro-mm-sig@lists.linaro.org
+Subject: [PATCH] amdgpu: amdgpu_device.c: Removed trailing whitespace
+Date:   Wed, 25 May 2022 14:09:14 -0500
+Message-Id: <20220525190914.60544-1-kernel@mitchellaugustin.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-type: text/plain
 Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It seems to exist since the old times and never used once.  Remove them.
+Removed trailing whitespace from end of line in amdgpu_device.c
 
-Signed-off-by: Peter Xu <peterx@redhat.com>
+Signed-off-by: Mitchell Augustin <kernel@mitchellaugustin.com>
 ---
- arch/x86/mm/hugetlbpage.c | 39 ---------------------------------------
- 1 file changed, 39 deletions(-)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_device.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/mm/hugetlbpage.c b/arch/x86/mm/hugetlbpage.c
-index a0d023cb4292..509408da0da1 100644
---- a/arch/x86/mm/hugetlbpage.c
-+++ b/arch/x86/mm/hugetlbpage.c
-@@ -19,44 +19,6 @@
- #include <asm/tlbflush.h>
- #include <asm/elf.h>
- 
--#if 0	/* This is just for testing */
--struct page *
--follow_huge_addr(struct mm_struct *mm, unsigned long address, int write)
--{
--	unsigned long start = address;
--	int length = 1;
--	int nr;
--	struct page *page;
--	struct vm_area_struct *vma;
--
--	vma = find_vma(mm, addr);
--	if (!vma || !is_vm_hugetlb_page(vma))
--		return ERR_PTR(-EINVAL);
--
--	pte = huge_pte_offset(mm, address, vma_mmu_pagesize(vma));
--
--	/* hugetlb should be locked, and hence, prefaulted */
--	WARN_ON(!pte || pte_none(*pte));
--
--	page = &pte_page(*pte)[vpfn % (HPAGE_SIZE/PAGE_SIZE)];
--
--	WARN_ON(!PageHead(page));
--
--	return page;
--}
--
--int pmd_huge(pmd_t pmd)
--{
--	return 0;
--}
--
--int pud_huge(pud_t pud)
--{
--	return 0;
--}
--
--#else
--
- /*
-  * pmd_huge() returns 1 if @pmd is hugetlb related entry, that is normal
-  * hugetlb entry or non-present (migration or hwpoisoned) hugetlb entry.
-@@ -72,7 +34,6 @@ int pud_huge(pud_t pud)
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
+index 49f734137f15..c531c05163cf 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
+@@ -3365,7 +3365,7 @@ bool amdgpu_device_asic_has_dc_support(enum amd_asic_type asic_type)
+  */
+ bool amdgpu_device_has_dc_support(struct amdgpu_device *adev)
  {
- 	return !!(pud_val(pud) & _PAGE_PSE);
- }
--#endif
- 
- #ifdef CONFIG_HUGETLB_PAGE
- static unsigned long hugetlb_get_unmapped_area_bottomup(struct file *file,
+-	if (amdgpu_sriov_vf(adev) || 
++	if (amdgpu_sriov_vf(adev) ||
+ 	    adev->enable_virtual_display ||
+ 	    (adev->harvest_ip_mask & AMD_HARVEST_IP_DMU_MASK))
+ 		return false;
+@@ -5762,7 +5762,7 @@ int amdgpu_in_reset(struct amdgpu_device *adev)
+ {
+ 	return atomic_read(&adev->reset_domain->in_gpu_reset);
+ 	}
+-	
++
+ /**
+  * amdgpu_device_halt() - bring hardware to some kind of halt state
+  *
 -- 
-2.32.0
+2.36.1
 
