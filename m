@@ -2,129 +2,222 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDF21C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 14:58:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C506BC43217
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 14:59:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244944AbiEYO64 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 10:58:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35496 "EHLO
+        id S243409AbiEYO7E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 10:59:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244982AbiEYO6c (ORCPT
+        with ESMTP id S244909AbiEYO6z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 10:58:32 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95A79AFAC2
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 07:58:29 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: alyssa)
-        with ESMTPSA id C08BA1F450F4
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1653490708;
-        bh=yD9tXqnPqKUJrB/V6ILLlV5Xai1v3uJYnOrXEF5Bvc0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AuBIb9m4C+G5XSDYj+f4kMKfN0PrUv2457r+p8ZQwKcYe0SFvH2SG5Hudu8CcGJl5
-         z6J4Dvj0fchV4z7UtZU6ULXox+Qs2ODC2PoPxTdyC8186FZ35DOBFCwsx5rNijnvj8
-         ClrbJD1t1YkyooEz8j+OSZv2YCfqBXWZY9yzkeiXggjJCZVZ30I+OWgtS0S2tnM/pv
-         70K7E4y1Fy5R/dAKYUNHLmDMHdrIly8ehu2mqUygBnPoUw3dZPYOsbL12pgc3QlrDf
-         l+T0ZI6kOHIUvtDsLfAwX7dO9yK15ZhphX0iV3cvQMVZepLWIUeYleaTgmCxEwmZB8
-         G/fuwZD7goWUQ==
-From:   Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>
-To:     dri-devel@lists.freedesktop.org
-Cc:     Rob Herring <robh@kernel.org>,
-        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        Steven Price <steven.price@arm.com>,
-        Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        =?UTF-8?q?N=C3=ADcolas=20F=20=2E=20R=20=2E=20A=20=2E=20Prado?= 
-        <nfraprado@collabora.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 8/9] drm/panfrost: Add Mali-G57 "Natt" support
-Date:   Wed, 25 May 2022 10:57:53 -0400
-Message-Id: <20220525145754.25866-9-alyssa.rosenzweig@collabora.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220525145754.25866-1-alyssa.rosenzweig@collabora.com>
-References: <20220525145754.25866-1-alyssa.rosenzweig@collabora.com>
+        Wed, 25 May 2022 10:58:55 -0400
+Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EDDCAF1C7;
+        Wed, 25 May 2022 07:58:53 -0700 (PDT)
+Received: (Authenticated sender: foss@0leil.net)
+        by mail.gandi.net (Postfix) with ESMTPSA id 4A66C1BF211;
+        Wed, 25 May 2022 14:58:47 +0000 (UTC)
+From:   Quentin Schulz <foss+kernel@0leil.net>
+Cc:     shawnx.tu@intel.com, mchehab@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, linux-media@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        foss+kernel@0leil.net,
+        Quentin Schulz <quentin.schulz@theobroma-systems.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v5 1/4] media: dt-bindings: ov5675: document YAML binding
+Date:   Wed, 25 May 2022 16:58:30 +0200
+Message-Id: <20220525145833.1165437-1-foss+kernel@0leil.net>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the features, issues, and GPU ID for Mali-G57, a first-generation
-Valhall GPU. Other first- and second-generation Valhall GPUs should be
-similar.
+From: Quentin Schulz <quentin.schulz@theobroma-systems.com>
 
-v2: Split out issue list for r0p0 from newer Natt GPUs, as TTRX_3485 was
-fixed in r0p1. Unfortunately, MT8192 has a r0p0, so we do need to handle
-TTRX_3485.
+This patch adds documentation of device tree in YAML schema for the
+OV5675 CMOS image sensor from Omnivision.
 
-Signed-off-by: Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Quentin Schulz <quentin.schulz@theobroma-systems.com>
 ---
- drivers/gpu/drm/panfrost/panfrost_features.h | 12 ++++++++++++
- drivers/gpu/drm/panfrost/panfrost_gpu.c      |  3 +++
- drivers/gpu/drm/panfrost/panfrost_issues.h   |  9 +++++++++
- 3 files changed, 24 insertions(+)
 
-diff --git a/drivers/gpu/drm/panfrost/panfrost_features.h b/drivers/gpu/drm/panfrost/panfrost_features.h
-index 1a8bdebc86a3..7ed0cd3ea2d4 100644
---- a/drivers/gpu/drm/panfrost/panfrost_features.h
-+++ b/drivers/gpu/drm/panfrost/panfrost_features.h
-@@ -106,6 +106,18 @@ enum panfrost_hw_feature {
- 	BIT_ULL(HW_FEATURE_TLS_HASHING) | \
- 	BIT_ULL(HW_FEATURE_3BIT_EXT_RW_L2_MMU_CONFIG))
- 
-+#define hw_features_g57 (\
-+	BIT_ULL(HW_FEATURE_JOBCHAIN_DISAMBIGUATION) | \
-+	BIT_ULL(HW_FEATURE_PWRON_DURING_PWROFF_TRANS) | \
-+	BIT_ULL(HW_FEATURE_XAFFINITY) | \
-+	BIT_ULL(HW_FEATURE_FLUSH_REDUCTION) | \
-+	BIT_ULL(HW_FEATURE_PROTECTED_MODE) | \
-+	BIT_ULL(HW_FEATURE_PROTECTED_DEBUG_MODE) | \
-+	BIT_ULL(HW_FEATURE_COHERENCY_REG) | \
-+	BIT_ULL(HW_FEATURE_AARCH64_MMU) | \
-+	BIT_ULL(HW_FEATURE_IDVS_GROUP_SIZE) | \
-+	BIT_ULL(HW_FEATURE_CLEAN_ONLY_SAFE))
+v4:
+ - added Reviewed-by,
+
+v3:
+ - removed clock-names,
+ - removed clock-frequency,
+ - added all-of of video-interface-devices schema,
+ - added clock frequency range in description,
+ - rephrased definition of supplies,
+ - fixed name of reset gpio,
+ - used schema ref for port and port->endpoint,
+ - removed mentions to driver,
+ - added HW data transfer speed limitation in comment for
+ link-frequencies,
+ - changed root additionalProperties to unevaluatedProperties to not
+ have to list all properties from video-interface-devices schema, such as
+ orientation or rotation,
+ - added maxItems to reset-gpios,
+ - updated example to use assigned-clocks and assigned-clock-rates
+ instead of clock-frequency and clock-names,
+
+v2:
+ - fixed incorrect id,
+ - fixed device tree example by adding missing dt-bindings headers,
+ - fixed device tree example by using vcc_1v2 for dvdd supply, as requested
+ in datasheet,
+
+ .../bindings/media/i2c/ovti,ov5675.yaml       | 123 ++++++++++++++++++
+ MAINTAINERS                                   |   1 +
+ 2 files changed, 124 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/media/i2c/ovti,ov5675.yaml
+
+diff --git a/Documentation/devicetree/bindings/media/i2c/ovti,ov5675.yaml b/Documentation/devicetree/bindings/media/i2c/ovti,ov5675.yaml
+new file mode 100644
+index 0000000000000..f0a48707bed77
+--- /dev/null
++++ b/Documentation/devicetree/bindings/media/i2c/ovti,ov5675.yaml
+@@ -0,0 +1,123 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++# Copyright (c) 2022 Theobroma Systems Design und Consulting GmbH
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/media/i2c/ovti,ov5675.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
- static inline bool panfrost_has_hw_feature(struct panfrost_device *pfdev,
- 					   enum panfrost_hw_feature feat)
- {
-diff --git a/drivers/gpu/drm/panfrost/panfrost_gpu.c b/drivers/gpu/drm/panfrost/panfrost_gpu.c
-index e1a6e763d0dc..6452e4e900dd 100644
---- a/drivers/gpu/drm/panfrost/panfrost_gpu.c
-+++ b/drivers/gpu/drm/panfrost/panfrost_gpu.c
-@@ -201,6 +201,9 @@ static const struct panfrost_model gpu_models[] = {
- 	GPU_MODEL(g52, 0x7002),
- 	GPU_MODEL(g31, 0x7003,
- 		GPU_REV(g31, 1, 0)),
++title: Omnivision OV5675 CMOS Sensor
 +
-+	GPU_MODEL(g57, 0x9001,
-+		GPU_REV(g57, 0, 0)),
- };
- 
- static void panfrost_gpu_init_features(struct panfrost_device *pfdev)
-diff --git a/drivers/gpu/drm/panfrost/panfrost_issues.h b/drivers/gpu/drm/panfrost/panfrost_issues.h
-index 4d41e0a13867..c5fa9e897a35 100644
---- a/drivers/gpu/drm/panfrost/panfrost_issues.h
-+++ b/drivers/gpu/drm/panfrost/panfrost_issues.h
-@@ -258,6 +258,15 @@ enum panfrost_hw_issue {
- 
- #define hw_issues_g76 0
- 
-+#define hw_issues_g57 (\
-+	BIT_ULL(HW_ISSUE_TTRX_2968_TTRX_3162) | \
-+	BIT_ULL(HW_ISSUE_TTRX_3076))
++maintainers:
++  - Quentin Schulz <quentin.schulz@theobroma-systems.com>
 +
-+#define hw_issues_g57_r0p0 (\
-+	BIT_ULL(HW_ISSUE_TTRX_2968_TTRX_3162) | \
-+	BIT_ULL(HW_ISSUE_TTRX_3076) | \
-+	BIT_ULL(HW_ISSUE_TTRX_3485))
++allOf:
++  - $ref: /schemas/media/video-interface-devices.yaml#
 +
- static inline bool panfrost_has_hw_issue(const struct panfrost_device *pfdev,
- 					 enum panfrost_hw_issue issue)
- {
++description: |
++  The Omnivision OV5675 is a high performance, 1/5-inch, 5 megapixel, CMOS
++  image sensor that delivers 2592x1944 at 30fps. It provides full-frame,
++  sub-sampled, and windowed 10-bit MIPI images in various formats via the
++  Serial Camera Control Bus (SCCB) interface.
++
++  This chip is programmable through I2C and two-wire SCCB. The sensor output
++  is available via CSI-2 serial data output (up to 2-lane).
++
++properties:
++  compatible:
++    const: ovti,ov5675
++
++  reg:
++    maxItems: 1
++
++  clocks:
++    description:
++      System input clock (aka XVCLK). From 6 to 27 MHz.
++    maxItems: 1
++
++  dovdd-supply:
++    description:
++      Digital I/O voltage supply, 1.8 volts.
++
++  avdd-supply:
++    description:
++      Analog voltage supply, 2.8 volts.
++
++  dvdd-supply:
++    description:
++      Digital core voltage supply, 1.2 volts.
++
++  reset-gpios:
++    description:
++      The phandle and specifier for the GPIO that controls sensor reset.
++      This corresponds to the hardware pin XSHUTDN which is physically
++      active low.
++    maxItems: 1
++
++  port:
++    $ref: /schemas/graph.yaml#/$defs/port-base
++    additionalProperties: false
++
++    properties:
++      endpoint:
++        $ref: /schemas/media/video-interfaces.yaml#
++        unevaluatedProperties: false
++
++        properties:
++          data-lanes:
++            minItems: 1
++            maxItems: 2
++
++          # Supports max data transfer of 900 Mbps per lane
++          link-frequencies: true
++
++required:
++  - compatible
++  - reg
++  - clocks
++  - dovdd-supply
++  - avdd-supply
++  - dvdd-supply
++  - port
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/px30-cru.h>
++    #include <dt-bindings/gpio/gpio.h>
++    #include <dt-bindings/pinctrl/rockchip.h>
++
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        ov5675: camera@36 {
++            compatible = "ovti,ov5675";
++            reg = <0x36>;
++
++            reset-gpios = <&gpio2 RK_PB1 GPIO_ACTIVE_LOW>;
++            pinctrl-names = "default";
++            pinctrl-0 = <&cif_clkout_m0>;
++
++            clocks = <&cru SCLK_CIF_OUT>;
++            assigned-clocks = <&cru SCLK_CIF_OUT>;
++            assigned-clock-rates = <19200000>;
++
++            avdd-supply = <&vcc_1v8>;
++            dvdd-supply = <&vcc_1v2>;
++            dovdd-supply = <&vcc_2v8>;
++
++            rotation = <90>;
++            orientation = <0>;
++
++            port {
++                ucam_out: endpoint {
++                    remote-endpoint = <&mipi_in_ucam>;
++                    data-lanes = <1 2>;
++                    link-frequencies = /bits/ 64 <450000000>;
++                };
++            };
++        };
++    };
++...
++
+diff --git a/MAINTAINERS b/MAINTAINERS
+index f468864fd268c..549cdec4faaf3 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -14551,6 +14551,7 @@ M:	Shawn Tu <shawnx.tu@intel.com>
+ L:	linux-media@vger.kernel.org
+ S:	Maintained
+ T:	git git://linuxtv.org/media_tree.git
++F:	Documentation/devicetree/bindings/media/i2c/ovti,ov5675.yaml
+ F:	drivers/media/i2c/ov5675.c
+ 
+ OMNIVISION OV5693 SENSOR DRIVER
 -- 
-2.35.1
+2.36.1
 
