@@ -2,221 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 112A3C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 09:44:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CAE7C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 09:44:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236751AbiEYJoQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 05:44:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56888 "EHLO
+        id S235793AbiEYJo1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 05:44:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241183AbiEYJnt (ORCPT
+        with ESMTP id S241463AbiEYJn7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 05:43:49 -0400
-Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A687DEC4;
-        Wed, 25 May 2022 02:43:46 -0700 (PDT)
-Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-2ff7b90e635so142922397b3.5;
-        Wed, 25 May 2022 02:43:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1O/cnzxLyE24n8oNtE1G8BpY+MDED/QH3SE2yJ32biA=;
-        b=BMhFL5b6E5KwNcVSCHnyQBR/FgHJaQShTBBhNtA64fbaT1zKoX/5V/10/GkyjDfCj5
-         eEpr1Pxj+qGzXRZS9XoI/2yjtClKvlDB0lY8OPR4oGIU4AbgR1sHw0i3exdtmHxh4lV8
-         rGnkKYWdzKoMkbA9/cUHDOSYCx7s9DLpGZdgwNaYZ3qi88cUDBg7xc7Ux1zV7A3DgYNT
-         xbiWWKtha4nFbmlMX9ZY2E+kzoeIoYEPU/RQcziysejpbJC4niDYU+zXWxI4taODdRtg
-         /dWPPfyfEFWY8NgtZAnMFQu4hlzKu7XlJJHHT7tNHM/FWT/16BhgDTPc3RSZP5ykWhhY
-         J6Cg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1O/cnzxLyE24n8oNtE1G8BpY+MDED/QH3SE2yJ32biA=;
-        b=5MwYpqTE3nKOiX/cYAmW7qhVTl4gV7tI0ud695nKnHNrlMHP5otSYV4x2jv7V+iXVU
-         cqWU/3DoyvdPp66wlSBtMnk01a/BaL1xnuhN7IwCLIeXAVfvxbim+37RSXOviwvXJ42O
-         DTsjwxnXJCfkOBg2A1mYWWpQuvq+SI6XypitpsSx4AC87bv9PNq6fcLdB4JyKBNQN6pU
-         JeYGF4+GsvYgSmXoMd19xZCK6Apjc5Vaw1N/ral/0XrAJLJxZpsZ5zhjUUu6IU5WcDJX
-         Rav7Ygeo38qqeUR9LPT94vtaolan/NmT1bZYWveAabX1yjl29v/5rU/5NW+1saq39XTQ
-         sv0g==
-X-Gm-Message-State: AOAM531FUeuvP6a8i7ut32vjEPEOwTyZmMH05jpWjNeEUQ3Pj4Z4oTzy
-        HZhiZwzJwY3Z9ztZixe3zGZPAGV8AW6f5+Dx3cs=
-X-Google-Smtp-Source: ABdhPJz4goephVaph29ovM6NwmrhGAKSlI3y2GQdztsG+ZmN8Hi5UDI5lr2bY+YLU8cDx55yu6SczHmnq+LS5yw1kyo=
-X-Received: by 2002:a0d:c101:0:b0:2ff:5824:e8a8 with SMTP id
- c1-20020a0dc101000000b002ff5824e8a8mr32467321ywd.413.1653471825732; Wed, 25
- May 2022 02:43:45 -0700 (PDT)
+        Wed, 25 May 2022 05:43:59 -0400
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2041.outbound.protection.outlook.com [40.107.94.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 720A9DFD4;
+        Wed, 25 May 2022 02:43:55 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=WuoUaFjN9TQoKx5ShLsE3edD5eItukk3vGC2E6JGz1ujcNNg+Ej+CVh2UeA4UPRhuaRh7/AnaT+jiaaXv4SDS3wG6m6kR3MAEnujcHipkPyZU2ZqxUElYCd41oHralyuwg6h/NZeu7XrEVsqFSE5Nybc05qCopBT7PwZHIBxZEnGwjItONM7pxtCM8/iud398XPi0e2ZYK1C1l1Mu1Wiuni84jUdpCB5fjijU73YCWXbQ/KdamjvByxP0IFFxmVE61xUsaFzAGHXSwQ72DNGm9BwPfU6spYw6gQRINRlzbgA7PJQKzWrDCSFJu6uqQ+awMd5YwOyTisFQbVkkI/hDQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=xOr1MBtil33b1hrIKr1/RSy5GJuzGExlotqZXbUfl74=;
+ b=F4vDRekVrNnA/gz3JQkMQROK4EQ+MSS5LuZiMkAXNKfTKFREFNZq17+bQZg0DgQRYcR3FE3racwkZp9h5NC59oYBG+p95KpOB44JAa675d55kq7G7+NZLTbmOSul5TgxvIH8R8x3vxVZVFVYaVo7JGxKbX1IXV9cbeWRkcexCbfJe0AjNXo87WJKF4x1RyKkCTRF8G06ckSRgE19U83d2+6PvYh1gHPh/wg/BgqWBzp5ICQoDyN4PLbRwd8ZPCv3VSezT6ds4kkzfEpxg6mP/G732xwtwrMvZEzsfZywTLG43x2pwTutxJRxB/tzvNT8K6RQwXHSvYnbfgD6+Qxa2g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=infradead.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=xOr1MBtil33b1hrIKr1/RSy5GJuzGExlotqZXbUfl74=;
+ b=N8a1Ec/1ctsXDmsMbsDlzntmLLKTWepzPb1w1l6BQKacU4g42ICvCIyBvL3DVYTqak3l+dnQh2n3rnNOwY5CbdVKkFGqkfxMM3PGqrOWZkBA2/DSxWZoPpuhSrWTwlqqZhu+ufASKUpibdZA1ad4onfdsOFgc08i8foJnOaO5qo=
+Received: from MW4PR04CA0089.namprd04.prod.outlook.com (2603:10b6:303:6b::34)
+ by CH2PR12MB3864.namprd12.prod.outlook.com (2603:10b6:610:25::27) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.14; Wed, 25 May
+ 2022 09:43:49 +0000
+Received: from CO1NAM11FT011.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:6b:cafe::f4) by MW4PR04CA0089.outlook.office365.com
+ (2603:10b6:303:6b::34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.13 via Frontend
+ Transport; Wed, 25 May 2022 09:43:48 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ CO1NAM11FT011.mail.protection.outlook.com (10.13.175.186) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5293.13 via Frontend Transport; Wed, 25 May 2022 09:43:48 +0000
+Received: from BLR-5CG113396H.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 25 May
+ 2022 04:43:32 -0500
+From:   Ravi Bangoria <ravi.bangoria@amd.com>
+To:     <peterz@infradead.org>, <acme@kernel.org>
+CC:     <ravi.bangoria@amd.com>, <jolsa@kernel.org>, <namhyung@kernel.org>,
+        <eranian@google.com>, <irogers@google.com>, <jmario@redhat.com>,
+        <leo.yan@linaro.org>, <alisaidi@amazon.com>, <ak@linux.intel.com>,
+        <kan.liang@linux.intel.com>, <dave.hansen@linux.intel.com>,
+        <hpa@zytor.com>, <mingo@redhat.com>, <mark.rutland@arm.com>,
+        <alexander.shishkin@linux.intel.com>, <tglx@linutronix.de>,
+        <bp@alien8.de>, <x86@kernel.org>,
+        <linux-perf-users@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <sandipan.das@amd.com>, <ananth.narayan@amd.com>,
+        <kim.phillips@amd.com>, <santosh.shukla@amd.com>
+Subject: [PATCH 09/13] perf mem: Add support for printing PERF_MEM_LVLNUM_{EXTN_MEM|IO}
+Date:   Wed, 25 May 2022 15:09:34 +0530
+Message-ID: <20220525093938.4101-10-ravi.bangoria@amd.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220525093938.4101-1-ravi.bangoria@amd.com>
+References: <20220525093938.4101-1-ravi.bangoria@amd.com>
 MIME-Version: 1.0
-References: <20220524172214.5104-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20220524172214.5104-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <CAMuHMdX0pqr8pmbX8OfUyTeEwiFGSG5uyP4nLG1LPy7_zzLPbQ@mail.gmail.com>
- <CA+V-a8ubrkDU2B=mJopzFrjhv1nVn5EXZmaprta0oj4p3J_N5Q@mail.gmail.com> <CAMuHMdVncBnD25RLLqL2qDFwboPSVvo5faJvamDxPH_wq9r22Q@mail.gmail.com>
-In-Reply-To: <CAMuHMdVncBnD25RLLqL2qDFwboPSVvo5faJvamDxPH_wq9r22Q@mail.gmail.com>
-From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date:   Wed, 25 May 2022 10:43:19 +0100
-Message-ID: <CA+V-a8tHfyqJx9YBFX3hJBEKuCbDpminz_4uSLK=MHV7W8-hJg@mail.gmail.com>
-Subject: Re: [PATCH RFC 2/2] irqchip/sifive-plic: Add support for Renesas
- RZ/Five SoC
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Sagar Kadam <sagar.kadam@sifive.com>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Phil Edworthy <phil.edworthy@renesas.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 9ae91759-f2e1-4e18-5dec-08da3e3311bb
+X-MS-TrafficTypeDiagnostic: CH2PR12MB3864:EE_
+X-Microsoft-Antispam-PRVS: <CH2PR12MB3864D64B0DD687014AB9B133E0D69@CH2PR12MB3864.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: awIVhb6QV6jsxMuNj7UXxJbTuUNRi9sq8GTUpa4ZczyGEm/IioKqWX11FBODzmhB2sA20u5cZswJ6IukxFCGTHGJQvjAHeoi6pnQ+PlPmg8kEI/3S6HGCYtTeGxoe347RSUTLO2IRO0uzia4ekHrd4TQjGVIAEZav40EFexezoEjEycPlcJsuyvjf3vRyBAk4hKdePIUpVR1VUaiN/eJNXPM9UYaZoE8ZYjAlIK2w3+j8M+boM+pQgbiGcygj19BxIZrY/w/QMtgZqqrVtAy1IpYepXJS4Z72lejzF7rjV0/fTYKpE4piax4SzTVIBzwFfIzon+LaB27cm4sBlYy53y/StYEvW80ABcOcAfDlo/aUbG6VnlTW23ESKd0hyatZQ5l7llOqWVUj2p3ht8pYdWNg05YZm4Vd9vhyowNfLzzAfPPfbX9i12KFnR1Q4ubETSTOPSuy/ZxeWpW/UIokbz8uOgqTR0I6mPJ/jR5M1TKkD54bATCq4uGrpBXMXcZxPQPu6E9QFNuhXtVUha1XCZSbMS1dguuDiDdzy50L4gg+Qk5SnrEdktJHFCdyy0w3Z8LnCKIC0bERjypn8tgS9bautjZIgAKixDzPVAOxTf/s84dDthw3drPcLtanKkcTCbC7C0uzYRSzYZZFEFvRdiBsnKtrW4x/1eKSMdT0LO7N5dzCNY4EFOkwvZTv/RFcNPvqUxOV3a3oWQszDW0ouUiQXWvHpKjq3M5R233TtA=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(54906003)(7696005)(82310400005)(16526019)(336012)(1076003)(47076005)(186003)(508600001)(426003)(36756003)(110136005)(2616005)(36860700001)(316002)(5660300002)(7416002)(356005)(86362001)(26005)(70206006)(70586007)(8676002)(40460700003)(81166007)(4744005)(4326008)(44832011)(8936002)(2906002)(83133001)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 May 2022 09:43:48.5749
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9ae91759-f2e1-4e18-5dec-08da3e3311bb
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT011.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB3864
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Geert,
+Add support for printing these new fields in perf mem report.
 
-On Wed, May 25, 2022 at 10:35 AM Geert Uytterhoeven
-<geert@linux-m68k.org> wrote:
->
-> Hi Prabhakar,
->
-> On Wed, May 25, 2022 at 11:01 AM Lad, Prabhakar
-> <prabhakar.csengg@gmail.com> wrote:
-> > On Wed, May 25, 2022 at 9:01 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> > > On Tue, May 24, 2022 at 7:22 PM Lad Prabhakar
-> > > <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> > > > The Renesas RZ/Five SoC has a RISC-V AX45MP AndesCore with NCEPLIC100. The
-> > > > NCEPLIC100 supports both edge-triggered and level-triggered interrupts. In
-> > > > case of edge-triggered interrupts NCEPLIC100 ignores the next interrupt
-> > > > edge until the previous completion message has been received and
-> > > > NCEPLIC100 doesn't support pending interrupt counter, hence losing the
-> > > > interrupts if not acknowledged in time.
-> > > >
-> > > > So the workaround for edge-triggered interrupts to be handled correctly
-> > > > and without losing is that it needs to be acknowledged first and then
-> > > > handler must be run so that we don't miss on the next edge-triggered
-> > > > interrupt.
-> > > >
-> > > > This patch adds a new compatible string for Renesas RZ/Five SoC and adds
-> > > > support to change interrupt flow based on the interrupt type. It also
-> > > > implements irq_ack and irq_set_type callbacks.
-> > > >
-> > > > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> > >
-> > > Thanks for your patch!
-> > >
-> > > > --- a/drivers/irqchip/irq-sifive-plic.c
-> > > > +++ b/drivers/irqchip/irq-sifive-plic.c
->
-> > > > @@ -163,10 +166,31 @@ static int plic_set_affinity(struct irq_data *d,
-> > > >  }
-> > > >  #endif
-> > > >
-> > > > +static void plic_irq_ack(struct irq_data *d)
-> > > > +{
-> > > > +       struct plic_handler *handler = this_cpu_ptr(&plic_handlers);
-> > > > +
-> > >
-> > > No check for RZ/Five or irq type?
-> > That is because we set the handle_fasteoi_ack_irq() only in case of
-> > RZ/Five and it is already checked in set_type() callback.
-> >
-> > > .irq_ack() seems to be called for level interrupts, too
-> > > (from handle_level_irq() through mask_ack_irq()).
-> > >
-> > Right but we are using handle_fasteoi_irq() for level interrupt which
-> > doesn't call mask_ack_irq(). And I have confirmed by adding a print in
-> > ack callback  and just enabling the serial (which has level
-> > interrupts).
->
-> But handle_fasteoi_irq() is configured only on RZ/Five below?
-> Which handler is used on non-RZ/Five?
->
-For non RZ/Five, handle_fasteoi_irq() [0] is used for both edge/level
-interrupts.
+Signed-off-by: Ravi Bangoria <ravi.bangoria@amd.com>
+---
+ tools/perf/util/mem-events.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-[0] https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/tree/drivers/irqchip/irq-sifive-plic.c?h=next-20220525#n195
+diff --git a/tools/perf/util/mem-events.c b/tools/perf/util/mem-events.c
+index ed0ab838bcc5..027cd6d62f21 100644
+--- a/tools/perf/util/mem-events.c
++++ b/tools/perf/util/mem-events.c
+@@ -294,6 +294,8 @@ static const char * const mem_lvl[] = {
+ };
+ 
+ static const char * const mem_lvlnum[] = {
++	[PERF_MEM_LVLNUM_EXTN_MEM] = "Ext Mem",
++	[PERF_MEM_LVLNUM_IO] = "I/O",
+ 	[PERF_MEM_LVLNUM_ANY_CACHE] = "Any cache",
+ 	[PERF_MEM_LVLNUM_LFB] = "LFB",
+ 	[PERF_MEM_LVLNUM_RAM] = "RAM",
+-- 
+2.31.1
 
-> I have to admit I'm not that deep into irq handling, and
-> adding a print indeed doesn't trigger on Starlight Beta.
->
-> > > > @@ -176,11 +200,37 @@ static void plic_irq_eoi(struct irq_data *d)
-> > > >         }
-> > > >  }
-> > > >
-> > > > +static int plic_irq_set_type(struct irq_data *d, unsigned int type)
-> > > > +{
-> > > > +       struct plic_handler *handler = this_cpu_ptr(&plic_handlers);
-> > > > +
-> > > > +       if (handler->priv->of_data != RENESAS_R9A07G043_PLIC)
-> > > > +               return 0;
-> > > > +
-> > > > +       switch (type) {
-> > > > +       case IRQ_TYPE_LEVEL_HIGH:
-> > > > +               irq_set_handler_locked(d, handle_fasteoi_irq);
-> > > > +               break;
-> > > > +
-> > > > +       case IRQ_TYPE_EDGE_RISING:
-> > > > +               irq_set_handler_locked(d, handle_fasteoi_ack_irq);
-> > > > +               break;
-> > > > +
-> > > > +       default:
-> > > > +               return -EINVAL;
-> > > > +       }
-> > > > +
-> > > > +       return 0;
-> > > > +}
-> > > > +
-> > > >  static struct irq_chip plic_chip = {
-> > > >         .name           = "SiFive PLIC",
-> > > >         .irq_mask       = plic_irq_mask,
-> > > >         .irq_unmask     = plic_irq_unmask,
-> > > > +       .irq_ack        = plic_irq_ack,
-> > >
-> > > This causes extra processing on non-affected PLICs.
-> > > Perhaps use a separate irq_chip instance?
-> > >
-> > I don't think so as the handle_fasteoi_ack_irq() is installed only in
-> > case of RZ/Five, so irq_ack() will not be called for non-affected
-> > PLIC's. Please correct me if I am wrong.
->
-> Hence I'll leave this to the irq maintainer...
->
-> > > > @@ -293,6 +356,9 @@ static int __init plic_init(struct device_node *node,
-> > > >         if (!priv)
-> > > >                 return -ENOMEM;
-> > > >
-> > > > +       if (of_device_is_compatible(node, "renesas-r9a07g043-plic"))
-> > > > +               priv->of_data = RENESAS_R9A07G043_PLIC;
-> > > > +
-> > >
-> > > So perhaps instead just look at #interrupt-cells, and use the onecell
-> > > or twocell irq_chip/irq_domain_ops based on that?
-> > >
-> > But we do call plic_irq_domain_translate() in the alloc callback and
-> > don't have a node pointer in there to check the interrupt cell count.
-> > Or maybe we can store the interrupt cell count in priv and use it
-> > accordingly above?
->
-> That's a reasonable option.
->
-Ok I will update this in v2.
-
-Cheers,
-Prabhakar
-
-> Gr{oetje,eeting}s,
->
->                         Geert
->
-> --
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
->
-> In personal conversations with technical people, I call myself a hacker. But
-> when I'm talking to journalists I just say "programmer" or something like that.
->                                 -- Linus Torvalds
