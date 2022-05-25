@@ -2,228 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6907EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 12:12:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 558FFC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 12:13:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243214AbiEYMMw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 08:12:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36514 "EHLO
+        id S236306AbiEYMNL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 08:13:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243615AbiEYMMi (ORCPT
+        with ESMTP id S243012AbiEYMND (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 08:12:38 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FF0732065;
-        Wed, 25 May 2022 05:12:07 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id D683C2197D;
-        Wed, 25 May 2022 12:12:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1653480725; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=R9ADgFqAEGWFiaV0FfZvAzF+jTR4txDSI8ABAqVPOrU=;
-        b=awLFvIy/3uDe+jRPi3uM6ImNGcgr76dhhnrE5FbEsTNqI1+nB9prPG5CID+74x/itCyjSJ
-        a2GNM8kaKtB6kHUqHOenvn20yFWg2r+zaZK8oJdqYP7kjRxS6EZxIIVU37Nzt9AKP+Ke9l
-        TTB2CNpvemT9RZDBJoERQvemdsiy/74=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1653480725;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=R9ADgFqAEGWFiaV0FfZvAzF+jTR4txDSI8ABAqVPOrU=;
-        b=K706IInHg4GxeM1vCvXQsH8K459190FtlVuCjS88lPD7RMRcayC1vyXtj3RD1gefDX6lpt
-        1tYagrhZl6r3bKAA==
-Received: from quack3.suse.cz (unknown [10.100.224.230])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id AEF6C2C141;
-        Wed, 25 May 2022 12:12:05 +0000 (UTC)
-Received: by quack3.suse.cz (Postfix, from userid 1000)
-        id 56E32A0632; Wed, 25 May 2022 14:12:05 +0200 (CEST)
-Date:   Wed, 25 May 2022 14:12:05 +0200
-From:   Jan Kara <jack@suse.cz>
-To:     Ritesh Harjani <ritesh.list@gmail.com>
-Cc:     Jan Kara <jack@suse.cz>, Baokun Li <libaokun1@huawei.com>,
-        linux-ext4@vger.kernel.org, tytso@mit.edu,
-        adilger.kernel@dilger.ca, linux-kernel@vger.kernel.org,
-        yi.zhang@huawei.com, yebin10@huawei.com, yukuai3@huawei.com
-Subject: Re: [PATCH 2/2] ext4: correct the judgment of BUG in
- ext4_mb_normalize_request
-Message-ID: <20220525121205.znoxp52yxyhoxjcc@quack3.lan>
-References: <20220521134217.312071-1-libaokun1@huawei.com>
- <20220521134217.312071-3-libaokun1@huawei.com>
- <20220523200844.fal3pmp7epid3rvv@riteshh-domain>
- <20220523210806.yeapg54ctleocwdn@quack3.lan>
- <20220524062655.ddiltnfxxhlelfgb@riteshh-domain>
- <20220524093933.bittzsrrpddttnab@quack3.lan>
- <20220524173135.imboagpi3iqav2cg@riteshh-domain>
+        Wed, 25 May 2022 08:13:03 -0400
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52E7A2AC68;
+        Wed, 25 May 2022 05:12:42 -0700 (PDT)
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24PAu5ij032597;
+        Wed, 25 May 2022 08:12:23 -0400
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3g93vddpaf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 25 May 2022 08:12:22 -0400
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 24PCCLZQ008027
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 25 May 2022 08:12:21 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Wed, 25 May
+ 2022 08:12:20 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Wed, 25 May 2022 08:12:20 -0400
+Received: from localhost.localdomain ([10.48.65.12])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 24PCC3xm028274;
+        Wed, 25 May 2022 08:12:05 -0400
+From:   <alexandru.tachici@analog.com>
+To:     <kuba@kernel.org>
+CC:     <alexandru.tachici@analog.com>, <davem@davemloft.net>,
+        <devicetree@vger.kernel.org>, <edumazet@google.com>,
+        <geert+renesas@glider.be>, <geert@linux-m68k.org>,
+        <josua@solid-run.com>, <krzysztof.kozlowski+dt@linaro.org>,
+        <linux-kernel@vger.kernel.org>, <michael.hennerich@analog.com>,
+        <netdev@vger.kernel.org>, <pabeni@redhat.com>, <robh+dt@kernel.org>
+Subject: Re: [PATCH] dt-bindings: net: adin: Fix adi,phy-output-clock description syntax
+Date:   Wed, 25 May 2022 15:28:13 +0300
+Message-ID: <20220525122813.88431-1-alexandru.tachici@analog.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220524112425.72f8c6e0@kernel.org>
+References: <20220524112425.72f8c6e0@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220524173135.imboagpi3iqav2cg@riteshh-domain>
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: O1MHOuA5jaqGAD2SYyMLIOF5bz-hzPLI
+X-Proofpoint-ORIG-GUID: O1MHOuA5jaqGAD2SYyMLIOF5bz-hzPLI
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-25_03,2022-05-25_02,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 phishscore=0
+ spamscore=0 malwarescore=0 adultscore=0 priorityscore=1501 mlxlogscore=891
+ mlxscore=0 suspectscore=0 lowpriorityscore=0 bulkscore=0 clxscore=1011
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2204290000
+ definitions=main-2205250062
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue 24-05-22 23:01:35, Ritesh Harjani wrote:
-> On 22/05/24 11:39AM, Jan Kara wrote:
-> > On Tue 24-05-22 11:56:55, Ritesh Harjani wrote:
-> > > On 22/05/23 11:08PM, Jan Kara wrote:
-> > > > On Tue 24-05-22 01:38:44, Ritesh Harjani wrote:
-> > > > > On 22/05/21 09:42PM, Baokun Li wrote:
-> > > > > > When either of the "start + size <= ac->ac_o_ex.fe_logical" or
-> > > > > > "start > ac->ac_o_ex.fe_logical" conditions is met, it indicates
-> > > > > > that the fe_logical is not in the allocated range.
-> > > > >
-> > > > > Sounds about right to me based on the logic in ext4_mb_use_inode_pa().
-> > > > > We try to allocate/preallocate such that ac->ac_o_ex.fe_logical should fall
-> > > > > within the preallocated range. So if our start or start + size doesn't include
-> > > > > fe_logical then it is a bug in the ext4_mb_normalize_request() logic.
-> > > >
-> > > > I agree ac->ac_o_ex.fe_logical is a goal block. But AFAIK it never was a
-> > > > hard guarantee that we would allocate extent that includes that block. It
+> On Tue, 24 May 2022 16:30:18 +0200 Geert Uytterhoeven wrote:
+> > On Tue, May 24, 2022 at 4:12 PM Geert Uytterhoeven
+> > <geert+renesas@glider.be> wrote:
+> > > "make dt_binding_check":
 > > >
-> > > Agree that the guarantee is not about the extent which finally gets allocated.
-> > > It is only within ext4_mb_normalize_request() that the "start" and "size"
-> > > variable calculations is done in such a way that the ac->ac_o_ex.fe_logical
-> > > block will always fall within the "start" & "end" boundaries after
-> > > normalization.
+> > >     Documentation/devicetree/bindings/net/adi,adin.yaml:40:77: [error] syntax error: mapping values are not allowed here (syntax)
 > > >
-> > > That is how it also updates the goal block at the end too. ac->ac_g_ex.
+> > > The first line of the description ends with a colon, hence the block
+> > > needs to be marked with a "|".
 > > >
-> > > > was always treated as a hint only. In particular if you look at the logic
-> > > > in ext4_mb_normalize_request() it does shift the start of the allocation to
-> > > > avoid preallocated ranges etc.
-> > >
-> > > Yes, I checked the logic of ext4_mb_normalize_request() again.
-> > > As I see it (I can be wrong, so please correct me), there is always an attempt
-> > > to make "start" & "start + size" such that it covers ac->ac_o_ex.fe_logical
-> > > except just one change where we are trimming the size of the request to only
-> > > EXT4_BLOCKS_PER_GROUP.
-> > >
-> > > For e.g. when it compares against preallocated ranges. It has a BUG() which
-> > > checks if the ac->ac_o_ex.fe_logical already lies in the preallocated range.
-> > > Because then we should never have come here to do allocation of a new block.
-> > >
-> > > 4143                 /* PA must not overlap original request */
-> > > 4144                 BUG_ON(!(ac->ac_o_ex.fe_logical >= pa_end ||
-> > > 4145                         ac->ac_o_ex.fe_logical < pa->pa_lstart));
-> > > <...>
-> > > 4152                 BUG_ON(pa->pa_lstart <= start && pa_end >= end);
-> > >
-> > > Then after skipping the preallocated regions which doesn't fall in between
-> > > "start" and "end"...
-> > >
-> > > 4147                 /* skip PAs this normalized request doesn't overlap with */
-> > > 4148                 if (pa->pa_lstart >= end || pa_end <= start) {
-> > > 4149                         spin_unlock(&pa->pa_lock);
-> > > 4150                         continue;
-> > > 4151                 }
-> > >
-> > > ...it adjusts "start" and "end" boundary according to allocated PAs boundaries
-> > > such that fe_logical is always in between "start" and "end".
-> > >
-> > > 4154                 /* adjust start or end to be adjacent to this pa */
-> > > 4155                 if (pa_end <= ac->ac_o_ex.fe_logical) {
-> > > 4156                         BUG_ON(pa_end < start);
-> > > 4157                         start = pa_end;
-> > > 4158                 } else if (pa->pa_lstart > ac->ac_o_ex.fe_logical) {
-> > > 4159                         BUG_ON(pa->pa_lstart > end);
-> > > 4160                         end = pa->pa_lstart;
-> > > 4161                 }
-> > >
-> > >
-> > >
-> > > > so I don't see how we are guaranteed that
-> > > > ext4_mb_normalize_request() will result in an allocation request that
-> > > > includes ac->ac_o_ex.fe_logical.
-> > >
-> > > It could be I am wrong, but looks like ext4_mb_normalize_request() keeps
-> > > ac->ac_o_ex.fe_logical within "start" and "end" of allocation request.
-> > > And then updates the goal block.
-> > >
-> > > 4196         ac->ac_g_ex.fe_logical = start;
-> > > 4197         ac->ac_g_ex.fe_len = EXT4_NUM_B2C(sbi, size);
-> > >
-> > > Thoughts?
-> >
-> > Right, after some more inspection the only thing I'm concerned about is:
-> >
-> >         /* don't cover already allocated blocks in selected range */
-> >         if (ar->pleft && start <= ar->lleft) {
-> >                 size -= ar->lleft + 1 - start;
-> >                 start = ar->lleft + 1;
-> >         }
-> >
-> > which can shift start beyond ac->ac_o_ex.fe_logical if the block would be
-> > already allocated. But I guess in that case we should not be calling
-> > ext4_mb_normalize_request()? ... some more code digging .. Yes, that is
-> > guaranteed in how lleft is initialized in ext4_ext_map_blocks().
+> > > Fixes: 1f77204e11f8b9e5 ("dt-bindings: net: adin: document phy clock output properties")
+> > > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> > > ---
+> > >  Documentation/devicetree/bindings/net/adi,adin.yaml | 3 ++-  
+> > 
+> > Alexandru Ardelean's email address bounces, while he is listed as
+> > a maintainer in several DT bindings files.
 > 
-> Yes.
-> 
-> > So OK, I withdraw my objection to the stronger check but the changelog really needs
-> 
-> Thanks Jan for confirming it.
-> 
-> 
-> > to do a better job to explain why the stronger condition should be true.
-> 
-> Agreed.
-> 
-> 
-> diff --git a/fs/ext4/mballoc.c b/fs/ext4/mballoc.c
-> index 252c168454c7..9e7c145e9aa2 100644
-> --- a/fs/ext4/mballoc.c
-> +++ b/fs/ext4/mballoc.c
-> @@ -4179,7 +4179,22 @@ ext4_mb_normalize_request(struct ext4_allocation_context *ac,
->         }
->         rcu_read_unlock();
-> 
-> -       if (start + size <= ac->ac_o_ex.fe_logical &&
-> +       /*
-> +        * In this function "start" and "size" are normalized for better
-> +        * alignment and length such that we could preallocate more blocks.
-> +        * This normalization is done such that original request of
-> +        * ac->ac_o_ex.fe_logical & fe_len should always lie within "start" and
-> +        * "size" boundaries.
-> 
-> Does above comment look good to you?
+> Let's CC Alexandru Tachici, maybe he knows if we need to update 
+> and to what.
 
-Yes, thanks!
+Yeah, I should have updated this one. You can add me instead or I will come back with a patch.
 
-> +        * (Note fe_len can be relaxed since FS block allocation API does not
-> +        * provide gurantee on number of contiguous blocks allocation since that
-> +        * depends upon free space left, etc).
-> +        * In case of inode pa, later we use the allocated blocks
-> +        * [pa_start + fe_logical - pa_lstart, fe_len/size] from the preallocated
-> +        * range of goal/best blocks [start, size] to put it at the
-> +        * ac_o_ex.fe_logical extent of this inode.
-> +        * (See ext4_mb_use_inode_pa() for more details)
-> +        */
-> 
-> ^^^ We can even put more info if needed (maybe in commit message?)
+  - Alexandru Tachici <alexandru.tachici@analog.com>
 
-I'd just put into commit message a note like: ext4_mb_normalize_request()
-can move logical start of allocated blocks to reduce fragmentation and
-better utilize preallocation. However logical block requested as a start of
-allocation (ac->ac_o_ex.fe_logical) should always be covered by allocated
-blocks so we add assertion to check that.
-
-> 
-> +       if (start + size <= ac->ac_o_ex.fe_logical ||
->                         start > ac->ac_o_ex.fe_logical) {
->                 ext4_msg(ac->ac_sb, KERN_ERR,
->                          "start %lu, size %lu, fe_logical %lu",
-> 
-> FYI - I ran the fsstress test (with -g 256) shared by Baokun with only above
-> change (&& -> ||) and not the original fix. And I see that we can hit this
-> mentioned BUG() now.
-
-Cool.
-
-								Honza
--- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+Regards,
+Alexandru
