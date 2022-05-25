@@ -2,95 +2,222 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 558FFC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 12:13:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21CEDC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 12:13:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236306AbiEYMNL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 08:13:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37340 "EHLO
+        id S242246AbiEYMN0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 08:13:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243012AbiEYMND (ORCPT
+        with ESMTP id S243624AbiEYMNH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 08:13:03 -0400
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52E7A2AC68;
-        Wed, 25 May 2022 05:12:42 -0700 (PDT)
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24PAu5ij032597;
-        Wed, 25 May 2022 08:12:23 -0400
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3g93vddpaf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 25 May 2022 08:12:22 -0400
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 24PCCLZQ008027
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 25 May 2022 08:12:21 -0400
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Wed, 25 May
- 2022 08:12:20 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Wed, 25 May 2022 08:12:20 -0400
-Received: from localhost.localdomain ([10.48.65.12])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 24PCC3xm028274;
-        Wed, 25 May 2022 08:12:05 -0400
-From:   <alexandru.tachici@analog.com>
-To:     <kuba@kernel.org>
-CC:     <alexandru.tachici@analog.com>, <davem@davemloft.net>,
-        <devicetree@vger.kernel.org>, <edumazet@google.com>,
-        <geert+renesas@glider.be>, <geert@linux-m68k.org>,
-        <josua@solid-run.com>, <krzysztof.kozlowski+dt@linaro.org>,
-        <linux-kernel@vger.kernel.org>, <michael.hennerich@analog.com>,
-        <netdev@vger.kernel.org>, <pabeni@redhat.com>, <robh+dt@kernel.org>
-Subject: Re: [PATCH] dt-bindings: net: adin: Fix adi,phy-output-clock description syntax
-Date:   Wed, 25 May 2022 15:28:13 +0300
-Message-ID: <20220525122813.88431-1-alexandru.tachici@analog.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220524112425.72f8c6e0@kernel.org>
-References: <20220524112425.72f8c6e0@kernel.org>
+        Wed, 25 May 2022 08:13:07 -0400
+Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::221])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE1D8313A9;
+        Wed, 25 May 2022 05:12:59 -0700 (PDT)
+Received: (Authenticated sender: foss@0leil.net)
+        by mail.gandi.net (Postfix) with ESMTPSA id A727C24000A;
+        Wed, 25 May 2022 12:12:55 +0000 (UTC)
+From:   Quentin Schulz <foss+kernel@0leil.net>
+Cc:     shawnx.tu@intel.com, mchehab@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, linux-media@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        foss+kernel@0leil.net,
+        Quentin Schulz <quentin.schulz@theobroma-systems.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v4 1/4] media: dt-bindings: ov5675: document YAML binding
+Date:   Wed, 25 May 2022 14:12:37 +0200
+Message-Id: <20220525121240.1094792-1-foss+kernel@0leil.net>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: O1MHOuA5jaqGAD2SYyMLIOF5bz-hzPLI
-X-Proofpoint-ORIG-GUID: O1MHOuA5jaqGAD2SYyMLIOF5bz-hzPLI
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-25_03,2022-05-25_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 phishscore=0
- spamscore=0 malwarescore=0 adultscore=0 priorityscore=1501 mlxlogscore=891
- mlxscore=0 suspectscore=0 lowpriorityscore=0 bulkscore=0 clxscore=1011
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2204290000
- definitions=main-2205250062
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> On Tue, 24 May 2022 16:30:18 +0200 Geert Uytterhoeven wrote:
-> > On Tue, May 24, 2022 at 4:12 PM Geert Uytterhoeven
-> > <geert+renesas@glider.be> wrote:
-> > > "make dt_binding_check":
-> > >
-> > >     Documentation/devicetree/bindings/net/adi,adin.yaml:40:77: [error] syntax error: mapping values are not allowed here (syntax)
-> > >
-> > > The first line of the description ends with a colon, hence the block
-> > > needs to be marked with a "|".
-> > >
-> > > Fixes: 1f77204e11f8b9e5 ("dt-bindings: net: adin: document phy clock output properties")
-> > > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> > > ---
-> > >  Documentation/devicetree/bindings/net/adi,adin.yaml | 3 ++-  
-> > 
-> > Alexandru Ardelean's email address bounces, while he is listed as
-> > a maintainer in several DT bindings files.
-> 
-> Let's CC Alexandru Tachici, maybe he knows if we need to update 
-> and to what.
+From: Quentin Schulz <quentin.schulz@theobroma-systems.com>
 
-Yeah, I should have updated this one. You can add me instead or I will come back with a patch.
+This patch adds documentation of device tree in YAML schema for the
+OV5675 CMOS image sensor from Omnivision.
 
-  - Alexandru Tachici <alexandru.tachici@analog.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Quentin Schulz <quentin.schulz@theobroma-systems.com>
+---
 
-Regards,
-Alexandru
+v4:
+ - added Reviewed-by,
+
+v3:
+ - removed clock-names,
+ - removed clock-frequency,
+ - added all-of of video-interface-devices schema,
+ - added clock frequency range in description,
+ - rephrased definition of supplies,
+ - fixed name of reset gpio,
+ - used schema ref for port and port->endpoint,
+ - removed mentions to driver,
+ - added HW data transfer speed limitation in comment for
+ link-frequencies,
+ - changed root additionalProperties to unevaluatedProperties to not
+ have to list all properties from video-interface-devices schema, such as
+ orientation or rotation,
+ - added maxItems to reset-gpios,
+ - updated example to use assigned-clocks and assigned-clock-rates
+ instead of clock-frequency and clock-names,
+
+v2:
+ - fixed incorrect id,
+ - fixed device tree example by adding missing dt-bindings headers,
+ - fixed device tree example by using vcc_1v2 for dvdd supply, as requested
+ in datasheet,
+
+ .../bindings/media/i2c/ovti,ov5675.yaml       | 123 ++++++++++++++++++
+ MAINTAINERS                                   |   1 +
+ 2 files changed, 124 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/media/i2c/ovti,ov5675.yaml
+
+diff --git a/Documentation/devicetree/bindings/media/i2c/ovti,ov5675.yaml b/Documentation/devicetree/bindings/media/i2c/ovti,ov5675.yaml
+new file mode 100644
+index 0000000000000..f0a48707bed77
+--- /dev/null
++++ b/Documentation/devicetree/bindings/media/i2c/ovti,ov5675.yaml
+@@ -0,0 +1,123 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++# Copyright (c) 2022 Theobroma Systems Design und Consulting GmbH
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/media/i2c/ovti,ov5675.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Omnivision OV5675 CMOS Sensor
++
++maintainers:
++  - Quentin Schulz <quentin.schulz@theobroma-systems.com>
++
++allOf:
++  - $ref: /schemas/media/video-interface-devices.yaml#
++
++description: |
++  The Omnivision OV5675 is a high performance, 1/5-inch, 5 megapixel, CMOS
++  image sensor that delivers 2592x1944 at 30fps. It provides full-frame,
++  sub-sampled, and windowed 10-bit MIPI images in various formats via the
++  Serial Camera Control Bus (SCCB) interface.
++
++  This chip is programmable through I2C and two-wire SCCB. The sensor output
++  is available via CSI-2 serial data output (up to 2-lane).
++
++properties:
++  compatible:
++    const: ovti,ov5675
++
++  reg:
++    maxItems: 1
++
++  clocks:
++    description:
++      System input clock (aka XVCLK). From 6 to 27 MHz.
++    maxItems: 1
++
++  dovdd-supply:
++    description:
++      Digital I/O voltage supply, 1.8 volts.
++
++  avdd-supply:
++    description:
++      Analog voltage supply, 2.8 volts.
++
++  dvdd-supply:
++    description:
++      Digital core voltage supply, 1.2 volts.
++
++  reset-gpios:
++    description:
++      The phandle and specifier for the GPIO that controls sensor reset.
++      This corresponds to the hardware pin XSHUTDN which is physically
++      active low.
++    maxItems: 1
++
++  port:
++    $ref: /schemas/graph.yaml#/$defs/port-base
++    additionalProperties: false
++
++    properties:
++      endpoint:
++        $ref: /schemas/media/video-interfaces.yaml#
++        unevaluatedProperties: false
++
++        properties:
++          data-lanes:
++            minItems: 1
++            maxItems: 2
++
++          # Supports max data transfer of 900 Mbps per lane
++          link-frequencies: true
++
++required:
++  - compatible
++  - reg
++  - clocks
++  - dovdd-supply
++  - avdd-supply
++  - dvdd-supply
++  - port
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/px30-cru.h>
++    #include <dt-bindings/gpio/gpio.h>
++    #include <dt-bindings/pinctrl/rockchip.h>
++
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        ov5675: camera@36 {
++            compatible = "ovti,ov5675";
++            reg = <0x36>;
++
++            reset-gpios = <&gpio2 RK_PB1 GPIO_ACTIVE_LOW>;
++            pinctrl-names = "default";
++            pinctrl-0 = <&cif_clkout_m0>;
++
++            clocks = <&cru SCLK_CIF_OUT>;
++            assigned-clocks = <&cru SCLK_CIF_OUT>;
++            assigned-clock-rates = <19200000>;
++
++            avdd-supply = <&vcc_1v8>;
++            dvdd-supply = <&vcc_1v2>;
++            dovdd-supply = <&vcc_2v8>;
++
++            rotation = <90>;
++            orientation = <0>;
++
++            port {
++                ucam_out: endpoint {
++                    remote-endpoint = <&mipi_in_ucam>;
++                    data-lanes = <1 2>;
++                    link-frequencies = /bits/ 64 <450000000>;
++                };
++            };
++        };
++    };
++...
++
+diff --git a/MAINTAINERS b/MAINTAINERS
+index f468864fd268c..549cdec4faaf3 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -14551,6 +14551,7 @@ M:	Shawn Tu <shawnx.tu@intel.com>
+ L:	linux-media@vger.kernel.org
+ S:	Maintained
+ T:	git git://linuxtv.org/media_tree.git
++F:	Documentation/devicetree/bindings/media/i2c/ovti,ov5675.yaml
+ F:	drivers/media/i2c/ov5675.c
+ 
+ OMNIVISION OV5693 SENSOR DRIVER
+-- 
+2.36.1
+
