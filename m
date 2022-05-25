@@ -2,103 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03074C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 14:15:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EF5AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 14:17:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244733AbiEYOO4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 10:14:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39686 "EHLO
+        id S235771AbiEYORp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 10:17:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244111AbiEYOOw (ORCPT
+        with ESMTP id S231388AbiEYORm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 10:14:52 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 75696ABF79
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 07:14:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653488090;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=wM9x4B2z5qH/AhZypEbIZLZ9L9qM+TiDof1TvDE3R8I=;
-        b=DiwoCDHY0bTsvjojy12OekRANEYMuWzJA+buu2U80YxiO0E/+6NJumlT6kn9T7ntupg8Kv
-        wvivs/JjDNLd0oBae6dkHXPMlyYhd34kl0xdDlr7Ymjv3el+FtcHeqMjht2w0KfYss+xcc
-        pXhvMEa9+bSFURNw1/pQgYxWdR/U4l8=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-613-aKo3TEKsO7mXUocalVHJtQ-1; Wed, 25 May 2022 10:14:49 -0400
-X-MC-Unique: aKo3TEKsO7mXUocalVHJtQ-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B2AE5185A794;
-        Wed, 25 May 2022 14:14:48 +0000 (UTC)
-Received: from starship (unknown [10.40.192.55])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9794A1121315;
-        Wed, 25 May 2022 14:14:46 +0000 (UTC)
-Message-ID: <d50f564071a7d8cc63a25bb9c96317504f021f49.camel@redhat.com>
-Subject: Re: [PATCH RESEND v12 00/17] KVM: x86/pmu: Add basic support to
- enable guest PEBS via DS
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>,
-        Like Xu <like.xu.linux@gmail.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Joerg Roedel <joro@8bytes.org>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, Jim Mattson <jmattson@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>
-Date:   Wed, 25 May 2022 17:14:45 +0300
-In-Reply-To: <eb34985a-3f21-f4d7-f25d-28f24c9794be@redhat.com>
-References: <20220411101946.20262-1-likexu@tencent.com>
-         <87fsl5u3bg.fsf@redhat.com>
-         <e0b96ebd-00ee-ead4-cf35-af910e847ada@gmail.com>
-         <d7461fd4-f6ec-1a0b-6768-0008a3092add@gmail.com>
-         <874k1ltw9y.fsf@redhat.com>
-         <f379a933-15b0-6858-eeef-5fbef6e5529c@gmail.com>
-         <0848a2da-c9cf-6973-c774-ff16c3e8a248@redhat.com>
-         <289d0c88-36a0-afd4-4d47-f2db3fb63654@gmail.com>
-         <48b495c5610d25596a268c71b627b2e2136ac0bd.camel@redhat.com>
-         <eb34985a-3f21-f4d7-f25d-28f24c9794be@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        Wed, 25 May 2022 10:17:42 -0400
+X-Greylist: delayed 1221 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 25 May 2022 07:17:41 PDT
+Received: from gateway33.websitewelcome.com (gateway33.websitewelcome.com [192.185.146.82])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E56739C2CB
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 07:17:41 -0700 (PDT)
+Received: from cm14.websitewelcome.com (cm14.websitewelcome.com [100.42.49.7])
+        by gateway33.websitewelcome.com (Postfix) with ESMTP id 8CE0448FA1
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 08:57:20 -0500 (CDT)
+Received: from 162-215-252-169.unifiedlayer.com ([208.91.199.152])
+        by cmsmtp with SMTP
+        id trVonr8sRpk0JtrVonGP9g; Wed, 25 May 2022 08:57:20 -0500
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=roeck-us.net; s=default; h=Content-Transfer-Encoding:MIME-Version:
+        References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
+        Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=5LUB0awXMZiu8jQkcYS4v26EEkwncaXC0X8E7Z9PWUg=; b=VtMUDDSp1odfYSN6zngsMlO1KW
+        39Qfou/QfHbqhGoKH/DecuZiuF3Tt+gpuG++GiWfTBH1mD5kf6ZTOJPFCYYrtbN9d06EdD5wka3ET
+        s8fyachKXzYZ/cE7wGpTm1N1hX9Bd0f8p6vZvozT7rkEPJFqcPfh21Z++TNIT0EWlL3OY0dMbWxcz
+        NWhhXQSdUzUd623HC/LHvcdJsEngsZWHMBBjwZJ4ix7+9k3yMS6LdaQQcVTWu+9FdM99TT1bd6l+T
+        nRz8O/aUJz5dODBI/L+u8RtdBf9amJ+GiKtcBRVQWSbyTZiI2EXNB3vtUM0jpnXYcz6IdsGqC4PXp
+        IpmQKqPQ==;
+Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:58270 helo=localhost)
+        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@roeck-us.net>)
+        id 1ntrVn-000P7D-QZ; Wed, 25 May 2022 13:57:19 +0000
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     linux-hwmon@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, Jean Delvare <jdelvare@suse.com>,
+        Slawomir Stepien <sst@poczta.fm>,
+        Guenter Roeck <linux@roeck-us.net>
+Subject: [PATCH 03/40] hwmon: (lm90) Reorder include files in alphabetical order
+Date:   Wed, 25 May 2022 06:56:32 -0700
+Message-Id: <20220525135709.2899592-4-linux@roeck-us.net>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220525135709.2899592-1-linux@roeck-us.net>
+References: <20220525135709.2899592-1-linux@roeck-us.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
+Content-Transfer-Encoding: 8bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - roeck-us.net
+X-BWhitelist: no
+X-Source-IP: 108.223.40.66
+X-Source-L: No
+X-Exim-ID: 1ntrVn-000P7D-QZ
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net (localhost) [108.223.40.66]:58270
+X-Source-Auth: guenter@roeck-us.net
+X-Email-Count: 15
+X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-05-25 at 16:13 +0200, Paolo Bonzini wrote:
-> On 5/25/22 16:12, Maxim Levitsky wrote:
-> > FYI, this patch series also break 'msr' test in kvm-unit tests.
-> > (kvm/queue of today, and master of the kvm-unit-tests repo)
-> > 
-> > The test tries to set the MSR_IA32_MISC_ENABLE to 0x400c51889 and gets #GP.
-> > 
-> > 
-> > Commenting this out, gets rid of #GP, but test still fails with unexpected result
-> > 
-> > 		if (!msr_info->host_initiated &&
-> > 		    ((old_val ^ data) & MSR_IA32_MISC_ENABLE_PEBS_UNAVAIL))
-> > 			return 1;
-> > 
-> > 
-> > 
-> > 
-> > It is very possible that the test is broken, I'll check this later.
-> 
-> Yes, for that I've sent a patch already:
-> 
-> https://lore.kernel.org/kvm/20220520183207.7952-1-pbonzini@redhat.com/
-> 
-> Paolo
-> 
+Reorder include files in alphabetical order to reduce the chance of
+duplicates and to make it clear where new include files should be
+added. Drop the unnecessary include of linux/sysfs.h. Include
+linux/device.h instead because that is what is actually used.
 
-Thank you very much!
+No functional change.
 
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+---
+ drivers/hwmon/lm90.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-Best regards,
-	Maxim Levitsky
+diff --git a/drivers/hwmon/lm90.c b/drivers/hwmon/lm90.c
+index 63ada2d0d839..b7f5b743c9f5 100644
+--- a/drivers/hwmon/lm90.c
++++ b/drivers/hwmon/lm90.c
+@@ -80,18 +80,18 @@
+  * concern all supported chipsets, unless mentioned otherwise.
+  */
+ 
+-#include <linux/module.h>
++#include <linux/device.h>
++#include <linux/err.h>
++#include <linux/i2c.h>
+ #include <linux/init.h>
+-#include <linux/slab.h>
++#include <linux/interrupt.h>
+ #include <linux/jiffies.h>
+-#include <linux/i2c.h>
+ #include <linux/hwmon.h>
+-#include <linux/err.h>
++#include <linux/module.h>
+ #include <linux/mutex.h>
+ #include <linux/of_device.h>
+-#include <linux/sysfs.h>
+-#include <linux/interrupt.h>
+ #include <linux/regulator/consumer.h>
++#include <linux/slab.h>
+ #include <linux/workqueue.h>
+ 
+ /*
+-- 
+2.35.1
 
