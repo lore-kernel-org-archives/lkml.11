@@ -2,103 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39FB9C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 15:15:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7FFFC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 15:15:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241608AbiEYPPK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 11:15:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51934 "EHLO
+        id S244775AbiEYPPQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 11:15:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245111AbiEYPO6 (ORCPT
+        with ESMTP id S245152AbiEYPPE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 11:14:58 -0400
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98221AFB0A;
-        Wed, 25 May 2022 08:14:53 -0700 (PDT)
-Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=diego.localnet)
-        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <heiko@sntech.de>)
-        id 1ntsiW-0006cQ-BV; Wed, 25 May 2022 17:14:32 +0200
-From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-To:     Rob Herring <robh@kernel.org>
-Cc:     palmer@dabbelt.com, paul.walmsley@sifive.com,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        wefu@redhat.com, guoren@kernel.org, atishp@atishpatra.org,
-        anup@brainfault.org, mick@ics.forth.gr, samuel@sholland.org,
-        cmuellner@linux.com, philipp.tomsich@vrull.eu, krzk+dt@kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH v2 1/3] dt-bindings: riscv: document cbom-block-size
-Date:   Wed, 25 May 2022 17:14:31 +0200
-Message-ID: <4376261.8F6SAcFxjW@diego>
-In-Reply-To: <20220518002529.GA1928329-robh@kernel.org>
-References: <20220511214132.2281431-1-heiko@sntech.de> <20220511214132.2281431-2-heiko@sntech.de> <20220518002529.GA1928329-robh@kernel.org>
+        Wed, 25 May 2022 11:15:04 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 702C3AFAF1
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 08:15:00 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-139-Xco2DS7JNnqZ9dGANxt50w-1; Wed, 25 May 2022 16:14:57 +0100
+X-MC-Unique: Xco2DS7JNnqZ9dGANxt50w-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.36; Wed, 25 May 2022 16:14:55 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.036; Wed, 25 May 2022 16:14:55 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Arnd Bergmann' <arnd@arndb.de>,
+        Linus Walleij <linus.walleij@linaro.org>
+CC:     Allen Pais <apais@linux.microsoft.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        "olivier.dautricourt@orolia.com" <olivier.dautricourt@orolia.com>,
+        Stefan Roese <sr@denx.de>, Vinod Koul <vkoul@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        "linux-hardening@vger.kernel.org" <linux-hardening@vger.kernel.org>,
+        "Ludovic Desroches" <ludovic.desroches@microchip.com>,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "Ray Jui" <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
+        "Nicolas Saenz Julienne" <nsaenz@kernel.org>,
+        Paul Cercueil <paul@crapouillou.net>,
+        "Eugeniy.Paltsev@synopsys.com" <Eugeniy.Paltsev@synopsys.com>,
+        "Gustavo Pimentel" <gustavo.pimentel@synopsys.com>,
+        Viresh Kumar <vireshk@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Leo Li <leoyang.li@nxp.com>,
+        "zw@zh-kernel.org" <zw@zh-kernel.org>,
+        Zhou Wang <wangzhou1@hisilicon.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Sean Wang <sean.wang@mediatek.com>,
+        "Matthias Brugger" <matthias.bgg@gmail.com>,
+        =?utf-8?B?QW5kcmVhcyBGw6RyYmVy?= <afaerber@suse.de>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Logan Gunthorpe <logang@deltatee.com>,
+        Sanjay R Mehta <sanju.mehta@amd.com>,
+        Daniel Mack <daniel@zonque.org>,
+        Haojian Zhuang <haojian.zhuang@gmail.com>,
+        "Robert Jarzmik" <robert.jarzmik@free.fr>,
+        Andy Gross <agross@kernel.org>,
+        "Bjorn Andersson" <bjorn.andersson@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        "green.wan@sifive.com" <green.wan@sifive.com>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Baolin Wang <baolin.wang7@gmail.com>,
+        Lyra Zhang <zhang.lyra@gmail.com>,
+        Patrice CHOTARD <patrice.chotard@foss.st.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        =?utf-8?B?SmVybmVqIMWga3JhYmVj?= <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: RE: [RFC 1/1] drivers/dma/*: replace tasklets with workqueue
+Thread-Topic: [RFC 1/1] drivers/dma/*: replace tasklets with workqueue
+Thread-Index: AQHYcCfd7aGmAIzi9kCYuZw9gbAMOK0vsf4g
+Date:   Wed, 25 May 2022 15:14:55 +0000
+Message-ID: <9947cfa64667406996de191f07b9e8b9@AcuMS.aculab.com>
+References: <20220419211658.11403-1-apais@linux.microsoft.com>
+ <20220419211658.11403-2-apais@linux.microsoft.com>
+ <CACRpkdZ2DFZRPHS1x0=M3_8zYvU-jpCG5Tm3863dXv51EhY+BA@mail.gmail.com>
+ <CAK8P3a0j_rziihsgHnG5bHMxmPbOkAhT6_+CCE4iFZy7HzQrLw@mail.gmail.com>
+In-Reply-To: <CAK8P3a0j_rziihsgHnG5bHMxmPbOkAhT6_+CCE4iFZy7HzQrLw@mail.gmail.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Mittwoch, 18. Mai 2022, 02:25:29 CEST schrieb Rob Herring:
-> On Wed, May 11, 2022 at 11:41:30PM +0200, Heiko Stuebner wrote:
-> > The Zicbom operates on a block-size defined for the cpu-core,
-> > which does not necessarily match other cache-sizes used.
-> > 
-> > So add the necessary property for the system to know the core's
-> > block-size.
-> > 
-> > Signed-off-by: Heiko Stuebner <heiko@sntech.de>
-> > ---
-> >  Documentation/devicetree/bindings/riscv/cpus.yaml | 7 +++++++
-> >  1 file changed, 7 insertions(+)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/riscv/cpus.yaml b/Documentation/devicetree/bindings/riscv/cpus.yaml
-> > index d632ac76532e..b179bfd155a3 100644
-> > --- a/Documentation/devicetree/bindings/riscv/cpus.yaml
-> > +++ b/Documentation/devicetree/bindings/riscv/cpus.yaml
-> > @@ -63,6 +63,13 @@ properties:
-> >        - riscv,sv48
-> >        - riscv,none
-> >  
-> > +  riscv,cbom-block-size:
-> > +    $ref: /schemas/types.yaml#/definitions/uint32
-> 
-> Any value 0-2^32 is valid?
-
-funnily enough there really seems to be _no_ constraints defined in the
-spec [0] regarding the actual cache-block size.
-
-It essentially only states
-"The capacity and organization of a cache and the size of a
-cache block are both implementation-specific"
-
-and later in software-discovery:
-"The initial set of CMO extensions requires the following information to
-be discovered by software:
-- The size of the cache block for management and prefetch instructions
-- The size of the cache block for zero instructions"
-
-
-
-[0] https://github.com/riscv/riscv-CMOs/blob/master/specifications/cmobase-v1.0.pdf
-
-
-> 
-> > +    description:
-> > +      Blocksize in bytes for the Zicbom cache operations. The block
-> > +      size is a property of the core itself and does not necessarily
-> > +      match other software defined cache sizes.
-> 
-> What about hardware defined cache sizes? I'm scratching my head as to 
-> what a 'software defined cache size' is.
-> 
-> > +
-> >    riscv,isa:
-> >      description:
-> >        Identifies the specific RISC-V instruction set architecture
-> 
-
-
-
+RnJvbTogQXJuZCBCZXJnbWFubg0KPiBTZW50OiAyNSBNYXkgMjAyMiAxMjowNA0KPiANCj4gT24g
+V2VkLCBNYXkgMjUsIDIwMjIgYXQgMTE6MjQgQU0gTGludXMgV2FsbGVpaiA8bGludXMud2FsbGVp
+akBsaW5hcm8ub3JnPiB3cm90ZToNCj4gPiBPbiBUdWUsIEFwciAxOSwgMjAyMiBhdCAxMToxNyBQ
+TSBBbGxlbiBQYWlzIDxhcGFpc0BsaW51eC5taWNyb3NvZnQuY29tPiB3cm90ZToNCj4gPg0KPiA+
+ID4gVGhlIHRhc2tsZXQgaXMgYW4gb2xkIEFQSSB3aGljaCB3aWxsIGJlIGRlcHJlY2F0ZWQsIHdv
+cmtxdWV1ZSBBUEkNCj4gPiA+IGNhYiBiZSB1c2VkIGluc3RlYWQgb2YgdGhlbS4NCj4gPiA+DQo+
+ID4gPiBUaGlzIHBhdGNoIHJlcGxhY2VzIHRoZSB0YXNrbGV0IHVzYWdlIGluIGRyaXZlcnMvZG1h
+Lyogd2l0aCBhDQo+ID4gPiBzaW1wbGUgd29yay4NCj4gPiA+DQo+ID4gPiBHaXRodWI6IGh0dHBz
+Oi8vZ2l0aHViLmNvbS9LU1BQL2xpbnV4L2lzc3Vlcy85NA0KPiA+ID4NCj4gPiA+IFNpZ25lZC1v
+ZmYtYnk6IEFsbGVuIFBhaXMgPGFwYWlzQGxpbnV4Lm1pY3Jvc29mdC5jb20+DQo+ID4NCj4gPiBQ
+YWdpbmcgVmluY2VudCBHdWl0dG90IGFuZCBBcm5kIEJlcmdtYW5uIG9uIHRoZSBmb2xsb3dpbmcg
+cXVlc3Rpb24NCj4gPiBvbiB0aGlzIHBhdGNoIHNldDoNCj4gPg0KPiA+IC0gV2lsbCByZXBsYWNp
+bmcgdGFza2xldHMgd2l0aCB3b3JrcXVlIGxpa2UgdGhpcyBuZWdhdGl2ZWx5IGltcGFjdCB0aGUN
+Cj4gPiAgIHBlcmZvcm1hbmNlIG9uIERNQSBlbmdpbmUgYm90dG9tIGhhbHZlcz8NCj4gDQo+IEkg
+dGhpbmsgaXQgd2lsbCBpbiBzb21lIGNhc2VzIGJ1dCBub3Qgb3RoZXJzLiBUaGUgcHJvYmxlbSBJ
+IHNlZSBpcyB0aGF0DQo+IHRoZSBzaG9ydCBwYXRjaCBkZXNjcmlwdGlvbiBtYWtlcyBpdCBzb3Vu
+ZCBsaWtlIGEgdHJpdmlhbCBjb252ZXJzaW9uIG9mIGENCj4gc2luZ2xlIHN1YnN5c3RlbSwgYnV0
+IGluIHJlYWxpdHkgdGhpcyBpbnRlcmFjdHMgd2l0aCBhbGwgdGhlIGRyaXZlcnMgdXNpbmcNCj4g
+RE1BIGVuZ2luZXMsIGluY2x1ZGluZyB0dHkvc2VyaWFsLCBzb3VuZCwgbW1jIGFuZCBzcGkuDQo+
+IA0KPiBJbiBtYW55IGNhc2VzLCB0aGUgY2hhbmdlIGlzIGFuIGltcHJvdmVtZW50LCBidXQgSSBj
+YW4gc2VlIGEgbnVtYmVyDQo+IG9mIHdheXMgdGhpcyBtaWdodCBnbyB3cm9uZzoNCg0KSWYgdGhl
+ICd0YXNrbGV0JyBBUEkgaXMgYmFzZWQgb24gdGhlIHNvZnRpbnQgKG9yIHNpbWlsYXIpDQp0aGVu
+IGNoYW5naW5nIHRvIHdvcmtxdWV1ZSB3aWxsIGNhdXNlIHNlcmlvdXMgZ3JpZWYgaW4gbWFueSBj
+YXNlcw0KdW5sZXNzIHRoZSB3b3JrcXVldWUgcHJvY2VzcyBydW5zIGF0IGEgaGlnaCBwcmlvcml0
+eS4NCg0KQ3VycmVudGx5IHNvZnRpbnQgY2FsbGJhY2tzIGFyZSB1c3VhbGx5IGhpZ2hlciBwcmlv
+cml0eSB0aGFuDQphbnkgdGFzay9wcm9jZXNzLg0KU28gb24gYSBidXN5IHN5c3RlbSB0aGV5IGFs
+bW9zdCBhbHdheXMgcnVuLg0KKFRoZXkgY2FuIGdldCBjYXVnaHQgb3V0IGJ5IGEgbmVlZF9yZXNj
+aGVkKCkgY2FsbCBhbmQgc3VkZGVubHkNCmJlIGZpZ2h0aW5nIHdpdGggbm9ybWFsIHVzZXIgcHJv
+Y2Vzc2VzIGZvciBjcHUgdGltZS4pDQoNCkFzIGFybmQgc2FpZCwgSSBzdXNwZWN0IHRoaXMgd2ls
+bCBicmVhayBhbnl0aGluZyB1c2luZyB0YXNrbGV0cw0KdG8gY2hhaW4gdG9nZXRoZXIgYXVkaW8g
+b3IgdmlkZW8gYnVmZmVycy4NCkFueSBwcm9jZXNzIGNvZGUgZG9pbmcgdGhhdCB3b3VsZCBuZWVk
+IHByb2JiYWx5IHRvIHJ1biBhdCBhDQonbWlkZGxpbmcnIFJUIHByaW9yaXR5Lg0KDQoJRGF2aWQN
+Cg0KLQ0KUmVnaXN0ZXJlZCBBZGRyZXNzIExha2VzaWRlLCBCcmFtbGV5IFJvYWQsIE1vdW50IEZh
+cm0sIE1pbHRvbiBLZXluZXMsIE1LMSAxUFQsIFVLDQpSZWdpc3RyYXRpb24gTm86IDEzOTczODYg
+KFdhbGVzKQ0K
 
