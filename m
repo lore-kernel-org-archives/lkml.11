@@ -2,211 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7329C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 14:33:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39C14C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 14:33:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244761AbiEYOdJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 10:33:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51074 "EHLO
+        id S244815AbiEYOd0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 10:33:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242606AbiEYOdE (ORCPT
+        with ESMTP id S244836AbiEYOdW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 10:33:04 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88663A76E7;
-        Wed, 25 May 2022 07:33:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653489183; x=1685025183;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=e8WdMPHPvUxue/jRn47cDBNn5mZvdiHoI8fDLRKx+b4=;
-  b=CyK6SQSUOOhv+w5/q/jod4hDt6Ajmf+9A8l6afxC4zXPb9fXry3yFxUQ
-   De6zfF+1+WljvKD1BeAyMod+trlqTFKefS7Pt/mQMIQUUg+vuACrieJec
-   MNYpMG+SkMmurKtuuvGnkboa/muzvKRG5JJRz3iMcNjgev7vFTuBEOqkr
-   k/YKY00bs5jlt+r76hK7Vpuo7rHA3pNn4bCxX6vgndC7IiggkKogNVpZs
-   V5vShNwXiw8USJUDnP0TfVqas43fZZ7oa+FPnboHb17IYosEBF0mEqfHQ
-   W9WSZYslQeaKamxn2RHuDaGPPw5VCdUrDkQ5cX5dAnjjnYYnbBrWL1Ffe
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10358"; a="360218473"
-X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
-   d="scan'208";a="360218473"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2022 07:33:03 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
-   d="scan'208";a="573264216"
-Received: from lkp-server01.sh.intel.com (HELO db63a1be7222) ([10.239.97.150])
-  by orsmga007.jf.intel.com with ESMTP; 25 May 2022 07:32:56 -0700
-Received: from kbuild by db63a1be7222 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nts4F-00034E-QU;
-        Wed, 25 May 2022 14:32:55 +0000
-Date:   Wed, 25 May 2022 22:32:14 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Eugenio =?iso-8859-1?Q?P=E9rez?= <eperezma@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        Jason Wang <jasowang@redhat.com>
-Cc:     kbuild-all@lists.01.org, Zhu Lingshan <lingshan.zhu@intel.com>,
-        martinh@xilinx.com, Stefano Garzarella <sgarzare@redhat.com>,
-        ecree.xilinx@gmail.com, Eli Cohen <elic@nvidia.com>,
-        Dan Carpenter <error27@gmail.com>,
-        Parav Pandit <parav@nvidia.com>,
-        Wu Zongyong <wuzongyong@linux.alibaba.com>, dinang@xilinx.com,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Xie Yongji <xieyongji@bytedance.com>, gautam.dawar@amd.com,
-        lulu@redhat.com, martinpo@xilinx.com, pabloc@xilinx.com,
-        Longpeng <longpeng2@huawei.com>, Piotr.Uminski@intel.com,
-        tanuj.kamde@amd.com, Si-Wei Liu <si-wei.liu@oracle.com>,
-        habetsm.xilinx@gmail.com, lvivier@redhat.com,
-        Zhang Min <zhang.min9@zte.com.cn>, hanand@xilinx.com
-Subject: Re: [PATCH v3 3/4] vhost-vdpa: uAPI to stop the device
-Message-ID: <202205252236.4ysv1ZWg-lkp@intel.com>
-References: <20220525105922.2413991-4-eperezma@redhat.com>
+        Wed, 25 May 2022 10:33:22 -0400
+Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E63FAAE263
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 07:33:19 -0700 (PDT)
+Received: by mail-io1-f70.google.com with SMTP id u18-20020a5d8712000000b0064c7a7c497aso11674603iom.18
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 07:33:19 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=lfuRuCSbDbWw/LnmiLDn4PqMyIUMss4hmHEyVpcB5Bk=;
+        b=f6mDWMRnSUugHYZgSC6TVPcd7JJ3/UgkrhCMkgMoweAMYN2u+93N8RPSnImk0INFEL
+         XsemPEUXJo8skzUMQir+rG/waIprgWtOGJUwWrWOo+c83lVNrA1rNnP8eif6K5mvN6uw
+         V9lsVsVVBwx8h0Kj7xGSPniMUvy080qxVdQWZIp2hNqR8dw3CKqMro1L0pnrwbNm/Z1W
+         IK/8RQalOBcUose5x6e8lwVFujr5+2d0E8VGYJ3DD2B2ZTyBQG+P4LzloltTYqff14IW
+         ActktOCdDUIj8IU3D7f4cL+FKbaRGOa75h6wqfQQLGBJezaZ24fzr4A7Z6OzsqhoWZEW
+         KKwA==
+X-Gm-Message-State: AOAM532ioFf0HZ7cGPpfiGijOZKOX5B0M5ZI9U7PWYhdmJWGUtFbQZNd
+        BNbgUpByj75YLvrSm2Xlu+qklLKTGZ4Rvp0pSw43bfSAHMdc
+X-Google-Smtp-Source: ABdhPJzTwtWHWhxEhDsaVWEr2S8+/3aht9UKWNH55PIwPGUjiB6Db+Hkc6N+N5+hfzxiE3l699mTHOiwxjVZ0ks5kOqz2DReax4x
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220525105922.2413991-4-eperezma@redhat.com>
+X-Received: by 2002:a92:6811:0:b0:2cd:994d:7406 with SMTP id
+ d17-20020a926811000000b002cd994d7406mr15883176ilc.245.1653489199318; Wed, 25
+ May 2022 07:33:19 -0700 (PDT)
+Date:   Wed, 25 May 2022 07:33:19 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000005d8c8805dfd6f470@google.com>
+Subject: [syzbot] memory leak in hidraw_report_event
+From:   syzbot <syzbot+f59100a0428e6ded9443@syzkaller.appspotmail.com>
+To:     benjamin.tissoires@redhat.com, jikos@kernel.org,
+        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi "Eugenio,
+Hello,
 
-Thank you for the patch! Yet something to improve:
+syzbot found the following issue on:
 
-[auto build test ERROR on mst-vhost/linux-next]
-[also build test ERROR on next-20220525]
-[cannot apply to horms-ipvs/master linux/master linus/master v5.18]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+HEAD commit:    aa051d36ce4a Merge tag 'for-linus-2022052401' of git://git..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=13cd063df00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=fb563a60820e68b9
+dashboard link: https://syzkaller.appspot.com/bug?extid=f59100a0428e6ded9443
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14d91de5f00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10522639f00000
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Eugenio-P-rez/Implement-vdpasim-stop-operation/20220525-190143
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git linux-next
-config: x86_64-randconfig-a013 (https://download.01.org/0day-ci/archive/20220525/202205252236.4ysv1ZWg-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-1) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/515f6b6d2a0164df801ddbe61e1cb1ae4e763873
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Eugenio-P-rez/Implement-vdpasim-stop-operation/20220525-190143
-        git checkout 515f6b6d2a0164df801ddbe61e1cb1ae4e763873
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+f59100a0428e6ded9443@syzkaller.appspotmail.com
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+BUG: memory leak
+unreferenced object 0xffff88810e72f180 (size 32):
+  comm "softirq", pid 0, jiffies 4294945143 (age 16.080s)
+  hex dump (first 32 bytes):
+    64 f3 c6 6a d1 88 07 04 00 00 00 00 00 00 00 00  d..j............
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff814ac6c3>] kmemdup+0x23/0x50 mm/util.c:128
+    [<ffffffff8357c1d2>] kmemdup include/linux/fortify-string.h:440 [inline]
+    [<ffffffff8357c1d2>] hidraw_report_event+0xa2/0x150 drivers/hid/hidraw.c:521
+    [<ffffffff8356ddad>] hid_report_raw_event+0x27d/0x740 drivers/hid/hid-core.c:1992
+    [<ffffffff8356e41e>] hid_input_report+0x1ae/0x270 drivers/hid/hid-core.c:2065
+    [<ffffffff835f0d3f>] hid_irq_in+0x1ff/0x250 drivers/hid/usbhid/hid-core.c:284
+    [<ffffffff82d3c7f9>] __usb_hcd_giveback_urb+0xf9/0x230 drivers/usb/core/hcd.c:1670
+    [<ffffffff82d3cc26>] usb_hcd_giveback_urb+0x1b6/0x1d0 drivers/usb/core/hcd.c:1747
+    [<ffffffff82ef1e14>] dummy_timer+0x8e4/0x14c0 drivers/usb/gadget/udc/dummy_hcd.c:1988
+    [<ffffffff812f50a8>] call_timer_fn+0x38/0x200 kernel/time/timer.c:1474
+    [<ffffffff812f5586>] expire_timers kernel/time/timer.c:1519 [inline]
+    [<ffffffff812f5586>] __run_timers.part.0+0x316/0x430 kernel/time/timer.c:1790
+    [<ffffffff812f56e4>] __run_timers kernel/time/timer.c:1768 [inline]
+    [<ffffffff812f56e4>] run_timer_softirq+0x44/0x90 kernel/time/timer.c:1803
+    [<ffffffff848000e6>] __do_softirq+0xe6/0x2ea kernel/softirq.c:571
+    [<ffffffff81246db0>] invoke_softirq kernel/softirq.c:445 [inline]
+    [<ffffffff81246db0>] __irq_exit_rcu kernel/softirq.c:650 [inline]
+    [<ffffffff81246db0>] irq_exit_rcu+0xc0/0x110 kernel/softirq.c:662
+    [<ffffffff84574f02>] sysvec_apic_timer_interrupt+0xa2/0xd0 arch/x86/kernel/apic/apic.c:1106
+    [<ffffffff84600c8b>] asm_sysvec_apic_timer_interrupt+0x1b/0x20 arch/x86/include/asm/idtentry.h:649
+    [<ffffffff8458a070>] native_safe_halt arch/x86/include/asm/irqflags.h:51 [inline]
+    [<ffffffff8458a070>] arch_safe_halt arch/x86/include/asm/irqflags.h:89 [inline]
+    [<ffffffff8458a070>] acpi_safe_halt drivers/acpi/processor_idle.c:111 [inline]
+    [<ffffffff8458a070>] acpi_idle_do_entry+0xc0/0xd0 drivers/acpi/processor_idle.c:554
 
-All errors (new ones prefixed by >>):
+BUG: memory leak
+unreferenced object 0xffff88810e72f160 (size 32):
+  comm "softirq", pid 0, jiffies 4294945145 (age 16.060s)
+  hex dump (first 32 bytes):
+    27 1a e8 41 4f c2 fd 8c 00 00 00 00 00 00 00 00  '..AO...........
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff814ac6c3>] kmemdup+0x23/0x50 mm/util.c:128
+    [<ffffffff8357c1d2>] kmemdup include/linux/fortify-string.h:440 [inline]
+    [<ffffffff8357c1d2>] hidraw_report_event+0xa2/0x150 drivers/hid/hidraw.c:521
+    [<ffffffff8356ddad>] hid_report_raw_event+0x27d/0x740 drivers/hid/hid-core.c:1992
+    [<ffffffff8356e41e>] hid_input_report+0x1ae/0x270 drivers/hid/hid-core.c:2065
+    [<ffffffff835f0d3f>] hid_irq_in+0x1ff/0x250 drivers/hid/usbhid/hid-core.c:284
+    [<ffffffff82d3c7f9>] __usb_hcd_giveback_urb+0xf9/0x230 drivers/usb/core/hcd.c:1670
+    [<ffffffff82d3cc26>] usb_hcd_giveback_urb+0x1b6/0x1d0 drivers/usb/core/hcd.c:1747
+    [<ffffffff82ef1e14>] dummy_timer+0x8e4/0x14c0 drivers/usb/gadget/udc/dummy_hcd.c:1988
+    [<ffffffff812f50a8>] call_timer_fn+0x38/0x200 kernel/time/timer.c:1474
+    [<ffffffff812f5586>] expire_timers kernel/time/timer.c:1519 [inline]
+    [<ffffffff812f5586>] __run_timers.part.0+0x316/0x430 kernel/time/timer.c:1790
+    [<ffffffff812f56e4>] __run_timers kernel/time/timer.c:1768 [inline]
+    [<ffffffff812f56e4>] run_timer_softirq+0x44/0x90 kernel/time/timer.c:1803
+    [<ffffffff848000e6>] __do_softirq+0xe6/0x2ea kernel/softirq.c:571
+    [<ffffffff81246db0>] invoke_softirq kernel/softirq.c:445 [inline]
+    [<ffffffff81246db0>] __irq_exit_rcu kernel/softirq.c:650 [inline]
+    [<ffffffff81246db0>] irq_exit_rcu+0xc0/0x110 kernel/softirq.c:662
+    [<ffffffff84574f02>] sysvec_apic_timer_interrupt+0xa2/0xd0 arch/x86/kernel/apic/apic.c:1106
+    [<ffffffff84600c8b>] asm_sysvec_apic_timer_interrupt+0x1b/0x20 arch/x86/include/asm/idtentry.h:649
+    [<ffffffff8458a070>] native_safe_halt arch/x86/include/asm/irqflags.h:51 [inline]
+    [<ffffffff8458a070>] arch_safe_halt arch/x86/include/asm/irqflags.h:89 [inline]
+    [<ffffffff8458a070>] acpi_safe_halt drivers/acpi/processor_idle.c:111 [inline]
+    [<ffffffff8458a070>] acpi_idle_do_entry+0xc0/0xd0 drivers/acpi/processor_idle.c:554
 
-   drivers/vhost/vdpa.c: In function 'vhost_vdpa_unlocked_ioctl':
->> drivers/vhost/vdpa.c:668:14: error: 'VHOST_STOP' undeclared (first use in this function)
-     668 |         case VHOST_STOP:
-         |              ^~~~~~~~~~
-   drivers/vhost/vdpa.c:668:14: note: each undeclared identifier is reported only once for each function it appears in
+BUG: memory leak
+unreferenced object 0xffff88810e72f140 (size 32):
+  comm "softirq", pid 0, jiffies 4294945147 (age 16.040s)
+  hex dump (first 32 bytes):
+    5e 2d ce 49 18 07 8e f1 00 00 00 00 00 00 00 00  ^-.I............
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff814ac6c3>] kmemdup+0x23/0x50 mm/util.c:128
+    [<ffffffff8357c1d2>] kmemdup include/linux/fortify-string.h:440 [inline]
+    [<ffffffff8357c1d2>] hidraw_report_event+0xa2/0x150 drivers/hid/hidraw.c:521
+    [<ffffffff8356ddad>] hid_report_raw_event+0x27d/0x740 drivers/hid/hid-core.c:1992
+    [<ffffffff8356e41e>] hid_input_report+0x1ae/0x270 drivers/hid/hid-core.c:2065
+    [<ffffffff835f0d3f>] hid_irq_in+0x1ff/0x250 drivers/hid/usbhid/hid-core.c:284
+    [<ffffffff82d3c7f9>] __usb_hcd_giveback_urb+0xf9/0x230 drivers/usb/core/hcd.c:1670
+    [<ffffffff82d3cc26>] usb_hcd_giveback_urb+0x1b6/0x1d0 drivers/usb/core/hcd.c:1747
+    [<ffffffff82ef1e14>] dummy_timer+0x8e4/0x14c0 drivers/usb/gadget/udc/dummy_hcd.c:1988
+    [<ffffffff812f50a8>] call_timer_fn+0x38/0x200 kernel/time/timer.c:1474
+    [<ffffffff812f5586>] expire_timers kernel/time/timer.c:1519 [inline]
+    [<ffffffff812f5586>] __run_timers.part.0+0x316/0x430 kernel/time/timer.c:1790
+    [<ffffffff812f56e4>] __run_timers kernel/time/timer.c:1768 [inline]
+    [<ffffffff812f56e4>] run_timer_softirq+0x44/0x90 kernel/time/timer.c:1803
+    [<ffffffff848000e6>] __do_softirq+0xe6/0x2ea kernel/softirq.c:571
+    [<ffffffff81246db0>] invoke_softirq kernel/softirq.c:445 [inline]
+    [<ffffffff81246db0>] __irq_exit_rcu kernel/softirq.c:650 [inline]
+    [<ffffffff81246db0>] irq_exit_rcu+0xc0/0x110 kernel/softirq.c:662
+    [<ffffffff84574f02>] sysvec_apic_timer_interrupt+0xa2/0xd0 arch/x86/kernel/apic/apic.c:1106
+    [<ffffffff84600c8b>] asm_sysvec_apic_timer_interrupt+0x1b/0x20 arch/x86/include/asm/idtentry.h:649
+    [<ffffffff8458a070>] native_safe_halt arch/x86/include/asm/irqflags.h:51 [inline]
+    [<ffffffff8458a070>] arch_safe_halt arch/x86/include/asm/irqflags.h:89 [inline]
+    [<ffffffff8458a070>] acpi_safe_halt drivers/acpi/processor_idle.c:111 [inline]
+    [<ffffffff8458a070>] acpi_idle_do_entry+0xc0/0xd0 drivers/acpi/processor_idle.c:554
 
 
-vim +/VHOST_STOP +668 drivers/vhost/vdpa.c
 
-   587	
-   588	static long vhost_vdpa_unlocked_ioctl(struct file *filep,
-   589					      unsigned int cmd, unsigned long arg)
-   590	{
-   591		struct vhost_vdpa *v = filep->private_data;
-   592		struct vhost_dev *d = &v->vdev;
-   593		void __user *argp = (void __user *)arg;
-   594		u64 __user *featurep = argp;
-   595		u64 features;
-   596		long r = 0;
-   597	
-   598		if (cmd == VHOST_SET_BACKEND_FEATURES) {
-   599			if (copy_from_user(&features, featurep, sizeof(features)))
-   600				return -EFAULT;
-   601			if (features & ~(VHOST_VDPA_BACKEND_FEATURES |
-   602					 BIT_ULL(VHOST_BACKEND_F_STOP)))
-   603				return -EOPNOTSUPP;
-   604			if ((features & BIT_ULL(VHOST_BACKEND_F_STOP)) &&
-   605			     !vhost_vdpa_can_stop(v))
-   606				return -EOPNOTSUPP;
-   607			vhost_set_backend_features(&v->vdev, features);
-   608			return 0;
-   609		}
-   610	
-   611		mutex_lock(&d->mutex);
-   612	
-   613		switch (cmd) {
-   614		case VHOST_VDPA_GET_DEVICE_ID:
-   615			r = vhost_vdpa_get_device_id(v, argp);
-   616			break;
-   617		case VHOST_VDPA_GET_STATUS:
-   618			r = vhost_vdpa_get_status(v, argp);
-   619			break;
-   620		case VHOST_VDPA_SET_STATUS:
-   621			r = vhost_vdpa_set_status(v, argp);
-   622			break;
-   623		case VHOST_VDPA_GET_CONFIG:
-   624			r = vhost_vdpa_get_config(v, argp);
-   625			break;
-   626		case VHOST_VDPA_SET_CONFIG:
-   627			r = vhost_vdpa_set_config(v, argp);
-   628			break;
-   629		case VHOST_GET_FEATURES:
-   630			r = vhost_vdpa_get_features(v, argp);
-   631			break;
-   632		case VHOST_SET_FEATURES:
-   633			r = vhost_vdpa_set_features(v, argp);
-   634			break;
-   635		case VHOST_VDPA_GET_VRING_NUM:
-   636			r = vhost_vdpa_get_vring_num(v, argp);
-   637			break;
-   638		case VHOST_VDPA_GET_GROUP_NUM:
-   639			r = copy_to_user(argp, &v->vdpa->ngroups,
-   640					 sizeof(v->vdpa->ngroups));
-   641			break;
-   642		case VHOST_VDPA_GET_AS_NUM:
-   643			r = copy_to_user(argp, &v->vdpa->nas, sizeof(v->vdpa->nas));
-   644			break;
-   645		case VHOST_SET_LOG_BASE:
-   646		case VHOST_SET_LOG_FD:
-   647			r = -ENOIOCTLCMD;
-   648			break;
-   649		case VHOST_VDPA_SET_CONFIG_CALL:
-   650			r = vhost_vdpa_set_config_call(v, argp);
-   651			break;
-   652		case VHOST_GET_BACKEND_FEATURES:
-   653			features = VHOST_VDPA_BACKEND_FEATURES;
-   654			if (vhost_vdpa_can_stop(v))
-   655				features |= BIT_ULL(VHOST_BACKEND_F_STOP);
-   656			if (copy_to_user(featurep, &features, sizeof(features)))
-   657				r = -EFAULT;
-   658			break;
-   659		case VHOST_VDPA_GET_IOVA_RANGE:
-   660			r = vhost_vdpa_get_iova_range(v, argp);
-   661			break;
-   662		case VHOST_VDPA_GET_CONFIG_SIZE:
-   663			r = vhost_vdpa_get_config_size(v, argp);
-   664			break;
-   665		case VHOST_VDPA_GET_VQS_COUNT:
-   666			r = vhost_vdpa_get_vqs_count(v, argp);
-   667			break;
- > 668		case VHOST_STOP:
-   669			r = vhost_vdpa_stop(v, argp);
-   670			break;
-   671		default:
-   672			r = vhost_dev_ioctl(&v->vdev, cmd, argp);
-   673			if (r == -ENOIOCTLCMD)
-   674				r = vhost_vdpa_vring_ioctl(v, cmd, argp);
-   675			break;
-   676		}
-   677	
-   678		mutex_unlock(&d->mutex);
-   679		return r;
-   680	}
-   681	
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
