@@ -2,144 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6108CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 14:19:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5362AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 14:20:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242633AbiEYOTh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 10:19:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42422 "EHLO
+        id S235155AbiEYOUZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 10:20:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235155AbiEYOTe (ORCPT
+        with ESMTP id S229791AbiEYOUV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 10:19:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB8BC9C2CB;
-        Wed, 25 May 2022 07:19:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 51FBC6194E;
-        Wed, 25 May 2022 14:19:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FD86C385B8;
-        Wed, 25 May 2022 14:19:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653488372;
-        bh=7bBJlCok73CmtV4Rm+ajB2IXkeRLn3vMxn3dmBMgVvs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=XVL9TT0jdngjLQ2AzVhatAPJryXjpKrdvf3jySU2hsg2wTEGsnI3SKCCiLL/NVLPo
-         A6DyGXI3I445RiRTZ9nuf6OPHkyM0vs2TZ8IiKGsETlPPTijFtl9bhTlALOAJeRNSO
-         uade6xQfgdV5CXdwh6ZoZepevw6/s5sNpCj18G4AGiflBqaJVGusl72hVI24XOsSfU
-         +dp7oMd6EC6pa/mgBbCrG/TFQWJlcp/u3Bb3Wn9tqYuKj+kqYbVLTwlntqnLx7JpGD
-         Szl4Z2syKay/ExvEuGdVklLVoheBcgXj8QJHkdpJk9uslAfVw7hAjgqc3lMDuP3L7O
-         0dCwoDpPa8T7g==
-Date:   Wed, 25 May 2022 09:19:30 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     "Rafael J. Wysocki" <rafael@kernel.org>
-Cc:     Yicong Yang <yangyicong@hisilicon.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Linux PCI <linux-pci@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>
-Subject: Re: [RESEND PATCH v5] PCI: Make sure the bus bridge powered on when
- scanning bus
-Message-ID: <20220525141930.GA290827@bhelgaas>
+        Wed, 25 May 2022 10:20:21 -0400
+X-Greylist: delayed 1381 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 25 May 2022 07:20:20 PDT
+Received: from gateway22.websitewelcome.com (gateway22.websitewelcome.com [192.185.46.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC5BA9C2CB
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 07:20:20 -0700 (PDT)
+Received: from cm11.websitewelcome.com (cm11.websitewelcome.com [100.42.49.5])
+        by gateway22.websitewelcome.com (Postfix) with ESMTP id 93AA7139D6
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 08:57:18 -0500 (CDT)
+Received: from 162-215-252-169.unifiedlayer.com ([208.91.199.152])
+        by cmsmtp with SMTP
+        id trVmnBNOS0EfytrVmn57wc; Wed, 25 May 2022 08:57:18 -0500
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=roeck-us.net; s=default; h=Content-Transfer-Encoding:MIME-Version:
+        References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
+        Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=d1b5nILyGqqpNbh83B6jQJVoKjYjPJ5yWnONtHERzTk=; b=pQlJ3e5PcDe4A5ueNDoqI7BkQi
+        2yEaxbPAluzHtnsCga8UgsQXNCaigGQ7aN1qvx162RxRJO6xUeA84kpL2J7XFKjXHcyVeSkkUtCwh
+        bUQXtcFU17+aRcHTyRDOLH1lhWAI2dDlo9AanGp0HL3EGsGNDGtEtzFew8J6mtHl4IJWII6ZL9boi
+        8+hMDZpNa1beELrVZR1JWRfB0RqDKw25vtfQp6qlTzSpgX2IsHrS8kRynVRT4oiKdxs3p47OQT5xT
+        PyvxnJVY/3+lAdkrqr3RSNsU2hizxouxNeeQ4sjpZpYX9am4suXFsXBAha+ez3Lnl63LhN0pWnEEd
+        wpStdYIg==;
+Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:58266 helo=localhost)
+        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@roeck-us.net>)
+        id 1ntrVl-000P4b-UR; Wed, 25 May 2022 13:57:18 +0000
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     linux-hwmon@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, Jean Delvare <jdelvare@suse.com>,
+        Slawomir Stepien <sst@poczta.fm>,
+        Guenter Roeck <linux@roeck-us.net>
+Subject: [PATCH 01/40] hwmon: (lm90) Generate sysfs and udev events for all alarms
+Date:   Wed, 25 May 2022 06:56:30 -0700
+Message-Id: <20220525135709.2899592-2-linux@roeck-us.net>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220525135709.2899592-1-linux@roeck-us.net>
+References: <20220525135709.2899592-1-linux@roeck-us.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAJZ5v0iKyVbHqjxH5nqfZ9E8C94EDhXXdkHYoN2smg3V7p6Wuw@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - roeck-us.net
+X-BWhitelist: no
+X-Source-IP: 108.223.40.66
+X-Source-L: No
+X-Exim-ID: 1ntrVl-000P4b-UR
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net (localhost) [108.223.40.66]:58266
+X-Source-Auth: guenter@roeck-us.net
+X-Email-Count: 7
+X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 25, 2022 at 01:27:21PM +0200, Rafael J. Wysocki wrote:
-> On Tue, May 24, 2022 at 10:58 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
-> >
-> > On Tue, May 17, 2022 at 08:43:19PM +0800, Yicong Yang wrote:
-> > > When the bus bridge is runtime suspended, we'll fail to rescan
-> > > the devices through sysfs as we cannot access the configuration
-> > > space correctly when the bridge is in D3hot.
-> >
-> > Is the "D3hot" above a typo?  I think devices are supposed to respond
-> > to config accesses when in D3hot.  PCIe r6.0, sec 5.3.1.4.1:
-> >
-> >   Configuration and Message requests are the only TLPs accepted by a
-> >   Function in the D3Hot state. ...
-> >
-> >   Functions that are in D3Hot are permitted to be transitioned by
-> >   software (writing to their PMCSR PowerState field) to the D0active
-> >   state or the D0uninitialized state. Functions that are in D3Hot must
-> >   respond to Configuration Space accesses as long as power and clock
-> >   are supplied so that they can be returned to D0 by software.
-> 
-> That applies to the device itself, though, and not to the bus under it.
-> 
-> In general, a bridge in D3hot causes the bus segment on the other side
-> of it to be inaccessible even for config space accesses AFAICS.
+So far the driver only generated sysfs and udev events for minimum and
+maximum alarms. Also generate events for critical and emergency alarms.
 
-Oh, thank you!  That was the piece I was missing.  I'll tweak the
-commit log to say something like:
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+---
+ drivers/hwmon/lm90.c | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
-  A bridge in a non-D0 power state does not forward config accesses to
-  its secondary side (PCIe r6.0, sec 5.3.1).  Make sure the bridge is
-  in D0 while we enumerate devices below it.
+diff --git a/drivers/hwmon/lm90.c b/drivers/hwmon/lm90.c
+index 3820f0e61510..83d027c134be 100644
+--- a/drivers/hwmon/lm90.c
++++ b/drivers/hwmon/lm90.c
+@@ -1829,6 +1829,26 @@ static bool lm90_is_tripped(struct i2c_client *client, u16 *status)
+ 		hwmon_notify_event(data->hwmon_dev, hwmon_temp,
+ 				   hwmon_temp_max_alarm, 2);
+ 
++	if (st & LM90_STATUS_LTHRM)
++		hwmon_notify_event(hwmon_dev, hwmon_temp,
++				   hwmon_temp_crit_alarm, 0);
++	if (st & LM90_STATUS_RTHRM)
++		hwmon_notify_event(hwmon_dev, hwmon_temp,
++				   hwmon_temp_crit_alarm, 1);
++	if (st2 & MAX6696_STATUS2_R2THRM)
++		hwmon_notify_event(hwmon_dev, hwmon_temp,
++				   hwmon_temp_crit_alarm, 2);
++
++	if (st2 & MAX6696_STATUS2_LOT2)
++		hwmon_notify_event(hwmon_dev, hwmon_temp,
++				   hwmon_temp_emergency_alarm, 0);
++	if (st2 & MAX6696_STATUS2_ROT2)
++		hwmon_notify_event(hwmon_dev, hwmon_temp,
++				   hwmon_temp_emergency_alarm, 1);
++	if (st2 & MAX6696_STATUS2_R2OT2)
++		hwmon_notify_event(hwmon_dev, hwmon_temp,
++				   hwmon_temp_emergency_alarm, 2);
++
+ 	return true;
+ }
+ 
+-- 
+2.35.1
 
-> > > It can be reproduced like:
-> > >
-> > > $ echo 1 > /sys/bus/pci/devices/0000:80:00.0/0000:81:00.1/remove
-> > > $ echo 1 > /sys/bus/pci/devices/0000:80:00.0/pci_bus/0000:81/rescan
-> > >
-> > > 0000:80:00.0 is a Root Port and it is runtime-suspended, so
-> > > 0000:81:00.1 is unreachable after a rescan.
-> > >
-> > > Power up the bridge when scanning the child bus and allow it to
-> > > suspend again by adding pm_runtime_get_sync()/pm_runtime_put()
-> > > in pci_scan_child_bus_extend().
-> > >
-> > > Cc: Rafael J. Wysocki <rafael@kernel.org>
-> > > Cc: Mika Westerberg <mika.westerberg@linux.intel.com>
-> > > Cc: Bjorn Helgaas <bhelgaas@google.com>
-> > > Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
-> > > Reviewed-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-> > > ---
-> > >  drivers/pci/probe.c | 12 ++++++++++++
-> > >  1 file changed, 12 insertions(+)
-> > >
-> > > diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-> > > index 17a969942d37..b108e72b6586 100644
-> > > --- a/drivers/pci/probe.c
-> > > +++ b/drivers/pci/probe.c
-> > > @@ -2859,11 +2859,20 @@ static unsigned int pci_scan_child_bus_extend(struct pci_bus *bus,
-> > >       unsigned int used_buses, normal_bridges = 0, hotplug_bridges = 0;
-> > >       unsigned int start = bus->busn_res.start;
-> > >       unsigned int devfn, fn, cmax, max = start;
-> > > +     struct pci_dev *bridge = bus->self;
-> > >       struct pci_dev *dev;
-> > >       int nr_devs;
-> > >
-> > >       dev_dbg(&bus->dev, "scanning bus\n");
-> > >
-> > > +     /*
-> > > +      * Make sure the bus bridge is powered on, otherwise we may not be
-> > > +      * able to scan the devices as we may fail to access the configuration
-> > > +      * space of subordinates.
-> > > +      */
-> > > +     if (bridge)
-> > > +             pm_runtime_get_sync(&bridge->dev);
-> > > +
-> > >       /* Go find them, Rover! */
-> > >       for (devfn = 0; devfn < 256; devfn += 8) {
-> > >               nr_devs = pci_scan_slot(bus, devfn);
-> > > @@ -2976,6 +2985,9 @@ static unsigned int pci_scan_child_bus_extend(struct pci_bus *bus,
-> > >               }
-> > >       }
-> > >
-> > > +     if (bridge)
-> > > +             pm_runtime_put(&bridge->dev);
-> > > +
-> > >       /*
-> > >        * We've scanned the bus and so we know all about what's on
-> > >        * the other side of any bridges that may be on this bus plus
-> > > --
-> > > 2.24.0
-> > >
