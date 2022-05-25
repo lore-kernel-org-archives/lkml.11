@@ -2,93 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4636C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 01:28:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CE4BC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 01:30:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243196AbiEYB2l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 21:28:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48120 "EHLO
+        id S243200AbiEYBaz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 21:30:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233885AbiEYB2j (ORCPT
+        with ESMTP id S237663AbiEYBax (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 21:28:39 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A4FD719E3;
-        Tue, 24 May 2022 18:28:38 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id z25so5228198pfr.1;
-        Tue, 24 May 2022 18:28:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=J/O7QHB/83qp0R6uAeHC9GzIW1KgB7sgS2PTCnjrXA8=;
-        b=Y/KejWZjl/qnMwHs1oYTYrwTlKeFkQxA7jiUh+uO9Ib12Cv0aMkjHuid4wRSqGmK9v
-         +oXZCBC+KeNq6xIv8/OWMuS6bqBWQa5S3JaP/Tl7Tn9COzMto1ZpDLIalqP6gpOZnXGn
-         bwVmtWAeJ4aWvrO6iHqX3hZ0EFf8bwr3IxQjnxJXi3RjgYwRDhaM8OljALdrzF/Qo0eS
-         NVMqoIU/0y2R2Ut8yW9Iy6G5qS4IpdWXK8agaPFea9X8zZ13vspfOGeQDcdcOokLz3fX
-         33h1srwRbqzkG55OwCReaU3WeyuC1cm27U2UYBhi55jPhtB/Ct30gn+gBEXptDmhvApH
-         LLrg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=J/O7QHB/83qp0R6uAeHC9GzIW1KgB7sgS2PTCnjrXA8=;
-        b=8EJn/E/zNEeTykYlmZVEzQhyg6mU5iPOuQ3WOGvAV05rru7iGT/9gpzfnMluJ+IBAh
-         S3iX6/BjVMk+Yz7tsCLp6RwAfQdBROLX6FILH8f3/ML30lYi342iyrggXBv4s0ZVguvl
-         +sRHLtjhi3LItGiNITW4b/GQrDlK3hnmrLBwBrq3H235lIMBDjJ1pEtBE//aKDjtAl8A
-         zOQw13e3JUT5BKzYEazHsYbW+O3D3Kn5lYgeN6XQYJLC4yb4O2zxuTEZIqou8/wL8PCq
-         VSloIK72HAruiZfm3+bXuK34LcIIpK/rqwfIU0CY/M2zbZq93o+LP2ocXyDTh7vcXkUc
-         0lqQ==
-X-Gm-Message-State: AOAM532e3sJ9CqMTmmct7c0y9x4UN9RCiJHp0SA0keONz11GfYYOMpr0
-        +G0I+XDJ3rQocxrjAa4i0EBy0RR8Uw==
-X-Google-Smtp-Source: ABdhPJxz1cpWGjZGtiQ+7Iib1gqWTaFhSN8JSkPhITcv0rxNQGbpVSKLwXdHZow5fUYR/38JDdZDXw==
-X-Received: by 2002:a63:9dc7:0:b0:3f6:17f0:f310 with SMTP id i190-20020a639dc7000000b003f617f0f310mr25982468pgd.285.1653442118027;
-        Tue, 24 May 2022 18:28:38 -0700 (PDT)
-Received: from localhost.localdomain (ns1003916.ip-51-81-154.us. [51.81.154.37])
-        by smtp.gmail.com with ESMTPSA id c13-20020a170902c1cd00b0015e8d4eb21asm7878285plc.100.2022.05.24.18.28.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 May 2022 18:28:37 -0700 (PDT)
-From:   sunliming <kelulanainsley@gmail.com>
-X-Google-Original-From: sunliming <sunliming@kylinos.cn>
-To:     mingo@redhat.com, rostedt@goodmis.org, tglx@linutronix.de,
-        bp@alien8.de, dave.hansen@linux.intel.com
-Cc:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
-        x86@kernel.org, linux-trace-devel@vger.kernel.org,
-        sunliming@kylinos.cn
-Subject: [PATCH v2 RESEND] x86,trace: Remove unused headers
-Date:   Wed, 25 May 2022 09:28:27 +0800
-Message-Id: <20220525012827.93464-1-sunliming@kylinos.cn>
-X-Mailer: git-send-email 2.25.1
+        Tue, 24 May 2022 21:30:53 -0400
+Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECE1D712FB;
+        Tue, 24 May 2022 18:30:51 -0700 (PDT)
+Date:   Tue, 24 May 2022 18:30:43 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1653442249;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=BqHyQcO/EPCHDY1xe0+4wActLlHOlU2jbcY6btA4FPI=;
+        b=IqC3gfAEusYUngfhPDQZyN41hUHpicr6FUJlsvV9XN4K1/O31k7g3yqgW6376yJbiURLyW
+        20n5GAtkF2694sJcddZ7ypbG6LGvwlQK2WiFktmvfV+7xQdG77X9Z7kjg5F/Re/LmpS5+Q
+        s23gJXYBOL5RQRc5tIVrC07aijyGkHk=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Roman Gushchin <roman.gushchin@linux.dev>
+To:     Vasily Averin <vvs@openvz.org>
+Cc:     Andrew Morton <akpm@linux-foundation.org>, kernel@openvz.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        Shakeel Butt <shakeelb@google.com>,
+        Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Michal Hocko <mhocko@suse.com>, cgroups@vger.kernel.org
+Subject: Re: [PATCH mm v2 5/9] memcg: enable accounting for percpu allocation
+ of struct psi_group_cpu
+Message-ID: <Yo2Gw8b09efUWimi@carbon>
+References: <Yn6aL3cO7VdrmHHp@carbon>
+ <16f17021-61a3-c6f4-f60c-1acd3a0b66b9@openvz.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <16f17021-61a3-c6f4-f60c-1acd3a0b66b9@openvz.org>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit 4b9a8dca0e58 ("x86/idt: Remove the tracing IDT completely")
-removed the tracing IDT from the file arch/x86/kernel/tracepoint.c,
-but left the related headers unused, remove it.
+On Sat, May 21, 2022 at 07:38:21PM +0300, Vasily Averin wrote:
+> struct pci_group_cpu is percpu allocated for each new cgroup and can
+> consume a significant portion of all allocated memory on nodes with
+> a large number of CPUs.
+> 
+> Common part of the cgroup creation:
+> Allocs  Alloc   $1*$2   Sum     Allocation
+> number  size
+> --------------------------------------------
+> 16  ~   352     5632    5632    KERNFS
+> 1   +   4096    4096    9728    (cgroup_mkdir+0xe4)
+> 1       584     584     10312   (radix_tree_node_alloc.constprop.0+0x89)
+> 1       192     192     10504   (__d_alloc+0x29)
+> 2       72      144     10648   (avc_alloc_node+0x27)
+> 2       64      128     10776   (percpu_ref_init+0x6a)
+> 1       64      64      10840   (memcg_list_lru_alloc+0x21a)
+> percpu:
+> 1   +   192     192     192     call_site=psi_cgroup_alloc+0x1e
+> 1   +   96      96      288     call_site=cgroup_rstat_init+0x5f
+> 2       12      24      312     call_site=percpu_ref_init+0x23
+> 1       6       6       318     call_site=__percpu_counter_init+0x22
+> 
+>  '+' -- to be accounted,
+>  '~' -- partially accounted
+> 
+> Signed-off-by: Vasily Averin <vvs@openvz.org>
 
-Signed-off-by: sunliming <sunliming@kylinos.cn>
----
- arch/x86/kernel/tracepoint.c | 3 ---
- 1 file changed, 3 deletions(-)
-
-diff --git a/arch/x86/kernel/tracepoint.c b/arch/x86/kernel/tracepoint.c
-index fcfc077afe2d..f39aad69fb64 100644
---- a/arch/x86/kernel/tracepoint.c
-+++ b/arch/x86/kernel/tracepoint.c
-@@ -8,10 +8,7 @@
- #include <linux/jump_label.h>
- #include <linux/atomic.h>
- 
--#include <asm/hw_irq.h>
--#include <asm/desc.h>
- #include <asm/trace/exceptions.h>
--#include <asm/trace/irq_vectors.h>
- 
- DEFINE_STATIC_KEY_FALSE(trace_pagefault_key);
- 
--- 
-2.25.1
-
+Acked-by: Roman Gushchin <roman.gushchin@linux.dev>
