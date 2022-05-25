@@ -2,291 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8D48C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 09:01:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B726C4321E
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 09:01:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236607AbiEYJBQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 05:01:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44984 "EHLO
+        id S236806AbiEYJBt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 05:01:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232453AbiEYJBO (ORCPT
+        with ESMTP id S230274AbiEYJBp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 05:01:14 -0400
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A9F070374;
-        Wed, 25 May 2022 02:01:13 -0700 (PDT)
-Received: by mail-yb1-xb33.google.com with SMTP id z7so13883173ybf.7;
-        Wed, 25 May 2022 02:01:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Ng9vmXyRhXj4QrWMiydiTC2faW35Q1++d5V/xgecxmQ=;
-        b=PFkRPQn3kfsCRcrb1KcMf6/C0L6KFBUP68UImSssNuWQs2ApfAbbH3vXNkot1xdz23
-         LqC7TUa1swTcKCEaP/vhBe5CECBi3gue8+ccNVaPmwNIWdvSD7mUW5UxIUZo6jOOB1b4
-         WNVh5JKCJrYwJULdJsECDMNCVqEyH4nJybF6r02yTPtmu5qIXYAgkmN1wACXkaQH1xjt
-         9qOR7zWujP4uoZVa1i23Ir7aow3d34ilxFsinl/joxal9Zu6EQAl9GYGBCzPghsuwc/4
-         8R92QiIbk3DN8NzhVyGCL4d04mjbxTZEbFX+wsJ7sa4Yd0GII6nb9VG4xdwt/xLJzhYG
-         Mg8A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Ng9vmXyRhXj4QrWMiydiTC2faW35Q1++d5V/xgecxmQ=;
-        b=tSA1l60WON3bHGQCnZ3pwXOqyi1aUbEEkOOtOQZA9piT/8fPZP56i4GgRSEuAhFDSW
-         gYxaQdhP2RU8xQbEIeMqD6ox49Ma5ad8/FWb/x7bWkVUdVn/e6Tt/kpax2CP/JsH3f7u
-         5yXXeYXYY8CNmEUpJ684XmJ3adVJEkWHIoofeaueWg3jfqa7F+mEJ7bZTL6MpyWlSqfu
-         g/NGgA0aOxwPMIkzZaEr636jYc+q5paxmS6/CsZ6qCU74KsoXj0uoj9uxth4O8+L0uVQ
-         seNb+MBouIIl24CD3KAW9SrgsKy11zm7HyuQOQkE1oGxnKys3II8WyNzRafPt+vDXA+a
-         8mOw==
-X-Gm-Message-State: AOAM5301DFVY02zZMJ0jqv078GmdtM0j80laQ4Cmm7x2UHRZtwpCUGaA
-        2hL98mgxPfJGDzPP33S2DEkGpfoDYQ9G+Hj9/S4rRN1gM1W53J3P
-X-Google-Smtp-Source: ABdhPJxKpV63L+V/62qDba7rT3D1hrve3O2Qa69s+0UkTTVmwAHqOFMTteNULGyp9qVmeGsRer+V8ktz7oy/rPiR5kk=
-X-Received: by 2002:a25:4bc4:0:b0:655:b2db:484 with SMTP id
- y187-20020a254bc4000000b00655b2db0484mr1210811yba.431.1653469272766; Wed, 25
- May 2022 02:01:12 -0700 (PDT)
+        Wed, 25 May 2022 05:01:45 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 88720703DC
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 02:01:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653469302;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=aIJTJIDCCKp+Pf3jyzyPqkfkf4mMXGMBGd7+AGgu8no=;
+        b=RNWe+Qlww+uCvkZXXo2qB/Abb1vC2LjxmeZ25YqoTpKfYtplyLOjtEjS0YM2u51uoOqHpS
+        DPalscggcWe2YktYj4Qm+S66cwinHH1/HWeOb1OV0V5y0pe0oaYvgqsliJ3fziJkEBjKHT
+        ACXP0CynyUAtT95fO2qW/cX7vlL+ug8=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-260-t7inQzRHP1O9XX8yaX4M6w-1; Wed, 25 May 2022 05:01:39 -0400
+X-MC-Unique: t7inQzRHP1O9XX8yaX4M6w-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id CA65680A0B5;
+        Wed, 25 May 2022 09:01:38 +0000 (UTC)
+Received: from fedora.redhat.com (unknown [10.40.194.186])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 085B840CFD0A;
+        Wed, 25 May 2022 09:01:36 +0000 (UTC)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Siddharth Chandrasekaran <sidcha@amazon.de>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v4 01/37] KVM: x86: Rename 'enable_direct_tlbflush' to 'enable_l2_tlb_flush'
+Date:   Wed, 25 May 2022 11:00:57 +0200
+Message-Id: <20220525090133.1264239-2-vkuznets@redhat.com>
+In-Reply-To: <20220525090133.1264239-1-vkuznets@redhat.com>
+References: <20220525090133.1264239-1-vkuznets@redhat.com>
 MIME-Version: 1.0
-References: <20220524172214.5104-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20220524172214.5104-3-prabhakar.mahadev-lad.rj@bp.renesas.com> <CAMuHMdX0pqr8pmbX8OfUyTeEwiFGSG5uyP4nLG1LPy7_zzLPbQ@mail.gmail.com>
-In-Reply-To: <CAMuHMdX0pqr8pmbX8OfUyTeEwiFGSG5uyP4nLG1LPy7_zzLPbQ@mail.gmail.com>
-From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date:   Wed, 25 May 2022 10:00:46 +0100
-Message-ID: <CA+V-a8ubrkDU2B=mJopzFrjhv1nVn5EXZmaprta0oj4p3J_N5Q@mail.gmail.com>
-Subject: Re: [PATCH RFC 2/2] irqchip/sifive-plic: Add support for Renesas
- RZ/Five SoC
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Sagar Kadam <sagar.kadam@sifive.com>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Phil Edworthy <phil.edworthy@renesas.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Geert,
+To make terminology between Hyper-V-on-KVM and KVM-on-Hyper-V consistent,
+rename 'enable_direct_tlbflush' to 'enable_l2_tlb_flush'. The change
+eliminates the use of confusing 'direct' and adds the missing underscore.
 
-Thank you for the review.
+No functional change.
 
-On Wed, May 25, 2022 at 9:01 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
->
-> Hi Prabhakar,
->
-> On Tue, May 24, 2022 at 7:22 PM Lad Prabhakar
-> <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> > The Renesas RZ/Five SoC has a RISC-V AX45MP AndesCore with NCEPLIC100. The
-> > NCEPLIC100 supports both edge-triggered and level-triggered interrupts. In
-> > case of edge-triggered interrupts NCEPLIC100 ignores the next interrupt
-> > edge until the previous completion message has been received and
-> > NCEPLIC100 doesn't support pending interrupt counter, hence losing the
-> > interrupts if not acknowledged in time.
-> >
-> > So the workaround for edge-triggered interrupts to be handled correctly
-> > and without losing is that it needs to be acknowledged first and then
-> > handler must be run so that we don't miss on the next edge-triggered
-> > interrupt.
-> >
-> > This patch adds a new compatible string for Renesas RZ/Five SoC and adds
-> > support to change interrupt flow based on the interrupt type. It also
-> > implements irq_ack and irq_set_type callbacks.
-> >
-> > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
->
-> Thanks for your patch!
->
-> > --- a/drivers/irqchip/irq-sifive-plic.c
-> > +++ b/drivers/irqchip/irq-sifive-plic.c
-> > @@ -60,10 +60,13 @@
-> >  #define        PLIC_DISABLE_THRESHOLD          0x7
-> >  #define        PLIC_ENABLE_THRESHOLD           0
-> >
-> > +#define RENESAS_R9A07G043_PLIC         1
-> > +
-> >  struct plic_priv {
-> >         struct cpumask lmask;
-> >         struct irq_domain *irqdomain;
-> >         void __iomem *regs;
-> > +       u8 of_data;
->
-> Usually it's cleaner to use feature bits instead of enum types.
->
-Agreed.
+Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+---
+ arch/x86/include/asm/kvm-x86-ops.h | 2 +-
+ arch/x86/include/asm/kvm_host.h    | 2 +-
+ arch/x86/kvm/svm/svm_onhyperv.c    | 2 +-
+ arch/x86/kvm/svm/svm_onhyperv.h    | 6 +++---
+ arch/x86/kvm/vmx/vmx.c             | 6 +++---
+ arch/x86/kvm/x86.c                 | 6 +++---
+ 6 files changed, 12 insertions(+), 12 deletions(-)
 
-> >  };
-> >
-> >  struct plic_handler {
-> > @@ -163,10 +166,31 @@ static int plic_set_affinity(struct irq_data *d,
-> >  }
-> >  #endif
-> >
-> > +static void plic_irq_ack(struct irq_data *d)
-> > +{
-> > +       struct plic_handler *handler = this_cpu_ptr(&plic_handlers);
-> > +
->
-> No check for RZ/Five or irq type?
-That is because we set the handle_fasteoi_ack_irq() only in case of
-RZ/Five and it is already checked in set_type() callback.
+diff --git a/arch/x86/include/asm/kvm-x86-ops.h b/arch/x86/include/asm/kvm-x86-ops.h
+index 5f1f8778be90..438b3042b901 100644
+--- a/arch/x86/include/asm/kvm-x86-ops.h
++++ b/arch/x86/include/asm/kvm-x86-ops.h
+@@ -122,7 +122,7 @@ KVM_X86_OP_OPTIONAL(vm_move_enc_context_from)
+ KVM_X86_OP(get_msr_feature)
+ KVM_X86_OP(can_emulate_instruction)
+ KVM_X86_OP(apic_init_signal_blocked)
+-KVM_X86_OP_OPTIONAL(enable_direct_tlbflush)
++KVM_X86_OP_OPTIONAL(enable_l2_tlb_flush)
+ KVM_X86_OP_OPTIONAL(migrate_timers)
+ KVM_X86_OP(msr_filter_changed)
+ KVM_X86_OP(complete_emulated_msr)
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index 9cdc5bbd721f..151880cfab9e 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -1523,7 +1523,7 @@ struct kvm_x86_ops {
+ 					void *insn, int insn_len);
+ 
+ 	bool (*apic_init_signal_blocked)(struct kvm_vcpu *vcpu);
+-	int (*enable_direct_tlbflush)(struct kvm_vcpu *vcpu);
++	int (*enable_l2_tlb_flush)(struct kvm_vcpu *vcpu);
+ 
+ 	void (*migrate_timers)(struct kvm_vcpu *vcpu);
+ 	void (*msr_filter_changed)(struct kvm_vcpu *vcpu);
+diff --git a/arch/x86/kvm/svm/svm_onhyperv.c b/arch/x86/kvm/svm/svm_onhyperv.c
+index 8cdc62c74a96..69a7014d1cef 100644
+--- a/arch/x86/kvm/svm/svm_onhyperv.c
++++ b/arch/x86/kvm/svm/svm_onhyperv.c
+@@ -14,7 +14,7 @@
+ #include "kvm_onhyperv.h"
+ #include "svm_onhyperv.h"
+ 
+-int svm_hv_enable_direct_tlbflush(struct kvm_vcpu *vcpu)
++int svm_hv_enable_l2_tlb_flush(struct kvm_vcpu *vcpu)
+ {
+ 	struct hv_enlightenments *hve;
+ 	struct hv_partition_assist_pg **p_hv_pa_pg =
+diff --git a/arch/x86/kvm/svm/svm_onhyperv.h b/arch/x86/kvm/svm/svm_onhyperv.h
+index e2fc59380465..d6ec4aeebedb 100644
+--- a/arch/x86/kvm/svm/svm_onhyperv.h
++++ b/arch/x86/kvm/svm/svm_onhyperv.h
+@@ -13,7 +13,7 @@
+ 
+ static struct kvm_x86_ops svm_x86_ops;
+ 
+-int svm_hv_enable_direct_tlbflush(struct kvm_vcpu *vcpu);
++int svm_hv_enable_l2_tlb_flush(struct kvm_vcpu *vcpu);
+ 
+ static inline void svm_hv_init_vmcb(struct vmcb *vmcb)
+ {
+@@ -51,8 +51,8 @@ static inline void svm_hv_hardware_setup(void)
+ 
+ 			vp_ap->nested_control.features.directhypercall = 1;
+ 		}
+-		svm_x86_ops.enable_direct_tlbflush =
+-				svm_hv_enable_direct_tlbflush;
++		svm_x86_ops.enable_l2_tlb_flush =
++				svm_hv_enable_l2_tlb_flush;
+ 	}
+ }
+ 
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+index 8bbcf2071faf..4380b6930647 100644
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -464,7 +464,7 @@ static unsigned long host_idt_base;
+ static bool __read_mostly enlightened_vmcs = true;
+ module_param(enlightened_vmcs, bool, 0444);
+ 
+-static int hv_enable_direct_tlbflush(struct kvm_vcpu *vcpu)
++static int hv_enable_l2_tlb_flush(struct kvm_vcpu *vcpu)
+ {
+ 	struct hv_enlightened_vmcs *evmcs;
+ 	struct hv_partition_assist_pg **p_hv_pa_pg =
+@@ -8307,8 +8307,8 @@ static int __init vmx_init(void)
+ 		}
+ 
+ 		if (ms_hyperv.nested_features & HV_X64_NESTED_DIRECT_FLUSH)
+-			vmx_x86_ops.enable_direct_tlbflush
+-				= hv_enable_direct_tlbflush;
++			vmx_x86_ops.enable_l2_tlb_flush
++				= hv_enable_l2_tlb_flush;
+ 
+ 	} else {
+ 		enlightened_vmcs = false;
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 04812eaaf61b..891507b2eca5 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -4380,7 +4380,7 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
+ 			kvm_x86_ops.nested_ops->get_state(NULL, NULL, 0) : 0;
+ 		break;
+ 	case KVM_CAP_HYPERV_DIRECT_TLBFLUSH:
+-		r = kvm_x86_ops.enable_direct_tlbflush != NULL;
++		r = kvm_x86_ops.enable_l2_tlb_flush != NULL;
+ 		break;
+ 	case KVM_CAP_HYPERV_ENLIGHTENED_VMCS:
+ 		r = kvm_x86_ops.nested_ops->enable_evmcs != NULL;
+@@ -5290,10 +5290,10 @@ static int kvm_vcpu_ioctl_enable_cap(struct kvm_vcpu *vcpu,
+ 		}
+ 		return r;
+ 	case KVM_CAP_HYPERV_DIRECT_TLBFLUSH:
+-		if (!kvm_x86_ops.enable_direct_tlbflush)
++		if (!kvm_x86_ops.enable_l2_tlb_flush)
+ 			return -ENOTTY;
+ 
+-		return static_call(kvm_x86_enable_direct_tlbflush)(vcpu);
++		return static_call(kvm_x86_enable_l2_tlb_flush)(vcpu);
+ 
+ 	case KVM_CAP_HYPERV_ENFORCE_CPUID:
+ 		return kvm_hv_set_enforce_cpuid(vcpu, cap->args[0]);
+-- 
+2.35.3
 
-> .irq_ack() seems to be called for level interrupts, too
-> (from handle_level_irq() through mask_ack_irq()).
->
-Right but we are using handle_fasteoi_irq() for level interrupt which
-doesn't call mask_ack_irq(). And I have confirmed by adding a print in
-ack callback  and just enabling the serial (which has level
-interrupts).
-
-> > +       if (irqd_irq_masked(d)) {
-> > +               plic_irq_unmask(d);
-> > +               writel(d->hwirq, handler->hart_base + CONTEXT_CLAIM);
-> > +               plic_irq_mask(d);
-> > +       } else {
-> > +               writel(d->hwirq, handler->hart_base + CONTEXT_CLAIM);
-> > +       }
-> > +}
->
-> The above is identical to the old plic_irq_eoi()...
->
-Indeed..
-
-> > +
-> >  static void plic_irq_eoi(struct irq_data *d)
-> >  {
-> >         struct plic_handler *handler = this_cpu_ptr(&plic_handlers);
-> >
-> > +       /*
-> > +        * For Renesas R9A07G043 SoC if the interrupt type is EDGE
-> > +        * we have already acknowledged it in ack callback.
-> > +        */
-> > +       if (handler->priv->of_data == RENESAS_R9A07G043_PLIC &&
-> > +           !irqd_is_level_type(d))
-> > +               return;
-> > +
->
-> ... so you can just call into plic_irq_ack() here?
->
-... yes it can be done.
-
-> >         if (irqd_irq_masked(d)) {
-> >                 plic_irq_unmask(d);
-> >                 writel(d->hwirq, handler->hart_base + CONTEXT_CLAIM);
-> > @@ -176,11 +200,37 @@ static void plic_irq_eoi(struct irq_data *d)
-> >         }
-> >  }
-> >
-> > +static int plic_irq_set_type(struct irq_data *d, unsigned int type)
-> > +{
-> > +       struct plic_handler *handler = this_cpu_ptr(&plic_handlers);
-> > +
-> > +       if (handler->priv->of_data != RENESAS_R9A07G043_PLIC)
-> > +               return 0;
-> > +
-> > +       switch (type) {
-> > +       case IRQ_TYPE_LEVEL_HIGH:
-> > +               irq_set_handler_locked(d, handle_fasteoi_irq);
-> > +               break;
-> > +
-> > +       case IRQ_TYPE_EDGE_RISING:
-> > +               irq_set_handler_locked(d, handle_fasteoi_ack_irq);
-> > +               break;
-> > +
-> > +       default:
-> > +               return -EINVAL;
-> > +       }
-> > +
-> > +       return 0;
-> > +}
-> > +
-> >  static struct irq_chip plic_chip = {
->
-> I think this can be const.
->
-Yes, I will update it.
-
-> >         .name           = "SiFive PLIC",
-> >         .irq_mask       = plic_irq_mask,
-> >         .irq_unmask     = plic_irq_unmask,
-> > +       .irq_ack        = plic_irq_ack,
->
-> This causes extra processing on non-affected PLICs.
-> Perhaps use a separate irq_chip instance?
->
-I don't think so as the handle_fasteoi_ack_irq() is installed only in
-case of RZ/Five, so irq_ack() will not be called for non-affected
-PLIC's. Please correct me if I am wrong.
-
-> >         .irq_eoi        = plic_irq_eoi,
-> > +       .irq_set_type   = plic_irq_set_type,
-> > +
-> >  #ifdef CONFIG_SMP
-> >         .irq_set_affinity = plic_set_affinity,
-> >  #endif
-> > @@ -198,6 +248,19 @@ static int plic_irqdomain_map(struct irq_domain *d, unsigned int irq,
-> >         return 0;
-> >  }
-> >
-> > +static int plic_irq_domain_translate(struct irq_domain *d,
-> > +                                    struct irq_fwspec *fwspec,
-> > +                                    unsigned long *hwirq,
-> > +                                    unsigned int *type)
-> > +{
-> > +       struct plic_priv *priv = d->host_data;
-> > +
-> > +       if (priv->of_data == RENESAS_R9A07G043_PLIC)
-> > +               return irq_domain_translate_twocell(d, fwspec, hwirq, type);
-> > +
-> > +       return irq_domain_translate_onecell(d, fwspec, hwirq, type);
->
-> This one clearly shows the discerning feature: onecell or twocell...
->
-> > +}
-> > +
-> >  static int plic_irq_domain_alloc(struct irq_domain *domain, unsigned int virq,
-> >                                  unsigned int nr_irqs, void *arg)
-> >  {
->
-> > @@ -293,6 +356,9 @@ static int __init plic_init(struct device_node *node,
-> >         if (!priv)
-> >                 return -ENOMEM;
-> >
-> > +       if (of_device_is_compatible(node, "renesas-r9a07g043-plic"))
-> > +               priv->of_data = RENESAS_R9A07G043_PLIC;
-> > +
->
-> So perhaps instead just look at #interrupt-cells, and use the onecell
-> or twocell irq_chip/irq_domain_ops based on that?
->
-But we do call plic_irq_domain_translate() in the alloc callback and
-don't have a node pointer in there to check the interrupt cell count.
-Or maybe we can store the interrupt cell count in priv and use it
-accordingly above?
-
-Cheers,
-Prabhakar
-
-> >         priv->regs = of_iomap(node, 0);
-> >         if (WARN_ON(!priv->regs)) {
-> >                 error = -EIO;
->
-> Gr{oetje,eeting}s,
->
->                         Geert
->
-> --
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
->
-> In personal conversations with technical people, I call myself a hacker. But
-> when I'm talking to journalists I just say "programmer" or something like that.
->                                 -- Linus Torvalds
