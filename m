@@ -2,104 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D9B8C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 17:28:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B66BFC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 17:32:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229790AbiEYR2W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 13:28:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42166 "EHLO
+        id S232244AbiEYRch (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 13:32:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235417AbiEYR2T (ORCPT
+        with ESMTP id S229823AbiEYRce (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 13:28:19 -0400
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F462AEE25
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 10:28:15 -0700 (PDT)
-Received: by mail-wm1-x334.google.com with SMTP id v4-20020a1cac04000000b00397001398c0so1495011wme.5
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 10:28:15 -0700 (PDT)
+        Wed, 25 May 2022 13:32:34 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21B28AE271
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 10:32:33 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id x2-20020a17090a1f8200b001e07a64c461so2237891pja.4
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 10:32:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5wN5Z1sp0tdcSIvXWY7HQoJeIR7CM7NXDblhbKWMdgk=;
-        b=mFI1Wp+Y3Cx5vpGRNPwKaQ7c2A1hROuIUOJG+McCGpIuG0xM+ehtyZ/T6SKyypafAx
-         oPrmJnVM0/wt1tgCIe5Nt2Oe6rjTwF6aNrJlYUGDp3uoI0dOyOfhVfve5iB48qAX0zre
-         f64IRWsxbTTPK6ONiOw1srs14BAxBnCe0LhiKSL4txovloLEWdmSwRBlxkO91tHj6SFh
-         6Qp71YV0tY0UO5OTt2UCizL+n3IJ4fAStWIvm2hGhrJJN/NL2+oN7gyQ0d86pQeVvEkS
-         ck32xhDsjfkz8lsbqQnIFxjD0mfSpAXmSGeZTfSveMRavywgmVWW4G4aQM37JxkawkmU
-         1D2w==
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=uKOzhX8ru6YupzPPVUW9G2G9XsQPjTP3RBRMRT4HCrs=;
+        b=FyAccB0oXpEBuBOxcmix4vQsWmUhUjnf8be7oMXpDUvwUENkgP2x52FT40EnpIwaDw
+         fr7MQg1gH5pfpoKEKmgLmSRpwRlAPv8uoNHjnRignSUoOSY63W//VWSR9MNj3WEMZl9/
+         r2TUYrBLGdbL31Kf1hstHdiIZU1+LVMfCtS1w/GwV0Mal1LlQSx4qu6gSfpjnoR4D23Z
+         MLyKNO6dX/cfK0OfvmedVYFnTH464/YqGeh4FOr7MpVuPDU/EZ0wGow3LN2QFt69oqYc
+         y6DbaDylpoEwuA6Rjyra8npsj12P/Mg+qEJDmSTLh/PY8OhbUdTB0Mry8fiSV0LD/08Z
+         HKvQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5wN5Z1sp0tdcSIvXWY7HQoJeIR7CM7NXDblhbKWMdgk=;
-        b=yhuduK3WAw6KFWWytwrUNwXEyAtATsDVbrZp3sP9rTDz22tfSF0UPrKpYKVhRbiFQ8
-         yeJfsAWo8XYCV8PBoHpJRnCRfn0vtILKCZJr6WtWgEtTSIOqs4DfeRktIJ3G45phlE6T
-         57vVa39XjgMuEVVXkEIVMFjU2OjVUn6/opKjZAXRGXtRyd4zLwlA+TppUrHrXqZA0E5k
-         D8un0j0jX+itWxPQ3u+GBbfGJP6Z/3s928GSphMYzJ1NivrNKAYleldUKusS1UAqj4rH
-         YimlqIVbZLBq7HTOdVpMGjEpZQoSN63Nxe1tNMt4/aVgRN7+1wghkfkRP01ik859T0OW
-         B6rw==
-X-Gm-Message-State: AOAM533Yomd+Bwh06peaH5LO5LMKngdX44eoZN5KqZDJMEmRficHv3jD
-        qQSJHauEBvMPtRNuJZrzDDI0iBY5BZvudPmv7ZL0RA==
-X-Google-Smtp-Source: ABdhPJx6DRtgAoKLyjqFjkaaX34xnnuGV9Xtj2C2Yh02kMXEfEL4eCaCfewk5Rpm9nkxm+tIIC4hFL0K9GY/vHY4Nes=
-X-Received: by 2002:a1c:acc4:0:b0:392:9dd4:fbcc with SMTP id
- v187-20020a1cacc4000000b003929dd4fbccmr9101955wme.78.1653499693969; Wed, 25
- May 2022 10:28:13 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=uKOzhX8ru6YupzPPVUW9G2G9XsQPjTP3RBRMRT4HCrs=;
+        b=c9AKn9lLvHfga4eRaExDCfUqxeTQOhHoC2tXA/s2urgQQ+wScsjVXqYjONC/D3RXOo
+         ZmhBn/GL8jGXHiJAZ191ZNH9YHYDvuFtN1ETMiVYhG41P0k3X6lMDeQvah46leDUvGhU
+         6i3nQqFwUhwTbMh6DmMS84oeKW6w70zradO6LGSRSC7AAXDiA/iADtLJpN4B05WBaykC
+         M95FhlNVBPR6UnRZ4dQG+mXcBfAuRi8g7rR3svoWei6KHPj/oWx/fpeC7viaMKRbBajh
+         wdA9n77Zp+/BMC4/Yb5bIhqt7RQQnBJ+fi3vHNDCrAvvdrucSgycPYCLxTdU5M+LUG8T
+         g5cQ==
+X-Gm-Message-State: AOAM531YgI+osYIvmhksVo8Ma7rkrLndT2F1NNrEY1Y/2dQy2EUSu6JH
+        3AXEojPCdDZ4TPfo/pBT11iJsQ==
+X-Google-Smtp-Source: ABdhPJymqelJmqXaqJ5lvTkskc43UEh4IL2o064fxrk4cTDYfPDuhIiWfzubPs2mkHTO8lG7+q28zQ==
+X-Received: by 2002:a17:90a:5ae1:b0:1db:d0a4:30a4 with SMTP id n88-20020a17090a5ae100b001dbd0a430a4mr11701841pji.128.1653499952316;
+        Wed, 25 May 2022 10:32:32 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id b6-20020a170902a9c600b001624dab05edsm3506026plr.8.2022.05.25.10.32.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 25 May 2022 10:32:31 -0700 (PDT)
+Date:   Wed, 25 May 2022 17:32:28 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Jon Kohler <jon@nutanix.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Waiman Long <longman@redhat.com>,
+        Kees Cook <keescook@chromium.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3] KVM: VMX: do not disable interception for
+ MSR_IA32_SPEC_CTRL on eIBRS
+Message-ID: <Yo5oLAzdYurlMQFm@google.com>
+References: <20220520204115.67580-1-jon@nutanix.com>
+ <Yo5hmcdRvE1UrI4y@google.com>
+ <3C8F5313-2830-46E3-A512-CFA4A24C24D7@nutanix.com>
 MIME-Version: 1.0
-References: <20220406233648.21644-1-brad@pensando.io> <20220406233648.21644-12-brad@pensando.io>
- <9c08f621be28dba65e811bc9cdedc882@kernel.org> <CAK9rFnyRTX+VM5g9P-ar=3VaExhHcwR8DzLvxtv-tG8cN9gqEQ@mail.gmail.com>
- <87tub21uoz.wl-maz@kernel.org>
-In-Reply-To: <87tub21uoz.wl-maz@kernel.org>
-From:   Brad Larson <brad@pensando.io>
-Date:   Wed, 25 May 2022 10:28:02 -0700
-Message-ID: <CAK9rFnzbexhS7htxkO9S4-kBF_nTeUkryE7DGTq=a1GHDLwcEQ@mail.gmail.com>
-Subject: Re: [PATCH 11/11] arm64: dts: Add Pensando Elba SoC support
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Mark Brown <broonie@kernel.org>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Olof Johansson <olof@lixom.net>,
-        David Clear <dac2@pensando.io>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        linux-spi <linux-spi@vger.kernel.org>,
-        linux-mmc <linux-mmc@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <3C8F5313-2830-46E3-A512-CFA4A24C24D7@nutanix.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Marc,
+On Wed, May 25, 2022, Jon Kohler wrote:
+> > On May 25, 2022, at 1:04 PM, Sean Christopherson <seanjc@google.com> wrote:
+> > the code.  Again, it's all about whether eIBRS is advertised to the guest.  With
+> > some other minor tweaking to wrangle the comment to 80 chars...
+> 
+> RE 80 chars - quick question (and forgive the silly question here), but how are you
+> counting that? I’ve got my editor cutting at 79 cols, where tab size is accounted
+> for as 4 cols, so the longest line on my side for this patch is 72-73 or so.
 
-On Sat, Apr 9, 2022 at 2:18 AM Marc Zyngier <maz@kernel.org> wrote:
->
-> On Sat, 09 Apr 2022 03:38:55 +0100,
-> Brad Larson <brad@pensando.io> wrote:
-> >
+Tabs are 8 cols in the kernel.  FWIW, your patch was totally fine with respect to
+wrapping, my comment was purely to give the heads up that I arbitrarily tweaked
+other bits of the comment to adjust for my suggested reword.
 
-> > > You are still missing the GICV and GICH regions that are
-> > > provided by the CPU. I already pointed that out in [1].
-> > >
-> > > The Cortex-A72 TRM will tell you where to find them (at
-> > > an offset from PERIPHBASE).
-> >
-> > Hi Marc,
-> >
-> > Got the addresses, neither region is used, and will be included in the
-> > next submission.
->
-> Not sure what you mean by these regions being unused here (the Linux
-> kernel definitely makes use of them). Note that you'll also need to
-> add GICC (which I forgot to mention above).
+> These also pass the checkpatch.pl script as well, so I just want to make sure
+> going forward I’m formatting them appropriately.
 
-Added missing GICV, GICH and GICC regions.
+For future reference, checkpatch.pl only yells if a line length exceeds 100 chars.
+The 80 char limit is a soft limit, with 100 chars being a mostly-firm limit.
+checkpatch used to yell at 80, but was changed because too many people were
+interpreting 80 chars as a hard limit and blindly wrapping code to make checkpatch
+happy at the cost of yielding less readable code.
 
-Regards,
-Brad
+Whether or not to run over the soft limit is definitely subjective, just try to
+use common sense.  E.g. overflowing by 1-2 chars, not a big deal, especially if
+the statement would otherwise fit on a single line, i.e. doesn't already wrap.
+
+A decent example is the SGX MSRs, which allows the SGX_LC_ENABLED check to run
+over a little, but wraps the data update.  The reasoning is that
+
+		if (!msr_info->host_initiated &&
+		    (!guest_cpuid_has(vcpu, X86_FEATURE_SGX_LC) ||
+		    ((vmx->msr_ia32_feature_control & FEAT_CTL_LOCKED) &&
+		    !(vmx->msr_ia32_feature_control & FEAT_CTL_SGX_LC_ENABLED))))
+			return 1;
+
+is much more readable than 
+
+		if (!msr_info->host_initiated &&
+		    (!guest_cpuid_has(vcpu, X86_FEATURE_SGX_LC) ||
+		    ((vmx->msr_ia32_feature_control & FEAT_CTL_LOCKED) &&
+		    !(vmx->msr_ia32_feature_control &
+		      FEAT_CTL_SGX_LC_ENABLED))))
+			return 1;
+
+but this
+
+		vmx->msr_ia32_sgxlepubkeyhash
+			[msr_index - MSR_IA32_SGXLEPUBKEYHASH0] = data;
+
+is only isn't _that_ much worse than running the line way out, and ~93 chars gets
+to be a bit too long.
+
+		vmx->msr_ia32_sgxlepubkeyhash[msr_index - MSR_IA32_SGXLEPUBKEYHASH0] = data;
