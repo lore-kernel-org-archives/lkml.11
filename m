@@ -2,100 +2,233 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF3BAC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 14:34:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C1EBC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 14:38:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238199AbiEYOeP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 10:34:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57316 "EHLO
+        id S237255AbiEYOia (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 10:38:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237558AbiEYOeN (ORCPT
+        with ESMTP id S231761AbiEYOi2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 10:34:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F498A7E20;
-        Wed, 25 May 2022 07:34:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F419F6195D;
-        Wed, 25 May 2022 14:34:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22B91C385B8;
-        Wed, 25 May 2022 14:34:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653489251;
-        bh=jKMXS9Z2wSf/iYiPIqP+VUf/M/S8DyVS0usjv1+qV2c=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=ltGVKF9ILk+J3qDoXXxbOxuefxDlIeGH5cypEsKhRPY5BnK8naQBWLrJn1aWrkPny
-         HcqttzfzqxJilDJv+SOlZl4pTjpU+vwO5RCUmd9Yw+yQaOCjZ6W9AH+7VXbI8X2X2p
-         hwem9EMNKPwJ3vW+IW0uTscg+pY1KKTtZp5TIceRFt6eNSzGW+UZsiCt22qcRP+OV/
-         eZLIAszeyj+0rWh0zPUPkwZySV7RgtOxnHt+hYHF+ggHwtWIMSq7Gb4XbUwAfNVaSI
-         chxWV3rYlzngrCzUkeOZvYKJMHmjz4L9L9t1wmTuyCS3c7vfToXNFBM9TDRP8yOSaJ
-         QSjcECuuOlYew==
-Date:   Wed, 25 May 2022 09:34:09 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        "Michael S . Tsirkin" <mst@redhat.com>, llvm@lists.linux.dev,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Bjorn Helgaas <bhelgaas@google.com>
-Subject: Re: [PATCH v2 1/2] linux/types.h: Remove unnecessary __bitwise__
-Message-ID: <20220525143409.GA292780@bhelgaas>
+        Wed, 25 May 2022 10:38:28 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84D8832079
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 07:38:26 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id j25so5987545wrb.6
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 07:38:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ffwll.ch; s=google;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=EgY0jaM9vHozFElUnQ8vjV07u7clksrPr+0iIxlv5TU=;
+        b=ZSAPAZI1ZzKFU26CKEpOFJwGxkDb48U0LhHGHNPMF66cJksDw2s26PhE92m2sP0/Lt
+         0CrCMZVem2RauRgZf+QX2owKSP9hBndUIrO6pTxX6yjcvxSobJbCppPOaTGaOss3ce5s
+         styIG9bn7WYlE9VRwM63fyU/WLG9nLL5z0hBQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :content-transfer-encoding:in-reply-to;
+        bh=EgY0jaM9vHozFElUnQ8vjV07u7clksrPr+0iIxlv5TU=;
+        b=KWl7AIzT6nfWpYdH/BjXIAWJAaIbM4wEU7J+tK/woJ2qmgCc4sw+aknnm8d8Kc5K9/
+         IPSH/66NFYyjbXRlZN3GNKlsq/tFjfdhgHCaST3Eu84FY2T4LPXr6Wo4RBoVW+bfOm0r
+         PQ5t1KUOEfvQheGnrd5nxGbTHZfBeVXmu1O897RmofUFo8imokod3y5QvFPnKCeT0Hk4
+         UycBU+QtOaQfc3rTi8688HKvU5ofeglrgy/Sk0lMUA+zbTSgH4uH48MxzwgGLkUeGyZ6
+         hYtzLShCGr8cBi6IIDc81V5O0Iu6KxkacVxwJ9qRVIg3g+koTZJ7GnKfrFXQgpWkjuRj
+         csPw==
+X-Gm-Message-State: AOAM530OmQiA4PbIfwQl6irV8Wb3cbh7GOAM4nG5/R/r0ulOzVgefGnx
+        SILABukU2JLrhtfXC9o47eWR9A==
+X-Google-Smtp-Source: ABdhPJzLNNEykkR4Jh5XLHgXxwE9aky/euCfurPFRV26dc5jYUXygZu7DY5BbEHKBLSkPW+aTFGinA==
+X-Received: by 2002:a05:6000:246:b0:20f:fff4:e1ec with SMTP id m6-20020a056000024600b0020ffff4e1ecmr2580893wrz.485.1653489505042;
+        Wed, 25 May 2022 07:38:25 -0700 (PDT)
+Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
+        by smtp.gmail.com with ESMTPSA id h15-20020adf9ccf000000b0020e58b3e064sm2292198wre.74.2022.05.25.07.38.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 25 May 2022 07:38:24 -0700 (PDT)
+Date:   Wed, 25 May 2022 16:38:22 +0200
+From:   Daniel Vetter <daniel@ffwll.ch>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     "T.J. Mercier" <tjmercier@google.com>,
+        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Kalesh Singh <kaleshsingh@google.com>,
+        Minchan Kim <minchan@google.com>,
+        Greg Kroah-Hartman <gregkh@google.com>,
+        John Stultz <jstultz@google.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Hridya Valsaraju <hridya@google.com>, kernel-team@android.com,
+        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] dma-buf: Move sysfs work out of DMA-BUF export path
+Message-ID: <Yo4/XhWQkACWaPIh@phenom.ffwll.local>
+Mail-Followup-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "T.J. Mercier" <tjmercier@google.com>,
+        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Kalesh Singh <kaleshsingh@google.com>,
+        Minchan Kim <minchan@google.com>,
+        Greg Kroah-Hartman <gregkh@google.com>,
+        John Stultz <jstultz@google.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Hridya Valsaraju <hridya@google.com>, kernel-team@android.com,
+        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org
+References: <20220516171315.2400578-1-tjmercier@google.com>
+ <175c5af3-9224-9c8e-0784-349dad9a2954@amd.com>
+ <CABdmKX2GcgCs1xANYPBp8OEtk9qqH7AvCzpdppj9rHXvMqWSAw@mail.gmail.com>
+ <0875fa95-3a25-a354-1433-201fca81ed3e@amd.com>
+ <CABdmKX1+VYfdzyVYOS5MCsr4ptGTygmuUP9ikyh-vW6DgKk2kg@mail.gmail.com>
+ <YoM9BAwybcjG7K/H@kroah.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <b5c0a68d-8387-4909-beea-f70ab9e6e3d5@kernel.org>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YoM9BAwybcjG7K/H@kroah.com>
+X-Operating-System: Linux phenom 5.10.0-8-amd64 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 25, 2022 at 08:51:29AM +0200, Jiri Slaby wrote:
-> On 15. 03. 22, 16:30, Bjorn Helgaas wrote:
-> > From: Bjorn Helgaas <bhelgaas@google.com>
-> > 
-> > There are no users of "__bitwise__" except the definition of "__bitwise".
-> > Remove __bitwise__ and define __bitwise directly.
-> > 
-> > This is a follow-up to 05de97003c77 ("linux/types.h: enable endian checks
-> > for all sparse builds").
-> > 
-> > Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-> > Cc: Michael S. Tsirkin <mst@redhat.com>
-> > ---
-> >   include/uapi/linux/types.h  | 5 ++---
-> >   tools/include/linux/types.h | 5 ++---
-> >   2 files changed, 4 insertions(+), 6 deletions(-)
-> > 
-> > diff --git a/include/uapi/linux/types.h b/include/uapi/linux/types.h
-> > index f6d2f83cbe29..71696f424ac8 100644
-> > --- a/include/uapi/linux/types.h
-> > +++ b/include/uapi/linux/types.h
-> > @@ -20,11 +20,10 @@
-> >    */
-> >   #ifdef __CHECKER__
-> > -#define __bitwise__ __attribute__((bitwise))
-> > +#define __bitwise	__attribute__((bitwise))
-> >   #else
-> > -#define __bitwise__
-> > +#define __bitwise
-> >   #endif
-> > -#define __bitwise __bitwise__
+On Tue, May 17, 2022 at 08:13:24AM +0200, Greg Kroah-Hartman wrote:
+> On Mon, May 16, 2022 at 05:08:05PM -0700, T.J. Mercier wrote:
+> > On Mon, May 16, 2022 at 12:21 PM Christian König
+> > <christian.koenig@amd.com> wrote:
+> > >
+> > > Am 16.05.22 um 20:08 schrieb T.J. Mercier:
+> > > > On Mon, May 16, 2022 at 10:20 AM Christian König
+> > > > <christian.koenig@amd.com> wrote:
+> > > >> Am 16.05.22 um 19:13 schrieb T.J. Mercier:
+> > > >>> Recently, we noticed an issue where a process went into direct reclaim
+> > > >>> while holding the kernfs rw semaphore for sysfs in write (exclusive)
+> > > >>> mode. This caused processes who were doing DMA-BUF exports and releases
+> > > >>> to go into uninterruptible sleep since they needed to acquire the same
+> > > >>> semaphore for the DMA-BUF sysfs entry creation/deletion. In order to avoid
+> > > >>> blocking DMA-BUF export for an indeterminate amount of time while
+> > > >>> another process is holding the sysfs rw semaphore in exclusive mode,
+> > > >>> this patch moves the per-buffer sysfs file creation to the default work
+> > > >>> queue. Note that this can lead to a short-term inaccuracy in the dmabuf
+> > > >>> sysfs statistics, but this is a tradeoff to prevent the hot path from
+> > > >>> being blocked. A work_struct is added to dma_buf to achieve this, but as
+> > > >>> it is unioned with the kobject in the sysfs_entry, dma_buf does not
+> > > >>> increase in size.
+> > > >> I'm still not very keen of this approach as it strongly feels like we
+> > > >> are working around shortcoming somewhere else.
+> > > >>
+> > > > My read of the thread for the last version is that we're running into
+> > > > a situation where sysfs is getting used for something it wasn't
+> > > > originally intended for, but we're also stuck with this sysfs
+> > > > functionality for dmabufs.
+> > > >
+> > > >>> Fixes: bdb8d06dfefd ("dmabuf: Add the capability to expose DMA-BUF stats in sysfs")
+> > > >>> Originally-by: Hridya Valsaraju <hridya@google.com>
+> > > >>> Signed-off-by: T.J. Mercier <tjmercier@google.com>
+> > > >>>
+> > > >>> ---
+> > > >>> See the originally submitted patch by Hridya Valsaraju here:
+> > > >>> https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Flkml.org%2Flkml%2F2022%2F1%2F4%2F1066&amp;data=05%7C01%7Cchristian.koenig%40amd.com%7C794614324d114880a25508da37672e4b%7C3dd8961fe4884e608e11a82d994e183d%7C0%7C0%7C637883213566903705%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&amp;sdata=bGlA2FeubfSeL5XDHYyWMZqUXfScoCphZjjK4jrqQJs%3D&amp;reserved=0
+> > > >>>
+> > > >>> v2 changes:
+> > > >>> - Defer only sysfs creation instead of creation and teardown per
+> > > >>> Christian König
+> > > >>>
+> > > >>> - Use a work queue instead of a kthread for deferred work per
+> > > >>> Christian König
+> > > >>> ---
+> > > >>>    drivers/dma-buf/dma-buf-sysfs-stats.c | 56 ++++++++++++++++++++-------
+> > > >>>    include/linux/dma-buf.h               | 14 ++++++-
+> > > >>>    2 files changed, 54 insertions(+), 16 deletions(-)
+> > > >>>
+> > > >>> diff --git a/drivers/dma-buf/dma-buf-sysfs-stats.c b/drivers/dma-buf/dma-buf-sysfs-stats.c
+> > > >>> index 2bba0babcb62..67b0a298291c 100644
+> > > >>> --- a/drivers/dma-buf/dma-buf-sysfs-stats.c
+> > > >>> +++ b/drivers/dma-buf/dma-buf-sysfs-stats.c
+> > > >>> @@ -11,6 +11,7 @@
+> > > >>>    #include <linux/printk.h>
+> > > >>>    #include <linux/slab.h>
+> > > >>>    #include <linux/sysfs.h>
+> > > >>> +#include <linux/workqueue.h>
+> > > >>>
+> > > >>>    #include "dma-buf-sysfs-stats.h"
+> > > >>>
+> > > >>> @@ -168,10 +169,46 @@ void dma_buf_uninit_sysfs_statistics(void)
+> > > >>>        kset_unregister(dma_buf_stats_kset);
+> > > >>>    }
+> > > >>>
+> > > >>> +static void sysfs_add_workfn(struct work_struct *work)
+> > > >>> +{
+> > > >>> +     struct dma_buf_sysfs_entry *sysfs_entry =
+> > > >>> +             container_of(work, struct dma_buf_sysfs_entry, sysfs_add_work);
+> > > >>> +     struct dma_buf *dmabuf = sysfs_entry->dmabuf;
+> > > >>> +
+> > > >>> +     /*
+> > > >>> +      * A dmabuf is ref-counted via its file member. If this handler holds the only
+> > > >>> +      * reference to the dmabuf, there is no need for sysfs kobject creation. This is an
+> > > >>> +      * optimization and a race; when the reference count drops to 1 immediately after
+> > > >>> +      * this check it is not harmful as the sysfs entry will still get cleaned up in
+> > > >>> +      * dma_buf_stats_teardown, which won't get called until the final dmabuf reference
+> > > >>> +      * is released, and that can't happen until the end of this function.
+> > > >>> +      */
+> > > >>> +     if (file_count(dmabuf->file) > 1) {
+> > > >> Please completely drop that. I see absolutely no justification for this
+> > > >> additional complexity.
+> > > >>
+> > > > This case gets hit around 5% of the time in my testing so the else is
+> > > > not a completely unused branch.
+> > >
+> > > Well I can only repeat myself: This means that your userspace is
+> > > severely broken!
+> > >
+> > > DMA-buf are meant to be long living objects
+> > This patch addresses export *latency* regardless of how long-lived the
+> > object is. Even a single, long-lived export will benefit from this
+> > change if it would otherwise be blocked on adding an object to sysfs.
+> > I think attempting to improve this latency still has merit.
 > 
-> Hi,
+> Fixing the latency is nice, but as it's just pushing the needed work off
+> to another code path, it will take longer overall for the sysfs stuff to
+> be ready for userspace to see.
 > 
-> this broke userspace, like open-iscsi:
-> > [   34s] In file included from session_info.h:9,
-> > [   34s]                  from iscsi_util.c:38:
-> > [   34s] ../include/iscsi_proto.h:66:30: error: expected '=', ',', ';', 'asm' or '__attribute__' before 'itt_t'
-> > [   34s]    66 | typedef uint32_t __bitwise__ itt_t;
-> > [   34s]       |                              ^~~~~
+> Perhaps we need to step back and understand what this code is supposed
+> to be doing.  As I recall, it was created because some systems do not
+> allow debugfs anymore, and they wanted the debugging information that
+> the dmabuf code was exposing to debugfs on a "normal" system.  Moving
+> that logic to sysfs made sense, but now I am wondering why we didn't see
+> these issues in the debugfs code previously?
 > 
-> It looks like we need __bitwise__ back.
+> Perhaps we should go just one step further and make a misc device node
+> for dmabug debugging information to be in and just have userspace
+> poll/read on the device node and we spit the info that used to be in
+> debugfs out through that?  That way this only affects systems when they
+> want to read the information and not normal code paths?  Yeah that's a
+> hack, but this whole thing feels overly complex now.
 
-Crap, sorry.  I don't know why I thought it would be safe to remove
-something from uapi.  I'll send a revert.
+A bit late on this discussion, but just wanted to add my +1 that we should
+either redesign the uapi, or fix the underlying latency issue in sysfs, or
+whatever else is deemed the proper fix.
 
-Bjorn
+Making uapi interfaces async in ways that userspace can't discover is a
+hack that we really shouldn't consider, at least for upstream. All kinds
+of hilarious things might start to happen when an object exists, but not
+consistently in all the places where it should be visible. There's a
+reason sysfs has all these neat property groups so that absolutely
+everything is added atomically. Doing stuff later on just because usually
+no one notices that the illusion falls apart isn't great.
+
+Unfortunately I don't have a clear idea here what would be the right
+solution :-/ One idea perhaps: Should we dynamically enumerate the objects
+when userspace does a readdir()? That's absolutely not how sysfs works,
+but procfs works like that and there's discussions going around about
+moving these optimizations to other kernfs implementations. At least there
+was a recent lwn article on this:
+
+https://lwn.net/Articles/895111/
+
+But that would be serious amounts of work I guess.
+-Daniel
+-- 
+Daniel Vetter
+Software Engineer, Intel Corporation
+http://blog.ffwll.ch
