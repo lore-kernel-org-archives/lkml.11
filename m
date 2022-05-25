@@ -2,62 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 697CDC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 13:17:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90534C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 13:17:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231299AbiEYNRZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 09:17:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34368 "EHLO
+        id S244299AbiEYNR3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 09:17:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239122AbiEYNQ7 (ORCPT
+        with ESMTP id S234869AbiEYNQ7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 25 May 2022 09:16:59 -0400
 Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64C0CE00B
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 06:16:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9375AE000
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 06:16:55 -0700 (PDT)
 Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
-        by mx0b-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24PCRmjI022096;
-        Wed, 25 May 2022 08:16:46 -0500
+        by mx0b-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24PCRmjD022096;
+        Wed, 25 May 2022 08:16:42 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=PODMain02222019;
- bh=VovP2fjHmWUZWiLciMKSnLk1aUbcDY4P7rblNQN7RKM=;
- b=XfqjvFfnpEY8n8ORa4hJO4LxzKZ3gcSWFo8woA9SzWd4yMB6k42SvpnUvZDLWTcmX/mJ
- lRJfIAbaJAnBmzyzZLooJ7I5/G4S9nQcOj+vXguJ33MFs7JUTgxuNporxAbr6xSb8hkH
- FWwgKQkdEuNLRbRxLiFJkVzA/67erJBpUzh5FUx8YLOrO+OEs+hqvE2Y71BUA0kjyk9h
- OAqlbrgrfrH0cZiwmivZInD+Ja02iPL6UAiH3MnRLOel97NJ47p5AxdMSfbmvQ4IX8Cf
- yu8L7MxFtXPJMbmPG2pOwE7NX9+PYWBrcCqDZG00g5Npxgo3xfo8dPEuu2SwQo8C0IFG kQ== 
+ bh=i7lw6DOkLlBNhuFgnm6YHtLKyoQAfOY/+S/HCRu3sx8=;
+ b=cMF1YJ+bB/91I6V+BAzdglfZmsg8XyxKs3JBuuX96ZEqDQByDNbUATghpAq1KqNilQTk
+ Fw4tTZ8x/NRpkcriKmtbAXx0MT6Epxl0EgrcLZZJK5wm/i5Kq/7TILAm+4AHhxik8Qtt
+ dXslTCNLfw+QChDHKTtNgrwX3s5vNYoyV7WbOkjOfBN9yeI8YVXn5sJxZjQpndTAsbtm
+ +fM12vX5rNUqDS3i4RW/TjJj5O1Zi6+2m1m0gWtLCD/Ifudox6TDdb4tTZZ7+6/Lwd6k
+ 1hTzaDLR0CrruRxh5BNmO9FHzovh2RjKEy6FFscGVD1DcWFpZvbqFeILTewL+PkDcy0U yw== 
 Received: from ediex01.ad.cirrus.com ([84.19.233.68])
-        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3g93u20we6-8
+        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3g93u20we6-3
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 25 May 2022 08:16:46 -0500
+        Wed, 25 May 2022 08:16:42 -0500
 Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
  (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 25 May
- 2022 14:16:43 +0100
+ 2022 14:16:40 +0100
 Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
  (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.24 via Frontend
- Transport; Wed, 25 May 2022 14:16:43 +0100
+ Transport; Wed, 25 May 2022 14:16:40 +0100
 Received: from vitaly-Legion-7-16ACHg6.ad.cirrus.com (unknown [198.90.238.233])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 620A846C;
-        Wed, 25 May 2022 13:16:43 +0000 (UTC)
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 8D02546C;
+        Wed, 25 May 2022 13:16:40 +0000 (UTC)
 From:   Vitaly Rodionov <vitalyr@opensource.cirrus.com>
 To:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
         Mark Brown <broonie@kernel.org>
 CC:     <alsa-devel@alsa-project.org>, <patches@opensource.cirrus.com>,
         <linux-kernel@vger.kernel.org>,
         Stefan Binding <sbinding@opensource.cirrus.com>
-Subject: [PATCH v4 10/17] ASoC: cs35l41: Do not print error when waking from hibernation
-Date:   Wed, 25 May 2022 14:16:31 +0100
-Message-ID: <20220525131638.5512-11-vitalyr@opensource.cirrus.com>
+Subject: [PATCH v4 03/17] ALSA: hda: cs35l41: Save codec object inside component struct
+Date:   Wed, 25 May 2022 14:16:24 +0100
+Message-ID: <20220525131638.5512-4-vitalyr@opensource.cirrus.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220525131638.5512-1-vitalyr@opensource.cirrus.com>
 References: <20220525131638.5512-1-vitalyr@opensource.cirrus.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: UpThctazHpv93Cr7d4kdTzKRFBHrtW7C
-X-Proofpoint-GUID: UpThctazHpv93Cr7d4kdTzKRFBHrtW7C
+X-Proofpoint-ORIG-GUID: 24KTQH9yo1OnROhtqO6VGewz92BYlJ7B
+X-Proofpoint-GUID: 24KTQH9yo1OnROhtqO6VGewz92BYlJ7B
 X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
@@ -65,10 +65,7 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Stefan Binding <sbinding@opensource.cirrus.com>
 
-When waking from hibernation, it is possible for the function
-which sends the wake command to fail initially, but after a
-retry it will succeed. There is no need to print an error if
-the initial attempts fail.
+This is required for ALSA control support.
 
 Signed-off-by: Stefan Binding <sbinding@opensource.cirrus.com>
 Signed-off-by: Vitaly Rodionov <vitalyr@opensource.cirrus.com>
@@ -77,23 +74,59 @@ Signed-off-by: Vitaly Rodionov <vitalyr@opensource.cirrus.com>
 Changes since v2:
  - No change
  
- sound/soc/codecs/cs35l41-lib.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ sound/pci/hda/cs35l41_hda.c   | 1 +
+ sound/pci/hda/cs35l41_hda.h   | 1 +
+ sound/pci/hda/hda_component.h | 1 +
+ sound/pci/hda/patch_realtek.c | 1 +
+ 4 files changed, 4 insertions(+)
 
-diff --git a/sound/soc/codecs/cs35l41-lib.c b/sound/soc/codecs/cs35l41-lib.c
-index cc5366c8bdd6..e726a38f1997 100644
---- a/sound/soc/codecs/cs35l41-lib.c
-+++ b/sound/soc/codecs/cs35l41-lib.c
-@@ -1302,7 +1302,8 @@ int cs35l41_set_cspl_mbox_cmd(struct device *dev, struct regmap *regmap,
- 			return 0;
- 	}
+diff --git a/sound/pci/hda/cs35l41_hda.c b/sound/pci/hda/cs35l41_hda.c
+index cce27a86267f..bbbaafac50c3 100644
+--- a/sound/pci/hda/cs35l41_hda.c
++++ b/sound/pci/hda/cs35l41_hda.c
+@@ -117,6 +117,7 @@ static int cs35l41_hda_bind(struct device *dev, struct device *master, void *mas
+ 		return -EBUSY;
  
--	dev_err(dev, "Failed to set mailbox cmd %u (status %u)\n", cmd, sts);
-+	if (cmd != CSPL_MBOX_CMD_OUT_OF_HIBERNATE)
-+		dev_err(dev, "Failed to set mailbox cmd %u (status %u)\n", cmd, sts);
+ 	comps->dev = dev;
++	cs35l41->codec = comps->codec;
+ 	strscpy(comps->name, dev_name(dev), sizeof(comps->name));
+ 	comps->playback_hook = cs35l41_hda_playback_hook;
  
- 	return -ENOMSG;
- }
+diff --git a/sound/pci/hda/cs35l41_hda.h b/sound/pci/hda/cs35l41_hda.h
+index a52ffd1f7999..aaf9e16684c2 100644
+--- a/sound/pci/hda/cs35l41_hda.h
++++ b/sound/pci/hda/cs35l41_hda.h
+@@ -32,6 +32,7 @@ struct cs35l41_hda {
+ 	struct regmap *regmap;
+ 	struct gpio_desc *reset_gpio;
+ 	struct cs35l41_hw_cfg hw_cfg;
++	struct hda_codec *codec;
+ 
+ 	int irq;
+ 	int index;
+diff --git a/sound/pci/hda/hda_component.h b/sound/pci/hda/hda_component.h
+index e26c896a13f3..534e845b9cd1 100644
+--- a/sound/pci/hda/hda_component.h
++++ b/sound/pci/hda/hda_component.h
+@@ -14,5 +14,6 @@
+ struct hda_component {
+ 	struct device *dev;
+ 	char name[HDA_MAX_NAME_SIZE];
++	struct hda_codec *codec;
+ 	void (*playback_hook)(struct device *dev, int action);
+ };
+diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
+index 80e4955e8c10..cd289b17ca13 100644
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -6631,6 +6631,7 @@ static void cs35l41_generic_fixup(struct hda_codec *cdc, int action, const char
+ 					      "%s-%s:00-cs35l41-hda.%d", bus, hid, i);
+ 			if (!name)
+ 				return;
++			spec->comps[i].codec = cdc;
+ 			component_match_add(dev, &spec->match, component_compare_dev_name, name);
+ 		}
+ 		ret = component_master_add_with_match(dev, &comp_master_ops, spec->match);
 -- 
 2.34.1
 
