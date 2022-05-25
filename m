@@ -2,72 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3792C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 18:38:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58461C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 18:38:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343957AbiEYSiC (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 14:38:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51232 "EHLO
+        id S233150AbiEYSiG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 14:38:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343982AbiEYShx (ORCPT
+        with ESMTP id S1343805AbiEYShw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 14:37:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BAC9B8BD3
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 11:37:40 -0700 (PDT)
+        Wed, 25 May 2022 14:37:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58F1CB82E5;
+        Wed, 25 May 2022 11:37:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E5364B81E9A
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 18:37:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 63809C34119;
-        Wed, 25 May 2022 18:37:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EB914617D9;
+        Wed, 25 May 2022 18:37:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 5C87FC385B8;
+        Wed, 25 May 2022 18:37:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653503857;
-        bh=nLmCvqzwrCRLhLB0pozEcPV/2/UC6kozAFFDsAyZwDs=;
+        s=k20201202; t=1653503855;
+        bh=yjw68vrdFW3l3zBArE4VuOiW3qBA6+hJaHYq/yy95to=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=Ecf2JjwRgFwoFIuQ4WYGyDUFzZFl11gI5x0HpbQQGkD0Z9UZXA6wudBRmMupjk1jv
-         BwSG5++jHsTSfroLDxHpY7OjHvD2wLUW2jMPVBHJEjXIsD2eiD4NfeBkkiYyblqdnS
-         p6cKM69scwF4Mu3tpV2ZETgnHKSZxs6x85uiSvZKNDDBAO00BqLrhL+eVi1nU86mdG
-         b5DQw67ByiqDX6jotlgReot9wYZcJwCkJ/Paxb822Ry/CGzCV9oaik0GOkBapS46Cp
-         qZ2ob1Z8hMEgwx94WszzeeArf2PivClll7eimjKtHExanBlRXQVYDHPYlv6qzjwma1
-         aiMQdGiwjHFFw==
+        b=eXkYziJK5LDYL2wXYmSn78/yirAlm8zk6M9N0AmPI/nSztk4p0DL1SFknZXEO4wXx
+         yxgpe3hBxr9SnHZaCguLsPpHMuCeJkBTG1hEoAqKy1B7eFQRlhjSXnJtHQnkzRyfTY
+         ex64CMtA39Ap/VIiBsvTAGCfOvQXHp/Rb5DE+CG58BzaoKxzo8W52PlmPCb7x5E/EI
+         DBoYm+NNfANIi7ZeoitRkVsHRAUDix/hrOOhtsuP8dMCNjYlW4S9bLUHmCOidjfIcv
+         FpillyJYPZkg1Wl30bj0k1JPO2A91xmOZLPiTVQbvX2pfHPqoxGc0R8EuNmpt2/H+w
+         pbnZfdN0goqkA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 51074F03943;
-        Wed, 25 May 2022 18:37:37 +0000 (UTC)
-Subject: Re: [GIT PULL] printk for 5.19
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 4AB6EE8DBDA;
+        Wed, 25 May 2022 18:37:35 +0000 (UTC)
+Subject: Re: [GIT PULL] Documentation for 5.19
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <YouKQw72H7y9EJQK@alley>
-References: <YouKQw72H7y9EJQK@alley>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <YouKQw72H7y9EJQK@alley>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/printk/linux.git tags/printk-for-5.19
-X-PR-Tracked-Commit-Id: 1c6fd59943a630f087b4b3089aefdcb0bf43cca0
+In-Reply-To: <87wnecgsnx.fsf@meer.lwn.net>
+References: <87wnecgsnx.fsf@meer.lwn.net>
+X-PR-Tracked-List-Id: <linux-doc.vger.kernel.org>
+X-PR-Tracked-Message-Id: <87wnecgsnx.fsf@meer.lwn.net>
+X-PR-Tracked-Remote: git://git.lwn.net/linux.git tags/docs-5.19
+X-PR-Tracked-Commit-Id: b86f46d5ce3e7497930be931a9a9e57480f0baff
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 537e62c865dcb9b91d07ed83f8615b71fa0b51bb
-Message-Id: <165350385732.15754.13378378629917550984.pr-tracker-bot@kernel.org>
-Date:   Wed, 25 May 2022 18:37:37 +0000
-To:     Petr Mladek <pmladek@suse.com>
+X-PR-Merge-Commit-Id: 88a618920e9baabc1780479e2fbb68e5551d0563
+Message-Id: <165350385530.15754.14984172251166457488.pr-tracker-bot@kernel.org>
+Date:   Wed, 25 May 2022 18:37:35 +0000
+To:     Jonathan Corbet <corbet@lwn.net>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        John Ogness <john.ogness@linutronix.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Jan Kara <jack@suse.cz>, Peter Zijlstra <peterz@infradead.org>,
-        linux-kernel@vger.kernel.org
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Mon, 23 May 2022 15:21:07 +0200:
+The pull request you sent on Mon, 23 May 2022 09:44:34 -0600:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/printk/linux.git tags/printk-for-5.19
+> git://git.lwn.net/linux.git tags/docs-5.19
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/537e62c865dcb9b91d07ed83f8615b71fa0b51bb
+https://git.kernel.org/torvalds/c/88a618920e9baabc1780479e2fbb68e5551d0563
 
 Thank you!
 
