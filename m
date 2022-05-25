@@ -2,69 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E805CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 18:37:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 426E1C43217
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 18:38:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343810AbiEYSh4 (ORCPT
+        id S1343814AbiEYSh7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 14:37:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51110 "EHLO
+        Wed, 25 May 2022 14:37:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343970AbiEYShx (ORCPT
+        with ESMTP id S1343975AbiEYShx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 25 May 2022 14:37:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9117BB8BC8;
-        Wed, 25 May 2022 11:37:38 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B89B2B8BD2
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 11:37:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 21060618D5;
-        Wed, 25 May 2022 18:37:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 880D3C34117;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 701FFB81E94
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 18:37:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 3EBFAC34114;
         Wed, 25 May 2022 18:37:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1653503857;
-        bh=JJ7SNvRNw6d5RG0y1pp2M4hVPW74mYFMePRx0hXsCUw=;
+        bh=55P97EI1sLAlykvLY61Yl1lUBMxk37aA+RZ+wKeRITI=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=tl3w2bPIJ+bswz/gKaoGkTaY1C/t6/zU4j0n9joWYvMXFspkfBx6EJgYFnPHGgkUL
-         1X489hG+BAjfGZPMTjg/BJkmZ12FuHoMjdd8FgmyK5SOF2EJgXss1eHm3GH7BiHiWj
-         /FfdYEneT/AbLQZJz/3xJJHvy2L8YdyWIdJm5C7spYOeCAPdg3eP8VuepQR0INODKb
-         s504RJ2f7dGBMHDQcdm8WXS66RarWySAwwR/hC8E34KzFIUjdDqEwKTC8dnJcdbhGA
-         nfwKzxJulOWi/W+3m+A67eeVSExWv6BTehPZZ7b+/1Pc3B5N9Sz/CreS8/S9Y4JjYd
-         5xdGwyMk0EkLg==
+        b=mU2WO+Fh9WoOeJU+SVnq5jyzhC8G85h8wImw9BPI9FbDVHW8CnVMy2regjugGq+Ll
+         5FSidDAtKxPbR0R0zp8CK4Psl13sdepKlWOJaF9tbYM8nCRwqOAO8l/A4y14BKaGBI
+         oIdpSilYGcrtlP9UOG33zKH2JtwbfX8PezBlPbYS3+YlIY6SHhXD/8qw5rF7AnHthI
+         s3ejE0uvD7vNGJfF0XGJgOXb4HRUKlWQXoLLsuYbizHVxRbB6nc5t6cebR1t46vIsH
+         4Xl7RBlv7EIzUbV3cPqpx/nQk/sQft23qyc5LIz2tw6bki+72PGFlqH1y2UhdDs9Yv
+         3iGHJsS+fG+EQ==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 706DFE8DBDA;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 27E15E8DBDA;
         Wed, 25 May 2022 18:37:37 +0000 (UTC)
-Subject: Re: [GIT PULL] KUnit update for Linux 5.19-rc1
+Subject: Re: [GIT PULL] slab for 5.19
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <76e8af6c-9757-4367-1407-84fbad96cc8d@linuxfoundation.org>
-References: <76e8af6c-9757-4367-1407-84fbad96cc8d@linuxfoundation.org>
+In-Reply-To: <8062f61e-5a4d-00a5-be1a-7921d3277e9d@suse.cz>
+References: <8062f61e-5a4d-00a5-be1a-7921d3277e9d@suse.cz>
 X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <76e8af6c-9757-4367-1407-84fbad96cc8d@linuxfoundation.org>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/shuah/linux-kselftest tags/linux-kselftest-kunit-5.19-rc1
-X-PR-Tracked-Commit-Id: e7eaffce47b7db72b077630dbe836f0c4132496d
+X-PR-Tracked-Message-Id: <8062f61e-5a4d-00a5-be1a-7921d3277e9d@suse.cz>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/vbabka/slab.git tags/slab-for-5.19
+X-PR-Tracked-Commit-Id: e001897da62eb543ef79bf173f145c2c9677f66c
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 64e34b50d7aeee7082287ec39f9d34d4e60f3a04
-Message-Id: <165350385745.15754.7197891709928038387.pr-tracker-bot@kernel.org>
+X-PR-Merge-Commit-Id: 2e17ce1106e04a7f3a83796ec623881487f75dd3
+Message-Id: <165350385715.15754.10929787075579258153.pr-tracker-bot@kernel.org>
 Date:   Wed, 25 May 2022 18:37:37 +0000
-To:     Shuah Khan <skhan@linuxfoundation.org>
+To:     Vlastimil Babka <vbabka@suse.cz>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        shuah <shuah@kernel.org>, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>, patches@lists.linux.dev,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Hyeonggon Yoo <42.hyeyoo@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Mon, 23 May 2022 12:21:27 -0600:
+The pull request you sent on Mon, 23 May 2022 11:54:08 +0200:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/shuah/linux-kselftest tags/linux-kselftest-kunit-5.19-rc1
+> git://git.kernel.org/pub/scm/linux/kernel/git/vbabka/slab.git tags/slab-for-5.19
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/64e34b50d7aeee7082287ec39f9d34d4e60f3a04
+https://git.kernel.org/torvalds/c/2e17ce1106e04a7f3a83796ec623881487f75dd3
 
 Thank you!
 
