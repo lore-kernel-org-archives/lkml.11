@@ -2,87 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DB15C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 12:50:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BFDBC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 12:51:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243885AbiEYMuV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 08:50:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36108 "EHLO
+        id S231986AbiEYMvL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 08:51:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243810AbiEYMuJ (ORCPT
+        with ESMTP id S233668AbiEYMvI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 08:50:09 -0400
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 625088D683
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 05:50:09 -0700 (PDT)
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com [209.85.208.71])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id D55633F19E
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 12:50:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1653483007;
-        bh=rAm0vlTlFHnGFybKw7GdGun3AiUfPwceSrfYbk/I7Zg=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
-        b=aidq1KrTTAqytspV1bm3osC8H1MAGrCyshzsT7AjHPpNXNRDPfQR/ypifxF94Z1aC
-         o7qjc4wmlskCy0lVYXy6gBW79mOQ4iuoKDCoNw2FaWwe91GlYxl1rycHIQcAElHhqX
-         imYJ+OLgA3a9fQiKAQK1yNLoovHUbg9oCwe0mCRE/KXARtmzIFoMTLX1dqXkU17Stb
-         fH0q8EIuRBmg9KNBb2a6+lZinUyuB1Zlep7QL99LANjTF430gBrs+QA8sXoxB3Gnd7
-         yu9puleDskIkfkER1q5PmvvbVgc9J1s2Ng+7E+3DHp7EfUW4pt/rJs4VVxj48axvPw
-         fmOozX6s6WP2Q==
-Received: by mail-ed1-f71.google.com with SMTP id r14-20020aa7cfce000000b0042bcefd6109so550418edy.13
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 05:50:07 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=rAm0vlTlFHnGFybKw7GdGun3AiUfPwceSrfYbk/I7Zg=;
-        b=wpw5zkrzwF1grgveYr1/76lsy/jIy1hZzC72mAzY1oqPx2TL7ySWL0G9B8RMFzuxQ3
-         pQqQLpigH/ypXnSKz/cByQcmvefEYjVj5Owm/VFJo9ZnI1HJCFsao8ffwvbWapEAU+eS
-         ROfaItPUawfrH1OWKgCEGD16bSmKV6Cc+kcml30O1nsBykEmdghrNFnLm6iOCSAWZDkO
-         a+42/YiRQ/wQ8EaeVKQztlBnaeRBXkxg6QFn+nNJR6BNTFpGhPkZeIL4MmrG8YSF+YJD
-         aiuN122Fi+bylo8raHQ1CtgTmkouEBQPdIELDGf7z57v7nWNAbD21ILpl6L8iCSmMBeR
-         XiXg==
-X-Gm-Message-State: AOAM530292fDsPOiTepIalGnxwoojSxjOv2k+a+SM8BPf+WXdtoqBTc/
-        BFiaJbepC9ODJ3vg/r8USzqZ/TKpfnALIXZiq0jEkdt3OqTOTzI10ItBah0ZvLgFe4pkochJ42h
-        vCvOiNt4QsVz9RYzboLKrSkQbGoWhDW/yv8eCu/iQBw==
-X-Received: by 2002:a17:907:2cc5:b0:6f9:1fc:ebef with SMTP id hg5-20020a1709072cc500b006f901fcebefmr28181476ejc.121.1653483007617;
-        Wed, 25 May 2022 05:50:07 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzvTvCfr2URj1gvVBPwdVrL7eDlhYrXsRoUskI+1RzXgsbrq4SC9HIUuinuM5xzuAqeiXyC7w==
-X-Received: by 2002:a17:907:2cc5:b0:6f9:1fc:ebef with SMTP id hg5-20020a1709072cc500b006f901fcebefmr28181460ejc.121.1653483007466;
-        Wed, 25 May 2022 05:50:07 -0700 (PDT)
-Received: from gollum.fritz.box ([194.191.244.86])
-        by smtp.gmail.com with ESMTPSA id l8-20020a1709060e0800b006f3ef214e62sm2860566eji.200.2022.05.25.05.50.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 May 2022 05:50:07 -0700 (PDT)
-From:   Juerg Haefliger <juerg.haefliger@canonical.com>
-To:     richard@nod.at, anton.ivanov@cambridgegreys.com,
-        johannes@sipsolutions.net, linux-um@lists.infradead.org
-Cc:     linux-kernel@vger.kernel.org,
-        Juerg Haefliger <juerg.haefliger@canonical.com>
-Subject: [PATCH 0/2] um: Kconfig: Style cleanups
-Date:   Wed, 25 May 2022 14:49:59 +0200
-Message-Id: <20220525125001.47009-1-juerg.haefliger@canonical.com>
-X-Mailer: git-send-email 2.32.0
+        Wed, 25 May 2022 08:51:08 -0400
+Received: from nbd.name (nbd.name [IPv6:2a01:4f8:221:3d45::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 040ED97288;
+        Wed, 25 May 2022 05:51:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
+         s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:Subject:
+        From:References:Cc:To:MIME-Version:Date:Message-ID:Sender:Reply-To:Content-ID
+        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
+        Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe
+        :List-Post:List-Owner:List-Archive;
+        bh=jBwEIuoVmdPNXYxEmNuUCTtGCzJ7RyCeMRM3c0lfdnM=; b=AzEIJBHOTmK7YtFNZfJc08I+Jo
+        f7MV+uUEn8mktkRQf/Qr6HiDRmqX1EBEpHR/XmmLEpSGw9XMi/jttcaeAUzlhOYtICb1I/V0zQYan
+        BIdeb0sHrQjvrUEhwkIUpbl7+KyJPEaJ4vEe3F14lucm62aI9R0NH8p8mwV00xFA8ArE=;
+Received: from p200300daa70ef2005cc39ce6374ff633.dip0.t-ipconnect.de ([2003:da:a70e:f200:5cc3:9ce6:374f:f633] helo=nf.local)
+        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.89)
+        (envelope-from <nbd@nbd.name>)
+        id 1ntqTR-0008WC-92; Wed, 25 May 2022 14:50:49 +0200
+Message-ID: <92ca6224-9232-2648-0123-7096aafa17fb@nbd.name>
+Date:   Wed, 25 May 2022 14:50:48 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.9.0
+Content-Language: en-US
+To:     Baligh GASMI <gasmibal@gmail.com>,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>
+Cc:     Johannes Berg <johannes@sipsolutions.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "open list:MAC80211" <linux-wireless@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+References: <20220525103512.3666956-1-gasmibal@gmail.com>
+ <87r14hoox8.fsf@toke.dk>
+ <CALxDnQa8d8CGXz2Mxvsz5csLj3KuTDW=z65DSzHk5x1Vg+y-rw@mail.gmail.com>
+From:   Felix Fietkau <nbd@nbd.name>
+Subject: Re: [RFC PATCH 1/1] mac80211: use AQL airtime for expected
+ throughput.
+In-Reply-To: <CALxDnQa8d8CGXz2Mxvsz5csLj3KuTDW=z65DSzHk5x1Vg+y-rw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The convention for indentation seems to be a single tab. Help text is
-further indented by an additional two whitespaces. Fix the lines that
-violate these rules.
 
-Juerg Haefliger (2):
-  um: Kconfig: Fix indentation
-  um/drivers: Kconfig: Fix indentation
+On 25.05.22 14:14, Baligh GASMI wrote:
+>> > Since the integration of AQL, packet TX airtime estimation is
+>> > calculated and counted to be used for the dequeue limit.
+>> >
+>> > Use this estimated airtime to compute expected throughput for
+>> > each station.
+>> >
+>> > It will be a generic mac80211 implementation. If the driver has
+>> > get_expected_throughput implementation, it will be used instead.
+>> >
+>> > Useful for L2 routing protocols, like B.A.T.M.A.N.
+>> >
+>> > Signed-off-by: Baligh Gasmi <gasmibal@gmail.com>
+>> > ---
+>> >  net/mac80211/driver-ops.h |  2 ++
+>> >  net/mac80211/sta_info.h   |  2 ++
+>> >  net/mac80211/status.c     | 22 ++++++++++++++++++++++
+>> >  net/mac80211/tx.c         |  3 ++-
+>> >  4 files changed, 28 insertions(+), 1 deletion(-)
+>> >
+>> > diff --git a/net/mac80211/driver-ops.h b/net/mac80211/driver-ops.h
+>> > index 4e2fc1a08681..4331b79647fa 100644
+>> > --- a/net/mac80211/driver-ops.h
+>> > +++ b/net/mac80211/driver-ops.h
+>> > @@ -1142,6 +1142,8 @@ static inline u32 drv_get_expected_throughput(struct ieee80211_local *local,
+>> >       trace_drv_get_expected_throughput(&sta->sta);
+>> >       if (local->ops->get_expected_throughput && sta->uploaded)
+>> >               ret = local->ops->get_expected_throughput(&local->hw, &sta->sta);
+>> > +     else
+>> > +             ret = ewma_avg_est_tp_read(&sta->status_stats.avg_est_tp);
+>> >       trace_drv_return_u32(local, ret);
+>> >
+>> >       return ret;
+>> > diff --git a/net/mac80211/sta_info.h b/net/mac80211/sta_info.h
+>> > index 379fd367197f..fe60be4c671d 100644
+>> > --- a/net/mac80211/sta_info.h
+>> > +++ b/net/mac80211/sta_info.h
+>> > @@ -123,6 +123,7 @@ enum ieee80211_sta_info_flags {
+>> >  #define HT_AGG_STATE_STOP_CB         7
+>> >  #define HT_AGG_STATE_SENT_ADDBA              8
+>> >
+>> > +DECLARE_EWMA(avg_est_tp, 8, 16)
+>> >  DECLARE_EWMA(avg_signal, 10, 8)
+>> >  enum ieee80211_agg_stop_reason {
+>> >       AGG_STOP_DECLINED,
+>> > @@ -641,6 +642,7 @@ struct sta_info {
+>> >               s8 last_ack_signal;
+>> >               bool ack_signal_filled;
+>> >               struct ewma_avg_signal avg_ack_signal;
+>> > +             struct ewma_avg_est_tp avg_est_tp;
+>> >       } status_stats;
+>> >
+>> >       /* Updated from TX path only, no locking requirements */
+>> > diff --git a/net/mac80211/status.c b/net/mac80211/status.c
+>> > index e81e8a5bb774..647ade3719f5 100644
+>> > --- a/net/mac80211/status.c
+>> > +++ b/net/mac80211/status.c
+>> > @@ -1145,6 +1145,28 @@ void ieee80211_tx_status_ext(struct ieee80211_hw *hw,
+>> >                       sta->status_stats.retry_failed++;
+>> >               sta->status_stats.retry_count += retry_count;
+>> >
+>> > +             if (skb && tx_time_est) {
+>>
+>> Shouldn't this be conditioned on actually being used (i.e., existence of
+>> get_expected_throughput op? Also maybe pull it out into its own function
+>> to make it clear what it's doing...
+> 
+> It's already the case I think, since the tx_time_est is not-zero only
+> when actually an estimated time is set.
+> A dedicated function seems good for me, for clarity, yes.
+> 
+>>
+>> > +                     /* max average packet size */
+>> > +                     size_t pkt_size = skb->len > 1024 ? 1024 : skb->len;
+>> > +
+>> > +                     if (acked) {
+>> > +                             /* ACK packet size */
+>> > +                             pkt_size += 14;
+>> > +                             /* SIFS x 2 */
+>> > +                             tx_time_est += 2 * 2;
+>> > +                     }
+>> > +
+>> > +                     /* Backoff average x retries */
+>> > +                     tx_time_est += retry_count ? retry_count * 2 : 2;
+>> > +
+>> > +                     /* failed tx */
+>> > +                     if (!acked && !noack_success)
+>> > +                             pkt_size = 0;
+>> > +
+>> > +                     ewma_avg_est_tp_add(&sta->status_stats.avg_est_tp,
+>> > +                                         ((pkt_size * 8) * 1000) / tx_time_est);
+>>
+>> Could we avoid adding this division in the fast path?
+> 
+> Maybe we can use the do_div() macro for optimization, I don't see how
+> we can avoid it.
+Here's one idea on how to make it less expensive and improve the average 
+of the throughput estimation at the same time:
 
- arch/um/Kconfig         |  2 +-
- arch/um/drivers/Kconfig | 54 ++++++++++++++++++++---------------------
- 2 files changed, 28 insertions(+), 28 deletions(-)
+In sta->status_stats add these fields:
 
--- 
-2.32.0
+u32 last_tp_update;
+u32 pkt_size;
+u32 tx_time_est;
 
+And in this part of the code you do something like this:
+
+u32 diff = ((u32)jiffies) - sta->status_stats.last_tp_update;
+sta->status_stats.pkt_size += (pkt_size * 8) * 1000;
+sta->status_stats.tx_time_est += tx_time_est;
+if (diff > HZ / 10) {
+	ewma_avg_est_tp_add(&sta->status_stats.avg_est_tp,
+			    sta->status_stats.pkt_size /
+			    sta->status_stats.tx_time_est);
+	sta->status_stats.pkt_size = 0;
+	sta->status_stats.tx_time_est = 0;
+}
+
+This ensures that you will only get max. 1 update per 100ms interval.
+
+Does that make sense?
+
+- Felix
