@@ -2,149 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF89EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 14:29:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89542C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 14:29:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244847AbiEYO3M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 10:29:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57768 "EHLO
+        id S240572AbiEYO3c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 10:29:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244820AbiEYO3D (ORCPT
+        with ESMTP id S244859AbiEYO3P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 10:29:03 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D348213F67
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 07:28:11 -0700 (PDT)
-Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24PE4fsN009606;
-        Wed, 25 May 2022 14:26:51 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=UWZSwr4apSHlTMsRIuz0yVYAH7SCvORDiD4BeImtR8g=;
- b=I/NmfraU0Jxha0Hh/LwMZODabgAaYxY8BCE+kuQCkdsxN62GvD2v80NUglDlWM+4j+3g
- Upm9SU1dpGEZm8BNDD8zLLCJ23QeVX8Sxn7FY7GdS5enWgSE4pqbntbsY83/HyJTAk40
- Q/wXtVOJPd/4EZmKqLurqjHjlT7+1OjnUIfjz+ANsZl5DonGS72Wj2XuvJsYlycgzL/n
- 3jBs5xa5QJ5SPSGFhwQrtHypHHtRJKwPmxPokDin/6o1SG9/HGKlr7lKTCnvAnDFwesh
- QwG8JF/fqBam/aFUQbESJwI8XJYt0W/tqLZrkRe/U2Q5cFD6R/w5zdTuDfJHaFgowbLJ Sg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g9hfnx94j-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 25 May 2022 14:26:51 +0000
-Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24PEKBjP019343;
-        Wed, 25 May 2022 14:26:50 GMT
-Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g9hfnx93s-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 25 May 2022 14:26:50 +0000
-Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
-        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24PEHl76021115;
-        Wed, 25 May 2022 14:26:48 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-        by ppma01fra.de.ibm.com with ESMTP id 3g93vc1cap-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 25 May 2022 14:26:48 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24PECbVe42008860
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 25 May 2022 14:12:37 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id EE4B75204F;
-        Wed, 25 May 2022 14:26:45 +0000 (GMT)
-Received: from [9.43.97.219] (unknown [9.43.97.219])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 400635204E;
-        Wed, 25 May 2022 14:26:40 +0000 (GMT)
-Message-ID: <e9ddbcfe-f8d4-e542-deab-a0fadf86c6eb@linux.ibm.com>
-Date:   Wed, 25 May 2022 19:56:39 +0530
+        Wed, 25 May 2022 10:29:15 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1EA8FA7747
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 07:29:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653488953;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=rJXBSsswS1QbSCIORAlXaRxJTnMr6MqFIgMIGnJ+Qao=;
+        b=HzzBTY80BSnVxYCIWwCbTcsQzuxpAk3xUvMim/xXm2E/+m5ZU2dVxZ6W+iE1LOKrSXfraR
+        /weKm7fYgz5ryMDNlXFdmhGb/EzEUSOrrlnIF8weHckBRmidZL2Tn3mooA5MCClCuSXvyA
+        KdDyCXLzL9OOrshVF5wSBl/xJEiWtT8=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-252-YR06shO1OwSFVnlHewrk4w-1; Wed, 25 May 2022 10:29:09 -0400
+X-MC-Unique: YR06shO1OwSFVnlHewrk4w-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 1E95485A5BC;
+        Wed, 25 May 2022 14:29:08 +0000 (UTC)
+Received: from dhcp-27-174.brq.redhat.com (unknown [10.40.193.81])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 8E4F5C15E71;
+        Wed, 25 May 2022 14:28:47 +0000 (UTC)
+Received: by dhcp-27-174.brq.redhat.com (nbSMTP-1.00) for uid 1000
+        oleg@redhat.com; Wed, 25 May 2022 16:29:07 +0200 (CEST)
+Date:   Wed, 25 May 2022 16:28:46 +0200
+From:   Oleg Nesterov <oleg@redhat.com>
+To:     "Eric W. Biederman" <ebiederm@xmission.com>
+Cc:     linux-kernel@vger.kernel.org, rjw@rjwysocki.net, mingo@kernel.org,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, mgorman@suse.de, bigeasy@linutronix.de,
+        Will Deacon <will@kernel.org>, tj@kernel.org,
+        linux-pm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        linux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
+        Jann Horn <jannh@google.com>, linux-ia64@vger.kernel.org,
+        Robert OCallahan <roc@pernos.co>, Kyle Huey <khuey@pernos.co>,
+        Richard Henderson <rth@twiddle.net>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>,
+        Jason Wessel <jason.wessel@windriver.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Douglas Miller <dougmill@linux.vnet.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>
+Subject: Re: [PATCH 07/16] signal: Wake up the designated parent
+Message-ID: <20220525142845.GA2687@redhat.com>
+References: <871qwq5ucx.fsf_-_@email.froward.int.ebiederm.org>
+ <20220518225355.784371-7-ebiederm@xmission.com>
+ <20220524132553.GD14347@redhat.com>
+ <20220524162808.GF14347@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH v8 7/7] x86/crash: Add x86 crash hotplug support for
- kexec_load
-Content-Language: en-US
-To:     Eric DeVolder <eric.devolder@oracle.com>,
-        linux-kernel@vger.kernel.org, x86@kernel.org,
-        kexec@lists.infradead.org, ebiederm@xmission.com,
-        dyoung@redhat.com, bhe@redhat.com, vgoyal@redhat.com
-Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, hpa@zytor.com,
-        nramas@linux.microsoft.com, thomas.lendacky@amd.com,
-        robh@kernel.org, efault@gmx.de, rppt@kernel.org, david@redhat.com,
-        konrad.wilk@oracle.com, boris.ostrovsky@oracle.com
-References: <20220505184603.1548-1-eric.devolder@oracle.com>
- <20220505184603.1548-8-eric.devolder@oracle.com>
-From:   Sourabh Jain <sourabhjain@linux.ibm.com>
-In-Reply-To: <20220505184603.1548-8-eric.devolder@oracle.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: ZKcWKRMI6loqY-FQfdgB-InlGA8lJt2D
-X-Proofpoint-ORIG-GUID: 1d8G_JNICD8TRwtzEQtoio6Qf331eN2S
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-25_04,2022-05-25_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 bulkscore=0
- impostorscore=0 phishscore=0 suspectscore=0 priorityscore=1501
- lowpriorityscore=0 mlxscore=0 mlxlogscore=999 spamscore=0 adultscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2205250072
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220524162808.GF14347@redhat.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Eric,
-
-On 06/05/22 00:16, Eric DeVolder wrote:
-> For kexec_file_load support, the loading of the crash kernel occurs
-> entirely within the kernel, and as such the elfcorehdr is readily
-> identified (so that it can be modified upon hotplug events).
+On 05/24, Oleg Nesterov wrote:
 >
-> This change enables support for kexec_load by identifying the
-> elfcorehdr segment in the arch_crash_handle_hotplug_event(),
-> if it has not already been identified.
+> On 05/24, Oleg Nesterov wrote:
+> >
+> > I fail to understand this patch...
+> >
+> > On 05/18, Eric W. Biederman wrote:
+> > >
+> > > Today if a process is ptraced only the ptracer will ever be woken up in
+> > > wait
+> >
+> > and why is this wrong?
+> >
+> > > Fixes: 75b95953a569 ("job control: Add @for_ptrace to do_notify_parent_cldstop()")
+> >
+> > how does this change fix 75b95953a569?
 >
-> Signed-off-by: Eric DeVolder <eric.devolder@oracle.com>
-> Acked-by: Baoquan He <bhe@redhat.com>
-> ---
->   arch/x86/kernel/crash.c | 24 ++++++++++++++++++++++++
->   1 file changed, 24 insertions(+)
+> OK, I guess you mean the 2nd do_notify_parent_cldstop() in ptrace_stop(),
+> the problematic case is current->ptrace == T. Right?
 >
-> diff --git a/arch/x86/kernel/crash.c b/arch/x86/kernel/crash.c
-> index 951ef365f0a7..845d7c77854d 100644
-> --- a/arch/x86/kernel/crash.c
-> +++ b/arch/x86/kernel/crash.c
-> @@ -485,6 +485,30 @@ void arch_crash_handle_hotplug_event(struct kimage *image,
->   	void *elfbuf = NULL;
->   	unsigned long mem, memsz;
->   
-> +	/*
-> +	 * When the struct kimage is alloced, it is wiped to zero, so
-> +	 * the elfcorehdr_index_valid defaults to false. It is set on the
-> +	 * kexec_file_load path, or here for kexec_load, if not already
-> +	 * identified.
-> +	 */
-> +	if (!image->elfcorehdr_index_valid) {
-> +		unsigned int n;
-> +
-> +		for (n = 0; n < image->nr_segments; n++) {
-> +			mem = image->segment[n].mem;
-> +			memsz = image->segment[n].memsz;
-> +			ptr = map_crash_pages(mem, memsz);
-> +			if (ptr) {
-> +				/* The segment containing elfcorehdr */
-> +				if (memcmp(ptr, ELFMAG, SELFMAG) == 0) {
-> +					image->elfcorehdr_index = (int)n;
-> +					image->elfcorehdr_index_valid = true;
+> I dislike this patch anyway, but let me think more about it.
 
-How about finding elfcorehdr index on kexec_load path post 
-kimage_load_segment call in
-do_kexec_load (kernel/kexec.c) or other suitable place? This way we can 
-avoid checking for
-elfcorehdr index for every hotplug. Also we might not need 
-image->elfcorehdr_index_valid.
+OK, now that I understand the problem, the patch doesn't look bad to me,
+although I'd ask to make the changelog more clear.
 
-Thanks,
-Sourabh Jain
+After this change __wake_up_parent() can't accept any "parent" from
+p->parent thread group, but all callers look fine except ptrace_detach().
 
+Oleg.
 
