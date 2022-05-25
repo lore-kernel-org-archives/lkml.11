@@ -2,80 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04CB1C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 14:59:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CCD6C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 14:59:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245039AbiEYO71 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 10:59:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35414 "EHLO
+        id S240552AbiEYO7h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 10:59:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244934AbiEYO6a (ORCPT
+        with ESMTP id S244959AbiEYO7Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 10:58:30 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D23AAF1ED
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 07:58:23 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: alyssa)
-        with ESMTPSA id 6D1E11F450F4
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1653490702;
-        bh=iIq4Z4OE65fY1MUJxJmt36vci/mo0TrqzqbRmhmVVVQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ALVw3IlJ0zZ35sYa98XF05tNlJeyYalTzDhzbUAQ+yPCPe5EpdyligBS3ytbL5P2X
-         ESgtBI6h821tZqo54pybiiWG7A6cFyHdgLOWrd9UmcT4ZDkv5KVg0qJ58FEXWKJVr2
-         m2lXcGK++3Z5qX1eJ8WG6MMVDk6/Xm9UB+dyw7u4/zsrjlE3X2c7VqfGON92hnXtTs
-         r0YYA62UPBZuDI3wrHNbQ5FUzkEtlily8FMHfNgKG4FrNyEIkykhig7v0EkcmALZNh
-         bx3R8osuxeZYDkcBSReCZLDPWM+hDCTiHYkhfPSTl+QoAyjZh6x3DfWDd3MwYEhC1s
-         XeHBXPsth+t6w==
-From:   Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>
-To:     dri-devel@lists.freedesktop.org
-Cc:     Rob Herring <robh@kernel.org>,
-        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        Steven Price <steven.price@arm.com>,
-        Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        =?UTF-8?q?N=C3=ADcolas=20F=20=2E=20R=20=2E=20A=20=2E=20Prado?= 
-        <nfraprado@collabora.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 6/9] drm/panfrost: Add "clean only safe" feature bit
-Date:   Wed, 25 May 2022 10:57:51 -0400
-Message-Id: <20220525145754.25866-7-alyssa.rosenzweig@collabora.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220525145754.25866-1-alyssa.rosenzweig@collabora.com>
-References: <20220525145754.25866-1-alyssa.rosenzweig@collabora.com>
+        Wed, 25 May 2022 10:59:16 -0400
+Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02DFFAF1F3;
+        Wed, 25 May 2022 07:59:04 -0700 (PDT)
+Received: (Authenticated sender: foss@0leil.net)
+        by mail.gandi.net (Postfix) with ESMTPSA id 3DB591BF207;
+        Wed, 25 May 2022 14:58:58 +0000 (UTC)
+From:   Quentin Schulz <foss+kernel@0leil.net>
+Cc:     shawnx.tu@intel.com, mchehab@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, linux-media@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        foss+kernel@0leil.net,
+        Quentin Schulz <quentin.schulz@theobroma-systems.com>
+Subject: [PATCH v5 4/4] media: i2c: ov5675: add .get_selection support
+Date:   Wed, 25 May 2022 16:58:33 +0200
+Message-Id: <20220525145833.1165437-4-foss+kernel@0leil.net>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220525145833.1165437-1-foss+kernel@0leil.net>
+References: <20220525145833.1165437-1-foss+kernel@0leil.net>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the HW_FEATURE_CLEAN_ONLY_SAFE bit based on kbase. When I actually
-tried to port the logic from kbase, trivial jobs raised Data Invalid
-Faults, so this may depend on other coherency details. It's still useful
-to have the bit to record the feature bit when adding new models.
+From: Quentin Schulz <quentin.schulz@theobroma-systems.com>
 
-Signed-off-by: Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>
-Reviewed-by: Steven Price <steven.price@arm.com>
+The sensor has 2592*1944 active pixels, surrounded by 16 active dummy
+pixels and there are an additional 24 black rows "at the bottom".
+
+                     [2624]
+        +-----+------------------+-----+
+        |     |     16 dummy     |     |
+        +-----+------------------+-----+
+        |     |                  |     |
+        |     |     [2592]       |     |
+        |     |                  |     |
+        |16   |      valid       | 16  |[2000]
+        |dummy|                  |dummy|
+        |     |            [1944]|     |
+        |     |                  |     |
+        +-----+------------------+-----+
+        |     |     16 dummy     |     |
+        +-----+------------------+-----+
+        |     |  24 black lines  |     |
+        +-----+------------------+-----+
+
+The top-left coordinate is gotten from the registers specified in the
+modes which are identical for both currently supported modes.
+
+Signed-off-by: Quentin Schulz <quentin.schulz@theobroma-systems.com>
 ---
- drivers/gpu/drm/panfrost/panfrost_features.h | 1 +
- 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/gpu/drm/panfrost/panfrost_features.h b/drivers/gpu/drm/panfrost/panfrost_features.h
-index 36fadcf9634e..1a8bdebc86a3 100644
---- a/drivers/gpu/drm/panfrost/panfrost_features.h
-+++ b/drivers/gpu/drm/panfrost/panfrost_features.h
-@@ -21,6 +21,7 @@ enum panfrost_hw_feature {
- 	HW_FEATURE_TLS_HASHING,
- 	HW_FEATURE_THREAD_GROUP_SPLIT,
- 	HW_FEATURE_IDVS_GROUP_SIZE,
-+	HW_FEATURE_CLEAN_ONLY_SAFE,
- 	HW_FEATURE_3BIT_EXT_RW_L2_MMU_CONFIG,
- };
+v4:
+ - explicit a bit more the commit log,
+ - added drawing in the commit log,
+ - fixed reporting for V4L2_SEL_TGT_CROP_* thanks to Jacopo's help,
+
+added in v3
+
+ drivers/media/i2c/ov5675.c | 33 +++++++++++++++++++++++++++++++++
+ 1 file changed, 33 insertions(+)
+
+diff --git a/drivers/media/i2c/ov5675.c b/drivers/media/i2c/ov5675.c
+index c1f3c387afde0..384a9ea2372c3 100644
+--- a/drivers/media/i2c/ov5675.c
++++ b/drivers/media/i2c/ov5675.c
+@@ -1121,6 +1121,38 @@ static int ov5675_get_format(struct v4l2_subdev *sd,
+ 	return 0;
+ }
  
++static int ov5675_get_selection(struct v4l2_subdev *sd,
++				struct v4l2_subdev_state *state,
++				struct v4l2_subdev_selection *sel)
++{
++	struct ov5675 *ov5675 = to_ov5675(sd);
++
++	if (sel->which != V4L2_SUBDEV_FORMAT_ACTIVE)
++		return -EINVAL;
++
++	switch (sel->target) {
++	case V4L2_SEL_TGT_CROP_BOUNDS:
++		sel->r.top = 0;
++		sel->r.left = 0;
++		sel->r.width = 2624;
++		sel->r.height = 2000;
++		return 0;
++	case V4L2_SEL_TGT_CROP:
++		sel->r.top = 16;
++		sel->r.left = 16;
++		sel->r.width = ov5675->cur_mode->width;
++		sel->r.height = ov5675->cur_mode->height;
++		return 0;
++	case V4L2_SEL_TGT_CROP_DEFAULT:
++		sel->r.top = 16;
++		sel->r.left = 16;
++		sel->r.width = supported_modes[0].width;
++		sel->r.height = supported_modes[0].height;
++		return 0;
++	}
++	return -EINVAL;
++}
++
+ static int ov5675_enum_mbus_code(struct v4l2_subdev *sd,
+ 				 struct v4l2_subdev_state *sd_state,
+ 				 struct v4l2_subdev_mbus_code_enum *code)
+@@ -1170,6 +1202,7 @@ static const struct v4l2_subdev_video_ops ov5675_video_ops = {
+ static const struct v4l2_subdev_pad_ops ov5675_pad_ops = {
+ 	.set_fmt = ov5675_set_format,
+ 	.get_fmt = ov5675_get_format,
++	.get_selection = ov5675_get_selection,
+ 	.enum_mbus_code = ov5675_enum_mbus_code,
+ 	.enum_frame_size = ov5675_enum_frame_size,
+ };
 -- 
-2.35.1
+2.36.1
 
