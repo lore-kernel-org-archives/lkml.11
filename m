@@ -2,112 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7876CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 15:12:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D0F8C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 15:13:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245033AbiEYPMb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 11:12:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48570 "EHLO
+        id S238764AbiEYPM5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 11:12:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245153AbiEYPMJ (ORCPT
+        with ESMTP id S245103AbiEYPMq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 11:12:09 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1E0DCB225B
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 08:12:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653491520;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=oibYPAPXB3rxchD26NN1if0CqTbEEBbCmYMLu9cS348=;
-        b=ii2M3SMSGsupnBRCYku1bw/wjL2Hg9Ab/UZoqj5tesYI3dvlvPeQ3bE+s+L1wMktYC5j6J
-        0e9TxrYWWggW/SL0yufuPY/5ZQkHevLu61QH3HJedGj/V4+xZR6i9T8qtCflf8WSUc3v/Z
-        94mAWRQktWbwJhBqxSlDM1lhTq3oD/M=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-650-3WVS63MGNry6uCXFElI4tQ-1; Wed, 25 May 2022 11:11:58 -0400
-X-MC-Unique: 3WVS63MGNry6uCXFElI4tQ-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 88DED811E81;
-        Wed, 25 May 2022 15:11:58 +0000 (UTC)
-Received: from lorien.usersys.redhat.com (unknown [10.39.192.91])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id C943F112131B;
-        Wed, 25 May 2022 15:11:56 +0000 (UTC)
-Date:   Wed, 25 May 2022 11:11:52 -0400
-From:   Phil Auld <pauld@redhat.com>
-To:     Valentin Schneider <vschneid@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>
-Subject: Re: [PATCH] cpuhp: make target_store() a nop when target == state
-Message-ID: <Yo5HOC0yoEBvvgdL@lorien.usersys.redhat.com>
-References: <20220523144728.32414-1-pauld@redhat.com>
- <xhsmh35gzj77s.mognet@vschneid.remote.csb>
- <Yo0KRVpfhUb8Ta4N@lorien.usersys.redhat.com>
- <xhsmhy1yqhrio.mognet@vschneid.remote.csb>
- <20220525133133.GA5500@pauld.bos.csb>
- <xhsmhtu9dir86.mognet@vschneid.remote.csb>
+        Wed, 25 May 2022 11:12:46 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7EC3B0D03;
+        Wed, 25 May 2022 08:12:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653491556; x=1685027556;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=dcB6j0j2Z3wrogy8OawuEn4BB7M0+1bgI6Iy3Cd0r/8=;
+  b=O/nP8oxQ7KQjkscmmf3pUB25ysZqovznoesalcczOBnt/saPrFhkkOoV
+   2Q7WVqUrptc+6E1+rk1KWMaVuMNFMMLZEc8X+FHytBMjGtN40KIJFjOlo
+   HfCcie0ky+tx/qfYq+jAc2Y52OYCNvVeE9zOxTLLVMhsABrqi9+Rachkl
+   sqv6NuuBU4cHrwEoyq+HKFg+Vj4SHojPQkaARDQ5CR91EB/evEGDala0C
+   DrPE4gF6lnwRyiYYAk+2277dLVKzXjem6wzBbxmJg1n3r0//uA5aVxuzW
+   M8NzD/UrEC9rUvQqpxIjfT+S/PvVH1tO/vPwnxbbaHi4GXnG2U7oedLo/
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10358"; a="271411558"
+X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
+   d="scan'208";a="271411558"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2022 08:12:36 -0700
+X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
+   d="scan'208";a="601948889"
+Received: from vlpathak-mobl.amr.corp.intel.com (HELO localhost) ([10.212.116.219])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2022 08:12:35 -0700
+Date:   Wed, 25 May 2022 08:12:35 -0700
+From:   Ira Weiny <ira.weiny@intel.com>
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
+        Evgeniy Dushistov <dushistov@mail.ru>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] fs/ufs: Replace kmap() with kmap_local_page()
+Message-ID: <Yo5HY3dzjVigCJ7i@iweiny-desk3>
+References: <20220516101925.15272-1-fmdefrancesco@gmail.com>
+ <YoJl+lh0QELbv/TL@casper.infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <xhsmhtu9dir86.mognet@vschneid.remote.csb>
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
+In-Reply-To: <YoJl+lh0QELbv/TL@casper.infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 25, 2022 at 04:09:29PM +0100 Valentin Schneider wrote:
-> On 25/05/22 09:31, Phil Auld wrote:
-> > On Wed, May 25, 2022 at 10:48:31AM +0100 Valentin Schneider wrote:
-> >>
-> >> Yeah it would be neater to not even enter cpu_{up, down}(), but my paranoia
-> >> makes me think we need the comparison to happen with at least the
-> >> cpu_add_remove_lock held to make sure st->state isn't moving under our
-> >> feet, otherwise we may still end up with target == state in _cpu_down() and
-> >> hit the bug you're describing.
-> >>
-> >
-> > This is what I was originally doing before I tried to "optimize" it:
-> >
-> >          if (st->state < target)
-> >                  ret = cpu_up(dev->id, target);
-> >          else if (st->state > target)
-> >                  ret = cpu_down(dev->id, target);
-> >
-> > This does the check under the lock and just falls through if state==target.
-> > I think I'll go back to that version.
-> >
-> > I also noticed while testing that the boot cpu does not get its target set.
-> > It's got state 233 but target 0.  So reading that out and writing it back
-> > on offlines cpu0.   I'll try to find where that is not getting set.
-> >
+On Mon, May 16, 2022 at 03:55:54PM +0100, Matthew Wilcox wrote:
+> On Mon, May 16, 2022 at 12:19:25PM +0200, Fabio M. De Francesco wrote:
+> > The use of kmap() is being deprecated in favor of kmap_local_page(). With
+> > kmap_local_page(), the mapping is per thread, CPU local and not globally
+> > visible.
+> > 
+> > The usage of kmap_local_page() in fs/ufs is pre-thread, therefore replace
+> > kmap() / kunmap() calls with kmap_local_page() / kunmap_local().
+> > 
+> > kunmap_local() requires the mapping address, so return that address from
+> > ufs_get_page() to be used in ufs_put_page().
+> > 
+> > These changes are essentially ported from fs/ext2 and are largely based on
+> > commit 782b76d7abdf ("fs/ext2: Replace kmap() with kmap_local_page()").
+> > 
+> > Suggested-by: Ira Weiny <ira.weiny@intel.com>
+> > Reviewed-by: Ira Weiny <ira.weiny@intel.com>
+> > Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
 > 
-> If I had to guess I'd say it's because the boot CPU doesn't go through the
-> regular hotplug machinery and sets its state straight to CPUHP_ONLINE
->
+> Have you done more than compile-tested this?  I'd like to know that it's
+> been tested on a machine with HIGHMEM enabled (in a VM, presumably).
+> UFS doesn't get a lot of testing, and it'd be annoying to put out a
+> patch that breaks the kmap_local() rules.
 
-Yes, that was my thought.
+Do you know of any real users of UFS?
 
+Fabio and I have been looking into how to test this and it seems like UFS
+support has been dropped in my system.  For example, there is no mkfs.ufs in my
+fc35 system.
 
-> /me digs
-> 
-> Maybe around this?
-> 
-> void __init boot_cpu_hotplug_init(void)
-> {
->         this_cpu_write(cpuhp_state.booted_once, true);
->         this_cpu_write(cpuhp_state.state, CPUHP_ONLINE);
-> }
-> 
+Searching google, I see that mkfs.ufs turns up a couple of Oracle documents.
+And some other links mention something called newfs which I've never heard of.
 
-Right, just found that too. Probably should set the target there as well.
+The patches follow the same pattern which was added to ext2 a while back and
+have not caused an issue.  So I'm pretty confident they will be ok.
 
+However, if it is critical that these be tested I think Fabio will have to hold
+off on these patches for now as there are plenty of other kmap() call sites
+which are more important to be fixed.
 
-Cheers,
-Phil
-
--- 
-
+Ira
