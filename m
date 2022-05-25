@@ -2,61 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9040BC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 14:01:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85DCEC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 14:01:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232268AbiEYOBS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 10:01:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53132 "EHLO
+        id S244645AbiEYOB3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 10:01:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244706AbiEYN7d (ORCPT
+        with ESMTP id S244603AbiEYN7C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 09:59:33 -0400
-Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85941AEE0A;
-        Wed, 25 May 2022 06:58:53 -0700 (PDT)
-Received: by mail-oi1-x22e.google.com with SMTP id m125so2069831oia.6;
-        Wed, 25 May 2022 06:58:53 -0700 (PDT)
+        Wed, 25 May 2022 09:59:02 -0400
+Received: from mail-oo1-xc31.google.com (mail-oo1-xc31.google.com [IPv6:2607:f8b0:4864:20::c31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24B2AAE26E;
+        Wed, 25 May 2022 06:58:46 -0700 (PDT)
+Received: by mail-oo1-xc31.google.com with SMTP id q7-20020a4adc47000000b0035f4d798376so3805282oov.6;
+        Wed, 25 May 2022 06:58:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=5hp0dbekvuABHpYBUEs96KVN5ghBlLRpdsHmk4A4gsY=;
-        b=TwKEsWyvpZ5GlzTloFURMTbxmwYufAFPvBfAvNoLWcwZFhoEHowOPFlxE7iFsANSCf
-         P2kkioCKJ6fhEgLydhYgp2Je9alxCdb4kGEREmMhKkPj439cIoyxd+ASO/GwTHYfZHpA
-         KUtnLSPrdk6bpgVm4bM9nUgAfm4DejsOVpibG2Jrt7WPdJIQF5SbsIzy5bSVdWup3gVy
-         jOgVFgcs7IP9qD4qg3BD1f8FdQdbZaMuvRhqr9cF+6H9Z3bRCCHFF3VxAmO/tRj9zQHh
-         Gqej0VZ8qwKXR886642M7jGc4lMbqJVoNA1pnJFQk+eVySCmQiEyhyZXJV9DO0btVecZ
-         NJpQ==
+        bh=b/ZGCgIBEp8AMD68mP9NkD6nfR4ulY45JIBNTsS2fQI=;
+        b=RTcC9btHA5Q7OChjAGQ0KWnGdtZKwq8kJ2taVeIPpe+stiQfQqWDne+0LqBsPIGedO
+         eilTjCNY7kstMkumyTIxkSDwj5BwEWSwU2cQokkV43WZQ1ia3CJThzGuPyantcYXSkvM
+         faDXWDFbQPwtz7j6whxmrvBShmA8aA7rPf9Fty5na4GJ8vx/jK011dl8Qy9emwsqci0Z
+         fEvqgFBTRjDRAhNGwfVDlu6dQNMAwuUHjazmyD5A8EKRfCWWrsYASINxM93kiiz6jQW5
+         i96a16+y9HBXqTB73gkkYmeT8Nyx5IT4gRQXHhliBqAvoc0aYnfwa98dA0tTYMNstx6w
+         DgmA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
          :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=5hp0dbekvuABHpYBUEs96KVN5ghBlLRpdsHmk4A4gsY=;
-        b=R3d3DZJX8J4t88GVlxJ5t1tZ4roYG2cgjfM+uhqxFK5bS5R4nl0b4j9cMvbPLBp2c2
-         Ux/TOw5iT3KRrQ239JUpqoweUxurMvkdqE71zR/ONiXme1Q+Dw5XYwnR9TcJvlfiOVUW
-         6T/sK+74QtM1v+lr2Pm9CRz8tOQTzEfMLsT0Usb19dJXiuBGIYpamNK8W9jYIMy05Bvu
-         +RF2WO4JsjSimC0nyT/JBM/z75YKYwnoFk+ST7DWjq7ZAf8DN8XtL+Z/iLU/4g1WHiEp
-         QCAiNWh9xoXyGb9J+VbrNA+tqNQkpMhtAmafsLMe2tUxCPGFH2+th3X+TVyo7tgJdMkx
-         cyEg==
-X-Gm-Message-State: AOAM530kBuhHE9UNZ6cWMyhXZeNCgt7EiDRytoPZPjVwHyedd24wYG55
-        GazBQqK86WLql08oOPcaFao0R40LQTX8qQ==
-X-Google-Smtp-Source: ABdhPJw8dxE7PUc0uURtb9tDBlDYEPUcWtaiu1AqQJXisaxmHjzkVz/mgRmstw5u4//tZFyGU70xdQ==
-X-Received: by 2002:aca:f1a:0:b0:32a:e909:a490 with SMTP id 26-20020aca0f1a000000b0032ae909a490mr5629095oip.239.1653487132634;
-        Wed, 25 May 2022 06:58:52 -0700 (PDT)
+        bh=b/ZGCgIBEp8AMD68mP9NkD6nfR4ulY45JIBNTsS2fQI=;
+        b=8AT8YMCR2YF/U4dm66tYSg9R094J915w0iDBp2EtzQF/APBXI68dgUArO2AfSMfrHw
+         lvsuJ5ddp1lbIbuDrwrTJkeSfK8nQJh61dd7ejAcBfvQcDcILk9qPHMxbBIJol/E0GEA
+         CGC7x9NNy4EfrJDe8JLuEDA6wBmqvz4n8lyrShrcHUpOTyWqTptorh1Mphy9kgUKVBZa
+         2NJXItHxHdAVQIYYuiGhrBo3bs4VHVxGKYgi0KJV1cvv8QzPPyGPqtmH9fHXhRnIhjYh
+         yZ3RCSpEN+eZacpPx3DPR0JecZ3RMNF55VHO101/1d+ySSfNv2EYpN3AYZy3BJl1wF70
+         vhaQ==
+X-Gm-Message-State: AOAM530PzjjcTbTQzzd3cILCwD42eW5A/Cc/JuwIxcCsfK/D/tgr6Oej
+        cECORuD76uwrMeoM/V/AQz5SX71abkhZDw==
+X-Google-Smtp-Source: ABdhPJy40x/hvUevpeVAXmRRXh00G0P8KdYomjxZo82BR6ZpfTUjylGWP2A9H9L+YVaDgQkwYfzjsA==
+X-Received: by 2002:a4a:2819:0:b0:40e:6f37:1ae8 with SMTP id h25-20020a4a2819000000b0040e6f371ae8mr8879821ooa.44.1653487125233;
+        Wed, 25 May 2022 06:58:45 -0700 (PDT)
 Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id 126-20020a4a0384000000b0035eb4e5a6cdsm6597357ooi.35.2022.05.25.06.58.51
+        by smtp.gmail.com with ESMTPSA id w9-20020a9d6389000000b0060ae12c51a5sm6122092otk.59.2022.05.25.06.58.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 May 2022 06:58:52 -0700 (PDT)
+        Wed, 25 May 2022 06:58:44 -0700 (PDT)
 Sender: Guenter Roeck <groeck7@gmail.com>
 From:   Guenter Roeck <linux@roeck-us.net>
 To:     linux-hwmon@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org, Jean Delvare <jdelvare@suse.com>,
         Slawomir Stepien <sst@poczta.fm>,
         Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH 27/40] hwmon: (lm90) Introduce 16-bit register write function
-Date:   Wed, 25 May 2022 06:57:45 -0700
-Message-Id: <20220525135758.2944744-28-linux@roeck-us.net>
+Subject: [PATCH 23/40] hwmon: (lm90) Add flag to indicate support for minimum temperature limits
+Date:   Wed, 25 May 2022 06:57:41 -0700
+Message-Id: <20220525135758.2944744-24-linux@roeck-us.net>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220525135758.2944744-1-linux@roeck-us.net>
 References: <20220525135758.2944744-1-linux@roeck-us.net>
@@ -66,72 +66,205 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Introduce 16-bit register write function to simplify the code in
-some places.
+A flag indicating support for minimum temperature limits doesn't cost much
+and will enable us to add support for MAX6642 to the lm90 driver.
 
 Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 ---
- drivers/hwmon/lm90.c | 33 +++++++++++++++++++--------------
- 1 file changed, 19 insertions(+), 14 deletions(-)
+ drivers/hwmon/lm90.c | 54 +++++++++++++++++++++++++-------------------
+ 1 file changed, 31 insertions(+), 23 deletions(-)
 
 diff --git a/drivers/hwmon/lm90.c b/drivers/hwmon/lm90.c
-index 20208f127508..46837f0bf62e 100644
+index 22ea75535ab4..abf1451c5652 100644
 --- a/drivers/hwmon/lm90.c
 +++ b/drivers/hwmon/lm90.c
-@@ -665,6 +665,21 @@ static int lm90_write_reg(struct i2c_client *client, u8 reg, u8 val)
- 	return i2c_smbus_write_byte_data(client, lm90_write_reg_addr(reg), val);
- }
+@@ -192,6 +192,7 @@ enum chips { adm1032, adt7461, adt7461a, adt7481, g781, lm86, lm90, lm99,
+ #define LM90_HAVE_PARTIAL_PEC	BIT(12)	/* Partial PEC support (adm1032)*/
+ #define LM90_HAVE_ALARMS	BIT(13)	/* Create 'alarms' attribute	*/
+ #define LM90_HAVE_EXT_UNSIGNED	BIT(14)	/* extended unsigned temperature*/
++#define LM90_HAVE_LOW		BIT(15)	/* low limits			*/
  
-+/*
-+ * Write into 16-bit LM90 register.
-+ * Convert register addresses to write address if needed, then execute the
-+ * operation.
-+ */
-+static int lm90_write16(struct i2c_client *client, u8 regh, u8 regl, u16 val)
-+{
-+	int ret;
-+
-+	ret = lm90_write_reg(client, regh, val >> 8);
-+	if (ret < 0 || !regl)
-+		return ret;
-+	return lm90_write_reg(client, regl, val & 0xff);
-+}
-+
- static int lm90_read16(struct i2c_client *client, u8 regh, u8 regl,
- 		       bool is_volatile)
- {
-@@ -1240,12 +1255,8 @@ static int lm90_set_temp(struct lm90_data *data, int index, int channel, long va
- 	if (channel > 1)
- 		lm90_select_remote_channel(data, true);
+ /* LM90 status */
+ #define LM90_STATUS_LTHRM	BIT(0)	/* local THERM limit tripped */
+@@ -369,7 +370,8 @@ static const struct lm90_params lm90_params[] = {
+ 	[adm1032] = {
+ 		.flags = LM90_HAVE_OFFSET | LM90_HAVE_REM_LIMIT_EXT
+ 		  | LM90_HAVE_BROKEN_ALERT | LM90_HAVE_CRIT
+-		  | LM90_HAVE_PARTIAL_PEC | LM90_HAVE_ALARMS,
++		  | LM90_HAVE_PARTIAL_PEC | LM90_HAVE_ALARMS
++		  | LM90_HAVE_LOW,
+ 		.alert_alarms = 0x7c,
+ 		.max_convrate = 10,
+ 	},
+@@ -382,7 +384,7 @@ static const struct lm90_params lm90_params[] = {
+ 		.flags = LM90_HAVE_OFFSET | LM90_HAVE_REM_LIMIT_EXT
+ 		  | LM90_HAVE_BROKEN_ALERT | LM90_HAVE_EXTENDED_TEMP
+ 		  | LM90_HAVE_CRIT | LM90_HAVE_PARTIAL_PEC
+-		  | LM90_HAVE_ALARMS,
++		  | LM90_HAVE_ALARMS | LM90_HAVE_LOW,
+ 		.alert_alarms = 0x7c,
+ 		.max_convrate = 10,
+ 		.resolution = 10,
+@@ -390,7 +392,8 @@ static const struct lm90_params lm90_params[] = {
+ 	[adt7461a] = {
+ 		.flags = LM90_HAVE_OFFSET | LM90_HAVE_REM_LIMIT_EXT
+ 		  | LM90_HAVE_BROKEN_ALERT | LM90_HAVE_EXTENDED_TEMP
+-		  | LM90_HAVE_CRIT | LM90_HAVE_PEC | LM90_HAVE_ALARMS,
++		  | LM90_HAVE_CRIT | LM90_HAVE_PEC | LM90_HAVE_ALARMS
++		  | LM90_HAVE_LOW,
+ 		.alert_alarms = 0x7c,
+ 		.max_convrate = 10,
+ 	},
+@@ -398,7 +401,7 @@ static const struct lm90_params lm90_params[] = {
+ 		.flags = LM90_HAVE_OFFSET | LM90_HAVE_REM_LIMIT_EXT
+ 		  | LM90_HAVE_BROKEN_ALERT | LM90_HAVE_EXTENDED_TEMP
+ 		  | LM90_HAVE_UNSIGNED_TEMP | LM90_HAVE_PEC
+-		  | LM90_HAVE_TEMP3 | LM90_HAVE_CRIT,
++		  | LM90_HAVE_TEMP3 | LM90_HAVE_CRIT | LM90_HAVE_LOW,
+ 		.alert_alarms = 0x1c7c,
+ 		.max_convrate = 11,
+ 		.resolution = 10,
+@@ -407,58 +410,58 @@ static const struct lm90_params lm90_params[] = {
+ 	[g781] = {
+ 		.flags = LM90_HAVE_OFFSET | LM90_HAVE_REM_LIMIT_EXT
+ 		  | LM90_HAVE_BROKEN_ALERT | LM90_HAVE_CRIT
+-		  | LM90_HAVE_ALARMS,
++		  | LM90_HAVE_ALARMS | LM90_HAVE_LOW,
+ 		.alert_alarms = 0x7c,
+ 		.max_convrate = 7,
+ 	},
+ 	[lm86] = {
+ 		.flags = LM90_HAVE_OFFSET | LM90_HAVE_REM_LIMIT_EXT
+-		  | LM90_HAVE_CRIT | LM90_HAVE_ALARMS,
++		  | LM90_HAVE_CRIT | LM90_HAVE_ALARMS | LM90_HAVE_LOW,
+ 		.alert_alarms = 0x7b,
+ 		.max_convrate = 9,
+ 	},
+ 	[lm90] = {
+ 		.flags = LM90_HAVE_OFFSET | LM90_HAVE_REM_LIMIT_EXT
+-		  | LM90_HAVE_CRIT | LM90_HAVE_ALARMS,
++		  | LM90_HAVE_CRIT | LM90_HAVE_ALARMS | LM90_HAVE_LOW,
+ 		.alert_alarms = 0x7b,
+ 		.max_convrate = 9,
+ 	},
+ 	[lm99] = {
+ 		.flags = LM90_HAVE_OFFSET | LM90_HAVE_REM_LIMIT_EXT
+-		  | LM90_HAVE_CRIT | LM90_HAVE_ALARMS,
++		  | LM90_HAVE_CRIT | LM90_HAVE_ALARMS | LM90_HAVE_LOW,
+ 		.alert_alarms = 0x7b,
+ 		.max_convrate = 9,
+ 	},
+ 	[max6646] = {
+ 		.flags = LM90_HAVE_CRIT | LM90_HAVE_BROKEN_ALERT
+-		  | LM90_HAVE_EXT_UNSIGNED | LM90_HAVE_ALARMS,
++		  | LM90_HAVE_EXT_UNSIGNED | LM90_HAVE_ALARMS | LM90_HAVE_LOW,
+ 		.alert_alarms = 0x7c,
+ 		.max_convrate = 6,
+ 		.reg_local_ext = MAX6657_REG_LOCAL_TEMPL,
+ 	},
+ 	[max6648] = {
+ 		.flags = LM90_HAVE_UNSIGNED_TEMP | LM90_HAVE_CRIT
+-		  | LM90_HAVE_BROKEN_ALERT,
++		  | LM90_HAVE_BROKEN_ALERT | LM90_HAVE_LOW,
+ 		.alert_alarms = 0x7c,
+ 		.max_convrate = 6,
+ 		.reg_local_ext = MAX6657_REG_LOCAL_TEMPL,
+ 	},
+ 	[max6654] = {
+-		.flags = LM90_HAVE_BROKEN_ALERT | LM90_HAVE_ALARMS,
++		.flags = LM90_HAVE_BROKEN_ALERT | LM90_HAVE_ALARMS | LM90_HAVE_LOW,
+ 		.alert_alarms = 0x7c,
+ 		.max_convrate = 7,
+ 		.reg_local_ext = MAX6657_REG_LOCAL_TEMPL,
+ 	},
+ 	[max6657] = {
+ 		.flags = LM90_PAUSE_FOR_CONFIG | LM90_HAVE_CRIT
+-		  | LM90_HAVE_ALARMS,
++		  | LM90_HAVE_ALARMS | LM90_HAVE_LOW,
+ 		.alert_alarms = 0x7c,
+ 		.max_convrate = 8,
+ 		.reg_local_ext = MAX6657_REG_LOCAL_TEMPL,
+ 	},
+ 	[max6659] = {
+ 		.flags = LM90_HAVE_EMERGENCY | LM90_HAVE_CRIT
+-		  | LM90_HAVE_ALARMS,
++		  | LM90_HAVE_ALARMS | LM90_HAVE_LOW,
+ 		.alert_alarms = 0x7c,
+ 		.max_convrate = 8,
+ 		.reg_local_ext = MAX6657_REG_LOCAL_TEMPL,
+@@ -471,14 +474,14 @@ static const struct lm90_params lm90_params[] = {
+ 		 */
+ 		.flags = LM90_HAVE_OFFSET | LM90_HAVE_CRIT
+ 		  | LM90_HAVE_CRIT_ALRM_SWP | LM90_HAVE_BROKEN_ALERT
+-		  | LM90_HAVE_ALARMS,
++		  | LM90_HAVE_ALARMS | LM90_HAVE_LOW,
+ 		.alert_alarms = 0x7c,
+ 		.max_convrate = 7,
+ 	},
+ 	[max6696] = {
+ 		.flags = LM90_HAVE_EMERGENCY
+ 		  | LM90_HAVE_EMERGENCY_ALARM | LM90_HAVE_TEMP3 | LM90_HAVE_CRIT
+-		  | LM90_HAVE_ALARMS,
++		  | LM90_HAVE_ALARMS | LM90_HAVE_LOW,
+ 		.alert_alarms = 0x1c7c,
+ 		.max_convrate = 6,
+ 		.reg_status2 = MAX6696_REG_STATUS2,
+@@ -486,7 +489,7 @@ static const struct lm90_params lm90_params[] = {
+ 	},
+ 	[w83l771] = {
+ 		.flags = LM90_HAVE_OFFSET | LM90_HAVE_REM_LIMIT_EXT | LM90_HAVE_CRIT
+-		  | LM90_HAVE_ALARMS,
++		  | LM90_HAVE_ALARMS | LM90_HAVE_LOW,
+ 		.alert_alarms = 0x7c,
+ 		.max_convrate = 8,
+ 	},
+@@ -497,7 +500,7 @@ static const struct lm90_params lm90_params[] = {
+ 		 * be set).
+ 		 */
+ 		.flags = LM90_HAVE_OFFSET | LM90_HAVE_REM_LIMIT_EXT | LM90_HAVE_CRIT
+-		  | LM90_HAVE_ALARMS,
++		  | LM90_HAVE_ALARMS | LM90_HAVE_LOW,
+ 		.alert_alarms = 0x7b,
+ 		.max_convrate = 9,
+ 		.reg_local_ext = SA56004_REG_LOCAL_TEMPL,
+@@ -505,7 +508,7 @@ static const struct lm90_params lm90_params[] = {
+ 	[tmp451] = {
+ 		.flags = LM90_HAVE_OFFSET | LM90_HAVE_REM_LIMIT_EXT
+ 		  | LM90_HAVE_BROKEN_ALERT | LM90_HAVE_EXTENDED_TEMP | LM90_HAVE_CRIT
+-		  | LM90_HAVE_UNSIGNED_TEMP | LM90_HAVE_ALARMS,
++		  | LM90_HAVE_UNSIGNED_TEMP | LM90_HAVE_ALARMS | LM90_HAVE_LOW,
+ 		.alert_alarms = 0x7c,
+ 		.max_convrate = 9,
+ 		.resolution = 12,
+@@ -514,7 +517,7 @@ static const struct lm90_params lm90_params[] = {
+ 	[tmp461] = {
+ 		.flags = LM90_HAVE_OFFSET | LM90_HAVE_REM_LIMIT_EXT
+ 		  | LM90_HAVE_BROKEN_ALERT | LM90_HAVE_EXTENDED_TEMP | LM90_HAVE_CRIT
+-		  | LM90_HAVE_ALARMS,
++		  | LM90_HAVE_ALARMS | LM90_HAVE_LOW,
+ 		.alert_alarms = 0x7c,
+ 		.max_convrate = 9,
+ 		.resolution = 12,
+@@ -2161,10 +2164,15 @@ static int lm90_probe(struct i2c_client *client)
+ 	info->type = hwmon_temp;
+ 	info->config = data->channel_config;
  
--	err = lm90_write_reg(client, regh, data->temp[index] >> 8);
--	if (err < 0)
--		goto deselect;
--	if (regl)
--		err = lm90_write_reg(client, regl, data->temp[index] & 0xff);
--deselect:
-+	err = lm90_write16(client, regh, regl, data->temp[index]);
+-	data->channel_config[0] = HWMON_T_INPUT | HWMON_T_MIN | HWMON_T_MAX |
+-		HWMON_T_MIN_ALARM | HWMON_T_MAX_ALARM;
+-	data->channel_config[1] = HWMON_T_INPUT | HWMON_T_MIN | HWMON_T_MAX |
+-		HWMON_T_MIN_ALARM | HWMON_T_MAX_ALARM | HWMON_T_FAULT;
++	data->channel_config[0] = HWMON_T_INPUT | HWMON_T_MAX |
++		HWMON_T_MAX_ALARM;
++	data->channel_config[1] = HWMON_T_INPUT | HWMON_T_MAX |
++		HWMON_T_MAX_ALARM | HWMON_T_FAULT;
 +
- 	if (channel > 1)
- 		lm90_select_remote_channel(data, false);
++	if (data->flags & LM90_HAVE_LOW) {
++		data->channel_config[0] |= HWMON_T_MIN | HWMON_T_MIN_ALARM;
++		data->channel_config[1] |= HWMON_T_MIN | HWMON_T_MIN_ALARM;
++	}
  
-@@ -1405,14 +1416,8 @@ static int lm90_temp_write(struct device *dev, u32 attr, int channel, long val)
- 		val = lm90_temp_to_reg(0, val,
- 				       lm90_temp_get_resolution(data, REMOTE_OFFSET));
- 		data->temp[REMOTE_OFFSET] = val;
--		err = i2c_smbus_write_byte_data(data->client,
--						LM90_REG_REMOTE_OFFSH,
--						val >> 8);
--		if (err)
--			break;
--		err = i2c_smbus_write_byte_data(data->client,
--						LM90_REG_REMOTE_OFFSL,
--						val & 0xff);
-+		err = lm90_write16(data->client, LM90_REG_REMOTE_OFFSH,
-+				   LM90_REG_REMOTE_OFFSL, val);
- 		break;
- 	default:
- 		err = -EOPNOTSUPP;
+ 	if (data->flags & LM90_HAVE_CRIT) {
+ 		data->channel_config[0] |= HWMON_T_CRIT | HWMON_T_CRIT_ALARM | HWMON_T_CRIT_HYST;
 -- 
 2.35.1
 
