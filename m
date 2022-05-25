@@ -2,137 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8393EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 19:49:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9DAFC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 19:52:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344775AbiEYTtp (ORCPT
+        id S1344789AbiEYTw3 convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 15:49:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47378 "EHLO
+        Wed, 25 May 2022 15:52:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344761AbiEYTtl (ORCPT
+        with ESMTP id S241221AbiEYTwX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 15:49:41 -0400
-Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1FA062CD7
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 12:49:38 -0700 (PDT)
-Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-2ff90e0937aso151179167b3.4
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 12:49:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=lcsU1M3aHmWM93+N/Pq2k69CNkfyIQUCxczoLH0OLPk=;
-        b=hGvqDCPINlCno6IGVx/RQ4/atSQ+dW08eMaP/4u4J2Rx0AU21Orr25m5AgNUJgVoBC
-         3FFOnaz5xSM9a3RRyGWmmLYgiZVdvKzEmj7vsHFg6Sh7EwGqNKrvH43xPCnlETqRbyTJ
-         rUgPCSCAGnF+I3fcFxMltq5wx33LgoLK4ERO4IR4Sot/Uaxxldi6tkX+WdLxAvCCiEtI
-         QP4xUPzpC2rlJZR8sd1n3W8vuHEHoaO4LC9YRcKisj9Uq+DszGcvpWkcK75IpZtbpf64
-         JIxJLJ+6BngIh5kjOcaFiUEdbJbMoovEHpIlAtRm4xeoQYYTe1wf9PGaYkAV8y48Abi0
-         +6Hg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=lcsU1M3aHmWM93+N/Pq2k69CNkfyIQUCxczoLH0OLPk=;
-        b=8IGK/qKfKeKbU8t1/NXvwZtltiT3qd0JNEaxEs+cGzAHVwFjNQIpq0g5hxXP/UgtPv
-         MSbdhGFIqrpYLpkKQ2CNoJmc60mBz2MVukaQ0fyxjxiyqA+AhB39dC5YStzEvhtImj0q
-         235KFcykSnHxl1BVvgop1nxKXz9XaZi9BG+Ui7c5JFk8tSHx6ffUmJR14dhODJnvsFm8
-         iOaK6sPov+zP5yjyFmn3DceuS4oQUJjABjX/M2mt392icW6P4hKa4tAE/Tqw3OXMZQbe
-         cAfBJkUG26iQ5tnQy7QCBHfroumpJhdXpYruUjBoclepDu3WIFfiJ8HTOZ0/f4KmtniS
-         T8Mw==
-X-Gm-Message-State: AOAM531CN9GfIv23Qr9pN9Yjkzh8KWgz9MVI1PTZM0wzFylUgLKs4IDH
-        a1XVOQlovixFQ7tN3BMKv/nfb9xbwywXww47SV86wQ==
-X-Google-Smtp-Source: ABdhPJye/LYmXdbx2DRGvhYd77idEIGqJLpVK4M7sUVcSaytWZ/KajOi10nwmyuJy9EQw0Od4wYghiCxgCclb01GpVs=
-X-Received: by 2002:a81:72c5:0:b0:300:7d0:a642 with SMTP id
- n188-20020a8172c5000000b0030007d0a642mr14402533ywc.80.1653508177547; Wed, 25
- May 2022 12:49:37 -0700 (PDT)
-MIME-Version: 1.0
-References: <YogkhvFGVcjNQ21Z@dev-arch.thelio-3990X> <CAGETcx9nvBs1b4M=2hBhrLX_2-rzLtAmV9WfTXu0MC7JnsBvwA@mail.gmail.com>
- <YogsiMCDupNUhMgL@dev-fedora.thelio-3990X> <CAGETcx-JyWwoGA3o8eep7E29Cm4DcVT6D1JFJh72jLcqm_mjCQ@mail.gmail.com>
- <Youleo3Ganxbc1sq@dev-arch.thelio-3990X> <CAGETcx-sL08h2toEyxY6ztc6xNuJiPok6iDEeuJ1mOA3nvE+vA@mail.gmail.com>
- <YowHNo4sBjr9ijZr@dev-arch.thelio-3990X> <CAGETcx91_WgpmwEA7mBSvUdyJV0a8ymfaNKTmXq=mAJYAjzq1A@mail.gmail.com>
- <Yo0KyWx+3oX3cMCS@linutronix.de> <CAGETcx_qTLwbjzMruLThLYV+MZD5W2Ox-QwLFQeW=eQgxzq-Hw@mail.gmail.com>
- <Yo3WvGnNk3LvLb7R@linutronix.de>
-In-Reply-To: <Yo3WvGnNk3LvLb7R@linutronix.de>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Wed, 25 May 2022 12:49:00 -0700
-Message-ID: <CAGETcx84ja_w_=vXKDOZnM8EVEcuAg1tX9Kqy57PTkDb1=H4FA@mail.gmail.com>
-Subject: Re: [PATCH v1] driver core: Extend deferred probe timeout on driver registration
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc:     Nathan Chancellor <nathan@kernel.org>,
+        Wed, 25 May 2022 15:52:23 -0400
+X-Greylist: delayed 1200 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 25 May 2022 12:52:22 PDT
+Received: from protestant.ebb.org (protestant.ebb.org [50.56.179.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D08D630B;
+        Wed, 25 May 2022 12:52:22 -0700 (PDT)
+Received: from localhost (unknown [216.161.86.18])
+        (Authenticated sender: bkuhn)
+        by protestant.ebb.org (Postfix) with ESMTPSA id 9D99C820B4;
+        Wed, 25 May 2022 12:14:38 -0700 (PDT)
+From:   "Bradley M. Kuhn" <bkuhn@ebb.org>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        copyleft-next@lists.fedorahosted.org
+Cc:     Luis Chamberlain <mcgrof@kernel.org>, tj@kernel.org,
+        gregkh@linuxfoundation.org, akpm@linux-foundation.org,
+        jeyu@kernel.org, shuah@kernel.org, bvanassche@acm.org,
+        dan.j.williams@intel.com, joe@perches.com, keescook@chromium.org,
+        rostedt@goodmis.org, minchan@kernel.org,
+        linux-spdx@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Goldwyn Rodrigues <rgoldwyn@suse.com>,
+        Kuno Woudt <kuno@frob.nl>,
+        Richard Fontana <fontana@sharpeleven.org>,
+        Ciaran Farrell <Ciaran.Farrell@suse.com>,
+        Christopher De Nicolo <Christopher.DeNicolo@suse.com>,
+        Christoph Hellwig <hch@lst.de>,
         Jonathan Corbet <corbet@lwn.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Rob Herring <robh@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Will Deacon <will@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Kevin Hilman <khilman@kernel.org>,
-        Thierry Reding <treding@nvidia.com>,
-        Mark Brown <broonie@kernel.org>, Pavel Machek <pavel@ucw.cz>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
-        linux-gpio@vger.kernel.org, linux-pm@vger.kernel.org,
-        iommu@lists.linux-foundation.org, kernel-team@android.com,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-s390@vger.kernel.org, John Stultz <jstultz@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Thorsten Leemhuis <linux@leemhuis.info>
+Subject: Re: [PATCH v9 1/6] LICENSES: Add the copyleft-next-0.3.1 license
+Organization: Opinions expressed in this email are my own and are not necessarily those of any organization with which I have an affiliation.
+References: <20211029184500.2821444-1-mcgrof@kernel.org>
+        <20211029184500.2821444-2-mcgrof@kernel.org> <87h75g0xbm.ffs@tglx>
+Face:   iVBORw0KGgoAAAANSUhEUgAAADAAAAAwBAMAAAClLOS0AAAABGdBTUEAALGPC/xhBQAAABVQ
+ TFRFAAAAWjotvpiH/PHt27Sj7sq8lXFeBchlBgAAAAFiS0dEAIgFHUgAAAAJcEhZcwAACxMAAAsT
+ AQCanBgAAAAHdElNRQfiCx4VFw6omMmeAAACAklEQVQ4y43UPZPbIBAGYGdu0puzQ51bI+qMdXId
+ r0F1RoLrwfb+/5+QF307VVR4PDxiF14h7Xa7t3q8LJGjavj7a1euCYiZnaPnv9DF4FyMLKdXOPs4
+ XM7KKzzKaF83gem+hUuF8QYUg7Fb4LEQAK1OG3hu4bbC3LpUC87+B9AMfQOg0yv0owEOK4x1+gnu
+ M3yaV3jOMGxvKoXEKC9gAoabJtZYlXO8wJcb1hMHQClZgSj7cbzsY4a2vSqltIlz8nMpZnMkEmVw
+ N4DtcYJo3AMPXFIMRMax/BjhOxZi2CpKKpWSZCd4C8aZ4CpzjR+Cint9WEp5H12IbbySEpHdaYVh
+ OY9onf0Qq9//zDCFEW0MbFjUz7mHD1UdO4B3iErk9whdKdWVRuW5YLl5KnU2rjTBDyPmQImm5mec
+ WQx7X3fBNwAzQ9kvBTKR0BwR3Bewhisn2mpkhea3BZwBcdorRlQk9QKecyZukRPeHTmuEL1FdjlJ
+ tmTlvoAJPnRaMnKinNICn4QthNaKlNAlLae9sc5UODaelVh+l345u7ZMIY89GNdmWV8cIaTFlLGm
+ QKLrzQykh/Aw02WsdoE2l1g7JIPdyWGFL6Hy1uJZsEjavLUXkVyeIdrbpPoXQHxDG0l68wEoW8vG
+ BLI6qc2XoUEWCUI26aQfK1wypuwV7v6mtMhtgL8avOP/pBCiigAAAABJRU5ErkJggg==
+X-Disclaimer: Opinions expressed in this email are my own and are not necessarily those of any organization with which I have an affiliation.
+Date:   Wed, 25 May 2022 12:13:45 -0700
+In-Reply-To: <87h75g0xbm.ffs@tglx> (Thomas Gleixner's message of "Mon, 23 May
+        2022 23:10:37 +0200")
+Message-ID: <87y1yph1cm.fsf@ebb.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 25, 2022 at 12:12 AM Sebastian Andrzej Siewior
-<bigeasy@linutronix.de> wrote:
->
-> On 2022-05-24 10:46:49 [-0700], Saravana Kannan wrote:
-> > > Removing probe_timeout_waitqueue (as suggested) or setting the timeou=
-t
-> > > to 0 avoids the delay.
-> >
-> > In your case, I think it might be working as intended? Curious, what
-> > was the call stack in your case where it was blocked?
->
-> Why is then there 10sec delay during boot? The backtrace is
-> |------------[ cut here ]------------
-> |WARNING: CPU: 4 PID: 1 at drivers/base/dd.c:742 wait_for_device_probe+0x=
-30/0x110
-> |Modules linked in:
-> |CPU: 4 PID: 1 Comm: swapper/0 Not tainted 5.18.0-rc5+ #154
-> |RIP: 0010:wait_for_device_probe+0x30/0x110
-> |Call Trace:
-> | <TASK>
-> | prepare_namespace+0x2b/0x160
-> | kernel_init_freeable+0x2b3/0x2dd
-> | kernel_init+0x11/0x110
-> | ret_from_fork+0x22/0x30
-> | </TASK>
->
-> Looking closer, it can't access init. This in particular box boots
-> directly the kernel without an initramfs so the kernel later mounts
-> /dev/sda1 and everything is good.  So that seems to be the reason=E2=80=
-=A6
+In answering Thomas' question …
 
-Hmmm... that part shouldn't matter. As long as you are hitting the
-same code path. My guess is one of them has CONFIG_MODULES enabled and
-the other doesn't.
+Thomas Gleixner wrote at 14:10 (PDT) on Monday:
+> If I want to remove this option, then how do I express this with a SPDX
+> license identifier?
 
-In either case, I think the patch needs to be reverted (I'll send out
-one soon), but that'll also mean I need to revert part of my patch
-(sets the timeout back to 0) or I need to fix this case:
-https://lore.kernel.org/lkml/TYAPR01MB45443DF63B9EF29054F7C41FD8C60@TYAPR01=
-MB4544.jpnprd01.prod.outlook.com/
+… some licensing/SPDX background is in order.  (I apologize in advance for a
+few paragraphs of license-splaining, as I know that many on this thread know
+these points already, but I suspect most only have only vague familiarity
+with this issue.)
 
-I'll try to do the latter if I can get something reasonable soon.
-Otherwise, I'll just do the revert + partial revert.
+copyleft-next 0.3.1 reads:
+>> +11. Later License Versions
+>> +    The Copyleft-Next Project may release new versions of copyleft-next,
+>> +    designated by a distinguishing version number ("Later Versions").
 
--Saravana
+Many don't realize that GPL is (or was, pre-copyleft-next) unique in
+structure among copyleft licenses in that the -or-later clause of all
+licenses in the GPL family is configurable.  That yields the complex forms
+of: GPLv1-only, GPLv1-or-later, GPLv2-only, GPLv2-or-later, etc.  GPLv3 even
+added the proxy upgrade clause (— a formulation SPDX can't handle at all).
 
+Other non-trivial FOSS licenses — such as Mozilla Public License (MPL),
+Common Development and Distribution License (CDDL), and Eclipse Public
+License (EPL) (as just three examples) — all have “automatic -or-later”.
+Thus, “MPLv2.0” *always* means “MPLv2.0-or-later”, so if you use the SPDX
+moniker for that (“MPL-2.0”), it really is akin to using “GPLv2-or-later”.
+Meanwhile, there is no *actual* way to license code under “MPLv2-only” — the
+license text itself prohibits it.
 
-> My other machine with an initramfs does not show this problem.
->
-> > -Saravana
->
-> Sebastian
+All that's to say: the GPL has (historically) always been a huge FOSS
+licensing special-case because of the complex configurability of its
+“-or-later” clause.
+
+One of the last activities I did with SPDX (in late 2017) was to help
+negotiate a solution on reworking the GPL identifiers to deal with this
+special case.  The solution was a classic political compromise — where
+*everyone* left unhappy — but that's what led to the deprecation of SPDX's
+“GPL-2.0” identifier in favor of “GPL-2.0-or-later” and “GPL-2.0-only”.
+
+I wasn't involved with SPDX anymore when they (much later) created the
+identifier “copyleft-next-0.3.1” — but it appears it was a case of “those
+who forget the past is condemned to repeat it” — because copyleft-next's
+SPDX identifier indeed has a similarly confusing ambiguity to “GPL-2.0”:
+
+copyleft-next 0.3.1 text reads further:
+>> +    Unless I explicitly remove the option of Distributing Covered Works
+>> +    under Later Versions, You may Distribute Covered Works under any Later
+>> +    Version.
+Thomas Gleixner noted about it at 14:10 (PDT) on Monday:
+> If I want to remove this option, then how do I express this with a SPDX
+> license identifier?  Sigh!
+
+So, this problem that Thomas notes above is definitely an error by the SPDX
+project, *just like* the one that exists for the deprecated “GPL-2.0”
+identifier.  But, that isn't copyleft-next's fault [0], nor Luis's fault.
+IMO, Luis shouldn't be punished (i.e., by being prohibited by the Linux
+project from licensing under the GPLv2-compatible terms of his choosing)
+simply because the SPDX project erred.
+
+Fortunately, the problem *is* hypothetical here because Luis has *not*
+indicated that he's licensing under “copyleft-next-0.3.1 REVOKING
+new-version-upgrade”, so it's not a problem for Luis' patch that SPDX offers
+no way to represent that licensing sub-option in copyleft-next.
+
+[0] Nevertheless, I am wondering, given that (a) opting-out-of-auto-upgrade is
+    *so* GPL-specific, and (b) the auto-upgrade opt out has caused decades
+    of pain and woe throughout the GPL-using community (and for SPDX!),
+    maybe copyleft-next should, in fact, drop that clause entirely in future
+    versions. Discussion of that is likely not of interest to most folks on
+    this wide thread, so I'll pick up that conversation more narrowly just
+    on the copyleft-next list from here …
+
+ -- bkuhn
