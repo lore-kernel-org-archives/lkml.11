@@ -2,163 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36029C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 11:11:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 810DEC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 11:11:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241660AbiEYLLQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 07:11:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41108 "EHLO
+        id S238237AbiEYLLp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 07:11:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241080AbiEYLLK (ORCPT
+        with ESMTP id S236920AbiEYLLj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 07:11:10 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE3CA8CCC5;
-        Wed, 25 May 2022 04:11:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=TTSfncRF4bwVxkeR+S4pHa2NuE5vU7NkHqU52imXoeo=; b=AZ7NLjulpP1WzqY4jAw9CJ6mzn
-        eNxn6mITLdAkzreesFIusYyJANkaOvbZVslHzJxDDqo/jW9prJ6mSOYajnNAsWgSTZTPCGe4Y+H+t
-        Q7b5K2i3OxODvn+feDcYZuuvagMcqlznlm2xJ6e8wPUzB4c/WkijGr50Z8D32ZlBmwWuMwGQbue1E
-        mrsCyjPGVmj7xf/0/rnV0zIseeyVAHCeyTCYTi0ZFmZwkk1CWC0IMPFglArv51u64lwHpRP8/QuNm
-        TypGtB34O3uGaPoduTA8k7e4jOZswva+y2onGqiOIb4Z5GAtPEnJDGpyLSzDy3ZlKvUO8MvNVaZm2
-        4u9mbK6A==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1ntouK-001b5l-Bp; Wed, 25 May 2022 11:10:28 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 59CA2300222;
-        Wed, 25 May 2022 13:10:17 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 374CD207688E7; Wed, 25 May 2022 13:10:17 +0200 (CEST)
-Date:   Wed, 25 May 2022 13:10:17 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Peter Xu <peterx@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        Richard Henderson <rth@twiddle.net>,
-        David Hildenbrand <david@redhat.com>,
-        Matt Turner <mattst88@gmail.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Michal Simek <monstr@monstr.eu>,
-        Russell King <linux@armlinux.org.uk>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        linux-riscv@lists.infradead.org,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Jonas Bonn <jonas@southpole.se>, Will Deacon <will@kernel.org>,
-        "James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        openrisc@lists.librecores.org, linux-s390@vger.kernel.org,
-        Ingo Molnar <mingo@redhat.com>,
-        linux-m68k@lists.linux-m68k.org,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Chris Zankel <chris@zankel.net>,
-        Alistair Popple <apopple@nvidia.com>,
-        linux-csky@vger.kernel.org, linux-hexagon@vger.kernel.org,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        sparclinux@vger.kernel.org,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Stafford Horne <shorne@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>, x86@kernel.org,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Paul Mackerras <paulus@samba.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        linux-xtensa@linux-xtensa.org, Nicholas Piggin <npiggin@gmail.com>,
-        linux-sh@vger.kernel.org, Vasily Gorbik <gor@linux.ibm.com>,
-        Borislav Petkov <bp@alien8.de>, linux-mips@vger.kernel.org,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        Helge Deller <deller@gmx.de>, Vineet Gupta <vgupta@kernel.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        linux-um@lists.infradead.org, linux-alpha@vger.kernel.org,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-ia64@vger.kernel.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Dinh Nguyen <dinguyen@kernel.org>, Guo Ren <guoren@kernel.org>,
-        linux-snps-arc@lists.infradead.org,
-        Hugh Dickins <hughd@google.com>, Rich Felker <dalias@libc.org>,
-        Andy Lutomirski <luto@kernel.org>,
-        Richard Weinberger <richard@nod.at>,
-        linuxppc-dev@lists.ozlabs.org, Brian Cain <bcain@quicinc.com>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>,
-        linux-parisc@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH v3] mm: Avoid unnecessary page fault retires on shared
- memory types
-Message-ID: <Yo4OmaNW5YUrGE0S@hirez.programming.kicks-ass.net>
-References: <20220524234531.1949-1-peterx@redhat.com>
+        Wed, 25 May 2022 07:11:39 -0400
+Received: from esa4.hgst.iphmx.com (esa4.hgst.iphmx.com [216.71.154.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27BD345781
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 04:11:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+  t=1653477097; x=1685013097;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=1ApspzUBKpnPb41FxJK3phqUVQ+mxeo54ozF/QmwScU=;
+  b=aunsX4am2VyTSGSgPI5scKu83WQ56WHALU/lz/0VaCsHzC2H2p6tyBTk
+   egrp5Q7W8dChuyZsy0b7UPsae+IIxwGWkRGl/IdJD/hA9CmFR4x1x1oEC
+   XCKvqRTYVI4+Mjg3UQh3tL9SMKjopPEGvtQ2JRyq2MAVsZrkz0h6q/fqc
+   1EG02l+5zWQIRtjXNybaXt5JtAkjPI4nBagox+ybWjgxh7qc163qoggSo
+   CmbGbYh+H+xrGCrLP8oEQijvuRV8ehy353/hqIuQHoZr222N6BE01F2MO
+   j2UXa5EGZiFHeaL+l8+niuA5vGkBIPYGfiAV6cNgKddWEfDLkC9wvoJ/5
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.91,250,1647273600"; 
+   d="scan'208";a="200173550"
+Received: from uls-op-cesaip02.wdc.com (HELO uls-op-cesaep02.wdc.com) ([199.255.45.15])
+  by ob1.hgst.iphmx.com with ESMTP; 25 May 2022 19:11:33 +0800
+IronPort-SDR: TXKxW7QGWOoUZHR9a3dWL7Cae/LJ9kBDyTNkv3jHu1JvRrwuH8sFoLtrrmsHqHEm/b4K+5P9EI
+ L4RSVnC/1fZXFKMNppyIYPW7lJ5JTgxhPmZxCXgSpw1XQer7WKwFV+X1dXFhO9n1JuIkK+N9OM
+ jlsKndV31uXBuCoZ+7m75zyEmvbCWQ+YzMB8cgVKTtaURXn9rKJW+2kGeMbVPDtz88eL9Zb2is
+ NICd8FmegP3cKIx211gyKuofcQ29E4JsKKnmdMH7LbVUevrT70G+606eVu/3+u1jgIsKDURqaD
+ e2qsrPLxwLE4DYAbQMjHlXWB
+Received: from uls-op-cesaip01.wdc.com ([10.248.3.36])
+  by uls-op-cesaep02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 25 May 2022 03:31:05 -0700
+IronPort-SDR: Lfdt1Rety046e7dn0h5wDymP+d0pOhxG6929NLpi/WI3f1oqUT8Ws2IvGUTc1uGunT7PxnoAg8
+ 7FjpbWlsSBlw4i6ZxA+ZPvcI5gsrPaqQTwJKx/OK709a2FAmDXfEW0X/ikn6RXXxmm6HXytir+
+ h1P35y9aQJk7R5/cm7Qy5sdnrtd3i5j2oebBVuZ3aNvU9skwW0Pfb9EaLsbfOWQ0ciNfDxfUF7
+ TP13aGToy1Y5vJI7dBGOxaDDSf42+WHcktJkZFlvQK1CoFRALqE+RPtSnHLZp1hBfWqCrUzMTA
+ r8w=
+WDCIronportException: Internal
+Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
+  by uls-op-cesaip01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 25 May 2022 04:11:33 -0700
+Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4L7T0N6Q9zz1SVny
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 04:11:32 -0700 (PDT)
+Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
+        reason="pass (just generated, assumed good)"
+        header.d=opensource.wdc.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+        opensource.wdc.com; h=content-transfer-encoding:content-type
+        :in-reply-to:organization:from:references:to:content-language
+        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
+        1653477092; x=1656069093; bh=1ApspzUBKpnPb41FxJK3phqUVQ+mxeo54oz
+        F/QmwScU=; b=gimYfpIJP7lQ4yMAIpoZzyEWNEhMXnRdQibGB1an1gd6dWPOTXj
+        iNvaHhqmQnGrd2kZ+0ikb9Azx+6NjehJfAqfUAJyfsEaA/AwQNhDLhFBQKWYPDHh
+        aoI8M/p/E2Lv7W6D4oO+NC6mKLHZY6zabvT1g4MnExytLEsMmFbPMGnPLcDMLy4H
+        oksHMJ4m0pq5ja2juHcWzzBeO3qDnOdnAO5ed8nDqCc26vVgubMfjZ/3k7SqedN4
+        SKCrISvnEtihumQaXZ75C5AKw/KG1jQ/bxZQxLAM/wGsJIKWMoyPw12/ixPq7ZvP
+        dSBfSl9QfoAQRTnhMzvijKIcKngks9M61BQ==
+X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
+Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
+        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id VoI8NlYGNMpO for <linux-kernel@vger.kernel.org>;
+        Wed, 25 May 2022 04:11:32 -0700 (PDT)
+Received: from [10.225.163.54] (unknown [10.225.163.54])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4L7T0M2BqLz1Rvlc;
+        Wed, 25 May 2022 04:11:31 -0700 (PDT)
+Message-ID: <48012e6e-f3c0-4436-5f5c-a2b0db89e33b@opensource.wdc.com>
+Date:   Wed, 25 May 2022 20:11:29 +0900
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220524234531.1949-1-peterx@redhat.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH 2/3] ata: ahci: Rename module parameter for lpm policy
+Content-Language: en-US
+To:     Christoph Hellwig <hch@infradead.org>,
+        Mario Limonciello <mario.limonciello@amd.com>
+Cc:     "open list:LIBATA SUBSYSTEM (Serial and Parallel ATA drivers)" 
+        <linux-ide@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>, hdegoede@redhat.com
+References: <20220524170508.563-1-mario.limonciello@amd.com>
+ <20220524170508.563-3-mario.limonciello@amd.com>
+ <Yo3w/dsaly+gcQNR@infradead.org>
+From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Organization: Western Digital Research
+In-Reply-To: <Yo3w/dsaly+gcQNR@infradead.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 24, 2022 at 07:45:31PM -0400, Peter Xu wrote:
-> I observed that for each of the shared file-backed page faults, we're very
-> likely to retry one more time for the 1st write fault upon no page.  It's
-> because we'll need to release the mmap lock for dirty rate limit purpose
-> with balance_dirty_pages_ratelimited() (in fault_dirty_shared_page()).
+On 5/25/22 18:03, Christoph Hellwig wrote:
+> On Tue, May 24, 2022 at 12:05:07PM -0500, Mario Limonciello wrote:
+>> The LPM policy is applied to more chipsets than just mobile designs.
+>> Update the module parameter to drop the word "mobile" to make this
+>> clearer to users.
+>>
+>> Also, document this renamed parameter in the admin-guide for users
+>> as it was missing previously.
 > 
-> Then after that throttling we return VM_FAULT_RETRY.
-> 
-> We did that probably because VM_FAULT_RETRY is the only way we can return
-> to the fault handler at that time telling it we've released the mmap lock.
-> 
-> However that's not ideal because it's very likely the fault does not need
-> to be retried at all since the pgtable was well installed before the
-> throttling, so the next continuous fault (including taking mmap read lock,
-> walk the pgtable, etc.) could be in most cases unnecessary.
-> 
-> It's not only slowing down page faults for shared file-backed, but also add
-> more mmap lock contention which is in most cases not needed at all.
-> 
-> To observe this, one could try to write to some shmem page and look at
-> "pgfault" value in /proc/vmstat, then we should expect 2 counts for each
-> shmem write simply because we retried, and vm event "pgfault" will capture
-> that.
-> 
-> To make it more efficient, add a new VM_FAULT_COMPLETED return code just to
-> show that we've completed the whole fault and released the lock.  It's also
-> a hint that we should very possibly not need another fault immediately on
-> this page because we've just completed it.
-> 
-> This patch provides a ~12% perf boost on my aarch64 test VM with a simple
-> program sequentially dirtying 400MB shmem file being mmap()ed and these are
-> the time it needs:
-> 
->   Before: 650.980 ms (+-1.94%)
->   After:  569.396 ms (+-1.38%)
-> 
-> I believe it could help more than that.
-> 
-> We need some special care on GUP and the s390 pgfault handler (for gmap
-> code before returning from pgfault), the rest changes in the page fault
-> handlers should be relatively straightforward.
-> 
-> Another thing to mention is that mm_account_fault() does take this new
-> fault as a generic fault to be accounted, unlike VM_FAULT_RETRY.
-> 
-> I explicitly didn't touch hmm_vma_fault() and break_ksm() because they do
-> not handle VM_FAULT_RETRY even with existing code, so I'm literally keeping
-> them as-is.
-> 
-> Signed-off-by: Peter Xu <peterx@redhat.com>
+> Even if the name is confusing I don't think we should rename it as
+> that breaks existing setups.  I think just updating the documentation
+> is good enough, but if you feel strongly we can just add the new name
+> while keeping the old one as an alias.
 
-Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
++1 for the alias.
+
+The other thing that this series need is to add the changes of the LPM
+policy initialization according to the adapter capabilities (your patch
+and the patches from Runa) as well as accounting for the eventual nolpm
+link horkage flag. Otherwise, I fear that this change will generate many
+regressions.
+
+-- 
+Damien Le Moal
+Western Digital Research
