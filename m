@@ -2,141 +2,246 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FE3CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 05:33:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D603C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 05:36:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244005AbiEYFd5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 01:33:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35836 "EHLO
+        id S244007AbiEYFgl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 01:36:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243999AbiEYFd4 (ORCPT
+        with ESMTP id S232051AbiEYFgh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 01:33:56 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47F1D5E74D
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 22:33:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653456835; x=1684992835;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=tC5kXzJ2AZTXt2qxLz/QlNtc9RLvHWTtlK4ZRvR3278=;
-  b=P+9eIJ0iqKBOt5fl8p6Khy5jOuGihRyGHIvIdVx2ejCb2/qJYTwf2qUC
-   T1ueCF66F9iZ8BVGLaWhfkntKaDQvpAr+qAWGQufchHjBdTIcY0qu4LtH
-   rzNvYPACceB/tLyND3XWLE+VdIItMabADHQMlAkBA4OnWl+WFWcPNYo47
-   9yK9p9D0cCXpleBkCStIiT3HkeSEkTStgOX+IF5cA9GmWJgvB/TQyRQ4B
-   /c10JKQPadBJYbJnxJRX1Jb/P8KZ1H3G/1N4BGSOiFcy+vgjS/w9NGdty
-   p3pa5jUCpKCEA6norC8BHZiqoWRodq1+jPF/MfD5orO1cs1qT48WUNd71
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10357"; a="336775076"
-X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
-   d="scan'208";a="336775076"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 May 2022 22:33:54 -0700
-X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
-   d="scan'208";a="601666278"
-Received: from jwang96-mobl.ccr.corp.intel.com (HELO [10.255.29.139]) ([10.255.29.139])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 May 2022 22:33:50 -0700
-Message-ID: <11743cbe-c354-8442-d758-764cc59ce01a@linux.intel.com>
-Date:   Wed, 25 May 2022 13:33:48 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Cc:     baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Eric Auger <eric.auger@redhat.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: Re: [PATCH v7 03/10] iommu/sva: Add iommu_sva_domain support
-Content-Language: en-US
-To:     Jason Gunthorpe <jgg@nvidia.com>
-References: <20220519072047.2996983-1-baolu.lu@linux.intel.com>
- <20220519072047.2996983-4-baolu.lu@linux.intel.com>
- <20220524134440.GT1343366@nvidia.com>
-From:   Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20220524134440.GT1343366@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Wed, 25 May 2022 01:36:37 -0400
+Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF2D3DF92
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 22:36:34 -0700 (PDT)
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 3B08720065E;
+        Wed, 25 May 2022 07:36:33 +0200 (CEST)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id D0E2F200665;
+        Wed, 25 May 2022 07:36:32 +0200 (CEST)
+Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 60AD0180031B;
+        Wed, 25 May 2022 13:36:31 +0800 (+08)
+From:   Shengjiu Wang <shengjiu.wang@nxp.com>
+To:     nicoleotsuka@gmail.com, Xiubo.Lee@gmail.com, festevam@gmail.com,
+        shengjiu.wang@gmail.com, lgirdwood@gmail.com, broonie@kernel.org,
+        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
+Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] ASoC: fsl_mqs: simplify the code with adding fsl_mqs_soc_data
+Date:   Wed, 25 May 2022 13:23:41 +0800
+Message-Id: <1653456221-21613-1-git-send-email-shengjiu.wang@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/5/24 21:44, Jason Gunthorpe wrote:
->> +{
->> +	struct iommu_sva_domain *sva_domain;
->> +	struct iommu_domain *domain;
->> +
->> +	if (!bus->iommu_ops || !bus->iommu_ops->sva_domain_ops)
->> +		return ERR_PTR(-ENODEV);
->> +
->> +	sva_domain = kzalloc(sizeof(*sva_domain), GFP_KERNEL);
->> +	if (!sva_domain)
->> +		return ERR_PTR(-ENOMEM);
->> +
->> +	mmgrab(mm);
->> +	sva_domain->mm = mm;
->> +
->> +	domain = &sva_domain->domain;
->> +	domain->type = IOMMU_DOMAIN_SVA;
->> +	domain->ops = bus->iommu_ops->sva_domain_ops;
->> +
->> +	return domain;
->> +}
->> +
->> +void iommu_sva_free_domain(struct iommu_domain *domain)
->> +{
->> +	struct iommu_sva_domain *sva_domain = to_sva_domain(domain);
->> +
->> +	mmdrop(sva_domain->mm);
->> +	kfree(sva_domain);
->> +}
-> No callback to the driver?
+Add soc specific data struct fsl_mqs_soc_data, move the
+definition of control register, each function bits to it,
+then the code can be simplified.
 
-Should do this in the next version. This version added an sva-specific
-iommu_domain_ops pointer in iommu_ops. This is not the right way to go.
+Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+---
+ sound/soc/fsl/fsl_mqs.c | 119 ++++++++++++++++++++++++----------------
+ 1 file changed, 71 insertions(+), 48 deletions(-)
 
-> 
->> +int iommu_sva_set_domain(struct iommu_domain *domain, struct device *dev,
->> +			 ioasid_t pasid)
->> +{
-> Why does this function exist? Just call iommu_set_device_pasid()
-
-Yes, agreed.
-
-> 
->> +int iommu_set_device_pasid(struct iommu_domain *domain, struct device *dev,
->> +			   ioasid_t pasid)
->> +{
-> Here you can continue to use attach/detach language as at this API
-> level we expect strict pairing..
-
-Sure.
-
-> 
-> 
->> +void iommu_block_device_pasid(struct iommu_domain *domain, struct device *dev,
->> +			      ioasid_t pasid)
->> +{
->> +	struct iommu_group *group = iommu_group_get(dev);
->> +
->> +	mutex_lock(&group->mutex);
->> +	domain->ops->block_dev_pasid(domain, dev, pasid);
->> +	xa_erase(&group->pasid_array, pasid);
->> +	mutex_unlock(&group->mutex);
-> Should be the blocking domain.
-
-As we discussed, we should change above to blocking domain when the
-blocking domain is supported on at least Intel and arm-smmu-v3 drivers.
-I have started the work for Intel driver support.
-
-Best regards,
-baolu
+diff --git a/sound/soc/fsl/fsl_mqs.c b/sound/soc/fsl/fsl_mqs.c
+index ceaecbe3a25e..8a8d727319d6 100644
+--- a/sound/soc/fsl/fsl_mqs.c
++++ b/sound/soc/fsl/fsl_mqs.c
+@@ -10,6 +10,7 @@
+ #include <linux/moduleparam.h>
+ #include <linux/mfd/syscon.h>
+ #include <linux/mfd/syscon/imx6q-iomuxc-gpr.h>
++#include <linux/of_device.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/of.h>
+ #include <linux/pm.h>
+@@ -29,15 +30,41 @@
+ #define MQS_CLK_DIV_MASK		(0xFF << 0)
+ #define MQS_CLK_DIV_SHIFT		(0)
+ 
++/**
++ * struct fsl_mqs_soc_data - soc specific data
++ *
++ * @use_gpr: control register is in General Purpose Register group
++ * @ctrl_off: control register offset
++ * @en_mask: enable bit mask
++ * @en_shift: enable bit shift
++ * @rst_mask: reset bit mask
++ * @rst_shift: reset bit shift
++ * @osr_mask: oversample bit mask
++ * @osr_shift: oversample bit shift
++ * @div_mask: clock divider mask
++ * @div_shift: clock divider bit shift
++ */
++struct fsl_mqs_soc_data {
++	bool use_gpr;
++	int  ctrl_off;
++	int  en_mask;
++	int  en_shift;
++	int  rst_mask;
++	int  rst_shift;
++	int  osr_mask;
++	int  osr_shift;
++	int  div_mask;
++	int  div_shift;
++};
++
+ /* codec private data */
+ struct fsl_mqs {
+ 	struct regmap *regmap;
+ 	struct clk *mclk;
+ 	struct clk *ipg;
++	const struct fsl_mqs_soc_data *soc;
+ 
+-	unsigned int reg_iomuxc_gpr2;
+ 	unsigned int reg_mqs_ctrl;
+-	bool use_gpr;
+ };
+ 
+ #define FSL_MQS_RATES	(SNDRV_PCM_RATE_44100 | SNDRV_PCM_RATE_48000)
+@@ -65,19 +92,11 @@ static int fsl_mqs_hw_params(struct snd_pcm_substream *substream,
+ 	res = mclk_rate % (32 * lrclk * 2 * 8);
+ 
+ 	if (res == 0 && div > 0 && div <= 256) {
+-		if (mqs_priv->use_gpr) {
+-			regmap_update_bits(mqs_priv->regmap, IOMUXC_GPR2,
+-					   IMX6SX_GPR2_MQS_CLK_DIV_MASK,
+-					   (div - 1) << IMX6SX_GPR2_MQS_CLK_DIV_SHIFT);
+-			regmap_update_bits(mqs_priv->regmap, IOMUXC_GPR2,
+-					   IMX6SX_GPR2_MQS_OVERSAMPLE_MASK, 0);
+-		} else {
+-			regmap_update_bits(mqs_priv->regmap, REG_MQS_CTRL,
+-					   MQS_CLK_DIV_MASK,
+-					   (div - 1) << MQS_CLK_DIV_SHIFT);
+-			regmap_update_bits(mqs_priv->regmap, REG_MQS_CTRL,
+-					   MQS_OVERSAMPLE_MASK, 0);
+-		}
++		regmap_update_bits(mqs_priv->regmap, mqs_priv->soc->ctrl_off,
++				   mqs_priv->soc->div_mask,
++				   (div - 1) << mqs_priv->soc->div_shift);
++		regmap_update_bits(mqs_priv->regmap, mqs_priv->soc->ctrl_off,
++				   mqs_priv->soc->osr_mask, 0);
+ 	} else {
+ 		dev_err(component->dev, "can't get proper divider\n");
+ 	}
+@@ -118,14 +137,9 @@ static int fsl_mqs_startup(struct snd_pcm_substream *substream,
+ 	struct snd_soc_component *component = dai->component;
+ 	struct fsl_mqs *mqs_priv = snd_soc_component_get_drvdata(component);
+ 
+-	if (mqs_priv->use_gpr)
+-		regmap_update_bits(mqs_priv->regmap, IOMUXC_GPR2,
+-				   IMX6SX_GPR2_MQS_EN_MASK,
+-				   1 << IMX6SX_GPR2_MQS_EN_SHIFT);
+-	else
+-		regmap_update_bits(mqs_priv->regmap, REG_MQS_CTRL,
+-				   MQS_EN_MASK,
+-				   1 << MQS_EN_SHIFT);
++	regmap_update_bits(mqs_priv->regmap, mqs_priv->soc->ctrl_off,
++			   mqs_priv->soc->en_mask,
++			   1 << mqs_priv->soc->en_shift);
+ 	return 0;
+ }
+ 
+@@ -135,12 +149,8 @@ static void fsl_mqs_shutdown(struct snd_pcm_substream *substream,
+ 	struct snd_soc_component *component = dai->component;
+ 	struct fsl_mqs *mqs_priv = snd_soc_component_get_drvdata(component);
+ 
+-	if (mqs_priv->use_gpr)
+-		regmap_update_bits(mqs_priv->regmap, IOMUXC_GPR2,
+-				   IMX6SX_GPR2_MQS_EN_MASK, 0);
+-	else
+-		regmap_update_bits(mqs_priv->regmap, REG_MQS_CTRL,
+-				   MQS_EN_MASK, 0);
++	regmap_update_bits(mqs_priv->regmap, mqs_priv->soc->ctrl_off,
++			   mqs_priv->soc->en_mask, 0);
+ }
+ 
+ static const struct snd_soc_component_driver soc_codec_fsl_mqs = {
+@@ -191,12 +201,9 @@ static int fsl_mqs_probe(struct platform_device *pdev)
+ 	 * But in i.MX8QM/i.MX8QXP the control register is moved
+ 	 * to its own domain.
+ 	 */
+-	if (of_device_is_compatible(np, "fsl,imx8qm-mqs"))
+-		mqs_priv->use_gpr = false;
+-	else
+-		mqs_priv->use_gpr = true;
++	mqs_priv->soc = of_device_get_match_data(&pdev->dev);
+ 
+-	if (mqs_priv->use_gpr) {
++	if (mqs_priv->soc->use_gpr) {
+ 		gpr_np = of_parse_phandle(np, "gpr", 0);
+ 		if (!gpr_np) {
+ 			dev_err(&pdev->dev, "failed to get gpr node by phandle\n");
+@@ -280,12 +287,7 @@ static int fsl_mqs_runtime_resume(struct device *dev)
+ 		return ret;
+ 	}
+ 
+-	if (mqs_priv->use_gpr)
+-		regmap_write(mqs_priv->regmap, IOMUXC_GPR2,
+-			     mqs_priv->reg_iomuxc_gpr2);
+-	else
+-		regmap_write(mqs_priv->regmap, REG_MQS_CTRL,
+-			     mqs_priv->reg_mqs_ctrl);
++	regmap_write(mqs_priv->regmap, mqs_priv->soc->ctrl_off, mqs_priv->reg_mqs_ctrl);
+ 	return 0;
+ }
+ 
+@@ -293,12 +295,7 @@ static int fsl_mqs_runtime_suspend(struct device *dev)
+ {
+ 	struct fsl_mqs *mqs_priv = dev_get_drvdata(dev);
+ 
+-	if (mqs_priv->use_gpr)
+-		regmap_read(mqs_priv->regmap, IOMUXC_GPR2,
+-			    &mqs_priv->reg_iomuxc_gpr2);
+-	else
+-		regmap_read(mqs_priv->regmap, REG_MQS_CTRL,
+-			    &mqs_priv->reg_mqs_ctrl);
++	regmap_read(mqs_priv->regmap, mqs_priv->soc->ctrl_off, &mqs_priv->reg_mqs_ctrl);
+ 
+ 	clk_disable_unprepare(mqs_priv->mclk);
+ 	clk_disable_unprepare(mqs_priv->ipg);
+@@ -315,9 +312,35 @@ static const struct dev_pm_ops fsl_mqs_pm_ops = {
+ 				pm_runtime_force_resume)
+ };
+ 
++static const struct fsl_mqs_soc_data fsl_mqs_imx8qm_data = {
++	.use_gpr = false,
++	.ctrl_off = REG_MQS_CTRL,
++	.en_mask  = MQS_EN_MASK,
++	.en_shift = MQS_EN_SHIFT,
++	.rst_mask = MQS_SW_RST_MASK,
++	.rst_shift = MQS_SW_RST_SHIFT,
++	.osr_mask = MQS_OVERSAMPLE_MASK,
++	.osr_shift = MQS_OVERSAMPLE_SHIFT,
++	.div_mask = MQS_CLK_DIV_MASK,
++	.div_shift = MQS_CLK_DIV_SHIFT,
++};
++
++static const struct fsl_mqs_soc_data fsl_mqs_imx6sx_data = {
++	.use_gpr = true,
++	.ctrl_off = IOMUXC_GPR2,
++	.en_mask  = IMX6SX_GPR2_MQS_EN_MASK,
++	.en_shift = IMX6SX_GPR2_MQS_EN_SHIFT,
++	.rst_mask = IMX6SX_GPR2_MQS_SW_RST_MASK,
++	.rst_shift = IMX6SX_GPR2_MQS_SW_RST_SHIFT,
++	.osr_mask  = IMX6SX_GPR2_MQS_OVERSAMPLE_MASK,
++	.osr_shift = IMX6SX_GPR2_MQS_OVERSAMPLE_SHIFT,
++	.div_mask  = IMX6SX_GPR2_MQS_CLK_DIV_MASK,
++	.div_shift = IMX6SX_GPR2_MQS_CLK_DIV_SHIFT,
++};
++
+ static const struct of_device_id fsl_mqs_dt_ids[] = {
+-	{ .compatible = "fsl,imx8qm-mqs", },
+-	{ .compatible = "fsl,imx6sx-mqs", },
++	{ .compatible = "fsl,imx8qm-mqs", .data = &fsl_mqs_imx8qm_data },
++	{ .compatible = "fsl,imx6sx-mqs", .data = &fsl_mqs_imx6sx_data },
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(of, fsl_mqs_dt_ids);
+-- 
+2.17.1
 
