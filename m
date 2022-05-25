@@ -2,144 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9DAFC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 19:52:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 323EEC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 19:52:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344789AbiEYTw3 convert rfc822-to-8bit (ORCPT
+        id S1344785AbiEYTwq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 15:52:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48468 "EHLO
+        Wed, 25 May 2022 15:52:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241221AbiEYTwX (ORCPT
+        with ESMTP id S239643AbiEYTw2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 15:52:23 -0400
-X-Greylist: delayed 1200 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 25 May 2022 12:52:22 PDT
-Received: from protestant.ebb.org (protestant.ebb.org [50.56.179.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D08D630B;
+        Wed, 25 May 2022 15:52:28 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B4F3113F15
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 12:52:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653508345;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=MoWVBq/Srp3PM5Qk/nZzvo63HOw5jDODOMMJjoSaqDU=;
+        b=XIogzBMRNbL7IAItWb489/xhAY/DRfpWOgXH2PzBzsq30Dp/YUJcRHk3zdoJUgTXFywNnx
+        aF5Rca5WaV3Q0ldCe1MP+/eXfxs+NGAhlipZPZc1CwebkapbC1ZYLjehscCZq46d95DKyP
+        4FNTQDMMOw7ER1vJBgKlGBQdYxQbPgs=
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com
+ [209.85.166.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-378-mAT3p7_lO1mqkSQ4BefgLw-1; Wed, 25 May 2022 15:52:24 -0400
+X-MC-Unique: mAT3p7_lO1mqkSQ4BefgLw-1
+Received: by mail-il1-f197.google.com with SMTP id p12-20020a056e02144c00b002d196a4d73eso7301006ilo.18
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 12:52:24 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MoWVBq/Srp3PM5Qk/nZzvo63HOw5jDODOMMJjoSaqDU=;
+        b=f2Tcxw19sSEraA4VXD7dzYeaKfBc/mvPyvQtTAbKEdls4DqymFgSy3WM33JHl+iNWn
+         TBtELcLABHPuU9nZldmh9+5zkXGBntci/eVlbjXTyHJmJV/bViBLNbSivjL8E9PFzWhw
+         mlOBfJYPXkZJzkokXnB9wPOnAK+1qEV+7HMatPW9CVW/gpb5HeFx/9svu16G8hEIc9IV
+         RZ0m85DGYG2MsnxutYDasNs3gjCL4hSAGcQuW6UK8qtjrMsuWalTSfZGe5atN0NhaJv0
+         Jq4s4MTzECjQ+sjjqIltKxaaP6mhCJJaaRLcSgeuXFJLXLnJdIfdnoJrJ0xqtAuG5Xp3
+         KkzQ==
+X-Gm-Message-State: AOAM5304svxPFQCdX7uaQWaR0sxhu890aO4X6pmi68+rFwXuAHXQpmOu
+        SLoGbyldi8glz8WcBZZPNrLufIcgMU1EXryceOKBJ/pK7lVXPXz+iBGup/B+OrrG7rLJuHI7+My
+        RbX3xuQIPdvnAkbHYJTFEXfNPp4l1eByAXMc81eXJzAbLeX3od1jCBI1VW3Vnb7s70Y1ueCjffg
+        ==
+X-Received: by 2002:a05:6602:29ce:b0:609:4f60:59cb with SMTP id z14-20020a05660229ce00b006094f6059cbmr15759286ioq.183.1653508343121;
+        Wed, 25 May 2022 12:52:23 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJy9bqdjvCpdaS834IY1vu+Cs+k6e6lxk4WTcV42PxlupTWCvf9TA9JPzqBYXGpZnofQU3rNkQ==
+X-Received: by 2002:a05:6602:29ce:b0:609:4f60:59cb with SMTP id z14-20020a05660229ce00b006094f6059cbmr15759276ioq.183.1653508342846;
         Wed, 25 May 2022 12:52:22 -0700 (PDT)
-Received: from localhost (unknown [216.161.86.18])
-        (Authenticated sender: bkuhn)
-        by protestant.ebb.org (Postfix) with ESMTPSA id 9D99C820B4;
-        Wed, 25 May 2022 12:14:38 -0700 (PDT)
-From:   "Bradley M. Kuhn" <bkuhn@ebb.org>
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        copyleft-next@lists.fedorahosted.org
-Cc:     Luis Chamberlain <mcgrof@kernel.org>, tj@kernel.org,
-        gregkh@linuxfoundation.org, akpm@linux-foundation.org,
-        jeyu@kernel.org, shuah@kernel.org, bvanassche@acm.org,
-        dan.j.williams@intel.com, joe@perches.com, keescook@chromium.org,
-        rostedt@goodmis.org, minchan@kernel.org,
-        linux-spdx@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Goldwyn Rodrigues <rgoldwyn@suse.com>,
-        Kuno Woudt <kuno@frob.nl>,
-        Richard Fontana <fontana@sharpeleven.org>,
-        Ciaran Farrell <Ciaran.Farrell@suse.com>,
-        Christopher De Nicolo <Christopher.DeNicolo@suse.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Thorsten Leemhuis <linux@leemhuis.info>
-Subject: Re: [PATCH v9 1/6] LICENSES: Add the copyleft-next-0.3.1 license
-Organization: Opinions expressed in this email are my own and are not necessarily those of any organization with which I have an affiliation.
-References: <20211029184500.2821444-1-mcgrof@kernel.org>
-        <20211029184500.2821444-2-mcgrof@kernel.org> <87h75g0xbm.ffs@tglx>
-Face:   iVBORw0KGgoAAAANSUhEUgAAADAAAAAwBAMAAAClLOS0AAAABGdBTUEAALGPC/xhBQAAABVQ
- TFRFAAAAWjotvpiH/PHt27Sj7sq8lXFeBchlBgAAAAFiS0dEAIgFHUgAAAAJcEhZcwAACxMAAAsT
- AQCanBgAAAAHdElNRQfiCx4VFw6omMmeAAACAklEQVQ4y43UPZPbIBAGYGdu0puzQ51bI+qMdXId
- r0F1RoLrwfb+/5+QF307VVR4PDxiF14h7Xa7t3q8LJGjavj7a1euCYiZnaPnv9DF4FyMLKdXOPs4
- XM7KKzzKaF83gem+hUuF8QYUg7Fb4LEQAK1OG3hu4bbC3LpUC87+B9AMfQOg0yv0owEOK4x1+gnu
- M3yaV3jOMGxvKoXEKC9gAoabJtZYlXO8wJcb1hMHQClZgSj7cbzsY4a2vSqltIlz8nMpZnMkEmVw
- N4DtcYJo3AMPXFIMRMax/BjhOxZi2CpKKpWSZCd4C8aZ4CpzjR+Cint9WEp5H12IbbySEpHdaYVh
- OY9onf0Qq9//zDCFEW0MbFjUz7mHD1UdO4B3iErk9whdKdWVRuW5YLl5KnU2rjTBDyPmQImm5mec
- WQx7X3fBNwAzQ9kvBTKR0BwR3Bewhisn2mpkhea3BZwBcdorRlQk9QKecyZukRPeHTmuEL1FdjlJ
- tmTlvoAJPnRaMnKinNICn4QthNaKlNAlLae9sc5UODaelVh+l345u7ZMIY89GNdmWV8cIaTFlLGm
- QKLrzQykh/Aw02WsdoE2l1g7JIPdyWGFL6Hy1uJZsEjavLUXkVyeIdrbpPoXQHxDG0l68wEoW8vG
- BLI6qc2XoUEWCUI26aQfK1wypuwV7v6mtMhtgL8avOP/pBCiigAAAABJRU5ErkJggg==
-X-Disclaimer: Opinions expressed in this email are my own and are not necessarily those of any organization with which I have an affiliation.
-Date:   Wed, 25 May 2022 12:13:45 -0700
-In-Reply-To: <87h75g0xbm.ffs@tglx> (Thomas Gleixner's message of "Mon, 23 May
-        2022 23:10:37 +0200")
-Message-ID: <87y1yph1cm.fsf@ebb.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+Received: from localhost.localdomain (cpec09435e3e0ee-cmc09435e3e0ec.cpe.net.cable.rogers.com. [99.241.198.116])
+        by smtp.gmail.com with ESMTPSA id n25-20020a02a199000000b0032e31eeebc1sm4352021jah.170.2022.05.25.12.52.21
+        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
+        Wed, 25 May 2022 12:52:22 -0700 (PDT)
+From:   Peter Xu <peterx@redhat.com>
+To:     linux-kernel@vger.kernel.org, linux-mm@kvack.org
+Cc:     Andrew Morton <akpm@linux-foundation.org>, peterx@redhat.com,
+        Mike Kravetz <mike.kravetz@oracle.com>
+Subject: [PATCH] mm/x86: Remove dead code for hugetlbpage.c
+Date:   Wed, 25 May 2022 15:52:20 -0400
+Message-Id: <20220525195220.10241-1-peterx@redhat.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+Content-type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In answering Thomas' question …
+It seems to exist since the old times and never used once.  Remove them.
 
-Thomas Gleixner wrote at 14:10 (PDT) on Monday:
-> If I want to remove this option, then how do I express this with a SPDX
-> license identifier?
+Signed-off-by: Peter Xu <peterx@redhat.com>
+---
+ arch/x86/mm/hugetlbpage.c | 39 ---------------------------------------
+ 1 file changed, 39 deletions(-)
 
-… some licensing/SPDX background is in order.  (I apologize in advance for a
-few paragraphs of license-splaining, as I know that many on this thread know
-these points already, but I suspect most only have only vague familiarity
-with this issue.)
+diff --git a/arch/x86/mm/hugetlbpage.c b/arch/x86/mm/hugetlbpage.c
+index a0d023cb4292..509408da0da1 100644
+--- a/arch/x86/mm/hugetlbpage.c
++++ b/arch/x86/mm/hugetlbpage.c
+@@ -19,44 +19,6 @@
+ #include <asm/tlbflush.h>
+ #include <asm/elf.h>
+ 
+-#if 0	/* This is just for testing */
+-struct page *
+-follow_huge_addr(struct mm_struct *mm, unsigned long address, int write)
+-{
+-	unsigned long start = address;
+-	int length = 1;
+-	int nr;
+-	struct page *page;
+-	struct vm_area_struct *vma;
+-
+-	vma = find_vma(mm, addr);
+-	if (!vma || !is_vm_hugetlb_page(vma))
+-		return ERR_PTR(-EINVAL);
+-
+-	pte = huge_pte_offset(mm, address, vma_mmu_pagesize(vma));
+-
+-	/* hugetlb should be locked, and hence, prefaulted */
+-	WARN_ON(!pte || pte_none(*pte));
+-
+-	page = &pte_page(*pte)[vpfn % (HPAGE_SIZE/PAGE_SIZE)];
+-
+-	WARN_ON(!PageHead(page));
+-
+-	return page;
+-}
+-
+-int pmd_huge(pmd_t pmd)
+-{
+-	return 0;
+-}
+-
+-int pud_huge(pud_t pud)
+-{
+-	return 0;
+-}
+-
+-#else
+-
+ /*
+  * pmd_huge() returns 1 if @pmd is hugetlb related entry, that is normal
+  * hugetlb entry or non-present (migration or hwpoisoned) hugetlb entry.
+@@ -72,7 +34,6 @@ int pud_huge(pud_t pud)
+ {
+ 	return !!(pud_val(pud) & _PAGE_PSE);
+ }
+-#endif
+ 
+ #ifdef CONFIG_HUGETLB_PAGE
+ static unsigned long hugetlb_get_unmapped_area_bottomup(struct file *file,
+-- 
+2.32.0
 
-copyleft-next 0.3.1 reads:
->> +11. Later License Versions
->> +    The Copyleft-Next Project may release new versions of copyleft-next,
->> +    designated by a distinguishing version number ("Later Versions").
-
-Many don't realize that GPL is (or was, pre-copyleft-next) unique in
-structure among copyleft licenses in that the -or-later clause of all
-licenses in the GPL family is configurable.  That yields the complex forms
-of: GPLv1-only, GPLv1-or-later, GPLv2-only, GPLv2-or-later, etc.  GPLv3 even
-added the proxy upgrade clause (— a formulation SPDX can't handle at all).
-
-Other non-trivial FOSS licenses — such as Mozilla Public License (MPL),
-Common Development and Distribution License (CDDL), and Eclipse Public
-License (EPL) (as just three examples) — all have “automatic -or-later”.
-Thus, “MPLv2.0” *always* means “MPLv2.0-or-later”, so if you use the SPDX
-moniker for that (“MPL-2.0”), it really is akin to using “GPLv2-or-later”.
-Meanwhile, there is no *actual* way to license code under “MPLv2-only” — the
-license text itself prohibits it.
-
-All that's to say: the GPL has (historically) always been a huge FOSS
-licensing special-case because of the complex configurability of its
-“-or-later” clause.
-
-One of the last activities I did with SPDX (in late 2017) was to help
-negotiate a solution on reworking the GPL identifiers to deal with this
-special case.  The solution was a classic political compromise — where
-*everyone* left unhappy — but that's what led to the deprecation of SPDX's
-“GPL-2.0” identifier in favor of “GPL-2.0-or-later” and “GPL-2.0-only”.
-
-I wasn't involved with SPDX anymore when they (much later) created the
-identifier “copyleft-next-0.3.1” — but it appears it was a case of “those
-who forget the past is condemned to repeat it” — because copyleft-next's
-SPDX identifier indeed has a similarly confusing ambiguity to “GPL-2.0”:
-
-copyleft-next 0.3.1 text reads further:
->> +    Unless I explicitly remove the option of Distributing Covered Works
->> +    under Later Versions, You may Distribute Covered Works under any Later
->> +    Version.
-Thomas Gleixner noted about it at 14:10 (PDT) on Monday:
-> If I want to remove this option, then how do I express this with a SPDX
-> license identifier?  Sigh!
-
-So, this problem that Thomas notes above is definitely an error by the SPDX
-project, *just like* the one that exists for the deprecated “GPL-2.0”
-identifier.  But, that isn't copyleft-next's fault [0], nor Luis's fault.
-IMO, Luis shouldn't be punished (i.e., by being prohibited by the Linux
-project from licensing under the GPLv2-compatible terms of his choosing)
-simply because the SPDX project erred.
-
-Fortunately, the problem *is* hypothetical here because Luis has *not*
-indicated that he's licensing under “copyleft-next-0.3.1 REVOKING
-new-version-upgrade”, so it's not a problem for Luis' patch that SPDX offers
-no way to represent that licensing sub-option in copyleft-next.
-
-[0] Nevertheless, I am wondering, given that (a) opting-out-of-auto-upgrade is
-    *so* GPL-specific, and (b) the auto-upgrade opt out has caused decades
-    of pain and woe throughout the GPL-using community (and for SPDX!),
-    maybe copyleft-next should, in fact, drop that clause entirely in future
-    versions. Discussion of that is likely not of interest to most folks on
-    this wide thread, so I'll pick up that conversation more narrowly just
-    on the copyleft-next list from here …
-
- -- bkuhn
