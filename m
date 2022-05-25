@@ -2,238 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27239C43217
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 09:45:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02A80C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 09:45:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240747AbiEYJpZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 05:45:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58916 "EHLO
+        id S237713AbiEYJpa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 05:45:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236444AbiEYJor (ORCPT
+        with ESMTP id S241348AbiEYJor (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 25 May 2022 05:44:47 -0400
-Received: from wnew2-smtp.messagingengine.com (wnew2-smtp.messagingengine.com [64.147.123.27])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 817C964D3;
-        Wed, 25 May 2022 02:44:43 -0700 (PDT)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.west.internal (Postfix) with ESMTP id B141D2B05006;
-        Wed, 25 May 2022 05:44:38 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Wed, 25 May 2022 05:44:41 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm3; t=1653471878; x=1653479078; bh=ys3iQzhNHF
-        k+i8WtIf+H8WQ46WfOZFCztCK2dX/C9P0=; b=N/JRB+WnexRIZ9dX5PcEm/8f/H
-        cPBsMsbDuSTmVpILRSXnNlFoPgXwTnB9sG5c2CBpqvmmZti7TCvET1ygVyPq4fwA
-        fQ5OKTgoJNLZ2M0ZTBEABVgD9xQIGnhTbnxt6XkIAVCIzuLJXBs7WAGfC96irWbw
-        lr6953LnsKHvebopgcw5k3L/zNh8kVTad2/799qbT1ZNmy0HBuUmu2c1k8Ro/kCY
-        bvMC07VkU0pJwn8wysn6o8m1M2Ne1dICZCA2GfRKAkRG+uRlxyGobz3yN2r1jOok
-        pxntt2LaG8S5EYl12Kr5IDS1ImVsXzQyl8d4WYDx7OYzrJX/5YAypClUA6hQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; t=1653471878; x=1653479078; bh=ys3iQzhNHFk+i8WtIf+H8WQ46WfO
-        ZFCztCK2dX/C9P0=; b=XJwcQJysHomLv8q3I/a024YNpcHuA7CVVSfdAKLSNh3e
-        yCo6zETnKg3Mmiy6LoUaiq2nQu9FmR/S85oMTwF7btYoM842Xj+nV71rUSMChwSf
-        dqf2GI+aNWNs5ombF58vGOinb8gsdVPNIx+xirIXrd2MM5HTFxrTtiWm/87u7xJG
-        g2dLVRdU0LdTz2v5YPgzkl1T0mdMsa+3PlpXoMfDj0mFo5gdyV+0rNllM1Gs6YzH
-        v42Dafl6F/jY8Nx/xQNz9BWuJQwjez2vm5rfwevvrJNdAG3j0FQLxK/8UQJ0nJ0c
-        WDUETgLd5XsVCXp/jcUW6Bu92Nyy4tEdyF1vOAVWKg==
-X-ME-Sender: <xms:hfqNYq_j5GFf5Uz1mDgmLdV70fLnuq6aSKWevLqyWIawg4NmhGrHQg>
-    <xme:hfqNYqtHTkLzDuf9wZyjFbHZAlnHbcr-0YckTlhEp7Xi4YnN4O9Rj5_Rgh6byONs6
-    vUf5M6n4txqCdpV9vw>
-X-ME-Received: <xmr:hfqNYgB-vOJM3N79sWpwTBKgf_FqXdlgWKqgCm2OFJA94fiDo67jizwJV9YM_HUjfM0eagMIdOKEsmwTFs1RY076g0I827v4G1dOjck>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrjeehgddukecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvvefukfhfgggtuggjsehgtderredttddvnecuhfhrohhmpeforgigihhm
-    vgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecuggftrfgrth
-    htvghrnhepgfeuuedtfefgveevheejfeeghedvjeejfeehkeffudetuedtgfeiieeiffeu
-    tdffnecuffhomhgrihhnpegsohhothhlihhnrdgtohhmnecuvehluhhsthgvrhfuihiivg
-    eptdenucfrrghrrghmpehmrghilhhfrhhomhepmhgrgihimhgvsegtvghrnhhordhtvggt
-    hh
-X-ME-Proxy: <xmx:hfqNYicSWVCNxtPjO2OP-dTZTG5RnA-8HT0mTEUaKkDRVcwql_I2Ug>
-    <xmx:hfqNYvOIcwaM76cNjFwwp5PA3zMSONCG2MMRXEw6yETvTmp88gEfoQ>
-    <xmx:hfqNYsk9JgcQt1Fcfw7pvS3BYvWH_sfA1sMh1fLYGKJSYXOJnHLW1A>
-    <xmx:hvqNYpW3xzQCmkMOuNOuoVddp28C1T8FymU-PtWuCJdZO9MFWihypK9P9TQ>
-Feedback-ID: i8771445c:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 25 May 2022 05:44:36 -0400 (EDT)
-Date:   Wed, 25 May 2022 11:44:34 +0200
-From:   Maxime Ripard <maxime@cerno.tech>
-To:     Guillaume Ranquet <granquet@baylibre.com>
-Cc:     airlied@linux.ie, angelogioacchino.delregno@collabora.com,
-        chunfeng.yun@mediatek.com, chunkuang.hu@kernel.org,
-        ck.hu@mediatek.com, daniel@ffwll.ch, deller@gmx.de,
-        jitao.shi@mediatek.com, kishon@ti.com, krzk+dt@kernel.org,
-        maarten.lankhorst@linux.intel.com, matthias.bgg@gmail.com,
-        p.zabel@pengutronix.de, robh+dt@kernel.org, tzimmermann@suse.de,
-        vkoul@kernel.org, devicetree@vger.kernel.org,
-        dri-devel@lists.freedesktop.org,
-        linux-arm-kernel@lists.infradead.org, linux-fbdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-phy@lists.infradead.org, markyacoub@google.com,
-        Markus Schneider-Pargmann <msp@baylibre.com>,
-        kernel test robot <lkp@intel.com>
-Subject: Re: [PATCH v9 18/22] drm/mediatek: Add mt8195 Embedded DisplayPort
- driver
-Message-ID: <20220525094434.7qhycnobrmgiihuf@houat>
-References: <20220327223927.20848-1-granquet@baylibre.com>
- <20220327223927.20848-19-granquet@baylibre.com>
- <20220429083933.q3w75q3zuyyuvo4w@houat>
- <CABnWg9tzhZjrdKT4chkDrY-uH8BMUoxyNLUSwfuG6Sv1J+8ddg@mail.gmail.com>
- <20220512074446.ihilbbnbuwesxbbg@houat>
- <CABnWg9tHRc_7VZ1z6NeMEDfQvxam_xOimBnM=hzBUqkhzPOSCA@mail.gmail.com>
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam08on2076.outbound.protection.outlook.com [40.107.101.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89C62FD35;
+        Wed, 25 May 2022 02:44:42 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=EGwXzEIuSZRIUiCTZmYjGwX1uEHUXtCXadEOO53MlM7LrwYBSEKi6h5OjBSBS95k+EHf3tbGzWn/Y68v+uoxwUKufgVY6QdYvLSLxKuem1LhvStfil+o7MkZmjwDkyGYzDWA8o/xtaOObA1EzRlnGJR5iEajxIBxMuihPNCtmJw9UcLtgNsCfnqLQDcNC7KXU5MOXVVzuPt7KCwyoMfzTJKlNM/j9+M60kRa/g2MRCBFHblU356KKw8+CFBlSXLN9CqwE4tdC2aUn+y4t0lMo8RkSDvwfLHk8E7aTGYEnNyj/6X6AAMuXP+zV23N8eFjpREUWa9wwUnNguEYRXk7Jg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=cbvlHW0SmcPizpGbkDxSq1c/GhMxwfxf4uWB+qfxxaw=;
+ b=MtngoxfQhUKrHGKFDnQlBsPu5QnKUhMULy3eTqqfv0Bx+gugnDxFx2SEX2oAQCqwnZiG0t4+QoaRWp3u/ObdYg8rea50cKqfT5SfRirI4LQy3s0UzRMz8aZxSOqvz+HXVJoK7gLT+Avypqlj7lBhDAMT/1MHgZnZDSVlaxsIQKG782n5AsNde7JO2lKpLaBSjKzy33GtbMcpD8ceX7W6yWFAxYQeRwETby84WONRdE9rAkdtLCqZcb6pG50CVIKWRhhcv8nvz/4hrWKwATNQYVe7tH1a4zvjZKdGqJ3H5J5Af7zbnHUaYVHIR6P/zlAOmde2qYTCO8QH57MbLblo4Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=infradead.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=cbvlHW0SmcPizpGbkDxSq1c/GhMxwfxf4uWB+qfxxaw=;
+ b=H6/IXNrRWUxAk2z8rMywsa2oqwfxeuS+GZsWS8Q0q4Q0B8ywbLxlUIfbe9v4m/3y7ivUf1p9fY+PDne/M5iBYQ6IlxwfZeqD4nWyrJ/27e8e6MW5wYIjmvKFON1eAg4EXCsR05F4wNR9PCn6aFUdTO4zbAoV6gk8BdVgAq+tYec=
+Received: from MW4PR03CA0259.namprd03.prod.outlook.com (2603:10b6:303:b4::24)
+ by BL3PR12MB6380.namprd12.prod.outlook.com (2603:10b6:208:3b3::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.23; Wed, 25 May
+ 2022 09:44:39 +0000
+Received: from CO1NAM11FT019.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:b4:cafe::ac) by MW4PR03CA0259.outlook.office365.com
+ (2603:10b6:303:b4::24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.13 via Frontend
+ Transport; Wed, 25 May 2022 09:44:39 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ CO1NAM11FT019.mail.protection.outlook.com (10.13.175.57) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5293.13 via Frontend Transport; Wed, 25 May 2022 09:44:38 +0000
+Received: from BLR-5CG113396H.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 25 May
+ 2022 04:44:24 -0500
+From:   Ravi Bangoria <ravi.bangoria@amd.com>
+To:     <peterz@infradead.org>, <acme@kernel.org>
+CC:     <ravi.bangoria@amd.com>, <jolsa@kernel.org>, <namhyung@kernel.org>,
+        <eranian@google.com>, <irogers@google.com>, <jmario@redhat.com>,
+        <leo.yan@linaro.org>, <alisaidi@amazon.com>, <ak@linux.intel.com>,
+        <kan.liang@linux.intel.com>, <dave.hansen@linux.intel.com>,
+        <hpa@zytor.com>, <mingo@redhat.com>, <mark.rutland@arm.com>,
+        <alexander.shishkin@linux.intel.com>, <tglx@linutronix.de>,
+        <bp@alien8.de>, <x86@kernel.org>,
+        <linux-perf-users@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <sandipan.das@amd.com>, <ananth.narayan@amd.com>,
+        <kim.phillips@amd.com>, <santosh.shukla@amd.com>
+Subject: [PATCH 13/13] perf mem: Use more generic term for LFB
+Date:   Wed, 25 May 2022 15:09:38 +0530
+Message-ID: <20220525093938.4101-14-ravi.bangoria@amd.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220525093938.4101-1-ravi.bangoria@amd.com>
+References: <20220525093938.4101-1-ravi.bangoria@amd.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="frqxb4oy2hxaw6mk"
-Content-Disposition: inline
-In-Reply-To: <CABnWg9tHRc_7VZ1z6NeMEDfQvxam_xOimBnM=hzBUqkhzPOSCA@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: ea413e6f-4036-471a-b775-08da3e332fb4
+X-MS-TrafficTypeDiagnostic: BL3PR12MB6380:EE_
+X-Microsoft-Antispam-PRVS: <BL3PR12MB6380FA4C6A2947873613179AE0D69@BL3PR12MB6380.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Fv6C2JBh+VvVsQgUBh3zyuXZYdmh+uWjhKxL6BDYwpAp9wDkKJNCUKAj4OM/5FsqyCmK+SBhdldZJIhP5ZU3TV6OlQetQQBhFHLl0c0cfWHC5YHG04bZmbfOdeuDtrBvXbH15dtiysS9zUxECl6OPM8z5XyQ+OQdxtk+f1e1juyW6FRgNr5dXolLHHAEXRadk1ia2FiTRQom1OyhHC9bTfHoqAC0Xhq9e1gzAL9hIYjr6ACLfziKCNH0XBMjGlTywMke5MYQFLDOaoO3U+dKZJovDS5XAtnFDzYbJ97AeBJgQ2IL7UDZRWnrq5L5hHP3VgamoSC8fvGgMm8nX67iEwz6S2T2GEd+smIETF9iNCLN3SLCZCpH/PEguq0tLPZQi4vrkSGIw7h61KWYKYD7BVMtmtOjH7c8+vlkoVov1kj0LZE29DQSk/pkTxSV2VZS3CMgng3Ph6DQffW638tHH7oX8T8d0izEPzOIFboTyhqLS7bBZ1YIspyxWDArs1sNTVG60UNmfUqexbMsD4bHL/HPe9DrEi/HZiF4KX3zRLWnbSAbDm7Z31gnJXFXyd8igxT1wY097JYaV2eMbGoemPBvBOtgtFH6gTxjXQmJgEmknfQITPwt8RpJgrDnX3X8J4SIKFjwN2d+SzVzB1UUPaAXxAeuPY69Z0qvuu+cIsV4mcHC+/tC0PBOLLDzZIWSnWTByvpwnXMW+ytpuBHPR9vfFwtFs911UWQBE7mtWhY=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(186003)(82310400005)(5660300002)(8676002)(70586007)(40460700003)(83380400001)(86362001)(2616005)(16526019)(426003)(110136005)(47076005)(54906003)(8936002)(336012)(81166007)(7696005)(26005)(316002)(356005)(2906002)(44832011)(1076003)(70206006)(508600001)(36756003)(4326008)(36860700001)(7416002)(6666004)(41533002)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 May 2022 09:44:38.9098
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: ea413e6f-4036-471a-b775-08da3e332fb4
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT019.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL3PR12MB6380
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+A hw component to track outstanding L1 Data Cache misses is called
+LFB (Line Fill Buffer) on Intel and Arm. However similar component
+exists on other arch with different names, for ex, it's called MAB
+(Miss Address Buffer) on AMD. Replace LFB with generic name "Cache
+Fill Buffer".
 
---frqxb4oy2hxaw6mk
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Ravi Bangoria <ravi.bangoria@amd.com>
+---
+ tools/perf/util/mem-events.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-On Thu, May 19, 2022 at 09:26:59AM -0700, Guillaume Ranquet wrote:
-> On Thu, 12 May 2022 09:44, Maxime Ripard <maxime@cerno.tech> wrote:
-> >Hi,
-> >
-> >On Wed, May 11, 2022 at 05:59:13AM -0700, Guillaume Ranquet wrote:
-> >> >> +#include <drm/drm_atomic_helper.h>
-> >> >> +#include <drm/drm_bridge.h>
-> >> >> +#include <drm/drm_crtc.h>
-> >> >> +#include <drm/dp/drm_dp_helper.h>
-> >> >> +#include <drm/drm_edid.h>
-> >> >> +#include <drm/drm_of.h>
-> >> >> +#include <drm/drm_panel.h>
-> >> >> +#include <drm/drm_print.h>
-> >> >> +#include <drm/drm_probe_helper.h>
-> >> >> +#include <linux/arm-smccc.h>
-> >> >> +#include <linux/clk.h>
-> >> >> +#include <linux/delay.h>
-> >> >> +#include <linux/errno.h>
-> >> >> +#include <linux/kernel.h>
-> >> >> +#include <linux/mfd/syscon.h>
-> >> >> +#include <linux/nvmem-consumer.h>
-> >> >> +#include <linux/of.h>
-> >> >> +#include <linux/of_irq.h>
-> >> >> +#include <linux/of_platform.h>
-> >> >> +#include <linux/phy/phy.h>
-> >> >> +#include <linux/platform_device.h>
-> >> >> +#include <linux/pm_runtime.h>
-> >> >> +#include <linux/regmap.h>
-> >> >> +#include <sound/hdmi-codec.h>
-> >> >> +#include <video/videomode.h>
-> >> >> +
-> >> >> +#include "mtk_dp_reg.h"
-> >> >> +
-> >> >> +#define MTK_DP_AUX_WAIT_REPLY_COUNT 20
-> >> >> +#define MTK_DP_CHECK_SINK_CAP_TIMEOUT_COUNT 3
-> >> >> +
-> >> >> +//TODO: platform/device data or dts?
-> >> >
-> >> >DTS :)
-> >>
-> >> It's probably going to be a platform_data struct for v10...
-> >> If I have time, I'll change it to a dts property for v10.
-> >
-> >I can't really imagine a case where we would need platform_data
-> >nowadays. If you have a device tree, then it should be part of the
-> >binding.
-> >
-> >What issue would you like to address by using a platform_data?
-> >
->=20
-> Ok, I'll migrate to dt then. I didn't realize platform_data were deprecia=
-ted.
->=20
-> Angelo wants the MAX_LINRATE and MAX_LANES defines to be configurable.
-> I imagined platform_data would be more appropriate as (per my understandi=
-ng) the
-> limitation is associated with a specific SoC.
+diff --git a/tools/perf/util/mem-events.c b/tools/perf/util/mem-events.c
+index 415d754fea8d..e3b8e174ceb4 100644
+--- a/tools/perf/util/mem-events.c
++++ b/tools/perf/util/mem-events.c
+@@ -282,7 +282,7 @@ static const char * const mem_lvl[] = {
+ 	"HIT",
+ 	"MISS",
+ 	"L1",
+-	"LFB",
++	"Cache Fill Buffer",
+ 	"L2",
+ 	"L3",
+ 	"Local RAM",
+@@ -298,7 +298,7 @@ static const char * const mem_lvlnum[] = {
+ 	[PERF_MEM_LVLNUM_EXTN_MEM] = "Ext Mem",
+ 	[PERF_MEM_LVLNUM_IO] = "I/O",
+ 	[PERF_MEM_LVLNUM_ANY_CACHE] = "Any cache",
+-	[PERF_MEM_LVLNUM_LFB] = "LFB",
++	[PERF_MEM_LVLNUM_LFB] = "Cache Fill Buffer",
+ 	[PERF_MEM_LVLNUM_RAM] = "RAM",
+ 	[PERF_MEM_LVLNUM_PMEM] = "PMEM",
+ 	[PERF_MEM_LVLNUM_NA] = "N/A",
+-- 
+2.31.1
 
-The entire device tree is nothing but a collection of data associated to
-a specific SoC though :)
-
-> >> >> +static struct edid *mtk_dp_get_edid(struct drm_bridge *bridge,
-> >> >> +				    struct drm_connector *connector)
-> >> >> +{
-> >> >> +	struct mtk_dp *mtk_dp =3D mtk_dp_from_bridge(bridge);
-> >> >> +	bool enabled =3D mtk_dp->enabled;
-> >> >> +	struct edid *new_edid =3D NULL;
-> >> >> +
-> >> >> +	if (!enabled)
-> >> >> +		drm_bridge_chain_pre_enable(bridge);
-> >> >> +
-> >> >> +	drm_dp_dpcd_writeb(&mtk_dp->aux, DP_SET_POWER, DP_SET_POWER_D0);
-> >> >> +	usleep_range(2000, 5000);
-> >> >> +
-> >> >> +	if (mtk_dp_plug_state(mtk_dp))
-> >> >> +		new_edid =3D drm_get_edid(connector, &mtk_dp->aux.ddc);
-> >> >> +
-> >> >> +	if (!enabled)
-> >> >> +		drm_bridge_chain_post_disable(bridge);
-> >> >
-> >> >Are you sure we can't get a mode set while get_edid is called?
-> >> >
-> >> >If we can, then you could end up disabling the device while it's being
-> >> >powered on.
-> >>
-> >> I'm a bit unsure, I need to spend more time in the drm stack to make s=
-ure.
-> >> I'll get back to you when I have a definitive answer.
-> >
-> >So, it looks like it's ok.
-> >
-> >get_edid is your implementation of get_modes, which is called by
-> >drm_helper_probe_single_connector_modes
-> >
-> >https://elixir.bootlin.com/linux/latest/source/drivers/gpu/drm/drm_probe=
-_helper.c#L416
-> >
-> >This is the standard implemantion of fill_modes, which is called
-> >whenever the get_connector ioctl is called (or similar paths, like
-> >drm_client_modeset_probe)
-> >
-> >drm_helper_probe_single_connector_modes is under the assumption that the
-> >mode_config.mutex is held though, and that the big lock. So it should be
-> >serialized there.
-> >
-> >Just for future proofing though, it would be better to use refcounting
-> >there. Would runtime_pm work for you there?
-> >
->=20
-> Thx for looking into this for me.
-> Not sure runtime_pm works here as it would only refcount if compiled
-> with CONFIG_PM?
-
-It should be enabled in most configurations these days, and you can
-always depend on it in your Kconfig option.
-
-> I'd rather use the enabled field as a refcounter instead of a boolean.
-
-It's a bit more ad-hoc, but that would work too. Make sure to use a lock
-or atomic operations though
-
-Maxime
-
---frqxb4oy2hxaw6mk
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYo36ggAKCRDj7w1vZxhR
-xZ8uAQD4p9FP6n4HWaV/eeMy9XLCytn17FejCmxsGJ+BVRXkngEA7rKJQeM++TcT
-7XF+Ij2881A16a/1Cfs+sVBCS9T7/Ao=
-=cDEf
------END PGP SIGNATURE-----
-
---frqxb4oy2hxaw6mk--
