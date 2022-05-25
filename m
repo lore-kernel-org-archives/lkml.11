@@ -2,114 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92A19C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 15:49:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C66B0C43217
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 15:50:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239314AbiEYPto (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 11:49:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39644 "EHLO
+        id S245365AbiEYPuc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 11:50:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233279AbiEYPtj (ORCPT
+        with ESMTP id S245359AbiEYPuH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 11:49:39 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18A669BADD
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 08:49:38 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id k30so30688734wrd.5
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 08:49:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=UydJpbLrcWgMt1c84uBS/iZ7u4bglmQySLbHThAhvv8=;
-        b=QTIaIlC6V+Y2TEijOedrdXkH8QV+VA1NdYAe/JUsY/KqEV4KGfYALljT8Ye0foBG5B
-         dTA0i9pp7RX3unhE/gwPaK8q/pGfNpq6+LR1lyueCO//cqlXM0cUPJmzh1xXDxPC/LFl
-         M3SNs+wrvCsyVMvQKrpBq4lNQB/8AM1UX1Y5ejUxfM4CFfI9Fccnmm9M8s1bCJDzsgMk
-         7BZnK1FCAahe6Lajc3N5cR92/GbKUi8l8L02gryb7sQLkitwTt2LF/WxGkxN6BGjq6aV
-         HRF+JdZ6z14+N89qBM3euzQrkLxEOMRT02YFCOXK9yGxd11lFPzNj1pyO0nzO3hKlOOq
-         rEsA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=UydJpbLrcWgMt1c84uBS/iZ7u4bglmQySLbHThAhvv8=;
-        b=eYZ2qWKgmaGcMmMu0e+t9hhFKm64vkquM/Y6I9cSLnq19Opm/9BshUz+iuHGW3N5M1
-         4uq/ems0q/B456mPrCHsExPZDgLg2nMfBKa5ydehPMbVVCZtJldYR5Bn7XYDm846lVWJ
-         GS4H8ez2rM4T8a4Z2AimRAp30hnKdW1APWLHogjOrnap0Q6Dgk9w0edqZOdqVDEuIh3N
-         uIgMmmgHOJR9jNLq6Pnwa2wYluQs9ZWN+3Io0Dmj9f98xZBPfAAEdQR670Nd0nWAOPNc
-         J30fHv07D5FDv03hdJFgqc+5QX3wX0IJoq6j5NTWa/Ap8Xv9xKZwkXMQUOC7q7VpTc0S
-         PHeA==
-X-Gm-Message-State: AOAM5324Byhn4n14vUpo3kzCBLtzF8YYWfHpWPIy1lfoJvS7Bkp9UxKS
-        iIN4bV63pY8PWgVphOXyq3klFPUSq7bGDKb2YgRtTw==
-X-Google-Smtp-Source: ABdhPJxW3P7y/3hZmf3oJarDJb+f5mlGntOYXlpyGBbZxJl9sr6o1mQ35VINtAjKqesywtLHaI2VaL5MCQvFW0dkMfE=
-X-Received: by 2002:a05:6000:1f89:b0:20e:5db3:febf with SMTP id
- bw9-20020a0560001f8900b0020e5db3febfmr27632896wrb.685.1653493776647; Wed, 25
- May 2022 08:49:36 -0700 (PDT)
+        Wed, 25 May 2022 11:50:07 -0400
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24673AE250
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 08:50:04 -0700 (PDT)
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+        by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20220525155002euoutp0234a16e4d8cc1b14941675c37f0bca9a8~yY9o4_doe0354103541euoutp02E
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 15:50:02 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20220525155002euoutp0234a16e4d8cc1b14941675c37f0bca9a8~yY9o4_doe0354103541euoutp02E
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1653493802;
+        bh=2eQZ6kViMFen5Vvv5WDxkU+VSeYRgwNz1guBAQ1Xbgw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=a4r22eAsBHe0iH2u5aBM3JQS6HB6jwgo0YmhQutxHjmR0UiiixutGSD3ld4doRe9R
+         PhqWlf3u88fSy7EPZ9iDrGHa+lyQ6/wNv2nidmXvUB/rqbKJslfjzCsxyinTbObUbm
+         YpzULJXwsfpNVjOI3Us03oUecMShlROSIAcH65es=
+Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
+        eucas1p2.samsung.com (KnoxPortal) with ESMTP id
+        20220525155000eucas1p216752d9914ca37a7d223bef39c8fb758~yY9nXTACK0700607006eucas1p2H;
+        Wed, 25 May 2022 15:50:00 +0000 (GMT)
+Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
+        eusmges3new.samsung.com (EUCPMTA) with SMTP id A9.FF.10260.8205E826; Wed, 25
+        May 2022 16:50:00 +0100 (BST)
+Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
+        eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+        20220525155000eucas1p200ac7e1c844980e728c9e88f51c4590e~yY9m7pDL80700607006eucas1p2G;
+        Wed, 25 May 2022 15:50:00 +0000 (GMT)
+Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
+        eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20220525154959eusmtrp232e421c63a06da32f789c1209bc5a763~yY9m62BF90177001770eusmtrp2W;
+        Wed, 25 May 2022 15:49:59 +0000 (GMT)
+X-AuditID: cbfec7f5-bddff70000002814-d0-628e502837bc
+Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
+        eusmgms2.samsung.com (EUCPMTA) with SMTP id DC.8E.09404.7205E826; Wed, 25
+        May 2022 16:49:59 +0100 (BST)
+Received: from localhost (unknown [106.210.248.20]) by eusmtip1.samsung.com
+        (KnoxPortal) with ESMTPA id
+        20220525154959eusmtip1b8cca573c1722645da3df92c140f2a0b~yY9mnZb3k1782817828eusmtip1W;
+        Wed, 25 May 2022 15:49:59 +0000 (GMT)
+From:   Pankaj Raghav <p.raghav@samsung.com>
+To:     axboe@kernel.dk, damien.lemoal@opensource.wdc.com,
+        snitzer@redhat.com, Johannes.Thumshirn@wdc.com, hch@lst.de,
+        hare@suse.de
+Cc:     dsterba@suse.com, dm-devel@redhat.com, jiangbo.365@bytedance.com,
+        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-nvme@lists.infradead.org, jaegeuk@kernel.org,
+        gost.dev@samsung.com, Pankaj Raghav <p.raghav@samsung.com>,
+        Luis Chamberlain <mcgrof@kernel.org>
+Subject: [PATCH v6 1/8] block: make blkdev_nr_zones and blk_queue_zone_no
+ generic for npo2 zsze
+Date:   Wed, 25 May 2022 17:49:50 +0200
+Message-Id: <20220525154957.393656-2-p.raghav@samsung.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220525154957.393656-1-p.raghav@samsung.com>
 MIME-Version: 1.0
-References: <20220406233648.21644-1-brad@pensando.io> <20220406233648.21644-4-brad@pensando.io>
- <888c0f62-7845-715e-12a1-7b16f84d2ae9@linaro.org>
-In-Reply-To: <888c0f62-7845-715e-12a1-7b16f84d2ae9@linaro.org>
-From:   Brad Larson <brad@pensando.io>
-Date:   Wed, 25 May 2022 08:49:25 -0700
-Message-ID: <CAK9rFnyUwdqcpn0y7h-S1DbXDG3QOw+kaBBKPq=4wVHDvznzBg@mail.gmail.com>
-Subject: Re: [PATCH 03/11] dt-bindings: mmc: Add Pensando Elba SoC binding
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Mark Brown <broonie@kernel.org>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Olof Johansson <olof@lixom.net>,
-        David Clear <dac2@pensando.io>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        linux-spi <linux-spi@vger.kernel.org>,
-        linux-mmc <linux-mmc@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrFKsWRmVeSWpSXmKPExsWy7djP87oaAX1JBhemSlisvtvPZvH77Hlm
+        i73vZrNaXPjRyGRx88BOJos9iyYxWaxcfZTJ4sn6WcwWPQc+sFj87brHZLH3lrbF5V1z2Czm
+        L3vKbnFjwlNGi89LW9gt2jZ+ZXQQ8Ph3Yg2bx+WzpR6bVnWyeWxeUu+x+2YDm8fO1vusHu/3
+        XWXz6NuyitFj/ZarLB6bT1d7fN4k59F+oJspgCeKyyYlNSezLLVI3y6BK2PaibnsBZNEKl5N
+        3sXYwPhQoIuRg0NCwETizJ6MLkYuDiGBFYwSi57sZuxi5ARyvjBK/G1ThUh8ZpRoeTWdFSQB
+        0jC59QkzRGI5o0TDil42COcFo0TX7AlMIGPZBLQkGjvZQeIiAo2MElNfnmAEcZgFZjNJzPs2
+        GWyHsECiRG/PHTYQm0VAVeLZm7usIM28AlYS+w5LQmyTl5h56Ts7iM0pYC0xf/9nZhCbV0BQ
+        4uTMJywgNjNQTfPW2WAXSQis55Q4er+DDaLZRWLpiddQtrDEq+Nb2CFsGYn/O+czQdjVEk9v
+        /IZqbmGU6N+5ng0SMNYSfWdyQExmAU2J9bv0IcodJR4//soOUcEnceOtIMQJfBKTtk1nhgjz
+        SnS0CUFUK0ns/PkEaqmExOWmOSwQJR4SW29bTGBUnIXkl1lIfpmFsHYBI/MqRvHU0uLc9NRi
+        47zUcr3ixNzi0rx0veT83E2MwOR3+t/xrzsYV7z6qHeIkYmD8RCjBAezkgjvhae9SUK8KYmV
+        ValF+fFFpTmpxYcYpTlYlMR5kzM3JAoJpCeWpGanphakFsFkmTg4pRqYkm9OKTvtfMh83uqA
+        XfP8nF47HhCbJC3U4RZw5MviGLmptnZc7uKBJ9N/5Z41/ykSvmFhi9nT+OjDSRLZLDsEFt1/
+        ke/cv3n/08L7ces6JrAdXRp4y6EjTPaTaMNCUw9lj6xLD45sE/5b8nJKlOSF8hNPpilf98s3
+        cTgcMyOkPVgkNIt76y+hrIfrHjOdOrVWNb9NmvHnipMBszytPNRNFjfN8zqjINfn9yRcw5tv
+        2mGlgCn/1q/iTOtfLr5D+5LCzfu9ggyBpXP4ZJktv6arNk2wkFdYVyOjeG3yiSXHQvpNjdcU
+        71nEs/FEokSYwhJOBmalt89Ye5465e868cqZ5/cy9sQL8zqUb364ZjhLiaU4I9FQi7moOBEA
+        QhWHGu0DAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrFIsWRmVeSWpSXmKPExsVy+t/xu7rqAX1JBse+WVisvtvPZvH77Hlm
+        i73vZrNaXPjRyGRx88BOJos9iyYxWaxcfZTJ4sn6WcwWPQc+sFj87brHZLH3lrbF5V1z2Czm
+        L3vKbnFjwlNGi89LW9gt2jZ+ZXQQ8Ph3Yg2bx+WzpR6bVnWyeWxeUu+x+2YDm8fO1vusHu/3
+        XWXz6NuyitFj/ZarLB6bT1d7fN4k59F+oJspgCdKz6Yov7QkVSEjv7jEVina0MJIz9DSQs/I
+        xFLP0Ng81srIVEnfziYlNSezLLVI3y5BL2PaibnsBZNEKl5N3sXYwPhQoIuRk0NCwERicusT
+        ZhBbSGApo0TDLy2IuITE7YVNjBC2sMSfa11sXYxcQDXPGCUOzdvF1MXIwcEmoCXR2MkOEhcR
+        6GSUmLOvFcxhFljOJPH80yJmkCJhgXiJ9df0QAaxCKhKPHtzlxUkzCtgJbHvsCTEfHmJmZe+
+        s4PYnALWEvP3f4a6x0ri652vrCA2r4CgxMmZT1hAbGag+uats5knMArMQpKahSS1gJFpFaNI
+        amlxbnpusZFecWJucWleul5yfu4mRmCkbjv2c8sOxpWvPuodYmTiYDzEKMHBrCTCe+Fpb5IQ
+        b0piZVVqUX58UWlOavEhRlOgsycyS4km5wNTRV5JvKGZgamhiZmlgamlmbGSOK9nQUeikEB6
+        YklqdmpqQWoRTB8TB6dUA1PkhHXz4zKaVu72PXKjsvWD+uuOJKXKq0Z8VmEee9zfvpbiTdKT
+        MpIqvyG85oSV4lW163f2z+ee4FHz7dRsnRbeG18DnZZJSm5R4mZ3K5acdUT7qvjyz+ZL4k5f
+        Zf2qVMb24bXB7Yum2ryBzec3MD1Y2pN2s+8a44XVl0ymhfLqLJzmudjxdMo51szLq0/3t8xa
+        YRTp/Nlgiv65ivc37x1wqZ0rxLyotTIlUDo1yC03XsNRUN9s0orMU3Lzfyq0tVX1r2thvLR6
+        WvnUR6XP7jd5fmZ9fWw+5x+b+GsebV8PvChsPrxJ/Xf8Jke76u93K+0/Z4c/n9kePvN/8Zc7
+        N/mzTN9EPQy69f/kx0cGYRuUWIozEg21mIuKEwGfZguQXQMAAA==
+X-CMS-MailID: 20220525155000eucas1p200ac7e1c844980e728c9e88f51c4590e
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20220525155000eucas1p200ac7e1c844980e728c9e88f51c4590e
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20220525155000eucas1p200ac7e1c844980e728c9e88f51c4590e
+References: <20220525154957.393656-1-p.raghav@samsung.com>
+        <CGME20220525155000eucas1p200ac7e1c844980e728c9e88f51c4590e@eucas1p2.samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Krzysztof,
+Adapt blkdev_nr_zones and blk_queue_zone_no function so that it can
+also work for non-power-of-2 zone sizes.
 
-On Thu, Apr 7, 2022 at 11:57 AM Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
->
-> On 07/04/2022 01:36, Brad Larson wrote:
-> >
-> > --- a/Documentation/devicetree/bindings/mmc/cdns,sdhci.yaml
-> > +++ b/Documentation/devicetree/bindings/mmc/cdns,sdhci.yaml
-> > @@ -19,10 +19,12 @@ properties:
-> >        - enum:
-> >            - microchip,mpfs-sd4hc
-> >            - socionext,uniphier-sd4hc
-> > +          - pensando,elba-sd4hc
->
-> Put your entry in alphabetical order.
+As the existing deployments of zoned devices had power-of-2
+assumption, power-of-2 optimized calculation is kept for those devices.
 
-Yes, will order alphabetical.
+There are no direct hot paths modified and the changes just
+introduce one new branch per call.
 
-> >        - const: cdns,sd4hc
-> >
-> >    reg:
-> > -    maxItems: 1
-> > +    minItems: 1
-> > +    maxItems: 2
->
-> This needs allOf:if:then: which sets constraint on number of items per
-> different compatible.
->
-> >
-> >    interrupts:
-> >      maxItems: 1
+Reviewed-by: Luis Chamberlain <mcgrof@kernel.org>
+Reviewed by: Adam Manzanares <a.manzanares@samsung.com>
+Reviewed-by: Hannes Reinecke <hare@suse.de>
+Signed-off-by: Pankaj Raghav <p.raghav@samsung.com>
+---
+ block/blk-zoned.c      | 12 +++++++++---
+ include/linux/blkdev.h |  8 +++++++-
+ 2 files changed, 16 insertions(+), 4 deletions(-)
 
-Thanks for the recommendation.  Changing to this approach as the
-second item is only for Elba SoC.
+diff --git a/block/blk-zoned.c b/block/blk-zoned.c
+index 38cd840d8838..8b0615287cd3 100644
+--- a/block/blk-zoned.c
++++ b/block/blk-zoned.c
+@@ -111,16 +111,22 @@ EXPORT_SYMBOL_GPL(__blk_req_zone_write_unlock);
+  * blkdev_nr_zones - Get number of zones
+  * @disk:	Target gendisk
+  *
+- * Return the total number of zones of a zoned block device.  For a block
+- * device without zone capabilities, the number of zones is always 0.
++ * Return the total number of zones of a zoned block device, including the
++ * eventual small last zone if present. For a block device without zone
++ * capabilities, the number of zones is always 0.
+  */
+ unsigned int blkdev_nr_zones(struct gendisk *disk)
+ {
+ 	sector_t zone_sectors = blk_queue_zone_sectors(disk->queue);
++	sector_t capacity = get_capacity(disk);
+ 
+ 	if (!blk_queue_is_zoned(disk->queue))
+ 		return 0;
+-	return (get_capacity(disk) + zone_sectors - 1) >> ilog2(zone_sectors);
++
++	if (is_power_of_2(zone_sectors))
++		return (capacity + zone_sectors - 1) >> ilog2(zone_sectors);
++
++	return DIV_ROUND_UP_SECTOR_T(capacity, zone_sectors);
+ }
+ EXPORT_SYMBOL_GPL(blkdev_nr_zones);
+ 
+diff --git a/include/linux/blkdev.h b/include/linux/blkdev.h
+index 60d016138997..c4e4c7071b7b 100644
+--- a/include/linux/blkdev.h
++++ b/include/linux/blkdev.h
+@@ -665,9 +665,15 @@ static inline unsigned int blk_queue_nr_zones(struct request_queue *q)
+ static inline unsigned int blk_queue_zone_no(struct request_queue *q,
+ 					     sector_t sector)
+ {
++	sector_t zone_sectors = blk_queue_zone_sectors(q);
++
+ 	if (!blk_queue_is_zoned(q))
+ 		return 0;
+-	return sector >> ilog2(q->limits.chunk_sectors);
++
++	if (is_power_of_2(zone_sectors))
++		return sector >> ilog2(zone_sectors);
++
++	return div64_u64(sector, zone_sectors);
+ }
+ 
+ static inline bool blk_queue_zone_is_seq(struct request_queue *q,
+-- 
+2.25.1
 
-Regards,
-Brad
