@@ -2,77 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD8CBC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 11:58:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28830C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 11:59:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235016AbiEYL6o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 07:58:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37932 "EHLO
+        id S236837AbiEYL7S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 07:59:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229841AbiEYL6m (ORCPT
+        with ESMTP id S229841AbiEYL7P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 07:58:42 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26AEB65CE
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 04:58:41 -0700 (PDT)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.56])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4L7V105rdZz1JCCt;
-        Wed, 25 May 2022 19:57:08 +0800 (CST)
-Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 25 May 2022 19:58:39 +0800
-Received: from localhost.localdomain.localdomain (10.175.113.25) by
- dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 25 May 2022 19:58:38 +0800
-From:   Kefeng Wang <wangkefeng.wang@huawei.com>
-To:     Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        Alexander Potapenko <glider@google.com>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Vincenzo Frascino <vincenzo.frascino@arm.com>,
-        <kasan-dev@googlegroups.com>, <linux-mm@kvack.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Andrew Morton <akpm@linux-foundation.org>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>
-Subject: [PATCH] mm: kasan: Fix input of vmalloc_to_page()
-Date:   Wed, 25 May 2022 20:08:04 +0800
-Message-ID: <20220525120804.38155-1-wangkefeng.wang@huawei.com>
-X-Mailer: git-send-email 2.35.3
+        Wed, 25 May 2022 07:59:15 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD3027649
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 04:59:14 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id ds11so19539373pjb.0
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 04:59:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=bBzKMMaiGL+EGEsjuc4MBX5f/qXIyEgcNNQtA6G0IvA=;
+        b=W7qA8nhtY4E/Qs4zv/J+F2PtRVpVlxLTKZVl2y60rx5UXgTH2ir4JJQ4cbSwj/ka4Z
+         rO3CyrijViPOhV/36HeqmSVxnym2O37IK10d0zhVBpBzZHKacaXQx1+fndmIU+betlvC
+         iw6iu8+QfLGop+S1pacmy1CzRbKaSavv6qIFG+iLzCi0XSIRqXbUP+gXyGp+lVF+z14F
+         36mEXTSjCD48u0oeV8RJ8CZcOVFWI6ZF3GLUHy9XoSh8gGflwQ04Uzb8TH2aqfQtcVHZ
+         VpUMdEQbdzBoZSc/35me/V6E0Lm1H1LFQFBqhXSgfPRuNT5CutAP7Z35vIBGkL+FLptM
+         UD3A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=bBzKMMaiGL+EGEsjuc4MBX5f/qXIyEgcNNQtA6G0IvA=;
+        b=5w2c6dfq3a1r5bFekrOc3TOrcLJA/r0chKb+j7cdVe4hP+sUgr/Z9xpZj/nBGnWQgW
+         umA7sYk0XltBlMIq/Qk/d/MvL+waQZ48jSPc8RoN0R5JEHfK1cNr0Le1pGQim9dZ/ioj
+         GORZkE4Wd8qOWpNppLspAdYNmVPxC6wifZJZzBx5poSuizs8GIg4oPcckk0uQp+Dqzlq
+         T3tcQnKpe/PL23U5hrwFu6OWPxHISuLe8RhPI4+zyKHBtcA+SRM5JPQzqAo1zcBaoAyu
+         WrztpeYR+3kPDt8cRPpOhqe5ORNwTbQoWQc9EA7oPDlLe/SJgwGM2B67Lckkqa5ftAjc
+         d9zw==
+X-Gm-Message-State: AOAM530qa2yoyxSAGBJHrAdWpUmy2qk4aqIjXT+2NoH6Zrw18UZzcZyy
+        JHpp6zY/p6VYazAgROunQP7rqQ==
+X-Google-Smtp-Source: ABdhPJxeRiRhJV7jRC/kDWa0f137Mc2dpQgBTgEXJ4ruDmxrqVeRSF0WsLz70rU8W/p4GmkxSZaWfw==
+X-Received: by 2002:a17:90a:1b4a:b0:1e0:a104:b730 with SMTP id q68-20020a17090a1b4a00b001e0a104b730mr4353940pjq.160.1653479954347;
+        Wed, 25 May 2022 04:59:14 -0700 (PDT)
+Received: from localhost ([139.177.225.238])
+        by smtp.gmail.com with ESMTPSA id e15-20020a17090a4a0f00b001cd4989fed3sm1424770pjh.31.2022.05.25.04.59.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 25 May 2022 04:59:13 -0700 (PDT)
+Date:   Wed, 25 May 2022 19:59:09 +0800
+From:   Muchun Song <songmuchun@bytedance.com>
+To:     Johannes Weiner <hannes@cmpxchg.org>
+Cc:     mhocko@kernel.org, roman.gushchin@linux.dev, shakeelb@google.com,
+        cgroups@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, duanxiongchun@bytedance.com,
+        longman@redhat.com
+Subject: Re: [PATCH v4 10/11] mm: lru: add VM_BUG_ON_FOLIO to lru maintenance
+ function
+Message-ID: <Yo4aDaiADXqFnbk8@FVFYT0MHHV2J.usts.net>
+References: <20220524060551.80037-1-songmuchun@bytedance.com>
+ <20220524060551.80037-11-songmuchun@bytedance.com>
+ <Yo01ghDEu4KcYKpH@cmpxchg.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.113.25]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemm500001.china.huawei.com (7.185.36.107)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yo01ghDEu4KcYKpH@cmpxchg.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When print virtual mapping info for vmalloc address, it should pass
-the addr not page, fix it.
+On Tue, May 24, 2022 at 03:44:02PM -0400, Johannes Weiner wrote:
+> On Tue, May 24, 2022 at 02:05:50PM +0800, Muchun Song wrote:
+> > We need to make sure that the page is deleted from or added to the
+> > correct lruvec list. So add a VM_BUG_ON_FOLIO() to catch invalid
+> > users.
+> > 
+> > Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+> 
+> Makes sense, but please use VM_WARN_ON_ONCE_FOLIO() so the machine can
+> continue limping along for extracting debug information.
+>
 
-Fixes: c056a364e954 ("kasan: print virtual mapping info in reports")
-Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
----
- mm/kasan/report.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Make sense. Will do.
 
-diff --git a/mm/kasan/report.c b/mm/kasan/report.c
-index 199d77cce21a..b341a191651d 100644
---- a/mm/kasan/report.c
-+++ b/mm/kasan/report.c
-@@ -347,7 +347,7 @@ static void print_address_description(void *addr, u8 tag)
- 			       va->addr, va->addr + va->size, va->caller);
- 			pr_err("\n");
- 
--			page = vmalloc_to_page(page);
-+			page = vmalloc_to_page(addr);
- 		}
- 	}
- 
--- 
-2.35.3
-
+Thanks. 
