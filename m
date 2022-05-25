@@ -2,94 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26CBDC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 09:34:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFCAEC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 09:35:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235157AbiEYJe0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 05:34:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43442 "EHLO
+        id S235889AbiEYJf0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 05:35:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230165AbiEYJeW (ORCPT
+        with ESMTP id S230165AbiEYJfY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 05:34:22 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B28218A326;
-        Wed, 25 May 2022 02:34:20 -0700 (PDT)
-Date:   Wed, 25 May 2022 11:34:16 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1653471258;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=3BDuC1M83okFLvS1+Asx6My6EAgtEJl/fGn/qK8yy/g=;
-        b=OGX1WV45bkvE5/HLctakku/QnFGGlxFmrDE89NZh2h/+AgW3yKIMbGkk0+oaILwP+fEEfL
-        ss4sCljtOrbb0tBkvaueEOnKZHvo/uxNAeMwyVHG0fkM3R2pZuQ79wBw4ywsuCD1jyEL71
-        mVPnujD4GT80b7ZoWy7KZjQo+G1taafoMb8KObT0PBSIdu6wNnBiNYge0U11LN04fs3Onh
-        qhXvoSxivTj+mC8kX2GZrEnZj0wjbwEb9KMbs8ANyzYSSaVtcyA6cJ/kFppswPIr3CTMpw
-        fX5yX8DEXP6kk9ezmd/jIdcnyMZ+qxpKwCMO2jb0D05KrIabjjWy0/rzQ9t4yw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1653471258;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=3BDuC1M83okFLvS1+Asx6My6EAgtEJl/fGn/qK8yy/g=;
-        b=ezgKY9Z5IoxbTrMK1PmZCuUtUK2dBS8xPqNlDTOSSY7eKcDOeP75DkrhUHFHje1x44zL3I
-        pvTxMSjSobVHDBCg==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     Ira Weiny <ira.weiny@intel.com>
-Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        Peter Collingbourne <pcc@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>, linux-kernel@vger.kernel.org,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-        outreachy@lists.linux.dev,
-        "Acked-by : Mike Rapoport" <rppt@linux.ibm.com>
-Subject: Re: [PATCH v2 1/4] mm/highmem: Fix kernel-doc warnings in highmem*.h
-Message-ID: <Yo34GGK62yVkPzZy@linutronix.de>
-References: <20220425162400.11334-1-fmdefrancesco@gmail.com>
- <20220425162400.11334-2-fmdefrancesco@gmail.com>
- <YmeYzKT8Ikq5SfdE@linutronix.de>
- <YmwLXvtSgl2BA2mC@iweiny-desk3>
+        Wed, 25 May 2022 05:35:24 -0400
+Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC0B08B094;
+        Wed, 25 May 2022 02:35:22 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R721e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0VEMuQ7p_1653471316;
+Received: from localhost(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0VEMuQ7p_1653471316)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 25 May 2022 17:35:20 +0800
+From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+To:     sathya.prakash@broadcom.com
+Cc:     kashyap.desai@broadcom.com, sumit.saxena@broadcom.com,
+        sreekanth.reddy@broadcom.com, jejb@linux.ibm.com,
+        martin.petersen@oracle.com, mpi3mr-linuxdrv.pdl@broadcom.com,
+        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: [PATCH] scsi: mpi3mr: Fix kernel-doc
+Date:   Wed, 25 May 2022 17:35:14 +0800
+Message-Id: <20220525093514.55467-1-jiapeng.chong@linux.alibaba.com>
+X-Mailer: git-send-email 2.20.1.7.g153144c
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YmwLXvtSgl2BA2mC@iweiny-desk3>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-04-29 08:59:26 [-0700], Ira Weiny wrote:
-> I think some discussion needs to happen around this API.
-> 
-> Highmem has little use.  I don't think anyone disagrees with Linus there.
-> (Although I think there are still a few users out there.)
+Fix the following W=1 kernel warnings:
 
-arm32 is still built and they have sometimes 1 - 2 GiB of memory.
+drivers/scsi/mpi3mr/mpi3mr_app.c:1706: warning: expecting prototype for
+adapter_state_show(). Prototype was for adp_state_show() instead.
 
-> kmap may be a poor name for an API without the highmem functionality.  But
-> perhaps not.  One could interpret it to mean simply getting the kernel mapping
-> of the page rather than creating one.  After all that is what 64bit has done
-> all along.
-> 
-> This interpretation helps when you consider features which attempt to layer the
-> direct map with additional protections like PKS.[1]  Those protections mean
-> that a simple page_address() is insufficient to access the direct map.
-> 
-> As far as calling kmap() and kmap_atomic() deprecated I'm ok with that if the
-> community is.
-> 
-> The current kmap() call sites need work and Fabio's work on auditing them is
-> extremely helpful.  That said, if we officially deprecate kmap_atomic() then
-> those sites could be added to the list for rework.
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+---
+ drivers/scsi/mpi3mr/mpi3mr_app.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Maybe I oversee something obvious but there is no problem with removing
-kmap_atomic*() and keeping only kmap_local*() around, is there?
-I never intended to deprecated kmap(), only kmap_atomic*() in favour of
-kmap_local*().
+diff --git a/drivers/scsi/mpi3mr/mpi3mr_app.c b/drivers/scsi/mpi3mr/mpi3mr_app.c
+index 9ab1762468ad..113cf6f281be 100644
+--- a/drivers/scsi/mpi3mr/mpi3mr_app.c
++++ b/drivers/scsi/mpi3mr/mpi3mr_app.c
+@@ -1693,7 +1693,7 @@ logging_level_store(struct device *dev,
+ static DEVICE_ATTR_RW(logging_level);
+ 
+ /**
+- * adapter_state_show - SysFS callback for adapter state show
++ * adp_state_show() - SysFS callback for adapter state show
+  * @dev: class device
+  * @attr: Device attributes
+  * @buf: Buffer to copy
+-- 
+2.20.1.7.g153144c
 
-> Ira
-
-Sebastian
