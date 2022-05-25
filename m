@@ -2,22 +2,22 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B8C2C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 10:10:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73A81C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 10:10:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239211AbiEYKKg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 06:10:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36022 "EHLO
+        id S242208AbiEYKKj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 06:10:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237531AbiEYKKV (ORCPT
+        with ESMTP id S229606AbiEYKKW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 06:10:21 -0400
+        Wed, 25 May 2022 06:10:22 -0400
 Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D02A91599
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 03:10:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C27BC90CE1
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 03:10:21 -0700 (PDT)
 Received: from localhost.localdomain (unknown [80.240.223.29])
-        by mail.ispras.ru (Postfix) with ESMTPSA id 66B1240755CB;
-        Wed, 25 May 2022 10:10:18 +0000 (UTC)
+        by mail.ispras.ru (Postfix) with ESMTPSA id B461240755EB;
+        Wed, 25 May 2022 10:10:19 +0000 (UTC)
 From:   Evgeniy Baskov <baskov@ispras.ru>
 To:     Borislav Petkov <bp@alien8.de>
 Cc:     Evgeniy Baskov <baskov@ispras.ru>,
@@ -25,9 +25,9 @@ Cc:     Evgeniy Baskov <baskov@ispras.ru>,
         Ingo Molnar <mingo@redhat.com>,
         Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v4 2/5] x86: Add resolve_cmdline() helper
-Date:   Wed, 25 May 2022 13:10:10 +0300
-Message-Id: <7eb917aeb1fa9f044f90ec33c8bf33bb6aee62a5.1653471377.git.baskov@ispras.ru>
+Subject: [PATCH v4 4/5] x86/boot: Use resolve_cmdline() in compressed kernel
+Date:   Wed, 25 May 2022 13:10:12 +0300
+Message-Id: <a2e035e2f3927900864255d593bbab1611b19895.1653471377.git.baskov@ispras.ru>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1653471377.git.baskov@ispras.ru>
 References: <cover.1653471377.git.baskov@ispras.ru>
@@ -37,61 +37,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Command line needs to be combined in both compressed and uncompressed
-kernel from built-in and boot command line strings, which requires
-non-trivial logic depending on CONFIG_CMDLINE_BOOL and
-CONFIG_CMDLINE_OVERRIDE.
+CONFIG_CMDLINE_BOOL and CONFIG_CMDLINE_OVERRIDE were ignored during
+options lookup in compressed kernel, including earlyprintk option,
+so it was impossible to get earlyprintk messages from that stage
+of boot process via command line provided at compile time.
+Being able to enable earlyprintk via compile-time option might
+be desirable for booting on systems with broken UEFI command line
+arguments via EFISTUB.
 
-Add a helper function to avoid code duplication.
+Use a common helper function to handle CONFIG_CMDLINE_* in compressed
+kernel.
+
+Place command_line_init explicitly in '.data' section since it is
+used before '.bss' section is zeroed and it is expected to be equal
+to zero.
 
 Signed-off-by: Evgeniy Baskov <baskov@ispras.ru>
 
- create mode 100644 arch/x86/include/asm/shared/setup-cmdline.h
-
-diff --git a/arch/x86/include/asm/shared/setup-cmdline.h b/arch/x86/include/asm/shared/setup-cmdline.h
-new file mode 100644
-index 000000000000..9822e5af4925
---- /dev/null
-+++ b/arch/x86/include/asm/shared/setup-cmdline.h
-@@ -0,0 +1,38 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
+diff --git a/arch/x86/boot/compressed/cmdline.c b/arch/x86/boot/compressed/cmdline.c
+index f1add5d85da9..77a758146531 100644
+--- a/arch/x86/boot/compressed/cmdline.c
++++ b/arch/x86/boot/compressed/cmdline.c
+@@ -12,6 +12,15 @@ static inline char rdfs8(addr_t addr)
+ 	return *((char *)(fs + addr));
+ }
+ #include "../cmdline.c"
 +
-+#ifndef _ASM_X86_SETUP_CMDLINE_H
-+#define _ASM_X86_SETUP_CMDLINE_H
-+
-+#define _SETUP
-+#include <asm/setup.h> /* For COMMAND_LINE_SIZE */
-+#undef _SETUP
-+
-+#include <linux/string.h>
-+
-+#ifdef CONFIG_CMDLINE_BOOL
-+#define COMMAND_LINE_INIT CONFIG_CMDLINE
-+#else
-+#define COMMAND_LINE_INIT ""
-+#endif
++static char command_line[COMMAND_LINE_SIZE] __section(".data") = COMMAND_LINE_INIT;
++static bool command_line_init __section(".data");
 +
 +/*
-+ * command_line and boot_command_line are expected to be at most
-+ * COMMAND_LINE_SIZE length. command_line needs to be initialized
-+ * with COMMAND_LINE_INIT.
++ * This always returns runtime command line and does not account for built-in
++ * command line, so this should not be used for cmdline parsing.
++ * Use get_cmdline() instead.
 + */
+ unsigned long get_cmd_line_ptr(void)
+ {
+ 	unsigned long cmd_line_ptr = boot_params->hdr.cmd_line_ptr;
+@@ -20,11 +29,22 @@ unsigned long get_cmd_line_ptr(void)
+ 
+ 	return cmd_line_ptr;
+ }
 +
-+static inline void resolve_cmdline(char *command_line,
-+				   const char *boot_command_line)
++static inline unsigned long get_cmdline(void)
 +{
-+#ifdef CONFIG_CMDLINE_BOOL
-+	if (!IS_ENABLED(CONFIG_CMDLINE_OVERRIDE)) {
-+		/* Append boot loader cmdline to builtin */
-+		strlcat(command_line, " ", COMMAND_LINE_SIZE);
-+		strlcat(command_line, boot_command_line, COMMAND_LINE_SIZE);
++	if (!command_line_init) {
++		resolve_cmdline(command_line, (char *)get_cmd_line_ptr());
++		command_line_init = 1;
 +	}
-+#else
-+	strlcpy(command_line, boot_command_line, COMMAND_LINE_SIZE);
-+#endif
++
++	return (unsigned long)command_line;
 +}
 +
-+#endif /* _ASM_X86_SETUP_CMDLINE_H */
+ int cmdline_find_option(const char *option, char *buffer, int bufsize)
+ {
+-	return __cmdline_find_option(get_cmd_line_ptr(), option, buffer, bufsize);
++	return __cmdline_find_option(get_cmdline(), option, buffer, bufsize);
+ }
+ int cmdline_find_option_bool(const char *option)
+ {
+-	return __cmdline_find_option_bool(get_cmd_line_ptr(), option);
++	return __cmdline_find_option_bool(get_cmdline(), option);
+ }
+diff --git a/arch/x86/boot/compressed/misc.h b/arch/x86/boot/compressed/misc.h
+index 4910bf230d7b..e30159dc81b4 100644
+--- a/arch/x86/boot/compressed/misc.h
++++ b/arch/x86/boot/compressed/misc.h
+@@ -26,6 +26,7 @@
+ #include <asm/boot.h>
+ #include <asm/bootparam.h>
+ #include <asm/desc_defs.h>
++#include <asm/shared/setup-cmdline.h>
+ 
+ #include "tdx.h"
+ 
 -- 
 2.36.1
 
