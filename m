@@ -2,90 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F608C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 19:40:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9A52C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 19:45:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348802AbiEZTkr (ORCPT
+        id S1348805AbiEZTpN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 15:40:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36704 "EHLO
+        Thu, 26 May 2022 15:45:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344646AbiEZTko (ORCPT
+        with ESMTP id S1347797AbiEZTpI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 15:40:44 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D88F25C85D
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 12:40:42 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id n10so4902085ejk.5
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 12:40:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=7ygqT9lGigZJ/CYDT7+D7nz3BZboq9zllaPVSGj/rjk=;
-        b=kr28vZGN05blbS66YlpNx2nb3IVkqa31qxAEgv0noWSbShQdN5UUR0xe+oDYnEfX6b
-         0z3vZLZXg2bg/sWgVE2Av9TV7LT7w/8P4OMs2fEI9eiTvGBy9MJ9+amKUGFrLvzWv0hT
-         YhlXtusfcb+U+TPQ1SvifFdL4o31sCt1Tsj8+86hoSdSUoFBZof0KkbmSqyVTIOMbPKu
-         C0rzU7nqA4dyfgZ8UTYRdpXN/FphI+tBRvw/DCSQp2daBE65+eCy9fegsttEK79X7Df7
-         jCENFKDrhpY7vZ7c9J46vp/I23uWnrSHGevknJ3glPEMzNtAEWe5xM+FaViy6wUXwl96
-         X3Tg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=7ygqT9lGigZJ/CYDT7+D7nz3BZboq9zllaPVSGj/rjk=;
-        b=XZwP6geEdQyAYEXPFn79rbi3AuEqpea8Q8kuTDL0L2EnRM5LPCM+Qz/UkB7PA7zfB9
-         Of1ta67bAeGFajmWciL66k3UK5s8LcYx4gzJ0g3is9DGk859Z8aUjovQN1AHUXT112Vo
-         r1XmOqKiBZJ0YR9VKI5/W7RslV0epTRpZ3gvl1Qj0CWeILaIP8ZRFif9XKjVJsLZMVZa
-         gqODA7s9CtEJUNuenobIutwkDW5v3UYa/U8MwbamtAlW82wsJO8adMb+2NpjYQ1Zj7M6
-         UK1bIIE/UgDdaR7FwjN3aDhqPf1zJvbLFaQvPD7GAuvBWfAeEFkNqpwmtEgvRKDiO7T4
-         vbvg==
-X-Gm-Message-State: AOAM531u8Ee2IhCMrDVUyokFp0y6jgVnKymyvoPvxN/gAfUxg27fiBEZ
-        vf4o61cgrJZ/TQCUBy+aIEOm/A==
-X-Google-Smtp-Source: ABdhPJzpn7MDzb5XTatBFzqgrCKJrOtisDCPplYuF02V+m3GksAs5ItkZu1/nhHfsTh6eV4c6Vue2g==
-X-Received: by 2002:a17:907:8a25:b0:6fe:ff5b:81f8 with SMTP id sc37-20020a1709078a2500b006feff5b81f8mr14939322ejc.184.1653594041435;
-        Thu, 26 May 2022 12:40:41 -0700 (PDT)
-Received: from [192.168.0.177] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id s20-20020a508d14000000b0042aba7ed532sm1160010eds.41.2022.05.26.12.40.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 26 May 2022 12:40:40 -0700 (PDT)
-Message-ID: <66eb1ab4-efa6-8c3f-84c1-ed8bca0a8432@linaro.org>
-Date:   Thu, 26 May 2022 21:40:39 +0200
+        Thu, 26 May 2022 15:45:08 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8BBDE6A063
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 12:45:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653594303;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=wGw3S4Q9Vcbsrn/loM6Su2TerHvvfSdMEurV8a8JpS4=;
+        b=WHCbOQi3YCpmULupJqbys9ph7x6GZgl3hyhkyplzF9CwJlCTeHQX+Ts89YXVtxat5BBPl6
+        Dac4deE1S8ym53PstiaXkXltvMnC9x9rTwO4IgkLNpZuQ09wjtqIcH1fs0aF1YYbzgLiha
+        F2ZqGXSV1MzFhnvqo7a2wbtw+pTs2T4=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-574-s_2j5mSHMUeeFkrfH07JZQ-1; Thu, 26 May 2022 15:44:59 -0400
+X-MC-Unique: s_2j5mSHMUeeFkrfH07JZQ-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 57AF280418B;
+        Thu, 26 May 2022 19:44:59 +0000 (UTC)
+Received: from fuller.cnet (ovpn-112-2.gru2.redhat.com [10.97.112.2])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 2833A2166B26;
+        Thu, 26 May 2022 19:44:59 +0000 (UTC)
+Received: by fuller.cnet (Postfix, from userid 1000)
+        id 5EA67416F574; Wed, 25 May 2022 14:31:29 -0300 (-03)
+Date:   Wed, 25 May 2022 14:31:29 -0300
+From:   Marcelo Tosatti <mtosatti@redhat.com>
+To:     Eiichi Tsukata <eiichi.tsukata@nutanix.com>
+Cc:     rafael@kernel.org, daniel.lezcano@linaro.org, rostedt@goodmis.org,
+        mingo@redhat.com, linux-pm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, joao.m.martins@oracle.com
+Subject: Re: [PATCH v2] cpuidle: haltpoll: Add trace points for
+ guest_halt_poll_ns grow/shrink
+Message-ID: <Yo5n8TsSuU9/IxEh@fuller.cnet>
+References: <20220523235332.162966-1-eiichi.tsukata@nutanix.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v2 2/2] arm64: dts: qcom: msm8916: Fix typo in pronto
- remoteproc node
-Content-Language: en-US
-To:     Sireesh Kodali <sireeshkodali1@gmail.com>,
-        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org
-Cc:     bjorn.andersson@linaro.org, Andy Gross <agross@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        open list <linux-kernel@vger.kernel.org>
-References: <20220526141740.15834-1-sireeshkodali1@gmail.com>
- <20220526141740.15834-3-sireeshkodali1@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220526141740.15834-3-sireeshkodali1@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220523235332.162966-1-eiichi.tsukata@nutanix.com>
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 26/05/2022 16:17, Sireesh Kodali wrote:
-> The smem-state properties for the pronto node were incorrectly labelled,
-> reading `qcom,state*` rather than `qcom,smem-state*`. Fix that, allowing
-> the stop state to be used.
+On Mon, May 23, 2022 at 11:53:32PM +0000, Eiichi Tsukata wrote:
+> Add trace points as are implemented in KVM host halt polling.
+> This helps tune guest halt polling params.
 > 
-> Fixes: 88106096cbf8 ("ARM: dts: msm8916: Add and enable wcnss node")
-> Signed-off-by: Sireesh Kodali <sireeshkodali1@gmail.com>
+> Signed-off-by: Eiichi Tsukata <eiichi.tsukata@nutanix.com>
+> ---
+>  drivers/cpuidle/governors/haltpoll.c | 15 ++++++++-----
+>  include/trace/events/power.h         | 33 ++++++++++++++++++++++++++++
+>  2 files changed, 43 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/cpuidle/governors/haltpoll.c b/drivers/cpuidle/governors/haltpoll.c
+> index cb2a96eafc02..a5b6ad32956c 100644
+> --- a/drivers/cpuidle/governors/haltpoll.c
+> +++ b/drivers/cpuidle/governors/haltpoll.c
+> @@ -19,6 +19,7 @@
+>  #include <linux/sched.h>
+>  #include <linux/module.h>
+>  #include <linux/kvm_para.h>
+> +#include <trace/events/power.h>
+>  
+>  static unsigned int guest_halt_poll_ns __read_mostly = 200000;
+>  module_param(guest_halt_poll_ns, uint, 0644);
+> @@ -77,13 +78,16 @@ static int haltpoll_select(struct cpuidle_driver *drv,
+>  
+>  static void adjust_poll_limit(struct cpuidle_device *dev, u64 block_ns)
+>  {
+> -	unsigned int val;
+> +	unsigned int val, old;
+>  
+> -	/* Grow cpu_halt_poll_us if
+> -	 * cpu_halt_poll_us < block_ns < guest_halt_poll_us
+> +	val = dev->poll_limit_ns;
+> +	old = val;
+> +
+> +	/* Grow poll_limit_ns if
+> +	 * poll_limit_ns < block_ns < guest_halt_poll_ns
+>  	 */
+>  	if (block_ns > dev->poll_limit_ns && block_ns <= guest_halt_poll_ns) {
+> -		val = dev->poll_limit_ns * guest_halt_poll_grow;
+> +		val *= guest_halt_poll_grow;
+>  
+>  		if (val < guest_halt_poll_grow_start)
+>  			val = guest_halt_poll_grow_start;
+> @@ -91,16 +95,17 @@ static void adjust_poll_limit(struct cpuidle_device *dev, u64 block_ns)
+>  			val = guest_halt_poll_ns;
+>  
 
-Include please acquired tags when sending a new version.
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Can do it before the assignment:
 
+		trace_guest_halt_poll_ns_grow(val, dev->poll_limit_ns);
 
-Best regards,
-Krzysztof
+>  		dev->poll_limit_ns = val;
+> +		trace_guest_halt_poll_ns_grow(smp_processor_id(), val, old);
+>  	} else if (block_ns > guest_halt_poll_ns &&
+>  		   guest_halt_poll_allow_shrink) {
+>  		unsigned int shrink = guest_halt_poll_shrink;
+>  
+> -		val = dev->poll_limit_ns;
+>  		if (shrink == 0)
+>  			val = 0;
+>  		else
+>  			val /= shrink;
+>  		dev->poll_limit_ns = val;
+> +		trace_guest_halt_poll_ns_shrink(smp_processor_id(), val, old);
+>  	}
+>  }
+>  
+> diff --git a/include/trace/events/power.h b/include/trace/events/power.h
+> index af5018aa9517..db065af9c3c0 100644
+> --- a/include/trace/events/power.h
+> +++ b/include/trace/events/power.h
+> @@ -500,6 +500,39 @@ DEFINE_EVENT(dev_pm_qos_request, dev_pm_qos_remove_request,
+>  
+>  	TP_ARGS(name, type, new_value)
+>  );
+> +
+> +TRACE_EVENT(guest_halt_poll_ns,
+> +
+> +	TP_PROTO(bool grow, unsigned int cpu_id,
+> +		 unsigned int new, unsigned int old),
+> +
+> +	TP_ARGS(grow, cpu_id, new, old),
+> +
+> +	TP_STRUCT__entry(
+> +		__field(bool, grow)
+> +		__field(unsigned int, cpu_id)
+> +		__field(unsigned int, new)
+> +		__field(unsigned int, old)
+> +	),
+> +
+> +	TP_fast_assign(
+> +		__entry->grow   = grow;
+> +		__entry->cpu_id = cpu_id;
+> +		__entry->new    = new;
+> +		__entry->old    = old;
+> +	),
+> +
+> +	TP_printk("cpu %u: halt_poll_ns %u (%s %u)",
+> +		__entry->cpu_id,
+> +		__entry->new,
+> +		__entry->grow ? "grow" : "shrink",
+> +		__entry->old)
+> +);
+> +
+> +#define trace_guest_halt_poll_ns_grow(cpu_id, new, old) \
+> +	trace_guest_halt_poll_ns(true, cpu_id, new, old)
+> +#define trace_guest_halt_poll_ns_shrink(cpu_id, new, old) \
+> +	trace_guest_halt_poll_ns(false, cpu_id, new, old)
+>  #endif /* _TRACE_POWER_H */
+>  
+>  /* This part must be outside protection */
+> -- 
+> 2.36.1
+> 
+> 
+
