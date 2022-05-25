@@ -2,98 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0E52C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 14:07:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B03EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 14:07:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244673AbiEYOHU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 10:07:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33192 "EHLO
+        id S236678AbiEYOHZ convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 10:07:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245643AbiEYOFy (ORCPT
+        with ESMTP id S245661AbiEYOF4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 10:05:54 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 290D78D6BD;
-        Wed, 25 May 2022 07:03:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653487435; x=1685023435;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=FdNkUTr3XASwSCxYa3ivhvPYt8r8WXycJZ613rnDCeE=;
-  b=K60NM2e227WWOO6sPbV2DViC1WmF2xeMeRGlN4g6SSkO4aSc31uTT2UJ
-   LROC/FmaLr1X0fmPByESBhqoemKfLICFdoGN1OxReaBTsrJegSh6orBmB
-   1jkgA7G9hwbQ3u749ybOlbkK1TeMDXIdH6u/+0/nC6PDjsJjCE07wpqo5
-   CYjdZ3NGzyobXDMKvXELmS/YCV1199mGh7SYmg92xG9+XYPn+34AKi1PN
-   uxrkBGGijP3/NyXV/a9KLqaN8RV5q9pnEa9mxQw7ve2hG7niuD36XD3FG
-   PxeEWMx7zFKJXpzA1RTCFY+o45bb/sdTL4E8n1hGw1IdnqfRpPJQr6onl
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10358"; a="299154465"
-X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
-   d="scan'208";a="299154465"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2022 07:03:54 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
-   d="scan'208";a="717694868"
-Received: from zxingrtx.sh.intel.com ([10.239.159.110])
-  by fmsmga001.fm.intel.com with ESMTP; 25 May 2022 07:03:52 -0700
-From:   zhengjun.xing@linux.intel.com
-To:     acme@kernel.org, peterz@infradead.org, mingo@redhat.com,
-        alexander.shishkin@intel.com, jolsa@redhat.com
-Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        irogers@google.com, adrian.hunter@intel.com, ak@linux.intel.com,
-        kan.liang@linux.intel.com, zhengjun.xing@linux.intel.com
-Subject: [PATCH] perf jevents: Fix event syntax error caused by ExtSel
-Date:   Wed, 25 May 2022 22:04:10 +0800
-Message-Id: <20220525140410.1706851-1-zhengjun.xing@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 25 May 2022 10:05:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C79609CCAC
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 07:05:30 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 539826190D
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 14:05:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F9D1C385B8;
+        Wed, 25 May 2022 14:05:28 +0000 (UTC)
+Date:   Wed, 25 May 2022 10:05:26 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Jakub =?UTF-8?B?TWF0xJtuYQ==?= <matenajakub@gmail.com>
+Cc:     linux-mm@kvack.org, patches@lists.linux.dev,
+        linux-kernel@vger.kernel.org, vbabka@suse.cz, mhocko@kernel.org,
+        mgorman@techsingularity.net, willy@infradead.org,
+        liam.howlett@oracle.com, hughd@google.com, kirill@shutemov.name,
+        riel@surriel.com, peterz@infradead.org, david@redhat.com
+Subject: Re: [RFC PATCH v3 6/6] [PATCH 6/6] mm: add tracing for VMA merges
+Message-ID: <20220525100526.2a7a0eb7@gandalf.local.home>
+In-Reply-To: <20220516125405.1675-7-matenajakub@gmail.com>
+References: <20220516125405.1675-1-matenajakub@gmail.com>
+        <20220516125405.1675-7-matenajakub@gmail.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhengjun Xing <zhengjun.xing@linux.intel.com>
+On Mon, 16 May 2022 14:54:05 +0200
+Jakub Matěna <matenajakub@gmail.com> wrote:
 
-In the origin code, when "ExtSel" is 1, the eventcode will change to
-"eventcode |= 1 << 21”. For event “UNC_Q_RxL_CREDITS_CONSUMED_VN0.DRS",
-its "ExtSel" is "1", its eventcode will change from 0x1E to 0x20001E,
-but in fact the eventcode should <=0x1FF, so this will cause the parse
-fail:
+> +	TP_fast_assign(
+> +		__entry->merged = merged == 0;
+> +		__entry->predecessor_different_av = merge_prev;
+> +		__entry->successor_different_av = merge_next;
+> +		__entry->predecessor_with_successor_different_av = merge_both;
 
-  # perf stat -e "UNC_Q_RxL_CREDITS_CONSUMED_VN0.DRS" -a sleep 0.1
-event syntax error: '.._RxL_CREDITS_CONSUMED_VN0.DRS'
-                                  \___ value too big for format, maximum is 511
 
-On the perf kernel side, the kernel assumes the valid bits are continuous.
-It will adjust the 0x100 (bit 8 for perf tool) to bit 21 in HW.
+> +		__entry->same_count = (merge_prev == AV_MERGE_SAME) +
+> +			(merge_next == AV_MERGE_SAME) +
+> +			(merge_both == AV_MERGE_SAME);
+> +		__entry->diff_count = (merge_prev == AV_MERGE_DIFFERENT) +
+> +			(merge_next == AV_MERGE_DIFFERENT) +
+> +			(merge_both == AV_MERGE_DIFFERENT);
+> +		__entry->failed_count = (merge_prev == AV_MERGE_FAILED) +
+> +			(merge_next == AV_MERGE_FAILED) +
+> +			(merge_both == AV_MERGE_FAILED);
 
-DEFINE_UNCORE_FORMAT_ATTR(event_ext, event, "config:0-7,21");
+The above looks like it can be moved into the TP_printk(), as you have the
+merge_prev, next and both saved already. Why waste more ring buffer space
+and execution time for information that can be derived at the time of
+reading the trace event?
 
-So the perf tool follows the kernel side and just set bit8 other than bit21.
+-- Steve
 
-Fixes: fedb2b518239 ("perf jevents: Add support for parsing uncore json files")
-Signed-off-by: Zhengjun Xing <zhengjun.xing@linux.intel.com>
-Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
----
- tools/perf/pmu-events/jevents.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/perf/pmu-events/jevents.c b/tools/perf/pmu-events/jevents.c
-index cee61c4ed59e..e597e4bac90f 100644
---- a/tools/perf/pmu-events/jevents.c
-+++ b/tools/perf/pmu-events/jevents.c
-@@ -605,7 +605,7 @@ static int json_events(const char *fn,
- 			} else if (json_streq(map, field, "ExtSel")) {
- 				char *code = NULL;
- 				addfield(map, &code, "", "", val);
--				eventcode |= strtoul(code, NULL, 0) << 21;
-+				eventcode |= strtoul(code, NULL, 0) << 8;
- 				free(code);
- 			} else if (json_streq(map, field, "EventName")) {
- 				addfield(map, &je.name, "", "", val);
--- 
-2.25.1
-
+> +	),
+> +
+> +	TP_printk("merged=%d predecessor=%s successor=%s predecessor_with_successor=%s same_count=%d diff_count=%d failed_count=%d",
+> +		__entry->merged,
+> +		__print_symbolic(__entry->predecessor_different_av, AV_MERGE_TYPES),
+> +		__print_symbolic(__entry->successor_different_av, AV_MERGE_TYPES),
+> +		__print_symbolic(__entry->predecessor_with_successor_different_av, AV_MERGE_TYPES),
+> +		__entry->same_count, __entry->diff_count, __entry->failed_count)
+> +
+> +);
+> +
