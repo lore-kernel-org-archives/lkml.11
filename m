@@ -2,246 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D603C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 05:36:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE119C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 05:38:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244007AbiEYFgl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 01:36:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38920 "EHLO
+        id S244017AbiEYFiY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 01:38:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232051AbiEYFgh (ORCPT
+        with ESMTP id S243946AbiEYFiW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 01:36:37 -0400
-Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF2D3DF92
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 22:36:34 -0700 (PDT)
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 3B08720065E;
-        Wed, 25 May 2022 07:36:33 +0200 (CEST)
-Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id D0E2F200665;
-        Wed, 25 May 2022 07:36:32 +0200 (CEST)
-Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 60AD0180031B;
-        Wed, 25 May 2022 13:36:31 +0800 (+08)
-From:   Shengjiu Wang <shengjiu.wang@nxp.com>
-To:     nicoleotsuka@gmail.com, Xiubo.Lee@gmail.com, festevam@gmail.com,
-        shengjiu.wang@gmail.com, lgirdwood@gmail.com, broonie@kernel.org,
-        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
-Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] ASoC: fsl_mqs: simplify the code with adding fsl_mqs_soc_data
-Date:   Wed, 25 May 2022 13:23:41 +0800
-Message-Id: <1653456221-21613-1-git-send-email-shengjiu.wang@nxp.com>
-X-Mailer: git-send-email 2.7.4
-X-Virus-Scanned: ClamAV using ClamSMTP
+        Wed, 25 May 2022 01:38:22 -0400
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4991B5EDE1
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 22:38:21 -0700 (PDT)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2f4dfd09d7fso170775677b3.0
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 22:38:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=J6AIzYxM94WLDE1VTUM2GvuHGVMYhOjSoUyQI5esYvY=;
+        b=fP6HOquRnsc+5BXSr+ruSg9nh2sJZ+tLEvHFpqfWI3Ce0PRPIgnMN4HTatj309I8mK
+         np2TV1REkwreC5pLx8Ms1vWtAsun+KHEkCo/zuY3CT8BwQ656GwvV4R2MsWTiBtXG7BK
+         NdZUdgU0P9G1pGPyw6PYU+iflcZpLKqFZvoL3uWWY0LztFQQ2MBxuOAJa3nyLVy4+5+Q
+         W/dYWcjdENu15m0VmnfOgMqyY1cH4HSdb0InDw0fyQfUu0zZg4HVsUfzenDbLt14P3Qi
+         MczvjGoEmVjeg2RxYaUMjOwohhSP4jIRHBsYWmIv6SLtXRRfvqRcvOW3sgOwj8h8UTyn
+         KTGQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=J6AIzYxM94WLDE1VTUM2GvuHGVMYhOjSoUyQI5esYvY=;
+        b=rzEJj+5k9YV41h9mU87EepuI+Z6edekAh2LMQRSRf4d77aIvB2/WaAKECG0j+NFeMi
+         FAQN2vRSKOwx0ySoiaQ1ok4acUdSxVWLVeW4t1EFYHDwRj9Oo80HNamUiYoDzxtaKZlU
+         p/n7yC6hnoq4ad1zw/QnO8jLDf7wpvaOXtiQqY6ynv+h+MKS321bAhdCUihku+tHKzEP
+         XXefswO2Pp5WLFFihoUY+0qYPPT0a8/CajwBWun22gjXjTiSasRjoZgkFLDJSGlGMMaJ
+         0dO09lhQH7zjD/R2+T9nmdxTZIJtG6IjQZ0jaiitIPnlHYqk4Ap3O6oV6qIADGykZLtH
+         Hsng==
+X-Gm-Message-State: AOAM531oFqaXlJsQNGEoIsoHGWt6XvTWxwy9ZMOFGF9mtmaHNEA/avSL
+        32p77w6vuRTMLsUAca8gGrZhx3Hal2rq
+X-Google-Smtp-Source: ABdhPJxXM4PFYMGr/65uoJQnUDAKa7kF4Mf+9D6qvNvXHP9FCJ3g/oucUObTbbJnfqUoFIGYPUbzXwZdTPJM
+X-Received: from irogers.svl.corp.google.com ([2620:15c:2cd:202:1ab1:de5:7b7f:3844])
+ (user=irogers job=sendgmr) by 2002:a25:4045:0:b0:64e:a6ae:23b7 with SMTP id
+ n66-20020a254045000000b0064ea6ae23b7mr31701321yba.296.1653457100526; Tue, 24
+ May 2022 22:38:20 -0700 (PDT)
+Date:   Tue, 24 May 2022 22:38:11 -0700
+Message-Id: <20220525053814.3265216-1-irogers@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.36.1.124.g0e6072fb45-goog
+Subject: [PATCH v4 0/3] JSON output for perf stat
+From:   Ian Rogers <irogers@google.com>
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
+        Sandipan Das <sandipan.das@amd.com>,
+        Claire Jensen <cjense@google.com>, Alyssa Ross <hi@alyssa.is>,
+        Like Xu <likexu@tencent.com>,
+        James Clark <james.clark@arm.com>,
+        Florian Fischer <florian.fischer@muhq.space>,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        Claire Jensen <clairej735@gmail.com>
+Cc:     Stephane Eranian <eranian@google.com>,
+        Ian Rogers <irogers@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add soc specific data struct fsl_mqs_soc_data, move the
-definition of control register, each function bits to it,
-then the code can be simplified.
+Parsing the CSV or text output of perf stat can be problematic when
+new output is added (columns in CSV format). JSON names values and
+simplifies the job of parsing. Add a JSON output option to perf-stat
+then add unit test that parses and validates the output.
 
-Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
----
- sound/soc/fsl/fsl_mqs.c | 119 ++++++++++++++++++++++++----------------
- 1 file changed, 71 insertions(+), 48 deletions(-)
+This is a resend of two v2 patches:
+https://lore.kernel.org/lkml/20210813220754.2104922-1-cjense@google.com/
+https://lore.kernel.org/lkml/20210813220936.2105426-1-cjense@google.com/
+with a few formatting changes and improvements to the linter.
 
-diff --git a/sound/soc/fsl/fsl_mqs.c b/sound/soc/fsl/fsl_mqs.c
-index ceaecbe3a25e..8a8d727319d6 100644
---- a/sound/soc/fsl/fsl_mqs.c
-+++ b/sound/soc/fsl/fsl_mqs.c
-@@ -10,6 +10,7 @@
- #include <linux/moduleparam.h>
- #include <linux/mfd/syscon.h>
- #include <linux/mfd/syscon/imx6q-iomuxc-gpr.h>
-+#include <linux/of_device.h>
- #include <linux/pm_runtime.h>
- #include <linux/of.h>
- #include <linux/pm.h>
-@@ -29,15 +30,41 @@
- #define MQS_CLK_DIV_MASK		(0xFF << 0)
- #define MQS_CLK_DIV_SHIFT		(0)
- 
-+/**
-+ * struct fsl_mqs_soc_data - soc specific data
-+ *
-+ * @use_gpr: control register is in General Purpose Register group
-+ * @ctrl_off: control register offset
-+ * @en_mask: enable bit mask
-+ * @en_shift: enable bit shift
-+ * @rst_mask: reset bit mask
-+ * @rst_shift: reset bit shift
-+ * @osr_mask: oversample bit mask
-+ * @osr_shift: oversample bit shift
-+ * @div_mask: clock divider mask
-+ * @div_shift: clock divider bit shift
-+ */
-+struct fsl_mqs_soc_data {
-+	bool use_gpr;
-+	int  ctrl_off;
-+	int  en_mask;
-+	int  en_shift;
-+	int  rst_mask;
-+	int  rst_shift;
-+	int  osr_mask;
-+	int  osr_shift;
-+	int  div_mask;
-+	int  div_shift;
-+};
-+
- /* codec private data */
- struct fsl_mqs {
- 	struct regmap *regmap;
- 	struct clk *mclk;
- 	struct clk *ipg;
-+	const struct fsl_mqs_soc_data *soc;
- 
--	unsigned int reg_iomuxc_gpr2;
- 	unsigned int reg_mqs_ctrl;
--	bool use_gpr;
- };
- 
- #define FSL_MQS_RATES	(SNDRV_PCM_RATE_44100 | SNDRV_PCM_RATE_48000)
-@@ -65,19 +92,11 @@ static int fsl_mqs_hw_params(struct snd_pcm_substream *substream,
- 	res = mclk_rate % (32 * lrclk * 2 * 8);
- 
- 	if (res == 0 && div > 0 && div <= 256) {
--		if (mqs_priv->use_gpr) {
--			regmap_update_bits(mqs_priv->regmap, IOMUXC_GPR2,
--					   IMX6SX_GPR2_MQS_CLK_DIV_MASK,
--					   (div - 1) << IMX6SX_GPR2_MQS_CLK_DIV_SHIFT);
--			regmap_update_bits(mqs_priv->regmap, IOMUXC_GPR2,
--					   IMX6SX_GPR2_MQS_OVERSAMPLE_MASK, 0);
--		} else {
--			regmap_update_bits(mqs_priv->regmap, REG_MQS_CTRL,
--					   MQS_CLK_DIV_MASK,
--					   (div - 1) << MQS_CLK_DIV_SHIFT);
--			regmap_update_bits(mqs_priv->regmap, REG_MQS_CTRL,
--					   MQS_OVERSAMPLE_MASK, 0);
--		}
-+		regmap_update_bits(mqs_priv->regmap, mqs_priv->soc->ctrl_off,
-+				   mqs_priv->soc->div_mask,
-+				   (div - 1) << mqs_priv->soc->div_shift);
-+		regmap_update_bits(mqs_priv->regmap, mqs_priv->soc->ctrl_off,
-+				   mqs_priv->soc->osr_mask, 0);
- 	} else {
- 		dev_err(component->dev, "can't get proper divider\n");
- 	}
-@@ -118,14 +137,9 @@ static int fsl_mqs_startup(struct snd_pcm_substream *substream,
- 	struct snd_soc_component *component = dai->component;
- 	struct fsl_mqs *mqs_priv = snd_soc_component_get_drvdata(component);
- 
--	if (mqs_priv->use_gpr)
--		regmap_update_bits(mqs_priv->regmap, IOMUXC_GPR2,
--				   IMX6SX_GPR2_MQS_EN_MASK,
--				   1 << IMX6SX_GPR2_MQS_EN_SHIFT);
--	else
--		regmap_update_bits(mqs_priv->regmap, REG_MQS_CTRL,
--				   MQS_EN_MASK,
--				   1 << MQS_EN_SHIFT);
-+	regmap_update_bits(mqs_priv->regmap, mqs_priv->soc->ctrl_off,
-+			   mqs_priv->soc->en_mask,
-+			   1 << mqs_priv->soc->en_shift);
- 	return 0;
- }
- 
-@@ -135,12 +149,8 @@ static void fsl_mqs_shutdown(struct snd_pcm_substream *substream,
- 	struct snd_soc_component *component = dai->component;
- 	struct fsl_mqs *mqs_priv = snd_soc_component_get_drvdata(component);
- 
--	if (mqs_priv->use_gpr)
--		regmap_update_bits(mqs_priv->regmap, IOMUXC_GPR2,
--				   IMX6SX_GPR2_MQS_EN_MASK, 0);
--	else
--		regmap_update_bits(mqs_priv->regmap, REG_MQS_CTRL,
--				   MQS_EN_MASK, 0);
-+	regmap_update_bits(mqs_priv->regmap, mqs_priv->soc->ctrl_off,
-+			   mqs_priv->soc->en_mask, 0);
- }
- 
- static const struct snd_soc_component_driver soc_codec_fsl_mqs = {
-@@ -191,12 +201,9 @@ static int fsl_mqs_probe(struct platform_device *pdev)
- 	 * But in i.MX8QM/i.MX8QXP the control register is moved
- 	 * to its own domain.
- 	 */
--	if (of_device_is_compatible(np, "fsl,imx8qm-mqs"))
--		mqs_priv->use_gpr = false;
--	else
--		mqs_priv->use_gpr = true;
-+	mqs_priv->soc = of_device_get_match_data(&pdev->dev);
- 
--	if (mqs_priv->use_gpr) {
-+	if (mqs_priv->soc->use_gpr) {
- 		gpr_np = of_parse_phandle(np, "gpr", 0);
- 		if (!gpr_np) {
- 			dev_err(&pdev->dev, "failed to get gpr node by phandle\n");
-@@ -280,12 +287,7 @@ static int fsl_mqs_runtime_resume(struct device *dev)
- 		return ret;
- 	}
- 
--	if (mqs_priv->use_gpr)
--		regmap_write(mqs_priv->regmap, IOMUXC_GPR2,
--			     mqs_priv->reg_iomuxc_gpr2);
--	else
--		regmap_write(mqs_priv->regmap, REG_MQS_CTRL,
--			     mqs_priv->reg_mqs_ctrl);
-+	regmap_write(mqs_priv->regmap, mqs_priv->soc->ctrl_off, mqs_priv->reg_mqs_ctrl);
- 	return 0;
- }
- 
-@@ -293,12 +295,7 @@ static int fsl_mqs_runtime_suspend(struct device *dev)
- {
- 	struct fsl_mqs *mqs_priv = dev_get_drvdata(dev);
- 
--	if (mqs_priv->use_gpr)
--		regmap_read(mqs_priv->regmap, IOMUXC_GPR2,
--			    &mqs_priv->reg_iomuxc_gpr2);
--	else
--		regmap_read(mqs_priv->regmap, REG_MQS_CTRL,
--			    &mqs_priv->reg_mqs_ctrl);
-+	regmap_read(mqs_priv->regmap, mqs_priv->soc->ctrl_off, &mqs_priv->reg_mqs_ctrl);
- 
- 	clk_disable_unprepare(mqs_priv->mclk);
- 	clk_disable_unprepare(mqs_priv->ipg);
-@@ -315,9 +312,35 @@ static const struct dev_pm_ops fsl_mqs_pm_ops = {
- 				pm_runtime_force_resume)
- };
- 
-+static const struct fsl_mqs_soc_data fsl_mqs_imx8qm_data = {
-+	.use_gpr = false,
-+	.ctrl_off = REG_MQS_CTRL,
-+	.en_mask  = MQS_EN_MASK,
-+	.en_shift = MQS_EN_SHIFT,
-+	.rst_mask = MQS_SW_RST_MASK,
-+	.rst_shift = MQS_SW_RST_SHIFT,
-+	.osr_mask = MQS_OVERSAMPLE_MASK,
-+	.osr_shift = MQS_OVERSAMPLE_SHIFT,
-+	.div_mask = MQS_CLK_DIV_MASK,
-+	.div_shift = MQS_CLK_DIV_SHIFT,
-+};
-+
-+static const struct fsl_mqs_soc_data fsl_mqs_imx6sx_data = {
-+	.use_gpr = true,
-+	.ctrl_off = IOMUXC_GPR2,
-+	.en_mask  = IMX6SX_GPR2_MQS_EN_MASK,
-+	.en_shift = IMX6SX_GPR2_MQS_EN_SHIFT,
-+	.rst_mask = IMX6SX_GPR2_MQS_SW_RST_MASK,
-+	.rst_shift = IMX6SX_GPR2_MQS_SW_RST_SHIFT,
-+	.osr_mask  = IMX6SX_GPR2_MQS_OVERSAMPLE_MASK,
-+	.osr_shift = IMX6SX_GPR2_MQS_OVERSAMPLE_SHIFT,
-+	.div_mask  = IMX6SX_GPR2_MQS_CLK_DIV_MASK,
-+	.div_shift = IMX6SX_GPR2_MQS_CLK_DIV_SHIFT,
-+};
-+
- static const struct of_device_id fsl_mqs_dt_ids[] = {
--	{ .compatible = "fsl,imx8qm-mqs", },
--	{ .compatible = "fsl,imx6sx-mqs", },
-+	{ .compatible = "fsl,imx8qm-mqs", .data = &fsl_mqs_imx8qm_data },
-+	{ .compatible = "fsl,imx6sx-mqs", .data = &fsl_mqs_imx6sx_data },
- 	{}
- };
- MODULE_DEVICE_TABLE(of, fsl_mqs_dt_ids);
+The CSV test/linter is also added to ensure that CSV output doesn't regress:
+https://lore.kernel.org/lkml/20210813192108.2087512-1-cjense@google.com/
+
+v4. Does some minor fixes to the json linter.
+
+v3. There is some tidy up of CSV code including a potential memory
+    over run in the os.nfields set up caught by sanitizers. To
+    facilitate this an AGGR_MAX value is added. v3 also adds the CSV
+    testing.
+
+v2. Fixes the system wide no aggregation test to not run if the
+    paranoia is wrong. It also makes the counter-value check handle
+    the "<not counted>" and "<not supported>" cases.
+
+Claire Jensen (3):
+  perf test: Add checking for perf stat CSV output.
+  perf stat: Add JSON output option
+  perf test: Json format checking
+
+ tools/perf/Documentation/perf-stat.txt        |  21 +
+ tools/perf/builtin-stat.c                     |   6 +
+ .../tests/shell/lib/perf_csv_output_lint.py   |  48 +++
+ .../tests/shell/lib/perf_json_output_lint.py  |  94 +++++
+ tools/perf/tests/shell/stat+csv_output.sh     | 147 +++++++
+ tools/perf/tests/shell/stat+json_output.sh    | 147 +++++++
+ tools/perf/util/stat-display.c                | 384 +++++++++++++-----
+ tools/perf/util/stat.c                        |   1 +
+ tools/perf/util/stat.h                        |   2 +
+ 9 files changed, 744 insertions(+), 106 deletions(-)
+ create mode 100644 tools/perf/tests/shell/lib/perf_csv_output_lint.py
+ create mode 100644 tools/perf/tests/shell/lib/perf_json_output_lint.py
+ create mode 100755 tools/perf/tests/shell/stat+csv_output.sh
+ create mode 100755 tools/perf/tests/shell/stat+json_output.sh
+
 -- 
-2.17.1
+2.36.1.124.g0e6072fb45-goog
 
