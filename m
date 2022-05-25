@@ -2,132 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5958C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 10:53:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06365C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 10:57:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235025AbiEYKxb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 06:53:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34876 "EHLO
+        id S236391AbiEYK54 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 06:57:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232603AbiEYKxY (ORCPT
+        with ESMTP id S230281AbiEYK5x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 06:53:24 -0400
-Received: from conssluserg-03.nifty.com (conssluserg-03.nifty.com [210.131.2.82])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2971F9FE1;
-        Wed, 25 May 2022 03:53:19 -0700 (PDT)
-Received: from mail-pj1-f49.google.com (mail-pj1-f49.google.com [209.85.216.49]) (authenticated)
-        by conssluserg-03.nifty.com with ESMTP id 24PAqdlx027069;
-        Wed, 25 May 2022 19:52:40 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-03.nifty.com 24PAqdlx027069
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1653475960;
-        bh=MtfOTBQmTIo5gTOtbY0pPCrvlLY0X0Y8Np1AC0lw+eQ=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=ANejoCLa+JDY7f/QB+aEMkxCqqDRpGJEjfMrNqahapNxAEVC0xF1w5CQsnCL2lS2O
-         1gX3hq/+f+XudCW1fgQzPL47JwdLvbzHvhyX8mJKCHPF2mSwe3Vq0ISv4YiyHKIZIv
-         leBsblGAqcve8Hkc8vS7kamj6WfzeqTIBXvVYMjZHFlpDXO9x9fRxV3FvCfHIzmkm6
-         6ekMWG561FH5H/cIwmvT1IwvSn3PoF5YGsB2EnjObBC+V2xQ8C9PtYbYqcWCEuUTXe
-         FtvL3ESR85ykxh7vzqD+dtq/iEIgS9wLg2QKTL+7ak7YPZEvhuxVk9D9iBFuLCSERp
-         vapW+WHt4GTdA==
-X-Nifty-SrcIP: [209.85.216.49]
-Received: by mail-pj1-f49.google.com with SMTP id ds11so19398988pjb.0;
-        Wed, 25 May 2022 03:52:40 -0700 (PDT)
-X-Gm-Message-State: AOAM533XlS6M7Y/KNExiIldB1TZ0Puh2rZcT+uYdBc7oV3m5P+cR01IU
-        4xJaXuVp6XnW4Xlvk2c4vdCWre6LyEo6GiZqjMs=
-X-Google-Smtp-Source: ABdhPJwTb+MeL125OS2dBICYlt3qN+vGKJTfy+DMPZOd5L6Xfe4wzuDX6+FP55+i15sov9sLfellQ9730AqgGSrqPB0=
-X-Received: by 2002:a17:90a:e004:b0:1e0:7a66:fb3a with SMTP id
- u4-20020a17090ae00400b001e07a66fb3amr7988416pjy.119.1653475959363; Wed, 25
- May 2022 03:52:39 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220513113930.10488-1-masahiroy@kernel.org> <20220513113930.10488-7-masahiroy@kernel.org>
- <20220525083142.GA1952409@roeck-us.net>
-In-Reply-To: <20220525083142.GA1952409@roeck-us.net>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Wed, 25 May 2022 19:51:17 +0900
-X-Gmail-Original-Message-ID: <CAK7LNATifx2c877yEX5VkTQ5h7_7iSnTB0nkR5i98PEBHb=DuQ@mail.gmail.com>
-Message-ID: <CAK7LNATifx2c877yEX5VkTQ5h7_7iSnTB0nkR5i98PEBHb=DuQ@mail.gmail.com>
-Subject: Re: [PATCH v6 06/10] kbuild: check static EXPORT_SYMBOL* by script
- instead of modpost
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Wed, 25 May 2022 06:57:53 -0400
+Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 584461182F;
+        Wed, 25 May 2022 03:57:50 -0700 (PDT)
+Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=diego.localnet)
+        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <heiko@sntech.de>)
+        id 1ntohn-0005Jh-KS; Wed, 25 May 2022 12:57:31 +0200
+From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
+To:     Guo Ren <guoren@kernel.org>, Guenter Roeck <linux@roeck-us.net>
+Cc:     Palmer Dabbelt <palmer@dabbelt.com>, Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Christoph Hellwig <hch@lst.de>,
+        linux-arch <linux-arch@vger.kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Nicolas Schier <nicolas@fjasle.eu>,
-        Peter Zijlstra <peterz@infradead.org>,
-        linux-modules <linux-modules@vger.kernel.org>,
-        clang-built-linux <llvm@lists.linux.dev>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Sami Tolvanen <samitolvanen@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        linux-csky@vger.kernel.org,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        sparclinux <sparclinux@vger.kernel.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        Parisc List <linux-parisc@vger.kernel.org>,
+        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        the arch/x86 maintainers <x86@kernel.org>,
+        Guo Ren <guoren@linux.alibaba.com>
+Subject: Re: [PATCH V9 20/20] riscv: compat: Add COMPAT Kbuild skeletal support
+Date:   Wed, 25 May 2022 12:57:30 +0200
+Message-ID: <6435704.4vTCxPXJkl@diego>
+In-Reply-To: <20220524220646.GA3990738@roeck-us.net>
+References: <20220322144003.2357128-1-guoren@kernel.org> <CAJF2gTSa=roJOiKFiL8nSQ12E-emz-xrXs=RNAc4zSFaPuRAzw@mail.gmail.com> <20220524220646.GA3990738@roeck-us.net>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 25, 2022 at 5:31 PM Guenter Roeck <linux@roeck-us.net> wrote:
->
-> On Fri, May 13, 2022 at 08:39:26PM +0900, Masahiro Yamada wrote:
-> > The 'static' specifier and EXPORT_SYMBOL() are an odd combination.
-> >
-> > Commit 15bfc2348d54 ("modpost: check for static EXPORT_SYMBOL*
-> > functions") tried to detect it, but this check has false negatives.
-> >
-> > Here is the sample code.
-> >
-> >   Makefile:
-> >
-> >     obj-y += foo1.o foo2.o
-> >
-> >   foo1.c:
-> >
-> >     #include <linux/export.h>
-> >     static void foo(void) {}
-> >     EXPORT_SYMBOL(foo);
-> >
-> >   foo2.c:
-> >
-> >     void foo(void) {}
-> >
-> > foo1.c exports the static symbol 'foo', but modpost cannot catch it
-> > because it is fooled by foo2.c, which has a global symbol with the
-> > same name.
-> >
-> > s->is_static is cleared if a global symbol with the same name is found
-> > somewhere, but EXPORT_SYMBOL() and the global symbol do not necessarily
-> > belong to the same compilation unit.
-> >
-> > This check should be done per compilation unit, but I do not know how
-> > to do it in modpost. modpost runs against vmlinux.o or modules, which
-> > merges multiple objects, then forgets their origin.
-> >
-> > It is true modpost gets access to the lists of all the member objects
-> > (.vmlinux.objs and *.mod), but modpost cannot parse individual objects
-> > because they may not be ELF but LLVM IR when CONFIG_LTO_CLANG=y.
-> >
-> > Add a simple bash script to parse the output from ${NM}. This works for
-> > CONFIG_LTO_CLANG=y because llvm-nm can dump symbols of LLVM IR files.
-> >
->
-> On parisc builds, this patch results in:
->
-> Building parisc:allnoconfig ... failed
-> --------------
-> Error log:
-> scripts/check-local-export: sh /opt/buildbot/slave/next-next/build/arch/parisc/nm failed
->
-> Guenter
+Am Mittwoch, 25. Mai 2022, 00:06:46 CEST schrieb Guenter Roeck:
+> On Wed, May 25, 2022 at 01:46:38AM +0800, Guo Ren wrote:
+> [ ... ]
+> 
+> > > The problem is come from "__dls3's vdso decode part in musl's
+> > > ldso/dynlink.c". The ehdr->e_phnum & ehdr->e_phentsize are wrong.
+> > >
+> > > I think the root cause is from musl's implementation with the wrong
+> > > elf parser. I would fix that soon.
+> > Not elf parser, it's "aux vector just past environ[]". I think I could
+> > solve this, but anyone who could help dig in is welcome.
+> > 
+> 
+> I am not sure I understand what you are saying here. Point is that my
+> root file system, generated with musl a year or so ago, crashes with
+> your patch set applied. That is a regression, even if there is a bug
+> in musl.
 
-Thanks for the report.
+Also as I said in the other part of the thread, the rootfs seems innocent,
+as my completely-standard Debian riscv64 rootfs is also affected.
 
-parisc overrides NM:
+The merged version seems to be v12 [0] - not sure how we this discussion
+ended up in v9, but I just tested this revision in two variants:
 
-NM              = sh $(srctree)/arch/parisc/nm
+- v5.17 + this v9 -> works nicely
+- v5.18-rc6 + this v9 (rebased onto it) -> breaks the boot
+  The only rebase-conflict was with the introduction of restartable
+  sequences and removal of the tracehook include, but turning CONFIG_RSEQ
+  off doesn't seem to affect the breakage.
+
+So it looks like something changed between 5.17 and 5.18 that causes the issue.
 
 
-I will fix the script to return the correct exit code.
+Heiko
+
+
+[0] https://lore.kernel.org/all/20220405071314.3225832-1-guoren@kernel.org/
 
 
 
--- 
-Best Regards
-Masahiro Yamada
