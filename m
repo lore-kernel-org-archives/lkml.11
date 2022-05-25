@@ -2,109 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FE50C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 09:11:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5266DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 09:12:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237753AbiEYJLm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 05:11:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57812 "EHLO
+        id S240052AbiEYJMk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 05:12:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237000AbiEYJLD (ORCPT
+        with ESMTP id S238263AbiEYJMW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 05:11:03 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8EE58A071;
-        Wed, 25 May 2022 02:07:24 -0700 (PDT)
-X-UUID: 5af157c294aa472aa416d492f819533c-20220525
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:ea680478-ccdc-46ff-a755-d5267da9f63e,OB:0,LO
-        B:0,IP:0,URL:5,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:0
-X-CID-META: VersionHash:2a19b09,CLOUDID:85e72db8-3c45-407b-8f66-25095432a27a,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
-        ,QS:0,BEC:nil
-X-UUID: 5af157c294aa472aa416d492f819533c-20220525
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
-        (envelope-from <mark-pk.tsai@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 244032822; Wed, 25 May 2022 17:07:12 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
- Wed, 25 May 2022 17:07:11 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
- mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.3 via Frontend Transport; Wed, 25 May 2022 17:07:11 +0800
-From:   Mark-PK Tsai <mark-pk.tsai@mediatek.com>
-To:     <stable@vger.kernel.org>
-CC:     <mchehab@kernel.org>, <matthias.bgg@gmail.com>,
-        <hverkuil-cisco@xs4all.nl>, <mark-pk.tsai@mediatek.com>,
-        <sakari.ailus@linux.intel.com>, <linux-media@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>, <yj.chiang@mediatek.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Subject: [PATCH 5.10 2/2] media: vim2m: initialize the media device earlier
-Date:   Wed, 25 May 2022 17:07:02 +0800
-Message-ID: <20220525090702.29035-3-mark-pk.tsai@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220525090702.29035-1-mark-pk.tsai@mediatek.com>
-References: <20220525090702.29035-1-mark-pk.tsai@mediatek.com>
+        Wed, 25 May 2022 05:12:22 -0400
+Received: from jari.cn (unknown [218.92.28.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7513FB36C7;
+        Wed, 25 May 2022 02:08:16 -0700 (PDT)
+Received: by ajax-webmail-localhost.localdomain (Coremail) ; Wed, 25 May
+ 2022 17:03:03 +0800 (GMT+08:00)
+X-Originating-IP: [182.148.13.40]
+Date:   Wed, 25 May 2022 17:03:03 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From:   "XueBing Chen" <chenxuebing@jari.cn>
+To:     vkoul@kernel.org
+Cc:     dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] dmaengine: dmatest: use strscpy to replace strlcpy
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT6.0.1 build 20210329(c53f3fee)
+ Copyright (c) 2002-2022 www.mailtech.cn
+ mispb-4e503810-ca60-4ec8-a188-7102c18937cf-zhkzyfz.cn
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Message-ID: <12e4cf06.a35.180fa748c29.Coremail.chenxuebing@jari.cn>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: AQAAfwAHEW_H8I1ibgY4AA--.645W
+X-CM-SenderInfo: hfkh05pxhex0nj6mt2flof0/1tbiAQARCmFEYxsloAAHsF
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
+        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+        daVFxhVjvjDU=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-
-Before the video device node is registered, the v4l2_dev.mdev
-pointer must be set in order to correctly associate the video
-device with the media device. Move the initialization of the
-media device up.
-
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-(cherry picked from commit 1a28dce222a6ece725689ad58c0cf4a1b48894f4)
-Signed-off-by: Mark-PK Tsai <mark-pk.tsai@mediatek.com>
----
- drivers/media/test-drivers/vim2m.c | 14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/media/test-drivers/vim2m.c b/drivers/media/test-drivers/vim2m.c
-index 331a9053a0ed..a24624353f9e 100644
---- a/drivers/media/test-drivers/vim2m.c
-+++ b/drivers/media/test-drivers/vim2m.c
-@@ -1339,12 +1339,6 @@ static int vim2m_probe(struct platform_device *pdev)
- 		goto error_dev;
- 	}
- 
--	ret = video_register_device(vfd, VFL_TYPE_VIDEO, 0);
--	if (ret) {
--		v4l2_err(&dev->v4l2_dev, "Failed to register video device\n");
--		goto error_m2m;
--	}
--
- #ifdef CONFIG_MEDIA_CONTROLLER
- 	dev->mdev.dev = &pdev->dev;
- 	strscpy(dev->mdev.model, "vim2m", sizeof(dev->mdev.model));
-@@ -1353,7 +1347,15 @@ static int vim2m_probe(struct platform_device *pdev)
- 	media_device_init(&dev->mdev);
- 	dev->mdev.ops = &m2m_media_ops;
- 	dev->v4l2_dev.mdev = &dev->mdev;
-+#endif
- 
-+	ret = video_register_device(vfd, VFL_TYPE_VIDEO, 0);
-+	if (ret) {
-+		v4l2_err(&dev->v4l2_dev, "Failed to register video device\n");
-+		goto error_m2m;
-+	}
-+
-+#ifdef CONFIG_MEDIA_CONTROLLER
- 	ret = v4l2_m2m_register_media_controller(dev->m2m_dev, vfd,
- 						 MEDIA_ENT_F_PROC_VIDEO_SCALER);
- 	if (ret) {
--- 
-2.18.0
-
+ClRoZSBzdHJsY3B5IHNob3VsZCBub3QgYmUgdXNlZCBiZWNhdXNlIGl0IGRvZXNuJ3QgbGltaXQg
+dGhlIHNvdXJjZQpsZW5ndGguIFByZWZlcnJlZCBpcyBzdHJzY3B5LgoKU2lnbmVkLW9mZi1ieTog
+WHVlQmluZyBDaGVuIDxjaGVueHVlYmluZ0BqYXJpLmNuPgotLS0KIGRyaXZlcnMvZG1hL2RtYXRl
+c3QuYyB8IDEyICsrKysrKy0tLS0tLQogMSBmaWxlIGNoYW5nZWQsIDYgaW5zZXJ0aW9ucygrKSwg
+NiBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL2RtYS9kbWF0ZXN0LmMgYi9kcml2
+ZXJzL2RtYS9kbWF0ZXN0LmMKaW5kZXggZjY5NjI0NmY1N2ZkLi45MWJmNjVlMDY3NGMgMTAwNjQ0
+Ci0tLSBhL2RyaXZlcnMvZG1hL2RtYXRlc3QuYworKysgYi9kcml2ZXJzL2RtYS9kbWF0ZXN0LmMK
+QEAgLTEwOTUsOCArMTA5NSw4IEBAIHN0YXRpYyB2b2lkIGFkZF90aHJlYWRlZF90ZXN0KHN0cnVj
+dCBkbWF0ZXN0X2luZm8gKmluZm8pCiAKIAkvKiBDb3B5IHRlc3QgcGFyYW1ldGVycyAqLwogCXBh
+cmFtcy0+YnVmX3NpemUgPSB0ZXN0X2J1Zl9zaXplOwotCXN0cmxjcHkocGFyYW1zLT5jaGFubmVs
+LCBzdHJpbSh0ZXN0X2NoYW5uZWwpLCBzaXplb2YocGFyYW1zLT5jaGFubmVsKSk7Ci0Jc3RybGNw
+eShwYXJhbXMtPmRldmljZSwgc3RyaW0odGVzdF9kZXZpY2UpLCBzaXplb2YocGFyYW1zLT5kZXZp
+Y2UpKTsKKwlzdHJzY3B5KHBhcmFtcy0+Y2hhbm5lbCwgc3RyaW0odGVzdF9jaGFubmVsKSwgc2l6
+ZW9mKHBhcmFtcy0+Y2hhbm5lbCkpOworCXN0cnNjcHkocGFyYW1zLT5kZXZpY2UsIHN0cmltKHRl
+c3RfZGV2aWNlKSwgc2l6ZW9mKHBhcmFtcy0+ZGV2aWNlKSk7CiAJcGFyYW1zLT50aHJlYWRzX3Bl
+cl9jaGFuID0gdGhyZWFkc19wZXJfY2hhbjsKIAlwYXJhbXMtPm1heF9jaGFubmVscyA9IG1heF9j
+aGFubmVsczsKIAlwYXJhbXMtPml0ZXJhdGlvbnMgPSBpdGVyYXRpb25zOwpAQCAtMTI0MCw3ICsx
+MjQwLDcgQEAgc3RhdGljIGludCBkbWF0ZXN0X2NoYW5fc2V0KGNvbnN0IGNoYXIgKnZhbCwgY29u
+c3Qgc3RydWN0IGtlcm5lbF9wYXJhbSAqa3ApCiAJCQkJZHRjID0gbGlzdF9sYXN0X2VudHJ5KCZp
+bmZvLT5jaGFubmVscywKIAkJCQkJCSAgICAgIHN0cnVjdCBkbWF0ZXN0X2NoYW4sCiAJCQkJCQkg
+ICAgICBub2RlKTsKLQkJCQlzdHJsY3B5KGNoYW5fcmVzZXRfdmFsLAorCQkJCXN0cnNjcHkoY2hh
+bl9yZXNldF92YWwsCiAJCQkJCWRtYV9jaGFuX25hbWUoZHRjLT5jaGFuKSwKIAkJCQkJc2l6ZW9m
+KGNoYW5fcmVzZXRfdmFsKSk7CiAJCQkJcmV0ID0gLUVCVVNZOwpAQCAtMTI2MywxNCArMTI2Mywx
+NCBAQCBzdGF0aWMgaW50IGRtYXRlc3RfY2hhbl9zZXQoY29uc3QgY2hhciAqdmFsLCBjb25zdCBz
+dHJ1Y3Qga2VybmVsX3BhcmFtICprcCkKIAkJaWYgKChzdHJjbXAoZG1hX2NoYW5fbmFtZShkdGMt
+PmNoYW4pLCBzdHJpbSh0ZXN0X2NoYW5uZWwpKSAhPSAwKQogCQkgICAgJiYgKHN0cmNtcCgiIiwg
+c3RyaW0odGVzdF9jaGFubmVsKSkgIT0gMCkpIHsKIAkJCXJldCA9IC1FSU5WQUw7Ci0JCQlzdHJs
+Y3B5KGNoYW5fcmVzZXRfdmFsLCBkbWFfY2hhbl9uYW1lKGR0Yy0+Y2hhbiksCisJCQlzdHJzY3B5
+KGNoYW5fcmVzZXRfdmFsLCBkbWFfY2hhbl9uYW1lKGR0Yy0+Y2hhbiksCiAJCQkJc2l6ZW9mKGNo
+YW5fcmVzZXRfdmFsKSk7CiAJCQlnb3RvIGFkZF9jaGFuX2VycjsKIAkJfQogCiAJfSBlbHNlIHsK
+IAkJLyogQ2xlYXIgdGVzdF9jaGFubmVsIGlmIG5vIGNoYW5uZWxzIHdlcmUgYWRkZWQgc3VjY2Vz
+c2Z1bGx5ICovCi0JCXN0cmxjcHkoY2hhbl9yZXNldF92YWwsICIiLCBzaXplb2YoY2hhbl9yZXNl
+dF92YWwpKTsKKwkJc3Ryc2NweShjaGFuX3Jlc2V0X3ZhbCwgIiIsIHNpemVvZihjaGFuX3Jlc2V0
+X3ZhbCkpOwogCQlyZXQgPSAtRUJVU1k7CiAJCWdvdG8gYWRkX2NoYW5fZXJyOwogCX0KQEAgLTEy
+OTUsNyArMTI5NSw3IEBAIHN0YXRpYyBpbnQgZG1hdGVzdF9jaGFuX2dldChjaGFyICp2YWwsIGNv
+bnN0IHN0cnVjdCBrZXJuZWxfcGFyYW0gKmtwKQogCW11dGV4X2xvY2soJmluZm8tPmxvY2spOwog
+CWlmICghaXNfdGhyZWFkZWRfdGVzdF9ydW4oaW5mbykgJiYgIWlzX3RocmVhZGVkX3Rlc3RfcGVu
+ZGluZyhpbmZvKSkgewogCQlzdG9wX3RocmVhZGVkX3Rlc3QoaW5mbyk7Ci0JCXN0cmxjcHkodGVz
+dF9jaGFubmVsLCAiIiwgc2l6ZW9mKHRlc3RfY2hhbm5lbCkpOworCQlzdHJzY3B5KHRlc3RfY2hh
+bm5lbCwgIiIsIHNpemVvZih0ZXN0X2NoYW5uZWwpKTsKIAl9CiAJbXV0ZXhfdW5sb2NrKCZpbmZv
+LT5sb2NrKTsKIAotLSAKMi4zNi4xCg==
