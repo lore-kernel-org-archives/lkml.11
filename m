@@ -2,149 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1690C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 15:38:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CA7BC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 15:40:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234674AbiEYPiu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 11:38:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56982 "EHLO
+        id S245178AbiEYPkj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 11:40:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229893AbiEYPij (ORCPT
+        with ESMTP id S229893AbiEYPkg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 11:38:39 -0400
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 634891A83A
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 08:38:35 -0700 (PDT)
-Received: by mail-pf1-x430.google.com with SMTP id y189so4467681pfy.10
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 08:38:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=XfUA65d3SdbF2oQUu55YnSpsWlaG2pXPKVSvY3AeaaY=;
-        b=HdWmnFghAeH4LB9aqAeQKPfx4YaL1PQAnvmeL63qjEhQAsAKGPbUoWiw805DbWMH7w
-         XoiBlH8sgL6Qd92qTjABYEtmtm8Cg+0qLN6NFvKknvRaO+mJDJqgzHyWB8HEZuWXscrH
-         Xz1wzE6LmtCY4J5IB9STw0NM5YtUlc4+LnGaMH+uaVJ+9hl2W1D75vtJW+gstoCx0AkA
-         d24A8qRFz6/7+LHkWFIXmI8WCtXovRtftQ/wkbSch57kOh30B0HA6YIDAZKaOqrc/HGo
-         AI0GxMStontX+lP5N4q0iFkpJeCCyO1oQ5OEx/TB6KuwVerlzTV7dTM9Yp0K4fMtVoKp
-         48LA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=XfUA65d3SdbF2oQUu55YnSpsWlaG2pXPKVSvY3AeaaY=;
-        b=O+TDfTqFj7OlMc2StfrfP1eO/TaPeu9FCV5oVvARMt5sPkE4R2Veo8OdEFDHHvz7lN
-         AXyyoe01J21OIXAK5Cuv+R4xpktAAZxA50Fmw+5xUkmSaAqzobuqU2J4JG3712WafrqS
-         Rt2+g4uC1+iX6eXm8J5V98vyAg/sk932SmarfDntWgijt3gQ+wmgqczksA7DH1kxeGUU
-         DH6qrChZ7Mc8KPx/IxUogP3m4yEyjGlF5Xmsx8unuSWnsX94ehmmDYMhqQ9qHbcE0UHm
-         rVcfnAyT9hdbODZ5WueGpDc+EcNHTeRuQhDb1UIFsvRh4NlgbsrhRjMChN4ZHWoaP+42
-         6HAA==
-X-Gm-Message-State: AOAM533CoFtbQWmJz/4cg556V+1tiGzmAQiXh3neivaHMmObYuGrSAtq
-        Q+wj64RqpxEEW9cCDYyy+GrTpA==
-X-Google-Smtp-Source: ABdhPJw8ma6FFkHhjBy1EOWCJFVdGQF0wo4kNYjbEkPmz677E+idKlyhbhGwlIzdJdTyXCoafh/Lkg==
-X-Received: by 2002:a63:1a17:0:b0:3fa:e901:1c68 with SMTP id a23-20020a631a17000000b003fae9011c68mr2278636pga.243.1653493114887;
-        Wed, 25 May 2022 08:38:34 -0700 (PDT)
-Received: from localhost ([2408:8207:18da:2310:c40f:7b5:4fa8:df3f])
-        by smtp.gmail.com with ESMTPSA id t2-20020a170902e84200b001618fee3900sm9707878plg.196.2022.05.25.08.38.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 May 2022 08:38:34 -0700 (PDT)
-Date:   Wed, 25 May 2022 23:38:30 +0800
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     Johannes Weiner <hannes@cmpxchg.org>
-Cc:     mhocko@kernel.org, roman.gushchin@linux.dev, shakeelb@google.com,
-        cgroups@vger.kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, duanxiongchun@bytedance.com,
-        longman@redhat.com
-Subject: Re: [PATCH v4 03/11] mm: memcontrol: make lruvec lock safe when LRU
- pages are reparented
-Message-ID: <Yo5NdncOsqL0xP8Q@FVFYT0MHHV2J.googleapis.com>
-References: <20220524060551.80037-1-songmuchun@bytedance.com>
- <20220524060551.80037-4-songmuchun@bytedance.com>
- <Yo0xmKOkBkhRy+bq@cmpxchg.org>
- <Yo38mlkMBFz2h+yP@FVFYT0MHHV2J.googleapis.com>
- <Yo4hVw7B+bUlMzLX@cmpxchg.org>
- <Yo4pPw+IHPBZvZUv@FVFYT0MHHV2J.googleapis.com>
- <Yo5B1tLcYPUoaACS@cmpxchg.org>
+        Wed, 25 May 2022 11:40:36 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A957A888A
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 08:40:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653493236; x=1685029236;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=Yr71LVtIF0IzK1uygtSjo875vCTw40HqQF9YxW8zSVQ=;
+  b=UvWiL5pEfyMSllPJQEEbAB1rTnSnE4t3HI+Uf+o6c7oeU/HU86cZiKnD
+   Z2kbwGR489xeIJuU8MucfAXYri8YrN3nHq5fFlE/mcstSQ7XowRcOvn0C
+   8v1oc6e+y381Dp1Z+GwOM1qAth3IKIAd7vKX75XcIbnXj6y8yEhKoTTgi
+   7cxyWM3VwsIx9FxyaS9Fib1V6dOMRcv2A2ama6PO1rf95lasejhsbFCxG
+   lRqT3hkE8VHFOENAiP8kmpiFTT/1rtHFbXKB1rWhd8NYuYN5Jh1+KWKbb
+   uhq0XRQwaGo2nYiiMBLgJ4J4uiubUj2Ldc0iKduVdJLLZlm+eTWJNA22x
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10358"; a="360236085"
+X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
+   d="scan'208";a="360236085"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2022 08:40:35 -0700
+X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
+   d="scan'208";a="573316986"
+Received: from hcrossle-mobl.amr.corp.intel.com (HELO [10.209.24.64]) ([10.209.24.64])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2022 08:40:34 -0700
+Message-ID: <2e9802ec-dc06-29bd-b6db-b66c5ad49886@linux.intel.com>
+Date:   Wed, 25 May 2022 08:40:34 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yo5B1tLcYPUoaACS@cmpxchg.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.8.1
+Subject: Re: [PATCH v7 2/5] x86/tdx: Add TDX Guest event notify interrupt
+ support
+Content-Language: en-US
+To:     Kai Huang <kai.huang@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org
+Cc:     "H . Peter Anvin" <hpa@zytor.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Wander Lairson Costa <wander@redhat.com>,
+        Isaku Yamahata <isaku.yamahata@gmail.com>,
+        marcelo.cerri@canonical.com, tim.gardner@canonical.com,
+        khalid.elmously@canonical.com, philip.cox@canonical.com,
+        linux-kernel@vger.kernel.org
+References: <20220524040517.703581-1-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <20220524040517.703581-3-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <2db114898222afd86eee77bf8ac46099c75f154e.camel@intel.com>
+From:   Sathyanarayanan Kuppuswamy 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>
+In-Reply-To: <2db114898222afd86eee77bf8ac46099c75f154e.camel@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 25, 2022 at 10:48:54AM -0400, Johannes Weiner wrote:
-> On Wed, May 25, 2022 at 09:03:59PM +0800, Muchun Song wrote:
-> > On Wed, May 25, 2022 at 08:30:15AM -0400, Johannes Weiner wrote:
-> > > On Wed, May 25, 2022 at 05:53:30PM +0800, Muchun Song wrote:
-> > > > On Tue, May 24, 2022 at 03:27:20PM -0400, Johannes Weiner wrote:
-> > > > > On Tue, May 24, 2022 at 02:05:43PM +0800, Muchun Song wrote:
-> > > > > > @@ -1230,10 +1213,23 @@ void lruvec_memcg_debug(struct lruvec *lruvec, struct folio *folio)
-> > > > > >   */
-> > > > > >  struct lruvec *folio_lruvec_lock(struct folio *folio)
-> > > > > >  {
-> > > > > > -	struct lruvec *lruvec = folio_lruvec(folio);
-> > > > > > +	struct lruvec *lruvec;
-> > > > > >  
-> > > > > > +	rcu_read_lock();
-> > > > > > +retry:
-> > > > > > +	lruvec = folio_lruvec(folio);
-> > > > > >  	spin_lock(&lruvec->lru_lock);
-> > > > > > -	lruvec_memcg_debug(lruvec, folio);
-> > > > > > +
-> > > > > > +	if (unlikely(lruvec_memcg(lruvec) != folio_memcg(folio))) {
-> > > > > > +		spin_unlock(&lruvec->lru_lock);
-> > > > > > +		goto retry;
-> > > > > > +	}
-> > > > > > +
-> > > > > > +	/*
-> > > > > > +	 * Preemption is disabled in the internal of spin_lock, which can serve
-> > > > > > +	 * as RCU read-side critical sections.
-> > > > > > +	 */
-> > > > > > +	rcu_read_unlock();
-> > > > > 
-> > > > > The code looks right to me, but I don't understand the comment: why do
-> > > > > we care that the rcu read-side continues? With the lru_lock held,
-> > > > > reparenting is on hold and the lruvec cannot be rcu-freed anyway, no?
-> > > > >
-> > > > 
-> > > > Right. We could hold rcu read lock until end of reparting.  So you mean
-> > > > we do rcu_read_unlock in folio_lruvec_lock()?
-> > > 
-> > > The comment seems to suggest that disabling preemption is what keeps
-> > > the lruvec alive. But it's the lru_lock that keeps it alive. The
-> > > cgroup destruction path tries to take the lru_lock long before it even
-> > > gets to synchronize_rcu(). Once you hold the lru_lock, having an
-> > > implied read-side critical section as well doesn't seem to matter.
-> > >
-> > 
-> > Well, I thought that spinlocks have implicit read-side critical sections
-> > because it disables preemption (I learned from the comments above
-> > synchronize_rcu() that says interrupts, preemption, or softirqs have been
-> > disabled also serve as RCU read-side critical sections).  So I have a
-> > question: is it still true in a PREEMPT_RT kernel (I am not familiar with
-> > this)?
-> 
-> Yes, but you're missing my point.
-> 
-> > > Should the comment be deleted?
-> > 
-> > I think we could remove the comments. If the above question is false, seems
-> > like we should continue holding rcu read lock.
-> 
-> It's true.
->
+Hi Kai,
 
-Thanks for your answer.
+On 5/23/22 11:40 PM, Kai Huang wrote:
+>> +/* Helper function to register tdx_event_notify_handler */
+>> +void tdx_setup_ev_notify_handler(void (*handler)(void))
+>> +{
+>> +	tdx_event_notify_handler = handler;
+>> +}
+>> +EXPORT_SYMBOL_GPL(tdx_setup_ev_notify_handler);
+>> +
+>> +/* Helper function to unregister tdx_event_notify_handler */
+>> +void tdx_remove_ev_notify_handler(void)
+>> +{
+>> +	tdx_event_notify_handler = NULL;
+>> +}
+>> +EXPORT_SYMBOL_GPL(tdx_remove_ev_notify_handler);
+> I don't think you need to export the two symbols now.
 
-> But assume it's false for a second. Why would you need to continue
-> holding it? What would it protect? The lruvec would be pinned by the
-> spinlock even if it DIDN'T imply an RCU lock, right?
-> 
-> So I don't understand the point of the comment. If the implied RCU
-> lock is protecting something not covered by the bare spinlock itself,
-> it should be added to the comment. Otherwise, the comment should go.
->
+Agree. I will remove it.
 
-Got it. Thanks for your nice explanation. I'll remove
-the comment here.
+-- 
+Sathyanarayanan Kuppuswamy
+Linux Kernel Developer
