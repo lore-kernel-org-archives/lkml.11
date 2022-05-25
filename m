@@ -2,137 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6EBFC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 15:15:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39FB9C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 15:15:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236405AbiEYPPI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 11:15:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51874 "EHLO
+        id S241608AbiEYPPK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 11:15:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245067AbiEYPOx (ORCPT
+        with ESMTP id S245111AbiEYPO6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 11:14:53 -0400
-Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6CFBB0A56
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 08:14:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
-        from:to:cc:subject:date:message-id:mime-version
-        :content-transfer-encoding; s=k1; bh=PmJeUcD7gmhS0PYNVlvnsEYDc66
-        oPHymA7qkWS2f7mc=; b=l6xpk6TF26KM1mnnh0+jz50FYpB78xor+ZgrgkGzOa6
-        /AE5kojTiMnLlP2sgBBwW9mnPWd2Spv7hLf4TLCWD4m9nh5Bjx0BlX7RFlB8wC/r
-        EPoJDhAWWgkiPoHLYjKyPthdV/nL9C63iYoaz5aIwR1E4OtFpfi5rvjYBMcreuxw
-        =
-Received: (qmail 1645302 invoked from network); 25 May 2022 17:13:58 +0200
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 25 May 2022 17:13:58 +0200
-X-UD-Smtp-Session: l3s3148p1@hA++hdffyRdZD++C
-From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
-To:     linux-renesas-soc@vger.kernel.org
-Cc:     Linh Phung <linh.phung.jy@renesas.com>,
-        Wolfram Sang <wsa@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] arm64: dts: renesas: r8a779f0: Add thermal support
-Date:   Wed, 25 May 2022 17:13:55 +0200
-Message-Id: <20220525151355.24175-1-wsa+renesas@sang-engineering.com>
-X-Mailer: git-send-email 2.35.1
+        Wed, 25 May 2022 11:14:58 -0400
+Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98221AFB0A;
+        Wed, 25 May 2022 08:14:53 -0700 (PDT)
+Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=diego.localnet)
+        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <heiko@sntech.de>)
+        id 1ntsiW-0006cQ-BV; Wed, 25 May 2022 17:14:32 +0200
+From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
+To:     Rob Herring <robh@kernel.org>
+Cc:     palmer@dabbelt.com, paul.walmsley@sifive.com,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        wefu@redhat.com, guoren@kernel.org, atishp@atishpatra.org,
+        anup@brainfault.org, mick@ics.forth.gr, samuel@sholland.org,
+        cmuellner@linux.com, philipp.tomsich@vrull.eu, krzk+dt@kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH v2 1/3] dt-bindings: riscv: document cbom-block-size
+Date:   Wed, 25 May 2022 17:14:31 +0200
+Message-ID: <4376261.8F6SAcFxjW@diego>
+In-Reply-To: <20220518002529.GA1928329-robh@kernel.org>
+References: <20220511214132.2281431-1-heiko@sntech.de> <20220511214132.2281431-2-heiko@sntech.de> <20220518002529.GA1928329-robh@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linh Phung <linh.phung.jy@renesas.com>
+Am Mittwoch, 18. Mai 2022, 02:25:29 CEST schrieb Rob Herring:
+> On Wed, May 11, 2022 at 11:41:30PM +0200, Heiko Stuebner wrote:
+> > The Zicbom operates on a block-size defined for the cpu-core,
+> > which does not necessarily match other cache-sizes used.
+> > 
+> > So add the necessary property for the system to know the core's
+> > block-size.
+> > 
+> > Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+> > ---
+> >  Documentation/devicetree/bindings/riscv/cpus.yaml | 7 +++++++
+> >  1 file changed, 7 insertions(+)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/riscv/cpus.yaml b/Documentation/devicetree/bindings/riscv/cpus.yaml
+> > index d632ac76532e..b179bfd155a3 100644
+> > --- a/Documentation/devicetree/bindings/riscv/cpus.yaml
+> > +++ b/Documentation/devicetree/bindings/riscv/cpus.yaml
+> > @@ -63,6 +63,13 @@ properties:
+> >        - riscv,sv48
+> >        - riscv,none
+> >  
+> > +  riscv,cbom-block-size:
+> > +    $ref: /schemas/types.yaml#/definitions/uint32
+> 
+> Any value 0-2^32 is valid?
 
-Add support for 3 TSC nodes of thermal. The 4th node is for the control
-domain and not for Linux.
+funnily enough there really seems to be _no_ constraints defined in the
+spec [0] regarding the actual cache-block size.
 
-Signed-off-by: Linh Phung <linh.phung.jy@renesas.com>
-[wsa: rebased, fixed resource size, removed unused 4th node breaking probe]
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
----
+It essentially only states
+"The capacity and organization of a cache and the size of a
+cache block are both implementation-specific"
 
-Works fine on my Spider board and allowed me to disconnect the fan :)
+and later in software-discovery:
+"The initial set of CMO extensions requires the following information to
+be discovered by software:
+- The size of the cache block for management and prefetch instructions
+- The size of the cache block for zero instructions"
 
- arch/arm64/boot/dts/renesas/r8a779f0.dtsi | 56 +++++++++++++++++++++++
- 1 file changed, 56 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/renesas/r8a779f0.dtsi b/arch/arm64/boot/dts/renesas/r8a779f0.dtsi
-index df46fb87cffc..d89064f86d85 100644
---- a/arch/arm64/boot/dts/renesas/r8a779f0.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a779f0.dtsi
-@@ -157,6 +157,18 @@ sysc: system-controller@e6180000 {
- 			#power-domain-cells = <1>;
- 		};
- 
-+		tsc: thermal@e6198000 {
-+			compatible = "renesas,r8a779f0-thermal";
-+			/* The 4th sensor is in control domain and not for Linux */
-+			reg = <0 0xe6198000 0 0x200>,
-+			      <0 0xe61a0000 0 0x200>,
-+			      <0 0xe61a8000 0 0x200>;
-+			clocks = <&cpg CPG_MOD 919>;
-+			power-domains = <&sysc R8A779F0_PD_ALWAYS_ON>;
-+			resets = <&cpg 919>;
-+			#thermal-sensor-cells = <1>;
-+		};
-+
- 		i2c0: i2c@e6500000 {
- 			compatible = "renesas,i2c-r8a779f0",
- 				     "renesas,rcar-gen4-i2c";
-@@ -360,6 +372,50 @@ prr: chipid@fff00044 {
- 		};
- 	};
- 
-+	thermal-zones {
-+		sensor_thermal1: sensor-thermal1 {
-+			polling-delay-passive = <250>;
-+			polling-delay = <1000>;
-+			thermal-sensors = <&tsc 0>;
-+
-+			trips {
-+				sensor1_crit: sensor1-crit {
-+					temperature = <120000>;
-+					hysteresis = <1000>;
-+					type = "critical";
-+				};
-+			};
-+		};
-+
-+		sensor_thermal2: sensor-thermal2 {
-+			polling-delay-passive = <250>;
-+			polling-delay = <1000>;
-+			thermal-sensors = <&tsc 1>;
-+
-+			trips {
-+				sensor2_crit: sensor2-crit {
-+					temperature = <120000>;
-+					hysteresis = <1000>;
-+					type = "critical";
-+				};
-+			};
-+		};
-+
-+		sensor_thermal3: sensor-thermal3 {
-+			polling-delay-passive = <250>;
-+			polling-delay = <1000>;
-+			thermal-sensors = <&tsc 2>;
-+
-+			trips {
-+				sensor3_crit: sensor3-crit {
-+					temperature = <120000>;
-+					hysteresis = <1000>;
-+					type = "critical";
-+				};
-+			};
-+		};
-+	};
-+
- 	timer {
- 		compatible = "arm,armv8-timer";
- 		interrupts-extended = <&gic GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(1) | IRQ_TYPE_LEVEL_LOW)>,
--- 
-2.35.1
+
+[0] https://github.com/riscv/riscv-CMOs/blob/master/specifications/cmobase-v1.0.pdf
+
+
+> 
+> > +    description:
+> > +      Blocksize in bytes for the Zicbom cache operations. The block
+> > +      size is a property of the core itself and does not necessarily
+> > +      match other software defined cache sizes.
+> 
+> What about hardware defined cache sizes? I'm scratching my head as to 
+> what a 'software defined cache size' is.
+> 
+> > +
+> >    riscv,isa:
+> >      description:
+> >        Identifies the specific RISC-V instruction set architecture
+> 
+
+
+
 
