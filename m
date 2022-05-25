@@ -2,133 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32018C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 16:59:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9A77C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 16:59:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235511AbiEYQ7U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 12:59:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48170 "EHLO
+        id S245588AbiEYQ7Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 12:59:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245544AbiEYQ7G (ORCPT
+        with ESMTP id S245548AbiEYQ7J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 12:59:06 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0970A502C;
-        Wed, 25 May 2022 09:59:05 -0700 (PDT)
-Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24PFpQB8017100;
-        Wed, 25 May 2022 16:59:01 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=PskLGdI9JIgYggRegGXFky41jIqj4v59+3Z8Hb7wQr8=;
- b=rPcUgnvQb+4Ee6ntSk/BejaXX+Y7tX5uRNoFuo2om22OtM+vVj1nVxCRVWTI+s1MJTrf
- Q/W4dSNIaMmhKkv/YANORHUWKKrNm4wanWodEt1GR56rriDvh1+cFjfez0KvrEzUo47l
- fna3+VJaLJgct95n5IGttEcflBMyqNIwTC1S53ij91d/N9MFh+GtYPUYtirdo9kOCxGS
- k2yB03RnY5eYKxsBfFDnomyIv6s3oMKwh49SPYpUL4ZdF3xusyZEZQ+ISySkMvbhgUtW
- 1Gsm55zVkl/vwZQhfHBwGGkI5nKYoy2w1z42sMwAFHb4t7DYqKUGkniN7LeFsHfNYWJ8 fQ== 
-Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g9pwka7sh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 25 May 2022 16:59:00 +0000
-Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
-        by ppma02dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24PGd0BS010050;
-        Wed, 25 May 2022 16:59:00 GMT
-Received: from b01cxnp22036.gho.pok.ibm.com (b01cxnp22036.gho.pok.ibm.com [9.57.198.26])
-        by ppma02dal.us.ibm.com with ESMTP id 3g93v895bt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 25 May 2022 16:59:00 +0000
-Received: from b01ledav004.gho.pok.ibm.com (b01ledav004.gho.pok.ibm.com [9.57.199.109])
-        by b01cxnp22036.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24PGwxDL5046828
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 25 May 2022 16:58:59 GMT
-Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 5A4E4112064;
-        Wed, 25 May 2022 16:58:59 +0000 (GMT)
-Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id CBEBA112062;
-        Wed, 25 May 2022 16:58:58 +0000 (GMT)
-Received: from v0005c16.aus.stglabs.ibm.com (unknown [9.211.60.201])
-        by b01ledav004.gho.pok.ibm.com (Postfix) with ESMTP;
-        Wed, 25 May 2022 16:58:58 +0000 (GMT)
-From:   Eddie James <eajames@linux.ibm.com>
-To:     broonie@kernel.org
-Cc:     linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Eddie James <eajames@linux.ibm.com>
-Subject: [PATCH 1/2] spi: fsi: Fix spurious timeout
-Date:   Wed, 25 May 2022 11:58:51 -0500
-Message-Id: <20220525165852.33167-2-eajames@linux.ibm.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220525165852.33167-1-eajames@linux.ibm.com>
-References: <20220525165852.33167-1-eajames@linux.ibm.com>
+        Wed, 25 May 2022 12:59:09 -0400
+Received: from smtp14.infineon.com (smtp14.infineon.com [IPv6:2a00:18f0:1e00:4::6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A91EBA5035;
+        Wed, 25 May 2022 09:59:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=infineon.com; i=@infineon.com; q=dns/txt; s=IFXMAIL;
+  t=1653497947; x=1685033947;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=raAcKkRK1vcgseG7nX/0It4n0oYZNslYiC1vOHUyHq0=;
+  b=ikBNCExWRvax4k4SbEEcyZi5Cv7d203wToUNPQAEHPoywFTZhqqxCXQV
+   dQEewWAwrw3vKwh1vgadzqeAv4dJxYks+LsI2r/NGx0+rx3zCw3To4grx
+   nfeMEaQH6rHee3ZQXa5EtX9Kc1EISMCzL1YFuT7nOroEij58s4bWApOiK
+   Q=;
+X-SBRS: None
+X-IronPort-AV: E=McAfee;i="6400,9594,10358"; a="123667546"
+X-IronPort-AV: E=Sophos;i="5.91,250,1647298800"; 
+   d="scan'208";a="123667546"
+Received: from unknown (HELO mucxv003.muc.infineon.com) ([172.23.11.20])
+  by smtp14.infineon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2022 18:59:05 +0200
+Received: from MUCSE803.infineon.com (MUCSE803.infineon.com [172.23.29.29])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mucxv003.muc.infineon.com (Postfix) with ESMTPS;
+        Wed, 25 May 2022 18:59:04 +0200 (CEST)
+Received: from MUCSE817.infineon.com (172.23.29.43) by MUCSE803.infineon.com
+ (172.23.29.29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Wed, 25 May
+ 2022 18:59:04 +0200
+Received: from ISCNPC0VBFBX.infineon.com (172.23.8.247) by
+ MUCSE817.infineon.com (172.23.29.43) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.26; Wed, 25 May 2022 18:59:04 +0200
+From:   Alexander Steffen <Alexander.Steffen@infineon.com>
+To:     <jarkko@kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-integrity@vger.kernel.org>
+CC:     Alexander Steffen <Alexander.Steffen@infineon.com>,
+        <peterhuewe@gmx.de>, <jgg@ziepe.ca>,
+        <krzysztof.kozlowski+dt@linaro.org>,
+        Johannes Holland <johannes.holland@infineon.com>,
+        Amir Mizinski <amirmizi6@gmail.com>
+Subject: [PATCH v4 0/3] tpm_tis_i2c
+Date:   Wed, 25 May 2022 18:58:46 +0200
+Message-ID: <20220525165849.7789-1-Alexander.Steffen@infineon.com>
+X-Mailer: git-send-email 2.28.0.windows.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 0WGKjuUraLEgBZ5lvoe6BQHdSdHgZCl2
-X-Proofpoint-ORIG-GUID: 0WGKjuUraLEgBZ5lvoe6BQHdSdHgZCl2
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-25_04,2022-05-25_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 lowpriorityscore=0
- bulkscore=0 clxscore=1015 priorityscore=1501 impostorscore=0
- suspectscore=0 malwarescore=0 mlxlogscore=999 adultscore=0 phishscore=0
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2205250085
+Content-Type: text/plain
+X-Originating-IP: [172.23.8.247]
+X-ClientProxiedBy: MUCSE821.infineon.com (172.23.29.47) To
+ MUCSE817.infineon.com (172.23.29.43)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The driver may return a timeout error even if the status register
-indicates that the transfer may proceed. Fix this by restructuring
-the polling loop.
+Changelog:
+ * v4:
+   * Move changelog to cover letter
+   * Add compatibles to trivial-devices.yaml
+   * Split patch for CRC interface and implementation
+   * Add tpm_tis_i2c prefix to all functions
+   * Improve documentation for guard time and sanity check
+   * Use for loop instead of while for retries
+ * v3:
+   * Document address_to_register function
+   * Add tpm_tis_i2c prefix to address_to_register
+   * Add #ifdef CONFIG_OF to of_tis_i2c_match
+   * Fix typos
+ * v2:
+   * move CCs from copyright comment to commit message
+   * fix an unchecked return code
 
-Fixes: 89b35e3f2851 ("spi: fsi: Implement a timeout for polling status")
-Signed-off-by: Eddie James <eajames@linux.ibm.com>
----
- I have one concern still, that if the kernel is very busy, it may
- schedule other work for the entire timeout period between assigning
- "end" and checking if timed out in the do/while loop... Is it worth
- worrying about this case?
+Alexander Steffen (3):
+  dt-bindings: trivial-devices: Add two I2C TPM devices
+  tpm: Add tpm_tis_verify_crc to the tpm_tis_phy_ops protocol layer
+  tpm: Add tpm_tis_i2c backend for tpm_tis_core
 
- drivers/spi/spi-fsi.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ .../devicetree/bindings/trivial-devices.yaml  |   4 +
+ drivers/char/tpm/Kconfig                      |  12 +
+ drivers/char/tpm/Makefile                     |   1 +
+ drivers/char/tpm/tpm_tis_core.c               |  14 +
+ drivers/char/tpm/tpm_tis_core.h               |  10 +
+ drivers/char/tpm/tpm_tis_i2c.c                | 406 ++++++++++++++++++
+ 6 files changed, 447 insertions(+)
+ create mode 100644 drivers/char/tpm/tpm_tis_i2c.c
 
-diff --git a/drivers/spi/spi-fsi.c b/drivers/spi/spi-fsi.c
-index d403a7a3021d..72ab066ce552 100644
---- a/drivers/spi/spi-fsi.c
-+++ b/drivers/spi/spi-fsi.c
-@@ -319,12 +319,12 @@ static int fsi_spi_transfer_data(struct fsi_spi *ctx,
- 
- 			end = jiffies + msecs_to_jiffies(SPI_FSI_STATUS_TIMEOUT_MS);
- 			do {
-+				if (time_after(jiffies, end))
-+					return -ETIMEDOUT;
-+
- 				rc = fsi_spi_status(ctx, &status, "TX");
- 				if (rc)
- 					return rc;
--
--				if (time_after(jiffies, end))
--					return -ETIMEDOUT;
- 			} while (status & SPI_FSI_STATUS_TDR_FULL);
- 
- 			sent += nb;
-@@ -337,12 +337,12 @@ static int fsi_spi_transfer_data(struct fsi_spi *ctx,
- 		while (transfer->len > recv) {
- 			end = jiffies + msecs_to_jiffies(SPI_FSI_STATUS_TIMEOUT_MS);
- 			do {
-+				if (time_after(jiffies, end))
-+					return -ETIMEDOUT;
-+
- 				rc = fsi_spi_status(ctx, &status, "RX");
- 				if (rc)
- 					return rc;
--
--				if (time_after(jiffies, end))
--					return -ETIMEDOUT;
- 			} while (!(status & SPI_FSI_STATUS_RDR_FULL));
- 
- 			rc = fsi_spi_read_reg(ctx, SPI_FSI_DATA_RX, &in);
 -- 
-2.27.0
+2.25.1
 
