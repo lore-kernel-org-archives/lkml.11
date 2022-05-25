@@ -2,226 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05C43C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 12:29:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 110E8C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 12:30:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243186AbiEYM3R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 08:29:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51822 "EHLO
+        id S232599AbiEYMaY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 08:30:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241704AbiEYM2y (ORCPT
+        with ESMTP id S229590AbiEYMaU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 08:28:54 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6437B6D3B5;
-        Wed, 25 May 2022 05:28:53 -0700 (PDT)
+        Wed, 25 May 2022 08:30:20 -0400
+Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 501C76D3B7
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 05:30:18 -0700 (PDT)
+Received: by mail-qt1-x82b.google.com with SMTP id hh4so16757808qtb.10
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 05:30:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1653481733; x=1685017733;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=wPKTjp4pBEiMz4EdkImMhZtUIupns5o1HS/xgzUFg7g=;
-  b=Yy2Th0jcWnq/WXMqyHxf4Yu3ggCX+7/CdPIYxRnCnDSsPXcjo7dc8OCO
-   8VsjHkOz0kf44M1utE1cUt2U08FoH/uv3QtDJf8WIgpNwAAy8n1s+IR14
-   DCqMyMHj8GnXTCG4xR+h5Prcx13Ammp2RGB/EZ+iCtCIvL7xwHIHi+DYD
-   s=;
-Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
-  by alexa-out.qualcomm.com with ESMTP; 25 May 2022 05:28:53 -0700
-X-QCInternal: smtphost
-Received: from ironmsg01-blr.qualcomm.com ([10.86.208.130])
-  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 25 May 2022 05:28:51 -0700
-X-QCInternal: smtphost
-Received: from c-sbhanu-linux.qualcomm.com ([10.242.50.201])
-  by ironmsg01-blr.qualcomm.com with ESMTP; 25 May 2022 17:58:27 +0530
-Received: by c-sbhanu-linux.qualcomm.com (Postfix, from userid 2344807)
-        id 3CE99180E; Wed, 25 May 2022 17:58:26 +0530 (IST)
-From:   Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
-To:     adrian.hunter@intel.com, ulf.hansson@linaro.org, agross@kernel.org,
-        bjorn.andersson@linaro.org, p.zabel@pengutronix.de,
-        chris@printf.net, venkatg@codeaurora.org, gdjakov@mm-sol.com,
-        quic_asutoshd@quicinc.com
-Cc:     linux-arm-msm@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, quic_rampraka@quicinc.com,
-        quic_pragalla@quicinc.com, quic_sartgarg@quicinc.com,
-        quic_nitirawa@quicinc.com, quic_sayalil@quicinc.com,
-        Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>,
-        Liangliang Lu <quic_luliang@quicinc.com>,
-        "Bao D . Nguyen" <quic_nguyenb@quicinc.com>
-Subject: [PATCH V7 2/4] mmc: sdhci: Capture eMMC and SD card errors
-Date:   Wed, 25 May 2022 17:58:19 +0530
-Message-Id: <1653481701-19642-3-git-send-email-quic_c_sbhanu@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1653481701-19642-1-git-send-email-quic_c_sbhanu@quicinc.com>
-References: <1653481701-19642-1-git-send-email-quic_c_sbhanu@quicinc.com>
+        d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=E4cl00r8fZFLtwJTErC/nGIuII++sdl50FiWVn7DYDg=;
+        b=LQ44JAnhD9qNj4RiG4BM2QieawWgPoEVj/ws0ERKGtEhPFWMXrtNEm98uQ7TUyheVo
+         rk/xoF8YnmB9J1kXL50vICactGTOfnUzWkgZ5Rjf6EfYzCl2W+IYJlJp33UWMk+WGB7T
+         Dcl16HXheBKsBpvtLqQ+yx8Za8a3WR6Kn3Nju7kW8r9mqfz11Aniqi/lRVfU6DRwCwgQ
+         2yFPkQFNmwRVRHp7KaE3L9wsBmOW5Z2zeZWdhm6o1lQyde6g8wdx2SkgDj9sUgKdWe5A
+         D/gdxNoQMWC3mFXaHsiFzQeLLgD9lgIkx1FigDCGECAU0PkhOej/l8N6FPGcdmbMDvWl
+         ouVQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=E4cl00r8fZFLtwJTErC/nGIuII++sdl50FiWVn7DYDg=;
+        b=CVJD17ixaHVDhlrCFFprZ+oLotlXJ2/YAQIjgnzW9ZDw+i2so0mF0c0sOiPKg4WnIU
+         VXuSmCK9ynK5hxm/LEqCUeHOyChY/BYWDAXTQKg1cKVDx5CSTkSl/GO72vqMtEu0/hXo
+         +UpvnUsDQTQviaO2bhEu7WFfJY+EDxnNll1ir2XYuPdG2gpcAIYwhSHOAhVTjkma/Y4r
+         4eqcIKzhNs1vf2ZS7HIoUwsJWaGrfzqyrOzmlkXZ7jHc92weaCxMAQHq5mPYuJtlsSkT
+         eAvJT3YaKYf0nuQEXAufi6h1sK9iWn/+v8nLgQSVqSIgPOnUBX6Wkckbn02lVdWEZ40W
+         PeXg==
+X-Gm-Message-State: AOAM531Q+hLJXPP2xVPlMGQoFzQu0bo4cgbs5qkTeAwViSTDlA3TsRzM
+        TLND4a0/gVrHdjwFu6AjSvL6Xg==
+X-Google-Smtp-Source: ABdhPJyytRziWVwawprnzpoB9zMapge3xdxp4ugjwWUqfzlZvOH+tTzED4y/XZJINd6rGGx4ow4q7w==
+X-Received: by 2002:ac8:5e4c:0:b0:2f3:c50e:53a6 with SMTP id i12-20020ac85e4c000000b002f3c50e53a6mr24090727qtx.499.1653481817698;
+        Wed, 25 May 2022 05:30:17 -0700 (PDT)
+Received: from localhost ([2620:10d:c091:480::1:741f])
+        by smtp.gmail.com with ESMTPSA id o16-20020ac85550000000b002fb673aa50asm330344qtr.89.2022.05.25.05.30.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 25 May 2022 05:30:17 -0700 (PDT)
+Date:   Wed, 25 May 2022 08:30:15 -0400
+From:   Johannes Weiner <hannes@cmpxchg.org>
+To:     Muchun Song <songmuchun@bytedance.com>
+Cc:     mhocko@kernel.org, roman.gushchin@linux.dev, shakeelb@google.com,
+        cgroups@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, duanxiongchun@bytedance.com,
+        longman@redhat.com
+Subject: Re: [PATCH v4 03/11] mm: memcontrol: make lruvec lock safe when LRU
+ pages are reparented
+Message-ID: <Yo4hVw7B+bUlMzLX@cmpxchg.org>
+References: <20220524060551.80037-1-songmuchun@bytedance.com>
+ <20220524060551.80037-4-songmuchun@bytedance.com>
+ <Yo0xmKOkBkhRy+bq@cmpxchg.org>
+ <Yo38mlkMBFz2h+yP@FVFYT0MHHV2J.googleapis.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yo38mlkMBFz2h+yP@FVFYT0MHHV2J.googleapis.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add changes to capture eMMC and SD card errors.
-This is useful for debug and testing.
+On Wed, May 25, 2022 at 05:53:30PM +0800, Muchun Song wrote:
+> On Tue, May 24, 2022 at 03:27:20PM -0400, Johannes Weiner wrote:
+> > On Tue, May 24, 2022 at 02:05:43PM +0800, Muchun Song wrote:
+> > > The diagram below shows how to make the folio lruvec lock safe when LRU
+> > > pages are reparented.
+> > > 
+> > > folio_lruvec_lock(folio)
+> > >     retry:
+> > > 	lruvec = folio_lruvec(folio);
+> > > 
+> > >         // The folio is reparented at this time.
+> > >         spin_lock(&lruvec->lru_lock);
+> > > 
+> > >         if (unlikely(lruvec_memcg(lruvec) != folio_memcg(folio)))
+> > >             // Acquired the wrong lruvec lock and need to retry.
+> > >             // Because this folio is on the parent memcg lruvec list.
+> > >             goto retry;
+> > > 
+> > >         // If we reach here, it means that folio_memcg(folio) is stable.
+> > > 
+> > > memcg_reparent_objcgs(memcg)
+> > >     // lruvec belongs to memcg and lruvec_parent belongs to parent memcg.
+> > >     spin_lock(&lruvec->lru_lock);
+> > >     spin_lock(&lruvec_parent->lru_lock);
+> > > 
+> > >     // Move all the pages from the lruvec list to the parent lruvec list.
+> > > 
+> > >     spin_unlock(&lruvec_parent->lru_lock);
+> > >     spin_unlock(&lruvec->lru_lock);
+> > > 
+> > > After we acquire the lruvec lock, we need to check whether the folio is
+> > > reparented. If so, we need to reacquire the new lruvec lock. On the
+> > > routine of the LRU pages reparenting, we will also acquire the lruvec
+> > > lock (will be implemented in the later patch). So folio_memcg() cannot
+> > > be changed when we hold the lruvec lock.
+> > > 
+> > > Since lruvec_memcg(lruvec) is always equal to folio_memcg(folio) after
+> > > we hold the lruvec lock, lruvec_memcg_debug() check is pointless. So
+> > > remove it.
+> > > 
+> > > This is a preparation for reparenting the LRU pages.
+> > > 
+> > > Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+> > 
+> > This looks good to me. Just one question:
+> > 
+> > > @@ -1230,10 +1213,23 @@ void lruvec_memcg_debug(struct lruvec *lruvec, struct folio *folio)
+> > >   */
+> > >  struct lruvec *folio_lruvec_lock(struct folio *folio)
+> > >  {
+> > > -	struct lruvec *lruvec = folio_lruvec(folio);
+> > > +	struct lruvec *lruvec;
+> > >  
+> > > +	rcu_read_lock();
+> > > +retry:
+> > > +	lruvec = folio_lruvec(folio);
+> > >  	spin_lock(&lruvec->lru_lock);
+> > > -	lruvec_memcg_debug(lruvec, folio);
+> > > +
+> > > +	if (unlikely(lruvec_memcg(lruvec) != folio_memcg(folio))) {
+> > > +		spin_unlock(&lruvec->lru_lock);
+> > > +		goto retry;
+> > > +	}
+> > > +
+> > > +	/*
+> > > +	 * Preemption is disabled in the internal of spin_lock, which can serve
+> > > +	 * as RCU read-side critical sections.
+> > > +	 */
+> > > +	rcu_read_unlock();
+> > 
+> > The code looks right to me, but I don't understand the comment: why do
+> > we care that the rcu read-side continues? With the lru_lock held,
+> > reparenting is on hold and the lruvec cannot be rcu-freed anyway, no?
+> >
+> 
+> Right. We could hold rcu read lock until end of reparting.  So you mean
+> we do rcu_read_unlock in folio_lruvec_lock()?
 
-Signed-off-by: Liangliang Lu <quic_luliang@quicinc.com>
-Signed-off-by: Sayali Lokhande <quic_sayalil@quicinc.com>
-Signed-off-by: Bao D. Nguyen <quic_nguyenb@quicinc.com>
-Signed-off-by: Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
-Acked-by: Adrian Hunter <adrian.hunter@intel.com>
----
- drivers/mmc/host/sdhci.c | 33 ++++++++++++++++++++++++++-------
- drivers/mmc/host/sdhci.h |  3 +++
- include/linux/mmc/mmc.h  |  6 ++++++
- 3 files changed, 35 insertions(+), 7 deletions(-)
+The comment seems to suggest that disabling preemption is what keeps
+the lruvec alive. But it's the lru_lock that keeps it alive. The
+cgroup destruction path tries to take the lru_lock long before it even
+gets to synchronize_rcu(). Once you hold the lru_lock, having an
+implied read-side critical section as well doesn't seem to matter.
 
-diff --git a/drivers/mmc/host/sdhci.c b/drivers/mmc/host/sdhci.c
-index 4805566..95c1b39 100644
---- a/drivers/mmc/host/sdhci.c
-+++ b/drivers/mmc/host/sdhci.c
-@@ -183,6 +183,7 @@ void sdhci_reset(struct sdhci_host *host, u8 mask)
- 		if (timeout == 0) {
- 			pr_err("%s: Reset 0x%x never completed.\n",
- 				mmc_hostname(host->mmc), (int)mask);
-+			sdhci_err_stats_inc(host, CTRL_TIMEOUT);
- 			sdhci_dumpregs(host);
- 			return;
- 		}
-@@ -1093,6 +1094,7 @@ void sdhci_send_command(struct sdhci_host *host, struct mmc_command *cmd)
- 		if (timeout == 0) {
- 			pr_err("%s: Controller never released inhibit bit(s).\n",
- 			       mmc_hostname(host->mmc));
-+			sdhci_err_stats_inc(host, CTRL_TIMEOUT);
- 			sdhci_dumpregs(host);
- 			cmd->error = -EIO;
- 			sdhci_finish_mrq(host, cmd->mrq);
-@@ -1363,6 +1365,7 @@ void sdhci_set_clock(struct sdhci_host *host, unsigned int clock)
- 		if (timeout == 0) {
- 			pr_err("%s: Internal clock never stabilised.\n",
- 			       mmc_hostname(host->mmc));
-+			sdhci_err_stats_inc(host, CTRL_TIMEOUT);
- 			sdhci_dumpregs(host);
- 			return;
- 		}
-@@ -2362,6 +2365,7 @@ static void sdhci_timeout_timer(unsigned long data)
- 	if (host->cmd && !sdhci_data_line_cmd(host->cmd)) {
- 		pr_err("%s: Timeout waiting for hardware cmd interrupt.\n",
- 		       mmc_hostname(host->mmc));
-+		sdhci_err_stats_inc(host, REQ_TIMEOUT);
- 		sdhci_dumpregs(host);
- 
- 		host->cmd->error = -ETIMEDOUT;
-@@ -2385,6 +2389,7 @@ static void sdhci_timeout_data_timer(unsigned long data)
- 	    (host->cmd && sdhci_data_line_cmd(host->cmd))) {
- 		pr_err("%s: Timeout waiting for hardware interrupt.\n",
- 		       mmc_hostname(host->mmc));
-+		sdhci_err_stats_inc(host, REQ_TIMEOUT);
- 		sdhci_dumpregs(host);
- 
- 		if (host->data) {
-@@ -2421,16 +2426,21 @@ static void sdhci_cmd_irq(struct sdhci_host *host, u32 intmask, u32 *mask)
- 			return;
- 		pr_err("%s: Got command interrupt 0x%08x even though no command operation was in progress.\n",
- 		       mmc_hostname(host->mmc), (unsigned)intmask);
-+		sdhci_err_stats_inc(host, UNEXPECTED_IRQ);
- 		sdhci_dumpregs(host);
- 		return;
- 	}
- 
- 	if (intmask & (SDHCI_INT_TIMEOUT | SDHCI_INT_CRC |
- 		       SDHCI_INT_END_BIT | SDHCI_INT_INDEX)) {
--		if (intmask & SDHCI_INT_TIMEOUT)
-+		if (intmask & SDHCI_INT_TIMEOUT) {
- 			host->cmd->error = -ETIMEDOUT;
--		else
-+			sdhci_err_stats_inc(host, CMD_TIMEOUT);
-+		} else {
- 			host->cmd->error = -EILSEQ;
-+			if (!mmc_op_tuning(host->cmd->opcode))
-+				sdhci_err_stats_inc(host, CMD_CRC);
-+		}
- 
- 		/*
- 		 * If this command initiates a data phase and a response
-@@ -2524,6 +2534,7 @@ static void sdhci_data_irq(struct sdhci_host *host, u32 intmask)
- 		if (data_cmd && (data_cmd->flags & MMC_RSP_BUSY)) {
- 			if (intmask & SDHCI_INT_DATA_TIMEOUT) {
- 				data_cmd->error = -ETIMEDOUT;
-+				sdhci_err_stats_inc(host, CMD_TIMEOUT);
- 				sdhci_finish_mrq(host, data_cmd->mrq);
- 				return;
- 			}
-@@ -2551,22 +2562,29 @@ static void sdhci_data_irq(struct sdhci_host *host, u32 intmask)
- 
- 		pr_err("%s: Got data interrupt 0x%08x even though no data operation was in progress.\n",
- 		       mmc_hostname(host->mmc), (unsigned)intmask);
-+		sdhci_err_stats_inc(host, UNEXPECTED_IRQ);
- 		sdhci_dumpregs(host);
- 
- 		return;
- 	}
- 
--	if (intmask & SDHCI_INT_DATA_TIMEOUT)
-+	if (intmask & SDHCI_INT_DATA_TIMEOUT) {
- 		host->data->error = -ETIMEDOUT;
--	else if (intmask & SDHCI_INT_DATA_END_BIT)
-+		sdhci_err_stats_inc(host, DAT_TIMEOUT);
-+	} else if (intmask & SDHCI_INT_DATA_END_BIT) {
- 		host->data->error = -EILSEQ;
--	else if ((intmask & SDHCI_INT_DATA_CRC) &&
-+		if (!mmc_op_tuning(SDHCI_GET_CMD(sdhci_readw(host, SDHCI_COMMAND))))
-+			sdhci_err_stats_inc(host, DAT_CRC);
-+	} else if ((intmask & SDHCI_INT_DATA_CRC) &&
- 		SDHCI_GET_CMD(sdhci_readw(host, SDHCI_COMMAND))
--			!= MMC_BUS_TEST_R)
-+			!= MMC_BUS_TEST_R) {
- 		host->data->error = -EILSEQ;
--	else if (intmask & SDHCI_INT_ADMA_ERROR) {
-+		if (!mmc_op_tuning(SDHCI_GET_CMD(sdhci_readw(host, SDHCI_COMMAND))))
-+			sdhci_err_stats_inc(host, DAT_CRC);
-+	} else if (intmask & SDHCI_INT_ADMA_ERROR) {
- 		pr_err("%s: ADMA error\n", mmc_hostname(host->mmc));
- 		sdhci_adma_show_error(host);
-+		sdhci_err_stats_inc(host, ADMA);
- 		host->data->error = -EIO;
- 		if (host->ops->adma_workaround)
- 			host->ops->adma_workaround(host, intmask);
-@@ -2720,6 +2738,7 @@ static irqreturn_t sdhci_irq(int irq, void *dev_id)
- 	if (unexpected) {
- 		pr_err("%s: Unexpected interrupt 0x%08x.\n",
- 			   mmc_hostname(host->mmc), unexpected);
-+		sdhci_err_stats_inc(host, UNEXPECTED_IRQ);
- 		sdhci_dumpregs(host);
- 	}
- 
-diff --git a/drivers/mmc/host/sdhci.h b/drivers/mmc/host/sdhci.h
-index c722cd2..492a350 100644
---- a/drivers/mmc/host/sdhci.h
-+++ b/drivers/mmc/host/sdhci.h
-@@ -321,6 +321,9 @@ struct sdhci_adma2_64_desc {
- /* Allow for a a command request and a data request at the same time */
- #define SDHCI_MAX_MRQS		2
- 
-+#define sdhci_err_stats_inc(host, err_name) \
-+	mmc_debugfs_err_stats_inc((host)->mmc, MMC_ERR_##err_name)
-+
- enum sdhci_cookie {
- 	COOKIE_UNMAPPED,
- 	COOKIE_PRE_MAPPED,	/* mapped by sdhci_pre_req() */
-diff --git a/include/linux/mmc/mmc.h b/include/linux/mmc/mmc.h
-index c376209..2d66c89 100644
---- a/include/linux/mmc/mmc.h
-+++ b/include/linux/mmc/mmc.h
-@@ -90,6 +90,12 @@ static inline bool mmc_op_multi(u32 opcode)
- 	       opcode == MMC_READ_MULTIPLE_BLOCK;
- }
- 
-+static inline bool mmc_op_tuning(u32 opcode)
-+{
-+	return opcode == MMC_SEND_TUNING_BLOCK ||
-+			opcode == MMC_SEND_TUNING_BLOCK_HS200;
-+}
-+
- /*
-  * MMC_SWITCH argument format:
-  *
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member 
-of Code Aurora Forum, hosted by The Linux Foundation
-
+Should the comment be deleted?
