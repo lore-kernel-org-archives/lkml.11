@@ -2,141 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33456C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 17:39:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 441F0C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 17:39:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245723AbiEYRjC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 13:39:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46810 "EHLO
+        id S245727AbiEYRj3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 13:39:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229837AbiEYRjB (ORCPT
+        with ESMTP id S229837AbiEYRj1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 13:39:01 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37A6CAFADA
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 10:39:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653500340; x=1685036340;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=d8IVV6FH6JDhsADseOUxBqVpCfkI/N2LszUb6foim30=;
-  b=kLjwlh7mLw9V/mYIToEsKcgxqxStqCPiqQhNypWlH7tyXCQuBUtrpe21
-   xjpKUNMJFgowWYxHTJq2rGlRDvLV47ymi/wu0P3h/h2rTImuuM5Mr9Ayg
-   yS5bcs0yN+MmmmpNqqf7d7paaqkfc+zWfO/ULhtQviTkFgzLJJOES7vfS
-   J4wAetvuzXrAHw3p6KQQcwAbS+9B7SRdunFkjOn9xtqc6DXgP4lDth24z
-   lD1QX28rlVU4KMzrX4Y7hnVhNqJUEU4Hv4ZQLsGIXtqbJwBBXDY0fGhQq
-   gYRKb0a+TuWqts7TPdPON0fne5h2cOFOg7uc8Hf+DRTBM3emrJrMSFWgZ
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10358"; a="253754550"
-X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
-   d="scan'208";a="253754550"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2022 10:12:03 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
-   d="scan'208";a="642458622"
-Received: from lkp-server01.sh.intel.com (HELO db63a1be7222) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 25 May 2022 10:12:02 -0700
-Received: from kbuild by db63a1be7222 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ntuYD-0003Ao-Ij;
-        Wed, 25 May 2022 17:12:01 +0000
-Date:   Thu, 26 May 2022 01:11:49 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Viresh Kumar <viresh.kumar@linaro.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [vireshk-pm:opp/config 10/33] include/linux/pm_opp.h:459:16:
- warning: returning 'void *' from a function with return type 'int' makes
- integer from pointer without a cast
-Message-ID: <202205260146.VYGeif1G-lkp@intel.com>
+        Wed, 25 May 2022 13:39:27 -0400
+Received: from FRA01-MR2-obe.outbound.protection.outlook.com (mail-eopbgr90059.outbound.protection.outlook.com [40.107.9.59])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 912EAAFADF
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 10:39:26 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=kWzgjgprANaAjPwTGWbLxfeSG/Kv4YrBt33aU7Dk1jSJonJJuhk4NtPVSMTq0tRNLzOl1WeDFTnyrLnJmVdAAq5XA/x6jPDu6c2661N0j6+Or10i7zzenh0CiTw4NcsJAppMzgSNdEEId15iSS9DJU+Ej/LDyBJC8In2hZrdzA+TR/f6peBqESohhOWYGIPGk2lDwVj44QO71OZaHhMcpb38jDkj/Oq8Cf0nmYS4ybotdvLc1qjsm88z4DWu+USygCfeYfXMW0SUVf8/lP6hS7phLLwPc50CSnp1Skp/6x2YjodBFpv3uWMpEtV+V9bCXVVrDuYYzE7VfOeRXKm2VQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=km/dVeqapOg7KIoRHkbyUlr75InbtugElkCTwtJWTi8=;
+ b=BCfiYAyTP7Y/czT1ga1zKAOE2xSGxbXPRWEdxenrkJvQDvOkLBx/UDuPDw4EkoCIFBFhuvEazIxouLnw5pSKGsNXWKPFCBlH90TcRnEhPxGqISX64SyDnlp4nAXf/0We/8Sq4/mRciWYX8tPKfwWYOIux6zz5WQ/nSmi3D2BCoW0DM7sMv7t/0+Xbp9XO3ELpXzLry8E7UoWVRh7MpP2KnnuFoLuQ9MWMJJmqgVYG6Ong4c3+IccdNqoVuBdt1iWniM8CYdFcDgTr3AysJXuX6bDwDdW350IdlDyBeEbzjs4uhPAW6bLHt/Ipwe59HN/MLRotzFcCjtjE58d1VGpJg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=csgroup.eu; dmarc=pass action=none header.from=csgroup.eu;
+ dkim=pass header.d=csgroup.eu; arc=none
+Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM (2603:10a6:501:31::15)
+ by PAZP264MB3021.FRAP264.PROD.OUTLOOK.COM (2603:10a6:102:1e6::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.14; Wed, 25 May
+ 2022 17:39:24 +0000
+Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
+ ([fe80::b15e:862f:adf7:5356]) by MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
+ ([fe80::b15e:862f:adf7:5356%5]) with mapi id 15.20.5273.023; Wed, 25 May 2022
+ 17:39:24 +0000
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Sathvika Vasireddy <sv@linux.vnet.ibm.com>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        "aik@ozlabs.ru" <aik@ozlabs.ru>, "mbenes@suse.cz" <mbenes@suse.cz>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "jpoimboe@redhat.com" <jpoimboe@redhat.com>,
+        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
+        Sathvika Vasireddy <sv@linux.ibm.com>
+Subject: Re: [RFC PATCH v2 0/7] objtool: Enable and implement --mcount option
+ on powerpc
+Thread-Topic: [RFC PATCH v2 0/7] objtool: Enable and implement --mcount option
+ on powerpc
+Thread-Index: AQHYb3C6vgEmcLWl90eZLKe3IHFJVq0vYXAAgAB8bIA=
+Date:   Wed, 25 May 2022 17:39:24 +0000
+Message-ID: <ea64b232-e002-9317-dca1-c5933fb94e03@csgroup.eu>
+References: <cover.1653398233.git.christophe.leroy@csgroup.eu>
+ <ac4e3ceb-7de8-2c3f-4689-1730d811bf3d@linux.vnet.ibm.com>
+In-Reply-To: <ac4e3ceb-7de8-2c3f-4689-1730d811bf3d@linux.vnet.ibm.com>
+Accept-Language: fr-FR, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=csgroup.eu;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: e5cf7d04-969c-4701-b3f8-08da3e758218
+x-ms-traffictypediagnostic: PAZP264MB3021:EE_
+x-microsoft-antispam-prvs: <PAZP264MB3021F9471131D87676C68994EDD69@PAZP264MB3021.FRAP264.PROD.OUTLOOK.COM>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: V+3d1ptqhZC8WgWNgp3J6TusO7fcA5gM1RCRWkcHhqaWHiSIEYLaPrw259pmAZgLVQQh5BIo1PaC/Ep+ClhxdEtLiC2lxHkx3yCrd98muesqJJeBXUV+442yOvrAQmAmq189PRtdxKV9DUimEPtpNTrm3d4P5Yn/C9/OHeAO7lhVsS2oLcBBKAkArFVJmr+yMZCs3kqtc8mePx+DqP5puc/Rr8GSApP/bWHqZiGk5/LqemKr6I4rWI3aVbpKlu/9ESloEr5DjVCVCYzu1zFzn4UNbA6DwFnhFjPJljfpa6NW044VJxtLreQFgEWqDcogtYBe0ggsBZAebQe8MAD9Kw75MhfDVT+Vjb3wwx+5murORrvkTsg6DR7c0hOUoniQvY+BHFdVv2wA+Eu4K7DfSviJNH3zUFO58AiaowD+URQ/9OLVacZn96/IiZLfzVlf2HnI4k5i3ytJLRK7kAUqvnX0fFlQPFIeY6u8BckxTNn/bid43yf5GEKhRhN+SYxugsAMg4U2WhuhN1QyyWLaF27ShWaWHcSJ66B+OCal5I6QeciBGvhfEhSDcnIi68oGFf9lS4gzr+y0HL+jMLrDm2JKN8NvwG0YkRzcn8386ZPyjdlCHTCsHTTGN94U/oIRtg7eT7mhcQlhXgYlc3p5Ee8VnBPorY6nWvZcWufxE3NHKgRe5ePmQQmbaxDpu8WHrzmcMDYNIHljvg91Bzcgmxmu0AhTfkEDlAQJjWYHwIbuM/NNdDRWKXXLcOmmz87E/FjoXZV6aCoxmAYye4Veug==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6506007)(122000001)(36756003)(86362001)(31686004)(2616005)(186003)(7416002)(54906003)(53546011)(5660300002)(44832011)(38070700005)(6916009)(38100700002)(91956017)(64756008)(8676002)(76116006)(66556008)(66946007)(66446008)(316002)(8936002)(4326008)(66476007)(2906002)(31696002)(71200400001)(83380400001)(6512007)(508600001)(26005)(6486002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?bk1HRmJraXkzdTcraXhDSlNHMGxEZWlmMHpGRkdWYStqUXVRRHZQbkRRZk9J?=
+ =?utf-8?B?bkJtL2hsVVlsaWNqTFdldWNLMXpwVzZxZksza1NRWU1sNTVYSExOYysvbklV?=
+ =?utf-8?B?bUl1QUNydVdRZnNmeEJzVklMS0RWd1VOd01qL1VYMzhoaUdHa3hTa2RoWm1I?=
+ =?utf-8?B?Vkg2TjJyOWVCR2d2MTQ3S1VmNzhuL214dExNaHpsU1hiLzZjSHFUUENmNExv?=
+ =?utf-8?B?bTM1dm9pMzJNK0xoaXc0TlVaVkVNSEZXT3AyTFRjNC9UcUduNnFFZjJxMlp5?=
+ =?utf-8?B?cDdkOHFsMGhvN0VzdHlFSmFYdTdzTDB4UVFxQk4xRXFrRjA4L1R5VUtmbnND?=
+ =?utf-8?B?V0pScjdlYnBwZEJTTjFDZ2pyMTFBT24xTVhSRHJWUnlPWHA4SzhtaHVkd3NZ?=
+ =?utf-8?B?S3FrY2xUeEFxQjJ4ejYvdFpMWXlGeWk5OXdTOSthNlFtdEVVV1RLbzFUZjM5?=
+ =?utf-8?B?YTZoNmd1TEFIT25sWlJuSFJETlk3TFJaV1R5Q2xlNzdoUDk3QnlEckxxTTNO?=
+ =?utf-8?B?QjJXTWc3ejdCNmJEazc3UW1XaU9HUzYwUkl5TzJxcmREV3JCODk4bWFtUVRl?=
+ =?utf-8?B?RnNOR2hLUWxrL0loOUlVdkxrdSszeG1YdzlDTlZVWW1lQmlnM0dzeWFiY3NV?=
+ =?utf-8?B?Wlp6WGNTclkxcEtrZUVyZWdNVjhyUVYxRnk2aGtQSDJ3dzhxdFZJZzZBdkU5?=
+ =?utf-8?B?alBWVU9VYW53T0tsdThiaStuSDBCUVhaY1Z2QVpiOS84VkRET01La0p3THR4?=
+ =?utf-8?B?RmJyRGlZaDJsVisvcmc1cUlxSGt5NVF3NzIzOUlaTW5MandKR2VxTkw3ZWdx?=
+ =?utf-8?B?NStnSHU4SDBrUmRlZjU4SkF1Snl4YWk1anJ6ZkdCZ0lDbnNlMHNjb3FVbita?=
+ =?utf-8?B?b0ZCUlV4dk81TmMrL2YzaDBPMGcvREEzdk1uN1pDRzQrTmlxeDZGT3haUW5L?=
+ =?utf-8?B?eTFQNjRkTTRsajhLNHg4cUtpdURRZUtQWXpLNnlyYmpkc3J0M281YytWOUlI?=
+ =?utf-8?B?N1F1VmpGanhxc1VyUGhTSW8xNlF3Z1pLYTRxcWlsbVNTd1ZKbHBvZDBZYmJM?=
+ =?utf-8?B?Q1Z1MWhzazlpZytEaHc0M0NrOWlDWlNKbThZWmhPeUxpQWFOQTlUQ01LVG5G?=
+ =?utf-8?B?ZXVvZGNzeVNPNkhTVkxsQW5QdElzL2JvTlVlNzUvNS9nUUswQ3VzT2IzVmdW?=
+ =?utf-8?B?Sk9ReEpnTnJnZTdNa3JqNXpQNHAxU2FrVU1zdC9aeEFYOGN5c0lFVWVNbWxX?=
+ =?utf-8?B?ZnFwbWtURWxjRnJRbjQyZUFUMGhkMm55S1Nrbng5YXllUXFtSUNoSDJIalNo?=
+ =?utf-8?B?d1Vpby9zbWYvUlRhSThpMUtTblY2dDdHMklBWStDNDNtV1YrOGZodk9qcE90?=
+ =?utf-8?B?R2p6S2gweDRLenZPTVRUY2pBdXhzeFhEaERsTEpBaUtVV1UyRFEyU25PWHZw?=
+ =?utf-8?B?WFBZUmdFaUxRaHhDVC9udE9FdnFtZlR5RlZoODg3L1NGRXYrR3l1K3Yrc2Mz?=
+ =?utf-8?B?WGNMMmpGRmNJOEU3RTgyUlVBaVY4aEFYNXFEZ25VeHo2VktuRVZXZ2o3WFRT?=
+ =?utf-8?B?VW5KSkxMb1NsdXd1eW85Z2paSWJ5WFRCSmduU2w2SWFobWhkRVg0ZndURlpE?=
+ =?utf-8?B?dlgvS2pObDBvTHJ4ZXNFVFVVblFzZFNYQXBuUXFyendDS2Vpc3VmMnJwRWIz?=
+ =?utf-8?B?Nk1WQk56V2xtcHZQMUNtbkFzZ1FwRUIvOFYxb0NUVGwrOXBlR2xuZ1oyait2?=
+ =?utf-8?B?RjZway9ibFhGNjJURFBONVlHVG5SVG1xS2p4V3I3ZUpiTjJZVVN3d3dDL2NE?=
+ =?utf-8?B?M3VoRXNYVkxQWU8rYWVGNUpzNVFJSi9YV3BZbXdoZVoxTVBUQmEyZ202N2Zz?=
+ =?utf-8?B?MFY5S3ViWWwxYzMxbUMwZnNHa0xielBLMkJza0tLSzhONmhqN1dOdk9DOHo4?=
+ =?utf-8?B?MTR2aVNrVzZaSm00V09VemNkam9rN3ZLclhEa0FNbkQ5TzkrZ1VjOTBTaVVR?=
+ =?utf-8?B?czhqQTZEaFdJV3VxekFEVVlOMHpRTlpESEVPMmFqNTFIZ0ZkUGViaXVkaEJ6?=
+ =?utf-8?B?c0FRSjc4ampFVnlSZmRobFl0OW04OVQ0VlA2djhVMGhtZFpNV1pDZEFpSGRG?=
+ =?utf-8?B?eWppaEVKUWtkaUs5TjQyUjFoQndqZ29jbjJUSWhCQ3RsTkljbUFyTGZXcGRD?=
+ =?utf-8?B?bGVoRDU2djhiZGFXamdqdVd1QmlGcGdjYTNoYThCNGpudmtlZXAzOUN4aWlB?=
+ =?utf-8?B?V244cUsyalkwazZXNGpqVFVKbnN2RzFidUY0YlhibzNDZHQ1eURSNlFnN2ZB?=
+ =?utf-8?B?Y05uS3hYVE9zOUJDVFQ1TkFGdjFUbEk3OTd2a21zVktQVmFJVEM2TVllNnZX?=
+ =?utf-8?Q?54StoQQqfZ/bIPBRn2omaMdtrQd7JeItRElBi?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <601DFE0E458B0F45B2E7BAE785BCE9C5@FRAP264.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+X-OriginatorOrg: csgroup.eu
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: e5cf7d04-969c-4701-b3f8-08da3e758218
+X-MS-Exchange-CrossTenant-originalarrivaltime: 25 May 2022 17:39:24.0786
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 9914def7-b676-4fda-8815-5d49fb3b45c8
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: GOu5ES5Wog/6Y9fEKgaHkOXZwzaNZpKsnyJ3S0OvsOhfShnDMw9KtNMqUIt3VhkJDx9f8rybY+PM8scsYzqKZ9gIr/V3ug0svlTCio8kg9Q=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAZP264MB3021
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/vireshk/pm.git opp/config
-head:   d730dc101c586defb49eeafd8eea9b7bb0baa01b
-commit: a23b86fb0614c769679169402c09ebcd07dbb22f [10/33] OPP: Add dev_pm_opp_set_config() and friends
-config: m68k-randconfig-r033-20220524 (https://download.01.org/0day-ci/archive/20220526/202205260146.VYGeif1G-lkp@intel.com/config)
-compiler: m68k-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/vireshk/pm.git/commit/?id=a23b86fb0614c769679169402c09ebcd07dbb22f
-        git remote add vireshk-pm https://git.kernel.org/pub/scm/linux/kernel/git/vireshk/pm.git
-        git fetch --no-tags vireshk-pm opp/config
-        git checkout a23b86fb0614c769679169402c09ebcd07dbb22f
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash kernel/sched/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   In file included from include/linux/cpufreq.h:19,
-                    from kernel/sched/sched.h:30,
-                    from kernel/sched/core.c:81:
-   include/linux/pm_opp.h: In function 'devm_pm_opp_set_config':
->> include/linux/pm_opp.h:459:16: warning: returning 'void *' from a function with return type 'int' makes integer from pointer without a cast [-Wint-conversion]
-     459 |         return ERR_PTR(-EOPNOTSUPP);
-         |                ^~~~~~~~~~~~~~~~~~~~
-   kernel/sched/core.c: At top level:
-   kernel/sched/core.c:5235:20: warning: no previous prototype for 'task_sched_runtime' [-Wmissing-prototypes]
-    5235 | unsigned long long task_sched_runtime(struct task_struct *p)
-         |                    ^~~~~~~~~~~~~~~~~~
-   kernel/sched/core.c:9420:13: warning: no previous prototype for 'sched_init_smp' [-Wmissing-prototypes]
-    9420 | void __init sched_init_smp(void)
-         |             ^~~~~~~~~~~~~~
-   kernel/sched/core.c:9448:13: warning: no previous prototype for 'sched_init' [-Wmissing-prototypes]
-    9448 | void __init sched_init(void)
-         |             ^~~~~~~~~~
---
-   In file included from include/linux/cpufreq.h:19,
-                    from kernel/sched/sched.h:30,
-                    from kernel/sched/fair.c:53:
-   include/linux/pm_opp.h: In function 'devm_pm_opp_set_config':
->> include/linux/pm_opp.h:459:16: warning: returning 'void *' from a function with return type 'int' makes integer from pointer without a cast [-Wint-conversion]
-     459 |         return ERR_PTR(-EOPNOTSUPP);
-         |                ^~~~~~~~~~~~~~~~~~~~
-   kernel/sched/fair.c: At top level:
-   kernel/sched/fair.c:663:5: warning: no previous prototype for 'sched_update_scaling' [-Wmissing-prototypes]
-     663 | int sched_update_scaling(void)
-         |     ^~~~~~~~~~~~~~~~~~~~
---
-   In file included from include/linux/cpufreq.h:19,
-                    from kernel/sched/sched.h:30,
-                    from kernel/sched/build_policy.c:33:
-   include/linux/pm_opp.h: In function 'devm_pm_opp_set_config':
->> include/linux/pm_opp.h:459:16: warning: returning 'void *' from a function with return type 'int' makes integer from pointer without a cast [-Wint-conversion]
-     459 |         return ERR_PTR(-EOPNOTSUPP);
-         |                ^~~~~~~~~~~~~~~~~~~~
-   In file included from kernel/sched/build_policy.c:43:
-   kernel/sched/rt.c: At top level:
-   kernel/sched/rt.c:666:6: warning: no previous prototype for 'sched_rt_bandwidth_account' [-Wmissing-prototypes]
-     666 | bool sched_rt_bandwidth_account(struct rt_rq *rt_rq)
-         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~
---
-   In file included from include/linux/cpufreq.h:19,
-                    from kernel/sched/build_utility.c:21:
-   include/linux/pm_opp.h: In function 'devm_pm_opp_set_config':
->> include/linux/pm_opp.h:459:16: warning: returning 'void *' from a function with return type 'int' makes integer from pointer without a cast [-Wint-conversion]
-     459 |         return ERR_PTR(-EOPNOTSUPP);
-         |                ^~~~~~~~~~~~~~~~~~~~
-
-
-vim +459 include/linux/pm_opp.h
-
-   456	
-   457	static inline int devm_pm_opp_set_config(struct device *dev, struct dev_pm_opp_config *config)
-   458	{
- > 459		return ERR_PTR(-EOPNOTSUPP);
-   460	}
-   461	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+SGkgU2F0aHZpa2EsDQoNCkxlIDI1LzA1LzIwMjIgw6AgMTI6MTQsIFNhdGh2aWthIFZhc2lyZWRk
+eSBhIMOpY3JpdMKgOg0KPiBIaSBDaHJpc3RvcGhlLA0KPiANCj4gT24gMjQvMDUvMjIgMTg6NDcs
+IENocmlzdG9waGUgTGVyb3kgd3JvdGU6DQo+PiBUaGlzIGRyYWZ0IHNlcmllcyBhZGRzIFBQQzMy
+IHN1cHBvcnQgdG8gU2F0aHZpa2EncyBzZXJpZXMuDQo+PiBWZXJpZmllZCBvbiBwbWFjMzIgb24g
+UUVNVS4NCj4+DQo+PiBJdCBzaG91bGQgaW4gcHJpbmNpcGxlIGFsc28gd29yayBmb3IgUFBDNjQg
+QkUgYnV0IGZvciB0aGUgdGltZSBiZWluZw0KPj4gc29tZXRoaW5nIGdvZXMgd3JvbmcuIEluIHRo
+ZSBiZWdpbm5pbmcgSSBoYWQgYSBzZWdmYXV0IGhlbmNlIHRoZSBmaXJzdA0KPj4gcGF0Y2guIEJ1
+dCBJIHN0aWxsIGdldCBubyBtY291bnQgc2VjdGlvbiBpbiB0aGUgZmlsZXMuDQo+IFNpbmNlIFBQ
+QzY0IEJFIHVzZXMgb2xkZXIgZWxmdjEgQUJJLCBpdCBwcmVwZW5kcyBhIGRvdCB0byBzeW1ib2xz
+Lg0KPiBBbmQgc28sIHRoZSByZWxvY2F0aW9uIHJlY29yZHMgaW4gY2FzZSBvZiBQUEM2NEJFIHBv
+aW50IHRvICIuX21jb3VudCIsDQo+IHJhdGhlciB0aGFuIGp1c3QgIl9tY291bnQiLiBXZSBzaG91
+bGQgYmUgbG9va2luZyBmb3IgIi5fbWNvdW50IiB0byBiZQ0KPiBhYmxlIHRvIGdlbmVyYXRlIG1j
+b3VudF9sb2Mgc2VjdGlvbiBpbiB0aGUgZmlsZXMuDQo+IA0KPiBMaWtlOg0KPiANCj4gZGlmZiAt
+LWdpdCBhL3Rvb2xzL29ianRvb2wvY2hlY2suYyBiL3Rvb2xzL29ianRvb2wvY2hlY2suYw0KPiBp
+bmRleCA3MGJlNWE3MmU4MzguLjdkYTViZjhjNzIzNiAxMDA2NDQNCj4gLS0tIGEvdG9vbHMvb2Jq
+dG9vbC9jaGVjay5jDQo+ICsrKyBiL3Rvb2xzL29ianRvb2wvY2hlY2suYw0KPiBAQCAtMjE4NSw3
+ICsyMTg1LDcgQEAgc3RhdGljIGludCBjbGFzc2lmeV9zeW1ib2xzKHN0cnVjdCBvYmp0b29sX2Zp
+bGUgDQo+ICpmaWxlKQ0KPiAgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoCBpZiAoYXJjaF9pc19yZXRwb2xpbmUoZnVuYykpDQo+ICDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBmdW5jLT5yZXRw
+b2xpbmVfdGh1bmsgPSB0cnVlOw0KPiANCj4gLcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgIGlmICgoIXN0cmNtcChmdW5jLT5uYW1lLCAiX19mZW50cnlfXyIpKSB8
+fCANCj4gKCFzdHJjbXAoZnVuYy0+bmFtZSwgIl9tY291bnQiKSkpDQo+ICvCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBpZiAoKCFzdHJjbXAoZnVuYy0+bmFtZSwg
+Il9fZmVudHJ5X18iKSkgfHwgDQo+ICghc3RyY21wKGZ1bmMtPm5hbWUsICJfbWNvdW50IikpIHx8
+ICghc3RyY21wKGZ1bmMtPm5hbWUsICIuX21jb3VudCIpKSkNCj4gIMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGZ1bmMtPmZlbnRy
+eSA9IHRydWU7DQo+IA0KPiAgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoCBpZiAoaXNfcHJvZmlsaW5nX2Z1bmMoZnVuYy0+bmFtZSkpDQo+IA0KPiANCj4gV2l0
+aCB0aGlzIGNoYW5nZSwgSSBjb3VsZCBzZWUgX19tY291bnRfbG9jIHNlY3Rpb24gYmVpbmcNCj4g
+Z2VuZXJhdGVkIGluIGluZGl2aWR1YWwgcHBjNjRiZSBvYmplY3QgZmlsZXMuDQo+IA0KDQpPciBz
+aG91bGQgd2UgaW1wbGVtZW50IGFuIGVxdWl2YWxlbnQgb2YgYXJjaF9mdHJhY2VfbWF0Y2hfYWRq
+dXN0KCkgaW4gDQpvYmp0b29sID8NCg0KQ2hyaXN0b3BoZQ==
