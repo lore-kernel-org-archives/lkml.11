@@ -2,90 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE5AAC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 17:46:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 988A0C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 17:47:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245752AbiEYRq0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 13:46:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50898 "EHLO
+        id S245760AbiEYRrC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 13:47:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245571AbiEYRqW (ORCPT
+        with ESMTP id S245758AbiEYRq5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 13:46:22 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BCA75F9E
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 10:46:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653500781; x=1685036781;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=XaAdaYRmEX4q3+5JloUL5heNfATKBvuMIhBlEAf54yk=;
-  b=UYyLRu93ZqH6ZMld31rA9g+pmG5f4tFkcBPFfycTa8duBJKw+O2eoAb6
-   zDK3pbVta0UsOe186yWhuSyDD0qzA8NZM6vO1JGJvP/RC20AUfoD6gH0t
-   mjnnQf8PuLYy/9LwHiV+luPYZs1rbD79xEvFdHGNQAMopIegWaKLO3WQo
-   GHfe4HqtGZZrUXDLEaIP1/7midd/ZWBjOq5r4R4RUMYSmxJI/634C0Irb
-   Oq9jT1taWZF5qvcUPyRdaA6ChPSroGfdb5jeJbKxtK53OYMiBt6USsRAl
-   /3545/5CFpTpHtG7MpDu1KlyYXSUXpgxrdTgIdCsJHJqgGBmNZ3BrkP7Y
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10358"; a="360278540"
-X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
-   d="scan'208";a="360278540"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2022 10:33:04 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
-   d="scan'208";a="630449881"
-Received: from lkp-server01.sh.intel.com (HELO db63a1be7222) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 25 May 2022 10:33:03 -0700
-Received: from kbuild by db63a1be7222 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ntusY-0003C0-J7;
-        Wed, 25 May 2022 17:33:02 +0000
-Date:   Thu, 26 May 2022 01:32:23 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Tzung-Bi Shih <tzungbi@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [tzungbi-chrome-platform:dev 25/25] ERROR: modpost:
- "cros_kunit_ec_xfer_mock_addx"
- [drivers/platform/chrome/cros_ec_proto_test.ko] undefined!
-Message-ID: <202205260106.UjRGjFFM-lkp@intel.com>
+        Wed, 25 May 2022 13:46:57 -0400
+Received: from mail-ot1-x329.google.com (mail-ot1-x329.google.com [IPv6:2607:f8b0:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 455BB46B3D
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 10:46:56 -0700 (PDT)
+Received: by mail-ot1-x329.google.com with SMTP id c15-20020a9d684f000000b0060b097c71ecso7735827oto.10
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 10:46:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=tsEdLKvObPS7G8Z2sQJhN9Qv1wSfra+nvCaaXzSR3NE=;
+        b=TPnIR59MQ45wZoYaGmL9O8worQ137EbRsvzppbPyS1whsq0eOeIpSRl+fYbYGKYU8l
+         X30g8eKP+oGDmMHHKGkodCqfuh3KmP3trn/mrXHSBGS9ytHpirPwoESMELyEwL7drh8i
+         VD6AGeyGlDOZ2EKmkoTsu/UHywH1C8Ar9cV6oyPzecPth3ANRjY1/7pVeXISKns7zJv/
+         BlEkvE6dcmUr5lEp491jGCQZeEZkpGQ7JMwJmr8W/L1F0+mtVzegIBrSov65CWaev1py
+         YMI7xfBe0+JlXfSL+HVk3H0ZwkvQ1oWXgcK3aRJB2LxWd+N0IaE6Y6//JkENHMzUiP2v
+         eRZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=tsEdLKvObPS7G8Z2sQJhN9Qv1wSfra+nvCaaXzSR3NE=;
+        b=lFSGwmrr8gaIZRdVlKR34+kydPzTGIlU85IDB465/1TiSm34EKNMuFgbkdvwAJqAIo
+         yNEFrhOd3nK+Lck5NsCW1kWt1Hgoq7rE27oWgsMBHWJXuUrI1q5txJOKpnl8Md/KT1gd
+         LqoS3zqiPidhkPN22iSfdE159MiOhIu4qcUCfi4t6J4KdEjLsrBjbmUtfZ8wlJJ6Ef1h
+         QiXPdiVdbXuSgSkLzlBDbhP48nIthqAe6D4oq7P+TWSI+qQcUogsYfzjOuKTUZDm7qNe
+         lqixKHdls9Orh0b51nFy1Ol5pD80dCJAlkhnqpP1N7ljz1TO2zdR8p1QpMqct5I6+6tD
+         3J9A==
+X-Gm-Message-State: AOAM532Vqxy6I27yopKm37hSip6JS+uWg+tEhCBTvNyTRU1fIl8r9jxb
+        /mZG9CCTLmM7SE4o2sWi1PudiyZumsGn+XHQ0GakFQ==
+X-Google-Smtp-Source: ABdhPJz4Y/uMvAYhmybXBKj+F5v37DNaWFYTJeREhWLMq2o9Zp3w+cBQ09c3LR8ST4KN+ehpHHfJiB+AO1m3nW7zoN0=
+X-Received: by 2002:a05:6830:280e:b0:606:ae45:6110 with SMTP id
+ w14-20020a056830280e00b00606ae456110mr12927454otu.14.1653500815319; Wed, 25
+ May 2022 10:46:55 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20220520204115.67580-1-jon@nutanix.com> <Yo5hmcdRvE1UrI4y@google.com>
+ <3C8F5313-2830-46E3-A512-CFA4A24C24D7@nutanix.com>
+In-Reply-To: <3C8F5313-2830-46E3-A512-CFA4A24C24D7@nutanix.com>
+From:   Jim Mattson <jmattson@google.com>
+Date:   Wed, 25 May 2022 10:46:43 -0700
+Message-ID: <CALMp9eT2=tEijnxUxFfv-1r5LJG4MyezqjnTsrysjuWGeko7_w@mail.gmail.com>
+Subject: Re: [PATCH v3] KVM: VMX: do not disable interception for
+ MSR_IA32_SPEC_CTRL on eIBRS
+To:     Jon Kohler <jon@nutanix.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Waiman Long <longman@redhat.com>,
+        Kees Cook <keescook@chromium.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/tzungbi/chrome-platform.git dev
-head:   c8065f6d478990cfc385d1d579972a75fc29605b
-commit: c8065f6d478990cfc385d1d579972a75fc29605b [25/25] platform/chrome: cros_ec_proto: add Kunit tests for cros_ec_query_all()
-config: arm64-randconfig-r006-20220524 (https://download.01.org/0day-ci/archive/20220526/202205260106.UjRGjFFM-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d52a6e75b0c402c7f3b42a2b1b2873f151220947)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm64 cross compiling tool for clang build
-        # apt-get install binutils-aarch64-linux-gnu
-        # https://git.kernel.org/pub/scm/linux/kernel/git/tzungbi/chrome-platform.git/commit/?id=c8065f6d478990cfc385d1d579972a75fc29605b
-        git remote add tzungbi-chrome-platform https://git.kernel.org/pub/scm/linux/kernel/git/tzungbi/chrome-platform.git
-        git fetch --no-tags tzungbi-chrome-platform dev
-        git checkout c8065f6d478990cfc385d1d579972a75fc29605b
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash
+On Wed, May 25, 2022 at 10:14 AM Jon Kohler <jon@nutanix.com> wrote:
+>
+>
+>
+> > On May 25, 2022, at 1:04 PM, Sean Christopherson <seanjc@google.com> wr=
+ote:
+> >
+> > On Fri, May 20, 2022, Jon Kohler wrote:
+> >> diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+> >> index 610355b9ccce..1c725d17d984 100644
+> >> --- a/arch/x86/kvm/vmx/vmx.c
+> >> +++ b/arch/x86/kvm/vmx/vmx.c
+> >> @@ -2057,20 +2057,32 @@ static int vmx_set_msr(struct kvm_vcpu *vcpu, =
+struct msr_data *msr_info)
+> >>                      return 1;
+> >>
+> >>              vmx->spec_ctrl =3D data;
+> >> -            if (!data)
+> >> +
+> >> +            /*
+> >> +             * Disable interception on the first non-zero write, unle=
+ss the
+> >> +             * guest is hosted on an eIBRS system and setting only
+> >
+> > The "unless guest is hosted on an eIBRS system" blurb is wrong and does=
+n't match
+>
+> Ah right, thanks for catching that
+>
+> > the code.  Again, it's all about whether eIBRS is advertised to the gue=
+st.  With
+> > some other minor tweaking to wrangle the comment to 80 chars...
+>
+> RE 80 chars - quick question (and forgive the silly question here), but h=
+ow are you
+> counting that? I=E2=80=99ve got my editor cutting at 79 cols, where tab s=
+ize is accounted
+> for as 4 cols, so the longest line on my side for this patch is 72-73 or =
+so.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>, old ones prefixed by <<):
-
->> ERROR: modpost: "cros_kunit_ec_xfer_mock_addx" [drivers/platform/chrome/cros_ec_proto_test.ko] undefined!
->> ERROR: modpost: "cros_kunit_ec_xfer_mock_next" [drivers/platform/chrome/cros_ec_proto_test.ko] undefined!
->> ERROR: modpost: "cros_kunit_ec_xfer_mock_add" [drivers/platform/chrome/cros_ec_proto_test.ko] undefined!
->> ERROR: modpost: "cros_kunit_reset" [drivers/platform/chrome/cros_ec_proto_test.ko] undefined!
->> ERROR: modpost: "cros_kunit_ec_xfer_mock" [drivers/platform/chrome/cros_ec_proto_test.ko] undefined!
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Tab stops are every 8 characters. :-)
