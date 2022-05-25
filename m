@@ -2,60 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4666C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 20:58:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A294C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 20:59:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244140AbiEYU6r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 16:58:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46456 "EHLO
+        id S1344185AbiEYU7W (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 16:59:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230314AbiEYU6o (ORCPT
+        with ESMTP id S232246AbiEYU7U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 16:58:44 -0400
-Received: from mail-ot1-f52.google.com (mail-ot1-f52.google.com [209.85.210.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3FAEBA54B;
-        Wed, 25 May 2022 13:58:43 -0700 (PDT)
-Received: by mail-ot1-f52.google.com with SMTP id l10-20020a9d7a8a000000b0060b151de434so6756010otn.2;
-        Wed, 25 May 2022 13:58:43 -0700 (PDT)
+        Wed, 25 May 2022 16:59:20 -0400
+Received: from mail-ot1-f50.google.com (mail-ot1-f50.google.com [209.85.210.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABFC0BA553;
+        Wed, 25 May 2022 13:59:19 -0700 (PDT)
+Received: by mail-ot1-f50.google.com with SMTP id w19-20020a9d6393000000b0060aeb359ca8so11713975otk.6;
+        Wed, 25 May 2022 13:59:19 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=+7R0jOM1X4u7urBmc2283Rmo7eHakiDoT/FWr1Vpcl8=;
-        b=IqIGYdzrWDahmOJXfR5Xv0qGOIIyY3y2iE1rpGzSPQueVxMDJC8N0iN4C1ODKw8PCJ
-         s2CimiEkiDWtjzeLLvJyt+8iSO+iRXdVAnd6phKoaSjNq677wyPd5EIRkSiS+BzPiJk0
-         UNBc7yQiVK9jdeuGzM2QkUHPkLPkDSNb41gj47Mvk03q+ZmAq3kJxUNHWPWzvPaseBab
-         CjCDk4wA6uqrGIWdgJro6+NF3oCAeejqVuG4d4Pxdyf0q8++QXe1MuXe1LGyF64KTOru
-         7y7gl5a0p2ErLJRvJ8bIQewGsrRgcrZJksZ+s5C+r4AJDPEbYBNapKfh/8dpZOfn/iv9
-         uS7w==
-X-Gm-Message-State: AOAM5330UT6iAHwwU6D004hOuyYd+v/prjgDNIZVbQnNPfB2zMCp8kDl
-        YO2F9iYGGU5icjvEXT8AXw==
-X-Google-Smtp-Source: ABdhPJz5l3JFyaeKrZTFkTzK+zkeMuXVUREn2S52CFfzx7dHLtxFxgDEfFTcUKndzWb2gdIez3qIeQ==
-X-Received: by 2002:a05:6830:310c:b0:606:66c8:53d4 with SMTP id b12-20020a056830310c00b0060666c853d4mr13372565ots.129.1653512323186;
-        Wed, 25 May 2022 13:58:43 -0700 (PDT)
+        bh=1m2s22XtmxEczOaH6Nvd5Gv9iJMhl6MqiC51IH1U9jc=;
+        b=uy7EAn6ql6b6ZygPiqws98K0b/pJuQtwoj2xjCCg7YT7hBCVb6IGzNwvSF7hn0+ohK
+         MElFex2+ueQ5K8aNP5p6x8DqJjJXD2H2SwyAtVi5lb7AICtXeJRveN8js15281mSswBU
+         vW3kRPjeUD/BHZ4jexHuQIVP0sybRlZrZS5zEnErc5K2yZIyrC4rQT5PjT/JLGT/orTm
+         KFzXLxP3QMZj94oDza3q7AYuT89RhFje1rbfu+J1L4dcMIHMTcZ0NDOue3ICar5pM96i
+         UFWvMuo6tFFPQEnERSlNMnol5lftROxx/RthL7yp3/2eshQxJJeMUiONWCnlY/oY1DUa
+         B17Q==
+X-Gm-Message-State: AOAM531atMPoPI5S8ThdRJvNLNnP2F3JM2Cm304YT5hSy8YGHL/yWsrK
+        huQ0GvvEHX0YGbQVIf5hCrC4eFkecg==
+X-Google-Smtp-Source: ABdhPJweDY0pMYyERhPPRmIRG2kB92PgCy9mt/HQ7tcYvBieKTd/XAk2Cowz8xfLpjWerh2SdE4Kbg==
+X-Received: by 2002:a9d:69:0:b0:60a:f535:f54e with SMTP id 96-20020a9d0069000000b0060af535f54emr10364616ota.215.1653512359028;
+        Wed, 25 May 2022 13:59:19 -0700 (PDT)
 Received: from xps15.. (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.googlemail.com with ESMTPSA id t5-20020a056871054500b000e686d1386asm6398922oal.4.2022.05.25.13.58.41
+        by smtp.googlemail.com with ESMTPSA id n24-20020a4ae758000000b0035eb4e5a6b1sm7058090oov.7.2022.05.25.13.59.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 May 2022 13:58:42 -0700 (PDT)
+        Wed, 25 May 2022 13:59:18 -0700 (PDT)
 From:   Rob Herring <robh@kernel.org>
-To:     Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        Marek Vasut <marex@denx.de>
-Cc:     Woojung Huh <Woojung.Huh@microchip.com>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] dt-bindings: net/dsa: Add spi-peripheral-props.yaml references
-Date:   Wed, 25 May 2022 15:57:50 -0500
-Message-Id: <20220525205752.2484423-1-robh@kernel.org>
+To:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] dt-bindings: mtd: spi-nand: Add spi-peripheral-props.yaml reference
+Date:   Wed, 25 May 2022 15:59:08 -0500
+Message-Id: <20220525205909.2486153-1-robh@kernel.org>
 X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -70,34 +62,21 @@ properties.
 
 Signed-off-by: Rob Herring <robh@kernel.org>
 ---
- Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml | 1 +
- Documentation/devicetree/bindings/net/dsa/realtek.yaml       | 1 +
- 2 files changed, 2 insertions(+)
+ Documentation/devicetree/bindings/mtd/spi-nand.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml b/Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml
-index 184152087b60..6bbd8145b6c1 100644
---- a/Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml
-+++ b/Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml
-@@ -12,6 +12,7 @@ maintainers:
+diff --git a/Documentation/devicetree/bindings/mtd/spi-nand.yaml b/Documentation/devicetree/bindings/mtd/spi-nand.yaml
+index 431faac518a4..dd3cd1d53009 100644
+--- a/Documentation/devicetree/bindings/mtd/spi-nand.yaml
++++ b/Documentation/devicetree/bindings/mtd/spi-nand.yaml
+@@ -11,6 +11,7 @@ maintainers:
  
  allOf:
-   - $ref: dsa.yaml#
+   - $ref: "nand-chip.yaml#"
 +  - $ref: /schemas/spi/spi-peripheral-props.yaml#
  
  properties:
-   # See Documentation/devicetree/bindings/net/dsa/dsa.yaml for a list of additional
-diff --git a/Documentation/devicetree/bindings/net/dsa/realtek.yaml b/Documentation/devicetree/bindings/net/dsa/realtek.yaml
-index 99ee4b5b9346..4f99aff029dc 100644
---- a/Documentation/devicetree/bindings/net/dsa/realtek.yaml
-+++ b/Documentation/devicetree/bindings/net/dsa/realtek.yaml
-@@ -108,6 +108,7 @@ if:
-     - reg
- 
- then:
-+  $ref: /schemas/spi/spi-peripheral-props.yaml#
-   not:
-     required:
-       - mdc-gpios
+   compatible:
 -- 
 2.34.1
 
