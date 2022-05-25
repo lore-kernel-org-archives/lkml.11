@@ -2,100 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C067EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 15:37:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA2D7C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 15:38:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243152AbiEYPhO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 11:37:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49904 "EHLO
+        id S245160AbiEYPiI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 11:38:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229893AbiEYPhM (ORCPT
+        with ESMTP id S229893AbiEYPiG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 11:37:12 -0400
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D83011175
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 08:37:09 -0700 (PDT)
-Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24PDJY1N020622;
-        Wed, 25 May 2022 17:36:11 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=O1fbynHXZxn47QZYa7EtoOen0o3Zv/2OzioTq8MA5lI=;
- b=KvSV8vitnhgpPfXH0qa6uago2zKPAgMRrR1UCMVeqKPxgV6bFHaP6eiOaf9BJ784zhAT
- zGZZ9rLjsakRuC5A42rsTuuG/g425a+xniK1YlDITzBBCBr8PETzYH2vjSy2yuDDVzkr
- cgZaQwcjDOCuTx1/KCp1kagsnhtEMhj/ODImaq5IoI907+l5zHfSJmqRfycE3UJkGg5g
- O0OdotLU9riCDrGRMqLlRV9N3SCn4HUhb2SUU1My/6uWbLO8BLljMEqJcxv1jp/A1+IP
- f1OKiLg+tiUGMMFEckToy94PNshGw5+gSUmWIg5dYPiz8e1ojDr6+yRkiLEvfporkcTG Ug== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3g93ur7d2n-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 25 May 2022 17:36:11 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id D6475100034;
-        Wed, 25 May 2022 17:36:08 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 17861237D61;
-        Wed, 25 May 2022 17:36:08 +0200 (CEST)
-Received: from [10.211.12.178] (10.75.127.44) by SHFDAG1NODE1.st.com
- (10.75.129.69) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Wed, 25 May
- 2022 17:36:07 +0200
-Message-ID: <06f99968-15a5-1138-2151-859b3e68c81d@foss.st.com>
-Date:   Wed, 25 May 2022 17:36:07 +0200
+        Wed, 25 May 2022 11:38:06 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B774A13DF7
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 08:38:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653493082;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=VRInkexwmTuHc361ogc4GS6wqKsIpJYzH/kvwhGn+HE=;
+        b=UyjDq2Z0DGDKUPun1fGa9xulO64dz0jsQQ1Fn0dh/iC7ZM3rUKQuGaCsMC39ijmgnFXmsg
+        E/Zy6BIbqOMTHWRT65gvd0D/AcnOyMwdgHiUjAI+D9YG5awlYNJF52kKq0rLSagHEZh70y
+        SxedOcH4nfrqR4T+zdQSl1CpV9+g+KU=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-642-8ncsaPV6M6upaOrK2Mv4sg-1; Wed, 25 May 2022 11:37:59 -0400
+X-MC-Unique: 8ncsaPV6M6upaOrK2Mv4sg-1
+Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9544619705BA;
+        Wed, 25 May 2022 15:37:58 +0000 (UTC)
+Received: from fuller.cnet (ovpn-112-2.gru2.redhat.com [10.97.112.2])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 0541A400F38;
+        Wed, 25 May 2022 15:37:58 +0000 (UTC)
+Received: by fuller.cnet (Postfix, from userid 1000)
+        id 529E5416F574; Wed, 25 May 2022 12:37:37 -0300 (-03)
+Date:   Wed, 25 May 2022 12:37:37 -0300
+From:   Marcelo Tosatti <mtosatti@redhat.com>
+To:     Stefan Wahren <stefan.wahren@i2se.com>
+Cc:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Minchan Kim <minchan@kernel.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Phil Elwell <phil@raspberrypi.com>, regressions@lists.linux.dev
+Subject: Re: vchiq: Performance regression since 5.18-rc1
+Message-ID: <Yo5NQS470wTuDq/f@fuller.cnet>
+References: <77d6d498-7dd9-03eb-60f2-d7e682bb1b20@i2se.com>
+ <YoszE8lQ9VcofLtX@linutronix.de>
+ <Yo41ggMvkI1B9TeM@fuller.cnet>
+ <e0402350-687e-14b6-2e30-4b459afa9afb@i2se.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH] ASoC: stm32: sai: Remove useless define
-Content-Language: en-US
-To:     Tang Bin <tangbin@cmss.chinamobile.com>,
-        <arnaud.pouliquen@foss.st.com>, <lgirdwood@gmail.com>,
-        <broonie@kernel.org>, <perex@perex.cz>, <tiwai@suse.com>,
-        <mcoquelin.stm32@gmail.com>, <alexandre.torgue@foss.st.com>
-CC:     <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20220525135023.6792-1-tangbin@cmss.chinamobile.com>
-From:   Olivier MOYSAN <olivier.moysan@foss.st.com>
-In-Reply-To: <20220525135023.6792-1-tangbin@cmss.chinamobile.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.75.127.44]
-X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SHFDAG1NODE1.st.com
- (10.75.129.69)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-25_04,2022-05-25_02,2022-02-23_01
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e0402350-687e-14b6-2e30-4b459afa9afb@i2se.com>
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 5/25/22 15:50, Tang Bin wrote:
-> STM_SAI_IS_SUB_B(x) and STM_SAI_BLOCK_NAME(x) are
-> not being used, so remove them.
+On Wed, May 25, 2022 at 04:07:47PM +0200, Stefan Wahren wrote:
+> Hi Marcelo,
 > 
-> Signed-off-by: Tang Bin <tangbin@cmss.chinamobile.com>
-> ---
->   sound/soc/stm/stm32_sai_sub.c | 2 --
->   1 file changed, 2 deletions(-)
+> Am 25.05.22 um 15:56 schrieb Marcelo Tosatti:
+> > On Mon, May 23, 2022 at 09:09:07AM +0200, Sebastian Andrzej Siewior wrote:
+> > > On 2022-05-22 01:22:00 [+0200], Stefan Wahren wrote:
+> > > > Hi,
+> > > Hi,
+> > > 
+> > > > while testing the staging/vc04_services/interface/vchiq_arm driver with my
+> > > > Raspberry Pi 3 B+ (multi_v7_defconfig) i noticed a huge performance
+> > > > regression since [ff042f4a9b050895a42cae893cc01fa2ca81b95c] mm:
+> > > > lru_cache_disable: replace work queue synchronization with synchronize_rcu
+> > > > 
+> > > > Usually i run "vchiq_test -f 1" to see the driver is still working [1].
+> > > What about
+> > > 	https://lore.kernel.org/all/YmrWK%2FKoU1zrAxPI@fuller.cnet/
+> > > 
+> > > Sebastian
+> > Stefan,
+> > 
+> > Can you please try the patch above ?
 > 
-> diff --git a/sound/soc/stm/stm32_sai_sub.c b/sound/soc/stm/stm32_sai_sub.c
-> index d300605a2..4b33257c5 100644
-> --- a/sound/soc/stm/stm32_sai_sub.c
-> +++ b/sound/soc/stm/stm32_sai_sub.c
-> @@ -45,8 +45,6 @@
->   #define STM_SAI_B_ID		0x1
->   
->   #define STM_SAI_IS_SUB_A(x)	((x)->id == STM_SAI_A_ID)
-> -#define STM_SAI_IS_SUB_B(x)	((x)->id == STM_SAI_B_ID)
-> -#define STM_SAI_BLOCK_NAME(x)	(((x)->id == STM_SAI_A_ID) ? "A" : "B")
->   
->   #define SAI_SYNC_NONE		0x0
->   #define SAI_SYNC_INTERNAL	0x1
+> this was the same as Paul send. I think i need more time for investigation,
+> maybe there is an issue with the application.
 
-Acked-by: Olivier Moysan <olivier.moysan@st.com>
+To clarify: they are not the same patches.
 
-Thanks
-Olivier
+> 
+> All i noticed so far is that in good case the CPU usage is around ~ 60 % and
+> higher, while in bad case the CPU is almost idle. Also the issue is not
+> reproducible with arm64/defconfig.
+> 
+> > 
+> > 
+> > 
+> > _______________________________________________
+> > linux-arm-kernel mailing list
+> > linux-arm-kernel@lists.infradead.org
+> > http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+> 
+> 
+
