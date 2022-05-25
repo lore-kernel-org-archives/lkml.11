@@ -2,89 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72A98C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 15:16:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8857AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 15:17:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245140AbiEYPPp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 11:15:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52396 "EHLO
+        id S245105AbiEYPRD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 11:17:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241797AbiEYPP3 (ORCPT
+        with ESMTP id S245165AbiEYPQ5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 11:15:29 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ADC0B041F;
-        Wed, 25 May 2022 08:15:28 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        Wed, 25 May 2022 11:16:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C991B0A4A
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 08:16:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 0DA13219D9;
-        Wed, 25 May 2022 15:15:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1653491727; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=4a7cwmdTvdlgEFSejjSvX4/8ts7XavMCpiK8LNYnCOA=;
-        b=S764p8MSC4ECPdB9CovFD1ktd/0hVWDcubdEvvK8aSmY0UJpusRO6HHKQSsTNcMgWuyCql
-        eBLZQrbPK0PC1oKOoUneaQ6fM2bdgxjIUAxHIpVWqwEAtMxZnfNueDfxUhaB6+kkOGb1xW
-        DRX0/paoMi8hgAvuAuVI1kPl8BHSJv0=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id D6F5413ADF;
-        Wed, 25 May 2022 15:15:26 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id oCdFMw5IjmLXAwAAMHmgww
-        (envelope-from <mkoutny@suse.com>); Wed, 25 May 2022 15:15:26 +0000
-From:   =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>
-To:     cgroups@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Bui Quang Minh <minhquangbui99@gmail.com>,
-        Tadeusz Struk <tadeusz.struk@linaro.org>
-Subject: [PATCH 0/2] cgroup_subsys_state lifecycle fixups
-Date:   Wed, 25 May 2022 17:15:15 +0200
-Message-Id: <20220525151517.8430-1-mkoutny@suse.com>
-X-Mailer: git-send-email 2.35.3
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EA023619FE
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 15:16:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44C93C385B8;
+        Wed, 25 May 2022 15:16:53 +0000 (UTC)
+Date:   Wed, 25 May 2022 11:16:51 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Junwen Wu <wudaemon@163.com>
+Cc:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        bsegall@google.com, mgorman@suse.de, bristot@redhat.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1] sched: Fix a typo in scheduler
+Message-ID: <20220525111651.6c8f8c31@gandalf.local.home>
+In-Reply-To: <20220521125420.12683-1-wudaemon@163.com>
+References: <20220521125420.12683-1-wudaemon@163.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Two corner cases were hanging around [2][3] related to css lifecycles,
-since they're loosely related I'm sending them together.
+On Sat, 21 May 2022 12:54:20 +0000
+Junwen Wu <wudaemon@163.com> wrote:
 
-The 2nd patch fixes problems encountered in syzbot tests only.
-Alternative solutions could be:
-- daisy-chain css_release_work_fn from the offending css_killed_work_fn call,
-- rework kill_css() not to rely on multi-stage css_killed_work_fn() [1].
+> Nice value is MIN_NICE(-20) to MAX_NICE(19), it better uses
+> int instead of long.
 
-The simplest approach was chosen.
+First of all, the subject is completely incorrect. There's no typo to be
+fixed. Second, why do you think it's better to use an int instead of long?
+Long is the natural word size of an architecture.
 
-The other existing users of percpu_ref_kill_and_confirm are not affected by
-similar issues.
+Now perhaps for consistency, we could fix all the locations that switch
+between long and int. For example, the sys_nice() definition has nice and
+retval as long and are set by functions that return int. But then again,
+sys_nice() returns long (and that cannot be changed).
 
-[1] Rough idea is to only synchronize via a completion like e.g.
-nvmet_sq_destroy() does and move most of css_killed_work_fn() at the end of
-kill_css(). kill_css() is only used in process context when de-configuring
-controllers or rmdiring a cgroup.
+Unless there's a real issue to be fixed (which I do not see one), I'd say
+leave it as is, because this change is doing nothing but adding unnecessary
+churn to the git repo.
 
-[2] https://lore.kernel.org/lkml/20220404142535.145975-1-minhquangbui99@gmail.com/
-[3] https://lore.kernel.org/lkml/20220412192459.227740-1-tadeusz.struk@linaro.org/
+Hence, NAK.
 
-Michal Koutný (2):
-  cgroup: Wait for cgroup_subsys_state offlining on unmount
-  cgroup: Use separate work structs on css release path
+-- Steve
 
- include/linux/cgroup-defs.h |  5 +++--
- kernel/cgroup/cgroup.c      | 19 +++++++++++--------
- 2 files changed, 14 insertions(+), 10 deletions(-)
 
--- 
-2.35.3
+> 
+> Signed-off-by: Junwen Wu <wudaemon@163.com>
+> ---
+>  include/linux/sched.h | 2 +-
+>  kernel/sched/core.c   | 2 +-
+>  2 files changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/include/linux/sched.h b/include/linux/sched.h
+> index 75ba8aa60248..cffc7cbed987 100644
+> --- a/include/linux/sched.h
+> +++ b/include/linux/sched.h
+> @@ -1830,7 +1830,7 @@ static inline int dl_task_check_affinity(struct task_struct *p, const struct cpu
+>  #endif
+>  
+>  extern int yield_to(struct task_struct *p, bool preempt);
+> -extern void set_user_nice(struct task_struct *p, long nice);
+> +extern void set_user_nice(struct task_struct *p, int nice);
+>  extern int task_prio(const struct task_struct *p);
+>  
+>  /**
+> diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+> index fcf0c180617c..15c1b63d771b 100644
+> --- a/kernel/sched/core.c
+> +++ b/kernel/sched/core.c
+> @@ -6888,7 +6888,7 @@ static inline int rt_effective_prio(struct task_struct *p, int prio)
+>  }
+>  #endif
+>  
+> -void set_user_nice(struct task_struct *p, long nice)
+> +void set_user_nice(struct task_struct *p, int nice)
+>  {
+>  	bool queued, running;
+>  	int old_prio;
 
