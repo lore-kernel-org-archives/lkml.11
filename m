@@ -2,92 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55FFBC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 13:57:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C45DDC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 13:58:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244524AbiEYN5A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 09:57:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50670 "EHLO
+        id S236530AbiEYN6G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 09:58:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244512AbiEYN45 (ORCPT
+        with ESMTP id S232680AbiEYN6E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 09:56:57 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9944C91575
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 06:56:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653487015;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=bwKtBZV8ciaRCowgqevFzBNex6RHDTKadOeeg0UrfVc=;
-        b=ieO6jRkRrzbm3543JJ1jzvykbWFwziukIABw4g6kfdb87cPaQ25y+ZuIn/UffOxdM60zYw
-        W3VzAdtDgp0eF2ZiJBNNjF1Z8HcImmh0odhjwbXn3ffSlC/nZKH7o9Hb8xzg8Anloft+HP
-        GZCdW79WcA/XwkrXkZ+GuCrRd5c3Jc4=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-587-0sDW9gHhNWyfEP9vRbyJdA-1; Wed, 25 May 2022 09:56:52 -0400
-X-MC-Unique: 0sDW9gHhNWyfEP9vRbyJdA-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9DE3D8001EA;
-        Wed, 25 May 2022 13:56:51 +0000 (UTC)
-Received: from fuller.cnet (ovpn-112-2.gru2.redhat.com [10.97.112.2])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 2F263405D4BF;
-        Wed, 25 May 2022 13:56:51 +0000 (UTC)
-Received: by fuller.cnet (Postfix, from userid 1000)
-        id CDA06416F574; Wed, 25 May 2022 10:56:18 -0300 (-03)
-Date:   Wed, 25 May 2022 10:56:18 -0300
-From:   Marcelo Tosatti <mtosatti@redhat.com>
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Stefan Wahren <stefan.wahren@i2se.com>
-Cc:     Stefan Wahren <stefan.wahren@i2se.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Minchan Kim <minchan@kernel.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Phil Elwell <phil@raspberrypi.com>, regressions@lists.linux.dev
-Subject: Re: vchiq: Performance regression since 5.18-rc1
-Message-ID: <Yo41ggMvkI1B9TeM@fuller.cnet>
-References: <77d6d498-7dd9-03eb-60f2-d7e682bb1b20@i2se.com>
- <YoszE8lQ9VcofLtX@linutronix.de>
+        Wed, 25 May 2022 09:58:04 -0400
+Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C2098D6BD;
+        Wed, 25 May 2022 06:58:02 -0700 (PDT)
+Received: by mail-oi1-x22a.google.com with SMTP id q8so25048035oif.13;
+        Wed, 25 May 2022 06:58:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=eKrX6kNpVLed89fPLoyVC6rMPjDh7kXs0BzGvHfT6B8=;
+        b=Jzz8cUeANrOWUvYLI9PctwPv/wo6R1OCzmm0J6o8V2AF1sxbJ1ILXgXDeeYNH89fsI
+         xJwE7Qin7OCYUJfngrpVdg9ZUwOgkrXkiX9l7qTRqWOlsLejkDvT6Is1yfK1LzEBQWO/
+         RjBFEC7FkhqcW+CdpQKdNpApnAZXH4m+lFfYw31+NQCSWsKZylXgiONWr02G2rTrhufZ
+         OGuTew3O9K3dfyBatzkL8MSDzqT6JOaQrpDiTZB6C7AoFNMggSOsQNNxSj7/cWgom27I
+         TRhG+4iO3Yk6IfUnI4lzgcusCB/+4pHkCS4CR0fkPpRafsJ/q9+PL0u66rzkU2xy33YG
+         W6dw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=eKrX6kNpVLed89fPLoyVC6rMPjDh7kXs0BzGvHfT6B8=;
+        b=n/CghCOOB3OiA6r5zVwl8PqsqbXxCKnRGPw3c0XxoG+iZtmrOOYEUdt4X9VhJYi2hv
+         Pmm2PeY5XjPhYwmmK/j4kNpVd/2VEba1xkgaMudVLC25Frpi9tn3SuxatXrxh0gam9EQ
+         z6+fRA/m1/SMW8FZNSUSIjcEAY4+145oI5jlwGl0mYD7Ozuge4sSYwjJ7IY0oNfPCP3c
+         5kPQ9W5DD3K4UcSTTXRWpQP5iBV5Gwxb1OeIsPRXxu/VjODy0ZLSYZaH3hKqgP01NjxO
+         GO//EL6O9RYFIL04ZVNoK4QFlOzmSIxyXmrI7gWOlGYasjIHE7GsGyAJY6wKzdaKscY4
+         LSKg==
+X-Gm-Message-State: AOAM533/zwjMpcAM2ejxFY4lWxOhP5jqQFFVP74SI2sRO7IIidRS7NV4
+        qjxelyHD1WZig2PYUutoJP0EPDu+GvsVZA==
+X-Google-Smtp-Source: ABdhPJzHMAjDAd5UTKnqEPadgdRIZAT/7Jt/PmgVfpJJ0mWQoI01zMHqNaIMB367OGjj0hLmcZ2RaA==
+X-Received: by 2002:a05:6808:1393:b0:326:379a:507b with SMTP id c19-20020a056808139300b00326379a507bmr5338358oiw.288.1653487081665;
+        Wed, 25 May 2022 06:58:01 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id k23-20020a544717000000b00325cda1ff87sm6371877oik.6.2022.05.25.06.58.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 25 May 2022 06:58:01 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     linux-hwmon@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, Jean Delvare <jdelvare@suse.com>,
+        Slawomir Stepien <sst@poczta.fm>,
+        Guenter Roeck <linux@roeck-us.net>
+Subject: [PATCH 00/40] hwmon: (lm90) Various improvements to lm90 driver
+Date:   Wed, 25 May 2022 06:57:18 -0700
+Message-Id: <20220525135758.2944744-1-linux@roeck-us.net>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YoszE8lQ9VcofLtX@linutronix.de>
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 23, 2022 at 09:09:07AM +0200, Sebastian Andrzej Siewior wrote:
-> On 2022-05-22 01:22:00 [+0200], Stefan Wahren wrote:
-> > Hi,
-> Hi,
-> 
-> > while testing the staging/vc04_services/interface/vchiq_arm driver with my
-> > Raspberry Pi 3 B+ (multi_v7_defconfig) i noticed a huge performance
-> > regression since [ff042f4a9b050895a42cae893cc01fa2ca81b95c] mm:
-> > lru_cache_disable: replace work queue synchronization with synchronize_rcu
-> > 
-> > Usually i run "vchiq_test -f 1" to see the driver is still working [1].
-> 
-> What about
-> 	https://lore.kernel.org/all/YmrWK%2FKoU1zrAxPI@fuller.cnet/
-> 
-> Sebastian
+This patch series implements various improvements to the lm90 driver.
 
-Stefan,
+- Generate sysfs and udev events for all alarms
+- Add support for LM84, ADM1020, ADM1021, ADT7421, ADT7481, ADT7482,
+  ADT7483A, NCT210, NCT214, NCT218, NCT72, MAX1617, MAX1617A, MAX6642,
+  NE1617, NE1617A, NE1618, GL523SM, THMC10, and MC1066
+- Explicit support for MAX6648
+- Handle differences between ADT7461 and ADT7461A
+- Individual drivers for ADM1021 and MAX6642 are now obsolete.
+- Improved PEC support. Some chips support PEC only in read operations,
+  others support PEC for both read and write operations.
+- Improved alarm handling
+- Streamlined temperature conversion functions 
+- Reorganized and improved chip detection code
 
-Can you please try the patch above ?
+----------------------------------------------------------------
+Guenter Roeck (40):
+      hwmon: (lm90) Generate sysfs and udev events for all alarms
+      hwmon: (lm90) Rework alarm/status handling
+      hwmon: (lm90) Reorder include files in alphabetical order
+      hwmon: (lm90) Reorder chip enumeration to be in alphabetical order
+      hwmon: (lm90) Use BIT macro
+      hwmon: (lm90) Move status register bit shifts to compile time
+      hwmon: (lm90) Stop using R_/W_ register prefix
+      hwmon: (lm90) Improve PEC support
+      hwmon: (lm90) Add partial PEC support for ADT7461
+      hwmon: (lm90) Enable full PEC support for ADT7461A
+      hwmon: (lm90) Add support for unsigned and signed temperatures
+      hwmon: (lm90) Only re-read registers if volatile
+      hwmon: (lm90) Support multiple temperature resolutions
+      hwmon: (lm90) Use single flag to indicate extended temperature support
+      hwmon: (lm90) Rework detect function
+      hwmon: (lm90) Add support for additional chip revision of NCT1008
+      hwmon: (lm90) Fix/Add detection of G781-1
+      hwmon: (lm90) Add flag to indicate 'alarms' attribute support
+      hwmon: (lm90) Add explicit support for MAX6648/MAX6692
+      hwmon: (lm90) Add support for ADT7481, ADT7482, and ADT7483
+      hwmon: (lm90) Strengthen chip detection for ADM1032, ADT7461(A), and NCT1008
+      hwmon: (lm90) Add support for MAX6690
+      hwmon: (lm90) Add flag to indicate support for minimum temperature limits
+      hwmon: (lm90) Add flag to indicate conversion rate support
+      hwmon: (lm90) Add support for MAX6642
+      hwmon: (lm90) Let lm90_read16() handle 8-bit read operations
+      hwmon: (lm90) Introduce 16-bit register write function
+      hwmon: (lm90) Support MAX1617 and LM84
+      hwmon: (lm90) Add support for ADM1021, ADM1021A, and ADM1023
+      hwmon: (lm90) Add remaining chips supported by adm1021 driver
+      hwmon: (lm90) Combine lm86 and lm90 configuration
+      hwmon: (lm90) Add explicit support for NCT210
+      hwmon: (lm90) Add support for ON Semiconductor NCT214 and NCT72
+      hwmon: (lm90) Add support for ON Semiconductor NCT218
+      hwmon: (lm90) Add support for ADT7421
+      hwmon: (lm90) Only disable alerts if not already disabled
+      hwmon: (lm90) Add explicit support for ADM1020
+      hwmon: (lm90) Add support and detection of Philips/NXP NE1618
+      hwmon: (lm90) Add table with supported Analog/ONSEMI devices
+      hwmon: (lm90) Support temp_samples attribute
 
-
+ Documentation/hwmon/lm90.rst |  233 +++-
+ drivers/hwmon/Kconfig        |   17 +-
+ drivers/hwmon/lm90.c         | 2415 ++++++++++++++++++++++++++++--------------
+ 3 files changed, 1832 insertions(+), 833 deletions(-)
