@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E579C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 09:05:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF5F3C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 09:05:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231448AbiEYJEw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 05:04:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47230 "EHLO
+        id S239087AbiEYJFT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 05:05:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241106AbiEYJER (ORCPT
+        with ESMTP id S240013AbiEYJEp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 05:04:17 -0400
+        Wed, 25 May 2022 05:04:45 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0A1FB9C2E4
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 02:03:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CD1D89CF68
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 02:03:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653469343;
+        s=mimecast20190719; t=1653469346;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=F94Tm16Pv+6X1Qxpix8Ro059dU0Hc/OW94AtIQA4pXw=;
-        b=KU2aM35LfGKJf9j+vrjoT2qgj2e7rIleQA8FcN4b3NTWN5bZRJCMI8jwcElulOhIfGhKVN
-        F2c48nerYHP24qj5mCl7DzApu+S7SSyBvbQEd6AnW3TFKDu7a0o8RXK8EmaCMGhwZDOepw
-        GszxaiaXxjmDLDV359V1tBLx8R/t3e0=
+        bh=LD6H/7F5euHu6V/2GlTmGfwg6AmcqYIKVVcIAKTKGX8=;
+        b=E+GJgzwWKSSVL8+4DjYfO9G9sfpYIdte2aRQTIAVB/uCK74NJqEfvz/xpXDBxBxyuvoCqg
+        2JRrd+46FIVff7Gfk2DGvV+N7gOFtX5Sny3xlghTO10ZkZ6ZW6QGswW3fG9Sl5DLycKYvR
+        emQYqbmqVFR/JWiyE+G7sjwL4jhOcWU=
 Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
  [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-537-AWE361fBMwGFiO485JcCkQ-1; Wed, 25 May 2022 05:02:17 -0400
-X-MC-Unique: AWE361fBMwGFiO485JcCkQ-1
+ us-mta-647-zFCimh1JM-av-SB0FSl7Ag-1; Wed, 25 May 2022 05:02:23 -0400
+X-MC-Unique: zFCimh1JM-av-SB0FSl7Ag-1
 Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 238943C01DA2;
-        Wed, 25 May 2022 09:02:17 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 07E913802B87;
+        Wed, 25 May 2022 09:02:23 +0000 (UTC)
 Received: from fedora.redhat.com (unknown [10.40.194.186])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 68B3E40CFD0A;
-        Wed, 25 May 2022 09:02:15 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 462C5405D4BF;
+        Wed, 25 May 2022 09:02:21 +0000 (UTC)
 From:   Vitaly Kuznetsov <vkuznets@redhat.com>
 To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -47,9 +47,9 @@ Cc:     Sean Christopherson <seanjc@google.com>,
         Michael Kelley <mikelley@microsoft.com>,
         Siddharth Chandrasekaran <sidcha@amazon.de>,
         linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v4 19/37] x86/hyperv: Fix 'struct hv_enlightened_vmcs' definition
-Date:   Wed, 25 May 2022 11:01:15 +0200
-Message-Id: <20220525090133.1264239-20-vkuznets@redhat.com>
+Subject: [PATCH v4 22/37] KVM: x86: Expose Hyper-V L2 TLB flush feature
+Date:   Wed, 25 May 2022 11:01:18 +0200
+Message-Id: <20220525090133.1264239-23-vkuznets@redhat.com>
 In-Reply-To: <20220525090133.1264239-1-vkuznets@redhat.com>
 References: <20220525090133.1264239-1-vkuznets@redhat.com>
 MIME-Version: 1.0
@@ -60,58 +60,27 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Section 1.9 of TLFS v6.0b says:
+With both nSVM and nVMX implementations in place, KVM can now expose
+Hyper-V L2 TLB flush feature to userspace.
 
-"All structures are padded in such a way that fields are aligned
-naturally (that is, an 8-byte field is aligned to an offset of 8 bytes
-and so on)".
-
-'struct enlightened_vmcs' has a glitch:
-
-...
-        struct {
-                u32                nested_flush_hypercall:1; /*   836: 0  4 */
-                u32                msr_bitmap:1;         /*   836: 1  4 */
-                u32                reserved:30;          /*   836: 2  4 */
-        } hv_enlightenments_control;                     /*   836     4 */
-        u32                        hv_vp_id;             /*   840     4 */
-        u64                        hv_vm_id;             /*   844     8 */
-        u64                        partition_assist_page; /*   852     8 */
-...
-
-And the observed values in 'partition_assist_page' make no sense at
-all. Fix the layout by padding the structure properly.
-
-Fixes: 68d1eb72ee99 ("x86/hyper-v: define struct hv_enlightened_vmcs and clean field bits")
 Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
-Reviewed-by: Michael Kelley <mikelley@microsoft.com>
 Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 ---
- arch/x86/include/asm/hyperv-tlfs.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/x86/kvm/hyperv.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/x86/include/asm/hyperv-tlfs.h b/arch/x86/include/asm/hyperv-tlfs.h
-index 5225a85c08c3..e7ddae8e02c6 100644
---- a/arch/x86/include/asm/hyperv-tlfs.h
-+++ b/arch/x86/include/asm/hyperv-tlfs.h
-@@ -548,7 +548,7 @@ struct hv_enlightened_vmcs {
- 	u64 guest_rip;
+diff --git a/arch/x86/kvm/hyperv.c b/arch/x86/kvm/hyperv.c
+index 9a41835ff4bc..7cdad050a5b7 100644
+--- a/arch/x86/kvm/hyperv.c
++++ b/arch/x86/kvm/hyperv.c
+@@ -2774,6 +2774,7 @@ int kvm_get_hv_cpuid(struct kvm_vcpu *vcpu, struct kvm_cpuid2 *cpuid,
  
- 	u32 hv_clean_fields;
--	u32 hv_padding_32;
-+	u32 padding32_1;
- 	u32 hv_synthetic_controls;
- 	struct {
- 		u32 nested_flush_hypercall:1;
-@@ -556,7 +556,7 @@ struct hv_enlightened_vmcs {
- 		u32 reserved:30;
- 	}  __packed hv_enlightenments_control;
- 	u32 hv_vp_id;
--
-+	u32 padding32_2;
- 	u64 hv_vm_id;
- 	u64 partition_assist_page;
- 	u64 padding64_4[4];
+ 		case HYPERV_CPUID_NESTED_FEATURES:
+ 			ent->eax = evmcs_ver;
++			ent->eax |= HV_X64_NESTED_DIRECT_FLUSH;
+ 			ent->eax |= HV_X64_NESTED_MSR_BITMAP;
+ 
+ 			break;
 -- 
 2.35.3
 
