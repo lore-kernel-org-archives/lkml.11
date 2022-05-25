@@ -2,140 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDA23C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 21:31:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84117C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 21:32:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344990AbiEYVbB (ORCPT
+        id S1343553AbiEYVcz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 17:31:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52058 "EHLO
+        Wed, 25 May 2022 17:32:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345345AbiEYVao (ORCPT
+        with ESMTP id S233748AbiEYVcw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 17:30:44 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 210B08148B
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 14:30:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653514240; x=1685050240;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=FoPSSUs1/5dO5P26gVSwaImoqHPclA56N3pkOrZONTg=;
-  b=Lj02f7OC4xlexSWEw9kC3SUcGS8J+SoRFmYe9tSFXedCJ7up9lRXLQ5S
-   bs2MMexb0WnBmGql182HbZ6sKQwFXv043X+O7jbkyZopqYYVXceyVIue5
-   aip158UoeB8zfqoj6VhoTASLrUb3uS/P5+ycm6vfUSIsGD7xPAxnD71H/
-   9AbbXbcAubuQwbPVe1qCPDgVU9DJU5rpWba/Hh1BhjGKUTCZhHHBXxphF
-   e5uxpJBscNnkI3ZMqSVnISDEwYvDeRzoRhqR/36rt+F7Ak6/B9Wue+ZaF
-   FZVt43mG4VJD4Jts7sHaUVuD8Sm8wRAG3SP2zu/hwCSNNn021WNdpVt7n
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10358"; a="271513315"
-X-IronPort-AV: E=Sophos;i="5.91,252,1647327600"; 
-   d="scan'208";a="271513315"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2022 14:30:39 -0700
-X-IronPort-AV: E=Sophos;i="5.91,252,1647327600"; 
-   d="scan'208";a="745955669"
-Received: from srotter-mobl1.amr.corp.intel.com (HELO [10.212.216.74]) ([10.212.216.74])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2022 14:30:38 -0700
-Message-ID: <01acfbad-7668-dfc6-b797-a9fa5f402a26@linux.intel.com>
-Date:   Wed, 25 May 2022 16:28:47 -0500
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.5.0
-Subject: Re: [PATCH v4 2/2] ASoC: amd: acp: Add support for rt5682s and rt1019
- card with hs instance
-Content-Language: en-US
-To:     V sujith kumar Reddy <Vsujithkumar.Reddy@amd.com>,
-        broonie@kernel.org, alsa-devel@alsa-project.org
-Cc:     Vijendar.Mukunda@amd.com, Basavaraj.Hiregoudar@amd.com,
-        Sunil-kumar.Dommati@amd.com, ajitkumar.pandey@amd.com,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Kai Vehmanen <kai.vehmanen@intel.com>,
-        Jia-Ju Bai <baijiaju1990@gmail.com>,
-        Akihiko Odaki <akihiko.odaki@gmail.com>,
-        open list <linux-kernel@vger.kernel.org>
-References: <20220525203415.2227914-1-Vsujithkumar.Reddy@amd.com>
- <20220525203415.2227914-3-Vsujithkumar.Reddy@amd.com>
-From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-In-Reply-To: <20220525203415.2227914-3-Vsujithkumar.Reddy@amd.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Wed, 25 May 2022 17:32:52 -0400
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85EFFA888A
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 14:32:51 -0700 (PDT)
+Received: by mail-pg1-x536.google.com with SMTP id a9so17890735pgv.12
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 14:32:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rivosinc-com.20210112.gappssmtp.com; s=20210112;
+        h=date:subject:in-reply-to:cc:from:to:message-id:mime-version
+         :content-transfer-encoding;
+        bh=fLi8Y5a/s0Xg4Sk1cYFIfOl1cphXOIvzxubSQqTFwj4=;
+        b=ZWirXg9GI4GKB5Uq33+V6Gj1KKxuFriu0iWhLDVoOxYETu/nz4VSIKpm201of+wkWj
+         CUPCPkaw0fddmC2mD9R6WQB/GeZKKfyL7dBQjJQ9ClrVMOZkXKYgvjJEFY+Q78p09g+3
+         JTfQG+yBJgJRJAEo47nC1yU+ncAzpael52p2lKdIc05vXZtbLXylgcMzbDXd2dGf/g51
+         poOQ8lg9+epyhpGQ2/J2harSg5MIIpaCavtplU7+1nO1NMjqncZ7aWmOYs9XIesURp0I
+         fYHptTdPy3T6LKXrGHdwGNXoXrS9DITPtsUsk8x//s+b1tlyES6PEkq+yZzTcdiCY5od
+         AF/g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:subject:in-reply-to:cc:from:to:message-id
+         :mime-version:content-transfer-encoding;
+        bh=fLi8Y5a/s0Xg4Sk1cYFIfOl1cphXOIvzxubSQqTFwj4=;
+        b=6hp2oPzn6uoYTrwnwIyNVadW/LhFSD5ye4bZ+yLK6Nowl5qMRjtw1p8hpH274xcj7D
+         8DZMnRu1EUIc9DteoUi0mLsDLn8cbwox+fLJqjpcNixmdXqWULzc9bNAf5oPyc8yXLYT
+         Hqxo8AGzculTlDBH8T9nAj6eToh5zMGUlQHO4Jk9/q9Srd+RZDrOVg4RfUKwYpVNsl0e
+         EzKQ+UI9mWK5DHNBz74hM7v8T8Eu+4wphyynwSYq7HHXUQDkNkpjOdw2xe9CVE+y/wh8
+         xZ/9xncpHiI8topCe4XG4ytokVk3341/W9M7G0gIdWYi1n5BJywfzeQRJL6delFQdWIl
+         7AuA==
+X-Gm-Message-State: AOAM5321S6vrAayggieG8av5Irqg9KhxFL4SVDmPTNKcgkdHG6apFuAv
+        R3e2Sp13qwN8R1/UWQGh4o3b9w==
+X-Google-Smtp-Source: ABdhPJzxUwdWZSvkE8NvpYTpsxHZCR1FjjsO5G9TYaUE/rXrn+mu2UY6/q3ZhQaX0rWjrhSR4hSqDg==
+X-Received: by 2002:a63:131a:0:b0:3fa:aa7e:b28a with SMTP id i26-20020a63131a000000b003faaa7eb28amr8518300pgl.569.1653514370848;
+        Wed, 25 May 2022 14:32:50 -0700 (PDT)
+Received: from localhost ([12.3.194.138])
+        by smtp.gmail.com with ESMTPSA id y66-20020a62ce45000000b0050dc7628138sm12320869pfg.18.2022.05.25.14.32.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 25 May 2022 14:32:50 -0700 (PDT)
+Date:   Wed, 25 May 2022 14:32:50 -0700 (PDT)
+X-Google-Original-Date: Tue, 24 May 2022 17:52:10 PDT (-0700)
+Subject:     Re: [PATCH v2 1/4] RISC-V: Avoid empty create_*_mapping definitions
+In-Reply-To: <87a6cfh0bq.fsf@igel.home>
+CC:     linux-riscv@lists.infradead.org, rdunlap@infradead.org,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        aou@eecs.berkeley.edu, anup@brainfault.org,
+        vincent.chen@sifive.com, guoren@kernel.org,
+        Atish Patra <atishp@rivosinc.com>,
+        alexandre.ghiti@canonical.com, jszhang@kernel.org,
+        vitaly.wool@konsulko.com, gatecat@ds0.me,
+        wangkefeng.wang@huawei.com, mick@ics.forth.gr,
+        panqinglin2020@iscas.ac.cn, rppt@kernel.org,
+        linux-kernel@vger.kernel.org, linux@rivosinc.com, lkp@intel.com
+From:   Palmer Dabbelt <palmer@rivosinc.com>
+To:     schwab@linux-m68k.org
+Message-ID: <mhng-3fb658cb-0f64-4c62-8318-b9b4c906ef00@palmer-ri-x1c9>
+Mime-Version: 1.0 (MHng)
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, 20 Apr 2022 15:11:37 PDT (-0700), schwab@linux-m68k.org wrote:
+> On Apr 20 2022, Palmer Dabbelt wrote:
+>
+>> (create_pmd_mpping() ends up skipped on XIP_KERNEL).
+>
+> Does it?  There is always the semicolon left as the body of the
+> conditional (which is why you get the empty-body warning in the first
+> place).
 
-
-On 5/25/22 15:34, V sujith kumar Reddy wrote:
-> We have new platform with rt5682s as a primary codec and rt1019 as an
-> amp codec. Add machine struct to register sof audio based sound card
-> on such Chrome machine.
-> 
-> Here we are configuring as a soc mclk master and codec slave.
-> 
-> Signed-off-by: V sujith kumar Reddy <Vsujithkumar.Reddy@amd.com>
-> ---
->  sound/soc/amd/acp-config.c          |  9 ++++
->  sound/soc/amd/acp/acp-mach-common.c | 69 ++++++++++++++++++++++++-----
->  sound/soc/amd/acp/acp-sof-mach.c    | 15 +++++++
->  3 files changed, 82 insertions(+), 11 deletions(-)
-> 
-> diff --git a/sound/soc/amd/acp-config.c b/sound/soc/amd/acp-config.c
-> index ba9e0adacc4a..39ca48be7be9 100644
-> --- a/sound/soc/amd/acp-config.c
-> +++ b/sound/soc/amd/acp-config.c
-> @@ -147,6 +147,15 @@ struct snd_soc_acpi_mach snd_soc_acpi_amd_rmb_sof_machines[] = {
->  		.fw_filename = "sof-rmb.ri",
->  		.sof_tplg_filename = "sof-acp-rmb.tplg",
->  	},
-> +	{
-> +		.id = "RTL5682",
-> +		.drv_name = "rt5682s-hs-rt1019",
-> +		.pdata = &acp_quirk_data,
-> +		.machine_quirk = snd_soc_acpi_codec_list,
-> +		.quirk_data = &amp_rt1019,
-> +		.fw_filename = "sof-rmb.ri",
-> +		.sof_tplg_filename = "sof-acp-rmb.tplg",
-> +	},
-
-that means a 3rd entry with the same pair of firmware/topology files?
-
->  	{},
->  };
->  EXPORT_SYMBOL(snd_soc_acpi_amd_rmb_sof_machines);
-> diff --git a/sound/soc/amd/acp/acp-mach-common.c b/sound/soc/amd/acp/acp-mach-common.c
-> index a03b396d96bb..4aad3fee51cf 100644
-> --- a/sound/soc/amd/acp/acp-mach-common.c
-> +++ b/sound/soc/amd/acp/acp-mach-common.c
-> @@ -148,10 +148,15 @@ static int acp_card_hs_startup(struct snd_pcm_substream *substream)
->  	struct snd_soc_card *card = rtd->card;
->  	struct acp_card_drvdata *drvdata = card->drvdata;
->  	struct snd_soc_dai *codec_dai = asoc_rtd_to_codec(rtd, 0);
-> -	int ret;
-> +	unsigned int fmt = 0;
-
-fmt initialization is overridden below.
-
-> +	int ret = 0;
-
-useless init...
-
->  
-> -	ret =  snd_soc_dai_set_fmt(codec_dai, SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF
-> -				   | SND_SOC_DAIFMT_CBP_CFP);
-> +	if (drvdata->soc_mclk)
-> +		fmt = SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF | SND_SOC_DAIFMT_CBC_CFC;
-> +	else
-> +		fmt = SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF | SND_SOC_DAIFMT_CBP_CFP;
-> +
-> +	ret =  snd_soc_dai_set_fmt(codec_dai, fmt);
-
-... overridden here
-
->  	if (ret < 0) {
->  		dev_err(rtd->card->dev, "Failed to set dai fmt: %d\n", ret);
->  		return ret;
-
+Yep, you're right.  I fixed up the commit message, thanks!
