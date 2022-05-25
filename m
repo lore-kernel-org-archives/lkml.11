@@ -2,123 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3814AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 14:28:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF89EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 14:29:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244848AbiEYO2q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 10:28:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57290 "EHLO
+        id S244847AbiEYO3M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 10:29:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244658AbiEYO1t (ORCPT
+        with ESMTP id S244820AbiEYO3D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 10:27:49 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B32F1209D
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 07:27:22 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id p10so11741140wrg.12
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 07:27:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=vJ1ZHRktroNtOl8H5m5yxZpwDkzeUzNeSS+Jn6yJC/E=;
-        b=RDQviVNxwnDPtpi7oegoJoeczxVptCjhjqG3k7e2MVyRfnEPXQK1Yh1mUiyt6PZWOT
-         D5kGdb6hYRbfoJVXaQstxQAn4TVO0B4oPNhT5dYC075z4MKUbkwAqLV0yqr71Xn16XQX
-         igoPgt+UJjSW3+kK+cSA/cwXZauSDLvZzvLrQTCHp2bR8oG1WtTDjgC4ZMXM64P5Q75P
-         tCKHM37n6SFwIm3i5s7e2NLzGbZXghMVU7vk+S/fXnvquPunmZUEFClnPbEBtKnHF4aH
-         K7luMHASgIXULLWtjmwvJKmEZmtnQwrgskARoSUNu69cp3HYxDrpSj2e70W5lhfNRAnK
-         vhhQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=vJ1ZHRktroNtOl8H5m5yxZpwDkzeUzNeSS+Jn6yJC/E=;
-        b=dRuExfg5mEMjkTpiB2IEXMmnbKUa/hyIDdwtuHBKuDJNHycDFRptmeartWGA5bM4HY
-         9cfZkN0DT97RzEqEfxj5qTLP7YqMyAm44dkCTbkID8rKFAZ0GRgO1yWwt0FGaXBGAkgo
-         XFtvEPkBycu7RwF/o2dIsodmiAMcepZAHAixiBtB2kQttYOyhw4b2Ret/FPMW9DAvmu1
-         2WyaxxHdZC4dNXJX2K8PYhCHBH8uQbpIYPjaVE1LqcW5qepo4u5lhWUB6jaGL5p6IPVb
-         EONkeVHOx8nHcRFNddM4Yef/G/zP/TRUph0m7Es66FtA5UGPpyFkGS5G69qEiIEHNaC5
-         dFXA==
-X-Gm-Message-State: AOAM533FoozTwnFZWrr/qZr6bfERqENnAhvQ4WNsFNhTx9OWom8Aeai4
-        Nne1TVdGy0mtvW1I++pbShX4gLR9PiHpwDcWyPWdNg==
-X-Google-Smtp-Source: ABdhPJwO71e56s9S6gZVeAgxZJG9PM+AF+DSN8b3zz0J1VjD/KFjwSYVgU2nlpO1Jp//jjlGO0e0mGWReG0/0XrUcdc=
-X-Received: by 2002:a5d:448d:0:b0:20d:744:7663 with SMTP id
- j13-20020a5d448d000000b0020d07447663mr27630902wrq.654.1653488840849; Wed, 25
- May 2022 07:27:20 -0700 (PDT)
+        Wed, 25 May 2022 10:29:03 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D348213F67
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 07:28:11 -0700 (PDT)
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24PE4fsN009606;
+        Wed, 25 May 2022 14:26:51 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=UWZSwr4apSHlTMsRIuz0yVYAH7SCvORDiD4BeImtR8g=;
+ b=I/NmfraU0Jxha0Hh/LwMZODabgAaYxY8BCE+kuQCkdsxN62GvD2v80NUglDlWM+4j+3g
+ Upm9SU1dpGEZm8BNDD8zLLCJ23QeVX8Sxn7FY7GdS5enWgSE4pqbntbsY83/HyJTAk40
+ Q/wXtVOJPd/4EZmKqLurqjHjlT7+1OjnUIfjz+ANsZl5DonGS72Wj2XuvJsYlycgzL/n
+ 3jBs5xa5QJ5SPSGFhwQrtHypHHtRJKwPmxPokDin/6o1SG9/HGKlr7lKTCnvAnDFwesh
+ QwG8JF/fqBam/aFUQbESJwI8XJYt0W/tqLZrkRe/U2Q5cFD6R/w5zdTuDfJHaFgowbLJ Sg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g9hfnx94j-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 25 May 2022 14:26:51 +0000
+Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24PEKBjP019343;
+        Wed, 25 May 2022 14:26:50 GMT
+Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g9hfnx93s-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 25 May 2022 14:26:50 +0000
+Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
+        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24PEHl76021115;
+        Wed, 25 May 2022 14:26:48 GMT
+Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
+        by ppma01fra.de.ibm.com with ESMTP id 3g93vc1cap-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 25 May 2022 14:26:48 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24PECbVe42008860
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 25 May 2022 14:12:37 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id EE4B75204F;
+        Wed, 25 May 2022 14:26:45 +0000 (GMT)
+Received: from [9.43.97.219] (unknown [9.43.97.219])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 400635204E;
+        Wed, 25 May 2022 14:26:40 +0000 (GMT)
+Message-ID: <e9ddbcfe-f8d4-e542-deab-a0fadf86c6eb@linux.ibm.com>
+Date:   Wed, 25 May 2022 19:56:39 +0530
 MIME-Version: 1.0
-References: <20220525140410.1706851-1-zhengjun.xing@linux.intel.com>
-In-Reply-To: <20220525140410.1706851-1-zhengjun.xing@linux.intel.com>
-From:   Ian Rogers <irogers@google.com>
-Date:   Wed, 25 May 2022 07:27:08 -0700
-Message-ID: <CAP-5=fUm4G043v6-pToBiT-psxt-_r4kxtsWwkjLh=ARmhmP_A@mail.gmail.com>
-Subject: Re: [PATCH] perf jevents: Fix event syntax error caused by ExtSel
-To:     zhengjun.xing@linux.intel.com
-Cc:     acme@kernel.org, peterz@infradead.org, mingo@redhat.com,
-        alexander.shishkin@intel.com, jolsa@redhat.com,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        adrian.hunter@intel.com, ak@linux.intel.com,
-        kan.liang@linux.intel.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v8 7/7] x86/crash: Add x86 crash hotplug support for
+ kexec_load
+Content-Language: en-US
+To:     Eric DeVolder <eric.devolder@oracle.com>,
+        linux-kernel@vger.kernel.org, x86@kernel.org,
+        kexec@lists.infradead.org, ebiederm@xmission.com,
+        dyoung@redhat.com, bhe@redhat.com, vgoyal@redhat.com
+Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, hpa@zytor.com,
+        nramas@linux.microsoft.com, thomas.lendacky@amd.com,
+        robh@kernel.org, efault@gmx.de, rppt@kernel.org, david@redhat.com,
+        konrad.wilk@oracle.com, boris.ostrovsky@oracle.com
+References: <20220505184603.1548-1-eric.devolder@oracle.com>
+ <20220505184603.1548-8-eric.devolder@oracle.com>
+From:   Sourabh Jain <sourabhjain@linux.ibm.com>
+In-Reply-To: <20220505184603.1548-8-eric.devolder@oracle.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: ZKcWKRMI6loqY-FQfdgB-InlGA8lJt2D
+X-Proofpoint-ORIG-GUID: 1d8G_JNICD8TRwtzEQtoio6Qf331eN2S
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-25_04,2022-05-25_02,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 bulkscore=0
+ impostorscore=0 phishscore=0 suspectscore=0 priorityscore=1501
+ lowpriorityscore=0 mlxscore=0 mlxlogscore=999 spamscore=0 adultscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2205250072
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 25, 2022 at 7:04 AM <zhengjun.xing@linux.intel.com> wrote:
->
-> From: Zhengjun Xing <zhengjun.xing@linux.intel.com>
->
-> In the origin code, when "ExtSel" is 1, the eventcode will change to
-> "eventcode |=3D 1 << 21=E2=80=9D. For event =E2=80=9CUNC_Q_RxL_CREDITS_CO=
-NSUMED_VN0.DRS",
-> its "ExtSel" is "1", its eventcode will change from 0x1E to 0x20001E,
-> but in fact the eventcode should <=3D0x1FF, so this will cause the parse
-> fail:
->
->   # perf stat -e "UNC_Q_RxL_CREDITS_CONSUMED_VN0.DRS" -a sleep 0.1
-> event syntax error: '.._RxL_CREDITS_CONSUMED_VN0.DRS'
->                                   \___ value too big for format, maximum =
-is 511
->
-> On the perf kernel side, the kernel assumes the valid bits are continuous=
-.
-> It will adjust the 0x100 (bit 8 for perf tool) to bit 21 in HW.
->
-> DEFINE_UNCORE_FORMAT_ATTR(event_ext, event, "config:0-7,21");
->
-> So the perf tool follows the kernel side and just set bit8 other than bit=
-21.
->
-> Fixes: fedb2b518239 ("perf jevents: Add support for parsing uncore json f=
-iles")
-> Signed-off-by: Zhengjun Xing <zhengjun.xing@linux.intel.com>
-> Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
+Hello Eric,
 
-Acked-by: Ian Rogers <irogers@google.com>
+On 06/05/22 00:16, Eric DeVolder wrote:
+> For kexec_file_load support, the loading of the crash kernel occurs
+> entirely within the kernel, and as such the elfcorehdr is readily
+> identified (so that it can be modified upon hotplug events).
+>
+> This change enables support for kexec_load by identifying the
+> elfcorehdr segment in the arch_crash_handle_hotplug_event(),
+> if it has not already been identified.
+>
+> Signed-off-by: Eric DeVolder <eric.devolder@oracle.com>
+> Acked-by: Baoquan He <bhe@redhat.com>
+> ---
+>   arch/x86/kernel/crash.c | 24 ++++++++++++++++++++++++
+>   1 file changed, 24 insertions(+)
+>
+> diff --git a/arch/x86/kernel/crash.c b/arch/x86/kernel/crash.c
+> index 951ef365f0a7..845d7c77854d 100644
+> --- a/arch/x86/kernel/crash.c
+> +++ b/arch/x86/kernel/crash.c
+> @@ -485,6 +485,30 @@ void arch_crash_handle_hotplug_event(struct kimage *image,
+>   	void *elfbuf = NULL;
+>   	unsigned long mem, memsz;
+>   
+> +	/*
+> +	 * When the struct kimage is alloced, it is wiped to zero, so
+> +	 * the elfcorehdr_index_valid defaults to false. It is set on the
+> +	 * kexec_file_load path, or here for kexec_load, if not already
+> +	 * identified.
+> +	 */
+> +	if (!image->elfcorehdr_index_valid) {
+> +		unsigned int n;
+> +
+> +		for (n = 0; n < image->nr_segments; n++) {
+> +			mem = image->segment[n].mem;
+> +			memsz = image->segment[n].memsz;
+> +			ptr = map_crash_pages(mem, memsz);
+> +			if (ptr) {
+> +				/* The segment containing elfcorehdr */
+> +				if (memcmp(ptr, ELFMAG, SELFMAG) == 0) {
+> +					image->elfcorehdr_index = (int)n;
+> +					image->elfcorehdr_index_valid = true;
+
+How about finding elfcorehdr index on kexec_load path post 
+kimage_load_segment call in
+do_kexec_load (kernel/kexec.c) or other suitable place? This way we can 
+avoid checking for
+elfcorehdr index for every hotplug. Also we might not need 
+image->elfcorehdr_index_valid.
 
 Thanks,
-Ian
+Sourabh Jain
 
-> ---
->  tools/perf/pmu-events/jevents.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/tools/perf/pmu-events/jevents.c b/tools/perf/pmu-events/jeve=
-nts.c
-> index cee61c4ed59e..e597e4bac90f 100644
-> --- a/tools/perf/pmu-events/jevents.c
-> +++ b/tools/perf/pmu-events/jevents.c
-> @@ -605,7 +605,7 @@ static int json_events(const char *fn,
->                         } else if (json_streq(map, field, "ExtSel")) {
->                                 char *code =3D NULL;
->                                 addfield(map, &code, "", "", val);
-> -                               eventcode |=3D strtoul(code, NULL, 0) << =
-21;
-> +                               eventcode |=3D strtoul(code, NULL, 0) << =
-8;
->                                 free(code);
->                         } else if (json_streq(map, field, "EventName")) {
->                                 addfield(map, &je.name, "", "", val);
-> --
-> 2.25.1
->
+
