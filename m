@@ -2,161 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBE48C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 14:17:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6108CC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 14:19:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244736AbiEYORx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 10:17:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41284 "EHLO
+        id S242633AbiEYOTh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 10:19:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241203AbiEYORq (ORCPT
+        with ESMTP id S235155AbiEYOTe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 10:17:46 -0400
-Received: from gateway33.websitewelcome.com (gateway33.websitewelcome.com [192.185.146.82])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C20C79C2D2
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 07:17:45 -0700 (PDT)
-Received: from cm13.websitewelcome.com (cm13.websitewelcome.com [100.42.49.6])
-        by gateway33.websitewelcome.com (Postfix) with ESMTP id 49D67498BB
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 08:57:22 -0500 (CDT)
-Received: from 162-215-252-169.unifiedlayer.com ([208.91.199.152])
-        by cmsmtp with SMTP
-        id trVpndlkveI1itrVqnlNWg; Wed, 25 May 2022 08:57:22 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=roeck-us.net; s=default; h=Content-Transfer-Encoding:MIME-Version:
-        References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
-        Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=jkeP4GwJvBOCaJylAO1wG73yjst6A2ktNXJqi4BU/pY=; b=zZjw13T48cCmm81iMvjrpUCyN5
-        DreKojrvdZSDM+Z2N/ys8sbsxd6X4TrEoAJKkpW5fZru/M7sXCQ2h4yggt0CaC4Tvt7ZYwEeSDFF6
-        THiJi9eGrSjUnYczjpeTUjdKCJ9UwfjS6ojxhE4grPaiiA0SK4qAvDvoMYHLyf4/HgaNwweJ/OeM/
-        0ZBRs9QqAsLOvI2N7C0mwW6+CZaXaweDbK/i+wtw/HxBGOmdRrvvLyYf2A9PcVr2RSIf0dbiDoz2U
-        Zirs+AuqQIiw8somqPsW9VYj2HT//86tMZRd5okmMT4yttT1D32INVkPXgB0oVHrwZnPblPjaSXeg
-        ThHA3cJw==;
-Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:58274 helo=localhost)
-        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@roeck-us.net>)
-        id 1ntrVp-000PAM-KV; Wed, 25 May 2022 13:57:21 +0000
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     linux-hwmon@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, Jean Delvare <jdelvare@suse.com>,
-        Slawomir Stepien <sst@poczta.fm>,
-        Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH 05/40] hwmon: (lm90) Use BIT macro
-Date:   Wed, 25 May 2022 06:56:34 -0700
-Message-Id: <20220525135709.2899592-6-linux@roeck-us.net>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220525135709.2899592-1-linux@roeck-us.net>
-References: <20220525135709.2899592-1-linux@roeck-us.net>
+        Wed, 25 May 2022 10:19:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB8BC9C2CB;
+        Wed, 25 May 2022 07:19:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 51FBC6194E;
+        Wed, 25 May 2022 14:19:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FD86C385B8;
+        Wed, 25 May 2022 14:19:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653488372;
+        bh=7bBJlCok73CmtV4Rm+ajB2IXkeRLn3vMxn3dmBMgVvs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=XVL9TT0jdngjLQ2AzVhatAPJryXjpKrdvf3jySU2hsg2wTEGsnI3SKCCiLL/NVLPo
+         A6DyGXI3I445RiRTZ9nuf6OPHkyM0vs2TZ8IiKGsETlPPTijFtl9bhTlALOAJeRNSO
+         uade6xQfgdV5CXdwh6ZoZepevw6/s5sNpCj18G4AGiflBqaJVGusl72hVI24XOsSfU
+         +dp7oMd6EC6pa/mgBbCrG/TFQWJlcp/u3Bb3Wn9tqYuKj+kqYbVLTwlntqnLx7JpGD
+         Szl4Z2syKay/ExvEuGdVklLVoheBcgXj8QJHkdpJk9uslAfVw7hAjgqc3lMDuP3L7O
+         0dCwoDpPa8T7g==
+Date:   Wed, 25 May 2022 09:19:30 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Yicong Yang <yangyicong@hisilicon.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Linux PCI <linux-pci@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>
+Subject: Re: [RESEND PATCH v5] PCI: Make sure the bus bridge powered on when
+ scanning bus
+Message-ID: <20220525141930.GA290827@bhelgaas>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - roeck-us.net
-X-BWhitelist: no
-X-Source-IP: 108.223.40.66
-X-Source-L: No
-X-Exim-ID: 1ntrVp-000PAM-KV
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net (localhost) [108.223.40.66]:58274
-X-Source-Auth: guenter@roeck-us.net
-X-Email-Count: 23
-X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
-X-Local-Domain: yes
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAJZ5v0iKyVbHqjxH5nqfZ9E8C94EDhXXdkHYoN2smg3V7p6Wuw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use BIT macro instead of shift operation to improve readability.
-No functional change.
+On Wed, May 25, 2022 at 01:27:21PM +0200, Rafael J. Wysocki wrote:
+> On Tue, May 24, 2022 at 10:58 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
+> >
+> > On Tue, May 17, 2022 at 08:43:19PM +0800, Yicong Yang wrote:
+> > > When the bus bridge is runtime suspended, we'll fail to rescan
+> > > the devices through sysfs as we cannot access the configuration
+> > > space correctly when the bridge is in D3hot.
+> >
+> > Is the "D3hot" above a typo?  I think devices are supposed to respond
+> > to config accesses when in D3hot.  PCIe r6.0, sec 5.3.1.4.1:
+> >
+> >   Configuration and Message requests are the only TLPs accepted by a
+> >   Function in the D3Hot state. ...
+> >
+> >   Functions that are in D3Hot are permitted to be transitioned by
+> >   software (writing to their PMCSR PowerState field) to the D0active
+> >   state or the D0uninitialized state. Functions that are in D3Hot must
+> >   respond to Configuration Space accesses as long as power and clock
+> >   are supplied so that they can be returned to D0 by software.
+> 
+> That applies to the device itself, though, and not to the bus under it.
+> 
+> In general, a bridge in D3hot causes the bus segment on the other side
+> of it to be inaccessible even for config space accesses AFAICS.
 
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
----
- drivers/hwmon/lm90.c | 55 ++++++++++++++++++++++----------------------
- 1 file changed, 28 insertions(+), 27 deletions(-)
+Oh, thank you!  That was the piece I was missing.  I'll tweak the
+commit log to say something like:
 
-diff --git a/drivers/hwmon/lm90.c b/drivers/hwmon/lm90.c
-index 6728520a21ca..0f3fadc1631c 100644
---- a/drivers/hwmon/lm90.c
-+++ b/drivers/hwmon/lm90.c
-@@ -80,6 +80,7 @@
-  * concern all supported chipsets, unless mentioned otherwise.
-  */
- 
-+#include <linux/bits.h>
- #include <linux/device.h>
- #include <linux/err.h>
- #include <linux/i2c.h>
-@@ -182,36 +183,36 @@ enum chips { adm1032, adt7461, g781, lm86, lm90, lm99,
- /*
-  * Device flags
-  */
--#define LM90_FLAG_ADT7461_EXT	(1 << 0) /* ADT7461 extended mode	*/
-+#define LM90_FLAG_ADT7461_EXT	BIT(0)	/* ADT7461 extended mode	*/
- /* Device features */
--#define LM90_HAVE_OFFSET	(1 << 1) /* temperature offset register	*/
--#define LM90_HAVE_REM_LIMIT_EXT	(1 << 3) /* extended remote limit	*/
--#define LM90_HAVE_EMERGENCY	(1 << 4) /* 3rd upper (emergency) limit	*/
--#define LM90_HAVE_EMERGENCY_ALARM (1 << 5)/* emergency alarm		*/
--#define LM90_HAVE_TEMP3		(1 << 6) /* 3rd temperature sensor	*/
--#define LM90_HAVE_BROKEN_ALERT	(1 << 7) /* Broken alert		*/
--#define LM90_HAVE_EXTENDED_TEMP	(1 << 8) /* extended temperature support*/
--#define LM90_PAUSE_FOR_CONFIG	(1 << 9) /* Pause conversion for config	*/
--#define LM90_HAVE_CRIT		(1 << 10)/* Chip supports CRIT/OVERT register	*/
--#define LM90_HAVE_CRIT_ALRM_SWP	(1 << 11)/* critical alarm bits swapped	*/
-+#define LM90_HAVE_OFFSET	BIT(1)	/* temperature offset register	*/
-+#define LM90_HAVE_REM_LIMIT_EXT	BIT(3)	/* extended remote limit	*/
-+#define LM90_HAVE_EMERGENCY	BIT(4)	/* 3rd upper (emergency) limit	*/
-+#define LM90_HAVE_EMERGENCY_ALARM BIT(5)/* emergency alarm		*/
-+#define LM90_HAVE_TEMP3		BIT(6)	/* 3rd temperature sensor	*/
-+#define LM90_HAVE_BROKEN_ALERT	BIT(7)	/* Broken alert			*/
-+#define LM90_HAVE_EXTENDED_TEMP	BIT(8)	/* extended temperature support	*/
-+#define LM90_PAUSE_FOR_CONFIG	BIT(9)	/* Pause conversion for config	*/
-+#define LM90_HAVE_CRIT		BIT(10)	/* Chip supports CRIT/OVERT register	*/
-+#define LM90_HAVE_CRIT_ALRM_SWP	BIT(11)	/* critical alarm bits swapped	*/
- 
- /* LM90 status */
--#define LM90_STATUS_LTHRM	(1 << 0) /* local THERM limit tripped */
--#define LM90_STATUS_RTHRM	(1 << 1) /* remote THERM limit tripped */
--#define LM90_STATUS_ROPEN	(1 << 2) /* remote is an open circuit */
--#define LM90_STATUS_RLOW	(1 << 3) /* remote low temp limit tripped */
--#define LM90_STATUS_RHIGH	(1 << 4) /* remote high temp limit tripped */
--#define LM90_STATUS_LLOW	(1 << 5) /* local low temp limit tripped */
--#define LM90_STATUS_LHIGH	(1 << 6) /* local high temp limit tripped */
--#define LM90_STATUS_BUSY	(1 << 7) /* conversion is ongoing */
--
--#define MAX6696_STATUS2_R2THRM	(1 << 1) /* remote2 THERM limit tripped */
--#define MAX6696_STATUS2_R2OPEN	(1 << 2) /* remote2 is an open circuit */
--#define MAX6696_STATUS2_R2LOW	(1 << 3) /* remote2 low temp limit tripped */
--#define MAX6696_STATUS2_R2HIGH	(1 << 4) /* remote2 high temp limit tripped */
--#define MAX6696_STATUS2_ROT2	(1 << 5) /* remote emergency limit tripped */
--#define MAX6696_STATUS2_R2OT2	(1 << 6) /* remote2 emergency limit tripped */
--#define MAX6696_STATUS2_LOT2	(1 << 7) /* local emergency limit tripped */
-+#define LM90_STATUS_LTHRM	BIT(0)	/* local THERM limit tripped */
-+#define LM90_STATUS_RTHRM	BIT(1)	/* remote THERM limit tripped */
-+#define LM90_STATUS_ROPEN	BIT(2)	/* remote is an open circuit */
-+#define LM90_STATUS_RLOW	BIT(3)	/* remote low temp limit tripped */
-+#define LM90_STATUS_RHIGH	BIT(4)	/* remote high temp limit tripped */
-+#define LM90_STATUS_LLOW	BIT(5)	/* local low temp limit tripped */
-+#define LM90_STATUS_LHIGH	BIT(6)	/* local high temp limit tripped */
-+#define LM90_STATUS_BUSY	BIT(7)	/* conversion is ongoing */
-+
-+#define MAX6696_STATUS2_R2THRM	BIT(1)	/* remote2 THERM limit tripped */
-+#define MAX6696_STATUS2_R2OPEN	BIT(2)	/* remote2 is an open circuit */
-+#define MAX6696_STATUS2_R2LOW	BIT(3)	/* remote2 low temp limit tripped */
-+#define MAX6696_STATUS2_R2HIGH	BIT(4)	/* remote2 high temp limit tripped */
-+#define MAX6696_STATUS2_ROT2	BIT(5)	/* remote emergency limit tripped */
-+#define MAX6696_STATUS2_R2OT2	BIT(6)	/* remote2 emergency limit tripped */
-+#define MAX6696_STATUS2_LOT2	BIT(7)	/* local emergency limit tripped */
- 
- /*
-  * Driver data (common to all clients)
--- 
-2.35.1
+  A bridge in a non-D0 power state does not forward config accesses to
+  its secondary side (PCIe r6.0, sec 5.3.1).  Make sure the bridge is
+  in D0 while we enumerate devices below it.
 
+> > > It can be reproduced like:
+> > >
+> > > $ echo 1 > /sys/bus/pci/devices/0000:80:00.0/0000:81:00.1/remove
+> > > $ echo 1 > /sys/bus/pci/devices/0000:80:00.0/pci_bus/0000:81/rescan
+> > >
+> > > 0000:80:00.0 is a Root Port and it is runtime-suspended, so
+> > > 0000:81:00.1 is unreachable after a rescan.
+> > >
+> > > Power up the bridge when scanning the child bus and allow it to
+> > > suspend again by adding pm_runtime_get_sync()/pm_runtime_put()
+> > > in pci_scan_child_bus_extend().
+> > >
+> > > Cc: Rafael J. Wysocki <rafael@kernel.org>
+> > > Cc: Mika Westerberg <mika.westerberg@linux.intel.com>
+> > > Cc: Bjorn Helgaas <bhelgaas@google.com>
+> > > Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
+> > > Reviewed-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+> > > ---
+> > >  drivers/pci/probe.c | 12 ++++++++++++
+> > >  1 file changed, 12 insertions(+)
+> > >
+> > > diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+> > > index 17a969942d37..b108e72b6586 100644
+> > > --- a/drivers/pci/probe.c
+> > > +++ b/drivers/pci/probe.c
+> > > @@ -2859,11 +2859,20 @@ static unsigned int pci_scan_child_bus_extend(struct pci_bus *bus,
+> > >       unsigned int used_buses, normal_bridges = 0, hotplug_bridges = 0;
+> > >       unsigned int start = bus->busn_res.start;
+> > >       unsigned int devfn, fn, cmax, max = start;
+> > > +     struct pci_dev *bridge = bus->self;
+> > >       struct pci_dev *dev;
+> > >       int nr_devs;
+> > >
+> > >       dev_dbg(&bus->dev, "scanning bus\n");
+> > >
+> > > +     /*
+> > > +      * Make sure the bus bridge is powered on, otherwise we may not be
+> > > +      * able to scan the devices as we may fail to access the configuration
+> > > +      * space of subordinates.
+> > > +      */
+> > > +     if (bridge)
+> > > +             pm_runtime_get_sync(&bridge->dev);
+> > > +
+> > >       /* Go find them, Rover! */
+> > >       for (devfn = 0; devfn < 256; devfn += 8) {
+> > >               nr_devs = pci_scan_slot(bus, devfn);
+> > > @@ -2976,6 +2985,9 @@ static unsigned int pci_scan_child_bus_extend(struct pci_bus *bus,
+> > >               }
+> > >       }
+> > >
+> > > +     if (bridge)
+> > > +             pm_runtime_put(&bridge->dev);
+> > > +
+> > >       /*
+> > >        * We've scanned the bus and so we know all about what's on
+> > >        * the other side of any bridges that may be on this bus plus
+> > > --
+> > > 2.24.0
+> > >
