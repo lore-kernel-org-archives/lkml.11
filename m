@@ -2,214 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3876C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 17:53:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04A27C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 17:53:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343594AbiEYRxb (ORCPT
+        id S1343573AbiEYRxv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 13:53:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35542 "EHLO
+        Wed, 25 May 2022 13:53:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343572AbiEYRx1 (ORCPT
+        with ESMTP id S1343596AbiEYRxt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 13:53:27 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EAAFBF78;
-        Wed, 25 May 2022 10:53:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653501204; x=1685037204;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=OBl8VqVg26hgXRW1FrdHxYUiLB4y0jncmZM7TnohZuE=;
-  b=FuNYdouKTfFyKuue9M+iMFEORnfXOZb47tW80Eb7P6gjVWQYTzdkkbJB
-   cJkmQG5RXtsnX4++Om8SoPeFdn0/W4qiLcZKUuluAAp1iAB+TlnDf18sW
-   8/rRhmZKJ0ENlIuT6IevSos7bL0cXryzbSLFYjNOwcojrj1KbgxtNOSwj
-   xKxGo5mq5DWr4Nn+Myolf9uDPjPBaDgzz+AsMtwL5Nzd04/AHo30Cf839
-   1+xd8CpC0SjRQpIfHEOpKCambpXh3GppAcAitYKgseGrGfugFh39me6tt
-   272q8ubjV9FS01iTgo3VcDfE5PTQtpq/6nkYPWfzexcCczZURduuTCmlz
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10358"; a="253763447"
-X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
-   d="scan'208";a="253763447"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2022 10:53:11 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
-   d="scan'208";a="664528898"
-Received: from lkp-server01.sh.intel.com (HELO db63a1be7222) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 25 May 2022 10:53:04 -0700
-Received: from kbuild by db63a1be7222 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ntvBv-0003DC-DD;
-        Wed, 25 May 2022 17:53:03 +0000
-Date:   Thu, 26 May 2022 01:52:58 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Eugenio =?iso-8859-1?Q?P=E9rez?= <eperezma@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        Jason Wang <jasowang@redhat.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Zhu Lingshan <lingshan.zhu@intel.com>, martinh@xilinx.com,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        ecree.xilinx@gmail.com, Eli Cohen <elic@nvidia.com>,
-        Dan Carpenter <error27@gmail.com>,
-        Parav Pandit <parav@nvidia.com>,
-        Wu Zongyong <wuzongyong@linux.alibaba.com>, dinang@xilinx.com,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Xie Yongji <xieyongji@bytedance.com>, gautam.dawar@amd.com,
-        lulu@redhat.com, martinpo@xilinx.com, pabloc@xilinx.com,
-        Longpeng <longpeng2@huawei.com>, Piotr.Uminski@intel.com,
-        tanuj.kamde@amd.com, Si-Wei Liu <si-wei.liu@oracle.com>,
-        habetsm.xilinx@gmail.com, lvivier@redhat.com,
-        Zhang Min <zhang.min9@zte.com.cn>, hanand@xilinx.com
-Subject: Re: [PATCH v3 3/4] vhost-vdpa: uAPI to stop the device
-Message-ID: <202205260121.6V500tTl-lkp@intel.com>
-References: <20220525105922.2413991-4-eperezma@redhat.com>
+        Wed, 25 May 2022 13:53:49 -0400
+Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9922DFB4;
+        Wed, 25 May 2022 10:53:32 -0700 (PDT)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+        by mail.sberdevices.ru (Postfix) with ESMTP id F0B8E5FD08;
+        Wed, 25 May 2022 20:53:28 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+        s=mail; t=1653501209;
+        bh=En3Np2u2djTMEVwwxBwoJJkxFH8AqiHFqQ265Nknr8o=;
+        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
+        b=EOeeYFyNtIC1PrWeiDG9ODbItxIuP0Rc4ssRlCd8eIecElXctQ7jHLBbqkSEgThD3
+         +xWvClg/WXHssF2/hWx1/ECjrAEdixt9xrpXjpxb3gwiw13jj+a3bimC08KKpbmrNs
+         ACgELy2KcYz/VHuArMMa/pTIOEQ+2R38fnPYpBdltRJu23Dsht1zl3froF5O/SyAgH
+         NvabuYIeibhaFCub4VRlTDS1cQizZU/XjX2NIxOCVo4Ap/xR1r/XG16g6ZHfPXj8rt
+         e/hMhVNHIOcQ4x9JQezltS8kH5IqQmw4Zx1eu7eRNbFWrBycqrmjnjZp3vgkwME9Tt
+         Mo4bgBNmWyTVQ==
+Received: from S-MS-EXCH02.sberdevices.ru (S-MS-EXCH02.sberdevices.ru [172.16.1.5])
+        by mail.sberdevices.ru (Postfix) with ESMTP;
+        Wed, 25 May 2022 20:53:26 +0300 (MSK)
+From:   Dmitry Rokosov <DDRokosov@sberdevices.ru>
+To:     Jonathan Cameron <jic23@kernel.org>
+CC:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "stano.jakubek@gmail.com" <stano.jakubek@gmail.com>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
+        "stephan@gerhold.net" <stephan@gerhold.net>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v1 2/3] iio: add MEMSensing MSA311 3-axis accelerometer
+ driver
+Thread-Topic: [PATCH v1 2/3] iio: add MEMSensing MSA311 3-axis accelerometer
+ driver
+Thread-Index: AQHYVASOybrxT0DjfUWoYWuGUlWOX6z4bouAgAnb/gCAIkALgIAGKs0AgAUw8QA=
+Date:   Wed, 25 May 2022 17:53:11 +0000
+Message-ID: <20220525175322.36umsxjwioyfcsac@CAB-WSD-L081021.sigma.sbrf.ru>
+References: <20220419154555.24191-1-ddrokosov@sberdevices.ru>
+ <20220419154555.24191-3-ddrokosov@sberdevices.ru>
+ <20220420115023.00006a25@Huawei.com>
+ <20220426172406.s4h6g7nrpytaq263@CAB-WSD-L081021.sigma.sbrf.ru>
+ <20220518122515.aby5lbb4xusr6pdt@CAB-WSD-L081021.sigma.sbrf.ru>
+ <20220522113654.0e3c0023@jic23-huawei>
+In-Reply-To: <20220522113654.0e3c0023@jic23-huawei>
+Accept-Language: ru-RU, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.16.1.12]
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <0CF6C5E8D08B4941B4A2F1C04D4EB0B2@sberdevices.ru>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220525105922.2413991-4-eperezma@redhat.com>
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/05/25 08:39:00 #19569940
+X-KSMG-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi "Eugenio,
+On Sun, May 22, 2022 at 11:36:54AM +0100, Jonathan Cameron wrote:
+> > Syscall delete_module() tries to stop module first and after calls
+> > driver exit() function (which executes devm_* handlers inside, includin=
+g IIO
+> > trigger unregister). It means we have the chicken or the egg dilemma he=
+re.
+> > Module can't be unloaded until module refcnt is not zero and we can't
+> > execute IIO trigger unregister (decrease module refcnt) only when modul=
+e
+> > refcnt is zero.
+> > I suppose the possible solution to such a problem is a different semant=
+ic
+> > for internal triggers (inside driver itself) and external drivers (like
+> > hwtimer trigger). What do you think?
+>=20
+> Potentially though it's going to be tricky as a driver doesn't generally
+> have any way to know they are internal and we need to be careful not to
+> underflow the reference counts.  We could hid a flag somewhere and
+> add an iio_trigger_get_same_owner() or something that sets that flag allo=
+wing
+> us to decide not to drop the reference count it if is automatically unass=
+ociated.
+> In the path where you get:
+> 1) iio_trigger_get_same_owner() on probe
+> 2) sysfs write changes to another trigger.
+> 3) sysfs write back to original trigger
+> it is reasonable to assume the need to clear the trigger
+> before driver removal is possible, whereas clearing the trigger associati=
+on
+> if only step 1 happened is no intuitive.
 
-Thank you for the patch! Yet something to improve:
+I will try to prepare the rfc patch if you don't mind. I propose to
+continue further discussion there.
 
-[auto build test ERROR on mst-vhost/linux-next]
-[also build test ERROR on next-20220525]
-[cannot apply to horms-ipvs/master linux/master linus/master v5.18]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+>=20
+> >=20
+> > The second one issue is located in the different IIO drivers. Some modu=
+les
+> > call iio_trigger_get() before iio_trigger_register(), trig->owner is no=
+t
+> > initialized to the right value (THIS_MODULE) and we don't acquire refcn=
+t
+> > for proper driver object.
+>=20
+> Ah. Good point. I guess we missed that when we were moving over to
+> automated setting of the module.
+>=20
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Eugenio-P-rez/Implement-vdpasim-stop-operation/20220525-190143
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git linux-next
-config: x86_64-randconfig-a005 (https://download.01.org/0day-ci/archive/20220526/202205260121.6V500tTl-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d52a6e75b0c402c7f3b42a2b1b2873f151220947)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/515f6b6d2a0164df801ddbe61e1cb1ae4e763873
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Eugenio-P-rez/Implement-vdpasim-stop-operation/20220525-190143
-        git checkout 515f6b6d2a0164df801ddbe61e1cb1ae4e763873
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/vhost/
+Already submitted v2 patchset here:
+https://lore.kernel.org/linux-iio/20220524181150.9240-1-ddrokosov@sberdevic=
+es.ru/
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> drivers/vhost/vdpa.c:668:7: error: use of undeclared identifier 'VHOST_STOP'
-           case VHOST_STOP:
-                ^
-   1 error generated.
-
-
-vim +/VHOST_STOP +668 drivers/vhost/vdpa.c
-
-   587	
-   588	static long vhost_vdpa_unlocked_ioctl(struct file *filep,
-   589					      unsigned int cmd, unsigned long arg)
-   590	{
-   591		struct vhost_vdpa *v = filep->private_data;
-   592		struct vhost_dev *d = &v->vdev;
-   593		void __user *argp = (void __user *)arg;
-   594		u64 __user *featurep = argp;
-   595		u64 features;
-   596		long r = 0;
-   597	
-   598		if (cmd == VHOST_SET_BACKEND_FEATURES) {
-   599			if (copy_from_user(&features, featurep, sizeof(features)))
-   600				return -EFAULT;
-   601			if (features & ~(VHOST_VDPA_BACKEND_FEATURES |
-   602					 BIT_ULL(VHOST_BACKEND_F_STOP)))
-   603				return -EOPNOTSUPP;
-   604			if ((features & BIT_ULL(VHOST_BACKEND_F_STOP)) &&
-   605			     !vhost_vdpa_can_stop(v))
-   606				return -EOPNOTSUPP;
-   607			vhost_set_backend_features(&v->vdev, features);
-   608			return 0;
-   609		}
-   610	
-   611		mutex_lock(&d->mutex);
-   612	
-   613		switch (cmd) {
-   614		case VHOST_VDPA_GET_DEVICE_ID:
-   615			r = vhost_vdpa_get_device_id(v, argp);
-   616			break;
-   617		case VHOST_VDPA_GET_STATUS:
-   618			r = vhost_vdpa_get_status(v, argp);
-   619			break;
-   620		case VHOST_VDPA_SET_STATUS:
-   621			r = vhost_vdpa_set_status(v, argp);
-   622			break;
-   623		case VHOST_VDPA_GET_CONFIG:
-   624			r = vhost_vdpa_get_config(v, argp);
-   625			break;
-   626		case VHOST_VDPA_SET_CONFIG:
-   627			r = vhost_vdpa_set_config(v, argp);
-   628			break;
-   629		case VHOST_GET_FEATURES:
-   630			r = vhost_vdpa_get_features(v, argp);
-   631			break;
-   632		case VHOST_SET_FEATURES:
-   633			r = vhost_vdpa_set_features(v, argp);
-   634			break;
-   635		case VHOST_VDPA_GET_VRING_NUM:
-   636			r = vhost_vdpa_get_vring_num(v, argp);
-   637			break;
-   638		case VHOST_VDPA_GET_GROUP_NUM:
-   639			r = copy_to_user(argp, &v->vdpa->ngroups,
-   640					 sizeof(v->vdpa->ngroups));
-   641			break;
-   642		case VHOST_VDPA_GET_AS_NUM:
-   643			r = copy_to_user(argp, &v->vdpa->nas, sizeof(v->vdpa->nas));
-   644			break;
-   645		case VHOST_SET_LOG_BASE:
-   646		case VHOST_SET_LOG_FD:
-   647			r = -ENOIOCTLCMD;
-   648			break;
-   649		case VHOST_VDPA_SET_CONFIG_CALL:
-   650			r = vhost_vdpa_set_config_call(v, argp);
-   651			break;
-   652		case VHOST_GET_BACKEND_FEATURES:
-   653			features = VHOST_VDPA_BACKEND_FEATURES;
-   654			if (vhost_vdpa_can_stop(v))
-   655				features |= BIT_ULL(VHOST_BACKEND_F_STOP);
-   656			if (copy_to_user(featurep, &features, sizeof(features)))
-   657				r = -EFAULT;
-   658			break;
-   659		case VHOST_VDPA_GET_IOVA_RANGE:
-   660			r = vhost_vdpa_get_iova_range(v, argp);
-   661			break;
-   662		case VHOST_VDPA_GET_CONFIG_SIZE:
-   663			r = vhost_vdpa_get_config_size(v, argp);
-   664			break;
-   665		case VHOST_VDPA_GET_VQS_COUNT:
-   666			r = vhost_vdpa_get_vqs_count(v, argp);
-   667			break;
- > 668		case VHOST_STOP:
-   669			r = vhost_vdpa_stop(v, argp);
-   670			break;
-   671		default:
-   672			r = vhost_dev_ioctl(&v->vdev, cmd, argp);
-   673			if (r == -ENOIOCTLCMD)
-   674				r = vhost_vdpa_vring_ioctl(v, cmd, argp);
-   675			break;
-   676		}
-   677	
-   678		mutex_unlock(&d->mutex);
-   679		return r;
-   680	}
-   681	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+--=20
+Thank you,
+Dmitry=
