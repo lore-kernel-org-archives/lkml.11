@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2C8BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 16:12:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C755C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 16:12:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244607AbiEYQMw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 12:12:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34880 "EHLO
+        id S245417AbiEYQM5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 12:12:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236249AbiEYQMn (ORCPT
+        with ESMTP id S238863AbiEYQMo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 12:12:43 -0400
+        Wed, 25 May 2022 12:12:44 -0400
 Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD20FB41F9
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 09:12:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C3AEB41F2
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 09:12:43 -0700 (PDT)
 Received: from zn.tnic (p200300ea97465795329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:9746:5795:329c:23ff:fea6:a903])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 42C811EC04E2;
-        Wed, 25 May 2022 18:12:41 +0200 (CEST)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 33EEF1EC064E;
+        Wed, 25 May 2022 18:12:42 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1653495161;
+        t=1653495162;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=E+TdOuNjF7WGNyon6haxmg5aXIog4wU2LGWC4mw0n8U=;
-        b=h941RWbAwqcik3N4sAq0X+Lfmw8/Zn/GBbQ4d6UV5Pz80i3BS/gMGaUfoNa7/Ph+udEnuW
-        purD3T8aJM4mUXQD+WXDLWEOa1/qAJZYyicLnSYjS7o3dsezvI+7AlHFjpa6ugMjHmqGtE
-        BGZgY/oy4UosbEUo0wxi/A2n2I6ctA0=
+        bh=bhZp5sw7frsYYj8/OoHw/3GuZNx/12J3ZfzOJ/qzK+E=;
+        b=Jb+scEotriM3yibw3XNeCJorNgp65/RY+jpLlAlMKaqDIC4LpNgWKDl5G7EZmlP9hp0F6R
+        1IQJ1TnRAifZZ5bim1K0EUu8wHKWV+r0oa9Ew9h5KsMfoLgLNSTgHTDcSH59T6RlF+IInQ
+        Mhy5Ewb8OkHrTTNCbm7BB3K4bd8W/y4=
 From:   Borislav Petkov <bp@alien8.de>
 To:     X86 ML <x86@kernel.org>
 Cc:     Tony Luck <tony.luck@intel.com>,
         LKML <linux-kernel@vger.kernel.org>
-Subject: [PATCH 1/4] x86/microcode: Rip out the OLD_INTERFACE
-Date:   Wed, 25 May 2022 18:12:29 +0200
-Message-Id: <20220525161232.14924-2-bp@alien8.de>
+Subject: [PATCH 3/4] x86/microcode: Taint and warn on late loading
+Date:   Wed, 25 May 2022 18:12:31 +0200
+Message-Id: <20220525161232.14924-4-bp@alien8.de>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220525161232.14924-1-bp@alien8.de>
 References: <20220525161232.14924-1-bp@alien8.de>
@@ -48,162 +48,36 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Borislav Petkov <bp@suse.de>
 
-Everything should be using the early initrd loading by now.
+Warn before it is attempted and taint the kernel.
 
 Signed-off-by: Borislav Petkov <bp@suse.de>
 ---
- arch/x86/Kconfig                     |  12 ----
- arch/x86/kernel/cpu/microcode/core.c | 100 ---------------------------
- 2 files changed, 112 deletions(-)
+ arch/x86/kernel/cpu/microcode/core.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 2e8f6fd28e59..1c0da2dbfb26 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -1345,18 +1345,6 @@ config MICROCODE_AMD
- 	  If you select this option, microcode patch loading support for AMD
- 	  processors will be enabled.
- 
--config MICROCODE_OLD_INTERFACE
--	bool "Ancient loading interface (DEPRECATED)"
--	default n
--	depends on MICROCODE
--	help
--	  DO NOT USE THIS! This is the ancient /dev/cpu/microcode interface
--	  which was used by userspace tools like iucode_tool and microcode.ctl.
--	  It is inadequate because it runs too late to be able to properly
--	  load microcode on a machine and it needs special tools. Instead, you
--	  should've switched to the early loading method with the initrd or
--	  builtin microcode by now: Documentation/x86/microcode.rst
--
- config X86_MSR
- 	tristate "/dev/cpu/*/msr - Model-specific register support"
- 	help
 diff --git a/arch/x86/kernel/cpu/microcode/core.c b/arch/x86/kernel/cpu/microcode/core.c
-index 239ff5fcec6a..b72c4134f289 100644
+index c717db6b6856..801b44ac3851 100644
 --- a/arch/x86/kernel/cpu/microcode/core.c
 +++ b/arch/x86/kernel/cpu/microcode/core.c
-@@ -373,98 +373,6 @@ static int apply_microcode_on_target(int cpu)
+@@ -493,6 +493,9 @@ static int microcode_reload_late(void)
+ {
+ 	int ret;
+ 
++	pr_err("Attempting late microcode loading - it is dangerous and taints the kernel.\n");
++	pr_err("You should switch to early loading, if possible.\n");
++
+ 	atomic_set(&late_cpus_in,  0);
+ 	atomic_set(&late_cpus_out, 0);
+ 
+@@ -541,6 +544,8 @@ static ssize_t reload_store(struct device *dev,
+ 	if (ret == 0)
+ 		ret = size;
+ 
++	add_taint(TAINT_CPU_OUT_OF_SPEC, LOCKDEP_STILL_OK);
++
  	return ret;
  }
  
--#ifdef CONFIG_MICROCODE_OLD_INTERFACE
--static int do_microcode_update(const void __user *buf, size_t size)
--{
--	int error = 0;
--	int cpu;
--
--	for_each_online_cpu(cpu) {
--		struct ucode_cpu_info *uci = ucode_cpu_info + cpu;
--		enum ucode_state ustate;
--
--		if (!uci->valid)
--			continue;
--
--		ustate = microcode_ops->request_microcode_user(cpu, buf, size);
--		if (ustate == UCODE_ERROR) {
--			error = -1;
--			break;
--		} else if (ustate == UCODE_NEW) {
--			apply_microcode_on_target(cpu);
--		}
--	}
--
--	return error;
--}
--
--static int microcode_open(struct inode *inode, struct file *file)
--{
--	return capable(CAP_SYS_RAWIO) ? stream_open(inode, file) : -EPERM;
--}
--
--static ssize_t microcode_write(struct file *file, const char __user *buf,
--			       size_t len, loff_t *ppos)
--{
--	ssize_t ret = -EINVAL;
--	unsigned long nr_pages = totalram_pages();
--
--	if ((len >> PAGE_SHIFT) > nr_pages) {
--		pr_err("too much data (max %ld pages)\n", nr_pages);
--		return ret;
--	}
--
--	cpus_read_lock();
--	mutex_lock(&microcode_mutex);
--
--	if (do_microcode_update(buf, len) == 0)
--		ret = (ssize_t)len;
--
--	if (ret > 0)
--		perf_check_microcode();
--
--	mutex_unlock(&microcode_mutex);
--	cpus_read_unlock();
--
--	return ret;
--}
--
--static const struct file_operations microcode_fops = {
--	.owner			= THIS_MODULE,
--	.write			= microcode_write,
--	.open			= microcode_open,
--	.llseek		= no_llseek,
--};
--
--static struct miscdevice microcode_dev = {
--	.minor			= MICROCODE_MINOR,
--	.name			= "microcode",
--	.nodename		= "cpu/microcode",
--	.fops			= &microcode_fops,
--};
--
--static int __init microcode_dev_init(void)
--{
--	int error;
--
--	error = misc_register(&microcode_dev);
--	if (error) {
--		pr_err("can't misc_register on minor=%d\n", MICROCODE_MINOR);
--		return error;
--	}
--
--	return 0;
--}
--
--static void __exit microcode_dev_exit(void)
--{
--	misc_deregister(&microcode_dev);
--}
--#else
--#define microcode_dev_init()	0
--#define microcode_dev_exit()	do { } while (0)
--#endif
--
- /* fake device for request_firmware */
- static struct platform_device	*microcode_pdev;
- 
-@@ -856,10 +764,6 @@ static int __init microcode_init(void)
- 		goto out_driver;
- 	}
- 
--	error = microcode_dev_init();
--	if (error)
--		goto out_ucode_group;
--
- 	register_syscore_ops(&mc_syscore_ops);
- 	cpuhp_setup_state_nocalls(CPUHP_AP_MICROCODE_LOADER, "x86/microcode:starting",
- 				  mc_cpu_starting, NULL);
-@@ -870,10 +774,6 @@ static int __init microcode_init(void)
- 
- 	return 0;
- 
-- out_ucode_group:
--	sysfs_remove_group(&cpu_subsys.dev_root->kobj,
--			   &cpu_root_microcode_group);
--
-  out_driver:
- 	cpus_read_lock();
- 	mutex_lock(&microcode_mutex);
 -- 
 2.35.1
 
