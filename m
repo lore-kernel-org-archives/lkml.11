@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D57ACC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 11:00:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F0F5C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 11:00:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241949AbiEYLAI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 07:00:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51644 "EHLO
+        id S233834AbiEYLAU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 07:00:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241788AbiEYLAB (ORCPT
+        with ESMTP id S241788AbiEYLAL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 07:00:01 -0400
+        Wed, 25 May 2022 07:00:11 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BB57B60BAF
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 04:00:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2F9E37037E
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 04:00:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653476399;
+        s=mimecast20190719; t=1653476408;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ese622/PjwlbZK8BGVrfy4abZ5tLs60liyPxNETnN7U=;
-        b=JRPrUCo3/Ia7YPUdQ4HGYd7ZXbbWhF7EUrnPeRT+32du3IdhC4+VurEJvnO3TB336KKYyl
-        pHygcgOBAWyQcYsRbfM4Sp4fvUaXOpVWFxrXoD9SDy9a3iwT+8tpvy+s5Q3w7pu4hel004
-        L9Qk7MIo3qv/4lzXTRvx/MkPLPay9Hk=
+        bh=NlxBW7wk8695Knmv4EkJy0sRMvfqe1PLsU+Qmw4ofPU=;
+        b=L5z1iWSZ3+Ji1rkGh1407i6DwMdusVMbdSTibVWn0GnPUG0LMl8g6jQs5OyiDGU5k7gnwl
+        e88iCdV26YkBL+WLSCpKRw8BZsxVRVRhoybq9ki2Xlrz5wrHxMUlrw6swIYv99hMNKQDcE
+        s5qn6+8xB3XPZ3xjU2UMg/FVSBhJSLo=
 Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
  [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-54-mAvFaTlVPUyrJ8isaMy3yQ-1; Wed, 25 May 2022 06:59:49 -0400
-X-MC-Unique: mAvFaTlVPUyrJ8isaMy3yQ-1
+ us-mta-8-k3rwf3ytO6ebUOz1zbXP5Q-1; Wed, 25 May 2022 07:00:06 -0400
+X-MC-Unique: k3rwf3ytO6ebUOz1zbXP5Q-1
 Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id D9C601C0CE63;
-        Wed, 25 May 2022 10:59:47 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C59EC29AB3EB;
+        Wed, 25 May 2022 11:00:04 +0000 (UTC)
 Received: from eperezma.remote.csb (unknown [10.39.192.180])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 57D9D7AD8;
-        Wed, 25 May 2022 10:59:41 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id BE2A17AD8;
+        Wed, 25 May 2022 10:59:56 +0000 (UTC)
 From:   =?UTF-8?q?Eugenio=20P=C3=A9rez?= <eperezma@redhat.com>
 To:     "Michael S. Tsirkin" <mst@redhat.com>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
@@ -56,9 +56,9 @@ Cc:     Zhu Lingshan <lingshan.zhu@intel.com>, martinh@xilinx.com,
         tanuj.kamde@amd.com, Si-Wei Liu <si-wei.liu@oracle.com>,
         habetsm.xilinx@gmail.com, lvivier@redhat.com,
         Zhang Min <zhang.min9@zte.com.cn>, hanand@xilinx.com
-Subject: [PATCH v3 1/4] vdpa: Add stop operation
-Date:   Wed, 25 May 2022 12:59:19 +0200
-Message-Id: <20220525105922.2413991-2-eperezma@redhat.com>
+Subject: [PATCH v3 3/4] vhost-vdpa: uAPI to stop the device
+Date:   Wed, 25 May 2022 12:59:21 +0200
+Message-Id: <20220525105922.2413991-4-eperezma@redhat.com>
 In-Reply-To: <20220525105922.2413991-1-eperezma@redhat.com>
 References: <20220525105922.2413991-1-eperezma@redhat.com>
 MIME-Version: 1.0
@@ -69,38 +69,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This operation is optional: It it's not implemented, backend feature bit
-will not be exposed.
+The ioctl adds support for stop the device from userspace.
 
 Signed-off-by: Eugenio Pérez <eperezma@redhat.com>
 ---
- include/linux/vdpa.h | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/vhost/vdpa.c       | 18 ++++++++++++++++++
+ include/uapi/linux/vhost.h | 14 ++++++++++++++
+ 2 files changed, 32 insertions(+)
 
-diff --git a/include/linux/vdpa.h b/include/linux/vdpa.h
-index 15af802d41c4..ddfebc4e1e01 100644
---- a/include/linux/vdpa.h
-+++ b/include/linux/vdpa.h
-@@ -215,6 +215,11 @@ struct vdpa_map_file {
-  * @reset:			Reset device
-  *				@vdev: vdpa device
-  *				Returns integer: success (0) or error (< 0)
-+ * @stop:			Stop or resume the device (optional, but it must
-+ *				be implemented if require device stop)
-+ *				@vdev: vdpa device
-+ *				@stop: stop (true), not stop (false)
-+ *				Returns integer: success (0) or error (< 0)
-  * @get_config_size:		Get the size of the configuration space includes
-  *				fields that are conditional on feature bits.
-  *				@vdev: vdpa device
-@@ -316,6 +321,7 @@ struct vdpa_config_ops {
- 	u8 (*get_status)(struct vdpa_device *vdev);
- 	void (*set_status)(struct vdpa_device *vdev, u8 status);
- 	int (*reset)(struct vdpa_device *vdev);
-+	int (*stop)(struct vdpa_device *vdev, bool stop);
- 	size_t (*get_config_size)(struct vdpa_device *vdev);
- 	void (*get_config)(struct vdpa_device *vdev, unsigned int offset,
- 			   void *buf, unsigned int len);
+diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+index 32713db5831d..a5d33bad92f9 100644
+--- a/drivers/vhost/vdpa.c
++++ b/drivers/vhost/vdpa.c
+@@ -478,6 +478,21 @@ static long vhost_vdpa_get_vqs_count(struct vhost_vdpa *v, u32 __user *argp)
+ 	return 0;
+ }
+ 
++static long vhost_vdpa_stop(struct vhost_vdpa *v, u32 __user *argp)
++{
++	struct vdpa_device *vdpa = v->vdpa;
++	const struct vdpa_config_ops *ops = vdpa->config;
++	int stop;
++
++	if (!ops->stop)
++		return -EOPNOTSUPP;
++
++	if (copy_from_user(&stop, argp, sizeof(stop)))
++		return -EFAULT;
++
++	return ops->stop(vdpa, stop);
++}
++
+ static long vhost_vdpa_vring_ioctl(struct vhost_vdpa *v, unsigned int cmd,
+ 				   void __user *argp)
+ {
+@@ -650,6 +665,9 @@ static long vhost_vdpa_unlocked_ioctl(struct file *filep,
+ 	case VHOST_VDPA_GET_VQS_COUNT:
+ 		r = vhost_vdpa_get_vqs_count(v, argp);
+ 		break;
++	case VHOST_STOP:
++		r = vhost_vdpa_stop(v, argp);
++		break;
+ 	default:
+ 		r = vhost_dev_ioctl(&v->vdev, cmd, argp);
+ 		if (r == -ENOIOCTLCMD)
+diff --git a/include/uapi/linux/vhost.h b/include/uapi/linux/vhost.h
+index cab645d4a645..c7e47b29bf61 100644
+--- a/include/uapi/linux/vhost.h
++++ b/include/uapi/linux/vhost.h
+@@ -171,4 +171,18 @@
+ #define VHOST_VDPA_SET_GROUP_ASID	_IOW(VHOST_VIRTIO, 0x7C, \
+ 					     struct vhost_vring_state)
+ 
++/* Stop or resume a device so it does not process virtqueue requests anymore
++ *
++ * After the return of ioctl with stop != 0, the device must finish any
++ * pending operations like in flight requests. It must also preserve all
++ * the necessary state (the virtqueue vring base plus the possible device
++ * specific states) that is required for restoring in the future. The
++ * device must not change its configuration after that point.
++ *
++ * After the return of ioctl with stop == 0, the device can continue
++ * processing buffers as long as typical conditions are met (vq is enabled,
++ * DRIVER_OK status bit is enabled, etc).
++ */
++#define VHOST_VDPA_STOP			_IOW(VHOST_VIRTIO, 0x7D, int)
++
+ #endif
 -- 
 2.27.0
 
