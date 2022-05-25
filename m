@@ -2,103 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25D2BC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 14:20:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC308C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 14:21:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237065AbiEYOU3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 10:20:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42882 "EHLO
+        id S235359AbiEYOU7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 10:20:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233501AbiEYOUX (ORCPT
+        with ESMTP id S233911AbiEYOU4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 10:20:23 -0400
-Received: from gateway22.websitewelcome.com (gateway22.websitewelcome.com [192.185.46.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA3CF9C2CB
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 07:20:22 -0700 (PDT)
-Received: from cm11.websitewelcome.com (cm11.websitewelcome.com [100.42.49.5])
-        by gateway22.websitewelcome.com (Postfix) with ESMTP id CB1461208E
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 08:57:21 -0500 (CDT)
-Received: from 162-215-252-169.unifiedlayer.com ([208.91.199.152])
-        by cmsmtp with SMTP
-        id trVpnBNTM0EfytrVpn581Q; Wed, 25 May 2022 08:57:21 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=roeck-us.net; s=default; h=Content-Transfer-Encoding:MIME-Version:
-        References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
-        Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=rCKqXle6qbQe/IsqkcPkNDc9pAVJQLLMF9gxVrNillo=; b=K9uaUQOjVJ+/emlolmG8oM4At/
-        HvP6C73sk5f84+w7DPVbjB9g3W+qHKKPnYuBAoM5eCIHtugpA6S7xiWWB5BKif+34NjIcnatRGVbx
-        tkGlxkm7ObCR7tuX8xsiOdplkHoN/SmYPJKdoPP6RtSHljgEI1zkTqbO+qEi/HwbJGwrI+eYh/3HX
-        ZkhYWn5MBYxJZkIC9ApPOg3g3VJMDNpIMyRcGYg5PTNl96oBMtjd9ng1p4PKajjiDACg3SBJRzA4J
-        Jly9EkL2EaqasAuUE9/3cvfhggxrB26U9dkTGCXTU47iAA1FlvpXEmWGaHm3hY/clJEmXFh4a8hWX
-        AGsUH+Uw==;
-Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:58272 helo=localhost)
-        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@roeck-us.net>)
-        id 1ntrVo-000P8e-P0; Wed, 25 May 2022 13:57:20 +0000
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     linux-hwmon@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, Jean Delvare <jdelvare@suse.com>,
-        Slawomir Stepien <sst@poczta.fm>,
-        Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH 04/40] hwmon: (lm90) Reorder chip enumeration to be in alphabetical order
-Date:   Wed, 25 May 2022 06:56:33 -0700
-Message-Id: <20220525135709.2899592-5-linux@roeck-us.net>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220525135709.2899592-1-linux@roeck-us.net>
-References: <20220525135709.2899592-1-linux@roeck-us.net>
+        Wed, 25 May 2022 10:20:56 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A7FCA30A2
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 07:20:55 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mfe@pengutronix.de>)
+        id 1ntrsV-0007o9-N1; Wed, 25 May 2022 16:20:47 +0200
+Received: from [2a0a:edc0:0:1101:1d::28] (helo=dude02.red.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <mfe@pengutronix.de>)
+        id 1ntrsW-004U3i-9t; Wed, 25 May 2022 16:20:46 +0200
+Received: from mfe by dude02.red.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <mfe@pengutronix.de>)
+        id 1ntrsU-00FAwM-5x; Wed, 25 May 2022 16:20:46 +0200
+From:   Marco Felsch <m.felsch@pengutronix.de>
+To:     p.zabel@pengutronix.de, robh+dt@kernel.org, krzk+dt@kernel.org
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel@pengutronix.de, Marco Felsch <m.felsch@pengutronix.de>
+Subject: [PATCH 1/2] dt-bindings: reset: Add TPS380x documentation
+Date:   Wed, 25 May 2022 16:20:19 +0200
+Message-Id: <20220525142019.3615253-1-m.felsch@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - roeck-us.net
-X-BWhitelist: no
-X-Source-IP: 108.223.40.66
-X-Source-L: No
-X-Exim-ID: 1ntrVo-000P8e-P0
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net (localhost) [108.223.40.66]:58272
-X-Source-Auth: guenter@roeck-us.net
-X-Email-Count: 19
-X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
-X-Local-Domain: yes
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: mfe@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Reorder chip enumeration in alphabetical order to make it easier to
-see which chips are supported, and to clarify where to add support
-new chip types. No functional change.
+Add device-tree binding documentation for the tps380x reset driver. The
+binding uses enum to make it easy to add more devices from that family.
 
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Marco Felsch <m.felsch@pengutronix.de>
 ---
- drivers/hwmon/lm90.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ .../bindings/reset/ti,tps380x-reset.yaml      | 49 +++++++++++++++++++
+ 1 file changed, 49 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/reset/ti,tps380x-reset.yaml
 
-diff --git a/drivers/hwmon/lm90.c b/drivers/hwmon/lm90.c
-index b7f5b743c9f5..6728520a21ca 100644
---- a/drivers/hwmon/lm90.c
-+++ b/drivers/hwmon/lm90.c
-@@ -113,8 +113,10 @@ static const unsigned short normal_i2c[] = {
- 	0x18, 0x19, 0x1a, 0x29, 0x2a, 0x2b, 0x48, 0x49, 0x4a, 0x4b, 0x4c,
- 	0x4d, 0x4e, 0x4f, I2C_CLIENT_END };
- 
--enum chips { lm90, adm1032, lm99, lm86, max6657, max6659, adt7461, max6680,
--	max6646, w83l771, max6696, sa56004, g781, tmp451, tmp461, max6654 };
-+enum chips { adm1032, adt7461, g781, lm86, lm90, lm99,
-+	max6646, max6654, max6657, max6659, max6680, max6696,
-+	sa56004, tmp451, tmp461, w83l771,
-+};
- 
- /*
-  * The LM90 registers
+diff --git a/Documentation/devicetree/bindings/reset/ti,tps380x-reset.yaml b/Documentation/devicetree/bindings/reset/ti,tps380x-reset.yaml
+new file mode 100644
+index 000000000000..afc835eda0ef
+--- /dev/null
++++ b/Documentation/devicetree/bindings/reset/ti,tps380x-reset.yaml
+@@ -0,0 +1,49 @@
++# SPDX-License-Identifier: (GPL-2.0-only or BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/reset/ti,tps380x-reset.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: TI TPS380x reset controller node bindings
++
++maintainers:
++  - Marco Felsch <kernel@pengutronix.de>
++
++description: |
++  The TPS380x family [1] of supervisory circuits monitor supply voltages to
++  provide circuit initialization and timing supervision. The devices assert a
++  RESET signal if the voltage drops below a preset threshold or upon a manual
++  reset input (MR). The RESET output remains asserted for the factory
++  programmed delay after the voltage return above its threshold or after the
++  manual reset input is released.
++
++  [1] https://www.ti.com/product/TPS3801
++
++properties:
++  compatible:
++    enum:
++      - ti,tps3801
++
++  reset-gpios:
++    maxItems: 1
++    description: Reference to the GPIO connected to the MR pin.
++
++  "#reset-cells":
++    const: 0
++
++required:
++  - compatible
++  - reset-gpios
++  - "#reset-cells"
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/gpio/gpio.h>
++    reset: reset-controller {
++        compatible = "ti,tps3801";
++        #reset-cells = <0>;
++        reset-gpios = <&gpio3 2 GPIO_ACTIVE_LOW>;
++    };
++...
 -- 
-2.35.1
+2.30.2
 
