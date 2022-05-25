@@ -2,110 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D47BBC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 17:37:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33456C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 17:39:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245717AbiEYRhL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 13:37:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46086 "EHLO
+        id S245723AbiEYRjC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 13:39:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229837AbiEYRhH (ORCPT
+        with ESMTP id S229837AbiEYRjB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 13:37:07 -0400
-Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E497B9158D;
-        Wed, 25 May 2022 10:37:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1653500222;
-    s=strato-dkim-0002; d=gerhold.net;
-    h=In-Reply-To:References:Message-ID:Subject:Cc:To:From:Date:Cc:Date:
-    From:Subject:Sender;
-    bh=LkCr1nDsG4a9WOPwOju1ojVRo2OtcGaGaOl1mrXFyCo=;
-    b=K3J1sP+MSx4Gw/yu+LtUYd9vQc7DGk7hjxZQmHD4RmdNo3qeBVmVpQf3x745IsXgCP
-    FDM7jK6aqyQ36IUXkBra1nhrje94CmYAR7oOEh5JswmXMuORuujAFupbd38qs9nq/cVQ
-    fK/fcvl27P+B06++6MwzPC27/wyxXEmeP0QULj6Rh2emNKKayXNuvi2DJ5KGPwEvNWw8
-    Eo3UGwt+x61M70BS9XIvv4/7ey7KJ89kpogqfnyakiYIgmHaIkdfLT2vUSjw2bGmZvXb
-    uIlHZ0RqodPMwnu4O5CVTLyJQKUp+cwuxQP4GqoCLtD9RL3/tZWwOJJHBv1YjZcFOiIQ
-    EEqA==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":P3gBZUipdd93FF5ZZvYFPugejmSTVR2nRPhVOQ/OcYgojyw4j34+u267FZF9PwpcNKLUrKsxlg=="
-X-RZG-CLASS-ID: mo00
-Received: from gerhold.net
-    by smtp.strato.de (RZmta 47.45.0 AUTH)
-    with ESMTPSA id 9056edy4PHb2XpL
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Wed, 25 May 2022 19:37:02 +0200 (CEST)
-Date:   Wed, 25 May 2022 19:36:53 +0200
-From:   Stephan Gerhold <stephan@gerhold.net>
-To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        agross@kernel.org, arnd@arndb.de, devicetree@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        olof@lixom.net, robh@kernel.org, sboyd@kernel.org
-Subject: Re: Removal of qcom,board-id and qcom,msm-id
-Message-ID: <Yo5pNRq/vBaamk0q@gerhold.net>
-References: <a3c932d1-a102-ce18-deea-18cbbd05ecab@linaro.org>
- <20220522195138.35943-1-konrad.dybcio@somainline.org>
- <53d5999b-88ee-24db-fd08-ff9406e2b7b7@linaro.org>
- <YowBtNkZ678ns4Ob@builder.lan>
- <CAA8EJprArSF_363FyS+63XfB=ZK657X81u8TJLTRx5AbTYy1ag@mail.gmail.com>
+        Wed, 25 May 2022 13:39:01 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37A6CAFADA
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 10:39:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653500340; x=1685036340;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=d8IVV6FH6JDhsADseOUxBqVpCfkI/N2LszUb6foim30=;
+  b=kLjwlh7mLw9V/mYIToEsKcgxqxStqCPiqQhNypWlH7tyXCQuBUtrpe21
+   xjpKUNMJFgowWYxHTJq2rGlRDvLV47ymi/wu0P3h/h2rTImuuM5Mr9Ayg
+   yS5bcs0yN+MmmmpNqqf7d7paaqkfc+zWfO/ULhtQviTkFgzLJJOES7vfS
+   J4wAetvuzXrAHw3p6KQQcwAbS+9B7SRdunFkjOn9xtqc6DXgP4lDth24z
+   lD1QX28rlVU4KMzrX4Y7hnVhNqJUEU4Hv4ZQLsGIXtqbJwBBXDY0fGhQq
+   gYRKb0a+TuWqts7TPdPON0fne5h2cOFOg7uc8Hf+DRTBM3emrJrMSFWgZ
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10358"; a="253754550"
+X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
+   d="scan'208";a="253754550"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2022 10:12:03 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
+   d="scan'208";a="642458622"
+Received: from lkp-server01.sh.intel.com (HELO db63a1be7222) ([10.239.97.150])
+  by fmsmga004.fm.intel.com with ESMTP; 25 May 2022 10:12:02 -0700
+Received: from kbuild by db63a1be7222 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1ntuYD-0003Ao-Ij;
+        Wed, 25 May 2022 17:12:01 +0000
+Date:   Thu, 26 May 2022 01:11:49 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Viresh Kumar <viresh.kumar@linaro.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [vireshk-pm:opp/config 10/33] include/linux/pm_opp.h:459:16:
+ warning: returning 'void *' from a function with return type 'int' makes
+ integer from pointer without a cast
+Message-ID: <202205260146.VYGeif1G-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAA8EJprArSF_363FyS+63XfB=ZK657X81u8TJLTRx5AbTYy1ag@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 24, 2022 at 01:18:53AM +0300, Dmitry Baryshkov wrote:
-> > We're following the bindings and don't pick board-id or msm-id unless
-> > there's a particular reason for it - which typically is that the
-> > downstream bootloader requires it - we don't use the properties on the
-> > kernel side.
-> 
-> Or unless we have another reason (like handling a single RB3+RB5 image).
-> I suspect PmOS might also like shipping a single image for some/all of
-> the supported devices. Or we might use that for the qcom-armv8a OE
-> machine.
-> 
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/vireshk/pm.git opp/config
+head:   d730dc101c586defb49eeafd8eea9b7bb0baa01b
+commit: a23b86fb0614c769679169402c09ebcd07dbb22f [10/33] OPP: Add dev_pm_opp_set_config() and friends
+config: m68k-randconfig-r033-20220524 (https://download.01.org/0day-ci/archive/20220526/202205260146.VYGeif1G-lkp@intel.com/config)
+compiler: m68k-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/vireshk/pm.git/commit/?id=a23b86fb0614c769679169402c09ebcd07dbb22f
+        git remote add vireshk-pm https://git.kernel.org/pub/scm/linux/kernel/git/vireshk/pm.git
+        git fetch --no-tags vireshk-pm opp/config
+        git checkout a23b86fb0614c769679169402c09ebcd07dbb22f
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash kernel/sched/
 
-On a larger scale the qcom,msm-id/board-id properties are not very
-useful for automatic DTB selection. This is simply because they are not
-unique when you look beyond just the Qualcomm reference boards. I know
-at least 3 totally different smartphones (from different vendors) where
-the bootloader picks "msm8916-mtp", even though they have little in
-common with Qualcomm's original MTP board.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-There are also vendors who made up their own broken numbering scheme,
-broken bootloaders that pick seemingly random DTBs or start modifying
-random properties etc etc. Perhaps it has improved on more recent
-devices but somehow I doubt it...
+All warnings (new ones prefixed by >>):
 
-This means that the qcom,msm-id/board-id properties are really just
-useful for making the bootloader happy, or if you have a number of
-devices in full control. It's not the consistently implemented standard
-that would actually be worth promoting for automatic DTB selection.
+   In file included from include/linux/cpufreq.h:19,
+                    from kernel/sched/sched.h:30,
+                    from kernel/sched/core.c:81:
+   include/linux/pm_opp.h: In function 'devm_pm_opp_set_config':
+>> include/linux/pm_opp.h:459:16: warning: returning 'void *' from a function with return type 'int' makes integer from pointer without a cast [-Wint-conversion]
+     459 |         return ERR_PTR(-EOPNOTSUPP);
+         |                ^~~~~~~~~~~~~~~~~~~~
+   kernel/sched/core.c: At top level:
+   kernel/sched/core.c:5235:20: warning: no previous prototype for 'task_sched_runtime' [-Wmissing-prototypes]
+    5235 | unsigned long long task_sched_runtime(struct task_struct *p)
+         |                    ^~~~~~~~~~~~~~~~~~
+   kernel/sched/core.c:9420:13: warning: no previous prototype for 'sched_init_smp' [-Wmissing-prototypes]
+    9420 | void __init sched_init_smp(void)
+         |             ^~~~~~~~~~~~~~
+   kernel/sched/core.c:9448:13: warning: no previous prototype for 'sched_init' [-Wmissing-prototypes]
+    9448 | void __init sched_init(void)
+         |             ^~~~~~~~~~
+--
+   In file included from include/linux/cpufreq.h:19,
+                    from kernel/sched/sched.h:30,
+                    from kernel/sched/fair.c:53:
+   include/linux/pm_opp.h: In function 'devm_pm_opp_set_config':
+>> include/linux/pm_opp.h:459:16: warning: returning 'void *' from a function with return type 'int' makes integer from pointer without a cast [-Wint-conversion]
+     459 |         return ERR_PTR(-EOPNOTSUPP);
+         |                ^~~~~~~~~~~~~~~~~~~~
+   kernel/sched/fair.c: At top level:
+   kernel/sched/fair.c:663:5: warning: no previous prototype for 'sched_update_scaling' [-Wmissing-prototypes]
+     663 | int sched_update_scaling(void)
+         |     ^~~~~~~~~~~~~~~~~~~~
+--
+   In file included from include/linux/cpufreq.h:19,
+                    from kernel/sched/sched.h:30,
+                    from kernel/sched/build_policy.c:33:
+   include/linux/pm_opp.h: In function 'devm_pm_opp_set_config':
+>> include/linux/pm_opp.h:459:16: warning: returning 'void *' from a function with return type 'int' makes integer from pointer without a cast [-Wint-conversion]
+     459 |         return ERR_PTR(-EOPNOTSUPP);
+         |                ^~~~~~~~~~~~~~~~~~~~
+   In file included from kernel/sched/build_policy.c:43:
+   kernel/sched/rt.c: At top level:
+   kernel/sched/rt.c:666:6: warning: no previous prototype for 'sched_rt_bandwidth_account' [-Wmissing-prototypes]
+     666 | bool sched_rt_bandwidth_account(struct rt_rq *rt_rq)
+         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~
+--
+   In file included from include/linux/cpufreq.h:19,
+                    from kernel/sched/build_utility.c:21:
+   include/linux/pm_opp.h: In function 'devm_pm_opp_set_config':
+>> include/linux/pm_opp.h:459:16: warning: returning 'void *' from a function with return type 'int' makes integer from pointer without a cast [-Wint-conversion]
+     459 |         return ERR_PTR(-EOPNOTSUPP);
+         |                ^~~~~~~~~~~~~~~~~~~~
 
-> >
-> > > If the dtbTool support for the bindings is there, then there is no
-> > > breakage, because you had to use dtbTool before so you have to use now.
-> > >
-> >
-> > Among all the platforms I maintain, MSM8916 (db410c) is the only one
-> > where I use dtbTool - because it refuses to accept the concatenated
-> > dtb.
-> 
-> It's strange, I have been using concatenated dtb with db410c for ages.
-> 
 
-There is a patch in Linaro's LK fork for DB410c that selects the
-appended DTB even if the qcom,msm-id/board-id properties are missing:
-https://git.linaro.org/landing-teams/working/qualcomm/lk.git/commit/?id=3be1d459a546a24f2bf10b9551663a3e69a8214e
+vim +459 include/linux/pm_opp.h
 
-If you don't have this commit or something equivalent, appended DTBs
-must have the qcom,msm-id/board-id properties for LK to accept them.
+   456	
+   457	static inline int devm_pm_opp_set_config(struct device *dev, struct dev_pm_opp_config *config)
+   458	{
+ > 459		return ERR_PTR(-EOPNOTSUPP);
+   460	}
+   461	
 
-Stephan
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
