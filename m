@@ -2,171 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E713C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 11:09:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB2DEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 11:10:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237383AbiEYLJL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 07:09:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33362 "EHLO
+        id S240494AbiEYLK3 convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 07:10:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230117AbiEYLJH (ORCPT
+        with ESMTP id S230117AbiEYLKZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 07:09:07 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 557CF4B1CE;
-        Wed, 25 May 2022 04:09:04 -0700 (PDT)
-Received: from mail-yb1-f169.google.com ([209.85.219.169]) by
- mrelayeu.kundenserver.de (mreue009 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1MmlfS-1nRwNd1dw6-00jup3; Wed, 25 May 2022 13:03:59 +0200
-Received: by mail-yb1-f169.google.com with SMTP id s14so8286681ybc.10;
-        Wed, 25 May 2022 04:03:59 -0700 (PDT)
-X-Gm-Message-State: AOAM530rmeqk08WjlN/QYC+WZuXpvM7ioxV96Ps+P10BEN4XaNoCxpPg
-        tzi129E65eoTjSXGI1o88lqPdydVXe/0hMUrZdg=
-X-Google-Smtp-Source: ABdhPJz1e+LfMuPz0MS9sNMc0xEtyj2vb1IvtyZSxvk0REhKPHlgJ8aBK7ZaMaZoGJN/t/2EL3imcUVYNZICVyESX2c=
-X-Received: by 2002:a25:9b89:0:b0:655:8454:dc92 with SMTP id
- v9-20020a259b89000000b006558454dc92mr3917386ybo.550.1653476637990; Wed, 25
- May 2022 04:03:57 -0700 (PDT)
+        Wed, 25 May 2022 07:10:25 -0400
+Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E54784A15;
+        Wed, 25 May 2022 04:10:22 -0700 (PDT)
+Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=diego.localnet)
+        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <heiko@sntech.de>)
+        id 1ntou5-0005Nh-BQ; Wed, 25 May 2022 13:10:13 +0200
+From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
+To:     Guo Ren <guoren@kernel.org>, Guenter Roeck <linux@roeck-us.net>
+Cc:     Palmer Dabbelt <palmer@dabbelt.com>, Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Christoph Hellwig <hch@lst.de>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        linux-csky@vger.kernel.org,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        sparclinux <sparclinux@vger.kernel.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        Parisc List <linux-parisc@vger.kernel.org>,
+        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        the arch/x86 maintainers <x86@kernel.org>,
+        Guo Ren <guoren@linux.alibaba.com>
+Subject: Re: [PATCH V9 20/20] riscv: compat: Add COMPAT Kbuild skeletal support
+Date:   Wed, 25 May 2022 13:10:12 +0200
+Message-ID: <3418219.V25eIC5XRa@diego>
+In-Reply-To: <6435704.4vTCxPXJkl@diego>
+References: <20220322144003.2357128-1-guoren@kernel.org> <20220524220646.GA3990738@roeck-us.net> <6435704.4vTCxPXJkl@diego>
 MIME-Version: 1.0
-References: <20220419211658.11403-1-apais@linux.microsoft.com>
- <20220419211658.11403-2-apais@linux.microsoft.com> <CACRpkdZ2DFZRPHS1x0=M3_8zYvU-jpCG5Tm3863dXv51EhY+BA@mail.gmail.com>
-In-Reply-To: <CACRpkdZ2DFZRPHS1x0=M3_8zYvU-jpCG5Tm3863dXv51EhY+BA@mail.gmail.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Wed, 25 May 2022 13:03:41 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a0j_rziihsgHnG5bHMxmPbOkAhT6_+CCE4iFZy7HzQrLw@mail.gmail.com>
-Message-ID: <CAK8P3a0j_rziihsgHnG5bHMxmPbOkAhT6_+CCE4iFZy7HzQrLw@mail.gmail.com>
-Subject: Re: [RFC 1/1] drivers/dma/*: replace tasklets with workqueue
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     Allen Pais <apais@linux.microsoft.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>, olivier.dautricourt@orolia.com,
-        Stefan Roese <sr@denx.de>, Vinod Koul <vkoul@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        linux-hardening@vger.kernel.org,
-        Ludovic Desroches <ludovic.desroches@microchip.com>,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Eugeniy.Paltsev@synopsys.com,
-        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Viresh Kumar <vireshk@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Leo Li <leoyang.li@nxp.com>, zw@zh-kernel.org,
-        Zhou Wang <wangzhou1@hisilicon.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Logan Gunthorpe <logang@deltatee.com>,
-        Sanjay R Mehta <sanju.mehta@amd.com>,
-        Daniel Mack <daniel@zonque.org>,
-        Haojian Zhuang <haojian.zhuang@gmail.com>,
-        Robert Jarzmik <robert.jarzmik@free.fr>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        green.wan@sifive.com, Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Lyra Zhang <zhang.lyra@gmail.com>,
-        Patrice CHOTARD <patrice.chotard@foss.st.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        =?UTF-8?Q?Jernej_=C5=A0krabec?= <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        dmaengine@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:f/6k2PCsIE8z9nVIcZyFl7FQM76NaSb/7sgHOxM2nu/nvieFW5T
- iWAJyvMLPoTlX5/UMfaYOUfCK3rlzw0wg3KHxasWD0dv00v0UVwJoiFG51yrVU5XSQhDLvH
- H/45U5SOj90pRYFmRgUXqlTYtUldRhVTOPzs75PlT6jhXCzj+i4ggaZjYT1o2p89Bq7LeR1
- SJRII9RZBL7zF+8VRnHhQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:vAWSt4/6Mzo=:dVQVOYp3ErokFgL6PgU6Le
- DIVX82jZfj7TFfkBwmSpvYtFk7yDRssUEkj5KaMwYGbscdcqRPtuhTXpgenwrHapb6prMiqeA
- eG7MjIO58GlMUOuu6IECsFNhZLP38r6PPuModfjhHhxe+3qtRS9+V8MVJ+1opcGgS6pn8XThK
- T8KfdIs3eZwS/XbKErZeT/isjuKS8yA3/0NwsgZt1UXxlKT3PkbF78xoVa9rZ2ozWhdzcMKQy
- uXHG9aMHsaLdaPCayCWa8bDDVfsvZ5cH/Kbf01uIZkkUWfLLF0U/viNfN7C/2HtvnyVGb1S+D
- uYT0rcZWn2/omsVbL5ShE5qfswMYGctv1BcWEnx1xCFVuy0wB3EwEF+yyh3yWI7eboiBjxbZi
- YbaowDmeexg2N6mDM8LV3Jhx4JbKujXyP+EKEj21c0rnCi6j8y9W87vrfDUJXdtpZYqcyhpd3
- hjp9Zt3z4iEMtxzX/ZJ4j2yjGKt6dQ6OFdro/DjFINeIkkNErne2x9SE3zMpjaAKeCT7DJi1v
- VdpYCYLqLR3kjV9QlqZQ1cTxH3EKQI3N+bL9bZuqEKA8DllMaC4y8tkkxqGERa+/qmVS25DjF
- BLFYX4+evjBzpC/tHzMCcaeaZbQTRA1iqbtAKk2Lf25VjollbFDrV4CdTZYyTQsvbGmUaiUgI
- 4pDrxHTsjBtBOtND+E+BQmF2K3FBCwfVp91ad6e6jPTk1Zhu6nGwqweOOr3kKngceBrYWmvlR
- U36MUcbOiqCjxbKqNfQtWrmwEfgvsSkFe2Lb34PSR367TGqchO/7cktGock4ka/5zqE9RbpEc
- 7QiHrIQ/R+iRuY1wGpJfqr5zG/sHLSrKaTcqEpm3kUlZpiiVy+Vexhj636eT8oV4AcBP6JjWE
- YnNg7L69pOttvhimJJeg==
+Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset="iso-8859-1"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 25, 2022 at 11:24 AM Linus Walleij <linus.walleij@linaro.org> wrote:
-> On Tue, Apr 19, 2022 at 11:17 PM Allen Pais <apais@linux.microsoft.com> wrote:
->
-> > The tasklet is an old API which will be deprecated, workqueue API
-> > cab be used instead of them.
-> >
-> > This patch replaces the tasklet usage in drivers/dma/* with a
-> > simple work.
-> >
-> > Github: https://github.com/KSPP/linux/issues/94
-> >
-> > Signed-off-by: Allen Pais <apais@linux.microsoft.com>
->
-> Paging Vincent Guittot and Arnd Bergmann on the following question
-> on this patch set:
->
-> - Will replacing tasklets with workque like this negatively impact the
->   performance on DMA engine bottom halves?
+Am Mittwoch, 25. Mai 2022, 12:57:30 CEST schrieb Heiko Stübner:
+> Am Mittwoch, 25. Mai 2022, 00:06:46 CEST schrieb Guenter Roeck:
+> > On Wed, May 25, 2022 at 01:46:38AM +0800, Guo Ren wrote:
+> > [ ... ]
+> > 
+> > > > The problem is come from "__dls3's vdso decode part in musl's
+> > > > ldso/dynlink.c". The ehdr->e_phnum & ehdr->e_phentsize are wrong.
+> > > >
+> > > > I think the root cause is from musl's implementation with the wrong
+> > > > elf parser. I would fix that soon.
+> > > Not elf parser, it's "aux vector just past environ[]". I think I could
+> > > solve this, but anyone who could help dig in is welcome.
+> > > 
+> > 
+> > I am not sure I understand what you are saying here. Point is that my
+> > root file system, generated with musl a year or so ago, crashes with
+> > your patch set applied. That is a regression, even if there is a bug
+> > in musl.
+> 
+> Also as I said in the other part of the thread, the rootfs seems innocent,
+> as my completely-standard Debian riscv64 rootfs is also affected.
+> 
+> The merged version seems to be v12 [0] - not sure how we this discussion
+> ended up in v9, but I just tested this revision in two variants:
+> 
+> - v5.17 + this v9 -> works nicely
 
-I think it will in some cases but not others. The problem I see is that
-the short patch description makes it sound like a trivial conversion of a
-single subsystem, but in reality this interacts with all the drivers using
-DMA engines, including tty/serial, sound, mmc and spi.
+I take that back ... now going back to that build I somehow also run into
+that issue here ... will investigate more.
 
-In many cases, the change is an improvement, but I can see a number
-of ways this might go wrong:
 
-- for audio, waiting to schedule the workqueue task may add enough
-  latency to lead to audible skips
+> - v5.18-rc6 + this v9 (rebased onto it) -> breaks the boot
+>   The only rebase-conflict was with the introduction of restartable
+>   sequences and removal of the tracehook include, but turning CONFIG_RSEQ
+>   off doesn't seem to affect the breakage.
+> 
+> So it looks like something changed between 5.17 and 5.18 that causes the issue.
+> 
+> 
+> Heiko
+> 
+> 
+> [0] https://lore.kernel.org/all/20220405071314.3225832-1-guoren@kernel.org/
+> 
 
-- for serial, transferring a few characters through DMA is probably
-  more expensive now than using MMIO, which might mean that
-  there may no longer be a point in using DMA in the first place.
 
-- Some drivers such as dw_mmc schedule another tasklet from the
-  callback. If the tasklet is turned into a workqueue, this becomes
-  a bit pointless unless we change the called drivers first.
 
-What might work better in the case of the dmaengine API would
-be an approach like:
 
-1. add helper functions to call the callback functions from a
-    tasklet locally defined in drivers/dma/dmaengine.c to allow
-    deferring it from hardirq context
-
-2. Change all  tasklets that are not part of the callback
-    mechanism to work queue functions, I only see
-    xilinx_dpdma_chan_err_task in the patch, but there
-    may be more
-
-3. change all drivers to move their custom tasklets back into
-    hardirq context and instead call the new helper for deferring
-    the callback.
-
-4. Extend the dmaengine callback API to let slave drivers
-    pick hardirq, tasklet or task context for the callback.
-    task context can mean either a workqueue, or a threaded
-    IRQ here, with the default remaining the tasklet version.
-
-5. Change slave drivers to pick either hardirq or task context
-    depending on their requirements
-
-6. Remove the tasklet version.
-
-This is of course a lot more complicated than Allen's
-approach, but I think the end result would be much better.
-
-         Arnd
