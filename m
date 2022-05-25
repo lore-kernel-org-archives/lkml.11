@@ -2,100 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A1E4C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 15:15:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EDC7C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 15:15:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234936AbiEYPPd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 11:15:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52228 "EHLO
+        id S245078AbiEYPPj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 11:15:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245076AbiEYPPZ (ORCPT
+        with ESMTP id S245059AbiEYPP3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 11:15:25 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B4D3DB0A7A
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 08:15:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653491721;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=gcTixSZTkvL/w/7L1HwLNEqSifq3qq6EouMS7B6x8F4=;
-        b=F/dfPQP5oqOdhKXnv5KmE8m4/REJe3wFZGl3hcvAarXwZjR9dF0YhCVHJoZ3FTioM+wkI0
-        pJNow9+fqNGKOCYC+Ln3nXHHqQtXPRRbGcj5/6djF2xbxnQ0ffaJshm/38AsA8SFWTemBQ
-        wKd9RPmadpedNxXt8jbmGFinypEeFoo=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-631-4_fxuDUvMWSoI3dK1IN28Q-1; Wed, 25 May 2022 11:15:19 -0400
-X-MC-Unique: 4_fxuDUvMWSoI3dK1IN28Q-1
-Received: by mail-ed1-f69.google.com with SMTP id j7-20020a056402238700b0042b9c2e9c64so2719893eda.19
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 08:15:19 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=gcTixSZTkvL/w/7L1HwLNEqSifq3qq6EouMS7B6x8F4=;
-        b=PFYs/hhC+9bwAEtUspV+hx1HfbrEiSpoOIVXYWA8Jy0ba5pur2+PmDjT8Lb4kechXH
-         bps8b68Q9NG2P2m2fuJIV8y86jPDtDQzdYvynpWqF3kyuuWhG7IVe7hmqZb8e4aWyS9A
-         /3q1JljHVPC4++LuhSWmhLmJ0jHPQUKT+vRP43E2pXm57XNWh7kh/a2O31nfxxO7nE/i
-         CrnXB1j1BCcufZ5dvT/l4YhEbZ2DJkbqV+5i2o09dupGRFKJThJovH6TWfnLwGxtOJzN
-         V9wzlqU/7NSNfVH3orS28ad+g3oXq2nssKz75gxQaEavkIkEF3qpeJfUmYrBJ5PjAZ/9
-         Lpsg==
-X-Gm-Message-State: AOAM5327Qo+ay9tNYsbcnrzrNY5E8wAbys6suErn9KfVT5599FZnF8oP
-        qYFMCt6IAy8ge7hVEJMNDP+zWcxQLoaPlfPaXFR60F8a89y7CvbFsLUpWHLAiE110zl22xNWhmO
-        kABwTt8rgNs+wXYKcodmCC/8=
-X-Received: by 2002:a17:906:2416:b0:6fe:a0be:91d5 with SMTP id z22-20020a170906241600b006fea0be91d5mr26367688eja.132.1653491718360;
-        Wed, 25 May 2022 08:15:18 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxTgN7zmlntoiNwoEyCgikQcdFrAhVHRko25ErlIb+NvzlhfgJXKvym4ZuzCjZcuR88JwVR7Q==
-X-Received: by 2002:a17:906:2416:b0:6fe:a0be:91d5 with SMTP id z22-20020a170906241600b006fea0be91d5mr26367677eja.132.1653491718216;
-        Wed, 25 May 2022 08:15:18 -0700 (PDT)
-Received: from auir.redhat.com (net-188-216-46-176.cust.vodafonedsl.it. [188.216.46.176])
-        by smtp.gmail.com with ESMTPSA id n17-20020aa7c791000000b0042ab02e3485sm10762135eds.44.2022.05.25.08.15.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 May 2022 08:15:17 -0700 (PDT)
-From:   Marco Pagani <marpagan@redhat.com>
-To:     Moritz Fischer <mdf@kernel.org>, Wu Hao <hao.wu@intel.com>,
-        Xu Yilun <yilun.xu@intel.com>, Tom Rix <trix@redhat.com>
-Cc:     Marco Pagani <marpagan@redhat.com>, linux-fpga@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] fpga: altera-pr-ip: fix unsigned comparison with less than zero
-Date:   Wed, 25 May 2022 17:14:52 +0200
-Message-Id: <20220525151453.55725-1-marpagan@redhat.com>
+        Wed, 25 May 2022 11:15:29 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10722B0433;
+        Wed, 25 May 2022 08:15:28 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 3E407219EE;
+        Wed, 25 May 2022 15:15:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1653491727; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=tls0/nqHOIQNk1w3ReHoYvYzJRQedtJDKDjgdFYZ8bY=;
+        b=XVCkXOLy6j3sLPyCCTKlGK2VYVNWbMyG053XXSuCzHKN7oLawqrxNsOE8CPr/MGxwIp+P0
+        IFMV3sYal8Rya+zWeKRkik30FqoEwdhr6xXGge0P2g2UR2A6yuFc+vBLKonZuqFLkzN7lT
+        HEHhxVeM7MwQHTLlWXs17J429qsjtOs=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 1214E13ADF;
+        Wed, 25 May 2022 15:15:27 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id qFtsAw9IjmLXAwAAMHmgww
+        (envelope-from <mkoutny@suse.com>); Wed, 25 May 2022 15:15:27 +0000
+From:   =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>
+To:     cgroups@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Bui Quang Minh <minhquangbui99@gmail.com>,
+        Tadeusz Struk <tadeusz.struk@linaro.org>
+Subject: [PATCH 1/2] cgroup: Wait for cgroup_subsys_state offlining on unmount
+Date:   Wed, 25 May 2022 17:15:16 +0200
+Message-Id: <20220525151517.8430-2-mkoutny@suse.com>
 X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220525151517.8430-1-mkoutny@suse.com>
+References: <20220525151517.8430-1-mkoutny@suse.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix the "comparison with less than zero" warning reported by
-cppcheck for the unsigned (size_t) parameter count of the
-alt_pr_fpga_write() function.
+The reported problem here occurs when cgroup hierarchy is unmounted
+quickly after last cgroup removal. The last cgroup prevents the root
+cgroup css->refcnt from being killed. The respective cgroup root thus
+remains permanently in existence.
 
-Reviewed-by: Tom Rix <trix@redhat.com>
-Acked-by: Xu Yilun <yilun.xu@intel.com>
-Signed-off-by: Marco Pagani <marpagan@redhat.com>
----
-Changes v1 -> v2:
-- Coding style fix
----
- drivers/fpga/altera-pr-ip-core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This is actually intended behavior for memory controller whose state is
+long-lived and there is no better option to attach it later (see also
+commit 3c606d35fe97 ("cgroup: prevent mount hang due to memory
+controller lifetime")).
 
-diff --git a/drivers/fpga/altera-pr-ip-core.c b/drivers/fpga/altera-pr-ip-core.c
-index be0667968d33..df8671af4a92 100644
---- a/drivers/fpga/altera-pr-ip-core.c
-+++ b/drivers/fpga/altera-pr-ip-core.c
-@@ -108,7 +108,7 @@ static int alt_pr_fpga_write(struct fpga_manager *mgr, const char *buf,
- 	u32 *buffer_32 = (u32 *)buf;
- 	size_t i = 0;
+We can make the situation better by checking children list only after
+any cgroups in the middle of removal are gone, detected via
+cgroup_destroy_wq.
+
+Reported-by: Bui Quang Minh <minhquangbui99@gmail.com>
+Link: https://lore.kernel.org/r/20220404142535.145975-1-minhquangbui99@gmail.com
+Signed-off-by: Michal Koutný <mkoutny@suse.com>
+---
+ kernel/cgroup/cgroup.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/kernel/cgroup/cgroup.c b/kernel/cgroup/cgroup.c
+index adb820e98f24..a5b0d5d54fbc 100644
+--- a/kernel/cgroup/cgroup.c
++++ b/kernel/cgroup/cgroup.c
+@@ -2205,11 +2205,14 @@ static void cgroup_kill_sb(struct super_block *sb)
+ 	struct cgroup_root *root = cgroup_root_from_kf(kf_root);
  
--	if (count <= 0)
-+	if (!count)
- 		return -EINVAL;
- 
- 	/* Write out the complete 32-bit chunks */
+ 	/*
+-	 * If @root doesn't have any children, start killing it.
++	 * If @root doesn't have any children held by residual state (e.g.
++	 * memory controller), start killing it, flush workqueue to filter out
++	 * transiently offlined children.
+ 	 * This prevents new mounts by disabling percpu_ref_tryget_live().
+ 	 *
+ 	 * And don't kill the default root.
+ 	 */
++	flush_workqueue(cgroup_destroy_wq);
+ 	if (list_empty(&root->cgrp.self.children) && root != &cgrp_dfl_root &&
+ 	    !percpu_ref_is_dying(&root->cgrp.self.refcnt)) {
+ 		cgroup_bpf_offline(&root->cgrp);
 -- 
 2.35.3
 
