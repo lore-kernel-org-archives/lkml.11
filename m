@@ -2,96 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36272C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 15:11:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E0DEC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 15:11:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244866AbiEYPLa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 11:11:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47246 "EHLO
+        id S243251AbiEYPLf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 11:11:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232941AbiEYPL0 (ORCPT
+        with ESMTP id S242439AbiEYPL1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 11:11:26 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82EF8AFACE
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 08:11:22 -0700 (PDT)
-Received: from fraeml740-chm.china.huawei.com (unknown [172.18.147.200])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4L7ZJS2Ww8z67tkx;
-        Wed, 25 May 2022 23:10:48 +0800 (CST)
-Received: from lhreml741-chm.china.huawei.com (10.201.108.191) by
- fraeml740-chm.china.huawei.com (10.206.15.221) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 25 May 2022 17:11:19 +0200
-Received: from [10.199.170.112] (10.199.170.112) by
- lhreml741-chm.china.huawei.com (10.201.108.191) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 25 May 2022 16:11:06 +0100
-Message-ID: <853b6d52-da86-1c06-3604-3085ece331a4@huawei.com>
-Date:   Wed, 25 May 2022 18:10:51 +0300
+        Wed, 25 May 2022 11:11:27 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95175AFAE4
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 08:11:24 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id u12-20020a17090a1d4c00b001df78c7c209so1933595pju.1
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 08:11:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ventanamicro.com; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=bRYOEpeP8mCOnNEZuD4+iCUOqYnaouRYbges9HW9UzU=;
+        b=fB7U5PYG4dbc2mUatzOeTVyMCW80Xn1V5J4gnethuZNXdHnYuttFdcoU/AEphupbov
+         zUGFLG9Mz+1uQtzY+8NGIAiNJ0D8OgrbJsMASU26h3tP45Rweo+eTPyfXXabYZpPqqt6
+         e1r7cajKXogHIIKNu1pM5zWSAUQt9oc1lFNfIYYghr5SdCvUNmGfxu5vuigKuuccNGaA
+         uD9Ln7t1Y5xARYxWZaXXDJFKLCdnHi102CkaLnBAM9jb2TFz81aI735OVi0D3oC0HDDQ
+         TtM3LRl9f+CGL1+gZSBvJ/SGRyaxfMxbfwIxwG19xqVPJkEzhEaMXn6E0y9BmGQS2x65
+         Iz6w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=bRYOEpeP8mCOnNEZuD4+iCUOqYnaouRYbges9HW9UzU=;
+        b=WY6tN2lgDCfEqSykNRl/E+xETfGRrflmnZP5GcOEeEEO/+ER52iqevh3o9t5rE9Zdo
+         QGqq5F6z95EHBbOLCjzcCQu9SkPeUMbmGm7TGwuda9WTqIBvAoNpGlI0yebVG62t2q/c
+         v7pHKrYZaKHbkVK9WgDnIDyyMQWt4rP0ADIaXASuKXD5qLmUSSCpiT/1u69m/ERoomh0
+         bkFuMfxnIsYgqK53la1e6o4i171MSvB+bZW8QEn757TwJWbwbJ0AHfHfzYHosOHY+xy8
+         ld+fnvQRdQZTZox3ADbsjJ5nEln6/rSRUBydeFRyqKf94FopSEHBALObSQOJdAzPT9s5
+         rEEw==
+X-Gm-Message-State: AOAM530zIRC6emCij30GX+92OQSRkdfODr60nfrdJQK7Knyx8Bwh/6JG
+        OY63XYDn8ExappPg7iEmQDG56A==
+X-Google-Smtp-Source: ABdhPJyvLJhZ25tdT27CnU0AAM2lFzx+JKOH7YUo/53c5dnjCKRLax1PKiPS3cY+JYL3ORleGvObXw==
+X-Received: by 2002:a17:902:d154:b0:163:5b66:564a with SMTP id t20-20020a170902d15400b001635b66564amr3395194plt.37.1653491483527;
+        Wed, 25 May 2022 08:11:23 -0700 (PDT)
+Received: from kerodipc.Dlink ([49.206.9.238])
+        by smtp.gmail.com with ESMTPSA id q16-20020a170902eb9000b00161b50c3db4sm9383129plg.94.2022.05.25.08.11.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 25 May 2022 08:11:23 -0700 (PDT)
+From:   Sunil V L <sunilvl@ventanamicro.com>
+To:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Marc Zyngier <maz@kernel.org>,
+        Atish Patra <atishp@rivosinc.com>,
+        Heinrich Schuchardt <heinrich.schuchardt@canonical.com>,
+        Anup Patel <apatel@ventanamicro.com>
+Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-efi@vger.kernel.org, Sunil V L <sunil.vl@gmail.com>,
+        Sunil V L <sunilvl@ventanamicro.com>
+Subject: [PATCH 1/5] riscv: cpu_ops_sbi: Support for 64bit hartid
+Date:   Wed, 25 May 2022 20:41:02 +0530
+Message-Id: <20220525151106.2176147-2-sunilvl@ventanamicro.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220525151106.2176147-1-sunilvl@ventanamicro.com>
+References: <20220525151106.2176147-1-sunilvl@ventanamicro.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH v2] coresight: etm4x: Add Support for HiSilicon ETM device
-Content-Language: en-US
-To:     Qi Liu <liuqi115@huawei.com>, <gregkh@linuxfoundation.org>,
-        <mathieu.poirier@linaro.org>, <suzuki.poulose@arm.com>,
-        <mike.leach@linaro.org>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>,
-        <abudankov@huawei.com>,
-        Alexey Budankov <alexey.budankov@huawei.com>
-References: <1597323562-3706-1-git-send-email-liuqi115@huawei.com>
-From:   Alexei Budankov <abudankov@huawei.com>
-In-Reply-To: <1597323562-3706-1-git-send-email-liuqi115@huawei.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.199.170.112]
-X-ClientProxiedBy: saopeml500003.china.huawei.com (7.184.65.141) To
- lhreml741-chm.china.huawei.com (10.201.108.191)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The hartid can be a 64bit value on RV64 platforms. This patch modifies
+the hartid variable type to unsigned long so that it can hold 64bit
+value on RV64 platforms.
 
-Hi Qi Liu,
+Signed-off-by: Sunil V L <sunilvl@ventanamicro.com>
+---
+ arch/riscv/kernel/cpu_ops_sbi.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-On 13.08.2020 15:59, Qi Liu wrote:
-> Add ETMv4 periperhal ID for HiSilicon Hip08 and Hip09 platform. Hip08
-> contains ETMv4.2 device and Hip09 contains ETMv4.5 device.
-> 
-> Signed-off-by: Qi Liu <liuqi115@huawei.com>
-> ---
->   drivers/hwtracing/coresight/coresight-etm4x.c | 2 ++
->   1 file changed, 2 insertions(+)
+diff --git a/arch/riscv/kernel/cpu_ops_sbi.c b/arch/riscv/kernel/cpu_ops_sbi.c
+index 4f5a6f84e2a4..efa0f0816634 100644
+--- a/arch/riscv/kernel/cpu_ops_sbi.c
++++ b/arch/riscv/kernel/cpu_ops_sbi.c
+@@ -65,7 +65,7 @@ static int sbi_hsm_hart_get_status(unsigned long hartid)
+ static int sbi_cpu_start(unsigned int cpuid, struct task_struct *tidle)
+ {
+ 	unsigned long boot_addr = __pa_symbol(secondary_start_sbi);
+-	int hartid = cpuid_to_hartid_map(cpuid);
++	unsigned long hartid = cpuid_to_hartid_map(cpuid);
+ 	unsigned long hsm_data;
+ 	struct sbi_hart_boot_data *bdata = &per_cpu(boot_data, cpuid);
+ 
+@@ -107,7 +107,7 @@ static void sbi_cpu_stop(void)
+ static int sbi_cpu_is_stopped(unsigned int cpuid)
+ {
+ 	int rc;
+-	int hartid = cpuid_to_hartid_map(cpuid);
++	unsigned long hartid = cpuid_to_hartid_map(cpuid);
+ 
+ 	rc = sbi_hsm_hart_get_status(hartid);
+ 
+-- 
+2.25.1
 
-Thanks for your patch.
-I would like to test HiSilicon ETM device feature on
-Kunpeng 920 based server.
-I applied the patch and booted the kernel with the changes.
-However I don't see any device files neither here:
-/sys/bus/coresight/devices/
-nor here:
-/sys/bus/event_source/devices/cs_etm/sinks/
-What should a user expect new in os with this patch added?
-
-Thanks,
-Alexei
-
-
-> 
-> diff --git a/drivers/hwtracing/coresight/coresight-etm4x.c b/drivers/hwtracing/coresight/coresight-etm4x.c
-> index 6d7d216..7797a57 100644
-> --- a/drivers/hwtracing/coresight/coresight-etm4x.c
-> +++ b/drivers/hwtracing/coresight/coresight-etm4x.c
-> @@ -1587,6 +1587,8 @@ static const struct amba_id etm4_ids[] = {
->   	CS_AMBA_UCI_ID(0x000bb805, uci_id_etm4),/* Qualcomm Kryo 4XX Cortex-A55 */
->   	CS_AMBA_UCI_ID(0x000bb804, uci_id_etm4),/* Qualcomm Kryo 4XX Cortex-A76 */
->   	CS_AMBA_UCI_ID(0x000cc0af, uci_id_etm4),/* Marvell ThunderX2 */
-> +	CS_AMBA_UCI_ID(0x000b6d01, uci_id_etm4),/* HiSilicon-Hip08 */
-> +	CS_AMBA_UCI_ID(0x000b6d02, uci_id_etm4),/* HiSilicon-Hip09 */
->   	{},
->   };
-> 
-> --
-> 2.8.1
