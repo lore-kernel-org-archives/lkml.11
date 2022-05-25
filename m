@@ -2,129 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 787BDC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 16:05:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5769AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 16:06:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245414AbiEYQFs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 12:05:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58286 "EHLO
+        id S237397AbiEYQGs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 12:06:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245423AbiEYQFn (ORCPT
+        with ESMTP id S234454AbiEYQGn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 12:05:43 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 651E2B82DD;
-        Wed, 25 May 2022 09:05:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653494741; x=1685030741;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Qtq8NsRkQ5MXSb0vyxgaVhO2wTrtOk/ncJF+4DTDLd0=;
-  b=kqSUtIo2wPCFYn4p+/jtSY6S/rBxpsOcxc2Hk+ECeVmxy1AJGp10s2fF
-   3g6NW8v6L2W+KzXXB4fXfA/Tr5JcMcXXneYd1/EbcR6ouw+r47Wfms8qR
-   GtfAElqRpitPHnA9q38go1b7QdiYWc+UzNob65yvNs0c7Ep776dMide6W
-   KrbulRLY4jMNvdLTUOTkg4Pkn0wWmRZStJImcqIAoWFBskaUM6Ir0y0E+
-   +Ilssh8JxZlzswKcueFT3/EzJPhLCch3uFdqivvYSho77QkKV7BJnLHPU
-   ODpXdtRgW2Duoq5HG0vi4dYfAzGyVit45Iapebu+HX3YHg/U8STMyxFpS
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10358"; a="273855084"
-X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
-   d="scan'208";a="273855084"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2022 09:03:13 -0700
-X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
-   d="scan'208";a="601970811"
-Received: from vlpathak-mobl.amr.corp.intel.com (HELO localhost) ([10.212.116.219])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2022 09:03:12 -0700
-Date:   Wed, 25 May 2022 09:03:12 -0700
-From:   Ira Weiny <ira.weiny@intel.com>
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        Peter Collingbourne <pcc@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>, linux-kernel@vger.kernel.org,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-        outreachy@lists.linux.dev,
-        "Acked-by : Mike Rapoport" <rppt@linux.ibm.com>
-Subject: Re: [PATCH v2 1/4] mm/highmem: Fix kernel-doc warnings in highmem*.h
-Message-ID: <Yo5TQOByKbMbvE8m@iweiny-desk3>
-References: <20220425162400.11334-1-fmdefrancesco@gmail.com>
- <20220425162400.11334-2-fmdefrancesco@gmail.com>
- <YmeYzKT8Ikq5SfdE@linutronix.de>
- <YmwLXvtSgl2BA2mC@iweiny-desk3>
- <Yo34GGK62yVkPzZy@linutronix.de>
+        Wed, 25 May 2022 12:06:43 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0294B36E2
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 09:06:42 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id er5so27583437edb.12
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 09:06:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8Z7Dq8yp4MZDxLPt+EoyHCLTOMSa7x8uy4FDYVoNiio=;
+        b=p8QaueAPRVWKJA4gQJtNvb1RI3hm2XqlvoyhUBkOKOs0ML0icz7yfQZdIgAH88OkcC
+         rZyy/xrJ7gYt6ykjZBgauo/+mkPVO03fWr1cN0qrOBViqZU3GmFVT3KPTu+bz2OsFWTp
+         B9W0E3/m1rt7h8nXPkEvvqV+nkGZdqtBB17T89aoAM0zK42qWDjlqosQBsyD+QJIX4h9
+         fXvdSmqqevD/JhyM6H2ZsqzAJ8F11IuyVgIqPyM7TEafgG/5cYab3+oAQfkLVPtCPPox
+         CZzwW3Yve4g75uNBuM/C+GQoyk1HaBdggX1Pcwy8FTw/RogC6sz8/c6iSc99qxGmQq7a
+         eqFQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8Z7Dq8yp4MZDxLPt+EoyHCLTOMSa7x8uy4FDYVoNiio=;
+        b=LgY7pP5AEcsVUKJrLJJE6JGc38+ZRTt2sl3nE8ZHNW0Q1BDJ2ZfzYyK26LfrT9Mr6k
+         2LU1IIMDtUrIpwh3AgIOaa+LiR2IQXUFtb6cfywhqyceIx64GnhSe0Nz1X2iMdYYcr+t
+         87sknQhpGb+o2+2FtWEb0z6uHRIlCZuo/w7oOkl2Jjl4SLPuxPKBBzpSm6kczpAX3AxL
+         Ie4vGzRHt3imEkAjzrwtr1BNNfw15hh2nE+GyCRONKJlWp31XgSBzCDQ4BTWQj+QCMvG
+         twdjX//oukhTWS3tLzknrtEbyDS3Cgc6q8BjJBtZpeTEKNZK+q5Xd3OZd+uN/S087xA6
+         xyWQ==
+X-Gm-Message-State: AOAM533bk0HgLbs+h+Q4DzLcIk4wfgZ4BNVhxjoeEfcL8SNkvL9eD/Ih
+        oDB+eAGa23vsg5HikSioduyMAxXb843pxs5HGjazxA==
+X-Google-Smtp-Source: ABdhPJwnKB+w/ACJYs1idaMe5SwT17w0cNbs0EcsX7aTCwh6DyPsRasoshDoxFrNDisUksS05dbLy/TFALsgD2m86Lk=
+X-Received: by 2002:a05:6402:1113:b0:428:679e:f73f with SMTP id
+ u19-20020a056402111300b00428679ef73fmr35606808edv.378.1653494801065; Wed, 25
+ May 2022 09:06:41 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yo34GGK62yVkPzZy@linutronix.de>
+References: <20220525154442.1438081-1-dlatypov@google.com> <CANiq72=hRbmHE865bwxQnCn2+kwB5nTaQgGAM0nijJnEL=3TJQ@mail.gmail.com>
+In-Reply-To: <CANiq72=hRbmHE865bwxQnCn2+kwB5nTaQgGAM0nijJnEL=3TJQ@mail.gmail.com>
+From:   Daniel Latypov <dlatypov@google.com>
+Date:   Wed, 25 May 2022 09:06:29 -0700
+Message-ID: <CAGS_qxo-HfwSOdOW7WNZb78GebJsdUF1-ka3U2PQb=qg0C1L5A@mail.gmail.com>
+Subject: Re: [RFC PATCH 0/4] kunit: more assertion reworking
+To:     Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Cc:     Brendan Higgins <brendanhiggins@google.com>,
+        David Gow <davidgow@google.com>,
+        Miguel Ojeda <ojeda@kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        KUnit Development <kunit-dev@googlegroups.com>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 25, 2022 at 11:34:16AM +0200, Sebastian Andrzej Siewior wrote:
-> On 2022-04-29 08:59:26 [-0700], Ira Weiny wrote:
-> > I think some discussion needs to happen around this API.
-> > 
-> > Highmem has little use.  I don't think anyone disagrees with Linus there.
-> > (Although I think there are still a few users out there.)
-> 
-> arm32 is still built and they have sometimes 1 - 2 GiB of memory.
+On Wed, May 25, 2022 at 8:56 AM Miguel Ojeda
+<miguel.ojeda.sandonis@gmail.com> wrote:
+>
+> Hi Daniel,
+>
+> On Wed, May 25, 2022 at 5:44 PM Daniel Latypov <dlatypov@google.com> wrote:
+> >
+> > Note: this does change the function signature of
+> > kunit_do_failed_assertion, so we'd need to update the rust wrapper in https://github.com/Rust-for-Linux/linux/blob/rust/rust/kernel/kunit.rs
+> > But otherwise, I don't think this series changes anything on the
+> > rust-side.
+>
+> Thanks for the heads up! I can take care of that.
 
-Yep :-) I was thinking of arm when I said this.
+FYI This probably won't need to happen soon.
+I'd mentioned the idea of patch #1, which changes
+kunit_do_failed_assertion(), and Brendan didn't seem keen on it
+before.
 
-> 
-> > kmap may be a poor name for an API without the highmem functionality.  But
-> > perhaps not.  One could interpret it to mean simply getting the kernel mapping
-> > of the page rather than creating one.  After all that is what 64bit has done
-> > all along.
-> > 
-> > This interpretation helps when you consider features which attempt to layer the
-> > direct map with additional protections like PKS.[1]  Those protections mean
-> > that a simple page_address() is insufficient to access the direct map.
-> > 
-> > As far as calling kmap() and kmap_atomic() deprecated I'm ok with that if the
-> > community is.
-> > 
-> > The current kmap() call sites need work and Fabio's work on auditing them is
-> > extremely helpful.  That said, if we officially deprecate kmap_atomic() then
-> > those sites could be added to the list for rework.
-> 
-> Maybe I oversee something obvious but there is no problem with removing
-> kmap_atomic*() and keeping only kmap_local*() around, is there?
+But the diff should be simple, e.g. just something like this:
+@@ -38,9 +38,7 @@
+             });
+             static CONDITION: &'static $crate::str::CStr =
+$crate::c_str!(stringify!($cond));
+             static ASSERTION: UnaryAssert =
+UnaryAssert($crate::bindings::kunit_unary_assert {
+-                assert: $crate::bindings::kunit_assert {
+-                    format: Some($crate::bindings::kunit_unary_assert_format),
+-                },
++                assert: $crate::bindings::kunit_assert {},
+                 condition: CONDITION.as_char_ptr(),
+                 expected_true: true,
+             });
+@@ -67,6 +65,7 @@
+                     core::ptr::addr_of!(LOCATION.0),
+                     $crate::bindings::kunit_assert_type_KUNIT_ASSERTION,
+                     core::ptr::addr_of!(ASSERTION.0.assert),
++                    Some($crate::bindings::kunit_unary_assert_format),
+                     core::ptr::null(),
+                 );
+             }
 
-No there is not.  But some kmap_atomic() sites may have to open code the
-preempt_disable() while others may not.
+The only tricky bit will be coordinating the changes :)
 
-I have not done a full audit of the kmap_atomic() sites but I suspect most
-don't really need the preempt_disable() but many may need to.  I just don't
-know.
-
-Regardless marking it deprecated can stop the growth of kmap_atomic() calls.
-
-> I never intended to deprecated kmap(), only kmap_atomic*() in favour of
-> kmap_local*().
-
-Ok.  But I do want to see kmap() use removed.  The PKS code can't work with
-kmap() and in general we are seeing more and more restrictions on the direct
-map which may or may not be compatible with kmap().  What I presented at LSFmm
-was to turn the kmap* interfaces into a more generic 'get me a temp kernel
-address' interface instead of a highmem interface.
-
-Any user who needs a long term address will need something other than kmap().
-To that end there was some discussion on making vmap() more efficient or other
-alternatives.
-
-First we need to focus on reducing the kmap() call sites.  This documentation
-change, making kmap() deprecated, will help ensure the kernel does not grow
-more of them.
-
-Ira
-
-> 
-> > Ira
-> 
-> Sebastian
+Daniel
