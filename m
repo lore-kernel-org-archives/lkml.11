@@ -2,189 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E45BCC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 07:12:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68B62C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 07:12:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242808AbiEYHMa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 03:12:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54400 "EHLO
+        id S244314AbiEYHMr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 03:12:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244288AbiEYHMX (ORCPT
+        with ESMTP id S238372AbiEYHMF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 03:12:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38209D126;
-        Wed, 25 May 2022 00:08:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D5559B81C9D;
-        Wed, 25 May 2022 07:08:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2225FC385B8;
-        Wed, 25 May 2022 07:08:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653462481;
-        bh=ljSQUedHPgiwfkVPTMDtN7y49NV8RiENyTWaPpDWcIA=;
-        h=From:To:Cc:Subject:Date:From;
-        b=iJpKi1a8a8YoEUmIQBXKO8i5fi2By3c+zws+9Mg1ewAwKMNBOxeFMVPlXkPcEmOAx
-         w9L2hZd5K6pnYZZAArx1rNvNms1H5ugn9802m46RwX16EV3NFSKuPPH/uSX79gesT1
-         xcBgk2ssfLOv2mBOtMgIwC1xu9y86IQ8Ylsxqfr0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
-        torvalds@linux-foundation.org, stable@vger.kernel.org
-Cc:     lwn@lwn.net, jslaby@suse.cz,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Linux 4.14.281
-Date:   Wed, 25 May 2022 09:07:54 +0200
-Message-Id: <16534624745741@kroah.com>
-X-Mailer: git-send-email 2.36.1
+        Wed, 25 May 2022 03:12:05 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCBA95FDB;
+        Wed, 25 May 2022 00:12:03 -0700 (PDT)
+Date:   Wed, 25 May 2022 09:11:56 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1653462718;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=+orsWNjWtAwiggB87niLJ7T2vo66GNbCnC4aWo769UQ=;
+        b=tXIaQWvesmewK1SQvqwWgjKsyAyyIrLjEanwcNAy2h/P5FMGq/kJgWZClGgDeKmANuYAkW
+        6I7SL146oVeYMmgPOm/K/5ULiZwNsVMQKo5zuy5USu5ms+bQvLeomBnv/Y7RF7ep6r43Fg
+        yrE+GteNpeB84vc7KB5yHCiGDGSLxpJF9n26BehK7VVK2KwTS1qiOtnBNXBBg3s07zq9LZ
+        QuC90oOJFyjhHJqpIG4b7pe7LqIsPAYDmbR2tbrm4G6CKN84jA5eTlcpkoSp3W47VVgETh
+        utsXLbJ9WiKBewsE1+4q4+5PmLVYRznaktasLTJPtcPFwgqlSj1UxEdIbhT9hg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1653462718;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=+orsWNjWtAwiggB87niLJ7T2vo66GNbCnC4aWo769UQ=;
+        b=1vNUO3Dakuo2lI9Z/n9vsWIZ8Loex9gUHN2zaefzYBYblmfryFJ25az2ZrOSX+XZBIv9t6
+        eUlvctYCzDyGwvCQ==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     Saravana Kannan <saravanak@google.com>
+Cc:     Nathan Chancellor <nathan@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Rob Herring <robh@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Will Deacon <will@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Kevin Hilman <khilman@kernel.org>,
+        Thierry Reding <treding@nvidia.com>,
+        Mark Brown <broonie@kernel.org>, Pavel Machek <pavel@ucw.cz>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
+        linux-gpio@vger.kernel.org, linux-pm@vger.kernel.org,
+        iommu@lists.linux-foundation.org, kernel-team@android.com,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-s390@vger.kernel.org, John Stultz <jstultz@google.com>
+Subject: Re: [PATCH v1] driver core: Extend deferred probe timeout on driver
+ registration
+Message-ID: <Yo3WvGnNk3LvLb7R@linutronix.de>
+References: <YogkhvFGVcjNQ21Z@dev-arch.thelio-3990X>
+ <CAGETcx9nvBs1b4M=2hBhrLX_2-rzLtAmV9WfTXu0MC7JnsBvwA@mail.gmail.com>
+ <YogsiMCDupNUhMgL@dev-fedora.thelio-3990X>
+ <CAGETcx-JyWwoGA3o8eep7E29Cm4DcVT6D1JFJh72jLcqm_mjCQ@mail.gmail.com>
+ <Youleo3Ganxbc1sq@dev-arch.thelio-3990X>
+ <CAGETcx-sL08h2toEyxY6ztc6xNuJiPok6iDEeuJ1mOA3nvE+vA@mail.gmail.com>
+ <YowHNo4sBjr9ijZr@dev-arch.thelio-3990X>
+ <CAGETcx91_WgpmwEA7mBSvUdyJV0a8ymfaNKTmXq=mAJYAjzq1A@mail.gmail.com>
+ <Yo0KyWx+3oX3cMCS@linutronix.de>
+ <CAGETcx_qTLwbjzMruLThLYV+MZD5W2Ox-QwLFQeW=eQgxzq-Hw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <CAGETcx_qTLwbjzMruLThLYV+MZD5W2Ox-QwLFQeW=eQgxzq-Hw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I'm announcing the release of the 4.14.281 kernel.
+On 2022-05-24 10:46:49 [-0700], Saravana Kannan wrote:
+> > Removing probe_timeout_waitqueue (as suggested) or setting the timeout
+> > to 0 avoids the delay.
+>=20
+> In your case, I think it might be working as intended? Curious, what
+> was the call stack in your case where it was blocked?
 
-All users of the 4.14 kernel series must upgrade.
+Why is then there 10sec delay during boot? The backtrace is
+|------------[ cut here ]------------
+|WARNING: CPU: 4 PID: 1 at drivers/base/dd.c:742 wait_for_device_probe+0x30=
+/0x110
+|Modules linked in:
+|CPU: 4 PID: 1 Comm: swapper/0 Not tainted 5.18.0-rc5+ #154
+|RIP: 0010:wait_for_device_probe+0x30/0x110
+|Call Trace:
+| <TASK>
+| prepare_namespace+0x2b/0x160
+| kernel_init_freeable+0x2b3/0x2dd
+| kernel_init+0x11/0x110
+| ret_from_fork+0x22/0x30
+| </TASK>
 
-The updated 4.14.y git tree can be found at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-4.14.y
-and can be browsed at the normal kernel.org git web browser:
-	https://git.kernel.org/?p=linux/kernel/git/stable/linux-stable.git;a=summary
+Looking closer, it can't access init. This in particular box boots
+directly the kernel without an initramfs so the kernel later mounts
+/dev/sda1 and everything is good.  So that seems to be the reason=E2=80=A6
+My other machine with an initramfs does not show this problem.
 
-thanks,
+> -Saravana
 
-greg k-h
-
-------------
-
- Makefile                                                  |    2 
- arch/arm/kernel/entry-armv.S                              |    2 
- arch/arm/kernel/stacktrace.c                              |   10 +--
- arch/arm/mm/proc-v7-bugs.c                                |    1 
- arch/mips/lantiq/falcon/sysctrl.c                         |    2 
- arch/mips/lantiq/xway/gptu.c                              |    2 
- arch/mips/lantiq/xway/sysctrl.c                           |   46 +++++++++-----
- arch/x86/um/shared/sysdep/syscalls_64.h                   |    5 -
- drivers/block/drbd/drbd_main.c                            |    7 +-
- drivers/block/floppy.c                                    |   17 ++---
- drivers/clk/at91/clk-generated.c                          |    4 +
- drivers/gpio/gpio-mvebu.c                                 |    3 
- drivers/gpio/gpio-vf610.c                                 |    8 +-
- drivers/gpu/drm/drm_dp_mst_topology.c                     |    1 
- drivers/input/input.c                                     |   19 +++++
- drivers/input/touchscreen/stmfts.c                        |    8 +-
- drivers/mmc/core/block.c                                  |    6 -
- drivers/mmc/core/mmc_ops.c                                |   27 ++++----
- drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c |    7 ++
- drivers/net/ethernet/dec/tulip/tulip_core.c               |    5 +
- drivers/net/ethernet/intel/igb/igb_main.c                 |    3 
- drivers/net/ethernet/qlogic/qla3xxx.c                     |    3 
- drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c          |    4 -
- drivers/net/vmxnet3/vmxnet3_drv.c                         |    6 +
- drivers/scsi/qla2xxx/qla_target.c                         |    3 
- kernel/events/core.c                                      |   14 ++++
- lib/swiotlb.c                                             |   12 ++-
- net/bridge/br_input.c                                     |    7 ++
- net/key/af_key.c                                          |    6 +
- net/mac80211/rx.c                                         |    3 
- net/nfc/nci/data.c                                        |    2 
- net/nfc/nci/hci.c                                         |    4 -
- sound/isa/wavefront/wavefront_synth.c                     |    3 
- tools/perf/bench/numa.c                                   |    2 
- 34 files changed, 176 insertions(+), 78 deletions(-)
-
-Andrew Lunn (1):
-      net: bridge: Clear offload_fwd_mark when passing frame up bridge interface.
-
-Ard Biesheuvel (2):
-      ARM: 9196/1: spectre-bhb: enable for Cortex-A15
-      ARM: 9197/1: spectre-bhb: fix loop8 sequence for Thumb2
-
-Christophe JAILLET (1):
-      net/qla3xxx: Fix a test in ql_reset_work()
-
-Codrin Ciubotariu (1):
-      clk: at91: generated: consider range when calculating best rate
-
-David Gow (1):
-      um: Cleanup syscall_handler_t definition/cast, fix warning
-
-Duoming Zhou (1):
-      NFC: nci: fix sleep in atomic context bugs caused by nci_skb_alloc
-
-Felix Fietkau (1):
-      mac80211: fix rx reordering with non explicit / psmp ack policy
-
-Gleb Chesnokov (1):
-      scsi: qla2xxx: Fix missed DMA unmap for aborted commands
-
-Grant Grundler (1):
-      net: atlantic: verify hw_head_ lies within TX buffer ring
-
-Greg Kroah-Hartman (1):
-      Linux 4.14.281
-
-Haibo Chen (1):
-      gpio: gpio-vf610: do not touch other bits when set the target bit
-
-Halil Pasic (1):
-      swiotlb: fix info leak with DMA_FROM_DEVICE
-
-Hangyu Hua (1):
-      drm/dp/mst: fix a possible memory leak in fetch_monitor_name()
-
-Jakob Koschel (1):
-      drbd: remove usage of list iterator variable after loop
-
-Jeff LaBundy (1):
-      Input: add bounds checking to input_set_capability()
-
-Jiasheng Jiang (1):
-      net: af_key: add check for pfkey_broadcast in function pfkey_process
-
-Kevin Mitchell (1):
-      igb: skip phy status check where unavailable
-
-Linus Torvalds (1):
-      Reinstate some of "swiotlb: rework "fix info leak with DMA_FROM_DEVICE""
-
-Peter Zijlstra (1):
-      perf: Fix sys_perf_event_open() race against self
-
-Takashi Iwai (1):
-      ALSA: wavefront: Proper check of get_user() error
-
-Thomas Richter (1):
-      perf bench numa: Address compiler error on s390
-
-Ulf Hansson (3):
-      mmc: core: Specify timeouts for BKOPS and CACHE_FLUSH for eMMC
-      mmc: block: Use generic_cmd6_time when modifying INAND_CMD38_ARG_EXT_CSD
-      mmc: core: Default to generic_cmd6_time as timeout in __mmc_switch()
-
-Uwe Kleine-König (1):
-      gpio: mvebu/pwm: Refuse requests with inverted polarity
-
-Willy Tarreau (1):
-      floppy: use a statically allocated error counter
-
-Xiaoke Wang (1):
-      MIPS: lantiq: check the return value of kzalloc()
-
-Yang Yingliang (2):
-      ethernet: tulip: fix missing pci_disable_device() on error in tulip_init_one()
-      net: stmmac: fix missing pci_disable_device() on error in stmmac_pci_probe()
-
-Zheng Yongjun (1):
-      Input: stmfts - fix reference leak in stmfts_input_open
-
-Zixuan Fu (2):
-      net: vmxnet3: fix possible use-after-free bugs in vmxnet3_rq_alloc_rx_buf()
-      net: vmxnet3: fix possible NULL pointer dereference in vmxnet3_rq_cleanup()
-
-linyujun (1):
-      ARM: 9191/1: arm/stacktrace, kasan: Silence KASAN warnings in unwind_frame()
-
+Sebastian
