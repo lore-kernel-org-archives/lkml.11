@@ -2,158 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD4DFC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 17:20:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0DDCC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 17:23:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245644AbiEYRU3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 13:20:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38244 "EHLO
+        id S244506AbiEYRXy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 13:23:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233601AbiEYRU1 (ORCPT
+        with ESMTP id S229586AbiEYRXx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 13:20:27 -0400
-Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56B0CAE271;
-        Wed, 25 May 2022 10:20:26 -0700 (PDT)
-Received: by mail-qk1-x72b.google.com with SMTP id l82so13244865qke.3;
-        Wed, 25 May 2022 10:20:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=YfBPEciL5G7knzd6QMjS+T5tcQUuK2HPFFm47OcA2Rk=;
-        b=SDNuq+CpL9mwhliv/HCa2205mkKlLFnNO+bi5V221Xkf2P4zQ0OCDi03/bpZSTZN6I
-         qGU0oMfOP1x4OArMNUxmnEHIjr/i6AhyKwMM5KO35xkmUYKSqae+LxXSRDVsRJg3POOD
-         1heLb6R1u1wRDho4dxMc80pexy03gXaONqVTHtkp/iRf4HLOD+t/ODIgXRr23jky8ojq
-         oYtxDdiRvm7Grs+v0P++Kj1sM9Vc+mWhn2QNTVeGF6XvURNO+/xDOJW3/Q/NPHnTzFMp
-         KrOahJEPjGyPa2gShpPmIeTBW7Ms/s+c1rRc80U0uKAsBb4xVhGipRb10pBipHBfEfxi
-         4l5w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=YfBPEciL5G7knzd6QMjS+T5tcQUuK2HPFFm47OcA2Rk=;
-        b=PxN3eicUM/W11FLC2ImYYbtnSdZ8j5V7WcOrspUKe4CLFafKebhYqEYAqa5a3FJpzL
-         n6mpw+85GFHQEaScNjxhxk0B/VxiQBlQCHQkYM6QE443LRcNLnl9P4nOpCP9aqDOlGOr
-         t3E7K7DIWNkli6EbT2HY7gIRsYscGAeEJbh9+E5P0ldb7v09HIgMSpGuskEv2Z48adgM
-         izO/mFvzoHy95Gt8YNtLsCTVEiUAcqnL2WAuxW5hwNJfu68JZyMZTI3NSWBddMtglpJG
-         a1/S0MrEj7XBgE13hitunZ4D6QNpZHtk5prZAedIbytvYM9K0Gi7Fi+/Axd/Tci31lgW
-         6VKw==
-X-Gm-Message-State: AOAM530r+G+gLZq2tiNu3scoMTVtG41BFWUVfOfkadysmm2KU1dUcRTE
-        Al8x2TsI82VL61MWUn5xQA==
-X-Google-Smtp-Source: ABdhPJxJtiJd73drvBnS+M39DznexShMWDDD0/WY8tbqvBv1sZqUR2r2Ytvsnek6D/zQiR9lKS31NQ==
-X-Received: by 2002:a05:620a:44c4:b0:6a5:a827:d86c with SMTP id y4-20020a05620a44c400b006a5a827d86cmr437283qkp.624.1653499225424;
-        Wed, 25 May 2022 10:20:25 -0700 (PDT)
-Received: from moria.home.lan (c-73-219-103-14.hsd1.vt.comcast.net. [73.219.103.14])
-        by smtp.gmail.com with ESMTPSA id r126-20020ae9dd84000000b0069ffe63228fsm1508826qkf.121.2022.05.25.10.20.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 May 2022 10:20:24 -0700 (PDT)
-Date:   Wed, 25 May 2022 13:20:22 -0400
-From:   Kent Overstreet <kent.overstreet@gmail.com>
-To:     Theodore Ts'o <tytso@mit.edu>
-Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-block@vger.kernel.org, netdev@vger.kernel.org,
-        mcgrof@kernel.org
-Subject: Re: RFC: Ioctl v2
-Message-ID: <20220525172022.ml7lhby2igxtlm7a@moria.home.lan>
-References: <20220520161652.rmhqlvwvfrvskg4w@moria.home.lan>
- <YogoI6Augr1V6AHn@mit.edu>
+        Wed, 25 May 2022 13:23:53 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E86C595A34;
+        Wed, 25 May 2022 10:23:51 -0700 (PDT)
+Date:   Wed, 25 May 2022 19:23:47 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1653499429;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=2BSL5Rwo89rLqEXxiG2O6kXQNZHwOECZU8ttnooY7V0=;
+        b=wHfyXvPi10cm/lxKPBaH5sQTLlyZyGhRWSuOypCbFdu+DKkpXBtenCfXbBaIlV4a8buy42
+        J1QaxjhTDKD3PdOWHzm5PGGfEX+oWwV6oQ70/aEeTfUHv1wtCoibEEEuAZ5+NQT8/dLUX5
+        gFoz4UYc1nJl/bTAtvEU6xmaUvC03xvJZTRHfP4IUYJ7sZ2zrLh2w8KZBfbMwFXf+pU21g
+        cYK0h55SalD7a0e2X1nmgHzBbQ84BC2uVQ+GOWSlN07wq+b5kfCFOXSk8tuH8uAczegl4+
+        Y8IVWXDct0MPqkiM8oOF5FMJ2xZ9bu65QYGixH0kQ8Q1o6XY3aQZIXt1BpTN1w==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1653499429;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=2BSL5Rwo89rLqEXxiG2O6kXQNZHwOECZU8ttnooY7V0=;
+        b=06W1Wu1i2QuRF6XW19bHvRtRWEM0L6umZqMvPg8GSDb/TOtiWGQAb7WTG+RCTTMbe79mBO
+        m/f9t+TZwaXWmbDg==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        linux-rt-users@vger.kernel.org,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: [ANNOUNCE] v5.18-rt11
+Message-ID: <Yo5mI5C2YefYEkh8@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <YogoI6Augr1V6AHn@mit.edu>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 20, 2022 at 07:45:39PM -0400, Theodore Ts'o wrote:
-> On Fri, May 20, 2022 at 12:16:52PM -0400, Kent Overstreet wrote:
-> > 
-> > Where the lack of real namespacing bites us more is when ioctls get promoted
-> > from filesystem or driver on up. Ted had a good example of an ext2 ioctl getting
-> > promoted to the VFS when it really shouldn't have, because it was exposing ext2
-> > specific data structures.
-> > 
-> > But because this is as simple as changing a #define EXT2_IOC to #define FS_IOC,
-> > it's really easy to do without adequate review - you don't have to change the
-> > ioctl number and break userspace, so why would you?
-> > 
-> > Introducing real namespacing would mean that promoting an ioctl to the VFS level
-> > would really have to be a new ioctl, and it'll get people to think more about
-> > what the new ioctl would be.
-> 
-> It's not clear that making harder not to break userspace is a
-> *feature*.  If existing programs are using a particular ioctl
-> namespace, being able to have other file systems adopt it has
-> historically been considered a *feature* not a *bug*.
-> 
-> At the time, we had working utilities, chattr and lsattr, which were
-> deployed on all Linux distributions, and newer file systems, such as
-> xfs, reiserfs, btrfs, etc., decided they wanted to piggy-back on those
-> existing utilities.  Forcing folks to deploy new utilities just
-> because it's the best way to force "adequate review" might be swinging
-> the pendulum too far in the straight-jacket direction.
+Dear RT folks!
 
-But back in those days, users updating those core utilities was a much bigger
-hassle. That's changing, we don't really have users compiling from source
-anymore, and we're slowly but steadily moving towards the rolling releases
-world: slackware -> debian -> nixos.
+I'm pleased to announce the v5.18-rt11 patch set. 
 
-And on the developer side of things, historically developers have worked on a
-few packages where they were comfortable with the process, and packages tended
-more towards giant monorepos, but the younger generation is more used to working
-across multiple packages/repositories as necessary (this is where github has
-been emphatically a good thing, despite being proprietary; it's standardized a
-lot of the friction-y "how do I submit to this repo" stuff).
+Changes since v5.18-rt10:
 
-So I understand where you're coming from but I think this is worth rethinking.
+  - Dropping preempt_check_resched_rt() checks. The checks were added to
+    ensure a possible wake up which could be missed if the wakeup
+    happens on the same CPU with disabled interrupts. This has been
+    reduced to a ksoftirqd wake and is no longer needed because a
+    softirq-raise won't wake ksoftirqd if the caller has BH disabled.
+    The remaining two caller (based on audit, htb_work_func() and
+    dev_cpu_dead()) acquire/release a lock "soon" which provides the
+    needed scheduling point.
 
-Additionally, bikeshedding gets really painful when people are trying to plan
-for all eventualities and think too far ahead. Having multiple stages of review
-is _helpful_ with this. If an ioctl is filesystem-private, it's perfectly fine
-for it embed filesystem specific data structures - if we can ensure that that
-won't get lifted to the VFS layer without anyone noticing!
+Known issues
+     - Valentin Schneider reported a few splats on ARM64, see
+          https://lkml.kernel.org/r/20210810134127.1394269-1-valentin.schneider@arm.com
 
-> ...
->
-> In the case of extended attributes, we had perfectly working userspace
-> tools that would have ***broken*** if we adhered to a doctrinaire,
-> when you promote an interface, we break the userspace interface Just
-> Because it's the Good Computer Science Thing To Do.
+The delta patch against v5.18-rt10 is appended below and can be found here:
+ 
+     https://cdn.kernel.org/pub/linux/kernel/projects/rt/5.18/incr/patch-5.18-rt10-rt11.patch.xz
 
-Not broken, though - it just would've needed updating to support additional
-filesystems, and when the ioctls don't need changing the patches would be
-trivial:
+You can get this release via the git tree at:
 
-ret = ioctl_xfs_goingdown(..);
-becomes
-ret = ioctl_fs_goingdown(...) ?:
-      ioctl_xfs_goingdown(...);
+    git://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-rt-devel.git v5.18-rt11
 
-(I'm the only one I know who does that chaining syntax in C, but I like it :)
+The RT patch against v5.18 can be found here:
 
-> So this approach requires that someone has to actually implement the
-> wrapper library.  Who will that be?  The answer could be, "let libc do
-> it", but then we need to worry about all the C libraries out there
-> actually adopting the new ioctl, which takes a long time, and
-> historically, some C library maintainers have had.... opinionated
-> points of view about the sort of "value add that should be done at the
-> C Library level".
+    https://cdn.kernel.org/pub/linux/kernel/projects/rt/5.18/older/patch-5.18-rt11.patch.xz
 
-Not libc, and we definitely don't want to have to update that library for every
-new ioctl - I'm imagining that library just being responsible for the "query
-kernel for ioctl numbers" part, the ioctl definitions themselves will still come
-from kernel headers.
+The split quilt queue is available at:
 
-> For example, I have an ext2fs library function
-> ext2fs_get_device_size2(), which wraps not only the BLKGETSIZE and
-> BLKGETSIZE64 ioctls, but also the equivalents for Apple Darwin
-> (DKIOCGETBLOCKCOUNT), FreeBSD/NetBSD (DIOCGDINFO and later
-> DIOCGMEDIASIZE), and the Window's DeviceIoControl()'s
-> IOCTL_DISK_GET_DRIVE_GEOMETRY call.  The point is that wrapper
-> functions are very much orthogonal to the ioctl interface; we're all
-> going to have wrapper functions, and we'll create them where they are
-> needed.
+    https://cdn.kernel.org/pub/linux/kernel/projects/rt/5.18/older/patches-5.18-rt11.tar.xz
 
-This seems unrelated to the ioctl v2 discussion, but - it would be _great_ if we
-could get that in a separate repository where others could make use of it :)
+Sebastian
+
+diff --git a/include/linux/preempt.h b/include/linux/preempt.h
+index c3cb3fcbee8c3..873a5dac54e0e 100644
+--- a/include/linux/preempt.h
++++ b/include/linux/preempt.h
+@@ -232,12 +232,6 @@ do { \
+ 
+ #define preempt_enable_no_resched() sched_preempt_enable_no_resched()
+ 
+-#ifndef CONFIG_PREEMPT_RT
+-# define preempt_check_resched_rt() barrier();
+-#else
+-# define preempt_check_resched_rt() preempt_check_resched()
+-#endif
+-
+ #define preemptible()	(preempt_count() == 0 && !irqs_disabled())
+ 
+ #ifdef CONFIG_PREEMPTION
+@@ -324,7 +318,6 @@ do { \
+ #define preempt_disable_notrace()		barrier()
+ #define preempt_enable_no_resched_notrace()	barrier()
+ #define preempt_enable_notrace()		barrier()
+-#define preempt_check_resched_rt()		barrier()
+ #define preemptible()				0
+ 
+ #define preempt_lazy_disable()			barrier()
+diff --git a/localversion-rt b/localversion-rt
+index d79dde624aaac..05c35cb580779 100644
+--- a/localversion-rt
++++ b/localversion-rt
+@@ -1 +1 @@
+--rt10
++-rt11
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 0b81439394b07..2771fd22dc6ae 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -3024,7 +3024,6 @@ static void __netif_reschedule(struct Qdisc *q)
+ 	sd->output_queue_tailp = &q->next_sched;
+ 	raise_softirq_irqoff(NET_TX_SOFTIRQ);
+ 	local_irq_restore(flags);
+-	preempt_check_resched_rt();
+ }
+ 
+ void __netif_schedule(struct Qdisc *q)
+@@ -3087,7 +3086,6 @@ void __dev_kfree_skb_irq(struct sk_buff *skb, enum skb_free_reason reason)
+ 	__this_cpu_write(softnet_data.completion_queue, skb);
+ 	raise_softirq_irqoff(NET_TX_SOFTIRQ);
+ 	local_irq_restore(flags);
+-	preempt_check_resched_rt();
+ }
+ EXPORT_SYMBOL(__dev_kfree_skb_irq);
+ 
+@@ -5809,14 +5807,12 @@ static void net_rps_action_and_irq_enable(struct softnet_data *sd)
+ 		sd->rps_ipi_list = NULL;
+ 
+ 		local_irq_enable();
+-		preempt_check_resched_rt();
+ 
+ 		/* Send pending IPI's to kick RPS processing on remote cpus. */
+ 		net_rps_send_ipi(remsd);
+ 	} else
+ #endif
+ 		local_irq_enable();
+-	preempt_check_resched_rt();
+ }
+ 
+ static bool sd_has_rps_ipi_waiting(struct softnet_data *sd)
+@@ -5892,7 +5888,6 @@ void __napi_schedule(struct napi_struct *n)
+ 	local_irq_save(flags);
+ 	____napi_schedule(this_cpu_ptr(&softnet_data), n);
+ 	local_irq_restore(flags);
+-	preempt_check_resched_rt();
+ }
+ EXPORT_SYMBOL(__napi_schedule);
+ 
+@@ -11001,7 +10996,6 @@ static int dev_cpu_dead(unsigned int oldcpu)
+ 
+ 	raise_softirq_irqoff(NET_TX_SOFTIRQ);
+ 	local_irq_enable();
+-	preempt_check_resched_rt();
+ 
+ #ifdef CONFIG_RPS
+ 	remsd = oldsd->rps_ipi_list;
