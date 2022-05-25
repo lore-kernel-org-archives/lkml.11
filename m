@@ -2,84 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5266DC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 09:12:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36D82C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 09:13:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240052AbiEYJMk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 05:12:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55874 "EHLO
+        id S231698AbiEYJNT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 05:13:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238263AbiEYJMW (ORCPT
+        with ESMTP id S231584AbiEYJNG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 05:12:22 -0400
-Received: from jari.cn (unknown [218.92.28.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7513FB36C7;
-        Wed, 25 May 2022 02:08:16 -0700 (PDT)
-Received: by ajax-webmail-localhost.localdomain (Coremail) ; Wed, 25 May
- 2022 17:03:03 +0800 (GMT+08:00)
-X-Originating-IP: [182.148.13.40]
-Date:   Wed, 25 May 2022 17:03:03 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   "XueBing Chen" <chenxuebing@jari.cn>
-To:     vkoul@kernel.org
-Cc:     dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] dmaengine: dmatest: use strscpy to replace strlcpy
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT6.0.1 build 20210329(c53f3fee)
- Copyright (c) 2002-2022 www.mailtech.cn
- mispb-4e503810-ca60-4ec8-a188-7102c18937cf-zhkzyfz.cn
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        Wed, 25 May 2022 05:13:06 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A66B69B184
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 02:09:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653469740;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=da7nS1EdTAInnQ5mYClBlXrsAp+Wl4jzAQ2Ex+71s1o=;
+        b=ckMKu2DodQVSuAJrWMAJeHYgHXJsoVU4kGTbBXXC9kZxDzWoj0s0lXS9PZDOnWDYn+3vEo
+        IvBESun+Tk6/tsjrfKqH83u49mQObERWKjjenK7W6u23ilL8h9fVkNoqFMfexOoUDJpZQK
+        rHkKQ7jEs+sVw0Yx0abO8w+e9ZfVJD0=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-613-Z9YWCNDCNQWky5B8JW6jHw-1; Wed, 25 May 2022 05:02:43 -0400
+X-MC-Unique: Z9YWCNDCNQWky5B8JW6jHw-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id D1FE83C01D9C;
+        Wed, 25 May 2022 09:02:42 +0000 (UTC)
+Received: from fedora.redhat.com (unknown [10.40.194.186])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 26CDE40CFD0A;
+        Wed, 25 May 2022 09:02:41 +0000 (UTC)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Siddharth Chandrasekaran <sidcha@amazon.de>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v4 32/37] KVM: selftests: nVMX: Allocate Hyper-V partition assist page
+Date:   Wed, 25 May 2022 11:01:28 +0200
+Message-Id: <20220525090133.1264239-33-vkuznets@redhat.com>
+In-Reply-To: <20220525090133.1264239-1-vkuznets@redhat.com>
+References: <20220525090133.1264239-1-vkuznets@redhat.com>
 MIME-Version: 1.0
-Message-ID: <12e4cf06.a35.180fa748c29.Coremail.chenxuebing@jari.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: AQAAfwAHEW_H8I1ibgY4AA--.645W
-X-CM-SenderInfo: hfkh05pxhex0nj6mt2flof0/1tbiAQARCmFEYxsloAAHsF
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
+Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ClRoZSBzdHJsY3B5IHNob3VsZCBub3QgYmUgdXNlZCBiZWNhdXNlIGl0IGRvZXNuJ3QgbGltaXQg
-dGhlIHNvdXJjZQpsZW5ndGguIFByZWZlcnJlZCBpcyBzdHJzY3B5LgoKU2lnbmVkLW9mZi1ieTog
-WHVlQmluZyBDaGVuIDxjaGVueHVlYmluZ0BqYXJpLmNuPgotLS0KIGRyaXZlcnMvZG1hL2RtYXRl
-c3QuYyB8IDEyICsrKysrKy0tLS0tLQogMSBmaWxlIGNoYW5nZWQsIDYgaW5zZXJ0aW9ucygrKSwg
-NiBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL2RtYS9kbWF0ZXN0LmMgYi9kcml2
-ZXJzL2RtYS9kbWF0ZXN0LmMKaW5kZXggZjY5NjI0NmY1N2ZkLi45MWJmNjVlMDY3NGMgMTAwNjQ0
-Ci0tLSBhL2RyaXZlcnMvZG1hL2RtYXRlc3QuYworKysgYi9kcml2ZXJzL2RtYS9kbWF0ZXN0LmMK
-QEAgLTEwOTUsOCArMTA5NSw4IEBAIHN0YXRpYyB2b2lkIGFkZF90aHJlYWRlZF90ZXN0KHN0cnVj
-dCBkbWF0ZXN0X2luZm8gKmluZm8pCiAKIAkvKiBDb3B5IHRlc3QgcGFyYW1ldGVycyAqLwogCXBh
-cmFtcy0+YnVmX3NpemUgPSB0ZXN0X2J1Zl9zaXplOwotCXN0cmxjcHkocGFyYW1zLT5jaGFubmVs
-LCBzdHJpbSh0ZXN0X2NoYW5uZWwpLCBzaXplb2YocGFyYW1zLT5jaGFubmVsKSk7Ci0Jc3RybGNw
-eShwYXJhbXMtPmRldmljZSwgc3RyaW0odGVzdF9kZXZpY2UpLCBzaXplb2YocGFyYW1zLT5kZXZp
-Y2UpKTsKKwlzdHJzY3B5KHBhcmFtcy0+Y2hhbm5lbCwgc3RyaW0odGVzdF9jaGFubmVsKSwgc2l6
-ZW9mKHBhcmFtcy0+Y2hhbm5lbCkpOworCXN0cnNjcHkocGFyYW1zLT5kZXZpY2UsIHN0cmltKHRl
-c3RfZGV2aWNlKSwgc2l6ZW9mKHBhcmFtcy0+ZGV2aWNlKSk7CiAJcGFyYW1zLT50aHJlYWRzX3Bl
-cl9jaGFuID0gdGhyZWFkc19wZXJfY2hhbjsKIAlwYXJhbXMtPm1heF9jaGFubmVscyA9IG1heF9j
-aGFubmVsczsKIAlwYXJhbXMtPml0ZXJhdGlvbnMgPSBpdGVyYXRpb25zOwpAQCAtMTI0MCw3ICsx
-MjQwLDcgQEAgc3RhdGljIGludCBkbWF0ZXN0X2NoYW5fc2V0KGNvbnN0IGNoYXIgKnZhbCwgY29u
-c3Qgc3RydWN0IGtlcm5lbF9wYXJhbSAqa3ApCiAJCQkJZHRjID0gbGlzdF9sYXN0X2VudHJ5KCZp
-bmZvLT5jaGFubmVscywKIAkJCQkJCSAgICAgIHN0cnVjdCBkbWF0ZXN0X2NoYW4sCiAJCQkJCQkg
-ICAgICBub2RlKTsKLQkJCQlzdHJsY3B5KGNoYW5fcmVzZXRfdmFsLAorCQkJCXN0cnNjcHkoY2hh
-bl9yZXNldF92YWwsCiAJCQkJCWRtYV9jaGFuX25hbWUoZHRjLT5jaGFuKSwKIAkJCQkJc2l6ZW9m
-KGNoYW5fcmVzZXRfdmFsKSk7CiAJCQkJcmV0ID0gLUVCVVNZOwpAQCAtMTI2MywxNCArMTI2Mywx
-NCBAQCBzdGF0aWMgaW50IGRtYXRlc3RfY2hhbl9zZXQoY29uc3QgY2hhciAqdmFsLCBjb25zdCBz
-dHJ1Y3Qga2VybmVsX3BhcmFtICprcCkKIAkJaWYgKChzdHJjbXAoZG1hX2NoYW5fbmFtZShkdGMt
-PmNoYW4pLCBzdHJpbSh0ZXN0X2NoYW5uZWwpKSAhPSAwKQogCQkgICAgJiYgKHN0cmNtcCgiIiwg
-c3RyaW0odGVzdF9jaGFubmVsKSkgIT0gMCkpIHsKIAkJCXJldCA9IC1FSU5WQUw7Ci0JCQlzdHJs
-Y3B5KGNoYW5fcmVzZXRfdmFsLCBkbWFfY2hhbl9uYW1lKGR0Yy0+Y2hhbiksCisJCQlzdHJzY3B5
-KGNoYW5fcmVzZXRfdmFsLCBkbWFfY2hhbl9uYW1lKGR0Yy0+Y2hhbiksCiAJCQkJc2l6ZW9mKGNo
-YW5fcmVzZXRfdmFsKSk7CiAJCQlnb3RvIGFkZF9jaGFuX2VycjsKIAkJfQogCiAJfSBlbHNlIHsK
-IAkJLyogQ2xlYXIgdGVzdF9jaGFubmVsIGlmIG5vIGNoYW5uZWxzIHdlcmUgYWRkZWQgc3VjY2Vz
-c2Z1bGx5ICovCi0JCXN0cmxjcHkoY2hhbl9yZXNldF92YWwsICIiLCBzaXplb2YoY2hhbl9yZXNl
-dF92YWwpKTsKKwkJc3Ryc2NweShjaGFuX3Jlc2V0X3ZhbCwgIiIsIHNpemVvZihjaGFuX3Jlc2V0
-X3ZhbCkpOwogCQlyZXQgPSAtRUJVU1k7CiAJCWdvdG8gYWRkX2NoYW5fZXJyOwogCX0KQEAgLTEy
-OTUsNyArMTI5NSw3IEBAIHN0YXRpYyBpbnQgZG1hdGVzdF9jaGFuX2dldChjaGFyICp2YWwsIGNv
-bnN0IHN0cnVjdCBrZXJuZWxfcGFyYW0gKmtwKQogCW11dGV4X2xvY2soJmluZm8tPmxvY2spOwog
-CWlmICghaXNfdGhyZWFkZWRfdGVzdF9ydW4oaW5mbykgJiYgIWlzX3RocmVhZGVkX3Rlc3RfcGVu
-ZGluZyhpbmZvKSkgewogCQlzdG9wX3RocmVhZGVkX3Rlc3QoaW5mbyk7Ci0JCXN0cmxjcHkodGVz
-dF9jaGFubmVsLCAiIiwgc2l6ZW9mKHRlc3RfY2hhbm5lbCkpOworCQlzdHJzY3B5KHRlc3RfY2hh
-bm5lbCwgIiIsIHNpemVvZih0ZXN0X2NoYW5uZWwpKTsKIAl9CiAJbXV0ZXhfdW5sb2NrKCZpbmZv
-LT5sb2NrKTsKIAotLSAKMi4zNi4xCg==
+In preparation to testing Hyper-V L2 TLB flush hypercalls, allocate
+so-called Partition assist page and link it to 'struct vmx_pages'.
+
+Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+---
+ tools/testing/selftests/kvm/include/x86_64/vmx.h | 4 ++++
+ tools/testing/selftests/kvm/lib/x86_64/vmx.c     | 7 +++++++
+ 2 files changed, 11 insertions(+)
+
+diff --git a/tools/testing/selftests/kvm/include/x86_64/vmx.h b/tools/testing/selftests/kvm/include/x86_64/vmx.h
+index 583ceb0d1457..f99922ca8259 100644
+--- a/tools/testing/selftests/kvm/include/x86_64/vmx.h
++++ b/tools/testing/selftests/kvm/include/x86_64/vmx.h
+@@ -567,6 +567,10 @@ struct vmx_pages {
+ 	uint64_t enlightened_vmcs_gpa;
+ 	void *enlightened_vmcs;
+ 
++	void *partition_assist_hva;
++	uint64_t partition_assist_gpa;
++	void *partition_assist;
++
+ 	void *eptp_hva;
+ 	uint64_t eptp_gpa;
+ 	void *eptp;
+diff --git a/tools/testing/selftests/kvm/lib/x86_64/vmx.c b/tools/testing/selftests/kvm/lib/x86_64/vmx.c
+index d089d8b850b5..3db21e0e1a8f 100644
+--- a/tools/testing/selftests/kvm/lib/x86_64/vmx.c
++++ b/tools/testing/selftests/kvm/lib/x86_64/vmx.c
+@@ -124,6 +124,13 @@ vcpu_alloc_vmx(struct kvm_vm *vm, vm_vaddr_t *p_vmx_gva)
+ 	vmx->enlightened_vmcs_gpa =
+ 		addr_gva2gpa(vm, (uintptr_t)vmx->enlightened_vmcs);
+ 
++	/* Setup of a region of guest memory for the partition assist page. */
++	vmx->partition_assist = (void *)vm_vaddr_alloc_page(vm);
++	vmx->partition_assist_hva =
++		addr_gva2hva(vm, (uintptr_t)vmx->partition_assist);
++	vmx->partition_assist_gpa =
++		addr_gva2gpa(vm, (uintptr_t)vmx->partition_assist);
++
+ 	*p_vmx_gva = vmx_gva;
+ 	return vmx;
+ }
+-- 
+2.35.3
+
