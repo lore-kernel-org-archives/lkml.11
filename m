@@ -2,117 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E683C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 13:56:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55FFBC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 13:57:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237947AbiEYN4t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 09:56:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50458 "EHLO
+        id S244524AbiEYN5A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 09:57:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229555AbiEYN4r (ORCPT
+        with ESMTP id S244512AbiEYN45 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 09:56:47 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52B778D6B7;
-        Wed, 25 May 2022 06:56:46 -0700 (PDT)
-Date:   Wed, 25 May 2022 13:56:43 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1653487005;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
+        Wed, 25 May 2022 09:56:57 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9944C91575
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 06:56:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653487015;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=6svJIhgsNotYCM2gnWaDCgcV12dIHd2Me3m7GcUKNyo=;
-        b=0SQidgDzaLUDbuK0RFRoBnkABs4FEplKLKDgvZD7nbQas/HnQsFbFoLGzD++2UeIaK8Sy1
-        XMgt4iFwRNg/26K6z23PrQr5YNUgUZJ+BgkC9dH+x4zHOKyEiHvIGSP/0yUjlvbrjEfnje
-        Jf6+g9V0Qr89XRG7kGfLhpL32ZTANQk5nGRztr4NkdpjoPtuVnlILeKodbVcqajUKqplMm
-        jSFXMpTchZUVNwOTO8aItiYTItnqRtwQkOoqyZTwoNi8hNR8cznzU7kpC+7cqlk4mHYg1J
-        Pl7wFp3IKTYokqYPTob29vUyTBaASSOjMGgjP6QMSeiwhpiFCDJQxKwuZwLTGQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1653487005;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=6svJIhgsNotYCM2gnWaDCgcV12dIHd2Me3m7GcUKNyo=;
-        b=3K+piQWMy8ji3Yu6aBOu6s174OOQQFwGscaYuunro4jC3kpfdzdDACoOFHBfxyIncgyATY
-        0C0hMef8wvCPBMCA==
-From:   "tip-bot2 for Juerg Haefliger" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: perf/core] perf/x86/Kconfig: Fix indentation in the Kconfig file
-Cc:     Juerg Haefliger <juerg.haefliger@canonical.com>,
-        Ingo Molnar <mingo@kernel.org>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220525133949.53730-1-juerg.haefliger@canonical.com>
-References: <20220525133949.53730-1-juerg.haefliger@canonical.com>
+        bh=bwKtBZV8ciaRCowgqevFzBNex6RHDTKadOeeg0UrfVc=;
+        b=ieO6jRkRrzbm3543JJ1jzvykbWFwziukIABw4g6kfdb87cPaQ25y+ZuIn/UffOxdM60zYw
+        W3VzAdtDgp0eF2ZiJBNNjF1Z8HcImmh0odhjwbXn3ffSlC/nZKH7o9Hb8xzg8Anloft+HP
+        GZCdW79WcA/XwkrXkZ+GuCrRd5c3Jc4=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-587-0sDW9gHhNWyfEP9vRbyJdA-1; Wed, 25 May 2022 09:56:52 -0400
+X-MC-Unique: 0sDW9gHhNWyfEP9vRbyJdA-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9DE3D8001EA;
+        Wed, 25 May 2022 13:56:51 +0000 (UTC)
+Received: from fuller.cnet (ovpn-112-2.gru2.redhat.com [10.97.112.2])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 2F263405D4BF;
+        Wed, 25 May 2022 13:56:51 +0000 (UTC)
+Received: by fuller.cnet (Postfix, from userid 1000)
+        id CDA06416F574; Wed, 25 May 2022 10:56:18 -0300 (-03)
+Date:   Wed, 25 May 2022 10:56:18 -0300
+From:   Marcelo Tosatti <mtosatti@redhat.com>
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Stefan Wahren <stefan.wahren@i2se.com>
+Cc:     Stefan Wahren <stefan.wahren@i2se.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Minchan Kim <minchan@kernel.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Phil Elwell <phil@raspberrypi.com>, regressions@lists.linux.dev
+Subject: Re: vchiq: Performance regression since 5.18-rc1
+Message-ID: <Yo41ggMvkI1B9TeM@fuller.cnet>
+References: <77d6d498-7dd9-03eb-60f2-d7e682bb1b20@i2se.com>
+ <YoszE8lQ9VcofLtX@linutronix.de>
 MIME-Version: 1.0
-Message-ID: <165348700360.4207.4712455380719142556.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YoszE8lQ9VcofLtX@linutronix.de>
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the perf/core branch of tip:
+On Mon, May 23, 2022 at 09:09:07AM +0200, Sebastian Andrzej Siewior wrote:
+> On 2022-05-22 01:22:00 [+0200], Stefan Wahren wrote:
+> > Hi,
+> Hi,
+> 
+> > while testing the staging/vc04_services/interface/vchiq_arm driver with my
+> > Raspberry Pi 3 B+ (multi_v7_defconfig) i noticed a huge performance
+> > regression since [ff042f4a9b050895a42cae893cc01fa2ca81b95c] mm:
+> > lru_cache_disable: replace work queue synchronization with synchronize_rcu
+> > 
+> > Usually i run "vchiq_test -f 1" to see the driver is still working [1].
+> 
+> What about
+> 	https://lore.kernel.org/all/YmrWK%2FKoU1zrAxPI@fuller.cnet/
+> 
+> Sebastian
 
-Commit-ID:     108ea7eb3e754be735a1c33d2713a19527fb2065
-Gitweb:        https://git.kernel.org/tip/108ea7eb3e754be735a1c33d2713a19527fb2065
-Author:        Juerg Haefliger <juerg.haefliger@canonical.com>
-AuthorDate:    Wed, 25 May 2022 15:39:49 +02:00
-Committer:     Ingo Molnar <mingo@kernel.org>
-CommitterDate: Wed, 25 May 2022 15:54:26 +02:00
+Stefan,
 
-perf/x86/Kconfig: Fix indentation in the Kconfig file
+Can you please try the patch above ?
 
-The convention for indentation seems to be a single tab. Help text is
-further indented by an additional two whitespaces. Fix the lines that
-violate these rules.
 
-Signed-off-by: Juerg Haefliger <juerg.haefliger@canonical.com>
-Signed-off-by: Ingo Molnar <mingo@kernel.org>
-Link: https://lore.kernel.org/r/20220525133949.53730-1-juerg.haefliger@canonical.com
----
- arch/x86/events/Kconfig | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
-
-diff --git a/arch/x86/events/Kconfig b/arch/x86/events/Kconfig
-index 09c5696..dabdf3d 100644
---- a/arch/x86/events/Kconfig
-+++ b/arch/x86/events/Kconfig
-@@ -6,24 +6,24 @@ config PERF_EVENTS_INTEL_UNCORE
- 	depends on PERF_EVENTS && CPU_SUP_INTEL && PCI
- 	default y
- 	help
--	Include support for Intel uncore performance events. These are
--	available on NehalemEX and more modern processors.
-+	  Include support for Intel uncore performance events. These are
-+	  available on NehalemEX and more modern processors.
- 
- config PERF_EVENTS_INTEL_RAPL
- 	tristate "Intel/AMD rapl performance events"
- 	depends on PERF_EVENTS && (CPU_SUP_INTEL || CPU_SUP_AMD) && PCI
- 	default y
- 	help
--	Include support for Intel and AMD rapl performance events for power
--	monitoring on modern processors.
-+	  Include support for Intel and AMD rapl performance events for power
-+	  monitoring on modern processors.
- 
- config PERF_EVENTS_INTEL_CSTATE
- 	tristate "Intel cstate performance events"
- 	depends on PERF_EVENTS && CPU_SUP_INTEL && PCI
- 	default y
- 	help
--	Include support for Intel cstate performance events for power
--	monitoring on modern processors.
-+	  Include support for Intel cstate performance events for power
-+	  monitoring on modern processors.
- 
- config PERF_EVENTS_AMD_POWER
- 	depends on PERF_EVENTS && CPU_SUP_AMD
