@@ -2,135 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35F50C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 16:03:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 095E9C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 16:04:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244823AbiEYQD2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 12:03:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56620 "EHLO
+        id S245170AbiEYQEU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 12:04:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235695AbiEYQDY (ORCPT
+        with ESMTP id S238899AbiEYQES (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 12:03:24 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CE23B41D0;
-        Wed, 25 May 2022 09:03:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653494602; x=1685030602;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=7NhX25SuGNORs55jhWR7pX5NAvt/ZOoud0zyj6OlrCQ=;
-  b=NS5JDpHnZ3yFPAxk3tY/YOp3ICFbFxBnJ7xnwWBRnwb3ez9tMd0DkxRG
-   NTEzjnUCXbPJhI+KixJDyB0RNtxKSB68CP70kYCwE/5O+zS6PZQp4eeSr
-   1kd8D+TaIgfe5JRrPGg+8Ux/qrNvGfHowrIeDYaeVFme32/qcWJN94QrO
-   oL0gUbkTELDv8vfqDJkZumG6P7l36SeIdP85gftuxFei0BXAq8F4yCJw6
-   TaBcpKrnmhmqYepVf1BGbyMPIL1bduXyN7rA2v4a69sh0hXKbQ3fQdO6B
-   0RVH7h81na2ZE4G20vD3ib+W1qCs64me9bImX5R/+DdJvRcUQYOpDRUar
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10358"; a="254351182"
-X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
-   d="scan'208";a="254351182"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2022 09:00:56 -0700
-X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
-   d="scan'208";a="573338858"
-Received: from canagani-mobl1.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.254.35.228])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2022 09:00:52 -0700
-Message-ID: <6efb18e38a7812b62652ce5c403455811336f063.camel@intel.com>
-Subject: Re: [PATCH v3 09/21] x86/virt/tdx: Get information about TDX module
- and convertible memory
-From:   Kai Huang <kai.huang@intel.com>
-To:     Dave Hansen <dave.hansen@intel.com>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org
-Cc:     seanjc@google.com, pbonzini@redhat.com, len.brown@intel.com,
-        tony.luck@intel.com, rafael.j.wysocki@intel.com,
-        reinette.chatre@intel.com, dan.j.williams@intel.com,
-        peterz@infradead.org, ak@linux.intel.com,
-        kirill.shutemov@linux.intel.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com,
-        isaku.yamahata@intel.com
-Date:   Thu, 26 May 2022 04:00:49 +1200
-In-Reply-To: <a47b12f762272540d7b8b691d863b60ddb0d246d.camel@intel.com>
-References: <cover.1649219184.git.kai.huang@intel.com>
-         <145620795852bf24ba2124a3f8234fd4aaac19d4.1649219184.git.kai.huang@intel.com>
-         <f929fb7a-5bdc-2567-77aa-762a098c8513@intel.com>
-         <0bab7221179229317a11311386c968bd0d40e344.camel@intel.com>
-         <98f81eed-e532-75bc-d2d8-4e020517b634@intel.com>
-         <be31134cf44a24d6d38fbf39e9e18ef223e216c6.camel@intel.com>
-         <4aea41ea-211f-fbde-34e9-4c4467ebc848@intel.com>
-         <a6694c81b4e96a22557fd0af70a81bd2c2e4e3e7.camel@intel.com>
-         <a47b12f762272540d7b8b691d863b60ddb0d246d.camel@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        Wed, 25 May 2022 12:04:18 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA12FAF1EB;
+        Wed, 25 May 2022 09:04:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id DB5DFCE2004;
+        Wed, 25 May 2022 16:04:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF2EEC385B8;
+        Wed, 25 May 2022 16:04:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653494652;
+        bh=9SsmUxRspR26RN2LNvw0etslFl1c4fkjQCM9Ey0idec=;
+        h=From:To:Cc:Subject:Date:From;
+        b=SugjF9n+aZoxi+E3o/AOBu3PmbEXcq2JYOU+7DP2xhuvWJD5WCyvChXVA/9SSctCV
+         +fwRuJ58O4VXbgZ+iX4yCVi4zm0TE7XLQVo973sWHAf6Vooj1gGl+zaQ6ymWvH291b
+         JsCcAwuS/6ofu5SHzgRXom/y1HoBsXAfQwSxhoxV2XUL4RYrKZtWwZ6ufyT86scMwn
+         hM2TojGU0hi/W8/QZKuCGqSko965sfkMaAo1enGMVkHkU2kduNtwhZWIQoPJP0VerJ
+         Iem0GPGqoBIRxkQlpVkLOntzZlZkvTeELsziD1DErGw/cU9cUQPd6hFRW1CbneX+uJ
+         wLj7qxzTCmJgg==
+From:   guoren@kernel.org
+To:     palmer@rivosinc.com, arnd@arndb.de, linux@roeck-us.net,
+        palmer@dabbelt.com, heiko@sntech.de
+Cc:     linux-riscv@lists.infradead.org, linux-arch@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Guo Ren <guoren@linux.alibaba.com>,
+        Guo Ren <guoren@kernel.org>
+Subject: [PATCH] riscv: compat: Using seperated vdso_maps for compat_vdso_info
+Date:   Wed, 25 May 2022 12:04:04 -0400
+Message-Id: <20220525160404.2930984-1-guoren@kernel.org>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-05-25 at 16:57 +1200, Kai Huang wrote:
-> On Wed, 2022-05-25 at 16:47 +1200, Kai Huang wrote:
-> > On Fri, 2022-04-29 at 10:47 -0700, Dave Hansen wrote:
-> > > On 4/28/22 16:14, Kai Huang wrote:
-> > > > On Thu, 2022-04-28 at 07:06 -0700, Dave Hansen wrote:
-> > > > > On 4/27/22 17:15, Kai Huang wrote:
-> > > > > > > Couldn't we get rid of that comment if you did something like:
-> > > > > > > 
-> > > > > > > 	ret = tdx_get_sysinfo(&tdx_cmr_array, &tdx_sysinfo);
-> > > > > > 
-> > > > > > Yes will do.
-> > > > > > 
-> > > > > > > and preferably make the variables function-local.
-> > > > > > 
-> > > > > > 'tdx_sysinfo' will be used by KVM too.
-> > > > > 
-> > > > > In other words, it's not a part of this series so I can't review whether
-> > > > > this statement is correct or whether there's a better way to hand this
-> > > > > information over to KVM.
-> > > > > 
-> > > > > This (minor) nugget influencing the design also isn't even commented or
-> > > > > addressed in the changelog.
-> > > > 
-> > > > TDSYSINFO_STRUCT is 1024B and CMR array is 512B, so I don't think it should be
-> > > > in the stack.  I can change to use dynamic allocation at the beginning and free
-> > > > it at the end of the function.  KVM support patches can change it to static
-> > > > variable in the file.
-> > > 
-> > > 2k of stack is big, but it isn't a deal breaker for something that's not
-> > > nested anywhere and that's only called once in a pretty controlled
-> > > setting and not in interrupt context.  I wouldn't cry about it.
-> > 
-> > Hi Dave,
-> > 
-> > I got below complaining when I use local variable for TDSYSINFO_STRUCT and CMR
-> > array:
-> > 
-> > arch/x86/virt/vmx/tdx/tdx.c:383:1: warning: the frame size of 3072 bytes is
-> > larger than 1024 bytes [-Wframe-larger-than=]
-> >   383 | }
-> > 
-> > So I don't think we can use local variable for them.  I'll still use static
-> > variables to avoid dynamic allocation.  In the commit message, I'll explain they
-> > are too big to put into the stack, and KVM will need to use TDSYSINFO_STRUCT
-> > reported by TDX module anyway.
-> > 
-> > Let me know if you don't agree?
-> 
-> Btw, CMR array alone can be put into the stack.  It will never be used by KVM,
-> so I'll put CMR array as local variable, but keep tdx_sysinfo as static
-> variable.
-> 
+From: Guo Ren <guoren@linux.alibaba.com>
 
-Sorry for multiple emails about this.  If I put CMR array to the stack, I still
-sometimes get the build warning.  So will use static variables.
+This is a fixup for vdso implementation which caused musl to
+fail.
 
-Also, constructing TDMRs internally needs to use tdx_sysinfo (max_tdmrs,
-pamt_entry_size, max_rsvd_per_tdmr), so with static variable they don't need to
-be passed around as function arguments.
+[   11.600082] Run /sbin/init as init process
+[   11.628561] init[1]: unhandled signal 11 code 0x1 at
+0x0000000000000000 in libc.so[ffffff8ad39000+a4000]
+[   11.629398] CPU: 0 PID: 1 Comm: init Not tainted
+5.18.0-rc7-next-20220520 #1
+[   11.629462] Hardware name: riscv-virtio,qemu (DT)
+[   11.629546] epc : 00ffffff8ada1100 ra : 00ffffff8ada13c8 sp :
+00ffffffc58199f0
+[   11.629586]  gp : 00ffffff8ad39000 tp : 00ffffff8ade0998 t0 :
+ffffffffffffffff
+[   11.629598]  t1 : 00ffffffc5819fd0 t2 : 0000000000000000 s0 :
+00ffffff8ade0cc0
+[   11.629610]  s1 : 00ffffff8ade0cc0 a0 : 0000000000000000 a1 :
+00ffffffc5819a00
+[   11.629622]  a2 : 0000000000000001 a3 : 000000000000001e a4 :
+00ffffffc5819b00
+[   11.629634]  a5 : 00ffffffc5819b00 a6 : 0000000000000000 a7 :
+0000000000000000
+[   11.629645]  s2 : 00ffffff8ade0ac8 s3 : 00ffffff8ade0ec8 s4 :
+00ffffff8ade0728
+[   11.629656]  s5 : 00ffffff8ade0a90 s6 : 0000000000000000 s7 :
+00ffffffc5819e40
+[   11.629667]  s8 : 00ffffff8ade0ca0 s9 : 00ffffff8addba50 s10:
+0000000000000000
+[   11.629678]  s11: 0000000000000000 t3 : 0000000000000002 t4 :
+0000000000000001
+[   11.629688]  t5 : 0000000000020000 t6 : ffffffffffffffff
+[   11.629699] status: 0000000000004020 badaddr: 0000000000000000
+cause: 000000000000000d
 
+The last __vdso_init(&compat_vdso_info) replaces the data in normal
+vdso_info. This is an obvious bug.
+
+Reported-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
+Signed-off-by: Guo Ren <guoren@kernel.org>
+Cc: Palmer Dabbelt <palmer@dabbelt.com>
+Cc: Heiko Stübner <heiko@sntech.de>
+---
+ arch/riscv/kernel/vdso.c | 15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
+
+diff --git a/arch/riscv/kernel/vdso.c b/arch/riscv/kernel/vdso.c
+index 50fe4c877603..69b05b6c181b 100644
+--- a/arch/riscv/kernel/vdso.c
++++ b/arch/riscv/kernel/vdso.c
+@@ -206,12 +206,23 @@ static struct __vdso_info vdso_info __ro_after_init = {
+ };
+ 
+ #ifdef CONFIG_COMPAT
++static struct vm_special_mapping rv_compat_vdso_maps[] __ro_after_init = {
++	[RV_VDSO_MAP_VVAR] = {
++		.name   = "[vvar]",
++		.fault = vvar_fault,
++	},
++	[RV_VDSO_MAP_VDSO] = {
++		.name   = "[vdso]",
++		.mremap = vdso_mremap,
++	},
++};
++
+ static struct __vdso_info compat_vdso_info __ro_after_init = {
+ 	.name = "compat_vdso",
+ 	.vdso_code_start = compat_vdso_start,
+ 	.vdso_code_end = compat_vdso_end,
+-	.dm = &rv_vdso_maps[RV_VDSO_MAP_VVAR],
+-	.cm = &rv_vdso_maps[RV_VDSO_MAP_VDSO],
++	.dm = &rv_compat_vdso_maps[RV_VDSO_MAP_VVAR],
++	.cm = &rv_compat_vdso_maps[RV_VDSO_MAP_VDSO],
+ };
+ #endif
+ 
 -- 
-Thanks,
--Kai
-
+2.36.1
 
