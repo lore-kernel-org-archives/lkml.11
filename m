@@ -2,251 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D6CFC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 08:41:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADA88C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 08:42:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235453AbiEYIlJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 04:41:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40094 "EHLO
+        id S235493AbiEYImC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 04:42:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232299AbiEYIlF (ORCPT
+        with ESMTP id S232299AbiEYIlz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 04:41:05 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 02700220D9
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 01:41:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653468063;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
+        Wed, 25 May 2022 04:41:55 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BE44CFD
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 01:41:54 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 1E6A1219B9;
+        Wed, 25 May 2022 08:41:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1653468113; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=sWhpLcpJcmzzGJ2iM8haayonZZiCVvJa6aMQQNtfVeM=;
-        b=OMlFnyE43cMz4++19Ro8XI5JR5BC61YNALEmcv0SkFsJ4oGxO7Eb12pA9vnsshJGDGNb/R
-        CWrH4IpaM+/Y3jPbf+QCU9tKpbjpcKsIFo30A0hqurDsOq/papiQ2ouGmvOGb0uVa1C3Sa
-        dkSZ9p+1HTPHki1ChXi8VkV5pDNcpfM=
-Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
- [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-133-CU-ifHlqNJWZ52T_1adxeQ-1; Wed, 25 May 2022 04:41:01 -0400
-X-MC-Unique: CU-ifHlqNJWZ52T_1adxeQ-1
-Received: by mail-qk1-f198.google.com with SMTP id l26-20020a37f51a000000b006a32d5737d2so13025675qkk.19
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 01:41:01 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=sWhpLcpJcmzzGJ2iM8haayonZZiCVvJa6aMQQNtfVeM=;
-        b=HhkaSRsNtxbbp43P+ZnOIIIxakzcONsORKonaxnQx50muzNdpuWF83pMcFPzcazGgY
-         fQYvUsYPU/0Bk+vg0YjIf//+haml+OfEAx9dN6SEw7+KTAbL8Ul2GH8TiDtJQPwkDGSg
-         sk2CKdPzeNZnWbSKiH0Rsc8qNyT5il3zlgQexdc2itH9ZB/CR9K8xksybvXLsRNkaiU/
-         +xsGLe5hGHyu8vgG8+cShaROR4EKys1ynnltfjpFy/BIjg602eUud8LWT5BfyvColluQ
-         MUvMwDzaFvObEyvS1Bw018Fk7UNe5hbJ4FnH8o5Q3JDwGL/OZg7wFlR60LJhQVjOv1IR
-         Oykg==
-X-Gm-Message-State: AOAM5308UfsB473RSL1rKr9YhLLv+ZoQflnE2ESi11gGyhpg0t7zDkvB
-        hJxe24uSLKhxioANLGS+6d5ow7o6GlfiuEpcDCzMe3n6Ki6XsAmE2eBU8zFoXY28k2z50aTEPMd
-        /NAOu7ewjObgFaDmcynWoDQoGbSAu7gJyI4kFgH2F
-X-Received: by 2002:ac8:59d6:0:b0:2f3:f521:ed4b with SMTP id f22-20020ac859d6000000b002f3f521ed4bmr23653695qtf.320.1653468060210;
-        Wed, 25 May 2022 01:41:00 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwUZjfDXKV2TZOhlW7DV8KIWqqQ7N5Fmr6WTaKUlb3oH2yQ3eYGHbrEDNce9XcfwrIGLsGtKUGPeFYNJD6JERI=
-X-Received: by 2002:ac8:59d6:0:b0:2f3:f521:ed4b with SMTP id
- f22-20020ac859d6000000b002f3f521ed4bmr23653668qtf.320.1653468059954; Wed, 25
- May 2022 01:40:59 -0700 (PDT)
+        bh=jePr5VZ+W+l9RSA8ra4ij2xbn2TevRksWLlauTlE47w=;
+        b=HPIJ7TIVTH1Neu0j9iQY2qOxzjd3OLblvIm0qwqJJCng9cYlkniJdvDw38RBTXAWK5P+sm
+        9qBU95jW/qHhTLKlbtwBh7pbkEyZFvU/3paAr2n7s09ovn0JnJJn2V9cDxc6uAiZ+cepfu
+        JI6aUTBFEeS2ph8YoSdmxS8ygvxuWUg=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1653468113;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=jePr5VZ+W+l9RSA8ra4ij2xbn2TevRksWLlauTlE47w=;
+        b=JSdQSz5MpNsONqrQkFkCm+KZ4w871BS4eF6IPX6up4upZ4OvZadxucsMQGdolrEIXPJLy5
+        wIT2fY2src7pEmAw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 0208E13ADF;
+        Wed, 25 May 2022 08:41:51 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id 4dZ5OM/rjWKRPAAAMHmgww
+        (envelope-from <osalvador@suse.de>); Wed, 25 May 2022 08:41:51 +0000
+Date:   Wed, 25 May 2022 10:41:47 +0200
+From:   Oscar Salvador <osalvador@suse.de>
+To:     Miaohe Lin <linmiaohe@huawei.com>
+Cc:     akpm@linux-foundation.org, mike.kravetz@oracle.com,
+        naoya.horiguchi@nec.com, peterx@redhat.com, apopple@nvidia.com,
+        ying.huang@intel.com, david@redhat.com, songmuchun@bytedance.com,
+        hch@lst.de, dhowells@redhat.com, cl@linux.com, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 3/4] mm/migration: return errno when isolate_huge_page
+ failed
+Message-ID: <Yo3ry9rRDa5jznHC@localhost.localdomain>
+References: <20220525081822.53547-1-linmiaohe@huawei.com>
+ <20220525081822.53547-4-linmiaohe@huawei.com>
 MIME-Version: 1.0
-References: <20220524170610.2255608-1-eperezma@redhat.com> <20220524170610.2255608-5-eperezma@redhat.com>
- <CACGkMEvCzxy+1BX2FMs5CvsvVvd9oedtgXmpiyAZWZECPypRig@mail.gmail.com>
-In-Reply-To: <CACGkMEvCzxy+1BX2FMs5CvsvVvd9oedtgXmpiyAZWZECPypRig@mail.gmail.com>
-From:   Eugenio Perez Martin <eperezma@redhat.com>
-Date:   Wed, 25 May 2022 10:40:23 +0200
-Message-ID: <CAJaqyWenRO_NY6=T8hL=VJ7F9Shn2VbicATBKPK7=U6te890ng@mail.gmail.com>
-Subject: Re: [PATCH v2 4/4] vdpa_sim: Implement stop vdpa op
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>, kvm <kvm@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Parav Pandit <parav@nvidia.com>,
-        Zhang Min <zhang.min9@zte.com.cn>,
-        Harpreet Singh Anand <hanand@xilinx.com>,
-        Zhu Lingshan <lingshan.zhu@intel.com>, tanuj.kamde@amd.com,
-        "Dawar, Gautam" <gautam.dawar@amd.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Xie Yongji <xieyongji@bytedance.com>,
-        Dinan Gunawardena <dinang@xilinx.com>,
-        habetsm.xilinx@gmail.com, Eli Cohen <elic@nvidia.com>,
-        Pablo Cascon Katchadourian <pabloc@xilinx.com>,
-        Laurent Vivier <lvivier@redhat.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Cindy Lu <lulu@redhat.com>,
-        Wu Zongyong <wuzongyong@linux.alibaba.com>,
-        ecree.xilinx@gmail.com, "Uminski, Piotr" <Piotr.Uminski@intel.com>,
-        Martin Porter <martinpo@xilinx.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Si-Wei Liu <si-wei.liu@oracle.com>,
-        Longpeng <longpeng2@huawei.com>,
-        Martin Petrus Hubertus Habets <martinh@xilinx.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220525081822.53547-4-linmiaohe@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 25, 2022 at 4:54 AM Jason Wang <jasowang@redhat.com> wrote:
->
-> On Wed, May 25, 2022 at 1:06 AM Eugenio P=C3=A9rez <eperezma@redhat.com> =
-wrote:
-> >
-> > Implement stop operation for vdpa_sim devices, so vhost-vdpa will offer
-> > that backend feature and userspace can effectively stop the device.
-> >
-> > This is a must before get virtqueue indexes (base) for live migration,
-> > since the device could modify them after userland gets them. There are
-> > individual ways to perform that action for some devices
-> > (VHOST_NET_SET_BACKEND, VHOST_VSOCK_SET_RUNNING, ...) but there was no
-> > way to perform it for any vhost device (and, in particular, vhost-vdpa)=
-.
-> >
-> > After the return of ioctl with stop !=3D 0, the device MUST finish any
-> > pending operations like in flight requests. It must also preserve all
-> > the necessary state (the virtqueue vring base plus the possible device
-> > specific states) that is required for restoring in the future. The
-> > device must not change its configuration after that point.
-> >
-> > After the return of ioctl with stop =3D=3D 0, the device can continue
-> > processing buffers as long as typical conditions are met (vq is enabled=
-,
-> > DRIVER_OK status bit is enabled, etc).
-> >
-> > In the future, we will provide features similar to
-> > VHOST_USER_GET_INFLIGHT_FD so the device can save pending operations.
-> >
-> > Signed-off-by: Eugenio P=C3=A9rez <eperezma@redhat.com>
-> > ---
-> >  drivers/vdpa/vdpa_sim/vdpa_sim.c     | 21 +++++++++++++++++++++
-> >  drivers/vdpa/vdpa_sim/vdpa_sim.h     |  1 +
-> >  drivers/vdpa/vdpa_sim/vdpa_sim_blk.c |  3 +++
-> >  drivers/vdpa/vdpa_sim/vdpa_sim_net.c |  3 +++
-> >  4 files changed, 28 insertions(+)
-> >
-> > diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim.c b/drivers/vdpa/vdpa_sim/v=
-dpa_sim.c
-> > index 50d721072beb..0515cf314bed 100644
-> > --- a/drivers/vdpa/vdpa_sim/vdpa_sim.c
-> > +++ b/drivers/vdpa/vdpa_sim/vdpa_sim.c
-> > @@ -107,6 +107,7 @@ static void vdpasim_do_reset(struct vdpasim *vdpasi=
-m)
-> >         for (i =3D 0; i < vdpasim->dev_attr.nas; i++)
-> >                 vhost_iotlb_reset(&vdpasim->iommu[i]);
-> >
-> > +       vdpasim->running =3D true;
-> >         spin_unlock(&vdpasim->iommu_lock);
-> >
-> >         vdpasim->features =3D 0;
-> > @@ -505,6 +506,24 @@ static int vdpasim_reset(struct vdpa_device *vdpa)
-> >         return 0;
-> >  }
-> >
-> > +static int vdpasim_stop(struct vdpa_device *vdpa, bool stop)
-> > +{
-> > +       struct vdpasim *vdpasim =3D vdpa_to_sim(vdpa);
-> > +       int i;
-> > +
-> > +       spin_lock(&vdpasim->lock);
-> > +       vdpasim->running =3D !stop;
-> > +       if (vdpasim->running) {
-> > +               /* Check for missed buffers */
-> > +               for (i =3D 0; i < vdpasim->dev_attr.nvqs; ++i)
-> > +                       vdpasim_kick_vq(vdpa, i);
-> > +
-> > +       }
-> > +       spin_unlock(&vdpasim->lock);
-> > +
-> > +       return 0;
-> > +}
-> > +
-> >  static size_t vdpasim_get_config_size(struct vdpa_device *vdpa)
-> >  {
-> >         struct vdpasim *vdpasim =3D vdpa_to_sim(vdpa);
-> > @@ -694,6 +713,7 @@ static const struct vdpa_config_ops vdpasim_config_=
-ops =3D {
-> >         .get_status             =3D vdpasim_get_status,
-> >         .set_status             =3D vdpasim_set_status,
-> >         .reset                  =3D vdpasim_reset,
-> > +       .stop                   =3D vdpasim_stop,
-> >         .get_config_size        =3D vdpasim_get_config_size,
-> >         .get_config             =3D vdpasim_get_config,
-> >         .set_config             =3D vdpasim_set_config,
-> > @@ -726,6 +746,7 @@ static const struct vdpa_config_ops vdpasim_batch_c=
-onfig_ops =3D {
-> >         .get_status             =3D vdpasim_get_status,
-> >         .set_status             =3D vdpasim_set_status,
-> >         .reset                  =3D vdpasim_reset,
-> > +       .stop                   =3D vdpasim_stop,
-> >         .get_config_size        =3D vdpasim_get_config_size,
-> >         .get_config             =3D vdpasim_get_config,
-> >         .set_config             =3D vdpasim_set_config,
-> > diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim.h b/drivers/vdpa/vdpa_sim/v=
-dpa_sim.h
-> > index 622782e92239..061986f30911 100644
-> > --- a/drivers/vdpa/vdpa_sim/vdpa_sim.h
-> > +++ b/drivers/vdpa/vdpa_sim/vdpa_sim.h
-> > @@ -66,6 +66,7 @@ struct vdpasim {
-> >         u32 generation;
-> >         u64 features;
-> >         u32 groups;
-> > +       bool running;
-> >         /* spinlock to synchronize iommu table */
-> >         spinlock_t iommu_lock;
-> >  };
-> > diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim_blk.c b/drivers/vdpa/vdpa_s=
-im/vdpa_sim_blk.c
-> > index 42d401d43911..bcdb1982c378 100644
-> > --- a/drivers/vdpa/vdpa_sim/vdpa_sim_blk.c
-> > +++ b/drivers/vdpa/vdpa_sim/vdpa_sim_blk.c
-> > @@ -204,6 +204,9 @@ static void vdpasim_blk_work(struct work_struct *wo=
-rk)
-> >         if (!(vdpasim->status & VIRTIO_CONFIG_S_DRIVER_OK))
-> >                 goto out;
-> >
-> > +       if (!vdpasim->running)
-> > +               goto out;
-> > +
-> >         for (i =3D 0; i < VDPASIM_BLK_VQ_NUM; i++) {
-> >                 struct vdpasim_virtqueue *vq =3D &vdpasim->vqs[i];
-> >
-> > diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim_net.c b/drivers/vdpa/vdpa_s=
-im/vdpa_sim_net.c
-> > index 5125976a4df8..886449e88502 100644
-> > --- a/drivers/vdpa/vdpa_sim/vdpa_sim_net.c
-> > +++ b/drivers/vdpa/vdpa_sim/vdpa_sim_net.c
-> > @@ -154,6 +154,9 @@ static void vdpasim_net_work(struct work_struct *wo=
-rk)
-> >
-> >         spin_lock(&vdpasim->lock);
-> >
-> > +       if (!vdpasim->running)
-> > +               goto out;
-> > +
->
-> Do we need to check vdpasim->running in vdpasim_kick_vq()?
->
+On Wed, May 25, 2022 at 04:18:21PM +0800, Miaohe Lin wrote:
+> We might fail to isolate huge page due to e.g. the page is under migration
+> which cleared HPageMigratable. We should return errno in this case rather
+> than always return 1 which could confuse the user, i.e. the caller might
+> think all of the memory is migrated while the hugetlb page is left behind.
+> We make the prototype of isolate_huge_page consistent with isolate_lru_page
+> as suggested by Huang Ying and rename isolate_huge_page to isolate_hugetlb
+> as suggested by Muchun to improve the readability.
+> 
+> Fixes: e8db67eb0ded ("mm: migrate: move_pages() supports thp migration")
+> Suggested-by: Huang Ying <ying.huang@intel.com>
+> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
 
-I'd say that not really: The important part is that we don't process
-more buffers, and that is more accurate here. To check it here will
-always avoid it although we queue work.
+Looks good to me, one thing below though:
 
-Maybe we can see it as an optimization: either to check before queuing
-the work as you propose or simply stop polling kick file descriptors?
+> ---
+>  include/linux/hugetlb.h |  6 +++---
+>  mm/gup.c                |  2 +-
+>  mm/hugetlb.c            | 11 +++++------
+>  mm/memory-failure.c     |  2 +-
+>  mm/mempolicy.c          |  2 +-
+>  mm/migrate.c            |  5 +++--
+>  6 files changed, 14 insertions(+), 14 deletions(-)
+> 
+...
+> --- a/mm/migrate.c
+> +++ b/mm/migrate.c
+> @@ -1627,8 +1627,9 @@ static int add_page_for_migration(struct mm_struct *mm, unsigned long addr,
+>  
+>  	if (PageHuge(page)) {
+>  		if (PageHead(page)) {
+> -			isolate_huge_page(page, pagelist);
+> -			err = 1;
+> +			err = isolate_hugetlb(page, pagelist);
+> +			if (!err)
+> +				err = 1;
+>  		}
 
-Thanks!
+We used to always return 1 which means page has been queued for migration, as we
+did not check isolate_huge_page() return value.
+Now, we either return 1 or 0 depending on isolate_hugetlb(). 
+I guess that was fine because in the end, if isolate_huge_page() failed,
+the page just does not get added to 'pagelist', right? So, it is just
+confusing for the user because he might not get an error so he thinks
+the page will be migrated, and yet will not?
 
-> Thanks
->
-> >         if (!(vdpasim->status & VIRTIO_CONFIG_S_DRIVER_OK))
-> >                 goto out;
-> >
-> > --
-> > 2.27.0
-> >
->
 
+-- 
+Oscar Salvador
+SUSE Labs
