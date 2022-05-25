@@ -2,77 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41654C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 17:58:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC246C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 18:04:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343626AbiEYR6F (ORCPT
+        id S1343567AbiEYSEL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 13:58:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48474 "EHLO
+        Wed, 25 May 2022 14:04:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235613AbiEYR6B (ORCPT
+        with ESMTP id S234793AbiEYSEJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 13:58:01 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA53A13D35
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 10:57:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=1xWCZXrCC3SsN1KQJaC2N7l7n1E1rs7j0k9r7unv6E8=; b=S36lzpqTN9jl/FT8S8Qg2vnXii
-        oU2B7rpvWI1T5ZkKh38ekJGvG7sNJhnmV3eS3mHuHvYUFe6eCfo+dBqM6DazuwIr7P3/TQZ3N6w1F
-        HHFK7ANdz8wgKEHzsxPt6rsL5W7tALbwgaLzPOuK4R+Vgs4wcHczr/QBSEqQr4GoJwtBiWj9uBMNB
-        SnW11xlTF+zx/N6ICcZfBrrtS26stnos9BdKuAtgShOfMz1brI0BYEpRJ/om6WRZ3Zr9UYWOu3iua
-        AqQW2/DVdYAMonWDT/nvXcTj+N90CP3ZDatxp4JhidISEZ589i3sZIbD90srI+a8Yw8XeCx7h2zKN
-        h00uxvbA==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1ntvGd-000Zaw-W2; Wed, 25 May 2022 17:57:56 +0000
-Date:   Wed, 25 May 2022 18:57:55 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     syzbot <syzbot+5b96d55e5b54924c77ad@syzkaller.appspotmail.com>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        syzkaller-bugs@googlegroups.com
-Subject: Re: [syzbot] KASAN: use-after-free Read in do_sync_mmap_readahead
-Message-ID: <Yo5uI9w7lll5B93r@casper.infradead.org>
-References: <0000000000008cfbca05dfd6db81@google.com>
- <20220525095842.f97b64de9cbcc0e15d1257a6@linux-foundation.org>
+        Wed, 25 May 2022 14:04:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7F199C2EA;
+        Wed, 25 May 2022 11:04:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 53E0961867;
+        Wed, 25 May 2022 18:04:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC4CEC385B8;
+        Wed, 25 May 2022 18:04:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653501845;
+        bh=aXmnGc30QJGOKnN8QGtQjSLondicMdgxQV+6Gc9Sh/I=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=GxyodLmRuyCrpbMUZZNxFu5dlcR3qOO2YZwt9OlXqebqLiPLqG2eezzupIFfGuZYO
+         JeUmLx8IgpsVAE7NPPZiTUcWgqlh4KBdOaKsLdDUu8qL+CGMjzHe/SxlnQDkMLq5xZ
+         8y7kU1Kv179sSDj8/2yBOfKH+/O4aQjXBERYkAcFZndj2B3mXX8kVyqrDdUQMeRmIH
+         ybYeqzZIPPCMsRbCwZdkXbw2zISzAHVseQq+XBnzeko/6VVLLLIYKT1yYD63k/rq2r
+         fPyZZ11e9m5YQ6/kT6z3UYucAJOqc2Quj39F+HE2WnVj1IrJlUzS7YYBmMRHVmPTGu
+         n+SfyN62v0yzg==
+Date:   Wed, 25 May 2022 19:03:58 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Alistair Francis <alistair@alistair23.me>
+Cc:     lgirdwood@gmail.com, lee.jones@linaro.org, robh+dt@kernel.org,
+        kernel@pengutronix.de, s.hauer@pengutronix.de,
+        alistair23@gmail.com, linux-arm-kernel@lists.infradead.org,
+        andreas@kemnade.info, amitk@kernel.org, shawnguo@kernel.org,
+        linux-kernel@vger.kernel.org, geert@linux-m68k.org,
+        linux-hwmon@vger.kernel.org, linux-imx@nxp.com, linux@roeck-us.net,
+        rui.zhang@intel.com, devicetree@vger.kernel.org,
+        linux-pm@vger.kernel.org
+Subject: Re: [PATCH v21 1/4] mfd: silergy,sy7636a: Add config option
+Message-ID: <Yo5vjlsc0J1S70zN@sirena.org.uk>
+References: <20220525115554.430971-1-alistair@alistair23.me>
+ <20220525115554.430971-2-alistair@alistair23.me>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="Xb1VzQtLyCGCdeJs"
 Content-Disposition: inline
-In-Reply-To: <20220525095842.f97b64de9cbcc0e15d1257a6@linux-foundation.org>
+In-Reply-To: <20220525115554.430971-2-alistair@alistair23.me>
+X-Cookie: The revolution will not be televised.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 25, 2022 at 09:58:42AM -0700, Andrew Morton wrote:
-> On Wed, 25 May 2022 07:26:22 -0700 syzbot <syzbot+5b96d55e5b54924c77ad@syzkaller.appspotmail.com> wrote:
-> > BUG: KASAN: use-after-free in do_sync_mmap_readahead+0x465/0x9f0 mm/filemap.c:3006
-> > Read of size 8 at addr ffff88801fedb050 by task syz-executor.5/1755
-> 
-> A race?
-> 
-> #ifdef CONFIG_TRANSPARENT_HUGEPAGE
-> 	/* Use the readahead code, even if readahead is disabled */
-> 	if (vmf->vma->vm_flags & VM_HUGEPAGE) {
-> 		fpin = maybe_unlock_mmap_for_io(vmf, fpin);
-> 		ractl._index &= ~((unsigned long)HPAGE_PMD_NR - 1);
-> 		ra->size = HPAGE_PMD_NR;
-> 		/*
-> 		 * Fetch two PMD folios, so we get the chance to actually
-> 		 * readahead, unless we've been told not to.
-> 		 */
-> -->		if (!(vmf->vma->vm_flags & VM_RAND_READ))
-> 			ra->size *= 2;
-> 		ra->async_size = HPAGE_PMD_NR;
-> 		page_cache_ra_order(&ractl, ra, HPAGE_PMD_ORDER);
-> 		return fpin;
-> 	}
-> #endif
-> 
-> Reading from vmf->vma->vm_flags was OK, then it suddenly wasn't.
 
-Ohh, that makes sense.  We unlocked the mmap_sem, so the file is
-pinned, but the VMA isn't.  I'll whip up a patch.
+--Xb1VzQtLyCGCdeJs
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
+On Wed, May 25, 2022 at 09:55:51PM +1000, Alistair Francis wrote:
+> Add a specific MFD_SY7636A config option.
+>=20
+> As part of this change we can use MFD_SY7636A as a dependency for all
+> SY7636a components and also remove the name from MFD_SIMPLE_MFD_I2C as
+> it no longer needs to be selectable.
+
+Acked-by: Mark Brown <broonie@kernel.org>
+
+--Xb1VzQtLyCGCdeJs
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmKOb40ACgkQJNaLcl1U
+h9CLMQf/SYOirRs4xevMFWKwchUx9dZjBAZGSX9cLlqyYVhhGte8LLyfNWGjO605
+bbx8N4Q8Z0itYfpdSHmROf/zzzg3X8fBeyp0MGERDD1EVQ31jT72kdKQwG0c30EH
+okNTey8mkegdzGNq0HnFc9ONLZNb2j1N7IyDlouLz4dfrLJ7cbAUoDGvm22hBBcT
+qu17BREdc4Sk0xAYeVyrVB/bqKI+lFVjhZG5sY9rJ4zR1BQo48v4ldO62Mygg+fd
+xZsupSjAH6puR6PbljGj1IHkDo29/HRuKu4ddXULcfrrrIJVIhY/+4nuCBIPTlNK
+olabG3BZiqm3ZicYMKlP3ICmtIikuw==
+=zAb/
+-----END PGP SIGNATURE-----
+
+--Xb1VzQtLyCGCdeJs--
