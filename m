@@ -2,115 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A655BC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 09:08:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F6D2C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 09:08:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240360AbiEYJIE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 05:08:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47674 "EHLO
+        id S231430AbiEYJII (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 05:08:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243089AbiEYJFw (ORCPT
+        with ESMTP id S242890AbiEYJFs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 05:05:52 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 59918A5022
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 02:04:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653469352;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=U1sMy8xaJxhqapgk5p9GIXqaotAkSrql7bAakOStiUU=;
-        b=ec5cba4fcuLvT+8ZObT87kBfv4M46lp24jOurXYSa8Tpvn4TecrpYBJ+jiA3LrRZh+dsv8
-        i5Ec8Gnd0uZq44Rf1XVs4n0y6OgicBhWJdP/pq6rWEKwf4HPZl94/UK5F874DYUEHnqwYZ
-        qq0EG93v1NHeph0qP5uXHCW9/pz71UQ=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-283-ngW-K9mdMyquC0PRoGRk-w-1; Wed, 25 May 2022 05:02:27 -0400
-X-MC-Unique: ngW-K9mdMyquC0PRoGRk-w-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id DD1EA3C01D9D;
-        Wed, 25 May 2022 09:02:26 +0000 (UTC)
-Received: from fedora.redhat.com (unknown [10.40.194.186])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 36D8040CFD0A;
-        Wed, 25 May 2022 09:02:25 +0000 (UTC)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Siddharth Chandrasekaran <sidcha@amazon.de>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v4 24/37] KVM: selftests: Move HYPERV_LINUX_OS_ID definition to a common header
-Date:   Wed, 25 May 2022 11:01:20 +0200
-Message-Id: <20220525090133.1264239-25-vkuznets@redhat.com>
-In-Reply-To: <20220525090133.1264239-1-vkuznets@redhat.com>
-References: <20220525090133.1264239-1-vkuznets@redhat.com>
+        Wed, 25 May 2022 05:05:48 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19884A5001;
+        Wed, 25 May 2022 02:03:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=f149isEkjIfAHkC+kbuLgy37kQgwJtPXTfas0jr63Rc=; b=BWj14xMlVhzlgV8vM7pFcL7HEB
+        j2YKII9yKoy9BoT+mo3FTOVL20gSISBCGw21FQ0sk9ZTnvsmre0CQOX1Ps/UAI7lyPRWqCVtrGlup
+        bBc/gAafKdFc4egnMR42NpLeQA8T44Ko1/rwzB1eO40eCR/Ka7HaqF3pdGeH54TFx9ZGp+mOsLmai
+        X3Sx+wWUtJfD6uM2Ba0d46C0pKz71i8szm4KqsUSIJ8W7/oY2YCNou2gBH+vnyZwgHo9sLgSMGuP/
+        2vqpy9gN/RNy4+tGPCoLoeozqyMMRWPUwEjWZCFRWi1rIqS95/cF0rsyP9UKey2k0vz37XoTHidTH
+        s2ALPSMQ==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1ntmvt-00AWFk-ED; Wed, 25 May 2022 09:03:57 +0000
+Date:   Wed, 25 May 2022 02:03:57 -0700
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Mario Limonciello <mario.limonciello@amd.com>
+Cc:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        "open list:LIBATA SUBSYSTEM (Serial and Parallel ATA drivers)" 
+        <linux-ide@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>, hdegoede@redhat.com
+Subject: Re: [PATCH 2/3] ata: ahci: Rename module parameter for lpm policy
+Message-ID: <Yo3w/dsaly+gcQNR@infradead.org>
+References: <20220524170508.563-1-mario.limonciello@amd.com>
+ <20220524170508.563-3-mario.limonciello@amd.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220524170508.563-3-mario.limonciello@amd.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-HYPERV_LINUX_OS_ID needs to be written to HV_X64_MSR_GUEST_OS_ID by
-each Hyper-V specific selftest.
+On Tue, May 24, 2022 at 12:05:07PM -0500, Mario Limonciello wrote:
+> The LPM policy is applied to more chipsets than just mobile designs.
+> Update the module parameter to drop the word "mobile" to make this
+> clearer to users.
+> 
+> Also, document this renamed parameter in the admin-guide for users
+> as it was missing previously.
 
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
----
- tools/testing/selftests/kvm/include/x86_64/hyperv.h  | 3 +++
- tools/testing/selftests/kvm/x86_64/hyperv_features.c | 5 ++---
- 2 files changed, 5 insertions(+), 3 deletions(-)
-
-diff --git a/tools/testing/selftests/kvm/include/x86_64/hyperv.h b/tools/testing/selftests/kvm/include/x86_64/hyperv.h
-index b66910702c0a..f0a8a93694b2 100644
---- a/tools/testing/selftests/kvm/include/x86_64/hyperv.h
-+++ b/tools/testing/selftests/kvm/include/x86_64/hyperv.h
-@@ -185,4 +185,7 @@
- /* hypercall options */
- #define HV_HYPERCALL_FAST_BIT		BIT(16)
- 
-+/* Proper HV_X64_MSR_GUEST_OS_ID value */
-+#define HYPERV_LINUX_OS_ID ((u64)0x8100 << 48)
-+
- #endif /* !SELFTEST_KVM_HYPERV_H */
-diff --git a/tools/testing/selftests/kvm/x86_64/hyperv_features.c b/tools/testing/selftests/kvm/x86_64/hyperv_features.c
-index 672915ce73d8..98c020356925 100644
---- a/tools/testing/selftests/kvm/x86_64/hyperv_features.c
-+++ b/tools/testing/selftests/kvm/x86_64/hyperv_features.c
-@@ -14,7 +14,6 @@
- #include "hyperv.h"
- 
- #define VCPU_ID 0
--#define LINUX_OS_ID ((u64)0x8100 << 48)
- 
- extern unsigned char rdmsr_start;
- extern unsigned char rdmsr_end;
-@@ -127,7 +126,7 @@ static void guest_hcall(vm_vaddr_t pgs_gpa, struct hcall_data *hcall)
- 	int i = 0;
- 	u64 res, input, output;
- 
--	wrmsr(HV_X64_MSR_GUEST_OS_ID, LINUX_OS_ID);
-+	wrmsr(HV_X64_MSR_GUEST_OS_ID, HYPERV_LINUX_OS_ID);
- 	wrmsr(HV_X64_MSR_HYPERCALL, pgs_gpa);
- 
- 	while (hcall->control) {
-@@ -230,7 +229,7 @@ static void guest_test_msrs_access(void)
- 			 */
- 			msr->idx = HV_X64_MSR_GUEST_OS_ID;
- 			msr->write = 1;
--			msr->write_val = LINUX_OS_ID;
-+			msr->write_val = HYPERV_LINUX_OS_ID;
- 			msr->available = 1;
- 			break;
- 		case 3:
--- 
-2.35.3
-
+Even if the name is confusing I don't think we should rename it as
+that breaks existing setups.  I think just updating the documentation
+is good enough, but if you feel strongly we can just add the new name
+while keeping the old one as an alias.
