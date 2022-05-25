@@ -2,35 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B93BC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6D12C433F5
 	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 19:10:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344451AbiEYTKD (ORCPT
+        id S1344559AbiEYTKN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 15:10:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51650 "EHLO
+        Wed, 25 May 2022 15:10:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344144AbiEYTHo (ORCPT
+        with ESMTP id S1344249AbiEYTH6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 15:07:44 -0400
-Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97EE812745;
-        Wed, 25 May 2022 12:07:08 -0700 (PDT)
+        Wed, 25 May 2022 15:07:58 -0400
+Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::225])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26DFC12AB0;
+        Wed, 25 May 2022 12:07:23 -0700 (PDT)
 Received: (Authenticated sender: paul.kocialkowski@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 184D11C0007;
-        Wed, 25 May 2022 19:07:06 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 53E6C1C0019;
+        Wed, 25 May 2022 19:07:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1653505627;
+        t=1653505636;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=nV/fT7T62Eud+PDjF+dQbzD1cVBN61pWhmLu4ECYLqg=;
-        b=arbdoTobyBw3+50VwgYgIqIGsARjlbiM6NIeiOqB5hp/KabsXz7jJcu2DCh8M6PmsaH8pe
-        qo61OuXB9g6jqhCv4tHgAtmkKvBer02uaxiQOJ0WUcx64adHgxmVziRDahkw7qHGX35LX1
-        1s0uSr45zS0G1f2V5pvTvMbonSenjZyTM4Ji/51pO6FaZNf5n9rGjWjki6d8Ia+cIwwwJU
-        uJDcnPLmt8qxdc5K4yLBgZYV9R5VnKY2BYFCUqR27dtazU60ngfXgYhyuSgIWEjGSwAICW
-        C6Jo1neyaU7L29ZZ0PmeousbEJ0gbpKvl8POO15Sc6VxdZKfn1NC+8nOaIOCcg==
+        bh=caV9nRuGoEA6+0iGltaXNYvrIvAMcvIE8iyAgygIsdg=;
+        b=f21hMsp+Fpb2Od2HAJo/ZykPlu9QAq0UhZ6catUZx7yIp/pPGHMD9/azdNMGDc5//sCOuj
+        ia3kpORcSYt6b1mv1axVsq8qJOfrjpdXQ3iyGxwWZ89ljNlibRPFGCIQJxmNzVl8pJ7noR
+        Az5bUN58X51RxoO8c9lp4f7IDA2TznVK6xb5Di2S/FEr9RybjivJIeakG404JsFyN9UJjy
+        d5YJSY8jkPqJuU2p0NfXzwtL8B2A2x0rOaCf0goiuSjHpq4FZZfqOprjtwGFEgPK/Ofp+1
+        m7YlUTUcLo7exrjef6MdH0/UhXRSMUgvmHFIjFwmooDSLdG6e/d2KtKzZPhrnQ==
 From:   Paul Kocialkowski <paul.kocialkowski@bootlin.com>
 To:     linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev
@@ -43,9 +43,9 @@ Cc:     Yong Deng <yong.deng@magewell.com>,
         Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
         Maxime Ripard <mripard@kernel.org>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: [PATCH v5 34/44] media: sun6i-csi: Introduce format match structure, list and helper
-Date:   Wed, 25 May 2022 21:06:07 +0200
-Message-Id: <20220525190617.696344-35-paul.kocialkowski@bootlin.com>
+Subject: [PATCH v5 42/44] media: sun6i-csi: Add extra checks to the interrupt routine
+Date:   Wed, 25 May 2022 21:06:15 +0200
+Message-Id: <20220525190617.696344-43-paul.kocialkowski@bootlin.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220525190617.696344-1-paul.kocialkowski@bootlin.com>
 References: <20220525190617.696344-1-paul.kocialkowski@bootlin.com>
@@ -55,162 +55,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Introduce a list of mbus/pixel format combinations that need an exact
-match between the two sides. This is the case when using raw input
-configuration. The list will be used to replace the
-sun6i_csi_is_format_supported combinatory helper.
+Check against the enabled bits and make sure capture is running before
+serving an interrupt, to add extra safety in the process.
 
 Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
 Acked-by: Jernej Skrabec <jernej.skrabec@gmail.com>
 ---
- .../sunxi/sun6i-csi/sun6i_csi_capture.c       | 117 ++++++++++++++++++
- .../sunxi/sun6i-csi/sun6i_csi_capture.h       |   5 +
- 2 files changed, 122 insertions(+)
+ drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.c b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.c
-index e8e71796afcb..aefb506c438d 100644
---- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.c
-+++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.c
-@@ -227,6 +227,123 @@ struct sun6i_csi_capture_format *sun6i_csi_capture_format_find(u32 pixelformat)
- 	return NULL;
- }
+diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c
+index eaf62cab0b64..46c5f98702e1 100644
+--- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c
++++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c
+@@ -89,13 +89,17 @@ static void sun6i_csi_v4l2_cleanup(struct sun6i_csi_device *csi_dev)
+ static irqreturn_t sun6i_csi_interrupt(int irq, void *private)
+ {
+ 	struct sun6i_csi_device *csi_dev = private;
++	bool capture_streaming = csi_dev->capture.state.streaming;
+ 	struct regmap *regmap = csi_dev->regmap;
+-	u32 status;
++	u32 status = 0, enable = 0;
  
-+/* RAW formats need an exact match between pixel and mbus formats. */
-+static const
-+struct sun6i_csi_capture_format_match sun6i_csi_capture_format_matches[] = {
-+	/* YUV420 */
-+	{
-+		.pixelformat	= V4L2_PIX_FMT_YUYV,
-+		.mbus_code	= MEDIA_BUS_FMT_YUYV8_2X8,
-+	},
-+	{
-+		.pixelformat	= V4L2_PIX_FMT_YUYV,
-+		.mbus_code	= MEDIA_BUS_FMT_YUYV8_1X16,
-+	},
-+	{
-+		.pixelformat	= V4L2_PIX_FMT_YVYU,
-+		.mbus_code	= MEDIA_BUS_FMT_YVYU8_2X8,
-+	},
-+	{
-+		.pixelformat	= V4L2_PIX_FMT_YVYU,
-+		.mbus_code	= MEDIA_BUS_FMT_YVYU8_1X16,
-+	},
-+	{
-+		.pixelformat	= V4L2_PIX_FMT_UYVY,
-+		.mbus_code	= MEDIA_BUS_FMT_UYVY8_2X8,
-+	},
-+	{
-+		.pixelformat	= V4L2_PIX_FMT_UYVY,
-+		.mbus_code	= MEDIA_BUS_FMT_UYVY8_1X16,
-+	},
-+	{
-+		.pixelformat	= V4L2_PIX_FMT_VYUY,
-+		.mbus_code	= MEDIA_BUS_FMT_VYUY8_2X8,
-+	},
-+	{
-+		.pixelformat	= V4L2_PIX_FMT_VYUY,
-+		.mbus_code	= MEDIA_BUS_FMT_VYUY8_1X16,
-+	},
-+	/* RGB */
-+	{
-+		.pixelformat	= V4L2_PIX_FMT_RGB565,
-+		.mbus_code	= MEDIA_BUS_FMT_RGB565_2X8_LE,
-+	},
-+	{
-+		.pixelformat	= V4L2_PIX_FMT_RGB565X,
-+		.mbus_code	= MEDIA_BUS_FMT_RGB565_2X8_BE,
-+	},
-+	/* Bayer */
-+	{
-+		.pixelformat	= V4L2_PIX_FMT_SBGGR8,
-+		.mbus_code	= MEDIA_BUS_FMT_SBGGR8_1X8,
-+	},
-+	{
-+		.pixelformat	= V4L2_PIX_FMT_SGBRG8,
-+		.mbus_code	= MEDIA_BUS_FMT_SGBRG8_1X8,
-+	},
-+	{
-+		.pixelformat	= V4L2_PIX_FMT_SGRBG8,
-+		.mbus_code	= MEDIA_BUS_FMT_SGRBG8_1X8,
-+	},
-+	{
-+		.pixelformat	= V4L2_PIX_FMT_SRGGB8,
-+		.mbus_code	= MEDIA_BUS_FMT_SRGGB8_1X8,
-+	},
-+	{
-+		.pixelformat	= V4L2_PIX_FMT_SBGGR10,
-+		.mbus_code	= MEDIA_BUS_FMT_SBGGR10_1X10,
-+	},
-+	{
-+		.pixelformat	= V4L2_PIX_FMT_SGBRG10,
-+		.mbus_code	= MEDIA_BUS_FMT_SGBRG10_1X10,
-+	},
-+	{
-+		.pixelformat	= V4L2_PIX_FMT_SGRBG10,
-+		.mbus_code	= MEDIA_BUS_FMT_SGRBG10_1X10,
-+	},
-+	{
-+		.pixelformat	= V4L2_PIX_FMT_SRGGB10,
-+		.mbus_code	= MEDIA_BUS_FMT_SRGGB10_1X10,
-+	},
-+	{
-+		.pixelformat	= V4L2_PIX_FMT_SBGGR12,
-+		.mbus_code	= MEDIA_BUS_FMT_SBGGR12_1X12,
-+	},
-+	{
-+		.pixelformat	= V4L2_PIX_FMT_SGBRG12,
-+		.mbus_code	= MEDIA_BUS_FMT_SGBRG12_1X12,
-+	},
-+	{
-+		.pixelformat	= V4L2_PIX_FMT_SGRBG12,
-+		.mbus_code	= MEDIA_BUS_FMT_SGRBG12_1X12,
-+	},
-+	{
-+		.pixelformat	= V4L2_PIX_FMT_SRGGB12,
-+		.mbus_code	= MEDIA_BUS_FMT_SRGGB12_1X12,
-+	},
-+	/* Compressed */
-+	{
-+		.pixelformat	= V4L2_PIX_FMT_JPEG,
-+		.mbus_code	= MEDIA_BUS_FMT_JPEG_1X8,
-+	},
-+};
-+
-+static bool sun6i_csi_capture_format_match(u32 pixelformat, u32 mbus_code)
-+{
-+	unsigned int i;
-+
-+	for (i = 0; i < ARRAY_SIZE(sun6i_csi_capture_format_matches); i++) {
-+		const struct sun6i_csi_capture_format_match *match =
-+			&sun6i_csi_capture_format_matches[i];
-+
-+		if (match->pixelformat == pixelformat &&
-+		    match->mbus_code == mbus_code)
-+			return true;
-+	}
-+
-+	return false;
-+}
-+
- /* Capture */
+ 	regmap_read(regmap, SUN6I_CSI_CH_INT_STA_REG, &status);
++	regmap_read(regmap, SUN6I_CSI_CH_INT_EN_REG, &enable);
  
- static void sun6i_csi_capture_irq_enable(struct sun6i_csi_device *csi_dev)
-diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.h b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.h
-index 4b1ff19edc2f..2605b16f091c 100644
---- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.h
-+++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.h
-@@ -27,6 +27,11 @@ struct sun6i_csi_capture_format {
- 	u32	hsize_len_factor;
- };
+-	if (!(status & 0xFF))
++	if (!status)
+ 		return IRQ_NONE;
++	else if (!(status & enable) || !capture_streaming)
++		goto complete;
  
-+struct sun6i_csi_capture_format_match {
-+	u32	pixelformat;
-+	u32	mbus_code;
-+};
-+
- #undef current
- struct sun6i_csi_capture_state {
- 	struct list_head		queue;
+ 	if ((status & SUN6I_CSI_CH_INT_STA_FIFO0_OF) ||
+ 	    (status & SUN6I_CSI_CH_INT_STA_FIFO1_OF) ||
+@@ -116,6 +120,7 @@ static irqreturn_t sun6i_csi_interrupt(int irq, void *private)
+ 	if (status & SUN6I_CSI_CH_INT_STA_VS)
+ 		sun6i_csi_capture_sync(csi_dev);
+ 
++complete:
+ 	regmap_write(regmap, SUN6I_CSI_CH_INT_STA_REG, status);
+ 
+ 	return IRQ_HANDLED;
 -- 
 2.36.1
 
