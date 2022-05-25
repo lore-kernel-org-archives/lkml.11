@@ -2,26 +2,25 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5362AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 14:20:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25D2BC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 14:20:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235155AbiEYOUZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 10:20:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42864 "EHLO
+        id S237065AbiEYOU3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 10:20:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229791AbiEYOUV (ORCPT
+        with ESMTP id S233501AbiEYOUX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 10:20:21 -0400
-X-Greylist: delayed 1381 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 25 May 2022 07:20:20 PDT
+        Wed, 25 May 2022 10:20:23 -0400
 Received: from gateway22.websitewelcome.com (gateway22.websitewelcome.com [192.185.46.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC5BA9C2CB
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 07:20:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA3CF9C2CB
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 07:20:22 -0700 (PDT)
 Received: from cm11.websitewelcome.com (cm11.websitewelcome.com [100.42.49.5])
-        by gateway22.websitewelcome.com (Postfix) with ESMTP id 93AA7139D6
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 08:57:18 -0500 (CDT)
+        by gateway22.websitewelcome.com (Postfix) with ESMTP id CB1461208E
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 08:57:21 -0500 (CDT)
 Received: from 162-215-252-169.unifiedlayer.com ([208.91.199.152])
         by cmsmtp with SMTP
-        id trVmnBNOS0EfytrVmn57wc; Wed, 25 May 2022 08:57:18 -0500
+        id trVpnBNTM0EfytrVpn581Q; Wed, 25 May 2022 08:57:21 -0500
 X-Authority-Reason: nr=8
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=roeck-us.net; s=default; h=Content-Transfer-Encoding:MIME-Version:
@@ -29,25 +28,25 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From:
         Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=d1b5nILyGqqpNbh83B6jQJVoKjYjPJ5yWnONtHERzTk=; b=pQlJ3e5PcDe4A5ueNDoqI7BkQi
-        2yEaxbPAluzHtnsCga8UgsQXNCaigGQ7aN1qvx162RxRJO6xUeA84kpL2J7XFKjXHcyVeSkkUtCwh
-        bUQXtcFU17+aRcHTyRDOLH1lhWAI2dDlo9AanGp0HL3EGsGNDGtEtzFew8J6mtHl4IJWII6ZL9boi
-        8+hMDZpNa1beELrVZR1JWRfB0RqDKw25vtfQp6qlTzSpgX2IsHrS8kRynVRT4oiKdxs3p47OQT5xT
-        PyvxnJVY/3+lAdkrqr3RSNsU2hizxouxNeeQ4sjpZpYX9am4suXFsXBAha+ez3Lnl63LhN0pWnEEd
-        wpStdYIg==;
-Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:58266 helo=localhost)
+        bh=rCKqXle6qbQe/IsqkcPkNDc9pAVJQLLMF9gxVrNillo=; b=K9uaUQOjVJ+/emlolmG8oM4At/
+        HvP6C73sk5f84+w7DPVbjB9g3W+qHKKPnYuBAoM5eCIHtugpA6S7xiWWB5BKif+34NjIcnatRGVbx
+        tkGlxkm7ObCR7tuX8xsiOdplkHoN/SmYPJKdoPP6RtSHljgEI1zkTqbO+qEi/HwbJGwrI+eYh/3HX
+        ZkhYWn5MBYxJZkIC9ApPOg3g3VJMDNpIMyRcGYg5PTNl96oBMtjd9ng1p4PKajjiDACg3SBJRzA4J
+        Jly9EkL2EaqasAuUE9/3cvfhggxrB26U9dkTGCXTU47iAA1FlvpXEmWGaHm3hY/clJEmXFh4a8hWX
+        AGsUH+Uw==;
+Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:58272 helo=localhost)
         by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <linux@roeck-us.net>)
-        id 1ntrVl-000P4b-UR; Wed, 25 May 2022 13:57:18 +0000
+        id 1ntrVo-000P8e-P0; Wed, 25 May 2022 13:57:20 +0000
 From:   Guenter Roeck <linux@roeck-us.net>
 To:     linux-hwmon@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org, Jean Delvare <jdelvare@suse.com>,
         Slawomir Stepien <sst@poczta.fm>,
         Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH 01/40] hwmon: (lm90) Generate sysfs and udev events for all alarms
-Date:   Wed, 25 May 2022 06:56:30 -0700
-Message-Id: <20220525135709.2899592-2-linux@roeck-us.net>
+Subject: [PATCH 04/40] hwmon: (lm90) Reorder chip enumeration to be in alphabetical order
+Date:   Wed, 25 May 2022 06:56:33 -0700
+Message-Id: <20220525135709.2899592-5-linux@roeck-us.net>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220525135709.2899592-1-linux@roeck-us.net>
 References: <20220525135709.2899592-1-linux@roeck-us.net>
@@ -61,58 +60,45 @@ X-AntiAbuse: Sender Address Domain - roeck-us.net
 X-BWhitelist: no
 X-Source-IP: 108.223.40.66
 X-Source-L: No
-X-Exim-ID: 1ntrVl-000P4b-UR
+X-Exim-ID: 1ntrVo-000P8e-P0
 X-Source: 
 X-Source-Args: 
 X-Source-Dir: 
-X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net (localhost) [108.223.40.66]:58266
+X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net (localhost) [108.223.40.66]:58272
 X-Source-Auth: guenter@roeck-us.net
-X-Email-Count: 7
+X-Email-Count: 19
 X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
 X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-So far the driver only generated sysfs and udev events for minimum and
-maximum alarms. Also generate events for critical and emergency alarms.
+Reorder chip enumeration in alphabetical order to make it easier to
+see which chips are supported, and to clarify where to add support
+new chip types. No functional change.
 
 Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 ---
- drivers/hwmon/lm90.c | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
+ drivers/hwmon/lm90.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/hwmon/lm90.c b/drivers/hwmon/lm90.c
-index 3820f0e61510..83d027c134be 100644
+index b7f5b743c9f5..6728520a21ca 100644
 --- a/drivers/hwmon/lm90.c
 +++ b/drivers/hwmon/lm90.c
-@@ -1829,6 +1829,26 @@ static bool lm90_is_tripped(struct i2c_client *client, u16 *status)
- 		hwmon_notify_event(data->hwmon_dev, hwmon_temp,
- 				   hwmon_temp_max_alarm, 2);
+@@ -113,8 +113,10 @@ static const unsigned short normal_i2c[] = {
+ 	0x18, 0x19, 0x1a, 0x29, 0x2a, 0x2b, 0x48, 0x49, 0x4a, 0x4b, 0x4c,
+ 	0x4d, 0x4e, 0x4f, I2C_CLIENT_END };
  
-+	if (st & LM90_STATUS_LTHRM)
-+		hwmon_notify_event(hwmon_dev, hwmon_temp,
-+				   hwmon_temp_crit_alarm, 0);
-+	if (st & LM90_STATUS_RTHRM)
-+		hwmon_notify_event(hwmon_dev, hwmon_temp,
-+				   hwmon_temp_crit_alarm, 1);
-+	if (st2 & MAX6696_STATUS2_R2THRM)
-+		hwmon_notify_event(hwmon_dev, hwmon_temp,
-+				   hwmon_temp_crit_alarm, 2);
-+
-+	if (st2 & MAX6696_STATUS2_LOT2)
-+		hwmon_notify_event(hwmon_dev, hwmon_temp,
-+				   hwmon_temp_emergency_alarm, 0);
-+	if (st2 & MAX6696_STATUS2_ROT2)
-+		hwmon_notify_event(hwmon_dev, hwmon_temp,
-+				   hwmon_temp_emergency_alarm, 1);
-+	if (st2 & MAX6696_STATUS2_R2OT2)
-+		hwmon_notify_event(hwmon_dev, hwmon_temp,
-+				   hwmon_temp_emergency_alarm, 2);
-+
- 	return true;
- }
+-enum chips { lm90, adm1032, lm99, lm86, max6657, max6659, adt7461, max6680,
+-	max6646, w83l771, max6696, sa56004, g781, tmp451, tmp461, max6654 };
++enum chips { adm1032, adt7461, g781, lm86, lm90, lm99,
++	max6646, max6654, max6657, max6659, max6680, max6696,
++	sa56004, tmp451, tmp461, w83l771,
++};
  
+ /*
+  * The LM90 registers
 -- 
 2.35.1
 
