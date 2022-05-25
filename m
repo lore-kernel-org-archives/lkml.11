@@ -2,32 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5306C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 14:58:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D7B8C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 14:58:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244935AbiEYO6f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 10:58:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35034 "EHLO
+        id S245026AbiEYO6o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 10:58:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244909AbiEYO6S (ORCPT
+        with ESMTP id S243409AbiEYO6c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 10:58:18 -0400
+        Wed, 25 May 2022 10:58:32 -0400
 Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6416AEE34
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 07:58:17 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DF34AF31D
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 07:58:26 -0700 (PDT)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: alyssa)
-        with ESMTPSA id 94FAC1F450F4
+        with ESMTPSA id DEE321F450F2
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1653490696;
-        bh=CcULeZxjY87ecxTA0HcUOCLHUV0rECEmqTrVAi386iI=;
+        s=mail; t=1653490705;
+        bh=eBsjBjQv3sk3UpDCtqJWY59zZ/1tiXDyZ4h31E3V6uQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O+8jb27A4B7maymABi5fpZFg6lIo5ElWSABs76c1Rpiu7SdK081CjQ8LLBXWiCdLk
-         JMxh/+PXaQVaQZKA96R4ax6mQEifXfCP5wFVK0eVltFBkzkPhQp/iCBq9DjOLB+wTK
-         ZC9bw8AzYkWK6Ti8ESxc86i8Jbl7haDYRjGHGOXXcE+qlt+GFIdK3VOzN9XnJ6jb05
-         twSkGZScijfVsNQh7Xy6cPUaa35HkUuhNkBjA8NobLfSkdehftBkuBBsKr9N2v9ej4
-         6MJFghYWq3Vv4+qhr+Y8YDadLKTmjgadj5xhK+ywt8MS/aSvD2RJe7POYGjxHc3JWH
-         D/UzhOQuU34UA==
+        b=Nj9NQjRZsmHCeUA9UZ1N3YDj/aLVJj04SpghF69HywUacUVSQQjUQbR5wwHhuVbmJ
+         g55kHm08WFg8MNjX91AciJjjm5x9KLbUX0mRDY1148flVCHlmIBy+p1OwPGKPdh2Bn
+         toz5w3/tDOcNMBk7QKBOjmQmQ++rzlnB/bOL4LvQHuigvaYh843130psT1U3OYwuao
+         jrZbhhpOTxtrPLlxJdaVHGp62zI7eqMcKCU94omvJT8UI8FuJCWhkVrKHuNwPqn630
+         OQ8SsPsT1AXgofkKEszU7dPhc9pX4m+xkEaM0fHGvTSN4/CQV6sIQK58GI5XliX0Wc
+         XdiN6UkaBZNzw==
 From:   Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>
 To:     dri-devel@lists.freedesktop.org
 Cc:     Rob Herring <robh@kernel.org>,
@@ -41,9 +41,9 @@ Cc:     Rob Herring <robh@kernel.org>,
         AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 4/9] drm/panfrost: Handle HW_ISSUE_TTRX_3076
-Date:   Wed, 25 May 2022 10:57:49 -0400
-Message-Id: <20220525145754.25866-5-alyssa.rosenzweig@collabora.com>
+Subject: [PATCH v2 7/9] drm/panfrost: Don't set L2_MMU_CONFIG quirks
+Date:   Wed, 25 May 2022 10:57:52 -0400
+Message-Id: <20220525145754.25866-8-alyssa.rosenzweig@collabora.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220525145754.25866-1-alyssa.rosenzweig@collabora.com>
 References: <20220525145754.25866-1-alyssa.rosenzweig@collabora.com>
@@ -53,59 +53,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some Valhall GPUs require resets when encountering bus faults due to
-occlusion query writes. Add the issue bit for this and handle it.
+L2_MMU_CONFIG is an implementation-defined register. Different Mali GPUs
+define slightly different MAX_READS and MAX_WRITES fields, which
+throttle outstanding reads and writes when set to non-zero values. When
+left as zero, reads and writes are not throttled.
+
+Both kbase and panfrost always zero these registers. Per discussion with
+Steven Price, there are two reasons these quirks may be used:
+
+1. Simulating slower memory subsystems. This use case is only of
+   interest to system-on-chip designers; it is not relevant to mainline.
+
+2. Working around broken memory subsystems. Hopefully we never see this
+   case in mainline. If we do, we'll need to set this register based on
+   an SoC-compatible, rather than generally matching on the GPU model.
+
+To the best of our knowledge, these fields are zero at reset, so the
+write is not necessary. Let's remove the write to aid porting to new
+Mali GPUs, which have different layouts for the L2_MMU_CONFIG register.
 
 Signed-off-by: Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>
+Suggested-by: Steven Price <steven.price@arm.com>
 Reviewed-by: Steven Price <steven.price@arm.com>
 ---
- drivers/gpu/drm/panfrost/panfrost_device.c | 9 +++++++--
- drivers/gpu/drm/panfrost/panfrost_issues.h | 4 ++++
- 2 files changed, 11 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/panfrost/panfrost_gpu.c | 12 ------------
+ 1 file changed, 12 deletions(-)
 
-diff --git a/drivers/gpu/drm/panfrost/panfrost_device.c b/drivers/gpu/drm/panfrost/panfrost_device.c
-index 7f51a4682ccb..ee612303f076 100644
---- a/drivers/gpu/drm/panfrost/panfrost_device.c
-+++ b/drivers/gpu/drm/panfrost/panfrost_device.c
-@@ -11,6 +11,7 @@
- #include "panfrost_device.h"
- #include "panfrost_devfreq.h"
- #include "panfrost_features.h"
-+#include "panfrost_issues.h"
- #include "panfrost_gpu.h"
- #include "panfrost_job.h"
- #include "panfrost_mmu.h"
-@@ -380,9 +381,13 @@ const char *panfrost_exception_name(u32 exception_code)
- bool panfrost_exception_needs_reset(const struct panfrost_device *pfdev,
- 				    u32 exception_code)
- {
--	/* Right now, none of the GPU we support need a reset, but this
--	 * might change.
-+	/* If an occlusion query write causes a bus fault on affected GPUs,
-+	 * future fragment jobs may hang. Reset to workaround.
- 	 */
-+	if (exception_code == DRM_PANFROST_EXCEPTION_JOB_BUS_FAULT)
-+		return panfrost_has_hw_issue(pfdev, HW_ISSUE_TTRX_3076);
-+
-+	/* No other GPUs we support need a reset */
- 	return false;
- }
+diff --git a/drivers/gpu/drm/panfrost/panfrost_gpu.c b/drivers/gpu/drm/panfrost/panfrost_gpu.c
+index 295bef27fb55..e1a6e763d0dc 100644
+--- a/drivers/gpu/drm/panfrost/panfrost_gpu.c
++++ b/drivers/gpu/drm/panfrost/panfrost_gpu.c
+@@ -127,18 +127,6 @@ static void panfrost_gpu_init_quirks(struct panfrost_device *pfdev)
+ 	gpu_write(pfdev, GPU_TILER_CONFIG, quirks);
  
-diff --git a/drivers/gpu/drm/panfrost/panfrost_issues.h b/drivers/gpu/drm/panfrost/panfrost_issues.h
-index 14670ee58ace..e35807e4b743 100644
---- a/drivers/gpu/drm/panfrost/panfrost_issues.h
-+++ b/drivers/gpu/drm/panfrost/panfrost_issues.h
-@@ -128,6 +128,10 @@ enum panfrost_hw_issue {
- 	/* Must set SC_VAR_ALGORITHM */
- 	HW_ISSUE_TTRX_2968_TTRX_3162,
  
-+	/* Bus fault from occlusion query write may cause future fragment jobs
-+	 * to hang */
-+	HW_ISSUE_TTRX_3076,
-+
- 	HW_ISSUE_END
- };
- 
+-	quirks = gpu_read(pfdev, GPU_L2_MMU_CONFIG);
+-
+-	/* Limit read & write ID width for AXI */
+-	if (panfrost_has_hw_feature(pfdev, HW_FEATURE_3BIT_EXT_RW_L2_MMU_CONFIG))
+-		quirks &= ~(L2_MMU_CONFIG_3BIT_LIMIT_EXTERNAL_READS |
+-			    L2_MMU_CONFIG_3BIT_LIMIT_EXTERNAL_WRITES);
+-	else
+-		quirks &= ~(L2_MMU_CONFIG_LIMIT_EXTERNAL_READS |
+-			    L2_MMU_CONFIG_LIMIT_EXTERNAL_WRITES);
+-
+-	gpu_write(pfdev, GPU_L2_MMU_CONFIG, quirks);
+-
+ 	quirks = 0;
+ 	if ((panfrost_model_eq(pfdev, 0x860) || panfrost_model_eq(pfdev, 0x880)) &&
+ 	    pfdev->features.revision >= 0x2000)
 -- 
 2.35.1
 
