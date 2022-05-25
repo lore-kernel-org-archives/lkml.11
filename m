@@ -2,179 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54BF3C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 18:04:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8476AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 18:09:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343643AbiEYSEl (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 14:04:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41536 "EHLO
+        id S243863AbiEYSJ0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 14:09:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232735AbiEYSEh (ORCPT
+        with ESMTP id S229707AbiEYSJY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 14:04:37 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FE659C2F0
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 11:04:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653501876; x=1685037876;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=Pm30+PUW/S28pt9vFLXKnwJexHgxReaTpMC4SzbOa18=;
-  b=V30Ko1Zn7C/98NE6bdQifudQWCYVSTI2Fuojqvj8rPyoKnWk6ESdsxTO
-   vhX7es1E2RxxmYLrNa54B6v/AumaKI8jJiLxAUnRT6+Fyye0ouv/1QSuS
-   0qudNCuTl17EkKZLV6wOnX4E5/9Mky+o0G3JzMSqu/ZRGWhpRdWpMhgqg
-   Z0JfFrS3Zh2aUmGDKYtnxlwUgTYvNmr1vaoiufPIdtf0bS0trvFy8sy9U
-   pJfGqE2P57eTzgWb2sJCpVKtb6hy4bR3Bm8ea8YfwNdXr+LTQ7ZjGHFNJ
-   rFRwiw54VWuaF99udjm9cUwA6LR7oZigRf+VG35aEPU++hLfBEJ/Qzxly
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10358"; a="253766051"
-X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
-   d="scan'208";a="253766051"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2022 11:04:06 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
-   d="scan'208";a="526975819"
-Received: from lkp-server01.sh.intel.com (HELO db63a1be7222) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 25 May 2022 11:04:04 -0700
-Received: from kbuild by db63a1be7222 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ntvMZ-0003Dq-Rj;
-        Wed, 25 May 2022 18:04:03 +0000
-Date:   Thu, 26 May 2022 02:03:16 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Viresh Kumar <viresh.kumar@linaro.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [vireshk-pm:opp/config 14/33] drivers/cpufreq/sti-cpufreq.c:163:33:
- error: initialization of 'const u32 *' {aka 'const unsigned int *'} from
- incompatible pointer type 'unsigned int (*)[3]'
-Message-ID: <202205260212.nwth1TXT-lkp@intel.com>
+        Wed, 25 May 2022 14:09:24 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 695838D691
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 11:09:23 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id q15so4896641edb.11
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 11:09:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=iRkHcd8s4ALLVT0dz9R8wU6Dyfv3RsX5g6d95y6kyVg=;
+        b=CcNicq/uL1ohoK3ra8nNfQr0V3hGSWF8YX6N94AENAc3GcjN1oIxB1mjFPYdi2oYvk
+         kDJMNSfWUCSJCHGc/4oY+60TyOp+cpqXrdMFyj/8AFKBF1FrJDB1TjYsHooiDwdeeHX6
+         MGiXHaQlXmjXoCo4H4Ud/47qhGHeN7oBdnY/s=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=iRkHcd8s4ALLVT0dz9R8wU6Dyfv3RsX5g6d95y6kyVg=;
+        b=Gn0TJgsZEkfSSForlwD0t/RzRMzVzesYDQLkkPQGc4IVux5xAiuzIajEsKvgzT0dX5
+         0mqJqDAAbytnmCzQsYpaOq7XjpP7i+o2RwBJ1hxSfiWJ3eLqm+a1QvK8hgOjbINSDkr6
+         iH5crOv3eGqAoFYmOpn/sgDvwC4ZMy2dum6nuL4GJg0TwfRAYNFm9reb6iDebCu+X//D
+         Pg0VDqRMA/qXdDKz3jnsnKi1WhtG+fZ90XyNDoQZYjIpleeGDFBHD7Ij9+x32XimIAh4
+         FHmjW5dNnJzjuiNaKCmsGW9HNZRFt8liPz5pBRJOIEWdX2hXMzDgyXfCx8Zko3V2iley
+         9IOw==
+X-Gm-Message-State: AOAM530ORN/0c5ZsHrjB62/nxZt6w35AJo3nhQq1LOdcAGTbNcNm01wY
+        P/TtJopo+kfnpEBeKjToV++3YLIFWdpYxLl6DXo=
+X-Google-Smtp-Source: ABdhPJz1ZEirQZ/xJRWsxcsd5gXPBnFEcxM+SezWMyVSDnq/j1HH2QDHSQeCPMrPXM03SPwHF+Wtpg==
+X-Received: by 2002:a05:6402:48c:b0:42a:e585:103 with SMTP id k12-20020a056402048c00b0042ae5850103mr35781096edv.375.1653502161757;
+        Wed, 25 May 2022 11:09:21 -0700 (PDT)
+Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com. [209.85.128.50])
+        by smtp.gmail.com with ESMTPSA id m20-20020a170906161400b006feba4ef020sm4975150ejd.180.2022.05.25.11.09.19
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 25 May 2022 11:09:19 -0700 (PDT)
+Received: by mail-wm1-f50.google.com with SMTP id p189so12943586wmp.3
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 11:09:19 -0700 (PDT)
+X-Received: by 2002:a05:600c:4f0e:b0:397:6b94:7469 with SMTP id
+ l14-20020a05600c4f0e00b003976b947469mr4160846wmq.145.1653502159032; Wed, 25
+ May 2022 11:09:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <YouKQw72H7y9EJQK@alley>
+In-Reply-To: <YouKQw72H7y9EJQK@alley>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Wed, 25 May 2022 11:09:02 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wgC47n_7E6UtFx_agkJtLmWOXGsjdFjybBFYNA1AheQLQ@mail.gmail.com>
+Message-ID: <CAHk-=wgC47n_7E6UtFx_agkJtLmWOXGsjdFjybBFYNA1AheQLQ@mail.gmail.com>
+Subject: Re: [GIT PULL] printk for 5.19
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        John Ogness <john.ogness@linutronix.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Jan Kara <jack@suse.cz>, Peter Zijlstra <peterz@infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/vireshk/pm.git opp/config
-head:   d730dc101c586defb49eeafd8eea9b7bb0baa01b
-commit: fde02a60d6932a408e7330eb5887de842eae2dbb [14/33] cpufreq: sti: Migrate to dev_pm_opp_set_config()
-config: arm-allmodconfig (https://download.01.org/0day-ci/archive/20220526/202205260212.nwth1TXT-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/vireshk/pm.git/commit/?id=fde02a60d6932a408e7330eb5887de842eae2dbb
-        git remote add vireshk-pm https://git.kernel.org/pub/scm/linux/kernel/git/vireshk/pm.git
-        git fetch --no-tags vireshk-pm opp/config
-        git checkout fde02a60d6932a408e7330eb5887de842eae2dbb
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash drivers/cpufreq/
+On Mon, May 23, 2022 at 6:21 AM Petr Mladek <pmladek@suse.com> wrote:
+>
+>   There are situations when the kthreads are either not available or
+>   not reliable, for example, early boot, suspend, or panic. In these
+>   situations, printk() uses the legacy mode and tries to handle consoles
+>   immediately.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Let's see how this works out, but I do have one complaint/query about
+the series.
 
-All errors (new ones prefixed by >>):
+Looking through the commits, I don't see how that "printk: wake up all
+waiters" makes any sense at all.
 
-   drivers/cpufreq/sti-cpufreq.c: In function 'sti_cpufreq_set_opp_info':
->> drivers/cpufreq/sti-cpufreq.c:163:33: error: initialization of 'const u32 *' {aka 'const unsigned int *'} from incompatible pointer type 'unsigned int (*)[3]' [-Werror=incompatible-pointer-types]
-     163 |                 .supported_hw = &version,
-         |                                 ^
-   drivers/cpufreq/sti-cpufreq.c:163:33: note: (near initialization for 'config.supported_hw')
-   cc1: some warnings being treated as errors
+It *ALREADY* woke up all waiters as far as I can see.
 
+Doing a wake_up_interruptible() will stop waking things up only when
+it hits a *exclusive* waiter, and as far as I can tell, there are no
+exclusive waiters there.
 
-vim +163 drivers/cpufreq/sti-cpufreq.c
+And if they were there, the "wake_up_all()" wouldn't be the right thing anyway.
 
-   150	
-   151	static int sti_cpufreq_set_opp_info(void)
-   152	{
-   153		struct device *dev = ddata.cpu;
-   154		struct device_node *np = dev->of_node;
-   155		const struct reg_field *reg_fields;
-   156		unsigned int hw_info_offset;
-   157		unsigned int version[VERSION_ELEMENTS];
-   158		int pcode, substrate, major, minor;
-   159		int ret;
-   160		char name[MAX_PCODE_NAME_LEN];
-   161		struct opp_table *opp_table;
-   162		struct dev_pm_opp_config config = {
- > 163			.supported_hw = &version,
-   164			.supported_hw_count = ARRAY_SIZE(version),
-   165			.prop_name = name,
-   166		};
-   167	
-   168		reg_fields = sti_cpufreq_match();
-   169		if (!reg_fields) {
-   170			dev_err(dev, "This SoC doesn't support voltage scaling\n");
-   171			return -ENODEV;
-   172		}
-   173	
-   174		ret = of_property_read_u32_index(np, "st,syscfg-eng",
-   175						 HW_INFO_INDEX, &hw_info_offset);
-   176		if (ret) {
-   177			dev_warn(dev, "Failed to read HW info offset from DT\n");
-   178			substrate = DEFAULT_VERSION;
-   179			pcode = 0;
-   180			goto use_defaults;
-   181		}
-   182	
-   183		pcode = sti_cpufreq_fetch_regmap_field(reg_fields,
-   184						       hw_info_offset,
-   185						       PCODE);
-   186		if (pcode < 0) {
-   187			dev_warn(dev, "Failed to obtain process code\n");
-   188			/* Use default pcode */
-   189			pcode = 0;
-   190		}
-   191	
-   192		substrate = sti_cpufreq_fetch_regmap_field(reg_fields,
-   193							   hw_info_offset,
-   194							   SUBSTRATE);
-   195		if (substrate) {
-   196			dev_warn(dev, "Failed to obtain substrate code\n");
-   197			/* Use default substrate */
-   198			substrate = DEFAULT_VERSION;
-   199		}
-   200	
-   201	use_defaults:
-   202		major = sti_cpufreq_fetch_major();
-   203		if (major < 0) {
-   204			dev_err(dev, "Failed to obtain major version\n");
-   205			/* Use default major number */
-   206			major = DEFAULT_VERSION;
-   207		}
-   208	
-   209		minor = sti_cpufreq_fetch_minor();
-   210		if (minor < 0) {
-   211			dev_err(dev, "Failed to obtain minor version\n");
-   212			/* Use default minor number */
-   213			minor = DEFAULT_VERSION;
-   214		}
-   215	
-   216		snprintf(name, MAX_PCODE_NAME_LEN, "pcode%d", pcode);
-   217	
-   218		version[0] = BIT(major);
-   219		version[1] = BIT(minor);
-   220		version[2] = BIT(substrate);
-   221	
-   222		opp_table = dev_pm_opp_set_config(dev, &config);
-   223		if (IS_ERR(opp_table)) {
-   224			dev_err(dev, "Failed to set OPP config\n");
-   225			return PTR_ERR(opp_table);
-   226		}
-   227	
-   228		dev_dbg(dev, "pcode: %d major: %d minor: %d substrate: %d\n",
-   229			pcode, major, minor, substrate);
-   230		dev_dbg(dev, "version[0]: %x version[1]: %x version[2]: %x\n",
-   231			version[0], version[1], version[2]);
-   232	
-   233		return 0;
-   234	}
-   235	
+So that commit seems to be fundamentally confused about things.
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+You should NEVER use wake_up_interruptible_all() in any normal code.
+
+That "all()" form is only for when there are exclusive waiters (that
+are expected to handle the situation entirely, or wake up the next
+waiter if they don't), *and* you have some exceptional thing that then
+causes *ALL* waiters to need to be woken up.
+
+For example, a "read()" might be an exclusive wait, so that multiple
+potential concurrent readers don't cause a scheduling herd of
+processes all to wake up when somebody writes to the socket or pipe or
+whatever.
+
+So in that situation a write() uses a regular wakeup, so that we only
+wake up the one waiter that will take care of things.
+
+But then a *shutdown* event obviously does affect everybody, so that
+would cause a "wake_up_interruptible_all()".
+
+I really don't see why the printk() code decided to use that wakeup
+function, and the commit message doesn't explain why it was done
+either.
+
+I'm sure we have lots of drivers that are confused about core things
+like this, and I don't really care.
+
+But when I see something really core like printk() get confused and
+mis-understand basic wait queue behavior, that makes me go "This is
+WRONG".
+
+Please explain.
+
+                    Linus
