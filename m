@@ -2,56 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C81B3C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 22:26:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBB55C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 22:26:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345426AbiEYW0W (ORCPT
+        id S1344989AbiEYW01 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 18:26:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55294 "EHLO
+        Wed, 25 May 2022 18:26:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344944AbiEYW0K (ORCPT
+        with ESMTP id S1345388AbiEYW0U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 18:26:10 -0400
+        Wed, 25 May 2022 18:26:20 -0400
 Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66F93AA
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 15:26:08 -0700 (PDT)
-Received: by mail-pl1-x64a.google.com with SMTP id c14-20020a170903234e00b0016374194948so319270plh.19
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 15:26:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C1DB277
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 15:26:14 -0700 (PDT)
+Received: by mail-pl1-x64a.google.com with SMTP id t14-20020a1709028c8e00b0015cf7e541feso12121217plo.1
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 15:26:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=reply-to:date:message-id:mime-version:subject:from:to:cc;
-        bh=k1BthjPgV7bQ6cNfFTK+8rBrGBtp639pLinxXU1m8Ho=;
-        b=Lejy4SDHGOTx73pYIreEYpHBRj1zlEZ7dvsywLDPdUJ5zzZEumvyp3uLGgex5dHGEk
-         vjEYzYudLsWug+4MQc8jfCHJ1+P+E7tHOGFTR8q/Yk2Lo7LaxhBAIEdcAal9nr+nqY3l
-         9JS8D9tFUfoS2J68w03A4N6+5dSXXG3DVvMBFQ01L9fCiwXmBJRK67Tl3fw6GO0YVBF6
-         5D5b0uSPPM/c3duxVeOz8+MjJy7NxRr0Cwdll5cKMbnPRwIgM0FkXcdwkfmL1w1iu41j
-         3p4wMo9wSOXPT4ceYsFLuVqrFhY+EVLAFWXhpRZRBfyrtiMWNnESRwB1u0hkKFE+O63+
-         PlYg==
+        h=reply-to:date:in-reply-to:message-id:mime-version:references
+         :subject:from:to:cc;
+        bh=1K6OM5CVosmRq7VrXJUvnPyF0+jKI5Wt9fyUJ3K2ibY=;
+        b=L3C+sxFViTeVKuyVx5ivxoNs7Q6DYSLINTgXeRAUuwL1UVebb8TNStoOpMZyfvPmh7
+         VU+hFtXQ2sdfPs465VxYnDTutAK2XRTNQbBz9Ht2PHH4sRve6QgaSf01OMCXm63bwqGN
+         TKTmrdaY1EGLCOpSa1LH4g3mL/V1MYdFetwPFYdxNhlDI/DlnnvqFaqX7Rlc/ppN4zPf
+         DuaG4mikEbaBkcOsHBWoOcI666PRRP/tDC3SdopDwzkvXYU/pb8XHb5sg7iqFnV+HFHI
+         3TFgrrEBIOIymBspGi1iMC95/Q0EQ7VwvHnH9BoFgOlQu0+mPtt4RWu/eB7M/uC2JEsb
+         7IYg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:date:message-id:mime-version:subject
-         :from:to:cc;
-        bh=k1BthjPgV7bQ6cNfFTK+8rBrGBtp639pLinxXU1m8Ho=;
-        b=HNXWUw2LwG89rn0VqkIgtUN1f64rG2ghfMmfrxOAw5MUphlLAZmE/CYMd1+7tdRIYi
-         FBerXM0YN6xApr86/AW7wNWuAiBqAIrkbej5qS38L9EGifVtcap9NYWct1aGfB9aCD9b
-         EtGaZjdJOTnUbluV3JWi9WcO8NwJaUESjJUC8PjP0BoPKyvaoMM52ntgRAfbNXjmjHnl
-         GUY+aD8TnU96CfyAXnfdmrBsJTdosyM0xdwTZqp+MKThksuhbCH0mY06nG30cMlMTJTk
-         Fitkve5gED2KtqBb25ZfuPkDZDtzkJt9Mztc1thRq0UWdwaK4E8YcBR/uiTL7aHf94hs
-         XnUg==
-X-Gm-Message-State: AOAM530xLRhh3+WBUJ3cKnX5fNfSAorVtAKjLGsnjA3CYxdkLoZlg6rL
-        Vugr0qU7iybZzL3qaRuJVFVFbHjnVz8=
-X-Google-Smtp-Source: ABdhPJzpK80n4XXnmnAuMG6yeiR7ZWEUUH/froE6+s05Poen8FWFQfnGnzxvOExtdBw3LmjaHO0EqiwCxkM=
+        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
+         :mime-version:references:subject:from:to:cc;
+        bh=1K6OM5CVosmRq7VrXJUvnPyF0+jKI5Wt9fyUJ3K2ibY=;
+        b=NLvOa2Y7eVQxmWdPNt14HSTgBA929N5nC5u/PZOnIaia77ptp/2DAW12Um9g7S4ssu
+         Uh7LQF2UuY0uktixJNfu7/c0cPDSxtPX9MVZyfBGCuYJ6ZJJuo6uSYLkX8XQFReghb9M
+         BVpE7nED5ujfPjarjnDH78IikM6iNE5kuBSDvahUoeLjMBkmogzsK8Zu+IdKmZ3Qnbsr
+         6dd/E5et9/0HnOpibQvtt2jR5uf6rToF/mZeRDtOts10grITGpiubPqMyAtKR1CsvF6Y
+         ay7fcRXOSpmzPpFg3FLQIDcxDMWFUNDwV8esGD7XbdxuHN+p1SYL5U6fxLj6tfBAEmRC
+         m6+Q==
+X-Gm-Message-State: AOAM5302XAzPyfDdD9hDVEq/6fwXbutaTMCcUFaYuUo36IohIpzkd5XN
+        6A1g1Ocy8ViJ2XE4i+NX1xKdj1lkaBc=
+X-Google-Smtp-Source: ABdhPJy88zKrcNaUS/fJ+z8CMMhWxSLqAWS1xOCdoT7FwuQTGaaLJiJLN6NuKX+u7dqcA6a7HXAciPgJN2E=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:90a:6487:b0:1df:7e0f:c93e with SMTP id
- h7-20020a17090a648700b001df7e0fc93emr12833136pjj.77.1653517567858; Wed, 25
- May 2022 15:26:07 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a17:90b:1192:b0:1e0:63f3:c463 with SMTP id
+ gk18-20020a17090b119200b001e063f3c463mr30564pjb.1.1653517573248; Wed, 25 May
+ 2022 15:26:13 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Wed, 25 May 2022 22:26:00 +0000
-Message-Id: <20220525222604.2810054-1-seanjc@google.com>
+Date:   Wed, 25 May 2022 22:26:03 +0000
+In-Reply-To: <20220525222604.2810054-1-seanjc@google.com>
+Message-Id: <20220525222604.2810054-4-seanjc@google.com>
 Mime-Version: 1.0
+References: <20220525222604.2810054-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.1.124.g0e6072fb45-goog
-Subject: [PATCH 0/4] KVM: x86: Emulator _regs fixes and cleanups
+Subject: [PATCH 3/4] KVM: x86: Omit VCPU_REGS_RIP from emulator's _regs array
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -66,29 +69,96 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Clean up and harden the use of the x86_emulate_ctxt._regs, which is
-surrounded by a fair bit of magic.  This series was prompted by bug reports
-by Kees and Robert where GCC-12 flags an out-of-bounds _regs access.  I'm
-99% certain GCC-12 is wrong and is generating a false positive, but just in
-case...
+Omit RIP from the emulator's _regs array, which is used only for GPRs,
+i.e. registers that can be referenced via ModRM and/or SIB bytes.  The
+emulator uses the dedicated _eip field for RIP, and manually reads from
+_eip to handle RIP-relative addressing.
 
-I didn't tag patch 2 with Fixes or Cc: stable@; if it turns out to "fix"
-the GCC-12 compilation error, it's probably worth sending to v5.18 stable
-tree (KVM hasn't changed, but the warning=>error was "introdued in v5.18
-by commit e6148767825c ("Makefile: Enable -Warray-bounds")).
+Replace all open coded instances of '16' with the new NR_EMULATOR_GPRS.
 
-Sean Christopherson (4):
-  KVM: x86: Grab regs_dirty in local 'unsigned long'
-  KVM: x86: Harden _regs accesses to guard against buggy input
-  KVM: x86: Omit VCPU_REGS_RIP from emulator's _regs array
-  KVM: x86: Use 16-bit fields to track dirty/valid emulator GPRs
+See also the comments above the read_gpr() and write_gpr() declarations,
+and obviously the handling in writeback_registers().
 
- arch/x86/kvm/emulate.c     | 14 ++++++++++++--
- arch/x86/kvm/kvm_emulate.h | 14 +++++++++++---
- 2 files changed, 23 insertions(+), 5 deletions(-)
+No functional change intended.
 
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+---
+ arch/x86/kvm/emulate.c     | 12 ++++++------
+ arch/x86/kvm/kvm_emulate.h | 10 +++++++++-
+ 2 files changed, 15 insertions(+), 7 deletions(-)
 
-base-commit: 90bde5bea810d766e7046bf5884f2ccf76dd78e9
+diff --git a/arch/x86/kvm/emulate.c b/arch/x86/kvm/emulate.c
+index c58366ae4da2..dd1bf116a9ed 100644
+--- a/arch/x86/kvm/emulate.c
++++ b/arch/x86/kvm/emulate.c
+@@ -247,8 +247,8 @@ enum x86_transfer_type {
+ 
+ static ulong reg_read(struct x86_emulate_ctxt *ctxt, unsigned nr)
+ {
+-	if (WARN_ON_ONCE(nr >= 16))
+-		nr &= 16 - 1;
++	if (WARN_ON_ONCE(nr >= NR_EMULATOR_GPRS))
++		nr &= NR_EMULATOR_GPRS - 1;
+ 
+ 	if (!(ctxt->regs_valid & (1 << nr))) {
+ 		ctxt->regs_valid |= 1 << nr;
+@@ -259,8 +259,8 @@ static ulong reg_read(struct x86_emulate_ctxt *ctxt, unsigned nr)
+ 
+ static ulong *reg_write(struct x86_emulate_ctxt *ctxt, unsigned nr)
+ {
+-	if (WARN_ON_ONCE(nr >= 16))
+-		nr &= 16 - 1;
++	if (WARN_ON_ONCE(nr >= NR_EMULATOR_GPRS))
++		nr &= NR_EMULATOR_GPRS - 1;
+ 
+ 	ctxt->regs_valid |= 1 << nr;
+ 	ctxt->regs_dirty |= 1 << nr;
+@@ -278,7 +278,7 @@ static void writeback_registers(struct x86_emulate_ctxt *ctxt)
+ 	unsigned long dirty = ctxt->regs_dirty;
+ 	unsigned reg;
+ 
+-	for_each_set_bit(reg, &dirty, 16)
++	for_each_set_bit(reg, &dirty, NR_EMULATOR_GPRS)
+ 		ctxt->ops->write_gpr(ctxt, reg, ctxt->_regs[reg]);
+ }
+ 
+@@ -2495,7 +2495,7 @@ static int rsm_load_state_64(struct x86_emulate_ctxt *ctxt,
+ 	u16 selector;
+ 	int i, r;
+ 
+-	for (i = 0; i < 16; i++)
++	for (i = 0; i < NR_EMULATOR_GPRS; i++)
+ 		*reg_write(ctxt, i) = GET_SMSTATE(u64, smstate, 0x7ff8 - i * 8);
+ 
+ 	ctxt->_eip   = GET_SMSTATE(u64, smstate, 0x7f78);
+diff --git a/arch/x86/kvm/kvm_emulate.h b/arch/x86/kvm/kvm_emulate.h
+index 8dff25d267b7..bdd4e9865ca9 100644
+--- a/arch/x86/kvm/kvm_emulate.h
++++ b/arch/x86/kvm/kvm_emulate.h
+@@ -301,6 +301,14 @@ struct fastop;
+ 
+ typedef void (*fastop_t)(struct fastop *);
+ 
++/*
++ * The emulator's _regs array tracks only the GPRs, i.e. excludes RIP.  RIP is
++ * tracked/accessed via _eip, and except for RIP relative addressing, which
++ * also uses _eip, RIP cannot be a register operand nor can it be an operand in
++ * a ModRM or SIB byte.
++ */
++#define NR_EMULATOR_GPRS	(VCPU_REGS_R15 + 1)
++
+ struct x86_emulate_ctxt {
+ 	void *vcpu;
+ 	const struct x86_emulate_ops *ops;
+@@ -363,7 +371,7 @@ struct x86_emulate_ctxt {
+ 	struct operand src2;
+ 	struct operand dst;
+ 	struct operand memop;
+-	unsigned long _regs[NR_VCPU_REGS];
++	unsigned long _regs[NR_EMULATOR_GPRS];
+ 	struct operand *memopp;
+ 	struct fetch_cache fetch;
+ 	struct read_cache io_read;
 -- 
 2.36.1.124.g0e6072fb45-goog
 
