@@ -2,140 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11F08C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 12:40:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73028C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 12:44:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243272AbiEYMkn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 08:40:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57902 "EHLO
+        id S237002AbiEYMoJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 08:44:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243290AbiEYMk2 (ORCPT
+        with ESMTP id S230385AbiEYMoG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 08:40:28 -0400
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CB0487A26
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 05:40:25 -0700 (PDT)
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com [209.85.208.70])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 387DB3F803
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 12:40:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1653482422;
-        bh=c10iLeMiN3rtcJh7R+kBjwZ/ioZSoIrALQhmp87Zhi4=;
-        h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-         MIME-Version;
-        b=ZyeDTwEnlkwhXdFL4xbAsKsJK9r3/czeryZoTR+UTxBTDPr5/2Nq8lH+bQfdbz8d7
-         pm1+5/8b1iKr3Sq26ygN3PFhi68N1/H6VpPozB0Ey4rmnhTg0xHP+vj1ZyvFaIuRWe
-         b3fMw/hB2U93iv48Cal14a1+PZMcMIG1oUh37RrFubtt0wmdrQYKk8JhcC0LOceqQM
-         46KTGyG0UnCVDREoX1H/rwTioIs06JpApnKlMHovMv6nbBe8G3qrmlknob86rhqyU2
-         zzI1dq+ZSBKc3MqvEHtUidsVh48kdgY6FIulOlyVFsZG3qP82G77WW603rtXK3vUhr
-         S6IBZ6hci2dSA==
-Received: by mail-ed1-f70.google.com with SMTP id q12-20020a056402040c00b0042a84f9939dso14837753edv.7
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 05:40:22 -0700 (PDT)
+        Wed, 25 May 2022 08:44:06 -0400
+Received: from mail-oi1-f170.google.com (mail-oi1-f170.google.com [209.85.167.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9594ED123;
+        Wed, 25 May 2022 05:44:04 -0700 (PDT)
+Received: by mail-oi1-f170.google.com with SMTP id e189so24868971oia.8;
+        Wed, 25 May 2022 05:44:04 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=c10iLeMiN3rtcJh7R+kBjwZ/ioZSoIrALQhmp87Zhi4=;
-        b=ErpMj8GNr28G5xmFXo8+Dky6YyeZ+vkLQ+W3FpeIyYooAUbQh2DaPA2ZBF0ZX98zyI
-         FzShyu2K1axnZKxGF0Wu5bkQTEOT+biXJoNfeAzWxJ5LTBuaL5UQWASDdjRCh3lfiE2D
-         g2cqCMuay6nNMIY0bXqxFIe/v1+xYRN6w1TWEm4N1RwLn9bqkWBOmsz9/524kgGwQ0r0
-         bEHK97U+hHBHjEDCD1AcwMm7pEwaFOOlCDfj6S2ah0IgmAKfzl7VCzGyBGiShBjvZmfV
-         aOpqZcH45B0Ti+L6IhXFVVesXd8KRUvk8HST0QEqH3YLviNj20CVvoyNMlBcWx0yOeOu
-         F3JA==
-X-Gm-Message-State: AOAM533ERp+UNImooW0GRdqCpphWmFi1zWD7e3UR/bvLLLAPVPoYh+Mw
-        pNbKWxcpKLeSDnzKaOm1+3a9mZ1j3poHszCn6A0waajb0oC8SWzX/rZAet6QyFm8zrzslYumnZI
-        eOtiwUokSPP/0YGscGgqqcks2bey5RwHOAPuEJK3V0Q==
-X-Received: by 2002:a05:6402:34c2:b0:42b:66d3:7b07 with SMTP id w2-20020a05640234c200b0042b66d37b07mr16289204edc.275.1653482417422;
-        Wed, 25 May 2022 05:40:17 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJy6Zbt6jA3u1X6KTZoLtdjzWjbqAcTxHk4GUPkqPs5gc24VOD834mWi0LGsNzIzB5A6SMXDww==
-X-Received: by 2002:a05:6402:34c2:b0:42b:66d3:7b07 with SMTP id w2-20020a05640234c200b0042b66d37b07mr16289182edc.275.1653482417204;
-        Wed, 25 May 2022 05:40:17 -0700 (PDT)
-Received: from gollum.fritz.box ([194.191.244.86])
-        by smtp.gmail.com with ESMTPSA id y20-20020a50eb94000000b0042617ba63c4sm10632614edr.78.2022.05.25.05.40.16
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=1xKn1TwFCEiFxTgut6Nt95ns9umTBM5bV8PgAamEzGI=;
+        b=U4hOSp/+4mz+lSlPH5EfRnsRB1Z1TH2wIGBizl7FjUTpGjeosqOdyPNW60o/hrqktp
+         u9gyZCxGtOUN/lVe3W/QGAaUdoLMCO1uR3OFf2s9EwNv52c8Mtiw5LSEhr7T8xpJuh4o
+         4H0Ad7f7xxp7rka0XAADGarkEDZ0oIl7WKuYQrxxD+BMKxFFP6XPfthClC0RNxJJ54JB
+         CVKJ51f9soBrkhs1kf5mPVfq+xNiP17HnS39fq3aL7rxbRd7yVR0uHTsompD/zdNdBUq
+         tMkvhGoRN4gylWyXi1sxCIVqTFao2rZ7rboUHb7F9uBgUIfYcXwyVm/xGvFdXzEs74q3
+         oxgw==
+X-Gm-Message-State: AOAM530zFho56UCDJmfxnZ7MQDJKpAYHPXTQ98MHrI1X6Ql+q/FMRnjF
+        2bkN6IasHOCzZ16KJuyVgg==
+X-Google-Smtp-Source: ABdhPJyp4RR2/wWLrfrKz/ft7jvpqGKEU8/LjZ5HHq0aDMy4VC3N1ZKM5JQ8agR6C41wBqF0tK49xg==
+X-Received: by 2002:a05:6808:1201:b0:325:75e1:25a8 with SMTP id a1-20020a056808120100b0032575e125a8mr5116618oil.18.1653482643566;
+        Wed, 25 May 2022 05:44:03 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id ec25-20020a0568708c1900b000edae17a8cesm5952127oab.3.2022.05.25.05.44.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 May 2022 05:40:16 -0700 (PDT)
-From:   Juerg Haefliger <juerg.haefliger@canonical.com>
-To:     ysato@users.sourceforge.jp, dalias@libc.org,
-        linux-sh@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Juerg Haefliger <juerg.haefliger@canonical.com>
-Subject: [PATCH 3/4] sh/boards: Kconfig: Fix indentation
-Date:   Wed, 25 May 2022 14:40:06 +0200
-Message-Id: <20220525124007.45328-4-juerg.haefliger@canonical.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220525124007.45328-1-juerg.haefliger@canonical.com>
-References: <20220525124007.45328-1-juerg.haefliger@canonical.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Wed, 25 May 2022 05:44:02 -0700 (PDT)
+Received: (nullmailer pid 1760895 invoked by uid 1000);
+        Wed, 25 May 2022 12:44:01 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Alexandre Bailon <abailon@baylibre.com>
+Cc:     linux-pm@vger.kernel.org, khilman@baylibre.com,
+        linux-mediatek@lists.infradead.org, p.zabel@pengutronix.de,
+        james.lo@mediatek.com, linux-arm-kernel@lists.infradead.org,
+        rui.zhang@intel.com, rafael@kernel.org, matthias.bgg@gmail.com,
+        amitk@kernel.org, robh+dt@kernel.org, fan.chen@mediatek.com,
+        daniel.lezcano@linaro.org, krzk+dt@kernel.org,
+        devicetree@vger.kernel.org, rex-bc.chen@mediatek.com,
+        louis.yu@mediatek.com, mka@chromium.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220524152552.246193-3-abailon@baylibre.com>
+References: <20220524152552.246193-1-abailon@baylibre.com> <20220524152552.246193-3-abailon@baylibre.com>
+Subject: Re: [PATCH v7 2/6] dt-bindings: thermal: Add binding document for LVTS thermal controllers
+Date:   Wed, 25 May 2022 07:44:01 -0500
+Message-Id: <1653482641.588144.1760894.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The convention for indentation seems to be a single tab. Help text is
-further indented by an additional two whitespaces. Fix the lines that
-violate these rules.
+On Tue, 24 May 2022 17:25:49 +0200, Alexandre Bailon wrote:
+> This patch adds binding document for mt8192 and mt8195 thermal
+> controllers.
+> 
+> Signed-off-by: Alexandre Bailon <abailon@baylibre.com>
+> ---
+>  .../thermal/mediatek,mt8192-lvts.yaml         | 81 +++++++++++++++++++
+>  1 file changed, 81 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/thermal/mediatek,mt8192-lvts.yaml
+> 
 
-While at it, remove stray tabs/spaces from a seemingly empty line.
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-Signed-off-by: Juerg Haefliger <juerg.haefliger@canonical.com>
----
- arch/sh/boards/Kconfig | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+yamllint warnings/errors:
 
-diff --git a/arch/sh/boards/Kconfig b/arch/sh/boards/Kconfig
-index 83bcb6d2daca..fbdb3fbfb976 100644
---- a/arch/sh/boards/Kconfig
-+++ b/arch/sh/boards/Kconfig
-@@ -36,7 +36,7 @@ config SH_SOLUTION_ENGINE
- 	select CPU_HAS_IPR_IRQ
- 	depends on CPU_SUBTYPE_SH7705 || CPU_SUBTYPE_SH7709 || CPU_SUBTYPE_SH7710 || \
- 	  CPU_SUBTYPE_SH7712 || CPU_SUBTYPE_SH7750 || CPU_SUBTYPE_SH7750S || \
--	  CPU_SUBTYPE_SH7750R 
-+	  CPU_SUBTYPE_SH7750R
- 	help
- 	  Select SolutionEngine if configuring for a Hitachi SH7705, SH7709,
- 	  SH7710, SH7712, SH7750, SH7750S or SH7750R evaluation board.
-@@ -56,7 +56,7 @@ config SH_7619_SOLUTION_ENGINE
- 	help
- 	  Select 7619 SolutionEngine if configuring for a Hitachi SH7619
- 	  evaluation board.
--	
-+
- config SH_7721_SOLUTION_ENGINE
- 	bool "SolutionEngine7721"
- 	select SOLUTION_ENGINE
-@@ -94,7 +94,7 @@ config SH_7751_SOLUTION_ENGINE
- 	help
- 	  Select 7751 SolutionEngine if configuring for a Hitachi SH7751
- 	  evaluation board.
--	  
-+
- config SH_7780_SOLUTION_ENGINE
- 	bool "SolutionEngine7780"
- 	select SOLUTION_ENGINE
-@@ -167,8 +167,8 @@ config SH_RSK
- 	  CPU_SUBTYPE_SH7264 || CPU_SUBTYPE_SH7269
- 	select REGULATOR_FIXED_VOLTAGE if REGULATOR
- 	help
--	 Select this option if configuring for any of the RSK+ MCU
--	 evaluation platforms.
-+	  Select this option if configuring for any of the RSK+ MCU
-+	  evaluation platforms.
- 
- config SH_SDK7780
- 	bool "SDK7780R3"
-@@ -236,7 +236,7 @@ config SH_MIGOR
- 	select REGULATOR_FIXED_VOLTAGE if REGULATOR
- 	help
- 	  Select Migo-R if configuring for the SH7722 Migo-R platform
--          by Renesas System Solutions Asia Pte. Ltd.
-+	  by Renesas System Solutions Asia Pte. Ltd.
- 
- config SH_AP325RXA
- 	bool "AP-325RXA"
--- 
-2.32.0
+dtschema/dtc warnings/errors:
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/thermal/mediatek,mt8192-lvts.yaml: allOf:1:$ref: '/nvmem/nvmem-consumer.yaml#' does not match '^(/schemas/|\\.\\./|#(/|$)|[a-zA-Z0-9]+)'
+	from schema $id: http://devicetree.org/meta-schemas/keywords.yaml#
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/thermal/mediatek,mt8192-lvts.yaml: ignoring, error in schema: allOf: 1: $ref
+Error: Documentation/devicetree/bindings/thermal/mediatek,mt8192-lvts.example.dts:34.36-37 syntax error
+FATAL ERROR: Unable to parse input tree
+make[1]: *** [scripts/Makefile.lib:364: Documentation/devicetree/bindings/thermal/mediatek,mt8192-lvts.example.dtb] Error 1
+make[1]: *** Waiting for unfinished jobs....
+make: *** [Makefile:1401: dt_binding_check] Error 2
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/patch/
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
 
