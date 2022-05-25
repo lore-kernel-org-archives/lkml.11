@@ -2,712 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80190C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 14:28:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3814AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 14:28:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244715AbiEYO2B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 10:28:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60544 "EHLO
+        id S244848AbiEYO2q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 10:28:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244853AbiEYO1o (ORCPT
+        with ESMTP id S244658AbiEYO1t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 10:27:44 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BDC0B11454
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 07:27:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653488820;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=5LHs+O7BfBzfV4veV/0VTPuJKstl9+71v5QRP+tAdys=;
-        b=Hib45ZM8bgQ3/dVHoZPVMzCJ3J78b/5tfccxQGorz2MXU8gCN+BG7D1yBDcj2Tl7fS22TO
-        jbpPID7Ahm3iTl0bbTVGI0goF2ZoyD6+J9RTdILrcQopAYjACruxOQjSYDlvHvhrnbCrm/
-        7cv8ghuHCKRLx3O9myLtmjG1ZaY2wsM=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-650-gWi1obc2MiaE_NzlcpdSVQ-1; Wed, 25 May 2022 10:26:54 -0400
-X-MC-Unique: gWi1obc2MiaE_NzlcpdSVQ-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0042F801E6B;
-        Wed, 25 May 2022 14:26:54 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.8])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5FB4040CF8EF;
-        Wed, 25 May 2022 14:26:52 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH 6/7] cifs: Remove unused code
-From:   David Howells <dhowells@redhat.com>
-To:     Steve French <smfrench@gmail.com>
-Cc:     Steve French <sfrench@samba.org>,
-        Shyam Prasad N <nspmangalore@gmail.com>,
-        Rohith Surabattula <rohiths.msft@gmail.com>,
-        linux-cifs@vger.kernel.org, dhowells@redhat.com,
-        Shyam Prasad N <nspmangalore@gmail.com>,
-        Rohith Surabattula <rohiths.msft@gmail.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        Al Viro <viro@zeniv.linux.org.uk>, linux-cifs@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Wed, 25 May 2022 15:26:51 +0100
-Message-ID: <165348881165.2106726.2993852968344861224.stgit@warthog.procyon.org.uk>
-In-Reply-To: <165348876794.2106726.9240233279581920208.stgit@warthog.procyon.org.uk>
-References: <165348876794.2106726.9240233279581920208.stgit@warthog.procyon.org.uk>
-User-Agent: StGit/1.4
+        Wed, 25 May 2022 10:27:49 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B32F1209D
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 07:27:22 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id p10so11741140wrg.12
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 07:27:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=vJ1ZHRktroNtOl8H5m5yxZpwDkzeUzNeSS+Jn6yJC/E=;
+        b=RDQviVNxwnDPtpi7oegoJoeczxVptCjhjqG3k7e2MVyRfnEPXQK1Yh1mUiyt6PZWOT
+         D5kGdb6hYRbfoJVXaQstxQAn4TVO0B4oPNhT5dYC075z4MKUbkwAqLV0yqr71Xn16XQX
+         igoPgt+UJjSW3+kK+cSA/cwXZauSDLvZzvLrQTCHp2bR8oG1WtTDjgC4ZMXM64P5Q75P
+         tCKHM37n6SFwIm3i5s7e2NLzGbZXghMVU7vk+S/fXnvquPunmZUEFClnPbEBtKnHF4aH
+         K7luMHASgIXULLWtjmwvJKmEZmtnQwrgskARoSUNu69cp3HYxDrpSj2e70W5lhfNRAnK
+         vhhQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=vJ1ZHRktroNtOl8H5m5yxZpwDkzeUzNeSS+Jn6yJC/E=;
+        b=dRuExfg5mEMjkTpiB2IEXMmnbKUa/hyIDdwtuHBKuDJNHycDFRptmeartWGA5bM4HY
+         9cfZkN0DT97RzEqEfxj5qTLP7YqMyAm44dkCTbkID8rKFAZ0GRgO1yWwt0FGaXBGAkgo
+         XFtvEPkBycu7RwF/o2dIsodmiAMcepZAHAixiBtB2kQttYOyhw4b2Ret/FPMW9DAvmu1
+         2WyaxxHdZC4dNXJX2K8PYhCHBH8uQbpIYPjaVE1LqcW5qepo4u5lhWUB6jaGL5p6IPVb
+         EONkeVHOx8nHcRFNddM4Yef/G/zP/TRUph0m7Es66FtA5UGPpyFkGS5G69qEiIEHNaC5
+         dFXA==
+X-Gm-Message-State: AOAM533FoozTwnFZWrr/qZr6bfERqENnAhvQ4WNsFNhTx9OWom8Aeai4
+        Nne1TVdGy0mtvW1I++pbShX4gLR9PiHpwDcWyPWdNg==
+X-Google-Smtp-Source: ABdhPJwO71e56s9S6gZVeAgxZJG9PM+AF+DSN8b3zz0J1VjD/KFjwSYVgU2nlpO1Jp//jjlGO0e0mGWReG0/0XrUcdc=
+X-Received: by 2002:a5d:448d:0:b0:20d:744:7663 with SMTP id
+ j13-20020a5d448d000000b0020d07447663mr27630902wrq.654.1653488840849; Wed, 25
+ May 2022 07:27:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
+References: <20220525140410.1706851-1-zhengjun.xing@linux.intel.com>
+In-Reply-To: <20220525140410.1706851-1-zhengjun.xing@linux.intel.com>
+From:   Ian Rogers <irogers@google.com>
+Date:   Wed, 25 May 2022 07:27:08 -0700
+Message-ID: <CAP-5=fUm4G043v6-pToBiT-psxt-_r4kxtsWwkjLh=ARmhmP_A@mail.gmail.com>
+Subject: Re: [PATCH] perf jevents: Fix event syntax error caused by ExtSel
+To:     zhengjun.xing@linux.intel.com
+Cc:     acme@kernel.org, peterz@infradead.org, mingo@redhat.com,
+        alexander.shishkin@intel.com, jolsa@redhat.com,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        adrian.hunter@intel.com, ak@linux.intel.com,
+        kan.liang@linux.intel.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove a bunch of functions that are no longer used and are commented out
-after the conversion to use iterators throughout the I/O path.
+On Wed, May 25, 2022 at 7:04 AM <zhengjun.xing@linux.intel.com> wrote:
+>
+> From: Zhengjun Xing <zhengjun.xing@linux.intel.com>
+>
+> In the origin code, when "ExtSel" is 1, the eventcode will change to
+> "eventcode |=3D 1 << 21=E2=80=9D. For event =E2=80=9CUNC_Q_RxL_CREDITS_CO=
+NSUMED_VN0.DRS",
+> its "ExtSel" is "1", its eventcode will change from 0x1E to 0x20001E,
+> but in fact the eventcode should <=3D0x1FF, so this will cause the parse
+> fail:
+>
+>   # perf stat -e "UNC_Q_RxL_CREDITS_CONSUMED_VN0.DRS" -a sleep 0.1
+> event syntax error: '.._RxL_CREDITS_CONSUMED_VN0.DRS'
+>                                   \___ value too big for format, maximum =
+is 511
+>
+> On the perf kernel side, the kernel assumes the valid bits are continuous=
+.
+> It will adjust the 0x100 (bit 8 for perf tool) to bit 21 in HW.
+>
+> DEFINE_UNCORE_FORMAT_ATTR(event_ext, event, "config:0-7,21");
+>
+> So the perf tool follows the kernel side and just set bit8 other than bit=
+21.
+>
+> Fixes: fedb2b518239 ("perf jevents: Add support for parsing uncore json f=
+iles")
+> Signed-off-by: Zhengjun Xing <zhengjun.xing@linux.intel.com>
+> Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
 
-Signed-off-by: David Howells <dhowells@redhat.com>
-cc: Steve French <sfrench@samba.org>
-cc: Shyam Prasad N <nspmangalore@gmail.com>
-cc: Rohith Surabattula <rohiths.msft@gmail.com>
-cc: linux-cifs@vger.kernel.org
----
+Acked-by: Ian Rogers <irogers@google.com>
 
- fs/cifs/file.c |  590 --------------------------------------------------------
- 1 file changed, 590 deletions(-)
+Thanks,
+Ian
 
-diff --git a/fs/cifs/file.c b/fs/cifs/file.c
-index ac9aeabef590..e8381140a24b 100644
---- a/fs/cifs/file.c
-+++ b/fs/cifs/file.c
-@@ -2262,298 +2262,6 @@ static int cifs_partialpagewrite(struct page *page, unsigned from, unsigned to)
- 	return rc;
- }
- 
--#if 0 // TODO: Remove for iov_iter support
--static struct cifs_writedata *
--wdata_alloc_and_fillpages(pgoff_t tofind, struct address_space *mapping,
--			  pgoff_t end, pgoff_t *index,
--			  unsigned int *found_pages)
--{
--	struct cifs_writedata *wdata;
--
--	wdata = cifs_writedata_alloc((unsigned int)tofind,
--				     cifs_writev_complete);
--	if (!wdata)
--		return NULL;
--
--	*found_pages = find_get_pages_range_tag(mapping, index, end,
--				PAGECACHE_TAG_DIRTY, tofind, wdata->pages);
--	return wdata;
--}
--
--static unsigned int
--wdata_prepare_pages(struct cifs_writedata *wdata, unsigned int found_pages,
--		    struct address_space *mapping,
--		    struct writeback_control *wbc,
--		    pgoff_t end, pgoff_t *index, pgoff_t *next, bool *done)
--{
--	unsigned int nr_pages = 0, i;
--	struct page *page;
--
--	for (i = 0; i < found_pages; i++) {
--		page = wdata->pages[i];
--		/*
--		 * At this point we hold neither the i_pages lock nor the
--		 * page lock: the page may be truncated or invalidated
--		 * (changing page->mapping to NULL), or even swizzled
--		 * back from swapper_space to tmpfs file mapping
--		 */
--
--		if (nr_pages == 0)
--			lock_page(page);
--		else if (!trylock_page(page))
--			break;
--
--		if (unlikely(page->mapping != mapping)) {
--			unlock_page(page);
--			break;
--		}
--
--		if (!wbc->range_cyclic && page->index > end) {
--			*done = true;
--			unlock_page(page);
--			break;
--		}
--
--		if (*next && (page->index != *next)) {
--			/* Not next consecutive page */
--			unlock_page(page);
--			break;
--		}
--
--		if (wbc->sync_mode != WB_SYNC_NONE)
--			wait_on_page_writeback(page);
--
--		if (PageWriteback(page) ||
--				!clear_page_dirty_for_io(page)) {
--			unlock_page(page);
--			break;
--		}
--
--		/*
--		 * This actually clears the dirty bit in the radix tree.
--		 * See cifs_writepage() for more commentary.
--		 */
--		set_page_writeback(page);
--		if (page_offset(page) >= i_size_read(mapping->host)) {
--			*done = true;
--			unlock_page(page);
--			end_page_writeback(page);
--			break;
--		}
--
--		wdata->pages[i] = page;
--		*next = page->index + 1;
--		++nr_pages;
--	}
--
--	/* reset index to refind any pages skipped */
--	if (nr_pages == 0)
--		*index = wdata->pages[0]->index + 1;
--
--	/* put any pages we aren't going to use */
--	for (i = nr_pages; i < found_pages; i++) {
--		put_page(wdata->pages[i]);
--		wdata->pages[i] = NULL;
--	}
--
--	return nr_pages;
--}
--
--static int
--wdata_send_pages(struct cifs_writedata *wdata, unsigned int nr_pages,
--		 struct address_space *mapping, struct writeback_control *wbc)
--{
--	int rc;
--
--	wdata->sync_mode = wbc->sync_mode;
--	wdata->nr_pages = nr_pages;
--	wdata->offset = page_offset(wdata->pages[0]);
--	wdata->pagesz = PAGE_SIZE;
--	wdata->tailsz = min(i_size_read(mapping->host) -
--			page_offset(wdata->pages[nr_pages - 1]),
--			(loff_t)PAGE_SIZE);
--	wdata->bytes = ((nr_pages - 1) * PAGE_SIZE) + wdata->tailsz;
--	wdata->pid = wdata->cfile->pid;
--
--	rc = adjust_credits(wdata->server, &wdata->credits, wdata->bytes);
--	if (rc)
--		return rc;
--
--	if (wdata->cfile->invalidHandle)
--		rc = -EAGAIN;
--	else
--		rc = wdata->server->ops->async_writev(wdata,
--						      cifs_writedata_release);
--
--	return rc;
--}
--
--static int cifs_writepages(struct address_space *mapping,
--			   struct writeback_control *wbc)
--{
--	struct inode *inode = mapping->host;
--	struct cifs_sb_info *cifs_sb = CIFS_SB(inode->i_sb);
--	struct TCP_Server_Info *server;
--	bool done = false, scanned = false, range_whole = false;
--	pgoff_t end, index;
--	struct cifs_writedata *wdata;
--	struct cifsFileInfo *cfile = NULL;
--	int rc = 0;
--	int saved_rc = 0;
--	unsigned int xid;
--
--	/*
--	 * If wsize is smaller than the page cache size, default to writing
--	 * one page at a time via cifs_writepage
--	 */
--	if (cifs_sb->ctx->wsize < PAGE_SIZE)
--		return generic_writepages(mapping, wbc);
--
--	xid = get_xid();
--	if (wbc->range_cyclic) {
--		index = mapping->writeback_index; /* Start from prev offset */
--		end = -1;
--	} else {
--		index = wbc->range_start >> PAGE_SHIFT;
--		end = wbc->range_end >> PAGE_SHIFT;
--		if (wbc->range_start == 0 && wbc->range_end == LLONG_MAX)
--			range_whole = true;
--		scanned = true;
--	}
--	server = cifs_pick_channel(cifs_sb_master_tcon(cifs_sb)->ses);
--
--retry:
--	while (!done && index <= end) {
--		unsigned int i, nr_pages, found_pages, wsize;
--		pgoff_t next = 0, tofind, saved_index = index;
--		struct cifs_credits credits_on_stack;
--		struct cifs_credits *credits = &credits_on_stack;
--		int get_file_rc = 0;
--
--		if (cfile)
--			cifsFileInfo_put(cfile);
--
--		rc = cifs_get_writable_file(CIFS_I(inode), FIND_WR_ANY, &cfile);
--
--		/* in case of an error store it to return later */
--		if (rc)
--			get_file_rc = rc;
--
--		rc = server->ops->wait_mtu_credits(server, cifs_sb->ctx->wsize,
--						   &wsize, credits);
--		if (rc != 0) {
--			done = true;
--			break;
--		}
--
--		tofind = min((wsize / PAGE_SIZE) - 1, end - index) + 1;
--
--		wdata = wdata_alloc_and_fillpages(tofind, mapping, end, &index,
--						  &found_pages);
--		if (!wdata) {
--			rc = -ENOMEM;
--			done = true;
--			add_credits_and_wake_if(server, credits, 0);
--			break;
--		}
--
--		if (found_pages == 0) {
--			kref_put(&wdata->refcount, cifs_writedata_release);
--			add_credits_and_wake_if(server, credits, 0);
--			break;
--		}
--
--		nr_pages = wdata_prepare_pages(wdata, found_pages, mapping, wbc,
--					       end, &index, &next, &done);
--
--		/* nothing to write? */
--		if (nr_pages == 0) {
--			kref_put(&wdata->refcount, cifs_writedata_release);
--			add_credits_and_wake_if(server, credits, 0);
--			continue;
--		}
--
--		wdata->credits = credits_on_stack;
--		wdata->cfile = cfile;
--		wdata->server = server;
--		cfile = NULL;
--
--		if (!wdata->cfile) {
--			cifs_dbg(VFS, "No writable handle in writepages rc=%d\n",
--				 get_file_rc);
--			if (is_retryable_error(get_file_rc))
--				rc = get_file_rc;
--			else
--				rc = -EBADF;
--		} else
--			rc = wdata_send_pages(wdata, nr_pages, mapping, wbc);
--
--		for (i = 0; i < nr_pages; ++i)
--			unlock_page(wdata->pages[i]);
--
--		/* send failure -- clean up the mess */
--		if (rc != 0) {
--			add_credits_and_wake_if(server, &wdata->credits, 0);
--			for (i = 0; i < nr_pages; ++i) {
--				if (is_retryable_error(rc))
--					redirty_page_for_writepage(wbc,
--							   wdata->pages[i]);
--				else
--					SetPageError(wdata->pages[i]);
--				end_page_writeback(wdata->pages[i]);
--				put_page(wdata->pages[i]);
--			}
--			if (!is_retryable_error(rc))
--				mapping_set_error(mapping, rc);
--		}
--		kref_put(&wdata->refcount, cifs_writedata_release);
--
--		if (wbc->sync_mode == WB_SYNC_ALL && rc == -EAGAIN) {
--			index = saved_index;
--			continue;
--		}
--
--		/* Return immediately if we received a signal during writing */
--		if (is_interrupt_error(rc)) {
--			done = true;
--			break;
--		}
--
--		if (rc != 0 && saved_rc == 0)
--			saved_rc = rc;
--
--		wbc->nr_to_write -= nr_pages;
--		if (wbc->nr_to_write <= 0)
--			done = true;
--
--		index = next;
--	}
--
--	if (!scanned && !done) {
--		/*
--		 * We hit the last page and there is more work to be done: wrap
--		 * back to the start of the file
--		 */
--		scanned = true;
--		index = 0;
--		goto retry;
--	}
--
--	if (saved_rc != 0)
--		rc = saved_rc;
--
--	if (wbc->range_cyclic || (range_whole && wbc->nr_to_write > 0))
--		mapping->writeback_index = index;
--
--	if (cfile)
--		cifsFileInfo_put(cfile);
--	free_xid(xid);
--	/* Indication to update ctime and mtime as close is deferred */
--	set_bit(CIFS_INO_MODIFIED_ATTR, &CIFS_I(inode)->flags);
--	return rc;
--}
--#endif
--
- /*
-  * Extend the region to be written back to include subsequent contiguously
-  * dirty pages if possible, but don't sleep while doing so.
-@@ -3136,49 +2844,6 @@ int cifs_flush(struct file *file, fl_owner_t id)
- 	return rc;
- }
- 
--#if 0 // TODO: Remove for iov_iter support
--static int
--cifs_write_allocate_pages(struct page **pages, unsigned long num_pages)
--{
--	int rc = 0;
--	unsigned long i;
--
--	for (i = 0; i < num_pages; i++) {
--		pages[i] = alloc_page(GFP_KERNEL|__GFP_HIGHMEM);
--		if (!pages[i]) {
--			/*
--			 * save number of pages we have already allocated and
--			 * return with ENOMEM error
--			 */
--			num_pages = i;
--			rc = -ENOMEM;
--			break;
--		}
--	}
--
--	if (rc) {
--		for (i = 0; i < num_pages; i++)
--			put_page(pages[i]);
--	}
--	return rc;
--}
--
--static inline
--size_t get_numpages(const size_t wsize, const size_t len, size_t *cur_len)
--{
--	size_t num_pages;
--	size_t clen;
--
--	clen = min_t(const size_t, len, wsize);
--	num_pages = DIV_ROUND_UP(clen, PAGE_SIZE);
--
--	if (cur_len)
--		*cur_len = clen;
--
--	return num_pages;
--}
--#endif
--
- static void
- cifs_uncached_writedata_release(struct kref *refcount)
- {
-@@ -3211,50 +2876,6 @@ cifs_uncached_writev_complete(struct work_struct *work)
- 	kref_put(&wdata->refcount, cifs_uncached_writedata_release);
- }
- 
--#if 0 // TODO: Remove for iov_iter support
--static int
--wdata_fill_from_iovec(struct cifs_writedata *wdata, struct iov_iter *from,
--		      size_t *len, unsigned long *num_pages)
--{
--	size_t save_len, copied, bytes, cur_len = *len;
--	unsigned long i, nr_pages = *num_pages;
--
--	save_len = cur_len;
--	for (i = 0; i < nr_pages; i++) {
--		bytes = min_t(const size_t, cur_len, PAGE_SIZE);
--		copied = copy_page_from_iter(wdata->pages[i], 0, bytes, from);
--		cur_len -= copied;
--		/*
--		 * If we didn't copy as much as we expected, then that
--		 * may mean we trod into an unmapped area. Stop copying
--		 * at that point. On the next pass through the big
--		 * loop, we'll likely end up getting a zero-length
--		 * write and bailing out of it.
--		 */
--		if (copied < bytes)
--			break;
--	}
--	cur_len = save_len - cur_len;
--	*len = cur_len;
--
--	/*
--	 * If we have no data to send, then that probably means that
--	 * the copy above failed altogether. That's most likely because
--	 * the address in the iovec was bogus. Return -EFAULT and let
--	 * the caller free anything we allocated and bail out.
--	 */
--	if (!cur_len)
--		return -EFAULT;
--
--	/*
--	 * i + 1 now represents the number of pages we actually used in
--	 * the copy phase above.
--	 */
--	*num_pages = i + 1;
--	return 0;
--}
--#endif
--
- static int
- cifs_resend_wdata(struct cifs_writedata *wdata, struct list_head *wdata_list,
- 	struct cifs_aio_ctx *ctx)
-@@ -3754,83 +3375,6 @@ cifs_uncached_readv_complete(struct work_struct *work)
- 	kref_put(&rdata->refcount, cifs_readdata_release);
- }
- 
--#if 0 // TODO: Remove for iov_iter support
--
--static int
--uncached_fill_pages(struct TCP_Server_Info *server,
--		    struct cifs_readdata *rdata, struct iov_iter *iter,
--		    unsigned int len)
--{
--	int result = 0;
--	unsigned int i;
--	unsigned int nr_pages = rdata->nr_pages;
--	unsigned int page_offset = rdata->page_offset;
--
--	rdata->got_bytes = 0;
--	rdata->tailsz = PAGE_SIZE;
--	for (i = 0; i < nr_pages; i++) {
--		struct page *page = rdata->pages[i];
--		size_t n;
--		unsigned int segment_size = rdata->pagesz;
--
--		if (i == 0)
--			segment_size -= page_offset;
--		else
--			page_offset = 0;
--
--
--		if (len <= 0) {
--			/* no need to hold page hostage */
--			rdata->pages[i] = NULL;
--			rdata->nr_pages--;
--			put_page(page);
--			continue;
--		}
--
--		n = len;
--		if (len >= segment_size)
--			/* enough data to fill the page */
--			n = segment_size;
--		else
--			rdata->tailsz = len;
--		len -= n;
--
--		if (iter)
--			result = copy_page_from_iter(
--					page, page_offset, n, iter);
--#ifdef CONFIG_CIFS_SMB_DIRECT
--		else if (rdata->mr)
--			result = n;
--#endif
--		else
--			result = cifs_read_page_from_socket(
--					server, page, page_offset, n);
--		if (result < 0)
--			break;
--
--		rdata->got_bytes += result;
--	}
--
--	return rdata->got_bytes > 0 && result != -ECONNABORTED ?
--						rdata->got_bytes : result;
--}
--
--static int
--cifs_uncached_read_into_pages(struct TCP_Server_Info *server,
--			      struct cifs_readdata *rdata, unsigned int len)
--{
--	return uncached_fill_pages(server, rdata, NULL, len);
--}
--
--static int
--cifs_uncached_copy_into_pages(struct TCP_Server_Info *server,
--			      struct cifs_readdata *rdata,
--			      struct iov_iter *iter)
--{
--	return uncached_fill_pages(server, rdata, iter, iter->count);
--}
--#endif
--
- static int cifs_resend_rdata(struct cifs_readdata *rdata,
- 			struct list_head *rdata_list,
- 			struct cifs_aio_ctx *ctx)
-@@ -4386,140 +3930,6 @@ int cifs_file_mmap(struct file *file, struct vm_area_struct *vma)
- 	return rc;
- }
- 
--#if 0 // TODO: Remove for iov_iter support
--
--static void
--cifs_readv_complete(struct work_struct *work)
--{
--	unsigned int i, got_bytes;
--	struct cifs_readdata *rdata = container_of(work,
--						struct cifs_readdata, work);
--
--	got_bytes = rdata->got_bytes;
--	for (i = 0; i < rdata->nr_pages; i++) {
--		struct page *page = rdata->pages[i];
--
--		if (rdata->result == 0 ||
--		    (rdata->result == -EAGAIN && got_bytes)) {
--			flush_dcache_page(page);
--			SetPageUptodate(page);
--		} else
--			SetPageError(page);
--
--		if (rdata->result == 0 ||
--		    (rdata->result == -EAGAIN && got_bytes))
--			cifs_readpage_to_fscache(rdata->mapping->host, page);
--
--		unlock_page(page);
--
--		got_bytes -= min_t(unsigned int, PAGE_SIZE, got_bytes);
--
--		put_page(page);
--		rdata->pages[i] = NULL;
--	}
--	kref_put(&rdata->refcount, cifs_readdata_release);
--}
--
--static int
--readpages_fill_pages(struct TCP_Server_Info *server,
--		     struct cifs_readdata *rdata, struct iov_iter *iter,
--		     unsigned int len)
--{
--	int result = 0;
--	unsigned int i;
--	u64 eof;
--	pgoff_t eof_index;
--	unsigned int nr_pages = rdata->nr_pages;
--	unsigned int page_offset = rdata->page_offset;
--
--	/* determine the eof that the server (probably) has */
--	eof = CIFS_I(rdata->mapping->host)->server_eof;
--	eof_index = eof ? (eof - 1) >> PAGE_SHIFT : 0;
--	cifs_dbg(FYI, "eof=%llu eof_index=%lu\n", eof, eof_index);
--
--	rdata->got_bytes = 0;
--	rdata->tailsz = PAGE_SIZE;
--	for (i = 0; i < nr_pages; i++) {
--		struct page *page = rdata->pages[i];
--		unsigned int to_read = rdata->pagesz;
--		size_t n;
--
--		if (i == 0)
--			to_read -= page_offset;
--		else
--			page_offset = 0;
--
--		n = to_read;
--
--		if (len >= to_read) {
--			len -= to_read;
--		} else if (len > 0) {
--			/* enough for partial page, fill and zero the rest */
--			zero_user(page, len + page_offset, to_read - len);
--			n = rdata->tailsz = len;
--			len = 0;
--		} else if (page->index > eof_index) {
--			/*
--			 * The VFS will not try to do readahead past the
--			 * i_size, but it's possible that we have outstanding
--			 * writes with gaps in the middle and the i_size hasn't
--			 * caught up yet. Populate those with zeroed out pages
--			 * to prevent the VFS from repeatedly attempting to
--			 * fill them until the writes are flushed.
--			 */
--			zero_user(page, 0, PAGE_SIZE);
--			flush_dcache_page(page);
--			SetPageUptodate(page);
--			unlock_page(page);
--			put_page(page);
--			rdata->pages[i] = NULL;
--			rdata->nr_pages--;
--			continue;
--		} else {
--			/* no need to hold page hostage */
--			unlock_page(page);
--			put_page(page);
--			rdata->pages[i] = NULL;
--			rdata->nr_pages--;
--			continue;
--		}
--
--		if (iter)
--			result = copy_page_from_iter(
--					page, page_offset, n, iter);
--#ifdef CONFIG_CIFS_SMB_DIRECT
--		else if (rdata->mr)
--			result = n;
--#endif
--		else
--			result = cifs_read_page_from_socket(
--					server, page, page_offset, n);
--		if (result < 0)
--			break;
--
--		rdata->got_bytes += result;
--	}
--
--	return rdata->got_bytes > 0 && result != -ECONNABORTED ?
--						rdata->got_bytes : result;
--}
--
--static int
--cifs_readpages_read_into_pages(struct TCP_Server_Info *server,
--			       struct cifs_readdata *rdata, unsigned int len)
--{
--	return readpages_fill_pages(server, rdata, NULL, len);
--}
--
--static int
--cifs_readpages_copy_into_pages(struct TCP_Server_Info *server,
--			       struct cifs_readdata *rdata,
--			       struct iov_iter *iter)
--{
--	return readpages_fill_pages(server, rdata, iter, iter->count);
--}
--#endif
--
- /*
-  * Unlock a bunch of folios in the pagecache.
-  */
-
-
+> ---
+>  tools/perf/pmu-events/jevents.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/tools/perf/pmu-events/jevents.c b/tools/perf/pmu-events/jeve=
+nts.c
+> index cee61c4ed59e..e597e4bac90f 100644
+> --- a/tools/perf/pmu-events/jevents.c
+> +++ b/tools/perf/pmu-events/jevents.c
+> @@ -605,7 +605,7 @@ static int json_events(const char *fn,
+>                         } else if (json_streq(map, field, "ExtSel")) {
+>                                 char *code =3D NULL;
+>                                 addfield(map, &code, "", "", val);
+> -                               eventcode |=3D strtoul(code, NULL, 0) << =
+21;
+> +                               eventcode |=3D strtoul(code, NULL, 0) << =
+8;
+>                                 free(code);
+>                         } else if (json_streq(map, field, "EventName")) {
+>                                 addfield(map, &je.name, "", "", val);
+> --
+> 2.25.1
+>
