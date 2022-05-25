@@ -2,88 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48E15C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 13:56:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E683C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 13:56:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242812AbiEYN4N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 09:56:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50074 "EHLO
+        id S237947AbiEYN4t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 09:56:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229555AbiEYN4I (ORCPT
+        with ESMTP id S229555AbiEYN4r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 09:56:08 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DBEB8AE4A
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 06:56:03 -0700 (PDT)
-Received: from zn.tnic (p200300ea97465795329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:9746:5795:329c:23ff:fea6:a903])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 2D5411EC064C;
-        Wed, 25 May 2022 15:55:58 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1653486958;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=RST4dh8t+hX/JhPHQNoOfLjLfAPVxCOqSiSb2TTlSF4=;
-        b=O4cEM2JjmeIFIigPuE5BI9738GQ+xaMWwJil9+wWYH9Vpe+G74PCNAvvPwe20GeH9NAlj1
-        50GgLTAp/e/oZZ34PzG/51hYw0OpsCMYWpRqF1DFbP9Gg4ag7ke9Xrp6djF+7xqwd9XGDJ
-        vRrPzySY4acOnCMO+5aMfTiEAeN1BLo=
-Date:   Wed, 25 May 2022 15:55:54 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     X86 ML <x86@kernel.org>, LKML <linux-kernel@vger.kernel.org>
-Subject: [PATCH 4/3] x86/microcode: Remove unnecessary perf callback
- default-disable late loading
-Message-ID: <Yo41ahlGTxyyZ/7o@zn.tnic>
-References: <20220524185324.28395-1-bp@alien8.de>
+        Wed, 25 May 2022 09:56:47 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52B778D6B7;
+        Wed, 25 May 2022 06:56:46 -0700 (PDT)
+Date:   Wed, 25 May 2022 13:56:43 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1653487005;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=6svJIhgsNotYCM2gnWaDCgcV12dIHd2Me3m7GcUKNyo=;
+        b=0SQidgDzaLUDbuK0RFRoBnkABs4FEplKLKDgvZD7nbQas/HnQsFbFoLGzD++2UeIaK8Sy1
+        XMgt4iFwRNg/26K6z23PrQr5YNUgUZJ+BgkC9dH+x4zHOKyEiHvIGSP/0yUjlvbrjEfnje
+        Jf6+g9V0Qr89XRG7kGfLhpL32ZTANQk5nGRztr4NkdpjoPtuVnlILeKodbVcqajUKqplMm
+        jSFXMpTchZUVNwOTO8aItiYTItnqRtwQkOoqyZTwoNi8hNR8cznzU7kpC+7cqlk4mHYg1J
+        Pl7wFp3IKTYokqYPTob29vUyTBaASSOjMGgjP6QMSeiwhpiFCDJQxKwuZwLTGQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1653487005;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=6svJIhgsNotYCM2gnWaDCgcV12dIHd2Me3m7GcUKNyo=;
+        b=3K+piQWMy8ji3Yu6aBOu6s174OOQQFwGscaYuunro4jC3kpfdzdDACoOFHBfxyIncgyATY
+        0C0hMef8wvCPBMCA==
+From:   "tip-bot2 for Juerg Haefliger" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: perf/core] perf/x86/Kconfig: Fix indentation in the Kconfig file
+Cc:     Juerg Haefliger <juerg.haefliger@canonical.com>,
+        Ingo Molnar <mingo@kernel.org>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220525133949.53730-1-juerg.haefliger@canonical.com>
+References: <20220525133949.53730-1-juerg.haefliger@canonical.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220524185324.28395-1-bp@alien8.de>
+Message-ID: <165348700360.4207.4712455380719142556.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Borislav Petkov <bp@suse.de>
+The following commit has been merged into the perf/core branch of tip:
 
-c93dc84cbe32 ("perf/x86: Add a microcode revision check for SNB-PEBS")
-checks whether the microcode revision has fixed PEBS issues.
+Commit-ID:     108ea7eb3e754be735a1c33d2713a19527fb2065
+Gitweb:        https://git.kernel.org/tip/108ea7eb3e754be735a1c33d2713a19527fb2065
+Author:        Juerg Haefliger <juerg.haefliger@canonical.com>
+AuthorDate:    Wed, 25 May 2022 15:39:49 +02:00
+Committer:     Ingo Molnar <mingo@kernel.org>
+CommitterDate: Wed, 25 May 2022 15:54:26 +02:00
 
-This can happen either:
+perf/x86/Kconfig: Fix indentation in the Kconfig file
 
-1. At PEBS init time, where the early microcode has been loaded already
+The convention for indentation seems to be a single tab. Help text is
+further indented by an additional two whitespaces. Fix the lines that
+violate these rules.
 
-2. During late loading, in the microcode_check() callback.
-
-So remove the unnecessary call in the microcode loader init routine.
-
-Signed-off-by: Borislav Petkov <bp@suse.de>
+Signed-off-by: Juerg Haefliger <juerg.haefliger@canonical.com>
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Link: https://lore.kernel.org/r/20220525133949.53730-1-juerg.haefliger@canonical.com
 ---
- arch/x86/kernel/cpu/microcode/core.c | 3 ---
- 1 file changed, 3 deletions(-)
+ arch/x86/events/Kconfig | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/arch/x86/kernel/cpu/microcode/core.c b/arch/x86/kernel/cpu/microcode/core.c
-index 801b44ac3851..ad57e0e4d674 100644
---- a/arch/x86/kernel/cpu/microcode/core.c
-+++ b/arch/x86/kernel/cpu/microcode/core.c
-@@ -756,10 +756,7 @@ static int __init microcode_init(void)
+diff --git a/arch/x86/events/Kconfig b/arch/x86/events/Kconfig
+index 09c5696..dabdf3d 100644
+--- a/arch/x86/events/Kconfig
++++ b/arch/x86/events/Kconfig
+@@ -6,24 +6,24 @@ config PERF_EVENTS_INTEL_UNCORE
+ 	depends on PERF_EVENTS && CPU_SUP_INTEL && PCI
+ 	default y
+ 	help
+-	Include support for Intel uncore performance events. These are
+-	available on NehalemEX and more modern processors.
++	  Include support for Intel uncore performance events. These are
++	  available on NehalemEX and more modern processors.
  
- 	cpus_read_lock();
- 	mutex_lock(&microcode_mutex);
--
- 	error = subsys_interface_register(&mc_cpu_interface);
--	if (!error)
--		perf_check_microcode();
- 	mutex_unlock(&microcode_mutex);
- 	cpus_read_unlock();
+ config PERF_EVENTS_INTEL_RAPL
+ 	tristate "Intel/AMD rapl performance events"
+ 	depends on PERF_EVENTS && (CPU_SUP_INTEL || CPU_SUP_AMD) && PCI
+ 	default y
+ 	help
+-	Include support for Intel and AMD rapl performance events for power
+-	monitoring on modern processors.
++	  Include support for Intel and AMD rapl performance events for power
++	  monitoring on modern processors.
  
--- 
-2.35.1
-
-
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+ config PERF_EVENTS_INTEL_CSTATE
+ 	tristate "Intel cstate performance events"
+ 	depends on PERF_EVENTS && CPU_SUP_INTEL && PCI
+ 	default y
+ 	help
+-	Include support for Intel cstate performance events for power
+-	monitoring on modern processors.
++	  Include support for Intel cstate performance events for power
++	  monitoring on modern processors.
+ 
+ config PERF_EVENTS_AMD_POWER
+ 	depends on PERF_EVENTS && CPU_SUP_AMD
