@@ -2,167 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B28B4C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 12:31:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9FA3C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 12:32:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238624AbiEYMbS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 08:31:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53984 "EHLO
+        id S239600AbiEYMcK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 08:32:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229590AbiEYMbQ (ORCPT
+        with ESMTP id S229882AbiEYMcH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 08:31:16 -0400
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0579410FD0
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 05:31:14 -0700 (PDT)
-Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24PCK9qm022732;
-        Wed, 25 May 2022 14:30:16 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=bPVKOjeRLgXhCaHSGPSwKkUnur7RswwoIBP9rTXhPjQ=;
- b=jCDdo5yiVDPtLuDw4vitdYjaky4ixEwyDDa//s/LwSA+o1NuoKVKs6DK6TKzVxFvkmtP
- qWpzv0rUNCdU6bZssDznIsZHKp5EycQgTe7D6UhvUJdzcx7Poi2hV7O/XlfGPgLfzMex
- HjzSmEBK3RnQpxj7hkHKUIh8McLyh3Vh0GAZIqGBQr1QfLI8RR5iiNkYptBQlB2EY3g3
- xH/iPLzvbApkgc1+lKG6lapfF/tfdZe38lKZDmzUMU7CmAfPpHlNu0z6TyATDdr94yTx
- OhIKgeRRtqE4nPAgszg/iQCiJXs6zDzy99XQoP7SeUgxWJ0lO+kOddgLxGk1ls1StD4D +A== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3g93v864rq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 25 May 2022 14:30:16 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id EEDD9100034;
-        Wed, 25 May 2022 14:30:14 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id A28FE229A8D;
-        Wed, 25 May 2022 14:30:14 +0200 (CEST)
-Received: from [10.211.12.178] (10.75.127.47) by SHFDAG1NODE1.st.com
- (10.75.129.69) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Wed, 25 May
- 2022 14:30:13 +0200
-Message-ID: <b346eb00-fde1-2dc0-e6e3-09dbf1359c20@foss.st.com>
-Date:   Wed, 25 May 2022 14:30:13 +0200
+        Wed, 25 May 2022 08:32:07 -0400
+Received: from mail-qk1-f182.google.com (mail-qk1-f182.google.com [209.85.222.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11FEF6D86D;
+        Wed, 25 May 2022 05:32:06 -0700 (PDT)
+Received: by mail-qk1-f182.google.com with SMTP id 190so10584111qkj.8;
+        Wed, 25 May 2022 05:32:06 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=gSY52yOUYVVMa0IKthoUAMnd2qVR5XAQBhwBHrssrZM=;
+        b=vdGKoQ04wBc5zaq6JKf1Tb3gv2bXgAQTJ0HzfKEd167s+uZ5OApngZpCaQUUUIVE1p
+         p6huAZJ+v1FDDfGxzD27Lx/l5Q1LZ4LPD5nrXZzFKyXIC4ijyd4PBpErLAyBptslNPvG
+         UTNDKPu1I05VgVwGCCMO8BlN5dh7U2qhZSU8Y2ykGPRbAyu2zL6B11E5dOkED9eI6mZQ
+         COkeCNYg12m1cWqywCdNqJYqXUivm7XeLg9i8cyB18rPELSBIS0S4i7locgKwtSlYCt5
+         UHSHDBJLVaQdSP3DoywAyLv5Qq1BE0g90rAatSnWOfpUk2Rhlu5TDvm8cIJdJiuMz+e8
+         3bsw==
+X-Gm-Message-State: AOAM531Y02ViFzC3mJWaiCpVqmvJXMUIr88acIQgbJlD6OoRcqq8cBNb
+        YLN70JNkz1792lAj21r4bs+WHkHkXVwirQ==
+X-Google-Smtp-Source: ABdhPJxpP9y0QtXhG+t1/hDsTOXQ0LWr0ZEcxPt8Cp3O3S9OK7kxba93WGlpZHm226grEOJ5DMqc1w==
+X-Received: by 2002:a05:620a:1a17:b0:69c:669c:1032 with SMTP id bk23-20020a05620a1a1700b0069c669c1032mr20411150qkb.377.1653481924985;
+        Wed, 25 May 2022 05:32:04 -0700 (PDT)
+Received: from mail-yb1-f182.google.com (mail-yb1-f182.google.com. [209.85.219.182])
+        by smtp.gmail.com with ESMTPSA id z11-20020a05622a124b00b002f93ece0df3sm1306465qtx.71.2022.05.25.05.32.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 25 May 2022 05:32:04 -0700 (PDT)
+Received: by mail-yb1-f182.google.com with SMTP id o80so36035186ybg.1;
+        Wed, 25 May 2022 05:32:03 -0700 (PDT)
+X-Received: by 2002:a05:6902:905:b0:64a:2089:f487 with SMTP id
+ bu5-20020a056902090500b0064a2089f487mr31418555ybb.202.1653481923339; Wed, 25
+ May 2022 05:32:03 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH] ASoC: stm32: sai: Use
- of_device_get_match_data()tosimplify code
-Content-Language: en-US
-To:     tangbin <tangbin@cmss.chinamobile.com>,
-        Mark Brown <broonie@kernel.org>
-CC:     <arnaud.pouliquen@foss.st.com>, <lgirdwood@gmail.com>,
-        <perex@perex.cz>, <tiwai@suse.com>, <mcoquelin.stm32@gmail.com>,
-        <alexandre.torgue@foss.st.com>, <alsa-devel@alsa-project.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20220519124235.21100-1-tangbin@cmss.chinamobile.com>
- <69d5cef3-57c0-9bc7-a83b-a85ef1c4cf29@foss.st.com>
- <YovZAf4S0XphBsco@sirena.org.uk>
- <3fb8d7f8-4506-3b28-22cb-863bda1f21c8@cmss.chinamobile.com>
- <d5ab354a-eb10-d31c-d55e-46a4c4d1a4ce@foss.st.com>
- <cd375914-a3e6-37c7-4a16-551937006f92@cmss.chinamobile.com>
-From:   Olivier MOYSAN <olivier.moysan@foss.st.com>
-In-Reply-To: <cd375914-a3e6-37c7-4a16-551937006f92@cmss.chinamobile.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.75.127.47]
-X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SHFDAG1NODE1.st.com
- (10.75.129.69)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-25_03,2022-05-25_02,2022-02-23_01
+References: <20220524112425.72f8c6e0@kernel.org> <20220525122813.88431-1-alexandru.tachici@analog.com>
+In-Reply-To: <20220525122813.88431-1-alexandru.tachici@analog.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 25 May 2022 14:31:51 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdVTfgFLCJ3u9CYTZ5xUL21+ENVsmHwhkPC3FRUF=k+xGg@mail.gmail.com>
+Message-ID: <CAMuHMdVTfgFLCJ3u9CYTZ5xUL21+ENVsmHwhkPC3FRUF=k+xGg@mail.gmail.com>
+Subject: Re: [PATCH] dt-bindings: net: adin: Fix adi,phy-output-clock
+ description syntax
+To:     alexandru.tachici@analog.com
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, Eric Dumazet <edumazet@google.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Josua Mayer <josua@solid-run.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        netdev <netdev@vger.kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Tang,
+Hi Alexandru,
 
-On 5/25/22 09:36, tangbin wrote:
-> Hi Olivier：
-> 
-> On 2022/5/24 22:30, Olivier MOYSAN wrote:
->> Hi Tang,
->>
->> On 5/24/22 03:44, tangbin wrote:
->>> Hi Mark & Olivier：
->>>
->>> On 2022/5/24 2:57, Mark Brown wrote:
->>>> On Mon, May 23, 2022 at 03:28:48PM +0200, Olivier MOYSAN wrote:
->>>>
->>>>> The current patch requires a change in the driver.
->>>>> Either changing STM_SAI_x_ID enums, or replacing data by a struct.
->>>>> For instance:
->>>>> struct stm32_sai_comp_data {
->>>>>     unsigned int id;
->>>>> }
->>>>> struct stm32_sai_comp_data stm32_sai_comp_data_a = {
->>>>>     .id = STM_SAI_A_ID;
->>>>> }
->>>>> struct of_device_id stm32_sai_sub_ids[] = {
->>>>>     .data = &stm32_sai_comp_data_a},
->>>>> }
->>>> Either approach works for me (or a revert for that matter).
->>>
->>>      Thanks for your advice, I was thoughtless.
->>>
->>>      I think change the date of STM_SAI_x_ID maybe simple. But if we 
->>> don't change the id,
->>>
->>> what about add a "#define" like the line 47:
->>>
->>> #define STM_SAI_IS_SUB(x) ((x)->id == STM_SAI_A_ID || (x)->id == 
->>> STM_SAI_B_ID)
->>>
->>> then in the judgement, wu use:
->>>
->>>      sai->id = (uintptr_t)of_device_get_match_data(&pdev->dev);
->>>
->>>      if (!STM_SAI_IS_SUB(sai))
->>>
->>>              return -EINVAL;
->>>
->>>
->>> if you think that's ok, I will send patch v2 for you .
->>>
->>
->> If we allow null value in STM_SAI_IS_SUB(sai) check, we can miss real 
->> NULL pointer error from of_device_get_match_data().
->>
->> The simplest way is to change STM_SAI_x_ID enums I think.
->> But honnestly, I feel more comfortable to let the driver unchanged.
->>
-> Oh，you are right, I am sorry.
-> 
-> Please forget this patch, I'm sorry to have wasted your time.
-> 
-> But I saw some codes is useless in the line 48 & line 49, I think we can 
-> remove it.
-> 
+On Wed, May 25, 2022 at 2:12 PM <alexandru.tachici@analog.com> wrote:
+> > On Tue, 24 May 2022 16:30:18 +0200 Geert Uytterhoeven wrote:
+> > > On Tue, May 24, 2022 at 4:12 PM Geert Uytterhoeven
+> > > <geert+renesas@glider.be> wrote:
+> > > > "make dt_binding_check":
+> > > >
+> > > >     Documentation/devicetree/bindings/net/adi,adin.yaml:40:77: [error] syntax error: mapping values are not allowed here (syntax)
+> > > >
+> > > > The first line of the description ends with a colon, hence the block
+> > > > needs to be marked with a "|".
+> > > >
+> > > > Fixes: 1f77204e11f8b9e5 ("dt-bindings: net: adin: document phy clock output properties")
+> > > > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> > > > ---
+> > > >  Documentation/devicetree/bindings/net/adi,adin.yaml | 3 ++-
+> > >
+> > > Alexandru Ardelean's email address bounces, while he is listed as
+> > > a maintainer in several DT bindings files.
+> >
+> > Let's CC Alexandru Tachici, maybe he knows if we need to update
+> > and to what.
+>
+> Yeah, I should have updated this one. You can add me instead or I will come back with a patch.
+>
+>   - Alexandru Tachici <alexandru.tachici@analog.com>
 
-Yes, these two defines are no more useful.
-Feel free to send a cleanup patch.
+Please send a patch (or patches).  There are multiple files listing the
+bouncing address, and I don't know which devices you have inherited.
 
-BRs
+Thanks!
 
-Olivier
+Gr{oetje,eeting}s,
 
-> If you think so, I will send this patch for you.
-> 
-> 
-> Thanks
-> 
-> Tang Bin
-> 
-> 
->> BRs
->> Olivier
->>
->>> Thanks
->>>
->>> Tang Bin
->>>
->>>
-> 
-> 
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
