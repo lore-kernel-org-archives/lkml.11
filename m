@@ -2,201 +2,221 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9DF9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 09:44:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 112A3C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 09:44:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241447AbiEYJn6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 05:43:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54272 "EHLO
+        id S236751AbiEYJoQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 05:44:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234752AbiEYJni (ORCPT
+        with ESMTP id S241183AbiEYJnt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 05:43:38 -0400
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2046.outbound.protection.outlook.com [40.107.93.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97E7F6423;
-        Wed, 25 May 2022 02:43:36 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Z8chP5p0Uv8IMfQPeg1FGFbZCBvfpe7l03IarILJaI5Dp5VNdaZ7DvMS3vN/OwQPJi0bsocpuJLcYYWQ/17Ffgr3YCVB62fciDt42yhCSwIf/7StxFwSIS5xUybN2gxcSoQb72QMKfupYAhPiFJQknT/LlW3DMv4/Lxlk1hchyusdCNhjcXd7M1ZDIgN93XmVXzolpdnidXqKQwb+s+hTq2Mos4jSOzJhdbKiyqWa66ZxUSzTWRl8VacJJD3hoU/0aJGYp/WMgyReci/eRaYbyN/KhGJRqS8e4y9gnJrKRdZCyM3b1l6yEWDKK5mpn1c6Ys7Ager5mIz5UWWt1TPfA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=zOQbbCrCq1oj6rR2mCmOv0EpYneRHwD92+Nx+s5gpWA=;
- b=KWAt6RIMTZG48HN0wiRIIG8T8Szz82N6mV9r75R76YuvyV1eCfrCWKHjiSrXmhokmG6mhaRHjIbzBWnt+1HrWhaJjp9a7qsONU3zeQJu9AIxfE09JN32It3giqgHhBhVU2pjEOqAfLaHcZpjpz0KxOIvLEL2HaPGrgz5hjmimT3Q9GHAIwfYMetAm7FGoprx0xI930eL5CCWfktXadMsinmWYCkKPoFJbPWXM1IHIeXp/xSuR1OaroZVtUp9Ws2nUrTgXFlu0I4DXtlv0Jq8P3SRiUbljTlA8HOyul/mOtGyU5VoJ3ZhAJ0USpDIDaOts19r0rwcvRNE6/2ZB/NDIQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=infradead.org smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zOQbbCrCq1oj6rR2mCmOv0EpYneRHwD92+Nx+s5gpWA=;
- b=2NCOusFqBnJI8fly0sj9FmeH4hSThkzJV9wuEy7T5L5nzqEIvTCsMksqdMpiLdCzVgvacX8NoHnV4ogCdmH/R1BsWBKxZX7y2N61oFmwR0hOrmxolJaIA4R6xrk5ofyyphRPL/tAEMUw39NnSeoUsnSkqpGGs/sfNFW8FpID7Hs=
-Received: from MW4PR03CA0060.namprd03.prod.outlook.com (2603:10b6:303:8e::35)
- by DM5PR12MB2469.namprd12.prod.outlook.com (2603:10b6:4:af::38) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.14; Wed, 25 May
- 2022 09:43:34 +0000
-Received: from CO1NAM11FT045.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:8e:cafe::a1) by MW4PR03CA0060.outlook.office365.com
- (2603:10b6:303:8e::35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.15 via Frontend
- Transport; Wed, 25 May 2022 09:43:33 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1NAM11FT045.mail.protection.outlook.com (10.13.175.181) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5293.13 via Frontend Transport; Wed, 25 May 2022 09:43:33 +0000
-Received: from BLR-5CG113396H.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 25 May
- 2022 04:43:20 -0500
-From:   Ravi Bangoria <ravi.bangoria@amd.com>
-To:     <peterz@infradead.org>, <acme@kernel.org>
-CC:     <ravi.bangoria@amd.com>, <jolsa@kernel.org>, <namhyung@kernel.org>,
-        <eranian@google.com>, <irogers@google.com>, <jmario@redhat.com>,
-        <leo.yan@linaro.org>, <alisaidi@amazon.com>, <ak@linux.intel.com>,
-        <kan.liang@linux.intel.com>, <dave.hansen@linux.intel.com>,
-        <hpa@zytor.com>, <mingo@redhat.com>, <mark.rutland@arm.com>,
-        <alexander.shishkin@linux.intel.com>, <tglx@linutronix.de>,
-        <bp@alien8.de>, <x86@kernel.org>,
-        <linux-perf-users@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <sandipan.das@amd.com>, <ananth.narayan@amd.com>,
-        <kim.phillips@amd.com>, <santosh.shukla@amd.com>
-Subject: [PATCH 08/13] perf tool: Sync arch/x86/include/asm/amd-ibs.h header
-Date:   Wed, 25 May 2022 15:09:33 +0530
-Message-ID: <20220525093938.4101-9-ravi.bangoria@amd.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220525093938.4101-1-ravi.bangoria@amd.com>
-References: <20220525093938.4101-1-ravi.bangoria@amd.com>
+        Wed, 25 May 2022 05:43:49 -0400
+Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A687DEC4;
+        Wed, 25 May 2022 02:43:46 -0700 (PDT)
+Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-2ff7b90e635so142922397b3.5;
+        Wed, 25 May 2022 02:43:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=1O/cnzxLyE24n8oNtE1G8BpY+MDED/QH3SE2yJ32biA=;
+        b=BMhFL5b6E5KwNcVSCHnyQBR/FgHJaQShTBBhNtA64fbaT1zKoX/5V/10/GkyjDfCj5
+         eEpr1Pxj+qGzXRZS9XoI/2yjtClKvlDB0lY8OPR4oGIU4AbgR1sHw0i3exdtmHxh4lV8
+         rGnkKYWdzKoMkbA9/cUHDOSYCx7s9DLpGZdgwNaYZ3qi88cUDBg7xc7Ux1zV7A3DgYNT
+         xbiWWKtha4nFbmlMX9ZY2E+kzoeIoYEPU/RQcziysejpbJC4niDYU+zXWxI4taODdRtg
+         /dWPPfyfEFWY8NgtZAnMFQu4hlzKu7XlJJHHT7tNHM/FWT/16BhgDTPc3RSZP5ykWhhY
+         J6Cg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1O/cnzxLyE24n8oNtE1G8BpY+MDED/QH3SE2yJ32biA=;
+        b=5MwYpqTE3nKOiX/cYAmW7qhVTl4gV7tI0ud695nKnHNrlMHP5otSYV4x2jv7V+iXVU
+         cqWU/3DoyvdPp66wlSBtMnk01a/BaL1xnuhN7IwCLIeXAVfvxbim+37RSXOviwvXJ42O
+         DTsjwxnXJCfkOBg2A1mYWWpQuvq+SI6XypitpsSx4AC87bv9PNq6fcLdB4JyKBNQN6pU
+         JeYGF4+GsvYgSmXoMd19xZCK6Apjc5Vaw1N/ral/0XrAJLJxZpsZ5zhjUUu6IU5WcDJX
+         Rav7Ygeo38qqeUR9LPT94vtaolan/NmT1bZYWveAabX1yjl29v/5rU/5NW+1saq39XTQ
+         sv0g==
+X-Gm-Message-State: AOAM531FUeuvP6a8i7ut32vjEPEOwTyZmMH05jpWjNeEUQ3Pj4Z4oTzy
+        HZhiZwzJwY3Z9ztZixe3zGZPAGV8AW6f5+Dx3cs=
+X-Google-Smtp-Source: ABdhPJz4goephVaph29ovM6NwmrhGAKSlI3y2GQdztsG+ZmN8Hi5UDI5lr2bY+YLU8cDx55yu6SczHmnq+LS5yw1kyo=
+X-Received: by 2002:a0d:c101:0:b0:2ff:5824:e8a8 with SMTP id
+ c1-20020a0dc101000000b002ff5824e8a8mr32467321ywd.413.1653471825732; Wed, 25
+ May 2022 02:43:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 6279a4b3-9bc2-4aa8-d9d6-08da3e3308c6
-X-MS-TrafficTypeDiagnostic: DM5PR12MB2469:EE_
-X-Microsoft-Antispam-PRVS: <DM5PR12MB2469D1D00437AF1208C58F83E0D69@DM5PR12MB2469.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: P1KQ0V4vmTJbnws6fEch4z0wmzHBfZ3vWYZ26VEle3GHifnHGSZdUNrCVn3RnEX5QWkz3br8Ojv8KNKDu1k/LH9hTWtMO3VXfWlqwiEcrI0tasqaHxb0Cy1RvQ161Ookp+BCkBoguFtvRruHwcjQV9PwKNY9qLPt7yze2vLKeXRMZ6x1wK4R2Yo6m1UVr/V7mxHAVFe424vN3IvxGF296rus6uR94paDGNk7BJl+6UVLSPuOEgR+yV+H/uShN0sBeP4FeRqgn3Jy5L/EfnDCEX6NP3cfiIEIm8ARCfUEilsT53sHg3JyewouHVS461puiLPA/5D8wZmGlX4OdU4wag51sOJO+0OSQKJj8dQykQuXuCOgmWN+4VnDeFiA466CWYOHnGf+nIWDPx/Gk+GxjWV5fy1lbOAnMeXP5KT0qFXlKUg6/dt9HAz+5WkWcD6LKUHAxuYx17uqfgQs2QGwvTLtOsjz+BFFboBZmx/e7O2cQIKrXinKIuHi7a9V0MKvGeoKaKillWewI0BioCxxlyxCWsO5GP6/5S5rrRFcKWtqaUN13REGg6nGUfOxqe6/n+61/xFOB571neSHtuMhAWBKnyEzFNzAjHAJIoFl4rjf9Fa2X1cY/ld6amfSCJS7JM83+v1RejrR3kiCZno2TM7LMNmwtfJjFGUM0fL461SFMBXUH6IALX3kpAalXzYOgKxTwSDB4frfvX5Xf5ULJA==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(36840700001)(46966006)(36756003)(36860700001)(7696005)(2906002)(110136005)(81166007)(5660300002)(54906003)(6666004)(82310400005)(16526019)(356005)(40460700003)(336012)(426003)(8676002)(26005)(8936002)(316002)(4326008)(70206006)(1076003)(70586007)(44832011)(186003)(86362001)(508600001)(2616005)(7416002)(83380400001)(47076005)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 May 2022 09:43:33.5975
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6279a4b3-9bc2-4aa8-d9d6-08da3e3308c6
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT045.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB2469
+References: <20220524172214.5104-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20220524172214.5104-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <CAMuHMdX0pqr8pmbX8OfUyTeEwiFGSG5uyP4nLG1LPy7_zzLPbQ@mail.gmail.com>
+ <CA+V-a8ubrkDU2B=mJopzFrjhv1nVn5EXZmaprta0oj4p3J_N5Q@mail.gmail.com> <CAMuHMdVncBnD25RLLqL2qDFwboPSVvo5faJvamDxPH_wq9r22Q@mail.gmail.com>
+In-Reply-To: <CAMuHMdVncBnD25RLLqL2qDFwboPSVvo5faJvamDxPH_wq9r22Q@mail.gmail.com>
+From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
+Date:   Wed, 25 May 2022 10:43:19 +0100
+Message-ID: <CA+V-a8tHfyqJx9YBFX3hJBEKuCbDpminz_4uSLK=MHV7W8-hJg@mail.gmail.com>
+Subject: Re: [PATCH RFC 2/2] irqchip/sifive-plic: Add support for Renesas
+ RZ/Five SoC
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Sagar Kadam <sagar.kadam@sifive.com>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Phil Edworthy <phil.edworthy@renesas.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Although new details added into this header is currently used by
-kernel only, tools copy needs to be in sync with kernel file.
+Hi Geert,
 
-Signed-off-by: Ravi Bangoria <ravi.bangoria@amd.com>
----
- tools/arch/x86/include/asm/amd-ibs.h | 76 ++++++++++++++++++++++++++++
- 1 file changed, 76 insertions(+)
+On Wed, May 25, 2022 at 10:35 AM Geert Uytterhoeven
+<geert@linux-m68k.org> wrote:
+>
+> Hi Prabhakar,
+>
+> On Wed, May 25, 2022 at 11:01 AM Lad, Prabhakar
+> <prabhakar.csengg@gmail.com> wrote:
+> > On Wed, May 25, 2022 at 9:01 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+> > > On Tue, May 24, 2022 at 7:22 PM Lad Prabhakar
+> > > <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+> > > > The Renesas RZ/Five SoC has a RISC-V AX45MP AndesCore with NCEPLIC100. The
+> > > > NCEPLIC100 supports both edge-triggered and level-triggered interrupts. In
+> > > > case of edge-triggered interrupts NCEPLIC100 ignores the next interrupt
+> > > > edge until the previous completion message has been received and
+> > > > NCEPLIC100 doesn't support pending interrupt counter, hence losing the
+> > > > interrupts if not acknowledged in time.
+> > > >
+> > > > So the workaround for edge-triggered interrupts to be handled correctly
+> > > > and without losing is that it needs to be acknowledged first and then
+> > > > handler must be run so that we don't miss on the next edge-triggered
+> > > > interrupt.
+> > > >
+> > > > This patch adds a new compatible string for Renesas RZ/Five SoC and adds
+> > > > support to change interrupt flow based on the interrupt type. It also
+> > > > implements irq_ack and irq_set_type callbacks.
+> > > >
+> > > > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> > >
+> > > Thanks for your patch!
+> > >
+> > > > --- a/drivers/irqchip/irq-sifive-plic.c
+> > > > +++ b/drivers/irqchip/irq-sifive-plic.c
+>
+> > > > @@ -163,10 +166,31 @@ static int plic_set_affinity(struct irq_data *d,
+> > > >  }
+> > > >  #endif
+> > > >
+> > > > +static void plic_irq_ack(struct irq_data *d)
+> > > > +{
+> > > > +       struct plic_handler *handler = this_cpu_ptr(&plic_handlers);
+> > > > +
+> > >
+> > > No check for RZ/Five or irq type?
+> > That is because we set the handle_fasteoi_ack_irq() only in case of
+> > RZ/Five and it is already checked in set_type() callback.
+> >
+> > > .irq_ack() seems to be called for level interrupts, too
+> > > (from handle_level_irq() through mask_ack_irq()).
+> > >
+> > Right but we are using handle_fasteoi_irq() for level interrupt which
+> > doesn't call mask_ack_irq(). And I have confirmed by adding a print in
+> > ack callback  and just enabling the serial (which has level
+> > interrupts).
+>
+> But handle_fasteoi_irq() is configured only on RZ/Five below?
+> Which handler is used on non-RZ/Five?
+>
+For non RZ/Five, handle_fasteoi_irq() [0] is used for both edge/level
+interrupts.
 
-diff --git a/tools/arch/x86/include/asm/amd-ibs.h b/tools/arch/x86/include/asm/amd-ibs.h
-index 765e9e752d03..c6f5f5f316ad 100644
---- a/tools/arch/x86/include/asm/amd-ibs.h
-+++ b/tools/arch/x86/include/asm/amd-ibs.h
-@@ -6,6 +6,82 @@
- 
- #include "msr-index.h"
- 
-+/* IBS_OP_DATA2 Bits */
-+#define IBS_DATA_SRC_HI_SHIFT			6
-+#define IBS_DATA_SRC_HI_MASK			(0x3ULL << IBS_DATA_SRC_HI_SHIFT)
-+#define IBS_CACHE_HIT_ST_SHIFT			5
-+#define IBS_CACHE_HIT_ST_MASK			(0x1ULL << IBS_CACHE_HIT_ST_SHIFT)
-+#define IBS_RMT_NODE_SHIFT			4
-+#define IBS_RMT_NODE_MASK			(0x1ULL << IBS_RMT_NODE_SHIFT)
-+#define IBS_DATA_SRC_LO_SHIFT			0
-+#define IBS_DATA_SRC_LO_MASK			(0x7ULL << IBS_DATA_SRC_LO_SHIFT)
-+
-+/* IBS_OP_DATA2 DataSrc */
-+#define IBS_DATA_SRC_LOC_CACHE			 2
-+#define IBS_DATA_SRC_DRAM			 3
-+#define IBS_DATA_SRC_REM_CACHE			 4
-+#define IBS_DATA_SRC_IO				 7
-+
-+/* IBS_OP_DATA2 with DataSrc Extension */
-+#define IBS_DATA_SRC_EXT_LOC_CACHE		 1
-+#define IBS_DATA_SRC_EXT_NEAR_CCX_CACHE		 2
-+#define IBS_DATA_SRC_EXT_DRAM			 3
-+#define IBS_DATA_SRC_EXT_FAR_CCX_CACHE		 5
-+#define IBS_DATA_SRC_EXT_PMEM			 6
-+#define IBS_DATA_SRC_EXT_IO			 7
-+#define IBS_DATA_SRC_EXT_EXT_MEM		 8
-+#define IBS_DATA_SRC_EXT_PEER_AGENT_MEM		12
-+
-+/* IBS_OP_DATA3 Bits */
-+#define IBS_TLB_REFILL_LAT_SHIFT		48
-+#define IBS_TLB_REFILL_LAT_MASK			(0xFFFFULL << IBS_TLB_REFILL_LAT_SHIFT)
-+#define IBS_DC_MISS_LAT_SHIFT			32
-+#define IBS_DC_MISS_LAT_MASK			(0xFFFFULL << IBS_DC_MISS_LAT_SHIFT)
-+#define IBS_OP_DC_MISS_OPEN_MEM_REQS_SHIFT	26
-+#define IBS_OP_DC_MISS_OPEN_MEM_REQS_MASK	(0x3FULL << IBS_OP_DC_MISS_OPEN_MEM_REQS_SHIFT)
-+#define IBS_OP_MEM_WIDTH_SHIFT			22
-+#define IBS_OP_MEM_WIDTH_MASK			(0xFULL << IBS_OP_MEM_WIDTH_SHIFT)
-+#define IBS_SW_PF_SHIFT				21
-+#define IBS_SW_PF_MASK				(0x1ULL << IBS_SW_PF_SHIFT)
-+#define IBS_L2_MISS_SHIFT			20
-+#define IBS_L2_MISS_MASK			(0x1ULL << IBS_L2_MISS_SHIFT)
-+#define IBS_DC_L2_TLB_HIT_1G_SHIFT		19
-+#define IBS_DC_L2_TLB_HIT_1G_MASK		(0x1ULL << IBS_DC_L2_TLB_HIT_1G_SHIFT)
-+#define IBS_DC_PHY_ADDR_VALID_SHIFT		18
-+#define IBS_DC_PHY_ADDR_VALID_MASK		(0x1ULL << IBS_DC_PHY_ADDR_VALID_SHIFT)
-+#define IBS_DC_LIN_ADDR_VALID_SHIFT		17
-+#define IBS_DC_LIN_ADDR_VALID_MASK		(0x1ULL << IBS_DC_LIN_ADDR_VALID_SHIFT)
-+#define IBS_DC_MISS_NO_MAB_ALLOC_SHIFT		16
-+#define IBS_DC_MISS_NO_MAB_ALLOC_MASK		(0x1ULL << IBS_DC_MISS_NO_MAB_ALLOC_SHIFT)
-+#define IBS_DC_LOCKED_OP_SHIFT			15
-+#define IBS_DC_LOCKED_OP_MASK			(0x1ULL << IBS_DC_LOCKED_OP_SHIFT)
-+#define IBS_DC_UC_MEM_ACC_SHIFT			14
-+#define IBS_DC_UC_MEM_ACC_MASK			(0x1ULL << IBS_DC_UC_MEM_ACC_SHIFT)
-+#define IBS_DC_WC_MEM_ACC_SHIFT			13
-+#define IBS_DC_WC_MEM_ACC_MASK			(0x1ULL << IBS_DC_WC_MEM_ACC_SHIFT)
-+#define IBS_DC_MIS_ACC_SHIFT			8
-+#define IBS_DC_MIS_ACC_MASK			(0x1ULL << IBS_DC_MIS_ACC_SHIFT)
-+#define IBS_DC_MISS_SHIFT			7
-+#define IBS_DC_MISS_MASK			(0x1ULL << IBS_DC_MISS_SHIFT)
-+#define IBS_DC_L2_TLB_HIT_2M_SHIFT		6
-+#define IBS_DC_L2_TLB_HIT_2M_MASK		(0x1ULL << IBS_DC_L2_TLB_HIT_2M_SHIFT)
-+/*
-+ * Definition of 5-4 bits is different between Zen3 and Zen4 (Zen2 definition
-+ * is same as Zen4) but the end result is same. So using Zen4 definition here.
-+ */
-+#define IBS_DC_L1_TLB_HIT_1G_SHIFT		5
-+#define IBS_DC_L1_TLB_HIT_1G_MASK		(0x1ULL << IBS_DC_L1_TLB_HIT_1G_SHIFT)
-+#define IBS_DC_L1_TLB_HIT_2M_SHIFT		4
-+#define IBS_DC_L1_TLB_HIT_2M_MASK		(0x1ULL << IBS_DC_L1_TLB_HIT_2M_SHIFT)
-+#define IBS_DC_L2_TLB_MISS_SHIFT		3
-+#define IBS_DC_L2_TLB_MISS_MASK			(0x1ULL << IBS_DC_L2_TLB_MISS_SHIFT)
-+#define IBS_DC_L1_TLB_MISS_SHIFT		2
-+#define IBS_DC_L1_TLB_MISS_MASK			(0x1ULL << IBS_DC_L1_TLB_MISS_SHIFT)
-+#define IBS_ST_OP_SHIFT				1
-+#define IBS_ST_OP_MASK				(0x1ULL << IBS_ST_OP_SHIFT)
-+#define IBS_LD_OP_SHIFT				0
-+#define IBS_LD_OP_MASK				(0x1ULL << IBS_LD_OP_SHIFT)
-+
- /*
-  * IBS Hardware MSRs
-  */
--- 
-2.31.1
+[0] https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/tree/drivers/irqchip/irq-sifive-plic.c?h=next-20220525#n195
 
+> I have to admit I'm not that deep into irq handling, and
+> adding a print indeed doesn't trigger on Starlight Beta.
+>
+> > > > @@ -176,11 +200,37 @@ static void plic_irq_eoi(struct irq_data *d)
+> > > >         }
+> > > >  }
+> > > >
+> > > > +static int plic_irq_set_type(struct irq_data *d, unsigned int type)
+> > > > +{
+> > > > +       struct plic_handler *handler = this_cpu_ptr(&plic_handlers);
+> > > > +
+> > > > +       if (handler->priv->of_data != RENESAS_R9A07G043_PLIC)
+> > > > +               return 0;
+> > > > +
+> > > > +       switch (type) {
+> > > > +       case IRQ_TYPE_LEVEL_HIGH:
+> > > > +               irq_set_handler_locked(d, handle_fasteoi_irq);
+> > > > +               break;
+> > > > +
+> > > > +       case IRQ_TYPE_EDGE_RISING:
+> > > > +               irq_set_handler_locked(d, handle_fasteoi_ack_irq);
+> > > > +               break;
+> > > > +
+> > > > +       default:
+> > > > +               return -EINVAL;
+> > > > +       }
+> > > > +
+> > > > +       return 0;
+> > > > +}
+> > > > +
+> > > >  static struct irq_chip plic_chip = {
+> > > >         .name           = "SiFive PLIC",
+> > > >         .irq_mask       = plic_irq_mask,
+> > > >         .irq_unmask     = plic_irq_unmask,
+> > > > +       .irq_ack        = plic_irq_ack,
+> > >
+> > > This causes extra processing on non-affected PLICs.
+> > > Perhaps use a separate irq_chip instance?
+> > >
+> > I don't think so as the handle_fasteoi_ack_irq() is installed only in
+> > case of RZ/Five, so irq_ack() will not be called for non-affected
+> > PLIC's. Please correct me if I am wrong.
+>
+> Hence I'll leave this to the irq maintainer...
+>
+> > > > @@ -293,6 +356,9 @@ static int __init plic_init(struct device_node *node,
+> > > >         if (!priv)
+> > > >                 return -ENOMEM;
+> > > >
+> > > > +       if (of_device_is_compatible(node, "renesas-r9a07g043-plic"))
+> > > > +               priv->of_data = RENESAS_R9A07G043_PLIC;
+> > > > +
+> > >
+> > > So perhaps instead just look at #interrupt-cells, and use the onecell
+> > > or twocell irq_chip/irq_domain_ops based on that?
+> > >
+> > But we do call plic_irq_domain_translate() in the alloc callback and
+> > don't have a node pointer in there to check the interrupt cell count.
+> > Or maybe we can store the interrupt cell count in priv and use it
+> > accordingly above?
+>
+> That's a reasonable option.
+>
+Ok I will update this in v2.
+
+Cheers,
+Prabhakar
+
+> Gr{oetje,eeting}s,
+>
+>                         Geert
+>
+> --
+> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+>
+> In personal conversations with technical people, I call myself a hacker. But
+> when I'm talking to journalists I just say "programmer" or something like that.
+>                                 -- Linus Torvalds
