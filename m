@@ -2,77 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83F0CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 15:04:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47AF9C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 15:06:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241789AbiEYPEb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 11:04:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39868 "EHLO
+        id S233535AbiEYPG0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 11:06:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245145AbiEYPEO (ORCPT
+        with ESMTP id S245095AbiEYPEF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 11:04:14 -0400
-Received: from relay3.hostedemail.com (smtprelay0010.hostedemail.com [216.40.44.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A35B1BA569
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 08:03:19 -0700 (PDT)
-Received: from omf10.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay06.hostedemail.com (Postfix) with ESMTP id 6FF2235963;
-        Wed, 25 May 2022 15:03:18 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf10.hostedemail.com (Postfix) with ESMTPA id 707AB39;
-        Wed, 25 May 2022 15:03:17 +0000 (UTC)
-Message-ID: <7a4641e036e4821b76eb4ed5b82a4f24b3029f05.camel@perches.com>
-Subject: Re: checkpatch mistake on XA_STATE?
-From:   Joe Perches <joe@perches.com>
-To:     David Howells <dhowells@redhat.com>,
-        Andy Whitcroft <apw@canonical.com>
-Cc:     willy@infradead.org, linux-kernel@vger.kernel.org
-Date:   Wed, 25 May 2022 08:03:16 -0700
-In-Reply-To: <1962595.1653473587@warthog.procyon.org.uk>
-References: <1962595.1653473587@warthog.procyon.org.uk>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.4-1ubuntu2 
+        Wed, 25 May 2022 11:04:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1A60AFB08
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 08:02:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 23482619EF
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 15:02:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 741BCC385B8;
+        Wed, 25 May 2022 15:02:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653490953;
+        bh=SopjZnEwL9dH67Z0H4heqgDTmhRTyXWQG5QAyoHE0Ks=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=dqhaUWLUxzSGjJpJsMwtqmlG16itKLnW9wbA6iR2gF9+08cUfegm+zUemDhThmfWZ
+         t7GgemjxEVGO7Eb/8YJQTPO3DpcEQOxwAtMO34go1jStSynPAx5t4u0zSQN4rQJ11Z
+         zqHdHaYzXXj1IACXKsuz+H0qpqbz8bk4+tDXAeXOQq6WFxcD6F3ouxdfjuaaomOZIz
+         MnfgpYQLvk88jTykmegPZ3xndQgJioiE+tPPqao5eujkAZKs2hxh2SD9ts7N4U3INT
+         mx8nyxM+2Y398PHkdfAd2o6lpEAq/GbeN6Lx+ovrdcmlHga97u43zbdhBvmmu3c7MU
+         x21MNhRCZrDlg==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 116B45C018D; Wed, 25 May 2022 08:02:33 -0700 (PDT)
+Date:   Wed, 25 May 2022 08:02:33 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     Stefan Wahren <stefan.wahren@i2se.com>,
+        Marcelo Tosatti <mtosatti@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Minchan Kim <minchan@kernel.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Phil Elwell <phil@raspberrypi.com>, regressions@lists.linux.dev
+Subject: Re: vchiq: Performance regression since 5.18-rc1
+Message-ID: <20220525150233.GX1790663@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <77d6d498-7dd9-03eb-60f2-d7e682bb1b20@i2se.com>
+ <YoszE8lQ9VcofLtX@linutronix.de>
+ <Yo41ggMvkI1B9TeM@fuller.cnet>
+ <e0402350-687e-14b6-2e30-4b459afa9afb@i2se.com>
+ <Yo48k4InPmj8lDxZ@linutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Stat-Signature: jpq3cux4ucgb48uxrseiatkawh8x4k5d
-X-Rspamd-Server: rspamout03
-X-Rspamd-Queue-Id: 707AB39
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX18evceSDcCS8zC8x07XzapybqBJ010eLz4=
-X-HE-Tag: 1653490997-366959
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yo48k4InPmj8lDxZ@linutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-05-25 at 11:13 +0100, David Howells wrote:
-> I see the following:
+On Wed, May 25, 2022 at 04:26:27PM +0200, Sebastian Andrzej Siewior wrote:
+> On 2022-05-25 16:07:47 [+0200], Stefan Wahren wrote:
+> > this was the same as Paul send. I think i need more time for investigation,
+> > maybe there is an issue with the application.
 > 
-> 	WARNING: Missing a blank line after declarations
-> 	#1921: FILE: fs/cifs/smb2ops.c:4684:
-> 	+       struct folio *folio;
-> 	+       XA_STATE(xas, buffer, 0);
-> 
-> but XA_STATE() technically *is* a declaration.
-> 
-> Should checkpatch treat it as such?
+> I haven't seen Paul referring to *that* patch. He pointed to some fs/
+> related changes.
 
-Probably.
----
- scripts/checkpatch.pl | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+True!  Both patches changed from a synchronize_rcu() to a
+synchronize_rcu_expedited(), but different instances of synchronize_rcu().
 
-diff --git a/scripts/checkpatch.pl b/scripts/checkpatch.pl
-index 503e8abbb2c1e..2cf28014132f6 100755
---- a/scripts/checkpatch.pl
-+++ b/scripts/checkpatch.pl
-@@ -1042,7 +1042,8 @@ our $FuncArg = qr{$Typecast{0,1}($LvalOrFunc|$Constant|$String)};
- our $declaration_macros = qr{(?x:
- 	(?:$Storage\s+)?(?:[A-Z_][A-Z0-9]*_){0,2}(?:DEFINE|DECLARE)(?:_[A-Z0-9]+){1,6}\s*\(|
- 	(?:$Storage\s+)?[HLP]?LIST_HEAD\s*\(|
--	(?:SKCIPHER_REQUEST|SHASH_DESC|AHASH_REQUEST)_ON_STACK\s*\(
-+	(?:SKCIPHER_REQUEST|SHASH_DESC|AHASH_REQUEST)_ON_STACK\s*\(|
-+	(?:$Storage\s+)?(?:XA_ARRAY|XA_ARRAY_ORDER)\s*\(
- )};
- 
- our %allow_repeated_words = (
-
-
+							Thanx, Paul
