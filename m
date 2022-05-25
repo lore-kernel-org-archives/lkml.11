@@ -2,143 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 534A3C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 19:14:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9840AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 19:16:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236246AbiEYTO2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 15:14:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44686 "EHLO
+        id S233157AbiEYTQT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 15:16:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344426AbiEYTNn (ORCPT
+        with ESMTP id S1344242AbiEYTOx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 15:13:43 -0400
-Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [217.70.183.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17C3724598;
-        Wed, 25 May 2022 12:11:28 -0700 (PDT)
-Received: (Authenticated sender: paul.kocialkowski@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 73F41FF805;
-        Wed, 25 May 2022 19:10:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1653505841;
+        Wed, 25 May 2022 15:14:53 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1A39A13DDF
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 12:12:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653505949;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=fD3BO/j67l9HqtMkYAqdXitbbV2fhX6yvbmEUse4WKw=;
-        b=oJXIxMrwuARH7NhkRxPm5HBcVr/w9NjpEcQNSvu6zq4c3aCjc9/v+ZZIHmkcUmzGAfivlG
-        8AFFOvGGKI3ZBLxw2XYVxTHT9vcMDOrAKSwl/X+PbOjFcLNkpMddpUysTtOazUP9zLno1d
-        LIcyP4gExKWouXGBkGjrzyhdsyRX/JjKvs3JjCM1dfuG1qxB2vvzmQil41tZ/uHn/NTczb
-        9IxMLWXGrc9YdstoVWaVCZHQiBn0x3pjrMpOFeYY+j4h3dVAWrSuuArStQT0R5KTbeFYVz
-        8ULPZ/YF5fsyhXZhPDNNGl0B0Vw12BvhawC4eXsrr0PaEHzc2nN/24JtG+pvLA==
-From:   Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-To:     linux-media@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev
-Cc:     Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Hans Verkuil <hans.verkuil@cisco.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: [PATCH v4 5/6] media: sun6i-csi: Detect the availability of the ISP
-Date:   Wed, 25 May 2022 21:10:25 +0200
-Message-Id: <20220525191026.696636-6-paul.kocialkowski@bootlin.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220525191026.696636-1-paul.kocialkowski@bootlin.com>
-References: <20220525191026.696636-1-paul.kocialkowski@bootlin.com>
+        bh=BSlFh6scasINwURYqTNfAHrALafGW5UGEVKrCU1SoX0=;
+        b=g3llxnsvr+TnVcyE+humBLZATAp4IOhq3+jQWsVBaLLzh7tqhB8fT108vTF0gumzOO1tQ0
+        jCv3vtNZCroaEWk2f3wRGPRQdjjfXLk+LMc7rWwSFq4zvdJutz37dB0mB9MK7I3Sv1QSPl
+        ZFdNkpl1wVUIuO3thuW692QGTcEpz6U=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-358-rZ4sn0afPomx16jKnHmyrw-1; Wed, 25 May 2022 15:12:25 -0400
+X-MC-Unique: rZ4sn0afPomx16jKnHmyrw-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 541B08001EA;
+        Wed, 25 May 2022 19:12:25 +0000 (UTC)
+Received: from horse.redhat.com (unknown [10.22.32.214])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 3CA3C7AD8;
+        Wed, 25 May 2022 19:12:25 +0000 (UTC)
+Received: by horse.redhat.com (Postfix, from userid 10451)
+        id EFB372208FA; Wed, 25 May 2022 15:12:24 -0400 (EDT)
+Date:   Wed, 25 May 2022 15:12:24 -0400
+From:   Vivek Goyal <vgoyal@redhat.com>
+To:     Bernd Schubert <bschubert@ddn.com>
+Cc:     Dharmendra Singh <dharamhans87@gmail.com>, miklos@szeredi.hu,
+        linux-fsdevel@vger.kernel.org, fuse-devel@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org, Dharmendra Singh <dsingh@ddn.com>
+Subject: Re: [PATCH v3 1/1] FUSE: Allow non-extending parallel direct writes
+ on the same file.
+Message-ID: <Yo5/mAtphbxSrhxS@redhat.com>
+References: <20220520043443.17439-1-dharamhans87@gmail.com>
+ <20220520043443.17439-2-dharamhans87@gmail.com>
+ <Yo54Z4EQjzsQbMTp@redhat.com>
+ <77b28772-b210-6597-eedd-fe7e0b5b1db9@ddn.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <77b28772-b210-6597-eedd-fe7e0b5b1db9@ddn.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a helper to detect whether the ISP is available and connected
-and store the indication in a driver-wide variable.
+On Wed, May 25, 2022 at 09:06:37PM +0200, Bernd Schubert wrote:
+> 
+> 
+> On 5/25/22 20:41, Vivek Goyal wrote:
+> > On Fri, May 20, 2022 at 10:04:43AM +0530, Dharmendra Singh wrote:
+> > > From: Dharmendra Singh <dsingh@ddn.com>
+> > > 
+> > > In general, as of now, in FUSE, direct writes on the same file are
+> > > serialized over inode lock i.e we hold inode lock for the full duration
+> > > of the write request. I could not found in fuse code a comment which
+> > > clearly explains why this exclusive lock is taken for direct writes.
+> > > Our guess is some USER space fuse implementations might be relying
+> > > on this lock for seralization and also it protects for the issues
+> > > arising due to file size assumption or write failures.  This patch
+> > > relaxes this exclusive lock in some cases of direct writes.
+> > > 
+> > > With these changes, we allows non-extending parallel direct writes
+> > > on the same file with the help of a flag called FOPEN_PARALLEL_WRITES.
+> > > If this flag is set on the file (flag is passed from libfuse to fuse
+> > > kernel as part of file open/create), we do not take exclusive lock instead
+> > > use shared lock so that all non-extending writes can run in parallel.
+> > > 
+> > > Best practise would be to enable parallel direct writes of all kinds
+> > > including extending writes as well but we see some issues such as
+> > > when one write completes and other fails, how we should truncate(if
+> > > needed) the file if underlying file system does not support holes
+> > > (For file systems which supports holes, there might be a possibility
+> > > of enabling parallel writes for all cases).
+> > > 
+> > > FUSE implementations which rely on this inode lock for serialisation
+> > > can continue to do so and this is default behaviour i.e no parallel
+> > > direct writes.
+> > > 
+> > > Signed-off-by: Dharmendra Singh <dsingh@ddn.com>
+> > > Signed-off-by: Bernd Schubert <bschubert@ddn.com>
+> > > ---
+> > >   fs/fuse/file.c            | 33 ++++++++++++++++++++++++++++++---
+> > >   include/uapi/linux/fuse.h |  2 ++
+> > >   2 files changed, 32 insertions(+), 3 deletions(-)
+> > > 
+> > > diff --git a/fs/fuse/file.c b/fs/fuse/file.c
+> > > index 829094451774..1a93fd80a6ce 100644
+> > > --- a/fs/fuse/file.c
+> > > +++ b/fs/fuse/file.c
+> > > @@ -1541,14 +1541,37 @@ static ssize_t fuse_direct_read_iter(struct kiocb *iocb, struct iov_iter *to)
+> > >   	return res;
+> > >   }
+> > > +static bool fuse_direct_write_extending_i_size(struct kiocb *iocb,
+> > > +					       struct iov_iter *iter)
+> > > +{
+> > > +	struct inode *inode = file_inode(iocb->ki_filp);
+> > > +
+> > > +	return (iocb->ki_flags & IOCB_APPEND ||
+> > > +		iocb->ki_pos + iov_iter_count(iter) > i_size_read(inode));
+> > > +}
+> > 
+> > Hi Dharmendra,
+> > 
+> > I have a question. What makes i_size stable. This is being read outside
+> > the inode_lock(). Can it race with truncate. I mean we checked
+> > i_size and decided to take shared lock. In the mean time another thread
+> > truncated the file and now our decision to take shared lock is wrong
+> > as file will be extended due to direct write?
+> 
+> Oh right, good catch! I guess we need to take a shared lock first, read the
+> size and if it is an extending lock need to unlock/switch to an excluding
+> lock. Theoretically could be a loop, but I guess that would be overkill.
 
-Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
----
- .../platform/sunxi/sun6i-csi/sun6i_csi.c      | 33 +++++++++++++++++++
- .../platform/sunxi/sun6i-csi/sun6i_csi.h      |  3 ++
- 2 files changed, 36 insertions(+)
+Another possibility is that we need to check again after taking shared
+lock if our decision to take shared lock was correct or not. If in
+unlikely case something changed, then drop shared lock and go back to
+exclusive lock, or drop the shared lock and re-evaluate which lock to take.
 
-diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c
-index 00521f966cee..b16166cba2ef 100644
---- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c
-+++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c
-@@ -24,6 +24,35 @@
- #include "sun6i_csi_capture.h"
- #include "sun6i_csi_reg.h"
- 
-+/* ISP */
-+
-+static bool sun6i_csi_isp_detect(struct sun6i_csi_device *csi_dev)
-+{
-+	struct device *dev = csi_dev->dev;
-+	struct fwnode_handle *handle = NULL;
-+
-+	/* ISP is not available if disabled in kernel config. */
-+	if (!IS_ENABLED(CONFIG_VIDEO_SUN6I_ISP))
-+		return 0;
-+
-+	/*
-+	 * ISP is not available if not connected via fwnode graph.
-+	 * This weill also check that the remote parent node is available.
-+	 */
-+	handle = fwnode_graph_get_endpoint_by_id(dev_fwnode(dev),
-+						 SUN6I_CSI_PORT_ISP, 0,
-+						 FWNODE_GRAPH_ENDPOINT_NEXT);
-+	if (!handle)
-+		return 0;
-+
-+	fwnode_handle_put(handle);
-+
-+	dev_info(dev, "ISP link is available\n");
-+	csi_dev->isp_available = true;
-+
-+	return 0;
-+}
-+
- /* Media */
- 
- static const struct media_device_ops sun6i_csi_media_ops = {
-@@ -290,6 +319,10 @@ static int sun6i_csi_probe(struct platform_device *platform_dev)
- 	if (ret)
- 		return ret;
- 
-+	ret = sun6i_csi_isp_detect(csi_dev);
-+	if (ret)
-+		goto error_resources;
-+
- 	ret = sun6i_csi_v4l2_setup(csi_dev);
- 	if (ret)
- 		goto error_resources;
-diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.h b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.h
-index e611bdd6e9b2..8e232cd91ebe 100644
---- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.h
-+++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.h
-@@ -21,6 +21,7 @@
- enum sun6i_csi_port {
- 	SUN6I_CSI_PORT_PARALLEL		= 0,
- 	SUN6I_CSI_PORT_MIPI_CSI2	= 1,
-+	SUN6I_CSI_PORT_ISP		= 2,
- };
- 
- struct sun6i_csi_buffer {
-@@ -44,6 +45,8 @@ struct sun6i_csi_device {
- 	struct clk			*clock_mod;
- 	struct clk			*clock_ram;
- 	struct reset_control		*reset;
-+
-+	bool				isp_available;
- };
- 
- struct sun6i_csi_variant {
--- 
-2.36.1
+Thanks
+Vivek
+
+> 
+> 
+> Thanks for your review!
+> 
+> Cheers,
+> Bernd
+> 
 
