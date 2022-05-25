@@ -2,76 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C749EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 05:20:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCB26C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 05:25:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243926AbiEYFUt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 01:20:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42402 "EHLO
+        id S243909AbiEYFZg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 01:25:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236574AbiEYFUr (ORCPT
+        with ESMTP id S230304AbiEYFZd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 01:20:47 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17EA51D337;
-        Tue, 24 May 2022 22:20:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 37D0BCE1DEB;
-        Wed, 25 May 2022 05:20:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 454C9C385B8;
-        Wed, 25 May 2022 05:20:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653456043;
-        bh=Ax7SXV8AbCEPJQ0FyfMaUKPPB7QiTryTXgGkV2IOmoQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=bHBQH0lLy+51bYky1vvejahr0d5UTgGUnv5tXk8I7NEdRAYEEb1o4RTpcHsGuOzLy
-         fLV1qiTgxEOnyUz71g++l11EYAa60g8yXPMtaHYnqjOTJA8IEsN1NqRSKGwi0ZJQnZ
-         N0tC6OKY4PPSuMDQtmQwY64wCu/nQAtM87zAxoBScLyh12Wp7K661d/J7P+GUqKttU
-         z9MFFIH6ZkSJwBMnJ3qdmV5f+0OwWWNuFKqPtw8soimQO6DR0LBukwYV3Udx1RBjbA
-         FXWqRobr/Vrn5D7r7VloLszFh81p6qb58UwzGJbJISQRO+i4s99d00dE//D0fLeOFU
-         lDhEt+s/k2XYQ==
-Date:   Tue, 24 May 2022 22:20:42 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Sasha Levin <sashal@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Thomas Bartschies <thomas.bartschies@cvk.de>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH AUTOSEL 5.17 08/12] net: af_key: check encryption module
- availability consistency
-Message-ID: <20220524222042.40557dbb@kernel.org>
-In-Reply-To: <20220524110908.7a237987@kernel.org>
-References: <20220524155929.826793-1-sashal@kernel.org>
-        <20220524155929.826793-8-sashal@kernel.org>
-        <20220524110908.7a237987@kernel.org>
+        Wed, 25 May 2022 01:25:33 -0400
+Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97BF350B21
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 22:25:32 -0700 (PDT)
+Received: from mail.ispras.ru (unknown [83.149.199.84])
+        by mail.ispras.ru (Postfix) with ESMTPSA id 0670140D403D;
+        Wed, 25 May 2022 05:25:31 +0000 (UTC)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Date:   Wed, 25 May 2022 08:25:30 +0300
+From:   baskov@ispras.ru
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 2/2] x86: Parse CONFIG_CMDLINE in compressed kernel
+In-Reply-To: <YnztqAtNEvnF5YcX@zn.tnic>
+References: <20220505103224.21667-1-baskov@ispras.ru>
+ <20220505103224.21667-3-baskov@ispras.ru> <YnztqAtNEvnF5YcX@zn.tnic>
+User-Agent: Roundcube Webmail/1.4.4
+Message-ID: <d783442602a1c546d3727b939f5cd199@ispras.ru>
+X-Sender: baskov@ispras.ru
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 24 May 2022 11:09:08 -0700 Jakub Kicinski wrote:
-> On Tue, 24 May 2022 11:59:22 -0400 Sasha Levin wrote:
-> > From: Thomas Bartschies <thomas.bartschies@cvk.de>
-> > 
-> > [ Upstream commit 015c44d7bff3f44d569716117becd570c179ca32 ]
-> > 
-> > Since the recent introduction supporting the SM3 and SM4 hash algos for IPsec, the kernel
-> > produces invalid pfkey acquire messages, when these encryption modules are disabled. This
-> > happens because the availability of the algos wasn't checked in all necessary functions.
-> > This patch adds these checks.
-> > 
-> > Signed-off-by: Thomas Bartschies <thomas.bartschies@cvk.de>
-> > Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
-> > Signed-off-by: Sasha Levin <sashal@kernel.org>  
+On 2022-05-12 14:21, Borislav Petkov wrote:
+> On Thu, May 05, 2022 at 01:32:24PM +0300, Baskov Evgeniy wrote:
 > 
-> I don't see anyone else complaining yet so let me step up.
+> Same note on the subject format as for your previous patch.
 > 
-> Please drop this, it's getting reverted.
 
-I take that back, sorry, it's a different patch.
-I meant not to backport 4dc2a5a8f6754492180741facf2a8787f2c415d7.
+Thanks.
+
+>> CONFIG_CMDLINE, CONFIG_CMDLINE_BOOL, and CONFIG_CMDLINE_OVERRIDE were
+>> ignored during options lookup in compressed kernel.
+>> 
+>> Parse CONFIG_CMDLINE-related options correctly in compressed kernel
+>> code.
+>> 
+>> cmd_line_ptr_init is explicitly placed in .data section since it is
+>> used and expected to be equal to zero before .bss section is cleared.
+> 
+> What I'm missing in this commit message is the use case which you have
+> in your 0/2 mail.
+> 
+> Also, to the tone of your commit messages, from
+> Documentation/process/submitting-patches.rst:
+> 
+>  "Describe your changes in imperative mood, e.g. "make xyzzy do frotz"
+>   instead of "[This patch] makes xyzzy do frotz" or "[I] changed xyzzy
+>   to do frotz", as if you are giving orders to the codebase to change
+>   its behaviour."
+> 
+> Also, do not talk about what your patch does - that should hopefully be
+> visible in the diff itself. Rather, talk about *why* you're doing what
+> you're doing.
+> 
+
+Will fix.
+
+> 
+> I had asked this already but let me try again: instead of copying this
+> from kernel proper, why don't you add a common helper which you call
+> from both locations?
+> 
+> And it is not like this is going to be a huge function so you can stick
+> it into a shared header in arch/x86/include/asm/shared/ and it'll get
+> inlined into both locations...
+
+Oh, now I got what you meant, I'll factor that out in the next version.
+There are currently no arch/x86/include/asm/shared/ directory,
+so, I guess, it will be OK to put the header just in
+arch/x86/include/asm/?
+
+--
+Baskov Evgeniy
