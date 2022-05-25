@@ -2,81 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53A7CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 03:28:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F01AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 03:28:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241994AbiEYD2J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 23:28:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46764 "EHLO
+        id S241323AbiEYD2h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 23:28:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242953AbiEYD1y (ORCPT
+        with ESMTP id S238884AbiEYD2e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 23:27:54 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D7A27893F;
-        Tue, 24 May 2022 20:27:54 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id cv10so1863978pjb.4;
-        Tue, 24 May 2022 20:27:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=Niq05ZlOgUrh6vX28ExFQ/HZPhi4Hjl0ZKDCJqxaD6E=;
-        b=UFNJG2oZurZg3v7j5Narl6MtJ4nkth27Ho67qrh/HKi8+SaPqmT2jKKJ+J/yz9SYdr
-         B/ur/OvCwEBYdmJaUzHrz1v6RkSs3yBJAmJfUMKrqDgPk2rlSzMEZO6K00j9AN88JUpt
-         XMaPkkfD4frTyNI6fTDXJB59Wzd3qgMZlXgheA5bu0V6yJOE5lEwq/4KOi6nVJiRSTgB
-         xnikiSpXFjMKNpK7mut1iOgVDR+POOshCy3vxrPScblFogMRmRaNzUiOkXbr0zZ5gl39
-         qAYEHbmzU2Gu4VHLliy8DCb4w3DJzxInxhGJt+RLUWfOIofS7JHl2U6GKF2hw5rV78wr
-         1Adw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=Niq05ZlOgUrh6vX28ExFQ/HZPhi4Hjl0ZKDCJqxaD6E=;
-        b=QzXAQ3iesl0I+ovFSaWx9g4hXZqtpXdMcmd25ITx2Q76PUwOfkjwvR46u3D4AQ/9py
-         EFpLNNiRpQZm9d/Hial7wMl3mY3f/dy3efGK9ePcRErIXrpr21rdolSwTki2aU0gFsIE
-         Eiymo73xaNIfWaJJutWAyBBOO8/KCzTkCve4q51t4SB4OL8DeYftnuPjwywP8aj8mewL
-         2ITOithuDRJ8joxf9e+LgawohnKlV3204P4ad9DdiK7wKipH/zr+ZptD4+X18mn5T7Qa
-         mwin2d1Aff2TDTM/90StizHnYZQEAEPboDur0usEysFLCidBq7Gtzpy8UeZOUYp50sye
-         v+PQ==
-X-Gm-Message-State: AOAM533eD5nzfN+Q1VubmgkndDx+REv1CsG4neJrhoN0l9wFMISXsrnN
-        QcepMGorp4o/UkFqXBWvH8Y/Up+4rRk=
-X-Google-Smtp-Source: ABdhPJyLW8iahjmdUv5zLm1LbAWkN51eKUGeoXA4FSqrRWsiC8ceZkNlQsS3m0UZu6MhzpQx4r7L7Q==
-X-Received: by 2002:a17:902:8303:b0:15f:86f:70a with SMTP id bd3-20020a170902830300b0015f086f070amr31292646plb.5.1653449273184;
-        Tue, 24 May 2022 20:27:53 -0700 (PDT)
-Received: from thinbox (23-122-134-180.lightspeed.sntcca.sbcglobal.net. [23.122.134.180])
-        by smtp.gmail.com with ESMTPSA id q14-20020a17090a178e00b001df3a251cc2sm326491pja.4.2022.05.24.20.27.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 May 2022 20:27:52 -0700 (PDT)
-Date:   Tue, 24 May 2022 20:27:51 -0700
-From:   Maurycy Z <10maurycy10@gmail.com>
-To:     linux-config@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, trivial@kernel.org
-Subject: [PATCH v1] "system" mispelled as "ststem" in help for configuration
- option SND_AUDIO_GRAPH_CARD.
-Message-ID: <Yo2iN2R6o0HdkToZ@thinbox>
+        Tue, 24 May 2022 23:28:34 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47FEA7A44F
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 20:28:19 -0700 (PDT)
+X-UUID: 01a910ce870243ac929270e8b9848174-20220525
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5,REQID:c4016c45-e276-4a22-b8f1-b1a8da546e26,OB:10,L
+        OB:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:51,FILE:0,RULE:Release_Ham,AC
+        TION:release,TS:56
+X-CID-INFO: VERSION:1.1.5,REQID:c4016c45-e276-4a22-b8f1-b1a8da546e26,OB:10,LOB
+        :0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:51,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:56
+X-CID-META: VersionHash:2a19b09,CLOUDID:b7f01fb8-3c45-407b-8f66-25095432a27a,C
+        OID:bf78fb8f7416,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:1,File:nil,QS:0,BEC:nil
+X-UUID: 01a910ce870243ac929270e8b9848174-20220525
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
+        (envelope-from <yf.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1293842912; Wed, 25 May 2022 11:28:13 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Wed, 25 May 2022 11:28:12 +0800
+Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by
+ mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.792.3 via Frontend Transport; Wed, 25 May 2022 11:28:10 +0800
+From:   <yf.wang@mediatek.com>
+To:     <miles.chen@mediatek.com>
+CC:     <Libo.Kang@mediatek.com>, <Yong.Wu@mediatek.com>,
+        <iommu@lists.linux-foundation.org>, <isaacm@codeaurora.org>,
+        <joro@8bytes.org>, <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>, <matthias.bgg@gmail.com>,
+        <ning.li@mediatek.com>, <quic_c_gdjako@quicinc.com>,
+        <robin.murphy@arm.com>, <sven@svenpeter.dev>, <will@kernel.org>,
+        <wsd_upstream@mediatek.com>, <yf.wang@mediatek.com>
+Subject: Re: [PATCH v5 1/2] iommu/io-pgtable-arm-v7s: Add a quirk to allow pgtable PA up to 35bit
+Date:   Wed, 25 May 2022 11:21:33 +0800
+Message-ID: <20220525032133.29053-1-yf.wang@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220519062756.14447-1-miles.chen@mediatek.com>
+References: <20220519062756.14447-1-miles.chen@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-"system" is mis-spelled as "ststem" in the help for SND_AUDIO_GRAPH_CARD.
+On Thu, 2022-05-19 at 14:27 +0800, Miles Chen wrote:
+> Hi Yunfei,
+> 
+> > The calling to kmem_cache_alloc for level 2 pgtable allocation may
+> > run
+> > in atomic context, and it fails sometimes when DMA32 zone runs out
+> > of
+> > memory.
+> > 
+> > Since Mediatek IOMMU hardware support at most 35bit PA in pgtable,
+> > so add a quirk to allow the PA of pgtables support up to bit35.
+> > 
+> > Signed-off-by: Ning Li <ning.li@mediatek.com>
+> > Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
+> > ---
+> >  drivers/iommu/io-pgtable-arm-v7s.c | 56 ++++++++++++++++++++++--
+> > ------
+> >  include/linux/io-pgtable.h         | 15 +++++---
+> >  2 files changed, 52 insertions(+), 19 deletions(-)
+> > 
+> > diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-
+> > pgtable-arm-v7s.c
+> 
+> ...snip...
+> 
+> > +     gfp_t gfp_l1 = __GFP_ZERO | ARM_V7S_TABLE_GFP_DMA;
+> >       struct io_pgtable_cfg *cfg = &data->iop.cfg;
+> >       struct device *dev = cfg->iommu_dev;
+> >       phys_addr_t phys;
+> > @@ -241,9 +251,11 @@ static void *__arm_v7s_alloc_table(int lvl,
+> > gfp_t gfp,
+> >       size_t size = ARM_V7S_TABLE_SIZE(lvl, cfg);
+> >       void *table = NULL;
+> > 
+> > +     if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT)
+> > +             gfp_l1 = __GFP_ZERO;
+> 
+> __GFP_ZERO is an action modifier, if we do not want
+> ARM_V7S_TABLE_GFP_DMA (GFP_DMA/GFP_DMA32), use gfp_l1 = (GFP_KERNEL |
+> __GFP_ZERO)
+> 
 
-Signed-off-by: Maurycy Zalewski <10maurycy10@gmail.com>
----
+Hi Miles,
+Thanks for the suggestion, we will update it in the next version.
 
-diff --git a/sound/soc/generic/Kconfig b/sound/soc/generic/Kconfig
-index b6df4e26b..72f3446e1 100644
---- a/sound/soc/generic/Kconfig
-+++ b/sound/soc/generic/Kconfig
-@@ -16,7 +16,7 @@ config SND_AUDIO_GRAPH_CARD
- 	help
- 	  This option enables generic simple sound card support
- 	  with OF-graph DT bindings.
--	  It also support DPCM of multi CPU single Codec ststem.
-+	  It also support DPCM of multi CPU single Codec system.
- 
- config SND_AUDIO_GRAPH_CARD2
- 	tristate "ASoC Audio Graph sound card2 support"
+Thanks,
+Yunfei.
 
+> > +
+> >       if (lvl == 1)
+> > -             table = (void *)__get_free_pages(
+> > -                     __GFP_ZERO | ARM_V7S_TABLE_GFP_DMA,
+> > get_order(size));
+> > +             table = (void *)__get_free_pages(gfp_l1,
+> > get_order(size));
+> >       else if (lvl == 2)
+> >               table = kmem_cache_zalloc(data->l2_tables, gfp);
+> > 
