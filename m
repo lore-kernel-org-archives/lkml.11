@@ -2,183 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E616AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 08:09:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 713C5C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 08:10:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235169AbiEYIJi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 04:09:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44008 "EHLO
+        id S235629AbiEYIKL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 04:10:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230115AbiEYIJ1 (ORCPT
+        with ESMTP id S235922AbiEYIJu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 04:09:27 -0400
-Received: from mail-vs1-f47.google.com (mail-vs1-f47.google.com [209.85.217.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C21B7CB62;
-        Wed, 25 May 2022 01:09:26 -0700 (PDT)
-Received: by mail-vs1-f47.google.com with SMTP id 68so13045341vse.11;
-        Wed, 25 May 2022 01:09:26 -0700 (PDT)
+        Wed, 25 May 2022 04:09:50 -0400
+Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D28F1814B2;
+        Wed, 25 May 2022 01:09:41 -0700 (PDT)
+Received: by mail-wr1-f53.google.com with SMTP id e2so17358133wrc.1;
+        Wed, 25 May 2022 01:09:41 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=AP6YAmjuideizUL7mupGqzQ5PgkASmXHUBF+HT7ISso=;
-        b=uxJG7TB5ZJoieTVL9kZBV836edJKVAeT7i96N1Eig6qaN8mbelut5uQR+kc+K8v4Bw
-         dkowdSspLVgOTKbgfz/5tlE4JY3hsccAG6cKlcL5+c93/euhtlRSlhexpfRCfevFIlWa
-         9rfIN6O2cHHmkMzRa4Jt66M6lUzWXaKo6ds0q2CpMvUDTE3jlDC4IcjInV/PbCZr3A0+
-         PpiO36GQjmCz8Sa7qHUT4p2WeLFLsEVcGj1Y3Rr5SL9TqWjDivfEq4nibmUqogpK36Eh
-         gZ8kUA1kvAG2Ude0vxeWE/NuD7GNe8+PSZ9nJefR1OPK15H6f66/MoRoCW471Fr/e5xZ
-         81zw==
-X-Gm-Message-State: AOAM532SXnRLy1P6ElhzCgp42VJD+0kpKtI8URzsEnkGThEYBs2sYTKj
-        8B5PNvPN02xJ7eX3SV9e4uEmF4nzDasNGbhk
-X-Google-Smtp-Source: ABdhPJyFCX17Qe0SSxnx7zIp3cpaHTT1zCBiw2GlZG3GhFycAwtOt46i1+3Zw1R/E5qT6LQBX71XZQ==
-X-Received: by 2002:a05:6102:f06:b0:337:9881:5031 with SMTP id v6-20020a0561020f0600b0033798815031mr8239948vss.67.1653466165429;
-        Wed, 25 May 2022 01:09:25 -0700 (PDT)
-Received: from mail-ua1-f44.google.com (mail-ua1-f44.google.com. [209.85.222.44])
-        by smtp.gmail.com with ESMTPSA id u23-20020ab07037000000b003626f894df6sm163784ual.36.2022.05.25.01.09.25
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=CVMOEmGCoID/U7Ok5RtjAgP51rImkcURoHcOEZZPehY=;
+        b=pcqN0BwCcGGIJXctw9Ht+kzET8v48ksElV9QSS390nR41p/XDtqqHHFOPqbwQIp5vZ
+         i6lvddy5C83XC1qKF+oQW3B7vOZv2wjW4q0qa3uzYK5TAFTEjR6GUZQ/ji/UNkudYdqa
+         5T1tI93uFwLjxu48poqHeWokav+ZCAxSYjsU80P6dVjDJEDJU8rrsDqfEmv6lgsKZg5n
+         lwnUap6WZrNSGp4kJASX8dVULrSkcPx46iFQAdWTdmkG53Up+xKRjIcXOoypV9zWbtqH
+         Ub/5RiDnSWWORkJd+hIMMi5z61K8/xAeWUgyv9l9iP34ljhwPSgpu7k/lnkj5sfMjZn2
+         E1MA==
+X-Gm-Message-State: AOAM5307YsBwr3H4lqUGNxQDihO17CCxB9ita4hz33h+V/c6ZQWPSL7c
+        OhRT10KiFEbfNpY9xXlYf6k=
+X-Google-Smtp-Source: ABdhPJy79W5xqYDzU2ooxTjO+0iX0pKT+szGglDG33KejuukZeEQUYrvQTH7cKt/Mv8XXrN5ekYUhA==
+X-Received: by 2002:a5d:4d05:0:b0:20e:6457:f2b1 with SMTP id z5-20020a5d4d05000000b0020e6457f2b1mr25224107wrt.653.1653466179973;
+        Wed, 25 May 2022 01:09:39 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id h1-20020a1ccc01000000b00397342e3830sm4714185wmb.0.2022.05.25.01.09.39
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 25 May 2022 01:09:25 -0700 (PDT)
-Received: by mail-ua1-f44.google.com with SMTP id m18so7079159uao.9;
-        Wed, 25 May 2022 01:09:25 -0700 (PDT)
-X-Received: by 2002:a05:6902:120e:b0:634:6f29:6b84 with SMTP id
- s14-20020a056902120e00b006346f296b84mr30228977ybu.604.1653465845434; Wed, 25
- May 2022 01:04:05 -0700 (PDT)
+        Wed, 25 May 2022 01:09:39 -0700 (PDT)
+Message-ID: <8093277c-5098-e5e3-f606-486de5b2f67b@kernel.org>
+Date:   Wed, 25 May 2022 10:09:38 +0200
 MIME-Version: 1.0
-References: <20220524234531.1949-1-peterx@redhat.com>
-In-Reply-To: <20220524234531.1949-1-peterx@redhat.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 25 May 2022 10:03:53 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdWpCUGXn=KzfpfZqResRR41XkBKZiQQVo_O_Hq+KMcDKg@mail.gmail.com>
-Message-ID: <CAMuHMdWpCUGXn=KzfpfZqResRR41XkBKZiQQVo_O_Hq+KMcDKg@mail.gmail.com>
-Subject: Re: [PATCH v3] mm: Avoid unnecessary page fault retires on shared
- memory types
-To:     Peter Xu <peterx@redhat.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux MM <linux-mm@kvack.org>,
-        Richard Henderson <rth@twiddle.net>,
-        David Hildenbrand <david@redhat.com>,
-        Matt Turner <mattst88@gmail.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Michal Simek <monstr@monstr.eu>,
-        Russell King <linux@armlinux.org.uk>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Jonas Bonn <jonas@southpole.se>, Will Deacon <will@kernel.org>,
-        "James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        openrisc@lists.librecores.org, linux-s390@vger.kernel.org,
-        Ingo Molnar <mingo@redhat.com>,
-        linux-m68k@lists.linux-m68k.org,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Chris Zankel <chris@zankel.net>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Alistair Popple <apopple@nvidia.com>,
-        linux-csky@vger.kernel.org, linux-hexagon@vger.kernel.org,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        sparclinux@vger.kernel.org,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Stafford Horne <shorne@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>, x86@kernel.org,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Paul Mackerras <paulus@samba.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        linux-xtensa@linux-xtensa.org, Nicholas Piggin <npiggin@gmail.com>,
-        linux-sh@vger.kernel.org, Vasily Gorbik <gor@linux.ibm.com>,
-        Borislav Petkov <bp@alien8.de>, linux-mips@vger.kernel.org,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        Helge Deller <deller@gmx.de>, Vineet Gupta <vgupta@kernel.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        linux-um@lists.infradead.org, linux-alpha@vger.kernel.org,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-ia64@vger.kernel.org, Dinh Nguyen <dinguyen@kernel.org>,
-        Guo Ren <guoren@kernel.org>,
-        linux-snps-arc@lists.infradead.org,
-        Hugh Dickins <hughd@google.com>, Rich Felker <dalias@libc.org>,
-        Andy Lutomirski <luto@kernel.org>,
-        Richard Weinberger <richard@nod.at>,
-        linuxppc-dev@lists.ozlabs.org, Brian Cain <bcain@quicinc.com>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [GIT PULL for v5.18-rc1] media updates
+Content-Language: en-US
+To:     Sean Young <sean@mess.org>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>,
-        linux-parisc@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20220322101406.459e2950@coco.lan>
+ <a0470450-ecfd-2918-e04a-7b57c1fd7694@kernel.org>
+ <Yo3ddVHgBBlvJEdh@gofer.mess.org>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <Yo3ddVHgBBlvJEdh@gofer.mess.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 25, 2022 at 1:45 AM Peter Xu <peterx@redhat.com> wrote:
-> I observed that for each of the shared file-backed page faults, we're very
-> likely to retry one more time for the 1st write fault upon no page.  It's
-> because we'll need to release the mmap lock for dirty rate limit purpose
-> with balance_dirty_pages_ratelimited() (in fault_dirty_shared_page()).
->
-> Then after that throttling we return VM_FAULT_RETRY.
->
-> We did that probably because VM_FAULT_RETRY is the only way we can return
-> to the fault handler at that time telling it we've released the mmap lock.
->
-> However that's not ideal because it's very likely the fault does not need
-> to be retried at all since the pgtable was well installed before the
-> throttling, so the next continuous fault (including taking mmap read lock,
-> walk the pgtable, etc.) could be in most cases unnecessary.
->
-> It's not only slowing down page faults for shared file-backed, but also add
-> more mmap lock contention which is in most cases not needed at all.
->
-> To observe this, one could try to write to some shmem page and look at
-> "pgfault" value in /proc/vmstat, then we should expect 2 counts for each
-> shmem write simply because we retried, and vm event "pgfault" will capture
-> that.
->
-> To make it more efficient, add a new VM_FAULT_COMPLETED return code just to
-> show that we've completed the whole fault and released the lock.  It's also
-> a hint that we should very possibly not need another fault immediately on
-> this page because we've just completed it.
->
-> This patch provides a ~12% perf boost on my aarch64 test VM with a simple
-> program sequentially dirtying 400MB shmem file being mmap()ed and these are
-> the time it needs:
->
->   Before: 650.980 ms (+-1.94%)
->   After:  569.396 ms (+-1.38%)
->
-> I believe it could help more than that.
->
-> We need some special care on GUP and the s390 pgfault handler (for gmap
-> code before returning from pgfault), the rest changes in the page fault
-> handlers should be relatively straightforward.
->
-> Another thing to mention is that mm_account_fault() does take this new
-> fault as a generic fault to be accounted, unlike VM_FAULT_RETRY.
->
-> I explicitly didn't touch hmm_vma_fault() and break_ksm() because they do
-> not handle VM_FAULT_RETRY even with existing code, so I'm literally keeping
-> them as-is.
->
-> Signed-off-by: Peter Xu <peterx@redhat.com>
+On 25. 05. 22, 9:40, Sean Young wrote:
+> Hi,
+> 
+> On Wed, May 25, 2022 at 08:42:26AM +0200, Jiri Slaby wrote:
+>> On 22. 03. 22, 10:14, Mauro Carvalho Chehab wrote:
+>>> Hi Linus,
+>>>
+>>> Please pull from:
+>>>     git://git.kernel.org/pub/scm/linux/kernel/git/mchehab/linux-media tags/media/v5.18-1
+>> ...
+>>> Sean Young (10):
+>> ...
+>>>         media: lirc: remove unused lirc features
+>>
+>> Hi,
+>>
+>> this breaks lirc build:
+>>> [   59s] lircd.cpp:489:49: error: 'LIRC_CAN_SET_REC_FILTER' was not declared in this scope; did you mean 'LIRC_CAN_SET_REC_CARRIER'?
+>>> [   59s]   489 |                     || (curr_driver->features & LIRC_CAN_SET_REC_FILTER)) {
+>>> [   59s]       |                                                 ^~~~~~~~~~~~~~~~~~~~~~~
+>>> [   59s]       |                                                 LIRC_CAN_SET_REC_CARRIER
+>>> [   59s] lircd.cpp: In function 'void loop()':
+>>> [   59s] lircd.cpp:2069:82: error: 'LIRC_CAN_NOTIFY_DECODE' was not declared in this scope; did you mean 'DRVCTL_NOTIFY_DECODE'?
+>>> [   59s]  2069 |                         if (curr_driver->drvctl_func && (curr_driver->features & LIRC_CAN_NOTIFY_DECODE))
+>>> [   59s]       |                                                                                  ^~~~~~~~~~~~~~~~~~~~~~
+>>> [   59s]       |                                                                                  DRVCTL_NOTIFY_DECODE
+>>
+>> So the uapi header defines should be brought back, IMO.
+> 
+> The lirc.h uapi defines the lirc chardev uapi. The uapi has not changed in
+> any way, for old or new kernels.
+> 
+> So the lirc header used to have feature flags LIRC_CAN_SET_REC_FILTER and
+> LIRC_CAN_NOTIFY_DECODE which were defined the in the lirc.h header, but
+> never implemented by any out of tree or in tree driver.
+> 
+> Neither feature was or will be ever implemented in the kernel;
+> LIRC_CAN_NOTIFY_DECODE is handled via the led subsytem, and it is unknown
+> what LIRC_CAN_SET_REC_FILTER is even supposed to mean. Again, I have not
+> found any implementation anywhere.
+> 
+> You are trying to build lirc user space daemon which is no longer maintained.
+> The last time the lirc daemon git repo had any commits was in 2019. User
+> space tooling has been replaced with daemon-less ir-ctl and ir-keytable,
+> which uses BPF for IR decoding.
+> 
+> The right fix is to simply delete the offending lines in lircd.cpp and all
+> will be well. Sometimes source code needs a little maintainence.
+> 
+> These changes in the lirc uapi do not change the uapi in any way, just the
+> ability the build some unmaintained software without trivial changes.
 
->  arch/m68k/mm/fault.c          |  4 ++++
+Hi,
 
-Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
+I don't understand how inability to build software is not an uapi 
+breakage -- care to elaborate?
 
-Gr{oetje,eeting}s,
+Be it umaintained or not, it's still in distributions (the above is from 
+opensuse build system) and it is broken now. Every single distributor 
+now would have to go and fix this.
 
-                        Geert
+So either you fix it (e.g. re-add only the entries as I suggested) or I 
+will post a revert of your patch. Sorry, no excuses.
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+thanks,
+-- 
+js
+suse labs
