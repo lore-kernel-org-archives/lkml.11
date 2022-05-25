@@ -2,155 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED4D9C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 14:33:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF3BAC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 14:34:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244849AbiEYOdj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 10:33:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53600 "EHLO
+        id S238199AbiEYOeP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 10:34:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244853AbiEYOdc (ORCPT
+        with ESMTP id S237558AbiEYOeN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 10:33:32 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A1ADEA88A1
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 07:33:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653489207;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=9TKWXPVOyy27jggL+/cJXYJRt9uEdXRrwGp2as9PzGY=;
-        b=PgOLgZk1zDCjho1yLJGQZDGxT/cT5s+ZWvASufOr6AbI7RKeMjPNUsbVeU+8qItK00WB9c
-        rDUCJ2wZleC+grwv6zXCAWMexJyZvpf9I1D/vSpTSOKXcl38DXP3HJhgMCrV8RX8VliApu
-        bUyb0wxYII1e/zvIjnV/Y2sXiUX9GbM=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-396-1WAZ6LSpP8WakQXx6X-awA-1; Wed, 25 May 2022 10:33:24 -0400
-X-MC-Unique: 1WAZ6LSpP8WakQXx6X-awA-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Wed, 25 May 2022 10:34:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F498A7E20;
+        Wed, 25 May 2022 07:34:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A921E858EFE;
-        Wed, 25 May 2022 14:33:22 +0000 (UTC)
-Received: from dhcp-27-174.brq.redhat.com (unknown [10.40.193.81])
-        by smtp.corp.redhat.com (Postfix) with SMTP id BC570112131B;
-        Wed, 25 May 2022 14:33:04 +0000 (UTC)
-Received: by dhcp-27-174.brq.redhat.com (nbSMTP-1.00) for uid 1000
-        oleg@redhat.com; Wed, 25 May 2022 16:33:22 +0200 (CEST)
-Date:   Wed, 25 May 2022 16:33:03 +0200
-From:   Oleg Nesterov <oleg@redhat.com>
-To:     "Eric W. Biederman" <ebiederm@xmission.com>
-Cc:     linux-kernel@vger.kernel.org, rjw@rjwysocki.net, mingo@kernel.org,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, mgorman@suse.de, bigeasy@linutronix.de,
-        Will Deacon <will@kernel.org>, tj@kernel.org,
-        linux-pm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        linux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
-        Jann Horn <jannh@google.com>, linux-ia64@vger.kernel.org,
-        Robert OCallahan <roc@pernos.co>, Kyle Huey <khuey@pernos.co>,
-        Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
-        Jason Wessel <jason.wessel@windriver.com>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Douglas Miller <dougmill@linux.vnet.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>
-Subject: Re: [PATCH 05/16] ptrace: Remove dead code from __ptrace_detach
-Message-ID: <20220525143303.GB2687@redhat.com>
-References: <871qwq5ucx.fsf_-_@email.froward.int.ebiederm.org>
- <20220518225355.784371-5-ebiederm@xmission.com>
- <20220524114250.GB14347@redhat.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F419F6195D;
+        Wed, 25 May 2022 14:34:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22B91C385B8;
+        Wed, 25 May 2022 14:34:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653489251;
+        bh=jKMXS9Z2wSf/iYiPIqP+VUf/M/S8DyVS0usjv1+qV2c=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=ltGVKF9ILk+J3qDoXXxbOxuefxDlIeGH5cypEsKhRPY5BnK8naQBWLrJn1aWrkPny
+         HcqttzfzqxJilDJv+SOlZl4pTjpU+vwO5RCUmd9Yw+yQaOCjZ6W9AH+7VXbI8X2X2p
+         hwem9EMNKPwJ3vW+IW0uTscg+pY1KKTtZp5TIceRFt6eNSzGW+UZsiCt22qcRP+OV/
+         eZLIAszeyj+0rWh0zPUPkwZySV7RgtOxnHt+hYHF+ggHwtWIMSq7Gb4XbUwAfNVaSI
+         chxWV3rYlzngrCzUkeOZvYKJMHmjz4L9L9t1wmTuyCS3c7vfToXNFBM9TDRP8yOSaJ
+         QSjcECuuOlYew==
+Date:   Wed, 25 May 2022 09:34:09 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Jiri Slaby <jirislaby@kernel.org>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        "Michael S . Tsirkin" <mst@redhat.com>, llvm@lists.linux.dev,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Bjorn Helgaas <bhelgaas@google.com>
+Subject: Re: [PATCH v2 1/2] linux/types.h: Remove unnecessary __bitwise__
+Message-ID: <20220525143409.GA292780@bhelgaas>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220524114250.GB14347@redhat.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
+In-Reply-To: <b5c0a68d-8387-4909-beea-f70ab9e6e3d5@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05/24, Oleg Nesterov wrote:
->
-> Sorry for delay.
->
-> On 05/18, Eric W. Biederman wrote:
-> >
-> > Ever since commit 28d838cc4dfe ("Fix ptrace self-attach rule") it has
-> > been impossible to attach another thread in the same thread group.
-> >
-> > Remove the code from __ptrace_detach that was trying to support
-> > detaching from a thread in the same thread group.
->
-> may be I am totally confused, but I think you misunderstood this code
-> and thus this patch is very wrong.
->
-> The same_thread_group() check does NOT try to check if debugger and
-> tracee is in the same thread group, this is indeed impossible.
->
-> We need this check to know if the tracee was ptrace_reparented() before
-> __ptrace_unlink() or not.
->
->
-> > -static int ignoring_children(struct sighand_struct *sigh)
-> > -{
-> > -	int ret;
-> > -	spin_lock(&sigh->siglock);
-> > -	ret = (sigh->action[SIGCHLD-1].sa.sa_handler == SIG_IGN) ||
-> > -	      (sigh->action[SIGCHLD-1].sa.sa_flags & SA_NOCLDWAIT);
-> > -	spin_unlock(&sigh->siglock);
-> > -	return ret;
-> > -}
->
-> ...
->
-> > @@ -565,14 +552,9 @@ static bool __ptrace_detach(struct task_struct *tracer, struct task_struct *p)
-> >
-> >  	dead = !thread_group_leader(p);
-> >
-> > -	if (!dead && thread_group_empty(p)) {
-> > -		if (!same_thread_group(p->real_parent, tracer))
-> > -			dead = do_notify_parent(p, p->exit_signal);
-> > -		else if (ignoring_children(tracer->sighand)) {
-> > -			__wake_up_parent(p, tracer);
-> > -			dead = true;
-> > -		}
-> > -	}
->
-> So the code above does:
->
-> 	- if !same_thread_group(p->real_parent, tracer), then the tracee was
-> 	  ptrace_reparented(), and now we need to notify its natural parent
-> 	  to let it know it has a zombie child.
->
-> 	- otherwise, the tracee is our natural child, and it is actually dead.
-> 	  however, since we are going to reap this task, we need to wake up our
-> 	  sub-threads possibly sleeping on ->wait_chldexit wait_queue_head_t.
->
-> See?
->
-> > +	if (!dead && thread_group_empty(p))
-> > +		dead = do_notify_parent(p, p->exit_signal);
->
-> No, this looks wrong. Or I missed something?
+On Wed, May 25, 2022 at 08:51:29AM +0200, Jiri Slaby wrote:
+> On 15. 03. 22, 16:30, Bjorn Helgaas wrote:
+> > From: Bjorn Helgaas <bhelgaas@google.com>
+> > 
+> > There are no users of "__bitwise__" except the definition of "__bitwise".
+> > Remove __bitwise__ and define __bitwise directly.
+> > 
+> > This is a follow-up to 05de97003c77 ("linux/types.h: enable endian checks
+> > for all sparse builds").
+> > 
+> > Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+> > Cc: Michael S. Tsirkin <mst@redhat.com>
+> > ---
+> >   include/uapi/linux/types.h  | 5 ++---
+> >   tools/include/linux/types.h | 5 ++---
+> >   2 files changed, 4 insertions(+), 6 deletions(-)
+> > 
+> > diff --git a/include/uapi/linux/types.h b/include/uapi/linux/types.h
+> > index f6d2f83cbe29..71696f424ac8 100644
+> > --- a/include/uapi/linux/types.h
+> > +++ b/include/uapi/linux/types.h
+> > @@ -20,11 +20,10 @@
+> >    */
+> >   #ifdef __CHECKER__
+> > -#define __bitwise__ __attribute__((bitwise))
+> > +#define __bitwise	__attribute__((bitwise))
+> >   #else
+> > -#define __bitwise__
+> > +#define __bitwise
+> >   #endif
+> > -#define __bitwise __bitwise__
+> 
+> Hi,
+> 
+> this broke userspace, like open-iscsi:
+> > [   34s] In file included from session_info.h:9,
+> > [   34s]                  from iscsi_util.c:38:
+> > [   34s] ../include/iscsi_proto.h:66:30: error: expected '=', ',', ';', 'asm' or '__attribute__' before 'itt_t'
+> > [   34s]    66 | typedef uint32_t __bitwise__ itt_t;
+> > [   34s]       |                              ^~~~~
+> 
+> It looks like we need __bitwise__ back.
 
-Yes, but...
+Crap, sorry.  I don't know why I thought it would be safe to remove
+something from uapi.  I'll send a revert.
 
-That said, it seems that we do not need __wake_up_parent() if it was our
-natural child?
-
-I'll recheck. Eric, I'll continue to read this series tomorrow, can't
-concentrate on ptrace today.
-
-Oleg.
-
+Bjorn
