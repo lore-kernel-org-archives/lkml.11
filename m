@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F5BFC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 09:02:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D59F6C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 09:02:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232976AbiEYJCc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 05:02:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45812 "EHLO
+        id S239079AbiEYJCg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 05:02:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238651AbiEYJCI (ORCPT
+        with ESMTP id S238676AbiEYJCE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 05:02:08 -0400
+        Wed, 25 May 2022 05:02:04 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 836378B094
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 02:02:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 710CC7CDE7
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 02:01:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653469322;
+        s=mimecast20190719; t=1653469317;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=HoOAusWmUMY8Nd0DAMfN6GftY7vo4orAj4jzmtrXqh4=;
-        b=bR1nEK9x1cRTXhd5zEYfpbD3ecX4+0mvi3I76M+Y/xZ0shkSQrw2QLI3LQGAE2a7d2fbeT
-        TEZL+5iMGHnT3DCxoEnMuEYff66Cz1nxSJUXICkVcl70WY/gpIzozpQcwL3KhwKl+uHUpd
-        sj9TRpi57IMJmsBcWR2sqxrUEllBLaQ=
+        bh=nng4Bpby9SbxbMmp9Nub7wzlYHfiy2rUZLajFMlVZtU=;
+        b=FUJbE+ykeG0LJiL3YRfJWY2TrGYNZ4LBS/s/l7BFDSuxuYFuh3zLdeEKnV++s80LG9vYNk
+        Qfrw23etbJiSPEtJXrayh/BcyZwO7t3DDq1Op37PEffjW+NSN/i6Kc0ZZmJktiB1zqZHJ6
+        R8OClMQiJf8GtaarKZ9SuG1+W3k3sGs=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-671-8BvxXyzcNTWV3T6S8_zv-A-1; Wed, 25 May 2022 05:01:58 -0400
-X-MC-Unique: 8BvxXyzcNTWV3T6S8_zv-A-1
+ us-mta-623-NTl7W1EePY61xZ8HgZFliw-1; Wed, 25 May 2022 05:01:54 -0400
+X-MC-Unique: NTl7W1EePY61xZ8HgZFliw-1
 Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id DA0FD804191;
-        Wed, 25 May 2022 09:01:57 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id EE1FD802814;
+        Wed, 25 May 2022 09:01:53 +0000 (UTC)
 Received: from fedora.redhat.com (unknown [10.40.194.186])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 35CBF405D4BF;
-        Wed, 25 May 2022 09:01:56 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 479E240CFD0A;
+        Wed, 25 May 2022 09:01:52 +0000 (UTC)
 From:   Vitaly Kuznetsov <vkuznets@redhat.com>
 To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -47,9 +47,9 @@ Cc:     Sean Christopherson <seanjc@google.com>,
         Michael Kelley <mikelley@microsoft.com>,
         Siddharth Chandrasekaran <sidcha@amazon.de>,
         linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v4 10/37] KVM: x86: hyper-v: Don't use sparse_set_to_vcpu_mask() in kvm_hv_send_ipi()
-Date:   Wed, 25 May 2022 11:01:06 +0200
-Message-Id: <20220525090133.1264239-11-vkuznets@redhat.com>
+Subject: [PATCH v4 08/37] x86/hyperv: Introduce HV_MAX_SPARSE_VCPU_BANKS/HV_VCPUS_PER_SPARSE_BANK constants
+Date:   Wed, 25 May 2022 11:01:04 +0200
+Message-Id: <20220525090133.1264239-9-vkuznets@redhat.com>
 In-Reply-To: <20220525090133.1264239-1-vkuznets@redhat.com>
 References: <20220525090133.1264239-1-vkuznets@redhat.com>
 MIME-Version: 1.0
@@ -60,96 +60,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Get rid of on-stack allocation of vcpu_mask and optimize kvm_hv_send_ipi()
-for a smaller number of vCPUs in the request. When Hyper-V TLB flush
-is in  use, HvSendSyntheticClusterIpi{,Ex} calls are not commonly used to
-send IPIs to a large number of vCPUs (and are rarely used in general).
+It may not come clear from where the magical '64' value used in
+__cpumask_to_vpset() come from. Moreover, '64' means both the maximum
+sparse bank number as well as the number of vCPUs per bank. Add defines
+to make things clear. These defines are also going to be used by KVM.
 
-Introduce hv_is_vp_in_sparse_set() to directly check if the specified
-VP_ID is present in sparse vCPU set.
+No functional change.
 
 Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
 Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 ---
- arch/x86/kvm/hyperv.c | 37 ++++++++++++++++++++++++++-----------
- 1 file changed, 26 insertions(+), 11 deletions(-)
+ include/asm-generic/hyperv-tlfs.h |  5 +++++
+ include/asm-generic/mshyperv.h    | 11 ++++++-----
+ 2 files changed, 11 insertions(+), 5 deletions(-)
 
-diff --git a/arch/x86/kvm/hyperv.c b/arch/x86/kvm/hyperv.c
-index 287eaca4db3c..dbefb492aa35 100644
---- a/arch/x86/kvm/hyperv.c
-+++ b/arch/x86/kvm/hyperv.c
-@@ -1747,6 +1747,25 @@ static void sparse_set_to_vcpu_mask(struct kvm *kvm, u64 *sparse_banks,
- 	}
- }
+diff --git a/include/asm-generic/hyperv-tlfs.h b/include/asm-generic/hyperv-tlfs.h
+index fdce7a4cfc6f..020ca9bdbb79 100644
+--- a/include/asm-generic/hyperv-tlfs.h
++++ b/include/asm-generic/hyperv-tlfs.h
+@@ -399,6 +399,11 @@ struct hv_vpset {
+ 	u64 bank_contents[];
+ } __packed;
  
-+static bool hv_is_vp_in_sparse_set(u32 vp_id, u64 valid_bank_mask, u64 sparse_banks[])
-+{
-+	int bank, sbank = 0;
++/* The maximum number of sparse vCPU banks which can be encoded by 'struct hv_vpset' */
++#define HV_MAX_SPARSE_VCPU_BANKS (64)
++/* The number of vCPUs in one sparse bank */
++#define HV_VCPUS_PER_SPARSE_BANK (64)
 +
-+	if (!test_bit(vp_id / HV_VCPUS_PER_SPARSE_BANK,
-+		      (unsigned long *)&valid_bank_mask))
-+		return false;
-+
-+	for_each_set_bit(bank, (unsigned long *)&valid_bank_mask,
-+			 KVM_HV_MAX_SPARSE_VCPU_SET_BITS) {
-+		if (bank == vp_id / HV_VCPUS_PER_SPARSE_BANK)
-+			break;
-+		sbank++;
-+	}
-+
-+	return test_bit(vp_id % HV_VCPUS_PER_SPARSE_BANK,
-+			(unsigned long *)&sparse_banks[sbank]);
-+}
-+
- struct kvm_hv_hcall {
- 	u64 param;
- 	u64 ingpa;
-@@ -2031,8 +2050,8 @@ static u64 kvm_hv_flush_tlb(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
- 		((u64)hc->rep_cnt << HV_HYPERCALL_REP_COMP_OFFSET);
- }
- 
--static void kvm_send_ipi_to_many(struct kvm *kvm, u32 vector,
--				 unsigned long *vcpu_bitmap)
-+static void kvm_hv_send_ipi_to_many(struct kvm *kvm, u32 vector,
-+				    u64 *sparse_banks, u64 valid_bank_mask)
- {
- 	struct kvm_lapic_irq irq = {
- 		.delivery_mode = APIC_DM_FIXED,
-@@ -2042,7 +2061,10 @@ static void kvm_send_ipi_to_many(struct kvm *kvm, u32 vector,
- 	unsigned long i;
- 
- 	kvm_for_each_vcpu(i, vcpu, kvm) {
--		if (vcpu_bitmap && !test_bit(i, vcpu_bitmap))
-+		if (sparse_banks &&
-+		    !hv_is_vp_in_sparse_set(kvm_hv_get_vpindex(vcpu),
-+					    valid_bank_mask,
-+					    sparse_banks))
- 			continue;
- 
- 		/* We fail only when APIC is disabled */
-@@ -2055,7 +2077,6 @@ static u64 kvm_hv_send_ipi(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
- 	struct kvm *kvm = vcpu->kvm;
- 	struct hv_send_ipi_ex send_ipi_ex;
- 	struct hv_send_ipi send_ipi;
--	DECLARE_BITMAP(vcpu_mask, KVM_MAX_VCPUS);
- 	unsigned long valid_bank_mask;
- 	u64 sparse_banks[KVM_HV_MAX_SPARSE_VCPU_SET_BITS];
+ /* HvCallSendSyntheticClusterIpi hypercall */
+ struct hv_send_ipi {
  	u32 vector;
-@@ -2117,13 +2138,7 @@ static u64 kvm_hv_send_ipi(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
- 	if ((vector < HV_IPI_LOW_VECTOR) || (vector > HV_IPI_HIGH_VECTOR))
- 		return HV_STATUS_INVALID_HYPERCALL_INPUT;
+diff --git a/include/asm-generic/mshyperv.h b/include/asm-generic/mshyperv.h
+index c08758b6b364..0abe91df1ef6 100644
+--- a/include/asm-generic/mshyperv.h
++++ b/include/asm-generic/mshyperv.h
+@@ -214,9 +214,10 @@ static inline int __cpumask_to_vpset(struct hv_vpset *vpset,
+ {
+ 	int cpu, vcpu, vcpu_bank, vcpu_offset, nr_bank = 1;
+ 	int this_cpu = smp_processor_id();
++	int max_vcpu_bank = hv_max_vp_index / HV_VCPUS_PER_SPARSE_BANK;
  
--	if (all_cpus) {
--		kvm_send_ipi_to_many(kvm, vector, NULL);
--	} else {
--		sparse_set_to_vcpu_mask(kvm, sparse_banks, valid_bank_mask, vcpu_mask);
--
--		kvm_send_ipi_to_many(kvm, vector, vcpu_mask);
--	}
-+	kvm_hv_send_ipi_to_many(kvm, vector, all_cpus ? NULL : sparse_banks, valid_bank_mask);
+-	/* valid_bank_mask can represent up to 64 banks */
+-	if (hv_max_vp_index / 64 >= 64)
++	/* vpset.valid_bank_mask can represent up to HV_MAX_SPARSE_VCPU_BANKS banks */
++	if (max_vcpu_bank >= HV_MAX_SPARSE_VCPU_BANKS)
+ 		return 0;
  
- ret_success:
- 	return HV_STATUS_SUCCESS;
+ 	/*
+@@ -224,7 +225,7 @@ static inline int __cpumask_to_vpset(struct hv_vpset *vpset,
+ 	 * structs are not cleared between calls, we risk flushing unneeded
+ 	 * vCPUs otherwise.
+ 	 */
+-	for (vcpu_bank = 0; vcpu_bank <= hv_max_vp_index / 64; vcpu_bank++)
++	for (vcpu_bank = 0; vcpu_bank <= max_vcpu_bank; vcpu_bank++)
+ 		vpset->bank_contents[vcpu_bank] = 0;
+ 
+ 	/*
+@@ -236,8 +237,8 @@ static inline int __cpumask_to_vpset(struct hv_vpset *vpset,
+ 		vcpu = hv_cpu_number_to_vp_number(cpu);
+ 		if (vcpu == VP_INVAL)
+ 			return -1;
+-		vcpu_bank = vcpu / 64;
+-		vcpu_offset = vcpu % 64;
++		vcpu_bank = vcpu / HV_VCPUS_PER_SPARSE_BANK;
++		vcpu_offset = vcpu % HV_VCPUS_PER_SPARSE_BANK;
+ 		__set_bit(vcpu_offset, (unsigned long *)
+ 			  &vpset->bank_contents[vcpu_bank]);
+ 		if (vcpu_bank >= nr_bank)
 -- 
 2.35.3
 
