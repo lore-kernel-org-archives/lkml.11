@@ -2,114 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA2D7C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 15:38:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1690C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 15:38:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245160AbiEYPiI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 11:38:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54328 "EHLO
+        id S234674AbiEYPiu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 11:38:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229893AbiEYPiG (ORCPT
+        with ESMTP id S229893AbiEYPij (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 11:38:06 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B774A13DF7
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 08:38:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653493082;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=VRInkexwmTuHc361ogc4GS6wqKsIpJYzH/kvwhGn+HE=;
-        b=UyjDq2Z0DGDKUPun1fGa9xulO64dz0jsQQ1Fn0dh/iC7ZM3rUKQuGaCsMC39ijmgnFXmsg
-        E/Zy6BIbqOMTHWRT65gvd0D/AcnOyMwdgHiUjAI+D9YG5awlYNJF52kKq0rLSagHEZh70y
-        SxedOcH4nfrqR4T+zdQSl1CpV9+g+KU=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-642-8ncsaPV6M6upaOrK2Mv4sg-1; Wed, 25 May 2022 11:37:59 -0400
-X-MC-Unique: 8ncsaPV6M6upaOrK2Mv4sg-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9544619705BA;
-        Wed, 25 May 2022 15:37:58 +0000 (UTC)
-Received: from fuller.cnet (ovpn-112-2.gru2.redhat.com [10.97.112.2])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 0541A400F38;
-        Wed, 25 May 2022 15:37:58 +0000 (UTC)
-Received: by fuller.cnet (Postfix, from userid 1000)
-        id 529E5416F574; Wed, 25 May 2022 12:37:37 -0300 (-03)
-Date:   Wed, 25 May 2022 12:37:37 -0300
-From:   Marcelo Tosatti <mtosatti@redhat.com>
-To:     Stefan Wahren <stefan.wahren@i2se.com>
-Cc:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Minchan Kim <minchan@kernel.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Phil Elwell <phil@raspberrypi.com>, regressions@lists.linux.dev
-Subject: Re: vchiq: Performance regression since 5.18-rc1
-Message-ID: <Yo5NQS470wTuDq/f@fuller.cnet>
-References: <77d6d498-7dd9-03eb-60f2-d7e682bb1b20@i2se.com>
- <YoszE8lQ9VcofLtX@linutronix.de>
- <Yo41ggMvkI1B9TeM@fuller.cnet>
- <e0402350-687e-14b6-2e30-4b459afa9afb@i2se.com>
+        Wed, 25 May 2022 11:38:39 -0400
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 634891A83A
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 08:38:35 -0700 (PDT)
+Received: by mail-pf1-x430.google.com with SMTP id y189so4467681pfy.10
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 08:38:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=XfUA65d3SdbF2oQUu55YnSpsWlaG2pXPKVSvY3AeaaY=;
+        b=HdWmnFghAeH4LB9aqAeQKPfx4YaL1PQAnvmeL63qjEhQAsAKGPbUoWiw805DbWMH7w
+         XoiBlH8sgL6Qd92qTjABYEtmtm8Cg+0qLN6NFvKknvRaO+mJDJqgzHyWB8HEZuWXscrH
+         Xz1wzE6LmtCY4J5IB9STw0NM5YtUlc4+LnGaMH+uaVJ+9hl2W1D75vtJW+gstoCx0AkA
+         d24A8qRFz6/7+LHkWFIXmI8WCtXovRtftQ/wkbSch57kOh30B0HA6YIDAZKaOqrc/HGo
+         AI0GxMStontX+lP5N4q0iFkpJeCCyO1oQ5OEx/TB6KuwVerlzTV7dTM9Yp0K4fMtVoKp
+         48LA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=XfUA65d3SdbF2oQUu55YnSpsWlaG2pXPKVSvY3AeaaY=;
+        b=O+TDfTqFj7OlMc2StfrfP1eO/TaPeu9FCV5oVvARMt5sPkE4R2Veo8OdEFDHHvz7lN
+         AXyyoe01J21OIXAK5Cuv+R4xpktAAZxA50Fmw+5xUkmSaAqzobuqU2J4JG3712WafrqS
+         Rt2+g4uC1+iX6eXm8J5V98vyAg/sk932SmarfDntWgijt3gQ+wmgqczksA7DH1kxeGUU
+         DH6qrChZ7Mc8KPx/IxUogP3m4yEyjGlF5Xmsx8unuSWnsX94ehmmDYMhqQ9qHbcE0UHm
+         rVcfnAyT9hdbODZ5WueGpDc+EcNHTeRuQhDb1UIFsvRh4NlgbsrhRjMChN4ZHWoaP+42
+         6HAA==
+X-Gm-Message-State: AOAM533CoFtbQWmJz/4cg556V+1tiGzmAQiXh3neivaHMmObYuGrSAtq
+        Q+wj64RqpxEEW9cCDYyy+GrTpA==
+X-Google-Smtp-Source: ABdhPJw8ma6FFkHhjBy1EOWCJFVdGQF0wo4kNYjbEkPmz677E+idKlyhbhGwlIzdJdTyXCoafh/Lkg==
+X-Received: by 2002:a63:1a17:0:b0:3fa:e901:1c68 with SMTP id a23-20020a631a17000000b003fae9011c68mr2278636pga.243.1653493114887;
+        Wed, 25 May 2022 08:38:34 -0700 (PDT)
+Received: from localhost ([2408:8207:18da:2310:c40f:7b5:4fa8:df3f])
+        by smtp.gmail.com with ESMTPSA id t2-20020a170902e84200b001618fee3900sm9707878plg.196.2022.05.25.08.38.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 25 May 2022 08:38:34 -0700 (PDT)
+Date:   Wed, 25 May 2022 23:38:30 +0800
+From:   Muchun Song <songmuchun@bytedance.com>
+To:     Johannes Weiner <hannes@cmpxchg.org>
+Cc:     mhocko@kernel.org, roman.gushchin@linux.dev, shakeelb@google.com,
+        cgroups@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, duanxiongchun@bytedance.com,
+        longman@redhat.com
+Subject: Re: [PATCH v4 03/11] mm: memcontrol: make lruvec lock safe when LRU
+ pages are reparented
+Message-ID: <Yo5NdncOsqL0xP8Q@FVFYT0MHHV2J.googleapis.com>
+References: <20220524060551.80037-1-songmuchun@bytedance.com>
+ <20220524060551.80037-4-songmuchun@bytedance.com>
+ <Yo0xmKOkBkhRy+bq@cmpxchg.org>
+ <Yo38mlkMBFz2h+yP@FVFYT0MHHV2J.googleapis.com>
+ <Yo4hVw7B+bUlMzLX@cmpxchg.org>
+ <Yo4pPw+IHPBZvZUv@FVFYT0MHHV2J.googleapis.com>
+ <Yo5B1tLcYPUoaACS@cmpxchg.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <e0402350-687e-14b6-2e30-4b459afa9afb@i2se.com>
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
+In-Reply-To: <Yo5B1tLcYPUoaACS@cmpxchg.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 25, 2022 at 04:07:47PM +0200, Stefan Wahren wrote:
-> Hi Marcelo,
-> 
-> Am 25.05.22 um 15:56 schrieb Marcelo Tosatti:
-> > On Mon, May 23, 2022 at 09:09:07AM +0200, Sebastian Andrzej Siewior wrote:
-> > > On 2022-05-22 01:22:00 [+0200], Stefan Wahren wrote:
-> > > > Hi,
-> > > Hi,
-> > > 
-> > > > while testing the staging/vc04_services/interface/vchiq_arm driver with my
-> > > > Raspberry Pi 3 B+ (multi_v7_defconfig) i noticed a huge performance
-> > > > regression since [ff042f4a9b050895a42cae893cc01fa2ca81b95c] mm:
-> > > > lru_cache_disable: replace work queue synchronization with synchronize_rcu
+On Wed, May 25, 2022 at 10:48:54AM -0400, Johannes Weiner wrote:
+> On Wed, May 25, 2022 at 09:03:59PM +0800, Muchun Song wrote:
+> > On Wed, May 25, 2022 at 08:30:15AM -0400, Johannes Weiner wrote:
+> > > On Wed, May 25, 2022 at 05:53:30PM +0800, Muchun Song wrote:
+> > > > On Tue, May 24, 2022 at 03:27:20PM -0400, Johannes Weiner wrote:
+> > > > > On Tue, May 24, 2022 at 02:05:43PM +0800, Muchun Song wrote:
+> > > > > > @@ -1230,10 +1213,23 @@ void lruvec_memcg_debug(struct lruvec *lruvec, struct folio *folio)
+> > > > > >   */
+> > > > > >  struct lruvec *folio_lruvec_lock(struct folio *folio)
+> > > > > >  {
+> > > > > > -	struct lruvec *lruvec = folio_lruvec(folio);
+> > > > > > +	struct lruvec *lruvec;
+> > > > > >  
+> > > > > > +	rcu_read_lock();
+> > > > > > +retry:
+> > > > > > +	lruvec = folio_lruvec(folio);
+> > > > > >  	spin_lock(&lruvec->lru_lock);
+> > > > > > -	lruvec_memcg_debug(lruvec, folio);
+> > > > > > +
+> > > > > > +	if (unlikely(lruvec_memcg(lruvec) != folio_memcg(folio))) {
+> > > > > > +		spin_unlock(&lruvec->lru_lock);
+> > > > > > +		goto retry;
+> > > > > > +	}
+> > > > > > +
+> > > > > > +	/*
+> > > > > > +	 * Preemption is disabled in the internal of spin_lock, which can serve
+> > > > > > +	 * as RCU read-side critical sections.
+> > > > > > +	 */
+> > > > > > +	rcu_read_unlock();
+> > > > > 
+> > > > > The code looks right to me, but I don't understand the comment: why do
+> > > > > we care that the rcu read-side continues? With the lru_lock held,
+> > > > > reparenting is on hold and the lruvec cannot be rcu-freed anyway, no?
+> > > > >
 > > > > 
-> > > > Usually i run "vchiq_test -f 1" to see the driver is still working [1].
-> > > What about
-> > > 	https://lore.kernel.org/all/YmrWK%2FKoU1zrAxPI@fuller.cnet/
+> > > > Right. We could hold rcu read lock until end of reparting.  So you mean
+> > > > we do rcu_read_unlock in folio_lruvec_lock()?
 > > > 
-> > > Sebastian
-> > Stefan,
+> > > The comment seems to suggest that disabling preemption is what keeps
+> > > the lruvec alive. But it's the lru_lock that keeps it alive. The
+> > > cgroup destruction path tries to take the lru_lock long before it even
+> > > gets to synchronize_rcu(). Once you hold the lru_lock, having an
+> > > implied read-side critical section as well doesn't seem to matter.
+> > >
 > > 
-> > Can you please try the patch above ?
+> > Well, I thought that spinlocks have implicit read-side critical sections
+> > because it disables preemption (I learned from the comments above
+> > synchronize_rcu() that says interrupts, preemption, or softirqs have been
+> > disabled also serve as RCU read-side critical sections).  So I have a
+> > question: is it still true in a PREEMPT_RT kernel (I am not familiar with
+> > this)?
 > 
-> this was the same as Paul send. I think i need more time for investigation,
-> maybe there is an issue with the application.
+> Yes, but you're missing my point.
+> 
+> > > Should the comment be deleted?
+> > 
+> > I think we could remove the comments. If the above question is false, seems
+> > like we should continue holding rcu read lock.
+> 
+> It's true.
+>
 
-To clarify: they are not the same patches.
+Thanks for your answer.
 
+> But assume it's false for a second. Why would you need to continue
+> holding it? What would it protect? The lruvec would be pinned by the
+> spinlock even if it DIDN'T imply an RCU lock, right?
 > 
-> All i noticed so far is that in good case the CPU usage is around ~ 60 % and
-> higher, while in bad case the CPU is almost idle. Also the issue is not
-> reproducible with arm64/defconfig.
-> 
-> > 
-> > 
-> > 
-> > _______________________________________________
-> > linux-arm-kernel mailing list
-> > linux-arm-kernel@lists.infradead.org
-> > http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-> 
-> 
+> So I don't understand the point of the comment. If the implied RCU
+> lock is protecting something not covered by the bare spinlock itself,
+> it should be added to the comment. Otherwise, the comment should go.
+>
 
+Got it. Thanks for your nice explanation. I'll remove
+the comment here.
