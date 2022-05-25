@@ -2,62 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEAC4C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 12:55:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 049E1C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 12:57:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243087AbiEYMzg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 08:55:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39148 "EHLO
+        id S243629AbiEYM5J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 08:57:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232576AbiEYMze (ORCPT
+        with ESMTP id S229831AbiEYM5H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 08:55:34 -0400
-X-Greylist: delayed 98148 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 25 May 2022 05:55:33 PDT
-Received: from box.indicandustries.com (hwsrv-970840.hostwindsdns.com [IPv6:2607:5501:3000:21a5::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF3025F40
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 05:55:32 -0700 (PDT)
-Received: from authenticated-user (box.indicandustries.com [104.168.149.109])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by box.indicandustries.com (Postfix) with ESMTPSA id 98F8E107DE0
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 03:25:29 -0600 (MDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-        d=box.indicandustries.com; s=mail; t=1653384330;
-        bh=V6VCn7WEbqHjVVQ20/+SYu6rwS1WmTHcxX88g+j430s=;
-        h=Reply-To:From:To:Subject:Date:From;
-        b=LaHm0IVak/DUNK8HXZgNyLMg7g4RZb52ii1fjmvlafYY4ZEl56X4ISRHp5IcJK9we
-         aINhCQSKbsfWoN6aArBs2Ny3Ozmj3gWjMQgu1BZGyXmuU7Kcgv9AhQHEb/JMt7O8YT
-         tB3FmNAoulE7HCrXMUD477edcj0yFlmytpMJOIZN5uwGSwY6HaSRMtCbx9A4g5cSOA
-         XwwhOdciTzy0tchKqoNMN3ESKLYAZN/qpXLEYPcXgQhY/8AjHucn1vzW0pzqZz97FG
-         yZOU7KVid1UK/1fPsDw26VgJlNHs19CSICWcXOJIHhbQ82jWFNlX6pEFZfag2avHyO
-         QxNe52Drt3VcQ==
-Reply-To: amjalia90@gmail.com
-From:   amjad.ali@box.indicandustries.com
-To:     linux-kernel@vger.kernel.org
-Subject: Hello Sir, I seek your urgent consideration.
-Date:   24 May 2022 11:25:29 +0200
-Message-ID: <20220524112529.F0B0526CE26C22F2@box.indicandustries.com>
+        Wed, 25 May 2022 08:57:07 -0400
+Received: from mail-yb1-f178.google.com (mail-yb1-f178.google.com [209.85.219.178])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7C1BA0051
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 05:57:06 -0700 (PDT)
+Received: by mail-yb1-f178.google.com with SMTP id g72so8071960ybf.0
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 05:57:06 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=XbTQQ3fFsREZ3tUhy2vBlOH2mWBOf5JDmMrH0eHv+2E=;
+        b=d4N0E7Xfbb7foV+cJmtF6eHJT1qjiLSSMK1qK8yL31OosmRjePjL/M9gOulWmnwfGB
+         pcR5iMo0ARzmSTA+C1zaVxN+w9Et1TN/3KBG5I39LLQcaQXwXZoMmr9VDfGk19sML6Oe
+         1Sv2T4tBHR0SUOA2ThXVbNtYPcWD6NnuiTDDVU7KZGGxoUvZymAv/TwzCYeCviHGAzJW
+         GbPlgE6QM2aWCz9I525/ufPVZh/Rep5FTiuv2flyDyiWXrhCkS305/qy7WrvYZ/lVcwo
+         o3lqx33n6r0B/pPaCYtHMmbw77GwzNIRC8bs0RiLwVUrDN2ikCgUvKXR2OPp8bNpM2D7
+         n0NA==
+X-Gm-Message-State: AOAM5314/vBxgSh17DirGkz4zpoHrGyquxCVHemnqop8K67HO6y+SOIi
+        qBdSnBITBkAcJClbPe0OZIIDwqYlbiEMUHOPbdU=
+X-Google-Smtp-Source: ABdhPJwvncEE0+UfXs5AhTYhctr25qdNy+sgvQE0dTu1P4CvXNDCmqtO8eBpQI+dL/SLF8fYYF3bG7NkMvBM0jJMhKE=
+X-Received: by 2002:a25:6b50:0:b0:64f:4b33:664 with SMTP id
+ o16-20020a256b50000000b0064f4b330664mr28570255ybm.153.1653483426127; Wed, 25
+ May 2022 05:57:06 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain;
-        charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+References: <20220524212118.425702-1-dmitry.osipenko@collabora.com>
+In-Reply-To: <20220524212118.425702-1-dmitry.osipenko@collabora.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Wed, 25 May 2022 14:56:55 +0200
+Message-ID: <CAJZ5v0gZCMZ3m7gpPNpZf8_9Uob1km01nA9BFOi9BJhb3fDXmA@mail.gmail.com>
+Subject: Re: [PATCH v1] kernel/reboot: Change registration order of legacy
+ power-off handler
+To:     Dmitry Osipenko <dmitry.osipenko@collabora.com>
+Cc:     "Rafael J . Wysocki" <rafael@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+On Tue, May 24, 2022 at 11:23 PM Dmitry Osipenko
+<dmitry.osipenko@collabora.com> wrote:
+>
+> We're unconditionally registering sys-off handler for the legacy
+> pm_power_off() callback, this causes problem for platforms that don't
+> use power-off handlers at all and should be halted. Now reboot syscall
+> assumes that there is a power-off handler installed and tries to power
+> off system instead of halting it.
+>
+> To fix the trouble, move the handler's registration to the reboot syscall
+> and check the pm_power_off() presence.
+>
+> Fixes: 0e2110d2e910 ("kernel/reboot: Add kernel_can_power_off()")
+> Reported-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+> ---
+>  kernel/reboot.c | 33 +++++++++++++++++----------------
+>  1 file changed, 17 insertions(+), 16 deletions(-)
+>
+> diff --git a/kernel/reboot.c b/kernel/reboot.c
+> index 0bdc64ecf4f6..a091145ee710 100644
+> --- a/kernel/reboot.c
+> +++ b/kernel/reboot.c
+> @@ -569,22 +569,6 @@ static int legacy_pm_power_off(struct sys_off_data *data)
+>         return NOTIFY_DONE;
+>  }
+>
+> -/*
+> - * Register sys-off handlers for legacy PM callbacks. This allows legacy
+> - * PM callbacks co-exist with the new sys-off API.
+> - *
+> - * TODO: Remove legacy handlers once all legacy PM users will be switched
+> - *       to the sys-off based APIs.
+> - */
+> -static int __init legacy_pm_init(void)
+> -{
+> -       register_sys_off_handler(SYS_OFF_MODE_POWER_OFF, SYS_OFF_PRIO_DEFAULT,
+> -                                legacy_pm_power_off, NULL);
+> -
+> -       return 0;
+> -}
+> -core_initcall(legacy_pm_init);
+> -
+>  static void do_kernel_power_off_prepare(void)
+>  {
+>         blocking_notifier_call_chain(&power_off_prep_handler_list, 0, NULL);
+> @@ -646,6 +630,7 @@ SYSCALL_DEFINE4(reboot, int, magic1, int, magic2, unsigned int, cmd,
+>                 void __user *, arg)
+>  {
+>         struct pid_namespace *pid_ns = task_active_pid_ns(current);
+> +       struct sys_off_handler *sys_off = NULL;
+>         char buffer[256];
+>         int ret = 0;
+>
+> @@ -670,6 +655,21 @@ SYSCALL_DEFINE4(reboot, int, magic1, int, magic2, unsigned int, cmd,
+>         if (ret)
+>                 return ret;
+>
+> +       /*
+> +        * Register sys-off handlers for legacy PM callback. This allows
+> +        * legacy PM callbacks temporary co-exist with the new sys-off API.
+> +        *
+> +        * TODO: Remove legacy handlers once all legacy PM users will be
+> +        *       switched to the sys-off based APIs.
+> +        */
+> +       if (pm_power_off) {
+> +               sys_off = register_sys_off_handler(SYS_OFF_MODE_POWER_OFF,
+> +                                                  SYS_OFF_PRIO_DEFAULT,
+> +                                                  legacy_pm_power_off, NULL);
+> +               if (IS_ERR(sys_off))
+> +                       return PTR_ERR(sys_off);
+> +       }
+> +
+>         /* Instead of trying to make the power_off code look like
+>          * halt when pm_power_off is not set do it the easy way.
+>          */
+> @@ -727,6 +727,7 @@ SYSCALL_DEFINE4(reboot, int, magic1, int, magic2, unsigned int, cmd,
+>                 break;
+>         }
+>         mutex_unlock(&system_transition_mutex);
+> +       unregister_sys_off_handler(sys_off);
+>         return ret;
+>  }
+>
+> --
 
-Greetings? I am Amjad. I work with a leading Bio Firm.  Due to=20
-the setbacks of the pandemic, my company has opened a bid in=20
-search of new suppliers for basic raw materials needed in=20
-production.
-
-I am seeking a representative=C2=A0as I am a staff, I can not be=20
-involved directly. It may not be your area of work but the=20
-profits are great and I will guide you through. I have already=20
-sourced a local supplier for this. I only need a reliable=20
-representative.
-
-Please get back to me so I can explain this in full.
-
-Amjad
+Applied, thanks!
