@@ -2,93 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76D21C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 17:48:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE330C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 17:48:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343503AbiEYRsU (ORCPT
+        id S1343494AbiEYRs5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 13:48:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52110 "EHLO
+        Wed, 25 May 2022 13:48:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243025AbiEYRsP (ORCPT
+        with ESMTP id S245754AbiEYRsx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 13:48:15 -0400
-Received: from mail-yw1-x1134.google.com (mail-yw1-x1134.google.com [IPv6:2607:f8b0:4864:20::1134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80A5143EDE;
-        Wed, 25 May 2022 10:48:14 -0700 (PDT)
-Received: by mail-yw1-x1134.google.com with SMTP id 00721157ae682-3003cb4e064so50148747b3.3;
-        Wed, 25 May 2022 10:48:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=j2JUsEMh5hOyegzZyZUxJxVUxQUsXmJ/ErLMrTCdGGA=;
-        b=b40fdQ3QnfjUiOZ/ZnBRzImhI0kuPnDRbuqM4qKrZO/vm9cknubxRB+k+LYgr3o5pc
-         UXe3Q1klrjgCHlswH5PSbrmASEcO+oeNSHlprKBIAnQEa1lZ7rThgVomyxmiTq5A5iOM
-         5MIsFjBz74qXh8u3Y7HLmPEHodX9XSvNlKx0R2GQqXXjWbO1ji9Iky3ylszINc5jwZYs
-         5vmSNoPT/GlgjkraZhr9DoERDSuhXzgnh076peIUwGKjluIPJW+n2CzqHJUvfcT82hpF
-         P8i6mOwvar6uj88hd5WVWC2Wo733qIA3JYvu+iRB0kKugUtSl2U/znfAuWY9hA5TiyEI
-         evdQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=j2JUsEMh5hOyegzZyZUxJxVUxQUsXmJ/ErLMrTCdGGA=;
-        b=ecFtDvVL1iwd5TbqR45Z8Qz2fRDB+kwhW5u3rIYsMEb84lgnITYo/PgUluOUDzeDwv
-         HM9kr14qwQlFywqt2HTbYSlIO55KBfLwraGIq4Y5dXstdA0V8r+pzUczCmBniC0snS7W
-         yvS89P3Vj5gP/WCMpofOw/C5Lw8sEzgPqhA94vpZLAHO/hvQJBFPhE4HTwopvyNXjD/B
-         BogmaJKBmfSq2QVsbOrg9Wvffatif4vxMIXvwbTC8qcZh+mNUmhxOIsLC3umQeS04Ix/
-         8o1UUZtpsbb/UqU2QXqhRX3Sqf8ojNMTYbRKL1c7yQCAucpS7ZbGoEqzX6kMPbGIeSba
-         SLdA==
-X-Gm-Message-State: AOAM531R6EHvFVdskNtVbsK8OfQ6LRFILqRAj+ZGdfEdcI21FX4Kvlc7
-        VBc30Rptvx9jbCqAWeWE22RfZajzuwazhYAbIWxxuRK4yGg=
-X-Google-Smtp-Source: ABdhPJzMNL4nDBfqU94XC7qe7W7TLRd4tfmEk8MhM8qxaKCXoB+SbhkG8lO5iC9oOVk7FsRISDBD7zwX0BlkNczVp3U=
-X-Received: by 2002:a81:87c4:0:b0:2ff:c5dc:72b9 with SMTP id
- x187-20020a8187c4000000b002ffc5dc72b9mr20757239ywf.19.1653500893574; Wed, 25
- May 2022 10:48:13 -0700 (PDT)
+        Wed, 25 May 2022 13:48:53 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68A6322285
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 10:48:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653500932; x=1685036932;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=ZiIT7udcNT8M512D+GC+EBX7lAzUqW1nxd2x6iQxp44=;
+  b=OjCq26bW9IC2qL46wBDH++2MpZAC0E/EM45mk/wZvK9Fy1nEtTNlslxR
+   5QUi8dm/2QUrZrZzSeZtDSO/y7GZuaDi1dnu/OUwGJBvxxhxHNNfAJll0
+   tDd110SHkPWNxdm1gAdG406Fo/gx03dR2vlmtVdB+10npLmHXmt7c3z3F
+   n3JcnnLz5Vvxhx+dJpAWftxw7yGx5oaKKeE8y8PBafo30dqSvig+qY39I
+   FWXlLzdIv8x5PZf8nhog+yA1nPy37hLaCyZvYBYDTPC/e4EzVtb2FgKO+
+   sDbNvWQMKjivabtXCRlGgLdjYe6va4pQgPQ9g+FqCF7C0K7/+8Rl6TGVC
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10358"; a="273997789"
+X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
+   d="scan'208";a="273997789"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2022 10:43:04 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
+   d="scan'208";a="549123097"
+Received: from lkp-server01.sh.intel.com (HELO db63a1be7222) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 25 May 2022 10:43:03 -0700
+Received: from kbuild by db63a1be7222 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1ntv2E-0003CW-U8;
+        Wed, 25 May 2022 17:43:02 +0000
+Date:   Thu, 26 May 2022 01:42:40 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Tzung-Bi Shih <tzungbi@kernel.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [tzungbi-chrome-platform:dev 25/25] cros_kunit_util.c:undefined
+ reference to `kunit_kmalloc_array'
+Message-ID: <202205260106.u6TwOLMB-lkp@intel.com>
 MIME-Version: 1.0
-From:   =?UTF-8?Q?Rafa=C5=82_Wysocki?= <rjwysocki@gmail.com>
-Date:   Wed, 25 May 2022 19:48:02 +0200
-Message-ID: <CAJZ5v0hjp2-yLN_UyQvMwhoPreTkA3xU0g3boYtxgLi6TWqabA@mail.gmail.com>
-Subject: [CFP] Power Management and Thermal Control MC at LPC 2022
-To:     Linux PM <linux-pm@vger.kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        "Zhang, Rui" <rui.zhang@intel.com>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        Len Brown <len.brown@intel.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Saravana Kannan <saravanak@google.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Morten Rasmussen <morten.rasmussen@arm.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi All,
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/tzungbi/chrome-platform.git dev
+head:   c8065f6d478990cfc385d1d579972a75fc29605b
+commit: c8065f6d478990cfc385d1d579972a75fc29605b [25/25] platform/chrome: cros_ec_proto: add Kunit tests for cros_ec_query_all()
+config: m68k-allmodconfig (https://download.01.org/0day-ci/archive/20220526/202205260106.u6TwOLMB-lkp@intel.com/config)
+compiler: m68k-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/tzungbi/chrome-platform.git/commit/?id=c8065f6d478990cfc385d1d579972a75fc29605b
+        git remote add tzungbi-chrome-platform https://git.kernel.org/pub/scm/linux/kernel/git/tzungbi/chrome-platform.git
+        git fetch --no-tags tzungbi-chrome-platform dev
+        git checkout c8065f6d478990cfc385d1d579972a75fc29605b
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash
 
-The Power Management and Thermal Control micro-conference:
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-https://lpc.events/event/16/contributions/1158/
+All errors (new ones prefixed by >>):
 
-has been accepted for the LPC 2022, so if you have a topic for
-discussion in that session, please submit it through the LPC web page:
+   m68k-linux-ld: drivers/platform/chrome/cros_kunit_util.o: in function `cros_kunit_ec_xfer_mock':
+>> cros_kunit_util.c:(.text+0x7c): undefined reference to `kunit_kmalloc_array'
+   m68k-linux-ld: drivers/platform/chrome/cros_kunit_util.o: in function `cros_kunit_ec_xfer_mock_addx':
+   cros_kunit_util.c:(.text+0x12e): undefined reference to `kunit_kmalloc_array'
 
-https://lpc.events/event/16/abstracts/
-
-(please choose Power Management and Thermal Control MC as the track).
-Please also submit topics already listed in the MC description.
-
-Please note that the LPC is mostly about discussing work in progress
-and development proposals, so make sure that your topic falls into
-this category.  In particular, please avoid submitting topics
-regarding work that has already been done.
-
-The LPC will be held in Dublin this year, but it should be possible to
-participate in the sessions remotely, so it should be fine to submit a
-topic even if you cannot go to Dublin in person.
-
-Looking forward to seeing you all at the LPC!
-
-Cheers,
-Rafael
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
