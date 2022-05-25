@@ -2,107 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5D69C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 14:56:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C09B9C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 14:58:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244805AbiEYO41 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 10:56:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33968 "EHLO
+        id S243591AbiEYO6K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 10:58:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241939AbiEYO4X (ORCPT
+        with ESMTP id S230182AbiEYO6H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 10:56:23 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9461D36171
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 07:56:21 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id t6so30502070wra.4
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 07:56:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=GRmrkmCITQkax/Dx9/Fy9p50J8k27ds4oFcgLc3FeZQ=;
-        b=kvCQ65GYzcvSQpaiM0pwVax/xwd/9jvuxahiPnCLkSIX4BdbI1za5P7bpU9VlQK6ea
-         BA61JlkSTP64rbEh2gh6mQSRNVUuHrRLTGz2EaNf9eCTprzJPKjfk4o2EsOhfyWD3wyW
-         qFiFKPSQeqRTBUcI2uZ2EISBz0swMaw4t5qSQWe8jRRV+/EFhQWglN8/iqhPIZ9kvCbG
-         CMiDsuK8/WE5ZlvxLcVOzJCPeSd0PESvhRpCRawDYukzTVVyIFbTR0/1YVsoeS2v55cT
-         E66jCsl5nrzuTTzJUl2/2Z2JWWTxOgRayefQWFGxIoQgLoZopzRzn/1xE6QNoBPY+ll+
-         RZuQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=GRmrkmCITQkax/Dx9/Fy9p50J8k27ds4oFcgLc3FeZQ=;
-        b=6V2F4mwhDPaNL2lBouVH+o+uD2NwBGdMT1/dj53BhVQeOdr1j7C2tq/gJ+2gyzbqTg
-         AnnXng6IontXOmPSHrx5xrq+RN2V0ks5mz3N7iWviPTSPVC9zhWEREUe8JYZoeV2Fw97
-         7Og29SEziSR0xwuwjhZZC4aKUM0kAIDAk+elH9Vx1O3E5isdPLL7pKde7mGTTpZqs5VN
-         d7D0mQ9N1f97/9OiHKkZJFZ6tjnUGc47xtKHNHZ1ztsWF3OODMT9BxFB5aHwyqOKou4K
-         1bDak7r2FZFyMlP6kbu9jMC5nUCZZVbTZqfLDhlMm2C/k0b2kfYfc7D4oOK7PawAA6n+
-         YGwA==
-X-Gm-Message-State: AOAM531pNMIT/tZU4RDrrp2rottAEM/84JxxCIajVBrL1jNpwgdPqwol
-        BwB0i4FkVWp0JPNqRBoC8/4MlQy3+jg=
-X-Google-Smtp-Source: ABdhPJzN/+hdpLVh3Tf15FuI+QNff0WX1WTfvz9VDPa84g7vY4sBJBxH+JDHaGZnaFnCPPm7JH02NQ==
-X-Received: by 2002:a5d:5310:0:b0:20f:d075:a386 with SMTP id e16-20020a5d5310000000b0020fd075a386mr15953145wrv.619.1653490580047;
-        Wed, 25 May 2022 07:56:20 -0700 (PDT)
-Received: from localhost.localdomain (93-103-18-160.static.t-2.net. [93.103.18.160])
-        by smtp.gmail.com with ESMTPSA id a19-20020a05600c349300b00397071b10dfsm2168896wmq.10.2022.05.25.07.56.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 May 2022 07:56:19 -0700 (PDT)
-From:   Uros Bizjak <ubizjak@gmail.com>
-To:     iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Cc:     Uros Bizjak <ubizjak@gmail.com>, Joerg Roedel <joro@8bytes.org>,
-        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        Will Deacon <will@kernel.org>
-Subject: [PATCH] iommu/amd: Use try_cmpxchg64 in alloc_pte and free_clear_pte
-Date:   Wed, 25 May 2022 16:54:16 +0200
-Message-Id: <20220525145416.10816-1-ubizjak@gmail.com>
-X-Mailer: git-send-email 2.35.3
+        Wed, 25 May 2022 10:58:07 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2A5C6C0FE
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 07:58:06 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: alyssa)
+        with ESMTPSA id E979D1F450F2
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1653490685;
+        bh=9bRShdzh+eFKzI1iX/FrVehRhjCGpbUYT7uXkboDLFA=;
+        h=From:To:Cc:Subject:Date:From;
+        b=ff9drY7INcYIJup2RVvMPpszBqC32CT5ohYQyiXUkCP8LNum6WAjATumWLGFHa2sb
+         TYwtNWK46RuqmcOypV9L9Yq4zzPDhPG5dIeeS1QEGl5ICTAuaVBPoZXf+zAeHkaCvB
+         VA9M4ph/jpmJc0S1lkku7xMWWNi3E6MKm/1U5PLtRPZXcPE4W6WzkiOFnN2BEUrUoi
+         l+dfbatSu2qZwLdKpb4vosiG93X/h6nJIglT3TkdXU+KZ5NDwfIYwxzlgN5/udwZcI
+         Bk2ekki8HjOFhXDX5HkPvh+NUujpo6qKjANFpmXY8W0U2nqGx6XsauFVdN63o2SAsd
+         sgdTg9IKruY8A==
+From:   Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>
+To:     dri-devel@lists.freedesktop.org
+Cc:     Rob Herring <robh@kernel.org>,
+        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+        Steven Price <steven.price@arm.com>,
+        Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        =?UTF-8?q?N=C3=ADcolas=20F=20=2E=20R=20=2E=20A=20=2E=20Prado?= 
+        <nfraprado@collabora.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 0/9] drm/panfrost: Valhall (JM) support
+Date:   Wed, 25 May 2022 10:57:45 -0400
+Message-Id: <20220525145754.25866-1-alyssa.rosenzweig@collabora.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use try_cmpxchg64 instead of cmpxchg64 (*ptr, old, new) != old in
-alloc_pte and free_clear_pte.  cmpxchg returns success in ZF flag, so this
-change saves a compare after cmpxchg (and related move instruction
-in front of cmpxchg). Also, remove racy explicit assignment to pteval
-when cmpxchg fails, this is what try_cmpxchg does implicitly from
-*pte in an atomic way.
+Here is version 2 of the series adding support for job manager Valhall
+(v9). CSF Valhall is not supported in this series. The core
+issues/features are added for Mali-G57 "Natt" as the current target.
+Natt is used in MT8192, which needs a few extra patches to follow
+(currently blocked on MediaTek integration issues.)
 
-Signed-off-by: Uros Bizjak <ubizjak@gmail.com>
-Cc: Joerg Roedel <joro@8bytes.org>
-Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Cc: Will Deacon <will@kernel.org>
----
- drivers/iommu/amd/io_pgtable.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+In terms of userspace, Mesa has almost all the required code for GLES3.1
+conformance and is just missing a few patches to merge for remaining
+features.
 
-diff --git a/drivers/iommu/amd/io_pgtable.c b/drivers/iommu/amd/io_pgtable.c
-index 6608d1717574..7d4b61e5db47 100644
---- a/drivers/iommu/amd/io_pgtable.c
-+++ b/drivers/iommu/amd/io_pgtable.c
-@@ -258,7 +258,7 @@ static u64 *alloc_pte(struct protection_domain *domain,
- 			__npte = PM_LEVEL_PDE(level, iommu_virt_to_phys(page));
- 
- 			/* pte could have been changed somewhere. */
--			if (cmpxchg64(pte, __pte, __npte) != __pte)
-+			if (!try_cmpxchg64(pte, &__pte, __npte))
- 				free_page((unsigned long)page);
- 			else if (IOMMU_PTE_PRESENT(__pte))
- 				*updated = true;
-@@ -341,10 +341,8 @@ static void free_clear_pte(u64 *pte, u64 pteval, struct list_head *freelist)
- 	u64 *pt;
- 	int mode;
- 
--	while (cmpxchg64(pte, pteval, 0) != pteval) {
-+	while (!try_cmpxchg64(pte, &pteval, 0))
- 		pr_warn("AMD-Vi: IOMMU pte changed since we read it\n");
--		pteval = *pte;
--	}
- 
- 	if (!IOMMU_PTE_PRESENT(pteval))
- 		return;
+v2 addresses minor issues found in v1, but no major changes.
+
+Alyssa Rosenzweig (9):
+  dt-bindings: Add compatibles for Mali Valhall GPU
+  drm/panfrost: Handle HW_ISSUE_TTRX_2968_TTRX_3162
+  drm/panfrost: Constify argument to has_hw_issue
+  drm/panfrost: Handle HW_ISSUE_TTRX_3076
+  drm/panfrost: Add HW_ISSUE_TTRX_3485 quirk
+  drm/panfrost: Add "clean only safe" feature bit
+  drm/panfrost: Don't set L2_MMU_CONFIG quirks
+  drm/panfrost: Add Mali-G57 "Natt" support
+  drm/panfrost: Add arm,mali-valhall-jm compatible
+
+ .../bindings/gpu/arm,mali-bifrost.yaml        | 53 +++++++++++++++----
+ drivers/gpu/drm/panfrost/panfrost_device.c    |  9 +++-
+ drivers/gpu/drm/panfrost/panfrost_drv.c       |  1 +
+ drivers/gpu/drm/panfrost/panfrost_features.h  | 13 +++++
+ drivers/gpu/drm/panfrost/panfrost_gpu.c       | 18 +++----
+ drivers/gpu/drm/panfrost/panfrost_issues.h    | 21 +++++++-
+ drivers/gpu/drm/panfrost/panfrost_regs.h      |  1 +
+ 7 files changed, 91 insertions(+), 25 deletions(-)
+
 -- 
-2.35.3
+2.35.1
 
