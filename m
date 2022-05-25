@@ -2,120 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7E5AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 15:12:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7876CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 15:12:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245108AbiEYPM1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 11:12:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47886 "EHLO
+        id S245033AbiEYPMb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 11:12:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245075AbiEYPLu (ORCPT
+        with ESMTP id S245153AbiEYPMJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 11:11:50 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8085FB0D04
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 08:11:41 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id cs3-20020a17090af50300b001e0808b5838so4425040pjb.1
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 08:11:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=qOKTXeNWDM3OWSCFHqvRVjau9Hc7oDvh7tjC+k8jq/o=;
-        b=UBPZWH+TATz2VkNVjv3l2uIGgs0f1hNmfKu7UsCQSpxOzNfX5uqFHquZe8kNsXXQt3
-         BBCLl7nupfFq0WQFWWHfPkBOiIa9/ew/QhkawAL+2nW1czDfTbqXjob/WnYtw5XrT+jg
-         B1xb4KceFpgK1vSRD9I1CLCGHyHo03oThdHhNh8BuL19b7UyfuhcqLvsfTNVoKdHuw7z
-         U7dYiJnG03VkJJdBriok+RoqEbdYmn/kJ8GgPr/WvK3g51iR00AhGx385tiqh/+cShSw
-         l0MgmcAbdSlv76GMNFW5D0zhfaUPWjXU7Hq5cZ2nuurJFE+SiUluGvCiOSRw4kON6eaV
-         dtzg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=qOKTXeNWDM3OWSCFHqvRVjau9Hc7oDvh7tjC+k8jq/o=;
-        b=GkBhhdWadJTeQP3WupKp/740JRbIWZQb9NNCdqfKMXVxUwvVFYS28fc7YwtMt/Zz6u
-         /0aeqr1mUwMJQthKchKD3NN3olaSgeyKZPJJSXhmr0v+/vNrFhxsMOkyPmeJcGn67H6h
-         zkgV758/nrMaoheeySJOxwIaN241eKWpRYLdj04lr32Na/lhgnozeVfNUefGB6G6+gBz
-         B70srG62WXcVjY4HBXnLPubKEgZV1dqUPLgyWvdAwl7W6wkBtIwr4HM4APc60Apya+Sq
-         MVieGXAj8ylDIXjBEav0FDUZ+ItzF1SFUBWYK2Rs44exxP3E4UUE/1Pu/AHL6DkupLEN
-         PzwA==
-X-Gm-Message-State: AOAM531Lapf06JReaZFJWoWS9xlI/Fdshz4AY9LHiafUuLtoriqk72Cz
-        KQYaHI8TmpL7tbt9LM94G8IjAgsxN7g5Lw==
-X-Google-Smtp-Source: ABdhPJzFV9KXkmRnt8/Y7g7Ea3f3WGAs/0un5724uAJwdas6wB2yfb1D/0UbPM5JfoAR9HFPwLVd2g==
-X-Received: by 2002:a17:902:d707:b0:15f:42a:bc62 with SMTP id w7-20020a170902d70700b0015f042abc62mr33373118ply.98.1653491500360;
-        Wed, 25 May 2022 08:11:40 -0700 (PDT)
-Received: from kerodipc.Dlink ([49.206.9.238])
-        by smtp.gmail.com with ESMTPSA id q16-20020a170902eb9000b00161b50c3db4sm9383129plg.94.2022.05.25.08.11.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 May 2022 08:11:40 -0700 (PDT)
-From:   Sunil V L <sunilvl@ventanamicro.com>
-To:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Marc Zyngier <maz@kernel.org>,
-        Atish Patra <atishp@rivosinc.com>,
-        Heinrich Schuchardt <heinrich.schuchardt@canonical.com>,
-        Anup Patel <apatel@ventanamicro.com>
-Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-efi@vger.kernel.org, Sunil V L <sunil.vl@gmail.com>,
-        Sunil V L <sunilvl@ventanamicro.com>
-Subject: [PATCH 5/5] riscv/efi_stub: Support for 64bit boot-hartid
-Date:   Wed, 25 May 2022 20:41:06 +0530
-Message-Id: <20220525151106.2176147-6-sunilvl@ventanamicro.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220525151106.2176147-1-sunilvl@ventanamicro.com>
-References: <20220525151106.2176147-1-sunilvl@ventanamicro.com>
+        Wed, 25 May 2022 11:12:09 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1E0DCB225B
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 08:12:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653491520;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=oibYPAPXB3rxchD26NN1if0CqTbEEBbCmYMLu9cS348=;
+        b=ii2M3SMSGsupnBRCYku1bw/wjL2Hg9Ab/UZoqj5tesYI3dvlvPeQ3bE+s+L1wMktYC5j6J
+        0e9TxrYWWggW/SL0yufuPY/5ZQkHevLu61QH3HJedGj/V4+xZR6i9T8qtCflf8WSUc3v/Z
+        94mAWRQktWbwJhBqxSlDM1lhTq3oD/M=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-650-3WVS63MGNry6uCXFElI4tQ-1; Wed, 25 May 2022 11:11:58 -0400
+X-MC-Unique: 3WVS63MGNry6uCXFElI4tQ-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 88DED811E81;
+        Wed, 25 May 2022 15:11:58 +0000 (UTC)
+Received: from lorien.usersys.redhat.com (unknown [10.39.192.91])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id C943F112131B;
+        Wed, 25 May 2022 15:11:56 +0000 (UTC)
+Date:   Wed, 25 May 2022 11:11:52 -0400
+From:   Phil Auld <pauld@redhat.com>
+To:     Valentin Schneider <vschneid@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [PATCH] cpuhp: make target_store() a nop when target == state
+Message-ID: <Yo5HOC0yoEBvvgdL@lorien.usersys.redhat.com>
+References: <20220523144728.32414-1-pauld@redhat.com>
+ <xhsmh35gzj77s.mognet@vschneid.remote.csb>
+ <Yo0KRVpfhUb8Ta4N@lorien.usersys.redhat.com>
+ <xhsmhy1yqhrio.mognet@vschneid.remote.csb>
+ <20220525133133.GA5500@pauld.bos.csb>
+ <xhsmhtu9dir86.mognet@vschneid.remote.csb>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <xhsmhtu9dir86.mognet@vschneid.remote.csb>
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The boot-hartid can be a 64bit value on RV64 platforms. Currently,
-the "boot-hartid" in DT is assumed to be 32bit only. This patch
-detects the size of the "boot-hartid" and uses 32bit or 64bit
-FDT reads appropriately.
+On Wed, May 25, 2022 at 04:09:29PM +0100 Valentin Schneider wrote:
+> On 25/05/22 09:31, Phil Auld wrote:
+> > On Wed, May 25, 2022 at 10:48:31AM +0100 Valentin Schneider wrote:
+> >>
+> >> Yeah it would be neater to not even enter cpu_{up, down}(), but my paranoia
+> >> makes me think we need the comparison to happen with at least the
+> >> cpu_add_remove_lock held to make sure st->state isn't moving under our
+> >> feet, otherwise we may still end up with target == state in _cpu_down() and
+> >> hit the bug you're describing.
+> >>
+> >
+> > This is what I was originally doing before I tried to "optimize" it:
+> >
+> >          if (st->state < target)
+> >                  ret = cpu_up(dev->id, target);
+> >          else if (st->state > target)
+> >                  ret = cpu_down(dev->id, target);
+> >
+> > This does the check under the lock and just falls through if state==target.
+> > I think I'll go back to that version.
+> >
+> > I also noticed while testing that the boot cpu does not get its target set.
+> > It's got state 233 but target 0.  So reading that out and writing it back
+> > on offlines cpu0.   I'll try to find where that is not getting set.
+> >
+> 
+> If I had to guess I'd say it's because the boot CPU doesn't go through the
+> regular hotplug machinery and sets its state straight to CPUHP_ONLINE
+>
 
-Signed-off-by: Sunil V L <sunilvl@ventanamicro.com>
----
- drivers/firmware/efi/libstub/riscv-stub.c | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+Yes, that was my thought.
 
-diff --git a/drivers/firmware/efi/libstub/riscv-stub.c b/drivers/firmware/efi/libstub/riscv-stub.c
-index 9e85e58d1f27..d748533f1329 100644
---- a/drivers/firmware/efi/libstub/riscv-stub.c
-+++ b/drivers/firmware/efi/libstub/riscv-stub.c
-@@ -29,7 +29,7 @@ static int get_boot_hartid_from_fdt(void)
- {
- 	const void *fdt;
- 	int chosen_node, len;
--	const fdt32_t *prop;
-+	const void *prop;
- 
- 	fdt = get_efi_config_table(DEVICE_TREE_GUID);
- 	if (!fdt)
-@@ -40,10 +40,16 @@ static int get_boot_hartid_from_fdt(void)
- 		return -EINVAL;
- 
- 	prop = fdt_getprop((void *)fdt, chosen_node, "boot-hartid", &len);
--	if (!prop || len != sizeof(u32))
-+	if (!prop)
-+		return -EINVAL;
-+
-+	if (len == sizeof(u32))
-+		hartid = (unsigned long) fdt32_to_cpu(*(fdt32_t *)prop);
-+	else if (len == sizeof(u64))
-+		hartid = (unsigned long) fdt64_to_cpu(*(fdt64_t *)prop);
-+	else
- 		return -EINVAL;
- 
--	hartid = fdt32_to_cpu(*prop);
- 	return 0;
- }
- 
+
+> /me digs
+> 
+> Maybe around this?
+> 
+> void __init boot_cpu_hotplug_init(void)
+> {
+>         this_cpu_write(cpuhp_state.booted_once, true);
+>         this_cpu_write(cpuhp_state.state, CPUHP_ONLINE);
+> }
+> 
+
+Right, just found that too. Probably should set the target there as well.
+
+
+Cheers,
+Phil
+
 -- 
-2.25.1
 
