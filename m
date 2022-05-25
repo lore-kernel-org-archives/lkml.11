@@ -2,87 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C283C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 06:34:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B454C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 06:34:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244147AbiEYGeJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 02:34:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45290 "EHLO
+        id S244153AbiEYGev (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 02:34:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244135AbiEYGeH (ORCPT
+        with ESMTP id S242458AbiEYGes (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 02:34:07 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEFD24EA13;
-        Tue, 24 May 2022 23:34:05 -0700 (PDT)
-Received: from localhost ([31.220.118.249]) by mrelayeu.kundenserver.de
- (mreue106 [212.227.15.183]) with ESMTPSA (Nemesis) id
- 1N0FE1-1nfX7s1UE3-00xNHI; Wed, 25 May 2022 08:33:39 +0200
-Date:   Wed, 25 May 2022 08:33:38 +0200
-From:   Andreas Klinger <ak@it-klinger.de>
-To:     Li Zhengyu <lizhengyu3@huawei.com>
-Cc:     jic23@kernel.org, lars@metafoo.de, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: srf08: Remove redundant if statement
-Message-ID: <Yo3Nwnq58tjKp3nl@arbad>
-References: <20220523122755.90638-1-lizhengyu3@huawei.com>
+        Wed, 25 May 2022 02:34:48 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEFD04EA13
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 23:34:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653460487; x=1684996487;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=M0oKdsgpAFHdUbHYt90/YCZ+zPrx6X/Xj0vgaYZnyG4=;
+  b=NLE1SCyx5qNngRgCfSvc6gpeHNjNTq/+gaN4QEgAkW9i+on30Zf7ZQ5P
+   NMn4VJpxZCe/U42yLhoHmzfTi7kYxZ7BX63e1KQsFFCYS0AAtA0ORC1GV
+   0Op/3MJqarqYLT6DnK1Xu2FsmWCOvBl7Wt4YOu7gUNHsWsBKeIym3cwSN
+   diRkYCwKlogxYbAuKxZK/6v5QCPLCUK5NPacLauGVWZeAyLaHibayYNen
+   LuVADUhJdtKMeUFHJOL1QrtD+hNxgLW1M4V2CKRliDq4HdByCZSTMs4O4
+   sbQxnRxKax/HIKr3i9zSc1dxXuL+YwlOjByjCx3vW8KGuDObGrBtgHucL
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10357"; a="273459208"
+X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
+   d="scan'208";a="273459208"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 May 2022 23:34:47 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
+   d="scan'208";a="745546927"
+Received: from lkp-server01.sh.intel.com (HELO db63a1be7222) ([10.239.97.150])
+  by orsmga005.jf.intel.com with ESMTP; 24 May 2022 23:34:45 -0700
+Received: from kbuild by db63a1be7222 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1ntkbV-0002oM-8y;
+        Wed, 25 May 2022 06:34:45 +0000
+Date:   Wed, 25 May 2022 14:33:44 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Peng Fan <peng.fan@nxp.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Abel Vesa <abel.vesa@nxp.com>
+Subject: drivers/clk/imx/clk-imx93.c:324:34: warning: unused variable
+ 'imx93_clk_of_match'
+Message-ID: <202205251429.1APkCSOG-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220523122755.90638-1-lizhengyu3@huawei.com>
-X-Provags-ID: V03:K1:WuCXsISV+LcR2fiPYceeJ/1veCe1id+9u8nVSBSHAaEPTL1EMfD
- /HdLCkq1VkRj6PAc3I7PdNOlqhg8av/+vc4icCrIsjRb2rzcgEDOah1UHgl5APpDftlU849
- e7vK+JdOK4qAj7pWFYxqvaxAcnm9h5X8lIClQD9ImeC2GSbdJqsbXKduJigPMTIQcTC5Hpg
- sQfwvUPOcKJXzMMPUCQyw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:/5SOd4ZNpR4=:bpPXgQM6zMLYq/zKz9NmA/
- VkabMv9XhdOQslnElnrZn8GJ/1q4+84tbGPumWSEj7Ql806RI7InR4MWQrd/ZA8FsACXFyw+9
- /tKNscZCOD87R3KE/TwY41PpZFC3yhEVEH6a5PNDsD0z/Qg7/o656TsT03e8c4CIT3h9qDip7
- V//B9wWAGilx3UzmyjwvMJ5qek0Q6UXfS+dEoGlSRW/tln3Sny4RcFhddAXKnLnNg8BeHHtDJ
- wn4D2HxHHDL7llBlXkBynl3EX5jECMJgbR7fk3iUVaUnlePUvknG9QQCG+9n396PM/Zrp7JUH
- hL/nEK34IkQe1yb562X5pebpUUy7NjuR6GQZcOcHoVm36VHDjTIQzNOSNmv9ObEcO1jqBkhDK
- Pf0i40mctf4SKfQJfQqdY7NJo6h0SGe5SveOM91/yLPaRX9+YpQpp1JzXUfx/gJJokDvS24Pb
- e4TSY8u/s6MsLJESIXacg6I2wD4pDjLwgxV0cP3DVNhfIVtTgpVvqXr72wO+9N/0Mr8eLHBUG
- GsNUynfggNp0Jwx9VfoQODPPrqom4UifpJ+2KEGBUcb8gCQy8oQQwz0fysBopEe2UtP8Sx2rR
- yotz7TtX4uvx1RCHOJZD5nx6LpHnBODNCWNdm27NmaCH1B01r3mQGwEaVv48VnJ3mQv51ozbT
- MtUBoqB8EMV2pCg0noTeUH3wwPiJKYoPAEPKMKCqtMqYdyP2KR+sX0ZNlX8AcqWDNUi0Mq/QD
- 8gDvdMpAHmfzbbBX+zKVm3Lp+ELVtMKvAa+unQ==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Acked-by: Andreas Klinger <ak@it-klinger.de>
+Hi Peng,
 
-Li Zhengyu <lizhengyu3@huawei.com> schrieb am Mo, 23. Mai 20:27:
-> (!val) has been checked outside the loop, remove redundant (val &&)
-> from loop.
-> 
-> Signed-off-by: Li Zhengyu <lizhengyu3@huawei.com>
-> ---
->  drivers/iio/proximity/srf08.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/proximity/srf08.c b/drivers/iio/proximity/srf08.c
-> index ac1ab7e89d4e..7ed11339c31e 100644
-> --- a/drivers/iio/proximity/srf08.c
-> +++ b/drivers/iio/proximity/srf08.c
-> @@ -354,7 +354,7 @@ static ssize_t srf08_write_sensitivity(struct srf08_data *data,
->  		return -EINVAL;
->  
->  	for (i = 0; i < data->chip_info->num_sensitivity_avail; i++)
-> -		if (val && (val == data->chip_info->sensitivity_avail[i])) {
-> +		if (val == data->chip_info->sensitivity_avail[i]) {
->  			regval = i;
->  			break;
->  		}
-> -- 
-> 2.17.1
-> 
+FYI, the error/warning still remains.
+
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   fdaf9a5840acaab18694a19e0eb0aa51162eeeed
+commit: 24defbe194b650218680fcd9dec8cd103537b531 clk: imx: add i.MX93 clk
+date:   3 months ago
+config: hexagon-buildonly-randconfig-r001-20220525 (https://download.01.org/0day-ci/archive/20220525/202205251429.1APkCSOG-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 10c9ecce9f6096e18222a331c5e7d085bd813f75)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=24defbe194b650218680fcd9dec8cd103537b531
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 24defbe194b650218680fcd9dec8cd103537b531
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/clk/imx/
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/clk/imx/clk-imx93.c:324:34: warning: unused variable 'imx93_clk_of_match' [-Wunused-const-variable]
+   static const struct of_device_id imx93_clk_of_match[] = {
+                                    ^
+   1 warning generated.
+
+
+vim +/imx93_clk_of_match +324 drivers/clk/imx/clk-imx93.c
+
+   323	
+ > 324	static const struct of_device_id imx93_clk_of_match[] = {
+   325		{ .compatible = "fsl,imx93-ccm" },
+   326		{ /* Sentinel */ },
+   327	};
+   328	MODULE_DEVICE_TABLE(of, imx93_clk_of_match);
+   329	
 
 -- 
-Andreas Klinger
-Grabenreith 27
-84508 Burgkirchen
-+49 8623 919966
-ak@it-klinger.de
-www.it-klinger.de
-www.grabenreith.de
+0-DAY CI Kernel Test Service
+https://01.org/lkp
