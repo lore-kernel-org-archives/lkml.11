@@ -2,120 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F01AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 03:28:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A72AC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 03:33:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241323AbiEYD2h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 23:28:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47392 "EHLO
+        id S242722AbiEYDdd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 23:33:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238884AbiEYD2e (ORCPT
+        with ESMTP id S238884AbiEYDdb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 23:28:34 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47FEA7A44F
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 20:28:19 -0700 (PDT)
-X-UUID: 01a910ce870243ac929270e8b9848174-20220525
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:c4016c45-e276-4a22-b8f1-b1a8da546e26,OB:10,L
-        OB:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:51,FILE:0,RULE:Release_Ham,AC
-        TION:release,TS:56
-X-CID-INFO: VERSION:1.1.5,REQID:c4016c45-e276-4a22-b8f1-b1a8da546e26,OB:10,LOB
-        :0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:51,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:56
-X-CID-META: VersionHash:2a19b09,CLOUDID:b7f01fb8-3c45-407b-8f66-25095432a27a,C
-        OID:bf78fb8f7416,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:1,File:nil,QS:0,BEC:nil
-X-UUID: 01a910ce870243ac929270e8b9848174-20220525
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
-        (envelope-from <yf.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1293842912; Wed, 25 May 2022 11:28:13 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Wed, 25 May 2022 11:28:12 +0800
-Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by
- mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.3 via Frontend Transport; Wed, 25 May 2022 11:28:10 +0800
-From:   <yf.wang@mediatek.com>
-To:     <miles.chen@mediatek.com>
-CC:     <Libo.Kang@mediatek.com>, <Yong.Wu@mediatek.com>,
-        <iommu@lists.linux-foundation.org>, <isaacm@codeaurora.org>,
-        <joro@8bytes.org>, <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>, <matthias.bgg@gmail.com>,
-        <ning.li@mediatek.com>, <quic_c_gdjako@quicinc.com>,
-        <robin.murphy@arm.com>, <sven@svenpeter.dev>, <will@kernel.org>,
-        <wsd_upstream@mediatek.com>, <yf.wang@mediatek.com>
-Subject: Re: [PATCH v5 1/2] iommu/io-pgtable-arm-v7s: Add a quirk to allow pgtable PA up to 35bit
-Date:   Wed, 25 May 2022 11:21:33 +0800
-Message-ID: <20220525032133.29053-1-yf.wang@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220519062756.14447-1-miles.chen@mediatek.com>
-References: <20220519062756.14447-1-miles.chen@mediatek.com>
+        Tue, 24 May 2022 23:33:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE46D77F2E;
+        Tue, 24 May 2022 20:33:30 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E9A560E26;
+        Wed, 25 May 2022 03:33:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 431D3C34100;
+        Wed, 25 May 2022 03:33:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653449609;
+        bh=/3mCiceS1LkYBHMvE4U6h0kEyWQEeCNrAyqF7kpGXPA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Cd8qvEwRO1nrbGI1tUHX75JI0NQ3JjRWVtSlA+v6198CJG867QhtnR+DAvAkASDfQ
+         OA6uDhZ0pnDP1kG3GARZudKkSyHPaPR3h9XKn/m/rCy4zNi2tgBmPSPsS7h7WFnYIe
+         MEL3pJHEa3yBcLy+tFoQtA93vn/bxfCEFfiNESUlr5caKK/fOTsW4YhoQChzzEbzdz
+         5ukyDemvSVcTNpSxHoNllP1b7vJZpXA2VPOfRK54WdkQcgN8XZhGBBiRQIKPrGmzGV
+         J/fcnYvoTJyDpw3lTLFIE/ecd/Z6puxtf5mdNUFM4/0Qe+mShfnQRrK6ws0pJXU+bj
+         7yYhzq0Hrt4Yw==
+Date:   Wed, 25 May 2022 11:33:25 +0800
+From:   Tzung-Bi Shih <tzungbi@kernel.org>
+To:     Matthias Kaehlcke <mka@chromium.org>
+Cc:     bleung@chromium.org, groeck@chromium.org, robh+dt@kernel.org,
+        chrome-platform@lists.linux.dev, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH v4 4/5] platform/chrome: cros_kbd_led_backlight: support
+ OF match
+Message-ID: <Yo2jhTpsa5Vw4+61@google.com>
+References: <20220523090822.3035189-1-tzungbi@kernel.org>
+ <20220523090822.3035189-5-tzungbi@kernel.org>
+ <Yo07IDqYuQUzeL+N@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yo07IDqYuQUzeL+N@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-05-19 at 14:27 +0800, Miles Chen wrote:
-> Hi Yunfei,
-> 
-> > The calling to kmem_cache_alloc for level 2 pgtable allocation may
-> > run
-> > in atomic context, and it fails sometimes when DMA32 zone runs out
-> > of
-> > memory.
-> > 
-> > Since Mediatek IOMMU hardware support at most 35bit PA in pgtable,
-> > so add a quirk to allow the PA of pgtables support up to bit35.
-> > 
-> > Signed-off-by: Ning Li <ning.li@mediatek.com>
-> > Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
-> > ---
-> >  drivers/iommu/io-pgtable-arm-v7s.c | 56 ++++++++++++++++++++++--
-> > ------
-> >  include/linux/io-pgtable.h         | 15 +++++---
-> >  2 files changed, 52 insertions(+), 19 deletions(-)
-> > 
-> > diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-
-> > pgtable-arm-v7s.c
-> 
-> ...snip...
-> 
-> > +     gfp_t gfp_l1 = __GFP_ZERO | ARM_V7S_TABLE_GFP_DMA;
-> >       struct io_pgtable_cfg *cfg = &data->iop.cfg;
-> >       struct device *dev = cfg->iommu_dev;
-> >       phys_addr_t phys;
-> > @@ -241,9 +251,11 @@ static void *__arm_v7s_alloc_table(int lvl,
-> > gfp_t gfp,
-> >       size_t size = ARM_V7S_TABLE_SIZE(lvl, cfg);
-> >       void *table = NULL;
-> > 
-> > +     if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT)
-> > +             gfp_l1 = __GFP_ZERO;
-> 
-> __GFP_ZERO is an action modifier, if we do not want
-> ARM_V7S_TABLE_GFP_DMA (GFP_DMA/GFP_DMA32), use gfp_l1 = (GFP_KERNEL |
-> __GFP_ZERO)
-> 
-
-Hi Miles,
-Thanks for the suggestion, we will update it in the next version.
-
-Thanks,
-Yunfei.
-
+On Tue, May 24, 2022 at 01:08:00PM -0700, Matthias Kaehlcke wrote:
+> On Mon, May 23, 2022 at 05:08:21PM +0800, Tzung-Bi Shih wrote:
+> > +#ifdef CONFIG_OF
+> > +static const struct of_device_id keyboard_led_of_match[] = {
+> > +	{
+> > +		.compatible = "google,cros-kbd-led-backlight",
+> > +	},
+> > +	{}
+> > +};
+> > +MODULE_DEVICE_TABLE(of, keyboard_led_of_match);
+> > +#endif
 > > +
-> >       if (lvl == 1)
-> > -             table = (void *)__get_free_pages(
-> > -                     __GFP_ZERO | ARM_V7S_TABLE_GFP_DMA,
-> > get_order(size));
-> > +             table = (void *)__get_free_pages(gfp_l1,
-> > get_order(size));
-> >       else if (lvl == 2)
-> >               table = kmem_cache_zalloc(data->l2_tables, gfp);
-> > 
+> >  static struct platform_driver keyboard_led_driver = {
+> >  	.driver		= {
+> >  		.name	= "chromeos-keyboard-leds",
+> >  		.acpi_match_table = ACPI_PTR(keyboard_led_acpi_match),
+> > +		.of_match_table = of_match_ptr(keyboard_led_of_match),
+> 
+> You need to put this assignment inside an '#ifdef CONFIG_OF' block,
+> otherwise the compiler won't find 'keyboard_led_of_match' when
+> CONFIG_OF isn't set.
+
+It doesn't need as of_match_ptr() already guarded it.
