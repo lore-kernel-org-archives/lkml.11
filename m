@@ -2,22 +2,22 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87294C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 10:10:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9B2CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 10:10:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242249AbiEYKKq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 06:10:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36034 "EHLO
+        id S242291AbiEYKKu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 06:10:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237662AbiEYKKV (ORCPT
+        with ESMTP id S237502AbiEYKKY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 06:10:21 -0400
+        Wed, 25 May 2022 06:10:24 -0400
 Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 160B392D2C
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 03:10:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E6FE9158B
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 03:10:22 -0700 (PDT)
 Received: from localhost.localdomain (unknown [80.240.223.29])
-        by mail.ispras.ru (Postfix) with ESMTPSA id 1466A40755E9;
-        Wed, 25 May 2022 10:10:19 +0000 (UTC)
+        by mail.ispras.ru (Postfix) with ESMTPSA id 620F340755EC;
+        Wed, 25 May 2022 10:10:20 +0000 (UTC)
 From:   Evgeniy Baskov <baskov@ispras.ru>
 To:     Borislav Petkov <bp@alien8.de>
 Cc:     Evgeniy Baskov <baskov@ispras.ru>,
@@ -25,9 +25,9 @@ Cc:     Evgeniy Baskov <baskov@ispras.ru>,
         Ingo Molnar <mingo@redhat.com>,
         Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v4 3/5] x86/setup: Use resolve_cmdline() in setup.c
-Date:   Wed, 25 May 2022 13:10:11 +0300
-Message-Id: <91ebe4b17ee6b77e0800be9689eb7c7a2514a0ef.1653471377.git.baskov@ispras.ru>
+Subject: [PATCH v4 5/5] x86/boot: Remove no longer needed includes
+Date:   Wed, 25 May 2022 13:10:13 +0300
+Message-Id: <9b92fe8edc970ae9d438273fa7eafde49827a14d.1653471377.git.baskov@ispras.ru>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1653471377.git.baskov@ispras.ru>
 References: <cover.1653471377.git.baskov@ispras.ru>
@@ -37,58 +37,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use a common helper function for command line resolving in
-arch/x86/kernel/setup.c for code unification.
+x86/incldue/asm/shared/setup-cmdline.h header already provides
+COMMAND_LINE_SIZE definition.
 
 Signed-off-by: Evgeniy Baskov <baskov@ispras.ru>
 
-diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index 249981bf3d8a..880465e26da2 100644
---- a/arch/x86/kernel/setup.c
-+++ b/arch/x86/kernel/setup.c
-@@ -47,6 +47,7 @@
- #include <asm/pci-direct.h>
- #include <asm/prom.h>
- #include <asm/proto.h>
-+#include <asm/shared/setup-cmdline.h>
- #include <asm/thermal.h>
- #include <asm/unwind.h>
- #include <asm/vsyscall.h>
-@@ -164,10 +165,7 @@ unsigned long saved_video_mode;
- #define RAMDISK_PROMPT_FLAG		0x8000
- #define RAMDISK_LOAD_FLAG		0x4000
+diff --git a/arch/x86/boot/compressed/ident_map_64.c b/arch/x86/boot/compressed/ident_map_64.c
+index 44c350d627c7..7dc0300529fa 100644
+--- a/arch/x86/boot/compressed/ident_map_64.c
++++ b/arch/x86/boot/compressed/ident_map_64.c
+@@ -33,10 +33,6 @@
+ #define __PAGE_OFFSET __PAGE_OFFSET_BASE
+ #include "../../mm/ident_map.c"
  
--static char __initdata command_line[COMMAND_LINE_SIZE];
--#ifdef CONFIG_CMDLINE_BOOL
--static char __initdata builtin_cmdline[COMMAND_LINE_SIZE] = CONFIG_CMDLINE;
--#endif
-+static char command_line[COMMAND_LINE_SIZE] __initdata = COMMAND_LINE_INIT;
- 
- #if defined(CONFIG_EDD) || defined(CONFIG_EDD_MODULE)
- struct edd edd;
-@@ -901,20 +899,8 @@ void __init setup_arch(char **cmdline_p)
- 	bss_resource.start = __pa_symbol(__bss_start);
- 	bss_resource.end = __pa_symbol(__bss_stop)-1;
- 
--#ifdef CONFIG_CMDLINE_BOOL
--#ifdef CONFIG_CMDLINE_OVERRIDE
--	strlcpy(boot_command_line, builtin_cmdline, COMMAND_LINE_SIZE);
--#else
--	if (builtin_cmdline[0]) {
--		/* append boot loader cmdline to builtin */
--		strlcat(builtin_cmdline, " ", COMMAND_LINE_SIZE);
--		strlcat(builtin_cmdline, boot_command_line, COMMAND_LINE_SIZE);
--		strlcpy(boot_command_line, builtin_cmdline, COMMAND_LINE_SIZE);
--	}
--#endif
--#endif
+-#define _SETUP
+-#include <asm/setup.h>	/* For COMMAND_LINE_SIZE */
+-#undef _SETUP
 -
--	strlcpy(command_line, boot_command_line, COMMAND_LINE_SIZE);
-+	resolve_cmdline(command_line, boot_command_line);
-+	strlcpy(boot_command_line, command_line, COMMAND_LINE_SIZE);
- 	*cmdline_p = command_line;
+ extern unsigned long get_cmd_line_ptr(void);
  
- 	/*
+ /* Used by PAGE_KERN* macros: */
+diff --git a/arch/x86/boot/compressed/kaslr.c b/arch/x86/boot/compressed/kaslr.c
+index 4a3f223973f4..39e455c105a7 100644
+--- a/arch/x86/boot/compressed/kaslr.c
++++ b/arch/x86/boot/compressed/kaslr.c
+@@ -31,10 +31,6 @@
+ #include <linux/ctype.h>
+ #include <generated/utsrelease.h>
+ 
+-#define _SETUP
+-#include <asm/setup.h>	/* For COMMAND_LINE_SIZE */
+-#undef _SETUP
+-
+ extern unsigned long get_cmd_line_ptr(void);
+ 
+ /* Simplified build-specific string for starting entropy. */
 -- 
 2.36.1
 
