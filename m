@@ -2,64 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04BEEC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 10:46:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7917C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 10:47:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242629AbiEYKqv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 06:46:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53428 "EHLO
+        id S238707AbiEYKrD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 06:47:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242522AbiEYKq1 (ORCPT
+        with ESMTP id S233450AbiEYKqZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 06:46:27 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57CD6D3
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 03:46:08 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id a13so7703577plh.6
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 03:46:08 -0700 (PDT)
+        Wed, 25 May 2022 06:46:25 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C6069B1B0
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 03:46:05 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id pq9-20020a17090b3d8900b001df622bf81dso4676720pjb.3
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 03:46:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=nfd8GuZibV93hv9RFZEH/5/7YZjQFYEI7fvZmGryy4s=;
-        b=TfAvOXi/gD7eAIll7QchzF7Eta8mzPE79DQuQGqufw9MAXxEiSBkUhihxhjy4hVKku
-         Ww6UrrdG8O2dEu71e4mxTyAq68P3xddG05R270g4Jq+MiOX6Ty6F43Xii72x4LZkgUS4
-         QfN498OGx3DN3QY0WPRX0i9eYTrnyKFkAVBVo=
+        bh=YFb0SNcpxggXxmh3L1U6bvqHH42Uek+PeM4W6Sd9ZO4=;
+        b=K3fVfk+Sn1+tGAYONxbTEGShQ6x6izXfoDmmXj+eneEdIx5zYjRt5VGo6j7vW9DCZg
+         Ve/D3i22yw6PjiL2zV+gaCGlyeOsYvwNCiMwYa3Zc3fKlxGDDofE1ocYtEAqZGIjPfe1
+         flpdrbgR1NY8UpFrQI3jP/0f9a16xUuwN25rg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=nfd8GuZibV93hv9RFZEH/5/7YZjQFYEI7fvZmGryy4s=;
-        b=C+yTfmYt2ddwLoA/6YozPs/H4pwsxyfICVsqDy54rrCRummHFnb+LBX7FphJN8HfKx
-         fsMk140lIUCfb19d0RaRLLrrlRsZniofyL78iAiddiwRsq6yYq4RBVURMkky1MG2sAH9
-         KKaImVlYZL00Zn3GIB1zQ2MYfm2APmxVtgNdcNr62hxZT4xbA2g1f60UMgnX42QLK6Lb
-         jQo7yAT1ZmN7s4rOm64CehRKoavmLfd8sc9Fs40iu+TkHwodEtS4V6T8DMDSeBdwux9v
-         ApN3r9CfJLH3RUpSnwCQKP7+2pYyU9uGjGODu/rNhZ6KffY3QCpK/WZqm6A0n2ytLS/e
-         z1Jg==
-X-Gm-Message-State: AOAM5320B1JsAKdXZ5Tl/gsyHMHEOP8Ts3Xa52H+2pXBPuc4LDpn1Fdn
-        CxfZXh+XaJ0f+uzULodxz0zPag==
-X-Google-Smtp-Source: ABdhPJx+kR3HjBYxdXGooCC+ftVmy/otgl5MmgHXHeoEREOhHWmbCkk17kKT61UumNXFsaWtKwwJGw==
-X-Received: by 2002:a17:90b:4f81:b0:1e0:7643:36ae with SMTP id qe1-20020a17090b4f8100b001e0764336aemr8297282pjb.124.1653475568108;
-        Wed, 25 May 2022 03:46:08 -0700 (PDT)
+        bh=YFb0SNcpxggXxmh3L1U6bvqHH42Uek+PeM4W6Sd9ZO4=;
+        b=AZvDJMV7CibbWhvM/wFXW8FJmbajoOkPBkl0JLstcK1RVQihsnck3HA93x0T5tbvXy
+         MN0t5fSDNGW+gV3rGg5MzuWAyfC7yUm+GpYeTFpHokWxKVK73ZNt6qoVCzhyGsGym5Ti
+         rSI4MaKxTdndqG4YJIEy8v8pItDFpNoTa1I2Lp4AOROX19Nim/27NNbFLeN2k1NVfp+1
+         CTQvNebj0zNTLRW8bHbiGArNwajfwHoIvPpFsG3TK0iGqAfkCm/BceOlvUukc8UOg/51
+         l0jPKNcOLO/ZtevBiBf1oyQJnjFg/JseC1dwdj2yS89h6RjhsYurf4L+tyWV0JYy6Eid
+         VJiw==
+X-Gm-Message-State: AOAM532nNrIvNVpkbTYk1EHTY4DXdG3iY0UvW/D9iZVW2YdwhiOcUVnQ
+        QGTELuQOMB3+Mv9jmuvls2o+DQ==
+X-Google-Smtp-Source: ABdhPJx/2oGYye6pAmkDaioVB0xtUbFinhfK21Zyd+S784kZipFqpV1nMwZG0+MPagzqyr1dcGGJyw==
+X-Received: by 2002:a17:902:b10f:b0:161:f196:b4e with SMTP id q15-20020a170902b10f00b00161f1960b4emr26115202plr.134.1653475564568;
+        Wed, 25 May 2022 03:46:04 -0700 (PDT)
 Received: from localhost (174.71.80.34.bc.googleusercontent.com. [34.80.71.174])
-        by smtp.gmail.com with UTF8SMTPSA id a21-20020a637055000000b003c14af505fesm8151397pgn.22.2022.05.25.03.46.05
+        by smtp.gmail.com with UTF8SMTPSA id e4-20020a170902e0c400b00161947ecc82sm1611921pla.199.2022.05.25.03.46.02
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 25 May 2022 03:46:07 -0700 (PDT)
+        Wed, 25 May 2022 03:46:04 -0700 (PDT)
 From:   Joseph Hwang <josephsih@chromium.org>
 To:     linux-bluetooth@vger.kernel.org, marcel@holtmann.org,
         luiz.dentz@gmail.com, pali@kernel.org
 Cc:     josephsih@google.com, chromeos-bluetooth-upstreaming@chromium.org,
         Joseph Hwang <josephsih@chromium.org>,
-        Archie Pusaka <apusaka@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
         Johan Hedberg <johan.hedberg@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH v5 5/5] Bluetooth: let HCI_QUALITY_REPORT persist over adapter power cycle
-Date:   Wed, 25 May 2022 18:45:45 +0800
-Message-Id: <20220525104545.2314653-3-josephsih@chromium.org>
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v5 4/5] Bluetooth: btintel: setup vendor_get_prefix and vendor_evt
+Date:   Wed, 25 May 2022 18:45:44 +0800
+Message-Id: <20220525104545.2314653-2-josephsih@chromium.org>
 X-Mailer: git-send-email 2.36.1.124.g0e6072fb45-goog
 In-Reply-To: <20220525104545.2314653-1-josephsih@chromium.org>
 References: <20220525104545.2314653-1-josephsih@chromium.org>
@@ -69,104 +64,130 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The quality report specifications, including AOSP Bluetooth Quality
-Report and Intel Telemetry Event, do not define what happen when
-the adapter is turned off and then on. To be consistent among
-different specifications and vendors, the quality report feature is
-turned off when the adapter is powered off and is turned on when
-the adapter is powered on if the feature has been on before power
-cycle.
+This patch sets up vendor_get_prefix and vendor_evt in btintel
+to surface Intel telemetry events.
 
 Signed-off-by: Joseph Hwang <josephsih@chromium.org>
-Reviewed-by: Archie Pusaka <apusaka@chromium.org>
 ---
 
 Changes in v5:
-- This is a new patch in this series changes version.
+- This is a new patch that holds the Intel specifics in the driver.
+- This patch sets up vendor_get_ext_prefix and vendor_evt.
+- INTEL_PREFIX is defined in little endian for convenience.
+- Define intel_ext_prefix to contain Intel prefix and the telemetry
+  subcode which will be returned by btintel_get_ext_prefix().
+- Remove the unnecessary "void *data" portion and the double space
+  from btintel_vendor_evt.
+- Remove some unnecessary checking in btintel_vendor_evt.
+- As to stripping off the prefix, that was what was done in
+  "Series-version: 1". Previous comment about the AOSP function in
+  pulling off the prefix header from the skb was "just do a basic
+  length check and then move on. The kernel has no interest in this
+  data." So that is why the whole skb->data is sent to the user space
+  for further handling. This is to be consistent with what AOSP does
+  there.
 
- include/net/bluetooth/hci_core.h |  1 -
- net/bluetooth/hci_sync.c         | 35 +++++++++++++++++++++++++++++++-
- 2 files changed, 34 insertions(+), 2 deletions(-)
+ drivers/bluetooth/btintel.c | 50 +++++++++++++++++++++++++++++++++++++
+ drivers/bluetooth/btintel.h | 13 ++++++++++
+ 2 files changed, 63 insertions(+)
 
-diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
-index 9e48d606591e..5788350efa68 100644
---- a/include/net/bluetooth/hci_core.h
-+++ b/include/net/bluetooth/hci_core.h
-@@ -807,7 +807,6 @@ extern struct mutex hci_cb_list_lock;
- 		hci_dev_clear_flag(hdev, HCI_LE_ADV);		\
- 		hci_dev_clear_flag(hdev, HCI_LL_RPA_RESOLUTION);\
- 		hci_dev_clear_flag(hdev, HCI_PERIODIC_INQ);	\
--		hci_dev_clear_flag(hdev, HCI_QUALITY_REPORT);	\
- 	} while (0)
+diff --git a/drivers/bluetooth/btintel.c b/drivers/bluetooth/btintel.c
+index 818681c89db8..7c39cb7352fd 100644
+--- a/drivers/bluetooth/btintel.c
++++ b/drivers/bluetooth/btintel.c
+@@ -2404,6 +2404,10 @@ static int btintel_setup_combined(struct hci_dev *hdev)
+ 	/* Set up the quality report callback for Intel devices */
+ 	hdev->set_quality_report = btintel_set_quality_report;
  
- #define hci_dev_le_state_simultaneous(hdev) \
-diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
-index a6ada9dcede5..12a18d046bb6 100644
---- a/net/bluetooth/hci_sync.c
-+++ b/net/bluetooth/hci_sync.c
-@@ -3849,6 +3849,31 @@ static const struct {
- 			 "advertised, but not supported.")
- };
- 
-+static void suspend_resume_quality_report(struct hci_dev *hdev, bool enable)
-+{
-+	int err;
++	/* Set up the vendor event callbacks for Intel devices */
++	hdev->vendor_get_ext_prefix = btintel_get_ext_prefix;
++	hdev->vendor_evt = btintel_vendor_evt;
 +
-+	/* Suspend and resume quality report only when the feature has
-+	 * already been enabled. The HCI_QUALITY_REPORT flag, as an indicator
-+	 * whether to re-enable the feature after resume, is not changed by
-+	 * suspend/resume.
-+	 */
-+	if (!hci_dev_test_flag(hdev, HCI_QUALITY_REPORT))
+ 	/* For Legacy device, check the HW platform value and size */
+ 	if (skb->len == sizeof(ver) && skb->data[1] == 0x37) {
+ 		bt_dev_dbg(hdev, "Read the legacy Intel version information");
+@@ -2650,6 +2654,52 @@ void btintel_secure_send_result(struct hci_dev *hdev,
+ }
+ EXPORT_SYMBOL_GPL(btintel_secure_send_result);
+ 
++/* INTEL_PREFIX below is defined in little endian. */
++static unsigned char INTEL_PREFIX[] = { 0x87, 0x80 };
++
++/* Define any Intel sub-opcodes here. */
++#define TELEMETRY_CODE		0x03
++static unsigned char INTEL_SUBCODES[] = { TELEMETRY_CODE };
++
++static struct ext_vendor_prefix intel_ext_prefix = {
++	.prefix         = INTEL_PREFIX,
++	.prefix_len     = sizeof(INTEL_PREFIX),
++	.subcodes       = INTEL_SUBCODES,
++	.subcodes_len   = sizeof(INTEL_SUBCODES),
++};
++
++struct ext_vendor_prefix *btintel_get_ext_prefix(struct hci_dev *hdev)
++{
++	return &intel_ext_prefix;
++}
++EXPORT_SYMBOL_GPL(btintel_get_ext_prefix);
++
++/* An Intel vendor event with prefix has the following structure. */
++struct intel_prefix_evt_data {
++	__le16 prefix; /* INTEL_PREFIX */
++	__u8 subcode;
++	__u8 data[];   /* a number of struct intel_tlv subevents */
++} __packed;
++
++void btintel_vendor_evt(struct hci_dev *hdev, struct sk_buff *skb)
++{
++	struct intel_prefix_evt_data *ev;
++
++	if (skb->len < sizeof(struct intel_prefix_evt_data))
 +		return;
 +
-+	if (hdev->set_quality_report)
-+		err = hdev->set_quality_report(hdev, enable);
-+	else
-+		err = aosp_set_quality_report(hdev, enable);
++	if (memcmp(skb->data, INTEL_PREFIX, sizeof(INTEL_PREFIX)))
++		return;
 +
-+	if (err)
-+		bt_dev_err(hdev, "%s quality report error %d",
-+			   enable ? "resume" : "suspend", err);
-+	else
-+		bt_dev_info(hdev, "%s quality report",
-+			    enable ? "resume" : "suspend");
++	/* Only interested in the telemetry event for now. */
++	ev = (struct intel_prefix_evt_data *)skb->data;
++	if (ev->subcode == TELEMETRY_CODE) {
++		hdev->hci_recv_quality_report(hdev, skb->data, skb->len,
++					      QUALITY_SPEC_INTEL_TELEMETRY);
++	}
++}
++EXPORT_SYMBOL_GPL(btintel_vendor_evt);
++
+ MODULE_AUTHOR("Marcel Holtmann <marcel@holtmann.org>");
+ MODULE_DESCRIPTION("Bluetooth support for Intel devices ver " VERSION);
+ MODULE_VERSION(VERSION);
+diff --git a/drivers/bluetooth/btintel.h b/drivers/bluetooth/btintel.h
+index e0060e58573c..040c41f11e91 100644
+--- a/drivers/bluetooth/btintel.h
++++ b/drivers/bluetooth/btintel.h
+@@ -211,6 +211,8 @@ void btintel_bootup(struct hci_dev *hdev, const void *ptr, unsigned int len);
+ void btintel_secure_send_result(struct hci_dev *hdev,
+ 				const void *ptr, unsigned int len);
+ int btintel_set_quality_report(struct hci_dev *hdev, bool enable);
++struct ext_vendor_prefix *btintel_get_ext_prefix(struct hci_dev *hdev);
++void btintel_vendor_evt(struct hci_dev *hdev, struct sk_buff *skb);
+ #else
+ 
+ static inline int btintel_check_bdaddr(struct hci_dev *hdev)
+@@ -306,4 +308,15 @@ static inline int btintel_set_quality_report(struct hci_dev *hdev, bool enable)
+ {
+ 	return -ENODEV;
+ }
++
++static inline struct ext_vendor_prefix *btintel_get_ext_prefix(
++							struct hci_dev *hdev)
++{
++	return NULL;
 +}
 +
- int hci_dev_open_sync(struct hci_dev *hdev)
- {
- 	int ret = 0;
-@@ -4013,6 +4038,7 @@ int hci_dev_open_sync(struct hci_dev *hdev)
- 	if (!hci_dev_test_flag(hdev, HCI_USER_CHANNEL)) {
- 		msft_do_open(hdev);
- 		aosp_do_open(hdev);
-+		suspend_resume_quality_report(hdev, true);
- 	}
- 
- 	clear_bit(HCI_INIT, &hdev->flags);
-@@ -4095,6 +4121,14 @@ int hci_dev_close_sync(struct hci_dev *hdev)
- 
- 	hci_request_cancel_all(hdev);
- 
-+	/* Disable quality report and close aosp before shutdown()
-+	 * is called. Otherwise, some chips may panic.
-+	 */
-+	if (!hci_dev_test_flag(hdev, HCI_USER_CHANNEL)) {
-+		suspend_resume_quality_report(hdev, false);
-+		aosp_do_close(hdev);
-+	}
++static inline void btintel_vendor_evt(struct hci_dev *hdev, struct sk_buff *skb)
++{
++}
 +
- 	if (!hci_dev_test_flag(hdev, HCI_UNREGISTER) &&
- 	    !hci_dev_test_flag(hdev, HCI_USER_CHANNEL) &&
- 	    test_bit(HCI_UP, &hdev->flags)) {
-@@ -4158,7 +4192,6 @@ int hci_dev_close_sync(struct hci_dev *hdev)
- 	hci_sock_dev_event(hdev, HCI_DEV_DOWN);
- 
- 	if (!hci_dev_test_flag(hdev, HCI_USER_CHANNEL)) {
--		aosp_do_close(hdev);
- 		msft_do_close(hdev);
- 	}
- 
+ #endif
 -- 
 2.36.1.124.g0e6072fb45-goog
 
