@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 833ECC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 09:06:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 754BEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 09:06:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241050AbiEYJGu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 05:06:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46892 "EHLO
+        id S242713AbiEYJFq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 05:05:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235798AbiEYJFR (ORCPT
+        with ESMTP id S231866AbiEYJEt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 05:05:17 -0400
+        Wed, 25 May 2022 05:04:49 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E848F8CCFA
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 02:03:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C3012A0047
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 02:03:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653469370;
+        s=mimecast20190719; t=1653469358;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=CY4apJS2z1cKUFJKMHfQr4ItLc6osQFAwRlPYuJ6Rzs=;
-        b=cfu80L2SFRiGKLjEPJpESfjTqXGRBwTF3mtWnPJRhSohxFibYQdnrZot1H+uI88Dkj7dYT
-        ckSz6uBuFytJzKSrZaXxOkeQvjnI9cEq82XqDAYPvIswZWh8fCF2eu8tbB2qhtPJkNBSID
-        5nWWBzCkHWhb9U1KUXzDJ7G3QSzlALE=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=hI5tcymMyNY0x/KbxdPcK+U4n8lHpHeb3PjdglObBsg=;
+        b=SPqzoiieGa+k8oB1DtUgzxlimVKVzYUcNjiKt+KVR+eO93pswxGtv1nAebsl+DLNDI5JIH
+        2EKYbEa3C8sc9nR/tB0057XvGt+FZOn9TrVJYtqceUdfCWruIR543IlTuSf4nIK7OcCeNH
+        ESi2opGSx/h57Se/9QeBUjw+kSj2Ero=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-145-Cwb-Ksw9M9SRQc-g3MzzRw-1; Wed, 25 May 2022 05:02:47 -0400
-X-MC-Unique: Cwb-Ksw9M9SRQc-g3MzzRw-1
+ us-mta-675-nD6Y8Hz8OCOorOTCyAXyrQ-1; Wed, 25 May 2022 05:02:35 -0400
+X-MC-Unique: nD6Y8Hz8OCOorOTCyAXyrQ-1
 Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id BCF62100BAB8;
-        Wed, 25 May 2022 09:02:46 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id D2D7C1C161A3;
+        Wed, 25 May 2022 09:02:34 +0000 (UTC)
 Received: from fedora.redhat.com (unknown [10.40.194.186])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0D86F40CFD0A;
-        Wed, 25 May 2022 09:02:44 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 23F9840CFD0A;
+        Wed, 25 May 2022 09:02:33 +0000 (UTC)
 From:   Vitaly Kuznetsov <vkuznets@redhat.com>
 To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -47,9 +47,9 @@ Cc:     Sean Christopherson <seanjc@google.com>,
         Michael Kelley <mikelley@microsoft.com>,
         Siddharth Chandrasekaran <sidcha@amazon.de>,
         linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v4 34/37] KVM: selftests: Sync 'struct hv_vp_assist_page' definition with hyperv-tlfs.h
-Date:   Wed, 25 May 2022 11:01:30 +0200
-Message-Id: <20220525090133.1264239-35-vkuznets@redhat.com>
+Subject: [PATCH v4 28/37] KVM: selftests: Export vm_vaddr_unused_gap() to make it possible to request unmapped ranges
+Date:   Wed, 25 May 2022 11:01:24 +0200
+Message-Id: <20220525090133.1264239-29-vkuznets@redhat.com>
 In-Reply-To: <20220525090133.1264239-1-vkuznets@redhat.com>
 References: <20220525090133.1264239-1-vkuznets@redhat.com>
 MIME-Version: 1.0
@@ -60,52 +60,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-'struct hv_vp_assist_page' definition doesn't match TLFS. Also, define
-'struct hv_nested_enlightenments_control' and use it instead of opaque
-'__u64'.
+Currently, tests can only request a new vaddr range by using
+vm_vaddr_alloc()/vm_vaddr_alloc_page()/vm_vaddr_alloc_pages() but
+these functions allocate and map physical pages too. Make it possible
+to request unmapped range too.
 
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
 Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 ---
- .../selftests/kvm/include/x86_64/evmcs.h      | 22 ++++++++++++++-----
- 1 file changed, 17 insertions(+), 5 deletions(-)
+ tools/testing/selftests/kvm/include/kvm_util_base.h | 1 +
+ tools/testing/selftests/kvm/lib/kvm_util.c          | 4 ++--
+ 2 files changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/include/x86_64/evmcs.h b/tools/testing/selftests/kvm/include/x86_64/evmcs.h
-index b6067b555110..9c965ba73dec 100644
---- a/tools/testing/selftests/kvm/include/x86_64/evmcs.h
-+++ b/tools/testing/selftests/kvm/include/x86_64/evmcs.h
-@@ -20,14 +20,26 @@
+diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
+index 92cef0ffb19e..8273fe93c4f6 100644
+--- a/tools/testing/selftests/kvm/include/kvm_util_base.h
++++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
+@@ -169,6 +169,7 @@ void vm_mem_region_set_flags(struct kvm_vm *vm, uint32_t slot, uint32_t flags);
+ void vm_mem_region_move(struct kvm_vm *vm, uint32_t slot, uint64_t new_gpa);
+ void vm_mem_region_delete(struct kvm_vm *vm, uint32_t slot);
+ void vm_vcpu_add(struct kvm_vm *vm, uint32_t vcpuid);
++vm_vaddr_t vm_vaddr_unused_gap(struct kvm_vm *vm, size_t sz, vm_vaddr_t vaddr_min);
+ vm_vaddr_t vm_vaddr_alloc(struct kvm_vm *vm, size_t sz, vm_vaddr_t vaddr_min);
+ vm_vaddr_t vm_vaddr_alloc_pages(struct kvm_vm *vm, int nr_pages);
+ vm_vaddr_t vm_vaddr_alloc_page(struct kvm_vm *vm);
+diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
+index 936be9c9f870..37df67780787 100644
+--- a/tools/testing/selftests/kvm/lib/kvm_util.c
++++ b/tools/testing/selftests/kvm/lib/kvm_util.c
+@@ -1263,8 +1263,8 @@ void vm_vcpu_add(struct kvm_vm *vm, uint32_t vcpuid)
+  * TEST_ASSERT failure occurs for invalid input or no area of at least
+  * sz unallocated bytes >= vaddr_min is available.
+  */
+-static vm_vaddr_t vm_vaddr_unused_gap(struct kvm_vm *vm, size_t sz,
+-				      vm_vaddr_t vaddr_min)
++vm_vaddr_t vm_vaddr_unused_gap(struct kvm_vm *vm, size_t sz,
++			       vm_vaddr_t vaddr_min)
+ {
+ 	uint64_t pages = (sz + vm->page_size - 1) >> vm->page_shift;
  
- extern bool enable_evmcs;
- 
-+struct hv_nested_enlightenments_control {
-+	struct {
-+		__u32 directhypercall:1;
-+		__u32 reserved:31;
-+	} features;
-+	struct {
-+		__u32 reserved;
-+	} hypercallControls;
-+} __packed;
-+
-+/* Define virtual processor assist page structure. */
- struct hv_vp_assist_page {
- 	__u32 apic_assist;
--	__u32 reserved;
--	__u64 vtl_control[2];
--	__u64 nested_enlightenments_control[2];
--	__u32 enlighten_vmentry;
-+	__u32 reserved1;
-+	__u64 vtl_control[3];
-+	struct hv_nested_enlightenments_control nested_control;
-+	__u8 enlighten_vmentry;
-+	__u8 reserved2[7];
- 	__u64 current_nested_vmcs;
--};
-+} __packed;
- 
- struct hv_enlightened_vmcs {
- 	u32 revision_id;
 -- 
 2.35.3
 
