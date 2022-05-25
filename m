@@ -2,86 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3480C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 20:57:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A430EC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 20:58:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344063AbiEYU5c (ORCPT
+        id S1344120AbiEYU6A (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 16:57:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45438 "EHLO
+        Wed, 25 May 2022 16:58:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230314AbiEYU53 (ORCPT
+        with ESMTP id S230314AbiEYU56 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 16:57:29 -0400
-Received: from mail-oi1-f175.google.com (mail-oi1-f175.google.com [209.85.167.175])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3488B8BE8;
-        Wed, 25 May 2022 13:57:28 -0700 (PDT)
-Received: by mail-oi1-f175.google.com with SMTP id t144so23208110oie.7;
-        Wed, 25 May 2022 13:57:28 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=PvdkFEtwnY8PQ1QhT5M3rI8a4A3NL4oFFj4uvWw4Njw=;
-        b=qAAYh8z9W9sthSvaFx8Cqas0uLq+3kwhqX5FF3EF62w2/1fPGqD/406S5MSu814iU8
-         haJGxYkPw2zBRzKOcTUFlr2pyXRqKyClHNoys69tIVjUDip+oehB9jUYvI0PMmmE9l7b
-         DSkuioULJbYIzl1VZalpHQe9RShrxbs/J4A5VdJ8uo0nLw2W+NKnyRBO10X03Kx+joMv
-         y4qNx3wrCPIiH6kEFedXSpcvB7OjOqUUk770Hjr+zV+xBI8ulQQyY2Ee0yTYgLRBHkaS
-         NavKvvRf4hSl/XOcAbXN2cd2IoUerjdU6E/6XAdTgP5jwBrhcb+XWWNgCEhlphf1AZzw
-         cn7w==
-X-Gm-Message-State: AOAM5310KgUdqPZlQNnaoYHP5cfu28MYnVK3sV5d8tzLuswPAvO/eeVL
-        qNfCirGPjkePFjfzshk2/w==
-X-Google-Smtp-Source: ABdhPJyRuiJ/assfY1zLs5zrpGcTguyfUw5N+iA1GV/DKuVDEOa45pd2/EegjcXHekwesofSJm644A==
-X-Received: by 2002:a05:6808:f09:b0:328:b61f:1b52 with SMTP id m9-20020a0568080f0900b00328b61f1b52mr6053707oiw.150.1653512238956;
-        Wed, 25 May 2022 13:57:18 -0700 (PDT)
-Received: from xps15.. (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.googlemail.com with ESMTPSA id r125-20020acada83000000b003289f51c2d7sm6896210oig.34.2022.05.25.13.57.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 May 2022 13:57:18 -0700 (PDT)
-From:   Rob Herring <robh@kernel.org>
-To:     Andrzej Hajda <andrzej.hajda@intel.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        "H. Nikolaus Schaller" <hns@goldelico.com>
-Cc:     dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] dt-bindings: display: ingenic,jz4780-hdmi: Drop undocumented 'ddc-i2c-bus'
-Date:   Wed, 25 May 2022 15:56:26 -0500
-Message-Id: <20220525205626.2482584-1-robh@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        Wed, 25 May 2022 16:57:58 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B60B7A0D04;
+        Wed, 25 May 2022 13:57:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=/JLR/8lAKxQhIS1LV8N9wRlA5QhOohZrfDX4jJsejTI=; b=IIQUHxMdfsA+EZZLgeyQBhxz7n
+        KiB62pbh7elhZ0euF9OXTnkGrbGjT6Vp8USXHt3HSGZTltWccPCBOAh/OMKYXxKJNkFimCaQ5xMoX
+        ergpPT2mgIyGPVNyO5z4+VBiNYrBq7NW+rouz7+7vKGn0Sa4sxZYCR12TSf+pU/hGgXg=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nty4m-004HNs-DF; Wed, 25 May 2022 22:57:52 +0200
+Date:   Wed, 25 May 2022 22:57:52 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Kent Overstreet <kent.overstreet@gmail.com>
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-block@vger.kernel.org, netdev@vger.kernel.org,
+        mcgrof@kernel.org, tytso@mit.edu
+Subject: Re: RFC: Ioctl v2
+Message-ID: <Yo6YUHi7NcZAAKg4@lunn.ch>
+References: <20220520161652.rmhqlvwvfrvskg4w@moria.home.lan>
+ <Yof6hsC1hLiYITdh@lunn.ch>
+ <20220521164546.h7huckdwvguvmmyy@moria.home.lan>
+ <20220521124559.69414fec@hermes.local>
+ <20220525170233.2yxb5pm75dehrjuj@moria.home.lan>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220525170233.2yxb5pm75dehrjuj@moria.home.lan>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-While 'ddc-i2c-bus' is a common property, it should be in a connector
-node rather than the HDMI bridge node as the I2C bus goes to a
-connector and not the HDMI block. Drop it from the example.
+> Actually, I have one in bcachefs that might fit better into the netlink bucket -
+> maybe while I've got your attention you could tell me what this is like in
+> netlink land.
+> 
+> In bcachefs, we have "data jobs", where userspace asks us to do something that
+> requires walking data and performing some operation on them - this is used for
+> manual rebalance, evacuating data off a device, scrub (when that gets
+> implemented), etc.
+> 
+> The way I did this was with an ioctl that takes as a parameter the job to
+> perform, then it kicks off a kernel thread to do the work and returns a file
+> descriptor, which userspace reads from to find out the current status of the job
+> (which it uses to implement a progress indicator). We kill off the kthread if
+> the file descriptor is closed, meaning ctrl-c works as expected.
+> 
+> I really like how this turned out, it's not much code and super slick - I was
+> considering abstracting it out as generic functionality. But this definitely
+> sounds like what netlink is targeted at - thoughts?
 
-Signed-off-by: Rob Herring <robh@kernel.org>
----
- .../devicetree/bindings/display/bridge/ingenic,jz4780-hdmi.yaml  | 1 -
- 1 file changed, 1 deletion(-)
+What is tricky with networking, is that it has a Big Lock, the
+RTNL. All ioctl and netlink operations are performed while holding
+this lock. So you cannot do an operation which takes a while.
 
-diff --git a/Documentation/devicetree/bindings/display/bridge/ingenic,jz4780-hdmi.yaml b/Documentation/devicetree/bindings/display/bridge/ingenic,jz4780-hdmi.yaml
-index b8219eab4475..89490fdffeb0 100644
---- a/Documentation/devicetree/bindings/display/bridge/ingenic,jz4780-hdmi.yaml
-+++ b/Documentation/devicetree/bindings/display/bridge/ingenic,jz4780-hdmi.yaml
-@@ -55,7 +55,6 @@ examples:
-         compatible = "ingenic,jz4780-dw-hdmi";
-         reg = <0x10180000 0x8000>;
-         reg-io-width = <4>;
--        ddc-i2c-bus = <&i2c4>;
-         interrupt-parent = <&intc>;
-         interrupts = <3>;
-         clocks = <&cgu JZ4780_CLK_AHB0>, <&cgu JZ4780_CLK_HDMI>;
--- 
-2.34.1
+But i implemented something similar to what you want a couple of years
+ago. Ethernet cable testing. It is split into a couple of netlink
+messages. There is one to initiate the cable test, and you can pass
+some parameters. If the Ethernet PHY supports it, you get back an
+immediate ACK, or an error messages, with probably -EOPNOTSUP, or
+-EINVAL. This is all done with the RTNL held, the lock being released
+after the reply.
+
+The PHY then actually starts doing the cable test. I can take from a
+couple of seconds, to 10-20 seconds, depending on exactly how it is
+implemented, how fast the PHY is etc.
+
+Once the PHY has finished, it broadcasts a report of the cable test to
+userspace. Any process can receive this. So the invoking ethtool
+--cable-test eth42 process waits around for it and dumps the test
+results.
+
+broadcasting messages is a big part of netlink. 'ip monitor' will
+receive all these broadcasts and decode them. So you get to see routes
+added/remove, ARP resolutions, interfaces going up and down. etc.
+
+Your ctrl-c handling does not exist, as far as i know. With cable
+testing, it runs to completion and makes the report. It could be there
+is nobody listening. At least for some PHYs you cannot abort a cable
+test once started, so ctrl-c might not even make sense.
+
+There is a video of my LPC talk online somewhere. But 1/2 of it is
+physics, how cable testing actually works. There is some details of
+the netlink part and how the PHY state machine works.
+
+    Andrew
+
+
 
