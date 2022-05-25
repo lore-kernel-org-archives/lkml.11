@@ -2,53 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6030DC43219
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 15:45:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACD06C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 15:45:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243858AbiEYPpO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 11:45:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49724 "EHLO
+        id S245230AbiEYPpS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 11:45:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243170AbiEYPo6 (ORCPT
+        with ESMTP id S245258AbiEYPpC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 11:44:58 -0400
-Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0AAA5D1B7
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 08:44:56 -0700 (PDT)
-Received: by mail-pj1-x1049.google.com with SMTP id nn14-20020a17090b38ce00b001e00df82de8so1460613pjb.1
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 08:44:56 -0700 (PDT)
+        Wed, 25 May 2022 11:45:02 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 472B78DDED
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 08:45:01 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id i204-20020a2522d5000000b006524ae5d7d7so4960065ybi.16
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 08:45:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=GgY7NSiX6uiGDtMHlohDtQsx1OJlx0SAIigzyTay35s=;
-        b=jowgYFt7SEavOK8Pjjl0zBdyPggQe+XS6DE8u89llg5eDqiCPe3JleZudMhvvt60Tx
-         KUrtmfXVebiCd4AudyFe5/7URbeh3YLBqpZsFGhazkj4rewAPV3pPdlvshEi+2gezxEH
-         mUCy9kHiaL+UHJfSyXq7u34pU5RUrFK90yNOEMZNCllIi+pfkZE6X4qm79Dbbp43dEbH
-         zu3eKe7pzRlHpv61tz2wvEjFc3VHhVpP3WI399rkB44ERWn0kHIDMkzoJZfdkgfUt5m5
-         GdJkcOsLABE6Z3vQprG6bFgxefZJ8FWtiR+cKBLd4ZZf8c7N00hAdGCNokw8ZxfwGHmO
-         8iTw==
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=LVwK1TWS2ZAb7Kfk7FPrer/dNWd3IkmkzZFa2JkAqMQ=;
+        b=CuaSdqC5/5PGcYkkjh3I3OulmQD6xBIMr/i67/rl3Sr5cF5QK7OG8SNCHSejBCSiIk
+         nYuKyrdDBQG9TzVOPyZnfHKbYR9ZLYhuVYNx+/hI9J/p96Pm4rG0hwKBSVm7JiSmDaAJ
+         8oQuniLZV712jAH7Hi5EUL00vQrXjmDGHht6C05HzTKBbO5uPqQGd9JMfZF364rkA4bo
+         HRlCpE905u+xVUd3l+C00OV5QSoY7s3/GKn8e/BkktXg9ZZUceVASl/sjBPF3IbrbGss
+         ff9PXEEjt9LgkVCED7YN2NL50v/EqNmcj0ywVqewWziWGuo7Mqm/EGeV0tujugQwnhBu
+         Ebyw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=GgY7NSiX6uiGDtMHlohDtQsx1OJlx0SAIigzyTay35s=;
-        b=ymS1ZyqcTf6RROhpTMTPyF6Jc76g1x5DGqlPwe64PsHEt1QfmGMSPT/+b+JxPudbqx
-         /VRApypDnVt/YYbf6VuUJBPf194SYyWuWhURUFPd977jLknQdU5RPtlfybcW59Hf4TD+
-         SUMw6RZCnp7ajvwOkXuJb18cagqCoR8LG2Fu/YWKAQ0l8InKQVp/5sD6jkmtUgqxxRUP
-         myRaibj/aR8Hm6sNr4NG3lcKA2Ju/WrkfxIRUFmkYgcFfXg871BLDobrNwSGjsHbooSf
-         +Ihu9mlyi8MPDays/XsycR52WrvUWJTfKzEz2Y571ifVvy546OU25ZFOcxxUWRIF+3oc
-         E+/Q==
-X-Gm-Message-State: AOAM533t4BofTUP8R8hTKg1RdBaLfX1ZaNXUlSTZkUeacmryjuQmhQ+T
-        ef15updaXib0UEnIh0zE/SK6Caq5zez8nw==
-X-Google-Smtp-Source: ABdhPJws+4oVrU34s68yHCpWDk1FFIPQdgTM7eK3gFqhOueOd5NicV9AOgO6qRBSK3sF6bdGOWE2XldPmjZXAg==
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=LVwK1TWS2ZAb7Kfk7FPrer/dNWd3IkmkzZFa2JkAqMQ=;
+        b=5gUvsYs8u3M0KYBBlOawYYf+0S+uYdFlhynT72Cppn//szlNb8ZYsCFEkXOk78vi8d
+         CLqVDmJpxZAXlzLsA745EOZ1suJxv3fwRJI+pypeBFiIScHkPjZ9Sl60q5Swks1IGF02
+         q1aSE5q3FvZDDFZqUn6CP7t01UdxwmuosMInzxLNGPM89Wm6Z2HuVQQNFD+wmTq9FscH
+         CE/oVXtSMRNETyk6UhxMeYPMnSoaZQ9ejGoX9XgqGAkts5c+/tyeSDeVl0sXytRfytDv
+         K/Pvyq+tXAIsJQPkehthCMZ97EI10GLrfOpf4XRn/WvKsY+IOTyT34Lh1kIqchV1vCzs
+         uEJw==
+X-Gm-Message-State: AOAM532dXDWn1cCL3axCeEU+bOWeH3Xv87KgT2G1AcrA6KOujQsFb9Fi
+        zCEdHuiG5aB3B3CS83TeXJZzSo5d2/jHHw==
+X-Google-Smtp-Source: ABdhPJyw+1yei1o/kJT6QO5M4hmlZq8hDTO/YxwP2PZ0T2KZlMVtxI8Ats6BjBJ/yA1EIyPvhA5QvyRZ05/BzQ==
 X-Received: from dlatypov.svl.corp.google.com ([2620:15c:2cd:202:5bba:b161:2a8a:2ddd])
- (user=dlatypov job=sendgmr) by 2002:a17:90a:9318:b0:1e0:b957:ffda with SMTP
- id p24-20020a17090a931800b001e0b957ffdamr2678266pjo.199.1653493496291; Wed,
- 25 May 2022 08:44:56 -0700 (PDT)
-Date:   Wed, 25 May 2022 08:44:38 -0700
-Message-Id: <20220525154442.1438081-1-dlatypov@google.com>
+ (user=dlatypov job=sendgmr) by 2002:a05:6902:143:b0:628:7cf1:f2a9 with SMTP
+ id p3-20020a056902014300b006287cf1f2a9mr30129754ybh.51.1653493500535; Wed, 25
+ May 2022 08:45:00 -0700 (PDT)
+Date:   Wed, 25 May 2022 08:44:40 -0700
+In-Reply-To: <20220525154442.1438081-1-dlatypov@google.com>
+Message-Id: <20220525154442.1438081-3-dlatypov@google.com>
 Mime-Version: 1.0
+References: <20220525154442.1438081-1-dlatypov@google.com>
 X-Mailer: git-send-email 2.36.1.124.g0e6072fb45-goog
-Subject: [RFC PATCH 0/4] kunit: more assertion reworking
+Subject: [RFC PATCH 2/4] rfc: kunit: rename base KUNIT_ASSERTION macro to _KUNIT_FAILED
 From:   Daniel Latypov <dlatypov@google.com>
 To:     brendanhiggins@google.com, davidgow@google.com
 Cc:     ojeda@kernel.org, linux-kernel@vger.kernel.org,
@@ -59,39 +63,187 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is a follow up to these three series:
-https://lore.kernel.org/all/20220113165931.451305-1-dlatypov@google.com/
-https://lore.kernel.org/all/20220118223506.1701553-1-dlatypov@google.com/
-https://lore.kernel.org/all/20220125210011.3817742-1-dlatypov@google.com/
+Context:
+Currently this macro's name, KUNIT_ASSERTION conflicts with the name of
+an enum whose values are {KUNIT_EXPECTATION, KUNIT_ASSERTION}.
 
-The two goals of those series were
-a) reduce the size of struct kunit_assert and friends.
-   (struct kunit_assert went from 48 => 8 bytes on UML.)
-b) simplify the internal code, mostly by deleting macros
+It's hard to think of a better name for the enum, so rename this macro.
+It's also a bit strange that the macro might do nothing depending on the
+boolean argument `pass`. Why not have callers check themselves?
 
-This series goes further
-a) sizeof(struct kunit_assert) = 0 now
-b) e.g. we delete another class of macros (KUNIT_INIT_*_ASSERT_STRUCT)
+This patch:
+Moves the pass/fail checking into the callers of KUNIT_ASSERTION, so now
+we only call it when the check has failed.
+Then we rename the macro the _KUNIT_FAILED() to reflect the new
+semantics.
 
-Note: this does change the function signature of
-kunit_do_failed_assertion, so we'd need to update the rust wrapper in https://github.com/Rust-for-Linux/linux/blob/rust/rust/kernel/kunit.rs
-But otherwise, I don't think this series changes anything on the
-rust-side.
+Signed-off-by: Daniel Latypov <dlatypov@google.com>
+---
+ include/kunit/test.h | 119 ++++++++++++++++++++++---------------------
+ 1 file changed, 61 insertions(+), 58 deletions(-)
 
-Daniel Latypov (4):
-  rfc: kunit: remove format func from struct kunit_assert, get it to 0
-    bytes
-  rfc: kunit: rename base KUNIT_ASSERTION macro to _KUNIT_FAILED
-  rfc: kunit: eliminate KUNIT_INIT_*_ASSERT_STRUCT macros
-  kunit: delcare kunit_assert structs as const
-
- include/kunit/assert.h |  74 ++-----------------------
- include/kunit/test.h   | 123 ++++++++++++++++++++++-------------------
- lib/kunit/test.c       |   7 ++-
- 3 files changed, 76 insertions(+), 128 deletions(-)
-
-
-base-commit: e7eaffce47b7db72b077630dbe836f0c4132496d
+diff --git a/include/kunit/test.h b/include/kunit/test.h
+index 6730734a2216..4a7cb7e72660 100644
+--- a/include/kunit/test.h
++++ b/include/kunit/test.h
+@@ -512,30 +512,27 @@ void kunit_do_failed_assertion(struct kunit *test,
+ 			       assert_format_t assert_format,
+ 			       const char *fmt, ...);
+ 
+-#define KUNIT_ASSERTION(test, assert_type, pass, assert_class, assert_format, INITIALIZER, fmt, ...) do { \
+-	if (unlikely(!(pass))) {					       \
+-		static const struct kunit_loc __loc = KUNIT_CURRENT_LOC;       \
+-		struct assert_class __assertion = INITIALIZER;		       \
+-		kunit_do_failed_assertion(test,				       \
+-					  &__loc,			       \
+-					  assert_type,			       \
+-					  &__assertion.assert,		       \
+-					  assert_format,		       \
+-					  fmt,				       \
+-					  ##__VA_ARGS__);		       \
+-	}								       \
++#define _KUNIT_FAILED(test, assert_type, assert_class, assert_format, INITIALIZER, fmt, ...) do { \
++	static const struct kunit_loc __loc = KUNIT_CURRENT_LOC;	       \
++	struct assert_class __assertion = INITIALIZER;			       \
++	kunit_do_failed_assertion(test,					       \
++				  &__loc,				       \
++				  assert_type,				       \
++				  &__assertion.assert,			       \
++				  assert_format,			       \
++				  fmt,					       \
++				  ##__VA_ARGS__);			       \
+ } while (0)
+ 
+ 
+ #define KUNIT_FAIL_ASSERTION(test, assert_type, fmt, ...)		       \
+-	KUNIT_ASSERTION(test,						       \
+-			assert_type,					       \
+-			false,						       \
+-			kunit_fail_assert,				       \
+-			kunit_fail_assert_format,			       \
+-			{},						       \
+-			fmt,						       \
+-			##__VA_ARGS__)
++	_KUNIT_FAILED(test,						       \
++		      assert_type,					       \
++		      kunit_fail_assert,				       \
++		      kunit_fail_assert_format,				       \
++		      {},						       \
++		      fmt,						       \
++		      ##__VA_ARGS__)
+ 
+ /**
+  * KUNIT_FAIL() - Always causes a test to fail when evaluated.
+@@ -560,15 +557,18 @@ void kunit_do_failed_assertion(struct kunit *test,
+ 			      expected_true,				       \
+ 			      fmt,					       \
+ 			      ...)					       \
+-	KUNIT_ASSERTION(test,						       \
+-			assert_type,					       \
+-			!!(condition) == !!expected_true,		       \
+-			kunit_unary_assert,				       \
+-			kunit_unary_assert_format,			       \
+-			KUNIT_INIT_UNARY_ASSERT_STRUCT(#condition,	       \
+-						       expected_true),	       \
+-			fmt,						       \
+-			##__VA_ARGS__)
++do {									       \
++	if (likely(!!(condition) == !!expected_true)) break;		       \
++									       \
++	_KUNIT_FAILED(test,						       \
++		      assert_type,					       \
++		      kunit_unary_assert,				       \
++		      kunit_unary_assert_format,			       \
++		      KUNIT_INIT_UNARY_ASSERT_STRUCT(#condition,	       \
++						     expected_true),	       \
++		      fmt,						       \
++		      ##__VA_ARGS__);					       \
++} while(0)
+ 
+ #define KUNIT_TRUE_MSG_ASSERTION(test, assert_type, condition, fmt, ...)       \
+ 	KUNIT_UNARY_ASSERTION(test,					       \
+@@ -618,16 +618,17 @@ do {									       \
+ 		.right_text = #right,					       \
+ 	};								       \
+ 									       \
+-	KUNIT_ASSERTION(test,						       \
+-			assert_type,					       \
+-			__left op __right,				       \
+-			assert_class,					       \
+-			format_func,					       \
+-			KUNIT_INIT_BINARY_ASSERT_STRUCT(&__text,	       \
+-							__left,		       \
+-							__right),	       \
+-			fmt,						       \
+-			##__VA_ARGS__);					       \
++	if (likely(__left op __right)) break;				       \
++									       \
++	_KUNIT_FAILED(test,						       \
++		      assert_type,					       \
++		      assert_class,					       \
++		      format_func,					       \
++		      KUNIT_INIT_BINARY_ASSERT_STRUCT(&__text,		       \
++						      __left,		       \
++						      __right),		       \
++		      fmt,						       \
++		      ##__VA_ARGS__);					       \
+ } while (0)
+ 
+ #define KUNIT_BINARY_INT_ASSERTION(test,				       \
+@@ -676,16 +677,18 @@ do {									       \
+ 		.right_text = #right,					       \
+ 	};								       \
+ 									       \
+-	KUNIT_ASSERTION(test,						       \
+-			assert_type,					       \
+-			strcmp(__left, __right) op 0,			       \
+-			kunit_binary_str_assert,			       \
+-			kunit_binary_str_assert_format,			       \
+-			KUNIT_INIT_BINARY_ASSERT_STRUCT(&__text,	       \
+-							__left,		       \
+-							__right),	       \
+-			fmt,						       \
+-			##__VA_ARGS__);					       \
++	if (likely(strcmp(__left, __right) op 0)) break;		       \
++									       \
++									       \
++	_KUNIT_FAILED(test,						       \
++		      assert_type,					       \
++		      kunit_binary_str_assert,				       \
++		      kunit_binary_str_assert_format,			       \
++		      KUNIT_INIT_BINARY_ASSERT_STRUCT(&__text,		       \
++						      __left,		       \
++						      __right),		       \
++		      fmt,						       \
++		      ##__VA_ARGS__);					       \
+ } while (0)
+ 
+ #define KUNIT_PTR_NOT_ERR_OR_NULL_MSG_ASSERTION(test,			       \
+@@ -696,15 +699,15 @@ do {									       \
+ do {									       \
+ 	const typeof(ptr) __ptr = (ptr);				       \
+ 									       \
+-	KUNIT_ASSERTION(test,						       \
+-			assert_type,					       \
+-			!IS_ERR_OR_NULL(__ptr),				       \
+-			kunit_ptr_not_err_assert,			       \
+-			kunit_ptr_not_err_assert_format,		       \
+-			KUNIT_INIT_PTR_NOT_ERR_STRUCT(#ptr,		       \
+-						      __ptr),		       \
+-			fmt,						       \
+-			##__VA_ARGS__);					       \
++	if (likely(!IS_ERR_OR_NULL(__ptr))) break;			       \
++									       \
++	_KUNIT_FAILED(test,						       \
++		      assert_type,					       \
++		      kunit_ptr_not_err_assert,				       \
++		      kunit_ptr_not_err_assert_format,			       \
++		      KUNIT_INIT_PTR_NOT_ERR_STRUCT(#ptr, __ptr),	       \
++		      fmt,						       \
++		      ##__VA_ARGS__);					       \
+ } while (0)
+ 
+ /**
 -- 
 2.36.1.124.g0e6072fb45-goog
 
