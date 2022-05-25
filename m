@@ -2,68 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CCF7C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 01:59:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EFE5C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 02:01:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243442AbiEYB7n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 21:59:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44260 "EHLO
+        id S243449AbiEYCBJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 22:01:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238164AbiEYB7k (ORCPT
+        with ESMTP id S238164AbiEYCBH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 21:59:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3770056C2D
-        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 18:59:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CA874614EE
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 01:59:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8B2FC34100;
-        Wed, 25 May 2022 01:59:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653443979;
-        bh=XjmXm7nrnLES/MEJ9AdsYRA3wQbvOl6+CmiwIjSNZHk=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=VnvMC35gUOYsOp5u5wfRFSI+qmAczcnTF0zCByyJZhoBE4T3ZI46nIq9ZugWBkyV8
-         U1kXZjhohgMGPd0Bf0Vv+1c/qI8xjcx+xjNKP2330rr6QD48ihCTIlu8EiGr0U/Gwh
-         atOvkTWNxuzIQ3UHU2JSJTcLN7w772EMX678Z+Z60xvTb1f9JXw4TlIH1Xnbm/Yi5K
-         hubre4f3Ud56IgPT6hHDWjh9WkAz6HpdNsyzC7K4EcABJGpXjGaPAf+1BsqbcrdGRa
-         Uo+FpGV3e6FITr6g5enOM4riDGoudENe2/7wVGFIniLvxL/JnbOCwFBwC4uNsAkR3e
-         DDttGd/S9sxMw==
-Message-ID: <699928df-b43a-aa9f-c0b2-48308dfc5d02@kernel.org>
-Date:   Wed, 25 May 2022 09:59:35 +0800
+        Tue, 24 May 2022 22:01:07 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5629A129;
+        Tue, 24 May 2022 19:01:05 -0700 (PDT)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4L7DmN6jJ2zjX44;
+        Wed, 25 May 2022 10:00:20 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 25 May 2022 10:01:03 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 25 May
+ 2022 10:01:03 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>
+CC:     <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>
+Subject: [PATCH -next] serial: pic32: fix missing clk_disable_unprepare() on error in pic32_uart_startup()
+Date:   Wed, 25 May 2022 10:12:04 +0800
+Message-ID: <20220525021204.2407631-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH] f2fs: allow compression for mmap files in
- compress_mode=user
-Content-Language: en-US
-To:     Sungjong Seo <sj1557.seo@samsung.com>, jaegeuk@kernel.org
-Cc:     linux-f2fs-devel@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org, daehojeong@google.com
-References: <CGME20220524022214epcas1p28d7b7de846e44cedf825eb4f5973932d@epcas1p2.samsung.com>
- <20220524012911.725783-1-sj1557.seo@samsung.com>
-From:   Chao Yu <chao@kernel.org>
-In-Reply-To: <20220524012911.725783-1-sj1557.seo@samsung.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/5/24 9:29, Sungjong Seo wrote:
-> Since commit e3c548323d32 ("f2fs: let's allow compression for mmap files"),
-> it has been allowed to compress mmap files. However, in compress_mode=user,
-> it is not allowed yet. To keep the same concept in both compress_modes,
-> f2fs_ioc_(de)compress_file() should also allow it.
-> 
-> Let's remove checking mmap files in f2fs_ioc_(de)compress_file() so that
-> the compression for mmap files is also allowed in compress_mode=user.
-> 
-> Signed-off-by: Sungjong Seo <sj1557.seo@samsung.com>
+Fix the missing clk_disable_unprepare() before return
+from pic32_uart_startup() in the error handling case.
 
-Reviewed-by: Chao Yu <chao@kernel.org>
+Fixes: 157b9394709e ("serial: pic32_uart: Add PIC32 UART driver")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ drivers/tty/serial/pic32_uart.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-Thanks,
+diff --git a/drivers/tty/serial/pic32_uart.c b/drivers/tty/serial/pic32_uart.c
+index b399aac530fe..f418f1de66b3 100644
+--- a/drivers/tty/serial/pic32_uart.c
++++ b/drivers/tty/serial/pic32_uart.c
+@@ -503,7 +503,7 @@ static int pic32_uart_startup(struct uart_port *port)
+ 	if (!sport->irq_fault_name) {
+ 		dev_err(port->dev, "%s: kasprintf err!", __func__);
+ 		ret = -ENOMEM;
+-		goto out_done;
++		goto out_disable_clk;
+ 	}
+ 	irq_set_status_flags(sport->irq_fault, IRQ_NOAUTOEN);
+ 	ret = request_irq(sport->irq_fault, pic32_uart_fault_interrupt,
+@@ -579,6 +579,8 @@ static int pic32_uart_startup(struct uart_port *port)
+ out_f:
+ 	free_irq(sport->irq_fault, port);
+ 	kfree(sport->irq_fault_name);
++out_disable_clk:
++	clk_disable_unprepare(sport->clk);
+ out_done:
+ 	return ret;
+ }
+-- 
+2.25.1
+
