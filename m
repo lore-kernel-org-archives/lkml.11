@@ -2,147 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B11B4C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 18:04:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54BF3C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 18:04:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244356AbiEYSEX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 14:04:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40312 "EHLO
+        id S1343643AbiEYSEl (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 14:04:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343627AbiEYSER (ORCPT
+        with ESMTP id S232735AbiEYSEh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 14:04:17 -0400
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB4109D4E3;
-        Wed, 25 May 2022 11:04:15 -0700 (PDT)
-Received: by mail-pf1-x42f.google.com with SMTP id bo5so19884198pfb.4;
-        Wed, 25 May 2022 11:04:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=h1TzB6zXHOqKMcJg/Znm0cPLJ3T5vb+uHY7kgpQJECw=;
-        b=eeuP43yZFEXFZNcbgSIVZCLPVZvBoHO+43zuKmEWHeY2uYb7hyM10eQ6yX0ME4TQlH
-         jiezxETkzQdMOFfgQqO9YwxX5MVyJ14DHFiG7b2bxoUQpfT392P4HbaDM8qyTJkRCv3Y
-         JhKBHR9wuWkk35jYgJVYw/lhxCDgc68OvL9fIQ7L0v9oi8bYFf7G648QdEjwPszsUDY7
-         fWxMzRje4vILYRkr2E/edNWfsLFlaxeF0CsncBGH/0lMHxexdQcsOYCzG8ygvvF75vs3
-         ZO61VhCWq82/9PNjPRFUB3BfzeD9viiZ6nM+mN1i2jonymC5b44WuhwrBIXxYBh3SuAO
-         T/lA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=h1TzB6zXHOqKMcJg/Znm0cPLJ3T5vb+uHY7kgpQJECw=;
-        b=GzO5tV97m58bzedj6mZUprpj2dROMvPFDjOexqXZZvL1Rlb6eNtLb8iPNnB07+vwx3
-         Z34SP+RixF2KuSEcCvF6sja4CHPnPZHOeM+jXtxuu1EfOkwFXMJXioad1nQ4YAYfcP9N
-         Z3a7L4JZ6N0FdHniqXtP2mme3vUORV2/SjsXjcqVqZzuKpqO2tS8IoCYBEmxKHuz5xvT
-         yUSU1vEFbBbSIFAISkXzwGKVfiGXrzRIyvF5WdPu+QkhMlMg8JsFAcyL4n/ybM5zVyTU
-         fPQUU3ESixlqNEpDO3vWFJPcvKwSDxkqty0Sozn+R5FBdstHVgPQFSlQ7R5EJnganrYx
-         pwJQ==
-X-Gm-Message-State: AOAM530chzwVFhCMZZNYsnemSQJ9VZYC/oNjTdELgZAHPJNvzgl+wYCg
-        necIbDpqgYALbLrHNAcIPnzoq+vn12Y=
-X-Google-Smtp-Source: ABdhPJwU8NvQlKhpXt6N/mFMMSnIztUWJDhbhyelzS2GIK0RpPcXNYOeEdq2m+c1gA4DoeCW8vFXeQ==
-X-Received: by 2002:a63:ef01:0:b0:3fb:4d0:6b62 with SMTP id u1-20020a63ef01000000b003fb04d06b62mr704946pgh.148.1653501855045;
-        Wed, 25 May 2022 11:04:15 -0700 (PDT)
-Received: from google.com ([2620:15c:202:201:150:a0bd:a968:f6a2])
-        by smtp.gmail.com with ESMTPSA id h11-20020a65518b000000b003c644b2180asm8826933pgq.77.2022.05.25.11.04.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 May 2022 11:04:13 -0700 (PDT)
-Date:   Wed, 25 May 2022 11:04:11 -0700
-From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
-To:     Pavel Machek <pavel@denx.de>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Zheng Yongjun <zhengyongjun3@huawei.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: Re: [PATCH 4.14 04/33] Input: stmfts - fix reference leak in
- stmfts_input_open
-Message-ID: <Yo5vmwfaJKhg9fzF@google.com>
-References: <20220523165746.957506211@linuxfoundation.org>
- <20220523165747.818755611@linuxfoundation.org>
- <20220525105248.GA31002@duo.ucw.cz>
+        Wed, 25 May 2022 14:04:37 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FE659C2F0
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 11:04:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653501876; x=1685037876;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=Pm30+PUW/S28pt9vFLXKnwJexHgxReaTpMC4SzbOa18=;
+  b=V30Ko1Zn7C/98NE6bdQifudQWCYVSTI2Fuojqvj8rPyoKnWk6ESdsxTO
+   vhX7es1E2RxxmYLrNa54B6v/AumaKI8jJiLxAUnRT6+Fyye0ouv/1QSuS
+   0qudNCuTl17EkKZLV6wOnX4E5/9Mky+o0G3JzMSqu/ZRGWhpRdWpMhgqg
+   Z0JfFrS3Zh2aUmGDKYtnxlwUgTYvNmr1vaoiufPIdtf0bS0trvFy8sy9U
+   pJfGqE2P57eTzgWb2sJCpVKtb6hy4bR3Bm8ea8YfwNdXr+LTQ7ZjGHFNJ
+   rFRwiw54VWuaF99udjm9cUwA6LR7oZigRf+VG35aEPU++hLfBEJ/Qzxly
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10358"; a="253766051"
+X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
+   d="scan'208";a="253766051"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2022 11:04:06 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
+   d="scan'208";a="526975819"
+Received: from lkp-server01.sh.intel.com (HELO db63a1be7222) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 25 May 2022 11:04:04 -0700
+Received: from kbuild by db63a1be7222 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1ntvMZ-0003Dq-Rj;
+        Wed, 25 May 2022 18:04:03 +0000
+Date:   Thu, 26 May 2022 02:03:16 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Viresh Kumar <viresh.kumar@linaro.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [vireshk-pm:opp/config 14/33] drivers/cpufreq/sti-cpufreq.c:163:33:
+ error: initialization of 'const u32 *' {aka 'const unsigned int *'} from
+ incompatible pointer type 'unsigned int (*)[3]'
+Message-ID: <202205260212.nwth1TXT-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220525105248.GA31002@duo.ucw.cz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 25, 2022 at 12:52:48PM +0200, Pavel Machek wrote:
-> Hi!
-> 
-> > From: Zheng Yongjun <zhengyongjun3@huawei.com>
-> > 
-> > [ Upstream commit 26623eea0da3476446909af96c980768df07bbd9 ]
-> > 
-> > pm_runtime_get_sync() will increment pm usage counter even it
-> > failed. Forgetting to call pm_runtime_put_noidle will result
-> > in reference leak in stmfts_input_open, so we should fix it.
-> 
-> This is wrong, AFAICT.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/vireshk/pm.git opp/config
+head:   d730dc101c586defb49eeafd8eea9b7bb0baa01b
+commit: fde02a60d6932a408e7330eb5887de842eae2dbb [14/33] cpufreq: sti: Migrate to dev_pm_opp_set_config()
+config: arm-allmodconfig (https://download.01.org/0day-ci/archive/20220526/202205260212.nwth1TXT-lkp@intel.com/config)
+compiler: arm-linux-gnueabi-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/vireshk/pm.git/commit/?id=fde02a60d6932a408e7330eb5887de842eae2dbb
+        git remote add vireshk-pm https://git.kernel.org/pub/scm/linux/kernel/git/vireshk/pm.git
+        git fetch --no-tags vireshk-pm opp/config
+        git checkout fde02a60d6932a408e7330eb5887de842eae2dbb
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash drivers/cpufreq/
 
-Yes, I think you are right. How about below?
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Thanks.
+All errors (new ones prefixed by >>):
+
+   drivers/cpufreq/sti-cpufreq.c: In function 'sti_cpufreq_set_opp_info':
+>> drivers/cpufreq/sti-cpufreq.c:163:33: error: initialization of 'const u32 *' {aka 'const unsigned int *'} from incompatible pointer type 'unsigned int (*)[3]' [-Werror=incompatible-pointer-types]
+     163 |                 .supported_hw = &version,
+         |                                 ^
+   drivers/cpufreq/sti-cpufreq.c:163:33: note: (near initialization for 'config.supported_hw')
+   cc1: some warnings being treated as errors
+
+
+vim +163 drivers/cpufreq/sti-cpufreq.c
+
+   150	
+   151	static int sti_cpufreq_set_opp_info(void)
+   152	{
+   153		struct device *dev = ddata.cpu;
+   154		struct device_node *np = dev->of_node;
+   155		const struct reg_field *reg_fields;
+   156		unsigned int hw_info_offset;
+   157		unsigned int version[VERSION_ELEMENTS];
+   158		int pcode, substrate, major, minor;
+   159		int ret;
+   160		char name[MAX_PCODE_NAME_LEN];
+   161		struct opp_table *opp_table;
+   162		struct dev_pm_opp_config config = {
+ > 163			.supported_hw = &version,
+   164			.supported_hw_count = ARRAY_SIZE(version),
+   165			.prop_name = name,
+   166		};
+   167	
+   168		reg_fields = sti_cpufreq_match();
+   169		if (!reg_fields) {
+   170			dev_err(dev, "This SoC doesn't support voltage scaling\n");
+   171			return -ENODEV;
+   172		}
+   173	
+   174		ret = of_property_read_u32_index(np, "st,syscfg-eng",
+   175						 HW_INFO_INDEX, &hw_info_offset);
+   176		if (ret) {
+   177			dev_warn(dev, "Failed to read HW info offset from DT\n");
+   178			substrate = DEFAULT_VERSION;
+   179			pcode = 0;
+   180			goto use_defaults;
+   181		}
+   182	
+   183		pcode = sti_cpufreq_fetch_regmap_field(reg_fields,
+   184						       hw_info_offset,
+   185						       PCODE);
+   186		if (pcode < 0) {
+   187			dev_warn(dev, "Failed to obtain process code\n");
+   188			/* Use default pcode */
+   189			pcode = 0;
+   190		}
+   191	
+   192		substrate = sti_cpufreq_fetch_regmap_field(reg_fields,
+   193							   hw_info_offset,
+   194							   SUBSTRATE);
+   195		if (substrate) {
+   196			dev_warn(dev, "Failed to obtain substrate code\n");
+   197			/* Use default substrate */
+   198			substrate = DEFAULT_VERSION;
+   199		}
+   200	
+   201	use_defaults:
+   202		major = sti_cpufreq_fetch_major();
+   203		if (major < 0) {
+   204			dev_err(dev, "Failed to obtain major version\n");
+   205			/* Use default major number */
+   206			major = DEFAULT_VERSION;
+   207		}
+   208	
+   209		minor = sti_cpufreq_fetch_minor();
+   210		if (minor < 0) {
+   211			dev_err(dev, "Failed to obtain minor version\n");
+   212			/* Use default minor number */
+   213			minor = DEFAULT_VERSION;
+   214		}
+   215	
+   216		snprintf(name, MAX_PCODE_NAME_LEN, "pcode%d", pcode);
+   217	
+   218		version[0] = BIT(major);
+   219		version[1] = BIT(minor);
+   220		version[2] = BIT(substrate);
+   221	
+   222		opp_table = dev_pm_opp_set_config(dev, &config);
+   223		if (IS_ERR(opp_table)) {
+   224			dev_err(dev, "Failed to set OPP config\n");
+   225			return PTR_ERR(opp_table);
+   226		}
+   227	
+   228		dev_dbg(dev, "pcode: %d major: %d minor: %d substrate: %d\n",
+   229			pcode, major, minor, substrate);
+   230		dev_dbg(dev, "version[0]: %x version[1]: %x version[2]: %x\n",
+   231			version[0], version[1], version[2]);
+   232	
+   233		return 0;
+   234	}
+   235	
 
 -- 
-Dmitry
-
-
-Input: stmfts - do not leave device disabled in stmfts_input_open
-
-From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-
-The commit 26623eea0da3 attempted to deal with potential leak of runtime
-PM counter when opening the touchscreen device, however it ended up
-erroneously dropping the counter in the case of successfully enabling the
-device.
-
-Let's address this by using pm_runtime_resume_and_get() and then executing
-pm_runtime_put_sync() only when we fail to send "sense on" command to the
-device.
-
-Fixes: 26623eea0da3 ("Input: stmfts - fix reference leak in stmfts_input_open")
-Reported-by: Pavel Machek <pavel@denx.de>
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
----
- drivers/input/touchscreen/stmfts.c |   16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/input/touchscreen/stmfts.c b/drivers/input/touchscreen/stmfts.c
-index 72e0b767e1ba..c175d44c52f3 100644
---- a/drivers/input/touchscreen/stmfts.c
-+++ b/drivers/input/touchscreen/stmfts.c
-@@ -337,13 +337,15 @@ static int stmfts_input_open(struct input_dev *dev)
- 	struct stmfts_data *sdata = input_get_drvdata(dev);
- 	int err;
- 
--	err = pm_runtime_get_sync(&sdata->client->dev);
--	if (err < 0)
--		goto out;
-+	err = pm_runtime_resume_and_get(&sdata->client->dev);
-+	if (err)
-+		return err;
- 
- 	err = i2c_smbus_write_byte(sdata->client, STMFTS_MS_MT_SENSE_ON);
--	if (err)
--		goto out;
-+	if (err) {
-+		pm_runtime_put_sync(&sdata->client->dev);
-+		return err;
-+	}
- 
- 	mutex_lock(&sdata->mutex);
- 	sdata->running = true;
-@@ -366,9 +368,7 @@ static int stmfts_input_open(struct input_dev *dev)
- 				 "failed to enable touchkey\n");
- 	}
- 
--out:
--	pm_runtime_put_noidle(&sdata->client->dev);
--	return err;
-+	return 0;
- }
- 
- static void stmfts_input_close(struct input_dev *dev)
+0-DAY CI Kernel Test Service
+https://01.org/lkp
