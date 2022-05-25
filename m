@@ -2,181 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E62BBC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 01:42:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EE52C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 01:42:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243306AbiEYBmF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 21:42:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42880 "EHLO
+        id S243316AbiEYBm6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 21:42:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243037AbiEYBmD (ORCPT
+        with ESMTP id S243037AbiEYBmz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 21:42:03 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE31B248F9;
-        Tue, 24 May 2022 18:42:00 -0700 (PDT)
-X-UUID: c52bb40ef8484146b988c1131c096071-20220525
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:84804d0f-03a4-471c-95f9-d8de54f42641,OB:0,LO
-        B:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:5
-X-CID-META: VersionHash:2a19b09,CLOUDID:08045747-4fb1-496b-8f1d-39e733fed1ea,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
-        ,QS:0,BEC:nil
-X-UUID: c52bb40ef8484146b988c1131c096071-20220525
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
-        (envelope-from <ck.hu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1709642572; Wed, 25 May 2022 09:41:55 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
- Wed, 25 May 2022 09:41:54 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n2.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
- Transport; Wed, 25 May 2022 09:41:54 +0800
-Message-ID: <2e5c146c53ce4d5addc05dd23e3fcd791425960c.camel@mediatek.com>
-Subject: Re: [PATCH v7, 3/4] drm/mediatek: keep dsi as LP00 before dcs cmds
- transfer
-From:   CK Hu <ck.hu@mediatek.com>
-To:     <xinlei.lee@mediatek.com>, <chunkuang.hu@kernel.org>,
-        <p.zabel@pengutronix.de>, <airlied@linux.ie>, <daniel@ffwll.ch>,
-        <matthias.bgg@gmail.com>
-CC:     <jitao.shi@mediatek.com>, <linux-kernel@vger.kernel.org>,
-        <dri-devel@lists.freedesktop.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <linux-mediatek@lists.infradead.org>,
-        "# 5 . 10 . x : b255d51e3967 : sched : Modify dsi funcs to atomic 
-        operations" <stable@vger.kernel.org>, <rex-bc.chen@mediatek.com>,
-        <linux-arm-kernel@lists.infradead.org>
-Date:   Wed, 25 May 2022 09:41:54 +0800
-In-Reply-To: <1653012007-11854-4-git-send-email-xinlei.lee@mediatek.com>
-References: <1653012007-11854-1-git-send-email-xinlei.lee@mediatek.com>
-         <1653012007-11854-4-git-send-email-xinlei.lee@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Tue, 24 May 2022 21:42:55 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 218E456FB0
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 18:42:54 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L7DJm2Lx5zQkJM;
+        Wed, 25 May 2022 09:39:52 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 25 May 2022 09:42:51 +0800
+Subject: Re: [PATCH v4 4/5] mm/shmem: fix infinite loop when swap in shmem
+ error at swapoff time
+To:     Andrew Morton <akpm@linux-foundation.org>
+CC:     =?UTF-8?B?SE9SSUdVQ0hJIE5BT1lBICjloIDlj6Mg55u05LmfKQ==?= 
+        <naoya.horiguchi@nec.com>, "hughd@google.com" <hughd@google.com>,
+        "willy@infradead.org" <willy@infradead.org>,
+        "vbabka@suse.cz" <vbabka@suse.cz>,
+        "dhowells@redhat.com" <dhowells@redhat.com>,
+        "neilb@suse.de" <neilb@suse.de>,
+        "apopple@nvidia.com" <apopple@nvidia.com>,
+        "david@redhat.com" <david@redhat.com>,
+        "surenb@google.com" <surenb@google.com>,
+        "peterx@redhat.com" <peterx@redhat.com>,
+        "rcampbell@nvidia.com" <rcampbell@nvidia.com>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20220519125030.21486-1-linmiaohe@huawei.com>
+ <20220519125030.21486-5-linmiaohe@huawei.com>
+ <20220520063433.GA584983@hori.linux.bs1.fc.nec.co.jp>
+ <0f6dc98b-88f4-c0c9-eb7b-5356ad0e08b1@huawei.com>
+ <20220524151014.4d16f01cbd1c04ef74e4db5e@linux-foundation.org>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <4475e184-0eea-a47b-9d7b-f90a14f08048@huawei.com>
+Date:   Wed, 25 May 2022 09:42:51 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+In-Reply-To: <20220524151014.4d16f01cbd1c04ef74e4db5e@linux-foundation.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Xinlei:
+On 2022/5/25 6:10, Andrew Morton wrote:
+> On Sat, 21 May 2022 17:34:28 +0800 Miaohe Lin <linmiaohe@huawei.com> wrote:
+> 
+>> On 2022/5/20 14:34, HORIGUCHI NAOYA(堀口 直也) wrote:
+>>> On Thu, May 19, 2022 at 08:50:29PM +0800, Miaohe Lin wrote:
+>>>> When swap in shmem error at swapoff time, there would be a infinite loop
+>>>> in the while loop in shmem_unuse_inode(). It's because swapin error is
+>>>> deliberately ignored now and thus info->swapped will never reach 0. So
+>>>> we can't escape the loop in shmem_unuse().
+>>>>
+>>>> In order to fix the issue, swapin_error entry is stored in the mapping
+>>>> when swapin error occurs. So the swapcache page can be freed and the
+>>>> user won't end up with a permanently mounted swap because a sector is
+>>>> bad. If the page is accessed later, the user process will be killed
+>>>> so that corrupted data is never consumed. On the other hand, if the
+>>>> page is never accessed, the user won't even notice it.
+>>>>
+>>>> Reported-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
+>>>> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+>>>
+>>> Hi Miaohe,
+>>>
+>>> Thank you for the update.  I might miss something, but I still see the same
+>>> problem (I checked it on mm-everything-2022-05-19-00-03 + this patchset).
+>>
+>> Hi Naoya,
+>> I reproduce the issue in the linux-next-next-20220520 version. And I found even if
+>> I *do not inject the swapin error*, the deadloop still occurs. After investigating the
+>> code for a long while, I found the root cause:
+>>
+>> diff --git a/mm/shmem.c b/mm/shmem.c
+>> index d55dd972023a..6d23ed4d23cb 100644
+>> --- a/mm/shmem.c
+>> +++ b/mm/shmem.c
+>> @@ -1182,7 +1182,7 @@ static int shmem_find_swap_entries(struct address_space *mapping,
+>>                 if (swp_type(entry) != type)
+>>                         continue;
+>>
+>> -               indices[ret] = xas.xa_index;
+>> +               indices[ret++] = xas.xa_index;
+>>                 if (!folio_batch_add(fbatch, folio))
+>>                         break;
+>>
+>> The origin code does not increment the ret value when a folio is found. I will send a patch
+>> to fix this next week. Thanks! :)
+> 
+> So I'm thinking that with Hugh's "mm/shmem: fix shmem folio swapoff
+> hang", this patchset is now looking OK, so
+> 
+> mm-swapfile-unuse_pte-can-map-random-data-if-swap-read-fails.patch
+> mm-swapfile-fix-lost-swap-bits-in-unuse_pte.patch
+> mm-madvise-free-hwpoison-and-swapin-error-entry-in-madvise_free_pte_range.patch
+> mm-shmem-fix-infinite-loop-when-swap-in-shmem-error-at-swapoff-time.patch
+> mm-filter-out-swapin-error-entry-in-shmem-mapping.patch
+> #
+> 
+> are OK for merging into mainline?
 
-On Fri, 2022-05-20 at 10:00 +0800, xinlei.lee@mediatek.com wrote:
-> From: Jitao Shi <jitao.shi@mediatek.com>
-> 
-> To comply with the panel sequence, hold the mipi signal to LP00
-> before the dcs cmds transmission,
-> and pull the mipi signal high from LP00 to LP11 until the start of
-> the dcs cmds transmission.
-> The normal panel timing is :
-> (1) pp1800 DC pull up
-> (2) avdd & avee AC pull high
-> (3) lcm_reset pull high -> pull low -> pull high
-> (4) Pull MIPI signal high (LP11) -> initial code -> send video
-> data(HS mode)
-> The power-off sequence is reversed.
-> If dsi is not in cmd mode, then dsi will pull the mipi signal high in
-> the mtk_output_dsi_enable function.
-> The delay in lane_ready func is the reaction time of dsi_rx after
-> pulling up the mipi signal.
+I think so. But it might be better to have Acked-by or Reviewed-by tag for [PATCH v4 4/5] first. :)
 
-Reviewed-by: CK Hu <ck.hu@mediatek.com>
+Thanks!
 
+> .
 > 
-> Fixes: 2dd8075d2185 ("drm/mediatek: mtk_dsi: Use the drm_panel_bridge
-> API")
-> 
-> Cc: <stable@vger.kernel.org> # 5.10.x: b255d51e3967: sched: Modify
-> dsi funcs to atomic operations
-> Cc: <stable@vger.kernel.org> # 5.10.x: 72c69c977502: sched: Separate
-> poweron/poweroff from enable/disable and define new funcs
-> Cc: <stable@vger.kernel.org> # 5.10.x
-> Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
-> Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
-> Reviewed-by: AngeloGioacchino Del Regno <
-> angelogioacchino.delregno@collabora.com>
-> ---
->  drivers/gpu/drm/mediatek/mtk_dsi.c | 28 +++++++++++++++++++++-------
->  1 file changed, 21 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c
-> b/drivers/gpu/drm/mediatek/mtk_dsi.c
-> index d9a6b928dba8..25e84d9426bf 100644
-> --- a/drivers/gpu/drm/mediatek/mtk_dsi.c
-> +++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
-> @@ -203,6 +203,7 @@ struct mtk_dsi {
->  	struct mtk_phy_timing phy_timing;
->  	int refcount;
->  	bool enabled;
-> +	bool lanes_ready;
->  	u32 irq_data;
->  	wait_queue_head_t irq_wait_queue;
->  	const struct mtk_dsi_driver_data *driver_data;
-> @@ -661,18 +662,11 @@ static int mtk_dsi_poweron(struct mtk_dsi *dsi)
->  	mtk_dsi_reset_engine(dsi);
->  	mtk_dsi_phy_timconfig(dsi);
->  
-> -	mtk_dsi_rxtx_control(dsi);
-> -	usleep_range(30, 100);
-> -	mtk_dsi_reset_dphy(dsi);
->  	mtk_dsi_ps_control_vact(dsi);
->  	mtk_dsi_set_vm_cmd(dsi);
->  	mtk_dsi_config_vdo_timing(dsi);
->  	mtk_dsi_set_interrupt_enable(dsi);
->  
-> -	mtk_dsi_clk_ulp_mode_leave(dsi);
-> -	mtk_dsi_lane0_ulp_mode_leave(dsi);
-> -	mtk_dsi_clk_hs_mode(dsi, 0);
-> -
->  	return 0;
->  err_disable_engine_clk:
->  	clk_disable_unprepare(dsi->engine_clk);
-> @@ -701,6 +695,23 @@ static void mtk_dsi_poweroff(struct mtk_dsi
-> *dsi)
->  	clk_disable_unprepare(dsi->digital_clk);
->  
->  	phy_power_off(dsi->phy);
-> +
-> +	dsi->lanes_ready = false;
-> +}
-> +
-> +static void mtk_dsi_lane_ready(struct mtk_dsi *dsi)
-> +{
-> +	if (!dsi->lanes_ready) {
-> +		dsi->lanes_ready = true;
-> +		mtk_dsi_rxtx_control(dsi);
-> +		usleep_range(30, 100);
-> +		mtk_dsi_reset_dphy(dsi);
-> +		mtk_dsi_clk_ulp_mode_leave(dsi);
-> +		mtk_dsi_lane0_ulp_mode_leave(dsi);
-> +		mtk_dsi_clk_hs_mode(dsi, 0);
-> +		msleep(20);
-> +		/* The reaction time after pulling up the mipi signal
-> for dsi_rx */
-> +	}
->  }
->  
->  static void mtk_output_dsi_enable(struct mtk_dsi *dsi)
-> @@ -708,6 +719,7 @@ static void mtk_output_dsi_enable(struct mtk_dsi
-> *dsi)
->  	if (dsi->enabled)
->  		return;
->  
-> +	mtk_dsi_lane_ready(dsi);
->  	mtk_dsi_set_mode(dsi);
->  	mtk_dsi_clk_hs_mode(dsi, 1);
->  
-> @@ -1017,6 +1029,8 @@ static ssize_t mtk_dsi_host_transfer(struct
-> mipi_dsi_host *host,
->  	if (MTK_DSI_HOST_IS_READ(msg->type))
->  		irq_flag |= LPRX_RD_RDY_INT_FLAG;
->  
-> +	mtk_dsi_lane_ready(dsi);
-> +
->  	ret = mtk_dsi_host_send_cmd(dsi, msg, irq_flag);
->  	if (ret)
->  		goto restore_dsi_mode;
 
