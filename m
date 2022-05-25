@@ -2,121 +2,206 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E75ABC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 22:03:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53AF4C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 22:06:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345066AbiEYWC6 (ORCPT
+        id S1345072AbiEYWGB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 18:02:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44244 "EHLO
+        Wed, 25 May 2022 18:06:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230147AbiEYWCz (ORCPT
+        with ESMTP id S230147AbiEYWF7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 18:02:55 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 604EC666B9
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 15:02:54 -0700 (PDT)
-From:   John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1653516167;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ko3tVBSTvXmk/EJ63Xa6wkbIGpFeqWXJmZYiv5w7gsE=;
-        b=zWL1+xn9tGuKoGNgX9h/92eiBQWYEolUJ1Og04+18wvN5A6uf2BeavHw7NaCzG2PFm9Mio
-        bS78G+Dpf7cdeSwsOGd5k56NG9KD1Trqz2xakCWFiAbGnJKY2JqGq5U38R+ZdkvcTw0n0E
-        4AzYHZ3ysIpvjgz46Yk8szXcdI2AKXqLWSrp6Qym2mEW+TrD+ZM5Hn/6G5tyzv926/Nk/h
-        NB4UEGYSOpDEeNz/N0mcSFASjM5YUe7RFeGWyzXcWIgV0XJE9g+y5KP/EX1U1fFDRrpnfJ
-        XK1cuHIV4bcjNSfOfiLl+gThRetI5Cw7WLCZ8zyOBLejdkAbSY4pbWP5WLdhww==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1653516167;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ko3tVBSTvXmk/EJ63Xa6wkbIGpFeqWXJmZYiv5w7gsE=;
-        b=CO6+5Oz/7S35pvsSlVQZP4iIWCSLpHyZ5ii8ZtrZ3erMaZKe/btURKj+zzJhGhdcKtqVqN
-        p63ywilq9VY/NKBg==
-To:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Petr Mladek <pmladek@suse.com>
-Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Jan Kara <jack@suse.cz>, Peter Zijlstra <peterz@infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [GIT PULL] printk for 5.19
-In-Reply-To: <CAHk-=wgC47n_7E6UtFx_agkJtLmWOXGsjdFjybBFYNA1AheQLQ@mail.gmail.com>
-References: <YouKQw72H7y9EJQK@alley>
- <CAHk-=wgC47n_7E6UtFx_agkJtLmWOXGsjdFjybBFYNA1AheQLQ@mail.gmail.com>
-Date:   Thu, 26 May 2022 00:08:46 +0206
-Message-ID: <87pmk1tgmx.fsf@jogness.linutronix.de>
+        Wed, 25 May 2022 18:05:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 335D3666B9;
+        Wed, 25 May 2022 15:05:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B5D1B61AC8;
+        Wed, 25 May 2022 22:05:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D979C34114;
+        Wed, 25 May 2022 22:05:55 +0000 (UTC)
+Date:   Wed, 25 May 2022 18:05:53 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Peter Zijlstra <peterz@infradead.org>, x86@kernel.org
+Subject: [PATCH v2] ftrace: Add FTRACE_MCOUNT_MAX_OFFSET to avoid adding
+ weak function
+Message-ID: <20220525180553.419eac77@gandalf.local.home>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-05-25, Linus Torvalds <torvalds@linux-foundation.org> wrote:
-> On Mon, May 23, 2022 at 6:21 AM Petr Mladek <pmladek@suse.com> wrote:
->> There are situations when the kthreads are either not available or
->> not reliable, for example, early boot, suspend, or panic. In these
->> situations, printk() uses the legacy mode and tries to handle
->> consoles immediately.
->
-> Let's see how this works out, but I do have one complaint/query about
-> the series.
->
-> Looking through the commits, I don't see how that "printk: wake up all
-> waiters" makes any sense at all.
->
-> It *ALREADY* woke up all waiters as far as I can see.
->
-> Doing a wake_up_interruptible() will stop waking things up only when
-> it hits a *exclusive* waiter, and as far as I can tell, there are no
-> exclusive waiters there.
+From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
 
-You are correct. @log_wait never has exclusive waiters. I will post a
-patch to revert the change in question.
+If an unused weak function was traced, it's call to fentry will still
+exist, which gets added into the __mcount_loc table. Ftrace will use
+kallsyms to retrieve the name for each location in __mcount_loc to display
+it in the available_filter_functions and used to enable functions via the
+name matching in set_ftrace_filter/notrace. Enabling these functions do
+nothing but enable an unused call to ftrace_caller. If a traced weak
+function is overridden, the symbol of the function would be used for it,
+which will either created duplicate names, or if the previous function was
+not traced, it would be incorrectly listed in available_filter_functions
+as a function that can be traced.
 
-Until now, I never took the time to investigate if there were any
-exclusive waiters. I just wanted to be sure that all waiters wake up,
-regardless of their type. But obviously the patch is unnecessary with
-the currently implemented waiters.
+This became an issue with BPF[1] as there are tooling that enables the
+direct callers via ftrace but then checks to see if the functions were
+actually enabled. The case of one function that was marked notrace, but
+was followed by an unused weak function that was traced. The unused
+function's call to fentry was added to the __mcount_loc section, and
+kallsyms retrieved the untraced function's symbol as the weak function was
+overridden. Since the untraced function would not get traced, the BPF
+check would detect this and fail.
 
-> That "all()" form is only for when there are exclusive waiters (that
-> are expected to handle the situation entirely, or wake up the next
-> waiter if they don't), *and* you have some exceptional thing that then
-> causes *ALL* waiters to need to be woken up.
->
-> For example, a "read()" might be an exclusive wait, so that multiple
-> potential concurrent readers don't cause a scheduling herd of
-> processes all to wake up when somebody writes to the socket or pipe or
-> whatever.
->
-> So in that situation a write() uses a regular wakeup, so that we only
-> wake up the one waiter that will take care of things.
->
-> But then a *shutdown* event obviously does affect everybody, so that
-> would cause a "wake_up_interruptible_all()".
+The real fix would be to fix kallsyms to not show address of weak
+functions as the function before it. But that would require adding code in
+the build to add function size to kallsyms so that it can know when the
+function ends instead of just using the start of the next known symbol.
 
-Thank you for taking the time to clarify the use case for all(). Such a
-use case currently does not exist for printk.
+In the mean time, this is a work around. Add a FTRACE_MCOUNT_MAX_OFFSET
+macro that if defined, ftrace will ignore any function that has its call
+to fentry/mcount that has an offset from the symbol that is greater than
+FTRACE_MCOUNT_MAX_OFFSET.
 
-> I'm sure we have lots of drivers that are confused about core things
-> like this, and I don't really care.
->
-> But when I see something really core like printk() get confused and
-> mis-understand basic wait queue behavior, that makes me go "This is
-> WRONG".
+If CONFIG_HAVE_FENTRY is defined for x86, define FTRACE_MCOUNT_MAX_OFFSET
+to zero, which will have ftrace ignore all locations that are not at the
+start of the function.
 
-You are correct to question a series when something like this in core
-code is found. I cannot guarantee that every line is perfect, but this
-series does have a great deal of dedicated review, discussion, revision,
-and heavy testing behind it.
+[1] https://lore.kernel.org/all/20220412094923.0abe90955e5db486b7bca279@kernel.org/
 
-Petr has done a great job of requiring these kinds of changes as
-separate commits, which certainly helps to identify any false steps.
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+---
+Changes since v1: https://lore.kernel.org/all/20220503150410.2d9e88aa@rorschach.local.home/
 
-Thank you for taking extra time to scrutinize this series.
+ - Changed MAX_OFFSET to 4 on x86 if KERNEL_IBT is enabled
+   (Reminded by Peter Zijlstra)
 
-John Ogness
+ arch/x86/include/asm/ftrace.h | 10 +++++++
+ kernel/trace/ftrace.c         | 50 +++++++++++++++++++++++++++++++++--
+ 2 files changed, 58 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/include/asm/ftrace.h b/arch/x86/include/asm/ftrace.h
+index 024d9797646e..53675fe2d847 100644
+--- a/arch/x86/include/asm/ftrace.h
++++ b/arch/x86/include/asm/ftrace.h
+@@ -9,6 +9,16 @@
+ # define MCOUNT_ADDR		((unsigned long)(__fentry__))
+ #define MCOUNT_INSN_SIZE	5 /* sizeof mcount call */
+ 
++/* Ignore unused weak functions which will have non zero offsets */
++#ifdef CONFIG_HAVE_FENTRY
++# ifdef CONFIG_X86_KERNEL_IBT
++/* endbr64 is 4 bytes in front of the fentry */
++#  define FTRACE_MCOUNT_MAX_OFFSET	4
++# else
++#  define FTRACE_MCOUNT_MAX_OFFSET	0
++# endif
++#endif
++
+ #ifdef CONFIG_DYNAMIC_FTRACE
+ #define ARCH_SUPPORTS_FTRACE_OPS 1
+ #endif
+diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
+index 1fa8cfc81ab2..8063a5ef82af 100644
+--- a/kernel/trace/ftrace.c
++++ b/kernel/trace/ftrace.c
+@@ -3654,6 +3654,31 @@ static void add_trampoline_func(struct seq_file *m, struct ftrace_ops *ops,
+ 		seq_printf(m, " ->%pS", ptr);
+ }
+ 
++#ifdef FTRACE_MCOUNT_MAX_OFFSET
++static int print_rec(struct seq_file *m, unsigned long ip)
++{
++	unsigned long offset;
++	char str[KSYM_SYMBOL_LEN];
++	char *modname;
++	int ret;
++
++	ret = kallsyms_lookup(ip, NULL, &offset, &modname, str);
++	if (!ret || offset > FTRACE_MCOUNT_MAX_OFFSET)
++		return -1;
++
++	seq_puts(m, str);
++	if (modname)
++		seq_printf(m, " [%s]", modname);
++	return 0;
++}
++#else
++static int print_rec(struct seq_file *m, unsigned long ip)
++{
++	seq_printf(m, "%ps", (void *)ip);
++	return 0;
++}
++#endif
++
+ static int t_show(struct seq_file *m, void *v)
+ {
+ 	struct ftrace_iterator *iter = m->private;
+@@ -3678,7 +3703,9 @@ static int t_show(struct seq_file *m, void *v)
+ 	if (!rec)
+ 		return 0;
+ 
+-	seq_printf(m, "%ps", (void *)rec->ip);
++	if (print_rec(m, rec->ip))
++		return 0;
++
+ 	if (iter->flags & FTRACE_ITER_ENABLED) {
+ 		struct ftrace_ops *ops;
+ 
+@@ -3996,6 +4023,24 @@ add_rec_by_index(struct ftrace_hash *hash, struct ftrace_glob *func_g,
+ 	return 0;
+ }
+ 
++#ifdef FTRACE_MCOUNT_MAX_OFFSET
++static int lookup_ip(unsigned long ip, char **modname, char *str)
++{
++	unsigned long offset;
++
++	kallsyms_lookup(ip, NULL, &offset, modname, str);
++	if (offset > FTRACE_MCOUNT_MAX_OFFSET)
++		return -1;
++	return 0;
++}
++#else
++static int lookup_ip(unsigned long ip, char **modname, char *str)
++{
++	kallsyms_lookup(ip, NULL, NULL, modname, str);
++	return 0;
++}
++#endif
++
+ static int
+ ftrace_match_record(struct dyn_ftrace *rec, struct ftrace_glob *func_g,
+ 		struct ftrace_glob *mod_g, int exclude_mod)
+@@ -4003,7 +4048,8 @@ ftrace_match_record(struct dyn_ftrace *rec, struct ftrace_glob *func_g,
+ 	char str[KSYM_SYMBOL_LEN];
+ 	char *modname;
+ 
+-	kallsyms_lookup(rec->ip, NULL, NULL, &modname, str);
++	if (lookup_ip(rec->ip, &modname, str))
++		return 0;
+ 
+ 	if (mod_g) {
+ 		int mod_matches = (modname) ? ftrace_match(modname, mod_g) : 0;
+-- 
+2.35.1
+
