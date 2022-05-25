@@ -2,80 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EFE5C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 02:01:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6037C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 02:03:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243449AbiEYCBJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 24 May 2022 22:01:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44966 "EHLO
+        id S243455AbiEYCDf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 24 May 2022 22:03:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238164AbiEYCBH (ORCPT
+        with ESMTP id S233450AbiEYCDe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 24 May 2022 22:01:07 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5629A129;
-        Tue, 24 May 2022 19:01:05 -0700 (PDT)
-Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4L7DmN6jJ2zjX44;
-        Wed, 25 May 2022 10:00:20 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 25 May 2022 10:01:03 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 25 May
- 2022 10:01:03 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>
-CC:     <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>
-Subject: [PATCH -next] serial: pic32: fix missing clk_disable_unprepare() on error in pic32_uart_startup()
-Date:   Wed, 25 May 2022 10:12:04 +0800
-Message-ID: <20220525021204.2407631-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 24 May 2022 22:03:34 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43BC465D0F
+        for <linux-kernel@vger.kernel.org>; Tue, 24 May 2022 19:03:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653444213; x=1684980213;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=biV8YxTRJk34SukN2je6rt+JeuKJLQpZbk8KhgtBapk=;
+  b=Y3S1Qq55ThhDpjO1DgY7mCMSpPd3J4ote2R2onTs9xIGYm8INXECjpEp
+   D7L6zxlsVvZton06f1BSWGcxtNRNyiArQkgjtIavW78EehqmndsXyEOt7
+   jdqrnWzffJ8yUVgy3VHuxlAlbl9/vypt72vPPMKonP+Tmymp23P0GKegw
+   cdhwWmS27bvaGuu2eKI8nJ/l8GOWHzmQIuim2B2Xb9BdYfX12dNoctnFi
+   4uAYmALNkeC/tR5YbLzrH2yJmDLSF/NraercmL81EyE/Fqz3ALgLaCVOO
+   mWb3Q4i2mnDFtgE6Xs1GkBD97m8vhin1M03XcUDZ8ceTAG6BTnB6/czTz
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10357"; a="360084825"
+X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
+   d="scan'208";a="360084825"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 May 2022 19:03:32 -0700
+X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
+   d="scan'208";a="601601512"
+Received: from jwang96-mobl.ccr.corp.intel.com (HELO [10.255.29.139]) ([10.255.29.139])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 May 2022 19:03:28 -0700
+Message-ID: <3c112762-f6e6-0b41-b38f-3bb2995d97cf@linux.intel.com>
+Date:   Wed, 25 May 2022 10:03:26 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Cc:     baolu.lu@linux.intel.com, Eric Auger <eric.auger@redhat.com>,
+        "Liu, Yi L" <yi.l.liu@intel.com>,
+        "Pan, Jacob jun" <jacob.jun.pan@intel.com>,
+        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>
+Subject: Re: [PATCH v7 01/10] iommu: Add pasids field in struct iommu_device
+Content-Language: en-US
+To:     "Tian, Kevin" <kevin.tian@intel.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        "Raj, Ashok" <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>,
+        "Jiang, Dave" <dave.jiang@intel.com>, Vinod Koul <vkoul@kernel.org>
+References: <20220519072047.2996983-1-baolu.lu@linux.intel.com>
+ <20220519072047.2996983-2-baolu.lu@linux.intel.com>
+ <BN9PR11MB52766D61BBE784A70B4BF06F8CD79@BN9PR11MB5276.namprd11.prod.outlook.com>
+From:   Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <BN9PR11MB52766D61BBE784A70B4BF06F8CD79@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix the missing clk_disable_unprepare() before return
-from pic32_uart_startup() in the error handling case.
+Hi Kevin,
 
-Fixes: 157b9394709e ("serial: pic32_uart: Add PIC32 UART driver")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- drivers/tty/serial/pic32_uart.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+Thank you for reviewing my patches.
 
-diff --git a/drivers/tty/serial/pic32_uart.c b/drivers/tty/serial/pic32_uart.c
-index b399aac530fe..f418f1de66b3 100644
---- a/drivers/tty/serial/pic32_uart.c
-+++ b/drivers/tty/serial/pic32_uart.c
-@@ -503,7 +503,7 @@ static int pic32_uart_startup(struct uart_port *port)
- 	if (!sport->irq_fault_name) {
- 		dev_err(port->dev, "%s: kasprintf err!", __func__);
- 		ret = -ENOMEM;
--		goto out_done;
-+		goto out_disable_clk;
- 	}
- 	irq_set_status_flags(sport->irq_fault, IRQ_NOAUTOEN);
- 	ret = request_irq(sport->irq_fault, pic32_uart_fault_interrupt,
-@@ -579,6 +579,8 @@ static int pic32_uart_startup(struct uart_port *port)
- out_f:
- 	free_irq(sport->irq_fault, port);
- 	kfree(sport->irq_fault_name);
-+out_disable_clk:
-+	clk_disable_unprepare(sport->clk);
- out_done:
- 	return ret;
- }
--- 
-2.25.1
+On 2022/5/24 17:24, Tian, Kevin wrote:
+>> From: Lu Baolu <baolu.lu@linux.intel.com>
+>> Sent: Thursday, May 19, 2022 3:21 PM
+>>
+>> Use this field to keep the number of supported PASIDs that an IOMMU
+>> hardware is able to support. This is a generic attribute of an IOMMU
+>> and lifting it into the per-IOMMU device structure makes it possible
+>> to allocate a PASID for device without calls into the IOMMU drivers.
+>> Any iommu driver which suports PASID related features should set this
+>> field before enabling them on the devices.
+>>
+>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>> Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+>> ---
+>>   include/linux/iommu.h                       | 2 ++
+>>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 1 +
+>>   drivers/iommu/intel/dmar.c                  | 4 ++++
+>>   3 files changed, 7 insertions(+)
+>>
+>> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+>> index 5e1afe169549..da423e87f248 100644
+>> --- a/include/linux/iommu.h
+>> +++ b/include/linux/iommu.h
+>> @@ -318,12 +318,14 @@ struct iommu_domain_ops {
+>>    * @list: Used by the iommu-core to keep a list of registered iommus
+>>    * @ops: iommu-ops for talking to this iommu
+>>    * @dev: struct device for sysfs handling
+>> + * @pasids: number of supported PASIDs
+>>    */
+>>   struct iommu_device {
+>>   	struct list_head list;
+>>   	const struct iommu_ops *ops;
+>>   	struct fwnode_handle *fwnode;
+>>   	struct device *dev;
+>> +	u32 pasids;
+> 
+> max_pasid or nr_pasids?
 
+max_pasid looks better.
+
+> 
+>>   };
+>>
+>>   /**
+>> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>> b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>> index 88817a3376ef..6e2cd082c670 100644
+>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>> @@ -3546,6 +3546,7 @@ static int arm_smmu_device_hw_probe(struct
+>> arm_smmu_device *smmu)
+>>   	/* SID/SSID sizes */
+>>   	smmu->ssid_bits = FIELD_GET(IDR1_SSIDSIZE, reg);
+>>   	smmu->sid_bits = FIELD_GET(IDR1_SIDSIZE, reg);
+>> +	smmu->iommu.pasids = smmu->ssid_bits;
+>>
+>>   	/*
+>>   	 * If the SMMU supports fewer bits than would fill a single L2 stream
+>> diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
+>> index 4de960834a1b..1c3cf267934d 100644
+>> --- a/drivers/iommu/intel/dmar.c
+>> +++ b/drivers/iommu/intel/dmar.c
+>> @@ -1126,6 +1126,10 @@ static int alloc_iommu(struct dmar_drhd_unit
+>> *drhd)
+>>
+>>   	raw_spin_lock_init(&iommu->register_lock);
+>>
+>> +	/* Supports full 20-bit PASID in scalable mode. */
+>> +	if (ecap_pasid(iommu->ecap))
+>> +		iommu->iommu.pasids = 1UL << 20;
+>> +
+> 
+> supported pasid bits is reported by ecap_pss(). I don't think we should
+> assume 20bits here.
+
+Yes. I overlooked this. Thanks for reminding.
+
+Another thing I need to improve is that scalable mode could be disabled.
+This field should be 0 in that case.
+
+> 
+>>   	/*
+>>   	 * This is only for hotplug; at boot time intel_iommu_enabled won't
+>>   	 * be set yet. When intel_iommu_init() runs, it registers the units
+>> --
+>> 2.25.1
+> 
+
+Best regards,
+baolu
