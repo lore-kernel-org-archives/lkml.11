@@ -2,195 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D628BC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 12:27:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61AD9C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 12:28:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241350AbiEYM1m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 08:27:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48186 "EHLO
+        id S241464AbiEYM2w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 08:28:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241712AbiEYM1j (ORCPT
+        with ESMTP id S229912AbiEYM2t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 08:27:39 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AB6A86D868
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 05:27:30 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 175201FB;
-        Wed, 25 May 2022 05:27:30 -0700 (PDT)
-Received: from FVFF77S0Q05N (unknown [10.57.0.228])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 24A533F73D;
-        Wed, 25 May 2022 05:27:28 -0700 (PDT)
-Date:   Wed, 25 May 2022 13:27:23 +0100
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     "Wangshaobo (bobo)" <bobo.shaobowang@huawei.com>
-Cc:     Steven Rostedt <rostedt@goodmis.org>, cj.chengjian@huawei.com,
-        huawei.libin@huawei.com, xiexiuqi@huawei.com, liwei391@huawei.com,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        catalin.marinas@arm.com, will@kernel.org, zengshun.wu@outlook.com
-Subject: Re: [RFC PATCH -next v2 3/4] arm64/ftrace: support dynamically
- allocated trampolines
-Message-ID: <Yo4gq6he3zb/B6kx@FVFF77S0Q05N>
-References: <20220316100132.244849-1-bobo.shaobowang@huawei.com>
- <20220316100132.244849-4-bobo.shaobowang@huawei.com>
- <YmFXrBG5AmX3+4f8@lakrids>
- <20220421100639.03c0d123@gandalf.local.home>
- <YmF0xYpTMoWOIl00@lakrids>
- <20220421114201.21228eeb@gandalf.local.home>
- <YmGF/OpIhAF8YeVq@lakrids>
- <8f36ebd2-2c56-d896-3a91-c97a5760b344@huawei.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <8f36ebd2-2c56-d896-3a91-c97a5760b344@huawei.com>
+        Wed, 25 May 2022 08:28:49 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 230386D3B5;
+        Wed, 25 May 2022 05:28:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1653481728; x=1685017728;
+  h=from:to:cc:subject:date:message-id;
+  bh=q+sIWWHvJkiJx9dq972yy+3PK2bE23fEgXN1NW8gC/k=;
+  b=Sgyxs23iEfCIzzrw0oVTyoSZFOf1xVFq3EYm1BysROeIS6Z74hM+Cmax
+   1FNHK7yKZ9qy8xDlAK6eOWGRX9DB8LQoSgPmGfLlK8iiJqW7Jd0dX1jdR
+   mn2O4oIQkiOuT0NC3vK/X9EYXBz+p7lKjyFttTltVsw0jpWiJeFeHaMJ7
+   k=;
+Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
+  by alexa-out.qualcomm.com with ESMTP; 25 May 2022 05:28:48 -0700
+X-QCInternal: smtphost
+Received: from ironmsg01-blr.qualcomm.com ([10.86.208.130])
+  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 25 May 2022 05:28:46 -0700
+X-QCInternal: smtphost
+Received: from c-sbhanu-linux.qualcomm.com ([10.242.50.201])
+  by ironmsg01-blr.qualcomm.com with ESMTP; 25 May 2022 17:58:24 +0530
+Received: by c-sbhanu-linux.qualcomm.com (Postfix, from userid 2344807)
+        id 497DB16F8; Wed, 25 May 2022 17:58:23 +0530 (IST)
+From:   Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
+To:     adrian.hunter@intel.com, ulf.hansson@linaro.org, agross@kernel.org,
+        bjorn.andersson@linaro.org, p.zabel@pengutronix.de,
+        chris@printf.net, venkatg@codeaurora.org, gdjakov@mm-sol.com,
+        quic_asutoshd@quicinc.com
+Cc:     linux-arm-msm@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, quic_rampraka@quicinc.com,
+        quic_pragalla@quicinc.com, quic_sartgarg@quicinc.com,
+        quic_nitirawa@quicinc.com, quic_sayalil@quicinc.com,
+        Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
+Subject: [PATCH V7 0/4] mmc: add error statistics for eMMC and SD card
+Date:   Wed, 25 May 2022 17:58:17 +0530
+Message-Id: <1653481701-19642-1-git-send-email-quic_c_sbhanu@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 05, 2022 at 10:57:35AM +0800, Wangshaobo (bobo) wrote:
-> 
-> 锟斤拷 2022/4/22 0:27, Mark Rutland 写锟斤拷:
-> > On Thu, Apr 21, 2022 at 11:42:01AM -0400, Steven Rostedt wrote:
-> > > On Thu, 21 Apr 2022 16:14:13 +0100
-> > > Mark Rutland <mark.rutland@arm.com> wrote:
-> > > 
-> > > > > Let's say you have 10 ftrace_ops registered (with bpf and kprobes this can
-> > > > > be quite common). But each of these ftrace_ops traces a function (or
-> > > > > functions) that are not being traced by the other ftrace_ops. That is, each
-> > > > > ftrace_ops has its own unique function(s) that they are tracing. One could
-> > > > > be tracing schedule, the other could be tracing ksoftirqd_should_run
-> > > > > (whatever).
-> > > > Ok, so that's when messing around with bpf or kprobes, and not generally
-> > > > when using plain old ftrace functionality under /sys/kernel/tracing/
-> > > > (unless that's concurrent with one of the former, as per your other
-> > > > reply) ?
-> > > It's any user of the ftrace infrastructure, which includes kprobes, bpf,
-> > > perf, function tracing, function graph tracing, and also affects instances.
-> > > 
-> > > > > Without this change, because the arch does not support dynamically
-> > > > > allocated trampolines, it means that all these ftrace_ops will be
-> > > > > registered to the same trampoline. That means, for every function that is
-> > > > > traced, it will loop through all 10 of theses ftrace_ops and check their
-> > > > > hashes to see if their callback should be called or not.
-> > > > Sure; I can see how that can be quite expensive.
-> > > > 
-> > > > What I'm trying to figure out is who this matters to and when, since the
-> > > > implementation is going to come with a bunch of subtle/fractal
-> > > > complexities, and likely a substantial overhead too when enabling or
-> > > > disabling tracing of a patch-site. I'd like to understand the trade-offs
-> > > > better.
-> > > > 
-> > > > > With dynamically allocated trampolines, each ftrace_ops will have their own
-> > > > > trampoline, and that trampoline will be called directly if the function
-> > > > > is only being traced by the one ftrace_ops. This is much more efficient.
-> > > > > 
-> > > > > If a function is traced by more than one ftrace_ops, then it falls back to
-> > > > > the loop.
-> > > > I see -- so the dynamic trampoline is just to get the ops? Or is that
-> > > > doing additional things?
-> > > It's to get both the ftrace_ops (as that's one of the parameters) as well
-> > > as to call the callback directly. Not sure if arm is affected by spectre,
-> > > but the "loop" function is filled with indirect function calls, where as
-> > > the dynamic trampolines call the callback directly.
-> > > 
-> > > Instead of:
-> > > 
-> > >    bl ftrace_caller
-> > > 
-> > > ftrace_caller:
-> > >    [..]
-> > >    bl ftrace_ops_list_func
-> > >    [..]
-> > > 
-> > > 
-> > > void ftrace_ops_list_func(...)
-> > > {
-> > > 	__do_for_each_ftrace_ops(op, ftrace_ops_list) {
-> > > 		if (ftrace_ops_test(op, ip)) // test the hash to see if it
-> > > 					     //	should trace this
-> > > 					     //	function.
-> > > 			op->func(...);
-> > > 	}
-> > > }
-> > > 
-> > > It does:
-> > > 
-> > >    bl dyanmic_tramp
-> > > 
-> > > dynamic_tramp:
-> > >    [..]
-> > >    bl func  // call the op->func directly!
-> > > 
-> > > 
-> > > Much more efficient!
-> > > 
-> > > 
-> > > > There might be a middle-ground here where we patch the ftrace_ops
-> > > > pointer into a literal pool at the patch-site, which would allow us to
-> > > > handle this atomically, and would avoid the issues with out-of-range
-> > > > trampolines.
-> > > Have an example of what you are suggesting?
-> > We can make the compiler to place 2 NOPs before the function entry point, and 2
-> > NOPs after it using `-fpatchable-function-entry=4,2` (the arguments are
-> > <total>,<before>). On arm64 all instructions are 4 bytes, and we'll use the
-> > first two NOPs as an 8-byte literal pool.
-> > 
-> > Ignoring BTI for now, the compiler generates (with some magic labels added here
-> > for demonstration):
-> > 
-> > 	__before_func:
-> > 			NOP
-> > 			NOP
-> > 	func:
-> > 			NOP
-> > 			NOP
-> > 	__remainder_of_func:
-> > 			...
-> > 
-> > At ftrace_init_nop() time we patch that to:
-> > 
-> > 	__before_func:
-> > 			// treat the 2 NOPs as an 8-byte literal-pool
-> > 			.quad	<default ops pointer> // see below
-> > 	func:
-> > 			MOV	X9, X30
-> > 			NOP
-> > 	__remainder_of_func:
-> > 			...
-> > 
-> > When enabling tracing we do
-> > 
-> > 	__before_func:
-> > 			// patch this with the relevant ops pointer
-> > 			.quad	<ops pointer>
-> > 	func:
-> > 			MOV	X9, X30
-> > 			BL	<trampoline>	// common trampoline
-> 
-> I have a question that does this common trampoline allocated by
-> module_alloc()? if yes, how to handle the long jump from traced func to
-> common trampoline if only adding two NOPs in front of func.
+Changes since V6:
+	- Rebased on Ulf's(Ulf Hansson) next branch as suggested by
+	  Adrain Hunter.
+	- Replaced debugfs_create_file() with debugfs_create_file_unsafe()
+	  as suggested by Adrain Hunter.
+	- "[V6,5/5] mmc: cqhci: Capture eMMC and SD card errors" not included
+	  in this Patch series as we don't have cqhci changes on Ulf's(Ulf Hansson)
+	  next branch.
 
-No; as today there'd be *one* trampoline in the main kernel image, and where a
-module is out-of-range it will use a PLT the module loader created at load time
-(and any patch-site in that module would use the same PLT and trampoline,
-regardless of what the ops pointer was).
+Changes since V5:
+	- Considered all error stats enums to set error state.
+	- Added missed tuning error related code changes which was
+	  missed in patch set V5 as Adrain Hunter pointed.
+	- Replaced DEFINE_SIMPLE_ATTRIBUTE with DEFINE_DEBUGFS_ATTRIBUTE
+	  as suggested by Adrain Hunter.
+	  
+Changes since V4:
+	- Defined new macro to increment err_stats members when error occurred
+	  as suggested by Adrain Hunter.
+	- Called err_stats members increment function after printing the error
+	  as suggested by Adrain Hunter.
+	- Considered INDEX and END_BIT errors same as CRC errors as suggested
+	  by Adrain Hunter.
+	- Removed Null check for host in debug fs functions and Reordered
+	  err_stats declarationas suggested by Adrain Hunter.
+	- Removed err_state variable stuff and updated err_state debug fs entry
+	  based on the err_stats members state as suggested by Adrain Hunter.
 
-There might be a PLT between the call and the trampoline, but that wouldn't
-have any functional effect; we'd still get all the arguments, the original LR
-(in x9), and the location of the call (in the LR), as we get today.
+Changes since V3:
+	- Dropped error stats feature flag as suggested by Adrain Hunter.
+	- Separated error state related changes in separate patches as
+	  suggested by Adrain Hunter.
+	  [PATCH V4 4/7] : error state debug fs
+	  [PATCH V4 5/7] : error state enable function
+	  [PATCH V4 6/7] : error state enable in error case
+	- Note: we are enabling error state before calling sdhci_dumpregs
+	  we couldn't add the err state in error stats array as err state
+	  is not error type.
+	- Corrected Signed-off-by order as suggested by Bjron Andersson.
+	- Moved error state enable code from sdhci_dumpregs to error
+	  conditions as suggested by Adrain Hunter
 
-For how we do that today, see commits:
+Changes since V2:
+	- Removed userspace error stats clear debug fs entry as suggested
+	  by Adrain Hunter.
+	- Split patch into 4 patches
+	  [PATCH V3 1/4] : sdhci driver
+	  [PATCH V3 2/4] : debug fs entries
+	  [PATCH V3 3/4] : core driver
+	  [PATCH V3 4/4] : cqhci driver
+	- Used for loop to print error messages instead of using printf
+	  statements for all error messages as suggested by Adrain Hunter.
+	- Introduced one flag to enable error stats feature, if any other
+	  client wants to use this feature, they need to enable that flag.
+	- Moved reset command timeout error statement to card init flow
+	  as suggested by Adrain Hunter.
 
-* e71a4e1bebaf7fd9 ("arm64: ftrace: add support for far branches to dynamic ftrace")
-  https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=e71a4e1bebaf7fd990efbdc04b38e5526914f0f1
+Changes since V1:
+	- Removed sysfs entry for eMMC and SD card error statistics and added
+	  debugfs entry as suggested by Adrian Hunter and Ulf Hansson.
 
-* f1a54ae9af0da4d7 ("arm64: module/ftrace: intialize PLT at load time")
-  https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=f1a54ae9af0da4d76239256ed640a93ab3aadac0
+Shaik Sajida Bhanu (4):
+  mmc: core: Capture eMMC and SD card errors
+  mmc: sdhci: Capture eMMC and SD card errors
+  mmc: debugfs: Add debug fs entry for mmc driver
+  mmc: debugfs: Add debug fs error state entry for mmc driver
 
-* 3b23e4991fb66f6d ("arm64: implement ftrace with regs")
-  https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=3b23e4991fb66f6d152f9055ede271a726ef9f21
+ drivers/mmc/core/core.c    | 11 +++++--
+ drivers/mmc/core/debugfs.c | 81 ++++++++++++++++++++++++++++++++++++++++++++++
+ drivers/mmc/host/sdhci.c   | 33 +++++++++++++++----
+ drivers/mmc/host/sdhci.h   |  3 ++
+ include/linux/mmc/host.h   | 26 +++++++++++++++
+ include/linux/mmc/mmc.h    |  6 ++++
+ 6 files changed, 151 insertions(+), 9 deletions(-)
 
-Thanks,
-Mark.
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member 
+of Code Aurora Forum, hosted by The Linux Foundation
+
