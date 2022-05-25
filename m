@@ -2,132 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 895A8C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 11:30:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F152C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 11:30:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242802AbiEYLaE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 07:30:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49174 "EHLO
+        id S229986AbiEYLaK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 07:30:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239102AbiEYL3r (ORCPT
+        with ESMTP id S236911AbiEYLaC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 07:29:47 -0400
-X-Greylist: delayed 163321 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 25 May 2022 04:29:44 PDT
-Received: from azure-sdnproxy-3.icoremail.net (azure-sdnproxy.icoremail.net [20.232.28.96])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id 31F479CCB3;
-        Wed, 25 May 2022 04:29:43 -0700 (PDT)
-Received: from ubuntu.localdomain (unknown [124.236.130.193])
-        by mail-app4 (Coremail) with SMTP id cS_KCgDn_iHyEo5iQ1u7AA--.41494S2;
-        Wed, 25 May 2022 19:28:58 +0800 (CST)
-From:   Duoming Zhou <duoming@zju.edu.cn>
-To:     netdev@vger.kernel.org
-Cc:     jreuter@yaina.de, ralf@linux-mips.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        linux-kernel@vger.kernel.org, linux-hams@vger.kernel.org,
-        thomas@osterried.de, Duoming Zhou <duoming@zju.edu.cn>
-Subject: [PATCH net] ax25: Fix ax25 session cleanup problem in ax25_release
-Date:   Wed, 25 May 2022 19:28:50 +0800
-Message-Id: <20220525112850.102363-1-duoming@zju.edu.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: cS_KCgDn_iHyEo5iQ1u7AA--.41494S2
-X-Coremail-Antispam: 1UD129KBjvJXoWxAF4xtw13WFWrXFy8AFyDGFg_yoW5XrWxpF
-        WDKa43trZrXF4UAw48WrZ7XF18uws8t3yDtF1jvFZa9w1fX3s8JFn5tF1jqFW3GFZ5tFn7
-        u34qgan8Zr1kuFJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUvC14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        Wed, 25 May 2022 07:30:02 -0400
+Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 10F889EB5F;
+        Wed, 25 May 2022 04:30:00 -0700 (PDT)
+Received: from linux.localdomain (unknown [113.200.148.30])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Cx7+U2E45iXTcBAA--.7414S2;
+        Wed, 25 May 2022 19:29:58 +0800 (CST)
+From:   Tiezhu Yang <yangtiezhu@loongson.cn>
+To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Cc:     Xuefeng Li <lixuefeng@loongson.cn>, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel test robot <lkp@intel.com>
+Subject: [PATCH] MIPS: RALINK: Define pci_remap_iospace under CONFIG_PCI_DRIVERS_GENERIC
+Date:   Wed, 25 May 2022 19:29:55 +0800
+Message-Id: <1653478195-21095-1-git-send-email-yangtiezhu@loongson.cn>
+X-Mailer: git-send-email 2.1.0
+X-CM-TRANSID: AQAAf9Cx7+U2E45iXTcBAA--.7414S2
+X-Coremail-Antispam: 1UD129KBjvJXoWxuFyrGF17WFWfCF43tryUAwb_yoW5Cr48pF
+        s5Ar92vw4rGFy3Ga1fZFn7uFsxWws8XFWUXr1FgwnxZF1qq347Jrs3Kr15AFW5JFs2qFWx
+        tr1fKw1UZFyqyaUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUkq14x267AKxVWUJVW8JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
         rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
-        JVWxJr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
-        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
-        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
-        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lFIxGxcIEc7CjxVA2
-        Y2ka0xkIwI1lc2xSY4AK67AK6r4kMxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r
-        1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CE
-        b7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0x
-        vE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAI
-        cVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2Kf
-        nxnUUI43ZEXa7VUbeT5PUUUUU==
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgwBAVZdtZ3p6QAKsn
+        1l84ACjcxK6xIIjxv20xvE14v26r4j6ryUM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4j
+        6r4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
+        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
+        I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Gr0_Cr1lOx8S6xCaFVCjc4AY6r1j6r
+        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY02Avz4vE14v_Gw4l
+        42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJV
+        WUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r126r1DMIIYrxkI7VAK
+        I48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r
+        4UMIIF0xvE42xK8VAvwI8IcIk0rVWrZr1j6s0DMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF
+        0xvEx4A2jsIEc7CjxVAFwI0_Jr0_GrUvcSsGvfC2KfnxnUUI43ZEXa7VUUAhltUUUUU==
+X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The timers of ax25 are used for correct session cleanup.
-If we use ax25_release() to close ax25 sessions and
-ax25_dev is not null, the del_timer_sync() functions in
-ax25_release() will execute. As a result, the sessions
-could not be cleaned up correctly, because the timers
-have stopped.
+kernel test robot reports a build error used with clang compiler and
+mips-randconfig [1]:
 
-This patch adds a device_up flag in ax25_dev in order to
-judge whether the device is up. If there are sessions to
-be cleaned up, the del_timer_sync() in ax25_release() will
-not execute. As a result the sessions could be cleaned up
-correctly.
+    ld.lld: error: undefined symbol: pci_remap_iospace
 
-Fixes: 82e31755e55f ("ax25: Fix UAF bugs in ax25 timers")
-Reported-by: Thomas Osterried <thomas@osterried.de>
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+we can see the following configs in the mips-randconfig file:
+
+    CONFIG_RALINK=y
+    CONFIG_SOC_MT7620=y
+    CONFIG_PCI_DRIVERS_LEGACY=y
+    CONFIG_PCI=y
+
+CONFIG_RALINK is set, so pci_remap_iospace is defined in the related
+arch/mips/include/asm/mach-ralink/spaces.h header file:
+
+    #define pci_remap_iospace pci_remap_iospace
+
+CONFIG_PCI is set, so pci_remap_iospace() in drivers/pci/pci.c is not
+built due to pci_remap_iospace is defined under CONFIG_RALINK.
+
+    #ifndef pci_remap_iospace
+    int pci_remap_iospace(const struct resource *res, ...)
+
+    $ objdump -d drivers/pci/pci.o | grep pci_remap_iospace
+    00004cc8 <devm_pci_remap_iospace>:
+        4d18:	10400008 	beqz	v0,4d3c <devm_pci_remap_iospace+0x74>
+        4d2c:	1040000c 	beqz	v0,4d60 <devm_pci_remap_iospace+0x98>
+        4d70:	1000fff3 	b	4d40 <devm_pci_remap_iospace+0x78>
+
+In addition, CONFIG_PCI_DRIVERS_GENERIC is not set, so pci_remap_iospace()
+in arch/mips/pci/pci-generic.c is not built too.
+
+    #ifdef pci_remap_iospace
+    int pci_remap_iospace(const struct resource *res, ...)
+
+For the above reasons, undefined reference pci_remap_iospace() looks like
+reasonable.
+
+Here are simple steps to reproduce used with gcc and defconfig:
+
+    cd mips.git
+    make vocore2_defconfig # set RALINK, SOC_MT7620, PCI_DRIVERS_LEGACY
+    make menuconfig        # set PCI
+    make
+
+there exists the following build error:
+
+      LD      vmlinux.o
+      MODPOST vmlinux.symvers
+      MODINFO modules.builtin.modinfo
+      GEN     modules.builtin
+      LD      .tmp_vmlinux.kallsyms1
+    drivers/pci/pci.o: In function `devm_pci_remap_iospace':
+    pci.c:(.text+0x4d24): undefined reference to `pci_remap_iospace'
+    Makefile:1158: recipe for target 'vmlinux' failed
+    make: *** [vmlinux] Error 1
+
+Define pci_remap_iospace under CONFIG_PCI_DRIVERS_GENERIC can fix the build
+error, with this patch, no build error remains. This patch is similar with
+commit e538e8649892 ("MIPS: asm: pci: define arch-specific
+'pci_remap_iospace()' dependent on 'CONFIG_PCI_DRIVERS_GENERIC'").
+
+[1] https://lore.kernel.org/lkml/202205251247.nQ5cxSV6-lkp@intel.com/
+
+Fixes: 09d97da660ff ("MIPS: Only define pci_remap_iospace() for Ralink")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
 ---
- include/net/ax25.h  |  1 +
- net/ax25/af_ax25.c  | 13 ++++++++-----
- net/ax25/ax25_dev.c |  1 +
- 3 files changed, 10 insertions(+), 5 deletions(-)
+ arch/mips/include/asm/mach-ralink/spaces.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/include/net/ax25.h b/include/net/ax25.h
-index 0f9790c455b..a427a05672e 100644
---- a/include/net/ax25.h
-+++ b/include/net/ax25.h
-@@ -228,6 +228,7 @@ typedef struct ax25_dev {
- 	ax25_dama_info		dama;
+diff --git a/arch/mips/include/asm/mach-ralink/spaces.h b/arch/mips/include/asm/mach-ralink/spaces.h
+index f7af11e..a9f0570 100644
+--- a/arch/mips/include/asm/mach-ralink/spaces.h
++++ b/arch/mips/include/asm/mach-ralink/spaces.h
+@@ -6,7 +6,9 @@
+ #define PCI_IOSIZE	SZ_64K
+ #define IO_SPACE_LIMIT	(PCI_IOSIZE - 1)
+ 
++#ifdef CONFIG_PCI_DRIVERS_GENERIC
+ #define pci_remap_iospace pci_remap_iospace
++#endif
+ 
+ #include <asm/mach-generic/spaces.h>
  #endif
- 	refcount_t		refcount;
-+	bool device_up;
- } ax25_dev;
- 
- typedef struct ax25_cb {
-diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
-index 363d47f9453..47ce6b630cc 100644
---- a/net/ax25/af_ax25.c
-+++ b/net/ax25/af_ax25.c
-@@ -81,6 +81,7 @@ static void ax25_kill_by_device(struct net_device *dev)
- 
- 	if ((ax25_dev = ax25_dev_ax25dev(dev)) == NULL)
- 		return;
-+	ax25_dev->device_up = false;
- 
- 	spin_lock_bh(&ax25_list_lock);
- again:
-@@ -1053,11 +1054,13 @@ static int ax25_release(struct socket *sock)
- 		ax25_destroy_socket(ax25);
- 	}
- 	if (ax25_dev) {
--		del_timer_sync(&ax25->timer);
--		del_timer_sync(&ax25->t1timer);
--		del_timer_sync(&ax25->t2timer);
--		del_timer_sync(&ax25->t3timer);
--		del_timer_sync(&ax25->idletimer);
-+		if (!ax25_dev->device_up) {
-+			del_timer_sync(&ax25->timer);
-+			del_timer_sync(&ax25->t1timer);
-+			del_timer_sync(&ax25->t2timer);
-+			del_timer_sync(&ax25->t3timer);
-+			del_timer_sync(&ax25->idletimer);
-+		}
- 		dev_put_track(ax25_dev->dev, &ax25_dev->dev_tracker);
- 		ax25_dev_put(ax25_dev);
- 	}
-diff --git a/net/ax25/ax25_dev.c b/net/ax25/ax25_dev.c
-index d2a244e1c26..5451be15e07 100644
---- a/net/ax25/ax25_dev.c
-+++ b/net/ax25/ax25_dev.c
-@@ -62,6 +62,7 @@ void ax25_dev_device_up(struct net_device *dev)
- 	ax25_dev->dev     = dev;
- 	dev_hold_track(dev, &ax25_dev->dev_tracker, GFP_ATOMIC);
- 	ax25_dev->forward = NULL;
-+	ax25_dev->device_up = true;
- 
- 	ax25_dev->values[AX25_VALUES_IPDEFMODE] = AX25_DEF_IPDEFMODE;
- 	ax25_dev->values[AX25_VALUES_AXDEFMODE] = AX25_DEF_AXDEFMODE;
 -- 
-2.17.1
+2.1.0
 
