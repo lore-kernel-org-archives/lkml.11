@@ -2,128 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91B30C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 20:02:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3206C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 20:06:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241729AbiEYUCj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 16:02:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52492 "EHLO
+        id S230118AbiEYUG1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 16:06:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235258AbiEYUCc (ORCPT
+        with ESMTP id S1345361AbiEYUFz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 16:02:32 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2297368319
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 13:02:32 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id ge11so879415pjb.0
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 13:02:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=AWaeHfIqso2uarSrq2voc6y6tcqWng3SnNIxku0tA0k=;
-        b=ezecxoS1sA3vkGGfwUxIzhGQpcMdwdQ/B9z2SvvAPRmDulRg7UxU9szNANvQ24Y57r
-         ivBiwI1khWN3D600by1SoMY+gQ2uvqvLzdj6JqyC3GStB1oKR0vo010PlPD/Ov4uDDMX
-         PcNzCUpi4CzTj7LRLePIkozu7t9ZfSWN2y7Ik=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=AWaeHfIqso2uarSrq2voc6y6tcqWng3SnNIxku0tA0k=;
-        b=rCWyDbMY5o8yddO79/2tQHhthud9SmMQGaOEiODJIY4ltU6z5wkFV9PLoGAwSyFSpz
-         dui2KammNApDUNzi3pwA0rYhztU3ajccD2PWaZ4gSus/rg4HMQZ08A877ihJ/Eu3WOPg
-         VaP/fJ6VW0BqSWgHJ18SQn9sUFd2PnHMp1DjPHCpfsRj9delKZ5d68B37aj4V1/fhSJF
-         SeG9GXMO2R3RCoZEi3eWwejRZIGyD1qM+DzYXCFZluOcUmhPLmf1GTMPtN3Q4SfX2qv8
-         SVACINfCsXr9JVHzs81duU6aDG1iq5Km7N6NIPf19lp3zm8ilvsg6oN1MY6X26T0j3zx
-         290Q==
-X-Gm-Message-State: AOAM533H5JmCgQ0qfFaHd3uMmdIj8GQa7VciehC9tIEtLURwCjZ1Pxhh
-        1+6OexP/6bdFUqwjZ8heGhO/Nw==
-X-Google-Smtp-Source: ABdhPJyhTlIBPpX3HR10hM9NOmXQk/4SBxH2F1TSa7CgOZddaoOpxfLS37lZuJOm1uIRUa88qkEuyw==
-X-Received: by 2002:a17:90b:4b82:b0:1e0:c609:69d7 with SMTP id lr2-20020a17090b4b8200b001e0c60969d7mr2258619pjb.119.1653508951535;
-        Wed, 25 May 2022 13:02:31 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id f13-20020a056a00228d00b0050dc762819esm11876635pfe.120.2022.05.25.13.02.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 May 2022 13:02:29 -0700 (PDT)
-Date:   Wed, 25 May 2022 13:02:28 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Sami Tolvanen <samitolvanen@google.com>,
-        linux-kernel@vger.kernel.org, Josh Poimboeuf <jpoimboe@redhat.com>,
-        x86@kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Joao Moreira <joao@overdrivepizza.com>,
-        Sedat Dilek <sedat.dilek@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        linux-hardening@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, llvm@lists.linux.dev
-Subject: Re: [RFC PATCH v2 20/21] x86: Add support for CONFIG_CFI_CLANG
-Message-ID: <202205251241.FDC27BC9@keescook>
-References: <20220513202159.1550547-1-samitolvanen@google.com>
- <20220513202159.1550547-21-samitolvanen@google.com>
- <YoIfWENLV1AR2ijj@hirez.programming.kicks-ass.net>
- <CABCJKucXA2jbTc9TF1mLUsEDKu52t71tzxpnsGOXY3_ks+W4Bg@mail.gmail.com>
- <20220516183047.GM76023@worktop.programming.kicks-ass.net>
- <CABCJKudmrBOkoDvDPOA-aEyrs9evHPWpzMpDZ10n8vXDBRdCxQ@mail.gmail.com>
- <20220516203723.GN76023@worktop.programming.kicks-ass.net>
+        Wed, 25 May 2022 16:05:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D20468319;
+        Wed, 25 May 2022 13:05:54 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 29405B81DDA;
+        Wed, 25 May 2022 20:05:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id CCD1EC34114;
+        Wed, 25 May 2022 20:05:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653509151;
+        bh=KVzGYD0tGkKI0mBq443u0HhvCvFhFhy9kR+aZCjxq/E=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=lAEhhKPYSuCeZNsCzDTIDXPxU4kGtmtva/8vwaMjGZ4EYRAtAUeokBy2z1PuMWr+y
+         FgvIebVAs/bP+40SJXK5X6MgpeKG9Y74E3Zve58+XJsNdIlPafiJOPV+nm9+nEjSBT
+         NGzs17l9EHGbJ/pUjljXItrmPI5W6v+9wsGuK0p9ljUKkJ5IwFCRm1YFeeks6UwbNG
+         QYjDkumNWDcDrUhBTOvKYQF+QpfNvZhVpzE3aHF528ShruyxFoXBT5ry2L/XyUfprn
+         3/hvBK5KRLWYNWeWnmi9HmM22K0Grkh1rSS1lcEpzjX4DL/tSDQWW4MHDbs/QHYrx1
+         atEYGjRH4qqDQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id AEAEBF03943;
+        Wed, 25 May 2022 20:05:51 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220516203723.GN76023@worktop.programming.kicks-ass.net>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH 5.17 126/158] perf stat: Fix and validate CPU map inputs in
+ synthetic PERF_RECORD_STAT events
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165350915170.15505.6185203070051218800.git-patchwork-notify@kernel.org>
+Date:   Wed, 25 May 2022 20:05:51 +0000
+References: <20220523165851.513336276@linuxfoundation.org>
+In-Reply-To: <20220523165851.513336276@linuxfoundation.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        mpetlan@redhat.com, irogers@google.com,
+        alexander.shishkin@linux.intel.com, ast@kernel.org,
+        andrii@kernel.org, daniel@iogearbox.net, davemarchevsky@fb.com,
+        james.clark@arm.com, jolsa@kernel.org, john.fastabend@gmail.com,
+        kan.liang@linux.intel.com, kpsingh@kernel.org, lv.ruyi@zte.com.cn,
+        mark.rutland@arm.com, kafai@fb.com, namhyung@kernel.org,
+        netdev@vger.kernel.org, peterz@infradead.org,
+        quentin@isovalent.com, songliubraving@fb.com, eranian@google.com,
+        zhengjun.xing@linux.intel.com, yhs@fb.com, acme@redhat.com,
+        sashal@kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 16, 2022 at 10:37:23PM +0200, Peter Zijlstra wrote:
-> On Mon, May 16, 2022 at 12:39:19PM -0700, Sami Tolvanen wrote:
+Hello:
+
+This patch was applied to netdev/net.git (master)
+by Arnaldo Carvalho de Melo <acme@redhat.com>:
+
+On Mon, 23 May 2022 19:04:43 +0200 you wrote:
+> From: Ian Rogers <irogers@google.com>
 > 
-> > > > With the current compiler patch, LLVM sets up function arguments after
-> > > > the CFI check. if it's a problem, we can look into changing that.
-> > >
-> > > Yes, please fix that. Again see that same patch for why this is a
-> > > problem. Objtool can trivially find retpoline calls, but finding this
-> > > kCFI gadget is going to be hard work. If you ensure they're
-> > > unconditionally stuck together, then the problem goes away find one,
-> > > finds the other.
-> > 
-> > You can use .kcfi_traps to locate the check right now, but I agree,
-> > it's not quite ideal.
+> [ Upstream commit 92d579ea3279aa87392b862df5810f0a7e30fcc6 ]
 > 
-> Oohh, indeed.
+> Stat events can come from disk and so need a degree of validation. They
+> contain a CPU which needs looking up via CPU map to access a counter.
+> 
 > [...]
 
-Hi Peter,
+Here is the summary with links:
+  - [5.17,126/158] perf stat: Fix and validate CPU map inputs in synthetic PERF_RECORD_STAT events
+    https://git.kernel.org/netdev/net/c/92d579ea3279
 
-Sami investigated moving the CFI check after arg setup, and found that
-to do it means making LLVM's CFI logic no longer both architecture
-and call-type agnostic. The CFI logic needs put at a lower level,
-requiring it be done in per-architecture code, and then additionally
-per-call-type. (And by per-call-type, AIUI, this means various types of
-indirect calls: standard, tail-call, etc.) Sami has it all working for
-x86, but I'm concerned about the risk/benefit in doing it this way. I
-only see down-sides:
-
-- Linux cannot enable CFI for a new architecture without also
-  implementing it within LLVM first.
-
-- LLVM CFI code becomes more complex, making it harder to
-  maintain/bug-fix/etc.
-
-I actually see the first issue as the larger problem: I want to make it
-easy for the kernel to use CFI, rather than harder. :P The first user
-of CFI already cleared the way for other architectures by adjusting the
-bulk of core kernel code, etc, so adding another architecture should be
-as trivial as possible, and not require yet newer releases of LLVM, etc,
-etc.
-
-So, since using .kcfi_traps already solves the issue for finding the
-checks, can we not require moving the CFI check? I think it would be a
-mistake to have to do that.
-
--Kees
-
+You are awesome, thank you!
 -- 
-Kees Cook
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
