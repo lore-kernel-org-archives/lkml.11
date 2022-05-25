@@ -2,124 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D2EDC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 19:38:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFEDEC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 19:40:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344427AbiEYTiG convert rfc822-to-8bit (ORCPT
+        id S1344845AbiEYTkd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 15:38:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59646 "EHLO
+        Wed, 25 May 2022 15:40:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344355AbiEYTiA (ORCPT
+        with ESMTP id S1344805AbiEYTk0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 15:38:00 -0400
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A89A66C84;
-        Wed, 25 May 2022 12:37:47 -0700 (PDT)
-Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=diego.localnet)
-        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <heiko@sntech.de>)
-        id 1ntwp4-0007pS-Ng; Wed, 25 May 2022 21:37:34 +0200
-From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-To:     Guo Ren <guoren@kernel.org>
-Cc:     Guenter Roeck <linux@roeck-us.net>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Christoph Hellwig <hch@lst.de>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        linux-csky@vger.kernel.org,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        sparclinux <sparclinux@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        Parisc List <linux-parisc@vger.kernel.org>,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        the arch/x86 maintainers <x86@kernel.org>,
-        Guo Ren <guoren@linux.alibaba.com>
-Subject: Re: [PATCH V9 20/20] riscv: compat: Add COMPAT Kbuild skeletal support
-Date:   Wed, 25 May 2022 21:37:33 +0200
-Message-ID: <1766627.8hzESeGDPO@diego>
-In-Reply-To: <CAJF2gTTkpHLZf-+VXZE_gCn=5ZJ5FS3jOxKLVoMyL4i=baPd7Q@mail.gmail.com>
-References: <20220322144003.2357128-1-guoren@kernel.org> <3418219.V25eIC5XRa@diego> <CAJF2gTTkpHLZf-+VXZE_gCn=5ZJ5FS3jOxKLVoMyL4i=baPd7Q@mail.gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-Content-Type: text/plain; charset="iso-8859-1"
+        Wed, 25 May 2022 15:40:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34ADA66F8D;
+        Wed, 25 May 2022 12:40:26 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F20BF619EC;
+        Wed, 25 May 2022 19:40:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id C35A6C36AE9;
+        Wed, 25 May 2022 19:40:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653507625;
+        bh=Wt2lJck2AxcZgLj+yP6AxtmGUEzmVVUjATnsSPocxZo=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=FJ3LHFUzeYFzKVXWdMRLhk4eTyfFotn7kWs8rVRqoO6Fu/A92cu0PWGwBl25uQ89P
+         h8NenlZ+aogeWk++Rnup43WN7RBFE4iv2SYIv2Fn+7xnlA/mDcWZSC0mOx/K1VxV5f
+         qHP9lTkdm09e44+3P9VutcnPuaHBgkeInMp/zZJHMll2qvPJnAqAed3/caHEH/x27B
+         7KYPceCpOef1VT5sVu/Nv97CambuLzdU8KITUeujNJbjda2WojhgwDWL33RyTrj0EU
+         fGuuamW/Mav0DxIINLcRbksO0/2ECT+F24Ek51YJTj1wpsMEMA+bO4f1T1tfmklEhL
+         CNcDnzmf8AToQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B0DCBF03943;
+        Wed, 25 May 2022 19:40:25 +0000 (UTC)
+Subject: Re: [GIT PULL] cgroup changes for v5.19-rc1
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <Yowcc/ZOBIIs2JtZ@slm.duckdns.org>
+References: <Yowcc/ZOBIIs2JtZ@slm.duckdns.org>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <Yowcc/ZOBIIs2JtZ@slm.duckdns.org>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/tj/cgroup.git for-5.19
+X-PR-Tracked-Commit-Id: b154a017c92011d8f71ce804583e5f9c3d90bb9a
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 8b49c4b1b6f6397aca3eaee4c79295b74350b7b4
+Message-Id: <165350762571.19106.6893198061463331276.pr-tracker-bot@kernel.org>
+Date:   Wed, 25 May 2022 19:40:25 +0000
+To:     Tejun Heo <tj@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, cgroups@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Mittwoch, 25. Mai 2022, 18:08:22 CEST schrieb Guo Ren:
-> Thx Heiko & Guenter,
-> 
-> On Wed, May 25, 2022 at 7:10 PM Heiko Stübner <heiko@sntech.de> wrote:
-> >
-> > Am Mittwoch, 25. Mai 2022, 12:57:30 CEST schrieb Heiko Stübner:
-> > > Am Mittwoch, 25. Mai 2022, 00:06:46 CEST schrieb Guenter Roeck:
-> > > > On Wed, May 25, 2022 at 01:46:38AM +0800, Guo Ren wrote:
-> > > > [ ... ]
-> > > >
-> > > > > > The problem is come from "__dls3's vdso decode part in musl's
-> > > > > > ldso/dynlink.c". The ehdr->e_phnum & ehdr->e_phentsize are wrong.
-> > > > > >
-> > > > > > I think the root cause is from musl's implementation with the wrong
-> > > > > > elf parser. I would fix that soon.
-> > > > > Not elf parser, it's "aux vector just past environ[]". I think I could
-> > > > > solve this, but anyone who could help dig in is welcome.
-> > > > >
-> > > >
-> > > > I am not sure I understand what you are saying here. Point is that my
-> > > > root file system, generated with musl a year or so ago, crashes with
-> > > > your patch set applied. That is a regression, even if there is a bug
-> > > > in musl.
-> Thx for the report, it's a valuable regression for riscv-compat.
-> 
-> > >
-> > > Also as I said in the other part of the thread, the rootfs seems innocent,
-> > > as my completely-standard Debian riscv64 rootfs is also affected.
-> > >
-> > > The merged version seems to be v12 [0] - not sure how we this discussion
-> > > ended up in v9, but I just tested this revision in two variants:
-> > >
-> > > - v5.17 + this v9 -> works nicely
-> >
-> > I take that back ... now going back to that build I somehow also run into
-> > that issue here ... will investigate more.
-> Yeah, it's my fault. I've fixed up it, please have a try:
-> 
-> https://lore.kernel.org/linux-riscv/20220525160404.2930984-1-guoren@kernel.org/T/#u
+The pull request you sent on Mon, 23 May 2022 13:44:51 -1000:
 
-very cool that you found the issue.
-I've tested your patch and it seems to fix the issue for me.
+> git://git.kernel.org/pub/scm/linux/kernel/git/tj/cgroup.git for-5.19
 
-Thanks for figuring out the cause
-Heiko
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/8b49c4b1b6f6397aca3eaee4c79295b74350b7b4
 
+Thank you!
 
-> > > - v5.18-rc6 + this v9 (rebased onto it) -> breaks the boot
-> > >   The only rebase-conflict was with the introduction of restartable
-> > >   sequences and removal of the tracehook include, but turning CONFIG_RSEQ
-> > >   off doesn't seem to affect the breakage.
-> > >
-> > > So it looks like something changed between 5.17 and 5.18 that causes the issue.
-> > >
-> > >
-> > > Heiko
-> > >
-> > >
-> > > [0] https://lore.kernel.org/all/20220405071314.3225832-1-guoren@kernel.org/
-> > >
-> >
-> >
-> >
-> >
-> 
-> 
-> 
-
-
-
-
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
