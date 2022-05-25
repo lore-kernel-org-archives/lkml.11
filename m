@@ -2,192 +2,258 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7917C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 10:47:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3094C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 10:51:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238707AbiEYKrD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 06:47:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53332 "EHLO
+        id S235757AbiEYKvi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 06:51:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233450AbiEYKqZ (ORCPT
+        with ESMTP id S230326AbiEYKve (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 06:46:25 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C6069B1B0
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 03:46:05 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id pq9-20020a17090b3d8900b001df622bf81dso4676720pjb.3
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 03:46:05 -0700 (PDT)
+        Wed, 25 May 2022 06:51:34 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB7F2C60
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 03:51:30 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id m20so40843268ejj.10
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 03:51:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=YFb0SNcpxggXxmh3L1U6bvqHH42Uek+PeM4W6Sd9ZO4=;
-        b=K3fVfk+Sn1+tGAYONxbTEGShQ6x6izXfoDmmXj+eneEdIx5zYjRt5VGo6j7vW9DCZg
-         Ve/D3i22yw6PjiL2zV+gaCGlyeOsYvwNCiMwYa3Zc3fKlxGDDofE1ocYtEAqZGIjPfe1
-         flpdrbgR1NY8UpFrQI3jP/0f9a16xUuwN25rg=
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=gPVyJOPCg3ZgGMg0ovPEKPFKhjYsgoChKtc8oyOFFRU=;
+        b=XF3wywkotbRkHHTdHn4JfgqG1bqdlal47P4FVCMhsRRvk+snkzg2N0P0Wfql69oUCe
+         jXxgfBLYwUNoWQETlZyYg3Qb8ZaZYUW+skbeI7CL4HHbR8ZbFKvs9zM4iGrLKz/GvTNT
+         bcXUCd6GYrZDTZYDDYJ+TlgxrpMm8GxDrKY6s25kWZZZXhOy4gceb+OILQfeKbKkMyb0
+         PIbQ4oB4/dQAy6nUgdGvMkVl1E3rVss5LzM5kWBCJOFyCHGET1govgboBw8ZTzBm7YaQ
+         NnvXJRXeo4lxFa6zR144bKgnr9sMH6bMXZJp5Rfjlk33S9IKDqbrybghoBP3Jk5pW16q
+         QjKg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=YFb0SNcpxggXxmh3L1U6bvqHH42Uek+PeM4W6Sd9ZO4=;
-        b=AZvDJMV7CibbWhvM/wFXW8FJmbajoOkPBkl0JLstcK1RVQihsnck3HA93x0T5tbvXy
-         MN0t5fSDNGW+gV3rGg5MzuWAyfC7yUm+GpYeTFpHokWxKVK73ZNt6qoVCzhyGsGym5Ti
-         rSI4MaKxTdndqG4YJIEy8v8pItDFpNoTa1I2Lp4AOROX19Nim/27NNbFLeN2k1NVfp+1
-         CTQvNebj0zNTLRW8bHbiGArNwajfwHoIvPpFsG3TK0iGqAfkCm/BceOlvUukc8UOg/51
-         l0jPKNcOLO/ZtevBiBf1oyQJnjFg/JseC1dwdj2yS89h6RjhsYurf4L+tyWV0JYy6Eid
-         VJiw==
-X-Gm-Message-State: AOAM532nNrIvNVpkbTYk1EHTY4DXdG3iY0UvW/D9iZVW2YdwhiOcUVnQ
-        QGTELuQOMB3+Mv9jmuvls2o+DQ==
-X-Google-Smtp-Source: ABdhPJx/2oGYye6pAmkDaioVB0xtUbFinhfK21Zyd+S784kZipFqpV1nMwZG0+MPagzqyr1dcGGJyw==
-X-Received: by 2002:a17:902:b10f:b0:161:f196:b4e with SMTP id q15-20020a170902b10f00b00161f1960b4emr26115202plr.134.1653475564568;
-        Wed, 25 May 2022 03:46:04 -0700 (PDT)
-Received: from localhost (174.71.80.34.bc.googleusercontent.com. [34.80.71.174])
-        by smtp.gmail.com with UTF8SMTPSA id e4-20020a170902e0c400b00161947ecc82sm1611921pla.199.2022.05.25.03.46.02
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=gPVyJOPCg3ZgGMg0ovPEKPFKhjYsgoChKtc8oyOFFRU=;
+        b=KpaaS+QYrDMVpAGCfHksRGuiPoyEGe20moYuAL42yypZPLGh2S/qYs5jmdovvYwn3X
+         J0c9xqZOPmixavXn8/BPfc9ykttvGKogXDcHOlV7Cz3CZqFc3xq6of6FXbKn1rqc6TUg
+         YSk+pn0H159+ZnxkJBnkoIXaY2Yy0k9cLrG8Y0H7X/9Oz9N0D/Cr/m0NmmjxWeAlDxmi
+         DDCunJXYdk8Y4T29yCy2h00imbv7YihKL+qalTUnkohtYITcHtQWQVIsd8fx7jUolhJ0
+         POmyj+ZgUtJH/o3H7ZGCAqPYeKChNjjyctQwc1nGBPwWfggydoUhaHsGrZqwBDJ6DCv8
+         v/5g==
+X-Gm-Message-State: AOAM532c9X4vh7b1LUH7Rncx1DkkhOHU1rcT3yC13EzoQZ5h62xg8CNo
+        8miirtKDF2X7Oqmaj2rJb1usCw==
+X-Google-Smtp-Source: ABdhPJyIJ0Pos6hMRgwgrSOuuvY86WS/3f7LaN1bSAlLoJJbFB4jHmVwfJhBDUFl1RoFEkvDTb+A1Q==
+X-Received: by 2002:a17:906:328a:b0:6f4:8045:3fe3 with SMTP id 10-20020a170906328a00b006f480453fe3mr29838810ejw.752.1653475889405;
+        Wed, 25 May 2022 03:51:29 -0700 (PDT)
+Received: from [192.168.0.177] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id qf24-20020a1709077f1800b006f3ef214dc3sm1336744ejc.41.2022.05.25.03.51.28
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 25 May 2022 03:46:04 -0700 (PDT)
-From:   Joseph Hwang <josephsih@chromium.org>
-To:     linux-bluetooth@vger.kernel.org, marcel@holtmann.org,
-        luiz.dentz@gmail.com, pali@kernel.org
-Cc:     josephsih@google.com, chromeos-bluetooth-upstreaming@chromium.org,
-        Joseph Hwang <josephsih@chromium.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v5 4/5] Bluetooth: btintel: setup vendor_get_prefix and vendor_evt
-Date:   Wed, 25 May 2022 18:45:44 +0800
-Message-Id: <20220525104545.2314653-2-josephsih@chromium.org>
-X-Mailer: git-send-email 2.36.1.124.g0e6072fb45-goog
-In-Reply-To: <20220525104545.2314653-1-josephsih@chromium.org>
-References: <20220525104545.2314653-1-josephsih@chromium.org>
+        Wed, 25 May 2022 03:51:29 -0700 (PDT)
+Message-ID: <4826e2e5-83c0-3d9a-8451-af042d64e94e@linaro.org>
+Date:   Wed, 25 May 2022 12:51:27 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v3] ARM: dts: aspeed: Adding Jabil Rubypass BMC
+Content-Language: en-US
+To:     David Wang <David_Wang6097@jabil.com>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     edward_chen@jabil.com, ben_pai@jabil.com
+References: <20220525093927.368131-1-David_Wang6097@jabil.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220525093927.368131-1-David_Wang6097@jabil.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch sets up vendor_get_prefix and vendor_evt in btintel
-to surface Intel telemetry events.
+On 25/05/2022 11:39, David Wang wrote:
+> The initial introduction of the jabil server with AST2600 BMC SoC.
+> 
+> ---
+> 
+> v3
+> - Adjustment entries are ordered by name.
+> - Remove the bootargs property and modify the stdout-path property.
+> - Group multiple LED devices into a group.
+> - Modify the "gpio3_71" node name format.
+> - Delete unneeded blank line at the end.
+> 
+> v2
+> - Disable empty i2c bus.
+> - Remove gfx node because aspeed-g6.dtsi isn't supported.
+> - Modify the led format and add some properties.
+> - Fix wrong indentation.
+> - Add stdout property in chosen node.
+> - Rename temp to temperature-sensor in i2c bus 0.
+> 
+> ---
+> 
+> Signed-off-by: David Wang <David_Wang6097@jabil.com>
+> ---
+>  arch/arm/boot/dts/Makefile                    |   1 +
+>  .../boot/dts/aspeed-bmc-jabil-rubypass.dts    | 442 ++++++++++++++++++
+>  2 files changed, 443 insertions(+)
+>  create mode 100644 arch/arm/boot/dts/aspeed-bmc-jabil-rubypass.dts
+> 
+> diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
+> index 7c16f8a2b738..5339e9339ce4 100644
+> --- a/arch/arm/boot/dts/Makefile
+> +++ b/arch/arm/boot/dts/Makefile
+> @@ -1543,6 +1543,7 @@ dtb-$(CONFIG_ARCH_ASPEED) += \
+>  	aspeed-bmc-intel-s2600wf.dtb \
+>  	aspeed-bmc-inspur-fp5280g2.dtb \
+>  	aspeed-bmc-inspur-nf5280m6.dtb \
+> +	aspeed-bmc-jabil-rubypass.dtb \
+>  	aspeed-bmc-lenovo-hr630.dtb \
+>  	aspeed-bmc-lenovo-hr855xg2.dtb \
+>  	aspeed-bmc-microsoft-olympus.dtb \
+> diff --git a/arch/arm/boot/dts/aspeed-bmc-jabil-rubypass.dts b/arch/arm/boot/dts/aspeed-bmc-jabil-rubypass.dts
+> new file mode 100644
+> index 000000000000..3a835f31a1b2
+> --- /dev/null
+> +++ b/arch/arm/boot/dts/aspeed-bmc-jabil-rubypass.dts
+> @@ -0,0 +1,442 @@
+> +// SPDX-License-Identifier: GPL-2.0-or-later
+> +
+> +/dts-v1/;
+> +
+> +#include "aspeed-g6.dtsi"
+> +#include <dt-bindings/gpio/aspeed-gpio.h>
+> +#include <dt-bindings/leds/common.h>
+> +
+> +/ {
+> +	model = "Jabil rbp";
+> +	compatible = "aspeed,ast2600";
 
-Signed-off-by: Joseph Hwang <josephsih@chromium.org>
----
+What happened here? Why the compatible is removed? You received a
+comment from Joel to add it, so silently reversing back is not a proper
+approach.
 
-Changes in v5:
-- This is a new patch that holds the Intel specifics in the driver.
-- This patch sets up vendor_get_ext_prefix and vendor_evt.
-- INTEL_PREFIX is defined in little endian for convenience.
-- Define intel_ext_prefix to contain Intel prefix and the telemetry
-  subcode which will be returned by btintel_get_ext_prefix().
-- Remove the unnecessary "void *data" portion and the double space
-  from btintel_vendor_evt.
-- Remove some unnecessary checking in btintel_vendor_evt.
-- As to stripping off the prefix, that was what was done in
-  "Series-version: 1". Previous comment about the AOSP function in
-  pulling off the prefix header from the skb was "just do a basic
-  length check and then move on. The kernel has no interest in this
-  data." So that is why the whole skb->data is sent to the user space
-  for further handling. This is to be consistent with what AOSP does
-  there.
+I wrote last time:
+"You need to document the new compatible."
 
- drivers/bluetooth/btintel.c | 50 +++++++++++++++++++++++++++++++++++++
- drivers/bluetooth/btintel.h | 13 ++++++++++
- 2 files changed, 63 insertions(+)
+> +
+> +	chosen {
+> +		stdout-path = "/uart5:115200n8";
+> +	};
+> +
+> +	memory@80000000 {
+> +		device_type = "memory";
+> +		reg = <0x80000000 0x80000000>;
+> +	};
+> +
+> +	vcc_sdhci0: regulator-vcc-sdhci0 {
+> +		compatible = "regulator-fixed";
+> +		regulator-name = "SDHCI0 Vcc";
+> +		regulator-min-microvolt = <3300000>;
+> +		regulator-max-microvolt = <3300000>;
+> +		gpios = <&gpio0 ASPEED_GPIO(V, 0) GPIO_ACTIVE_HIGH>;
+> +		enable-active-high;
+> +	};
+> +
+> +
 
-diff --git a/drivers/bluetooth/btintel.c b/drivers/bluetooth/btintel.c
-index 818681c89db8..7c39cb7352fd 100644
---- a/drivers/bluetooth/btintel.c
-+++ b/drivers/bluetooth/btintel.c
-@@ -2404,6 +2404,10 @@ static int btintel_setup_combined(struct hci_dev *hdev)
- 	/* Set up the quality report callback for Intel devices */
- 	hdev->set_quality_report = btintel_set_quality_report;
- 
-+	/* Set up the vendor event callbacks for Intel devices */
-+	hdev->vendor_get_ext_prefix = btintel_get_ext_prefix;
-+	hdev->vendor_evt = btintel_vendor_evt;
-+
- 	/* For Legacy device, check the HW platform value and size */
- 	if (skb->len == sizeof(ver) && skb->data[1] == 0x37) {
- 		bt_dev_dbg(hdev, "Read the legacy Intel version information");
-@@ -2650,6 +2654,52 @@ void btintel_secure_send_result(struct hci_dev *hdev,
- }
- EXPORT_SYMBOL_GPL(btintel_secure_send_result);
- 
-+/* INTEL_PREFIX below is defined in little endian. */
-+static unsigned char INTEL_PREFIX[] = { 0x87, 0x80 };
-+
-+/* Define any Intel sub-opcodes here. */
-+#define TELEMETRY_CODE		0x03
-+static unsigned char INTEL_SUBCODES[] = { TELEMETRY_CODE };
-+
-+static struct ext_vendor_prefix intel_ext_prefix = {
-+	.prefix         = INTEL_PREFIX,
-+	.prefix_len     = sizeof(INTEL_PREFIX),
-+	.subcodes       = INTEL_SUBCODES,
-+	.subcodes_len   = sizeof(INTEL_SUBCODES),
-+};
-+
-+struct ext_vendor_prefix *btintel_get_ext_prefix(struct hci_dev *hdev)
-+{
-+	return &intel_ext_prefix;
-+}
-+EXPORT_SYMBOL_GPL(btintel_get_ext_prefix);
-+
-+/* An Intel vendor event with prefix has the following structure. */
-+struct intel_prefix_evt_data {
-+	__le16 prefix; /* INTEL_PREFIX */
-+	__u8 subcode;
-+	__u8 data[];   /* a number of struct intel_tlv subevents */
-+} __packed;
-+
-+void btintel_vendor_evt(struct hci_dev *hdev, struct sk_buff *skb)
-+{
-+	struct intel_prefix_evt_data *ev;
-+
-+	if (skb->len < sizeof(struct intel_prefix_evt_data))
-+		return;
-+
-+	if (memcmp(skb->data, INTEL_PREFIX, sizeof(INTEL_PREFIX)))
-+		return;
-+
-+	/* Only interested in the telemetry event for now. */
-+	ev = (struct intel_prefix_evt_data *)skb->data;
-+	if (ev->subcode == TELEMETRY_CODE) {
-+		hdev->hci_recv_quality_report(hdev, skb->data, skb->len,
-+					      QUALITY_SPEC_INTEL_TELEMETRY);
-+	}
-+}
-+EXPORT_SYMBOL_GPL(btintel_vendor_evt);
-+
- MODULE_AUTHOR("Marcel Holtmann <marcel@holtmann.org>");
- MODULE_DESCRIPTION("Bluetooth support for Intel devices ver " VERSION);
- MODULE_VERSION(VERSION);
-diff --git a/drivers/bluetooth/btintel.h b/drivers/bluetooth/btintel.h
-index e0060e58573c..040c41f11e91 100644
---- a/drivers/bluetooth/btintel.h
-+++ b/drivers/bluetooth/btintel.h
-@@ -211,6 +211,8 @@ void btintel_bootup(struct hci_dev *hdev, const void *ptr, unsigned int len);
- void btintel_secure_send_result(struct hci_dev *hdev,
- 				const void *ptr, unsigned int len);
- int btintel_set_quality_report(struct hci_dev *hdev, bool enable);
-+struct ext_vendor_prefix *btintel_get_ext_prefix(struct hci_dev *hdev);
-+void btintel_vendor_evt(struct hci_dev *hdev, struct sk_buff *skb);
- #else
- 
- static inline int btintel_check_bdaddr(struct hci_dev *hdev)
-@@ -306,4 +308,15 @@ static inline int btintel_set_quality_report(struct hci_dev *hdev, bool enable)
- {
- 	return -ENODEV;
- }
-+
-+static inline struct ext_vendor_prefix *btintel_get_ext_prefix(
-+							struct hci_dev *hdev)
-+{
-+	return NULL;
-+}
-+
-+static inline void btintel_vendor_evt(struct hci_dev *hdev, struct sk_buff *skb)
-+{
-+}
-+
- #endif
--- 
-2.36.1.124.g0e6072fb45-goog
+Just one blank line.
 
+> +	vccq_sdhci0: regulator-vccq-sdhci0 {
+> +		compatible = "regulator-gpio";
+> +		regulator-name = "SDHCI0 VccQ";
+> +		regulator-min-microvolt = <1800000>;
+> +		regulator-max-microvolt = <3300000>;
+> +		gpios = <&gpio0 ASPEED_GPIO(V, 1) GPIO_ACTIVE_HIGH>;
+> +		gpios-states = <1>;
+> +		states = <3300000 1>,
+> +			 <1800000 0>;
+> +	};
+> +
+> +	vcc_sdhci1: regulator-vcc-sdhci1 {
+> +		compatible = "regulator-fixed";
+> +		regulator-name = "SDHCI1 Vcc";
+> +		regulator-min-microvolt = <3300000>;
+> +		regulator-max-microvolt = <3300000>;
+> +		gpios = <&gpio0 ASPEED_GPIO(V, 2) GPIO_ACTIVE_HIGH>;
+> +		enable-active-high;
+> +	};
+> +
+> +	vccq_sdhci1: regulator-vccq-sdhci1 {
+> +		compatible = "regulator-gpio";
+> +		regulator-name = "SDHCI1 VccQ";
+> +		regulator-min-microvolt = <1800000>;
+> +		regulator-max-microvolt = <3300000>;
+> +		gpios = <&gpio0 ASPEED_GPIO(V, 3) GPIO_ACTIVE_HIGH>;
+> +		gpios-states = <1>;
+> +		states = <3300000 1>,
+> +			 <1800000 0>;
+> +	};
+> +
+> +	leds {
+> +		compatible = "gpio-leds";
+> +		pinctrl-names = "default";
+> +
+> +		led-0 {
+> +			label = "identify";
+> +			color = <LED_COLOR_ID_BLUE>;
+> +			function = LED_FUNCTION_INDICATOR;
+> +			retain-state-shutdown;
+> +			gpios = <&gpio0 ASPEED_GPIO(B, 7) GPIO_ACTIVE_LOW>;
+> +		};
+> +
+> +		led-1 {
+> +			label = "status_amber";
+> +			color = <LED_COLOR_ID_AMBER>;
+> +			function = LED_FUNCTION_STATUS;
+> +			gpios = <&gpio0 ASPEED_GPIO(G, 3) GPIO_ACTIVE_LOW>;
+> +		};
+> +
+> +		led-2 {
+> +			label = "status_green";
+> +			color = <LED_COLOR_ID_GREEN>;
+> +			default-state = "keep";
+> +			function = LED_FUNCTION_STATUS;
+> +			gpios = <&gpio0 ASPEED_GPIO(G, 2) GPIO_ACTIVE_LOW>;
+> +		};
+> +
+> +		led-3 {
+> +			label = "status_susack";
+> +			function = LED_FUNCTION_STATUS;
+> +			gpios = <&gpio0 ASPEED_GPIO(V, 6) GPIO_ACTIVE_LOW>;
+> +		};
+> +
+> +		led-4{
+
+Missing space
+
+> +			label = "power-amber";
+> +			color = <LED_COLOR_ID_AMBER>;
+> +			function = LED_FUNCTION_POWER;
+> +			gpios = <&gpio0 ASPEED_GPIO(Y, 0) GPIO_ACTIVE_LOW>;
+> +		};
+> +
+
+...
+
+> +
+> +&kcs3 {
+> +	aspeed,lpc-io-reg = <0xCA2>;
+> +	status = "okay";
+> +};
+> +
+> +&kcs4 {
+> +	aspeed,lpc-io-reg = <0xCA4>;
+> +	status = "okay";
+> +};
+> +
+> +&lpc_snoop {
+> +	snoop-ports = <0x80>;
+> +	status = "okay";
+> +};
+> \ No newline at end of file
+
+Now you miss a new line at end of file...
+
+
+Best regards,
+Krzysztof
