@@ -2,193 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB9E2C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 11:28:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECD55C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 11:29:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232920AbiEYL2D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 07:28:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47370 "EHLO
+        id S238149AbiEYL3m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 07:29:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241060AbiEYL1o (ORCPT
+        with ESMTP id S230228AbiEYL3i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 07:27:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DD7D9EB6B;
-        Wed, 25 May 2022 04:27:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Wed, 25 May 2022 07:29:38 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 355969CCA3;
+        Wed, 25 May 2022 04:29:37 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id E2162219A2;
+        Wed, 25 May 2022 11:29:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1653478175; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=uOXMlcfKrkG1ML4XJusI4RGsH3zQ8lDiqGTODex4bVQ=;
+        b=vVu5Y8RfOc2mljmTt3/FVrZbMqEHiHWMz0Vyq+bCn4kL1BGIvYWOIxCFP+9dcojJAKVfEP
+        Zqq+TpvXQ292b8Cz2xV+KoJOmDtqLqgSbGOMuql+GXqWUJn6lo0rOsJLaKAX4AsqheiisY
+        m4bvDa06mUcNrPpexDr6JJq8LAuUaiI=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1653478175;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=uOXMlcfKrkG1ML4XJusI4RGsH3zQ8lDiqGTODex4bVQ=;
+        b=J48jGLDMs0fwKWFXKqmtzMKhLa9e4+5YZ0knn4E725uAI8jq/EViK0arzDPaFEgqSC7zGn
+        1/bkRSIKvaQGD6CA==
+Received: from quack3.suse.cz (unknown [10.100.224.230])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 487E1B81D26;
-        Wed, 25 May 2022 11:27:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B01ACC385B8;
-        Wed, 25 May 2022 11:27:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653478061;
-        bh=koflIRXjp6DUubFrVVuIsQCYgnnlKZX/mFWNYM4Xq1s=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=LQ/4U2G/D1ssovDPoN5J3gYIIXsZzIV2QbShXWj5hCEeSB+G1rDWyCrYMaLFNSG9V
-         Ry9am/YdG1ONr+/47ccp8VA5CpY9slv02mZoKIeb0SolgEWQqjrNQgTwCFWjo7ogvC
-         wk7MHsVfX44ijHdIG6yMzddrTwRdZgFqpfsdanf5K76HYZBf38FMN4yRXhsvKkkaeQ
-         l81AK1iRXG5UGJiAXaRtvZdMhC5iAKpkeX/5hE9lroTirwbW5bHkn69ntGXJ+Sb/k7
-         67DhElX44GOuL3S01fNwinsDJqWyqaiadfm/fp0+zRYhsI8icLUjeCdmusZf1swiYR
-         M0ugi/s52Ot8A==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 545174007E; Wed, 25 May 2022 08:27:38 -0300 (-03)
-Date:   Wed, 25 May 2022 08:27:38 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Namhyung Kim <namhyung@kernel.org>
-Cc:     Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Song Liu <songliubraving@fb.com>, Hao Luo <haoluo@google.com>,
-        Milian Wolff <milian.wolff@kdab.com>,
-        bpf <bpf@vger.kernel.org>,
-        linux-perf-users <linux-perf-users@vger.kernel.org>,
-        Blake Jones <blakejones@google.com>
-Subject: Re: [PATCH 3/6] perf record: Implement basic filtering for off-cpu
-Message-ID: <Yo4SqnEqzo2Rt+PF@kernel.org>
-References: <20220518224725.742882-1-namhyung@kernel.org>
- <20220518224725.742882-4-namhyung@kernel.org>
- <CAP-5=fWfZ_MqiAUx-tdO1C=Dyyzno6FbBp+KGAb_MweXs+N7Jw@mail.gmail.com>
- <CAM9d7cgxdFJJQOg6ivuy4+nh=WME2fgjvM-kSWLv9zd49yxR4A@mail.gmail.com>
+        by relay2.suse.de (Postfix) with ESMTPS id 42C9C2C142;
+        Wed, 25 May 2022 11:29:35 +0000 (UTC)
+Received: by quack3.suse.cz (Postfix, from userid 1000)
+        id 6F40DA0632; Wed, 25 May 2022 13:29:32 +0200 (CEST)
+Date:   Wed, 25 May 2022 13:29:32 +0200
+From:   Jan Kara <jack@suse.cz>
+To:     Baokun Li <libaokun1@huawei.com>
+Cc:     Jan Kara <jack@suse.cz>, lczerner@redhat.com,
+        linux-ext4@vger.kernel.org, tytso@mit.edu,
+        adilger.kernel@dilger.ca, ritesh.list@gmail.com,
+        linux-kernel@vger.kernel.org, yi.zhang@huawei.com,
+        yebin10@huawei.com, yukuai3@huawei.com
+Subject: Re: [PATCH 2/2] ext4: correct the judgment of BUG in
+ ext4_mb_normalize_request
+Message-ID: <20220525112932.d3gi7nynygkirdpi@quack3.lan>
+References: <20220521134217.312071-1-libaokun1@huawei.com>
+ <20220521134217.312071-3-libaokun1@huawei.com>
+ <20220523094023.e3rnile4wh7uiich@quack3.lan>
+ <3755e40b-f817-83df-b239-b0697976c272@huawei.com>
+ <20220524093026.qhwyibhgg6ulsw6r@quack3.lan>
+ <26962b95-1129-60c4-dbde-6fea44c514a6@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <CAM9d7cgxdFJJQOg6ivuy4+nh=WME2fgjvM-kSWLv9zd49yxR4A@mail.gmail.com>
-X-Url:  http://acmel.wordpress.com
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <26962b95-1129-60c4-dbde-6fea44c514a6@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Thu, May 19, 2022 at 02:02:28PM -0700, Namhyung Kim escreveu:
-> On Wed, May 18, 2022 at 9:02 PM Ian Rogers <irogers@google.com> wrote:
-> >
-> > On Wed, May 18, 2022 at 3:47 PM Namhyung Kim <namhyung@kernel.org> wrote:
-> > >
-> > > It should honor cpu and task filtering with -a, -C or -p, -t options.
-> > >
-> > > Signed-off-by: Namhyung Kim <namhyung@kernel.org>
-> > > ---
-> > >  tools/perf/builtin-record.c            |  2 +-
-> > >  tools/perf/util/bpf_off_cpu.c          | 78 +++++++++++++++++++++++---
-> > >  tools/perf/util/bpf_skel/off_cpu.bpf.c | 52 +++++++++++++++--
-> > >  tools/perf/util/off_cpu.h              |  6 +-
-> > >  4 files changed, 123 insertions(+), 15 deletions(-)
-> > >
-> > > diff --git a/tools/perf/builtin-record.c b/tools/perf/builtin-record.c
-> > > index 91f88501412e..7f60d2eac0b4 100644
-> > > --- a/tools/perf/builtin-record.c
-> > > +++ b/tools/perf/builtin-record.c
-> > > @@ -907,7 +907,7 @@ static int record__config_text_poke(struct evlist *evlist)
-> > >
-> > >  static int record__config_off_cpu(struct record *rec)
-> > >  {
-> > > -       return off_cpu_prepare(rec->evlist);
-> > > +       return off_cpu_prepare(rec->evlist, &rec->opts.target);
-> > >  }
-> > >
-> > >  static bool record__kcore_readable(struct machine *machine)
-> > > diff --git a/tools/perf/util/bpf_off_cpu.c b/tools/perf/util/bpf_off_cpu.c
-> > > index 9ed7aca3f4ac..b5e2d038da50 100644
-> > > --- a/tools/perf/util/bpf_off_cpu.c
-> > > +++ b/tools/perf/util/bpf_off_cpu.c
-> > > @@ -6,6 +6,9 @@
-> > >  #include "util/off_cpu.h"
-> > >  #include "util/perf-hooks.h"
-> > >  #include "util/session.h"
-> > > +#include "util/target.h"
-> > > +#include "util/cpumap.h"
-> > > +#include "util/thread_map.h"
-> > >  #include <bpf/bpf.h>
-> > >
-> > >  #include "bpf_skel/off_cpu.skel.h"
-> > > @@ -60,8 +63,23 @@ static int off_cpu_config(struct evlist *evlist)
-> > >         return 0;
-> > >  }
-> > >
-> > > -static void off_cpu_start(void *arg __maybe_unused)
-> > > +static void off_cpu_start(void *arg)
-> > >  {
-> > > +       struct evlist *evlist = arg;
-> > > +
-> > > +       /* update task filter for the given workload */
-> > > +       if (!skel->bss->has_cpu && !skel->bss->has_task &&
-> > > +           perf_thread_map__pid(evlist->core.threads, 0) != -1) {
-> > > +               int fd;
-> > > +               u32 pid;
-> > > +               u8 val = 1;
-> > > +
-> > > +               skel->bss->has_task = 1;
-> > > +               fd = bpf_map__fd(skel->maps.task_filter);
-> > > +               pid = perf_thread_map__pid(evlist->core.threads, 0);
-> > > +               bpf_map_update_elem(fd, &pid, &val, BPF_ANY);
-> > > +       }
-> > > +
-> > >         skel->bss->enabled = 1;
-> > >  }
-> > >
-> > > @@ -71,31 +89,75 @@ static void off_cpu_finish(void *arg __maybe_unused)
-> > >         off_cpu_bpf__destroy(skel);
-> > >  }
-> > >
-> > > -int off_cpu_prepare(struct evlist *evlist)
-> > > +int off_cpu_prepare(struct evlist *evlist, struct target *target)
-> > >  {
-> > > -       int err;
-> > > +       int err, fd, i;
-> > > +       int ncpus = 1, ntasks = 1;
-> > >
-> > >         if (off_cpu_config(evlist) < 0) {
-> > >                 pr_err("Failed to config off-cpu BPF event\n");
-> > >                 return -1;
-> > >         }
-> > >
-> > > -       set_max_rlimit();
-> > > -
-> > > -       skel = off_cpu_bpf__open_and_load();
-> > > +       skel = off_cpu_bpf__open();
-> > >         if (!skel) {
-> > >                 pr_err("Failed to open off-cpu BPF skeleton\n");
-> > >                 return -1;
-> > >         }
-> > >
-> > > +       /* don't need to set cpu filter for system-wide mode */
-> > > +       if (target->cpu_list) {
-> > > +               ncpus = perf_cpu_map__nr(evlist->core.user_requested_cpus);
-> > > +               bpf_map__set_max_entries(skel->maps.cpu_filter, ncpus);
-> > > +       }
-> > > +
-> > > +       if (target__has_task(target)) {
-> > > +               ntasks = perf_thread_map__nr(evlist->core.threads);
-> > > +               bpf_map__set_max_entries(skel->maps.task_filter, ntasks);
-> > > +       }
-> > > +
-> > > +       set_max_rlimit();
-> > > +
-> > > +       err = off_cpu_bpf__load(skel);
-> > > +       if (err) {
-> > > +               pr_err("Failed to load off-cpu skeleton\n");
-> > > +               goto out;
-> > > +       }
-> > > +
-> > > +       if (target->cpu_list) {
-> > > +               u32 cpu;
-> > > +               u8 val = 1;
-> > > +
-> > > +               skel->bss->has_cpu = 1;
-> > > +               fd = bpf_map__fd(skel->maps.cpu_filter);
-> > > +
-> > > +               for (i = 0; i < ncpus; i++) {
-> > > +                       cpu = perf_cpu_map__cpu(evlist->core.user_requested_cpus, i).cpu;
-> > > +                       bpf_map_update_elem(fd, &cpu, &val, BPF_ANY);
-> >
-> > Perhaps more concise with a for_each:
-> >
-> > perf_cpu_map__for_each_cpu(cpu, idx, evlist->core.user_requested_cpus)
-> >   bpf_map_update_elem(fd, &cpu.cpu, &val, BPF_ANY);
+On Tue 24-05-22 21:44:31, Baokun Li wrote:
+> 在 2022/5/24 17:30, Jan Kara 写道:
+> > On Mon 23-05-22 21:04:16, libaokun (A) wrote:
+> > > 在 2022/5/23 17:40, Jan Kara 写道:
+> > > > On Sat 21-05-22 21:42:17, Baokun Li wrote:
+> > > > > When either of the "start + size <= ac->ac_o_ex.fe_logical" or
+> > > > > "start > ac->ac_o_ex.fe_logical" conditions is met, it indicates
+> > > > > that the fe_logical is not in the allocated range.
+> > > > > In this case, it should be bug_ON.
+> > > > > 
+> > > > > Fixes: dfe076c106f6 ("ext4: get rid of code duplication")
+> > > > > Signed-off-by: Baokun Li<libaokun1@huawei.com>
+> > > > I think this is actually wrong. The original condition checks whether
+> > > > start + size does not overflow the used integer type. Your condition is
+> > > > much stronger and I don't think it always has to be true. E.g. allocation
+> > > > goal block (start variable) can be pushed to larger values by existing
+> > > > preallocation or so.
+> > > > 
+> > > > 								Honza
+> > > > 
+> > > I think there are two reasons for this:
+> > > 
+> > > First of all, the code here is as follows.
+> > > ```
+> > >          size = end - start;
+> > >          [...]
+> > > if (start + size <= ac->ac_o_ex.fe_logical &&
+> > >                          start > ac->ac_o_ex.fe_logical) {
+> > >                  ext4_msg(ac->ac_sb, KERN_ERR,
+> > >                           "start %lu, size %lu, fe_logical %lu",
+> > >                           (unsigned long) start, (unsigned long) size,
+> > >                           (unsigned long) ac->ac_o_ex.fe_logical);
+> > > BUG();
+> > > }
+> > >          BUG_ON(size <= 0 || size > EXT4_BLOCKS_PER_GROUP(ac->ac_sb));
+> > > ```
+> > > First of all, there is no need to compare with ac_o_ex.fe_logical if it is
+> > > to determine whether there is an overflow.
+> > > Because the previous logic guarantees start < = ac_o_ex.fe_logical, and
+> > How does it guarantee that? The logic:
+> > 
+> >          if (ar->pleft && start <= ar->lleft) {
+> >                  size -= ar->lleft + 1 - start;
+> >                  start = ar->lleft + 1;
+> >          }
+> > 
+> > can move 'start' to further blocks...
+> This is not the case. According to the code of the preceding process,
+> ar->pleft and ar->pright are assigned values in ext4_ext_map_blocks.
+> ar->pleft is the first allocated block found to the left by map->m_lblk
+> (that is, fe_logical),
+> and ar->pright is the first allocated block found to the right.
+> ar->lleft and ar->lright are logical block numbers, so there must be
+> "ar->lleft < ac_o_ex.fe_logical < ar->lright".
 
-So I'll wait for a new version of this patchset.
+Right, I've found that out after sending my previous email. Sorry for
+confusion.
 
-- Arnaldo
+> > > Secondly, the following code flow also reflects this logic.
+> > > 
+> > >             ext4_mb_normalize_request
+> > >              >>> start + size <= ac->ac_o_ex.fe_logical
+> > >             ext4_mb_regular_allocator
+> > >              ext4_mb_simple_scan_group
+> > >               ext4_mb_use_best_found
+> > >                ext4_mb_new_preallocation
+> > >                 ext4_mb_new_inode_pa
+> > >                  ext4_mb_use_inode_pa
+> > >                   >>> set ac->ac_b_ex.fe_len <= 0
+> > >             ext4_mb_mark_diskspace_used
+> > >              >>> BUG_ON(ac->ac_b_ex.fe_len <= 0);
+> > > 
+> > > In ext4_mb_use_inode_pa, you have the following code.
+> > > ```
+> > > start = pa->pa_pstart + (ac->ac_o_ex.fe_logical - pa->pa_lstart);
+> > > end = min(pa->pa_pstart + EXT4_C2B(sbi, pa->pa_len), start + EXT4_C2B(sbi,
+> > > ac->ac_o_ex.fe_len));
+> > > len = EXT4_NUM_B2C(sbi, end - start);
+> > > ac->ac_b_ex.fe_len = len;
+> > > ```
+> > > The starting position in ext4_mb_mark_diskspace_used will be assert.
+> > > BUG_ON(ac->ac_b_ex.fe_len <= 0);
+> > > When end == start + EXT4_C2B(sbi, ac->ac_o_ex.fe_len) is used, the value of
+> > > end - start must be greater than 0.
+> > > However, when end == pa->pa_pstart + EXT4_C2B(sbi, pa->pa_len) occurs, this
+> > > bug_ON may be triggered.
+> > > When this bug_ON is triggered, that is,
+> > > 
+> > > ac->ac_b_ex.fe_len <= 0
+> > > end - start <= 0
+> > > end <= start
+> > > pa->pa_pstart + EXT4_C2B(sbi, pa->pa_len) <= pa->pa_pstart +
+> > > (ac->ac_o_ex.fe_logical - pa->pa_lstart)
+> > > pa->pa_len <= ac->ac_o_ex.fe_logical - pa->pa_lstart
+> > > pa->pa_lstart + pa->pa_len <= ac->ac_o_ex.fe_logical
+> > > start + size <= ac->ac_o_ex.fe_logical
+> > > 
+> > > So I think that "&&" here should be changed to "||".
+> > Sorry, I still disagree. After some more code reading I agree that
+> > ac->ac_o_ex.fe_logical is the logical block where we want allocated blocks
+> > to be placed in the inode so logical extent of allocated blocks should include
+> > ac->ac_o_ex.fe_logical. But I would be reluctant to make assertion you
+> > suggest unless we make sure ac->ac_o_ex.fe_logical in unallocated (in which
+> > case we can also remove some other code from ext4_mb_normalize_request()).
+> > 
+> > 									Honza
+> > 
+> What codes are you referring to that can be deleted?
+
+So I though the shifting of 'start' by lleft cannot happen but then I
+realized that if 'start' got aligned down, it can now be lower than lleft
+so the shifting is indeed needed. So all code is needed there.
+
+								Honza
+-- 
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
