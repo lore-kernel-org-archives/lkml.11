@@ -2,35 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1914C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 19:10:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 136BAC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 19:10:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344490AbiEYTKI (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 15:10:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53316 "EHLO
+        id S232331AbiEYTKR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 15:10:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344245AbiEYTH6 (ORCPT
+        with ESMTP id S1344235AbiEYTHp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 15:07:58 -0400
-Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::225])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4219D11A32;
-        Wed, 25 May 2022 12:07:20 -0700 (PDT)
+        Wed, 25 May 2022 15:07:45 -0400
+Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EBDD11C34;
+        Wed, 25 May 2022 12:07:13 -0700 (PDT)
 Received: (Authenticated sender: paul.kocialkowski@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 2FAC01C0005;
-        Wed, 25 May 2022 19:07:14 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 81F5A1C0013;
+        Wed, 25 May 2022 19:07:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1653505635;
+        t=1653505630;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=IwHDK7KRuo6NnSyhQJ3Js124K9MUdgPsqbRN4iUvCVw=;
-        b=Afz1MdMgP0QaUd8t5OiSIVukDMnbo8HIwPYF460ZOwk1cHjf+8kUehbT6mngyLSkSTqZE6
-        +tm9RwEmemTPgNUuqVlnqJBVTrWm2MeHt1tFQBGn/T9qL0cGnMsM8GpcWfGK/MIirC/csB
-        9YGQaKoASc4/VeQ5ROKNG7CkpOC+DbfyB0FtwPIsk1N2zCotExAm9ZaDSgiTSSBDiWhCFd
-        f9myXVdcNnla0vlKrHbBQULr+whKvgsTyXMzSmS8MU+ux2t0syHan6hjKlPorBcgGcdYXg
-        PQfKzztMDvYxvlp4Upukoe3yUZkqswUTUx/Z+woHogQXIPSgORiyoXI+4Pb+vw==
+        bh=MkYX32bYuzXveiC8ZHka1SV6+a03LCc0xV33wwje6N0=;
+        b=KrwrOcrCMyxp4v1V826wOTMgUlLzM1CSsFmMCANSbibWFwU4zK3olk4nZJxoqZvT/0UbGk
+        qOmKUw5WZW84iQyLj5lSAGHYaepsFb9dV5CJq3thpKqenD1S9ZYXzz7c95nBmmuFUu5Zqo
+        YCH9ZxvdQiisfN46qOmsk5/hEbMYsRoLt1pp9ROGKOgx/Vg0olGUi8PCHY8Dgaynh+WSRw
+        MpLRRsgYZNnLrcYHcib3Ch3JRAMHVzjqGH9xALxVtrOJYgWj8vT3F/x0aOXp38V5bjAn7f
+        PSwTSEzXnFqB+ewDkh/36WcJPysge7Gv3VYmzgF/MNnDUTqWKEjmAikLQ2HqFQ==
 From:   Paul Kocialkowski <paul.kocialkowski@bootlin.com>
 To:     linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev
@@ -43,9 +42,9 @@ Cc:     Yong Deng <yong.deng@magewell.com>,
         Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
         Maxime Ripard <mripard@kernel.org>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: [PATCH v5 41/44] media: sun6i-csi: Only configure capture when streaming
-Date:   Wed, 25 May 2022 21:06:14 +0200
-Message-Id: <20220525190617.696344-42-paul.kocialkowski@bootlin.com>
+Subject: [PATCH v5 37/44] media: sun6i-csi: Move hardware control to the bridge
+Date:   Wed, 25 May 2022 21:06:10 +0200
+Message-Id: <20220525190617.696344-38-paul.kocialkowski@bootlin.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220525190617.696344-1-paul.kocialkowski@bootlin.com>
 References: <20220525190617.696344-1-paul.kocialkowski@bootlin.com>
@@ -55,173 +54,608 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a streaming element to the capture state structure to know if the
-capture device is used or not. Only configure things related to output
-when streaming, including the output format, irq, state (dma buffer)
-and window configuration registers.
+In order to support the isp workflow, we need to be able to configure
+the hardware from the bridge when the capture device is not used.
 
-After this change, it becomes possible to use the bridge without the
-capture device, which will be the case in the isp media flow.
+As a result, move all hardware configuration calls from capture to
+the bridge. Only the window configuration part (which is specific
+to using capture) remains there.
+
+This effectively opens the way for hooking the bridge to the
+isp in the future.
 
 Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-Acked-by: Jernej Skrabec <jernej.skrabec@gmail.com>
 ---
- .../sunxi/sun6i-csi/sun6i_csi_bridge.c        | 50 ++++++++++++-------
- .../sunxi/sun6i-csi/sun6i_csi_capture.c       | 11 +++-
- .../sunxi/sun6i-csi/sun6i_csi_capture.h       |  1 +
- 3 files changed, 41 insertions(+), 21 deletions(-)
+ .../sunxi/sun6i-csi/sun6i_csi_bridge.c        | 227 ++++++++++++++++
+ .../sunxi/sun6i-csi/sun6i_csi_capture.c       | 249 +-----------------
+ .../sunxi/sun6i-csi/sun6i_csi_capture.h       |   3 +
+ 3 files changed, 237 insertions(+), 242 deletions(-)
 
 diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_bridge.c b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_bridge.c
-index 27289d904d5c..8e9eded0df28 100644
+index 79263a421dd2..ec3e04353106 100644
 --- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_bridge.c
 +++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_bridge.c
-@@ -338,6 +338,7 @@ sun6i_csi_bridge_configure_mipi_csi2(struct sun6i_csi_device *csi_dev)
- static void sun6i_csi_bridge_configure_format(struct sun6i_csi_device *csi_dev)
- {
- 	struct regmap *regmap = csi_dev->regmap;
-+	bool capture_streaming = csi_dev->capture.state.streaming;
- 	const struct sun6i_csi_bridge_format *bridge_format;
- 	const struct sun6i_csi_capture_format *capture_format;
- 	u32 mbus_code, field, pixelformat;
-@@ -353,26 +354,29 @@ static void sun6i_csi_bridge_configure_format(struct sun6i_csi_device *csi_dev)
- 	input_format = bridge_format->input_format;
- 	input_yuv_seq = bridge_format->input_yuv_seq;
+@@ -174,6 +174,205 @@ sun6i_csi_bridge_format_find(u32 mbus_code)
+ 	return NULL;
+ }
  
--	sun6i_csi_capture_format(csi_dev, &pixelformat, NULL);
-+	if (capture_streaming) {
-+		sun6i_csi_capture_format(csi_dev, &pixelformat, NULL);
++/* Bridge */
++
++static void sun6i_csi_bridge_irq_enable(struct sun6i_csi_device *csi_dev)
++{
++	struct regmap *regmap = csi_dev->regmap;
++
++	regmap_write(regmap, SUN6I_CSI_CH_INT_EN_REG,
++		     SUN6I_CSI_CH_INT_EN_VS |
++		     SUN6I_CSI_CH_INT_EN_HB_OF |
++		     SUN6I_CSI_CH_INT_EN_FIFO2_OF |
++		     SUN6I_CSI_CH_INT_EN_FIFO1_OF |
++		     SUN6I_CSI_CH_INT_EN_FIFO0_OF |
++		     SUN6I_CSI_CH_INT_EN_FD |
++		     SUN6I_CSI_CH_INT_EN_CD);
++}
++
++static void sun6i_csi_bridge_irq_disable(struct sun6i_csi_device *csi_dev)
++{
++	struct regmap *regmap = csi_dev->regmap;
++
++	regmap_write(regmap, SUN6I_CSI_CH_INT_EN_REG, 0);
++}
++
++static void sun6i_csi_bridge_irq_clear(struct sun6i_csi_device *csi_dev)
++{
++	struct regmap *regmap = csi_dev->regmap;
++
++	regmap_write(regmap, SUN6I_CSI_CH_INT_EN_REG, 0);
++	regmap_write(regmap, SUN6I_CSI_CH_INT_STA_REG,
++		     SUN6I_CSI_CH_INT_STA_CLEAR);
++}
++
++static void sun6i_csi_bridge_enable(struct sun6i_csi_device *csi_dev)
++{
++	struct regmap *regmap = csi_dev->regmap;
++
++	regmap_update_bits(regmap, SUN6I_CSI_EN_REG, SUN6I_CSI_EN_CSI_EN,
++			   SUN6I_CSI_EN_CSI_EN);
++
++	regmap_update_bits(regmap, SUN6I_CSI_CAP_REG, SUN6I_CSI_CAP_VCAP_ON,
++			   SUN6I_CSI_CAP_VCAP_ON);
++}
++
++static void sun6i_csi_bridge_disable(struct sun6i_csi_device *csi_dev)
++{
++	struct regmap *regmap = csi_dev->regmap;
++
++	regmap_update_bits(regmap, SUN6I_CSI_CAP_REG, SUN6I_CSI_CAP_VCAP_ON, 0);
++	regmap_update_bits(regmap, SUN6I_CSI_EN_REG, SUN6I_CSI_EN_CSI_EN, 0);
++}
++
++static void
++sun6i_csi_bridge_configure_interface(struct sun6i_csi_device *csi_dev)
++{
++	struct device *dev = csi_dev->dev;
++	struct regmap *regmap = csi_dev->regmap;
++	struct v4l2_fwnode_endpoint *endpoint =
++		&csi_dev->bridge.source_parallel.endpoint;
++	unsigned char bus_width = endpoint->bus.parallel.bus_width;
++	unsigned int flags = endpoint->bus.parallel.flags;
++	u32 field;
++	u32 value = SUN6I_CSI_IF_CFG_IF_CSI;
++
++	sun6i_csi_bridge_format(csi_dev, NULL, &field);
++
++	if (field == V4L2_FIELD_INTERLACED ||
++	    field == V4L2_FIELD_INTERLACED_TB ||
++	    field == V4L2_FIELD_INTERLACED_BT)
++		value |= SUN6I_CSI_IF_CFG_SRC_TYPE_INTERLACED |
++			 SUN6I_CSI_IF_CFG_FIELD_DT_PCLK_SHIFT(1) |
++			 SUN6I_CSI_IF_CFG_FIELD_DT_FIELD_VSYNC;
++	else
++		value |= SUN6I_CSI_IF_CFG_SRC_TYPE_PROGRESSIVE;
++
++	switch (endpoint->bus_type) {
++	case V4L2_MBUS_PARALLEL:
++		if (bus_width == 16)
++			value |= SUN6I_CSI_IF_CFG_IF_CSI_YUV_COMBINED;
++		else
++			value |= SUN6I_CSI_IF_CFG_IF_CSI_YUV_RAW;
++
++		if (flags & V4L2_MBUS_FIELD_EVEN_LOW)
++			value |= SUN6I_CSI_IF_CFG_FIELD_NEGATIVE;
++		else
++			value |= SUN6I_CSI_IF_CFG_FIELD_POSITIVE;
++
++		if (flags & V4L2_MBUS_VSYNC_ACTIVE_LOW)
++			value |= SUN6I_CSI_IF_CFG_VREF_POL_NEGATIVE;
++		else
++			value |= SUN6I_CSI_IF_CFG_VREF_POL_POSITIVE;
++
++		if (flags & V4L2_MBUS_HSYNC_ACTIVE_LOW)
++			value |= SUN6I_CSI_IF_CFG_HREF_POL_NEGATIVE;
++		else
++			value |= SUN6I_CSI_IF_CFG_HREF_POL_POSITIVE;
++
++		if (flags & V4L2_MBUS_PCLK_SAMPLE_RISING)
++			value |= SUN6I_CSI_IF_CFG_CLK_POL_RISING;
++		else
++			value |= SUN6I_CSI_IF_CFG_CLK_POL_FALLING;
++		break;
++	case V4L2_MBUS_BT656:
++		if (bus_width == 16)
++			value |= SUN6I_CSI_IF_CFG_IF_CSI_BT1120;
++		else
++			value |= SUN6I_CSI_IF_CFG_IF_CSI_BT656;
++
++		if (flags & V4L2_MBUS_FIELD_EVEN_LOW)
++			value |= SUN6I_CSI_IF_CFG_FIELD_NEGATIVE;
++		else
++			value |= SUN6I_CSI_IF_CFG_FIELD_POSITIVE;
++
++		if (flags & V4L2_MBUS_PCLK_SAMPLE_FALLING)
++			value |= SUN6I_CSI_IF_CFG_CLK_POL_RISING;
++		else
++			value |= SUN6I_CSI_IF_CFG_CLK_POL_FALLING;
++		break;
++	default:
++		dev_warn(dev, "unsupported bus type: %d\n", endpoint->bus_type);
++		break;
++	}
++
++	switch (bus_width) {
++	case 8:
++	/* 16-bit YUV formats use a doubled width in 8-bit mode. */
++	case 16:
++		value |= SUN6I_CSI_IF_CFG_DATA_WIDTH_8;
++		break;
++	case 10:
++		value |= SUN6I_CSI_IF_CFG_DATA_WIDTH_10;
++		break;
++	case 12:
++		value |= SUN6I_CSI_IF_CFG_DATA_WIDTH_12;
++		break;
++	default:
++		dev_warn(dev, "unsupported bus width: %u\n", bus_width);
++		break;
++	}
++
++	regmap_write(regmap, SUN6I_CSI_IF_CFG_REG, value);
++}
++
++static void sun6i_csi_bridge_configure_format(struct sun6i_csi_device *csi_dev)
++{
++	struct regmap *regmap = csi_dev->regmap;
++	const struct sun6i_csi_bridge_format *bridge_format;
++	const struct sun6i_csi_capture_format *capture_format;
++	u32 mbus_code, field, pixelformat;
++	u8 input_format, input_yuv_seq, output_format;
++	u32 value = 0;
++
++	sun6i_csi_bridge_format(csi_dev, &mbus_code, &field);
++
++	bridge_format = sun6i_csi_bridge_format_find(mbus_code);
++	if (WARN_ON(!bridge_format))
++		return;
++
++	input_format = bridge_format->input_format;
++	input_yuv_seq = bridge_format->input_yuv_seq;
++
++	sun6i_csi_capture_format(csi_dev, &pixelformat, NULL);
++
++	capture_format = sun6i_csi_capture_format_find(pixelformat);
++	if (WARN_ON(!capture_format))
++		return;
++
++	if (capture_format->input_format_raw)
++		input_format = SUN6I_CSI_INPUT_FMT_RAW;
++
++	if (capture_format->input_yuv_seq_invert)
++		input_yuv_seq = bridge_format->input_yuv_seq_invert;
++
++	if (field == V4L2_FIELD_INTERLACED ||
++	    field == V4L2_FIELD_INTERLACED_TB ||
++	    field == V4L2_FIELD_INTERLACED_BT)
++		output_format = capture_format->output_format_field;
++	else
++		output_format = capture_format->output_format_frame;
++
++	value |= SUN6I_CSI_CH_CFG_OUTPUT_FMT(output_format);
++	value |= SUN6I_CSI_CH_CFG_INPUT_FMT(input_format);
++	value |= SUN6I_CSI_CH_CFG_INPUT_YUV_SEQ(input_yuv_seq);
++
++	if (field == V4L2_FIELD_TOP)
++		value |= SUN6I_CSI_CH_CFG_FIELD_SEL_FIELD0;
++	else if (field == V4L2_FIELD_BOTTOM)
++		value |= SUN6I_CSI_CH_CFG_FIELD_SEL_FIELD1;
++	else
++		value |= SUN6I_CSI_CH_CFG_FIELD_SEL_EITHER;
++
++	regmap_write(regmap, SUN6I_CSI_CH_CFG_REG, value);
++}
++
++static void sun6i_csi_bridge_configure(struct sun6i_csi_device *csi_dev)
++{
++	sun6i_csi_bridge_configure_interface(csi_dev);
++	sun6i_csi_bridge_configure_format(csi_dev);
++}
++
+ /* V4L2 Subdev */
  
+ static int sun6i_csi_bridge_s_stream(struct v4l2_subdev *subdev, int on)
+@@ -204,6 +403,30 @@ static int sun6i_csi_bridge_s_stream(struct v4l2_subdev *subdev, int on)
+ 		goto disable;
+ 	}
+ 
++	/* PM */
++
++	ret = pm_runtime_resume_and_get(dev);
++	if (ret < 0)
++		return ret;
++
++	/* Clear */
++
++	sun6i_csi_bridge_irq_clear(csi_dev);
++
++	/* Configure */
++
++	sun6i_csi_bridge_configure(csi_dev);
++	sun6i_csi_capture_configure(csi_dev);
++
++	/* State Update */
++
++	sun6i_csi_capture_state_update(csi_dev);
++
++	/* Enable */
++
++	sun6i_csi_bridge_irq_enable(csi_dev);
++	sun6i_csi_bridge_enable(csi_dev);
++
+ 	ret = v4l2_subdev_call(source_subdev, video, s_stream, 1);
+ 	if (ret && ret != -ENOIOCTLCMD)
+ 		goto disable;
+@@ -211,6 +434,10 @@ static int sun6i_csi_bridge_s_stream(struct v4l2_subdev *subdev, int on)
+ 	return 0;
+ 
+ disable:
++	sun6i_csi_bridge_irq_disable(csi_dev);
++	sun6i_csi_bridge_disable(csi_dev);
++
++	pm_runtime_put(dev);
+ 
+ 	return ret;
+ }
+diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.c b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.c
+index b91b6ad44ba1..a0131023a8b9 100644
+--- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.c
++++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.c
+@@ -6,7 +6,6 @@
+  */
+ 
+ #include <linux/of.h>
+-#include <linux/pm_runtime.h>
+ #include <linux/regmap.h>
+ 
+ #include <media/v4l2-device.h>
+@@ -330,55 +329,6 @@ static bool sun6i_csi_capture_format_match(u32 pixelformat, u32 mbus_code)
+ 
+ /* Capture */
+ 
+-static void sun6i_csi_capture_irq_enable(struct sun6i_csi_device *csi_dev)
+-{
+-	struct regmap *regmap = csi_dev->regmap;
+-
+-	regmap_write(regmap, SUN6I_CSI_CH_INT_EN_REG,
+-		     SUN6I_CSI_CH_INT_EN_VS |
+-		     SUN6I_CSI_CH_INT_EN_HB_OF |
+-		     SUN6I_CSI_CH_INT_EN_FIFO2_OF |
+-		     SUN6I_CSI_CH_INT_EN_FIFO1_OF |
+-		     SUN6I_CSI_CH_INT_EN_FIFO0_OF |
+-		     SUN6I_CSI_CH_INT_EN_FD |
+-		     SUN6I_CSI_CH_INT_EN_CD);
+-}
+-
+-static void sun6i_csi_capture_irq_disable(struct sun6i_csi_device *csi_dev)
+-{
+-	struct regmap *regmap = csi_dev->regmap;
+-
+-	regmap_write(regmap, SUN6I_CSI_CH_INT_EN_REG, 0);
+-}
+-
+-static void sun6i_csi_capture_irq_clear(struct sun6i_csi_device *csi_dev)
+-{
+-	struct regmap *regmap = csi_dev->regmap;
+-
+-	regmap_write(regmap, SUN6I_CSI_CH_INT_EN_REG, 0);
+-	regmap_write(regmap, SUN6I_CSI_CH_INT_STA_REG,
+-		     SUN6I_CSI_CH_INT_STA_CLEAR);
+-}
+-
+-static void sun6i_csi_capture_enable(struct sun6i_csi_device *csi_dev)
+-{
+-	struct regmap *regmap = csi_dev->regmap;
+-
+-	regmap_update_bits(regmap, SUN6I_CSI_EN_REG, SUN6I_CSI_EN_CSI_EN,
+-			   SUN6I_CSI_EN_CSI_EN);
+-
+-	regmap_update_bits(regmap, SUN6I_CSI_CAP_REG, SUN6I_CSI_CAP_VCAP_ON,
+-			   SUN6I_CSI_CAP_VCAP_ON);
+-}
+-
+-static void sun6i_csi_capture_disable(struct sun6i_csi_device *csi_dev)
+-{
+-	struct regmap *regmap = csi_dev->regmap;
+-
+-	regmap_update_bits(regmap, SUN6I_CSI_CAP_REG, SUN6I_CSI_CAP_VCAP_ON, 0);
+-	regmap_update_bits(regmap, SUN6I_CSI_EN_REG, SUN6I_CSI_EN_CSI_EN, 0);
+-}
+-
+ static void
+ sun6i_csi_capture_buffer_configure(struct sun6i_csi_device *csi_dev,
+ 				   struct sun6i_csi_buffer *csi_buffer)
+@@ -420,148 +370,7 @@ sun6i_csi_capture_buffer_configure(struct sun6i_csi_device *csi_dev,
+ 	}
+ }
+ 
+-static void
+-sun6i_csi_capture_configure_interface(struct sun6i_csi_device *csi_dev)
+-{
+-	struct device *dev = csi_dev->dev;
+-	struct regmap *regmap = csi_dev->regmap;
+-	struct v4l2_fwnode_endpoint *endpoint =
+-		&csi_dev->bridge.source_parallel.endpoint;
+-	unsigned char bus_width = endpoint->bus.parallel.bus_width;
+-	unsigned int flags = endpoint->bus.parallel.flags;
+-	u32 pixelformat, field;
+-	u32 value = SUN6I_CSI_IF_CFG_IF_CSI;
+-
+-	sun6i_csi_capture_format(csi_dev, &pixelformat, &field);
+-
+-	if (field == V4L2_FIELD_INTERLACED ||
+-	    field == V4L2_FIELD_INTERLACED_TB ||
+-	    field == V4L2_FIELD_INTERLACED_BT)
+-		value |= SUN6I_CSI_IF_CFG_SRC_TYPE_INTERLACED |
+-			 SUN6I_CSI_IF_CFG_FIELD_DT_PCLK_SHIFT(1) |
+-			 SUN6I_CSI_IF_CFG_FIELD_DT_FIELD_VSYNC;
+-	else
+-		value |= SUN6I_CSI_IF_CFG_SRC_TYPE_PROGRESSIVE;
+-
+-	switch (endpoint->bus_type) {
+-	case V4L2_MBUS_PARALLEL:
+-		if (bus_width == 16)
+-			value |= SUN6I_CSI_IF_CFG_IF_CSI_YUV_COMBINED;
+-		else
+-			value |= SUN6I_CSI_IF_CFG_IF_CSI_YUV_RAW;
+-
+-		if (flags & V4L2_MBUS_FIELD_EVEN_LOW)
+-			value |= SUN6I_CSI_IF_CFG_FIELD_NEGATIVE;
+-		else
+-			value |= SUN6I_CSI_IF_CFG_FIELD_POSITIVE;
+-
+-		if (flags & V4L2_MBUS_VSYNC_ACTIVE_LOW)
+-			value |= SUN6I_CSI_IF_CFG_VREF_POL_NEGATIVE;
+-		else
+-			value |= SUN6I_CSI_IF_CFG_VREF_POL_POSITIVE;
+-
+-		if (flags & V4L2_MBUS_HSYNC_ACTIVE_LOW)
+-			value |= SUN6I_CSI_IF_CFG_HREF_POL_NEGATIVE;
+-		else
+-			value |= SUN6I_CSI_IF_CFG_HREF_POL_POSITIVE;
+-
+-		if (flags & V4L2_MBUS_PCLK_SAMPLE_RISING)
+-			value |= SUN6I_CSI_IF_CFG_CLK_POL_RISING;
+-		else
+-			value |= SUN6I_CSI_IF_CFG_CLK_POL_FALLING;
+-		break;
+-	case V4L2_MBUS_BT656:
+-		if (bus_width == 16)
+-			value |= SUN6I_CSI_IF_CFG_IF_CSI_BT1120;
+-		else
+-			value |= SUN6I_CSI_IF_CFG_IF_CSI_BT656;
+-
+-		if (flags & V4L2_MBUS_FIELD_EVEN_LOW)
+-			value |= SUN6I_CSI_IF_CFG_FIELD_NEGATIVE;
+-		else
+-			value |= SUN6I_CSI_IF_CFG_FIELD_POSITIVE;
+-
+-		if (flags & V4L2_MBUS_PCLK_SAMPLE_FALLING)
+-			value |= SUN6I_CSI_IF_CFG_CLK_POL_RISING;
+-		else
+-			value |= SUN6I_CSI_IF_CFG_CLK_POL_FALLING;
+-		break;
+-	default:
+-		dev_warn(dev, "unsupported bus type: %d\n", endpoint->bus_type);
+-		break;
+-	}
+-
+-	switch (bus_width) {
+-	case 8:
+-	/* 16-bit YUV formats use a doubled width in 8-bit mode. */
+-	case 16:
+-		value |= SUN6I_CSI_IF_CFG_DATA_WIDTH_8;
+-		break;
+-	case 10:
+-		value |= SUN6I_CSI_IF_CFG_DATA_WIDTH_10;
+-		break;
+-	case 12:
+-		value |= SUN6I_CSI_IF_CFG_DATA_WIDTH_12;
+-		break;
+-	default:
+-		dev_warn(dev, "unsupported bus width: %u\n", bus_width);
+-		break;
+-	}
+-
+-	regmap_write(regmap, SUN6I_CSI_IF_CFG_REG, value);
+-}
+-
+-static void sun6i_csi_capture_configure_format(struct sun6i_csi_device *csi_dev)
+-{
+-	struct regmap *regmap = csi_dev->regmap;
+-	const struct sun6i_csi_bridge_format *bridge_format;
+-	const struct sun6i_csi_capture_format *capture_format;
+-	u32 mbus_code, pixelformat, field;
+-	u8 input_format, input_yuv_seq, output_format;
+-	u32 value = 0;
+-
+-	sun6i_csi_capture_format(csi_dev, &pixelformat, &field);
+-	sun6i_csi_bridge_format(csi_dev, &mbus_code, NULL);
+-
+-	bridge_format = sun6i_csi_bridge_format_find(mbus_code);
+-	if (WARN_ON(!bridge_format))
+-		return;
+-
+-	input_format = bridge_format->input_format;
+-	input_yuv_seq = bridge_format->input_yuv_seq;
+-
 -	capture_format = sun6i_csi_capture_format_find(pixelformat);
 -	if (WARN_ON(!capture_format))
 -		return;
-+		capture_format = sun6i_csi_capture_format_find(pixelformat);
-+		if (WARN_ON(!capture_format))
-+			return;
- 
+-
 -	if (capture_format->input_format_raw)
 -		input_format = SUN6I_CSI_INPUT_FMT_RAW;
-+		if (capture_format->input_format_raw)
-+			input_format = SUN6I_CSI_INPUT_FMT_RAW;
- 
+-
 -	if (capture_format->input_yuv_seq_invert)
 -		input_yuv_seq = bridge_format->input_yuv_seq_invert;
-+		if (capture_format->input_yuv_seq_invert)
-+			input_yuv_seq = bridge_format->input_yuv_seq_invert;
- 
+-
 -	if (field == V4L2_FIELD_INTERLACED ||
 -	    field == V4L2_FIELD_INTERLACED_TB ||
 -	    field == V4L2_FIELD_INTERLACED_BT)
 -		output_format = capture_format->output_format_field;
 -	else
 -		output_format = capture_format->output_format_frame;
-+		if (field == V4L2_FIELD_INTERLACED ||
-+		    field == V4L2_FIELD_INTERLACED_TB ||
-+		    field == V4L2_FIELD_INTERLACED_BT)
-+			output_format = capture_format->output_format_field;
-+		else
-+			output_format = capture_format->output_format_frame;
-+
-+		value |= SUN6I_CSI_CH_CFG_OUTPUT_FMT(output_format);
-+	}
- 
+-
 -	value |= SUN6I_CSI_CH_CFG_OUTPUT_FMT(output_format);
- 	value |= SUN6I_CSI_CH_CFG_INPUT_FMT(input_format);
- 	value |= SUN6I_CSI_CH_CFG_INPUT_YUV_SEQ(input_yuv_seq);
+-	value |= SUN6I_CSI_CH_CFG_INPUT_FMT(input_format);
+-	value |= SUN6I_CSI_CH_CFG_INPUT_YUV_SEQ(input_yuv_seq);
+-
+-	if (field == V4L2_FIELD_TOP)
+-		value |= SUN6I_CSI_CH_CFG_FIELD_SEL_FIELD0;
+-	else if (field == V4L2_FIELD_BOTTOM)
+-		value |= SUN6I_CSI_CH_CFG_FIELD_SEL_FIELD1;
+-	else
+-		value |= SUN6I_CSI_CH_CFG_FIELD_SEL_EITHER;
+-
+-	regmap_write(regmap, SUN6I_CSI_CH_CFG_REG, value);
+-}
+-
+-static void sun6i_csi_capture_configure_window(struct sun6i_csi_device *csi_dev)
++void sun6i_csi_capture_configure(struct sun6i_csi_device *csi_dev)
+ {
+ 	struct regmap *regmap = csi_dev->regmap;
+ 	const struct sun6i_csi_capture_format *format;
+@@ -624,13 +433,6 @@ static void sun6i_csi_capture_configure_window(struct sun6i_csi_device *csi_dev)
+ 		     SUN6I_CSI_CH_BUF_LEN_LUMA_LINE(luma_line));
+ }
  
-@@ -406,6 +410,7 @@ static int sun6i_csi_bridge_s_stream(struct v4l2_subdev *subdev, int on)
- 	struct sun6i_csi_device *csi_dev = v4l2_get_subdevdata(subdev);
- 	struct sun6i_csi_bridge *bridge = &csi_dev->bridge;
- 	struct media_entity *bridge_entity = &bridge->subdev.entity;
-+	bool capture_streaming = csi_dev->capture.state.streaming;
- 	struct device *dev = csi_dev->dev;
- 	struct sun6i_csi_bridge_source *source;
- 	struct v4l2_subdev *source_subdev;
-@@ -448,15 +453,20 @@ static int sun6i_csi_bridge_s_stream(struct v4l2_subdev *subdev, int on)
- 	/* Configure */
+-static void sun6i_csi_capture_configure(struct sun6i_csi_device *csi_dev)
+-{
+-	sun6i_csi_capture_configure_interface(csi_dev);
+-	sun6i_csi_capture_configure_format(csi_dev);
+-	sun6i_csi_capture_configure_window(csi_dev);
+-}
+-
+ /* State */
  
- 	sun6i_csi_bridge_configure(csi_dev, source);
--	sun6i_csi_capture_configure(csi_dev);
-+
-+	if (capture_streaming)
-+		sun6i_csi_capture_configure(csi_dev);
+ static void sun6i_csi_capture_state_cleanup(struct sun6i_csi_device *csi_dev,
+@@ -670,7 +472,7 @@ static void sun6i_csi_capture_state_cleanup(struct sun6i_csi_device *csi_dev,
+ 	spin_unlock_irqrestore(&state->lock, flags);
+ }
  
- 	/* State Update */
+-static void sun6i_csi_capture_state_update(struct sun6i_csi_device *csi_dev)
++void sun6i_csi_capture_state_update(struct sun6i_csi_device *csi_dev)
+ {
+ 	struct sun6i_csi_capture_state *state = &csi_dev->capture.state;
+ 	struct sun6i_csi_buffer *csi_buffer;
+@@ -803,11 +605,9 @@ static int sun6i_csi_capture_start_streaming(struct vb2_queue *queue,
+ 					     unsigned int count)
+ {
+ 	struct sun6i_csi_device *csi_dev = vb2_get_drv_priv(queue);
+-	struct sun6i_csi_capture *capture = &csi_dev->capture;
+-	struct sun6i_csi_capture_state *state = &capture->state;
+-	struct video_device *video_dev = &capture->video_dev;
++	struct sun6i_csi_capture_state *state = &csi_dev->capture.state;
++	struct video_device *video_dev = &csi_dev->capture.video_dev;
+ 	struct v4l2_subdev *subdev = &csi_dev->bridge.subdev;
+-	struct device *dev = csi_dev->dev;
+ 	int ret;
  
--	sun6i_csi_capture_state_update(csi_dev);
-+	if (capture_streaming)
-+		sun6i_csi_capture_state_update(csi_dev);
- 
- 	/* Enable */
- 
--	sun6i_csi_bridge_irq_enable(csi_dev);
-+	if (capture_streaming)
-+		sun6i_csi_bridge_irq_enable(csi_dev);
-+
- 	sun6i_csi_bridge_enable(csi_dev);
- 
- 	ret = v4l2_subdev_call(source_subdev, video, s_stream, 1);
-@@ -466,7 +476,9 @@ static int sun6i_csi_bridge_s_stream(struct v4l2_subdev *subdev, int on)
- 	return 0;
- 
- disable:
--	sun6i_csi_bridge_irq_disable(csi_dev);
-+	if (capture_streaming)
-+		sun6i_csi_bridge_irq_disable(csi_dev);
-+
- 	sun6i_csi_bridge_disable(csi_dev);
- 
- 	pm_runtime_put(dev);
-diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.c b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.c
-index 36ddc190a919..c9e7526b84c4 100644
---- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.c
-+++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.c
-@@ -616,13 +616,17 @@ static int sun6i_csi_capture_start_streaming(struct vb2_queue *queue,
+ 	state->sequence = 0;
+@@ -816,41 +616,12 @@ static int sun6i_csi_capture_start_streaming(struct vb2_queue *queue,
  	if (ret < 0)
  		goto error_state;
  
-+	state->streaming = true;
-+
+-	/* PM */
+-
+-	ret = pm_runtime_resume_and_get(dev);
+-	if (ret < 0)
+-		goto error_media_pipeline;
+-
+-	/* Clear */
+-
+-	sun6i_csi_capture_irq_clear(csi_dev);
+-
+-	/* Configure */
+-
+-	sun6i_csi_capture_configure(csi_dev);
+-
+-	/* State Update */
+-
+-	sun6i_csi_capture_state_update(csi_dev);
+-
+-	/* Enable */
+-
+-	sun6i_csi_capture_irq_enable(csi_dev);
+-	sun6i_csi_capture_enable(csi_dev);
+-
  	ret = v4l2_subdev_call(subdev, video, s_stream, 1);
  	if (ret && ret != -ENOIOCTLCMD)
--		goto error_media_pipeline;
-+		goto error_streaming;
+-		goto error_stream;
++		goto error_media_pipeline;
  
  	return 0;
  
--error_media_pipeline:
-+error_streaming:
-+	state->streaming = false;
-+
+-error_stream:
+-	sun6i_csi_capture_disable(csi_dev);
+-	sun6i_csi_capture_irq_disable(csi_dev);
+-
+-	pm_runtime_put(dev);
+-
+ error_media_pipeline:
  	media_pipeline_stop(&video_dev->entity);
  
- error_state:
-@@ -634,11 +638,14 @@ static int sun6i_csi_capture_start_streaming(struct vb2_queue *queue,
+@@ -863,18 +634,12 @@ static int sun6i_csi_capture_start_streaming(struct vb2_queue *queue,
  static void sun6i_csi_capture_stop_streaming(struct vb2_queue *queue)
  {
  	struct sun6i_csi_device *csi_dev = vb2_get_drv_priv(queue);
-+	struct sun6i_csi_capture_state *state = &csi_dev->capture.state;
- 	struct video_device *video_dev = &csi_dev->capture.video_dev;
+-	struct sun6i_csi_capture *capture = &csi_dev->capture;
++	struct video_device *video_dev = &csi_dev->capture.video_dev;
  	struct v4l2_subdev *subdev = &csi_dev->bridge.subdev;
+-	struct device *dev = csi_dev->dev;
  
  	v4l2_subdev_call(subdev, video, s_stream, 0);
  
-+	state->streaming = false;
-+
- 	media_pipeline_stop(&video_dev->entity);
+-	sun6i_csi_capture_disable(csi_dev);
+-	sun6i_csi_capture_irq_disable(csi_dev);
+-
+-	pm_runtime_put(dev);
+-
+-	media_pipeline_stop(&capture->video_dev.entity);
++	media_pipeline_stop(&video_dev->entity);
  
  	sun6i_csi_capture_state_cleanup(csi_dev, true);
+ }
 diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.h b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.h
-index ceceb030aef6..29893cf96f6b 100644
+index 2605b16f091c..a61db3bc72e5 100644
 --- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.h
 +++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.h
-@@ -44,6 +44,7 @@ struct sun6i_csi_capture_state {
- 	struct sun6i_csi_buffer		*complete;
+@@ -63,6 +63,9 @@ void sun6i_csi_capture_format(struct sun6i_csi_device *csi_dev,
+ const
+ struct sun6i_csi_capture_format *sun6i_csi_capture_format_find(u32 pixelformat);
  
- 	unsigned int			sequence;
-+	bool				streaming;
- };
++void sun6i_csi_capture_configure(struct sun6i_csi_device *csi_dev);
++void sun6i_csi_capture_state_update(struct sun6i_csi_device *csi_dev);
++
+ void sun6i_csi_capture_sync(struct sun6i_csi_device *csi_dev);
+ void sun6i_csi_capture_frame_done(struct sun6i_csi_device *csi_dev);
  
- struct sun6i_csi_capture {
 -- 
 2.36.1
 
