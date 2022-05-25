@@ -2,59 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 434A0C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 22:26:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58DAEC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 22:26:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345423AbiEYW0g (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 18:26:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55538 "EHLO
+        id S231669AbiEYW0l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 18:26:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345411AbiEYW0V (ORCPT
+        with ESMTP id S1345368AbiEYW0N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 18:26:21 -0400
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CC3326EA
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 15:26:16 -0700 (PDT)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2f7dbceab08so188482977b3.10
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 15:26:16 -0700 (PDT)
+        Wed, 25 May 2022 18:26:13 -0400
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5285B10F
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 15:26:10 -0700 (PDT)
+Received: by mail-pj1-x1049.google.com with SMTP id on14-20020a17090b1d0e00b001c7a548e4f7so2003614pjb.2
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 15:26:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=sP4pft3yTMhXYmyTAUA9SDM5ympNXK0fw2aWJc3LaWM=;
-        b=nt8xIxammCWBKmuZkiAyG5Rfz8Wi+6snvbgkikf7esrJCQZz6kOdx+Day2vV2sO0s0
-         Cdb9tCPtVcRNZKt9tqyi+H5WzmOtP9vbdXPm2NDP6a8FFSA/gHxOYDC2wY6a9+Htd0e8
-         WG676KXqy6xskD362nmb8T+9mg3JeTqIe8sFrphUxixgMSIHs3djCBOpnx8fwJyY6dx/
-         6cZpOzp9DAkrASVkngVbSfTtsygFC8F1gfailABOosvp7tpqSETO9M9PnMf2HyPGPb5E
-         n4lzS3Q2DZJVTrUKbsyaZx/8wt3mfVyuMnZ1aemACgJSNb4mb3/SmPfPwnY/YRvAl9/E
-         no5w==
+        bh=1+sE54bQx2t4fwpbWEt17sU4LeDI45Rz3nd8Z1fxEVM=;
+        b=ShFQVD12P8JMQ//0COOqBxO64VBS2rO4ICn0VoixRym+8gf7yxI5GUCZwQa/dMooZZ
+         zNj9bZnqXh6tAOLyWobqHp7Yo6b1qsvfxeaDZbVB87VtxVPq2wCD/RGxCYYFLaCe5kAy
+         bUrnz0suGuIVrHH3yNidW0GXjtZYuxoRBQfPYnPVmhB0JYIb/Q0LZKfmmDM1rq12GeE4
+         sWjYbFS8TWnaTCjTouv4h7bs6aW21oT6MGJjHjqGSf0Ej0oPq9jCCHZjuzPdTMBqdSj7
+         0iv2lnADB6batSLynOoQ5dB9Vg2lm7vggQz5JVZroRUQhzavtTSt6sQU6nnRTKGGZHwb
+         tdQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=sP4pft3yTMhXYmyTAUA9SDM5ympNXK0fw2aWJc3LaWM=;
-        b=ZncLOwk6lw5hEAZ7RjzhdztI6EyJPZ61w7zyNOV8VLkl0Ws+tAey58vX5KXHT4SQ44
-         J39LOhRIGtdJQUOcX+5SppaehzaEfNALNqy5mLbFTSv+rMf9oREzmAUcAio757N2S9BH
-         f3HtbhR5KJo8p0rUXwuq1pGnrvNKh9cTqoju6TEKRSRVjznS7VabU0rP7mKM+XVTqhW9
-         6oqlvZKsHddkdlngzi3AmaLewVYMRGFMG1lIafvjhpdoVd7bDF73OfluNZIIgB6epl/Q
-         X2JapEwnHsE7zhfSoIpk+W0n6ffJoGlbvKV5ysEW7uaqAYJ97oICXqnj0/oG9STy2KYN
-         mmOg==
-X-Gm-Message-State: AOAM5336I6Jq4MOs2Zf9z2dyxgQ7J272cYfU34p0+QIVdIxYR0Y3l2dv
-        nwmR7XvADVEr5yofUEUjytTJtLryDek=
-X-Google-Smtp-Source: ABdhPJyJ4tmdcPftxWFkmif8ejJIr/nQV0DAemlOUfspDQk7AN8fRlvb33qyuKNBkQq4K+vySs4+bJ4qE7Q=
+        bh=1+sE54bQx2t4fwpbWEt17sU4LeDI45Rz3nd8Z1fxEVM=;
+        b=ngC2r8quACrPUbB9is6nPyml5ABInONGU6UYjnaA08YFlhHr1DgBkBUtPbWcQjIxiD
+         ZEooMlVddgDnrUrQIffDvLKWr6PGB14u56aBQ3YNI2Wos41BsTivblrlzY6nUh6N0FZ7
+         hdG7KgBHKGLq24pgonoD+67JdamdguOl9D5r27HemdERfbcmVU7wZ6EJqjKmXZy0ra1D
+         q5Cav5Ojg5jrsooaegGYb33ZrdgsReY+nKxNhXWNVImYNz8XuY0eEnWAJTa2ZJwhG4AO
+         GlZCtqrT5fPSwTIJi6gAs/9+Mctb6TRHpUB+Och/huP8KYDKuAA6dnnbZUA3V4o9rrl+
+         6aMg==
+X-Gm-Message-State: AOAM533GxsXNfnCMTDrUPkCu9OJWXtj+s6wJfAz5XBC+Mpl9ikb+s9N2
+        XCPIAplztT8geIC8nwBlML7+V56w49s=
+X-Google-Smtp-Source: ABdhPJxzEOOjvl7kgGks3plOPdNixXYXYcduS3W+WrJEIL+vcj1zZdB3vif0SZDFUx6i5RTW5fMkKhe71nU=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a25:cb17:0:b0:64f:5939:533 with SMTP id
- b23-20020a25cb17000000b0064f59390533mr27804829ybg.105.1653517575274; Wed, 25
- May 2022 15:26:15 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a17:90b:38ce:b0:1e0:5bb2:9316 with SMTP id
+ nn14-20020a17090b38ce00b001e05bb29316mr12652709pjb.51.1653517569704; Wed, 25
+ May 2022 15:26:09 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Wed, 25 May 2022 22:26:04 +0000
+Date:   Wed, 25 May 2022 22:26:01 +0000
 In-Reply-To: <20220525222604.2810054-1-seanjc@google.com>
-Message-Id: <20220525222604.2810054-5-seanjc@google.com>
+Message-Id: <20220525222604.2810054-2-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220525222604.2810054-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.1.124.g0e6072fb45-goog
-Subject: [PATCH 4/4] KVM: x86: Use 16-bit fields to track dirty/valid emulator GPRs
+Subject: [PATCH 1/4] KVM: x86: Grab regs_dirty in local 'unsigned long'
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -69,53 +68,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use a u16 instead of a u32 to track the dirty/valid status of GPRs in the
-emulator.  Unlike struct kvm_vcpu_arch, x86_emulate_ctxt tracks only the
-"true" GPRs, i.e. doesn't include RIP in its array, and so only needs to
-track 16 registers.
-
-Note, having 16 GPRs is a fundamental property of x86-64 and will not
-change barring a massive architecture update.  Legacy x86 ModRM and SIB
-encodings use 3 bits for GPRs, i.e. support 8 registers.  x86-64 uses a
-single bit in the REX prefix for each possible reference type to double
-the number of supported GPRs to 16 registers (4 bits).
+Capture ctxt->regs_dirty in a local 'unsigned long' instead of casting
+ctxt->regs_dirty to an 'unsigned long *' for use in for_each_set_bit().
+The bitops helpers really do read the entire 'unsigned long', even though
+the walking of the read value is capped at the specified size.  I.e. KVM
+is reading memory beyond ctxt->regs_dirty.  Functionally it's not an
+issue because regs_dirty is in the middle of x86_emulate_ctxt, i.e. KVM
+is just reading its own memory, but relying on that coincidence is gross
+and unsafe.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- arch/x86/kvm/emulate.c     | 3 +++
- arch/x86/kvm/kvm_emulate.h | 4 ++--
- 2 files changed, 5 insertions(+), 2 deletions(-)
+ arch/x86/kvm/emulate.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/arch/x86/kvm/emulate.c b/arch/x86/kvm/emulate.c
-index dd1bf116a9ed..afb115b6a5a4 100644
+index 89b11e7dca8a..7226a127ccb4 100644
 --- a/arch/x86/kvm/emulate.c
 +++ b/arch/x86/kvm/emulate.c
-@@ -262,6 +262,9 @@ static ulong *reg_write(struct x86_emulate_ctxt *ctxt, unsigned nr)
- 	if (WARN_ON_ONCE(nr >= NR_EMULATOR_GPRS))
- 		nr &= NR_EMULATOR_GPRS - 1;
+@@ -269,9 +269,10 @@ static ulong *reg_rmw(struct x86_emulate_ctxt *ctxt, unsigned nr)
  
-+	BUILD_BUG_ON(sizeof(ctxt->regs_dirty) * BITS_PER_BYTE < NR_EMULATOR_GPRS);
-+	BUILD_BUG_ON(sizeof(ctxt->regs_valid) * BITS_PER_BYTE < NR_EMULATOR_GPRS);
-+
- 	ctxt->regs_valid |= 1 << nr;
- 	ctxt->regs_dirty |= 1 << nr;
- 	return &ctxt->_regs[nr];
-diff --git a/arch/x86/kvm/kvm_emulate.h b/arch/x86/kvm/kvm_emulate.h
-index bdd4e9865ca9..fbe87ba78163 100644
---- a/arch/x86/kvm/kvm_emulate.h
-+++ b/arch/x86/kvm/kvm_emulate.h
-@@ -353,9 +353,9 @@ struct x86_emulate_ctxt {
- 	u8 lock_prefix;
- 	u8 rep_prefix;
- 	/* bitmaps of registers in _regs[] that can be read */
--	u32 regs_valid;
-+	u16 regs_valid;
- 	/* bitmaps of registers in _regs[] that have been written */
--	u32 regs_dirty;
-+	u16 regs_dirty;
- 	/* modrm */
- 	u8 modrm;
- 	u8 modrm_mod;
+ static void writeback_registers(struct x86_emulate_ctxt *ctxt)
+ {
++	unsigned long dirty = ctxt->regs_dirty;
+ 	unsigned reg;
+ 
+-	for_each_set_bit(reg, (ulong *)&ctxt->regs_dirty, 16)
++	for_each_set_bit(reg, &dirty, 16)
+ 		ctxt->ops->write_gpr(ctxt, reg, ctxt->_regs[reg]);
+ }
+ 
 -- 
 2.36.1.124.g0e6072fb45-goog
 
