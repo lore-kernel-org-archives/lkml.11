@@ -2,110 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08C66C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 14:47:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C977C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 25 May 2022 14:48:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237623AbiEYOq7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 10:46:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41168 "EHLO
+        id S241810AbiEYOsl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 10:48:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231563AbiEYOqy (ORCPT
+        with ESMTP id S229865AbiEYOsj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 10:46:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A45C583A2;
-        Wed, 25 May 2022 07:46:54 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B6743B81E06;
-        Wed, 25 May 2022 14:46:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10057C385B8;
-        Wed, 25 May 2022 14:46:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653490011;
-        bh=MGUAjBfT1CfsgNrG6C6NIIrhHiPumGmBrh4GcIxCtA0=;
-        h=From:To:Cc:Subject:Date:From;
-        b=hX9yzkErUAL5MhY/2FtubfyBZIkfecq3HKFSPqvL58h1mJ9G/WQDBV6/bKs0xCHZ5
-         QK2XzUvIUH4sonpCw0JQs4h/fHNlIlQUdSm8G+b4N7QntzFRlYT/3hGb3wYY73HZ9V
-         d/ilw7LuowTXYpPQz3Dywvtxt6m+hoAYgeAp2E+cI8Zq4Wkv9RB2Lic+Xdq+K7TdFP
-         AE3wrhA3Y+RQxXQNM1ifKTt1Z1bOZPMVbKslcErHRiq7Hi49MLHq9udD5vni9v2vxy
-         4goFv1Iew1MjFsYWCGgRND+POLn4K097Me5NQiUd4/MsVPef4MnF45GVlY/Uj+oiMW
-         37kSNjv1+GioA==
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Andrew Morton <akpm@linux-foundation.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Jiri Slaby <jirislaby@kernel.org>, llvm@lists.linux.dev,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Bjorn Helgaas <bhelgaas@google.com>
-Subject: [PATCH] Revert "linux/types.h: remove unnecessary __bitwise__"
-Date:   Wed, 25 May 2022 09:46:38 -0500
-Message-Id: <20220525144638.293934-1-helgaas@kernel.org>
+        Wed, 25 May 2022 10:48:39 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52D2B6CF59
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 07:48:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653490118; x=1685026118;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=+zf9BLb1YsbTyRecGKN57FpFRihXjMy/F9uE9o3MsKg=;
+  b=etV9nnO3air4BNVBLHXuW550kAszXcHj8aDDS7Ukg4I8sERTZx4sJdYN
+   KXCMbdlF4HkSacnEc3uF8aW3U7VR3wXoatfvWZgeeBuetAM1s5NlGbbY8
+   jNlnm+gBIYAEJM3++kaLanTaAz8vWPDHfMcBcvUXZZAYJ65V1d3KK/OYr
+   lICJf3Id9vmbZAr+RMNKJy80Yrjb0qow/kbILjW11JsdpjAKUb/AwOSZo
+   S2jyrN7LFqSkzPKrMxkeqe8mbh8aCzz7tTcZYk21BMXOOC1BTWsgB9IJf
+   yjUZFL2UZ1d/4gHHRJDDpbSfpxmE0oe0kRqbgWtZmGJhW6cMkDXGON6tR
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10358"; a="253703392"
+X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
+   d="scan'208";a="253703392"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2022 07:48:38 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
+   d="scan'208";a="549050144"
+Received: from dev2.igk.intel.com ([10.237.148.94])
+  by orsmga006.jf.intel.com with ESMTP; 25 May 2022 07:48:36 -0700
+From:   =?UTF-8?q?Amadeusz=20S=C5=82awi=C5=84ski?= 
+        <amadeuszx.slawinski@linux.intel.com>
+To:     Vineet Gupta <vgupta@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     linux-snps-arc@lists.infradead.org,
+        linux-m68k@lists.linux-m68k.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Amadeusz=20S=C5=82awi=C5=84ski?= 
+        <amadeuszx.slawinski@linux.intel.com>
+Subject: [PATCH 1/2] ARC: bitops: Change __fls to return unsigned long
+Date:   Wed, 25 May 2022 16:48:43 +0200
+Message-Id: <20220525144844.1571705-2-amadeuszx.slawinski@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220525144844.1571705-1-amadeuszx.slawinski@linux.intel.com>
+References: <20220525144844.1571705-1-amadeuszx.slawinski@linux.intel.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bjorn Helgaas <bhelgaas@google.com>
+As per asm-generic definition and other architectures __fls should
+return unsigned long.
 
-This reverts commit c724c866bb70cb8c607081a26823a1f0ebde4387.
+No functional change is expected as return value should fit in unsigned
+long.
 
-Jiri Slaby reported that c724c866bb70 ("linux/types.h: remove unnecessary
-__bitwise__") broke userspace, including open-iscsi, because it uses
-__bitwise__.
-
-Restore the __bitwise__ definition.
-
-Link: https://lore.kernel.org/r/b5c0a68d-8387-4909-beea-f70ab9e6e3d5@kernel.org
-Reported-by: Jiri Slaby <jirislaby@kernel.org>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Signed-off-by: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
 ---
- include/uapi/linux/types.h  | 5 +++--
- tools/include/linux/types.h | 5 +++--
- 2 files changed, 6 insertions(+), 4 deletions(-)
+ arch/arc/include/asm/bitops.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/uapi/linux/types.h b/include/uapi/linux/types.h
-index c4dc597f3dcf..2415d5dcb5d3 100644
---- a/include/uapi/linux/types.h
-+++ b/include/uapi/linux/types.h
-@@ -21,10 +21,11 @@
- 
- /* sparse defines __CHECKER__; see Documentation/dev-tools/sparse.rst */
- #ifdef __CHECKER__
--#define __bitwise	__attribute__((bitwise))
-+#define __bitwise__ __attribute__((bitwise))
- #else
--#define __bitwise
-+#define __bitwise__
- #endif
-+#define __bitwise __bitwise__
- 
- typedef __u16 __bitwise __le16;
- typedef __u16 __bitwise __be16;
-diff --git a/tools/include/linux/types.h b/tools/include/linux/types.h
-index 051fdeaf2670..5908e58c3598 100644
---- a/tools/include/linux/types.h
-+++ b/tools/include/linux/types.h
-@@ -43,10 +43,11 @@ typedef __u8  u8;
- typedef __s8  s8;
- 
- #ifdef __CHECKER__
--#define __bitwise	__attribute__((bitwise))
-+#define __bitwise__ __attribute__((bitwise))
- #else
--#define __bitwise
-+#define __bitwise__
- #endif
-+#define __bitwise __bitwise__
- 
- #define __force
- #define __user
+diff --git a/arch/arc/include/asm/bitops.h b/arch/arc/include/asm/bitops.h
+index bdb7e190a294..4076607e7168 100644
+--- a/arch/arc/include/asm/bitops.h
++++ b/arch/arc/include/asm/bitops.h
+@@ -82,7 +82,7 @@ static inline __attribute__ ((const)) int fls(unsigned int x)
+ /*
+  * __fls: Similar to fls, but zero based (0-31)
+  */
+-static inline __attribute__ ((const)) int __fls(unsigned long x)
++static inline __attribute__ ((const)) unsigned long __fls(unsigned long x)
+ {
+ 	if (!x)
+ 		return 0;
 -- 
 2.25.1
 
