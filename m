@@ -2,143 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAF38C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 00:39:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A6B8C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 00:39:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344563AbiEZAjE (ORCPT
+        id S1344599AbiEZAjs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 20:39:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58352 "EHLO
+        Wed, 25 May 2022 20:39:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236465AbiEZAi7 (ORCPT
+        with ESMTP id S240789AbiEZAjn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 20:38:59 -0400
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07FA9B82D4
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 17:38:58 -0700 (PDT)
-Received: by mail-pf1-x436.google.com with SMTP id 202so438019pfu.0
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 17:38:57 -0700 (PDT)
+        Wed, 25 May 2022 20:39:43 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D066AE264
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 17:39:42 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id 202so439121pfu.0
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 17:39:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=7P8MdhBUHeNYERj02eaiVlo3+1akuXNgpyLjujYYpb0=;
-        b=nGnImQMrxcKuAMPfn2cnaf9VK34koPZI6BdWd8L/dvJkOmKEczFMWc8Yx7hsQFZeVL
-         9KLxd0tBqQk1/z15iyaTJQGyj+rpJcqO/oigF6/cI0x8g+X/Xo/VBfVgAonu8k6z7tAw
-         rX3SONGBqur0M8KowUWh/wmc3aYT+yOgmGgvthbF1GbnQhkOPFYSCTfv0l7sg5kj2jls
-         D/lYOdddeRohuY3mRJGYNVA5mDFRmRi5K+xU9HMyUH4O1+TPylZTZEwi6U0ynqv/r7ZQ
-         PEcsEwLY3XMn7/TlPZPqXhp0uzspbOfW5miRUT3ck3ZbCGUmofEeJzc2ijyz7b5LJr0L
-         9x9Q==
+        d=dabbelt-com.20210112.gappssmtp.com; s=20210112;
+        h=date:subject:in-reply-to:cc:from:to:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lmgayds5UtNEFyHbtMEOI/udLkmrlP9KZ5Zh1sLLZwU=;
+        b=Ki9BjClaDu10N/8XW3YdIW+aM9JwTsK5eJ7ZRizWaJukpFsCAC9ZVrj4tbtrzZxBxG
+         q+3cCEvBD0cDVSaL4Tr+XC1OghoMfUyMa4uN2DTbk69pTjL7mdMbSom+dpWfKDxBW6y/
+         xqc91eVk9bYknMBKuiJAKdA7vLgLi7sNExBcT9eaRTbBCMEyBduY+COgJy7RZ8KrViWs
+         vuH+NavQ0uvbD3M8F+vNl1yrN18rEJDYdhcHqWFCy6D3jpCs2l37ztahBQNKMYvjgqop
+         eRzAbYDCBI+hhnfZoV2RHkO+21j4mh7Np3kZeFUYbeSB6fkV+XCclNIDWT5FbtUNjM0k
+         avnQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=7P8MdhBUHeNYERj02eaiVlo3+1akuXNgpyLjujYYpb0=;
-        b=WyUiarZ+63G3hx8W1Y4bYhv2qxx6QdITGgLqcFpJotjuijw9YQ30daOcWJObr+gGbP
-         hRXLfj01K1Rpe5TzXY7kpZgwf8M8rhaA5J0ni4yhrP5YXbd0JOG6J/f8eUzmalcC1mWt
-         idlsHu/JJY0/YA6j1SQ2Zj3q+r1i0ziyFb+UfGFadgm7t+swyrrM0kHCrL9OavzjCmhS
-         XG+helB/Zur9LK9higoQ5d6G9XKcfq/muSIF8XOS+UeHe0bwD7vavjNrl/BNTOOT/Ser
-         C3v355TfyNn0uQdShd5RMo23fLiTBVRd+LSLvBdAJRF4NdeSP5j+ErfCEog2pNziAwyc
-         IsHA==
-X-Gm-Message-State: AOAM532m+kPzH4s0F2IBTjyPNVuZwkawvLAR+wGU+dkPFMvnPH0iKmrx
-        yRKdpKJs/ThrTJ/3VuEp8tk2KQ==
-X-Google-Smtp-Source: ABdhPJxQ2PEcWk8DK3E2AzHueuX2Pq6jI8vVF9DbxayvJeVzlRCPUepbJ8f3PDiOx87ktlbbZyxBrw==
-X-Received: by 2002:a62:1413:0:b0:518:4259:200e with SMTP id 19-20020a621413000000b005184259200emr34153334pfu.41.1653525537153;
-        Wed, 25 May 2022 17:38:57 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id bh8-20020a056a02020800b003f5cc9c31e2sm141353pgb.38.2022.05.25.17.38.56
+        h=x-gm-message-state:date:subject:in-reply-to:cc:from:to:message-id
+         :mime-version:content-transfer-encoding;
+        bh=lmgayds5UtNEFyHbtMEOI/udLkmrlP9KZ5Zh1sLLZwU=;
+        b=ofsD51c6bia/zS+8GnDV/yDrRulZYQOKnp9tuHZy9EWzdBdKt660Q1Zq78i5O/NF2f
+         t2JFPLXaOm0JQLiIeD/JFKlfsR4WnUqzF5iN4jJsQDQuuVI7cXPXdcayM5YeSyHwEaTr
+         PzhjsYOnruaVfNx19ROXjGlB03RbB1FbNFWQstvwJ3sj2uMFsWhEQW+9W2UC/90wzq3w
+         cfFMATgqnniUgTBD46jVj8XCOrnxgP4gN7Y5QCF088LIOVh/aHVS2S5a71yzhUjR+X+O
+         18RWn4dlZib7rAwlkfhF/1kakCZ4Lw2uObQDfPcMeSKCCLi9tTsDwQmR/LadYzTfeZAt
+         TJCw==
+X-Gm-Message-State: AOAM5325v9adjxtV+mNV1UJVhqfoA0SmqUodSrVrLQy1QNtMyzJPirJw
+        CRfpn7oO62ZJ3ZEk2Iocl527gQ==
+X-Google-Smtp-Source: ABdhPJzkH9LzH2tzaLtZljf2U0KKdd7VDbdj19BDT+3tyKSkGkp0zFoN2Hm3IE7OoLNAWn5cRUCeyA==
+X-Received: by 2002:a65:6e9b:0:b0:3c5:f761:2d94 with SMTP id bm27-20020a656e9b000000b003c5f7612d94mr30378283pgb.79.1653525581600;
+        Wed, 25 May 2022 17:39:41 -0700 (PDT)
+Received: from localhost ([12.3.194.138])
+        by smtp.gmail.com with ESMTPSA id z8-20020a17090a170800b001d93118827asm85801pjd.57.2022.05.25.17.39.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 May 2022 17:38:56 -0700 (PDT)
-Date:   Thu, 26 May 2022 00:38:52 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Johannes Weiner <hannes@cmpxchg.org>
-Cc:     Yosry Ahmed <yosryahmed@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Marc Zyngier <maz@kernel.org>, Tejun Heo <tj@kernel.org>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Oliver Upton <oupton@google.com>,
-        Cgroups <cgroups@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
-        kvm@vger.kernel.org, Linux-MM <linux-mm@kvack.org>
-Subject: Re: [PATCH v4 1/4] mm: add NR_SECONDARY_PAGETABLE to count secondary
- page table uses.
-Message-ID: <Yo7MHA2aUaprvgl8@google.com>
-References: <CAJD7tkY7JF25XXUFq2mGroetMkfo-2zGOaQC94pjZE3D42+oaw@mail.gmail.com>
- <Yn2TGJ4vZ/fst+CY@cmpxchg.org>
- <Yn2YYl98Vhh/UL0w@google.com>
- <Yn5+OtZSSUZZgTQj@cmpxchg.org>
- <Yn6DeEGLyR4Q0cDp@google.com>
- <CALvZod6nERq4j=L0V+pc-rd5+QKi4yb_23tWV-1MF53xL5KE6Q@mail.gmail.com>
- <CAJD7tka-5+XRkthNV4qCg8woPCpjcwynQoRBame-3GP1L8y+WQ@mail.gmail.com>
- <YoeoLJNQTam5fJSu@cmpxchg.org>
- <CAJD7tkYjcmwBeUx-=MTQeUf78uqFDvfpy7OuKy4OvoS7HiVO1Q@mail.gmail.com>
- <Yo4Ze+DZrLqn0PeU@cmpxchg.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yo4Ze+DZrLqn0PeU@cmpxchg.org>
+        Wed, 25 May 2022 17:39:39 -0700 (PDT)
+Date:   Wed, 25 May 2022 17:39:39 -0700 (PDT)
+X-Google-Original-Date: Wed, 25 May 2022 17:39:37 PDT (-0700)
+Subject:     Re: [PATCH] riscv: compat: Using seperated vdso_maps for compat_vdso_info
+In-Reply-To: <48ef770c-75bf-6c37-66fe-9719164bc6e0@roeck-us.net>
+CC:     guoren@kernel.org, Arnd Bergmann <arnd@arndb.de>, heiko@sntech.de,
+        linux-riscv@lists.infradead.org, linux-arch@vger.kernel.org,
+        linux-kernel@vger.kernel.org, guoren@linux.alibaba.com
+From:   Palmer Dabbelt <palmer@dabbelt.com>
+To:     linux@roeck-us.net
+Message-ID: <mhng-7a88227d-dc64-4d87-9e1a-0ea802ddf0a1@palmer-ri-x1c9>
+Mime-Version: 1.0 (MHng)
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 25, 2022, Johannes Weiner wrote:
-> On Tue, May 24, 2022 at 03:31:52PM -0700, Yosry Ahmed wrote:
-> > I don't have enough context to say whether we should piggyback KVM MMU
-> > pages to the existing NR_PAGETABLE item, but from a high level it
-> > seems like it would be more helpful if they are a separate stat.
-> > Anyway, I am willing to go with whatever Sean thinks is best.
-> 
-> Somebody should work this out and put it into a changelog. It's
-> permanent ABI.
+On Wed, 25 May 2022 15:56:07 PDT (-0700), linux@roeck-us.net wrote:
+> On 5/25/22 14:34, Palmer Dabbelt wrote:
+>> On Wed, 25 May 2022 14:15:03 PDT (-0700), linux@roeck-us.net wrote:
+>>> On 5/25/22 09:04, guoren@kernel.org wrote:
+>>>> From: Guo Ren <guoren@linux.alibaba.com>
+>>>>
+>>>> This is a fixup for vdso implementation which caused musl to
+>>>> fail.
+>>>>
+>>>> [   11.600082] Run /sbin/init as init process
+>>>> [   11.628561] init[1]: unhandled signal 11 code 0x1 at
+>>>> 0x0000000000000000 in libc.so[ffffff8ad39000+a4000]
+>>>> [   11.629398] CPU: 0 PID: 1 Comm: init Not tainted
+>>>> 5.18.0-rc7-next-20220520 #1
+>>>> [   11.629462] Hardware name: riscv-virtio,qemu (DT)
+>>>> [   11.629546] epc : 00ffffff8ada1100 ra : 00ffffff8ada13c8 sp :
+>>>> 00ffffffc58199f0
+>>>> [   11.629586]  gp : 00ffffff8ad39000 tp : 00ffffff8ade0998 t0 :
+>>>> ffffffffffffffff
+>>>> [   11.629598]  t1 : 00ffffffc5819fd0 t2 : 0000000000000000 s0 :
+>>>> 00ffffff8ade0cc0
+>>>> [   11.629610]  s1 : 00ffffff8ade0cc0 a0 : 0000000000000000 a1 :
+>>>> 00ffffffc5819a00
+>>>> [   11.629622]  a2 : 0000000000000001 a3 : 000000000000001e a4 :
+>>>> 00ffffffc5819b00
+>>>> [   11.629634]  a5 : 00ffffffc5819b00 a6 : 0000000000000000 a7 :
+>>>> 0000000000000000
+>>>> [   11.629645]  s2 : 00ffffff8ade0ac8 s3 : 00ffffff8ade0ec8 s4 :
+>>>> 00ffffff8ade0728
+>>>> [   11.629656]  s5 : 00ffffff8ade0a90 s6 : 0000000000000000 s7 :
+>>>> 00ffffffc5819e40
+>>>> [   11.629667]  s8 : 00ffffff8ade0ca0 s9 : 00ffffff8addba50 s10:
+>>>> 0000000000000000
+>>>> [   11.629678]  s11: 0000000000000000 t3 : 0000000000000002 t4 :
+>>>> 0000000000000001
+>>>> [   11.629688]  t5 : 0000000000020000 t6 : ffffffffffffffff
+>>>> [   11.629699] status: 0000000000004020 badaddr: 0000000000000000
+>>>> cause: 000000000000000d
+>>>>
+>>>> The last __vdso_init(&compat_vdso_info) replaces the data in normal
+>>>> vdso_info. This is an obvious bug.
+>>>>
+>>>> Reported-by: Guenter Roeck <linux@roeck-us.net>
+>>>> Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
+>>>> Signed-off-by: Guo Ren <guoren@kernel.org>
+>>>> Cc: Palmer Dabbelt <palmer@dabbelt.com>
+>>>> Cc: Heiko Stübner <heiko@sntech.de>
+>>>
+>>> Tested-by: Guenter Roeck <linux@roeck-us.net>
+>>
+>> Sorry I'm a bit buried right now, this is fixing the issue you pointed out earlier?
+>>
+> Yes.
 
-After a lot of waffling, my vote is to add a dedicated NR_SECONDARY_PAGETABLE.
+Awosome, I think that was the only big blocker so far.
 
-It's somewhat redundant from a KVM perspective, as NR_SECONDARY_PAGETABLE will
-scale with KVM's per-VM pages_{4k,2m,1g} stats unless the guest is doing something
-bizarre, e.g. accessing only 4kb chunks of 2mb pages so that KVM is forced to
-allocate a large number of page tables even though the guest isn't accessing that
-much memory.
+I added a musl-based userspace to my test setup, which is rv64-only 
+(buildroot doesn't have rv32 musl, I thought upstream had it but maybe 
+i'm misremembering).  This patch fixes the bug, so I've added it to 
+for-next with
 
-But, someone would need to either understand how KVM works to make that connection,
-or know (or be told) to go look at KVM's stats if they're running VMs to better
-decipher the stats.
+Fixes: 3092eb456375 ("riscv: compat: vdso: Add setup additional pages implementation")
 
-And even in the little bit of time I played with this, I found having
-nr_page_table_pages side-by-side with nr_secondary_page_table_pages to be very
-informative.  E.g. when backing a VM with THP versus HugeTLB,
-nr_secondary_page_table_pages is roughly the same, but nr_page_table_pages is an
-order of a magnitude higher with THP.  I'm guessing the THP behavior is due to
-something triggering DoubleMap, but now I want to find out why that's happening.
+which I think is correct, but LMK if there's an issue.  
 
-So while I'm pretty sure a clever user could glean the same info by cross-referencing
-NR_PAGETABLE stats with KVM stats, I think having NR_SECONDARY_PAGETABLE will at the
-very least prove to be helpful for understanding tradeoffs between VM backing types,
-and likely even steer folks towards potential optimizations.
+Thanks!
 
-Baseline:
-  # grep page_table /proc/vmstat 
-  nr_page_table_pages 2830
-  nr_secondary_page_table_pages 0
+(and also sorry I poked Geert instead of you about this one, oops ;))
 
-THP:
-  # grep page_table /proc/vmstat 
-  nr_page_table_pages 7584
-  nr_secondary_page_table_pages 140
-
-HugeTLB:
-  # grep page_table /proc/vmstat
-  nr_page_table_pages 3153
-  nr_secondary_page_table_pages 153
-
+>
+> Thanks,
+> Guenter
+>
+>>>
+>>>> ---
+>>>>   arch/riscv/kernel/vdso.c | 15 +++++++++++++--
+>>>>   1 file changed, 13 insertions(+), 2 deletions(-)
+>>>>
+>>>> diff --git a/arch/riscv/kernel/vdso.c b/arch/riscv/kernel/vdso.c
+>>>> index 50fe4c877603..69b05b6c181b 100644
+>>>> --- a/arch/riscv/kernel/vdso.c
+>>>> +++ b/arch/riscv/kernel/vdso.c
+>>>> @@ -206,12 +206,23 @@ static struct __vdso_info vdso_info __ro_after_init = {
+>>>>   };
+>>>>
+>>>>   #ifdef CONFIG_COMPAT
+>>>> +static struct vm_special_mapping rv_compat_vdso_maps[] __ro_after_init = {
+>>>> +    [RV_VDSO_MAP_VVAR] = {
+>>>> +        .name   = "[vvar]",
+>>>> +        .fault = vvar_fault,
+>>>> +    },
+>>>> +    [RV_VDSO_MAP_VDSO] = {
+>>>> +        .name   = "[vdso]",
+>>>> +        .mremap = vdso_mremap,
+>>>> +    },
+>>>> +};
+>>>> +
+>>>>   static struct __vdso_info compat_vdso_info __ro_after_init = {
+>>>>       .name = "compat_vdso",
+>>>>       .vdso_code_start = compat_vdso_start,
+>>>>       .vdso_code_end = compat_vdso_end,
+>>>> -    .dm = &rv_vdso_maps[RV_VDSO_MAP_VVAR],
+>>>> -    .cm = &rv_vdso_maps[RV_VDSO_MAP_VDSO],
+>>>> +    .dm = &rv_compat_vdso_maps[RV_VDSO_MAP_VVAR],
+>>>> +    .cm = &rv_compat_vdso_maps[RV_VDSO_MAP_VDSO],
+>>>>   };
+>>>>   #endif
+>>>>
