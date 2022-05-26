@@ -2,174 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F463C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 11:22:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 165E3C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 11:23:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347100AbiEZLWi (ORCPT
+        id S1347169AbiEZLXR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 07:22:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48566 "EHLO
+        Thu, 26 May 2022 07:23:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347158AbiEZLWU (ORCPT
+        with ESMTP id S1347252AbiEZLW6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 07:22:20 -0400
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29CA4112A
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 04:22:01 -0700 (PDT)
-Received: by mail-pf1-x429.google.com with SMTP id y189so1435246pfy.10
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 04:22:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=wRyXjUnbuN8AArPJcHoUjYeWkLPL7LreNSYdLAK0u9k=;
-        b=B0xy+3RUGPdeJE34oJ+ShJjF1I809kPfObCH500XadV1bePmTTJKBRbAD2ieBC+ysO
-         2DT6QUCgLMqGimKyXkICXmUcppD2Ndob6ILn9uZGQyL1ZIT9blB4p4eiiaosTyo08Wwo
-         DFzott6m4wObq8TjrTeBfoL9XLRrNnTPpZg8Y=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=wRyXjUnbuN8AArPJcHoUjYeWkLPL7LreNSYdLAK0u9k=;
-        b=B9G34kFOK1qmOFV1Fel+RojvWpmNd968rGZmLC+IMVX3w19th2nYZ/rW7jqQAAEO2d
-         P3mq0Is9lOhrXAV8DrZF8bBuNj7CN+k0voJeRvjQ+sz5y6WR5HV8B4QcAC8vQKWCyjut
-         w9nMzIWbWCcrkTJfncUgqfwI36BIGEennEc/JWBmD4TKBNJK2WMnc9tm+iQ7wwABcMNe
-         8RwtUdAj6qnt5i48dyAuXbql4WZDbGI025mEofsHpd3uuDl02hrLVE9/mkCR5sKtUVbo
-         eq6SaKEM5bEfzApPcFIq0JiTB3Ga1KafQ1KcrWV9RW1qkm/9V4vz1k8/DK0Q9i8oylnX
-         8QJQ==
-X-Gm-Message-State: AOAM531LVfzu2ilaz1POsu0zWdyDM+oVoRTAl+DO4umtxX4ucapdgsWh
-        vf2BbeuV+T4oOFiyp5H1EIC4AA==
-X-Google-Smtp-Source: ABdhPJxnxtIlJ7ULQJ8KTu/+loAsvXfALnBvt6eaj1i0FdCDRbJ9YrYd6QHBB+uN6hwoH0xG8m7HKg==
-X-Received: by 2002:a63:82c7:0:b0:3f9:e153:6a54 with SMTP id w190-20020a6382c7000000b003f9e1536a54mr23972141pgd.409.1653564121453;
-        Thu, 26 May 2022 04:22:01 -0700 (PDT)
-Received: from localhost (174.71.80.34.bc.googleusercontent.com. [34.80.71.174])
-        by smtp.gmail.com with UTF8SMTPSA id 2-20020a170902e9c200b001614cd997a8sm1230287plk.236.2022.05.26.04.21.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 26 May 2022 04:22:01 -0700 (PDT)
-From:   Joseph Hwang <josephsih@chromium.org>
-To:     linux-bluetooth@vger.kernel.org, marcel@holtmann.org,
-        luiz.dentz@gmail.com, pali@kernel.org
-Cc:     chromeos-bluetooth-upstreaming@chromium.org, josephsih@google.com,
-        Joseph Hwang <josephsih@chromium.org>,
-        Archie Pusaka <apusaka@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH v6 5/5] Bluetooth: let HCI_QUALITY_REPORT persist over adapter power cycle
-Date:   Thu, 26 May 2022 19:21:34 +0800
-Message-Id: <20220526112135.2486883-3-josephsih@chromium.org>
-X-Mailer: git-send-email 2.36.1.124.g0e6072fb45-goog
-In-Reply-To: <20220526112135.2486883-1-josephsih@chromium.org>
-References: <20220526112135.2486883-1-josephsih@chromium.org>
+        Thu, 26 May 2022 07:22:58 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99FC7273C;
+        Thu, 26 May 2022 04:22:30 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 796581F88B;
+        Thu, 26 May 2022 11:22:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1653564149; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Hv0r7+P52bHUfxGCUQuHehbuy065ANoliNcm3V+0PFI=;
+        b=utAQl6liQ+JUOSurMy22DRK/WHQEwUNAJPY0hO3x8ST/3ghDSYABv66ADrFm/rLcXGZbwL
+        id0nrWLqSv+f/Re52lXyOhtxCSs1Tk51+U/rLpTMsbvmdpGjUFczTfQusPkTjTLUvbjwp2
+        1JUNuLjIcjQLoyETNXg5L8Htt00NnlQ=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 58D9513AE3;
+        Thu, 26 May 2022 11:22:29 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id NlXVFPVij2LnOgAAMHmgww
+        (envelope-from <mkoutny@suse.com>); Thu, 26 May 2022 11:22:29 +0000
+Date:   Thu, 26 May 2022 13:22:28 +0200
+From:   Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
+To:     =?utf-8?B?5Y+y5oCd6L+c?= <shisiyuan19870131@gmail.com>
+Cc:     Tejun Heo <tj@kernel.org>, Li Zefan <lizefan@huawei.com>,
+        Johannes Weiner <hannes@cmpxchg.org>, cgroups@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] cgroup: Return if dst_cgrp equals to src_cgrp
+Message-ID: <20220526112228.GG11007@blackbody.suse.cz>
+References: <1653066120-21262-1-git-send-email-shisiyuan@xiaomi.com>
+ <Yo6zAi+Y/uXLYUI7@blackbook>
+ <CAC=y0ud7oPtFqj=dqBSicoWwoN0knAwA6svidiYjbFn9BJMR3w@mail.gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAC=y0ud7oPtFqj=dqBSicoWwoN0knAwA6svidiYjbFn9BJMR3w@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The quality report specifications, including AOSP Bluetooth Quality
-Report and Intel Telemetry Event, do not define what happen when
-the adapter is turned off and then on. To be consistent among
-different specifications and vendors, the quality report feature is
-turned off when the adapter is powered off and is turned on when
-the adapter is powered on if the feature has been on before power
-cycle.
+On Thu, May 26, 2022 at 12:40:17PM +0800, 史思远 <shisiyuan19870131@gmail.com> wrote:
+> echo 1413 >  /dev/cpuset/foreground/cgroup.procs
+> echo 1413 >  /dev/cpuset/foreground/cgroup.procs
+> echo 1413 >  /dev/cpuset/foreground/cgroup.procs
 
-Signed-off-by: Joseph Hwang <josephsih@chromium.org>
-Reviewed-by: Archie Pusaka <apusaka@chromium.org>
----
+Thank you.
 
-(no changes since v5)
+> In this situation, since the second echo, dst_cgrp equals to src_cgrp(both
+> cgroups are the 'foreground' cpuset).
+> cgroup1_procs_write（）-> __cgroup1_procs_write()
+> -> cgrp = cgroup_kn_lock_live()
+> -> task = cgroup_procs_write_start(buf...)
+> -> cgroup_attach_task(cgrp, task, threadgroup);
+>   -> 1) cgroup_migrate_add_src(task_css_set(task), dst_cgrp, &mgctx);  //
+> detect the (src_cgrp == dst_cgrp), don't need to continue the following
+> migration flow.
+>   -> 2) cgroup_migrate_prepare_dst(&mgctx)
 
-Changes in v5:
-- This is a new patch in this series changes version.
+Here, I'd like to let you know about [1]
 
- include/net/bluetooth/hci_core.h |  1 -
- net/bluetooth/hci_sync.c         | 35 +++++++++++++++++++++++++++++++-
- 2 files changed, 34 insertions(+), 2 deletions(-)
+>   -> 3) cgroup_migrate(leader, threadgroup, &mgctx)
+>   -> 4) cgroup_migrate_finish(&mgctx) // cleanup
+> -> cgroup_procs_write_finish();  // cleanup
 
-diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
-index 9e48d606591e..5788350efa68 100644
---- a/include/net/bluetooth/hci_core.h
-+++ b/include/net/bluetooth/hci_core.h
-@@ -807,7 +807,6 @@ extern struct mutex hci_cb_list_lock;
- 		hci_dev_clear_flag(hdev, HCI_LE_ADV);		\
- 		hci_dev_clear_flag(hdev, HCI_LL_RPA_RESOLUTION);\
- 		hci_dev_clear_flag(hdev, HCI_PERIODIC_INQ);	\
--		hci_dev_clear_flag(hdev, HCI_QUALITY_REPORT);	\
- 	} while (0)
- 
- #define hci_dev_le_state_simultaneous(hdev) \
-diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
-index a6ada9dcede5..12a18d046bb6 100644
---- a/net/bluetooth/hci_sync.c
-+++ b/net/bluetooth/hci_sync.c
-@@ -3849,6 +3849,31 @@ static const struct {
- 			 "advertised, but not supported.")
- };
- 
-+static void suspend_resume_quality_report(struct hci_dev *hdev, bool enable)
-+{
-+	int err;
-+
-+	/* Suspend and resume quality report only when the feature has
-+	 * already been enabled. The HCI_QUALITY_REPORT flag, as an indicator
-+	 * whether to re-enable the feature after resume, is not changed by
-+	 * suspend/resume.
-+	 */
-+	if (!hci_dev_test_flag(hdev, HCI_QUALITY_REPORT))
-+		return;
-+
-+	if (hdev->set_quality_report)
-+		err = hdev->set_quality_report(hdev, enable);
-+	else
-+		err = aosp_set_quality_report(hdev, enable);
-+
-+	if (err)
-+		bt_dev_err(hdev, "%s quality report error %d",
-+			   enable ? "resume" : "suspend", err);
-+	else
-+		bt_dev_info(hdev, "%s quality report",
-+			    enable ? "resume" : "suspend");
-+}
-+
- int hci_dev_open_sync(struct hci_dev *hdev)
- {
- 	int ret = 0;
-@@ -4013,6 +4038,7 @@ int hci_dev_open_sync(struct hci_dev *hdev)
- 	if (!hci_dev_test_flag(hdev, HCI_USER_CHANNEL)) {
- 		msft_do_open(hdev);
- 		aosp_do_open(hdev);
-+		suspend_resume_quality_report(hdev, true);
- 	}
- 
- 	clear_bit(HCI_INIT, &hdev->flags);
-@@ -4095,6 +4121,14 @@ int hci_dev_close_sync(struct hci_dev *hdev)
- 
- 	hci_request_cancel_all(hdev);
- 
-+	/* Disable quality report and close aosp before shutdown()
-+	 * is called. Otherwise, some chips may panic.
-+	 */
-+	if (!hci_dev_test_flag(hdev, HCI_USER_CHANNEL)) {
-+		suspend_resume_quality_report(hdev, false);
-+		aosp_do_close(hdev);
-+	}
-+
- 	if (!hci_dev_test_flag(hdev, HCI_UNREGISTER) &&
- 	    !hci_dev_test_flag(hdev, HCI_USER_CHANNEL) &&
- 	    test_bit(HCI_UP, &hdev->flags)) {
-@@ -4158,7 +4192,6 @@ int hci_dev_close_sync(struct hci_dev *hdev)
- 	hci_sock_dev_event(hdev, HCI_DEV_DOWN);
- 
- 	if (!hci_dev_test_flag(hdev, HCI_USER_CHANNEL)) {
--		aosp_do_close(hdev);
- 		msft_do_close(hdev);
- 	}
- 
--- 
-2.36.1.124.g0e6072fb45-goog
 
+> >> The main purpose for this patch is to handle the situation above, and
+> just noticed that cgroup_update_dfl_csses() also
+> calls cgroup_migrate_add_src(). So I assume it's a similar situation. We
+> can discuss more about it.
+
+So I think the patch doesn't save that much and identical css_set is
+better condition to check on (covers cgroup_update_dfl_csses too).
+
+Michal
+
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/kernel/cgroup/cgroup.c?h=v5.18#n2710
