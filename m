@@ -2,145 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28CFFC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 14:49:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B42F2C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 14:50:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347765AbiEZOts (ORCPT
+        id S1347834AbiEZOuV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 10:49:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48558 "EHLO
+        Thu, 26 May 2022 10:50:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243362AbiEZOtk (ORCPT
+        with ESMTP id S1347767AbiEZOuS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 10:49:40 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7E3812AE4;
-        Thu, 26 May 2022 07:49:36 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id f9so3561275ejc.0;
-        Thu, 26 May 2022 07:49:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=zls+MzWfNPZtlXrrhoUFcg/vRk2lvR8P63hFWQr6QVQ=;
-        b=VN7XyPmcnf+r0c9uFfso0TaP5OfKEcmXy7GyTZfhd0/K/m4YGQQybFCZdWUeQuvrmK
-         z7AiaUvxEbiCvOqLvf42ZUorbp0AbsWGuQcl8vJK6ZE2t5O166B0PyKU/3ACPrVGlD7Y
-         3Q+WhPMC6zgre4S6rMKdeW6MTClNoFRUjXXhjtp4OWsQpkgs/VLdcfHmy0PdMO/dWxHf
-         oFP6gSNbVSOwXuC45vmwcaBhcB6BhQnbkMh64RtCuUxeDTAUdqkEYoz/hcSs2U1Xojaa
-         skwAJRhwpfDt6xDbPdA/FjKWGcbRaHQZlZDq0i38toEqVu3xlQlT++pUYOwiJfd+iKcc
-         bFdg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=zls+MzWfNPZtlXrrhoUFcg/vRk2lvR8P63hFWQr6QVQ=;
-        b=VrGqqjRnVoIdylojwLpfhDFjuo6jngA9vAUctQHSZ7WuEOlxF4SC9p/fIwWdxnIaiw
-         /4zrSXRksvjPYziek6hTe+ycODX1L2wtC/VtTNNjBAnLNRTrPWD67YW/cA5WmTDfTDTL
-         rxt6UISruFoF2jM27NoS228dIX+hPDmk5mP+1LxNEPhyBT6KKcLad/BHNaQH9PTt/ea1
-         Rgd/QXFx/QdbIidEGuCq2AKQ/bvl8TUTy2oXGYixZ4HP3EhJN9TZsuvdlYU2ijwdvrcy
-         hOb4wSbF4WqET22j+pupNZ42W9Ui5UMEg4DKU5+lk5Ryz/vaIpxzJGFcJXfWQT6+HFCw
-         UCmQ==
-X-Gm-Message-State: AOAM532OFxTWdFIJngwlrgLzdhoynO/27fo9e6TZ3t7/SnxANm3m0dOh
-        8xg9wjZjAblQImLAjIV/fTYgSjpMlKwcgI7z
-X-Google-Smtp-Source: ABdhPJyD9f+4ZFEI6jZ541jsLof3Q2dlfauTm/zR+AYc1PlDValxLFKK422K5ikxEdwl32XWGT36Ng==
-X-Received: by 2002:a17:907:da3:b0:6fe:f08b:776 with SMTP id go35-20020a1709070da300b006fef08b0776mr17607635ejc.558.1653576575332;
-        Thu, 26 May 2022 07:49:35 -0700 (PDT)
-Received: from krava (net-93-65-242-160.cust.vodafonedsl.it. [93.65.242.160])
-        by smtp.gmail.com with ESMTPSA id b23-20020a1709065e5700b006fe9ba21333sm567992eju.113.2022.05.26.07.49.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 May 2022 07:49:34 -0700 (PDT)
-From:   Jiri Olsa <olsajiri@gmail.com>
-X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
-Date:   Thu, 26 May 2022 16:49:26 +0200
-To:     Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     Steven Rostedt <rostedt@goodmis.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, "Paul E. McKenney" <paulmck@kernel.org>
-Subject: Re: [PATCH] rethook: Reject getting a rethook if RCU is not watching
-Message-ID: <Yo+TWcfpyHy55Il5@krava>
-References: <165189881197.175864.14757002789194211860.stgit@devnote2>
- <20220524192301.0c2ab08a@gandalf.local.home>
- <20220526232530.cb7d0aed0c60625ef093a735@kernel.org>
+        Thu, 26 May 2022 10:50:18 -0400
+X-Greylist: delayed 439 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 26 May 2022 07:50:17 PDT
+Received: from relay07.th.seeweb.it (relay07.th.seeweb.it [5.144.164.168])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 953F056FB8
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 07:50:17 -0700 (PDT)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by m-r2.th.seeweb.it (Postfix) with ESMTPSA id 958283FA27;
+        Thu, 26 May 2022 17:05:07 +0200 (CEST)
+Message-ID: <256a5147-82b1-9453-574e-7c96f244d266@somainline.org>
+Date:   Thu, 26 May 2022 16:42:52 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220526232530.cb7d0aed0c60625ef093a735@kernel.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v7 5/6] arm64: dts: mt8195: Add efuse node to mt8195
+Content-Language: en-US
+To:     Alexandre Bailon <abailon@baylibre.com>, rafael@kernel.org,
+        rui.zhang@intel.com, daniel.lezcano@linaro.org, amitk@kernel.org
+Cc:     linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        khilman@baylibre.com, mka@chromium.org, robh+dt@kernel.org,
+        krzk+dt@kernel.org, matthias.bgg@gmail.com, p.zabel@pengutronix.de,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, james.lo@mediatek.com,
+        fan.chen@mediatek.com, louis.yu@mediatek.com,
+        rex-bc.chen@mediatek.com
+References: <20220524152552.246193-1-abailon@baylibre.com>
+ <20220524152552.246193-6-abailon@baylibre.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>
+In-Reply-To: <20220524152552.246193-6-abailon@baylibre.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 26, 2022 at 11:25:30PM +0900, Masami Hiramatsu wrote:
-> On Tue, 24 May 2022 19:23:01 -0400
-> Steven Rostedt <rostedt@goodmis.org> wrote:
+Il 24/05/22 17:25, Alexandre Bailon ha scritto:
+> This adds the efuse node. This will be required by the thermal driver
+> to get the calibration data.
 > 
-> > On Sat,  7 May 2022 13:46:52 +0900
-> > Masami Hiramatsu <mhiramat@kernel.org> wrote:
-> > 
-> > Is this expected to go through the BPF tree?
-> > 
+> Signed-off-by: Alexandre Bailon <abailon@baylibre.com>
+> ---
+>   arch/arm64/boot/dts/mediatek/mt8195.dtsi | 17 +++++++++++++++++
+>   1 file changed, 17 insertions(+)
 > 
-> Yes, since rethook (fprobe) is currently used only from eBPF.
-> Jiri, can you check this is good for your test case?
+> diff --git a/arch/arm64/boot/dts/mediatek/mt8195.dtsi b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
+> index 0011a8ba8f96..51443e83d906 100644
+> --- a/arch/arm64/boot/dts/mediatek/mt8195.dtsi
+> +++ b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
+> @@ -1238,6 +1238,23 @@ nor_flash: spi@1132c000 {
+>   			status = "disabled";
+>   		};
+>   
+> +		efuse: efuse@11c10000 {
+> +			compatible = "mediatek,efuse";
+> +			reg = <0 0x11c10000 0 0x1000>;
+> +			#address-cells = <1>;
+> +			#size-cells = <1>;
+> +
+> +			lvts_e_data1: data1 {
 
-sure I'll test it.. can't see the original email,
-perhaps I wasn't cc-ed.. but I'll find it
+lvts1-calib@1bc
 
-is this also related to tracing 'idle' functions,
-as discussed in here?
-  https://lore.kernel.org/bpf/20220515203653.4039075-1-jolsa@kernel.org/
+> +				reg = <0x1bc 0x14>;
+> +			};
+> +			lvts_e_data2: data1-1 {
 
-because that's the one I can reproduce.. but I can
-certainly try that with your change as well
+lvts2-calib@1d0
 
-jirka
+> +				reg = <0x1d0 0x38>;
+> +			};
+> +			svs_calibration: calib@580 {
+> +				reg = <0x580 0x64>;
+> +			};
+> +		};
+> +
+>   		u3phy2: t-phy@11c40000 {
+>   			compatible = "mediatek,mt8195-tphy", "mediatek,generic-tphy-v3";
+>   			#address-cells = <1>;
 
-> 
-> Thank you,
-> 
-> 
-> > -- Steve
-> > 
-> > 
-> > > Since the rethook_recycle() will involve the call_rcu() for reclaiming
-> > > the rethook_instance, the rethook must be set up at the RCU available
-> > > context (non idle). This rethook_recycle() in the rethook trampoline
-> > > handler is inevitable, thus the RCU available check must be done before
-> > > setting the rethook trampoline.
-> > > 
-> > > This adds a rcu_is_watching() check in the rethook_try_get() so that
-> > > it will return NULL if it is called when !rcu_is_watching().
-> > > 
-> > > Fixes: 54ecbe6f1ed5 ("rethook: Add a generic return hook")
-> > > Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
-> > > ---
-> > >  kernel/trace/rethook.c |    9 +++++++++
-> > >  1 file changed, 9 insertions(+)
-> > > 
-> > > diff --git a/kernel/trace/rethook.c b/kernel/trace/rethook.c
-> > > index b56833700d23..c69d82273ce7 100644
-> > > --- a/kernel/trace/rethook.c
-> > > +++ b/kernel/trace/rethook.c
-> > > @@ -154,6 +154,15 @@ struct rethook_node *rethook_try_get(struct rethook *rh)
-> > >  	if (unlikely(!handler))
-> > >  		return NULL;
-> > >  
-> > > +	/*
-> > > +	 * This expects the caller will set up a rethook on a function entry.
-> > > +	 * When the function returns, the rethook will eventually be reclaimed
-> > > +	 * or released in the rethook_recycle() with call_rcu().
-> > > +	 * This means the caller must be run in the RCU-availabe context.
-> > > +	 */
-> > > +	if (unlikely(!rcu_is_watching()))
-> > > +		return NULL;
-> > > +
-> > >  	fn = freelist_try_get(&rh->pool);
-> > >  	if (!fn)
-> > >  		return NULL;
-> > 
-> 
-> 
-> -- 
-> Masami Hiramatsu (Google) <mhiramat@kernel.org>
