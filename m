@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA975C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 11:03:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F527C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 11:03:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347130AbiEZLDm (ORCPT
+        id S1347133AbiEZLDp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 07:03:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35328 "EHLO
+        Thu, 26 May 2022 07:03:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347104AbiEZLDP (ORCPT
+        with ESMTP id S1347107AbiEZLDQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 07:03:15 -0400
+        Thu, 26 May 2022 07:03:16 -0400
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DCC9CEBB1
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 04:03:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27F8ACEB9E
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 04:03:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:References:
         Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
         Content-ID:Content-Description:In-Reply-To;
-        bh=ahCkEUxJhRK4hVH+4uEu4Zy1YkpDUahrDlA6QHnqYn8=; b=VBE83Hd4eytECO94kruW1UuKSc
-        2WI3mvsU/TIWy8PuSiezJKbYSVu2vrql7iDaYT9vR22bxcXupaeD6bGmbN75ZXokikrHgKGVbFMrM
-        FTWGjHlJDlRgS+q28NyFrsn5MDRRUn/Bcfb2+26JX2xQjr3/Zd3k+4AUDgBbFrLx1920YCNiBtlWj
-        jmWb+ohJoYo8MAcRjGlsN691mXZgBGrzZK/OfrK5LqlqyPAb0vcp0TX0N55A7vLTD6JV1pgwEFbvO
-        v/sgzlDvd21SIW56whktjMdaGO+qO3KdS+KYriZxBVboad6LrOgcSu0hl7UND/ORRyXZ7+c1NH3Jk
-        T9JS6Fbw==;
+        bh=hrWj1TQzRXXNfBbwlPL8fBv3Cv5xKmT4kRjYFjpA0b8=; b=LPhC0XIJeHPEL3lzMrp71EjaRT
+        RHi6MwUpTtIu0qZ31jnbU0JSDb9onf1s8LW5s+2l9mtA45ongpIt6MsVvs2gOTiJRzkbqkBC7r6i0
+        0aKqo+PiNl2gN1noyDODwhG8P5mtyWgW/orvwUHZD47dVEinEPbzs0TgYPJwzna5VMprvEMLrqCXo
+        SgiS201R+1NAyluMckoCOq4PCcVbaj2pwbPf1qPPSPD1M9m5OES/1HMZn0rMENq5y8uscFrFLveA7
+        kyULDQSSIyUtfSYG3oTOsTskNosMPNpSnbWoJG7vDB3cal5t0K0IeLVH2uDJDxSFZjwXyic3rlwIr
+        eIu9Xwlw==;
 Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
         by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nuBGX-001Bjo-5l; Thu, 26 May 2022 11:02:53 +0000
+        id 1nuBGX-001Bjx-Nq; Thu, 26 May 2022 11:02:53 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 932EE30031D;
-        Thu, 26 May 2022 13:02:50 +0200 (CEST)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 8FC1F3002AF;
+        Thu, 26 May 2022 13:02:51 +0200 (CEST)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id 6B11E202C3166; Thu, 26 May 2022 13:02:50 +0200 (CEST)
-Message-ID: <20220526105957.754830839@infradead.org>
+        id 856332021C964; Thu, 26 May 2022 13:02:50 +0200 (CEST)
+Message-ID: <20220526105958.134113388@infradead.org>
 User-Agent: quilt/0.66
-Date:   Thu, 26 May 2022 12:52:53 +0200
+Date:   Thu, 26 May 2022 12:52:59 +0200
 From:   Peter Zijlstra <peterz@infradead.org>
 To:     x86@kernel.org, jpoimboe@redhat.com
 Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org,
         elver@google.com, jbaron@akamai.com, rostedt@goodmis.org,
         ardb@kernel.org, mark.rutland@arm.com
-Subject: [PATCH 1/7] x86/entry: Anchor annotation
+Subject: [PATCH 7/7] context_tracking: Always inline empty stubs
 References: <20220526105252.440440893@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,37 +53,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-x86_64-allmodconfig gives:
+Because GCC is seriously challenged..
 
-  vmlinux.o: warning: objtool: entry_SYSCALL_compat+0x0: ANNOTATE_NOENDBR on ENDBR
+vmlinux.o: warning: objtool: enter_from_user_mode+0x85: call to context_tracking_enabled() leaves .noinstr.text section
+vmlinux.o: warning: objtool: syscall_enter_from_user_mode+0x8f: call to context_tracking_enabled() leaves .noinstr.text section
+vmlinux.o: warning: objtool: syscall_enter_from_user_mode_prepare+0x85: call to context_tracking_enabled() leaves .noinstr.text section
+vmlinux.o: warning: objtool: irqentry_enter_from_user_mode+0x85: call to context_tracking_enabled() leaves .noinstr.text section
 
-This is due to:
-
-	ANNOTATE_NOENDBR
-SYM_CODE_END(entry_SYSENTER_compat)
-SYM_CODE_START(entry_SYSCALL_compat)
-	UNWIND_HINT_EMPTY
-	ENDBR
-
-And the hint then landing on the first instruction of the next symbol,
-which happens to be ENDBR. Stick in an int3 to anchor the annotation
-in the previous symbol.
-
-Fixes: 3e3f06950434 ("x86/ibt: Annotate text references")
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 ---
- arch/x86/entry/entry_64_compat.S |    1 +
- 1 file changed, 1 insertion(+)
+ include/linux/context_tracking_state.h |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/arch/x86/entry/entry_64_compat.S
-+++ b/arch/x86/entry/entry_64_compat.S
-@@ -124,6 +124,7 @@ SYM_INNER_LABEL(entry_SYSENTER_compat_af
- 	jmp	.Lsysenter_flags_fixed
- SYM_INNER_LABEL(__end_entry_SYSENTER_compat, SYM_L_GLOBAL)
- 	ANNOTATE_NOENDBR // is_sysenter_singlestep
-+	int3
- SYM_CODE_END(entry_SYSENTER_compat)
+--- a/include/linux/context_tracking_state.h
++++ b/include/linux/context_tracking_state.h
+@@ -46,10 +46,10 @@ static __always_inline bool context_trac
+ 	return __this_cpu_read(context_tracking.state) == CONTEXT_USER;
+ }
+ #else
+-static inline bool context_tracking_in_user(void) { return false; }
+-static inline bool context_tracking_enabled(void) { return false; }
+-static inline bool context_tracking_enabled_cpu(int cpu) { return false; }
+-static inline bool context_tracking_enabled_this_cpu(void) { return false; }
++static __always_inline bool context_tracking_in_user(void) { return false; }
++static __always_inline bool context_tracking_enabled(void) { return false; }
++static __always_inline bool context_tracking_enabled_cpu(int cpu) { return false; }
++static __always_inline bool context_tracking_enabled_this_cpu(void) { return false; }
+ #endif /* CONFIG_CONTEXT_TRACKING */
  
- /*
+ #endif
 
 
