@@ -2,121 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86308C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 05:55:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B517C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 06:00:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346007AbiEZFy4 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 01:54:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40326 "EHLO
+        id S238217AbiEZGAJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 02:00:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229813AbiEZFyy (ORCPT
+        with ESMTP id S230108AbiEZF77 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 01:54:54 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB1F8AF1EB;
-        Wed, 25 May 2022 22:54:52 -0700 (PDT)
-X-UUID: f0156b3f023442de83e983fdefdf6daa-20220526
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:bca405fb-0a5b-40e5-a557-59b9c45bfe03,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:0
-X-CID-META: VersionHash:2a19b09,CLOUDID:e9a38947-4fb1-496b-8f1d-39e733fed1ea,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
-        ,QS:0,BEC:nil
-X-UUID: f0156b3f023442de83e983fdefdf6daa-20220526
-Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by mailgw01.mediatek.com
-        (envelope-from <jia-wei.chang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1055895831; Thu, 26 May 2022 13:54:45 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Thu, 26 May 2022 13:54:44 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 26 May 2022 13:54:44 +0800
-Message-ID: <36568582407c2513028bdd6669b9a6147ebd6132.camel@mediatek.com>
-Subject: Re: [PATCH v3 4/4] soc: mediatek: svs: add support for mt8195
-From:   Jia-Wei Chang <jia-wei.chang@mediatek.com>
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        "Rob Herring" <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Roger Lu <roger.lu@mediatek.com>,
-        Kevin Hilman <khilman@kernel.org>
-CC:     <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <hsinyi@google.com>
-Date:   Thu, 26 May 2022 13:54:44 +0800
-In-Reply-To: <d9563b65-2391-d32c-8a07-ca7a13cae7c7@collabora.com>
-References: <20220523084034.26802-1-jia-wei.chang@mediatek.com>
-         <20220523084034.26802-5-jia-wei.chang@mediatek.com>
-         <d9563b65-2391-d32c-8a07-ca7a13cae7c7@collabora.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Thu, 26 May 2022 01:59:59 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFE9DA5017
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 22:59:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653544796; x=1685080796;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=FoFi6ee/Unw0akjPodAajaS59MNcAC8Hemf/HS8pGgc=;
+  b=GU6w+6WkIjxGSKQfkR8YmKAqvvAY78WijLG18A3EvYpUoeYrSExAOM8b
+   xFzCELmz2FVXZlZ2/wdhsnrAG1o7ZgFdRFhpm7vYd6p+pBy3hlSkrXhtv
+   +GavGyz7qC4rKn2SRVO2TXGj9AB90GKgaXW77nckKKmjj9VW+VDsFhsC4
+   HKWNTagIRw946cGCXUVWYpqNib+BnPA1/hadn3yrVehf69jv1bgXZflSb
+   Wg+kHlcBOJTzD7vrP0gJFwXaKH00/jmpvlhsDt2hmdpjB4cv5JE7mfqwq
+   n+d9KGZnCvjp6FZU2ia0Z6n3NkOzkqFE6M44r5RVVwQRu8hR/60CUnEjH
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10358"; a="254544418"
+X-IronPort-AV: E=Sophos;i="5.91,252,1647327600"; 
+   d="scan'208";a="254544418"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2022 22:59:56 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,252,1647327600"; 
+   d="scan'208";a="821079105"
+Received: from lkp-server01.sh.intel.com (HELO db63a1be7222) ([10.239.97.150])
+  by fmsmga006.fm.intel.com with ESMTP; 25 May 2022 22:59:52 -0700
+Received: from kbuild by db63a1be7222 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nu6XH-0003e8-NG;
+        Thu, 26 May 2022 05:59:51 +0000
+Date:   Thu, 26 May 2022 13:59:07 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Chao Gao <chao.gao@intel.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org,
+        Isaku Yamahata <isaku.yamahata@intel.com>,
+        Zeng Guang <guang.zeng@intel.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [intel-tdx:kvm-upstream-workaround 99/435]
+ arch/x86/kvm/vmx/vmx.c:4410:5: error: no previous prototype for function
+ 'vmx_get_pid_table_order'
+Message-ID: <202205261324.RC40VHb7-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-05-23 at 11:38 +0200, AngeloGioacchino Del Regno wrote:
-> Il 23/05/22 10:40, Tim Chang ha scritto:
-> > From: Jia-Wei Chang <jia-wei.chang@mediatek.com>
-> > 
-> > To support svs on MT8195, add corresponding bank information,
-> > platform
-> > data, probe and parsing function.
-> > 
-> > Signed-off-by: Jia-Wei Chang <jia-wei.chang@mediatek.com>
-> 
-> 
-> 
-> > ---
-> >   drivers/soc/mediatek/mtk-svs.c | 151
-> > +++++++++++++++++++++++++++++++++
-> >   1 file changed, 151 insertions(+)
-> > 
-> > diff --git a/drivers/soc/mediatek/mtk-svs.c
-> > b/drivers/soc/mediatek/mtk-svs.c
-> > index 656d0361ff7d..bb5021648143 100644
-> > --- a/drivers/soc/mediatek/mtk-svs.c
-> > +++ b/drivers/soc/mediatek/mtk-svs.c
-> > @@ -1680,6 +1680,89 @@ static int svs_bank_resource_setup(struct
-> > svs_platform *svsp)
-> 
-> ..snip..
-> 
-> > @@ -2559,6 +2697,16 @@ static struct svs_bank svs_mt8183_banks[] =
-> > {
-> >   	},
-> >   };
-> >   
-> > +static const struct svs_platform_data svs_mt8195_platform_data = {
-> > +	.name = "mt8195-svs",
-> > +	.banks = svs_mt8195_banks,
-> > +	.efuse_parsing = svs_mt8195_efuse_parsing,
-> > +	.probe = svs_mt8192_platform_probe,
-> > +	.irqflags = IRQF_TRIGGER_HIGH,
-> 
-> Interrupt flags are specified in devicetree; avoid declaring
-> irqflags.
-> 
-> After that:
-> 
-> Reviewed-by: AngeloGioacchino Del Regno <
-> angelogioacchino.delregno@collabora.com>
-> 
+tree:   https://github.com/intel/tdx.git kvm-upstream-workaround
+head:   0075383344a9c2bfaba7cca988c85008d92c4f8c
+commit: 7325e60f0f39b6cffcc23ec74910cf0ec5ac1412 [99/435] KVM: VMX: enable IPI virtualization
+config: i386-randconfig-a002 (https://download.01.org/0day-ci/archive/20220526/202205261324.RC40VHb7-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 3d546191ad9d7d2ad2c7928204b9de51deafa675)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel/tdx/commit/7325e60f0f39b6cffcc23ec74910cf0ec5ac1412
+        git remote add intel-tdx https://github.com/intel/tdx.git
+        git fetch --no-tags intel-tdx kvm-upstream-workaround
+        git checkout 7325e60f0f39b6cffcc23ec74910cf0ec5ac1412
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash arch/x86/kvm/
 
-Hi Angelo,
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Sure, I will remove it in the next version.
-Thanks.
+Note: the intel-tdx/kvm-upstream-workaround HEAD 0075383344a9c2bfaba7cca988c85008d92c4f8c builds fine.
+      It only hurts bisectability.
 
+All errors (new ones prefixed by >>):
+
+>> arch/x86/kvm/vmx/vmx.c:4410:5: error: no previous prototype for function 'vmx_get_pid_table_order' [-Werror,-Wmissing-prototypes]
+   int vmx_get_pid_table_order(struct kvm *kvm)
+       ^
+   arch/x86/kvm/vmx/vmx.c:4410:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   int vmx_get_pid_table_order(struct kvm *kvm)
+   ^
+   static 
+   1 error generated.
+
+
+vim +/vmx_get_pid_table_order +4410 arch/x86/kvm/vmx/vmx.c
+
+  4409	
+> 4410	int vmx_get_pid_table_order(struct kvm *kvm)
+  4411	{
+  4412		return get_order(kvm->arch.max_vcpu_ids * sizeof(*to_kvm_vmx(kvm)->pid_table));
+  4413	}
+  4414	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
