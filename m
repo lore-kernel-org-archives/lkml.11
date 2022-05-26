@@ -2,95 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71B0DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 16:56:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23940C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 16:58:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348022AbiEZQ4m (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 12:56:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56690 "EHLO
+        id S244655AbiEZQ6z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 12:58:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231623AbiEZQ4j (ORCPT
+        with ESMTP id S229612AbiEZQ6w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 12:56:39 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFC4F19035
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 09:56:38 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id fd25so2531578edb.3
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 09:56:38 -0700 (PDT)
+        Thu, 26 May 2022 12:58:52 -0400
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D684A3085
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 09:58:49 -0700 (PDT)
+Received: by mail-lj1-x22f.google.com with SMTP id 1so2374935ljp.8
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 09:58:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linux-foundation.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=isOrsXL0jHLDNpKhO8ZEqLC8ipi0wUCiYFmfhMLBsnU=;
-        b=bE6cq8VXUw1ng5S8fzhwxLsVvpBr5SVM2s8vxx5gkoxKNAfetakdLEGE8CTXa7IJZt
-         K+kt/6HoJEa2Ex44jO8RkS5uhxfCoTX0Grykbi/9zAJ1IlCmATU8zUZE2TcOkYXZGSmN
-         oLQGi/OQ3kqT+160gfv8dAn/LD5zrNzI2mUm4=
+        bh=KIrgpKkAzwB07gYimrtbZQWgxesfa74CNz+gljHxsDM=;
+        b=Uw2QqULbsgoG8dWkUYz5Wetvt9zrj+w2Z/3KG1NXe+Ga2SYOQA4ahHz0GCrZxRVxxs
+         V+aWCEb61jpbUN2D2snj9yzTr4OzNyUFkAE5Zt5ZRUjf0jixHym11fMEvpdfrn+XIvS7
+         eBQrWbr/A3ETMNkjZcLBXDbPoHW+g5IGealpM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=isOrsXL0jHLDNpKhO8ZEqLC8ipi0wUCiYFmfhMLBsnU=;
-        b=xOY3dWP/7BQTuHn/NXKHaaUYIyVtPSDkb50gyfZImiZkBh0STycqXzZAuDMmyX8uMR
-         PtMqpf7cegUVpP06UN0T1VfK7C+K+y2JfsQG9MTcQZr7gdZU6zgD9wjDs3tmEaLSa3/R
-         XC+g2YOWdHCQL7pRf7/bjg7sxTIMK4EuRMKP3YPuPO5vgTHmBPyubUwOklT4Un3xXwDi
-         veR7SFcJXvnKuwtl1SCaDsVxhUGDZLJAb34skfixf1cdX7Teb3QOAd4FtxOTWxEcb3Xl
-         PWVbKqs1s7sQPE8X7yiJ2rOx4mwt4fNjspf6s4DO8/g23seJKLaRy+8JnNsB8njDGQqD
-         QNUQ==
-X-Gm-Message-State: AOAM531sl/OyIRaEp0ybfRShgHV4nvDnbZKaq23tBglhOa2oQqmhzCrh
-        rRn6WiWRxBpQp2PSvr+aZI4ONsqrAZz30u8ab88=
-X-Google-Smtp-Source: ABdhPJzK8fy4Q6MqPhRtdGxI7QVFCr5WZeaVA6mp9ND+XGyxEjDiddss3q/7CoMA0ZjVAsjjtYlAbg==
-X-Received: by 2002:aa7:d591:0:b0:42b:de9d:423b with SMTP id r17-20020aa7d591000000b0042bde9d423bmr3203820edq.359.1653584196913;
-        Thu, 26 May 2022 09:56:36 -0700 (PDT)
-Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com. [209.85.221.50])
-        by smtp.gmail.com with ESMTPSA id c23-20020a50f617000000b0042b765c2448sm996034edn.80.2022.05.26.09.56.36
+        bh=KIrgpKkAzwB07gYimrtbZQWgxesfa74CNz+gljHxsDM=;
+        b=1n5IhervGKYWeA6D4ClCfgIgACbpbfvx1iPph0rGnp3u/oNpbELGzEPokW7t09SO8a
+         59YqF/wS7FLSZXuq242wYXS6O5/RV4NfeYs9CCzw9spYuVJZtPVxlJtr7jbkvBf/WZMR
+         i5fBwQCLtXgW68l8USO71StcLusw81HGQQ6dPLTWsZ15FMnW9V0lOkNCtTzusjgVKPgU
+         hlztf9IpMcK+uOqxbZP+6lEC1hZZ44QAFuQyjfLYitBqcnyLtRgCa+KmAevI2Qmx/ZMh
+         5SlkAV3K1rXLamtRIsucfYuLtBberDaSbhv5j1RC5MGvlS+GpQDDJltJNIzP4q2BncZV
+         ouxg==
+X-Gm-Message-State: AOAM531E3vzIn0kHfEg1PVOlxzrskU9NdsxNzluWNEkW3RHmfmCbk5Ew
+        b9650p4apB+9322a1pTvrvJRNmKZIObKz00Y8h0=
+X-Google-Smtp-Source: ABdhPJy7TVjPe6O2CQ7dFTQfiXVKvT2Ola1gYpvrzQpTtH8asuYK+vfcrUKqpbX+YfiqS/ZeJxkWpg==
+X-Received: by 2002:a05:651c:1246:b0:253:f0b4:a410 with SMTP id h6-20020a05651c124600b00253f0b4a410mr9957896ljh.288.1653584327289;
+        Thu, 26 May 2022 09:58:47 -0700 (PDT)
+Received: from mail-lf1-f48.google.com (mail-lf1-f48.google.com. [209.85.167.48])
+        by smtp.gmail.com with ESMTPSA id e29-20020a19691d000000b0047255d211fesm434070lfc.301.2022.05.26.09.58.46
         for <linux-kernel@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 26 May 2022 09:56:36 -0700 (PDT)
-Received: by mail-wr1-f50.google.com with SMTP id z15so2848520wrg.11
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 09:56:36 -0700 (PDT)
-X-Received: by 2002:a5d:6da6:0:b0:20f:bc8a:9400 with SMTP id
- u6-20020a5d6da6000000b0020fbc8a9400mr25595398wrs.274.1653584195719; Thu, 26
- May 2022 09:56:35 -0700 (PDT)
+        Thu, 26 May 2022 09:58:47 -0700 (PDT)
+Received: by mail-lf1-f48.google.com with SMTP id bu29so3327478lfb.0
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 09:58:46 -0700 (PDT)
+X-Received: by 2002:a5d:58cc:0:b0:20e:643d:e46a with SMTP id
+ o12-20020a5d58cc000000b0020e643de46amr30854195wrf.97.1653583940350; Thu, 26
+ May 2022 09:52:20 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220525144013.6481-1-ubizjak@gmail.com> <20220525144013.6481-2-ubizjak@gmail.com>
- <CAHk-=wh1XeaxWXG5QziGA4ds918UnW1hO924kusgVB-wGj+9Og@mail.gmail.com>
-In-Reply-To: <CAHk-=wh1XeaxWXG5QziGA4ds918UnW1hO924kusgVB-wGj+9Og@mail.gmail.com>
+References: <CAHk-=wh1XeaxWXG5QziGA4ds918UnW1hO924kusgVB-wGj+9Og@mail.gmail.com>
+ <871qwgmqws.fsf@mpe.ellerman.id.au>
+In-Reply-To: <871qwgmqws.fsf@mpe.ellerman.id.au>
 From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Thu, 26 May 2022 09:56:19 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wg1xKLV3aWWvp46295yFkAnzxv3pmehoHk6RuEwB0pa_Q@mail.gmail.com>
-Message-ID: <CAHk-=wg1xKLV3aWWvp46295yFkAnzxv3pmehoHk6RuEwB0pa_Q@mail.gmail.com>
+Date:   Thu, 26 May 2022 09:52:04 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wjd-RVttYwPc9RYD+x0b=WNYc_PZ2JKwPxc8fm54t0d2w@mail.gmail.com>
+Message-ID: <CAHk-=wjd-RVttYwPc9RYD+x0b=WNYc_PZ2JKwPxc8fm54t0d2w@mail.gmail.com>
 Subject: Re: [PATCH 1/2] locking/lockref: Use try_cmpxchg64 in CMPXCHG_LOOP macro
-To:     Uros Bizjak <ubizjak@gmail.com>,
+To:     Michael Ellerman <mpe@ellerman.id.au>
+Cc:     Uros Bizjak <ubizjak@gmail.com>,
         Catalin Marinas <catalin.marinas@arm.com>,
         Will Deacon <will@kernel.org>,
         Russell King <linux@armlinux.org.uk>,
-        Michael Ellerman <mpe@ellerman.id.au>,
         Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Heiko Carstens <hca@linux.ibm.com>
-Cc:     "the arch/x86 maintainers" <x86@kernel.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         Peter Zijlstra <peterz@infradead.org>,
         Thomas Gleixner <tglx@linutronix.de>, Waiman.Long@hp.com,
-        Paul McKenney <paulmck@linux.vnet.ibm.com>
+        Paul McKenney <paulmck@linux.vnet.ibm.com>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 25, 2022 at 9:47 AM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
+On Thu, May 26, 2022 at 5:15 AM Michael Ellerman <mpe@ellerman.id.au> wrote:
 >
-> Ack on this one regardless of the 32-bit x86 question.
+> Do you know of a benchmark that shows it up? I tried a few things but
+> couldn't get lockref_get() to count for more than 1-2%.
 
-.. and with confirmation from Michael and Mark (and the analysis from
-Uros on the fallback code), I've applied this to my tree.
+Heh. 1% for a small instruction sequence that is only handful of
+instructions and is used in just a couple of places counts as "very
+hot" for me.
 
-NOTE!
+I assume you did the natural thing: threaded pathname lookup (with
+paths being of the longer variety to not be dominated by system call
+etc costs).
 
-I have *not* applied the second patch with the x86-32 change to enable
-this on 32-bit with CMPXCHG8B enabled. I think that's independent, and
-will leave it up to the x86 maintainers.  Plus I think the patch
-should be simplified.
-
-             Linus
+               Linus
