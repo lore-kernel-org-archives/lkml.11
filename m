@@ -2,118 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53F86C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 00:47:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 772D8C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 00:55:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241532AbiEZAr1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 20:47:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35932 "EHLO
+        id S234115AbiEZAz6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 20:55:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345330AbiEZArP (ORCPT
+        with ESMTP id S1345796AbiEZAzb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 20:47:15 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42C3A65B6;
-        Wed, 25 May 2022 17:46:54 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4L7q576JFYz4xD7;
-        Thu, 26 May 2022 10:46:51 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1653526012;
-        bh=prRDMbc48ZhiOQbW7OeU9AvVQRnsu/2pVUDXu6O8GRo=;
-        h=Date:From:To:Cc:Subject:From;
-        b=CGmxWPoEAAV0A5GIyTONt7wgrP/PxU4543afU10SSfXrl7ko8qt6C1Z9Aq8IrxmJx
-         ucBdWDlU1qdn425eAZJQeQGwu5036JgWQxu5adYfpAaTPXrLCCcU/Hyn13bhy3+aBe
-         EDy2lPGoJ7mWi3E+YqkrW5Vw676wPuMn8b+4ML8xkIw42oPu7csis/u7VDbfPRXhgp
-         jFYeQdNqF+ERBdy+AP2KdmuaMyxSWuoxW9dpFKADFkI2JPmHFbrOZLKalqZZnj3zgm
-         la/wq+5HSadXIRE+UJ6FWLckLclEn5ZyyZBic8iPxEcv1P3DgLIbYRHNSV816f3n99
-         AK1gW2vlRaCng==
-Date:   Thu, 26 May 2022 10:46:50 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Jeff Layton <jlayton@kernel.org>,
-        Ilya Dryomov <idryomov@gmail.com>,
-        David Howells <dhowells@redhat.com>
-Cc:     Jakob Koschel <jakobkoschel@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: manual merge of the ceph tree with the fscache tree
-Message-ID: <20220526104650.73fc943f@canb.auug.org.au>
+        Wed, 25 May 2022 20:55:31 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FEF9DFE4
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 17:55:30 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id wh22so270606ejb.7
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 17:55:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=JaqQEwN5gGu7MuEou1u1zwwpE+vqC3sAxcFTo02SWDA=;
+        b=bhIkJ14BXb4Gmmp5f8z02sxBhmmF8TGvh22Xut1tW0ARNZ219RGX+wDUOBoddOxasb
+         PGt9EIIl0NJdNBixbeh6bgcmUh5262AJYw/ZYLvhECdizqGT6ooae01wART2qqLCv8lf
+         bA4cAR6zOdWtKEcUl8+nSv9hJS/mSVGl/hNMXAZlXHYa/YajTW7VXpZT7+oysBxRgIn+
+         +IE6D8w+1ffUNjJ8HGKCYT16ltx/GffdyDJXa15RTvUM9gYm96e3z/BNOB/UsxEDnPi2
+         FYPYdZFd6DEqztc01Reat8aS3WeDkLbWIixPR2WWoGeJtfsvcUm395TiS8r14DN8caIj
+         qZ2g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JaqQEwN5gGu7MuEou1u1zwwpE+vqC3sAxcFTo02SWDA=;
+        b=xqbyN1Moz/oO+g0gfXan7A6a53b0CSQSO0dHn/HtCCZ3GfAu4kfDTPfHhLhldVzxTU
+         lIydIEoEnD+NIErKID5NJqMUE+1YDmGjehgFq5yS8s/n+yk2SJzi1Qv+LHXdSycqUkIx
+         te/92+eSTl+o58Pr6Sof7W8KpmM1IVHyL5m+5YDXm/OmZwj+xgO0VVXgCoaVBYp1Rb85
+         mRLBTkp5MF2a8z34Ss8fudlstZqormOZb6r9LgQyYFFA1IbOZoqEmuAREc3xecxIeyM6
+         sZEp1qiO/ytDM7/lsom09U/1AvJywZevTEvMZZ9S4VpRt2pj8m7/b8SRYPfAmYOOYh3P
+         693A==
+X-Gm-Message-State: AOAM530zUim6y1DipiYFKvhjVrydHxW+iADJBap1VheXePCiPOWrLdRQ
+        G0u5Zkj4DCB5zFJy86nlO1lYQxMv0qh6fjlhk0E=
+X-Google-Smtp-Source: ABdhPJxbRJIRlPwAO+7B0ZusKYSyfuUNbkRZqmO2LtsmNDK2xa9R6Xz5WYrhI9objzsk+DpgQnEBUMySDnRFwFcUp80=
+X-Received: by 2002:a17:907:728b:b0:6f9:a9bf:a8e7 with SMTP id
+ dt11-20020a170907728b00b006f9a9bfa8e7mr32415738ejc.696.1653526528840; Wed, 25
+ May 2022 17:55:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/lVEfP7kHOadeEQiyB/kpruW";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+References: <202205021042.xPjJ6Z4J-lkp@intel.com> <CAOMZO5Dg8_vDbW0vau4YFspZZ-RS=in8xEavkyYvBAQB41xTWA@mail.gmail.com>
+ <Yo7MFbwDyT+1lzcr@dev-arch.thelio-3990X>
+In-Reply-To: <Yo7MFbwDyT+1lzcr@dev-arch.thelio-3990X>
+From:   Fabio Estevam <festevam@gmail.com>
+Date:   Wed, 25 May 2022 21:55:20 -0300
+Message-ID: <CAOMZO5ARsRj_M_sX4dNk1039e+NG8C65asx2PG-kVzibQWfBZQ@mail.gmail.com>
+Subject: Re: drivers/dma/imx-dma.c:1048:20: warning: cast to smaller integer
+ type 'enum imx_dma_type' from 'const void *'
+To:     Nathan Chancellor <nathan@kernel.org>
+Cc:     kernel test robot <lkp@intel.com>, llvm@lists.linux.dev,
+        kbuild-all@lists.01.org,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Vinod Koul <vkoul@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/lVEfP7kHOadeEQiyB/kpruW
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Hi Nathan,
 
-Hi all,
+On Wed, May 25, 2022 at 9:38 PM Nathan Chancellor <nathan@kernel.org> wrote:
 
-Today's linux-next merge of the ceph tree got a conflict in:
+> Either an intermediate cast to uintptr_t or unsigned long or replacing
+> the enum cast with one of those should work. See commits:
+>
+> 2602dc10f9d9 ("memory: renesas-rpc-if: Silence clang warning")
+> 10462b3558d4 ("can: mcp251x: mcp251x_can_probe(): silence clang warning")
+> 83415669d8d8 ("can: hi311x: hi3110_can_probe(): silence clang warning")
+> be5aeee30e45 ("scsi: fcoe: Suppress a compiler warning")
 
-  fs/ceph/caps.c
+Thanks for sharing these commits.
 
-between commit:
+I have submitted a patch.
 
-  713423282ae1 ("netfs: Fix gcc-12 warning by embedding vfs inode in netfs_=
-i_context")
-
-from the fscache tree and commit:
-
-  3ffa9d6f991f ("ceph: replace usage of found with dedicated list iterator =
-variable")
-
-from the ceph tree.
-
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc fs/ceph/caps.c
-index a0467bca39fa,bf2e94005598..000000000000
---- a/fs/ceph/caps.c
-+++ b/fs/ceph/caps.c
-@@@ -3181,11 -3202,10 +3202,10 @@@ void ceph_put_cap_refs_no_check_caps(st
-  void ceph_put_wrbuffer_cap_refs(struct ceph_inode_info *ci, int nr,
-  				struct ceph_snap_context *snapc)
-  {
- -	struct inode *inode =3D &ci->vfs_inode;
- +	struct inode *inode =3D &ci->netfs.inode;
-- 	struct ceph_cap_snap *capsnap =3D NULL;
-+ 	struct ceph_cap_snap *capsnap =3D NULL, *iter;
-  	int put =3D 0;
-  	bool last =3D false;
-- 	bool found =3D false;
-  	bool flush_snaps =3D false;
-  	bool complete_capsnap =3D false;
- =20
-
---Sig_/lVEfP7kHOadeEQiyB/kpruW
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmKOzfoACgkQAVBC80lX
-0Gy+Twf9H1wwOql1ft1TnkVW/nFJVJEEwdskdwc5jrpx/q2gIjKsKH03RWZcbfyN
-9FjEXKTvQsCuRdJSscHzEcxlcsBlYOgtQUp7vPTzFEWRfGehLRBDXTCTJdGQ1NVU
-mHtbBpaD9xiYQXE96iIvyH00db/S2tdk5X71RlCTefT4/DIcipdbLu9u2NqjX5qK
-jXCFzUU1wmKyNuDrM8oZBdRBWRAFZ9ncP35aRqslJWNioS1sUHfCoKI3NHi6STkH
-W6Te1VGg1dyMNcNTmodHwWjoXdachcUoDyZMapTp//Gn27wzCgn92WAzC8KkDBcX
-j1gyjAdWR45ElXREfMkwPXiZpRQ0LA==
-=pAr8
------END PGP SIGNATURE-----
-
---Sig_/lVEfP7kHOadeEQiyB/kpruW--
+Cheers
