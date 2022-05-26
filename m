@@ -2,170 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 681F3C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 13:40:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3277CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 13:41:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244883AbiEZNkY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 09:40:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39888 "EHLO
+        id S245488AbiEZNlj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 09:41:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231466AbiEZNkT (ORCPT
+        with ESMTP id S243990AbiEZNlh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 09:40:19 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F46B5E767
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 06:40:18 -0700 (PDT)
-Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24QDbvCI023751;
-        Thu, 26 May 2022 13:39:37 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=5HJ5s9o+3hDPq2NWvfxUbVJWO2R6/Udu9Xp3AxQBuyI=;
- b=UOH2tJMZGkY6fAD5PGn9FTj+HRSOCiXTeZzUftSCF7vCnrSejTG70G7ED5vyK1X/YZoi
- cg/YnM2a7L9/l389kYreLXpPHd4Vqll3iweRq5Gz/wL7V+l3T0bcoRLFCwQOY4kllje7
- v4FP72P43V99QUFx9tcp0u3xonTw6FTfY6AvrSBnzNltIbEhh0nDk5Qysnu6BpUZzKpP
- gCtNya0JCGc3YNtojKV9cldT9gu5wPFKl8K2oulgtnc6lnk5wN5zndbhi2n8QTwA/FVn
- uMIba1PMHPhKCWNQuewSSi7c3ofy6M4ed8LMWBMK0JgSVXfeybF++c5Eyo6wqEQ9X/k7 9Q== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3gaakug0kj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 26 May 2022 13:39:37 +0000
-Received: from m0098413.ppops.net (m0098413.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24QDdEs4026426;
-        Thu, 26 May 2022 13:39:36 GMT
-Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3gaakug0k9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 26 May 2022 13:39:36 +0000
-Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
-        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24QDUGXf026642;
-        Thu, 26 May 2022 13:39:34 GMT
-Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
-        by ppma04fra.de.ibm.com with ESMTP id 3g94g3a3ge-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 26 May 2022 13:39:34 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24QDdWuO28443022
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 26 May 2022 13:39:32 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 0E8114C040;
-        Thu, 26 May 2022 13:39:32 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 6ECE04C044;
-        Thu, 26 May 2022 13:39:26 +0000 (GMT)
-Received: from [9.43.96.50] (unknown [9.43.96.50])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu, 26 May 2022 13:39:26 +0000 (GMT)
-Message-ID: <94fba107-a425-7cf6-2a7b-0562c2dcfce4@linux.ibm.com>
-Date:   Thu, 26 May 2022 19:09:25 +0530
+        Thu, 26 May 2022 09:41:37 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 25E64C66
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 06:41:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653572494;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=cPpYHnXIBZc98vfrpGPPeNO4G+nbrOWi/rqlDfKtk/c=;
+        b=X/laqBFRVhv6WlhxpVRLhAsz0uohm0B6J6bLbFj4M4EZe3uLrghPf56sUxkd3MW+QgS9YL
+        9wtB7ktGLe9WIa6a6scE0uVJalXX5nsEZzstV0dlfRqkxxQD5Rs1rRdzv8znRAPddDBd5W
+        B3VUBIHBfSy3kuFzDKTM7RicjSm3iz8=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-628-tGYkW9k3MCWUHF6gsBxOEw-1; Thu, 26 May 2022 09:41:33 -0400
+X-MC-Unique: tGYkW9k3MCWUHF6gsBxOEw-1
+Received: by mail-wr1-f69.google.com with SMTP id s14-20020adfa28e000000b0020ac7532f08so268948wra.15
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 06:41:33 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=cPpYHnXIBZc98vfrpGPPeNO4G+nbrOWi/rqlDfKtk/c=;
+        b=WQAjkjL+FGsEZ5ByC4c1/oxuNX2ZSRwEKTamgiLadCxWbVJI5zS0OtaGEf3sRgDoOg
+         0OaCtM6EdcdKvJJOkm78l1d+eKqXV3vgjoRuOKb2pTSetWxuxk7Wkoo0C7aEcIpfeLpX
+         DDsDq1RpVeizl4djLh+43biDnucMRBjdUUgHpUeYNppNS+goGNgKZQW9qJ+1/NnDqAB6
+         ya1Kx53pw8sMIGMZx0+dvfjWYh6ZTvU/yQAohp/5H9oUQEoWPk8JdR+e43zRLuJsrbGT
+         DLZNGJq18EEZVMDRZAaWJr/HHC5w4Z9mKScwiwnt+b/gurdKU3jbsXwpXHB9F/MZzBEH
+         vXXw==
+X-Gm-Message-State: AOAM531YjjS10LyNA/lLALKfbfH3O+PIKedQ8eI8cz4WQAyRedzlFX9a
+        WrdUgllgalc8XovoqCG9lZJGQVnpffoL7kcs6sF2hAz1GYTALX5Y5iamWBmZBsP50VnTNxME7w4
+        7FQzuITPs9Dcixbd70AYdg/DwQtuFxkgd+CtA5oT+M8Civz3qhRO2PHsByFoPu5CefCuuIlti8k
+        4=
+X-Received: by 2002:a5d:6daf:0:b0:20f:f1e7:c720 with SMTP id u15-20020a5d6daf000000b0020ff1e7c720mr10535508wrs.584.1653572491881;
+        Thu, 26 May 2022 06:41:31 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwVYTuz6x/5UvuRXjQeFp4kffPnv1D04L8SNOA7VUlENyLLGoULl5N/3tWbwS2OIqt7VfQu5Q==
+X-Received: by 2002:a5d:6daf:0:b0:20f:f1e7:c720 with SMTP id u15-20020a5d6daf000000b0020ff1e7c720mr10535483wrs.584.1653572491600;
+        Thu, 26 May 2022 06:41:31 -0700 (PDT)
+Received: from minerva.home (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id h6-20020a5d5046000000b0020c547f75easm1765022wrt.101.2022.05.26.06.41.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 May 2022 06:41:31 -0700 (PDT)
+From:   Javier Martinez Canillas <javierm@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Christian Kellner <ckellner@redhat.com>,
+        Muhammad Usama Anjum <usama.anjum@collabora.com>,
+        Alexander Larsson <alexl@redhat.com>,
+        Alberto Ruiz <aruiz@redhat.com>,
+        Peter Jones <pjones@redhat.com>,
+        Lennart Poettering <lennart@poettering.net>,
+        Colin Walters <walters@verbum.org>,
+        Chung-Chiang Cheng <cccheng@synology.com>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
+Subject: [PATCH v3 1/3] fat: add a vfat_rename2() and make existing .rename callback a helper
+Date:   Thu, 26 May 2022 15:41:17 +0200
+Message-Id: <20220526134119.242182-2-javierm@redhat.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220526134119.242182-1-javierm@redhat.com>
+References: <20220526134119.242182-1-javierm@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH v8 0/7] crash: Kernel handling of CPU and memory hot
- un/plug
-Content-Language: en-US
-To:     Eric DeVolder <eric.devolder@oracle.com>,
-        linux-kernel@vger.kernel.org, x86@kernel.org,
-        kexec@lists.infradead.org, ebiederm@xmission.com,
-        dyoung@redhat.com, bhe@redhat.com, vgoyal@redhat.com
-Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, hpa@zytor.com,
-        nramas@linux.microsoft.com, thomas.lendacky@amd.com,
-        robh@kernel.org, efault@gmx.de, rppt@kernel.org, david@redhat.com,
-        konrad.wilk@oracle.com, boris.ostrovsky@oracle.com
-References: <20220505184603.1548-1-eric.devolder@oracle.com>
- <311b0834-c675-fd15-8184-82b122f4a9cc@linux.ibm.com>
- <bffb3d9e-1946-f4b6-d58c-9c44bc0bee26@oracle.com>
-From:   Sourabh Jain <sourabhjain@linux.ibm.com>
-In-Reply-To: <bffb3d9e-1946-f4b6-d58c-9c44bc0bee26@oracle.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: TMtScjGuOPJarKMyIiuaNDW2sNZ9NxBR
-X-Proofpoint-ORIG-GUID: byNRdpRpU3U4J37GkwzqvFC2PANKnG4v
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-26_07,2022-05-25_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 clxscore=1015
- bulkscore=0 mlxlogscore=999 malwarescore=0 spamscore=0 suspectscore=0
- impostorscore=0 priorityscore=1501 phishscore=0 lowpriorityscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2205260066
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Eric,
+Currently vfat only supports the RENAME_NOREPLACE flag which is handled by
+the virtual file system layer but doesn't support the RENAME_EXCHANGE flag.
 
-On 26/05/22 18:46, Eric DeVolder wrote:
->
->
-> On 5/25/22 10:13, Sourabh Jain wrote:
->> Hello Eric,
->>
->> On 06/05/22 00:15, Eric DeVolder wrote:
->>> When the kdump service is loaded, if a CPU or memory is hot
->>> un/plugged, the crash elfcorehdr (for x86), which describes the CPUs
->>> and memory in the system, must also be updated, else the resulting
->>> vmcore is inaccurate (eg. missing either CPU context or memory
->>> regions).
->>>
->>> The current solution utilizes udev to initiate an unload-then-reload
->>> of the kdump image (e. kernel, initrd, boot_params, puratory and
->>> elfcorehdr) by the userspace kexec utility. In previous posts I have
->>> outlined the significant performance problems related to offloading
->>> this activity to userspace.
->>>
->>> This patchset introduces a generic crash hot un/plug handler that
->>> registers with the CPU and memory notifiers. Upon CPU or memory
->>> changes, this generic handler is invoked and performs important
->>> housekeeping, for example obtaining the appropriate lock, and then
->>> invokes an architecture specific handler to do the appropriate
->>> updates.
->>>
->>> In the case of x86_64, the arch specific handler generates a new
->>> elfcorehdr, and overwrites the old one in memory. No involvement
->>> with userspace needed.
->>>
->>> To realize the benefits/test this patchset, one must make a couple
->>> of minor changes to userspace:
->>>
->>>   - Disable the udev rule for updating kdump on hot un/plug changes.
->>>     Add the following as the first two lines to the udev rule file
->>>     /usr/lib/udev/rules.d/98-kexec.rules:
->>
->> If we can have a sysfs attribute to advertise this feature then 
->> userspace
->> utilities (kexec tool/udev rules) can take action accordingly. In 
->> short, it will
->> help us maintain backward compatibility.
->>
->> kexec tool can use the new sysfs attribute and allocate additional 
->> buffer space
->> for elfcorehdr accordingly. Similarly, the checksum-related changes 
->> can come
->> under this check.
->>
->> Udev rule can use this sysfs file to decide kdump service reload is 
->> required or not.
->
-> Great idea. I've been working on the corresponding udev and 
-> kexec-tools changes and your input/idea here is quite timely.
->
-> I have boolean "crash_hotplug" as a core_param(), so it will show up as:
->
-> # cat /sys/module/kernel/parameters/crash_hotplug
-> N
+Add a vfat_rename2() function to be used as the .rename callback and move
+the current vfat_rename() handler to a helper. This is in preparation for
+implementing the RENAME_NOREPLACE flag using a different helper function.
 
-How about using 0-1 instead Y/N?
-0 = crash hotplug not supported
-1 = crash hotplug supported
+Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+---
 
-Also how about keeping sysfs here instead?
-/sys/kernel/kexec_crash_hotplug
+(no changes since v1)
 
-Thanks,
-Souabh Jain
+ fs/fat/namei_vfat.c | 21 ++++++++++++++-------
+ 1 file changed, 14 insertions(+), 7 deletions(-)
+
+diff --git a/fs/fat/namei_vfat.c b/fs/fat/namei_vfat.c
+index c573314806cf..88ccb2ee3537 100644
+--- a/fs/fat/namei_vfat.c
++++ b/fs/fat/namei_vfat.c
+@@ -889,9 +889,8 @@ static int vfat_mkdir(struct user_namespace *mnt_userns, struct inode *dir,
+ 	return err;
+ }
+ 
+-static int vfat_rename(struct user_namespace *mnt_userns, struct inode *old_dir,
+-		       struct dentry *old_dentry, struct inode *new_dir,
+-		       struct dentry *new_dentry, unsigned int flags)
++static int vfat_rename(struct inode *old_dir, struct dentry *old_dentry,
++		       struct inode *new_dir, struct dentry *new_dentry)
+ {
+ 	struct buffer_head *dotdot_bh;
+ 	struct msdos_dir_entry *dotdot_de;
+@@ -902,9 +901,6 @@ static int vfat_rename(struct user_namespace *mnt_userns, struct inode *old_dir,
+ 	int err, is_dir, update_dotdot, corrupt = 0;
+ 	struct super_block *sb = old_dir->i_sb;
+ 
+-	if (flags & ~RENAME_NOREPLACE)
+-		return -EINVAL;
+-
+ 	old_sinfo.bh = sinfo.bh = dotdot_bh = NULL;
+ 	old_inode = d_inode(old_dentry);
+ 	new_inode = d_inode(new_dentry);
+@@ -1021,13 +1017,24 @@ static int vfat_rename(struct user_namespace *mnt_userns, struct inode *old_dir,
+ 	goto out;
+ }
+ 
++static int vfat_rename2(struct user_namespace *mnt_userns, struct inode *old_dir,
++			struct dentry *old_dentry, struct inode *new_dir,
++			struct dentry *new_dentry, unsigned int flags)
++{
++	if (flags & ~RENAME_NOREPLACE)
++		return -EINVAL;
++
++	/* VFS already handled RENAME_NOREPLACE, handle it as a normal rename */
++	return vfat_rename(old_dir, old_dentry, new_dir, new_dentry);
++}
++
+ static const struct inode_operations vfat_dir_inode_operations = {
+ 	.create		= vfat_create,
+ 	.lookup		= vfat_lookup,
+ 	.unlink		= vfat_unlink,
+ 	.mkdir		= vfat_mkdir,
+ 	.rmdir		= vfat_rmdir,
+-	.rename		= vfat_rename,
++	.rename		= vfat_rename2,
+ 	.setattr	= fat_setattr,
+ 	.getattr	= fat_getattr,
+ 	.update_time	= fat_update_time,
+-- 
+2.36.1
 
