@@ -2,166 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F607C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 02:25:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8369C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 02:40:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346195AbiEZCZ4 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 22:25:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57176 "EHLO
+        id S231135AbiEZCkp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 22:40:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231262AbiEZCZy (ORCPT
+        with ESMTP id S229928AbiEZCko (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 22:25:54 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9731BCEAD
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 19:25:53 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id o10-20020a17090a4e8a00b001df2fcdc165so3246664pjh.0
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 19:25:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=EEnCAXzIKzBX8a+ZY+aJ2FVWSHOtVfgunLZbATQpn20=;
-        b=W10EKExlpftJBTnBqjNUAtnsiAUfHnABsGE5AlTLAqMh7GqgMpzzub0qFeCKCVsYBI
-         KeJESH3gU6ZRM3zCCloADhZvmBC34vbmJ1A0ux21YgEfEkXyTPMQiAj1FRTZH0dQdDs1
-         Ekim+iwvxZin/MBLGykjoLbPHkGMRd+BmiMjRBL1XO9K9+EB0QkJGrGDG0O4InCtmhGP
-         QtBOPPy1De6lyX/UaZGqAJMFyrpJCiwVTX5Dc+V8HtvDLPtGlskIVhgqJ70ddvHTgkSa
-         zPy1N0vo40lEGaTADUjAp14MDRtNNTIx0XqsyM0IFtrQDE3o5cVsJMRTNTRLKtcEkA/F
-         ox6w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=EEnCAXzIKzBX8a+ZY+aJ2FVWSHOtVfgunLZbATQpn20=;
-        b=R95/jD0ct3xX0z0lc8FHbKNWFdlfZsFY7xvjdGWTazVwr64Gv6LdP2dnpIPix24a5N
-         IYNChktg7rRZ9IiBQrEFUUlc9sVUOmnslVEuzkrzCe0FvVMcEcJFLJJEoDcpJsFrnvFS
-         2Kc4Aoe9JVdESTrqGSgysuDeiL+VnO1KVZnBm9u/3jiJvayk2DCGPQ06bO9fpdLSbaPt
-         zejF76WQksUBRKQ0MdZZceZvdc3AU3lvuHH3CtfXJ4JV+/tzHkzw7f/cCv090yIhoC4k
-         MpAlNbDkvrXmXcZ2lDw0/3+t9QTkA7SZKsOPh/uPdaN3OkULrB1I/M7dkwCPL7nGMhsJ
-         FORQ==
-X-Gm-Message-State: AOAM530Z0DTazrKWCPyF9HPibyaZDYhFvUgkr85uP5POM8mJIeSCeIP9
-        hOB8TlVsxaQOegh+2GrMuczNjQ==
-X-Google-Smtp-Source: ABdhPJwt2BGjxkJfOxtlg5m/+6B4LdTBLKQa+0e8AbzcbMWNE7G8FrsvHIdGFRHX3S0IoeNB39MgNg==
-X-Received: by 2002:a17:902:c7cd:b0:161:8b6f:73c3 with SMTP id r13-20020a170902c7cd00b001618b6f73c3mr35562226pla.156.1653531953263;
-        Wed, 25 May 2022 19:25:53 -0700 (PDT)
-Received: from localhost ([2408:8207:18da:2310:c40c:3e14:bb57:48be])
-        by smtp.gmail.com with ESMTPSA id j18-20020a170903025200b001624f2b71b4sm101208plh.152.2022.05.25.19.25.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 May 2022 19:25:52 -0700 (PDT)
-Date:   Thu, 26 May 2022 10:25:47 +0800
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     Roman Gushchin <roman.gushchin@linux.dev>
-Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        Dave Chinner <dchinner@redhat.com>,
-        linux-kernel@vger.kernel.org,
-        Kent Overstreet <kent.overstreet@gmail.com>,
-        Hillf Danton <hdanton@sina.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: Re: [PATCH v4 4/6] mm: docs: document shrinker debugfs
-Message-ID: <Yo7lK1wp9fXi4obF@FVFYT0MHHV2J.googleapis.com>
-References: <20220525202600.2910982-1-roman.gushchin@linux.dev>
- <20220525202600.2910982-5-roman.gushchin@linux.dev>
+        Wed, 25 May 2022 22:40:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9878D6621A
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 19:40:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0C4F2B81E6C
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 02:40:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2BCD5C385B8;
+        Thu, 26 May 2022 02:40:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653532839;
+        bh=Nekco3mEdzmOoGYbr+l5+JxZcWOSAqhdgYQ+UjDVSz8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=MR5z7y1ZVGstMnPmq97lSE3kBPaVat/Rm/kjPHJ4cU3joo6Ufz6DNkHJr1g64XVu2
+         zyMzVlnsk/GqSqPnX3+l5tQ2d/Pax4ByeTLrbEWnYIRYPvsCMJXmvZUpeB16tyRUB1
+         Qm7oYRFUhP2q30+ivW2xBMrH+hyyNRM+nrxrxiztWNkqVJx7X8d2pw8EgUXUAPsEQ8
+         m3654klQQlJun3gVn2B4T+4Pf0BqKqdEoB1f5L+21up5imWq07E7AKxQQDAXIvCrdv
+         ut+72EmMGbqJd6/vEhNDb8yQZi37K1eaLVzToiPIuwbAWcKz6B5IuGmE8LvIdIw5mw
+         7hkUX90Wmipkg==
+Date:   Wed, 25 May 2022 19:40:37 -0700
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>
+Cc:     Nick Desaulniers <ndesaulniers@google.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, patches@lists.linux.dev,
+        Jessica Clarke <jrtc27@jrtc27.com>
+Subject: Re: [PATCH] riscv: Fix ALT_THEAD_PMA's asm parameters
+Message-ID: <Yo7opc/A8ITue0/4@dev-arch.thelio-3990X>
+References: <20220518184529.454008-1-nathan@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220525202600.2910982-5-roman.gushchin@linux.dev>
+In-Reply-To: <20220518184529.454008-1-nathan@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 25, 2022 at 01:25:58PM -0700, Roman Gushchin wrote:
-> Add a document describing the shrinker debugfs interface.
+Small ping on this and https://lore.kernel.org/20220516214520.3252074-1-nathan@kernel.org/.
+
+Our builds on -next have been broken for a week now. Hopefully these can
+make the first RISC-V pull request to avoid mainline being broken in the
+same fashion.
+
+Cheers,
+Nathan
+
+On Wed, May 18, 2022 at 11:45:29AM -0700, Nathan Chancellor wrote:
+> After commit a35707c3d850 ("riscv: add memory-type errata for T-Head"),
+> builds with LLVM's integrated assembler fail like:
 > 
-> Signed-off-by: Roman Gushchin <roman.gushchin@linux.dev>
+>   In file included from arch/riscv/kernel/asm-offsets.c:10:
+>   In file included from ./include/linux/mm.h:29:
+>   In file included from ./include/linux/pgtable.h:6:
+>   In file included from ./arch/riscv/include/asm/pgtable.h:114:
+>   ./arch/riscv/include/asm/pgtable-64.h:210:2: error: invalid input constraint '0' in asm
+>           ALT_THEAD_PMA(prot_val);
+>           ^
+>   ./arch/riscv/include/asm/errata_list.h:88:4: note: expanded from macro 'ALT_THEAD_PMA'
+>           : "0"(_val),                                                    \
+>             ^
+> 
+> This was reported upstream to LLVM where Jessica pointed out a couple of
+> issues with the existing implementation of ALT_THEAD_PMA:
+> 
+> * t3 is modified but not listed in the clobbers list.
+> 
+> * "+r"(_val) marks _val as both an input and output of the asm but then
+>   "0"(_val) marks _val as an input matching constraint, which does not
+>   make much sense in this situation, as %1 is not actually used in the
+>   asm and matching constraints are designed to be used for different
+>   inputs that need to use the same register.
+> 
+> Drop the matching contraint and shift all the operands by one, as %1 is
+> unused, and mark t3 as clobbered. This resolves the build error and goes
+> not cause any problems with GNU as.
+> 
+> Fixes: a35707c3d850 ("riscv: add memory-type errata for T-Head")
+> Link: https://github.com/ClangBuiltLinux/linux/issues/1641
+> Link: https://github.com/llvm/llvm-project/issues/55514
+> Link: https://gcc.gnu.org/onlinedocs/gcc/Simple-Constraints.html
+> Suggested-by: Jessica Clarke <jrtc27@jrtc27.com>
+> Signed-off-by: Nathan Chancellor <nathan@kernel.org>
 > ---
->  Documentation/admin-guide/mm/index.rst        |   1 +
->  .../admin-guide/mm/shrinker_debugfs.rst       | 100 ++++++++++++++++++
->  2 files changed, 101 insertions(+)
->  create mode 100644 Documentation/admin-guide/mm/shrinker_debugfs.rst
+>  arch/riscv/include/asm/errata_list.h | 14 +++++++-------
+>  1 file changed, 7 insertions(+), 7 deletions(-)
 > 
-> diff --git a/Documentation/admin-guide/mm/index.rst b/Documentation/admin-guide/mm/index.rst
-> index c21b5823f126..1bd11118dfb1 100644
-> --- a/Documentation/admin-guide/mm/index.rst
-> +++ b/Documentation/admin-guide/mm/index.rst
-> @@ -36,6 +36,7 @@ the Linux memory management.
->     numa_memory_policy
->     numaperf
->     pagemap
-> +   shrinker_debugfs
->     soft-dirty
->     swap_numa
->     transhuge
-> diff --git a/Documentation/admin-guide/mm/shrinker_debugfs.rst b/Documentation/admin-guide/mm/shrinker_debugfs.rst
-> new file mode 100644
-> index 000000000000..2033d696aa59
-> --- /dev/null
-> +++ b/Documentation/admin-guide/mm/shrinker_debugfs.rst
-> @@ -0,0 +1,100 @@
-> +.. _shrinker_debugfs:
-> +
-> +==========================
-> +Shrinker Debugfs Interface
-> +==========================
-> +
-> +Shrinker debugfs interface provides a visibility into the kernel memory
-> +shrinkers subsystem and allows to get information about individual shrinkers.
-> +
-> +For each shrinker registered in the system a directory in **<debugfs>/shrinker/**
-> +is created. The directory's name is composed from the shrinker's name and an
-> +unique id: e.g. *kfree_rcu-0* or *sb-xfs:vda1-36*.
-> +
-> +Each shrinker directory contains the **count** file, which allows to trigger
-> +the *count_objects()* callback for each memcg and numa node (if applicable).
-> +
-> +Usage:
-> +------
-> +
-> +1. *List registered shrinkers*
-> +
-> +  ::
-> +
-> +    $ cd /sys/kernel/debug/shrinker/
-> +    $ ls
-> +    dqcache-16          sb-hugetlbfs-17  sb-rootfs-2      sb-tmpfs-49
-> +    kfree_rcu-0         sb-hugetlbfs-33  sb-securityfs-6  sb-tracefs-13
-> +    sb-aio-20           sb-iomem-12      sb-selinuxfs-22  sb-xfs:vda1-36
-> +    sb-anon_inodefs-15  sb-mqueue-21     sb-sockfs-8      sb-zsmalloc-19
-> +    sb-bdev-3           sb-nsfs-4        sb-sysfs-26      shadow-18
-> +    sb-bpf-32           sb-pipefs-14     sb-tmpfs-1       thp_deferred_split-10
-> +    sb-btrfs:vda2-24    sb-proc-25       sb-tmpfs-27      thp_zero-9
-> +    sb-cgroup2-30       sb-proc-39       sb-tmpfs-29      xfs_buf-vda1-37
-> +    sb-configfs-23      sb-proc-41       sb-tmpfs-35      xfs_inodegc-vda1-38
-> +    sb-dax-11           sb-proc-45       sb-tmpfs-40      zspool-zram0-34
-> +    sb-debugfs-7        sb-proc-46       sb-tmpfs-42
-> +    sb-devpts-28        sb-proc-47       sb-tmpfs-43
-> +    sb-devtmpfs-5       sb-pstore-31     sb-tmpfs-44
-> +
-> +2. *Get information about a specific shrinker*
-> +
-> +  ::
-> +
-> +    $ cd sb-btrfs\:vda2-24/
-> +    $ ls
-> +    count
-> +
-> +3. *Count objects*
-> +
-> +  Each line in the output has the following format::
-> +
-> +    <cgroup inode id> <nr of objects on node 0> <nr of objects on node 1> ...
-> +    <cgroup inode id> <nr of objects on node 0> <nr of objects on node 1> ...
-> +    ...
-> +
-> +  If there are no objects on all numa nodes, a line is omitted. If there
-> +  are no objects at all, the output might be empty.
-
-Should we add the following lines into here?
-
-"
-If the shrinker is not memcg-aware or CONFIG_MEMCG is off, 0 is
-printed as cgroup inode id. If the shrinker is not numa-aware, 0's are
-printed for all nodes except the first one.
-"
-
-Thanks.
+> diff --git a/arch/riscv/include/asm/errata_list.h b/arch/riscv/include/asm/errata_list.h
+> index 9e2888dbb5b1..416ead0f9a65 100644
+> --- a/arch/riscv/include/asm/errata_list.h
+> +++ b/arch/riscv/include/asm/errata_list.h
+> @@ -75,20 +75,20 @@ asm volatile(ALTERNATIVE(						\
+>  	"nop\n\t"							\
+>  	"nop\n\t"							\
+>  	"nop",								\
+> -	"li      t3, %2\n\t"						\
+> -	"slli    t3, t3, %4\n\t"					\
+> +	"li      t3, %1\n\t"						\
+> +	"slli    t3, t3, %3\n\t"					\
+>  	"and     t3, %0, t3\n\t"					\
+>  	"bne     t3, zero, 2f\n\t"					\
+> -	"li      t3, %3\n\t"						\
+> -	"slli    t3, t3, %4\n\t"					\
+> +	"li      t3, %2\n\t"						\
+> +	"slli    t3, t3, %3\n\t"					\
+>  	"or      %0, %0, t3\n\t"					\
+>  	"2:",  THEAD_VENDOR_ID,						\
+>  		ERRATA_THEAD_PBMT, CONFIG_ERRATA_THEAD_PBMT)		\
+>  	: "+r"(_val)							\
+> -	: "0"(_val),							\
+> -	  "I"(_PAGE_MTMASK_THEAD >> ALT_THEAD_PBMT_SHIFT),		\
+> +	: "I"(_PAGE_MTMASK_THEAD >> ALT_THEAD_PBMT_SHIFT),		\
+>  	  "I"(_PAGE_PMA_THEAD >> ALT_THEAD_PBMT_SHIFT),			\
+> -	  "I"(ALT_THEAD_PBMT_SHIFT))
+> +	  "I"(ALT_THEAD_PBMT_SHIFT)					\
+> +	: "t3")
+>  #else
+>  #define ALT_THEAD_PMA(_val)
+>  #endif
+> 
+> base-commit: 93c0651617a62a69717299f1464dda798af8bebb
+> -- 
+> 2.36.1
+> 
+> 
+> _______________________________________________
+> linux-riscv mailing list
+> linux-riscv@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-riscv
