@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAB6EC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 11:46:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37C5EC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 11:47:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346440AbiEZLqx (ORCPT
+        id S1347201AbiEZLq5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 07:46:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57802 "EHLO
+        Thu, 26 May 2022 07:46:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238032AbiEZLo6 (ORCPT
+        with ESMTP id S1347247AbiEZLpM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 07:44:58 -0400
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41461D8090
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 04:44:52 -0700 (PDT)
-Received: by mail-pg1-x52c.google.com with SMTP id e66so1122949pgc.8
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 04:44:52 -0700 (PDT)
+        Thu, 26 May 2022 07:45:12 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AD3C49902
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 04:44:58 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id o9-20020a17090a0a0900b001df3fc52ea7so4201305pjo.3
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 04:44:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=gAxtECM05PzG/Tji4CAVaBCkNnxvwBxiF1rKgSbAS7k=;
-        b=IjQikfoaO7L/MsZ9JQx/BST3wDHalycaIFjh7JZMnim1nvhyRMqMCOKENl+sdy0fo8
-         BRDbsF6yLDdx7IZid3mbTMxB8kRqmFW+vKiwa3Wm3uFWjiy3QURC7rfiP8+mhijN/gq0
-         iuDDSX544E5hxNx7Q6Pv3NVMWYX3IUExUwxmt9fd6fE9GmcZgIPZ9jV6dJzWcNir2ikH
-         aut7Dgsm/FL3RPvEkZAY1GfJeT0Ury7eGcIGjh5zM345Zmzv0AwLL2FhWCHqobE3IBVj
-         8qcEtqVxELs0mm0xvc+rb6NvXy70Ox+4wZ1OJCG+a8Pp7otfDtjdyBi0Hs0TrDT7dBEV
-         zYJA==
+        bh=Dbbt9rtTwG4gE+OVtAcGxXUAaT1xVEW1UYgDSsh/rzE=;
+        b=RMJaCg2x3lZF/5iUJrvARxD8NpTd27etPnDG2pI//KDguG2KVnVYA1Vid3+zb9nxDE
+         MOvOtQBNMsI63JABXt/RV3B4/GopT0foiw+o+MN4QCxlG5PMCrGYSrGRhxLVGI6r+qqV
+         9ezfS0eKACWvFuf0W4F/eN7Bh8E/AwrcvV06Fh5hF1CHAe+57zvywS+cp+lXniH3Q9gC
+         qiL5hu/OiqLhL3uxF3zrekpxdOi92f8hKjGLxCZO3pZpc/KFOoofSRtSg9aJUT//1iVt
+         IoRWc0bRVFsPHfth/4Yq3sJn4AqaeO719xDxIKkex+yMII8GrG0i5+wPs0YQSVWNuYW9
+         YuVA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=gAxtECM05PzG/Tji4CAVaBCkNnxvwBxiF1rKgSbAS7k=;
-        b=Ti4JfKBoR3PdjO9x4TKOMKv2stEmAWBn3VpttWZOvRhm6w6ORwy8/u1NU0nGfErV6y
-         QnTh0HxI3vx5pE4R16KJ3BEjb53Ot7U2MCQ2JdQ4nT+O8WYUma3PqOJ803VpUbWCbean
-         ni5RAnc6afHmijRqTlhLdkFhB0YdZTAFFd7Lc07m2Z5CtnSWitOpJMNer2g9LT9mq8xu
-         /IKgQou8BiyesWmempNjC4x8XnQLC1CXUoRl7RpWmAEK9Fo/gTzU4mpMDLC3XN5HZ//s
-         HM7i9kOffi1bhihYSZa2a4HRSLEe3aI5abmZZvpnQTpe55VM8zi29NYKzMFE7Vc8nWxJ
-         qTPw==
-X-Gm-Message-State: AOAM5303uu4yePmk2dkS3+VR9unD5rj8jdm0NrtxhpAq01kqEGtQ5phv
-        F54FnlIqJ+ftqsp7J8mZ9Dcc+Q==
-X-Google-Smtp-Source: ABdhPJzWLutPUzX6PUXXIQ+ONdk7t8pldnwM+fEQ3bXC4gZ/bxFrAIy/sLqyWwcbQFrAIIOKbkgMeQ==
-X-Received: by 2002:a65:63c4:0:b0:3f6:3a63:3148 with SMTP id n4-20020a6563c4000000b003f63a633148mr30750750pgv.33.1653565491496;
-        Thu, 26 May 2022 04:44:51 -0700 (PDT)
+        bh=Dbbt9rtTwG4gE+OVtAcGxXUAaT1xVEW1UYgDSsh/rzE=;
+        b=gJ5eIadcekc4flae3SS9TfVbhU4bkD7cOGTlxQbb4/FbuLP9w6TW353ZU7x7s/FahS
+         xfod/1W2K9rKpTTuIzyuQrZ9vSAGXoIM1upW3KXX3vmudRusDGokcsdfn7MalDKCn1Pq
+         LQ5PU1pOC1gCNjkGoG9IhkvFWkOjsSW3jmI0BTLiILdfdG+QanTfScLAjaJ59wN3/Vqw
+         MXZbFicDd/4OvWS6+AhGt8yB1cuvpnqoaHMXaw0OI6GFfY7QZYIuEoJpNvouddw2L4Ht
+         DHBff4/kUuH/gVu8GG7NLrvQRe5x+DuRWTlN8DlfmEpi532m6YDDrqy1eaPGHlCa8Zll
+         jxrw==
+X-Gm-Message-State: AOAM5307abIAuWoki361+H2ErVQCP45fF8wtFCc8si0HREtLZSTpguyb
+        28drqNqoIeXoZzDtsvOtdXkZQw==
+X-Google-Smtp-Source: ABdhPJwBKKcXOxuOxaT5d0+aqOVq9sUzLdc5/qKsmCx09mE4+x79vnxjnvxlpxxSEytNTlDzdzl3lA==
+X-Received: by 2002:a17:90a:8d08:b0:1e0:a2dc:c71b with SMTP id c8-20020a17090a8d0800b001e0a2dcc71bmr2227511pjo.72.1653565498266;
+        Thu, 26 May 2022 04:44:58 -0700 (PDT)
 Received: from localhost ([122.162.234.2])
-        by smtp.gmail.com with ESMTPSA id mm12-20020a17090b358c00b001cd4989ff62sm1270324pjb.41.2022.05.26.04.44.50
+        by smtp.gmail.com with ESMTPSA id m23-20020a17090ade1700b001cd4989fee4sm3460273pjv.48.2022.05.26.04.44.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 May 2022 04:44:51 -0700 (PDT)
+        Thu, 26 May 2022 04:44:57 -0700 (PDT)
 From:   Viresh Kumar <viresh.kumar@linaro.org>
 To:     Viresh Kumar <vireshk@kernel.org>, Nishanth Menon <nm@ti.com>,
         Stephen Boyd <sboyd@kernel.org>,
@@ -58,9 +58,9 @@ Cc:     Viresh Kumar <viresh.kumar@linaro.org>, linux-pm@vger.kernel.org,
         Rafael Wysocki <rjw@rjwysocki.net>,
         Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 27/31] OPP: Remove dev_pm_opp_set_clkname() and friends
-Date:   Thu, 26 May 2022 17:12:26 +0530
-Message-Id: <8b51e3f21c469472f2dbe43fef8963b911fde135.1653564321.git.viresh.kumar@linaro.org>
+Subject: [PATCH 29/31] OPP: Remove dev_pm_opp_attach_genpd() and friends
+Date:   Thu, 26 May 2022 17:12:28 +0530
+Message-Id: <4315c9a6a29631e1671c9822efddfa6e95ae4d2d.1653564321.git.viresh.kumar@linaro.org>
 X-Mailer: git-send-email 2.31.1.272.g89b43f80a514
 In-Reply-To: <cover.1653564321.git.viresh.kumar@linaro.org>
 References: <cover.1653564321.git.viresh.kumar@linaro.org>
@@ -71,191 +71,213 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 Now that everyone has migrated to dev_pm_opp_set_config(), remove the
-public interface for dev_pm_opp_set_clkname() and friends.
+public interface for dev_pm_opp_attach_genpd() and friends.
 
 Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
 ---
- drivers/opp/core.c     | 93 ++++++++++--------------------------------
- include/linux/pm_opp.h | 15 -------
- 2 files changed, 21 insertions(+), 87 deletions(-)
+ drivers/opp/core.c     | 86 ++++++++++--------------------------------
+ include/linux/pm_opp.h | 17 ---------
+ 2 files changed, 20 insertions(+), 83 deletions(-)
 
 diff --git a/drivers/opp/core.c b/drivers/opp/core.c
-index 07cb8ff33a6d..c2590c0c05a0 100644
+index 412af91d2039..69c6cf6a0bcc 100644
 --- a/drivers/opp/core.c
 +++ b/drivers/opp/core.c
-@@ -2152,7 +2152,7 @@ static void _opp_put_regulators(struct opp_table *opp_table)
+@@ -2254,7 +2254,7 @@ static void _opp_unregister_set_opp_helper(struct opp_table *opp_table)
+ 	}
+ }
+ 
+-static void _opp_detach_genpd(struct opp_table *opp_table)
++static void _detach_genpd(struct opp_table *opp_table)
+ {
+ 	int index;
+ 
+@@ -2274,7 +2274,7 @@ static void _opp_detach_genpd(struct opp_table *opp_table)
  }
  
  /**
-- * dev_pm_opp_set_clkname() - Set clk name for the device
-+ * _opp_set_clkname() - Set clk name for the device
-  * @dev: Device for which clk name is being set.
-  * @name: Clk name.
-  *
-@@ -2163,93 +2163,41 @@ static void _opp_put_regulators(struct opp_table *opp_table)
-  *
-  * This must be called before any OPPs are initialized for the device.
+- * dev_pm_opp_attach_genpd - Attach genpd(s) for the device and save virtual device pointer
++ * _opp_attach_genpd - Attach genpd(s) for the device and save virtual device pointer
+  * @dev: Consumer device for which the genpd is getting attached.
+  * @names: Null terminated array of pointers containing names of genpd to attach.
+  * @virt_devs: Pointer to return the array of virtual devices.
+@@ -2295,30 +2295,23 @@ static void _opp_detach_genpd(struct opp_table *opp_table)
+  * The order of entries in the names array must match the order in which
+  * "required-opps" are added in DT.
   */
--struct opp_table *dev_pm_opp_set_clkname(struct device *dev, const char *name)
-+static int _opp_set_clkname(struct opp_table *opp_table, struct device *dev,
-+			    const char *name)
+-struct opp_table *dev_pm_opp_attach_genpd(struct device *dev,
+-		const char * const *names, struct device ***virt_devs)
++static int _opp_attach_genpd(struct opp_table *opp_table, struct device *dev,
++			     const char * const *names, struct device ***virt_devs)
  {
 -	struct opp_table *opp_table;
--	int ret;
--
+ 	struct device *virt_dev;
+ 	int index = 0, ret = -EINVAL;
+ 	const char * const *name = names;
+ 
 -	opp_table = _add_opp_table(dev, false);
 -	if (IS_ERR(opp_table))
 -		return opp_table;
 -
--	/* This should be called before OPPs are initialized */
--	if (WARN_ON(!list_empty(&opp_table->opp_list))) {
--		ret = -EBUSY;
--		goto err;
--	}
--
- 	/* Another CPU that shares the OPP table has set the clkname ? */
- 	if (opp_table->clk_configured)
+ 	if (opp_table->genpd_virt_devs)
 -		return opp_table;
 +		return 0;
  
- 	/* clk shouldn't be initialized at this point */
--	if (WARN_ON(opp_table->clk)) {
--		ret = -EBUSY;
--		goto err;
+ 	/*
+ 	 * If the genpd's OPP table isn't already initialized, parsing of the
+ 	 * required-opps fail for dev. We should retry this after genpd's OPP
+ 	 * table is added.
+ 	 */
+-	if (!opp_table->required_opp_count) {
+-		ret = -EPROBE_DEFER;
+-		goto put_table;
 -	}
-+	if (WARN_ON(opp_table->clk))
-+		return -EBUSY;
++	if (!opp_table->required_opp_count)
++		return -EPROBE_DEFER;
  
- 	/* Find clk for the device */
- 	opp_table->clk = clk_get(dev, name);
- 	if (IS_ERR(opp_table->clk)) {
--		ret = dev_err_probe(dev, PTR_ERR(opp_table->clk),
-+		return dev_err_probe(dev, PTR_ERR(opp_table->clk),
- 				    "%s: Couldn't find clock\n", __func__);
--		goto err;
- 	}
+ 	mutex_lock(&opp_table->genpd_virt_dev_lock);
  
- 	opp_table->clk_configured = true;
+@@ -2351,74 +2344,34 @@ struct opp_table *dev_pm_opp_attach_genpd(struct device *dev,
+ 		*virt_devs = opp_table->genpd_virt_devs;
+ 	mutex_unlock(&opp_table->genpd_virt_dev_lock);
  
 -	return opp_table;
--
--err:
++	return 0;
+ 
+ err:
+-	_opp_detach_genpd(opp_table);
++	_detach_genpd(opp_table);
+ unlock:
+ 	mutex_unlock(&opp_table->genpd_virt_dev_lock);
++	return ret;
+ 
+-put_table:
 -	dev_pm_opp_put_opp_table(opp_table);
 -
 -	return ERR_PTR(ret);
--}
--EXPORT_SYMBOL_GPL(dev_pm_opp_set_clkname);
--
--/**
-- * dev_pm_opp_put_clkname() - Releases resources blocked for clk.
-- * @opp_table: OPP table returned from dev_pm_opp_set_clkname().
-- */
--void dev_pm_opp_put_clkname(struct opp_table *opp_table)
--{
+ }
+-EXPORT_SYMBOL_GPL(dev_pm_opp_attach_genpd);
+ 
+ /**
+- * dev_pm_opp_detach_genpd() - Detach genpd(s) from the device.
+- * @opp_table: OPP table returned by dev_pm_opp_attach_genpd().
++ * _opp_detach_genpd() - Detach genpd(s) from the device.
++ * @opp_table: OPP table returned by _opp_attach_genpd().
+  *
+  * This detaches the genpd(s), resets the virtual device pointers, and puts the
+  * OPP table.
+  */
+-void dev_pm_opp_detach_genpd(struct opp_table *opp_table)
++static void _opp_detach_genpd(struct opp_table *opp_table)
+ {
 -	if (unlikely(!opp_table))
 -		return;
 -
--	clk_put(opp_table->clk);
--	opp_table->clk = ERR_PTR(-EINVAL);
--	opp_table->clk_configured = false;
+ 	/*
+ 	 * Acquire genpd_virt_dev_lock to make sure virt_dev isn't getting
+ 	 * used in parallel.
+ 	 */
+ 	mutex_lock(&opp_table->genpd_virt_dev_lock);
+-	_opp_detach_genpd(opp_table);
++	_detach_genpd(opp_table);
+ 	mutex_unlock(&opp_table->genpd_virt_dev_lock);
 -
 -	dev_pm_opp_put_opp_table(opp_table);
 -}
--EXPORT_SYMBOL_GPL(dev_pm_opp_put_clkname);
+-EXPORT_SYMBOL_GPL(dev_pm_opp_detach_genpd);
 -
--static void devm_pm_opp_clkname_release(void *data)
+-static void devm_pm_opp_detach_genpd(void *data)
 -{
--	dev_pm_opp_put_clkname(data);
-+	return 0;
+-	dev_pm_opp_detach_genpd(data);
  }
  
- /**
-- * devm_pm_opp_set_clkname() - Set clk name for the device
-- * @dev: Device for which clk name is being set.
-- * @name: Clk name.
+-/**
+- * devm_pm_opp_attach_genpd - Attach genpd(s) for the device and save virtual
+- *			      device pointer
+- * @dev: Consumer device for which the genpd is getting attached.
+- * @names: Null terminated array of pointers containing names of genpd to attach.
+- * @virt_devs: Pointer to return the array of virtual devices.
 - *
-- * This is a resource-managed variant of dev_pm_opp_set_clkname().
+- * This is a resource-managed version of dev_pm_opp_attach_genpd().
 - *
 - * Return: 0 on success and errorno otherwise.
-+ * _opp_put_clkname() - Releases resources blocked for clk.
-+ * @opp_table: OPP table returned from _opp_set_clkname().
-  */
--int devm_pm_opp_set_clkname(struct device *dev, const char *name)
-+static void _opp_put_clkname(struct opp_table *opp_table)
- {
+- */
+-int devm_pm_opp_attach_genpd(struct device *dev, const char * const *names,
+-			     struct device ***virt_devs)
+-{
 -	struct opp_table *opp_table;
 -
--	opp_table = dev_pm_opp_set_clkname(dev, name);
+-	opp_table = dev_pm_opp_attach_genpd(dev, names, virt_devs);
 -	if (IS_ERR(opp_table))
 -		return PTR_ERR(opp_table);
 -
--	return devm_add_action_or_reset(dev, devm_pm_opp_clkname_release,
+-	return devm_add_action_or_reset(dev, devm_pm_opp_detach_genpd,
 -					opp_table);
-+	if (opp_table->clk_configured) {
-+		clk_put(opp_table->clk);
-+		opp_table->clk = ERR_PTR(-EINVAL);
-+		opp_table->clk_configured = false;
-+	}
- }
--EXPORT_SYMBOL_GPL(devm_pm_opp_set_clkname);
- 
+-}
+-EXPORT_SYMBOL_GPL(devm_pm_opp_attach_genpd);
+-
  /**
-  * dev_pm_opp_register_set_opp_helper() - Register custom set OPP helper
-@@ -2549,9 +2497,11 @@ struct opp_table *dev_pm_opp_set_config(struct device *dev,
+  * dev_pm_opp_set_config() - Set OPP configuration for the device.
+  * @dev: Device for which configuration is being set.
+@@ -2495,10 +2448,12 @@ struct opp_table *dev_pm_opp_set_config(struct device *dev,
  
- 	// Configure clock
- 	if (config->clk_name) {
--		ret = dev_pm_opp_set_clkname(dev, config->clk_name);
+ 	// Attach genpds
+ 	if (config->genpd_names) {
+-		ret = dev_pm_opp_attach_genpd(dev, config->genpd_names,
+-					      config->virt_devs);
 -		if (IS_ERR(ret))
-+		err = _opp_set_clkname(opp_table, dev, config->clk_name);
++		err = _opp_attach_genpd(opp_table, dev, config->genpd_names,
++					config->virt_devs);
 +		if (err) {
 +			ret = ERR_PTR(err);
  			goto err;
 +		}
  	}
  
- 	// Configure property names
-@@ -2633,8 +2583,7 @@ void dev_pm_opp_clear_config(struct opp_table *opp_table)
- 	if (opp_table->prop_name)
- 		dev_pm_opp_put_prop_name(opp_table);
+ 	return opp_table;
+@@ -2524,8 +2479,7 @@ EXPORT_SYMBOL_GPL(dev_pm_opp_set_config);
+  */
+ void dev_pm_opp_clear_config(struct opp_table *opp_table)
+ {
+-	if (opp_table->genpd_virt_devs)
+-		dev_pm_opp_detach_genpd(opp_table);
++	_opp_detach_genpd(opp_table);
  
--	if (opp_table->clk_configured)
--		dev_pm_opp_put_clkname(opp_table);
-+	_opp_put_clkname(opp_table);
+ 	_opp_put_regulators(opp_table);
  
- 	dev_pm_opp_put_opp_table(opp_table);
- }
 diff --git a/include/linux/pm_opp.h b/include/linux/pm_opp.h
-index b80982e5a067..7afa8160590d 100644
+index 0ad60c7dca02..a310564ab698 100644
 --- a/include/linux/pm_opp.h
 +++ b/include/linux/pm_opp.h
 @@ -186,9 +186,6 @@ void dev_pm_opp_clear_config(struct opp_table *opp_table);
  
  struct opp_table *dev_pm_opp_set_prop_name(struct device *dev, const char *name);
  void dev_pm_opp_put_prop_name(struct opp_table *opp_table);
--struct opp_table *dev_pm_opp_set_clkname(struct device *dev, const char *name);
--void dev_pm_opp_put_clkname(struct opp_table *opp_table);
--int devm_pm_opp_set_clkname(struct device *dev, const char *name);
- struct opp_table *dev_pm_opp_register_set_opp_helper(struct device *dev, int (*set_opp)(struct dev_pm_set_opp_data *data));
- void dev_pm_opp_unregister_set_opp_helper(struct opp_table *opp_table);
- int devm_pm_opp_register_set_opp_helper(struct device *dev, int (*set_opp)(struct dev_pm_set_opp_data *data));
-@@ -387,18 +384,6 @@ static inline struct opp_table *dev_pm_opp_set_prop_name(struct device *dev, con
+-struct opp_table *dev_pm_opp_attach_genpd(struct device *dev, const char * const *names, struct device ***virt_devs);
+-void dev_pm_opp_detach_genpd(struct opp_table *opp_table);
+-int devm_pm_opp_attach_genpd(struct device *dev, const char * const *names, struct device ***virt_devs);
+ struct dev_pm_opp *dev_pm_opp_xlate_required_opp(struct opp_table *src_table, struct opp_table *dst_table, struct dev_pm_opp *src_opp);
+ int dev_pm_opp_xlate_performance_state(struct opp_table *src_table, struct opp_table *dst_table, unsigned int pstate);
+ int dev_pm_opp_set_rate(struct device *dev, unsigned long target_freq);
+@@ -367,20 +364,6 @@ static inline struct opp_table *dev_pm_opp_set_prop_name(struct device *dev, con
  
  static inline void dev_pm_opp_put_prop_name(struct opp_table *opp_table) {}
  
--static inline struct opp_table *dev_pm_opp_set_clkname(struct device *dev, const char *name)
+-static inline struct opp_table *dev_pm_opp_attach_genpd(struct device *dev, const char * const *names, struct device ***virt_devs)
 -{
 -	return ERR_PTR(-EOPNOTSUPP);
 -}
 -
--static inline void dev_pm_opp_put_clkname(struct opp_table *opp_table) {}
+-static inline void dev_pm_opp_detach_genpd(struct opp_table *opp_table) {}
 -
--static inline int devm_pm_opp_set_clkname(struct device *dev, const char *name)
+-static inline int devm_pm_opp_attach_genpd(struct device *dev,
+-					   const char * const *names,
+-					   struct device ***virt_devs)
 -{
 -	return -EOPNOTSUPP;
 -}
 -
- static inline struct opp_table *dev_pm_opp_attach_genpd(struct device *dev, const char * const *names, struct device ***virt_devs)
+ static inline struct opp_table *dev_pm_opp_set_config(struct device *dev, struct dev_pm_opp_config *config)
  {
  	return ERR_PTR(-EOPNOTSUPP);
 -- 
