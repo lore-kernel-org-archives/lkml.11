@@ -2,193 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19FD7C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 23:15:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB1C2C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 23:19:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349490AbiEZXPq (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 19:15:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42662 "EHLO
+        id S243128AbiEZXTG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 19:19:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232203AbiEZXPm (ORCPT
+        with ESMTP id S230376AbiEZXTF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 19:15:42 -0400
-Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80434E52A3
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 16:15:40 -0700 (PDT)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.nyi.internal (Postfix) with ESMTP id 97E045C01E4;
-        Thu, 26 May 2022 19:15:39 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute5.internal (MEProxy); Thu, 26 May 2022 19:15:39 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sent.com; h=cc
-        :cc:content-transfer-encoding:date:date:from:from:in-reply-to
-        :message-id:mime-version:reply-to:reply-to:sender:subject
-        :subject:to:to; s=fm1; t=1653606939; x=1653693339; bh=qCVBc37kvb
-        RszsEQWErm5bs0GrXfiWiwMbQyFvk4XSk=; b=r+k3sseNp3hgKV6KYqE5AEMXyP
-        ARuxlET4aUSFmVJaBFMglZ1BWjzHWif4PY9OXqflziN9J0jMuBvtBK1lqi0MPf+f
-        Yzgd0SHcmcek+EHHp6uNAHsyY6oLolaIsTDjGDoTsg9sdUOZE2SyCxwvyMMYW+aH
-        FvABK+TT2dkpOjiH1D0b5fydd/MnhGCrAS43XpQprNT0lGB8h7+RWywc0bImlYfa
-        aDYY3iOyrzQATDG4VenDOrYRseTt83MAGHbWE4HZ2QlnX9K+lroX7Jw0hIz8WViv
-        G9RWiEy7qsbhlZL1QurhJMDRvdFz6ZV9XGBkCChQoZqK8zO+PMI0ybjLQOjw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :feedback-id:feedback-id:from:from:in-reply-to:message-id
-        :mime-version:reply-to:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; t=1653606939; x=1653693339; bh=qCVBc37kvbRszsEQWErm5bs0GrXf
-        iWiwMbQyFvk4XSk=; b=vTaJwHRxEds7yaBLMX8wV+cHSOI1lqc15hAGEr/BGSyc
-        9r9O7qaVU48pWGhScb7PE7jlFqRREVJUCvw0TBK7JBf5QrKB/pEtRkljfoxzLuMV
-        7Ljer4tIGh6k9Pouee3a7v5Bge4dAGNzRywftI0RVJPRG/i9Q3Qeje2d99obZju+
-        LBm2f0b+OYuYAsCRcj9t7N559brFl4Ugy3rnaz/FSHpmdhtP/maaUUyoJQ740ZA6
-        y9svYiBJneAEOz4lhdCGtxzoW6Ko+3ZWyudoiNBgCIumf6YPd6167nbpYJD/Df5L
-        gLGL/pk3VnfZwbscG86CUWyTMPDjMgRxQmV7oqpskQ==
-X-ME-Sender: <xms:GgqQYp9RZXCM2aBISs4cOX5Km3IihxwZBqRxCsil_HkBVv2ougkHHQ>
-    <xme:GgqQYtu2Aksl3yR8CNthBMzrp84NUOk1GG1lFW-Fmo8yMy08idW-2OIDOeq6KRjzL
-    0e1FMYG4gTHf_lAqQ>
-X-ME-Received: <xmr:GgqQYnD1tNMwTStJDybldiZ7DtY0-BI9wn91oSYICzqv6hFpmVrtHp3xu-eHxFT1HH637GoyoY5rM29fLA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrjeekgddukecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenfg
-    hrlhcuvffnffculddutddmnegovehorghsthgrlhdqhfeguddvqddtvdculdduhedtmden
-    ucfjughrpefhvfevufffkfforhgggfestdhqredtredttdenucfhrhhomhepkghiucgjrg
-    hnuceoiihirdihrghnsehsvghnthdrtghomheqnecuggftrfgrthhtvghrnhepvdeiuedt
-    hedttdfhgeevkeeuveefvdeuheejledtvefgjeetkedugfdvleevkeffnecuffhomhgrih
-    hnpehkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhep
-    mhgrihhlfhhrohhmpeiiihdrhigrnhesshgvnhhtrdgtohhm
-X-ME-Proxy: <xmx:GgqQYteMsmCtSBCJOOiD0Qj2UxQfiRYWOumO_t5OrgqOD9aAVAE1_g>
-    <xmx:GgqQYuPlBhtf70HRGpi4jxDFdfrApvKPLrNv-a3OEiA06tcN17IW4g>
-    <xmx:GgqQYvlvpPxO0YAxXbHFW5K28qdFIU6ZrDon-UcL2BRXS_OclqmmvQ>
-    <xmx:GwqQYovCN4Z5w9zSaTzxC6VZjHWgNgA96h9vemM3QYCiC7PwSVFpJg>
-Feedback-ID: iccd040f4:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 26 May 2022 19:15:37 -0400 (EDT)
-From:   Zi Yan <zi.yan@sent.com>
-To:     Andrew Morton <akpm@linux-foundation.org>,
-        David Hildenbrand <david@redhat.com>, linux-mm@kvack.org
-Cc:     linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        Qian Cai <quic_qiancai@quicinc.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Eric Ren <renzhengeek@gmail.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        Oscar Salvador <osalvador@suse.de>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Zi Yan <ziy@nvidia.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Michael Walle <michael@walle.cc>
-Subject: [PATCH 1/2] mm: page-isolation: skip isolated pageblock in start_isolate_page_range()
-Date:   Thu, 26 May 2022 19:15:30 -0400
-Message-Id: <20220526231531.2404977-1-zi.yan@sent.com>
-X-Mailer: git-send-email 2.35.1
-Reply-To: Zi Yan <ziy@nvidia.com>
+        Thu, 26 May 2022 19:19:05 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36472E52A8;
+        Thu, 26 May 2022 16:19:04 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id i27so5604596ejd.9;
+        Thu, 26 May 2022 16:19:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=+BqwmdTcK+KDA2kwf/xtmIwFsx/ogHDu3MhALkXgSMs=;
+        b=NC+0LJ1Y9JUlHIBbnIZ7V3FgMxQ+MJA8+ucckqMMFPk4wCwh/figE8o+6ioP+6OguO
+         LZrO/hfA7F/iKOiSKrbEBHUZg8cS/nkR8zKxMMeUiLi2B0KpYcpfnlWN4Of3mmLH2GBz
+         d8BAcX8yTzu3xjM217Y1hP/KxCCdk5LQThsD10gJsw8jUbPxzr+e6pdhRXEKbcxa2Vis
+         Sf2kwZhQwCuor3cwTOWt6Sr8GijiS+5jiOJPXed0jN/NV7m/dfZVDux5vlJr5SV88uke
+         xMiVohIDC3oUCSr5s8iTkswZbXbD9IrQnx8BbLFBVikbasiH9PN0QfTCIviBz/2rrjAg
+         hZgg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=+BqwmdTcK+KDA2kwf/xtmIwFsx/ogHDu3MhALkXgSMs=;
+        b=rizP5ZFzu0C4fNDEdtJ+2wmwsc7G0K3lXgpxpSOo0UJrBL5wsORIJN+UIyjCe09zcs
+         LK3t321Ck42vIHPXMTe7nWL7UU5clvHFFq+VZeD/Pr2hnvE9T45N7S2qrDRgS4Tp35ev
+         OSDzY9yEjqBVX4cF4xhZ3yoAJwxDZzU3P33rn8OG0m9k2RwUcOYmELMxIqKAtZ++ADCU
+         Vlyl9q43epboZ6EPQ9OjsPO5gqMgYn0C0XIai0Eltqkn3MhopCWQnYmmNZ336ZJtpgZq
+         16kFEPhHjVZ7pLru+XumA0xsgoXPv/UHAF13t4MQutHC+SpE+JhXs1wDjSH3ByKinUuw
+         CM7A==
+X-Gm-Message-State: AOAM530gGcchJCwbr7joXzlfzEx5PhbZw8FGTxMAnz5metcH7KsJJ0+i
+        BxW65fZmYnaIZ2na85B8kJ8=
+X-Google-Smtp-Source: ABdhPJyVAy1Oi9U0Q22Wizfjf/aAKD7ZaKUWFMy3eDy0HKVs9cWZeDp9klmNgESJKFzoDTFx+FybJQ==
+X-Received: by 2002:a17:906:99c5:b0:6fe:b069:4ab6 with SMTP id s5-20020a17090699c500b006feb0694ab6mr28506177ejn.436.1653607142622;
+        Thu, 26 May 2022 16:19:02 -0700 (PDT)
+Received: from skbuf ([188.25.255.186])
+        by smtp.gmail.com with ESMTPSA id n13-20020a170906118d00b006fec50645ebsm878443eja.204.2022.05.26.16.19.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 May 2022 16:19:01 -0700 (PDT)
+Date:   Fri, 27 May 2022 02:18:59 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        Marek Vasut <marex@denx.de>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: net/dsa: Add spi-peripheral-props.yaml
+ references
+Message-ID: <20220526231859.qstxkxqdetiawozv@skbuf>
+References: <20220525205752.2484423-1-robh@kernel.org>
+ <20220526003216.7jxopjckccugh3ft@skbuf>
+ <20220526220450.GB315754-robh@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220526220450.GB315754-robh@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zi Yan <ziy@nvidia.com>
+On Thu, May 26, 2022 at 05:04:50PM -0500, Rob Herring wrote:
+> On Thu, May 26, 2022 at 03:32:16AM +0300, Vladimir Oltean wrote:
+> > Also needed by nxp,sja1105.yaml and the following from brcm,b53.yaml:
+> > 	brcm,bcm5325
+> > 	brcm,bcm5365
+> > 	brcm,bcm5395
+> > 	brcm,bcm5397
+> > 	brcm,bcm5398
+> > 	brcm,bcm53115
+> > 	brcm,bcm53125
+> > 	brcm,bcm53128
+> 
+> Okay. Looks like you missed bcm5389?
 
-start_isolate_page_range() first isolates the first and the last
-pageblocks in the range and ensure pages across range boundaries are split
-during isolation. But it missed the case when the range is <=3D a pageblock
-and the first and the last pageblocks are the same one, so the second
-isolate_single_pageblock() will always fail. To fix it, skip the pageblock
-isolation in second isolate_single_pageblock().
-
-Fixes: 88ee134320b8 ("mm: fix a potential infinite loop in start_isolate_pa=
-ge_range()")
-Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Link: https://lore.kernel.org/linux-mm/ac65adc0-a7e4-cdfe-a0d8-757195b86293=
-@samsung.com/
-
-Reported-by: Michael Walle <michael@walle.cc>
-Tested-by: Michael Walle <michael@walle.cc>
-Link: https://lore.kernel.org/linux-mm/8ca048ca8b547e0dd1c95387ee05c23d@wal=
-le.cc/
-
-Signed-off-by: Zi Yan <ziy@nvidia.com>
----
- mm/page_isolation.c | 26 ++++++++++++++++++--------
- 1 file changed, 18 insertions(+), 8 deletions(-)
-
-diff --git a/mm/page_isolation.c b/mm/page_isolation.c
-index c643c8420809..fbd820b21292 100644
---- a/mm/page_isolation.c
-+++ b/mm/page_isolation.c
-@@ -300,7 +300,7 @@ __first_valid_page(unsigned long pfn, unsigned long nr_=
-pages)
-  * the in-use page then splitting the free page.
-  */
- static int isolate_single_pageblock(unsigned long boundary_pfn, int flags,
--			gfp_t gfp_flags, bool isolate_before)
-+			gfp_t gfp_flags, bool isolate_before, bool skip_isolation)
- {
- 	unsigned char saved_mt;
- 	unsigned long start_pfn;
-@@ -327,11 +327,16 @@ static int isolate_single_pageblock(unsigned long bou=
-ndary_pfn, int flags,
- 				      zone->zone_start_pfn);
-=20
- 	saved_mt =3D get_pageblock_migratetype(pfn_to_page(isolate_pageblock));
--	ret =3D set_migratetype_isolate(pfn_to_page(isolate_pageblock), saved_mt,=
- flags,
--			isolate_pageblock, isolate_pageblock + pageblock_nr_pages);
-=20
--	if (ret)
--		return ret;
-+	if (skip_isolation)
-+		VM_BUG_ON(!is_migrate_isolate(saved_mt));
-+	else {
-+		ret =3D set_migratetype_isolate(pfn_to_page(isolate_pageblock), saved_mt=
-, flags,
-+				isolate_pageblock, isolate_pageblock + pageblock_nr_pages);
-+
-+		if (ret)
-+			return ret;
-+	}
-=20
- 	/*
- 	 * Bail out early when the to-be-isolated pageblock does not form
-@@ -463,7 +468,8 @@ static int isolate_single_pageblock(unsigned long bound=
-ary_pfn, int flags,
- 	return 0;
- failed:
- 	/* restore the original migratetype */
--	unset_migratetype_isolate(pfn_to_page(isolate_pageblock), saved_mt);
-+	if (!skip_isolation)
-+		unset_migratetype_isolate(pfn_to_page(isolate_pageblock), saved_mt);
- 	return -EBUSY;
- }
-=20
-@@ -522,14 +528,18 @@ int start_isolate_page_range(unsigned long start_pfn,=
- unsigned long end_pfn,
- 	unsigned long isolate_start =3D ALIGN_DOWN(start_pfn, pageblock_nr_pages);
- 	unsigned long isolate_end =3D ALIGN(end_pfn, pageblock_nr_pages);
- 	int ret;
-+	bool skip_isolation =3D false;
-=20
- 	/* isolate [isolate_start, isolate_start + pageblock_nr_pages) pageblock =
-*/
--	ret =3D isolate_single_pageblock(isolate_start, flags, gfp_flags, false);
-+	ret =3D isolate_single_pageblock(isolate_start, flags, gfp_flags, false, =
-skip_isolation);
- 	if (ret)
- 		return ret;
-=20
-+	if (isolate_start =3D=3D isolate_end - pageblock_nr_pages)
-+		skip_isolation =3D true;
-+
- 	/* isolate [isolate_end - pageblock_nr_pages, isolate_end) pageblock */
--	ret =3D isolate_single_pageblock(isolate_end, flags, gfp_flags, true);
-+	ret =3D isolate_single_pageblock(isolate_end, flags, gfp_flags, true, ski=
-p_isolation);
- 	if (ret) {
- 		unset_migratetype_isolate(pfn_to_page(isolate_start), migratetype);
- 		return ret;
---=20
-2.35.1
-
+I went to the end of drivers/net/dsa/b53/b53_spi.c and copied the
+compatible strings. "brcm,bcm5389" is marked in b53_mdio.c, so I would
+guess not.
