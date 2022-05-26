@@ -2,136 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4E0AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 08:49:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B68B0C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 08:49:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343787AbiEZIt2 (ORCPT
+        id S1346798AbiEZIte (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 04:49:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53472 "EHLO
+        Thu, 26 May 2022 04:49:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245149AbiEZItU (ORCPT
+        with ESMTP id S1346758AbiEZItW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 04:49:20 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 12B1EC3D1A
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 01:49:19 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B237A1477;
-        Thu, 26 May 2022 01:49:18 -0700 (PDT)
-Received: from [10.1.37.22] (e122027.cambridge.arm.com [10.1.37.22])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EA9103F93E;
-        Thu, 26 May 2022 01:49:15 -0700 (PDT)
-Message-ID: <69f132c4-22b0-7cee-96a5-032ca745418b@arm.com>
-Date:   Thu, 26 May 2022 09:49:13 +0100
+        Thu, 26 May 2022 04:49:22 -0400
+Received: from mail-yw1-x1136.google.com (mail-yw1-x1136.google.com [IPv6:2607:f8b0:4864:20::1136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C761A888A;
+        Thu, 26 May 2022 01:49:21 -0700 (PDT)
+Received: by mail-yw1-x1136.google.com with SMTP id 00721157ae682-300beab2b76so8068027b3.13;
+        Thu, 26 May 2022 01:49:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=lR+TDr5LsguOn0VlHOYnRCFxRx4+aXjTPws9yY6c9Ps=;
+        b=dePYxaYADwy99/kEkfatg9gM+WrqLQn8Y+9iUnBjSFPp+2Tie1Y91tr9I4Hhr1T//N
+         O8wmRHO23cRkZySp3l66x3VAYRl28qdPbYKZqVuGKqGHnbkcVB0EhFssTUB2+1j1f2xF
+         rhF09KcK/nbrUAMUCGK4BiKhZtvgCR7Z+cpHcE1yKouDwNHZa0DXI+PZvFXk0QSNZvkx
+         YvsKA0ALR5qS1zwW3Vw34gJ3o/InKGBkRQ7VvrST4pnXhgQteFJljhqe1jCJLpUuKI+0
+         JLQ1SfuGwp2p7vREmVgwFXiWZxxzpnrbXpJ1cquOmhFhuuZyk7IeY/8XFRKV83JgDr90
+         2cag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=lR+TDr5LsguOn0VlHOYnRCFxRx4+aXjTPws9yY6c9Ps=;
+        b=n52BjwyXH8iYW+XtFKr54XjZClQ99zjNkqTXR//4ttezigSwrRo3iDhggtSkfYY7wq
+         essqhlrIA7a7vW67rudT5MjK0GoJsjkGivPiceGj3G6EjyXKc5nTi0+muYr2tGR2VzE+
+         DrBxhq70Mbtje5a0tYtNKUnC4clD1d46yO6eAeFB9Ki+wkYygN4FRlQedGleq5ocdX8Q
+         ff+7a+alt08dlU0C77NUpMib9mX5vZwyne/BeiZjlyjb2fNFU9byw9IQPY9RgOpH3Dez
+         eBwxOKWUsMgO6iWGSJ1gdt6UE0bEUlXiuHAfNaTIEcAWOCU1PW8E9qtQT6vhuV2D086B
+         pj1Q==
+X-Gm-Message-State: AOAM532DaSh074UHMkl1ceIHSSkD//r4P00u7VfkyFRqnZD+YrmjS/SM
+        DXCw7hUkPx7nbOCJKer3EVbepuzVE6x5gkAZFP3VNSj1ZiE=
+X-Google-Smtp-Source: ABdhPJzialUr5kBtsF+rQDVp9AhSqEHOiDeC5+O03iQtIA8jRBZNf91Kul18LqL8NyuJNZ3koDIWcB8eaIBLTwG8bWU=
+X-Received: by 2002:a81:b80d:0:b0:2ff:db8b:333a with SMTP id
+ v13-20020a81b80d000000b002ffdb8b333amr20379755ywe.17.1653554960598; Thu, 26
+ May 2022 01:49:20 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v2 8/9] drm/panfrost: Add Mali-G57 "Natt" support
-Content-Language: en-GB
-To:     Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
-        dri-devel@lists.freedesktop.org
-Cc:     Rob Herring <robh@kernel.org>,
-        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        =?UTF-8?Q?N=c3=adcolas_F_=2e_R_=2e_A_=2e_Prado?= 
-        <nfraprado@collabora.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        linux-kernel@vger.kernel.org
-References: <20220525145754.25866-1-alyssa.rosenzweig@collabora.com>
- <20220525145754.25866-9-alyssa.rosenzweig@collabora.com>
-From:   Steven Price <steven.price@arm.com>
-In-Reply-To: <20220525145754.25866-9-alyssa.rosenzweig@collabora.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220521131700.3661-1-jiangshanlai@gmail.com>
+In-Reply-To: <20220521131700.3661-1-jiangshanlai@gmail.com>
+From:   Lai Jiangshan <jiangshanlai@gmail.com>
+Date:   Thu, 26 May 2022 16:49:09 +0800
+Message-ID: <CAJhGHyDSxN5haa6bx+44jRXw3PBad6DcmZNc115g5Vfve=xLEA@mail.gmail.com>
+Subject: Re: [PATCH V3 00/12] KVM: X86/MMU: Use one-off local shadow page for
+ special roots
+To:     LKML <linux-kernel@vger.kernel.org>,
+        "open list:KERNEL VIRTUAL MACHINE FOR MIPS (KVM/mips)" 
+        <kvm@vger.kernel.org>, Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        David Matlack <dmatlack@google.com>,
+        Lai Jiangshan <jiangshan.ljs@antgroup.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 25/05/2022 15:57, Alyssa Rosenzweig wrote:
-> Add the features, issues, and GPU ID for Mali-G57, a first-generation
-> Valhall GPU. Other first- and second-generation Valhall GPUs should be
-> similar.
-> 
-> v2: Split out issue list for r0p0 from newer Natt GPUs, as TTRX_3485 was
-> fixed in r0p1. Unfortunately, MT8192 has a r0p0, so we do need to handle
-> TTRX_3485.
-> 
-> Signed-off-by: Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>
-> ---
->  drivers/gpu/drm/panfrost/panfrost_features.h | 12 ++++++++++++
->  drivers/gpu/drm/panfrost/panfrost_gpu.c      |  3 +++
->  drivers/gpu/drm/panfrost/panfrost_issues.h   |  9 +++++++++
->  3 files changed, 24 insertions(+)
-> 
-> diff --git a/drivers/gpu/drm/panfrost/panfrost_features.h b/drivers/gpu/drm/panfrost/panfrost_features.h
-> index 1a8bdebc86a3..7ed0cd3ea2d4 100644
-> --- a/drivers/gpu/drm/panfrost/panfrost_features.h
-> +++ b/drivers/gpu/drm/panfrost/panfrost_features.h
-> @@ -106,6 +106,18 @@ enum panfrost_hw_feature {
->  	BIT_ULL(HW_FEATURE_TLS_HASHING) | \
->  	BIT_ULL(HW_FEATURE_3BIT_EXT_RW_L2_MMU_CONFIG))
->  
-> +#define hw_features_g57 (\
-> +	BIT_ULL(HW_FEATURE_JOBCHAIN_DISAMBIGUATION) | \
-> +	BIT_ULL(HW_FEATURE_PWRON_DURING_PWROFF_TRANS) | \
-> +	BIT_ULL(HW_FEATURE_XAFFINITY) | \
-> +	BIT_ULL(HW_FEATURE_FLUSH_REDUCTION) | \
-> +	BIT_ULL(HW_FEATURE_PROTECTED_MODE) | \
-> +	BIT_ULL(HW_FEATURE_PROTECTED_DEBUG_MODE) | \
-> +	BIT_ULL(HW_FEATURE_COHERENCY_REG) | \
-> +	BIT_ULL(HW_FEATURE_AARCH64_MMU) | \
-> +	BIT_ULL(HW_FEATURE_IDVS_GROUP_SIZE) | \
-> +	BIT_ULL(HW_FEATURE_CLEAN_ONLY_SAFE))
-> +
->  static inline bool panfrost_has_hw_feature(struct panfrost_device *pfdev,
->  					   enum panfrost_hw_feature feat)
->  {
-> diff --git a/drivers/gpu/drm/panfrost/panfrost_gpu.c b/drivers/gpu/drm/panfrost/panfrost_gpu.c
-> index e1a6e763d0dc..6452e4e900dd 100644
-> --- a/drivers/gpu/drm/panfrost/panfrost_gpu.c
-> +++ b/drivers/gpu/drm/panfrost/panfrost_gpu.c
-> @@ -201,6 +201,9 @@ static const struct panfrost_model gpu_models[] = {
->  	GPU_MODEL(g52, 0x7002),
->  	GPU_MODEL(g31, 0x7003,
->  		GPU_REV(g31, 1, 0)),
-> +
-> +	GPU_MODEL(g57, 0x9001,
-> +		GPU_REV(g57, 0, 0)),
->  };
->  
->  static void panfrost_gpu_init_features(struct panfrost_device *pfdev)
-> diff --git a/drivers/gpu/drm/panfrost/panfrost_issues.h b/drivers/gpu/drm/panfrost/panfrost_issues.h
-> index 4d41e0a13867..c5fa9e897a35 100644
-> --- a/drivers/gpu/drm/panfrost/panfrost_issues.h
-> +++ b/drivers/gpu/drm/panfrost/panfrost_issues.h
-> @@ -258,6 +258,15 @@ enum panfrost_hw_issue {
->  
->  #define hw_issues_g76 0
->  
-> +#define hw_issues_g57 (\
-> +	BIT_ULL(HW_ISSUE_TTRX_2968_TTRX_3162) | \
-> +	BIT_ULL(HW_ISSUE_TTRX_3076))
-> +
-> +#define hw_issues_g57_r0p0 (\
-> +	BIT_ULL(HW_ISSUE_TTRX_2968_TTRX_3162) | \
-> +	BIT_ULL(HW_ISSUE_TTRX_3076) | \
-> +	BIT_ULL(HW_ISSUE_TTRX_3485))
+On Sat, May 21, 2022 at 9:16 PM Lai Jiangshan <jiangshanlai@gmail.com> wrote:
+>
+> From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
+>
+> Current code uses mmu->pae_root, mmu->pml4_root, and mmu->pml5_root to
+> setup special roots.  The initialization code is complex and the roots
+> are not associated with struct kvm_mmu_page which causes the code more
+> complex.
+>
+> So add new local shadow pages to simplify it.
+>
+> The local shadow pages are associated with struct kvm_mmu_page and
+> VCPU-local.
+>
+> The local shadow pages are created and freed when the roots are
+> changed (or one-off) which can be optimized but not in the patchset
+> since the re-creating is light way (in normal case only the struct
+> kvm_mmu_page needs to be re-allocated and sp->spt doens't, because
+> it is likely to be mmu->pae_root)
+>
+> The patchset also fixes a possible bug described in:
+> https://lore.kernel.org/lkml/20220415103414.86555-1-jiangshanlai@gmail.com/
+> as patch1.
+>
 
-There's no need to repeat the issues that are generic for g57 in the
-r0p0 list. So this can be simplified to:
+Ping and please ignore patch1 and patch9. It would not cause any conflict
+without patch1 and patch9 if both are ignored together.
 
- #define hw_issues_g57_r0p0 (\
- 	BIT_ULL(HW_ISSUE_TTRX_3485))
+The fix is wrong (see new discussion in the above link).  So the possible
+correct fix will not have any conflict with this patchset of one-off
+local shadow page.  I don't want to add extra stuff in this patchset
+anymore.
 
-With that fixed:
-
-Reviewed-by: Steven Price <steven.price@arm.com>
-
-> +
->  static inline bool panfrost_has_hw_issue(const struct panfrost_device *pfdev,
->  					 enum panfrost_hw_issue issue)
->  {
-
+Thanks
+Lai
