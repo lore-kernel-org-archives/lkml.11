@@ -2,101 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EE90C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 00:41:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAB1BC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 00:42:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233761AbiEZAli (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 20:41:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59956 "EHLO
+        id S234524AbiEZAml (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 20:42:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242987AbiEZAlZ (ORCPT
+        with ESMTP id S244531AbiEZAmh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 20:41:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 732959EB44;
-        Wed, 25 May 2022 17:41:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 18B38B81EAA;
-        Thu, 26 May 2022 00:41:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8414FC385B8;
-        Thu, 26 May 2022 00:41:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653525681;
-        bh=mEug+FNS3WAXtVD1YTd+ywizxj+k7diM1xohqO66iJ0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=XQPhmP8pgmq6nZ3qk05p/o5hHp6puXPtqeJVhD6j8wjQBFd2MdDJnkUrsJj2SqhYo
-         pcwALRgvkDWrNcknXYYTCYrnyg00EhFKc4U2m6wEzQY/JjO1opRITP8WUBZPBgRjke
-         yulFv7ieKYW0J6bxZmwWRjPy5NU0eD6zLnBRQSrLAmznMnR5cA8ZvlZynrrPpLldV/
-         ZnhoOgXXNcI2dOchczXi6BcGT0Af6jlrjxdgW/9JmzDt48be7qmo/B852JAj+Zc63J
-         NZcxbsTTKVMYBLO/Iw06c4dTLGvHQA7cNImKUkah1oW2cbpsWjkaezoZkN9QjVQyKw
-         cYXKGSBtU7xuA==
-Date:   Thu, 26 May 2022 03:39:39 +0300
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Shuah Khan <shuah@kernel.org>, dave.hansen@linux.intel.com
-Cc:     stable@vger.kernel.org, Dave Hansen <dave.hansen@linux.intel.com>,
-        Jethro Beekman <jethro@fortanix.com>,
-        Borislav Petkov <bp@suse.de>, linux-sgx@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] selftests/sgx: add test_encl.elf to TEST_GEN_FILES
-Message-ID: <Yo7MS2+g9kcI39xq@iki.fi>
-References: <20220523181120.54547-1-jarkko@kernel.org>
+        Wed, 25 May 2022 20:42:37 -0400
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EF359EB44
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 17:42:35 -0700 (PDT)
+Received: by mail-pf1-x42a.google.com with SMTP id p8so393530pfh.8
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 17:42:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=fY0pwDasrq+hRjmATMcQojEaPrvpzo0c/cewYgdoFdE=;
+        b=qfofRs/eTHswEF/1OKt1RhCOxZEdZqsH/dQ3Ah/C2NHat9+ya5Ayyh0qXuBlF7Ogjx
+         1Nt98Q52DvJZ50eNZPp4DpX0gJscVDO1Orhwb436nk14jX0gc077JunMqH88pMj89RBP
+         2rRumAOf1JLNuTBPN6K1VykuiVeweWdhUooobJ/6lQy/UVAKbn7wrDfyOHGpmGpal+Zh
+         LqIXOgC4EGaTvjPFvulFGuDA27pBHajIKsgh2Ogx/1wGmL9U45B96hnU2OIZIfykcbdU
+         BtYIAlB2gpzRZl/i9LI77kEROHhy6n3lCaHU+1kpqWDU5MuXeg8CQl5ejk/aUv4oWAmZ
+         fseA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=fY0pwDasrq+hRjmATMcQojEaPrvpzo0c/cewYgdoFdE=;
+        b=qKiKVhmuktxY15LaGUbQXA7oHga2504DOSvZW5Pj6TxHa5iivRpB8dp0xF5O6nzHyp
+         Kl2NU04fmoe3E6huDLortLxFbmd3Y59gvClaeB1ki37NSKScWsuWH4CQI85LwqZf+ZCg
+         YbsNKznw67PWpgp0UxI0aIh0CmKUJBQDfwFZ9Z8heWyKldZ5dwHmBHyqwcSlU/EsNv4Q
+         C4abZ/9JHC5ayAWPNGZmKmzs/9y94gPrJmKCObccpRzVkETqzBnvrZQTRo7nOHNG8J68
+         nBynk9a/DiC/sBpXLP/u+warLShH0uhylfZOnuhnAR6QvGZjC9PcOrIuoVmGdWBa4byZ
+         FJbQ==
+X-Gm-Message-State: AOAM533HrsjURab7KqDmt4j71c27TOLyo6yqZxR1W9l2PXLHBnBMN4xk
+        a82ImqnYYt3lrBBQdFrGCWOpQw==
+X-Google-Smtp-Source: ABdhPJwv37XxWZcWzFsMuo9RiXyWU/ZE5BuaGahcNSly21GjZTmQLec1BMusc0kymiEH1SQWHwAwfw==
+X-Received: by 2002:a63:dc42:0:b0:3c5:e187:572 with SMTP id f2-20020a63dc42000000b003c5e1870572mr30940215pgj.82.1653525754866;
+        Wed, 25 May 2022 17:42:34 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id a10-20020a63e84a000000b003c5e836eddasm123780pgk.94.2022.05.25.17.42.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 25 May 2022 17:42:34 -0700 (PDT)
+Date:   Thu, 26 May 2022 00:42:31 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Yuan Yao <yuan.yao@linux.intel.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Chenyi Qiang <chenyi.qiang@intel.com>,
+        Lei Wang <lei4.wang@intel.com>
+Subject: Re: [PATCH 1/2] KVM: VMX: Sanitize VM-Entry/VM-Exit control pairs at
+ kvm_intel load time
+Message-ID: <Yo7M95ILNsHSBtqj@google.com>
+References: <20220525210447.2758436-1-seanjc@google.com>
+ <20220525210447.2758436-2-seanjc@google.com>
+ <20220525232744.e6g77merw7pita3s@yy-desk-7060>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220523181120.54547-1-jarkko@kernel.org>
+In-Reply-To: <20220525232744.e6g77merw7pita3s@yy-desk-7060>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 23, 2022 at 09:11:20PM +0300, Jarkko Sakkinen wrote:
-> TEST_GEN_FILES contains files that are generated during compilation and are
-> required to be included together with the test binaries, e.g. when
-> performing:
+On Thu, May 26, 2022, Yuan Yao wrote:
+> On Wed, May 25, 2022 at 09:04:46PM +0000, Sean Christopherson wrote:
+> > @@ -2614,6 +2635,20 @@ static __init int setup_vmcs_config(struct vmcs_config *vmcs_conf,
+> >  				&_vmentry_control) < 0)
+> >  		return -EIO;
+> >
+> > +	for (i = 0; i < ARRAY_SIZE(vmcs_entry_exit_pairs); i++) {
+> > +		u32 n_ctrl = vmcs_entry_exit_pairs[i].entry_control;
+> > +		u32 x_ctrl = vmcs_entry_exit_pairs[i].exit_control;
+> > +
+> > +		if (!(_vmentry_control & n_ctrl) == !(_vmexit_control & x_ctrl))
+> > +			continue;
+> > +
+> > +		pr_warn_once("Inconsistent VM-Entry/VM-Exit pair, entry = %x, exit = %x\n",
+> > +			     _vmentry_control & n_ctrl, _vmexit_control & x_ctrl);
 > 
-> make -C tools/testing/selftests install INSTALL_PATH=/some/other/path [*]
-> 
-> Add test_encl.elf to TEST_GEN_FILES because otherwise the installed test
-> binary will fail to run.
-> 
-> [*] https://docs.kernel.org/dev-tools/kselftest.html
-> 
-> Cc: stable@vger.kernel.org
-> Fixes: 2adcba79e69d ("selftests/x86: Add a selftest for SGX")
-> Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
-> ---
-> v2:
-> Use TEST_GEN_FILES in the "all" target, instead of duplicating the path for
-> test_encl.elf.
-> ---
->  tools/testing/selftests/sgx/Makefile | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/tools/testing/selftests/sgx/Makefile b/tools/testing/selftests/sgx/Makefile
-> index 75af864e07b6..7f60811b5b20 100644
-> --- a/tools/testing/selftests/sgx/Makefile
-> +++ b/tools/testing/selftests/sgx/Makefile
-> @@ -17,9 +17,10 @@ ENCL_CFLAGS := -Wall -Werror -static -nostdlib -nostartfiles -fPIC \
->  	       -fno-stack-protector -mrdrnd $(INCLUDES)
->  
->  TEST_CUSTOM_PROGS := $(OUTPUT)/test_sgx
-> +TEST_GEN_FILES := $(OUTPUT)/test_encl.elf
->  
->  ifeq ($(CAN_BUILD_X86_64), 1)
-> -all: $(TEST_CUSTOM_PROGS) $(OUTPUT)/test_encl.elf
-> +all: $(TEST_CUSTOM_PROGS) $(TEST_GEN_FILES)
->  endif
->  
->  $(OUTPUT)/test_sgx: $(OUTPUT)/main.o \
-> -- 
-> 2.36.1
-> 
+> How about "n_ctrl, x_ctrl);" ? In 0/1 or 1/0 case this
+> outputs all information of real inconsistent bits but not 0.
 
-Dave, would it be by any means possible to pick this? My workload is
-kernel testing with buildroot [*].
+I thought about adding the stringified control name to the output (yay macros),
+but opted for the simplest approach because this should be a very, very rare
+event.  All the necessary info is there, it just takes a bit of leg work to get
+from a single control bit to the related control name and finally to its pair.
 
-[*] Related:
-    https://lore.kernel.org/buildroot/2c42570b01b2b51cc33d6623b25a736e4f20c601.camel@iki.fi/T/#t
-
-BR, Jarkko
+I'm not totally against printing more info, but if we're going to bother doing so,
+my vote is to print names instead of numbers.
