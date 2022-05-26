@@ -2,67 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50087C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 13:17:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFB3CC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 13:17:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229580AbiEZNRf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 09:17:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55848 "EHLO
+        id S1347484AbiEZNR6 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 09:17:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230010AbiEZNR3 (ORCPT
+        with ESMTP id S1345691AbiEZNR4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 09:17:29 -0400
-X-Greylist: delayed 903 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 26 May 2022 06:17:27 PDT
-Received: from mail-sh.amlogic.com (mail-sh.amlogic.com [58.32.228.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10D93C6E42;
-        Thu, 26 May 2022 06:17:26 -0700 (PDT)
-Received: from droid10-sz.amlogic.com (10.28.8.20) by mail-sh.amlogic.com
- (10.18.11.5) with Microsoft SMTP Server id 15.1.2176.14; Thu, 26 May 2022
- 21:02:19 +0800
-From:   Zelong Dong <zelong.dong@amlogic.com>
-To:     <devicetree@vger.kernel.org>, <p.zabel@pengutronix.de>,
-        <robh+dt@kernel.org>, <khilman@baylibre.com>,
-        <narmstrong@baylibre.com>, <martin.blumenstingl@googlemail.com>
-CC:     <linux-amlogic@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <jbrunet@baylibre.com>,
-        Zelong Dong <zelong.dong@amlogic.com>
-Subject: [PATCH] arm64: dts: meson: add reset controller for Meson-S4 SoC
-Date:   Thu, 26 May 2022 21:01:58 +0800
-Message-ID: <20220526130158.36651-1-zelong.dong@amlogic.com>
-X-Mailer: git-send-email 2.35.1
+        Thu, 26 May 2022 09:17:56 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABB9CD02A2
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 06:17:53 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id ck4so2897823ejb.8
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 06:17:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=soleen.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/Tums9sSBFm64JACZICEeaJP4n2qB4OZ4M0MNbuB31s=;
+        b=F04feQsX0xtaTMBBAIJ0ZM+soGiLto1TlYo8OhYxfKtXyZTXTedLY95EAHuqpAQ2Rw
+         vhGMZLsQ0F1Xm8sCodqH/nso/UcewPDGeJPOFABGTeR2sloWV0vVUaiys3f89CFFwhJC
+         p8yE4d5bu5QX+rSvVTcsbQLgksjy/MZlCeJaPrpFmZMCs1Muzb1smSiB9AMbSuJQJ1ut
+         K+eyrNWUC79mn8xF3N5bNPxOBF9ucs4YO3II8PQESLvWiB3303TXV6YMPuAaQA/lKzl1
+         L1vRRV+dKBtm8nPyGLuSBEO0MrJ/MjIHWhLUO8CfCiKO91o0XgLpoYaSo8W3MnkbAmmc
+         JwkQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/Tums9sSBFm64JACZICEeaJP4n2qB4OZ4M0MNbuB31s=;
+        b=a4nOzQVecLKWrqowC2HPjEWAuB7n6Pej8z1ItbnsDuKdhadbnCUk1bw/AMQBJRGCEY
+         FOfotO3R0p1/dtsP6urydJzFHobumSzeZDb82YUj244sY8F1lVwURFEBd8qxGQGyoAVr
+         En1awnAAnLLeVVJcY8L5hrp4oFDqm0Z4C0Z4fOu4DSW51o1LLhPDOIm0X2lnhVGqj32X
+         wXSYaZY3L8+ll1Akv8VKo3eLboh1znEeOtMNaaVqVIJU5ekS2h8r5JZD4df3vDmF79q/
+         V2vN7j6Sd7S9erNrKerVKDiC4J51A7/GnsYLX9O9mXsIocu0jyajU+MJ/4e2xrwIH8aG
+         /wbQ==
+X-Gm-Message-State: AOAM533mIYLxq6pImfNUB8GVqaQhYwfORG/Pi15wLcQ0haJ57X0mz0ZU
+        yUFpBomjHZuJ2eYR4mcRBBmEW6lIucpdnNz5ssFlEA==
+X-Google-Smtp-Source: ABdhPJwt2DDvHgTg3x1ZOOEX1n+YPivbXaH4Zo/aUAeNSS2EIe9RQvn5zW/kTp+wlypm6G+UT4rkqjenFUrrI+C6Cwc=
+X-Received: by 2002:a17:907:86a9:b0:6ff:45d:c05b with SMTP id
+ qa41-20020a17090786a900b006ff045dc05bmr12015950ejc.492.1653571072192; Thu, 26
+ May 2022 06:17:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.28.8.20]
+References: <20220526113350.30806-1-linmiaohe@huawei.com>
+In-Reply-To: <20220526113350.30806-1-linmiaohe@huawei.com>
+From:   Pasha Tatashin <pasha.tatashin@soleen.com>
+Date:   Thu, 26 May 2022 09:17:14 -0400
+Message-ID: <CA+CK2bARAVPq6N_V-Wjfzgu9eHPw4eX8DPm2xn6sjbZF14_0Ng@mail.gmail.com>
+Subject: Re: [PATCH] mm/page_table_check: fix accessing unmapped ptep
+To:     Miaohe Lin <linmiaohe@huawei.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        David Rientjes <rientjes@google.com>,
+        linux-mm <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the reset controller device of Meson-S4 SoC family
+On Thu, May 26, 2022 at 7:33 AM Miaohe Lin <linmiaohe@huawei.com> wrote:
+>
+> ptep is unmapped too early, so ptep will be accessed while it's unmapped.
+> Fix it by deferring pte_unmap() until page table checking is done.
 
-Signed-off-by: Zelong Dong <zelong.dong@amlogic.com>
----
- arch/arm64/boot/dts/amlogic/meson-s4.dtsi | 6 ++++++
- 1 file changed, 6 insertions(+)
+I would re-word this as a cleanup. While pte_unmap() is currently
+unused, it is still better to call it after we are done with *ptep in
+case of future changes in other architectures.
 
-diff --git a/arch/arm64/boot/dts/amlogic/meson-s4.dtsi b/arch/arm64/boot/dts/amlogic/meson-s4.dtsi
-index 480afa2cc61f..c750bc60786f 100644
---- a/arch/arm64/boot/dts/amlogic/meson-s4.dtsi
-+++ b/arch/arm64/boot/dts/amlogic/meson-s4.dtsi
-@@ -94,6 +94,12 @@ uart_B: serial@7a000 {
- 				clocks = <&xtal>, <&xtal>, <&xtal>;
- 				clock-names = "xtal", "pclk", "baud";
- 			};
-+
-+			reset: reset-controller@2000 {
-+				compatible = "amlogic,meson-s4-reset";
-+				reg = <0x0 0x2000 0x0 0x98>;
-+				#reset-cells = <1>;
-+			};
- 		};
- 	};
- };
--- 
-2.35.1
+>
+> Fixes: 80110bbfbba6 ("mm/page_table_check: check entries at pmd levels")
 
+This is more a clean-up, there is no existing bug, so no need to
+backport to stable. Please remove the above.
+
+> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+
+With the above changes:
+Acked-by: Pasha Tatashin <pasha.tatashin@soleen.com>
+
+
+> ---
+>  mm/page_table_check.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/mm/page_table_check.c b/mm/page_table_check.c
+> index 3692bea2ea2c..971c3129b0e3 100644
+> --- a/mm/page_table_check.c
+> +++ b/mm/page_table_check.c
+> @@ -234,11 +234,11 @@ void __page_table_check_pte_clear_range(struct mm_struct *mm,
+>                 pte_t *ptep = pte_offset_map(&pmd, addr);
+>                 unsigned long i;
+>
+> -               pte_unmap(ptep);
+>                 for (i = 0; i < PTRS_PER_PTE; i++) {
+>                         __page_table_check_pte_clear(mm, addr, *ptep);
+>                         addr += PAGE_SIZE;
+>                         ptep++;
+>                 }
+> +               pte_unmap(ptep);
+>         }
+>  }
+> --
+> 2.23.0
+>
