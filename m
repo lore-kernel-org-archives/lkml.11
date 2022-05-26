@@ -2,87 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03769C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 01:53:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C0CDC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 01:55:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344810AbiEZBx4 (ORCPT
+        id S1345676AbiEZBzE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 21:53:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36466 "EHLO
+        Wed, 25 May 2022 21:55:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344786AbiEZBxx (ORCPT
+        with ESMTP id S1345777AbiEZBzA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 21:53:53 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CBE9A7769
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 18:53:52 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id z11so521270pjc.3
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 18:53:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=2pxcPCM5VX3sDe5qyFbWo9KsQkuEix+lNtMfCJKnED8=;
-        b=5FR6mDsGsdcRK/I2zLo0w4AmRmztswHxOMlOghEitUIUoFhbADRYuzTLEQOf1nH0ae
-         kaBCxEXhH1e39HsFefV5KmXovUyqB9ZwSqz6pd0qlA1lj2z8Jg/wU1ozt74F2qYbNAZj
-         m63WUwjKmvePg7TjRroTXI6TC2DsdWOCr8bpTkmIrzgpSoCsv1DCodVMB37ZJQLlRvc7
-         yi7w0mLdNpHijHwKxwLJMpwieN/kVBttxwPW5S5CTNG8Rp9ESGT9wK7YnN9kADCpN+A8
-         WL+U47BRmXfRDAoXnxUo1T6Mm6WwQTHpv7u4PSzkqM7Y3jSZh9CIz6DcbAaxzhFN4OQN
-         CsMA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=2pxcPCM5VX3sDe5qyFbWo9KsQkuEix+lNtMfCJKnED8=;
-        b=zvZhHblNgERf9RAefRnGZTn0qSBAz8OGFBK+rdCjbMRD0EiV9jhV0vpMdBLcC6sZeU
-         aA0pqP+A5hT3i+ZsBjSp3XJHPHhhXWQMwjTGNBhTUD9vNFUilm6aBJt1OcnnwrciVhPM
-         01BjZqgD4CsDzSlcpS9sKAus7RlLLD4jP7mlYCBxKiEFB2Ql6yqP1mQstRHzBv3JRRGa
-         rb7x+/Kv9nZi4Y6zsZ6g919N4KFKf3NDuXayLBIusRs7NV7mEZo+Cr6r99F8g4tmMwTB
-         sf8Qe3QJe1FDyDFWDTKlZkqoOa7QFKy6DYCE+RwgNTrVMnLfCLHyxmuZZFOsJ1nK0SF6
-         prXg==
-X-Gm-Message-State: AOAM533GgkOYxi6qe2M4VnwgsiInf36tOd7dmTcqB7n/CCYoQahSLhn5
-        6KJSDbz0r/UwdQjI6eZA8H+AhQ==
-X-Google-Smtp-Source: ABdhPJxLVXYPbhDTW6AtuaVmmhyNvqcx7+jSSXywyFBxJNlDjtHcVlRLEq4+CwmtINLsa++1kLB5vg==
-X-Received: by 2002:a17:902:b703:b0:158:2667:7447 with SMTP id d3-20020a170902b70300b0015826677447mr35269851pls.92.1653530031588;
-        Wed, 25 May 2022 18:53:51 -0700 (PDT)
-Received: from localhost ([2408:8207:18da:2310:c40c:3e14:bb57:48be])
-        by smtp.gmail.com with ESMTPSA id 65-20020a620644000000b0050dc7628166sm68190pfg.64.2022.05.25.18.53.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 May 2022 18:53:51 -0700 (PDT)
-Date:   Thu, 26 May 2022 09:53:47 +0800
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     Roman Gushchin <roman.gushchin@linux.dev>
-Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        Dave Chinner <dchinner@redhat.com>,
-        linux-kernel@vger.kernel.org,
-        Kent Overstreet <kent.overstreet@gmail.com>,
-        Hillf Danton <hdanton@sina.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: Re: [PATCH v4 1/6] mm: memcontrol: introduce mem_cgroup_ino() and
- mem_cgroup_get_from_ino()
-Message-ID: <Yo7dqwUZhpe2amtF@FVFYT0MHHV2J.googleapis.com>
-References: <20220525202600.2910982-1-roman.gushchin@linux.dev>
- <20220525202600.2910982-2-roman.gushchin@linux.dev>
+        Wed, 25 May 2022 21:55:00 -0400
+X-Greylist: delayed 358 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 25 May 2022 18:54:59 PDT
+Received: from mail.eskimo.com (mail.eskimo.com [204.122.16.222])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 123F7A7E1A;
+        Wed, 25 May 2022 18:54:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=eskimo.com;
+        s=default; t=1653529739;
+        bh=VhtTl6PFy6AJclvYo5GWavMZF1ZfPH1+J4/x75mDWjI=;
+        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
+        b=DdT41yPyzKxpmbcaQX5W7TJI+nZKXvXHp0XOaE3t/AshCmDmkknIDvMdC97vgtgHA
+         O7cAuOWYWmXjDsGg3KiuOfxgHhgBAgJ8Iqtm1KGGsk0IGdPE1EHj07aBv/LdLmLoqt
+         2hjfZ6kTEgMmcJkpZFVQDwKPOTq4EKL8fxKVo2zX8UwZmqmMoRkIOBq6K10WmH/RBl
+         BILUDMZ0YxbNiQ9I+AGY3fT7z7ZNwUbUwX1ZATQ/UOFRDnYDZ6rYNWFMtd6hetNmJl
+         2XYJREu+I+OCl89A1OiIRL7Y8wfWyjALHYtRX8d/zdDmn1e3JP0JtF9qQK7jWTYMYH
+         EClu34hVNf57Q==
+Received: from ubuntu.eskimo.com (ubuntu.eskimo.com [204.122.16.33])
+        by mail.eskimo.com (Postfix) with ESMTPS id B64B63C9FF9;
+        Wed, 25 May 2022 18:48:59 -0700 (PDT)
+Date:   Wed, 25 May 2022 18:48:59 -0700 (PDT)
+From:   Robert Dinse <nanook@eskimo.com>
+To:     Sean Christopherson <seanjc@google.com>
+cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Kees Cook <keescook@chromium.org>
+Subject: Re: [PATCH 0/4] KVM: x86: Emulator _regs fixes and cleanups
+In-Reply-To: <20220525222604.2810054-1-seanjc@google.com>
+Message-ID: <847a4d9b-e064-fac5-ae5e-3574baa170b@eskimo.com>
+References: <20220525222604.2810054-1-seanjc@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220525202600.2910982-2-roman.gushchin@linux.dev>
+Content-Type: text/plain; charset=US-ASCII; format=flowed
+X-Virus-Scanned: clamav-milter 0.103.6 at mail.eskimo.com
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 25, 2022 at 01:25:55PM -0700, Roman Gushchin wrote:
-> Shrinker debugfs requires a way to represent memory cgroups without
-> using full paths, both for displaying information and getting input
-> from a user.
-> 
-> Cgroup inode number is a perfect way, already used by bpf.
-> 
-> This commit adds a couple of helper functions which will be used
-> to handle memcg-aware shrinkers.
-> 
-> Signed-off-by: Roman Gushchin <roman.gushchin@linux.dev>
 
-Acked-by: Muchun Song <songmuchun@bytedance.com>
+      This set of patches did allow 5.18 to compile without errors using gcc 
+12.1.  Thank you!
 
-Thanks.
+-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
+  Eskimo North Linux Friendly Internet Access, Shell Accounts, and Hosting.
+    Knowledgeable human assistance, not telephone trees or script readers.
+  See our web site: http://www.eskimo.com/ (206) 812-0051 or (800) 246-6874.
+
+On Wed, 25 May 2022, Sean Christopherson wrote:
+
+> Date: Wed, 25 May 2022 22:26:00 +0000
+> From: Sean Christopherson <seanjc@google.com>
+> To: Paolo Bonzini <pbonzini@redhat.com>
+> Cc: Sean Christopherson <seanjc@google.com>,
+>     Vitaly Kuznetsov <vkuznets@redhat.com>,
+>     Wanpeng Li <wanpengli@tencent.com>, Jim Mattson <jmattson@google.com>,
+>     Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+>     linux-kernel@vger.kernel.org, Robert Dinse <nanook@eskimo.com>,
+>     Kees Cook <keescook@chromium.org>
+> Subject: [PATCH 0/4] KVM: x86: Emulator _regs fixes and cleanups
+> 
+> Clean up and harden the use of the x86_emulate_ctxt._regs, which is
+> surrounded by a fair bit of magic.  This series was prompted by bug reports
+> by Kees and Robert where GCC-12 flags an out-of-bounds _regs access.  I'm
+> 99% certain GCC-12 is wrong and is generating a false positive, but just in
+> case...
+>
+> I didn't tag patch 2 with Fixes or Cc: stable@; if it turns out to "fix"
+> the GCC-12 compilation error, it's probably worth sending to v5.18 stable
+> tree (KVM hasn't changed, but the warning=>error was "introdued in v5.18
+> by commit e6148767825c ("Makefile: Enable -Warray-bounds")).
+>
+> Sean Christopherson (4):
+>  KVM: x86: Grab regs_dirty in local 'unsigned long'
+>  KVM: x86: Harden _regs accesses to guard against buggy input
+>  KVM: x86: Omit VCPU_REGS_RIP from emulator's _regs array
+>  KVM: x86: Use 16-bit fields to track dirty/valid emulator GPRs
+>
+> arch/x86/kvm/emulate.c     | 14 ++++++++++++--
+> arch/x86/kvm/kvm_emulate.h | 14 +++++++++++---
+> 2 files changed, 23 insertions(+), 5 deletions(-)
+>
+>
+> base-commit: 90bde5bea810d766e7046bf5884f2ccf76dd78e9
+> -- 
+> 2.36.1.124.g0e6072fb45-goog
+>
