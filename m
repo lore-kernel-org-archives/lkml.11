@@ -2,122 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0813FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 08:17:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79E4CC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 08:18:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241025AbiEZIRL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 04:17:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37342 "EHLO
+        id S1346003AbiEZISZ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 04:18:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346686AbiEZIQg (ORCPT
+        with ESMTP id S1346686AbiEZISL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 04:16:36 -0400
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 829204C7B6
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 01:16:17 -0700 (PDT)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-2f4dfd09d7fso8176837b3.0
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 01:16:17 -0700 (PDT)
+        Thu, 26 May 2022 04:18:11 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6955148305
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 01:18:04 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id y189so1099113pfy.10
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 01:18:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=6dgEjD+4R2dKDRgscs/xv70YgyhfXrRwkUylnVTphfk=;
-        b=XL1eUaOAcssMtqvMAb2JLoXAqGRiBPWRpPBJh6rTDvytgReAH+LjXHDFnDZXS9f9I2
-         35g3JMRGxQZlCvxOhWMcOSoY7fmD/fBdQK3AfpTe4+KDVzo3ISAmWs2bpcJGBQMEHxn2
-         XOrBvHACbTqtONiyNPB/vydyMzterA8qUwVfxsEqd+Vz+8qcEbmdk9FVpwyv4JToLFBL
-         EPR58mdlFaKlltO8fCr0xZCvNvm+F4UFw5xJYUT6ue5rms9F3TPGMAGF7HdiGvNufzye
-         R8r2YJjaY8RuLAuVFWX7SLMYTTkhhepWRDKwQDGC55z4gixqwa9JauWCwnOhgDgX/TTb
-         SoiA==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FHMg2tAJOCenEiVm0R3x4NJY3ZvV5XmmBxrfAtuHiRM=;
+        b=KnBx9YtN4b+GHS/KrRRe1SpvKu6kRXIFzBpZd7W9JnOP9J8tVct8iNortVjqqF14aA
+         7Y7r5AcJR6yBjtzcjVkTOsdqQHuPcA64ml6RkKoanCxSAnp+OL7/goCls8BaRmHAnXy6
+         5say0/yA7Q9/ccwhzw8oQP9Kyeiv4TnPFeSIrn6TtI9cF3ZyHFP5sKzx56q0h5NzjFh2
+         2KTAVj7P2agyaO4zzY30snaN0dFpM/zUBo5uxyWcNrFiXn7G4dLNeQ6xVj+mq3gl1DW4
+         GgGiSn+DDC0eJDqPITF/TY4ucOzgVACUNMoQxJhXhqICIOkjsNGh0UKGmmaHsBZX3ETe
+         ZsyA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=6dgEjD+4R2dKDRgscs/xv70YgyhfXrRwkUylnVTphfk=;
-        b=iO/dDRtrRBOUjANtnwGihSK4F9PPoaLcv0PrfzBvwVVd0J8WVtvORrbrjoG3azUb0c
-         CdIjAHUOOu/4YoTOQucKF545yn1Ybv2X/HSSRfK74RbuVu71l8PXfflF8ovuKz4OY7yU
-         pAyPPbSSxgHuNbD1eGOTDZpo/Kr2zkWY25wRMx74Dq8r2a2ciGRSXGFpTF9wR+IY2pi2
-         uKtRRLIgwW0uN4Pj4/o7tFtfNR39jKp5ijudQEV21fcU3SGLSxJoVJ/CF+IHWzKN/DZs
-         8RaRLdDTzM2t79EwRz1JxIa6VmB92t1653WUaF4AfDenmay6E/xqpbYLXVnLKtqPgkoK
-         cnng==
-X-Gm-Message-State: AOAM533Csl1PI+/AILM7B49r7pKNre8yaA+tIFeuiA3CPazk5qWvc36L
-        s91Q/mQqOkEeO66QrFwMpKOpsLzE2aQwOf0=
-X-Google-Smtp-Source: ABdhPJx5hTzSS2LFu7RkqlQ7KLRzxV0Py+PZHVG9x+dcAcINC/1HXYTnTXlf9OdhjLu3DXMEHDG7SkiPohYReIE=
-X-Received: from saravanak.san.corp.google.com ([2620:15c:2d:3:ff1f:a3b7:b6de:d30f])
- (user=saravanak job=sendgmr) by 2002:a25:fb12:0:b0:64d:d6fb:406a with SMTP id
- j18-20020a25fb12000000b0064dd6fb406amr34790013ybe.433.1653552977155; Thu, 26
- May 2022 01:16:17 -0700 (PDT)
-Date:   Thu, 26 May 2022 01:15:47 -0700
-In-Reply-To: <20220526081550.1089805-1-saravanak@google.com>
-Message-Id: <20220526081550.1089805-9-saravanak@google.com>
-Mime-Version: 1.0
-References: <20220526081550.1089805-1-saravanak@google.com>
-X-Mailer: git-send-email 2.36.1.124.g0e6072fb45-goog
-Subject: [RFC PATCH v1 8/9] net: ipconfig: Force fw_devlink to unblock any
- devices that might probe
-From:   Saravana Kannan <saravanak@google.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Kevin Hilman <khilman@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FHMg2tAJOCenEiVm0R3x4NJY3ZvV5XmmBxrfAtuHiRM=;
+        b=tE0rn9bkx7YGxLSsTKY5iXUDleHzT4SECQbbdYv8MCtohs7PCwCs7yxx+fk9E/7tyo
+         /CjGYhDNxgUrWRT0j6RQJB8DZikkrNTmI5epXdUcmzKtrAnk8pVOX+44KxWOqi0SqNhi
+         fq7Z5ludT5z1ZedcWZD6G42xODkd2L++kFHH+42AxSt5W58TULaUiPA2iv5IXcaWiYuS
+         PbY555kOxGSGuq5JgRZH9G89tEB7oXowpiYi9wUEwdcf7gradXCU2FbzFpqgGl+yImbu
+         +gG+S2uyGr3cBJfjY1pqDerY2YVkPjLONB4MXYRi8M0yuNqc6cw8YrgGUax26VsE57yI
+         8eRQ==
+X-Gm-Message-State: AOAM532xSw+fa+ax5v+6XB3ujavy0MBol/ynHmjCr7J8/ibQWhyAjDUn
+        BHEqVhbky8RdEJDoQDk7UgM=
+X-Google-Smtp-Source: ABdhPJwa3Ta0ib9PrN7P+QnvubHC3BGs+cfN2XyBZuN/FssHGW+YpSwHz7QhClmqcA8h5g9+B09wPg==
+X-Received: by 2002:a65:5188:0:b0:3fa:6081:7393 with SMTP id h8-20020a655188000000b003fa60817393mr15297881pgq.72.1653553083916;
+        Thu, 26 May 2022 01:18:03 -0700 (PDT)
+Received: from localhost.localdomain ([202.120.234.246])
+        by smtp.googlemail.com with ESMTPSA id u2-20020a17090ae00200b001dcf9fe5cddsm827824pjy.38.2022.05.26.01.18.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 May 2022 01:18:03 -0700 (PDT)
+From:   Miaoqian Lin <linmq006@gmail.com>
+To:     Linus Walleij <linus.walleij@linaro.org>,
         Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>
-Cc:     Saravana Kannan <saravanak@google.com>,
-        Mark Brown <broonie@kernel.org>, Rob Herring <robh@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        John Stultz <jstultz@google.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        kernel-team@android.com, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, iommu@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-acpi@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     linmq006@gmail.com
+Subject: [PATCH] ARM: integrator: Fix refcount leak in intcp_init_of
+Date:   Thu, 26 May 2022 12:17:56 +0400
+Message-Id: <20220526081756.32998-1-linmq006@gmail.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If there are network devices that could probe without some of their
-suppliers probing and those network devices are needed for IP auto
-config to work, then fw_devlink=on might break that usecase by blocking
-the network devices from probing by the time IP auto config starts.
+of_find_matching_node() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not need anymore.
+Add missing of_node_put() to avoid refcount leak.
 
-So, when IP auto config is enabled, make sure fw_devlink doesn't block
-the probing of any device that has a driver by the time we get to IP
-auto config.
-
-Signed-off-by: Saravana Kannan <saravanak@google.com>
+Fixes: df36680f1a71 ("ARM: integrator: core module registers from compatible strings")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
 ---
- net/ipv4/ipconfig.c | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/arm/mach-integrator/integrator_cp.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/ipv4/ipconfig.c b/net/ipv4/ipconfig.c
-index 9d41d5d5cd1e..aa7b8ba68ca6 100644
---- a/net/ipv4/ipconfig.c
-+++ b/net/ipv4/ipconfig.c
-@@ -1435,6 +1435,8 @@ static int __init wait_for_devices(void)
- {
- 	int i;
+diff --git a/arch/arm/mach-integrator/integrator_cp.c b/arch/arm/mach-integrator/integrator_cp.c
+index b7eb4038798b..bb301ca8c7e1 100644
+--- a/arch/arm/mach-integrator/integrator_cp.c
++++ b/arch/arm/mach-integrator/integrator_cp.c
+@@ -126,6 +126,7 @@ static void __init intcp_init_of(void)
+ 		return;
  
-+	fw_devlink_unblock_may_probe();
-+
- 	for (i = 0; i < DEVICE_WAIT_MAX; i++) {
- 		struct net_device *dev;
- 		int found = 0;
+ 	intcp_con_base = of_iomap(cpcon, 0);
++	of_node_put(cpcon);
+ 	if (!intcp_con_base)
+ 		return;
+ 
 -- 
-2.36.1.124.g0e6072fb45-goog
+2.25.1
 
