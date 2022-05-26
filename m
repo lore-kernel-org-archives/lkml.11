@@ -2,72 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 479BBC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 22:05:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D565C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 22:05:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349988AbiEZWFL (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 18:05:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45244 "EHLO
+        id S235799AbiEZWFP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 18:05:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349993AbiEZWE4 (ORCPT
+        with ESMTP id S1349991AbiEZWEz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 18:04:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AD875DA3A;
-        Thu, 26 May 2022 15:04:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DDCC361BEF;
-        Thu, 26 May 2022 22:04:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 36858C36AE5;
-        Thu, 26 May 2022 22:04:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653602694;
-        bh=qk7AP8/K8hdhmOzogrVLOPSXEqmDbE7fQptkkwVNruo=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=R+Dv2mekf+s5LXivu0yAZ3/ItLdo0a81lnEy5wVitHnaXByjSIlZF/lu4mA9EGcoL
-         aJN0ouAT4axV5Wa95hSycL/W14p+rPhjexEMVR5xjzKuqGzR+18RKt5oKnAK8xGTRm
-         JNwbY7vkY/da/5Xm3JMwWRzaVw0Nm/ISrV1bb3P3hwFcOpmVyb0opYaXgsRwrnH0fX
-         S2pQG6lsDgJiYsBb6rE3WA0l9ntnBluzsM5XgjFYPIK9oeEK5RJ/YeOA1GDUfg0KNB
-         C7kWeY/UYUyvYUWVvgxnf56tKNDvocpDbl7jLzbjPa84wmOpvgaqiOKaTsduW7nJlZ
-         MvnaWQio8lvgA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 23C5DF03942;
-        Thu, 26 May 2022 22:04:54 +0000 (UTC)
-Subject: Re: [GIT PULL] gpio: updates for v5.19
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220525161220.151201-1-brgl@bgdev.pl>
-References: <20220525161220.151201-1-brgl@bgdev.pl>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220525161220.151201-1-brgl@bgdev.pl>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/brgl/linux.git tags/gpio-updates-for-v5.19
-X-PR-Tracked-Commit-Id: 5a7cb9f3978d1fe8cfba798b4c9c054ce226e8fd
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 7182e897695d5b70fb772736f1f08639ca0fff78
-Message-Id: <165360269414.24340.324746412142816756.pr-tracker-bot@kernel.org>
-Date:   Thu, 26 May 2022 22:04:54 +0000
-To:     Bartosz Golaszewski <brgl@bgdev.pl>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Thu, 26 May 2022 18:04:55 -0400
+Received: from mail-oi1-f169.google.com (mail-oi1-f169.google.com [209.85.167.169])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC246E64FD;
+        Thu, 26 May 2022 15:04:53 -0700 (PDT)
+Received: by mail-oi1-f169.google.com with SMTP id m125so3712394oia.6;
+        Thu, 26 May 2022 15:04:53 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=vLdbpKGNLu5yk557HufBJXrdPTT5qvK3rlnfRWVqz+M=;
+        b=S/yZXd38JtSpnZqP9mMghbuKx+Xp0XKkUFVHoFX9gi7foW7o/wVxCgeepq73BGG5hB
+         bi9UbRT55/PlgbLBpZDhk1S3UHgvFJZfkMo15atZjGybYt+FC9qzdzA1584lsW625t3Y
+         HSmAT1p8T+PCENRf5hjrznLKR8+jXs8dcA+7s3Yl2OT5+ATNmyeCS8yIaeMJBVqxIZQi
+         S0Ccc6rRy92bN0rAAaSvBQVvXX7VJ6zwTOQKmtQYG3yj1RKBlpqCJIKzuRVoRaH/9Qae
+         1zGBK5H63mSqdVu4t099AhnhjJfbSLLJNhiis8uuqFnWq36pdCuW73EpvRQRikhpdy4S
+         6C0Q==
+X-Gm-Message-State: AOAM533/XNQma477JKspuPHmvrTcDPaGu63UdKeqWJOu3EMr4pwBBDVd
+        aHrO9VUF/aqJaOpT9u43Pg==
+X-Google-Smtp-Source: ABdhPJz8cg4On41gsBd8ruxHfQJAb2nP9yPlOL55wyn6mRRBKLYXIjiccQunOdeUs8migoK46Yb0Hg==
+X-Received: by 2002:a05:6808:144d:b0:32b:7fbc:9440 with SMTP id x13-20020a056808144d00b0032b7fbc9440mr2303610oiv.226.1653602693051;
+        Thu, 26 May 2022 15:04:53 -0700 (PDT)
+Received: from robh.at.kernel.org (rrcs-192-154-179-37.sw.biz.rr.com. [192.154.179.37])
+        by smtp.gmail.com with ESMTPSA id r7-20020a056808210700b0032b7c4ead49sm1105154oiw.18.2022.05.26.15.04.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 May 2022 15:04:52 -0700 (PDT)
+Received: (nullmailer pid 343192 invoked by uid 1000);
+        Thu, 26 May 2022 22:04:50 -0000
+Date:   Thu, 26 May 2022 17:04:50 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Linus Walleij <linus.walleij@linaro.org>,
-        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Bartosz Golaszewski <brgl@bgdev.pl>
+        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        Marek Vasut <marex@denx.de>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: net/dsa: Add spi-peripheral-props.yaml
+ references
+Message-ID: <20220526220450.GB315754-robh@kernel.org>
+References: <20220525205752.2484423-1-robh@kernel.org>
+ <20220526003216.7jxopjckccugh3ft@skbuf>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220526003216.7jxopjckccugh3ft@skbuf>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Wed, 25 May 2022 18:12:20 +0200:
+On Thu, May 26, 2022 at 03:32:16AM +0300, Vladimir Oltean wrote:
+> On Wed, May 25, 2022 at 03:57:50PM -0500, Rob Herring wrote:
+> > SPI peripheral device bindings need to reference spi-peripheral-props.yaml
+> > in order to use various SPI controller specific properties. Otherwise,
+> > the unevaluatedProperties check will reject any controller specific
+> > properties.
+> > 
+> > Signed-off-by: Rob Herring <robh@kernel.org>
+> > ---
+> >  Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml | 1 +
+> >  Documentation/devicetree/bindings/net/dsa/realtek.yaml       | 1 +
+> >  2 files changed, 2 insertions(+)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml b/Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml
+> > index 184152087b60..6bbd8145b6c1 100644
+> > --- a/Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml
+> > +++ b/Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml
+> > @@ -12,6 +12,7 @@ maintainers:
+> >  
+> >  allOf:
+> >    - $ref: dsa.yaml#
+> > +  - $ref: /schemas/spi/spi-peripheral-props.yaml#
+> >  
+> >  properties:
+> >    # See Documentation/devicetree/bindings/net/dsa/dsa.yaml for a list of additional
+> > diff --git a/Documentation/devicetree/bindings/net/dsa/realtek.yaml b/Documentation/devicetree/bindings/net/dsa/realtek.yaml
+> > index 99ee4b5b9346..4f99aff029dc 100644
+> > --- a/Documentation/devicetree/bindings/net/dsa/realtek.yaml
+> > +++ b/Documentation/devicetree/bindings/net/dsa/realtek.yaml
+> > @@ -108,6 +108,7 @@ if:
+> >      - reg
+> >  
+> >  then:
+> > +  $ref: /schemas/spi/spi-peripheral-props.yaml#
+> >    not:
+> >      required:
+> >        - mdc-gpios
+> > -- 
+> > 2.34.1
+> > 
+> 
+> Also needed by nxp,sja1105.yaml and the following from brcm,b53.yaml:
+> 	brcm,bcm5325
+> 	brcm,bcm5365
+> 	brcm,bcm5395
+> 	brcm,bcm5397
+> 	brcm,bcm5398
+> 	brcm,bcm53115
+> 	brcm,bcm53125
+> 	brcm,bcm53128
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/brgl/linux.git tags/gpio-updates-for-v5.19
+Okay. Looks like you missed bcm5389?
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/7182e897695d5b70fb772736f1f08639ca0fff78
-
-Thank you!
-
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+Rob
