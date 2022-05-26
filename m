@@ -2,80 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6840C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 12:05:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4F81C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 12:06:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239810AbiEZMFr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 08:05:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42320 "EHLO
+        id S244364AbiEZMGE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 08:06:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229826AbiEZMFo (ORCPT
+        with ESMTP id S229826AbiEZMGB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 08:05:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E311D02A2;
-        Thu, 26 May 2022 05:05:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DC21560C52;
-        Thu, 26 May 2022 12:05:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3182C385A9;
-        Thu, 26 May 2022 12:05:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653566739;
-        bh=EZ83Wu0JIwui5tEnq9zsFh1J1HyLzUwNJ/Dy+pO3xvA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=fPMbA5axeabY/ZFxS5rXuKPt7XWp+0mcWg2WC6lVFuvYINemHq5i+oKy9KK0Ni1em
-         1DwXq0tblKIBK/yrgHoHB0Z6wZ8DflmvuNsHdkMm7/nKr4u6ItwVgpZ0/KZGLEUTXF
-         bffFTjnx5WVhBb8RP8cOYiMmQq95qAN71k7EofXU=
-Date:   Thu, 26 May 2022 14:05:36 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Denis Efremov <efremov@linux.com>
-Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
-        dan.carpenter@oracle.com, straube.linux@gmail.com,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, stable <stable@vger.kernel.org>
-Subject: Re: [PATCH v5.10] staging: rtl8723bs: prevent ->Ssid overflow in
- rtw_wx_set_scan()
-Message-ID: <Yo9tEA6AXBg9CV8y@kroah.com>
-References: <YoZk3YLEDYKGG5xe@kroah.com>
- <20220520035730.5533-1-efremov@linux.com>
- <YounkTGwmcQns3vy@kroah.com>
- <22589460-930c-b307-acf0-2a49f5f5261f@linux.com>
+        Thu, 26 May 2022 08:06:01 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51AB8D02BB;
+        Thu, 26 May 2022 05:06:00 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L865D3rFMzQkQJ;
+        Thu, 26 May 2022 20:02:56 +0800 (CST)
+Received: from dggpemm500002.china.huawei.com (7.185.36.229) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 26 May 2022 20:05:55 +0800
+Received: from localhost.localdomain (10.175.112.125) by
+ dggpemm500002.china.huawei.com (7.185.36.229) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 26 May 2022 20:05:54 +0800
+From:   Chen Wandun <chenwandun@huawei.com>
+To:     <tj@kernel.org>, <lizefan.x@bytedance.com>, <hannes@cmpxchg.org>,
+        <surenb@google.com>, <cgroups@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH] psi: dont alloc memory for psi by default
+Date:   Thu, 26 May 2022 20:26:56 +0800
+Message-ID: <20220526122656.256274-1-chenwandun@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <22589460-930c-b307-acf0-2a49f5f5261f@linux.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.112.125]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500002.china.huawei.com (7.185.36.229)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 23, 2022 at 09:41:09PM +0400, Denis Efremov wrote:
-> Hi,
-> 
-> On 5/23/22 19:26, Greg KH wrote:
-> > On Fri, May 20, 2022 at 07:57:30AM +0400, Denis Efremov (Oracle) wrote:
-> >> This code has a check to prevent read overflow but it needs another
-> >> check to prevent writing beyond the end of the ->Ssid[] array.
-> >>
-> >> Fixes: 554c0a3abf21 ("staging: Add rtl8723bs sdio wifi driver")
-> >> Cc: stable <stable@vger.kernel.org>
-> >> Signed-off-by: Denis Efremov (Oracle) <efremov@linux.com>
-> >> ---
-> >>  drivers/staging/rtl8723bs/os_dep/ioctl_linux.c | 6 ++++--
-> >>  1 file changed, 4 insertions(+), 2 deletions(-)
-> > 
-> > And only 5.10 needs this?  What about all other kernel branches?
-> > 
-> 
-> >From 5.10, 5.4, 4.19, to 4.14.
-> 
-> There is a small spaces conflict in 5.4-4.14 kernels because of
-> c77761d660a6 staging: rtl8723bs: Fix spacing issues
-> 
-> I sent another patch to handle it.
+Memory about struct psi_group is allocated by default for
+each cgroup even if psi_disabled is true, in this case, these
+allocated memory is waste, so alloc memory for struct psi_group
+only when psi_disabled is false.
 
-Thanks, all now queued up.
+Signed-off-by: Chen Wandun <chenwandun@huawei.com>
+---
+ include/linux/cgroup-defs.h |  2 +-
+ include/linux/cgroup.h      |  2 +-
+ kernel/cgroup/cgroup.c      |  8 ++++----
+ kernel/sched/psi.c          | 19 +++++++++++++------
+ 4 files changed, 19 insertions(+), 12 deletions(-)
 
-greg k-h
+diff --git a/include/linux/cgroup-defs.h b/include/linux/cgroup-defs.h
+index 1bfcfb1af352..672de25e3ec8 100644
+--- a/include/linux/cgroup-defs.h
++++ b/include/linux/cgroup-defs.h
+@@ -475,7 +475,7 @@ struct cgroup {
+ 	struct work_struct release_agent_work;
+ 
+ 	/* used to track pressure stalls */
+-	struct psi_group psi;
++	struct psi_group *psi;
+ 
+ 	/* used to store eBPF programs */
+ 	struct cgroup_bpf bpf;
+diff --git a/include/linux/cgroup.h b/include/linux/cgroup.h
+index 0d1ada8968d7..ed53bfe7c46c 100644
+--- a/include/linux/cgroup.h
++++ b/include/linux/cgroup.h
+@@ -674,7 +674,7 @@ static inline void pr_cont_cgroup_path(struct cgroup *cgrp)
+ 
+ static inline struct psi_group *cgroup_psi(struct cgroup *cgrp)
+ {
+-	return &cgrp->psi;
++	return cgrp->psi;
+ }
+ 
+ bool cgroup_psi_enabled(void);
+diff --git a/kernel/cgroup/cgroup.c b/kernel/cgroup/cgroup.c
+index 1779ccddb734..90a654cb8a1e 100644
+--- a/kernel/cgroup/cgroup.c
++++ b/kernel/cgroup/cgroup.c
+@@ -3609,21 +3609,21 @@ static int cpu_stat_show(struct seq_file *seq, void *v)
+ static int cgroup_io_pressure_show(struct seq_file *seq, void *v)
+ {
+ 	struct cgroup *cgrp = seq_css(seq)->cgroup;
+-	struct psi_group *psi = cgroup_ino(cgrp) == 1 ? &psi_system : &cgrp->psi;
++	struct psi_group *psi = cgroup_ino(cgrp) == 1 ? &psi_system : cgrp->psi;
+ 
+ 	return psi_show(seq, psi, PSI_IO);
+ }
+ static int cgroup_memory_pressure_show(struct seq_file *seq, void *v)
+ {
+ 	struct cgroup *cgrp = seq_css(seq)->cgroup;
+-	struct psi_group *psi = cgroup_ino(cgrp) == 1 ? &psi_system : &cgrp->psi;
++	struct psi_group *psi = cgroup_ino(cgrp) == 1 ? &psi_system : cgrp->psi;
+ 
+ 	return psi_show(seq, psi, PSI_MEM);
+ }
+ static int cgroup_cpu_pressure_show(struct seq_file *seq, void *v)
+ {
+ 	struct cgroup *cgrp = seq_css(seq)->cgroup;
+-	struct psi_group *psi = cgroup_ino(cgrp) == 1 ? &psi_system : &cgrp->psi;
++	struct psi_group *psi = cgroup_ino(cgrp) == 1 ? &psi_system : cgrp->psi;
+ 
+ 	return psi_show(seq, psi, PSI_CPU);
+ }
+@@ -3649,7 +3649,7 @@ static ssize_t cgroup_pressure_write(struct kernfs_open_file *of, char *buf,
+ 		return -EBUSY;
+ 	}
+ 
+-	psi = cgroup_ino(cgrp) == 1 ? &psi_system : &cgrp->psi;
++	psi = cgroup_ino(cgrp) == 1 ? &psi_system : cgrp->psi;
+ 	new = psi_trigger_create(psi, buf, nbytes, res);
+ 	if (IS_ERR(new)) {
+ 		cgroup_put(cgrp);
+diff --git a/kernel/sched/psi.c b/kernel/sched/psi.c
+index a337f3e35997..ec66b40bdd40 100644
+--- a/kernel/sched/psi.c
++++ b/kernel/sched/psi.c
+@@ -957,10 +957,16 @@ int psi_cgroup_alloc(struct cgroup *cgroup)
+ 	if (static_branch_likely(&psi_disabled))
+ 		return 0;
+ 
+-	cgroup->psi.pcpu = alloc_percpu(struct psi_group_cpu);
+-	if (!cgroup->psi.pcpu)
++	cgroup->psi = kmalloc(sizeof(struct psi_group), GFP_KERNEL);
++	if (!cgroup->psi)
+ 		return -ENOMEM;
+-	group_init(&cgroup->psi);
++
++	cgroup->psi->pcpu = alloc_percpu(struct psi_group_cpu);
++	if (!cgroup->psi->pcpu) {
++		kfree(cgroup->psi);
++		return -ENOMEM;
++	}
++	group_init(cgroup->psi);
+ 	return 0;
+ }
+ 
+@@ -969,10 +975,11 @@ void psi_cgroup_free(struct cgroup *cgroup)
+ 	if (static_branch_likely(&psi_disabled))
+ 		return;
+ 
+-	cancel_delayed_work_sync(&cgroup->psi.avgs_work);
+-	free_percpu(cgroup->psi.pcpu);
++	cancel_delayed_work_sync(&cgroup->psi->avgs_work);
++	free_percpu(cgroup->psi->pcpu);
+ 	/* All triggers must be removed by now */
+-	WARN_ONCE(cgroup->psi.poll_states, "psi: trigger leak\n");
++	WARN_ONCE(cgroup->psi->poll_states, "psi: trigger leak\n");
++	kfree(cgroup->psi);
+ }
+ 
+ /**
+-- 
+2.25.1
+
