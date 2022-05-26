@@ -2,88 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76E99C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 16:41:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18299C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 16:41:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244348AbiEZQlL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 12:41:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47690 "EHLO
+        id S1344226AbiEZQlv (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 12:41:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229800AbiEZQlJ (ORCPT
+        with ESMTP id S232956AbiEZQlt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 12:41:09 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA10C3B3C0
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 09:41:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653583267; x=1685119267;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=tjBaAbh6HrriUT68SvY0WLPr98BrVKnGVpNLD4OjveA=;
-  b=KTDaH4gFvMvaH/yMPmsfyEDwmI0AnUFZwJKawOx8XXg7gmSCaahRAgPy
-   uEEY9X2q8eRZHPq6RIr5nJoNatFb2A7CLbizzOnxCk2xoZn/1xM13/AYz
-   Wx/kKkUbUP/08Uzv59Lz5PZsTics9YhB8AMmFli2RC0HlI46yea6mY7LA
-   Mu33NIGUZbrrZFPdLvnHXLEurh3/X2XeB3wVBX6TywdVrLFafHHtSyRTH
-   stF8UNfe4L1hRWZpGCZqCLmW4eKRWPJotFD7mW+QMJEC0hOl06bizPcej
-   Uu1jkuJ+s0f4HVqmfAS1WU1nLEyfWhOGrSTihBR8MHmcSxvyGZbjm4FOd
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10359"; a="360599659"
-X-IronPort-AV: E=Sophos;i="5.91,252,1647327600"; 
-   d="scan'208";a="360599659"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 May 2022 09:41:07 -0700
-X-IronPort-AV: E=Sophos;i="5.91,252,1647327600"; 
-   d="scan'208";a="573973495"
-Received: from agluck-desk3.sc.intel.com ([172.25.222.78])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 May 2022 09:41:07 -0700
-Date:   Thu, 26 May 2022 09:41:06 -0700
-From:   "Luck, Tony" <tony.luck@intel.com>
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     Peter Zijlstra <peterz@infradead.org>, X86 ML <x86@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: Taint addresses
-Message-ID: <Yo+tomN1kNkvXiBk@agluck-desk3.sc.intel.com>
-References: <20220524185324.28395-1-bp@alien8.de>
- <20220524185324.28395-4-bp@alien8.de>
- <Yo2ASBAElqrQvzh3@agluck-desk3.sc.intel.com>
- <20220525065940.GF2578@worktop.programming.kicks-ass.net>
- <Yo3cpb1yZhwhHEga@zn.tnic>
- <4644ff0530ba40948ed1f0e2e45a24d8@intel.com>
- <Yo5LAenZIsYmM9Ie@zn.tnic>
- <c40151ec88db4b7aa7dcadf6428b019e@intel.com>
- <Yo5SupgZjT/a1p5m@zn.tnic>
- <Yo9uYL9eL9KBuzam@zn.tnic>
+        Thu, 26 May 2022 12:41:49 -0400
+Received: from mail-ot1-x32e.google.com (mail-ot1-x32e.google.com [IPv6:2607:f8b0:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BA5BF18;
+        Thu, 26 May 2022 09:41:49 -0700 (PDT)
+Received: by mail-ot1-x32e.google.com with SMTP id c15-20020a9d684f000000b0060b097c71ecso1297917oto.10;
+        Thu, 26 May 2022 09:41:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=fAnwqjpJIA2T/ZTyHUwVx0u4aY+zBTaNXhuFNK0GJX4=;
+        b=oDCxbRHKqlg5pawaIgeC9JNhr/1Qn5H5aEXa3nxQ5ydNzOm1cT5JCbDy3YuIqMJ4CD
+         vUbQbJjzsINtfQr+KA9Kyq+Wxlswpycu8dLYxu27njXKxcZ+zc2KAV6raYgiafV74GfM
+         M+vYsxpgMLivrv3v3mX6s9IBTa/K9A9jFo+O0Q+3NAKb7Hap6g1l/2UUmCLZ4Lx110+n
+         lls3TQ2WjX6oEk4Bd6hWXrxFcTFy1z02u8NG7YhLsJqwYpWESkn2NZidKC5cSxwX/J9z
+         Djb1Znn7NC6Xjm4v2d20F8V24jyl+EFxtYGJYRP22B3PiR7PHGp/1XBFRKboAZkMO8KT
+         FlpA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=fAnwqjpJIA2T/ZTyHUwVx0u4aY+zBTaNXhuFNK0GJX4=;
+        b=KKm3phkMm9wpO30sms6Alkhaz20ZlMx2h4TaetKD9tFiVg0H+lJzgqNLD3u+GTLgzs
+         lxeS7750jDgu2NYiLd9I5iETp8Qw5iL3f6Kci2En5qIKy6EB/svxOYVcdP/KxeQUzJMH
+         hTvKiYFFqzkRCvA5jPSer8HnZEnNqaBru3YNpWkVbgfC6NJFz/Uj9FyPyOisLmdS5pwy
+         YCRwaZTPKCKn3FKeG2HXKjy0E+2pfq1NwvWwgYvl31Y6yBF9N/xnBgQ40xI6e42sy4r7
+         gztJew3LOYfUtekBOYxJkNpo54CRgmY2Tm1YIH4IBqAPpffGZm2mkggxbBZd6rivN2lp
+         lQqg==
+X-Gm-Message-State: AOAM531EuMkvwWiCDmQ4UGpPZtC6R9y/ID2B0lmiFpYPcLO40G5HtW7P
+        A6nvU+WiIg8WqgjhOjnbn7E=
+X-Google-Smtp-Source: ABdhPJxA4gmqBwbrufoJsOyk7+4vDgHdxH62gnb/euQNUtGZdnkJdcV4FIcESuWD9/Diketx0PnPvw==
+X-Received: by 2002:a9d:74d4:0:b0:60b:18da:7882 with SMTP id a20-20020a9d74d4000000b0060b18da7882mr7804769otl.343.1653583308379;
+        Thu, 26 May 2022 09:41:48 -0700 (PDT)
+Received: from localhost ([12.97.180.36])
+        by smtp.gmail.com with ESMTPSA id p7-20020a4aac07000000b0040ebba81054sm792016oon.46.2022.05.26.09.41.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 May 2022 09:41:47 -0700 (PDT)
+Date:   Thu, 26 May 2022 09:42:25 -0700
+From:   Yury Norov <yury.norov@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org
+Cc:     yury.norov@gmail.com, linux-kernel@vger.kernel.org
+Subject: Patch for stable
+Message-ID: <Yo+t8QAgVTi2E6B4@yury-laptop>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Yo9uYL9eL9KBuzam@zn.tnic>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 26, 2022 at 02:11:12PM +0200, Borislav Petkov wrote:
-> I guess something like this:
-> 
-> ...
-> [    2.591532] x86/mm: Checked W+X mappings: passed, no W+X pages found.
-> [    2.592678] CPU: 2 PID: 1 Comm: swapper/0 Tainted: G S       C        5.18.0+ #7
-> [    2.593079] Last taint addresses:
-> [    2.593079]  S:start_kernel+0x614/0x634
-> [    2.593079]  C:kernel_init+0x70/0x140
+Hi Greg,
 
-Maybe something a little more user friendly than addresses?
+Can you please consider taking the patch "KVM: x86: hyper-v: fix type
+of valid_bank_mask" into stable?
 
-If there was a new macro:
+Commit ea8c66fe8d8f4f93df941e52120a3512d7bf5128 upstream.
 
-#define add_taint(flag, lockdep) __add_taint(flag, lockdep, __FILE__, __LINE__)
-
-then renmame existing add_taint() to __add_taint() and have it save the
-file/line values.
-
-Then you could print filename:line
-
-Also: Is it more useful to store the most recent taint of each type,
-or the first of each type?
-
--Tony
+Thanks,
+Yury
