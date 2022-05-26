@@ -2,58 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 212F2C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9C02C4332F
 	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 17:55:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348394AbiEZRyw (ORCPT
+        id S1348577AbiEZRzB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 13:54:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50180 "EHLO
+        Thu, 26 May 2022 13:55:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236554AbiEZRyS (ORCPT
+        with ESMTP id S1348417AbiEZRyf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 13:54:18 -0400
-Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57BFCA502E
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 10:54:17 -0700 (PDT)
-Received: by mail-pf1-x44a.google.com with SMTP id 15-20020aa7920f000000b0050cf449957fso1313972pfo.9
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 10:54:17 -0700 (PDT)
+        Thu, 26 May 2022 13:54:35 -0400
+Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CF52AF1C7
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 10:54:26 -0700 (PDT)
+Received: by mail-pg1-x54a.google.com with SMTP id o18-20020a63fb12000000b003fb22d1c6a0so957609pgh.12
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 10:54:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=0FS/khluyzXyi0v7JMPmPvXNbS+JklV5tSdCLtxEUUk=;
-        b=HrkQFgdujrqFd3BRxxt7bRuGXEf8RWb66hZtsqdudc94AMeXuZwfxe5oSwRdX+eRrR
-         IYhW2jztILRKX2tbD1FD5BeoyJShY4usFO+IwyRiO69sgqyELWq00S6yUzjJe212LTno
-         lZvROlt5uqQJdKmKI2UyjeFKzNvLkICfQtm17xgybvEFMeBeobAtbYtJHyEIwALgZ/tn
-         u9wzo7lLnURyr0C2S1YpFxjtDfJ582dTQzUyXElddc4+9jX/levpaMUXZibHirpPurBB
-         D9tW7T8+M7d0B3uM4L/KoxIMnwiyF0QtrkDNa6X8+4ImdN9vFEQd7MfcR4rgYGNe0g+9
-         D+NA==
+        bh=Gbi/sedZET/zdh3Sj6stt7i603Maf3FW/BMVimtE9Dk=;
+        b=RNAY/9X/J49yUlxi8AKv1KkXRYKZgi2PVinBAREd+jVpM+5cwAOYppy0mI01VfqmuD
+         XaGRYp2JTW2yv3ibXEtx3Hff3uMup4mbPnEKt7nr6eHxB78t9CC40BM1PjdTsj0Xuqpm
+         fv3EHLNgYDiFhZ6bAY5qung9sKodPn/4VzOYBuK6JufQFVu+BDvYYtxmOtfQaGhC+u4s
+         NHCWNQHN5ZYGWcEgPSyEt8kMmczP2vHVUMOBo1geViZYNayZ0kn8mz1J1at6LWIMyY0H
+         ve4Ypnk5M5fknwtsx24lQb5SEgIVvrpDrxL5uwCh5+fAOWovFBnQHVZrzzSPFWkH8bMA
+         cuyA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=0FS/khluyzXyi0v7JMPmPvXNbS+JklV5tSdCLtxEUUk=;
-        b=sJQlFQCPREk7c35eLquw2KY0v1ODFtnfXDS++ymFAcm+fCX5SDSLMz0jjIMQmbZmln
-         RQ9xAkKJhkDWAslM2QrmsMpdV1FhPbbAJuECJdUgC149O9VgDNdawRRf5nxntrP+YR6f
-         7vMUOvmRI/S/IjeJtKJetsEmO/x4KzTfqkZY5Db+yrJqATs46UcNFukyHR4TM3yr/M6u
-         s7vkwst2R5bdBZG5KR/yFiQM0szakrcN+vJChFbxLaScqIwmnNyRjQYwn1O9XMUctSXs
-         CzClRrnjmTf7Zp3TgBzBj/HrFZ4/6lCi0T/LR6kXTaFhpbYR7wh3MPdolo0s+44iFiTR
-         isxA==
-X-Gm-Message-State: AOAM532Wc6hJ9F5sDXotcHLsi1InShoX/OeOB9ivW5rIAZ0kQPt5gQZW
-        aq+aa2mWBEQDdmv/324qzZRLRc1bMk3z
-X-Google-Smtp-Source: ABdhPJwEI6jPYmsPvZnvvRFp8VGXZTwyDOgPjMc7nn/ZmtEPM4e59mSKFUnPTnOJKJaq7mcxqB6EbYWXFEF5
+        bh=Gbi/sedZET/zdh3Sj6stt7i603Maf3FW/BMVimtE9Dk=;
+        b=3hC4c2GIAePSxFGTdfpKRPe2zBcMLMIqnwyY4SpjqzS4xLW3aJpIaEbWcL5hp+cmaG
+         IwLhksGak8/3eLkRE574DosvDnaZNZksTHT439q/KGAVCOn0LvdsZ9b+ADRILqcqFVqK
+         NeMd/JRcBCMU9hYfqRRC4A9Aip66VCFWDWj7WhV86qpg+5xmw23evX0o5NKheO9eSy06
+         r7VeVyqHqQWEkOfx3j9HbM3bVeCXM2Lxq6tm7l3B1ihpIVmgEUGKXXJZEHY6HqQaTuQZ
+         E/0CafHHVYCFlJrPSD/tf27sw/ptqxMEBe9yRz5bkUn9+AwZX1ZE4RcWlpcJaz1h+3+O
+         iNEQ==
+X-Gm-Message-State: AOAM531EkGmXM3uB0mT/PK56AbhoB3M+v7gbxgNLnPaSSxRu75si3vUq
+        CsDZ5GlbfTAzTz1Kp+RwMhNXi75QZHIC
+X-Google-Smtp-Source: ABdhPJxIwN1/7gxgK2uJEkp1UJVizd20EAW3Jwz+1LpuZ9Fz7N2mp3FRBVeQ8fWCXijwEYhaEYArtzfJllV+
 X-Received: from sweer.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:e45])
- (user=bgardon job=sendgmr) by 2002:a17:902:8203:b0:15f:4423:6e9c with SMTP id
- x3-20020a170902820300b0015f44236e9cmr39395839pln.25.1653587656833; Thu, 26
- May 2022 10:54:16 -0700 (PDT)
-Date:   Thu, 26 May 2022 17:54:00 +0000
+ (user=bgardon job=sendgmr) by 2002:aa7:8b57:0:b0:518:7003:e28e with SMTP id
+ i23-20020aa78b57000000b005187003e28emr32272726pfd.28.1653587666160; Thu, 26
+ May 2022 10:54:26 -0700 (PDT)
+Date:   Thu, 26 May 2022 17:54:06 +0000
 In-Reply-To: <20220526175408.399718-1-bgardon@google.com>
-Message-Id: <20220526175408.399718-4-bgardon@google.com>
+Message-Id: <20220526175408.399718-10-bgardon@google.com>
 Mime-Version: 1.0
 References: <20220526175408.399718-1-bgardon@google.com>
 X-Mailer: git-send-email 2.36.1.124.g0e6072fb45-goog
-Subject: [PATCH v8 03/11] KVM: selftests: Read binary stats desc in lib
+Subject: [PATCH v8 09/11] KVM: selftests: Factor out calculation of pages
+ needed for a VM
 From:   Ben Gardon <bgardon@google.com>
 To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
 Cc:     linux-kernel@vger.kernel.org, Peter Xu <peterx@redhat.com>,
@@ -69,148 +70,127 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Move the code to read the binary stats descriptors to the KVM selftests
-library. It will be re-used by other tests to check KVM behavior.
-
-No functional change intended.
+Factor out the calculation of the number of pages needed for a VM to
+make it easier to separate creating the VM and adding vCPUs.
 
 Reviewed-by: David Matlack <dmatlack@google.com>
 Reviewed-by: Peter Xu <peterx@redhat.com>
 Signed-off-by: Ben Gardon <bgardon@google.com>
 ---
- .../selftests/kvm/include/kvm_util_base.h     | 24 ++++++++++++++
- .../selftests/kvm/kvm_binary_stats_test.c     | 16 +++------
- tools/testing/selftests/kvm/lib/kvm_util.c    | 33 +++++++++++++++++++
- 3 files changed, 62 insertions(+), 11 deletions(-)
+ .../selftests/kvm/include/kvm_util_base.h     |  4 ++
+ tools/testing/selftests/kvm/lib/kvm_util.c    | 59 ++++++++++++++-----
+ 2 files changed, 47 insertions(+), 16 deletions(-)
 
 diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
-index 749cded9b157..da7bf881f94f 100644
+index 035168cec451..3c9898c59ea1 100644
 --- a/tools/testing/selftests/kvm/include/kvm_util_base.h
 +++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
-@@ -401,6 +401,30 @@ void assert_on_unhandled_exception(struct kvm_vm *vm, uint32_t vcpuid);
- int vm_get_stats_fd(struct kvm_vm *vm);
- int vcpu_get_stats_fd(struct kvm_vm *vm, uint32_t vcpuid);
- void read_stats_header(int stats_fd, struct kvm_stats_header *header);
-+struct kvm_stats_desc *read_stats_descriptors(int stats_fd,
-+					      struct kvm_stats_header *header);
+@@ -312,6 +312,10 @@ vm_paddr_t vm_phy_pages_alloc(struct kvm_vm *vm, size_t num,
+ 			      vm_paddr_t paddr_min, uint32_t memslot);
+ vm_paddr_t vm_alloc_page_table(struct kvm_vm *vm);
+ 
++uint64_t vm_pages_needed(enum vm_guest_mode mode, uint32_t nr_vcpus,
++			 uint64_t slot0_mem_pages, uint64_t extra_mem_pages,
++			 uint32_t num_percpu_pages);
 +
-+static inline ssize_t get_stats_descriptor_size(struct kvm_stats_header *header)
-+{
-+	 /*
-+	  * The base size of the descriptor is defined by KVM's ABI, but the
-+	  * size of the name field is variable, as far as KVM's ABI is
-+	  * concerned. For a given instance of KVM, the name field is the same
-+	  * size for all stats and is provided in the overall stats header.
-+	  */
-+	return sizeof(struct kvm_stats_desc) + header->name_size;
-+}
-+
-+static inline struct kvm_stats_desc *get_stats_descriptor(struct kvm_stats_desc *stats,
-+							  int index,
-+							  struct kvm_stats_header *header)
-+{
-+	/*
-+	 * Note, size_desc includes the size of the name field, which is
-+	 * variable. i.e. this is NOT equivalent to &stats_desc[i].
-+	 */
-+	return (void *)stats + index * get_stats_descriptor_size(header);
-+}
- 
- uint32_t guest_get_vcpuid(void);
- 
-diff --git a/tools/testing/selftests/kvm/kvm_binary_stats_test.c b/tools/testing/selftests/kvm/kvm_binary_stats_test.c
-index fb511b42a03e..a5198b9a19c1 100644
---- a/tools/testing/selftests/kvm/kvm_binary_stats_test.c
-+++ b/tools/testing/selftests/kvm/kvm_binary_stats_test.c
-@@ -35,7 +35,7 @@ static void stats_test(int stats_fd)
- 	/* Read kvm stats header */
- 	read_stats_header(stats_fd, &header);
- 
--	size_desc = sizeof(*stats_desc) + header.name_size;
-+	size_desc = get_stats_descriptor_size(&header);
- 
- 	/* Read kvm stats id string */
- 	id = malloc(header.name_size);
-@@ -62,18 +62,12 @@ static void stats_test(int stats_fd)
- 							header.data_offset),
- 			"Descriptor block is overlapped with data block");
- 
--	/* Allocate memory for stats descriptors */
--	stats_desc = calloc(header.num_desc, size_desc);
--	TEST_ASSERT(stats_desc, "Allocate memory for stats descriptors");
- 	/* Read kvm stats descriptors */
--	ret = pread(stats_fd, stats_desc,
--			size_desc * header.num_desc, header.desc_offset);
--	TEST_ASSERT(ret == size_desc * header.num_desc,
--			"Read KVM stats descriptors");
-+	stats_desc = read_stats_descriptors(stats_fd, &header);
- 
- 	/* Sanity check for fields in descriptors */
- 	for (i = 0; i < header.num_desc; ++i) {
--		pdesc = (void *)stats_desc + i * size_desc;
-+		pdesc = get_stats_descriptor(stats_desc, i, &header);
- 		/* Check type,unit,base boundaries */
- 		TEST_ASSERT((pdesc->flags & KVM_STATS_TYPE_MASK)
- 				<= KVM_STATS_TYPE_MAX, "Unknown KVM stats type");
-@@ -129,7 +123,7 @@ static void stats_test(int stats_fd)
- 			"Data size is not correct");
- 	/* Check stats offset */
- 	for (i = 0; i < header.num_desc; ++i) {
--		pdesc = (void *)stats_desc + i * size_desc;
-+		pdesc = get_stats_descriptor(stats_desc, i, &header);
- 		TEST_ASSERT(pdesc->offset < size_data,
- 			"Invalid offset (%u) for stats: %s",
- 			pdesc->offset, pdesc->name);
-@@ -144,7 +138,7 @@ static void stats_test(int stats_fd)
- 	/* Read kvm stats data one by one */
- 	size_data = 0;
- 	for (i = 0; i < header.num_desc; ++i) {
--		pdesc = (void *)stats_desc + i * size_desc;
-+		pdesc = get_stats_descriptor(stats_desc, i, &header);
- 		ret = pread(stats_fd, stats_data,
- 				pdesc->size * sizeof(*stats_data),
- 				header.data_offset + size_data);
+ /*
+  * Create a VM with reasonable defaults
+  *
 diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
-index 1d75d41f92dc..e5abcb189f1d 100644
+index 200d3bb803e0..385f249c2dc5 100644
 --- a/tools/testing/selftests/kvm/lib/kvm_util.c
 +++ b/tools/testing/selftests/kvm/lib/kvm_util.c
-@@ -2577,3 +2577,36 @@ void read_stats_header(int stats_fd, struct kvm_stats_header *header)
- 	ret = read(stats_fd, header, sizeof(*header));
- 	TEST_ASSERT(ret == sizeof(*header), "Read stats header");
+@@ -377,7 +377,7 @@ struct kvm_vm *vm_create_without_vcpus(enum vm_guest_mode mode, uint64_t pages)
  }
+ 
+ /*
+- * VM Create with customized parameters
++ * Get the number of pages needed for a VM
+  *
+  * Input Args:
+  *   mode - VM Mode (e.g. VM_MODE_P52V48_4K)
+@@ -385,27 +385,17 @@ struct kvm_vm *vm_create_without_vcpus(enum vm_guest_mode mode, uint64_t pages)
+  *   slot0_mem_pages - Slot0 physical memory size
+  *   extra_mem_pages - Non-slot0 physical memory total size
+  *   num_percpu_pages - Per-cpu physical memory pages
+- *   guest_code - Guest entry point
+- *   vcpuids - VCPU IDs
+  *
+  * Output Args: None
+  *
+  * Return:
+- *   Pointer to opaque structure that describes the created VM.
+- *
+- * Creates a VM with the mode specified by mode (e.g. VM_MODE_P52V48_4K),
+- * with customized slot0 memory size, at least 512 pages currently.
+- * extra_mem_pages is only used to calculate the maximum page table size,
+- * no real memory allocation for non-slot0 memory in this function.
++ *   The number of pages needed for the VM.
+  */
+-struct kvm_vm *vm_create_with_vcpus(enum vm_guest_mode mode, uint32_t nr_vcpus,
+-				    uint64_t slot0_mem_pages, uint64_t extra_mem_pages,
+-				    uint32_t num_percpu_pages, void *guest_code,
+-				    uint32_t vcpuids[])
++uint64_t vm_pages_needed(enum vm_guest_mode mode, uint32_t nr_vcpus,
++			 uint64_t slot0_mem_pages, uint64_t extra_mem_pages,
++			 uint32_t num_percpu_pages)
+ {
+ 	uint64_t vcpu_pages, extra_pg_pages, pages;
+-	struct kvm_vm *vm;
+-	int i;
+ 
+ 	/* Force slot0 memory size not small than DEFAULT_GUEST_PHY_PAGES */
+ 	if (slot0_mem_pages < DEFAULT_GUEST_PHY_PAGES)
+@@ -421,11 +411,48 @@ struct kvm_vm *vm_create_with_vcpus(enum vm_guest_mode mode, uint32_t nr_vcpus,
+ 	extra_pg_pages = (slot0_mem_pages + extra_mem_pages + vcpu_pages) / PTES_PER_MIN_PAGE * 2;
+ 	pages = slot0_mem_pages + vcpu_pages + extra_pg_pages;
+ 
++	pages = vm_adjust_num_guest_pages(mode, pages);
++
++	return pages;
++}
 +
 +/*
-+ * Read binary stats descriptors
++ * VM Create with customized parameters
 + *
 + * Input Args:
-+ *   stats_fd - the file descriptor for the binary stats file from which to read
-+ *   header - the binary stats metadata header corresponding to the given FD
++ *   mode - VM Mode (e.g. VM_MODE_P52V48_4K)
++ *   nr_vcpus - VCPU count
++ *   slot0_mem_pages - Slot0 physical memory size
++ *   extra_mem_pages - Non-slot0 physical memory total size
++ *   num_percpu_pages - Per-cpu physical memory pages
++ *   guest_code - Guest entry point
++ *   vcpuids - VCPU IDs
 + *
 + * Output Args: None
 + *
 + * Return:
-+ *   A pointer to a newly allocated series of stat descriptors.
-+ *   Caller is responsible for freeing the returned kvm_stats_desc.
++ *   Pointer to opaque structure that describes the created VM.
 + *
-+ * Read the stats descriptors from the binary stats interface.
++ * Creates a VM with the mode specified by mode (e.g. VM_MODE_P52V48_4K),
++ * with customized slot0 memory size, at least 512 pages currently.
++ * extra_mem_pages is only used to calculate the maximum page table size,
++ * no real memory allocation for non-slot0 memory in this function.
 + */
-+struct kvm_stats_desc *read_stats_descriptors(int stats_fd,
-+					      struct kvm_stats_header *header)
++struct kvm_vm *vm_create_with_vcpus(enum vm_guest_mode mode, uint32_t nr_vcpus,
++				    uint64_t slot0_mem_pages, uint64_t extra_mem_pages,
++				    uint32_t num_percpu_pages, void *guest_code,
++				    uint32_t vcpuids[])
 +{
-+	struct kvm_stats_desc *stats_desc;
-+	ssize_t desc_size, total_size, ret;
++	uint64_t pages;
++	struct kvm_vm *vm;
++	int i;
 +
-+	desc_size = get_stats_descriptor_size(header);
-+	total_size = header->num_desc * desc_size;
-+
-+	stats_desc = calloc(header->num_desc, desc_size);
-+	TEST_ASSERT(stats_desc, "Allocate memory for stats descriptors");
-+
-+	ret = pread(stats_fd, stats_desc, total_size, header->desc_offset);
-+	TEST_ASSERT(ret == total_size, "Read KVM stats descriptors");
-+
-+	return stats_desc;
-+}
+ 	TEST_ASSERT(nr_vcpus <= kvm_check_cap(KVM_CAP_MAX_VCPUS),
+ 		    "nr_vcpus = %d too large for host, max-vcpus = %d",
+ 		    nr_vcpus, kvm_check_cap(KVM_CAP_MAX_VCPUS));
+ 
+-	pages = vm_adjust_num_guest_pages(mode, pages);
++	pages = vm_pages_needed(mode, nr_vcpus, slot0_mem_pages,
++				extra_mem_pages, num_percpu_pages);
+ 
+ 	vm = vm_create_without_vcpus(mode, pages);
+ 
 -- 
 2.36.1.124.g0e6072fb45-goog
 
