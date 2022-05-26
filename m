@@ -2,94 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9BE1C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 08:21:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9004C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 08:21:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242859AbiEZIV1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 04:21:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57760 "EHLO
+        id S1343882AbiEZIVv (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 04:21:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238490AbiEZIVY (ORCPT
+        with ESMTP id S244413AbiEZIVn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 04:21:24 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E16F64B86D;
-        Thu, 26 May 2022 01:21:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653553282; x=1685089282;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=BqVs7J907I6LTrc6ve0PJwuw+PZZEbKVHaVhU84OcIw=;
-  b=OEBDCs3mxSlrobsUJuM6TMvvpUZSTskcvDgkTY7EU7G2l3K3QJHhPYhn
-   jt6oAHPrIK0iWVloHoaxW3RTuVEsWVPZiaArUZZRmL8ZYYi5gH1fcgE+J
-   75gA3z6h34GDo0skqbUvfKLT357CggOjxfHO7vzS1j+jK6+IvQMCSVGxq
-   nSIN+8LEDe0s+LKemQSOuQE3tkJWuaCj76rN41e6scks2XpCOR1jHPC4G
-   fvj1dWGYJsYYc+m6F1f169uwoa3qfRzhGg7ftVLnpU/QH2UbmsIvQlnHC
-   Yqp5S6Trh1Hl6mboahZXRXMhoXwxSz0nm6hIb/qfWRzhk6dEizIRlc5HV
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10358"; a="254580227"
-X-IronPort-AV: E=Sophos;i="5.91,252,1647327600"; 
-   d="scan'208";a="254580227"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 May 2022 01:21:22 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,252,1647327600"; 
-   d="scan'208";a="664828782"
-Received: from linux.intel.com ([10.54.29.200])
-  by FMSMGA003.fm.intel.com with ESMTP; 26 May 2022 01:21:22 -0700
-Received: from linux.intel.com (ssid-ilbpg3-teeminta.png.intel.com [10.88.227.74])
-        (using TLSv1.2 with cipher DHE-RSA-AES128-SHA (128/128 bits))
-        (No client certificate requested)
-        by linux.intel.com (Postfix) with ESMTPS id E722E5807C9;
-        Thu, 26 May 2022 01:21:18 -0700 (PDT)
-Date:   Thu, 26 May 2022 16:18:39 +0800
-From:   Tan Tee Min <tee.min.tan@linux.intel.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Voon Wei Feng <weifeng.voon@intel.com>,
-        Sit Michael Wei Hong <michael.wei.hong.sit@intel.com>,
-        Ling Pei Lee <pei.lee.ling@intel.com>,
-        Looi Hong Aun <hong.aun.looi@intel.com>,
-        Tan Tee Min <tee.min.tan@intel.com>
-Subject: Re: [PATCH net-next 1/1] net: phy: dp83867: retrigger SGMII AN when
- link change
-Message-ID: <20220526081839.GA26465@linux.intel.com>
-References: <20220526013714.4119839-1-tee.min.tan@linux.intel.com>
- <20220525215629.69af5bf5@kernel.org>
+        Thu, 26 May 2022 04:21:43 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D63C2880E5;
+        Thu, 26 May 2022 01:21:41 -0700 (PDT)
+X-UUID: ffc10f9af261439d8942d69317f0502a-20220526
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5,REQID:005753e9-4ec5-490c-90c3-3461ee58a619,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:0
+X-CID-META: VersionHash:2a19b09,CLOUDID:2eb18f47-4fb1-496b-8f1d-39e733fed1ea,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
+        ,QS:0,BEC:nil
+X-UUID: ffc10f9af261439d8942d69317f0502a-20220526
+Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by mailgw02.mediatek.com
+        (envelope-from <yong.wu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1049831913; Thu, 26 May 2022 16:21:34 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
+ Thu, 26 May 2022 16:21:34 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkmbs11n2.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
+ Transport; Thu, 26 May 2022 16:21:33 +0800
+Message-ID: <56c10d94fe62deb5eba7dbe0f90f92564913d87e.camel@mediatek.com>
+Subject: Re: [PATCH v2 1/7] dt-bindings: iommu: mediatek: Add phandles for
+ mediatek infra/pericfg
+From:   Yong Wu <yong.wu@mediatek.com>
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>
+CC:     <joro@8bytes.org>, <will@kernel.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <matthias.bgg@gmail.com>,
+        <iommu@lists.linux-foundation.org>,
+        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <krzysztof.kozlowski@linaro.org>
+Date:   Thu, 26 May 2022 16:21:33 +0800
+In-Reply-To: <20220518100503.37279-2-angelogioacchino.delregno@collabora.com>
+References: <20220518100503.37279-1-angelogioacchino.delregno@collabora.com>
+         <20220518100503.37279-2-angelogioacchino.delregno@collabora.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220525215629.69af5bf5@kernel.org>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 25, 2022 at 09:56:29PM -0700, Jakub Kicinski wrote:
-> On Thu, 26 May 2022 09:37:14 +0800 Tan Tee Min wrote:
-> > As suggested by TI, implemented a SW solution here to retrigger SGMII
-> > Auto-Neg whenever there is a link change.
+On Wed, 2022-05-18 at 12:04 +0200, AngeloGioacchino Del Regno wrote:
+> Add properties "mediatek,infracfg" and "mediatek,pericfg" to let the
+> mtk_iommu driver retrieve phandles to the infracfg and pericfg
+> syscon(s)
+> instead of performing a per-soc compatible lookup.
 > 
-> Thanks, sounds like this bug has always been in the driver so we should
-> add:
+> Signed-off-by: AngeloGioacchino Del Regno <
+> angelogioacchino.delregno@collabora.com>
+> ---
+>  .../devicetree/bindings/iommu/mediatek,iommu.yaml         | 8
+> ++++++++
+>  1 file changed, 8 insertions(+)
 > 
-> Fixes: 2a10154abcb7 ("net: phy: dp83867: Add TI dp83867 phy")
-> 
-> Is that right? Getting a workaround like this into stable eventually
-> seems like a good idea so Fixes tag will help.
+> diff --git
+> a/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
+> b/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
+> index 2ae3bbad7f1a..c4af41947593 100644
+> --- a/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
+> +++ b/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
+> @@ -101,6 +101,10 @@ properties:
+>      items:
+>        - const: bclk
+>  
+> +  mediatek,infracfg:
+> +    $ref: /schemas/types.yaml#/definitions/phandle
+> +    description: The phandle to the mediatek infracfg syscon
+> +
 
-Thanks for the quick response.
+Just curious, why not put this "mediatek,infracfg" and its required
+segment[6/7] into one patch?
 
-Yes, you are right.
-Let me add the Fixes tag and Cc <stable@vger.kernel.org> in v2 patch.
-
-Thanks,
-Tee Min
+>    mediatek,larbs:
+>      $ref: /schemas/types.yaml#/definitions/phandle-array
+>      minItems: 1
+> @@ -112,6 +116,10 @@ properties:
+>        Refer to bindings/memory-controllers/mediatek,smi-larb.yaml.
+> It must sort
+>        according to the local arbiter index, like larb0, larb1,
+> larb2...
+>  
+> +  mediatek,pericfg:
+> +    $ref: /schemas/types.yaml#/definitions/phandle
+> +    description: The phandle to the mediatek pericfg syscon
+> +
+>    '#iommu-cells':
+>      const: 1
+>      description: |
 
