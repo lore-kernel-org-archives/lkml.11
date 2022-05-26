@@ -2,112 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EE33C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 01:53:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E777C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 01:53:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243258AbiEZBxZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 21:53:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36212 "EHLO
+        id S1344664AbiEZBxx (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 21:53:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235094AbiEZBxT (ORCPT
+        with ESMTP id S235094AbiEZBxv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 21:53:19 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA161A76E7
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 18:53:17 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4L7rXw1mvHzjX5h;
-        Thu, 26 May 2022 09:52:32 +0800 (CST)
-Received: from [10.174.177.76] (10.174.177.76) by
- canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 26 May 2022 09:53:15 +0800
-Subject: Re: [PATCH v3 3/4] mm/migration: return errno when isolate_huge_page
- failed
-To:     Oscar Salvador <osalvador@suse.de>
-CC:     <akpm@linux-foundation.org>, <mike.kravetz@oracle.com>,
-        <naoya.horiguchi@nec.com>, <peterx@redhat.com>,
-        <apopple@nvidia.com>, <ying.huang@intel.com>, <david@redhat.com>,
-        <songmuchun@bytedance.com>, <hch@lst.de>, <dhowells@redhat.com>,
-        <cl@linux.com>, <linux-mm@kvack.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20220525081822.53547-1-linmiaohe@huawei.com>
- <20220525081822.53547-4-linmiaohe@huawei.com>
- <Yo3ry9rRDa5jznHC@localhost.localdomain>
-From:   Miaohe Lin <linmiaohe@huawei.com>
-Message-ID: <5ed70fbc-c582-6e85-22bc-3ccafa0d7a3f@huawei.com>
-Date:   Thu, 26 May 2022 09:53:15 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        Wed, 25 May 2022 21:53:51 -0400
+Received: from mail-ot1-f53.google.com (mail-ot1-f53.google.com [209.85.210.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EA9EA76E9;
+        Wed, 25 May 2022 18:53:50 -0700 (PDT)
+Received: by mail-ot1-f53.google.com with SMTP id g13-20020a9d6b0d000000b0060b13026e0dso139225otp.8;
+        Wed, 25 May 2022 18:53:50 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=m55NAQ/+DalgNWR3OXGbO7JhI+ga4RyvXmQjO8mq5mQ=;
+        b=rYL3y8yJdI9B6tpDipfQG8JtKDQDKmei/ngo2XHFXevlrqi64uSi6p4MVTmzV25kB4
+         370bkidqoAk+aM2Oj8p03+830TJNGWANQ1akF56ozlspNScemdlvO2s7pv5SV0kEevbj
+         uXBzmRhKwD60dL+XPwKwOdUAR+rpT/+J+s5EWn57nbvu8S1z3QCtgQtHdpa4WD44/oOz
+         Jm/bPpnxJI2BiZXuBnNRl5841vcvWKh0Yolo/EbGS7geSPEpLj/+lI57CMBfg1wUm7ge
+         Am9rX976PYnft4C7gSEpJyK4SOH//Ehifr4hBsDUt8YrHB52OtkNq2iRD7VmECVuRXP9
+         2x0w==
+X-Gm-Message-State: AOAM53077bXn4pyEWeZeutwSVBYvQ1HrgHLoFGNUlioBuGw8F1gfAcof
+        3SfYHoAANyNzclWMWmFrCw==
+X-Google-Smtp-Source: ABdhPJxUECrPKk1zVsVzwxw4o4izk5MQHkys50u0beDZYTdqa/G5za3LI8m4qnzvCPli/b7OAfXPcw==
+X-Received: by 2002:a9d:5506:0:b0:60b:1f4c:85b5 with SMTP id l6-20020a9d5506000000b0060b1f4c85b5mr5483048oth.174.1653530029455;
+        Wed, 25 May 2022 18:53:49 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id f18-20020a9d7b52000000b0060603221262sm117879oto.50.2022.05.25.18.53.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 25 May 2022 18:53:48 -0700 (PDT)
+Received: (nullmailer pid 2890783 invoked by uid 1000);
+        Thu, 26 May 2022 01:53:47 -0000
+Date:   Wed, 25 May 2022 20:53:47 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Geert Uytterhoeven <geert+renesas@glider.be>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Josua Mayer <josua@solid-run.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [PATCH] dt-bindings: net: adin: Fix adi,phy-output-clock
+ description syntax
+Message-ID: <20220526015347.GA2890726-robh@kernel.org>
+References: <6fcef2665a6cd86a021509a84c5956ec2efd93ed.1653401420.git.geert+renesas@glider.be>
 MIME-Version: 1.0
-In-Reply-To: <Yo3ry9rRDa5jznHC@localhost.localdomain>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.177.76]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6fcef2665a6cd86a021509a84c5956ec2efd93ed.1653401420.git.geert+renesas@glider.be>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/5/25 16:41, Oscar Salvador wrote:
-> On Wed, May 25, 2022 at 04:18:21PM +0800, Miaohe Lin wrote:
->> We might fail to isolate huge page due to e.g. the page is under migration
->> which cleared HPageMigratable. We should return errno in this case rather
->> than always return 1 which could confuse the user, i.e. the caller might
->> think all of the memory is migrated while the hugetlb page is left behind.
->> We make the prototype of isolate_huge_page consistent with isolate_lru_page
->> as suggested by Huang Ying and rename isolate_huge_page to isolate_hugetlb
->> as suggested by Muchun to improve the readability.
->>
->> Fixes: e8db67eb0ded ("mm: migrate: move_pages() supports thp migration")
->> Suggested-by: Huang Ying <ying.huang@intel.com>
->> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+On Tue, 24 May 2022 16:11:53 +0200, Geert Uytterhoeven wrote:
+> "make dt_binding_check":
 > 
-> Looks good to me, one thing below though:
+>     Documentation/devicetree/bindings/net/adi,adin.yaml:40:77: [error] syntax error: mapping values are not allowed here (syntax)
 > 
->> ---
->>  include/linux/hugetlb.h |  6 +++---
->>  mm/gup.c                |  2 +-
->>  mm/hugetlb.c            | 11 +++++------
->>  mm/memory-failure.c     |  2 +-
->>  mm/mempolicy.c          |  2 +-
->>  mm/migrate.c            |  5 +++--
->>  6 files changed, 14 insertions(+), 14 deletions(-)
->>
-> ...
->> --- a/mm/migrate.c
->> +++ b/mm/migrate.c
->> @@ -1627,8 +1627,9 @@ static int add_page_for_migration(struct mm_struct *mm, unsigned long addr,
->>  
->>  	if (PageHuge(page)) {
->>  		if (PageHead(page)) {
->> -			isolate_huge_page(page, pagelist);
->> -			err = 1;
->> +			err = isolate_hugetlb(page, pagelist);
->> +			if (!err)
->> +				err = 1;
->>  		}
+> The first line of the description ends with a colon, hence the block
+> needs to be marked with a "|".
 > 
-> We used to always return 1 which means page has been queued for migration, as we
-> did not check isolate_huge_page() return value.
-> Now, we either return 1 or 0 depending on isolate_hugetlb(). 
-
-Return 1 or -EBUSY just as normal page case.
-
-> I guess that was fine because in the end, if isolate_huge_page() failed,
-> the page just does not get added to 'pagelist', right? So, it is just
-> confusing for the user because he might not get an error so he thinks
-> the page will be migrated, and yet will not?
-
-Yes, the hugetlb page might not be migrated due to error while it's not reported in the
-__user *status. So the caller might think all of the memory is migrated and thus does
-not retry to migrate the hugetlb page in the next round.
-
-Many thanks for your review and comment! :)
-
-> 
+> Fixes: 1f77204e11f8b9e5 ("dt-bindings: net: adin: document phy clock output properties")
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> ---
+>  Documentation/devicetree/bindings/net/adi,adin.yaml | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
 > 
 
+Acked-by: Rob Herring <robh@kernel.org>
