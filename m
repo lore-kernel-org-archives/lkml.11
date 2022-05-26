@@ -2,114 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C6DDC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 10:27:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 170E0C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 10:32:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242223AbiEZK15 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 06:27:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58102 "EHLO
+        id S1346124AbiEZKcW (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 06:32:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233811AbiEZK1x (ORCPT
+        with ESMTP id S1344766AbiEZKcS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 06:27:53 -0400
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC531C9666
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 03:27:51 -0700 (PDT)
-Received: by mail-pf1-x433.google.com with SMTP id 202so1392369pfu.0
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 03:27:51 -0700 (PDT)
+        Thu, 26 May 2022 06:32:18 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB3112AE26
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 03:32:15 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id f21so2095972ejh.11
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 03:32:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=oUe5qjHE746YsZEG88fvj0C8TBLZdImHAFuEEdYBkXw=;
-        b=Stw9e/v85gPO2N1vgvwURGj/CxdNR6Azaiv97JK6NQnC940NOP+Clev15pCSWT4xyT
-         3JzT+Y/NldWIOhGkH1iJqwkzCdGZULf3Jy1FLhuYQz6ZmBZhplHx+175DIwVM9mU1baw
-         LnVRP0b4ZQkGQjpGggN05t64QoKodEh7UMgifBA1ciK8hvfP/aYqxHkeHiUpIF64qYNs
-         uDrdr7Wu9tKkzkP8TShGWX+QWTLRZKGKq3tKCENZMoL9b6QfXXvSfDwk+EexkJFASX+V
-         laexhG2eygNOfgCYl+xvNJRcnpj7IqUSrx5mam9sPOeapbpMZQAi3yJELV9xFAjLOyG3
-         kEyA==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=IhOoJiEVW1f9NZEh+LjhXs1p495IAP76V+trW0SBtRo=;
+        b=fHJSBncXPQADirHt+O19VJemtFTXXzyJ9q03nrECjDpx0gclUcHS+ieBBLezoqaGC8
+         fC9IFFI8ajtjcsHFcgywLvOMp38YGvBMAleD8t3/LJ+AzXKH8Ws0VP/al+A5cV+dvndp
+         vbwzgeE6XPTvGSWaBMWaPbxOPw5U6SbRdTI6AzE9Ukhmj4/OFvziEXy8j39zUB7eEJhj
+         FTN8mM+nJh+j543Nxch1kt4Eb2DiZFyFlU6AkDNnAYa7Thb88HRDsTB2Yf2h7GIIM3UL
+         5G3W+O3JObh5EYYc+QDGbPhCcusMC6Vv+6UPGGM5+QCWxR3F7NvdX/5JM+LR+olH2syZ
+         kYmg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=oUe5qjHE746YsZEG88fvj0C8TBLZdImHAFuEEdYBkXw=;
-        b=wswEQv5f/RAgMhq22fu1gC+cMyOmRGhs5cJkLRhIwqxO7efJnkXzdTUnq1TlrCr/wX
-         kHXV5R2pgRp77s2OKxskCqKc2qIT6WAJo7DreB3aa6tC0HvwA2rGI+bdqqEnJgFPZXAf
-         QnDAW7QxraSpbeSSR6hP+d8vPuEEdMkxLdOrUGc2iL6OVrQcuXH5cjluetDRpdvG4XQ/
-         wU8QTNjM2iOVpJ84hyiWFeNCR3fmD9/hGiVrQCbmPYLUTPsazSR9+8PAqkco9zT1HaZX
-         3pcvTm90vMqQVzyeAPLXcdJ7vc2iMVExsQAvTiRuFVRIcg/lpvd1KFgckCAn7pOKw1xu
-         g4/g==
-X-Gm-Message-State: AOAM532M2YDxPq5zaL9cLbEuKi1+3JFXgnMPq8I6NpI9cR+mVPkS2eiz
-        WdVcfrQx1yu78ynNBZbDVFzXCg==
-X-Google-Smtp-Source: ABdhPJzk/4qznsz2eXu4MQ8+yKPx64W3doEbD81UmTDqITtBAoa74V+NV5H6kgRfZ3+aohJyYyt5sw==
-X-Received: by 2002:a63:488:0:b0:3f5:e6da:4619 with SMTP id 130-20020a630488000000b003f5e6da4619mr32218957pge.6.1653560871342;
-        Thu, 26 May 2022 03:27:51 -0700 (PDT)
-Received: from localhost ([122.162.234.2])
-        by smtp.gmail.com with ESMTPSA id k2-20020a170902f28200b0015e8d4eb1dcsm1134696plc.38.2022.05.26.03.27.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 May 2022 03:27:50 -0700 (PDT)
-Date:   Thu, 26 May 2022 15:57:49 +0530
-From:   Viresh Kumar <viresh.kumar@linaro.org>
-To:     Stephen Boyd <sboyd@kernel.org>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Viresh Kumar <vireshk@kernel.org>, Nishanth Menon <nm@ti.com>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Avri Altman <avri.altman@wdc.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Taniya Das <tdas@codeaurora.org>,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-scsi@vger.kernel.org
-Subject: Re: [RFC PATCH v2 4/6] PM: opp: allow control of multiple clocks
-Message-ID: <20220526102749.5tj5ttr5wxwfdrhh@vireshk-i7>
-References: <20220425072710.v6gwo4gu3aouezg4@vireshk-i7>
- <dea39b1f-0091-2690-7f07-108d07ef9f3c@linaro.org>
- <20220510044053.ykn6ygnbeokhzrsa@vireshk-i7>
- <1e533194-7047-8342-b426-f607fddbfaa3@linaro.org>
- <20220511050643.hd5tcrojb3wkbg7t@vireshk-i7>
- <20220518235708.1A04CC385A9@smtp.kernel.org>
- <65a4c28d-6702-3a9f-f837-1ea69a428777@linaro.org>
- <20220520005934.8AB1DC385AA@smtp.kernel.org>
- <20220525070551.guv3csxi5kkqfr4f@vireshk-i7>
- <20220525160455.67E2BC385B8@smtp.kernel.org>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=IhOoJiEVW1f9NZEh+LjhXs1p495IAP76V+trW0SBtRo=;
+        b=zHGRrFH/xtULDAbxWPDtVDN6GNCBUe9RLWSrd9ZugTqYtJ0du6aNUGCurFdnUm1wI/
+         bEMDbdhmGTv3HtKyCIjlzTdooLLyo0VGwFcLM5R9MKyOr7rkFC3EWHeoXP19CeYrBzCu
+         RQXxlly2Ui8uXmVdlNMbiWVpFFGGDJpqtWMOH8Gb5QSI58Labk/ZFIeyjDHh8OXJjszM
+         71As9XXQvUeDSv1e4VuwoCCL/vbw9+bQsDN4kC+v8zK4Xsy66O7CoBI/Whz3vEHZljqI
+         FeWDlf17zE/leDMFkukJr5qNbX0sFjxbWXcUyC03r8UhvEKqZAoceAiJRatbBEDXEvdJ
+         +O/w==
+X-Gm-Message-State: AOAM532mOd4lapESFcWBiyFTVcG16q5d92TkPN9gv8xTGSOaNUNRTW84
+        oTIG1skPZvi8j+tFxIILpWVy9g==
+X-Google-Smtp-Source: ABdhPJytcoRzpFy9P5lbgclcSPwMfqb4FHL8nr2e5PQ5uM1dp3kx1YyMinkEiWBL0zjylUDn4i5I3w==
+X-Received: by 2002:a17:907:d21:b0:6fe:c340:616 with SMTP id gn33-20020a1709070d2100b006fec3400616mr22342567ejc.177.1653561134125;
+        Thu, 26 May 2022 03:32:14 -0700 (PDT)
+Received: from [192.168.0.177] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id i8-20020a50c3c8000000b0042617ba63basm610186edf.68.2022.05.26.03.32.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 26 May 2022 03:32:13 -0700 (PDT)
+Message-ID: <076d53d3-6062-686f-8e45-14c5f936bbf6@linaro.org>
+Date:   Thu, 26 May 2022 12:32:12 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220525160455.67E2BC385B8@smtp.kernel.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 1/2] dt-bindings: backlight: rt4831: Add the new property
+ for ocp level selection
+Content-Language: en-US
+To:     ChiYuan Huang <u0084500@gmail.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        jingoohan1@gmail.com, Pavel Machek <pavel@ucw.cz>, deller@gmx.de,
+        cy_huang <cy_huang@richtek.com>, lucas_tsai@richtek.com,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, dri-devel@lists.freedesktop.org,
+        linux-fbdev@vger.kernel.org,
+        Linux LED Subsystem <linux-leds@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>
+References: <1653534995-30794-1-git-send-email-u0084500@gmail.com>
+ <1653534995-30794-2-git-send-email-u0084500@gmail.com>
+ <1c7ab94c-a736-c629-bd8c-8a974803e2b9@linaro.org>
+ <CADiBU39jZ6TdYZoH80m4R-X2_fUXZOvDA4yUd_TQdPzBJLE+JA@mail.gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <CADiBU39jZ6TdYZoH80m4R-X2_fUXZOvDA4yUd_TQdPzBJLE+JA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 25-05-22, 09:04, Stephen Boyd wrote:
-> I'm saying that each OPP table would be for a single clk, but they would
-> be connected through required-opps for the device's OPP table.
+On 26/05/2022 10:13, ChiYuan Huang wrote:
+> Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> 於 2022年5月26日 週四 下午4:06寫道：
+>>
+>> On 26/05/2022 05:16, cy_huang wrote:
+>>> From: ChiYuan Huang <cy_huang@richtek.com>
+>>>
+>>> Add the new property for ocp level selection.
+>>>
+>>> Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
+>>> ---
+>>>  .../bindings/leds/backlight/richtek,rt4831-backlight.yaml         | 8 ++++++++
+>>>  include/dt-bindings/leds/rt4831-backlight.h                       | 5 +++++
+>>>  2 files changed, 13 insertions(+)
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/leds/backlight/richtek,rt4831-backlight.yaml b/Documentation/devicetree/bindings/leds/backlight/richtek,rt4831-backlight.yaml
+>>> index e0ac686..c1c59de 100644
+>>> --- a/Documentation/devicetree/bindings/leds/backlight/richtek,rt4831-backlight.yaml
+>>> +++ b/Documentation/devicetree/bindings/leds/backlight/richtek,rt4831-backlight.yaml
+>>> @@ -47,6 +47,14 @@ properties:
+>>>      minimum: 0
+>>>      maximum: 3
+>>>
+>>> +  richtek,bled-ocp-sel:
+>>
+>> Skip "sel" as it is a shortcut of selection. Name instead:
+>> "richtek,backlight-ocp"
+>>
+> OK, if so, do I need to rename all properties from 'bled' to 'backlight' ?
+> If  only this property is naming as 'backlight'. it may conflict with
+> the others like as "richtek,bled-ovp-sel".
 
-Ahh, okay.
+Ah, no, no need.
 
-> It would
-> mean that dev_pm_opp_set_clkname() would need extension to let a driver
-> indicate which clk is associated with an OPP table.
+>>
+>>> +    description: |
+>>> +      Backlight OCP level selection, currently support 0.9A/1.2A/1.5A/1.8A
+>>
+>> Could you explain here what is OCP (unfold the acronym)?
+> Yes. And the full name is 'over current protection'.
 
-Hmm, just that it complicates simple cases. Lets see.
+Thanks and this leads to second thing - you encode register value
+instead of logical value. This must be a logical value in mA, so
+"richtek,bled-ocp-microamp".
 
-> From your other
-> reply on v3 it seems that you're leaning towards having an array of
-> frequency values in the OPP table instead of doing table linking?
+I see you already did some register-style for voltage. It's wrong but it
+was done, so let it be. But let's don't make that a pattern...
 
-I am not against that to be honest, we have done that for voltages and
-current already. I am just not fine with having any one of them as the
-primary clock. I liked your idea of reusing "level" for that.
 
-I have started some rewriting of the core, to simplify things and
-reduce the number of ever increasing APIs (which you suggested earlier
-once). Lets see where we land eventually.
+>>
+>>
+>> Best regards,
+>> Krzysztof
 
--- 
-viresh
+
+Best regards,
+Krzysztof
