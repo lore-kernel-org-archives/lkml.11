@@ -2,100 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C0CDC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 01:55:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEFF7C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 01:55:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345676AbiEZBzE (ORCPT
+        id S1345852AbiEZBz1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 21:55:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37014 "EHLO
+        Wed, 25 May 2022 21:55:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345777AbiEZBzA (ORCPT
+        with ESMTP id S240584AbiEZBzZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 21:55:00 -0400
-X-Greylist: delayed 358 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 25 May 2022 18:54:59 PDT
-Received: from mail.eskimo.com (mail.eskimo.com [204.122.16.222])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 123F7A7E1A;
-        Wed, 25 May 2022 18:54:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=eskimo.com;
-        s=default; t=1653529739;
-        bh=VhtTl6PFy6AJclvYo5GWavMZF1ZfPH1+J4/x75mDWjI=;
-        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
-        b=DdT41yPyzKxpmbcaQX5W7TJI+nZKXvXHp0XOaE3t/AshCmDmkknIDvMdC97vgtgHA
-         O7cAuOWYWmXjDsGg3KiuOfxgHhgBAgJ8Iqtm1KGGsk0IGdPE1EHj07aBv/LdLmLoqt
-         2hjfZ6kTEgMmcJkpZFVQDwKPOTq4EKL8fxKVo2zX8UwZmqmMoRkIOBq6K10WmH/RBl
-         BILUDMZ0YxbNiQ9I+AGY3fT7z7ZNwUbUwX1ZATQ/UOFRDnYDZ6rYNWFMtd6hetNmJl
-         2XYJREu+I+OCl89A1OiIRL7Y8wfWyjALHYtRX8d/zdDmn1e3JP0JtF9qQK7jWTYMYH
-         EClu34hVNf57Q==
-Received: from ubuntu.eskimo.com (ubuntu.eskimo.com [204.122.16.33])
-        by mail.eskimo.com (Postfix) with ESMTPS id B64B63C9FF9;
-        Wed, 25 May 2022 18:48:59 -0700 (PDT)
-Date:   Wed, 25 May 2022 18:48:59 -0700 (PDT)
-From:   Robert Dinse <nanook@eskimo.com>
-To:     Sean Christopherson <seanjc@google.com>
-cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Kees Cook <keescook@chromium.org>
-Subject: Re: [PATCH 0/4] KVM: x86: Emulator _regs fixes and cleanups
-In-Reply-To: <20220525222604.2810054-1-seanjc@google.com>
-Message-ID: <847a4d9b-e064-fac5-ae5e-3574baa170b@eskimo.com>
-References: <20220525222604.2810054-1-seanjc@google.com>
+        Wed, 25 May 2022 21:55:25 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DFD8ABF79;
+        Wed, 25 May 2022 18:55:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653530124; x=1685066124;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=1pfebO5CWIzGouQot/Szo2SSK2J1j3dTVROMYETyiwQ=;
+  b=dAiKp5JhVHCxputtWeQ02yyJbYwp6LTmbdLr4RP7xDchV/dMzs7OyjMr
+   SkQMLwYQqo8dZ8tQpErjkqRga2dsENylXUr46r2OlLQDaJw+LmnXTGKx3
+   7LjyCK2PWjmdgDsozZWHJBAgPpLbLqlhiZbIBeBmla1UGooD3x+Mv0jI7
+   bBZjmomkoyx1kxa3xrnd1fVf9e7CRscGUW6Rjy/z0aKSruNw5cxFc7b/a
+   UMV2trXUZYJExU57g1UX1N90S+QBWgOyUnZtqzwXoGX3wl9d1S1Mv1QW1
+   mR6pt6xJKb7+ox6vtkIAPc9E2Edv4J7DhhFf7+TIbGpjNuJeOWauFU5pG
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10358"; a="271564491"
+X-IronPort-AV: E=Sophos;i="5.91,252,1647327600"; 
+   d="scan'208";a="271564491"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2022 18:55:24 -0700
+X-IronPort-AV: E=Sophos;i="5.91,252,1647327600"; 
+   d="scan'208";a="527137344"
+Received: from zq-optiplex-7090.bj.intel.com ([10.238.156.125])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2022 18:55:15 -0700
+From:   Zqiang <qiang1.zhang@intel.com>
+To:     paulmck@kernel.org, frederic@kernel.org
+Cc:     rcu@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] rcu: Cleanup RCU urgency state for offline CPU
+Date:   Thu, 26 May 2022 09:55:12 +0800
+Message-Id: <20220526015512.2218046-1-qiang1.zhang@intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII; format=flowed
-X-Virus-Scanned: clamav-milter 0.103.6 at mail.eskimo.com
-X-Virus-Status: Clean
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+When an RCU grace period starts and at this time the CPU is in
+the process of going offline, if the RCU gp-fqs occurs during the
+time period when the CPU has passed the stop-machine but has not
+yet entered the idle loop, and this CPU have not report quiescent
+state yet, its urgent flags maybe is set, for example due to cbovld
+is true, but this CPUs rcu urgent flags is not cleanup in rcu_report_dead()
+when report qs. however for CPU that have been report qs, its rcu
+urgent flags should cleanup, so add rcu_disable_urgency_upon_qs()
+in rcu_report_dead() when CPU report qs.
 
-      This set of patches did allow 5.18 to compile without errors using gcc 
-12.1.  Thank you!
+Signed-off-by: Zqiang <qiang1.zhang@intel.com>
+---
+ kernel/rcu/tree.c | 1 +
+ 1 file changed, 1 insertion(+)
 
--_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
-  Eskimo North Linux Friendly Internet Access, Shell Accounts, and Hosting.
-    Knowledgeable human assistance, not telephone trees or script readers.
-  See our web site: http://www.eskimo.com/ (206) 812-0051 or (800) 246-6874.
+diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
+index 02233b17cce0..6a01a48fe56d 100644
+--- a/kernel/rcu/tree.c
++++ b/kernel/rcu/tree.c
+@@ -4536,6 +4536,7 @@ void rcu_report_dead(unsigned int cpu)
+ 	rdp->rcu_ofl_gp_flags = READ_ONCE(rcu_state.gp_flags);
+ 	if (rnp->qsmask & mask) { /* RCU waiting on outgoing CPU? */
+ 		/* Report quiescent state -before- changing ->qsmaskinitnext! */
++		rcu_disable_urgency_upon_qs(rdp);
+ 		rcu_report_qs_rnp(mask, rnp, rnp->gp_seq, flags);
+ 		raw_spin_lock_irqsave_rcu_node(rnp, flags);
+ 	}
+-- 
+2.25.1
 
-On Wed, 25 May 2022, Sean Christopherson wrote:
-
-> Date: Wed, 25 May 2022 22:26:00 +0000
-> From: Sean Christopherson <seanjc@google.com>
-> To: Paolo Bonzini <pbonzini@redhat.com>
-> Cc: Sean Christopherson <seanjc@google.com>,
->     Vitaly Kuznetsov <vkuznets@redhat.com>,
->     Wanpeng Li <wanpengli@tencent.com>, Jim Mattson <jmattson@google.com>,
->     Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
->     linux-kernel@vger.kernel.org, Robert Dinse <nanook@eskimo.com>,
->     Kees Cook <keescook@chromium.org>
-> Subject: [PATCH 0/4] KVM: x86: Emulator _regs fixes and cleanups
-> 
-> Clean up and harden the use of the x86_emulate_ctxt._regs, which is
-> surrounded by a fair bit of magic.  This series was prompted by bug reports
-> by Kees and Robert where GCC-12 flags an out-of-bounds _regs access.  I'm
-> 99% certain GCC-12 is wrong and is generating a false positive, but just in
-> case...
->
-> I didn't tag patch 2 with Fixes or Cc: stable@; if it turns out to "fix"
-> the GCC-12 compilation error, it's probably worth sending to v5.18 stable
-> tree (KVM hasn't changed, but the warning=>error was "introdued in v5.18
-> by commit e6148767825c ("Makefile: Enable -Warray-bounds")).
->
-> Sean Christopherson (4):
->  KVM: x86: Grab regs_dirty in local 'unsigned long'
->  KVM: x86: Harden _regs accesses to guard against buggy input
->  KVM: x86: Omit VCPU_REGS_RIP from emulator's _regs array
->  KVM: x86: Use 16-bit fields to track dirty/valid emulator GPRs
->
-> arch/x86/kvm/emulate.c     | 14 ++++++++++++--
-> arch/x86/kvm/kvm_emulate.h | 14 +++++++++++---
-> 2 files changed, 23 insertions(+), 5 deletions(-)
->
->
-> base-commit: 90bde5bea810d766e7046bf5884f2ccf76dd78e9
-> -- 
-> 2.36.1.124.g0e6072fb45-goog
->
