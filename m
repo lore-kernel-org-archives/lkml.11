@@ -2,163 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12C0DC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 01:33:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46E0DC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 01:39:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235577AbiEZBdR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 21:33:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55544 "EHLO
+        id S241663AbiEZBjS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 21:39:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232147AbiEZBdK (ORCPT
+        with ESMTP id S229458AbiEZBjN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 21:33:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21060DE93
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 18:33:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D1F1AB81EAA
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 01:33:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3AB2C34117;
-        Thu, 26 May 2022 01:33:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653528786;
-        bh=pQbwgINLxI21GXXyGtGVeUNfYP2Q2AzNFVmF3Cd0PNM=;
-        h=Date:From:To:Cc:Subject:From;
-        b=pR/NjBZ4wpBqm8YpbrG2oteKBFh9ISJ1Lsqy9sVDxIkoWWhbmk+tjrl0OYyLRwwBc
-         KPQjrE2ffov3+OnxnTcZC/e6o/Dj2bT0IlUgkeJJa3SLDXc/SaUAKarDYB1FhNHheo
-         EEnxfmK4ata+XjIFrezl5mgM3PPaPkPGwtUA9YCP6a8xsXbRvqsrEozx2lY1s/U9lR
-         CsqPYAgwUj3eq1X0kgxy7dU+hnpre9LlGq2PJ1tKGZ9afqdR1cI+6LxswVqQDQToMe
-         Hxl8tBBduHomnnGRIubC+8bEx5NDb2QW4mwqxxk9DStk8cqqxm3oq+NCcTX4KdZAlB
-         LITR1wXkHHB4A==
-Date:   Thu, 26 May 2022 09:33:02 +0800
-From:   Tzung-Bi Shih <tzungbi@kernel.org>
-To:     torvalds@linux-foundation.org
-Cc:     pmalani@chromium.org, bleung@chromium.org,
-        linux-kernel@vger.kernel.org, groeck@chromium.org,
-        tzungbi@kernel.org, chrome-platform@lists.linux.dev
-Subject: [GIT PULL] chrome-platform changes for v5.19
-Message-ID: <Yo7YztZklByTINZp@google.com>
+        Wed, 25 May 2022 21:39:13 -0400
+Received: from mail-m974.mail.163.com (mail-m974.mail.163.com [123.126.97.4])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 62C049D4FD;
+        Wed, 25 May 2022 18:39:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=b2P3Q
+        H6vt+McJy25fKhf43Jb4cDyVE2JY2bcEA7mzQo=; b=WDptdQL78j+RaS/nAHlYX
+        1Ce4aKhc4cNCcl5AxJK1AkEFLoy6YFb8SUGN9FUqFWukOvX2K+qSVayAHKuGitqX
+        DHE9c9TyX+fYi6o1XcqZGm/kb/MR8YwojTjisk5yHeYHPRJXQBRWwEVwVe8SGfIG
+        Xq94AeLZ77Q7yb0HmOMjoM=
+Received: from localhost.localdomain (unknown [123.112.69.106])
+        by smtp4 (Coremail) with SMTP id HNxpCgD3__Mh2o5ig+JFEQ--.3894S4;
+        Thu, 26 May 2022 09:38:46 +0800 (CST)
+From:   Jianglei Nie <niejianglei2021@163.com>
+To:     bootc@bootc.net, martin.petersen@oracle.com
+Cc:     linux-scsi@vger.kernel.org, target-devel@vger.kernel.org,
+        linux1394-devel@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org,
+        Jianglei Nie <niejianglei2021@163.com>
+Subject: [PATCH] scsi: target: sbp: Fix memory leak in sbp_management_request_logout()
+Date:   Thu, 26 May 2022 09:38:39 +0800
+Message-Id: <20220526013839.471987-1-niejianglei2021@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="mIqwI4HpAZfVtEbQ"
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: HNxpCgD3__Mh2o5ig+JFEQ--.3894S4
+X-Coremail-Antispam: 1Uf129KBjvdXoW7GFykCw47GF4DtF18KrWUXFb_yoWfWrgEkw
+        srW34xurn5Ww4kKF4jkw15CrWavF4kZF1ayF4ktFWakrW7Wr1xXr1q9F93A3srCr48JrnY
+        kFsIvr1Uu3y5ujkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xRibAwPUUUUU==
+X-Originating-IP: [123.112.69.106]
+X-CM-SenderInfo: xqlhyxxdqjzvrlsqjii6rwjhhfrp/1tbiMgQMjFWBzm5eRwABsa
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+When req->node_addr != login->sess->node_id, sbp_management_request
+_logout() returns without releasing the login, which may lead to a
+potential memory leak.
 
---mIqwI4HpAZfVtEbQ
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+We can fix it by calling sbp_login_release() before the function returns.
 
-Linus,
+Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
+---
+ drivers/target/sbp/sbp_target.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Please pull chrome-platform updates for v5.19.
+diff --git a/drivers/target/sbp/sbp_target.c b/drivers/target/sbp/sbp_target.c
+index 504670994fb4..76f3ec58a24b 100644
+--- a/drivers/target/sbp/sbp_target.c
++++ b/drivers/target/sbp/sbp_target.c
+@@ -575,6 +575,7 @@ static void sbp_management_request_logout(
+ 		req->status.status = cpu_to_be32(
+ 			STATUS_BLOCK_RESP(STATUS_RESP_REQUEST_COMPLETE) |
+ 			STATUS_BLOCK_SBP_STATUS(SBP_STATUS_ACCESS_DENIED));
++		sbp_login_release(login, true);
+ 		return;
+ 	}
+ 
+-- 
+2.25.1
 
-Thanks,
-TzungBi
-
-
-The following changes since commit 3123109284176b1532874591f7c81f3837bbdc17:
-
-  Linux 5.18-rc1 (2022-04-03 14:08:21 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/chrome-platform/linux.git/ tags/tag-chrome-platform-for-v5.19
-
-for you to fetch changes up to abd4fd43f2af03e2e852e6b1b98faeee9e3eae55:
-
-  platform/chrome: Use imperative mood for ChromeOS ACPI sysfs ABI descriptions (2022-05-24 08:46:21 +0800)
-
-----------------------------------------------------------------
-chrome platform changes for 5.19
-
-cros_ec:
-* Fix wrong error handling path.
-* Clean-up patches.
-
-cros_ec_chardev:
-* Re-introduce cros_ec_cmd_xfer to fix ABI broken.
-
-cros_ec_lpcs:
-* Support the Framework Laptop.
-
-cros_ec_typec:
-* Fix NULL dereference.
-
-chromeos_acpi:
-* Add ChromeOS ACPI device driver.
-* Fix Sphinx errors when `make htmldocs`.
-
-misc:
-* Drop BUG_ON()s.
-
-----------------------------------------------------------------
-Akihiko Odaki (1):
-      platform/chrome: cros_ec_typec: Check for EC driver
-
-Bagas Sanjaya (2):
-      platform/chrome: Use tables for values lists of ChromeOS ACPI sysfs ABI
-      platform/chrome: Use imperative mood for ChromeOS ACPI sysfs ABI descriptions
-
-Dustin L. Howett (2):
-      platform/chrome: cros_ec_lpcs: detect the Framework Laptop
-      platform/chrome: cros_ec_lpcs: reserve the MEC LPC I/O ports first
-
-Enric Balletbo i Serra (1):
-      platform/chrome: Add ChromeOS ACPI device driver
-
-Guenter Roeck (1):
-      platform/chrome: Re-introduce cros_ec_cmd_xfer and use it for ioctls
-
-Tzung-Bi Shih (12):
-      platform/chrome: cros_ec: fix error handling in cros_ec_register()
-      platform/chrome: cros_ec: remove unused variable `was_wake_device`
-      platform/chrome: cros_ec: determine `wake_enabled` in cros_ec_suspend()
-      platform/chrome: cros_ec: sort header inclusion alphabetically
-      platform/chrome: cros_ec: append newline to all logs
-      platform/chrome: cros_ec_proto: drop unneeded BUG_ON() in prepare_packet()
-      platform/chrome: correct cros_ec_prepare_tx() usage
-      platform/chrome: cros_ec_proto: drop BUG_ON() in cros_ec_prepare_tx()
-      platform/chrome: cros_ec_proto: drop BUG_ON() in cros_ec_get_host_event()
-      platform/chrome: cros_ec_i2c: drop BUG_ON() in cros_ec_pkt_xfer_i2c()
-      platform/chrome: cros_ec_spi: drop unneeded BUG_ON()
-      platform/chrome: cros_ec_spi: drop BUG_ON() if `din` isn't large enough
-
- .../ABI/testing/sysfs-driver-chromeos-acpi         | 137 ++++++++
- .../firmware-guide/acpi/chromeos-acpi-device.rst   | 363 +++++++++++++++++++++
- Documentation/firmware-guide/acpi/index.rst        |   1 +
- drivers/platform/chrome/Kconfig                    |  11 +
- drivers/platform/chrome/Makefile                   |   1 +
- drivers/platform/chrome/chromeos_acpi.c            | 257 +++++++++++++++
- drivers/platform/chrome/cros_ec.c                  |  36 +-
- drivers/platform/chrome/cros_ec_chardev.c          |   2 +-
- drivers/platform/chrome/cros_ec_i2c.c              |  12 +-
- drivers/platform/chrome/cros_ec_ishtp.c            |   4 +-
- drivers/platform/chrome/cros_ec_lpc.c              |  49 ++-
- drivers/platform/chrome/cros_ec_proto.c            |  63 +++-
- drivers/platform/chrome/cros_ec_rpmsg.c            |   2 +
- drivers/platform/chrome/cros_ec_spi.c              |  15 +-
- drivers/platform/chrome/cros_ec_typec.c            |   3 +
- include/linux/platform_data/cros_ec_commands.h     |  10 +-
- include/linux/platform_data/cros_ec_proto.h        |   6 +-
- 17 files changed, 914 insertions(+), 58 deletions(-)
- create mode 100644 Documentation/ABI/testing/sysfs-driver-chromeos-acpi
- create mode 100644 Documentation/firmware-guide/acpi/chromeos-acpi-device.rst
- create mode 100644 drivers/platform/chrome/chromeos_acpi.c
-
---mIqwI4HpAZfVtEbQ
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQS0yQeDP3cjLyifNRUrxTEGBto89AUCYo7YywAKCRArxTEGBto8
-9MO5AP0YOKlZzovTiBkkpIvTjEymnWL7BZUUyhsvRZ4nPq2+RwEApP4zGGqHEpWQ
-l78mr0S2+GZ/+L9P9U8h/kLv37rahwE=
-=iNyh
------END PGP SIGNATURE-----
-
---mIqwI4HpAZfVtEbQ--
