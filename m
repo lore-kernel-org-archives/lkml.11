@@ -2,116 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF4DDC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 18:37:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E6C2C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 18:38:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245728AbiEZSh6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 14:37:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52228 "EHLO
+        id S1348507AbiEZSiz (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 14:38:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344552AbiEZSgp (ORCPT
+        with ESMTP id S1348433AbiEZSiw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 14:36:45 -0400
-Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A076F1A81B;
-        Thu, 26 May 2022 11:36:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-        d=metrotek.ru; s=mail;
-        h=from:subject:date:message-id:to:cc:mime-version:content-transfer-encoding:
-         in-reply-to:references;
-        bh=Y+q3Espln8Rodgx5Nn4tnLIErSJz4K4izMOM418Zr7I=;
-        b=CDCDp0lvnT6d+fk+tBBDtnCaSfZEVf3RPpv4f1S6sQ3FucvAtkXbjuUgkoOj9bcGYniuGq3/KuFcz
-         Nc/T9g+gANm7+XT6SVp4bwBsXnLFYO1P8t0V4VtDtTIfNPkOCs0vVNP5mRvCYOHsu3U37mwUNgAv9b
-         rJYexOv/QyxloruGPTNDdt+YuI3NACIrFUGqMidltXOgD01n2Ih9ZvoCcJI/t+Qa3ArIIUFfYfKzIL
-         Zn1JTMBc+HKYRnbzdDyFQ/9mb7Lvw+JFULSteHswxzLI2k6RDewIbnxFTlk6vW7+1kAQkQgnjlxypb
-         3TF4j4/OT60wLMX/aj3D5aqhBxoDoGQ==
-X-Kerio-Anti-Spam:  Build: [Engines: 2.16.3.1424, Stamp: 3], Multi: [Enabled, t: (0.000009,0.008003)], BW: [Enabled, t: (0.000023,0.000001)], RTDA: [Enabled, t: (0.074349), Hit: No, Details: v2.39.0; Id: 15.52keuo.1g40qf8k0.cppb; mclb], total: 0(700)
-X-Footer: bWV0cm90ZWsucnU=
-Received: from localhost.localdomain ([178.70.36.174])
-        (authenticated user i.bornyakov@metrotek.ru)
-        by mail.pr-group.ru with ESMTPSA
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
-        Thu, 26 May 2022 21:36:11 +0300
-From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
-To:     mdf@kernel.org, hao.wu@intel.com, yilun.xu@intel.com,
-        trix@redhat.com, Conor.Dooley@microchip.com
-Cc:     Ivan Bornyakov <i.bornyakov@metrotek.ru>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-fpga@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        system@metrotek.ru, Rob Herring <robh@kernel.org>
-Subject: [PATCH v13 3/3] dt-bindings: fpga: add binding doc for microchip-spi fpga mgr
-Date:   Thu, 26 May 2022 21:13:44 +0300
-Message-Id: <20220526181344.2088-4-i.bornyakov@metrotek.ru>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220526181344.2088-1-i.bornyakov@metrotek.ru>
-References: <20220526181344.2088-1-i.bornyakov@metrotek.ru>
+        Thu, 26 May 2022 14:38:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E98B6A051;
+        Thu, 26 May 2022 11:38:50 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CB464B821AA;
+        Thu, 26 May 2022 18:38:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1B9AC385A9;
+        Thu, 26 May 2022 18:38:46 +0000 (UTC)
+Date:   Thu, 26 May 2022 14:38:44 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Dave Hansen <dave.hansen@intel.com>
+Cc:     sunliming <sunliming@kylinos.cn>, mingo@kernel.org,
+        linux-tip-commits@vger.kernel.org, dave.hansen@linux.intel.com,
+        x86@kernel.org, linux-kernel@vger.kernel.org,
+        kelulanainsley@gmail.com
+Subject: Re: [PATCH V2] x86/idt: traceponit.c: fix comment for irq vector
+ tracepoints
+Message-ID: <20220526143844.2d5c8741@gandalf.local.home>
+In-Reply-To: <8f3be3c2-dcd0-1646-b5bd-0a6597e7ca2e@intel.com>
+References: <20220526110831.175743-1-sunliming@kylinos.cn>
+        <8f3be3c2-dcd0-1646-b5bd-0a6597e7ca2e@intel.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add Device Tree Binding doc for Microchip Polarfire FPGA Manager using
-slave SPI to load .dat formatted bitstream image.
+On Thu, 26 May 2022 09:24:31 -0700
+Dave Hansen <dave.hansen@intel.com> wrote:
 
-Signed-off-by: Ivan Bornyakov <i.bornyakov@metrotek.ru>
-Reviewed-by: Rob Herring <robh@kernel.org>
----
- .../fpga/microchip,mpf-spi-fpga-mgr.yaml      | 44 +++++++++++++++++++
- 1 file changed, 44 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml
+> On 5/26/22 04:08, sunliming wrote:
+> > 
+> > diff --git a/arch/x86/kernel/tracepoint.c b/arch/x86/kernel/tracepoint.c
+> > index fcfc077afe2d..065191022035 100644
+> > --- a/arch/x86/kernel/tracepoint.c
+> > +++ b/arch/x86/kernel/tracepoint.c
+> > @@ -1,9 +1,6 @@
+> >  // SPDX-License-Identifier: GPL-2.0
+> >  /*
+> > - * Code for supporting irq vector tracepoints.
+> > - *
+> >   * Copyright (C) 2013 Seiji Aguchi <seiji.aguchi@hds.com>
+> > - *
+> >   */
+> >  #include <linux/jump_label.h>
+> >  #include <linux/atomic.h>  
+> 
+> While I'm also generally careful about removing others' copyrights, Mr.
+> Aguchi only touched this file once and all of the code from that one
+> touch appears to be gone to me.  Shouldn't we just zap the whole comment?
 
-diff --git a/Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml b/Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml
-new file mode 100644
-index 000000000000..aee45cb15592
---- /dev/null
-+++ b/Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml
-@@ -0,0 +1,44 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/fpga/microchip,mpf-spi-fpga-mgr.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Microchip Polarfire FPGA manager.
-+
-+maintainers:
-+  - Ivan Bornyakov <i.bornyakov@metrotek.ru>
-+
-+description:
-+  Device Tree Bindings for Microchip Polarfire FPGA Manager using slave SPI to
-+  load the bitstream in .dat format.
-+
-+properties:
-+  compatible:
-+    enum:
-+      - microchip,mpf-spi-fpga-mgr
-+
-+  reg:
-+    description: SPI chip select
-+    maxItems: 1
-+
-+  spi-max-frequency: true
-+
-+required:
-+  - compatible
-+  - reg
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    spi {
-+            #address-cells = <1>;
-+            #size-cells = <0>;
-+
-+            fpga_mgr@0 {
-+                    compatible = "microchip,mpf-spi-fpga-mgr";
-+                    spi-max-frequency = <20000000>;
-+                    reg = <0>;
-+            };
-+    };
--- 
-2.35.1
+Perhaps, but that's a different change than this is addressing. This is
+only addressing fixing the comments about the removal of the code.
 
+But looking at the history of this file. Seiji created it, but the only
+code that remains in the file was mostly added by Thomas. The only lines
+that Seiji has now is the whitespace and the brackets.
 
+I would still have the removal of the copyright as a separate patch.
+
+-- Steve
