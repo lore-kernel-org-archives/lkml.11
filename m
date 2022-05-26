@@ -2,97 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16AB8C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 18:37:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF4DDC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 18:37:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244864AbiEZShi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 14:37:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54044 "EHLO
+        id S245728AbiEZSh6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 14:37:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345254AbiEZShZ (ORCPT
+        with ESMTP id S1344552AbiEZSgp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 14:37:25 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 380DF694A5
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 11:37:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653590243;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=iZXZyOBj9K/G+WFDwIrle6dO9n3UzwXZHEEzIr/nzYk=;
-        b=EcN/9lvQ2vCfiG/e2xYWoODYOQEkXUaYtUvRX8268CA1WFkXVfs8Auaql9IoYONSvGMBJ2
-        6mBRqFgpr/pG17PrvReBn5zLlg5IX/OcoO4i8GXSCQbuDVXT7FP6pM8DtGv6bu6c+vKTFY
-        TgD6/kjuAvbgplcnNHYCZRAbPn5ChMU=
-Received: from mail-io1-f70.google.com (mail-io1-f70.google.com
- [209.85.166.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-302-Ml5Y1yKDO720KnabuZbwxg-1; Thu, 26 May 2022 14:37:22 -0400
-X-MC-Unique: Ml5Y1yKDO720KnabuZbwxg-1
-Received: by mail-io1-f70.google.com with SMTP id k184-20020a6bbac1000000b0065aeedd4ba8so1472312iof.20
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 11:37:21 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=iZXZyOBj9K/G+WFDwIrle6dO9n3UzwXZHEEzIr/nzYk=;
-        b=Qqc7th9LrvUPICPzvNwR8R2tpBP5etMFRS+IplhNBP5NBPNVWfocC/Hce1ccK9SgMu
-         kJOACcj9Y4nGCqsbTaAJf2/6tgSSAm8LluYColEfVSkKJTVCiA7LjxrbnTHDXBJ43+s8
-         2iV4v4miIpjareF11+2Hbfkpah5tb3jxcJ8vCZ6umn8MfGJJocKW0BWrDkQ1atWvXR+z
-         qAc8Z2z6s30Vp3BY/MdF0Ak4+UImmkEzSTm1NOms2/FehaNY/SZ6hT4fB5zbijFWfe//
-         pzJVxugxQoZR/zrcchEZzRD5dl+AWkvP4HxZ3uyNhUrv3vuwHJcUC2uICzl6WvGWMiod
-         Q44Q==
-X-Gm-Message-State: AOAM5305A+Wr0v+YB8fO1aSt8gemj83Y3zb8fEzer3DRA/mm1In0PGYF
-        SA+NDyin8YeEULrr9IyJyeCoJPAeT/DfX+VUc49VDzmYCQkcM8pdzmqPH1GVnbfUfE5/Sje7JPz
-        jzDLPFYLAgY+s8Evas2OxtlTG
-X-Received: by 2002:a05:6638:4901:b0:32f:d52c:924c with SMTP id cx1-20020a056638490100b0032fd52c924cmr6248112jab.8.1653590241277;
-        Thu, 26 May 2022 11:37:21 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzpP2TSvS6e9NpQEMUP3qCECYxWtAnkzb4ugRqwUnJ/Y/Oan//xTqCMVr3HgbEkayorckxxRg==
-X-Received: by 2002:a05:6638:4901:b0:32f:d52c:924c with SMTP id cx1-20020a056638490100b0032fd52c924cmr6248102jab.8.1653590241044;
-        Thu, 26 May 2022 11:37:21 -0700 (PDT)
-Received: from xz-m1.local (cpec09435e3e0ee-cmc09435e3e0ec.cpe.net.cable.rogers.com. [99.241.198.116])
-        by smtp.gmail.com with ESMTPSA id x89-20020a0294e2000000b0032e43cb7344sm575684jah.146.2022.05.26.11.37.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 May 2022 11:37:20 -0700 (PDT)
-Date:   Thu, 26 May 2022 14:37:18 -0400
-From:   Peter Xu <peterx@redhat.com>
-To:     Jue Wang <juew@google.com>
-Cc:     pizhenwei@bytedance.com, Andrew Morton <akpm@linux-foundation.org>,
-        David Hildenbrand <david@redhat.com>, jasowang@redhat.com,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux MM <linux-mm@kvack.org>, mst@redhat.com,
-        HORIGUCHI =?utf-8?B?TkFPWUEo5aCA5Y+jIOebtOS5nyk=?= 
-        <naoya.horiguchi@nec.com>, Paolo Bonzini <pbonzini@redhat.com>,
-        qemu-devel@nongnu.org, virtualization@lists.linux-foundation.org
-Subject: Re: [PATCH 0/3] recover hardware corrupted page by virtio balloon
-Message-ID: <Yo/I3oLkd9OU0ice@xz-m1.local>
-References: <CAPcxDJ5pduUyMA0rf+-aTjK_2eBvig05UTiTptX1nVkWE-_g8w@mail.gmail.com>
+        Thu, 26 May 2022 14:36:45 -0400
+Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A076F1A81B;
+        Thu, 26 May 2022 11:36:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+        d=metrotek.ru; s=mail;
+        h=from:subject:date:message-id:to:cc:mime-version:content-transfer-encoding:
+         in-reply-to:references;
+        bh=Y+q3Espln8Rodgx5Nn4tnLIErSJz4K4izMOM418Zr7I=;
+        b=CDCDp0lvnT6d+fk+tBBDtnCaSfZEVf3RPpv4f1S6sQ3FucvAtkXbjuUgkoOj9bcGYniuGq3/KuFcz
+         Nc/T9g+gANm7+XT6SVp4bwBsXnLFYO1P8t0V4VtDtTIfNPkOCs0vVNP5mRvCYOHsu3U37mwUNgAv9b
+         rJYexOv/QyxloruGPTNDdt+YuI3NACIrFUGqMidltXOgD01n2Ih9ZvoCcJI/t+Qa3ArIIUFfYfKzIL
+         Zn1JTMBc+HKYRnbzdDyFQ/9mb7Lvw+JFULSteHswxzLI2k6RDewIbnxFTlk6vW7+1kAQkQgnjlxypb
+         3TF4j4/OT60wLMX/aj3D5aqhBxoDoGQ==
+X-Kerio-Anti-Spam:  Build: [Engines: 2.16.3.1424, Stamp: 3], Multi: [Enabled, t: (0.000009,0.008003)], BW: [Enabled, t: (0.000023,0.000001)], RTDA: [Enabled, t: (0.074349), Hit: No, Details: v2.39.0; Id: 15.52keuo.1g40qf8k0.cppb; mclb], total: 0(700)
+X-Footer: bWV0cm90ZWsucnU=
+Received: from localhost.localdomain ([178.70.36.174])
+        (authenticated user i.bornyakov@metrotek.ru)
+        by mail.pr-group.ru with ESMTPSA
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
+        Thu, 26 May 2022 21:36:11 +0300
+From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
+To:     mdf@kernel.org, hao.wu@intel.com, yilun.xu@intel.com,
+        trix@redhat.com, Conor.Dooley@microchip.com
+Cc:     Ivan Bornyakov <i.bornyakov@metrotek.ru>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, linux-fpga@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        system@metrotek.ru, Rob Herring <robh@kernel.org>
+Subject: [PATCH v13 3/3] dt-bindings: fpga: add binding doc for microchip-spi fpga mgr
+Date:   Thu, 26 May 2022 21:13:44 +0300
+Message-Id: <20220526181344.2088-4-i.bornyakov@metrotek.ru>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220526181344.2088-1-i.bornyakov@metrotek.ru>
+References: <20220526181344.2088-1-i.bornyakov@metrotek.ru>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CAPcxDJ5pduUyMA0rf+-aTjK_2eBvig05UTiTptX1nVkWE-_g8w@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 25, 2022 at 01:16:34PM -0700, Jue Wang wrote:
-> The hypervisor _must_ emulate poisons identified in guest physical
-> address space (could be transported from the source VM), this is to
-> prevent silent data corruption in the guest. With a paravirtual
-> approach like this patch series, the hypervisor can clear some of the
-> poisoned HVAs knowing for certain that the guest OS has isolated the
-> poisoned page. I wonder how much value it provides to the guest if the
-> guest and workload are _not_ in a pressing need for the extra KB/MB
-> worth of memory.
+Add Device Tree Binding doc for Microchip Polarfire FPGA Manager using
+slave SPI to load .dat formatted bitstream image.
 
-I'm curious the same on how unpoisoning could help here.  The reasoning
-behind would be great material to be mentioned in the next cover letter.
+Signed-off-by: Ivan Bornyakov <i.bornyakov@metrotek.ru>
+Reviewed-by: Rob Herring <robh@kernel.org>
+---
+ .../fpga/microchip,mpf-spi-fpga-mgr.yaml      | 44 +++++++++++++++++++
+ 1 file changed, 44 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml
 
-Shouldn't we consider migrating serious workloads off the host already
-where there's a sign of more severe hardware issues, instead?
-
-Thanks,
-
+diff --git a/Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml b/Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml
+new file mode 100644
+index 000000000000..aee45cb15592
+--- /dev/null
++++ b/Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml
+@@ -0,0 +1,44 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/fpga/microchip,mpf-spi-fpga-mgr.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Microchip Polarfire FPGA manager.
++
++maintainers:
++  - Ivan Bornyakov <i.bornyakov@metrotek.ru>
++
++description:
++  Device Tree Bindings for Microchip Polarfire FPGA Manager using slave SPI to
++  load the bitstream in .dat format.
++
++properties:
++  compatible:
++    enum:
++      - microchip,mpf-spi-fpga-mgr
++
++  reg:
++    description: SPI chip select
++    maxItems: 1
++
++  spi-max-frequency: true
++
++required:
++  - compatible
++  - reg
++
++additionalProperties: false
++
++examples:
++  - |
++    spi {
++            #address-cells = <1>;
++            #size-cells = <0>;
++
++            fpga_mgr@0 {
++                    compatible = "microchip,mpf-spi-fpga-mgr";
++                    spi-max-frequency = <20000000>;
++                    reg = <0>;
++            };
++    };
 -- 
-Peter Xu
+2.35.1
+
 
