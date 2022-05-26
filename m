@@ -2,123 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 733EFC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 08:31:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BF03C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 08:38:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346697AbiEZIbo (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 04:31:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45270 "EHLO
+        id S244690AbiEZIiF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 04:38:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238338AbiEZIbn (ORCPT
+        with ESMTP id S233597AbiEZIiA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 04:31:43 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83E1BC1EFD
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 01:31:41 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id t6so1232113wra.4
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 01:31:41 -0700 (PDT)
+        Thu, 26 May 2022 04:38:00 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A72C8D697;
+        Thu, 26 May 2022 01:37:59 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id l20-20020a17090a409400b001dd2a9d555bso1196756pjg.0;
+        Thu, 26 May 2022 01:37:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=Jmqqor+JTEI0R4a/DkT42jCnQETEVaAlxof7FaryNdo=;
-        b=dDiqMHtv64xskgDGIds+v3plHZeEFmT2vEISE1pJj7UdgQps3oLxHiqijtANJpt4Hf
-         2LdtVP4KkVo4HxaD0x/XhDzt+o/sq4HqWyqzNNVepCf6mzd7HEArxN5hzDAnjgNWt3+U
-         drcPc0yJyL5bMWMMJvAFUD/M+8Xrxm2zNzvBxgmLSW+LwBpBWhLHpjPL5CVEjXFZODFo
-         OcnJL45UwryxZNZJf51SZlGs3cRHoN/2U1tVIepu7WV5PlH/jRpTPqYaEcNf0B1FojCv
-         R3M8iiX7XRTIf8uUVhOoloQ4RySV7kuuHxgAyx37+7mTSDlTOQ7XK+sU/EJXFx5+jdAU
-         jEmA==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=xf0m+cxj00ml2J9yglsVjh3XZlLBOWXtU5mmNEGwQ3U=;
+        b=i642uYY+wNCW0IASrgCRqqUrpcyvz5d7Y5qfZhMhirG9Tm3cfZwhsci4yxhdFfngQS
+         iiLYP2kYMX2o8DP7FpRPczN05j8zdJOm6GzMxIRc++95E4XlXesmhSLzVE45TbbXvRtO
+         2IA3/6rGlxgRyhXT2zHzL073VKF2HjW5jrH8MCB/IfSaNRTHB8ZrWS7/xyhwEzW4cZ5q
+         qhCDS4D+LmZfEruPup0LJjJ1ijKFKsxsCE0dd0zTHO5q9etGVnslIQHQap4RdKqJbwhE
+         pbi8NMbo3e4Q22lYdpf1ytGoC23bbj8zimwxRuVIT3cCSptA1tEQRnm4cwqzh6uB6cxz
+         WzAw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=Jmqqor+JTEI0R4a/DkT42jCnQETEVaAlxof7FaryNdo=;
-        b=dI20AC0uuAyDGKm4TcP89OpkTTMAZ6/c4OY0g3pPVyn8X5+Fyn1pPu5MzknWjHGHV2
-         jgU3YNAKWyCGo2arwoDFGMwoZoPcJV79LPguChCK+WhYTBMG8X4AkpPf31dI1Bot/ppM
-         GKfIAdRq3H7h7/LvPNLwAdu51XYdT4wNaM0pjDwJGzxu9ZvbQAHFdaJwKt0G0lDNPsNi
-         3Xw2yaFsSuCpQww2cqMCuo5FGPEptrde9K6T5AoTF0MUwvKfoN3iuFWyC8OzXqlVYtm5
-         cjAp0lsFZHGRPR3oB6hQQDTpKE0r3jthybOtyrAkQjDm+NPj8jAYsbX6CtTRkLaBgdDT
-         iHXQ==
-X-Gm-Message-State: AOAM531bw2TYg83Cx6wVDtk83D8HVjkzAZIBgdWnkWNiEDWgmOsGVl+A
-        TWHCEx8vsaQOQMCdp6b6C0sCTA==
-X-Google-Smtp-Source: ABdhPJz8qwMcfJrgol5cMUSkP80H+gA0sbUCANx/+OkeENig34vB3UtUuzD6sB8axWf65N747DQSvg==
-X-Received: by 2002:a5d:5945:0:b0:20d:132e:7e99 with SMTP id e5-20020a5d5945000000b0020d132e7e99mr29817990wri.578.1653553900132;
-        Thu, 26 May 2022 01:31:40 -0700 (PDT)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id l16-20020a5d4bd0000000b0020e5e906e47sm1112751wrt.75.2022.05.26.01.31.39
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=xf0m+cxj00ml2J9yglsVjh3XZlLBOWXtU5mmNEGwQ3U=;
+        b=Cv9xWbAY60BNqCiGF+VyJf/Gerr+yRHpPhLVpEZmHua4ubmUjA5myFtjKdA1iAnXiW
+         IzOuMPhus89IKCqyC05xjDCdrhuAm6jom8PHi1P9imQ8Gse41JFzF9L56wPj1/5it3AC
+         P/o3mz06W8MMQ/51ClfQF7Omza64Yp6kfye4lTCm7bW9AZPWD8WqLz2RBnvLDMfK7W45
+         47/AJUf1bllvFpCloZh68PNYuPVIePny0vSrBVGONLLIToI7stjEDMLA6T8aCmeMbTgO
+         hnsX0fgA3JB6sms3DUPVApIPyXTc6KVx1JIWVJLCj2lx7YWet5d6GCgcVMlYdG3rgqr3
+         grzA==
+X-Gm-Message-State: AOAM531xUFtdBHb2G8WiXcxnpc/5T+iR48eoeUTgLw4gOlZ5KdJZApuu
+        0Ft2ZejcK/4P2b+qplJQjxw=
+X-Google-Smtp-Source: ABdhPJyomcwLo5TPDTRup87oeopH9IDzFzWCv42VuwnRK/LOPPEHKHcBE48P9ZU4tHOxHqOHHKMwJw==
+X-Received: by 2002:a17:90a:31cf:b0:1c9:f9b8:68c7 with SMTP id j15-20020a17090a31cf00b001c9f9b868c7mr1510376pjf.34.1653554278500;
+        Thu, 26 May 2022 01:37:58 -0700 (PDT)
+Received: from localhost.localdomain ([202.120.234.246])
+        by smtp.googlemail.com with ESMTPSA id k71-20020a63844a000000b003db7de758besm964332pgd.5.2022.05.26.01.37.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 May 2022 01:31:39 -0700 (PDT)
-Date:   Thu, 26 May 2022 09:31:37 +0100
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Xu Yilun <yilun.xu@intel.com>
-Cc:     Russ Weight <russell.h.weight@intel.com>, mdf@kernel.org,
-        hao.wu@intel.com, linux-fpga@vger.kernel.org,
-        linux-kernel@vger.kernel.org, trix@redhat.com, marpagan@redhat.com,
-        lgoncalv@redhat.com, matthew.gerlach@linux.intel.com,
-        basheer.ahmed.muddebihal@intel.com, tianfei.zhang@intel.com
-Subject: Re: [PATCH v21 1/5] mfd: intel-m10-bmc: Rename n3000bmc-secure driver
-Message-ID: <Yo866ekAg3+9TBQ6@google.com>
-References: <20220521003607.737734-1-russell.h.weight@intel.com>
- <20220521003607.737734-2-russell.h.weight@intel.com>
- <20220526075413.GB148394@yilunxu-OptiPlex-7050>
+        Thu, 26 May 2022 01:37:58 -0700 (PDT)
+From:   Miaoqian Lin <linmq006@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     linmq006@gmail.com
+Subject: [PATCH] net: dsa: mv88e6xxx: Fix refcount leak in mv88e6xxx_mdios_register
+Date:   Thu, 26 May 2022 12:37:48 +0400
+Message-Id: <20220526083748.39816-1-linmq006@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220526075413.GB148394@yilunxu-OptiPlex-7050>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 26 May 2022, Xu Yilun wrote:
+of_get_child_by_name() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when done.
+This function missing of_node_put() in an error path.
+Add missing of_node_put() to avoid refcount leak.
 
-> On Fri, May 20, 2022 at 05:36:03PM -0700, Russ Weight wrote:
-> > The n3000bmc-secure driver has changed to n3000bmc-sec-update. Update
-> > the name in the list of the intel-m10-bmc sub-drivers.
-> > 
-> > Signed-off-by: Russ Weight <russell.h.weight@intel.com>
-> > ---
-> > v21:
-> >   - No change
-> > v20:
-> >   - No change
-> > v19:
-> >   - No change
-> > v18:
-> >   - No change
-> > v17:
-> >   - This is a new patch to change in the name of the secure update
-> >     driver.
-> > ---
-> >  drivers/mfd/intel-m10-bmc.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/mfd/intel-m10-bmc.c b/drivers/mfd/intel-m10-bmc.c
-> > index 8db3bcf5fccc..f4d0d72573c8 100644
-> > --- a/drivers/mfd/intel-m10-bmc.c
-> > +++ b/drivers/mfd/intel-m10-bmc.c
-> > @@ -26,7 +26,7 @@ static struct mfd_cell m10bmc_d5005_subdevs[] = {
-> >  static struct mfd_cell m10bmc_pacn3000_subdevs[] = {
-> >  	{ .name = "n3000bmc-hwmon" },
-> >  	{ .name = "n3000bmc-retimer" },
-> > -	{ .name = "n3000bmc-secure" },
-> > +	{ .name = "n3000bmc-sec-update" },
-> 
-> Acked-by: Xu Yilun <yilun.xu@intel.com>
-> 
-> Hi Lee:
-> 
-> Is it good to you? If yes, could I apply this patch to linux-fpga
-> and submit along with the other patches in this series?
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+---
+ drivers/net/dsa/mv88e6xxx/chip.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-That's fine.
-
-Acked-by: Lee Jones <lee.jones@linaro.org>
-
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index 5d2c57a7c708..0726df6aeb1f 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -3960,8 +3960,10 @@ static int mv88e6xxx_mdios_register(struct mv88e6xxx_chip *chip,
+ 	 */
+ 	child = of_get_child_by_name(np, "mdio");
+ 	err = mv88e6xxx_mdio_register(chip, child, false);
+-	if (err)
++	if (err) {
++		of_node_put(child);
+ 		return err;
++	}
+ 
+ 	/* Walk the device tree, and see if there are any other nodes
+ 	 * which say they are compatible with the external mdio
 -- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+2.25.1
+
