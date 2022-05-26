@@ -2,175 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36659C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 01:01:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4797DC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 01:01:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345196AbiEZBA5 (ORCPT
+        id S1345163AbiEZBBq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 21:00:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58170 "EHLO
+        Wed, 25 May 2022 21:01:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345153AbiEZBAw (ORCPT
+        with ESMTP id S233274AbiEZBBn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 21:00:52 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8D1269CF3
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 18:00:51 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id x12so284215wrg.2
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 18:00:51 -0700 (PDT)
+        Wed, 25 May 2022 21:01:43 -0400
+Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3795F28E3F
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 18:01:42 -0700 (PDT)
+Received: by mail-yb1-xb42.google.com with SMTP id t26so567215ybt.3
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 18:01:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=jrtc27.com; s=gmail.jrtc27.user;
-        h=mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=5TA2OkBhz4fpZ+xneLnEgQmjFfE9fpDr0ZbY4GJw0ZQ=;
-        b=ngjsDrz/yXO+HZIkkuhS2JJUxmT3ktjUn6eljHR4XmffVXt5jrXCSTTSgsKbfi6Oe8
-         JVBB11OTWoE93S5+sJxfHN82ZfWCnSjdakYKPMLRBcDEephAbzm6w/vAfCM6tvHou+bY
-         vIlaEq3fftA4+gNfiQN2N51CUWAnT1lbgdCLfopkfG2HNhDd6SG6dASl41YkNbhGbZwO
-         qbggID4XYAuShraxgUDiMdYtL9HgzC3hPzowZ2J4C0FC4oR8ZNwOk/JGzX1lvtMzvWpY
-         FH5qoQSlqMMrUB3AyOY8r6RA6molqT2tOwvmPP8foHwZlMm2PwKcRSUKjwGr0KJalr7x
-         c4zA==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=gOEnRJpOdTvkdK6X7t127DgQA0EFmqZ7LKvPVYjecso=;
+        b=gtjW6qzphf1fKBxxHmI60e9QD33KM2PUmyoz5a1GxJzW2HN74HLsAiTacc53j4ape8
+         lDK4XvWTFh20V8W9HUhxK7RTv+mEfD+cTWXwqTKNDYCRwi70EA02vp7F5LD4t435lkV4
+         PWnlO9M7EIGn2Dzk6yf3ymeYHRha+ZsdprhWIZXAz987pY8Iq2mmm240ZbJqUdsQXPHc
+         GKDN44JPOwbfoegK8pbop8fV5+4utvHOl/X1OdQj8GEyDh9qnqd7CO4qxJbCP8vHgHas
+         QrVrrOicWQROnh2om4b5xyFPlf09QSpX4zaoqw6cOti3uhbE9H2VhE4/x6yQ3W64XbNu
+         pWFg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=5TA2OkBhz4fpZ+xneLnEgQmjFfE9fpDr0ZbY4GJw0ZQ=;
-        b=s8JYVhPbBD7EcODmtHlZudadZodz23ZxDkYELeLnMuMJSCEaS3PY6Kiauc/1pV+diz
-         jOoQ+YucqwOCLhxXOMIyZ03OEtjWjSF5h/5aNU56sO+DipOAyaM7j0rEG2bvFWirOxVf
-         WY7DQF1K3CxdDiAI9p+q83MMRVULPwM4fyvDYP1MiEV8VuVlH2d5rBvMimTJSBfnsH0O
-         dpkNZk4+4LcjkZi06o4DjFP7p7wmvBmVi49WKbPyrdufYOIGdOGVx+qrXFRfakdZenLN
-         yAvvyobDGkfBd5ouYfLerXpXuQ2LhU7yu4aOgfIPhaucVf/MHWpc6jV30RkHBuM+R7zf
-         FAKA==
-X-Gm-Message-State: AOAM533TbpFGfVkgow5tjRzmI5asM8/y6N3/2BN/01CBd4tqdbJ5xq9A
-        daET/31XlHYczjmyimPfxC9MYw==
-X-Google-Smtp-Source: ABdhPJwrr5kdZD/ajpIquLCdox7ixE/4glrnxGMAf06db+1JZf7fpvikkIUX1ABOhaXULz4UbDL58w==
-X-Received: by 2002:a5d:4601:0:b0:20d:53a:2f39 with SMTP id t1-20020a5d4601000000b0020d053a2f39mr28779139wrq.347.1653526850400;
-        Wed, 25 May 2022 18:00:50 -0700 (PDT)
-Received: from smtpclient.apple (global-5-141.nat-2.net.cam.ac.uk. [131.111.5.141])
-        by smtp.gmail.com with ESMTPSA id v23-20020a7bcb57000000b003958af7d0c8sm213205wmj.45.2022.05.25.18.00.49
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 25 May 2022 18:00:49 -0700 (PDT)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.80.82.1.1\))
-Subject: Re: [PATCH V2] riscv: compat: Using seperated vdso_maps for
- compat_vdso_info
-From:   Jessica Clarke <jrtc27@jrtc27.com>
-In-Reply-To: <20220526003339.2948309-1-guoren@kernel.org>
-Date:   Thu, 26 May 2022 02:00:49 +0100
-Cc:     palmer@rivosinc.com, arnd@arndb.de, linux@roeck-us.net,
-        palmer@dabbelt.com, heiko@sntech.de,
-        linux-riscv@lists.infradead.org, linux-arch@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Guo Ren <guoren@linux.alibaba.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=gOEnRJpOdTvkdK6X7t127DgQA0EFmqZ7LKvPVYjecso=;
+        b=CJ07pr3Xawu349Sgf6kJBASloNu+t+G1W6y57HNPUjElPwvCzY4VNcaPz5av0C9rTX
+         BaJtzXqpkokhvmI2xRf0474zxPH9NFlLidgXXzxZle7Ql3lPANwdqv1BnBBYYIdUb7Lc
+         XA/pBMYS9/AeSHZD9wbMav+yL0Hh5FTgxagAkAAfozAfu5XBG3o7J4vov1hLayCeOIfe
+         5OhHcbq8iT+5iEfD5GfRSBuZwPMYq8s8Xj/QuAztufyB6IRbbo434o1be5hTrgcM9lJ2
+         kj+wxvOtVCQjgNTGzwszbwHjzO0QRfE4JR/5gjYolqhUTC7hipGwPa2wxPRTqSuEVHVk
+         3XYg==
+X-Gm-Message-State: AOAM530b5GS3L4dpltSpm9V1WYOEp+fFakNgrA0Q4mabwEyT9/FDXS/L
+        B0YZuon/15qI6vtSLo0S1D/RyQmiLX2nhipRsA==
+X-Google-Smtp-Source: ABdhPJx/SCcn+yXFORfJPNf5PZ90/mpSrR3j0NmVsHRDVdzHSfiti4NL+keLJub+ifu8T3LWPna5VFWZIeZ99zpujek=
+X-Received: by 2002:a25:614e:0:b0:64d:6b44:514b with SMTP id
+ v75-20020a25614e000000b0064d6b44514bmr32701719ybb.397.1653526901454; Wed, 25
+ May 2022 18:01:41 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220523075123.1068763-1-sunliming@kylinos.cn> <20220525115142.279298c1@gandalf.local.home>
+In-Reply-To: <20220525115142.279298c1@gandalf.local.home>
+From:   sunliming <kelulanainsley@gmail.com>
+Date:   Thu, 26 May 2022 09:01:30 +0800
+Message-ID: <CAJncD7Q8gV6T2i5EnZzRDdH968da0WZSKk3hZWC=sHu=8onGug@mail.gmail.com>
+Subject: Re: [PATCH] tracing: fix comments of event_trigger_separate_filter()
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     mingo@redhat.com, linux-kernel@vger.kernel.org,
+        sunliming@kylinos.cn, Tom Zanussi <zanussi@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Message-Id: <EC36D0A9-AE06-4C05-A31B-CC348881937D@jrtc27.com>
-References: <20220526003339.2948309-1-guoren@kernel.org>
-To:     guoren@kernel.org
-X-Mailer: Apple Mail (2.3696.80.82.1.1)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 26 May 2022, at 01:33, guoren@kernel.org wrote:
->=20
-> From: Guo Ren <guoren@linux.alibaba.com>
->=20
-> This is a fixup for vdso implementation which caused musl to
-> fail.
->=20
-> [   11.600082] Run /sbin/init as init process
-> [   11.628561] init[1]: unhandled signal 11 code 0x1 at
-> 0x0000000000000000 in libc.so[ffffff8ad39000+a4000]
-> [   11.629398] CPU: 0 PID: 1 Comm: init Not tainted
-> 5.18.0-rc7-next-20220520 #1
-> [   11.629462] Hardware name: riscv-virtio,qemu (DT)
-> [   11.629546] epc : 00ffffff8ada1100 ra : 00ffffff8ada13c8 sp :
-> 00ffffffc58199f0
-> [   11.629586]  gp : 00ffffff8ad39000 tp : 00ffffff8ade0998 t0 :
-> ffffffffffffffff
-> [   11.629598]  t1 : 00ffffffc5819fd0 t2 : 0000000000000000 s0 :
-> 00ffffff8ade0cc0
-> [   11.629610]  s1 : 00ffffff8ade0cc0 a0 : 0000000000000000 a1 :
-> 00ffffffc5819a00
-> [   11.629622]  a2 : 0000000000000001 a3 : 000000000000001e a4 :
-> 00ffffffc5819b00
-> [   11.629634]  a5 : 00ffffffc5819b00 a6 : 0000000000000000 a7 :
-> 0000000000000000
-> [   11.629645]  s2 : 00ffffff8ade0ac8 s3 : 00ffffff8ade0ec8 s4 :
-> 00ffffff8ade0728
-> [   11.629656]  s5 : 00ffffff8ade0a90 s6 : 0000000000000000 s7 :
-> 00ffffffc5819e40
-> [   11.629667]  s8 : 00ffffff8ade0ca0 s9 : 00ffffff8addba50 s10:
-> 0000000000000000
-> [   11.629678]  s11: 0000000000000000 t3 : 0000000000000002 t4 :
-> 0000000000000001
-> [   11.629688]  t5 : 0000000000020000 t6 : ffffffffffffffff
-> [   11.629699] status: 0000000000004020 badaddr: 0000000000000000
-> cause: 000000000000000d
->=20
-> The last __vdso_init(&compat_vdso_info) replaces the data in normal
-> vdso_info. This is an obvious bug.
->=20
-> Reported-by: Guenter Roeck <linux@roeck-us.net>
-> Tested-by: Guenter Roeck <linux@roeck-us.net>
-> Tested-by: Heiko St=C3=BCbner <heiko@sntech.de>
-> Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
-> Signed-off-by: Guo Ren <guoren@kernel.org>
-> Cc: Palmer Dabbelt <palmer@dabbelt.com>
-> ---
-> Changes in V2:
-> - Add Tested-by
-> - Rename vvar & vdso in /proc/<pid>/maps.
-
-Why? No other architecture renames it to that, and various pieces of
-software look for the magic [vdso] name, including GDB and LLDB, though
-by my count there are 57 source packages in Debian that contain the
-string literal "[vdso]" (including quotes), including Firefox,
-Android's ART, lvm2 and elfutils.
-
-Jess
-
-> ---
-> arch/riscv/kernel/vdso.c | 15 +++++++++++++--
-> 1 file changed, 13 insertions(+), 2 deletions(-)
->=20
-> diff --git a/arch/riscv/kernel/vdso.c b/arch/riscv/kernel/vdso.c
-> index 50fe4c877603..957f164c9778 100644
-> --- a/arch/riscv/kernel/vdso.c
-> +++ b/arch/riscv/kernel/vdso.c
-> @@ -206,12 +206,23 @@ static struct __vdso_info vdso_info =
-__ro_after_init =3D {
-> };
->=20
-> #ifdef CONFIG_COMPAT
-> +static struct vm_special_mapping rv_compat_vdso_maps[] =
-__ro_after_init =3D {
-> +	[RV_VDSO_MAP_VVAR] =3D {
-> +		.name   =3D "[compat vvar]",
-> +		.fault =3D vvar_fault,
-> +	},
-> +	[RV_VDSO_MAP_VDSO] =3D {
-> +		.name   =3D "[compat vdso]",
-> +		.mremap =3D vdso_mremap,
-> +	},
-> +};
-> +
-> static struct __vdso_info compat_vdso_info __ro_after_init =3D {
-> 	.name =3D "compat_vdso",
-> 	.vdso_code_start =3D compat_vdso_start,
-> 	.vdso_code_end =3D compat_vdso_end,
-> -	.dm =3D &rv_vdso_maps[RV_VDSO_MAP_VVAR],
-> -	.cm =3D &rv_vdso_maps[RV_VDSO_MAP_VDSO],
-> +	.dm =3D &rv_compat_vdso_maps[RV_VDSO_MAP_VVAR],
-> +	.cm =3D &rv_compat_vdso_maps[RV_VDSO_MAP_VDSO],
-> };
-> #endif
->=20
-> --=20
-> 2.36.1
->=20
->=20
-> _______________________________________________
-> linux-riscv mailing list
-> linux-riscv@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-riscv
-
+Steven Rostedt <rostedt@goodmis.org> =E4=BA=8E2022=E5=B9=B45=E6=9C=8825=E6=
+=97=A5=E5=91=A8=E4=B8=89 23:51=E5=86=99=E9=81=93=EF=BC=9A
+>
+> On Mon, 23 May 2022 15:51:23 +0800
+> slm <kelulanainsley@gmail.com> wrote:
+>
+> > The parameter name in comments of event_trigger_separate_filter()
+> > is inconsistent with actual parameter name, fix it.
+> >
+> > Signed-off-by: slm <sunliming@kylinos.cn>
+>
+> Signed off by must have your full name. I doubt "slm" is your full name.
+>
+> > ---
+> >  kernel/trace/trace_events_trigger.c | 23 ++++++++++++-----------
+> >  1 file changed, 12 insertions(+), 11 deletions(-)
+> >
+> > diff --git a/kernel/trace/trace_events_trigger.c b/kernel/trace/trace_e=
+vents_trigger.c
+> > index 21592bed2e89..c364dc729339 100644
+> > --- a/kernel/trace/trace_events_trigger.c
+> > +++ b/kernel/trace/trace_events_trigger.c
+> > @@ -738,27 +738,28 @@ bool event_trigger_empty_param(const char *param)
+> >
+> >  /**
+> >   * event_trigger_separate_filter - separate an event trigger from a fi=
+lter
+> > - * @param: The param string containing trigger and possibly filter
+> > - * @trigger: outparam, will be filled with a pointer to the trigger
+> > + * @param_and_filter: The param_and_filter string containing trigger
+> > + * and possibly filter
+>
+> The parameter description should be contained to a single line. No need t=
+o
+> say "The param_and_filter".
+>
+>
+> > + * @param: outparam, will be filled with a pointer to the trigger
+> >   * @filter: outparam, will be filled with a pointer to the filter
+> >   * @param_required: Specifies whether or not the param string is requi=
+red
+> >   *
+> >   * Given a param string of the form '[trigger] [if filter]', this
+> >   * function separates the filter from the trigger and returns the
+> > - * trigger in *trigger and the filter in *filter.  Either the *trigger
+> > + * trigger in *param and the filter in *filter.  Either the *param
+>
+> If you are updating this, then it should be:
+>
+>     trigger in @param and the filter in @filter.
+>
+> As they are referencing parameters which need the "@" notation.
+>
+> >   * or the *filter may be set to NULL by this function - if not set to
+>
+> And that includes the above as well.
+>
+> >   * NULL, they will contain strings corresponding to the trigger and
+> >   * filter.
+> >   *
+> >   * There are two cases that need to be handled with respect to the
+> > - * passed-in param: either the param is required, or it is not
+> > - * required.  If @param_required is set, and there's no param, it will
+> > - * return -EINVAL.  If @param_required is not set and there's a param
+> > - * that starts with a number, that corresponds to the case of a
+> > - * trigger with :n (n =3D number of times the trigger should fire) and
+> > - * the parsing continues normally; otherwise the function just returns
+> > - * and assumes param just contains a filter and there's nothing else
+> > - * to do.
+> > + * passed-in param_and_filter: either the param is required, or
+>
+> As "param" did not have a "@" in front of it, that means it did not
+> represent the parameter.
+>
+> > + * it is not required.  If @param_required is set, and there's no
+> > + * param, it will return -EINVAL.  If @param_required is not set
+> > + * and there's a param_and_filter that starts with a number, that
+> > + * corresponds to the case of a trigger with :n (n =3D number of times
+> > + * the trigger should fire) and the parsing continues normally;
+> > + * otherwise the function just returns and assumes param_and_filter
+> > + * just contains a filter and there's nothing else to do.
+>
+> And there's still more space to use, as the biggest line is only 70
+> characters and we allow 80.
+>
+> -- Steve
+>
+> >   *
+> >   * Return: 0 on success, errno otherwise
+> >   */
+>
+I got it. Thanks for your review.
