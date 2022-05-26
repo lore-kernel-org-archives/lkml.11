@@ -2,99 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A829C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 01:46:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38E66C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 01:52:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233601AbiEZBqx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 21:46:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33796 "EHLO
+        id S240066AbiEZBwp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 21:52:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230192AbiEZBqr (ORCPT
+        with ESMTP id S235094AbiEZBwn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 21:46:47 -0400
-Received: from mail-oa1-f46.google.com (mail-oa1-f46.google.com [209.85.160.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B9218DDD2;
-        Wed, 25 May 2022 18:46:46 -0700 (PDT)
-Received: by mail-oa1-f46.google.com with SMTP id 586e51a60fabf-f2a4c51c45so642179fac.9;
-        Wed, 25 May 2022 18:46:46 -0700 (PDT)
+        Wed, 25 May 2022 21:52:43 -0400
+Received: from mail-ot1-f52.google.com (mail-ot1-f52.google.com [209.85.210.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5A10A76E7;
+        Wed, 25 May 2022 18:52:42 -0700 (PDT)
+Received: by mail-ot1-f52.google.com with SMTP id h9-20020a056830400900b0060b03bfe792so127918ots.12;
+        Wed, 25 May 2022 18:52:42 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=6furrOjrDUV85XtAuBJ6m/tHv7Cr2IP2D70aDr3j5Hs=;
-        b=CX0a9LX9eNGbMICfAvHZvynpch4OdwE6wbsOCKp6eQiv5LXl1T5dKjAFX5GaRI1ypS
-         mIlaw+nsowbj4bXrm+41PcgQiI/b0GJXAMsC8DrSNL6lXWDsqQGoDg8eHO1FXAwufNrX
-         D1/FDvVHohuc5u3uO8L2gE20tRi+ym8OtVplIpwcoqDp9B7XnXX8nE9sIl/Ko5BLnyeX
-         N7LsVxgg3/SDo+qt5/ssxRsMXZ+EFv014rGlix4RGDbAeDYqk4ZVgdKDKfps6puY76Aw
-         zt8dtftXD96gF9F6zCFNkZxtn4OeldQl73wG8aqwArqbi50jggjmqZg4Car8nCOK0jZV
-         HPLQ==
-X-Gm-Message-State: AOAM531BsSxauEd+lV2FPNgdQNpt2qzgdFlBUjKPVXiwxX0rpiOMxTgr
-        02pl+Gk/ov7eN2Q/3YPR4ysc0TGV8Q==
-X-Google-Smtp-Source: ABdhPJw0MqIKEAYGSj8vFkwsSBLltgN0uJecV7/4E3iNGQwDikRJ1m1S3Ib8YDRu6U6xOvZfW4rMOA==
-X-Received: by 2002:a05:6870:b609:b0:f2:74e7:9bf1 with SMTP id cm9-20020a056870b60900b000f274e79bf1mr4887oab.141.1653529605213;
-        Wed, 25 May 2022 18:46:45 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=nIzC1T+B7FDF0YpbJTKwhnFmPynXYVhFmPj3hCsebHQ=;
+        b=GD+bJuXSxL7TFNzl4e67maAAGj0HA9HwFjAvln4BF7HKQLb2Lufbye3Oge8TxSJ2R/
+         tjBclEA1FR0Lxc6758C0kDx4F+p2QQbbTVBuFCF6Wxk2qasaSW2VS1VLjicuL+h0NF+I
+         4wdXLmNccDyAm6U9AGXPJjeKQbzdkEX5CeS5gmosq3xbr7WyA3/jraI/6mkuLPcIGK6B
+         UIowYjrCi3SZvwJ2mhjsfMeM6SrfDCB78POJnveC6Zm7Z/tQhpR3g6ARqy49genEOPIT
+         3qQpBz19DvjMPc1Pt1ToZmwWPcuWhHFlCtAYG9TxfH1y8yiOm+4dnPp/tyOwVjmHgWm9
+         e1KA==
+X-Gm-Message-State: AOAM531lbVeZ7cuS+yHdl0oaOELwukB0NCZaF8IXYwN0N+fIqnSPrDPa
+        qfx75buK96rTVd/SFyUvPg==
+X-Google-Smtp-Source: ABdhPJyGLVz2XIk37MGgjfeDK1wCmyQfKDhVcWU1Z8taSkD/ZTIqKmAE+ecAPywpSuZCqzBNd8ypNA==
+X-Received: by 2002:a05:6830:164d:b0:60b:3d2a:42de with SMTP id h13-20020a056830164d00b0060b3d2a42demr830293otr.373.1653529962148;
+        Wed, 25 May 2022 18:52:42 -0700 (PDT)
 Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id y5-20020a4ad645000000b0040e5ff4a737sm141390oos.26.2022.05.25.18.46.43
+        by smtp.gmail.com with ESMTPSA id s3-20020a056808208300b0032ba39d8be6sm202565oiw.14.2022.05.25.18.52.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 May 2022 18:46:44 -0700 (PDT)
-Received: (nullmailer pid 2880899 invoked by uid 1000);
-        Thu, 26 May 2022 01:46:43 -0000
+        Wed, 25 May 2022 18:52:41 -0700 (PDT)
+Received: (nullmailer pid 2888797 invoked by uid 1000);
+        Thu, 26 May 2022 01:52:40 -0000
+Date:   Wed, 25 May 2022 20:52:40 -0500
 From:   Rob Herring <robh@kernel.org>
-To:     Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-Cc:     Chen-Yu Tsai <wens@csie.org>, linux-media@vger.kernel.org,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Samuel Holland <samuel@sholland.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, linux-sunxi@lists.linux.dev,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, Hans Verkuil <hans.verkuil@cisco.com>
-In-Reply-To: <20220525191026.696636-2-paul.kocialkowski@bootlin.com>
-References: <20220525191026.696636-1-paul.kocialkowski@bootlin.com> <20220525191026.696636-2-paul.kocialkowski@bootlin.com>
-Subject: Re: [PATCH v4 1/6] dt-bindings: media: Add Allwinner A31 ISP bindings documentation
-Date:   Wed, 25 May 2022 20:46:43 -0500
-Message-Id: <1653529603.421651.2880898.nullmailer@robh.at.kernel.org>
+To:     Vaibhav Jain <vaibhav@linux.ibm.com>
+Cc:     linuxppc-dev@lists.ozlabs.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Aneesh Kumar K . V" <aneesh.kumar@linux.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Prakhar Srivastava <prsriva@linux.microsoft.com>,
+        Lakshmi Ramasubramanian <nramas@linux.microsoft.com>,
+        Thiago Jung Bauermann <bauerman@linux.ibm.com>,
+        Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH v2] of: check previous kernel's ima-kexec-buffer against
+ memory bounds
+Message-ID: <20220526015240.GA2884362-robh@kernel.org>
+References: <20220524055042.1527968-1-vaibhav@linux.ibm.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220524055042.1527968-1-vaibhav@linux.ibm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 25 May 2022 21:10:21 +0200, Paul Kocialkowski wrote:
-> This introduces YAML bindings documentation for the Allwinner A31 Image
-> Signal Processor (ISP).
+On Tue, May 24, 2022 at 11:20:42AM +0530, Vaibhav Jain wrote:
+> Presently ima_get_kexec_buffer() doesn't check if the previous kernel's
+> ima-kexec-buffer lies outside the addressable memory range. This can result
+> in a kernel panic if the new kernel is booted with 'mem=X' arg and the
+> ima-kexec-buffer was allocated beyond that range by the previous kernel.
+> The panic is usually of the form below:
 > 
-> Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+> $ sudo kexec --initrd initrd vmlinux --append='mem=16G'
+> 
+> <snip>
+>  BUG: Unable to handle kernel data access on read at 0xc000c01fff7f0000
+>  Faulting instruction address: 0xc000000000837974
+>  Oops: Kernel access of bad area, sig: 11 [#1]
+> <snip>
+>  NIP [c000000000837974] ima_restore_measurement_list+0x94/0x6c0
+>  LR [c00000000083b55c] ima_load_kexec_buffer+0xac/0x160
+>  Call Trace:
+>  [c00000000371fa80] [c00000000083b55c] ima_load_kexec_buffer+0xac/0x160
+>  [c00000000371fb00] [c0000000020512c4] ima_init+0x80/0x108
+>  [c00000000371fb70] [c0000000020514dc] init_ima+0x4c/0x120
+>  [c00000000371fbf0] [c000000000012240] do_one_initcall+0x60/0x2c0
+>  [c00000000371fcc0] [c000000002004ad0] kernel_init_freeable+0x344/0x3ec
+>  [c00000000371fda0] [c0000000000128a4] kernel_init+0x34/0x1b0
+>  [c00000000371fe10] [c00000000000ce64] ret_from_kernel_thread+0x5c/0x64
+>  Instruction dump:
+>  f92100b8 f92100c0 90e10090 910100a0 4182050c 282a0017 3bc00000 40810330
+>  7c0802a6 fb610198 7c9b2378 f80101d0 <a1240000> 2c090001 40820614 e9240010
+>  ---[ end trace 0000000000000000 ]---
+> 
+> Fix this issue by checking returned PFN range of previous kernel's
+> ima-kexec-buffer with pfn_valid to ensure correct memory bounds.
+> 
+> Fixes: 467d27824920 ("powerpc: ima: get the kexec buffer passed by the previous kernel")
+> Cc: Frank Rowand <frowand.list@gmail.com>
+> Cc: Prakhar Srivastava <prsriva@linux.microsoft.com>
+> Cc: Lakshmi Ramasubramanian <nramas@linux.microsoft.com>
+> Cc: Thiago Jung Bauermann <bauerman@linux.ibm.com>
+> Cc: Rob Herring <robh@kernel.org>
+> Signed-off-by: Vaibhav Jain <vaibhav@linux.ibm.com>
+> 
 > ---
->  .../media/allwinner,sun6i-a31-isp.yaml        | 97 +++++++++++++++++++
->  1 file changed, 97 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/media/allwinner,sun6i-a31-isp.yaml
+> Changelog
+> ==========
 > 
+> v2:
+> * Instead of using memblock to determine the valid bounds use pfn_valid() to do
+> so since memblock may not be available late after the kernel init. [ Mpe ]
+> * Changed the patch prefix from 'powerpc' to 'of' [ Mpe ]
+> * Updated the 'Fixes' tag to point to correct commit that introduced this
+> function. [ Rob ]
+> * Fixed some whitespace/tab issues in the patch description [ Rob ]
+> * Added another check for checking ig 'tmp_size' for ima-kexec-buffer is > 0
+> ---
+>  drivers/of/kexec.c | 17 +++++++++++++++++
+>  1 file changed, 17 insertions(+)
+> 
+> diff --git a/drivers/of/kexec.c b/drivers/of/kexec.c
+> index 8d374cc552be..879e984fe901 100644
+> --- a/drivers/of/kexec.c
+> +++ b/drivers/of/kexec.c
+> @@ -126,6 +126,7 @@ int ima_get_kexec_buffer(void **addr, size_t *size)
+>  {
+>  	int ret, len;
+>  	unsigned long tmp_addr;
+> +	unsigned int start_pfn, end_pfn;
+>  	size_t tmp_size;
+>  	const void *prop;
+>  
+> @@ -140,6 +141,22 @@ int ima_get_kexec_buffer(void **addr, size_t *size)
+>  	if (ret)
+>  		return ret;
+>  
+> +	/* Do some sanity on the returned size for the ima-kexec buffer */
+> +	if (!tmp_size)
+> +		return -ENOENT;
+> +
+> +	/*
+> +	 * Calculate the PFNs for the buffer and ensure
+> +	 * they are with in addressable memory.
+> +	 */
+> +	start_pfn = PHYS_PFN(tmp_addr);
+> +	end_pfn = PHYS_PFN(tmp_addr + tmp_size - 1);
+> +	if (!pfn_valid(start_pfn) || !pfn_valid(end_pfn)) {
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+pfn_valid() isn't necessarily RAM, only that you have a struct page 
+AIUI. Maybe page_is_ram() instead?
 
-yamllint warnings/errors:
-./Documentation/devicetree/bindings/media/allwinner,sun6i-a31-isp.yaml:53:9: [warning] wrong indentation: expected 10 but found 8 (indentation)
-./Documentation/devicetree/bindings/media/allwinner,sun6i-a31-isp.yaml:55:9: [warning] wrong indentation: expected 10 but found 8 (indentation)
+Thanks to Robin for this.
 
-dtschema/dtc warnings/errors:
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/patch/
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
-
+Rob
