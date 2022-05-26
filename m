@@ -2,27 +2,26 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07BA1C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 13:34:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9A14C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 13:34:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347570AbiEZNeS (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 09:34:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35100 "EHLO
+        id S242488AbiEZNeV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 09:34:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232354AbiEZNeJ (ORCPT
+        with ESMTP id S242751AbiEZNeJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 26 May 2022 09:34:09 -0400
-Received: from EUR01-VE1-obe.outbound.protection.outlook.com (mail-eopbgr140130.outbound.protection.outlook.com [40.107.14.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A96A5D80AC;
-        Thu, 26 May 2022 06:34:06 -0700 (PDT)
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-eopbgr80127.outbound.protection.outlook.com [40.107.8.127])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02DA4D80BF;
+        Thu, 26 May 2022 06:34:08 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=f63YuR6KlvUssD2en1JlJ3mGJnGtIFyl1+dPSEqUsUc5O4BSv1v+t9rP1FD4Q3UxK/+KWieeKdwq7BbyEqYIOwv2RtwHxLAu0qMT9xdV4WlINjS8xs5HcDeH0GB6u/s+mesn8yhqiny5aIxKuxeuxOPSAfgD0QIZ2cexaTZo51BzVUBtFlL/7Rsd8OCW/p6IyLFrZwWndSj/W8y5SBTNYa8UlJ5+bJmv8BcSgOZs99kuem5+YMqMVw5lq3WCpStyIWV81/cdVxhDMdpl0rJR8hJ+aKIpqcrD75t6QMusJV8RbTGa2c9SiADxHbuDb1fa91ImIGHjqBngSIlEKx9ybQ==
+ b=geyQhnkrMo1mBcTqbz6dAJ3fPH10VkU4B68zwyCRVMeJ3Et60rbZhLgdZa2X+YUBcSvqg3480z8SOpy9Z1aYp+s22x+rynHsAPJyAsKsPx+u8YR3NtJsAZ8Nr9AIekGQvp+RJ/Pcu2eDzT4BSaBsuMNiAMMrSGaD+xAVuDzKtojspVVTrzXTW/E7tB7hZlPAhRXLyFiWWU4In7p6gey/2dHpz6Z3PclhNJlp71T04fAptLRwTpTSSKmNNnhNluQSbzAdMsfOBBniXpFbbu/UVvkDTWqm3Ezc4D8M5sSj+nWHDXHBQcOXP9aYIwhlBR/BevS/voEMoas13UTrIpvGwA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=21Y26y7ZUZ+0wCnfwjyWGfVU1MS3F8zg9V2N6ayDMPk=;
- b=bhhOKOG7nPjG63CDDxey4Z4tOJnC0zr0e5f+GoY1UdsU773TKTJNTTYjVUfMa/swHHFt4m2a6yn7WxhKk7S0ISj+AyEZDQg/Uh5wUfdbfAxKxU9WNqXLAOF54i4aoyW0qkZbbyNd1WVhpAekTF8KGMeJly/YqvVXKyXpu6WOUGnipyWfTHTBO+NlvR8IpCJFU6PR6PkAm0mm9yP2RebFfOQFg55vnE+L3/0Sk84KFdyd+JfD8ZyBgehF2zebF/OtcDevbd/Na/e9vIG4ODLUNF+SRvBai3kZKzauoGOzIMQQvtjQQmANsraEfW53vIK8XPxqnYmWvX3KDeHD9IQWWg==
+ bh=r+xk23cg8Anp2Mjf8M1Ay5KX+v1dGQLeLjM9VmER06Y=;
+ b=meaOuwZi8Tai3MY92aiq4f6OG9peyn+UsmIpsWCyyFtf7QGFcVeKSOJRwKgS77Rp7++JVYa565aPeTajzNftJRJGHdEv9J6ypYxLKa9klGQdx/85UAIVSNDUstsKfPjzKCm7N4CIHGXaSiEbhoU4leJNyRy9VSkGMStfw/OeNqtGH/5e563GewFrWmSVl+tA2WWds7OYubp+mI/8/t525u+FlbXnJT3ukf1J/JPtt43yxxm36zQjmu/s/KDWgmnxzBbNo9GLqGR0fg2aqMI8YJu7Jmy8CC13Tv97BtKpOIMq5Kz0zGuPbweNRj38hDpwSPGi75NZbVBy+DqRxJVWbg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  193.8.40.94) smtp.rcpttodomain=kernel.org
  smtp.mailfrom=leica-geosystems.com.cn; dmarc=pass (p=quarantine sp=quarantine
@@ -31,18 +30,18 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=leica-geosystems.com.cn; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=21Y26y7ZUZ+0wCnfwjyWGfVU1MS3F8zg9V2N6ayDMPk=;
- b=lC1GYdnCPqxafhh3QK6C4OGOzMpKQR0Bbca7tUgvgaFqlcS5j1sEDyyQSg0zZGQccEnKSXfNPBqLD8M8wTHQV1FMtk9BfyylQ4A2ixa2w0rXEnsTbzSMkDEikm74gpQ+16YCbKYUqasTQrJgJew5o7qtZG9MjUQHBRwv1wiyit4=
-Received: from AS9PR06CA0007.eurprd06.prod.outlook.com (2603:10a6:20b:462::19)
- by AM5PR06MB2994.eurprd06.prod.outlook.com (2603:10a6:206:a::16) with
+ bh=r+xk23cg8Anp2Mjf8M1Ay5KX+v1dGQLeLjM9VmER06Y=;
+ b=DMXn0PGC6Eyg7lmsoC4u3nFk3lz2RsYY90Nbqskkej7MKJ9Ze/2psnJiyXyiogeXagLJQxKkSnNIPfl44y2fgXk8D/4JAZIhuX8r4SrL067A05Mk8v9k7mmuHc/tWNwEdVvBJoBih3kyYb2gyevPWvOnNfR+zUxt7CyAE1JvC0k=
+Received: from AS9PR06CA0004.eurprd06.prod.outlook.com (2603:10a6:20b:462::20)
+ by PR3PR06MB6873.eurprd06.prod.outlook.com (2603:10a6:102:8a::9) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.13; Thu, 26 May
- 2022 13:34:04 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.15; Thu, 26 May
+ 2022 13:34:05 +0000
 Received: from VE1EUR02FT025.eop-EUR02.prod.protection.outlook.com
- (2603:10a6:20b:462:cafe::5f) by AS9PR06CA0007.outlook.office365.com
- (2603:10a6:20b:462::19) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.15 via Frontend
- Transport; Thu, 26 May 2022 13:34:03 +0000
+ (2603:10a6:20b:462:cafe::82) by AS9PR06CA0004.outlook.office365.com
+ (2603:10a6:20b:462::20) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.13 via Frontend
+ Transport; Thu, 26 May 2022 13:34:05 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 193.8.40.94)
  smtp.mailfrom=leica-geosystems.com.cn; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=leica-geosystems.com.cn;
@@ -52,7 +51,7 @@ Received-SPF: Pass (protection.outlook.com: domain of leica-geosystems.com.cn
 Received: from aherlnxbspsrv01.lgs-net.com (193.8.40.94) by
  VE1EUR02FT025.mail.protection.outlook.com (10.152.12.109) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5293.13 via Frontend Transport; Thu, 26 May 2022 13:34:03 +0000
+ 15.20.5293.13 via Frontend Transport; Thu, 26 May 2022 13:34:04 +0000
 From:   LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
 To:     jic23@kernel.org, lars@metafoo.de, mchehab+huawei@kernel.org,
         ardeleanalex@gmail.com, linux-iio@vger.kernel.org,
@@ -60,9 +59,9 @@ To:     jic23@kernel.org, lars@metafoo.de, mchehab+huawei@kernel.org,
         robh+dt@kernel.org, mike.looijmans@topic.nl,
         devicetree@vger.kernel.org
 Cc:     thomas.haemmerle@leica-geosystems.com
-Subject: [PATCH V5 1/6] iio: accel: bmi088: Modified the scale calculate
-Date:   Thu, 26 May 2022 13:33:54 +0000
-Message-Id: <20220526133359.2261928-2-Qing-wu.Li@leica-geosystems.com.cn>
+Subject: [PATCH V5 3/6] iio: accel: bmi088: modified the device name
+Date:   Thu, 26 May 2022 13:33:56 +0000
+Message-Id: <20220526133359.2261928-4-Qing-wu.Li@leica-geosystems.com.cn>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220526133359.2261928-1-Qing-wu.Li@leica-geosystems.com.cn>
 References: <20220526133359.2261928-1-Qing-wu.Li@leica-geosystems.com.cn>
@@ -71,107 +70,210 @@ Content-Transfer-Encoding: 8bit
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
 Content-Type: text/plain
-X-MS-Office365-Filtering-Correlation-Id: d1528c77-7724-40df-9b2d-08da3f1c6671
-X-MS-TrafficTypeDiagnostic: AM5PR06MB2994:EE_
-X-Microsoft-Antispam-PRVS: <AM5PR06MB2994E70D018DC85AC4860E8ED7D99@AM5PR06MB2994.eurprd06.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: d463a6e4-21a1-4ecb-6779-08da3f1c6762
+X-MS-TrafficTypeDiagnostic: PR3PR06MB6873:EE_
+X-Microsoft-Antispam-PRVS: <PR3PR06MB687369808C7CE9E0FD6E2358D7D99@PR3PR06MB6873.eurprd06.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: uf82L/0/+m6HgHHpnr9+PQOQF78SUFyoIwiBwasuSdoOchBDCPznKdUOZQIG8OdllQoja6013WpeMyd3ttrGmvr8oxk+Xny2dnjddkCs++Dt67aBOv0RepPUHsgVIlNbumxkglHrKqG/VpnCdEwqzqADOouuOgVBnybuCJTAAZtCcxkKoKabysvmtMUXFZMlmc9LzFedItNKktOH8Ie3K2qXA9oEI/FoX5zRLsGs4Co9Y1Y93fYjPUjUykRi/U4MiWLR3iX+GtQqhpfea39zy1SCxmEUUpzYTqcsw99g45ppOnAaYEfA6oZZm94vpOL0qBbGyAL6LEhosrCA9H7I4Q/g6XfSRELJg+IlLRvPYjfBQKjxoHBAYRHa58tf0K8gjhNl6/jRtoUL4YLh46yamohIkDyHPNtgoxQBfQyvNhBLI+IcwMlCpC3wv4w14n+7tTbmZICTvtqN+GZNcqQV1lD9znh111x1jCeGDmk1sHeWGCdG7zW78HYZ+kiOMbrPuUP5RJhVQh5nmjhs1ASJtA4i6CUJF8uT7xuvffZjVy0RWUJyWey0lTBL8XHYnAQP1aGNGO0V8lhOJBqyfA+yb1/9eWpEgBoCqzlvFsOzNia2ExNaLVu+FmAEHAuTSHOXYCka2wk7uY5UdWpNSwMsTj2lSQOFm93kItDJ9e48aR4yOcVkgfBcAHUhBDzItjjnEtlE7YLewfH7jcnfKNeJfA==
-X-Forefront-Antispam-Report: CIP:193.8.40.94;CTRY:CH;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:aherlnxbspsrv01.lgs-net.com;PTR:ahersrvdom50.leica-geosystems.com;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(36736006)(186003)(956004)(1076003)(2616005)(316002)(8676002)(336012)(118246002)(86362001)(4326008)(6506007)(6512007)(6666004)(36756003)(107886003)(26005)(83380400001)(70206006)(70586007)(47076005)(81166007)(36860700001)(8936002)(2906002)(82310400005)(921005)(356005)(5660300002)(6486002)(508600001)(40460700003);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: twWAZIS6RCnZ6oMWrv3r/SwDTq2bA15fz6fOFgsV7lz25/P9zlQ25/TfqAzz7dpIRXpRX6qpyokGkjybHkH6x/Cvk4e7Tjs8D0GAXU4cmbNXNau9BfjOBvjk0+wv8km9f+oPgG2ydJnOclK/EdxqLHGAZYSE7KAk23RYrKotP3ThrwiI7jgguuSFWs50SYJXRbMQPVg9tGOnkrMtJ9lARlmPIxXUli8fNQ3z52svgIdsHU5See9SMx+c/NcWQb4zXzJqYiNvQaMPvW7t7IW3Fcahx8R+IhRNyVBMHqmOyMOUPO1Hr4p5oNO1ADM5tZQgH7bU0FMDlmoKoVFNrPJmI9VzarSWCxUNEIImTgiKX+turE4QhR5f7Iv+EkGd5KqIcQJO48RAIts0a/kR4yfPn3BOgLPtbDtS82KkAip996tiOTr3+ESMv5pnGLTRSGfMd0Cp9aSzMYJOdkv89Tg2GKciXvV/mIB0vnLJerrsQWqKnmxI8XtweUUJVTtBes3p7c8QSA9n5TXSz39K2wEcI6RcdsHcmL9MhOY5czxq72BQCwqsnXUA11KApkbxezdUt1gZ/3GeB+90AWKWgGWacQFfcsHWvTBDSNvOCGVW9NiKbkPEkJYbbdrpzwgEpf+beF40KW7OZbIfpFwBxUlLiSxbfwdFO9GfIUs0BWBA26puxRcF6s0Y3KkSUw97byI7Q7ZjncHXzN72F1m8thCWFQ==
+X-Forefront-Antispam-Report: CIP:193.8.40.94;CTRY:CH;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:aherlnxbspsrv01.lgs-net.com;PTR:ahersrvdom50.leica-geosystems.com;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(956004)(86362001)(47076005)(40460700003)(316002)(508600001)(107886003)(36736006)(186003)(6486002)(6506007)(6512007)(356005)(81166007)(1076003)(26005)(336012)(2616005)(6666004)(921005)(83380400001)(2906002)(82310400005)(8936002)(118246002)(4326008)(36756003)(8676002)(70206006)(70586007)(5660300002)(36860700001);DIR:OUT;SFP:1102;
 X-OriginatorOrg: leica-geosystems.com.cn
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 May 2022 13:34:03.4202
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 May 2022 13:34:04.9982
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: d1528c77-7724-40df-9b2d-08da3f1c6671
+X-MS-Exchange-CrossTenant-Network-Message-Id: d463a6e4-21a1-4ecb-6779-08da3f1c6762
 X-MS-Exchange-CrossTenant-Id: 1b16ab3e-b8f6-4fe3-9f3e-2db7fe549f6a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=1b16ab3e-b8f6-4fe3-9f3e-2db7fe549f6a;Ip=[193.8.40.94];Helo=[aherlnxbspsrv01.lgs-net.com]
 X-MS-Exchange-CrossTenant-AuthSource: VE1EUR02FT025.eop-EUR02.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM5PR06MB2994
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PR3PR06MB6873
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The units after application of scale are 100*m/s^2,
-The scale calculation is only for the device
-with the range of 3, 6, 12, and 24g,
-but some other chips have a range of 2, 4, 6, and 8g.
+iio: accel: bmi088: modified the device name
 
-Modified the scales from formula to a list, the scales in the list are
-calculated as 9.8/32768*pow(2,reg41+1)*1.5, refer to datasheet 5.3.4.
-The new units after the application of scale are m/s^2.
+It is possible to have multiple sensors connected on the same platform.
+For support of different sensors, making it possible to obtain the
+device name by reading the chip id. If the device was found in the
+table but the device tree binding is different, the driver will carry
+on with a warning. If no matching device was found, the driver load
+the binding chip info.
 
-Reviewed-by: Alexandru Ardelean <ardeleanalex@gmail.com>
+Tested case, test with bmi085 and bmi090 patches applied:
+connect 3 bmi090l to the system, and set device tree compatible:
+spi2.0: compatible = "bosch,bmi090l-accel";
+spi2.2: compatible = "bosch,bmi088-accel";
+spi2.4: compatible = "bosch,bmi085-accel";
+
+Get a warning for the mismatched devices:
+bmi088_accel_spi spi2.2: unexpected chip id 0x1A
+bmi088_accel_spi spi2.4: unexpected chip id 0x1A
+
+Get the real present device name:
+/sys/bus/iio/devices/iio:device1/name:bmi090l-accel
+/sys/bus/iio/devices/iio:device3/name:bmi090l-accel
+/sys/bus/iio/devices/iio:device5/name:bmi090l-accel
+
 Signed-off-by: LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
 ---
- drivers/iio/accel/bmi088-accel-core.c | 15 +++++++++++----
- 1 file changed, 11 insertions(+), 4 deletions(-)
+ drivers/iio/accel/bmi088-accel-core.c | 35 +++++++++++++++------------
+ drivers/iio/accel/bmi088-accel-spi.c  | 13 +++++++---
+ drivers/iio/accel/bmi088-accel.h      |  7 +++++-
+ 3 files changed, 36 insertions(+), 19 deletions(-)
 
 diff --git a/drivers/iio/accel/bmi088-accel-core.c b/drivers/iio/accel/bmi088-accel-core.c
-index d74465214feb..fd812802b71d 100644
+index 73c1e2aecd7e..f6e44b36f5fc 100644
 --- a/drivers/iio/accel/bmi088-accel-core.c
 +++ b/drivers/iio/accel/bmi088-accel-core.c
-@@ -6,6 +6,7 @@
-  * Copyright (c) 2018-2021, Topic Embedded Products
-  */
- 
-+#include <linux/bitfield.h>
- #include <linux/delay.h>
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
-@@ -73,6 +74,8 @@
- #define BMI088_ACCEL_FIFO_MODE_FIFO			0x40
- #define BMI088_ACCEL_FIFO_MODE_STREAM			0x80
- 
-+#define BMIO088_ACCEL_ACC_RANGE_MSK			GENMASK(1, 0)
+@@ -389,6 +389,7 @@ static int bmi088_accel_read_avail(struct iio_dev *indio_dev,
+ 			     long mask)
+ {
+ 	struct bmi088_accel_data *data = iio_priv(indio_dev);
 +
- enum bmi088_accel_axis {
- 	AXIS_X,
- 	AXIS_Y,
-@@ -119,6 +122,7 @@ struct bmi088_accel_chip_info {
- 	u8 chip_id;
- 	const struct iio_chan_spec *channels;
- 	int num_channels;
-+	const int scale_table[4][2];
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_SCALE:
+ 		*vals = (const int *)data->chip_info->scale_table;
+@@ -464,8 +465,8 @@ static const struct iio_chan_spec bmi088_accel_channels[] = {
  };
  
- struct bmi088_accel_data {
-@@ -280,6 +284,7 @@ static int bmi088_accel_read_raw(struct iio_dev *indio_dev,
- 	struct bmi088_accel_data *data = iio_priv(indio_dev);
- 	struct device *dev = regmap_get_device(data->regmap);
- 	int ret;
-+	int reg;
- 
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
-@@ -330,13 +335,14 @@ static int bmi088_accel_read_raw(struct iio_dev *indio_dev,
- 				return ret;
- 
- 			ret = regmap_read(data->regmap,
--					  BMI088_ACCEL_REG_ACC_RANGE, val);
-+					  BMI088_ACCEL_REG_ACC_RANGE, &reg);
- 			if (ret)
- 				goto out_read_raw_pm_put;
- 
--			*val2 = 15 - (*val & 0x3);
--			*val = 3 * 980;
--			ret = IIO_VAL_FRACTIONAL_LOG2;
-+			reg = FIELD_GET(BMIO088_ACCEL_ACC_RANGE_MSK, reg);
-+			*val  = data->chip_info->scale_table[reg][0];
-+			*val2 = data->chip_info->scale_table[reg][1];
-+			ret = IIO_VAL_INT_PLUS_MICRO;
- 
- 			goto out_read_raw_pm_put;
- 		default:
-@@ -432,6 +438,7 @@ static const struct bmi088_accel_chip_info bmi088_accel_chip_info_tbl[] = {
+ static const struct bmi088_accel_chip_info bmi088_accel_chip_info_tbl[] = {
+-	[0] = {
+-		.name = "bmi088a",
++	[BOSCH_BMI088] = {
++		.name = "bmi088-accel",
  		.chip_id = 0x1E,
  		.channels = bmi088_accel_channels,
  		.num_channels = ARRAY_SIZE(bmi088_accel_channels),
-+		.scale_table = {{0, 897}, {0, 1794}, {0, 3589}, {0, 7178}},
- 	},
+@@ -484,12 +485,15 @@ static const unsigned long bmi088_accel_scan_masks[] = {
+ 	0
  };
  
+-static int bmi088_accel_chip_init(struct bmi088_accel_data *data)
++static int bmi088_accel_chip_init(struct bmi088_accel_data *data, enum bmi_device_type type)
+ {
+ 	struct device *dev = regmap_get_device(data->regmap);
+ 	int ret, i;
+ 	unsigned int val;
+ 
++	if (type >= BOSCH_UNKNOWN)
++		return -ENODEV;
++
+ 	/* Do a dummy read to enable SPI interface, won't harm I2C */
+ 	regmap_read(data->regmap, BMI088_ACCEL_REG_INT_STATUS, &val);
+ 
+@@ -515,22 +519,23 @@ static int bmi088_accel_chip_init(struct bmi088_accel_data *data)
+ 	}
+ 
+ 	/* Validate chip ID */
+-	for (i = 0; i < ARRAY_SIZE(bmi088_accel_chip_info_tbl); i++) {
+-		if (bmi088_accel_chip_info_tbl[i].chip_id == val) {
+-			data->chip_info = &bmi088_accel_chip_info_tbl[i];
++	for (i = 0; i < ARRAY_SIZE(bmi088_accel_chip_info_tbl); i++)
++		if (bmi088_accel_chip_info_tbl[i].chip_id == val)
+ 			break;
+-		}
+-	}
+-	if (i == ARRAY_SIZE(bmi088_accel_chip_info_tbl)) {
+-		dev_err(dev, "Invalid chip %x\n", val);
+-		return -ENODEV;
+-	}
++
++	if (i == ARRAY_SIZE(bmi088_accel_chip_info_tbl))
++		data->chip_info = &bmi088_accel_chip_info_tbl[type];
++	else
++		data->chip_info = &bmi088_accel_chip_info_tbl[i];
++
++	if (i != type)
++		dev_warn(dev, "unexpected chip id 0x%X\n", val);
+ 
+ 	return 0;
+ }
+ 
+ int bmi088_accel_core_probe(struct device *dev, struct regmap *regmap,
+-	int irq, const char *name, bool block_supported)
++	int irq, enum bmi_device_type type)
+ {
+ 	struct bmi088_accel_data *data;
+ 	struct iio_dev *indio_dev;
+@@ -545,13 +550,13 @@ int bmi088_accel_core_probe(struct device *dev, struct regmap *regmap,
+ 
+ 	data->regmap = regmap;
+ 
+-	ret = bmi088_accel_chip_init(data);
++	ret = bmi088_accel_chip_init(data, type);
+ 	if (ret)
+ 		return ret;
+ 
+ 	indio_dev->channels = data->chip_info->channels;
+ 	indio_dev->num_channels = data->chip_info->num_channels;
+-	indio_dev->name = name ? name : data->chip_info->name;
++	indio_dev->name = data->chip_info->name;
+ 	indio_dev->available_scan_masks = bmi088_accel_scan_masks;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 	indio_dev->info = &bmi088_accel_info;
+diff --git a/drivers/iio/accel/bmi088-accel-spi.c b/drivers/iio/accel/bmi088-accel-spi.c
+index 06d99d9949f3..c77aec01bc67 100644
+--- a/drivers/iio/accel/bmi088-accel-spi.c
++++ b/drivers/iio/accel/bmi088-accel-spi.c
+@@ -52,8 +52,8 @@ static int bmi088_accel_probe(struct spi_device *spi)
+ 		return PTR_ERR(regmap);
+ 	}
+ 
+-	return bmi088_accel_core_probe(&spi->dev, regmap, spi->irq, id->name,
+-				       true);
++	return bmi088_accel_core_probe(&spi->dev, regmap, spi->irq,
++					id->driver_data);
+ }
+ 
+ static void bmi088_accel_remove(struct spi_device *spi)
+@@ -61,8 +61,14 @@ static void bmi088_accel_remove(struct spi_device *spi)
+ 	bmi088_accel_core_remove(&spi->dev);
+ }
+ 
++static const struct of_device_id bmi088_of_match[] = {
++	{ .compatible = "bosch,bmi088-accel" },
++	{}
++};
++MODULE_DEVICE_TABLE(of, bmi088_of_match);
++
+ static const struct spi_device_id bmi088_accel_id[] = {
+-	{"bmi088-accel", },
++	{"bmi088-accel",  BOSCH_BMI088},
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(spi, bmi088_accel_id);
+@@ -71,6 +77,7 @@ static struct spi_driver bmi088_accel_driver = {
+ 	.driver = {
+ 		.name	= "bmi088_accel_spi",
+ 		.pm	= &bmi088_accel_pm_ops,
++		.of_match_table = bmi088_of_match,
+ 	},
+ 	.probe		= bmi088_accel_probe,
+ 	.remove		= bmi088_accel_remove,
+diff --git a/drivers/iio/accel/bmi088-accel.h b/drivers/iio/accel/bmi088-accel.h
+index 5d40c7cf1cbc..65338a1bf97d 100644
+--- a/drivers/iio/accel/bmi088-accel.h
++++ b/drivers/iio/accel/bmi088-accel.h
+@@ -8,11 +8,16 @@
+ 
+ struct device;
+ 
++enum bmi_device_type {
++	BOSCH_BMI088,
++	BOSCH_UNKNOWN,
++};
++
+ extern const struct regmap_config bmi088_regmap_conf;
+ extern const struct dev_pm_ops bmi088_accel_pm_ops;
+ 
+ int bmi088_accel_core_probe(struct device *dev, struct regmap *regmap, int irq,
+-			    const char *name, bool block_supported);
++			    enum bmi_device_type type);
+ void bmi088_accel_core_remove(struct device *dev);
+ 
+ #endif /* BMI088_ACCEL_H */
 -- 
 2.25.1
 
