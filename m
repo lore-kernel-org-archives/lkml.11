@@ -2,133 +2,226 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B89D4C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 23:14:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67359C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 23:15:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344338AbiEZXOl (ORCPT
+        id S1346714AbiEZXPp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 19:14:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41984 "EHLO
+        Thu, 26 May 2022 19:15:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231613AbiEZXOj (ORCPT
+        with ESMTP id S231613AbiEZXPm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 19:14:39 -0400
-Received: from mail.eskimo.com (mail.eskimo.com [204.122.16.222])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DFD4E52A1;
-        Thu, 26 May 2022 16:14:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=eskimo.com;
-        s=default; t=1653606876;
-        bh=brQFxuJo8vPS3y4lzGJlq1ypgd6jd/P+HXBTPOoOyyU=;
-        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
-        b=S58o+5zOf7LZhkXnDjwS3R/yU0J3HXSBryXqEyBtrNuHxqqji3Mzz9UCqw1fLjML1
-         /67CAA03CzJZMEh2uxdPWfcYO8KZ4xYnON9OEnIgiP77TJN9STKT1iyv8YlMTORKSb
-         UjoHb1kYa2VJMTHEYZ5ezJbAc1097LIOaaH9uAfRLJclFEvlYkXLEagsU9jz4/VjHi
-         TzWwArh8Wcnit5UVAboP8EESUPTdmWq04JehrpAkv0nuwRexy9PDE5u105L4YwF3ND
-         By/i4yTqY19sggdhE6ZWu5pwwRhdGEi5z5ZolkbXzZFy5MnLLthaDxj+Hlsuwfe1qO
-         0oXSXH1r3cRQQ==
-Received: from ubuntu.eskimo.com (ubuntu.eskimo.com [204.122.16.33])
-        by mail.eskimo.com (Postfix) with ESMTPS id C93943CA09F;
-        Thu, 26 May 2022 16:14:36 -0700 (PDT)
-Date:   Thu, 26 May 2022 16:14:36 -0700 (PDT)
-From:   Robert Dinse <nanook@eskimo.com>
-To:     Sean Christopherson <seanjc@google.com>
-cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Kees Cook <keescook@chromium.org>
-Subject: Re: [PATCH v2 0/8] KVM: x86: Emulator _regs fixes and cleanups
-In-Reply-To: <20220526210817.3428868-1-seanjc@google.com>
-Message-ID: <d25dc23a-5379-9ad0-25c-9d7ef656c410@eskimo.com>
-References: <20220526210817.3428868-1-seanjc@google.com>
+        Thu, 26 May 2022 19:15:42 -0400
+Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6D57E52A6
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 16:15:40 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.nyi.internal (Postfix) with ESMTP id 3B7DE5C00BB;
+        Thu, 26 May 2022 19:15:40 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute5.internal (MEProxy); Thu, 26 May 2022 19:15:40 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sent.com; h=cc
+        :cc:content-transfer-encoding:date:date:from:from:in-reply-to
+        :in-reply-to:message-id:mime-version:references:reply-to
+        :reply-to:sender:subject:subject:to:to; s=fm1; t=1653606940; x=
+        1653693340; bh=yFZglDNybaIMHmH9kYiFg9JUBZT2DT4WqPECVtKPtHQ=; b=V
+        Gk9Kb5UWLW9rAmv4oflryNCTdu5f02iH/Eggx26tDDAlFb5/7NKSdpDaY3aaY99f
+        xhxLsB1sOZoLTKPHXGoO2yCpck2lKS8j4U6j0fotxcBsJd9Z6g3VqPWXsGmJBgIm
+        ao+0g6yQAi9b9VHYaqS+O8DANnT5RBMgj+RgxhiKS02e3goN3ZlUXfQkJaAei2IR
+        DI8/cJ77eelIGSaGbZ6g6TRi2h5YxODtQ/JzskqPjEVVjDXB9tOqTvOss15JfNeq
+        XqpMmEocGU1hfvl4SZSeuyj1N1v43wdoNi9vtBGWDcogn33bDrqD/Vk9ZkElA3oL
+        tcZUKWGabjwfQFqmV1wMA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
+        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:reply-to:sender
+        :subject:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender
+        :x-me-sender:x-sasl-enc; s=fm1; t=1653606940; x=1653693340; bh=y
+        FZglDNybaIMHmH9kYiFg9JUBZT2DT4WqPECVtKPtHQ=; b=szQGTVZ5KKlCRaZdj
+        txQU6MuzToX1f/jvtVzVzJWLSRv7f1qYiL0gb+EuHRLIfqGXpyAKLfWdGX//CYQq
+        7Fbdcv0ayCsto2+i2yk8HJPfDyfsVCjovxSvRVLr29zXegnnKO4tyq6kBfTkaaEb
+        BN9UtXoIOdPi6tstSKxKRzy4tasbGVkmzEoG9Y+ETnmKaR8J8+/MsW5SkezXYdYF
+        xKf6BlmDgExWEfwDnbfJ1ZNYbnAm+86WgBFnE0082tf51dX/12sa43wICGTCKSRj
+        f6OYKVCkEP5zfQn3nngy5qiit9OvMbVirLQGkB+W9OU1CQJWKzAbErB75FuEQ9Eg
+        3Kxmw==
+X-ME-Sender: <xms:HAqQYugJPjG5z_4XU3abTApFifulRP6zv1tyHJIbTdCMurCFqILAoQ>
+    <xme:HAqQYvDDJk4Pg_r_rXIt3S4MK-WOTjcTfE98cLFKL1goWTooLL_Y-dtVQOSzQTfIb
+    jvTVNqOKtvXbEvKtw>
+X-ME-Received: <xmr:HAqQYmFlK9Pb9PnZ9BmLaEhO1b5CQtDZ52XcP4RAQQyJsCOpYTXACIKIUAjb5pobRQl5o1uzX2ZcFdrHGg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrjeekgddukecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpefhvfevufffkffojghfrhgggfestdhqredtredttdenucfhrhhomhepkghiucgj
+    rghnuceoiihirdihrghnsehsvghnthdrtghomheqnecuggftrfgrthhtvghrnhepudeiue
+    evhffhkeelhfeugeevjeefleelkedviedugfdvjeejfeejtdetheeulefhnecuffhomhgr
+    ihhnpehkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmh
+    epmhgrihhlfhhrohhmpeiiihdrhigrnhesshgvnhhtrdgtohhm
+X-ME-Proxy: <xmx:HAqQYnS83r7JXBl7KB6d4ZaBwCEFoFFycuqxoxsNE_HVyH7bGXJBZg>
+    <xmx:HAqQYrw5WvFPp1wYkrF0384s2hUD-wLRLzBp6cU2_p-Kdb0nGy6Edg>
+    <xmx:HAqQYl4ZgJWQF67d1tUwEOph2xywpSF_rvfPFrzo9lEBgat42L1FtA>
+    <xmx:HAqQYuqNEMKpe9rz6zFNHa_OyhrULDxoPTzzOWJyU4HeWLW2ewbmYA>
+Feedback-ID: iccd040f4:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 26 May 2022 19:15:39 -0400 (EDT)
+From:   Zi Yan <zi.yan@sent.com>
+To:     Andrew Morton <akpm@linux-foundation.org>,
+        David Hildenbrand <david@redhat.com>, linux-mm@kvack.org
+Cc:     linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        Qian Cai <quic_qiancai@quicinc.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        Eric Ren <renzhengeek@gmail.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        Oscar Salvador <osalvador@suse.de>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Zi Yan <ziy@nvidia.com>, Doug Berger <opendmb@gmail.com>
+Subject: [PATCH 2/2] mm: split free page with properly free memory accounting and without race
+Date:   Thu, 26 May 2022 19:15:31 -0400
+Message-Id: <20220526231531.2404977-2-zi.yan@sent.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220526231531.2404977-1-zi.yan@sent.com>
+References: <20220526231531.2404977-1-zi.yan@sent.com>
+Reply-To: Zi Yan <ziy@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII; format=flowed
-X-Virus-Scanned: clamav-milter 0.103.6 at mail.eskimo.com
-X-Virus-Status: Clean
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Zi Yan <ziy@nvidia.com>
 
-      It >DID< build ok with this patch, I applied it and built last night,
-I'm presently running that kernel with a KVM/Qemu Windows guest on my
-workstation:
+In isolate_single_pageblock(), free pages are checked without holding zone
+lock, but they can go away in split_free_page() when zone lock is held.
+Check the free page and its order again in split_free_page() when zone lock
+is held. Recheck the page if the free page is gone under zone lock.
 
-Linux nanook 5.18.0 #1 SMP PREEMPT Wed May 25 18:14:43 PDT 2022 x86_64 x86_64 
-x86_64 GNU/Linux
+In addition, in split_free_page(), the free page was deleted from the page
+list without changing free page accounting. Add the missing free page
+accounting code.
 
-      The Windows guest starts and runs but networking isn't working (I am
-using a bridge for the guest hosts and a static IP for both the main machine
-and guest), it all works including networking with 5.17.9.
+Fix the type of order parameter in split_free_page().
+Link: https://lore.kernel.org/lkml/20220525103621.987185e2ca0079f7b97b856d@=
+linux-foundation.org/
 
--_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
-  Eskimo North Linux Friendly Internet Access, Shell Accounts, and Hosting.
-    Knowledgeable human assistance, not telephone trees or script readers.
-  See our web site: http://www.eskimo.com/ (206) 812-0051 or (800) 246-6874.
+Fixes: b2c9e2fbba32 ("mm: make alloc_contig_range work at pageblock granula=
+rity")
+Reported-by: Doug Berger <opendmb@gmail.com>
+Link: https://lore.kernel.org/linux-mm/c3932a6f-77fe-29f7-0c29-fe6b1c67ab7b=
+@gmail.com/
+Signed-off-by: Zi Yan <ziy@nvidia.com>
+---
+ mm/internal.h       |  4 ++--
+ mm/page_alloc.c     | 24 ++++++++++++++++++++----
+ mm/page_isolation.c | 10 +++++++---
+ 3 files changed, 29 insertions(+), 9 deletions(-)
 
-On Thu, 26 May 2022, Sean Christopherson wrote:
+diff --git a/mm/internal.h b/mm/internal.h
+index 20e0a990da40..7cf12a15475b 100644
+--- a/mm/internal.h
++++ b/mm/internal.h
+@@ -374,8 +374,8 @@ extern void *memmap_alloc(phys_addr_t size, phys_addr_t=
+ align,
+ 			  phys_addr_t min_addr,
+ 			  int nid, bool exact_nid);
+=20
+-void split_free_page(struct page *free_page,
+-				int order, unsigned long split_pfn_offset);
++int split_free_page(struct page *free_page,
++			unsigned int order, unsigned long split_pfn_offset);
+=20
+ #if defined CONFIG_COMPACTION || defined CONFIG_CMA
+=20
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index 355bd017b185..2717d6dede99 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -1112,30 +1112,44 @@ static inline void __free_one_page(struct page *pag=
+e,
+  * @order:		the order of the page
+  * @split_pfn_offset:	split offset within the page
+  *
++ * Return -ENOENT if the free page is changed, otherwise 0
++ *
+  * It is used when the free page crosses two pageblocks with different mig=
+ratetypes
+  * at split_pfn_offset within the page. The split free page will be put in=
+to
+  * separate migratetype lists afterwards. Otherwise, the function achieves
+  * nothing.
+  */
+-void split_free_page(struct page *free_page,
+-				int order, unsigned long split_pfn_offset)
++int split_free_page(struct page *free_page,
++			unsigned int order, unsigned long split_pfn_offset)
+ {
+ 	struct zone *zone =3D page_zone(free_page);
+ 	unsigned long free_page_pfn =3D page_to_pfn(free_page);
+ 	unsigned long pfn;
+ 	unsigned long flags;
+ 	int free_page_order;
++	int mt;
++	int ret =3D 0;
+=20
+ 	if (split_pfn_offset =3D=3D 0)
+-		return;
++		return ret;
+=20
+ 	spin_lock_irqsave(&zone->lock, flags);
++
++	if (!PageBuddy(free_page) || buddy_order(free_page) !=3D order) {
++		ret =3D -ENOENT;
++		goto out;
++	}
++
++	mt =3D get_pageblock_migratetype(free_page);
++	if (likely(!is_migrate_isolate(mt)))
++		__mod_zone_freepage_state(zone, -(1UL << order), mt);
++
+ 	del_page_from_free_list(free_page, zone, order);
+ 	for (pfn =3D free_page_pfn;
+ 	     pfn < free_page_pfn + (1UL << order);) {
+ 		int mt =3D get_pfnblock_migratetype(pfn_to_page(pfn), pfn);
+=20
+-		free_page_order =3D min_t(int,
++		free_page_order =3D min_t(unsigned int,
+ 					pfn ? __ffs(pfn) : order,
+ 					__fls(split_pfn_offset));
+ 		__free_one_page(pfn_to_page(pfn), pfn, zone, free_page_order,
+@@ -1146,7 +1160,9 @@ void split_free_page(struct page *free_page,
+ 		if (split_pfn_offset =3D=3D 0)
+ 			split_pfn_offset =3D (1UL << order) - (pfn - free_page_pfn);
+ 	}
++out:
+ 	spin_unlock_irqrestore(&zone->lock, flags);
++	return ret;
+ }
+ /*
+  * A bad page could be due to a number of fields. Instead of multiple bran=
+ches,
+diff --git a/mm/page_isolation.c b/mm/page_isolation.c
+index fbd820b21292..6021f8444b5a 100644
+--- a/mm/page_isolation.c
++++ b/mm/page_isolation.c
+@@ -371,9 +371,13 @@ static int isolate_single_pageblock(unsigned long boun=
+dary_pfn, int flags,
+ 		if (PageBuddy(page)) {
+ 			int order =3D buddy_order(page);
+=20
+-			if (pfn + (1UL << order) > boundary_pfn)
+-				split_free_page(page, order, boundary_pfn - pfn);
+-			pfn +=3D (1UL << order);
++			if (pfn + (1UL << order) > boundary_pfn) {
++				/* free page changed before split, check it again */
++				if (split_free_page(page, order, boundary_pfn - pfn))
++					continue;
++			}
++
++			pfn +=3D 1UL << order;
+ 			continue;
+ 		}
+ 		/*
+--=20
+2.35.1
 
-> Date: Thu, 26 May 2022 21:08:09 +0000
-> From: Sean Christopherson <seanjc@google.com>
-> To: Paolo Bonzini <pbonzini@redhat.com>
-> Cc: Sean Christopherson <seanjc@google.com>,
->     Vitaly Kuznetsov <vkuznets@redhat.com>,
->     Wanpeng Li <wanpengli@tencent.com>, Jim Mattson <jmattson@google.com>,
->     Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
->     linux-kernel@vger.kernel.org, Kees Cook <keescook@chromium.org>,
->     Robert Dinse <nanook@eskimo.com>
-> Subject: [PATCH v2 0/8] KVM: x86: Emulator _regs fixes and cleanups
-> 
-> Clean up and harden the use of the x86_emulate_ctxt._regs, which is
-> surrounded by a fair bit of magic.  This series was prompted by bug reports
-> by Kees and Robert where GCC-12 flags an out-of-bounds _regs access.  The
-> warning is a false positive due to a now-known GCC bug, but it's cheap and
-> easy to harden the _regs usage, and doing so minimizing the risk of more
-> precisely handling 32-bit vs. 64-bit GPRs.
->
-> I didn't tag patch 2 with Fixes or Cc: stable@.  It does remedy the
-> GCC-12 warning, but AIUI the GCC-12 bug affects other KVM paths that
-> already have explicit guardrails, i.e. fixing this one case doesn't
-> guarantee happiness when building with CONFIG_KVM_WERROR=y, let alone
-> CONFIG_WERROR=y.  That said, it might be worth sending to the v5.18 stable
-> tree[*] as it does appear to make some configs/setups happy.
->
-> [*] KVM hasn't changed, but the warning=>error was introduced in v5.18 by
->   commit e6148767825c ("Makefile: Enable -Warray-bounds").
->
-> v2:
->  - Collect reviews and tests. [Vitaly, Kees, Robert]
->  - Tweak patch 1's changelog to explicitly call out that dirty_regs is a
->    4 byte field. [Vitaly]
->  - Add Reported-by for Kees and Robert since this does technically fix a
->    build breakage.
->  - Use a raw literal for NR_EMULATOR_GPRS instead of VCPU_REGS_R15+1 to
->    play nice with 32-bit builds. [kernel test robot]
->  - Reduce the number of emulated GPRs to 8 for 32-bit builds.
->  - Add and use KVM_EMULATOR_BUG_ON() to bug/kill the VM when an emulator
->    bug is detected.  [Vitaly]
->
-> v1: https://lore.kernel.org/all/20220525222604.2810054-1-seanjc@google.com
->
-> Sean Christopherson (8):
->  KVM: x86: Grab regs_dirty in local 'unsigned long'
->  KVM: x86: Harden _regs accesses to guard against buggy input
->  KVM: x86: Omit VCPU_REGS_RIP from emulator's _regs array
->  KVM: x86: Use 16-bit fields to track dirty/valid emulator GPRs
->  KVM: x86: Reduce the number of emulator GPRs to '8' for 32-bit KVM
->  KVM: x86: Bug the VM if the emulator accesses a non-existent GPR
->  KVM: x86: Bug the VM if the emulator generates a bogus exception
->    vector
->  KVM: x86: Bug the VM on an out-of-bounds data read
->
-> arch/x86/kvm/emulate.c     | 26 ++++++++++++++++++++------
-> arch/x86/kvm/kvm_emulate.h | 28 +++++++++++++++++++++++++---
-> arch/x86/kvm/x86.c         |  9 +++++++++
-> 3 files changed, 54 insertions(+), 9 deletions(-)
->
->
-> base-commit: 90bde5bea810d766e7046bf5884f2ccf76dd78e9
-> -- 
-> 2.36.1.255.ge46751e96f-goog
->
