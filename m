@@ -2,132 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55F5DC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 13:55:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BED25C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 13:57:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235071AbiEZNzD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 09:55:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47664 "EHLO
+        id S1347012AbiEZN5p (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 09:57:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347128AbiEZNzB (ORCPT
+        with ESMTP id S229922AbiEZN5l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 09:55:01 -0400
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2041.outbound.protection.outlook.com [40.107.220.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CA43562E5;
-        Thu, 26 May 2022 06:55:00 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PrtP8b6IHDhiGL/g7z91dTsg3TX5aOoaIX1RYoLIIThHhgwiSEDiC4Rq2ydYusgjZFpHwIjOp98cXYNzLivsvJgDzBcZ7G+jidpzhVD3HEuChsQ9UYdlMHR7R87u4wffs0YBcXh3U559hjadrV9e+6qTFHNGxpBlbkP+KCioAjlum3IUo8WgaXrhNFhTRDwwTDYi7wMQKlYwPdHdiqX1xuWRwRVNryqI4xuf6mn5ssWhBZmraXOEDGtoM04nnDTxAK64BigZaWJDyRgvo/FAWfBNNV7QJfO7Hr+kVrH4T+ptQa5DytdNRTEgX1N0yiFI0FjNo/fyL7IO6gB9IXkBJA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=BoAxY5wk0pf2Lhc4LP0WiaGuF3JE9xJCyIs7479quh4=;
- b=OxH/12RCqIkv1UWObx/pUlrD+XjDLcBeQRsZL8WUJhnwXC4RMxIkBTtaGo/k/LOo0OeACOPAFIGXd/pqbI5L6VAi+iTYU4hHj7MuEITsST5gukjUVg25cW7grxLzPa5cYhRpx6jzBNhAirbRuDJ3alZQdnQDeY4933baavimnaFVc+697ygvIzPtBvlVQZ/p4TqVBek3sYeCEizdDiUg1hwVctu+5axSFsA30S8qN2YSp+1/uN9yb6BcDXhwAxBtIDAWTRLFnw0gajAlImOeAmGYfWKO0svIg/HlCKaLuE7dDg2u46upF3jQArkk8Hr8kTBNq7WuEazJDgckMiwaQA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BoAxY5wk0pf2Lhc4LP0WiaGuF3JE9xJCyIs7479quh4=;
- b=suZGpQgEUmi5ZL3FyNMlKQFBqeO2Uoo8z9W/lNpQS8IAfI5DkfNjuRQUEnPILDr4BVduZ8dolAMado0ZEbqfjFaAHJzKr3JwAhA59Pi5PsLkn1iOyJNQzV2RCUlKviTsd1T5fB68d5fOKVT+KFxyk7wPPnGeFIDZMLuKT70qHQsFY/ZeA8gyNo+bUxyOK+YTgC1GWir3u/E5+gDpJooGxAhivNOQY3dhKbD2le81J5+IGJHDfwhN/LwWk5H/CLi4t8DTxkyBxNtnJRY8BOrSWOYZO9EhLRsf+sSMzEoukrnslepLNIdv4moguS0DF9fpPmelczDIv1mHCXmfYIRmNA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by BYAPR12MB3415.namprd12.prod.outlook.com (2603:10b6:a03:d5::25) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.13; Thu, 26 May
- 2022 13:54:58 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::2484:51da:d56f:f1a5]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::2484:51da:d56f:f1a5%7]) with mapi id 15.20.5293.013; Thu, 26 May 2022
- 13:54:58 +0000
-Date:   Thu, 26 May 2022 10:54:56 -0300
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Yang Li <yang.lee@linux.alibaba.com>
-Cc:     haris.iqbal@ionos.com, jinpu.wang@ionos.com, leon@kernel.org,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: Re: [PATCH -next] RDMA/rtrs-clt: Fix one kernel-doc comment
-Message-ID: <20220526135456.GA2960870@nvidia.com>
-References: <20220526130945.98601-1-yang.lee@linux.alibaba.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220526130945.98601-1-yang.lee@linux.alibaba.com>
-X-ClientProxiedBy: BL1PR13CA0082.namprd13.prod.outlook.com
- (2603:10b6:208:2b8::27) To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
+        Thu, 26 May 2022 09:57:41 -0400
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56FED6BFC0;
+        Thu, 26 May 2022 06:57:39 -0700 (PDT)
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24QCCgsh007655;
+        Thu, 26 May 2022 09:57:30 -0400
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3g93vde2ge-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 26 May 2022 09:57:29 -0400
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 24QDvSSj043747
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 26 May 2022 09:57:28 -0400
+Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
+ ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Thu, 26 May 2022 09:57:27 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
+ ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Thu, 26 May 2022 09:57:27 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Thu, 26 May 2022 09:57:27 -0400
+Received: from localhost.localdomain ([10.48.65.12])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 24QDvEOv028301;
+        Thu, 26 May 2022 09:57:16 -0400
+From:   <alexandru.tachici@analog.com>
+To:     <netdev@vger.kernel.org>
+CC:     <kuba@kernel.org>, <devicetree@vger.kernel.org>,
+        <edumazet@google.com>, <geert+renesas@glider.be>,
+        <geert@linux-m68k.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>,
+        <linux-kernel@vger.kernel.org>, <michael.hennerich@analog.com>,
+        Alexandru Tachici <alexandru.tachici@analog.com>
+Subject: [net] dt-bindings: net: Update ADIN PHY maintainers
+Date:   Thu, 26 May 2022 17:13:18 +0300
+Message-ID: <20220526141318.77146-1-alexandru.tachici@analog.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 0e34bcbd-997a-45f5-6a8f-08da3f1f5202
-X-MS-TrafficTypeDiagnostic: BYAPR12MB3415:EE_
-X-Microsoft-Antispam-PRVS: <BYAPR12MB34157CBEAA6C5E5E068B24BEC2D99@BYAPR12MB3415.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 9Z4hY8TeGbL/jS4qvMMPJaO82zfIuVKBJvTymf9nIUHI0fp1pb8Xye9oJ4wZ6wYO2akW9ivbuT4Iof08wfuhcsZJf/hRAZJlgex6sVfOoY/kK/yRxoEwvS0HAuF08rarvdJzH34ZzvR20GjJwWzioA1vudWaF+ym4IPuCJROPPu09sd5WKaxBH6129XrCanisC9anNbzONRGaqtK2jfRAw+UHWTC5IOP2zQLpCoYU5tLFmyx+XPOViZqO67pmeLfZ8Qd4aTsDY+KOu9Re6Z7iPeQBWcGAXyZibF1UmKTN00rmTQCvh1cWhf/PkDEFIm8fAbe5xjNXipW4ts4lFwzP4RapgUBuBCYOu0Kw1M3pyoj9V3FEWK8a/8FXTCT+B6j2M7FifEtAKoLapiwDHp+iM/RbSscjMuZ9wbDyTXHBap95dovdjsPmcbQJWlFp7Zs7NWWkGh9HnhsBCMYmdISb33GYAT+XcBu7YxsdJnSNVIF88r0j4LVq4hHyV0fqKC8ud72vO5crx02Bh9UnjOqQmk6duOsahTcHoyKDITijAPRqaLCGgcM/ii/FPYyL2O3Ez8E+RHFwgBdJG/ImUpNj533Oqh8jakEzVIvDD1sEBUjWV4a02OY/oabAR1ZOgUkyUmV94plT6Puot4bNjMx3g==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6486002)(8936002)(6916009)(86362001)(66556008)(66476007)(38100700002)(66946007)(4326008)(8676002)(316002)(1076003)(2906002)(6512007)(4744005)(2616005)(26005)(6506007)(83380400001)(508600001)(36756003)(186003)(33656002)(5660300002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Pi+oyuK0sEJATFtdxlYz3sVVBVqFpvG8w2egKyMlh/gropv84imZf7TdPEka?=
- =?us-ascii?Q?vX7OPOVJzoS5FKt/OE/MNPxLYOMkguKRPDca7ehbLtoDJbkweg+uCWS7+QP/?=
- =?us-ascii?Q?rdr/2J4k44UbIRqVdLPU4Q2awF8MlfqBaghuqeEOAXi6hukE51P/4jHElzG5?=
- =?us-ascii?Q?KgqxFkCNYcjDmSicomvgUP5XJbTtfLTtmJhiwpTwtU7QCN9FocSGpJBus2KP?=
- =?us-ascii?Q?p4DJcrREVa4Gi3CYaL/kBiY0y9D9yoRtLrXWr9UlixZLbiVVmfqxITYr6qzi?=
- =?us-ascii?Q?rL7eXg4AdDV0XitZ4Cwa39MG226krBYKyXBPUgOtk3hBxYIMmzpQ47Cr3oYA?=
- =?us-ascii?Q?GMKj2hJoFOP+pkHoN8tnSmmBNf3Kj6vr8PCXGObnqB697R5vWqrpZAdHQ61d?=
- =?us-ascii?Q?7JaUhpz69bPkQty//O21OutgaP3Qre00G56XHnJlFonCtQ1FlfOt0DPDF0fR?=
- =?us-ascii?Q?moXJ/i5xLT5RYhAyintrTYcVoa+3f7OmXc4sIKFnoKqm4ckTZu8nxmo3CIB3?=
- =?us-ascii?Q?O7BiZ3tdvZ14oW3ROevl2BncI8S6Dw8MRNuPE+dOZexK6ysRgV9d7q7n7sU4?=
- =?us-ascii?Q?vJKwLfgNAKFhZxXdmXRf6/7WlmKFTXmzOcj8AfR+flmoqiq1oT9KLmr2BphO?=
- =?us-ascii?Q?IMfwBcaqk1swJolVxxje/tZNWrnM35ra9rCeZ9B0QXtDjz886BM7iMVn90DW?=
- =?us-ascii?Q?qXlOEdT1ALYO5WGR2TAG7A/t0gLJnpY4ie5PObVjgc2/JcLrGhljsKj+w1S/?=
- =?us-ascii?Q?a0KEK/+sb7Fm2LCYCO2v4byzPf+2g/F/CM5dAItRgmRdA5hDMPjpAG0oJism?=
- =?us-ascii?Q?ibnq4bwqRm/mL5zfU5Vt1XVQjlOUQrwAJ/2yD8JB07gD/+Wd+luL6CbgXhAT?=
- =?us-ascii?Q?USEaXrGOyBszrGWYDpD/Gb5ZKBPnj+ES/ySKcQQRn+os+aA/d/3Vvab4A+Mh?=
- =?us-ascii?Q?CPDLsEUclk9WRnsatdVDbG3ulI6PanbGTwpX9eFBcBsdQ8Rkhns8G27yFi5f?=
- =?us-ascii?Q?wsEo25ToWFe6EWTO1yiGBA+PXdSp5kd/CAg/ECFeoBp0qY/2cEaBeQDiZxWK?=
- =?us-ascii?Q?AIPd5WLrfvRGFMCzV/EG0/ZCGUSFtnJA//EJSFl2IvoSYJcFAB4yqfdBML99?=
- =?us-ascii?Q?jv1es7nOArA5qGuBXwpLJOZEy9uX7Wswz+p53eF1dGNgFs2SkyXb2sRFOnuA?=
- =?us-ascii?Q?10moR/fPkVKME8Zxn1q5pOk1NRhLkqRQ71at+K3nyKS3gZq3mm4fnRY1EqOl?=
- =?us-ascii?Q?+k56OajDVenxQjdiPCbgMli/q60B3ZwIKRkYMjZmfkr6yZuYquER1ramhQIo?=
- =?us-ascii?Q?HexKMKbVa9d44Hy6BhDHlDwDG9LZ6fmyU2L1+UmPKjFUptVeficZM3uRiS/0?=
- =?us-ascii?Q?Jp8RES6stDG35vqzjQMXOk+jJjkdRp+YE+nR/DGV3iX/VFTisW1t/ZxVUKHv?=
- =?us-ascii?Q?5FI8taBpqqX5DnNWqXns5fdETHA2e1Opi32RxdLwoX9fEKlbcAC4iRKNDCM2?=
- =?us-ascii?Q?a6lbZWKn2hB5HtUUj7gAZdLisf58lrnmxNFWxnNpnajApCuB1cKrbqlGLc8j?=
- =?us-ascii?Q?50LWMdzFrHhd5bkL0OcUT7HFZMzt8CdUMq8rxMjM8I6JzsaCycmy8hFVi/GE?=
- =?us-ascii?Q?gmc5QhYxA4ob+F9XB8T+eLQabSuvj/5Oo0f6sacSwLQQzziBRKpKPj12+jQx?=
- =?us-ascii?Q?9+d2VR8NQD/VtL5FZ7Rff9KyCdUp9U8AHBP9b0v48YrTtEsMEJnJKYvE0ntr?=
- =?us-ascii?Q?Qp3nyeWf6w=3D=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0e34bcbd-997a-45f5-6a8f-08da3f1f5202
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 May 2022 13:54:58.1740
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: s2auUjbOSI7pjBbxGpNURYVSTLqPsse5/V9i4Yp5jM99ZH6BFCbukcxrHpaGMihb
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3415
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: 51kpTgNab8Q8bXEZmlI-dvjOtf1jYYP-
+X-Proofpoint-ORIG-GUID: 51kpTgNab8Q8bXEZmlI-dvjOtf1jYYP-
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-26_08,2022-05-25_02,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 lowpriorityscore=0
+ impostorscore=0 malwarescore=0 mlxlogscore=722 phishscore=0 suspectscore=0
+ spamscore=0 adultscore=0 bulkscore=0 priorityscore=1501 clxscore=1015
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2204290000
+ definitions=main-2205260069
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 26, 2022 at 09:09:45PM +0800, Yang Li wrote:
-> Add the description of @pathname and remove @sessname in rtrs_clt_open()
-> kernel-doc comment to remove warnings found by running scripts/kernel-doc,
-> which is caused by using 'make W=1'.
-> 
-> drivers/infiniband/ulp/rtrs/rtrs-clt.c:2809: warning: Function parameter
-> or member 'pathname' not described in 'rtrs_clt_open'
-> drivers/infiniband/ulp/rtrs/rtrs-clt.c:2809: warning: Excess function
-> parameter 'sessname' description in 'rtrs_clt_open'
-> 
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
-> ---
->  drivers/infiniband/ulp/rtrs/rtrs-clt.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+From: Alexandru Tachici <alexandru.tachici@analog.com>
 
-Applied to for-next, thanks
+Update the dt-bindings maintainers section.
 
-Jason
+Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
+---
+ Documentation/devicetree/bindings/net/adi,adin.yaml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Documentation/devicetree/bindings/net/adi,adin.yaml b/Documentation/devicetree/bindings/net/adi,adin.yaml
+index 77750df0c2c4..dac2a25e218e 100644
+--- a/Documentation/devicetree/bindings/net/adi,adin.yaml
++++ b/Documentation/devicetree/bindings/net/adi,adin.yaml
+@@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+ title: Analog Devices ADIN1200/ADIN1300 PHY
+ 
+ maintainers:
+-  - Alexandru Ardelean <alexandru.ardelean@analog.com>
++  - Alexandru Tachici <alexandru.tachici@analog.com>
+ 
+ description: |
+   Bindings for Analog Devices Industrial Ethernet PHYs
+-- 
+2.25.1
+
