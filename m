@@ -2,141 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34F63C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 14:54:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C68B1C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 14:54:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345137AbiEZOyp (ORCPT
+        id S1347671AbiEZOyt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 10:54:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59850 "EHLO
+        Thu, 26 May 2022 10:54:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231482AbiEZOym (ORCPT
+        with ESMTP id S240687AbiEZOym (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 26 May 2022 10:54:42 -0400
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE7F214D0F
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 07:54:40 -0700 (PDT)
-Received: by mail-pg1-x536.google.com with SMTP id j21so1492310pga.13
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 07:54:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=/XepXcl3MwknhHJh7/3Lmb3wiRfEwFXmNtfFn6bYrM8=;
-        b=er90n3esibIhtB8JkkbPU17C3v/v2Hajk48v6S8Aigmie8lqS3Pcl01ODmzg0I/Y1n
-         pqupHzGJsOGBdLzV0ssl85/n6hIfwZCKsl7rx88yxRLfPWp9koSB7BTBQhzKh1ygdLUE
-         Ar9QGhhQXuOtYkDpmfwH4xtzXFwiEEh3oT4O8n0o50VGHsb0Z+ACZfgKw3hFUsV4m6FK
-         MHdV6uYDQc55kr1nBf0SUnwROL2JNpqSQyAqAxAmcxuPO1Lkkk65ei55GjN/0lm4Rv7f
-         sRRMb04jSlj2JY086tzCCvW7955t+YFahnsjfZwlbhiDfP8dzen48aLKOfT7YPLjoGAN
-         r67w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=/XepXcl3MwknhHJh7/3Lmb3wiRfEwFXmNtfFn6bYrM8=;
-        b=EsA2rV4Q/SWatS28U0GE8Qc7io5dGmiAufRx3UGMl27ps7jqyk6TNd+DjCdwX1E6eP
-         /hTd0nRbozC98XsdQGqOURqfK1yOMDWpJSIBkxpX1Td+aRGpQ8fUxfjiAXpoRJt4y5AT
-         056b9HHVS2zEVyvXqdBpqeFrBXt4nXuQG8CMZfeFco8o39tYd1hqj9FoOvvmtuxkspmt
-         01b2Apm64HI97ysNIWvriqWw9rzNkTJfyuyIvbfD8z213t5OnCTMBX6bTrtLTDXwOtg3
-         N/FNHC4p9jLfyisuN74pXWQPVfJK/OcTQyen0PJnqFTcatuSbUP7KtJfvWcLqzaJzQbD
-         nLgQ==
-X-Gm-Message-State: AOAM530JDCFM322q+StUnOwY443tRNwFJtbYelB8J7085mmuoIzwMmn8
-        RM4EiWqMzgov7lD9+W+AsbWT+Q==
-X-Google-Smtp-Source: ABdhPJxF+lSZPtHpmQB/BJiBujuXz5MuUkwz6PHe/8nysAWfIRWl8xf3CDSZF2a6hrmjG49DgP6kaQ==
-X-Received: by 2002:a63:f158:0:b0:3db:8563:e8f5 with SMTP id o24-20020a63f158000000b003db8563e8f5mr33900015pgk.191.1653576880326;
-        Thu, 26 May 2022 07:54:40 -0700 (PDT)
-Received: from leo-build-box.lan (n058152048107.netvigator.com. [58.152.48.107])
-        by smtp.gmail.com with ESMTPSA id o17-20020a170902d4d100b0015e8d4eb28csm1690877plg.214.2022.05.26.07.54.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 May 2022 07:54:39 -0700 (PDT)
-From:   Leo Yan <leo.yan@linaro.org>
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Leo Yan <leo.yan@linaro.org>, Joe Mario <jmario@redhat.com>
-Subject: [PATCH v2] perf c2c: Use stdio interface if slang is not supported
-Date:   Thu, 26 May 2022 22:54:00 +0800
-Message-Id: <20220526145400.611249-1-leo.yan@linaro.org>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F311F36E28
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 07:54:41 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 64D6561BD4
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 14:54:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78B38C385A9;
+        Thu, 26 May 2022 14:54:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653576880;
+        bh=hXEWABgFpEb92wPiah32bOUadWzKqqT8anhnxU8Zme4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=gxnYoBkeS3NxwCgvDe4m6Dx0JZZwcrlaMoSIowVytmagQF0rks1f9f1xDRYzSIXTX
+         8HQrs8k5K6JplK/SDHUPmhfhMOV2A/+Lr6uI1A1+2M1OEHHkuAuYD8JfWn2P9XKwQA
+         oCiA4jgyxubHUWIjSdhwedpENiX0Kj2EIB5NA06J6GPofQFPHs14bzeMBW+S8kjkhR
+         n2BKZmKtT+gLxF5kkqjQep8fS4ou/1syxNAdSDdo96tjmp2ZjVFi5pV/mI0RVQP2Kx
+         7YCC201dH74AM+38Xn6Bu7C1myxh5NIlLNEFVGvgbh88CK7Jcq10KmzexW2uSAa/X8
+         ikaMnv2jAcjew==
+Date:   Thu, 26 May 2022 23:54:35 +0900
+From:   Masami Hiramatsu (Google) <mhiramat@kernel.org>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Gautam Menghani <gautammenghani201@gmail.com>, mingo@redhat.com,
+        linux-kernel@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        skhan@linuxfoundation.org, Masami Hiramatsu <mhiramat@kernel.org>
+Subject: Re: [PATCH] kernel/trace: Initialize integer variable to prevent
+ garbage return value
+Message-Id: <20220526235435.59a1b3074ecfb30825824948@kernel.org>
+In-Reply-To: <20220525112551.37e86da6@gandalf.local.home>
+References: <20220522061826.1751-1-gautammenghani201@gmail.com>
+        <20220525112551.37e86da6@gandalf.local.home>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If slang lib is not installed on the system, perf c2c tool disables
-TUI mode and roll back to use stdio mode;  but the flag 'c2c.use_stdio'
-is missed to set true and thus it wrongly applies UI quirks in the
-function ui_quirks().
+On Wed, 25 May 2022 11:25:51 -0400
+Steven Rostedt <rostedt@goodmis.org> wrote:
 
-This commit forces to use stdio interface if slang is not supported,
-and it can avoid to apply the UI quirks and show the correct metric
-header.
+> On Sat, 21 May 2022 23:18:26 -0700
+> Gautam Menghani <gautammenghani201@gmail.com> wrote:
+> 
+> > Initialize the integer variable to 0 to fix the clang scan warning:
+> > Undefined or garbage value returned to caller 
+> > [core.uninitialized.UndefReturn]
+> >         return ret;
+> > 
+> > Signed-off-by: Gautam Menghani <gautammenghani201@gmail.com>
+> > ---
+> >  kernel/trace/trace_boot.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/kernel/trace/trace_boot.c b/kernel/trace/trace_boot.c
+> > index 0580287d7a0d..778200dd8ede 100644
+> > --- a/kernel/trace/trace_boot.c
+> > +++ b/kernel/trace/trace_boot.c
+> > @@ -300,7 +300,7 @@ trace_boot_hist_add_handlers(struct xbc_node *hnode, char **bufp,
+> >  {
+> >  	struct xbc_node *node;
+> >  	const char *p, *handler;
+> > -	int ret;
+> > +	int ret = 0;
+> 
+> Looks good to me. Masami, care to ack it?
 
-Before:
+Thanks! This looks good to me.
 
-=================================================
-      Shared Cache Line Distribution Pareto
-=================================================
-  -------------------------------------------------------------------------------
-      0        0        0       99        0        0        0      0xaaaac17d6000
-  -------------------------------------------------------------------------------
-    0.00%    0.00%    6.06%    0.00%    0.00%    0.00%   0x20   N/A       0      0xaaaac17c25ac         0         0        43       375    18469         2  [.] 0x00000000000025ac  memstress         memstress[25ac]   0
-    0.00%    0.00%   93.94%    0.00%    0.00%    0.00%   0x29   N/A       0      0xaaaac17c3e88         0         0       173       180      135         2  [.] 0x0000000000003e88  memstress         memstress[3e88]   0
+Fixes: 8993665abcce ("tracing/boot: Support multiple handlers for per-event histogram")
+Cc: stable@vger.kernel.org
+Acked-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
 
-After:
+Thank you!
 
-=================================================
-      Shared Cache Line Distribution Pareto
-=================================================
-  -------------------------------------------------------------------------------
-      0        0        0       99        0        0        0      0xaaaac17d6000
-  -------------------------------------------------------------------------------
-           0.00%    0.00%    6.06%    0.00%    0.00%    0.00%                0x20   N/A       0      0xaaaac17c25ac         0         0        43       375    18469         2  [.] 0x00000000000025ac  memstress         memstress[25ac]   0
-           0.00%    0.00%   93.94%    0.00%    0.00%    0.00%                0x29   N/A       0      0xaaaac17c3e88         0         0       173       180      135         2  [.] 0x0000000000003e88  memstress         memstress[3e88]   0
+> 
+> -- Steve
+> 
+> >  
+> >  	handler = xbc_node_get_data(hnode);
+> >  
+> 
 
-Fixes: 5a1a99cd2e4e ("perf c2c report: Add main TUI browser")
-Reported-by: Joe Mario <jmario@redhat.com>
-Signed-off-by: Leo Yan <leo.yan@linaro.org>
----
 
-Changes from v1:
-* Added fixes tag;
-* Added reported tag from Joe.
-
- tools/perf/builtin-c2c.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/tools/perf/builtin-c2c.c b/tools/perf/builtin-c2c.c
-index c8230c48125f..80b525c065ed 100644
---- a/tools/perf/builtin-c2c.c
-+++ b/tools/perf/builtin-c2c.c
-@@ -2801,9 +2801,7 @@ static int perf_c2c__report(int argc, const char **argv)
- 		   "the input file to process"),
- 	OPT_INCR('N', "node-info", &c2c.node_info,
- 		 "show extra node info in report (repeat for more info)"),
--#ifdef HAVE_SLANG_SUPPORT
- 	OPT_BOOLEAN(0, "stdio", &c2c.use_stdio, "Use the stdio interface"),
--#endif
- 	OPT_BOOLEAN(0, "stats", &c2c.stats_only,
- 		    "Display only statistic tables (implies --stdio)"),
- 	OPT_BOOLEAN(0, "full-symbols", &c2c.symbol_full,
-@@ -2833,6 +2831,10 @@ static int perf_c2c__report(int argc, const char **argv)
- 	if (argc)
- 		usage_with_options(report_c2c_usage, options);
- 
-+#ifndef HAVE_SLANG_SUPPORT
-+	c2c.use_stdio = true;
-+#endif
-+
- 	if (c2c.stats_only)
- 		c2c.use_stdio = true;
- 
 -- 
-2.25.1
-
+Masami Hiramatsu (Google) <mhiramat@kernel.org>
