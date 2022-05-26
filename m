@@ -2,162 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B46FC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 17:55:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC294C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 17:58:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348404AbiEZRzT (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 13:55:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51170 "EHLO
+        id S240286AbiEZR6H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 13:58:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240286AbiEZRyp (ORCPT
+        with ESMTP id S233423AbiEZR6F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 13:54:45 -0400
-Received: from mail-pf1-x449.google.com (mail-pf1-x449.google.com [IPv6:2607:f8b0:4864:20::449])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71F98C03BB
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 10:54:30 -0700 (PDT)
-Received: by mail-pf1-x449.google.com with SMTP id z186-20020a6233c3000000b00510a6bc2864so1309565pfz.10
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 10:54:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=FRI3yOd2jBqllb9cCkfyWs3M3poFKw/VaB/vECthXc0=;
-        b=qaLYC8O0iC/49VvNbNC4/d+/0PPNhyiS1NmDCxgYJI6YRSk4bOI/2G1qfmi5uArvAr
-         +ihmPwxft3+Xie9rw/VuqSYu1q+T7tg4iaOwyNwsEYOG7Y5ckgHyhSLDjMC7dvl4H0Sa
-         3UDvXdYrW1B2M3pqqDVFxus5CHojluv1mp8W6eVqHHIX/XI1Xejr4k6xpx1hKYpyjTzh
-         q8fV6/jUKCI/EEG/JaukT2qQDAMPhS87QdMSAfoaDLGOe1zNnKoulrhr3ybYJ7d4NbGd
-         5th9CjEyr4mSvsn/ncspBqPm7JyDzgZfS0wmfaioWvJ4HZIUe27gUvYj2ytH3T2aa8I/
-         GQmw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=FRI3yOd2jBqllb9cCkfyWs3M3poFKw/VaB/vECthXc0=;
-        b=PqKJnaKH2FKqFZDBXm9udohwJEXAMlIZryKeHgbpkEYjXkeNdm4U0alXbgRK8HXJFD
-         yf2xMUtoTiCx7VFKO6EKddilZ37G2QH7DqZ/NA04l5ehWGA8Offkj2YyNDBqDfdGfWlx
-         zRZTUwVQar99Xbh0J5VVCnsBKDqw5VCPo1cJv9V6VYnvIHRbSkfvSmGmsdHxMJY9p5zK
-         GjCumhfnkR7DjlrLr7HprUrz4d1PiPYOhLn2ir22Ur23+UEDphiCtubNmx/Oo9Wn7HY8
-         jj6nm9IMrDyRGXeF17m2BUsgfOalNMD499EkL4F8/dkX3tex1GwAwoMawqcXtnEmtECy
-         Hgog==
-X-Gm-Message-State: AOAM532lID3w/ZRSsIUB31ElSx3rH6wkSlHZEF8dEr7hcZMDKThImgBq
-        Um1tS4WZo0EQQnos3qau92j32xVcDm4D
-X-Google-Smtp-Source: ABdhPJwiQksr/pw7CYHck0RR+tFA/cI985RJqtaX3uK/hhC4hDNVaZ2egzRl+njfFBnFaWvq9tHOXyPjVXcH
-X-Received: from sweer.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:e45])
- (user=bgardon job=sendgmr) by 2002:a17:90b:1192:b0:1e0:63f3:c463 with SMTP id
- gk18-20020a17090b119200b001e063f3c463mr184161pjb.1.1653587669619; Thu, 26 May
- 2022 10:54:29 -0700 (PDT)
-Date:   Thu, 26 May 2022 17:54:08 +0000
-In-Reply-To: <20220526175408.399718-1-bgardon@google.com>
-Message-Id: <20220526175408.399718-12-bgardon@google.com>
-Mime-Version: 1.0
-References: <20220526175408.399718-1-bgardon@google.com>
-X-Mailer: git-send-email 2.36.1.124.g0e6072fb45-goog
-Subject: [PATCH v8 11/11] KVM: selftests: Cache binary stats metadata for
- duration of test
-From:   Ben Gardon <bgardon@google.com>
-To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, Peter Xu <peterx@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        David Matlack <dmatlack@google.com>,
-        Jim Mattson <jmattson@google.com>,
-        David Dunn <daviddunn@google.com>,
-        Jing Zhang <jingzhangos@google.com>,
-        Junaid Shahid <junaids@google.com>,
-        Ben Gardon <bgardon@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Thu, 26 May 2022 13:58:05 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6BFEDFD7;
+        Thu, 26 May 2022 10:58:03 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: dmitry.osipenko)
+        with ESMTPSA id DA6701F458C5
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1653587881;
+        bh=vKrfmc3boXboPynKhfGf6a+AgAeTRHxWWw/3jLM5Jic=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=DGkTuUPwewZwysjZztrVad/lb9S/kXm3+CYcMvUjKexgsyXtFd1nxFQrKIctmAXDE
+         Dg4zWR6Lg/z3Q5upNyDit2RITf3OMKBlmER62SyW0U42xsGGg6QU60mHzng41heGyk
+         NU4P7ccBQDG8c0W5TBR01+lyJcSnh8zyQ8X4MXL0wbrfDi55ocZBn4f47Yq+Qm9r/l
+         dkOwFM8+qVn8evQindIk4K2aIF4MZIQ+S647V8zghD5pI/2CMgkfBp23fAj8XzYIZ6
+         3Mt5DrdIKw58s6+5PISOPPMbS6bEZtDYTHtKIafhS/zxXwZl9zGfofl5uvRKsINlUj
+         HSzFw1AXzb0JQ==
+Message-ID: <45c29859-f7a6-48e5-be48-bd8191ac299a@collabora.com>
+Date:   Thu, 26 May 2022 20:57:56 +0300
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH 21/31] soc/tegra: Remove the call to
+ devm_pm_opp_set_clkname()
+Content-Language: en-US
+To:     Viresh Kumar <viresh.kumar@linaro.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>
+Cc:     linux-pm@vger.kernel.org,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Rafael Wysocki <rjw@rjwysocki.net>,
+        Stephen Boyd <sboyd@kernel.org>, Nishanth Menon <nm@ti.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <cover.1653564321.git.viresh.kumar@linaro.org>
+ <1e88b248352afe03cd3bf0e887b1f2be86b5afb5.1653564321.git.viresh.kumar@linaro.org>
+From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
+In-Reply-To: <1e88b248352afe03cd3bf0e887b1f2be86b5afb5.1653564321.git.viresh.kumar@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In order to improve performance across multiple reads of VM stats, cache
-the stats metadata in the VM struct.
+On 5/26/22 14:42, Viresh Kumar wrote:
+> The OPP core already performs devm_pm_opp_set_clkname() with name as
+> NULL, the callers shouldn't be doing the same unless they have a
+> different clock name to add here.
+> 
+> Drop the call.
+> 
+> Cc: Dmitry Osipenko <digetx@gmail.com>
+> Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
+> ---
+>  drivers/soc/tegra/common.c | 6 ------
+>  1 file changed, 6 deletions(-)
+> 
+> diff --git a/drivers/soc/tegra/common.c b/drivers/soc/tegra/common.c
+> index 32c346b72635..49a5360f4507 100644
+> --- a/drivers/soc/tegra/common.c
+> +++ b/drivers/soc/tegra/common.c
+> @@ -108,12 +108,6 @@ int devm_tegra_core_dev_init_opp_table(struct device *dev,
+>  	u32 hw_version;
+>  	int err;
+>  
+> -	err = devm_pm_opp_set_clkname(dev, NULL);
+> -	if (err) {
+> -		dev_err(dev, "failed to set OPP clk: %d\n", err);
+> -		return err;
+> -	}
+> -
+>  	/* Tegra114+ doesn't support OPP yet */
+>  	if (!of_machine_is_compatible("nvidia,tegra20") &&
+>  	    !of_machine_is_compatible("nvidia,tegra30"))
 
-Signed-off-by: Ben Gardon <bgardon@google.com>
----
- tools/testing/selftests/kvm/lib/kvm_util.c    | 32 ++++++++++---------
- .../selftests/kvm/lib/kvm_util_internal.h     |  5 +++
- 2 files changed, 22 insertions(+), 15 deletions(-)
+I can't see where OPP core performs devm_pm_opp_set_clkname().
 
-diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
-index 33d4d64c1391..a32b7b4352b9 100644
---- a/tools/testing/selftests/kvm/lib/kvm_util.c
-+++ b/tools/testing/selftests/kvm/lib/kvm_util.c
-@@ -736,6 +736,12 @@ void kvm_vm_free(struct kvm_vm *vmp)
- 	if (vmp == NULL)
- 		return;
- 
-+	/* Free cached stats metadata and close FD */
-+	if (vmp->stats_fd) {
-+		free(vmp->stats_desc);
-+		close(vmp->stats_fd);
-+	}
-+
- 	/* Free userspace_mem_regions. */
- 	hash_for_each_safe(vmp->regions.slot_hash, ctr, node, region, slot_node)
- 		__vm_mem_region_delete(vmp, region, false);
-@@ -2694,34 +2700,30 @@ void read_stat_data(int stats_fd, struct kvm_stats_header *header,
- void __vm_get_stat(struct kvm_vm *vm, const char *stat_name, uint64_t *data,
- 		   size_t max_elements)
- {
--	struct kvm_stats_desc *stats_desc;
--	struct kvm_stats_header header;
- 	struct kvm_stats_desc *desc;
- 	size_t size_desc;
--	int stats_fd;
- 	int i;
- 
--	stats_fd = vm_get_stats_fd(vm);
--
--	read_stats_header(stats_fd, &header);
--
--	stats_desc = read_stats_descriptors(stats_fd, &header);
-+	if (!vm->stats_fd) {
-+		vm->stats_fd = vm_get_stats_fd(vm);
-+		read_stats_header(vm->stats_fd, &vm->stats_header);
-+		vm->stats_desc = read_stats_descriptors(vm->stats_fd,
-+							&vm->stats_header);
-+	}
- 
--	size_desc = get_stats_descriptor_size(&header);
-+	size_desc = get_stats_descriptor_size(&vm->stats_header);
- 
--	for (i = 0; i < header.num_desc; ++i) {
--		desc = (void *)stats_desc + (i * size_desc);
-+	for (i = 0; i < vm->stats_header.num_desc; ++i) {
-+		desc = (void *)vm->stats_desc + (i * size_desc);
- 
- 		if (strcmp(desc->name, stat_name))
- 			continue;
- 
--		read_stat_data(stats_fd, &header, desc, data, max_elements);
-+		read_stat_data(vm->stats_fd, &vm->stats_header, desc,
-+			       data, max_elements);
- 
- 		break;
- 	}
--
--	free(stats_desc);
--	close(stats_fd);
- }
- 
- /* VM disable NX huge pages
-diff --git a/tools/testing/selftests/kvm/lib/kvm_util_internal.h b/tools/testing/selftests/kvm/lib/kvm_util_internal.h
-index a03febc24ba6..e753edd7b8d3 100644
---- a/tools/testing/selftests/kvm/lib/kvm_util_internal.h
-+++ b/tools/testing/selftests/kvm/lib/kvm_util_internal.h
-@@ -67,6 +67,11 @@ struct kvm_vm {
- 	vm_vaddr_t idt;
- 	vm_vaddr_t handlers;
- 	uint32_t dirty_ring_size;
-+
-+	/* Cache of information for binary stats interface */
-+	int stats_fd;
-+	struct kvm_stats_header stats_header;
-+	struct kvm_stats_desc *stats_desc;
- };
- 
- struct vcpu *vcpu_find(struct kvm_vm *vm, uint32_t vcpuid);
 -- 
-2.36.1.124.g0e6072fb45-goog
-
+Best regards,
+Dmitry
