@@ -2,100 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 501F3C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 14:12:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8FD0C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 14:13:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347598AbiEZOMN (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 10:12:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44392 "EHLO
+        id S244180AbiEZONi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 10:13:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231806AbiEZOML (ORCPT
+        with ESMTP id S231806AbiEZONa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 10:12:11 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3686C1ED2
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 07:12:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653574329; x=1685110329;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=cdS+6RMM6jUt8rBjDLC4rrEek6GHvI0IU671aslbkgI=;
-  b=cstftcE+fK26aLNdsuDM1IX9j8rNE489CeJqwSA94+Q8HYGLfoOF5ncr
-   JYJGHrYN8xu0DeCSfgbj5JS9nGVSkzZlchiRMejiVVjkOpmALd1A2c9Ap
-   EQ5k42UUN5MSaby8V3oFk2d4BhGvEzAkL5XEZWKHi2kFwDzuGqSe5t4tY
-   AEYMZ5/Ssu2H9bgtxjn/OjNuQKNN2TNkBWv/+L+Stem2Oge3DlzGl1ykG
-   wDtOw65GV4edxgXpc5vh0MYxE4+kay7NPIszfL6nKsNy5APaiLcWSVrXp
-   jt9RdeW6vPoR5kEEEVBkgjPBamN1Hb+XyO4mVmsH7G2AP3J+aj+5nQNkw
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10359"; a="254040173"
-X-IronPort-AV: E=Sophos;i="5.91,252,1647327600"; 
-   d="scan'208";a="254040173"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 May 2022 07:12:09 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,252,1647327600"; 
-   d="scan'208";a="630931545"
-Received: from lkp-server01.sh.intel.com (HELO db63a1be7222) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 26 May 2022 07:12:08 -0700
-Received: from kbuild by db63a1be7222 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nuEDf-0003uu-Kt;
-        Thu, 26 May 2022 14:12:07 +0000
-Date:   Thu, 26 May 2022 22:11:34 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Borislav Petkov <bp@suse.de>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Peter Zijlstra <peterz@infradead.org>
-Subject: [peterz-queue:objtool/urgent 9/9]
- arch/x86/include/asm/extable.h:47:86: warning: 'noreturn' function does
- return
-Message-ID: <202205262227.2m2DJfpJ-lkp@intel.com>
+        Thu, 26 May 2022 10:13:30 -0400
+Received: from wout3-smtp.messagingengine.com (wout3-smtp.messagingengine.com [64.147.123.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB393C1ED5;
+        Thu, 26 May 2022 07:13:29 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.west.internal (Postfix) with ESMTP id 2BB18320095B;
+        Thu, 26 May 2022 10:13:27 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute5.internal (MEProxy); Thu, 26 May 2022 10:13:29 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; t=1653574406; x=1653660806; bh=vnwACNqhZoOoXwIiQWU2wL/gnnhq
+        0onDp8LHcdhWTNg=; b=OuVZF/6dfxHAylAnDM80GjsVlw5t/W0/v3Ac/hSkZlW3
+        6budAzqVou/8FMEF8bHQ3QdbUIZLRaBN6+Os28Hbm5QJzyZTQWOK6NHeuvozpG4X
+        Dw6IKF742xWjTvOZGmrHJNkcQ4/nE8in2JOlJP4BZYDtYTde62kx6igeR8uCeLaw
+        lqwvqMNvwbUWySqZ0dgh0eUEAl8kttTvhPlDv8Lms6Jmn8JNq/2E0/cIkjolRT16
+        dzsbcLrSWh204ftIGEj/i3JiG2LTn1gJ60yBTGlDpbTwsAmMXpxVCzBa1AOlCDl0
+        NrjltsJu1VRuvFQMfz7Z7AaD39FdaMLbY5wxNbs+Rw==
+X-ME-Sender: <xms:BYuPYrqRIAexR2_L_gBVXKr6byVNV7aHujxd6DXwJKNyvNrsAgSi0w>
+    <xme:BYuPYlpEOTeXblN17XiBCOveogzmYPbW-fTtGz_0fc6JKXGSF0H4rLRc1DpCshPCx
+    2TuFVL6uR9cz9A>
+X-ME-Received: <xmr:BYuPYoNOI_2OxjK1Whx8-npY4qsyGCZ8o9p--VASWEuvNU6rBXIS3W1NFxC2z0wWk5jz3tzdDLz4KAy3tq9QuGfv2cIZwQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrjeejgdejvdcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
+    gvrhhnpedvudefveekheeugeeftddvveefgfduieefudeifefgleekheegleegjeejgeeg
+    hfenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
+    hoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:BYuPYu6LOcBOGbfpSYXrF7jWxzX8QW3KrbfG2IwsVcOVQkDRuJ4PGA>
+    <xmx:BYuPYq4s5Cu4DqXxPsSLmODY0tulu-Vdn__mr-Tk5LpSVy88CVWrRA>
+    <xmx:BYuPYmj2mUW2TQGb_O4uvddrVIX2MtiVnfqzRIUWdobW5Hd-IkGDYA>
+    <xmx:BouPYnwL6CZ3no6COUQ1FGwlYR2SWZ-PYihJspZ35uq2Zymi6UllSw>
+Feedback-ID: i494840e7:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 26 May 2022 10:13:24 -0400 (EDT)
+Date:   Thu, 26 May 2022 17:13:22 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Hans Schultz <schultz.hans@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Hans Schultz <schultz.hans+netdev@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH V3 net-next 1/4] net: bridge: add fdb flag to extent
+ locked port feature
+Message-ID: <Yo+LAj1vnjq0p36q@shredder>
+References: <20220524152144.40527-1-schultz.hans+netdev@gmail.com>
+ <20220524152144.40527-2-schultz.hans+netdev@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20220524152144.40527-2-schultz.hans+netdev@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git objtool/urgent
-head:   43c6fc6a431b43163dc3950543dd87b986f25945
-commit: 43c6fc6a431b43163dc3950543dd87b986f25945 [9/9] x86/extable: Annotate ex_handler_msr_mce() as a dead end
-config: x86_64-randconfig-a013 (https://download.01.org/0day-ci/archive/20220526/202205262227.2m2DJfpJ-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-1) 11.3.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git/commit/?id=43c6fc6a431b43163dc3950543dd87b986f25945
-        git remote add peterz-queue https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git
-        git fetch --no-tags peterz-queue objtool/urgent
-        git checkout 43c6fc6a431b43163dc3950543dd87b986f25945
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash arch/x86/mm/
+On Tue, May 24, 2022 at 05:21:41PM +0200, Hans Schultz wrote:
+> Add an intermediate state for clients behind a locked port to allow for
+> possible opening of the port for said clients. This feature corresponds
+> to the Mac-Auth and MAC Authentication Bypass (MAB) named features. The
+> latter defined by Cisco.
+> Locked FDB entries will be limited in number, so as to prevent DOS
+> attacks by spamming the port with random entries. The limit will be
+> a per port limit as it is a port based feature and that the port flushes
+> all FDB entries on link down.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Why locked FDB entries need a special treatment compared to regular
+entries? A port that has learning enabled can be spammed with random
+source MACs just as well.
 
-All warnings (new ones prefixed by >>):
+The authorization daemon that is monitoring FDB notifications can have a
+policy to shut down a port if the rate / number of locked entries is
+above a given threshold.
 
-   In file included from arch/x86/include/asm/uaccess.h:13,
-                    from include/linux/uaccess.h:11,
-                    from arch/x86/mm/extable.c:3:
-   arch/x86/include/asm/extable.h: In function 'ex_handler_msr_mce':
->> arch/x86/include/asm/extable.h:47:86: warning: 'noreturn' function does return
-      47 | static inline void __noreturn ex_handler_msr_mce(struct pt_regs *regs, bool wrmsr) { }
-         |                                                                                      ^
-
-
-vim +/noreturn +47 arch/x86/include/asm/extable.h
-
-    43	
-    44	#ifdef CONFIG_X86_MCE
-    45	extern void __noreturn ex_handler_msr_mce(struct pt_regs *regs, bool wrmsr);
-    46	#else
-  > 47	static inline void __noreturn ex_handler_msr_mce(struct pt_regs *regs, bool wrmsr) { }
-    48	#endif
-    49	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+I don't think this kind of policy belongs in the kernel. If it resides
+in user space, then the threshold can be adjusted. Currently it's hard
+coded to 64 and I don't see how user space can change or monitor it.
