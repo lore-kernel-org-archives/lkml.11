@@ -2,145 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC4ACC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 20:49:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE18FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 20:53:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348792AbiEZUtt (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 16:49:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47890 "EHLO
+        id S239325AbiEZUxL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 16:53:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234336AbiEZUtr (ORCPT
+        with ESMTP id S233403AbiEZUxI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 16:49:47 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EBDF4D60E;
-        Thu, 26 May 2022 13:49:46 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id rq11so5189274ejc.4;
-        Thu, 26 May 2022 13:49:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=yAsZTSZ1a8xS9rErKf9SBVyjQcUkv6lfr/KFAu+coOk=;
-        b=dVtl33CWWZyZn9JYz1uRdSZSHiMQzLcltFH4jMDsrB9nKmQ6Ap9CB5WUE2jdTeJFoI
-         RNIRQkKz2GVz/IgieYF1l0Fmlv5YmMxsq7AdTZ5xGDN5GSTghMEtbxJ05tX2KQid/mqB
-         KJQM6Biwkjc2/PoWxMm7F9zgvsCIeQpX6XEcNXMe44ENkY3kQV3S6So7H2SL2+ifLSh5
-         a8PF2syU6ly260rc1LjRzTu3woA/Yf3lNYqT4S8YScsdl57E121XLJskZmBZJpgP/B5h
-         UpHO860e1fAKaxBax28XJrzR0P6Km3HQ+gC2OPUiZi2HuMMVCucDmHlUNYwuI0HV1tjW
-         pwXw==
+        Thu, 26 May 2022 16:53:08 -0400
+Received: from mail-oa1-f52.google.com (mail-oa1-f52.google.com [209.85.160.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0392367D1E;
+        Thu, 26 May 2022 13:53:08 -0700 (PDT)
+Received: by mail-oa1-f52.google.com with SMTP id 586e51a60fabf-f16a3e0529so3641968fac.2;
+        Thu, 26 May 2022 13:53:07 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=yAsZTSZ1a8xS9rErKf9SBVyjQcUkv6lfr/KFAu+coOk=;
-        b=gfHPhCWUuFbRjeQIak08zcZlxf9JMbksVpyQDkqY6iqaBstZuJA08cT8grOtZgfvz2
-         y2qMZY3AB6pnkwCJiOJbtJH49rIofqhbXP5KqziW+WvUttHaua45QR3jB4ov+jNNC1Af
-         XXsgOcy1994a7qFx3QIhv8Lrr0W00L6i5t+9WrMcakjb8PUdWNkYN1FvpfQqqeNkwKko
-         +DL8bbfHiHb9koLZDrYMeX0kaOYWWdjqG/pHw/mnzbLsMZeOihxbVFpaxBP1qGg3xPZ5
-         4snKu70/fqEchtZaPI3HaD++jlRD/jPvBEsWOHoBvQR5Sb22NogyXBuV83Eoha3pYm1R
-         UMtg==
-X-Gm-Message-State: AOAM530ArcOBKcTNW9mcRomRDk0sSte6nE3RwU72mqJFcXI4Y1ZiHgWe
-        AEGDhrlwCwTcdNO+5+8HnBU=
-X-Google-Smtp-Source: ABdhPJxUN5ZUhtOcz0d2q4ybSjuruzHPv1K4AehZHBwLykcSk+YIbNmkk8aYK2nzmqaUrcp9c8+rxw==
-X-Received: by 2002:a17:907:8a18:b0:6fe:ccbc:afe5 with SMTP id sc24-20020a1709078a1800b006feccbcafe5mr22223241ejc.54.1653598185213;
-        Thu, 26 May 2022 13:49:45 -0700 (PDT)
-Received: from kista.localnet (213-161-3-76.dynamic.telemach.net. [213.161.3.76])
-        by smtp.gmail.com with ESMTPSA id b3-20020a50e783000000b0042617ba637fsm1252502edn.9.2022.05.26.13.49.44
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=pc1NE8k39pHbtINYaHG41r5I5vQP7cYj1pZbQZyEc5A=;
+        b=dLXOTaZXl3uaoy+D4ovE5Vqv2dhWHvBDl31glpQZb96L4TwaEdbLgUkS1vIe9wKqCG
+         tHc6vh4t21eapdegkkjMXqf0guyiMGwugnZxYiX9UkWQJ0A78PSQrUpPi73A3JoTiIOo
+         E1ZWxLI7zlFMUepuW2BTyQC/tc6fSeNNpb0rtqgruzryLrwM70PyFPyNPpg1uzyhH9Rk
+         8H2TGU6Fm53fRz7I/Pmwiv5HRDingNtqNx9vQTEI55t1mtG4vWdX/OtSGL9qgLfKtF2R
+         OL0x7MyCRG161zzJJ/HZCMTGmxYEyxjwzsCWLM9iNTVHS6/mTDQM+G13Ej/d/2vNI7mm
+         l9Vg==
+X-Gm-Message-State: AOAM531n5TwoGW7qgLgA2CQSdIWFcswfIpH/azjy7ePZSYdOeZDacS+a
+        iTcw0+lOZ9vf9BjDUEtCSRyIMxAaYw==
+X-Google-Smtp-Source: ABdhPJwsNwYmZovbeLT/mlyxE9TxQhyDCMg+nsKKnuLDMaufWVf24gyTr7Jb6zt4qTS97ACRK01edQ==
+X-Received: by 2002:a05:6870:339a:b0:f2:d065:be1f with SMTP id w26-20020a056870339a00b000f2d065be1fmr2276522oae.69.1653598387346;
+        Thu, 26 May 2022 13:53:07 -0700 (PDT)
+Received: from robh.at.kernel.org (rrcs-192-154-179-37.sw.biz.rr.com. [192.154.179.37])
+        by smtp.gmail.com with ESMTPSA id v1-20020a056830090100b00605fd407259sm1057769ott.3.2022.05.26.13.53.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 May 2022 13:49:44 -0700 (PDT)
-From:   Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
-To:     Chen-Yu Tsai <wens@csie.org>, Samuel Holland <samuel@sholland.org>
-Cc:     Samuel Holland <samuel@sholland.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Vishnu Patekar <vishnupatekar0510@gmail.com>,
-        linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-sunxi@lists.linux.dev
-Subject: Re: [PATCH] pinctrl: sunxi: a83t: Fix NAND function name for some pins
-Date:   Thu, 26 May 2022 22:49:43 +0200
-Message-ID: <7383317.EvYhyI6sBW@kista>
-In-Reply-To: <20220526024956.49500-1-samuel@sholland.org>
-References: <20220526024956.49500-1-samuel@sholland.org>
+        Thu, 26 May 2022 13:53:06 -0700 (PDT)
+Received: (nullmailer pid 244609 invoked by uid 1000);
+        Thu, 26 May 2022 20:53:04 -0000
+Date:   Thu, 26 May 2022 15:53:04 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Johan Hovold <johan+linaro@kernel.org>
+Cc:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Stanimir Varbanov <svarbanov@mm-sol.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        linux-pci@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] PCI: qcom: Add support for modular builds
+Message-ID: <20220526205304.GK54904-robh@kernel.org>
+References: <20220519094646.23009-1-johan+linaro@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220519094646.23009-1-johan+linaro@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dne =C4=8Detrtek, 26. maj 2022 ob 04:49:56 CEST je Samuel Holland napisal(a=
-):
-> The other NAND pins on Port C use the "nand0" function name.
-> "nand0" also matches all of the other Allwinner SoCs.
->=20
-> Fixes: 4730f33f0d82 ("pinctrl: sunxi: add allwinner A83T PIO controller=20
-support")
-> Signed-off-by: Samuel Holland <samuel@sholland.org>
-
-Acked-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-
-Best regards,
-Jernej
-
+On Thu, May 19, 2022 at 11:46:46AM +0200, Johan Hovold wrote:
+> Allow the Qualcomm PCIe controller driver to be built as a module, which
+> is useful for multi-platform kernels as well as during development.
+> 
+> Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
 > ---
->=20
->  drivers/pinctrl/sunxi/pinctrl-sun8i-a83t.c | 10 +++++-----
->  1 file changed, 5 insertions(+), 5 deletions(-)
->=20
-> diff --git a/drivers/pinctrl/sunxi/pinctrl-sun8i-a83t.c b/drivers/pinctrl/
-sunxi/pinctrl-sun8i-a83t.c
-> index 4ada80317a3b..b5c1a8f363f3 100644
-> --- a/drivers/pinctrl/sunxi/pinctrl-sun8i-a83t.c
-> +++ b/drivers/pinctrl/sunxi/pinctrl-sun8i-a83t.c
-> @@ -158,26 +158,26 @@ static const struct sunxi_desc_pin sun8i_a83t_pins[=
-] =3D=20
-{
->  	SUNXI_PIN(SUNXI_PINCTRL_PIN(C, 14),
->  		  SUNXI_FUNCTION(0x0, "gpio_in"),
->  		  SUNXI_FUNCTION(0x1, "gpio_out"),
-> -		  SUNXI_FUNCTION(0x2, "nand"),		/* DQ6=20
-*/
-> +		  SUNXI_FUNCTION(0x2, "nand0"),		/* DQ6=20
-*/
->  		  SUNXI_FUNCTION(0x3, "mmc2")),		/* D6=20
-*/
->  	SUNXI_PIN(SUNXI_PINCTRL_PIN(C, 15),
->  		  SUNXI_FUNCTION(0x0, "gpio_in"),
->  		  SUNXI_FUNCTION(0x1, "gpio_out"),
-> -		  SUNXI_FUNCTION(0x2, "nand"),		/* DQ7=20
-*/
-> +		  SUNXI_FUNCTION(0x2, "nand0"),		/* DQ7=20
-*/
->  		  SUNXI_FUNCTION(0x3, "mmc2")),		/* D7=20
-*/
->  	SUNXI_PIN(SUNXI_PINCTRL_PIN(C, 16),
->  		  SUNXI_FUNCTION(0x0, "gpio_in"),
->  		  SUNXI_FUNCTION(0x1, "gpio_out"),
-> -		  SUNXI_FUNCTION(0x2, "nand"),		/* DQS=20
-*/
-> +		  SUNXI_FUNCTION(0x2, "nand0"),		/* DQS=20
-*/
->  		  SUNXI_FUNCTION(0x3, "mmc2")),		/* RST=20
-*/
->  	SUNXI_PIN(SUNXI_PINCTRL_PIN(C, 17),
->  		  SUNXI_FUNCTION(0x0, "gpio_in"),
->  		  SUNXI_FUNCTION(0x1, "gpio_out"),
-> -		  SUNXI_FUNCTION(0x2, "nand")),		/* CE2=20
-*/
-> +		  SUNXI_FUNCTION(0x2, "nand0")),	/* CE2 */
->  	SUNXI_PIN(SUNXI_PINCTRL_PIN(C, 18),
->  		  SUNXI_FUNCTION(0x0, "gpio_in"),
->  		  SUNXI_FUNCTION(0x1, "gpio_out"),
-> -		  SUNXI_FUNCTION(0x2, "nand")),		/* CE3=20
-*/
-> +		  SUNXI_FUNCTION(0x2, "nand0")),	/* CE3 */
->  	/* Hole */
->  	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 2),
->  		  SUNXI_FUNCTION(0x0, "gpio_in"),
-> --=20
-> 2.35.1
->=20
->=20
+>  drivers/pci/controller/dwc/Kconfig     |  2 +-
+>  drivers/pci/controller/dwc/pcie-qcom.c | 36 +++++++++++++++++++++++---
+>  2 files changed, 34 insertions(+), 4 deletions(-)
 
-
+Reviewed-by: Rob Herring <robh@kernel.org>
