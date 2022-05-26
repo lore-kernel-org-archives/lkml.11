@@ -2,107 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4407C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 20:12:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61C92C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 20:12:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348884AbiEZUMQ (ORCPT
+        id S1346033AbiEZUMZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 16:12:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57102 "EHLO
+        Thu, 26 May 2022 16:12:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348874AbiEZUMI (ORCPT
+        with ESMTP id S1348900AbiEZUMU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 16:12:08 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEA9EC5DB9;
-        Thu, 26 May 2022 13:12:07 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id w2-20020a17090ac98200b001e0519fe5a8so2574231pjt.4;
-        Thu, 26 May 2022 13:12:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Ym1mSZ1N+gDIg7RPoqcZ6DASQgrFGhS7kPRYey05Jig=;
-        b=U1xGut8jUgrl5aH8rrFlvVXLlKZ7koIFTkdaMNaSFb8co+fPLt4WOdT87pgdLm6qh/
-         T5NtkOndjxddPXrFuQIIF0BxTtiH2PPpuJU4fsZpIT/NmHbDkvkP04pJxo3w8ZXXearK
-         kMXiE6Hh5pvG5yBWpANTZX3wgyqrKqbM8ya8yowLKKrQOEz0A3Hd4+1yEqTStNr0ieYv
-         7/baUY8jkz09C99Gw4+4utqAiIqoDRP8JanN0EoMKt1diGcDbyXxcTDIvTv9ws+1qJ31
-         UQUqHbQNlGGzEId1tuQe/ERjK/CIo/eHN5u9tNsEezabBNv7BphITj4I/SyMZRUEcxlX
-         /T7A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Ym1mSZ1N+gDIg7RPoqcZ6DASQgrFGhS7kPRYey05Jig=;
-        b=twQJiG/y+MXWHGFtdSibf+/NSl3Eml3r+NyyvuL6OHZvVXz8YU7lq/v2QLdDf1ZQhe
-         KhSA6Q27sXBWYBbUHBt8m9xHqmPuEIPFqyVpbXZXLslMz8ujzmUAkZ050DH8XOXSlCx0
-         7+Xey39LanoU0z829boeS73yWe81STAFwZU0RpKZuM/nBFpFmQrng0XTRZ2YzFfMZck5
-         qTiTKBYTYghn2MzFb0NtK7abrWjMjhdO2SEC22jchENEh7ul+N2daHJyGK7aFVP7Flj+
-         i5fK0438pLDDTdSx4DlHog+fkNNAchTb2z83/tZV+LQv6QUb5Ty2y0GsZ5COWcp0668G
-         pG1A==
-X-Gm-Message-State: AOAM5328KOA0AblWsCLd6hLX9O1bAyGtZifFJiBNOfhOiTQsP5PeOZ9r
-        vu2cfmwLagKCzw66b+3ENDC01hHK7kUOBHi1wFWCpup8
-X-Google-Smtp-Source: ABdhPJxBECFKdSI1IJ8bWSn4XNDvgl0Y71qedIzUHn9db1kEWuBdaTXj/Sa82JHFeVa7k0aeyBGlKXFKI5ofxC7eGCg=
-X-Received: by 2002:a17:902:d5c1:b0:162:64e:8c21 with SMTP id
- g1-20020a170902d5c100b00162064e8c21mr27987572plh.34.1653595927124; Thu, 26
- May 2022 13:12:07 -0700 (PDT)
+        Thu, 26 May 2022 16:12:20 -0400
+X-Greylist: delayed 521 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 26 May 2022 13:12:05 PDT
+Received: from 0.smtp.remotehost.it (unknown [213.190.28.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7BF39A9B5;
+        Thu, 26 May 2022 13:12:05 -0700 (PDT)
+Message-ID: <672f03a9-9ffa-c2f8-a369-e958c79a57f3@0.smtp.remotehost.it>
+Date:   Thu, 26 May 2022 22:03:05 +0200
 MIME-Version: 1.0
-References: <20220526094918.482971-1-niejianglei2021@163.com> <081b216e6496e8cc2284df191dcc2d8b604d04f7.camel@redhat.com>
-In-Reply-To: <081b216e6496e8cc2284df191dcc2d8b604d04f7.camel@redhat.com>
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date:   Thu, 26 May 2022 13:11:56 -0700
-Message-ID: <CABBYNZJ+E6KMyqODib_nhGJuZzWssSrswKR9MoqPrM7tuEpDcg@mail.gmail.com>
-Subject: Re: [PATCH] Bluetooth: hci_conn: fix potential double free in le_scan_cleanup()
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     Jianglei Nie <niejianglei2021@163.com>, marcel@holtmann.org,
-        johan.hedberg@gmail.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, linux-bluetooth@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [PATCH] fbdev: vesafb: Fix a use-after-free due early fb_info
+ cleanup
+Content-Language: en-US
+To:     Javier Martinez Canillas <javierm@redhat.com>,
+        linux-kernel@vger.kernel.org
+Cc:     Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Helge Deller <deller@gmx.de>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org
+References: <20220526194752.307192-1-javierm@redhat.com>
+From:   Pascal Ernster <dri-devel@hardfalcon.net>
+In-Reply-To: <20220526194752.307192-1-javierm@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+[2022-05-26 21:47:52] Javier Martinez Canillas:
+> Commit b3c9a924aab6 ("fbdev: vesafb: Cleanup fb_info in .fb_destroy rather
+> than .remove") fixed a use-after-free error due the vesafb driver freeing
+> the fb_info in the .remove handler instead of doing it in .fb_destroy.
+> 
+> This can happen if the .fb_destroy callback is executed after the .remove
+> callback, since the former tries to access a pointer freed by the latter.
+> 
+> But that change didn't take into account that another possible scenario is
+> that .fb_destroy is called before the .remove callback. For example, if no
+> process has the fbdev chardev opened by the time the driver is removed.
+> 
+> If that's the case, fb_info will be freed when unregister_framebuffer() is
+> called, making the fb_info pointer accessed in vesafb_remove() after that
+> to no longer be valid.
+> 
+> To prevent that, move the expression containing the info->par to happen
+> before the unregister_framebuffer() function call.
+> 
+> Fixes: b3c9a924aab6 ("fbdev: vesafb: Cleanup fb_info in .fb_destroy rather than .remove")
+> Reported-by: Pascal Ernster <dri-devel@hardfalcon.net>
+> Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
 
-On Thu, May 26, 2022 at 4:24 AM Paolo Abeni <pabeni@redhat.com> wrote:
->
-> On Thu, 2022-05-26 at 17:49 +0800, Jianglei Nie wrote:
-> > When "c == conn" is true, hci_conn_cleanup() is called. The
-> > hci_conn_cleanup() calls hci_dev_put() and hci_conn_put() in
-> > its function implementation. hci_dev_put() and hci_conn_put()
-> > will free the relevant resource if the reference count reaches
-> > zero, which may lead to a double free when hci_dev_put() and
-> > hci_conn_put() are called again.
-> >
-> > We should add a return to this function after hci_conn_cleanup()
-> > is called.
-> >
-> > Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
-> > ---
-> >  net/bluetooth/hci_conn.c | 1 +
-> >  1 file changed, 1 insertion(+)
-> >
-> > diff --git a/net/bluetooth/hci_conn.c b/net/bluetooth/hci_conn.c
-> > index fe803bee419a..7b3e91eb9fa3 100644
-> > --- a/net/bluetooth/hci_conn.c
-> > +++ b/net/bluetooth/hci_conn.c
-> > @@ -166,6 +166,7 @@ static void le_scan_cleanup(struct work_struct *work)
-> >       if (c == conn) {
-> >               hci_connect_le_scan_cleanup(conn);
-> >               hci_conn_cleanup(conn);
-> > +             return;
->
-> This looks not correct. At very least you should release the
-> hci_dev_lock.
+Tested on a bare metal machine and on a test VM that had both crashed 
+when booting a kernel lacking this patch.
+Again, thanks a lot for the quick fix! :)
 
-Yep, it should probably use break instead of return.
-
-> Cheers,
->
-> Paolo
->
+Tested-by: Pascal Ernster <dri-devel@hardfalcon.net>
 
 
--- 
-Luiz Augusto von Dentz
+> ---
+> 
+>   drivers/video/fbdev/vesafb.c | 5 +++--
+>   1 file changed, 3 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/video/fbdev/vesafb.c b/drivers/video/fbdev/vesafb.c
+> index e25e8de5ff67..929d4775cb4b 100644
+> --- a/drivers/video/fbdev/vesafb.c
+> +++ b/drivers/video/fbdev/vesafb.c
+> @@ -490,11 +490,12 @@ static int vesafb_remove(struct platform_device *pdev)
+>   {
+>   	struct fb_info *info = platform_get_drvdata(pdev);
+>   
+> -	/* vesafb_destroy takes care of info cleanup */
+> -	unregister_framebuffer(info);
+>   	if (((struct vesafb_par *)(info->par))->region)
+>   		release_region(0x3c0, 32);
+>   
+> +	/* vesafb_destroy takes care of info cleanup */
+> +	unregister_framebuffer(info);
+> +
+>   	return 0;
+>   }
+>   
+
