@@ -2,70 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBF58C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 11:44:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E63D2C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 11:45:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347407AbiEZLo5 (ORCPT
+        id S1347227AbiEZLpF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 07:44:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55988 "EHLO
+        Thu, 26 May 2022 07:45:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347181AbiEZLoF (ORCPT
+        with ESMTP id S1345972AbiEZLnt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 07:44:05 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3DF8496B6
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 04:43:59 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id gz24so1532053pjb.2
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 04:43:59 -0700 (PDT)
+        Thu, 26 May 2022 07:43:49 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DF163DDEA
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 04:43:38 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id z11so1520298pjc.3
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 04:43:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=6s0x8dJmuy2Ybw2lPLVZk+KMGhxE6UiFXXt2n7Y53xs=;
-        b=U7t6fFDjDa0Ctor2pMs5mB+RkfuEaQPk9jAll6z0ozbTwHH7hCCOV39QhC1AudH7B7
-         mQNpvXHdoHtmlP/l8G9ftM8cnpNgbGwwGz9I+OmYGanwKqbuDAFiLpXAxWh8NKaVHaAA
-         aBOK8br6uQdtX1bFAvIQ7JvqoxwHiCHDyyeEoXHWCbLWoVvk7zriP5dvMGGKYIuZyP3N
-         Ec0tGGa/3p+cdA3hyyIF0IaJc8Wg1rXpfwN5vn1/9ccbu8Tx6TT0v0YsqfAustZYcUM+
-         AEv36mJY1RccxXovNcGZX5iR8HI63Dc4GaojNxWzAlkrNrcHbTysqe9W1RvbTeEt6NOm
-         3OfA==
+        bh=rm1D/w2QvTu4or6R4hVEWZEG7Ji+GbsLOWNM+13EdT0=;
+        b=Fd6PbFwGgpst1ab5pqOOW4QTQNxMqsotRztlxhyBXRB9vSU8cR6l8K41Jbn967c9An
+         MFLcQSGLMm7Mf/rirshMD4Sv+3ABPCSjnyZ4krYlhRhdAd5Dl1q4SJGjZ5qNaqRWihRA
+         J9+lJtvhvQ0tBVhuUY6uoz/0PBzfEC2kioPqVDuMoYW2Z6WEawIjGAjeZJ6Y4UMAX7xj
+         CRP/wK7D/TBdX68CnrinT62c0JI4dD8dZOHu33+1NBXljRLPA3AVTGkfToUUYDAN+Cg8
+         7HJrhThNKB0IqEON+9/H65bREo6Gg0wtQKOGiUfo/5mZbA0Uzsc54ww9Dcu8PborF3qP
+         7oGg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=6s0x8dJmuy2Ybw2lPLVZk+KMGhxE6UiFXXt2n7Y53xs=;
-        b=ik4TJdSIKBwJl5HBixwgKkr2Kj+qMEa3LARkbmpEa9u03ZFpLXLQAn3sUA5yVPPN5V
-         zAQmxGxFa+44ynKvE00UodwwgXQ4ay82JRmjPqfcCyMI9027kEdiaR1qOexo7pWImIYE
-         OfibDTDnaTcAC8xhPekC6k2Equ2vbxkusLys8oA98wMYM279xpyW71nqY06w7472yGqx
-         8qKCdtJ4F8OXR4eGPi7rCfGvGaYX02V3I8myJo77d3SMX+3vXn8u1gldcA3cbAVb4mMA
-         meXBshAaom9m7NveX+D37i+XuJyO8HcDlrXLa8MFRjomgyT5zkydTU+65f1YgLKrJvLi
-         mxCQ==
-X-Gm-Message-State: AOAM5316P7G0jcDJWEXN4deZLaRTlTlQx1HnMz5+BzthAIblFIWTDtIF
-        M9ZmWP+pcSRz1fb9Z1tpD5QEBpjE8QvqeQ==
-X-Google-Smtp-Source: ABdhPJxbhS8femEgYxRhuPmf1pbTSv1ParpKVoHJCFN/pCA01ph85V+OU8iJG6Dir5uT/slHjL/sTg==
-X-Received: by 2002:a17:90a:4cc2:b0:1dd:1010:d10d with SMTP id k60-20020a17090a4cc200b001dd1010d10dmr2174506pjh.205.1653565439389;
-        Thu, 26 May 2022 04:43:59 -0700 (PDT)
+        bh=rm1D/w2QvTu4or6R4hVEWZEG7Ji+GbsLOWNM+13EdT0=;
+        b=00vV+rj3+OpWv2vbKy0rZ65ZvqWJwP+ST1nkDdaXE+hpi6ryvksL+0Zz+i+elmlUUT
+         +mwwrIF9loOXKknOp7soN7RAgEGKn97uJan2/xLUoEYBi5wofvw3Qz75Mf6TWDuAt0la
+         bRB67eYJZBfcIorD2rotzfbR7nw+bnjSLqvfeXHqf6FvzI10k/a5VzjG1Y+QX4LG4fSG
+         8RoIBh06flHz0hCZH5NtmLSRZ5H3NgmSRzhaxSkv4I7C8oUCk/0sMItUzZY9I4l8uqb0
+         pL1qTzRwoEWs5w9pf1V+zQ9r1T7lXUzi01kUJFzpX9hYkPBPfQeSfL4MgoNxv+I8vCgP
+         k1bA==
+X-Gm-Message-State: AOAM531H+A+FqqCwcm7a2LP7Bq4GbzSWGup9GkZGAAmWn5FZFxHvgxKU
+        uLLkq8XBfZ3cmJkaelWsZ6IoBQ==
+X-Google-Smtp-Source: ABdhPJwL2+vUZJljvm15zkMsICuHtMSjWDz1W5QvpfO7supCE+5odduI8PvAbAnWZVnkOOf/YRXaHQ==
+X-Received: by 2002:a17:90a:8916:b0:1e0:9f07:6d39 with SMTP id u22-20020a17090a891600b001e09f076d39mr2200543pjn.163.1653565417763;
+        Thu, 26 May 2022 04:43:37 -0700 (PDT)
 Received: from localhost ([122.162.234.2])
-        by smtp.gmail.com with ESMTPSA id v5-20020a62a505000000b005183434ec86sm1261317pfm.135.2022.05.26.04.43.58
+        by smtp.gmail.com with ESMTPSA id o20-20020a63fb14000000b003ed6b3dc52esm1331741pgh.55.2022.05.26.04.43.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 May 2022 04:43:59 -0700 (PDT)
+        Thu, 26 May 2022 04:43:37 -0700 (PDT)
 From:   Viresh Kumar <viresh.kumar@linaro.org>
-To:     MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Kyungmin Park <kyungmin.park@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>
-Cc:     Viresh Kumar <viresh.kumar@linaro.org>, linux-pm@vger.kernel.org,
+To:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>
+Cc:     linux-pm@vger.kernel.org,
         Vincent Guittot <vincent.guittot@linaro.org>,
         Rafael Wysocki <rjw@rjwysocki.net>,
         Stephen Boyd <sboyd@kernel.org>, Nishanth Menon <nm@ti.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 11/31] devfreq: sun8i: Migrate to dev_pm_opp_set_config()
-Date:   Thu, 26 May 2022 17:12:10 +0530
-Message-Id: <276f3e9b7d9b696cbfa1e5546f79db7029510fb4.1653564321.git.viresh.kumar@linaro.org>
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 04/31] cpufreq: imx: Migrate to dev_pm_opp_set_config()
+Date:   Thu, 26 May 2022 17:12:03 +0530
+Message-Id: <2d9e2996d9ca9da1561f50f58520c7f2ced53e0a.1653564321.git.viresh.kumar@linaro.org>
 X-Mailer: git-send-email 2.31.1.272.g89b43f80a514
 In-Reply-To: <cover.1653564321.git.viresh.kumar@linaro.org>
 References: <cover.1653564321.git.viresh.kumar@linaro.org>
@@ -82,34 +82,53 @@ Lets start using it.
 
 Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
 ---
- drivers/devfreq/sun8i-a33-mbus.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/cpufreq/imx-cpufreq-dt.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/devfreq/sun8i-a33-mbus.c b/drivers/devfreq/sun8i-a33-mbus.c
-index 13d32213139f..125b479c9d6d 100644
---- a/drivers/devfreq/sun8i-a33-mbus.c
-+++ b/drivers/devfreq/sun8i-a33-mbus.c
-@@ -337,6 +337,9 @@ static int sun8i_a33_mbus_probe(struct platform_device *pdev)
- 	unsigned int max_state;
- 	const char *err;
- 	int i, ret;
+diff --git a/drivers/cpufreq/imx-cpufreq-dt.c b/drivers/cpufreq/imx-cpufreq-dt.c
+index 3fe9125156b4..57917b0670f2 100644
+--- a/drivers/cpufreq/imx-cpufreq-dt.c
++++ b/drivers/cpufreq/imx-cpufreq-dt.c
+@@ -86,6 +86,10 @@ static int imx_cpufreq_dt_probe(struct platform_device *pdev)
+ 	u32 cell_value, supported_hw[2];
+ 	int speed_grade, mkt_segment;
+ 	int ret;
 +	struct dev_pm_opp_config config = {
-+		.clk_name = "dram",
++		.supported_hw = supported_hw,
++		.supported_hw_count = ARRAY_SIZE(supported_hw),
 +	};
  
- 	variant = device_get_match_data(dev);
- 	if (!variant)
-@@ -404,9 +407,9 @@ static int sun8i_a33_mbus_probe(struct platform_device *pdev)
- 	priv->profile.freq_table	= priv->freq_table;
- 	priv->profile.max_state		= max_state;
+ 	cpu_dev = get_cpu_device(0);
  
--	ret = devm_pm_opp_set_clkname(dev, "dram");
-+	ret = devm_pm_opp_set_config(dev, &config);
- 	if (ret) {
--		err = "failed to add OPP table\n";
-+		err = "failed to set OPP config\n";
- 		goto err_unlock_mbus;
+@@ -153,17 +157,17 @@ static int imx_cpufreq_dt_probe(struct platform_device *pdev)
+ 	dev_info(&pdev->dev, "cpu speed grade %d mkt segment %d supported-hw %#x %#x\n",
+ 			speed_grade, mkt_segment, supported_hw[0], supported_hw[1]);
+ 
+-	cpufreq_opp_table = dev_pm_opp_set_supported_hw(cpu_dev, supported_hw, 2);
++	cpufreq_opp_table = dev_pm_opp_set_config(cpu_dev, &config);
+ 	if (IS_ERR(cpufreq_opp_table)) {
+ 		ret = PTR_ERR(cpufreq_opp_table);
+-		dev_err(&pdev->dev, "Failed to set supported opp: %d\n", ret);
++		dev_err(&pdev->dev, "Failed to set Opp config: %d\n", ret);
+ 		return ret;
  	}
+ 
+ 	cpufreq_dt_pdev = platform_device_register_data(
+ 			&pdev->dev, "cpufreq-dt", -1, NULL, 0);
+ 	if (IS_ERR(cpufreq_dt_pdev)) {
+-		dev_pm_opp_put_supported_hw(cpufreq_opp_table);
++		dev_pm_opp_clear_config(cpufreq_opp_table);
+ 		ret = PTR_ERR(cpufreq_dt_pdev);
+ 		dev_err(&pdev->dev, "Failed to register cpufreq-dt: %d\n", ret);
+ 		return ret;
+@@ -176,7 +180,7 @@ static int imx_cpufreq_dt_remove(struct platform_device *pdev)
+ {
+ 	platform_device_unregister(cpufreq_dt_pdev);
+ 	if (!of_machine_is_compatible("fsl,imx7ulp"))
+-		dev_pm_opp_put_supported_hw(cpufreq_opp_table);
++		dev_pm_opp_clear_config(cpufreq_opp_table);
+ 	else
+ 		clk_bulk_put(ARRAY_SIZE(imx7ulp_clks), imx7ulp_clks);
  
 -- 
 2.31.1.272.g89b43f80a514
