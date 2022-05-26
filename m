@@ -2,59 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F3BBC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 21:24:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80F37C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 21:24:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349137AbiEZVY3 (ORCPT
+        id S1349204AbiEZVYe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 17:24:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44456 "EHLO
+        Thu, 26 May 2022 17:24:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348865AbiEZVYV (ORCPT
+        with ESMTP id S1349072AbiEZVYZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 17:24:21 -0400
-Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 185785623E
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 14:24:21 -0700 (PDT)
-Received: by mail-pj1-x104a.google.com with SMTP id nn14-20020a17090b38ce00b001e00df82de8so3909300pjb.1
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 14:24:21 -0700 (PDT)
+        Thu, 26 May 2022 17:24:25 -0400
+Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AEAA60069
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 14:24:24 -0700 (PDT)
+Received: by mail-pl1-x64a.google.com with SMTP id t14-20020a1709028c8e00b0015cf7e541feso1703861plo.1
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 14:24:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=Nj11sMCgQgDAP7C4SyDQj5semkrlbFX/aMEmua6TrWo=;
-        b=K72D1I+pKpn91nJKzkfGAnssAW78lSoqkoj7q0Fsy0PcP782i5+XHpwQ+31nJDR/F5
-         T2ZQrkYnsoBofCYqYLMmMnYXnzYYVAEb5GSsjU+RSn6T+yYyL5K5PGhP15hyJvwlxtuK
-         w3llFQUFkG5IomCwYNqArB0n3jnBFjQAsSzXClsbEumISzv2WFFx4zMofHOp8XqebpbP
-         sbTmErvnivyyYdMEsHKht9i8830EY5MELCPHvwaaEp2G952pkNy796Ct4leLH56qcQhJ
-         rBdNlJp6c/UI0ykSoDOUe4IdQBZkUQQhh8pRrSc2iBCwh40cRzGcB5O5BCQ0Jc0XMu52
-         tlBg==
+        bh=+ARLUoQErvE10R5Z3P5YbADKHrFc+h+h9fYwAe9gqkQ=;
+        b=P1O1m4A5QB3PkqYRhvWgKI3trzoLpiD17Kap9u1Ntf7VXNNt1LmTVq0xans+HuPbwP
+         mrMXwad+SEnBrc5v+SdXuwL7TfEDMDuy3jr82opB5JprY8fpDve5pmyhw/qPJ5KCyALt
+         rFJ5C02+GK3Um1cpjhCZFsMdja3ACtm7xaEK2uFGIcSrATj61okbfsKEv/q9Q2V0qgcE
+         8XbzvEcswTakOhChRP0G2ohPJDooOxl1wJ3oRkV0+YniNUu3+5oXZwertnhEL7elo276
+         CFUTe0QOajucWkgSzuSbC60D7gFaNKbeIkXJgjThxp8libH4wQFoylreajXaLkiXjahY
+         loeQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=Nj11sMCgQgDAP7C4SyDQj5semkrlbFX/aMEmua6TrWo=;
-        b=Z5rN6YPBoBaDcShw+MJ1A7OzTCd2S/V2SEjqpA1SvMaS2Cg5mHAm3MQCmlrPqdYjyl
-         2V5sZtJY00RZigOfx89YGkO1vHDnruW7QDmeHRq9qFJicpcrsreQwO+/cgJ5ytlrzEdu
-         yFzCKsVTkZ0atcdVrAdEwxTwLnmWqI0bYNYGfNOP7Gu7VqVeImHmcDuttrm3cU8zOR3K
-         RqJQnnA3JA1155tjYNWzFM7S7PnJ5mBkl7xi2yMrMP8NV4/Wr8XDlUn4ORbGUXhmb5BB
-         6lNXQt3UOF3nGi0GHyptpYXRK4LJX6YQKvjQIBYR1bMNPW6riMVelxbjuCiUFhSt73Mr
-         NQ+Q==
-X-Gm-Message-State: AOAM530Q0datGDJSzsdUHy0glM4AQsVGlx4DfvZ4pKSkrlFNnQFgJW41
-        Rg7gu2WIqD0gov5lDxmXnvjhVkHZAkQ=
-X-Google-Smtp-Source: ABdhPJxE9wmASbPgNq1RmxvCK1+awZBzuRGIk5dOXG8m86UEZH9YhpSnNSvR3YNCfYA8r7EWuS14TcECFl4=
+        bh=+ARLUoQErvE10R5Z3P5YbADKHrFc+h+h9fYwAe9gqkQ=;
+        b=vJKGYJz0ckPbia07V4O2JIOpkf6JWY2tUp6DJL2+cUzpw3UwZASjVe4fF/2lZq+TX0
+         vWTSmgkQzstV5fVrKoilMnej46n48aqdaz5Sxyjff9qqNech7kJkfrrXgBUS/JhO8BaR
+         voohlP+/9PvEYDm/dDBrA4locwPMFQJ0swZRKvYADCve2SpOFyKOAOwTRL3nIjs0TWpX
+         TYFfvMTjhGqEeF0xk7ZVPUERlk0ZyBlx/pXQXx71y0wmpKazGgzldZGqtdUCaH2pzqzL
+         wmo8aCE1NGRlUysRKhDkl0NGToxGro5VFCJub54lishxg5KpbaLa6HJtUk4ARxnhrSmD
+         t6HQ==
+X-Gm-Message-State: AOAM531H5qZfmTluYhx7ARJ13xnGMjJWWvveCMxgIiBKeATgZG1U2svw
+        rdtRz+vsdMZT1U++5FDvOzaFJ4UsvXs=
+X-Google-Smtp-Source: ABdhPJw0nK+wAhiONzhiRIha9jnwWLcnJmVTgMO2zOQF0Ko9glHAJQlpshUO38CIPt2CWi406/F7XXICRcc=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:902:c612:b0:161:e095:8ff6 with SMTP id
- r18-20020a170902c61200b00161e0958ff6mr37012728plr.145.1653600260466; Thu, 26
- May 2022 14:24:20 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a62:e819:0:b0:518:6a98:b02 with SMTP id
+ c25-20020a62e819000000b005186a980b02mr34100356pfi.74.1653600263944; Thu, 26
+ May 2022 14:24:23 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Thu, 26 May 2022 21:08:11 +0000
+Date:   Thu, 26 May 2022 21:08:13 +0000
 In-Reply-To: <20220526210817.3428868-1-seanjc@google.com>
-Message-Id: <20220526210817.3428868-3-seanjc@google.com>
+Message-Id: <20220526210817.3428868-5-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220526210817.3428868-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH v2 2/8] KVM: x86: Harden _regs accesses to guard against buggy input
+Subject: [PATCH v2 4/8] KVM: x86: Use 16-bit fields to track dirty/valid
+ emulator GPRs
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -69,70 +70,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-WARN and truncate the incoming GPR number/index when reading/writing GPRs
-in the emulator to guard against KVM bugs, e.g. to avoid out-of-bounds
-accesses to ctxt->_regs[] if KVM generates a bogus index.  Truncate the
-index instead of returning e.g. zero, as reg_write() returns a pointer
-to the register, i.e. returning zero would result in a NULL pointer
-dereference.  KVM could also force the index to any arbitrary GPR, but
-that's no better or worse, just different.
+Use a u16 instead of a u32 to track the dirty/valid status of GPRs in the
+emulator.  Unlike struct kvm_vcpu_arch, x86_emulate_ctxt tracks only the
+"true" GPRs, i.e. doesn't include RIP in its array, and so only needs to
+track 16 registers.
 
-Open code the restriction to 16 registers; RIP is handled via _eip and
-should never be accessed through reg_read() or reg_write().  See the
-comments above the declarations of reg_read() and reg_write(), and the
-behavior of writeback_registers().  The horrific open coded mess will be
-cleaned up in a future commit.
+Note, maxing out at 16 GPRs is a fundamental property of x86-64 and will
+not change barring a massive architecture update.  Legacy x86 ModRM and
+SIB encodings use 3 bits for GPRs, i.e. support 8 registers.  x86-64 uses
+a single bit in the REX prefix for each possible reference type to double
+the number of supported GPRs to 16 registers (4 bits).
 
-There are no such bugs known to exist in the emulator, but determining
-that KVM is bug-free is not at all simple and requires a deep dive into
-the emulator.  The code is so convoluted that GCC-12 with the recently
-enable -Warray-bounds spits out a false-positive due to a GCC bug:
-
-  arch/x86/kvm/emulate.c:254:27: warning: array subscript 32 is above array
-                                 bounds of 'long unsigned int[17]' [-Warray-bounds]
-    254 |         return ctxt->_regs[nr];
-        |                ~~~~~~~~~~~^~~~
-  In file included from arch/x86/kvm/emulate.c:23:
-  arch/x86/kvm/kvm_emulate.h: In function 'reg_rmw':
-  arch/x86/kvm/kvm_emulate.h:366:23: note: while referencing '_regs'
-    366 |         unsigned long _regs[NR_VCPU_REGS];
-        |                       ^~~~~
-
-Link: https://lore.kernel.org/all/YofQlBrlx18J7h9Y@google.com
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=216026
-Link: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=105679
-Reported-and-tested-by: Robert Dinse <nanook@eskimo.com>
-Reported-by: Kees Cook <keescook@chromium.org>
 Reviewed-by: Kees Cook <keescook@chromium.org>
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- arch/x86/kvm/emulate.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/x86/kvm/emulate.c     | 3 +++
+ arch/x86/kvm/kvm_emulate.h | 4 ++--
+ 2 files changed, 5 insertions(+), 2 deletions(-)
 
 diff --git a/arch/x86/kvm/emulate.c b/arch/x86/kvm/emulate.c
-index 7226a127ccb4..c58366ae4da2 100644
+index c74c0fd3b860..5aaf1d1200af 100644
 --- a/arch/x86/kvm/emulate.c
 +++ b/arch/x86/kvm/emulate.c
-@@ -247,6 +247,9 @@ enum x86_transfer_type {
+@@ -262,6 +262,9 @@ static ulong *reg_write(struct x86_emulate_ctxt *ctxt, unsigned nr)
+ 	if (WARN_ON_ONCE(nr >= NR_EMULATOR_GPRS))
+ 		nr &= NR_EMULATOR_GPRS - 1;
  
- static ulong reg_read(struct x86_emulate_ctxt *ctxt, unsigned nr)
- {
-+	if (WARN_ON_ONCE(nr >= 16))
-+		nr &= 16 - 1;
-+
- 	if (!(ctxt->regs_valid & (1 << nr))) {
- 		ctxt->regs_valid |= 1 << nr;
- 		ctxt->_regs[nr] = ctxt->ops->read_gpr(ctxt, nr);
-@@ -256,6 +259,9 @@ static ulong reg_read(struct x86_emulate_ctxt *ctxt, unsigned nr)
- 
- static ulong *reg_write(struct x86_emulate_ctxt *ctxt, unsigned nr)
- {
-+	if (WARN_ON_ONCE(nr >= 16))
-+		nr &= 16 - 1;
++	BUILD_BUG_ON(sizeof(ctxt->regs_dirty) * BITS_PER_BYTE < NR_EMULATOR_GPRS);
++	BUILD_BUG_ON(sizeof(ctxt->regs_valid) * BITS_PER_BYTE < NR_EMULATOR_GPRS);
 +
  	ctxt->regs_valid |= 1 << nr;
  	ctxt->regs_dirty |= 1 << nr;
  	return &ctxt->_regs[nr];
+diff --git a/arch/x86/kvm/kvm_emulate.h b/arch/x86/kvm/kvm_emulate.h
+index bc3f8295c8c8..3a65d6ea7fe6 100644
+--- a/arch/x86/kvm/kvm_emulate.h
++++ b/arch/x86/kvm/kvm_emulate.h
+@@ -356,9 +356,9 @@ struct x86_emulate_ctxt {
+ 	u8 lock_prefix;
+ 	u8 rep_prefix;
+ 	/* bitmaps of registers in _regs[] that can be read */
+-	u32 regs_valid;
++	u16 regs_valid;
+ 	/* bitmaps of registers in _regs[] that have been written */
+-	u32 regs_dirty;
++	u16 regs_dirty;
+ 	/* modrm */
+ 	u8 modrm;
+ 	u8 modrm_mod;
 -- 
 2.36.1.255.ge46751e96f-goog
 
