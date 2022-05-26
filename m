@@ -2,67 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34379C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 11:45:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7370AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 11:45:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347132AbiEZLph (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 07:45:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58968 "EHLO
+        id S241631AbiEZLpk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 07:45:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347190AbiEZLof (ORCPT
+        with ESMTP id S1347255AbiEZLoi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 07:44:35 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B0A8D0289
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 04:44:13 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id l7-20020a17090aaa8700b001dd1a5b9965so1514751pjq.2
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 04:44:13 -0700 (PDT)
+        Thu, 26 May 2022 07:44:38 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0C6BD02B0
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 04:44:19 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id q4so1208571plr.11
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 04:44:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=HsZm01W7lVAYoixKo6Nk800vk4WIHy3MlJNuyYghC/E=;
-        b=Wu/JMipJ6JOhMstgYzE3dXXw6nfzo+Z40qL43mmLs92tnCkqEchuC0GkobCAide8pC
-         9dAMVYodIG1r8gvpVHuxSNdfQpIoHGrVGx/GFK/zzgLOiU8yag8npVq/xiFZQdlQy5lv
-         3UT1eW4xeo6Igg8MmXPt8iJQw/p6UIFhczgqv67ux8KvehwfVHIQyiCvfBxxDP9IJiie
-         GosfMVhgFvoDmzkA7yln56NRSwmneRV6Ur4rGXDVVnE2RZCPFS57Ls2pgOpgItOmuSvh
-         XFrxNBsETuUFY8EFBPK1TdYiZRtorTjeHslF1AqfpYTuCWS3mmz7/hEbQ3f+cD8+o+A6
-         2P3A==
+        bh=JPsuNO4IJ7T2z2weCPNLXji/1rrU6SbwmIuvAfLuJdM=;
+        b=gXnGQSuj+c45yeKB+8j1h5YrFgbmZ/F+ScjvzuqHVRExHvwyEIyIm5m2DGsq4eRivF
+         P+M98Z8RwNJBIogL2m0HYIZ/Fwa/lLhneVU4VJ4Mj/sOV0eRgziQBZkii377HVD6QyY1
+         2bI/Muk5RxlNiPNzwLamtJMg9nie/mRGw9lFbmQU1dDJfGWsoTyOloH1ViyUb9qy2iog
+         R08xQMgbo7j+fugthPtNqBSIqZ60i0bcEzLumfuUcIQbXxbNMflFxtoh2dfLplEfco3s
+         Mk6gkTfQyPxNUeu4yHFaMQt3tnDVqPzUxf2Z/qjS5HuGEXrcPAUGpj/kBGYO/P3ecI86
+         SX9g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=HsZm01W7lVAYoixKo6Nk800vk4WIHy3MlJNuyYghC/E=;
-        b=ABxObW+6P20nOmHcxmvxkId/1Fx06wtJTzJuk9WId689yZzerUWSEWwUw468BPzpyL
-         75PxhiNmj+oSZPPnCr3Hvv359ZdOCPW8r1ZpAbgIEjZBnikk5sVDwQvjhSW4Q/m5V0z7
-         lPXGfovJvuFWyypF7Ejvc8UVAJti50j/IK9UFSkMuhmz4Vz0p6UWU+uhOSQeF2uZApt0
-         L1RsK+QtLutGOQ3BYums+ljh8QpWPsZe9qIxlraY8RLBVZzzWH+zRXiF1as43A1Ovm1i
-         ArgdVet4zMpwQ6N5UJgXDa6QquayScSBgr+RHPmdsGfmELuVt6/mrotLPv1uWMZ6rBo1
-         E+vQ==
-X-Gm-Message-State: AOAM532Ec70pzSnC+X7bqCq1WpMPZU1avSDEV7MdtvLzERuINYmgwxFE
-        o1+x2RI8OSOrIUTrzgsIm9YH9Q==
-X-Google-Smtp-Source: ABdhPJyfcjHj9Ly12wH9ItwVX3s2KDOb31DEq1TzBbFi6yJUwSS4pqWWAqG68J0QgVbGcfhWH2g6lQ==
-X-Received: by 2002:a17:902:f70a:b0:153:88c7:774 with SMTP id h10-20020a170902f70a00b0015388c70774mr37348147plo.166.1653565452780;
-        Thu, 26 May 2022 04:44:12 -0700 (PDT)
+        bh=JPsuNO4IJ7T2z2weCPNLXji/1rrU6SbwmIuvAfLuJdM=;
+        b=th9GXuIcVGNQlfmwQP1VZ5fA7uedmgwHN71B8oPKq0NVHG1oAUvOcRP+f6S/+4Wa0a
+         11aNTa/ZzX5KiDdi851YYCgs/ZfKwNbxYRO9elcyVprZ1gUiSZDe3ufgm24BS+jF9YRE
+         /R1hpM7lzmZJdtEDwj8UqeUg/Yaf0YnxDrm1rbr3hfk/BZJ/Z6dH8gvJkplOao43nmNX
+         7kjZ011UbDCmYDIwUoRKlSF0N0ot2+3mWtANlrSyEIVNNW5pqPX/Y51/ah5KGXb1SA+h
+         9W2NaC//dg/+44UBYnfl1iN4u8uhX4/aVHFIul+jz97nt8D/ma56hwGy02m4zIVtz+h6
+         pyGA==
+X-Gm-Message-State: AOAM530gvvFbUyC0glRmB19n0HQctJXHlOv+xf/wMQwY8nPLzS8WaB6K
+        ouMQXvSE5puV/dG5CHEduiJxMA==
+X-Google-Smtp-Source: ABdhPJxHkvspcXsVc/hjxvjqkI2gYKKMuKYXQeyh/YgUZZoPbuby4lZj7ryI8rRuulEhYMTROUIvnQ==
+X-Received: by 2002:a17:90a:de02:b0:1df:3f94:811c with SMTP id m2-20020a17090ade0200b001df3f94811cmr2197205pjv.112.1653565459142;
+        Thu, 26 May 2022 04:44:19 -0700 (PDT)
 Received: from localhost ([122.162.234.2])
-        by smtp.gmail.com with ESMTPSA id q12-20020a170902eb8c00b0015e8d4eb1d7sm1270604plg.33.2022.05.26.04.44.12
+        by smtp.gmail.com with ESMTPSA id u30-20020a63235e000000b003c14af505fcsm1319907pgm.20.2022.05.26.04.44.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 May 2022 04:44:12 -0700 (PDT)
+        Thu, 26 May 2022 04:44:18 -0700 (PDT)
 From:   Viresh Kumar <viresh.kumar@linaro.org>
-To:     Rob Herring <robh@kernel.org>,
-        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        Steven Price <steven.price@arm.com>,
-        Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>
+To:     Stanimir Varbanov <stanimir.varbanov@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
 Cc:     Viresh Kumar <viresh.kumar@linaro.org>, linux-pm@vger.kernel.org,
         Vincent Guittot <vincent.guittot@linaro.org>,
         Rafael Wysocki <rjw@rjwysocki.net>,
         Stephen Boyd <sboyd@kernel.org>, Nishanth Menon <nm@ti.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 15/31] drm/panfrost: Migrate to dev_pm_opp_set_config()
-Date:   Thu, 26 May 2022 17:12:14 +0530
-Message-Id: <2a0970a5cf1fc92e16eb2b782798a6b609594cdc.1653564321.git.viresh.kumar@linaro.org>
+        linux-media@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 17/31] media: venus: Migrate to dev_pm_opp_set_config()
+Date:   Thu, 26 May 2022 17:12:16 +0530
+Message-Id: <1f243f35b02d53fde5bf730a7da1a789186f62b1.1653564321.git.viresh.kumar@linaro.org>
 X-Mailer: git-send-email 2.31.1.272.g89b43f80a514
 In-Reply-To: <cover.1653564321.git.viresh.kumar@linaro.org>
 References: <cover.1653564321.git.viresh.kumar@linaro.org>
@@ -79,40 +78,69 @@ Lets start using it.
 
 Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
 ---
- drivers/gpu/drm/panfrost/panfrost_devfreq.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/media/platform/qcom/venus/pm_helpers.c | 16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/panfrost/panfrost_devfreq.c b/drivers/gpu/drm/panfrost/panfrost_devfreq.c
-index 194af7f607a6..7826d9366d35 100644
---- a/drivers/gpu/drm/panfrost/panfrost_devfreq.c
-+++ b/drivers/gpu/drm/panfrost/panfrost_devfreq.c
-@@ -91,6 +91,10 @@ int panfrost_devfreq_init(struct panfrost_device *pfdev)
- 	struct devfreq *devfreq;
- 	struct thermal_cooling_device *cooling;
- 	struct panfrost_devfreq *pfdevfreq = &pfdev->pfdevfreq;
+diff --git a/drivers/media/platform/qcom/venus/pm_helpers.c b/drivers/media/platform/qcom/venus/pm_helpers.c
+index cb48c5ff3dee..16f8849896a9 100644
+--- a/drivers/media/platform/qcom/venus/pm_helpers.c
++++ b/drivers/media/platform/qcom/venus/pm_helpers.c
+@@ -294,12 +294,15 @@ static int load_scale_v1(struct venus_inst *inst)
+ static int core_get_v1(struct venus_core *core)
+ {
+ 	int ret;
 +	struct dev_pm_opp_config config = {
-+		.regulator_names = pfdev->comp->supply_names,
-+		.regulator_count = pfdev->comp->num_supplies,
++		.clk_name = "core",
 +	};
  
- 	if (pfdev->comp->num_supplies > 1) {
- 		/*
-@@ -101,13 +105,12 @@ int panfrost_devfreq_init(struct panfrost_device *pfdev)
- 		return 0;
- 	}
+ 	ret = core_clks_get(core);
+ 	if (ret)
+ 		return ret;
  
--	ret = devm_pm_opp_set_regulators(dev, pfdev->comp->supply_names,
--					 pfdev->comp->num_supplies);
+-	ret = devm_pm_opp_set_clkname(core->dev, "core");
++	ret = devm_pm_opp_set_config(core->dev, &config);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -862,6 +865,10 @@ static int vcodec_domains_get(struct venus_core *core)
+ 	const struct venus_resources *res = core->res;
+ 	struct device *pd;
+ 	unsigned int i;
++	struct dev_pm_opp_config config = {
++		.genpd_names = res->opp_pmdomain,
++		.virt_devs = &opp_virt_dev,
++	};
+ 
+ 	if (!res->vcodec_pmdomains_num)
+ 		goto skip_pmdomains;
+@@ -879,7 +886,7 @@ static int vcodec_domains_get(struct venus_core *core)
+ 		return 0;
+ 
+ 	/* Attach the power domain for setting performance state */
+-	ret = devm_pm_opp_attach_genpd(dev, res->opp_pmdomain, &opp_virt_dev);
 +	ret = devm_pm_opp_set_config(dev, &config);
- 	if (ret) {
- 		/* Continue if the optional regulator is missing */
- 		if (ret != -ENODEV) {
- 			if (ret != -EPROBE_DEFER)
--				DRM_DEV_ERROR(dev, "Couldn't set OPP regulators\n");
-+				DRM_DEV_ERROR(dev, "Couldn't set OPP config\n");
- 			return ret;
- 		}
- 	}
+ 	if (ret)
+ 		goto opp_attach_err;
+ 
+@@ -978,6 +985,9 @@ static int core_get_v4(struct venus_core *core)
+ 	struct device *dev = core->dev;
+ 	const struct venus_resources *res = core->res;
+ 	int ret;
++	struct dev_pm_opp_config config = {
++		.clk_name = "core",
++	};
+ 
+ 	ret = core_clks_get(core);
+ 	if (ret)
+@@ -1003,7 +1013,7 @@ static int core_get_v4(struct venus_core *core)
+ 	if (legacy_binding)
+ 		return 0;
+ 
+-	ret = devm_pm_opp_set_clkname(dev, "core");
++	ret = devm_pm_opp_set_config(dev, &config);
+ 	if (ret)
+ 		return ret;
+ 
 -- 
 2.31.1.272.g89b43f80a514
 
