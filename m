@@ -2,163 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13F04C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 00:56:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B777C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 01:00:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345210AbiEZA4C (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 20:56:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45434 "EHLO
+        id S243530AbiEZBAu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 21:00:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345755AbiEZAz1 (ORCPT
+        with ESMTP id S1345819AbiEZBAi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 20:55:27 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9D686DFE4
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 17:55:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653526524;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=yJXqOz+uU25JvmhdChbh6XiN9Ren8ftiBWD/fyoXYhA=;
-        b=VheoLs/oCfFZh1ZHZYdTrZ56TsdDfOuvSsfPjwnp4jD60vKvx+XUcq0/vZQ9dGNzBr0F97
-        sXlVPiiF5O1yejCGBYQ5FcLHWngndvQemC8qyKhQV06V0fzUNyhhV/ksmNxrCS2HlAfM4T
-        qUIjX3gc/zH/xvSV9Z/qruNgP5IGbTE=
-Received: from mail-pj1-f69.google.com (mail-pj1-f69.google.com
- [209.85.216.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-411-X18ThDBuPeOEyDoD4IBynQ-1; Wed, 25 May 2022 20:55:23 -0400
-X-MC-Unique: X18ThDBuPeOEyDoD4IBynQ-1
-Received: by mail-pj1-f69.google.com with SMTP id on14-20020a17090b1d0e00b001c7a548e4f7so2210323pjb.2
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 17:55:23 -0700 (PDT)
+        Wed, 25 May 2022 21:00:38 -0400
+Received: from mail-ot1-x32e.google.com (mail-ot1-x32e.google.com [IPv6:2607:f8b0:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35B5369CE8
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 18:00:36 -0700 (PDT)
+Received: by mail-ot1-x32e.google.com with SMTP id e11-20020a9d6e0b000000b0060afcbafa80so115607otr.3
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 18:00:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=rESdkCwPqse6sStO4+DauKtPsPwAWSccX3gNyrYzPo4=;
+        b=cIZ5ZG536zr5k7KHC1Q2keKZ3UzihzmKNsNtKJZ8RAE6TvCSgB1RLGApmzcAS/dZRP
+         QV6bCinfKsMLL8f3eK3XxqPXB3NhmPe0VZD2nftSF8fxdP2lBPphTnEotg81hgnX/SiN
+         UUnnEEDb09XFjjB8JR67zLVW1qA0SK0/LtEL4UZ+NHH72LckHLOWA0C+qjt9edEjM+xJ
+         HARYdTAxCxCUkRRpZ3UEznN+SrXlUBWWTsnEY+HyOGeZ4iSQ0KnXheHSSn3oa3kHIc4z
+         JDTSOzM4G5NfXXGXGqQCG7hSrYi5SvItORMf5rdyZQHxRPgLOlmcIifLIUX9kkgE3YpI
+         YxqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=yJXqOz+uU25JvmhdChbh6XiN9Ren8ftiBWD/fyoXYhA=;
-        b=1WKApS3mCIa/9vuJO/BpjFvkw/VU/uXecjJtRs4Cd+BfhxnsrfVwJKae25o6Ck3cQQ
-         UufuFeJs/Vy4iUS6rP1G8ZoxrG1AUBqJJThQBwvnEWSz6OxYYyhRbuFjXeJTJU1CZj46
-         zVqb3l3INfKADL9cKUTJbm0SWBKvXceDEQ9zS8iaQzBHuQVauTS4GzquvhUjdvuZVBJK
-         F88Oc/qTjK5xXCKp5+x3tn55Ei00bZEnarzj0By0a9XsAgTvyOe44rYFP+ZaoTsR8YRg
-         CtkojMibIVu5UOV6Ev/MQMay0HRbKupSh2FPx5/O1swqmLnAMHpXXTONq2O1y4+7SrGI
-         q20w==
-X-Gm-Message-State: AOAM531r3VaToUL1n4kBt/uOFZRdhP5eND6tlnnQzCttAMs0ax7eqwPj
-        6xj8RCEf+XBdTCxQH6LScERe5gjDFx7g0NlZIypDTPNEChE/88c5PyTunKobnF2rQiY7i8RBB5l
-        bTkQlW7bQXKIGDUtFjeWMs/rkxW1z7y2PVQtqXaPHlFCUmRi+09rwqMSZ+gymMKvfaLYvQ4rqig
-        ==
-X-Received: by 2002:a17:902:704a:b0:161:996e:bf4 with SMTP id h10-20020a170902704a00b00161996e0bf4mr35079486plt.118.1653526521844;
-        Wed, 25 May 2022 17:55:21 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwCbrF0uQFcmCr95NaeasnD7ovOjx9IFdOE4/zRaiA1R+5amqdd7fy3VDDHcGFgiY+za6xE9Q==
-X-Received: by 2002:a17:902:704a:b0:161:996e:bf4 with SMTP id h10-20020a170902704a00b00161996e0bf4mr35079456plt.118.1653526521428;
-        Wed, 25 May 2022 17:55:21 -0700 (PDT)
-Received: from [10.72.12.81] ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id k2-20020a170902f28200b0015e8d4eb1dcsm37852plc.38.2022.05.25.17.55.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 25 May 2022 17:55:20 -0700 (PDT)
-Subject: Re: [PATCH] ceph: use correct index when encoding client supported
- features
-To:     =?UTF-8?Q?Lu=c3=ads_Henriques?= <lhenriques@suse.de>,
-        Jeff Layton <jlayton@kernel.org>,
-        Ilya Dryomov <idryomov@gmail.com>
-Cc:     ceph-devel@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220524160627.20893-1-lhenriques@suse.de>
-From:   Xiubo Li <xiubli@redhat.com>
-Message-ID: <d1f22b3b-7415-0fdb-e702-24f2a7b0b939@redhat.com>
-Date:   Thu, 26 May 2022 08:55:15 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rESdkCwPqse6sStO4+DauKtPsPwAWSccX3gNyrYzPo4=;
+        b=OGBOQX3eubIrd04/8Fa4YFjC7eewhhaSgs5Y6bqBgjtuoeo3DkTTmBSNJgCJhM67If
+         EcKCDO+KZqgL4XsIfPHDuc/ODJGWvLuCLZh7Id9pX7WGiqkuHtGcpX/DpgD5wVOpvaOO
+         JkNsHlmC9ZikExP5lLc6SigV/UhVuiyPbovSal6j5SYddAHSvyaFlVHWt1d/gIFHv6XQ
+         T+2xYcShCxHFE85yBGBFZ+aZLh8fLWHc0X2wkook+xhDf4m8wF/S5UuAMjJzAOBBVFyt
+         W2vCNvjyqNXFBZa4eL3xMqIlMhVzyUXxxpmaLQuPwsz6HDMURhxDVgAVqtlXDEL7wAmR
+         wAow==
+X-Gm-Message-State: AOAM5323WBWDYiAjdFzOPAKGKhBzwVAz1Tob9hVQVZxlst0N67ZX/amB
+        c7VLi/Ttb4LwPA2R2OAd+yCXRusGpuaCu756ylgtQA==
+X-Google-Smtp-Source: ABdhPJzw3IblBKst7XNW79+bDjJme70ch0qiX3+Acpi7M5r6n+OApvvsHuWk+0EYB9lShYm5w3IHfmkZ8rOZAVNZLqA=
+X-Received: by 2002:a9d:6ac8:0:b0:60b:cce:eff0 with SMTP id
+ m8-20020a9d6ac8000000b0060b0cceeff0mr7768045otq.75.1653526835206; Wed, 25 May
+ 2022 18:00:35 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20220524160627.20893-1-lhenriques@suse.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+References: <20220525210447.2758436-1-seanjc@google.com> <20220525210447.2758436-3-seanjc@google.com>
+ <CALMp9eRgiPZeGhKHMnwJVSLPvKjPFo4vKzg3=TXTuLL_LSt_fw@mail.gmail.com> <Yo7Np1N1TVD4drxc@google.com>
+In-Reply-To: <Yo7Np1N1TVD4drxc@google.com>
+From:   Jim Mattson <jmattson@google.com>
+Date:   Wed, 25 May 2022 18:00:24 -0700
+Message-ID: <CALMp9eQTYY3NiP-3fZgnMn9-nGWTtx7aA3T0-tTvdfeZkhdNrA@mail.gmail.com>
+Subject: Re: [PATCH 2/2] KVM: VMX: Add knob to allow rejecting kvm_intel on
+ inconsistent VMCS config
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Chenyi Qiang <chenyi.qiang@intel.com>,
+        Lei Wang <lei4.wang@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-On 5/25/22 12:06 AM, Luís Henriques wrote:
-> Feature bits have to be encoded into the correct locations.  This hasn't
-> been an issue so far because the only hole in the feature bits was in bit
-> 10 (CEPHFS_FEATURE_RECLAIM_CLIENT), which is located in the 2nd byte.  When
-> adding more bits that go beyond the this 2nd byte, the bug will show up.
+On Wed, May 25, 2022 at 5:45 PM Sean Christopherson <seanjc@google.com> wrote:
 >
-> Fixes: 9ba1e224538a ("ceph: allocate the correct amount of extra bytes for the session features")
-> Signed-off-by: Luís Henriques <lhenriques@suse.de>
-> ---
->   fs/ceph/mds_client.c | 7 +++++--
->   fs/ceph/mds_client.h | 2 --
->   2 files changed, 5 insertions(+), 4 deletions(-)
+> On Wed, May 25, 2022, Jim Mattson wrote:
+> > On Wed, May 25, 2022 at 2:04 PM Sean Christopherson <seanjc@google.com> wrote:
+> > >
+> > > Add an off-by-default module param, reject_inconsistent_vmcs_config, to
+> > > allow rejecting the load of kvm_intel if an inconsistent VMCS config is
+> > > detected.  Continuing on with an inconsistent, degraded config is
+> > > undesirable when the CPU is expected to support a given set of features,
+> > > e.g. can result in a misconfigured VM if userspace doesn't cross-check
+> > > KVM_GET_SUPPORTED_CPUID, and/or can result in poor performance due to
+> > > lack of fast MSR switching.
+> > >
+> > > Signed-off-by: Sean Christopherson <seanjc@google.com>
+> > > ---
+> > There are several inconsistent VMCS configs that are not rejected here
+> > (e.g. "enable XSAVES/XRSTORS" on a CPU that doesn't support XSAVES).
+> > Do you plan to include more checks in the future, or should this be,
+> > "reject_some_inconsistent_vmcs_configs"? :-)
 >
-> I hope I got this code right.  I found this issue when trying to add an
-> extra feature bit that would go beyond bit 15 and that wasn't showing up
-> on the MDS side.
+> I have no plan, it was purely a reaction to continuing on with a known bad entry/exit
+> pair handling being awful.  I hesitated to even apply it to the EPT/VPID stuff, but
+> again it seemed silly to detect an inconsistency and do nothing about it.
 >
-> diff --git a/fs/ceph/mds_client.c b/fs/ceph/mds_client.c
-> index 1bd3e1bb0fdf..77e742b6fd30 100644
-> --- a/fs/ceph/mds_client.c
-> +++ b/fs/ceph/mds_client.c
-> @@ -1220,14 +1220,17 @@ static int encode_supported_features(void **p, void *end)
->   	if (count > 0) {
->   		size_t i;
->   		size_t size = FEATURE_BYTES(count);
-> +		unsigned long bit;
->   
->   		if (WARN_ON_ONCE(*p + 4 + size > end))
->   			return -ERANGE;
->   
->   		ceph_encode_32(p, size);
->   		memset(*p, 0, size);
-> -		for (i = 0; i < count; i++)
-> -			((unsigned char*)(*p))[i / 8] |= BIT(feature_bits[i] % 8);
-> +		for (i = 0; i < count; i++) {
-> +			bit = feature_bits[i];
-> +			((unsigned char *)(*p))[bit / 8] |= BIT(bit % 8);
-> +		}
->   		*p += size;
->   	} else {
->   		if (WARN_ON_ONCE(*p + 4 > end))
-> diff --git a/fs/ceph/mds_client.h b/fs/ceph/mds_client.h
-> index 33497846e47e..12901e3a6823 100644
-> --- a/fs/ceph/mds_client.h
-> +++ b/fs/ceph/mds_client.h
-> @@ -45,8 +45,6 @@ enum ceph_feature_type {
->   	CEPHFS_FEATURE_MULTI_RECONNECT,		\
->   	CEPHFS_FEATURE_DELEG_INO,		\
->   	CEPHFS_FEATURE_METRIC_COLLECT,		\
-> -						\
-> -	CEPHFS_FEATURE_MAX,			\
->   }
->   #define CEPHFS_FEATURES_CLIENT_REQUIRED {}
->   
+> I'm not opposed to adding more checks, though there is definitely a point of
+> diminishing returns.  I'm just picking the really low hanging fruit :-)
 
-LGTM. Just one small fix in the comment, since you have removed the 
-'CEPHFS_FEATURE_MAX', which makes no sense any more:
-
-
-diff --git a/fs/ceph/mds_client.h b/fs/ceph/mds_client.h
-index 33497846e47e..ac49344ea79e 100644
---- a/fs/ceph/mds_client.h
-+++ b/fs/ceph/mds_client.h
-@@ -33,10 +33,6 @@ enum ceph_feature_type {
-         CEPHFS_FEATURE_MAX = CEPHFS_FEATURE_METRIC_COLLECT,
-  };
-
--/*
-- * This will always have the highest feature bit value
-- * as the last element of the array.
-- */
-  #define CEPHFS_FEATURES_CLIENT_SUPPORTED {     \
-         0, 1, 2, 3, 4, 5, 6, 7,                 \
-         CEPHFS_FEATURE_MIMIC,                   \
-
-Merged into the testing branch.
-
-Thanks Luis.
-
--- Xiubo
-
-
+The usual KVM approach to a misconfigured guest is to let userspace
+shoot itself in the foot, as long as it doesn't put the host at risk.
+This change seems to run counter to that.
