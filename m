@@ -2,102 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF0C3C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 09:52:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE410C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 09:56:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242124AbiEZJwR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 05:52:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58170 "EHLO
+        id S1344368AbiEZJ4k (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 05:56:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231512AbiEZJwP (ORCPT
+        with ESMTP id S231512AbiEZJ4i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 05:52:15 -0400
-Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15088C9657;
-        Thu, 26 May 2022 02:52:15 -0700 (PDT)
-Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-2ec42eae76bso9627707b3.10;
-        Thu, 26 May 2022 02:52:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5fW3OfjEhzE5YNooV46nflF0oAOwiUDDOMvNtmNpi/w=;
-        b=K2iyAo7Bms6m+fqUFJtfe6CXeLZsYcr916aM41w+5VuE9O0UzmacBX+KtsC+fZJ9+t
-         Lb0f0LJmnN78I1YHKHvn6DTizcHGYIRAfpEm2HVO5pKAz4ohKRZleWWNr0GeZ4CldsgO
-         q2wVwTIpDBQGrfhwRuEjyPC+yM1MYaBU/C3q4gY1no3iZZi/Tij0J20DW25KIxOpDzPX
-         PG4DDlQGYfHnZgWQlS1dnpNLurObhdtbFEEWqa+uiH1mwc2hBGAYJhRxH6UOVS4mkLn7
-         iT8pux43RThpY9Kr6oTYuRb4pXz+8iALq0f8QlwrI3nO60QVKMUyzIsjdttGUUdwE0mW
-         /NLw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5fW3OfjEhzE5YNooV46nflF0oAOwiUDDOMvNtmNpi/w=;
-        b=22ZmZ+FcPQm4ZB9Qo3/f6eRMlzqJ+SOyJWN5sFTGExIGT4uyI/ziKxyH999z924TcP
-         PFobCWb8ajvTu2PDZ/jtWTFhmeSTkyNHL76mHDtImN1r42HaA7IJkaVbOys13Y/vTxS9
-         8mWz7ezfUJXOGzgTZc8NPsK7s920Tg4Nm9EnSqswbGPTe8/5NheZ6xurWfWzfQ6J/5pE
-         2vAkaTx2TAdPvcxYCp+hMo/J0MQel/k2rsjqC6hPDR7+MVwrX/e32z1vTMlyULdQ7uY4
-         fA6mYRyotaLpDhOv1rqEA1tPfLyaKjOBfq3Y6IdwSByvJGkMwvx9oSLHBEmcm1vSjB2v
-         hTZg==
-X-Gm-Message-State: AOAM533UVTzRqWm5/nXOX8/S7muGcO3Xn28TwUXrj2j/AWToJRzyyvTT
-        UPUM+YdCOKICwwBpNTvVNmFX1D4NWNTi59aPATU=
-X-Google-Smtp-Source: ABdhPJyv0tBS5V0rb3H2z5vrD2ANb/y+4/drmRomJZR+ESqjjUNxWQapHKACIzIAq2VqcB1rA9fA+j25dCijZo6vaM0=
-X-Received: by 2002:a0d:e60a:0:b0:301:b342:5316 with SMTP id
- p10-20020a0de60a000000b00301b3425316mr3759640ywe.256.1653558734405; Thu, 26
- May 2022 02:52:14 -0700 (PDT)
+        Thu, 26 May 2022 05:56:38 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82F7BC9676;
+        Thu, 26 May 2022 02:56:37 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id C63901F91C;
+        Thu, 26 May 2022 09:56:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1653558995; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=OFhmgixX5LOgkqqC8+umKFYLrjndJW5kicXnZWzhHcM=;
+        b=IFtKrgBpUSxaIqVCvIEJxuP0+8BajYar9PUK+it7szWAOhxuqgh3gsI50vxQ5v2+PAk+v5
+        HmhTw77kSpoGw0/3EJ8WyMbDUAVjADlDKKvwZcwDnjw6FA5moc+3dGsd+gFfKPR7xHm1RT
+        FKNfMRfPE3vE2jk8xlz9H4AnRMv+oTs=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 968381351F;
+        Thu, 26 May 2022 09:56:35 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id gi+FI9NOj2IBHwAAMHmgww
+        (envelope-from <mkoutny@suse.com>); Thu, 26 May 2022 09:56:35 +0000
+Date:   Thu, 26 May 2022 11:56:34 +0200
+From:   Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
+To:     cgroups@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Bui Quang Minh <minhquangbui99@gmail.com>,
+        Tadeusz Struk <tadeusz.struk@linaro.org>
+Subject: Re: [PATCH 2/2] cgroup: Use separate work structs on css release path
+Message-ID: <Yo7KfEOz92kS2z5Y@blackbook>
+References: <20220525151517.8430-1-mkoutny@suse.com>
+ <20220525151517.8430-3-mkoutny@suse.com>
+ <20220525161455.GA16134@blackbody.suse.cz>
 MIME-Version: 1.0
-References: <20220415103414.86555-1-jiangshanlai@gmail.com>
- <YoK3zEVj+DuIBEs7@google.com> <CALzav=c_WfJ0hvHUFHkLH-+zrDXZSCzKsGHP6kPYd77adwHkUQ@mail.gmail.com>
- <CAJhGHyBtVwZ9G+Mv8FMwC4Uku_gK4-Ng7+x+FqykZLftANm0Yg@mail.gmail.com> <70cec00b-428f-9310-96b6-c6257fe36dec@redhat.com>
-In-Reply-To: <70cec00b-428f-9310-96b6-c6257fe36dec@redhat.com>
-From:   Lai Jiangshan <jiangshanlai@gmail.com>
-Date:   Thu, 26 May 2022 17:52:03 +0800
-Message-ID: <CAJhGHyAqNpESB_DKH+Hh4qW+t0MbtmG7JAore=kOPbE6SH3xeQ@mail.gmail.com>
-Subject: Re: [PATCH] kvm: x86/svm/nested: Cache PDPTEs for nested NPT in PAE
- paging mode
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     David Matlack <dmatlack@google.com>,
-        Sean Christopherson <seanjc@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Lai Jiangshan <jiangshan.ljs@antgroup.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        X86 ML <x86@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        Avi Kivity <avi@redhat.com>, kvm list <kvm@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220525161455.GA16134@blackbody.suse.cz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 26, 2022 at 5:33 PM Paolo Bonzini <pbonzini@redhat.com> wrote:
->
-> On 5/26/22 10:38, Lai Jiangshan wrote:
-> >> (Although the APM does say that "modern processors" do not pre-load
-> >> PDPTEs.)
->
-> This changed between the Oct 2020 and Nov 2021, so I suppose the change
-> was done in Zen 3.
->
-> > Oh, I also missed the fact that L1 is the host when emulating it.
-> >
-> > The code is for host-mode (L1)'s nested_cr3 which is using the
-> > traditional PAE PDPTEs loading and checking.
-> >
-> > So using caches is the only correct way, right?
->
-> The caching behavior for NPT PDPTEs does not matter too much.  What
-> matters is that a PDPTE with reserved bits should cause a #NPF at usage
-> time rather than a VMentry failure or a #NPF immediately after VMentry.
->
+On Wed, May 25, 2022 at 06:14:55PM +0200, Michal Koutný <mkoutny@suse.com> wrote:
+> But the above is not correct. I've looked at the stack trace [1] and the
+> offending percpu_ref_put_many is called from an RCU callback
+> percpu_ref_switch_to_atomic_rcu(), so I can't actually see why it drops
+> to zero there...
 
-Since there is mmu->get_pdptrs() in mmu_alloc_shadow_roots(), you can't
-conform this now.
+The link [1] should have been [1].
+After some more thought, the following is possible sequencing of
+involved functions.
 
-It will be easier to only cause a #NPF at usage time after the one-off local
-patchset.
+// ref=A: initial state
+kill_css()
+  css_get // ref+=F == A+F: fuse
+  percpu_ref_kill_and_confirm
+    __percpu_ref_switch_to_atomic
+      percpu_ref_get
+        // ref += 1 == A+F+1: atomic mode, self-protection
+    percpu_ref_put
+      // ref -= 1 == A+F: kill the base reference
+  [via rcu]
+  percpu_ref_switch_to_atomic_rcu
+    percpu_ref_call_confirm_rcu
+      css_killed_ref_fn == refcnt.confirm_switch
+        queue_work(css->destroy_work)        (1)
+                                                     [via css->destroy_work]
+                                                     css_killed_work_fn == wq.func
+                                                       offline_css() // needs fuse
+                                                       css_put // ref -= F == A: de-fuse
+      percpu_ref_put
+        // ref -= 1 == A-1: remove self-protection
+        css_release                                   // A <= 1 -> 2nd queue_work explodes!
+          queue_work(css->destroy_work)      (2)
+          [via css->destroy_work]
+          css_release_work_fn == wq.func
+
+Another CPU would have to dispatch and run the css_killed_work_fn
+callback in parallel to percpu_ref_switch_to_atomic_rcu. It's a more
+correct explanation, however, its likelihood does seem very low. Perhaps
+some debug prints of percpu_ref_data.data in percpu_ref_call_confirm_rcu
+could shed more light onto this [2].
+
+HTH,
+Michal
+
+[1] https://syzkaller.appspot.com/text?tag=CrashReport&x=162b5781f00000
+[2] I tried notifying syzbot about [3] moments ago.
+[3] https://github.com/Werkov/linux/tree/cgroup-ml/css-lifecycle-syzbot
+
