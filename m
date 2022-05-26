@@ -2,566 +2,325 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A38C0C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 14:38:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EB6DC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 14:39:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347742AbiEZOiH (ORCPT
+        id S1344332AbiEZOjG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 10:38:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36840 "EHLO
+        Thu, 26 May 2022 10:39:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347676AbiEZOhe (ORCPT
+        with ESMTP id S1347750AbiEZOid (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 10:37:34 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0A9ED0291
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 07:37:28 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id ck4so3330984ejb.8
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 07:37:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=XotmoyGENTKzdFs/kjENA5hkXRoByzTebnhMnOPE5tI=;
-        b=n8Q5DTSWxDAsPwKd8qW3GDt+fIVtOob3bl5Agkda8Bb3nlL0081p7JoRvBoTMvzZnr
-         ASrvWz5qQbUo+fHvdv/nGUUszsc28dGk6AFs9J7+Svlx8erqW9gAGtHmp6F78zaF7HNS
-         9sxmOjvW9M/Eiwq9JL7fZuDDVG7WG359ltBUf/LWraBDSVc0fAWUcH4p8COFcLhoISWe
-         Eq2mxr8D/c8a28hLgL0ORKWQfWJq/9hUQJVirKUCpx5bDRBLKjUMwC4mT4ivzepOpRGQ
-         CPnur06UHGWlQiYQ+UxYkRnueP1VXYlxjAgoVHd1aN3lBKVV4OK1qV8/BEt81DXohfLi
-         hH9Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=XotmoyGENTKzdFs/kjENA5hkXRoByzTebnhMnOPE5tI=;
-        b=xGVtHIPoVqpfw0pcdOyQ7qchevXpUy6bYg9P+5W7TnMYfqjYMtBd5Q4ORLOZLKTA/t
-         6yFLXTjSMcpZF8HU30nyZv+bBphkzOl6ZS/gO2lQP/Vd3UL96tFzf3Y4X4qcw0Ni1eaU
-         VwMmMFT3JUAbd6Hrk1/UWrzmENhYSaF65TNFwRbcsltJbVSl4v1a8gY1T6X096cv0ltL
-         ioMxFw+VvmXUmI5K0MG0rkKYmBkCyXqTGkFC9wS8t1ixjm0+0ckGxfzT/X+JLrmUS93t
-         vPdmtTv/yVkZlVhsdCdPVqS2Q6jOLvZMJEgjsLTZyES5iMVGRVk8inCbFH8VqXPjY/a+
-         RkVw==
-X-Gm-Message-State: AOAM532dcABkIBIZGKTqKXSlbxxD+QE39yF7tnak4ZdItCXVPE3hdLQR
-        LCcgIZovAmUMEi22ZjeTCd785w==
-X-Google-Smtp-Source: ABdhPJwNVEqxQwr83S5CUUojKyQ2oom79sHVNvzSZbkfFAmGRGYFIVxamqmTiwB4Kqme1/jZjcR6gw==
-X-Received: by 2002:a17:907:7f1b:b0:6ff:159a:5502 with SMTP id qf27-20020a1709077f1b00b006ff159a5502mr7083000ejc.738.1653575847044;
-        Thu, 26 May 2022 07:37:27 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id f27-20020a50a6db000000b0042be2dfa8bdsm267962edc.81.2022.05.26.07.37.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 May 2022 07:37:26 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Tomasz Figa <tomasz.figa@gmail.com>,
-        Sylwester Nawrocki <s.nawrocki@samsung.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-gpio@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 5/7] arm64: dts: exynos: use local header for pinctrl register values
-Date:   Thu, 26 May 2022 16:37:05 +0200
-Message-Id: <20220526143707.767490-6-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220526143707.767490-1-krzysztof.kozlowski@linaro.org>
-References: <20220526143707.767490-1-krzysztof.kozlowski@linaro.org>
+        Thu, 26 May 2022 10:38:33 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 71F83E15E4
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 07:38:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653575878;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=PHeIEU9tmAOSo5oYQbuzvWGVWkOIq11hKGKnfJEPwt0=;
+        b=YuWAqZ5NaHyxYmIRrX/VgtS0ytSjce5DhK2EUy2NEtjQMdtX7QysJhSyb2rrz0qhteyqfS
+        2KR0uVvMx64IxPT9SIaeAPVgJGIW+G7D47/jk/WH+YYjE4PYwx20aacvuh/HaMjjafVa8a
+        z+UEX7m9vYpiQ9TmveQi8c2yaBt/QVU=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-374-9t_RVTvVMqmchf4VO1GLaA-1; Thu, 26 May 2022 10:37:52 -0400
+X-MC-Unique: 9t_RVTvVMqmchf4VO1GLaA-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id D9E0885A5BC;
+        Thu, 26 May 2022 14:37:51 +0000 (UTC)
+Received: from fedora (unknown [10.22.16.201])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 5CBF2405D4BF;
+        Thu, 26 May 2022 14:37:48 +0000 (UTC)
+Date:   Thu, 26 May 2022 11:37:47 -0300
+From:   Wander Lairson Costa <wander@redhat.com>
+To:     Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kai Huang <kai.huang@intel.com>,
+        Isaku Yamahata <isaku.yamahata@gmail.com>,
+        marcelo.cerri@canonical.com, tim.gardner@canonical.com,
+        khalid.elmously@canonical.com, philip.cox@canonical.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v7 1/5] x86/tdx: Add TDX Guest attestation interface
+ driver
+Message-ID: <Yo+Qu5soPel433ln@fedora>
+References: <20220524040517.703581-1-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <20220524040517.703581-2-sathyanarayanan.kuppuswamy@linux.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220524040517.703581-2-sathyanarayanan.kuppuswamy@linux.intel.com>
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The DTS uses hardware register values directly in pin controller pin
-configuration.  These are not some IDs or other abstraction layer but
-raw numbers used in the registers.
+On Mon, May 23, 2022 at 09:05:13PM -0700, Kuppuswamy Sathyanarayanan wrote:
+> In TDX guest, attestation is used to verify the trustworthiness of a TD
+> to other entities before provisioning secrets to the TD.
+> 
+> One usage example is, when a TD guest uses encrypted drive and if the
+> decryption keys required to access the drive are stored in a secure 3rd
+> party keyserver, the key server can use attestation to verify TD's
+> trustworthiness and release the decryption keys to the TD.
+> 
+> The attestation process consists of two steps: TDREPORT generation and
+> Quote generation.
+> 
+> TDREPORT (TDREPORT_STRUCT) is a fixed-size data structure generated by
+> the TDX module which contains TD-specific information (such as TD
+> measurements), platform security version, and the MAC to protect the
+> integrity of the TDREPORT. The TD kernel uses TDCALL[TDG.MR.REPORT] to
+> get the TDREPORT from the TDX module. A user-provided 64-Byte
+> REPORTDATA is used as input and included in the TDREPORT. Typically it
+> can be some nonce provided by attestation service so the TDREPORT can
+> be verified uniquely. More details about TDREPORT can be found in
+> Intel TDX Module specification, section titled "TDG.MR.REPORT Leaf".
+> 
+> TDREPORT can only be verified on local platform as the MAC key is bound
+> to the platform. To support remote verification of the TDREPORT, TDX
+> leverages Intel SGX Quote Enclave (QE) to verify the TDREPORT locally
+> and convert it to a remote verifiable Quote.
+> 
+> After getting the TDREPORT, the second step of the attestation process
+> is to send it to the QE to generate the Quote. TDX doesn't support SGX
+> inside the TD, so the QE can be deployed in the host, or in another
+> legacy VM with SGX support. How to send the TDREPORT to QE and receive
+> the Quote is implementation and deployment specific.
+> 
+> Implement a basic attestation driver to allow TD userspace to get the
+> TDREPORT. The TD userspace attestation software can get the TDREPORT
+> and then choose whatever communication channel available (i.e. vsock)
+> to send the TDREPORT to QE and receive the Quote.
+> 
+> Also note that explicit access permissions are not enforced in this
+> driver because the quote and measurements are not a secret. However
+> the access permissions of the device node can be used to set any
+> desired access policy. The udev default is usually root access
+> only.
+> 
+> Operations like getting TDREPORT or Quote generation involves sending
+> a blob of data as input and getting another blob of data as output. It
+> was considered to use a sysfs interface for this, but it doesn't fit
+> well into the standard sysfs model for configuring values. It would be
+> possible to do read/write on files, but it would need multiple file
+> descriptors, which would be somewhat messy. IOCTLs seems to be the best
+> fitting and simplest model for this use case. Also, the REPORTDATA used
+> in TDREPORT generation can possibly come from attestation service to
+> uniquely verify the Quote (like per instance verification). In such
+> case, since REPORTDATA is a secret, using sysfs to share it is insecure
+> compared to sending it via IOCTL.
+> 
+> Reviewed-by: Tony Luck <tony.luck@intel.com>
+> Reviewed-by: Andi Kleen <ak@linux.intel.com>
+> Acked-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+> Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+> ---
+>  arch/x86/coco/tdx/Makefile      |   2 +-
+>  arch/x86/coco/tdx/attest.c      | 118 ++++++++++++++++++++++++++++++++
+>  arch/x86/include/uapi/asm/tdx.h |  42 ++++++++++++
+>  3 files changed, 161 insertions(+), 1 deletion(-)
+>  create mode 100644 arch/x86/coco/tdx/attest.c
+>  create mode 100644 arch/x86/include/uapi/asm/tdx.h
+> 
+> diff --git a/arch/x86/coco/tdx/Makefile b/arch/x86/coco/tdx/Makefile
+> index 46c55998557d..d2db3e6770e5 100644
+> --- a/arch/x86/coco/tdx/Makefile
+> +++ b/arch/x86/coco/tdx/Makefile
+> @@ -1,3 +1,3 @@
+>  # SPDX-License-Identifier: GPL-2.0
+>  
+> -obj-y += tdx.o tdcall.o
+> +obj-y += tdx.o tdcall.o attest.o
+> diff --git a/arch/x86/coco/tdx/attest.c b/arch/x86/coco/tdx/attest.c
+> new file mode 100644
+> index 000000000000..24db0bad4923
+> --- /dev/null
+> +++ b/arch/x86/coco/tdx/attest.c
+> @@ -0,0 +1,118 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * attest.c - TDX guest attestation interface driver.
+> + *
+> + * Implements user interface to trigger attestation process.
+> + *
+> + * Copyright (C) 2022 Intel Corporation
+> + *
+> + */
+> +
+> +#define pr_fmt(fmt) "x86/tdx: attest: " fmt
+> +
+> +#include <linux/miscdevice.h>
+> +#include <linux/mm.h>
+> +#include <linux/io.h>
+> +#include <asm/tdx.h>
+> +#include <uapi/asm/tdx.h>
+> +
+> +#define DRIVER_NAME "tdx-attest"
+> +
+> +/* TDREPORT module call leaf ID */
+> +#define TDX_GET_REPORT			4
+> +
+> +static struct miscdevice miscdev;
+> +
+> +static long tdx_get_report(void __user *argp)
+> +{
+> +	void *reportdata = NULL, *tdreport = NULL;
+> +	long ret;
+> +
+> +	/* Allocate buffer space for REPORTDATA */
+> +	reportdata = kmalloc(TDX_REPORTDATA_LEN, GFP_KERNEL);
+> +	if (!reportdata)
+> +		return -ENOMEM;
+> +
+> +	/* Allocate buffer space for TDREPORT */
+> +	tdreport = kmalloc(TDX_REPORT_LEN, GFP_KERNEL);
+> +	if (!tdreport) {
+> +		ret = -ENOMEM;
+> +		goto out;
+> +	}
+> +
+> +	/* Copy REPORTDATA from the user buffer */
+> +	if (copy_from_user(reportdata, argp, TDX_REPORTDATA_LEN)) {
+> +		ret = -EFAULT;
+> +		goto out;
+> +	}
+> +
+> +	/*
+> +	 * Generate TDREPORT using "TDG.MR.REPORT" TDCALL.
+> +	 *
+> +	 * Get the TDREPORT using REPORTDATA as input. Refer to
+> +	 * section 22.3.3 TDG.MR.REPORT leaf in the TDX Module 1.0
+> +	 * Specification for detailed information.
+> +	 */
+> +	ret = __tdx_module_call(TDX_GET_REPORT, virt_to_phys(tdreport),
+> +				virt_to_phys(reportdata), 0, 0, NULL);
+> +	if (ret) {
+> +		pr_debug("TDREPORT TDCALL failed, status:%lx\n", ret);
+> +		ret = -EIO;
+> +		goto out;
+> +	}
+> +
+> +	/* Copy TDREPORT back to the user buffer */
+> +	if (copy_to_user(argp, tdreport, TDX_REPORT_LEN))
+> +		ret = -EFAULT;
+> +
+> +out:
+> +	kfree(reportdata);
+> +	kfree(tdreport);
+> +	return ret;
+> +}
+> +
+> +static long tdx_attest_ioctl(struct file *file, unsigned int cmd,
+> +			     unsigned long arg)
+> +{
+> +	void __user *argp = (void __user *)arg;
+> +	long ret = -EINVAL;
+> +
+> +	switch (cmd) {
+> +	case TDX_CMD_GET_REPORT:
+> +		ret = tdx_get_report(argp);
+> +		break;
+> +	default:
+> +		pr_debug("cmd %d not supported\n", cmd);
+> +		break;
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+> +static const struct file_operations tdx_attest_fops = {
+> +	.owner		= THIS_MODULE,
+> +	.unlocked_ioctl	= tdx_attest_ioctl,
+> +	.llseek		= no_llseek,
+> +};
+> +
+> +static int __init tdx_attestation_init(void)
+> +{
+> +	int ret;
+> +
+> +	/* Make sure we are in a valid TDX platform */
+> +	if (!cpu_feature_enabled(X86_FEATURE_TDX_GUEST))
+> +		return -EIO;
+> +
+> +	miscdev.name = DRIVER_NAME;
+> +	miscdev.minor = MISC_DYNAMIC_MINOR;
+> +	miscdev.fops = &tdx_attest_fops;
+> +
+> +	ret = misc_register(&miscdev);
+> +	if (ret) {
+> +		pr_err("misc device registration failed\n");
+> +		return ret;
+> +	}
+> +
+> +	return 0;
+> +}
+> +device_initcall(tdx_attestation_init)
+> diff --git a/arch/x86/include/uapi/asm/tdx.h b/arch/x86/include/uapi/asm/tdx.h
+> new file mode 100644
+> index 000000000000..8b57dea67eab
+> --- /dev/null
+> +++ b/arch/x86/include/uapi/asm/tdx.h
+> @@ -0,0 +1,42 @@
+> +/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+> +#ifndef _UAPI_ASM_X86_TDX_H
+> +#define _UAPI_ASM_X86_TDX_H
+> +
+> +#include <linux/types.h>
+> +#include <linux/ioctl.h>
+> +
+> +/* Length of the REPORTDATA used in TDG.MR.REPORT TDCALL */
+> +#define TDX_REPORTDATA_LEN		64
+> +
+> +/* Length of TDREPORT used in TDG.MR.REPORT TDCALL */
+> +#define TDX_REPORT_LEN			1024
+> +
+> +/**
+> + * struct tdx_report_req: Get TDREPORT using REPORTDATA as input.
+> + *
+> + * @reportdata : User-defined 64-Byte REPORTDATA to be included into
+> + *		 TDREPORT. Typically it can be some nonce provided by
+> + *		 attestation service, so the generated TDREPORT can be
+> + *		 uniquely verified.
+> + * @tdreport   : TDREPORT output from TDCALL[TDG.MR.REPORT] of size
+> + *		 TDX_REPORT_LEN.
+> + *
+> + * Used in TDX_CMD_GET_REPORT IOCTL request.
+> + */
+> +struct tdx_report_req {
+> +	union {
+> +		__u8 reportdata[TDX_REPORTDATA_LEN];
+> +		__u8 tdreport[TDX_REPORT_LEN];
+> +	};
+> +};
+> +
+> +/*
+> + * TDX_CMD_GET_REPORT - Get TDREPORT using TDCALL[TDG.MR.REPORT]
+> + *
+> + * Return 0 on success, -EIO on TDCALL execution failure, and
+> + * standard errno on other general error cases.
+> + *
+> + */
+> +#define TDX_CMD_GET_REPORT		_IOWR('T', 0x01, struct tdx_report_req)
+> +
+> +#endif /* _UAPI_ASM_X86_TDX_H */
+> -- 
+> 2.25.1
+> 
+> 
 
-These numbers were previously put in the bindings header to avoid code
-duplication and to provide some context meaning (name), but they do not
-fit the purpose of bindings.
-
-Store the constants in a header next to DTS and use them instead of
-bindings.
-
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- arch/arm64/boot/dts/exynos/exynos-pinctrl.h   | 79 +++++++++++++++++++
- .../boot/dts/exynos/exynos5433-pinctrl.dtsi   |  2 +-
- .../boot/dts/exynos/exynos7-espresso.dts      |  6 +-
- .../boot/dts/exynos/exynos7-pinctrl.dtsi      | 72 ++++++++---------
- .../boot/dts/exynos/exynos7885-pinctrl.dtsi   |  2 +-
- .../boot/dts/exynos/exynos850-pinctrl.dtsi    |  2 +-
- .../boot/dts/exynos/exynosautov9-pinctrl.dtsi |  2 +-
- 7 files changed, 122 insertions(+), 43 deletions(-)
- create mode 100644 arch/arm64/boot/dts/exynos/exynos-pinctrl.h
-
-diff --git a/arch/arm64/boot/dts/exynos/exynos-pinctrl.h b/arch/arm64/boot/dts/exynos/exynos-pinctrl.h
-new file mode 100644
-index 000000000000..1a23c7817057
---- /dev/null
-+++ b/arch/arm64/boot/dts/exynos/exynos-pinctrl.h
-@@ -0,0 +1,79 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Samsung's Exynos pinctrl bindings
-+ *
-+ * Copyright (c) 2016 Samsung Electronics Co., Ltd.
-+ *		http://www.samsung.com
-+ * Copyright (c) 2022 Linaro Ltd
-+ * Author: Krzysztof Kozlowski <krzk@kernel.org>
-+ */
-+
-+#ifndef __DTS_ARM64_SAMSUNG_EXYNOS_PINCTRL_H__
-+#define __DTS_ARM64_SAMSUNG_EXYNOS_PINCTRL_H__
-+
-+#define EXYNOS_PIN_PULL_NONE		0
-+#define EXYNOS_PIN_PULL_DOWN		1
-+#define EXYNOS_PIN_PULL_UP		3
-+
-+/* Pin function in power down mode */
-+#define EXYNOS_PIN_PDN_OUT0		0
-+#define EXYNOS_PIN_PDN_OUT1		1
-+#define EXYNOS_PIN_PDN_INPUT		2
-+#define EXYNOS_PIN_PDN_PREV		3
-+
-+/*
-+ * Drive strengths for Exynos5410, Exynos542x, Exynos5800, Exynos7885, Exynos850
-+ * (except GPIO_HSI block), ExynosAutov9 (FSI0, PERIC1)
-+ */
-+#define EXYNOS5420_PIN_DRV_LV1		0
-+#define EXYNOS5420_PIN_DRV_LV2		1
-+#define EXYNOS5420_PIN_DRV_LV3		2
-+#define EXYNOS5420_PIN_DRV_LV4		3
-+
-+/* Drive strengths for Exynos5433 */
-+#define EXYNOS5433_PIN_DRV_FAST_SR1	0
-+#define EXYNOS5433_PIN_DRV_FAST_SR2	1
-+#define EXYNOS5433_PIN_DRV_FAST_SR3	2
-+#define EXYNOS5433_PIN_DRV_FAST_SR4	3
-+#define EXYNOS5433_PIN_DRV_FAST_SR5	4
-+#define EXYNOS5433_PIN_DRV_FAST_SR6	5
-+#define EXYNOS5433_PIN_DRV_SLOW_SR1	8
-+#define EXYNOS5433_PIN_DRV_SLOW_SR2	9
-+#define EXYNOS5433_PIN_DRV_SLOW_SR3	0xa
-+#define EXYNOS5433_PIN_DRV_SLOW_SR4	0xb
-+#define EXYNOS5433_PIN_DRV_SLOW_SR5	0xc
-+#define EXYNOS5433_PIN_DRV_SLOW_SR6	0xf
-+
-+/* Drive strengths for Exynos7 (except FSYS1) */
-+#define EXYNOS7_PIN_DRV_LV1		0
-+#define EXYNOS7_PIN_DRV_LV2		2
-+#define EXYNOS7_PIN_DRV_LV3		1
-+#define EXYNOS7_PIN_DRV_LV4		3
-+
-+/* Drive strengths for Exynos7 FSYS1 block */
-+#define EXYNOS7_FSYS1_PIN_DRV_LV1	0
-+#define EXYNOS7_FSYS1_PIN_DRV_LV2	4
-+#define EXYNOS7_FSYS1_PIN_DRV_LV3	2
-+#define EXYNOS7_FSYS1_PIN_DRV_LV4	6
-+#define EXYNOS7_FSYS1_PIN_DRV_LV5	1
-+#define EXYNOS7_FSYS1_PIN_DRV_LV6	5
-+
-+/* Drive strengths for Exynos850 GPIO_HSI block */
-+#define EXYNOS850_HSI_PIN_DRV_LV1	0	/* 1x   */
-+#define EXYNOS850_HSI_PIN_DRV_LV1_5	1	/* 1.5x */
-+#define EXYNOS850_HSI_PIN_DRV_LV2	2	/* 2x   */
-+#define EXYNOS850_HSI_PIN_DRV_LV2_5	3	/* 2.5x */
-+#define EXYNOS850_HSI_PIN_DRV_LV3	4	/* 3x   */
-+#define EXYNOS850_HSI_PIN_DRV_LV4	5	/* 4x   */
-+
-+#define EXYNOS_PIN_FUNC_INPUT		0
-+#define EXYNOS_PIN_FUNC_OUTPUT		1
-+#define EXYNOS_PIN_FUNC_2		2
-+#define EXYNOS_PIN_FUNC_3		3
-+#define EXYNOS_PIN_FUNC_4		4
-+#define EXYNOS_PIN_FUNC_5		5
-+#define EXYNOS_PIN_FUNC_6		6
-+#define EXYNOS_PIN_FUNC_EINT		0xf
-+#define EXYNOS_PIN_FUNC_F		EXYNOS_PIN_FUNC_EINT
-+
-+#endif /* __DTS_ARM64_SAMSUNG_EXYNOS_PINCTRL_H__ */
-diff --git a/arch/arm64/boot/dts/exynos/exynos5433-pinctrl.dtsi b/arch/arm64/boot/dts/exynos/exynos5433-pinctrl.dtsi
-index 4b46af3e164d..681553577ebc 100644
---- a/arch/arm64/boot/dts/exynos/exynos5433-pinctrl.dtsi
-+++ b/arch/arm64/boot/dts/exynos/exynos5433-pinctrl.dtsi
-@@ -9,7 +9,7 @@
-  * tree nodes are listed in this file.
-  */
- 
--#include <dt-bindings/pinctrl/samsung.h>
-+#include "exynos-pinctrl.h"
- 
- #define PIN(_pin, _func, _pull, _drv)					\
- 	pin- ## _pin {							\
-diff --git a/arch/arm64/boot/dts/exynos/exynos7-espresso.dts b/arch/arm64/boot/dts/exynos/exynos7-espresso.dts
-index 0895e818d3c1..e38c59cf18dc 100644
---- a/arch/arm64/boot/dts/exynos/exynos7-espresso.dts
-+++ b/arch/arm64/boot/dts/exynos/exynos7-espresso.dts
-@@ -357,7 +357,7 @@ &pinctrl_alive {
- 	pmic_irq: pmic-irq-pins {
- 		samsung,pins = "gpa0-2";
- 		samsung,pin-pud = <EXYNOS_PIN_PULL_UP>;
--		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV4>;
-+		samsung,pin-drv = <EXYNOS7_PIN_DRV_LV4>;
- 	};
- };
- 
-@@ -397,14 +397,14 @@ usb30_vbus_en: usb30-vbus-en-pins {
- 		samsung,pins = "gph1-1";
- 		samsung,pin-function = <EXYNOS_PIN_FUNC_OUTPUT>;
- 		samsung,pin-pud = <EXYNOS_PIN_PULL_NONE>;
--		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
-+		samsung,pin-drv = <EXYNOS7_PIN_DRV_LV1>;
- 	};
- 
- 	usb3drd_boost_en: usb3drd-boost-en-pins {
- 		samsung,pins = "gpf4-1";
- 		samsung,pin-function = <EXYNOS_PIN_FUNC_OUTPUT>;
- 		samsung,pin-pud = <EXYNOS_PIN_PULL_NONE>;
--		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
-+		samsung,pin-drv = <EXYNOS7_PIN_DRV_LV1>;
- 	};
- };
- 
-diff --git a/arch/arm64/boot/dts/exynos/exynos7-pinctrl.dtsi b/arch/arm64/boot/dts/exynos/exynos7-pinctrl.dtsi
-index be9b971f3697..ee9c24a226f3 100644
---- a/arch/arm64/boot/dts/exynos/exynos7-pinctrl.dtsi
-+++ b/arch/arm64/boot/dts/exynos/exynos7-pinctrl.dtsi
-@@ -9,7 +9,7 @@
-  * device tree nodes in this file.
-  */
- 
--#include <dt-bindings/pinctrl/samsung.h>
-+#include "exynos-pinctrl.h"
- 
- &pinctrl_alive {
- 	gpa0: gpa0-gpio-bank {
-@@ -188,161 +188,161 @@ hs_i2c10_bus: hs-i2c10-bus-pins {
- 		samsung,pins = "gpb0-1", "gpb0-0";
- 		samsung,pin-function = <EXYNOS_PIN_FUNC_2>;
- 		samsung,pin-pud = <EXYNOS_PIN_PULL_UP>;
--		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
-+		samsung,pin-drv = <EXYNOS7_PIN_DRV_LV1>;
- 	};
- 
- 	hs_i2c11_bus: hs-i2c11-bus-pins {
- 		samsung,pins = "gpb0-3", "gpb0-2";
- 		samsung,pin-function = <EXYNOS_PIN_FUNC_2>;
- 		samsung,pin-pud = <EXYNOS_PIN_PULL_UP>;
--		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
-+		samsung,pin-drv = <EXYNOS7_PIN_DRV_LV1>;
- 	};
- 
- 	hs_i2c2_bus: hs-i2c2-bus-pins {
- 		samsung,pins = "gpd0-3", "gpd0-2";
- 		samsung,pin-function = <EXYNOS_PIN_FUNC_3>;
- 		samsung,pin-pud = <EXYNOS_PIN_PULL_UP>;
--		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
-+		samsung,pin-drv = <EXYNOS7_PIN_DRV_LV1>;
- 	};
- 
- 	uart0_data: uart0-data-pins {
- 		samsung,pins = "gpd0-0", "gpd0-1";
- 		samsung,pin-function = <EXYNOS_PIN_FUNC_2>;
- 		samsung,pin-pud = <EXYNOS_PIN_PULL_NONE>;
--		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
-+		samsung,pin-drv = <EXYNOS7_PIN_DRV_LV1>;
- 	};
- 
- 	uart0_fctl: uart0-fctl-pins {
- 		samsung,pins = "gpd0-2", "gpd0-3";
- 		samsung,pin-function = <EXYNOS_PIN_FUNC_2>;
- 		samsung,pin-pud = <EXYNOS_PIN_PULL_NONE>;
--		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
-+		samsung,pin-drv = <EXYNOS7_PIN_DRV_LV1>;
- 	};
- 
- 	uart2_data: uart2-data-pins {
- 		samsung,pins = "gpd1-4", "gpd1-5";
- 		samsung,pin-function = <EXYNOS_PIN_FUNC_2>;
- 		samsung,pin-pud = <EXYNOS_PIN_PULL_NONE>;
--		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
-+		samsung,pin-drv = <EXYNOS7_PIN_DRV_LV1>;
- 	};
- 
- 	hs_i2c3_bus: hs-i2c3-bus-pins {
- 		samsung,pins = "gpd1-3", "gpd1-2";
- 		samsung,pin-function = <EXYNOS_PIN_FUNC_3>;
- 		samsung,pin-pud = <EXYNOS_PIN_PULL_UP>;
--		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
-+		samsung,pin-drv = <EXYNOS7_PIN_DRV_LV1>;
- 	};
- 
- 	uart1_data: uart1-data-pins {
- 		samsung,pins = "gpd1-0", "gpd1-1";
- 		samsung,pin-function = <EXYNOS_PIN_FUNC_2>;
- 		samsung,pin-pud = <EXYNOS_PIN_PULL_NONE>;
--		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
-+		samsung,pin-drv = <EXYNOS7_PIN_DRV_LV1>;
- 	};
- 
- 	uart1_fctl: uart1-fctl-pins {
- 		samsung,pins = "gpd1-2", "gpd1-3";
- 		samsung,pin-function = <EXYNOS_PIN_FUNC_2>;
- 		samsung,pin-pud = <EXYNOS_PIN_PULL_NONE>;
--		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
-+		samsung,pin-drv = <EXYNOS7_PIN_DRV_LV1>;
- 	};
- 
- 	hs_i2c0_bus: hs-i2c0-bus-pins {
- 		samsung,pins = "gpd2-1", "gpd2-0";
- 		samsung,pin-function = <EXYNOS_PIN_FUNC_2>;
- 		samsung,pin-pud = <EXYNOS_PIN_PULL_UP>;
--		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
-+		samsung,pin-drv = <EXYNOS7_PIN_DRV_LV1>;
- 	};
- 
- 	hs_i2c1_bus: hs-i2c1-bus-pins {
- 		samsung,pins = "gpd2-3", "gpd2-2";
- 		samsung,pin-function = <EXYNOS_PIN_FUNC_2>;
- 		samsung,pin-pud = <EXYNOS_PIN_PULL_UP>;
--		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
-+		samsung,pin-drv = <EXYNOS7_PIN_DRV_LV1>;
- 	};
- 
- 	hs_i2c9_bus: hs-i2c9-bus-pins {
- 		samsung,pins = "gpd2-7", "gpd2-6";
- 		samsung,pin-function = <EXYNOS_PIN_FUNC_3>;
- 		samsung,pin-pud = <EXYNOS_PIN_PULL_UP>;
--		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
-+		samsung,pin-drv = <EXYNOS7_PIN_DRV_LV1>;
- 	};
- 
- 	pwm0_out: pwm0-out-pins {
- 		samsung,pins = "gpd2-4";
- 		samsung,pin-function = <EXYNOS_PIN_FUNC_2>;
- 		samsung,pin-pud = <EXYNOS_PIN_PULL_NONE>;
--		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
-+		samsung,pin-drv = <EXYNOS7_PIN_DRV_LV1>;
- 	};
- 
- 	pwm1_out: pwm1-out-pins {
- 		samsung,pins = "gpd2-5";
- 		samsung,pin-function = <EXYNOS_PIN_FUNC_2>;
- 		samsung,pin-pud = <EXYNOS_PIN_PULL_NONE>;
--		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
-+		samsung,pin-drv = <EXYNOS7_PIN_DRV_LV1>;
- 	};
- 
- 	pwm2_out: pwm2-out-pins {
- 		samsung,pins = "gpd2-6";
- 		samsung,pin-function = <EXYNOS_PIN_FUNC_2>;
- 		samsung,pin-pud = <EXYNOS_PIN_PULL_NONE>;
--		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
-+		samsung,pin-drv = <EXYNOS7_PIN_DRV_LV1>;
- 	};
- 
- 	pwm3_out: pwm3-out-pins {
- 		samsung,pins = "gpd2-7";
- 		samsung,pin-function = <EXYNOS_PIN_FUNC_2>;
- 		samsung,pin-pud = <EXYNOS_PIN_PULL_NONE>;
--		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
-+		samsung,pin-drv = <EXYNOS7_PIN_DRV_LV1>;
- 	};
- 
- 	hs_i2c8_bus: hs-i2c8-bus-pins {
- 		samsung,pins = "gpd5-3", "gpd5-2";
- 		samsung,pin-function = <EXYNOS_PIN_FUNC_3>;
- 		samsung,pin-pud = <EXYNOS_PIN_PULL_UP>;
--		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
-+		samsung,pin-drv = <EXYNOS7_PIN_DRV_LV1>;
- 	};
- 
- 	uart3_data: uart3-data-pins {
- 		samsung,pins = "gpd5-0", "gpd5-1";
- 		samsung,pin-function = <EXYNOS_PIN_FUNC_3>;
- 		samsung,pin-pud = <EXYNOS_PIN_PULL_NONE>;
--		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
-+		samsung,pin-drv = <EXYNOS7_PIN_DRV_LV1>;
- 	};
- 
- 	spi2_bus: spi2-bus-pins {
- 		samsung,pins = "gpd5-0", "gpd5-1", "gpd5-2", "gpd5-3";
- 		samsung,pin-function = <EXYNOS_PIN_FUNC_2>;
- 		samsung,pin-pud = <EXYNOS_PIN_PULL_UP>;
--		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
-+		samsung,pin-drv = <EXYNOS7_PIN_DRV_LV1>;
- 	};
- 
- 	spi1_bus: spi1-bus-pins {
- 		samsung,pins = "gpd6-2", "gpd6-3", "gpd6-4", "gpd6-5";
- 		samsung,pin-function = <EXYNOS_PIN_FUNC_2>;
- 		samsung,pin-pud = <EXYNOS_PIN_PULL_UP>;
--		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
-+		samsung,pin-drv = <EXYNOS7_PIN_DRV_LV1>;
- 	};
- 
- 	spi0_bus: spi0-bus-pins {
- 		samsung,pins = "gpd8-0", "gpd8-1", "gpd6-0", "gpd6-1";
- 		samsung,pin-function = <EXYNOS_PIN_FUNC_2>;
- 		samsung,pin-pud = <EXYNOS_PIN_PULL_UP>;
--		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
-+		samsung,pin-drv = <EXYNOS7_PIN_DRV_LV1>;
- 	};
- 
- 	hs_i2c4_bus: hs-i2c4-bus-pins {
- 		samsung,pins = "gpg3-1", "gpg3-0";
- 		samsung,pin-function = <EXYNOS_PIN_FUNC_2>;
- 		samsung,pin-pud = <EXYNOS_PIN_PULL_UP>;
--		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
-+		samsung,pin-drv = <EXYNOS7_PIN_DRV_LV1>;
- 	};
- 
- 	hs_i2c5_bus: hs-i2c5-bus-pins {
- 		samsung,pins = "gpg3-3", "gpg3-2";
- 		samsung,pin-function = <EXYNOS_PIN_FUNC_2>;
- 		samsung,pin-pud = <EXYNOS_PIN_PULL_UP>;
--		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
-+		samsung,pin-drv = <EXYNOS7_PIN_DRV_LV1>;
- 	};
- };
- 
-@@ -359,7 +359,7 @@ hs_i2c6_bus: hs-i2c6-bus-pins {
- 		samsung,pins = "gpj0-1", "gpj0-0";
- 		samsung,pin-function = <EXYNOS_PIN_FUNC_2>;
- 		samsung,pin-pud = <EXYNOS_PIN_PULL_UP>;
--		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
-+		samsung,pin-drv = <EXYNOS7_PIN_DRV_LV1>;
- 	};
- };
- 
-@@ -376,7 +376,7 @@ hs_i2c7_bus: hs-i2c7-bus-pins {
- 		samsung,pins = "gpj1-1", "gpj1-0";
- 		samsung,pin-function = <EXYNOS_PIN_FUNC_2>;
- 		samsung,pin-pud = <EXYNOS_PIN_PULL_UP>;
--		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
-+		samsung,pin-drv = <EXYNOS7_PIN_DRV_LV1>;
- 	};
- };
- 
-@@ -393,7 +393,7 @@ spi3_bus: spi3-bus-pins {
- 		samsung,pins = "gpg4-0", "gpg4-1", "gpg4-2", "gpg4-3";
- 		samsung,pin-function = <EXYNOS_PIN_FUNC_2>;
- 		samsung,pin-pud = <EXYNOS_PIN_PULL_UP>;
--		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
-+		samsung,pin-drv = <EXYNOS7_PIN_DRV_LV1>;
- 	};
- };
- 
-@@ -410,7 +410,7 @@ spi4_bus: spi4-bus-pins {
- 		samsung,pins = "gpv7-0", "gpv7-1", "gpv7-2", "gpv7-3";
- 		samsung,pin-function = <EXYNOS_PIN_FUNC_2>;
- 		samsung,pin-pud = <EXYNOS_PIN_PULL_UP>;
--		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
-+		samsung,pin-drv = <EXYNOS7_PIN_DRV_LV1>;
- 	};
- };
- 
-@@ -427,35 +427,35 @@ sd2_clk: sd2-clk-pins {
- 		samsung,pins = "gpr4-0";
- 		samsung,pin-function = <EXYNOS_PIN_FUNC_2>;
- 		samsung,pin-pud = <EXYNOS_PIN_PULL_NONE>;
--		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV4>;
-+		samsung,pin-drv = <EXYNOS7_PIN_DRV_LV4>;
- 	};
- 
- 	sd2_cmd: sd2-cmd-pins {
- 		samsung,pins = "gpr4-1";
- 		samsung,pin-function = <EXYNOS_PIN_FUNC_2>;
- 		samsung,pin-pud = <EXYNOS_PIN_PULL_NONE>;
--		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV4>;
-+		samsung,pin-drv = <EXYNOS7_PIN_DRV_LV4>;
- 	};
- 
- 	sd2_cd: sd2-cd-pins {
- 		samsung,pins = "gpr4-2";
- 		samsung,pin-function = <EXYNOS_PIN_FUNC_2>;
- 		samsung,pin-pud = <EXYNOS_PIN_PULL_UP>;
--		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV4>;
-+		samsung,pin-drv = <EXYNOS7_PIN_DRV_LV4>;
- 	};
- 
- 	sd2_bus1: sd2-bus-width1-pins {
- 		samsung,pins = "gpr4-3";
- 		samsung,pin-function = <EXYNOS_PIN_FUNC_2>;
- 		samsung,pin-pud = <EXYNOS_PIN_PULL_UP>;
--		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV4>;
-+		samsung,pin-drv = <EXYNOS7_PIN_DRV_LV4>;
- 	};
- 
- 	sd2_bus4: sd2-bus-width4-pins {
- 		samsung,pins = "gpr4-4", "gpr4-5", "gpr4-6";
- 		samsung,pin-function = <EXYNOS_PIN_FUNC_2>;
- 		samsung,pin-pud = <EXYNOS_PIN_PULL_UP>;
--		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV4>;
-+		samsung,pin-drv = <EXYNOS7_PIN_DRV_LV4>;
- 	};
- };
- 
-@@ -683,20 +683,20 @@ spi5_bus: spi5-bus-pins {
- 		samsung,pins = "gpf2-0", "gpf2-1", "gpf2-2", "gpf2-3";
- 		samsung,pin-function = <EXYNOS_PIN_FUNC_2>;
- 		samsung,pin-pud = <EXYNOS_PIN_PULL_UP>;
--		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
-+		samsung,pin-drv = <EXYNOS7_PIN_DRV_LV1>;
- 	};
- 
- 	ufs_refclk_out: ufs-refclk-out-pins {
- 		samsung,pins = "gpg2-4";
- 		samsung,pin-function = <EXYNOS_PIN_FUNC_2>;
- 		samsung,pin-pud = <EXYNOS_PIN_PULL_NONE>;
--		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV2>;
-+		samsung,pin-drv = <EXYNOS7_PIN_DRV_LV2>;
- 	};
- 
- 	ufs_rst_n: ufs-rst-n-pins {
- 		samsung,pins = "gph1-5";
- 		samsung,pin-function = <EXYNOS_PIN_FUNC_2>;
- 		samsung,pin-pud = <EXYNOS_PIN_PULL_UP>;
--		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
-+		samsung,pin-drv = <EXYNOS7_PIN_DRV_LV1>;
- 	};
- };
-diff --git a/arch/arm64/boot/dts/exynos/exynos7885-pinctrl.dtsi b/arch/arm64/boot/dts/exynos/exynos7885-pinctrl.dtsi
-index a50c1dbd5545..34bb12191955 100644
---- a/arch/arm64/boot/dts/exynos/exynos7885-pinctrl.dtsi
-+++ b/arch/arm64/boot/dts/exynos/exynos7885-pinctrl.dtsi
-@@ -9,8 +9,8 @@
-  * device tree nodes in this file.
-  */
- 
--#include <dt-bindings/pinctrl/samsung.h>
- #include <dt-bindings/interrupt-controller/arm-gic.h>
-+#include "exynos-pinctrl.h"
- 
- &pinctrl_alive {
- 	etc0: etc0-gpio-bank {
-diff --git a/arch/arm64/boot/dts/exynos/exynos850-pinctrl.dtsi b/arch/arm64/boot/dts/exynos/exynos850-pinctrl.dtsi
-index f43e4a206282..424bc80bde68 100644
---- a/arch/arm64/boot/dts/exynos/exynos850-pinctrl.dtsi
-+++ b/arch/arm64/boot/dts/exynos/exynos850-pinctrl.dtsi
-@@ -10,7 +10,7 @@
-  */
- 
- #include <dt-bindings/interrupt-controller/arm-gic.h>
--#include <dt-bindings/pinctrl/samsung.h>
-+#include "exynos-pinctrl.h"
- 
- &pinctrl_alive {
- 	gpa0: gpa0-gpio-bank {
-diff --git a/arch/arm64/boot/dts/exynos/exynosautov9-pinctrl.dtsi b/arch/arm64/boot/dts/exynos/exynosautov9-pinctrl.dtsi
-index ef0349d1c3d0..2a616d23c09f 100644
---- a/arch/arm64/boot/dts/exynos/exynosautov9-pinctrl.dtsi
-+++ b/arch/arm64/boot/dts/exynos/exynosautov9-pinctrl.dtsi
-@@ -8,7 +8,7 @@
-  * device tree nodes in this file.
-  */
- 
--#include <dt-bindings/pinctrl/samsung.h>
-+#include "exynos-pinctrl.h"
- 
- &pinctrl_alive {
- 	gpa0: gpa0-gpio-bank {
--- 
-2.34.1
+Acked-by: Wander Lairson Costa <wander@redhat.com>
 
