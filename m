@@ -2,108 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 155F0C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 19:25:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F1BCC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 19:28:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345150AbiEZTZg (ORCPT
+        id S1346254AbiEZT2v (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 15:25:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42476 "EHLO
+        Thu, 26 May 2022 15:28:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345661AbiEZTZ3 (ORCPT
+        with ESMTP id S229680AbiEZT2r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 15:25:29 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22C42DFF5E
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 12:25:27 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id rs12so4718501ejb.13
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 12:25:27 -0700 (PDT)
+        Thu, 26 May 2022 15:28:47 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 264164BB83;
+        Thu, 26 May 2022 12:28:47 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id gk22so2632887pjb.1;
+        Thu, 26 May 2022 12:28:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RBGAM8ryyHsLa1iHEdpEDPOuYUzM/w4WcP0+IKIl0to=;
-        b=FpexxPFk6evFtmZePpp/pK5/5YvsIKeU3kuxpcbYGEPOLilZ1GMUSx6/yXBfsG5I4C
-         kgHAp+KYicclMZQXM00SIOqqQqUhLuQw9/ED5Aa14fN9EYrQMMprD8xpZTE9viVygmg8
-         1zv0Mi3o2BGPy/h/mVjjaWchquMhV9J5iJp8Q=
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=e2aEm4l6aQr3oyoHBVOR4pb/mJNPMjNtRn+Wn2MyTwA=;
+        b=EdtWl4YeWlWe+aiDrDmZt95xVF5e7EjM+NBkReFonToKJgrFNJLE3x/tuqUMaODDgH
+         z175s4+g8lqca6vSC7CVBRpJaXrAkW01gCIufNnytrPpa849e8stRLKgH6x7gXteQ6WO
+         O7gvDHPsdgduLwbYEAlJFOwg+9KD3sNtMFy7TaMd8Gxr15HAwKxuxIgMBqwaUB9VbmpH
+         oIBev9rEz6TpNhzBejXGAsgFLT/HHxayi41K/pH1RjhOuTn0OPQDXb8GMJtb7qJiHJlc
+         JK7+qEDJckDhFPioqvtycQZXRCED2zkOe+7t9PW6KRQKfdRRxco3SfbG9mNsgSnhTpXW
+         yD2A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RBGAM8ryyHsLa1iHEdpEDPOuYUzM/w4WcP0+IKIl0to=;
-        b=tzw//F+21Th0zR0kIhj3uPFb0+yYayxhwEDSU240XYjGxkARHGe5LOFBwQOdResBi8
-         XcnLitH5USU1DUhFnQUgLYyXZt5bljCmASJuVtvW/KG7YWz+v325z/8xoPmLjzv3Q0s2
-         WfC0jzQRoZQxbAILqMBVgaQYRstIp6KOlUKETY+mQprinyFGNj5aad8cOjvBVU0Gfxoi
-         cUL3hr6ot8KHDEgYaPGllT/OkcxLvha7FBm+I/YXuG0ErjhzBYOZZFrXXYxIEpnvOgBt
-         reQb0HXExKDoR0mDiE6JgZG1Q8uB4iqI00NyuiKtQrG00nejAjXiMYAkgHBSpVDLh9LQ
-         mp5A==
-X-Gm-Message-State: AOAM5308nLsLxwj6qVQv+KatruSSdLXYMNyes2GTeIlIfMkE42Y0qHLM
-        7f29xhaTe0CkCIkMjWIX6LrTHJ4TOHbfLEPVdug=
-X-Google-Smtp-Source: ABdhPJxaJtfuKWKqCyNiw1XLcB6iv/eS5xCkFeDpkSJqVNarCsY5l3U/9zESk9WrVgqYsNxyIfdUJA==
-X-Received: by 2002:a17:906:4fd1:b0:6f3:be23:7ad5 with SMTP id i17-20020a1709064fd100b006f3be237ad5mr35204533ejw.264.1653593125347;
-        Thu, 26 May 2022 12:25:25 -0700 (PDT)
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com. [209.85.128.54])
-        by smtp.gmail.com with ESMTPSA id f22-20020a50d556000000b0042617ba63a9sm1137972edj.51.2022.05.26.12.25.23
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 26 May 2022 12:25:24 -0700 (PDT)
-Received: by mail-wm1-f54.google.com with SMTP id p5-20020a1c2905000000b003970dd5404dso1613977wmp.0
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 12:25:23 -0700 (PDT)
-X-Received: by 2002:a1c:7207:0:b0:397:66ee:9d71 with SMTP id
- n7-20020a1c7207000000b0039766ee9d71mr3653949wmc.8.1653593123526; Thu, 26 May
- 2022 12:25:23 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=e2aEm4l6aQr3oyoHBVOR4pb/mJNPMjNtRn+Wn2MyTwA=;
+        b=KKjPr9dVKSeaRiKrvD0ezp6BBItZRSDOj93phmhrVceEOLLQXah7pYEZBGEjESm8dM
+         HdxBIlSV0n1vVZZdc35NwL6jCGhkjGd8Ka8ar78YlVroVpOcxdIVx7FDj00iVY79PKDq
+         RFj6l/gk32UahmW2VvsO7kwYUcUx/1jXwSqmB9ybKgALtqDLV2Dug0EG4oqbPtkF76+K
+         ZmM6Z9leavPA0S3rS4u+lAxdeYewI170cJl1HfDuqivNEHaF4mkAjS8u+BbI3SN9fNob
+         0RsvxED2OIkPmLfDkIIiD4diQZh+Kn3gwSn6WpAFXqTtnsTTiG5cR2zHl4mdQRxddQsq
+         1q9w==
+X-Gm-Message-State: AOAM532yp/Pcl0TkHoLtfHywG25H58A8tCpdYEG4y0tFxjAK8M2eoMZq
+        XfXT7XNW1SujEwE6GQPPhFc=
+X-Google-Smtp-Source: ABdhPJwj53C01uVXrjQ9FlROcibjKde9Rip8NxhpfVv986KX1k4tmge6DJyoTptUkaw/7dmkKrjD+A==
+X-Received: by 2002:a17:902:f78d:b0:14d:522e:deb3 with SMTP id q13-20020a170902f78d00b0014d522edeb3mr39151166pln.173.1653593326637;
+        Thu, 26 May 2022 12:28:46 -0700 (PDT)
+Received: from localhost ([192.55.54.49])
+        by smtp.gmail.com with ESMTPSA id i67-20020a625446000000b0050dc76281bbsm1891209pfb.149.2022.05.26.12.28.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 May 2022 12:28:46 -0700 (PDT)
+Date:   Thu, 26 May 2022 12:28:44 -0700
+From:   Isaku Yamahata <isaku.yamahata@gmail.com>
+To:     Sagi Shahar <sagis@google.com>
+Cc:     "Yamahata, Isaku" <isaku.yamahata@intel.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, isaku.yamahata@gmail.com,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Erdem Aktas <erdemaktas@google.com>,
+        Sean Christopherson <seanjc@google.com>
+Subject: Re: [RFC PATCH v6 006/104] KVM: TDX: Detect CPU feature on kernel
+ module initialization
+Message-ID: <20220526192844.GC3413287@ls.amr.corp.intel.com>
+References: <cover.1651774250.git.isaku.yamahata@intel.com>
+ <eb5d2891a3ff55d88545221c588ba87e4c811878.1651774250.git.isaku.yamahata@intel.com>
+ <CAAhR5DFWo6KjBO_0QtT71S2ZmKc-kAo6Kqcwc2M4-kFc-PkmyA@mail.gmail.com>
 MIME-Version: 1.0
-References: <13e61c61-0d4b-5f48-6373-f056bf8b603f@redhat.com>
- <CAHk-=wgV8zqiLi5p-SNZ2zSi95CkkFXqPZJjtneVXeobgAohJg@mail.gmail.com>
- <f39aa9c0-b4e6-1f5d-f556-643442fcbcc5@redhat.com> <CAHk-=wgNP+Dziv=4MDEf-wAW-U_0ZNNsL0gMDs7A46+CACgD4w@mail.gmail.com>
- <e5ff5023-c3e7-769b-33b0-2c4b376bc4d2@redhat.com>
-In-Reply-To: <e5ff5023-c3e7-769b-33b0-2c4b376bc4d2@redhat.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Thu, 26 May 2022 12:25:07 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wgTRT6nQeJpVCKb+m=So6bLzUZQYcY6+RH5W0gZfsp+Fg@mail.gmail.com>
-Message-ID: <CAHk-=wgTRT6nQeJpVCKb+m=So6bLzUZQYcY6+RH5W0gZfsp+Fg@mail.gmail.com>
-Subject: Re: [GIT PULL] platform-drivers-x86 for 5.19-1
-To:     Hans de Goede <hdegoede@redhat.com>
-Cc:     Andy Shevchenko <andy@infradead.org>,
-        Mark Gross <mark.gross@intel.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <CAAhR5DFWo6KjBO_0QtT71S2ZmKc-kAo6Kqcwc2M4-kFc-PkmyA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 25, 2022 at 5:34 AM Hans de Goede <hdegoede@redhat.com> wrote:
->
-> 5. run:
->
-> git tag -s platform-drivers-x86-v5.19-1 for-next
-> git request-pull v5.18-rc1 git://git.kernel.org/pub/scm/linux/kernel/git/pdx86/platform-drivers-x86.git platform-drivers-x86-v5.19-1 > pull
+On Mon, May 23, 2022 at 04:47:59PM -0700,
+Sagi Shahar <sagis@google.com> wrote:
 
-So there's your problem.
+> > diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
+> > new file mode 100644
+> > index 000000000000..9e26e3fa60ee
+> > --- /dev/null
+> > +++ b/arch/x86/kvm/vmx/tdx.c
+> > @@ -0,0 +1,39 @@
+> > +// SPDX-License-Identifier: GPL-2.0
+> > +#include <linux/cpu.h>
+> > +
+> > +#include <asm/tdx.h>
+> > +
+> > +#include "capabilities.h"
+> > +#include "x86_ops.h"
+> > +
+> > +#undef pr_fmt
+> > +#define pr_fmt(fmt) "tdx: " fmt
+> > +
+> > +static u64 hkid_mask __ro_after_init;
+> > +static u8 hkid_start_pos __ro_after_init;
+> > +
+> > +int __init tdx_hardware_setup(struct kvm_x86_ops *x86_ops)
+> > +{
+> > +       u32 max_pa;
+> > +
+> > +       if (!enable_ept) {
+> > +               pr_warn("Cannot enable TDX with EPT disabled\n");
+> > +               return -EINVAL;
+> > +       }
+> > +
+> > +       if (!platform_has_tdx()) {
+> > +               if (__seamrr_enabled())
+> > +                       pr_warn("Cannot enable TDX with SEAMRR disabled\n");
+> 
+> So if we fail for another reason (e.g. tdx_keyid_sufficient returns
+> false) we are going to fail silently and disable TDX without any log
+> saying what happened. This will make it difficult to debug TDX
+> initialization issues.
 
-You're basically saying "give me a pull-request against v5.18-rc1".
+Agreed.  I've updated it as follows.
 
-Which is bogus, since you already sent me part of your pile after rc1,
-and I already have it, so now your pull request will end up repeating
-those parts.
-
-So just do
-
-     git fetch origin
-     git request-pull origin/master git://git....
-
-to let git figure out what the actual common state is with 'origin'
-(and obviously you may have a different name for my upstream
-repository, so replace "origin" with whatever that correct name is).
-
-(That "git fetch origin" doesn't have to happen right before the pull
-request, but it has to be done at *some* point so that your git tree
-is basically aware of what I've merged from you previously).
-
-Anyway, the important point is that you shouldn't try to remember -
-incorrectly - what the last common point for us is.  Git knows - as
-long as you just give it enough info.
-
-                 Linus
++int __init tdx_hardware_setup(struct kvm_x86_ops *x86_ops)
++{
++       u32 max_pa;
++
++       if (!enable_ept) {
++               pr_warn("Cannot enable TDX with EPT disabled\n");
++               return -EINVAL;
++       }
++
++       if (!platform_has_tdx()) {
++               if (__seamrr_enabled())
++                       pr_warn("Cannot enable TDX with SEAMRR disabled\n");
++               else
++                       pr_warn("Cannot enable TDX on TDX disabled platform.\n");
++               return -ENODEV;
++       }
++
++       /* Safe guard check because TDX overrides tlb_remote_flush callback. */
++       if (WARN_ON_ONCE(x86_ops->tlb_remote_flush))
++               return -EIO;
++
++       max_pa = cpuid_eax(0x80000008) & 0xff;
++       hkid_start_pos = boot_cpu_data.x86_phys_bits;
++       hkid_mask = GENMASK_ULL(max_pa - 1, hkid_start_pos);
++       pr_info("kvm: TDX is supported. hkid start pos %d mask 0x%llx\n",
++               hkid_start_pos, hkid_mask);
++
++       return 0;
++}
+-- 
+Isaku Yamahata <isaku.yamahata@gmail.com>
