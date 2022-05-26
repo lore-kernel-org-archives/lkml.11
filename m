@@ -2,103 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBF8DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 15:33:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0FEBC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 15:36:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347966AbiEZPdj (ORCPT
+        id S1346462AbiEZPgU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 11:33:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42488 "EHLO
+        Thu, 26 May 2022 11:36:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346462AbiEZPdi (ORCPT
+        with ESMTP id S237111AbiEZPgT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 11:33:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45412C1ED8
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 08:33:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A04CA61C64
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 15:33:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04A44C385A9;
-        Thu, 26 May 2022 15:33:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653579215;
-        bh=FT4RzyNJhGH1Xvs0BNepk6mODPann7y9135LL7cckyA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=saerT/+VGvOH8MzSXrAq+VXSokBG5Y3jxqeXe9/5kkx6DjMLknN7mMDFnuOEm/Ww6
-         hXStapOVvQIhG2bEqWF51SUy1np+N5e0Lq1NrGB6fXl+0tpmQkAr7vemq6IGDdretc
-         4e6+ov0k1fgwdGvWJtR2R3uKwaXjJ5o7xxK+m3DctnTnLcYlgtKeotrKxz3iwFwswd
-         G9AZq66oBVufxqZylDP8cB//xx8KA09z0AznzixoVPJG+vsPcqV6aFtRTXuJijHjdd
-         twd58GtstuCxSslhtCacTmuiBMf9AjEpfgtcPNFWhggahO1MI/MOsu947pI495kM1d
-         H+kDD6z+aWDbw==
-Date:   Fri, 27 May 2022 00:33:30 +0900
-From:   Masami Hiramatsu (Google) <mhiramat@kernel.org>
-To:     Liao Chang <liaochang1@huawei.com>
-Cc:     <paul.walmsley@sifive.com>, <palmer@dabbelt.com>,
-        <aou@eecs.berkeley.edu>, <rostedt@goodmis.org>,
-        <peterz@infradead.org>, <naveen.n.rao@linux.vnet.ibm.com>,
-        <jszhang@kernel.org>, <guoren@kernel.org>,
-        <linux-riscv@lists.infradead.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2] riscv/kprobe: reclaim insn_slot on kprobe
- unregistration
-Message-Id: <20220527003330.68f1fc0f58ecec812a7d037e@kernel.org>
-In-Reply-To: <20220525014424.20717-1-liaochang1@huawei.com>
-References: <20220525014424.20717-1-liaochang1@huawei.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        Thu, 26 May 2022 11:36:19 -0400
+Received: from relay.hostedemail.com (smtprelay0016.hostedemail.com [216.40.44.16])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61FC5BCEA6
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 08:36:17 -0700 (PDT)
+Received: from omf20.hostedemail.com (a10.router.float.18 [10.200.18.1])
+        by unirelay10.hostedemail.com (Postfix) with ESMTP id 9D598596;
+        Thu, 26 May 2022 15:36:16 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf20.hostedemail.com (Postfix) with ESMTPA id 2E10E2002A;
+        Thu, 26 May 2022 15:36:15 +0000 (UTC)
+Message-ID: <b93a8882649e69819e01b44d621f1fc33a7467da.camel@perches.com>
+Subject: Re: [PATCH v2 01/28] lib/printbuf: New data structure for printing
+ strings
+From:   Joe Perches <joe@perches.com>
+To:     Kent Overstreet <kent.overstreet@gmail.com>,
+        Petr Mladek <pmladek@suse.com>
+Cc:     linux-kernel@vger.kernel.org, linux-mm@vger.kernel.org,
+        rostedt@goodmis.org, senozhatsky@chromium.org,
+        andriy.shevchenko@linux.intel.com, willy@infradead.org
+Date:   Thu, 26 May 2022 08:36:14 -0700
+In-Reply-To: <20220526152127.gw7gb4jnoikop4hl@moria.home.lan>
+References: <20220519172421.162394-1-kent.overstreet@gmail.com>
+         <20220519172421.162394-2-kent.overstreet@gmail.com>
+         <Yo+XZ4YtU9fN/sGE@alley> <20220526152127.gw7gb4jnoikop4hl@moria.home.lan>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.40.4-1ubuntu2 
+MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
+X-Rspamd-Server: rspamout04
+X-Rspamd-Queue-Id: 2E10E2002A
+X-Stat-Signature: re8mr6iqgaqckdmzyoqapfn7d6u8ehdi
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX1/jTM04rXRmp+mKrB2FBSeZQSp0hn9TN9o=
+X-HE-Tag: 1653579375-14664
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 25 May 2022 09:44:24 +0800
-Liao Chang <liaochang1@huawei.com> wrote:
-
-> On kprobe registration kernel allocate one insn_slot for new kprobe,
-> but it forget to reclaim the insn_slot on unregistration, leading to a
-> potential leakage.
+On Thu, 2022-05-26 at 11:21 -0400, Kent Overstreet wrote:
+> On Thu, May 26, 2022 at 05:06:15PM +0200, Petr Mladek wrote:
+> > The "pr_" prefix is a nightmare for me because the same prefix
+> > is used also for printk() API ;-)
+> > 
+> > Could we please use "pb_" instead?
 > 
-> Reported-by: Chen Guokai <chenguokai17@mails.ucas.ac.cn>
-> Signed-off-by: Liao Chang <liaochang1@huawei.com>
+> I'm not entirely against that, but I see printbufs as already in this patchset
+> tightly coupled to vsprintf.c and thus quite related to printk, as well - and
+> there aren't that many different pr_ things. So I think the shared prefix makes
+> some sense, I'd like to hear what others think before making that change.
 
-Looks good to me.
-
-Fixes: c22b0bcb1dd0 ("riscv: Add kprobes supported")
-Cc: stable@vger.kernel.org
-Reviewed-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
-
-Thank you,
+I think the reused prefix is not good.
+bufs are not printks.
 
 
-> ---
-> v2:
->   Add Reported-by tag
-> 
->  arch/riscv/kernel/probes/kprobes.c | 4 ++++
->  1 file changed, 4 insertions(+)
-> 
-> diff --git a/arch/riscv/kernel/probes/kprobes.c b/arch/riscv/kernel/probes/kprobes.c
-> index e6e950b7cf32..f12eb1fbb52c 100644
-> --- a/arch/riscv/kernel/probes/kprobes.c
-> +++ b/arch/riscv/kernel/probes/kprobes.c
-> @@ -110,6 +110,10 @@ void __kprobes arch_disarm_kprobe(struct kprobe *p)
->  
->  void __kprobes arch_remove_kprobe(struct kprobe *p)
->  {
-> +	if (p->ainsn.api.insn) {
-> +		free_insn_slot(p->ainsn.api.insn, 0);
-> +		p->ainsn.api.insn = NULL;
-> +	}
->  }
->  
->  static void __kprobes save_previous_kprobe(struct kprobe_ctlblk *kcb)
-> -- 
-> 2.17.1
-> 
 
-
--- 
-Masami Hiramatsu (Google) <mhiramat@kernel.org>
