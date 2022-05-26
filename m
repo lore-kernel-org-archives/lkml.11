@@ -2,95 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBECAC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 11:41:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64842C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 11:42:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240744AbiEZLl1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 07:41:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42636 "EHLO
+        id S241375AbiEZLmi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 07:42:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229549AbiEZLlZ (ORCPT
+        with ESMTP id S229549AbiEZLme (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 07:41:25 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E9B51DA5C;
-        Thu, 26 May 2022 04:41:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1653565205;
-        bh=GbdIaIIk78hNi8gQCmD4dMLd0D25sZO/rqp6h4oacX4=;
-        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=U2Fdg8gF9KgPifWJIy5i0JSAgT9bvp/S/TpbBh9XbRd2CGmyMVDE0vukEEUqMItKL
-         KjbjzLvr2lzUm6BmVq+MaQLX9v8fl1wj1CIT3L/vBot6dhEhVWcbthgvSL5Avo/Ih4
-         6X0FiOIdK345gdD+61naUlsacTnRl0V7G3K5jqXk=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.20.60] ([92.116.164.234]) by mail.gmx.net (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MLzBj-1oBRcD3NnV-00HuNE; Thu, 26
- May 2022 13:40:04 +0200
-Message-ID: <26772d5c-5630-799b-5f10-33e3f7ba083a@gmx.de>
-Date:   Thu, 26 May 2022 13:39:50 +0200
+        Thu, 26 May 2022 07:42:34 -0400
+Received: from mail-vs1-xe33.google.com (mail-vs1-xe33.google.com [IPv6:2607:f8b0:4864:20::e33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 712A82A738;
+        Thu, 26 May 2022 04:42:32 -0700 (PDT)
+Received: by mail-vs1-xe33.google.com with SMTP id j7so1139659vsj.7;
+        Thu, 26 May 2022 04:42:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=JEe4JTq4HMoZ+I0YWVgsR8sQxwI+sin4+wwLO1J3RKE=;
+        b=JLvO98Fu21sCqp2drA5IfmaUVr0h4lXAXWuPssLA5gtFkyn/FNC1jLwcQi+AGBV7wH
+         uJrpcQYkVYpsRk0cSakfbvPtYDIyFqdskvQJ1qsUHfT+rPBKMNjdeW6IOShNFFKid1b2
+         0vNUdDNqr6zoooiZ0/NarObdmNt80ywVrC/tAsYJTXXogKHxQnQYvkkCFB7b7XWPYvmz
+         KCMVKcwrNpvs/ZDYn28Ru24YXag2mLh0gV/bYbWeabYCR7Oo+d0fh2EC+ynAeCzEApky
+         AvBjMkJrEKG49Q63WoPqYa0sO+vBpxe7FJ5oQ0VotbsdoOrm873KJcD3X0yKlZhjsv8X
+         33jQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JEe4JTq4HMoZ+I0YWVgsR8sQxwI+sin4+wwLO1J3RKE=;
+        b=4cnGZV2OYi42H2Mu9Gpq4P0oxgvqtzIJPOO7KDSpV047tTQZlhy9nj/qvCBITtbTzv
+         GDDXKejtCgczoGickWxDAcVLt2vj24B3aWuGR2hDL92dZhVf4FpgeA8hNQUMwe4u9NXX
+         xfFv2j2pcozv+QVtXMQdSnjP8LHwDkKrq1nHHoLt15U50LTEjmUaR4jUVzCF3lj5twi/
+         YDyjUWq6UxJ275QCc9/5qb/O8bMdAxr/MYiSRHm702SLKGvCxTESNkAEI53x/X83scmi
+         3c+hq11sHIpAlRlwax3BFod7g7EsZcHjvTmQ+rPOgF5BnnBJm+TyApjUfF9v7wULvYKe
+         ywqw==
+X-Gm-Message-State: AOAM532713nz082V4MIKoV2WFvz5pG8mBul8hmEabi393K2tiEggWEkE
+        BsHMP2z3cgYSPa8euWx+uk8Z5CYtAPIz1YfYiXI=
+X-Google-Smtp-Source: ABdhPJxIWXKb0kNzslGKXSAJfQCxTBRn9ur413NVMbEzqZ/Rc3zTbpcH1KxoGPjgrUzciHvXWJHHcjItv26rUnsZcWM=
+X-Received: by 2002:a67:e09d:0:b0:335:def7:e939 with SMTP id
+ f29-20020a67e09d000000b00335def7e939mr14828589vsl.27.1653565351588; Thu, 26
+ May 2022 04:42:31 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH] radeon: Fix spelling typo in comment
-Content-Language: en-US
-To:     pengfuyuan <pengfuyuan@kylinos.cn>
-Cc:     linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-References: <20220526062757.1155581-1-pengfuyuan@kylinos.cn>
-From:   Helge Deller <deller@gmx.de>
-In-Reply-To: <20220526062757.1155581-1-pengfuyuan@kylinos.cn>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:i6AuLEP6gw6wM4fkV8X6gXcJuhH5Qswx2kDD6/VD/KhvN0D8XWF
- DfNxTdzkI8sCW4uYlvtzgHllO1xo0mYne5aiefuObrIx3wzbFXzjaopArIR1qo5mCueEbmR
- Ai159xgDLdZQII7qBwvhyCZifyCM/O8xe6sE1tdQkI13UCgOVJScsFA0k77/A9+qAJxFGZI
- 13yl5esPQr65Dd9xF2SOA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:7gDlbvIfId4=:3xabrUmqyZGfdU3/Pcgbs/
- AIzx+Fo5oBKKivd0VAGF7Z9rAUUUbkLBhR3vuRiZX70oojyuECT+qH52LNGcNlqpxP5t335e8
- 87nMZIB8wHjGfymCbNoLy6vxmH8W1n/uI5u2RaxNR/bS5U2gVaqAqigqOwc5oictDpCP6dXGz
- R+c6EArR6rmbr9fe69G8rfxNP5H6ckbTF18IHLts4CMBrukWaAhro5OSVn0q7HkakXZR7bYbH
- JqgnB6HHZaxdpQmhGn3Tw1DUElLobEMpIP2yy3J2XFm5ILYrD3cCL6rBm4m10cbQaFoF10U8p
- KGCKhf4cCtMCSkl9wQuOZmKSpYrCDAMnzo5FzL0fcnRvcS3OMgAlM473BcO5AMNkmu1oM4Phv
- aD7AQ3ia5nGm4+SQflTHGR3m+Rd3YdgX/JQy606vs0ote32Ku/0CwogEJS13F8qnNLiKGIsw+
- S7Nx6ivMp5fUNdvPowirZUaN+itSCoVSst5CGpY85+SYvNJjJLhy/OsrcUgnGTmAkW8fd5F04
- kRs75z786tTNbZI2eLNXHhykhSp3tJcqUtQaAkIlELGlZNuNXHGrrKiXWRQt1wTvFRlTIr833
- lcjsyon2bBDNmRh3c4SOhcoLbDzT/zF1TQtj6VkZREmgCkdffqbhl/i0eoPShSl3+ZEKnJ1yV
- XTUhd4ezEPyi9+KnhOAK/zaou4x8I/96Kr1NecnYqiH3kRaCHa2EJMxIOrqCmOP235ArxEPiX
- sxAtGK6s5qE9hI8mxIKBwlocBh3+Axlb+XdZRrOfdKKOZx8YTxYFpXCxCJJvQwqsTdUO12LIF
- XyFwqM1/WJgPRDh6xrLAvU8mQ0uJQiaxz1RURsrkVQAZx4yor72bDxHPMx8QyGVIhAMvDEFR+
- 3xkrsMUybgD+nDpuAeFqxrkaZWzqpICAAMB/9k34z/Isbv43FPleIgTIs/G4hnhQEIX+9Uhd2
- DpAG8bEiFN9SE90d6nI2cER/N9z+jR8Qco2TWOecYE4Rf9nh6tt3Nj72UzvM1SF79a7P7Oznh
- 3eZ5g2i9qKA9oUDQfOyBRlW1ZxsWyEDj3vrFMh+1T9dWZ4dgX/dXbFqZtZa8HV4NCaFL9DQVw
- ugu5NcmDjyF1sQoxUdcucO4i4Rs+CXr6NZGLFqKvM8Wnv5Sd3BYgxVvXQ==
+References: <20220526094100.1494193-1-jiasheng@iscas.ac.cn>
+In-Reply-To: <20220526094100.1494193-1-jiasheng@iscas.ac.cn>
+From:   Tali Perry <tali.perry1@gmail.com>
+Date:   Thu, 26 May 2022 14:42:20 +0300
+Message-ID: <CAHb3i=v+LV=sGCX8obuy=sXBFvnP9k-THb=mGw4ze8M5AVCYoQ@mail.gmail.com>
+Subject: Re: [PATCH] i2c: npcm7xx: barco-p50-gpio: Add check for platform_driver_register
+To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Cc:     avifishman70@gmail.com, Tomer Maimon <tmaimon77@gmail.com>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
+        Linux I2C <linux-i2c@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/26/22 08:27, pengfuyuan wrote:
-> Fix spelling typo in comment.
+On Thu, May 26, 2022 at 12:41 PM Jiasheng Jiang <jiasheng@iscas.ac.cn> wrote:
 >
-> Signed-off-by: pengfuyuan <pengfuyuan@kylinos.cn>
-
-applied to the fbdev git tree.
-
-Thanks!
-Helge
-
+> As platform_driver_register() could fail, it should be better
+> to deal with the return value in order to maintain the code
+> consisitency.
+>
+> Fixes: 56a1485b102e ("i2c: npcm7xx: Add Nuvoton NPCM I2C controller driver")
+> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 > ---
->  include/video/radeon.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  drivers/i2c/busses/i2c-npcm7xx.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
 >
-> diff --git a/include/video/radeon.h b/include/video/radeon.h
-> index 005eae19ec09..72f94ccfa725 100644
-> --- a/include/video/radeon.h
-> +++ b/include/video/radeon.h
-> @@ -750,7 +750,7 @@
->  #define WAIT_DMA_GUI_IDLE			   (1 << 9)
->  #define WAIT_2D_IDLECLEAN			   (1 << 16)
+> diff --git a/drivers/i2c/busses/i2c-npcm7xx.c b/drivers/i2c/busses/i2c-npcm7xx.c
+> index 71aad029425d..08737fa2dcbf 100644
+> --- a/drivers/i2c/busses/i2c-npcm7xx.c
+> +++ b/drivers/i2c/busses/i2c-npcm7xx.c
+> @@ -2336,8 +2336,7 @@ static struct platform_driver npcm_i2c_bus_driver = {
+>  static int __init npcm_i2c_init(void)
+>  {
+>         npcm_i2c_debugfs_dir = debugfs_create_dir("npcm_i2c", NULL);
+> -       platform_driver_register(&npcm_i2c_bus_driver);
+> -       return 0;
+> +       return platform_driver_register(&npcm_i2c_bus_driver);
+>  }
+>  module_init(npcm_i2c_init);
 >
-> -/* SURFACE_CNTL bit consants */
-> +/* SURFACE_CNTL bit constants */
->  #define SURF_TRANSLATION_DIS			   (1 << 8)
->  #define NONSURF_AP0_SWP_16BPP			   (1 << 20)
->  #define NONSURF_AP0_SWP_32BPP			   (1 << 21)
+> --
+> 2.25.1
+>
+thanks, Jiansheng !
 
+Acked-by: Tali Perry <tali.perry1@gmail.com>
