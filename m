@@ -2,99 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F101AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 22:51:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5D46C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 22:54:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343927AbiEZWvu (ORCPT
+        id S1348630AbiEZWya (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 18:51:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58732 "EHLO
+        Thu, 26 May 2022 18:54:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231535AbiEZWvs (ORCPT
+        with ESMTP id S1343582AbiEZWy1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 18:51:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A5C2DFF5E;
-        Thu, 26 May 2022 15:51:47 -0700 (PDT)
+        Thu, 26 May 2022 18:54:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD6F5E7314
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 15:54:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 215D8B80686;
-        Thu, 26 May 2022 22:51:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E1FFC385A9;
-        Thu, 26 May 2022 22:51:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653605504;
-        bh=Tys7xlqJB6C43ppPS6C0HzRjdGQs+gMJMt+YF4tmbsE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Ef+SL70pMsvyPQsPAYH+ZsTywBtkq2bZgHx5o6JYGqroTpuvsWi0ijdTRarDWRZVx
-         lDBXcAw5Gfh6sDLhcAxHk0p7YqZW7nWUzIcYxWOmUj6yVQ9s/2sLSQg+d9qyf1qTFP
-         icuIaNfXryBM4NgzyAsey3keror4qKYz+bySAP5r+P4t/BHu4FgrFY87NWwy90zvF2
-         PnnxMMhKPNbrfWfXWoyEawBDLLMeVhrTD8MPjRk2M1Loe/JjGRXrf2Qjzw8CVxsq35
-         KQ7/ptAXVN1ZGda4xqdienJXCdZKc1yEYn4gtA4dzTDeeYS8NEV0ZP8xOb6MmIfYWx
-         wkLG36Mt8P1Dw==
-Date:   Fri, 27 May 2022 00:51:41 +0200
-From:   Frederic Weisbecker <frederic@kernel.org>
-To:     Tejun Heo <tj@kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Paul Gortmaker <paul.gortmaker@windriver.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        Phil Auld <pauld@redhat.com>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Waiman Long <longman@redhat.com>,
-        Daniel Bristot de Oliveira <bristot@kernel.org>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        rcu@vger.kernel.org
-Subject: Re: [RFC PATCH 4/4] cpuset: Support RCU-NOCB toggle on v2 root
- partitions
-Message-ID: <20220526225141.GA1214445@lothringen>
-References: <20220525221055.1152307-1-frederic@kernel.org>
- <20220525221055.1152307-5-frederic@kernel.org>
- <Yo/FGcG+uiBh88sT@slm.duckdns.org>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5147C61C55
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 22:54:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BC31C3411F;
+        Thu, 26 May 2022 22:54:25 +0000 (UTC)
+Received: from rostedt by gandalf.local.home with local (Exim 4.95)
+        (envelope-from <rostedt@goodmis.org>)
+        id 1nuMN6-002Tg3-KS;
+        Thu, 26 May 2022 18:54:24 -0400
+Message-ID: <20220526225424.464292505@goodmis.org>
+User-Agent: quilt/0.66
+Date:   Thu, 26 May 2022 18:53:49 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Daniel Bristot de Oliveria <bristot@kernel.org>,
+        John Kacur <jkacur@redhat.com>
+Subject: [for-next][PATCH 4/6] rtla: Minor grammar fix for rtla README
+References: <20220526225345.068997320@goodmis.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yo/FGcG+uiBh88sT@slm.duckdns.org>
+Content-Type: text/plain; charset=UTF-8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 26, 2022 at 08:21:13AM -1000, Tejun Heo wrote:
-> On Thu, May 26, 2022 at 12:10:55AM +0200, Frederic Weisbecker wrote:
-> > Introduce a new "isolation.rcu_nocb" file within a cgroup2/cpuset
-> > directory which provides support for a set of CPUs to either enable ("1")
-> > or disable ("0") RCU callbacks offloading (aka. RCU NOCB). This can
-> > overwrite previous boot settings towards "rcu_nocbs=" kernel parameter.
-> > 
-> > The file is only writeable on "root" type partitions to exclude any
-> > overlap. The deepest root type partition has the highest priority.
-> > This means that given the following setting:
-> > 
-> >                     Top cpuset (CPUs: 0-7)
-> >                     cpuset.isolation.rcu_nocb = 0
-> >                               |
-> >                               |
-> >                     Subdirectory A (CPUs: 5-7)
-> >                     cpuset.cpus.partition = root
-> >                     cpuset.isolation.rcu_nocb = 0
-> >                               |
-> >                               |
-> >                     Subdirectory B (CPUs: 7)
-> >                     cpuset.cpus.partition = root
-> >                     cpuset.isolation.rcu_nocb = 1
-> > 
-> > the result is that only CPU 7 is in rcu_nocb mode.
-> > 
-> > Note that "rcu_nocbs" kernel parameter must be passed on boot, even
-> > without a cpulist, so that nocb support is enabled.
-> 
-> Does it even make sense to make this hierarchical? What's wrong with a
-> cpumask under sys/ or proc/?
+From: John Kacur <jkacur@redhat.com>
 
-I'm usually told that cpusets is the current place where CPU attributes are
-supposed to go. I personally don't mind much /sys either even though cpusets
-looks like a more flexible way to partition CPUs with properties and tasks
-placement altogether...
+- Change to "The rtla meta-tool includes"
+- Remove an unnecessary "But, "
+- Adjust the formatting of the paragraph resulting from the changes.
+- Simplify the wording for the libraries and tools.
+
+Link: https://lkml.kernel.org/r/437f0accdde53713ab3cce46f3564be00487e031.1651247710.git.bristot@kernel.org
+Link: https://lore.kernel.org/r/20220408161012.10544-1-jkacur@redhat.com/
+
+Cc: Daniel Bristot de Oliveria <bristot@kernel.org>
+Fixes: 79ce8f43ac5a ("rtla: Real-Time Linux Analysis tool")
+Acked-by: Daniel Bristot de Oliveira <bristot@kernel.org>
+Signed-off-by: John Kacur <jkacur@redhat.com>
+Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+---
+ tools/tracing/rtla/README.txt | 12 +++++-------
+ 1 file changed, 5 insertions(+), 7 deletions(-)
+
+diff --git a/tools/tracing/rtla/README.txt b/tools/tracing/rtla/README.txt
+index 6c88446f7e74..0fbad2640b8c 100644
+--- a/tools/tracing/rtla/README.txt
++++ b/tools/tracing/rtla/README.txt
+@@ -1,15 +1,13 @@
+ RTLA: Real-Time Linux Analysis tools
+ 
+-The rtla is a meta-tool that includes a set of commands that
+-aims to analyze the real-time properties of Linux. But, instead of
+-testing Linux as a black box, rtla leverages kernel tracing
+-capabilities to provide precise information about the properties
+-and root causes of unexpected results.
++The rtla meta-tool includes a set of commands that aims to analyze
++the real-time properties of Linux. Instead of testing Linux as a black box,
++rtla leverages kernel tracing capabilities to provide precise information
++about the properties and root causes of unexpected results.
+ 
+ Installing RTLA
+ 
+-RTLA depends on some libraries and tools. More precisely, it depends on the
+-following libraries:
++RTLA depends on the following libraries and tools:
+ 
+  - libtracefs
+  - libtraceevent
+-- 
+2.35.1
