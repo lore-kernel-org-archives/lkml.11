@@ -2,96 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BED25C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 13:57:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38676C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 14:01:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347012AbiEZN5p (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 09:57:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55056 "EHLO
+        id S238778AbiEZOBs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 10:01:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229922AbiEZN5l (ORCPT
+        with ESMTP id S243057AbiEZOBo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 09:57:41 -0400
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56FED6BFC0;
-        Thu, 26 May 2022 06:57:39 -0700 (PDT)
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24QCCgsh007655;
-        Thu, 26 May 2022 09:57:30 -0400
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3g93vde2ge-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 26 May 2022 09:57:29 -0400
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 24QDvSSj043747
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 26 May 2022 09:57:28 -0400
-Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
- ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Thu, 26 May 2022 09:57:27 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
- ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Thu, 26 May 2022 09:57:27 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Thu, 26 May 2022 09:57:27 -0400
-Received: from localhost.localdomain ([10.48.65.12])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 24QDvEOv028301;
-        Thu, 26 May 2022 09:57:16 -0400
-From:   <alexandru.tachici@analog.com>
-To:     <netdev@vger.kernel.org>
-CC:     <kuba@kernel.org>, <devicetree@vger.kernel.org>,
-        <edumazet@google.com>, <geert+renesas@glider.be>,
-        <geert@linux-m68k.org>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>,
-        <linux-kernel@vger.kernel.org>, <michael.hennerich@analog.com>,
-        Alexandru Tachici <alexandru.tachici@analog.com>
-Subject: [net] dt-bindings: net: Update ADIN PHY maintainers
-Date:   Thu, 26 May 2022 17:13:18 +0300
-Message-ID: <20220526141318.77146-1-alexandru.tachici@analog.com>
-X-Mailer: git-send-email 2.17.1
+        Thu, 26 May 2022 10:01:44 -0400
+Received: from mail-oa1-f48.google.com (mail-oa1-f48.google.com [209.85.160.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2FE729C94;
+        Thu, 26 May 2022 07:01:43 -0700 (PDT)
+Received: by mail-oa1-f48.google.com with SMTP id 586e51a60fabf-f2ccb58ee0so2305932fac.1;
+        Thu, 26 May 2022 07:01:43 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=630+yzM+8ZRIJgGt1PX3q1U65CqKqFKTdKKAusXegFE=;
+        b=rcjF+7aSZ/5BumB/dq1ImV9wrYA799LTdVGeunT712a+LFs2M/oFI09z9Aw+o0TzoZ
+         9VQMnckDE8oUxR5YLDx/IIDb1WvmR6SxqlgwVMhbKR0ny8SRGG2z5IT7uDVYXu7pTrfp
+         TkWznDfxtY/ExrjiTzZ/UZhrrw13QD+9fP8B9O58kmjVhvw0PDliJiGWvl30mwvHPFo8
+         uy8GMqufk2sPuin3zynNsLEDLe6Cr3spxXMT83fGLMbwrEwbCEL/QDdMC/TQiACXM+JA
+         4xYJFMvzq5FQnh5XU8jBBMRG3XDHGcdNNXA4gaG9eB1Ht3gDxYq0BOU8YKSJVmUab/Zs
+         m86w==
+X-Gm-Message-State: AOAM533TQsOwxUmqHp1SQRtrJa+fPzpYSaC1hHehPj7xPD/CaZUQgV/n
+        yzsnfDnDkP+zBH1DREuSLw==
+X-Google-Smtp-Source: ABdhPJy31ULAG1BKRj44Pgem6fGllcaudG8S/xoYaoxphrtX8KQ4nv2oag+sqs8aPxZF2nK8XvYt0g==
+X-Received: by 2002:a05:6871:82c:b0:f2:bbc3:8e1a with SMTP id q44-20020a056871082c00b000f2bbc38e1amr1305312oap.66.1653573703045;
+        Thu, 26 May 2022 07:01:43 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id j6-20020a056830270600b0060b0c9e7ff1sm621876otu.47.2022.05.26.07.01.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 May 2022 07:01:42 -0700 (PDT)
+Received: (nullmailer pid 3918964 invoked by uid 1000);
+        Thu, 26 May 2022 14:01:41 -0000
+Date:   Thu, 26 May 2022 09:01:41 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Conor.Dooley@microchip.com
+Cc:     broonie@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        agross@kernel.org, bjorn.andersson@linaro.org,
+        krzysztof.kozlowski@linaro.org, linux-spi@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org
+Subject: Re: [PATCH] spi: dt-bindings: Fix unevaluatedProperties warnings in
+ examples
+Message-ID: <20220526140141.GB3831942-robh@kernel.org>
+References: <20220526014141.2872567-1-robh@kernel.org>
+ <13a92f37-2491-9daa-05a7-f831d9bbb0e0@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: 51kpTgNab8Q8bXEZmlI-dvjOtf1jYYP-
-X-Proofpoint-ORIG-GUID: 51kpTgNab8Q8bXEZmlI-dvjOtf1jYYP-
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-26_08,2022-05-25_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 lowpriorityscore=0
- impostorscore=0 malwarescore=0 mlxlogscore=722 phishscore=0 suspectscore=0
- spamscore=0 adultscore=0 bulkscore=0 priorityscore=1501 clxscore=1015
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2204290000
- definitions=main-2205260069
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <13a92f37-2491-9daa-05a7-f831d9bbb0e0@microchip.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexandru Tachici <alexandru.tachici@analog.com>
+On Thu, May 26, 2022 at 06:52:23AM +0000, Conor.Dooley@microchip.com wrote:
+> On 26/05/2022 02:41, Rob Herring wrote:
+> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> > 
+> > The 'unevaluatedProperties' schema checks is not fully working and doesn't
+> > catch some cases where there's a $ref to another schema. A fix is pending,
+> > but results in new warnings in examples.
+> > 
+> > 'spi-max-frequency' is supposed to be a per SPI peripheral device property,
+> > not a SPI controller property, so drop it.
+> 
+> Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
+> 
+> As this property is in the mpfs devicetree & I'll need to fix it, is this
+> patch targeted at 5.19? (I assume given the window is open and there's no
+> fixes tag that it isn't).
 
-Update the dt-bindings maintainers section.
+5.18 ideally because warnings are going to appear when I push the 
+dtschema fix for 'unevaluatedProperties'.
 
-Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
----
- Documentation/devicetree/bindings/net/adi,adin.yaml | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/Documentation/devicetree/bindings/net/adi,adin.yaml b/Documentation/devicetree/bindings/net/adi,adin.yaml
-index 77750df0c2c4..dac2a25e218e 100644
---- a/Documentation/devicetree/bindings/net/adi,adin.yaml
-+++ b/Documentation/devicetree/bindings/net/adi,adin.yaml
-@@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
- title: Analog Devices ADIN1200/ADIN1300 PHY
- 
- maintainers:
--  - Alexandru Ardelean <alexandru.ardelean@analog.com>
-+  - Alexandru Tachici <alexandru.tachici@analog.com>
- 
- description: |
-   Bindings for Analog Devices Industrial Ethernet PHYs
--- 
-2.25.1
-
+Rob
