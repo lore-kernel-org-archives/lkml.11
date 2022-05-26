@@ -2,85 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F3E2C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 20:32:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97481C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 20:32:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230050AbiEZUcB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 16:32:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37816 "EHLO
+        id S238983AbiEZUcT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 16:32:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232178AbiEZUb5 (ORCPT
+        with ESMTP id S238913AbiEZUcP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 16:31:57 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 36D8955AC
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 13:31:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653597115;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=wQbOUriGCnynaLUc5Bo76/WwyN+TFwMe7tvzUPT6f20=;
-        b=LteoKDlfxC31tncHiylWAvL02YT0Qg4D5pc5nNLnYQGojfafu8YY7hZbUfzFwyH3JAZ+MQ
-        7iytl4wYNaoXiVTqwvgQY3PUo/OYfb+LeleW6ov0mY/xji/K3j24Ho+GxVU718KPl65xXZ
-        +/tVh4AI0dXWvueHFOS1jNUb8i8ooO4=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-644-bnyKRFf2N3mqFq1B1yJviw-1; Thu, 26 May 2022 16:31:51 -0400
-X-MC-Unique: bnyKRFf2N3mqFq1B1yJviw-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 992A6296A60C;
-        Thu, 26 May 2022 20:31:51 +0000 (UTC)
-Received: from darcari.bos.com (unknown [10.22.8.164])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3913D2026D64;
-        Thu, 26 May 2022 20:31:51 +0000 (UTC)
-From:   David Arcari <darcari@redhat.com>
-To:     platform-driver-x86@vger.kernel.org
-Cc:     David Arcari <darcari@redhat.com>,
-        "David E. Box" <david.e.box@linux.intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>, linux-kernel@vger.kernel.org
-Subject: [PATCH] [PATCH] platform/x86/intel: Fix pmt_crashlog array reference
-Date:   Thu, 26 May 2022 16:31:40 -0400
-Message-Id: <20220526203140.339120-1-darcari@redhat.com>
+        Thu, 26 May 2022 16:32:15 -0400
+X-Greylist: delayed 936 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 26 May 2022 13:32:15 PDT
+Received: from mail.codeweavers.com (mail.codeweavers.com [50.203.203.244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1002FBA99F
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 13:32:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=codeweavers.com; s=6377696661; h=Content-Transfer-Encoding:MIME-Version:
+        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=5VYllHU10anpVUUYivEzMyIwr1agxY+1jmV5w60yc8k=; b=G516JXowGisfhh9C9HDuc3tY05
+        32/3UQAJJp+4hF6T9aNabsV232CX2VVNNahx5lBpUBVG/XLjpVm9BS2dJcDYcLS41w1lzdecsvC04
+        B65VgjDZJaKbIjOH8vPJi4e5ssuzPELSoe9rAzSoP9cDupTAPpgEcYFIV8LhnsiEzWRQ=;
+Received: from [10.69.141.126] (helo=localhost)
+        by mail.codeweavers.com with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <schapla@codeweavers.com>)
+        id 1nuJuL-0001dX-Ch; Thu, 26 May 2022 15:16:33 -0500
+From:   "Shawn M. Chapla" <schapla@codeweavers.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     "Shawn M . Chapla" <schapla@codeweavers.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>
+Subject: [PATCH] perf data: Prefer sampled CPU when exporting JSON
+Date:   Thu, 26 May 2022 16:14:47 -0400
+Message-Id: <20220526201506.2028281-1-schapla@codeweavers.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The probe function pmt_crashlog_probe() may incorrectly reference
-the 'priv->entry array' as it uses 'i' to reference the array instead
-of 'priv->num_entries' as it should.  This is similar to the problem
-that was addressed in pmt_telemetry_probe via commit 2cdfa0c20d58
-("platform/x86/intel: Fix 'rmmod pmt_telemetry' panic").
+When CPU has been explicitly sampled (via --sample-cpu), prefer this
+sampled value over the thread CPU value when exporting to JSON.
 
-Cc: "David E. Box" <david.e.box@linux.intel.com>
-Cc: Hans de Goede <hdegoede@redhat.com>
-Cc: Mark Gross <markgross@kernel.org>
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: David Arcari <darcari@redhat.com>
+Signed-off-by: Shawn M. Chapla <schapla@codeweavers.com>
 ---
- drivers/platform/x86/intel/pmt/crashlog.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/perf/util/data-convert-json.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/platform/x86/intel/pmt/crashlog.c b/drivers/platform/x86/intel/pmt/crashlog.c
-index 34daf9df168b..ace1239bc0a0 100644
---- a/drivers/platform/x86/intel/pmt/crashlog.c
-+++ b/drivers/platform/x86/intel/pmt/crashlog.c
-@@ -282,7 +282,7 @@ static int pmt_crashlog_probe(struct auxiliary_device *auxdev,
- 	auxiliary_set_drvdata(auxdev, priv);
+diff --git a/tools/perf/util/data-convert-json.c b/tools/perf/util/data-convert-json.c
+index f1ab6edba446..613d6ae82663 100644
+--- a/tools/perf/util/data-convert-json.c
++++ b/tools/perf/util/data-convert-json.c
+@@ -149,6 +149,7 @@ static int process_sample_event(struct perf_tool *tool,
+ 	struct convert_json *c = container_of(tool, struct convert_json, tool);
+ 	FILE *out = c->out;
+ 	struct addr_location al, tal;
++	u64 sample_type = __evlist__combined_sample_type(evsel->evlist);
+ 	u8 cpumode = PERF_RECORD_MISC_USER;
  
- 	for (i = 0; i < intel_vsec_dev->num_resources; i++) {
--		struct intel_pmt_entry *entry = &priv->entry[i].entry;
-+		struct intel_pmt_entry *entry = &priv->entry[priv->num_entries].entry;
+ 	if (machine__resolve(machine, &al, sample) < 0) {
+@@ -168,7 +169,9 @@ static int process_sample_event(struct perf_tool *tool,
+ 	output_json_key_format(out, true, 3, "pid", "%i", al.thread->pid_);
+ 	output_json_key_format(out, true, 3, "tid", "%i", al.thread->tid);
  
- 		ret = intel_pmt_dev_create(entry, &pmt_crashlog_ns, intel_vsec_dev, i);
- 		if (ret < 0)
+-	if (al.thread->cpu >= 0)
++	if ((sample_type & PERF_SAMPLE_CPU))
++		output_json_key_format(out, true, 3, "cpu", "%i", sample->cpu);
++	else if (al.thread->cpu >= 0)
+ 		output_json_key_format(out, true, 3, "cpu", "%i", al.thread->cpu);
+ 
+ 	output_json_key_string(out, true, 3, "comm", thread__comm_str(al.thread));
 -- 
-2.27.0
+2.36.1
 
