@@ -2,111 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98865C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 11:18:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 429D4C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 11:21:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346586AbiEZLSE (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 07:18:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44060 "EHLO
+        id S238866AbiEZLVq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 07:21:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233141AbiEZLSC (ORCPT
+        with ESMTP id S233141AbiEZLVn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 07:18:02 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3016A986DA;
-        Thu, 26 May 2022 04:18:01 -0700 (PDT)
+        Thu, 26 May 2022 07:21:43 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDD52C52
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 04:21:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653563881; x=1685099881;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=BPjvQnwWBSu8CUNkWwbhRr6V2vDqJNPDDllQ5xGL/Oc=;
-  b=IsK4HZ9UmmxEZSU78D93Y148qb8RjG2nDrF73nBSlg3Rv1LzBhii58Nz
-   okGChgu1qqEcwdMDzlFuOKNtsj/7JVvqUpbpSBIi6TQQIaK0dnugUzoPV
-   LCt4qm+nS5+lAvrj0p1fqPoe/fVBghwpaEfvYICyt35e5sN/4PLW5/V8r
-   ZoAolQyroXGDv/l2Ht/YAcKJi78fnlPBiLz9B0G1j65R1caYJJRUPFMc2
-   Ts+DubztZf5j+dMBPWff6RVnXhX90ne8IeuhbJW7VE+NLSg0soLSvbkKl
-   fF5XeLuqDw8wHKWTvimyEX/SC75npXNiU4ubmXN6cbH+DD03MkEfVLmav
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10358"; a="256188467"
+  t=1653564102; x=1685100102;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=E3UfK5LmPaRzbKe05FjBGuRV4gJXJ0211VX0BroG/Lc=;
+  b=Cw0wDGaSwbPvGdSFMs4XRcNKJRRetdnDHufnAXZgM7MRBhSS9pR+j+Pk
+   GsyVgxYT5nHkjyVqdOOPmPHsBegRxuKOwJMi1iqEi0OU9Cax71kOCrGmn
+   NEg12h3ReHAXQFam3ExA2fYYSz5tIKXwSNXjD0yN/24b/7fawYqc18XY+
+   5Fo1vzySZO4nV01sk9pjW8fUib30QNQ5JtBbD4jlDYapkWzpGr3RFgU8/
+   fPd4bX9NqkNw3Nj7VbMcoZs9GV172ji2wYidtZIxFJCSzXc/qxEyUDz1C
+   VGeZ7Kt68uoxB1PO70DizOjyTsz7CIHCdegTv2O1ZwQvKZ3fY0gT0K8ih
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10358"; a="337170454"
 X-IronPort-AV: E=Sophos;i="5.91,252,1647327600"; 
-   d="scan'208";a="256188467"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 May 2022 04:18:00 -0700
-X-ExtLoop1: 1
+   d="scan'208";a="337170454"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 May 2022 04:21:42 -0700
 X-IronPort-AV: E=Sophos;i="5.91,252,1647327600"; 
-   d="scan'208";a="746274712"
-Received: from lkp-server01.sh.intel.com (HELO db63a1be7222) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 26 May 2022 04:17:59 -0700
-Received: from kbuild by db63a1be7222 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nuBV8-0003ou-MB;
-        Thu, 26 May 2022 11:17:58 +0000
-Date:   Thu, 26 May 2022 19:17:25 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org
-Subject: drivers/media/platform/marvell/mmp-driver.c:364:34: warning: unused
- variable 'mmpcam_of_match'
-Message-ID: <202205261949.WNSQhZ5Y-lkp@intel.com>
+   d="scan'208";a="704484668"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 May 2022 04:21:39 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nuBYd-000Lfw-TH;
+        Thu, 26 May 2022 14:21:35 +0300
+Date:   Thu, 26 May 2022 14:21:35 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Miaoqian Lin <linmq006@gmail.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Broadcom Kernel Team <bcm-kernel-feedback-list@broadcom.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Kees Cook <keescook@chromium.org>,
+        Helge Deller <deller@gmx.de>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Gareth Powell <gpowell@broadcom.com>,
+        Brian Norris <computersforpeace@gmail.com>,
+        Doug Berger <opendmb@gmail.com>,
+        Justin Chen <justinpopo6@gmail.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] soc: bcm: brcmstb: pm: pm-arm: Fix refcount leak in
+ brcmstb_pm_probe
+Message-ID: <Yo9ivyinKV4alJu8@smile.fi.intel.com>
+References: <20220526075325.27356-1-linmq006@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20220526075325.27356-1-linmq006@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Mauro,
+On Thu, May 26, 2022 at 11:53:22AM +0400, Miaoqian Lin wrote:
+> of_find_matching_node() returns a node pointer with refcount
+> incremented, we should use of_node_put() on it when not need anymore.
+> Add missing of_node_put() to avoid refcount leak.
+> 
+> In brcmstb_init_sram, it pass dn to of_address_to_resource(),
+> of_address_to_resource() will call of_find_device_by_node() to take
+> reference, so we should release the reference returned by
+> of_find_matching_node().
 
-First bad commit (maybe != root cause):
+Looks legit,
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   babf0bb978e3c9fce6c4eba6b744c8754fd43d8e
-commit: dc7bbea90075b57772e9a28043061bf71d96f06f media: platform: rename marvell-ccic/ to marvell/
-date:   10 weeks ago
-config: mips-randconfig-r025-20220524 (https://download.01.org/0day-ci/archive/20220526/202205261949.WNSQhZ5Y-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 3d546191ad9d7d2ad2c7928204b9de51deafa675)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install mips cross compiling tool for clang build
-        # apt-get install binutils-mips-linux-gnu
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=dc7bbea90075b57772e9a28043061bf71d96f06f
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout dc7bbea90075b57772e9a28043061bf71d96f06f
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash drivers/media/platform/marvell/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> drivers/media/platform/marvell/mmp-driver.c:364:34: warning: unused variable 'mmpcam_of_match' [-Wunused-const-variable]
-   static const struct of_device_id mmpcam_of_match[] = {
-                                    ^
-   1 warning generated.
-
-
-vim +/mmpcam_of_match +364 drivers/media/platform/marvell/mmp-driver.c
-
-bb0a896e3d5083 drivers/media/video/marvell-ccic/mmp-driver.c    Jonathan Corbet 2011-12-30  363  
-83c40e6611ec1e drivers/media/platform/marvell-ccic/mmp-driver.c Lubomir Rintel  2019-05-28 @364  static const struct of_device_id mmpcam_of_match[] = {
-83c40e6611ec1e drivers/media/platform/marvell-ccic/mmp-driver.c Lubomir Rintel  2019-05-28  365  	{ .compatible = "marvell,mmp2-ccic", },
-83c40e6611ec1e drivers/media/platform/marvell-ccic/mmp-driver.c Lubomir Rintel  2019-05-28  366  	{},
-83c40e6611ec1e drivers/media/platform/marvell-ccic/mmp-driver.c Lubomir Rintel  2019-05-28  367  };
-08aac0e32fe44b drivers/media/platform/marvell-ccic/mmp-driver.c Lubomir Rintel  2019-07-22  368  MODULE_DEVICE_TABLE(of, mmpcam_of_match);
-67a8dbbc4e04cd drivers/media/video/marvell-ccic/mmp-driver.c    Jonathan Corbet 2011-06-11  369  
-
-:::::: The code at line 364 was first introduced by commit
-:::::: 83c40e6611ec1e548ece34f6940f516333abc16a media: marvell-ccic/mmp: add devicetree support
-
-:::::: TO: Lubomir Rintel <lkundrak@v3.sk>
-:::::: CC: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
+> Fixes: 0b741b8234c8 ("soc: bcm: brcmstb: Add support for S2/S3/S5 suspend states (ARM)")
+> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+> ---
+>  drivers/soc/bcm/brcmstb/pm/pm-arm.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/soc/bcm/brcmstb/pm/pm-arm.c b/drivers/soc/bcm/brcmstb/pm/pm-arm.c
+> index 3cbb165d6e30..70ad0f3dce28 100644
+> --- a/drivers/soc/bcm/brcmstb/pm/pm-arm.c
+> +++ b/drivers/soc/bcm/brcmstb/pm/pm-arm.c
+> @@ -783,6 +783,7 @@ static int brcmstb_pm_probe(struct platform_device *pdev)
+>  	}
+>  
+>  	ret = brcmstb_init_sram(dn);
+> +	of_node_put(dn);
+>  	if (ret) {
+>  		pr_err("error setting up SRAM for PM\n");
+>  		return ret;
+> -- 
+> 2.25.1
+> 
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+With Best Regards,
+Andy Shevchenko
+
+
