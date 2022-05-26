@@ -2,193 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C98CCC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 01:30:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ABFEC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 01:31:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237617AbiEZBah (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 21:30:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52724 "EHLO
+        id S233485AbiEZBbD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 21:31:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345886AbiEZBaV (ORCPT
+        with ESMTP id S245169AbiEZBao (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 21:30:21 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B122BC6F6;
-        Wed, 25 May 2022 18:30:14 -0700 (PDT)
+        Wed, 25 May 2022 21:30:44 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B19F8A76F4;
+        Wed, 25 May 2022 18:30:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653528614; x=1685064614;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=a8+WUe4B0ciu7UC0zA7ygOhzD7vTZsn3gC9JC/7qays=;
-  b=RwbTImCD9ckRaOF3JENfzcWQoCFkyByl/uiytOCrIhsgOcCbXrpsYZYQ
-   3SbvwC+lRcgp4MCiwrbvg7qz2ewwgqMOPkufR+AhZY/KMNZo4iAatDgTI
-   xTJrLIRhVKk9j98rC8yoUf+Da8t1DU+j3IlB2CmdY1nnzBo5N10Pevzgh
-   PesWteXbWwkDvYEIPdSiEfXaoisUxv6U6XMIGm4GGMUFLtj9/OJtooGX5
-   dfR/jk4M+JGIFKFd9BEwJ8lxolgflFOPCJZsZam+zhLnqp6MwqgsqRvRN
-   wov/xd1FPbe9G1VGQJESrgxfi59r9u0D2nYWunz4uP6QRrdKai+dRUz7c
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10358"; a="253860813"
+  t=1653528627; x=1685064627;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=UaSIPRzQt8djgwCCogviIlJQSqF/rXfZ66henu/ROoY=;
+  b=dTTyDv38O0Oyxwm3H23qgOh7Mmxfcd44npw5Wx54abP0fUA+37piwUgg
+   6JWCiQP+WEoj2CizKCuEvp43H+w9/w3GpxKxY+UkN+/AQW/7LZO7caUR5
+   iOHQtmjYbBAEl/97S2snN+Qf2ewgYe5Y4IDHYrAbvPc7k7VZQYKzUERAe
+   1gkC6pRgmK+uStAU/UgymoeJft26/oVsh3hztSPRCYyTQuUophT8cIQin
+   n8Fm6kRwR7BVO1mnTvWmNCCoqyvqeuX8wsdSuRdES6nq2X2tupDw8tlmY
+   3oslxqf/AgchmI5P1T9gGld+gFDGcWnT48S2z/RL66YDk6TPwHE+osllK
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10358"; a="273713962"
 X-IronPort-AV: E=Sophos;i="5.91,252,1647327600"; 
-   d="scan'208";a="253860813"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2022 18:30:14 -0700
+   d="scan'208";a="273713962"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2022 18:30:27 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,252,1647327600"; 
-   d="scan'208";a="559947247"
-Received: from yy-desk-7060.sh.intel.com (HELO localhost) ([10.239.159.76])
-  by orsmga002.jf.intel.com with ESMTP; 25 May 2022 18:30:10 -0700
-Date:   Thu, 26 May 2022 09:30:10 +0800
-From:   Yuan Yao <yuan.yao@linux.intel.com>
-To:     Ben Gardon <bgardon@google.com>
-Cc:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        linux-kernel@vger.kernel.org, Peter Xu <peterx@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        David Matlack <dmatlack@google.com>,
-        Jim Mattson <jmattson@google.com>,
-        David Dunn <daviddunn@google.com>,
-        Jing Zhang <jingzhangos@google.com>,
-        Junaid Shahid <junaids@google.com>
-Subject: Re: [PATCH] KVM: x86/MMU: Zap non-leaf SPTEs when disabling dirty
- logging
-Message-ID: <20220526013010.ag4jzs7bbt5mudrg@yy-desk-7060>
-References: <20220525230904.1584480-1-bgardon@google.com>
+   d="scan'208";a="718002411"
+Received: from p12hl01tmin.png.intel.com ([10.158.65.216])
+  by fmsmga001.fm.intel.com with ESMTP; 25 May 2022 18:30:23 -0700
+From:   Tan Tee Min <tee.min.tan@linux.intel.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Voon Wei Feng <weifeng.voon@intel.com>,
+        Sit Michael Wei Hong <michael.wei.hong.sit@intel.com>,
+        Ling Pei Lee <pei.lee.ling@intel.com>,
+        Looi Hong Aun <hong.aun.looi@intel.com>,
+        Tan Tee Min <tee.min.tan@intel.com>
+Subject: [PATCH net-next 1/1] net: phy: dp83867: retrigger SGMII AN when link change
+Date:   Thu, 26 May 2022 09:37:14 +0800
+Message-Id: <20220526013714.4119839-1-tee.min.tan@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220525230904.1584480-1-bgardon@google.com>
-User-Agent: NeoMutt/20171215
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 25, 2022 at 11:09:04PM +0000, Ben Gardon wrote:
-> When disabling dirty logging, zap non-leaf parent entries to allow
-> replacement with huge pages instead of recursing and zapping all of the
-> child, leaf entries. This reduces the number of TLB flushes required.
->
-> Currently disabling dirty logging with the TDP MMU is extremely slow.
-> On a 96 vCPU / 96G VM backed with gigabyte pages, it takes ~200 seconds
-> to disable dirty logging with the TDP MMU, as opposed to ~4 seconds with
-> the shadow MMU. This patch reduces the disable dirty log time with the
-> TDP MMU to ~3 seconds.
->
-> Testing:
-> Ran KVM selftests and kvm-unit-tests on an Intel Haswell. This
-> patch introduced no new failures.
->
-> Signed-off-by: Ben Gardon <bgardon@google.com>
-> ---
->  arch/x86/kvm/mmu/tdp_iter.c |  9 +++++++++
->  arch/x86/kvm/mmu/tdp_iter.h |  1 +
->  arch/x86/kvm/mmu/tdp_mmu.c  | 38 +++++++++++++++++++++++++++++++------
->  3 files changed, 42 insertions(+), 6 deletions(-)
->
-> diff --git a/arch/x86/kvm/mmu/tdp_iter.c b/arch/x86/kvm/mmu/tdp_iter.c
-> index 6d3b3e5a5533..ee4802d7b36c 100644
-> --- a/arch/x86/kvm/mmu/tdp_iter.c
-> +++ b/arch/x86/kvm/mmu/tdp_iter.c
-> @@ -145,6 +145,15 @@ static bool try_step_up(struct tdp_iter *iter)
->  	return true;
->  }
->
-> +/*
-> + * Step the iterator back up a level in the paging structure. Should only be
-> + * used when the iterator is below the root level.
-> + */
-> +void tdp_iter_step_up(struct tdp_iter *iter)
-> +{
-> +	WARN_ON(!try_step_up(iter));
-> +}
-> +
->  /*
->   * Step to the next SPTE in a pre-order traversal of the paging structure.
->   * To get to the next SPTE, the iterator either steps down towards the goal
-> diff --git a/arch/x86/kvm/mmu/tdp_iter.h b/arch/x86/kvm/mmu/tdp_iter.h
-> index f0af385c56e0..adfca0cf94d3 100644
-> --- a/arch/x86/kvm/mmu/tdp_iter.h
-> +++ b/arch/x86/kvm/mmu/tdp_iter.h
-> @@ -114,5 +114,6 @@ void tdp_iter_start(struct tdp_iter *iter, struct kvm_mmu_page *root,
->  		    int min_level, gfn_t next_last_level_gfn);
->  void tdp_iter_next(struct tdp_iter *iter);
->  void tdp_iter_restart(struct tdp_iter *iter);
-> +void tdp_iter_step_up(struct tdp_iter *iter);
->
->  #endif /* __KVM_X86_MMU_TDP_ITER_H */
-> diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
-> index 841feaa48be5..7b9265d67131 100644
-> --- a/arch/x86/kvm/mmu/tdp_mmu.c
-> +++ b/arch/x86/kvm/mmu/tdp_mmu.c
-> @@ -1742,12 +1742,12 @@ static void zap_collapsible_spte_range(struct kvm *kvm,
->  	gfn_t start = slot->base_gfn;
->  	gfn_t end = start + slot->npages;
->  	struct tdp_iter iter;
-> +	int max_mapping_level;
->  	kvm_pfn_t pfn;
->
->  	rcu_read_lock();
->
->  	tdp_root_for_each_pte(iter, root, start, end) {
-> -retry:
->  		if (tdp_mmu_iter_cond_resched(kvm, &iter, false, true))
->  			continue;
->
-> @@ -1755,15 +1755,41 @@ static void zap_collapsible_spte_range(struct kvm *kvm,
->  		    !is_last_spte(iter.old_spte, iter.level))
->  			continue;
->
-> +		/*
-> +		 * This is a leaf SPTE. Check if the PFN it maps can
-> +		 * be mapped at a higher level.
-> +		 */
->  		pfn = spte_to_pfn(iter.old_spte);
-> -		if (kvm_is_reserved_pfn(pfn) ||
-> -		    iter.level >= kvm_mmu_max_mapping_level(kvm, slot, iter.gfn,
-> -							    pfn, PG_LEVEL_NUM))
-> +
-> +		if (kvm_is_reserved_pfn(pfn))
->  			continue;
->
-> +		max_mapping_level = kvm_mmu_max_mapping_level(kvm, slot,
-> +				iter.gfn, pfn, PG_LEVEL_NUM);
-> +
-> +		WARN_ON(max_mapping_level < iter.level);
-> +
-> +		/*
-> +		 * If this page is already mapped at the highest
-> +		 * viable level, there's nothing more to do.
-> +		 */
-> +		if (max_mapping_level == iter.level)
-> +			continue;
-> +
-> +		/*
-> +		 * The page can be remapped at a higher level, so step
-> +		 * up to zap the parent SPTE.
-> +		 */
-> +		while (max_mapping_level > iter.level)
-> +			tdp_iter_step_up(&iter);
+There is a limitation in TI DP83867 PHY device where SGMII AN is only
+triggered once after the device is booted up. Even after the PHY TPI is
+down and up again, SGMII AN is not triggered and hence no new in-band
+message from PHY to MAC side SGMII.
 
-So the benefit from this is:
-Before: Zap 512 ptes in 4K level page table do TLB flush 512 times.
-Now: Zap higher level 1 2MB level pte do TLB flush 1 time, event
-     it also handles all 512 lower level 4K ptes, but just atomic operation
-     there, see handle_removed_pt().
+This could cause an issue during power up, when PHY is up prior to MAC.
+At this condition, once MAC side SGMII is up, MAC side SGMII wouldn`t
+receive new in-band message from TI PHY with correct link status, speed
+and duplex info.
 
-Is my understanding correct ?
+As suggested by TI, implemented a SW solution here to retrigger SGMII
+Auto-Neg whenever there is a link change.
 
-> +
->  		/* Note, a successful atomic zap also does a remote TLB flush. */
-> -		if (tdp_mmu_zap_spte_atomic(kvm, &iter))
-> -			goto retry;
-> +		tdp_mmu_zap_spte_atomic(kvm, &iter);
-> +
-> +		/*
-> +		 * If the atomic zap fails, the iter will recurse back into
-> +		 * the same subtree to retry.
-> +		 */
->  	}
->
->  	rcu_read_unlock();
-> --
-> 2.36.1.124.g0e6072fb45-goog
->
+Signed-off-by: Sit, Michael Wei Hong <michael.wei.hong.sit@intel.com>
+Reviewed-by: Voon Weifeng <weifeng.voon@intel.com>
+Signed-off-by: Tan Tee Min <tee.min.tan@linux.intel.com>
+---
+ drivers/net/phy/dp83867.c | 29 +++++++++++++++++++++++++++++
+ 1 file changed, 29 insertions(+)
+
+diff --git a/drivers/net/phy/dp83867.c b/drivers/net/phy/dp83867.c
+index 8561f2d4443b..13dafe7a29bd 100644
+--- a/drivers/net/phy/dp83867.c
++++ b/drivers/net/phy/dp83867.c
+@@ -137,6 +137,7 @@
+ #define DP83867_DOWNSHIFT_2_COUNT	2
+ #define DP83867_DOWNSHIFT_4_COUNT	4
+ #define DP83867_DOWNSHIFT_8_COUNT	8
++#define DP83867_SGMII_AUTONEG_EN	BIT(7)
+ 
+ /* CFG3 bits */
+ #define DP83867_CFG3_INT_OE			BIT(7)
+@@ -855,6 +856,32 @@ static int dp83867_phy_reset(struct phy_device *phydev)
+ 			 DP83867_PHYCR_FORCE_LINK_GOOD, 0);
+ }
+ 
++static void dp83867_link_change_notify(struct phy_device *phydev)
++{
++	/* There is a limitation in DP83867 PHY device where SGMII AN is
++	 * only triggered once after the device is booted up. Even after the
++	 * PHY TPI is down and up again, SGMII AN is not triggered and
++	 * hence no new in-band message from PHY to MAC side SGMII.
++	 * This could cause an issue during power up, when PHY is up prior
++	 * to MAC. At this condition, once MAC side SGMII is up, MAC side
++	 * SGMII wouldn`t receive new in-band message from TI PHY with
++	 * correct link status, speed and duplex info.
++	 * Thus, implemented a SW solution here to retrigger SGMII Auto-Neg
++	 * whenever there is a link change.
++	 */
++	if (phydev->interface == PHY_INTERFACE_MODE_SGMII) {
++		int val = 0;
++
++		val = phy_clear_bits(phydev, DP83867_CFG2,
++				     DP83867_SGMII_AUTONEG_EN);
++		if (val < 0)
++			return;
++
++		phy_set_bits(phydev, DP83867_CFG2,
++			     DP83867_SGMII_AUTONEG_EN);
++	}
++}
++
+ static struct phy_driver dp83867_driver[] = {
+ 	{
+ 		.phy_id		= DP83867_PHY_ID,
+@@ -879,6 +906,8 @@ static struct phy_driver dp83867_driver[] = {
+ 
+ 		.suspend	= genphy_suspend,
+ 		.resume		= genphy_resume,
++
++		.link_change_notify = dp83867_link_change_notify,
+ 	},
+ };
+ module_phy_driver(dp83867_driver);
+-- 
+2.25.1
+
