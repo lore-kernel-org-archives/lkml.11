@@ -2,86 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1801C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 06:58:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6295FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 07:01:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242269AbiEZG57 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 02:57:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39422 "EHLO
+        id S236388AbiEZHBv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 03:01:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239214AbiEZG5w (ORCPT
+        with ESMTP id S230099AbiEZHBt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 02:57:52 -0400
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E87527CD9
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 23:57:50 -0700 (PDT)
-Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com [209.85.218.70])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id BB6223F21C
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 06:57:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1653548261;
-        bh=YwbocuSneHvQq0fh/EdmbXmlfTeqDwMbby8XL3N7k/U=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
-        b=AVzKQVVw6TAGDLnKvunWmwYt/vuoJeWlSsWN0c6fC8Ls5GcSKlxqeKHXqxPZAigMq
-         uewf8jwgt5JMG1muu29/LGH6bz6E+VkF6YiYd2xiToOOdiCtwMWzSu83+emDMaLnw/
-         v9h8nC9Lw5jhtIMufDudYqzJHi9Jebb0BTAr3V7FPGmuWuHD1oCnnpRDGol+5ML8EN
-         KwVzfBBmnCxM7C/z+DUfBAofjmg5fmlHA5CbZEXq0+q6C+JDTrUXviy5AfbJnunszD
-         hdXu2P3o+BcVKxl4OJg3sAmJDXQ+V9mE56zTvAD3N6s3YQkvWHyObTALV0tNJc6lJO
-         lQ/hmLZbP07HQ==
-Received: by mail-ej1-f70.google.com with SMTP id lf18-20020a170906ae5200b006fec8de9f0cso396682ejb.4
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 23:57:41 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=YwbocuSneHvQq0fh/EdmbXmlfTeqDwMbby8XL3N7k/U=;
-        b=VGqIX2NtbA0tV3I4/HahrCIa3AezWRnPOxO7OFIMQCjl2farP3rov1tV404omKnkt1
-         agH9P7qYzv3hsK5D+Ffn5PYc6cRSmRjn6he1GYFHf6uETsboSxf31Gs/tkR0KxLgbo/u
-         x7z2GxoKY97FzCO3SAGQ/dOJ3g0zJt0bH2Gia/NinCHmytArv02pw+3sIp+1XlJ2qOfE
-         I0PBgCeJtAZfoqi7VmEb+VzKui9iyub9jJE6acLR1t78JDospfFas/6we5A4wCvQfWfC
-         /5fbCX48GRoJV/8mQCNiEeiDh2Ie+VaPK5Jm26jtE5z8uc98XRtNMISzBF6te7vvEyxA
-         +Dsw==
-X-Gm-Message-State: AOAM531U7vigQNPeG8lz6/BP+pjrBraIQFDvfDcfhJ4j60PtB7Jk+BK3
-        ROt0rizKn30sOaYJXrYfpNNmcZVRAO1WQ7UKCkrKNgGq0QI/fq/+F2T5m8S/Ot0BKg6Z938Ho7V
-        Kk5mOX/8/8/XW5STM8dpD60fIClr8KunPQGa7bPf1zA==
-X-Received: by 2002:a05:6402:380f:b0:42b:27aa:d4cb with SMTP id es15-20020a056402380f00b0042b27aad4cbmr31517636edb.211.1653548261445;
-        Wed, 25 May 2022 23:57:41 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzrCbaTkwubd8CefOtFsYwzxV3AEkWN3OGRmcmHpo3yFUy4WL5kUwmf18rbGX6Kv/KSsK8d0A==
-X-Received: by 2002:a05:6402:380f:b0:42b:27aa:d4cb with SMTP id es15-20020a056402380f00b0042b27aad4cbmr31517629edb.211.1653548261294;
-        Wed, 25 May 2022 23:57:41 -0700 (PDT)
-Received: from gollum.fritz.box ([194.191.244.86])
-        by smtp.gmail.com with ESMTPSA id w15-20020a17090652cf00b006fed8dfcf78sm220906ejn.225.2022.05.25.23.57.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 May 2022 23:57:40 -0700 (PDT)
-From:   Juerg Haefliger <juerg.haefliger@canonical.com>
-To:     mpe@ellerman.id.au, benh@kernel.crashing.org, paulus@samba.org,
-        linuxppc-dev@lists.ozlabs.org
-Cc:     linux-kernel@vger.kernel.org,
-        Juerg Haefliger <juerg.haefliger@canonical.com>
-Subject: [PATCH 0/2] powerpc: Kconfig cleanups
-Date:   Thu, 26 May 2022 08:57:35 +0200
-Message-Id: <20220526065737.86370-1-juerg.haefliger@canonical.com>
-X-Mailer: git-send-email 2.32.0
+        Thu, 26 May 2022 03:01:49 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 88271255AA
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 00:01:48 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C76D31474;
+        Thu, 26 May 2022 00:01:47 -0700 (PDT)
+Received: from [10.162.43.8] (unknown [10.162.43.8])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 236A63F73D;
+        Thu, 26 May 2022 00:01:44 -0700 (PDT)
+Message-ID: <428c7c69-6ac1-51d5-7c26-5f31de61a909@arm.com>
+Date:   Thu, 26 May 2022 12:31:40 +0530
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] mm/hugetlb: Remove unnecessary
+ huge_ptep_set_access_flags() in hugetlb_mcopy_atomic_pte()
+Content-Language: en-US
+To:     Baolin Wang <baolin.wang@linux.alibaba.com>,
+        mike.kravetz@oracle.com, akpm@linux-foundation.org,
+        songmuchun@bytedance.com
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org
+References: <7cd55152c1a00910afda570d1543a97198b3665b.1653468078.git.baolin.wang@linux.alibaba.com>
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+In-Reply-To: <7cd55152c1a00910afda570d1543a97198b3665b.1653468078.git.baolin.wang@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Replace some stray tabs with whitespaces and remove an extra empty
-line.
 
-Juerg Haefliger (2):
-  powerpc: Kconfig: Replace tabs with whitespaces
-  powerpc: Kconfig.debug: Remove extra empty line
 
- arch/powerpc/Kconfig       | 6 +++---
- arch/powerpc/Kconfig.debug | 1 -
- 2 files changed, 3 insertions(+), 4 deletions(-)
+On 5/25/22 15:56, Baolin Wang wrote:
+> There is no need to update the hugetlb access flags after just setting the
+> hugetlb page table entry by set_huge_pte_at(), since the page table entry
+> value has no changes. Thus remove the unnecessary huge_ptep_set_access_flags()
 
--- 
-2.32.0
+WARNING: Possible unwrapped commit description (prefer a maximum 75 chars per line)
+#9: 
+value has no changes. Thus remove the unnecessary huge_ptep_set_access_flags()
 
+total: 0 errors, 1 warnings, 8 lines checked
+
+> in hugetlb_mcopy_atomic_pte().
+> 
+> Signed-off-by: Baolin Wang <baolin.wang@linux.alibaba.com>
+
+Otherwise LGTM,
+
+Reviewed-by: Anshuman Khandual <anshuman.khandual@arm.com>
+
+> ---
+>  mm/hugetlb.c | 2 --
+>  1 file changed, 2 deletions(-)
+> 
+> diff --git a/mm/hugetlb.c b/mm/hugetlb.c
+> index 7c468ac..3ad49bf 100644
+> --- a/mm/hugetlb.c
+> +++ b/mm/hugetlb.c
+> @@ -6032,8 +6032,6 @@ int hugetlb_mcopy_atomic_pte(struct mm_struct *dst_mm,
+>  
+>  	set_huge_pte_at(dst_mm, dst_addr, dst_pte, _dst_pte);
+>  
+> -	(void)huge_ptep_set_access_flags(dst_vma, dst_addr, dst_pte, _dst_pte,
+> -					dst_vma->vm_flags & VM_WRITE);
+>  	hugetlb_count_add(pages_per_huge_page(h), dst_mm);
+>  
+>  	/* No need to invalidate - it was non-present before */
