@@ -2,84 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54705C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 03:46:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33C79C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 03:46:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245675AbiEZDqm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 23:46:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52498 "EHLO
+        id S1343792AbiEZDqu (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 23:46:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245127AbiEZDqZ (ORCPT
+        with ESMTP id S245303AbiEZDqa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 23:46:25 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B19B7BDA2D
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 20:46:14 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id y85-20020a253258000000b0064eaa00a2cbso618362yby.2
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 20:46:14 -0700 (PDT)
+        Wed, 25 May 2022 23:46:30 -0400
+Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1124FD38
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 20:46:21 -0700 (PDT)
+Received: by mail-pl1-x649.google.com with SMTP id e18-20020a170902ef5200b0016153d857a6so396735plx.5
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 20:46:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=pOuhR3Pzar7ge+NX8TBbznCApuMPK+u8nzqtMow3X3w=;
-        b=pFtuCq9Ahm+dC/wB/XGsvhVcvqEGv0ncYhOV7eYSKXtiZRQTf/H8Bo6BSHNlckk8MZ
-         giClqLGO+gDIF6i9lvSpvUtkDlZs5eNq9Dtl8PTSv97NS10j31WS74RsTNgADrb8S6jI
-         cWb7d6f+XSRsn3wRfzLEYt2TGsYEQe8TojWOEk2+XvPI15TrI2TS+fR0ukC42HFlU0pK
-         ga1fLXslxACOE+ZDusSSawGhpuwQIN5Uj+U/usag7iGRoMUVgBOUcwZAo41fWFoop1vb
-         ZnAf8UMo/ym1VQYCqIRxI+ir1nzmyZ0KrDK6SoopJw8pKQA5RViJ5A+Lqr6wkBNDN/um
-         YFAw==
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=6MNgMENOyD6oT5LvMsfOpHfBO2ZH4FG1eUHU37bxLow=;
+        b=cwMuN3FusGYuQwW0vzhutxD5D0QU51D/+Sueh2qUlBal2JEFrqoNA7a6wSV/+RZmXv
+         Z6Ww0mhE/LLpZckd0Dyl5fg7aqF5/vy2brnsU40OG1GYBlzhUcpn7G+tqA5smx/FvBBD
+         DAcVlcjxzbKZp/y0A3EWxudBIcUtQY0LQcXeez5jllaQGMZ3nfCoiTaX2ORs2bxqv84L
+         LM6DkaNLYs1+mkAVP2lC+mMN5D/NEia0aTu8T1CFBKirqNuBd4v+757OlLH8GBz+YRtP
+         aZFkXkUJRi3V7LZgBzdnxVONx32kF/VndiaLZJerfB7eZZgparT/PYo89rZonbonn7at
+         QCKw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=pOuhR3Pzar7ge+NX8TBbznCApuMPK+u8nzqtMow3X3w=;
-        b=ij1m33I/zGz2CW+zw/nvwJfFKJC+QcqJb9xR8f05Ca7UBXKhZRT7R/yo/N0h29SWOf
-         h9eol17vQtGYdh+l1unfnw0JBvmqJysBSh93M7aH5GKgRGgQRL1dMbwhwBhR9G+4krdr
-         C47BWDZCahZUCVwtXk3Z0Kz6KkUEvpNeMNYjSrBo1NOdi8NCYEc5zP92erxpSLQ0aURZ
-         Y5/GRmKrLg3LvIPyzpagDPRZrSbdfm7XALP7Sv+2tmiA7x5o5GS7TNYmlHT4JwykW3ly
-         YuzAZCKmj65eLsMge5xRIZig+gQNM40GcM65mDandIUcgkoB8msG16Tc/KQ0A+RlDiDh
-         v9NQ==
-X-Gm-Message-State: AOAM531H5PWo0BMu+4y0gFxTsFeUEHABkMgRZAx4uqC1n1mG2yR8uPKX
-        uUZPOfvM53MlI7kOuiJBIHZB/thcLVzK6/U=
-X-Google-Smtp-Source: ABdhPJwW5TFihKc5fHoOWh+k/wmtfXHJI7LiYEd2CbsQpL9OfsK+Uu/vuEzg0N01VUgI0MphYYCU7YgT/GtskfQ=
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=6MNgMENOyD6oT5LvMsfOpHfBO2ZH4FG1eUHU37bxLow=;
+        b=4GBZljI+TFfJZ517ihHwOg2ijmhxjZnalhHM3onlTcnO/gLOg1u9FX4Jxqw4DunZ8z
+         A99liVlAF15MCKryCC0UcYMNvECsrHKWb9++nZ2NyW0qXjbz0lERZPOLyuVhu17NY11w
+         FWv4UJOJTayyjFQPkNBLH4RVLfty3B4nSKo7FtgTlA5yuxH6rvivqlrt15Q97LjR82Li
+         tgNSSqRYIN+63MkTC7+cg/S+ylYC37L1SecYyKBHibEJAW/6c/Ja9WIdcRckbDd18RAm
+         rq2N0v7kjps6KkIUBzCofxxr9A+DlGLz0lOhwss6zj16rK7nOi7xPEttmXVD8kfrUjo8
+         HBKQ==
+X-Gm-Message-State: AOAM531MCWFCraUENZH7UH1fprjDci2u4uNfYZyH0YGy9MjwYg6mjjWX
+        yQUQLmIZlSKiLd+1k3f6xDGS4SS4ros3kDA=
+X-Google-Smtp-Source: ABdhPJzvyi8HTzIzW8ZO9SiL2k3tZwthIn6V/jOlzo2pc4pIRW/s3uLbEF7iZt/YPGQhY346pubKNrle350ZskE=
 X-Received: from saravanak.san.corp.google.com ([2620:15c:2d:3:cbc9:88bf:e847:ab95])
- (user=saravanak job=sendgmr) by 2002:a25:501:0:b0:657:c41:3734 with SMTP id
- 1-20020a250501000000b006570c413734mr968289ybf.279.1653536773756; Wed, 25 May
- 2022 20:46:13 -0700 (PDT)
-Date:   Wed, 25 May 2022 20:46:07 -0700
-Message-Id: <20220526034609.480766-1-saravanak@google.com>
+ (user=saravanak job=sendgmr) by 2002:a17:902:cecd:b0:163:794c:fa9 with SMTP
+ id d13-20020a170902cecd00b00163794c0fa9mr1134158plg.136.1653536781324; Wed,
+ 25 May 2022 20:46:21 -0700 (PDT)
+Date:   Wed, 25 May 2022 20:46:09 -0700
+In-Reply-To: <20220526034609.480766-1-saravanak@google.com>
+Message-Id: <20220526034609.480766-3-saravanak@google.com>
 Mime-Version: 1.0
+References: <20220526034609.480766-1-saravanak@google.com>
 X-Mailer: git-send-email 2.36.1.124.g0e6072fb45-goog
-Subject: [PATCH v1 0/2] Fix issues with deferred_probe_timeout being non-zero
+Subject: [PATCH v1 2/2] driver core: Set default deferred_probe_timeout back
+ to 0.
 From:   Saravana Kannan <saravanak@google.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         "Rafael J. Wysocki" <rafael@kernel.org>,
         John Stultz <john.stultz@linaro.org>,
         Mark Brown <broonie@kernel.org>, Rob Herring <robh@kernel.org>,
         Saravana Kannan <saravanak@google.com>
-Cc:     kernel-team@android.com, linux-kernel@vger.kernel.org
+Cc:     kernel-team@android.com, linux-kernel@vger.kernel.org,
+        Nathan Chancellor <nathan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Setting deferred_probe_timeout to a non-zero default used to cause
-issues with NFS rootfs. But the fix for that is causing other problem.
-So revert the fix and set the default deferred_probe_timeout back to
-zero.
+Since we had to effectively reverted
+commit 35a672363ab3 ("driver core: Ensure wait_for_device_probe() waits
+until the deferred_probe_timeout fires") in an earlier patch, a non-zero
+deferred_probe_timeout will break NFS rootfs mounting [1] again. So, set
+the default back to zero until we can fix that.
 
-Most of the Cc list if from commit 35a672363ab3. Please let me know if
-you want to be removed from future patches related to
-deferred_probe_timeout and NFS rootfs issues.
+[1] - https://lore.kernel.org/lkml/TYAPR01MB45443DF63B9EF29054F7C41FD8C60@TYAPR01MB4544.jpnprd01.prod.outlook.com/
 
--Saravana
+Cc: Mark Brown <broonie@kernel.org>
+Cc: Rob Herring <robh@kernel.org>
+Reported-by: Nathan Chancellor <nathan@kernel.org>
+Reported-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Fixes: 2b28a1a84a0e ("driver core: Extend deferred probe timeout on driver registration")
+Signed-off-by: Saravana Kannan <saravanak@google.com>
+---
+ drivers/base/dd.c | 5 -----
+ 1 file changed, 5 deletions(-)
 
-Saravana Kannan (2):
-  driver core: Fix wait_for_device_probe() & deferred_probe_timeout
-    interaction
-  driver core: Set default deferred_probe_timeout back to 0.
-
- drivers/base/dd.c | 10 ----------
- 1 file changed, 10 deletions(-)
-
+diff --git a/drivers/base/dd.c b/drivers/base/dd.c
+index 91f63cd33b12..251b5ba1b84a 100644
+--- a/drivers/base/dd.c
++++ b/drivers/base/dd.c
+@@ -256,12 +256,7 @@ static int deferred_devs_show(struct seq_file *s, void *data)
+ }
+ DEFINE_SHOW_ATTRIBUTE(deferred_devs);
+ 
+-#ifdef CONFIG_MODULES
+-int driver_deferred_probe_timeout = 10;
+-#else
+ int driver_deferred_probe_timeout;
+-#endif
+-
+ EXPORT_SYMBOL_GPL(driver_deferred_probe_timeout);
+ 
+ static int __init deferred_probe_timeout_setup(char *str)
 -- 
 2.36.1.124.g0e6072fb45-goog
 
