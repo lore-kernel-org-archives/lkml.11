@@ -2,67 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69AF3C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 20:46:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56EC4C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 20:46:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349089AbiEZUqm (ORCPT
+        id S1349050AbiEZUqt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 16:46:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33584 "EHLO
+        Thu, 26 May 2022 16:46:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349159AbiEZUqX (ORCPT
+        with ESMTP id S1349154AbiEZUqT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 16:46:23 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 494E1B1DA
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 13:46:14 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id n22so214062eda.5
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 13:46:14 -0700 (PDT)
+        Thu, 26 May 2022 16:46:19 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA681140D1
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 13:46:12 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id c93so1840618edf.7
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 13:46:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=KQPHjD3c8QXyN7jVG+t3oRTkD3S6BZATZ+byBZXQpIc=;
-        b=ykyjo9fiDDRysWdg8Ubk1v8ubnriDbcCKYYaZ5teRE5SYlk0m0juZYfS8CoVEYoeeA
-         Lmq7nhoN0LkR5OynCoiMDl2rI+cT4+/YqDcZp9mfTQjOrulbGjBRN2xerJRBBe+b2qvP
-         EfvVdivEheVDOZrLOYU+ImL9bRDXzAGblk7t/74uBd5RGYJ3IbpDZf3tE9x77kN5lsyN
-         Qey8HqivbUNv6M60jnT24rSojwxzzSXhSzJGKn5EV8ZTha1jQjlx+N1/mmwvelss3dXw
-         U+ajeDUvh5+LTiEUPI7ggPdNQUOnaDTKGKynVL92JpOT4+U9e4yxYjllUrOHdwZZbmCj
-         T3+g==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=KsaZBsRuA05EIUREKaT6uWWUf8NwbjqVqV7AE7nTWuU=;
+        b=BcG3GQbgtgUVWKJIL9pS1cl+PhYjFfOPC3ea6JJLYZLasXxxf9YqHtdfnk1vHgt9oN
+         dXkvNfUzTUjdbG5iaHDtbTC7BOXBhpgZGZLuQYQozmdemKYFeNYmWVs+jzCkr5gijPP9
+         pu8Vm3V/GmE1WfBcJJ4K1THJt2HVlLxGc41kND9G1ajNnuFoDVl9M3laiooEZSSPXfSC
+         1vqO/Md++rL0A843euiuhBLUTx0Eh1Zq1S7xhD6oP2GUCNnlSTabYcCO6LGpwpKNZu/Q
+         RVSVLzlGU3w5jbqpESra4VVecnEIAJ3IRnKwqcyjmtbK7nwf1DUA2Av/Z8mXY5Mab+lW
+         e/9w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=KQPHjD3c8QXyN7jVG+t3oRTkD3S6BZATZ+byBZXQpIc=;
-        b=VYck8kXrPb/QbEWbs4oRwyx1hoK/szc38Xt19UAkpX543Hqma8LobwJEJ3aSv9ufLH
-         9C1Lk4fqVeaSBeJL7dPsiCU5VPaTMEIagbHOQ/je862fTpurhw1T/8RdBtiJsL+hpU2w
-         1I+uVbVgJraPzcCc8sG06R+elNIbaKgV9NB+hfi0xXHv3r1bMVXs5YUEPmjBYVWtUgB6
-         N9Qdsy/DoquDF4OnHzBxJYZsfyp/DUmVxd7PTb7ZxCzopjhxkPWYJg9VUyccYK+7ZFKZ
-         dR+0HrMH6bT65uDNyWbfl9/9hwlt6tz1f3pFV26Mc5LRHYFHkJ1XVciLDVcUj05hBqu+
-         CNDA==
-X-Gm-Message-State: AOAM530Xj8W6PjUbAYgP2DEQZxH6bbC+K3QL0dL4YHYgKvDoNoeMA9kb
-        tjHeFj2kIVCukaKoU9cmvP5p6g==
-X-Google-Smtp-Source: ABdhPJxnobfUufGwlnrmVi/R9ZAFVVpvRRBrBrdDup3R2hU57m9At3PhU7hsw2wv0Qjs3Ee8TFbnvA==
-X-Received: by 2002:a05:6402:1610:b0:42c:6bf6:3d4b with SMTP id f16-20020a056402161000b0042c6bf63d4bmr60230edv.54.1653597973326;
-        Thu, 26 May 2022 13:46:13 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=KsaZBsRuA05EIUREKaT6uWWUf8NwbjqVqV7AE7nTWuU=;
+        b=zGb+XCu6PYZa43qWjM9AmJrN2XEsBkhDGU+gAA1dcGP7qkurlVHtzW2YD2w0dIQh+y
+         AFHYDS6cYN7r1WppJvJL4lGQlC6lajXG4k+a8lNZiQ9Xf4qQqCWmN2vkCdc2toHZWarz
+         FcnB0goGwdS4SmvvXiij4xJYzf4hCmaAVdbzHWwm3VIGVyIrKUfIajzDRi3xwoliD8Ul
+         vZenEf9oTyQye4ND9cncsO8DKpF674aUi37/02w7P6yQbjChT+RXOND9GoYBWGOdDBoa
+         gdousU4OvE97ZlD00k1KHTRCpvDP+FgqPozIZyW0vKL8F0g4UB+DbYl1Ffrh+8iL6gJz
+         IxEA==
+X-Gm-Message-State: AOAM533PaV1gPvKoH1UfXIb7zyXBPXyBufI883KhyOhPlZFo08qbNabH
+        j4D40A6dvpjFXAmwXw8mYXJveQ==
+X-Google-Smtp-Source: ABdhPJxf+t6ex1yqGxjrKm3rgwAVyW6+45X+S9LTTOg/92RQBOuHNHx7ZIFz79bhaTqMDzO/AluRJA==
+X-Received: by 2002:a05:6402:2071:b0:42b:dfa4:d4e1 with SMTP id bd17-20020a056402207100b0042bdfa4d4e1mr3714379edb.70.1653597971094;
+        Thu, 26 May 2022 13:46:11 -0700 (PDT)
 Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id gc21-20020a1709072b1500b006ff16f48e2asm813254ejc.76.2022.05.26.13.46.12
+        by smtp.gmail.com with ESMTPSA id gc21-20020a1709072b1500b006ff16f48e2asm813254ejc.76.2022.05.26.13.46.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 May 2022 13:46:12 -0700 (PDT)
+        Thu, 26 May 2022 13:46:10 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        arm@kernel.org, soc@kernel.org,
-        Khuong Dinh <khuong@os.amperecomputing.com>,
+        arm@kernel.org, soc@kernel.org, Dinh Nguyen <dinguyen@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 3/5] arm64: dts: apm: adjust whitespace around '='
-Date:   Thu, 26 May 2022 22:46:04 +0200
-Message-Id: <20220526204606.833054-3-krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 1/5] arm64: dts: altera: adjust whitespace around '='
+Date:   Thu, 26 May 2022 22:46:02 +0200
+Message-Id: <20220526204606.833054-1-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220526204606.833054-1-krzysztof.kozlowski@linaro.org>
-References: <20220526204606.833054-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -79,45 +76,22 @@ Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
 Output compared with dtx_diff and fdtdump.
 ---
- arch/arm64/boot/dts/apm/apm-shadowcat.dtsi | 2 +-
- arch/arm64/boot/dts/apm/apm-storm.dtsi     | 4 ++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/apm/apm-shadowcat.dtsi b/arch/arm64/boot/dts/apm/apm-shadowcat.dtsi
-index a83c82c50e29..251f2ca0a649 100644
---- a/arch/arm64/boot/dts/apm/apm-shadowcat.dtsi
-+++ b/arch/arm64/boot/dts/apm/apm-shadowcat.dtsi
-@@ -601,7 +601,7 @@ serial0: serial@10600000 {
- 		usb0: dwusb@19000000 {
- 			status = "disabled";
- 			compatible = "snps,dwc3";
--			reg =  <0x0 0x19000000 0x0 0x100000>;
-+			reg = <0x0 0x19000000 0x0 0x100000>;
- 			interrupts = <0x0 0x5d 0x4>;
- 			dma-coherent;
- 			dr_mode = "host";
-diff --git a/arch/arm64/boot/dts/apm/apm-storm.dtsi b/arch/arm64/boot/dts/apm/apm-storm.dtsi
-index 0f37e77f5459..d49ea382154d 100644
---- a/arch/arm64/boot/dts/apm/apm-storm.dtsi
-+++ b/arch/arm64/boot/dts/apm/apm-storm.dtsi
-@@ -927,7 +927,7 @@ sata3: sata@1a800000 {
- 		usb0: dwusb@19000000 {
- 			status = "disabled";
- 			compatible = "snps,dwc3";
--			reg =  <0x0 0x19000000 0x0 0x100000>;
-+			reg = <0x0 0x19000000 0x0 0x100000>;
- 			interrupts = <0x0 0x89 0x4>;
- 			dma-coherent;
- 			dr_mode = "host";
-@@ -936,7 +936,7 @@ usb0: dwusb@19000000 {
- 		usb1: dwusb@19800000 {
- 			status = "disabled";
- 			compatible = "snps,dwc3";
--			reg =  <0x0 0x19800000 0x0 0x100000>;
-+			reg = <0x0 0x19800000 0x0 0x100000>;
- 			interrupts = <0x0 0x8a 0x4>;
- 			dma-coherent;
- 			dr_mode = "host";
+diff --git a/arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi b/arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi
+index aa2bba75265f..db771690641b 100644
+--- a/arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi
++++ b/arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi
+@@ -594,7 +594,7 @@ emac0-tx-ecc@ff8c0400 {
+ 		};
+ 
+ 		qspi: spi@ff8d2000 {
+-			compatible =  "intel,socfpga-qspi", "cdns,qspi-nor";
++			compatible = "intel,socfpga-qspi", "cdns,qspi-nor";
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+ 			reg = <0xff8d2000 0x100>,
 -- 
 2.34.1
 
