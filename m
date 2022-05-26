@@ -2,224 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02594C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 03:48:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5109DC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 03:52:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344887AbiEZDsX (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 23:48:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54424 "EHLO
+        id S238841AbiEZDwd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 23:52:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344861AbiEZDsN (ORCPT
+        with ESMTP id S229889AbiEZDwZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 23:48:13 -0400
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2048.outbound.protection.outlook.com [40.107.237.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD96D532DC;
-        Wed, 25 May 2022 20:48:04 -0700 (PDT)
+        Wed, 25 May 2022 23:52:25 -0400
+Received: from EUR01-DB5-obe.outbound.protection.outlook.com (mail-eopbgr150070.outbound.protection.outlook.com [40.107.15.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 545AAA0D31;
+        Wed, 25 May 2022 20:52:21 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YK+MWbJs17H22fl7nCJPEXcwqOn6SMimo2bGMp59cw0ZHflzS4DHv78J/BgHPDnnYZGqp5u1uQt4jxH7tB9WPfuPU2JaybrL9aZbaWKSAQR0Lg8b+wVud+restgfAJAAbYagO20Qcq7aZ6vrgxUfXXq5+K0sVIt0ULGaKZ1PPIQrc5BQR4TDDa8Mio/XCphBJlMESkR3mEc6AlS/dpA03koWbm9rIYhpxaaeYn5TwftVP2NhIKiGrQe8NWkrRtxksPpy/QXhEz6AQorZ4tagEXiqIN1pEBEzLXOHF5RWUPV56UOunq2zbMGqdVAFziV2osTsm9l2esL4gA7El3f8yg==
+ b=Ob3L92aBwNh5q/C6NBzm58guD7bhVNSks6MAc68mMyx7Y+mpy4Mtc7d+V7cuTI8cESoSSnoAn+BiDjFony+YQb4MLDnY0tmrrydfZKWswJSn+vQXBhNRXtRUoIfbw84s8aMQfJbjgtfR7i6/3MdyZy+C9IfFwE169bPhIR8AeDsGArsL4Cc15v7aaeo0km3SgF1znUG1M58yIau/qfhlvQ+HKbSsOZGpErbdFjfar8Y/qb976jftSLW8jnFqkFP22P+7l37R9IdB2FOscWZbZH4OIcNHQtUyulNnzrKq3b7SeZo9Fq393tNsGWmVgBOt6EsXhaZV29sYJST39qbOXg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=OYkbSQC2Wb1E40TC6+os9NHgkzLRNn1CGGGEKK5fN4Q=;
- b=B3iAFM0i54mnVOyvycrSp7FnD7SleoqUO/j9ZgXOwVwVA1TiwaYuVE0sq+ogYhBeG2bxEnDm36uK1h9RmpIhIJqSXdlRFLaW7t0uEz5iX92vDy/sS13ybDOyTA3tZU1gBAAEUAVJQ18ZKeXUnux57r62gTPYHwMjHG+RdBKezXE9lfBrDpWQ/qK2noPVpaMib+m86Bk8116KdWEW86be/50vPQzaZ9dVTDathkuK1D8HWPvDN98ePaUvRi9hNpXYpJttpfeIfDmLjnlhRo8Jh+c9RWLEnDVTRcQLAB5oNNdwsYt41iCDsaH0d5/MXybdYAdEwh8TIA83BDzz67godg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=linuxfoundation.org smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ bh=PGz9Xv3jiVF0H+sge+mN/7r0UMryka8h4sEmSqY2ias=;
+ b=SHOI7Z9LJ1m5QajkJJxw/sosV2uxPLs4hV9+Rsvg1D70DmHMw0kayqhij03ThGIpytxu48N/YYKBmAK+x5JnERJYbj00Iz0SkKZZN5ZBAG4k/WfkO/RRj6B0rDv5O5DbTofo6u9R2H70gmqY3MtCwvAjTbwTCnYOE8Us7FThQDRu1GVaUEIiRUC3L7g91BgDyHwfhc6cTDQ6x4leABwVcuUpVNNJ9pkljSqr+Tj95WTvQPBpg3+rcAtaUdhlXZWyUz1Vomqp4cPDPHP2khFoppDx+5ZvPIgVQ2aAxTDwB5jTwnu6dSGwuWWv3uHwd01I+fRCK+J/I0x9PQqjVyj/9w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OYkbSQC2Wb1E40TC6+os9NHgkzLRNn1CGGGEKK5fN4Q=;
- b=jSgIFvcY3JORgueHGtiCgcNbFyeiXJSo9r1RUXCSiiOcPktfgEmOQ1K3RzqqI3/6p3AQsK4BmaaKuoFNaBtaFDARZXoEZndNikjT6fBBgaLa6lxsuSRTbD0bnaT31rrt05nat5zdGehO9Q3UdvYxUbjnakm+10VypLMLaaO3cs8=
-Received: from MW3PR05CA0004.namprd05.prod.outlook.com (2603:10b6:303:2b::9)
- by BYAPR12MB3511.namprd12.prod.outlook.com (2603:10b6:a03:132::13) with
+ bh=PGz9Xv3jiVF0H+sge+mN/7r0UMryka8h4sEmSqY2ias=;
+ b=b05ZRSzUt9SLOpSx7GH/XP7fqirnm9S4cVy5NcsCUUKdaWhtprWWtm7Wbv4tFVQ/VwyJ5NyXlj9ZI0Q9L4vJk015HfKOg5Mgv6TSnEtBzxErOvPUodW9K0UlIXX6AjwQjC8tUtxLQfTNJbkPmPbro+SuEqvEf77BG+AfutyXKWU=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=oss.nxp.com;
+Received: from DU0PR04MB9417.eurprd04.prod.outlook.com (2603:10a6:10:358::11)
+ by AM4PR0401MB2324.eurprd04.prod.outlook.com (2603:10a6:200:4f::15) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.16; Thu, 26 May
- 2022 03:48:01 +0000
-Received: from CO1NAM11FT026.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:2b:cafe::60) by MW3PR05CA0004.outlook.office365.com
- (2603:10b6:303:2b::9) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.5 via Frontend
- Transport; Thu, 26 May 2022 03:48:01 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1NAM11FT026.mail.protection.outlook.com (10.13.175.67) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5293.13 via Frontend Transport; Thu, 26 May 2022 03:48:01 +0000
-Received: from jasmine-meng.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 25 May
- 2022 22:47:56 -0500
-From:   Meng Li <li.meng@amd.com>
-To:     Shuah Khan <skhan@linuxfoundation.org>,
-        Huang Rui <ray.huang@amd.com>, <linux-pm@vger.kernel.org>
-CC:     "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
-        Nathan Fontenot <nathan.fontenot@amd.com>,
-        Deepak Sharma <deepak.sharma@amd.com>,
-        "Alex Deucher" <alexander.deucher@amd.com>,
-        Mario Limonciello <mario.limonciello@amd.com>,
-        Jinzhou Su <Jinzhou.Su@amd.com>,
-        Perry Yuan <Perry.Yuan@amd.com>,
-        Xiaojian Du <Xiaojian.Du@amd.com>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Borislav Petkov <bp@alien8.de>, <linux-kernel@vger.kernel.org>,
-        Meng Li <li.meng@amd.com>
-Subject: [V8 PATCH 4/4] Documentation: amd-pstate: Add unit test introduction
-Date:   Thu, 26 May 2022 11:47:25 +0800
-Message-ID: <20220526034725.1708916-5-li.meng@amd.com>
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.13; Thu, 26 May
+ 2022 03:52:18 +0000
+Received: from DU0PR04MB9417.eurprd04.prod.outlook.com
+ ([fe80::a892:e4a9:4769:13a5]) by DU0PR04MB9417.eurprd04.prod.outlook.com
+ ([fe80::a892:e4a9:4769:13a5%7]) with mapi id 15.20.5293.013; Thu, 26 May 2022
+ 03:52:18 +0000
+From:   "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
+To:     shawnguo@kernel.org, leoyang.li@nxp.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org,
+        linux-arm-kernel@lists.infradead.org, evicetree@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, Peng Fan <peng.fan@nxp.com>
+Subject: [PATCH] arm64: dts: ls-10xx: use generic dma node name
+Date:   Thu, 26 May 2022 11:54:05 +0800
+Message-Id: <20220526035405.4062687-1-peng.fan@oss.nxp.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220526034725.1708916-1-li.meng@amd.com>
-References: <20220526034725.1708916-1-li.meng@amd.com>
-MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
+X-ClientProxiedBy: SI2P153CA0005.APCP153.PROD.OUTLOOK.COM
+ (2603:1096:4:140::11) To DU0PR04MB9417.eurprd04.prod.outlook.com
+ (2603:10a6:10:358::11)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 705cdc70-e138-4f5f-34e0-08da3eca8840
-X-MS-TrafficTypeDiagnostic: BYAPR12MB3511:EE_
-X-Microsoft-Antispam-PRVS: <BYAPR12MB3511076B9E4B2625C9BFA60FF7D99@BYAPR12MB3511.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 769c0af1-0c27-4ccd-eaa9-08da3ecb2109
+X-MS-TrafficTypeDiagnostic: AM4PR0401MB2324:EE_
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
+X-Microsoft-Antispam-PRVS: <AM4PR0401MB23240EC823E0DF1D1CBE698DC9D99@AM4PR0401MB2324.eurprd04.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 3GLiUjYL0zyiULpg/wdzIOEOfrEzl/+eF+pbXxOcNraINaB7h18RdEbefOBXsB5NgGbLBvAc4YFNayH4DMYgp0pKqs0WwRu6CfVOHsL8BJclaLoGeHEayoT/pZZvT+lJ2pXRmXxjotzbNqD52SBCXmUEYCKUpFt9BJ9Ftrl/EWiUwXT+dlZ0tE2iYT4jHg2OTpiAkQxPxwKy338URR0C17CLXgLLtEgQZlY3QWLvZwsvV9pDRPyFqRGCfgkL4kgy3WuPjw/rOi8Nq+vTVSU3jYcZpNB+FzUpOV7RhlRxNKsp/TMjJ+1O8urJqM8Vi2quM4XER318A1aqkJpA81Us2Dgff5j8csvtYqTbJc43qzcRcdA6t5zspC13Y8WD3muTatEvxsN36r8TWHzOUaK1fUwPsuYWCUzdzTIiAskRFiwkR+UwVyi2llnwGR6ySIaAZK4eUCAL9DeYLJ0rOL7GXJdGjfGgojdWIEpfWebafb5cXHiX2hYXqTRtM346HA4aNAQd7pARogVW7PfbvaD5R/EbILeZl0xjCSsh+bH4wfLS7tPTcHXCzoEzWC8dSNHP8xmucadotyq79tNTTM4ZjC5KhDIn752/nYgEo5V4MHqZfWjcKcOYrBbKk+xwidgvg9VFidbnQ+U/EzwjoBQLuRroNc0hdy/gkh7rhEjC3Cgi0UBfBa8RE/RQJhdE0jRDfzzFnwqQCjVIUc+bQecQtUEgVFxj23HlRfzK9KZhZYkt3ICmppkbhthHSoItJgLZFMHPn1Q5ciMQd5BQgxaShjlsh2/HiVrp9lc+bY5MVoFVF+MOIKmQMnQVhMWPZZ1veou9EbzvA314m+GLHSqA0w==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(40460700003)(54906003)(2906002)(36860700001)(83380400001)(6666004)(8936002)(47076005)(5660300002)(2616005)(86362001)(426003)(508600001)(336012)(26005)(7696005)(81166007)(1076003)(966005)(110136005)(316002)(36756003)(4326008)(8676002)(356005)(82310400005)(70206006)(70586007)(186003)(16526019)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 May 2022 03:48:01.4852
+X-Microsoft-Antispam-Message-Info: 4/Bw6+5p1eqf4rMo8F/AoedJZ3BGe1wluql7DFGcvHNt4ruS/p5Eg39j74UwQ9cZppaJn1eR+4MKO01BLVFUBRxQyBE7JAL10V5/RAQUVeb8Oy6FJp6g9mcV9KJ84QSumR0kusry5gYZAs4oJTOrdRxdy2SR9Tu59NodPFFSRrkCh93PQCUr2VVmnsMgzdQi1niKQpQ0nMgAUUvwZk7b7ueSXJ2MZ5r6+32+ru1qUxRG+BhLEHpNx2Jc6W146vJKSaihQ/b4IMP7YRnO1duNyJm9YoeFTVzcS0ctynuk/PhhDIqaOXvEaQu/2ryLgzgZ2vrqhyKVuClaWyBuu1XUP0KS1WfE+CTqHdnwaPH1AZUX7Ebx76qRbCwG170rxp8HOtlgNziL9OoCa7Uq/+A8rKMOphjmO2Yj56vCCFvFmIZXySifZkTrDGCJaF9T2NFa4cnRYcjgesmLTcusx+x8eYRyQiR456sPtprVEsPgCexORUePj9CVEYAIEKQhXtX3LZmgNGWCBip/bql7Hm9842IqIUksmoLLGZ8CpWPTs/Ug3RHomeOdhVeqLlg+QtCrb2wqzVZrAyho7CVpLU9QbTVgSs3+F3M0+BYvFG+syDSB6uLpgS73KsnwbIvGzzRwzBvXO039Xs7ymEJCQU4CrMWPBMtrCKy55y1RuKoEHGqyrBVtmO6c/hc+ZuloLL8cnZxSKzO6/IvbPKG6+awO7hJI5aA1VB+XEbRBv3qYobw=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU0PR04MB9417.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(5660300002)(508600001)(6512007)(316002)(38100700002)(26005)(6486002)(86362001)(1076003)(38350700002)(186003)(83380400001)(6506007)(66476007)(52116002)(66556008)(4326008)(8676002)(66946007)(2616005)(8936002)(6666004)(2906002)(41533002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?E54Hj5YfJHEguHuBSfSyiHzhhhPlZ6AN99AlqW/uxRcrU7kpwJdDnTpgTEJZ?=
+ =?us-ascii?Q?/yK4E6Q8foAnr51e10frorg3qCyXpCGnMvmXCuKMIAcBFMCLVQLly30+foUO?=
+ =?us-ascii?Q?cppkEHvA2EU59aXeSSqcJveDDyL8uzLVXTg4RljQWHJwK0UiCQA+PGlVAwC0?=
+ =?us-ascii?Q?26eKRDLGOrpVxIOKboP7uKS+CPju8oQYCBBk3uM3HJzQauQzkKcEoTJaKC8u?=
+ =?us-ascii?Q?0yFZDbcPNkdSqIb8aJxg958UGOOQc2P1sBtEKD/teEHEYmYcYsZi8SkraAwL?=
+ =?us-ascii?Q?s5DZlgnLYjQCHty/XMJd9UTmICi4FlIjecHKjW9v3p4qbtZiMiamsntUYihV?=
+ =?us-ascii?Q?nF/whn8dwBh1Lt7PGi+rCYp55aryGJleiHMBERSS5wKon93IEbExSUoI90FE?=
+ =?us-ascii?Q?D8ulz4O34Hgk/KZ7dqkTWe239n+njJZz8nzl6dNyiKA20/PFQpTEZnHNNKX5?=
+ =?us-ascii?Q?dTvfxvRJdAtTpfmS24zJl7ESJR3IoDK85tPVRaUn8t2agXUSUA1l1jtTBV/A?=
+ =?us-ascii?Q?LKDDny0qil3nDEYpVDXl7O7KfWCHtENtIEeQjjjIa+zODa4sbvmSVA6ngm3K?=
+ =?us-ascii?Q?EdD0zxLTg92AfOqZJMjRUOC3ktcc4JicV8Zo6b5iKS1Uu7J2YFotMkNRsFiA?=
+ =?us-ascii?Q?zOEYjOX8Acv3yfZLgSRNbtj2lmCiAyT+VDWx48kLMFDYXHOO0ZXDEEoVOTRP?=
+ =?us-ascii?Q?Sr7OqSird4QVOGs1uS1vlbOyV0RM2LTFQ/dbv17IESpYKfmMZ60pIzIAeWTe?=
+ =?us-ascii?Q?KjH8UoCLX+RpxyWK6rq6kT7huEosQmcfJ64nqxEUEHBqI7u2jH2OcLlXu67c?=
+ =?us-ascii?Q?gRgJ7Okd9zXsn9YinstxMCgZRKOs3onsv//qPC30PFn/3alXaMBfIGpVHjlJ?=
+ =?us-ascii?Q?dAzG8diE4zcBV47rFRc1Igy5WjSLsq/pF/SXYUYYf6XxtBTgBKawXX5FQ/5x?=
+ =?us-ascii?Q?Z9aBYrNLOMhTq71NjyW3FjWn+seLD3Gwyh7CnuOqhIlTPjGP22xMK0ivjkSb?=
+ =?us-ascii?Q?zRGOcS6YVRx1okWzjcoVYrZNZSjxPnGJ+n/HCqYIArhG5mx2gk7vKenG+7u7?=
+ =?us-ascii?Q?CW4KOUWgKfp3B07tvEtoTF2QYkyGHdwBOD0wgkx6M4YiolXbIqhtzKgErsCE?=
+ =?us-ascii?Q?3tWGQtnfrZEQsmB7KmpAwREXL50BHj5CtOss2o47hXvTafAdHelnxnWTHaQC?=
+ =?us-ascii?Q?+XnhAMk0U+decjb3g5ied0rDhArL+bOfKF2P0ZAq3xyvt/+YvR5wVuBgfo9W?=
+ =?us-ascii?Q?hVWxXBIUH6t/SdU62dQV/p7F42FFLzsOjeZtpUpkW6Z1nZ3hYLgj/LsnbWFQ?=
+ =?us-ascii?Q?8Tp6x6emNvNnv0v2x1I2EUUXAZVh3Nyctbk0SUHuPXAsyx/zHW4pRNwhyMuw?=
+ =?us-ascii?Q?wBKIvNQlbw4tdCF/F7q0f+Ousg4r3OC6fm59ILmY9siaX03YES0w6oLM2KtC?=
+ =?us-ascii?Q?Hw0PGc9yPHcopApTxV43neWMENtI1oOlm+YvSOqjh6l3NeTfbloszUmySeyZ?=
+ =?us-ascii?Q?ua7RW6z383bX/OpCxT0XneYW0sZ3eTW+V4BG944sKdqfklKcziWx8PcbQ0sm?=
+ =?us-ascii?Q?QkNkDPAJOIeeTcB9P0y7ioosqbe58ebrus/Wk8S8mG+S8UQ37p6FBm+x58sz?=
+ =?us-ascii?Q?4TjDE4VjE2OQvXZIjP2nIe0Q5XGGjNHp54Erzp6rHvmFTBRvy8UEq8nujGXD?=
+ =?us-ascii?Q?RXZsWRZgjAMAJMTZBpirgOpe7NsLdAwuzO2a25jQiXJC3S8b90AAao0y2h25?=
+ =?us-ascii?Q?F3jzN3oflg=3D=3D?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 769c0af1-0c27-4ccd-eaa9-08da3ecb2109
+X-MS-Exchange-CrossTenant-AuthSource: DU0PR04MB9417.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 May 2022 03:52:18.3208
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 705cdc70-e138-4f5f-34e0-08da3eca8840
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT026.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3511
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Mx+ITqPrTmg8z5/i4pNi7hSZ4brKynPysWRRilval/pCGAizwS3b06sebVUbSgMWdGu7JU6xBKsMbwCra8edVg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR0401MB2324
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Introduce the AMD P-State unit test module design and implementation.
-It also talks about kselftest and how to use.
+From: Peng Fan <peng.fan@nxp.com>
 
-Signed-off-by: Meng Li <li.meng@amd.com>
-Acked-by: Huang Rui <ray.huang@amd.com>
-Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
+dma-controller is preferred for dma node.
+
+Signed-off-by: Peng Fan <peng.fan@nxp.com>
 ---
- Documentation/admin-guide/pm/amd-pstate.rst | 76 +++++++++++++++++++++
- 1 file changed, 76 insertions(+)
+ arch/arm64/boot/dts/freescale/fsl-ls1012a.dtsi | 2 +-
+ arch/arm64/boot/dts/freescale/fsl-ls1043a.dtsi | 2 +-
+ arch/arm64/boot/dts/freescale/fsl-ls1046a.dtsi | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/admin-guide/pm/amd-pstate.rst b/Documentation/admin-guide/pm/amd-pstate.rst
-index 83b58eb4ab4d..8f3d30c5a0d8 100644
---- a/Documentation/admin-guide/pm/amd-pstate.rst
-+++ b/Documentation/admin-guide/pm/amd-pstate.rst
-@@ -182,6 +182,7 @@ to the ``struct sugov_cpu`` that the utilization update belongs to.
- Then, ``amd-pstate`` updates the desired performance according to the CPU
- scheduler assigned.
+diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1012a.dtsi b/arch/arm64/boot/dts/freescale/fsl-ls1012a.dtsi
+index 50a72cda4727..f96df39d5533 100644
+--- a/arch/arm64/boot/dts/freescale/fsl-ls1012a.dtsi
++++ b/arch/arm64/boot/dts/freescale/fsl-ls1012a.dtsi
+@@ -465,7 +465,7 @@ QORIQ_CLK_PLL_DIV(4)>,
+ 			status = "disabled";
+ 		};
  
-+.. _processor_support:
+-		edma0: edma@2c00000 {
++		edma0: dma-controller@2c00000 {
+ 			#dma-cells = <2>;
+ 			compatible = "fsl,vf610-edma";
+ 			reg = <0x0 0x2c00000 0x0 0x10000>,
+diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1043a.dtsi b/arch/arm64/boot/dts/freescale/fsl-ls1043a.dtsi
+index 21200cbf7161..d91793d113eb 100644
+--- a/arch/arm64/boot/dts/freescale/fsl-ls1043a.dtsi
++++ b/arch/arm64/boot/dts/freescale/fsl-ls1043a.dtsi
+@@ -784,7 +784,7 @@ wdog0: watchdog@2ad0000 {
+ 			big-endian;
+ 		};
  
- Processor Support
- =======================
-@@ -282,6 +283,8 @@ efficiency frequency management method on AMD processors.
- Kernel Module Options for ``amd-pstate``
- =========================================
+-		edma0: edma@2c00000 {
++		edma0: dma-controller@2c00000 {
+ 			#dma-cells = <2>;
+ 			compatible = "fsl,vf610-edma";
+ 			reg = <0x0 0x2c00000 0x0 0x10000>,
+diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1046a.dtsi b/arch/arm64/boot/dts/freescale/fsl-ls1046a.dtsi
+index 0085e83adf65..46285b5710df 100644
+--- a/arch/arm64/boot/dts/freescale/fsl-ls1046a.dtsi
++++ b/arch/arm64/boot/dts/freescale/fsl-ls1046a.dtsi
+@@ -683,7 +683,7 @@ wdog0: watchdog@2ad0000 {
+ 			big-endian;
+ 		};
  
-+.. _shared_mem:
-+
- ``shared_mem``
- Use a module param (shared_mem) to enable related processors manually with
- **amd_pstate.shared_mem=1**.
-@@ -393,6 +396,76 @@ about part of the output. ::
-  CPU_005     712          116384        39        49        166       0.7565  9645075 2214891 38431470  25.1   11.646       469         2.496         kworker/5:0-40
-  CPU_006     712          116408        39        49        166       0.6769  8950227 1839034 37192089  24.06  11.272       470         2.496         kworker/6:0-1264
- 
-+Unit Tests for amd-pstate
-+-------------------------
-+
-+``amd-pstate-ut`` is a test module for testing the ``amd-pstate`` driver.
-+
-+ * It can help all users to verify their processor support (SBIOS/Firmware or Hardware).
-+
-+ * Kernel can have a basic function test to avoid the kernel regression during the update.
-+
-+ * We can introduce more functional or performance tests to align the result together, it will benefit power and performance scale optimization.
-+
-+1. Test case decriptions
-+
-+        +---------+--------------------------------+------------------------------------------------------------------------------------+
-+        | Index   | Functions                      | Description                                                                        |
-+        +=========+================================+====================================================================================+
-+        | 0       | amd_pstate_ut_acpi_cpc_valid   || Check whether the _CPC object is present in SBIOS.                                |
-+        |         |                                ||                                                                                   |
-+        |         |                                || The detail refer to `Processor Support <processor_support_>`_.                    |
-+        +---------+--------------------------------+------------------------------------------------------------------------------------+
-+        | 1       | amd_pstate_ut_check_enabled    || Check whether AMD P-State is enabled.                                             |
-+        |         |                                ||                                                                                   |
-+        |         |                                || AMD P-States and ACPI hardware P-States always can be supported in one processor. |
-+        |         |                                | But AMD P-States has the higher priority and if it is enabled with                 |
-+        |         |                                | :c:macro:`MSR_AMD_CPPC_ENABLE` or ``cppc_set_enable``, it will respond to the      |
-+        |         |                                | request from AMD P-States.                                                         |
-+        +---------+--------------------------------+------------------------------------------------------------------------------------+
-+        | 2       | amd_pstate_ut_check_perf       || Check if the each performance values are reasonable.                              |
-+        |         |                                || highest_perf >= nominal_perf > lowest_nonlinear_perf > lowest_perf > 0.           |
-+        +---------+--------------------------------+------------------------------------------------------------------------------------+
-+        | 3       | amd_pstate_ut_check_freq       || Check if the each frequency values and max freq when set support boost mode       |
-+        |         |                                | are reasonable.                                                                    |
-+        |         |                                || max_freq >= nominal_freq > lowest_nonlinear_freq > min_freq > 0                   |
-+        |         |                                || If boost is not active but supported, this maximum frequency will be larger than  |
-+        |         |                                | the one in ``cpuinfo``.                                                            |
-+        +---------+--------------------------------+------------------------------------------------------------------------------------+
-+
-+#. How to execute the tests
-+
-+   We use test module in the kselftest frameworks to implement it.
-+   We create amd-pstate-ut module and tie it into kselftest.(for
-+   details refer to Linux Kernel Selftests [4]_).
-+
-+    1. Build
-+
-+        + open the :c:macro:`CONFIG_X86_AMD_PSTATE` configuration option.
-+        + set the :c:macro:`CONFIG_X86_AMD_PSTATE_UT` configuration option to M.
-+        + make project
-+        + make selftest ::
-+
-+            $ cd linux
-+            $ make -C tools/testing/selftests
-+
-+    #. Installation & Steps ::
-+
-+        $ make -C tools/testing/selftests install INSTALL_PATH=~/kselftest
-+        $ sudo ./kselftest/run_kselftest.sh -c amd-pstate
-+        TAP version 13
-+        1..1
-+        # selftests: amd-pstate: amd-pstate-ut.sh
-+        # amd-pstate-ut: ok
-+        ok 1 selftests: amd-pstate: amd-pstate-ut.sh
-+
-+    #. Results ::
-+
-+         $ dmesg | grep "amd_pstate_ut" | tee log.txt
-+         [12977.570663] amd_pstate_ut: 1    amd_pstate_ut_acpi_cpc_valid  success!
-+         [12977.570673] amd_pstate_ut: 2    amd_pstate_ut_check_enabled   success!
-+         [12977.571207] amd_pstate_ut: 3    amd_pstate_ut_check_perf      success!
-+         [12977.571212] amd_pstate_ut: 4    amd_pstate_ut_check_freq      success!
- 
- Reference
- ===========
-@@ -405,3 +478,6 @@ Reference
- 
- .. [3] Processor Programming Reference (PPR) for AMD Family 19h Model 51h, Revision A1 Processors
-        https://www.amd.com/system/files/TechDocs/56569-A1-PUB.zip
-+
-+.. [4] Linux Kernel Selftests,
-+       https://www.kernel.org/doc/html/latest/dev-tools/kselftest.html
+-		edma0: edma@2c00000 {
++		edma0: dma-controller@2c00000 {
+ 			#dma-cells = <2>;
+ 			compatible = "fsl,vf610-edma";
+ 			reg = <0x0 0x2c00000 0x0 0x10000>,
 -- 
 2.25.1
 
