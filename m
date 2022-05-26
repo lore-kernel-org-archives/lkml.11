@@ -2,186 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9420BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 04:26:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2287C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 04:40:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345589AbiEZE0x (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 00:26:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47974 "EHLO
+        id S242604AbiEZEkA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 00:40:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239088AbiEZE0m (ORCPT
+        with ESMTP id S239088AbiEZEjz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 00:26:42 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8337EE1D;
-        Wed, 25 May 2022 21:26:36 -0700 (PDT)
+        Thu, 26 May 2022 00:39:55 -0400
+Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8AFF8B0AC;
+        Wed, 25 May 2022 21:39:54 -0700 (PDT)
+Received: by mail-pg1-x52e.google.com with SMTP id j21so384895pga.13;
+        Wed, 25 May 2022 21:39:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1653539196; x=1685075196;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=Pe6Wi8DVqmHt8ekxuGJOkmaUnohWx9M/ugvxsS8fsas=;
-  b=sR2DjEuIp6Io9qFkeHs1zbedD0agkfxKFin1cZfaQJYYa45At8jW2MFb
-   V+3Hes0YfpMaY0AYiJb7o0VxNO2VE8WFXoxV4dxV7ipfHwrQll3uJXpDH
-   DIFwDJ3notLajymGwXiNB50fOmyjyeum/oSaAM26Mm/0WQCuTojXxMIuA
-   4=;
-Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 25 May 2022 21:26:36 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2022 21:26:35 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 25 May 2022 21:26:35 -0700
-Received: from hu-tdas-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 25 May 2022 21:26:31 -0700
-From:   Taniya Das <quic_tdas@quicinc.com>
-To:     Stephen Boyd <sboyd@kernel.org>,
-        =?UTF-8?q?Michael=20Turquette=20=C2=A0?= <mturquette@baylibre.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-CC:     <linux-arm-msm@vger.kernel.org>, <linux-soc@vger.kernel.org>,
-        <linux-clk@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <robh@kernel.org>,
-        <robh+dt@kernel.org>, Taniya Das <quic_tdas@quicinc.com>
-Subject: [PATCH v3 3/3] clk: qcom: lpass: Add support for resets & external mclk for SC7280
-Date:   Thu, 26 May 2022 09:56:01 +0530
-Message-ID: <20220526042601.32064-4-quic_tdas@quicinc.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220526042601.32064-1-quic_tdas@quicinc.com>
-References: <20220526042601.32064-1-quic_tdas@quicinc.com>
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=UCUt8Yc7zYDUiimWIGThGkhoILZPhzLlu5O82zOXa38=;
+        b=aV/SUigznehnPw3+KhLvXP9GGdbe7fXa3SEr7LmCQRdtBP1BGoPTF7nhfMxRJRPvLG
+         chrrAoNA9agcxvcBgPFG7SgaCthYTU1/oVj4DGy2iMzEnAergMIGbGyEMwoCxBQ2TvjF
+         vPKWfpoekXDqedNzarkKZrLTHsyLPK5mmiWOMPUTuEDD1HGzjcy71qKbf3WlOCNc78Cy
+         3Kfw2xwprpLWqp0Nitvj4/CcrAlhwAwPmhqPu778ox9eTnevytu/90q+Va8eSNv3Juk/
+         QIPJSzMM7OlUu35Zn5Vxe1ZHcU52ABuljc0HLW/rhvbTONxloZUyUp17j5oQiW8I6o8M
+         +nkw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=UCUt8Yc7zYDUiimWIGThGkhoILZPhzLlu5O82zOXa38=;
+        b=aBO/pGdb7Hg/1LpHORlHl8THhh+JNIOTjIQT7OoYo9/Lebwsl1zk7aBc/oymhmMdVR
+         M2Yf+BEQ90wuqfEVrZPBV/V9hLau/48Puss+fJBV6rsDxx7//UKOpYDg/ZR+j0LSS89b
+         IqS/Z21rrYI7FBMCxLgnu9kK2H0n6a50Ial1KW6xttcb+6jgWvSjPH4uXLhmrnIZlOBn
+         F20yS2h3fs6pvkadVnee4I87YYXAEWlb5xInvILN8XR5bLsQLt9q7kGGNrImogX5BWmG
+         KvaSDOVII1LN47j03ek8Vt+0d4VIUvXlPbtKzI/Q7jy1xZOSTF/ZW1wGny/np9D7Wc6S
+         2yFw==
+X-Gm-Message-State: AOAM5333sWgvntKiwsoJI8CH4Tqq1O5Y16CLfq4JfxRhaWuDBkpc3x99
+        17wscPTvLbmaCxDsOAk18SBCaJJv8eyJzw==
+X-Google-Smtp-Source: ABdhPJwPQn33e+P+y+ZoWsJAfI6MEG3HH+rRAybs8v8pNTXPZeJyfPF5jt7DA0zh5OepjFLZPdXIRg==
+X-Received: by 2002:a63:225b:0:b0:3fa:beab:211d with SMTP id t27-20020a63225b000000b003fabeab211dmr8387174pgm.350.1653539993959;
+        Wed, 25 May 2022 21:39:53 -0700 (PDT)
+Received: from debian.me (subs02-180-214-232-22.three.co.id. [180.214.232.22])
+        by smtp.gmail.com with ESMTPSA id 200-20020a6304d1000000b003f9eacd0684sm450834pge.3.2022.05.25.21.39.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 25 May 2022 21:39:53 -0700 (PDT)
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+To:     linux-doc@vger.kernel.org
+Cc:     Bagas Sanjaya <bagasdotme@gmail.com>,
+        Filipe Manana <fdmanana@suse.com>, Chris Mason <clm@fb.com>,
+        Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>, linux-btrfs@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] btrfs: add missing function name in btrfs_log_new_name() kernel-doc comment
+Date:   Thu, 26 May 2022 11:39:33 +0700
+Message-Id: <20220526043933.315937-1-bagasdotme@gmail.com>
+X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The clock gating control for TX/RX/WSA core bus clocks would be required
-to be reset(moved from hardware control) from audio core driver. Thus
-add the support for the reset clocks.
+kernel test robot reported kernel-doc warning:
 
-Also add the external mclk to interface external MI2S.
+>> fs/btrfs/tree-log.c:6792: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
+    * Update the log after adding a new name for an inode.
 
-Fixes: 2b75e142523e ("clk: qcom: lpass: Add support for LPASS clock controller for SC7280").
-Signed-off-by: Taniya Das <quic_tdas@quicinc.com>
+This has side-effect warning when invoking kernel-doc script directly:
+
+fs/btrfs/tree-log.c:6957: warning: missing initial short description on line:
+ * Update the log after adding a new name for an inode.
+
+These warnings above are caused by missing function name in the kernel-doc
+comment of btrfs_log_new_name().
+
+Fix these by adding the function name into short description on the comment
+block.
+
+Link: https://lore.kernel.org/linux-doc/202205260024.TLEp6Pj2-lkp@intel.com/
+Fixes: d5f5bd546552a9 ("btrfs: pass the dentry to btrfs_log_new_name() instead of the inode")
+Cc: Filipe Manana <fdmanana@suse.com>
+Cc: Chris Mason <clm@fb.com>
+Cc: Josef Bacik <josef@toxicpanda.com>
+Cc: David Sterba <dsterba@suse.com>
+Cc: linux-btrfs@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
 ---
- drivers/clk/qcom/lpassaudiocc-sc7280.c | 17 ++++++++++++-
- drivers/clk/qcom/lpasscorecc-sc7280.c  | 33 ++++++++++++++++++++++++++
- 2 files changed, 49 insertions(+), 1 deletion(-)
+ fs/btrfs/tree-log.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/clk/qcom/lpassaudiocc-sc7280.c b/drivers/clk/qcom/lpassaudiocc-sc7280.c
-index 6ab6e5a34c72..536509b78341 100644
---- a/drivers/clk/qcom/lpassaudiocc-sc7280.c
-+++ b/drivers/clk/qcom/lpassaudiocc-sc7280.c
-@@ -22,6 +22,7 @@
- #include "clk-regmap-mux.h"
- #include "common.h"
- #include "gdsc.h"
-+#include "reset.h"
+diff --git a/fs/btrfs/tree-log.c b/fs/btrfs/tree-log.c
+index 370388fadf960a..d25cbe61fdb669 100644
+--- a/fs/btrfs/tree-log.c
++++ b/fs/btrfs/tree-log.c
+@@ -6954,7 +6954,7 @@ void btrfs_record_snapshot_destroy(struct btrfs_trans_handle *trans,
+ }
+ 
+ /**
+- * Update the log after adding a new name for an inode.
++ * btrfs_log_new_name() - Update the log after adding a new name for an inode.
+  *
+  * @trans:              Transaction handle.
+  * @old_dentry:         The dentry associated with the old name and the old
 
- enum {
- 	P_BI_TCXO,
-@@ -221,7 +222,7 @@ static struct clk_rcg2 lpass_aon_cc_main_rcg_clk_src = {
- 		.parent_data = lpass_aon_cc_parent_data_0,
- 		.num_parents = ARRAY_SIZE(lpass_aon_cc_parent_data_0),
- 		.flags = CLK_OPS_PARENT_ENABLE,
--		.ops = &clk_rcg2_ops,
-+		.ops = &clk_rcg2_shared_ops,
- 	},
- };
-
-@@ -665,6 +666,18 @@ static const struct qcom_cc_desc lpass_audio_cc_sc7280_desc = {
- 	.num_clks = ARRAY_SIZE(lpass_audio_cc_sc7280_clocks),
- };
-
-+static const struct qcom_reset_map lpass_audio_cc_sc7280_resets[] = {
-+	[LPASS_AUDIO_SWR_RX_CGCR] =  { 0xa0, 1 },
-+	[LPASS_AUDIO_SWR_TX_CGCR] =  { 0xa8, 1 },
-+	[LPASS_AUDIO_SWR_WSA_CGCR] = { 0xb0, 1 },
-+};
-+
-+static const struct qcom_cc_desc lpass_audio_cc_reset_sc7280_desc = {
-+	.config = &lpass_audio_cc_sc7280_regmap_config,
-+	.resets = lpass_audio_cc_sc7280_resets,
-+	.num_resets = ARRAY_SIZE(lpass_audio_cc_sc7280_resets),
-+};
-+
- static const struct of_device_id lpass_audio_cc_sc7280_match_table[] = {
- 	{ .compatible = "qcom,sc7280-lpassaudiocc" },
- 	{ }
-@@ -741,6 +754,8 @@ static int lpass_audio_cc_sc7280_probe(struct platform_device *pdev)
- 		return ret;
- 	}
-
-+	ret = qcom_cc_probe_by_index(pdev, 1, &lpass_audio_cc_reset_sc7280_desc);
-+
- 	pm_runtime_mark_last_busy(&pdev->dev);
- 	pm_runtime_put_autosuspend(&pdev->dev);
- 	pm_runtime_put_sync(&pdev->dev);
-diff --git a/drivers/clk/qcom/lpasscorecc-sc7280.c b/drivers/clk/qcom/lpasscorecc-sc7280.c
-index 1f1f1bd1b68e..6ad19b06b1ce 100644
---- a/drivers/clk/qcom/lpasscorecc-sc7280.c
-+++ b/drivers/clk/qcom/lpasscorecc-sc7280.c
-@@ -190,6 +190,19 @@ static struct clk_rcg2 lpass_core_cc_ext_if1_clk_src = {
- 	},
- };
-
-+static struct clk_rcg2 lpass_core_cc_ext_mclk0_clk_src = {
-+	.cmd_rcgr = 0x20000,
-+	.mnd_width = 8,
-+	.hid_width = 5,
-+	.parent_map = lpass_core_cc_parent_map_0,
-+	.freq_tbl = ftbl_lpass_core_cc_ext_if0_clk_src,
-+	.clkr.hw.init = &(const struct clk_init_data){
-+		.name = "lpass_core_cc_ext_mclk0_clk_src",
-+		.parent_data = lpass_core_cc_parent_data_0,
-+		.num_parents = ARRAY_SIZE(lpass_core_cc_parent_data_0),
-+		.ops = &clk_rcg2_ops,
-+	},
-+};
-
- static struct clk_branch lpass_core_cc_core_clk = {
- 	.halt_reg = 0x1f000,
-@@ -283,6 +296,24 @@ static struct clk_branch lpass_core_cc_lpm_mem0_core_clk = {
- 	},
- };
-
-+static struct clk_branch lpass_core_cc_ext_mclk0_clk = {
-+	.halt_reg = 0x20014,
-+	.halt_check = BRANCH_HALT,
-+	.clkr = {
-+		.enable_reg = 0x20014,
-+		.enable_mask = BIT(0),
-+		.hw.init = &(const struct clk_init_data){
-+			.name = "lpass_core_cc_ext_mclk0_clk",
-+			.parent_hws = (const struct clk_hw*[]){
-+				&lpass_core_cc_ext_mclk0_clk_src.clkr.hw,
-+			},
-+			.num_parents = 1,
-+			.flags = CLK_SET_RATE_PARENT,
-+			.ops = &clk_branch2_ops,
-+		},
-+	},
-+};
-+
- static struct clk_branch lpass_core_cc_sysnoc_mport_core_clk = {
- 	.halt_reg = 0x23000,
- 	.halt_check = BRANCH_HALT_VOTED,
-@@ -326,6 +357,8 @@ static struct clk_regmap *lpass_core_cc_sc7280_clocks[] = {
- 	[LPASS_CORE_CC_LPM_CORE_CLK] = &lpass_core_cc_lpm_core_clk.clkr,
- 	[LPASS_CORE_CC_LPM_MEM0_CORE_CLK] = &lpass_core_cc_lpm_mem0_core_clk.clkr,
- 	[LPASS_CORE_CC_SYSNOC_MPORT_CORE_CLK] = &lpass_core_cc_sysnoc_mport_core_clk.clkr,
-+	[LPASS_CORE_CC_EXT_MCLK0_CLK] = &lpass_core_cc_ext_mclk0_clk.clkr,
-+	[LPASS_CORE_CC_EXT_MCLK0_CLK_SRC] = &lpass_core_cc_ext_mclk0_clk_src.clkr,
- };
-
- static struct regmap_config lpass_core_cc_sc7280_regmap_config = {
---
-2.17.1
+base-commit: babf0bb978e3c9fce6c4eba6b744c8754fd43d8e
+-- 
+An old man doll... just what I always wanted! - Clara
 
