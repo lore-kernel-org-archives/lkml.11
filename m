@@ -2,68 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 563F2C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 11:46:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94209C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 11:46:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344879AbiEZLqH (ORCPT
+        id S1347399AbiEZLqM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 07:46:07 -0400
+        Thu, 26 May 2022 07:46:12 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347353AbiEZLo4 (ORCPT
+        with ESMTP id S1347293AbiEZLoj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 07:44:56 -0400
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 255ABD029E
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 04:44:42 -0700 (PDT)
-Received: by mail-pg1-x534.google.com with SMTP id x12so1124120pgj.7
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 04:44:41 -0700 (PDT)
+        Thu, 26 May 2022 07:44:39 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD3FDD4123
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 04:44:28 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id pq9-20020a17090b3d8900b001df622bf81dso1498543pjb.3
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 04:44:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Ea7OeFJXlMpFcPLCRl9ByzN+8R9kDLKU8gAyymKSibQ=;
-        b=M6bRg+ULJ96LPwVQ7+5mReEW6ZqyIV3Sw0mUefHoAbPfZkGsn0gU5r1icGCEjYkHeS
-         LZYzMws85x1JW1ZIVi11yxmJEZt9nPXRXAzUBUiJRa2eWGg/HEfMPMQxVATCKPOD+jrx
-         OdWVyEgzxpUBJzJcm/blvmIT/3RPW2UkGXrAjD/+ovhUmhml8N2JhwpaDLxJjLWK+yOA
-         UT0x1q9jF/CQPOmxPMdb8UK++Y+myFIm6xEWiyNyKBiN3dqv8crhWv2uDYjW7mTv+eVX
-         TZdFxHmBplkzg1lzvyh+YKaqrQJ/aFOtFsAR4POd2B9XTCgETMvLsA8VT1Wf3E+qIgb+
-         rZaw==
+        bh=FnikfB78qN2eYHl4FR7LPxdyycjHoZ9Hgqa39kltcXQ=;
+        b=iLa9+C/z31eA64sQJIWGTLNaXb2oUnaLppIs8+xdJ+XS+eVWwbWjVMA1xaMtm/g9zp
+         fQK8S0t8bACe27kKS2NezrOJtXk1UeWGGwn9TKiXdBS0+LJRJhibcPm7xOP8qWahqAE9
+         wrwX6s2oR2W5dBzZQOMePd7wqgxPgGxbxcC2u/tuK3e11BTC6KPzWM7Bf1KBb+FhBuB7
+         XeyVcxMN8gM1gxShGrX9udLdNm6cM8mbfl1U3BpT40Mdaxu0QX0mapb1COoDfpVtox3v
+         fVzHqig8Cr/AdA65AdyNFmbPd+6yQyBnL/vqPuOzSmFD+PI2I0dgpW98NtFROFkI168M
+         LhVg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Ea7OeFJXlMpFcPLCRl9ByzN+8R9kDLKU8gAyymKSibQ=;
-        b=DX63RWM9aPEX+3j1+IeaxsnE77f0QwiuDlLxlsEqcODO4re8uDMQGho1j60DUp3oeh
-         +Hboa0G5IKtVw9xtxsb2pqlMv5lhbgXHAPrIsLuj7w+WEUHXYYEg3aeWslC/7mCRrMF7
-         PEb/8dOgGjxMJUl192Q9csHwSM+N7dFCn3HfFbZ+sO/SEaWfinPWTyhb2qgYBEbiLMcs
-         q5yrc+Gc8SHGx9Nco0+F0scdHJyhf4Vg1+I+CSGwKQNjJBCwEU5D0aEVeK5TptcGT/33
-         4xa9BpfV39xisxYnLbR8o1wA84V9mpYobMmyC4UT8ls5tRsyBepCvF5HxUKtQ9cwU+M4
-         5uPg==
-X-Gm-Message-State: AOAM531OdFjQvSaGCmzabZWjS8jnTZgM/D02m9iCOfSfLnmm36hL2jnF
-        tIQg773a4OKTafSa2voHAqoB816Z8V33cQ==
-X-Google-Smtp-Source: ABdhPJxmzRiAXnitzctuPYAA9jUL7Rnfwu6jdDAlzlKlkWUlBLdlfPYGPy437OiWOPMUX61OXwUPFQ==
-X-Received: by 2002:a05:6a00:1d1d:b0:518:421c:b65e with SMTP id a29-20020a056a001d1d00b00518421cb65emr35712261pfx.43.1653565481268;
-        Thu, 26 May 2022 04:44:41 -0700 (PDT)
+        bh=FnikfB78qN2eYHl4FR7LPxdyycjHoZ9Hgqa39kltcXQ=;
+        b=Sr7y/+Ta2pNUlKgXPPZ8VhYFMG8zmuQ/csfrM7p6gjyFWZ7ZCLGYNIEzCmphxP07We
+         8zRIkaX9BD61JnF0yC16RJMRXExUK8PigMXQ6ToRs3bX4xu/+VTMuKG6+G1UY+4Whfyx
+         o1tVs4DA/ZqPWy9hzRWaGqOPIgpJXZAkAvaoeZP6z122ZibJJSIyvfl30QXmY5ItLnGy
+         ZlinLXRKtSeJJFBlHXgQl5QXReV6u76qtCWLsf5eV0duWxcJiA+sT+LKMVr8R3UN12n/
+         2ygTD7ODCDk2bwg3oxohLg0APsj1ZyCVuCs1CGkTXwnP7FGovoA2rf6yjuLE3Yz1C1dR
+         9Ixg==
+X-Gm-Message-State: AOAM5321NK9ocbb6TZ6MgyS8w8xe2WF+Z2tqOqnChJ8HIfq/r7JzrAsj
+        /5JFlHUp8qc+nOGl6cOa5ospsQ==
+X-Google-Smtp-Source: ABdhPJxxhjUF1JGPGdIx5+uHDoJrHMIiF47mG2/D6YAqtvdWuR0wXd119OG9/t5XyNMERogQGTBd8Q==
+X-Received: by 2002:a17:902:8f86:b0:162:22ff:496b with SMTP id z6-20020a1709028f8600b0016222ff496bmr19413781plo.105.1653565468446;
+        Thu, 26 May 2022 04:44:28 -0700 (PDT)
 Received: from localhost ([122.162.234.2])
-        by smtp.gmail.com with ESMTPSA id i13-20020a170902eb4d00b001635f9b6e2fsm1360265pli.61.2022.05.26.04.44.40
+        by smtp.gmail.com with ESMTPSA id w67-20020a623046000000b00518424f8922sm1294114pfw.77.2022.05.26.04.44.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 May 2022 04:44:40 -0700 (PDT)
+        Thu, 26 May 2022 04:44:28 -0700 (PDT)
 From:   Viresh Kumar <viresh.kumar@linaro.org>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
+To:     Viresh Kumar <vireshk@kernel.org>, Nishanth Menon <nm@ti.com>,
+        Stephen Boyd <sboyd@kernel.org>
 Cc:     Viresh Kumar <viresh.kumar@linaro.org>, linux-pm@vger.kernel.org,
         Vincent Guittot <vincent.guittot@linaro.org>,
         Rafael Wysocki <rjw@rjwysocki.net>,
-        Stephen Boyd <sboyd@kernel.org>, Nishanth Menon <nm@ti.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 24/31] serial: qcom: Migrate to dev_pm_opp_set_config()
-Date:   Thu, 26 May 2022 17:12:23 +0530
-Message-Id: <49aff8c5f72dae52ef7e9acb4f821d0c3e097813.1653564321.git.viresh.kumar@linaro.org>
+Subject: [PATCH 20/31] OPP: ti: Migrate to dev_pm_opp_set_config()
+Date:   Thu, 26 May 2022 17:12:19 +0530
+Message-Id: <bc6726196db7116065e7f6dffc6dfb1e50c77700.1653564321.git.viresh.kumar@linaro.org>
 X-Mailer: git-send-email 2.31.1.272.g89b43f80a514
 In-Reply-To: <cover.1653564321.git.viresh.kumar@linaro.org>
 References: <cover.1653564321.git.viresh.kumar@linaro.org>
@@ -80,32 +76,33 @@ Lets start using it.
 
 Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
 ---
- drivers/tty/serial/qcom_geni_serial.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/opp/ti-opp-supply.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index 1543a6028856..391fcc3a0f61 100644
---- a/drivers/tty/serial/qcom_geni_serial.c
-+++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -1331,6 +1331,9 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
- 	int irq;
- 	bool console = false;
- 	struct uart_driver *drv;
+diff --git a/drivers/opp/ti-opp-supply.c b/drivers/opp/ti-opp-supply.c
+index bd4771f388ab..a30825dc30cf 100644
+--- a/drivers/opp/ti-opp-supply.c
++++ b/drivers/opp/ti-opp-supply.c
+@@ -382,6 +382,9 @@ static int ti_opp_supply_probe(struct platform_device *pdev)
+ 	const struct of_device_id *match;
+ 	const struct ti_opp_supply_of_data *of_data;
+ 	int ret = 0;
 +	struct dev_pm_opp_config config = {
-+		.clk_name = "se",
++		.set_opp = ti_opp_supply_set_opp,
 +	};
  
- 	if (of_device_is_compatible(pdev->dev.of_node, "qcom,geni-debug-uart"))
- 		console = true;
-@@ -1414,7 +1417,7 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
- 	if (of_property_read_bool(pdev->dev.of_node, "cts-rts-swap"))
- 		port->cts_rts_swap = true;
+ 	match = of_match_device(ti_opp_supply_of_match, dev);
+ 	if (!match) {
+@@ -405,8 +408,7 @@ static int ti_opp_supply_probe(struct platform_device *pdev)
+ 			return ret;
+ 	}
  
--	ret = devm_pm_opp_set_clkname(&pdev->dev, "se");
-+	ret = devm_pm_opp_set_config(&pdev->dev, &config);
+-	ret = PTR_ERR_OR_ZERO(dev_pm_opp_register_set_opp_helper(cpu_dev,
+-								 ti_opp_supply_set_opp));
++	ret = PTR_ERR_OR_ZERO(dev_pm_opp_set_config(cpu_dev, &config));
  	if (ret)
- 		return ret;
- 	/* OPP table is optional */
+ 		_free_optimized_voltages(dev, &opp_data);
+ 
 -- 
 2.31.1.272.g89b43f80a514
 
