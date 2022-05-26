@@ -2,99 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9FCBC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 16:06:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDE3FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 16:08:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348116AbiEZQGa (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 12:06:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40630 "EHLO
+        id S236462AbiEZQIa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 12:08:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348096AbiEZQGX (ORCPT
+        with ESMTP id S1347434AbiEZQIZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 12:06:23 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 51584E08F
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 09:06:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653581181;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=/Y46BWpHrd9tkntXCOk51y3fuj4rMYPJnHD26/b0FwE=;
-        b=i9EAyOChnG92hjAu1CAYm8W/7je8LWgGv7qpzlNSr2FX20YaDrEz/mDpPmPwqVooHTPNxl
-        jiwfQ1579gUs+UQmwsI5o7ByzX/c/7I9St+ax46vKz7EqMO82MTUWiwN7fgDr68/QGBfnm
-        Y1SkWKPB/cR8Idh0VeJt6oxWuTGrY6g=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-669-M_BZ9zLKNcWY5QZK7ylQbg-1; Thu, 26 May 2022 12:06:16 -0400
-X-MC-Unique: M_BZ9zLKNcWY5QZK7ylQbg-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 92956100BAB8;
-        Thu, 26 May 2022 16:06:16 +0000 (UTC)
-Received: from pauld.bos.com (dhcp-17-51.bos.redhat.com [10.18.17.51])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 709B4400F3E8;
-        Thu, 26 May 2022 16:06:16 +0000 (UTC)
-From:   Phil Auld <pauld@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Valentin Schneider <vschneid@redhat.com>
-Subject: [PATCH v2 1/2] cpuhp: make target_store() a nop when target == state
-Date:   Thu, 26 May 2022 12:06:14 -0400
-Message-Id: <20220526160615.7976-2-pauld@redhat.com>
-In-Reply-To: <20220526160615.7976-1-pauld@redhat.com>
-References: <20220526160615.7976-1-pauld@redhat.com>
+        Thu, 26 May 2022 12:08:25 -0400
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5876818B02
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 09:08:23 -0700 (PDT)
+Received: by mail-pg1-x536.google.com with SMTP id g184so1715989pgc.1
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 09:08:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=c1Bktjyy5yJ48/4ouEx7iyf57Oc/MXH/iXvxQddSwqY=;
+        b=TG4xn66tfld7JgXJ99NFHNTFBy/Fa/PgxOABrwHjyvrHSkzB6WYiB2LwKkSu8YSgs3
+         DzNa+O5Yn5Gq42nfsi1YffVHYgdR/+S8s4R7jSB07TNYoCNwy5H2WinMRkOI8mylW8kk
+         QT8+hQuDfgdJywPgsRGmtYzZ5kArx76tGcQUiMIHpQx85rGCW1SqqX56K1h1+CZ43ob5
+         4Wd/6ZYwt9FYdhx+O0wyo0SVMg9Nq2auNMb8WH0yChC1jwKNUvkQQYBkUw/p58ty6Tfv
+         LW42xXWDPlW6rbkkqPC4l9q7CKBMX9aXCr7X8Psi1JoCZq29tec2Dj4hcZgrXn7KSSs/
+         WgkQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=c1Bktjyy5yJ48/4ouEx7iyf57Oc/MXH/iXvxQddSwqY=;
+        b=6ZeFzFxL6iXZmPQNv5SDQh1AXNNSNWYEOj8aMjmw3nCZ0fEYPVw8u7TqAgTvHoW5Kq
+         H1WX3iPSsoI6gMo/lxzmvZY9wTgnhP/UE6HRVruGHUCTnFwWvHuHGIX0sFD+rLw/BbC6
+         i1MJ366sCMGBHrwFAgUCUIp4rMt77LKIyMzSjttpZ6QnV0pkGYzCl+yHb8DEaVc+TDd4
+         G7rmBd+3fkf0u3sD5/IZTEzySc61Az+Kqd2Cyo7ts0QWYgQalZ9ocJYZzvf+oHK/TXjx
+         kGAyMTCMtkc9XNhBVHHSIn0BgYyCorjrlDt/0JHioQbm6AX3QN7+yf9G/+Cfib5w/ovG
+         FrcQ==
+X-Gm-Message-State: AOAM533sk75N6SKRLdu48m7fHLu6k+8oeDcXnPEcEemcY95cqZSBWdoR
+        OPWgokQbxzQRVjiQQQnHUHKOKA==
+X-Google-Smtp-Source: ABdhPJzhCgX4b/z0L+UTtDS+3Sl4/75IHeHEbzY0Xzo3Wl9favASavx82GN1vnqWmi6FTV58ROfr1g==
+X-Received: by 2002:a63:f705:0:b0:3fa:9d26:f4ef with SMTP id x5-20020a63f705000000b003fa9d26f4efmr13344938pgh.613.1653581302725;
+        Thu, 26 May 2022 09:08:22 -0700 (PDT)
+Received: from leoy-ThinkPad-X240s (n058152048195.netvigator.com. [58.152.48.195])
+        by smtp.gmail.com with ESMTPSA id k12-20020a170902d58c00b0016366fbc155sm1695092plh.255.2022.05.26.09.08.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 May 2022 09:08:22 -0700 (PDT)
+Date:   Fri, 27 May 2022 00:08:17 +0800
+From:   Leo Yan <leo.yan@linaro.org>
+To:     Carsten Haitzler <carsten.haitzler@foss.arm.com>
+Cc:     linux-kernel@vger.kernel.org, coresight@lists.linaro.org,
+        suzuki.poulose@arm.com, mathieu.poirier@linaro.org,
+        mike.leach@linaro.org, linux-perf-users@vger.kernel.org,
+        acme@kernel.org
+Subject: Re: [PATCH 3/3] perf test: Add coresight tests to guage quality of
+ data generated
+Message-ID: <20220526160817.GE795802@leoy-ThinkPad-X240s>
+References: <20220309122859.31487-1-carsten.haitzler@foss.arm.com>
+ <20220309122859.31487-3-carsten.haitzler@foss.arm.com>
+ <20220410083041.GA184647@leoy-ThinkPad-X240s>
+ <050209c2-c784-e255-4e75-5c8674c5cfe0@foss.arm.com>
+ <20220526082039.GA795802@leoy-ThinkPad-X240s>
 MIME-Version: 1.0
-Content-type: text/plain
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220526082039.GA795802@leoy-ThinkPad-X240s>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-writing the current state back in hotplug/target calls cpu_down()
-which will set cpu dying even when it isn't and then nothing will
-ever clear it. A stress test that reads values and writes them back
-for all cpu device files in sysfs will trigger the BUG() in
-select_fallback_rq once all cpus are marked as dying.
+On Thu, May 26, 2022 at 04:20:39PM +0800, Leo Yan wrote:
 
-kernel/cpu.c::target_store()
-	...
-        if (st->state < target)
-                ret = cpu_up(dev->id, target);
-        else
-                ret = cpu_down(dev->id, target);
+[...]
 
-cpu_down() -> cpu_set_state()
-	 bool bringup = st->state < target;
-	 ...
-	 if (cpu_dying(cpu) != !bringup)
-		set_cpu_dying(cpu, !bringup);
+> Yes, my Juno board has 8GB but I also have DB410c with 1GB with quad
+> coes [1].  I am still concern for 256MB buffer size, it's not friendly for
+> embedded system, and even not good for server.  For example, if we run
+> this testing on Arm server with 96 cores (like Hisilicon D06 board),
+> then we need the buffer size is:
+> 
+>   256MiB * 96 = 16GiB
 
-Fix this by letting state==target fall through in the target_store()
-conditional.
-
-Signed-off-by: Phil Auld <pauld@redhat.com>
----
- kernel/cpu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/kernel/cpu.c b/kernel/cpu.c
-index d0a9aa0b42e8..cdb6ac10ad94 100644
---- a/kernel/cpu.c
-+++ b/kernel/cpu.c
-@@ -2315,7 +2315,7 @@ static ssize_t target_store(struct device *dev, struct device_attribute *attr,
- 
- 	if (st->state < target)
- 		ret = cpu_up(dev->id, target);
--	else
-+	else if (st->state > target)
- 		ret = cpu_down(dev->id, target);
- out:
- 	unlock_device_hotplug();
--- 
-2.18.0
-
+Correct for my bad math... here should be 256MiB * 96 = 24GiB.
