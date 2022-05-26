@@ -2,133 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3136C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 18:55:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EF37C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 18:56:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348535AbiEZSzk (ORCPT
+        id S1348670AbiEZS4I (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 14:55:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57294 "EHLO
+        Thu, 26 May 2022 14:56:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348652AbiEZSzf (ORCPT
+        with ESMTP id S1348649AbiEZS4D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 14:55:35 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43019DE307
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 11:55:30 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id t5so2882367edc.2
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 11:55:30 -0700 (PDT)
+        Thu, 26 May 2022 14:56:03 -0400
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94BD2CC155
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 11:56:01 -0700 (PDT)
+Received: by mail-pf1-x434.google.com with SMTP id y189so2395835pfy.10
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 11:56:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=RRDgXcTy3sRijo/6Cj3EIWOrdOUTZxQ9iUE40zIwF5Y=;
-        b=myskOeeYUV5tH0W3pTOS182i92Rz6Mea2Rx0Y1TC+14z4SyW2S4zaH9uLwvpi+C7GS
-         p+UfOEYmmeerBnPBR+bgtxK076YTjyMIEo3zAcVYfkPYKplsykdCQb+EaGGD7BSFETW8
-         GSPd+8EHTKpLkJXlrEOwVUjfN/dMs/SnbT1mHZUo4mBa++kdpcNr5w57Rw8SDSpnSkeZ
-         7Gd6Yqz8+ZbmGJkUf4RSI4GhmhK/WirSgPm2JBS1QSVZdDmXPcQpL6LkieeU6y7LNFVC
-         h5VKbIRmq2vKaTvsh7NsFnFxil4+oahmD+nS0QTGwip+cc72oPsYdXhu/oVyR0wYPFvJ
-         0V9Q==
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=C23ku60u5EbcBtHDM0AvRYZ9fyGdZC0fsc/OWH0Q2Bo=;
+        b=CzDVt5+0oQ4YdZ25DftcUtcOo9puptREsJGh6kStUtHLsiG3a51UKOFcBCQWGAHz8L
+         LsewvqTAm4PAJUSPfIu1urJRNcxxW3Z3M63Caa0SOzfZcC9qJtrmmL5TjVj2Bpp2oaLE
+         l0d771pItRmXXUKBQWqym60FEuEeQHD6iI4UR2HHqDLIsQ8UdhKAR8db2Arg8Yj6S5kS
+         5e7yumUXd2sjWycHiDgyverKbEfaQeaQdXoyNjtIxBE22rFzXSm2PMxLG7gQ36+DwMws
+         CL6EqB3Di7KUS6Jd8CaW9IeSdzfqvK6+U8JUTLEKaN8Tq0RM1+jmMfyYSBko6lg/szMh
+         Yr4w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=RRDgXcTy3sRijo/6Cj3EIWOrdOUTZxQ9iUE40zIwF5Y=;
-        b=fU2RqAghgTl3mZNIY3UUv14H1MkPpq8h5lxrrmd9CmS/lhy31rGyGQA51cBRN1+zJJ
-         xyv4H8bJp3Ty6OPjy+lS0suhH0YY3heWJqoVytJCwxaUe4ut981cIbJaW2SSAIcB++Ff
-         Nc9SCNgoDhS+oZa3cFdjH7vkjtKu0X5REKtT5bi513+UYHqE5CSil45x6KhgYIw/fiqh
-         ZejD3fIP9IPqLOQFaeUdvfndgCgiLVBTFxQTHpUmnFx4gdssOtDFU95Tu6l1gMdYw7gl
-         K97+tGca3UeAUxCmE7iLqxqRqkfhmYhOqo4E1ee0teYcs+2Hbt45D46dy8N15lj51zuk
-         NbNw==
-X-Gm-Message-State: AOAM5322k1kOEA09L5fkvDNoVIK7ByjnoZQlYllgnDrCsapoXHquS73a
-        UhbYEO9YtibAlZafHq5YzyI=
-X-Google-Smtp-Source: ABdhPJwq/m8oGHmbY30OQtqpIZBDBVA8dWCs7Tw0XNUvUWVcTv1u/C1hOnihtN2+BXyeluIyeDhxHg==
-X-Received: by 2002:a05:6402:3594:b0:42b:65dd:489 with SMTP id y20-20020a056402359400b0042b65dd0489mr23698268edc.222.1653591328713;
-        Thu, 26 May 2022 11:55:28 -0700 (PDT)
-Received: from localhost.localdomain (93-103-18-160.static.t-2.net. [93.103.18.160])
-        by smtp.gmail.com with ESMTPSA id yr16-20020a170907335000b006f3ef214e42sm733860ejb.168.2022.05.26.11.55.27
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=C23ku60u5EbcBtHDM0AvRYZ9fyGdZC0fsc/OWH0Q2Bo=;
+        b=6bj7vlA+j0Fw93mpmHr9cm8gM4fkpwzFhgQ4Wzd5gqQFDCWZtpRHpt+43KJL33YdSa
+         ChRvDvk28+dKnswN89Qa9sME5vtWI4zMTqSvA1r+DlIQs2oMHbrvaH1JsN0WoJXuY+/r
+         DJ4IN0COa8spQVmI/t5eIvWhvZ7Yq9yLQ6YOn9dcOfFiEVpkK+L8btdiLzVUnB/KQ865
+         VPqDt157fheYSyQTIzrTL3U3UNuMH6vh8IBw4A6asu+HXDnABoYGL8rQvuQIj2WBLw59
+         AdteS0fApFg+xgbcwkwDCzsK8V1rDXwkWKN6Vy3HdTvfS/JBTsSzek+PuxrpCnTafQk6
+         rnfQ==
+X-Gm-Message-State: AOAM532y+jcH48xaDijLG9dHiIp97g9GaAZiXRwxvTIMHCrUqRT3VkGP
+        q8nhhAYTeZ7AVCr7NBIbayYeJ0mPLeU=
+X-Google-Smtp-Source: ABdhPJxZMhMAjhxQZZDv6TJ/bk+5+JOPLY0CGxLMkTHmSiZzWwIMhhfaXuT0C2q9BLRWk+Lauv9guA==
+X-Received: by 2002:a63:d04f:0:b0:3f2:76be:bf2e with SMTP id s15-20020a63d04f000000b003f276bebf2emr33624888pgi.15.1653591360823;
+        Thu, 26 May 2022 11:56:00 -0700 (PDT)
+Received: from localhost ([2620:10d:c090:400::4:aafd])
+        by smtp.gmail.com with ESMTPSA id q21-20020aa79615000000b0050dc76281ecsm1857273pfg.198.2022.05.26.11.56.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 May 2022 11:55:27 -0700 (PDT)
-From:   Uros Bizjak <ubizjak@gmail.com>
-To:     x86@kernel.org, linux-kernel@vger.kernel.org
-Cc:     Uros Bizjak <ubizjak@gmail.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>
-Subject: [PATCH v2] locking/lockref/x86: Enable ARCH_USE_CMPXCHG_LOCKREF for X86_CMPXCHG64
-Date:   Thu, 26 May 2022 20:54:30 +0200
-Message-Id: <20220526185430.59120-1-ubizjak@gmail.com>
-X-Mailer: git-send-email 2.35.3
+        Thu, 26 May 2022 11:56:00 -0700 (PDT)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Thu, 26 May 2022 08:55:58 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Wonhyuk Yang <vvghjk1234@gmail.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Baik Song An <bsahn@etri.re.kr>,
+        Hong Yeon Kim <kimhy@etri.re.kr>,
+        Taeung Song <taeung@reallinux.co.kr>, linuxgeek@linuxgeek.io,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] workqueue: Fix type of cpu in trace event
+Message-ID: <Yo/NPkJW9vnuHBcr@slm.duckdns.org>
+References: <20220504023204.598531-1-vvghjk1234@gmail.com>
+ <20220524162912.0133006b@gandalf.local.home>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220524162912.0133006b@gandalf.local.home>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit bc08b449ee14ace4d869adaa1bb35a44ce68d775 enabled lockless
-reference count updates using cmpxchg() only for x86_64 and
-left x86_32 behind due to inability to detect support for
-cmpxchg8b instruction. Nowadays, we can use CONFIG_X86_CMPXCHG64
-for this purpose. Also, by using try_cmpxchg64() instead of cmpxchg()
-in CMPXCHG_LOOP macro, the compiler actually produces sane code,
-improving lockref_get_or_lock main loop from:
+On Tue, May 24, 2022 at 04:29:12PM -0400, Steven Rostedt wrote:
+> On Wed,  4 May 2022 11:32:03 +0900
+> Wonhyuk Yang <vvghjk1234@gmail.com> wrote:
+> 
+> > The trace event "workqueue_queue_work" use unsigned int type for
+> > req_cpu, cpu. This casue confusing cpu number like below log.
+> > 
+> > $ cat /sys/kernel/debug/tracing/trace
+> > cat-317  [001] ...: workqueue_queue_work: ... req_cpu=8192 cpu=4294967295
+> > 
+> > So, change unsigned type to signed type in the trace event. After
+> > applying this patch, cpu number will be printed as -1 instead of
+> > 4294967295 as folllows.
+> > 
+> 
+> I was going through my backlog of pending patches and came across this.
+> Note, that trace events are maintained by the subsystem they belong to.
+> This change is for workqueues, not tracing (as your subject correctly
+> states).
+> 
+> I Cc'd Tejun here as he maintains this code.
 
- 2a5:	8d 48 01             	lea    0x1(%eax),%ecx
- 2a8:	85 c0                	test   %eax,%eax
- 2aa:	7e 3c                	jle    2e8 <lockref_get_or_lock+0x78>
- 2ac:	8b 44 24 08          	mov    0x8(%esp),%eax
- 2b0:	8b 54 24 0c          	mov    0xc(%esp),%edx
- 2b4:	8b 74 24 04          	mov    0x4(%esp),%esi
- 2b8:	f0 0f c7 0e          	lock cmpxchg8b (%esi)
- 2bc:	8b 4c 24 0c          	mov    0xc(%esp),%ecx
- 2c0:	89 c3                	mov    %eax,%ebx
- 2c2:	89 d0                	mov    %edx,%eax
- 2c4:	8b 74 24 08          	mov    0x8(%esp),%esi
- 2c8:	31 ca                	xor    %ecx,%edx
- 2ca:	31 de                	xor    %ebx,%esi
- 2cc:	09 f2                	or     %esi,%edx
- 2ce:	75 40                	jne    310 <lockref_get_or_lock+0xa0>
+I'll apply it to the wq tree once rc1 drops.
 
-to:
+Thanks.
 
-  2d:	8d 4f 01             	lea    0x1(%edi),%ecx
-  30:	85 ff                	test   %edi,%edi
-  32:	7e 1c                	jle    50 <lockref_get_or_lock+0x50>
-  34:	f0 0f c7 0e          	lock cmpxchg8b (%esi)
-  38:	75 36                	jne    70 <lockref_get_or_lock+0x70>
-
-Signed-off-by: Uros Bizjak <ubizjak@gmail.com>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
----
-v2:
- - select ARCH_USE_CMPXCHG_LOCKREF for CONFIG_X86_CMPXCHG which
-   is unconditionally defined for X86_64
----
- arch/x86/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 6f59517c4356..cfc42f370419 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -27,7 +27,6 @@ config X86_64
- 	# Options that are inherently 64-bit kernel only:
- 	select ARCH_HAS_GIGANTIC_PAGE
- 	select ARCH_SUPPORTS_INT128 if CC_HAS_INT128
--	select ARCH_USE_CMPXCHG_LOCKREF
- 	select HAVE_ARCH_SOFT_DIRTY
- 	select MODULES_USE_ELF_RELA
- 	select NEED_DMA_MAP_STATE
-@@ -111,6 +110,7 @@ config X86
- 	select ARCH_SUPPORTS_LTO_CLANG
- 	select ARCH_SUPPORTS_LTO_CLANG_THIN
- 	select ARCH_USE_BUILTIN_BSWAP
-+	select ARCH_USE_CMPXCHG_LOCKREF		if X86_CMPXCHG64
- 	select ARCH_USE_MEMTEST
- 	select ARCH_USE_QUEUED_RWLOCKS
- 	select ARCH_USE_QUEUED_SPINLOCKS
 -- 
-2.35.3
-
+tejun
