@@ -2,59 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D377BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 21:24:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49F07C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 21:24:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349226AbiEZVYn (ORCPT
+        id S1345544AbiEZVYs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 17:24:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44516 "EHLO
+        Thu, 26 May 2022 17:24:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348998AbiEZVYY (ORCPT
+        with ESMTP id S1349152AbiEZVYc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 17:24:24 -0400
-Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A097587A25
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 14:24:22 -0700 (PDT)
-Received: by mail-pj1-x1049.google.com with SMTP id g9-20020a17090a3c8900b001e0b21c4d68so1664478pjc.9
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 14:24:22 -0700 (PDT)
+        Thu, 26 May 2022 17:24:32 -0400
+Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 690C2C03AA
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 14:24:26 -0700 (PDT)
+Received: by mail-pf1-x44a.google.com with SMTP id z186-20020a6233c3000000b00510a6bc2864so1486487pfz.10
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 14:24:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=PHlgII++2wIvs6hDrvRGyxpTlkYLyG2XZsv/tF8ktec=;
-        b=EjR3CvFdD4qmlvt2dipOIuLCgt9cB3TxZLX5sW8gDxj1N8MgeukB2KSfi/Wd5x2+3V
-         ltKUp9vKh5QUHtlVZ4NMPI7aQyK2f51a/p7hIlK/d7diGjA53aQbgMavD+zhUrHOO0C1
-         Pt9YMGdQFMlHSSwSNmsczu0nbjX2665XijE+VPVJC7Vt2xvRxPs3wGR3Kw0a3t2mxYNV
-         lL2QIM1nxqtarHU6Ruu98837OKk+1fSmEaVbICbmvZM6u5uVP8jpu8iMqnnx4Z4Y+Lx8
-         HLSvHmSilB4NSH9tWVJDVmWMJoNQUF1qT7JYLFzMHc7ANM2c5oR7ZSB2U9NsuXPbjG2j
-         KszQ==
+        bh=vRAWGApnZo9PQoKSv+ZEImJz7U3HwflIO0rVPe9gUZU=;
+        b=AuzYwvO+aFV3coHvl7K8KwGsYi6DGC0TkiEteCchpLesVODaU452xnHzHBJREb8Jbr
+         2aGV5xDy4pWsobXF7xO2yRHmoYLNtJKJHnYJ0V8UmMwip981d7pD4jNF5vhqtUmPkWr4
+         eANCrVZAUXZ7ZVOwzKTVdyHTRsMc12HjplmVvqUV46xFfqIlLNQ36TqSDqNAOBC9PlfQ
+         QAsOKQQYg6EuAwHZMGFY5tJ7OmiP18H5E5XVSklljJ8wBLIv1H3mddfjE5lAbGyBwIdA
+         lsJ2mXx4v/foETyFGjPDoN034bzZSwe+07TXR+9mvhmv0gVRQ6+3Pn9X5QkAeXGAFF5S
+         pelA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=PHlgII++2wIvs6hDrvRGyxpTlkYLyG2XZsv/tF8ktec=;
-        b=Q+HDHvIUiaC86N1viD/BdrpT6D3VrrXAlBDZq07l5IGWJ806M4lMqc/TvWoUV/GKVA
-         Pfu1WGhiZH5dtO8Y+faWpiFRoutQst5uXU2RXZ99SqVDUK6fQl8NiRU2xO2pk/LTOk92
-         b+QxmcCB/EPtZZyGcYDDsrdWoq1XKCgAJmmwt/Pk31oOUPTY7uvmwYBSF/QVnAfP9CbG
-         FysmmJjCr5xGOCWANrctQd8+GH2CayoZgCOIPTaec8GZdJKJsjSXyvZeyScRWMQ5WmI/
-         rqXKtiRKc7/u9E6tDVW8KIVIoO8Q7MJ4TfOl6ZQZvufMBKrrMsZWnrYw93bhm4qXesiR
-         InEg==
-X-Gm-Message-State: AOAM532xRBZncvF4XLTvanHP1jZe6pjp9liHDACaD8MWNANOXxM4TBMq
-        eVXtHvCUzsY7+eGhWhVLtY2g531TY2M=
-X-Google-Smtp-Source: ABdhPJw/ccwDmeY7jf7RVD+CTb+pd3p8Uic7RhBWSbMGkZIbC9D4edge/H18CR7gVRPN4L8jAPWVcX7Knck=
+        bh=vRAWGApnZo9PQoKSv+ZEImJz7U3HwflIO0rVPe9gUZU=;
+        b=m8K3OnP+IcVmBwCvveLyh9fOqgpwdkIpYNLMRJhZ2mUeZ8IBxW3dDuXYtzhjhTR9Yd
+         s4w6FhaelFbFSk3kULyTKG+jadJt4O5lXrH7i6lPnmW+pTYUrhAmSpACzYo041qxrW0Y
+         C9pJ09eQtjQQI3ivK88JA0BqbADH3vIPME9ysYejX34NsFkj7E6958SS00Mr9vsb/rzZ
+         Yo0OjlD4cuQixvsOzYQqOHUHD4UNwVYnkvynjIUAzkRfg9+WJfcSNm0Zn97MgdGUGhFU
+         RHnZmlXd1C4KTOO2EXxnHKOoVGoZTijE+xEN/HcXk0yNlAclwX5I5Flc+NTusR1UDgnE
+         PDUw==
+X-Gm-Message-State: AOAM5320rre/8RRJev4vinc+mZgZcR3WycT7YVu3fxiGqH2rPHvynean
+        /aoSaSEHQV3Sd6Vz/MXTec/shBuQckE=
+X-Google-Smtp-Source: ABdhPJyvAr6xUQFYgm5WV3rKJQ4tk4S5ntWPyBHIlSXKk1BBeLTAu2f6WznnIhnvLiAHU4OPrsZPctfEhSM=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a63:86c7:0:b0:3fb:a6ea:b73a with SMTP id
- x190-20020a6386c7000000b003fba6eab73amr367971pgd.510.1653600262128; Thu, 26
- May 2022 14:24:22 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a65:6bce:0:b0:3f2:5f88:6f7d with SMTP id
+ e14-20020a656bce000000b003f25f886f7dmr34957881pgw.253.1653600265524; Thu, 26
+ May 2022 14:24:25 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Thu, 26 May 2022 21:08:12 +0000
+Date:   Thu, 26 May 2022 21:08:14 +0000
 In-Reply-To: <20220526210817.3428868-1-seanjc@google.com>
-Message-Id: <20220526210817.3428868-4-seanjc@google.com>
+Message-Id: <20220526210817.3428868-6-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220526210817.3428868-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH v2 3/8] KVM: x86: Omit VCPU_REGS_RIP from emulator's _regs array
+Subject: [PATCH v2 5/8] KVM: x86: Reduce the number of emulator GPRs to '8'
+ for 32-bit KVM
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -69,93 +70,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Omit RIP from the emulator's _regs array, which is used only for GPRs,
-i.e. registers that can be referenced via ModRM and/or SIB bytes.  The
-emulator uses the dedicated _eip field for RIP, and manually reads from
-_eip to handle RIP-relative addressing.
+Reduce the number of GPRs emulated by 32-bit KVM from 16 to 8.  KVM does
+not support emulating 64-bit mode on 32-bit host kernels, and so should
+never generate accesses to R8-15.
 
-To avoid an even bigger, slightly more dangerous change, hardcode the
-number of GPRs to 16 for the time being even though 32-bit KVM's emulator
-technically should only have 8 GPRs.  Add a TODO to address that in a
-future commit.
+Opportunistically use NR_EMULATOR_GPRS in rsm_load_state_{32,64}() now
+that it is precise and accurate for both flavors.
 
-See also the comments above the read_gpr() and write_gpr() declarations,
-and obviously the handling in writeback_registers().
-
-No functional change intended.
+Wrap the definition with full #ifdef ugliness; sadly, IS_ENABLED()
+doesn't guarantee a compile-time constant as far as BUILD_BUG_ON() is
+concerned.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- arch/x86/kvm/emulate.c     | 10 +++++-----
- arch/x86/kvm/kvm_emulate.h | 13 ++++++++++++-
- 2 files changed, 17 insertions(+), 6 deletions(-)
+ arch/x86/kvm/emulate.c     | 4 ++--
+ arch/x86/kvm/kvm_emulate.h | 7 ++++---
+ 2 files changed, 6 insertions(+), 5 deletions(-)
 
 diff --git a/arch/x86/kvm/emulate.c b/arch/x86/kvm/emulate.c
-index c58366ae4da2..c74c0fd3b860 100644
+index 5aaf1d1200af..77161f57c8d3 100644
 --- a/arch/x86/kvm/emulate.c
 +++ b/arch/x86/kvm/emulate.c
-@@ -247,8 +247,8 @@ enum x86_transfer_type {
+@@ -2441,7 +2441,7 @@ static int rsm_load_state_32(struct x86_emulate_ctxt *ctxt,
+ 	ctxt->eflags =             GET_SMSTATE(u32, smstate, 0x7ff4) | X86_EFLAGS_FIXED;
+ 	ctxt->_eip =               GET_SMSTATE(u32, smstate, 0x7ff0);
  
- static ulong reg_read(struct x86_emulate_ctxt *ctxt, unsigned nr)
- {
--	if (WARN_ON_ONCE(nr >= 16))
--		nr &= 16 - 1;
-+	if (WARN_ON_ONCE(nr >= NR_EMULATOR_GPRS))
-+		nr &= NR_EMULATOR_GPRS - 1;
+-	for (i = 0; i < 8; i++)
++	for (i = 0; i < NR_EMULATOR_GPRS; i++)
+ 		*reg_write(ctxt, i) = GET_SMSTATE(u32, smstate, 0x7fd0 + i * 4);
  
- 	if (!(ctxt->regs_valid & (1 << nr))) {
- 		ctxt->regs_valid |= 1 << nr;
-@@ -259,8 +259,8 @@ static ulong reg_read(struct x86_emulate_ctxt *ctxt, unsigned nr)
+ 	val = GET_SMSTATE(u32, smstate, 0x7fcc);
+@@ -2498,7 +2498,7 @@ static int rsm_load_state_64(struct x86_emulate_ctxt *ctxt,
+ 	u16 selector;
+ 	int i, r;
  
- static ulong *reg_write(struct x86_emulate_ctxt *ctxt, unsigned nr)
- {
--	if (WARN_ON_ONCE(nr >= 16))
--		nr &= 16 - 1;
-+	if (WARN_ON_ONCE(nr >= NR_EMULATOR_GPRS))
-+		nr &= NR_EMULATOR_GPRS - 1;
+-	for (i = 0; i < 16; i++)
++	for (i = 0; i < NR_EMULATOR_GPRS; i++)
+ 		*reg_write(ctxt, i) = GET_SMSTATE(u64, smstate, 0x7ff8 - i * 8);
  
- 	ctxt->regs_valid |= 1 << nr;
- 	ctxt->regs_dirty |= 1 << nr;
-@@ -278,7 +278,7 @@ static void writeback_registers(struct x86_emulate_ctxt *ctxt)
- 	unsigned long dirty = ctxt->regs_dirty;
- 	unsigned reg;
- 
--	for_each_set_bit(reg, &dirty, 16)
-+	for_each_set_bit(reg, &dirty, NR_EMULATOR_GPRS)
- 		ctxt->ops->write_gpr(ctxt, reg, ctxt->_regs[reg]);
- }
- 
+ 	ctxt->_eip   = GET_SMSTATE(u64, smstate, 0x7f78);
 diff --git a/arch/x86/kvm/kvm_emulate.h b/arch/x86/kvm/kvm_emulate.h
-index 8dff25d267b7..bc3f8295c8c8 100644
+index 3a65d6ea7fe6..034c845b3c63 100644
 --- a/arch/x86/kvm/kvm_emulate.h
 +++ b/arch/x86/kvm/kvm_emulate.h
-@@ -301,6 +301,17 @@ struct fastop;
+@@ -306,11 +306,12 @@ typedef void (*fastop_t)(struct fastop *);
+  * tracked/accessed via _eip, and except for RIP relative addressing, which
+  * also uses _eip, RIP cannot be a register operand nor can it be an operand in
+  * a ModRM or SIB byte.
+- *
+- * TODO: this is technically wrong for 32-bit KVM, which only supports 8 GPRs;
+- * R8-R15 don't exist.
+  */
++#ifdef CONFIG_X86_64
+ #define NR_EMULATOR_GPRS	16
++#else
++#define NR_EMULATOR_GPRS	8
++#endif
  
- typedef void (*fastop_t)(struct fastop *);
- 
-+/*
-+ * The emulator's _regs array tracks only the GPRs, i.e. excludes RIP.  RIP is
-+ * tracked/accessed via _eip, and except for RIP relative addressing, which
-+ * also uses _eip, RIP cannot be a register operand nor can it be an operand in
-+ * a ModRM or SIB byte.
-+ *
-+ * TODO: this is technically wrong for 32-bit KVM, which only supports 8 GPRs;
-+ * R8-R15 don't exist.
-+ */
-+#define NR_EMULATOR_GPRS	16
-+
  struct x86_emulate_ctxt {
  	void *vcpu;
- 	const struct x86_emulate_ops *ops;
-@@ -363,7 +374,7 @@ struct x86_emulate_ctxt {
- 	struct operand src2;
- 	struct operand dst;
- 	struct operand memop;
--	unsigned long _regs[NR_VCPU_REGS];
-+	unsigned long _regs[NR_EMULATOR_GPRS];
- 	struct operand *memopp;
- 	struct fetch_cache fetch;
- 	struct read_cache io_read;
 -- 
 2.36.1.255.ge46751e96f-goog
 
