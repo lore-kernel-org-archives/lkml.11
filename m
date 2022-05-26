@@ -2,814 +2,495 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 005EAC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 22:45:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCE19C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 22:46:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349340AbiEZWph (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 18:45:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55426 "EHLO
+        id S242890AbiEZWq0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 18:46:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349267AbiEZWp0 (ORCPT
+        with ESMTP id S231535AbiEZWqV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 18:45:26 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABA2CEAD28
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 15:45:22 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id i17-20020a259d11000000b0064cd3084085so2731746ybp.9
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 15:45:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=AnSyX/Sm99AXliSbWauBigEMtulFecNV4hCuFVa7Ezw=;
-        b=l76Z9Lr2pk9dqCXjKNkAD77DHtysk5WNI/UNbs6mRrAbSFjqAfhddDQrDZIo8BQHoC
-         mVa0kscHX/eAiwRkeMel+n0fLBHWWLJ8EQ3YXfVibSMUTF1r7FmqQhltUCGm87wtDUZ3
-         aGJ8oB8JdZSknCINvW5vysqhwDN4PuDbVoAvjVwCkVdnZzjT2Qraab4KxxV3kHlmfWHu
-         VKf06k281tw82zZ9OqA3Ezrf7+5X3yKGCxifnoiIrqeiVUOj5S493SiN1swgqcq08ZgX
-         rzq3BBPPR2UGQBS0f+mgm3h8/9QazFdp/89Zitusg+HhIB/u5z+tPykytRqXwff9SVaU
-         fIMA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=AnSyX/Sm99AXliSbWauBigEMtulFecNV4hCuFVa7Ezw=;
-        b=6VIVIDuTtDNKj6itC7CoJx//Ii93lP6ves22jkp2LUh5xkKng85ILyK6M4Lhm59nZi
-         eP069ulj1cI7D67dXJyVBbX2o1/wqnJVY6PtJYgp8cawnU0no7s5cu4HKeihaUkZGkk1
-         xcwiJlaD/m88FRMDHDeo7MWo4gBNHgHZKf+SQIzlAitVojP+nM7VLgRAQAhYJt3UsTjN
-         /FIOhEUVtVZHKs3wDrK0CPw8KvLZ70OABHTMNL82/txDha8ZsJXVsp1uaTlbvgAt8lRc
-         6D6rLxZkE5xTPpTWpuE57ydoSR+Lj2N8Ahm5IxkusDyBRb2jPo9KE3tZ5r3VI/ZjCBQ6
-         E9tg==
-X-Gm-Message-State: AOAM531aipodLEvtLcrrIiTkyXcsALW1jtOtU/u0jQYsVXnBmfnLMOIC
-        jvDwtrauDjxmy8U3dDXjyv90hwF2I2BH
-X-Google-Smtp-Source: ABdhPJx7QuyUZ5/OfEgJzIPLNaje7Zdsn2HMqKQsnIK9b97HEoLm+/GigeOmg0mhrez3U2kkSgzM/bxu3mQ9
-X-Received: from irogers.svl.corp.google.com ([2620:15c:2cd:202:4b39:e167:e698:7d4])
- (user=irogers job=sendgmr) by 2002:a25:41c8:0:b0:65b:1578:e11 with SMTP id
- o191-20020a2541c8000000b0065b15780e11mr324242yba.262.1653605121214; Thu, 26
- May 2022 15:45:21 -0700 (PDT)
-Date:   Thu, 26 May 2022 15:45:14 -0700
-In-Reply-To: <20220526224515.4088240-1-irogers@google.com>
-Message-Id: <20220526224515.4088240-2-irogers@google.com>
-Mime-Version: 1.0
-References: <20220526224515.4088240-1-irogers@google.com>
-X-Mailer: git-send-email 2.36.1.124.g0e6072fb45-goog
-Subject: [PATCH v5 1/2] perf stat: Add JSON output option
-From:   Ian Rogers <irogers@google.com>
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
-        Sandipan Das <sandipan.das@amd.com>,
-        Claire Jensen <cjense@google.com>, Alyssa Ross <hi@alyssa.is>,
-        Like Xu <likexu@tencent.com>,
-        James Clark <james.clark@arm.com>,
-        Florian Fischer <florian.fischer@muhq.space>,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        Claire Jensen <clairej735@gmail.com>
-Cc:     Stephane Eranian <eranian@google.com>,
-        Ian Rogers <irogers@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Thu, 26 May 2022 18:46:21 -0400
+Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [IPv6:2001:df5:b000:5::4])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98C39DE310
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 15:46:17 -0700 (PDT)
+Received: from svr-chch-seg1.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id D91572C01EA;
+        Thu, 26 May 2022 22:46:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
+        s=mail181024; t=1653605174;
+        bh=2OQjXeuUJ1wZ+Sm100HT7mP5tHZJIyOFU+qHpFGMSec=;
+        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
+        b=GUa+6RDBmo/+320fmpmux8HsRt8XqOtuK3IZD/Fgw81J7yIlMflJ/zTdMQ/6iMJ9x
+         T3JK5wGjfMn/Za1piHiYR+SDo/qhI2QGMq1vI4M5dA3uV7Fv6smcw/v11HaH7JauIf
+         7Kwb/umdCBAkP3FNUZrtJOkPkTFLuhjsmOLrrxcUSP7pK6shJRlxXvIiUbFNSJBEjN
+         jqN3zxRhgdjI22jchn9TpG5QyF0F0zIXGvG1kYQRoTDRO7q36a/yMCPJxzZdl5GKXC
+         06rF4ppucvBPHyA7wqm2BcOAe0gCU0ZMFtAI8S9ERR7UjwWg7wA2QVV7nf8XOngWW8
+         4S8IZFBDY2cig==
+Received: from svr-chch-ex1.atlnz.lc (Not Verified[2001:df5:b000:bc8::77]) by svr-chch-seg1.atlnz.lc with Trustwave SEG (v8,2,6,11305)
+        id <B629003360001>; Fri, 27 May 2022 10:46:14 +1200
+Received: from svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8::77) by
+ svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8::77) with Microsoft SMTP Server
+ (TLS) id 15.0.1497.36; Fri, 27 May 2022 10:46:14 +1200
+Received: from svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8]) by
+ svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8%12]) with mapi id
+ 15.00.1497.036; Fri, 27 May 2022 10:46:14 +1200
+From:   Chris Packham <Chris.Packham@alliedtelesis.co.nz>
+To:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
+        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
+        "will@kernel.org" <will@kernel.org>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "gregory.clement@bootlin.com" <gregory.clement@bootlin.com>,
+        "sebastian.hesselbarth@gmail.com" <sebastian.hesselbarth@gmail.com>,
+        "kostap@marvell.com" <kostap@marvell.com>,
+        "robert.marko@sartura.hr" <robert.marko@sartura.hr>,
+        "vadym.kochan@plvision.eu" <vadym.kochan@plvision.eu>,
+        Elad Nachman <enachman@marvell.com>,
+        Serhiy Pshyk <serhiy.pshyk@plvision.eu>
+CC:     "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH v8 2/3] arm64: dts: marvell: Add Armada 98DX2530 SoC and
+ RD-AC5X board
+Thread-Topic: [PATCH v8 2/3] arm64: dts: marvell: Add Armada 98DX2530 SoC and
+ RD-AC5X board
+Thread-Index: AQHYaLPUD+oibO1AYUujXl5i0rei+a0i7TGAgA4dCoA=
+Date:   Thu, 26 May 2022 22:46:13 +0000
+Message-ID: <048651c3-6dcf-4975-1729-d9e5fc81fd7c@alliedtelesis.co.nz>
+References: <20220515233047.531979-1-chris.packham@alliedtelesis.co.nz>
+ <20220515233047.531979-3-chris.packham@alliedtelesis.co.nz>
+ <8f710c99-3ed8-2603-1c4f-db4386bda587@alliedtelesis.co.nz>
+In-Reply-To: <8f710c99-3ed8-2603-1c4f-db4386bda587@alliedtelesis.co.nz>
+Accept-Language: en-NZ, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.32.1.11]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <FCE86041E35E9141977EF4074234288E@atlnz.lc>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-SEG-SpamProfiler-Analysis: v=2.3 cv=U+Hs8tju c=1 sm=1 tr=0 a=Xf/6aR1Nyvzi7BryhOrcLQ==:117 a=xqWC_Br6kY4A:10 a=oKJsc7D3gJEA:10 a=IkcTkHD0fZMA:10 a=oZkIemNP1mAA:10 a=UkVllhjyqDHyWLNHnckA:9 a=QEXdDO2ut3YA:10
+X-SEG-SpamProfiler-Score: 0
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Claire Jensen <cjense@google.com>
-
-CSV output is tricky to format and column layout changes are susceptible
-to breaking parsers. New JSON-formatted output has variable names to
-identify fields that are consistent and informative, making
-the output parseable.
-
-CSV output example:
-
-1.20,msec,task-clock:u,1204272,100.00,0.697,CPUs utilized
-0,,context-switches:u,1204272,100.00,0.000,/sec
-0,,cpu-migrations:u,1204272,100.00,0.000,/sec
-70,,page-faults:u,1204272,100.00,58.126,K/sec
-
-JSON output example:
-
-{"counter-value" : "3805.723968", "unit" : "msec", "event" :
-"cpu-clock", "event-runtime" : 3805731510100.00, "pcnt-running"
-: 100.00, "metric-value" : 4.007571, "metric-unit" : "CPUs utilized"}
-{"counter-value" : "6166.000000", "unit" : "", "event" :
-"context-switches", "event-runtime" : 3805723045100.00, "pcnt-running"
-: 100.00, "metric-value" : 1.620191, "metric-unit" : "K/sec"}
-{"counter-value" : "466.000000", "unit" : "", "event" :
-"cpu-migrations", "event-runtime" : 3805727613100.00, "pcnt-running"
-: 100.00, "metric-value" : 122.447136, "metric-unit" : "/sec"}
-{"counter-value" : "208.000000", "unit" : "", "event" :
-"page-faults", "event-runtime" : 3805726799100.00, "pcnt-running"
-: 100.00, "metric-value" : 54.654516, "metric-unit" : "/sec"}
-
-Also added documentation for JSON option.
-There is some tidy up of CSV code including a potential memory over run
-in the os.nfields set up. To facilitate this an AGGR_MAX value is added.
-
-Signed-off-by: Claire Jensen <cjense@google.com>
-Signed-off-by: Ian Rogers <irogers@google.com>
----
- tools/perf/Documentation/perf-stat.txt |  21 ++
- tools/perf/builtin-stat.c              |   6 +
- tools/perf/util/stat-display.c         | 384 ++++++++++++++++++-------
- tools/perf/util/stat.c                 |   1 +
- tools/perf/util/stat.h                 |   2 +
- 5 files changed, 308 insertions(+), 106 deletions(-)
-
-diff --git a/tools/perf/Documentation/perf-stat.txt b/tools/perf/Documentation/perf-stat.txt
-index 8d1cde00b8d6..f9cdfd912b05 100644
---- a/tools/perf/Documentation/perf-stat.txt
-+++ b/tools/perf/Documentation/perf-stat.txt
-@@ -570,6 +570,27 @@ Additional metrics may be printed with all earlier fields being empty.
- 
- include::intel-hybrid.txt[]
- 
-+JSON FORMAT
-+-----------
-+
-+With -j, perf stat is able to print out a JSON format output
-+that can be used for parsing.
-+
-+- timestamp : optional usec time stamp in fractions of second (with -I)
-+- optional aggregate options:
-+		- core : core identifier (with --per-core)
-+		- die : die identifier (with --per-die)
-+		- socket : socket identifier (with --per-socket)
-+		- node : node identifier (with --per-node)
-+		- thread : thread identifier (with --per-thread)
-+- counter-value : counter value
-+- unit : unit of the counter value or empty
-+- event : event name
-+- variance : optional variance if multiple values are collected (with -r)
-+- runtime : run time of counter
-+- metric-value : optional metric value
-+- metric-unit : optional unit of metric
-+
- SEE ALSO
- --------
- linkperf:perf-top[1], linkperf:perf-list[1]
-diff --git a/tools/perf/builtin-stat.c b/tools/perf/builtin-stat.c
-index 4ce87a8eb7d7..6c7e59440e3a 100644
---- a/tools/perf/builtin-stat.c
-+++ b/tools/perf/builtin-stat.c
-@@ -1256,6 +1256,8 @@ static struct option stat_options[] = {
- 		    "Merge identical named hybrid events"),
- 	OPT_STRING('x', "field-separator", &stat_config.csv_sep, "separator",
- 		   "print counts with custom separator"),
-+	OPT_BOOLEAN('j', "json-output", &stat_config.json_output,
-+		   "print counts in JSON format"),
- 	OPT_CALLBACK('G', "cgroup", &evsel_list, "name",
- 		     "monitor event in cgroup name only", parse_stat_cgroups),
- 	OPT_STRING(0, "for-each-cgroup", &stat_config.cgroup_list, "name",
-@@ -1442,6 +1444,7 @@ static aggr_cpu_id_get_t aggr_mode__get_aggr(enum aggr_mode aggr_mode)
- 	case AGGR_GLOBAL:
- 	case AGGR_THREAD:
- 	case AGGR_UNSET:
-+	case AGGR_MAX:
- 	default:
- 		return NULL;
- 	}
-@@ -1466,6 +1469,7 @@ static aggr_get_id_t aggr_mode__get_id(enum aggr_mode aggr_mode)
- 	case AGGR_GLOBAL:
- 	case AGGR_THREAD:
- 	case AGGR_UNSET:
-+	case AGGR_MAX:
- 	default:
- 		return NULL;
- 	}
-@@ -1616,6 +1620,7 @@ static aggr_cpu_id_get_t aggr_mode__get_aggr_file(enum aggr_mode aggr_mode)
- 	case AGGR_GLOBAL:
- 	case AGGR_THREAD:
- 	case AGGR_UNSET:
-+	case AGGR_MAX:
- 	default:
- 		return NULL;
- 	}
-@@ -1636,6 +1641,7 @@ static aggr_get_id_t aggr_mode__get_id_file(enum aggr_mode aggr_mode)
- 	case AGGR_GLOBAL:
- 	case AGGR_THREAD:
- 	case AGGR_UNSET:
-+	case AGGR_MAX:
- 	default:
- 		return NULL;
- 	}
-diff --git a/tools/perf/util/stat-display.c b/tools/perf/util/stat-display.c
-index 606f09b09226..2bbd11446fa9 100644
---- a/tools/perf/util/stat-display.c
-+++ b/tools/perf/util/stat-display.c
-@@ -28,15 +28,21 @@
- static void print_running(struct perf_stat_config *config,
- 			  u64 run, u64 ena)
- {
--	if (config->csv_output) {
--		fprintf(config->output, "%s%" PRIu64 "%s%.2f",
--					config->csv_sep,
--					run,
--					config->csv_sep,
--					ena ? 100.0 * run / ena : 100.0);
--	} else if (run != ena) {
-+
-+	double enabled_percent = 100;
-+
-+	if (run != ena)
-+		enabled_percent = 100 * run / ena;
-+	if (config->json_output)
-+		fprintf(config->output,
-+			"\"event-runtime\" : %lu, \"pcnt-running\" : %.2f, ",
-+			run, enabled_percent);
-+	else if (config->csv_output)
-+		fprintf(config->output,
-+			"%s%" PRIu64 "%s%.2f", config->csv_sep,
-+			run, config->csv_sep, enabled_percent);
-+	else if (run != ena)
- 		fprintf(config->output, "  (%.2f%%)", 100.0 * run / ena);
--	}
- }
- 
- static void print_noise_pct(struct perf_stat_config *config,
-@@ -44,7 +50,9 @@ static void print_noise_pct(struct perf_stat_config *config,
- {
- 	double pct = rel_stddev_stats(total, avg);
- 
--	if (config->csv_output)
-+	if (config->json_output)
-+		fprintf(config->output, "\"variance\" : %.2f, ", pct);
-+	else if (config->csv_output)
- 		fprintf(config->output, "%s%.2f%%", config->csv_sep, pct);
- 	else if (pct)
- 		fprintf(config->output, "  ( +-%6.2f%% )", pct);
-@@ -66,7 +74,11 @@ static void print_cgroup(struct perf_stat_config *config, struct evsel *evsel)
- {
- 	if (nr_cgroups) {
- 		const char *cgrp_name = evsel->cgrp ? evsel->cgrp->name  : "";
--		fprintf(config->output, "%s%s", config->csv_sep, cgrp_name);
-+
-+		if (config->json_output)
-+			fprintf(config->output, "\"cgroup\" : \"%s\", ", cgrp_name);
-+		else
-+			fprintf(config->output, "%s%s", config->csv_sep, cgrp_name);
- 	}
- }
- 
-@@ -74,69 +86,123 @@ static void print_cgroup(struct perf_stat_config *config, struct evsel *evsel)
- static void aggr_printout(struct perf_stat_config *config,
- 			  struct evsel *evsel, struct aggr_cpu_id id, int nr)
- {
-+
-+
-+	if (config->json_output && !config->interval)
-+		fprintf(config->output, "{");
-+
- 	switch (config->aggr_mode) {
- 	case AGGR_CORE:
--		fprintf(config->output, "S%d-D%d-C%*d%s%*d%s",
--			id.socket,
--			id.die,
--			config->csv_output ? 0 : -8,
--			id.core,
--			config->csv_sep,
--			config->csv_output ? 0 : 4,
--			nr,
--			config->csv_sep);
-+		if (config->json_output) {
-+			fprintf(config->output,
-+				"\"core\" : \"S%d-D%d-C%d\", \"aggregate-number\" : %d, ",
-+				id.socket,
-+				id.die,
-+				id.core,
-+				nr);
-+		} else {
-+			fprintf(config->output, "S%d-D%d-C%*d%s%*d%s",
-+				id.socket,
-+				id.die,
-+				config->csv_output ? 0 : -8,
-+				id.core,
-+				config->csv_sep,
-+				config->csv_output ? 0 : 4,
-+				nr,
-+				config->csv_sep);
-+		}
- 		break;
- 	case AGGR_DIE:
--		fprintf(config->output, "S%d-D%*d%s%*d%s",
--			id.socket,
--			config->csv_output ? 0 : -8,
--			id.die,
--			config->csv_sep,
--			config->csv_output ? 0 : 4,
--			nr,
--			config->csv_sep);
-+		if (config->json_output) {
-+			fprintf(config->output,
-+				"\"die\" : \"S%d-D%d\", \"aggregate-number\" : %d, ",
-+				id.socket,
-+				id.die,
-+				nr);
-+		} else {
-+			fprintf(config->output, "S%d-D%*d%s%*d%s",
-+				id.socket,
-+				config->csv_output ? 0 : -8,
-+				id.die,
-+				config->csv_sep,
-+				config->csv_output ? 0 : 4,
-+				nr,
-+				config->csv_sep);
-+		}
- 		break;
- 	case AGGR_SOCKET:
--		fprintf(config->output, "S%*d%s%*d%s",
--			config->csv_output ? 0 : -5,
--			id.socket,
--			config->csv_sep,
--			config->csv_output ? 0 : 4,
--			nr,
--			config->csv_sep);
--			break;
-+		if (config->json_output) {
-+			fprintf(config->output,
-+				"\"socket\" : \"S%d\", \"aggregate-number\" : %d, ",
-+				id.socket,
-+				nr);
-+		} else {
-+			fprintf(config->output, "S%*d%s%*d%s",
-+				config->csv_output ? 0 : -5,
-+				id.socket,
-+				config->csv_sep,
-+				config->csv_output ? 0 : 4,
-+				nr,
-+				config->csv_sep);
-+		}
-+		break;
- 	case AGGR_NODE:
--		fprintf(config->output, "N%*d%s%*d%s",
--			config->csv_output ? 0 : -5,
--			id.node,
--			config->csv_sep,
--			config->csv_output ? 0 : 4,
--			nr,
--			config->csv_sep);
--			break;
-+		if (config->json_output) {
-+			fprintf(config->output, "\"node\" : \"N%d\", \"aggregate-number\" : %d, ",
-+				id.node,
-+				nr);
-+		} else {
-+			fprintf(config->output, "N%*d%s%*d%s",
-+				config->csv_output ? 0 : -5,
-+				id.node,
-+				config->csv_sep,
-+				config->csv_output ? 0 : 4,
-+				nr,
-+				config->csv_sep);
-+		}
-+		break;
- 	case AGGR_NONE:
--		if (evsel->percore && !config->percore_show_thread) {
--			fprintf(config->output, "S%d-D%d-C%*d%s",
--				id.socket,
--				id.die,
--				config->csv_output ? 0 : -3,
--				id.core, config->csv_sep);
--		} else if (id.cpu.cpu > -1) {
--			fprintf(config->output, "CPU%*d%s",
--				config->csv_output ? 0 : -7,
--				id.cpu.cpu, config->csv_sep);
-+		if (config->json_output) {
-+			if (evsel->percore && !config->percore_show_thread) {
-+				fprintf(config->output, "\"core\" : \"S%d-D%d-C%d\"",
-+					id.socket,
-+					id.die,
-+					id.core);
-+			} else if (id.core > -1) {
-+				fprintf(config->output, "\"cpu\" : \"%d\", ",
-+					id.cpu.cpu);
-+			}
-+		} else {
-+			if (evsel->percore && !config->percore_show_thread) {
-+				fprintf(config->output, "S%d-D%d-C%*d%s",
-+					id.socket,
-+					id.die,
-+					config->csv_output ? 0 : -3,
-+					id.core, config->csv_sep);
-+			} else if (id.core > -1) {
-+				fprintf(config->output, "CPU%*d%s",
-+					config->csv_output ? 0 : -7,
-+					id.cpu.cpu, config->csv_sep);
-+			}
- 		}
- 		break;
- 	case AGGR_THREAD:
--		fprintf(config->output, "%*s-%*d%s",
--			config->csv_output ? 0 : 16,
--			perf_thread_map__comm(evsel->core.threads, id.thread),
--			config->csv_output ? 0 : -8,
--			perf_thread_map__pid(evsel->core.threads, id.thread),
--			config->csv_sep);
-+		if (config->json_output) {
-+			fprintf(config->output, "\"thread\" : \"%s-%d\", ",
-+				perf_thread_map__comm(evsel->core.threads, id.thread),
-+				perf_thread_map__pid(evsel->core.threads, id.thread));
-+		} else {
-+			fprintf(config->output, "%*s-%*d%s",
-+				config->csv_output ? 0 : 16,
-+				perf_thread_map__comm(evsel->core.threads, id.thread),
-+				config->csv_output ? 0 : -8,
-+				perf_thread_map__pid(evsel->core.threads, id.thread),
-+				config->csv_sep);
-+		}
- 		break;
- 	case AGGR_GLOBAL:
- 	case AGGR_UNSET:
-+	case AGGR_MAX:
- 	default:
- 		break;
- 	}
-@@ -234,6 +300,31 @@ static void print_metric_csv(struct perf_stat_config *config __maybe_unused,
- 	fprintf(out, "%s%s%s%s", config->csv_sep, vals, config->csv_sep, skip_spaces(unit));
- }
- 
-+static void print_metric_json(struct perf_stat_config *config __maybe_unused,
-+			     void *ctx,
-+			     const char *color __maybe_unused,
-+			     const char *fmt __maybe_unused,
-+			     const char *unit, double val)
-+{
-+	struct outstate *os = ctx;
-+	FILE *out = os->fh;
-+
-+	fprintf(out, "\"metric-value\" : %f, ", val);
-+	fprintf(out, "\"metric-unit\" : \"%s\"", unit);
-+	if (!config->metric_only)
-+		fprintf(out, "}");
-+}
-+
-+static void new_line_json(struct perf_stat_config *config, void *ctx)
-+{
-+	struct outstate *os = ctx;
-+
-+	fputc('\n', os->fh);
-+	if (os->prefix)
-+		fprintf(os->fh, "%s", os->prefix);
-+	aggr_printout(config, os->evsel, os->id, os->nr);
-+}
-+
- /* Filter out some columns that don't work well in metrics only mode */
- 
- static bool valid_only_metric(const char *unit)
-@@ -300,6 +391,27 @@ static void print_metric_only_csv(struct perf_stat_config *config __maybe_unused
- 	fprintf(out, "%s%s", vals, config->csv_sep);
- }
- 
-+static void print_metric_only_json(struct perf_stat_config *config __maybe_unused,
-+				  void *ctx, const char *color __maybe_unused,
-+				  const char *fmt,
-+				  const char *unit, double val)
-+{
-+	struct outstate *os = ctx;
-+	FILE *out = os->fh;
-+	char buf[64], *vals, *ends;
-+	char tbuf[1024];
-+
-+	if (!valid_only_metric(unit))
-+		return;
-+	unit = fixunit(tbuf, os->evsel, unit);
-+	snprintf(buf, sizeof(buf), fmt, val);
-+	ends = vals = skip_spaces(buf);
-+	while (isdigit(*ends) || *ends == '.')
-+		ends++;
-+	*ends = 0;
-+	fprintf(out, "{\"metric-value\" : \"%s\"}", vals);
-+}
-+
- static void new_line_metric(struct perf_stat_config *config __maybe_unused,
- 			    void *ctx __maybe_unused)
- {
-@@ -318,10 +430,13 @@ static void print_metric_header(struct perf_stat_config *config,
- 	    os->evsel->priv != os->evsel->evlist->selected->priv)
- 		return;
- 
--	if (!valid_only_metric(unit))
-+	if (!valid_only_metric(unit) && !config->json_output)
- 		return;
- 	unit = fixunit(tbuf, os->evsel, unit);
--	if (config->csv_output)
-+
-+	if (config->json_output)
-+		fprintf(os->fh, "\"unit\" : \"%s\"", unit);
-+	else if (config->csv_output)
- 		fprintf(os->fh, "%s%s", unit, config->csv_sep);
- 	else
- 		fprintf(os->fh, "%*s ", config->metric_only_len, unit);
-@@ -367,14 +482,28 @@ static void abs_printout(struct perf_stat_config *config,
- 
- 	aggr_printout(config, evsel, id, nr);
- 
--	fprintf(output, fmt, avg, config->csv_sep);
-+	if (config->json_output)
-+		fprintf(output, "\"counter-value\" : \"%f\", ", avg);
-+	else
-+		fprintf(output, fmt, avg, config->csv_sep);
-+
-+	if (config->json_output) {
-+		if (evsel->unit) {
-+			fprintf(output, "\"unit\" : \"%s\", ",
-+				evsel->unit);
-+		}
-+	} else {
-+		if (evsel->unit)
-+			fprintf(output, "%-*s%s",
-+				config->csv_output ? 0 : config->unit_width,
-+				evsel->unit, config->csv_sep);
-+	}
- 
--	if (evsel->unit)
--		fprintf(output, "%-*s%s",
--			config->csv_output ? 0 : config->unit_width,
--			evsel->unit, config->csv_sep);
- 
--	fprintf(output, "%-*s", config->csv_output ? 0 : 25, evsel__name(evsel));
-+	if (config->json_output)
-+		fprintf(output, "\"event\" : \"%s\", ", evsel__name(evsel));
-+	else
-+		fprintf(output, "%-*s", config->csv_output ? 0 : 25, evsel__name(evsel));
- 
- 	print_cgroup(config, evsel);
- }
-@@ -416,34 +545,30 @@ static void printout(struct perf_stat_config *config, struct aggr_cpu_id id, int
- 		.nr = nr,
- 		.evsel = counter,
- 	};
--	print_metric_t pm = print_metric_std;
-+	print_metric_t pm;
- 	new_line_t nl;
- 
--	if (config->metric_only) {
--		nl = new_line_metric;
--		if (config->csv_output)
--			pm = print_metric_only_csv;
--		else
--			pm = print_metric_only;
--	} else
--		nl = new_line_std;
--
--	if (config->csv_output && !config->metric_only) {
--		static int aggr_fields[] = {
--			[AGGR_GLOBAL] = 0,
--			[AGGR_THREAD] = 1,
-+	if (config->csv_output) {
-+		static const int aggr_fields[AGGR_MAX] = {
- 			[AGGR_NONE] = 1,
-+			[AGGR_GLOBAL] = 0,
- 			[AGGR_SOCKET] = 2,
- 			[AGGR_DIE] = 2,
- 			[AGGR_CORE] = 2,
-+			[AGGR_THREAD] = 1,
-+			[AGGR_UNSET] = 0,
-+			[AGGR_NODE] = 0,
- 		};
- 
--		pm = print_metric_csv;
--		nl = new_line_csv;
--		os.nfields = 3;
--		os.nfields += aggr_fields[config->aggr_mode];
--		if (counter->cgrp)
--			os.nfields++;
-+		pm = config->metric_only ? print_metric_only_csv : print_metric_csv;
-+		nl = config->metric_only ? new_line_metric : new_line_csv;
-+		os.nfields = 3 + aggr_fields[config->aggr_mode] + (counter->cgrp ? 1 : 0);
-+	} else if (config->json_output) {
-+		pm = config->metric_only ? print_metric_only_json : print_metric_json;
-+		nl = config->metric_only ? new_line_metric : new_line_json;
-+	} else {
-+		pm = config->metric_only ? print_metric_only : print_metric_std;
-+		nl = config->metric_only ? new_line_metric : new_line_std;
- 	}
- 
- 	if (!config->no_csv_summary && config->csv_output &&
-@@ -458,10 +583,15 @@ static void printout(struct perf_stat_config *config, struct aggr_cpu_id id, int
- 		}
- 		aggr_printout(config, counter, id, nr);
- 
--		fprintf(config->output, "%*s%s",
--			config->csv_output ? 0 : 18,
--			counter->supported ? CNTR_NOT_COUNTED : CNTR_NOT_SUPPORTED,
--			config->csv_sep);
-+		if (config->json_output) {
-+			fprintf(config->output, "\"counter-value\" : \"%s\", ",
-+					counter->supported ? CNTR_NOT_COUNTED : CNTR_NOT_SUPPORTED);
-+		} else {
-+			fprintf(config->output, "%*s%s",
-+				config->csv_output ? 0 : 18,
-+				counter->supported ? CNTR_NOT_COUNTED : CNTR_NOT_SUPPORTED,
-+				config->csv_sep);
-+		}
- 
- 		if (counter->supported) {
- 			if (!evlist__has_hybrid(counter->evlist)) {
-@@ -471,21 +601,32 @@ static void printout(struct perf_stat_config *config, struct aggr_cpu_id id, int
- 			}
- 		}
- 
--		fprintf(config->output, "%-*s%s",
--			config->csv_output ? 0 : config->unit_width,
--			counter->unit, config->csv_sep);
-+		if (config->json_output) {
-+			fprintf(config->output, "\"unit\" : \"%s\", ", counter->unit);
-+		} else {
-+			fprintf(config->output, "%-*s%s",
-+				config->csv_output ? 0 : config->unit_width,
-+				counter->unit, config->csv_sep);
-+		}
- 
--		fprintf(config->output, "%*s",
--			config->csv_output ? 0 : -25, evsel__name(counter));
-+		if (config->json_output) {
-+			fprintf(config->output, "\"event\" : \"%s\", ",
-+				evsel__name(counter));
-+		} else {
-+			fprintf(config->output, "%*s",
-+				 config->csv_output ? 0 : -25, evsel__name(counter));
-+		}
- 
- 		print_cgroup(config, counter);
- 
--		if (!config->csv_output)
-+		if (!config->csv_output && !config->json_output)
- 			pm(config, &os, NULL, NULL, "", 0);
- 		print_noise(config, counter, noise);
- 		print_running(config, run, ena);
- 		if (config->csv_output)
- 			pm(config, &os, NULL, NULL, "", 0);
-+		else if (config->json_output)
-+			pm(config, &os, NULL, NULL, "", 0);
- 		return;
- 	}
- 
-@@ -500,12 +641,15 @@ static void printout(struct perf_stat_config *config, struct aggr_cpu_id id, int
- 	if (config->csv_output && !config->metric_only) {
- 		print_noise(config, counter, noise);
- 		print_running(config, run, ena);
-+	} else if (config->json_output && !config->metric_only) {
-+		print_noise(config, counter, noise);
-+		print_running(config, run, ena);
- 	}
- 
- 	perf_stat__print_shadow_stats(config, counter, uval,
- 				first_shadow_cpu_map_idx(config, counter, &id),
- 				&out, &config->metric_events, st);
--	if (!config->csv_output && !config->metric_only) {
-+	if (!config->csv_output && !config->metric_only && !config->json_output) {
- 		print_noise(config, counter, noise);
- 		print_running(config, run, ena);
- 	}
-@@ -1004,8 +1148,12 @@ static void print_metric_headers(struct perf_stat_config *config,
- 	struct outstate os = {
- 		.fh = config->output
- 	};
-+	bool first = true;
-+
-+		if (config->json_output && !config->interval)
-+			fprintf(config->output, "{");
- 
--	if (prefix)
-+	if (prefix && !config->json_output)
- 		fprintf(config->output, "%s", prefix);
- 
- 	if (!config->csv_output && !no_indent)
-@@ -1025,6 +1173,9 @@ static void print_metric_headers(struct perf_stat_config *config,
- 		os.evsel = counter;
- 		out.ctx = &os;
- 		out.print_metric = print_metric_header;
-+		if (!first && config->json_output)
-+			fprintf(config->output, ", ");
-+		first = false;
- 		out.new_line = new_line_metric;
- 		out.force_header = true;
- 		perf_stat__print_shadow_stats(config, counter, 0,
-@@ -1033,6 +1184,8 @@ static void print_metric_headers(struct perf_stat_config *config,
- 					      &config->metric_events,
- 					      &rt_stat);
- 	}
-+	if (config->json_output)
-+		fprintf(config->output, "}");
- 	fputc('\n', config->output);
- }
- 
-@@ -1048,10 +1201,18 @@ static void print_interval(struct perf_stat_config *config,
- 	if (config->interval_clear)
- 		puts(CONSOLE_CLEAR);
- 
--	if (!config->iostat_run)
--		sprintf(prefix, "%6lu.%09lu%s", (unsigned long) ts->tv_sec, ts->tv_nsec, config->csv_sep);
--
--	if ((num_print_interval == 0 && !config->csv_output) || config->interval_clear) {
-+	if (!config->iostat_run && !config->json_output)
-+		sprintf(prefix, "%6lu.%09lu%s", (unsigned long) ts->tv_sec,
-+				 ts->tv_nsec, config->csv_sep);
-+	if (!config->iostat_run && config->json_output && !config->metric_only)
-+		sprintf(prefix, "{\"interval\" : %lu.%09lu, ", (unsigned long)
-+				 ts->tv_sec, ts->tv_nsec);
-+	if (!config->iostat_run && config->json_output && config->metric_only)
-+		sprintf(prefix, "{\"interval\" : %lu.%09lu}", (unsigned long)
-+				 ts->tv_sec, ts->tv_nsec);
-+
-+	if ((num_print_interval == 0 && !config->csv_output && !config->json_output)
-+			 || config->interval_clear) {
- 		switch (config->aggr_mode) {
- 		case AGGR_NODE:
- 			fprintf(output, "#           time node   cpus");
-@@ -1091,12 +1252,19 @@ static void print_interval(struct perf_stat_config *config,
- 					fprintf(output, "             counts %*s events\n", unit_width, "unit");
- 			}
- 		case AGGR_UNSET:
-+		case AGGR_MAX:
- 			break;
- 		}
- 	}
- 
--	if ((num_print_interval == 0 || config->interval_clear) && metric_only)
-+	if ((num_print_interval == 0 || config->interval_clear)
-+			 && metric_only && !config->json_output)
- 		print_metric_headers(config, evlist, " ", true);
-+	if ((num_print_interval == 0 || config->interval_clear)
-+			 && metric_only && config->json_output) {
-+		fprintf(output, "{");
-+		print_metric_headers(config, evlist, " ", true);
-+	}
- 	if (++num_print_interval == 25)
- 		num_print_interval = 0;
- }
-@@ -1110,7 +1278,7 @@ static void print_header(struct perf_stat_config *config,
- 
- 	fflush(stdout);
- 
--	if (!config->csv_output) {
-+	if (!config->csv_output && !config->json_output) {
- 		fprintf(output, "\n");
- 		fprintf(output, " Performance counter stats for ");
- 		if (_target->bpf_str)
-@@ -1303,6 +1471,9 @@ void evlist__print_counters(struct evlist *evlist, struct perf_stat_config *conf
- 			num_print_iv = 0;
- 		if (config->aggr_mode == AGGR_GLOBAL && prefix && !config->iostat_run)
- 			fprintf(config->output, "%s", prefix);
-+
-+		if (config->json_output && !config->metric_only)
-+			fprintf(config->output, "}");
- 	}
- 
- 	switch (config->aggr_mode) {
-@@ -1341,12 +1512,13 @@ void evlist__print_counters(struct evlist *evlist, struct perf_stat_config *conf
- 			}
- 		}
- 		break;
-+	case AGGR_MAX:
- 	case AGGR_UNSET:
- 	default:
- 		break;
- 	}
- 
--	if (!interval && !config->csv_output)
-+	if (!interval && !config->csv_output && !config->json_output)
- 		print_footer(config);
- 
- 	fflush(config->output);
-diff --git a/tools/perf/util/stat.c b/tools/perf/util/stat.c
-index 37ea2d044708..0882b4754fcf 100644
---- a/tools/perf/util/stat.c
-+++ b/tools/perf/util/stat.c
-@@ -401,6 +401,7 @@ process_counter_values(struct perf_stat_config *config, struct evsel *evsel,
- 		aggr->ena += count->ena;
- 		aggr->run += count->run;
- 	case AGGR_UNSET:
-+	case AGGR_MAX:
- 	default:
- 		break;
- 	}
-diff --git a/tools/perf/util/stat.h b/tools/perf/util/stat.h
-index b5aeb8e6d34b..668250022f8c 100644
---- a/tools/perf/util/stat.h
-+++ b/tools/perf/util/stat.h
-@@ -57,6 +57,7 @@ enum aggr_mode {
- 	AGGR_THREAD,
- 	AGGR_UNSET,
- 	AGGR_NODE,
-+	AGGR_MAX
- };
- 
- enum {
-@@ -121,6 +122,7 @@ struct perf_stat_config {
- 	bool			 no_inherit;
- 	bool			 identifier;
- 	bool			 csv_output;
-+	bool			 json_output;
- 	bool			 interval_clear;
- 	bool			 metric_only;
- 	bool			 null_run;
--- 
-2.36.1.124.g0e6072fb45-goog
-
+SGkgQWxsLA0KDQpPbiAxOC8wNS8yMiAxMToxNCwgQ2hyaXMgUGFja2hhbSB3cm90ZToNCj4gSGkg
+QWxsLA0KPg0KPiBPbiAxNi8wNS8yMiAxMTozMCwgQ2hyaXMgUGFja2hhbSB3cm90ZToNCj4+IFRo
+ZSA5OERYMjUzMCBTb0MgaXMgdGhlIENvbnRyb2wgYW5kIE1hbmFnZW1lbnQgQ1BVIGludGVncmF0
+ZWQgaW50bw0KPj4gdGhlIE1hcnZlbGwgOThEWDI1eHggYW5kIDk4RFgzNXh4IHNlcmllcyBvZiBz
+d2l0Y2ggY2hpcCAoaW50ZXJuYWxseQ0KPj4gcmVmZXJyZWQgdG8gYXMgQWxsZXlDYXQ1IGFuZCBB
+bGxleUNhdDVYKS4NCj4+DQo+PiBUaGVzZSBmaWxlcyBoYXZlIGJlZW4gdGFrZW4gZnJvbSB0aGUg
+TWFydmVsbCBTREsgYW5kIGxpZ2h0bHkgY2xlYW5lZA0KPj4gdXAgd2l0aCB0aGUgTGljZW5zZSBh
+bmQgY29weXJpZ2h0IHJldGFpbmVkLg0KPj4NCj4+IFNpZ25lZC1vZmYtYnk6IENocmlzIFBhY2to
+YW0gPGNocmlzLnBhY2toYW1AYWxsaWVkdGVsZXNpcy5jby5uej4NCj4+IFJldmlld2VkLWJ5OiBB
+bmRyZXcgTHVubiA8YW5kcmV3QGx1bm4uY2g+DQo+PiAtLS0NCj4NCj4gSSd2ZSBiZWVuIGluIHRv
+dWNoIHdpdGggc29tZSBvZiB0aGUgdGVhbSBhdCBNYXJ2ZWxsLiBUaGV5IGhhdmUgc29tZSANCj4g
+YWRkaXRpb25zIHRoYXQgc2hvdWxkIGhvcGVmdWxseSByZXNvbHZlIHNvbWUgb2YgdGhlIHF1ZXJp
+ZXMvY29uY2VybnMgDQo+IGFyb3VuZCB0aGUgY2xvY2sgY29uZmlndXJhdGlvbi4gSSd2ZSBhbHNv
+IGdvdCBhIG1pbm9yIHVwZGF0ZSB0byBhZGQgYSANCj4gY29tbWVudCBhYm91dCB0aGUgUFBJIGZv
+ciB0aGUgRUwyIHZpcnR1YWwgdGltZXIgYmFzZWQgb24gTWFyYydzIHJlcXVlc3QuDQo+DQo+IEkg
+ZXhwZWN0IHRvIHNlbmQgYSB2OSB3aXRoIHRob3NlIGNoYW5nZXMgKGFuZCBhbnl0aGluZyBlbHNl
+IGFueW9uZSBoYXMgDQo+IGZlZWRiYWNrIG9uIHJlbGF0ZWQgdG8gdGhpcyBzZXJpZXMpIHNvbWV0
+aW1lIG5leHQgd2Vlay4NCg0KSSBoYWQgYSBnb29kIGNvbnZlcnNhdGlvbiB3aXRoIEVsYWQsIFZh
+ZHltIGFuZCBTZXJoaXkuDQoNClRoZSBwbGFuIGlzIGZvciB0aGVtIHRvIHRha2Ugb3ZlciB0aGlz
+IHNlcmllcyBhbmQgZ2V0IGl0IGRyaXZlbiB0byANCmNvbXBsZXRpb24uIFdlJ3ZlIG1pc3NlZCB0
+aGUgbWVyZ2Ugd2luZG93IGZvciA1LjE5IGJ1dCBob3BlZnVsbHkgd2UgY2FuIA0KZ2V0IHRoaW5n
+cyBpbiBmb3IgNS4yMC4NCg0KV2UgZXhwZWN0IHRvIHNlZSBhbm90aGVyIG5hbWUgY2hhbmdlIGF3
+YXkgZnJvbSAiYXJtYWRhIiAodGhlIEFsbGV5Y2F0NSANCkNuTSBibG9jayBkb2Vzbid0IHJlYWxs
+eSBiZWFyIG11Y2ggcmVzZW1ibGFuY2UgdG8gdGhlIEFybWFkYS0zNzAwIGFzaWRlIA0KZnJvbSB0
+aGUgb2RkIHBlcmlwaGVyYWwpLg0KDQpUaGVyZSBzaG91bGQgYWxzbyBiZSBzb21lIGNsYXJpZmlj
+YXRpb24gYXJvdW5kIHRoZSBjbG9ja2luZy4gQXMgSSANCmV4cGVjdGVkIHRoZXJlIHJlYWxseSBh
+cmUganVzdCBzb21lIGZpeGVkIGRpdmlkZXJzIGluIHRoZSBoYXJkd2FyZSB0aGF0IA0KdGFrZSB0
+aGUgc2luZ2xlIDI1TUh6IHJlZmVyZW5jZSBjbG9jayB0byBzdXBwbHkgY2xvY2tzIGZvciB0aGUg
+dmFyaW91cyANCnBlcmlwaGVyYWxzLiBUaGVyZSBpcyBubyBnYXRpbmcgb3IgZHluYW1pYyBzY2Fs
+aW5nIHBvc3NpYmxlIHNvIHRoZXNlIGFyZSANCmp1c3QgcmVwcmVzZW50ZWQgYXMgZml4ZWQtY2xv
+Y2sgbm9kZXMuDQoNCj4NCj4+DQo+PiBOb3RlczoNCj4+IMKgwqDCoMKgIFRoZSBNYXJ2ZWxsIFNE
+SyBoYXMgYSBudW1iZXIgb2YgbmV3IGNvbXBhdGlibGUgc3RyaW5ncy4gSSd2ZSANCj4+IGJyb3Vn
+aHQNCj4+IMKgwqDCoMKgIHRocm91Z2ggc29tZSBvZiB0aGUgZHJpdmVycyBvciB3aGVyZSBwb3Nz
+aWJsZSB1c2VkIGFuIGluLXRyZWUNCj4+IMKgwqDCoMKgIGFsdGVybmF0aXZlIChlLmcuIHRoZXJl
+IGlzIFNESyBjb2RlIGZvciBhIGFjNS1ncGlvIGJ1dCB0d28gDQo+PiBpbnN0YW5jZXMgb2YNCj4+
+IMKgwqDCoMKgIHRoZSBleGlzdGluZyBtYXJ2ZWxsLG9yaW9uLWdwaW8gc2VlbXMgdG8gY292ZXIg
+d2hhdCBpcyBuZWVkZWQgaWYgDQo+PiB5b3UgdXNlDQo+PiDCoMKgwqDCoCBhbiBhcHByb3ByaWF0
+ZSBiaW5kaW5nKS4gSSBleHBlY3QgdGhhdCB0aGVyZSB3aWxsIGEgbmV3IHNlcmllcyBvZg0KPj4g
+wqDCoMKgwqAgcGF0Y2hlcyB3aGVuIEkgZ2V0IHNvbWUgZGlmZmVyZW50IGhhcmR3YXJlIChvciBh
+ZGRpdGlvbnMgdG8gdGhpcyANCj4+IHNlcmllcw0KPj4gwqDCoMKgwqAgZGVwZW5kaW5nIG9uIGlm
+L3doZW4gaXQgbGFuZHMpLg0KPj4gwqDCoMKgwqAgwqDCoMKgwqAgQ2hhbmdlcyBpbiB2ODoNCj4+
+IMKgwqDCoMKgIC0gUmVtb3ZlIHVubmVjZXNzYXJ5IGNsb2NrLWZyZXF1ZW5jeSBwcm9wZXJ0eSBv
+biBhcm12OC10aW1lcg0KPj4gwqDCoMKgwqAgLSBSZW1vdmUgdW5uZWNlc3NhcnkgcmVkaXN0cmli
+dXRvci1zdHJpZGUgcHJvcGVydHkgb24gZ2ljDQo+PiDCoMKgwqDCoCAtIEFkZCBHSUNfU1BJIGlu
+dGVycnVwdHMgZm9yIGdwaW9zDQo+PiDCoMKgwqDCoCBDaGFuZ2VzIGluIHY3Og0KPj4gwqDCoMKg
+wqAgLSBBZGQgbWlzc2luZyBjb21wYXRpYmxlIG9uIHVzYjENCj4+IMKgwqDCoMKgIC0gQWRkICJy
+ZC1hYzV4IiBjb21wYXRpYmxlIGZvciBib2FyZA0KPj4gwqDCoMKgwqAgLSBNb3ZlIGFsaWFzZXMg
+dG8gYm9hcmQgZHRzDQo+PiDCoMKgwqDCoCAtIE1vdmUgYm9hcmQgc3BlY2lmaWMgdXNiIGluZm8g
+dG8gYm9hcmQgZHRzDQo+PiDCoMKgwqDCoCAtIENvbnNvbGlkYXRlIHVzYjEgYm9hcmQgc2V0dGlu
+Z3MgYW5kIHJlbW92ZSB1bm5lY2Vzc2FyeSBjb21wYXRpYmxlDQo+PiDCoMKgwqDCoCAtIEFkZCBB
+bGxpZWQgVGVsZXNpcyBjb3B5cmlnaHQNCj4+IMKgwqDCoMKgIC0gUmVuYW1lIGZpbGVzIGFmdGVy
+IG1haWxuZy1saXN0IGRpc2N1c3Npb24NCj4+IMKgwqDCoMKgIENoYW5nZXMgaW4gdjY6DQo+PiDC
+oMKgwqDCoCAtIE1vdmUgQ1BVIG5vZGVzIGFib3ZlIHRoZSBTb0MgKEtyenlzenRvZikNCj4+IMKg
+wqDCoMKgIC0gTWlub3IgZm9ybWF0dGluZyBjbGVhbiB1cHMgKEtyenlzenRvZikNCj4+IMKgwqDC
+oMKgIC0gUnVuIHRocm91Z2ggYG1ha2UgZHRic19jaGVja2ANCj4+IMKgwqDCoMKgIC0gTW92ZSBn
+aWMgbm9kZXMgaW5zaWRlIFNvQw0KPj4gwqDCoMKgwqAgLSBHcm91cCBjbG9ja3MgdW5kZXIgYSBj
+bG9jayBub2RlDQo+PiDCoMKgwqDCoCBDaGFuZ2VzIGluIHY1Og0KPj4gwqDCoMKgwqAgLSBhZGQg
+I3thZGRyZXNzLHNpemV9LWNlbGxzIHByb3BlcnR5IHRvIGkyYyBub2Rlcw0KPj4gwqDCoMKgwqAg
+LSBtYWtlIGkyYyBub2RlcyBkaXNhYmxlZCBpbiB0aGUgU29DIGFuZCBlbmFibGUgdGhlbSBpbiB0
+aGUgYm9hcmQNCj4+IMKgwqDCoMKgIC0gYWRkIGludGVycnVwdCBjb250cm9sbGVyIGF0dHJpYnV0
+ZXMgdG8gZ3BpbyBub2Rlcw0KPj4gwqDCoMKgwqAgLSBNb3ZlIGZpeGVkLWNsb2NrIG5vZGVzIHVw
+IGEgbGV2ZWwgYW5kIHJlbW92ZSB1bm5lY2Vzc2FyeSBAMA0KPj4gwqDCoMKgwqAgQ2hhbmdlcyBp
+biB2NDoNCj4+IMKgwqDCoMKgIC0gdXNlICdwaHktaGFuZGxlJyBpbnN0ZWFkIG9mICdwaHknDQo+
+PiDCoMKgwqDCoCAtIG1vdmUgc3RhdHVzPSJva2F5IiBvbiB1c2Igbm9kZXMgdG8gYm9hcmQgZHRz
+DQo+PiDCoMKgwqDCoCAtIEFkZCByZXZpZXcgZnJvbSBBbmRyZXcNCj4+IMKgwqDCoMKgIENoYW5n
+ZXMgaW4gdjM6DQo+PiDCoMKgwqDCoCAtIE1vdmUgbWVtb3J5IG5vZGUgdG8gYm9hcmQNCj4+IMKg
+wqDCoMKgIC0gVXNlIHNpbmdsZSBkaWdpdCByZWcgdmFsdWUgZm9yIHBoeSBhZGRyZXNzDQo+PiDC
+oMKgwqDCoCAtIFJlbW92ZSBNTUMgbm9kZSAoZHJpdmVyIG5lZWRzIHdvcmspDQo+PiDCoMKgwqDC
+oCAtIFJlbW92ZSBzeXNjb24gJiBzaW1wbGUtbWZkIGZvciBwaW5jdHJsDQo+PiDCoMKgwqDCoCBD
+aGFuZ2VzIGluIHYyOg0KPj4gwqDCoMKgwqAgLSBNYWtlIHBpbmN0cmwgYSBjaGlsZCBub2RlIG9m
+IGEgc3lzY29uIG5vZGUNCj4+IMKgwqDCoMKgIC0gVXNlIG1hcnZlbGwsYXJtYWRhLThrLWdwaW8g
+aW5zdGVhZCBvZiBvcmlvbi1ncGlvDQo+PiDCoMKgwqDCoCAtIFJlbW92ZSBuYW5kIHBlcmlwaGVy
+YWwuIFRoZSBNYXJ2ZWxsIFNESyBkb2VzIGhhdmUgc29tZSBjaGFuZ2VzIA0KPj4gZm9yIHRoZQ0K
+Pj4gwqDCoMKgwqDCoMKgIGFjNS1uYW5kLWNvbnRyb2xsZXIgYnV0IEkgY3VycmVudGx5IGxhY2sg
+aGFyZHdhcmUgd2l0aCBOQU5EIA0KPj4gZml0dGVkIHNvDQo+PiDCoMKgwqDCoMKgwqAgSSBjYW4n
+dCB0ZXN0IGl0IHJpZ2h0IG5vdy4gSSd2ZSB0aGVyZWZvcmUgY2hvc2VuIHRvIG9taXQgdGhlIA0K
+Pj4gbm9kZSBhbmQNCj4+IMKgwqDCoMKgwqDCoCBub3QgYXR0ZW1wdGVkIHRvIGJyaW5nIGluIHRo
+ZSBkcml2ZXIgb3IgYmluZGluZy4NCj4+IMKgwqDCoMKgIC0gUmVtb3ZlIHBjaWUgcGVyaXBoZXJh
+bC4gQWdhaW4gdGhlcmUgYXJlIGNoYW5nZXMgaW4gdGhlIFNESyBhbmQgDQo+PiBJIGhhdmUNCj4+
+IMKgwqDCoMKgwqDCoCBubyB3YXkgb2YgdGVzdGluZyB0aGVtLg0KPj4gwqDCoMKgwqAgLSBSZW1v
+dmUgcHJlc3RlcmEgbm9kZS4NCj4+IMKgwqDCoMKgIC0gUmVtb3ZlICJtYXJ2ZWxsLGFjNS1laGNp
+IiBjb21wYXRpYmxlIGZyb20gVVNCIG5vZGUgYXMNCj4+IMKgwqDCoMKgwqDCoCAibWFydmVsbCxv
+cmlvbi1laGNpIiBpcyBzdWZmaWNpZW50DQo+PiDCoMKgwqDCoCAtIFJlbW92ZSB3YXRjaGRvZyBu
+b2RlLiBUaGVyZSBpcyBhIGJ1Z2d5IGRyaXZlciBmb3IgdGhlIGFjNSANCj4+IHdhdGNoZG9nIGlu
+DQo+PiDCoMKgwqDCoMKgwqAgdGhlIFNESyBidXQgaXQgbmVlZHMgc29tZSB3b3JrIHNvIEkndmUg
+ZHJvcHBlZCB0aGUgbm9kZSBmb3Igbm93Lg0KPj4NCj4+IMKgIGFyY2gvYXJtNjQvYm9vdC9kdHMv
+bWFydmVsbC9NYWtlZmlsZcKgwqDCoMKgwqDCoMKgwqDCoCB8wqDCoCAxICsNCj4+IMKgIC4uLi9i
+b290L2R0cy9tYXJ2ZWxsL2FybWFkYS05OGR4MjV4eC5kdHNpwqDCoMKgwqAgfCAyOTcgKysrKysr
+KysrKysrKysrKysrDQo+PiDCoCAuLi4vYm9vdC9kdHMvbWFydmVsbC9hcm1hZGEtOThkeDM1eHgt
+cmQuZHRzwqDCoCB8IDEwMSArKysrKysNCj4+IMKgIC4uLi9ib290L2R0cy9tYXJ2ZWxsL2FybWFk
+YS05OGR4MzV4eC5kdHNpwqDCoMKgwqAgfMKgIDEzICsNCj4+IMKgIDQgZmlsZXMgY2hhbmdlZCwg
+NDEyIGluc2VydGlvbnMoKykNCj4+IMKgIGNyZWF0ZSBtb2RlIDEwMDY0NCBhcmNoL2FybTY0L2Jv
+b3QvZHRzL21hcnZlbGwvYXJtYWRhLTk4ZHgyNXh4LmR0c2kNCj4+IMKgIGNyZWF0ZSBtb2RlIDEw
+MDY0NCBhcmNoL2FybTY0L2Jvb3QvZHRzL21hcnZlbGwvYXJtYWRhLTk4ZHgzNXh4LXJkLmR0cw0K
+Pj4gwqAgY3JlYXRlIG1vZGUgMTAwNjQ0IGFyY2gvYXJtNjQvYm9vdC9kdHMvbWFydmVsbC9hcm1h
+ZGEtOThkeDM1eHguZHRzaQ0KPj4NCj4+IGRpZmYgLS1naXQgYS9hcmNoL2FybTY0L2Jvb3QvZHRz
+L21hcnZlbGwvTWFrZWZpbGUgDQo+PiBiL2FyY2gvYXJtNjQvYm9vdC9kdHMvbWFydmVsbC9NYWtl
+ZmlsZQ0KPj4gaW5kZXggMWM3OTRjZGNiOGU2Li5iN2E0YzcxNWFmYmIgMTAwNjQ0DQo+PiAtLS0g
+YS9hcmNoL2FybTY0L2Jvb3QvZHRzL21hcnZlbGwvTWFrZWZpbGUNCj4+ICsrKyBiL2FyY2gvYXJt
+NjQvYm9vdC9kdHMvbWFydmVsbC9NYWtlZmlsZQ0KPj4gQEAgLTI0LDMgKzI0LDQgQEAgZHRiLSQo
+Q09ORklHX0FSQ0hfTVZFQlUpICs9IGNuOTEzMi1kYi5kdGINCj4+IMKgIGR0Yi0kKENPTkZJR19B
+UkNIX01WRUJVKSArPSBjbjkxMzItZGItQi5kdGINCj4+IMKgIGR0Yi0kKENPTkZJR19BUkNIX01W
+RUJVKSArPSBjbjkxMzAtY3JiLUEuZHRiDQo+PiDCoCBkdGItJChDT05GSUdfQVJDSF9NVkVCVSkg
+Kz0gY245MTMwLWNyYi1CLmR0Yg0KPj4gK2R0Yi0kKENPTkZJR19BUkNIX01WRUJVKSArPSBhcm1h
+ZGEtOThkeDM1eHgtcmQuZHRiDQo+PiBkaWZmIC0tZ2l0IGEvYXJjaC9hcm02NC9ib290L2R0cy9t
+YXJ2ZWxsL2FybWFkYS05OGR4MjV4eC5kdHNpIA0KPj4gYi9hcmNoL2FybTY0L2Jvb3QvZHRzL21h
+cnZlbGwvYXJtYWRhLTk4ZHgyNXh4LmR0c2kNCj4+IG5ldyBmaWxlIG1vZGUgMTAwNjQ0DQo+PiBp
+bmRleCAwMDAwMDAwMDAwMDAuLjg4ZWRjNzQxYzAwOA0KPj4gLS0tIC9kZXYvbnVsbA0KPj4gKysr
+IGIvYXJjaC9hcm02NC9ib290L2R0cy9tYXJ2ZWxsL2FybWFkYS05OGR4MjV4eC5kdHNpDQo+PiBA
+QCAtMCwwICsxLDI5NyBAQA0KPj4gKy8vIFNQRFgtTGljZW5zZS1JZGVudGlmaWVyOiAoR1BMLTIu
+MCsgT1IgTUlUKQ0KPj4gKy8qDQo+PiArICogRGV2aWNlIFRyZWUgRm9yIEFDNS4NCj4+ICsgKg0K
+Pj4gKyAqIENvcHlyaWdodCAoQykgMjAyMSBNYXJ2ZWxsDQo+PiArICogQ29weXJpZ2h0IChDKSAy
+MDIyIEFsbGllZCBUZWxlc2lzIExhYnMNCj4+ICsgKi8NCj4+ICsNCj4+ICsjaW5jbHVkZSA8ZHQt
+YmluZGluZ3MvZ3Bpby9ncGlvLmg+DQo+PiArI2luY2x1ZGUgPGR0LWJpbmRpbmdzL2ludGVycnVw
+dC1jb250cm9sbGVyL2FybS1naWMuaD4NCj4+ICsNCj4+ICsvIHsNCj4+ICvCoMKgwqAgbW9kZWwg
+PSAiTWFydmVsbCBBQzUgU29DIjsNCj4+ICvCoMKgwqAgY29tcGF0aWJsZSA9ICJtYXJ2ZWxsLGFj
+NSI7DQo+PiArwqDCoMKgIGludGVycnVwdC1wYXJlbnQgPSA8JmdpYz47DQo+PiArwqDCoMKgICNh
+ZGRyZXNzLWNlbGxzID0gPDI+Ow0KPj4gK8KgwqDCoCAjc2l6ZS1jZWxscyA9IDwyPjsNCj4+ICsN
+Cj4+ICvCoMKgwqAgY3B1cyB7DQo+PiArwqDCoMKgwqDCoMKgwqAgI2FkZHJlc3MtY2VsbHMgPSA8
+Mj47DQo+PiArwqDCoMKgwqDCoMKgwqAgI3NpemUtY2VsbHMgPSA8MD47DQo+PiArDQo+PiArwqDC
+oMKgwqDCoMKgwqAgY3B1LW1hcCB7DQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBjbHVzdGVy
+MCB7DQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGNvcmUwIHsNCj4+ICvCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBjcHUgPSA8JmNwdTA+Ow0KPj4gK8Kg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB9Ow0KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoCBjb3JlMSB7DQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqAgY3B1ID0gPCZjcHUxPjsNCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAg
+fTsNCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIH07DQo+PiArwqDCoMKgwqDCoMKgwqAgfTsN
+Cj4+ICsNCj4+ICvCoMKgwqDCoMKgwqDCoCBjcHUwOiBjcHVAMCB7DQo+PiArwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoCBkZXZpY2VfdHlwZSA9ICJjcHUiOw0KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKg
+wqAgY29tcGF0aWJsZSA9ICJhcm0sYXJtdjgiOw0KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAg
+cmVnID0gPDB4MCAweDA+Ow0KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAgZW5hYmxlLW1ldGhv
+ZCA9ICJwc2NpIjsNCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIG5leHQtbGV2ZWwtY2FjaGUg
+PSA8JmwyPjsNCj4+ICvCoMKgwqDCoMKgwqDCoCB9Ow0KPj4gKw0KPj4gK8KgwqDCoMKgwqDCoMKg
+IGNwdTE6IGNwdUAxIHsNCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGRldmljZV90eXBlID0g
+ImNwdSI7DQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBjb21wYXRpYmxlID0gImFybSxhcm12
+OCI7DQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCByZWcgPSA8MHgwIDB4MTAwPjsNCj4+ICvC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgIGVuYWJsZS1tZXRob2QgPSAicHNjaSI7DQo+PiArwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoCBuZXh0LWxldmVsLWNhY2hlID0gPCZsMj47DQo+PiArwqDCoMKgwqDC
+oMKgwqAgfTsNCj4+ICsNCj4+ICvCoMKgwqDCoMKgwqDCoCBsMjogbDItY2FjaGUgew0KPj4gK8Kg
+wqDCoMKgwqDCoMKgwqDCoMKgwqAgY29tcGF0aWJsZSA9ICJjYWNoZSI7DQo+PiArwqDCoMKgwqDC
+oMKgwqAgfTsNCj4+ICvCoMKgwqAgfTsNCj4+ICsNCj4+ICvCoMKgwqAgcHNjaSB7DQo+PiArwqDC
+oMKgwqDCoMKgwqAgY29tcGF0aWJsZSA9ICJhcm0scHNjaS0wLjIiOw0KPj4gK8KgwqDCoMKgwqDC
+oMKgIG1ldGhvZCA9ICJzbWMiOw0KPj4gK8KgwqDCoCB9Ow0KPj4gKw0KPj4gK8KgwqDCoCB0aW1l
+ciB7DQo+PiArwqDCoMKgwqDCoMKgwqAgY29tcGF0aWJsZSA9ICJhcm0sYXJtdjgtdGltZXIiOw0K
+Pj4gK8KgwqDCoMKgwqDCoMKgIGludGVycnVwdHMgPSA8R0lDX1BQSSA5IElSUV9UWVBFX0xFVkVM
+X0hJR0g+LA0KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIDxHSUNfUFBJIDgg
+SVJRX1RZUEVfTEVWRUxfSElHSD4sDQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqAgPEdJQ19QUEkgMTAgSVJRX1RZUEVfTEVWRUxfSElHSD4sDQo+PiArwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqAgPEdJQ19QUEkgNyBJUlFfVFlQRV9MRVZFTF9ISUdIPjsNCj4+ICvC
+oMKgwqAgfTsNCj4+ICsNCj4+ICvCoMKgwqAgcG11IHsNCj4+ICvCoMKgwqDCoMKgwqDCoCBjb21w
+YXRpYmxlID0gImFybSxhcm12OC1wbXV2MyI7DQo+PiArwqDCoMKgwqDCoMKgwqAgaW50ZXJydXB0
+cyA9IDxHSUNfUFBJIDEyIElSUV9UWVBFX0xFVkVMX0hJR0g+Ow0KPj4gK8KgwqDCoCB9Ow0KPj4g
+Kw0KPj4gK8KgwqDCoCBzb2Mgew0KPj4gK8KgwqDCoMKgwqDCoMKgIGNvbXBhdGlibGUgPSAic2lt
+cGxlLWJ1cyI7DQo+PiArwqDCoMKgwqDCoMKgwqAgI2FkZHJlc3MtY2VsbHMgPSA8Mj47DQo+PiAr
+wqDCoMKgwqDCoMKgwqAgI3NpemUtY2VsbHMgPSA8Mj47DQo+PiArwqDCoMKgwqDCoMKgwqAgcmFu
+Z2VzOw0KPj4gK8KgwqDCoMKgwqDCoMKgIGRtYS1yYW5nZXM7DQo+PiArDQo+PiArwqDCoMKgwqDC
+oMKgwqAgaW50ZXJuYWwtcmVnc0A3ZjAwMDAwMCB7DQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oCAjYWRkcmVzcy1jZWxscyA9IDwxPjsNCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgICNzaXpl
+LWNlbGxzID0gPDE+Ow0KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAgY29tcGF0aWJsZSA9ICJz
+aW1wbGUtYnVzIjsNCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIC8qIDE2TSBpbnRlcm5hbCBy
+ZWdpc3RlciBAIDB4N2YwMF8wMDAwICovDQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCByYW5n
+ZXMgPSA8MHgwIDB4MCAweDdmMDAwMDAwIDB4MTAwMDAwMD47DQo+PiArwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoCBkbWEtY29oZXJlbnQ7DQo+PiArDQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB1
+YXJ0MDogc2VyaWFsQDEyMDAwIHsNCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAg
+Y29tcGF0aWJsZSA9ICJzbnBzLGR3LWFwYi11YXJ0IjsNCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqAgcmVnID0gPDB4MTIwMDAgMHgxMDA+Ow0KPj4gK8KgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoCByZWctc2hpZnQgPSA8Mj47DQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgIGludGVycnVwdHMgPSA8R0lDX1NQSSA4MyBJUlFfVFlQRV9MRVZFTF9ISUdIPjsN
+Cj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgcmVnLWlvLXdpZHRoID0gPDE+Ow0K
+Pj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBjbG9jay1mcmVxdWVuY3kgPSA8MzI4
+MDAwMDAwPjsNCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgc3RhdHVzID0gIm9r
+YXkiOw0KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAgfTsNCj4+ICsNCj4+ICvCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgIG1kaW86IG1kaW9AMjIwMDQgew0KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoCAjYWRkcmVzcy1jZWxscyA9IDwxPjsNCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqAgI3NpemUtY2VsbHMgPSA8MD47DQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgIGNvbXBhdGlibGUgPSAibWFydmVsbCxvcmlvbi1tZGlvIjsNCj4+ICvCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgcmVnID0gPDB4MjIwMDQgMHg0PjsNCj4+ICvCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgY2xvY2tzID0gPCZjb3JlX2Nsb2NrPjsNCj4+ICvCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgIH07DQo+PiArDQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBp
+MmMwOiBpMmNAMTEwMDB7DQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGNvbXBh
+dGlibGUgPSAibWFydmVsbCxtdjc4MjMwLWkyYyI7DQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgIHJlZyA9IDwweDExMDAwIDB4MjA+Ow0KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoCAjYWRkcmVzcy1jZWxscyA9IDwxPjsNCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqAgI3NpemUtY2VsbHMgPSA8MD47DQo+PiArDQo+PiArwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgIGNsb2NrcyA9IDwmY29yZV9jbG9jaz47DQo+PiArwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgIGNsb2NrLW5hbWVzID0gImNvcmUiOw0KPj4gK8KgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoCBpbnRlcnJ1cHRzID0gPEdJQ19TUEkgODcgSVJRX1RZUEVfTEVW
+RUxfSElHSD47DQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGNsb2NrLWZyZXF1
+ZW5jeT08MTAwMDAwPjsNCj4+ICsNCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAg
+cGluY3RybC1uYW1lcyA9ICJkZWZhdWx0IiwgImdwaW8iOw0KPj4gK8KgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoCBwaW5jdHJsLTAgPSA8JmkyYzBfcGlucz47DQo+PiArwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgIHBpbmN0cmwtMSA9IDwmaTJjMF9ncGlvPjsNCj4+ICvCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgc2NsX2dwaW8gPSA8JmdwaW8wIDI2IEdQSU9fQUNUSVZF
+X0hJR0g+Ow0KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBzZGFfZ3BpbyA9IDwm
+Z3BpbzAgMjcgR1BJT19BQ1RJVkVfSElHSD47DQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgIHN0YXR1cyA9ICJkaXNhYmxlZCI7DQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB9
+Ow0KPj4gKw0KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAgaTJjMTogaTJjQDExMTAwew0KPj4g
+K8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBjb21wYXRpYmxlID0gIm1hcnZlbGwsbXY3
+ODIzMC1pMmMiOw0KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCByZWcgPSA8MHgx
+MTEwMCAweDIwPjsNCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgI2FkZHJlc3Mt
+Y2VsbHMgPSA8MT47DQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgICNzaXplLWNl
+bGxzID0gPDA+Ow0KPj4gKw0KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBjbG9j
+a3MgPSA8JmNvcmVfY2xvY2s+Ow0KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBj
+bG9jay1uYW1lcyA9ICJjb3JlIjsNCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAg
+aW50ZXJydXB0cyA9IDxHSUNfU1BJIDg4IElSUV9UWVBFX0xFVkVMX0hJR0g+Ow0KPj4gK8KgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBjbG9jay1mcmVxdWVuY3k9PDEwMDAwMD47DQo+PiAr
+DQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHBpbmN0cmwtbmFtZXMgPSAiZGVm
+YXVsdCIsICJncGlvIjsNCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgcGluY3Ry
+bC0wID0gPCZpMmMxX3BpbnM+Ow0KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBw
+aW5jdHJsLTEgPSA8JmkyYzFfZ3Bpbz47DQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgIHNjbF9ncGlvID0gPCZncGlvMCAyMCBHUElPX0FDVElWRV9ISUdIPjsNCj4+ICvCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgc2RhX2dwaW8gPSA8JmdwaW8wIDIxIEdQSU9fQUNUSVZF
+X0hJR0g+Ow0KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBzdGF0dXMgPSAiZGlz
+YWJsZWQiOw0KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAgfTsNCj4+ICsNCj4+ICvCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgIGdwaW8wOiBncGlvQDE4MTAwIHsNCj4+ICvCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqAgY29tcGF0aWJsZSA9ICJtYXJ2ZWxsLG9yaW9uLWdwaW8iOw0KPj4gK8Kg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCByZWcgPSA8MHgxODEwMCAweDQwPjsNCj4+ICvC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgbmdwaW9zID0gPDMyPjsNCj4+ICvCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgZ3Bpby1jb250cm9sbGVyOw0KPj4gK8KgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoCAjZ3Bpby1jZWxscyA9IDwyPjsNCj4+ICvCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqAgZ3Bpby1yYW5nZXMgPSA8JnBpbmN0cmwwIDAgMCAzMj47DQo+PiAr
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIG1hcnZlbGwscHdtLW9mZnNldCA9IDwweDFm
+MD47DQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGludGVycnVwdC1jb250cm9s
+bGVyOw0KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAjaW50ZXJydXB0LWNlbGxz
+ID0gPDI+Ow0KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBpbnRlcnJ1cHRzID0g
+PEdJQ19TUEkgNzUgSVJRX1RZUEVfTEVWRUxfSElHSD4sDQo+PiArwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIDxHSUNfU1BJIDc2IElSUV9UWVBFX0xFVkVM
+X0hJR0g+LA0KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoCA8R0lDX1NQSSA3NyBJUlFfVFlQRV9MRVZFTF9ISUdIPiwNCj4+ICvCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgPEdJQ19TUEkgNzggSVJRX1RZUEVf
+TEVWRUxfSElHSD47DQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB9Ow0KPj4gKw0KPj4gK8Kg
+wqDCoMKgwqDCoMKgwqDCoMKgwqAgZ3BpbzE6IGdwaW9AMTgxNDAgew0KPj4gK8KgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoCByZWcgPSA8MHgxODE0MCAweDQwPjsNCj4+ICvCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqAgY29tcGF0aWJsZSA9ICJtYXJ2ZWxsLG9yaW9uLWdwaW8iOw0K
+Pj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBuZ3Bpb3MgPSA8MTQ+Ow0KPj4gK8Kg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBncGlvLWNvbnRyb2xsZXI7DQo+PiArwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgICNncGlvLWNlbGxzID0gPDI+Ow0KPj4gK8KgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBncGlvLXJhbmdlcyA9IDwmcGluY3RybDAgMCAzMiAxND47
+DQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIG1hcnZlbGwscHdtLW9mZnNldCA9
+IDwweDFmMD47DQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGludGVycnVwdC1j
+b250cm9sbGVyOw0KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAjaW50ZXJydXB0
+LWNlbGxzID0gPDI+Ow0KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBpbnRlcnJ1
+cHRzID0gPEdJQ19TUEkgNzkgSVJRX1RZUEVfTEVWRUxfSElHSD4sDQo+PiArwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIDxHSUNfU1BJIDgwIElSUV9UWVBF
+X0xFVkVMX0hJR0g+Ow0KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAgfTsNCj4+ICvCoMKgwqDC
+oMKgwqDCoCB9Ow0KPj4gKw0KPj4gK8KgwqDCoMKgwqDCoMKgIC8qDQo+PiArwqDCoMKgwqDCoMKg
+wqDCoCAqIERlZGljYXRlZCBzZWN0aW9uIGZvciBkZXZpY2VzIGJlaGluZCAzMmJpdCBjb250cm9s
+bGVycyBzbyB3ZQ0KPj4gK8KgwqDCoMKgwqDCoMKgwqAgKiBjYW4gY29uZmlndXJlIHNwZWNpZmlj
+IERNQSBtYXBwaW5nIGZvciB0aGVtDQo+PiArwqDCoMKgwqDCoMKgwqDCoCAqLw0KPj4gK8KgwqDC
+oMKgwqDCoMKgIGJlaGluZC0zMmJpdC1jb250cm9sbGVyQDdmMDAwMDAwIHsNCj4+ICvCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgIGNvbXBhdGlibGUgPSAic2ltcGxlLWJ1cyI7DQo+PiArwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoCAjYWRkcmVzcy1jZWxscyA9IDwweDI+Ow0KPj4gK8KgwqDCoMKgwqDCoMKg
+wqDCoMKgwqAgI3NpemUtY2VsbHMgPSA8MHgyPjsNCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+IHJhbmdlcyA9IDwweDAgMHgwIDB4MCAweDdmMDAwMDAwIDB4MCAweDEwMDAwMDA+Ow0KPj4gK8Kg
+wqDCoMKgwqDCoMKgwqDCoMKgwqAgLyogSG9zdCBwaHkgcmFtIHN0YXJ0cyBhdCAweDIwME0gKi8N
+Cj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGRtYS1yYW5nZXMgPSA8MHgwIDB4MCAweDIgMHgw
+IDB4MSAweDA+Ow0KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAgZG1hLWNvaGVyZW50Ow0KPj4g
+Kw0KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAgZXRoMDogZXRoZXJuZXRAMjAwMDAgew0KPj4g
+K8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBjb21wYXRpYmxlID0gIm1hcnZlbGwsYXJt
+YWRhLWFjNS1uZXRhIjsNCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgcmVnID0g
+PDB4MCAweDIwMDAwIDB4MCAweDQwMDA+Ow0KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoCBpbnRlcnJ1cHRzID0gPEdJQ19TUEkgNDUgSVJRX1RZUEVfTEVWRUxfSElHSD47DQo+PiAr
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGNsb2NrcyA9IDwmY29yZV9jbG9jaz47DQo+
+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHBoeS1tb2RlID0gInNnbWlpIjsNCj4+
+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgc3RhdHVzID0gImRpc2FibGVkIjsNCj4+
+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIH07DQo+PiArDQo+PiArwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoCBldGgxOiBldGhlcm5ldEAyNDAwMCB7DQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgIGNvbXBhdGlibGUgPSAibWFydmVsbCxhcm1hZGEtYWM1LW5ldGEiOw0KPj4gK8KgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCByZWcgPSA8MHgwIDB4MjQwMDAgMHgwIDB4NDAwMD47
+DQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGludGVycnVwdHMgPSA8R0lDX1NQ
+SSA1NSBJUlFfVFlQRV9MRVZFTF9ISUdIPjsNCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqAgY2xvY2tzID0gPCZjb3JlX2Nsb2NrPjsNCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqAgcGh5LW1vZGUgPSAic2dtaWkiOw0KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoCBzdGF0dXMgPSAiZGlzYWJsZWQiOw0KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAg
+fTsNCj4+ICsNCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHVzYjA6IHVzYkA4MDAwMCB7DQo+
+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGNvbXBhdGlibGUgPSAibWFydmVsbCxv
+cmlvbi1laGNpIjsNCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgcmVnID0gPDB4
+MCAweDgwMDAwIDB4MCAweDUwMD47DQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+IGludGVycnVwdHMgPSA8R0lDX1NQSSA2NyBJUlFfVFlQRV9MRVZFTF9ISUdIPjsNCj4+ICvCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgc3RhdHVzID0gImRpc2FibGVkIjsNCj4+ICvCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgIH07DQo+PiArDQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB1
+c2IxOiB1c2JAYTAwMDAgew0KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBjb21w
+YXRpYmxlID0gIm1hcnZlbGwsb3Jpb24tZWhjaSI7DQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgIHJlZyA9IDwweDAgMHhhMDAwMCAweDAgMHg1MDA+Ow0KPj4gK8KgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoCBpbnRlcnJ1cHRzID0gPEdJQ19TUEkgNjkgSVJRX1RZUEVfTEVW
+RUxfSElHSD47DQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHN0YXR1cyA9ICJk
+aXNhYmxlZCI7DQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB9Ow0KPj4gK8KgwqDCoMKgwqDC
+oMKgIH07DQo+PiArDQo+PiArwqDCoMKgwqDCoMKgwqAgcGluY3RybDA6IHBpbmN0cmxAODAwMjAx
+MDAgew0KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAgY29tcGF0aWJsZSA9ICJtYXJ2ZWxsLGFj
+NS1waW5jdHJsIjsNCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHJlZyA9IDwwIDB4ODAwMjAx
+MDAgMCAweDIwPjsNCj4+ICsNCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGkyYzBfcGluczog
+aTJjMC1waW5zIHsNCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgbWFydmVsbCxw
+aW5zID0gIm1wcDI2IiwgIm1wcDI3IjsNCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqAgbWFydmVsbCxmdW5jdGlvbiA9ICJpMmMwIjsNCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+IH07DQo+PiArDQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBpMmMwX2dwaW86IGkyYzAtZ3Bp
+by1waW5zIHsNCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgbWFydmVsbCxwaW5z
+ID0gIm1wcDI2IiwgIm1wcDI3IjsNCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAg
+bWFydmVsbCxmdW5jdGlvbiA9ICJncGlvIjsNCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIH07
+DQo+PiArDQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBpMmMxX3BpbnM6IGkyYzEtcGlucyB7
+DQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIG1hcnZlbGwscGlucyA9ICJtcHAy
+MCIsICJtcHAyMSI7DQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIG1hcnZlbGws
+ZnVuY3Rpb24gPSAiaTJjMSI7DQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB9Ow0KPj4gKw0K
+Pj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAgaTJjMV9ncGlvOiBpMmMxLWdwaW8tcGlucyB7DQo+
+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIG1hcnZlbGwscGlucyA9ICJtcHAyMCIs
+ICJtcHAyMSI7DQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIG1hcnZlbGwsZnVu
+Y3Rpb24gPSAiaTJjMSI7DQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB9Ow0KPj4gK8KgwqDC
+oMKgwqDCoMKgIH07DQo+PiArDQo+PiArwqDCoMKgwqDCoMKgwqAgc3BpMDogc3BpQDgwNWEwMDAw
+IHsNCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGNvbXBhdGlibGUgPSAibWFydmVsbCxhcm1h
+ZGEtMzcwMC1zcGkiOw0KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAgcmVnID0gPDB4MCAweDgw
+NWEwMDAwIDB4MCAweDUwPjsNCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgICNhZGRyZXNzLWNl
+bGxzID0gPDB4MT47DQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAjc2l6ZS1jZWxscyA9IDww
+eDA+Ow0KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAgY2xvY2tzID0gPCZzcGlfY2xvY2s+Ow0K
+Pj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAgaW50ZXJydXB0cyA9IDxHSUNfU1BJIDkwIElSUV9U
+WVBFX0xFVkVMX0hJR0g+Ow0KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAgbnVtLWNzID0gPDE+
+Ow0KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAgc3RhdHVzID0gImRpc2FibGVkIjsNCj4+ICvC
+oMKgwqDCoMKgwqDCoCB9Ow0KPj4gKw0KPj4gK8KgwqDCoMKgwqDCoMKgIHNwaTE6IHNwaUA4MDVh
+ODAwMCB7DQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBjb21wYXRpYmxlID0gIm1hcnZlbGws
+YXJtYWRhLTM3MDAtc3BpIjsNCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHJlZyA9IDwweDAg
+MHg4MDVhODAwMCAweDAgMHg1MD47DQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAjYWRkcmVz
+cy1jZWxscyA9IDwweDE+Ow0KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAgI3NpemUtY2VsbHMg
+PSA8MHgwPjsNCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGNsb2NrcyA9IDwmc3BpX2Nsb2Nr
+PjsNCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGludGVycnVwdHMgPSA8R0lDX1NQSSA5MSBJ
+UlFfVFlQRV9MRVZFTF9ISUdIPjsNCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIG51bS1jcyA9
+IDwxPjsNCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHN0YXR1cyA9ICJkaXNhYmxlZCI7DQo+
+PiArwqDCoMKgwqDCoMKgwqAgfTsNCj4+ICsNCj4+ICvCoMKgwqDCoMKgwqDCoCBnaWM6IGludGVy
+cnVwdC1jb250cm9sbGVyQDgwNjAwMDAwIHsNCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGNv
+bXBhdGlibGUgPSAiYXJtLGdpYy12MyI7DQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAjaW50
+ZXJydXB0LWNlbGxzID0gPDM+Ow0KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAgaW50ZXJydXB0
+LWNvbnRyb2xsZXI7DQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCByZWcgPSA8MHgwIDB4ODA2
+MDAwMDAgMHgwIDB4MTAwMDA+LCAvKiBHSUNEICovDQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoCA8MHgwIDB4ODA2NjAwMDAgMHgwIDB4NDAwMDA+OyAvKiBHSUNSICovDQo+
+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBpbnRlcnJ1cHRzID0gPEdJQ19QUEkgNiBJUlFfVFlQ
+RV9MRVZFTF9ISUdIPjsNCj4+ICvCoMKgwqDCoMKgwqDCoCB9Ow0KPj4gK8KgwqDCoCB9Ow0KPj4g
+Kw0KPj4gK8KgwqDCoCBjbG9ja3Mgew0KPj4gK8KgwqDCoMKgwqDCoMKgIGNvcmVfY2xvY2s6IGNv
+cmUtY2xvY2sgew0KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAgY29tcGF0aWJsZSA9ICJmaXhl
+ZC1jbG9jayI7DQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAjY2xvY2stY2VsbHMgPSA8MD47
+DQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBjbG9jay1mcmVxdWVuY3kgPSA8NDAwMDAwMDAw
+PjsNCj4+ICvCoMKgwqDCoMKgwqDCoCB9Ow0KPj4gKw0KPj4gK8KgwqDCoMKgwqDCoMKgIGF4aV9j
+bG9jazogYXhpLWNsb2NrIHsNCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGNvbXBhdGlibGUg
+PSAiZml4ZWQtY2xvY2siOw0KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAgI2Nsb2NrLWNlbGxz
+ID0gPDA+Ow0KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAgY2xvY2stZnJlcXVlbmN5ID0gPDMy
+NTAwMDAwMD47DQo+PiArwqDCoMKgwqDCoMKgwqAgfTsNCj4+ICsNCj4+ICvCoMKgwqDCoMKgwqDC
+oCBzcGlfY2xvY2s6IHNwaS1jbG9jayB7DQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBjb21w
+YXRpYmxlID0gImZpeGVkLWNsb2NrIjsNCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgICNjbG9j
+ay1jZWxscyA9IDwwPjsNCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGNsb2NrLWZyZXF1ZW5j
+eSA9IDwyMDAwMDAwMDA+Ow0KPj4gK8KgwqDCoMKgwqDCoMKgIH07DQo+PiArwqDCoMKgIH07DQo+
+PiArfTsNCj4+IGRpZmYgLS1naXQgYS9hcmNoL2FybTY0L2Jvb3QvZHRzL21hcnZlbGwvYXJtYWRh
+LTk4ZHgzNXh4LXJkLmR0cyANCj4+IGIvYXJjaC9hcm02NC9ib290L2R0cy9tYXJ2ZWxsL2FybWFk
+YS05OGR4MzV4eC1yZC5kdHMNCj4+IG5ldyBmaWxlIG1vZGUgMTAwNjQ0DQo+PiBpbmRleCAwMDAw
+MDAwMDAwMDAuLmMyMGUwMzI0MTBmYQ0KPj4gLS0tIC9kZXYvbnVsbA0KPj4gKysrIGIvYXJjaC9h
+cm02NC9ib290L2R0cy9tYXJ2ZWxsL2FybWFkYS05OGR4MzV4eC1yZC5kdHMNCj4+IEBAIC0wLDAg
+KzEsMTAxIEBADQo+PiArLy8gU1BEWC1MaWNlbnNlLUlkZW50aWZpZXI6IChHUEwtMi4wKyBPUiBN
+SVQpDQo+PiArLyoNCj4+ICsgKiBEZXZpY2UgVHJlZSBGb3IgUkQtQUM1WC4NCj4+ICsgKg0KPj4g
+KyAqIENvcHlyaWdodCAoQykgMjAyMSBNYXJ2ZWxsDQo+PiArICogQ29weXJpZ2h0IChDKSAyMDIy
+IEFsbGllZCBUZWxlc2lzIExhYnMNCj4+ICsgKi8NCj4+ICsvKg0KPj4gKyAqIERldmljZSBUcmVl
+IGZpbGUgZm9yIE1hcnZlbGwgQWxsZXljYXQgNVggZGV2ZWxvcG1lbnQgYm9hcmQNCj4+ICsgKiBU
+aGlzIGJvYXJkIGZpbGUgc3VwcG9ydHMgdGhlIEIgY29uZmlndXJhdGlvbiBvZiB0aGUgYm9hcmQN
+Cj4+ICsgKi8NCj4+ICsNCj4+ICsvZHRzLXYxLzsNCj4+ICsNCj4+ICsjaW5jbHVkZSAiYXJtYWRh
+LTk4ZHgzNXh4LmR0c2kiDQo+PiArDQo+PiArLyB7DQo+PiArwqDCoMKgIG1vZGVsID0gIk1hcnZl
+bGwgUkQtQUM1WCBCb2FyZCI7DQo+PiArwqDCoMKgIGNvbXBhdGlibGUgPSAibWFydmVsbCxyZC1h
+YzV4IiwgIm1hcnZlbGwsYWM1eCIsICJtYXJ2ZWxsLGFjNSI7DQo+PiArDQo+PiArwqDCoMKgIGFs
+aWFzZXMgew0KPj4gK8KgwqDCoMKgwqDCoMKgIHNlcmlhbDAgPSAmdWFydDA7DQo+PiArwqDCoMKg
+wqDCoMKgwqAgc3BpZmxhc2gwID0gJnNwaWZsYXNoMDsNCj4+ICvCoMKgwqDCoMKgwqDCoCBncGlv
+MCA9ICZncGlvMDsNCj4+ICvCoMKgwqDCoMKgwqDCoCBncGlvMSA9ICZncGlvMTsNCj4+ICvCoMKg
+wqDCoMKgwqDCoCBldGhlcm5ldDAgPSAmZXRoMDsNCj4+ICvCoMKgwqDCoMKgwqDCoCBldGhlcm5l
+dDEgPSAmZXRoMTsNCj4+ICvCoMKgwqAgfTsNCj4+ICsNCj4+ICvCoMKgwqAgbWVtb3J5QDAgew0K
+Pj4gK8KgwqDCoMKgwqDCoMKgIGRldmljZV90eXBlID0gIm1lbW9yeSI7DQo+PiArwqDCoMKgwqDC
+oMKgwqAgcmVnID0gPDB4MiAweDAwMDAwMDAwIDB4MCAweDQwMDAwMDAwPjsNCj4+ICvCoMKgwqAg
+fTsNCj4+ICsNCj4+ICvCoMKgwqAgdXNiMXBoeTogdXNiLXBoeSB7DQo+PiArwqDCoMKgwqDCoMKg
+wqAgY29tcGF0aWJsZSA9ICJ1c2Itbm9wLXhjZWl2IjsNCj4+ICvCoMKgwqDCoMKgwqDCoCAjcGh5
+LWNlbGxzID0gPDA+Ow0KPj4gK8KgwqDCoCB9Ow0KPj4gK307DQo+PiArDQo+PiArJm1kaW8gew0K
+Pj4gK8KgwqDCoCBwaHkwOiBldGhlcm5ldC1waHlAMCB7DQo+PiArwqDCoMKgwqDCoMKgwqAgcmVn
+ID0gPDA+Ow0KPj4gK8KgwqDCoCB9Ow0KPj4gK307DQo+PiArDQo+PiArJmkyYzAgew0KPj4gK8Kg
+wqDCoCBzdGF0dXMgPSAib2theSI7DQo+PiArfTsNCj4+ICsNCj4+ICsmaTJjMSB7DQo+PiArwqDC
+oMKgIHN0YXR1cyA9ICJva2F5IjsNCj4+ICt9Ow0KPj4gKw0KPj4gKyZldGgwIHsNCj4+ICvCoMKg
+wqAgc3RhdHVzID0gIm9rYXkiOw0KPj4gK8KgwqDCoCBwaHktaGFuZGxlID0gPCZwaHkwPjsNCj4+
+ICt9Ow0KPj4gKw0KPj4gKy8qIFVTQjAgaXMgYSBob3N0IFVTQiAqLw0KPj4gKyZ1c2IwIHsNCj4+
+ICvCoMKgwqAgc3RhdHVzID0gIm9rYXkiOw0KPj4gK307DQo+PiArDQo+PiArLyogVVNCMSBpcyBh
+IHBlcmlwaGVyYWwgVVNCICovDQo+PiArJnVzYjEgew0KPj4gK8KgwqDCoCBzdGF0dXMgPSAib2th
+eSI7DQo+PiArwqDCoMKgIHBoeXMgPSA8JnVzYjFwaHk+Ow0KPj4gK8KgwqDCoCBwaHktbmFtZXMg
+PSAidXNiLXBoeSI7DQo+PiArwqDCoMKgIGRyX21vZGUgPSAicGVyaXBoZXJhbCI7DQo+PiArfTsN
+Cj4+ICsNCj4+ICsmc3BpMCB7DQo+PiArwqDCoMKgIHN0YXR1cyA9ICJva2F5IjsNCj4+ICsNCj4+
+ICvCoMKgwqAgc3BpZmxhc2gwOiBmbGFzaEAwIHsNCj4+ICvCoMKgwqDCoMKgwqDCoCBjb21wYXRp
+YmxlID0gImplZGVjLHNwaS1ub3IiOw0KPj4gK8KgwqDCoMKgwqDCoMKgIHNwaS1tYXgtZnJlcXVl
+bmN5ID0gPDUwMDAwMDAwPjsNCj4+ICvCoMKgwqDCoMKgwqDCoCBzcGktdHgtYnVzLXdpZHRoID0g
+PDE+OyAvKiAxLXNpbmdsZSwgMi1kdWFsLCA0LXF1YWQgKi8NCj4+ICvCoMKgwqDCoMKgwqDCoCBz
+cGktcngtYnVzLXdpZHRoID0gPDE+OyAvKiAxLXNpbmdsZSwgMi1kdWFsLCA0LXF1YWQgKi8NCj4+
+ICvCoMKgwqDCoMKgwqDCoCByZWcgPSA8MD47DQo+PiArDQo+PiArwqDCoMKgwqDCoMKgwqAgI2Fk
+ZHJlc3MtY2VsbHMgPSA8MT47DQo+PiArwqDCoMKgwqDCoMKgwqAgI3NpemUtY2VsbHMgPSA8MT47
+DQo+PiArDQo+PiArwqDCoMKgwqDCoMKgwqAgcGFydGl0aW9uQDAgew0KPj4gK8KgwqDCoMKgwqDC
+oMKgwqDCoMKgwqAgbGFiZWwgPSAic3BpX2ZsYXNoX3BhcnQwIjsNCj4+ICvCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgIHJlZyA9IDwweDAgMHg4MDAwMDA+Ow0KPj4gK8KgwqDCoMKgwqDCoMKgIH07DQo+
+PiArDQo+PiArwqDCoMKgwqDCoMKgwqAgcGFyaXRpb25AMSB7DQo+PiArwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoCBsYWJlbCA9ICJzcGlfZmxhc2hfcGFydDEiOw0KPj4gK8KgwqDCoMKgwqDCoMKgwqDC
+oMKgwqAgcmVnID0gPDB4ODAwMDAwIDB4NzAwMDAwPjsNCj4+ICvCoMKgwqDCoMKgwqDCoCB9Ow0K
+Pj4gKw0KPj4gK8KgwqDCoMKgwqDCoMKgIHBhcml0aW9uQDIgew0KPj4gK8KgwqDCoMKgwqDCoMKg
+wqDCoMKgwqAgbGFiZWwgPSAic3BpX2ZsYXNoX3BhcnQyIjsNCj4+ICvCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgIHJlZyA9IDwweEYwMDAwMCAweDEwMDAwMD47DQo+PiArwqDCoMKgwqDCoMKgwqAgfTsN
+Cj4+ICvCoMKgwqAgfTsNCj4+ICt9Ow0KPj4gZGlmZiAtLWdpdCBhL2FyY2gvYXJtNjQvYm9vdC9k
+dHMvbWFydmVsbC9hcm1hZGEtOThkeDM1eHguZHRzaSANCj4+IGIvYXJjaC9hcm02NC9ib290L2R0
+cy9tYXJ2ZWxsL2FybWFkYS05OGR4MzV4eC5kdHNpDQo+PiBuZXcgZmlsZSBtb2RlIDEwMDY0NA0K
+Pj4gaW5kZXggMDAwMDAwMDAwMDAwLi42MmQyNjUwNTEzYWENCj4+IC0tLSAvZGV2L251bGwNCj4+
+ICsrKyBiL2FyY2gvYXJtNjQvYm9vdC9kdHMvbWFydmVsbC9hcm1hZGEtOThkeDM1eHguZHRzaQ0K
+Pj4gQEAgLTAsMCArMSwxMyBAQA0KPj4gKy8vIFNQRFgtTGljZW5zZS1JZGVudGlmaWVyOiAoR1BM
+LTIuMCsgT1IgTUlUKQ0KPj4gKy8qDQo+PiArICogRGV2aWNlIFRyZWUgRm9yIEFDNVguDQo+PiAr
+ICoNCj4+ICsgKiBDb3B5cmlnaHQgKEMpIDIwMjIgQWxsaWVkIFRlbGVzaXMgTGFicw0KPj4gKyAq
+Lw0KPj4gKw0KPj4gKyNpbmNsdWRlICJhcm1hZGEtOThkeDI1eHguZHRzaSINCj4+ICsNCj4+ICsv
+IHsNCj4+ICvCoMKgwqAgbW9kZWwgPSAiTWFydmVsbCBBQzVYIFNvQyI7DQo+PiArwqDCoMKgIGNv
+bXBhdGlibGUgPSAibWFydmVsbCxhYzV4IiwgIm1hcnZlbGwsYWM1IjsNCj4+ICt9Ow==
