@@ -2,126 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34B2BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 00:32:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A8AEC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 00:33:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237442AbiEZAcl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 20:32:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55342 "EHLO
+        id S1343967AbiEZAdz (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 20:33:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237109AbiEZAcg (ORCPT
+        with ESMTP id S1343900AbiEZAdv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 20:32:36 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94EC3B0424;
-        Wed, 25 May 2022 17:32:20 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id wh22so203149ejb.7;
-        Wed, 25 May 2022 17:32:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=tBXCIHb4qO8VHE6VmKjrYwTNzuBx6iQC8DAUSK/i1Bg=;
-        b=cyNAEaMDlQzWgLKBudLnvNUcsoNyt10eIOeTK7Y2Lt0uV7BmaIyrJ4n2cRHr+qq/aW
-         mFphYOMRHbz3EevPZy5lnZnemP8TQldIedQlOeJxmLoJirujqkyzbFep0cnRoobPNEEz
-         5sdXrRfnHZVnNy2nVlc1Dzdio9A7LF4YSM1bozIvVAYVbhyy4xDCeBT1LzBSc60lPvk6
-         NK2DTT/aLjacr5p7rA8amGXhZmlGlUhvP4aHckhOX+QaC2NMEkJNxJvEv3s5XDkJL+Gi
-         ENdxTej6Ru+Vz/gUkhwkQA4rxQN+Ya33S9hllkvgbBpoWga3cxn9VJxWLfU4TTVWoj+N
-         a+3A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=tBXCIHb4qO8VHE6VmKjrYwTNzuBx6iQC8DAUSK/i1Bg=;
-        b=kghKZTzhOslPAbsJkkK+53G0ROUtEFyLPqz0sU/76rIgONNLg3iCcqESbZbDD6fmiJ
-         Nvdpo5W9vITctpFjy1fbXhZsEwrt6E0mcun8E8fQmwvLJRKTo8Yb8tmqZkRwRP9qjldb
-         m084Pje5+GnL+IFc/6u7TTlIZ9Yqb7frKgp+ivCsvoboZ+nm+j0duOZ3e2FqJMBHbOLy
-         Jhv441+NOsgAH3Zk491R8E0ZIZPifH8BeLJJ2zJQ5jHXE8rxWdw9PNYtkIzBc4XGCgwF
-         eOwAdvWDPPVttvTsjpSAoBuuiIeAcgBCH3FI66zctaeqFB+hb/oHZKOsepLmouhoAE3f
-         tqzA==
-X-Gm-Message-State: AOAM530dFtJXhRTDzoIqEGfd3CkoUlXS5ELmIHtSCBALK2amjKPqRYN3
-        IzSjVvAt150R4UdfGGs3tSk=
-X-Google-Smtp-Source: ABdhPJw03Up8flLPvxOIgpUAg6dl93ZyvmvVjLa56m/Cpy2CfskqyfS3o+8FfaX1MwwK7EhZC+JChA==
-X-Received: by 2002:a17:907:2cc3:b0:6f8:5a21:4d62 with SMTP id hg3-20020a1709072cc300b006f85a214d62mr32485376ejc.256.1653525139035;
-        Wed, 25 May 2022 17:32:19 -0700 (PDT)
-Received: from skbuf ([188.25.255.186])
-        by smtp.gmail.com with ESMTPSA id v19-20020a170906339300b006f3ef214e05sm31072eja.107.2022.05.25.17.32.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 May 2022 17:32:18 -0700 (PDT)
-Date:   Thu, 26 May 2022 03:32:16 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        Marek Vasut <marex@denx.de>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: net/dsa: Add spi-peripheral-props.yaml
- references
-Message-ID: <20220526003216.7jxopjckccugh3ft@skbuf>
-References: <20220525205752.2484423-1-robh@kernel.org>
+        Wed, 25 May 2022 20:33:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23B9EA7750;
+        Wed, 25 May 2022 17:33:50 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BC1E9B81EC6;
+        Thu, 26 May 2022 00:33:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5A33C385B8;
+        Thu, 26 May 2022 00:33:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653525227;
+        bh=ZWKxggY+VnUVpjU4MoysVSsuD3COCyMSaEfvLuXgVRs=;
+        h=From:To:Cc:Subject:Date:From;
+        b=PBq6fKCo1Bz3EIujJxTKMMGWJbuJ0AOm4fbJNtj8D7eFmMOLfK3VAk6A1OaQ06kA7
+         M2FK2VWqIbFP/w+aXhQmOrUMA9u4hBzaVVAdyZP9o2exDmH4Nibf3XvUZoN7hoy0dp
+         UIeJnJNof3D2CKGFKMtat6wU1/gHTxYJRiObxv9PG4vBEsytYeMwGTvjwuC8Q37AVO
+         6Sb4JbA3ZcaOfeURQqnr0HQ2JaBTBZIaewKvENbOxbpbKDYBXVPgaGOXz5rj4i0wDv
+         EH6DMCyHBlTpLyMCQm7MqAIrrFGoRhQr41peKlgwcAfgISDqQsBFjicLqSrLq42uzR
+         pwgWjvgD7iZNg==
+From:   guoren@kernel.org
+To:     palmer@rivosinc.com, arnd@arndb.de, linux@roeck-us.net,
+        palmer@dabbelt.com, heiko@sntech.de
+Cc:     linux-riscv@lists.infradead.org, linux-arch@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Guo Ren <guoren@linux.alibaba.com>,
+        Guo Ren <guoren@kernel.org>
+Subject: [PATCH V2] riscv: compat: Using seperated vdso_maps for compat_vdso_info
+Date:   Wed, 25 May 2022 20:33:39 -0400
+Message-Id: <20220526003339.2948309-1-guoren@kernel.org>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220525205752.2484423-1-robh@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 25, 2022 at 03:57:50PM -0500, Rob Herring wrote:
-> SPI peripheral device bindings need to reference spi-peripheral-props.yaml
-> in order to use various SPI controller specific properties. Otherwise,
-> the unevaluatedProperties check will reject any controller specific
-> properties.
-> 
-> Signed-off-by: Rob Herring <robh@kernel.org>
-> ---
->  Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml | 1 +
->  Documentation/devicetree/bindings/net/dsa/realtek.yaml       | 1 +
->  2 files changed, 2 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml b/Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml
-> index 184152087b60..6bbd8145b6c1 100644
-> --- a/Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml
-> +++ b/Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml
-> @@ -12,6 +12,7 @@ maintainers:
->  
->  allOf:
->    - $ref: dsa.yaml#
-> +  - $ref: /schemas/spi/spi-peripheral-props.yaml#
->  
->  properties:
->    # See Documentation/devicetree/bindings/net/dsa/dsa.yaml for a list of additional
-> diff --git a/Documentation/devicetree/bindings/net/dsa/realtek.yaml b/Documentation/devicetree/bindings/net/dsa/realtek.yaml
-> index 99ee4b5b9346..4f99aff029dc 100644
-> --- a/Documentation/devicetree/bindings/net/dsa/realtek.yaml
-> +++ b/Documentation/devicetree/bindings/net/dsa/realtek.yaml
-> @@ -108,6 +108,7 @@ if:
->      - reg
->  
->  then:
-> +  $ref: /schemas/spi/spi-peripheral-props.yaml#
->    not:
->      required:
->        - mdc-gpios
-> -- 
-> 2.34.1
-> 
+From: Guo Ren <guoren@linux.alibaba.com>
 
-Also needed by nxp,sja1105.yaml and the following from brcm,b53.yaml:
-	brcm,bcm5325
-	brcm,bcm5365
-	brcm,bcm5395
-	brcm,bcm5397
-	brcm,bcm5398
-	brcm,bcm53115
-	brcm,bcm53125
-	brcm,bcm53128
+This is a fixup for vdso implementation which caused musl to
+fail.
+
+[   11.600082] Run /sbin/init as init process
+[   11.628561] init[1]: unhandled signal 11 code 0x1 at
+0x0000000000000000 in libc.so[ffffff8ad39000+a4000]
+[   11.629398] CPU: 0 PID: 1 Comm: init Not tainted
+5.18.0-rc7-next-20220520 #1
+[   11.629462] Hardware name: riscv-virtio,qemu (DT)
+[   11.629546] epc : 00ffffff8ada1100 ra : 00ffffff8ada13c8 sp :
+00ffffffc58199f0
+[   11.629586]  gp : 00ffffff8ad39000 tp : 00ffffff8ade0998 t0 :
+ffffffffffffffff
+[   11.629598]  t1 : 00ffffffc5819fd0 t2 : 0000000000000000 s0 :
+00ffffff8ade0cc0
+[   11.629610]  s1 : 00ffffff8ade0cc0 a0 : 0000000000000000 a1 :
+00ffffffc5819a00
+[   11.629622]  a2 : 0000000000000001 a3 : 000000000000001e a4 :
+00ffffffc5819b00
+[   11.629634]  a5 : 00ffffffc5819b00 a6 : 0000000000000000 a7 :
+0000000000000000
+[   11.629645]  s2 : 00ffffff8ade0ac8 s3 : 00ffffff8ade0ec8 s4 :
+00ffffff8ade0728
+[   11.629656]  s5 : 00ffffff8ade0a90 s6 : 0000000000000000 s7 :
+00ffffffc5819e40
+[   11.629667]  s8 : 00ffffff8ade0ca0 s9 : 00ffffff8addba50 s10:
+0000000000000000
+[   11.629678]  s11: 0000000000000000 t3 : 0000000000000002 t4 :
+0000000000000001
+[   11.629688]  t5 : 0000000000020000 t6 : ffffffffffffffff
+[   11.629699] status: 0000000000004020 badaddr: 0000000000000000
+cause: 000000000000000d
+
+The last __vdso_init(&compat_vdso_info) replaces the data in normal
+vdso_info. This is an obvious bug.
+
+Reported-by: Guenter Roeck <linux@roeck-us.net>
+Tested-by: Guenter Roeck <linux@roeck-us.net>
+Tested-by: Heiko Stübner <heiko@sntech.de>
+Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
+Signed-off-by: Guo Ren <guoren@kernel.org>
+Cc: Palmer Dabbelt <palmer@dabbelt.com>
+---
+Changes in V2:
+ - Add Tested-by
+ - Rename vvar & vdso in /proc/<pid>/maps.
+---
+ arch/riscv/kernel/vdso.c | 15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
+
+diff --git a/arch/riscv/kernel/vdso.c b/arch/riscv/kernel/vdso.c
+index 50fe4c877603..957f164c9778 100644
+--- a/arch/riscv/kernel/vdso.c
++++ b/arch/riscv/kernel/vdso.c
+@@ -206,12 +206,23 @@ static struct __vdso_info vdso_info __ro_after_init = {
+ };
+ 
+ #ifdef CONFIG_COMPAT
++static struct vm_special_mapping rv_compat_vdso_maps[] __ro_after_init = {
++	[RV_VDSO_MAP_VVAR] = {
++		.name   = "[compat vvar]",
++		.fault = vvar_fault,
++	},
++	[RV_VDSO_MAP_VDSO] = {
++		.name   = "[compat vdso]",
++		.mremap = vdso_mremap,
++	},
++};
++
+ static struct __vdso_info compat_vdso_info __ro_after_init = {
+ 	.name = "compat_vdso",
+ 	.vdso_code_start = compat_vdso_start,
+ 	.vdso_code_end = compat_vdso_end,
+-	.dm = &rv_vdso_maps[RV_VDSO_MAP_VVAR],
+-	.cm = &rv_vdso_maps[RV_VDSO_MAP_VDSO],
++	.dm = &rv_compat_vdso_maps[RV_VDSO_MAP_VVAR],
++	.cm = &rv_compat_vdso_maps[RV_VDSO_MAP_VDSO],
+ };
+ #endif
+ 
+-- 
+2.36.1
+
