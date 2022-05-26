@@ -2,140 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4F8BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 19:58:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E9A4C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 20:03:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245568AbiEZT6N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 15:58:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49024 "EHLO
+        id S1348868AbiEZUDJ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 16:03:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235380AbiEZT6J (ORCPT
+        with ESMTP id S245211AbiEZUDF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 15:58:09 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CE93937AAD
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 12:58:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653595087;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=oOXbG4pXgB/tMHUk6J9HTXNGVb2QU/YqfUjt26GHJWg=;
-        b=GXltilIxu+5RGZ6K847RidaRcjROq6TPi+f0NgIxmfY3EJoVzh4/tUH9F8rVJOH7azjx4X
-        +kYgB28hTbI//UaVSgEIiHXSKnKLguAjgwpOaVxiAQbvBMYiz+Xg6tvUrpGG1m2Be8p4tP
-        BdWffqDrj0kunOUDdPx2+9vFhpHP014=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-260-YLlSNeESPlmRCw6TRZfPxw-1; Thu, 26 May 2022 15:58:05 -0400
-X-MC-Unique: YLlSNeESPlmRCw6TRZfPxw-1
-Received: by mail-ed1-f70.google.com with SMTP id j22-20020aa7ca56000000b0042bd3527f2aso1758845edt.0
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 12:58:05 -0700 (PDT)
+        Thu, 26 May 2022 16:03:05 -0400
+Received: from mail-oa1-x36.google.com (mail-oa1-x36.google.com [IPv6:2001:4860:4864:20::36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A70B266686
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 13:03:03 -0700 (PDT)
+Received: by mail-oa1-x36.google.com with SMTP id 586e51a60fabf-f2cbceefb8so3438333fac.11
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 13:03:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=FadbUOYQTfhqwtmXPIV4R6Iv53QsaHE17At37GAFSpI=;
+        b=ECumAw/OczA+Bc4OdOqq0SzGUpO6cJZG+4ICfj1RjEdhHVePkpnT8F+XZgihYIIpJh
+         wDkt3GBfrSddkPu5fhA51v881vO1jw9qtGZHJYZ5cgsHFXMoQ/NjVIWXb7t3S25XsKMM
+         n4XOtCaaKACuVwDhP23Fe8wFiP4c5VqColuIs=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=oOXbG4pXgB/tMHUk6J9HTXNGVb2QU/YqfUjt26GHJWg=;
-        b=7REyJMmnj5chzlQy7r+IobF0d7AVtCNFkJUBbDXn0JOvHpwU6YvxdMu7qxpr1F9ztD
-         h6kU4BfqyBrJilwVfu41aIRu/yoAQ3JHZDaUserM8yA0534ynNHWG0vaR5yt7nL2W7Qy
-         Y0zjlQ+at1a8CTiGCB05z/8RKnKrpE0ttXJCdPT+Cd9j4xWU0QaoJ9/jG8cuBAPZqo4I
-         p/c1xxEv8m4xPChEQI95TGOF45vOnp40yGPAlDR1loeFbA0I6mW7bNUg0yCT/2WbUhpJ
-         uWDOc9QLPNEkSOWqurruCctLw9uhYSSQgE3h5xvidg121cM7Ako07jt+5RgJvLzvc47D
-         2ABw==
-X-Gm-Message-State: AOAM532OEW1tVa9YTyzwT96U57qvawdBm48S1URgs/T1BmP28uOMMG6j
-        lK4KwwV2Vcy3Rzwzt9YvDQgaFOoDSB4nK+Lv9bNQMY8eVKFqw1G323pBbmQTM5DvXkfnaLtDYdq
-        vjYMzhyYnWdyPtAvagWzs1mWF
-X-Received: by 2002:a17:907:9483:b0:6ff:b1:467a with SMTP id dm3-20020a170907948300b006ff00b1467amr14411607ejc.683.1653595084284;
-        Thu, 26 May 2022 12:58:04 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzeFT//mmyuN2iNQEtrbSHEIB8t9ML5kjmZLZsVIz+6dD0vsb29kMps6gyECXnUOqdt4JtkGA==
-X-Received: by 2002:a17:907:9483:b0:6ff:b1:467a with SMTP id dm3-20020a170907948300b006ff00b1467amr14411598ejc.683.1653595084058;
-        Thu, 26 May 2022 12:58:04 -0700 (PDT)
-Received: from [192.168.45.129] ([185.238.218.66])
-        by smtp.gmail.com with ESMTPSA id s25-20020a170906bc5900b006fed40e5564sm773435ejv.83.2022.05.26.12.58.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 26 May 2022 12:58:03 -0700 (PDT)
-Message-ID: <82c37e1c-f216-e635-9107-af04f43484e4@redhat.com>
-Date:   Thu, 26 May 2022 21:58:02 +0200
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=FadbUOYQTfhqwtmXPIV4R6Iv53QsaHE17At37GAFSpI=;
+        b=Vm+F+gmMZHhvg0GYzlV6t0zNvY3ySk/CJ361iXDtKQfX3TorIMVNjO2Ww+EMhFsgn1
+         ROJolmFh9EKeJvaapKfto7pCpcFTwBfeR5cBZO3KqfGcQi0b3SvQksWv+am0Zc1vHM8+
+         NfO5GTibRgS2IKyUM/S2jTrGyta739LKR9AbdwOwT9BuJ+XS/ulVhutLvOVWk4dhoV+X
+         lhzkrhwXDLl4VDVJkRsBrNZ8M+PdF/GZg0pqc1DvjJp76LploWbNhr0cFcFDXIq2ItZe
+         vTJ51CkhUvrV1FYtRT2JoqBujnqj4Ecv6r+e/Al/s2tsCI0w96EiLOOvLJGvmKweynjf
+         BqUQ==
+X-Gm-Message-State: AOAM530GGaJcsWdakQMzS6GGcBype+2p8yGY6TdZkrtqDq3DvQ33+WHw
+        CAjMqtlINh1q75jRmKApHW2VjQBZs2pHbVu147CgOw==
+X-Google-Smtp-Source: ABdhPJyYxNK72k7Hut3zKeeRKfCsZ7QCP4bCHsBSQnD4xwgdfDbPatJObrFRzcHOU6dkskZA8r+cDO9eBA7dRpkp8h4=
+X-Received: by 2002:a05:6870:240d:b0:f1:b878:e97c with SMTP id
+ n13-20020a056870240d00b000f1b878e97cmr2102021oap.193.1653595382947; Thu, 26
+ May 2022 13:03:02 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Thu, 26 May 2022 16:03:02 -0400
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [GIT PULL] platform-drivers-x86 for 5.19-1
-Content-Language: en-US
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Andy Shevchenko <andy@infradead.org>,
-        Mark Gross <mark.gross@intel.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>
-References: <13e61c61-0d4b-5f48-6373-f056bf8b603f@redhat.com>
- <CAHk-=wgV8zqiLi5p-SNZ2zSi95CkkFXqPZJjtneVXeobgAohJg@mail.gmail.com>
- <f39aa9c0-b4e6-1f5d-f556-643442fcbcc5@redhat.com>
- <CAHk-=wgNP+Dziv=4MDEf-wAW-U_0ZNNsL0gMDs7A46+CACgD4w@mail.gmail.com>
- <e5ff5023-c3e7-769b-33b0-2c4b376bc4d2@redhat.com>
- <CAHk-=wgTRT6nQeJpVCKb+m=So6bLzUZQYcY6+RH5W0gZfsp+Fg@mail.gmail.com>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <CAHk-=wgTRT6nQeJpVCKb+m=So6bLzUZQYcY6+RH5W0gZfsp+Fg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20220523233719.1496297-1-bjorn.andersson@linaro.org>
+References: <20220523233719.1496297-1-bjorn.andersson@linaro.org>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Thu, 26 May 2022 16:03:02 -0400
+Message-ID: <CAE-0n53SJkTLGg60BURV_3c3C_cB4JyAQx-TUe4mRXyT42G4Fg@mail.gmail.com>
+Subject: Re: [PATCH] leds: qcom-lpg: Require pattern to follow documentation
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        Pavel Machek <pavel@ucw.cz>
+Cc:     Matthias Kaehlcke <mka@chromium.org>,
+        Satya Priya <quic_c_skakit@quicinc.com>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-leds@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Quoting Bjorn Andersson (2022-05-23 16:37:19)
+> The leds-trigger-pattern documentation describes how the brightness of
+> the LED should transition linearly from one brightness value to the
+> next, over the given delta_t.
+>
+> But the pattern engine in the Qualcomm LPG hardware only supports
+> holding the brightness for each entry for the period.
+> This subset of patterns can be represented in the leds-trigger-pattern
+> by injecting zero-time transitions after each entry in the pattern,
+> resulting in a pattern that pattern that can be rendered by the LPG.
 
-On 5/26/22 21:25, Linus Torvalds wrote:
-> On Wed, May 25, 2022 at 5:34 AM Hans de Goede <hdegoede@redhat.com> wrote:
->>
->> 5. run:
->>
->> git tag -s platform-drivers-x86-v5.19-1 for-next
->> git request-pull v5.18-rc1 git://git.kernel.org/pub/scm/linux/kernel/git/pdx86/platform-drivers-x86.git platform-drivers-x86-v5.19-1 > pull
-> 
-> So there's your problem.
-> 
-> You're basically saying "give me a pull-request against v5.18-rc1".
-> 
-> Which is bogus, since you already sent me part of your pile after rc1,
-> and I already have it, so now your pull request will end up repeating
-> those parts.
-> 
-> So just do
-> 
->      git fetch origin
->      git request-pull origin/master git://git....
-> 
-> to let git figure out what the actual common state is with 'origin'
-> (and obviously you may have a different name for my upstream
-> repository, so replace "origin" with whatever that correct name is).
-> 
-> (That "git fetch origin" doesn't have to happen right before the pull
-> request, but it has to be done at *some* point so that your git tree
-> is basically aware of what I've merged from you previously).
-> 
-> Anyway, the important point is that you shouldn't try to remember -
-> incorrectly - what the last common point for us is.  Git knows - as
-> long as you just give it enough info.
+s/that pattern//
 
-Right, I see. I gave this a try locally and indeed reduces the shortlog
-+ diffstat a bit. I will remember to use this form when creating
-pull-reqs from now on.
+>
+> Rework LPG pattern interface to require these zero-time transitions, to
+> make it comply with this subset of patterns and reject the patterns it
+> can't render.
+>
+> Fixes: 24e2d05d1b68 ("leds: Add driver for Qualcomm LPG")
+> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> ---
 
-Note that this seems to only help up to the point where my for-next
-and fixes branching start diverging though.
-
-So e.g. the surface bits you pointed out before:
-
-platform/surface:
- -  aggregator: Fix initialization order when compiling as builtin module
- -  gpe: Add support for Surface Pro 8
-
-+ the matching diffstat bits
-
-Are still present in the shortlog even though they are already in v5.18
-
-Regards,
-
-Hans
-
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
