@@ -2,145 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D699C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 03:29:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB9B8C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 03:36:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237697AbiEZD3Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 23:29:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37194 "EHLO
+        id S239527AbiEZDgz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 23:36:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230314AbiEZD3U (ORCPT
+        with ESMTP id S230314AbiEZDgu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 23:29:20 -0400
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1anam02on2089.outbound.protection.outlook.com [40.107.96.89])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADC44B0409
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 20:29:18 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SOFqJF1BjIsl5b4sx/CRUa+gxWtpfkeU7ayemB5fMN1vu7uU/JODD9/jAmFEZllbNlJy+Ts8a+Bumus5fQLz2Cxe+xBFXq6MmtEXAkNVmCkqHj7qs3B8I+iSbG40R1Iz2WhA9TYOadehFUZJ0LcovYqWvn9xllW40BmBy6RIJAkfDosGTs6VAsr13hXrtOwrTD+W3vkS3CfgKyZpzCghHr5EUiQ5nSqzo/wcCNyHyHGYfZOjlqAlbgOJ86zd7lkMPBXQxRwd5pybwdb9MJ07cc/TUpVVC/A93w3EAd9nlTLczVjfzwzqKtucqOn2FL8LVd0f724YVU/3zZtPniJIAw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=pb1K9Aj5sVdO/YgAqWin4RPpJeDfOdGMLdnSV2hxBhA=;
- b=hZ6dIunJCm+tDBYXL1gvU0IMSaJq+LmxGHh05OQFB28NNa46H0QPFgrNX5q9yIlXPDZKtLlsIT7ZqwNLPLsxeAGMJREn0ebMb1SDsu6pTQhL7mUw/dbvMxTYKXv4aFNz4zuRbfhpfCFEUn5qd5TWfwVosE0NEsw3nczYHg8NHEYl7/GO2Gmb1wMXk72Y18/xQyc6w76Pf6dBCbT4EH/sPx/IfeoEPJPk3fDGhL/vhadyE7Z23zeP5gz+ESvar5VJHQfNpEI+qjRgh2Q95gmQLrY24pNBJ+ODXG0ZqZddGiQiMuPsuJ7SwWC7jBtP7hWmJqVIWoKlHzvCTcyHYuYahg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pb1K9Aj5sVdO/YgAqWin4RPpJeDfOdGMLdnSV2hxBhA=;
- b=c7jlGXY7MhYsrEl4+32vbX48cKyTNFznt+oTSvEdRG5V1a70V7xMCAsx9NsNQtmhzCD1LX0bjd8nsyxuiyY7hu8VlaxxNBn0Y0mw3rtJ/gIJTDd7mqldc1K9+w3jot2EUCXwuIZ8OOcvzjqQ58LUm07yGjbH7kFXtNEW2zmvFjU=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DM8PR12MB5445.namprd12.prod.outlook.com (2603:10b6:8:24::7) by
- DM8PR12MB5461.namprd12.prod.outlook.com (2603:10b6:8:3a::19) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5293.13; Thu, 26 May 2022 03:29:17 +0000
-Received: from DM8PR12MB5445.namprd12.prod.outlook.com
- ([fe80::8c27:b470:84f9:82b8]) by DM8PR12MB5445.namprd12.prod.outlook.com
- ([fe80::8c27:b470:84f9:82b8%7]) with mapi id 15.20.5273.023; Thu, 26 May 2022
- 03:29:17 +0000
-Message-ID: <dac2c654-cb9c-6554-0afd-9e8db012374a@amd.com>
-Date:   Thu, 26 May 2022 10:29:09 +0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.9.0
-Subject: Re: [PATCH v2] iommu/amd: Set translation valid bit only when IO page
- tables are in used
-Content-Language: en-US
-To:     Joerg Roedel <joro@8bytes.org>
-Cc:     linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
-        vasant.hegde@amd.com, jon.grimm@amd.com
-References: <20220509074815.11881-1-suravee.suthikulpanit@amd.com>
- <Yn5YIfzmerwAM30M@8bytes.org> <1dfaf07e-040e-848b-db7c-86a107fd5cb3@amd.com>
- <YodMvV/8eii4KCLg@8bytes.org>
-From:   Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-In-Reply-To: <YodMvV/8eii4KCLg@8bytes.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: HK2PR02CA0199.apcprd02.prod.outlook.com
- (2603:1096:201:20::11) To DM8PR12MB5445.namprd12.prod.outlook.com
- (2603:10b6:8:24::7)
+        Wed, 25 May 2022 23:36:50 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D78274FC67
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 20:36:46 -0700 (PDT)
+Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L7tqz2sp6zjX7b;
+        Thu, 26 May 2022 11:35:43 +0800 (CST)
+Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
+ kwepemi500012.china.huawei.com (7.221.188.12) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 26 May 2022 11:36:44 +0800
+Received: from [10.174.179.234] (10.174.179.234) by
+ kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 26 May 2022 11:36:42 +0800
+Message-ID: <87bdb1c6-5803-d9c0-9208-432027ae1d8b@huawei.com>
+Date:   Thu, 26 May 2022 11:36:41 +0800
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 8fb3c4ce-9bd1-4675-1c08-08da3ec7e9c1
-X-MS-TrafficTypeDiagnostic: DM8PR12MB5461:EE_
-X-Microsoft-Antispam-PRVS: <DM8PR12MB5461EBC51F2B8B1799E13FBFF3D99@DM8PR12MB5461.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ppu3l/lHBk0d8iJ8FDqKXADfhDmeDqNJSpm8T5keQFFpqhz3T0KXteT6gfZAFclrQDn37j64upuoQygW2SBZLO0E52CAgHO41KyCbnNaCIRglxxAHXyh/ToamfikEnPXgobdxnrF1ibFg82rMqrmakGLXLPTywsyKSXWNxlHkr03WarUnkIWmUtIvbx3nTZToIgPDMR36bAk3jPt2QUFWwtEt4TiIZirMb0KnwwUJhR+iHNCcmEUyO5raos9uJd5DuNTPtqFFD03iGuAHzXTyraZCk/KFnhgcCXL/4VSe//ICqBRs6gs2xRWw1n9N8TsdP328NjIwrjpX4g625MG6MTGAiVQcbu6cpRsJP9Z+hV3rACTESenHTfc2pJ1KGxLYgzfYPWHB6LV8MFRUzhedw9c0SV0766bcu6H+PM3KfkSt7vxuFUV7yDl9ZVcceuB3Lc5a6hANyIFHBD2R0vSRAXYDve8xq/TsL2uQGL6RyI5otSoVtNsVRDkvysty9oJMavSAbVN1p8VmnyMoK/orLuU8ZA+nTNKjQJ/lxlbH70eq2Vk2BydhRybLhIwTyg4IK+bmyep/TW5A7dRSit2wnLZfIvfzF+BCwJ6TjGkblDFWytOdr5EdAv6zr9fuKG47P6W6mGL5Stn/tFWIFVTdplL7GCAGXixux6k3j7lIDP2lf5bq4mYHoKsnANQebzm5I8Dmm71oVPiEB4amZwzfYPfWs/lT4PLfJnTF4ghfbI=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM8PR12MB5445.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(66946007)(66556008)(2616005)(6506007)(6666004)(53546011)(316002)(26005)(6916009)(31696002)(6512007)(508600001)(66476007)(8676002)(4326008)(6486002)(86362001)(38100700002)(186003)(5660300002)(2906002)(31686004)(4744005)(44832011)(36756003)(8936002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?dXFIWnNDZnBuL3AreWhOMFpBN3IrRWNWQ29XL3F5QWxIdHovd05UbGtDQXlT?=
- =?utf-8?B?b3ByMXQ1THFjaml0dTBNWWhIQlFYRGVxOVVyR25EaW1oZEo1NWtvZXdnR3Az?=
- =?utf-8?B?ZHdBSDN6azJZOVhmcTM3Zjl1dm1XdklBWHRTZmtKcXZhZU1ydEM5aUQrMkhV?=
- =?utf-8?B?TDB4QmJxckhEQ0ZRS0pqTC9zYnVubUQybk5qZ0hhSlllZm9acEhPWGltd1Iy?=
- =?utf-8?B?QnJTQVNDZElncHIrbkFsVEh4eitsVEYxeS9SV1RMZXBuVDdFVit1OUlNV3pV?=
- =?utf-8?B?d2UrTk1Qam1tclFQdDYxdTFxRG5SbUJlc21tcHhGU0RSbzk5SFJlZy8rcmJS?=
- =?utf-8?B?YzF2YmVFL0xmRVNIZWJKT3RJTDJiTGNiVkFmOXRxUzlOeGxweC8rQjJLZ3hR?=
- =?utf-8?B?WjB3Mnk4NjFZeXdBbXorMEhzVDZpS0ovb1ZKOVFySWlEKzNiU3ZhMDRteXJE?=
- =?utf-8?B?ais4OThyMjNyOEhndmVCVXkzTmczM1VqRjNxT3U0eU83TURuRTd6R3had2Zo?=
- =?utf-8?B?dnRxSGVyKzB2WmJNcU0zTXd4eDJ0NDIyRFBHZlhJOHFPRGJtRDlDVTlFV1J4?=
- =?utf-8?B?SEo2RVFYdGhjbUM1UHdBT2lQRU5zR1ZiWjNwS3I5TUVxL1l2bGZQNHN4VEJm?=
- =?utf-8?B?c2tEUmhYZnlEWGRQUUF4OFlSZisxK0RIMWcyT2ZEVVR6eHl5TE5LZGRSUVZQ?=
- =?utf-8?B?cEY2WUI3V0xEcEsvUVJEeTE2WldvR28rRUtHeVl4RmswY2xadVNtTm1kT0V1?=
- =?utf-8?B?SSt5WThsY1NwYklyZUJwaUhvMHZWMVRJVHBrWUdZTEN2UE53dk5HQ1hvZ1Na?=
- =?utf-8?B?UTdsdG9TVlM2TmU5QW5WZVo2blg4bkZab1NvRllaekF5TzBXLzZBUE1hV21l?=
- =?utf-8?B?R2hDRDFvU0h4RUErY1hJVkpPUkJSUzJoT2FJT0RBTjgxa3dnTFhRUVhTclhG?=
- =?utf-8?B?THJRZVdxZE9QK0VrS2FwbzVCV0RmNFJIRE1uRUVsWkpMRmZ4R3F0NE1rR2hQ?=
- =?utf-8?B?dG9CNUhaMVBUZHM2Q28yVjYvVTdqUFk2WlNiRi9wV0l4MmRDODlBMnhvUm5L?=
- =?utf-8?B?eTJRN2pVdktma0JRQWxuVG41SVRxNExTVEppMGl2TmV2cmd2MHA5T3R1Y0E3?=
- =?utf-8?B?WjZSRXdGT1ZhMEZ2UXlZeG8xYXJnK2FxTEVvWEJ3R2dMVnhBWGJhaytBZ0NV?=
- =?utf-8?B?ZlpEa1RqQWIwMnc2RittZ0huUURnK0pPNXNuMWxmaXBkc0dZRSs1MGw4U1A4?=
- =?utf-8?B?WngwOTdRdUZYbWZYTWVRNVJSN2tJU3dyZUtSR0tMZEI3Vmk4TlpJWWg2Q1Z6?=
- =?utf-8?B?aVdhTW5aMGdicjg4eXZmNWN4aHVaVGhyZXZEZWNWT2ZuQ0Fvd0lJZWZVZ2xM?=
- =?utf-8?B?THZIUUhSVDQ2Y0o5WllqNTJHTVA2cWJqNWRHdEZDUnMvTHN6YWhBVzZ1Wkx4?=
- =?utf-8?B?NFlpYi9GekxmUURLYklUWkJ4YmlmNUFwNFFZa1hMNlZ2cjZjMzIrMUxOTlV1?=
- =?utf-8?B?d1QrTnlaOVVwVytBa053VXBXWmd1amRMS2c2cDZkWjZhRjhOaDFmRVg4Z1ZQ?=
- =?utf-8?B?ZFV4cEExSnEvY2FoUUNkUzdrVVd1UkY1QnVHYWRmT0RSZkhJQmhBZmdGT2pN?=
- =?utf-8?B?cTMvMGhKbkwvMytYWTJwSENZUHdZdXRvaEJTRDRXWmpLWFQ0eGFDV0kycUNB?=
- =?utf-8?B?WGxwRnFnRm9qNGpzYldWSnc3R2xrVXVLNGU0YTdxTUtlemtUeGJxcnVsaDZB?=
- =?utf-8?B?WmZHczdHN1VDKzRObXdTckduN3lMc28yeUVYQzlRRERGa21EMEhlazZBV3Vl?=
- =?utf-8?B?OWNSaHRCSklXL3dMWG14Y1ZyMnZjZzNLcExDNWdETnorZ3FuZDJzMnQvcFZq?=
- =?utf-8?B?Q0ROdFl0MWl3bnRSRlhyU2RNWHNXWVZUR0tVbzMvcS83T2J5eGxhdXh3V2I1?=
- =?utf-8?B?aW83SERtSFd6Nkh6cW1lYkN6MXRPelZpdUg3aE40SWV0dkJKWHpLOE1QajN3?=
- =?utf-8?B?VHFOYzAyaWY5M25wcmE2Nld3a2IvdkdQaHVsQnYrcXdncXlzVTZKdjMvd0Zo?=
- =?utf-8?B?VjNBWEMxY1lRbVFHQ21vQjVPRU9NZEUzSVd5cEEwV0FuTksyekk3VVFTM2J5?=
- =?utf-8?B?alNadUlYa1hTZG8rbzNJMWhUVUdCZkR1eVIyWVNBczNBZkpMaDdIT0dsVCtn?=
- =?utf-8?B?SjNjcGJ2cXZ4MFpXRWIxc3czdElnRTJXcWwycTVWWHlkSE5zUHJBeURRZ25N?=
- =?utf-8?B?cUZoZWtObGVVT01KcXQ0dHpQc0pPdUNsbTY0TGM2OGdRMFdPMFJMbEJaWU5O?=
- =?utf-8?B?T0doOUppOEl1Tm0wUUNQdjV6cnRKS01INmd4eGtmVndIWFVqYWM1dz09?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8fb3c4ce-9bd1-4675-1c08-08da3ec7e9c1
-X-MS-Exchange-CrossTenant-AuthSource: DM8PR12MB5445.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 May 2022 03:29:17.0766
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: /8LbmZ3uNSL8LJwc6dd3e2Pp+zM5RBHriiGMchIph+Jqa1petpDOP2Vosub/WiY8Z4jz9zkR9hvChXWeOvNpBw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM8PR12MB5461
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH -next v4 3/7] arm64: add support for machine check error
+ safe
+To:     Mark Rutland <mark.rutland@arm.com>
+CC:     James Morse <james.morse@arm.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "Ingo Molnar" <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "Catalin Marinas" <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        "Alexander Viro" <viro@zeniv.linux.org.uk>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>, <x86@kernel.org>,
+        "H . Peter Anvin" <hpa@zytor.com>, <linuxppc-dev@lists.ozlabs.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Xie XiuQi <xiexiuqi@huawei.com>,
+        Guohanjun <guohanjun@huawei.com>
+References: <20220420030418.3189040-1-tongtiangen@huawei.com>
+ <20220420030418.3189040-4-tongtiangen@huawei.com> <Yn54mA7KnlAs1dER@lakrids>
+ <46e5954c-a9a8-f4a8-07cc-de42e2753051@huawei.com>
+ <Yo3pP/Y+6HHuVBns@FVFF77S0Q05N>
+From:   Tong Tiangen <tongtiangen@huawei.com>
+In-Reply-To: <Yo3pP/Y+6HHuVBns@FVFF77S0Q05N>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.179.234]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600017.china.huawei.com (7.193.23.234)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Joerg,
 
-On 5/20/22 3:09 PM, Joerg Roedel wrote:
-> Hi Suravee,
-> 
-> On Mon, May 16, 2022 at 07:27:51PM +0700, Suravee Suthikulpanit wrote:
-> 
->> - Also, it seems that the current iommu v2 page table use case, where GVA->GPA=SPA
->> will no longer be supported on system w/ SNPSup=1. Any thoughts?
-> 
-> Support for that is not upstream yet, it should be easy to disallow this
-> configuration and just use the v1 page-tables when SNP is active. This
-> can be handled entirely inside the AMD IOMMU driver.
-> 
 
-Actually, I am referring to when user uses the IOMMU v2 table for shared virtual address
-in current iommu_v2 driver (e.g. amd_iommu_init_device(), amd_iommu_bind_pasid).
+在 2022/5/25 16:30, Mark Rutland 写道:
+> On Thu, May 19, 2022 at 02:29:54PM +0800, Tong Tiangen wrote:
+>>
+>>
+>> 在 2022/5/13 23:26, Mark Rutland 写道:
+>>> On Wed, Apr 20, 2022 at 03:04:14AM +0000, Tong Tiangen wrote:
+>>>> During the processing of arm64 kernel hardware memory errors(do_sea()), if
+>>>> the errors is consumed in the kernel, the current processing is panic.
+>>>> However, it is not optimal.
+>>>>
+>>>> Take uaccess for example, if the uaccess operation fails due to memory
+>>>> error, only the user process will be affected, kill the user process
+>>>> and isolate the user page with hardware memory errors is a better choice.
+>>>
+>>> Conceptually, I'm fine with the idea of constraining what we do for a
+>>> true uaccess, but I don't like the implementation of this at all, and I
+>>> think we first need to clean up the arm64 extable usage to clearly
+>>> distinguish a uaccess from another access.
+>>
+>> OK,using EX_TYPE_UACCESS and this extable type could be recover, this is
+>> more reasonable.
+> 
+> Great.
+> 
+>> For EX_TYPE_UACCESS_ERR_ZERO, today we use it for kernel accesses in a
+>> couple of cases, such as
+>> get_user/futex/__user_cache_maint()/__user_swpX_asm(),
+> 
+> Those are all user accesses.
+> 
+> However, __get_kernel_nofault() and __put_kernel_nofault() use
+> EX_TYPE_UACCESS_ERR_ZERO by way of __{get,put}_mem_asm(), so we'd need to
+> refactor that code to split the user/kernel cases higher up the callchain.
+> 
+>> your suggestion is:
+>> get_user continues to use EX_TYPE_UACCESS_ERR_ZERO and the other cases use
+>> new type EX_TYPE_FIXUP_ERR_ZERO?
+> 
+> Yes, that's the rough shape. We could make the latter EX_TYPE_KACCESS_ERR_ZERO
+> to be clearly analogous to EX_TYPE_UACCESS_ERR_ZERO, and with that I susepct we
+> could remove EX_TYPE_FIXUP.
+> 
+> Thanks,
+> Mark.
+According to your suggestion, i think the definition is like this:
 
-Best Regards,
-Suravee
+#define EX_TYPE_NONE                    0
+#define EX_TYPE_FIXUP                   1    --> delete
+#define EX_TYPE_BPF                     2
+#define EX_TYPE_UACCESS_ERR_ZERO        3
+#define EX_TYPE_LOAD_UNALIGNED_ZEROPAD  4
+#define EX_TYPE_UACCESS		        xx   --> add
+#define EX_TYPE_KACCESS_ERR_ZERO        xx   --> add
+[The value defined by the macro here is temporary]
+
+There are two points to modify:
+
+1、_get_kernel_nofault() and __put_kernel_nofault()  using 
+EX_TYPE_KACCESS_ERR_ZERO, Other positions using 
+EX_TYPE_UACCESS_ERR_ZERO keep unchanged.
+
+2、delete EX_TYPE_FIXUP.
+
+There is no doubt about others. As for EX_TYPE_FIXUP, I think it needs 
+to be retained, _cond_extable(EX_TYPE_FIXUP) is still in use in assembler.h.
+
+Thanks,
+Tong.
+
+> .
