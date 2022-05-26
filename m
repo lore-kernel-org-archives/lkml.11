@@ -2,437 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B631CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 20:47:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE173C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 20:47:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348978AbiEZUrD (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 16:47:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33640 "EHLO
+        id S242508AbiEZUrM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 16:47:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349168AbiEZUqX (ORCPT
+        with ESMTP id S237350AbiEZUqZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 16:46:23 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12D04BC2B
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 13:46:17 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id er5so3144780edb.12
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 13:46:17 -0700 (PDT)
+        Thu, 26 May 2022 16:46:25 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DCBC12638
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 13:46:21 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id c93so1840618edf.7
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 13:46:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=lBaqWUZdGRxVXZa/3xFn5e0ng0GgoHiZioilUw5+2nw=;
-        b=Cv0JakkXE60pGLI7Iyhf67f1yhGMoKIqoT+mBKLUK6Ga875dfGpC9/btNCcIg99qBA
-         UzrB7bs7Wh7HvZk6CwGBEv7Tv0e/WgtEX2C22p4pdGQsYLT6ufYXQT/MOJv8FHqGwXxj
-         /TB9LO7I459hEYE+b9x7XYbDD54uLPepZvzKWl0E1RBCL0q1LvNOmuxD1rFvC9GzMW8/
-         D75bhWgOULe3Ra0NRkagjYu+U3+XdeAo+US/j8hTQMgv7U2ZGA3U6oeL6uRw1a7OFglI
-         +U1gFGAS0nnMCxHD4VpKI8MRIGRrHrAelcjB8cNDQMGmrL/9ilYx0+NhqtHL084FhPJ/
-         eueA==
+        d=soleen.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
+        bh=N06cOpR0fhGltUp7Tz8+3ysz8vx784Cgbf5RyQDoybc=;
+        b=VjpYF8OdmX+re+xHpO8tjhO+FnfUoFPPtaKdJ++8fS/6WpgR8FMaLAZrJ6nj4dBfQr
+         RIVlo/nG2s5U+jFfh8wMJDPP/tTLUBTEz8gqZwDvra39wWT9Pielk5G0w+LLwVTiTmvc
+         qwtwpEhdN0vdVMESpLNA5TGZSpbnIR6uIb2lXhc0LbmCB1GhV447iFzu/NprYtXGdAnr
+         a6ngjaFmBKFbUjPX5IVFWY/BcmFSOW6rD+TZTckTgvzGTl/1UMHdqCD7kqQ+qcnE+H4k
+         oEcvrmwm2Sjy1w6mFb4mVG16BIdgcVPKduhDdAKUbd4DzrHdIRY5e8juItU3xMYkcrV9
+         KfSg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=lBaqWUZdGRxVXZa/3xFn5e0ng0GgoHiZioilUw5+2nw=;
-        b=U4o9CiQU0ZdHKwksfwVaqimsTNqvQIBnEaVb45q7L29eqG1WzKyvRN8utgubsk784P
-         PE2x4r+Rz1j6vUeL/rCjp57qhWvh6mIV6eUwsqCugOu2NeLWLLGBIuTyDf1L9ACb0VkL
-         mDc6EwbXdyBlvLoV5LN0WheyArw5b45MVMSOdtFZjwDtUNfeamR4rPc0PktXHH2au4YR
-         Rhh5ml73J6U+AIbn8cgI1ldmaK1wj4J888StEoGgMtOVskmgVK5XpvJ2TyoHhAzB1xSA
-         BlgBVH8b0qoJb33NjQ2vCk9Jbf6Ci9BvdNLglIJai9BQKNAHgOKqFRl8uLgOOSC18ZEU
-         fftA==
-X-Gm-Message-State: AOAM532/BDCEL9ge/LdHXs06Sc/qnJ/NSrW8ABpxGAi8VEiD3Q0hUFfF
-        BE5UWaqWZyfbmFoFRyDvg8xxRBmrhsIoWUvW
-X-Google-Smtp-Source: ABdhPJyHWBYYGWWKKVa+ctitylRhZbBsaUfysB9c86pss61rRr5dSIfVUtjmrT45kwD7kqrjoXIc6w==
-X-Received: by 2002:a05:6402:221a:b0:42b:c764:9c9f with SMTP id cq26-20020a056402221a00b0042bc7649c9fmr10690849edb.75.1653597975466;
-        Thu, 26 May 2022 13:46:15 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id gc21-20020a1709072b1500b006ff16f48e2asm813254ejc.76.2022.05.26.13.46.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 May 2022 13:46:15 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        arm@kernel.org, soc@kernel.org, Chanho Min <chanho.min@lge.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 5/5] arm64: dts: lg: adjust whitespace around '='
-Date:   Thu, 26 May 2022 22:46:06 +0200
-Message-Id: <20220526204606.833054-5-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220526204606.833054-1-krzysztof.kozlowski@linaro.org>
-References: <20220526204606.833054-1-krzysztof.kozlowski@linaro.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to;
+        bh=N06cOpR0fhGltUp7Tz8+3ysz8vx784Cgbf5RyQDoybc=;
+        b=ROjjQqzRowRfDJKvlF9YA3Hkyzd2fja9GoSn183szjG41dOqmsaUcakamX2y4kKpFW
+         VHIE1PzFJ2idbw4J6elyMHTRuO/sDWduLnQguBayg7qJ8mtuLSm0axA3Llz4WHaY2ebm
+         VBdlADc5VG3Pu2kX1/eLgw+FMWeIBJRkH0Kirbe2Azp0vcDE9WxcQpLvDvvPOITJDNrk
+         O13PdyQi9foTRDVZbB3xsx0uZCUvws3SUoH5LmVmpVGRMMDvkNV3upQXKa6HOLmMvELg
+         VdU1Zi06o1Qfw8ZbHtrKRj24Ds2zCWqTWqZtWZGOGXvbo2dXE2iDlCMlyDnN/N6g1GwM
+         0Oxg==
+X-Gm-Message-State: AOAM5317PTi8NAMa5DRWD07luERdCavbsSnjJcLPdSfIEuHWKUQtCPbO
+        AbRRHUjhiKn5NYGR412oXkrC8GTlKknpPSMnLQn7uA==
+X-Google-Smtp-Source: ABdhPJzSjHfFP+9o6W7dtpiuHhbXpOi+Ely6T6jRghUPr+keMXC2TwImJEfBB4K3AtkK7mq6YZqiSSiPE4c7S1mdIWg=
+X-Received: by 2002:a50:ea8b:0:b0:428:7d05:eb7e with SMTP id
+ d11-20020a50ea8b000000b004287d05eb7emr40591268edo.185.1653597981396; Thu, 26
+ May 2022 13:46:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220526203805.3659597-1-tatashin@google.com>
+In-Reply-To: <20220526203805.3659597-1-tatashin@google.com>
+From:   Pasha Tatashin <pasha.tatashin@soleen.com>
+Date:   Thu, 26 May 2022 16:45:45 -0400
+Message-ID: <CA+CK2bDkKzp6uvy+f09K=COd3xn+EDa5nEu2j2o7Vyhd=aG0AA@mail.gmail.com>
+Subject: Re: [PATCH] kexec_file: Increase maximum file size to 4G
+To:     Pasha Tatashin <pasha.tatashin@soleen.com>,
+        Sasha Levin <sashal@kernel.org>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        kexec mailing list <kexec@lists.infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>, rburanyi@google.com,
+        Greg Thelen <gthelen@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix whitespace coding style: use single space instead of tabs or
-multiple spaces around '=' sign in property assignment.  No functional
-changes (same DTB).
+On Thu, May 26, 2022 at 4:38 PM Pasha Tatashin
+<pasha.tatashin@soleen.com> wrote:
+>
+> In some case initrd can be large. For example, it could be a netboot
+> image loaded by u-root, that is kexec'ing into it.
+>
+> The maximum size of initrd is arbitrary set to 2G. Also, the limit is
+> not very obvious because it is hidden behind a generic INT_MAX macro.
+>
+> Theoretically, we could make it LONG_MAX, but it is safer to keep it
+> sane, and just increase it to 4G.
+>
+> Increase the size to 4G, and make it obvious by having a new macro
+> that specifies the maximum file size supported by kexec_file_load()
+> syscall: KEXEC_FILE_SIZE_MAX.
+>
+> Signed-off-by: Pasha Tatashin <tatashin@google.com>
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Should be instead:
+Signed-off-by: Pasha Tatashin <pasha.tatashin@soleen.com>
 
----
+Thanks,
+Pasha
 
-Output compared with dtx_diff and fdtdump.
----
- arch/arm64/boot/dts/lg/lg1312.dtsi | 38 +++++++++++++++---------------
- arch/arm64/boot/dts/lg/lg1313.dtsi | 38 +++++++++++++++---------------
- 2 files changed, 38 insertions(+), 38 deletions(-)
-
-diff --git a/arch/arm64/boot/dts/lg/lg1312.dtsi b/arch/arm64/boot/dts/lg/lg1312.dtsi
-index bec97480a960..78ae73d0cf36 100644
---- a/arch/arm64/boot/dts/lg/lg1312.dtsi
-+++ b/arch/arm64/boot/dts/lg/lg1312.dtsi
-@@ -52,7 +52,7 @@ L2_0: l2-cache0 {
- 	};
- 
- 	psci {
--		compatible  = "arm,psci-0.2", "arm,psci";
-+		compatible = "arm,psci-0.2", "arm,psci";
- 		method = "smc";
- 		cpu_suspend = <0x84000001>;
- 		cpu_off = <0x84000002>;
-@@ -150,7 +150,7 @@ uart0: serial@fe000000 {
- 			interrupts = <GIC_SPI 0 IRQ_TYPE_LEVEL_HIGH>;
- 			clocks = <&clk_bus>;
- 			clock-names = "apb_pclk";
--			status="disabled";
-+			status = "disabled";
- 		};
- 		uart1: serial@fe100000 {
- 			compatible = "arm,pl011", "arm,primecell";
-@@ -158,7 +158,7 @@ uart1: serial@fe100000 {
- 			interrupts = <GIC_SPI 1 IRQ_TYPE_LEVEL_HIGH>;
- 			clocks = <&clk_bus>;
- 			clock-names = "apb_pclk";
--			status="disabled";
-+			status = "disabled";
- 		};
- 		uart2: serial@fe200000 {
- 			compatible = "arm,pl011", "arm,primecell";
-@@ -166,7 +166,7 @@ uart2: serial@fe200000 {
- 			interrupts = <GIC_SPI 2 IRQ_TYPE_LEVEL_HIGH>;
- 			clocks = <&clk_bus>;
- 			clock-names = "apb_pclk";
--			status="disabled";
-+			status = "disabled";
- 		};
- 		spi0: spi@fe800000 {
- 			compatible = "arm,pl022", "arm,primecell";
-@@ -197,7 +197,7 @@ gpio0: gpio@fd400000 {
- 			reg = <0x0 0xfd400000 0x1000>;
- 			clocks = <&clk_bus>;
- 			clock-names = "apb_pclk";
--			status="disabled";
-+			status = "disabled";
- 		};
- 		gpio1: gpio@fd410000 {
- 			#gpio-cells = <2>;
-@@ -206,7 +206,7 @@ gpio1: gpio@fd410000 {
- 			reg = <0x0 0xfd410000 0x1000>;
- 			clocks = <&clk_bus>;
- 			clock-names = "apb_pclk";
--			status="disabled";
-+			status = "disabled";
- 		};
- 		gpio2: gpio@fd420000 {
- 			#gpio-cells = <2>;
-@@ -215,7 +215,7 @@ gpio2: gpio@fd420000 {
- 			reg = <0x0 0xfd420000 0x1000>;
- 			clocks = <&clk_bus>;
- 			clock-names = "apb_pclk";
--			status="disabled";
-+			status = "disabled";
- 		};
- 		gpio3: gpio@fd430000 {
- 			#gpio-cells = <2>;
-@@ -232,7 +232,7 @@ gpio4: gpio@fd440000 {
- 			reg = <0x0 0xfd440000 0x1000>;
- 			clocks = <&clk_bus>;
- 			clock-names = "apb_pclk";
--			status="disabled";
-+			status = "disabled";
- 		};
- 		gpio5: gpio@fd450000 {
- 			#gpio-cells = <2>;
-@@ -241,7 +241,7 @@ gpio5: gpio@fd450000 {
- 			reg = <0x0 0xfd450000 0x1000>;
- 			clocks = <&clk_bus>;
- 			clock-names = "apb_pclk";
--			status="disabled";
-+			status = "disabled";
- 		};
- 		gpio6: gpio@fd460000 {
- 			#gpio-cells = <2>;
-@@ -250,7 +250,7 @@ gpio6: gpio@fd460000 {
- 			reg = <0x0 0xfd460000 0x1000>;
- 			clocks = <&clk_bus>;
- 			clock-names = "apb_pclk";
--			status="disabled";
-+			status = "disabled";
- 		};
- 		gpio7: gpio@fd470000 {
- 			#gpio-cells = <2>;
-@@ -259,7 +259,7 @@ gpio7: gpio@fd470000 {
- 			reg = <0x0 0xfd470000 0x1000>;
- 			clocks = <&clk_bus>;
- 			clock-names = "apb_pclk";
--			status="disabled";
-+			status = "disabled";
- 		};
- 		gpio8: gpio@fd480000 {
- 			#gpio-cells = <2>;
-@@ -268,7 +268,7 @@ gpio8: gpio@fd480000 {
- 			reg = <0x0 0xfd480000 0x1000>;
- 			clocks = <&clk_bus>;
- 			clock-names = "apb_pclk";
--			status="disabled";
-+			status = "disabled";
- 		};
- 		gpio9: gpio@fd490000 {
- 			#gpio-cells = <2>;
-@@ -277,7 +277,7 @@ gpio9: gpio@fd490000 {
- 			reg = <0x0 0xfd490000 0x1000>;
- 			clocks = <&clk_bus>;
- 			clock-names = "apb_pclk";
--			status="disabled";
-+			status = "disabled";
- 		};
- 		gpio10: gpio@fd4a0000 {
- 			#gpio-cells = <2>;
-@@ -286,7 +286,7 @@ gpio10: gpio@fd4a0000 {
- 			reg = <0x0 0xfd4a0000 0x1000>;
- 			clocks = <&clk_bus>;
- 			clock-names = "apb_pclk";
--			status="disabled";
-+			status = "disabled";
- 		};
- 		gpio11: gpio@fd4b0000 {
- 			#gpio-cells = <2>;
-@@ -303,7 +303,7 @@ gpio12: gpio@fd4c0000 {
- 			reg = <0x0 0xfd4c0000 0x1000>;
- 			clocks = <&clk_bus>;
- 			clock-names = "apb_pclk";
--			status="disabled";
-+			status = "disabled";
- 		};
- 		gpio13: gpio@fd4d0000 {
- 			#gpio-cells = <2>;
-@@ -312,7 +312,7 @@ gpio13: gpio@fd4d0000 {
- 			reg = <0x0 0xfd4d0000 0x1000>;
- 			clocks = <&clk_bus>;
- 			clock-names = "apb_pclk";
--			status="disabled";
-+			status = "disabled";
- 		};
- 		gpio14: gpio@fd4e0000 {
- 			#gpio-cells = <2>;
-@@ -321,7 +321,7 @@ gpio14: gpio@fd4e0000 {
- 			reg = <0x0 0xfd4e0000 0x1000>;
- 			clocks = <&clk_bus>;
- 			clock-names = "apb_pclk";
--			status="disabled";
-+			status = "disabled";
- 		};
- 		gpio15: gpio@fd4f0000 {
- 			#gpio-cells = <2>;
-@@ -330,7 +330,7 @@ gpio15: gpio@fd4f0000 {
- 			reg = <0x0 0xfd4f0000 0x1000>;
- 			clocks = <&clk_bus>;
- 			clock-names = "apb_pclk";
--			status="disabled";
-+			status = "disabled";
- 		};
- 		gpio16: gpio@fd500000 {
- 			#gpio-cells = <2>;
-@@ -339,7 +339,7 @@ gpio16: gpio@fd500000 {
- 			reg = <0x0 0xfd500000 0x1000>;
- 			clocks = <&clk_bus>;
- 			clock-names = "apb_pclk";
--			status="disabled";
-+			status = "disabled";
- 		};
- 		gpio17: gpio@fd510000 {
- 			#gpio-cells = <2>;
-diff --git a/arch/arm64/boot/dts/lg/lg1313.dtsi b/arch/arm64/boot/dts/lg/lg1313.dtsi
-index ada3d4dc6305..2173316573be 100644
---- a/arch/arm64/boot/dts/lg/lg1313.dtsi
-+++ b/arch/arm64/boot/dts/lg/lg1313.dtsi
-@@ -52,7 +52,7 @@ L2_0: l2-cache0 {
- 	};
- 
- 	psci {
--		compatible  = "arm,psci-0.2", "arm,psci";
-+		compatible = "arm,psci-0.2", "arm,psci";
- 		method = "smc";
- 		cpu_suspend = <0x84000001>;
- 		cpu_off = <0x84000002>;
-@@ -150,7 +150,7 @@ uart0: serial@fe000000 {
- 			interrupts = <GIC_SPI 0 IRQ_TYPE_LEVEL_HIGH>;
- 			clocks = <&clk_bus>;
- 			clock-names = "apb_pclk";
--			status="disabled";
-+			status = "disabled";
- 		};
- 		uart1: serial@fe100000 {
- 			compatible = "arm,pl011", "arm,primecell";
-@@ -158,7 +158,7 @@ uart1: serial@fe100000 {
- 			interrupts = <GIC_SPI 1 IRQ_TYPE_LEVEL_HIGH>;
- 			clocks = <&clk_bus>;
- 			clock-names = "apb_pclk";
--			status="disabled";
-+			status = "disabled";
- 		};
- 		uart2: serial@fe200000 {
- 			compatible = "arm,pl011", "arm,primecell";
-@@ -166,7 +166,7 @@ uart2: serial@fe200000 {
- 			interrupts = <GIC_SPI 2 IRQ_TYPE_LEVEL_HIGH>;
- 			clocks = <&clk_bus>;
- 			clock-names = "apb_pclk";
--			status="disabled";
-+			status = "disabled";
- 		};
- 		spi0: spi@fe800000 {
- 			compatible = "arm,pl022", "arm,primecell";
-@@ -197,7 +197,7 @@ gpio0: gpio@fd400000 {
- 			reg = <0x0 0xfd400000 0x1000>;
- 			clocks = <&clk_bus>;
- 			clock-names = "apb_pclk";
--			status="disabled";
-+			status = "disabled";
- 		};
- 		gpio1: gpio@fd410000 {
- 			#gpio-cells = <2>;
-@@ -206,7 +206,7 @@ gpio1: gpio@fd410000 {
- 			reg = <0x0 0xfd410000 0x1000>;
- 			clocks = <&clk_bus>;
- 			clock-names = "apb_pclk";
--			status="disabled";
-+			status = "disabled";
- 		};
- 		gpio2: gpio@fd420000 {
- 			#gpio-cells = <2>;
-@@ -215,7 +215,7 @@ gpio2: gpio@fd420000 {
- 			reg = <0x0 0xfd420000 0x1000>;
- 			clocks = <&clk_bus>;
- 			clock-names = "apb_pclk";
--			status="disabled";
-+			status = "disabled";
- 		};
- 		gpio3: gpio@fd430000 {
- 			#gpio-cells = <2>;
-@@ -232,7 +232,7 @@ gpio4: gpio@fd440000 {
- 			reg = <0x0 0xfd440000 0x1000>;
- 			clocks = <&clk_bus>;
- 			clock-names = "apb_pclk";
--			status="disabled";
-+			status = "disabled";
- 		};
- 		gpio5: gpio@fd450000 {
- 			#gpio-cells = <2>;
-@@ -241,7 +241,7 @@ gpio5: gpio@fd450000 {
- 			reg = <0x0 0xfd450000 0x1000>;
- 			clocks = <&clk_bus>;
- 			clock-names = "apb_pclk";
--			status="disabled";
-+			status = "disabled";
- 		};
- 		gpio6: gpio@fd460000 {
- 			#gpio-cells = <2>;
-@@ -250,7 +250,7 @@ gpio6: gpio@fd460000 {
- 			reg = <0x0 0xfd460000 0x1000>;
- 			clocks = <&clk_bus>;
- 			clock-names = "apb_pclk";
--			status="disabled";
-+			status = "disabled";
- 		};
- 		gpio7: gpio@fd470000 {
- 			#gpio-cells = <2>;
-@@ -259,7 +259,7 @@ gpio7: gpio@fd470000 {
- 			reg = <0x0 0xfd470000 0x1000>;
- 			clocks = <&clk_bus>;
- 			clock-names = "apb_pclk";
--			status="disabled";
-+			status = "disabled";
- 		};
- 		gpio8: gpio@fd480000 {
- 			#gpio-cells = <2>;
-@@ -268,7 +268,7 @@ gpio8: gpio@fd480000 {
- 			reg = <0x0 0xfd480000 0x1000>;
- 			clocks = <&clk_bus>;
- 			clock-names = "apb_pclk";
--			status="disabled";
-+			status = "disabled";
- 		};
- 		gpio9: gpio@fd490000 {
- 			#gpio-cells = <2>;
-@@ -277,7 +277,7 @@ gpio9: gpio@fd490000 {
- 			reg = <0x0 0xfd490000 0x1000>;
- 			clocks = <&clk_bus>;
- 			clock-names = "apb_pclk";
--			status="disabled";
-+			status = "disabled";
- 		};
- 		gpio10: gpio@fd4a0000 {
- 			#gpio-cells = <2>;
-@@ -286,7 +286,7 @@ gpio10: gpio@fd4a0000 {
- 			reg = <0x0 0xfd4a0000 0x1000>;
- 			clocks = <&clk_bus>;
- 			clock-names = "apb_pclk";
--			status="disabled";
-+			status = "disabled";
- 		};
- 		gpio11: gpio@fd4b0000 {
- 			#gpio-cells = <2>;
-@@ -303,7 +303,7 @@ gpio12: gpio@fd4c0000 {
- 			reg = <0x0 0xfd4c0000 0x1000>;
- 			clocks = <&clk_bus>;
- 			clock-names = "apb_pclk";
--			status="disabled";
-+			status = "disabled";
- 		};
- 		gpio13: gpio@fd4d0000 {
- 			#gpio-cells = <2>;
-@@ -312,7 +312,7 @@ gpio13: gpio@fd4d0000 {
- 			reg = <0x0 0xfd4d0000 0x1000>;
- 			clocks = <&clk_bus>;
- 			clock-names = "apb_pclk";
--			status="disabled";
-+			status = "disabled";
- 		};
- 		gpio14: gpio@fd4e0000 {
- 			#gpio-cells = <2>;
-@@ -321,7 +321,7 @@ gpio14: gpio@fd4e0000 {
- 			reg = <0x0 0xfd4e0000 0x1000>;
- 			clocks = <&clk_bus>;
- 			clock-names = "apb_pclk";
--			status="disabled";
-+			status = "disabled";
- 		};
- 		gpio15: gpio@fd4f0000 {
- 			#gpio-cells = <2>;
-@@ -330,7 +330,7 @@ gpio15: gpio@fd4f0000 {
- 			reg = <0x0 0xfd4f0000 0x1000>;
- 			clocks = <&clk_bus>;
- 			clock-names = "apb_pclk";
--			status="disabled";
-+			status = "disabled";
- 		};
- 		gpio16: gpio@fd500000 {
- 			#gpio-cells = <2>;
-@@ -339,7 +339,7 @@ gpio16: gpio@fd500000 {
- 			reg = <0x0 0xfd500000 0x1000>;
- 			clocks = <&clk_bus>;
- 			clock-names = "apb_pclk";
--			status="disabled";
-+			status = "disabled";
- 		};
- 		gpio17: gpio@fd510000 {
- 			#gpio-cells = <2>;
--- 
-2.34.1
-
+> ---
+>  kernel/kexec_file.c | 8 ++++++--
+>  1 file changed, 6 insertions(+), 2 deletions(-)
+>
+> diff --git a/kernel/kexec_file.c b/kernel/kexec_file.c
+> index 8347fc158d2b..1be2227b33e6 100644
+> --- a/kernel/kexec_file.c
+> +++ b/kernel/kexec_file.c
+> @@ -31,6 +31,9 @@
+>
+>  static int kexec_calculate_store_digests(struct kimage *image);
+>
+> +/* Maximum size in bytes for kernel/initrd files. */
+> +#define KEXEC_FILE_SIZE_MAX    (4UL << 30)
+> +
+>  /*
+>   * Currently this is the only default function that is exported as some
+>   * architectures need it to do additional handlings.
+> @@ -227,7 +230,8 @@ kimage_file_prepare_segments(struct kimage *image, int kernel_fd, int initrd_fd,
+>         void *ldata;
+>
+>         ret = kernel_read_file_from_fd(kernel_fd, 0, &image->kernel_buf,
+> -                                      INT_MAX, NULL, READING_KEXEC_IMAGE);
+> +                                      KEXEC_FILE_SIZE_MAX, NULL,
+> +                                      READING_KEXEC_IMAGE);
+>         if (ret < 0)
+>                 return ret;
+>         image->kernel_buf_len = ret;
+> @@ -247,7 +251,7 @@ kimage_file_prepare_segments(struct kimage *image, int kernel_fd, int initrd_fd,
+>         /* It is possible that there no initramfs is being loaded */
+>         if (!(flags & KEXEC_FILE_NO_INITRAMFS)) {
+>                 ret = kernel_read_file_from_fd(initrd_fd, 0, &image->initrd_buf,
+> -                                              INT_MAX, NULL,
+> +                                              KEXEC_FILE_SIZE_MAX, NULL,
+>                                                READING_KEXEC_INITRAMFS);
+>                 if (ret < 0)
+>                         goto out;
+> --
+> 2.36.1.124.g0e6072fb45-goog
+>
