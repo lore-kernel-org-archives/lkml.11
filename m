@@ -2,219 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DA9CC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 09:05:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE9F7C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 09:07:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346806AbiEZJFv (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 05:05:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43776 "EHLO
+        id S240074AbiEZJHZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 05:07:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346821AbiEZJFt (ORCPT
+        with ESMTP id S241430AbiEZJHW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 05:05:49 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 325A3C6E47
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 02:05:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653555945; x=1685091945;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=kEsf6LMdSMOflapG+PvkyXqMVBIJuUPjv9Fs8ZiXKgs=;
-  b=PX+YBLbeQTmdNvnAyKWLrW5G1QomfD9wVTIJO0wY5glUuPgRRbfIOXnl
-   6h8qbnfqE8yPZL9TlW98YEqcGciu4+5IMVlRljs9HzcgZNgMs6dXB06rv
-   awZMX5MQ7lM5eRRYpkn4G1GgqYftPW2cmT5mB+5MR6s6u59VziT2DWMT8
-   S7WqgYIIvDSJ7ZdBP63XS15uGvUCUYbqKeVCfUzFqsb6lxH7XomhGccAr
-   +YuH0Yrlyl9/g83z5xaJwA8r5B/p2rB2NpyB1r8m7E2N5q9Ms5S11LQbQ
-   8lPe1sdk8AAa7a6WnM9Gb8DFi7CISJpjQt5TvmBpDkxPJzQYTU/y1mrsG
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10358"; a="254590697"
-X-IronPort-AV: E=Sophos;i="5.91,252,1647327600"; 
-   d="scan'208";a="254590697"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 May 2022 02:05:44 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,252,1647327600"; 
-   d="scan'208";a="901923413"
-Received: from lkp-server01.sh.intel.com (HELO db63a1be7222) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 26 May 2022 02:05:41 -0700
-Received: from kbuild by db63a1be7222 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nu9R6-0003jY-DW;
-        Thu, 26 May 2022 09:05:40 +0000
-Date:   Thu, 26 May 2022 16:53:16 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Chengming Zhou <zhouchengming@bytedance.com>, mingo@redhat.com,
-        peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
-        bristot@redhat.com, vschneid@redhat.com, odin@uged.al
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        duanxiongchun@bytedance.com, songmuchun@bytedance.com,
-        Chengming Zhou <zhouchengming@bytedance.com>
-Subject: Re: [PATCH v2 2/2] sched/fair: optimize and simplify rq
- leaf_cfs_rq_list
-Message-ID: <202205261617.YUT1ixQ8-lkp@intel.com>
-References: <20220526071354.6426-3-zhouchengming@bytedance.com>
+        Thu, 26 May 2022 05:07:22 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E3113F580
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 02:07:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653556040;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=KrhZj/f2a1K5xyngYjaDLFoTBYuesG1Fa4WdS5JUxdc=;
+        b=XuJHul1V4EVaNkhDKojXRcuVM39EmwMf7K38F1Iztkxg7Cqcyl6LBLMlhdP8a7g+g27i6N
+        QqIoPujpxdIg6Sbs7qeN85UQCptJ1WrFMgYs8gRTicJuQYP0ZHBprjbUN5sDNRAJbE3/Um
+        5rsWk/X04mARzuGoyGpOHGw+4oy3s7c=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-596--IfXvtcWN-eyrh1f7OZ_YQ-1; Thu, 26 May 2022 05:07:18 -0400
+X-MC-Unique: -IfXvtcWN-eyrh1f7OZ_YQ-1
+Received: by mail-wm1-f69.google.com with SMTP id bg40-20020a05600c3ca800b00394779649b1so2711636wmb.3
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 02:07:18 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=KrhZj/f2a1K5xyngYjaDLFoTBYuesG1Fa4WdS5JUxdc=;
+        b=aEc8pjc5lKKfOUHwjG2ZlXgmUBBVnUoJOlN5hZdj6fxeZPSTLlzLcRzNw+9gqIcWWZ
+         FOkscTIHiH5tWOhV+2f25rIky6TtCpx9Ye+TSp6kMTeHcjxrt5YiGwjEDwgFremghyE+
+         gdTmAhtlRKr4bOMz74Pv9uYY/u6S7xKoJVizd3nEH6BxQZ2S8BrDTvTpCU+e866o4q7r
+         bW0Dtb725GimORJySpTViSzESOdVuGSPJMHsbViVozikoP0eR7+FrIIuMQVnR1MP8NKZ
+         fxqxQs4601U+rbfuk+W5jf/poceC1pb8hZR/aYySGXlasIcvkJ9f33TJiLry9xwrcT8C
+         JkbQ==
+X-Gm-Message-State: AOAM533KM+zT3pM7jwVecXMRHa53CTRHzRzjwGwMHo7VYhQrRRYVRApU
+        JnW/xAgB93gNnFXoD9PcUYmSgr6/3t2y2OUiyj9DC3uQXM3FvKXWMfjroUUfvSKPUA5A8hO7JWD
+        /3l9QV3LC7BiUuC5pKbZ1JLMG
+X-Received: by 2002:a05:600c:3d0d:b0:397:460d:3360 with SMTP id bh13-20020a05600c3d0d00b00397460d3360mr1385903wmb.54.1653556037192;
+        Thu, 26 May 2022 02:07:17 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzsQMSJXaL5D4KLoVhLNCOsXSL5t/a06VfP1CmmgXg13RDPmXb5nBs/26we+aadnB6KRWEdCQ==
+X-Received: by 2002:a05:600c:3d0d:b0:397:460d:3360 with SMTP id bh13-20020a05600c3d0d00b00397460d3360mr1385860wmb.54.1653556036941;
+        Thu, 26 May 2022 02:07:16 -0700 (PDT)
+Received: from sgarzare-redhat (host-87-12-25-16.business.telecomitalia.it. [87.12.25.16])
+        by smtp.gmail.com with ESMTPSA id p36-20020a05600c1da400b003974027722csm1247492wms.47.2022.05.26.02.07.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 May 2022 02:07:16 -0700 (PDT)
+Date:   Thu, 26 May 2022 11:07:06 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Eugenio Perez Martin <eperezma@redhat.com>
+Cc:     "Dawar, Gautam" <gautam.dawar@amd.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        Jason Wang <jasowang@redhat.com>,
+        Zhu Lingshan <lingshan.zhu@intel.com>,
+        "martinh@xilinx.com" <martinh@xilinx.com>,
+        "ecree.xilinx@gmail.com" <ecree.xilinx@gmail.com>,
+        Eli Cohen <elic@nvidia.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Wu Zongyong <wuzongyong@linux.alibaba.com>,
+        "dinang@xilinx.com" <dinang@xilinx.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Xie Yongji <xieyongji@bytedance.com>,
+        "lulu@redhat.com" <lulu@redhat.com>,
+        "martinpo@xilinx.com" <martinpo@xilinx.com>,
+        "pabloc@xilinx.com" <pabloc@xilinx.com>,
+        Longpeng <longpeng2@huawei.com>,
+        "Piotr.Uminski@intel.com" <Piotr.Uminski@intel.com>,
+        "Kamde, Tanuj" <tanuj.kamde@amd.com>,
+        Si-Wei Liu <si-wei.liu@oracle.com>,
+        "habetsm.xilinx@gmail.com" <habetsm.xilinx@gmail.com>,
+        "lvivier@redhat.com" <lvivier@redhat.com>,
+        Zhang Min <zhang.min9@zte.com.cn>,
+        "hanand@xilinx.com" <hanand@xilinx.com>
+Subject: Re: [PATCH v3 2/4] vhost-vdpa: introduce STOP backend feature bit
+Message-ID: <20220526090706.maf645wayelb7mcp@sgarzare-redhat>
+References: <20220525105922.2413991-1-eperezma@redhat.com>
+ <20220525105922.2413991-3-eperezma@redhat.com>
+ <BL1PR12MB582520CC9CE024149141327499D69@BL1PR12MB5825.namprd12.prod.outlook.com>
+ <CAJaqyWc9_ErCg4whLKrjNyP5z2DZno-LJm7PN=-9uk7PUT4fJw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
 Content-Disposition: inline
-In-Reply-To: <20220526071354.6426-3-zhouchengming@bytedance.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAJaqyWc9_ErCg4whLKrjNyP5z2DZno-LJm7PN=-9uk7PUT4fJw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Chengming,
+On Thu, May 26, 2022 at 10:57:03AM +0200, Eugenio Perez Martin wrote:
+>On Wed, May 25, 2022 at 1:23 PM Dawar, Gautam <gautam.dawar@amd.com> wrote:
+>>
+>> [AMD Official Use Only - General]
+>>
+>> -----Original Message-----
+>> From: Eugenio Pérez <eperezma@redhat.com>
+>> Sent: Wednesday, May 25, 2022 4:29 PM
+>> To: Michael S. Tsirkin <mst@redhat.com>; netdev@vger.kernel.org; linux-kernel@vger.kernel.org; kvm@vger.kernel.org; virtualization@lists.linux-foundation.org; Jason Wang <jasowang@redhat.com>
+>> Cc: Zhu Lingshan <lingshan.zhu@intel.com>; martinh@xilinx.com; Stefano Garzarella <sgarzare@redhat.com>; ecree.xilinx@gmail.com; Eli Cohen <elic@nvidia.com>; Dan Carpenter <dan.carpenter@oracle.com>; Parav Pandit <parav@nvidia.com>; Wu Zongyong <wuzongyong@linux.alibaba.com>; dinang@xilinx.com; Christophe JAILLET <christophe.jaillet@wanadoo.fr>; Xie Yongji <xieyongji@bytedance.com>; Dawar, Gautam <gautam.dawar@amd.com>; lulu@redhat.com; martinpo@xilinx.com; pabloc@xilinx.com; Longpeng <longpeng2@huawei.com>; Piotr.Uminski@intel.com; Kamde, Tanuj <tanuj.kamde@amd.com>; Si-Wei Liu <si-wei.liu@oracle.com>; habetsm.xilinx@gmail.com; lvivier@redhat.com; Zhang Min <zhang.min9@zte.com.cn>; hanand@xilinx.com
+>> Subject: [PATCH v3 2/4] vhost-vdpa: introduce STOP backend feature bit
+>>
+>> [CAUTION: External Email]
+>>
+>> Userland knows if it can stop the device or not by checking this feature bit.
+>>
+>> It's only offered if the vdpa driver backend implements the stop() operation callback, and try to set it if the backend does not offer that callback is an error.
+>>
+>> Signed-off-by: Eugenio Pérez <eperezma@redhat.com>
+>> ---
+>>  drivers/vhost/vdpa.c             | 16 +++++++++++++++-
+>>  include/uapi/linux/vhost_types.h |  2 ++
+>>  2 files changed, 17 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c index 1f1d1c425573..32713db5831d 100644
+>> --- a/drivers/vhost/vdpa.c
+>> +++ b/drivers/vhost/vdpa.c
+>> @@ -347,6 +347,14 @@ static long vhost_vdpa_set_config(struct vhost_vdpa *v,
+>>         return 0;
+>>  }
+>>
+>> +static bool vhost_vdpa_can_stop(const struct vhost_vdpa *v) {
+>> +       struct vdpa_device *vdpa = v->vdpa;
+>> +       const struct vdpa_config_ops *ops = vdpa->config;
+>> +
+>> +       return ops->stop;
+>> [GD>>] Would it be better to explicitly return a bool to match the return type?
+>
+>I'm not sure about the kernel code style regarding that casting. Maybe
+>it's better to return !!ops->stop here. The macros likely and unlikely
+>do that.
 
-Thank you for the patch! Yet something to improve:
+IIUC `ops->stop` is a function pointer, so what about
 
-[auto build test ERROR on tip/sched/core]
-[also build test ERROR on tip/master linus/master v5.18 next-20220525]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+     return ops->stop != NULL;
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Chengming-Zhou/sched-fair-optimize-and-simplify-rq-leaf_cfs_rq_list/20220526-151850
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git 991d8d8142cad94f9c5c05db25e67fa83d6f772a
-config: powerpc-allnoconfig (https://download.01.org/0day-ci/archive/20220526/202205261617.YUT1ixQ8-lkp@intel.com/config)
-compiler: powerpc-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/cb2b1810aeb3f8f290a932f3e625ab9df1110054
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Chengming-Zhou/sched-fair-optimize-and-simplify-rq-leaf_cfs_rq_list/20220526-151850
-        git checkout cb2b1810aeb3f8f290a932f3e625ab9df1110054
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=powerpc SHELL=/bin/bash kernel/sched/
+Thanks,
+Stefano
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   kernel/sched/fair.c:645:5: warning: no previous prototype for 'sched_update_scaling' [-Wmissing-prototypes]
-     645 | int sched_update_scaling(void)
-         |     ^~~~~~~~~~~~~~~~~~~~
-   kernel/sched/fair.c: In function 'enqueue_entity':
->> kernel/sched/fair.c:4343:22: error: implicit declaration of function 'throttled_hierarchy' [-Werror=implicit-function-declaration]
-    4343 |                 if (!throttled_hierarchy(cfs_rq))
-         |                      ^~~~~~~~~~~~~~~~~~~
-   kernel/sched/fair.c: At top level:
->> kernel/sched/fair.c:5484:19: error: static declaration of 'throttled_hierarchy' follows non-static declaration
-    5484 | static inline int throttled_hierarchy(struct cfs_rq *cfs_rq)
-         |                   ^~~~~~~~~~~~~~~~~~~
-   kernel/sched/fair.c:4343:22: note: previous implicit declaration of 'throttled_hierarchy' with type 'int()'
-    4343 |                 if (!throttled_hierarchy(cfs_rq))
-         |                      ^~~~~~~~~~~~~~~~~~~
-   kernel/sched/fair.c:5495:6: warning: no previous prototype for 'init_cfs_bandwidth' [-Wmissing-prototypes]
-    5495 | void init_cfs_bandwidth(struct cfs_bandwidth *cfs_b) {}
-         |      ^~~~~~~~~~~~~~~~~~
-   kernel/sched/fair.c:11654:6: warning: no previous prototype for 'free_fair_sched_group' [-Wmissing-prototypes]
-   11654 | void free_fair_sched_group(struct task_group *tg) { }
-         |      ^~~~~~~~~~~~~~~~~~~~~
-   kernel/sched/fair.c:11656:5: warning: no previous prototype for 'alloc_fair_sched_group' [-Wmissing-prototypes]
-   11656 | int alloc_fair_sched_group(struct task_group *tg, struct task_group *parent)
-         |     ^~~~~~~~~~~~~~~~~~~~~~
-   kernel/sched/fair.c:11661:6: warning: no previous prototype for 'online_fair_sched_group' [-Wmissing-prototypes]
-   11661 | void online_fair_sched_group(struct task_group *tg) { }
-         |      ^~~~~~~~~~~~~~~~~~~~~~~
-   kernel/sched/fair.c:11663:6: warning: no previous prototype for 'unregister_fair_sched_group' [-Wmissing-prototypes]
-   11663 | void unregister_fair_sched_group(struct task_group *tg) { }
-         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-   cc1: some warnings being treated as errors
-
-
-vim +/throttled_hierarchy +4343 kernel/sched/fair.c
-
-  4263	
-  4264	/*
-  4265	 * MIGRATION
-  4266	 *
-  4267	 *	dequeue
-  4268	 *	  update_curr()
-  4269	 *	    update_min_vruntime()
-  4270	 *	  vruntime -= min_vruntime
-  4271	 *
-  4272	 *	enqueue
-  4273	 *	  update_curr()
-  4274	 *	    update_min_vruntime()
-  4275	 *	  vruntime += min_vruntime
-  4276	 *
-  4277	 * this way the vruntime transition between RQs is done when both
-  4278	 * min_vruntime are up-to-date.
-  4279	 *
-  4280	 * WAKEUP (remote)
-  4281	 *
-  4282	 *	->migrate_task_rq_fair() (p->state == TASK_WAKING)
-  4283	 *	  vruntime -= min_vruntime
-  4284	 *
-  4285	 *	enqueue
-  4286	 *	  update_curr()
-  4287	 *	    update_min_vruntime()
-  4288	 *	  vruntime += min_vruntime
-  4289	 *
-  4290	 * this way we don't have the most up-to-date min_vruntime on the originating
-  4291	 * CPU and an up-to-date min_vruntime on the destination CPU.
-  4292	 */
-  4293	
-  4294	static void
-  4295	enqueue_entity(struct cfs_rq *cfs_rq, struct sched_entity *se, int flags)
-  4296	{
-  4297		bool renorm = !(flags & ENQUEUE_WAKEUP) || (flags & ENQUEUE_MIGRATED);
-  4298		bool curr = cfs_rq->curr == se;
-  4299	
-  4300		/*
-  4301		 * If we're the current task, we must renormalise before calling
-  4302		 * update_curr().
-  4303		 */
-  4304		if (renorm && curr)
-  4305			se->vruntime += cfs_rq->min_vruntime;
-  4306	
-  4307		update_curr(cfs_rq);
-  4308	
-  4309		/*
-  4310		 * Otherwise, renormalise after, such that we're placed at the current
-  4311		 * moment in time, instead of some random moment in the past. Being
-  4312		 * placed in the past could significantly boost this task to the
-  4313		 * fairness detriment of existing tasks.
-  4314		 */
-  4315		if (renorm && !curr)
-  4316			se->vruntime += cfs_rq->min_vruntime;
-  4317	
-  4318		/*
-  4319		 * When enqueuing a sched_entity, we must:
-  4320		 *   - Update loads to have both entity and cfs_rq synced with now.
-  4321		 *   - Add its load to cfs_rq->runnable_avg
-  4322		 *   - For group_entity, update its weight to reflect the new share of
-  4323		 *     its group cfs_rq
-  4324		 *   - Add its new weight to cfs_rq->load.weight
-  4325		 */
-  4326		update_load_avg(cfs_rq, se, UPDATE_TG | DO_ATTACH);
-  4327		se_update_runnable(se);
-  4328		update_cfs_group(se);
-  4329		account_entity_enqueue(cfs_rq, se);
-  4330	
-  4331		if (flags & ENQUEUE_WAKEUP)
-  4332			place_entity(cfs_rq, se, 0);
-  4333	
-  4334		check_schedstat_required();
-  4335		update_stats_enqueue_fair(cfs_rq, se, flags);
-  4336		check_spread(cfs_rq, se);
-  4337		if (!curr)
-  4338			__enqueue_entity(cfs_rq, se);
-  4339		se->on_rq = 1;
-  4340	
-  4341		if (cfs_rq->nr_running == 1) {
-  4342			check_enqueue_throttle(cfs_rq);
-> 4343			if (!throttled_hierarchy(cfs_rq))
-  4344				list_add_leaf_cfs_rq(cfs_rq);
-  4345		}
-  4346	}
-  4347	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
