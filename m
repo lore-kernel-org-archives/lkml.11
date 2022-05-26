@@ -2,69 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8927C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 20:57:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E4DAC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 20:58:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349133AbiEZU51 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 16:57:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40712 "EHLO
+        id S242894AbiEZU6e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 16:58:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343921AbiEZU5A (ORCPT
+        with ESMTP id S232749AbiEZU6c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 16:57:00 -0400
+        Thu, 26 May 2022 16:58:32 -0400
 Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 245E46A066
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 13:56:59 -0700 (PDT)
-Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=phil.lan)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A336E64EC
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 13:58:30 -0700 (PDT)
+Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=diego.localnet)
         by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <heiko@sntech.de>)
-        id 1nuKXL-0006ZH-2e; Thu, 26 May 2022 22:56:51 +0200
-From:   Heiko Stuebner <heiko@sntech.de>
+        id 1nuKYt-0006bZ-PZ; Thu, 26 May 2022 22:58:27 +0200
+From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
 To:     palmer@dabbelt.com, paul.walmsley@sifive.com
 Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
         wefu@redhat.com, guoren@kernel.org, mick@ics.forth.gr,
         samuel@sholland.org, cmuellner@linux.com, philipp.tomsich@vrull.eu,
-        hch@lst.de, Heiko Stuebner <heiko@sntech.de>,
-        kernel test robot <yujie.liu@intel.com>
-Subject: [PATCH v2 4/5] riscv: fix dependency for t-head errata
-Date:   Thu, 26 May 2022 22:56:45 +0200
-Message-Id: <20220526205646.258337-5-heiko@sntech.de>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220526205646.258337-1-heiko@sntech.de>
-References: <20220526205646.258337-1-heiko@sntech.de>
+        hch@lst.de
+Subject: Re: [PATCH 0/4] riscv: some svpbmt fixes
+Date:   Thu, 26 May 2022 22:58:27 +0200
+Message-ID: <3505332.hdfAi7Kttb@diego>
+In-Reply-To: <20220518170254.3178923-1-heiko@sntech.de>
+References: <20220518170254.3178923-1-heiko@sntech.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-alternatives only work correctly on non-xip-kernels and while the
-selected alternative-symbol has the correct dependency the symbol
-selecting it also needs that dependency.
+Am Mittwoch, 18. Mai 2022, 19:02:50 CEST schrieb Heiko Stuebner:
+> Some additionals comments and notes from autobuilders received
+> after the series got applied, warranted some changes.
+> 
+> So this is a small collection of cleanups for the svpbmt v10 series.
 
-So add the missing dependency to the T-Head errata Kconfig symbol.
+I've just sent a v2 of this which added another patch onto the series.
 
-Reported-by: kernel test robot <yujie.liu@intel.com>
-Reviewed-by: Guo Ren <guoren@kernel.org>
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
----
- arch/riscv/Kconfig.erratas | 1 +
- 1 file changed, 1 insertion(+)
+See https://lore.kernel.org/r/20220526205646.258337-1-heiko@sntech.de
 
-diff --git a/arch/riscv/Kconfig.erratas b/arch/riscv/Kconfig.erratas
-index ebfcd5cc6eaf..457ac72c9b36 100644
---- a/arch/riscv/Kconfig.erratas
-+++ b/arch/riscv/Kconfig.erratas
-@@ -35,6 +35,7 @@ config ERRATA_SIFIVE_CIP_1200
- 
- config ERRATA_THEAD
- 	bool "T-HEAD errata"
-+	depends on !XIP_KERNEL
- 	select RISCV_ALTERNATIVE
- 	help
- 	  All T-HEAD errata Kconfig depend on this Kconfig. Disabling
--- 
-2.35.1
+
+Heiko
+
+> Heiko Stuebner (4):
+>   riscv: drop cpufeature_apply_feature tracking variable
+>   riscv: Improve description for RISCV_ISA_SVPBMT Kconfig symbol
+>   riscv: make patch-function pointer more generic in
+>     cpu_manufacturer_info struct
+>   riscv: fix dependency for t-head errata
+> 
+>  arch/riscv/Kconfig              |  9 +++++++--
+>  arch/riscv/Kconfig.erratas      |  1 +
+>  arch/riscv/kernel/alternative.c | 18 +++++++++---------
+>  arch/riscv/kernel/cpufeature.c  |  5 +----
+>  4 files changed, 18 insertions(+), 15 deletions(-)
+> 
+> 
+
+
+
 
