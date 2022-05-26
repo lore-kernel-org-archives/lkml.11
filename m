@@ -2,65 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2156EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 11:46:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 563F2C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 11:46:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347328AbiEZLp7 (ORCPT
+        id S1344879AbiEZLqH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 07:45:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59660 "EHLO
+        Thu, 26 May 2022 07:46:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347253AbiEZLox (ORCPT
+        with ESMTP id S1347353AbiEZLo4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 07:44:53 -0400
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8702D681D
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 04:44:35 -0700 (PDT)
-Received: by mail-pf1-x436.google.com with SMTP id b135so1466438pfb.12
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 04:44:35 -0700 (PDT)
+        Thu, 26 May 2022 07:44:56 -0400
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 255ABD029E
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 04:44:42 -0700 (PDT)
+Received: by mail-pg1-x534.google.com with SMTP id x12so1124120pgj.7
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 04:44:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=OpIXnp/tGO9yryIO5uLfqtwQ8qkcQ6bLFqmnA/PDaH8=;
-        b=MFdcYu76oyCuRELMA/UT6I8+Uofdl+CvLDfOYzFOWIDdBxChsj2ZxhDT5WiAjixcEc
-         aNbPSVIFjJFn0IADZdzVqnNa8KIpeqZTDGjQgmAOp0jJJipQREmct/n8fxQFoStBFY5O
-         ceSwO/I0g+3z6RImm1ZiCxOvTwLgh1oUhAWmwSx6ih3HRTkHW2K21qXMkQV4A712055U
-         f1AzYPZbCrF6UL5z47AxpwYGQmblPs75rpg/3QrmtQHVIlszkefIP1282rDXPOSLO8p7
-         w2Bj7FcLCz5ojSB/RKKm3zJ1By1+iFemQNhw+4k/SRNI8mGMuEtgyUsXIso9qnsP1D4v
-         nW7w==
+        bh=Ea7OeFJXlMpFcPLCRl9ByzN+8R9kDLKU8gAyymKSibQ=;
+        b=M6bRg+ULJ96LPwVQ7+5mReEW6ZqyIV3Sw0mUefHoAbPfZkGsn0gU5r1icGCEjYkHeS
+         LZYzMws85x1JW1ZIVi11yxmJEZt9nPXRXAzUBUiJRa2eWGg/HEfMPMQxVATCKPOD+jrx
+         OdWVyEgzxpUBJzJcm/blvmIT/3RPW2UkGXrAjD/+ovhUmhml8N2JhwpaDLxJjLWK+yOA
+         UT0x1q9jF/CQPOmxPMdb8UK++Y+myFIm6xEWiyNyKBiN3dqv8crhWv2uDYjW7mTv+eVX
+         TZdFxHmBplkzg1lzvyh+YKaqrQJ/aFOtFsAR4POd2B9XTCgETMvLsA8VT1Wf3E+qIgb+
+         rZaw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=OpIXnp/tGO9yryIO5uLfqtwQ8qkcQ6bLFqmnA/PDaH8=;
-        b=Blb/pcTiJqxL7R3npj2PF221Ada8yC+VX6UBCwWZ0uR9oiyJZ0A0NfY0Gxgw8kjiAQ
-         eYMytYmPK0LC/KC/74fAMk9E7IuZQEgicEDFYKLc5b46PKZr+prhUmKxV7o86coSSQ1c
-         d9C6UqE9DyNop3icZ1QFUbdSlGYt4NWTfUeyqfqn3aPNWFBF17s6Y3ZTIh0dJ5U2/xyC
-         5uHau9X8VlZIiXqNxpFKTKa1lF0A+lZwyhC7LgVJYh4Xu77yxUcQ1+Wb3idHBAlH7w8V
-         uT9PmnWhBsK6ky4CLPv+F0YhunVGDC/RbFad8tTDN9xW2M7w8/rbO1M5PvOaSfgblZ1Z
-         DnOQ==
-X-Gm-Message-State: AOAM532k2T7498e9tASL3Qz6g6wnejLoBtn6/O+ee6TRPcDGrQctiSf7
-        /rOAa/YYblc6Qirg0tYsrJoAjg==
-X-Google-Smtp-Source: ABdhPJz53ecZNA5N1GA7gWB/uJLUku58lnZBPmy2rotuPeH9S8qnNu4uShufq05gKx8Ahp/HIrEYxA==
-X-Received: by 2002:aa7:84d6:0:b0:518:8b7d:bdad with SMTP id x22-20020aa784d6000000b005188b7dbdadmr24393258pfn.59.1653565474829;
-        Thu, 26 May 2022 04:44:34 -0700 (PDT)
+        bh=Ea7OeFJXlMpFcPLCRl9ByzN+8R9kDLKU8gAyymKSibQ=;
+        b=DX63RWM9aPEX+3j1+IeaxsnE77f0QwiuDlLxlsEqcODO4re8uDMQGho1j60DUp3oeh
+         +Hboa0G5IKtVw9xtxsb2pqlMv5lhbgXHAPrIsLuj7w+WEUHXYYEg3aeWslC/7mCRrMF7
+         PEb/8dOgGjxMJUl192Q9csHwSM+N7dFCn3HfFbZ+sO/SEaWfinPWTyhb2qgYBEbiLMcs
+         q5yrc+Gc8SHGx9Nco0+F0scdHJyhf4Vg1+I+CSGwKQNjJBCwEU5D0aEVeK5TptcGT/33
+         4xa9BpfV39xisxYnLbR8o1wA84V9mpYobMmyC4UT8ls5tRsyBepCvF5HxUKtQ9cwU+M4
+         5uPg==
+X-Gm-Message-State: AOAM531OdFjQvSaGCmzabZWjS8jnTZgM/D02m9iCOfSfLnmm36hL2jnF
+        tIQg773a4OKTafSa2voHAqoB816Z8V33cQ==
+X-Google-Smtp-Source: ABdhPJxmzRiAXnitzctuPYAA9jUL7Rnfwu6jdDAlzlKlkWUlBLdlfPYGPy437OiWOPMUX61OXwUPFQ==
+X-Received: by 2002:a05:6a00:1d1d:b0:518:421c:b65e with SMTP id a29-20020a056a001d1d00b00518421cb65emr35712261pfx.43.1653565481268;
+        Thu, 26 May 2022 04:44:41 -0700 (PDT)
 Received: from localhost ([122.162.234.2])
-        by smtp.gmail.com with ESMTPSA id e2-20020a170902e0c200b0015e8d4eb260sm1256061pla.170.2022.05.26.04.44.34
+        by smtp.gmail.com with ESMTPSA id i13-20020a170902eb4d00b001635f9b6e2fsm1360265pli.61.2022.05.26.04.44.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 May 2022 04:44:34 -0700 (PDT)
+        Thu, 26 May 2022 04:44:40 -0700 (PDT)
 From:   Viresh Kumar <viresh.kumar@linaro.org>
-To:     Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
 Cc:     Viresh Kumar <viresh.kumar@linaro.org>, linux-pm@vger.kernel.org,
         Vincent Guittot <vincent.guittot@linaro.org>,
         Rafael Wysocki <rjw@rjwysocki.net>,
         Stephen Boyd <sboyd@kernel.org>, Nishanth Menon <nm@ti.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 22/31] soc/tegra: Migrate to dev_pm_opp_set_config()
-Date:   Thu, 26 May 2022 17:12:21 +0530
-Message-Id: <449b344f037c7ef1970bc84d31e0d4c4cb4d2951.1653564321.git.viresh.kumar@linaro.org>
+        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 24/31] serial: qcom: Migrate to dev_pm_opp_set_config()
+Date:   Thu, 26 May 2022 17:12:23 +0530
+Message-Id: <49aff8c5f72dae52ef7e9acb4f821d0c3e097813.1653564321.git.viresh.kumar@linaro.org>
 X-Mailer: git-send-email 2.31.1.272.g89b43f80a514
 In-Reply-To: <cover.1653564321.git.viresh.kumar@linaro.org>
 References: <cover.1653564321.git.viresh.kumar@linaro.org>
@@ -77,65 +80,32 @@ Lets start using it.
 
 Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
 ---
- drivers/soc/tegra/common.c | 8 ++++++--
- drivers/soc/tegra/pmc.c    | 8 ++++++--
- 2 files changed, 12 insertions(+), 4 deletions(-)
+ drivers/tty/serial/qcom_geni_serial.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/soc/tegra/common.c b/drivers/soc/tegra/common.c
-index 49a5360f4507..7ba15cb836e8 100644
---- a/drivers/soc/tegra/common.c
-+++ b/drivers/soc/tegra/common.c
-@@ -107,6 +107,10 @@ int devm_tegra_core_dev_init_opp_table(struct device *dev,
- {
- 	u32 hw_version;
- 	int err;
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index 1543a6028856..391fcc3a0f61 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -1331,6 +1331,9 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
+ 	int irq;
+ 	bool console = false;
+ 	struct uart_driver *drv;
 +	struct dev_pm_opp_config config = {
-+		.supported_hw = &hw_version,
-+		.supported_hw_count = 1,
++		.clk_name = "se",
 +	};
  
- 	/* Tegra114+ doesn't support OPP yet */
- 	if (!of_machine_is_compatible("nvidia,tegra20") &&
-@@ -118,9 +122,9 @@ int devm_tegra_core_dev_init_opp_table(struct device *dev,
- 	else
- 		hw_version = BIT(tegra_sku_info.soc_speedo_id);
+ 	if (of_device_is_compatible(pdev->dev.of_node, "qcom,geni-debug-uart"))
+ 		console = true;
+@@ -1414,7 +1417,7 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
+ 	if (of_property_read_bool(pdev->dev.of_node, "cts-rts-swap"))
+ 		port->cts_rts_swap = true;
  
--	err = devm_pm_opp_set_supported_hw(dev, &hw_version, 1);
-+	err = devm_pm_opp_set_config(dev, &config);
- 	if (err) {
--		dev_err(dev, "failed to set OPP supported HW: %d\n", err);
-+		dev_err(dev, "failed to set OPP config: %d\n", err);
- 		return err;
- 	}
- 
-diff --git a/drivers/soc/tegra/pmc.c b/drivers/soc/tegra/pmc.c
-index fdf508e03400..01ec76dd433d 100644
---- a/drivers/soc/tegra/pmc.c
-+++ b/drivers/soc/tegra/pmc.c
-@@ -1366,6 +1366,10 @@ static int tegra_pmc_core_pd_add(struct tegra_pmc *pmc, struct device_node *np)
- 	struct generic_pm_domain *genpd;
- 	const char *rname = "core";
- 	int err;
-+	struct dev_pm_opp_config config = {
-+		.regulator_names = &rname,
-+		.regulator_count = 1,
-+	};
- 
- 	genpd = devm_kzalloc(pmc->dev, sizeof(*genpd), GFP_KERNEL);
- 	if (!genpd)
-@@ -1375,10 +1379,10 @@ static int tegra_pmc_core_pd_add(struct tegra_pmc *pmc, struct device_node *np)
- 	genpd->set_performance_state = tegra_pmc_core_pd_set_performance_state;
- 	genpd->opp_to_performance_state = tegra_pmc_core_pd_opp_to_performance_state;
- 
--	err = devm_pm_opp_set_regulators(pmc->dev, &rname, 1);
-+	err = devm_pm_opp_set_config(pmc->dev, &config);
- 	if (err)
- 		return dev_err_probe(pmc->dev, err,
--				     "failed to set core OPP regulator\n");
-+				     "failed to set OPP config\n");
- 
- 	err = pm_genpd_init(genpd, NULL, false);
- 	if (err) {
+-	ret = devm_pm_opp_set_clkname(&pdev->dev, "se");
++	ret = devm_pm_opp_set_config(&pdev->dev, &config);
+ 	if (ret)
+ 		return ret;
+ 	/* OPP table is optional */
 -- 
 2.31.1.272.g89b43f80a514
 
