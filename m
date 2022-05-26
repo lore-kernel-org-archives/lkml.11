@@ -2,140 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0126C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 20:40:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABC31C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 20:41:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345622AbiEZUkl (ORCPT
+        id S1348645AbiEZUk7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 16:40:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45348 "EHLO
+        Thu, 26 May 2022 16:40:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232903AbiEZUki (ORCPT
+        with ESMTP id S1348626AbiEZUkt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 16:40:38 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3E10E15F7
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 13:40:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1653597637; x=1685133637;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=IJdm9DSkjzkpq4cQM5uzeP+0z5TWT/S2S0U1NnQ9ajs=;
-  b=cjRi6kvGiUqm3LUgzReC9mxZm/0DbYuzuEsHIPujRGiwTYk8xye+ITiS
-   9DpVUkCNPwZ6rbcakUyeQ40JByfZ0YNt+NI+LXmhAMoqNeYrPtCmwxS9T
-   KySyeyHfiBYjWmG/OnyZJaJK5YqUUbd7iMlAp7J70Rb61d0yotVCUpmCC
-   o=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 26 May 2022 13:40:37 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 May 2022 13:40:36 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 26 May 2022 13:40:36 -0700
-Received: from ubuntu.qualcomm.com (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 26 May
- 2022 13:40:34 -0700
-From:   Qian Cai <quic_qiancai@quicinc.com>
-To:     Marc Zyngier <maz@kernel.org>
-CC:     James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <kvmarm@lists.cs.columbia.edu>, <linux-kernel@vger.kernel.org>,
-        Qian Cai <quic_qiancai@quicinc.com>
-Subject: [PATCH] KVM: arm64: Fix memory leaks from stage2 pagetable
-Date:   Thu, 26 May 2022 16:39:56 -0400
-Message-ID: <20220526203956.143873-1-quic_qiancai@quicinc.com>
-X-Mailer: git-send-email 2.32.0
+        Thu, 26 May 2022 16:40:49 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D3409E2755
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 13:40:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653597647;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=qeYoBwClMquOdM4mrLC20XcvsQqVIaRivM3jxGFd6y4=;
+        b=HnW5YvT/CNE98hB+yAgSz4RYvJqP+rhKqlDPhE2XLOeCSr5VifyqjLemmzEEoBUV1fhBRR
+        4JVT67ecmsm9ew+VkKgSSt2El3hYNWYx/QZyYCzTr1J+CcQwiFa9NlUIDyguPFO3rKn4Vz
+        n8d6HUjhSFv1CLRI1eWSfrVfrdurHc0=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-112-mc-1D6SBM96eFkb1G_VMfw-1; Thu, 26 May 2022 16:40:40 -0400
+X-MC-Unique: mc-1D6SBM96eFkb1G_VMfw-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A2A5D185A7A4;
+        Thu, 26 May 2022 20:40:39 +0000 (UTC)
+Received: from segfault.boston.devel.redhat.com (segfault.boston.devel.redhat.com [10.19.60.26])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 31DDF1121315;
+        Thu, 26 May 2022 20:40:39 +0000 (UTC)
+From:   Jeff Moyer <jmoyer@redhat.com>
+To:     Frederick Lawler <fred@cloudflare.com>
+Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-aio@kvack.org, linux-fsdevel@vger.kernel.org,
+        linux-cachefs@redhat.com, linux-cifs@vger.kernel.org,
+        samba-technical@lists.samba.org, linux-mm@kvack.org,
+        linux-nfs@vger.kernel.org, linux-unionfs@vger.kernel.org,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        keyrings@vger.kernel.org, selinux@vger.kernel.org,
+        serge@hallyn.com, amir73il@gmail.com, kernel-team@cloudflare.com
+Subject: Re: [PATCH v2] cred: Propagate security_prepare_creds() error code
+References: <20220525183703.466936-1-fred@cloudflare.com>
+X-PGP-KeyID: 1F78E1B4
+X-PGP-CertKey: F6FE 280D 8293 F72C 65FD  5A58 1FF8 A7CA 1F78 E1B4
+Date:   Thu, 26 May 2022 16:43:44 -0400
+In-Reply-To: <20220525183703.466936-1-fred@cloudflare.com> (Frederick Lawler's
+        message of "Wed, 25 May 2022 13:37:03 -0500")
+Message-ID: <x49o7zkvxbz.fsf@segfault.boston.devel.redhat.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Running some SR-IOV workloads could trigger some leak reports from
-kmemleak.
+Frederick Lawler <fred@cloudflare.com> writes:
 
-unreferenced object 0xffff080243cef500 (size 128):
-  comm "qemu-system-aar", pid 179935, jiffies 4298359506 (age 1629.732s)
-  hex dump (first 32 bytes):
-    28 00 00 00 01 00 00 00 00 e0 4c 52 03 08 ff ff  (.........LR....
-    e0 af a4 7f 7c d1 ff ff a8 3c b3 08 00 80 ff ff  ....|....<......
-  backtrace:
-     kmem_cache_alloc_trace
-     kvm_init_stage2_mmu
-     kvm_arch_init_vm
-     kvm_create_vm
-     kvm_dev_ioctl
-     __arm64_sys_ioctl
-     invoke_syscall
-     el0_svc_common.constprop.0
-     do_el0_svc
-     el0_svc
-     el0t_64_sync_handler
-     el0t_64_sync
+> While experimenting with the security_prepare_creds() LSM hook, we
+> noticed that our EPERM error code was not propagated up the callstack.
+> Instead ENOMEM is always returned.  As a result, some tools may send a
+> confusing error message to the user:
+>
+> $ unshare -rU
+> unshare: unshare failed: Cannot allocate memory
+>
+> A user would think that the system didn't have enough memory, when
+> instead the action was denied.
+>
+> This problem occurs because prepare_creds() and prepare_kernel_cred()
+> return NULL when security_prepare_creds() returns an error code. Later,
+> functions calling prepare_creds() and prepare_kernel_cred() return
+> ENOMEM because they assume that a NULL meant there was no memory
+> allocated.
+>
+> Fix this by propagating an error code from security_prepare_creds() up
+> the callstack.
+>
+> Signed-off-by: Frederick Lawler <fred@cloudflare.com>
 
-Since I yet to find a way to reproduce this at will, I just did a code
-inspection and found this one spot that could happen. It is unlikely
-that will fix my issue because I don't see mine went into the error
-paths. But, we should fix it regardless.
+The fs/aio.c part looks ok to me.  We should probably also update the
+man page for io_submit, though, to document the conditions under which
+EPERM can be returned.
 
-If hardware_enable_all() or kvm_init_mmu_notifier() failed in
-kvm_create_vm(), we ended up leaking stage2 pagetable memory from
-kvm_init_stage2_mmu() because we will no longer call
-kvm_arch_flush_shadow_all().
-
-It seems that it is impossible to simply move kvm_free_stage2_pgd() from
-kvm_arch_flush_shadow_all() into kvm_arch_destroy_vm() due to the issue
-mentioned in the "Fixes" commit below. Thus, fixed it by freeing the
-memory from kvm_arch_destroy_vm() only if the MMU notifier is not even
-initialized.
-
-Fixes: 293f293637b5 ("kvm-arm: Unmap shadow pagetables properly")
-Signed-off-by: Qian Cai <quic_qiancai@quicinc.com>
----
- arch/arm64/kvm/arm.c | 3 +++
- arch/arm64/kvm/mmu.c | 3 ++-
- 2 files changed, 5 insertions(+), 1 deletion(-)
-
-diff --git a/arch/arm64/kvm/arm.c b/arch/arm64/kvm/arm.c
-index 400bb0fe2745..7d12824f2034 100644
---- a/arch/arm64/kvm/arm.c
-+++ b/arch/arm64/kvm/arm.c
-@@ -180,6 +180,9 @@ vm_fault_t kvm_arch_vcpu_fault(struct kvm_vcpu *vcpu, struct vm_fault *vmf)
-  */
- void kvm_arch_destroy_vm(struct kvm *kvm)
- {
-+	if (!kvm->mmu_notifier.ops)
-+		kvm_free_stage2_pgd(&kvm->arch.mmu);
-+
- 	bitmap_free(kvm->arch.pmu_filter);
- 	free_cpumask_var(kvm->arch.supported_cpus);
- 
-diff --git a/arch/arm64/kvm/mmu.c b/arch/arm64/kvm/mmu.c
-index f5651a05b6a8..13a527656ba7 100644
---- a/arch/arm64/kvm/mmu.c
-+++ b/arch/arm64/kvm/mmu.c
-@@ -1739,7 +1739,8 @@ void kvm_arch_memslots_updated(struct kvm *kvm, u64 gen)
- 
- void kvm_arch_flush_shadow_all(struct kvm *kvm)
- {
--	kvm_free_stage2_pgd(&kvm->arch.mmu);
-+	if (kvm->mmu_notifier.ops)
-+		kvm_free_stage2_pgd(&kvm->arch.mmu);
- }
- 
- void kvm_arch_flush_shadow_memslot(struct kvm *kvm,
--- 
-2.32.0
+Acked-by: Jeff Moyer <jmoyer@redhat.com>
 
