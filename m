@@ -2,83 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EE0AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 05:10:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B229C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 05:24:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345969AbiEZFK0 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 01:10:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52788 "EHLO
+        id S245630AbiEZFYW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 01:24:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343609AbiEZFKP (ORCPT
+        with ESMTP id S230040AbiEZFYT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 01:10:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E004BC6EB;
-        Wed, 25 May 2022 22:10:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C188061A28;
-        Thu, 26 May 2022 05:10:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E403DC3411A;
-        Thu, 26 May 2022 05:10:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653541813;
-        bh=r1iNoWcRZJU0O8vpO8cGgHs8O1llOLU009J/Sx/Z6eg=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=gWfeDo+E6vmEmnR58Qz+in5ognrVRoYmGyrz6o+AZ/o6a3mSLshhFxN4Kc+rreGLG
-         NAsslmTRXhH7vw1sxlztkLm6ecgdfoNE9WQSXuHRTfc9ii4PeZBzbINBtT4gUHUN+g
-         4exq9Djizu21Zn/jNQOV2EDqicr8DSrCCGCx3JeR2gXEeztXV8M1aCJRiIm2dmmrOw
-         cUON5dT7hPN0NV+Wx/mrxJSSb44js6qlK77FoOVIRGtAT3ecFTKDcn7r8cGQ3NLB9r
-         vpVkYW+Z5g2vZpGbXlLpxVvbLl/rC7/Hhlg7fMtFtIUT8l9hd5+dcq5og6+615Ihr0
-         0lFFRDUnKC1Ow==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C3091F03946;
-        Thu, 26 May 2022 05:10:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Thu, 26 May 2022 01:24:19 -0400
+Received: from mail-qv1-xf2a.google.com (mail-qv1-xf2a.google.com [IPv6:2607:f8b0:4864:20::f2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5524CA5AAC;
+        Wed, 25 May 2022 22:24:16 -0700 (PDT)
+Received: by mail-qv1-xf2a.google.com with SMTP id b11so970017qvv.4;
+        Wed, 25 May 2022 22:24:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=YHO6zM29Kcg3RuIDmSGj1k3u9xjpChjCh4IML1ge/VM=;
+        b=A8ggUJBTgjIruHVO2AGSGC50BJpzccp2JqngUhzLy/tfmWgfIWRDLNwWLNmHNLYw+a
+         hKb8cIblIrrNzbnAl119oFOfmfo5t2kdizwA1SlLIjgcFJ7jsc6CrNpVjgBlAqArbR44
+         bXjDqv3OxphYAQ6HqZVfzo53iG7r6lvHTReeaUNgitl55aMyMk4PouDkSQISzkbPMYxB
+         h3S5KeMYr1TVF4dv5eI3uZaBzydeG7LWtBgw2mTL7nAaKUeYBS+ESjl1DS7OJD0OC3eK
+         CiiGt9mQQTk8/w8c4ZYb/3+Yh0lU4wF5tNoQHCwzRHhZckh4OhBEGVMBm6M+I2eTanpy
+         pi3A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YHO6zM29Kcg3RuIDmSGj1k3u9xjpChjCh4IML1ge/VM=;
+        b=uOgdrXwfJby1HuWAXqM9EMprDZaCUoPeev4TuJ0pNS9HkTzxtMyMMQzg/yJo6Av7hg
+         KejWhdYJL7IhWFKI10aKOXbIXMY1GmzbEL1dHb5BMtvcWmulbP+gxfj5lw+0FLgkbmoa
+         V5+G2rAMo+8hDcZp2p5GKUEg+Eni+vZVVyd5Fs/JQ0v1Y+4rms6HVOzio/jjJ4x4sHRf
+         DHp1LY1ClxuESEPfStVAaR9JmQd0NNnLOHoggAeWEQYlMuVoVUiqbrbHtuTFrUmQsPV9
+         2ozCWR/1WUmMC1wbbx9kiiorh8nbA7L/py2qiD37n8PnPAnrvMlTDUQRCD3BGj61v23I
+         Slqw==
+X-Gm-Message-State: AOAM530ZFIQg/HNTP0eOokVR6H+xAJIJNtifsV67u8C3aVwhRXUCdkfl
+        aTs15BeXMo4p9GrC7oItdlHwiWxjPgtNwePBZAYh8NJ3kCw=
+X-Google-Smtp-Source: ABdhPJwb6UvvGofVw7KIoM/B1pA9VRC/+Ovrxd0sIsDmlMbHYWwyso9BrACMyTItqwM3HaImR8+DQK7ZIYa45LflQpk=
+X-Received: by 2002:ad4:5945:0:b0:45a:ff69:47c4 with SMTP id
+ eo5-20020ad45945000000b0045aff6947c4mr28706059qvb.86.1653542655510; Wed, 25
+ May 2022 22:24:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] dt-bindings: net: adin: Fix adi,phy-output-clock description
- syntax
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165354181279.23912.8360582385555698481.git-patchwork-notify@kernel.org>
-Date:   Thu, 26 May 2022 05:10:12 +0000
-References: <6fcef2665a6cd86a021509a84c5956ec2efd93ed.1653401420.git.geert+renesas@glider.be>
-In-Reply-To: <6fcef2665a6cd86a021509a84c5956ec2efd93ed.1653401420.git.geert+renesas@glider.be>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>
-Cc:     michael.hennerich@analog.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        alexandru.ardelean@analog.com, josua@solid-run.com,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+References: <1653478195-21095-1-git-send-email-yangtiezhu@loongson.cn>
+In-Reply-To: <1653478195-21095-1-git-send-email-yangtiezhu@loongson.cn>
+From:   Sergio Paracuellos <sergio.paracuellos@gmail.com>
+Date:   Thu, 26 May 2022 07:24:04 +0200
+Message-ID: <CAMhs-H_5kHmvG5F=KZaDMzQ8VbSQfg_qqVnzCMuntpH9YU+V4Q@mail.gmail.com>
+Subject: Re: [PATCH] MIPS: RALINK: Define pci_remap_iospace under CONFIG_PCI_DRIVERS_GENERIC
+To:     Tiezhu Yang <yangtiezhu@loongson.cn>
+Cc:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Xuefeng Li <lixuefeng@loongson.cn>,
+        "open list:MIPS" <linux-mips@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        kernel test robot <lkp@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+On Wed, May 25, 2022 at 8:59 PM Tiezhu Yang <yangtiezhu@loongson.cn> wrote:
+>
+> kernel test robot reports a build error used with clang compiler and
+> mips-randconfig [1]:
+>
+>     ld.lld: error: undefined symbol: pci_remap_iospace
+>
+> we can see the following configs in the mips-randconfig file:
+>
+>     CONFIG_RALINK=y
+>     CONFIG_SOC_MT7620=y
+>     CONFIG_PCI_DRIVERS_LEGACY=y
+>     CONFIG_PCI=y
+>
+> CONFIG_RALINK is set, so pci_remap_iospace is defined in the related
+> arch/mips/include/asm/mach-ralink/spaces.h header file:
+>
+>     #define pci_remap_iospace pci_remap_iospace
+>
+> CONFIG_PCI is set, so pci_remap_iospace() in drivers/pci/pci.c is not
+> built due to pci_remap_iospace is defined under CONFIG_RALINK.
+>
+>     #ifndef pci_remap_iospace
+>     int pci_remap_iospace(const struct resource *res, ...)
+>
+>     $ objdump -d drivers/pci/pci.o | grep pci_remap_iospace
+>     00004cc8 <devm_pci_remap_iospace>:
+>         4d18:   10400008        beqz    v0,4d3c <devm_pci_remap_iospace+0x74>
+>         4d2c:   1040000c        beqz    v0,4d60 <devm_pci_remap_iospace+0x98>
+>         4d70:   1000fff3        b       4d40 <devm_pci_remap_iospace+0x78>
+>
+> In addition, CONFIG_PCI_DRIVERS_GENERIC is not set, so pci_remap_iospace()
+> in arch/mips/pci/pci-generic.c is not built too.
+>
+>     #ifdef pci_remap_iospace
+>     int pci_remap_iospace(const struct resource *res, ...)
+>
+> For the above reasons, undefined reference pci_remap_iospace() looks like
+> reasonable.
+>
+> Here are simple steps to reproduce used with gcc and defconfig:
+>
+>     cd mips.git
+>     make vocore2_defconfig # set RALINK, SOC_MT7620, PCI_DRIVERS_LEGACY
+>     make menuconfig        # set PCI
+>     make
+>
+> there exists the following build error:
+>
+>       LD      vmlinux.o
+>       MODPOST vmlinux.symvers
+>       MODINFO modules.builtin.modinfo
+>       GEN     modules.builtin
+>       LD      .tmp_vmlinux.kallsyms1
+>     drivers/pci/pci.o: In function `devm_pci_remap_iospace':
+>     pci.c:(.text+0x4d24): undefined reference to `pci_remap_iospace'
+>     Makefile:1158: recipe for target 'vmlinux' failed
+>     make: *** [vmlinux] Error 1
+>
+> Define pci_remap_iospace under CONFIG_PCI_DRIVERS_GENERIC can fix the build
+> error, with this patch, no build error remains. This patch is similar with
+> commit e538e8649892 ("MIPS: asm: pci: define arch-specific
+> 'pci_remap_iospace()' dependent on 'CONFIG_PCI_DRIVERS_GENERIC'").
+>
+> [1] https://lore.kernel.org/lkml/202205251247.nQ5cxSV6-lkp@intel.com/
+>
+> Fixes: 09d97da660ff ("MIPS: Only define pci_remap_iospace() for Ralink")
+> Reported-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
+> ---
+>  arch/mips/include/asm/mach-ralink/spaces.h | 2 ++
+>  1 file changed, 2 insertions(+)
 
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Tue, 24 May 2022 16:11:53 +0200 you wrote:
-> "make dt_binding_check":
-> 
->     Documentation/devicetree/bindings/net/adi,adin.yaml:40:77: [error] syntax error: mapping values are not allowed here (syntax)
-> 
-> The first line of the description ends with a colon, hence the block
-> needs to be marked with a "|".
-> 
-> [...]
-
-Here is the summary with links:
-  - dt-bindings: net: adin: Fix adi,phy-output-clock description syntax
-    https://git.kernel.org/netdev/net/c/6c465408a770
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Acked-by: Sergio Paracuellos <sergio.paracuellos@gmail.com>
