@@ -2,164 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D533DC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 16:37:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8FECC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 16:40:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233881AbiEZQhy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 12:37:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42148 "EHLO
+        id S240361AbiEZQkc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 12:40:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348153AbiEZQgY (ORCPT
+        with ESMTP id S229800AbiEZQka (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 12:36:24 -0400
-Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8E8C4C403;
-        Thu, 26 May 2022 09:36:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=deltatee.com; s=20200525; h=Subject:MIME-Version:References:In-Reply-To:
-        Message-Id:Date:Cc:To:From:content-disposition;
-        bh=IWEOZJwft2vuBCToQwiXtUQwH05rs0AR5scLKqJJLCk=; b=YqQ7aAvSMpq5Xh/9MSHmojdO5v
-        9Z/vu0Kuu6vaYv1TiAUyxO8pkxmmXZq3FEueXi/crC4oyBu59XgENqunIz9igI6SO8anh+H7qmT8O
-        AmPVW2Wq1F11rg6NOU8WETjDcKrq20zdd3ff4gz8DyN1FLsWHtXtO5qRZl2RsS808qIIGWipba7gw
-        0FYOm82WMyLemFo13vvW7bK4aQmGqumiAhmLXF4djwQidhxKUyHrOkE3qrSHWhm7bd/ZIyn8HlWBA
-        5cQ/34gLmikwocQ+0YEGK743B3Tn3tdrXldXwrVUKIGC+BS24CJgBdGNglVQF8GZ8/PdYAHcLDLIX
-        sBnP9Kew==;
-Received: from cgy1-donard.priv.deltatee.com ([172.16.1.31])
-        by ale.deltatee.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <gunthorp@deltatee.com>)
-        id 1nuGTD-008A7S-8b; Thu, 26 May 2022 10:36:21 -0600
-Received: from gunthorp by cgy1-donard.priv.deltatee.com with local (Exim 4.94.2)
-        (envelope-from <gunthorp@deltatee.com>)
-        id 1nuGT7-0008X6-VI; Thu, 26 May 2022 10:36:14 -0600
-From:   Logan Gunthorpe <logang@deltatee.com>
-To:     linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org,
-        Song Liu <song@kernel.org>
-Cc:     Christoph Hellwig <hch@infradead.org>,
-        Donald Buczek <buczek@molgen.mpg.de>,
-        Guoqing Jiang <guoqing.jiang@linux.dev>,
-        Xiao Ni <xni@redhat.com>, Stephen Bates <sbates@raithlin.com>,
-        Martin Oliveira <Martin.Oliveira@eideticom.com>,
-        David Sloan <David.Sloan@eideticom.com>,
-        Logan Gunthorpe <logang@deltatee.com>,
-        Christoph Hellwig <hch@lst.de>
-Date:   Thu, 26 May 2022 10:35:48 -0600
-Message-Id: <20220526163604.32736-2-logang@deltatee.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220526163604.32736-1-logang@deltatee.com>
-References: <20220526163604.32736-1-logang@deltatee.com>
+        Thu, 26 May 2022 12:40:30 -0400
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 297B83DA53
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 09:40:29 -0700 (PDT)
+Received: by mail-pg1-x533.google.com with SMTP id a9so1723766pgv.12
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 09:40:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Qm/bVNNdXqTapnzq5a3prBU390ldFSuOXJiLpWHawkQ=;
+        b=R+x1MUxR33XfpedDwvQaiuAUW+Q7ZEcX45T5t+DjlDw+0CKO6rEsBRh61K2L5VY7B0
+         lZfl1BBiXcxYE8Mruw1/QPLIUOXDeQ/hc7m8dtGqLKVnRX0zjb7Uexm2wyMOxftJi9tC
+         f56c9oAqTf0cBZY2+H9f9rE5oWA9ikXykDr4Ghw/bAhX6JahCuIH3yZ/8ih8I8r/2AG6
+         8t5MrmFIJYmmjmPfNwXUwqYyJh+ACyMziAzj5dXUU7LeITI5IANrDMSaWiyOeJbgKjYh
+         MkA8ivnsvzjqXpv2k/bYgr4jb+QuoYuzTDszQaqOB+E/lRytNu5W2LhpBtBaDXyy+tSh
+         IHCw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Qm/bVNNdXqTapnzq5a3prBU390ldFSuOXJiLpWHawkQ=;
+        b=xOjRP8Yh85XeOd+Di/T/V0U11Vyj3bk5khJmbaaQg7jY14hI5LuIDUA/lbPZPxugoF
+         f7GKX/nauNkr8nsMxZP4Rl0xXYlhrJObZDtBZKWfLFmxq9XCcbtwoVC63LchQGl8TMDC
+         nlkMy3SiYdLaZgfR2j66XFlBkDRj2U4cEoBV2WrmnDFJ4PDWYcLhnKN57T9K/139kVkH
+         Wdm+EWJvnIwqjzc/m0pHvjJ/HkwurVGis2xgcdExDp7O4xUaMmjTm4G14ntOmpY6J2TH
+         s28yNEaBKORGLXLm8n/4ZHXa+OBSIGW8H9HT4rhqmfnVlPAp0V1wbURqcm5/rjUwR40z
+         KgMw==
+X-Gm-Message-State: AOAM532XXVk7huwMkp0WZ3i8mcOfnIiG3H0QlwYCCqwp7UChCgtXoEhh
+        VVfEoS04JL10KaOxUew/uFJsdQ==
+X-Google-Smtp-Source: ABdhPJyGGDxeevh6Hrci70x5DivpUnSf32p7bYI5avh1GAy878a7gP1PLmaPpluQ5Iefh9lutvBiIg==
+X-Received: by 2002:a05:6a00:1411:b0:4fd:e594:fac0 with SMTP id l17-20020a056a00141100b004fde594fac0mr39518591pfu.79.1653583228391;
+        Thu, 26 May 2022 09:40:28 -0700 (PDT)
+Received: from google.com (254.80.82.34.bc.googleusercontent.com. [34.82.80.254])
+        by smtp.gmail.com with ESMTPSA id h18-20020a056a00231200b005104c6d7941sm1767647pfh.31.2022.05.26.09.40.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 May 2022 09:40:27 -0700 (PDT)
+Date:   Thu, 26 May 2022 16:40:23 +0000
+From:   David Matlack <dmatlack@google.com>
+To:     Ben Gardon <bgardon@google.com>
+Cc:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
+        linux-kernel@vger.kernel.org, Peter Xu <peterx@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Jim Mattson <jmattson@google.com>,
+        David Dunn <daviddunn@google.com>,
+        Jing Zhang <jingzhangos@google.com>,
+        Junaid Shahid <junaids@google.com>
+Subject: Re: [PATCH] KVM: x86/MMU: Zap non-leaf SPTEs when disabling dirty
+ logging
+Message-ID: <Yo+td/A+yEK8z7Z/@google.com>
+References: <20220525230904.1584480-1-bgardon@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 172.16.1.31
-X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org, song@kernel.org, hch@infradead.org, buczek@molgen.mpg.de, guoqing.jiang@linux.dev, xni@redhat.com, sbates@raithlin.com, Martin.Oliveira@eideticom.com, David.Sloan@eideticom.com, logang@deltatee.com, hch@lst.de
-X-SA-Exim-Mail-From: gunthorp@deltatee.com
-Subject: [PATCH v2 01/17] md/raid5-log: Drop extern decorators for function prototypes
-X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
-X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220525230904.1584480-1-bgardon@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-extern is not necessary and recommended against when defining prototype
-functions in headers. checkpatch.pl complains about these. So remove
-them.
+On Wed, May 25, 2022 at 11:09:04PM +0000, Ben Gardon wrote:
+> When disabling dirty logging, zap non-leaf parent entries to allow
+> replacement with huge pages instead of recursing and zapping all of the
+> child, leaf entries. This reduces the number of TLB flushes required.
+> 
+> Currently disabling dirty logging with the TDP MMU is extremely slow.
+> On a 96 vCPU / 96G VM backed with gigabyte pages, it takes ~200 seconds
+> to disable dirty logging with the TDP MMU, as opposed to ~4 seconds with
+> the shadow MMU. This patch reduces the disable dirty log time with the
+> TDP MMU to ~3 seconds.
 
-Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
----
- drivers/md/raid5-log.h | 75 ++++++++++++++++++++----------------------
- 1 file changed, 36 insertions(+), 39 deletions(-)
+Nice!
 
-diff --git a/drivers/md/raid5-log.h b/drivers/md/raid5-log.h
-index 43c714a8798c..270ced4f770f 100644
---- a/drivers/md/raid5-log.h
-+++ b/drivers/md/raid5-log.h
-@@ -2,49 +2,46 @@
- #ifndef _RAID5_LOG_H
- #define _RAID5_LOG_H
- 
--extern int r5l_init_log(struct r5conf *conf, struct md_rdev *rdev);
--extern void r5l_exit_log(struct r5conf *conf);
--extern int r5l_write_stripe(struct r5l_log *log, struct stripe_head *head_sh);
--extern void r5l_write_stripe_run(struct r5l_log *log);
--extern void r5l_flush_stripe_to_raid(struct r5l_log *log);
--extern void r5l_stripe_write_finished(struct stripe_head *sh);
--extern int r5l_handle_flush_request(struct r5l_log *log, struct bio *bio);
--extern void r5l_quiesce(struct r5l_log *log, int quiesce);
--extern bool r5l_log_disk_error(struct r5conf *conf);
--extern bool r5c_is_writeback(struct r5l_log *log);
--extern int
--r5c_try_caching_write(struct r5conf *conf, struct stripe_head *sh,
--		      struct stripe_head_state *s, int disks);
--extern void
--r5c_finish_stripe_write_out(struct r5conf *conf, struct stripe_head *sh,
--			    struct stripe_head_state *s);
--extern void r5c_release_extra_page(struct stripe_head *sh);
--extern void r5c_use_extra_page(struct stripe_head *sh);
--extern void r5l_wake_reclaim(struct r5l_log *log, sector_t space);
--extern void r5c_handle_cached_data_endio(struct r5conf *conf,
--	struct stripe_head *sh, int disks);
--extern int r5c_cache_data(struct r5l_log *log, struct stripe_head *sh);
--extern void r5c_make_stripe_write_out(struct stripe_head *sh);
--extern void r5c_flush_cache(struct r5conf *conf, int num);
--extern void r5c_check_stripe_cache_usage(struct r5conf *conf);
--extern void r5c_check_cached_full_stripe(struct r5conf *conf);
-+int r5l_init_log(struct r5conf *conf, struct md_rdev *rdev);
-+void r5l_exit_log(struct r5conf *conf);
-+int r5l_write_stripe(struct r5l_log *log, struct stripe_head *head_sh);
-+void r5l_write_stripe_run(struct r5l_log *log);
-+void r5l_flush_stripe_to_raid(struct r5l_log *log);
-+void r5l_stripe_write_finished(struct stripe_head *sh);
-+int r5l_handle_flush_request(struct r5l_log *log, struct bio *bio);
-+void r5l_quiesce(struct r5l_log *log, int quiesce);
-+bool r5l_log_disk_error(struct r5conf *conf);
-+bool r5c_is_writeback(struct r5l_log *log);
-+int r5c_try_caching_write(struct r5conf *conf, struct stripe_head *sh,
-+			  struct stripe_head_state *s, int disks);
-+void r5c_finish_stripe_write_out(struct r5conf *conf, struct stripe_head *sh,
-+				 struct stripe_head_state *s);
-+void r5c_release_extra_page(struct stripe_head *sh);
-+void r5c_use_extra_page(struct stripe_head *sh);
-+void r5l_wake_reclaim(struct r5l_log *log, sector_t space);
-+void r5c_handle_cached_data_endio(struct r5conf *conf,
-+				  struct stripe_head *sh, int disks);
-+int r5c_cache_data(struct r5l_log *log, struct stripe_head *sh);
-+void r5c_make_stripe_write_out(struct stripe_head *sh);
-+void r5c_flush_cache(struct r5conf *conf, int num);
-+void r5c_check_stripe_cache_usage(struct r5conf *conf);
-+void r5c_check_cached_full_stripe(struct r5conf *conf);
- extern struct md_sysfs_entry r5c_journal_mode;
--extern void r5c_update_on_rdev_error(struct mddev *mddev,
--				     struct md_rdev *rdev);
--extern bool r5c_big_stripe_cached(struct r5conf *conf, sector_t sect);
--extern int r5l_start(struct r5l_log *log);
-+void r5c_update_on_rdev_error(struct mddev *mddev, struct md_rdev *rdev);
-+bool r5c_big_stripe_cached(struct r5conf *conf, sector_t sect);
-+int r5l_start(struct r5l_log *log);
- 
--extern struct dma_async_tx_descriptor *
-+struct dma_async_tx_descriptor *
- ops_run_partial_parity(struct stripe_head *sh, struct raid5_percpu *percpu,
- 		       struct dma_async_tx_descriptor *tx);
--extern int ppl_init_log(struct r5conf *conf);
--extern void ppl_exit_log(struct r5conf *conf);
--extern int ppl_write_stripe(struct r5conf *conf, struct stripe_head *sh);
--extern void ppl_write_stripe_run(struct r5conf *conf);
--extern void ppl_stripe_write_finished(struct stripe_head *sh);
--extern int ppl_modify_log(struct r5conf *conf, struct md_rdev *rdev, bool add);
--extern void ppl_quiesce(struct r5conf *conf, int quiesce);
--extern int ppl_handle_flush_request(struct r5l_log *log, struct bio *bio);
-+int ppl_init_log(struct r5conf *conf);
-+void ppl_exit_log(struct r5conf *conf);
-+int ppl_write_stripe(struct r5conf *conf, struct stripe_head *sh);
-+void ppl_write_stripe_run(struct r5conf *conf);
-+void ppl_stripe_write_finished(struct stripe_head *sh);
-+int ppl_modify_log(struct r5conf *conf, struct md_rdev *rdev, bool add);
-+void ppl_quiesce(struct r5conf *conf, int quiesce);
-+int ppl_handle_flush_request(struct r5l_log *log, struct bio *bio);
- extern struct md_sysfs_entry ppl_write_hint;
- 
- static inline bool raid5_has_log(struct r5conf *conf)
--- 
-2.30.2
+It'd be good to also mention the new WARN. e.g.
 
+  Opportunistically add a WARN() to catch GFNS that are mapped at a
+  higher level than their max level.
+
+> 
+> Testing:
+> Ran KVM selftests and kvm-unit-tests on an Intel Haswell. This
+> patch introduced no new failures.
+> 
+> Signed-off-by: Ben Gardon <bgardon@google.com>
+
+Reviewed-by: David Matlack <dmatlack@google.com>
+
+> ---
+>  arch/x86/kvm/mmu/tdp_iter.c |  9 +++++++++
+>  arch/x86/kvm/mmu/tdp_iter.h |  1 +
+>  arch/x86/kvm/mmu/tdp_mmu.c  | 38 +++++++++++++++++++++++++++++++------
+>  3 files changed, 42 insertions(+), 6 deletions(-)
+> 
+> diff --git a/arch/x86/kvm/mmu/tdp_iter.c b/arch/x86/kvm/mmu/tdp_iter.c
+> index 6d3b3e5a5533..ee4802d7b36c 100644
+> --- a/arch/x86/kvm/mmu/tdp_iter.c
+> +++ b/arch/x86/kvm/mmu/tdp_iter.c
+> @@ -145,6 +145,15 @@ static bool try_step_up(struct tdp_iter *iter)
+>  	return true;
+>  }
+>  
+> +/*
+> + * Step the iterator back up a level in the paging structure. Should only be
+> + * used when the iterator is below the root level.
+> + */
+> +void tdp_iter_step_up(struct tdp_iter *iter)
+> +{
+> +	WARN_ON(!try_step_up(iter));
+> +}
+> +
+>  /*
+>   * Step to the next SPTE in a pre-order traversal of the paging structure.
+>   * To get to the next SPTE, the iterator either steps down towards the goal
+> diff --git a/arch/x86/kvm/mmu/tdp_iter.h b/arch/x86/kvm/mmu/tdp_iter.h
+> index f0af385c56e0..adfca0cf94d3 100644
+> --- a/arch/x86/kvm/mmu/tdp_iter.h
+> +++ b/arch/x86/kvm/mmu/tdp_iter.h
+> @@ -114,5 +114,6 @@ void tdp_iter_start(struct tdp_iter *iter, struct kvm_mmu_page *root,
+>  		    int min_level, gfn_t next_last_level_gfn);
+>  void tdp_iter_next(struct tdp_iter *iter);
+>  void tdp_iter_restart(struct tdp_iter *iter);
+> +void tdp_iter_step_up(struct tdp_iter *iter);
+>  
+>  #endif /* __KVM_X86_MMU_TDP_ITER_H */
+> diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
+> index 841feaa48be5..7b9265d67131 100644
+> --- a/arch/x86/kvm/mmu/tdp_mmu.c
+> +++ b/arch/x86/kvm/mmu/tdp_mmu.c
+> @@ -1742,12 +1742,12 @@ static void zap_collapsible_spte_range(struct kvm *kvm,
+>  	gfn_t start = slot->base_gfn;
+>  	gfn_t end = start + slot->npages;
+>  	struct tdp_iter iter;
+> +	int max_mapping_level;
+>  	kvm_pfn_t pfn;
+>  
+>  	rcu_read_lock();
+>  
+>  	tdp_root_for_each_pte(iter, root, start, end) {
+> -retry:
+>  		if (tdp_mmu_iter_cond_resched(kvm, &iter, false, true))
+>  			continue;
+>  
+> @@ -1755,15 +1755,41 @@ static void zap_collapsible_spte_range(struct kvm *kvm,
+>  		    !is_last_spte(iter.old_spte, iter.level))
+>  			continue;
+>  
+> +		/*
+> +		 * This is a leaf SPTE. Check if the PFN it maps can
+> +		 * be mapped at a higher level.
+> +		 */
+>  		pfn = spte_to_pfn(iter.old_spte);
+> -		if (kvm_is_reserved_pfn(pfn) ||
+> -		    iter.level >= kvm_mmu_max_mapping_level(kvm, slot, iter.gfn,
+> -							    pfn, PG_LEVEL_NUM))
+> +
+> +		if (kvm_is_reserved_pfn(pfn))
+>  			continue;
+>  
+> +		max_mapping_level = kvm_mmu_max_mapping_level(kvm, slot,
+> +				iter.gfn, pfn, PG_LEVEL_NUM);
+> +
+> +		WARN_ON(max_mapping_level < iter.level);
+> +
+> +		/*
+> +		 * If this page is already mapped at the highest
+> +		 * viable level, there's nothing more to do.
+> +		 */
+> +		if (max_mapping_level == iter.level)
+> +			continue;
+> +
+> +		/*
+> +		 * The page can be remapped at a higher level, so step
+> +		 * up to zap the parent SPTE.
+> +		 */
+> +		while (max_mapping_level > iter.level)
+> +			tdp_iter_step_up(&iter);
+> +
+>  		/* Note, a successful atomic zap also does a remote TLB flush. */
+> -		if (tdp_mmu_zap_spte_atomic(kvm, &iter))
+> -			goto retry;
+> +		tdp_mmu_zap_spte_atomic(kvm, &iter);
+> +
+> +		/*
+> +		 * If the atomic zap fails, the iter will recurse back into
+> +		 * the same subtree to retry.
+> +		 */
+>  	}
+>  
+>  	rcu_read_unlock();
+> -- 
+> 2.36.1.124.g0e6072fb45-goog
+> 
