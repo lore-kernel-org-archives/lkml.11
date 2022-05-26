@@ -2,125 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A4D6C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 20:47:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03074C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 20:48:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344407AbiEZUrl (ORCPT
+        id S1344939AbiEZUsB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 16:47:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39112 "EHLO
+        Thu, 26 May 2022 16:48:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232099AbiEZUre (ORCPT
+        with ESMTP id S1344745AbiEZUr5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 16:47:34 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70978A443;
-        Thu, 26 May 2022 13:47:33 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id ck4so5075628ejb.8;
-        Thu, 26 May 2022 13:47:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=zF0dlNUACtjt+qkupNMI+W9KO4LXB81LDpLHAqqq8bU=;
-        b=KKvIvjxG35BgXYRE5GUSWo2W1Eh3brqlBtN2mpq5uc0lPq2xirit4nJHH0YMVit0ak
-         8jI3FQhvBmg5xAWR0TS+e8BBm80miOcQ3xIZgyyZlB0RIwCwqMFrWwFpQlv0HZsj16Rd
-         wFvPF48VR006mQuYqtErwUgKQC1BRWHqfIFWZukdwJzmFaX2yjm2KLcvT7PnZW1VPuDE
-         C1pWoEqmVbu0eaWC8Q9p08E8wjGTFDvwDgnikIBNzIMktt3znlazEwdI4dflMdxvOwNB
-         WTiiKyJUHo7uJZUzytM4uXOeu3j15TCEiV3Zb33spBgB59tRP6lsP4A/1Q0C07LsXOxK
-         E8QQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=zF0dlNUACtjt+qkupNMI+W9KO4LXB81LDpLHAqqq8bU=;
-        b=gUPY9EmF9rxHVMneSpg5BnrXS09qzn1ONjb/XZakZfIBg6OZIvIJ7EMLWyfVFjUbdE
-         0pJUDNzEYm+vAQFR0S3XahJpcowNHz2nVjUsu5cJ1t/4qIzALTsTds754QtNeWEuEzeM
-         5ocRykZvQpA6ZGLq5uT3MgcCYXhwvMho99I/UOFnVVWuXsQrtds4K8FAb7IzOhCGdccA
-         uEGPY1C3/rDngJMXVwIZgee6hhUiCBg8ygkVkNQkcuoc2nWehfgQtYOu409aL2meLSAX
-         Y6lZ3REuXHZXQJ41LLj2o74jCoQwOA9Aub1lD4EaNF+bYqU3uySklGyEObMoXLiuS6a7
-         T1XQ==
-X-Gm-Message-State: AOAM5300vlCfYXd66/EwpdwcdjOE+ILYtAM+2lxudPfhUAWQzMCIPvSB
-        SFRjocDmkeXojf2LUB5e2eY=
-X-Google-Smtp-Source: ABdhPJw0IIXSFXU9ghub7BEMgfUTM2n9AyloyVrpCQcpB3A7OI/7nUffW+7qG0Yk/U2dJqjtpLXiUw==
-X-Received: by 2002:a17:906:3a92:b0:6fe:9029:b62c with SMTP id y18-20020a1709063a9200b006fe9029b62cmr35511240ejd.569.1653598051959;
-        Thu, 26 May 2022 13:47:31 -0700 (PDT)
-Received: from kista.localnet (213-161-3-76.dynamic.telemach.net. [213.161.3.76])
-        by smtp.gmail.com with ESMTPSA id sb22-20020a1709076d9600b006f3ef214dd9sm823554ejc.63.2022.05.26.13.47.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 May 2022 13:47:31 -0700 (PDT)
-From:   Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Samuel Holland <samuel@sholland.org>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: Re: [PATCH] ARM: dts: sun5i: adjust whitespace around '='
-Date:   Thu, 26 May 2022 22:47:30 +0200
-Message-ID: <1893171.PYKUYFuaPT@kista>
-In-Reply-To: <20220526203547.830848-1-krzysztof.kozlowski@linaro.org>
-References: <20220526203547.830848-1-krzysztof.kozlowski@linaro.org>
+        Thu, 26 May 2022 16:47:57 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A976812092
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 13:47:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653598071;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=SY0RUurSRwuYkFp5Br4T7o+bRxgU1bmYAiSCEYlf2MY=;
+        b=XH/RpsYB1ZaLDglZNCKp3lOsOInDgxHy9K1j16tMps2GIj/gbk31YtAM9ObDdz9YdUynpx
+        T2ddW2rxeIrOJhRAVTJj+aba0lRFhAoQ+s/+xrTERuFPOx5dl2C9jO8gu/ljVn0IcND4Ai
+        MrJZhhob5kFNUJPgZHTLYCQnu8xDKRs=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-638-LveylXj7MlygAX64zTYprQ-1; Thu, 26 May 2022 16:47:48 -0400
+X-MC-Unique: LveylXj7MlygAX64zTYprQ-1
+Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 43BB6801E6B;
+        Thu, 26 May 2022 20:47:48 +0000 (UTC)
+Received: from emerald.redhat.com (unknown [10.22.34.115])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E1FB2400F36;
+        Thu, 26 May 2022 20:47:47 +0000 (UTC)
+From:   Lyude Paul <lyude@redhat.com>
+To:     nouveau@lists.freedesktop.org
+Cc:     Karol Herbst <kherbst@redhat.com>, Ben Skeggs <bskeggs@redhat.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        dri-devel@lists.freedesktop.org (open list:DRM DRIVER FOR NVIDIA
+        GEFORCE/QUADRO GPUS), linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH 2/2] drm/nouveau: Don't pm_runtime_put_sync(), only pm_runtime_put_autosuspend()
+Date:   Thu, 26 May 2022 16:47:32 -0400
+Message-Id: <20220526204732.660069-3-lyude@redhat.com>
+In-Reply-To: <20220526204732.660069-1-lyude@redhat.com>
+References: <20220526204732.660069-1-lyude@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dne =C4=8Detrtek, 26. maj 2022 ob 22:35:46 CEST je Krzysztof Kozlowski napi=
-sal(a):
-> Fix whitespace coding style: use single space instead of tabs or
-> multiple spaces around '=3D' sign in property assignment.  No functional
-> changes (same DTB).
->=20
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+While trying to fix another issue, it occurred to me that I don't actually
+think there is any situation where we want pm_runtime_put() in nouveau to
+be synchronous. In fact, this kind of just seems like it would cause
+issues where we may unexpectedly block a thread we don't expect to be
+blocked.
 
-Acked-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+So, let's only use pm_runtime_put_autosuspend().
 
-Best regards,
-Jernej
+Signed-off-by: Lyude Paul <lyude@redhat.com>
+---
+ drivers/gpu/drm/nouveau/nouveau_display.c | 2 +-
+ drivers/gpu/drm/nouveau/nouveau_fbcon.c   | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
->=20
-> ---
->=20
-> Output compared with dtx_diff and fdtdump.
-> ---
->  arch/arm/boot/dts/sun5i-a13-licheepi-one.dts | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
->=20
-> diff --git a/arch/arm/boot/dts/sun5i-a13-licheepi-one.dts b/arch/arm/boot/
-dts/sun5i-a13-licheepi-one.dts
-> index 2ce361f8fede..3a6c4bd0a44f 100644
-> --- a/arch/arm/boot/dts/sun5i-a13-licheepi-one.dts
-> +++ b/arch/arm/boot/dts/sun5i-a13-licheepi-one.dts
-> @@ -67,18 +67,18 @@ leds {
->  		compatible =3D "gpio-leds";
-> =20
->  		led-0 {
-> -			label =3D"licheepi:red:usr";
-> +			label =3D "licheepi:red:usr";
->  			gpios =3D <&pio 2 5 GPIO_ACTIVE_LOW>;
->  		};
-> =20
->  		led-1 {
-> -			label =3D"licheepi:green:usr";
-> +			label =3D "licheepi:green:usr";
->  			gpios =3D <&pio 2 19 GPIO_ACTIVE_LOW>;
->  			default-state =3D "on";
->  		};
-> =20
->  		led-2 {
-> -			label =3D"licheepi:blue:usr";
-> +			label =3D "licheepi:blue:usr";
->  			gpios =3D <&pio 2 4 GPIO_ACTIVE_LOW>;
->  		};
-> =20
-> --=20
-> 2.34.1
->=20
->=20
-
+diff --git a/drivers/gpu/drm/nouveau/nouveau_display.c b/drivers/gpu/drm/nouveau/nouveau_display.c
+index 9f5a45f24e5b..103bfb11acb9 100644
+--- a/drivers/gpu/drm/nouveau/nouveau_display.c
++++ b/drivers/gpu/drm/nouveau/nouveau_display.c
+@@ -515,7 +515,7 @@ nouveau_display_hpd_work(struct work_struct *work)
+ 
+ 	pm_runtime_mark_last_busy(drm->dev->dev);
+ noop:
+-	pm_runtime_put_sync(drm->dev->dev);
++	pm_runtime_put(drm->dev->dev);
+ }
+ 
+ #ifdef CONFIG_ACPI
+diff --git a/drivers/gpu/drm/nouveau/nouveau_fbcon.c b/drivers/gpu/drm/nouveau/nouveau_fbcon.c
+index 4f9b3aa5deda..20ac1ce2c0f1 100644
+--- a/drivers/gpu/drm/nouveau/nouveau_fbcon.c
++++ b/drivers/gpu/drm/nouveau/nouveau_fbcon.c
+@@ -466,7 +466,7 @@ nouveau_fbcon_set_suspend_work(struct work_struct *work)
+ 	if (state == FBINFO_STATE_RUNNING) {
+ 		nouveau_fbcon_hotplug_resume(drm->fbcon);
+ 		pm_runtime_mark_last_busy(drm->dev->dev);
+-		pm_runtime_put_sync(drm->dev->dev);
++		pm_runtime_put_autosuspend(drm->dev->dev);
+ 	}
+ }
+ 
+-- 
+2.35.3
 
