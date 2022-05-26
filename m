@@ -2,158 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F7FBC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 01:55:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A2A9C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 01:56:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344930AbiEZBzm (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 21:55:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37328 "EHLO
+        id S243518AbiEZB4w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 21:56:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345843AbiEZBz2 (ORCPT
+        with ESMTP id S231338AbiEZB4o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 21:55:28 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BB21B41C3
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 18:55:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653530127; x=1685066127;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=P/NghkjHpuPIcqeLRTKNCAEhE3en/f+6JiG9RCqPuNA=;
-  b=IM2cNeHFde66bNO6pFR/CTSleRxICn+6/QGzPiNn6Fgg3MP4fydS6hPW
-   abMb5ShwEdc7BLrmVqoO/1g4qLEkmPJVZEhwmgwp2Iw1xqIRs1YzPQvDY
-   2OEgDksG6VX90nI5rCX97qAVXUutbtv6UjyraLOeeChCzcX4qDm0FWRRC
-   ajyEq1Okg8WGAOHBk7OOsRI5LZaayZfLzLIT8LKBIBbI25tQ6Dx0t3Ltr
-   G4MgcSlDkkfEojFqgVA38UacYrRsnjHYMaKea2Woc+gAhUm9rcD7JZxmP
-   xidd+dIGMcDM3jwc6NOKtmG3QyJ2UPodf23tlJBij6gaqqzvFwqv2liOk
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10358"; a="299330289"
-X-IronPort-AV: E=Sophos;i="5.91,252,1647327600"; 
-   d="scan'208";a="299330289"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2022 18:55:27 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,252,1647327600"; 
-   d="scan'208";a="630646675"
-Received: from lkp-server01.sh.intel.com (HELO db63a1be7222) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 25 May 2022 18:55:25 -0700
-Received: from kbuild by db63a1be7222 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nu2ij-0003Um-5u;
-        Thu, 26 May 2022 01:55:25 +0000
-Date:   Thu, 26 May 2022 09:54:24 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "x86-ml" <x86@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [tip:x86/boot] BUILD SUCCESS
- 8a33d96bd178d5f49cc5c1898e4cda08e221d2db
-Message-ID: <628eddd0.0wll48G8zTQ7fYDx%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Wed, 25 May 2022 21:56:44 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 525A121251
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 18:56:44 -0700 (PDT)
+Received: from dggpeml500020.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4L7rbz0xYmzgYNr;
+        Thu, 26 May 2022 09:55:11 +0800 (CST)
+Received: from [10.174.177.174] (10.174.177.174) by
+ dggpeml500020.china.huawei.com (7.185.36.88) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 26 May 2022 09:56:42 +0800
+Message-ID: <45daf51c-c9ec-d4d9-1aee-27fe4bb4b1da@huawei.com>
+Date:   Thu, 26 May 2022 09:56:42 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH -next] jffs2: fix memory leak in jffs2_do_fill_super
+To:     Richard Weinberger <richard@nod.at>
+CC:     David Woodhouse <dwmw2@infradead.org>,
+        linux-mtd <linux-mtd@lists.infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        yukuai3 <yukuai3@huawei.com>, Baokun Li <libaokun1@huawei.com>
+References: <20220412093816.2280678-1-libaokun1@huawei.com>
+ <c2f49973-e5be-475a-1b92-77fc6e86ba37@huawei.com>
+ <1917663619.89751.1653338200219.JavaMail.zimbra@nod.at>
+From:   Baokun Li <libaokun1@huawei.com>
+In-Reply-To: <1917663619.89751.1653338200219.JavaMail.zimbra@nod.at>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.177.174]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpeml500020.china.huawei.com (7.185.36.88)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/boot
-branch HEAD: 8a33d96bd178d5f49cc5c1898e4cda08e221d2db  x86/setup: Use strscpy() to replace deprecated strlcpy()
+在 2022/5/24 4:36, Richard Weinberger 写道:
+> ----- Ursprüngliche Mail -----
+>> Von: "libaokun" <libaokun1@huawei.com>
+>> An: "richard" <richard@nod.at>, "David Woodhouse" <dwmw2@infradead.org>, "linux-mtd" <linux-mtd@lists.infradead.org>,
+>> "linux-kernel" <linux-kernel@vger.kernel.org>
+>> CC: "yukuai3" <yukuai3@huawei.com>, "libaokun" <libaokun1@huawei.com>
+>> Gesendet: Montag, 23. Mai 2022 08:00:21
+>> Betreff: Re: [PATCH -next] jffs2: fix memory leak in jffs2_do_fill_super
+>> ping
+> Thanks for your time. You patch will be part of the upcoming merge window.
+> I'm preparing right now my queue.
+>
+> Thanks,
+> //richard
+> .
 
-elapsed time: 723m
-
-configs tested: 81
-configs skipped: 65
-
-The following configs have been built successfully.
-More configs may be tested in the coming days.
-
-gcc tested configs:
-arm64                               defconfig
-arm64                            allyesconfig
-arm                              allmodconfig
-arm                                 defconfig
-arm                              allyesconfig
-sh                              ul2_defconfig
-m68k                            mac_defconfig
-sh                         apsh4a3a_defconfig
-nios2                               defconfig
-sh                         ecovec24_defconfig
-sh                           se7712_defconfig
-arm                           h3600_defconfig
-sh                          rsk7201_defconfig
-powerpc                 mpc834x_mds_defconfig
-m68k                           sun3_defconfig
-powerpc                 mpc85xx_cds_defconfig
-ia64                                defconfig
-m68k                             allyesconfig
-m68k                             allmodconfig
-m68k                                defconfig
-arc                              allyesconfig
-csky                                defconfig
-nios2                            allyesconfig
-alpha                               defconfig
-alpha                            allyesconfig
-h8300                            allyesconfig
-xtensa                           allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-s390                                defconfig
-s390                             allmodconfig
-parisc                              defconfig
-parisc64                            defconfig
-parisc                           allyesconfig
-s390                             allyesconfig
-sparc                               defconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-i386                                defconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                           allnoconfig
-powerpc                          allmodconfig
-x86_64                        randconfig-a006
-x86_64                        randconfig-a004
-x86_64                        randconfig-a002
-i386                          randconfig-a012
-i386                          randconfig-a014
-i386                          randconfig-a016
-arc                  randconfig-r043-20220524
-s390                 randconfig-r044-20220524
-riscv                randconfig-r042-20220524
-riscv                               defconfig
-riscv                    nommu_virt_defconfig
-riscv                          rv32_defconfig
-riscv                    nommu_k210_defconfig
-riscv                             allnoconfig
-riscv                            allmodconfig
-riscv                            allyesconfig
-um                           x86_64_defconfig
-um                             i386_defconfig
-x86_64                                  kexec
-x86_64                              defconfig
-x86_64                           allyesconfig
-x86_64                               rhel-8.3
-x86_64                          rhel-8.3-func
-x86_64                           rhel-8.3-syz
-x86_64                    rhel-8.3-kselftests
-x86_64                         rhel-8.3-kunit
-
-clang tested configs:
-x86_64                        randconfig-a005
-x86_64                        randconfig-a003
-x86_64                        randconfig-a001
-i386                          randconfig-a002
-i386                          randconfig-a006
-i386                          randconfig-a004
-x86_64                        randconfig-a012
-x86_64                        randconfig-a014
-x86_64                        randconfig-a016
+Thank you for your review!
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+With Best Regards,
+Baokun Li
+
