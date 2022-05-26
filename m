@@ -2,141 +2,227 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7113FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 18:20:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FA5DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 18:21:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234460AbiEZSU3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 14:20:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40848 "EHLO
+        id S236352AbiEZSVO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 14:21:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349222AbiEZSUB (ORCPT
+        with ESMTP id S1348558AbiEZSVI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 14:20:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 651E8C03BA;
-        Thu, 26 May 2022 11:20:00 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C5D87B821AA;
-        Thu, 26 May 2022 18:19:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B857C34114;
-        Thu, 26 May 2022 18:19:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653589198;
-        bh=AV4sY7+ADpxJuDw9fhgadxalbn8NdBDUPKkU22h8dpc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=iBVjaBWPP4FxfPd7GkRuTMDBV97IYTJ5n80HP2s5dFhMIGt6JTf6Pu7cn0BvAokB+
-         9Qg0Gj+LURkGJRn+bxSRWRd5SqMx0Y2EzihGgs2VGxnFNS8DGfKbctxsU0XgAGmKEO
-         U47chmUOStAD7VJfP50KagsW24iOYLfghC4sLI0Izh0Bj/2LMjdMbe0DQhzo3ZorDg
-         +rMGscAxcLeDnHp434izJcP2EefRi7gIHYSHEsa8Fcis1E+HjrQ/15otCnmmwUv3x0
-         bkAZu/JioqqAHRPCPt6Ddw392y176gYkiBLybLEBxdiba8VTkjXqsGW3cjPEfUX49v
-         14LjZJkmwiOeg==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id BED1F4036D; Thu, 26 May 2022 15:19:54 -0300 (-03)
-Date:   Thu, 26 May 2022 15:19:54 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     James Clark <james.clark@arm.com>
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-perf-users@vger.kernel.org, broonie@kernel.org,
-        german.gomez@arm.com, John Garry <john.garry@huawei.com>,
-        Will Deacon <will@kernel.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Leo Yan <leo.yan@linaro.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>, linux-doc@vger.kernel.org
-Subject: Re: [PATCH v1 4/6] perf tools: Use dynamic register set for Dwarf
- unwind
-Message-ID: <Yo/EytFDKnOEiWCa@kernel.org>
-References: <20220509144257.1623063-1-james.clark@arm.com>
- <20220509144257.1623063-5-james.clark@arm.com>
- <Yo+gYbLNnYGOPzGs@kernel.org>
+        Thu, 26 May 2022 14:21:08 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED16C506DE
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 11:21:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653589266; x=1685125266;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=JXcbP4hOY9Rv62xY9VPi5eg9WbxcPewM+lTqA3pqPJk=;
+  b=mJbVPgJKJZLL6mFOBsacEkjOcgHYxYPDMapATO1KDow6ZoykNLX11lH1
+   3cygxfm6YNNV8W9/a112poymTIQhc+GCVPaq/Xxd82ZCivT4/4j0XhKAA
+   84ZCOiyaAHcI1Icyu4Y+BoN7IonDA5+MgCEpDUsmuJV9Zyu320trYEkiu
+   W+UbDSq74VW5+0BY0sDqh4AZExqSVv+DgGFRbIc78Md/klPdjDsDQN9ZV
+   OfWqWDYj4ajBO0wQ7/ho8vk7iT+5pYqLw9s67N6QIEBZ3YLfpV5m/r3QM
+   05eSZ5tPlDTN7Cyc+XFHKFBw4LrSOl616nsj1Nghs2S7iTjbfOvqlx+6Q
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10359"; a="274245139"
+X-IronPort-AV: E=Sophos;i="5.91,252,1647327600"; 
+   d="scan'208";a="274245139"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 May 2022 11:21:05 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,252,1647327600"; 
+   d="scan'208";a="704677831"
+Received: from lkp-server01.sh.intel.com (HELO db63a1be7222) ([10.239.97.150])
+  by orsmga004.jf.intel.com with ESMTP; 26 May 2022 11:21:03 -0700
+Received: from kbuild by db63a1be7222 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nuI6Y-000464-AF;
+        Thu, 26 May 2022 18:21:02 +0000
+Date:   Fri, 27 May 2022 02:20:15 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     David Howells <dhowells@redhat.com>
+Cc:     kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org
+Subject: [ammarfaizi2-block:dhowells/linux-fs/cifs-for-sfrench 5/9]
+ fs/cifs/file.c:2735:62: error: 'struct smbd_connection' has no member named
+ 'max_frmr_depth'
+Message-ID: <202205270237.wVtbeA7b-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <Yo+gYbLNnYGOPzGs@kernel.org>
-X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Thu, May 26, 2022 at 12:44:33PM -0300, Arnaldo Carvalho de Melo escreveu:
-> Em Mon, May 09, 2022 at 03:42:52PM +0100, James Clark escreveu:
-> > Architectures can detect availability of extra registers at
-> > runtime so use this more complete set for unwinding. This
-> > will include the VG register on arm64 in a later commit.
-> > 
-> > If the function isn't implemented then PERF_REGS_MASK is
-> > returned and there is no change.
-> 
-> Committer notes:
-> 
-> Added util/perf_regs.c to tools/perf/util/python-ext-sources so that
-> 'perf test python' passes, i.e. the perf python binding has all the
-> symbols it needs, addressing:
-> 
->   $ perf test -v python
->    19: 'import perf' in python                                         :
->   --- start ---
->   test child forked, pid 2037817
->   python usage test: "echo "import sys ; sys.path.append('/tmp/build/perf/python'); import perf" | '/usr/bin/python3' "
->   Traceback (most recent call last):
->     File "<stdin>", line 1, in <module>
->   ImportError: /tmp/build/perf/python/perf.cpython-310-x86_64-linux-gnu.so: undefined symbol: arch__user_reg_mask
->   test child finished with -1
->   ---- end ----
->   'import perf' in python: FAILED!
->   $
+tree:   https://github.com/ammarfaizi2/linux-block dhowells/linux-fs/cifs-for-sfrench
+head:   ba04fd019482403a282ad499323f5cdd1ee5216a
+commit: b4eb9ac0feb7aff675a958612c9d2b2052f53690 [5/9] cifs: Change the I/O paths to use an iterator rather than a page list
+config: h8300-buildonly-randconfig-r001-20220524 (https://download.01.org/0day-ci/archive/20220527/202205270237.wVtbeA7b-lkp@intel.com/config)
+compiler: h8300-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/b4eb9ac0feb7aff675a958612c9d2b2052f53690
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block dhowells/linux-fs/cifs-for-sfrench
+        git checkout b4eb9ac0feb7aff675a958612c9d2b2052f53690
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=h8300 SHELL=/bin/bash fs/cifs/
 
-Too old to support?
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-  69     7.19 ubuntu:16.04-x-arm64          : FAIL gcc version 5.4.0 20160609 (Ubuntu/Linaro 5.4.0-6ubuntu1~16.04.9)
-    arch/arm64/util/perf_regs.c: In function 'arch__user_reg_mask':
-    arch/arm64/util/perf_regs.c:151:28: error: 'HWCAP_SVE' undeclared (first use in this function)
-      if (getauxval(AT_HWCAP) & HWCAP_SVE)
-                                ^
-    arch/arm64/util/perf_regs.c:151:28: note: each undeclared identifier is reported only once for each function it appears in
-    /git/perf-5.18.0/tools/build/Makefile.build:139: recipe for target 'util' failed
-    make[5]: *** [util] Error 2
-    /git/perf-5.18.0/tools/build/Makefile.build:139: recipe for target 'arm64' failed
-    make[4]: *** [arm64] Error 2
-    /git/perf-5.18.0/tools/build/Makefile.build:139: recipe for target 'arch' failed
-    make[3]: *** [arch] Error 2
+All errors (new ones prefixed by >>):
+
+   fs/cifs/file.c: In function 'cifs_write_back_from_locked_folio':
+>> fs/cifs/file.c:2735:62: error: 'struct smbd_connection' has no member named 'max_frmr_depth'
+    2735 |                                 max_pages = server->smbd_conn->max_frmr_depth;
+         |                                                              ^~
 
 
-⬢[acme@toolbox perf]$ find . -name "*.h" | xargs grep -w HWCAP_SVE
-./arch/arm64/include/uapi/asm/hwcap.h:#define HWCAP_SVE		(1 << 22)
-⬢[acme@toolbox perf]$ 
+vim +2735 fs/cifs/file.c
 
-  
-> > Signed-off-by: James Clark <james.clark@arm.com>
-> > ---
-> >  tools/perf/util/evsel.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/tools/perf/util/evsel.c b/tools/perf/util/evsel.c
-> > index d38722560e80..a881784da966 100644
-> > --- a/tools/perf/util/evsel.c
-> > +++ b/tools/perf/util/evsel.c
-> > @@ -875,7 +875,7 @@ static void __evsel__config_callchain(struct evsel *evsel, struct record_opts *o
-> >  					   "specifying a subset with --user-regs may render DWARF unwinding unreliable, "
-> >  					   "so the minimal registers set (IP, SP) is explicitly forced.\n");
-> >  			} else {
-> > -				attr->sample_regs_user |= PERF_REGS_MASK;
-> > +				attr->sample_regs_user |= arch__user_reg_mask();
-> >  			}
-> >  			attr->sample_stack_user = param->dump_size;
-> >  			attr->exclude_callchain_user = 1;
-> > -- 
-> > 2.28.0
-> 
-> -- 
-> 
-> - Arnaldo
+  2662	
+  2663	/*
+  2664	 * Write back the locked page and any subsequent non-locked dirty pages.
+  2665	 */
+  2666	static ssize_t cifs_write_back_from_locked_folio(struct address_space *mapping,
+  2667							 struct writeback_control *wbc,
+  2668							 struct folio *folio,
+  2669							 loff_t start, loff_t end)
+  2670	{
+  2671		struct inode *inode = mapping->host;
+  2672		struct TCP_Server_Info *server;
+  2673		struct cifs_writedata *wdata;
+  2674		struct cifs_sb_info *cifs_sb = CIFS_SB(inode->i_sb);
+  2675		struct cifs_credits credits_on_stack;
+  2676		struct cifs_credits *credits = &credits_on_stack;
+  2677		struct cifsFileInfo *cfile = NULL;
+  2678		unsigned int xid, wsize, len;
+  2679		loff_t i_size = i_size_read(inode);
+  2680		size_t max_len;
+  2681		long count = wbc->nr_to_write;
+  2682		int rc;
+  2683	
+  2684		/* The folio should be locked, dirty and not undergoing writeback. */
+  2685		if (folio_start_writeback(folio))
+  2686			WARN_ON(1);
+  2687	
+  2688		count -= folio_nr_pages(folio);
+  2689		len = folio_size(folio);
+  2690	
+  2691		xid = get_xid();
+  2692		server = cifs_pick_channel(cifs_sb_master_tcon(cifs_sb)->ses);
+  2693	
+  2694		rc = cifs_get_writable_file(CIFS_I(inode), FIND_WR_ANY, &cfile);
+  2695		if (rc) {
+  2696			cifs_dbg(VFS, "No writable handle in writepages rc=%d\n", rc);
+  2697			goto err_xid;
+  2698		}
+  2699	
+  2700		rc = server->ops->wait_mtu_credits(server, cifs_sb->ctx->wsize,
+  2701						   &wsize, credits);
+  2702		if (rc != 0)
+  2703			goto err_close;
+  2704	
+  2705		wdata = cifs_writedata_alloc(cifs_writev_complete);
+  2706		if (!wdata) {
+  2707			rc = -ENOMEM;
+  2708			goto err_uncredit;
+  2709		}
+  2710	
+  2711		wdata->sync_mode = wbc->sync_mode;
+  2712		wdata->offset = folio_pos(folio);
+  2713		wdata->pid = cfile->pid;
+  2714		wdata->credits = credits_on_stack;
+  2715		wdata->cfile = cfile;
+  2716		wdata->server = server;
+  2717		cfile = NULL;
+  2718	
+  2719		/* Find all consecutive lockable dirty pages, stopping when we find a
+  2720		 * page that is not immediately lockable, is not dirty or is missing,
+  2721		 * or we reach the end of the range.
+  2722		 */
+  2723		if (start < i_size) {
+  2724			/* Trim the write to the EOF; the extra data is ignored.  Also
+  2725			 * put an upper limit on the size of a single storedata op.
+  2726			 */
+  2727			max_len = wsize;
+  2728			max_len = min_t(unsigned long long, max_len, end - start + 1);
+  2729			max_len = min_t(unsigned long long, max_len, i_size - start);
+  2730	
+  2731			if (len < max_len) {
+  2732				int max_pages = INT_MAX;
+  2733	
+  2734				if (server->smbd_conn)
+> 2735					max_pages = server->smbd_conn->max_frmr_depth;
+  2736				max_pages -= folio_nr_pages(folio);
+  2737	
+  2738				if (max_pages > 0)
+  2739					cifs_extend_writeback(mapping, &count, start,
+  2740							      max_pages, max_len, &len);
+  2741			}
+  2742			len = min_t(loff_t, len, max_len);
+  2743		}
+  2744	
+  2745		wdata->bytes = len;
+  2746	
+  2747		/* We now have a contiguous set of dirty pages, each with writeback
+  2748		 * set; the first page is still locked at this point, but all the rest
+  2749		 * have been unlocked.
+  2750		 */
+  2751		folio_unlock(folio);
+  2752	
+  2753		if (start < i_size) {
+  2754			iov_iter_xarray(&wdata->iter, WRITE, &mapping->i_pages, start, len);
+  2755	
+  2756			rc = adjust_credits(wdata->server, &wdata->credits, wdata->bytes);
+  2757			if (rc)
+  2758				goto err_wdata;
+  2759	
+  2760			if (wdata->cfile->invalidHandle)
+  2761				rc = -EAGAIN;
+  2762			else
+  2763				rc = wdata->server->ops->async_writev(wdata,
+  2764								      cifs_writedata_release);
+  2765			if (rc >= 0) {
+  2766				kref_put(&wdata->refcount, cifs_writedata_release);
+  2767				goto err_close;
+  2768			}
+  2769		} else {
+  2770			/* The dirty region was entirely beyond the EOF. */
+  2771			cifs_pages_written_back(inode, start, len);
+  2772			rc = 0;
+  2773		}
+  2774	
+  2775	err_wdata:
+  2776		kref_put(&wdata->refcount, cifs_writedata_release);
+  2777	err_uncredit:
+  2778		add_credits_and_wake_if(server, credits, 0);
+  2779	err_close:
+  2780		if (cfile)
+  2781			cifsFileInfo_put(cfile);
+  2782	err_xid:
+  2783		free_xid(xid);
+  2784		if (rc == 0) {
+  2785			wbc->nr_to_write = count;
+  2786		} else if (is_retryable_error(rc)) {
+  2787			cifs_pages_write_redirty(inode, start, len);
+  2788		} else {
+  2789			cifs_pages_write_failed(inode, start, len);
+  2790			mapping_set_error(mapping, rc);
+  2791		}
+  2792		/* Indication to update ctime and mtime as close is deferred */
+  2793		set_bit(CIFS_INO_MODIFIED_ATTR, &CIFS_I(inode)->flags);
+  2794		return rc;
+  2795	}
+  2796	
 
 -- 
-
-- Arnaldo
+0-DAY CI Kernel Test Service
+https://01.org/lkp
