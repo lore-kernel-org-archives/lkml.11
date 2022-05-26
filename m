@@ -2,179 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CA68C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 12:29:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01BCDC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 12:30:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347236AbiEZM3Y (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 08:29:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56402 "EHLO
+        id S233768AbiEZMaE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 08:30:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235329AbiEZM3W (ORCPT
+        with ESMTP id S1347242AbiEZMaA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 08:29:22 -0400
-Received: from mout02.posteo.de (mout02.posteo.de [185.67.36.66])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2552E3B3EB
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 05:29:20 -0700 (PDT)
-Received: from submission (posteo.de [185.67.36.169]) 
-        by mout02.posteo.de (Postfix) with ESMTPS id AF45A24010A
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 14:29:18 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=posteo.net; s=2017;
-        t=1653568158; bh=ZvHFDTJj3PDcLCu6uRttdmWEtz7RZGQPjet07o2/DX4=;
-        h=Subject:To:Cc:From:Date:From;
-        b=JTIz56tSGdyhulQAlPkbExH0g+nj+KlpHq+qBLBo0h30EeDINwLS0Q2NSlx2Thnhd
-         7+IPc6qGqY0kP3/Dzl+9TU1mLb8cU6Fr8ZcLDCPHyjS9KvadWmPJMjczR8NfyjnM8U
-         +Gy4/mXQmTCF1N0E20qWZ6sWmwy7XD/d6DLsJTLu7XQ0JSlPaoY1sD6kUmtzi5kclV
-         gS+lU8hV1WYVozM/2JKT3jM4LbA8Y8sju8pU63LFkar38TB9RQF/yCfnLfJeu5Wl/N
-         bbFapeV8q23K7dz4X8S9/tRjxqLQR+CyXVh3FN/xKvfEUf4htJGy09KT5gGArRaRpW
-         rbPpJg8uQNyVg==
-Received: from customer (localhost [127.0.0.1])
-        by submission (posteo.de) with ESMTPSA id 4L86gc4tLhz6tmR;
-        Thu, 26 May 2022 14:29:16 +0200 (CEST)
-Subject: Re: [PATCH v2] cpu/hotplug: Do not bail-out in DYING/STARTING
- sections
-To:     Vincent Donnefort <vdonnefort@google.com>, peterz@infradead.org,
-        tglx@linutronix.de
-Cc:     linux-kernel@vger.kernel.org, vschneid@redhat.com,
-        kernel-team@android.com
-References: <20220523160536.2889162-1-vdonnefort@google.com>
-From:   Derek Dolney <z23@posteo.net>
-Message-ID: <77d0ed9b-8521-c4a9-69c4-ec82cba81e61@posteo.net>
-Date:   Thu, 26 May 2022 12:27:26 +0000
+        Thu, 26 May 2022 08:30:00 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FDBB56F8F
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 05:29:59 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id rq11so2747085ejc.4
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 05:29:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=aLoZyAFphV/+60wu8181za3z3TK7CcZiTOyjHwozI0E=;
+        b=IMbPSBOijUcaivu5Arrk0t2nJPwfbUW7Sga0kCu3L8a6WXzxUjePZz2p4dv+dO6Zow
+         khevmCi6bSuaABdqA1N7e4+O4+fnWNgvtMqH89zOkZYEjveamQP6irdAnpIsve41AKmT
+         9u5vJL4aMl/QYcZhX58Rjl1KhFeeqMu/zLWwNnPt+obrgE7ByQj3qQdf4qUQ6MN0U2iR
+         pN5/rzMMalA5gDnrtjKo+MFmvEJzeStT9w6aVmYWPyCoPNRFZk/wNXCJcmTrLlyV3Yia
+         1QY3v8q1OYU6h8Nafh/gSG7XFuzJOSTDVh765PoY+A5bbydjmSLk3RFkAjSvIOh4KtZO
+         iXjQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=aLoZyAFphV/+60wu8181za3z3TK7CcZiTOyjHwozI0E=;
+        b=jRN6Df5KkmWzFf0004yET0qDWXqbgKn9qgIHZ8B00NDEoY1MPB3f2kHsVewQKWsKNj
+         16L2qDmyOu6qRnEWLsMGdGDwna/v/ozLnRFDywtigQ1on9lL8YsNy6bo01RWD38mP/fn
+         dPXg5D88LtnxITnOx+KHnvhrjQKt9Oi+kL1WSOpIkgV6zB1kUQl1lj3xlheSP5UohyOz
+         XIs0IqCRUmpI8FqZ4wu1nnlM0mgODbX9KxhL40wjvqJ2Aa4ZdkPUpxwd0Kzz/4eOPNEN
+         Hc5g65iQMlUO8jDwvNarakRNDArlE3CwfOatpifR1ldJDXs0nzRFoZPG5C3T+mvM1CZC
+         VQyQ==
+X-Gm-Message-State: AOAM530CwTGSMo8Gxzbpu5hPd7n0VhqTiZxTCRopKMNNyVoxGlAyImZc
+        bJ+Lu4QKH0xVIUchyxBp/DmjEQ==
+X-Google-Smtp-Source: ABdhPJxG77domyUfSS44VyjZJFYAAxPQs0E5cMcm+PO05g3XF9SR+kU+148+z/UT7qbqHImcDWlLiQ==
+X-Received: by 2002:a17:907:971a:b0:6fe:bdf6:b67e with SMTP id jg26-20020a170907971a00b006febdf6b67emr22107884ejc.312.1653568197689;
+        Thu, 26 May 2022 05:29:57 -0700 (PDT)
+Received: from [192.168.0.177] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id h8-20020a1709063b4800b006feb3d65337sm474568ejf.102.2022.05.26.05.29.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 26 May 2022 05:29:57 -0700 (PDT)
+Message-ID: <8c4941a1-e047-1352-32ba-8595cd0143f0@linaro.org>
+Date:   Thu, 26 May 2022 14:29:56 +0200
 MIME-Version: 1.0
-In-Reply-To: <20220523160536.2889162-1-vdonnefort@google.com>
-Content-Type: text/plain; charset=utf-8
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v4 1/3] dt-bindings: trivial-devices: Add two I2C TPM
+ devices
 Content-Language: en-US
+To:     Alexander Steffen <Alexander.Steffen@infineon.com>,
+        jarkko@kernel.org, linux-kernel@vger.kernel.org,
+        linux-integrity@vger.kernel.org, devicetree@vger.kernel.org
+Cc:     peterhuewe@gmx.de, jgg@ziepe.ca, krzysztof.kozlowski+dt@linaro.org,
+        Johannes Holland <johannes.holland@infineon.com>,
+        Amir Mizinski <amirmizi6@gmail.com>
+References: <20220525165849.7789-1-Alexander.Steffen@infineon.com>
+ <20220525165849.7789-2-Alexander.Steffen@infineon.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220525165849.7789-2-Alexander.Steffen@infineon.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Tested by: Derek Dolney <z23@posteo.net>
-
-Suspend and resume with tboot are working again with this patch. Tested
-on 5.12 broken commit and latest git 5.18.
-
-On 5/23/22 12:05 PM, Vincent Donnefort wrote:
-> The DYING/STARTING callbacks are not expected to fail. However, as reported
-> by Derek, drivers such as tboot are still free to return errors within
-> those sections. In that case, there's nothing the hotplug machinery can do,
-> so let's just proceed and log the failures.
+On 25/05/2022 18:58, Alexander Steffen wrote:
+> Both are supported by the upcoming tpm_tis_i2c driver.
 > 
-> Fixes: 453e41085183 (cpu/hotplug: Add cpuhp_invoke_callback_range())
-> Reported-by: Derek Dolney <z23@posteo.net>
-> Signed-off-by: Vincent Donnefort <vdonnefort@google.com>
-> 
+> Signed-off-by: Alexander Steffen <Alexander.Steffen@infineon.com>
 > ---
+>  Documentation/devicetree/bindings/trivial-devices.yaml | 4 ++++
+>  1 file changed, 4 insertions(+)
 > 
-> v1 -> v2: 
->    - Commit message rewording.
->    - More details in the warnings.
->    - Some variable renaming
-> 
-> diff --git a/kernel/cpu.c b/kernel/cpu.c
-> index bbad5e375d3b..c3617683459e 100644
-> --- a/kernel/cpu.c
-> +++ b/kernel/cpu.c
-> @@ -663,21 +663,51 @@ static bool cpuhp_next_state(bool bringup,
->  	return true;
->  }
->  
-> -static int cpuhp_invoke_callback_range(bool bringup,
-> -				       unsigned int cpu,
-> -				       struct cpuhp_cpu_state *st,
-> -				       enum cpuhp_state target)
-> +static int _cpuhp_invoke_callback_range(bool bringup,
-> +					unsigned int cpu,
-> +					struct cpuhp_cpu_state *st,
-> +					enum cpuhp_state target,
-> +					bool nofail)
->  {
->  	enum cpuhp_state state;
-> -	int err = 0;
-> +	int ret = 0;
->  
->  	while (cpuhp_next_state(bringup, &state, st, target)) {
-> +		int err;
-> +
->  		err = cpuhp_invoke_callback(cpu, state, bringup, NULL, NULL);
-> -		if (err)
-> +		if (!err)
-> +			continue;
-> +
-> +		if (nofail) {
-> +			pr_warn("CPU %u %s state %s (%d) failed (%d)\n",
-> +				cpu, bringup ? "UP" : "DOWN",
-> +				cpuhp_get_step(st->state)->name,
-> +				st->state, err);
-> +			ret = -1;
-> +		} else {
-> +			ret = err;
->  			break;
-> +		}
->  	}
->  
-> -	return err;
-> +	return ret;
-> +}
-> +
-> +static inline int cpuhp_invoke_callback_range(bool bringup,
-> +					      unsigned int cpu,
-> +					      struct cpuhp_cpu_state *st,
-> +					      enum cpuhp_state target)
-> +{
-> +	return _cpuhp_invoke_callback_range(bringup, cpu, st, target, false);
-> +}
-> +
-> +static inline void cpuhp_invoke_callback_range_nofail(bool bringup,
-> +						      unsigned int cpu,
-> +						      struct cpuhp_cpu_state *st,
-> +						      enum cpuhp_state target)
-> +{
-> +	WARN_ON_ONCE(_cpuhp_invoke_callback_range(bringup, cpu, st, target, true));
->  }
->  
->  static inline bool can_rollback_cpu(struct cpuhp_cpu_state *st)
-> @@ -999,7 +1029,6 @@ static int take_cpu_down(void *_param)
->  	struct cpuhp_cpu_state *st = this_cpu_ptr(&cpuhp_state);
->  	enum cpuhp_state target = max((int)st->target, CPUHP_AP_OFFLINE);
->  	int err, cpu = smp_processor_id();
-> -	int ret;
->  
->  	/* Ensure this CPU doesn't handle any more interrupts. */
->  	err = __cpu_disable();
-> @@ -1012,13 +1041,11 @@ static int take_cpu_down(void *_param)
->  	 */
->  	WARN_ON(st->state != (CPUHP_TEARDOWN_CPU - 1));
->  
-> -	/* Invoke the former CPU_DYING callbacks */
-> -	ret = cpuhp_invoke_callback_range(false, cpu, st, target);
-> -
->  	/*
-> +	 * Invoke the former CPU_DYING callbacks
->  	 * DYING must not fail!
->  	 */
-> -	WARN_ON_ONCE(ret);
-> +	cpuhp_invoke_callback_range_nofail(false, cpu, st, target);
->  
->  	/* Give up timekeeping duties */
->  	tick_handover_do_timer();
-> @@ -1296,16 +1323,14 @@ void notify_cpu_starting(unsigned int cpu)
->  {
->  	struct cpuhp_cpu_state *st = per_cpu_ptr(&cpuhp_state, cpu);
->  	enum cpuhp_state target = min((int)st->target, CPUHP_AP_ONLINE);
-> -	int ret;
->  
->  	rcu_cpu_starting(cpu);	/* Enables RCU usage on this CPU. */
->  	cpumask_set_cpu(cpu, &cpus_booted_once_mask);
-> -	ret = cpuhp_invoke_callback_range(true, cpu, st, target);
->  
->  	/*
->  	 * STARTING must not fail!
->  	 */
-> -	WARN_ON_ONCE(ret);
-> +	cpuhp_invoke_callback_range_nofail(true, cpu, st, target);
->  }
->  
->  /*
-> 
+> diff --git a/Documentation/devicetree/bindings/trivial-devices.yaml b/Documentation/devicetree/bindings/trivial-devices.yaml
+> index 550a2e5c9e05..dc52822331dd 100644
+> --- a/Documentation/devicetree/bindings/trivial-devices.yaml
+> +++ b/Documentation/devicetree/bindings/trivial-devices.yaml
+> @@ -135,6 +135,8 @@ properties:
+>            - infineon,slb9635tt
+>              # Infineon SLB9645 I2C TPM (new protocol, max 400khz)
+>            - infineon,slb9645tt
+> +            # Infineon SLB9673 I2C TPM 2.0
+> +          - infineon,slb9673
+>              # Infineon TLV493D-A1B6 I2C 3D Magnetic Sensor
+>            - infineon,tlv493d-a1b6
+>              # Infineon Multi-phase Digital VR Controller xdpe11280
+> @@ -323,6 +325,8 @@ properties:
+>            - st,24c256
+>              # Ambient Light Sensor with SMBUS/Two Wire Serial Interface
+>            - taos,tsl2550
+> +            # TCG TIS-compliant TPM with I2C interface
+> +          - tcg,tpm_tis-i2c
+
+One flavor uses tpm-tis, another tpm_tis... I guess it is too late to
+make it consistent, but let's stick to the one more reasonable, so:
+"tpm-tis-i2c".
+
+
+Best regards,
+Krzysztof
