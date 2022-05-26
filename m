@@ -2,68 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 898CEC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 20:42:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 466E0C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 20:42:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347028AbiEZUmt (ORCPT
+        id S1344213AbiEZUmx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 16:42:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49398 "EHLO
+        Thu, 26 May 2022 16:42:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349046AbiEZUme (ORCPT
+        with ESMTP id S1347442AbiEZUmi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 16:42:34 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B10BC63F5
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 13:42:26 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id q15so3128979edb.11
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 13:42:26 -0700 (PDT)
+        Thu, 26 May 2022 16:42:38 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A478EB7D3
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 13:42:35 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id y13so5180107eje.2
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 13:42:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=6PoGfKqwaOSA8hY2KbOckVLUzTs3Q4Jc3iaXuQGoRpA=;
-        b=s7sEBaSU1vzd54sOOs0rZZNg9jOLdNNbwjwpFo7NPaSSc3/EKIKfGfGqUmjfhdBIZu
-         tB3MOE4n0cSRKiu3kMyc9QWQPlCIxLXlFngGQ99MiTppR/kW6DZ2r6vPXjZxisDjDaYy
-         k13/DLeamBpnmEzAc+1qsZ1L6InFRZoR/BKSyKI7UfsHpX3PqVH6BgrO/pw4iEh3fnfA
-         aDN7/ymbV30iKKJ5/2YpkRPQks9rvdQYpsQEtIyoocUVncRWur4ETpIxqQ7iRrdx9vvs
-         r0DbsSw+JAaC5BiER/ilnIVQPfvqwa4W+hnWDhdh1zk68xbe2pzmpU0TmUMNdL8vN6EL
-         84Vg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zBSottq5B2GJ9FFPovyG/bRnnI/fVKoW6GgzyoAPPks=;
+        b=mqm2TyTwLe9J3JzIvwLX0t7OOCi6SC7Ci5LT4ey3rSWSr8XLS4LfCEMPkzVFr2g1gn
+         WFOBsQO10LJuTz0PS5+KKEd6B4piYrbVXwbQFbPk16xZzidpogTh/2p8GawS9uDlK2EJ
+         75ijNM9oNz2CrSCWfYq9OeQEKcMbdccezQIUnlECkj+1Ga47rpvvfNnmRoEUXS/wX/Bu
+         nkpptkYm+hQ2SdifCTJRPuhVGA+ZlcolTCOXKto5mcNNxXpk3MLqekCzj6lywkPtYamB
+         J8TOImHlRF9NHnRL5G0QAbZtmRebyd4kErEdpW61miRlVEmQfh/SkdF0KsXxs8jzxrJ6
+         jcqA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=6PoGfKqwaOSA8hY2KbOckVLUzTs3Q4Jc3iaXuQGoRpA=;
-        b=mEpIR14MTLzaA/G+0YI/jlU6Z16vzVHguMj2ierkGqhMC2CAjnwSmhYLMi6NEqT26H
-         +7ba/jZF+03eawvG74MGkPq9wOgqQ2n32hwU7Dg8K01ogit0Fa2ixvhdsyTZ/RCyjh7k
-         gWlnBLDQs+e8Mxu3oRMur6/pVBhRb33BxC6LvL0PPIm2gXhL1yUerPOXjgzPms5fsKn/
-         AledS4DwGe1vf3HbnpcHSru5BjUs4X71jB0FXf4pGKFar3vWpqFj+4niKX4RHjtLvYhr
-         Q0kC+PgDITAdPfW6AKa/5uAECPzmTFUWL7rkD4pzSj33poI09oUSe6LirbHPWHR86rv6
-         EK/Q==
-X-Gm-Message-State: AOAM531lwEPQQjdnUwnl7H2sJVaMbgOlAvTRQqALYpn1Ymyo8bAgnpKS
-        SsKIM6eU4ef69QZQ47NLEESdPQ==
-X-Google-Smtp-Source: ABdhPJx7r6j+aBTRisTlPBtzTk+q8WC0quei+dan1fVS+/Wp2DlSJGxhdl7sKtt7zczYJvjIFb1ifA==
-X-Received: by 2002:a05:6402:90d:b0:428:c1ad:1e74 with SMTP id g13-20020a056402090d00b00428c1ad1e74mr41662182edz.345.1653597745304;
-        Thu, 26 May 2022 13:42:25 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zBSottq5B2GJ9FFPovyG/bRnnI/fVKoW6GgzyoAPPks=;
+        b=1padWN+61A1tDpXfa46rp/frTzcyEz+lLrZYF6CPT+ntoItlMi1LfQ1QdiF5aWBXVI
+         au9qpB9/5Mfdq67IdxdxRwd4HQw/mKGxuqbgzGdZ/5vEzE1hPq4H+kDodgIMEKE/WHa6
+         MuGOJ1ymnggRwhlhg+0s2b7t+IsK7mL2le1aRDBTK59yqMw6nyZW5J2pOdiG3M3PNTal
+         yVdUI6pGfxpm4OXZSp/WR15fEQ0Y+hrO74e2Oj6U83g35l4OVO1tnUcDuWRwIrhEGphc
+         vjgcZAJE6x997PDizDsQIztrTm9JV1EuzSifhXPkJuSau3s/htZ0JIyNC6BuU9lW8Q+A
+         bsiA==
+X-Gm-Message-State: AOAM533hE/5Ip0FOTxDsN3KzlviBZMgEfLwRPF8tr4Vy51/LX0Po+p4P
+        V8/0ilTAkLQRmSDWwz7aKACW3w==
+X-Google-Smtp-Source: ABdhPJz7O6I5XI5FpXBZSFKsMcuwni2DNPsFAGM+js5EZkfB37k56jQ/r1s0n1NCr6XaDCKTFlOHaQ==
+X-Received: by 2002:a17:906:49c6:b0:6fe:95bb:93cc with SMTP id w6-20020a17090649c600b006fe95bb93ccmr34838737ejv.30.1653597754194;
+        Thu, 26 May 2022 13:42:34 -0700 (PDT)
 Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id r17-20020a50d691000000b0042617ba6389sm1239732edi.19.2022.05.26.13.42.24
+        by smtp.gmail.com with ESMTPSA id ay21-20020a170906d29500b006feba4ef020sm798012ejb.180.2022.05.26.13.42.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 May 2022 13:42:24 -0700 (PDT)
+        Thu, 26 May 2022 13:42:33 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        arm@kernel.org, soc@kernel.org, Heiko Stuebner <heiko@sntech.de>,
+        arm@kernel.org, soc@kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 2/3] ARM: dts: rockchip: adjust whitespace around '='
-Date:   Thu, 26 May 2022 22:42:17 +0200
-Message-Id: <20220526204218.832029-2-krzysztof.kozlowski@linaro.org>
+Subject: [PATCH] arm64: dts: renesas: adjust whitespace around '='
+Date:   Thu, 26 May 2022 22:42:31 +0200
+Message-Id: <20220526204231.832090-1-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220526204218.832029-1-krzysztof.kozlowski@linaro.org>
-References: <20220526204218.832029-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -80,29 +79,97 @@ Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
 Output compared with dtx_diff and fdtdump.
 ---
- .../arm/boot/dts/rk3288-veyron-broadcom-bluetooth.dtsi | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ arch/arm64/boot/dts/renesas/draak.dtsi           |  2 +-
+ arch/arm64/boot/dts/renesas/ebisu.dtsi           |  2 +-
+ arch/arm64/boot/dts/renesas/salvator-common.dtsi |  2 +-
+ arch/arm64/boot/dts/renesas/ulcb-kf.dtsi         | 14 +++++++-------
+ arch/arm64/boot/dts/renesas/ulcb.dtsi            |  2 +-
+ 5 files changed, 11 insertions(+), 11 deletions(-)
 
-diff --git a/arch/arm/boot/dts/rk3288-veyron-broadcom-bluetooth.dtsi b/arch/arm/boot/dts/rk3288-veyron-broadcom-bluetooth.dtsi
-index a10d25ac8f7b..f9dde0eef527 100644
---- a/arch/arm/boot/dts/rk3288-veyron-broadcom-bluetooth.dtsi
-+++ b/arch/arm/boot/dts/rk3288-veyron-broadcom-bluetooth.dtsi
-@@ -13,10 +13,10 @@ bluetooth {
- 			    <&bt_dev_wake>;
- 
- 		compatible = "brcm,bcm43540-bt";
--		host-wakeup-gpios	= <&gpio4 RK_PD7 GPIO_ACTIVE_HIGH>;
--		shutdown-gpios		= <&gpio4 RK_PD5 GPIO_ACTIVE_HIGH>;
--		device-wakeup-gpios	= <&gpio4 RK_PD2 GPIO_ACTIVE_HIGH>;
--		max-speed		= <3000000>;
--		brcm,bt-pcm-int-params	= [01 02 00 01 01];
-+		host-wakeup-gpios = <&gpio4 RK_PD7 GPIO_ACTIVE_HIGH>;
-+		shutdown-gpios = <&gpio4 RK_PD5 GPIO_ACTIVE_HIGH>;
-+		device-wakeup-gpios = <&gpio4 RK_PD2 GPIO_ACTIVE_HIGH>;
-+		max-speed = <3000000>;
-+		brcm,bt-pcm-int-params = [01 02 00 01 01];
+diff --git a/arch/arm64/boot/dts/renesas/draak.dtsi b/arch/arm64/boot/dts/renesas/draak.dtsi
+index 7231f820d601..ef3bb835d5c0 100644
+--- a/arch/arm64/boot/dts/renesas/draak.dtsi
++++ b/arch/arm64/boot/dts/renesas/draak.dtsi
+@@ -630,7 +630,7 @@ rsnd_for_ak4613: endpoint {
+ 				bitclock-master = <&rsnd_for_ak4613>;
+ 				frame-master = <&rsnd_for_ak4613>;
+ 				playback = <&ssi3>, <&src5>, <&dvc0>;
+-				capture  = <&ssi4>, <&src6>, <&dvc1>;
++				capture = <&ssi4>, <&src6>, <&dvc1>;
+ 			};
+ 		};
  	};
- };
+diff --git a/arch/arm64/boot/dts/renesas/ebisu.dtsi b/arch/arm64/boot/dts/renesas/ebisu.dtsi
+index 72f359efa23e..aef0896b2f5f 100644
+--- a/arch/arm64/boot/dts/renesas/ebisu.dtsi
++++ b/arch/arm64/boot/dts/renesas/ebisu.dtsi
+@@ -711,7 +711,7 @@ &rcar_sound {
+ 	rcar_sound,dai {
+ 		dai0 {
+ 			playback = <&ssi0>, <&src0>, <&dvc0>;
+-			capture  = <&ssi1>, <&src1>, <&dvc1>;
++			capture = <&ssi1>, <&src1>, <&dvc1>;
+ 		};
+ 	};
+ 
+diff --git a/arch/arm64/boot/dts/renesas/salvator-common.dtsi b/arch/arm64/boot/dts/renesas/salvator-common.dtsi
+index 31837fcd7bf0..09ff1708cfa6 100644
+--- a/arch/arm64/boot/dts/renesas/salvator-common.dtsi
++++ b/arch/arm64/boot/dts/renesas/salvator-common.dtsi
+@@ -832,7 +832,7 @@ rsnd_endpoint0: endpoint {
+ 				frame-master = <&rsnd_endpoint0>;
+ 
+ 				playback = <&ssi0>, <&src0>, <&dvc0>;
+-				capture  = <&ssi1>, <&src1>, <&dvc1>;
++				capture = <&ssi1>, <&src1>, <&dvc1>;
+ 			};
+ 		};
+ 
+diff --git a/arch/arm64/boot/dts/renesas/ulcb-kf.dtsi b/arch/arm64/boot/dts/renesas/ulcb-kf.dtsi
+index 5bcb84403ef6..408871c2859d 100644
+--- a/arch/arm64/boot/dts/renesas/ulcb-kf.dtsi
++++ b/arch/arm64/boot/dts/renesas/ulcb-kf.dtsi
+@@ -206,12 +206,12 @@ pcm3168a: audio-codec@44 {
+ 				clocks = <&clksndsel>;
+ 				clock-names = "scki";
+ 
+-				VDD1-supply	= <&snd_3p3v>;
+-				VDD2-supply	= <&snd_3p3v>;
+-				VCCAD1-supply	= <&snd_vcc5v>;
+-				VCCAD2-supply	= <&snd_vcc5v>;
+-				VCCDA1-supply	= <&snd_vcc5v>;
+-				VCCDA2-supply	= <&snd_vcc5v>;
++				VDD1-supply = <&snd_3p3v>;
++				VDD2-supply = <&snd_3p3v>;
++				VCCAD1-supply = <&snd_vcc5v>;
++				VCCAD2-supply = <&snd_vcc5v>;
++				VCCDA1-supply = <&snd_vcc5v>;
++				VCCDA2-supply = <&snd_vcc5v>;
+ 
+ 				ports {
+ 					#address-cells = <1>;
+@@ -438,7 +438,7 @@ rsnd_for_pcm3168a_capture: endpoint {
+ 				bitclock-master;
+ 				frame-master;
+ 				dai-tdm-slot-num = <6>;
+-				capture  = <&ssi4>;
++				capture = <&ssi4>;
+ 			};
+ 		};
+ 	};
+diff --git a/arch/arm64/boot/dts/renesas/ulcb.dtsi b/arch/arm64/boot/dts/renesas/ulcb.dtsi
+index 90a4c0629d24..5f390865a4cd 100644
+--- a/arch/arm64/boot/dts/renesas/ulcb.dtsi
++++ b/arch/arm64/boot/dts/renesas/ulcb.dtsi
+@@ -411,7 +411,7 @@ rsnd_for_ak4613: endpoint {
+ 				bitclock-master;
+ 				frame-master;
+ 				playback = <&ssi0>, <&src0>, <&dvc0>;
+-				capture  = <&ssi1>, <&src1>, <&dvc1>;
++				capture = <&ssi1>, <&src1>, <&dvc1>;
+ 			};
+ 		};
+ 		rsnd_port1: port@1 {
 -- 
 2.34.1
 
