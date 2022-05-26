@@ -2,63 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C39EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 07:59:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BFC7C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 08:01:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346517AbiEZH7r (ORCPT
+        id S1346537AbiEZIBC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 03:59:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42164 "EHLO
+        Thu, 26 May 2022 04:01:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232951AbiEZH7n (ORCPT
+        with ESMTP id S234066AbiEZIBB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 03:59:43 -0400
-Received: from gofer.mess.org (gofer.mess.org [IPv6:2a02:8011:d000:212::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F3883153F;
-        Thu, 26 May 2022 00:59:42 -0700 (PDT)
-Received: by gofer.mess.org (Postfix, from userid 1000)
-        id 8C044101CFB; Thu, 26 May 2022 08:59:40 +0100 (BST)
-Date:   Thu, 26 May 2022 08:59:40 +0100
-From:   Sean Young <sean@mess.org>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        linux-media@vger.kernel.org
-Subject: [PATCH] media: lirc: add missing exceptions for lirc uapi header file
-Message-ID: <Yo8zbIJuceliqWfi@gofer.mess.org>
-References: <20220526172154.23853e1c@canb.auug.org.au>
+        Thu, 26 May 2022 04:01:01 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBBE13153F
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 01:00:59 -0700 (PDT)
+Received: from fraeml713-chm.china.huawei.com (unknown [172.18.147.201])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4L80jN1cMDz67MGw;
+        Thu, 26 May 2022 16:00:24 +0800 (CST)
+Received: from lhreml741-chm.china.huawei.com (10.201.108.191) by
+ fraeml713-chm.china.huawei.com (10.206.15.32) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 26 May 2022 10:00:57 +0200
+Received: from [10.81.194.226] (10.81.194.226) by
+ lhreml741-chm.china.huawei.com (10.201.108.191) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 26 May 2022 09:00:45 +0100
+Message-ID: <13ee708e-17a7-7e0d-7d24-827c3786f007@huawei.com>
+Date:   Thu, 26 May 2022 11:00:27 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220526172154.23853e1c@canb.auug.org.au>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v2] coresight: etm4x: Add Support for HiSilicon ETM device
+Content-Language: en-US
+To:     "liuqi (BA)" <liuqi115@huawei.com>, Linuxarm <linuxarm@huawei.com>,
+        <gregkh@linuxfoundation.org>, <mathieu.poirier@linaro.org>,
+        <suzuki.poulose@arm.com>, <mike.leach@linaro.org>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        Alexey Budankov <alexey.budankov@huawei.com>,
+        <abudankov@huawei.com>
+References: <1597323562-3706-1-git-send-email-liuqi115@huawei.com>
+ <853b6d52-da86-1c06-3604-3085ece331a4@huawei.com>
+ <5dd1bd83-232a-07e4-8fde-e4f6cd0e5b8c@huawei.com>
+ <93b92859-2229-8766-09d2-df16e1ebd4e8@huawei.com>
+ <50c25ce8-15bc-80a8-59dc-a20571a6460a@huawei.com>
+From:   Alexei Budankov <abudankov@huawei.com>
+In-Reply-To: <50c25ce8-15bc-80a8-59dc-a20571a6460a@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.81.194.226]
+X-ClientProxiedBy: saopeml00100002.china.huawei.com (7.184.65.84) To
+ lhreml741-chm.china.huawei.com (10.201.108.191)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-commit e5499dd7253c ("media: lirc: revert removal of unused feature flags")
-reintroduced unused feature flags in the lirc uapi header, but failed to
-reintroduce the necessary exceptions for the docs.
+Hi,
 
-Fixes: e5499dd7253c ("media: lirc: revert removal of unused feature flags")
-Signed-off-by: Sean Young <sean@mess.org>
----
- Documentation/userspace-api/media/lirc.h.rst.exceptions | 2 ++
- 1 file changed, 2 insertions(+)
+On 26.05.2022 10:47, liuqi (BA) wrote:
+> 
+> 
+> On 2022/5/26 15:23, Alexei Budankov wrote:
+>> Hi Qi,
+>>
+<SNIP>
+>>
+>> Look like our server firmware should be upgraded, right?
+> 
+> Yes, seems firmware should be upgraded first, and then you could test ETM device :)
 
-diff --git a/Documentation/userspace-api/media/lirc.h.rst.exceptions b/Documentation/userspace-api/media/lirc.h.rst.exceptions
-index 913d17b49831..1aeb7d7afe13 100644
---- a/Documentation/userspace-api/media/lirc.h.rst.exceptions
-+++ b/Documentation/userspace-api/media/lirc.h.rst.exceptions
-@@ -30,6 +30,8 @@ ignore define LIRC_CAN_REC
- 
- ignore define LIRC_CAN_SEND_MASK
- ignore define LIRC_CAN_REC_MASK
-+ignore define LIRC_CAN_SET_REC_FILTER
-+ignore define LIRC_CAN_NOTIFY_DECODE
- 
- # Obsolete ioctls
- 
--- 
-2.36.1
+I would appreciate if you could share some links to upgrade bits and docs, if possible,
+so we could use it to perform the upgrade.
+
+Thanks,
+Alexei
 
