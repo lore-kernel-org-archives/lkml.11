@@ -2,64 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA9F0C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 11:44:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D00E5C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 11:44:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243164AbiEZLn5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 07:43:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54266 "EHLO
+        id S1347174AbiEZLoF (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 07:44:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241420AbiEZLnr (ORCPT
+        with ESMTP id S1347192AbiEZLnv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 07:43:47 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E26E53CA69
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 04:43:34 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id gk22so1536486pjb.1
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 04:43:34 -0700 (PDT)
+        Thu, 26 May 2022 07:43:51 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06E2E3F8BB
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 04:43:44 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id m1so1236034plx.3
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 04:43:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=kMTBzF5GicTdtcI+q0Njd7W32oNENUig/mMmCqOVS/0=;
-        b=ECi8lONJz84vPA+6+yEdoeSZJvDmlwibpoOcQAEudBjrrORfDZ/A7oQAi1gqj8vgRR
-         R+aqLr1rCe0jlBex5tphEGJ7fCpucrSMkTjnakJRfX97TsQII573ISpzpCCuM58QT9nH
-         nXZ5IxBlFOY0JD+INnxF8anGEdvIsejZPxNtpwcXyOqsf0eWz3z4Nk0RTuKsXtgHsbvs
-         0HYW94kSNL3bXaYX2ZN84qn8SAu6dvkj+XsKjLzs78nPc836WmFnEydmRKvjQPiwZp5p
-         Rs/39UtauVouAx7r0D/kbMkbS+cibwfpPKIo2VVimuLkcQPb6ZfAtSDavkUFyl2OxuET
-         sYhQ==
+        bh=q5eTD6wz1RXfj8aC8lU6FuYhpZBKLogZOeVce0BXIgM=;
+        b=hyg3hFnQcPvN2g1w1Dk7J+XwKPQZFfUbC4t8cmaoD+p2EK9JJlbZowvdc5GDn2InTZ
+         U/hmhwfU0LvuiYyE9robqo4jdwQQqInnjxW/Pl1wzI0O8uW2DwgSLzevQlopXFz5fDDQ
+         RBQIZ9BWrpxnWvDDB6UO4Hu1VYTzO5OEyoI4iJEmWmlERXPuhRtdi+9kJFFKZ9NM/Dkf
+         8ua/vHhARhWTbkCkUyI66x1IC49r09iZw7/dTHhXSC6CKW282fnDITCiULd3xIY0vgsc
+         vSiEWao+Zffi8wJQ/olvRqsXhWfsfPpTo3oNS1m8pjS0ILEDsUMoNYBT2Irwy/NprreE
+         2ctg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=kMTBzF5GicTdtcI+q0Njd7W32oNENUig/mMmCqOVS/0=;
-        b=tId0oY7YTYgHJHo6SylKAaWwAn1ftEbioNTgN5eczWfoFZetgOvgDP1tgme1eMsfmF
-         IHWPAY5kItb3w+pemf2aveySpRmh6Ist/5sKxFe66/bqaQRL7gidtlsPdw++qGm4D30K
-         3eGQ+F5fwrwWaY6jHarBQku4ZJY5nbaoDYOUS4SpY1UB1bmmjs3c54NDInUIyR6Ic5Gv
-         vM/YNG1E2x83pHN8+lz8NBtsbPBuH7IlV3ah5sEsFXI98gg58prc0Z+xT4Hjl3fC/QeM
-         12VVliYFx1WGK25vsmG6dH5C60CTDimjreENxGpGI53bHYuY/yYKIjvZPtrYVaY9o+iQ
-         XIyw==
-X-Gm-Message-State: AOAM533+aH89tJjj2T9peUUjNGTqcwGqqZuok7LBClYPlD4Q2iIkbIet
-        2iLtz4UaNrm5jo27XvyFXS1Ljg==
-X-Google-Smtp-Source: ABdhPJzBbBXOIW7AH9VqiZmcSr1TWNB9MDwyZf88IfV8UNEVzAgf3SeMfmF1BnlsZTyvge51/vwdqw==
-X-Received: by 2002:a17:90b:4a8c:b0:1df:c71d:5104 with SMTP id lp12-20020a17090b4a8c00b001dfc71d5104mr2184562pjb.216.1653565414412;
-        Thu, 26 May 2022 04:43:34 -0700 (PDT)
+        bh=q5eTD6wz1RXfj8aC8lU6FuYhpZBKLogZOeVce0BXIgM=;
+        b=1//OJNqBmwpFd2NtFNDYL02xy5dj8ablZd2nGVEoaXx+OG4kE9XKvfs7jkEBZDff5/
+         tWN6+XSwUXTowG91dwrDYvW1Fd1fazxSMGoUEGO34Sw+/pN5lkPfA5R5CkcyMr4BYCFT
+         823H6jevWUnZxnWtjFOSbLH/1omaHII3swtZcqtkaUbtXLPaDpONzMLVeEQWHsJIszLd
+         sLHu9PjQRaz4e6SbEmREEn9SnEEIngwet7PO/T3UEOADujV1j7mgQ5RruhLW8B8DVxc5
+         fspespM6FcGIvhZZF13o2UnPylajetLs2MQRKzV4826aaSBQZvQcnwEI+JbRlEEZHZGv
+         Np2w==
+X-Gm-Message-State: AOAM530ouWqoaKcrHFgQivMxeBRbFriMMX96JkbDPsZoXjFfVuooetrl
+        KBEFYTKCBAyurLrlUIkSuAfXOA==
+X-Google-Smtp-Source: ABdhPJxX52apzdGJ+G31jFpsd6qyzr51sC9eQfAIoKm53t4NTL029WnhH6PlgGdl81lH5onahxYScQ==
+X-Received: by 2002:a17:90b:1d87:b0:1dc:a9c0:3d49 with SMTP id pf7-20020a17090b1d8700b001dca9c03d49mr2272677pjb.12.1653565423783;
+        Thu, 26 May 2022 04:43:43 -0700 (PDT)
 Received: from localhost ([122.162.234.2])
-        by smtp.gmail.com with ESMTPSA id k3-20020a170902d58300b0016168e90f3fsm1314412plh.5.2022.05.26.04.43.33
+        by smtp.gmail.com with ESMTPSA id i2-20020a170902e48200b001617e18e253sm221482ple.143.2022.05.26.04.43.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 May 2022 04:43:34 -0700 (PDT)
+        Thu, 26 May 2022 04:43:43 -0700 (PDT)
 From:   Viresh Kumar <viresh.kumar@linaro.org>
-To:     "Rafael J. Wysocki" <rafael@kernel.org>,
+To:     Patrice Chotard <patrice.chotard@foss.st.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
         Viresh Kumar <viresh.kumar@linaro.org>
 Cc:     linux-pm@vger.kernel.org,
         Vincent Guittot <vincent.guittot@linaro.org>,
         Rafael Wysocki <rjw@rjwysocki.net>,
         Stephen Boyd <sboyd@kernel.org>, Nishanth Menon <nm@ti.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 03/31] cpufreq: dt: Migrate to dev_pm_opp_set_config()
-Date:   Thu, 26 May 2022 17:12:02 +0530
-Message-Id: <a1fb3c6b287d9fb872ad5a73ba5475482f930b8e.1653564321.git.viresh.kumar@linaro.org>
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 06/31] cpufreq: sti: Migrate to dev_pm_opp_set_config()
+Date:   Thu, 26 May 2022 17:12:05 +0530
+Message-Id: <a8de04432a90f35f7a6ee9aec8555f829e7ca9bd.1653564321.git.viresh.kumar@linaro.org>
 X-Mailer: git-send-email 2.31.1.272.g89b43f80a514
 In-Reply-To: <cover.1653564321.git.viresh.kumar@linaro.org>
 References: <cover.1653564321.git.viresh.kumar@linaro.org>
@@ -76,51 +78,61 @@ Lets start using it.
 
 Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
 ---
- drivers/cpufreq/cpufreq-dt.c | 14 +++++++++-----
- 1 file changed, 9 insertions(+), 5 deletions(-)
+ drivers/cpufreq/sti-cpufreq.c | 22 ++++++++--------------
+ 1 file changed, 8 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/cpufreq/cpufreq-dt.c b/drivers/cpufreq/cpufreq-dt.c
-index 8fcaba541539..65f299acb0c4 100644
---- a/drivers/cpufreq/cpufreq-dt.c
-+++ b/drivers/cpufreq/cpufreq-dt.c
-@@ -220,12 +220,16 @@ static int dt_cpufreq_early_init(struct device *dev, int cpu)
- 	 */
- 	reg_name = find_supply_name(cpu_dev);
- 	if (reg_name) {
--		priv->opp_table = dev_pm_opp_set_regulators(cpu_dev, &reg_name,
--							    1);
-+		struct dev_pm_opp_config config = {
-+			.regulator_names = &reg_name,
-+			.regulator_count = 1,
-+		};
-+
-+		priv->opp_table = dev_pm_opp_set_config(cpu_dev, &config);
- 		if (IS_ERR(priv->opp_table)) {
- 			ret = PTR_ERR(priv->opp_table);
- 			if (ret != -EPROBE_DEFER)
--				dev_err(cpu_dev, "failed to set regulators: %d\n",
-+				dev_err(cpu_dev, "failed to set OPP config: %d\n",
- 					ret);
- 			goto free_cpumask;
- 		}
-@@ -295,7 +299,7 @@ static int dt_cpufreq_early_init(struct device *dev, int cpu)
- out:
- 	if (priv->have_static_opps)
- 		dev_pm_opp_of_cpumask_remove_table(priv->cpus);
--	dev_pm_opp_put_regulators(priv->opp_table);
-+	dev_pm_opp_clear_config(priv->opp_table);
- free_cpumask:
- 	free_cpumask_var(priv->cpus);
- 	return ret;
-@@ -309,7 +313,7 @@ static void dt_cpufreq_release(void)
- 		dev_pm_opp_free_cpufreq_table(priv->cpu_dev, &priv->freq_table);
- 		if (priv->have_static_opps)
- 			dev_pm_opp_of_cpumask_remove_table(priv->cpus);
--		dev_pm_opp_put_regulators(priv->opp_table);
-+		dev_pm_opp_clear_config(priv->opp_table);
- 		free_cpumask_var(priv->cpus);
- 		list_del(&priv->node);
+diff --git a/drivers/cpufreq/sti-cpufreq.c b/drivers/cpufreq/sti-cpufreq.c
+index fdb0a722d881..f4121a9d27e5 100644
+--- a/drivers/cpufreq/sti-cpufreq.c
++++ b/drivers/cpufreq/sti-cpufreq.c
+@@ -159,6 +159,11 @@ static int sti_cpufreq_set_opp_info(void)
+ 	int ret;
+ 	char name[MAX_PCODE_NAME_LEN];
+ 	struct opp_table *opp_table;
++	struct dev_pm_opp_config config = {
++		.supported_hw = version,
++		.supported_hw_count = ARRAY_SIZE(version),
++		.prop_name = name,
++	};
+ 
+ 	reg_fields = sti_cpufreq_match();
+ 	if (!reg_fields) {
+@@ -210,21 +215,14 @@ static int sti_cpufreq_set_opp_info(void)
+ 
+ 	snprintf(name, MAX_PCODE_NAME_LEN, "pcode%d", pcode);
+ 
+-	opp_table = dev_pm_opp_set_prop_name(dev, name);
+-	if (IS_ERR(opp_table)) {
+-		dev_err(dev, "Failed to set prop name\n");
+-		return PTR_ERR(opp_table);
+-	}
+-
+ 	version[0] = BIT(major);
+ 	version[1] = BIT(minor);
+ 	version[2] = BIT(substrate);
+ 
+-	opp_table = dev_pm_opp_set_supported_hw(dev, version, VERSION_ELEMENTS);
++	opp_table = dev_pm_opp_set_config(dev, &config);
+ 	if (IS_ERR(opp_table)) {
+-		dev_err(dev, "Failed to set supported hardware\n");
+-		ret = PTR_ERR(opp_table);
+-		goto err_put_prop_name;
++		dev_err(dev, "Failed to set OPP config\n");
++		return PTR_ERR(opp_table);
  	}
+ 
+ 	dev_dbg(dev, "pcode: %d major: %d minor: %d substrate: %d\n",
+@@ -233,10 +231,6 @@ static int sti_cpufreq_set_opp_info(void)
+ 		version[0], version[1], version[2]);
+ 
+ 	return 0;
+-
+-err_put_prop_name:
+-	dev_pm_opp_put_prop_name(opp_table);
+-	return ret;
+ }
+ 
+ static int sti_cpufreq_fetch_syscon_registers(void)
 -- 
 2.31.1.272.g89b43f80a514
 
