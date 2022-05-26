@@ -2,73 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D0D5C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 12:58:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DC4AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 13:00:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347456AbiEZM6W (ORCPT
+        id S1345698AbiEZNAQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 08:58:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59866 "EHLO
+        Thu, 26 May 2022 09:00:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234058AbiEZM6P (ORCPT
+        with ESMTP id S231159AbiEZNAM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 08:58:15 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F39985C763;
-        Thu, 26 May 2022 05:58:10 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id BC0671F45606
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1653569889;
-        bh=0EdiI4UQ62Oms7jhkCwXc010LL9bgAzrmJqjHMZq+s4=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=hG8tTMicAxc9tkcBCjll+kmxdI0KFOZiKfGF9HkmV4NeA+m4JIMBbQDAjbWgltFtR
-         7w1ziS85DOPFjNMrevW86fNGRfvTHsa5a5jhO0DvcGC1gn15X7lk5ECX33Qe7doS3A
-         GwniaDrRNj7O2brEBTb3egVMxLIZ7O2wznwCKm9Dt+izVDe+weTTO6JTK4O3bE4znv
-         CBuDXV+Ywa9AP5H5YfOpZXphRkUErFnCFDkxwYYiJy2bAmTK9if+z2lFBcJaGrgssV
-         aTa07hwR7m8JPTw4OKv3rQ/SFXrRVJlsQpfQkSDfiYt1cLU/3kmRBDv2mmyShIM8tf
-         YhV2HtQqPGpiA==
-Message-ID: <3d2b130c-9826-1440-3ec9-28a44b767de9@collabora.com>
-Date:   Thu, 26 May 2022 14:58:05 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH v7 1/6] thermal: mediatek: Relocate driver to mediatek
- folder
-Content-Language: en-US
-To:     Alexandre Bailon <abailon@baylibre.com>, rafael@kernel.org,
-        rui.zhang@intel.com, daniel.lezcano@linaro.org, amitk@kernel.org
-Cc:     linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        khilman@baylibre.com, mka@chromium.org, robh+dt@kernel.org,
-        krzk+dt@kernel.org, matthias.bgg@gmail.com, p.zabel@pengutronix.de,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, james.lo@mediatek.com,
-        fan.chen@mediatek.com, louis.yu@mediatek.com,
-        rex-bc.chen@mediatek.com, Michael Kao <michael.kao@mediatek.com>,
-        Ben Tseng <ben.tseng@mediatek.com>
-References: <20220524152552.246193-1-abailon@baylibre.com>
- <20220524152552.246193-2-abailon@baylibre.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220524152552.246193-2-abailon@baylibre.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Thu, 26 May 2022 09:00:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B5C7CFE00
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 06:00:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E744DB820CB
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 13:00:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADD6AC385A9;
+        Thu, 26 May 2022 13:00:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653570008;
+        bh=GrNN2j5tqrd/2L9HWmTTDNls2RMClzr1/7nW7pxBuy8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=GRKuXugyyT3Tk/2E/Jax28CgLLu8HOB3WfgtbCUPiI/S6Cx+d4X3XW3bHhgU4ldYg
+         iDsnTMF3G8n0kUybLVCcMEPtjPajLCTDQLetrzEFBXwhP8siy6lbGJ4GaJ0x1iavUo
+         zhe4WgRRactOPYqF/ZnHIHW4HnIH6NTfOiHF3hU/DJwcvb0eaWyFecfR5zxf9zrZ4j
+         MVrvHWRKO9mZa4olKHLxUWdyvv/V8gMHAVIwGD8tY5P1gkG/UYHvuNaS0ZNJDyfF2F
+         r9Wnai2yQjRVMGoD1o10zLvI5yj4+xsoC3Wm+IzetIRr64OH/7ETpqjwQtRri2CHIz
+         TP6E9DUdowV1A==
+Received: from athedsl-4557779.home.otenet.gr ([94.70.87.219] helo=wait-a-minute.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nuD5y-00Dr09-7b; Thu, 26 May 2022 14:00:06 +0100
+Date:   Thu, 26 May 2022 14:00:05 +0100
+Message-ID: <87bkvkmotm.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     richard clark <richard.xnu.clark@gmail.com>
+Cc:     Robin Murphy <robin.murphy@arm.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: Question about SPIs' interrupt trigger type restrictions
+In-Reply-To: <CAJNi4rOtsfzJWsgx7CABczbf3DqqsigErf1YFw6hKOhWnACnHQ@mail.gmail.com>
+References: <CAJNi4rNwPQf747UM_hiYYwL=HDxg8QnPpfFPv1PfrtN9ZP1y1g@mail.gmail.com>
+        <35f95ba3-8a7b-7918-0f9d-e14274a5ffe9@arm.com>
+        <CAJNi4rMbBbLP2Tsv-wnnJKt4Y0moOE5-sNaZN1fCty908pwAKw@mail.gmail.com>
+        <87ee0gn5rq.wl-maz@kernel.org>
+        <5a8d5c51-ae02-a335-6768-2bedf809ab63@arm.com>
+        <CAJNi4rOtsfzJWsgx7CABczbf3DqqsigErf1YFw6hKOhWnACnHQ@mail.gmail.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-SA-Exim-Connect-IP: 94.70.87.219
+X-SA-Exim-Rcpt-To: richard.xnu.clark@gmail.com, robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 24/05/22 17:25, Alexandre Bailon ha scritto:
-> From: Michael Kao <michael.kao@mediatek.com>
-> 
-> Add Mediatek proprietary folder to upstream more thermal zone and cooler
-> drivers. Relocate the original thermal controller driver to it and rename
-> as soc_temp.c to show its purpose more clearly.
-> 
-> Signed-off-by: Michael Kao <michael.kao@mediatek.com>
-> Signed-off-by: Ben Tseng <ben.tseng@mediatek.com>
-> Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+On Thu, 26 May 2022 13:30:35 +0100,
+richard clark <richard.xnu.clark@gmail.com> wrote:
+>=20
+> On Thu, May 26, 2022 at 4:41 PM Robin Murphy <robin.murphy@arm.com> wrote:
+> >
+> > On 2022-05-26 07:54, Marc Zyngier wrote:
+> > > On Thu, 26 May 2022 04:44:41 +0100,
+> > > richard clark <richard.xnu.clark@gmail.com> wrote:
+> > >>
+> > >> On Thu, May 26, 2022 at 3:14 AM Robin Murphy <robin.murphy@arm.com> =
+wrote:
+> > >>>
+> > >>> On 2022-05-25 11:01, richard clark wrote:
+> > >>>> Hi Marc,
+> > >>>>
+> > >>>> For below code snippet about SPI interrupt trigger type:
+> > >>>>
+> > >>>> static int gic_set_type(struct irq_data *d, unsigned int type)
+> > >>>> {
+> > >>>>           ...
+> > >>>>           /* SPIs have restrictions on the supported types */
+> > >>>>           if ((range =3D=3D SPI_RANGE || range =3D=3D ESPI_RANGE) =
+&&
+> > >>>>               type !=3D IRQ_TYPE_LEVEL_HIGH && type !=3D IRQ_TYPE_=
+EDGE_RISING)
+> > >>>>                   return -EINVAL;
+> > >>>>           ...
+> > >>>> }
+> > >>>>
+> > >>>> We have a device at hand whose interrupt type is SPI, Falling edge
+> > >>>> will trigger the interrupt. But the request_irq(50, handler,
+> > >>>> IRQ_TYPE_EDGE_FALLING, ...) will return -EINVAL.
+> > >>>>
+> > >>>> The question is, why must the SPI interrupt use IRQ_TYPE_EDGE_RISI=
+NG
+> > >>>> instead of IRQ_TYPE_EDGE_FALLING?
+> > >>>
+> > >>> Because that's what the GIC architecture[1] says. From section 1.2.1
+> > >>> "Interrupt Types":
+> > >>>
+> > >>> "An interrupt that is edge-triggered has the following property:
+> > >>>          =E2=80=A2 It is asserted on detection of a rising edge of =
+an interrupt signal
+> > >>
+> > >> This rising edge detection is not true, it's also asserted by
+> > >> falling edge, just like the GICD_ICFGR register says: Changing the
+> > >> interrupt configuration between level-sensitive and *edge-triggered
+> > >> (in either direction)* at a time when there is a pending interrupt
+> > >> ...,
+> > >
+> > > Let me finish the sentence for you:
+> > >
+> > > <quote>
+> > > ... will leave the interrupt in an UNKNOWN pending state.
+> > > </quote>
+> > >
+> > > and the direction here is about the configuration bit, not the edge
+> > > direction.
+> >
+> > Indeed it's clearly referring to either direction of *the change*, i.e.
+> > from edge to level and from level to edge.
+> >
+> > >> which has been confirmed by GIC-500 on my platform.
+> > >
+> > >  From the GIC500 r1p1 TRM, page 2-8:
+> > >
+> > > <quote>
+> > > SPIs are generated either by wire inputs or by writes to the AXI4
+> > > slave programming interface.  The GIC-500 can support up to 960 SPIs
+> > > corresponding to the external spi[991:32] signal. The number of SPIs
+> > > available depends on the implemented configuration. The permitted
+> > > values are 32-960, in steps of 32. The first SPI has an ID number of
+> > > 32. You can configure whether each SPI is triggered on a rising edge
+> > > or is active-HIGH level-sensitive.
+> > > </quote>
+> > >
+> > > So I have no idea what you are talking about, but you definitely have
+> > > the wrong end of the stick. Both the architecture and the
+> > > implementations are aligned with what the GIC drivers do.
+> > >
+> > > If your system behaves differently, this is because something is
+> > > inverting the signal, which is extremely common. Just describe this in
+> > > your device tree, or lie to the kernel, whichever way you want.
+> >
+> > I think the important concept to grasp here is that what we describe in
+> > DT is not properties of the device in isolation, but properties of its
+> > integration into the system as a whole. Consider the "reg" property,
+> > which in 99% of cases has nothing to do with the actual device it
+> > belongs to, but is instead describing a property of the interconnect,
+> > namely how its address map decodes to a particular interface, to which
+> > the given device happens to be attached.
+>=20
+> I don't care about the DT at all... The essential is- does the GIC
+> only support rising edge detection really just as the document says,
+> I'm doubtful about that ;-)
 
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Doubt as much as you want. The architecture and implementations are
+crystal clear on the subject.
 
+>=20
+> >
+> > At the HDL level, the device block may very well have an output signal
+> > which idles at logic-high, and pulses low to indicate an event, however
+> > it only becomes an *interrupt* if it is wired up to an interrupt
+> > controller; on its own it's just some output signal. What the DT
+> > interrupt specifier describes is that wiring, *from the interrupt
+> > controller's point of view*. If a pulsed signal is fed into an Arm GIC
+> > SPI input then as an interrupt it *is* IRQ_TYPE_EDGE_RISING, because
+> > that's how the GIC hardware will treat it. The integration as a whole
+>=20
+> EDGE_RISING can leave its mark in the GIC, that's the *how*, but why
+> EDGE_FALLING can't, any reasons to justify this behavior?
 
+Err, because there is no bit that allows such a configuration, maybe?
+
+And that if someone has a falling edge signal, they can drop an
+inverter on the path and be done with it?
+
+Anyway, if you have an issue with the current behaviour of either
+implementations or architecture, I suggest you take up with ARM.
+
+> I believe that the drivers still work if the trigger type sanity check
+> in the GIC driver is removed.
+
+The driver would then be misrepresenting the architecture, and that
+would be a bug. There are enough bugs in that area that we don't need
+to add an extra one.
+
+	M.
+
+--=20
+Without deviation from the norm, progress is not possible.
