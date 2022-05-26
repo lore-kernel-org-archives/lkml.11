@@ -2,74 +2,235 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0084C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 12:32:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F80AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 12:33:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347313AbiEZMcy (ORCPT
+        id S1347338AbiEZMdG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 08:32:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34124 "EHLO
+        Thu, 26 May 2022 08:33:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347281AbiEZMcn (ORCPT
+        with ESMTP id S1347305AbiEZMct (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 08:32:43 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46D5D9596;
-        Thu, 26 May 2022 05:32:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=wF8XuVv4mQ1+nmm8VPTygZ9HsG27ew/AaBd2b5MOd4g=; b=wC8se2ghyF+jb6nNGxIwCKn6/N
-        HcTNdSoruv7771/MS7Vrmvb529ZovFG7BgUiVjo5s7CH85tvFAJ4FYkGP7b4gb9W4OgDcLmV50/Jg
-        oK3i8Y98rAfBC8oNoqOQrAufk2u0k599YYz+sKezh7Bu8ZoajLAZbch1Bq35CD2nvubE=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nuCf0-004Lth-Cu; Thu, 26 May 2022 14:32:14 +0200
-Date:   Thu, 26 May 2022 14:32:14 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Tan Tee Min <tee.min.tan@linux.intel.com>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Dan Murphy <dmurphy@ti.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org, Voon Wei Feng <weifeng.voon@intel.com>,
-        Sit Michael Wei Hong <michael.wei.hong.sit@intel.com>,
-        Ling Pei Lee <pei.lee.ling@intel.com>,
-        Looi Hong Aun <hong.aun.looi@intel.com>,
-        Wong Vee Khee <vee.khee.wong@intel.com>,
-        Tan Tee Min <tee.min.tan@intel.com>
-Subject: Re: [PATCH net-next v2 1/1] net: phy: dp83867: retrigger SGMII AN
- when link change
-Message-ID: <Yo9zTmMduwel8XeZ@lunn.ch>
-References: <20220526090347.128742-1-tee.min.tan@linux.intel.com>
+        Thu, 26 May 2022 08:32:49 -0400
+Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70044.outbound.protection.outlook.com [40.107.7.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9E779FD2;
+        Thu, 26 May 2022 05:32:44 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=E/+NC+bYgmd/lyUjjCLRJgnVqXMWq0aL4WVXuAD1rrbDLTRZAThAzjnADExlnBpDLrMUKSQo6Q6rUS8MFndStrHv6ls5y65p2FFjQD8FVNnx/gKcmjwsPMzjHcMYcg6FeoIhEM+wNAGiIRNw0wd9hMZEX9FNEtIKAf8dBPmvGQwjVU3djODYn0fjvNk4l1yLc04YdLlVESxfv8A09y6gmthcm3zWSwM1q/L90oZH7nLljocm9iPWZfwsFbNrp10UIuMDIay86d58+1EqLF1gXnEfcRHnZE8Jyjn6W/5QSn0/3HrrBiK5S35oY/KakcA976E1lavBBdYSalvzGAdlwQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=sbFd6RXXWumFShmNL4DP0nO9hfrnj7j2ZCPhB8uxCZ4=;
+ b=TwJXkfZ+1HXYPW4fN7CCRGzUq/fs8sCD8tjbC/NQuJhT+shnh2fXL7BYev+ilsIWzVeEf7n/6lBid/VHyaclVqroD2wiOuNJ8fbJLuILIX+JbgHH4uHIm/UO7iwuKJLMlz4zVROXXMhs64Rs2jxKiXl9xqMBYY1JDI4v+CJcEUR7b6oXL8xSi+fI9eW83fr38drgZxXPXttVQVq6nGGd9vOlLXKFOFSe9XKsn5BPCaQBvmIHs7SH9E6GL51M+jVM3+MXTxL7fhUCPbbs5M4Slo8xkMTV4Un+gy2A1rC/QjFV3VYc4nf+XHA2oUB6ThkIrJq7xKytT11apnmQpwph3w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=sbFd6RXXWumFShmNL4DP0nO9hfrnj7j2ZCPhB8uxCZ4=;
+ b=lqRcFGxNEW0+2ThBkIUm147zKVsQ3cpKDSpjJwspmJucql4bEuktRszd3Qh7tMoEGSR+bJrFSSHQDdRZOqLQSOYHVqINWlVrr3X8EaSdLe1aFwFzCtH0bORcE/rnEYrnQVvPBZxc6Utptz77bvvYCVXhtNtSyDziBwPJjW3jS0o=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=oss.nxp.com;
+Received: from DU0PR04MB9417.eurprd04.prod.outlook.com (2603:10a6:10:358::11)
+ by AM0PR04MB6515.eurprd04.prod.outlook.com (2603:10a6:208:16f::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.13; Thu, 26 May
+ 2022 12:32:41 +0000
+Received: from DU0PR04MB9417.eurprd04.prod.outlook.com
+ ([fe80::a892:e4a9:4769:13a5]) by DU0PR04MB9417.eurprd04.prod.outlook.com
+ ([fe80::a892:e4a9:4769:13a5%7]) with mapi id 15.20.5293.013; Thu, 26 May 2022
+ 12:32:41 +0000
+From:   "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
+To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        sboyd@kernel.org, mturquette@baylibre.com, shawnguo@kernel.org,
+        s.hauer@pengutronix.de
+Cc:     aisheng.dong@nxp.com, l.stach@pengutronix.de,
+        kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, Peng Fan <peng.fan@nxp.com>
+Subject: [PATCH V2 2/7] dt-bindings: soc: add i.MX93 mediamix blk ctrl
+Date:   Thu, 26 May 2022 20:34:06 +0800
+Message-Id: <20220526123411.270083-3-peng.fan@oss.nxp.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220526123411.270083-1-peng.fan@oss.nxp.com>
+References: <20220526123411.270083-1-peng.fan@oss.nxp.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SI2PR06CA0013.apcprd06.prod.outlook.com
+ (2603:1096:4:186::18) To DU0PR04MB9417.eurprd04.prod.outlook.com
+ (2603:10a6:10:358::11)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220526090347.128742-1-tee.min.tan@linux.intel.com>
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: c4313542-2331-4616-c9bc-08da3f13d38a
+X-MS-TrafficTypeDiagnostic: AM0PR04MB6515:EE_
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
+X-Microsoft-Antispam-PRVS: <AM0PR04MB651589EB3D396C11483EA84DC9D99@AM0PR04MB6515.eurprd04.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: z0mlcQ6vSpSM1k/I0fDddzqYDwvmqcchoBBpcaAQdzOnTKVHD7e1Ap8+myl2ElSccOfLe6OyiE/Q9zlAvye+/albFavPv6hqG8VnhJ5fkyJ096q0ijVj0AY+zz9cWOHrgFqRiN0dSgAQWVmPo+s4FjocUIpfDn0kWSCtu9JhepkG2oREnetcMlfOjDfNgUVI0+sL7swr9VBxGcxcPLoLKTqXPJQPvesiNzG0V8Z57xewgSvi0hbmL7IoDnfUZgVlD/JZ1L1sxZtEN0m5nr9H1kqAUaNbrxcpZ9zuojX/tRVMWP1FDavsKzrKxWSGIYWp1q2HM0H9A7liKlQmHSkBhBE92yUjGzK2bnxn5zBOeU/engzKXdp4OPY0MOjvM8zdCBT8DU6IU9H1C4UKKu6Cc4PFUycTXfP2BZAitce0OJTSyCtuPgQoGJbQHrbg3btAftCrVRFnQhUbcDkvxelWbV0VEhja/4bi9yM0T2l3aj7KuvGH2aEnni6NpwY6o51JDOB+P7e4MX6XwyCye8HCQdA17JT5RKFQPIrz5ZMzZ2suHRRDraMwXQlsZtNQOb5Ce8kXFEAOAuq4UJMiudkUCWk5KWqiCK4Mmib0uGHH/GM22ry6byOe4dfl1VUIMmYMrDzXB3OZmTTjZXV8dJvu5laW9CZ9aERpMLSPAneD53/h5tydLbqdkQRQWqz5yQHxNuT+me/0yDTgWTWrNt9qHgWga6jchmuxIj61ElVxiKRonQIH43UwlwfR7qAEJlDa/Cfg5P8KVdfjuJPURwktMRigdXPoonN/zirUDR9xNZter8tIdMvyLP+G+IWY/G6+hGBsdJenzzdmqc0U8jVugw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU0PR04MB9417.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(316002)(52116002)(966005)(2616005)(6512007)(86362001)(26005)(38100700002)(38350700002)(6506007)(66946007)(66476007)(66556008)(4326008)(8676002)(6666004)(5660300002)(8936002)(7416002)(508600001)(2906002)(83380400001)(186003)(1076003)(6486002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ohWiCKPfcOazX2sRZ29EVCHthaxezgpTaIWi0IQbJw+atv65deJRUSeX9c4H?=
+ =?us-ascii?Q?q5althI2MrDbsyyOlRAf1jDSP+S6V04CFmfCjqeq5VfUDMYOQmwTZxj0Q+z5?=
+ =?us-ascii?Q?NGju3go8Uww2xpUNOKztifNAwXSTeXNvbkLljlJ5F4DJD/qJ+lI2pD4Avw+s?=
+ =?us-ascii?Q?Iw7OMEGDVNxk/NLNR6rXdR985G2rKqZEa9tXJqsjegVb5Hoyz1MZW03ZBh8n?=
+ =?us-ascii?Q?Vcb6i/QcLRwD12kal/CBw8Y/havoO21fDXQlSef7A/KKLQrcXe7yM7/eP3Yi?=
+ =?us-ascii?Q?ohoi+C2gFZenw3jnRD3J3AAbt6GJR4Z7pf0W0al1i6OHBToGBYeCiuwqcnek?=
+ =?us-ascii?Q?/+n0xt90uVe1C0pTf9W2JGuxccJQnBIE1onWz0GCLb7mV0jTqVf/1u1bldXo?=
+ =?us-ascii?Q?GGOJhvDNjJX1piAtKCIkhdO/5LQPuLj8S2uYynZCzeIM/LJhAWG6KNBbfkNq?=
+ =?us-ascii?Q?MJcEraaYCvprs1g9bGMXRMDdON5LMOhGIiAH24KGj/AWxk7c+iyz6gBahzFu?=
+ =?us-ascii?Q?1I+TGnIgrch2d/Stk1AmW59Cf2edl+x8mTc2TFkdbvZ1d0hwXevrxs4cbbmu?=
+ =?us-ascii?Q?bQ1FSAi/+WTzQbFhYcvlYqe1ry1RhB1V8M+oiIZNTM2Rh0YMhXMqBRVNOGjW?=
+ =?us-ascii?Q?jHrG2nrGuyApTUOpag69zqhxftA8ulYBDDrBfb/n8xeMWesGgjh81jdh87Q4?=
+ =?us-ascii?Q?46zi8NNObTANa52Vh/A59BbZtJHcu+OrA8jsFo9CYXj5PsV89bfw0H7lK5sO?=
+ =?us-ascii?Q?Z3OhVWHexrBmc7OyR68Da5s7ChBUXNyVWSLNJryKsfFrhXvkfj0ZWZvBMAsU?=
+ =?us-ascii?Q?iu2P68s9qxLcndgbNuJCFvY6muZNsKUdpKi4p12l756XEyziKppsZjzT+1Jq?=
+ =?us-ascii?Q?pl+iAjvhjOcBx37HORxNinGHmBtB3PGyPUWm/fr2M2tDmsJ7nWW+6o/DqktW?=
+ =?us-ascii?Q?Qwti6rlh9071AJJve+a3OvxvLEajpemnkE8JVBXSwnl9JgPt2ib48z8waWiG?=
+ =?us-ascii?Q?xGVlaJ5tc+6tm5b68Hg9hTMvA6f8HDG1SqE1ej/TbM817ZvQm1b6zvjcQXEj?=
+ =?us-ascii?Q?QejrxCE/L3xgRgdAVtdCZxX1ObiIjfBCPd6RiubemwDZOa1PecUfRlNFMoA9?=
+ =?us-ascii?Q?QI0IO0eXhdOoJF1frLj16aA4QKON/IYvv7OxST58Q8u8Zknb4sEjsTuz806l?=
+ =?us-ascii?Q?p+b7MFNTSCLeUtC3T6gz5CmPNHtjLspI8DdtW+F3bVjQkhypSoJwoRzETAZm?=
+ =?us-ascii?Q?b3TLK2R5lvPn+mEXcUayI4ZRgN8xi0BPKPBVfhxexzTRi0WbNchzVxLrti/f?=
+ =?us-ascii?Q?ENquUvocflmv1PtKqYOWc7QyM45lomNyDK00EL2q2rCnuPQm6blMi98oZ5hB?=
+ =?us-ascii?Q?AixO9z7I6jDCxol2iXI9eAZYYiBbkPFsErAh89Xv6CuO+Ve6mYB32AobWC2F?=
+ =?us-ascii?Q?HOgZDud33QpJMtnV5taG0JjtYLfnQ/Wio4YhwOfPptLcaWVFloQOpOyfUoXe?=
+ =?us-ascii?Q?P8Bupf7GWqPiRHM686Z4zmikFDDHBqm/PTz4U44GuQZmclwJSpE3H94FkM1T?=
+ =?us-ascii?Q?gU9Wh0CNk/xGw/wyg1yGK18zJYR9IQ9ee3oJ9kIBw+DPMYPfKhcBkmyuXkWV?=
+ =?us-ascii?Q?suXS4z+uqJ3HMVNk9ypv/y/6ER3CWHvmzdCzoGVPZIMEkbJzskksH9kCmxXQ?=
+ =?us-ascii?Q?VIAUIwayXBr/5FoNe33/OgLZ/n6mp5aBGEwjNrXRcxQtYJM/MtjSHvFqbKMC?=
+ =?us-ascii?Q?NvfGdCAHNw=3D=3D?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c4313542-2331-4616-c9bc-08da3f13d38a
+X-MS-Exchange-CrossTenant-AuthSource: DU0PR04MB9417.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 May 2022 12:32:41.4862
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: JXXgDBTZizl5DGbbQR/XV0C6KHvyoxT7SWebvuL6t6y678yw5vnkHPDM5QwJEz81B9nPmBzRFkKPL7i/asfYXQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB6515
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 26, 2022 at 05:03:47PM +0800, Tan Tee Min wrote:
-> There is a limitation in TI DP83867 PHY device where SGMII AN is only
-> triggered once after the device is booted up. Even after the PHY TPI is
-> down and up again, SGMII AN is not triggered and hence no new in-band
-> message from PHY to MAC side SGMII.
-> 
-> This could cause an issue during power up, when PHY is up prior to MAC.
-> At this condition, once MAC side SGMII is up, MAC side SGMII wouldn`t
-> receive new in-band message from TI PHY with correct link status, speed
-> and duplex info.
-> 
-> As suggested by TI, implemented a SW solution here to retrigger SGMII
-> Auto-Neg whenever there is a link change.
+From: Peng Fan <peng.fan@nxp.com>
 
-Is there a bit in the PHY which reports host side link? There is no
-point triggering an AN if there is already link.
+Add DT bindings for i.MX93 MEDIAMIX BLK CTRL.
 
-      Andrew
+Signed-off-by: Peng Fan <peng.fan@nxp.com>
+---
+ .../soc/imx/fsl,imx93-media-blk-ctrl.yaml     | 80 +++++++++++++++++++
+ include/dt-bindings/power/fsl,imx93-power.h   |  6 ++
+ 2 files changed, 86 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/soc/imx/fsl,imx93-media-blk-ctrl.yaml
+
+diff --git a/Documentation/devicetree/bindings/soc/imx/fsl,imx93-media-blk-ctrl.yaml b/Documentation/devicetree/bindings/soc/imx/fsl,imx93-media-blk-ctrl.yaml
+new file mode 100644
+index 000000000000..792ebecec22d
+--- /dev/null
++++ b/Documentation/devicetree/bindings/soc/imx/fsl,imx93-media-blk-ctrl.yaml
+@@ -0,0 +1,80 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/soc/imx/fsl,imx93-media-blk-ctrl.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: NXP i.MX93 Media blk-ctrl
++
++maintainers:
++  - Peng Fan <peng.fan@nxp.com>
++
++description:
++  The i.MX93 MEDIAMIX domain contains control and status registers known
++  as MEDIAMIX Block Control (MEDIAMIX BLK_CTRL). These registers include
++  clocking, reset, and miscellaneous top-level controls for peripherals
++  within the MEDIAMIX domain
++
++properties:
++  compatible:
++    items:
++      - const: fsl,imx93-media-blk-ctrl
++      - const: syscon
++
++  reg:
++    maxItems: 1
++
++  '#power-domain-cells':
++    const: 1
++
++  power-domains:
++    maxItems: 1
++
++  clocks:
++    maxItems: 10
++
++  clock-names:
++    items:
++      - const: apb
++      - const: axi
++      - const: nic
++      - const: disp
++      - const: cam
++      - const: pxp
++      - const: lcdif
++      - const: isi
++      - const: csi
++      - const: dsi
++
++required:
++  - compatible
++  - reg
++  - power-domains
++  - clocks
++  - clock-names
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/imx93-clock.h>
++    #include <dt-bindings/power/fsl,imx93-power.h>
++
++    media_blk_ctrl: system-controller@4ac10000 {
++      compatible = "fsl,imx93-media-blk-ctrl", "syscon";
++      reg = <0x4ac10000 0x10000>;
++      power-domains = <&mediamix>;
++      clocks = <&clk IMX93_CLK_MEDIA_APB>,
++               <&clk IMX93_CLK_MEDIA_AXI>,
++               <&clk IMX93_CLK_NIC_MEDIA_GATE>,
++               <&clk IMX93_CLK_MEDIA_DISP_PIX>,
++               <&clk IMX93_CLK_CAM_PIX>,
++               <&clk IMX93_CLK_PXP_GATE>,
++               <&clk IMX93_CLK_LCDIF_GATE>,
++               <&clk IMX93_CLK_ISI_GATE>,
++               <&clk IMX93_CLK_MIPI_CSI_GATE>,
++               <&clk IMX93_CLK_MIPI_DSI_GATE>;
++               clock-names = "apb", "axi", "nic", "disp", "cam",
++                             "pxp", "lcdif", "isi", "csi", "dsi";
++      #power-domain-cells = <1>;
++    };
+diff --git a/include/dt-bindings/power/fsl,imx93-power.h b/include/dt-bindings/power/fsl,imx93-power.h
+index 27fb7df80f93..b3d2d9619d3a 100644
+--- a/include/dt-bindings/power/fsl,imx93-power.h
++++ b/include/dt-bindings/power/fsl,imx93-power.h
+@@ -8,4 +8,10 @@
+ 
+ #define IMX93_POWER_DOMAIN_MEDIAMIX		0
+ 
++#define IMX93_MEDIABLK_PD_MIPI_DSI		0
++#define IMX93_MEDIABLK_PD_MIPI_CSI		1
++#define IMX93_MEDIABLK_PD_PXP			2
++#define IMX93_MEDIABLK_PD_LCDIF			3
++#define IMX93_MEDIABLK_PD_ISI			4
++
+ #endif
+-- 
+2.25.1
+
