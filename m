@@ -2,121 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83E5CC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 10:40:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CC67C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 10:40:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345048AbiEZKkE (ORCPT
+        id S1347066AbiEZKkG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 06:40:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42330 "EHLO
+        Thu, 26 May 2022 06:40:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241731AbiEZKj5 (ORCPT
+        with ESMTP id S1344583AbiEZKj7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 06:39:57 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 619D1CEB85
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 03:39:56 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id c2so1123415plh.2
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 03:39:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=1qF1kRC9LwiJlnC5OgZ6TWXKv8JNcRSCPefpgmCPVd0=;
-        b=3prUM9x8qMxEGp9TN9u5j+Pn+QPRZ6vtKEOOTjfSve4w4ERlYmn9ZrUQHsNqu8f8Ys
-         +BbC1CCUJCQyfky8idKRSKHXDe3b4jwQ4DFLjqVqnrY3Gh74XkTcQaBtmMMsJ+38b4if
-         SAq6SEjqZYA/PkuEpM+RqqrWotZevQ1MMLXCPh0y6o/snlhbqUMfaByKL+2BLBE6delk
-         DHAEYKLanbnXSXyOouIFC2/YQxPc4KEvgAYuulny8sv0JCXxu0nVg5FUqhHERU+MPspA
-         SsXTlCuYc8sKKlTg/gdhOGzAJG5pKX01pv5fZIiH/1EMGcConD8j2sm1RyNgCZi3qlp1
-         6cNg==
+        Thu, 26 May 2022 06:39:59 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 10CDCCC16D
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 03:39:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653561597;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=+r8IRfW0aiu0JceyLx2VcCldtR76oQiy6OB80vh4MBU=;
+        b=UuKabnlS2KsPcL66OyNh962UV2itohE+kT91gcanIVqYt9MsDU+IGcW6zJLXwRWzzZVEgD
+        4XPvsVjVxQTxHAd4PgGCsLBDj2CP7PE5Sq45ek7m4wHsafvOPth1QRbMGBiFeoRL6HyQF3
+        s8+rTWCr1TP7enVhkNwjBO3N1CGelKg=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-557--pr031zbNSqrd5DnEH0vHg-1; Thu, 26 May 2022 06:39:55 -0400
+X-MC-Unique: -pr031zbNSqrd5DnEH0vHg-1
+Received: by mail-ed1-f69.google.com with SMTP id i8-20020a50fd08000000b0042baef934f5so811137eds.16
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 03:39:55 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=1qF1kRC9LwiJlnC5OgZ6TWXKv8JNcRSCPefpgmCPVd0=;
-        b=FLqapcr7I97iioHKrsvTOm49IhkdnvwdnV5BiW1DhVKM6OgKllc+UTHl5onZ+KYl/C
-         WGAoJpq1edj8d9EWoODks02aEYWPINa1UyGQekuecI9GOiP3MNhnKx6gpYluhLzk6PYl
-         2tRlg6UUjb+iIUx11M0yhsvAgPfKhKlpM5+DXjG3wTtbSJRI/QtPNnptbyHb/rGLcP7K
-         EuWr+4jvdWOP03a4E2Z1MOwT82VMPogFceq43WhOwSCmhaR9zZNypjxXzghBYvQMaj+0
-         7QZQJ5E/kNleWBw+gFPxYHzCrv+t/+A4vszql8JbH4zH3gxUCx57FWzETJJQ9+FNCHT3
-         eCBA==
-X-Gm-Message-State: AOAM530VHuZT7Cm5mluJvOsRmxivz4PHi4vz6rBXSjQ2gs/2WRcEjdCr
-        Z/cVu9U6efAC44EvEF9/5i5X7E9ntXMApw==
-X-Google-Smtp-Source: ABdhPJxgjNHGHZhbqF3mCgZL1AIuiMiG/+kd4oHT3n+gConpQz+Ltl/AIjmdVxqrUx1rFXHmV1v20g==
-X-Received: by 2002:a17:90b:3a89:b0:1de:bad4:b614 with SMTP id om9-20020a17090b3a8900b001debad4b614mr1919898pjb.139.1653561595952;
-        Thu, 26 May 2022 03:39:55 -0700 (PDT)
-Received: from C02CV1DAMD6P.bytedance.net ([139.177.225.225])
-        by smtp.gmail.com with ESMTPSA id u17-20020a17090341d100b0015e8d4eb23dsm1257311ple.135.2022.05.26.03.39.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 May 2022 03:39:55 -0700 (PDT)
-From:   Chengming Zhou <zhouchengming@bytedance.com>
-To:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
-        bristot@redhat.com, vschneid@redhat.com, odin@uged.al
-Cc:     linux-kernel@vger.kernel.org, duanxiongchun@bytedance.com,
-        songmuchun@bytedance.com,
-        Chengming Zhou <zhouchengming@bytedance.com>
-Subject: [PATCH v3 1/2] sched/fair: fix propagate during synchronous attach/detach
-Date:   Thu, 26 May 2022 18:39:28 +0800
-Message-Id: <20220526103929.14976-2-zhouchengming@bytedance.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220526103929.14976-1-zhouchengming@bytedance.com>
-References: <20220526103929.14976-1-zhouchengming@bytedance.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=+r8IRfW0aiu0JceyLx2VcCldtR76oQiy6OB80vh4MBU=;
+        b=Yk5835SuxIz3ztzDpuj6dvIh2NGzLn8/WWhNMQ56rgLP9di483ICznuEsovm4IxR6C
+         79LBsR+BRtJxmtVLs38ktc6KuC/H+byy+at6HsIJQ1zxy36Bk5KLlLhVq05Gv79tChcM
+         LaZRJUVc72W29RS7JldSdd885ddz8NFl2PF8mcriVhTzQ1ZiOAFIyVdvnKGFGiRXWmhs
+         /wTkXk5zVPqWoY48Pm+cmttONB+fAQTB8R8yOBHoWnNDv0sQHAXwLJRrwXgqeLdhVAuY
+         I5pTZDJy+z0zImTISJnD4mjRcd+zaCyiGlj2IjeVErek1jTUGTO7G1Rk9qsg9T0i8n13
+         K6Sg==
+X-Gm-Message-State: AOAM531FS3i2RI5AS7ch7W673j4GMY6tkrO+YdIetn9V1L4YLz2a7tKS
+        i4IfK/1VTEOHZWZWY8Y/Yl6UwoZH0/fKVmp37anXsQLlrXhn8DPmLLz4EGwocXRAK0FuJSqon1b
+        /JYM9AnICgDIRfNbouK+SqT53
+X-Received: by 2002:a17:906:f17:b0:6fe:94f6:cb8a with SMTP id z23-20020a1709060f1700b006fe94f6cb8amr31800178eji.456.1653561594741;
+        Thu, 26 May 2022 03:39:54 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyUSYGuJiw8tlBQEs9M1/lLmuEsmHtBEs/SiLz744J3SQye6+zzJi4pp7socx6vuf4BRlOQcA==
+X-Received: by 2002:a17:906:f17:b0:6fe:94f6:cb8a with SMTP id z23-20020a1709060f1700b006fe94f6cb8amr31800168eji.456.1653561594551;
+        Thu, 26 May 2022 03:39:54 -0700 (PDT)
+Received: from ?IPV6:2001:b07:6468:f312:9af8:e5f5:7516:fa89? ([2001:b07:6468:f312:9af8:e5f5:7516:fa89])
+        by smtp.googlemail.com with ESMTPSA id c10-20020a05640227ca00b0042ab9da73e6sm633908ede.94.2022.05.26.03.39.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 26 May 2022 03:39:53 -0700 (PDT)
+Message-ID: <8288b833-68f0-9fd2-d4d4-21cc9aff5ec2@redhat.com>
+Date:   Thu, 26 May 2022 12:39:51 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH 2/2] KVM: VMX: Add knob to allow rejecting kvm_intel on
+ inconsistent VMCS config
+Content-Language: en-US
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Chenyi Qiang <chenyi.qiang@intel.com>,
+        Lei Wang <lei4.wang@intel.com>
+References: <20220525210447.2758436-1-seanjc@google.com>
+ <20220525210447.2758436-3-seanjc@google.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <20220525210447.2758436-3-seanjc@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When a task moves from/to a cfs_rq, we first detach/attach the load_avg
-of se from/to that cfs_rq, then propagate the changes across the tg tree
-to make it visible to the root, which did in update_load_avg().
+On 5/25/22 23:04, Sean Christopherson wrote:
+> Add an off-by-default module param, reject_inconsistent_vmcs_config, to
+> allow rejecting the load of kvm_intel if an inconsistent VMCS config is
+> detected.  Continuing on with an inconsistent, degraded config is
+> undesirable when the CPU is expected to support a given set of features,
+> e.g. can result in a misconfigured VM if userspace doesn't cross-check
+> KVM_GET_SUPPORTED_CPUID, and/or can result in poor performance due to
+> lack of fast MSR switching.
+> 
+> Signed-off-by: Sean Christopherson<seanjc@google.com>
+> ---
+>   arch/x86/kvm/vmx/vmx.c | 20 +++++++++++++++++---
+>   1 file changed, 17 insertions(+), 3 deletions(-)
 
-But the current code will break when encountering a on_list cfs_rq,
-can't propagate up to the root cfs_rq, that also mismatch with the
-comment of propagate_entity_cfs_rq(), which says "Propagate the changes
-of the sched_entity across the tg tree to make it visible to the root".
+Yeah let's do this by default.
 
-The second problem is that it won't update_load_avg() for throttled
-cfs_rq, cause the load changes can't be propagated upwards.
-
-    A
-    |
-    B  --> throttled cfs_rq
-   /
-  C
-
-The prop_runnable_sum of C won't be propagated to B, so won't be
-propagated to A.
-
-Fixes: 0258bdfaff5b ("sched/fair: Fix unfairness caused by missing load decay")
-Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
----
- kernel/sched/fair.c | 10 ++--------
- 1 file changed, 2 insertions(+), 8 deletions(-)
-
-diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index 906b2c7c48d1..c6da204f3068 100644
---- a/kernel/sched/fair.c
-+++ b/kernel/sched/fair.c
-@@ -11267,14 +11267,8 @@ static void propagate_entity_cfs_rq(struct sched_entity *se)
- 	for_each_sched_entity(se) {
- 		cfs_rq = cfs_rq_of(se);
- 
--		if (!cfs_rq_throttled(cfs_rq)){
--			update_load_avg(cfs_rq, se, UPDATE_TG);
--			list_add_leaf_cfs_rq(cfs_rq);
--			continue;
--		}
--
--		if (list_add_leaf_cfs_rq(cfs_rq))
--			break;
-+		update_load_avg(cfs_rq, se, UPDATE_TG);
-+		list_add_leaf_cfs_rq(cfs_rq);
- 	}
- }
- #else
--- 
-2.36.1
+Paolo
 
