@@ -2,157 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EE21C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 10:14:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7743FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 10:16:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347034AbiEZKOh (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 06:14:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50674 "EHLO
+        id S234399AbiEZKP7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 06:15:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346966AbiEZKOc (ORCPT
+        with ESMTP id S231858AbiEZKPx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 06:14:32 -0400
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8AD7CC14F
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 03:14:29 -0700 (PDT)
-Received: by mail-pf1-x436.google.com with SMTP id y1so1327540pfr.6
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 03:14:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=RSEr13eh+b6fOF4AIQVIdh/mTfAE/d0o6HTViH73RH4=;
-        b=AhqRwWOd7vPwSK0WdCEI/mtADZ0WYUYDxoOYNpK0cJ+qeb3asr/jmkQ++hwgkcwnSB
-         38ucsbXU16c8+Zeyd2igfIIyCbZDxG4HcUppsnLaCljtbC5jdgWNLIm8ZBU8JzzKjUTk
-         nrwMZT9NmI/8rLEdsV185mOXplXQsj/n1SZAVdcQyBGF1x6NKuuSy+8dlA8w9D0PmHID
-         vXMWF6dbyuwM3OZzyQVMVA8SETBoHv5LTNsG40AgiE8PwLSkrZd5HxRQuD2kFs2GeC30
-         njIzMQG87fwF0lv1MvSPpllVsUvI27iogOqkkuwWd4CfElnWn3nvMdVHhSQXTo7Tf9XU
-         AlUA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=RSEr13eh+b6fOF4AIQVIdh/mTfAE/d0o6HTViH73RH4=;
-        b=vl6VcGNTLm+ilQBNDAbE7bNIn3CI3Ws3MuIsYQCkhIWhRGl2oU3mVJE8aOeHumfOBW
-         G+WD7BigdgaWozeRdybLkUYSFdVHdgP+k27u54gdc1zA4ewkPMiFiDucVxF5z/UZYsNV
-         gr0bXwRMR3EkPQaygGsRW/62pXwyv7hGsfpNK7h4DYCsqvhC6GnF03R9W+zplhGtZDAs
-         pzJpfIY9utDvwulaHEys4oXMSy7bLO37SqU8GAsOOYwE7PKC7aBgtdekmvxK1s4Rcqh/
-         H8LE+ZLmSQppIyfRDvBy8ejA4uO8BTF4ljR2Q5tHko3GuYKN1j9+svoHQMCOiqsWfgBH
-         SUiQ==
-X-Gm-Message-State: AOAM533vVTS8iQjApUaLBwUtQiQt0Kb8zS1ONQVKlsM1Tb8Cpfewvm4e
-        fKXE+BWto97u0mu2xTODYdyjK5bEldw1ap9McI8=
-X-Google-Smtp-Source: ABdhPJz3Z9xMwYQfC2QoP5WeL+fHK/zSti7f5Ovbj4z8bi0pBo7Myi8IR9qR2GZovHZ+KIH5C+l+5Q==
-X-Received: by 2002:a63:69c2:0:b0:3fa:78b5:d991 with SMTP id e185-20020a6369c2000000b003fa78b5d991mr14981430pgc.40.1653560069174;
-        Thu, 26 May 2022 03:14:29 -0700 (PDT)
-Received: from leoy-ThinkPad-X240s (n058152048195.netvigator.com. [58.152.48.195])
-        by smtp.gmail.com with ESMTPSA id b14-20020a62a10e000000b00512ee2f22acsm1109545pff.97.2022.05.26.03.14.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 May 2022 03:14:28 -0700 (PDT)
-Date:   Thu, 26 May 2022 18:14:23 +0800
-From:   Leo Yan <leo.yan@linaro.org>
-To:     Carsten Haitzler <carsten.haitzler@foss.arm.com>
-Cc:     linux-kernel@vger.kernel.org, coresight@lists.linaro.org,
-        suzuki.poulose@arm.com, mathieu.poirier@linaro.org,
-        mike.leach@linaro.org, linux-perf-users@vger.kernel.org,
-        acme@kernel.org
-Subject: Re: [PATCH 2/3] perf test: Shell - only run .sh shell files to skip
- other files
-Message-ID: <20220526101423.GB795802@leoy-ThinkPad-X240s>
-References: <20220309122859.31487-1-carsten.haitzler@foss.arm.com>
- <20220309122859.31487-2-carsten.haitzler@foss.arm.com>
- <20220410022846.GB14326@leoy-ThinkPad-X240s>
- <9ab780aa-7e78-b0f9-21ed-cf30f41f8fab@foss.arm.com>
+        Thu, 26 May 2022 06:15:53 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E427AC9ED2
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 03:15:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=QrMQdl+7eAngoEDHGtum/kWjmPhefhrNuIZO2rfUGK0=; b=MY1f+zSXnf+Tg/WVXnC/OUlg+N
+        RFGdqCbYG4Tq+yt2mJ1+9OoxOtIMoKtqoCkL56e0ew5yT05JpPekpgbY3/Z/OEeCz+sbnqBkWyhAC
+        8nDhYfflOgQEUFKqPLtZ86HrxzLsqFJ72PkR2me+CgZQKT7PIIIjbmIkVMfOFy4Gt58n0x8sCGElo
+        YJQqoUGeTBFJd0okk2UwNIqo5Ix3jSOnbSLCBgFRbBb0BQ0eLmNFPyYK2LBDUzLsWTOoLsuIqjDoK
+        9dV8gQ3u5Pur7bEu8jS7F0ocZko+eiGUVJ/8gttIA6JGpjPml3Zy4g1LT9jzerccmTfB0pEhaNNfW
+        qMutxnTQ==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nuAWo-0019o4-Tc; Thu, 26 May 2022 10:15:39 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id D1D61981124; Thu, 26 May 2022 12:15:36 +0200 (CEST)
+Date:   Thu, 26 May 2022 12:15:36 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Vincent Donnefort <vdonnefort@google.com>
+Cc:     tglx@linutronix.de, linux-kernel@vger.kernel.org,
+        vschneid@redhat.com, kernel-team@android.com,
+        Derek Dolney <z23@posteo.net>
+Subject: Re: [PATCH v2] cpu/hotplug: Do not bail-out in DYING/STARTING
+ sections
+Message-ID: <20220526101536.GP2578@worktop.programming.kicks-ass.net>
+References: <20220523160536.2889162-1-vdonnefort@google.com>
+ <20220525165248.GI2578@worktop.programming.kicks-ass.net>
+ <Yo85PLANCnCcMgvD@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <9ab780aa-7e78-b0f9-21ed-cf30f41f8fab@foss.arm.com>
+In-Reply-To: <Yo85PLANCnCcMgvD@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 05:21:27PM +0100, Carsten Haitzler wrote:
-> On 4/10/22 03:28, Leo Yan wrote:
-> > On Wed, Mar 09, 2022 at 12:28:58PM +0000, carsten.haitzler@foss.arm.com wrote:
-> > > From: Carsten Haitzler <carsten.haitzler@arm.com>
+On Thu, May 26, 2022 at 09:24:28AM +0100, Vincent Donnefort wrote:
+> On Wed, May 25, 2022 at 06:52:48PM +0200, Peter Zijlstra wrote:
+> > On Mon, May 23, 2022 at 05:05:36PM +0100, Vincent Donnefort wrote:
+> > > The DYING/STARTING callbacks are not expected to fail. However, as reported
+> > > by Derek, drivers such as tboot are still free to return errors within
+> > > those sections. In that case, there's nothing the hotplug machinery can do,
+> > > so let's just proceed and log the failures.
 > > > 
-> > > You edit your scripts in the tests and end up with your usual shell
-> > > backup files with ~ or .bak or something else at the end, but then your
-> > > next perf test run wants to run the backups too. You might also have perf
-> > > .data files in the directory or something else undesireable as well. You end
-> > > up chasing which test is the one you edited and the backup and have to keep
-> > > removing all the backup files, so automatically skip any files that are
-> > > not plain *.sh scripts to limit the time wasted in chasing ghosts.
-> > > 
-> > > Signed-off-by: Carsten Haitzler <carsten.haitzler@arm.com>
-> > > 
-> > > ---
-> > >   tools/perf/tests/builtin-test.c | 17 +++++++++++++++--
-> > >   1 file changed, 15 insertions(+), 2 deletions(-)
-> > > 
-> > > diff --git a/tools/perf/tests/builtin-test.c b/tools/perf/tests/builtin-test.c
-> > > index 3c34cb766724..3a02ba7a7a89 100644
-> > > --- a/tools/perf/tests/builtin-test.c
-> > > +++ b/tools/perf/tests/builtin-test.c
-> > > @@ -296,9 +296,22 @@ static const char *shell_test__description(char *description, size_t size,
-> > >   #define for_each_shell_test(entlist, nr, base, ent)	                \
-> > >   	for (int __i = 0; __i < nr && (ent = entlist[__i]); __i++)	\
-> > > -		if (!is_directory(base, ent) && \
-> > > +		if (ent->d_name[0] != '.' && \
-> > > +			!is_directory(base, ent) && \
-> > >   			is_executable_file(base, ent) && \
-> > > -			ent->d_name[0] != '.')
-> > > +			is_shell_script(ent->d_name))
 > > 
-> > Just nitpick: since multiple conditions are added, seems to me it's good
-> > to use a single function is_executable_shell_script() to make decision
-> > if a file is an executable shell script.
+> > I'm confused. Why isn't this a driver bug?
 > 
-> I'd certainly make a function if this was being re-used, but as the "coding
-> pattern" was to do all the tests already inside the if() in only one place,
-> I kept with the style there and didn't change the code that didn't need
-> changing. I can rewrite this code and basically make a function that is just
-> an if ...:
-> 
-> bool is_exe_shell_script(const char *base, struct dirent *ent) {
->    return ent->d_name[0] != '.'         && !is_directory(base, ent) &&
->           is_executable_file(base, ent) && is_shell_script(ent->d_name);
-> }
-> 
-> And macro becomes:
-> 
-> #define for_each_shell_test(entlist, nr, base, ent) \
->   for (int __i = 0; __i < nr && (ent = entlist[__i]); __i++) \
->     if (is_shell(base, ent))
+> It is a entirely a driver bug which has been reported already. but 453e41085183
+> (cpu/hotplug: Add cpuhp_invoke_callback_range()) changed the behaviour so I
+> thought it would be worth to revert to the original one which is to not break
+> the entire up/down for a single driver error.
 
-Sorry for long latency.
-
-If the condition checking gets complex, seems to me it is reasonable to
-use a static function (or a macro?) to encapsulate the logics.
-
-> But one catch... it really should be is_non_hidden_exe_shell_script() as
-> it's checking that it's not a hidden file AND is a shell script. Or do I
-> keep the hidden file test outside of the function in the if? If we're nit
-> picking then I need to know exactly what you want here as your suggested
-> name is actually incorrect.
-
-I personally prefer to use the condition:
-
-  if (is_exe_shell_script() && ent->d_name[0] != '.')
-      do_something...
-
-The reason is the function is_exe_shell_script() is more common and we
-use it easily in wider scope.
-
-> > And the condition checking 'ent->d_name[0] != '.'' would be redundant
-> > after we have checked the file suffix '.sh'.
-> 
-> This isn't actually redundant. You can have .something.sh :) If the idea is
-> we skip anything with a . at the start first always... then the if (to me)
-> is obvious.
-
-Yeah, I agree the checking the start char '.' is the right thing
-to do.
-
-Thanks,
-Leo
+Ah I see. Fair enough I suppose.
