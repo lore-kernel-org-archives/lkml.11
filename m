@@ -2,78 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA20BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 14:29:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AB53C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 14:30:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347655AbiEZO3X (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 10:29:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59998 "EHLO
+        id S244388AbiEZOaL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 10:30:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232903AbiEZO3S (ORCPT
+        with ESMTP id S234078AbiEZOaH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 10:29:18 -0400
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44F55C6E73
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 07:29:18 -0700 (PDT)
-Received: by mail-yb1-xb2d.google.com with SMTP id x137so3167833ybg.5
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 07:29:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ydnp/SkEaNui6oKHTmT2ANWb4DcH7fhI+J8O3cY/vm8=;
-        b=lHoB8lWPRbxH8mzNXQ/OqDB1zLwRJRT60HTzLHg49lTanRVW+wFH9jXxaw4Guu5N1g
-         +/6P9fIyX4dhl8p0sOnYMqqtWA5Vl6ptE5q31qPpmcW8B4WbSjWuzpUcDVx2FD2Ik+jx
-         upku+j0FjvWOzFRmfYZZqGvijEVYSLPQXbUYrt0hvpj6dnW8J0VlSBXd2bZ5Ezr6IOcp
-         1NX9ADMUhNk/ZDUhb0/S6jUYf7XYwEzrEvxcM66ESnYna6VQaev7E5it1ashPTkoHHGk
-         TNvROvmiYcPNa5O0k64jMN/OXksW+V9Nel8hhLiyIU9YzWw9GaXVQ+W2DBEMWk96cPWU
-         FXQg==
+        Thu, 26 May 2022 10:30:07 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0E816C6E65
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 07:30:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653575405;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=/hbXFKs5os4KRddKG4snbTFtherU/r6Je1WrF2mEc5o=;
+        b=W2hkmJ9iVVMVq5dfa6dkwqMUqBbw8AI88LiJM9JOJvRp5OCIzUtBSzNRBpRET18SxyfU2C
+        e+mS2r6IYYEV8lmdN/gmfhRmwoASkxWvM5Ln4QV4A4yK92JTg6jxOmLyN3YarMuekJ2L/3
+        6MT0WITGAyo85zrtx6+XxRYiuuxtHjs=
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com
+ [209.85.166.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-553-Hyxd_wKpPMGLqkgbDB-C8g-1; Thu, 26 May 2022 10:30:03 -0400
+X-MC-Unique: Hyxd_wKpPMGLqkgbDB-C8g-1
+Received: by mail-il1-f200.google.com with SMTP id q6-20020a056e0215c600b002c2c4091914so1243870ilu.14
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 07:30:03 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ydnp/SkEaNui6oKHTmT2ANWb4DcH7fhI+J8O3cY/vm8=;
-        b=hdUN/TW2VMo1XWkbhJrFy5w88mChE8cwogcTQrGFBUhIGRbh52cju0IMIjTz+X+wR2
-         4jMovRvSnnLWHo7F86WMcC3sSIz2/GvmTs1XHmNo9X4K2sETshzS1vY3bbF7WLzjJXLb
-         oeJuXeKLpSvDtzxrPoyajZjv0jeSZn2D17hsW9qqMXV5qs01AIkK9n8L4Cm1afAVQR4X
-         00B2qgdNDuhJ96tQmFwoVD9CVQwnkg8LAFYq58Fhf5+EcET7vHj5EA4LAsiKBVHwroed
-         JvE+lD349XU9ljnmYJQRUMzBGSDXhRiDu/l1LI2ymq1Dkl2MACyihnF5BKbJKhzkxvH6
-         T3Ow==
-X-Gm-Message-State: AOAM533LwHlie9S9gRkRDJ5l6C8aIDBht4JlWZ97D0UXPf4yfI4X34Ge
-        1Czt23Na9Sm3UwtB3g06mDNQ0BUPVvrcaVOWAJf3UA==
-X-Google-Smtp-Source: ABdhPJzt1NOUwWqS9KMSfdhdmLFRvdVLkaRsRaWTXrveTqJ7fnZnUYJ7debsK2tbIb1BOC6ZpyW3j0vki0nJwktj1bo=
-X-Received: by 2002:a5b:691:0:b0:64d:ab44:f12e with SMTP id
- j17-20020a5b0691000000b0064dab44f12emr35447124ybq.533.1653575357508; Thu, 26
- May 2022 07:29:17 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=/hbXFKs5os4KRddKG4snbTFtherU/r6Je1WrF2mEc5o=;
+        b=kkfkknFlKcox/bF4kcY6jDRYjp704/bhBW7Z9xaLRDD8UQLo2gpma0PAzx4z9/YrPj
+         CGeD5i6PJWBYsE6fKbyz7bxGFRH4eOL+mY79/Px2Kt+fZ/ZDfeEu9d51lXe1JnHdHqq4
+         ema1OWhDr15V/B3VFJAhtOQys5QWg0jESRBSdZS/yTIbgW1YeEb7v4HJwQdLEg2qXsIb
+         O4U3W4BeSpiXsQYWv97pHkxiWBFNdaiUfPwN39g3A4GpyMDqr53dHu+sUOM3TRAl4MbE
+         eCxgvKvAqBkm3RWkMHH+qIfRBd1DnO4N+bHg/8/1CiW1Sr2eArQDT5cOXjCQ0EC1tQG4
+         jNfw==
+X-Gm-Message-State: AOAM532CAyciC3XVs558IG7JIlH/kovPOvZA2MxVFCS7Xpk1ZVXMkKqy
+        O3qekl2BxqhGs8qGkxTkrF1C3+5DiCnqcabIpiW1jh5RmbMFjre9/WGWW1kDAG5KjQHA5IdHgC4
+        icBlMebmc1dfG7nuG22CkgFWg
+X-Received: by 2002:a05:6e02:1988:b0:2cf:691e:2a8 with SMTP id g8-20020a056e02198800b002cf691e02a8mr18862906ilf.54.1653575403299;
+        Thu, 26 May 2022 07:30:03 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzPSo8mF4mfBm24d7gUVoJ7UmeRwfK10RCCWWPovTs2cnyg4+iIr+dbQG+UmCYbdmiabpUN6w==
+X-Received: by 2002:a05:6e02:1988:b0:2cf:691e:2a8 with SMTP id g8-20020a056e02198800b002cf691e02a8mr18862894ilf.54.1653575403028;
+        Thu, 26 May 2022 07:30:03 -0700 (PDT)
+Received: from xz-m1.local (cpec09435e3e0ee-cmc09435e3e0ec.cpe.net.cable.rogers.com. [99.241.198.116])
+        by smtp.gmail.com with ESMTPSA id l10-20020a92700a000000b002d1d3b1abbesm520825ilc.80.2022.05.26.07.30.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 May 2022 07:30:02 -0700 (PDT)
+Date:   Thu, 26 May 2022 10:30:00 -0400
+From:   Peter Xu <peterx@redhat.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Ben Gardon <bgardon@google.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Sean Christopherson <seanjc@google.com>,
+        David Matlack <dmatlack@google.com>,
+        Jim Mattson <jmattson@google.com>,
+        David Dunn <daviddunn@google.com>,
+        Jing Zhang <jingzhangos@google.com>,
+        Junaid Shahid <junaids@google.com>
+Subject: Re: [PATCH] KVM: x86/MMU: Zap non-leaf SPTEs when disabling dirty
+ logging
+Message-ID: <Yo+O6AqNNBTg7BMY@xz-m1.local>
+References: <20220525230904.1584480-1-bgardon@google.com>
+ <a3ea7446-901f-1d33-47a9-35755b4d86d5@redhat.com>
 MIME-Version: 1.0
-References: <20220526110652.64849-1-linmq006@gmail.com>
-In-Reply-To: <20220526110652.64849-1-linmq006@gmail.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Thu, 26 May 2022 16:29:06 +0200
-Message-ID: <CACRpkdapKGvc75KV6ryJTLZdWCk=_dNrkzv_g0DnyNJm=1DvXw@mail.gmail.com>
-Subject: Re: [PATCH] mtd: partitions: Fix refcount leak in parse_redboot_of
-To:     Miaoqian Lin <linmq006@gmail.com>
-Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Corentin Labbe <clabbe@baylibre.com>,
-        linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <a3ea7446-901f-1d33-47a9-35755b4d86d5@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 26, 2022 at 1:07 PM Miaoqian Lin <linmq006@gmail.com> wrote:
+On Thu, May 26, 2022 at 02:01:43PM +0200, Paolo Bonzini wrote:
+> On 5/26/22 01:09, Ben Gardon wrote:
+> > +		WARN_ON(max_mapping_level < iter.level);
+> > +
+> > +		/*
+> > +		 * If this page is already mapped at the highest
+> > +		 * viable level, there's nothing more to do.
+> > +		 */
+> > +		if (max_mapping_level == iter.level)
+> > +			continue;
+> > +
+> > +		/*
+> > +		 * The page can be remapped at a higher level, so step
+> > +		 * up to zap the parent SPTE.
+> > +		 */
+> > +		while (max_mapping_level > iter.level)
+> > +			tdp_iter_step_up(&iter);
+> > +
+> >   		/* Note, a successful atomic zap also does a remote TLB flush. */
+> > -		if (tdp_mmu_zap_spte_atomic(kvm, &iter))
+> > -			goto retry;
+> > +		tdp_mmu_zap_spte_atomic(kvm, &iter);
+> > +
+> 
+> Can you make this a sparate function (for example
+> tdp_mmu_zap_collapsible_spte_atomic)?  Otherwise looks great!
 
-> of_get_child_by_name() returns a node pointer with refcount
-> incremented, we should use of_node_put() on it when not need anymore.
-> Add missing of_node_put() to avoid refcount leak.
->
-> Fixes: 237960880960 ("mtd: partitions: redboot: seek fis-index-block in the right node")
-> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+There could be a tiny downside of using a helper in that it'll hide the
+step-up of the iterator, which might not be as obvious as keeping it in the
+loop?
 
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Thanks,
 
-Yours,
-Linus Walleij
+-- 
+Peter Xu
+
