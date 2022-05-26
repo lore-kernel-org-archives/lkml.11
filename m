@@ -2,105 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B106BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 16:19:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05FBAC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 14:28:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240022AbiERQT0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 12:19:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40286 "EHLO
+        id S1347637AbiEZO2s (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 10:28:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239910AbiERQTO (ORCPT
+        with ESMTP id S231149AbiEZO2q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 12:19:14 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DE3C1E3EF5;
-        Wed, 18 May 2022 09:19:13 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 1523C21B69;
-        Wed, 18 May 2022 16:19:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1652890752; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=MA/TGEKVPxKbLeu24UuN4Wl1Ug0/+Zeg7Z8sjXvszlQ=;
-        b=T85gBeJqRK7xR4vfqE2zMJJ0HcOS1Oi0LQBMKaORbDWklcTCaU6N0C+f/+G32E1UIaG2pf
-        uN7mFG3ut+AnHRXV4hElSGMXOe4Z3ksjgrCJsuNXmcgZNR7l7Mt3ecWR4ZUOijndkH1n6F
-        pdEZxqpGuYJi3qbHxvEon2tXxQjwnS8=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id D94E313A6D;
-        Wed, 18 May 2022 16:19:11 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id PXsQNH8chWLqZAAAMHmgww
-        (envelope-from <mkoutny@suse.com>); Wed, 18 May 2022 16:19:11 +0000
-From:   =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>
-To:     cgroups@vger.kernel.org, linux-mm@kvack.org
-Cc:     Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Shakeel Butt <shakeelb@google.com>,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        Richard Palethorpe <rpalethorpe@suse.de>
-Subject: 
-Date:   Wed, 18 May 2022 18:18:54 +0200
-Message-Id: <20220518161859.21565-1-mkoutny@suse.com>
-X-Mailer: git-send-email 2.35.3
+        Thu, 26 May 2022 10:28:46 -0400
+Received: from mail-oa1-x34.google.com (mail-oa1-x34.google.com [IPv6:2001:4860:4864:20::34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85151C5E73;
+        Thu, 26 May 2022 07:28:45 -0700 (PDT)
+Received: by mail-oa1-x34.google.com with SMTP id 586e51a60fabf-f2c296d320so2355158fac.8;
+        Thu, 26 May 2022 07:28:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=zD1tykVhXikMZCSvJDlW1fV+0q4vJMuokHitqc0dVX4=;
+        b=kqGiKeW/Q+eQLqib+/I5kXYt+IGhKxnt7OcEBcFKQRIojruiJWKJinwsvYmrQKXG7T
+         CqUmQ122h57gHGK+sUaMgms7/t19fQVjf04473VvM/ZsUftnR1+/hEg3uH03vCoLJFJo
+         1YngMVmbZ+24vusqUNrXBSBwPH/kXUGFtmrJgIIJPCYBHhbRR7YmFtqrYPa1qkEfd+7w
+         89d42XFWfFuSYvP1qYnSGGBySa9ER/TOA3VVOrdfOmlEjhgqgQPjqf1T2CHmjGxFXNX8
+         meWJhKvtTqT5GRMky3KhfRUVqC5fHv+WDPbW2fqZkziQoVnmt2fDILDlOQKqI83AIWSc
+         uexw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=zD1tykVhXikMZCSvJDlW1fV+0q4vJMuokHitqc0dVX4=;
+        b=Hlbrr+DII46Pt7WeazO78QrLmfTtJ2zaZiOA3GKREBR1gd5dffXeCQrmY/gwdM5vGh
+         9X2BMi5fWc0eqXLytg9Iws3AuvhicTesq9T4uXh4uATASEz0gZ+uisr/93x+iVa1zCbz
+         LcdL3V8OCr9S/qve45Y7P49b9w7BzdzYlieX6Sex/8UeLt1rj6jLvNa4zAPUW8eddAxo
+         bHWNU79AMSsAPE/bRBkoO9sig554kxOencfTVzeJHq+gPs2BHaPaPc6ZhCsCwyPRVqid
+         gxm+bQqRYj7KNcxalxhyQ6CPz8TALT13px1UEREZ/kuijAlda9bpimEtLJ4JtW8/pUWh
+         qYBQ==
+X-Gm-Message-State: AOAM533Sr3jlcSY159ilHtUWJRkJJbyhs7HIsRimebLPUxqDwBZe9lEo
+        DiMwip3KJ/TafNUHzNIMFoY=
+X-Google-Smtp-Source: ABdhPJwShhJB/K0OACBBFmQw8TveuQWb5lYavZbLiMKJvXPxoWiS6icyi2dvW+mue/WuNUh8cs7fEg==
+X-Received: by 2002:a05:6870:a689:b0:ed:e8f2:fe14 with SMTP id i9-20020a056870a68900b000ede8f2fe14mr1383085oam.199.1653575324517;
+        Thu, 26 May 2022 07:28:44 -0700 (PDT)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id bj39-20020a05680819a700b0032b7b588f3asm666938oib.46.2022.05.26.07.28.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 26 May 2022 07:28:43 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <1c732733-69c1-f1e4-5d5a-486dc6effb39@roeck-us.net>
+Date:   Thu, 26 May 2022 07:28:41 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] watchdog: f71808e_wdt: Add check for
+ platform_driver_register
+Content-Language: en-US
+To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>, wim@linux-watchdog.org
+Cc:     linux-watchdog@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220526080303.1005063-1-jiasheng@iscas.ac.cn>
+From:   Guenter Roeck <linux@roeck-us.net>
+In-Reply-To: <20220526080303.1005063-1-jiasheng@iscas.ac.cn>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Subject: [PATCH v2 0/5] memcontrol selftests fixups
+On 5/26/22 01:03, Jiasheng Jiang wrote:
+> As platform_driver_register() could fail, it should be better
+> to deal with the return value in order to maintain the code
+> consisitency.
+> 
+> Fixes: 27e0fe00a5c6 ("watchdog: f71808e_wdt: refactor to platform device/driver pair")
+> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-Hello.
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
 
-I'm just flushing the patches to make memcontrol selftests check the
-events behavior we had consensus about (test_memcg_low fails).
-
-(test_memcg_reclaim, test_memcg_swap_max fail for me now but it's present
-even before the refactoring.)
-
-The two bigger changes are:
-- adjustment of the protected values to make tests succeed with the given
-  tolerance,
-- both test_memcg_low and test_memcg_min check protection of memory in
-  populated cgroups (actually as per Documentation/admin-guide/cgroup-v2.rst
-  memory.min should not apply to empty cgroups, which is not the case
-  currently. Therefore I unified tests with the populated case in order to to
-  bring more broken tests).
-
-
-Thanks,
-Michal
-
-Changes from v1 (https://lore.kernel.org/r/20220513171811.730-1-mkoutny@suse.com/)
-- fixed mis-rebase in compilation fix patch,
-- added review, ack tags from v1,
-- applied feedback from v1 (Octave script in git tree),
-- added one more patch extracting common parts,
-- rebased on mm-stable bbe832b9db2e.
-
-Michal Koutný (5):
-  selftests: memcg: Fix compilation
-  selftests: memcg: Expect no low events in unprotected sibling
-  selftests: memcg: Adjust expected reclaim values of protected cgroups
-  selftests: memcg: Remove protection from top level memcg
-  selftests: memcg: Factor out common parts of memory.{low,min} tests
-
- MAINTAINERS                                   |   1 +
- .../selftests/cgroup/memcg_protection.m       |  89 +++++++
- .../selftests/cgroup/test_memcontrol.c        | 247 +++++-------------
- 3 files changed, 152 insertions(+), 185 deletions(-)
- create mode 100644 tools/testing/selftests/cgroup/memcg_protection.m
-
--- 
-2.35.3
+> ---
+>   drivers/watchdog/f71808e_wdt.c | 4 +++-
+>   1 file changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/watchdog/f71808e_wdt.c b/drivers/watchdog/f71808e_wdt.c
+> index 7f59c680de25..6a16d3d0bb1e 100644
+> --- a/drivers/watchdog/f71808e_wdt.c
+> +++ b/drivers/watchdog/f71808e_wdt.c
+> @@ -634,7 +634,9 @@ static int __init fintek_wdt_init(void)
+>   
+>   	pdata.type = ret;
+>   
+> -	platform_driver_register(&fintek_wdt_driver);
+> +	ret = platform_driver_register(&fintek_wdt_driver);
+> +	if (ret)
+> +		return ret;
+>   
+>   	wdt_res.name = "superio port";
+>   	wdt_res.flags = IORESOURCE_IO;
 
