@@ -2,172 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98E41C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 13:15:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51A21C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 13:17:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243558AbiEZNPx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 09:15:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54688 "EHLO
+        id S244930AbiEZNRO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 09:17:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230010AbiEZNPu (ORCPT
+        with ESMTP id S230010AbiEZNRL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 09:15:50 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43A68D0293;
-        Thu, 26 May 2022 06:15:48 -0700 (PDT)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4L87gT0cwkzgYD2;
-        Thu, 26 May 2022 21:14:13 +0800 (CST)
-Received: from dggpemm500019.china.huawei.com (7.185.36.180) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 26 May 2022 21:15:45 +0800
-Received: from [10.67.109.184] (10.67.109.184) by
- dggpemm500019.china.huawei.com (7.185.36.180) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 26 May 2022 21:15:44 +0800
-Subject: Re: [PATCH bpf-next v2 2/2] riscv, bpf: Support riscv jit to provide
- bpf_line_info
-To:     Luke Nelson <luke.r.nels@gmail.com>
-CC:     bpf <bpf@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        Networking <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        "Daniel Borkmann" <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Xi Wang <xi.wang@gmail.com>, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>
-References: <20220429014240.3434866-1-pulehui@huawei.com>
- <20220429014240.3434866-3-pulehui@huawei.com>
- <CAB-e3NRn9VgdWfakom6Cbx-3btakEzvpNVmiQw7k-h_-EtOMng@mail.gmail.com>
-From:   Pu Lehui <pulehui@huawei.com>
-Message-ID: <522e1e15-47ee-e972-8177-579a3e44f638@huawei.com>
-Date:   Thu, 26 May 2022 21:15:44 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
-MIME-Version: 1.0
-In-Reply-To: <CAB-e3NRn9VgdWfakom6Cbx-3btakEzvpNVmiQw7k-h_-EtOMng@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.109.184]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500019.china.huawei.com (7.185.36.180)
-X-CFilter-Loop: Reflected
+        Thu, 26 May 2022 09:17:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 923FDC5E77
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 06:17:10 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D10C61ABC
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 13:17:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 814A3C385A9;
+        Thu, 26 May 2022 13:17:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653571029;
+        bh=IJHWboOnB04oHPuvgwG0K7Zt4XEO7o5G9M1ZTH5c6X8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=eQlWDxCcbZSDY9JK7nfARh0P0yqN/W0Ux42ErqPoTa1r5zhukTECqy2e+xtcPsTUX
+         ErLO+VC0FJCNG9evSBjqxB0/4pidSGcy9vCamtc8dZqdhh5zXVOoNvcx5/cQNAOjHS
+         k5nKLlK+mq1D5NU+zPHu4Ce+2+UJeAWz0HXtfvUjLKbPRH31B6A7vmukq2XTHKNjXl
+         UCXbS/2iNKWaJAxMCyot+mvsd/0wsmmNjEK2WFiMsOIt6xpFMt/wKYg1FPPa3YzleK
+         BP45oufEdhLXBJ3Yb5Ng/9njjXy2mD8YZcSW4OIolcFZGadrtm9Jyb8ynS1r/g4QdW
+         omlZx3nRRaUqA==
+Received: from athedsl-4557779.home.otenet.gr ([94.70.87.219] helo=wait-a-minute.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nuDMR-00Dr95-2R; Thu, 26 May 2022 14:17:07 +0100
+Date:   Thu, 26 May 2022 14:17:04 +0100
+Message-ID: <87a6b4mo1b.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Miaoqian Lin <linmq006@gmail.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] irqchip/gic/realview: Fix refcount leak in realview_gic_of_init
+In-Reply-To: <20220526074348.23972-1-linmq006@gmail.com>
+References: <20220526074348.23972-1-linmq006@gmail.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 94.70.87.219
+X-SA-Exim-Rcpt-To: linmq006@gmail.com, tglx@linutronix.de, linus.walleij@linaro.org, linux-kernel@vger.kernel.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Luke,
+On Thu, 26 May 2022 08:43:48 +0100,
+Miaoqian Lin <linmq006@gmail.com> wrote:
+> 
+> of_find_matching_node_and_match() returns a node pointer with refcount
+> incremented, we should use of_node_put() on it when not need anymore.
+> Add missing of_node_put() to avoid refcount leak.
+> 
+> Fixes: 82b0a434b436 ("irqchip/gic/realview: Support more RealView DCC variants")
+> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
 
-On 2022/5/7 5:44, Luke Nelson wrote:
-> Thanks for the patch! I have a couple of notes written down below.
-> 
->> +               ctx->prologue_offset = ctx->ninsns;
->> ...
->> +               prologue_len = ctx->epilogue_offset - ctx->prologue_offset;
->> +               for (i = 0; i < prog->len; i++)
->> +                       ctx->offset[i] = ninsns_rvoff(prologue_len + ctx->offset[i]);
-> 
-> The logic looks correct to me; my only nit is that the name
-> prologue_offset might be a bit confusing. The prologue is always at
-> the beginning of the final JITed program, it just happens to be that
-> the prologue is emitted "out of order" on the initial/internal passes
-> that compute offsets.
-> 
-> What prologue_offset really measures in your code is the length of the
-> body of the JITed program. What do you think about renaming
-> prologue_offset to something like body_len? Then the line to compute
-> prologue_len becomes:
-> 
->          prologue_len = ctx->epilogue_offset - ctx->body_len;
-> 
-> This version makes more sense to me why it's correct. Curious what you think.
->
-
-Sorry for getting back to you so late. Thanks so much for your review. 
-It seems that ctx->body_len makes more sence, I will rename it.
-
-> 
->> +               bpf_prog_fill_jited_linfo(prog, ctx->offset);
-> 
-> Here's a quote from the comment that documents
-> bpf_prog_fill_jited_linfo in kernel/bpf/core.c:
-> 
-> /* The jit engine is responsible to provide an array
->   * for insn_off to the jited_off mapping (insn_to_jit_off).
-> ...
->   * jited_off is the byte off to the last byte of the jited insn.
-> 
-> This comment says that ctx->offset (passed to this function as
-> insn_to_jit_off) should map each instruction to the offset of the last
-> byte of the JITed instructions, but as I understand it your patch sets
-> ctx->offset[i] to be the offset _one past_ the last byte of the JITed
-> instructions (i.e., the first byte of the next instruction). I'm not
-> sure if this is a bug in your code, in this comment, or in my
-> understanding :)
-> 
-> As a concrete example, suppose the BPF instruction at index 0 compiles
-> to 2 (non-compressed) RISC-V instructions, or 8 bytes. Then
-> ctx->offset[0] will be 2 after the initial JIT passes, and your code
-> would update ctx->offset[0] to be 4*prologue_len + 8. This offset
-> corresponds to the first byte of insns[1], not the last byte of
-> insn[0], which would be 4*prologue_len + 7.
-> 
-> My guess would be that the comment is out of date and your code is
-> doing the correct thing, since it seems in line with what other JITs
-> are doing. If that's the case, maybe we can consider updating that
-> comment at some point. I'm curious if the tests you ran would break if
-> you changed your code to match what the comment says (i.e.,
-> subtracting 1 byte from each element in ctx->offset before passing to
-> bpf_prog_fill_jited_linfo).
-> 
-
-IIUC,ctx->offset(passed to bpf_prog_fill_jited_linfo as insn_to_jit_off)
-should be the first byte of the next instruction, or the byte off to the 
-end of the current instruction.
-
-Here's the code as below
-bpf_prog_fill_jited_linfo in kernel/bpf/core.c:
-
-	jited_linfo[i] = prog->bpf_func +
-		insn_to_jit_off[linfo[i].insn_off - insn_start - 1];
-
-we can see here that "linfo[i].insn_off - insn_start - 1" refers to the 
-previous instruction, and the corresponding insn_to_jit_off refers to 
-the first byte of the current instruction.
-
-It seems the following quote might make more sense
-bpf_prog_fill_jited_linfo in kernel/bpf/core.c:
-* jited_off is the byte off to the "end" of the jited insn.
-
-> 
->> ./test_progs -a btf
->> #19 btf:OK
->> Summary: 1/215 PASSED, 0 SKIPPED, 0 FAILED
-> 
-> Last, did you have a chance to run any of the other tests with your
-> change (e.g., test_verifier, test_bpf.ko, other tests in test_progs)?
-> I don't expect this change to break any tests, but may as well run
-> them if it's easy enough just to be sure.
-> 
-
-Yeah, "test_verifier", "test_bpf.ko" and "test_progs -a btf" all test 
-pass, as well as "test_progs" with no new failure ceses. I will attach 
-the test result in v3.
+Instead of sending these one after the other, why don't you send a
+series addressing the irqchip drivers in one go? That'd be much easier
+to manage and review.
 
 Thanks,
-Lehui
 
-> 
-> Thanks!
-> - Luke
-> .
-> 
+	M.
+
+-- 
+Without deviation from the norm, progress is not possible.
