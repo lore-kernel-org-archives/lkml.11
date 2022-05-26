@@ -2,104 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 055F8C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 08:59:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51D2CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 09:01:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241277AbiEZI7b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 04:59:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60494 "EHLO
+        id S244881AbiEZJBB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 05:01:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232463AbiEZI7a (ORCPT
+        with ESMTP id S231936AbiEZJA6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 04:59:30 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7E000A8880
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 01:59:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653555568;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=QBuQubLXsKdHypsOLS0DFxdMqRgrnMQKA1oWPGoQKlI=;
-        b=Ljly1e9wzrW8u5S9J4AMm5uY2/UH3i0p3kWkw38uFTCnONZpVTWSIHgd9fL6XITOIhjf1k
-        vpjYGbHspViSqCnN8VTEUzR+v9/t7wb4WVpyqLUHDxqWAyQFtES3Obg+6TlVEYbBvOvtEx
-        7nxM5S4JJC9ki+H08qci5b5dJX/hHGw=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-577-P4MqsIMZOP2jImVxM-YdsA-1; Thu, 26 May 2022 04:59:26 -0400
-X-MC-Unique: P4MqsIMZOP2jImVxM-YdsA-1
-Received: by mail-wr1-f69.google.com with SMTP id n13-20020a5d67cd000000b0021003b039e0so153041wrw.12
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 01:59:26 -0700 (PDT)
+        Thu, 26 May 2022 05:00:58 -0400
+Received: from mail-ej1-f48.google.com (mail-ej1-f48.google.com [209.85.218.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9619AA7E39;
+        Thu, 26 May 2022 02:00:57 -0700 (PDT)
+Received: by mail-ej1-f48.google.com with SMTP id f21so1696723ejh.11;
+        Thu, 26 May 2022 02:00:57 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=QBuQubLXsKdHypsOLS0DFxdMqRgrnMQKA1oWPGoQKlI=;
-        b=hzr0zsFicgJm1HyhIbdaVK8ODziLzVjg2QIEWYm0vaAgpH0+6BGsJXlYqaN0u1zHhK
-         CgBpv6tMxwKBLE4qbZJPLxPr378WEzrLTNHXaTf9t30X6qc2L2sO4tecZeFFA3LOdmWC
-         Iv+ZrsGDqX8ZcWwnXm0nz9kM7PebB+BHxudO/o/0buYiDXiM6VfS6W5kKwYc7YZrTJPN
-         rb+IwlFLmAEi/y2rzhUZRSzCWD4aWjrXMmWa9VSjOJ1mTv6nS9I1q9+HnobcS7YYfiRB
-         htASQQzWd7SDFF6/pbthKYoY/NpZcwUGJTtRvNpaOzvNSOZ4D8hiMCiaCynafFBK4BJC
-         2osw==
-X-Gm-Message-State: AOAM531Hev+L2kmmVK18/Z/IECQpjX6cmDoYSiQpdP0ZU8dEz2Vql5jS
-        IW6HxDPR58ZhPuBnibcq/wK7IyORKPaWXkWZ5w20TbQf4sRI+X9c0MDQDNvSKhU5xK8VKFxsAUg
-        5Fm6SnyecY/YQaxEGj8ePphc4
-X-Received: by 2002:a05:6000:1acc:b0:20f:f12a:a535 with SMTP id i12-20020a0560001acc00b0020ff12aa535mr10151113wry.375.1653555565586;
-        Thu, 26 May 2022 01:59:25 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxCzonV2Cu3c/gBioAW18CkReONSq7IWRWZkImNQWIDlZfYH8w2iZN8Bzrt8eIEu0exVcGFWg==
-X-Received: by 2002:a05:6000:1acc:b0:20f:f12a:a535 with SMTP id i12-20020a0560001acc00b0020ff12aa535mr10151093wry.375.1653555565296;
-        Thu, 26 May 2022 01:59:25 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-112-184.dyn.eolo.it. [146.241.112.184])
-        by smtp.gmail.com with ESMTPSA id c124-20020a1c3582000000b003973ea7e725sm4616302wma.0.2022.05.26.01.59.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 May 2022 01:59:25 -0700 (PDT)
-Message-ID: <de4aab60766b3de8705b09e36b8050feb92865ec.camel@redhat.com>
-Subject: Re: [PATCH net] net: macsec: Retrieve MACSec-XPN attributes before
- offloading
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Carlos Fernandez <carlos.escuin@gmail.com>
-Cc:     carlos.fernandez@technica-engineering.de,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Era Mayflower <mayflowerera@gmail.com>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Date:   Thu, 26 May 2022 10:59:23 +0200
-In-Reply-To: <20220524114134.366696-1-carlos.fernandez@technica-engineering.de>
-References: <20220524114134.366696-1-carlos.fernandez@technica-engineering.de>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=sjBm94r+SZCpqMEtFTlHZhDX0lygeSCfuwzmdT2Wqlk=;
+        b=6C+W6A8XmfgMmb8aPF2SRZh4gN0TaqzULFWf8gsRbuSSq86nIoC3D+eTuN6Rwp5uYG
+         1Z0Uoi8pOVJdx1Tr1BxeLiH1J7nBy6iIgPnGwNkpmi6Enlrg8GW7ntNM0CP29HxLjXP0
+         V0hTjsJivA1iYVgbDs/oAOpneglsr9H+ymGvGVZWI+D6fylFpl6FZWNf57dd7Uiehavn
+         rLUatSCCtkjz/1t05lR1HEyuLbLtUK7lXwJiH+ElYucLPFxgNhT7616C4vylwqhYNFh0
+         4SQZDX3+e90pZ+Z2+ceACvskD8L/aoz0SfLzlrGRvrLIrBOtk80EAPw65RnQ8bw5U5nz
+         LnoQ==
+X-Gm-Message-State: AOAM533QXPiTWIFd8GZm6+1yNsf7pTVhPb4TOMpAtlWRQhQAgVzbx7Iv
+        tPEVeHtokyEaNhP+dNr5A/A=
+X-Google-Smtp-Source: ABdhPJxqjGaQdiFgCf1SGM3twv9W4CPY5SZ9hMzvvBpbF/H5q4uJ7jgeabbmL+dxHb8NZ/SKb9eVbQ==
+X-Received: by 2002:a17:906:49c6:b0:6fe:95bb:93cc with SMTP id w6-20020a17090649c600b006fe95bb93ccmr32272454ejv.30.1653555656059;
+        Thu, 26 May 2022 02:00:56 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::49? ([2a0b:e7c0:0:107::49])
+        by smtp.gmail.com with ESMTPSA id a24-20020a056402237800b0042ae4dea360sm511221eda.63.2022.05.26.02.00.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 26 May 2022 02:00:55 -0700 (PDT)
+Message-ID: <ef79f546-0d10-f603-ccbe-789ed021943c@kernel.org>
+Date:   Thu, 26 May 2022 11:00:54 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH] Revert "linux/types.h: remove unnecessary __bitwise__"
+Content-Language: en-US
+To:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Bjorn Helgaas <helgaas@kernel.org>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        "Michael S . Tsirkin" <mst@redhat.com>, llvm@lists.linux.dev,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>
+References: <20220525144638.293934-1-helgaas@kernel.org>
+ <CAHk-=whk=ygWsxt=1HhndCwjtXdga9sPmkxFGby5PJWRk5yx9Q@mail.gmail.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <CAHk-=whk=ygWsxt=1HhndCwjtXdga9sPmkxFGby5PJWRk5yx9Q@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-05-24 at 13:41 +0200, Carlos Fernandez wrote:
-> When MACsec offloading is used with XPN, before mdo_add_rxsa
-> and mdo_add_txsa functions are called, the key salt is not
-> copied to the macsec context struct. Offloaded phys will need
-> this data when performing offloading.
+On 25. 05. 22, 18:02, Linus Torvalds wrote:
+> On Wed, May 25, 2022 at 7:46 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
+>>
+>> This reverts commit c724c866bb70cb8c607081a26823a1f0ebde4387.
+>>
+>> Jiri Slaby reported that c724c866bb70 ("linux/types.h: remove unnecessary
+>> __bitwise__") broke userspace, including open-iscsi, because it uses
+>> __bitwise__.
+>>
+>> Restore the __bitwise__ definition.
 > 
-> Fix by copying salt and id to context struct before calling the
-> offloading functions.
+> Hmm.
 > 
-> Fixes: 48ef50fa866a ("macsec: Netlink support of XPN cipher suites")
-> Signed-off-by: Carlos Fernandez <carlos.fernandez@technica-engineering.de>
+> Presumably it's only the uapi case that actually wants to re-instate it.
+> 
+> And I'd rather make that "__bitwise__" case explicitly special, with a
+> comment about why it exists when the kernel itself doesn't use it.
+> 
+> IOW, rather than the revert, maybe something like the below
+> (whitespace-damaged) instead?
+> 
+> Jiri, does something like this work for you?
 
-I'm sorry to nick-picking again, but this patch don't pass checkpatch
-validation:
+Yes, thanks.
 
-https://patchwork.kernel.org/project/netdevbpf/patch/20220524114134.366696-1-carlos.fernandez@technica-engineering.de/
+> ---
+>   include/uapi/linux/types.h | 3 +++
+>   1 file changed, 3 insertions(+)
+> 
+> diff --git a/include/uapi/linux/types.h b/include/uapi/linux/types.h
+> index c4dc597f3dcf..308433be33c2 100644
+> --- a/include/uapi/linux/types.h
+> +++ b/include/uapi/linux/types.h
+> @@ -26,6 +26,9 @@
+>   #define __bitwise
+>   #endif
+> 
+> +/* The kernel doesn't use this legacy form, but user space does */
+> +#define __bitwise__ __bitwise
+> +
+>   typedef __u16 __bitwise __le16;
+>   typedef __u16 __bitwise __be16;
+>   typedef __u32 __bitwise __le32;
 
-Specifically, you should add a 'From:' tag as the first line:
 
-From: Carlos Fernandez <carlos.fernandez@technica-engineering.de>
-
-(Or send this patch from the above email address)
-
-Thanks!
-
+-- 
+js
+suse labs
