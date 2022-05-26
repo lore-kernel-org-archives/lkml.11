@@ -2,211 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB552C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 11:47:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23A78C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 11:50:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346647AbiEZLrN (ORCPT
+        id S1347278AbiEZLu0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 07:47:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58970 "EHLO
+        Thu, 26 May 2022 07:50:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347319AbiEZLp3 (ORCPT
+        with ESMTP id S232856AbiEZLuA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 07:45:29 -0400
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4EC2D4114
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 04:45:03 -0700 (PDT)
-Received: by mail-pg1-x530.google.com with SMTP id h186so1138005pgc.3
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 04:45:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=TICE0sEo29HZevVnLs4kCPjhRnCI25SlD1yVTGEH4+k=;
-        b=EaFzUtct3u72LMB2wcd38TcNEH3QSE41xyPZ8SYAwkvb4NBp/UO6oQ76kPQM5sVUqr
-         OPGY1Ryvl4luE3l2Bx2HW/Ootx+8vyGDkFIR/P5fC5h0tB2U61+SQB2F3izRnOkuKxmK
-         ma3VEKQpHfZ0ISiBK9IANhZcw80iIh9W79P/ihQEhd9u3qRvz2JCBvsNzV2VGpC21n50
-         Gi9iFNN4zbPk8732A3C9ymTAyQIucBwc2onCa94c2WmfiiTJdsQOppp3T25qGSgdJYqA
-         YrNT3jqzSSsJ4Fhb7zUOAE0QvGPkE/2oXTc9QaRFZbqmgce+v/ywTrXCuH5rMMDum2UF
-         icHg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=TICE0sEo29HZevVnLs4kCPjhRnCI25SlD1yVTGEH4+k=;
-        b=q/h4K7o3N3Vi51wdObO+3RF0t1p59fWCOS2OLAZhjN7MPD9pwyb1I1MMChESRk9413
-         TeSGCNJ92L/0JIWRJ4n99gMdxcckQBt0rBc/35MGp3cTZE5XQgSLwH9Dccc+pBrJ6KYP
-         V2gqKZC7O4rCVp4DtjRZeHa1mATop1gcUlyWdMxQ7X0S9lwep/EkPW7WCTmi+idXDD89
-         D3Qym+zkJnjzQQLkMoCQHRjR5A3tgB/PpaeNcR5+ifbZTSES746TBakRriZb/Yupi6e1
-         raxB7UWSDYnDremfQBDAk2YVJlvQ53C47D81HxI6/NLozmRIFYY4GOWLheEcUctxwQfm
-         1PuQ==
-X-Gm-Message-State: AOAM532/DuPrfvrVSw34vMOlCeIyejkT6rgPJHCuezBW8oQfCZ0vRv2U
-        /EkJrTOhDrtUidn5y6n/Lf0EYA==
-X-Google-Smtp-Source: ABdhPJyQKuH/h9iKeWw8+X8qYznTvkFUak07qMZ+pSwWpk+l4Rye1RtzCrJ0MjlevLV8snQkO9rsCA==
-X-Received: by 2002:a63:6a87:0:b0:3f9:c829:796d with SMTP id f129-20020a636a87000000b003f9c829796dmr25675440pgc.232.1653565501748;
-        Thu, 26 May 2022 04:45:01 -0700 (PDT)
-Received: from localhost ([122.162.234.2])
-        by smtp.gmail.com with ESMTPSA id m5-20020a63f605000000b003faebbb772esm1354503pgh.25.2022.05.26.04.45.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 May 2022 04:45:01 -0700 (PDT)
-From:   Viresh Kumar <viresh.kumar@linaro.org>
-To:     Viresh Kumar <vireshk@kernel.org>, Nishanth Menon <nm@ti.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>
-Cc:     Viresh Kumar <viresh.kumar@linaro.org>, linux-pm@vger.kernel.org,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Rafael Wysocki <rjw@rjwysocki.net>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 30/31] OPP: Remove dev_pm_opp_set_prop_name() and friends
-Date:   Thu, 26 May 2022 17:12:29 +0530
-Message-Id: <d255e60026e183b0331ddd1b4b69c90a22377bfc.1653564321.git.viresh.kumar@linaro.org>
-X-Mailer: git-send-email 2.31.1.272.g89b43f80a514
-In-Reply-To: <cover.1653564321.git.viresh.kumar@linaro.org>
-References: <cover.1653564321.git.viresh.kumar@linaro.org>
+        Thu, 26 May 2022 07:50:00 -0400
+Received: from mout02.posteo.de (mout02.posteo.de [185.67.36.66])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81B9D13CE7
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 04:49:57 -0700 (PDT)
+Received: from submission (posteo.de [185.67.36.169]) 
+        by mout02.posteo.de (Postfix) with ESMTPS id 3993C240109
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 13:49:55 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=posteo.net; s=2017;
+        t=1653565795; bh=cRcbvpylDEovzuioyUFbmK10HWZL8EtsZHhbUVtRPI0=;
+        h=Subject:To:Cc:From:Date:From;
+        b=SJ2CozR0XtfZ6bF8xNQcF5bqVGtpyVhVp4vw7HjWiVkPW5GClTlJbRdl9fogACn4C
+         3kJ/jgUTfVc1YUBuh4d9mqz8q7wCJWkumo9zvFSAtQTw/f+Tu2FmpzQxenDhRc477D
+         rw0fs0dzSGxu3p3I30NGlng+Zc6VrcO4RsIOKumTbM/fuZaxV/52knY/Ec2LS9oG5r
+         Wwx6Kv52LrRSLSTey7+Qd1WI+Tg4e33pwcqsPrHGbrcZRbFF2ywlcZtBaVBtdSEQrv
+         1Vz9c5Kb4N2y5MQ8YaAsBW6NBk69xCMj4hHFxf6ZoZnc0f2fGsp7nvTMoVoq6ImcqF
+         S/MOPQkcM/brg==
+Received: from customer (localhost [127.0.0.1])
+        by submission (posteo.de) with ESMTPSA id 4L85p75wHzz6tmY;
+        Thu, 26 May 2022 13:49:51 +0200 (CEST)
+Subject: Re: [PATCH v2] cpu/hotplug: Do not bail-out in DYING/STARTING
+ sections
+To:     Vincent Donnefort <vdonnefort@google.com>, peterz@infradead.org,
+        tglx@linutronix.de
+Cc:     linux-kernel@vger.kernel.org, vschneid@redhat.com,
+        kernel-team@android.com
+References: <20220523160536.2889162-1-vdonnefort@google.com>
+From:   Derek Dolney <z23@posteo.net>
+Message-ID: <7083f81f-cded-44f8-1586-46a1e44f0786@posteo.net>
+Date:   Thu, 26 May 2022 11:48:01 +0000
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220523160536.2889162-1-vdonnefort@google.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now that everyone has migrated to dev_pm_opp_set_config(), remove the
-public interface for dev_pm_opp_set_prop_name() and friends.
+I tested this patch on the 5.12 commit that broke suspend and also on
+the latest git 5.18 branch and this is good, suspend and resume are
+working again.
 
-Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
----
- drivers/opp/core.c     | 54 +++++++++++++++---------------------------
- include/linux/pm_opp.h |  9 -------
- 2 files changed, 19 insertions(+), 44 deletions(-)
+Derek
 
-diff --git a/drivers/opp/core.c b/drivers/opp/core.c
-index 69c6cf6a0bcc..e6c76b90dbf7 100644
---- a/drivers/opp/core.c
-+++ b/drivers/opp/core.c
-@@ -1993,7 +1993,7 @@ static void _opp_put_supported_hw(struct opp_table *opp_table)
- }
- 
- /**
-- * dev_pm_opp_set_prop_name() - Set prop-extn name
-+ * _opp_set_prop_name() - Set prop-extn name
-  * @dev: Device for which the prop-name has to be set.
-  * @name: name to postfix to properties.
-  *
-@@ -2002,50 +2002,33 @@ static void _opp_put_supported_hw(struct opp_table *opp_table)
-  * which the extension will apply are opp-microvolt and opp-microamp. OPP core
-  * should postfix the property name with -<name> while looking for them.
-  */
--struct opp_table *dev_pm_opp_set_prop_name(struct device *dev, const char *name)
-+static int _opp_set_prop_name(struct opp_table *opp_table, const char *name)
- {
--	struct opp_table *opp_table;
--
--	opp_table = _add_opp_table(dev, false);
--	if (IS_ERR(opp_table))
--		return opp_table;
--
--	/* Make sure there are no concurrent readers while updating opp_table */
--	WARN_ON(!list_empty(&opp_table->opp_list));
--
- 	/* Another CPU that shares the OPP table has set the property ? */
--	if (opp_table->prop_name)
--		return opp_table;
--
--	opp_table->prop_name = kstrdup(name, GFP_KERNEL);
- 	if (!opp_table->prop_name) {
--		dev_pm_opp_put_opp_table(opp_table);
--		return ERR_PTR(-ENOMEM);
-+		opp_table->prop_name = kstrdup(name, GFP_KERNEL);
-+		if (!opp_table->prop_name)
-+			return -ENOMEM;
- 	}
- 
--	return opp_table;
-+	return 0;
- }
--EXPORT_SYMBOL_GPL(dev_pm_opp_set_prop_name);
- 
- /**
-- * dev_pm_opp_put_prop_name() - Releases resources blocked for prop-name
-- * @opp_table: OPP table returned by dev_pm_opp_set_prop_name().
-+ * _opp_put_prop_name() - Releases resources blocked for prop-name
-+ * @opp_table: OPP table returned by _opp_set_prop_name().
-  *
-  * This is required only for the V2 bindings, and is called for a matching
-- * dev_pm_opp_set_prop_name(). Until this is called, the opp_table structure
-+ * _opp_set_prop_name(). Until this is called, the opp_table structure
-  * will not be freed.
-  */
--void dev_pm_opp_put_prop_name(struct opp_table *opp_table)
-+static void _opp_put_prop_name(struct opp_table *opp_table)
- {
--	if (unlikely(!opp_table))
--		return;
--
--	kfree(opp_table->prop_name);
--	opp_table->prop_name = NULL;
--
--	dev_pm_opp_put_opp_table(opp_table);
-+	if (opp_table->prop_name) {
-+		kfree(opp_table->prop_name);
-+		opp_table->prop_name = NULL;
-+	}
- }
--EXPORT_SYMBOL_GPL(dev_pm_opp_put_prop_name);
- 
- /**
-  * _opp_set_regulators() - Set regulator names for the device
-@@ -2411,9 +2394,11 @@ struct opp_table *dev_pm_opp_set_config(struct device *dev,
- 
- 	// Configure property names
- 	if (config->prop_name) {
--		ret = dev_pm_opp_set_prop_name(dev, config->prop_name);
--		if (IS_ERR(ret))
-+		err = _opp_set_prop_name(opp_table, config->prop_name);
-+		if (err) {
-+			ret = ERR_PTR(err);
- 			goto err;
-+		}
- 	}
- 
- 	// Configure opp helper
-@@ -2487,8 +2472,7 @@ void dev_pm_opp_clear_config(struct opp_table *opp_table)
- 
- 	_opp_unregister_set_opp_helper(opp_table);
- 
--	if (opp_table->prop_name)
--		dev_pm_opp_put_prop_name(opp_table);
-+	_opp_put_prop_name(opp_table);
- 
- 	_opp_put_clkname(opp_table);
- 
-diff --git a/include/linux/pm_opp.h b/include/linux/pm_opp.h
-index a310564ab698..6cf1bbc71ed2 100644
---- a/include/linux/pm_opp.h
-+++ b/include/linux/pm_opp.h
-@@ -184,8 +184,6 @@ struct opp_table *dev_pm_opp_set_config(struct device *dev, struct dev_pm_opp_co
- int devm_pm_opp_set_config(struct device *dev, struct dev_pm_opp_config *config);
- void dev_pm_opp_clear_config(struct opp_table *opp_table);
- 
--struct opp_table *dev_pm_opp_set_prop_name(struct device *dev, const char *name);
--void dev_pm_opp_put_prop_name(struct opp_table *opp_table);
- struct dev_pm_opp *dev_pm_opp_xlate_required_opp(struct opp_table *src_table, struct opp_table *dst_table, struct dev_pm_opp *src_opp);
- int dev_pm_opp_xlate_performance_state(struct opp_table *src_table, struct opp_table *dst_table, unsigned int pstate);
- int dev_pm_opp_set_rate(struct device *dev, unsigned long target_freq);
-@@ -357,13 +355,6 @@ static inline int dev_pm_opp_unregister_notifier(struct device *dev, struct noti
- 	return -EOPNOTSUPP;
- }
- 
--static inline struct opp_table *dev_pm_opp_set_prop_name(struct device *dev, const char *name)
--{
--	return ERR_PTR(-EOPNOTSUPP);
--}
--
--static inline void dev_pm_opp_put_prop_name(struct opp_table *opp_table) {}
--
- static inline struct opp_table *dev_pm_opp_set_config(struct device *dev, struct dev_pm_opp_config *config)
- {
- 	return ERR_PTR(-EOPNOTSUPP);
--- 
-2.31.1.272.g89b43f80a514
-
+On 5/23/22 12:05 PM, Vincent Donnefort wrote:
+> The DYING/STARTING callbacks are not expected to fail. However, as reported
+> by Derek, drivers such as tboot are still free to return errors within
+> those sections. In that case, there's nothing the hotplug machinery can do,
+> so let's just proceed and log the failures.
+> 
+> Fixes: 453e41085183 (cpu/hotplug: Add cpuhp_invoke_callback_range())
+> Reported-by: Derek Dolney <z23@posteo.net>
+> Signed-off-by: Vincent Donnefort <vdonnefort@google.com>
+> 
+> ---
+> 
+> v1 -> v2: 
+>    - Commit message rewording.
+>    - More details in the warnings.
+>    - Some variable renaming
+> 
+> diff --git a/kernel/cpu.c b/kernel/cpu.c
+> index bbad5e375d3b..c3617683459e 100644
+> --- a/kernel/cpu.c
+> +++ b/kernel/cpu.c
+> @@ -663,21 +663,51 @@ static bool cpuhp_next_state(bool bringup,
+>  	return true;
+>  }
+>  
+> -static int cpuhp_invoke_callback_range(bool bringup,
+> -				       unsigned int cpu,
+> -				       struct cpuhp_cpu_state *st,
+> -				       enum cpuhp_state target)
+> +static int _cpuhp_invoke_callback_range(bool bringup,
+> +					unsigned int cpu,
+> +					struct cpuhp_cpu_state *st,
+> +					enum cpuhp_state target,
+> +					bool nofail)
+>  {
+>  	enum cpuhp_state state;
+> -	int err = 0;
+> +	int ret = 0;
+>  
+>  	while (cpuhp_next_state(bringup, &state, st, target)) {
+> +		int err;
+> +
+>  		err = cpuhp_invoke_callback(cpu, state, bringup, NULL, NULL);
+> -		if (err)
+> +		if (!err)
+> +			continue;
+> +
+> +		if (nofail) {
+> +			pr_warn("CPU %u %s state %s (%d) failed (%d)\n",
+> +				cpu, bringup ? "UP" : "DOWN",
+> +				cpuhp_get_step(st->state)->name,
+> +				st->state, err);
+> +			ret = -1;
+> +		} else {
+> +			ret = err;
+>  			break;
+> +		}
+>  	}
+>  
+> -	return err;
+> +	return ret;
+> +}
+> +
+> +static inline int cpuhp_invoke_callback_range(bool bringup,
+> +					      unsigned int cpu,
+> +					      struct cpuhp_cpu_state *st,
+> +					      enum cpuhp_state target)
+> +{
+> +	return _cpuhp_invoke_callback_range(bringup, cpu, st, target, false);
+> +}
+> +
+> +static inline void cpuhp_invoke_callback_range_nofail(bool bringup,
+> +						      unsigned int cpu,
+> +						      struct cpuhp_cpu_state *st,
+> +						      enum cpuhp_state target)
+> +{
+> +	WARN_ON_ONCE(_cpuhp_invoke_callback_range(bringup, cpu, st, target, true));
+>  }
+>  
+>  static inline bool can_rollback_cpu(struct cpuhp_cpu_state *st)
+> @@ -999,7 +1029,6 @@ static int take_cpu_down(void *_param)
+>  	struct cpuhp_cpu_state *st = this_cpu_ptr(&cpuhp_state);
+>  	enum cpuhp_state target = max((int)st->target, CPUHP_AP_OFFLINE);
+>  	int err, cpu = smp_processor_id();
+> -	int ret;
+>  
+>  	/* Ensure this CPU doesn't handle any more interrupts. */
+>  	err = __cpu_disable();
+> @@ -1012,13 +1041,11 @@ static int take_cpu_down(void *_param)
+>  	 */
+>  	WARN_ON(st->state != (CPUHP_TEARDOWN_CPU - 1));
+>  
+> -	/* Invoke the former CPU_DYING callbacks */
+> -	ret = cpuhp_invoke_callback_range(false, cpu, st, target);
+> -
+>  	/*
+> +	 * Invoke the former CPU_DYING callbacks
+>  	 * DYING must not fail!
+>  	 */
+> -	WARN_ON_ONCE(ret);
+> +	cpuhp_invoke_callback_range_nofail(false, cpu, st, target);
+>  
+>  	/* Give up timekeeping duties */
+>  	tick_handover_do_timer();
+> @@ -1296,16 +1323,14 @@ void notify_cpu_starting(unsigned int cpu)
+>  {
+>  	struct cpuhp_cpu_state *st = per_cpu_ptr(&cpuhp_state, cpu);
+>  	enum cpuhp_state target = min((int)st->target, CPUHP_AP_ONLINE);
+> -	int ret;
+>  
+>  	rcu_cpu_starting(cpu);	/* Enables RCU usage on this CPU. */
+>  	cpumask_set_cpu(cpu, &cpus_booted_once_mask);
+> -	ret = cpuhp_invoke_callback_range(true, cpu, st, target);
+>  
+>  	/*
+>  	 * STARTING must not fail!
+>  	 */
+> -	WARN_ON_ONCE(ret);
+> +	cpuhp_invoke_callback_range_nofail(true, cpu, st, target);
+>  }
+>  
+>  /*
+> 
