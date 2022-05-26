@@ -2,91 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D641C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 11:05:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3A53C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 11:07:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344270AbiEZLFR (ORCPT
+        id S1346899AbiEZLHP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 07:05:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35740 "EHLO
+        Thu, 26 May 2022 07:07:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347107AbiEZLDq (ORCPT
+        with ESMTP id S232643AbiEZLHG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 07:03:46 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69DCCCEBB7
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 04:03:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=Content-Type:MIME-Version:References:
-        Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
-        Content-ID:Content-Description:In-Reply-To;
-        bh=wvAvvbNo0hvEaZFKbTa+ygMbbyVcho85Qv3DLuAb9qY=; b=Aiv+eZWJXCR+Oh1l2J65HSodgM
-        kjBrssVNXSJNT0pVn1nRP+qCAaEKSdXfQ3KCQ7kZJ1MioBXVZPfLqjA8KX/R6cJjruvgExPItSk4r
-        s7EH1DnlhuvM4M3LnGW+ek6Ziog8nnU6jsRSqgbRQ26/5cyvUnH2/NGMWcw9L7JDHxf91WjZrduYe
-        JhhQkRUeLvTfEQ5bZpMYBCRbzuTFF4/0IUXBF9suSIcf03eiCyFOf+emBe+IjHFnfPPj5DnciaJLm
-        yXK87a6Y2U6/JALtdxpyR7S6Gbu+LVZbp9XuJM1cWM/00lt0cRP8MLIsIxRWutxb0nW3NTKtDc2hW
-        a8CKUr/A==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nuBGX-001sVf-K3; Thu, 26 May 2022 11:02:54 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 9B32930047E;
-        Thu, 26 May 2022 13:02:50 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id 7659C202226B8; Thu, 26 May 2022 13:02:50 +0200 (CEST)
-Message-ID: <20220526105957.944756116@infradead.org>
-User-Agent: quilt/0.66
-Date:   Thu, 26 May 2022 12:52:56 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     x86@kernel.org, jpoimboe@redhat.com
-Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org,
-        elver@google.com, jbaron@akamai.com, rostedt@goodmis.org,
-        ardb@kernel.org, mark.rutland@arm.com,
-        kernel test robot <lkp@intel.com>
-Subject: [PATCH 4/7] x86/cpu: Elide KCSAN for cpu_has() and friends
-References: <20220526105252.440440893@infradead.org>
+        Thu, 26 May 2022 07:07:06 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 710DA15FEE
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 04:07:05 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id m1so1171680plx.3
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 04:07:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MMgVyRNdqqfbP3WwHBRXWSmLvrhAi/fRvJMgjDc3EOs=;
+        b=JUKixnG9osJLbrycPGbSnT+N81UGY6Om9yFrZkK298rRD+ziLyU5fBqF/tl5JjXrh3
+         ujQZ1VYslTSoJ78snxNoP3DMgms5+6iyOX2SjwVycyvyHrMex1rddouJYR+NtK4gN4RR
+         25yFQHpVU6eyS/S0vVtTaskvki/rqLz1mP9wdE9OPAAyJwD/n7/oTq/NT1zus/UcECmH
+         Flvr5tCcVe8JKst5KCnQABSkysWfDNTxBAr+bqYQsK5fDiRjG0Qu3VzA7Dd92vDyI7Nh
+         jwxP+hOtfLPJroIimVfQ0FdKUPROM2HoaLmJD5m44z15TMR11HuD8Bij8JQbAgx/nV+y
+         NhFw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MMgVyRNdqqfbP3WwHBRXWSmLvrhAi/fRvJMgjDc3EOs=;
+        b=lgKVsQtVvsfUMlbJUl9WYPSzaIAC5vJzu+SRE+EwH+iF91xu7YPm0lvEHmVZKjqfA0
+         APe/WIwR01y+LEu0mI8wML5pErQI0grCRX7PeRmp0C96Gw5OcMhy1fNBB1Ecpyn4Nl6g
+         ViGOst4yxSVBZFp/vWFBzfPijSwcGPZVuOVj5ekRoz0DJgaT5+5ateaYYKtPm+hoDRzx
+         sDkZ1XUIFNxGvD1AhdWvvBNKkxdekFBuX8yCjQTk2UMGyRKD17O1VxtECS11R4ZPSkMT
+         rsdqGIpiBcsQWBnC71MCnbZ1eMS9GEgCSjg7lD1HjEyxSPMUkR5la7uWuf9CkQjyYTVm
+         Z8VQ==
+X-Gm-Message-State: AOAM532iK0BY9OXJZpI6XpSXSrrAj1xqJGEfEw8zsHoFvBAqccN72anu
+        iSUAsukmyEHbcS57GM94O30=
+X-Google-Smtp-Source: ABdhPJxq1svgl05DLs/x1l9IlKIfOMe4cFnuhjOgcTIzfFBewCLkZetUcsTBcTMyxWBlNMczcquHOg==
+X-Received: by 2002:a17:90b:3849:b0:1dc:b686:34e2 with SMTP id nl9-20020a17090b384900b001dcb68634e2mr2086847pjb.164.1653563224928;
+        Thu, 26 May 2022 04:07:04 -0700 (PDT)
+Received: from localhost.localdomain ([202.120.234.246])
+        by smtp.googlemail.com with ESMTPSA id j11-20020aa7928b000000b0050dc7628133sm1254993pfa.13.2022.05.26.04.07.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 May 2022 04:07:04 -0700 (PDT)
+From:   Miaoqian Lin <linmq006@gmail.com>
+To:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Miaoqian Lin <linmq006@gmail.com>,
+        Corentin Labbe <clabbe@baylibre.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] mtd: partitions: Fix refcount leak in parse_redboot_of
+Date:   Thu, 26 May 2022 15:06:49 +0400
+Message-Id: <20220526110652.64849-1-linmq006@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As x86 uses the <asm-generic/bitops/instrumented-*.h> headers, the
-regular forms of all bitops are instrumented with explicit calls to
-KASAN and KCSAN checks. As these are explicit calls, these are not
-suppressed by the noinstr function attribute.
+of_get_child_by_name() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not need anymore.
+Add missing of_node_put() to avoid refcount leak.
 
-This can result in calls to those check functions in noinstr code, which
-objtool warns about:
-
-vmlinux.o: warning: objtool: enter_from_user_mode+0x24: call to __kcsan_check_access() leaves .noinstr.text section
-vmlinux.o: warning: objtool: syscall_enter_from_user_mode+0x28: call to __kcsan_check_access() leaves .noinstr.text section
-vmlinux.o: warning: objtool: syscall_enter_from_user_mode_prepare+0x24: call to __kcsan_check_access() leaves .noinstr.text section
-vmlinux.o: warning: objtool: irqentry_enter_from_user_mode+0x24: call to __kcsan_check_access() leaves .noinstr.text section
-
-Prevent this by using the arch_*() bitops, which are the underlying
-bitops without explciit instrumentation.
-
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/20220502111216.290518605@infradead.org
+Fixes: 237960880960 ("mtd: partitions: redboot: seek fis-index-block in the right node")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
 ---
- arch/x86/include/asm/cpufeature.h |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/mtd/parsers/redboot.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/arch/x86/include/asm/cpufeature.h
-+++ b/arch/x86/include/asm/cpufeature.h
-@@ -51,7 +51,7 @@ extern const char * const x86_power_flag
- extern const char * const x86_bug_flags[NBUGINTS*32];
+diff --git a/drivers/mtd/parsers/redboot.c b/drivers/mtd/parsers/redboot.c
+index feb44a573d44..a16b42a88581 100644
+--- a/drivers/mtd/parsers/redboot.c
++++ b/drivers/mtd/parsers/redboot.c
+@@ -58,6 +58,7 @@ static void parse_redboot_of(struct mtd_info *master)
+ 		return;
  
- #define test_cpu_cap(c, bit)						\
--	 test_bit(bit, (unsigned long *)((c)->x86_capability))
-+	 arch_test_bit(bit, (unsigned long *)((c)->x86_capability))
+ 	ret = of_property_read_u32(npart, "fis-index-block", &dirblock);
++	of_node_put(npart);
+ 	if (ret)
+ 		return;
  
- /*
-  * There are 32 bits/features in each mask word.  The high bits
-
+-- 
+2.25.1
 
