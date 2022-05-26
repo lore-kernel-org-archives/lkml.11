@@ -2,84 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 087C7C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 10:36:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68B45C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 10:39:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347078AbiEZKgZ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 06:36:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55476 "EHLO
+        id S238559AbiEZKjy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 06:39:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347066AbiEZKgN (ORCPT
+        with ESMTP id S229886AbiEZKjv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 06:36:13 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFB31CEBA3;
-        Thu, 26 May 2022 03:35:58 -0700 (PDT)
-Received: from fraeml739-chm.china.huawei.com (unknown [172.18.147.200])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4L84442mZDz6GD9M;
-        Thu, 26 May 2022 18:31:48 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml739-chm.china.huawei.com (10.206.15.220) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 26 May 2022 12:35:56 +0200
-Received: from localhost.localdomain (10.69.192.58) by
- lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 26 May 2022 11:35:52 +0100
-From:   John Garry <john.garry@huawei.com>
-To:     <damien.lemoal@opensource.wdc.com>, <joro@8bytes.org>,
-        <will@kernel.org>, <jejb@linux.ibm.com>,
-        <martin.petersen@oracle.com>, <hch@lst.de>,
-        <m.szyprowski@samsung.com>, <robin.murphy@arm.com>
-CC:     <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-ide@vger.kernel.org>, <iommu@lists.linux-foundation.org>,
-        <linux-scsi@vger.kernel.org>, <liyihang6@hisilicon.com>,
-        <chenxiang66@hisilicon.com>, <thunder.leizhen@huawei.com>,
-        John Garry <john.garry@huawei.com>
-Subject: [PATCH v2 4/4] libata-scsi: Cap ata_device->max_sectors according to shost->max_sectors
-Date:   Thu, 26 May 2022 18:28:34 +0800
-Message-ID: <1653560914-82185-5-git-send-email-john.garry@huawei.com>
-X-Mailer: git-send-email 2.8.1
-In-Reply-To: <1653560914-82185-1-git-send-email-john.garry@huawei.com>
-References: <1653560914-82185-1-git-send-email-john.garry@huawei.com>
+        Thu, 26 May 2022 06:39:51 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9011CC16D
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 03:39:50 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id l20-20020a17090a409400b001dd2a9d555bso1420961pjg.0
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 03:39:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2nB3L+cKWVC+0i7cUASK6ah3sRfXIWNbzDbdAe4fH/k=;
+        b=lrOCz4T1Kq/4W3W3DfQN6ue+qXNmVXqTe6fzUsfeA/2NQ36CGyDQmRAHR3iSD8a4X8
+         ZOZXWBH7bRSO+cHYu7TugmjR9tcRXkGjOq24Rqtwy9Y2l+4G5PkwLkIDkAwYlsd9Vt4M
+         O2RXvTlBe1yrCKrq0jcyifYZ4KFly/6RPyTlJzYdzOwWJoOyN4ahVNBXw84NIM5ln7Sp
+         4QP3OAWmHCOZOMvO0VVkWmvSWZ2DPEmO2US4EX+Q6vWRwfnnTZAPYdJl6DL9lt9DWHDe
+         4UfH9VORSfwWwzCaFTAarVhRCi7MvEmT4J8ENW5YzRL1CDeOWjGSfrEPeBCU3LWjzcew
+         KzYg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2nB3L+cKWVC+0i7cUASK6ah3sRfXIWNbzDbdAe4fH/k=;
+        b=UGCLNUxjwKmHmyeSf0S4ZhdXRc8muA7h0Tl1qxThI+fLVEAwsmPOllq1fObzM95OuC
+         Es6BFP9HK4JFsPj0dH/vU4Soj8wqyLPLWoJJZEbRIOHQ4R8TyFK27fMCEkBWNOdQjqHQ
+         xrY6tK22EP1O6xVo/ZGnVBWYPeL8MWR+9oEkxsUVO+7jGnK+yJTf17+JCtwvv+vQcqaf
+         VzRVKFVdOJSqop0EjWIGXQ+HT8yrkDxDYH35lhxV3gOYe8Lu9WVcMOyF0FkrZ4k+DDF4
+         N/oTHIKRrhSRTrSsmE0ak7Fk0EvFFQEj66+3zbfEtRCCkz8Y/H4ZcVCa5n8Pnm/3qb4A
+         dzAg==
+X-Gm-Message-State: AOAM533y084JYm7cVtEXy6s7lVyo4Wu8Lk+a+mzekjfwY09U0PSd24or
+        vJU46CAl02sYlq39QLU5Vjegkw==
+X-Google-Smtp-Source: ABdhPJwqmMrK8dU/zABGxmNoJt1CjpCsAmUOcwOZazxgjQ9rXrXLuauYbBMKJBrSd/GHbm4NdNajKQ==
+X-Received: by 2002:a17:90b:3142:b0:1df:77f2:e169 with SMTP id ip2-20020a17090b314200b001df77f2e169mr1883385pjb.245.1653561590489;
+        Thu, 26 May 2022 03:39:50 -0700 (PDT)
+Received: from C02CV1DAMD6P.bytedance.net ([139.177.225.225])
+        by smtp.gmail.com with ESMTPSA id u17-20020a17090341d100b0015e8d4eb23dsm1257311ple.135.2022.05.26.03.39.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 May 2022 03:39:50 -0700 (PDT)
+From:   Chengming Zhou <zhouchengming@bytedance.com>
+To:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
+        bristot@redhat.com, vschneid@redhat.com, odin@uged.al
+Cc:     linux-kernel@vger.kernel.org, duanxiongchun@bytedance.com,
+        songmuchun@bytedance.com,
+        Chengming Zhou <zhouchengming@bytedance.com>
+Subject: [PATCH v3 0/2] sched/fair: optimize and simplify rq
+Date:   Thu, 26 May 2022 18:39:27 +0800
+Message-Id: <20220526103929.14976-1-zhouchengming@bytedance.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.58]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ATA devices (struct ata_device) have a max_sectors field which is
-configured internally in libata. This is then used to (re)configure the
-associated sdev request queue max_sectors value from how it is earlier set
-in __scsi_init_queue(). In __scsi_init_queue() the max_sectors value is set
-according to shost limits, which includes host DMA mapping limits.
+Hi,
 
-Cap the ata_device max_sectors according to shost->max_sectors to respect
-this shost limit.
+This version is based on [1], which try to not put cfs_rqs in throttled_hierarchy
+on the rq leaf_cfs_rq_list, simplify the leaf_cfs_rq_list maintenance and
+optimize the periodic load decay.
 
-Signed-off-by: John Garry <john.garry@huawei.com>
-Acked-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
----
- drivers/ata/libata-scsi.c | 1 +
- 1 file changed, 1 insertion(+)
+Vincent suggested moving throttled_hierarchy() outside list_add_leaf_cfs_rq()
+because the task will not be added in this case which is quite misleading.
 
-diff --git a/drivers/ata/libata-scsi.c b/drivers/ata/libata-scsi.c
-index 06c9d90238d9..25fe89791641 100644
---- a/drivers/ata/libata-scsi.c
-+++ b/drivers/ata/libata-scsi.c
-@@ -1036,6 +1036,7 @@ int ata_scsi_dev_config(struct scsi_device *sdev, struct ata_device *dev)
- 		dev->flags |= ATA_DFLAG_NO_UNLOAD;
- 
- 	/* configure max sectors */
-+	dev->max_sectors = min(dev->max_sectors, sdev->host->max_sectors);
- 	blk_queue_max_hw_sectors(q, dev->max_sectors);
- 
- 	if (dev->class == ATA_DEV_ATAPI) {
+When do that moving in propagate_entity_cfs_rq(), I found it has problem
+with propagation upwards. So add the fix in the first patch to be easier
+to backport, please see the details in its commit message.
+
+[1] https://lore.kernel.org/all/20220427160544.40309-1-zhouchengming@bytedance.com/
+
+Chengming Zhou (2):
+  sched/fair: fix propagate during synchronous attach/detach
+  sched/fair: optimize and simplify rq leaf_cfs_rq_list
+
+ kernel/sched/fair.c | 87 ++++++++++++---------------------------------
+ 1 file changed, 22 insertions(+), 65 deletions(-)
+
 -- 
-2.26.2
+2.36.1
 
