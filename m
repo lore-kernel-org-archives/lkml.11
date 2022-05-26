@@ -2,86 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E793C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 13:02:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69974C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 13:04:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239549AbiEZNCG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 09:02:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40592 "EHLO
+        id S1347464AbiEZNEP (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 09:04:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236276AbiEZNCB (ORCPT
+        with ESMTP id S1347398AbiEZNEM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 09:02:01 -0400
-Received: from out199-13.us.a.mail.aliyun.com (out199-13.us.a.mail.aliyun.com [47.90.199.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4603FCFE22;
-        Thu, 26 May 2022 06:02:00 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R211e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0VESMMfK_1653570115;
-Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0VESMMfK_1653570115)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Thu, 26 May 2022 21:01:56 +0800
-From:   Yang Li <yang.lee@linux.alibaba.com>
-To:     andreas.noever@gmail.com
-Cc:     michael.jamet@intel.com, mika.westerberg@linux.intel.com,
-        YehezkelShB@gmail.com, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Yang Li <yang.lee@linux.alibaba.com>,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: [PATCH -next] thunderbolt: Fix some kernel-doc comments
-Date:   Thu, 26 May 2022 21:01:54 +0800
-Message-Id: <20220526130154.89745-1-yang.lee@linux.alibaba.com>
-X-Mailer: git-send-email 2.20.1.7.g153144c
+        Thu, 26 May 2022 09:04:12 -0400
+Received: from mout-p-101.mailbox.org (mout-p-101.mailbox.org [IPv6:2001:67c:2050:0:465::101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E70B5CFE3E;
+        Thu, 26 May 2022 06:04:10 -0700 (PDT)
+Received: from smtp1.mailbox.org (smtp1.mailbox.org [10.196.197.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mout-p-101.mailbox.org (Postfix) with ESMTPS id 4L87Rm0bs8z9sZH;
+        Thu, 26 May 2022 15:04:04 +0200 (CEST)
+Date:   Thu, 26 May 2022 23:03:55 +1000
+From:   Aleksa Sarai <cyphar@cyphar.com>
+To:     Christian Brauner <brauner@kernel.org>
+Cc:     Miklos Szeredi <miklos@szeredi.hu>,
+        Amir Goldstein <amir73il@gmail.com>,
+        Simon Ser <contact@emersion.fr>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>
+Subject: Re: procfs: open("/proc/self/fd/...") allows bypassing O_RDONLY
+Message-ID: <20220526130355.fo6gzbst455fxywy@senku>
+References: <lGo7a4qQABKb-u_xsz6p-QtLIy2bzciBLTUJ7-ksv7ppK3mRrJhXqFmCFU4AtQf6EyrZUrYuSLDMBHEUMe5st_iT9VcRuyYPMU_jVpSzoWg=@emersion.fr>
+ <03l0hfZIzD9KwSxSntGcmfFhvbIKiK45poGUhXtR7Qi0Av0-ZnqnSBPAP09GGpSrKGZWZNCTvme_Gpiuz0Bcg6ewDIXSH24SBx_tvfyZSWU=@emersion.fr>
+ <CAJfpegs4GVirNVtf4OqunzNwbXQywZVkxpGPtpN=ZonHU2SpiA@mail.gmail.com>
+ <20220513095817.622gcrgx3fffwk4h@wittgenstein>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="ls6hlrjjszajykhe"
+Content-Disposition: inline
+In-Reply-To: <20220513095817.622gcrgx3fffwk4h@wittgenstein>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove some warnings found by running scripts/kernel-doc,
-which is caused by using 'make W=1'.
 
-drivers/thunderbolt/ctl.c:701: warning: expecting prototype for
-tb_cfg_start(). Prototype was for tb_ctl_start() instead
-drivers/thunderbolt/ctl.c:722: warning: expecting prototype for
-tb_ctrl_stop(). Prototype was for tb_ctl_stop() instead
-drivers/thunderbolt/ctl.c:930: warning: expecting prototype for
-tb_cfg_write(). Prototype was for tb_cfg_write_raw() instead
+--ls6hlrjjszajykhe
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
----
- drivers/thunderbolt/ctl.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+On 2022-05-13, Christian Brauner <brauner@kernel.org> wrote:
+> On Thu, May 12, 2022 at 02:56:22PM +0200, Miklos Szeredi wrote:
+> > On Thu, 12 May 2022 at 14:41, Simon Ser <contact@emersion.fr> wrote:
+> > >
+> > > On Thursday, May 12th, 2022 at 12:37, Simon Ser <contact@emersion.fr>=
+ wrote:
+> > >
+> > > > what would be a good way to share a FD to another
+> > > > process without allowing it to write to the underlying file?
+> > >
+> > > (I'm reminded that memfd + seals exist for this purpose. Still, I'd be
+> > > interested to know whether that O_RDONLY/O_RDWR behavior is intended,
+> > > because it's pretty surprising. The motivation for using O_RDONLY over
+> > > memfd seals is that it isn't Linux-specific.)
+> >=20
+> > Yes, this is intended.   The /proc/$PID/fd/$FD file represents the
+> > inode pointed to by $FD.   So the open flags for $FD are irrelevant
+> > when operating on the proc fd file.
+>=20
+> Fwiw, the original openat2() patchset contained upgrade masks which we
+> decided to split it out into a separate patchset.
+>=20
+> The idea is that struct open_how would be extended with an upgrade mask
+> field which allows the opener to specify with which permissions a file
+> descriptor is allowed to be re-opened. This has quite a lot of
+> use-cases, especially in container runtimes. So one could open an fd and
+> restrict it from being re-opened with O_WRONLY. For container runtimes
+> this is a huge security win and for userspace in general it would
+> provide a backwards compatible way of e.g., making O_PATH fds
+> non-upgradable. The plan is to resend the extension at some point in the
+> not too distant future.
 
-diff --git a/drivers/thunderbolt/ctl.c b/drivers/thunderbolt/ctl.c
-index e92c658dba1c..e5ede5debfb0 100644
---- a/drivers/thunderbolt/ctl.c
-+++ b/drivers/thunderbolt/ctl.c
-@@ -694,7 +694,7 @@ void tb_ctl_free(struct tb_ctl *ctl)
- }
- 
- /**
-- * tb_cfg_start() - start/resume the control channel
-+ * tb_ctl_start() - start/resume the control channel
-  * @ctl: Control channel to start
-  */
- void tb_ctl_start(struct tb_ctl *ctl)
-@@ -710,7 +710,7 @@ void tb_ctl_start(struct tb_ctl *ctl)
- }
- 
- /**
-- * tb_ctrl_stop() - pause the control channel
-+ * tb_ctl_stop() - pause the control channel
-  * @ctl: Control channel to stop
-  *
-  * All invocations of ctl->callback will have finished after this method
-@@ -912,7 +912,7 @@ struct tb_cfg_result tb_cfg_read_raw(struct tb_ctl *ctl, void *buffer,
- }
- 
- /**
-- * tb_cfg_write() - write from buffer into config space
-+ * tb_cfg_write_raw() - write from buffer into config space
-  * @ctl: Pointer to the control channel
-  * @buffer: Data to write
-  * @route: Route string of the router
--- 
-2.20.1.7.g153144c
+I am currently working on reviving this patchset.
 
+The main issue at the moment is that the semantics for how we should
+deal with directories is a little difficult to define (we want to ignore
+modes for directories because of *at(2) semantics but there's no fmode_t
+bits at the moment representing that the flip is a directory), but I'm
+working on it.
+
+This is going to be included along with the O_EMPTYPATH feature (since
+making this safe is IMHO a pre-requisite for O_EMPTYPATH).
+
+--=20
+Aleksa Sarai
+Senior Software Engineer (Containers)
+SUSE Linux GmbH
+<https://www.cyphar.com/>
+
+--ls6hlrjjszajykhe
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQSxZm6dtfE8gxLLfYqdlLljIbnQEgUCYo96uAAKCRCdlLljIbnQ
+EuLaAP9AIoX3ZQoBY4Zbt7eYKU1Futeff1vE4dFwviRHUzebPAEAtrMNZ1WaqSOT
+6XAkAWN2lR2wUyPESn4+ONh89CO/0gs=
+=8SCK
+-----END PGP SIGNATURE-----
+
+--ls6hlrjjszajykhe--
