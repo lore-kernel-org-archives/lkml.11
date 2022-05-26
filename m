@@ -2,90 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67C91C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 00:11:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43304C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 00:14:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237851AbiEZALO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 20:11:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36450 "EHLO
+        id S1345971AbiEZAOm (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 20:14:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348086AbiEZAJQ (ORCPT
+        with ESMTP id S1345612AbiEZAOk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 20:09:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 597D8644C4;
-        Wed, 25 May 2022 17:09:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EB214615A7;
-        Thu, 26 May 2022 00:09:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 48A81C385B8;
-        Thu, 26 May 2022 00:09:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653523753;
-        bh=jTLBYobhUkBsdmzoU4YpAWuG9pJVRc2HjmMPnus4QFI=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=cHrLIj8CKcT94pmnHnJj7XusJRMMoCdiuqzIn2YQVlZdHxn+ltd5jM4axqlqy48qi
-         HaWcMkgwClPXoaKUSrKUFiuLKxF95tOAlWgxbHa/mTTBtQeUUEih3yhH3a3cec3JPw
-         LdvoSdyDKRG3Y2YgbWjKT3lXtvPpXLEbNTNuAcn94TwKilcjpsqadlQLsEoRMiZDZ0
-         heDlv4PZ9LV/rqzJmLVeirVA6cBxcViGSwCdyoRL3W2jc5oq3WTb1wEd7wBBH887TL
-         Aqqbc0QAgFgI/ReSAb5arMkdJFO9qdCxj2IcnCUJnB8GoDLdFom8/9cblaKKoo1kLS
-         JEzOlrECRXs1w==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 35D7FEAC081;
-        Thu, 26 May 2022 00:09:13 +0000 (UTC)
-Subject: Re: [GIT PULL] perf tools changes for v5.19: 1st batch
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220524014938.46153-1-acme@kernel.org>
-References: <20220524014938.46153-1-acme@kernel.org>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220524014938.46153-1-acme@kernel.org>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git tags/perf-tools-for-v5.19-2022-05-23
-X-PR-Tracked-Commit-Id: 5d2b6bc3a6a27ad265d2ec0d53dd7ef33bd314fc
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: d223575e50f8da0de358c0098defd560069ecf66
-Message-Id: <165352375320.5177.3664357052040729431.pr-tracker-bot@kernel.org>
-Date:   Thu, 26 May 2022 00:09:13 +0000
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Clark Williams <williams@redhat.com>,
-        Kate Carcia <kcarcia@redhat.com>, linux-kernel@vger.kernel.org,
-        linux-perf-users@vger.kernel.org,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Carsten Haitzler <carsten.haitzler@arm.com>,
-        Dmitriy Vyukov <dvyukov@google.com>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        Eric Lin <eric.lin@sifive.com>,
-        Florian Fischer <florian.fischer@muhq.space>,
-        Ian Rogers <irogers@google.com>,
-        James Clark <james.clark@arm.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Leo Yan <leo.yan@linaro.org>,
-        =?UTF-8?q?Martin=20Li=C5=A1ka?= <mliska@suse.cz>,
-        Thomas Richter <tmricht@linux.ibm.com>,
-        Xing Zhengjun <zhengjun.xing@linux.intel.com>,
-        Yang Jihong <yangjihong1@huawei.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>
+        Wed, 25 May 2022 20:14:40 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E47916391
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 17:14:39 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id q21so190101ejm.1
+        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 17:14:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=FUN1Hk+wVODcst4ocCxem+PCWnT3RpL+w2LVEy5CkRA=;
+        b=RtP6hh4X8z+2MahAiAUIOJVM9Cfmt7V5Ll8iE25tjBROyYvHx4EOB8CtLSuOQeapQd
+         BR1dE4Yip3iyeN1fJom8sECDjU2+AKUGFOFdW94NxU5AyV9Js4RicQo7nhg6MqqySr/r
+         MsiOZh3uZVfiTEimtdnWO4N2hsnqY1z1fITBrp8gZrKtOs8rtHAtWN82Jm4FaGK04oEk
+         SM1JaUH0FbWOBZC7d6+39nmFWIrPZJ+9Fy/gxfH1Q/NPCP8GuV8eC+jeaecUcSbUXcr8
+         1LN/htRrUOFLscNprtUKZdz2aJSfLLMANVSpubh492YLFpHnbRNWZwvq4j3iFsl4EzSp
+         uJkw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=FUN1Hk+wVODcst4ocCxem+PCWnT3RpL+w2LVEy5CkRA=;
+        b=wl/DubnmgaJIFym4OsuoM3ze1e6UFOgfvZE1gGpNVo1m0/dt8Lm6KfcaMevdw5Ssb9
+         yS9AxvCrdR/d/AyTDkM07tuXFz+m1brjn29eGtMNFlATT52w5K3hbTm6S+lnm2RvC+9E
+         kc17wBUbpFMhXqMkFlednVh0WP0+JoITWxk3cRbxeb1SvmxsOs5MBsXlJnjvIMl2glJl
+         XtV8l11TEui8ti+HotGd4ue8VpSW57US84RvMWIPISPkZLLjIwB+gpneqbBH/PdJ3vqt
+         BMvbg9rW2YBBxSAO6U/qndZiB3zCzZtnDxw8rCKaA4aQ0KKrBu3yVZ+V0fjwRw+Oa3G2
+         JhYg==
+X-Gm-Message-State: AOAM531n5kCYJVB6LJbj2CFgAVLKkCiuO7d6eiTEBVG8c53HBB6SnOEq
+        vbQg50BeQq3TNdWJqTbh0aD1aG1D/LJT2TACFDg=
+X-Google-Smtp-Source: ABdhPJyO00AJg5mswWV1wx6ajRW6tH6ji4ANJHj6fdfFPQFeCDOUk7NVjUlDeNuLLnBukt35NG5sW7tLc1W4JwY9K+I=
+X-Received: by 2002:a17:907:62a0:b0:6fe:69f3:88de with SMTP id
+ nd32-20020a17090762a000b006fe69f388demr30054330ejc.214.1653524078459; Wed, 25
+ May 2022 17:14:38 -0700 (PDT)
+MIME-Version: 1.0
+References: <202205021042.xPjJ6Z4J-lkp@intel.com>
+In-Reply-To: <202205021042.xPjJ6Z4J-lkp@intel.com>
+From:   Fabio Estevam <festevam@gmail.com>
+Date:   Wed, 25 May 2022 21:14:30 -0300
+Message-ID: <CAOMZO5Dg8_vDbW0vau4YFspZZ-RS=in8xEavkyYvBAQB41xTWA@mail.gmail.com>
+Subject: Re: drivers/dma/imx-dma.c:1048:20: warning: cast to smaller integer
+ type 'enum imx_dma_type' from 'const void *'
+To:     kernel test robot <lkp@intel.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Vinod Koul <vkoul@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Mon, 23 May 2022 22:49:38 -0300:
+On Sun, May 1, 2022 at 11:13 PM kernel test robot <lkp@intel.com> wrote:
+>
+> Hi Fabio,
+>
+> FYI, the error/warning still remains.
+>
+> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+> head:   672c0c5173427e6b3e2a9bbb7be51ceeec78093a
+> commit: 0ab785c894e618587e83bb67e8a8e96649868ad1 dmaengine: imx-dma: Remove unused .id_table
+> date:   1 year, 5 months ago
+> config: arm64-allyesconfig (https://download.01.org/0day-ci/archive/20220502/202205021042.xPjJ6Z4J-lkp@intel.com/config)
+> compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 09325d36061e42b495d1f4c7e933e260eac260ed)
+> reproduce (this is a W=1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # install arm64 cross compiling tool for clang build
+>         # apt-get install binutils-aarch64-linux-gnu
+>         # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=0ab785c894e618587e83bb67e8a8e96649868ad1
+>         git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+>         git fetch --no-tags linus master
+>         git checkout 0ab785c894e618587e83bb67e8a8e96649868ad1
+>         # save the config file
+>         mkdir build_dir && cp config build_dir/.config
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/dma/
+>
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
+>
+> All warnings (new ones prefixed by >>):
+>
+> >> drivers/dma/imx-dma.c:1048:20: warning: cast to smaller integer type 'enum imx_dma_type' from 'const void *' [-Wvoid-pointer-to-enum-cast]
+>            imxdma->devtype = (enum imx_dma_type)of_device_get_match_data(&pdev->dev);
+>                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>    1 warning generated.
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git tags/perf-tools-for-v5.19-2022-05-23
+Does anyone know how to fix this clang warning?
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/d223575e50f8da0de358c0098defd560069ecf66
-
-Thank you!
-
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+Thanks
