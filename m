@@ -2,83 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD466C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 16:42:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEF19C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 16:50:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344956AbiEZQmh (ORCPT
+        id S1348200AbiEZQuU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 12:42:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48660 "EHLO
+        Thu, 26 May 2022 12:50:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232956AbiEZQme (ORCPT
+        with ESMTP id S1348274AbiEZQuH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 12:42:34 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCB3A2B184
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 09:42:33 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id v15so49253edl.9
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 09:42:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=CS+0C9116uvsXBY7Qgz+7y8K9WB8FdT9j6xZ5iT4ego=;
-        b=La+B/5HOPMqeQ2jcp0ah8wbzOcZKyNemQaHwQ4VCK7IBBU57xfK48vqU0oScXSzYwP
-         5FnoG3FzyCWct1+Ebttkf5m6Z2FAUua2Tu7YIIk+bRLhRZQRZZpI0mB4N9bHIjQHTMOA
-         Fnw2mLEgcWV/Qt2LRpttaqkCrTmAhUxy6QssE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CS+0C9116uvsXBY7Qgz+7y8K9WB8FdT9j6xZ5iT4ego=;
-        b=Q+Y8c35Swbs0wBnf8HG6kmRdCct447Y6RBvcpkKy+ogQIlDe9PxaaoOm8ecx3Ur2uG
-         EH33wHQvO0NYvsCzslMNIx2OCrMk4g0AHtyWGzbo2iU6rx0iskNHdHTclWVKykCXbupa
-         ICVah9sAKrrTV+Hui2GLaCULnPmqYu4LhmMGLoBuZc7PrwzyKW3E/+jTO+OK0yy6A1Rh
-         HgkO0/04ZLPCWWK8IHpogilFVnuQHF6s+h3alUed3e+vOuJs4Sc0juHcmhlyRh9K2kh9
-         wAgIxgaeCx8fkwyjCCm1c2U5Kn+4iDa2PdhUE7XDBQ14cN5x9W/DN0b4T8B3BH2/0iPM
-         56ww==
-X-Gm-Message-State: AOAM530QFQFx0nFaP9toJh8L26deeFxaCtTijCq9yySKC1F+I97jzd6K
-        t2WZVDfE4nS4OIjGSdHIXs9YSLx1TfrqtZBF9WA=
-X-Google-Smtp-Source: ABdhPJxibSZS8D35z1TZm2bsBtJX+a/2xKwGmLwz5tfCKUe37VIX1VwyCPXPB8GLboIBMWApZpLbTw==
-X-Received: by 2002:a05:6402:2392:b0:42b:de42:c4b with SMTP id j18-20020a056402239200b0042bde420c4bmr3329730eda.368.1653583352085;
-        Thu, 26 May 2022 09:42:32 -0700 (PDT)
-Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com. [209.85.221.47])
-        by smtp.gmail.com with ESMTPSA id m22-20020a17090679d600b006f3ef214da9sm685250ejo.15.2022.05.26.09.42.30
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 26 May 2022 09:42:30 -0700 (PDT)
-Received: by mail-wr1-f47.google.com with SMTP id j25so2823203wrb.6
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 09:42:30 -0700 (PDT)
-X-Received: by 2002:a5d:6da6:0:b0:20f:bc8a:9400 with SMTP id
- u6-20020a5d6da6000000b0020fbc8a9400mr25553633wrs.274.1653583349904; Thu, 26
- May 2022 09:42:29 -0700 (PDT)
+        Thu, 26 May 2022 12:50:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06E5349C99;
+        Thu, 26 May 2022 09:50:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 88A3561CEC;
+        Thu, 26 May 2022 16:50:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61948C385A9;
+        Thu, 26 May 2022 16:50:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1653583805;
+        bh=HxEkgjO2EAAyeO56xVtO8CtSiCh6jF5FCDTEIEOocXg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=phGHcKF/et7RPbxWmSyaD6M7QvM6Hdrc2MQcQZC/nRH3w0KLJYV8hJyRV1hPazjOf
+         T7mici+6LLdT0yMxhtNYhUsXrKN+0eUeOqTg4+JW1WCeHLnbe7XFyuMKmOQ2MT4Ng+
+         mJGf3P4CRRtTSQq1z2OOtxIqecbrO5wsRfZkSzw4=
+Date:   Thu, 26 May 2022 18:49:13 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Yury Norov <yury.norov@gmail.com>
+Cc:     stable@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: Patch for stable
+Message-ID: <Yo+vidb+a9Ctqyih@kroah.com>
+References: <Yo+t8QAgVTi2E6B4@yury-laptop>
 MIME-Version: 1.0
-References: <20220526151706.331557-1-helgaas@kernel.org>
-In-Reply-To: <20220526151706.331557-1-helgaas@kernel.org>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Thu, 26 May 2022 09:42:13 -0700
-X-Gmail-Original-Message-ID: <CAHk-=whP4fH1_ZyWFAvzBjG_Qa1U0+iAnT-iJsmM9DwvNEtWdw@mail.gmail.com>
-Message-ID: <CAHk-=whP4fH1_ZyWFAvzBjG_Qa1U0+iAnT-iJsmM9DwvNEtWdw@mail.gmail.com>
-Subject: Re: [PATCH v2] linux/types.h: Restore __bitwise__ definition
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Jiri Slaby <jirislaby@kernel.org>, llvm@lists.linux.dev,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yo+t8QAgVTi2E6B4@yury-laptop>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 26, 2022 at 8:17 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
->
-> Restore the __bitwise__ definition.
+On Thu, May 26, 2022 at 09:42:25AM -0700, Yury Norov wrote:
+> Hi Greg,
+> 
+> Can you please consider taking the patch "KVM: x86: hyper-v: fix type
+> of valid_bank_mask" into stable?
+> 
+> Commit ea8c66fe8d8f4f93df941e52120a3512d7bf5128 upstream.
 
-Thanks, but I already ended up applying this yesterday,
+For what kernel tree(s) should thie be backported?
 
-                   Linus
+thanks,
+
+greg k-h
