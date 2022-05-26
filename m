@@ -2,145 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A825C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 08:57:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ED90C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 08:57:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237186AbiEZI5H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 04:57:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58378 "EHLO
+        id S236269AbiEZI5q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 04:57:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232417AbiEZI5C (ORCPT
+        with ESMTP id S235533AbiEZI5n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 04:57:02 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85AFE3525C;
-        Thu, 26 May 2022 01:57:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653555420; x=1685091420;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=VYZcLDoZJWGwpGI3Sm3xsbMDc92hUIeYlIsQC6WcKIA=;
-  b=PvqOM7G0s49LAxFkLgj0huKG2B0hdhKRH7tPWcuGPJ44v/OXfDTiDe8R
-   C9NwcmFoKHIMFRYZmt/Al0Cv4kcmb4+WmDxQRt+ox6R6F9CwqZvTtzxc3
-   jl+QC5ZVWmZcXjfyyOL2lf+KqpgVUrPEf4WtHXn6aAMojlvl+2CVHceHA
-   mu+Px5vrjaLK6p5jZwd22A2/Xegv3/jR++mWRzvLm/0fnJl8i6z13jos4
-   22n4MmaLTFg5cUF5rYYvBRi5lqkYe+J6KmqT6AxQEpcYveVbe2mLPdxYP
-   YoL2xAmH4WvebulPkFqUQo43ye8yZwowMaeHmKbI886MoSpxqoI346mWf
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10358"; a="337136423"
-X-IronPort-AV: E=Sophos;i="5.91,252,1647327600"; 
-   d="scan'208";a="337136423"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 May 2022 01:57:00 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,252,1647327600"; 
-   d="scan'208";a="609601489"
-Received: from p12hl01tmin.png.intel.com ([10.158.65.216])
-  by orsmga001.jf.intel.com with ESMTP; 26 May 2022 01:56:56 -0700
-From:   Tan Tee Min <tee.min.tan@linux.intel.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Dan Murphy <dmurphy@ti.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org, Voon Wei Feng <weifeng.voon@intel.com>,
-        Sit Michael Wei Hong <michael.wei.hong.sit@intel.com>,
-        Ling Pei Lee <pei.lee.ling@intel.com>,
-        Looi Hong Aun <hong.aun.looi@intel.com>,
-        Wong Vee Khee <vee.khee.wong@intel.com>,
-        Tan Tee Min <tee.min.tan@intel.com>
-Subject: [PATCH net-next v2 1/1] net: phy: dp83867: retrigger SGMII AN when link change
-Date:   Thu, 26 May 2022 17:03:47 +0800
-Message-Id: <20220526090347.128742-1-tee.min.tan@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 26 May 2022 04:57:43 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9D369A8883
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 01:57:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653555461;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=wZpmyj3OZQ3pBrXt/5TVuYqgh1eNpvGfVJnmbN2oiSY=;
+        b=dO5EkKVjhdhnkPqMNpleLatDOFu41WN94sXoC3WJAsKwL5N+vNbSYr0rrijIZIiDryOE7D
+        FbSez67kgYwyjNbCXVB4ftmC/zR5fnI+RbrtjOP8XIkt1LiGG+2Y0fTM6glr78sQcgvAMH
+        pEhGIwzqyzVCQC3PcRBX5wItuaZLkUM=
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
+ [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-554-qVEj97hjP42I0ZkOaNGiqQ-1; Thu, 26 May 2022 04:57:40 -0400
+X-MC-Unique: qVEj97hjP42I0ZkOaNGiqQ-1
+Received: by mail-qk1-f197.google.com with SMTP id c8-20020a05620a268800b0069c0f1b3206so853287qkp.18
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 01:57:40 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=wZpmyj3OZQ3pBrXt/5TVuYqgh1eNpvGfVJnmbN2oiSY=;
+        b=T8PCABsEyrCM+ppHnchgFbYvL01/9t5pC1MueJipvDAZXYlVv3HDH4mMDArJsysiJ2
+         L9iq9HbXVvvGYhqFKM4d1KgEuPN1HZKRyrou0c9vLCs+rocRUJJ27zjzI1YKrCajCfC7
+         edy/QlWMh5Dd9LeQVZVxeHPtbJPvoQ5leGNqMhKCZJziDytMgFw/TFzZF00xN7Z2jJ/m
+         33aKu5c2lRjYRgnUWpf5CT2WSjuLYHQ0AJiZBpdRMmKXxa6N4cMUGTihFzJh8PaqKns/
+         Vuj9zuuHS6nCPzeg4WRPAxu0L2UBM5eO6ehFMm2R3+lpOuvVhMGbgWEaNrU6ysBd+nKe
+         Sxpw==
+X-Gm-Message-State: AOAM5312hO98D9sBHm3XZ3pzuBo/9eq5gvi3Vx/qHm4DFycyCvkC7rWG
+        nZIGF3c8OTtZsdJKhf01fswklswynyDrgw62U0IB/VBeZFUMSZ6TPcqVX88vqttrBnIkqshq2ik
+        Z9lppqhvWol5yNB/ghbjrweK1BtNqvK76QF0V1PvV
+X-Received: by 2002:a05:622a:1899:b0:2f3:b09e:dbe9 with SMTP id v25-20020a05622a189900b002f3b09edbe9mr27814502qtc.199.1653555459670;
+        Thu, 26 May 2022 01:57:39 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwjIaLlyyFKyzCNM0eVOxdzZFqpQOposlyXO+xlUZBqq0LkEO+INJ4wUrqjhNoPeHr4YKiQ02LEvGSr1//hqf4=
+X-Received: by 2002:a05:622a:1899:b0:2f3:b09e:dbe9 with SMTP id
+ v25-20020a05622a189900b002f3b09edbe9mr27814485qtc.199.1653555459453; Thu, 26
+ May 2022 01:57:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220525105922.2413991-1-eperezma@redhat.com> <20220525105922.2413991-3-eperezma@redhat.com>
+ <BL1PR12MB582520CC9CE024149141327499D69@BL1PR12MB5825.namprd12.prod.outlook.com>
+In-Reply-To: <BL1PR12MB582520CC9CE024149141327499D69@BL1PR12MB5825.namprd12.prod.outlook.com>
+From:   Eugenio Perez Martin <eperezma@redhat.com>
+Date:   Thu, 26 May 2022 10:57:03 +0200
+Message-ID: <CAJaqyWc9_ErCg4whLKrjNyP5z2DZno-LJm7PN=-9uk7PUT4fJw@mail.gmail.com>
+Subject: Re: [PATCH v3 2/4] vhost-vdpa: introduce STOP backend feature bit
+To:     "Dawar, Gautam" <gautam.dawar@amd.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        Jason Wang <jasowang@redhat.com>,
+        Zhu Lingshan <lingshan.zhu@intel.com>,
+        "martinh@xilinx.com" <martinh@xilinx.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        "ecree.xilinx@gmail.com" <ecree.xilinx@gmail.com>,
+        Eli Cohen <elic@nvidia.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Wu Zongyong <wuzongyong@linux.alibaba.com>,
+        "dinang@xilinx.com" <dinang@xilinx.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Xie Yongji <xieyongji@bytedance.com>,
+        "lulu@redhat.com" <lulu@redhat.com>,
+        "martinpo@xilinx.com" <martinpo@xilinx.com>,
+        "pabloc@xilinx.com" <pabloc@xilinx.com>,
+        Longpeng <longpeng2@huawei.com>,
+        "Piotr.Uminski@intel.com" <Piotr.Uminski@intel.com>,
+        "Kamde, Tanuj" <tanuj.kamde@amd.com>,
+        Si-Wei Liu <si-wei.liu@oracle.com>,
+        "habetsm.xilinx@gmail.com" <habetsm.xilinx@gmail.com>,
+        "lvivier@redhat.com" <lvivier@redhat.com>,
+        Zhang Min <zhang.min9@zte.com.cn>,
+        "hanand@xilinx.com" <hanand@xilinx.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is a limitation in TI DP83867 PHY device where SGMII AN is only
-triggered once after the device is booted up. Even after the PHY TPI is
-down and up again, SGMII AN is not triggered and hence no new in-band
-message from PHY to MAC side SGMII.
+On Wed, May 25, 2022 at 1:23 PM Dawar, Gautam <gautam.dawar@amd.com> wrote:
+>
+> [AMD Official Use Only - General]
+>
+> -----Original Message-----
+> From: Eugenio P=C3=A9rez <eperezma@redhat.com>
+> Sent: Wednesday, May 25, 2022 4:29 PM
+> To: Michael S. Tsirkin <mst@redhat.com>; netdev@vger.kernel.org; linux-ke=
+rnel@vger.kernel.org; kvm@vger.kernel.org; virtualization@lists.linux-found=
+ation.org; Jason Wang <jasowang@redhat.com>
+> Cc: Zhu Lingshan <lingshan.zhu@intel.com>; martinh@xilinx.com; Stefano Ga=
+rzarella <sgarzare@redhat.com>; ecree.xilinx@gmail.com; Eli Cohen <elic@nvi=
+dia.com>; Dan Carpenter <dan.carpenter@oracle.com>; Parav Pandit <parav@nvi=
+dia.com>; Wu Zongyong <wuzongyong@linux.alibaba.com>; dinang@xilinx.com; Ch=
+ristophe JAILLET <christophe.jaillet@wanadoo.fr>; Xie Yongji <xieyongji@byt=
+edance.com>; Dawar, Gautam <gautam.dawar@amd.com>; lulu@redhat.com; martinp=
+o@xilinx.com; pabloc@xilinx.com; Longpeng <longpeng2@huawei.com>; Piotr.Umi=
+nski@intel.com; Kamde, Tanuj <tanuj.kamde@amd.com>; Si-Wei Liu <si-wei.liu@=
+oracle.com>; habetsm.xilinx@gmail.com; lvivier@redhat.com; Zhang Min <zhang=
+.min9@zte.com.cn>; hanand@xilinx.com
+> Subject: [PATCH v3 2/4] vhost-vdpa: introduce STOP backend feature bit
+>
+> [CAUTION: External Email]
+>
+> Userland knows if it can stop the device or not by checking this feature =
+bit.
+>
+> It's only offered if the vdpa driver backend implements the stop() operat=
+ion callback, and try to set it if the backend does not offer that callback=
+ is an error.
+>
+> Signed-off-by: Eugenio P=C3=A9rez <eperezma@redhat.com>
+> ---
+>  drivers/vhost/vdpa.c             | 16 +++++++++++++++-
+>  include/uapi/linux/vhost_types.h |  2 ++
+>  2 files changed, 17 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c index 1f1d1c4255=
+73..32713db5831d 100644
+> --- a/drivers/vhost/vdpa.c
+> +++ b/drivers/vhost/vdpa.c
+> @@ -347,6 +347,14 @@ static long vhost_vdpa_set_config(struct vhost_vdpa =
+*v,
+>         return 0;
+>  }
+>
+> +static bool vhost_vdpa_can_stop(const struct vhost_vdpa *v) {
+> +       struct vdpa_device *vdpa =3D v->vdpa;
+> +       const struct vdpa_config_ops *ops =3D vdpa->config;
+> +
+> +       return ops->stop;
+> [GD>>] Would it be better to explicitly return a bool to match the return=
+ type?
 
-This could cause an issue during power up, when PHY is up prior to MAC.
-At this condition, once MAC side SGMII is up, MAC side SGMII wouldn`t
-receive new in-band message from TI PHY with correct link status, speed
-and duplex info.
+I'm not sure about the kernel code style regarding that casting. Maybe
+it's better to return !!ops->stop here. The macros likely and unlikely
+do that.
 
-As suggested by TI, implemented a SW solution here to retrigger SGMII
-Auto-Neg whenever there is a link change.
+Thanks!
 
-v2: Add Fixes tag in commit message.
-
-Fixes: 2a10154abcb7 ("net: phy: dp83867: Add TI dp83867 phy")
-Cc: <stable@vger.kernel.org> # 5.4.x
-Signed-off-by: Sit, Michael Wei Hong <michael.wei.hong.sit@intel.com>
-Reviewed-by: Voon Weifeng <weifeng.voon@intel.com>
-Signed-off-by: Tan Tee Min <tee.min.tan@linux.intel.com>
----
- drivers/net/phy/dp83867.c | 29 +++++++++++++++++++++++++++++
- 1 file changed, 29 insertions(+)
-
-diff --git a/drivers/net/phy/dp83867.c b/drivers/net/phy/dp83867.c
-index 8561f2d4443b..13dafe7a29bd 100644
---- a/drivers/net/phy/dp83867.c
-+++ b/drivers/net/phy/dp83867.c
-@@ -137,6 +137,7 @@
- #define DP83867_DOWNSHIFT_2_COUNT	2
- #define DP83867_DOWNSHIFT_4_COUNT	4
- #define DP83867_DOWNSHIFT_8_COUNT	8
-+#define DP83867_SGMII_AUTONEG_EN	BIT(7)
- 
- /* CFG3 bits */
- #define DP83867_CFG3_INT_OE			BIT(7)
-@@ -855,6 +856,32 @@ static int dp83867_phy_reset(struct phy_device *phydev)
- 			 DP83867_PHYCR_FORCE_LINK_GOOD, 0);
- }
- 
-+static void dp83867_link_change_notify(struct phy_device *phydev)
-+{
-+	/* There is a limitation in DP83867 PHY device where SGMII AN is
-+	 * only triggered once after the device is booted up. Even after the
-+	 * PHY TPI is down and up again, SGMII AN is not triggered and
-+	 * hence no new in-band message from PHY to MAC side SGMII.
-+	 * This could cause an issue during power up, when PHY is up prior
-+	 * to MAC. At this condition, once MAC side SGMII is up, MAC side
-+	 * SGMII wouldn`t receive new in-band message from TI PHY with
-+	 * correct link status, speed and duplex info.
-+	 * Thus, implemented a SW solution here to retrigger SGMII Auto-Neg
-+	 * whenever there is a link change.
-+	 */
-+	if (phydev->interface == PHY_INTERFACE_MODE_SGMII) {
-+		int val = 0;
-+
-+		val = phy_clear_bits(phydev, DP83867_CFG2,
-+				     DP83867_SGMII_AUTONEG_EN);
-+		if (val < 0)
-+			return;
-+
-+		phy_set_bits(phydev, DP83867_CFG2,
-+			     DP83867_SGMII_AUTONEG_EN);
-+	}
-+}
-+
- static struct phy_driver dp83867_driver[] = {
- 	{
- 		.phy_id		= DP83867_PHY_ID,
-@@ -879,6 +906,8 @@ static struct phy_driver dp83867_driver[] = {
- 
- 		.suspend	= genphy_suspend,
- 		.resume		= genphy_resume,
-+
-+		.link_change_notify = dp83867_link_change_notify,
- 	},
- };
- module_phy_driver(dp83867_driver);
--- 
-2.25.1
+> +}
+> +
+>  static long vhost_vdpa_get_features(struct vhost_vdpa *v, u64 __user *fe=
+aturep)  {
+>         struct vdpa_device *vdpa =3D v->vdpa; @@ -575,7 +583,11 @@ static=
+ long vhost_vdpa_unlocked_ioctl(struct file *filep,
+>         if (cmd =3D=3D VHOST_SET_BACKEND_FEATURES) {
+>                 if (copy_from_user(&features, featurep, sizeof(features))=
+)
+>                         return -EFAULT;
+> -               if (features & ~VHOST_VDPA_BACKEND_FEATURES)
+> +               if (features & ~(VHOST_VDPA_BACKEND_FEATURES |
+> +                                BIT_ULL(VHOST_BACKEND_F_STOP)))
+> +                       return -EOPNOTSUPP;
+> +               if ((features & BIT_ULL(VHOST_BACKEND_F_STOP)) &&
+> +                    !vhost_vdpa_can_stop(v))
+>                         return -EOPNOTSUPP;
+>                 vhost_set_backend_features(&v->vdev, features);
+>                 return 0;
+> @@ -624,6 +636,8 @@ static long vhost_vdpa_unlocked_ioctl(struct file *fi=
+lep,
+>                 break;
+>         case VHOST_GET_BACKEND_FEATURES:
+>                 features =3D VHOST_VDPA_BACKEND_FEATURES;
+> +               if (vhost_vdpa_can_stop(v))
+> +                       features |=3D BIT_ULL(VHOST_BACKEND_F_STOP);
+>                 if (copy_to_user(featurep, &features, sizeof(features)))
+>                         r =3D -EFAULT;
+>                 break;
+> diff --git a/include/uapi/linux/vhost_types.h b/include/uapi/linux/vhost_=
+types.h
+> index 634cee485abb..2758e665791b 100644
+> --- a/include/uapi/linux/vhost_types.h
+> +++ b/include/uapi/linux/vhost_types.h
+> @@ -161,5 +161,7 @@ struct vhost_vdpa_iova_range {
+>   * message
+>   */
+>  #define VHOST_BACKEND_F_IOTLB_ASID  0x3
+> +/* Stop device from processing virtqueue buffers */ #define
+> +VHOST_BACKEND_F_STOP  0x4
+>
+>  #endif
+> --
+> 2.27.0
+>
 
