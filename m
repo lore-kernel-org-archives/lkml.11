@@ -2,69 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E55D4C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 20:46:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EBECC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 20:46:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347809AbiEZUp6 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 16:45:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60522 "EHLO
+        id S237177AbiEZUqY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 16:46:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349026AbiEZUpp (ORCPT
+        with ESMTP id S1346148AbiEZUqP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 16:45:45 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8C23434B6
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 13:45:33 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id wh22so5166580ejb.7
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 13:45:33 -0700 (PDT)
+        Thu, 26 May 2022 16:46:15 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA1595DBC7
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 13:45:59 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id i27so5064111ejd.9
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 13:45:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=h+A3qo6BldJs7yB/PUZIl3d+cRoad7gVEXVoqQHqU1I=;
-        b=bsgklBTJ5kRGLaDjr1BfSDjF1LVpD2uDeE4Cb6TesbVm7pPQRfsRxCEA3IhYwiCk29
-         uPGnS1ku5A8/1gUu1EBhlwaWa4l1MW35jGgmfYB12OYCt14rnwHUI5mdm4ZyGbL7rGTb
-         PcIeDNiDsgUlpgkLZUg/70YBUS6aKSK2bMKe26r1SgMtkl25sWih7r/kV0mbctgGmDG0
-         LubrrOByyAJe7+gV37x9aH6a5r6oEZysuurR1wjxszu3tiQ9w+KPQESd0lEnYJwvcqQN
-         jnjUBv/GlpyQ9oy8zoaP8pj8NBmNvOFMWBkHdcqHVkA1qROpQVMsLoqjZ6rKD0kNPOzX
-         hKVw==
+        bh=6IYNJKDiS0GsxsIfjukniKUSVecFLdtV/BJTHhq/ubw=;
+        b=owB1dleLPG3OEjVQ4kP49KUKmgZfacfRD5gYgPRUOIMN9K8eJhrh7WsqO81aI5JY2N
+         opwnKxla+8MAlR9Zi7c0OeSV+2PWc5oTLpcFm2y1vOUusMOCPrLds6xD1tYc7QBFIKNP
+         NE68c3ZMgmcJmtFzaxACWNdcQZvl/vkOqOuPSvPA+pMkuaXM0qU5gLLEcacIW8wWtSkZ
+         0O03bC5+93aU6iKf/iKLvgxZeIwKJas1lslpIZFSBTUZLYBa+VCcOmniNQaLw7YLE1Ds
+         dMVDslwWbvbc4TevZUSOthF+Q+C2aYrjyBUs604DXzMHMGAIJpNVcLMNW+JqKc4supIG
+         /V8w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=h+A3qo6BldJs7yB/PUZIl3d+cRoad7gVEXVoqQHqU1I=;
-        b=k4MUD9P76+8DsciO6jBXfPkJ27V9R0o5TIt6WhY9+l8uZYFl8RhYTbl/+LJm4d7y68
-         z1v/Yj/ut1QnDbMAaYFVn/R+yzDlPCLPEBeHJqiQ7dvRyCApes6RzPSe6/ZnOetMXeZZ
-         OTK5hwsXJpQFJukCEQKybNLZjagPA1d9UpZv8iAHYCDJRCxMWirmcDUtdKXIC1PpBzjW
-         hBxJ0L/7EVVV0laxIEWCySVDecrAoS+U8khoF7mrEOpXbfp/3SiuobPmYuvv7l0EZIWo
-         a4dZTbiLXfUJ35SC17rrMcenbyYmzZmCRwLAF1cKDQUzNgqcbaaUHLEU3EtlUyTdNKDk
-         oRRw==
-X-Gm-Message-State: AOAM531/PWYGX/AyLqnvWSizo0RUZbRvNwihj1fs755FeyYGTfn6n/BT
-        dNGjQLisWipKYU/7gBxs5d/iCA==
-X-Google-Smtp-Source: ABdhPJxbfx0ehewyZhx++Y7dMO9l/5GqNy/H+1t0rKskIYQrY9Sk4ZR/QsPiB+GGpu0kCkRrHSGEWA==
-X-Received: by 2002:a17:906:99c3:b0:6ff:1254:7227 with SMTP id s3-20020a17090699c300b006ff12547227mr8743993ejn.692.1653597932074;
-        Thu, 26 May 2022 13:45:32 -0700 (PDT)
+        bh=6IYNJKDiS0GsxsIfjukniKUSVecFLdtV/BJTHhq/ubw=;
+        b=zb2TqVxshXVBi9KY2MaMFAzC71AnTVOmT6zKfavJqPOeic0wQPdtN9mIrh/lgubU86
+         qRy6ATTozZNFLkuc/iK+OSSUAMj6nPUPyPX2PV/bSYoidWOnjJIIsTl9xClPvWEHrMLi
+         MAseNOAyVrudGaieiVR0JLZv11AXLWzvjAoIiayaGchC3rGONKcy3kjfqCor+PJOi27O
+         f43l9yAGWFxkD1YTXQVH3a0zBoCqxDWz+s+EtZBzAPrwPEGgBqKEQnL2lTrQ6djS66Z2
+         3hzz3uz0ub9Y3Zs08YWgxFXHm16pDhSsjh4wbejqB+gOkR9WxOFvrA4G5tEIRy+0OjKn
+         bmlQ==
+X-Gm-Message-State: AOAM531Qz34dgxQcgtyAqjYX93fIvAVNm3S81qQ7JCScF1kbJYYbGzl4
+        nK37MR8PV0WzAZDAWtZb9MaKIg==
+X-Google-Smtp-Source: ABdhPJz8AXnd6L8rAXQTGJvqOqAm1R+IiFsGG7//dQPGu4ApZsgRXYECTsCTneE4TJbZqANQfqfPlw==
+X-Received: by 2002:a17:907:1c81:b0:6ff:335d:a0f7 with SMTP id nb1-20020a1709071c8100b006ff335da0f7mr845104ejc.182.1653597958016;
+        Thu, 26 May 2022 13:45:58 -0700 (PDT)
 Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id rv3-20020a1709068d0300b006fec69a3978sm769550ejc.207.2022.05.26.13.45.30
+        by smtp.gmail.com with ESMTPSA id z1-20020a1709067e4100b006fe8ac6bc69sm827633ejr.140.2022.05.26.13.45.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 May 2022 13:45:31 -0700 (PDT)
+        Thu, 26 May 2022 13:45:57 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        arm@kernel.org, soc@kernel.org, Daniel Mack <daniel@zonque.org>,
-        Haojian Zhuang <haojian.zhuang@gmail.com>,
-        Robert Jarzmik <robert.jarzmik@free.fr>,
-        Rob Herring <robh+dt@kernel.org>,
+        arm@kernel.org, soc@kernel.org, Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
 Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 2/2] ARM: dts: pxa: adjust whitespace around '='
-Date:   Thu, 26 May 2022 22:45:25 +0200
-Message-Id: <20220526204525.832847-2-krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 2/2] ARM: dts: meson: adjust whitespace around '='
+Date:   Thu, 26 May 2022 22:45:52 +0200
+Message-Id: <20220526204552.832961-2-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220526204525.832847-1-krzysztof.kozlowski@linaro.org>
-References: <20220526204525.832847-1-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220526204552.832961-1-krzysztof.kozlowski@linaro.org>
+References: <20220526204552.832961-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -81,50 +81,58 @@ Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
 Output compared with dtx_diff and fdtdump.
 ---
- arch/arm/boot/dts/pxa300-raumfeld-common.dtsi | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ arch/arm/boot/dts/meson.dtsi   | 4 ++--
+ arch/arm/boot/dts/meson8.dtsi  | 2 +-
+ arch/arm/boot/dts/meson8b.dtsi | 2 +-
+ 3 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/arch/arm/boot/dts/pxa300-raumfeld-common.dtsi b/arch/arm/boot/dts/pxa300-raumfeld-common.dtsi
-index 8a6721d436bd..147c99191dc2 100644
---- a/arch/arm/boot/dts/pxa300-raumfeld-common.dtsi
-+++ b/arch/arm/boot/dts/pxa300-raumfeld-common.dtsi
-@@ -189,31 +189,31 @@ max8660: regulator@34 {
+diff --git a/arch/arm/boot/dts/meson.dtsi b/arch/arm/boot/dts/meson.dtsi
+index 26eaba3fa96f..8e3860d5d916 100644
+--- a/arch/arm/boot/dts/meson.dtsi
++++ b/arch/arm/boot/dts/meson.dtsi
+@@ -214,14 +214,14 @@ aobus: aobus@c8100000 {
+ 			ranges = <0x0 0xc8100000 0x100000>;
  
- 		regulators {
- 			regulator-v3 {
--				regulator-compatible= "V3(DCDC)";
-+				regulator-compatible = "V3(DCDC)";
- 				regulator-min-microvolt = <725000>;
- 				regulator-max-microvolt = <1800000>;
+ 			ao_arc_rproc: remoteproc@1c {
+-				compatible= "amlogic,meson-mx-ao-arc";
++				compatible = "amlogic,meson-mx-ao-arc";
+ 				reg = <0x1c 0x8>, <0x38 0x8>;
+ 				reg-names = "remap", "cpu";
+ 				status = "disabled";
  			};
  
- 			regulator-v4 {
--				regulator-compatible= "V4(DCDC)";
-+				regulator-compatible = "V4(DCDC)";
- 				regulator-min-microvolt = <725000>;
- 				regulator-max-microvolt = <1800000>;
- 			};
+ 			ir_receiver: ir-receiver@480 {
+-				compatible= "amlogic,meson6-ir";
++				compatible = "amlogic,meson6-ir";
+ 				reg = <0x480 0x20>;
+ 				interrupts = <GIC_SPI 15 IRQ_TYPE_EDGE_RISING>;
+ 				status = "disabled";
+diff --git a/arch/arm/boot/dts/meson8.dtsi b/arch/arm/boot/dts/meson8.dtsi
+index 9997a5d0333a..0f8bac8bac8b 100644
+--- a/arch/arm/boot/dts/meson8.dtsi
++++ b/arch/arm/boot/dts/meson8.dtsi
+@@ -430,7 +430,7 @@ mux {
+ };
  
- 			regulator-v5 {
--				regulator-compatible= "V5(LDO)";
-+				regulator-compatible = "V5(LDO)";
- 				regulator-min-microvolt = <1700000>;
- 				regulator-max-microvolt = <2000000>;
- 			};
+ &ao_arc_rproc {
+-	compatible= "amlogic,meson8-ao-arc", "amlogic,meson-mx-ao-arc";
++	compatible = "amlogic,meson8-ao-arc", "amlogic,meson-mx-ao-arc";
+ 	amlogic,secbus2 = <&secbus2>;
+ 	sram = <&ao_arc_sram>;
+ 	resets = <&reset RESET_MEDIA_CPU>;
+diff --git a/arch/arm/boot/dts/meson8b.dtsi b/arch/arm/boot/dts/meson8b.dtsi
+index 94f1c03decce..cf9c04a61ba3 100644
+--- a/arch/arm/boot/dts/meson8b.dtsi
++++ b/arch/arm/boot/dts/meson8b.dtsi
+@@ -384,7 +384,7 @@ mux {
+ };
  
- 			reg_vcc_sdio: regulator-v6 {
--				regulator-compatible= "V6(LDO)";
-+				regulator-compatible = "V6(LDO)";
- 				regulator-min-microvolt = <3300000>;
- 				regulator-max-microvolt = <3300000>;
- 			};
- 
- 			regulator-v7 {
--				regulator-compatible= "V7(LDO)";
-+				regulator-compatible = "V7(LDO)";
- 				regulator-min-microvolt = <1800000>;
- 				regulator-max-microvolt = <3300000>;
- 			};
+ &ao_arc_rproc {
+-	compatible= "amlogic,meson8b-ao-arc", "amlogic,meson-mx-ao-arc";
++	compatible = "amlogic,meson8b-ao-arc", "amlogic,meson-mx-ao-arc";
+ 	amlogic,secbus2 = <&secbus2>;
+ 	sram = <&ao_arc_sram>;
+ 	resets = <&reset RESET_MEDIA_CPU>;
 -- 
 2.34.1
 
