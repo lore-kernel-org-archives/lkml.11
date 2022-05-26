@@ -2,162 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 039F2C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 12:34:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEF88C43217
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 12:34:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347477AbiEZMeB (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 08:34:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37506 "EHLO
+        id S234357AbiEZMeq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 08:34:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347386AbiEZMda (ORCPT
+        with ESMTP id S240425AbiEZMem (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 08:33:30 -0400
-Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2079.outbound.protection.outlook.com [40.107.20.79])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6863A46C;
-        Thu, 26 May 2022 05:33:10 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Z9SjXiB4jexnX3Y+Br54t7RbH/IrY8T7KyKwSDncaGqpOFM5I24/EOMeEcIPRnxQs4l+HyeMqRwntDiyxv+xZKPkiOjYx2YUz0WIDoZyM/EyYyJpdKzP+0j0yfX2cLOIFsHE1rzTD8GD+TZhfThuXMUnCsyYem9gJrZBjA84rUIITTQb0SRlyk4VGBAyrLfI9a8xMbGypvi2Ak6xCCAWp2YazouLlIdEH6mwsDvQS30luUufiqTy/EdKgq9oPU3jR1XZmtN9fzcDCIIbzIfbVGLo4kOObSwjAig2epJtJx0fQv9f+ReE1dZThjsXcw2u0zH7Nm4pbriwW+W7qMeeWQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=QXgwknCxgnC4sPJlycjjKQde5pOXYa0eLqTitX+1NVM=;
- b=Mvm9JobClanhhFSf0VMq8Lqa4KPpy80O4dTQVQgwbE4NLYvrIuNQaE4bgQkMnK4IBvGylTE+rianC+Y94j23DtB+pXwMKJbVbyMDIfxCtp1z04ss+fsozIjawcNMNZFps7S9c4/pfcajnudfotR7WAnIgyxAuH1Eaci7EN/OdaMrAeXHBoBG5/TUib7/hiQcMhhBASCYV8tywnd57aYXiRNvocoL782HduMrTdoYDsKJKohcRcje1Od9oGcwAdKaMCzItqySRbs6/xbna1BTGQeATssYDoQXeHMj6luNexW4v5w4kfI1ebt5zDnhwSyLNwx0H0NE2cRKoVs4tmqIpA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector2-NXP1-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QXgwknCxgnC4sPJlycjjKQde5pOXYa0eLqTitX+1NVM=;
- b=ZyAAANHNF3P6RwHAo9yLIIPPnffpIayRgrCGZ2T1/qMMuSwb4lcSb4yKHw0/cGhtsRrrS/v8PHJb37RkELO9M/Xf3U3xaaLslBLLg+7xMhkc9FrCqmKPAk2UFNAw5ibTXfpJR6rhE1skL2PkyIEEyRdaN1/tBHCRBmWcgIh+hHE=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=oss.nxp.com;
-Received: from DU0PR04MB9417.eurprd04.prod.outlook.com (2603:10a6:10:358::11)
- by DB9PR04MB8363.eurprd04.prod.outlook.com (2603:10a6:10:24b::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.13; Thu, 26 May
- 2022 12:33:05 +0000
-Received: from DU0PR04MB9417.eurprd04.prod.outlook.com
- ([fe80::a892:e4a9:4769:13a5]) by DU0PR04MB9417.eurprd04.prod.outlook.com
- ([fe80::a892:e4a9:4769:13a5%7]) with mapi id 15.20.5293.013; Thu, 26 May 2022
- 12:33:05 +0000
-From:   "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
-To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        sboyd@kernel.org, mturquette@baylibre.com, shawnguo@kernel.org,
-        s.hauer@pengutronix.de
-Cc:     aisheng.dong@nxp.com, l.stach@pengutronix.de,
-        kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, Peng Fan <peng.fan@nxp.com>
-Subject: [PATCH V2 7/7] arm64: dts: imx93: add mediamix blk ctrl node
-Date:   Thu, 26 May 2022 20:34:11 +0800
-Message-Id: <20220526123411.270083-8-peng.fan@oss.nxp.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220526123411.270083-1-peng.fan@oss.nxp.com>
-References: <20220526123411.270083-1-peng.fan@oss.nxp.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SI2PR06CA0013.apcprd06.prod.outlook.com
- (2603:1096:4:186::18) To DU0PR04MB9417.eurprd04.prod.outlook.com
- (2603:10a6:10:358::11)
+        Thu, 26 May 2022 08:34:42 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4757E95B5
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 05:34:41 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id gh17so2764420ejc.6
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 05:34:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=kbA/XPfgYe97A871O4yCZGDbLdPICAAC1mz9m3oyjmA=;
+        b=AMO1JahtE/L14l9S/DcwHOnZKcrgeHAFI0Djsqo/AOYuaFXBsKpGid7DtC4JVXDXdU
+         VJowDrEf6t3TjkmkywcYo/5XeJ4XTsPcnJS668xTSWvXmsBnVzTrx7PTdiZ/OS+2CMzz
+         kibCzUxp01EzArbJNCQRtB1UUaZ1S7wSc6McgeKEjimgjMPzJyv7JVCkx/KVCWce0XhH
+         EAwKjG4l3qSm6hecM03SDvuD64rTLvl31nIEO4E0g3By19fTWBaOJAXq6Gq551cNqayr
+         JFz8WnZiO+3C1pUxmlSZ+hk/H3WzyYua/oVKDdqGloR8A3QSRogH9NEMEDWF7Gz4PMcs
+         BcDA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=kbA/XPfgYe97A871O4yCZGDbLdPICAAC1mz9m3oyjmA=;
+        b=O8QMaWcw2PLM+MTVkfoJuVe4MqxpwTEHz49l17Sl19ikTkCjrMZ+PQo1UE5jeXmVap
+         a9db5C9BuvPB41WjfdkXvRJC2Myor1c+CkRhkxpL0J+sgiPo9+OKmD4iG7PM2b6KwaN6
+         rPe5jfID7fmods3gk6Qplkgn6WP7b/EFPlM/UKl63zWvQfTBk3BEi12iKuGAN7J1WXEe
+         RdlPp0jD7ock4DrkWYItnI+31M+e9RaKRmeUm8EjvL510hMVqPD58QwSESdLa3xmLsNm
+         XjPREmPxJYXrR9Zxfe2tSp2VbCA3mASkY1Er5uEQ71IUhtblCFNVBimHF0ceQF7mp9Hk
+         z8Qg==
+X-Gm-Message-State: AOAM5331ojlXz9aowbQIKSn7viiuNjwiac/qhwIqZXuUGvVkm3T1h9IS
+        oCIIFUjNF86UPfOs77gROzzyYg==
+X-Google-Smtp-Source: ABdhPJyWg4C2hxWT1lae+nfHCv1cvifH3vY5gxg9JLDqJCByZcz/y0GpLcnXMkmIX3sTzLADzp+qHA==
+X-Received: by 2002:a17:907:8a19:b0:6fe:e146:d107 with SMTP id sc25-20020a1709078a1900b006fee146d107mr18328016ejc.763.1653568479848;
+        Thu, 26 May 2022 05:34:39 -0700 (PDT)
+Received: from [192.168.0.177] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id ia15-20020a170907a06f00b006fee2c743b6sm474096ejc.159.2022.05.26.05.34.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 26 May 2022 05:34:39 -0700 (PDT)
+Message-ID: <219392a2-a873-a1da-b8b4-b3cc83013cf4@linaro.org>
+Date:   Thu, 26 May 2022 14:34:38 +0200
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 226b3bf0-cb2d-4eea-91e8-08da3f13e181
-X-MS-TrafficTypeDiagnostic: DB9PR04MB8363:EE_
-X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
-X-Microsoft-Antispam-PRVS: <DB9PR04MB8363F78FC77FA7499361569FC9D99@DB9PR04MB8363.eurprd04.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: qdxS9bM2vEA4H0YhDOrNETj7f8IfNmDg4ud/yHSEWW+87ezxYNmPyIzz0IQ+HnB0N/R+ZJ2e/MVrgsvAxC70K0MahpU+021Ep3wUrpWsUpxICTxq4bcbd4QrRjL5x5LRZp2rMSFiEKvDW+GlxSCrt1MM10zGhTv539WuS4qVlwEN/c3UOxunJzzENAU4tRcj/40C+dTUY6alv694AgIl2A6GfAWMCnUAZ2dyVSrzLW/RGr7EEj1KCPHoFPszbgMrLHSwUZI0wOy9ClDCGRNIWce/dWLDC3SrV98y6Z3pwofSFj2niV/Jf9Qljjk7D3iI3zNbLS8RS7S9xbYeZnVyS4wAbpKC/+HmziLlyZInUmd40mAfKpTESTirF/Kn/rQpq7gOHLOuAT6CBOPy9/ZjiFcXkMYt+jtgw/ZeUnxHiO6gmzMMXaOk6qdJWb8blB7QjIXzOFLNWloSevoOtnaIx84BTqPXihRnsTki/M0d7DYXTq6u1Z5qVnvcl5XVN1Rfmlbkw7fFZXrGiF5TXe8GpGd57XiyzLUalPHCx8NI/yX6oO78uoXEkAJHTNwiIk5kXhj3XKy+Wy+EePzu9wl79JlzrcATeXvAOS0hnuIc5v8DDsaCMu7iy7zIgFcXowszpJH9czxST6aIbMm+QD288IndaanuTLFiqZ70J6PwRTTgMsFH+YU1RBR4reVnvW2cVtw4WNGrypP/otJj73Zr2Q==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU0PR04MB9417.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(508600001)(38350700002)(6486002)(186003)(2906002)(26005)(6512007)(66476007)(66946007)(83380400001)(66556008)(4326008)(38100700002)(7416002)(86362001)(5660300002)(2616005)(1076003)(8676002)(316002)(8936002)(6506007)(52116002)(6666004);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ck5YCj+Kt0oS/eGWzWLKc7WHb1ZYmYWcFChL+V/Z/VZUNSPs8sd9ZuQA0lun?=
- =?us-ascii?Q?m4LRbE7XjGYNMIRQ3lOjyWgdDlW+4AA/5vF3VvzBGOE3rYp0o53r1SEVt8gJ?=
- =?us-ascii?Q?V6RUvF6lUSLRFVTFP7ngHSpLt6HuIbTHX5O1XXQq6qkuRAlANstEGGaSouSI?=
- =?us-ascii?Q?mgNYFZ+gd/UdyRWXl7lsF9Uw5zx624ZpaAsy+iXkUyIla2I5SJ0VYnBlxWRq?=
- =?us-ascii?Q?R5rk6N/iGuLb7XECkIxZgQhST8zFL9FwVsE2F8xDsNA684zDk7hZsaj68/WF?=
- =?us-ascii?Q?cgrFbBBkm4RCQg+hOeKDmmYD8iApfk0mKsVP/avQ1MfuhQjEI2Dw9wIijiAS?=
- =?us-ascii?Q?oN8h2NoV/3b1a4uh26s3w5g6D3cExOTwGV2vIoXnb7Q0FtYDparvUvNcvyCZ?=
- =?us-ascii?Q?fpYSQDTyBDIgYCWqd3eXnQyExJla/3Fuo6fGxD7C4EAPZqHglTnd11l4yX8s?=
- =?us-ascii?Q?uXqz9CtIGOdicoRmWHtw4OYQLPK+Gm0cIXdq3YkomTraOrvgHJZc9o4I6xM+?=
- =?us-ascii?Q?hQZvPXiEwBofNEOgnf+lX03NRnmNE1bx6KhkVno03L6kQnasELJfaMswPCX2?=
- =?us-ascii?Q?lWiZ07EgK1pA5q0PhUUquliQZhMHwN7+WbuQSLleU4ER9GlxK2w43EK59cUN?=
- =?us-ascii?Q?XKx6WvP1vl5nCELQ7B4jyW4tUkzsif0o1+obUciThkVo1PtssQM2Y3zhChyE?=
- =?us-ascii?Q?EGIQJlMGYfLEJDjhg/9aX1auwFIV3NZfxzm0FQQuu45/mS6zlkdq//ErcVJm?=
- =?us-ascii?Q?im7gkwHlIxiZxzbKFTtyFQNJLxRWhv7EwYvOmCsKMJ6/EeSpMeg1nDvKGS/O?=
- =?us-ascii?Q?u/t2mIE6j0D2AzFSQy/Lnt0H6LBVcGicMUz9WRmD1kntKIEwmO8WB4Faeyff?=
- =?us-ascii?Q?5WOuGhvhS1pVHg4+LlkDGXuQ48OZmBNa8CRC4h3dzE+qR+JXgJfMc3czJjpC?=
- =?us-ascii?Q?WAVPYlR14FcnLd5ZNSpNUWl2iFEfef/qhKrgKb037KRal2CJvSzypp0S/Hja?=
- =?us-ascii?Q?JiEMgNd1r1i1PnxLcd5p0GdkeWIIw0RpjEC4bN0kWb3GyPQqe9ld4cfPlzsJ?=
- =?us-ascii?Q?ibdGiRn3CYFP6A1X47x+yj9KD8MPaKBRj1qhwkydOKHvMk4JqjjQZjK7sHPN?=
- =?us-ascii?Q?E8fGmSDuX03blEMu6IU9nwRiwNgQzv5WAmVBPCfWmd/SZ/2L2LJdR0FPWRQ1?=
- =?us-ascii?Q?n6yZNtIgZWIecE84CZH0JPtlNfOljNHMSAXhyMRhCaK19Gjcp/j6/eFP+0lI?=
- =?us-ascii?Q?jPLYrSUscaU47BQvnWDSGiPi6MepmvUc99WDgWFVWiFuTgz735UFeKxiaunU?=
- =?us-ascii?Q?BT2Q8LykcEWIXBQ+B1N6QaC9o98SPxcO6tdnq6jZWPowfI+8nEOmIW2vzlbd?=
- =?us-ascii?Q?3A4wntTgDFLw0aDFT7zk+APurKXheNZej1151pF+WA4Cj7aklDUmJ7f9z1Rx?=
- =?us-ascii?Q?Mj7+BpJAeD+uy6Z+3cXXZRDlDSDnJOlIKF+ZVzz/SRa59rtld1AhiNWYKvBR?=
- =?us-ascii?Q?rgtCGN6fpjrZ2u7fhq1GXeYNMuP0AM7a1rMKM/6xNQthnluvYRS/jDsgsfz8?=
- =?us-ascii?Q?cmLoS58nZuAUXPL955wOHaUlRvlplbw34tPQLXjxFSDDaMESIY91oWabofTW?=
- =?us-ascii?Q?J6/6LrriHbVlFifMQPCqblCuhshT7OPlI71xQpXj2zR33SubStcKd45QToCH?=
- =?us-ascii?Q?oqcE2Qt5QcpYQylCNYlF7zkAEMz6M0AXsfk/042kfrRKUKTasX7scHUqyw74?=
- =?us-ascii?Q?RKq9VHm/8Q=3D=3D?=
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 226b3bf0-cb2d-4eea-91e8-08da3f13e181
-X-MS-Exchange-CrossTenant-AuthSource: DU0PR04MB9417.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 May 2022 12:33:04.9779
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: vxMhLlU1SeUITmF9G4hBYy6FM/3N6rHf7SPJo/rAcmIH+HMHP/2yRZI7rj2a9cC0uTtvJV8hstH1MtKzGDtraA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR04MB8363
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v3 2/5] dt-bindings: interconnect: qcom: Split out
+ rpmh-common bindings
+Content-Language: en-US
+To:     Luca Weiss <luca.weiss@fairphone.com>,
+        linux-arm-msm@vger.kernel.org
+Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Georgi Djakov <djakov@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Odelu Kukatla <okukatla@codeaurora.org>,
+        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220525144404.200390-1-luca.weiss@fairphone.com>
+ <20220525144404.200390-3-luca.weiss@fairphone.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220525144404.200390-3-luca.weiss@fairphone.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peng Fan <peng.fan@nxp.com>
+On 25/05/2022 16:43, Luca Weiss wrote:
+> In preparation for the platforms, split out common definitions used in
+> rpmh-based interconnects.
+> 
+> Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
+> ---
+> Changes since v2:
+> * Reorganize patches so order is more logical
+> * Replace bouncing maintainer email with Bjorn
+> * maxItems: 2 for qcom,bcm-voters and qcom,bcm-voter-names
+> * Remove | from some descriptions
+> 
+>  .../interconnect/qcom,rpmh-common.yaml        | 43 +++++++++++++++++++
+>  .../bindings/interconnect/qcom,rpmh.yaml      | 22 +++-------
+>  2 files changed, 48 insertions(+), 17 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/interconnect/qcom,rpmh-common.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/interconnect/qcom,rpmh-common.yaml b/Documentation/devicetree/bindings/interconnect/qcom,rpmh-common.yaml
+> new file mode 100644
+> index 000000000000..e962e8dc9a61
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/interconnect/qcom,rpmh-common.yaml
+> @@ -0,0 +1,43 @@
+> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/interconnect/qcom,rpmh-common.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Qualcomm RPMh Network-On-Chip Interconnect
+> +
+> +maintainers:
+> +  - Georgi Djakov <georgi.djakov@linaro.org>
+> +  - Bjorn Andersson <bjorn.andersson@linaro.org>
+> +
+> +description:
+> +  RPMh interconnect providers support system bandwidth requirements through
+> +  RPMh hardware accelerators known as Bus Clock Manager (BCM). The provider is
+> +  able to communicate with the BCM through the Resource State Coordinator (RSC)
+> +  associated with each execution environment. Provider nodes must point to at
+> +  least one RPMh device child node pertaining to their RSC and each provider
+> +  can map to multiple RPMh resources.
+> +
+> +properties:
+> +  '#interconnect-cells':
+> +    enum: [ 1, 2 ]
+> +
+> +  qcom,bcm-voters:
+> +    $ref: /schemas/types.yaml#/definitions/phandle-array
+> +    items:
+> +      maxItems: 1
+> +    maxItems: 2
+> +    description:
+> +      List of phandles to qcom,bcm-voter nodes that are required by
+> +      this interconnect to send RPMh commands.
+> +
+> +  qcom,bcm-voter-names:
+> +    description:
+> +      Names for each of the qcom,bcm-voters specified.
+> +    maxItems: 2
 
-Add i.MX93 mediamix blk ctrl node
+Property above has maxItems before description, so let's make it
+consistent (also above).
 
-Signed-off-by: Peng Fan <peng.fan@nxp.com>
----
- arch/arm64/boot/dts/freescale/imx93.dtsi | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-diff --git a/arch/arm64/boot/dts/freescale/imx93.dtsi b/arch/arm64/boot/dts/freescale/imx93.dtsi
-index f7d4f769db00..493d4be710e7 100644
---- a/arch/arm64/boot/dts/freescale/imx93.dtsi
-+++ b/arch/arm64/boot/dts/freescale/imx93.dtsi
-@@ -348,5 +348,25 @@ gpio1: gpio@47400080 {
- 			#interrupt-cells = <2>;
- 			gpio-ranges = <&iomuxc 0 0 32>;
- 		};
-+
-+		media_blk_ctrl: power-controller@4ac10000 {
-+			compatible = "fsl,imx93-media-blk-ctrl", "syscon";
-+			reg = <0x4ac10000 0x10000>;
-+			power-domains = <&mediamix>;
-+			clocks = <&clk IMX93_CLK_MEDIA_APB>,
-+				 <&clk IMX93_CLK_MEDIA_AXI>,
-+				 <&clk IMX93_CLK_NIC_MEDIA_GATE>,
-+				 <&clk IMX93_CLK_MEDIA_DISP_PIX>,
-+				 <&clk IMX93_CLK_CAM_PIX>,
-+				 <&clk IMX93_CLK_PXP_GATE>,
-+				 <&clk IMX93_CLK_LCDIF_GATE>,
-+				 <&clk IMX93_CLK_ISI_GATE>,
-+				 <&clk IMX93_CLK_MIPI_CSI_GATE>,
-+				 <&clk IMX93_CLK_MIPI_DSI_GATE>;
-+			clock-names = "apb", "axi", "nic", "disp", "cam",
-+				      "pxp", "lcdif", "isi", "csi", "dsi";
-+			#power-domain-cells = <1>;
-+			status = "disabled";
-+		};
- 	};
- };
--- 
-2.25.1
 
+Best regards,
+Krzysztof
