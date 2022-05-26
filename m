@@ -2,68 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B314C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 20:46:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2B05C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 20:46:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348693AbiEZUqf (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 16:46:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60766 "EHLO
+        id S245243AbiEZUqj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 16:46:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349009AbiEZUqS (ORCPT
+        with ESMTP id S1349056AbiEZUqX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 16:46:18 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B9EB3BC
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 13:46:09 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id y32so4066648lfa.6
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 13:46:09 -0700 (PDT)
+        Thu, 26 May 2022 16:46:23 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C83B1A473
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 13:46:13 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id t5so3179885edc.2
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 13:46:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=zKFl69Qf/EfZisA1xjfBE06TiXrFDlro+owcvXYxfLs=;
-        b=OPrJTmWWghJxejBwqiBJKnQTE203iScML6t38O4ge+iX4qrqf9UUL8F1yxMhy9/D2I
-         vtU5EtfG4quCCB2ZCn7woUy8Nlfcnv6W5+2drvtJ1F47aHI0CBGa6KfwacFvANbHiQao
-         m3YW06Doa442ooxkosamZ/z07i70Y14NmNCWJbkzdISVa3PiF39J7UMufwc0qNQQB8ef
-         Z5aLWglU/wPFO1tD7Oz7/WJAfzKfC7X6M5Hm/VD4FRMeOyTIjryxWRjYBVdpBAtWMojw
-         6Qj2YFapZvbVb/Jm/d+V7ugCCRHN1STPy/TpgRt/Xu2neoZSth7ha2V06YLazxgi8ONB
-         CqMw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=rnybARV3PwUYIGMqQC+Cnp8reh2zKysuGjn0nOXwzUs=;
+        b=LihLiejBgtb1JWrkSoCEc7iO3MJvpnBkTVV4nodP5KXPCg3pChJQvYNBPvc7Zfdnkm
+         5kMTPWtUsCDj6IVl3U0gws1lE0+lb+/Apc3ac6Rg8tciBGgMw/SJWQY9WK5XmoPjtOIC
+         WKvC8XMPKlRJRz7omcLDaiX46xme99b17SQW58lrsZC7eUWctqT6NuWadl7BbPnbzGzB
+         Hw1U9Dxdqcs/YkrMU8sbqf5W9ta5hF7u5FkxU+fj/+t6RQ5YZTel8kRpGSd00Y6eQuzV
+         7DAk7sS9eCLb2BjOMJhOf94mnqQCv9qFabFmxvYP6SA+QFavLJqGVROURE1iI/7W0Q/Z
+         TvQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=zKFl69Qf/EfZisA1xjfBE06TiXrFDlro+owcvXYxfLs=;
-        b=IZY5tIjdbiiI1yTXQy6s7ycKBA0XBXulR3VQny2Nk+G8zgm5M6Zjqit/IPl5cbsSZb
-         fE6CTBsrYFDJNt1C+OqjioNj0F+u3BOv7DhZggBbNTIcK4zh1CVhoDLaU46weUvJTpMM
-         QhFCxqZ03ldaC7EY5xc5jOUt6ufVA0pBBepOTZWoYD+IrYZkvR1IJtgpNjzmRR2A2cMv
-         0amH9/ezDLc5xQvKdLN+7Y3WgMZOzARdsOcKrUNiW4NgZixsjLF7iBjB7Q8QUXo7Trr7
-         vzatV8FvluaOnxbunW8cN0X5ndy2eEAr3S9qMpTRNrJREcXtAm1ANSvXY76wMLZ8+Zcd
-         ow6g==
-X-Gm-Message-State: AOAM531H/hrP845JgwlfIAa3GEIUWDzbUzK7M2cmjhEei+4Kv2aiQALt
-        vsPy1LhaIwH56Av3HJMiNz/+jBugvdBr1t8p
-X-Google-Smtp-Source: ABdhPJxjg7MxB9+eNd5wcXXuMUeFFezHj5yR25BZpYg2A0ogiMJQ3jbwAK7yX/hn0Rc1JtM5uBcpOw==
-X-Received: by 2002:a17:907:a414:b0:6ff:2e46:e891 with SMTP id sg20-20020a170907a41400b006ff2e46e891mr2501719ejc.758.1653597956660;
-        Thu, 26 May 2022 13:45:56 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=rnybARV3PwUYIGMqQC+Cnp8reh2zKysuGjn0nOXwzUs=;
+        b=25oP89iRKjYijHFOK7gPOIyydpatR7LlbuZQN7y10q3WrNS7RUVw6h146ad3GZrGiD
+         orBjUaaMLUjWgsBMcTtMV/3TvV4mw5JHKliOjgb3xsf0JUDqMJ+kGiIQ4hkuvr2sJPrF
+         auzEosnP6XL/cn1kRsqxyxvdrMxpBEzUYx8bnwqGFQpNnmjmK9cgz2MOnJY6onUjRcDn
+         nhzusuxBzR8ImpiZJVBFRg/yoVfdJdBR6zRbU3C24yAjZJ37Bjb8L05O4P67tRFy3lpB
+         nCGMGu9K3LFiABviKxu7gMt8j8chwK2uyx3Uo7OF3RMRZhlYH0c+Uzv/JnrsBEie2dmx
+         fEVw==
+X-Gm-Message-State: AOAM530u7zzgmvxW9kMHgb4VYWDsV30uCiU2ItHZeqJWK94xFZLFOH4h
+        5Tg69b28CtFJcWEzEw+pJepz7A==
+X-Google-Smtp-Source: ABdhPJxhrSUNdF75HeB2S4wTXDWWHMko2Vvbdd8PFPVfzHBp9hwcw7GOu6CQNFmU1ukyWR8Rvsn6EQ==
+X-Received: by 2002:a05:6402:524e:b0:42b:5902:1f26 with SMTP id t14-20020a056402524e00b0042b59021f26mr26047973edd.153.1653597972244;
+        Thu, 26 May 2022 13:46:12 -0700 (PDT)
 Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id z1-20020a1709067e4100b006fe8ac6bc69sm827633ejr.140.2022.05.26.13.45.55
+        by smtp.gmail.com with ESMTPSA id gc21-20020a1709072b1500b006ff16f48e2asm813254ejc.76.2022.05.26.13.46.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 May 2022 13:45:56 -0700 (PDT)
+        Thu, 26 May 2022 13:46:11 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        arm@kernel.org, soc@kernel.org, Rob Herring <robh+dt@kernel.org>,
+        arm@kernel.org, soc@kernel.org,
+        Brijesh Singh <brijeshkumar.singh@amd.com>,
+        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 1/2] arm64: dts: amlogic: adjust whitespace around '='
-Date:   Thu, 26 May 2022 22:45:51 +0200
-Message-Id: <20220526204552.832961-1-krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 2/5] arm64: dts: amd: adjust whitespace around '='
+Date:   Thu, 26 May 2022 22:46:03 +0200
+Message-Id: <20220526204606.833054-2-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220526204606.833054-1-krzysztof.kozlowski@linaro.org>
+References: <20220526204606.833054-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -80,50 +80,40 @@ Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
 Output compared with dtx_diff and fdtdump.
 ---
- arch/arm64/boot/dts/amlogic/meson-axg.dtsi                      | 2 +-
- arch/arm64/boot/dts/amlogic/meson-gx.dtsi                       | 2 +-
- .../boot/dts/amlogic/meson-gxl-s905w-jethome-jethub-j80.dts     | 2 +-
- 3 files changed, 3 insertions(+), 3 deletions(-)
+ arch/arm64/boot/dts/amd/amd-overdrive-rev-b0.dts | 4 ++--
+ arch/arm64/boot/dts/amd/amd-overdrive-rev-b1.dts | 4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/amlogic/meson-axg.dtsi b/arch/arm64/boot/dts/amlogic/meson-axg.dtsi
-index 3f5254eeb47b..04f797b5a012 100644
---- a/arch/arm64/boot/dts/amlogic/meson-axg.dtsi
-+++ b/arch/arm64/boot/dts/amlogic/meson-axg.dtsi
-@@ -1535,7 +1535,7 @@ aobus: bus@ff800000 {
+diff --git a/arch/arm64/boot/dts/amd/amd-overdrive-rev-b0.dts b/arch/arm64/boot/dts/amd/amd-overdrive-rev-b0.dts
+index c290d1ce2b03..02bff65e5fd6 100644
+--- a/arch/arm64/boot/dts/amd/amd-overdrive-rev-b0.dts
++++ b/arch/arm64/boot/dts/amd/amd-overdrive-rev-b0.dts
+@@ -20,8 +20,8 @@ chosen {
+ 	};
  
- 			sysctrl_AO: sys-ctrl@0 {
- 				compatible = "amlogic,meson-axg-ao-sysctrl", "simple-mfd", "syscon";
--				reg =  <0x0 0x0 0x0 0x100>;
-+				reg = <0x0 0x0 0x0 0x100>;
- 
- 				clkc_AO: clock-controller {
- 					compatible = "amlogic,meson-axg-aoclkc";
-diff --git a/arch/arm64/boot/dts/amlogic/meson-gx.dtsi b/arch/arm64/boot/dts/amlogic/meson-gx.dtsi
-index aa14ea017a61..023a52005494 100644
---- a/arch/arm64/boot/dts/amlogic/meson-gx.dtsi
-+++ b/arch/arm64/boot/dts/amlogic/meson-gx.dtsi
-@@ -450,7 +450,7 @@ aobus: bus@c8100000 {
- 
- 			sysctrl_AO: sys-ctrl@0 {
- 				compatible = "amlogic,meson-gx-ao-sysctrl", "simple-mfd", "syscon";
--				reg =  <0x0 0x0 0x0 0x100>;
-+				reg = <0x0 0x0 0x0 0x100>;
- 
- 				clkc_AO: clock-controller {
- 					compatible = "amlogic,meson-gx-aoclkc";
-diff --git a/arch/arm64/boot/dts/amlogic/meson-gxl-s905w-jethome-jethub-j80.dts b/arch/arm64/boot/dts/amlogic/meson-gxl-s905w-jethome-jethub-j80.dts
-index fcb304c5a40f..6831137c5c10 100644
---- a/arch/arm64/boot/dts/amlogic/meson-gxl-s905w-jethome-jethub-j80.dts
-+++ b/arch/arm64/boot/dts/amlogic/meson-gxl-s905w-jethome-jethub-j80.dts
-@@ -216,7 +216,7 @@ &uart_A {
- 
- 	bluetooth {
- 		compatible = "realtek,rtl8822cs-bt";
--		enable-gpios  = <&gpio GPIOX_17 GPIO_ACTIVE_HIGH>;
-+		enable-gpios = <&gpio GPIOX_17 GPIO_ACTIVE_HIGH>;
- 		host-wake-gpios = <&gpio GPIOX_18 GPIO_ACTIVE_HIGH>;
-        };
+ 	psci {
+-		compatible   = "arm,psci-0.2";
+-		method       = "smc";
++		compatible = "arm,psci-0.2";
++		method = "smc";
+ 	};
  };
+ 
+diff --git a/arch/arm64/boot/dts/amd/amd-overdrive-rev-b1.dts b/arch/arm64/boot/dts/amd/amd-overdrive-rev-b1.dts
+index e0926f6bb7c3..07dab1f1e3c8 100644
+--- a/arch/arm64/boot/dts/amd/amd-overdrive-rev-b1.dts
++++ b/arch/arm64/boot/dts/amd/amd-overdrive-rev-b1.dts
+@@ -20,8 +20,8 @@ chosen {
+ 	};
+ 
+ 	psci {
+-		compatible   = "arm,psci-0.2";
+-		method       = "smc";
++		compatible = "arm,psci-0.2";
++		method = "smc";
+ 	};
+ };
+ 
 -- 
 2.34.1
 
