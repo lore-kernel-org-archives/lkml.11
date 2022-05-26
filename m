@@ -2,103 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0908AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 20:14:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32E63C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 20:15:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348900AbiEZUOA (ORCPT
+        id S1348912AbiEZUP0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 16:14:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58592 "EHLO
+        Thu, 26 May 2022 16:15:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233384AbiEZUN6 (ORCPT
+        with ESMTP id S233384AbiEZUPZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 16:13:58 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BC77C1EC4
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 13:13:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653596037; x=1685132037;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=0J3P8mCVmRJH4VExXC4e3LOi9we7yQ54YNUzVR9BQ9Y=;
-  b=KNAHQXbdTFieoE8nYXOJdPw3snxuBQwxOYcMTDVcvKK6pdQOWJUTg6Kd
-   gVbZryAm7+JMZMFtnMaufscDCoaon0pY0EEEPH79GZhxwBx+JOBHAx3z4
-   rsmLj5S7uS6Mx/lGR7hfBn5Q9yXncZQzn8x5ojCGfx0OFb4zkzd/vCfRH
-   5jDsSrKwHjA7PrsVIygAnaVyue9gmXkliSDXDa3+I2d16ziYcd9u7eFZf
-   vtUeVx3k17mlQ4y7ohm1prPfvVbfKT8czApX7yMkXZqkNU8A/zugHHsQS
-   bK1AEinlgPelU+HE0zKbeKRqYN3pRyVwKRIoAFSPNMjT+c+nzB9s1MurF
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10359"; a="274279075"
-X-IronPort-AV: E=Sophos;i="5.91,252,1647327600"; 
-   d="scan'208";a="274279075"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 May 2022 13:13:57 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,252,1647327600"; 
-   d="scan'208";a="902196364"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga005.fm.intel.com with ESMTP; 26 May 2022 13:13:53 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id F1E04109; Thu, 26 May 2022 23:13:54 +0300 (EEST)
-Date:   Thu, 26 May 2022 23:13:54 +0300
-From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-To:     Dave Hansen <dave.hansen@intel.com>
-Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        luto@kernel.org, peterz@infradead.org, ak@linux.intel.com,
-        dan.j.williams@intel.com, david@redhat.com, hpa@zytor.com,
-        linux-kernel@vger.kernel.org,
-        sathyanarayanan.kuppuswamy@linux.intel.com, seanjc@google.com,
-        thomas.lendacky@amd.com, x86@kernel.org
-Subject: Re: [PATCHv3 2/3] x86/tdx: Clarify RIP adjustments in #VE handler
-Message-ID: <20220526201354.v5a6fsi4aiuet2d7@black.fi.intel.com>
-References: <20220524221012.62332-1-kirill.shutemov@linux.intel.com>
- <20220524221012.62332-3-kirill.shutemov@linux.intel.com>
- <89f55141-a71c-1fd8-e1be-96355c63c03a@intel.com>
+        Thu, 26 May 2022 16:15:25 -0400
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B52DC5DB9;
+        Thu, 26 May 2022 13:15:20 -0700 (PDT)
+Received: by mail-wm1-x332.google.com with SMTP id f23-20020a7bcc17000000b003972dda143eso3445873wmh.3;
+        Thu, 26 May 2022 13:15:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=vOOSDW3LWjs9OtqRa5AjHsFDFKnXrZ6n3su1CfR2K0U=;
+        b=R9/CTyhc+jxrwO9ltIj70JhtW081O78V2963+iUCrLpAvG/aBztOJIhagPr7atkw/8
+         sk13EoAbCyRutWQDS/lfCx5UrRrHfXu5cEy5H3cSvYcrnk9NqRl8H3WguUunhgwJBgC5
+         4QBrJ9b/m74QGd7Pmsa+a2KrYOmuPf43nKCO0KwyUQsFKTtgI+awTbkghatMSva/mZvW
+         6uxBHsjqaPjxUAPVwcVh74ynmXf5hb1jZnAWDfB2DCPKR5OMnNmeAxNht3OxuS9JdpsC
+         +EJDnhyrUzQXOEHfB84AgREfivY2Adl+VVlTPwRdPcDD7FaKRBYBZewHvDVpzTMPHw6h
+         Df3g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=vOOSDW3LWjs9OtqRa5AjHsFDFKnXrZ6n3su1CfR2K0U=;
+        b=zYeTx6ysG16IAAnphwSwwoKdaXYKN7IS3uiy6EEWsyo8fbvAzR3afP8dQRuNedFyOY
+         qGVe/uuZCmsPN3Xkq1/5hlfcPkYWLGayB1eA6uaQC3g7uNAHPMavHRbT1dSQc5PNMK/1
+         FCgfb+pExuJA8dzwLn15ZwF5v8Fg5oJuN9PFbmvyLvJKwrYf53IsZtGxVRYp94xcl6LN
+         5vv9TVKsucOiQXAWks10nxQfekqzgPCo/K4jjnB0yY1f5HcfH656YIrRi19U1EEhkDmw
+         kkbvFJqvesrBNTHJ+NRRTs49pyK0UktWkdHPGCUFENmoKJ5t4nHzjZDGA0DmptssPZZt
+         Q1BQ==
+X-Gm-Message-State: AOAM533R0bvxtXUdUi66vvXLbnUfdDW4ulnXnAajJNwsYDoqMGqWcEI8
+        2RIHlc9gCDvrjNd6D2UVH8Q=
+X-Google-Smtp-Source: ABdhPJzYh/cJdGeA8u+SrsyNUMeyVhGcq1i2fuxjTUcc2CKlFascKZcvvsHhlPIBG3t6V6hcm60yOA==
+X-Received: by 2002:a05:600c:3b05:b0:397:54ce:896 with SMTP id m5-20020a05600c3b0500b0039754ce0896mr3791047wms.3.1653596118826;
+        Thu, 26 May 2022 13:15:18 -0700 (PDT)
+Received: from olivier-3493erg ([2a01:e34:ec42:fd70:8e84:c3a8:e5ed:7183])
+        by smtp.gmail.com with ESMTPSA id n15-20020a5d588f000000b0020fe86d340fsm110962wrf.55.2022.05.26.13.15.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 May 2022 13:15:18 -0700 (PDT)
+Date:   Thu, 26 May 2022 22:15:16 +0200
+From:   Olivier dautricourt <olivierdautricourt@gmail.com>
+To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Cc:     sr@denx.de, vkoul@kernel.org, dmaengine@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>
+Subject: Re: [PATCH] dmaengine: altera: Fix kernel-doc
+Message-ID: <Yo/f1F5wf1Tpaqoi@olivier-3493erg>
+References: <20220525093313.52749-1-jiapeng.chong@linux.alibaba.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <89f55141-a71c-1fd8-e1be-96355c63c03a@intel.com>
+In-Reply-To: <20220525093313.52749-1-jiapeng.chong@linux.alibaba.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 25, 2022 at 09:02:48AM -0700, Dave Hansen wrote:
-> On 5/24/22 15:10, Kirill A. Shutemov wrote:
-> > +static int ve_instr_len(struct ve_info *ve)
-> > +{
-> > +	/*
-> > +	 * If the #VE happened due to instruction execution, GET_VEINFO
-> > +	 * provides info on the instruction.
-> > +	 *
-> > +	 * For #VE due to EPT violation, info provided by GET_VEINFO not usable
-> > +	 * and kernel has to decode instruction manually to find out its
-> > +	 * length. Catch such cases.
-> > +	 */
-> > +	if (WARN_ON_ONCE(ve->exit_reason == EXIT_REASON_EPT_VIOLATION))
-> > +		return 0;
-> > +
-> > +	return ve->instr_len;
-> > +}
+On Wed, May 25, 2022 at 05:33:13PM +0800, Jiapeng Chong wrote:
+> Fix the following W=1 kernel warnings:
 > 
-> I'm not super happy with how this comment ended up.  First, let's put
-> the comment next to the code to which it applies, like:
+> drivers/dma/altera-msgdma.c:927: warning: expecting prototype for
+> msgdma_dma_remove(). Prototype was for msgdma_remove() instead.
 > 
-> 	/*
-> 	 * ve->instr_len is not defined for EPT violations.  For those,
-> 	 * the kernel must decode instructions manually and should not
-> 	 * be using this function.
-> 	 */
-> 	if (WARN_ON_ONCE(ve->exit_reason == EXIT_REASON_EPT_VIOLATION))
-> 		return 0;
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+> ---
+>  drivers/dma/altera-msgdma.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> 	/*
-> 	 * Assume that the #VE occurred due to instruction execution.
-> 	 */
-> 	return ve->instr_len;
+> diff --git a/drivers/dma/altera-msgdma.c b/drivers/dma/altera-msgdma.c
+> index 6f56dfd375e3..bdaac5d62a04 100644
+> --- a/drivers/dma/altera-msgdma.c
+> +++ b/drivers/dma/altera-msgdma.c
+> @@ -918,7 +918,7 @@ static int msgdma_probe(struct platform_device *pdev)
+>  }
+>  
+>  /**
+> - * msgdma_dma_remove - Driver remove function
+> + * msgdma_remove() - Driver remove function
+>   * @pdev: Pointer to the platform_device structure
+>   *
+>   * Return: Always '0'
+> -- 
+> 2.20.1.7.g153144c
+> 
 
-Would it be helpful if the function has a whitelist of exit resons where
-using ve->instr_len is safe? WARN_ONCE() and return 0 otherwise.
+Hello, thanks for reporting.
 
--- 
- Kirill A. Shutemov
+I notice now that another doc entry is misnamed:
+
+drivers/dma/altera-msgdma.c:758: warning: expecting prototype for
+msgdma_chan_remove(). Prototype was for msgdma_dev_remove() instead
+
+Is it possible for you to fix this aswell ?
+I also suggest using the full name of the driver in the commit message:
+dmaengine: altera-msgdma: ...
+
+
+Kr,
+
+
+Olivier
+
