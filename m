@@ -2,304 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8E70C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 20:54:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 976C3C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 20:54:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348857AbiEZUyC (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 16:54:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33704 "EHLO
+        id S245003AbiEZUyH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 16:54:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230123AbiEZUx7 (ORCPT
+        with ESMTP id S1348691AbiEZUyB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 16:53:59 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAAED67D1E;
-        Thu, 26 May 2022 13:53:57 -0700 (PDT)
-Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24QKLimd002637;
-        Thu, 26 May 2022 20:53:38 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=tZWBd9uDfN7eBp6FxFNCshQrwCuBJZvA8XVxAG6t838=;
- b=OlGUJveswGJ39ODh6Q0/oRjpVhSVRb5TooVJshOz4xtpcGe+2Acy2lU5CLB/lVmPM8ct
- 17uDixqUZOdsTDR0TU8zTbiQduofgaEPKBAvZi6wJM++iqpKcXOQqrA4Iyk/UofIFJBO
- I/aA58T4z25WNdP1aG0H/UCXs6s5ogPh/h53ohVC6WAnArZuPj4yo8qpFfS9r+UF9cyb
- HcbNGgkvl/7FOuJB8ykK+GWZzeGqWbwfVCeeu/8TEsjqgrqaw1Fpcnl/4awjQ+oCTG70
- /cOg3iu7cWLtGHhB0OPddm6VqbZfN3afetqyNv+4A0FxcyseBeI1R+6vUPW59skjscRa 1Q== 
-Received: from ppma02wdc.us.ibm.com (aa.5b.37a9.ip4.static.sl-reverse.com [169.55.91.170])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3gaggvggu0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 26 May 2022 20:53:37 +0000
-Received: from pps.filterd (ppma02wdc.us.ibm.com [127.0.0.1])
-        by ppma02wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24QKr2Lm027947;
-        Thu, 26 May 2022 20:53:37 GMT
-Received: from b03cxnp07028.gho.boulder.ibm.com (b03cxnp07028.gho.boulder.ibm.com [9.17.130.15])
-        by ppma02wdc.us.ibm.com with ESMTP id 3gagpkr2bq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 26 May 2022 20:53:37 +0000
-Received: from b03ledav003.gho.boulder.ibm.com (b03ledav003.gho.boulder.ibm.com [9.17.130.234])
-        by b03cxnp07028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24QKra7U20119952
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 26 May 2022 20:53:36 GMT
-Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 06D896A054;
-        Thu, 26 May 2022 20:53:36 +0000 (GMT)
-Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 813776A051;
-        Thu, 26 May 2022 20:53:35 +0000 (GMT)
-Received: from v0005c16.aus.stglabs.ibm.com (unknown [9.211.46.254])
-        by b03ledav003.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Thu, 26 May 2022 20:53:35 +0000 (GMT)
-From:   Eddie James <eajames@linux.ibm.com>
-To:     linux-i2c@vger.kernel.org
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        wsa@kernel.org, peda@axentia.se, jic23@kernel.org, lars@metafoo.de,
-        eajames@linux.ibm.com, miltonm@us.ibm.com, joel@jms.id.au
-Subject: [PATCH 1/2] i2c: core: Add mux root adapter operations
-Date:   Thu, 26 May 2022 15:53:33 -0500
-Message-Id: <20220526205334.64114-2-eajames@linux.ibm.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220526205334.64114-1-eajames@linux.ibm.com>
-References: <20220526205334.64114-1-eajames@linux.ibm.com>
+        Thu, 26 May 2022 16:54:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2251967D1E;
+        Thu, 26 May 2022 13:54:00 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9C53561B43;
+        Thu, 26 May 2022 20:53:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 728F5C385A9;
+        Thu, 26 May 2022 20:53:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653598438;
+        bh=3fivRCkd5fSNHIxjV+5VCoZjgLoG/bfYfiExSsl/3qU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=papothjgQFrzOlwxukQRagU21y+cRRYK/3NXsssOkQafGmTRgV8fwVLNrVAn82I+0
+         e8ffES34AXbRQgeSJMzp2DCzsfTx8iXrJg64CaCzVmpxetOZYAyRSPIO4PlfpwmtUN
+         Ie9x9ASbgRJrHvfjCv/cl6GyUHAlqk8eVGG5bRJoecdZIgIFpqDxlBhjTcm3IsVGLc
+         wGcqgn5mSAff7pcR3gSg17u7z0LQEOAI9AM3GjpXyYveSZ8P0icVNl5Nlys+MhlU+c
+         sJFYruG/NePrYmz+7/3zRcy4z3myes/pJ+QJucoxvPd6Kq6vXEC75q2VfWySbwAxen
+         CO0EnreDDoBjg==
+Date:   Thu, 26 May 2022 15:53:55 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Jim Quinlan <jim2101024@gmail.com>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        James Dutton <james.dutton@gmail.com>,
+        Cyril Brulebois <kibi@debian.org>,
+        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
+        Jim Quinlan <james.quinlan@broadcom.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        "moderated list:BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE" 
+        <linux-rpi-kernel@lists.infradead.org>,
+        "moderated list:BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>, linux-pm@vger.kernel.org
+Subject: Re: [PATCH v1] PCI: brcmstb: Fix regression regarding missing PCIe
+ linkup
+Message-ID: <20220526205355.GA344519@bhelgaas>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: Sz_QaotiDhXEVzWw2UM8W9OEnTnaS82F
-X-Proofpoint-GUID: Sz_QaotiDhXEVzWw2UM8W9OEnTnaS82F
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-26_10,2022-05-25_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 malwarescore=0
- bulkscore=0 spamscore=0 impostorscore=0 priorityscore=1501 adultscore=0
- mlxlogscore=999 phishscore=0 clxscore=1015 suspectscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2205260095
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220526192512.GH54904-robh@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some I2C clients need the ability to control the root I2C bus even if the
-endpoint device is behind a mux. For example, a driver for a chip that
-can't handle any I2C traffic on the bus while coming out of reset
-(including an I2C-driven mux switching channels) may need to lock the root
-bus with the mux selection fixed for the entire time the device is in
-reset.
-For this purpose, add a new structure containing two function pointers to
-the adapter structure. These functions pointers should be defined for
-every adapter. The lock_select operation, for a mux adapter, locks the
-parent adpaters up to the root and selects the adapter's channel. The
-unlock_deselect operation deselects the mux channel and unlocks all the
-adapters. For a non-mux adapter, the operations lock and unlock the
-adapters up to the root. This scheme should work with multiple levels of
-muxes and regular adapters in between.
+On Thu, May 26, 2022 at 02:25:12PM -0500, Rob Herring wrote:
+> On Mon, May 23, 2022 at 05:10:36PM -0500, Bjorn Helgaas wrote:
+> > On Sat, May 21, 2022 at 02:51:42PM -0400, Jim Quinlan wrote:
+> > > On Sat, May 21,
+> > > 2CONFIG_INITRAMFS_SOURCE="/work3/jq921458/cpio/54-arm64-rootfs.cpio022
+> > > at 12:43 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
+> > > > On Wed, May 18, 2022 at 03:42:11PM -0400, Jim Quinlan wrote:
 
-Signed-off-by: Eddie James <eajames@linux.ibm.com>
----
- drivers/i2c/i2c-core-base.c | 38 ++++++++++++++++++++++++++++
- drivers/i2c/i2c-mux.c       | 50 +++++++++++++++++++++++++++++++++++++
- include/linux/i2c.h         | 42 +++++++++++++++++++++++++++++++
- 3 files changed, 130 insertions(+)
+> > > > I added Rafael because this seems vaguely similar to runtime power
+> > > > management, and if we can integrate with that somehow, I'd sure like
+> > > > to avoid building a parallel infrastructure for it.
+> > > >
+> > > > The current path we're on is to move some of this code that's
+> > > > currently in pcie-brcmstb.c to the PCIe portdrv [0].  I'm a little
+> > > > hesitant about that because ACPI does just fine without it.  If we're
+> > > > adding new DT functionality that could not be implemented via ACPI,
+> > > > that's one thing.  But I'm not convinced this is that new.
+> > >
+> > > AFAICT, Broadcom STB and Cable Modem products do not have/use/want
+> > > ACPI.  We are fine with keeping this "PCIe regulator" feature
+> > > private to our driver and giving you speedy and full support in
+> > > maintaining it.
+> > 
+> > I don't mean that you should use ACPI, only that ACPI platforms can do
+> > this sort of power control using the existing PCI core infrastructure,
+> > and maybe there's a way for OF/DT platforms to hook into that same
+> > infrastructure to minimize the driver-specific work.  E.g., maybe
+> > there's a way to extend platform_pci_set_power_state() and similar to
+> > manage these regulators.
+> 
+> The big difference is ACPI abstracts how to control power for a device. 
+> The OS just knows D0, D3, etc. states. For DT, there is no such 
+> abstraction. You need device specific code to do device specific power 
+> management.
 
-diff --git a/drivers/i2c/i2c-core-base.c b/drivers/i2c/i2c-core-base.c
-index d43db2c3876e..e2c365348e1f 100644
---- a/drivers/i2c/i2c-core-base.c
-+++ b/drivers/i2c/i2c-core-base.c
-@@ -1357,6 +1357,41 @@ static const struct i2c_lock_operations i2c_adapter_lock_ops = {
- 	.unlock_bus =  i2c_adapter_unlock_bus,
- };
- 
-+/*
-+ * For a non-mux adapter, the lock_select operation locks the chain of
-+ * adapters upwards, returning the root. If there's a mux above this adapter
-+ * somehow, it should also get locked and the desired channel selected.
-+ */
-+static struct i2c_adapter *i2c_adapter_lock_select(struct i2c_adapter *adapter)
-+{
-+	struct i2c_adapter *ret = adapter;
-+	struct i2c_adapter *parent = i2c_parent_is_i2c_adapter(adapter);
-+
-+	if (parent) {
-+		ret = parent->mux_root_ops->lock_select(parent);
-+		if (IS_ERR(ret))
-+			return ret;
-+	}
-+
-+	adapter->lock_ops->lock_bus(adapter, I2C_LOCK_ROOT_ADAPTER);
-+	return ret;
-+}
-+
-+static void i2c_adapter_unlock_deselect(struct i2c_adapter *adapter)
-+{
-+	struct i2c_adapter *parent = i2c_parent_is_i2c_adapter(adapter);
-+
-+	adapter->lock_ops->unlock_bus(adapter, I2C_LOCK_ROOT_ADAPTER);
-+
-+	if (parent)
-+		parent->mux_root_ops->unlock_deselect(parent);
-+}
-+
-+static const struct i2c_mux_root_operations i2c_adapter_mux_root_ops = {
-+	.lock_select = i2c_adapter_lock_select,
-+	.unlock_deselect = i2c_adapter_unlock_deselect,
-+};
-+
- static void i2c_host_notify_irq_teardown(struct i2c_adapter *adap)
- {
- 	struct irq_domain *domain = adap->host_notify_domain;
-@@ -1452,6 +1487,9 @@ static int i2c_register_adapter(struct i2c_adapter *adap)
- 	if (!adap->lock_ops)
- 		adap->lock_ops = &i2c_adapter_lock_ops;
- 
-+	if (!adap->mux_root_ops)
-+		adap->mux_root_ops = &i2c_adapter_mux_root_ops;
-+
- 	adap->locked_flags = 0;
- 	rt_mutex_init(&adap->bus_lock);
- 	rt_mutex_init(&adap->mux_lock);
-diff --git a/drivers/i2c/i2c-mux.c b/drivers/i2c/i2c-mux.c
-index 774507b54b57..c7db770e4198 100644
---- a/drivers/i2c/i2c-mux.c
-+++ b/drivers/i2c/i2c-mux.c
-@@ -210,6 +210,49 @@ static void i2c_parent_unlock_bus(struct i2c_adapter *adapter,
- 	rt_mutex_unlock(&parent->mux_lock);
- }
- 
-+/*
-+ * For a mux adapter, the lock_select operation first locks just like the
-+ * lock_bus operation. Then it selects the channel for this adapter and
-+ * returns the root adapter. If there is another mux above this one, calling
-+ * the parent lock_select should ensure that the channel is correctly
-+ * selected.
-+ */
-+static struct i2c_adapter *i2c_mux_lock_select(struct i2c_adapter *adapter)
-+{
-+	int ret;
-+	struct i2c_mux_priv *priv = adapter->algo_data;
-+	struct i2c_mux_core *muxc = priv->muxc;
-+	struct i2c_adapter *parent = muxc->parent;
-+
-+	rt_mutex_lock_nested(&parent->mux_lock, i2c_adapter_depth(adapter));
-+
-+	adapter = parent->mux_root_ops->lock_select(parent);
-+	if (IS_ERR(adapter))
-+		return adapter;
-+
-+	ret = muxc->select(muxc, priv->chan_id);
-+	if (ret < 0) {
-+		parent->mux_root_ops->unlock_deselect(parent);
-+		rt_mutex_unlock(&parent->mux_lock);
-+		return ERR_PTR(ret);
-+	}
-+
-+	return adapter;
-+}
-+
-+static void i2c_mux_unlock_deselect(struct i2c_adapter *adapter)
-+{
-+	struct i2c_mux_priv *priv = adapter->algo_data;
-+	struct i2c_mux_core *muxc = priv->muxc;
-+	struct i2c_adapter *parent = muxc->parent;
-+
-+	if (muxc->deselect)
-+		muxc->deselect(muxc, priv->chan_id);
-+
-+	parent->mux_root_ops->unlock_deselect(parent);
-+	rt_mutex_unlock(&parent->mux_lock);
-+}
-+
- struct i2c_adapter *i2c_root_adapter(struct device *dev)
- {
- 	struct device *i2c;
-@@ -279,6 +322,11 @@ static const struct i2c_lock_operations i2c_parent_lock_ops = {
- 	.unlock_bus =  i2c_parent_unlock_bus,
- };
- 
-+static const struct i2c_mux_root_operations i2c_mux_root_ops = {
-+	.lock_select = i2c_mux_lock_select,
-+	.unlock_deselect = i2c_mux_unlock_deselect,
-+};
-+
- int i2c_mux_add_adapter(struct i2c_mux_core *muxc,
- 			u32 force_nr, u32 chan_id,
- 			unsigned int class)
-@@ -339,6 +387,8 @@ int i2c_mux_add_adapter(struct i2c_mux_core *muxc,
- 	else
- 		priv->adap.lock_ops = &i2c_parent_lock_ops;
- 
-+	priv->adap.mux_root_ops = &i2c_mux_root_ops;
-+
- 	/* Sanity check on class */
- 	if (i2c_mux_parent_classes(parent) & class)
- 		dev_err(&parent->dev,
-diff --git a/include/linux/i2c.h b/include/linux/i2c.h
-index fbda5ada2afc..a3596f61b417 100644
---- a/include/linux/i2c.h
-+++ b/include/linux/i2c.h
-@@ -583,6 +583,26 @@ struct i2c_lock_operations {
- 	void (*unlock_bus)(struct i2c_adapter *adapter, unsigned int flags);
- };
- 
-+/**
-+ * struct i2c_mux_root_operations - represent operations to lock and select
-+ * the adapter's mux channel (if a mux is present)
-+ * @lock_select: Get exclusive access to the root I2C bus adapter with the
-+ *   correct mux channel selected for the adapter
-+ * @unlock_deslect: Release exclusive access to the root I2C bus adapter and
-+ *   deselect the mux channel for the adapter
-+ *
-+ * Some I2C clients need the ability to control the root I2C bus even if the
-+ * endpoint device is behind a mux. For example, a driver for a chip that
-+ * can't handle any I2C traffic on the bus while coming out of reset (including
-+ * an I2C-driven mux switching channels) may need to lock the root bus with
-+ * the mux selection fixed for the entire time the device is in reset.
-+ * These operations are for such a purpose.
-+ */
-+struct i2c_mux_root_operations {
-+	struct i2c_adapter *(*lock_select)(struct i2c_adapter *adapter);
-+	void (*unlock_deselect)(struct i2c_adapter *adapter);
-+};
-+
- /**
-  * struct i2c_timings - I2C timing information
-  * @bus_freq_hz: the bus frequency in Hz
-@@ -725,6 +745,7 @@ struct i2c_adapter {
- 
- 	/* data fields that are valid for all devices	*/
- 	const struct i2c_lock_operations *lock_ops;
-+	const struct i2c_mux_root_operations *mux_root_ops;
- 	struct rt_mutex bus_lock;
- 	struct rt_mutex mux_lock;
- 
-@@ -817,6 +838,27 @@ i2c_unlock_bus(struct i2c_adapter *adapter, unsigned int flags)
- 	adapter->lock_ops->unlock_bus(adapter, flags);
- }
- 
-+/**
-+ * i2c_lock_select_bus - Get exclusive access to the root I2C bus with the
-+ *   target's mux channel (if a mux is present) selected.
-+ * @adapter: Target I2C bus
-+ *
-+ * Return the root I2C bus if mux selection succeeds, an ERR_PTR otherwise
-+ */
-+static inline struct i2c_adapter *i2c_lock_select_bus(struct i2c_adapter *adapter)
-+{
-+	return adapter->mux_root_ops->lock_select(adapter);
-+}
-+
-+/**
-+ * i2c_unlock_deslect_bus - Release exclusive access to the root I2C bus
-+ * @adapter: Target I2C bus
-+ */
-+static inline void i2c_unlock_deselect_bus(struct i2c_adapter *adapter)
-+{
-+	adapter->mux_root_ops->unlock_deselect(adapter);
-+}
-+
- /**
-  * i2c_mark_adapter_suspended - Report suspended state of the adapter to the core
-  * @adap: Adapter to mark as suspended
--- 
-2.27.0
+I'm thinking about the PCI side of the host controller, which should
+live by the PCI rules.  There are device-specific ways to control
+power, clocks, resets, etc on the PCI side, but drivers for PCI
+devices (as opposed to drivers for the host controllers) can't really
+call that code directly.
 
+There are some exceptions, but generally speaking I don't think PCI
+drivers that use generic power management need to use PCI_D0,
+PCI_D3hot, etc directly.  Generic PM uses interfaces like
+pci_pm_suspend() that keep most of the PCI details in the PCI core
+instead of the endpoint driver, e.g., [3].
+
+The PCI core has a bunch of interfaces:
+
+  platform_pci_power_manageable()
+  platform_pci_set_power_state()
+  platform_pci_get_power_state()
+  platform_pci_choose_state()
+
+that currently mostly use ACPI.  So I'm wondering whether there's some
+way to extend those platform_*() interfaces to call the native host
+controller device-specific power control code via an ops structure.
+
+Otherwise it feels like the native host controller drivers are in a
+different world than the generic PM world, and we'll end up with every
+host controller driver reimplementing things.
+
+For example, how would we runtime suspend a Root Port and turn off
+power for PCI devices below it?  Obviously that requires
+device-specific code to control the power.  Do we have some common
+interface to it, or do we have to trap config writes to PCI_PM_CTRL or
+something?
+
+[3] https://git.kernel.org/linus/cd97b7e0d780
+
+> > > > [0] https://lore.kernel.org/r/20211110221456.11977-6-jim2101024@gmail.com
+
+> > > > IIUC, this path:
+> > > >
+> > > >   pci_alloc_child_bus
+> > > >     brcm_pcie_add_bus                   # .add_bus method
+> > > >       pci_subdev_regulators_add_bus     # in pcie-brcmstb.c for now
+> > > >         alloc_subdev_regulators         # in pcie-brcmstb.c for now
+> > > >         regulator_bulk_get
+> > > >         regulator_bulk_enable
+> > > >       brcm_pcie_linkup                  # bring link up
+> > > >
+> > > > is basically so we can leave power to downstream devices off, then
+> > > > turn it on when we're ready to enumerate those downstream devices.
+> > >
+> > > Yes  -- it is the "chicken-and-egg" problem.  Ideally, we would like
+> > > for the endpoint driver to turn on its own regulators, but even to
+> > > know which endpoint driver to probe we must turn on the regulator to
+> > > establish linkup.
+> > 
+> > I don't think having an endpoint driver turn on power to its device is
+> > the right goal.  
+> 
+> DT requires device specific code to control a specific device. That 
+> belongs in the driver for that device.
+
+I must be talking about something different than you are.  I see that
+brcmstb has device-specific code to control the brcmstb device as well
+as power for PCI devices downstream from that device.
+
+When I read "endpoint driver" I think of a PCIe Endpoint device like a
+NIC.  That's just a random PCI device, and I read "endpoint driver to
+turn on its own regulators" as suggesting that the NIC driver (e1000,
+etc) would turn on power to the NIC.  Is that the intent?
+
+Bjorn
