@@ -2,144 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37C28C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 03:45:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4731C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 03:46:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244552AbiEZDpS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 25 May 2022 23:45:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50994 "EHLO
+        id S244906AbiEZDqD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 25 May 2022 23:46:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243945AbiEZDoy (ORCPT
+        with ESMTP id S231163AbiEZDqA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 25 May 2022 23:44:54 -0400
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78D30E021
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 20:44:53 -0700 (PDT)
-Received: by mail-yb1-xb30.google.com with SMTP id t26so973971ybt.3
-        for <linux-kernel@vger.kernel.org>; Wed, 25 May 2022 20:44:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=vqm3/hRG3VFupBjNaowrJsn6+8n6Q/MlLgSOykyM6ao=;
-        b=Rdq2EDWfNjlToyu3i1KDJ36brOAsakHrEl5hcbEJW4eAVWWqGU5/rq7y16zc+SnLqv
-         EBdnVR4v6xa2tT9ESLo03C2WPDqbq/12c/p/kexJ45pBO+8F5WDQ3vLLNCSNNaiORzOT
-         AcD5dF769nRhCOkWZZHrJTE2EYG4tDmvV6qb1I0JK0ZpUjMswYvuofbV67+YfgRLX4C+
-         djdwO4HQIgLIsTdda/Hz6wKgnwczBQM9jJNIPpUJInA/t7IpAgBeypMGO6U3sSVtc+Q3
-         Jo7mi4SaZCTzOdKJSaYGEpN6ugpfu3EeV831yONPtoIqI5BMGk3V27qrxieEis+/dS7r
-         y82g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=vqm3/hRG3VFupBjNaowrJsn6+8n6Q/MlLgSOykyM6ao=;
-        b=huTkFAT7GMkxABBlRhv/r12CvqRh70sd0PPjsMEsEjrOIJuwczw9xF9idkpA5/2nHL
-         A+7HjPT+nQ+ZpkyJjaKvBAxAsKhImA3mlr5terjasXHDvlhep9AfE06257BfWpvtcutN
-         LG5A7Aypah4NU3WNCqiZIx2drcQlhh0h8MCd1JZRBRUJq9gJRzCtIpsQU7InFXZdqoff
-         bTOClVnz7E7YFIjhM5BH4R5XAcxrC2jLmjt6A1+Uumx22RkzgeCZ2NErcWRKOvgRPAK1
-         JPUPOIYQn6rYpK1wzTyjVTwr73UEboThLN5XwO3r+Y+EkhnhSggBRSvIy01+fhDMRFGF
-         BI1A==
-X-Gm-Message-State: AOAM5305yCZqYOWJjn1i8UamqAHhTcmRUwbl1/Goig3b2+YEYj3j+sCx
-        aFuNIVlWVotEjpE5gENlFgeMlN7Zud6up7vfAzCgWTFMvKc=
-X-Google-Smtp-Source: ABdhPJwrr5Izo/sSMvdH5Mj96mptxHwIoJU9RuKzu2xD4OWsbCBPcWuumUFcAT2RC1OmCOl7pEZQKaKvh4d8sdoLLRE=
-X-Received: by 2002:a25:c8c6:0:b0:651:2cb7:138d with SMTP id
- y189-20020a25c8c6000000b006512cb7138dmr12199396ybf.524.1653536692766; Wed, 25
- May 2022 20:44:52 -0700 (PDT)
+        Wed, 25 May 2022 23:46:00 -0400
+X-Greylist: delayed 914 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 25 May 2022 20:45:58 PDT
+Received: from mail-m973.mail.163.com (mail-m973.mail.163.com [123.126.97.3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 785C735DD7;
+        Wed, 25 May 2022 20:45:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=CjTO1
+        zV1XxDBvRyik+WBGvUIZFFmgjo+eyQguphswZA=; b=fwlLaKzWVMM5dd12lo4e8
+        A/aAWpMLYTUCF86JRTQhpTcpd0yzeVoDKDXqncr1tSbACKnZ+WU0HdwscDV36A8B
+        TXTHxCPw/Vh1ZT/RL7zhK6u0NmS544WTPCH9K67cGz44dNfcseaB6MZY+P/lr6UV
+        860oL8uw3R41TWTeWuwnPA=
+Received: from localhost.localdomain (unknown [123.112.69.106])
+        by smtp3 (Coremail) with SMTP id G9xpCgA3f6s89I5iG2uqEg--.14753S4;
+        Thu, 26 May 2022 11:30:14 +0800 (CST)
+From:   Jianglei Nie <niejianglei2021@163.com>
+To:     pizza@shaftnet.org, kvalo@kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Jianglei Nie <niejianglei2021@163.com>
+Subject: [PATCH] cw1200: Fix memory leak in cw1200_set_key()
+Date:   Thu, 26 May 2022 11:30:03 +0800
+Message-Id: <20220526033003.473943-1-niejianglei2021@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <CAJNi4rNwPQf747UM_hiYYwL=HDxg8QnPpfFPv1PfrtN9ZP1y1g@mail.gmail.com>
- <35f95ba3-8a7b-7918-0f9d-e14274a5ffe9@arm.com>
-In-Reply-To: <35f95ba3-8a7b-7918-0f9d-e14274a5ffe9@arm.com>
-From:   richard clark <richard.xnu.clark@gmail.com>
-Date:   Thu, 26 May 2022 11:44:41 +0800
-Message-ID: <CAJNi4rMbBbLP2Tsv-wnnJKt4Y0moOE5-sNaZN1fCty908pwAKw@mail.gmail.com>
-Subject: Re: Question about SPIs' interrupt trigger type restrictions
-To:     Robin Murphy <robin.murphy@arm.com>
-Cc:     maz@kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: G9xpCgA3f6s89I5iG2uqEg--.14753S4
+X-Coremail-Antispam: 1Uf129KBjvdXoW7Jr18Aw1rCF4DKFW7Cr4fuFg_yoW3KFX_GF
+        1Yqa18Grs7Jr12kryrAr4furWSv3WYgF4fuay2qayayanrurWDXr15XFWxJryUK3y8ZF4f
+        Gw4kWa1rAw1jqjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xREsjjJUUUUU==
+X-Originating-IP: [123.112.69.106]
+X-CM-SenderInfo: xqlhyxxdqjzvrlsqjii6rwjhhfrp/1tbiWwcNjGI0Up-XlwABsH
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 26, 2022 at 3:14 AM Robin Murphy <robin.murphy@arm.com> wrote:
->
-> On 2022-05-25 11:01, richard clark wrote:
-> > Hi Marc,
-> >
-> > For below code snippet about SPI interrupt trigger type:
-> >
-> > static int gic_set_type(struct irq_data *d, unsigned int type)
-> > {
-> >          ...
-> >          /* SPIs have restrictions on the supported types */
-> >          if ((range =3D=3D SPI_RANGE || range =3D=3D ESPI_RANGE) &&
-> >              type !=3D IRQ_TYPE_LEVEL_HIGH && type !=3D IRQ_TYPE_EDGE_R=
-ISING)
-> >                  return -EINVAL;
-> >          ...
-> > }
-> >
-> > We have a device at hand whose interrupt type is SPI, Falling edge
-> > will trigger the interrupt. But the request_irq(50, handler,
-> > IRQ_TYPE_EDGE_FALLING, ...) will return -EINVAL.
-> >
-> > The question is, why must the SPI interrupt use IRQ_TYPE_EDGE_RISING
-> > instead of IRQ_TYPE_EDGE_FALLING?
->
-> Because that's what the GIC architecture[1] says. From section 1.2.1
-> "Interrupt Types":
->
-> "An interrupt that is edge-triggered has the following property:
->         =E2=80=A2 It is asserted on detection of a rising edge of an inte=
-rrupt signal
+When wsm_key.index > WSM_KEY_MAX_INDEX, cw1200_set_key() returns without
+calling cw1200_free_key() like other wrong paths, which may lead to a
+potential memory leak.
 
-This rising edge detection is not true, it's also asserted by falling
-edge, just like the GICD_ICFGR register says:
-Changing the interrupt configuration between level-sensitive and
-*edge-triggered (in either direction)* at a time when there is a
-pending interrupt ..., which
-has been confirmed by GIC-500 on my platform.
+We can fix it by calling cw1200_free_key() when some error occurs.
 
-> and then, regardless of the state of the signal, remains asserted until
-> the interrupt is acknowledged by software."
->
-> External signals with the wrong polarity may need external logic to
+Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
+---
+ drivers/net/wireless/st/cw1200/sta.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-IMO, it's not wrong polarity for a device to interrupt the processor
-with a falling edge, it's normal. Actually, the GIC supports
-edge-trigger type:
-'0b10 Corresponding interrupt is edge-triggered', the
-IRQ_TYPE_EDGE_RISING check in gic_set_type(...) is just a sanity check
-from this point of view.
-I would more like to have below changes applied:
+diff --git a/drivers/net/wireless/st/cw1200/sta.c b/drivers/net/wireless/st/cw1200/sta.c
+index 236022d4ae2a..c0097577978d 100644
+--- a/drivers/net/wireless/st/cw1200/sta.c
++++ b/drivers/net/wireless/st/cw1200/sta.c
+@@ -823,6 +823,7 @@ int cw1200_set_key(struct ieee80211_hw *dev, enum set_key_cmd cmd,
+ 		};
+ 
+ 		if (wsm_key.index > WSM_KEY_MAX_INDEX) {
++			cw1200_free_key(priv, idx);
+ 			ret = -EINVAL;
+ 			goto finally;
+ 		}
+-- 
+2.25.1
 
---- a/linux/drivers/irqchip/irq-gic-v3.c
-+++ b/linux/drivers/irqchip/irq-gic-v3.c
-
-@@ -560,8 +560,7 @@ static int gic_set_type(struct irq_data *d,
-unsigned int type)
-                return type !=3D IRQ_TYPE_EDGE_RISING ? -EINVAL : 0;
-        /* SPIs have restrictions on the supported types */
--       if ((range =3D=3D SPI_RANGE || range =3D=3D ESPI_RANGE) &&
--           type !=3D IRQ_TYPE_LEVEL_HIGH && type !=3D IRQ_TYPE_EDGE_RISING=
-)
-+       if ((range =3D=3D SPI_RANGE || range =3D=3D ESPI_RANGE) && !(type &=
- 0xf))
-                return -EINVAL;
-
- I believe irq-gic.c has the same issue, but can't confirm now.
-
-
-> invert them (which might even be offered by the GIC implementation
-> itself, e.g. [2]), but the programmer's model neither knows nor cares
-> about such details, it only knows notions of "edge-triggered" and
-> "level-sensitive", where from its point of view the asserted states are
-> rising and high respectively.
->
-> Robin.
->
-> [1] https://developer.arm.com/documentation/ihi0069/latest
-> [2]
-> https://developer.arm.com/documentation/100336/0106/components-and-config=
-uration/spi-collator/spi-collator-wires?lang=3Den
