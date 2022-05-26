@@ -2,86 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E6EFC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 09:04:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DBB4C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 09:04:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242715AbiEZJEE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 05:04:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42512 "EHLO
+        id S244620AbiEZJEs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 05:04:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231776AbiEZJEC (ORCPT
+        with ESMTP id S230209AbiEZJEp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 05:04:02 -0400
-Received: from cstnet.cn (smtp21.cstnet.cn [159.226.251.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2F52D116D
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 02:04:00 -0700 (PDT)
-Received: from localhost.localdomain (unknown [124.16.138.126])
-        by APP-01 (Coremail) with SMTP id qwCowAD3_4dyQo9iz1N7Cg--.40442S2;
-        Thu, 26 May 2022 17:03:54 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     santoshkumar.yadav@barco.com, peter.korsgaard@barco.com,
-        hdegoede@redhat.com, markgross@kernel.org
-Cc:     platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: [PATCH] platform/x86: barco-p50-gpio: Add check for platform_driver_register
-Date:   Thu, 26 May 2022 17:03:45 +0800
-Message-Id: <20220526090345.1444172-1-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+        Thu, 26 May 2022 05:04:45 -0400
+Received: from nksmu.kylinos.cn (mailgw.kylinos.cn [123.150.8.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A0955F77
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 02:04:44 -0700 (PDT)
+X-UUID: f4745014d2db43658cbb45f51dcca748-20220526
+X-GW-Reason: 13103
+X-Policy-Incident: 5pS25Lu25Lq66LaF6L+HMTDkurrpnIDopoHlrqHmoLg=
+X-Content-Feature: ica/max.line-size 103
+        audit/email.address 1
+X-CPASD-INFO: 6c18a69c4fab45259d9ed1d71faf4805@f7NrWI5pZ5NghqOug3h9b1mVaZWUXYS
+        Gc6CBlmJoXFWVhH5xTWJsXVKBfG5QZWNdYVN_eGpQYl9gZFB5i3-XblBgXoZgUZB3haVrWJFkaQ==
+X-CLOUD-ID: 6c18a69c4fab45259d9ed1d71faf4805
+X-CPASD-SUMMARY: SIP:-1,APTIP:-2.0,KEY:0.0,FROMBLOCK:1,OB:0.0,URL:-5,TVAL:165.
+        0,ESV:0.0,ECOM:-5.0,ML:0.0,FD:0.0,CUTS:293.0,IP:-3.0,MAL:-5.0,PHF:-5.0,PHC:-5
+        .0,SPF:4.0,EDMS:-5,IPLABEL:-5.0,FROMTO:0,AD:0,FFOB:0.0,CFOB:0.0,SPC:0,SIG:-5,
+        AUF:7,DUF:41546,ACD:295,DCD:398,SL:0,EISP:0,AG:0,CFC:0.855,CFSR:0.037,UAT:0,R
+        AF:2,IMG:-5.0,DFA:0,DTA:0,IBL:-5,ADI:-5,SBL:0,REDM:0,REIP:0,ESB:0,ATTNUM:0,EA
+        F:0,CID:-5.0,VERSION:2.3.17
+X-CPASD-ID: f4745014d2db43658cbb45f51dcca748-20220526
+X-CPASD-BLOCK: 1000
+X-CPASD-STAGE: 1
+X-UUID: f4745014d2db43658cbb45f51dcca748-20220526
+X-User: huangbing@kylinos.cn
+Received: from [172.20.108.189] [(116.128.244.169)] by nksmu.kylinos.cn
+        (envelope-from <huangbing@kylinos.cn>)
+        (Generic MTA)
+        with ESMTP id 516048628; Thu, 26 May 2022 16:35:58 +0800
+Message-ID: <e4523195-b271-0b11-e297-5ca25cc23504@kylinos.cn>
+Date:   Thu, 26 May 2022 16:32:54 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: qwCowAD3_4dyQo9iz1N7Cg--.40442S2
-X-Coremail-Antispam: 1UD129KBjvdXoWrtw18uF43GFWkAr1DCF1xXwb_yoWktwc_CF
-        18uFZrWrn5Kas2kF1jyw43uryIkas5WFs3Kw1xtFyaqa4rJa1xCr42vry3tw17Wr1YvFyD
-        G3s7CFWSkrya9jkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbckFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Gr0_Xr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr0_
-        Cr1l84ACjcxK6I8E87Iv67AKxVWxJr0_GcWl84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s
-        0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xII
-        jxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr
-        1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxkIecxEwVAFwVW8uwCF
-        04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r
-        18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_JF0_Jw1lIxkGc2Ij64vI
-        r41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr
-        1lIxAIcVCF04k26cxKx2IYs7xG6rWUJVWrZr1UMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF
-        0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUhNVgUUUUU=
-X-Originating-IP: [124.16.138.126]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] sche/fair: static cpumasks for load balance
+Content-Language: en-US
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     mingo@redhat.com, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
+        bristot@redhat.com, brauner@kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220523094216.1746504-1-huangbing@kylinos.cn>
+ <20220525170434.GK2578@worktop.programming.kicks-ass.net>
+From:   huangbing <huangbing@kylinos.cn>
+In-Reply-To: <20220525170434.GK2578@worktop.programming.kicks-ass.net>
+Content-Type: multipart/mixed;
+        boundary="Add_By_Label_Mail_Nextpart_001"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As platform_driver_register() could fail, it should be better
-to deal with the return value in order to maintain the code
-consisitency.
+--Add_By_Label_Mail_Nextpart_001
+Content-Type: text/plain;
+Content-Transfer-Encoding: 7bit
 
-Fixes: 86af1d02d458 ("platform/x86: Support for EC-connected GPIOs for identify LED/button on Barco P50 board")
 
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
----
- drivers/platform/x86/barco-p50-gpio.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/platform/x86/barco-p50-gpio.c b/drivers/platform/x86/barco-p50-gpio.c
-index 05534287bc26..8dd672339485 100644
---- a/drivers/platform/x86/barco-p50-gpio.c
-+++ b/drivers/platform/x86/barco-p50-gpio.c
-@@ -405,11 +405,14 @@ MODULE_DEVICE_TABLE(dmi, dmi_ids);
- static int __init p50_module_init(void)
- {
- 	struct resource res = DEFINE_RES_IO(P50_GPIO_IO_PORT_BASE, P50_PORT_CMD + 1);
-+	int ret;
- 
- 	if (!dmi_first_match(dmi_ids))
- 		return -ENODEV;
- 
--	platform_driver_register(&p50_gpio_driver);
-+	ret = platform_driver_register(&p50_gpio_driver);
-+	if (ret)
-+		return ret;
- 
- 	gpio_pdev = platform_device_register_simple(DRIVER_NAME, PLATFORM_DEVID_NONE, &res, 1);
- 	if (IS_ERR(gpio_pdev)) {
--- 
-2.25.1
+On 5/26/22 01:04, Peter Zijlstra wrote:
+> On Mon, May 23, 2022 at 05:42:16PM +0800, Bing Huang wrote:
+>> The both cpu mask load_balance_mask and select_idle_mask just only used
+>> in fair.c, but allocation in core.c in CONFIG_CPUMASK_OFFSTACK=y case,
+>> and global via declare per cpu variations. More or less, it looks wired.
+>>
+>> Signed-off-by: Bing Huang <huangbing@kylinos.cn>
+>> ---
+>>   kernel/sched/core.c  | 13 +++----------
+>>   kernel/sched/fair.c  | 18 ++++++++++++++++--
+>>   kernel/sched/sched.h |  4 ++++
+>>   3 files changed, 23 insertions(+), 12 deletions(-)
+>>
+>> diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+>> index d58c0389eb23..64934c5e236d 100644
+>> --- a/kernel/sched/core.c
+>> +++ b/kernel/sched/core.c
+>> @@ -9448,9 +9448,6 @@ LIST_HEAD(task_groups);
+>>   static struct kmem_cache *task_group_cache __read_mostly;
+>>   #endif
+>>   
+>> -DECLARE_PER_CPU(cpumask_var_t, load_balance_mask);
+>> -DECLARE_PER_CPU(cpumask_var_t, select_idle_mask);
+>> -
+>>   void __init sched_init(void)
+>>   {
+>>   	unsigned long ptr = 0;
+>> @@ -9494,14 +9491,10 @@ void __init sched_init(void)
+>>   
+>>   #endif /* CONFIG_RT_GROUP_SCHED */
+>>   	}
+>> +
+>>   #ifdef CONFIG_CPUMASK_OFFSTACK
+>> -	for_each_possible_cpu(i) {
+>> -		per_cpu(load_balance_mask, i) = (cpumask_var_t)kzalloc_node(
+>> -			cpumask_size(), GFP_KERNEL, cpu_to_node(i));
+>> -		per_cpu(select_idle_mask, i) = (cpumask_var_t)kzalloc_node(
+>> -			cpumask_size(), GFP_KERNEL, cpu_to_node(i));
+>> -	}
+>> -#endif /* CONFIG_CPUMASK_OFFSTACK */
+>> +	init_working_cpumask();
+>> +#endif
+> We already have init_sched_fair_class(), can't you use that?
 
+OK, thanks for your review. I got it.
+
+In addition, I notice that load_balance_mask and select_idle_mask are 
+defined
+in CONFIG_SMP=y case in fair.c, so could be they moved inside 
+CONFIG_SMP, or just outside ?
+
+>
+>>   
+>>   	init_rt_bandwidth(&def_rt_bandwidth, global_rt_period(), global_rt_runtime());
+>>   
+>> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+>> index a68482d66535..3a4b0dd1beb5 100644
+>> --- a/kernel/sched/fair.c
+>> +++ b/kernel/sched/fair.c
+>> @@ -5831,8 +5831,8 @@ static void dequeue_task_fair(struct rq *rq, struct task_struct *p, int flags)
+>>   #ifdef CONFIG_SMP
+>>   
+>>   /* Working cpumask for: load_balance, load_balance_newidle. */
+>> -DEFINE_PER_CPU(cpumask_var_t, load_balance_mask);
+>> -DEFINE_PER_CPU(cpumask_var_t, select_idle_mask);
+>> +static DEFINE_PER_CPU(cpumask_var_t, load_balance_mask);
+>> +static DEFINE_PER_CPU(cpumask_var_t, select_idle_mask);
+>>   
+>>   #ifdef CONFIG_NO_HZ_COMMON
+>>   
+>> @@ -7052,6 +7052,20 @@ balance_fair(struct rq *rq, struct task_struct *prev, struct rq_flags *rf)
+>>   }
+>>   #endif /* CONFIG_SMP */
+>>   
+>> +#ifdef CONFIG_CPUMASK_OFFSTACK
+>> +void __init init_working_cpumask(void)
+>> +{
+>> +	int i;
+>> +
+>> +	for_each_possible_cpu(i) {
+>> +		per_cpu(load_balance_mask, i) = (cpumask_var_t)kzalloc_node(
+>> +				cpumask_size(), GFP_KERNEL, cpu_to_node(i));
+>> +		per_cpu(select_idle_mask, i) = (cpumask_var_t)kzalloc_node(
+>> +				cpumask_size(), GFP_KERNEL, cpu_to_node(i));
+>> +	}
+>> +}
+>> +#endif
+> If you stick that #ifdef inside the function, you can remove it
+> everwhere else. Less #ifdef is more better.
+I will remove it, move them inside init_sched_fair_class().
