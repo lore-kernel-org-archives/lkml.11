@@ -2,84 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C08E5C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 18:31:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C9ADC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 26 May 2022 18:32:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236404AbiEZSbz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 14:31:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38358 "EHLO
+        id S235489AbiEZSci (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 14:32:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233171AbiEZSbq (ORCPT
+        with ESMTP id S1347870AbiEZSca (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 14:31:46 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 254052714D
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 11:31:43 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id h11so2795486eda.8
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 11:31:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=soleen.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=OqaDyen+xHLMjM1+kU3vv7vEUmDoXnKLSHCxr0ki/yI=;
-        b=BkgFlzuGNKyb+uNyGnU6TxJ6tLPcnTTz0fIfAd0G6SJqAnBMulcPqqFv87YZb40zBr
-         45DtchsOB/RWvL1ETS2WM5vNZNWwcoQi6eUXN3Y8ht6azoD9p5U3j+SjLzDTj5jRzMFr
-         mWYp8z+Lw27JzV6nLRO784rXgmDzNNVW1X4rPhGqT9CcDL8N1xECKwkUKmAH6hwNip8o
-         tSoFF1Gw5harFb5i08n4Q7kK2a6o3lPbBYAZ1gbMnFKFovTyzUOrKznNLujUO78M392n
-         snBE7BSEouVeDgQ6JuN5/Yu3lgHzFryGE7lN27p/JX2G+Yeoipo1Iq2B6uT8zo0Dp3kg
-         Y26A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=OqaDyen+xHLMjM1+kU3vv7vEUmDoXnKLSHCxr0ki/yI=;
-        b=PEnh+uxf7YKYsHPnrLMROIh8cM/kJIPTNTR3c90qT/ui6X4PKtJUb49bRbJ8q/TTY1
-         O1QH1x9NblGdknx6X+kv4jQhRIf75cqMEIS2xU8tvOE7Z6OVlFzz/0ii3THwOTFRGdi+
-         CxO4TlLK2lofObhLdu0EK9GwQVazmMzZFIbJ+W5NEJvRDJbGrhHg8qMamknhB8yCnEB5
-         YDXYDBbhURpkixWLcTNGBR1FS83Lwxo4rEnDAyRnDdBjtbkkYjkOqTQKlTVnvKBAOX4d
-         k261xtz8V7DgczPOECr8Fx4NuXZjhUWIGGKLzAkN9tJC43cgBWrDRdJmH8g+DcPrcV19
-         EY1Q==
-X-Gm-Message-State: AOAM532zprev/AYBzmKi2ppc94wki+/2mXzE3SU8idI1JV6OhFqbBg3D
-        FoRidq9IKkU9/pRUUI66dN/KgenIFC7D/4ttFMwtcA==
-X-Google-Smtp-Source: ABdhPJx0eHADBVzR9F6OjFXojGL3k6dCwZofMe8lUrMYlUp5GceoNL/vvUAdvoESE6uYkZYs+3Ly5be4VSp7LeVAaXM=
-X-Received: by 2002:aa7:dccd:0:b0:42b:d509:b5b with SMTP id
- w13-20020aa7dccd000000b0042bd5090b5bmr6266347edu.19.1653589902378; Thu, 26
- May 2022 11:31:42 -0700 (PDT)
+        Thu, 26 May 2022 14:32:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5B665D5D9;
+        Thu, 26 May 2022 11:32:20 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 715C361253;
+        Thu, 26 May 2022 18:32:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F047C385A9;
+        Thu, 26 May 2022 18:32:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653589939;
+        bh=LavzREuF1tBDqZDmhtBOmA5kmgbGDHnLoBNXRB/bOWg=;
+        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+        b=UPWHODL6WD+wVDG/+wJJUbQbbHn+mju0PBArKtmCuLzc7lHss/MTPDqV8oW3mAJIi
+         oLWN99ts+wDm+XzUzmB2JqjSi0YB9999/o/idea9ody/aZ8FFFGFi3C70x/reAcihu
+         einOpXoQJc0b9C9K5/KpYWKcw9rP93s4soh4chExJCGN1hEINRnEWlGDBK21dR0gZE
+         VEt4dfYtMdm1Dpa6Hi7cYzlD67W7NriMEOlrtG0M7U4gXE7RpQ1iJMxt9JWD4UOAfX
+         2Vh6tg/7OL1JpWVbIYXWHrMBTpWaqa4aGVYviqYWyW9bDp5EtlNz43NRjL/3TfhFJA
+         8vD829Qv7i9bQ==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20220526113350.30806-1-linmiaohe@huawei.com> <Yo+B4b0nF+kI35pG@casper.infradead.org>
- <CA+CK2bBBLjr3kGqc=zA6M5773G6gj83LB_kwwOCNuFX8YoUp+w@mail.gmail.com> <20220526111546.50102da288cccbe913cadbf4@linux-foundation.org>
-In-Reply-To: <20220526111546.50102da288cccbe913cadbf4@linux-foundation.org>
-From:   Pasha Tatashin <pasha.tatashin@soleen.com>
-Date:   Thu, 26 May 2022 14:31:06 -0400
-Message-ID: <CA+CK2bBJ3baj2Qt+9Wy1r==_Uym_UZJ+S-HRwFAsspPamctk_Q@mail.gmail.com>
-Subject: Re: [PATCH] mm/page_table_check: fix accessing unmapped ptep
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Matthew Wilcox <willy@infradead.org>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        David Rientjes <rientjes@google.com>,
-        linux-mm <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <Yot4XHaf6uHcJxTL@hovoldconsulting.com>
+References: <20220520100948.19622-1-johan+linaro@kernel.org> <20220520100948.19622-3-johan+linaro@kernel.org> <20220521035228.1FD9AC385A9@smtp.kernel.org> <Yot4XHaf6uHcJxTL@hovoldconsulting.com>
+Subject: Re: [PATCH 2/3] clk: qcom: gdsc: add support for collapse-vote registers
+From:   Stephen Boyd <sboyd@kernel.org>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Johan Hovold <johan+linaro@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+To:     Johan Hovold <johan@kernel.org>
+Date:   Thu, 26 May 2022 11:32:17 -0700
+User-Agent: alot/0.10
+Message-Id: <20220526183219.9F047C385A9@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> > Miaohe, please store the ptep, or maybe drop this patch entirely.
->
-> I think it's best to fix it.  I rewrote the changelog as
->
-> : ptep is unmapped too early, so ptep could theoretically be accessed while
-> : it's unmapped.  This might become a problem if/when CONFIG_HIGHPTE becomes
-> : available on riscv.
-> :
-> : Fix it by deferring pte_unmap() until page table checking is done.
->
-> I'll retain the Fixes:.  This doesn't imply cc:stable in MM, and anyone
-> who backports the original patchset will want to know about this fixup.
-Makes sense.
+Quoting Johan Hovold (2022-05-23 05:04:44)
+> On Fri, May 20, 2022 at 08:52:26PM -0700, Stephen Boyd wrote:
+> > Quoting Johan Hovold (2022-05-20 03:09:47)
+> > > Recent Qualcomm platforms have APCS collapse-vote registers that allow
+> > > for sharing GDSCs with other masters (e.g. LPASS).
+> >=20
+> > Maybe just say 'with other subsystems' because LPASS is an entire
+> > subsystem.
+>=20
+> The term "subsystem" is too broad and also has a different meaning in
+> Linux.
+>=20
+> The vendor kernel uses "masters" here which is clear enough and
+> presumably matches their documentation.
+>=20
 
-
-> And I queued a fixup for the thing Matthew noticed.
-Thank you Andrew.
-
-Pasha
+How about "voter"? Then it isn't confused with linux subsystems.
