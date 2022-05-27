@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 988DAC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:54:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B238C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:54:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352180AbiE0LyH (ORCPT
+        id S1351927AbiE0LyS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 07:54:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40386 "EHLO
+        Fri, 27 May 2022 07:54:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352288AbiE0LuR (ORCPT
+        with ESMTP id S1352351AbiE0LuU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:50:17 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D8D614D79B;
-        Fri, 27 May 2022 04:44:25 -0700 (PDT)
+        Fri, 27 May 2022 07:50:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 754DE13F90C;
+        Fri, 27 May 2022 04:44:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id D7BA7CE250E;
-        Fri, 27 May 2022 11:44:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3322C385A9;
-        Fri, 27 May 2022 11:44:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AEB4461CF0;
+        Fri, 27 May 2022 11:44:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDAAAC385A9;
+        Fri, 27 May 2022 11:44:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653651862;
-        bh=o4soIyc1vQYJQ67dGq9GBUeAqDilcx63IcfzN7572IA=;
+        s=korg; t=1653651868;
+        bh=Wf5YjyGS/Miwbxm5fWl0FgB1C4SqltlK0Q2dh7YVefI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yG+DcucXBKGrDWPIAjjVyvdXH+smM+xEQrO2vB8kwgM1OSJl+k4/DLgaf531B1Sg8
-         07cLUXITHTkxrCHRENQMWJYLpN8Qug/yFijOv/Xnl4oJw5pLGBmugHTe12S8InbWDo
-         Tg104bmm566ENnnRyiql7bkEYjJxEbdLz03NhLr0=
+        b=Dct5adY0hzrNS2wOKSorK4QFntmDPH99w5gCOLb1sXxWYuP7vX5vSzbMjxtGcqVnU
+         STnRjaCR+mpxDTiVcQsOQroM/wlQ1EroQ1Kmb7ibZXKnDDC8PIOA/Rf2BXdCyX7syC
+         9ZzfiakmEHdfexSC3axvSOiwbtXmRh/w/5135wn8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Max Filippov <jcmvbkbc@gmail.com>,
+        stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.17 083/111] xtensa: use fallback for random_get_entropy() instead of zero
-Date:   Fri, 27 May 2022 10:49:55 +0200
-Message-Id: <20220527084831.238456575@linuxfoundation.org>
+Subject: [PATCH 5.15 043/145] random: remove use_input_pool parameter from crng_reseed()
+Date:   Fri, 27 May 2022 10:49:04 +0200
+Message-Id: <20220527084856.086474331@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084819.133490171@linuxfoundation.org>
-References: <20220527084819.133490171@linuxfoundation.org>
+In-Reply-To: <20220527084850.364560116@linuxfoundation.org>
+References: <20220527084850.364560116@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,51 +49,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Eric Biggers <ebiggers@google.com>
 
-commit e10e2f58030c5c211d49042a8c2a1b93d40b2ffb upstream.
+commit 5d58ea3a31cc98b9fa563f6921d3d043bf0103d1 upstream.
 
-In the event that random_get_entropy() can't access a cycle counter or
-similar, falling back to returning 0 is really not the best we can do.
-Instead, at least calling random_get_entropy_fallback() would be
-preferable, because that always needs to return _something_, even
-falling back to jiffies eventually. It's not as though
-random_get_entropy_fallback() is super high precision or guaranteed to
-be entropic, but basically anything that's not zero all the time is
-better than returning zero all the time.
+The primary_crng is always reseeded from the input_pool, while the NUMA
+crngs are always reseeded from the primary_crng.  Remove the redundant
+'use_input_pool' parameter from crng_reseed() and just directly check
+whether the crng is the primary_crng.
 
-This is accomplished by just including the asm-generic code like on
-other architectures, which means we can get rid of the empty stub
-function here.
-
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Acked-by: Max Filippov <jcmvbkbc@gmail.com>
+Signed-off-by: Eric Biggers <ebiggers@google.com>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/xtensa/include/asm/timex.h |    6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/char/random.c |   12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
---- a/arch/xtensa/include/asm/timex.h
-+++ b/arch/xtensa/include/asm/timex.h
-@@ -29,10 +29,6 @@
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -365,7 +365,7 @@ static struct {
  
- extern unsigned long ccount_freq;
+ static void extract_entropy(void *buf, size_t nbytes);
  
--typedef unsigned long long cycles_t;
--
--#define get_cycles()	(0)
--
- void local_timer_setup(unsigned cpu);
+-static void crng_reseed(struct crng_state *crng, bool use_input_pool);
++static void crng_reseed(struct crng_state *crng);
  
  /*
-@@ -59,4 +55,6 @@ static inline void set_linux_timer (unsi
- 	xtensa_set_sr(ccompare, SREG_CCOMPARE + LINUX_TIMER);
+  * This function adds bytes into the entropy "pool".  It does not
+@@ -464,7 +464,7 @@ static void credit_entropy_bits(int nbit
+ 	trace_credit_entropy_bits(nbits, entropy_count, _RET_IP_);
+ 
+ 	if (crng_init < 2 && entropy_count >= POOL_MIN_BITS)
+-		crng_reseed(&primary_crng, true);
++		crng_reseed(&primary_crng);
  }
  
-+#include <asm-generic/timex.h>
-+
- #endif	/* _XTENSA_TIMEX_H */
+ /*********************************************************************
+@@ -701,7 +701,7 @@ static int crng_slow_load(const u8 *cp,
+ 	return 1;
+ }
+ 
+-static void crng_reseed(struct crng_state *crng, bool use_input_pool)
++static void crng_reseed(struct crng_state *crng)
+ {
+ 	unsigned long flags;
+ 	int i;
+@@ -710,7 +710,7 @@ static void crng_reseed(struct crng_stat
+ 		u32 key[8];
+ 	} buf;
+ 
+-	if (use_input_pool) {
++	if (crng == &primary_crng) {
+ 		int entropy_count;
+ 		do {
+ 			entropy_count = READ_ONCE(input_pool.entropy_count);
+@@ -748,7 +748,7 @@ static void _extract_crng(struct crng_st
+ 		init_time = READ_ONCE(crng->init_time);
+ 		if (time_after(READ_ONCE(crng_global_init_time), init_time) ||
+ 		    time_after(jiffies, init_time + CRNG_RESEED_INTERVAL))
+-			crng_reseed(crng, crng == &primary_crng);
++			crng_reseed(crng);
+ 	}
+ 	spin_lock_irqsave(&crng->lock, flags);
+ 	chacha20_block(&crng->state[0], out);
+@@ -1547,7 +1547,7 @@ static long random_ioctl(struct file *f,
+ 			return -EPERM;
+ 		if (crng_init < 2)
+ 			return -ENODATA;
+-		crng_reseed(&primary_crng, true);
++		crng_reseed(&primary_crng);
+ 		WRITE_ONCE(crng_global_init_time, jiffies - 1);
+ 		return 0;
+ 	default:
 
 
