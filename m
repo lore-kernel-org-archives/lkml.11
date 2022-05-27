@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 114BCC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:41:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB3B9C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:41:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232037AbiE0Llu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 07:41:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44296 "EHLO
+        id S1351609AbiE0Ll6 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 07:41:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351459AbiE0LkX (ORCPT
+        with ESMTP id S1351574AbiE0Lkr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:40:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14FAC13C0A2;
-        Fri, 27 May 2022 04:39:23 -0700 (PDT)
+        Fri, 27 May 2022 07:40:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F55913C1F4;
+        Fri, 27 May 2022 04:39:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8C5D0B82466;
-        Fri, 27 May 2022 11:39:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DACB9C385A9;
-        Fri, 27 May 2022 11:39:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B9DB461CC4;
+        Fri, 27 May 2022 11:39:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3772C385A9;
+        Fri, 27 May 2022 11:39:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653651560;
-        bh=jyNLySF5vsx/KrVHGxCws/YWkN5WY3oKvFLrahlNFEs=;
+        s=korg; t=1653651569;
+        bh=hnMVFKzJakkFudy48mRUI+VFFoGuT+sdo+aAIP6T100=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aqiF1EW5BUjHiBbdz2fNQMErmPpY5KeMj8qmvkBsHGjRcDZCDtmhWgBwuYtRFsFRJ
-         ZQRMAkjLln+w9uSvrY1oZ8LI86ozER55GEu7LYsUjRfBH7SeX9xSRNyJlk+4xCp+F7
-         fbnu9MqRf0SGqz5zTWwF+Qk6S0gSwkpB0M3KK3CU=
+        b=jsfso5SSCF12QNUW1Sa2P1qYKa3xf/FKQEUq81nEkiuWkHnoRTUr5pqIHvpmywwwI
+         a+SN+ta2zydQv0ROSbcvPcUoSjEvIh9vVn8D+63BX9nb4Rd8qxogDJaD288BfFJk4o
+         i+9taOR7I4gW55rQb/BhNJUGrXfSvGMrxhhx6CSM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         Dominik Brodowski <linux@dominikbrodowski.net>,
+        Theodore Tso <tytso@mit.edu>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.17 058/111] random: re-add removed comment about get_random_{u32,u64} reseeding
-Date:   Fri, 27 May 2022 10:49:30 +0200
-Message-Id: <20220527084827.705061603@linuxfoundation.org>
+Subject: [PATCH 5.17 059/111] random: mix build-time latent entropy into pool at init
+Date:   Fri, 27 May 2022 10:49:31 +0200
+Message-Id: <20220527084827.872544791@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220527084819.133490171@linuxfoundation.org>
 References: <20220527084819.133490171@linuxfoundation.org>
@@ -51,35 +53,41 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit dd7aa36e535797926d8eb311da7151919130139d upstream.
+commit 1754abb3e7583c570666fa1e1ee5b317e88c89a0 upstream.
 
-The comment about get_random_{u32,u64}() not invoking reseeding got
-added in an unrelated commit, that then was recently reverted by
-0313bc278dac ("Revert "random: block in /dev/urandom""). So this adds
-that little comment snippet back, and improves the wording a bit too.
+Prior, the "input_pool_data" array needed no real initialization, and so
+it was easy to mark it with __latent_entropy to populate it during
+compile-time. In switching to using a hash function, this required us to
+specifically initialize it to some specific state, which means we
+dropped the __latent_entropy attribute. An unfortunate side effect was
+this meant the pool was no longer seeded using compile-time random data.
+In order to bring this back, we declare an array in rand_initialize()
+with __latent_entropy and call mix_pool_bytes() on that at init, which
+accomplishes the same thing as before. We make this __initconst, so that
+it doesn't take up space at runtime after init.
 
+Fixes: 6e8ec2552c7d ("random: use computational hash for entropy extraction")
 Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Reviewed-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/char/random.c |    5 +++++
+ 1 file changed, 5 insertions(+)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -224,9 +224,10 @@ static void _warn_unseeded_randomness(co
-  *
-  * These interfaces will return the requested number of random bytes
-  * into the given buffer or as a return value. This is equivalent to
-- * a read from /dev/urandom. The integer family of functions may be
-- * higher performance for one-off random integers, because they do a
-- * bit of buffering.
-+ * a read from /dev/urandom. The u32, u64, int, and long family of
-+ * functions may be higher performance for one-off random integers,
-+ * because they do a bit of buffering and do not invoke reseeding
-+ * until the buffer is emptied.
-  *
-  *********************************************************************/
+@@ -970,6 +970,11 @@ int __init rand_initialize(void)
+ 	bool arch_init = true;
+ 	unsigned long rv;
  
++#if defined(LATENT_ENTROPY_PLUGIN)
++	static const u8 compiletime_seed[BLAKE2S_BLOCK_SIZE] __initconst __latent_entropy;
++	_mix_pool_bytes(compiletime_seed, sizeof(compiletime_seed));
++#endif
++
+ 	for (i = 0; i < BLAKE2S_BLOCK_SIZE; i += sizeof(rv)) {
+ 		if (!arch_get_random_seed_long_early(&rv) &&
+ 		    !arch_get_random_long_early(&rv)) {
 
 
