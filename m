@@ -2,109 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90350C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 07:32:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC944C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 07:32:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347136AbiE0HcR (ORCPT
+        id S1346951AbiE0Hcp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 03:32:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44954 "EHLO
+        Fri, 27 May 2022 03:32:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234922AbiE0HcP (ORCPT
+        with ESMTP id S230332AbiE0Hci (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 03:32:15 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0016F68B4
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 00:32:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
-        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
-        Resent-Cc:Resent-Message-ID; bh=7L1UvtWzSeI1RAxfnE/3HtRDKWRdqRZ2oSzwia86H/U=;
-        t=1653636733; x=1654846333; b=nnrMgrImbIVbCZEg3jsS/ZjfBbuDwIgSnaJCpugINo4Y4F4
-        ryHeOD5AUw5brzunxa825n6o8A4phNnfpomLN9Pg7lC6mRci+WaNDDibycTiVRfrC9dX3lT71ckMf
-        ilYgdtuxc8oIfIsOzI9biLsExJ8vSHKu8qiI7/o6ahjkYQR54MMQgpaypjjI3plpE92cOSsNryFor
-        q3DAH/iFVX663qCUGN+/5ZjbPsCV87PQO/vhu70nyk1j/Qy8UmGgQhYsUFdcWDlN4Z7WfZnVyn5FA
-        VI4TL7nYCA1tTpk0E4t2w1IGacy5a8WxqB/4jIgqPzW5sEW6ak4ayjz4piPzE3Og==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.95)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1nuUS4-005xX2-LH;
-        Fri, 27 May 2022 09:32:04 +0200
-Message-ID: <1f0e79c925f79fba884ec905cf55a3eb7b602d48.camel@sipsolutions.net>
-Subject: Re: [RFC PATCH v3] UML: add support for KASAN under x86_64
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Dmitry Vyukov <dvyukov@google.com>, David Gow <davidgow@google.com>
-Cc:     Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        Patricia Alfonso <trishalfonso@google.com>,
-        Jeff Dike <jdike@addtoit.com>,
-        Richard Weinberger <richard@nod.at>,
-        anton.ivanov@cambridgegreys.com,
-        Brendan Higgins <brendanhiggins@google.com>,
-        kasan-dev <kasan-dev@googlegroups.com>,
-        linux-um@lists.infradead.org, LKML <linux-kernel@vger.kernel.org>,
-        Daniel Latypov <dlatypov@google.com>
-Date:   Fri, 27 May 2022 09:32:03 +0200
-In-Reply-To: <CACT4Y+a191xbPi_0w6imTAYHDeAoudrxbWiuERBOk41e5q_K_Q@mail.gmail.com>
-References: <20220525111756.GA15955@axis.com>
-         <20220526010111.755166-1-davidgow@google.com>
-         <CACT4Y+a191xbPi_0w6imTAYHDeAoudrxbWiuERBOk41e5q_K_Q@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.1 (3.44.1-1.fc36) 
+        Fri, 27 May 2022 03:32:38 -0400
+Received: from smtp.smtpout.orange.fr (smtp08.smtpout.orange.fr [80.12.242.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17B40F688C
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 00:32:34 -0700 (PDT)
+Received: from [192.168.1.18] ([90.11.191.102])
+        by smtp.orange.fr with ESMTPA
+        id uUSUn7gyWN260uUSUnhRNX; Fri, 27 May 2022 09:32:32 +0200
+X-ME-Helo: [192.168.1.18]
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Fri, 27 May 2022 09:32:32 +0200
+X-ME-IP: 90.11.191.102
+Message-ID: <a3e0df04-fb94-ef38-c2dc-1c41e6c721d9@wanadoo.fr>
+Date:   Fri, 27 May 2022 09:32:30 +0200
 MIME-Version: 1.0
-X-malware-bazaar: not-scanned
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] mac80211: Directly use ida_alloc()/free()
+Content-Language: en-AU
+To:     liuke94@huawei.com
+References: <20220527074132.2474867-1-liuke94@huawei.com>
+Cc:     davem@davemloft.net, edumazet@google.com,
+        johannes@sipsolutions.net, kuba@kernel.org, kvalo@kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+In-Reply-To: <20220527074132.2474867-1-liuke94@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-05-27 at 07:31 +0200, Dmitry Vyukov wrote:
-> > - This doesn't seem to work when CONFIG_STATIC_LINK is enabled (because
-> >   libc crt0 code calls memory functions, which expect the shadow memory
-> >   to already exist, due to multiple symbols being resolved.
-> >   - I think we should just make this depend on dynamic UML.
-> >   - For that matter, I think static UML is actually broken at the
-> >     moment. I'll send a patch out tomorrow.
->=20
-> I don't know how important the static build is for UML.
+Hi,
 
-Depends who you ask, I guess.
+Le 27/05/2022 à 09:41, keliu a écrit :
+> Use ida_alloc()/ida_free() instead of deprecated
+> ida_simple_get()/ida_simple_remove() .
+> 
+> Signed-off-by: keliu <liuke94-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+> ---
+>   drivers/net/wireless/mac80211_hwsim.c | 6 +++---
+>   1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wireless/mac80211_hwsim.c
+> index e9ec63e0e395..6ad884d9e9a4 100644
+> --- a/drivers/net/wireless/mac80211_hwsim.c
+> +++ b/drivers/net/wireless/mac80211_hwsim.c
+> @@ -290,8 +290,8 @@ static inline int hwsim_net_set_netgroup(struct net *net)
+>   {
+>   	struct hwsim_net *hwsim_net = net_generic(net, hwsim_net_id);
+>   
+> -	hwsim_net->netgroup = ida_simple_get(&hwsim_netgroup_ida,
+> -					     0, 0, GFP_KERNEL);
+> +	hwsim_net->netgroup = ida_alloc(&hwsim_netgroup_ida,
+> +					     GFP_KERNEL);
+Nitpick: GFP_KERNEL should be on the same line if there is enough space 
+or aligned with &hwsim_netgroup_ida
 
-IMHO just making KASAN depend on !STATIC_LINK is fine, until somebody
-actually wants to do what you describe:
 
-> Generally I prefer to build things statically b/c e.g. if a testing
-> system builds on one machine but runs tests on another, dynamic link
-> may be a problem. Or, say, if a testing system provides binary
-> artifacts, and then nobody can run it locally.
->=20
-> One potential way to fix it is to require outline KASAN
-> instrumentation for static build and then make kasan_arch_is_ready()
-> return false until the shadow is mapped. I see kasan_arch_is_ready()
-> is checked at the beginning of all KASAN runtime entry points.
-> But it would be nice if the dynamic build also supports inline and
-> does not add kasan_arch_is_ready() check overhead.
+Out of curiosity, how do you generate these patches?
+(coccinelle should be the perfect tool for it, but I thought it would 
+already deal with alignment)
 
-which sounds fine too, but ... trade-offs.
+CJ
 
-> > +       if (IS_ENABLED(CONFIG_UML)) {
-> > +               __memset(kasan_mem_to_shadow((void *)addr), KASAN_VMALL=
-OC_INVALID, shadow_end - shadow_start);
->=20
-> "kasan_mem_to_shadow((void *)addr)" can be replaced with shadow_start.
+>   	return hwsim_net->netgroup >= 0 ? 0 : -ENOMEM;
+>   }
+>   
+> @@ -4733,7 +4733,7 @@ static void __net_exit hwsim_exit_net(struct net *net)
+>   					 NULL);
+>   	}
+>   
+> -	ida_simple_remove(&hwsim_netgroup_ida, hwsim_net_get_netgroup(net));
+> +	ida_free(&hwsim_netgroup_ida, hwsim_net_get_netgroup(net));
+>   }
+>   
+>   static struct pernet_operations hwsim_net_ops = {
 
-and then the memset line isn't so long anymore :)
-
->=20
->=20
-> > +               return 0;
-> > +       }
-> > +
-> > +       shadow_start =3D ALIGN_DOWN(shadow_start, PAGE_SIZE);
-> >         shadow_end =3D ALIGN(shadow_end, PAGE_SIZE);
->=20
-> There is no new fancy PAGE_ALIGN macro for this. And I've seen people
-
-s/no/now the/ I guess, but it's also existing code.
-
-johannes
