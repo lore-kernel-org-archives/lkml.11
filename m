@@ -2,83 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D29BC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 09:42:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7F7EC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 09:43:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242592AbiE0JmO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 05:42:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50698 "EHLO
+        id S1350346AbiE0Jn3 convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 05:43:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235152AbiE0JmL (ORCPT
+        with ESMTP id S235152AbiE0Jn1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 05:42:11 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C13CA3E5EE;
-        Fri, 27 May 2022 02:42:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653644529; x=1685180529;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=dbtnMI3UHVoIrRQqCtwR7FgwcIVnGGpefctdsCFMNWY=;
-  b=iaa+qDmZgWlPfunctFq2ZrO6skAC979t2Twv+qQSGsoGAgEu3noRlPM+
-   7nEsoKzr+j8/KhuNmFBQz6W5OvBx261aUT4YU3/rXJJlx0JTpOujR7IkL
-   LMSB4Lvjb1PR+DfChMAcA0ayGQN9LKrYvuHVJd59+0pBqyBCU0g5eZj/O
-   tPQCOd/f7zU1lX89xlaZcnGNqr40zCAhx8/kali6sDpHdILdeqdvj0k90
-   v9Q1/P1rEMK8tQnBSQr2LWbX0NcMeeNriVlbGg6oIEXAfvZI7IwJ6nXk4
-   z5yGeM2xiKm4zc2jcLH0YtwYfHY9GtjnDsUY7+iKyRdsRgXcL2El6dtbV
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10359"; a="360822039"
-X-IronPort-AV: E=Sophos;i="5.91,255,1647327600"; 
-   d="scan'208";a="360822039"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2022 02:42:09 -0700
-X-IronPort-AV: E=Sophos;i="5.91,255,1647327600"; 
-   d="scan'208";a="705045135"
-Received: from leiwang7-mobl.ccr.corp.intel.com (HELO [10.254.211.236]) ([10.254.211.236])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2022 02:42:06 -0700
-Message-ID: <e751ff56-5e0d-e842-78ed-b9c7e9069a26@intel.com>
-Date:   Fri, 27 May 2022 17:42:04 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.9.1
-Subject: Re: [PATCH v7 7/8] KVM: VMX: Expose PKS to guest
+        Fri, 27 May 2022 05:43:27 -0400
+X-Greylist: delayed 339 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 27 May 2022 02:43:24 PDT
+Received: from fd01.gateway.ufhost.com (fd01.gateway.ufhost.com [61.152.239.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58F11ED72A
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 02:43:24 -0700 (PDT)
+Received: from EXMBX166.cuchost.com (unknown [175.102.18.54])
+        (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
+        (Client CN "EXMBX166", Issuer "EXMBX166" (not verified))
+        by fd01.gateway.ufhost.com (Postfix) with ESMTP id 18B6C24E424;
+        Fri, 27 May 2022 17:37:36 +0800 (CST)
+Received: from EXMBX066.cuchost.com (172.16.7.66) by EXMBX166.cuchost.com
+ (172.16.6.76) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Fri, 27 May
+ 2022 17:37:35 +0800
+Received: from EXMBX161.cuchost.com (172.16.6.71) by EXMBX066.cuchost.com
+ (172.16.6.66) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Fri, 27 May
+ 2022 17:37:34 +0800
+Received: from EXMBX161.cuchost.com ([fe80::5c09:58ab:29b:a780]) by
+ EXMBX161.cuchost.com ([fe80::5c09:58ab:29b:a780%15]) with mapi id
+ 15.00.1497.033; Fri, 27 May 2022 17:37:34 +0800
+From:   Leyfoon Tan <leyfoon.tan@starfivetech.com>
+To:     Palmer Dabbelt <palmer@dabbelt.com>
+CC:     Alexandre Ghiti <alexandre.ghiti@canonical.com>,
+        "linux-riscv@lists.infradead.org" <linux-riscv@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: arch/riscv: SV48 patch series questions
+Thread-Topic: arch/riscv: SV48 patch series questions
+Thread-Index: AdhxrOkRGR9CQf46QWqljv+TL2tt2A==
+Date:   Fri, 27 May 2022 09:37:34 +0000
+Message-ID: <83813d991f96428c95c6d681c16ae852@EXMBX161.cuchost.com>
+Accept-Language: en-US, zh-CN
 Content-Language: en-US
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     pbonzini@redhat.com, vkuznets@redhat.com, wanpengli@tencent.com,
-        jmattson@google.com, joro@8bytes.org, chenyi.qiang@intel.com,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220424101557.134102-1-lei4.wang@intel.com>
- <20220424101557.134102-8-lei4.wang@intel.com> <Yo1rfrnV5nObIHJK@google.com>
-From:   "Wang, Lei" <lei4.wang@intel.com>
-In-Reply-To: <Yo1rfrnV5nObIHJK@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [60.49.44.206]
+x-yovoleruleagent: yovoleflag
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+MIME-Version: 1.0
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/25/2022 7:34 AM, Sean Christopherson wrote:
-> On Sun, Apr 24, 2022, Lei Wang wrote:
->> diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
->> index 9d0588e85410..cbcb0d7b47a4 100644
->> --- a/arch/x86/kvm/vmx/vmx.c
->> +++ b/arch/x86/kvm/vmx/vmx.c
->> @@ -3250,7 +3250,7 @@ void vmx_set_cr4(struct kvm_vcpu *vcpu, unsigned long cr4)
->>   		}
->>   
->>   		/*
->> -		 * SMEP/SMAP/PKU is disabled if CPU is in non-paging mode in
->> +		 * SMEP/SMAP/PKU/PKS is disabled if CPU is in non-paging mode in
->>   		 * hardware.  To emulate this behavior, SMEP/SMAP/PKU needs
-> Heh, missed one ;-)  Let's reduce future pain and reword this whole comment:
->
-> 		/*
-> 		 * SMEP/SMAP/PKU/PKS are effectively disabled if the CPU is in
-> 		 * non-paging mode in hardware.  To emulate this behavior,
-> 		 * clear them in the hardware CR4 when the guest switches to
-> 		 * non-paging mode and unrestricted guest is disabled, as KVM
-> 		 * must run the guest with hardware CR0.PG=1.
-> 		 */
->
-Nice catch, will fix it ;-)
+Hi Palmer
+
+Alex's "Introduce sv48 support without relocatable kernel" patch series in [1] was partially merged to Linux v5.17. But there are 4 patches are not merged (Patch-10 to 13).
+
+May I know what is the plan for these patches? Will them merged to next v5.19 merging window? Or do you expect any changes for these patches or Alex needs resend with rebase to latest kernel version?
+
+Note, we would like to use the Patch-13 in this series.
+
+Patches not merged:
+[v3,10/13] riscv: Improve virtual kernel memory layout dump
+[v3,11/13] Documentation: riscv: Add sv48 description to VM layout
+[v3,12/13] riscv: Initialize thread pointer before calling C functions
+[v3,13/13] riscv: Allow user to downgrade to sv39 when hw supports sv48 if !KASAN
+
+[1]: https://patchwork.kernel.org/project/linux-riscv/cover/20211206104657.433304-1-alexandre.ghiti@canonical.com/
+
+Thanks.
+
+Regards
+Ley Foon
