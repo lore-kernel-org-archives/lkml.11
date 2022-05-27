@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88985C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:59:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0886DC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:59:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347302AbiE0I7O (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 04:59:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55962 "EHLO
+        id S236455AbiE0I7U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 04:59:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350242AbiE0I5O (ORCPT
+        with ESMTP id S1350321AbiE0I6d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 04:57:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FCD9111BB0;
-        Fri, 27 May 2022 01:54:40 -0700 (PDT)
+        Fri, 27 May 2022 04:58:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DCC611CA3C;
+        Fri, 27 May 2022 01:54:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 79ABA61CB7;
-        Fri, 27 May 2022 08:54:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AF56C385A9;
-        Fri, 27 May 2022 08:54:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 323A761C01;
+        Fri, 27 May 2022 08:54:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05770C385A9;
+        Fri, 27 May 2022 08:54:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653641678;
-        bh=u1UqmCTFtjAEx/jrfzp+B7WVcH5ZjcmJTpDVL3lfdJw=;
+        s=korg; t=1653641689;
+        bh=Wf5YjyGS/Miwbxm5fWl0FgB1C4SqltlK0Q2dh7YVefI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Aoa5rqJogxNfERAUIL77HqqLA6Q13Fz2V06N0tiMZR2rX7YjVLfdgPiZ8fAKgJ92y
-         SNOgrkwwSe4jLDJMVrHetCFh1qLvDdF4voQ9eckXcAx6wVAsjLUbg1IPYTdwU3rxmy
-         CFrK8FGiaq6vCOewq8pRX83cibZeu9h7FGq0fQ7Q=
+        b=MAuPNhCXl4nWxZs3NpdzMB4qZOizsmUQgvEa44bAEIiQN9CNydd+rwNxGyoB57ryF
+         FHnoDTvDffpCjAyJdXgp3bJtTTuwP67/PIJSHZjTn0JxqvWtYd5i0D9EV0Woz2QTJ6
+         pPO5IHzTBtnOinUlUP6ukp/G0CEIB6jJWMFa+nKg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
+        stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.18 33/47] random: handle latent entropy and command line from random_init()
-Date:   Fri, 27 May 2022 10:50:13 +0200
-Message-Id: <20220527084806.884481906@linuxfoundation.org>
+Subject: [PATCH 5.17 008/111] random: remove use_input_pool parameter from crng_reseed()
+Date:   Fri, 27 May 2022 10:48:40 +0200
+Message-Id: <20220527084820.288878202@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084801.223648383@linuxfoundation.org>
-References: <20220527084801.223648383@linuxfoundation.org>
+In-Reply-To: <20220527084819.133490171@linuxfoundation.org>
+References: <20220527084819.133490171@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,132 +48,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Eric Biggers <ebiggers@google.com>
 
-commit 2f14062bb14b0fcfcc21e6dc7d5b5c0d25966164 upstream.
+commit 5d58ea3a31cc98b9fa563f6921d3d043bf0103d1 upstream.
 
-Currently, start_kernel() adds latent entropy and the command line to
-the entropy bool *after* the RNG has been initialized, deferring when
-it's actually used by things like stack canaries until the next time
-the pool is seeded. This surely is not intended.
+The primary_crng is always reseeded from the input_pool, while the NUMA
+crngs are always reseeded from the primary_crng.  Remove the redundant
+'use_input_pool' parameter from crng_reseed() and just directly check
+whether the crng is the primary_crng.
 
-Rather than splitting up which entropy gets added where and when between
-start_kernel() and random_init(), just do everything in random_init(),
-which should eliminate these kinds of bugs in the future.
-
-While we're at it, rename the awkwardly titled "rand_initialize()" to
-the more standard "random_init()" nomenclature.
-
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Signed-off-by: Eric Biggers <ebiggers@google.com>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c  |   17 ++++++++++-------
- include/linux/random.h |   15 +++++++--------
- init/main.c            |   10 +++-------
- 3 files changed, 20 insertions(+), 22 deletions(-)
+ drivers/char/random.c |   12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -891,12 +891,13 @@ early_param("random.trust_bootloader", p
+@@ -365,7 +365,7 @@ static struct {
+ 
+ static void extract_entropy(void *buf, size_t nbytes);
+ 
+-static void crng_reseed(struct crng_state *crng, bool use_input_pool);
++static void crng_reseed(struct crng_state *crng);
  
  /*
-  * The first collection of entropy occurs at system boot while interrupts
-- * are still turned off. Here we push in RDSEED, a timestamp, and utsname().
-- * Depending on the above configuration knob, RDSEED may be considered
-- * sufficient for initialization. Note that much earlier setup may already
-- * have pushed entropy into the input pool by the time we get here.
-+ * are still turned off. Here we push in latent entropy, RDSEED, a timestamp,
-+ * utsname(), and the command line. Depending on the above configuration knob,
-+ * RDSEED may be considered sufficient for initialization. Note that much
-+ * earlier setup may already have pushed entropy into the input pool by the
-+ * time we get here.
-  */
--int __init rand_initialize(void)
-+int __init random_init(const char *command_line)
- {
- 	size_t i;
- 	ktime_t now = ktime_get_real();
-@@ -918,6 +919,8 @@ int __init rand_initialize(void)
- 	}
- 	_mix_pool_bytes(&now, sizeof(now));
- 	_mix_pool_bytes(utsname(), sizeof(*(utsname())));
-+	_mix_pool_bytes(command_line, strlen(command_line));
-+	add_latent_entropy();
+  * This function adds bytes into the entropy "pool".  It does not
+@@ -464,7 +464,7 @@ static void credit_entropy_bits(int nbit
+ 	trace_credit_entropy_bits(nbits, entropy_count, _RET_IP_);
  
- 	if (crng_ready())
- 		crng_reseed();
-@@ -1637,8 +1640,8 @@ static struct ctl_table random_table[] =
- };
- 
- /*
-- * rand_initialize() is called before sysctl_init(),
-- * so we cannot call register_sysctl_init() in rand_initialize()
-+ * random_init() is called before sysctl_init(),
-+ * so we cannot call register_sysctl_init() in random_init()
-  */
- static int __init random_sysctls_init(void)
- {
---- a/include/linux/random.h
-+++ b/include/linux/random.h
-@@ -14,22 +14,21 @@ struct notifier_block;
- 
- extern void add_device_randomness(const void *, size_t);
- extern void add_bootloader_randomness(const void *, size_t);
-+extern void add_input_randomness(unsigned int type, unsigned int code,
-+				 unsigned int value) __latent_entropy;
-+extern void add_interrupt_randomness(int irq) __latent_entropy;
-+extern void add_hwgenerator_randomness(const void *buffer, size_t count,
-+				       size_t entropy);
- 
- #if defined(LATENT_ENTROPY_PLUGIN) && !defined(__CHECKER__)
- static inline void add_latent_entropy(void)
- {
--	add_device_randomness((const void *)&latent_entropy,
--			      sizeof(latent_entropy));
-+	add_device_randomness((const void *)&latent_entropy, sizeof(latent_entropy));
+ 	if (crng_init < 2 && entropy_count >= POOL_MIN_BITS)
+-		crng_reseed(&primary_crng, true);
++		crng_reseed(&primary_crng);
  }
- #else
- static inline void add_latent_entropy(void) {}
- #endif
  
--extern void add_input_randomness(unsigned int type, unsigned int code,
--				 unsigned int value) __latent_entropy;
--extern void add_interrupt_randomness(int irq) __latent_entropy;
--extern void add_hwgenerator_randomness(const void *buffer, size_t count,
--				       size_t entropy);
- #if IS_ENABLED(CONFIG_VMGENID)
- extern void add_vmfork_randomness(const void *unique_vm_id, size_t size);
- extern int register_random_vmfork_notifier(struct notifier_block *nb);
-@@ -41,7 +40,7 @@ static inline int unregister_random_vmfo
+ /*********************************************************************
+@@ -701,7 +701,7 @@ static int crng_slow_load(const u8 *cp,
+ 	return 1;
+ }
  
- extern void get_random_bytes(void *buf, size_t nbytes);
- extern int wait_for_random_bytes(void);
--extern int __init rand_initialize(void);
-+extern int __init random_init(const char *command_line);
- extern bool rng_is_initialized(void);
- extern int register_random_ready_notifier(struct notifier_block *nb);
- extern int unregister_random_ready_notifier(struct notifier_block *nb);
---- a/init/main.c
-+++ b/init/main.c
-@@ -1040,15 +1040,11 @@ asmlinkage __visible void __init __no_sa
- 	/*
- 	 * For best initial stack canary entropy, prepare it after:
- 	 * - setup_arch() for any UEFI RNG entropy and boot cmdline access
--	 * - timekeeping_init() for ktime entropy used in rand_initialize()
-+	 * - timekeeping_init() for ktime entropy used in random_init()
- 	 * - time_init() for making random_get_entropy() work on some platforms
--	 * - rand_initialize() to get any arch-specific entropy like RDRAND
--	 * - add_latent_entropy() to get any latent entropy
--	 * - adding command line entropy
-+	 * - random_init() to initialize the RNG from from early entropy sources
- 	 */
--	rand_initialize();
--	add_latent_entropy();
--	add_device_randomness(command_line, strlen(command_line));
-+	random_init(command_line);
- 	boot_init_stack_canary();
+-static void crng_reseed(struct crng_state *crng, bool use_input_pool)
++static void crng_reseed(struct crng_state *crng)
+ {
+ 	unsigned long flags;
+ 	int i;
+@@ -710,7 +710,7 @@ static void crng_reseed(struct crng_stat
+ 		u32 key[8];
+ 	} buf;
  
- 	perf_event_init();
+-	if (use_input_pool) {
++	if (crng == &primary_crng) {
+ 		int entropy_count;
+ 		do {
+ 			entropy_count = READ_ONCE(input_pool.entropy_count);
+@@ -748,7 +748,7 @@ static void _extract_crng(struct crng_st
+ 		init_time = READ_ONCE(crng->init_time);
+ 		if (time_after(READ_ONCE(crng_global_init_time), init_time) ||
+ 		    time_after(jiffies, init_time + CRNG_RESEED_INTERVAL))
+-			crng_reseed(crng, crng == &primary_crng);
++			crng_reseed(crng);
+ 	}
+ 	spin_lock_irqsave(&crng->lock, flags);
+ 	chacha20_block(&crng->state[0], out);
+@@ -1547,7 +1547,7 @@ static long random_ioctl(struct file *f,
+ 			return -EPERM;
+ 		if (crng_init < 2)
+ 			return -ENODATA;
+-		crng_reseed(&primary_crng, true);
++		crng_reseed(&primary_crng);
+ 		WRITE_ONCE(crng_global_init_time, jiffies - 1);
+ 		return 0;
+ 	default:
 
 
