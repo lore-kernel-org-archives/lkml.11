@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A020C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:01:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34C33C43219
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:01:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352311AbiE0MAL (ORCPT
+        id S1352604AbiE0MAp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 08:00:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38986 "EHLO
+        Fri, 27 May 2022 08:00:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353171AbiE0LvX (ORCPT
+        with ESMTP id S1352871AbiE0Lu5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:51:23 -0400
+        Fri, 27 May 2022 07:50:57 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8EC3146763;
-        Fri, 27 May 2022 04:46:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAC84276;
+        Fri, 27 May 2022 04:46:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BCDC161D19;
-        Fri, 27 May 2022 11:46:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCBDBC385A9;
-        Fri, 27 May 2022 11:46:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 529FF61D96;
+        Fri, 27 May 2022 11:46:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 638D1C385A9;
+        Fri, 27 May 2022 11:46:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653652017;
-        bh=Yy5gQPcfw9NC/kuApdrxoyH05hh4EnBXxxCCeB24uyw=;
+        s=korg; t=1653651975;
+        bh=Ml2drK8wflGx1WqYyuyVWtr3gasKF1wxogQ6AqqIt3Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pqh8z+m+v3QW8DDUkhKwzymCHNTBC3CHngPQQ5sR5tyNGJbIz2BzqnmNLc5ftMpGk
-         HoOYnvsX3tTrodci24pdk+G7DvCKoDASQ0Hamfj3xmXU2fIDyvBT9ispXm3/tsOf7Y
-         DVtjnYwu/gfa7FgjtfmUtO2fxAqa0aMzc1NT9TMk=
+        b=A1FXYeaQ07CvAsXTdV0Z2A1IP+qZyw1EeeDBHOuMAG6KxvUiUDrcdp57IAMHQ5AMg
+         lNWmwpZ6pLjk8exz79R3b751fOcwz397oA158caODy5gLELojfWJplk1sHpSnX/oRr
+         1o7iUdvnzVXhlPqEi8mPODv4jRnV/GxuPcxLpSJg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Veronika Kabatova <vkabatov@redhat.com>,
-        Aristeu Rozanski <aris@redhat.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        dann frazier <dann.frazier@canonical.com>
-Subject: [PATCH 5.17 110/111] ACPI: sysfs: Fix BERT error region memory mapping
-Date:   Fri, 27 May 2022 10:50:22 +0200
-Message-Id: <20220527084834.798679404@linuxfoundation.org>
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Joe Perches <joe@perches.com>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.17 092/111] random: use symbolic constants for crng_init states
+Date:   Fri, 27 May 2022 10:50:04 +0200
+Message-Id: <20220527084832.450066928@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220527084819.133490171@linuxfoundation.org>
 References: <20220527084819.133490171@linuxfoundation.org>
@@ -54,85 +51,125 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 1bbc21785b7336619fb6a67f1fff5afdaf229acc upstream.
+commit e3d2c5e79a999aa4e7d6f0127e16d3da5a4ff70d upstream.
 
-Currently the sysfs interface maps the BERT error region as "memory"
-(through acpi_os_map_memory()) in order to copy the error records into
-memory buffers through memory operations (eg memory_read_from_buffer()).
+crng_init represents a state machine, with three states, and various
+rules for transitions. For the longest time, we've been managing these
+with "0", "1", and "2", and expecting people to figure it out. To make
+the code more obvious, replace these with proper enum values
+representing the transition, and then redocument what each of these
+states mean.
 
-The OS system cannot detect whether the BERT error region is part of
-system RAM or it is "device memory" (eg BMC memory) and therefore it
-cannot detect which memory attributes the bus to memory support (and
-corresponding kernel mapping, unless firmware provides the required
-information).
-
-The acpi_os_map_memory() arch backend implementation determines the
-mapping attributes. On arm64, if the BERT error region is not present in
-the EFI memory map, the error region is mapped as device-nGnRnE; this
-triggers alignment faults since memcpy unaligned accesses are not
-allowed in device-nGnRnE regions.
-
-The ACPI sysfs code cannot therefore map by default the BERT error
-region with memory semantics but should use a safer default.
-
-Change the sysfs code to map the BERT error region as MMIO (through
-acpi_os_map_iomem()) and use the memcpy_fromio() interface to read the
-error region into the kernel buffer.
-
-Link: https://lore.kernel.org/linux-arm-kernel/31ffe8fc-f5ee-2858-26c5-0fd8bdd68702@arm.com
-Link: https://lore.kernel.org/linux-acpi/CAJZ5v0g+OVbhuUUDrLUCfX_mVqY_e8ubgLTU98=jfjTeb4t+Pw@mail.gmail.com
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Tested-by: Veronika Kabatova <vkabatov@redhat.com>
-Tested-by: Aristeu Rozanski <aris@redhat.com>
-Acked-by: Ard Biesheuvel <ardb@kernel.org>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Cc: dann frazier <dann.frazier@canonical.com>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Cc: Joe Perches <joe@perches.com>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/acpi/sysfs.c |   25 ++++++++++++++++++-------
- 1 file changed, 18 insertions(+), 7 deletions(-)
+ drivers/char/random.c |   38 +++++++++++++++++++-------------------
+ 1 file changed, 19 insertions(+), 19 deletions(-)
 
---- a/drivers/acpi/sysfs.c
-+++ b/drivers/acpi/sysfs.c
-@@ -415,19 +415,30 @@ static ssize_t acpi_data_show(struct fil
- 			      loff_t offset, size_t count)
- {
- 	struct acpi_data_attr *data_attr;
--	void *base;
--	ssize_t rc;
-+	void __iomem *base;
-+	ssize_t size;
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -70,16 +70,16 @@
+  *********************************************************************/
  
- 	data_attr = container_of(bin_attr, struct acpi_data_attr, attr);
-+	size = data_attr->attr.size;
+ /*
+- * crng_init =  0 --> Uninitialized
+- *		1 --> Initialized
+- *		2 --> Initialized from input_pool
+- *
+  * crng_init is protected by base_crng->lock, and only increases
+- * its value (from 0->1->2).
++ * its value (from empty->early->ready).
+  */
+-static int crng_init = 0;
+-#define crng_ready() (likely(crng_init > 1))
+-/* Various types of waiters for crng_init->2 transition. */
++static enum {
++	CRNG_EMPTY = 0, /* Little to no entropy collected */
++	CRNG_EARLY = 1, /* At least POOL_EARLY_BITS collected */
++	CRNG_READY = 2  /* Fully initialized with POOL_READY_BITS collected */
++} crng_init = CRNG_EMPTY;
++#define crng_ready() (likely(crng_init >= CRNG_READY))
++/* Various types of waiters for crng_init->CRNG_READY transition. */
+ static DECLARE_WAIT_QUEUE_HEAD(crng_init_wait);
+ static struct fasync_struct *fasync;
+ static DEFINE_SPINLOCK(random_ready_chain_lock);
+@@ -282,7 +282,7 @@ static void crng_reseed(void)
+ 	WRITE_ONCE(base_crng.generation, next_gen);
+ 	WRITE_ONCE(base_crng.birth, jiffies);
+ 	if (!crng_ready()) {
+-		crng_init = 2;
++		crng_init = CRNG_READY;
+ 		finalize_init = true;
+ 	}
+ 	spin_unlock_irqrestore(&base_crng.lock, flags);
+@@ -376,7 +376,7 @@ static void crng_make_state(u32 chacha_s
+ 	 * For the fast path, we check whether we're ready, unlocked first, and
+ 	 * then re-check once locked later. In the case where we're really not
+ 	 * ready, we do fast key erasure with the base_crng directly, extracting
+-	 * when crng_init==0.
++	 * when crng_init is CRNG_EMPTY.
+ 	 */
+ 	if (!crng_ready()) {
+ 		bool ready;
+@@ -384,7 +384,7 @@ static void crng_make_state(u32 chacha_s
+ 		spin_lock_irqsave(&base_crng.lock, flags);
+ 		ready = crng_ready();
+ 		if (!ready) {
+-			if (crng_init == 0)
++			if (crng_init == CRNG_EMPTY)
+ 				extract_entropy(base_crng.key, sizeof(base_crng.key));
+ 			crng_fast_key_erasure(base_crng.key, chacha_state,
+ 					      random_data, random_data_len);
+@@ -738,8 +738,8 @@ EXPORT_SYMBOL(get_random_bytes_arch);
  
--	base = acpi_os_map_memory(data_attr->addr, data_attr->attr.size);
-+	if (offset < 0)
-+		return -EINVAL;
-+
-+	if (offset >= size)
-+		return 0;
-+
-+	if (count > size - offset)
-+		count = size - offset;
-+
-+	base = acpi_os_map_iomem(data_attr->addr, size);
- 	if (!base)
- 		return -ENOMEM;
--	rc = memory_read_from_buffer(buf, count, &offset, base,
--				     data_attr->attr.size);
--	acpi_os_unmap_memory(base, data_attr->attr.size);
+ enum {
+ 	POOL_BITS = BLAKE2S_HASH_SIZE * 8,
+-	POOL_INIT_BITS = POOL_BITS, /* No point in settling for less. */
+-	POOL_FAST_INIT_BITS = POOL_INIT_BITS / 2
++	POOL_READY_BITS = POOL_BITS, /* When crng_init->CRNG_READY */
++	POOL_EARLY_BITS = POOL_READY_BITS / 2 /* When crng_init->CRNG_EARLY */
+ };
  
--	return rc;
-+	memcpy_fromio(buf, base + offset, count);
-+
-+	acpi_os_unmap_iomem(base, size);
-+
-+	return count;
- }
+ static struct {
+@@ -834,13 +834,13 @@ static void credit_init_bits(size_t nbit
+ 		init_bits = min_t(unsigned int, POOL_BITS, orig + add);
+ 	} while (cmpxchg(&input_pool.init_bits, orig, init_bits) != orig);
  
- static int acpi_bert_data_init(void *th, struct acpi_data_attr *data_attr)
+-	if (!crng_ready() && init_bits >= POOL_INIT_BITS)
++	if (!crng_ready() && init_bits >= POOL_READY_BITS)
+ 		crng_reseed();
+-	else if (unlikely(crng_init == 0 && init_bits >= POOL_FAST_INIT_BITS)) {
++	else if (unlikely(crng_init == CRNG_EMPTY && init_bits >= POOL_EARLY_BITS)) {
+ 		spin_lock_irqsave(&base_crng.lock, flags);
+-		if (crng_init == 0) {
++		if (crng_init == CRNG_EMPTY) {
+ 			extract_entropy(base_crng.key, sizeof(base_crng.key));
+-			crng_init = 1;
++			crng_init = CRNG_EARLY;
+ 		}
+ 		spin_unlock_irqrestore(&base_crng.lock, flags);
+ 	}
+@@ -1515,7 +1515,7 @@ const struct file_operations urandom_fop
+  *
+  * - write_wakeup_threshold - the amount of entropy in the input pool
+  *   below which write polls to /dev/random will unblock, requesting
+- *   more entropy, tied to the POOL_INIT_BITS constant. It is writable
++ *   more entropy, tied to the POOL_READY_BITS constant. It is writable
+  *   to avoid breaking old userspaces, but writing to it does not
+  *   change any behavior of the RNG.
+  *
+@@ -1530,7 +1530,7 @@ const struct file_operations urandom_fop
+ #include <linux/sysctl.h>
+ 
+ static int sysctl_random_min_urandom_seed = CRNG_RESEED_INTERVAL / HZ;
+-static int sysctl_random_write_wakeup_bits = POOL_INIT_BITS;
++static int sysctl_random_write_wakeup_bits = POOL_READY_BITS;
+ static int sysctl_poolsize = POOL_BITS;
+ static u8 sysctl_bootid[UUID_SIZE];
+ 
 
 
