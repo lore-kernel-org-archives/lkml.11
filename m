@@ -2,191 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C4BBC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 09:03:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8471DC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 09:04:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350420AbiE0JDw (ORCPT
+        id S1350491AbiE0JEA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 05:03:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35190 "EHLO
+        Fri, 27 May 2022 05:04:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350851AbiE0JAq (ORCPT
+        with ESMTP id S1350852AbiE0JAq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 27 May 2022 05:00:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4432F1078B2;
-        Fri, 27 May 2022 01:57:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C80961DA4;
-        Fri, 27 May 2022 08:57:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35C4DC34100;
-        Fri, 27 May 2022 08:57:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653641834;
-        bh=NatoMCFLDoqs2tCAyid/EccYcE29QtWy5guBAtHLCIE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IXGmiBvor2Qxaq/yKvVpAaI3fz/AvH4FVYxJWBTTn6og/sWjUmeKeACunMtKcBcXI
-         A62KENCTiQ6wiSymWORD0vYbjoLEDLSGO7ydML2A0PjjxOR2jYkY0NbBW8E3pdht1G
-         M5TzXWG3RYsUCD2rBsrKS6KB3xRtlrjbnTGBFmcM=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Moshe Kol <moshe.kol@mail.huji.ac.il>,
-        Yossi Gilad <yossi.gilad@mail.huji.ac.il>,
-        Amit Klein <aksecurity@gmail.com>,
-        Eric Dumazet <edumazet@google.com>, Willy Tarreau <w@1wt.eu>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Stefan Ghinea <stefan.ghinea@windriver.com>
-Subject: [PATCH 5.10 006/163] secure_seq: use the 64 bits of the siphash for port offset calculation
-Date:   Fri, 27 May 2022 10:48:06 +0200
-Message-Id: <20220527084829.061384848@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
-References: <20220527084828.156494029@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D00D108AAD;
+        Fri, 27 May 2022 01:57:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1653641837; x=1685177837;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Cz0az1bh7WDnZV2yku+ue+sCkR00jjhrmoI17Su6PQ4=;
+  b=I6SA6TdD/TDx9TN8xWS73h69+5XWUTNWdGGDj2cBAnE9/qEDWFju6YFO
+   ycrLYH2v+YpbwVZjoYe2nUt3he8PQXwQzyCkg3+TkHnoHJD/bYrfRFpRh
+   1lSJTVOyQsPt1IcUuNsP2UGWqRlU3CmiFYQo9hXwthATjnAQ7aTKCoUDC
+   M=;
+Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
+  by alexa-out.qualcomm.com with ESMTP; 27 May 2022 01:57:17 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2022 01:57:01 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Fri, 27 May 2022 01:56:40 -0700
+Received: from hu-pkondeti-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Fri, 27 May 2022 01:56:38 -0700
+Date:   Fri, 27 May 2022 14:26:33 +0530
+From:   Pavan Kondeti <quic_pkondeti@quicinc.com>
+To:     Prashanth K <quic_prashk@quicinc.com>
+CC:     Matthias Brugger <matthias.bgg@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Pavankumar Kondeti <quic_pkondeti@quicinc.com>,
+        Pratham Pratap <quic_ppratap@quicinc.com>,
+        <linux-usb@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] usb: common: usb-conn-gpio: Allow wakeup from system
+ suspend
+Message-ID: <20220527085633.GB17518@hu-pkondeti-hyd.qualcomm.com>
+References: <1653634146-12215-1-git-send-email-quic_prashk@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <1653634146-12215-1-git-send-email-quic_prashk@quicinc.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Willy Tarreau <w@1wt.eu>
+On Fri, May 27, 2022 at 12:19:06PM +0530, Prashanth K wrote:
+> Currently the VBUS/ID detection interrupts are disabled during system
+> suspend. So the USB cable connect/disconnect event can't wakeup the
+> system from low power mode. To allow this, we keep these interrupts
+> enabled and configure them as wakeup capable. This behavior can be
+> controlled through device wakeup source policy by the user space.
+> 
+> Signed-off-by: Prashanth K <quic_prashk@quicinc.com>
+> ---
+>  drivers/usb/common/usb-conn-gpio.c | 17 +++++++++++++++++
+>  1 file changed, 17 insertions(+)
+> 
+> diff --git a/drivers/usb/common/usb-conn-gpio.c b/drivers/usb/common/usb-conn-gpio.c
+> index 395f9bb..b39c9f1c 100644
+> --- a/drivers/usb/common/usb-conn-gpio.c
+> +++ b/drivers/usb/common/usb-conn-gpio.c
+> @@ -257,6 +257,7 @@ static int usb_conn_probe(struct platform_device *pdev)
+>  	}
+>  
+>  	platform_set_drvdata(pdev, info);
+> +	device_set_wakeup_capable(&pdev->dev, true);
+>  
+>  	/* Perform initial detection */
+>  	usb_conn_queue_dwork(info, 0);
+> @@ -286,6 +287,14 @@ static int __maybe_unused usb_conn_suspend(struct device *dev)
+>  {
+>  	struct usb_conn_info *info = dev_get_drvdata(dev);
+>  
+> +	if (device_may_wakeup(dev)) {
+> +		if (info->id_gpiod)
+> +			enable_irq_wake(info->id_irq);
+> +		if (info->vbus_gpiod)
+> +			enable_irq_wake(info->vbus_irq);
+> +		return 0;
+> +	}
+> +
+>  	if (info->id_gpiod)
+>  		disable_irq(info->id_irq);
+>  	if (info->vbus_gpiod)
+> @@ -300,6 +309,14 @@ static int __maybe_unused usb_conn_resume(struct device *dev)
+>  {
+>  	struct usb_conn_info *info = dev_get_drvdata(dev);
+>  
+> +	if (device_may_wakeup(dev)) {
+> +		if (info->id_gpiod)
+> +			disable_irq_wake(info->id_irq);
+> +		if (info->vbus_gpiod)
+> +			disable_irq_wake(info->vbus_irq);
+> +		return 0;
+> +	}
+> +
+>  	pinctrl_pm_select_default_state(dev);
+>  
+>  	if (info->id_gpiod)
 
-commit b2d057560b8107c633b39aabe517ff9d93f285e3 upstream.
+Looks good to me.
 
-SipHash replaced MD5 in secure_ipv{4,6}_port_ephemeral() via commit
-7cd23e5300c1 ("secure_seq: use SipHash in place of MD5"), but the output
-remained truncated to 32-bit only. In order to exploit more bits from the
-hash, let's make the functions return the full 64-bit of siphash_3u32().
-We also make sure the port offset calculation in __inet_hash_connect()
-remains done on 32-bit to avoid the need for div_u64_rem() and an extra
-cost on 32-bit systems.
-
-Cc: Jason A. Donenfeld <Jason@zx2c4.com>
-Cc: Moshe Kol <moshe.kol@mail.huji.ac.il>
-Cc: Yossi Gilad <yossi.gilad@mail.huji.ac.il>
-Cc: Amit Klein <aksecurity@gmail.com>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: Willy Tarreau <w@1wt.eu>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-[SG: Adjusted context]
-Signed-off-by: Stefan Ghinea <stefan.ghinea@windriver.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- include/net/inet_hashtables.h |    2 +-
- include/net/secure_seq.h      |    4 ++--
- net/core/secure_seq.c         |    4 ++--
- net/ipv4/inet_hashtables.c    |   10 ++++++----
- net/ipv6/inet6_hashtables.c   |    4 ++--
- 5 files changed, 13 insertions(+), 11 deletions(-)
-
---- a/include/net/inet_hashtables.h
-+++ b/include/net/inet_hashtables.h
-@@ -419,7 +419,7 @@ static inline void sk_rcv_saddr_set(stru
- }
- 
- int __inet_hash_connect(struct inet_timewait_death_row *death_row,
--			struct sock *sk, u32 port_offset,
-+			struct sock *sk, u64 port_offset,
- 			int (*check_established)(struct inet_timewait_death_row *,
- 						 struct sock *, __u16,
- 						 struct inet_timewait_sock **));
---- a/include/net/secure_seq.h
-+++ b/include/net/secure_seq.h
-@@ -4,8 +4,8 @@
- 
- #include <linux/types.h>
- 
--u32 secure_ipv4_port_ephemeral(__be32 saddr, __be32 daddr, __be16 dport);
--u32 secure_ipv6_port_ephemeral(const __be32 *saddr, const __be32 *daddr,
-+u64 secure_ipv4_port_ephemeral(__be32 saddr, __be32 daddr, __be16 dport);
-+u64 secure_ipv6_port_ephemeral(const __be32 *saddr, const __be32 *daddr,
- 			       __be16 dport);
- u32 secure_tcp_seq(__be32 saddr, __be32 daddr,
- 		   __be16 sport, __be16 dport);
---- a/net/core/secure_seq.c
-+++ b/net/core/secure_seq.c
-@@ -96,7 +96,7 @@ u32 secure_tcpv6_seq(const __be32 *saddr
- }
- EXPORT_SYMBOL(secure_tcpv6_seq);
- 
--u32 secure_ipv6_port_ephemeral(const __be32 *saddr, const __be32 *daddr,
-+u64 secure_ipv6_port_ephemeral(const __be32 *saddr, const __be32 *daddr,
- 			       __be16 dport)
- {
- 	const struct {
-@@ -146,7 +146,7 @@ u32 secure_tcp_seq(__be32 saddr, __be32
- }
- EXPORT_SYMBOL_GPL(secure_tcp_seq);
- 
--u32 secure_ipv4_port_ephemeral(__be32 saddr, __be32 daddr, __be16 dport)
-+u64 secure_ipv4_port_ephemeral(__be32 saddr, __be32 daddr, __be16 dport)
- {
- 	net_secret_init();
- 	return siphash_4u32((__force u32)saddr, (__force u32)daddr,
---- a/net/ipv4/inet_hashtables.c
-+++ b/net/ipv4/inet_hashtables.c
-@@ -504,7 +504,7 @@ not_unique:
- 	return -EADDRNOTAVAIL;
- }
- 
--static u32 inet_sk_port_offset(const struct sock *sk)
-+static u64 inet_sk_port_offset(const struct sock *sk)
- {
- 	const struct inet_sock *inet = inet_sk(sk);
- 
-@@ -734,7 +734,7 @@ EXPORT_SYMBOL_GPL(inet_unhash);
- static u32 table_perturb[1 << INET_TABLE_PERTURB_SHIFT];
- 
- int __inet_hash_connect(struct inet_timewait_death_row *death_row,
--		struct sock *sk, u32 port_offset,
-+		struct sock *sk, u64 port_offset,
- 		int (*check_established)(struct inet_timewait_death_row *,
- 			struct sock *, __u16, struct inet_timewait_sock **))
- {
-@@ -777,7 +777,9 @@ int __inet_hash_connect(struct inet_time
- 	net_get_random_once(table_perturb, sizeof(table_perturb));
- 	index = hash_32(port_offset, INET_TABLE_PERTURB_SHIFT);
- 
--	offset = (READ_ONCE(table_perturb[index]) + port_offset) % remaining;
-+	offset = READ_ONCE(table_perturb[index]) + port_offset;
-+	offset %= remaining;
-+
- 	/* In first pass we try ports of @low parity.
- 	 * inet_csk_get_port() does the opposite choice.
- 	 */
-@@ -854,7 +856,7 @@ ok:
- int inet_hash_connect(struct inet_timewait_death_row *death_row,
- 		      struct sock *sk)
- {
--	u32 port_offset = 0;
-+	u64 port_offset = 0;
- 
- 	if (!inet_sk(sk)->inet_num)
- 		port_offset = inet_sk_port_offset(sk);
---- a/net/ipv6/inet6_hashtables.c
-+++ b/net/ipv6/inet6_hashtables.c
-@@ -308,7 +308,7 @@ not_unique:
- 	return -EADDRNOTAVAIL;
- }
- 
--static u32 inet6_sk_port_offset(const struct sock *sk)
-+static u64 inet6_sk_port_offset(const struct sock *sk)
- {
- 	const struct inet_sock *inet = inet_sk(sk);
- 
-@@ -320,7 +320,7 @@ static u32 inet6_sk_port_offset(const st
- int inet6_hash_connect(struct inet_timewait_death_row *death_row,
- 		       struct sock *sk)
- {
--	u32 port_offset = 0;
-+	u64 port_offset = 0;
- 
- 	if (!inet_sk(sk)->inet_num)
- 		port_offset = inet6_sk_port_offset(sk);
-
-
+Thanks,
+Pavan
