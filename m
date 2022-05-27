@@ -2,51 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00374C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:09:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB110C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:11:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349518AbiE0MJq (ORCPT
+        id S1352928AbiE0MJ6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 08:09:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54648 "EHLO
+        Fri, 27 May 2022 08:09:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353290AbiE0L4W (ORCPT
+        with ESMTP id S1353289AbiE0L4W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 27 May 2022 07:56:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53C3B13C1C5;
-        Fri, 27 May 2022 04:50:37 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D776913C0BB;
+        Fri, 27 May 2022 04:50:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0D64BB82466;
-        Fri, 27 May 2022 11:50:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EF41C34100;
-        Fri, 27 May 2022 11:50:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6B1FE61D56;
+        Fri, 27 May 2022 11:50:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7663FC385A9;
+        Fri, 27 May 2022 11:50:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653652234;
-        bh=T0hgMG9ClkBYAoRPRZ4y4+hXqRnCKgRJ9WydT4BZvWc=;
+        s=korg; t=1653652231;
+        bh=t+CWp4gJ78L2N63BE4YI9JQVYhLl6AuUO2Wxjs1ljEU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0MjQ8sy9eUuofYiBXbIZFrUEAOeHr8QGa0c0QvHc2Yp26egYXJsnQqodV6fuWDUD5
-         aXYeOeeacgNFbcO8bWRDcSXVaHxiTKT/8FrUUnYLrRegxMtxMPVtBF56Ut1Im2zSkW
-         yUKiIOSjUaoMBHaUOFE2gf5tnMt0M8ogr9LgwFyM=
+        b=a5fXfR3KIL7N//1rhonICF5FIK/LjEXrHNoHOOn6MdJb/LWJUfMYpOzSApY+ORP2O
+         bYGnQ8yp5xhtcu2O6y2lEHJhKZo2xfA1bv5HKhQVqDZv4hO9aFaE3mQLEi8fbGnDqE
+         mbC3kFj0CvvXos2vG1OBMlXHrwC06cJmAXjRzg8M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
+        stable@vger.kernel.org, Eric Biggers <ebiggers@kernel.org>,
+        Eric Biggers <ebiggers@google.com>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.15 105/145] s390: define get_cycles macro for arch-override
-Date:   Fri, 27 May 2022 10:50:06 +0200
-Message-Id: <20220527084903.298773633@linuxfoundation.org>
+Subject: [PATCH 5.10 119/163] random: document crng_fast_key_erasure() destination possibility
+Date:   Fri, 27 May 2022 10:49:59 +0200
+Message-Id: <20220527084844.606058923@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084850.364560116@linuxfoundation.org>
-References: <20220527084850.364560116@linuxfoundation.org>
+In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
+References: <20220527084828.156494029@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -57,37 +52,42 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 2e3df523256cb9836de8441e9c791a796759bb3c upstream.
+commit 8717627d6ac53251ee012c3c7aca392f29f38a42 upstream.
 
-S390x defines a get_cycles() function, but it does not do the usual
-`#define get_cycles get_cycles` dance, making it impossible for generic
-code to see if an arch-specific function was defined. While the
-get_cycles() ifdef is not currently used, the following timekeeping
-patch in this series will depend on the macro existing (or not existing)
-when defining random_get_entropy().
+This reverts 35a33ff3807d ("random: use memmove instead of memcpy for
+remaining 32 bytes"), which was made on a totally bogus basis. The thing
+it was worried about overlapping came from the stack, not from one of
+its arguments, as Eric pointed out.
 
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Vasily Gorbik <gor@linux.ibm.com>
-Cc: Alexander Gordeev <agordeev@linux.ibm.com>
-Cc: Christian Borntraeger <borntraeger@linux.ibm.com>
-Cc: Sven Schnelle <svens@linux.ibm.com>
-Acked-by: Heiko Carstens <hca@linux.ibm.com>
+But the fact that this confusion even happened draws attention to the
+fact that it's a bit non-obvious that the random_data parameter can
+alias chacha_state, and in fact should do so when the caller can't rely
+on the stack being cleared in a timely manner. So this commit documents
+that.
+
+Reported-by: Eric Biggers <ebiggers@kernel.org>
+Reviewed-by: Eric Biggers <ebiggers@google.com>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/s390/include/asm/timex.h |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/char/random.c |    7 +++++++
+ 1 file changed, 7 insertions(+)
 
---- a/arch/s390/include/asm/timex.h
-+++ b/arch/s390/include/asm/timex.h
-@@ -201,6 +201,7 @@ static inline cycles_t get_cycles(void)
- {
- 	return (cycles_t) get_tod_clock() >> 2;
- }
-+#define get_cycles get_cycles
- 
- int get_phys_clock(unsigned long *clock);
- void init_cpu_timer(void);
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -320,6 +320,13 @@ static void crng_reseed(void)
+  * the resultant ChaCha state to the user, along with the second
+  * half of the block containing 32 bytes of random data that may
+  * be used; random_data_len may not be greater than 32.
++ *
++ * The returned ChaCha state contains within it a copy of the old
++ * key value, at index 4, so the state should always be zeroed out
++ * immediately after using in order to maintain forward secrecy.
++ * If the state cannot be erased in a timely manner, then it is
++ * safer to set the random_data parameter to &chacha_state[4] so
++ * that this function overwrites it before returning.
+  */
+ static void crng_fast_key_erasure(u8 key[CHACHA_KEY_SIZE],
+ 				  u32 chacha_state[CHACHA_STATE_WORDS],
 
 
