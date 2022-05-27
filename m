@@ -2,109 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30B85C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 06:36:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A444C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 06:37:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239662AbiE0Gg5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 02:36:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42756 "EHLO
+        id S1343642AbiE0Gh4 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 02:37:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229561AbiE0Ggz (ORCPT
+        with ESMTP id S229561AbiE0Ghu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 02:36:55 -0400
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B3867C166
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 23:36:54 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id n8so3369366plh.1
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 23:36:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=SuokLXZBT769hHza25K/JKzYPz4okNLCTIvug/IPsOQ=;
-        b=w/Dtt17bexhMQfEO6bZdS8g76rcXfd1fCxzoZiPupXvbG6D1PCjYICkTcZoXMchs33
-         XwQDdljexH8C7HWpuWkcd0aabZDZmfOs37/pSWL2o/Ma2ckuRkSN4tVLxE3BGT8SjmmZ
-         /JHpZM9duuHTTZ/hqxVnt4BMWzchBWwfjfx1TZXxxn3s7cEvgS8S/aWR+aakyvAW8LGi
-         BUHH0av/nN3KGi26NcaMjBdfZ6bmAo2QAxjbYMkVFw675/L/X8gkdLIELP7ZP9Myzhz7
-         vQ/X1Rz9UX2xuO+xfYfn6QqA/MsysGxlfvyPQco5aSoo19c6jl7B2GTMxIfcgqs9i2YR
-         xeyA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=SuokLXZBT769hHza25K/JKzYPz4okNLCTIvug/IPsOQ=;
-        b=se6oU5/Y/3KXFfwtaZSIHnP5MkqIjVNwlJLIbTjHlZcYizRrcomAbk0nrLq1lETqHA
-         RewdVWtua3tDLwtnWk+nOZ09VEVRs+jRpjIJT9UA8UvIMTysz3bSB4fupzNQ700hhiqk
-         nHd0hXUlUrrqBp3Qu66G6vLIhyb19bhzta6LMVRtnQ8XuSZnxvwYigdCZTyKb8mdSMfz
-         7bxv4PJCH8eBH0EPNMzTGhkuumsOEpZqEWD2K+i5U8ZvXsji1/WFM5i0sMGs8OkjoKod
-         OURNkz6Yfy+eGuOqR2z1w5HZHnyHX7ye5AC4+sKi6nsHzvv1sDd/yf0fWorf1jbJIh56
-         FHSg==
-X-Gm-Message-State: AOAM533KWrLHF/EXCeIwvXsNql8qZGWKwALn59Wq+NXdxq5RqnIY1GCe
-        qaPPl4zdChiOzM3nl0Jx0DDjow==
-X-Google-Smtp-Source: ABdhPJxOPiXIhe6VKd4CALjITeyKD3bUphXadgcUtVKUa901LvCRw8JDURlFy6QfYahvehfnBi6M3g==
-X-Received: by 2002:a17:90a:bb17:b0:1e0:ab18:4491 with SMTP id u23-20020a17090abb1700b001e0ab184491mr6583871pjr.120.1653633413656;
-        Thu, 26 May 2022 23:36:53 -0700 (PDT)
-Received: from [10.255.70.20] ([139.177.225.235])
-        by smtp.gmail.com with ESMTPSA id m9-20020a63ed49000000b003f9d1c020cbsm2619464pgk.51.2022.05.26.23.36.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 26 May 2022 23:36:52 -0700 (PDT)
-Message-ID: <24a95dea-9ea6-a904-7c0b-197961afa1d1@bytedance.com>
-Date:   Fri, 27 May 2022 14:32:52 +0800
+        Fri, 27 May 2022 02:37:50 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF9E0E2771;
+        Thu, 26 May 2022 23:37:49 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L8Zm553FJzRhQZ;
+        Fri, 27 May 2022 14:34:45 +0800 (CST)
+Received: from dggpemm500018.china.huawei.com (7.185.36.111) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 27 May 2022 14:37:47 +0800
+Received: from localhost.localdomain (10.175.112.125) by
+ dggpemm500018.china.huawei.com (7.185.36.111) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 27 May 2022 14:37:47 +0800
+From:   keliu <liuke94@huawei.com>
+To:     <robh@kernel.org>, <gregkh@linuxfoundation.org>,
+        <jirislaby@kernel.org>, <linux-serial@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     keliu <liuke94@huawei.com>
+Subject: [PATCH] serdev: Directly use ida_alloc()/free()
+Date:   Fri, 27 May 2022 06:59:16 +0000
+Message-ID: <20220527065916.2359005-1-liuke94@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: Re: [PATCH 0/3] recover hardware corrupted page by virtio balloon
-Content-Language: en-US
-To:     Peter Xu <peterx@redhat.com>, Jue Wang <juew@google.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        David Hildenbrand <david@redhat.com>, jasowang@redhat.com,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux MM <linux-mm@kvack.org>, mst@redhat.com,
-        =?UTF-8?B?SE9SSUdVQ0hJIE5BT1lBKOWggOWPoyDnm7TkuZ8p?= 
-        <naoya.horiguchi@nec.com>, Paolo Bonzini <pbonzini@redhat.com>,
-        qemu-devel@nongnu.org, virtualization@lists.linux-foundation.org
-References: <CAPcxDJ5pduUyMA0rf+-aTjK_2eBvig05UTiTptX1nVkWE-_g8w@mail.gmail.com>
- <Yo/I3oLkd9OU0ice@xz-m1.local>
-From:   zhenwei pi <pizhenwei@bytedance.com>
-In-Reply-To: <Yo/I3oLkd9OU0ice@xz-m1.local>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.112.125]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm500018.china.huawei.com (7.185.36.111)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/27/22 02:37, Peter Xu wrote:
-> On Wed, May 25, 2022 at 01:16:34PM -0700, Jue Wang wrote:
->> The hypervisor _must_ emulate poisons identified in guest physical
->> address space (could be transported from the source VM), this is to
->> prevent silent data corruption in the guest. With a paravirtual
->> approach like this patch series, the hypervisor can clear some of the
->> poisoned HVAs knowing for certain that the guest OS has isolated the
->> poisoned page. I wonder how much value it provides to the guest if the
->> guest and workload are _not_ in a pressing need for the extra KB/MB
->> worth of memory.
-> 
-> I'm curious the same on how unpoisoning could help here.  The reasoning
-> behind would be great material to be mentioned in the next cover letter.
-> 
-> Shouldn't we consider migrating serious workloads off the host already
-> where there's a sign of more severe hardware issues, instead?
-> 
-> Thanks,
-> 
+Use ida_alloc()/ida_free() instead of deprecated
+ida_simple_get()/ida_simple_remove() .
 
-I'm maintaining 1000,000+ virtual machines, from my experience:
-UE is quite unusual and occurs randomly, and I did not hit UE storm case 
-in the past years. The memory also has no obvious performance drop after 
-hitting UE.
+Signed-off-by: keliu <liuke94@huawei.com>
+---
+ drivers/tty/serdev/core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-I hit several CE storm case, the performance memory drops a lot. But I 
-can't find obvious relationship between UE and CE.
-
-So from the point of my view, to fix the corrupted page for VM seems 
-good enough. And yes, unpoisoning several pages does not help 
-significantly, but it is still a chance to make the virtualization better.
-
+diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+index 0180e1e4e75d..213f8cb99661 100644
+--- a/drivers/tty/serdev/core.c
++++ b/drivers/tty/serdev/core.c
+@@ -75,7 +75,7 @@ static bool is_serdev_device(const struct device *dev)
+ static void serdev_ctrl_release(struct device *dev)
+ {
+ 	struct serdev_controller *ctrl = to_serdev_controller(dev);
+-	ida_simple_remove(&ctrl_ida, ctrl->nr);
++	ida_free(&ctrl_ida, ctrl->nr);
+ 	kfree(ctrl);
+ }
+ 
+@@ -486,7 +486,7 @@ struct serdev_controller *serdev_controller_alloc(struct device *parent,
+ 	if (!ctrl)
+ 		return NULL;
+ 
+-	id = ida_simple_get(&ctrl_ida, 0, 0, GFP_KERNEL);
++	id = ida_alloc(&ctrl_ida, GFP_KERNEL);
+ 	if (id < 0) {
+ 		dev_err(parent,
+ 			"unable to allocate serdev controller identifier.\n");
 -- 
-zhenwei pi
+2.25.1
+
