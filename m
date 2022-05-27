@@ -2,126 +2,317 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DC13C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:04:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D651C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:06:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349836AbiE0LDz (ORCPT
+        id S1350765AbiE0LGO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 07:03:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38260 "EHLO
+        Fri, 27 May 2022 07:06:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351203AbiE0LCw (ORCPT
+        with ESMTP id S242190AbiE0LGJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:02:52 -0400
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B9D94131289
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 04:02:47 -0700 (PDT)
-Received: from localhost.localdomain.localdomain (unknown [10.2.5.46])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Ax_+bSr5BidhAEAA--.20547S3;
-        Fri, 27 May 2022 19:02:43 +0800 (CST)
-From:   Jianmin Lv <lvjianmin@loongson.cn>
-To:     Thomas Gleixner <tglx@linutronix.de>, Marc Zyngier <maz@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, Xuefeng Li <lixuefeng@loongson.cn>,
-        Huacai Chen <chenhuacai@gmail.com>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Huacai Chen <chenhuacai@loongson.cn>,
-        Jianmin Lv <lvjianmin@loongson.cn>
-Subject: [PATCH RFC V2 07/10] irqchip/loongson-htvec: Add suspend/resume support
-Date:   Fri, 27 May 2022 19:02:39 +0800
-Message-Id: <1653649362-12091-2-git-send-email-lvjianmin@loongson.cn>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1653649362-12091-1-git-send-email-lvjianmin@loongson.cn>
-References: <1653649362-12091-1-git-send-email-lvjianmin@loongson.cn>
-X-CM-TRANSID: AQAAf9Ax_+bSr5BidhAEAA--.20547S3
-X-Coremail-Antispam: 1UD129KBjvJXoWxJr18ZrW7uF18Jw4UuFWfZrb_yoW8Cw17pa
-        y5CrW5tw47GFyxXrnxAF4UZr1av34rGrW2vFWfta13u3ZrKw1DGF48AF1YyF48ArZ29Fn0
-        gFW5uws8Ca15JFJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUBI14x267AKxVW5JVWrJwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2048vs2IY020E87I2jVAFwI0_Jr4l82xGYIkIc2
-        x26xkF7I0E14v26r1I6r4UM28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8wA2z4x0
-        Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j6F4UJw
-        A2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oVCq3wAS
-        0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2
-        IY67AKxVWUXVWUAwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0
-        Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY02Avz4vE-syl42xK82IYc2
-        Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s02
-        6x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0x
-        vE2Ix0cI8IcVAFwI0_JFI_Gr1lIxAIcVC0I7IYx2IY6xkF7I0E14v26F4j6r4UJwCI42IY
-        6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aV
-        CY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUbcyCJUUUUU==
-X-CM-SenderInfo: 5oymxthqpl0qxorr0wxvrqhubq/
+        Fri, 27 May 2022 07:06:09 -0400
+Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DECEE13276D;
+        Fri, 27 May 2022 04:06:05 -0700 (PDT)
+Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-30a2adffd24so1146427b3.7;
+        Fri, 27 May 2022 04:06:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=fRa2P5R5JHyAbD0921v5jTq/ooDfcVGFwaV7OE0Et6o=;
+        b=kJGGUDKLTlcgvdzeSf1+D3/jxr9Asp7eEdqVnybm5O84SY6IwYmKlOjsAjZ7ecrVva
+         uzAwaXxoJrGr7WCKwmJznP4IpRi68uaZB7JY4qkjUBn6PQz8V7M3MN1/59a9CwWJI4vp
+         BGojBTyC/1v4vfuvjyNAMMfRHb+zNLDVxKTaD3vXgUfj2aW5+Ry/6YW+eAuQQh+JvACH
+         NCsxOXsfQDzr5oSRfOtnHw3Vp6hrHpRP0hNAVxG6GzpyE/RGp8emjDPFXbGUcoTRvgpH
+         9TolshWpMSHkvnjcrK90CYS0cHHfJgXKSsdg/YuhGS0XtGq6l89G+sxadk9kuxexmfg7
+         kTQg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fRa2P5R5JHyAbD0921v5jTq/ooDfcVGFwaV7OE0Et6o=;
+        b=YZ/xL5WepA0MSCADt1Q2rSYcS+rs3s7iP64shs8xU6cQz39ljzVVWAfwKqODB0fz3W
+         MtfWtyZFzt04Nf2SeNveqgxriXOSdg4FYBx5WwxFiaDxNxbgxv46InYdZ6rBbrI+hJQA
+         wqTHNhVYFFkrPyDAI8N8dE7l5kF61Y9QTdzE9m727yh86opW2G5pK58Q8dHLpoOP5fuS
+         yauo5V8XTgAjBd6NPrKsA+h363uakEZwRcL91YZKt/yVQEOWhwG9re90/xjh4SST/XMm
+         ckfQ+qtspApmhiqo6CudWwllWliAliuZf997xWgAHKPf6KZuSHfqAqwTlm6Bp17vInxg
+         VZoQ==
+X-Gm-Message-State: AOAM530zv4rewHkjXYsIBnRZIpfoJ3GobjMd31p/n230RbuIsVoe/2zo
+        IsDp+Q453QfNwcS11oQJBDVWuOV+3uIX8UkCX3w=
+X-Google-Smtp-Source: ABdhPJxUmotqC0TlXzdswm1/HGKqKMcvrFQ6HTKOQiniXSSy8vS9J3TvvqymhS0jNEyh4j721BFcwJ4bO0u8WRmY+6U=
+X-Received: by 2002:a81:6c14:0:b0:306:14a:9f7c with SMTP id
+ h20-20020a816c14000000b00306014a9f7cmr2089658ywc.16.1653649565012; Fri, 27
+ May 2022 04:06:05 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220524172214.5104-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20220524172214.5104-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <20220524172214.5104-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
+From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
+Date:   Fri, 27 May 2022 12:05:38 +0100
+Message-ID: <CA+V-a8vfzsB55YdFmtx3eim617b=WCYJu+Tm3SO9c1QCB3i0Lw@mail.gmail.com>
+Subject: Re: [PATCH RFC 2/2] irqchip/sifive-plic: Add support for Renesas
+ RZ/Five SoC
+To:     Marc Zyngier <maz@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Sagar Kadam <sagar.kadam@sifive.com>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Phil Edworthy <phil.edworthy@renesas.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add suspend/resume support for HTVEC irqchip, which is needed for
-suspend/hibernation.
+Hi,
 
-Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
-Signed-off-by: Jianmin Lv <lvjianmin@loongson.cn>
----
- drivers/irqchip/irq-loongson-htvec.c | 27 +++++++++++++++++++++++++++
- 1 file changed, 27 insertions(+)
+On Tue, May 24, 2022 at 6:22 PM Lad Prabhakar
+<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+>
+> The Renesas RZ/Five SoC has a RISC-V AX45MP AndesCore with NCEPLIC100. The
+> NCEPLIC100 supports both edge-triggered and level-triggered interrupts. In
+> case of edge-triggered interrupts NCEPLIC100 ignores the next interrupt
+> edge until the previous completion message has been received and
+> NCEPLIC100 doesn't support pending interrupt counter, hence losing the
+> interrupts if not acknowledged in time.
+>
+> So the workaround for edge-triggered interrupts to be handled correctly
+> and without losing is that it needs to be acknowledged first and then
+> handler must be run so that we don't miss on the next edge-triggered
+> interrupt.
+>
+> This patch adds a new compatible string for Renesas RZ/Five SoC and adds
+> support to change interrupt flow based on the interrupt type. It also
+> implements irq_ack and irq_set_type callbacks.
+>
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> ---
+>  drivers/irqchip/Kconfig           |  1 +
+>  drivers/irqchip/irq-sifive-plic.c | 71 ++++++++++++++++++++++++++++++-
+>  2 files changed, 70 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
+> index f3d071422f3b..aea0e4e7e547 100644
+> --- a/drivers/irqchip/Kconfig
+> +++ b/drivers/irqchip/Kconfig
+> @@ -537,6 +537,7 @@ config SIFIVE_PLIC
+>         bool "SiFive Platform-Level Interrupt Controller"
+>         depends on RISCV
+>         select IRQ_DOMAIN_HIERARCHY
+> +       select IRQ_FASTEOI_HIERARCHY_HANDLERS
+>         help
+>            This enables support for the PLIC chip found in SiFive (and
+>            potentially other) RISC-V systems.  The PLIC controls devices
+> diff --git a/drivers/irqchip/irq-sifive-plic.c b/drivers/irqchip/irq-sifive-plic.c
+> index bb87e4c3b88e..abffce48e69c 100644
+> --- a/drivers/irqchip/irq-sifive-plic.c
+> +++ b/drivers/irqchip/irq-sifive-plic.c
+> @@ -60,10 +60,13 @@
+>  #define        PLIC_DISABLE_THRESHOLD          0x7
+>  #define        PLIC_ENABLE_THRESHOLD           0
+>
+> +#define RENESAS_R9A07G043_PLIC         1
+> +
+>  struct plic_priv {
+>         struct cpumask lmask;
+>         struct irq_domain *irqdomain;
+>         void __iomem *regs;
+> +       u8 of_data;
+>  };
+>
+>  struct plic_handler {
+> @@ -163,10 +166,31 @@ static int plic_set_affinity(struct irq_data *d,
+>  }
+>  #endif
+>
+> +static void plic_irq_ack(struct irq_data *d)
+> +{
+> +       struct plic_handler *handler = this_cpu_ptr(&plic_handlers);
+> +
+> +       if (irqd_irq_masked(d)) {
+> +               plic_irq_unmask(d);
+> +               writel(d->hwirq, handler->hart_base + CONTEXT_CLAIM);
+> +               plic_irq_mask(d);
+> +       } else {
+> +               writel(d->hwirq, handler->hart_base + CONTEXT_CLAIM);
+> +       }
+> +}
+> +
+I sometimes still see an interrupt miss!
 
-diff --git a/drivers/irqchip/irq-loongson-htvec.c b/drivers/irqchip/irq-loongson-htvec.c
-index 354630b..a3c60e3 100644
---- a/drivers/irqchip/irq-loongson-htvec.c
-+++ b/drivers/irqchip/irq-loongson-htvec.c
-@@ -16,6 +16,7 @@
- #include <linux/of_address.h>
- #include <linux/of_irq.h>
- #include <linux/of_platform.h>
-+#include <linux/syscore_ops.h>
- #include "irq-loongarch-pic-common.h"
- 
- /* Registers */
-@@ -31,6 +32,7 @@ struct htvec {
- 	struct irq_domain	*htvec_domain;
- 	raw_spinlock_t		htvec_lock;
- 	struct fwnode_handle	*domain_handle;
-+	u32			saved_vec_en[HTVEC_MAX_PARENT_IRQ];
- };
- 
- static struct htvec *htvec_priv;
-@@ -158,6 +160,29 @@ static void htvec_reset(struct htvec *priv)
- 	}
- }
- 
-+static int htvec_suspend(void)
-+{
-+	int i;
-+
-+	for (i = 0; i < htvec_priv->num_parents; i++)
-+		htvec_priv->saved_vec_en[i] = readl(htvec_priv->base + HTVEC_EN_OFF + 4 * i);
-+
-+	return 0;
-+}
-+
-+static void htvec_resume(void)
-+{
-+	int i;
-+
-+	for (i = 0; i < htvec_priv->num_parents; i++)
-+		writel(htvec_priv->saved_vec_en[i], htvec_priv->base + HTVEC_EN_OFF + 4 * i);
-+}
-+
-+static struct syscore_ops htvec_syscore_ops = {
-+	.suspend = htvec_suspend,
-+	.resume = htvec_resume,
-+};
-+
- static int htvec_init(phys_addr_t addr, unsigned long size,
- 		int num_parents, int parent_irq[], struct fwnode_handle *domain_handle)
- {
-@@ -193,6 +218,8 @@ static int htvec_init(phys_addr_t addr, unsigned long size,
- 
- 	register_syscore_ops(&htvec_syscore_ops);
- 
-+	register_syscore_ops(&htvec_syscore_ops);
-+
- 	return 0;
- 
- iounmap_base:
--- 
-1.8.3.1
+As per [0], we first need to claim the interrupt by reading the claim
+register which needs to be done in the ack callback (which should be
+doable) for edge interrupts, but the problem arises in the chained
+handler callback where it does claim the interrupt by reading the
+claim register.
 
+static void plic_handle_irq(struct irq_desc *desc)
+{
+    struct plic_handler *handler = this_cpu_ptr(&plic_handlers);
+    struct irq_chip *chip = irq_desc_get_chip(desc);
+    void __iomem *claim = handler->hart_base + CONTEXT_CLAIM;
+    irq_hw_number_t hwirq;
+
+    WARN_ON_ONCE(!handler->present);
+
+    chained_irq_enter(chip, desc);
+
+    while ((hwirq = readl(claim))) {
+        int err = generic_handle_domain_irq(handler->priv->irqdomain,
+                            hwirq);
+        if (unlikely(err))
+            pr_warn_ratelimited("can't find mapping for hwirq %lu\n",
+                    hwirq);
+    }
+
+    chained_irq_exit(chip, desc);
+}
+
+I was thinking I would get around by getting the irqdata in
+plic_handle_irq() callback using the irq_desc (struct irq_data *d =
+&desc->irq_data;) and check the d->hwirq but this will be always 9.
+
+        plic: interrupt-controller@12c00000 {
+            compatible = "renesas-r9a07g043-plic";
+            #interrupt-cells = <2>;
+            #address-cells = <0>;
+            riscv,ndev = <543>;
+            interrupt-controller;
+            reg = <0x0 0x12c00000 0 0x400000>;
+            clocks = <&cpg CPG_MOD R9A07G043_NCEPLIC_ACLK>;
+            clock-names = "plic100ss";
+            power-domains = <&cpg>;
+            resets = <&cpg R9A07G043_NCEPLIC_ARESETN>;
+            interrupts-extended = <&cpu0_intc 11 &cpu0_intc 9>;
+        };
+
+Any pointers on how this could be done sanely.
+
+[0] https://github.com/riscv/riscv-plic-spec/blob/master/images/PLICInterruptFlow.jpg
+
+Cheers,
+Prabhakar
+
+
+>  static void plic_irq_eoi(struct irq_data *d)
+>  {
+>         struct plic_handler *handler = this_cpu_ptr(&plic_handlers);
+>
+> +       /*
+> +        * For Renesas R9A07G043 SoC if the interrupt type is EDGE
+> +        * we have already acknowledged it in ack callback.
+> +        */
+> +       if (handler->priv->of_data == RENESAS_R9A07G043_PLIC &&
+> +           !irqd_is_level_type(d))
+> +               return;
+> +
+>         if (irqd_irq_masked(d)) {
+>                 plic_irq_unmask(d);
+>                 writel(d->hwirq, handler->hart_base + CONTEXT_CLAIM);
+> @@ -176,11 +200,37 @@ static void plic_irq_eoi(struct irq_data *d)
+>         }
+>  }
+>
+> +static int plic_irq_set_type(struct irq_data *d, unsigned int type)
+> +{
+> +       struct plic_handler *handler = this_cpu_ptr(&plic_handlers);
+> +
+> +       if (handler->priv->of_data != RENESAS_R9A07G043_PLIC)
+> +               return 0;
+> +
+> +       switch (type) {
+> +       case IRQ_TYPE_LEVEL_HIGH:
+> +               irq_set_handler_locked(d, handle_fasteoi_irq);
+> +               break;
+> +
+> +       case IRQ_TYPE_EDGE_RISING:
+> +               irq_set_handler_locked(d, handle_fasteoi_ack_irq);
+> +               break;
+> +
+> +       default:
+> +               return -EINVAL;
+> +       }
+> +
+> +       return 0;
+> +}
+> +
+>  static struct irq_chip plic_chip = {
+>         .name           = "SiFive PLIC",
+>         .irq_mask       = plic_irq_mask,
+>         .irq_unmask     = plic_irq_unmask,
+> +       .irq_ack        = plic_irq_ack,
+>         .irq_eoi        = plic_irq_eoi,
+> +       .irq_set_type   = plic_irq_set_type,
+> +
+>  #ifdef CONFIG_SMP
+>         .irq_set_affinity = plic_set_affinity,
+>  #endif
+> @@ -198,6 +248,19 @@ static int plic_irqdomain_map(struct irq_domain *d, unsigned int irq,
+>         return 0;
+>  }
+>
+> +static int plic_irq_domain_translate(struct irq_domain *d,
+> +                                    struct irq_fwspec *fwspec,
+> +                                    unsigned long *hwirq,
+> +                                    unsigned int *type)
+> +{
+> +       struct plic_priv *priv = d->host_data;
+> +
+> +       if (priv->of_data == RENESAS_R9A07G043_PLIC)
+> +               return irq_domain_translate_twocell(d, fwspec, hwirq, type);
+> +
+> +       return irq_domain_translate_onecell(d, fwspec, hwirq, type);
+> +}
+> +
+>  static int plic_irq_domain_alloc(struct irq_domain *domain, unsigned int virq,
+>                                  unsigned int nr_irqs, void *arg)
+>  {
+> @@ -206,7 +269,7 @@ static int plic_irq_domain_alloc(struct irq_domain *domain, unsigned int virq,
+>         unsigned int type;
+>         struct irq_fwspec *fwspec = arg;
+>
+> -       ret = irq_domain_translate_onecell(domain, fwspec, &hwirq, &type);
+> +       ret = plic_irq_domain_translate(domain, fwspec, &hwirq, &type);
+>         if (ret)
+>                 return ret;
+>
+> @@ -220,7 +283,7 @@ static int plic_irq_domain_alloc(struct irq_domain *domain, unsigned int virq,
+>  }
+>
+>  static const struct irq_domain_ops plic_irqdomain_ops = {
+> -       .translate      = irq_domain_translate_onecell,
+> +       .translate      = plic_irq_domain_translate,
+>         .alloc          = plic_irq_domain_alloc,
+>         .free           = irq_domain_free_irqs_top,
+>  };
+> @@ -293,6 +356,9 @@ static int __init plic_init(struct device_node *node,
+>         if (!priv)
+>                 return -ENOMEM;
+>
+> +       if (of_device_is_compatible(node, "renesas-r9a07g043-plic"))
+> +               priv->of_data = RENESAS_R9A07G043_PLIC;
+> +
+>         priv->regs = of_iomap(node, 0);
+>         if (WARN_ON(!priv->regs)) {
+>                 error = -EIO;
+> @@ -411,5 +477,6 @@ static int __init plic_init(struct device_node *node,
+>  }
+>
+>  IRQCHIP_DECLARE(sifive_plic, "sifive,plic-1.0.0", plic_init);
+> +IRQCHIP_DECLARE(renesas_r9a07g043_plic, "renesas-r9a07g043-plic", plic_init);
+>  IRQCHIP_DECLARE(riscv_plic0, "riscv,plic0", plic_init); /* for legacy systems */
+>  IRQCHIP_DECLARE(thead_c900_plic, "thead,c900-plic", plic_init); /* for firmware driver */
+> --
+> 2.25.1
+>
