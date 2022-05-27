@@ -2,86 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8423DC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 07:57:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9C5CC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 07:58:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235088AbiE0H5z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 03:57:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49892 "EHLO
+        id S238935AbiE0H6R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 03:58:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234349AbiE0H5n (ORCPT
+        with ESMTP id S1348313AbiE0H6J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 03:57:43 -0400
-Received: from mx0b-001ae601.pphosted.com (mx0a-001ae601.pphosted.com [67.231.149.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 703BF3136F
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 00:57:41 -0700 (PDT)
-Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
-        by mx0a-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24R6JKfu016200;
-        Fri, 27 May 2022 02:56:25 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=PODMain02222019;
- bh=N+a9sb4xyr+qi8RTEZxVC+qM4rBN4R20YOVvSGD6lo8=;
- b=j8PKh2u6yDGf2+VO5JdvM2Mt0rP0d05xL/Rmg18BbqJJyMzHXfKvbRIoesohK9khzSwp
- Pn1qFNa7n0noe/ZjbsCiB8Kx5Ug+XfiTjzNgSVZlDKFZh1S3gT2eLrfY3zSEfZTP9LIE
- lqr9k7uwL0GIoX/bGKtZuC9w0j63p70YXTvpteBkaWK+SyRM3akUw0Uv/fIxWoCAxiA6
- uFD4rvrzguUGue0QRLjQWDhzaMbNIbwcyCUNi/isJEs3fxDmK6tC1VupCb1P4ffuhBxW
- CLUMhFoYgUhhE4sZFCNILUndvjZK5VfKtO14AejZhbaFENsHGM3/rQk5AnsEZFPI9IIW WQ== 
-Received: from ediex01.ad.cirrus.com ([84.19.233.68])
-        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3g93u4k9ux-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 27 May 2022 02:56:25 -0500
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 27 May
- 2022 08:56:22 +0100
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.24 via Frontend
- Transport; Fri, 27 May 2022 08:56:22 +0100
-Received: from ediswmail.ad.cirrus.com (ediswmail.ad.cirrus.com [198.61.86.93])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id E6CCE46C;
-        Fri, 27 May 2022 07:56:22 +0000 (UTC)
-Date:   Fri, 27 May 2022 07:56:22 +0000
-From:   Charles Keepax <ckeepax@opensource.cirrus.com>
-To:     Adam Ford <aford173@gmail.com>
-CC:     <alsa-devel@alsa-project.org>, <aford@beaconembedded.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, Stephen Kitt <steve@sk2.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Minghao Chi <chi.minghao@zte.com.cn>,
-        "open list:WOLFSON MICROELECTRONICS DRIVERS" 
-        <patches@opensource.cirrus.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] ASoC: wm8962: Fix suspend while playing music
-Message-ID: <20220527075622.GR38351@ediswmail.ad.cirrus.com>
-References: <20220526182129.538472-1-aford173@gmail.com>
+        Fri, 27 May 2022 03:58:09 -0400
+Received: from smtp.smtpout.orange.fr (smtp03.smtpout.orange.fr [80.12.242.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F20BFD349
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 00:58:04 -0700 (PDT)
+Received: from [192.168.1.18] ([90.11.191.102])
+        by smtp.orange.fr with ESMTPA
+        id uUrAnKWhD5ohRuUrAn770b; Fri, 27 May 2022 09:58:03 +0200
+X-ME-Helo: [192.168.1.18]
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Fri, 27 May 2022 09:58:03 +0200
+X-ME-IP: 90.11.191.102
+Message-ID: <9930ff36-90fe-d072-c1f1-5abf753feff4@wanadoo.fr>
+Date:   Fri, 27 May 2022 09:58:00 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220526182129.538472-1-aford173@gmail.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
-X-Proofpoint-ORIG-GUID: CdI6fm166QBGAmMEVa5QrgUYS6Ve4eqZ
-X-Proofpoint-GUID: CdI6fm166QBGAmMEVa5QrgUYS6Ve4eqZ
-X-Proofpoint-Spam-Reason: safe
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] mac80211: Directly use ida_alloc()/free()
+Content-Language: en-US
+To:     Kalle Valo <kvalo@kernel.org>
+Cc:     liuke94@huawei.com, davem@davemloft.net, edumazet@google.com,
+        johannes@sipsolutions.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com
+References: <20220527074132.2474867-1-liuke94@huawei.com>
+ <a3e0df04-fb94-ef38-c2dc-1c41e6c721d9@wanadoo.fr> <87czfzxvyu.fsf@kernel.org>
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+In-Reply-To: <87czfzxvyu.fsf@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 26, 2022 at 01:21:28PM -0500, Adam Ford wrote:
-> If the audio CODEC is playing sound when the system is suspended,
-> it can be left in a state which throws the following error:
+Le 27/05/2022 à 09:42, Kalle Valo a écrit :
+> Christophe JAILLET <christophe.jaillet@wanadoo.fr> writes:
 > 
-> wm8962 3-001a: ASoC: error at soc_component_read_no_lock on wm8962.3-001a: -16
+>> Le 27/05/2022 à 09:41, keliu a écrit :
+>>> Use ida_alloc()/ida_free() instead of deprecated
+>>> ida_simple_get()/ida_simple_remove() .
+>>>
+>>> Signed-off-by: keliu <liuke94-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 > 
-> Once this error has occurred, the audio will not work again until rebooted.
+> Heh, this email address got me confused :) I guess you (Christophe) use
+> gmane and it's just some obfuscation done by gmane?
 > 
-> Fix this by configuring SET_SYSTEM_SLEEP_PM_OPS.
-> 
-> Signed-off-by: Adam Ford <aford173@gmail.com>
 
-Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Yes, I use gname and thunderbird as a client. I also think that it is 
+some obfuscation done by gname.
 
-Thanks,
-Charles
+This kind of obfuscation is not done on all messages, and not done 
+consistently on the message of the same ML. I don't know the rule that 
+is applied.
+
+CJ
