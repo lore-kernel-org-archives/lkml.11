@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5168C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:12:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99FF5C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:12:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352561AbiE0MMn (ORCPT
+        id S1352594AbiE0MMv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 08:12:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57386 "EHLO
+        Fri, 27 May 2022 08:12:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352399AbiE0LzU (ORCPT
+        with ESMTP id S1352390AbiE0LzT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:55:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D64F615A769;
-        Fri, 27 May 2022 04:48:25 -0700 (PDT)
+        Fri, 27 May 2022 07:55:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B89215A749;
+        Fri, 27 May 2022 04:48:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 78CC7B8091D;
-        Fri, 27 May 2022 11:48:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB3A8C385A9;
-        Fri, 27 May 2022 11:48:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DC33A61D56;
+        Fri, 27 May 2022 11:48:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9D77C385A9;
+        Fri, 27 May 2022 11:48:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653652103;
-        bh=41Qm0OR+Mf6ZsBxsL2Yv1rcdzmNMckEe0jBWiGIyEPs=;
+        s=korg; t=1653652100;
+        bh=eTiNwnTuZEIS520BxGxeULXm+yAoNMpLHA1evdbh5pc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kDAtRKfgDyn1DPnA2cLsSvpBqjmmYhnI+Qq43bPk973LGTeGI0YXWAH3KMJ3/dstK
-         JpMOGBvqejBjYaDvHF7HYb0cnCkRTgi6ya9RiQ9n1ycHK8DmsM5SBP4esQsCZFgifP
-         /jhyFbQBZEEDYLrapiahurolbd9DNvzg5SogX58U=
+        b=2GyPh+91O2NRkEsG+ywY2F8tG3ECxlRPCszYY5n3csyaVBSNmOo2F6wbeH+m2kdHI
+         jfQgckYkzaTIwnwRokeCxnDfAXLQJcIpnLEXYcaNKQgQco2kWzM0Y7ptTmZcyVSVIt
+         o3fN22KWbWx/HXgNCCOYW+W+Iol4tOImAKnTdHGg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        Eric Biggers <ebiggers@google.com>,
         Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.10 097/163] random: round-robin registers as ulong, not u32
-Date:   Fri, 27 May 2022 10:49:37 +0200
-Message-Id: <20220527084841.461892679@linuxfoundation.org>
+Subject: [PATCH 5.10 088/163] random: group userspace read/write functions
+Date:   Fri, 27 May 2022 10:49:28 +0200
+Message-Id: <20220527084840.283045390@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
 References: <20220527084828.156494029@linuxfoundation.org>
@@ -52,44 +53,181 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit da3951ebdcd1cb1d5c750e08cd05aee7b0c04d9a upstream.
+commit a6adf8e7a605250b911e94793fd077933709ff9e upstream.
 
-When the interrupt handler does not have a valid cycle counter, it calls
-get_reg() to read a register from the irq stack, in round-robin.
-Currently it does this assuming that registers are 32-bit. This is
-_probably_ the case, and probably all platforms without cycle counters
-are in fact 32-bit platforms. But maybe not, and either way, it's not
-quite correct. This commit fixes that to deal with `unsigned long`
-rather than `u32`.
+This pulls all of the userspace read/write-focused functions into the
+fifth labeled section.
+
+No functional changes.
 
 Cc: Theodore Ts'o <tytso@mit.edu>
+Reviewed-by: Eric Biggers <ebiggers@google.com>
 Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/char/random.c |  125 ++++++++++++++++++++++++++++++--------------------
+ 1 file changed, 77 insertions(+), 48 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -1261,15 +1261,15 @@ int random_online_cpu(unsigned int cpu)
+@@ -1477,30 +1477,61 @@ static void try_to_generate_entropy(void
+ 	mix_pool_bytes(&stack.now, sizeof(stack.now));
  }
- #endif
  
--static u32 get_reg(struct fast_pool *f, struct pt_regs *regs)
-+static unsigned long get_reg(struct fast_pool *f, struct pt_regs *regs)
+-static ssize_t urandom_read(struct file *file, char __user *buf, size_t nbytes,
+-			    loff_t *ppos)
++
++/**********************************************************************
++ *
++ * Userspace reader/writer interfaces.
++ *
++ * getrandom(2) is the primary modern interface into the RNG and should
++ * be used in preference to anything else.
++ *
++ * Reading from /dev/random has the same functionality as calling
++ * getrandom(2) with flags=0. In earlier versions, however, it had
++ * vastly different semantics and should therefore be avoided, to
++ * prevent backwards compatibility issues.
++ *
++ * Reading from /dev/urandom has the same functionality as calling
++ * getrandom(2) with flags=GRND_INSECURE. Because it does not block
++ * waiting for the RNG to be ready, it should not be used.
++ *
++ * Writing to either /dev/random or /dev/urandom adds entropy to
++ * the input pool but does not credit it.
++ *
++ * Polling on /dev/random indicates when the RNG is initialized, on
++ * the read side, and when it wants new entropy, on the write side.
++ *
++ * Both /dev/random and /dev/urandom have the same set of ioctls for
++ * adding entropy, getting the entropy count, zeroing the count, and
++ * reseeding the crng.
++ *
++ **********************************************************************/
++
++SYSCALL_DEFINE3(getrandom, char __user *, buf, size_t, count, unsigned int,
++		flags)
  {
--	u32 *ptr = (u32 *)regs;
-+	unsigned long *ptr = (unsigned long *)regs;
- 	unsigned int idx;
+-	static int maxwarn = 10;
++	if (flags & ~(GRND_NONBLOCK | GRND_RANDOM | GRND_INSECURE))
++		return -EINVAL;
  
- 	if (regs == NULL)
+-	if (!crng_ready() && maxwarn > 0) {
+-		maxwarn--;
+-		if (__ratelimit(&urandom_warning))
+-			pr_notice("%s: uninitialized urandom read (%zd bytes read)\n",
+-				  current->comm, nbytes);
+-	}
++	/*
++	 * Requesting insecure and blocking randomness at the same time makes
++	 * no sense.
++	 */
++	if ((flags & (GRND_INSECURE | GRND_RANDOM)) == (GRND_INSECURE | GRND_RANDOM))
++		return -EINVAL;
+ 
+-	return get_random_bytes_user(buf, nbytes);
+-}
++	if (count > INT_MAX)
++		count = INT_MAX;
+ 
+-static ssize_t random_read(struct file *file, char __user *buf, size_t nbytes,
+-			   loff_t *ppos)
+-{
+-	int ret;
++	if (!(flags & GRND_INSECURE) && !crng_ready()) {
++		int ret;
+ 
+-	ret = wait_for_random_bytes();
+-	if (ret != 0)
+-		return ret;
+-	return get_random_bytes_user(buf, nbytes);
++		if (flags & GRND_NONBLOCK)
++			return -EAGAIN;
++		ret = wait_for_random_bytes();
++		if (unlikely(ret))
++			return ret;
++	}
++	return get_random_bytes_user(buf, count);
+ }
+ 
+ static __poll_t random_poll(struct file *file, poll_table *wait)
+@@ -1552,6 +1583,32 @@ static ssize_t random_write(struct file
+ 	return (ssize_t)count;
+ }
+ 
++static ssize_t urandom_read(struct file *file, char __user *buf, size_t nbytes,
++			    loff_t *ppos)
++{
++	static int maxwarn = 10;
++
++	if (!crng_ready() && maxwarn > 0) {
++		maxwarn--;
++		if (__ratelimit(&urandom_warning))
++			pr_notice("%s: uninitialized urandom read (%zd bytes read)\n",
++				  current->comm, nbytes);
++	}
++
++	return get_random_bytes_user(buf, nbytes);
++}
++
++static ssize_t random_read(struct file *file, char __user *buf, size_t nbytes,
++			   loff_t *ppos)
++{
++	int ret;
++
++	ret = wait_for_random_bytes();
++	if (ret != 0)
++		return ret;
++	return get_random_bytes_user(buf, nbytes);
++}
++
+ static long random_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
+ {
+ 	int size, ent_count;
+@@ -1560,7 +1617,7 @@ static long random_ioctl(struct file *f,
+ 
+ 	switch (cmd) {
+ 	case RNDGETENTCNT:
+-		/* inherently racy, no point locking */
++		/* Inherently racy, no point locking. */
+ 		if (put_user(input_pool.entropy_count, p))
+ 			return -EFAULT;
  		return 0;
- 	idx = READ_ONCE(f->reg_idx);
--	if (idx >= sizeof(struct pt_regs) / sizeof(u32))
-+	if (idx >= sizeof(struct pt_regs) / sizeof(unsigned long))
- 		idx = 0;
- 	ptr += idx++;
- 	WRITE_ONCE(f->reg_idx, idx);
+@@ -1636,34 +1693,6 @@ const struct file_operations urandom_fop
+ 	.llseek = noop_llseek,
+ };
+ 
+-SYSCALL_DEFINE3(getrandom, char __user *, buf, size_t, count, unsigned int,
+-		flags)
+-{
+-	if (flags & ~(GRND_NONBLOCK | GRND_RANDOM | GRND_INSECURE))
+-		return -EINVAL;
+-
+-	/*
+-	 * Requesting insecure and blocking randomness at the same time makes
+-	 * no sense.
+-	 */
+-	if ((flags & (GRND_INSECURE | GRND_RANDOM)) == (GRND_INSECURE | GRND_RANDOM))
+-		return -EINVAL;
+-
+-	if (count > INT_MAX)
+-		count = INT_MAX;
+-
+-	if (!(flags & GRND_INSECURE) && !crng_ready()) {
+-		int ret;
+-
+-		if (flags & GRND_NONBLOCK)
+-			return -EAGAIN;
+-		ret = wait_for_random_bytes();
+-		if (unlikely(ret))
+-			return ret;
+-	}
+-	return get_random_bytes_user(buf, count);
+-}
+-
+ /********************************************************************
+  *
+  * Sysctl interface
 
 
