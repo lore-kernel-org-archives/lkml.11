@@ -2,154 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47258C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 15:25:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A272C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 15:32:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353602AbiE0PZu (ORCPT
+        id S1353626AbiE0PcD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 11:25:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56454 "EHLO
+        Fri, 27 May 2022 11:32:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344384AbiE0PZs (ORCPT
+        with ESMTP id S235167AbiE0PcA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 11:25:48 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C44658E72;
-        Fri, 27 May 2022 08:25:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1653665147; x=1685201147;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=4AmAb1G5xdwslkVKnzE93VMW23TrnWoLURqtUMAegWE=;
-  b=T9cghxPOj/KLj2uzGacuRYZahdBSNSBk20Du+WutpDwkUE7UGiXz6Ie9
-   fFncuKXBDLWYFY7ufCMTvpJ2IAnULrT4Q/bxm8ZkIiyFWFT8AAft5s+Mj
-   SO6fHcBDro0dLcdwX5MoAMWk31rw3oqdcJQyxn+xL5AptBinJgmslqF6D
-   E=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 27 May 2022 08:25:46 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2022 08:25:45 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Fri, 27 May 2022 08:25:44 -0700
-Received: from [10.110.46.98] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Fri, 27 May
- 2022 08:25:43 -0700
-Message-ID: <1f325de0-a10e-27a8-ce7a-9ecaed75465c@quicinc.com>
-Date:   Fri, 27 May 2022 08:25:42 -0700
+        Fri, 27 May 2022 11:32:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A75DE27157;
+        Fri, 27 May 2022 08:31:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 68B4EB8258A;
+        Fri, 27 May 2022 15:31:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3A3BC385A9;
+        Fri, 27 May 2022 15:31:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653665517;
+        bh=lDacCcW5oBQ/nFAD4l5L8yV6/DrYAxo5jI0xrrZLIUo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=otNuxF4tGMSeaMha2xXHnHV5OIS3F3SZzm4iyeVBirWWS4lloMSYuJCB4Ggkhg5N5
+         XjthG4zVxpbfHSE3zapxjG2J8XAf0xjt39HDVxpGBozFr9LhWmnAof47DnYBC4sfQu
+         a6VMJqVey0NrS102dTQKfTCZdWAwRJZZdAAmiucP4mxrG8wObPT0UgYvpDUYT181H/
+         L/SkGGfeFYUN4B4qGd6tX8ri7FcnLh6fpt/QPv9ejo+SLJPgVPqxu4b6SH6+7eP34u
+         QfvJnEGY/QF7WERzBIi4qxx+bQLWbzCG6u3E0d5ics0Kv4dDyy4vHvW0/EDBN1UNWH
+         U5qpK0EH3X50A==
+Date:   Fri, 27 May 2022 08:31:54 -0700
+From:   Josh Poimboeuf <jpoimboe@kernel.org>
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Peter Zijlstra <peterz@infradead.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>, llvm@lists.linux.dev,
+        Helge Deller <deller@gmx.de>, linux-parisc@vger.kernel.org,
+        Nicolas Schier <nicolas@fjasle.eu>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        Sedat Dilek <sedat.dilek@gmail.com>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>
+Subject: Re: [PATCH v7 2/8] kbuild: do not create *.prelink.o for Clang LTO
+ or IBT
+Message-ID: <20220527153154.hivyahzjz3txouoi@treble>
+References: <20220527100155.1996314-1-masahiroy@kernel.org>
+ <20220527100155.1996314-3-masahiroy@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH] drm/msm/dp: force link training for display resolution
- change
-Content-Language: en-US
-To:     Stephen Boyd <swboyd@chromium.org>, <agross@kernel.org>,
-        <airlied@linux.ie>, <bjorn.andersson@linaro.org>,
-        <daniel@ffwll.ch>, <dianders@chromium.org>,
-        <dmitry.baryshkov@linaro.org>, <robdclark@gmail.com>,
-        <sean@poorly.run>, <vkoul@kernel.org>
-CC:     <quic_abhinavk@quicinc.com>, <quic_aravindh@quicinc.com>,
-        <quic_sbillaka@quicinc.com>, <freedreno@lists.freedesktop.org>,
-        <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <1653585978-30090-1-git-send-email-quic_khsieh@quicinc.com>
- <CAE-0n53Nr7o=ZmSsBWOjUxCKxMYNrVwuVdbdL0wG7WZyrPo4Yw@mail.gmail.com>
-From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
-In-Reply-To: <CAE-0n53Nr7o=ZmSsBWOjUxCKxMYNrVwuVdbdL0wG7WZyrPo4Yw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220527100155.1996314-3-masahiroy@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Fri, May 27, 2022 at 07:01:49PM +0900, Masahiro Yamada wrote:
+> New build flow
+> ==============
+> 
+>  [1] single-object module
+> 
+>   Since there is only one object, there is no need to keep the LLVM IR.
+>   Use $(CC)+$(LD) to generate an ELF object in one build rule. When LTO
+>   is disabled, $(LD) is unneeded because $(CC) produces an ELF object.
+> 
+>                $(CC)+$(LD)+objtool              $(LD)
+>     foo.c ----------------------------> foo.o ---------> foo.ko
+>                                         (ELF)     |
+>                                                   |
+>                                       foo.mod.o --/
+> 
+>  [2] multi-object module
+> 
+>   Previously, $(AR) was used to combine LLVM bitcode into an archive,
+>   but there was no technical reason to do so. Use $(LD) to merge them
+>   into a single ELF object.
+> 
+>                                $(LD)
+>              $(CC)            +objtool          $(LD)
+>     foo1.c ---------> foo1.o ---------> foo.o ---------> foo.ko
+>                                  |      (ELF)     |
+>     foo2.c ---------> foo2.o ----/                |
+>                      (LLVM IR)        foo.mod.o --/
+> 
+> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+> Reviewed-by: Nicolas Schier <nicolas@fjasle.eu>
+> Tested-by: Nathan Chancellor <nathan@kernel.org>
+> Reviewed-by: Sami Tolvanen <samitolvanen@google.com>
+> Tested-by: Sedat Dilek <sedat.dilek@gmail.com> # LLVM-14 (x86-64)
 
-On 5/26/2022 5:07 PM, Stephen Boyd wrote:
-> Quoting Kuogee Hsieh (2022-05-26 10:26:18)
->> During display resolution changes display have to be disabled first
->> followed by display enable with new resolution. This patch force
->> main link always be retrained during display enable procedure to
->> simplify implementation instead of manually kicking of irq_hpd
->> handle.
-> How is that better? Can you please describe how it improves things? I
-> suppose it avoids some round trips through the event queue just to turn
-> on the display?
+Acked-by: Josh Poimboeuf <jpoimboe@kernel.org>
 
-This try to fix customer issues which only happen on one particular 
-panel which fails on display resolution changes sometimes.
-
-I will add more description.
-
->
->> Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
-> Any Fixes tag? Or it's not fixing anything, just making things simpler?
-will add.
->
->> diff --git a/drivers/gpu/drm/msm/dp/dp_ctrl.c b/drivers/gpu/drm/msm/dp/dp_ctrl.c
->> index 5ddb4e8..8b71013 100644
->> --- a/drivers/gpu/drm/msm/dp/dp_ctrl.c
->> +++ b/drivers/gpu/drm/msm/dp/dp_ctrl.c
->> diff --git a/drivers/gpu/drm/msm/dp/dp_ctrl.h b/drivers/gpu/drm/msm/dp/dp_ctrl.h
->> index 2433edb..dcc7af21 100644
->> --- a/drivers/gpu/drm/msm/dp/dp_ctrl.h
->> +++ b/drivers/gpu/drm/msm/dp/dp_ctrl.h
->> @@ -20,7 +20,7 @@ struct dp_ctrl {
->>   };
->>
->>   int dp_ctrl_on_link(struct dp_ctrl *dp_ctrl);
->> -int dp_ctrl_on_stream(struct dp_ctrl *dp_ctrl);
->> +int dp_ctrl_on_stream(struct dp_ctrl *dp_ctrl, bool force_link_train);
-> Can we have another API like dp_ctrl_on_stream_retrain()? Or name
-> 'force_link_train' to 'retrain'?
->
->>   int dp_ctrl_off_link_stream(struct dp_ctrl *dp_ctrl);
->>   int dp_ctrl_off(struct dp_ctrl *dp_ctrl);
->>   void dp_ctrl_push_idle(struct dp_ctrl *dp_ctrl);
->> diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
->> index bfc6581..9246421 100644
->> --- a/drivers/gpu/drm/msm/dp/dp_display.c
->> +++ b/drivers/gpu/drm/msm/dp/dp_display.c
->> @@ -892,7 +892,7 @@ static int dp_display_enable(struct dp_display_private *dp, u32 data)
-> Any reason why dp_display_enable() is forward declared and why it takes
-> a u32 data argument? It's not part of the eventqueue calling code from
-> what I can tell so we should be able to rename 'data' to 'retrain_link'?
->
->>                  return 0;
->>          }
->>
->> -       rc = dp_ctrl_on_stream(dp->ctrl);
->> +       rc = dp_ctrl_on_stream(dp->ctrl, data);
->>          if (!rc)
->>                  dp_display->power_on = true;
->>
->> @@ -1594,6 +1594,7 @@ int msm_dp_display_enable(struct msm_dp *dp, struct drm_encoder *encoder)
->>          int rc = 0;
->>          struct dp_display_private *dp_display;
->>          u32 state;
->> +       bool force_link_train = false;
->>
->>          dp_display = container_of(dp, struct dp_display_private, dp_display);
->>          if (!dp_display->dp_mode.drm_mode.clock) {
->> @@ -1622,10 +1623,12 @@ int msm_dp_display_enable(struct msm_dp *dp, struct drm_encoder *encoder)
->>
->>          state =  dp_display->hpd_state;
->>
->> -       if (state == ST_DISPLAY_OFF)
->> +       if (state == ST_DISPLAY_OFF) {
->>                  dp_display_host_phy_init(dp_display);
->> +               force_link_train = 1;
-> Use true instead of 1 if the type is a bool please.
->
->> +       }
->>
->> -       dp_display_enable(dp_display, 0);
->> +       dp_display_enable(dp_display, force_link_train);
->>
->>          rc = dp_display_post_enable(dp);
->>          if (rc) {
+-- 
+Josh
