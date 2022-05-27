@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 394A4C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:17:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AA82C47080
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:17:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354288AbiE0MRT (ORCPT
+        id S1353898AbiE0MQq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 08:17:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49964 "EHLO
+        Fri, 27 May 2022 08:16:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352665AbiE0ME0 (ORCPT
+        with ESMTP id S1345609AbiE0MDd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 08:04:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC16E14CDCB;
-        Fri, 27 May 2022 04:53:43 -0700 (PDT)
+        Fri, 27 May 2022 08:03:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C92513F91D;
+        Fri, 27 May 2022 04:53:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2E8F2B824DB;
-        Fri, 27 May 2022 11:53:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93359C34113;
-        Fri, 27 May 2022 11:53:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DEEE361DCA;
+        Fri, 27 May 2022 11:53:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA587C385A9;
+        Fri, 27 May 2022 11:53:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653652421;
-        bh=Z+euVyAmEA5KJhzZGZD702OrTY20IlToj7cTxysyVXc=;
+        s=korg; t=1653652406;
+        bh=Rm0f0RVAWg6AynPmYa+oA/QouZBPXYVH9SfrC4oNYJE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EdcdvFCE1A+UgIq2HxI8ti4CghqWYcnLhxz37TetTkKOvTpnnaVwXDzlJ1wlnQRfS
-         +ipXmoobRQx4DTAHnpeocL9BwwLzIWIi8+4sPnJ+SCkbGIMKz7HxO9n9YlXpMETinY
-         RzQJ0H4vfQF/QjyLzH/v6J9F4aYWB+3bPGdFtVss=
+        b=2gTz/oo85nUFogT47ltiHRpOkmAtQWW0N5uWRTiMa2Vla85jx7Br2ksTk8kMWgu33
+         8qsNIYyU4Ccrv4wxcLWNIjEeH2rR/IGOxTRt5CiNtVEn3eTK7NEOCfCR9+jripgKBU
+         KJuuHpt5Ryyqid2ubWXY1HdSCGw6vjWiLhlP6NL8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
-        Sultan Alsawaf <sultan@kerneltoast.com>,
         Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.10 152/163] random: use static branch for crng_ready()
-Date:   Fri, 27 May 2022 10:50:32 +0200
-Message-Id: <20220527084849.444293491@linuxfoundation.org>
+Subject: [PATCH 5.10 138/163] random: do not use batches when !crng_ready()
+Date:   Fri, 27 May 2022 10:50:18 +0200
+Message-Id: <20220527084847.442011842@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
 References: <20220527084828.156494029@linuxfoundation.org>
@@ -53,95 +52,59 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit f5bda35fba615ace70a656d4700423fa6c9bebee upstream.
+commit cbe89e5a375a51bbb952929b93fa973416fea74e upstream.
 
-Since crng_ready() is only false briefly during initialization and then
-forever after becomes true, we don't need to evaluate it after, making
-it a prime candidate for a static branch.
-
-One complication, however, is that it changes state in a particular call
-to credit_init_bits(), which might be made from atomic context, which
-means we must kick off a workqueue to change the static key. Further
-complicating things, credit_init_bits() may be called sufficiently early
-on in system initialization such that system_wq is NULL.
-
-Fortunately, there exists the nice function execute_in_process_context(),
-which will immediately execute the function if !in_interrupt(), and
-otherwise defer it to a workqueue. During early init, before workqueues
-are available, in_interrupt() is always false, because interrupts
-haven't even been enabled yet, which means the function in that case
-executes immediately. Later on, after workqueues are available,
-in_interrupt() might be true, but in that case, the work is queued in
-system_wq and all goes well.
+It's too hard to keep the batches synchronized, and pointless anyway,
+since in !crng_ready(), we're updating the base_crng key really often,
+where batching only hurts. So instead, if the crng isn't ready, just
+call into get_random_bytes(). At this stage nothing is performance
+critical anyhow.
 
 Cc: Theodore Ts'o <tytso@mit.edu>
-Cc: Sultan Alsawaf <sultan@kerneltoast.com>
 Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   16 ++++++++++++----
- 1 file changed, 12 insertions(+), 4 deletions(-)
+ drivers/char/random.c |   14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -77,8 +77,9 @@ static enum {
- 	CRNG_EMPTY = 0, /* Little to no entropy collected */
- 	CRNG_EARLY = 1, /* At least POOL_EARLY_BITS collected */
- 	CRNG_READY = 2  /* Fully initialized with POOL_READY_BITS collected */
--} crng_init = CRNG_EMPTY;
--#define crng_ready() (likely(crng_init >= CRNG_READY))
-+} crng_init __read_mostly = CRNG_EMPTY;
-+static DEFINE_STATIC_KEY_FALSE(crng_is_ready);
-+#define crng_ready() (static_branch_likely(&crng_is_ready) || crng_init >= CRNG_READY)
- /* Various types of waiters for crng_init->CRNG_READY transition. */
- static DECLARE_WAIT_QUEUE_HEAD(crng_init_wait);
- static struct fasync_struct *fasync;
-@@ -108,6 +109,11 @@ bool rng_is_initialized(void)
- }
- EXPORT_SYMBOL(rng_is_initialized);
+@@ -467,10 +467,8 @@ static void crng_pre_init_inject(const v
  
-+static void crng_set_ready(struct work_struct *work)
-+{
-+	static_branch_enable(&crng_is_ready);
-+}
-+
- /* Used by wait_for_random_bytes(), and considered an entropy collector, below. */
- static void try_to_generate_entropy(void);
+ 	if (account) {
+ 		crng_init_cnt += min_t(size_t, len, CRNG_INIT_CNT_THRESH - crng_init_cnt);
+-		if (crng_init_cnt >= CRNG_INIT_CNT_THRESH) {
+-			++base_crng.generation;
++		if (crng_init_cnt >= CRNG_INIT_CNT_THRESH)
+ 			crng_init = 1;
+-		}
+ 	}
  
-@@ -269,7 +275,7 @@ static void crng_reseed(void)
- 		++next_gen;
- 	WRITE_ONCE(base_crng.generation, next_gen);
- 	WRITE_ONCE(base_crng.birth, jiffies);
--	if (!crng_ready())
-+	if (!static_branch_likely(&crng_is_ready))
- 		crng_init = CRNG_READY;
  	spin_unlock_irqrestore(&base_crng.lock, flags);
- 	memzero_explicit(key, sizeof(key));
-@@ -787,6 +793,7 @@ static void extract_entropy(void *buf, s
+@@ -626,6 +624,11 @@ u64 get_random_u64(void)
  
- static void credit_init_bits(size_t nbits)
- {
-+	static struct execute_work set_ready;
- 	unsigned int new, orig, add;
- 	unsigned long flags;
+ 	warn_unseeded_randomness(&previous);
  
-@@ -802,6 +809,7 @@ static void credit_init_bits(size_t nbit
++	if  (!crng_ready()) {
++		_get_random_bytes(&ret, sizeof(ret));
++		return ret;
++	}
++
+ 	local_lock_irqsave(&batched_entropy_u64.lock, flags);
+ 	batch = raw_cpu_ptr(&batched_entropy_u64);
  
- 	if (orig < POOL_READY_BITS && new >= POOL_READY_BITS) {
- 		crng_reseed(); /* Sets crng_init to CRNG_READY under base_crng.lock. */
-+		execute_in_process_context(crng_set_ready, &set_ready);
- 		process_random_ready_list();
- 		wake_up_interruptible(&crng_init_wait);
- 		kill_fasync(&fasync, SIGIO, POLL_IN);
-@@ -1311,7 +1319,7 @@ SYSCALL_DEFINE3(getrandom, char __user *
- 	if (count > INT_MAX)
- 		count = INT_MAX;
+@@ -660,6 +663,11 @@ u32 get_random_u32(void)
  
--	if (!(flags & GRND_INSECURE) && !crng_ready()) {
-+	if (!crng_ready() && !(flags & GRND_INSECURE)) {
- 		int ret;
+ 	warn_unseeded_randomness(&previous);
  
- 		if (flags & GRND_NONBLOCK)
++	if  (!crng_ready()) {
++		_get_random_bytes(&ret, sizeof(ret));
++		return ret;
++	}
++
+ 	local_lock_irqsave(&batched_entropy_u32.lock, flags);
+ 	batch = raw_cpu_ptr(&batched_entropy_u32);
+ 
 
 
