@@ -2,135 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49346C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 09:37:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D158C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 09:38:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349979AbiE0JhO (ORCPT
+        id S1350551AbiE0Jid (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 05:37:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37016 "EHLO
+        Fri, 27 May 2022 05:38:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350337AbiE0JhM (ORCPT
+        with ESMTP id S1348413AbiE0Jia (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 05:37:12 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DECCA13F40
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 02:37:06 -0700 (PDT)
-Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24R8wtBu000420;
-        Fri, 27 May 2022 09:36:16 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- in-reply-to; s=pp1; bh=/3yhtcLV7lGw1O774Uj3YB+h1YJJQMkZuXgBVStyG1I=;
- b=M2/yJLI3eFZtBs1FuFgCL5WalrJ0IGN7srYzhcEtEVvAAFwudph3NKOEmhxEO2geNBEz
- x1ekL6rwU72zQ4ANWO8Q34mM7oKrlECb3T6PFMzb3efDP0yEcRB5EW71mkIEadr/sVIg
- EkZK01+lspZdCcQdnsC9C3LAHlw7O+iYMjEr8l5icRGvPLg7hqAxZgweWo0qn4MSEX7G
- q+AKz8O1n1DgYALF8AhMse09pqelh3YyeVd+nNE/QFrcYLYbIriEfNl3duLUzGvj753B
- 8PLpr51T6m6g67/zMdINnIQ3kM0PCdQ1wRTZXQljDj0a7yZ2GQ42Fo38+E7uEBp59/mF /w== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gaum30my7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 27 May 2022 09:36:16 +0000
-Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24R9WHZ2028821;
-        Fri, 27 May 2022 09:36:15 GMT
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gaum30mxh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 27 May 2022 09:36:15 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24R9CccZ005327;
-        Fri, 27 May 2022 09:36:13 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma03ams.nl.ibm.com with ESMTP id 3g93ux3r7e-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 27 May 2022 09:36:12 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24R9aAB617236406
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 27 May 2022 09:36:10 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 91E93A4054;
-        Fri, 27 May 2022 09:36:10 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id F35E0A405C;
-        Fri, 27 May 2022 09:36:09 +0000 (GMT)
-Received: from osiris (unknown [9.145.57.114])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
-        Fri, 27 May 2022 09:36:09 +0000 (GMT)
-Date:   Fri, 27 May 2022 11:36:08 +0200
-From:   Heiko Carstens <hca@linux.ibm.com>
-To:     Mark Rutland <mark.rutland@arm.com>
-Cc:     Michael Ellerman <mpe@ellerman.id.au>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Uros Bizjak <ubizjak@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        the arch/x86 maintainers <x86@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>, Waiman.Long@hp.com,
-        Paul McKenney <paulmck@linux.vnet.ibm.com>,
-        linuxppc-dev@lists.ozlabs.org
-Subject: Re: [PATCH 1/2] locking/lockref: Use try_cmpxchg64 in CMPXCHG_LOOP
- macro
-Message-ID: <YpCbiBCx1o38uhhX@osiris>
-References: <CAHk-=wh1XeaxWXG5QziGA4ds918UnW1hO924kusgVB-wGj+9Og@mail.gmail.com>
- <871qwgmqws.fsf@mpe.ellerman.id.au>
- <Yo91omfDZtTgXhyn@FVFF77S0Q05N.cambridge.arm.com>
+        Fri, 27 May 2022 05:38:30 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B432949C82
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 02:38:28 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id h11so4721170eda.8
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 02:38:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=amarulasolutions.com; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=3WnguRZLVfGoSX9zr8213z+cLpZyYlKDXrozeUElf0g=;
+        b=ix1Reun4wWMys+cSnZyVdjcSGZQHsynXRRo+htcqY0nvW5P5nuf8nWQ3i+jzgdgYer
+         eLNMo3m+0s3R4BlXve4U0Q/HbtTILpVtY5RxqYWPQ9wc/ie7ibUHn7Wveea9DBtcd/ZA
+         05S/Jl1AmlDk+T1DN2LXgG7KBw105KbKOIIt8=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=3WnguRZLVfGoSX9zr8213z+cLpZyYlKDXrozeUElf0g=;
+        b=OaxpSpSE/NeUepRcycSHptxFJ/xLhFRCnWFJeztvdqNPPQThzDIJid4wEY5rXs3dio
+         95C29GFjfFwTsCbBis6mhqy7wTawklvRCgKELKfP5GdtKgIJ50hXn1s1ZTJT5JWGNPWz
+         BYBaJDJ0kQ7f8619vG9vgOjoVL4g+5Sg21OzrUZGdw/Nuxate1+PowwWY5Bvbym7IRIS
+         /MWWCeHVxtHH/7OihFLhc9LFLFx6gNTJrPkAvVWDIYjZB8BInoyq7qfp13BRhMUfIOCe
+         81gNK/C4THCTGZPCG8gycCQyi9Gi0KK4wv1nLIoeO1y2yMySrTC4tbwADndS1uK5Zdc2
+         55Ew==
+X-Gm-Message-State: AOAM531To5IMZfkMkn833bAOXRmp9qyTpTxtWo+4EJjhTxWlXUixQEVN
+        HBpHW/la9dd8mhUmTl+QQpiolw==
+X-Google-Smtp-Source: ABdhPJxd2spwerZv6mnCc7ShmO42K83mj9j0PBdx2nzcPOue7O85RWLIieC+eGRZMA59o6m+M0F1kA==
+X-Received: by 2002:aa7:c0ca:0:b0:42c:5fac:e526 with SMTP id j10-20020aa7c0ca000000b0042c5face526mr2489643edp.219.1653644307249;
+        Fri, 27 May 2022 02:38:27 -0700 (PDT)
+Received: from tom-ThinkPad-T14s-Gen-2i (net-188-217-53-154.cust.vodafonedsl.it. [188.217.53.154])
+        by smtp.gmail.com with ESMTPSA id i27-20020a50871b000000b0042ab8c5e99fsm1900671edb.14.2022.05.27.02.38.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 27 May 2022 02:38:26 -0700 (PDT)
+Date:   Fri, 27 May 2022 11:38:24 +0200
+From:   Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
+To:     Ming Qian <ming.qian@nxp.com>
+Cc:     mchehab@kernel.org, mirela.rabulea@oss.nxp.com,
+        hverkuil-cisco@xs4all.nl, shawnguo@kernel.org,
+        s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
+        linux-imx@nxp.com, linux-media@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH] media: imx-jpeg: Leave a blank space before the
+ configuration data
+Message-ID: <20220527093824.GF11217@tom-ThinkPad-T14s-Gen-2i>
+References: <20220527075437.16882-1-ming.qian@nxp.com>
+ <20220527075437.16882-3-ming.qian@nxp.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Yo91omfDZtTgXhyn@FVFF77S0Q05N.cambridge.arm.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: IInokStyvhEzGjfG9nWgkGvGO89yAxRN
-X-Proofpoint-ORIG-GUID: ZMfPYhuHlVUkExUVG7NJSGyAZDOiDEYf
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-27_03,2022-05-25_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- lowpriorityscore=0 mlxscore=0 adultscore=0 phishscore=0 clxscore=1011
- bulkscore=0 mlxlogscore=674 spamscore=0 impostorscore=0 suspectscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2205270044
+In-Reply-To: <20220527075437.16882-3-ming.qian@nxp.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 26, 2022 at 01:42:35PM +0100, Mark Rutland wrote:
-> On Thu, May 26, 2022 at 10:14:59PM +1000, Michael Ellerman wrote:
-> > Linus Torvalds <torvalds@linux-foundation.org> writes:
-> > > On Wed, May 25, 2022 at 7:40 AM Uros Bizjak <ubizjak@gmail.com> wrote:
-> > >>
-> > >> Use try_cmpxchg64 instead of cmpxchg64 in CMPXCHG_LOOP macro.
-> > >> x86 CMPXCHG instruction returns success in ZF flag, so this
-> > >> change saves a compare after cmpxchg (and related move instruction
-> > >> in front of cmpxchg). The main loop of lockref_get improves from:
-> > >
-> > > Ack on this one regardless of the 32-bit x86 question.
-> > >
-> > > HOWEVER.
-> > >
-> > > I'd like other architectures to pipe up too, because I think right now
-> > > x86 is the only one that implements that "arch_try_cmpxchg()" family
-> > > of operations natively, and I think the generic fallback for when it
-> > > is missing might be kind of nasty.
-> > >
-> > > Maybe it ends up generating ok code, but it's also possible that it
-> > > just didn't matter when it was only used in one place in the
-> > > scheduler.
-> > 
-> > This patch seems to generate slightly *better* code on powerpc.
-> > 
-> > I see one register-to-register move that gets shifted slightly later, so
-> > that it's skipped on the path that returns directly via the SUCCESS
-> > case.
-> 
-> FWIW, I see the same on arm64; a register-to-register move gets moved out of
-> the success path. That changes the register allocation, and resulting in one
-> fewer move, but otherwise the code generation is the same.
+Hi Ming,
+I think have some comments on the code for this would be nice for the
+future
 
-Just for the records: s390 code generation changes the same like on
-powerpc; so looks good.
+On Fri, May 27, 2022 at 03:54:35PM +0800, Ming Qian wrote:
+> There is a hardware bug that it will load
+> the first 128 bytes of configuration data twice,
+> it will led to some configure error.
+> so shift the configuration data 128 bytes,
+> and make the first 128 bytes all zero,
+> then hardware will load the 128 zero twice,
+
+From what I've understood you initialize cfg_stm with zeros then
+you start to write the configuration from 0x80 (128 bytes), avoiding the hw issue right?
+
+> and ignore them as garbage.
+> then the configuration data can be loaded correctly
+> 
+> Signed-off-by: Ming Qian <ming.qian@nxp.com>
+> Reviewed-by: Mirela Rabulea <mirela.rabulea@nxp.com>
+> ---
+>  drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c
+> index 734e1b65fbc7..ad4213e020f3 100644
+> --- a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c
+> +++ b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c
+> @@ -519,6 +519,7 @@ static bool mxc_jpeg_alloc_slot_data(struct mxc_jpeg_dev *jpeg,
+>  				     GFP_ATOMIC);
+>  	if (!cfg_stm)
+>  		goto err;
+> +	memset(cfg_stm, 0, MXC_JPEG_MAX_CFG_STREAM);
+>  	jpeg->slot_data[slot].cfg_stream_vaddr = cfg_stm;
+>  
+>  skip_alloc:
+> @@ -755,7 +756,7 @@ static unsigned int mxc_jpeg_setup_cfg_stream(void *cfg_stream_vaddr,
+>  					      u32 fourcc,
+>  					      u16 w, u16 h)
+>  {
+> -	unsigned int offset = 0;
+> +	unsigned int offset = 0x80;
+>  	u8 *cfg = (u8 *)cfg_stream_vaddr;
+>  	struct mxc_jpeg_sof *sof;
+>  	struct mxc_jpeg_sos *sos;
+> -- 
+> 2.36.1
+> 
+
+Thanks,
+Tommaso
+
+-- 
+Tommaso Merciai
+Embedded Linux Engineer
+tommaso.merciai@amarulasolutions.com
+__________________________________
+
+Amarula Solutions SRL
+Via Le Canevare 30, 31100 Treviso, Veneto, IT
+T. +39 042 243 5310
+info@amarulasolutions.com
+www.amarulasolutions.com
