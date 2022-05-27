@@ -2,82 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1586BC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 07:11:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43A06C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 07:12:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347030AbiE0HLN (ORCPT
+        id S1346163AbiE0HMZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 03:11:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48534 "EHLO
+        Fri, 27 May 2022 03:12:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345267AbiE0HKQ (ORCPT
+        with ESMTP id S1347620AbiE0HMI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 03:10:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4808F68A6;
-        Fri, 27 May 2022 00:10:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8EE57B82373;
-        Fri, 27 May 2022 07:10:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 2B887C34100;
-        Fri, 27 May 2022 07:10:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653635413;
-        bh=VfQljeW8VSYce8YPJcbQdzZsTyI0fH78WhfERJkS1Jo=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=FHj7hGttXyWLduFDWcuKu1EZFwdcy8c73t3a5GkGR3g50eTu/oMfv3BFsYVYpZGPC
-         9a0pDntETzVxSBECHF0OnizJheKTgTpqPNzfLEqLih/sk6pMfh4L4JY6PfErs0A1Ri
-         OH0gjezBcHYbv7Ueg44T6qiBD27CFJVEXEq5IY7E4jr6098C+CHrnJFx0q7Y9v5AIJ
-         y7J1QJ1q2kLi/WM+5kupvhnFHLm2gHmG5zHGs05cTDlpRsO8wWFbkp8YuAjqTyfx1K
-         VmTvdVUzUKoSxru2+bnTeO5IQEKGAp1meiV8YZwG9D81/dEZ07tErHTI+RE9fdrqaP
-         8yQ1ZC6OlZ5Ig==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0FD2FF03944;
-        Fri, 27 May 2022 07:10:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Fri, 27 May 2022 03:12:08 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CF1FDB3
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 00:11:35 -0700 (PDT)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L8bW33QqyzRhR3;
+        Fri, 27 May 2022 15:08:31 +0800 (CST)
+Received: from dggpemm500018.china.huawei.com (7.185.36.111) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 27 May 2022 15:11:33 +0800
+Received: from localhost.localdomain (10.175.112.125) by
+ dggpemm500018.china.huawei.com (7.185.36.111) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 27 May 2022 15:11:33 +0800
+From:   keliu <liuke94@huawei.com>
+To:     <mst@redhat.com>, <jasowang@redhat.com>,
+        <virtualization@lists.linux-foundation.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     keliu <liuke94@huawei.com>
+Subject: [PATCH] virtio: Directly use ida_alloc()/free()
+Date:   Fri, 27 May 2022 07:33:02 +0000
+Message-ID: <20220527073302.2474073-1-liuke94@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v3] net: dsa: mv88e6xxx: Fix refcount leak in
- mv88e6xxx_mdios_register
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165363541306.15180.11215142620498870991.git-patchwork-notify@kernel.org>
-Date:   Fri, 27 May 2022 07:10:13 +0000
-References: <20220526145208.25673-1-linmq006@gmail.com>
-In-Reply-To: <20220526145208.25673-1-linmq006@gmail.com>
-To:     Miaoqian Lin <linmq006@gmail.com>
-Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        olteanv@gmail.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.112.125]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemm500018.china.huawei.com (7.185.36.111)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+Use ida_alloc()/ida_free() instead of deprecated
+ida_simple_get()/ida_simple_remove() .
 
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
+Signed-off-by: keliu <liuke94@huawei.com>
+---
+ drivers/virtio/virtio.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-On Thu, 26 May 2022 18:52:08 +0400 you wrote:
-> of_get_child_by_name() returns a node pointer with refcount
-> incremented, we should use of_node_put() on it when done.
-> 
-> mv88e6xxx_mdio_register() pass the device node to of_mdiobus_register().
-> We don't need the device node after it.
-> 
-> Add missing of_node_put() to avoid refcount leak.
-> 
-> [...]
-
-Here is the summary with links:
-  - [v3] net: dsa: mv88e6xxx: Fix refcount leak in mv88e6xxx_mdios_register
-    https://git.kernel.org/netdev/net/c/02ded5a17361
-
-You are awesome, thank you!
+diff --git a/drivers/virtio/virtio.c b/drivers/virtio/virtio.c
+index 22f15f444f75..143f94652306 100644
+--- a/drivers/virtio/virtio.c
++++ b/drivers/virtio/virtio.c
+@@ -413,7 +413,7 @@ int register_virtio_device(struct virtio_device *dev)
+ 	device_initialize(&dev->dev);
+ 
+ 	/* Assign a unique device index and hence name. */
+-	err = ida_simple_get(&virtio_index_ida, 0, 0, GFP_KERNEL);
++	err = ida_alloc(&virtio_index_ida, GFP_KERNEL);
+ 	if (err < 0)
+ 		goto out;
+ 
+@@ -451,7 +451,7 @@ int register_virtio_device(struct virtio_device *dev)
+ out_of_node_put:
+ 	of_node_put(dev->dev.of_node);
+ out_ida_remove:
+-	ida_simple_remove(&virtio_index_ida, dev->index);
++	ida_free(&virtio_index_ida, dev->index);
+ out:
+ 	virtio_add_status(dev, VIRTIO_CONFIG_S_FAILED);
+ 	return err;
+@@ -469,7 +469,7 @@ void unregister_virtio_device(struct virtio_device *dev)
+ 	int index = dev->index; /* save for after device release */
+ 
+ 	device_unregister(&dev->dev);
+-	ida_simple_remove(&virtio_index_ida, index);
++	ida_free(&virtio_index_ida, index);
+ }
+ EXPORT_SYMBOL_GPL(unregister_virtio_device);
+ 
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.25.1
 
