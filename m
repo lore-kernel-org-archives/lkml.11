@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CB31C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 15:58:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E4BCC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 15:58:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354002AbiE0P6Z (ORCPT
+        id S1353990AbiE0P62 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 11:58:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48628 "EHLO
+        Fri, 27 May 2022 11:58:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353994AbiE0P5W (ORCPT
+        with ESMTP id S1353847AbiE0P5Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 11:57:22 -0400
+        Fri, 27 May 2022 11:57:24 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 384676BFD3
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 08:56:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BBE4DED78D
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 08:57:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653667018;
+        s=mimecast20190719; t=1653667032;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=hp82BU+I7MuWflxbH4EWx7W3vuzx9MsZrRsI8zYTBvY=;
-        b=KKCWaHdddv1AtPwVdGJYF/U7nm4mIlcEgu1ORI67GHluZGI3h4/bywuxuliyRhnTi264GT
-        t4vdyobjQhWYej5boEr6FtDj/7J4mn2DqZar04vQR8NDFVgMxVkZCrreEOpEiuW4cPYvat
-        1QfLonVA1j/Zua4RNElPkZvZ1uAPTJY=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=RZJZWfsaByLj0ij8xQqPbsK2IaQ+e2uUS77uqtBhMFM=;
+        b=HNYC9/HkZ5ZlNoRScTJCx0QNiAj8i3/Wh8fBM5eN2qk8IIFpqCKEBKpir6pxIewhFawTBu
+        t/evJJVLzxoI/VrwSfXpC0p3nSANRMT7juyNxNd8GmSZBUZliWaPoc2tfLLqSGdB3z/7Mp
+        soYmBYm345g7I5pd8WIbcBfsJWsDljc=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-144-l05X-G7UPD621rHeDk9Xfw-1; Fri, 27 May 2022 11:56:53 -0400
-X-MC-Unique: l05X-G7UPD621rHeDk9Xfw-1
+ us-mta-582-tHEDPbcbPs6HXRL3C8C4EQ-1; Fri, 27 May 2022 11:57:08 -0400
+X-MC-Unique: tHEDPbcbPs6HXRL3C8C4EQ-1
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6B28639F9CAA;
-        Fri, 27 May 2022 15:56:52 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id F3F64101A54E;
+        Fri, 27 May 2022 15:57:07 +0000 (UTC)
 Received: from fedora.redhat.com (unknown [10.40.192.126])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E7D862166B29;
-        Fri, 27 May 2022 15:56:49 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B50372166B26;
+        Fri, 27 May 2022 15:57:05 +0000 (UTC)
 From:   Vitaly Kuznetsov <vkuznets@redhat.com>
 To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -49,9 +49,9 @@ Cc:     Sean Christopherson <seanjc@google.com>,
         Siddharth Chandrasekaran <sidcha@amazon.de>,
         Yuan Yao <yuan.yao@linux.intel.com>,
         linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v5 23/37] KVM: selftests: Better XMM read/write helpers
-Date:   Fri, 27 May 2022 17:55:32 +0200
-Message-Id: <20220527155546.1528910-24-vkuznets@redhat.com>
+Subject: [PATCH v5 29/37] KVM: selftests: Export _vm_get_page_table_entry()
+Date:   Fri, 27 May 2022 17:55:38 +0200
+Message-Id: <20220527155546.1528910-30-vkuznets@redhat.com>
 In-Reply-To: <20220527155546.1528910-1-vkuznets@redhat.com>
 References: <20220527155546.1528910-1-vkuznets@redhat.com>
 MIME-Version: 1.0
@@ -62,129 +62,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-set_xmm()/get_xmm() helpers are fairly useless as they only read 64 bits
-from 128-bit registers. Moreover, these helpers are not used. Borrow
-_kvm_read_sse_reg()/_kvm_write_sse_reg() from KVM limiting them to
-XMM0-XMM8 for now.
+Make it possible for tests to mangle guest's page table entries in
+addition to just getting them (available with vm_get_page_table_entry()).
 
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
 Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 ---
- .../selftests/kvm/include/x86_64/processor.h  | 70 ++++++++++---------
- 1 file changed, 36 insertions(+), 34 deletions(-)
+ tools/testing/selftests/kvm/include/x86_64/processor.h | 1 +
+ tools/testing/selftests/kvm/lib/x86_64/processor.c     | 3 +--
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/tools/testing/selftests/kvm/include/x86_64/processor.h b/tools/testing/selftests/kvm/include/x86_64/processor.h
-index 4fd870f37b9e..9ac244fdce73 100644
+index 9ac244fdce73..76cfd7f70add 100644
 --- a/tools/testing/selftests/kvm/include/x86_64/processor.h
 +++ b/tools/testing/selftests/kvm/include/x86_64/processor.h
-@@ -315,71 +315,73 @@ static inline void cpuid(uint32_t *eax, uint32_t *ebx,
- 	    : "memory");
+@@ -475,6 +475,7 @@ void vcpu_init_descriptor_tables(struct kvm_vm *vm, uint32_t vcpuid);
+ void vm_install_exception_handler(struct kvm_vm *vm, int vector,
+ 			void (*handler)(struct ex_regs *));
+ 
++uint64_t *_vm_get_page_table_entry(struct kvm_vm *vm, int vcpuid, uint64_t vaddr);
+ uint64_t vm_get_page_table_entry(struct kvm_vm *vm, int vcpuid, uint64_t vaddr);
+ void vm_set_page_table_entry(struct kvm_vm *vm, int vcpuid, uint64_t vaddr,
+ 			     uint64_t pte);
+diff --git a/tools/testing/selftests/kvm/lib/x86_64/processor.c b/tools/testing/selftests/kvm/lib/x86_64/processor.c
+index 33ea5e9955d9..dfe54a970410 100644
+--- a/tools/testing/selftests/kvm/lib/x86_64/processor.c
++++ b/tools/testing/selftests/kvm/lib/x86_64/processor.c
+@@ -246,8 +246,7 @@ void virt_pg_map(struct kvm_vm *vm, uint64_t vaddr, uint64_t paddr)
+ 	__virt_pg_map(vm, vaddr, paddr, X86_PAGE_SIZE_4K);
  }
  
--#define SET_XMM(__var, __xmm) \
--	asm volatile("movq %0, %%"#__xmm : : "r"(__var) : #__xmm)
-+typedef u32		__attribute__((vector_size(16))) sse128_t;
-+#define __sse128_u	union { sse128_t vec; u64 as_u64[2]; u32 as_u32[4]; }
-+#define sse128_lo(x)	({ __sse128_u t; t.vec = x; t.as_u64[0]; })
-+#define sse128_hi(x)	({ __sse128_u t; t.vec = x; t.as_u64[1]; })
- 
--static inline void set_xmm(int n, unsigned long val)
-+static inline void read_sse_reg(int reg, sse128_t *data)
+-static uint64_t *_vm_get_page_table_entry(struct kvm_vm *vm, int vcpuid,
+-						       uint64_t vaddr)
++uint64_t *_vm_get_page_table_entry(struct kvm_vm *vm, int vcpuid, uint64_t vaddr)
  {
--	switch (n) {
-+	switch (reg) {
- 	case 0:
--		SET_XMM(val, xmm0);
-+		asm("movdqa %%xmm0, %0" : "=m"(*data));
- 		break;
- 	case 1:
--		SET_XMM(val, xmm1);
-+		asm("movdqa %%xmm1, %0" : "=m"(*data));
- 		break;
- 	case 2:
--		SET_XMM(val, xmm2);
-+		asm("movdqa %%xmm2, %0" : "=m"(*data));
- 		break;
- 	case 3:
--		SET_XMM(val, xmm3);
-+		asm("movdqa %%xmm3, %0" : "=m"(*data));
- 		break;
- 	case 4:
--		SET_XMM(val, xmm4);
-+		asm("movdqa %%xmm4, %0" : "=m"(*data));
- 		break;
- 	case 5:
--		SET_XMM(val, xmm5);
-+		asm("movdqa %%xmm5, %0" : "=m"(*data));
- 		break;
- 	case 6:
--		SET_XMM(val, xmm6);
-+		asm("movdqa %%xmm6, %0" : "=m"(*data));
- 		break;
- 	case 7:
--		SET_XMM(val, xmm7);
-+		asm("movdqa %%xmm7, %0" : "=m"(*data));
- 		break;
-+	default:
-+		BUG();
- 	}
- }
- 
--#define GET_XMM(__xmm)							\
--({									\
--	unsigned long __val;						\
--	asm volatile("movq %%"#__xmm", %0" : "=r"(__val));		\
--	__val;								\
--})
--
--static inline unsigned long get_xmm(int n)
-+static inline void write_sse_reg(int reg, const sse128_t *data)
- {
--	assert(n >= 0 && n <= 7);
--
--	switch (n) {
-+	switch (reg) {
- 	case 0:
--		return GET_XMM(xmm0);
-+		asm("movdqa %0, %%xmm0" : : "m"(*data));
-+		break;
- 	case 1:
--		return GET_XMM(xmm1);
-+		asm("movdqa %0, %%xmm1" : : "m"(*data));
-+		break;
- 	case 2:
--		return GET_XMM(xmm2);
-+		asm("movdqa %0, %%xmm2" : : "m"(*data));
-+		break;
- 	case 3:
--		return GET_XMM(xmm3);
-+		asm("movdqa %0, %%xmm3" : : "m"(*data));
-+		break;
- 	case 4:
--		return GET_XMM(xmm4);
-+		asm("movdqa %0, %%xmm4" : : "m"(*data));
-+		break;
- 	case 5:
--		return GET_XMM(xmm5);
-+		asm("movdqa %0, %%xmm5" : : "m"(*data));
-+		break;
- 	case 6:
--		return GET_XMM(xmm6);
-+		asm("movdqa %0, %%xmm6" : : "m"(*data));
-+		break;
- 	case 7:
--		return GET_XMM(xmm7);
-+		asm("movdqa %0, %%xmm7" : : "m"(*data));
-+		break;
-+	default:
-+		BUG();
- 	}
--
--	/* never reached */
--	return 0;
- }
- 
- static inline void cpu_relax(void)
+ 	uint16_t index[4];
+ 	uint64_t *pml4e, *pdpe, *pde;
 -- 
 2.35.3
 
