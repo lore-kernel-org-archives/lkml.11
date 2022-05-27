@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72B57C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 09:02:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3609BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 09:02:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350319AbiE0JCq (ORCPT
+        id S1350478AbiE0JCv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 05:02:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59864 "EHLO
+        Fri, 27 May 2022 05:02:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350531AbiE0JAD (ORCPT
+        with ESMTP id S1350607AbiE0JAL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 05:00:03 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85AA2106566;
-        Fri, 27 May 2022 01:56:10 -0700 (PDT)
+        Fri, 27 May 2022 05:00:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30F2C5000E;
+        Fri, 27 May 2022 01:56:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id DE5C2CE23C9;
-        Fri, 27 May 2022 08:56:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4357C385B8;
-        Fri, 27 May 2022 08:56:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B60FEB823E2;
+        Fri, 27 May 2022 08:56:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCBD6C34113;
+        Fri, 27 May 2022 08:56:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653641767;
-        bh=2wSHEEurpZQC1OfwEv0aR4844pcEFDJ9Ix5fkH0x0Gs=;
+        s=korg; t=1653641774;
+        bh=jN3i2LdxfYzhR0w/hB0nyLMKgMI6Tdxlrm4dOLX7fsg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cw8mwaa6Uw3nztn6usLdRkjkBJh7jiECjQo8p/vJKjIUX0+FdUZeLxsqJS5VnbFLA
-         uUJ0bAwNGBvNoC5vhIGvyUFlkz3tJyQMYhXKkYspsylnOAAXOm/VaJJcbXe/Zp4Vbq
-         IdNqFo99wZHLRY4CvoK3EBN6tdeGSFXDx9MhxWJY=
+        b=TgEtWJhcsHEOZqqwG/jcDUCMVQMe1ObW+1KlcQmWlCSx0feSsoKxMWEjZQLWYnh6X
+         zSAOfkXAsB9+rlfH1IwnV+y3jFHWVASE63UA+wPq/rlyB1UTlzY+TqS1NWJ7RVX0NQ
+         CWGzO0J4O4g/4dA7J9puexfBCQA5he+NWLVGBqP4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yongkang Jia <kangel@zju.edu.cn>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Vegard Nossum <vegard.nossum@oracle.com>
-Subject: [PATCH 5.10 004/163] KVM: x86/mmu: fix NULL pointer dereference on guest INVPCID
-Date:   Fri, 27 May 2022 10:48:04 +0200
-Message-Id: <20220527084828.810813962@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        dann frazier <dann.frazier@canonical.com>
+Subject: [PATCH 5.10 009/163] ACPI: sysfs: Make sparse happy about address space in use
+Date:   Fri, 27 May 2022 10:48:09 +0200
+Message-Id: <20220527084829.478698906@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
 References: <20220527084828.156494029@linuxfoundation.org>
@@ -50,56 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paolo Bonzini <pbonzini@redhat.com>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-commit 9f46c187e2e680ecd9de7983e4d081c3391acc76 upstream.
+commit bdd56d7d8931e842775d2e5b93d426a8d1940e33 upstream.
 
-With shadow paging enabled, the INVPCID instruction results in a call
-to kvm_mmu_invpcid_gva.  If INVPCID is executed with CR0.PG=0, the
-invlpg callback is not set and the result is a NULL pointer dereference.
-Fix it trivially by checking for mmu->invlpg before every call.
+Sparse is not happy about address space in use in acpi_data_show():
 
-There are other possibilities:
+drivers/acpi/sysfs.c:428:14: warning: incorrect type in assignment (different address spaces)
+drivers/acpi/sysfs.c:428:14:    expected void [noderef] __iomem *base
+drivers/acpi/sysfs.c:428:14:    got void *
+drivers/acpi/sysfs.c:431:59: warning: incorrect type in argument 4 (different address spaces)
+drivers/acpi/sysfs.c:431:59:    expected void const *from
+drivers/acpi/sysfs.c:431:59:    got void [noderef] __iomem *base
+drivers/acpi/sysfs.c:433:30: warning: incorrect type in argument 1 (different address spaces)
+drivers/acpi/sysfs.c:433:30:    expected void *logical_address
+drivers/acpi/sysfs.c:433:30:    got void [noderef] __iomem *base
 
-- check for CR0.PG, because KVM (like all Intel processors after P5)
-  flushes guest TLB on CR0.PG changes so that INVPCID/INVLPG are a
-  nop with paging disabled
+Indeed, acpi_os_map_memory() returns a void pointer with dropped specific
+address space. Hence, we don't need to carry out __iomem in acpi_data_show().
 
-- check for EFER.LMA, because KVM syncs and flushes when switching
-  MMU contexts outside of 64-bit mode
-
-All of these are tricky, go for the simple solution.  This is CVE-2022-1789.
-
-Reported-by: Yongkang Jia <kangel@zju.edu.cn>
-Cc: stable@vger.kernel.org
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-[fix conflict due to missing b9e5603c2a3accbadfec570ac501a54431a6bdba]
-Signed-off-by: Vegard Nossum <vegard.nossum@oracle.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Cc: dann frazier <dann.frazier@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/mmu/mmu.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/acpi/sysfs.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/x86/kvm/mmu/mmu.c
-+++ b/arch/x86/kvm/mmu/mmu.c
-@@ -5178,14 +5178,16 @@ void kvm_mmu_invpcid_gva(struct kvm_vcpu
- 	uint i;
+--- a/drivers/acpi/sysfs.c
++++ b/drivers/acpi/sysfs.c
+@@ -438,7 +438,7 @@ static ssize_t acpi_data_show(struct fil
+ 			      loff_t offset, size_t count)
+ {
+ 	struct acpi_data_attr *data_attr;
+-	void __iomem *base;
++	void *base;
+ 	ssize_t rc;
  
- 	if (pcid == kvm_get_active_pcid(vcpu)) {
--		mmu->invlpg(vcpu, gva, mmu->root_hpa);
-+		if (mmu->invlpg)
-+			mmu->invlpg(vcpu, gva, mmu->root_hpa);
- 		tlb_flush = true;
- 	}
- 
- 	for (i = 0; i < KVM_MMU_NUM_PREV_ROOTS; i++) {
- 		if (VALID_PAGE(mmu->prev_roots[i].hpa) &&
- 		    pcid == kvm_get_pcid(vcpu, mmu->prev_roots[i].pgd)) {
--			mmu->invlpg(vcpu, gva, mmu->prev_roots[i].hpa);
-+			if (mmu->invlpg)
-+				mmu->invlpg(vcpu, gva, mmu->prev_roots[i].hpa);
- 			tlb_flush = true;
- 		}
- 	}
+ 	data_attr = container_of(bin_attr, struct acpi_data_attr, attr);
 
 
