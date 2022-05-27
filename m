@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9B25C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:46:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEFC7C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:46:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351797AbiE0Loz (ORCPT
+        id S1351829AbiE0LpA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 07:44:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58520 "EHLO
+        Fri, 27 May 2022 07:45:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351809AbiE0Ln6 (ORCPT
+        with ESMTP id S235376AbiE0LnL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:43:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A37F066FB0;
-        Fri, 27 May 2022 04:40:49 -0700 (PDT)
+        Fri, 27 May 2022 07:43:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE5431339C5;
+        Fri, 27 May 2022 04:40:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F08CF61CB7;
-        Fri, 27 May 2022 11:40:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BDCFC34113;
-        Fri, 27 May 2022 11:40:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DC354B824D7;
+        Fri, 27 May 2022 11:40:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33C7AC385A9;
+        Fri, 27 May 2022 11:40:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653651648;
+        s=korg; t=1653651633;
         bh=f9E5EI7jJkflJj4QutB3zPFBUaC/T63F6pOaKTQ3D9I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=e5zMnNmP+SVrGUpqey/iR9Wt+kzNuydn5xQV+aNLDDz2QKeUMsO257Fga+cmcqne4
-         WomhFL/0Q3cVm5S46mi3zaOWy6v0PC+AF00MPDj4SdCrYPv1jxx8K1y6gv5VbEFvlU
-         xx49OmuY2SGnwIzl/4zwB4cz1PijfkDO4x69vVsc=
+        b=ZQmfXXdbD+lGh5Z47M6ITsh5CX7BxVa7FIR0xndHViOoyDC0Oh20tEmG+DiGkf/y/
+         QgEyxKj+Xa+g2gmSh7DCdQbrcEFuH2wguVN2Gr1jEgwTHDFq5VdlPmpIc12S2vFJhJ
+         bLVJWfy9GiC0Xj4jJXtkEeNnCWsvWNkc+Fet+Ssc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.10 043/163] random: remove incomplete last_data logic
-Date:   Fri, 27 May 2022 10:48:43 +0200
-Message-Id: <20220527084834.058330176@linuxfoundation.org>
+Subject: [PATCH 5.15 025/145] random: remove incomplete last_data logic
+Date:   Fri, 27 May 2022 10:48:46 +0200
+Message-Id: <20220527084853.953801714@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
-References: <20220527084828.156494029@linuxfoundation.org>
+In-Reply-To: <20220527084850.364560116@linuxfoundation.org>
+References: <20220527084850.364560116@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
