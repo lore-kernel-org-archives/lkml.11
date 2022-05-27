@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15633C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:41:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3A02C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:41:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351542AbiE0LlT (ORCPT
+        id S1351616AbiE0Ll1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 07:41:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45658 "EHLO
+        Fri, 27 May 2022 07:41:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351737AbiE0LkD (ORCPT
+        with ESMTP id S1351778AbiE0LkF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:40:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BD9913128C;
-        Fri, 27 May 2022 04:39:12 -0700 (PDT)
+        Fri, 27 May 2022 07:40:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 745C5111BA6;
+        Fri, 27 May 2022 04:39:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E4E9961CD8;
-        Fri, 27 May 2022 11:39:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F254FC385A9;
-        Fri, 27 May 2022 11:39:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D82D961CB7;
+        Fri, 27 May 2022 11:39:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E75EFC385A9;
+        Fri, 27 May 2022 11:39:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653651551;
-        bh=aARjXd9mcvbcdHWE51vJ2pbllbwuZ37CccrqNv/hH70=;
+        s=korg; t=1653651557;
+        bh=zeCNXD/6mPqe80gmC393S7dCSxWXSaOLreAdBp1vAWM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FthS+chxGEIVbSDtksvaPGklXL0sav/c5HtkB4epvvJ2fO1vZcr/+zJe4G6G4hYUE
-         s8n/lnf7ETUpHy/O0+skXij2R/fzXzVrCMxIvISe2CVTiEFFuPIG+HWRSrOqzIDM6c
-         qefLKpIEKvOMqgxYyTWRNtqK28lBg74+3sFkZetM=
+        b=w3hyO/5s3HTX2+ezbV1IxPIfyaIvgQh0jWUkx6xnbj3mv0vwBPMQX6iA4sxzrx+Hl
+         hee6BzldFU8/rKFmOEG9OzeYormZu9C8NwuAQMti0JfHGvd3to4YjgvYFFvy1hYHAf
+         +qV5J3OehherNOeq7JTmCGFboBszrNZIWJe2wfZw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.10 032/163] random: do not sign extend bytes for rotation when mixing
-Date:   Fri, 27 May 2022 10:48:32 +0200
-Message-Id: <20220527084832.607944244@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.15 016/145] random: mix bootloader randomness into pool
+Date:   Fri, 27 May 2022 10:48:37 +0200
+Message-Id: <20220527084852.955822975@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
-References: <20220527084828.156494029@linuxfoundation.org>
+In-Reply-To: <20220527084850.364560116@linuxfoundation.org>
+References: <20220527084850.364560116@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,31 +52,42 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 0d9488ffbf2faddebc6bac055bfa6c93b94056a3 upstream.
+commit 57826feeedb63b091f807ba8325d736775d39afd upstream.
 
-By using `char` instead of `unsigned char`, certain platforms will sign
-extend the byte when `w = rol32(*bytes++, input_rotate)` is called,
-meaning that bit 7 is overrepresented when mixing. This isn't a real
-problem (unless the mixer itself is already broken) since it's still
-invertible, but it's not quite correct either. Fix this by using an
-explicit unsigned type.
+If we're trusting bootloader randomness, crng_fast_load() is called by
+add_hwgenerator_randomness(), which sets us to crng_init==1. However,
+usually it is only called once for an initial 64-byte push, so bootloader
+entropy will not mix any bytes into the input pool. So it's conceivable
+that crng_init==1 when crng_initialize_primary() is called later, but
+then the input pool is empty. When that happens, the crng state key will
+be overwritten with extracted output from the empty input pool. That's
+bad.
 
+In contrast, if we're not trusting bootloader randomness, we call
+crng_slow_load() *and* we call mix_pool_bytes(), so that later
+crng_initialize_primary() isn't drawing on nothing.
+
+In order to prevent crng_initialize_primary() from extracting an empty
+pool, have the trusted bootloader case mirror that of the untrusted
+bootloader case, mixing the input into the pool.
+
+[linux@dominikbrodowski.net: rewrite commit message]
+Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/char/random.c |    1 +
+ 1 file changed, 1 insertion(+)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -547,7 +547,7 @@ static void _mix_pool_bytes(struct entro
- 	unsigned long i, tap1, tap2, tap3, tap4, tap5;
- 	int input_rotate;
- 	int wordmask = r->poolinfo->poolwords - 1;
--	const char *bytes = in;
-+	const unsigned char *bytes = in;
- 	__u32 w;
+@@ -2301,6 +2301,7 @@ void add_hwgenerator_randomness(const ch
  
- 	tap1 = r->poolinfo->tap1;
+ 	if (unlikely(crng_init == 0)) {
+ 		size_t ret = crng_fast_load(buffer, count);
++		mix_pool_bytes(poolp, buffer, ret);
+ 		count -= ret;
+ 		buffer += ret;
+ 		if (!count || crng_init == 0)
 
 
