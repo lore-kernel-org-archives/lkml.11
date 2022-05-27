@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34E20C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:58:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76C83C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:58:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243203AbiE0I61 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 04:58:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34856 "EHLO
+        id S1343703AbiE0I6e (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 04:58:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350074AbiE0Izk (ORCPT
+        with ESMTP id S1350311AbiE0IzP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 04:55:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39921544F5;
-        Fri, 27 May 2022 01:54:20 -0700 (PDT)
+        Fri, 27 May 2022 04:55:15 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF45A5E17E;
+        Fri, 27 May 2022 01:53:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0908361D56;
-        Fri, 27 May 2022 08:54:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0E5CC385A9;
-        Fri, 27 May 2022 08:54:18 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id E8BB5CE237A;
+        Fri, 27 May 2022 08:53:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C608FC385A9;
+        Fri, 27 May 2022 08:53:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653641659;
-        bh=iMBXmKHWLQ51QDGO5IeQitVLpi/PoVqA8seqpwKdUIE=;
+        s=korg; t=1653641609;
+        bh=AkmbyX7kj5nPzG+eUDjqwRv35ba6cPqLkRss36eEYDQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dTxer9FlfeB0nfY0tmWWq8TGnR5HT5iQDwZpOcrd7V5V6aBYeA3K2SN9jzNMai1Jc
-         lSJIEHrSqhwGcd91hCea4LdKOH6SUeIDZfaNQxaTRcMq6vs8PpW4ipYg/JhdW7so/l
-         lEc1bRGnciaETdmKz0ngUQt8fpYaAiQZUwQXvyb4=
+        b=uf7g+7c9hbDmVR4wn/97852UJ1KeyoKOouXDGCr0CbtJWXpCOWKCYbxxAhGJxq1u8
+         LjmmX5mgZSLXMMtfM/TiGme4F/WQCQo8c8cRM8WogzogGABJvnvfA0yt6+ghB7ZBvc
+         nk8Fk81D940TV8tCwvIdIzLEtxAkhsbxRhwE0wjQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.18 41/47] random: unify batched entropy implementations
-Date:   Fri, 27 May 2022 10:50:21 +0200
-Message-Id: <20220527084808.067808316@linuxfoundation.org>
+        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org
+Subject: [PATCH 5.18 16/47] x86/tsc: Use fallback for random_get_entropy() instead of zero
+Date:   Fri, 27 May 2022 10:49:56 +0200
+Message-Id: <20220527084803.992718382@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220527084801.223648383@linuxfoundation.org>
 References: <20220527084801.223648383@linuxfoundation.org>
@@ -51,188 +53,71 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 3092adcef3ffd2ef59634998297ca8358461ebce upstream.
+commit 3bd4abc07a267e6a8b33d7f8717136e18f921c53 upstream.
 
-There are currently two separate batched entropy implementations, for
-u32 and u64, with nearly identical code, with the goal of avoiding
-unaligned memory accesses and letting the buffers be used more
-efficiently. Having to maintain these two functions independently is a
-bit of a hassle though, considering that they always need to be kept in
-sync.
+In the event that random_get_entropy() can't access a cycle counter or
+similar, falling back to returning 0 is suboptimal. Instead, fallback
+to calling random_get_entropy_fallback(), which isn't extremely high
+precision or guaranteed to be entropic, but is certainly better than
+returning zero all the time.
 
-This commit factors them out into a type-generic macro, so that the
-expansion produces the same code as before, such that diffing the
-assembly shows no differences. This will also make it easier in the
-future to add u16 and u8 batches.
+If CONFIG_X86_TSC=n, then it's possible for the kernel to run on systems
+without RDTSC, such as 486 and certain 586, so the fallback code is only
+required for that case.
 
-This was initially tested using an always_inline function and letting
-gcc constant fold the type size in, but the code gen was less efficient,
-and in general it was more verbose and harder to follow. So this patch
-goes with the boring macro solution, similar to what's already done for
-the _wait functions in random.h.
+As well, fix up both the new function and the get_cycles() function from
+which it was derived to use cpu_feature_enabled() rather than
+boot_cpu_has(), and use !IS_ENABLED() instead of #ifndef.
 
-Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: x86@kernel.org
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |  145 ++++++++++++++++++--------------------------------
- 1 file changed, 54 insertions(+), 91 deletions(-)
+ arch/x86/include/asm/timex.h |    9 +++++++++
+ arch/x86/include/asm/tsc.h   |    7 +++----
+ 2 files changed, 12 insertions(+), 4 deletions(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -509,99 +509,62 @@ out_zero_chacha:
-  * provided by this function is okay, the function wait_for_random_bytes()
-  * should be called and return 0 at least once at any point prior.
-  */
--struct batched_entropy {
--	union {
--		/*
--		 * We make this 1.5x a ChaCha block, so that we get the
--		 * remaining 32 bytes from fast key erasure, plus one full
--		 * block from the detached ChaCha state. We can increase
--		 * the size of this later if needed so long as we keep the
--		 * formula of (integer_blocks + 0.5) * CHACHA_BLOCK_SIZE.
--		 */
--		u64 entropy_u64[CHACHA_BLOCK_SIZE * 3 / (2 * sizeof(u64))];
--		u32 entropy_u32[CHACHA_BLOCK_SIZE * 3 / (2 * sizeof(u32))];
--	};
--	local_lock_t lock;
--	unsigned long generation;
--	unsigned int position;
--};
+--- a/arch/x86/include/asm/timex.h
++++ b/arch/x86/include/asm/timex.h
+@@ -5,6 +5,15 @@
+ #include <asm/processor.h>
+ #include <asm/tsc.h>
  
-+#define DEFINE_BATCHED_ENTROPY(type)						\
-+struct batch_ ##type {								\
-+	/*									\
-+	 * We make this 1.5x a ChaCha block, so that we get the			\
-+	 * remaining 32 bytes from fast key erasure, plus one full		\
-+	 * block from the detached ChaCha state. We can increase		\
-+	 * the size of this later if needed so long as we keep the		\
-+	 * formula of (integer_blocks + 0.5) * CHACHA_BLOCK_SIZE.		\
-+	 */									\
-+	type entropy[CHACHA_BLOCK_SIZE * 3 / (2 * sizeof(type))];		\
-+	local_lock_t lock;							\
-+	unsigned long generation;						\
-+	unsigned int position;							\
-+};										\
-+										\
-+static DEFINE_PER_CPU(struct batch_ ##type, batched_entropy_ ##type) = {	\
-+	.lock = INIT_LOCAL_LOCK(batched_entropy_ ##type.lock),			\
-+	.position = UINT_MAX							\
-+};										\
-+										\
-+type get_random_ ##type(void)							\
-+{										\
-+	type ret;								\
-+	unsigned long flags;							\
-+	struct batch_ ##type *batch;						\
-+	unsigned long next_gen;							\
-+										\
-+	warn_unseeded_randomness();						\
-+										\
-+	if  (!crng_ready()) {							\
-+		_get_random_bytes(&ret, sizeof(ret));				\
-+		return ret;							\
-+	}									\
-+										\
-+	local_lock_irqsave(&batched_entropy_ ##type.lock, flags);		\
-+	batch = raw_cpu_ptr(&batched_entropy_##type);				\
-+										\
-+	next_gen = READ_ONCE(base_crng.generation);				\
-+	if (batch->position >= ARRAY_SIZE(batch->entropy) ||			\
-+	    next_gen != batch->generation) {					\
-+		_get_random_bytes(batch->entropy, sizeof(batch->entropy));	\
-+		batch->position = 0;						\
-+		batch->generation = next_gen;					\
-+	}									\
-+										\
-+	ret = batch->entropy[batch->position];					\
-+	batch->entropy[batch->position] = 0;					\
-+	++batch->position;							\
-+	local_unlock_irqrestore(&batched_entropy_ ##type.lock, flags);		\
-+	return ret;								\
-+}										\
-+EXPORT_SYMBOL(get_random_ ##type);
++static inline unsigned long random_get_entropy(void)
++{
++	if (!IS_ENABLED(CONFIG_X86_TSC) &&
++	    !cpu_feature_enabled(X86_FEATURE_TSC))
++		return random_get_entropy_fallback();
++	return rdtsc();
++}
++#define random_get_entropy random_get_entropy
++
+ /* Assume we use the PIT time source for the clock tick */
+ #define CLOCK_TICK_RATE		PIT_TICK_RATE
  
--static DEFINE_PER_CPU(struct batched_entropy, batched_entropy_u64) = {
--	.lock = INIT_LOCAL_LOCK(batched_entropy_u64.lock),
--	.position = UINT_MAX
--};
--
--u64 get_random_u64(void)
--{
--	u64 ret;
--	unsigned long flags;
--	struct batched_entropy *batch;
--	unsigned long next_gen;
--
--	warn_unseeded_randomness();
--
--	if  (!crng_ready()) {
--		_get_random_bytes(&ret, sizeof(ret));
--		return ret;
--	}
--
--	local_lock_irqsave(&batched_entropy_u64.lock, flags);
--	batch = raw_cpu_ptr(&batched_entropy_u64);
--
--	next_gen = READ_ONCE(base_crng.generation);
--	if (batch->position >= ARRAY_SIZE(batch->entropy_u64) ||
--	    next_gen != batch->generation) {
--		_get_random_bytes(batch->entropy_u64, sizeof(batch->entropy_u64));
--		batch->position = 0;
--		batch->generation = next_gen;
--	}
--
--	ret = batch->entropy_u64[batch->position];
--	batch->entropy_u64[batch->position] = 0;
--	++batch->position;
--	local_unlock_irqrestore(&batched_entropy_u64.lock, flags);
--	return ret;
--}
--EXPORT_SYMBOL(get_random_u64);
--
--static DEFINE_PER_CPU(struct batched_entropy, batched_entropy_u32) = {
--	.lock = INIT_LOCAL_LOCK(batched_entropy_u32.lock),
--	.position = UINT_MAX
--};
--
--u32 get_random_u32(void)
--{
--	u32 ret;
--	unsigned long flags;
--	struct batched_entropy *batch;
--	unsigned long next_gen;
--
--	warn_unseeded_randomness();
--
--	if  (!crng_ready()) {
--		_get_random_bytes(&ret, sizeof(ret));
--		return ret;
--	}
--
--	local_lock_irqsave(&batched_entropy_u32.lock, flags);
--	batch = raw_cpu_ptr(&batched_entropy_u32);
--
--	next_gen = READ_ONCE(base_crng.generation);
--	if (batch->position >= ARRAY_SIZE(batch->entropy_u32) ||
--	    next_gen != batch->generation) {
--		_get_random_bytes(batch->entropy_u32, sizeof(batch->entropy_u32));
--		batch->position = 0;
--		batch->generation = next_gen;
--	}
--
--	ret = batch->entropy_u32[batch->position];
--	batch->entropy_u32[batch->position] = 0;
--	++batch->position;
--	local_unlock_irqrestore(&batched_entropy_u32.lock, flags);
--	return ret;
--}
--EXPORT_SYMBOL(get_random_u32);
-+DEFINE_BATCHED_ENTROPY(u64)
-+DEFINE_BATCHED_ENTROPY(u32)
+--- a/arch/x86/include/asm/tsc.h
++++ b/arch/x86/include/asm/tsc.h
+@@ -20,13 +20,12 @@ extern void disable_TSC(void);
  
- #ifdef CONFIG_SMP
- /*
+ static inline cycles_t get_cycles(void)
+ {
+-#ifndef CONFIG_X86_TSC
+-	if (!boot_cpu_has(X86_FEATURE_TSC))
++	if (!IS_ENABLED(CONFIG_X86_TSC) &&
++	    !cpu_feature_enabled(X86_FEATURE_TSC))
+ 		return 0;
+-#endif
+-
+ 	return rdtsc();
+ }
++#define get_cycles get_cycles
+ 
+ extern struct system_counterval_t convert_art_to_tsc(u64 art);
+ extern struct system_counterval_t convert_art_ns_to_tsc(u64 art_ns);
 
 
