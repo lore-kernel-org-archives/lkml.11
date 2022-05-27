@@ -2,82 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA452C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:38:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D014CC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:38:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349847AbiE0Iio (ORCPT
+        id S1349972AbiE0Iiu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 04:38:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52244 "EHLO
+        Fri, 27 May 2022 04:38:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349875AbiE0IiO (ORCPT
+        with ESMTP id S1350019AbiE0Ii1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 04:38:14 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 582A1108AB1
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 01:37:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653640658; x=1685176658;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=e8+pSY1x+l3uGIZDMc8m/MwYXF+f6ONLrv/OSYV1yzM=;
-  b=joOc++CJ9PdHOtT75aGoFOIl2JZHVwh/1xsrCVA8m+iadCC5My9WfeRx
-   PLPWVwxzfVPjTNEIV6EwvaUZ/5kqOtn9uuBsgLVN1oThsmpG41kEeLrbZ
-   1PHwhHCVT6Qc35fYGCblOhK1hCwX84/aNlDIuD+ukMxbbZY371tgfDdeI
-   EB3exAkodQlrsbbc4vwyvx4g/QNzVRRe/jvfif5Bx4VC5hkmSD/KJ7siF
-   2qgF5dS4SyAJJP+LOKH5NCl8pi4YFG6D7s3pgmDo+rzDzYqkHsMeNhVx6
-   Rg+5BsOfXt6XswbnRYsku/pDKSURNWb8KCcerIqD9eS5weyEItwmpIOxE
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10359"; a="337469172"
-X-IronPort-AV: E=Sophos;i="5.91,254,1647327600"; 
-   d="scan'208";a="337469172"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2022 01:37:37 -0700
-X-IronPort-AV: E=Sophos;i="5.91,254,1647327600"; 
-   d="scan'208";a="746823906"
-Received: from aslawinx-mobl.ger.corp.intel.com (HELO [10.99.249.33]) ([10.99.249.33])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2022 01:37:35 -0700
-Message-ID: <04c05bd5-63c7-bbac-889c-6e9897f7b990@linux.intel.com>
-Date:   Fri, 27 May 2022 10:37:33 +0200
+        Fri, 27 May 2022 04:38:27 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88A6765D09;
+        Fri, 27 May 2022 01:37:48 -0700 (PDT)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.57])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4L8dSF3f8qz1JCSM;
+        Fri, 27 May 2022 16:36:13 +0800 (CST)
+Received: from dggpemm500018.china.huawei.com (7.185.36.111) by
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 27 May 2022 16:37:46 +0800
+Received: from localhost.localdomain (10.175.112.125) by
+ dggpemm500018.china.huawei.com (7.185.36.111) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 27 May 2022 16:37:45 +0800
+From:   keliu <liuke94@huawei.com>
+To:     <hao.wu@intel.com>, <trix@redhat.com>, <mdf@kernel.org>,
+        <yilun.xu@intel.com>, <linux-fpga@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     keliu <liuke94@huawei.com>
+Subject: [PATCH] fpga: Directly use ida_alloc()/free()
+Date:   Fri, 27 May 2022 08:59:15 +0000
+Message-ID: <20220527085915.2798928-1-liuke94@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH 1/2] ARC: bitops: Change __fls to return unsigned long
-Content-Language: en-US
-To:     Vineet Gupta <vgupta@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     linux-snps-arc@lists.infradead.org,
-        linux-m68k@lists.linux-m68k.org, linux-kernel@vger.kernel.org
-References: <20220525144844.1571705-1-amadeuszx.slawinski@linux.intel.com>
- <20220525144844.1571705-2-amadeuszx.slawinski@linux.intel.com>
- <17bdbca6-8352-50a8-0a3e-49ffe09422a2@kernel.org>
-From:   =?UTF-8?Q?Amadeusz_S=c5=82awi=c5=84ski?= 
-        <amadeuszx.slawinski@linux.intel.com>
-In-Reply-To: <17bdbca6-8352-50a8-0a3e-49ffe09422a2@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.112.125]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm500018.china.huawei.com (7.185.36.111)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/26/2022 5:42 AM, Vineet Gupta wrote:
-> Hi,
-> 
-> On 5/25/22 07:48, Amadeusz Sławiński wrote:
->> As per asm-generic definition and other architectures __fls should
->> return unsigned long.
->>
->> No functional change is expected as return value should fit in unsigned
->> long.
->>
->> Signed-off-by: Amadeusz Sławiński<amadeuszx.slawinski@linux.intel.com>
-> 
-> Applied to for-curr.
-> 
-> Thx,
-> -Vineet
+Use ida_alloc()/ida_free() instead of deprecated
+ida_simple_get()/ida_simple_remove() .
 
-And apparently __fls is defined in two places in ARC header and I only 
-changed one, should I send incremental patch on top of already merged 
-one or v2?
+Signed-off-by: keliu <liuke94@huawei.com>
+---
+ drivers/fpga/dfl.c         | 4 ++--
+ drivers/fpga/fpga-bridge.c | 6 +++---
+ drivers/fpga/fpga-mgr.c    | 6 +++---
+ drivers/fpga/fpga-region.c | 6 +++---
+ 4 files changed, 11 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/fpga/dfl.c b/drivers/fpga/dfl.c
+index 599bb21d86af..2dff0c626cc6 100644
+--- a/drivers/fpga/dfl.c
++++ b/drivers/fpga/dfl.c
+@@ -342,7 +342,7 @@ static void release_dfl_dev(struct device *dev)
+ 	if (ddev->mmio_res.parent)
+ 		release_resource(&ddev->mmio_res);
+ 
+-	ida_simple_remove(&dfl_device_ida, ddev->id);
++	ida_free(&dfl_device_ida, ddev->id);
+ 	kfree(ddev->irqs);
+ 	kfree(ddev);
+ }
+@@ -360,7 +360,7 @@ dfl_dev_add(struct dfl_feature_platform_data *pdata,
+ 	if (!ddev)
+ 		return ERR_PTR(-ENOMEM);
+ 
+-	id = ida_simple_get(&dfl_device_ida, 0, 0, GFP_KERNEL);
++	id = ida_alloc(&dfl_device_ida, GFP_KERNEL);
+ 	if (id < 0) {
+ 		dev_err(&pdev->dev, "unable to get id\n");
+ 		kfree(ddev);
+diff --git a/drivers/fpga/fpga-bridge.c b/drivers/fpga/fpga-bridge.c
+index 16f2b164a178..727704431f61 100644
+--- a/drivers/fpga/fpga-bridge.c
++++ b/drivers/fpga/fpga-bridge.c
+@@ -342,7 +342,7 @@ fpga_bridge_register(struct device *parent, const char *name,
+ 	if (!bridge)
+ 		return ERR_PTR(-ENOMEM);
+ 
+-	id = ida_simple_get(&fpga_bridge_ida, 0, 0, GFP_KERNEL);
++	id = ida_alloc(&fpga_bridge_ida, GFP_KERNEL);
+ 	if (id < 0) {
+ 		ret = id;
+ 		goto error_kfree;
+@@ -375,7 +375,7 @@ fpga_bridge_register(struct device *parent, const char *name,
+ 	return bridge;
+ 
+ error_device:
+-	ida_simple_remove(&fpga_bridge_ida, id);
++	ida_free(&fpga_bridge_ida, id);
+ error_kfree:
+ 	kfree(bridge);
+ 
+@@ -407,7 +407,7 @@ static void fpga_bridge_dev_release(struct device *dev)
+ {
+ 	struct fpga_bridge *bridge = to_fpga_bridge(dev);
+ 
+-	ida_simple_remove(&fpga_bridge_ida, bridge->dev.id);
++	ida_free(&fpga_bridge_ida, bridge->dev.id);
+ 	kfree(bridge);
+ }
+ 
+diff --git a/drivers/fpga/fpga-mgr.c b/drivers/fpga/fpga-mgr.c
+index d49a9ce34568..2955a21beebe 100644
+--- a/drivers/fpga/fpga-mgr.c
++++ b/drivers/fpga/fpga-mgr.c
+@@ -622,7 +622,7 @@ fpga_mgr_register_full(struct device *parent, const struct fpga_manager_info *in
+ 	if (!mgr)
+ 		return ERR_PTR(-ENOMEM);
+ 
+-	id = ida_simple_get(&fpga_mgr_ida, 0, 0, GFP_KERNEL);
++	id = ida_alloc(&fpga_mgr_ida, GFP_KERNEL);
+ 	if (id < 0) {
+ 		ret = id;
+ 		goto error_kfree;
+@@ -661,7 +661,7 @@ fpga_mgr_register_full(struct device *parent, const struct fpga_manager_info *in
+ 	return mgr;
+ 
+ error_device:
+-	ida_simple_remove(&fpga_mgr_ida, id);
++	ida_free(&fpga_mgr_ida, id);
+ error_kfree:
+ 	kfree(mgr);
+ 
+@@ -785,7 +785,7 @@ static void fpga_mgr_dev_release(struct device *dev)
+ {
+ 	struct fpga_manager *mgr = to_fpga_manager(dev);
+ 
+-	ida_simple_remove(&fpga_mgr_ida, mgr->dev.id);
++	ida_free(&fpga_mgr_ida, mgr->dev.id);
+ 	kfree(mgr);
+ }
+ 
+diff --git a/drivers/fpga/fpga-region.c b/drivers/fpga/fpga-region.c
+index b0ac18de4885..18bcaa1926dd 100644
+--- a/drivers/fpga/fpga-region.c
++++ b/drivers/fpga/fpga-region.c
+@@ -202,7 +202,7 @@ fpga_region_register_full(struct device *parent, const struct fpga_region_info *
+ 	if (!region)
+ 		return ERR_PTR(-ENOMEM);
+ 
+-	id = ida_simple_get(&fpga_region_ida, 0, 0, GFP_KERNEL);
++	id = ida_alloc(&fpga_region_ida, GFP_KERNEL);
+ 	if (id < 0) {
+ 		ret = id;
+ 		goto err_free;
+@@ -234,7 +234,7 @@ fpga_region_register_full(struct device *parent, const struct fpga_region_info *
+ 	return region;
+ 
+ err_remove:
+-	ida_simple_remove(&fpga_region_ida, id);
++	ida_free(&fpga_region_ida, id);
+ err_free:
+ 	kfree(region);
+ 
+@@ -283,7 +283,7 @@ static void fpga_region_dev_release(struct device *dev)
+ {
+ 	struct fpga_region *region = to_fpga_region(dev);
+ 
+-	ida_simple_remove(&fpga_region_ida, region->dev.id);
++	ida_free(&fpga_region_ida, region->dev.id);
+ 	kfree(region);
+ }
+ 
+-- 
+2.25.1
+
