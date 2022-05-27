@@ -2,104 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E695BC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 06:27:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0A6EC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 06:28:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245430AbiE0G1k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 02:27:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43194 "EHLO
+        id S245483AbiE0G23 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 02:28:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240291AbiE0G1j (ORCPT
+        with ESMTP id S238874AbiE0G20 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 02:27:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6BEF313B4;
-        Thu, 26 May 2022 23:27:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 667B2618CB;
-        Fri, 27 May 2022 06:27:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5464AC385A9;
-        Fri, 27 May 2022 06:27:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653632856;
-        bh=L9BhbK5z8mAy1Aa7jHJx4mr/XyGaxNMknk8uKHvbA+8=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=QwO6dq/yaF848AYty2DzrwdCzXIHx4c23FjAG/KyexPdSjS+TRCTPGyuT7p6+B11j
-         XHm2w8jw1C9qhLQtIRHMuyObfB5L5s7gUJSM2vqvg8awqtjqYOfAlmgU28GG2UiymV
-         7ihcuJIOZUjbc0onUBB89VDt69bLQNvit0YrzT8cHA22uhktzXKQDS4eQVUbdhUTq1
-         sdHJmnMtUORv38O0gVYkNeFq5a/OJSwZNiUonpgXzwnnyB1sQGfPWIQySbLCAl/XHS
-         YKeqVqtASVTUrxBReh0oFueogB+bjeRiDHSIFzNOqzVpG93eO1f/qAfpj2HwFP2zWe
-         3rN/BN/I0gPqQ==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     kernel test robot <lkp@intel.com>
-Cc:     Jianglei Nie <niejianglei2021@163.com>, pizza@shaftnet.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] cw1200: Fix memory leak in cw1200_set_key()
-References: <20220526033003.473943-1-niejianglei2021@163.com>
-        <202205261656.CWDWN8nG-lkp@intel.com>
-Date:   Fri, 27 May 2022 09:27:30 +0300
-In-Reply-To: <202205261656.CWDWN8nG-lkp@intel.com> (kernel test robot's
-        message of "Thu, 26 May 2022 17:02:43 +0800")
-Message-ID: <875ylrwkvh.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        Fri, 27 May 2022 02:28:26 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3097239BBB;
+        Thu, 26 May 2022 23:28:24 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L8ZbX15V2zjX79;
+        Fri, 27 May 2022 14:27:20 +0800 (CST)
+Received: from dggpemm500018.china.huawei.com (7.185.36.111) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 27 May 2022 14:28:22 +0800
+Received: from localhost.localdomain (10.175.112.125) by
+ dggpemm500018.china.huawei.com (7.185.36.111) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 27 May 2022 14:28:22 +0800
+From:   keliu <liuke94@huawei.com>
+To:     <trond.myklebust@hammerspace.com>, <anna@kernel.org>,
+        <linux-nfs@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     keliu <liuke94@huawei.com>
+Subject: [PATCH] nfs: Directly use ida_alloc()/free()
+Date:   Fri, 27 May 2022 06:49:51 +0000
+Message-ID: <20220527064951.2358639-1-liuke94@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.112.125]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm500018.china.huawei.com (7.185.36.111)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-kernel test robot <lkp@intel.com> writes:
+Use ida_alloc()/ida_free() instead of deprecated
+ida_simple_get()/ida_simple_remove() .
 
-> Hi Jianglei,
->
-> Thank you for the patch! Yet something to improve:
->
-> [auto build test ERROR on wireless-next/main]
-> [also build test ERROR on wireless/main v5.18 next-20220526]
-> [If your patch is applied to the wrong git tree, kindly drop us a note.
-> And when submitting patch, we suggest to use '--base' as documented in
-> https://git-scm.com/docs/git-format-patch]
->
-> url:    https://github.com/intel-lab-lkp/linux/commits/Jianglei-Nie/cw1200-Fix-memory-leak-in-cw1200_set_key/20220526-114747
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless-next.git main
-> config: x86_64-randconfig-a003 (https://download.01.org/0day-ci/archive/20220526/202205261656.CWDWN8nG-lkp@intel.com/config)
-> compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 3d546191ad9d7d2ad2c7928204b9de51deafa675)
-> reproduce (this is a W=1 build):
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # https://github.com/intel-lab-lkp/linux/commit/1e40283730dea11a1556d589925313cdca295484
->         git remote add linux-review https://github.com/intel-lab-lkp/linux
->         git fetch --no-tags linux-review Jianglei-Nie/cw1200-Fix-memory-leak-in-cw1200_set_key/20220526-114747
->         git checkout 1e40283730dea11a1556d589925313cdca295484
->         # save the config file
->         mkdir build_dir && cp config build_dir/.config
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/net/wireless/st/cw1200/
->
-> If you fix the issue, kindly add following tag where applicable
-> Reported-by: kernel test robot <lkp@intel.com>
->
-> All errors (new ones prefixed by >>):
->
->>> drivers/net/wireless/st/cw1200/sta.c:826:26: error: use of undeclared identifier 'idx'
->                            cw1200_free_key(priv, idx);
->                                                  ^
+Signed-off-by: keliu <liuke94@huawei.com>
+---
+ fs/nfs/nfs4state.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-So you don't even compile your patches? That is bad.
-
-The patches sent to linux-wireless should be properly tested. In some
-trivial cases a compilation test might enough, but even then that needs
-to be clearly documented with "Compile tested only" in the commit log.
-
-I'm getting worried how frequent it has become that people submit
-untested patches or that they test them using simulation tools like
-syzbot, but not on real hardware.
-
+diff --git a/fs/nfs/nfs4state.c b/fs/nfs/nfs4state.c
+index 9e1c987c81e7..e4c311dc8b93 100644
+--- a/fs/nfs/nfs4state.c
++++ b/fs/nfs/nfs4state.c
+@@ -497,7 +497,7 @@ nfs4_alloc_state_owner(struct nfs_server *server,
+ 	sp = kzalloc(sizeof(*sp), gfp_flags);
+ 	if (!sp)
+ 		return NULL;
+-	sp->so_seqid.owner_id = ida_simple_get(&server->openowner_id, 0, 0,
++	sp->so_seqid.owner_id = ida_alloc(&server->openowner_id,
+ 						gfp_flags);
+ 	if (sp->so_seqid.owner_id < 0) {
+ 		kfree(sp);
+@@ -534,7 +534,7 @@ static void nfs4_free_state_owner(struct nfs4_state_owner *sp)
+ {
+ 	nfs4_destroy_seqid_counter(&sp->so_seqid);
+ 	put_cred(sp->so_cred);
+-	ida_simple_remove(&sp->so_server->openowner_id, sp->so_seqid.owner_id);
++	ida_free(&sp->so_server->openowner_id, sp->so_seqid.owner_id);
+ 	kfree(sp);
+ }
+ 
+@@ -877,8 +877,8 @@ static struct nfs4_lock_state *nfs4_alloc_lock_state(struct nfs4_state *state, f
+ 	refcount_set(&lsp->ls_count, 1);
+ 	lsp->ls_state = state;
+ 	lsp->ls_owner = fl_owner;
+-	lsp->ls_seqid.owner_id = ida_simple_get(&server->lockowner_id,
+-						0, 0, GFP_KERNEL_ACCOUNT);
++	lsp->ls_seqid.owner_id = ida_alloc(&server->lockowner_id,
++						GFP_KERNEL_ACCOUNT);
+ 	if (lsp->ls_seqid.owner_id < 0)
+ 		goto out_free;
+ 	INIT_LIST_HEAD(&lsp->ls_locks);
+@@ -890,7 +890,7 @@ static struct nfs4_lock_state *nfs4_alloc_lock_state(struct nfs4_state *state, f
+ 
+ void nfs4_free_lock_state(struct nfs_server *server, struct nfs4_lock_state *lsp)
+ {
+-	ida_simple_remove(&server->lockowner_id, lsp->ls_seqid.owner_id);
++	ida_free(&server->lockowner_id, lsp->ls_seqid.owner_id);
+ 	nfs4_destroy_seqid_counter(&lsp->ls_seqid);
+ 	kfree(lsp);
+ }
 -- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+2.25.1
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
