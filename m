@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B0C1C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 15:57:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E2F7C43217
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 15:57:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353829AbiE0P5f (ORCPT
+        id S1353972AbiE0P5p (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 11:57:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42756 "EHLO
+        Fri, 27 May 2022 11:57:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353888AbiE0P4q (ORCPT
+        with ESMTP id S1353767AbiE0P5U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 11:56:46 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C28FE50466
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 08:56:32 -0700 (PDT)
+        Fri, 27 May 2022 11:57:20 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5DB326220C
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 08:56:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653666991;
+        s=mimecast20190719; t=1653667006;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=2/rTcaqTmlzfmui0ZlZlp5EgRX7xZjqFpH2VkaIbdbk=;
-        b=GJ3TelO56d1EPckp2d+63pCCLx6MNOhZxcfEg4Hg8SVsiCmhJLUVX6/eqyozWwfUL+ja8K
-        X4y3lboGPckDmV1Jc6H2w9zIqEisho/LIvXx/itybt2FfzmN01P7XFetovVrdJ3lmERrFE
-        HhUzMqeFWrZpzKdGYHvVL+XsxQq8ouI=
+        bh=F94Tm16Pv+6X1Qxpix8Ro059dU0Hc/OW94AtIQA4pXw=;
+        b=Y6jLD75asQOxFnE7nUuWx5NOUxtvNBc2/zIcFNeXkRt6nBBkF1e7P4Lg8Wi+8K49HAcHYZ
+        CA0JDVxvRbk0KgIbkGDDVxR9erDI2SKgZs2SkNX9vxDswZmlcVcvlX69EnS/iA0tfVrwuZ
+        GeuikZO9o3VHh70iOArt6tioc/niZ9c=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-610-A8ic-Y-aOx6oAcPnP5iVwQ-1; Fri, 27 May 2022 11:56:28 -0400
-X-MC-Unique: A8ic-Y-aOx6oAcPnP5iVwQ-1
+ us-mta-317-r8DvPRaOMHK8fJOuBiYn-Q-1; Fri, 27 May 2022 11:56:42 -0400
+X-MC-Unique: r8DvPRaOMHK8fJOuBiYn-Q-1
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C59B8811E76;
-        Fri, 27 May 2022 15:56:27 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C96AE811E76;
+        Fri, 27 May 2022 15:56:41 +0000 (UTC)
 Received: from fedora.redhat.com (unknown [10.40.192.126])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 45A592166B26;
-        Fri, 27 May 2022 15:56:25 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 49ABD2166B26;
+        Fri, 27 May 2022 15:56:39 +0000 (UTC)
 From:   Vitaly Kuznetsov <vkuznets@redhat.com>
 To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -49,9 +49,9 @@ Cc:     Sean Christopherson <seanjc@google.com>,
         Siddharth Chandrasekaran <sidcha@amazon.de>,
         Yuan Yao <yuan.yao@linux.intel.com>,
         linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v5 14/37] KVM: nSVM: Keep track of Hyper-V hv_vm_id/hv_vp_id
-Date:   Fri, 27 May 2022 17:55:23 +0200
-Message-Id: <20220527155546.1528910-15-vkuznets@redhat.com>
+Subject: [PATCH v5 19/37] x86/hyperv: Fix 'struct hv_enlightened_vmcs' definition
+Date:   Fri, 27 May 2022 17:55:28 +0200
+Message-Id: <20220527155546.1528910-20-vkuznets@redhat.com>
 In-Reply-To: <20220527155546.1528910-1-vkuznets@redhat.com>
 References: <20220527155546.1528910-1-vkuznets@redhat.com>
 MIME-Version: 1.0
@@ -62,60 +62,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Similar to nSVM, KVM needs to know L2's VM_ID/VP_ID and Partition
-assist page address to handle L2 TLB flush requests.
+Section 1.9 of TLFS v6.0b says:
 
+"All structures are padded in such a way that fields are aligned
+naturally (that is, an 8-byte field is aligned to an offset of 8 bytes
+and so on)".
+
+'struct enlightened_vmcs' has a glitch:
+
+...
+        struct {
+                u32                nested_flush_hypercall:1; /*   836: 0  4 */
+                u32                msr_bitmap:1;         /*   836: 1  4 */
+                u32                reserved:30;          /*   836: 2  4 */
+        } hv_enlightenments_control;                     /*   836     4 */
+        u32                        hv_vp_id;             /*   840     4 */
+        u64                        hv_vm_id;             /*   844     8 */
+        u64                        partition_assist_page; /*   852     8 */
+...
+
+And the observed values in 'partition_assist_page' make no sense at
+all. Fix the layout by padding the structure properly.
+
+Fixes: 68d1eb72ee99 ("x86/hyper-v: define struct hv_enlightened_vmcs and clean field bits")
+Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+Reviewed-by: Michael Kelley <mikelley@microsoft.com>
 Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 ---
- arch/x86/kvm/svm/hyperv.h | 16 ++++++++++++++++
- arch/x86/kvm/svm/nested.c |  2 ++
- 2 files changed, 18 insertions(+)
+ arch/x86/include/asm/hyperv-tlfs.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/kvm/svm/hyperv.h b/arch/x86/kvm/svm/hyperv.h
-index 7d6d97968fb9..8cf702fed7e5 100644
---- a/arch/x86/kvm/svm/hyperv.h
-+++ b/arch/x86/kvm/svm/hyperv.h
-@@ -9,6 +9,7 @@
- #include <asm/mshyperv.h>
+diff --git a/arch/x86/include/asm/hyperv-tlfs.h b/arch/x86/include/asm/hyperv-tlfs.h
+index 5225a85c08c3..e7ddae8e02c6 100644
+--- a/arch/x86/include/asm/hyperv-tlfs.h
++++ b/arch/x86/include/asm/hyperv-tlfs.h
+@@ -548,7 +548,7 @@ struct hv_enlightened_vmcs {
+ 	u64 guest_rip;
  
- #include "../hyperv.h"
-+#include "svm.h"
- 
- /*
-  * Hyper-V uses the software reserved 32 bytes in VMCB
-@@ -32,4 +33,19 @@ struct hv_enlightenments {
-  */
- #define VMCB_HV_NESTED_ENLIGHTENMENTS VMCB_SW
- 
-+static inline void nested_svm_hv_update_vm_vp_ids(struct kvm_vcpu *vcpu)
-+{
-+	struct vcpu_svm *svm = to_svm(vcpu);
-+	struct hv_enlightenments *hve =
-+		(struct hv_enlightenments *)svm->nested.ctl.reserved_sw;
-+	struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
-+
-+	if (!hv_vcpu)
-+		return;
-+
-+	hv_vcpu->nested.pa_page_gpa = hve->partition_assist_page;
-+	hv_vcpu->nested.vm_id = hve->hv_vm_id;
-+	hv_vcpu->nested.vp_id = hve->hv_vp_id;
-+}
-+
- #endif /* __ARCH_X86_KVM_SVM_HYPERV_H__ */
-diff --git a/arch/x86/kvm/svm/nested.c b/arch/x86/kvm/svm/nested.c
-index 2cf92c12706a..7bf35f3345c2 100644
---- a/arch/x86/kvm/svm/nested.c
-+++ b/arch/x86/kvm/svm/nested.c
-@@ -811,6 +811,8 @@ int enter_svm_guest_mode(struct kvm_vcpu *vcpu, u64 vmcb12_gpa,
- 	if (kvm_vcpu_apicv_active(vcpu))
- 		kvm_make_request(KVM_REQ_APICV_UPDATE, vcpu);
- 
-+	nested_svm_hv_update_vm_vp_ids(vcpu);
-+
- 	return 0;
- }
- 
+ 	u32 hv_clean_fields;
+-	u32 hv_padding_32;
++	u32 padding32_1;
+ 	u32 hv_synthetic_controls;
+ 	struct {
+ 		u32 nested_flush_hypercall:1;
+@@ -556,7 +556,7 @@ struct hv_enlightened_vmcs {
+ 		u32 reserved:30;
+ 	}  __packed hv_enlightenments_control;
+ 	u32 hv_vp_id;
+-
++	u32 padding32_2;
+ 	u64 hv_vm_id;
+ 	u64 partition_assist_page;
+ 	u64 padding64_4[4];
 -- 
 2.35.3
 
