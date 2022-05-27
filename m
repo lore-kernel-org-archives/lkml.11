@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 137A0C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:43:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46626C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:43:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241506AbiE0LnA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 07:43:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45686 "EHLO
+        id S1351673AbiE0LnJ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 07:43:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351565AbiE0Llp (ORCPT
+        with ESMTP id S1351660AbiE0Llg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:41:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE8A2133255;
-        Fri, 27 May 2022 04:40:12 -0700 (PDT)
+        Fri, 27 May 2022 07:41:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CD13132A22;
+        Fri, 27 May 2022 04:40:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 63678B824DA;
-        Fri, 27 May 2022 11:40:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1989C385A9;
-        Fri, 27 May 2022 11:40:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EDA1361CDB;
+        Fri, 27 May 2022 11:40:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 011FCC385A9;
+        Fri, 27 May 2022 11:40:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653651610;
-        bh=cmSJxlEvBCbyDxTaNo1HC2OzkcM6kNw/KvVhcsbx2ck=;
+        s=korg; t=1653651607;
+        bh=MDm/pljiyWy7z5p2QamWBTY2xuk1WtPtJ+TRVpkiheA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=adDp87DxOSh17xSE9TFuWmSqEw5BjY+wfrF/wyqUYli/iUKHwTh271LHt0Qgtm3So
-         Ow0kxJoTmLASvmZjQPHslncP/URI5Vb/LNNBF84GC/IzC9ULyGeGGfc20y2cqZ4kBb
-         wMEa2XrprTJgngoVtxmh6x0nDfAoaaw+KUbj5ki8=
+        b=pinZ29/uO3IJJhNcJE47Op+svW6/Owhj/JIqJ/SVOOQ3rIlfaMB9soGo/HPE7sstM
+         kPX3bSEmg7IR1siwuSamsa6WTJZ0steAZDMsIgpgeQX3BcLXCWk2WqCsizCdKr5FDY
+         e21Z2B1u8oy4gq6fdPvfHCOuC8quYeD1gz/aDybs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Herbert Xu <herbert@gondor.apana.org.au>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        Eric Biggers <ebiggers@google.com>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.15 009/145] lib/crypto: sha1: re-roll loops to reduce code size
-Date:   Fri, 27 May 2022 10:48:30 +0200
-Message-Id: <20220527084851.970700751@linuxfoundation.org>
+Subject: [PATCH 5.17 054/111] random: reseed more often immediately after booting
+Date:   Fri, 27 May 2022 10:49:26 +0200
+Message-Id: <20220527084827.112732987@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084850.364560116@linuxfoundation.org>
-References: <20220527084850.364560116@linuxfoundation.org>
+In-Reply-To: <20220527084819.133490171@linuxfoundation.org>
+References: <20220527084819.133490171@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,156 +52,85 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 9a1536b093bb5bf60689021275fd24d513bb8db0 upstream.
+commit 7a7ff644aeaf071d433caffb3b8ea57354b55bd3 upstream.
 
-With SHA-1 no longer being used for anything performance oriented, and
-also soon to be phased out entirely, we can make up for the space added
-by unrolled BLAKE2s by simply re-rolling SHA-1. Since SHA-1 is so much
-more complex, re-rolling it more or less takes care of the code size
-added by BLAKE2s. And eventually, hopefully we'll see SHA-1 removed
-entirely from most small kernel builds.
+In order to chip away at the "premature first" problem, we augment our
+existing entropy accounting with more frequent reseedings at boot.
 
-Cc: Herbert Xu <herbert@gondor.apana.org.au>
-Cc: Ard Biesheuvel <ardb@kernel.org>
-Tested-by: Geert Uytterhoeven <geert@linux-m68k.org>
+The idea is that at boot, we're getting entropy from various places, and
+we're not very sure which of early boot entropy is good and which isn't.
+Even when we're crediting the entropy, we're still not totally certain
+that it's any good. Since boot is the one time (aside from a compromise)
+that we have zero entropy, it's important that we shepherd entropy into
+the crng fairly often.
+
+At the same time, we don't want a "premature next" problem, whereby an
+attacker can brute force individual bits of added entropy. In lieu of
+going full-on Fortuna (for now), we can pick a simpler strategy of just
+reseeding more often during the first 5 minutes after boot. This is
+still bounded by the 256-bit entropy credit requirement, so we'll skip a
+reseeding if we haven't reached that, but in case entropy /is/ coming
+in, this ensures that it makes its way into the crng rather rapidly
+during these early stages.
+
+Ordinarily we reseed if the previous reseeding is 300 seconds old. This
+commit changes things so that for the first 600 seconds of boot time, we
+reseed if the previous reseeding is uptime / 2 seconds old. That means
+that we'll reseed at the very least double the uptime of the previous
+reseeding.
+
+Cc: Theodore Ts'o <tytso@mit.edu>
+Reviewed-by: Eric Biggers <ebiggers@google.com>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- lib/sha1.c |   95 ++++++++-----------------------------------------------------
- 1 file changed, 14 insertions(+), 81 deletions(-)
+ drivers/char/random.c |   28 +++++++++++++++++++++++++---
+ 1 file changed, 25 insertions(+), 3 deletions(-)
 
---- a/lib/sha1.c
-+++ b/lib/sha1.c
-@@ -9,6 +9,7 @@
- #include <linux/kernel.h>
- #include <linux/export.h>
- #include <linux/bitops.h>
-+#include <linux/string.h>
- #include <crypto/sha1.h>
- #include <asm/unaligned.h>
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -336,6 +336,28 @@ static void crng_fast_key_erasure(u8 key
+ }
  
-@@ -55,7 +56,8 @@
- #define SHA_ROUND(t, input, fn, constant, A, B, C, D, E) do { \
- 	__u32 TEMP = input(t); setW(t, TEMP); \
- 	E += TEMP + rol32(A,5) + (fn) + (constant); \
--	B = ror32(B, 2); } while (0)
-+	B = ror32(B, 2); \
-+	TEMP = E; E = D; D = C; C = B; B = A; A = TEMP; } while (0)
+ /*
++ * Return whether the crng seed is considered to be sufficiently
++ * old that a reseeding might be attempted. This happens if the last
++ * reseeding was CRNG_RESEED_INTERVAL ago, or during early boot, at
++ * an interval proportional to the uptime.
++ */
++static bool crng_has_old_seed(void)
++{
++	static bool early_boot = true;
++	unsigned long interval = CRNG_RESEED_INTERVAL;
++
++	if (unlikely(READ_ONCE(early_boot))) {
++		time64_t uptime = ktime_get_seconds();
++		if (uptime >= CRNG_RESEED_INTERVAL / HZ * 2)
++			WRITE_ONCE(early_boot, false);
++		else
++			interval = max_t(unsigned int, 5 * HZ,
++					 (unsigned int)uptime / 2 * HZ);
++	}
++	return time_after(jiffies, READ_ONCE(base_crng.birth) + interval);
++}
++
++/*
+  * This function returns a ChaCha state that you may use for generating
+  * random data. It also returns up to 32 bytes on its own of random data
+  * that may be used; random_data_len may not be greater than 32.
+@@ -368,10 +390,10 @@ static void crng_make_state(u32 chacha_s
+ 	}
  
- #define T_0_15(t, A, B, C, D, E)  SHA_ROUND(t, SHA_SRC, (((C^D)&B)^D) , 0x5a827999, A, B, C, D, E )
- #define T_16_19(t, A, B, C, D, E) SHA_ROUND(t, SHA_MIX, (((C^D)&B)^D) , 0x5a827999, A, B, C, D, E )
-@@ -84,6 +86,7 @@
- void sha1_transform(__u32 *digest, const char *data, __u32 *array)
- {
- 	__u32 A, B, C, D, E;
-+	unsigned int i = 0;
+ 	/*
+-	 * If the base_crng is more than 5 minutes old, we reseed, which
+-	 * in turn bumps the generation counter that we check below.
++	 * If the base_crng is old enough, we try to reseed, which in turn
++	 * bumps the generation counter that we check below.
+ 	 */
+-	if (unlikely(time_after(jiffies, READ_ONCE(base_crng.birth) + CRNG_RESEED_INTERVAL)))
++	if (unlikely(crng_has_old_seed()))
+ 		crng_reseed();
  
- 	A = digest[0];
- 	B = digest[1];
-@@ -92,94 +95,24 @@ void sha1_transform(__u32 *digest, const
- 	E = digest[4];
- 
- 	/* Round 1 - iterations 0-16 take their input from 'data' */
--	T_0_15( 0, A, B, C, D, E);
--	T_0_15( 1, E, A, B, C, D);
--	T_0_15( 2, D, E, A, B, C);
--	T_0_15( 3, C, D, E, A, B);
--	T_0_15( 4, B, C, D, E, A);
--	T_0_15( 5, A, B, C, D, E);
--	T_0_15( 6, E, A, B, C, D);
--	T_0_15( 7, D, E, A, B, C);
--	T_0_15( 8, C, D, E, A, B);
--	T_0_15( 9, B, C, D, E, A);
--	T_0_15(10, A, B, C, D, E);
--	T_0_15(11, E, A, B, C, D);
--	T_0_15(12, D, E, A, B, C);
--	T_0_15(13, C, D, E, A, B);
--	T_0_15(14, B, C, D, E, A);
--	T_0_15(15, A, B, C, D, E);
-+	for (; i < 16; ++i)
-+		T_0_15(i, A, B, C, D, E);
- 
- 	/* Round 1 - tail. Input from 512-bit mixing array */
--	T_16_19(16, E, A, B, C, D);
--	T_16_19(17, D, E, A, B, C);
--	T_16_19(18, C, D, E, A, B);
--	T_16_19(19, B, C, D, E, A);
-+	for (; i < 20; ++i)
-+		T_16_19(i, A, B, C, D, E);
- 
- 	/* Round 2 */
--	T_20_39(20, A, B, C, D, E);
--	T_20_39(21, E, A, B, C, D);
--	T_20_39(22, D, E, A, B, C);
--	T_20_39(23, C, D, E, A, B);
--	T_20_39(24, B, C, D, E, A);
--	T_20_39(25, A, B, C, D, E);
--	T_20_39(26, E, A, B, C, D);
--	T_20_39(27, D, E, A, B, C);
--	T_20_39(28, C, D, E, A, B);
--	T_20_39(29, B, C, D, E, A);
--	T_20_39(30, A, B, C, D, E);
--	T_20_39(31, E, A, B, C, D);
--	T_20_39(32, D, E, A, B, C);
--	T_20_39(33, C, D, E, A, B);
--	T_20_39(34, B, C, D, E, A);
--	T_20_39(35, A, B, C, D, E);
--	T_20_39(36, E, A, B, C, D);
--	T_20_39(37, D, E, A, B, C);
--	T_20_39(38, C, D, E, A, B);
--	T_20_39(39, B, C, D, E, A);
-+	for (; i < 40; ++i)
-+		T_20_39(i, A, B, C, D, E);
- 
- 	/* Round 3 */
--	T_40_59(40, A, B, C, D, E);
--	T_40_59(41, E, A, B, C, D);
--	T_40_59(42, D, E, A, B, C);
--	T_40_59(43, C, D, E, A, B);
--	T_40_59(44, B, C, D, E, A);
--	T_40_59(45, A, B, C, D, E);
--	T_40_59(46, E, A, B, C, D);
--	T_40_59(47, D, E, A, B, C);
--	T_40_59(48, C, D, E, A, B);
--	T_40_59(49, B, C, D, E, A);
--	T_40_59(50, A, B, C, D, E);
--	T_40_59(51, E, A, B, C, D);
--	T_40_59(52, D, E, A, B, C);
--	T_40_59(53, C, D, E, A, B);
--	T_40_59(54, B, C, D, E, A);
--	T_40_59(55, A, B, C, D, E);
--	T_40_59(56, E, A, B, C, D);
--	T_40_59(57, D, E, A, B, C);
--	T_40_59(58, C, D, E, A, B);
--	T_40_59(59, B, C, D, E, A);
-+	for (; i < 60; ++i)
-+		T_40_59(i, A, B, C, D, E);
- 
- 	/* Round 4 */
--	T_60_79(60, A, B, C, D, E);
--	T_60_79(61, E, A, B, C, D);
--	T_60_79(62, D, E, A, B, C);
--	T_60_79(63, C, D, E, A, B);
--	T_60_79(64, B, C, D, E, A);
--	T_60_79(65, A, B, C, D, E);
--	T_60_79(66, E, A, B, C, D);
--	T_60_79(67, D, E, A, B, C);
--	T_60_79(68, C, D, E, A, B);
--	T_60_79(69, B, C, D, E, A);
--	T_60_79(70, A, B, C, D, E);
--	T_60_79(71, E, A, B, C, D);
--	T_60_79(72, D, E, A, B, C);
--	T_60_79(73, C, D, E, A, B);
--	T_60_79(74, B, C, D, E, A);
--	T_60_79(75, A, B, C, D, E);
--	T_60_79(76, E, A, B, C, D);
--	T_60_79(77, D, E, A, B, C);
--	T_60_79(78, C, D, E, A, B);
--	T_60_79(79, B, C, D, E, A);
-+	for (; i < 80; ++i)
-+		T_60_79(i, A, B, C, D, E);
- 
- 	digest[0] += A;
- 	digest[1] += B;
+ 	local_lock_irqsave(&crngs.lock, flags);
 
 
