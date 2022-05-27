@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75616C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4882C4167B
 	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:56:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352638AbiE0Lzd (ORCPT
+        id S1352792AbiE0Lzk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 07:55:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41072 "EHLO
+        Fri, 27 May 2022 07:55:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352784AbiE0Luv (ORCPT
+        with ESMTP id S1352793AbiE0Luw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:50:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10AED132759;
-        Fri, 27 May 2022 04:45:19 -0700 (PDT)
+        Fri, 27 May 2022 07:50:52 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A5501269B6;
+        Fri, 27 May 2022 04:45:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ACB80B824D6;
-        Fri, 27 May 2022 11:45:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F153BC385A9;
-        Fri, 27 May 2022 11:45:15 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id D2C1ACE1164;
+        Fri, 27 May 2022 11:45:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E65B5C385A9;
+        Fri, 27 May 2022 11:45:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653651916;
-        bh=nyNsl1FhrSkC5K3QNeXt8djsHyg/84AZ3Q0j/O2PnJo=;
+        s=korg; t=1653651919;
+        bh=s6T+HuT78bAP0HH1vMwcpZGWnTvNxrhKCd8tLlgc4lE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pJa1ZrM/kcEyVgTxpBo4cOpBObdfLJKNxX34mw+qS2P7OMYhOEp756qlSERI/b4pj
-         IJEOvmea3bTKhgpudEV2d13PtNDGQxioyMhiVQQq7qorM4yi6TOPa0zJUFs+eSBUaM
-         Jdi/xnXa1RAUzmZs2EeJnebIBg7DSSJ64fSDwn0o=
+        b=kskKI+FT047460vEP/Q6bHt/q1i89kVyK+EsQnyo2MsMYD3f06qDcGydsO/GXBK4f
+         Uj2Mc24qQb+BJOMdon6FsFGYSyGl3oggLisB6CoC+EwbAS01vlZBGWA1qTjF2T9ir7
+         cZD3ETAGDqMHlv2STKBujq5E/M3gclZIJrRrB26A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         Dominik Brodowski <linux@dominikbrodowski.net>,
-        Eric Biggers <ebiggers@google.com>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.15 057/145] random: fix locking for crng_init in crng_reseed()
-Date:   Fri, 27 May 2022 10:49:18 +0200
-Message-Id: <20220527084857.607940798@linuxfoundation.org>
+Subject: [PATCH 5.17 093/111] random: avoid initializing twice in credit race
+Date:   Fri, 27 May 2022 10:50:05 +0200
+Message-Id: <20220527084832.577576318@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084850.364560116@linuxfoundation.org>
-References: <20220527084850.364560116@linuxfoundation.org>
+In-Reply-To: <20220527084819.133490171@linuxfoundation.org>
+References: <20220527084819.133490171@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,50 +50,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dominik Brodowski <linux@dominikbrodowski.net>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 7191c628fe07b70d3f37de736d173d1b115396ed upstream.
+commit fed7ef061686cc813b1f3d8d0edc6c35b4d3537b upstream.
 
-crng_init is protected by primary_crng->lock. Therefore, we need
-to hold this lock when increasing crng_init to 2. As we shouldn't
-hold this lock for too long, only hold it for those parts which
-require protection.
+Since all changes of crng_init now go through credit_init_bits(), we can
+fix a long standing race in which two concurrent callers of
+credit_init_bits() have the new bit count >= some threshold, but are
+doing so with crng_init as a lower threshold, checked outside of a lock,
+resulting in crng_reseed() or similar being called twice.
 
-Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
-Reviewed-by: Eric Biggers <ebiggers@google.com>
+In order to fix this, we can use the original cmpxchg value of the bit
+count, and only change crng_init when the bit count transitions from
+below a threshold to meeting the threshold.
+
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/char/random.c |   10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -502,6 +502,7 @@ static void crng_reseed(void)
- 	int entropy_count;
- 	unsigned long next_gen;
- 	u8 key[CHACHA_KEY_SIZE];
-+	bool finalize_init = false;
+@@ -821,7 +821,7 @@ static void extract_entropy(void *buf, s
  
- 	/*
- 	 * First we make sure we have POOL_MIN_BITS of entropy in the pool,
-@@ -529,12 +530,14 @@ static void crng_reseed(void)
- 		++next_gen;
- 	WRITE_ONCE(base_crng.generation, next_gen);
- 	WRITE_ONCE(base_crng.birth, jiffies);
--	spin_unlock_irqrestore(&base_crng.lock, flags);
--	memzero_explicit(key, sizeof(key));
--
- 	if (crng_init < 2) {
- 		invalidate_batched_entropy();
- 		crng_init = 2;
-+		finalize_init = true;
-+	}
-+	spin_unlock_irqrestore(&base_crng.lock, flags);
-+	memzero_explicit(key, sizeof(key));
-+	if (finalize_init) {
- 		process_random_ready_list();
- 		wake_up_interruptible(&crng_init_wait);
- 		kill_fasync(&fasync, SIGIO, POLL_IN);
+ static void credit_init_bits(size_t nbits)
+ {
+-	unsigned int init_bits, orig, add;
++	unsigned int new, orig, add;
+ 	unsigned long flags;
+ 
+ 	if (crng_ready() || !nbits)
+@@ -831,12 +831,12 @@ static void credit_init_bits(size_t nbit
+ 
+ 	do {
+ 		orig = READ_ONCE(input_pool.init_bits);
+-		init_bits = min_t(unsigned int, POOL_BITS, orig + add);
+-	} while (cmpxchg(&input_pool.init_bits, orig, init_bits) != orig);
++		new = min_t(unsigned int, POOL_BITS, orig + add);
++	} while (cmpxchg(&input_pool.init_bits, orig, new) != orig);
+ 
+-	if (!crng_ready() && init_bits >= POOL_READY_BITS)
++	if (orig < POOL_READY_BITS && new >= POOL_READY_BITS)
+ 		crng_reseed();
+-	else if (unlikely(crng_init == CRNG_EMPTY && init_bits >= POOL_EARLY_BITS)) {
++	else if (orig < POOL_EARLY_BITS && new >= POOL_EARLY_BITS) {
+ 		spin_lock_irqsave(&base_crng.lock, flags);
+ 		if (crng_init == CRNG_EMPTY) {
+ 			extract_entropy(base_crng.key, sizeof(base_crng.key));
 
 
