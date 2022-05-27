@@ -2,216 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA509C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 02:26:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAF9DC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 02:27:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234758AbiE0C0a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 22:26:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51172 "EHLO
+        id S235074AbiE0C1C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 22:27:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229552AbiE0C00 (ORCPT
+        with ESMTP id S234949AbiE0C04 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 22:26:26 -0400
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A4285FF5
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 19:26:25 -0700 (PDT)
-Received: by mail-pl1-x635.google.com with SMTP id t4so69079pld.4
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 19:26:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=GTmACc9N/3MLTj6poPRyGy9qcVFfRLI5Sz32EZV0z38=;
-        b=COgXgMZDG8WkP+lglV2Qm8KiYg3OYMJ6q8zRmVVu4YCQhwnr7YHTclag8GvN6sPpqj
-         snyshILu0mVF35uUzY3IlNV9lWALJRWgtcJCwaJ1up/VKMnneFH4I2c4Q/SuqpcT+xJS
-         daVWNio46q8qRqPTPGJPc/nGy+VQMvmJMExBR9jsfPXJBRsunsvuvv5c2vRI0uGs/H42
-         MTteQDv/PoLH7V0fx1W/rcVnFrgqRC/gawvBOz1wSEkGDK7M7tYwSvQDJ1Mj4yC2oeGq
-         NBkIf5iBnZvgvG6zmmMCX9Uo0b9ZtH+3JN2JND1LiwxJgkKye5t/48JP60vScOgML+au
-         nF4g==
+        Thu, 26 May 2022 22:26:56 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8A9B9DFF49
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 19:26:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653618410;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=oaDAshEcGYeYhJ5+Zo99OPfgNFs1k3b7zVlzbxHYNl0=;
+        b=MsoZxVsdQq/zRH23U6ED0gdtz1Yg9cjvDnfEgPZDQ9N4Pxa5/ps8AN/SXeYjIzQ8J3gkWe
+        P41sW5r71Ndz4fOchno3wy7tBk1UAVTCV75BTmjC3vn/FZRYi+5Yfb+qPfhvbKGVcig60P
+        iUfbLulsOda9qOalJHCsQ+ZwzDfk68o=
+Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com
+ [209.85.167.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-14-h2i7CJyvNu21s-9IT-eMwQ-1; Thu, 26 May 2022 22:26:49 -0400
+X-MC-Unique: h2i7CJyvNu21s-9IT-eMwQ-1
+Received: by mail-lf1-f69.google.com with SMTP id z14-20020a056512308e00b004786d7fde66so1338313lfd.18
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 19:26:49 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=GTmACc9N/3MLTj6poPRyGy9qcVFfRLI5Sz32EZV0z38=;
-        b=AjCncZKgVe9PhuwBejH/d86WW550uFetyYjH/ct7p1m3jXEQWmxcBIi2A68qpLnSqU
-         zQZIbv4B9OKS1kH7XxiV2V3ZK2w0PwC9eiH7GdlDC68tcC5JwBCpXP7gqM9J4eG7am+2
-         8YEx16S2Wv0zfpPtBC2jWNB/K1hpjwWHbwbimriOPLbCJdb7csCAGD9HRfe4g6WQo0GP
-         2X59f7DvoRHy7vff9J0ZFRWNHsol37ejUFCxRNpP8BeE4vnvWs/nnZHm8rFQPmMGi89Y
-         /vut56UeevBZdJGCiqTDThQhr8OfkVi9BgtscZ7zHCMykvRv5DT31JmbF/QeZpcbLXJq
-         5HXA==
-X-Gm-Message-State: AOAM532TNZxPh9QEs2JLtGB4w+nwrHigmzAkr+DODLXGyizoO4dMQp7a
-        LTalXQLx3JTla50uOfm8YHwXfA==
-X-Google-Smtp-Source: ABdhPJwG+lmKSHcrxP6YtEa7GiL6Nr6zjRjr3nP+ihLp9L087u1RV9dVoYNbsckRgYc6uXjSvJ5U9w==
-X-Received: by 2002:a17:902:bf06:b0:14d:8c72:96c6 with SMTP id bi6-20020a170902bf0600b0014d8c7296c6mr40633154plb.156.1653618384636;
-        Thu, 26 May 2022 19:26:24 -0700 (PDT)
-Received: from [10.255.70.20] ([139.177.225.235])
-        by smtp.gmail.com with ESMTPSA id j2-20020a170902690200b0015f4b7a012bsm2247113plk.251.2022.05.26.19.26.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 26 May 2022 19:26:23 -0700 (PDT)
-Message-ID: <27062739-74af-7deb-2486-45bb84888433@bytedance.com>
-Date:   Fri, 27 May 2022 10:22:23 +0800
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=oaDAshEcGYeYhJ5+Zo99OPfgNFs1k3b7zVlzbxHYNl0=;
+        b=YotUrf66IIlhjUf+d/K501/D6Zvd9gKfg7bky0yvnNKPpTSfzMjqX4bRmggK5WLRvL
+         n7N2w4/1MKc8DBTHPogwnF4XQqA6wYWKwRG7Muj2ptUwiYfsF8j61QEEwWDtl/iwnMF4
+         rrscKjcf1PwyEKBGTzRtKaI/wKuegNLMt3k2rjRZ4Pnb3NiDjfOaObEiV5nILctkP+Mc
+         jJCxmU5BqbSpKJlyXgISq5WBoYOrIU4KLJXNtS3K09rPBKRaKmkqYwk9sNSGjkqjmBXB
+         KeuXsNQ/4ZHdh4akEDGoL/cw/dSwngEhUPBVX05TozLgPRzjyF7w/Pq2yIYZGO1A2Zc9
+         EQIQ==
+X-Gm-Message-State: AOAM531zLrZOGjeUjX8vR0UHMZzIwM1ZcihXTuufAsnJUX9H3o03bwyU
+        z44EFakMrRMr7oydNhRQtzp4yIZ/TBKRlXgU3OayKCgl+oLwvcgI/MlUWIs8hsoEVAELFvZcrMM
+        QRnp1o5KZ8IXrxVSyzWikIZ75WFJVh3XaV0hrhPal
+X-Received: by 2002:a2e:954c:0:b0:253:d9bf:9f55 with SMTP id t12-20020a2e954c000000b00253d9bf9f55mr21308472ljh.300.1653618407874;
+        Thu, 26 May 2022 19:26:47 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzHcqEOz1xk1ptv4/JAwcVxyXOZtbrjI3QyKwE3Rw+KFfhLBm5gZOZJQQUeuqyIULlx21HHjnfaD0MAV67KrFc=
+X-Received: by 2002:a2e:954c:0:b0:253:d9bf:9f55 with SMTP id
+ t12-20020a2e954c000000b00253d9bf9f55mr21308435ljh.300.1653618407570; Thu, 26
+ May 2022 19:26:47 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: Re: [PATCH 3/3] virtio_balloon: Introduce memory recover
-Content-Language: en-US
-To:     "Michael S. Tsirkin" <mst@redhat.com>, akpm@linux-foundation.org,
-        naoya.horiguchi@nec.com
-Cc:     david@redhat.com, linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        jasowang@redhat.com, virtualization@lists.linux-foundation.org,
-        pbonzini@redhat.com, peterx@redhat.com, qemu-devel@nongnu.org
-References: <20220520070648.1794132-1-pizhenwei@bytedance.com>
- <20220520070648.1794132-4-pizhenwei@bytedance.com>
- <20220526151507-mutt-send-email-mst@kernel.org>
-From:   zhenwei pi <pizhenwei@bytedance.com>
-In-Reply-To: <20220526151507-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220526124338.36247-1-eperezma@redhat.com> <PH0PR12MB54819C6C6DAF6572AEADC1AEDCD99@PH0PR12MB5481.namprd12.prod.outlook.com>
+In-Reply-To: <PH0PR12MB54819C6C6DAF6572AEADC1AEDCD99@PH0PR12MB5481.namprd12.prod.outlook.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Fri, 27 May 2022 10:26:35 +0800
+Message-ID: <CACGkMEu1YenjBHAssP=FvKX6WxDQ5Aa50r-BsnkfR4zqNTk6hg@mail.gmail.com>
+Subject: Re: [PATCH v4 0/4] Implement vdpasim stop operation
+To:     Parav Pandit <parav@nvidia.com>
+Cc:     =?UTF-8?Q?Eugenio_P=C3=A9rez?= <eperezma@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "martinh@xilinx.com" <martinh@xilinx.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        "martinpo@xilinx.com" <martinpo@xilinx.com>,
+        "lvivier@redhat.com" <lvivier@redhat.com>,
+        "pabloc@xilinx.com" <pabloc@xilinx.com>,
+        Eli Cohen <elic@nvidia.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Xie Yongji <xieyongji@bytedance.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Zhang Min <zhang.min9@zte.com.cn>,
+        Wu Zongyong <wuzongyong@linux.alibaba.com>,
+        "lulu@redhat.com" <lulu@redhat.com>,
+        Zhu Lingshan <lingshan.zhu@intel.com>,
+        "Piotr.Uminski@intel.com" <Piotr.Uminski@intel.com>,
+        Si-Wei Liu <si-wei.liu@oracle.com>,
+        "ecree.xilinx@gmail.com" <ecree.xilinx@gmail.com>,
+        "gautam.dawar@amd.com" <gautam.dawar@amd.com>,
+        "habetsm.xilinx@gmail.com" <habetsm.xilinx@gmail.com>,
+        "tanuj.kamde@amd.com" <tanuj.kamde@amd.com>,
+        "hanand@xilinx.com" <hanand@xilinx.com>,
+        "dinang@xilinx.com" <dinang@xilinx.com>,
+        Longpeng <longpeng2@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/27/22 03:18, Michael S. Tsirkin wrote:
-> On Fri, May 20, 2022 at 03:06:48PM +0800, zhenwei pi wrote:
->> Introduce a new queue 'recover VQ', this allows guest to recover
->> hardware corrupted page:
->>
->> Guest              5.MF -> 6.RVQ FE    10.Unpoison page
->>                      /           \            /
->> -------------------+-------------+----------+-----------
->>                     |             |          |
->>                  4.MCE        7.RVQ BE   9.RVQ Event
->>   QEMU             /               \       /
->>               3.SIGBUS              8.Remap
->>                  /
->> ----------------+------------------------------------
->>                  |
->>              +--2.MF
->>   Host       /
->>         1.HW error
->>
->> The workflow:
->> 1, HardWare page error occurs randomly.
->> 2, host side handles corrupted page by Memory Failure mechanism, sends
->>     SIGBUS to the user process if early-kill is enabled.
->> 3, QEMU handles SIGBUS, if the address belongs to guest RAM, then:
->> 4, QEMU tries to inject MCE into guest.
->> 5, guest handles memory failure again.
->>
->> 1-5 is already supported for a long time, the next steps are supported
->> in this patch(also related driver patch):
->> 6, guest balloon driver gets noticed of the corrupted PFN, and sends
->>     request to host side by Recover VQ FrontEnd.
->> 7, QEMU handles request from Recover VQ BackEnd, then:
->> 8, QEMU remaps the corrupted HVA fo fix the memory failure, then:
->> 9, QEMU acks the guest side the result by Recover VQ.
->> 10, guest unpoisons the page if the corrupted page gets recoverd
->>      successfully.
->>
->> Then the guest fixes the HW page error dynamiclly without rebooting.
->>
->> Emulate MCE by QEMU, the guest works fine:
->>   mce: [Hardware Error]: Machine check events logged
->>   Memory failure: 0x61646: recovery action for dirty LRU page: Recovered
->>   virtio_balloon virtio5: recovered pfn 0x61646
->>   Unpoison: Unpoisoned page 0x61646 by virtio-balloon
->>   MCE: Killing stress:24502 due to hardware memory corruption fault at 7f5be2e5a010
->>
->> The 'HardwareCorrupted' in /proc/meminfo also shows 0 kB.
->>
->> Signed-off-by: zhenwei pi <pizhenwei@bytedance.com>
->> ---
->>   drivers/virtio/virtio_balloon.c     | 243 ++++++++++++++++++++++++++++
->>   include/uapi/linux/virtio_balloon.h |  16 ++
->>   2 files changed, 259 insertions(+)
->>
->> diff --git a/drivers/virtio/virtio_balloon.c b/drivers/virtio/virtio_balloon.c
->> index f4c34a2a6b8e..f9d95d1d8a4d 100644
->> --- a/drivers/virtio/virtio_balloon.c
->> +++ b/drivers/virtio/virtio_balloon.c
->> @@ -52,6 +52,7 @@ enum virtio_balloon_vq {
->>   	VIRTIO_BALLOON_VQ_STATS,
->>   	VIRTIO_BALLOON_VQ_FREE_PAGE,
->>   	VIRTIO_BALLOON_VQ_REPORTING,
->> +	VIRTIO_BALLOON_VQ_RECOVER,
->>   	VIRTIO_BALLOON_VQ_MAX
->>   };
->>   
->> @@ -59,6 +60,12 @@ enum virtio_balloon_config_read {
->>   	VIRTIO_BALLOON_CONFIG_READ_CMD_ID = 0,
->>   };
->>   
->> +/* the request body to commucate with host side */
->> +struct __virtio_balloon_recover {
->> +	struct virtio_balloon_recover vbr;
->> +	__virtio32 pfns[VIRTIO_BALLOON_PAGES_PER_PAGE];
->> +};
->> +
-> 
-> 
-> I don't think this idea of passing 32 bit pfns is going to fly.
-> What is wrong with just passing the pages normally as a s/g list?
-> this is what is done for the hints at the moment.
-> 
-> neither should you use __virtio types for new functionality
-> (should all be __le), nor use __virtio for the struct name.
-> 
-> 
+On Thu, May 26, 2022 at 8:54 PM Parav Pandit <parav@nvidia.com> wrote:
+>
+>
+>
+> > From: Eugenio P=C3=A9rez <eperezma@redhat.com>
+> > Sent: Thursday, May 26, 2022 8:44 AM
+>
+> > Implement stop operation for vdpa_sim devices, so vhost-vdpa will offer
+> >
+> > that backend feature and userspace can effectively stop the device.
+> >
+> >
+> >
+> > This is a must before get virtqueue indexes (base) for live migration,
+> >
+> > since the device could modify them after userland gets them. There are
+> >
+> > individual ways to perform that action for some devices
+> >
+> > (VHOST_NET_SET_BACKEND, VHOST_VSOCK_SET_RUNNING, ...) but there
+> > was no
+> >
+> > way to perform it for any vhost device (and, in particular, vhost-vdpa)=
+.
+> >
+> >
+> >
+> > After the return of ioctl with stop !=3D 0, the device MUST finish any
+> >
+> > pending operations like in flight requests. It must also preserve all
+> >
+> > the necessary state (the virtqueue vring base plus the possible device
+> >
+> > specific states) that is required for restoring in the future. The
+> >
+> > device must not change its configuration after that point.
+> >
+> >
+> >
+> > After the return of ioctl with stop =3D=3D 0, the device can continue
+> >
+> > processing buffers as long as typical conditions are met (vq is enabled=
+,
+> >
+> > DRIVER_OK status bit is enabled, etc).
+>
+> Just to be clear, we are adding vdpa level new ioctl() that doesn=E2=80=
+=99t map to any mechanism in the virtio spec.
 
-Guest side sends GPA/PFN to host side by passing the pages normally as a 
-s/g list, this is OK.
+We try to provide forward compatibility to VIRTIO_CONFIG_S_STOP. That
+means it is expected to implement at least a subset of
+VIRTIO_CONFIG_S_STOP.
 
-But in this scenario, guest also needs to get 
-status(recovered?corrupted?failed to recover?) of page from the host side.
+>
+> Why can't we use this ioctl() to indicate driver to start/stop the device=
+ instead of driving it through the driver_ok?
 
-For a normal page(Ex, 4K), the host could return the status quite 
-immediately. But for the 2M hugetlb of guest RAM, the host should be 
-pending until the guest requests 512*4K to recover. Once the 2M hugepage 
-gets recovered(or failed to recover), the host returns 512 PFNs with 
-status to guest. There are at most 512 recover requests of a single 2M 
-huge page.
+So the idea is to add capability that does not exist in the spec. Then
+came the stop/resume which can't be done via DRIVER_OK. I think we
+should only allow the stop/resume to succeed after DRIVER_OK is set.
 
-For example, the guest tries to recover a corrupted page:
-struct scatterlist status_sg, page_sg, *sgs[2];
+> This is in the context of other discussion we had in the LM series.
 
-sg_init_one(&status_sg, status, sizeof(*status));
-sgs[0] = &status_sg;
+Do you see any issue that blocks the live migration?
 
-p = page_address(page);
-sg_init_one(&page_sg, p, PAGE_SIZE);
-sgs[1] = &page_sg;
+Thanks
 
-virtqueue_add_sgs(recover_vq, sgs, 1, 1, NULL, GFP_ATOMIC);
-
-The host handles 4K recover request on 2M hugepage, this request is 
-pending until the full 2M huge page gets recovered(or failed).
-
-To avoid too many pending request in virt queue, I designed as this 
-patch(should use __le), passing PFN in request body, using a single IN 
-request only.
-
-
-...
->> --- a/include/uapi/linux/virtio_balloon.h
->> +++ b/include/uapi/linux/virtio_balloon.h
->> @@ -37,6 +37,7 @@
->>   #define VIRTIO_BALLOON_F_FREE_PAGE_HINT	3 /* VQ to report free pages */
->>   #define VIRTIO_BALLOON_F_PAGE_POISON	4 /* Guest is using page poisoning */
->>   #define VIRTIO_BALLOON_F_REPORTING	5 /* Page reporting virtqueue */
->> +#define VIRTIO_BALLOON_F_RECOVER	6 /* Memory recover virtqueue */
->>   
->>   /* Size of a PFN in the balloon interface. */
->>   #define VIRTIO_BALLOON_PFN_SHIFT 12
-> 
-> Please get this feature recorded in the spec with the virtio TC.
-> They will also ask you to supply minimal documentation.
-> 
-
-Sure!
-By the way, this feature depends on the memory&&memory-failure 
-mechanism, what about sending the change of spec to virtio TC after 
-Andrew and Naoya ack?
-
--- 
-zhenwei pi
