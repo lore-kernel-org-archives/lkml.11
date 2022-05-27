@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EA1EC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D444C4321E
 	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:17:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353399AbiE0MPQ (ORCPT
+        id S1353558AbiE0MPY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 08:15:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49820 "EHLO
+        Fri, 27 May 2022 08:15:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352875AbiE0MBB (ORCPT
+        with ESMTP id S1352932AbiE0MBF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 08:01:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F3133BA76;
-        Fri, 27 May 2022 04:52:57 -0700 (PDT)
+        Fri, 27 May 2022 08:01:05 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA0023D498;
+        Fri, 27 May 2022 04:53:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A2F73B8091D;
-        Fri, 27 May 2022 11:52:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE9C5C385A9;
-        Fri, 27 May 2022 11:52:53 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id BF39BCE2511;
+        Fri, 27 May 2022 11:52:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC993C385A9;
+        Fri, 27 May 2022 11:52:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653652374;
-        bh=Op0bUEBLc+mstggcGsP0fcSHMSekjU6xTMmOlWoR4Sc=;
+        s=korg; t=1653652377;
+        bh=sbrL44tMkKlNhB/ubeCGu9MeR5vV2zIzvhWF5VTfUMs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Zvw49vxTC7wBut/F+IcPmbn/8ZOlfRt9Mnjjt4wtwz6SF5AgMUdt4tWM88r7rqlb2
-         zAY0TSy2ZtWbbW6s3w6fpGKlN0+6+U439j+jCqp+OiZCxuBqOsBmpz9Pg/HuhSMC0Q
-         L7qdS3wpqTUPYFE1/h2jRbkYpNjGd+uKk/sMKxEE=
+        b=zm/9DKXLERMry/+IhZ2O4dKafPlvlhUA/a4b2smfxMFozo5AF4uzJ0IHKQ9he5xpw
+         IbHARraN8cj6jGl41xnJmq8gPKs92wsf5f13fAQqAeUCRlUHmKuLkCe0urA2MlxJkj
+         2P5a4lT3qK5Thc3Dt/fbjXMzMfpPYpKz1wUW+dI0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
+        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Arnd Bergmann <arnd@arndb.de>,
+        "David S. Miller" <davem@davemloft.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.15 128/145] random: avoid initializing twice in credit race
-Date:   Fri, 27 May 2022 10:50:29 +0200
-Message-Id: <20220527084906.028701770@linuxfoundation.org>
+Subject: [PATCH 5.10 135/163] sparc: use fallback for random_get_entropy() instead of zero
+Date:   Fri, 27 May 2022 10:50:15 +0200
+Message-Id: <20220527084847.008112750@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084850.364560116@linuxfoundation.org>
-References: <20220527084850.364560116@linuxfoundation.org>
+In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
+References: <20220527084828.156494029@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,52 +53,41 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit fed7ef061686cc813b1f3d8d0edc6c35b4d3537b upstream.
+commit ac9756c79797bb98972736b13cfb239fd2cffb79 upstream.
 
-Since all changes of crng_init now go through credit_init_bits(), we can
-fix a long standing race in which two concurrent callers of
-credit_init_bits() have the new bit count >= some threshold, but are
-doing so with crng_init as a lower threshold, checked outside of a lock,
-resulting in crng_reseed() or similar being called twice.
+In the event that random_get_entropy() can't access a cycle counter or
+similar, falling back to returning 0 is really not the best we can do.
+Instead, at least calling random_get_entropy_fallback() would be
+preferable, because that always needs to return _something_, even
+falling back to jiffies eventually. It's not as though
+random_get_entropy_fallback() is super high precision or guaranteed to
+be entropic, but basically anything that's not zero all the time is
+better than returning zero all the time.
 
-In order to fix this, we can use the original cmpxchg value of the bit
-count, and only change crng_init when the bit count transitions from
-below a threshold to meeting the threshold.
+This is accomplished by just including the asm-generic code like on
+other architectures, which means we can get rid of the empty stub
+function here.
 
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: David S. Miller <davem@davemloft.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ arch/sparc/include/asm/timex_32.h |    4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -823,7 +823,7 @@ static void extract_entropy(void *buf, s
+--- a/arch/sparc/include/asm/timex_32.h
++++ b/arch/sparc/include/asm/timex_32.h
+@@ -9,8 +9,6 @@
  
- static void credit_init_bits(size_t nbits)
- {
--	unsigned int init_bits, orig, add;
-+	unsigned int new, orig, add;
- 	unsigned long flags;
+ #define CLOCK_TICK_RATE	1193180 /* Underlying HZ */
  
- 	if (crng_ready() || !nbits)
-@@ -833,12 +833,12 @@ static void credit_init_bits(size_t nbit
+-/* XXX Maybe do something better at some point... -DaveM */
+-typedef unsigned long cycles_t;
+-#define get_cycles()	(0)
++#include <asm-generic/timex.h>
  
- 	do {
- 		orig = READ_ONCE(input_pool.init_bits);
--		init_bits = min_t(unsigned int, POOL_BITS, orig + add);
--	} while (cmpxchg(&input_pool.init_bits, orig, init_bits) != orig);
-+		new = min_t(unsigned int, POOL_BITS, orig + add);
-+	} while (cmpxchg(&input_pool.init_bits, orig, new) != orig);
- 
--	if (!crng_ready() && init_bits >= POOL_READY_BITS)
-+	if (orig < POOL_READY_BITS && new >= POOL_READY_BITS)
- 		crng_reseed();
--	else if (unlikely(crng_init == CRNG_EMPTY && init_bits >= POOL_EARLY_BITS)) {
-+	else if (orig < POOL_EARLY_BITS && new >= POOL_EARLY_BITS) {
- 		spin_lock_irqsave(&base_crng.lock, flags);
- 		if (crng_init == CRNG_EMPTY) {
- 			extract_entropy(base_crng.key, sizeof(base_crng.key));
+ #endif
 
 
