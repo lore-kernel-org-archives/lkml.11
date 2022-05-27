@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13088C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:08:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 032C7C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:08:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243350AbiE0MIQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 08:08:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57388 "EHLO
+        id S237428AbiE0MIb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 08:08:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352994AbiE0Lzx (ORCPT
+        with ESMTP id S1353105AbiE0L4L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:55:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8085B15E4B7;
-        Fri, 27 May 2022 04:49:33 -0700 (PDT)
+        Fri, 27 May 2022 07:56:11 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB47615E61E;
+        Fri, 27 May 2022 04:49:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 13C9861D9F;
-        Fri, 27 May 2022 11:49:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C403C3411B;
-        Fri, 27 May 2022 11:49:31 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 02B7CCE2480;
+        Fri, 27 May 2022 11:49:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 124FFC385A9;
+        Fri, 27 May 2022 11:49:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653652172;
-        bh=KTs+xomYX51L3KBxgiY1mlchgYaaGZ2z5mj5sA2Wqxc=;
+        s=korg; t=1653652181;
+        bh=CL218ElMiLie/Oak1szbaMjRkRMppysThTv7HyrUkvU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=v+3+zOKe5uRFSHrX/g0IYAJDtbrxP0RrGmGwZQT3buyn0nWYuyGUD1KNT/SaQq2KA
-         f1EQaKMHV9oZJKsZbaMb+77YOfRJZj52IfgEdcnkvcgnVgHuzGlsdj8JoqH8ia2AS0
-         7+vBaWBu3/G1LlilTV5NuOalpDd2MkhJjVlYz1CY=
+        b=ZCKDJUlBpcfWiOSv22xXG0MkPJisOk4rr2RKJVnj98D7qDWjAOWRW+1I+2Q6r1Z6T
+         0FPhD5q/974YBZI1L47otndZevpZoizYJGs/HXcFBgRcVGs49uX9UQgLKp1yA1shpn
+         Chodzppfj0nOaK6SXkXT/VfBHlMgrJhnAm5Ch4oc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Jann Horn <jannh@google.com>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.10 108/163] random: check for signal and try earlier when generating entropy
-Date:   Fri, 27 May 2022 10:49:48 +0200
-Message-Id: <20220527084843.144719116@linuxfoundation.org>
+Subject: [PATCH 5.15 096/145] random: do not allow user to keep crng key around on stack
+Date:   Fri, 27 May 2022 10:49:57 +0200
+Message-Id: <20220527084902.352909935@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
-References: <20220527084828.156494029@linuxfoundation.org>
+In-Reply-To: <20220527084850.364560116@linuxfoundation.org>
+References: <20220527084850.364560116@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,56 +51,96 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 3e504d2026eb6c8762cd6040ae57db166516824a upstream.
+commit aba120cc101788544aa3e2c30c8da88513892350 upstream.
 
-Rather than waiting a full second in an interruptable waiter before
-trying to generate entropy, try to generate entropy first and wait
-second. While waiting one second might give an extra second for getting
-entropy from elsewhere, we're already pretty late in the init process
-here, and whatever else is generating entropy will still continue to
-contribute. This has implications on signal handling: we call
-try_to_generate_entropy() from wait_for_random_bytes(), and
-wait_for_random_bytes() always uses wait_event_interruptible_timeout()
-when waiting, since it's called by userspace code in restartable
-contexts, where signals can pend. Since try_to_generate_entropy() now
-runs first, if a signal is pending, it's necessary for
-try_to_generate_entropy() to check for signals, since it won't hit the
-wait until after try_to_generate_entropy() has returned. And even before
-this change, when entering a busy loop in try_to_generate_entropy(), we
-should have been checking to see if any signals are pending, so that a
-process doesn't get stuck in that loop longer than expected.
+The fast key erasure RNG design relies on the key that's used to be used
+and then discarded. We do this, making judicious use of
+memzero_explicit().  However, reads to /dev/urandom and calls to
+getrandom() involve a copy_to_user(), and userspace can use FUSE or
+userfaultfd, or make a massive call, dynamically remap memory addresses
+as it goes, and set the process priority to idle, in order to keep a
+kernel stack alive indefinitely. By probing
+/proc/sys/kernel/random/entropy_avail to learn when the crng key is
+refreshed, a malicious userspace could mount this attack every 5 minutes
+thereafter, breaking the crng's forward secrecy.
+
+In order to fix this, we just overwrite the stack's key with the first
+32 bytes of the "free" fast key erasure output. If we're returning <= 32
+bytes to the user, then we can still return those bytes directly, so
+that short reads don't become slower. And for long reads, the difference
+is hopefully lost in the amortization, so it doesn't change much, with
+that amortization helping variously for medium reads.
+
+We don't need to do this for get_random_bytes() and the various
+kernel-space callers, and later, if we ever switch to always batching,
+this won't be necessary either, so there's no need to change the API of
+these functions.
 
 Cc: Theodore Ts'o <tytso@mit.edu>
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Reviewed-by: Jann Horn <jannh@google.com>
+Fixes: c92e040d575a ("random: add backtracking protection to the CRNG")
+Fixes: 186873c549df ("random: use simpler fast key erasure flow on per-cpu keys")
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/char/random.c |   35 +++++++++++++++++++++++------------
+ 1 file changed, 23 insertions(+), 12 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -127,10 +127,11 @@ int wait_for_random_bytes(void)
- {
- 	while (!crng_ready()) {
- 		int ret;
-+
-+		try_to_generate_entropy();
- 		ret = wait_event_interruptible_timeout(crng_init_wait, crng_ready(), HZ);
- 		if (ret)
- 			return ret > 0 ? 0 : ret;
--		try_to_generate_entropy();
- 	}
- 	return 0;
- }
-@@ -1371,7 +1372,7 @@ static void try_to_generate_entropy(void
- 		return;
+@@ -534,19 +534,29 @@ static ssize_t get_random_bytes_user(voi
+ 	if (!nbytes)
+ 		return 0;
  
- 	timer_setup_on_stack(&stack.timer, entropy_timer, 0);
--	while (!crng_ready()) {
-+	while (!crng_ready() && !signal_pending(current)) {
- 		if (!timer_pending(&stack.timer))
- 			mod_timer(&stack.timer, jiffies + 1);
- 		mix_pool_bytes(&stack.cycles, sizeof(stack.cycles));
+-	len = min_t(size_t, 32, nbytes);
+-	crng_make_state(chacha_state, output, len);
+-
+-	if (copy_to_user(buf, output, len))
+-		return -EFAULT;
+-	nbytes -= len;
+-	buf += len;
+-	ret += len;
++	/*
++	 * Immediately overwrite the ChaCha key at index 4 with random
++	 * bytes, in case userspace causes copy_to_user() below to sleep
++	 * forever, so that we still retain forward secrecy in that case.
++	 */
++	crng_make_state(chacha_state, (u8 *)&chacha_state[4], CHACHA_KEY_SIZE);
++	/*
++	 * However, if we're doing a read of len <= 32, we don't need to
++	 * use chacha_state after, so we can simply return those bytes to
++	 * the user directly.
++	 */
++	if (nbytes <= CHACHA_KEY_SIZE) {
++		ret = copy_to_user(buf, &chacha_state[4], nbytes) ? -EFAULT : nbytes;
++		goto out_zero_chacha;
++	}
+ 
+-	while (nbytes) {
++	do {
+ 		if (large_request && need_resched()) {
+-			if (signal_pending(current))
++			if (signal_pending(current)) {
++				if (!ret)
++					ret = -ERESTARTSYS;
+ 				break;
++			}
+ 			schedule();
+ 		}
+ 
+@@ -563,10 +573,11 @@ static ssize_t get_random_bytes_user(voi
+ 		nbytes -= len;
+ 		buf += len;
+ 		ret += len;
+-	}
++	} while (nbytes);
+ 
+-	memzero_explicit(chacha_state, sizeof(chacha_state));
+ 	memzero_explicit(output, sizeof(output));
++out_zero_chacha:
++	memzero_explicit(chacha_state, sizeof(chacha_state));
+ 	return ret;
+ }
+ 
 
 
