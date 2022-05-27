@@ -2,113 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE6F0C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 16:27:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D08E3C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 16:30:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354127AbiE0Q1w (ORCPT
+        id S1353629AbiE0QaZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 12:27:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34332 "EHLO
+        Fri, 27 May 2022 12:30:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232903AbiE0Q1q (ORCPT
+        with ESMTP id S231132AbiE0QaW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 12:27:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D046B340F1;
-        Fri, 27 May 2022 09:27:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8920AB824C9;
-        Fri, 27 May 2022 16:27:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1C57C385A9;
-        Fri, 27 May 2022 16:27:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653668863;
-        bh=PRaPi35zkOUa2ee/LGAevmhlOaftEQU94uTYvSbtIYs=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=AUdwYQFnQL+oIJZpQBq82jSSk/heA2LObEFqnWPTzgh2mrOIXni7GDPG92ZByPDAk
-         CXin4Wfey4ZAbnSrcb4b9JF9zdlkzUnIJyGTlytzZNg9j35uWmSLNL0n6xTt1iHWX6
-         GN5QE2cHwLcpHdl8DWmcaC6mP3HldR9n21UzSajhcjyB7DZ8b7ZNP81SzbRcaPyaK1
-         otrfDC0N16l12UKtoxCh5N87Wq41JO+dF94S0HDlIXuHW93p74TPJNaWaYVXufzCts
-         UNreNLMeRwR0EM7IHX0B9C9lArH3Anry9wqsz4BPdA9v+MFBr9rL8X0o5TOhCO2ktv
-         bWLDU2W0wVVPA==
-Message-ID: <459385ee7ccf4fcf3e22d4a11b4f438d648422bf.camel@kernel.org>
-Subject: Re: [PATCH v7 03/25] kallsyms: increase maximum kernel symbol
- length to 512
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
-        David Howells <dhowells@redhat.com>
-Cc:     Miguel Ojeda <ojeda@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        rust-for-linux <rust-for-linux@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Alex Gaynor <alex.gaynor@gmail.com>,
-        Wedson Almeida Filho <wedsonaf@google.com>,
-        Gary Guo <gary@garyguo.net>, Boqun Feng <boqun.feng@gmail.com>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        live-patching@vger.kernel.org, linux-perf-users@vger.kernel.org
-Date:   Fri, 27 May 2022 19:25:57 +0300
-In-Reply-To: <CANiq72m6ttD9QpB3nW-5B+M1seknv0GZ4-DqtF85qTg6Lvxnhg@mail.gmail.com>
-References: <20220523020209.11810-1-ojeda@kernel.org>
-         <20220523020209.11810-4-ojeda@kernel.org> <YovvIQeN3lmOYzJO@kernel.org>
-         <CANiq72m6ttD9QpB3nW-5B+M1seknv0GZ4-DqtF85qTg6Lvxnhg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.1 
+        Fri, 27 May 2022 12:30:22 -0400
+Received: from mail-ua1-x92f.google.com (mail-ua1-x92f.google.com [IPv6:2607:f8b0:4864:20::92f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EE583B2B6
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 09:30:22 -0700 (PDT)
+Received: by mail-ua1-x92f.google.com with SMTP id 63so1733305uaw.10
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 09:30:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9g6mz1ylmv173XWWIuI9CzS3Wpc02dZXxX1VqooLv6M=;
+        b=ICPj8M19sLww6myKVnMx7K4vHlePmm+tmuVa2CCBroqezT99t1DinF9BZu3oSQWi95
+         PpHxUge67hCiEN+WbmdFcFmp8LoaNqXmtffkzJy1t2bg6QFSpt+0cta9Vh/exFeakeY8
+         ES6R1K20FZEi8DvnQo+3jrpIm5FGofSrhASDaagpHZYCBydJb1rbBRkKTUKmMN2hpZbm
+         FRCTGunZ2yKbLACuUH57tkyr0bh7HuM09UnLIwgdDTL+WogL5Yjb2zxog50f0Rjsgd8z
+         Cctn/w1tgtMEDvEQuXCz2/zfx4aQ/YRaYg3+SGh/W7Ihl0m86+RY8kWo0ZD2STUDzwff
+         u6xw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9g6mz1ylmv173XWWIuI9CzS3Wpc02dZXxX1VqooLv6M=;
+        b=S9UfGCvXRtWeJsG6aomG4Keq/v0lvolTsizZdHeyRGLX3bbkQc8hy+/Jgcf7wPgzuZ
+         DipF6sV3octCax5DTGQDiD1BEIVHXbSefjwU5UAzaY3jjz1P0p0fgNvC8NzSGDp9Jemj
+         o32L+xFShfqUQel2bY4qY5LaaWitkFRngLaQ0ywAysaUoI2FzTJrizf0bKBZT1s3yWbb
+         9WRaLxGMr+eHUJgU2Ei0eLcQvK+OmEpZJTUc4LBqeCTmmBFG9yjaBmXwNseITKVmhz71
+         5SfS0E4u4kh4FU7Bys31dgrwaqW59tBxygnxmUoeuMn93K6V5WJwGNosfymbzgDYWcEW
+         4SCg==
+X-Gm-Message-State: AOAM533CojZTdobz1LDNsKMgOtRF6HWFYAZ2cSCR3hosDIdLQMqThq4l
+        GR/YsOlqOsOV2JCtBRvblB3vK06Cx9Sex8a22fQsRg==
+X-Google-Smtp-Source: ABdhPJzt+PohqIGTGjBpgaRI7q35Gs5Fzbmr+cx7m/7GoZaI2EB6hlNIf7D72yOYQIlLGACN2Xz+OWyWgoTOKR9NHJQ=
+X-Received: by 2002:a9f:3592:0:b0:365:ef07:68c9 with SMTP id
+ t18-20020a9f3592000000b00365ef0768c9mr15993279uad.60.1653669021023; Fri, 27
+ May 2022 09:30:21 -0700 (PDT)
 MIME-Version: 1.0
+References: <CAAPL-u-dFp7PwPH6DfbYdnY8xaGsHz3tRQ0CPGVkiqURvdN8=A@mail.gmail.com>
+ <c453491b-6dc1-a008-d6f4-3c806eebd2ef@linux.ibm.com>
+In-Reply-To: <c453491b-6dc1-a008-d6f4-3c806eebd2ef@linux.ibm.com>
+From:   Wei Xu <weixugc@google.com>
+Date:   Fri, 27 May 2022 09:30:10 -0700
+Message-ID: <CAAPL-u_NwJuxWe7Wfn3A1sut+QwEmoZh2QUBQKNPq4bU=NjybA@mail.gmail.com>
+Subject: Re: RFC: Memory Tiering Kernel Interfaces (v3)
+To:     Aneesh Kumar K V <aneesh.kumar@linux.ibm.com>
+Cc:     Huang Ying <ying.huang@intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Greg Thelen <gthelen@google.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Tim C Chen <tim.c.chen@intel.com>,
+        Brice Goglin <brice.goglin@gmail.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Hesham Almatary <hesham.almatary@huawei.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Alistair Popple <apopple@nvidia.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Feng Tang <feng.tang@intel.com>, Linux MM <linux-mm@kvack.org>,
+        Jagdish Gediya <jvgediya@linux.ibm.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        David Rientjes <rientjes@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-05-24 at 20:07 +0200, Miguel Ojeda wrote:
-> On Mon, May 23, 2022 at 10:33 PM Jarkko Sakkinen <jarkko@kernel.org> wrot=
-e:
-> >=20
-> > There's no description what the patch does.
->=20
-> I am not sure what you mean. Both the subject and the last paragraph
-> describe what the patch does, while the rest gives the rationale
-> behind it.
->=20
-> Cheers,
-> Miguel
+On Fri, May 27, 2022 at 6:41 AM Aneesh Kumar K V
+<aneesh.kumar@linux.ibm.com> wrote:
+>
+> On 5/27/22 2:52 AM, Wei Xu wrote:
+>
+> >    The order of memory tiers is determined by their rank values, not by
+> >    their memtier device names.
+> >
+> >    - /sys/devices/system/memtier/possible
+> >
+> >      Format: ordered list of "memtier(rank)"
+> >      Example: 0(64), 1(128), 2(192)
+> >
+> >      Read-only.  When read, list all available memory tiers and their
+> >      associated ranks, ordered by the rank values (from the highest
+> >       tier to the lowest tier).
+> >
+>
+> Did we discuss the need for this? I haven't done this in the patch
+> series I sent across.
 
-The honest answer: I don't actually remember what I was thinking=C2=A0
-(other stuff stole my focus) but my comment neither makes much
-sense to me. Please just ignore it, and apologies for causing
-confusion.
+The "possible" file is only needed if we decide to hide the
+directories of memtiers that have no nodes.  We can remove this
+interface and always show all memtier directories to keep things
+simpler.
 
-There's something I'm looking into in my spare time right now.
-I'm experimenting with interfacing keyring types to Rust. The
-first step, I guess, is to provide a Rust abstraction for
-assoc_array.
+> We do have
+> /sys/devices/system/memtier/default_rank which should allow user to
+> identify the default rank to which memory would get added via hotplug if
+> the NUMA node is not part of any memory tier.
 
-I've skimmed through the patch set and have now *rough* idea of
-patterns and techniques. My opens are more on the process side
-of things since there's no yet mainline subtree.
+Sounds good to me to have it.
 
-If I send a patch or patch sets, would this be a good workflow:
-
-1. RFC tag.
-2. In the cover letter denote the patch set version, which was
-   used the baseline.
-
-Linux keyring is without argument a kind of subsystem that would
-hugely benefit of the Rust work, as it is both user space facing=C2=A0
-nd handling a vast amount of user's confidential data.=20
-
-BR, Jarkko
+>
+> -aneesh
