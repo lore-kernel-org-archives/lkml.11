@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BC3AC388F3
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 672E8C38A05
 	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:07:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353653AbiE0MGJ (ORCPT
+        id S1353704AbiE0MGT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 08:06:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57744 "EHLO
+        Fri, 27 May 2022 08:06:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353291AbiE0L4W (ORCPT
+        with ESMTP id S1353326AbiE0L4Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:56:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D207913C4D7;
-        Fri, 27 May 2022 04:50:38 -0700 (PDT)
+        Fri, 27 May 2022 07:56:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66AF2E3A;
+        Fri, 27 May 2022 04:51:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 631F461D9B;
-        Fri, 27 May 2022 11:50:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EFEFC385A9;
-        Fri, 27 May 2022 11:50:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0393961D56;
+        Fri, 27 May 2022 11:51:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1235BC385A9;
+        Fri, 27 May 2022 11:51:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653652237;
-        bh=ELZHOAn0JmY6glc5BEfK96mfL1jQkNz7O6OFXDEyC4o=;
+        s=korg; t=1653652285;
+        bh=YAaAnfdN5DGX6izEPZPLbxRmKyDvGykDk8xyS2lO+OE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qNXlL9Kf1oh97DmjAqSgw+Jb78ZboV+/a+9p+JBreUkPBc7+vIKzDi8XOyR4eOm/M
-         9AJ0dFU93UMs6sZNr+zTW2TLHnYHYst1cXbLnrmlRjh9AwM68lNiiIgFxGC4tjS7JB
-         RKZzlsslFfrS/zlqEx3ATucA8PU4HhIoM8AQeyP4=
+        b=p43gYKIm1PJrHlis4nhMH4AWu+1/lAC3NqwiH1GRxGFFmEWPSTsKkLO9hSoEQ/E/U
+         +vkJ1G4+kkx5hNvP8zX96zfDgJBZ0aG0NMJjWyHfPWCFP2GxmoQQ+SjIFXqgZ+jUtj
+         ivQl63lvjkhL7M7/abgmOZraprIyGng3GTDRPPG8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.10 120/163] random: fix sysctl documentation nits
-Date:   Fri, 27 May 2022 10:50:00 +0200
-Message-Id: <20220527084844.715720968@linuxfoundation.org>
+        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Arnd Bergmann <arnd@arndb.de>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.15 113/145] arm: use fallback for random_get_entropy() instead of zero
+Date:   Fri, 27 May 2022 10:50:14 +0200
+Message-Id: <20220527084904.255902300@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
-References: <20220527084828.156494029@linuxfoundation.org>
+In-Reply-To: <20220527084850.364560116@linuxfoundation.org>
+References: <20220527084850.364560116@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,40 +53,34 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 069c4ea6871c18bd368f27756e0f91ffb524a788 upstream.
+commit ff8a8f59c99f6a7c656387addc4d9f2247d75077 upstream.
 
-A semicolon was missing, and the almost-alphabetical-but-not ordering
-was confusing, so regroup these by category instead.
+In the event that random_get_entropy() can't access a cycle counter or
+similar, falling back to returning 0 is really not the best we can do.
+Instead, at least calling random_get_entropy_fallback() would be
+preferable, because that always needs to return _something_, even
+falling back to jiffies eventually. It's not as though
+random_get_entropy_fallback() is super high precision or guaranteed to
+be entropic, but basically anything that's not zero all the time is
+better than returning zero all the time.
 
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/admin-guide/sysctl/kernel.rst |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ arch/arm/include/asm/timex.h |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/Documentation/admin-guide/sysctl/kernel.rst
-+++ b/Documentation/admin-guide/sysctl/kernel.rst
-@@ -1006,6 +1006,9 @@ This is a directory, with the following
- * ``boot_id``: a UUID generated the first time this is retrieved, and
-   unvarying after that;
+--- a/arch/arm/include/asm/timex.h
++++ b/arch/arm/include/asm/timex.h
+@@ -11,5 +11,6 @@
  
-+* ``uuid``: a UUID generated every time this is retrieved (this can
-+  thus be used to generate UUIDs at will);
-+
- * ``entropy_avail``: the pool's entropy count, in bits;
+ typedef unsigned long cycles_t;
+ #define get_cycles()	({ cycles_t c; read_current_timer(&c) ? 0 : c; })
++#define random_get_entropy() (((unsigned long)get_cycles()) ?: random_get_entropy_fallback())
  
- * ``poolsize``: the entropy pool size, in bits;
-@@ -1013,10 +1016,7 @@ This is a directory, with the following
- * ``urandom_min_reseed_secs``: obsolete (used to determine the minimum
-   number of seconds between urandom pool reseeding). This file is
-   writable for compatibility purposes, but writing to it has no effect
--  on any RNG behavior.
--
--* ``uuid``: a UUID generated every time this is retrieved (this can
--  thus be used to generate UUIDs at will);
-+  on any RNG behavior;
- 
- * ``write_wakeup_threshold``: when the entropy count drops below this
-   (as a number of bits), processes waiting to write to ``/dev/random``
+ #endif
 
 
