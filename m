@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5431DC4321E
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:07:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D2CFC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:08:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352753AbiE0MH3 (ORCPT
+        id S1352968AbiE0MHi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 08:07:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57498 "EHLO
+        Fri, 27 May 2022 08:07:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353334AbiE0L4Y (ORCPT
+        with ESMTP id S1353254AbiE0L4V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:56:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F10EDFC1;
-        Fri, 27 May 2022 04:51:33 -0700 (PDT)
+        Fri, 27 May 2022 07:56:21 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A4EAFC4FA;
+        Fri, 27 May 2022 04:50:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A6B29B824DA;
-        Fri, 27 May 2022 11:51:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 041BFC385A9;
-        Fri, 27 May 2022 11:51:30 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id BC697CE2480;
+        Fri, 27 May 2022 11:50:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5909C385A9;
+        Fri, 27 May 2022 11:50:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653652291;
-        bh=bYGVN7kfmeQdES4CFzs8Cvo+1Ksjh/MOcCcr62PeBgo=;
+        s=korg; t=1653652214;
+        bh=XSyzW1rqJtEuSAiRzlou7jCCWzgp7BO+3upXjd452X8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hyKUK6FYLrDj8sMnJ7gCmY+tiK9mxcf3p46GuWt3j4S4+vd4cg2rwL3u0tfyRztVK
-         HQxe/ookRJAd2kKHwK3G4efU1Rr7WhatRs/menQ11ZP7rCvymAVRTg9VXDYyTlZM59
-         s7FpYO0KBEwktK9wZBVK3u4s7R8+tKjhn6uBuRbY=
+        b=iqotpjPZ1lfxlJTHTaBGZkUROTHglMZKxMWNhxZH3x+gjexpBSEg9/N+50rZUYfol
+         17xOxCFq2FxHUwm3V0gV5CEipF/AqlQUVwJ8KtjZHT5hVqN6bGU9Hsmcf//Gy3jtdl
+         nO5cs+HTauflgSMd23DhULYOQIPrPvopgNsG61p0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Dinh Nguyen <dinguyen@kernel.org>,
+        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
+        Theodore Tso <tytso@mit.edu>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.15 114/145] nios2: use fallback for random_get_entropy() instead of zero
-Date:   Fri, 27 May 2022 10:50:15 +0200
-Message-Id: <20220527084904.360804982@linuxfoundation.org>
+Subject: [PATCH 5.10 116/163] random: check for signals every PAGE_SIZE chunk of /dev/[u]random
+Date:   Fri, 27 May 2022 10:49:56 +0200
+Message-Id: <20220527084844.246754865@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084850.364560116@linuxfoundation.org>
-References: <20220527084850.364560116@linuxfoundation.org>
+In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
+References: <20220527084828.156494029@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,36 +52,107 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit c04e72700f2293013dab40208e809369378f224c upstream.
+commit e3c1c4fd9e6d14059ed93ebfe15e1c57793b1a05 upstream.
 
-In the event that random_get_entropy() can't access a cycle counter or
-similar, falling back to returning 0 is really not the best we can do.
-Instead, at least calling random_get_entropy_fallback() would be
-preferable, because that always needs to return _something_, even
-falling back to jiffies eventually. It's not as though
-random_get_entropy_fallback() is super high precision or guaranteed to
-be entropic, but basically anything that's not zero all the time is
-better than returning zero all the time.
+In 1448769c9cdb ("random: check for signal_pending() outside of
+need_resched() check"), Jann pointed out that we previously were only
+checking the TIF_NOTIFY_SIGNAL and TIF_SIGPENDING flags if the process
+had TIF_NEED_RESCHED set, which meant in practice, super long reads to
+/dev/[u]random would delay signal handling by a long time. I tried this
+using the below program, and indeed I wasn't able to interrupt a
+/dev/urandom read until after several megabytes had been read. The bug
+he fixed has always been there, and so code that reads from /dev/urandom
+without checking the return value of read() has mostly worked for a long
+time, for most sizes, not just for <= 256.
 
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Acked-by: Dinh Nguyen <dinguyen@kernel.org>
+Maybe it makes sense to keep that code working. The reason it was so
+small prior, ignoring the fact that it didn't work anyway, was likely
+because /dev/random used to block, and that could happen for pretty
+large lengths of time while entropy was gathered. But now, it's just a
+chacha20 call, which is extremely fast and is just operating on pure
+data, without having to wait for some external event. In that sense,
+/dev/[u]random is a lot more like /dev/zero.
+
+Taking a page out of /dev/zero's read_zero() function, it always returns
+at least one chunk, and then checks for signals after each chunk. Chunk
+sizes there are of length PAGE_SIZE. Let's just copy the same thing for
+/dev/[u]random, and check for signals and cond_resched() for every
+PAGE_SIZE amount of data. This makes the behavior more consistent with
+expectations, and should mitigate the impact of Jann's fix for the
+age-old signal check bug.
+
+---- test program ----
+
+  #include <unistd.h>
+  #include <signal.h>
+  #include <stdio.h>
+  #include <sys/random.h>
+
+  static unsigned char x[~0U];
+
+  static void handle(int) { }
+
+  int main(int argc, char *argv[])
+  {
+    pid_t pid = getpid(), child;
+    signal(SIGUSR1, handle);
+    if (!(child = fork())) {
+      for (;;)
+        kill(pid, SIGUSR1);
+    }
+    pause();
+    printf("interrupted after reading %zd bytes\n", getrandom(x, sizeof(x), 0));
+    kill(child, SIGTERM);
+    return 0;
+  }
+
+Cc: Jann Horn <jannh@google.com>
+Cc: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/nios2/include/asm/timex.h |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/char/random.c |   17 +++++++----------
+ 1 file changed, 7 insertions(+), 10 deletions(-)
 
---- a/arch/nios2/include/asm/timex.h
-+++ b/arch/nios2/include/asm/timex.h
-@@ -8,5 +8,8 @@
- typedef unsigned long cycles_t;
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -525,7 +525,6 @@ EXPORT_SYMBOL(get_random_bytes);
  
- extern cycles_t get_cycles(void);
-+#define get_cycles get_cycles
+ static ssize_t get_random_bytes_user(void __user *buf, size_t nbytes)
+ {
+-	bool large_request = nbytes > 256;
+ 	ssize_t ret = 0;
+ 	size_t len;
+ 	u32 chacha_state[CHACHA_STATE_WORDS];
+@@ -551,15 +550,6 @@ static ssize_t get_random_bytes_user(voi
+ 	}
+ 
+ 	do {
+-		if (large_request) {
+-			if (signal_pending(current)) {
+-				if (!ret)
+-					ret = -ERESTARTSYS;
+-				break;
+-			}
+-			cond_resched();
+-		}
+-
+ 		chacha20_block(chacha_state, output);
+ 		if (unlikely(chacha_state[12] == 0))
+ 			++chacha_state[13];
+@@ -573,6 +563,13 @@ static ssize_t get_random_bytes_user(voi
+ 		nbytes -= len;
+ 		buf += len;
+ 		ret += len;
 +
-+#define random_get_entropy() (((unsigned long)get_cycles()) ?: random_get_entropy_fallback())
++		BUILD_BUG_ON(PAGE_SIZE % CHACHA_BLOCK_SIZE != 0);
++		if (!(ret % PAGE_SIZE) && nbytes) {
++			if (signal_pending(current))
++				break;
++			cond_resched();
++		}
+ 	} while (nbytes);
  
- #endif
+ 	memzero_explicit(output, sizeof(output));
 
 
