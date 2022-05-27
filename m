@@ -2,183 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1C78C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 07:09:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D136C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 07:09:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345477AbiE0HJY (ORCPT
+        id S1346752AbiE0HJ3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 03:09:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44732 "EHLO
+        Fri, 27 May 2022 03:09:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345548AbiE0HJG (ORCPT
+        with ESMTP id S1345528AbiE0HJQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 03:09:06 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69E7CFD34F;
-        Fri, 27 May 2022 00:07:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1653635271; x=1685171271;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=RwQc5FyNxnZwDYZUUhQH6gr1/5DebPTnHa51OwkXzy0=;
-  b=mplf2T+GahxjdE6Sczhtbcm72vLJa4ZSM1ugO/MJwv8Ct5cfdpmtC22V
-   zikdvcRTvAQKD13BkU3Xc4wYJR2W74qaPcSS/ITEYuEEGrK2Tn1lidCAF
-   g+ndThj5q/DqSKDpUZJcurD3OgSpR0UShOq09dPeI7Gx5Rnv1fO5gtrp2
-   A3zHHKXbfkWwpQx2dxhu7XN/IBmQrrvcckwPhrQhYi9+laOa5YGQj8e8e
-   1O6B7YnNVTrXIAwC1nKbBX0pzwIFISWSc/qleJpNcUXH+m6tkaS0Sj7tf
-   /tSBqlyKUKxKdp5k2YFZnKMQT5/GSdn795jLdpHgJIk5qY7xBUmhEpzAN
-   w==;
-X-IronPort-AV: E=Sophos;i="5.91,254,1647327600"; 
-   d="scan'208";a="97536404"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 27 May 2022 00:07:42 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 27 May 2022 00:07:37 -0700
-Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Fri, 27 May 2022 00:07:33 -0700
-From:   Arun Ramadoss <arun.ramadoss@microchip.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Woojung Huh <woojung.huh@microchip.com>,
-        <UNGLinuxDriver@microchip.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "Russell King" <linux@armlinux.org.uk>
-Subject: [RFC Patch net-next 13/17] net: dsa: microchip: ksz9477: separate phylink mode from switch register
-Date:   Fri, 27 May 2022 12:33:54 +0530
-Message-ID: <20220527070358.25490-14-arun.ramadoss@microchip.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527070358.25490-1-arun.ramadoss@microchip.com>
-References: <20220527070358.25490-1-arun.ramadoss@microchip.com>
+        Fri, 27 May 2022 03:09:16 -0400
+Received: from conssluserg-02.nifty.com (conssluserg-02.nifty.com [210.131.2.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05009FF59B;
+        Fri, 27 May 2022 00:08:31 -0700 (PDT)
+Received: from mail-pl1-f179.google.com (mail-pl1-f179.google.com [209.85.214.179]) (authenticated)
+        by conssluserg-02.nifty.com with ESMTP id 24R77wkV008090;
+        Fri, 27 May 2022 16:07:59 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-02.nifty.com 24R77wkV008090
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1653635279;
+        bh=mV/udz/FFuiifR9fUggl0SWSX/QJeAsM+es90basFQw=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=bZ6koubBA13dDKKMIF4Qj8XW7ypyDItbXW9QeDuyzuJ1VcBBhpyrPd1gi8XFwNr3C
+         FOd4Zi7x5eWmw0zpToh+DeltaWSKMOv/rJxwyEWuGnr2rRR+huri3PWO1akxb4h7I1
+         tZiz09bOYz3rRC0z7QF4U2gEbcL0nIpES61RglMsmqC6b0yryiuCq3eSf8ZhXBgtDf
+         hnKWIYF7V0iGiHPZOofvvv/OJWvYL8FH4xQfJk9bI4BPVa/NMaAkMwt2u6ndFLh1JY
+         mELtIeGoJNElmRK9xbKGUB0+31EPctvX84Akst4scj7aJBtJ952a2NoDH2p7O96d0Y
+         GvHqBcnjd7kEg==
+X-Nifty-SrcIP: [209.85.214.179]
+Received: by mail-pl1-f179.google.com with SMTP id d22so3397859plr.9;
+        Fri, 27 May 2022 00:07:59 -0700 (PDT)
+X-Gm-Message-State: AOAM5319kLs4zkG44vYOw1K2O0PxjrIoHzqE+zMIiV3gLP1XwS/ir//5
+        kTAuvm3Un0tJHnTmopXpbJTS928/ItH0js56/80=
+X-Google-Smtp-Source: ABdhPJylxGPI7tDSEZDye7GXUuW8+TbK0iqVGAGVHq+ghY+58bzx25op6jYR9L4MhCmj303SgIUxmq8grFuWppoIVck=
+X-Received: by 2002:a17:902:9887:b0:151:6e1c:7082 with SMTP id
+ s7-20020a170902988700b001516e1c7082mr40896597plp.162.1653635278105; Fri, 27
+ May 2022 00:07:58 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+References: <20220524152718.331773-1-alexandr.lobakin@intel.com>
+In-Reply-To: <20220524152718.331773-1-alexandr.lobakin@intel.com>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Fri, 27 May 2022 16:06:35 +0900
+X-Gmail-Original-Message-ID: <CAK7LNARaUvgOeXg5q9JMErYxQsK16JBmK5sWBxhGSu-d+UyrOA@mail.gmail.com>
+Message-ID: <CAK7LNARaUvgOeXg5q9JMErYxQsK16JBmK5sWBxhGSu-d+UyrOA@mail.gmail.com>
+Subject: Re: [PATCH] modpost: fix removing numeric suffixes
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>
+Cc:     Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Rusty Russell <rusty@rustcorp.com.au>,
+        Michal Nazarewicz <mina86@mina86.com>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As per 'commit 3506b2f42dff ("net: dsa: microchip: call
-phy_remove_link_mode during probe")' phy_remove_link_mode is added in
-the switch_register function after dsa_switch_register. In order to have
-the common switch register function, moving this phy init after
-dsa_register_switch using the new ksz_dev_ops.dsa_init hook.
+On Wed, May 25, 2022 at 12:28 AM Alexander Lobakin
+<alexandr.lobakin@intel.com> wrote:
+>
+> With the `-z unique-symbol` linker flag or any similar mechanism,
+> it is possible to trigger the following:
+>
+> ERROR: modpost: "param_set_uint.0" [vmlinux] is a static EXPORT_SYMBOL
+>
+> The reason is that for now the condition from remove_dot():
+>
+> if (m && (s[n + m] == '.' || s[n + m] == 0))
+>
+> which was designed to test if it's a dot or a '\0' after the suffix
+> is never satisfied.
+> This is due to that `s[n + m]` always points to the last digit of a
+> numeric suffix, not on the symbol next to it (from a custom debug
+> print added to modpost):
+>
+> param_set_uint.0, s[n + m] is '0', s[n + m + 1] is '\0'
+>
+> So it's off-by-one and was like that since 2014.
+>
+> Fix this for the sake of any potential upcoming features, but don't
+> bother stable-backporting, as it's well hidden -- apart from that
+> LD flag, it can be triggered only with GCC LTO which never landed
+> upstream.
+>
+> Fixes: fcd38ed0ff26 ("scripts: modpost: fix compilation warning")
+> Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+> ---
 
-Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
----
- drivers/net/dsa/microchip/ksz9477.c    | 49 ++++++++++++++------------
- drivers/net/dsa/microchip/ksz_common.c |  5 ++-
- drivers/net/dsa/microchip/ksz_common.h |  1 +
- 3 files changed, 31 insertions(+), 24 deletions(-)
 
-diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index ecce99b77ef6..c87ce0e2afd8 100644
---- a/drivers/net/dsa/microchip/ksz9477.c
-+++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -1349,6 +1349,30 @@ static void ksz9477_switch_exit(struct ksz_device *dev)
- 	ksz9477_reset_switch(dev);
- }
- 
-+static int ksz9477_dsa_init(struct ksz_device *dev)
-+{
-+	struct phy_device *phydev;
-+	int i;
-+
-+	for (i = 0; i < dev->phy_port_cnt; ++i) {
-+		if (!dsa_is_user_port(dev->ds, i))
-+			continue;
-+
-+		phydev = dsa_to_port(dev->ds, i)->slave->phydev;
-+
-+		/* The MAC actually cannot run in 1000 half-duplex mode. */
-+		phy_remove_link_mode(phydev,
-+				     ETHTOOL_LINK_MODE_1000baseT_Half_BIT);
-+
-+		/* PHY does not support gigabit. */
-+		if (!(dev->features & GBIT_SUPPORT))
-+			phy_remove_link_mode(phydev,
-+					     ETHTOOL_LINK_MODE_1000baseT_Full_BIT);
-+	}
-+
-+	return 0;
-+}
-+
- static const struct ksz_dev_ops ksz9477_dev_ops = {
- 	.setup = ksz9477_setup,
- 	.get_port_addr = ksz9477_get_port_addr,
-@@ -1377,35 +1401,14 @@ static const struct ksz_dev_ops ksz9477_dev_ops = {
- 	.change_mtu = ksz9477_change_mtu,
- 	.max_mtu = ksz9477_max_mtu,
- 	.shutdown = ksz9477_reset_switch,
-+	.dsa_init = ksz9477_dsa_init,
- 	.init = ksz9477_switch_init,
- 	.exit = ksz9477_switch_exit,
- };
- 
- int ksz9477_switch_register(struct ksz_device *dev)
- {
--	int ret, i;
--	struct phy_device *phydev;
--
--	ret = ksz_switch_register(dev, &ksz9477_dev_ops);
--	if (ret)
--		return ret;
--
--	for (i = 0; i < dev->phy_port_cnt; ++i) {
--		if (!dsa_is_user_port(dev->ds, i))
--			continue;
--
--		phydev = dsa_to_port(dev->ds, i)->slave->phydev;
--
--		/* The MAC actually cannot run in 1000 half-duplex mode. */
--		phy_remove_link_mode(phydev,
--				     ETHTOOL_LINK_MODE_1000baseT_Half_BIT);
--
--		/* PHY does not support gigabit. */
--		if (!(dev->features & GBIT_SUPPORT))
--			phy_remove_link_mode(phydev,
--					     ETHTOOL_LINK_MODE_1000baseT_Full_BIT);
--	}
--	return ret;
-+	return ksz_switch_register(dev, &ksz9477_dev_ops);
- }
- EXPORT_SYMBOL(ksz9477_switch_register);
- 
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index ace5cf0ad5a8..f40d64858d35 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -1253,7 +1253,10 @@ int ksz_switch_register(struct ksz_device *dev,
- 	/* Start the MIB timer. */
- 	schedule_delayed_work(&dev->mib_read, 0);
- 
--	return 0;
-+	if (dev->dev_ops->dsa_init)
-+		ret = dev->dev_ops->dsa_init(dev);
-+
-+	return ret;
- }
- EXPORT_SYMBOL(ksz_switch_register);
- 
-diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index 872d378ac45c..23962f47df46 100644
---- a/drivers/net/dsa/microchip/ksz_common.h
-+++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -213,6 +213,7 @@ struct ksz_dev_ops {
- 	void (*freeze_mib)(struct ksz_device *dev, int port, bool freeze);
- 	void (*port_init_cnt)(struct ksz_device *dev, int port);
- 	int (*shutdown)(struct ksz_device *dev);
-+	int (*dsa_init)(struct ksz_device *dev);
- 	int (*init)(struct ksz_device *dev);
- 	void (*exit)(struct ksz_device *dev);
- };
+Applied to linux-kbuild.
+Thanks.
+
+
+
+>  scripts/mod/modpost.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
+> index 6f5c605ab0fb..fd04ba057490 100644
+> --- a/scripts/mod/modpost.c
+> +++ b/scripts/mod/modpost.c
+> @@ -1905,7 +1905,7 @@ static char *remove_dot(char *s)
+>
+>         if (n && s[n]) {
+>                 size_t m = strspn(s + n + 1, "0123456789");
+> -               if (m && (s[n + m] == '.' || s[n + m] == 0))
+> +               if (m && (s[n + m + 1] == '.' || s[n + m + 1] == 0))
+>                         s[n] = 0;
+>         }
+>         return s;
+> --
+> 2.36.1
+>
+
+
 -- 
-2.36.1
-
+Best Regards
+Masahiro Yamada
