@@ -2,96 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AA4EC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:19:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22C3CC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:20:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351253AbiE0LTQ (ORCPT
+        id S1351263AbiE0LUQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 07:19:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56612 "EHLO
+        Fri, 27 May 2022 07:20:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233963AbiE0LTM (ORCPT
+        with ESMTP id S244684AbiE0LUO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:19:12 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EA82122B74;
-        Fri, 27 May 2022 04:19:09 -0700 (PDT)
-Received: from dggpeml500023.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L8j305MlyzjWxY;
-        Fri, 27 May 2022 19:18:04 +0800 (CST)
-Received: from ubuntu1804.huawei.com (10.67.174.58) by
- dggpeml500023.china.huawei.com (7.185.36.114) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 27 May 2022 19:19:07 +0800
-From:   Xiu Jianfeng <xiujianfeng@huawei.com>
-To:     <zohar@linux.ibm.com>, <dmitry.kasatkin@gmail.com>,
-        <jmorris@namei.org>, <serge@hallyn.com>
-CC:     <linux-integrity@vger.kernel.org>,
-        <linux-security-module@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH -next] Revert "evm: Fix memleak in init_desc"
-Date:   Fri, 27 May 2022 19:17:26 +0800
-Message-ID: <20220527111726.195825-1-xiujianfeng@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Fri, 27 May 2022 07:20:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE1E012698E;
+        Fri, 27 May 2022 04:20:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B95F61CB6;
+        Fri, 27 May 2022 11:20:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id A012FC34113;
+        Fri, 27 May 2022 11:20:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653650412;
+        bh=MeNcJ1RMkgY4m5ptE96b0P/31qMrByU6sk4dUWYsWzY=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ejlNXm9cWWA8D+vbjsmOZrlO6qZpvsduQp4q9HB/3wj5AKIf3gvM2ZbnIvYNdzUMz
+         wkpTX3H4COpzRn19KL8cEsVYl/JX6N2nDCKSJ0qW45dSTZ3gRpM3DOP7jFq2iI+WkD
+         GLzw4BjA1cUWl3TbmdrIfzCe0ZYke1y/u3rpv8JpyVK4Mn7/2H7fXyxobYQgQcXO7u
+         5GG86ZLUI5A+Qab8f425Vx+mJIzzDvt45Orlgfk5aYZ4xQK+XipeZ7KU93TMrOrSqR
+         wRdiK28FGdspL7jW5FQ1Qb735UBryDAINbxg4olQ9KQckt6akj+Qz3ABVzzx608aoG
+         5Z8zQWKKjyIiw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 83594F03947;
+        Fri, 27 May 2022 11:20:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.174.58]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpeml500023.china.huawei.com (7.185.36.114)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next] net: lan743x: PCI11010 / PCI11414 fix
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165365041252.2876.15372602203233940410.git-patchwork-notify@kernel.org>
+Date:   Fri, 27 May 2022 11:20:12 +0000
+References: <20220527041728.3257-1-Raju.Lakkaraju@microchip.com>
+In-Reply-To: <20220527041728.3257-1-Raju.Lakkaraju@microchip.com>
+To:     Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, bryan.whitehead@microchip.com,
+        richardcochran@gmail.com, UNGLinuxDriver@microchip.com,
+        Ian.Saturley@microchip.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This reverts commit ccf11dbaa07b328fa469415c362d33459c140a37.
+Hello:
 
-Commit ccf11dbaa07b ("evm: Fix memleak in init_desc") said there is
-memleak in init_desc. That may be incorrect, as we can see, tmp_tfm is
-saved in one of the two global variables hmac_tfm or evm_tfm[hash_algo],
-then if init_desc is called next time, there is no need to alloc tfm
-again, so in the error path of kmalloc desc or crypto_shash_init(desc),
-It is not a problem without freeing tmp_tfm.
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-And also that commit did not reset the global variable to NULL after
-freeing tmp_tfm and this makes *tfm a dangling pointer which may cause a
-UAF issue.
+On Fri, 27 May 2022 09:47:28 +0530 you wrote:
+> Fix the MDIO interface declarations to reflect what is currently supported by
+> the PCI11010 / PCI11414 devices (C22 for RGMII and C22_C45 for SGMII)
+> 
+> Signed-off-by: Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
+> ---
+>  drivers/net/ethernet/microchip/lan743x_main.c | 32 +++++++++++++------
+>  1 file changed, 22 insertions(+), 10 deletions(-)
 
-Signed-off-by: Xiu Jianfeng <xiujianfeng@huawei.com>
----
- security/integrity/evm/evm_crypto.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+Here is the summary with links:
+  - [net-next] net: lan743x: PCI11010 / PCI11414 fix
+    https://git.kernel.org/netdev/net/c/79dfeb2916d7
 
-diff --git a/security/integrity/evm/evm_crypto.c b/security/integrity/evm/evm_crypto.c
-index a733aff02006..708de9656bbd 100644
---- a/security/integrity/evm/evm_crypto.c
-+++ b/security/integrity/evm/evm_crypto.c
-@@ -75,7 +75,7 @@ static struct shash_desc *init_desc(char type, uint8_t hash_algo)
- {
- 	long rc;
- 	const char *algo;
--	struct crypto_shash **tfm, *tmp_tfm = NULL;
-+	struct crypto_shash **tfm, *tmp_tfm;
- 	struct shash_desc *desc;
- 
- 	if (type == EVM_XATTR_HMAC) {
-@@ -120,16 +120,13 @@ static struct shash_desc *init_desc(char type, uint8_t hash_algo)
- alloc:
- 	desc = kmalloc(sizeof(*desc) + crypto_shash_descsize(*tfm),
- 			GFP_KERNEL);
--	if (!desc) {
--		crypto_free_shash(tmp_tfm);
-+	if (!desc)
- 		return ERR_PTR(-ENOMEM);
--	}
- 
- 	desc->tfm = *tfm;
- 
- 	rc = crypto_shash_init(desc);
- 	if (rc) {
--		crypto_free_shash(tmp_tfm);
- 		kfree(desc);
- 		return ERR_PTR(rc);
- 	}
+You are awesome, thank you!
 -- 
-2.17.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
