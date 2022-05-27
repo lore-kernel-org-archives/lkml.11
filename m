@@ -2,46 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91AB6C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:37:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5669EC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:37:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351402AbiE0Lhs (ORCPT
+        id S1351366AbiE0Lhw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 07:37:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44186 "EHLO
+        Fri, 27 May 2022 07:37:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345594AbiE0Lhm (ORCPT
+        with ESMTP id S1351351AbiE0Lhd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:37:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 738066540C;
-        Fri, 27 May 2022 04:37:33 -0700 (PDT)
+        Fri, 27 May 2022 07:37:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C07EF62CC9;
+        Fri, 27 May 2022 04:37:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EC9D761CE2;
-        Fri, 27 May 2022 11:37:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0485DC34113;
-        Fri, 27 May 2022 11:37:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 779D8B824DC;
+        Fri, 27 May 2022 11:37:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB395C385A9;
+        Fri, 27 May 2022 11:37:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653651452;
-        bh=amemK8Q9YbQzV/hIYUpP+5+ychYfZ9KcS9kDPk/te5c=;
+        s=korg; t=1653651449;
+        bh=Yy5gQPcfw9NC/kuApdrxoyH05hh4EnBXxxCCeB24uyw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bIuoGKPcsD4I0+vMHmg/YpdHDERhXAFnOxsdkwULULHPCNVCbHHdDEMS2wsldx311
-         iTVWwljACoWNI2JC8Kwt5OMvNcpzJ31WgHPktDXNxWp/iLIOFCi9PnpqKk8RqOptqK
-         NAGtTAlZmgSJGMuA09uZNtGg8EnGx3OR6NXbYADo=
+        b=bqKoEK4NUqCxEG4/E/EjiJ9l4W46+2LXY3AdbzoVr+ggGfQft0EvhvnDEZQQ+j+2a
+         0R2Lubwfvxad/2kqRqAXiop6UH0BiqzGJEfSNbV5dROLxNbn99URII1UYER78qNe+r
+         uuoShZlC936gh1qHgxS6YKgvLDnAMESDfhM7oqjE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.17 046/111] random: cleanup UUID handling
-Date:   Fri, 27 May 2022 10:49:18 +0200
-Message-Id: <20220527084825.965332823@linuxfoundation.org>
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Veronika Kabatova <vkabatov@redhat.com>,
+        Aristeu Rozanski <aris@redhat.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        dann frazier <dann.frazier@canonical.com>
+Subject: [PATCH 5.15 004/145] ACPI: sysfs: Fix BERT error region memory mapping
+Date:   Fri, 27 May 2022 10:48:25 +0200
+Message-Id: <20220527084851.055599790@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084819.133490171@linuxfoundation.org>
-References: <20220527084819.133490171@linuxfoundation.org>
+In-Reply-To: <20220527084850.364560116@linuxfoundation.org>
+References: <20220527084850.364560116@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,93 +54,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
 
-commit 64276a9939ff414f2f0db38036cf4e1a0a703394 upstream.
+commit 1bbc21785b7336619fb6a67f1fff5afdaf229acc upstream.
 
-Rather than hard coding various lengths, we can use the right constants.
-Strings should be `char *` while buffers should be `u8 *`. Rather than
-have a nonsensical and unused maxlength, just remove it. Finally, use
-snprintf instead of sprintf, just out of good hygiene.
+Currently the sysfs interface maps the BERT error region as "memory"
+(through acpi_os_map_memory()) in order to copy the error records into
+memory buffers through memory operations (eg memory_read_from_buffer()).
 
-As well, remove the old comment about returning a binary UUID via the
-binary sysctl syscall. That syscall was removed from the kernel in 5.5,
-and actually, the "uuid_strategy" function and related infrastructure
-for even serving it via the binary sysctl syscall was removed with
-894d2491153a ("sysctl drivers: Remove dead binary sysctl support") back
-in 2.6.33.
+The OS system cannot detect whether the BERT error region is part of
+system RAM or it is "device memory" (eg BMC memory) and therefore it
+cannot detect which memory attributes the bus to memory support (and
+corresponding kernel mapping, unless firmware provides the required
+information).
 
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+The acpi_os_map_memory() arch backend implementation determines the
+mapping attributes. On arm64, if the BERT error region is not present in
+the EFI memory map, the error region is mapped as device-nGnRnE; this
+triggers alignment faults since memcpy unaligned accesses are not
+allowed in device-nGnRnE regions.
+
+The ACPI sysfs code cannot therefore map by default the BERT error
+region with memory semantics but should use a safer default.
+
+Change the sysfs code to map the BERT error region as MMIO (through
+acpi_os_map_iomem()) and use the memcpy_fromio() interface to read the
+error region into the kernel buffer.
+
+Link: https://lore.kernel.org/linux-arm-kernel/31ffe8fc-f5ee-2858-26c5-0fd8bdd68702@arm.com
+Link: https://lore.kernel.org/linux-acpi/CAJZ5v0g+OVbhuUUDrLUCfX_mVqY_e8ubgLTU98=jfjTeb4t+Pw@mail.gmail.com
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Tested-by: Veronika Kabatova <vkabatov@redhat.com>
+Tested-by: Aristeu Rozanski <aris@redhat.com>
+Acked-by: Ard Biesheuvel <ardb@kernel.org>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Cc: dann frazier <dann.frazier@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   29 +++++++++++++----------------
- 1 file changed, 13 insertions(+), 16 deletions(-)
+ drivers/acpi/sysfs.c |   25 ++++++++++++++++++-------
+ 1 file changed, 18 insertions(+), 7 deletions(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -1661,22 +1661,25 @@ const struct file_operations urandom_fop
- static int sysctl_random_min_urandom_seed = 60;
- static int sysctl_random_write_wakeup_bits = POOL_MIN_BITS;
- static int sysctl_poolsize = POOL_BITS;
--static char sysctl_bootid[16];
-+static u8 sysctl_bootid[UUID_SIZE];
- 
- /*
-  * This function is used to return both the bootid UUID, and random
-- * UUID.  The difference is in whether table->data is NULL; if it is,
-+ * UUID. The difference is in whether table->data is NULL; if it is,
-  * then a new UUID is generated and returned to the user.
-- *
-- * If the user accesses this via the proc interface, the UUID will be
-- * returned as an ASCII string in the standard UUID format; if via the
-- * sysctl system call, as 16 bytes of binary data.
-  */
- static int proc_do_uuid(struct ctl_table *table, int write, void *buffer,
- 			size_t *lenp, loff_t *ppos)
+--- a/drivers/acpi/sysfs.c
++++ b/drivers/acpi/sysfs.c
+@@ -415,19 +415,30 @@ static ssize_t acpi_data_show(struct fil
+ 			      loff_t offset, size_t count)
  {
--	struct ctl_table fake_table;
--	unsigned char buf[64], tmp_uuid[16], *uuid;
-+	u8 tmp_uuid[UUID_SIZE], *uuid;
-+	char uuid_string[UUID_STRING_LEN + 1];
-+	struct ctl_table fake_table = {
-+		.data = uuid_string,
-+		.maxlen = UUID_STRING_LEN
-+	};
+ 	struct acpi_data_attr *data_attr;
+-	void *base;
+-	ssize_t rc;
++	void __iomem *base;
++	ssize_t size;
+ 
+ 	data_attr = container_of(bin_attr, struct acpi_data_attr, attr);
++	size = data_attr->attr.size;
+ 
+-	base = acpi_os_map_memory(data_attr->addr, data_attr->attr.size);
++	if (offset < 0)
++		return -EINVAL;
 +
-+	if (write)
-+		return -EPERM;
++	if (offset >= size)
++		return 0;
++
++	if (count > size - offset)
++		count = size - offset;
++
++	base = acpi_os_map_iomem(data_attr->addr, size);
+ 	if (!base)
+ 		return -ENOMEM;
+-	rc = memory_read_from_buffer(buf, count, &offset, base,
+-				     data_attr->attr.size);
+-	acpi_os_unmap_memory(base, data_attr->attr.size);
  
- 	uuid = table->data;
- 	if (!uuid) {
-@@ -1691,12 +1694,8 @@ static int proc_do_uuid(struct ctl_table
- 		spin_unlock(&bootid_spinlock);
- 	}
- 
--	sprintf(buf, "%pU", uuid);
--
--	fake_table.data = buf;
--	fake_table.maxlen = sizeof(buf);
--
--	return proc_dostring(&fake_table, write, buffer, lenp, ppos);
-+	snprintf(uuid_string, sizeof(uuid_string), "%pU", uuid);
-+	return proc_dostring(&fake_table, 0, buffer, lenp, ppos);
+-	return rc;
++	memcpy_fromio(buf, base + offset, count);
++
++	acpi_os_unmap_iomem(base, size);
++
++	return count;
  }
  
- static struct ctl_table random_table[] = {
-@@ -1731,13 +1730,11 @@ static struct ctl_table random_table[] =
- 	{
- 		.procname	= "boot_id",
- 		.data		= &sysctl_bootid,
--		.maxlen		= 16,
- 		.mode		= 0444,
- 		.proc_handler	= proc_do_uuid,
- 	},
- 	{
- 		.procname	= "uuid",
--		.maxlen		= 16,
- 		.mode		= 0444,
- 		.proc_handler	= proc_do_uuid,
- 	},
+ static int acpi_bert_data_init(void *th, struct acpi_data_attr *data_attr)
 
 
