@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0762EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 07:07:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 536CCC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 07:07:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345567AbiE0HHK (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 03:07:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43844 "EHLO
+        id S234238AbiE0HH1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 03:07:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344209AbiE0HGq (ORCPT
+        with ESMTP id S1345444AbiE0HG6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 03:06:46 -0400
+        Fri, 27 May 2022 03:06:58 -0400
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13439F1365;
-        Fri, 27 May 2022 00:06:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 822E3F68AA;
+        Fri, 27 May 2022 00:06:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1653635203; x=1685171203;
+  t=1653635216; x=1685171216;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=kOUxOz0CuZ6ZV6n9fE6Ut+b/Kon8oZeIxhvj1TjAWCo=;
-  b=XZzBlCjrMgl5BR8dG1hgAIK8Rwzoja6BEPWlxRKhqHI3DT5BWd+DMcb9
-   +LzjoEPSXNBQh/RBYBZwzerXVocyGoGHSX31SgMAoz/r4XkgYOZT+/sqA
-   JZak7IRPLvjnD/smTpD/x/SWUj3ET5nUWJtJdMC1cO8nQ2e4ayyLsmLWn
-   w40aMYknUTuvZn4Ly5EkS5EgsndnddYWOUhkDFmwn10Z9dhyxA7fcylv4
-   q9XRzoNkxbjIIer5QXui7usLFC6SrMV3F6MNMLEX4S6xGMvr8kdn9kh6o
-   HpVByGjqPDfIb21/gUIsPagm1N4+N2oLlW0+ZFjjuL8byga9iYGiLRY+K
+  bh=E5BLy6gRUx5QYynXA0m1su3odBaUXpMPYruvosrgoeU=;
+  b=hyyF2c9jX3imOB0kx2dB9iSci/3s+5SyL4Ivyj5z+4Eh5adZAtQaQyO/
+   fuExuycWy6MFZ/sLiDoLR0k0hEzc+JTfG/LU+UdHyYTLXy1XacQVZOqtf
+   ITiUuWLUmE93f0xYLWVHNHmyc6bKiGCAfdzx3DkTbx6KDo+QK1CWoPUsd
+   u1qOZvucGQD+vrCie+EwBg396YXSkqOWHPZymMSuAR8AHg0YgJttuEMgJ
+   e2a/JMCAA08vLFI/8Ey0xwXTY82vbDWD+dPlMlP8Cfjy/1a0aWpqzofMk
+   2AEh8Q5Hli0YIiXxj+9qOMELzimBZDb2GEw4eugK6/y2VgS/B6gUpo9Kz
    A==;
 X-IronPort-AV: E=Sophos;i="5.91,254,1647327600"; 
-   d="scan'208";a="175350392"
+   d="scan'208";a="175350469"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 27 May 2022 00:06:41 -0700
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 27 May 2022 00:06:54 -0700
 Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 27 May 2022 00:06:41 -0700
+ 15.1.2375.17; Fri, 27 May 2022 00:06:54 -0700
 Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Fri, 27 May 2022 00:06:36 -0700
+ 15.1.2375.17 via Frontend Transport; Fri, 27 May 2022 00:06:49 -0700
 From:   Arun Ramadoss <arun.ramadoss@microchip.com>
 To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
 CC:     Woojung Huh <woojung.huh@microchip.com>,
@@ -52,9 +51,9 @@ CC:     Woojung Huh <woojung.huh@microchip.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         "Russell King" <linux@armlinux.org.uk>
-Subject: [RFC Patch net-next 06/17] net: dsa: microchip: move the port mirror to ksz_common
-Date:   Fri, 27 May 2022 12:33:47 +0530
-Message-ID: <20220527070358.25490-7-arun.ramadoss@microchip.com>
+Subject: [RFC Patch net-next 08/17] net: dsa: microchip: update the ksz_phylink_get_caps
+Date:   Fri, 27 May 2022 12:33:49 +0530
+Message-ID: <20220527070358.25490-9-arun.ramadoss@microchip.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220527070358.25490-1-arun.ramadoss@microchip.com>
 References: <20220527070358.25490-1-arun.ramadoss@microchip.com>
@@ -65,181 +64,115 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch updates the common port mirror add/del dsa_switch_ops in
-ksz_common.c. The individual switches implementation is executed based
-on the ksz_dev_ops function pointers.
+This patch assigns the phylink_get_caps in ksz8795 and ksz9477 to
+ksz_phylink_get_caps. And update their mac_capabilities in the
+respective ksz_dev_ops.
 
 Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
 ---
- drivers/net/dsa/microchip/ksz8795.c    | 13 ++++++-------
- drivers/net/dsa/microchip/ksz9477.c    | 12 ++++++------
- drivers/net/dsa/microchip/ksz_common.c | 25 +++++++++++++++++++++++++
- drivers/net/dsa/microchip/ksz_common.h | 10 ++++++++++
- 4 files changed, 47 insertions(+), 13 deletions(-)
+ drivers/net/dsa/microchip/ksz8795.c    | 9 +++------
+ drivers/net/dsa/microchip/ksz9477.c    | 7 +++----
+ drivers/net/dsa/microchip/ksz_common.c | 3 +++
+ drivers/net/dsa/microchip/ksz_common.h | 2 ++
+ 4 files changed, 11 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-index 157d69e46793..8657b520b336 100644
+index e6982fa9d382..25763d89c67a 100644
 --- a/drivers/net/dsa/microchip/ksz8795.c
 +++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -1089,12 +1089,10 @@ static int ksz8_port_vlan_del(struct ksz_device *dev, int port,
- 	return 0;
+@@ -1353,13 +1353,9 @@ static int ksz8_setup(struct dsa_switch *ds)
+ 	return ksz8_handle_global_errata(ds);
  }
  
--static int ksz8_port_mirror_add(struct dsa_switch *ds, int port,
-+static int ksz8_port_mirror_add(struct ksz_device *dev, int port,
- 				struct dsa_mall_mirror_tc_entry *mirror,
- 				bool ingress, struct netlink_ext_ack *extack)
+-static void ksz8_get_caps(struct dsa_switch *ds, int port,
++static void ksz8_get_caps(struct ksz_device *dev, int port,
+ 			  struct phylink_config *config)
  {
 -	struct ksz_device *dev = ds->priv;
 -
- 	if (ingress) {
- 		ksz_port_cfg(dev, port, P_MIRROR_CTRL, PORT_MIRROR_RX, true);
- 		dev->mirror_rx |= BIT(port);
-@@ -1113,10 +1111,9 @@ static int ksz8_port_mirror_add(struct dsa_switch *ds, int port,
- 	return 0;
- }
+-	ksz_phylink_get_caps(ds, port, config);
+-
+ 	config->mac_capabilities = MAC_10 | MAC_100;
  
--static void ksz8_port_mirror_del(struct dsa_switch *ds, int port,
-+static void ksz8_port_mirror_del(struct ksz_device *dev, int port,
- 				 struct dsa_mall_mirror_tc_entry *mirror)
- {
--	struct ksz_device *dev = ds->priv;
- 	u8 data;
- 
- 	if (mirror->ingress) {
-@@ -1400,8 +1397,8 @@ static const struct dsa_switch_ops ksz8_switch_ops = {
- 	.port_fdb_dump		= ksz_port_fdb_dump,
- 	.port_mdb_add           = ksz_port_mdb_add,
- 	.port_mdb_del           = ksz_port_mdb_del,
--	.port_mirror_add	= ksz8_port_mirror_add,
--	.port_mirror_del	= ksz8_port_mirror_del,
-+	.port_mirror_add	= ksz_port_mirror_add,
-+	.port_mirror_del	= ksz_port_mirror_del,
- };
- 
- static u32 ksz8_get_port_addr(int port, int offset)
-@@ -1464,6 +1461,8 @@ static const struct ksz_dev_ops ksz8_dev_ops = {
- 	.vlan_filtering = ksz8_port_vlan_filtering,
- 	.vlan_add = ksz8_port_vlan_add,
- 	.vlan_del = ksz8_port_vlan_del,
-+	.mirror_add = ksz8_port_mirror_add,
-+	.mirror_del = ksz8_port_mirror_del,
+ 	/* Silicon Errata Sheet (DS80000830A):
+@@ -1381,7 +1377,7 @@ static const struct dsa_switch_ops ksz8_switch_ops = {
+ 	.setup			= ksz8_setup,
+ 	.phy_read		= ksz_phy_read16,
+ 	.phy_write		= ksz_phy_write16,
+-	.phylink_get_caps	= ksz8_get_caps,
++	.phylink_get_caps	= ksz_phylink_get_caps,
+ 	.phylink_mac_link_down	= ksz_mac_link_down,
+ 	.port_enable		= ksz_enable_port,
+ 	.get_strings		= ksz_get_strings,
+@@ -1464,6 +1460,7 @@ static const struct ksz_dev_ops ksz8_dev_ops = {
+ 	.mirror_add = ksz8_port_mirror_add,
+ 	.mirror_del = ksz8_port_mirror_del,
+ 	.get_stp_reg = ksz8_get_stp_reg,
++	.get_caps = ksz8_get_caps,
  	.shutdown = ksz8_reset_switch,
  	.init = ksz8_switch_init,
  	.exit = ksz8_switch_exit,
 diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index e230fe1d1917..6796c9d89ab9 100644
+index f08694aba6bb..494f93e4c7f8 100644
 --- a/drivers/net/dsa/microchip/ksz9477.c
 +++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -811,11 +811,10 @@ static int ksz9477_port_mdb_del(struct dsa_switch *ds, int port,
- 	return ret;
+@@ -1073,11 +1073,9 @@ static void ksz9477_phy_errata_setup(struct ksz_device *dev, int port)
+ 	ksz9477_port_mmd_write(dev, port, 0x1c, 0x20, 0xeeee);
  }
  
--static int ksz9477_port_mirror_add(struct dsa_switch *ds, int port,
-+static int ksz9477_port_mirror_add(struct ksz_device *dev, int port,
- 				   struct dsa_mall_mirror_tc_entry *mirror,
- 				   bool ingress, struct netlink_ext_ack *extack)
+-static void ksz9477_get_caps(struct dsa_switch *ds, int port,
++static void ksz9477_get_caps(struct ksz_device *dev, int port,
+ 			     struct phylink_config *config)
  {
--	struct ksz_device *dev = ds->priv;
- 	u8 data;
- 	int p;
- 
-@@ -851,10 +850,9 @@ static int ksz9477_port_mirror_add(struct dsa_switch *ds, int port,
- 	return 0;
+-	ksz_phylink_get_caps(ds, port, config);
+-
+ 	config->mac_capabilities = MAC_10 | MAC_100 | MAC_1000FD |
+ 				   MAC_ASYM_PAUSE | MAC_SYM_PAUSE;
  }
- 
--static void ksz9477_port_mirror_del(struct dsa_switch *ds, int port,
-+static void ksz9477_port_mirror_del(struct ksz_device *dev, int port,
- 				    struct dsa_mall_mirror_tc_entry *mirror)
- {
--	struct ksz_device *dev = ds->priv;
- 	bool in_use = false;
- 	u8 data;
- 	int p;
-@@ -1327,8 +1325,8 @@ static const struct dsa_switch_ops ksz9477_switch_ops = {
- 	.port_fdb_del		= ksz9477_port_fdb_del,
- 	.port_mdb_add           = ksz9477_port_mdb_add,
- 	.port_mdb_del           = ksz9477_port_mdb_del,
--	.port_mirror_add	= ksz9477_port_mirror_add,
--	.port_mirror_del	= ksz9477_port_mirror_del,
-+	.port_mirror_add	= ksz_port_mirror_add,
-+	.port_mirror_del	= ksz_port_mirror_del,
- 	.get_stats64		= ksz_get_stats64,
- 	.port_change_mtu	= ksz9477_change_mtu,
- 	.port_max_mtu		= ksz9477_max_mtu,
-@@ -1406,6 +1404,8 @@ static const struct ksz_dev_ops ksz9477_dev_ops = {
- 	.vlan_filtering = ksz9477_port_vlan_filtering,
- 	.vlan_add = ksz9477_port_vlan_add,
- 	.vlan_del = ksz9477_port_vlan_del,
-+	.mirror_add = ksz9477_port_mirror_add,
-+	.mirror_del = ksz9477_port_mirror_del,
+@@ -1307,7 +1305,7 @@ static const struct dsa_switch_ops ksz9477_switch_ops = {
+ 	.phy_read		= ksz_phy_read16,
+ 	.phy_write		= ksz_phy_write16,
+ 	.phylink_mac_link_down	= ksz_mac_link_down,
+-	.phylink_get_caps	= ksz9477_get_caps,
++	.phylink_get_caps	= ksz_phylink_get_caps,
+ 	.port_enable		= ksz_enable_port,
+ 	.get_strings		= ksz_get_strings,
+ 	.get_ethtool_stats	= ksz_get_ethtool_stats,
+@@ -1406,6 +1404,7 @@ static const struct ksz_dev_ops ksz9477_dev_ops = {
+ 	.mirror_add = ksz9477_port_mirror_add,
+ 	.mirror_del = ksz9477_port_mirror_del,
+ 	.get_stp_reg = ksz9477_get_stp_reg,
++	.get_caps = ksz9477_get_caps,
  	.shutdown = ksz9477_reset_switch,
  	.init = ksz9477_switch_init,
  	.exit = ksz9477_switch_exit,
 diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index a1fef9e4e36c..1ed4cc94795e 100644
+index 5cf183f753d9..c1303a46a9b7 100644
 --- a/drivers/net/dsa/microchip/ksz_common.c
 +++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -994,6 +994,31 @@ int ksz_port_vlan_del(struct dsa_switch *ds, int port,
+@@ -456,6 +456,9 @@ void ksz_phylink_get_caps(struct dsa_switch *ds, int port,
+ 	if (dev->info->internal_phy[port])
+ 		__set_bit(PHY_INTERFACE_MODE_INTERNAL,
+ 			  config->supported_interfaces);
++
++	if (dev->dev_ops->get_caps)
++		dev->dev_ops->get_caps(dev, port, config);
  }
- EXPORT_SYMBOL_GPL(ksz_port_vlan_del);
+ EXPORT_SYMBOL_GPL(ksz_phylink_get_caps);
  
-+int ksz_port_mirror_add(struct dsa_switch *ds, int port,
-+			struct dsa_mall_mirror_tc_entry *mirror,
-+			bool ingress, struct netlink_ext_ack *extack)
-+{
-+	struct ksz_device *dev = ds->priv;
-+	int ret = -EOPNOTSUPP;
-+
-+	if (dev->dev_ops->mirror_add)
-+		ret = dev->dev_ops->mirror_add(dev, port, mirror, ingress,
-+					       extack);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(ksz_port_mirror_add);
-+
-+void ksz_port_mirror_del(struct dsa_switch *ds, int port,
-+			 struct dsa_mall_mirror_tc_entry *mirror)
-+{
-+	struct ksz_device *dev = ds->priv;
-+
-+	if (dev->dev_ops->mirror_del)
-+		dev->dev_ops->mirror_del(dev, port, mirror);
-+}
-+EXPORT_SYMBOL_GPL(ksz_port_mirror_del);
-+
- static int ksz_switch_detect(struct ksz_device *dev)
- {
- 	u8 id1, id2;
 diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index 03e738c0cbb8..01080ec22bf1 100644
+index 2727934b7171..8124737a1170 100644
 --- a/drivers/net/dsa/microchip/ksz_common.h
 +++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -187,6 +187,11 @@ struct ksz_dev_ops {
- 			 struct netlink_ext_ack *extack);
- 	int  (*vlan_del)(struct ksz_device *dev, int port,
- 			 const struct switchdev_obj_port_vlan *vlan);
-+	int (*mirror_add)(struct ksz_device *dev, int port,
-+			  struct dsa_mall_mirror_tc_entry *mirror,
-+			  bool ingress, struct netlink_ext_ack *extack);
-+	void (*mirror_del)(struct ksz_device *dev, int port,
-+			   struct dsa_mall_mirror_tc_entry *mirror);
+@@ -193,6 +193,8 @@ struct ksz_dev_ops {
+ 	void (*mirror_del)(struct ksz_device *dev, int port,
+ 			   struct dsa_mall_mirror_tc_entry *mirror);
+ 	int (*get_stp_reg)(void);
++	void (*get_caps)(struct ksz_device *dev, int port,
++			 struct phylink_config *config);
  	void (*freeze_mib)(struct ksz_device *dev, int port, bool freeze);
  	void (*port_init_cnt)(struct ksz_device *dev, int port);
  	int (*shutdown)(struct ksz_device *dev);
-@@ -247,6 +252,11 @@ int ksz_port_vlan_add(struct dsa_switch *ds, int port,
- 		      struct netlink_ext_ack *extack);
- int ksz_port_vlan_del(struct dsa_switch *ds, int port,
- 		      const struct switchdev_obj_port_vlan *vlan);
-+int ksz_port_mirror_add(struct dsa_switch *ds, int port,
-+			struct dsa_mall_mirror_tc_entry *mirror,
-+			bool ingress, struct netlink_ext_ack *extack);
-+void ksz_port_mirror_del(struct dsa_switch *ds, int port,
-+			 struct dsa_mall_mirror_tc_entry *mirror);
- 
- /* Common register access functions */
- 
 -- 
 2.36.1
 
