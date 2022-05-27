@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 633B0C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03611C433F5
 	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 16:00:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354279AbiE0P74 (ORCPT
+        id S1353938AbiE0P7w (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 11:59:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44662 "EHLO
+        Fri, 27 May 2022 11:59:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354015AbiE0P5X (ORCPT
+        with ESMTP id S1354056AbiE0P50 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 11:57:23 -0400
+        Fri, 27 May 2022 11:57:26 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9893384A0B
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 08:57:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 86858106360
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 08:57:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653667026;
+        s=mimecast20190719; t=1653667037;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=9WVsBcdK1pashc39XZuDFCMTzqZzW5I7bLvXXIw2aRw=;
-        b=PKTRoHeQNxxInJfSKYeF1P5a2pF4DEapVqx9JbF4P1oI2IKGRg/ahYc1jhFbuxDh1W70es
-        I2WVNyVbF/n8NANsq2VK0xJe5IGCoxupUXvO3u1eEWW98BiotaJBwivYIVIf6GYEpbxDRf
-        v0t05kepcJ2ZIU2AlQuskusePrvPP68=
+        bh=3qxwv5wiOvBlb48z9efxHM9EMKTa2zX0xlJcwyNu62c=;
+        b=TsDAxOV6MxdLFqEkkmdqzilDUc9N0dk/AKyYMmgp/OpDPbO6BegFMRp5j/EenqsrMbGiIa
+        THTdFFmHi9HMeFLrA5Na1BEViSyLA51eGETfgUYP40g1Q+B/Bew6lvHmAqvE6ftWy7bnqd
+        BCTwVWXBJ3uMkxuu3bNecsG1fCb4YIM=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-346-BOt013xzPjGolhgc3sgQww-1; Fri, 27 May 2022 11:57:01 -0400
-X-MC-Unique: BOt013xzPjGolhgc3sgQww-1
+ us-mta-608-ijLppT8nPvCM0A3-w_S32A-1; Fri, 27 May 2022 11:57:11 -0400
+X-MC-Unique: ijLppT8nPvCM0A3-w_S32A-1
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A028E101A54E;
-        Fri, 27 May 2022 15:57:00 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id EFC06858EEE;
+        Fri, 27 May 2022 15:57:10 +0000 (UTC)
 Received: from fedora.redhat.com (unknown [10.40.192.126])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id F1AE62166B26;
-        Fri, 27 May 2022 15:56:57 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 604002166B26;
+        Fri, 27 May 2022 15:57:08 +0000 (UTC)
 From:   Vitaly Kuznetsov <vkuznets@redhat.com>
 To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -49,9 +49,9 @@ Cc:     Sean Christopherson <seanjc@google.com>,
         Siddharth Chandrasekaran <sidcha@amazon.de>,
         Yuan Yao <yuan.yao@linux.intel.com>,
         linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v5 26/37] KVM: selftests: Hyper-V PV IPI selftest
-Date:   Fri, 27 May 2022 17:55:35 +0200
-Message-Id: <20220527155546.1528910-27-vkuznets@redhat.com>
+Subject: [PATCH v5 30/37] KVM: selftests: Hyper-V PV TLB flush selftest
+Date:   Fri, 27 May 2022 17:55:39 +0200
+Message-Id: <20220527155546.1528910-31-vkuznets@redhat.com>
 In-Reply-To: <20220527155546.1528910-1-vkuznets@redhat.com>
 References: <20220527155546.1528910-1-vkuznets@redhat.com>
 MIME-Version: 1.0
@@ -62,94 +62,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Introduce a selftest for Hyper-V PV IPI hypercalls
-(HvCallSendSyntheticClusterIpi, HvCallSendSyntheticClusterIpiEx).
+Introduce a selftest for Hyper-V PV TLB flush hypercalls
+(HvFlushVirtualAddressSpace/HvFlushVirtualAddressSpaceEx,
+HvFlushVirtualAddressList/HvFlushVirtualAddressListEx).
 
-The test creates one 'sender' vCPU and two 'receiver' vCPU and then
-issues various combinations of send IPI hypercalls in both 'normal'
-and 'fast' (with XMM input where necessary) mode. Later, the test
-checks whether IPIs were delivered to the expected destination vCPU[s].
+The test creates one 'sender' vCPU and two 'worker' vCPU which do busy
+loop reading from a certain GVA checking the observed value. Sender
+vCPU drops to the host to swap the data page with another page filled
+with a different value. The expectation for workers is also
+altered. Without TLB flush on worker vCPUs, they may continue to
+observe old value. To guard against accidental TLB flushes for worker
+vCPUs the test is repeated 100 times.
 
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+Hyper-V TLB flush hypercalls are tested in both 'normal' and 'XMM
+fast' modes.
+
 Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 ---
  tools/testing/selftests/kvm/.gitignore        |   1 +
  tools/testing/selftests/kvm/Makefile          |   1 +
- .../selftests/kvm/include/x86_64/hyperv.h     |  12 +
- .../testing/selftests/kvm/x86_64/hyperv_ipi.c | 352 ++++++++++++++++++
- 4 files changed, 366 insertions(+)
- create mode 100644 tools/testing/selftests/kvm/x86_64/hyperv_ipi.c
+ .../selftests/kvm/include/x86_64/hyperv.h     |   1 +
+ .../selftests/kvm/x86_64/hyperv_tlb_flush.c   | 660 ++++++++++++++++++
+ 4 files changed, 663 insertions(+)
+ create mode 100644 tools/testing/selftests/kvm/x86_64/hyperv_tlb_flush.c
 
 diff --git a/tools/testing/selftests/kvm/.gitignore b/tools/testing/selftests/kvm/.gitignore
-index 90a6dea2e84c..1ff6fef86e52 100644
+index 1ff6fef86e52..917f4787b358 100644
 --- a/tools/testing/selftests/kvm/.gitignore
 +++ b/tools/testing/selftests/kvm/.gitignore
-@@ -24,6 +24,7 @@
- /x86_64/hyperv_clock
- /x86_64/hyperv_cpuid
+@@ -26,6 +26,7 @@
  /x86_64/hyperv_features
-+/x86_64/hyperv_ipi
+ /x86_64/hyperv_ipi
  /x86_64/hyperv_svm_test
++/x86_64/hyperv_tlb_flush
  /x86_64/max_vcpuid_cap_test
  /x86_64/mmio_warning_test
+ /x86_64/mmu_role_test
 diff --git a/tools/testing/selftests/kvm/Makefile b/tools/testing/selftests/kvm/Makefile
-index a014368a2cd2..6417078b8c0e 100644
+index 6417078b8c0e..276cd665083b 100644
 --- a/tools/testing/selftests/kvm/Makefile
 +++ b/tools/testing/selftests/kvm/Makefile
-@@ -52,6 +52,7 @@ TEST_GEN_PROGS_x86_64 += x86_64/fix_hypercall_test
- TEST_GEN_PROGS_x86_64 += x86_64/hyperv_clock
- TEST_GEN_PROGS_x86_64 += x86_64/hyperv_cpuid
+@@ -54,6 +54,7 @@ TEST_GEN_PROGS_x86_64 += x86_64/hyperv_cpuid
  TEST_GEN_PROGS_x86_64 += x86_64/hyperv_features
-+TEST_GEN_PROGS_x86_64 += x86_64/hyperv_ipi
+ TEST_GEN_PROGS_x86_64 += x86_64/hyperv_ipi
  TEST_GEN_PROGS_x86_64 += x86_64/hyperv_svm_test
++TEST_GEN_PROGS_x86_64 += x86_64/hyperv_tlb_flush
  TEST_GEN_PROGS_x86_64 += x86_64/kvm_clock_test
  TEST_GEN_PROGS_x86_64 += x86_64/kvm_pv_test
+ TEST_GEN_PROGS_x86_64 += x86_64/mmio_warning_test
 diff --git a/tools/testing/selftests/kvm/include/x86_64/hyperv.h b/tools/testing/selftests/kvm/include/x86_64/hyperv.h
-index e0a1b4c2fbbc..1b467626be58 100644
+index 1b467626be58..c302027fa6d5 100644
 --- a/tools/testing/selftests/kvm/include/x86_64/hyperv.h
 +++ b/tools/testing/selftests/kvm/include/x86_64/hyperv.h
-@@ -9,6 +9,8 @@
- #ifndef SELFTEST_KVM_HYPERV_H
- #define SELFTEST_KVM_HYPERV_H
- 
-+#include "processor.h"
-+
- #define HYPERV_CPUID_VENDOR_AND_MAX_FUNCTIONS	0x40000000
- #define HYPERV_CPUID_INTERFACE			0x40000001
- #define HYPERV_CPUID_VERSION			0x40000002
-@@ -184,6 +186,7 @@
- 
+@@ -187,6 +187,7 @@
  /* hypercall options */
  #define HV_HYPERCALL_FAST_BIT		BIT(16)
-+#define HV_HYPERCALL_VARHEAD_OFFSET	17
+ #define HV_HYPERCALL_VARHEAD_OFFSET	17
++#define HV_HYPERCALL_REP_COMP_OFFSET	32
  
  static inline u64 hyperv_hypercall(u64 control, vm_vaddr_t input_address,
  			   vm_vaddr_t output_address)
-@@ -200,6 +203,15 @@ static inline u64 hyperv_hypercall(u64 control, vm_vaddr_t input_address,
- 	return hv_status;
- }
- 
-+/* Write 'Fast' hypercall input 'data' to the first 'n_sse_regs' SSE regs */
-+static inline void hyperv_write_xmm_input(void *data, int n_sse_regs)
-+{
-+	int i;
-+
-+	for (i = 0; i < n_sse_regs; i++)
-+		write_sse_reg(i, (sse128_t *)(data + sizeof(sse128_t) * i));
-+}
-+
- /* Proper HV_X64_MSR_GUEST_OS_ID value */
- #define HYPERV_LINUX_OS_ID ((u64)0x8100 << 48)
- 
-diff --git a/tools/testing/selftests/kvm/x86_64/hyperv_ipi.c b/tools/testing/selftests/kvm/x86_64/hyperv_ipi.c
+diff --git a/tools/testing/selftests/kvm/x86_64/hyperv_tlb_flush.c b/tools/testing/selftests/kvm/x86_64/hyperv_tlb_flush.c
 new file mode 100644
-index 000000000000..a8e834be62bc
+index 000000000000..d23e40d3b480
 --- /dev/null
-+++ b/tools/testing/selftests/kvm/x86_64/hyperv_ipi.c
-@@ -0,0 +1,352 @@
++++ b/tools/testing/selftests/kvm/x86_64/hyperv_tlb_flush.c
+@@ -0,0 +1,660 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
-+ * Hyper-V HvCallSendSyntheticClusterIpi{,Ex} tests
++ * Hyper-V HvFlushVirtualAddress{List,Space}{,Ex} tests
 + *
 + * Copyright (C) 2022, Red Hat, Inc.
 + *
@@ -160,17 +141,17 @@ index 000000000000..a8e834be62bc
 +#include <inttypes.h>
 +
 +#include "kvm_util.h"
++#include "processor.h"
 +#include "hyperv.h"
 +#include "test_util.h"
 +#include "vmx.h"
 +
 +#define SENDER_VCPU_ID   1
-+#define RECEIVER_VCPU_ID_1 2
-+#define RECEIVER_VCPU_ID_2 65
++#define WORKER_VCPU_ID_1 2
++#define WORKER_VCPU_ID_2 65
 +
-+#define IPI_VECTOR	 0xfe
-+
-+static volatile uint64_t ipis_rcvd[RECEIVER_VCPU_ID_2 + 1];
++#define NTRY 100
++#define NTEST_PAGES 2
 +
 +struct thread_params {
 +	struct kvm_vm *vm;
@@ -180,7 +161,7 @@ index 000000000000..a8e834be62bc
 +struct hv_vpset {
 +	u64 format;
 +	u64 valid_bank_mask;
-+	u64 bank_contents[2];
++	u64 bank_contents[];
 +};
 +
 +enum HV_GENERIC_SET_FORMAT {
@@ -188,185 +169,462 @@ index 000000000000..a8e834be62bc
 +	HV_GENERIC_SET_ALL,
 +};
 +
-+/* HvCallSendSyntheticClusterIpi hypercall */
-+struct hv_send_ipi {
-+	u32 vector;
-+	u32 reserved;
-+	u64 cpu_mask;
++#define HV_FLUSH_ALL_PROCESSORS			BIT(0)
++#define HV_FLUSH_ALL_VIRTUAL_ADDRESS_SPACES	BIT(1)
++#define HV_FLUSH_NON_GLOBAL_MAPPINGS_ONLY	BIT(2)
++#define HV_FLUSH_USE_EXTENDED_RANGE_FORMAT	BIT(3)
++
++/* HvFlushVirtualAddressSpace, HvFlushVirtualAddressList hypercalls */
++struct hv_tlb_flush {
++	u64 address_space;
++	u64 flags;
++	u64 processor_mask;
++	u64 gva_list[];
++} __packed;
++
++/* HvFlushVirtualAddressSpaceEx, HvFlushVirtualAddressListEx hypercalls */
++struct hv_tlb_flush_ex {
++	u64 address_space;
++	u64 flags;
++	struct hv_vpset hv_vp_set;
++	u64 gva_list[];
++} __packed;
++
++/*
++ * Pass the following info to 'workers' and 'sender'
++ * - Hypercall page's GVA
++ * - Hypercall page's GPA
++ * - Test pages GVA
++ * - GVAs of the test pages' PTEs
++ */
++struct test_data {
++	vm_vaddr_t hcall_gva;
++	vm_paddr_t hcall_gpa;
++	vm_vaddr_t test_pages;
++	vm_vaddr_t test_pages_pte[NTEST_PAGES];
 +};
 +
-+/* HvCallSendSyntheticClusterIpiEx hypercall */
-+struct hv_send_ipi_ex {
-+	u32 vector;
-+	u32 reserved;
-+	struct hv_vpset vp_set;
-+};
-+
-+static inline void hv_init(vm_vaddr_t pgs_gpa)
++/* 'Worker' vCPU code checking the contents of the test page */
++static void worker_guest_code(vm_vaddr_t test_data)
 +{
-+	wrmsr(HV_X64_MSR_GUEST_OS_ID, HYPERV_LINUX_OS_ID);
-+	wrmsr(HV_X64_MSR_HYPERCALL, pgs_gpa);
-+}
-+
-+static void receiver_code(void *hcall_page, vm_vaddr_t pgs_gpa)
-+{
-+	u32 vcpu_id;
++	struct test_data *data = (struct test_data *)test_data;
++	u32 vcpu_id = rdmsr(HV_X64_MSR_VP_INDEX);
++	unsigned char chr_exp1, chr_exp2, chr_cur;
 +
 +	x2apic_enable();
-+	hv_init(pgs_gpa);
++	wrmsr(HV_X64_MSR_GUEST_OS_ID, HYPERV_LINUX_OS_ID);
 +
-+	vcpu_id = rdmsr(HV_X64_MSR_VP_INDEX);
-+
-+	/* Signal sender vCPU we're ready */
-+	ipis_rcvd[vcpu_id] = (u64)-1;
-+
-+	for (;;)
-+		asm volatile("sti; hlt; cli");
++	for (;;) {
++		/* Read the expected char, then check what's in the test pages and then
++		 * check the expectation again to make sure it wasn't updated in the meantime.
++		 */
++		chr_exp1 = READ_ONCE(*(unsigned char *)
++				     (data->test_pages + PAGE_SIZE * NTEST_PAGES + vcpu_id));
++		asm volatile("lfence");
++		chr_cur = *(unsigned char *)data->test_pages;
++		asm volatile("lfence");
++		chr_exp2 = READ_ONCE(*(unsigned char *)
++				     (data->test_pages + PAGE_SIZE * NTEST_PAGES + vcpu_id));
++		if (chr_exp1 && chr_exp1 == chr_exp2)
++			GUEST_ASSERT(chr_cur == chr_exp1);
++		asm volatile("nop");
++	}
 +}
 +
-+static void guest_ipi_handler(struct ex_regs *regs)
++/*
++ * Write per-CPU info indicating what each 'worker' CPU is supposed to see in
++ * test page. '0' means don't check.
++ */
++static void set_expected_char(void *addr, unsigned char chr, int vcpu_id)
 +{
-+	u32 vcpu_id = rdmsr(HV_X64_MSR_VP_INDEX);
-+
-+	ipis_rcvd[vcpu_id]++;
-+	wrmsr(HV_X64_MSR_EOI, 1);
++	asm volatile("mfence");
++	*(unsigned char *)(addr + NTEST_PAGES * PAGE_SIZE + vcpu_id) = chr;
 +}
 +
-+static inline void nop_loop(void)
++/* Update PTEs swapping two test pages */
++static void swap_two_test_pages(vm_paddr_t pte_gva1, vm_paddr_t pte_gva2)
++{
++	uint64_t pte[2];
++
++	pte[0] = *(uint64_t *)pte_gva1;
++	pte[1] = *(uint64_t *)pte_gva2;
++
++	*(uint64_t *)pte_gva1 = pte[1];
++	*(uint64_t *)pte_gva2 = pte[0];
++}
++
++/* Delay */
++static inline void rep_nop(void)
 +{
 +	int i;
 +
-+	for (i = 0; i < 100000000; i++)
++	for (i = 0; i < 1000000; i++)
 +		asm volatile("nop");
 +}
 +
-+static void sender_guest_code(void *hcall_page, vm_vaddr_t pgs_gpa)
++/*
++ * Prepare to test: 'disable' workers by setting the expectation to '0',
++ * clear hypercall input page and then swap two test pages.
++ */
++static inline void prepare_to_test(struct test_data *data)
 +{
-+	struct hv_send_ipi *ipi = (struct hv_send_ipi *)hcall_page;
-+	struct hv_send_ipi_ex *ipi_ex = (struct hv_send_ipi_ex *)hcall_page;
-+	int stage = 1, ipis_expected[2] = {0};
++	/* Clear hypercall input page */
++	memset((void *)data->hcall_gva, 0, PAGE_SIZE);
++
++	/* 'Disable' workers */
++	set_expected_char((void *)data->test_pages, 0x0, WORKER_VCPU_ID_1);
++	set_expected_char((void *)data->test_pages, 0x0, WORKER_VCPU_ID_2);
++
++	/* Make sure workers have enough time to notice */
++	asm volatile("mfence");
++	rep_nop();
++
++	/* Swap test page mappings */
++	swap_two_test_pages(data->test_pages_pte[0], data->test_pages_pte[1]);
++}
++
++/*
++ * Finalize the test: check hypercall resule set the expected char for
++ * 'worker' CPUs and give them some time to test.
++ */
++static inline void post_test(struct test_data *data, u64 res,
++			     char exp_char1, char exp_char2)
++{
++	/* Check hypercall return code */
++	GUEST_ASSERT((res & 0xffff) == 0);
++
++	/* Set the expectation for workers, '0' means don't test */
++	set_expected_char((void *)data->test_pages, exp_char1, WORKER_VCPU_ID_1);
++	set_expected_char((void *)data->test_pages, exp_char2, WORKER_VCPU_ID_2);
++
++	/* Make sure workers have enough time to test */
++	asm volatile("mfence");
++	rep_nop();
++}
++
++/* Main vCPU doing the test */
++static void sender_guest_code(vm_vaddr_t test_data)
++{
++	struct test_data *data = (struct test_data *)test_data;
++	struct hv_tlb_flush *flush = (struct hv_tlb_flush *)data->hcall_gva;
++	struct hv_tlb_flush_ex *flush_ex = (struct hv_tlb_flush_ex *)data->hcall_gva;
++	vm_paddr_t hcall_gpa = data->hcall_gpa;
 +	u64 res;
++	int i, stage = 1;
 +
-+	hv_init(pgs_gpa);
-+	GUEST_SYNC(stage++);
++	wrmsr(HV_X64_MSR_GUEST_OS_ID, HYPERV_LINUX_OS_ID);
++	wrmsr(HV_X64_MSR_HYPERCALL, data->hcall_gpa);
 +
-+	/* Wait for receiver vCPUs to come up */
-+	while (!ipis_rcvd[RECEIVER_VCPU_ID_1] || !ipis_rcvd[RECEIVER_VCPU_ID_2])
-+		nop_loop();
-+	ipis_rcvd[RECEIVER_VCPU_ID_1] = ipis_rcvd[RECEIVER_VCPU_ID_2] = 0;
++	/* "Slow" hypercalls */
 +
-+	/* 'Slow' HvCallSendSyntheticClusterIpi to RECEIVER_VCPU_ID_1 */
-+	ipi->vector = IPI_VECTOR;
-+	ipi->cpu_mask = 1 << RECEIVER_VCPU_ID_1;
-+	res = hyperv_hypercall(HVCALL_SEND_IPI, pgs_gpa, pgs_gpa + 4096);
-+	GUEST_ASSERT((res & 0xffff) == 0);
-+	nop_loop();
-+	GUEST_ASSERT(ipis_rcvd[RECEIVER_VCPU_ID_1] == ++ipis_expected[0]);
-+	GUEST_ASSERT(ipis_rcvd[RECEIVER_VCPU_ID_2] == ipis_expected[1]);
-+	GUEST_SYNC(stage++);
-+	/* 'Fast' HvCallSendSyntheticClusterIpi to RECEIVER_VCPU_ID_1 */
-+	res = hyperv_hypercall(HVCALL_SEND_IPI | HV_HYPERCALL_FAST_BIT,
-+			       IPI_VECTOR, 1 << RECEIVER_VCPU_ID_1);
-+	GUEST_ASSERT((res & 0xffff) == 0);
-+	nop_loop();
-+	GUEST_ASSERT(ipis_rcvd[RECEIVER_VCPU_ID_1] == ++ipis_expected[0]);
-+	GUEST_ASSERT(ipis_rcvd[RECEIVER_VCPU_ID_2] == ipis_expected[1]);
 +	GUEST_SYNC(stage++);
 +
-+	/* 'Slow' HvCallSendSyntheticClusterIpiEx to RECEIVER_VCPU_ID_1 */
-+	memset(hcall_page, 0, 4096);
-+	ipi_ex->vector = IPI_VECTOR;
-+	ipi_ex->vp_set.format = HV_GENERIC_SET_SPARSE_4K;
-+	ipi_ex->vp_set.valid_bank_mask = 1 << 0;
-+	ipi_ex->vp_set.bank_contents[0] = BIT(RECEIVER_VCPU_ID_1);
-+	res = hyperv_hypercall(HVCALL_SEND_IPI_EX | (1 << HV_HYPERCALL_VARHEAD_OFFSET),
-+			       pgs_gpa, pgs_gpa + 4096);
-+	GUEST_ASSERT((res & 0xffff) == 0);
-+	nop_loop();
-+	GUEST_ASSERT(ipis_rcvd[RECEIVER_VCPU_ID_1] == ++ipis_expected[0]);
-+	GUEST_ASSERT(ipis_rcvd[RECEIVER_VCPU_ID_2] == ipis_expected[1]);
-+	GUEST_SYNC(stage++);
-+	/* 'XMM Fast' HvCallSendSyntheticClusterIpiEx to RECEIVER_VCPU_ID_1 */
-+	hyperv_write_xmm_input(&ipi_ex->vp_set.valid_bank_mask, 1);
-+	res = hyperv_hypercall(HVCALL_SEND_IPI_EX | HV_HYPERCALL_FAST_BIT |
-+			       (1 << HV_HYPERCALL_VARHEAD_OFFSET),
-+			       IPI_VECTOR, HV_GENERIC_SET_SPARSE_4K);
-+	GUEST_ASSERT((res & 0xffff) == 0);
-+	nop_loop();
-+	GUEST_ASSERT(ipis_rcvd[RECEIVER_VCPU_ID_1] == ++ipis_expected[0]);
-+	GUEST_ASSERT(ipis_rcvd[RECEIVER_VCPU_ID_2] == ipis_expected[1]);
++	/* HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE for WORKER_VCPU_ID_1 */
++	for (i = 0; i < NTRY; i++) {
++		prepare_to_test(data);
++		flush->flags = HV_FLUSH_ALL_VIRTUAL_ADDRESS_SPACES;
++		flush->processor_mask = BIT(WORKER_VCPU_ID_1);
++		res = hyperv_hypercall(HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE, hcall_gpa,
++				       hcall_gpa + PAGE_SIZE);
++		post_test(data, res, i % 2 ? 0x1 : 0x2, 0x0);
++	}
++
 +	GUEST_SYNC(stage++);
 +
-+	/* 'Slow' HvCallSendSyntheticClusterIpiEx to RECEIVER_VCPU_ID_2 */
-+	memset(hcall_page, 0, 4096);
-+	ipi_ex->vector = IPI_VECTOR;
-+	ipi_ex->vp_set.format = HV_GENERIC_SET_SPARSE_4K;
-+	ipi_ex->vp_set.valid_bank_mask = 1 << 1;
-+	ipi_ex->vp_set.bank_contents[0] = BIT(RECEIVER_VCPU_ID_2 - 64);
-+	res = hyperv_hypercall(HVCALL_SEND_IPI_EX | (1 << HV_HYPERCALL_VARHEAD_OFFSET),
-+			       pgs_gpa, pgs_gpa + 4096);
-+	GUEST_ASSERT((res & 0xffff) == 0);
-+	nop_loop();
-+	GUEST_ASSERT(ipis_rcvd[RECEIVER_VCPU_ID_1] == ipis_expected[0]);
-+	GUEST_ASSERT(ipis_rcvd[RECEIVER_VCPU_ID_2] == ++ipis_expected[1]);
-+	GUEST_SYNC(stage++);
-+	/* 'XMM Fast' HvCallSendSyntheticClusterIpiEx to RECEIVER_VCPU_ID_2 */
-+	hyperv_write_xmm_input(&ipi_ex->vp_set.valid_bank_mask, 1);
-+	res = hyperv_hypercall(HVCALL_SEND_IPI_EX | HV_HYPERCALL_FAST_BIT |
-+			       (1 << HV_HYPERCALL_VARHEAD_OFFSET),
-+			       IPI_VECTOR, HV_GENERIC_SET_SPARSE_4K);
-+	GUEST_ASSERT((res & 0xffff) == 0);
-+	nop_loop();
-+	GUEST_ASSERT(ipis_rcvd[RECEIVER_VCPU_ID_1] == ipis_expected[0]);
-+	GUEST_ASSERT(ipis_rcvd[RECEIVER_VCPU_ID_2] == ++ipis_expected[1]);
++	/* HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST for WORKER_VCPU_ID_1 */
++	for (i = 0; i < NTRY; i++) {
++		prepare_to_test(data);
++		flush->flags = HV_FLUSH_ALL_VIRTUAL_ADDRESS_SPACES;
++		flush->processor_mask = BIT(WORKER_VCPU_ID_1);
++		flush->gva_list[0] = (u64)data->test_pages;
++		res = hyperv_hypercall(HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST |
++				       (1UL << HV_HYPERCALL_REP_COMP_OFFSET),
++				       hcall_gpa, hcall_gpa + PAGE_SIZE);
++		post_test(data, res, i % 2 ? 0x1 : 0x2, 0x0);
++	}
++
 +	GUEST_SYNC(stage++);
 +
-+	/* 'Slow' HvCallSendSyntheticClusterIpiEx to both RECEIVER_VCPU_ID_{1,2} */
-+	memset(hcall_page, 0, 4096);
-+	ipi_ex->vector = IPI_VECTOR;
-+	ipi_ex->vp_set.format = HV_GENERIC_SET_SPARSE_4K;
-+	ipi_ex->vp_set.valid_bank_mask = 1 << 1 | 1;
-+	ipi_ex->vp_set.bank_contents[0] = BIT(RECEIVER_VCPU_ID_1);
-+	ipi_ex->vp_set.bank_contents[1] = BIT(RECEIVER_VCPU_ID_2 - 64);
-+	res = hyperv_hypercall(HVCALL_SEND_IPI_EX | (2 << HV_HYPERCALL_VARHEAD_OFFSET),
-+			       pgs_gpa, pgs_gpa + 4096);
-+	GUEST_ASSERT((res & 0xffff) == 0);
-+	nop_loop();
-+	GUEST_ASSERT(ipis_rcvd[RECEIVER_VCPU_ID_1] == ++ipis_expected[0]);
-+	GUEST_ASSERT(ipis_rcvd[RECEIVER_VCPU_ID_2] == ++ipis_expected[1]);
-+	GUEST_SYNC(stage++);
-+	/* 'XMM Fast' HvCallSendSyntheticClusterIpiEx to both RECEIVER_VCPU_ID_{1, 2} */
-+	hyperv_write_xmm_input(&ipi_ex->vp_set.valid_bank_mask, 2);
-+	res = hyperv_hypercall(HVCALL_SEND_IPI_EX | HV_HYPERCALL_FAST_BIT |
-+			       (2 << HV_HYPERCALL_VARHEAD_OFFSET),
-+			       IPI_VECTOR, HV_GENERIC_SET_SPARSE_4K);
-+	GUEST_ASSERT((res & 0xffff) == 0);
-+	nop_loop();
-+	GUEST_ASSERT(ipis_rcvd[RECEIVER_VCPU_ID_1] == ++ipis_expected[0]);
-+	GUEST_ASSERT(ipis_rcvd[RECEIVER_VCPU_ID_2] == ++ipis_expected[1]);
++	/* HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE for HV_FLUSH_ALL_PROCESSORS */
++	for (i = 0; i < NTRY; i++) {
++		prepare_to_test(data);
++		flush->flags = HV_FLUSH_ALL_VIRTUAL_ADDRESS_SPACES | HV_FLUSH_ALL_PROCESSORS;
++		flush->processor_mask = 0;
++		res = hyperv_hypercall(HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE, hcall_gpa,
++				       hcall_gpa + PAGE_SIZE);
++		post_test(data, res, i % 2 ? 0x1 : 0x2, i % 2 ? 0x1 : 0x2);
++	}
++
 +	GUEST_SYNC(stage++);
 +
-+	/* 'Slow' HvCallSendSyntheticClusterIpiEx to HV_GENERIC_SET_ALL */
-+	memset(hcall_page, 0, 4096);
-+	ipi_ex->vector = IPI_VECTOR;
-+	ipi_ex->vp_set.format = HV_GENERIC_SET_ALL;
-+	res = hyperv_hypercall(HVCALL_SEND_IPI_EX, pgs_gpa, pgs_gpa + 4096);
-+	GUEST_ASSERT((res & 0xffff) == 0);
-+	nop_loop();
-+	GUEST_ASSERT(ipis_rcvd[RECEIVER_VCPU_ID_1] == ++ipis_expected[0]);
-+	GUEST_ASSERT(ipis_rcvd[RECEIVER_VCPU_ID_2] == ++ipis_expected[1]);
++	/* HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST for HV_FLUSH_ALL_PROCESSORS */
++	for (i = 0; i < NTRY; i++) {
++		prepare_to_test(data);
++		flush->flags = HV_FLUSH_ALL_VIRTUAL_ADDRESS_SPACES | HV_FLUSH_ALL_PROCESSORS;
++		flush->gva_list[0] = (u64)data->test_pages;
++		res = hyperv_hypercall(HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST |
++				       (1UL << HV_HYPERCALL_REP_COMP_OFFSET),
++				       hcall_gpa, hcall_gpa + PAGE_SIZE);
++		post_test(data, res, i % 2 ? 0x1 : 0x2, i % 2 ? 0x1 : 0x2);
++	}
++
 +	GUEST_SYNC(stage++);
-+	/*
-+	 * 'XMM Fast' HvCallSendSyntheticClusterIpiEx to HV_GENERIC_SET_ALL.
-+	 * Nothing to write anything to XMM regs.
-+	 */
-+	res = hyperv_hypercall(HVCALL_SEND_IPI_EX | HV_HYPERCALL_FAST_BIT,
-+			       IPI_VECTOR, HV_GENERIC_SET_ALL);
-+	GUEST_ASSERT((res & 0xffff) == 0);
-+	nop_loop();
-+	GUEST_ASSERT(ipis_rcvd[RECEIVER_VCPU_ID_1] == ++ipis_expected[0]);
-+	GUEST_ASSERT(ipis_rcvd[RECEIVER_VCPU_ID_2] == ++ipis_expected[1]);
++
++	/* HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE_EX for WORKER_VCPU_ID_2 */
++	for (i = 0; i < NTRY; i++) {
++		prepare_to_test(data);
++		flush_ex->flags = HV_FLUSH_ALL_VIRTUAL_ADDRESS_SPACES;
++		flush_ex->hv_vp_set.format = HV_GENERIC_SET_SPARSE_4K;
++		flush_ex->hv_vp_set.valid_bank_mask = BIT_ULL(WORKER_VCPU_ID_2 / 64);
++		flush_ex->hv_vp_set.bank_contents[0] = BIT_ULL(WORKER_VCPU_ID_2 % 64);
++		res = hyperv_hypercall(HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE_EX |
++				       (1 << HV_HYPERCALL_VARHEAD_OFFSET),
++				       hcall_gpa, hcall_gpa + PAGE_SIZE);
++		post_test(data, res, 0x0, i % 2 ? 0x1 : 0x2);
++	}
++
 +	GUEST_SYNC(stage++);
++
++	/* HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST_EX for WORKER_VCPU_ID_2 */
++	for (i = 0; i < NTRY; i++) {
++		prepare_to_test(data);
++		flush_ex->flags = HV_FLUSH_ALL_VIRTUAL_ADDRESS_SPACES;
++		flush_ex->hv_vp_set.format = HV_GENERIC_SET_SPARSE_4K;
++		flush_ex->hv_vp_set.valid_bank_mask = BIT_ULL(WORKER_VCPU_ID_2 / 64);
++		flush_ex->hv_vp_set.bank_contents[0] = BIT_ULL(WORKER_VCPU_ID_2 % 64);
++		/* bank_contents and gva_list occupy the same space, thus [1] */
++		flush_ex->gva_list[1] = (u64)data->test_pages;
++		res = hyperv_hypercall(HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST_EX |
++				       (1 << HV_HYPERCALL_VARHEAD_OFFSET) |
++				       (1UL << HV_HYPERCALL_REP_COMP_OFFSET),
++				       hcall_gpa, hcall_gpa + PAGE_SIZE);
++		post_test(data, res, 0x0, i % 2 ? 0x1 : 0x2);
++	}
++
++	GUEST_SYNC(stage++);
++
++	/* HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE_EX for both vCPUs */
++	for (i = 0; i < NTRY; i++) {
++		prepare_to_test(data);
++		flush_ex->flags = HV_FLUSH_ALL_VIRTUAL_ADDRESS_SPACES;
++		flush_ex->hv_vp_set.format = HV_GENERIC_SET_SPARSE_4K;
++		flush_ex->hv_vp_set.valid_bank_mask = BIT_ULL(WORKER_VCPU_ID_2 / 64) |
++			BIT_ULL(WORKER_VCPU_ID_1 / 64);
++		flush_ex->hv_vp_set.bank_contents[0] = BIT_ULL(WORKER_VCPU_ID_1 % 64);
++		flush_ex->hv_vp_set.bank_contents[1] = BIT_ULL(WORKER_VCPU_ID_2 % 64);
++		res = hyperv_hypercall(HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE_EX |
++				       (2 << HV_HYPERCALL_VARHEAD_OFFSET),
++				       hcall_gpa, hcall_gpa + PAGE_SIZE);
++		post_test(data, res, i % 2 ? 0x1 : 0x2, i % 2 ? 0x1 : 0x2);
++	}
++
++	GUEST_SYNC(stage++);
++
++	/* HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST_EX for both vCPUs */
++	for (i = 0; i < NTRY; i++) {
++		prepare_to_test(data);
++		flush_ex->flags = HV_FLUSH_ALL_VIRTUAL_ADDRESS_SPACES;
++		flush_ex->hv_vp_set.format = HV_GENERIC_SET_SPARSE_4K;
++		flush_ex->hv_vp_set.valid_bank_mask = BIT_ULL(WORKER_VCPU_ID_1 / 64) |
++			BIT_ULL(WORKER_VCPU_ID_2 / 64);
++		flush_ex->hv_vp_set.bank_contents[0] = BIT_ULL(WORKER_VCPU_ID_1 % 64);
++		flush_ex->hv_vp_set.bank_contents[1] = BIT_ULL(WORKER_VCPU_ID_2 % 64);
++		/* bank_contents and gva_list occupy the same space, thus [2] */
++		flush_ex->gva_list[2] = (u64)data->test_pages;
++		res = hyperv_hypercall(HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST_EX |
++				       (2 << HV_HYPERCALL_VARHEAD_OFFSET) |
++				       (1UL << HV_HYPERCALL_REP_COMP_OFFSET),
++				       hcall_gpa, hcall_gpa + PAGE_SIZE);
++		post_test(data, res, i % 2 ? 0x1 : 0x2, i % 2 ? 0x1 : 0x2);
++	}
++
++	GUEST_SYNC(stage++);
++
++	/* HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE_EX for HV_GENERIC_SET_ALL */
++	for (i = 0; i < NTRY; i++) {
++		prepare_to_test(data);
++		flush_ex->flags = HV_FLUSH_ALL_VIRTUAL_ADDRESS_SPACES;
++		flush_ex->hv_vp_set.format = HV_GENERIC_SET_ALL;
++		res = hyperv_hypercall(HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE_EX,
++				       hcall_gpa, hcall_gpa + PAGE_SIZE);
++		post_test(data, res, i % 2 ? 0x1 : 0x2, i % 2 ? 0x1 : 0x2);
++	}
++
++	GUEST_SYNC(stage++);
++
++	/* HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST_EX for HV_GENERIC_SET_ALL */
++	for (i = 0; i < NTRY; i++) {
++		prepare_to_test(data);
++		flush_ex->flags = HV_FLUSH_ALL_VIRTUAL_ADDRESS_SPACES;
++		flush_ex->hv_vp_set.format = HV_GENERIC_SET_ALL;
++		flush_ex->gva_list[0] = (u64)data->test_pages;
++		res = hyperv_hypercall(HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST_EX |
++				       (1UL << HV_HYPERCALL_REP_COMP_OFFSET),
++				       hcall_gpa, hcall_gpa + PAGE_SIZE);
++		post_test(data, res, i % 2 ? 0x1 : 0x2, i % 2 ? 0x1 : 0x2);
++	}
++
++	/* "Fast" hypercalls */
++
++	GUEST_SYNC(stage++);
++
++	/* HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE for WORKER_VCPU_ID_1 */
++	for (i = 0; i < NTRY; i++) {
++		prepare_to_test(data);
++		flush->processor_mask = BIT(WORKER_VCPU_ID_1);
++		hyperv_write_xmm_input(&flush->processor_mask, 1);
++		res = hyperv_hypercall(HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE |
++				       HV_HYPERCALL_FAST_BIT, 0x0,
++				       HV_FLUSH_ALL_VIRTUAL_ADDRESS_SPACES);
++		post_test(data, res, i % 2 ? 0x1 : 0x2, 0x0);
++	}
++
++	GUEST_SYNC(stage++);
++
++	/* HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST for WORKER_VCPU_ID_1 */
++	for (i = 0; i < NTRY; i++) {
++		prepare_to_test(data);
++		flush->processor_mask = BIT(WORKER_VCPU_ID_1);
++		flush->gva_list[0] = (u64)data->test_pages;
++		hyperv_write_xmm_input(&flush->processor_mask, 1);
++		res = hyperv_hypercall(HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST |
++				       HV_HYPERCALL_FAST_BIT |
++				       (1UL << HV_HYPERCALL_REP_COMP_OFFSET),
++				       0x0, HV_FLUSH_ALL_VIRTUAL_ADDRESS_SPACES);
++		post_test(data, res, i % 2 ? 0x1 : 0x2, 0x0);
++	}
++
++	GUEST_SYNC(stage++);
++
++	/* HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE for HV_FLUSH_ALL_PROCESSORS */
++	for (i = 0; i < NTRY; i++) {
++		prepare_to_test(data);
++		hyperv_write_xmm_input(&flush->processor_mask, 1);
++		res = hyperv_hypercall(HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE |
++				       HV_HYPERCALL_FAST_BIT, 0x0,
++				       HV_FLUSH_ALL_VIRTUAL_ADDRESS_SPACES |
++				       HV_FLUSH_ALL_PROCESSORS);
++		post_test(data, res, i % 2 ? 0x1 : 0x2, i % 2 ? 0x1 : 0x2);
++	}
++
++	GUEST_SYNC(stage++);
++
++	/* HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST for HV_FLUSH_ALL_PROCESSORS */
++	for (i = 0; i < NTRY; i++) {
++		prepare_to_test(data);
++		flush->gva_list[0] = (u64)data->test_pages;
++		hyperv_write_xmm_input(&flush->processor_mask, 1);
++		res = hyperv_hypercall(HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST |
++				       HV_HYPERCALL_FAST_BIT |
++				       (1UL << HV_HYPERCALL_REP_COMP_OFFSET), 0x0,
++				       HV_FLUSH_ALL_VIRTUAL_ADDRESS_SPACES |
++				       HV_FLUSH_ALL_PROCESSORS);
++		post_test(data, res, i % 2 ? 0x1 : 0x2, i % 2 ? 0x1 : 0x2);
++	}
++
++	GUEST_SYNC(stage++);
++
++	/* HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE_EX for WORKER_VCPU_ID_2 */
++	for (i = 0; i < NTRY; i++) {
++		prepare_to_test(data);
++		flush_ex->hv_vp_set.format = HV_GENERIC_SET_SPARSE_4K;
++		flush_ex->hv_vp_set.valid_bank_mask = BIT_ULL(WORKER_VCPU_ID_2 / 64);
++		flush_ex->hv_vp_set.bank_contents[0] = BIT_ULL(WORKER_VCPU_ID_2 % 64);
++		hyperv_write_xmm_input(&flush_ex->hv_vp_set, 2);
++		res = hyperv_hypercall(HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE_EX |
++				       HV_HYPERCALL_FAST_BIT |
++				       (1 << HV_HYPERCALL_VARHEAD_OFFSET),
++				       0x0, HV_FLUSH_ALL_VIRTUAL_ADDRESS_SPACES);
++		post_test(data, res, 0x0, i % 2 ? 0x1 : 0x2);
++	}
++
++	GUEST_SYNC(stage++);
++
++	/* HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST_EX for WORKER_VCPU_ID_2 */
++	for (i = 0; i < NTRY; i++) {
++		prepare_to_test(data);
++		flush_ex->hv_vp_set.format = HV_GENERIC_SET_SPARSE_4K;
++		flush_ex->hv_vp_set.valid_bank_mask = BIT_ULL(WORKER_VCPU_ID_2 / 64);
++		flush_ex->hv_vp_set.bank_contents[0] = BIT_ULL(WORKER_VCPU_ID_2 % 64);
++		/* bank_contents and gva_list occupy the same space, thus [1] */
++		flush_ex->gva_list[1] = (u64)data->test_pages;
++		hyperv_write_xmm_input(&flush_ex->hv_vp_set, 2);
++		res = hyperv_hypercall(HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST_EX |
++				       HV_HYPERCALL_FAST_BIT |
++				       (1 << HV_HYPERCALL_VARHEAD_OFFSET) |
++				       (1UL << HV_HYPERCALL_REP_COMP_OFFSET),
++				       0x0, HV_FLUSH_ALL_VIRTUAL_ADDRESS_SPACES);
++		post_test(data, res, 0x0, i % 2 ? 0x1 : 0x2);
++	}
++
++	GUEST_SYNC(stage++);
++
++	/* HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE_EX for both vCPUs */
++	for (i = 0; i < NTRY; i++) {
++		prepare_to_test(data);
++		flush_ex->hv_vp_set.format = HV_GENERIC_SET_SPARSE_4K;
++		flush_ex->hv_vp_set.valid_bank_mask = BIT_ULL(WORKER_VCPU_ID_2 / 64) |
++			BIT_ULL(WORKER_VCPU_ID_1 / 64);
++		flush_ex->hv_vp_set.bank_contents[0] = BIT_ULL(WORKER_VCPU_ID_1 % 64);
++		flush_ex->hv_vp_set.bank_contents[1] = BIT_ULL(WORKER_VCPU_ID_2 % 64);
++		hyperv_write_xmm_input(&flush_ex->hv_vp_set, 2);
++		res = hyperv_hypercall(HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE_EX |
++				       HV_HYPERCALL_FAST_BIT |
++				       (2 << HV_HYPERCALL_VARHEAD_OFFSET),
++				       0x0, HV_FLUSH_ALL_VIRTUAL_ADDRESS_SPACES);
++		post_test(data, res, i % 2 ? 0x1 : 0x2, i % 2 ? 0x1 : 0x2);
++	}
++
++	GUEST_SYNC(stage++);
++
++	/* HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST_EX for both vCPUs */
++	for (i = 0; i < NTRY; i++) {
++		prepare_to_test(data);
++		flush_ex->hv_vp_set.format = HV_GENERIC_SET_SPARSE_4K;
++		flush_ex->hv_vp_set.valid_bank_mask = BIT_ULL(WORKER_VCPU_ID_1 / 64) |
++			BIT_ULL(WORKER_VCPU_ID_2 / 64);
++		flush_ex->hv_vp_set.bank_contents[0] = BIT_ULL(WORKER_VCPU_ID_1 % 64);
++		flush_ex->hv_vp_set.bank_contents[1] = BIT_ULL(WORKER_VCPU_ID_2 % 64);
++		/* bank_contents and gva_list occupy the same space, thus [2] */
++		flush_ex->gva_list[2] = (u64)data->test_pages;
++		hyperv_write_xmm_input(&flush_ex->hv_vp_set, 3);
++		res = hyperv_hypercall(HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST_EX |
++				       HV_HYPERCALL_FAST_BIT |
++				       (2 << HV_HYPERCALL_VARHEAD_OFFSET) |
++				       (1UL << HV_HYPERCALL_REP_COMP_OFFSET),
++				       0x0, HV_FLUSH_ALL_VIRTUAL_ADDRESS_SPACES);
++		post_test(data, res, i % 2 ? 0x1 : 0x2, i % 2 ? 0x1 : 0x2);
++	}
++
++	GUEST_SYNC(stage++);
++
++	/* HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE_EX for HV_GENERIC_SET_ALL */
++	for (i = 0; i < NTRY; i++) {
++		prepare_to_test(data);
++		flush_ex->flags = HV_FLUSH_ALL_VIRTUAL_ADDRESS_SPACES;
++		flush_ex->hv_vp_set.format = HV_GENERIC_SET_ALL;
++		hyperv_write_xmm_input(&flush_ex->hv_vp_set, 2);
++		res = hyperv_hypercall(HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE_EX |
++				       HV_HYPERCALL_FAST_BIT,
++				       0x0, HV_FLUSH_ALL_VIRTUAL_ADDRESS_SPACES);
++		post_test(data, res, i % 2 ? 0x1 : 0x2, i % 2 ? 0x1 : 0x2);
++	}
++
++	GUEST_SYNC(stage++);
++
++	/* HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST_EX for HV_GENERIC_SET_ALL */
++	for (i = 0; i < NTRY; i++) {
++		prepare_to_test(data);
++		flush_ex->flags = HV_FLUSH_ALL_VIRTUAL_ADDRESS_SPACES;
++		flush_ex->hv_vp_set.format = HV_GENERIC_SET_ALL;
++		flush_ex->gva_list[0] = (u64)data->test_pages;
++		hyperv_write_xmm_input(&flush_ex->hv_vp_set, 2);
++		res = hyperv_hypercall(HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST_EX |
++				       HV_HYPERCALL_FAST_BIT |
++				       (1UL << HV_HYPERCALL_REP_COMP_OFFSET),
++				       0x0, HV_FLUSH_ALL_VIRTUAL_ADDRESS_SPACES);
++		post_test(data, res, i % 2 ? 0x1 : 0x2, i % 2 ? 0x1 : 0x2);
++	}
 +
 +	GUEST_DONE();
 +}
@@ -421,51 +679,82 @@ index 000000000000..a8e834be62bc
 +
 +int main(int argc, char *argv[])
 +{
-+	int r;
 +	pthread_t threads[2];
 +	struct thread_params params[2];
 +	struct kvm_vm *vm;
 +	struct kvm_run *run;
-+	vm_vaddr_t hcall_page;
++	vm_vaddr_t test_data_page, gva;
++	vm_paddr_t gpa;
++	uint64_t *pte;
++	struct test_data *data;
 +	struct ucall uc;
-+	int stage = 1;
++	int stage = 1, r, i;
 +
 +	vm = vm_create_default(SENDER_VCPU_ID, 0, sender_guest_code);
 +	params[0].vm = vm;
 +	params[1].vm = vm;
 +
++	/* Test data page */
++	test_data_page = vm_vaddr_alloc_page(vm);
++	data = (struct test_data *)addr_gva2hva(vm, test_data_page);
++
 +	/* Hypercall input/output */
-+	hcall_page = vm_vaddr_alloc_pages(vm, 2);
-+	memset(addr_gva2hva(vm, hcall_page), 0x0, 2 * getpagesize());
++	data->hcall_gva = vm_vaddr_alloc_pages(vm, 2);
++	data->hcall_gpa = addr_gva2gpa(vm, data->hcall_gva);
++	memset(addr_gva2hva(vm, data->hcall_gva), 0x0, 2 * PAGE_SIZE);
 +
-+	vm_init_descriptor_tables(vm);
++	/*
++	 * Test pages: the first one is filled with '0x1's, the second with '0x2's
++	 * and the test will swap their mappings. The third page keeps the indication
++	 * about the current state of mappings.
++	 */
++	data->test_pages = vm_vaddr_alloc_pages(vm, NTEST_PAGES + 1);
++	for (i = 0; i < NTEST_PAGES; i++)
++		memset(addr_gva2hva(vm, data->test_pages + PAGE_SIZE * i),
++		       (char)(i + 1), PAGE_SIZE);
++	set_expected_char(addr_gva2hva(vm, data->test_pages), 0x0, WORKER_VCPU_ID_1);
++	set_expected_char(addr_gva2hva(vm, data->test_pages), 0x0, WORKER_VCPU_ID_2);
 +
-+	vm_vcpu_add_default(vm, RECEIVER_VCPU_ID_1, receiver_code);
-+	vcpu_init_descriptor_tables(vm, RECEIVER_VCPU_ID_1);
-+	vcpu_args_set(vm, RECEIVER_VCPU_ID_1, 2, hcall_page, addr_gva2gpa(vm, hcall_page));
-+	vcpu_set_msr(vm, RECEIVER_VCPU_ID_1, HV_X64_MSR_VP_INDEX, RECEIVER_VCPU_ID_1);
-+	vcpu_set_hv_cpuid(vm, RECEIVER_VCPU_ID_1);
++	/*
++	 * Get PTE pointers for test pages and map them inside the guest.
++	 * Use separate page for each PTE for simplicity.
++	 */
++	gva = vm_vaddr_unused_gap(vm, NTEST_PAGES * PAGE_SIZE, KVM_UTIL_MIN_VADDR);
++	for (i = 0; i < NTEST_PAGES; i++) {
++		pte = _vm_get_page_table_entry(vm, SENDER_VCPU_ID,
++					       data->test_pages + i * PAGE_SIZE);
++		gpa = addr_hva2gpa(vm, pte);
++		__virt_pg_map(vm, gva + PAGE_SIZE * i, gpa & PAGE_MASK, X86_PAGE_SIZE_4K);
++		data->test_pages_pte[i] = gva + (gpa & ~PAGE_MASK);
++	}
 +
-+	vm_vcpu_add_default(vm, RECEIVER_VCPU_ID_2, receiver_code);
-+	vcpu_init_descriptor_tables(vm, RECEIVER_VCPU_ID_2);
-+	vcpu_args_set(vm, RECEIVER_VCPU_ID_2, 2, hcall_page, addr_gva2gpa(vm, hcall_page));
-+	vcpu_set_msr(vm, RECEIVER_VCPU_ID_2, HV_X64_MSR_VP_INDEX, RECEIVER_VCPU_ID_2);
-+	vcpu_set_hv_cpuid(vm, RECEIVER_VCPU_ID_2);
-+
-+	vm_install_exception_handler(vm, IPI_VECTOR, guest_ipi_handler);
-+
-+	vcpu_args_set(vm, SENDER_VCPU_ID, 2, hcall_page, addr_gva2gpa(vm, hcall_page));
++	/*
++	 * Sender vCPU which performs the test: swaps test pages, sets expectation
++	 * for 'workers' and issues TLB flush hypercalls.
++	 */
++	vcpu_args_set(vm, SENDER_VCPU_ID, 1, test_data_page);
 +	vcpu_set_hv_cpuid(vm, SENDER_VCPU_ID);
 +
-+	params[0].vcpu_id = RECEIVER_VCPU_ID_1;
++	/* Create worker vCPUs which check the contents of the test pages */
++	vm_vcpu_add_default(vm, WORKER_VCPU_ID_1, worker_guest_code);
++	vcpu_args_set(vm, WORKER_VCPU_ID_1, 1, test_data_page);
++	vcpu_set_msr(vm, WORKER_VCPU_ID_1, HV_X64_MSR_VP_INDEX, WORKER_VCPU_ID_1);
++	vcpu_set_hv_cpuid(vm, WORKER_VCPU_ID_1);
++
++	vm_vcpu_add_default(vm, WORKER_VCPU_ID_2, worker_guest_code);
++	vcpu_args_set(vm, WORKER_VCPU_ID_2, 1, test_data_page);
++	vcpu_set_msr(vm, WORKER_VCPU_ID_2, HV_X64_MSR_VP_INDEX, WORKER_VCPU_ID_2);
++	vcpu_set_hv_cpuid(vm, WORKER_VCPU_ID_2);
++
++	params[0].vcpu_id = WORKER_VCPU_ID_1;
 +	r = pthread_create(&threads[0], NULL, vcpu_thread, &params[0]);
 +	TEST_ASSERT(r == 0,
-+		    "pthread_create halter failed errno=%d", errno);
++		    "pthread_create failed errno=%d", errno);
 +
-+	params[1].vcpu_id = RECEIVER_VCPU_ID_2;
++	params[1].vcpu_id = WORKER_VCPU_ID_2;
 +	r = pthread_create(&threads[1], NULL, vcpu_thread, &params[1]);
 +	TEST_ASSERT(r == 0,
-+		    "pthread_create halter failed errno=%d", errno);
++		    "pthread_create failed errno=%d", errno);
 +
 +	run = vcpu_state(vm, SENDER_VCPU_ID);
 +
@@ -493,8 +782,8 @@ index 000000000000..a8e834be62bc
 +		stage++;
 +	}
 +
-+	cancel_join_vcpu_thread(threads[0], RECEIVER_VCPU_ID_1);
-+	cancel_join_vcpu_thread(threads[1], RECEIVER_VCPU_ID_2);
++	cancel_join_vcpu_thread(threads[0], WORKER_VCPU_ID_1);
++	cancel_join_vcpu_thread(threads[1], WORKER_VCPU_ID_2);
 +	kvm_vm_free(vm);
 +
 +	return 0;
