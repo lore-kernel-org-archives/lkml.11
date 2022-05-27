@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34C33C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2694FC433FE
 	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:01:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352604AbiE0MAp (ORCPT
+        id S1352537AbiE0MAm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 08:00:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41426 "EHLO
+        Fri, 27 May 2022 08:00:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352871AbiE0Lu5 (ORCPT
+        with ESMTP id S1352885AbiE0Lu6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:50:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAC84276;
-        Fri, 27 May 2022 04:46:16 -0700 (PDT)
+        Fri, 27 May 2022 07:50:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2A52389;
+        Fri, 27 May 2022 04:46:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 529FF61D96;
-        Fri, 27 May 2022 11:46:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 638D1C385A9;
-        Fri, 27 May 2022 11:46:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4567B61D7F;
+        Fri, 27 May 2022 11:46:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50C73C34100;
+        Fri, 27 May 2022 11:46:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653651975;
-        bh=Ml2drK8wflGx1WqYyuyVWtr3gasKF1wxogQ6AqqIt3Q=;
+        s=korg; t=1653651978;
+        bh=Z5pJfDHLQ0+e1gBSa0TwJXXMrWtqq9wh9y2ZJhTg8gc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A1FXYeaQ07CvAsXTdV0Z2A1IP+qZyw1EeeDBHOuMAG6KxvUiUDrcdp57IAMHQ5AMg
-         lNWmwpZ6pLjk8exz79R3b751fOcwz397oA158caODy5gLELojfWJplk1sHpSnX/oRr
-         1o7iUdvnzVXhlPqEi8mPODv4jRnV/GxuPcxLpSJg=
+        b=itrND8BGSUeyTXZ8meTRtYRZmYYfBuclpYanoL/tbGNTGTa14mUhG+wJzKqtR6J4K
+         bzUCavEVNvI434wSJHBiH/3BgFRvGiBrmB7wbHNoog39GtPPFfl2mhn0gfNgyvgUKv
+         3XBk+mlbf1lAhfoyDhhCj4ZNGyoYO9YK5MDTcPxU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         Dominik Brodowski <linux@dominikbrodowski.net>,
-        Joe Perches <joe@perches.com>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.17 092/111] random: use symbolic constants for crng_init states
-Date:   Fri, 27 May 2022 10:50:04 +0200
-Message-Id: <20220527084832.450066928@linuxfoundation.org>
+Subject: [PATCH 5.17 103/111] random: move initialization functions out of hot pages
+Date:   Fri, 27 May 2022 10:50:15 +0200
+Message-Id: <20220527084833.881967920@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220527084819.133490171@linuxfoundation.org>
 References: <20220527084819.133490171@linuxfoundation.org>
@@ -53,123 +52,172 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit e3d2c5e79a999aa4e7d6f0127e16d3da5a4ff70d upstream.
+commit 560181c27b582557d633ecb608110075433383af upstream.
 
-crng_init represents a state machine, with three states, and various
-rules for transitions. For the longest time, we've been managing these
-with "0", "1", and "2", and expecting people to figure it out. To make
-the code more obvious, replace these with proper enum values
-representing the transition, and then redocument what each of these
-states mean.
+Much of random.c is devoted to initializing the rng and accounting for
+when a sufficient amount of entropy has been added. In a perfect world,
+this would all happen during init, and so we could mark these functions
+as __init. But in reality, this isn't the case: sometimes the rng only
+finishes initializing some seconds after system init is finished.
+
+For this reason, at the moment, a whole host of functions that are only
+used relatively close to system init and then never again are intermixed
+with functions that are used in hot code all the time. This creates more
+cache misses than necessary.
+
+In order to pack the hot code closer together, this commit moves the
+initialization functions that can't be marked as __init into
+.text.unlikely by way of the __cold attribute.
+
+Of particular note is moving credit_init_bits() into a macro wrapper
+that inlines the crng_ready() static branch check. This avoids a
+function call to a nop+ret, and most notably prevents extra entropy
+arithmetic from being computed in mix_interrupt_randomness().
 
 Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
-Cc: Joe Perches <joe@perches.com>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   38 +++++++++++++++++++-------------------
- 1 file changed, 19 insertions(+), 19 deletions(-)
+ drivers/char/random.c |   40 ++++++++++++++++++----------------------
+ 1 file changed, 18 insertions(+), 22 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -70,16 +70,16 @@
-  *********************************************************************/
+@@ -109,7 +109,7 @@ bool rng_is_initialized(void)
+ }
+ EXPORT_SYMBOL(rng_is_initialized);
  
- /*
-- * crng_init =  0 --> Uninitialized
-- *		1 --> Initialized
-- *		2 --> Initialized from input_pool
-- *
-  * crng_init is protected by base_crng->lock, and only increases
-- * its value (from 0->1->2).
-+ * its value (from empty->early->ready).
+-static void crng_set_ready(struct work_struct *work)
++static void __cold crng_set_ready(struct work_struct *work)
+ {
+ 	static_branch_enable(&crng_is_ready);
+ }
+@@ -148,7 +148,7 @@ EXPORT_SYMBOL(wait_for_random_bytes);
+  * returns: 0 if callback is successfully added
+  *	    -EALREADY if pool is already initialised (callback not called)
   */
--static int crng_init = 0;
--#define crng_ready() (likely(crng_init > 1))
--/* Various types of waiters for crng_init->2 transition. */
-+static enum {
-+	CRNG_EMPTY = 0, /* Little to no entropy collected */
-+	CRNG_EARLY = 1, /* At least POOL_EARLY_BITS collected */
-+	CRNG_READY = 2  /* Fully initialized with POOL_READY_BITS collected */
-+} crng_init = CRNG_EMPTY;
-+#define crng_ready() (likely(crng_init >= CRNG_READY))
-+/* Various types of waiters for crng_init->CRNG_READY transition. */
- static DECLARE_WAIT_QUEUE_HEAD(crng_init_wait);
- static struct fasync_struct *fasync;
- static DEFINE_SPINLOCK(random_ready_chain_lock);
-@@ -282,7 +282,7 @@ static void crng_reseed(void)
- 	WRITE_ONCE(base_crng.generation, next_gen);
- 	WRITE_ONCE(base_crng.birth, jiffies);
- 	if (!crng_ready()) {
--		crng_init = 2;
-+		crng_init = CRNG_READY;
- 		finalize_init = true;
- 	}
- 	spin_unlock_irqrestore(&base_crng.lock, flags);
-@@ -376,7 +376,7 @@ static void crng_make_state(u32 chacha_s
- 	 * For the fast path, we check whether we're ready, unlocked first, and
- 	 * then re-check once locked later. In the case where we're really not
- 	 * ready, we do fast key erasure with the base_crng directly, extracting
--	 * when crng_init==0.
-+	 * when crng_init is CRNG_EMPTY.
- 	 */
- 	if (!crng_ready()) {
- 		bool ready;
-@@ -384,7 +384,7 @@ static void crng_make_state(u32 chacha_s
- 		spin_lock_irqsave(&base_crng.lock, flags);
- 		ready = crng_ready();
- 		if (!ready) {
--			if (crng_init == 0)
-+			if (crng_init == CRNG_EMPTY)
- 				extract_entropy(base_crng.key, sizeof(base_crng.key));
- 			crng_fast_key_erasure(base_crng.key, chacha_state,
- 					      random_data, random_data_len);
-@@ -738,8 +738,8 @@ EXPORT_SYMBOL(get_random_bytes_arch);
+-int register_random_ready_notifier(struct notifier_block *nb)
++int __cold register_random_ready_notifier(struct notifier_block *nb)
+ {
+ 	unsigned long flags;
+ 	int ret = -EALREADY;
+@@ -166,7 +166,7 @@ int register_random_ready_notifier(struc
+ /*
+  * Delete a previously registered readiness callback function.
+  */
+-int unregister_random_ready_notifier(struct notifier_block *nb)
++int __cold unregister_random_ready_notifier(struct notifier_block *nb)
+ {
+ 	unsigned long flags;
+ 	int ret;
+@@ -177,7 +177,7 @@ int unregister_random_ready_notifier(str
+ 	return ret;
+ }
  
- enum {
- 	POOL_BITS = BLAKE2S_HASH_SIZE * 8,
--	POOL_INIT_BITS = POOL_BITS, /* No point in settling for less. */
--	POOL_FAST_INIT_BITS = POOL_INIT_BITS / 2
-+	POOL_READY_BITS = POOL_BITS, /* When crng_init->CRNG_READY */
-+	POOL_EARLY_BITS = POOL_READY_BITS / 2 /* When crng_init->CRNG_EARLY */
- };
+-static void process_random_ready_list(void)
++static void __cold process_random_ready_list(void)
+ {
+ 	unsigned long flags;
  
- static struct {
-@@ -834,13 +834,13 @@ static void credit_init_bits(size_t nbit
- 		init_bits = min_t(unsigned int, POOL_BITS, orig + add);
- 	} while (cmpxchg(&input_pool.init_bits, orig, init_bits) != orig);
+@@ -187,15 +187,9 @@ static void process_random_ready_list(vo
+ }
  
--	if (!crng_ready() && init_bits >= POOL_INIT_BITS)
-+	if (!crng_ready() && init_bits >= POOL_READY_BITS)
- 		crng_reseed();
--	else if (unlikely(crng_init == 0 && init_bits >= POOL_FAST_INIT_BITS)) {
-+	else if (unlikely(crng_init == CRNG_EMPTY && init_bits >= POOL_EARLY_BITS)) {
- 		spin_lock_irqsave(&base_crng.lock, flags);
--		if (crng_init == 0) {
-+		if (crng_init == CRNG_EMPTY) {
- 			extract_entropy(base_crng.key, sizeof(base_crng.key));
--			crng_init = 1;
-+			crng_init = CRNG_EARLY;
- 		}
- 		spin_unlock_irqrestore(&base_crng.lock, flags);
- 	}
-@@ -1515,7 +1515,7 @@ const struct file_operations urandom_fop
+ #define warn_unseeded_randomness() \
+-	_warn_unseeded_randomness(__func__, (void *)_RET_IP_)
+-
+-static void _warn_unseeded_randomness(const char *func_name, void *caller)
+-{
+-	if (!IS_ENABLED(CONFIG_WARN_ALL_UNSEEDED_RANDOM) || crng_ready())
+-		return;
+-	printk_deferred(KERN_NOTICE "random: %s called from %pS with crng_init=%d\n",
+-			func_name, caller, crng_init);
+-}
++	if (IS_ENABLED(CONFIG_WARN_ALL_UNSEEDED_RANDOM) && !crng_ready()) \
++		printk_deferred(KERN_NOTICE "random: %s called from %pS with crng_init=%d\n", \
++				__func__, (void *)_RET_IP_, crng_init)
+ 
+ 
+ /*********************************************************************
+@@ -614,7 +608,7 @@ EXPORT_SYMBOL(get_random_u32);
+  * This function is called when the CPU is coming up, with entry
+  * CPUHP_RANDOM_PREPARE, which comes before CPUHP_WORKQUEUE_PREP.
+  */
+-int random_prepare_cpu(unsigned int cpu)
++int __cold random_prepare_cpu(unsigned int cpu)
+ {
+ 	/*
+ 	 * When the cpu comes back online, immediately invalidate both
+@@ -789,13 +783,15 @@ static void extract_entropy(void *buf, s
+ 	memzero_explicit(&block, sizeof(block));
+ }
+ 
+-static void credit_init_bits(size_t bits)
++#define credit_init_bits(bits) if (!crng_ready()) _credit_init_bits(bits)
++
++static void __cold _credit_init_bits(size_t bits)
+ {
+ 	static struct execute_work set_ready;
+ 	unsigned int new, orig, add;
+ 	unsigned long flags;
+ 
+-	if (crng_ready() || !bits)
++	if (!bits)
+ 		return;
+ 
+ 	add = min_t(size_t, bits, POOL_BITS);
+@@ -974,7 +970,7 @@ EXPORT_SYMBOL_GPL(add_hwgenerator_random
+  * Handle random seed passed by bootloader, and credit it if
+  * CONFIG_RANDOM_TRUST_BOOTLOADER is set.
+  */
+-void add_bootloader_randomness(const void *buf, size_t len)
++void __cold add_bootloader_randomness(const void *buf, size_t len)
+ {
+ 	mix_pool_bytes(buf, len);
+ 	if (trust_bootloader)
+@@ -1020,7 +1016,7 @@ static void fast_mix(unsigned long s[4],
+  * This function is called when the CPU has just come online, with
+  * entry CPUHP_AP_RANDOM_ONLINE, just after CPUHP_AP_WORKQUEUE_ONLINE.
+  */
+-int random_online_cpu(unsigned int cpu)
++int __cold random_online_cpu(unsigned int cpu)
+ {
+ 	/*
+ 	 * During CPU shutdown and before CPU onlining, add_interrupt_
+@@ -1175,7 +1171,7 @@ static void add_timer_randomness(struct
+ 	if (in_hardirq())
+ 		this_cpu_ptr(&irq_randomness)->count += max(1u, bits * 64) - 1;
+ 	else
+-		credit_init_bits(bits);
++		_credit_init_bits(bits);
+ }
+ 
+ void add_input_randomness(unsigned int type, unsigned int code, unsigned int value)
+@@ -1203,7 +1199,7 @@ void add_disk_randomness(struct gendisk
+ }
+ EXPORT_SYMBOL_GPL(add_disk_randomness);
+ 
+-void rand_initialize_disk(struct gendisk *disk)
++void __cold rand_initialize_disk(struct gendisk *disk)
+ {
+ 	struct timer_rand_state *state;
+ 
+@@ -1232,7 +1228,7 @@ void rand_initialize_disk(struct gendisk
   *
-  * - write_wakeup_threshold - the amount of entropy in the input pool
-  *   below which write polls to /dev/random will unblock, requesting
-- *   more entropy, tied to the POOL_INIT_BITS constant. It is writable
-+ *   more entropy, tied to the POOL_READY_BITS constant. It is writable
-  *   to avoid breaking old userspaces, but writing to it does not
-  *   change any behavior of the RNG.
-  *
-@@ -1530,7 +1530,7 @@ const struct file_operations urandom_fop
- #include <linux/sysctl.h>
- 
- static int sysctl_random_min_urandom_seed = CRNG_RESEED_INTERVAL / HZ;
--static int sysctl_random_write_wakeup_bits = POOL_INIT_BITS;
-+static int sysctl_random_write_wakeup_bits = POOL_READY_BITS;
- static int sysctl_poolsize = POOL_BITS;
- static u8 sysctl_bootid[UUID_SIZE];
- 
+  * So the re-arming always happens in the entropy loop itself.
+  */
+-static void entropy_timer(struct timer_list *t)
++static void __cold entropy_timer(struct timer_list *t)
+ {
+ 	credit_init_bits(1);
+ }
+@@ -1241,7 +1237,7 @@ static void entropy_timer(struct timer_l
+  * If we have an actual cycle counter, see if we can
+  * generate enough entropy with timing noise
+  */
+-static void try_to_generate_entropy(void)
++static void __cold try_to_generate_entropy(void)
+ {
+ 	struct {
+ 		unsigned long entropy;
 
 
