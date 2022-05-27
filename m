@@ -2,84 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61414C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 23:05:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 337BEC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 23:09:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231467AbiE0XFY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 19:05:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39872 "EHLO
+        id S1355126AbiE0XI7 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 19:08:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230193AbiE0XFA (ORCPT
+        with ESMTP id S242369AbiE0XIz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 19:05:00 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6311312E33F
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 16:04:58 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id v15so4636102edl.9
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 16:04:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6BGoFFgW/Mo0Xp2ZeLbW4T3GKY+VDGTAwfQ7W1wk09o=;
-        b=M1D1Ve7N12RMFQKKTXgwWaa5btEqkDX8TyQBKk1K0II7CkANOnLW1EP4aKbEIGi4sh
-         WwVXtLLKsqhEKaUNouMKfO1QpWYqIxXEWh9U/Dm4Zj/0lsXbf6hCi19sld0JuIE3f3WS
-         QTj+V3awjOgu4xhQTxweoGzYrNbyWekMAmzIM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6BGoFFgW/Mo0Xp2ZeLbW4T3GKY+VDGTAwfQ7W1wk09o=;
-        b=wqI0uZIYs0Jve7HEjE+5Dp+sF2BLpZY503dMjpgfJaGTh/mTPc6MYXuxcmhw6Ja3qp
-         YwJjKwyy9UtuL7QzQ9wsSWgZDWhLzPzirTuw6cMyOvnZSd27v1DzmsWz4BvAHQzLjSD5
-         uKC8vAS1ohz0rOIEJJufsRGGsYIcpk4yBDDSOkUBO+rXPh68pTGVJNIgPdCDu0sByvGL
-         Hn6QkE4ndixnRemqAo3TuYDJoJBKH7qbw6pRKKwvclP6AUTf1xabpDhQl5Q9OYMT8iG8
-         G4kvX8AD/zIQjAuZGj69WyemLQ2I6sSKdlN3RzPxeQxdGdCdSY68lx2OzxDDNvdsMEzI
-         aAWw==
-X-Gm-Message-State: AOAM5320RKCM/Ac2jo9cOUVq8hyMnULwO9WVdjMHIYIBC+on0dyqn17P
-        2nbgca1uyJxUDOXAnAVMrdq1oAoHGQD8665d
-X-Google-Smtp-Source: ABdhPJznQb9mW8lh0X0k4Oa+fUA5c0qauc1wsIyLA75QsjFzlvp9cYJrs64eRXjdCNxqP74gSlUbWw==
-X-Received: by 2002:a05:6402:270a:b0:42b:3721:4e76 with SMTP id y10-20020a056402270a00b0042b37214e76mr37665296edd.51.1653692696696;
-        Fri, 27 May 2022 16:04:56 -0700 (PDT)
-Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com. [209.85.221.52])
-        by smtp.gmail.com with ESMTPSA id mu31-20020a1709068a9f00b006feb875503fsm1855001ejc.78.2022.05.27.16.04.56
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 27 May 2022 16:04:56 -0700 (PDT)
-Received: by mail-wr1-f52.google.com with SMTP id e2so7675469wrc.1
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 16:04:56 -0700 (PDT)
-X-Received: by 2002:a05:6000:16c4:b0:20f:cd5d:4797 with SMTP id
- h4-20020a05600016c400b0020fcd5d4797mr25777297wrf.193.1653692695718; Fri, 27
- May 2022 16:04:55 -0700 (PDT)
-MIME-Version: 1.0
-References: <4dc223ba-b0d1-e183-1d83-a03a03c1df97@oracle.com>
-In-Reply-To: <4dc223ba-b0d1-e183-1d83-a03a03c1df97@oracle.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Fri, 27 May 2022 16:04:39 -0700
-X-Gmail-Original-Message-ID: <CAHk-=whL6vtgSgFqu3t29DsfU84M7RaZHC9aJz5WN6bNOY563w@mail.gmail.com>
-Message-ID: <CAHk-=whL6vtgSgFqu3t29DsfU84M7RaZHC9aJz5WN6bNOY563w@mail.gmail.com>
-Subject: Re: [GIT PULL] jfs updates for v5.19
-To:     Dave Kleikamp <dave.kleikamp@oracle.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Fri, 27 May 2022 19:08:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD8E562227
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 16:08:54 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A3EA61A1D
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 23:08:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id DB383C34113;
+        Fri, 27 May 2022 23:08:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653692933;
+        bh=A+oRepZSQMqjKQyN/Yb7erpjHMIebZXI4vseepVcx+g=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=smfFKZyPY4GPgg3+99ujRoMOwgN0Az7KuuzsO6bNFaQwqXs5t/lM56ms9FGZRTsBl
+         9obxYLAVzbpFUH5qlqVGhahljGBsGLNOPIYBLci+3A/zCqyGGDB4nNxFnuxtMxhBKA
+         +5of/3XPd/d4ycer9LM18DttZ+nVO+LkDZdN51bdMrMmsHdBnM53zQyqlV+qlsJBI6
+         Htm7IOMA3zM6Qa0nydqge2qJ5i6a0oYIN+yU7PyftmXcmQ8rDyL4lw2T9W0qPF4cbB
+         TOD0AarSeuv7W0uDJOSu2R87FMt04CqtLuAdIgUw419x133Uhu1eJMQ0bVGF5wgKJS
+         e1y5qUZU86n9A==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C6480EAC081;
+        Fri, 27 May 2022 23:08:53 +0000 (UTC)
+Subject: Re: [GIT PULL] LIBNVDIMM and DAX for 5.19
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <CAPcyv4gyd=k7qx7nfnLmnmTASFmrJF-nOBAs9cTqM5DSuCZU6Q@mail.gmail.com>
+References: <CAPcyv4gyd=k7qx7nfnLmnmTASFmrJF-nOBAs9cTqM5DSuCZU6Q@mail.gmail.com>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <CAPcyv4gyd=k7qx7nfnLmnmTASFmrJF-nOBAs9cTqM5DSuCZU6Q@mail.gmail.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/nvdimm/nvdimm tags/libnvdimm-for-5.19
+X-PR-Tracked-Commit-Id: f42e8e5088b9e791c8f7ac661f68e29a4996a4e3
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 35cdd8656eac470b9abc9de8d4bd268fbc0fb34b
+Message-Id: <165369293380.12283.15539059634683739876.pr-tracker-bot@kernel.org>
+Date:   Fri, 27 May 2022 23:08:53 +0000
+To:     Dan Williams <dan.j.williams@intel.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Linux NVDIMM <nvdimm@lists.linux.dev>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 27, 2022 at 8:10 AM Dave Kleikamp <dave.kleikamp@oracle.com> wrote:
->
-> JFS: One bug fix and some code cleanup
+The pull request you sent on Fri, 27 May 2022 15:34:04 -0700:
 
-Oh, ok...
+> git://git.kernel.org/pub/scm/linux/kernel/git/nvdimm/nvdimm tags/libnvdimm-for-5.19
 
->   10 files changed, 3 insertions(+), 1652 deletions(-)
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/35cdd8656eac470b9abc9de8d4bd268fbc0fb34b
 
-.. whee.
+Thank you!
 
-Usually when people say "some cleanup" they are talking about fixing
-some nasty code patterns, not removing 1600 lines of 20-year old dead
-code.
-
-Thanks,
-
-              Linus
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
