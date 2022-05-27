@@ -2,207 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F6DEC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 09:50:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2275C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 09:50:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345184AbiE0Jua (ORCPT
+        id S1350687AbiE0Juz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 05:50:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40822 "EHLO
+        Fri, 27 May 2022 05:50:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233563AbiE0Ju2 (ORCPT
+        with ESMTP id S1350685AbiE0Jux (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 05:50:28 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58A27106376;
-        Fri, 27 May 2022 02:50:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=PLZv4aN+bw9fiReWqFHw5EhmLaGImAvmd3vz2MNI3n8=; b=h9J/+hI5vZ1dVXe/z0CJ51jtYa
-        ba7bXDyl4BxzqTfuWt4NF6kLsyN1Ep/pG0/+bKcdVXDyZH41cu0zvnBaI1C5vxHyqT0cUy/LtE983
-        5s79+FEHB7TL7UKCoG590pjZJgQMaFb1fkoIeB0+f0+x4GUiiTkmez1ld+tNzw24+kcGa5s9nX23S
-        fqdA0cWYeMYg8MYUSDJXzn20joUJOpMNYTFaxuiN6lPhBfbD7Z7+1ZL8AsZmXVa9SrG6UZwGXlZjp
-        QxPpWXbFyZCQnsuNdci+iwraNbrqXA36VQazDVtY+edGuVLYgbmKL1Gq/jlB/LqUxoO3VtF854VdP
-        jPxERNkw==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nuWb2-0029gh-9r; Fri, 27 May 2022 09:49:31 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id E623030006D;
-        Fri, 27 May 2022 11:49:23 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id C8A50207C012A; Fri, 27 May 2022 11:49:23 +0200 (CEST)
-Date:   Fri, 27 May 2022 11:49:23 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Ian Rogers <irogers@google.com>
-Cc:     perry.taylor@intel.com, caleb.biggers@intel.com,
-        kshipra.bopardikar@intel.com,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        James Clark <james.clark@arm.com>,
-        John Garry <john.garry@huawei.com>,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        Stephane Eranian <eranian@google.com>,
-        Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [PATCH v2] perf metrics: Add literal for system TSC frequency
-Message-ID: <YpCeo6APNtXvrTPJ@hirez.programming.kicks-ass.net>
-References: <20220527040407.4193232-1-irogers@google.com>
+        Fri, 27 May 2022 05:50:53 -0400
+Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70074.outbound.protection.outlook.com [40.107.7.74])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32B81106556;
+        Fri, 27 May 2022 02:50:50 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=e+09WAVApdVwz+3RqaQtVp+wRZpikcRTrszhBhQ+LnRGdrbwKStlsUieDzVhnTprHdXE+WG803geU8Gb74/KRpZfgyFM2yoV/MMnRmg3cL/npoSE/rsvZlfoTy5P1fllvuRuz9ifni0v7zW3C0T9AqrcnwUswG5ODnj0hPZA7+Pw6lJoCABFW2xdxFl0Z0q4g9a6+SKX8IQwEwAAh//wG2tZyZVwaAZsPfLx+FYu1YzlWEUV1Nfnn4x1aDdbRUXRvwywRk8g94lIlrEsEisIjb6DbTVG5W9XpynN7n4o/hFRl6tCubic02T4EoaHdqBkRJyuTyZ9p6VdpPpP6Sy8fg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=gOphPAZCwWiXSq5cKMPdC9JSXvlavE2E/EDwI7P0rBk=;
+ b=BGP11ADA+q7/kahMmI97CwYmzz4nkUadK0bhRPebVpoxWFCpUHeV7HsEPkBcVWg4etdrELpCncVIPq4haqt7TmbmXAy1zTvhMxQTbWNTbFr5/2STF2/0O+NNT99qfWg5eXHCh4rQ+7SnL2jmnuiSwUPVa6qLFTSvmK5XCqpAknJlgbXl3ugDS/QkwX5zwWQhxOLdod54/Eg2K20PicoqXnhAXtYswJOeK6wy/ccr/gn/CMXC6T0LTALcNdjhQK1VHdFeY/2Hkc19iOBTyFlFHUvCF52fqHNjaD+6ifR9oIesw7pXLY2X3OSxN/Njp9RSWzxV2e7SXiBhTQCj3w2wDA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=gOphPAZCwWiXSq5cKMPdC9JSXvlavE2E/EDwI7P0rBk=;
+ b=H7Se7HxM69NG+JxQmsA+CTtayNldoLDnlNQDu2Ev8XTeamjloOnEiiuVM3e1PJ2e3b4lhq4jNfwu0rqMSIZAgl+xh24feEr7zs3ZiYrJby31AQQ/JU3n5X0kIydwAEmJhKWbMs7PTKKpwM8XOTH01iztRvPs8c/AEhRt/YD85TI=
+Received: from VI1PR04MB5005.eurprd04.prod.outlook.com (2603:10a6:803:57::30)
+ by DB6PR0401MB2677.eurprd04.prod.outlook.com (2603:10a6:4:38::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.15; Fri, 27 May
+ 2022 09:50:47 +0000
+Received: from VI1PR04MB5005.eurprd04.prod.outlook.com
+ ([fe80::b116:46f0:f42b:cf19]) by VI1PR04MB5005.eurprd04.prod.outlook.com
+ ([fe80::b116:46f0:f42b:cf19%3]) with mapi id 15.20.5293.013; Fri, 27 May 2022
+ 09:50:47 +0000
+From:   Viorel Suman <viorel.suman@nxp.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "Viorel Suman (OSS)" <viorel.suman@oss.nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Luo Jie <luoj@codeaurora.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        dl-linux-imx <linux-imx@nxp.com>
+Subject: Re: [PATCH] net: phy: at803x: disable WOL at probe
+Thread-Topic: [PATCH] net: phy: at803x: disable WOL at probe
+Thread-Index: AQHYcCNkafabLQYWvUiOZDbREa7myq0yHGYAgABhzAA=
+Date:   Fri, 27 May 2022 09:50:47 +0000
+Message-ID: <20220527094939.qgtl3s7frlgx3yvf@localhost.localdomain>
+References: <20220525103657.22384-1-viorel.suman@oss.nxp.com>
+ <20220526210044.638128f6@kernel.org>
+In-Reply-To: <20220526210044.638128f6@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 9c46db1e-522e-4842-ae6e-08da3fc65fef
+x-ms-traffictypediagnostic: DB6PR0401MB2677:EE_
+x-microsoft-antispam-prvs: <DB6PR0401MB2677EC303ED9ABBDDE76073192D89@DB6PR0401MB2677.eurprd04.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 47uAsBJXeJuGHHTsgx6Vu7gA0k548/5CJ5+5r5arXW56D/UPfc8a+FpdG59WiBC5pzfeHBT0zkKXmmDxlcj1cvpk139SqRLZFbEXQBKL6bBuqBu+HxxfJl2jZ9ES2FPlulrKXBhn9BbX6QcXIPdjOUu4U1IY+laCrrTsitShpPvy2osi3YzIN8UCzyLRbBeeSSaAxT8YKl1tqamJqWfRK+WFTCQJ0Znqpj2xiJpZ6Mi9df3YWlZUKGz6IlM0nJ1Z9bVTvyCk3hTQqR4v9sOAtnbic+TtIfovC2+l++mBpqk4zRskIwiP+iZ0qqef+RYUuReqCwwJB1++S8qnnvrllkbMhNnqKamnTTqrnjtNWNRSD6zPFN43uUQZnadSRoKOF9v1sXHv7E1E0ZxaWQuLStDmi7Mo3vfd0viKPAky2GRctuCFFDzQW27fHi5yNzCTxUHgFA2ldvll1gvFo2Cg1ICkL0rFhbigZHCTkmr3Fhg5lsCrRpirpNy54URbZ69i4Si9jsnpCRTR2B5eKTQDfywsbzB+FhKpL+HLZ3FTdMvCfI47WJwUqOsxP7pe0SkT1Dp0dZCn1gLeqXUav+B/jepvxgYb4GmQb+2yVe1R1hJoTMpJpr8r+gcgXCWhTExWDolOUWVmOsm99wNLgnb0QE0GWcnARn+bqlzeZdhHj475NxEryQcOzN2NWyh37+RFvAUJm+hgpKyhvdIDhrrRVQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5005.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(5660300002)(71200400001)(38100700002)(8676002)(66446008)(76116006)(66556008)(66946007)(64756008)(66476007)(91956017)(4326008)(508600001)(44832011)(2906002)(7416002)(53546011)(6486002)(6506007)(8936002)(122000001)(186003)(1076003)(26005)(9686003)(6512007)(316002)(86362001)(38070700005)(54906003)(6916009);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?whypKfI+UEIQ3ICO6LiG5ic3sX8m7CyKlZWiQQ5OstnfN7bYiT6jFvzVbVLG?=
+ =?us-ascii?Q?3jNnT1ho9rf/QHMRhG9+2zQ8MYtQW/u00CkmoG0rOoT/NJk0Jy3jfDtAvgSo?=
+ =?us-ascii?Q?KyW8TgbiyWR8pwcnEQI9CJDaymWezeZFGTwTq7AlkauQufsZwSyz26OqpLgH?=
+ =?us-ascii?Q?oHLF0oeDCoYDvhlS/yifEyGTPrZxHKMZvY6r2VUwyAtH3Uqw6+EMWS/iiuK9?=
+ =?us-ascii?Q?3i22jwobzGwqOuRIkVqt0kAKYr0l/KIxbEb5GM8jh/NzuQYrrq/YwFu5Bueg?=
+ =?us-ascii?Q?zFWr5YpgvPOqvIZ9l5DxbcVJTGb5SZBn1GleHZH0jKExD2Au4EcpsqofmFP8?=
+ =?us-ascii?Q?z+Txzhow/4acFHfFbooGnthx6JMQAYT7svDv688q/AQ/0li/5pDFvWsSQtuf?=
+ =?us-ascii?Q?1xi0dhGrqy6RSDZAzTCNMlSxaJHmUJGSXFsWSArx4ieoF0bTCD+j7cai0hJn?=
+ =?us-ascii?Q?+1U8wc2gQCN/lhxdE0SgGM7MfDTwY5rOIRJukp/XOhocJC9cmB7cjgDUhogS?=
+ =?us-ascii?Q?ucRTKM3rM1CuEIM7SE7tM/i4Z4UaE8CHRrKTYaagrNQFM6hjeoJz24yUHK/q?=
+ =?us-ascii?Q?roCfOqpiXpMh5t5P6fUwvMbGNktQq6ZB2gemA22R45V+SAf0dsEftW0sSICn?=
+ =?us-ascii?Q?lM5qMFPnNTiTrtr4xgIkgVdD4IXjJd3wDcf0wPaNYjhzSx+2XsV+xHDGtq/Z?=
+ =?us-ascii?Q?2bsioHjsWRXWA7dPYXRgQkygdImw/8UfIZ9HWKzd9VQB1HjlhO1h2jRVdcNZ?=
+ =?us-ascii?Q?3WA4PRk7Ma1dxA3q8IyERe/FAbFweoxwuKm5aNJP9Hkrh0aoFdENT8MglSqo?=
+ =?us-ascii?Q?mAM8CgKYXIY7qtA+xkXDSQeHnLFTLgkingw+ATVwMKNKmYJ5cMf8lOzBSE4U?=
+ =?us-ascii?Q?NJV6qAsGaFXZad0LR79NIPmf17f0uM4Lv9oA2P0/NV9ObBmjsKxf4Lt71CFE?=
+ =?us-ascii?Q?HazN9YEKTBbpc17Qa9zu+RIwQoFYtUVq3TwWW+pWE+LAL2dL6gQfNdN8DSpb?=
+ =?us-ascii?Q?ewqP46lwp7FEu2FlxsQnP9lCc5WivTKgDQVaKoRP5uSeD5c97FPveedZBwyW?=
+ =?us-ascii?Q?6iMY6ksWaHJpD9jqFOKxhZCR0yM1GucjepUC5cdqNI6sZk0+o+BSuIPYDLb7?=
+ =?us-ascii?Q?NB2H55cKgLMUYlb66m86XYFeGOdPYTAT4UyBQJeJewYAeWtS/Nk1B1Y1ItlO?=
+ =?us-ascii?Q?KvfwI1MJzn/E4W7ZEkYWMXYg8jj9HXji3EFnYecvRIFVvSvbv02OnkSWkNtr?=
+ =?us-ascii?Q?gEe5uebUSki/N5yYEXyNSyzwwDyxSiPL7W+DON2EOCLPf0RioNbb97yVZK+H?=
+ =?us-ascii?Q?u+u+107VGiWMUUt8FJGZcxfg9X4JrpE4H1iMzl6LVOuMgS3iVVjElFKbA1wM?=
+ =?us-ascii?Q?8otCt7kdrYkOA3G5nuKzCFLClGXNQmTwz/xVVbHPaiMVyrz5d26NnT6XDJ3+?=
+ =?us-ascii?Q?MQwgoeDnb4UzPb9k/HXUB7rwfwUqRcrwci0sABGuM1FFbBGcc6XRdqdSvort?=
+ =?us-ascii?Q?8dmoO0UUNRkgcuwTmdrWxLPOtAC9JsczNa42UqpahvopBbnwMmHCDnyAwNwy?=
+ =?us-ascii?Q?BIGTnwPUaBEJjDgLVjAYwh8qBlyg248zXkXIRnwwxO+xynb0CR+neGUtwY3q?=
+ =?us-ascii?Q?WzgnwDYgXJ23CPIRR6kJ0zsQ5QEhFtryJ3mK6kVXrhhcoh3UgiAj6RWyEBvj?=
+ =?us-ascii?Q?n20wphxsr0XhYI9ZH6eotds94DLU5s0JhOVWNqBNxPRvvcYzAF+JTTIGQB1g?=
+ =?us-ascii?Q?MVbvftu7FvwT7t7lxx9bU/f72V9vX+4=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <448B1B9533984D4D87C12BF5055224D9@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220527040407.4193232-1-irogers@google.com>
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5005.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9c46db1e-522e-4842-ae6e-08da3fc65fef
+X-MS-Exchange-CrossTenant-originalarrivaltime: 27 May 2022 09:50:47.1495
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: NFuesg9ZZ4PENHJdAPlpqfTBuLRW8FhkXYbhrj6Yf5l9ctcAtTV5BXDE/V079a2ItjLZuALw/f+2BlayN/VRlw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0401MB2677
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 26, 2022 at 09:04:07PM -0700, Ian Rogers wrote:
-> Such a literal is useful to calculate things like the average frequency
-> [1]. The TSC frequency isn't exposed by sysfs although some experimental
-> drivers look to add it [2]. This change computes the value using the
-> frequency in /proc/cpuinfo which is accurate at least on Intel
-> processors.
-> 
-> v2. Adds warnings to make clear if things have changed/broken on future
->     Intel platforms. It also adds caching and an Intel specific that a
->     value is computed.
-> 
-> [1] https://github.com/intel/perfmon-metrics/blob/5ad9ef7056f31075e8178b9f1fb732af183b2c8d/SKX/metrics/perf/skx_metric_perf.json#L11
-> [2] https://github.com/trailofbits/tsc_freq_khz
+On 22-05-26 21:00:44, Jakub Kicinski wrote:
+> On Wed, 25 May 2022 13:36:57 +0300 Viorel Suman (OSS) wrote:
+> > diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
+> > index 73926006d319..6277d1b1d814 100644
+> > --- a/drivers/net/phy/at803x.c
+> > +++ b/drivers/net/phy/at803x.c
+> > @@ -443,10 +443,10 @@ static int at803x_set_wol(struct phy_device *phyd=
+ev,
+> >  		AT803X_LOC_MAC_ADDR_0_15_OFFSET,
+> >  	};
+> > =20
+> > -	if (!ndev)
+> > -		return -ENODEV;
+> > -
+> >  	if (wol->wolopts & WAKE_MAGIC) {
+> > +		if (!ndev)
+> > +			return -ENODEV;
+>=20
+> Please move the ndev variable into the scope.
+> It'll make it clear that it can't be used elsewhere
+> in this function.
 
-This all seems bonghits inspired... and perf actually does expose the
-tsc frequency. What do you think is in perf_event_mmap_page::time_* ?
+Thank you for review, done in v2.
 
-> 
-> Signed-off-by: Ian Rogers <irogers@google.com>
-> ---
->  tools/perf/tests/expr.c | 15 +++++++++++++
->  tools/perf/util/expr.c  | 50 +++++++++++++++++++++++++++++++++++++++++
->  2 files changed, 65 insertions(+)
-> 
-> diff --git a/tools/perf/tests/expr.c b/tools/perf/tests/expr.c
-> index 5c0032fe93ae..45afe4f24859 100644
-> --- a/tools/perf/tests/expr.c
-> +++ b/tools/perf/tests/expr.c
-> @@ -1,8 +1,10 @@
->  // SPDX-License-Identifier: GPL-2.0
->  #include "util/debug.h"
->  #include "util/expr.h"
-> +#include "util/header.h"
->  #include "util/smt.h"
->  #include "tests.h"
-> +#include <math.h>
->  #include <stdlib.h>
->  #include <string.h>
->  #include <linux/zalloc.h>
-> @@ -69,6 +71,11 @@ static int test__expr(struct test_suite *t __maybe_unused, int subtest __maybe_u
->  	double val, num_cpus, num_cores, num_dies, num_packages;
->  	int ret;
->  	struct expr_parse_ctx *ctx;
-> +	bool is_intel = false;
-> +	char buf[128];
-> +
-> +	if (!get_cpuid(buf, sizeof(buf)))
-> +		is_intel = strstr(buf, "Intel") != NULL;
->  
->  	TEST_ASSERT_EQUAL("ids_union", test_ids_union(), 0);
->  
-> @@ -175,6 +182,14 @@ static int test__expr(struct test_suite *t __maybe_unused, int subtest __maybe_u
->  	if (num_dies) // Some platforms do not have CPU die support, for example s390
->  		TEST_ASSERT_VAL("#num_dies >= #num_packages", num_dies >= num_packages);
->  
-> +	if (is_intel) {
-> +		double system_tsc_freq;
-> +
-> +		TEST_ASSERT_VAL("#system_tsc_freq", expr__parse(&system_tsc_freq, ctx,
-> +								"#system_tsc_freq") == 0);
-> +		TEST_ASSERT_VAL("!isnan(#system_tsc_freq)", !isnan(system_tsc_freq));
-> +	}
-> +
->  	/*
->  	 * Source count returns the number of events aggregating in a leader
->  	 * event including the leader. Check parsing yields an id.
-> diff --git a/tools/perf/util/expr.c b/tools/perf/util/expr.c
-> index 675f318ce7c1..f33aeb1e6faa 100644
-> --- a/tools/perf/util/expr.c
-> +++ b/tools/perf/util/expr.c
-> @@ -402,6 +402,51 @@ double expr_id_data__source_count(const struct expr_id_data *data)
->  	return data->val.source_count;
->  }
->  
-> +/*
-> + * Derive the TSC frequency in Hz from the /proc/cpuinfo, for example:
-> + * ...
-> + * model name      : Intel(R) Xeon(R) Gold 6154 CPU @ 3.00GHz
-> + * ...
-> + * will return 3000000000.
-> + */
-> +static double system_tsc_freq(void)
-> +{
-> +	static double result;
-> +	static bool computed;
-> +	FILE *cpuinfo;
-> +	char *line = NULL;
-> +	size_t len = 0;
-> +
-> +	if (computed)
-> +		return result;
-> +
-> +	computed = true;
-> +	result = NAN;
-> +	cpuinfo = fopen("/proc/cpuinfo", "r");
-> +	if (!cpuinfo) {
-> +		pr_err("Failed to read /proc/cpuinfo for TSC frequency");
-> +		return NAN;
-> +	}
-> +	while (getline(&line, &len, cpuinfo) > 0) {
-> +		if (!strncmp(line, "model name", 10)) {
-> +			char *pos = strstr(line + 11, " @ ");
-> +
-> +			if (pos && sscanf(pos, " @ %lfGHz", &result) == 1) {
-> +				result *= 1000000000;
-> +				goto out;
-> +			}
-> +		}
-> +	}
-> +
-> +out:
-> +	if (isnan(result))
-> +		pr_err("Failed to find TSC frequency in /proc/cpuinfo");
-> +
-> +	free(line);
-> +	fclose(cpuinfo);
-> +	return result;
-> +}
-> +
->  double expr__get_literal(const char *literal)
->  {
->  	static struct cpu_topology *topology;
-> @@ -417,6 +462,11 @@ double expr__get_literal(const char *literal)
->  		goto out;
->  	}
->  
-> +	if (!strcasecmp("#system_tsc_freq", literal)) {
-> +		result = system_tsc_freq();
-> +		goto out;
-> +	}
-> +
->  	/*
->  	 * Assume that topology strings are consistent, such as CPUs "0-1"
->  	 * wouldn't be listed as "0,1", and so after deduplication the number of
-> -- 
-> 2.36.1.124.g0e6072fb45-goog
-> 
+>=20
+> >  		mac =3D (const u8 *) ndev->dev_addr;
+> > =20
+> >  		if (!is_valid_ether_addr(mac))
+> > @@ -857,6 +857,9 @@ static int at803x_probe(struct phy_device *phydev)
+> >  	if (phydev->drv->phy_id =3D=3D ATH8031_PHY_ID) {
+> >  		int ccr =3D phy_read(phydev, AT803X_REG_CHIP_CONFIG);
+> >  		int mode_cfg;
+> > +		struct ethtool_wolinfo wol =3D {
+> > +			.wolopts =3D 0,
+> > +		};
+> > =20
+> >  		if (ccr < 0)
+> >  			goto err;
+> > @@ -872,6 +875,13 @@ static int at803x_probe(struct phy_device *phydev)
+> >  			priv->is_fiber =3D true;
+> >  			break;
+> >  		}
+> > +
+> > +		/* Disable WOL by default */
+> > +		ret =3D at803x_set_wol(phydev, &wol);
+> > +		if (ret < 0) {
+> > +			phydev_err(phydev, "failed to disable WOL on probe: %d\n", ret);
+> > +			return ret;
+>=20
+> Don't you need to goto err; here?
+
+Missed err section indeed, thanks. Fixed in v2.
+
+>=20
+> > +		}
+> >  	}
+> > =20
+> >  	return 0;=
