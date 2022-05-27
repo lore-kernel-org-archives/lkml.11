@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5824DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:48:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B88CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:49:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245584AbiE0Lso (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 07:48:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56480 "EHLO
+        id S1351900AbiE0Ls4 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 07:48:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351856AbiE0LoF (ORCPT
+        with ESMTP id S1351935AbiE0LpJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:44:05 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10BE813C0A2;
-        Fri, 27 May 2022 04:41:06 -0700 (PDT)
+        Fri, 27 May 2022 07:45:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CA2413C351;
+        Fri, 27 May 2022 04:41:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 0B559CE250E;
-        Fri, 27 May 2022 11:41:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C162C385A9;
-        Fri, 27 May 2022 11:41:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BD52461C3F;
+        Fri, 27 May 2022 11:41:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C766FC385A9;
+        Fri, 27 May 2022 11:41:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653651663;
-        bh=J5xJYi+i64ykzs9x/0F9qkD+abvNKXxxEEBjmLewFAs=;
+        s=korg; t=1653651690;
+        bh=5Qvl9MRNPbfZ5zmGTUMKK2Aok2MPBZGiLGgl4WAat1s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pJvDjDC8qY3LKBXKr2Na1uZbNHfDvgIWtK+EhbnqdSY+MaZfslwr74eBjDIuAyYwJ
-         D75CBdpN4imOiNfVh/l6fSA6ujJh9ZotGPA+SXW5fihtW7Ikexghq1PHjWynboHDtQ
-         ocLnQQ12trwcr4FPNj9TuQrnWgpVIUsf9Sg63agg=
+        b=lYwx4WEvQ1SNgCUPKmPlqp283w+Z+TdbnJXAsOeZfxvvRtoncvKizDdFf9ENfhsCr
+         HUsiNZovbwAGvHpv7EGiKgl/PgZWjTEnFfobjhc0z78T37aT4x3hruDaGkEmC0TeHB
+         zoD+Gt0K7LtLxmsdp0HtQlfKnnLEXu1J6xHLuc9o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
+        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
+        Theodore Tso <tytso@mit.edu>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.15 028/145] random: remove unused OUTPUT_POOL constants
-Date:   Fri, 27 May 2022 10:48:49 +0200
-Message-Id: <20220527084854.241287047@linuxfoundation.org>
+Subject: [PATCH 5.17 063/111] random: check for signals every PAGE_SIZE chunk of /dev/[u]random
+Date:   Fri, 27 May 2022 10:49:35 +0200
+Message-Id: <20220527084828.462781628@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084850.364560116@linuxfoundation.org>
-References: <20220527084850.364560116@linuxfoundation.org>
+In-Reply-To: <20220527084819.133490171@linuxfoundation.org>
+References: <20220527084819.133490171@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,42 +52,107 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 0f63702718c91d89c922081ac1e6baeddc2d8b1a upstream.
+commit e3c1c4fd9e6d14059ed93ebfe15e1c57793b1a05 upstream.
 
-We no longer have an output pool. Rather, we have just a wakeup bits
-threshold for /dev/random reads, presumably so that processes don't
-hang. This value, random_write_wakeup_bits, is configurable anyway. So
-all the no longer usefully named OUTPUT_POOL constants were doing was
-setting a reasonable default for random_write_wakeup_bits. This commit
-gets rid of the constants and just puts it all in the default value of
-random_write_wakeup_bits.
+In 1448769c9cdb ("random: check for signal_pending() outside of
+need_resched() check"), Jann pointed out that we previously were only
+checking the TIF_NOTIFY_SIGNAL and TIF_SIGPENDING flags if the process
+had TIF_NEED_RESCHED set, which meant in practice, super long reads to
+/dev/[u]random would delay signal handling by a long time. I tried this
+using the below program, and indeed I wasn't able to interrupt a
+/dev/urandom read until after several megabytes had been read. The bug
+he fixed has always been there, and so code that reads from /dev/urandom
+without checking the return value of read() has mostly worked for a long
+time, for most sizes, not just for <= 256.
 
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Maybe it makes sense to keep that code working. The reason it was so
+small prior, ignoring the fact that it didn't work anyway, was likely
+because /dev/random used to block, and that could happen for pretty
+large lengths of time while entropy was gathered. But now, it's just a
+chacha20 call, which is extremely fast and is just operating on pure
+data, without having to wait for some external event. In that sense,
+/dev/[u]random is a lot more like /dev/zero.
+
+Taking a page out of /dev/zero's read_zero() function, it always returns
+at least one chunk, and then checks for signals after each chunk. Chunk
+sizes there are of length PAGE_SIZE. Let's just copy the same thing for
+/dev/[u]random, and check for signals and cond_resched() for every
+PAGE_SIZE amount of data. This makes the behavior more consistent with
+expectations, and should mitigate the impact of Jann's fix for the
+age-old signal check bug.
+
+---- test program ----
+
+  #include <unistd.h>
+  #include <signal.h>
+  #include <stdio.h>
+  #include <sys/random.h>
+
+  static unsigned char x[~0U];
+
+  static void handle(int) { }
+
+  int main(int argc, char *argv[])
+  {
+    pid_t pid = getpid(), child;
+    signal(SIGUSR1, handle);
+    if (!(child = fork())) {
+      for (;;)
+        kill(pid, SIGUSR1);
+    }
+    pause();
+    printf("interrupted after reading %zd bytes\n", getrandom(x, sizeof(x), 0));
+    kill(child, SIGTERM);
+    return 0;
+  }
+
+Cc: Jann Horn <jannh@google.com>
+Cc: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/char/random.c |   17 +++++++----------
+ 1 file changed, 7 insertions(+), 10 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -363,8 +363,6 @@
-  */
- #define INPUT_POOL_SHIFT	12
- #define INPUT_POOL_WORDS	(1 << (INPUT_POOL_SHIFT-5))
--#define OUTPUT_POOL_SHIFT	10
--#define OUTPUT_POOL_WORDS	(1 << (OUTPUT_POOL_SHIFT-5))
- #define EXTRACT_SIZE		(BLAKE2S_HASH_SIZE / 2)
+@@ -523,7 +523,6 @@ EXPORT_SYMBOL(get_random_bytes);
  
- /*
-@@ -382,7 +380,7 @@
-  * should wake up processes which are selecting or polling on write
-  * access to /dev/random.
-  */
--static int random_write_wakeup_bits = 28 * OUTPUT_POOL_WORDS;
-+static int random_write_wakeup_bits = 28 * (1 << 5);
+ static ssize_t get_random_bytes_user(void __user *buf, size_t nbytes)
+ {
+-	bool large_request = nbytes > 256;
+ 	ssize_t ret = 0;
+ 	size_t len;
+ 	u32 chacha_state[CHACHA_STATE_WORDS];
+@@ -549,15 +548,6 @@ static ssize_t get_random_bytes_user(voi
+ 	}
  
- /*
-  * Originally, we used a primitive polynomial of degree .poolwords
+ 	do {
+-		if (large_request) {
+-			if (signal_pending(current)) {
+-				if (!ret)
+-					ret = -ERESTARTSYS;
+-				break;
+-			}
+-			cond_resched();
+-		}
+-
+ 		chacha20_block(chacha_state, output);
+ 		if (unlikely(chacha_state[12] == 0))
+ 			++chacha_state[13];
+@@ -571,6 +561,13 @@ static ssize_t get_random_bytes_user(voi
+ 		nbytes -= len;
+ 		buf += len;
+ 		ret += len;
++
++		BUILD_BUG_ON(PAGE_SIZE % CHACHA_BLOCK_SIZE != 0);
++		if (!(ret % PAGE_SIZE) && nbytes) {
++			if (signal_pending(current))
++				break;
++			cond_resched();
++		}
+ 	} while (nbytes);
+ 
+ 	memzero_explicit(output, sizeof(output));
 
 
