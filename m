@@ -2,124 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAD0CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:53:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E99DC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:54:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235744AbiE0Ixz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 04:53:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58324 "EHLO
+        id S1344053AbiE0Ix7 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 04:53:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350152AbiE0Iwz (ORCPT
+        with ESMTP id S1350065AbiE0IxK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 04:52:55 -0400
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A3645C36B;
-        Fri, 27 May 2022 01:52:31 -0700 (PDT)
-Received: by mail-lf1-x132.google.com with SMTP id w14so5820426lfl.13;
-        Fri, 27 May 2022 01:52:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=d50SivsluZ6NgKs+usTsgrAsMJ0dcEpxRZNyKV1rSXs=;
-        b=KEjqvKVgBn8GA2gtH494LAiAmb/ydkqhE0qixQQg7udNkBMreayccOL8QGT4+9jwAo
-         t8kZxqgSZGtl09ng5HwGDPmcUrry5qYWoQjVCfjWq2U9abNeAOXw82YhtjH3SLyTERU+
-         B/N0eFWNvI/SmJsWRZULqMzx8dgQrlM6Bo51fssmhbBIauoZtu3j8cZXvtsOpge73XXu
-         tzpAH6CVtudOd4a3v8R0kMgO+jBiyzDf9eFQ693ZBSzocZJwyCE9hTjpmDZsc0qfC9eJ
-         8/fP8fRmLPWGAkTswoDCLFgUX9xDlMKhAQOomAKqOWkV12euJV61I3dShddEfEn7HxoV
-         qnIg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=d50SivsluZ6NgKs+usTsgrAsMJ0dcEpxRZNyKV1rSXs=;
-        b=0beuBWOtabW2i+M5/asfIvdfjCtfHyAMlLsWz0WOVaKKuo8r7tuWr2xSofIib7QG9q
-         s1tXtaZVf+DJh5EkPOTm6HJMOnc17EHshmFP3Amkb4xtRPylW+hCRtip1dK/IBMKykjH
-         O4k2qa5Qy4pdAQ8DgBamrqsUJLHtkmpe9Ca1StyJoERznZ18BNdRnZgo9D+D1VhOgNPX
-         5a9s1IbFP2hiat/cEeOjkUbYjgt1yXmDEKTqAQzMi33vmuYdyQp+Epyb2USfgcJruiuv
-         2JZ9x/hhweKGXYQq7fli2HkGprnO/ZtJ4MPRjfDbsP5bLBCTuH2Lgqj7mYW9qyyPMl1i
-         Hubw==
-X-Gm-Message-State: AOAM530wqEKPWEfUbPemgW281F1tzZ11B8e9+UWWYpFRVQ+JEw/64BJX
-        NwvEltBmOnKh7RkAzerO5M0CR7WXEP1Uxg==
-X-Google-Smtp-Source: ABdhPJyX5vZzhLcAN2wrY2aDt2lZJIj7HuWJAQA9EdkuCUm2ulwuRSxecwK2qF8CnhTd0wQ3Cr3Tfw==
-X-Received: by 2002:a05:6512:3f8c:b0:45d:cb2a:8779 with SMTP id x12-20020a0565123f8c00b0045dcb2a8779mr30514470lfa.499.1653641549871;
-        Fri, 27 May 2022 01:52:29 -0700 (PDT)
-Received: from wse-c0127 (2-104-116-184-cable.dk.customer.tdc.net. [2.104.116.184])
-        by smtp.gmail.com with ESMTPSA id s15-20020a056512314f00b0047255d211fasm772938lfi.297.2022.05.27.01.52.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 May 2022 01:52:29 -0700 (PDT)
-From:   Hans Schultz <schultz.hans@gmail.com>
-X-Google-Original-From: Hans Schultz <schultz.hans+netdev@gmail.com>
-To:     Ido Schimmel <idosch@idosch.org>,
-        Hans Schultz <schultz.hans@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH V3 net-next 1/4] net: bridge: add fdb flag to extent
- locked port feature
-In-Reply-To: <Yo+LAj1vnjq0p36q@shredder>
-References: <20220524152144.40527-1-schultz.hans+netdev@gmail.com>
- <20220524152144.40527-2-schultz.hans+netdev@gmail.com>
- <Yo+LAj1vnjq0p36q@shredder>
-Date:   Fri, 27 May 2022 10:52:27 +0200
-Message-ID: <86sfov2w8k.fsf@gmail.com>
+        Fri, 27 May 2022 04:53:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FA1F5C74A;
+        Fri, 27 May 2022 01:52:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 15E5561D3D;
+        Fri, 27 May 2022 08:52:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B69D4C34100;
+        Fri, 27 May 2022 08:52:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1653641556;
+        bh=Trgz+USAQPCv1R/UHnPbOXYDe7Kd+M22X+yARLpqOVw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=w7tDwd2tUwyQZQnW2Rml27p+hsB8vwgs5eIDJXTDb03trH6zO4NTq9IyAvAhGuRES
+         AtvnqjuR4LbaJN38J3nJQk9UYhj8YWrIfTmGJUG/aS6ZZcG22YG5JpgsjJI/bN+Z5O
+         Z99qC9SbGGxAejAZxeSTeNw31LUOY48OSciehhzc=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.18 17/47] um: use fallback for random_get_entropy() instead of zero
+Date:   Fri, 27 May 2022 10:49:57 +0200
+Message-Id: <20220527084804.121132542@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220527084801.223648383@linuxfoundation.org>
+References: <20220527084801.223648383@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On tor, maj 26, 2022 at 17:13, Ido Schimmel <idosch@idosch.org> wrote:
-> On Tue, May 24, 2022 at 05:21:41PM +0200, Hans Schultz wrote:
->> Add an intermediate state for clients behind a locked port to allow for
->> possible opening of the port for said clients. This feature corresponds
->> to the Mac-Auth and MAC Authentication Bypass (MAB) named features. The
->> latter defined by Cisco.
->> Locked FDB entries will be limited in number, so as to prevent DOS
->> attacks by spamming the port with random entries. The limit will be
->> a per port limit as it is a port based feature and that the port flushes
->> all FDB entries on link down.
->
-> Why locked FDB entries need a special treatment compared to regular
-> entries? A port that has learning enabled can be spammed with random
-> source MACs just as well.
->
-> The authorization daemon that is monitoring FDB notifications can have a
-> policy to shut down a port if the rate / number of locked entries is
-> above a given threshold.
->
-> I don't think this kind of policy belongs in the kernel. If it resides
-> in user space, then the threshold can be adjusted. Currently it's hard
-> coded to 64 and I don't see how user space can change or monitor it.
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-In the Mac-Auth/MAB context, the locked port feature is really a form of
-CPU based learning, and on mv88e6xxx switchcores, this is facilitated by
-violation interrupts. Based on miss violation interrupts, the locked
-entries are then added to a list with a timer to remove the entries
-according to the bridge timeout.
-As this is very CPU intensive compared to normal operation, the
-assessment is that all this will jam up most devices if bombarded with
-random entries at link speed, and my estimate is that any userspace 
-daemon that listens to the ensuing fdb events will never get a chance
-to stop this flood and eventually the device will lock down/reset. To
-prevent this, the limit is introduced.
+commit 9f13fb0cd11ed2327abff69f6501a2c124c88b5a upstream.
 
-Ideally this limit could be adjustable from userspace, but in real
-use-cases a cap like 64 should be more than enough, as that corresponds
-to 64 possible devices behind a port that cannot authenticate by other
-means (printers etc.) than having their mac addresses white-listed.
+In the event that random_get_entropy() can't access a cycle counter or
+similar, falling back to returning 0 is really not the best we can do.
+Instead, at least calling random_get_entropy_fallback() would be
+preferable, because that always needs to return _something_, even
+falling back to jiffies eventually. It's not as though
+random_get_entropy_fallback() is super high precision or guaranteed to
+be entropic, but basically anything that's not zero all the time is
+better than returning zero all the time.
 
-The software bridge behavior was then just set to correspond to the
-offloaded behavior, but after correspondence with Nik, the software
-bridge locked entries limit will be removed.
+This is accomplished by just including the asm-generic code like on
+other architectures, which means we can get rid of the empty stub
+function here.
+
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Richard Weinberger <richard@nod.at>
+Cc: Anton Ivanov <anton.ivanov@cambridgegreys.com>
+Acked-by: Johannes Berg <johannes@sipsolutions.net>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/um/include/asm/timex.h |    9 ++-------
+ 1 file changed, 2 insertions(+), 7 deletions(-)
+
+--- a/arch/um/include/asm/timex.h
++++ b/arch/um/include/asm/timex.h
+@@ -2,13 +2,8 @@
+ #ifndef __UM_TIMEX_H
+ #define __UM_TIMEX_H
+ 
+-typedef unsigned long cycles_t;
+-
+-static inline cycles_t get_cycles (void)
+-{
+-	return 0;
+-}
+-
+ #define CLOCK_TICK_RATE (HZ)
+ 
++#include <asm-generic/timex.h>
++
+ #endif
+
+
