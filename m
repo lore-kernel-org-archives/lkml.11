@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49D04C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:11:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11B40C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:11:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344000AbiE0MLp (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 08:11:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57538 "EHLO
+        id S241237AbiE0MLw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 08:11:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351969AbiE0L4w (ORCPT
+        with ESMTP id S1352635AbiE0Lzc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:56:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 533FD5FDA;
-        Fri, 27 May 2022 04:51:59 -0700 (PDT)
+        Fri, 27 May 2022 07:55:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D43415BAC0;
+        Fri, 27 May 2022 04:48:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 89FDE61DDC;
-        Fri, 27 May 2022 11:51:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E330C385A9;
-        Fri, 27 May 2022 11:51:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9B64FB824CA;
+        Fri, 27 May 2022 11:48:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBF0EC385A9;
+        Fri, 27 May 2022 11:48:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653652318;
-        bh=o4soIyc1vQYJQ67dGq9GBUeAqDilcx63IcfzN7572IA=;
+        s=korg; t=1653652130;
+        bh=16LFNup+v25/VvNo3CxgLkxi4CTpG2cxX/qybxkt+Iw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wm/EPwP2psFqBjo7efpNrufeKc7W64WW+8zIhqNXW6yZV5bCIlO1q2Q0x9l+cBdqO
-         6XQy7LEJ+1sLmtIcY7GsAg3RBxkgIloa44sjCBSLHWsV28C3gvCL6WpS7bB5+cTXRd
-         tbP9qm6BhR7fTiALy11pmFMNgIBKDGoGOitk/ph0=
+        b=Uh1rhedXKaYZCrpbggkklhtA6ryfuRVYpytuuh5o0ne+rotQCfTxxAVtulG2UH8X8
+         wG+yZOuvfpYj0IOLjTyeuzAkNhWKO5ECly3OBNIWn4r7+ARNbcvxhQ+5PoBqovwmDX
+         3jbZDbrdIUoMQesqZHaMp7j02ksHpw7UWeFs/UTs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Max Filippov <jcmvbkbc@gmail.com>,
+        stable@vger.kernel.org, Matt Mackall <mpm@selenic.com>,
+        Theodore Tso <tytso@mit.edu>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Eric Biggers <ebiggers@google.com>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.15 118/145] xtensa: use fallback for random_get_entropy() instead of zero
-Date:   Fri, 27 May 2022 10:50:19 +0200
-Message-Id: <20220527084904.805979187@linuxfoundation.org>
+Subject: [PATCH 5.15 077/145] random: pull add_hwgenerator_randomness() declaration into random.h
+Date:   Fri, 27 May 2022 10:49:38 +0200
+Message-Id: <20220527084859.986748620@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220527084850.364560116@linuxfoundation.org>
 References: <20220527084850.364560116@linuxfoundation.org>
@@ -53,49 +54,61 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit e10e2f58030c5c211d49042a8c2a1b93d40b2ffb upstream.
+commit b777c38239fec5a528e59f55b379e31b1a187524 upstream.
 
-In the event that random_get_entropy() can't access a cycle counter or
-similar, falling back to returning 0 is really not the best we can do.
-Instead, at least calling random_get_entropy_fallback() would be
-preferable, because that always needs to return _something_, even
-falling back to jiffies eventually. It's not as though
-random_get_entropy_fallback() is super high precision or guaranteed to
-be entropic, but basically anything that's not zero all the time is
-better than returning zero all the time.
+add_hwgenerator_randomness() is a function implemented and documented
+inside of random.c. It is the way that hardware RNGs push data into it.
+Therefore, it should be declared in random.h. Otherwise sparse complains
+with:
 
-This is accomplished by just including the asm-generic code like on
-other architectures, which means we can get rid of the empty stub
-function here.
+random.c:1137:6: warning: symbol 'add_hwgenerator_randomness' was not declared. Should it be static?
 
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Acked-by: Max Filippov <jcmvbkbc@gmail.com>
+The alternative would be to include hw_random.h into random.c, but that
+wouldn't really be good for anything except slowing down compile time.
+
+Cc: Matt Mackall <mpm@selenic.com>
+Cc: Theodore Ts'o <tytso@mit.edu>
+Acked-by: Herbert Xu <herbert@gondor.apana.org.au>
+Reviewed-by: Eric Biggers <ebiggers@google.com>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/xtensa/include/asm/timex.h |    6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/char/hw_random/core.c |    1 +
+ include/linux/hw_random.h     |    2 --
+ include/linux/random.h        |    2 ++
+ 3 files changed, 3 insertions(+), 2 deletions(-)
 
---- a/arch/xtensa/include/asm/timex.h
-+++ b/arch/xtensa/include/asm/timex.h
-@@ -29,10 +29,6 @@
+--- a/drivers/char/hw_random/core.c
++++ b/drivers/char/hw_random/core.c
+@@ -15,6 +15,7 @@
+ #include <linux/err.h>
+ #include <linux/fs.h>
+ #include <linux/hw_random.h>
++#include <linux/random.h>
+ #include <linux/kernel.h>
+ #include <linux/kthread.h>
+ #include <linux/sched/signal.h>
+--- a/include/linux/hw_random.h
++++ b/include/linux/hw_random.h
+@@ -60,7 +60,5 @@ extern int devm_hwrng_register(struct de
+ /** Unregister a Hardware Random Number Generator driver. */
+ extern void hwrng_unregister(struct hwrng *rng);
+ extern void devm_hwrng_unregister(struct device *dve, struct hwrng *rng);
+-/** Feed random bits into the pool. */
+-extern void add_hwgenerator_randomness(const void *buffer, size_t count, size_t entropy);
  
- extern unsigned long ccount_freq;
+ #endif /* LINUX_HWRANDOM_H_ */
+--- a/include/linux/random.h
++++ b/include/linux/random.h
+@@ -32,6 +32,8 @@ static inline void add_latent_entropy(vo
+ extern void add_input_randomness(unsigned int type, unsigned int code,
+ 				 unsigned int value) __latent_entropy;
+ extern void add_interrupt_randomness(int irq) __latent_entropy;
++extern void add_hwgenerator_randomness(const void *buffer, size_t count,
++				       size_t entropy);
  
--typedef unsigned long long cycles_t;
--
--#define get_cycles()	(0)
--
- void local_timer_setup(unsigned cpu);
- 
- /*
-@@ -59,4 +55,6 @@ static inline void set_linux_timer (unsi
- 	xtensa_set_sr(ccompare, SREG_CCOMPARE + LINUX_TIMER);
- }
- 
-+#include <asm-generic/timex.h>
-+
- #endif	/* _XTENSA_TIMEX_H */
+ extern void get_random_bytes(void *buf, size_t nbytes);
+ extern int wait_for_random_bytes(void);
 
 
