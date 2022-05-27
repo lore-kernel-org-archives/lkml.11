@@ -2,77 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CEB5C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 07:14:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A90DDC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 07:14:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233105AbiE0HOd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 03:14:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58908 "EHLO
+        id S1345528AbiE0HOh (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 03:14:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241644AbiE0HOW (ORCPT
+        with ESMTP id S244981AbiE0HO1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 03:14:22 -0400
-Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A400CE28
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 00:14:18 -0700 (PDT)
-Received: by mail-il1-f199.google.com with SMTP id c1-20020a928e01000000b002d1b20aa761so2581507ild.6
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 00:14:18 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=ahauavK3k/vHNaBKJ9ifW7woRHJxrv9tXaxi0vivhiE=;
-        b=3cWpOz72n4Ws/Y4zKUBLpqoGSBRzhTsftSXfvDc0ikBClgC4MhG+J1Ct02PGIyXHjP
-         6bmi+/70uQ5MbdIfGU30srv/tLEwHl5TOa5DgH6xWQKO9hE+AfGzEEl2M87/SdpLuAHU
-         UPrTCvOehc1KbVYRp/OU650cEsHEgQNBRIbG3EF89Nqluhu1sOXduTUgNJd+/32HJHKu
-         hb2f1dPShNpBX1c66l6/zVtsisP4ePbHikRec0mcJntVsogtw4k6Zqa2O9u1Urn9VUua
-         RHaX4CxOpLvQaB44SrSdreNP7MxnAeM2Sls5Nqs5rx9rb7ryq5qRxGZBjtoj/N8hhAFe
-         l6Ag==
-X-Gm-Message-State: AOAM533amVx2QArXtkBlfTPOEB5zMV+2akfZ0cHME5rNulrCxjq0eYuR
-        AdE2p8pqjv0BMRPJSlIaTQhbYEp58E5iPk9qmTgotCt58JHK
-X-Google-Smtp-Source: ABdhPJwLstrXc7I3GXxg7NbJpTPh6jnJM3lVI64THmDHJRa3Btt0GIlazr6bkdM1df05eIBnPkc3KcYPuW3TWp5rZRqnhEbAmwah
+        Fri, 27 May 2022 03:14:27 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B016F3A5E6
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 00:14:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653635661;
+        h=from:from:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=KVraxte1vrcRlqC53OEcc6nFbHRHftbMtAJLs4yYTCI=;
+        b=LFOhmu1V1A8bBSajI/8w7IpiS8gfZAuM/dVEIuIVuWe251SL5mcQwmqr2G4TTyNBvdXgdy
+        WfZNqSoLAxF3e6Kwu8IvbuF760TRfnHeZVVOclJthZWS9q/IzoKuDKRx+ik5/JytPhocaO
+        5b15mEcVAbkDrvd0csUpfesfcVEEmJQ=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-170-CkBTD7vpPbulWZldrmxtOA-1; Fri, 27 May 2022 03:14:17 -0400
+X-MC-Unique: CkBTD7vpPbulWZldrmxtOA-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 58B478219B2;
+        Fri, 27 May 2022 07:13:21 +0000 (UTC)
+Received: from [10.72.12.91] (ovpn-12-91.pek2.redhat.com [10.72.12.91])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 14DC9C212C;
+        Fri, 27 May 2022 07:12:55 +0000 (UTC)
+Reply-To: Gavin Shan <gshan@redhat.com>
+Subject: Re: [PATCH] arm64/hugetlb: Fix building errors in
+ huge_ptep_clear_flush()
+To:     Baolin Wang <baolin.wang@linux.alibaba.com>,
+        torvalds@linux-foundation.org
+Cc:     catalin.marinas@arm.com, will@kernel.org,
+        akpm@linux-foundation.org, anshuman.khandual@arm.com,
+        naresh.kamboju@linaro.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+References: <814e20c19b110209ee12ecae7cb05f8a78d021c8.1653625820.git.baolin.wang@linux.alibaba.com>
+From:   Gavin Shan <gshan@redhat.com>
+Message-ID: <4707e621-c167-8fff-b210-9babb6a3f2df@redhat.com>
+Date:   Fri, 27 May 2022 15:12:50 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.0
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:17c9:b0:2d1:a85f:7bd3 with SMTP id
- z9-20020a056e0217c900b002d1a85f7bd3mr13144013ilu.92.1653635657391; Fri, 27
- May 2022 00:14:17 -0700 (PDT)
-Date:   Fri, 27 May 2022 00:14:17 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000f2655205dff90da9@google.com>
-Subject: [syzbot] upstream build error (18)
-From:   syzbot <syzbot+a0b95614aef2afe9e488@syzkaller.appspotmail.com>
-To:     anshuman.khandual@arm.com, baolin.wang@linux.alibaba.com,
-        catalin.marinas@arm.com, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, mike.kravetz@oracle.com,
-        songmuchun@bytedance.com, syzkaller-bugs@googlegroups.com,
-        will@kernel.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <814e20c19b110209ee12ecae7cb05f8a78d021c8.1653625820.git.baolin.wang@linux.alibaba.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+Hi Baolin,
 
-syzbot found the following issue on:
+On 5/27/22 12:51 PM, Baolin Wang wrote:
+> Fix below building errors which was caused by commit ae07562909f3
+> ("mm: change huge_ptep_clear_flush() to return the original pte")
+> interacting with commit fb396bb459c1 ("arm64/hugetlb: Drop TLB flush
+> from get_clear_flush()").
+> 
+> Due to the new get_clear_contig() has dropped TLB flush, we should
+> add an explicit TLB flush in huge_ptep_clear_flush() to keep original
+> semantics when changing to use new get_clear_contig().
+> 
+> "
+> arch/arm64/mm/hugetlbpage.c: In function ‘huge_ptep_clear_flush’:
+> arch/arm64/mm/hugetlbpage.c:515:9: error: implicit declaration of
+> function ‘get_clear_flush’; did you mean ‘ptep_clear_flush’?
+> [-Werror=implicit-function-declaration]
+>    515 |  return get_clear_flush(vma->vm_mm, addr, ptep, pgsize, ncontig);
+>        |         ^~~~~~~~~~~~~~~
+>        |         ptep_clear_flush
+> "
+> 
+> Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+> Suggested-by: Catalin Marinas <catalin.marinas@arm.com>
+> Signed-off-by: Baolin Wang <baolin.wang@linux.alibaba.com>
+> Cc: Catalin Marinas <catalin.marinas@arm.com>
+> Cc: Anshuman Khandual <anshuman.khandual@arm.com>
+> Cc: Andrew Morton <akpm@linux-foundation.org>
+> ---
+>   arch/arm64/mm/hugetlbpage.c | 5 ++++-
+>   1 file changed, 4 insertions(+), 1 deletion(-)
+> 
 
-HEAD commit:    7e284070abe5 Merge tag 'for-5.19/dm-changes' of git://git...
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=1233ae81f00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=854cea6cbaeb1d1b
-dashboard link: https://syzkaller.appspot.com/bug?extid=a0b95614aef2afe9e488
-compiler:       aarch64-linux-gnu-gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-userspace arch: arm64
+I ran to the compiling failure either and it would be caused by
+commit fb396bb459c1 ("arm64/hugetlb: Drop TLB flush from get_clear_flush()").
+It's worthy to have a "Fixes" tag. With those fixed:
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+a0b95614aef2afe9e488@syzkaller.appspotmail.com
+Reviewed-by: Gavin Shan <gshan@redhat.com>
 
-arch/arm64/mm/hugetlbpage.c:515:9: error: implicit declaration of function 'get_clear_flush'; did you mean 'ptep_clear_flush'? [-Werror=implicit-function-declaration]
-arch/arm64/mm/hugetlbpage.c:515:9: error: incompatible types when returning type 'int' but 'pte_t' was expected
-arch/arm64/mm/hugetlbpage.c:516:1: error: control reaches end of non-void function [-Werror=return-type]
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+> diff --git a/arch/arm64/mm/hugetlbpage.c b/arch/arm64/mm/hugetlbpage.c
+> index 0f0c17dfeb9c..e2a5ec9fdc0d 100644
+> --- a/arch/arm64/mm/hugetlbpage.c
+> +++ b/arch/arm64/mm/hugetlbpage.c
+> @@ -507,12 +507,15 @@ pte_t huge_ptep_clear_flush(struct vm_area_struct *vma,
+>   {
+>   	size_t pgsize;
+>   	int ncontig;
+> +	pte_t orig_pte;
+>   
+>   	if (!pte_cont(READ_ONCE(*ptep)))
+>   		return ptep_clear_flush(vma, addr, ptep);
+>   
+>   	ncontig = find_num_contig(vma->vm_mm, addr, ptep, &pgsize);
+> -	return get_clear_flush(vma->vm_mm, addr, ptep, pgsize, ncontig);
+> +	orig_pte = get_clear_contig(vma->vm_mm, addr, ptep, pgsize, ncontig);
+> +	flush_tlb_range(vma, addr, addr + pgsize * ncontig);
+> +	return orig_pte;
+>   }
+>   
+>   static int __init hugetlbpage_init(void)
+> 
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Thanks,
+Gavin
+
