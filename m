@@ -2,175 +2,381 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B261DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:07:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7E87C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:07:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348793AbiE0IHQ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 04:07:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57224 "EHLO
+        id S234624AbiE0IHV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 04:07:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349627AbiE0IGi (ORCPT
+        with ESMTP id S1349695AbiE0IGn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 04:06:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EBC8AF315;
-        Fri, 27 May 2022 01:06:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Fri, 27 May 2022 04:06:43 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7E462C3D18
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 01:06:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653638785;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Fyjs17cQuU2U21OwKMwjdN3jGGY3Oxumv8wAG92m2EA=;
+        b=AitsRHhd7u2erCEHwJ4hYBM750m4tFdKXJGPhrCjN+yDEi42UwqROsn2AgeVUN0/nV1nI3
+        vJewSJOHhYQWVZ9EIILGD9OquK9CPoeb0L4seTpSAV50/Bf58ruz/uVu0RZZOMDuisXswG
+        JShG2yw6JJ9IJoXUCC/r8jR95GdnuPw=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-505-PsGwo5UTOaOLMy8tj08cCw-1; Fri, 27 May 2022 04:06:22 -0400
+X-MC-Unique: PsGwo5UTOaOLMy8tj08cCw-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8786A61C01;
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 4F110185A79C;
         Fri, 27 May 2022 08:06:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 998CAC34119;
-        Fri, 27 May 2022 08:06:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653638780;
-        bh=bExDxURONoYyEyd2zIv+DcSXNxKTDMG5tYNYaUYxBJc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=QnUb/Iotj6TLwlrFaZEv5Mj1e2uWOatVHI1xeiSd6YPEBYzPq1CPU6lowYeMJ66Xa
-         ED3/aVsH5VNu3w1153cjLlkDukyW2Esl4jKOPSJqIK9236GmTJveEIeOPDbjmsFrt6
-         AronjEdLvrWRBdHmFJIerwC2Kz9GaftGPDDqNQ006N23oST9E4Wl9TJu+/YInV20JL
-         r2Uf2Z9gKCYnKNIIVlSv/FwGFN4Q0ALDwXrRaWJHrImdAcrzKQgqpAxx3PzjBIekbK
-         BQtbM4vc4MQJ+7uF/PUaKHkszShaU/wvTxSwoFHc1b5vJR0P7Yr816NWTr7EeyNcdP
-         mDN1TcO4tL21g==
-Date:   Fri, 27 May 2022 13:36:16 +0530
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Allen Pais <apais@linux.microsoft.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        olivier.dautricourt@orolia.com, Stefan Roese <sr@denx.de>,
-        Kees Cook <keescook@chromium.org>,
-        linux-hardening@vger.kernel.org,
-        Ludovic Desroches <ludovic.desroches@microchip.com>,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Eugeniy.Paltsev@synopsys.com,
-        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Viresh Kumar <vireshk@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Leo Li <leoyang.li@nxp.com>, zw@zh-kernel.org,
-        Zhou Wang <wangzhou1@hisilicon.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Andreas =?iso-8859-1?Q?F=E4rber?= <afaerber@suse.de>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Logan Gunthorpe <logang@deltatee.com>,
-        Sanjay R Mehta <sanju.mehta@amd.com>,
-        Daniel Mack <daniel@zonque.org>,
-        Haojian Zhuang <haojian.zhuang@gmail.com>,
-        Robert Jarzmik <robert.jarzmik@free.fr>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        green.wan@sifive.com, Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Lyra Zhang <zhang.lyra@gmail.com>,
-        Patrice CHOTARD <patrice.chotard@foss.st.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej =?utf-8?Q?=C5=A0krabec?= <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        dmaengine@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC 1/1] drivers/dma/*: replace tasklets with workqueue
-Message-ID: <YpCGePbo9B/Z7slV@matsya>
-References: <20220419211658.11403-1-apais@linux.microsoft.com>
- <20220419211658.11403-2-apais@linux.microsoft.com>
- <CACRpkdZ2DFZRPHS1x0=M3_8zYvU-jpCG5Tm3863dXv51EhY+BA@mail.gmail.com>
- <CAK8P3a0j_rziihsgHnG5bHMxmPbOkAhT6_+CCE4iFZy7HzQrLw@mail.gmail.com>
+Received: from gshan.redhat.com (ovpn-12-91.pek2.redhat.com [10.72.12.91])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 8B3662026D64;
+        Fri, 27 May 2022 08:06:14 +0000 (UTC)
+From:   Gavin Shan <gshan@redhat.com>
+To:     kvmarm@lists.cs.columbia.edu
+Cc:     maz@kernel.org, linux-kernel@vger.kernel.org, eauger@redhat.com,
+        oupton@google.com, Jonathan.Cameron@huawei.com,
+        pbonzini@redhat.com, vkuznets@redhat.com, will@kernel.org,
+        james.morse@arm.com, mark.rutland@arm.com,
+        shannon.zhaosl@gmail.com, shijie@amperemail.onmicrosoft.com,
+        shan.gavin@gmail.com
+Subject: [PATCH v7 19/22] KVM: arm64: Support SDEI event migration
+Date:   Fri, 27 May 2022 16:02:50 +0800
+Message-Id: <20220527080253.1562538-20-gshan@redhat.com>
+In-Reply-To: <20220527080253.1562538-1-gshan@redhat.com>
+References: <20220527080253.1562538-1-gshan@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAK8P3a0j_rziihsgHnG5bHMxmPbOkAhT6_+CCE4iFZy7HzQrLw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 25-05-22, 13:03, Arnd Bergmann wrote:
-> On Wed, May 25, 2022 at 11:24 AM Linus Walleij <linus.walleij@linaro.org> wrote:
-> > On Tue, Apr 19, 2022 at 11:17 PM Allen Pais <apais@linux.microsoft.com> wrote:
-> >
-> > > The tasklet is an old API which will be deprecated, workqueue API
-> > > cab be used instead of them.
-> > >
-> > > This patch replaces the tasklet usage in drivers/dma/* with a
-> > > simple work.
-> > >
-> > > Github: https://github.com/KSPP/linux/issues/94
-> > >
-> > > Signed-off-by: Allen Pais <apais@linux.microsoft.com>
-> >
-> > Paging Vincent Guittot and Arnd Bergmann on the following question
-> > on this patch set:
-> >
-> > - Will replacing tasklets with workque like this negatively impact the
-> >   performance on DMA engine bottom halves?
-> 
-> I think it will in some cases but not others. The problem I see is that
-> the short patch description makes it sound like a trivial conversion of a
-> single subsystem, but in reality this interacts with all the drivers using
-> DMA engines, including tty/serial, sound, mmc and spi.
-> 
-> In many cases, the change is an improvement, but I can see a number
-> of ways this might go wrong:
-> 
-> - for audio, waiting to schedule the workqueue task may add enough
->   latency to lead to audible skips
-> 
-> - for serial, transferring a few characters through DMA is probably
->   more expensive now than using MMIO, which might mean that
->   there may no longer be a point in using DMA in the first place.
-> 
-> - Some drivers such as dw_mmc schedule another tasklet from the
->   callback. If the tasklet is turned into a workqueue, this becomes
->   a bit pointless unless we change the called drivers first.
+This supports migration for SDEI event handlers, states and context.
+Several pseudo firmware registers are added to assist the migration
+work.
 
-Yes and there are assumptions in the peripheral drivers about the
-context of callback which right now is tasklet, that needs to be updated
-as well..
+   * KVM_REG_ARM_SDEI_EVENT_HANDLER_0
+     KVM_REG_ARM_SDEI_EVENT_HANDLER_1
+     KVM_REG_ARM_SDEI_EVENT_HANDLER_2
+     KVM_REG_ARM_SDEI_EVENT_HANDLER_3
 
-> What might work better in the case of the dmaengine API would
-> be an approach like:
-> 
-> 1. add helper functions to call the callback functions from a
->     tasklet locally defined in drivers/dma/dmaengine.c to allow
->     deferring it from hardirq context
-> 
-> 2. Change all  tasklets that are not part of the callback
->     mechanism to work queue functions, I only see
->     xilinx_dpdma_chan_err_task in the patch, but there
->     may be more
-> 
-> 3. change all drivers to move their custom tasklets back into
->     hardirq context and instead call the new helper for deferring
->     the callback.
-> 
-> 4. Extend the dmaengine callback API to let slave drivers
->     pick hardirq, tasklet or task context for the callback.
->     task context can mean either a workqueue, or a threaded
->     IRQ here, with the default remaining the tasklet version.
+     128-bits in length. They're mapped to the handler's address
+     and argument for Software Signaled event and Async PF event.
+     Additinal two events are reserved for future needs without
+     too much considerations to the compatible issue. Not too much
+     bandwidth needed to migrate those two additional registers.
 
-That does sound a good idea, but I dont know who will use the workqueue
-or a threaded context here, it might be that most would default to
-hardirq or tasklet context for obvious reasons...
+  * KVM_REG_ARM_SDEI_EVENT_REGISTERED
+    KVM_REG_ARM_SDEI_EVENT_ENABLED
+    KVM_REG_ARM_SDEI_EVENT_RUNNING
+    KVM_REG_ARM_SDEI_EVENT_PENDING
 
-> 
-> 5. Change slave drivers to pick either hardirq or task context
->     depending on their requirements
-> 
-> 6. Remove the tasklet version.
-> 
-> This is of course a lot more complicated than Allen's
-> approach, but I think the end result would be much better.
-> 
->          Arnd
+    64-bits in length. They're mapped to registered, enabled,
+    running and pending bitmap.
 
+  * KVM_REG_ARM_SDEI_EVENT_CONTEXT
+
+    2048-bits in length. It's mapped to saved or interrupted
+    context.
+
+  * KVM_REG_ARM_SDEI_PE_STATE
+
+    64-bits in length. It's mapped to PE's states, which is masked
+    or unmasked.
+
+Signed-off-by: Gavin Shan <gshan@redhat.com>
+---
+ arch/arm64/include/asm/kvm_sdei.h |   2 +
+ arch/arm64/include/uapi/asm/kvm.h |  17 ++++
+ arch/arm64/kvm/hypercalls.c       |  32 ++++++
+ arch/arm64/kvm/sdei.c             | 161 ++++++++++++++++++++++++++++++
+ 4 files changed, 212 insertions(+)
+
+diff --git a/arch/arm64/include/asm/kvm_sdei.h b/arch/arm64/include/asm/kvm_sdei.h
+index a68d40137a88..d11964b88b58 100644
+--- a/arch/arm64/include/asm/kvm_sdei.h
++++ b/arch/arm64/include/asm/kvm_sdei.h
+@@ -73,6 +73,8 @@ int kvm_sdei_inject_event(struct kvm_vcpu *vcpu,
+ 			  unsigned int num, bool immediate);
+ int kvm_sdei_cancel_event(struct kvm_vcpu *vcpu, unsigned int num);
+ void kvm_sdei_deliver_event(struct kvm_vcpu *vcpu);
++int kvm_sdei_get_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg);
++int kvm_sdei_set_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg);
+ void kvm_sdei_create_vcpu(struct kvm_vcpu *vcpu);
+ void kvm_sdei_destroy_vcpu(struct kvm_vcpu *vcpu);
+ 
+diff --git a/arch/arm64/include/uapi/asm/kvm.h b/arch/arm64/include/uapi/asm/kvm.h
+index cc3251381960..90247ce8de59 100644
+--- a/arch/arm64/include/uapi/asm/kvm.h
++++ b/arch/arm64/include/uapi/asm/kvm.h
+@@ -262,6 +262,11 @@ struct kvm_arm_copy_mte_tags {
+ #define KVM_REG_ARM_FW			(0x0014 << KVM_REG_ARM_COPROC_SHIFT)
+ #define KVM_REG_ARM_FW_REG(r)		(KVM_REG_ARM64 | KVM_REG_SIZE_U64 | \
+ 					 KVM_REG_ARM_FW | ((r) & 0xffff))
++#define KVM_REG_ARM_FW_REG_128(r)	(KVM_REG_ARM64 | KVM_REG_SIZE_U128 | \
++					 KVM_REG_ARM_FW | ((r) & 0xffff))
++#define KVM_REG_ARM_FW_REG_2048(r)	(KVM_REG_ARM64 | KVM_REG_SIZE_U2048 | \
++					 KVM_REG_ARM_FW | ((r) & 0xffff))
++
+ #define KVM_REG_ARM_PSCI_VERSION	KVM_REG_ARM_FW_REG(0)
+ #define KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_1	KVM_REG_ARM_FW_REG(1)
+ #define KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_1_NOT_AVAIL		0
+@@ -288,6 +293,18 @@ struct kvm_arm_copy_mte_tags {
+ #define KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3_AVAIL		1
+ #define KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3_NOT_REQUIRED	2
+ 
++/* SDEI registers */
++#define KVM_REG_ARM_SDEI_EVENT_HANDLER_0	KVM_REG_ARM_FW_REG_128(4)
++#define KVM_REG_ARM_SDEI_EVENT_HANDLER_1	KVM_REG_ARM_FW_REG_128(5)
++#define KVM_REG_ARM_SDEI_EVENT_HANDLER_2	KVM_REG_ARM_FW_REG_128(6)
++#define KVM_REG_ARM_SDEI_EVENT_HANDLER_3	KVM_REG_ARM_FW_REG_128(7)
++#define KVM_REG_ARM_SDEI_EVENT_REGISTERED	KVM_REG_ARM_FW_REG(8)
++#define KVM_REG_ARM_SDEI_EVENT_ENABLED		KVM_REG_ARM_FW_REG(9)
++#define KVM_REG_ARM_SDEI_EVENT_RUNNING		KVM_REG_ARM_FW_REG(10)
++#define KVM_REG_ARM_SDEI_EVENT_PENDING		KVM_REG_ARM_FW_REG(11)
++#define KVM_REG_ARM_SDEI_EVENT_CONTEXT		KVM_REG_ARM_FW_REG_2048(12)
++#define KVM_REG_ARM_SDEI_PE_STATE		KVM_REG_ARM_FW_REG(13)
++
+ /* SVE registers */
+ #define KVM_REG_ARM64_SVE		(0x15 << KVM_REG_ARM_COPROC_SHIFT)
+ 
+diff --git a/arch/arm64/kvm/hypercalls.c b/arch/arm64/kvm/hypercalls.c
+index 8e0df54d1422..d330aee968a9 100644
+--- a/arch/arm64/kvm/hypercalls.c
++++ b/arch/arm64/kvm/hypercalls.c
+@@ -290,6 +290,16 @@ static const u64 kvm_arm_fw_reg_ids[] = {
+ 	KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_1,
+ 	KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2,
+ 	KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3,
++	KVM_REG_ARM_SDEI_EVENT_HANDLER_0,
++	KVM_REG_ARM_SDEI_EVENT_HANDLER_1,
++	KVM_REG_ARM_SDEI_EVENT_HANDLER_2,
++	KVM_REG_ARM_SDEI_EVENT_HANDLER_3,
++	KVM_REG_ARM_SDEI_EVENT_REGISTERED,
++	KVM_REG_ARM_SDEI_EVENT_ENABLED,
++	KVM_REG_ARM_SDEI_EVENT_RUNNING,
++	KVM_REG_ARM_SDEI_EVENT_PENDING,
++	KVM_REG_ARM_SDEI_EVENT_CONTEXT,
++	KVM_REG_ARM_SDEI_PE_STATE,
+ 	KVM_REG_ARM_STD_BMAP,
+ 	KVM_REG_ARM_STD_HYP_BMAP,
+ 	KVM_REG_ARM_VENDOR_HYP_BMAP,
+@@ -387,6 +397,17 @@ int kvm_arm_get_fw_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
+ 	case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3:
+ 		val = get_kernel_wa_level(reg->id) & KVM_REG_FEATURE_LEVEL_MASK;
+ 		break;
++	case KVM_REG_ARM_SDEI_EVENT_HANDLER_0:
++	case KVM_REG_ARM_SDEI_EVENT_HANDLER_1:
++	case KVM_REG_ARM_SDEI_EVENT_HANDLER_2:
++	case KVM_REG_ARM_SDEI_EVENT_HANDLER_3:
++	case KVM_REG_ARM_SDEI_EVENT_REGISTERED:
++	case KVM_REG_ARM_SDEI_EVENT_ENABLED:
++	case KVM_REG_ARM_SDEI_EVENT_RUNNING:
++	case KVM_REG_ARM_SDEI_EVENT_PENDING:
++	case KVM_REG_ARM_SDEI_EVENT_CONTEXT:
++	case KVM_REG_ARM_SDEI_PE_STATE:
++		return kvm_sdei_get_reg(vcpu, reg);
+ 	case KVM_REG_ARM_STD_BMAP:
+ 		val = READ_ONCE(smccc_feat->std_bmap);
+ 		break;
+@@ -537,6 +558,17 @@ int kvm_arm_set_fw_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
+ 			return -EINVAL;
+ 
+ 		return 0;
++	case KVM_REG_ARM_SDEI_EVENT_HANDLER_0:
++	case KVM_REG_ARM_SDEI_EVENT_HANDLER_1:
++	case KVM_REG_ARM_SDEI_EVENT_HANDLER_2:
++	case KVM_REG_ARM_SDEI_EVENT_HANDLER_3:
++	case KVM_REG_ARM_SDEI_EVENT_REGISTERED:
++	case KVM_REG_ARM_SDEI_EVENT_ENABLED:
++	case KVM_REG_ARM_SDEI_EVENT_RUNNING:
++	case KVM_REG_ARM_SDEI_EVENT_PENDING:
++	case KVM_REG_ARM_SDEI_EVENT_CONTEXT:
++	case KVM_REG_ARM_SDEI_PE_STATE:
++		return kvm_sdei_set_reg(vcpu, reg);
+ 	case KVM_REG_ARM_STD_BMAP:
+ 	case KVM_REG_ARM_STD_HYP_BMAP:
+ 	case KVM_REG_ARM_VENDOR_HYP_BMAP:
+diff --git a/arch/arm64/kvm/sdei.c b/arch/arm64/kvm/sdei.c
+index f95b9bcce13c..c14532de48f5 100644
+--- a/arch/arm64/kvm/sdei.c
++++ b/arch/arm64/kvm/sdei.c
+@@ -498,6 +498,167 @@ void kvm_sdei_deliver_event(struct kvm_vcpu *vcpu)
+ 	set_bit(num, &vsdei->running);
+ }
+ 
++int kvm_sdei_get_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
++{
++	struct kvm_sdei_vcpu *vsdei = vcpu->arch.sdei;
++	struct kvm_sdei_event_context *ctxt = &vsdei->ctxt;
++	struct kvm_sdei_event_handler handler;
++	void __user *uaddr = (void __user *)(long)reg->addr;
++	unsigned int num, i;
++	unsigned long val, *pstate = NULL;
++
++	if (!vsdei)
++		return -EPERM;
++
++	switch (reg->id) {
++	case KVM_REG_ARM_SDEI_EVENT_HANDLER_0:
++	case KVM_REG_ARM_SDEI_EVENT_HANDLER_1:
++	case KVM_REG_ARM_SDEI_EVENT_HANDLER_2:
++	case KVM_REG_ARM_SDEI_EVENT_HANDLER_3:
++		 num = (reg->id & 0xffff) -
++		       (KVM_REG_ARM_SDEI_EVENT_HANDLER_0 & 0xffff);
++
++		if (num < KVM_NR_SDEI_EVENTS)
++			handler = vsdei->handlers[num];
++		else
++			memset(&handler, 0, sizeof(handler));
++
++		if (copy_to_user(uaddr, &handler, KVM_REG_SIZE(reg->id)))
++			return -EFAULT;
++
++		break;
++	case KVM_REG_ARM_SDEI_EVENT_REGISTERED:
++		pstate = &vsdei->registered;
++		fallthrough;
++	case KVM_REG_ARM_SDEI_EVENT_ENABLED:
++		pstate = pstate ? : &vsdei->enabled;
++		fallthrough;
++	case KVM_REG_ARM_SDEI_EVENT_RUNNING:
++		pstate = pstate ? : &vsdei->running;
++		fallthrough;
++	case KVM_REG_ARM_SDEI_EVENT_PENDING:
++		pstate = pstate ? : &vsdei->pending;
++		if (copy_to_user(uaddr, pstate, KVM_REG_SIZE(reg->id)))
++			return -EFAULT;
++
++		break;
++	case KVM_REG_ARM_SDEI_EVENT_CONTEXT:
++		if (copy_to_user(uaddr, &ctxt->pc, sizeof(ctxt->pc)))
++			return -EFAULT;
++
++		uaddr += sizeof(ctxt->pc);
++		if (copy_to_user(uaddr, &ctxt->pstate, sizeof(ctxt->pstate)))
++			return -EFAULT;
++
++		uaddr += sizeof(ctxt->pstate);
++		for (i = 0; i < ARRAY_SIZE(ctxt->regs); i++) {
++			if (copy_to_user(uaddr, &ctxt->regs[i],
++					 sizeof(ctxt->regs[i])))
++				return -EFAULT;
++
++			uaddr += sizeof(ctxt->regs[i]);
++		}
++
++		break;
++	case KVM_REG_ARM_SDEI_PE_STATE:
++		val = (vcpu->arch.flags & KVM_ARM64_SDEI_MASKED) ? 1 : 0;
++		if (copy_to_user(uaddr, &val, KVM_REG_SIZE(reg->id)))
++			return -EFAULT;
++
++		break;
++	default:
++		return -ENOENT;
++	}
++
++	return 0;
++}
++
++int kvm_sdei_set_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
++{
++	struct kvm_sdei_vcpu *vsdei = vcpu->arch.sdei;
++	struct kvm_sdei_event_context *ctxt = &vsdei->ctxt;
++	void __user *uaddr = (void __user *)(long)reg->addr;
++	unsigned int num, i;
++	unsigned long val, *pstate = NULL;
++
++	if (!vsdei)
++		return -EPERM;
++
++	switch (reg->id) {
++	case KVM_REG_ARM_SDEI_EVENT_HANDLER_0:
++	case KVM_REG_ARM_SDEI_EVENT_HANDLER_1:
++	case KVM_REG_ARM_SDEI_EVENT_HANDLER_2:
++	case KVM_REG_ARM_SDEI_EVENT_HANDLER_3:
++		num = (reg->id & 0xffff) -
++		      (KVM_REG_ARM_SDEI_EVENT_HANDLER_0 & 0xffff);
++		if (num >= KVM_NR_SDEI_EVENTS)
++			break;
++
++		if (copy_from_user(&vsdei->handlers[num], uaddr,
++				   sizeof(vsdei->handlers[num])))
++			return -EFAULT;
++
++		break;
++	case KVM_REG_ARM_SDEI_EVENT_REGISTERED:
++		pstate = &vsdei->registered;
++		fallthrough;
++	case KVM_REG_ARM_SDEI_EVENT_ENABLED:
++		pstate = pstate ? : &vsdei->enabled;
++		fallthrough;
++	case KVM_REG_ARM_SDEI_EVENT_RUNNING:
++		pstate = pstate ? : &vsdei->running;
++		fallthrough;
++	case KVM_REG_ARM_SDEI_EVENT_PENDING:
++		pstate = pstate ? : &vsdei->pending;
++		if (copy_from_user(&val, uaddr, sizeof(val)))
++			return -EFAULT;
++
++		*pstate = (val & GENMASK(KVM_NR_SDEI_EVENTS - 1, 0));
++		if (!(vcpu->arch.flags & KVM_ARM64_SDEI_MASKED) &&
++		    pstate == &vsdei->pending &&
++		    vsdei->pending)
++			kvm_make_request(KVM_REQ_SDEI, vcpu);
++
++		break;
++	case KVM_REG_ARM_SDEI_EVENT_CONTEXT:
++		if (copy_from_user(&ctxt->pc, uaddr, sizeof(ctxt->pc)))
++			return -EFAULT;
++
++		uaddr += sizeof(ctxt->pc);
++		if (copy_from_user(&ctxt->pstate, uaddr, sizeof(ctxt->pstate)))
++			return -EFAULT;
++
++		uaddr += sizeof(ctxt->pstate);
++		for (i = 0; i < ARRAY_SIZE(ctxt->regs); i++) {
++			if (copy_from_user(&ctxt->regs[i], uaddr,
++					   sizeof(ctxt->regs[i])))
++				return -EFAULT;
++
++			uaddr += sizeof(ctxt->regs[i]);
++		}
++
++		break;
++	case KVM_REG_ARM_SDEI_PE_STATE:
++		if (copy_from_user(&val, uaddr, sizeof(val)))
++			return -EFAULT;
++
++		if (val) {
++			vcpu->arch.flags |= KVM_ARM64_SDEI_MASKED;
++		} else {
++			vcpu->arch.flags &= ~KVM_ARM64_SDEI_MASKED;
++			if (vsdei->pending)
++				kvm_make_request(KVM_REQ_SDEI, vcpu);
++		}
++
++		break;
++	default:
++		return -ENOENT;
++	}
++
++	return 0;
++
++}
++
+ void kvm_sdei_create_vcpu(struct kvm_vcpu *vcpu)
+ {
+ 	struct kvm_sdei_vcpu *vsdei;
 -- 
-~Vinod
+2.23.0
+
