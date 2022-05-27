@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 862ABC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:04:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7E38C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:04:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345813AbiE0MEE (ORCPT
+        id S1352231AbiE0MEH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 08:04:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57540 "EHLO
+        Fri, 27 May 2022 08:04:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352733AbiE0Lzi (ORCPT
+        with ESMTP id S1352907AbiE0Lzp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:55:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1097F14B67F;
-        Fri, 27 May 2022 04:49:01 -0700 (PDT)
+        Fri, 27 May 2022 07:55:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BA1715D336;
+        Fri, 27 May 2022 04:49:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5F6C0B824CA;
-        Fri, 27 May 2022 11:49:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB40CC385A9;
-        Fri, 27 May 2022 11:48:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E806E61DD1;
+        Fri, 27 May 2022 11:49:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDB6EC34100;
+        Fri, 27 May 2022 11:49:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653652139;
-        bh=112rpqfBHZG5Knz4Q5D4qmKKkDWxTkkyP+SwPAWWXkY=;
+        s=korg; t=1653652154;
+        bh=MJ3ioA9L3duUCEK+ANNZZFEjSPbY9PI+/BmLpwwTanA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RTQ+9cjM+XQAd3Kgnv7RxPu6G5FdYtulZDil1QQvhYNlnYs8A/tzSQXDNTp3kbFgB
-         Y76v2jtlTmS4qnkqwdYbNDCw3vrCE3GyIM/xnBR0VbzS8bo3tO/GoaYOZYtPUM03+w
-         DHlo1P0bQAv4bJ3cZJquJNc4YCCYUXWww6wHF6qI=
+        b=fD5u0zPH2LIdkG79/+7JYC2/KCBDVqleddAqjMDAbR1EcdwByP73M/WEPTnFXui//
+         6EwZYe3rTGz2vbXYh4mc4WTAh8kpNJKk6nKQGi26eJu1rfik07q/JaEC7RhlyQw8Se
+         DCm/npWZ9f/mAtzXgQe8u5WUUecyhHfGdSs7dYQc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        Graham Christensen <graham@grahamc.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
         Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.10 103/163] random: dont let 644 read-only sysctls be written to
-Date:   Fri, 27 May 2022 10:49:43 +0200
-Message-Id: <20220527084842.344288009@linuxfoundation.org>
+Subject: [PATCH 5.15 092/145] random: treat bootloader trust toggle the same way as cpu trust toggle
+Date:   Fri, 27 May 2022 10:49:53 +0200
+Message-Id: <20220527084901.776147540@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
-References: <20220527084828.156494029@linuxfoundation.org>
+In-Reply-To: <20220527084850.364560116@linuxfoundation.org>
+References: <20220527084850.364560116@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,54 +54,87 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 77553cf8f44863b31da242cf24671d76ddb61597 upstream.
+commit d97c68d178fbf8aaaf21b69b446f2dfb13909316 upstream.
 
-We leave around these old sysctls for compatibility, and we keep them
-"writable" for compatibility, but even after writing, we should keep
-reporting the same value. This is consistent with how userspaces tend to
-use sysctl_random_write_wakeup_bits, writing to it, and then later
-reading from it and using the value.
+If CONFIG_RANDOM_TRUST_CPU is set, the RNG initializes using RDRAND.
+But, the user can disable (or enable) this behavior by setting
+`random.trust_cpu=0/1` on the kernel command line. This allows system
+builders to do reasonable things while avoiding howls from tinfoil
+hatters. (Or vice versa.)
+
+CONFIG_RANDOM_TRUST_BOOTLOADER is basically the same thing, but regards
+the seed passed via EFI or device tree, which might come from RDRAND or
+a TPM or somewhere else. In order to allow distros to more easily enable
+this while avoiding those same howls (or vice versa), this commit adds
+the corresponding `random.trust_bootloader=0/1` toggle.
 
 Cc: Theodore Ts'o <tytso@mit.edu>
+Cc: Graham Christensen <graham@grahamc.com>
+Reviewed-by: Ard Biesheuvel <ardb@kernel.org>
 Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Link: https://github.com/NixOS/nixpkgs/pull/165355
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ Documentation/admin-guide/kernel-parameters.txt |    6 ++++++
+ drivers/char/Kconfig                            |    3 ++-
+ drivers/char/random.c                           |    8 +++++++-
+ 3 files changed, 15 insertions(+), 2 deletions(-)
 
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -4307,6 +4307,12 @@
+ 			fully seed the kernel's CRNG. Default is controlled
+ 			by CONFIG_RANDOM_TRUST_CPU.
+ 
++	random.trust_bootloader={on,off}
++			[KNL] Enable or disable trusting the use of a
++			seed passed by the bootloader (if available) to
++			fully seed the kernel's CRNG. Default is controlled
++			by CONFIG_RANDOM_TRUST_BOOTLOADER.
++
+ 	randomize_kstack_offset=
+ 			[KNL] Enable or disable kernel stack offset
+ 			randomization, which provides roughly 5 bits of
+--- a/drivers/char/Kconfig
++++ b/drivers/char/Kconfig
+@@ -449,6 +449,7 @@ config RANDOM_TRUST_BOOTLOADER
+ 	device randomness. Say Y here to assume the entropy provided by the
+ 	booloader is trustworthy so it will be added to the kernel's entropy
+ 	pool. Otherwise, say N here so it will be regarded as device input that
+-	only mixes the entropy pool.
++	only mixes the entropy pool. This can also be configured at boot with
++	"random.trust_bootloader=on/off".
+ 
+ endmenu
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -1669,6 +1669,13 @@ static int proc_do_uuid(struct ctl_table
- 	return proc_dostring(&fake_table, 0, buffer, lenp, ppos);
- }
+@@ -945,11 +945,17 @@ static bool drain_entropy(void *buf, siz
+  **********************************************************************/
  
-+/* The same as proc_dointvec, but writes don't change anything. */
-+static int proc_do_rointvec(struct ctl_table *table, int write, void *buffer,
-+			    size_t *lenp, loff_t *ppos)
+ static bool trust_cpu __ro_after_init = IS_ENABLED(CONFIG_RANDOM_TRUST_CPU);
++static bool trust_bootloader __ro_after_init = IS_ENABLED(CONFIG_RANDOM_TRUST_BOOTLOADER);
+ static int __init parse_trust_cpu(char *arg)
+ {
+ 	return kstrtobool(arg, &trust_cpu);
+ }
++static int __init parse_trust_bootloader(char *arg)
 +{
-+	return write ? 0 : proc_dointvec(table, 0, buffer, lenp, ppos);
++	return kstrtobool(arg, &trust_bootloader);
 +}
-+
- extern struct ctl_table random_table[];
- struct ctl_table random_table[] = {
- 	{
-@@ -1690,14 +1697,14 @@ struct ctl_table random_table[] = {
- 		.data		= &sysctl_random_write_wakeup_bits,
- 		.maxlen		= sizeof(int),
- 		.mode		= 0644,
--		.proc_handler	= proc_dointvec,
-+		.proc_handler	= proc_do_rointvec,
- 	},
- 	{
- 		.procname	= "urandom_min_reseed_secs",
- 		.data		= &sysctl_random_min_urandom_seed,
- 		.maxlen		= sizeof(int),
- 		.mode		= 0644,
--		.proc_handler	= proc_dointvec,
-+		.proc_handler	= proc_do_rointvec,
- 	},
- 	{
- 		.procname	= "boot_id",
+ early_param("random.trust_cpu", parse_trust_cpu);
++early_param("random.trust_bootloader", parse_trust_bootloader);
+ 
+ /*
+  * The first collection of entropy occurs at system boot while interrupts
+@@ -1157,7 +1163,7 @@ EXPORT_SYMBOL_GPL(add_hwgenerator_random
+  */
+ void add_bootloader_randomness(const void *buf, size_t size)
+ {
+-	if (IS_ENABLED(CONFIG_RANDOM_TRUST_BOOTLOADER))
++	if (trust_bootloader)
+ 		add_hwgenerator_randomness(buf, size, size * 8);
+ 	else
+ 		add_device_randomness(buf, size);
 
 
