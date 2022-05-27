@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96C57C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:49:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95607C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:49:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343945AbiE0LtP (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 07:49:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57132 "EHLO
+        id S244787AbiE0LtW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 07:49:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352095AbiE0LpW (ORCPT
+        with ESMTP id S1352128AbiE0Lp2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:45:22 -0400
+        Fri, 27 May 2022 07:45:28 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3CCF140868;
-        Fri, 27 May 2022 04:41:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C121512B00E;
+        Fri, 27 May 2022 04:42:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4E0DD61D46;
-        Fri, 27 May 2022 11:41:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CEC0C385A9;
-        Fri, 27 May 2022 11:41:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 44DAC61CDB;
+        Fri, 27 May 2022 11:42:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55121C385A9;
+        Fri, 27 May 2022 11:41:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653651716;
-        bh=YVFCm9IvwmgkDNWZPZYSkH8bYCAZpNilJPeiWNu6Xuk=;
+        s=korg; t=1653651719;
+        bh=05oCL9/vwRD2ONushJmIq7RlXP0+bm7pgIUFoypvMaI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tJa0bnddslGgrff/oR3XdFvx18vcwFhEHGEjrGcL3j9vikd7djdrXtCHhoLu4R+YO
-         vFvET2O+j0tldo+yu1VsqZRnRAcIFPKBdP1P9zyXXOba1aR8Bsph8rJKtV+9RaMSns
-         ZSd3m50ompDFxeVjMAAPlwSztBrR9rbVKwwHO5q4=
+        b=eSpHC8VFNhePE/OTeA+qqdyjjmUPhBHihr4YFtgivU0PWPTbhmwgEqk3Bzj6+s2A1
+         jui0f1U6k6oHFrQhbwy7s/yOPfW4jbI40DQYoqJEZbV4Xt1wElXybIH6C3Iu3E1xCg
+         ru6I4WK+hCdayUV33ZEy/Esy2J+eVreSAD+Hnflw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
+        stable@vger.kernel.org,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.17 075/111] m68k: use fallback for random_get_entropy() instead of zero
-Date:   Fri, 27 May 2022 10:49:47 +0200
-Message-Id: <20220527084830.091696429@linuxfoundation.org>
+Subject: [PATCH 5.15 036/145] random: access primary_pool directly rather than through pointer
+Date:   Fri, 27 May 2022 10:48:57 +0200
+Message-Id: <20220527084855.276368548@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084819.133490171@linuxfoundation.org>
-References: <20220527084819.133490171@linuxfoundation.org>
+In-Reply-To: <20220527084850.364560116@linuxfoundation.org>
+References: <20220527084850.364560116@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,38 +49,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Dominik Brodowski <linux@dominikbrodowski.net>
 
-commit 0f392c95391f2d708b12971a07edaa7973f9eece upstream.
+commit ebf7606388732ecf2821ca21087e9446cb4a5b57 upstream.
 
-In the event that random_get_entropy() can't access a cycle counter or
-similar, falling back to returning 0 is really not the best we can do.
-Instead, at least calling random_get_entropy_fallback() would be
-preferable, because that always needs to return _something_, even
-falling back to jiffies eventually. It's not as though
-random_get_entropy_fallback() is super high precision or guaranteed to
-be entropic, but basically anything that's not zero all the time is
-better than returning zero all the time.
+Both crng_initialize_primary() and crng_init_try_arch_early() are
+only called for the primary_pool. Accessing it directly instead of
+through a function parameter simplifies the code.
 
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/m68k/include/asm/timex.h |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/char/random.c |   14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
---- a/arch/m68k/include/asm/timex.h
-+++ b/arch/m68k/include/asm/timex.h
-@@ -35,7 +35,7 @@ static inline unsigned long random_get_e
- {
- 	if (mach_random_get_entropy)
- 		return mach_random_get_entropy();
--	return 0;
-+	return random_get_entropy_fallback();
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -762,7 +762,7 @@ static bool crng_init_try_arch(struct cr
+ 	return arch_init;
  }
- #define random_get_entropy	random_get_entropy
  
+-static bool __init crng_init_try_arch_early(struct crng_state *crng)
++static bool __init crng_init_try_arch_early(void)
+ {
+ 	int i;
+ 	bool arch_init = true;
+@@ -774,7 +774,7 @@ static bool __init crng_init_try_arch_ea
+ 			rv = random_get_entropy();
+ 			arch_init = false;
+ 		}
+-		crng->state[i] ^= rv;
++		primary_crng.state[i] ^= rv;
+ 	}
+ 
+ 	return arch_init;
+@@ -788,16 +788,16 @@ static void crng_initialize_secondary(st
+ 	crng->init_time = jiffies - CRNG_RESEED_INTERVAL - 1;
+ }
+ 
+-static void __init crng_initialize_primary(struct crng_state *crng)
++static void __init crng_initialize_primary(void)
+ {
+-	_extract_entropy(&crng->state[4], sizeof(u32) * 12);
+-	if (crng_init_try_arch_early(crng) && trust_cpu && crng_init < 2) {
++	_extract_entropy(&primary_crng.state[4], sizeof(u32) * 12);
++	if (crng_init_try_arch_early() && trust_cpu && crng_init < 2) {
+ 		invalidate_batched_entropy();
+ 		numa_crng_init();
+ 		crng_init = 2;
+ 		pr_notice("crng init done (trusting CPU's manufacturer)\n");
+ 	}
+-	crng->init_time = jiffies - CRNG_RESEED_INTERVAL - 1;
++	primary_crng.init_time = jiffies - CRNG_RESEED_INTERVAL - 1;
+ }
+ 
+ static void crng_finalize_init(struct crng_state *crng)
+@@ -1698,7 +1698,7 @@ int __init rand_initialize(void)
+ 	init_std_data();
+ 	if (crng_need_final_init)
+ 		crng_finalize_init(&primary_crng);
+-	crng_initialize_primary(&primary_crng);
++	crng_initialize_primary();
+ 	crng_global_init_time = jiffies;
+ 	if (ratelimit_disable) {
+ 		urandom_warning.interval = 0;
 
 
