@@ -2,80 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AAB2C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 01:48:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83833C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 01:50:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233143AbiE0BsG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 21:48:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33726 "EHLO
+        id S233165AbiE0BuA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 21:50:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229463AbiE0BsE (ORCPT
+        with ESMTP id S233258AbiE0Btz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 21:48:04 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E71513702C
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 18:48:02 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4L8SP73f2NzDqND;
-        Fri, 27 May 2022 09:47:55 +0800 (CST)
-Received: from [10.174.177.76] (10.174.177.76) by
- canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 27 May 2022 09:48:00 +0800
-Subject: Re: [PATCH] mm: use PAGE_ALIGNED instead of IS_ALIGNED
-To:     <bh1scw@gmail.com>
-CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-References: <20220526140257.1568744-1-bh1scw@gmail.com>
-From:   Miaohe Lin <linmiaohe@huawei.com>
-Message-ID: <f65a79ca-0cf8-91e1-ecd3-24ede70858ae@huawei.com>
-Date:   Fri, 27 May 2022 09:48:00 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        Thu, 26 May 2022 21:49:55 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE22DE2758;
+        Thu, 26 May 2022 18:49:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653616194; x=1685152194;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=kut1lyhhg+8YOva3L1ERzYHZ76rCQIBn6vcFl8mahxg=;
+  b=CMShrFktcY0NLyPNxmttBRR/xL8ehJK5Au/otaUsEhJt34VwXKUcY7XQ
+   QbjW1KTa2mfHxXx2Fj0OKjyQRQy99LK2y0HxOwrdNkuq5xi0f4OCOFbOr
+   +GLiTYL593qQCVl+8dLsMs0kcCGdJwF3gMkzxwGOETKNXBzSetLtuwKZD
+   kvkEjDLcpYnGVlBs9xNvv6s3TJlhi/voiiApKirWHm1al0FqXkOrrWjU6
+   xYjArUS7ittlou6gYWz3pbFPXHPNTJeenz9hC70qYbzygpUna/+EWmSQ6
+   2jX+XiFAurMfrEkyfS1LElxct8PsGNMbiCrwjxC+fi1MRD0lMDS5n6S0R
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10359"; a="274451648"
+X-IronPort-AV: E=Sophos;i="5.91,254,1647327600"; 
+   d="scan'208";a="274451648"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 May 2022 18:49:54 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,254,1647327600"; 
+   d="scan'208";a="631230192"
+Received: from linux.intel.com ([10.54.29.200])
+  by fmsmga008.fm.intel.com with ESMTP; 26 May 2022 18:49:53 -0700
+Received: from linux.intel.com (ssid-ilbpg3-teeminta.png.intel.com [10.88.227.74])
+        (using TLSv1.2 with cipher DHE-RSA-AES128-SHA (128/128 bits))
+        (No client certificate requested)
+        by linux.intel.com (Postfix) with ESMTPS id 116F7580B54;
+        Thu, 26 May 2022 18:49:49 -0700 (PDT)
+Date:   Fri, 27 May 2022 09:47:09 +0800
+From:   Tan Tee Min <tee.min.tan@linux.intel.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Dan Murphy <dmurphy@ti.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org, Voon Wei Feng <weifeng.voon@intel.com>,
+        Sit Michael Wei Hong <michael.wei.hong.sit@intel.com>,
+        Ling Pei Lee <pei.lee.ling@intel.com>,
+        Looi Hong Aun <hong.aun.looi@intel.com>,
+        Wong Vee Khee <vee.khee.wong@intel.com>,
+        Tan Tee Min <tee.min.tan@intel.com>
+Subject: Re: [PATCH net-next v2 1/1] net: phy: dp83867: retrigger SGMII AN
+ when link change
+Message-ID: <20220527014709.GA26992@linux.intel.com>
+References: <20220526090347.128742-1-tee.min.tan@linux.intel.com>
+ <Yo9zTmMduwel8XeZ@lunn.ch>
 MIME-Version: 1.0
-In-Reply-To: <20220526140257.1568744-1-bh1scw@gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.177.76]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yo9zTmMduwel8XeZ@lunn.ch>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/5/26 22:02, bh1scw@gmail.com wrote:
-> From: Fanjun Kong <bh1scw@gmail.com>
+On Thu, May 26, 2022 at 02:32:14PM +0200, Andrew Lunn wrote:
+> On Thu, May 26, 2022 at 05:03:47PM +0800, Tan Tee Min wrote:
+> > This could cause an issue during power up, when PHY is up prior to MAC.
+> > At this condition, once MAC side SGMII is up, MAC side SGMII wouldn`t
+> > receive new in-band message from TI PHY with correct link status, speed
+> > and duplex info.
+> > 
+> > As suggested by TI, implemented a SW solution here to retrigger SGMII
+> > Auto-Neg whenever there is a link change.
 > 
-> The <linux/mm.h> already provides the PAGE_ALIGNED macro. Let's
-> use this macro instead of IS_ALIGNED and passing PAGE_SIZE directly.
+> Is there a bit in the PHY which reports host side link? There is no
+> point triggering an AN if there is already link.
 > 
-> Signed-off-by: Fanjun Kong <bh1scw@gmail.com>
+>       Andrew
 
-Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
+Thanks for your comment.
 
-Thanks!
+There is no register bit in TI PHY which reports the SGMII AN link status.
+But, there is a bit that only reports the SGMII AN completion status.
 
-> ---
->  mm/sparse-vmemmap.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/mm/sparse-vmemmap.c b/mm/sparse-vmemmap.c
-> index f4fa61dbbee3..49cb15cbe590 100644
-> --- a/mm/sparse-vmemmap.c
-> +++ b/mm/sparse-vmemmap.c
-> @@ -200,8 +200,8 @@ static int vmemmap_remap_range(unsigned long start, unsigned long end,
->  	unsigned long next;
->  	pgd_t *pgd;
->  
-> -	VM_BUG_ON(!IS_ALIGNED(start, PAGE_SIZE));
-> -	VM_BUG_ON(!IS_ALIGNED(end, PAGE_SIZE));
-> +	VM_BUG_ON(!PAGE_ALIGNED(start));
-> +	VM_BUG_ON(!PAGE_ALIGNED(end));
->  
->  	pgd = pgd_offset_k(addr);
->  	do {
-> 
+In this case, the PHY side SGMII AN has been already completed prior to MAC is up.
+So, once MAC side SGMII is up, MAC side SGMII wouldn`t receive any new
+in-band message from TI PHY.
+
+Thanks,
+Tee Min
 
