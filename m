@@ -2,208 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 275A7C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:46:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 895DAC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:47:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349926AbiE0Iqv (ORCPT
+        id S1349918AbiE0IrE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 04:46:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43406 "EHLO
+        Fri, 27 May 2022 04:47:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349898AbiE0Iqg (ORCPT
+        with ESMTP id S1349898AbiE0Iq7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 04:46:36 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D09E12ACB;
-        Fri, 27 May 2022 01:46:33 -0700 (PDT)
-Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.53])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4L8dfL4dGyz1JC7l;
-        Fri, 27 May 2022 16:44:58 +0800 (CST)
-Received: from dggpemm500018.china.huawei.com (7.185.36.111) by
- dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 27 May 2022 16:46:31 +0800
-Received: from localhost.localdomain (10.175.112.125) by
- dggpemm500018.china.huawei.com (7.185.36.111) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 27 May 2022 16:46:30 +0800
-From:   keliu <liuke94@huawei.com>
-To:     <peter.chen@kernel.org>, <gregkh@linuxfoundation.org>,
-        <balbi@kernel.org>, <heikki.krogerus@linux.intel.com>,
-        <mdevaev@gmail.com>, <maze@google.com>, <ruslan.bilovol@gmail.com>,
-        <phil@raspberrypi.com>, <libaokun1@huawei.com>,
-        <dan.carpenter@oracle.com>, <akpm@linux-foundation.org>,
-        <brauner@kernel.org>, <songmuchun@bytedance.com>,
-        <dh10.jung@samsung.com>, <linux-usb@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     keliu <liuke94@huawei.com>
-Subject: [PATCH] drivers: usb: Directly use ida_alloc()/free()
-Date:   Fri, 27 May 2022 09:08:00 +0000
-Message-ID: <20220527090800.2881397-1-liuke94@huawei.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.112.125]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpemm500018.china.huawei.com (7.185.36.111)
-X-CFilter-Loop: Reflected
+        Fri, 27 May 2022 04:46:59 -0400
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C796D25C5A;
+        Fri, 27 May 2022 01:46:57 -0700 (PDT)
+Received: by mail-pl1-x62b.google.com with SMTP id a13so3586140plh.6;
+        Fri, 27 May 2022 01:46:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=LT+QAOqNHX7ViHSsik7kvf3ypjWNwSuEN+rviPBBKVw=;
+        b=EkXFhzB6I2uejZeDOfwTivxzmkAjlXWQzgl7qS1XAqWQSsrMu3JAjkaSjsfaL51svU
+         uZBzGyfFzcwDbnNsjntpXEi6BKOUPzamrL5XX4vGVMPP4+9JI4cl2BQScVC5lNBlEoVm
+         rVtSgcMKqsbGqBzEOr6qb5QvJ0DnzQxDYdxoj5Q+KrmLGGK/IBiaAG5CubqkZ6JAURhh
+         fnHmldWC0iducAx6xhxoqiAVBoh/9AAR2nT6Io4ILBQT4AHvTXNf+j3PX7DjGPUMZ4lU
+         QElFZQaiz8IcjrdWNtptAUIMZpbTh4w4mlws44DvIwY+ZKdT6luOpK2CHcQGD7zgshyQ
+         6/yg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=LT+QAOqNHX7ViHSsik7kvf3ypjWNwSuEN+rviPBBKVw=;
+        b=vttJdLvBGu5KTrgIkrqvnqw3bjclu3k+f7cPAXjz442iUEreHVCV3U6wRyzr2OT+4F
+         33liF1ZFIN+5F9kQ/9dFv6UY/IXzTwi858iu00BF5af2+NbaT2ElFEnbMpb3otoQFe/N
+         ieB2nOU+mpLWOyixLasxBXM/fUeD3idLj81AHRHjwzbGCIsFHgEB4o5ocqZl35TicBmZ
+         x33KtP9RfnQtfAiIYBTF4Do2WNYpleWI67CVPG7oCyuRvhULmW9GlOienq8uGn6h3Jux
+         wCcsGdYbVzD6XLiEtP/lzZ/+HqlM/bOHIHQx1NXQFXBRWtL4VUBkGBK9ipekDFtnmQ9P
+         TN7Q==
+X-Gm-Message-State: AOAM532R/RI/hoP/ETO3z7WEXcHK9Wgsghm2wCi3HQnTKL6Nga20F904
+        IbTJXY2zVsFFSdK6N7ON9Pjzjp2UUU/Ncw==
+X-Google-Smtp-Source: ABdhPJwbMVfPy1IMJtptgkrIf6LW9VDXVLIQ/vswb1KPSPLQl8dZBhbh32Dh0jzQbem2FdkY30ZOMw==
+X-Received: by 2002:a17:90a:5d03:b0:1e0:cc5b:4808 with SMTP id s3-20020a17090a5d0300b001e0cc5b4808mr7091366pji.180.1653641217105;
+        Fri, 27 May 2022 01:46:57 -0700 (PDT)
+Received: from localhost.localdomain ([116.89.143.231])
+        by smtp.gmail.com with ESMTPSA id k12-20020a170902d58c00b0015e8d4eb1ebsm3003254plh.53.2022.05.27.01.46.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 27 May 2022 01:46:56 -0700 (PDT)
+From:   medadyoung@gmail.com
+X-Google-Original-From: ctcchien@nuvoton.com
+To:     benjaminfair@google.com, yuenn@google.com, venture@google.com,
+        tali.perry1@gmail.com, tmaimon77@gmail.com, avifishman70@gmail.com,
+        robh+dt@kernel.org, alexandre.belloni@bootlin.com,
+        a.zummo@towertech.it, KWLIU@nuvoton.com, YSCHU@nuvoton.com,
+        JJLIU0@nuvoton.com, KFTING@nuvoton.com, ctcchien@nuvoton.com
+Cc:     openbmc@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-rtc@vger.kernel.org
+Subject: [PATCH v3 0/3] RTC: nuvoton: Add nuvoton real time clock driver
+Date:   Fri, 27 May 2022 16:46:44 +0800
+Message-Id: <20220527084647.30835-1-ctcchien@nuvoton.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use ida_alloc()/ida_free() instead of deprecated
-ida_simple_get()/ida_simple_remove() .
+From: Medad CChien <ctcchien@nuvoton.com>
 
-Signed-off-by: keliu <liuke94@huawei.com>
----
- drivers/usb/chipidea/core.c             | 6 +++---
- drivers/usb/gadget/function/f_hid.c     | 6 +++---
- drivers/usb/gadget/function/f_printer.c | 6 +++---
- drivers/usb/gadget/function/rndis.c     | 4 ++--
- drivers/usb/typec/class.c               | 8 ++++----
- 5 files changed, 15 insertions(+), 15 deletions(-)
+Support Nuvoton NCT3018Y real time clock.
 
-diff --git a/drivers/usb/chipidea/core.c b/drivers/usb/chipidea/core.c
-index 5359b2a2e4d2..ab8fd4d96836 100644
---- a/drivers/usb/chipidea/core.c
-+++ b/drivers/usb/chipidea/core.c
-@@ -853,7 +853,7 @@ struct platform_device *ci_hdrc_add_device(struct device *dev,
- 	if (ret)
- 		return ERR_PTR(ret);
- 
--	id = ida_simple_get(&ci_ida, 0, 0, GFP_KERNEL);
-+	id = ida_alloc(&ci_ida, GFP_KERNEL);
- 	if (id < 0)
- 		return ERR_PTR(id);
- 
-@@ -883,7 +883,7 @@ struct platform_device *ci_hdrc_add_device(struct device *dev,
- err:
- 	platform_device_put(pdev);
- put_id:
--	ida_simple_remove(&ci_ida, id);
-+	ida_free(&ci_ida, id);
- 	return ERR_PTR(ret);
- }
- EXPORT_SYMBOL_GPL(ci_hdrc_add_device);
-@@ -892,7 +892,7 @@ void ci_hdrc_remove_device(struct platform_device *pdev)
- {
- 	int id = pdev->id;
- 	platform_device_unregister(pdev);
--	ida_simple_remove(&ci_ida, id);
-+	ida_free(&ci_ida, id);
- }
- EXPORT_SYMBOL_GPL(ci_hdrc_remove_device);
- 
-diff --git a/drivers/usb/gadget/function/f_hid.c b/drivers/usb/gadget/function/f_hid.c
-index ca0a7d9eaa34..84e834e512dc 100644
---- a/drivers/usb/gadget/function/f_hid.c
-+++ b/drivers/usb/gadget/function/f_hid.c
-@@ -1028,9 +1028,9 @@ static inline int hidg_get_minor(void)
- {
- 	int ret;
- 
--	ret = ida_simple_get(&hidg_ida, 0, 0, GFP_KERNEL);
-+	ret = ida_alloc(&hidg_ida, GFP_KERNEL);
- 	if (ret >= HIDG_MINORS) {
--		ida_simple_remove(&hidg_ida, ret);
-+		ida_free(&hidg_ida, ret);
- 		ret = -ENODEV;
- 	}
- 
-@@ -1175,7 +1175,7 @@ static const struct config_item_type hid_func_type = {
- 
- static inline void hidg_put_minor(int minor)
- {
--	ida_simple_remove(&hidg_ida, minor);
-+	ida_free(&hidg_ida, minor);
- }
- 
- static void hidg_free_inst(struct usb_function_instance *f)
-diff --git a/drivers/usb/gadget/function/f_printer.c b/drivers/usb/gadget/function/f_printer.c
-index abec5c58f525..eb325940566c 100644
---- a/drivers/usb/gadget/function/f_printer.c
-+++ b/drivers/usb/gadget/function/f_printer.c
-@@ -1316,9 +1316,9 @@ static inline int gprinter_get_minor(void)
- {
- 	int ret;
- 
--	ret = ida_simple_get(&printer_ida, 0, 0, GFP_KERNEL);
-+	ret = ida_alloc(&printer_ida, GFP_KERNEL);
- 	if (ret >= PRINTER_MINORS) {
--		ida_simple_remove(&printer_ida, ret);
-+		ida_free(&printer_ida, ret);
- 		ret = -ENODEV;
- 	}
- 
-@@ -1327,7 +1327,7 @@ static inline int gprinter_get_minor(void)
- 
- static inline void gprinter_put_minor(int minor)
- {
--	ida_simple_remove(&printer_ida, minor);
-+	ida_free(&printer_ida, minor);
- }
- 
- static int gprinter_setup(int);
-diff --git a/drivers/usb/gadget/function/rndis.c b/drivers/usb/gadget/function/rndis.c
-index 713efd9aefde..14e803862940 100644
---- a/drivers/usb/gadget/function/rndis.c
-+++ b/drivers/usb/gadget/function/rndis.c
-@@ -869,12 +869,12 @@ EXPORT_SYMBOL_GPL(rndis_msg_parser);
- 
- static inline int rndis_get_nr(void)
- {
--	return ida_simple_get(&rndis_ida, 0, 0, GFP_KERNEL);
-+	return ida_alloc(&rndis_ida, GFP_KERNEL);
- }
- 
- static inline void rndis_put_nr(int nr)
- {
--	ida_simple_remove(&rndis_ida, nr);
-+	ida_free(&rndis_ida, nr);
- }
- 
- struct rndis_params *rndis_register(void (*resp_avail)(void *v), void *v)
-diff --git a/drivers/usb/typec/class.c b/drivers/usb/typec/class.c
-index ee0e520707dd..6d7d69d09ed4 100644
---- a/drivers/usb/typec/class.c
-+++ b/drivers/usb/typec/class.c
-@@ -474,7 +474,7 @@ static int altmode_id_get(struct device *dev)
- 	else
- 		ids = &to_typec_port(dev)->mode_ids;
- 
--	return ida_simple_get(ids, 0, 0, GFP_KERNEL);
-+	return ida_alloc(ids, GFP_KERNEL);
- }
- 
- static void altmode_id_remove(struct device *dev, int id)
-@@ -488,7 +488,7 @@ static void altmode_id_remove(struct device *dev, int id)
- 	else
- 		ids = &to_typec_port(dev)->mode_ids;
- 
--	ida_simple_remove(ids, id);
-+	ida_free(ids, id);
- }
- 
- static void typec_altmode_release(struct device *dev)
-@@ -1599,7 +1599,7 @@ static void typec_release(struct device *dev)
- {
- 	struct typec_port *port = to_typec_port(dev);
- 
--	ida_simple_remove(&typec_index_ida, port->id);
-+	ida_free(&typec_index_ida, port->id);
- 	ida_destroy(&port->mode_ids);
- 	typec_switch_put(port->sw);
- 	typec_mux_put(port->mux);
-@@ -2042,7 +2042,7 @@ struct typec_port *typec_register_port(struct device *parent,
- 	if (!port)
- 		return ERR_PTR(-ENOMEM);
- 
--	id = ida_simple_get(&typec_index_ida, 0, 0, GFP_KERNEL);
-+	id = ida_alloc(&typec_index_ida, GFP_KERNEL);
- 	if (id < 0) {
- 		kfree(port);
- 		return ERR_PTR(id);
+Changes since version 3:
+ - Add part number in Kconfig.
+ - Refactor rtc-nct3018y.c.
+
+Changes since version 2:
+ - Fix errors in rtc-nct3018y.c.
+ - Fix warnings in rtc-nct3018y.c.
+
+Changes since version 1:
+ - Add nuvoton,nct3018y property in NPCM devicetree.
+ - Add new property in rtc binding document.
+ - Add new driver for nuvoton real time clock driver.
+
+Medad CChien (3):
+  dt-bindings: rtc: nuvoton: add NCT3018Y Real Time Clock
+  ARM: dts: nuvoton: Add nuvoton RTC3018Y node
+  RTC: nuvoton: Add NCT3018Y real time clock driver
+
+ .../bindings/rtc/nuvoton,nct3018y.yaml        |  44 ++
+ MAINTAINERS                                   |   2 +
+ arch/arm/boot/dts/nuvoton-npcm750-evb.dts     |   6 +
+ drivers/rtc/Kconfig                           |  10 +
+ drivers/rtc/Makefile                          |   1 +
+ drivers/rtc/rtc-nct3018y.c                    | 560 ++++++++++++++++++
+ 6 files changed, 623 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/rtc/nuvoton,nct3018y.yaml
+ create mode 100644 drivers/rtc/rtc-nct3018y.c
+
 -- 
-2.25.1
+2.17.1
 
