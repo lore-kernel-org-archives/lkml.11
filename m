@@ -2,50 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9CF0C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAADCC4167B
 	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 09:06:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351089AbiE0JFw (ORCPT
+        id S1351027AbiE0JFp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 05:05:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35248 "EHLO
+        Fri, 27 May 2022 05:05:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350663AbiE0JAP (ORCPT
+        with ESMTP id S1350683AbiE0JAT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 05:00:15 -0400
+        Fri, 27 May 2022 05:00:19 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7A4662BE3;
-        Fri, 27 May 2022 01:56:39 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D43463BCF;
+        Fri, 27 May 2022 01:56:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9A363B823DE;
-        Fri, 27 May 2022 08:56:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C79D1C34100;
-        Fri, 27 May 2022 08:56:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5F572B823D9;
+        Fri, 27 May 2022 08:56:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D941C385B8;
+        Fri, 27 May 2022 08:56:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653641797;
-        bh=TvSP2+gIKr8wSl72N8VM4swQHZlA8NwkYof9GNkuWzE=;
+        s=korg; t=1653641801;
+        bh=rM3kl0vv2bjgSwp+qxFhlAqocre7jchX693t5VQTPnQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gSgkPNic/fwp/ZFwHk+YJyeROQlZ6KbRpzFFwR5XQQxMNt15rrb2iaJAR8Fj6qIXR
-         7FUxmQkKOTCaggQ/XoGF5K2ETcqXq/P6/D0mP14KxcJtwgLlkgE6WkqLu+c/+1JQ1/
-         pFQ7gt6vdhq1wYzXxrdBUmQuLQUOYKks6A8bePuc=
+        b=MGJ2zRJzsuKE0HI74QbCBVNxG1sdXtbP/hCMSg87YJE4jG4Z4BJJyv2htyAnNtV+7
+         Enj+Ko34TGwHXrPXjM6ZexfQIU1dVjI6yRUqpCf0en1k37eldCivq4QGAQUZCEMv+1
+         SD1oM7ID3BlBhq4jOm8tnN+jUd+v2Ayp2EUcIs7k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, linux-crypto@vger.kernel.org,
-        Andy Lutomirski <luto@kernel.org>,
-        Jann Horn <jannh@google.com>, Theodore Tso <tytso@mit.edu>,
-        Ard Biesheuvel <ardb@kernel.org>,
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
         Eric Biggers <ebiggers@google.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.10 012/163] random: remove dead code left over from blocking pool
-Date:   Fri, 27 May 2022 10:48:12 +0200
-Message-Id: <20220527084829.902796403@linuxfoundation.org>
+Subject: [PATCH 5.17 037/111] random: rewrite header introductory comment
+Date:   Fri, 27 May 2022 10:49:09 +0200
+Message-Id: <20220527084824.699721210@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
-References: <20220527084828.156494029@linuxfoundation.org>
+In-Reply-To: <20220527084819.133490171@linuxfoundation.org>
+References: <20220527084819.133490171@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -54,187 +51,211 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Biggers <ebiggers@google.com>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 118a4417e14348b2e46f5e467da8444ec4757a45 upstream.
+commit 5f75d9f3babea8ae0a2d06724656874f41d317f5 upstream.
 
-Remove some dead code that was left over following commit 90ea1c6436d2
-("random: remove the blocking pool").
+Now that we've re-documented the various sections, we can remove the
+outdated text here and replace it with a high-level overview.
 
-Cc: linux-crypto@vger.kernel.org
-Cc: Andy Lutomirski <luto@kernel.org>
-Cc: Jann Horn <jannh@google.com>
 Cc: Theodore Ts'o <tytso@mit.edu>
-Reviewed-by: Andy Lutomirski <luto@kernel.org>
-Acked-by: Ard Biesheuvel <ardb@kernel.org>
-Signed-off-by: Eric Biggers <ebiggers@google.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Reviewed-by: Eric Biggers <ebiggers@google.com>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c         |   17 +-------
- include/trace/events/random.h |   83 ------------------------------------------
- 2 files changed, 3 insertions(+), 97 deletions(-)
+ drivers/char/random.c |  179 +++++---------------------------------------------
+ 1 file changed, 19 insertions(+), 160 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -501,7 +501,6 @@ struct entropy_store {
- 	unsigned short add_ptr;
- 	unsigned short input_rotate;
- 	int entropy_count;
--	unsigned int initialized:1;
- 	unsigned int last_data_init:1;
- 	__u8 last_data[EXTRACT_SIZE];
- };
-@@ -661,7 +660,7 @@ static void process_random_ready_list(vo
-  */
- static void credit_entropy_bits(struct entropy_store *r, int nbits)
- {
--	int entropy_count, orig, has_initialized = 0;
-+	int entropy_count, orig;
- 	const int pool_size = r->poolinfo->poolfracbits;
- 	int nfrac = nbits << ENTROPY_SHIFT;
- 
-@@ -718,23 +717,14 @@ retry:
- 	if (cmpxchg(&r->entropy_count, orig, entropy_count) != orig)
- 		goto retry;
- 
--	if (has_initialized) {
--		r->initialized = 1;
--		kill_fasync(&fasync, SIGIO, POLL_IN);
--	}
--
- 	trace_credit_entropy_bits(r->name, nbits,
- 				  entropy_count >> ENTROPY_SHIFT, _RET_IP_);
- 
- 	if (r == &input_pool) {
- 		int entropy_bits = entropy_count >> ENTROPY_SHIFT;
- 
--		if (crng_init < 2) {
--			if (entropy_bits < 128)
--				return;
-+		if (crng_init < 2 && entropy_bits >= 128)
- 			crng_reseed(&primary_crng, r);
--			entropy_bits = ENTROPY_BITS(r);
--		}
- 	}
- }
- 
-@@ -1392,8 +1382,7 @@ retry:
- }
- 
+@@ -2,168 +2,27 @@
  /*
-- * This function does the actual extraction for extract_entropy and
-- * extract_entropy_user.
-+ * This function does the actual extraction for extract_entropy.
+  * Copyright (C) 2017-2022 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
+  * Copyright Matt Mackall <mpm@selenic.com>, 2003, 2004, 2005
+- * Copyright Theodore Ts'o, 1994, 1995, 1996, 1997, 1998, 1999.  All
+- * rights reserved.
+- */
+-
+-/*
+- * Exported interfaces ---- output
+- * ===============================
+- *
+- * There are four exported interfaces; two for use within the kernel,
+- * and two for use from userspace.
+- *
+- * Exported interfaces ---- userspace output
+- * -----------------------------------------
+- *
+- * The userspace interfaces are two character devices /dev/random and
+- * /dev/urandom.  /dev/random is suitable for use when very high
+- * quality randomness is desired (for example, for key generation or
+- * one-time pads), as it will only return a maximum of the number of
+- * bits of randomness (as estimated by the random number generator)
+- * contained in the entropy pool.
+- *
+- * The /dev/urandom device does not have this limit, and will return
+- * as many bytes as are requested.  As more and more random bytes are
+- * requested without giving time for the entropy pool to recharge,
+- * this will result in random numbers that are merely cryptographically
+- * strong.  For many applications, however, this is acceptable.
+- *
+- * Exported interfaces ---- kernel output
+- * --------------------------------------
+- *
+- * The primary kernel interfaces are:
+- *
+- *	void get_random_bytes(void *buf, size_t nbytes);
+- *	u32 get_random_u32()
+- *	u64 get_random_u64()
+- *	unsigned int get_random_int()
+- *	unsigned long get_random_long()
+- *
+- * These interfaces will return the requested number of random bytes
+- * into the given buffer or as a return value. This is equivalent to a
+- * read from /dev/urandom. The get_random_{u32,u64,int,long}() family
+- * of functions may be higher performance for one-off random integers,
+- * because they do a bit of buffering.
+- *
+- * prandom_u32()
+- * -------------
+- *
+- * For even weaker applications, see the pseudorandom generator
+- * prandom_u32(), prandom_max(), and prandom_bytes().  If the random
+- * numbers aren't security-critical at all, these are *far* cheaper.
+- * Useful for self-tests, random error simulation, randomized backoffs,
+- * and any other application where you trust that nobody is trying to
+- * maliciously mess with you by guessing the "random" numbers.
+- *
+- * Exported interfaces ---- input
+- * ==============================
+- *
+- * The current exported interfaces for gathering environmental noise
+- * from the devices are:
+- *
+- *	void add_device_randomness(const void *buf, size_t size);
+- *	void add_input_randomness(unsigned int type, unsigned int code,
+- *                                unsigned int value);
+- *	void add_interrupt_randomness(int irq);
+- *	void add_disk_randomness(struct gendisk *disk);
+- *	void add_hwgenerator_randomness(const void *buffer, size_t count,
+- *					size_t entropy);
+- *	void add_bootloader_randomness(const void *buf, size_t size);
+- *
+- * add_device_randomness() is for adding data to the random pool that
+- * is likely to differ between two devices (or possibly even per boot).
+- * This would be things like MAC addresses or serial numbers, or the
+- * read-out of the RTC. This does *not* add any actual entropy to the
+- * pool, but it initializes the pool to different values for devices
+- * that might otherwise be identical and have very little entropy
+- * available to them (particularly common in the embedded world).
+- *
+- * add_input_randomness() uses the input layer interrupt timing, as well as
+- * the event type information from the hardware.
+- *
+- * add_interrupt_randomness() uses the interrupt timing as random
+- * inputs to the entropy pool. Using the cycle counters and the irq source
+- * as inputs, it feeds the randomness roughly once a second.
+- *
+- * add_disk_randomness() uses what amounts to the seek time of block
+- * layer request events, on a per-disk_devt basis, as input to the
+- * entropy pool. Note that high-speed solid state drives with very low
+- * seek times do not make for good sources of entropy, as their seek
+- * times are usually fairly consistent.
+- *
+- * All of these routines try to estimate how many bits of randomness a
+- * particular randomness source.  They do this by keeping track of the
+- * first and second order deltas of the event timings.
+- *
+- * add_hwgenerator_randomness() is for true hardware RNGs, and will credit
+- * entropy as specified by the caller. If the entropy pool is full it will
+- * block until more entropy is needed.
+- *
+- * add_bootloader_randomness() is the same as add_hwgenerator_randomness() or
+- * add_device_randomness(), depending on whether or not the configuration
+- * option CONFIG_RANDOM_TRUST_BOOTLOADER is set.
+- *
+- * Ensuring unpredictability at system startup
+- * ============================================
+- *
+- * When any operating system starts up, it will go through a sequence
+- * of actions that are fairly predictable by an adversary, especially
+- * if the start-up does not involve interaction with a human operator.
+- * This reduces the actual number of bits of unpredictability in the
+- * entropy pool below the value in entropy_count.  In order to
+- * counteract this effect, it helps to carry information in the
+- * entropy pool across shut-downs and start-ups.  To do this, put the
+- * following lines an appropriate script which is run during the boot
+- * sequence:
+- *
+- *	echo "Initializing random number generator..."
+- *	random_seed=/var/run/random-seed
+- *	# Carry a random seed from start-up to start-up
+- *	# Load and then save the whole entropy pool
+- *	if [ -f $random_seed ]; then
+- *		cat $random_seed >/dev/urandom
+- *	else
+- *		touch $random_seed
+- *	fi
+- *	chmod 600 $random_seed
+- *	dd if=/dev/urandom of=$random_seed count=1 bs=512
+- *
+- * and the following lines in an appropriate script which is run as
+- * the system is shutdown:
+- *
+- *	# Carry a random seed from shut-down to start-up
+- *	# Save the whole entropy pool
+- *	echo "Saving random seed..."
+- *	random_seed=/var/run/random-seed
+- *	touch $random_seed
+- *	chmod 600 $random_seed
+- *	dd if=/dev/urandom of=$random_seed count=1 bs=512
+- *
+- * For example, on most modern systems using the System V init
+- * scripts, such code fragments would be found in
+- * /etc/rc.d/init.d/random.  On older Linux systems, the correct script
+- * location might be in /etc/rcb.d/rc.local or /etc/rc.d/rc.0.
+- *
+- * Effectively, these commands cause the contents of the entropy pool
+- * to be saved at shut-down time and reloaded into the entropy pool at
+- * start-up.  (The 'dd' in the addition to the bootup script is to
+- * make sure that /etc/random-seed is different for every start-up,
+- * even if the system crashes without executing rc.0.)  Even with
+- * complete knowledge of the start-up activities, predicting the state
+- * of the entropy pool requires knowledge of the previous history of
+- * the system.
+- *
+- * Configuring the /dev/random driver under Linux
+- * ==============================================
++ * Copyright Theodore Ts'o, 1994, 1995, 1996, 1997, 1998, 1999. All rights reserved.
   *
-  * Note: we assume that .poolwords is a multiple of 16 words.
+- * The /dev/random driver under Linux uses minor numbers 8 and 9 of
+- * the /dev/mem major number (#1).  So if your system does not have
+- * /dev/random and /dev/urandom created already, they can be created
+- * by using the commands:
++ * This driver produces cryptographically secure pseudorandom data. It is divided
++ * into roughly six sections, each with a section header:
+  *
+- *	mknod /dev/random c 1 8
+- *	mknod /dev/urandom c 1 9
++ *   - Initialization and readiness waiting.
++ *   - Fast key erasure RNG, the "crng".
++ *   - Entropy accumulation and extraction routines.
++ *   - Entropy collection routines.
++ *   - Userspace reader/writer interfaces.
++ *   - Sysctl interface.
++ *
++ * The high level overview is that there is one input pool, into which
++ * various pieces of data are hashed. Some of that data is then "credited" as
++ * having a certain number of bits of entropy. When enough bits of entropy are
++ * available, the hash is finalized and handed as a key to a stream cipher that
++ * expands it indefinitely for various consumers. This key is periodically
++ * refreshed as the various entropy collectors, described below, add data to the
++ * input pool and credit it. There is currently no Fortuna-like scheduler
++ * involved, which can lead to malicious entropy sources causing a premature
++ * reseed, and the entropy estimates are, at best, conservative guesses.
   */
---- a/include/trace/events/random.h
-+++ b/include/trace/events/random.h
-@@ -85,28 +85,6 @@ TRACE_EVENT(credit_entropy_bits,
- 		  __entry->entropy_count, (void *)__entry->IP)
- );
  
--TRACE_EVENT(push_to_pool,
--	TP_PROTO(const char *pool_name, int pool_bits, int input_bits),
--
--	TP_ARGS(pool_name, pool_bits, input_bits),
--
--	TP_STRUCT__entry(
--		__field( const char *,	pool_name		)
--		__field(	  int,	pool_bits		)
--		__field(	  int,	input_bits		)
--	),
--
--	TP_fast_assign(
--		__entry->pool_name	= pool_name;
--		__entry->pool_bits	= pool_bits;
--		__entry->input_bits	= input_bits;
--	),
--
--	TP_printk("%s: pool_bits %d input_pool_bits %d",
--		  __entry->pool_name, __entry->pool_bits,
--		  __entry->input_bits)
--);
--
- TRACE_EVENT(debit_entropy,
- 	TP_PROTO(const char *pool_name, int debit_bits),
- 
-@@ -161,35 +139,6 @@ TRACE_EVENT(add_disk_randomness,
- 		  MINOR(__entry->dev), __entry->input_bits)
- );
- 
--TRACE_EVENT(xfer_secondary_pool,
--	TP_PROTO(const char *pool_name, int xfer_bits, int request_bits,
--		 int pool_entropy, int input_entropy),
--
--	TP_ARGS(pool_name, xfer_bits, request_bits, pool_entropy,
--		input_entropy),
--
--	TP_STRUCT__entry(
--		__field( const char *,	pool_name		)
--		__field(	  int,	xfer_bits		)
--		__field(	  int,	request_bits		)
--		__field(	  int,	pool_entropy		)
--		__field(	  int,	input_entropy		)
--	),
--
--	TP_fast_assign(
--		__entry->pool_name	= pool_name;
--		__entry->xfer_bits	= xfer_bits;
--		__entry->request_bits	= request_bits;
--		__entry->pool_entropy	= pool_entropy;
--		__entry->input_entropy	= input_entropy;
--	),
--
--	TP_printk("pool %s xfer_bits %d request_bits %d pool_entropy %d "
--		  "input_entropy %d", __entry->pool_name, __entry->xfer_bits,
--		  __entry->request_bits, __entry->pool_entropy,
--		  __entry->input_entropy)
--);
--
- DECLARE_EVENT_CLASS(random__get_random_bytes,
- 	TP_PROTO(int nbytes, unsigned long IP),
- 
-@@ -253,38 +202,6 @@ DEFINE_EVENT(random__extract_entropy, ex
- 	TP_ARGS(pool_name, nbytes, entropy_count, IP)
- );
- 
--DEFINE_EVENT(random__extract_entropy, extract_entropy_user,
--	TP_PROTO(const char *pool_name, int nbytes, int entropy_count,
--		 unsigned long IP),
--
--	TP_ARGS(pool_name, nbytes, entropy_count, IP)
--);
--
--TRACE_EVENT(random_read,
--	TP_PROTO(int got_bits, int need_bits, int pool_left, int input_left),
--
--	TP_ARGS(got_bits, need_bits, pool_left, input_left),
--
--	TP_STRUCT__entry(
--		__field(	  int,	got_bits		)
--		__field(	  int,	need_bits		)
--		__field(	  int,	pool_left		)
--		__field(	  int,	input_left		)
--	),
--
--	TP_fast_assign(
--		__entry->got_bits	= got_bits;
--		__entry->need_bits	= need_bits;
--		__entry->pool_left	= pool_left;
--		__entry->input_left	= input_left;
--	),
--
--	TP_printk("got_bits %d still_needed_bits %d "
--		  "blocking_pool_entropy_left %d input_entropy_left %d",
--		  __entry->got_bits, __entry->got_bits, __entry->pool_left,
--		  __entry->input_left)
--);
--
- TRACE_EVENT(urandom_read,
- 	TP_PROTO(int got_bits, int pool_left, int input_left),
- 
+ #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 
