@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE008C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 09:01:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D45FC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 09:01:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350422AbiE0I75 (ORCPT
+        id S1350353AbiE0JBX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 04:59:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59860 "EHLO
+        Fri, 27 May 2022 05:01:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350353AbiE0I6i (ORCPT
+        with ESMTP id S1350300AbiE0I6j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 04:58:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93BC1122B65;
-        Fri, 27 May 2022 01:55:02 -0700 (PDT)
+        Fri, 27 May 2022 04:58:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 712F7123884;
+        Fri, 27 May 2022 01:55:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6D841B823DE;
-        Fri, 27 May 2022 08:55:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6578C385A9;
-        Fri, 27 May 2022 08:54:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 029CEB823DD;
+        Fri, 27 May 2022 08:55:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B078C385A9;
+        Fri, 27 May 2022 08:55:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653641700;
-        bh=MaBgi7ZnlxQbkWYfipo7IvEa5D6UF98U73eud8U8f4M=;
+        s=korg; t=1653641703;
+        bh=0ycG1C8R9RfHAaw3cLJ3/vzUv+464neREcYcVWVG6kQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LmsM7Fmr4sIpBiMYHrJb5VIi59IQodm7uwQeNrzvJFnjAN9GpTqUCkR4NKZ4B1Ol/
-         yXVYjy1IaUkbP2XEFuS1ziZMKudC9Jc+lM/dKnxvbTuvwzvdgU/Ld4eQtYdW1G9ec6
-         7jJ5B+3hFchspew3uI/8cZcq69Oot2TlDNGhtR+s=
+        b=JPONJSJ9ZVopTqZ/QzVYyk+bCTd3kIPiDGnYdF/3s34v28gii25ivJ0TigzX/MaVB
+         EWqOoH+4xPADhJv1WPdfUkZOsi5T+TtyNqg+QyqPu9ZUWARZpPviaK0nS06APoHAUO
+         bgWuAwfW9sMPiQhFWkOBrmzcfP2jVacIhvGhCjaM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jens Axboe <axboe@kernel.dk>,
-        Al Viro <viro@zeniv.linux.org.uk>,
+        stable@vger.kernel.org,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Jann Horn <jannh@google.com>,
+        Eric Biggers <ebiggers@google.com>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.18 43/47] random: convert to using fops->write_iter()
-Date:   Fri, 27 May 2022 10:50:23 +0200
-Message-Id: <20220527084808.407340154@linuxfoundation.org>
+Subject: [PATCH 5.17 021/111] random: zero buffer after reading entropy from userspace
+Date:   Fri, 27 May 2022 10:48:53 +0200
+Message-Id: <20220527084822.362277500@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084801.223648383@linuxfoundation.org>
-References: <20220527084801.223648383@linuxfoundation.org>
+In-Reply-To: <20220527084819.133490171@linuxfoundation.org>
+References: <20220527084819.133490171@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,148 +52,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jens Axboe <axboe@kernel.dk>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 22b0a222af4df8ee9bb8e07013ab44da9511b047 upstream.
+commit 7b5164fb1279bf0251371848e40bae646b59b3a8 upstream.
 
-Now that the read side has been converted to fix a regression with
-splice, convert the write side as well to have some symmetry in the
-interface used (and help deprecate ->write()).
+This buffer may contain entropic data that shouldn't stick around longer
+than needed, so zero out the temporary buffer at the end of write_pool().
 
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-[Jason: cleaned up random_ioctl a bit, require full writes in
- RNDADDENTROPY since it's crediting entropy, simplify control flow of
- write_pool(), and incorporate suggestions from Al.]
-Cc: Al Viro <viro@zeniv.linux.org.uk>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Reviewed-by: Jann Horn <jannh@google.com>
+Reviewed-by: Eric Biggers <ebiggers@google.com>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   67 ++++++++++++++++++++++++++------------------------
- 1 file changed, 35 insertions(+), 32 deletions(-)
+ drivers/char/random.c |   11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -1291,39 +1291,31 @@ static __poll_t random_poll(struct file
- 	return crng_ready() ? EPOLLIN | EPOLLRDNORM : EPOLLOUT | EPOLLWRNORM;
- }
- 
--static int write_pool(const char __user *ubuf, size_t len)
-+static ssize_t write_pool(struct iov_iter *iter)
+@@ -1336,19 +1336,24 @@ static __poll_t random_poll(struct file
+ static int write_pool(const char __user *ubuf, size_t count)
  {
--	size_t block_len;
--	int ret = 0;
+ 	size_t len;
++	int ret = 0;
  	u8 block[BLAKE2S_BLOCK_SIZE];
-+	ssize_t ret = 0;
-+	size_t copied;
  
--	while (len) {
--		block_len = min(len, sizeof(block));
--		if (copy_from_user(block, ubuf, block_len)) {
--			ret = -EFAULT;
--			goto out;
--		}
--		len -= block_len;
--		ubuf += block_len;
--		mix_pool_bytes(block, block_len);
-+	if (unlikely(!iov_iter_count(iter)))
-+		return 0;
-+
-+	for (;;) {
-+		copied = copy_from_iter(block, sizeof(block), iter);
-+		ret += copied;
-+		mix_pool_bytes(block, copied);
-+		if (!iov_iter_count(iter) || copied != sizeof(block))
-+			break;
+ 	while (count) {
+ 		len = min(count, sizeof(block));
+-		if (copy_from_user(block, ubuf, len))
+-			return -EFAULT;
++		if (copy_from_user(block, ubuf, len)) {
++			ret = -EFAULT;
++			goto out;
++		}
+ 		count -= len;
+ 		ubuf += len;
+ 		mix_pool_bytes(block, len);
  		cond_resched();
  	}
  
--out:
- 	memzero_explicit(block, sizeof(block));
--	return ret;
-+	return ret ? ret : -EFAULT;
+-	return 0;
++out:
++	memzero_explicit(block, sizeof(block));
++	return ret;
  }
  
--static ssize_t random_write(struct file *file, const char __user *ubuf,
--			    size_t len, loff_t *ppos)
-+static ssize_t random_write_iter(struct kiocb *kiocb, struct iov_iter *iter)
- {
--	int ret;
--
--	ret = write_pool(ubuf, len);
--	if (ret)
--		return ret;
--
--	return (ssize_t)len;
-+	return write_pool(iter);
- }
- 
- static ssize_t urandom_read_iter(struct kiocb *kiocb, struct iov_iter *iter)
-@@ -1362,9 +1354,8 @@ static ssize_t random_read_iter(struct k
- 
- static long random_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
- {
--	int size, ent_count;
- 	int __user *p = (int __user *)arg;
--	int retval;
-+	int ent_count;
- 
- 	switch (cmd) {
- 	case RNDGETENTCNT:
-@@ -1381,20 +1372,32 @@ static long random_ioctl(struct file *f,
- 			return -EINVAL;
- 		credit_init_bits(ent_count);
- 		return 0;
--	case RNDADDENTROPY:
-+	case RNDADDENTROPY: {
-+		struct iov_iter iter;
-+		struct iovec iov;
-+		ssize_t ret;
-+		int len;
-+
- 		if (!capable(CAP_SYS_ADMIN))
- 			return -EPERM;
- 		if (get_user(ent_count, p++))
- 			return -EFAULT;
- 		if (ent_count < 0)
- 			return -EINVAL;
--		if (get_user(size, p++))
-+		if (get_user(len, p++))
-+			return -EFAULT;
-+		ret = import_single_range(WRITE, p, len, &iov, &iter);
-+		if (unlikely(ret))
-+			return ret;
-+		ret = write_pool(&iter);
-+		if (unlikely(ret < 0))
-+			return ret;
-+		/* Since we're crediting, enforce that it was all written into the pool. */
-+		if (unlikely(ret != len))
- 			return -EFAULT;
--		retval = write_pool((const char __user *)p, size);
--		if (retval < 0)
--			return retval;
- 		credit_init_bits(ent_count);
- 		return 0;
-+	}
- 	case RNDZAPENTCNT:
- 	case RNDCLEARPOOL:
- 		/* No longer has any effect. */
-@@ -1420,7 +1423,7 @@ static int random_fasync(int fd, struct
- 
- const struct file_operations random_fops = {
- 	.read_iter = random_read_iter,
--	.write = random_write,
-+	.write_iter = random_write_iter,
- 	.poll = random_poll,
- 	.unlocked_ioctl = random_ioctl,
- 	.compat_ioctl = compat_ptr_ioctl,
-@@ -1430,7 +1433,7 @@ const struct file_operations random_fops
- 
- const struct file_operations urandom_fops = {
- 	.read_iter = urandom_read_iter,
--	.write = random_write,
-+	.write_iter = random_write_iter,
- 	.unlocked_ioctl = random_ioctl,
- 	.compat_ioctl = compat_ptr_ioctl,
- 	.fasync = random_fasync,
+ static ssize_t random_write(struct file *file, const char __user *buffer,
 
 
