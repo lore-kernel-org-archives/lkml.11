@@ -2,73 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A891C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 13:05:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B70F7C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 13:10:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352380AbiE0NF4 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 09:05:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52076 "EHLO
+        id S241521AbiE0NKK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 09:10:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349877AbiE0NFt (ORCPT
+        with ESMTP id S1352275AbiE0NKF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 09:05:49 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96CF95DBEC
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 06:05:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
-        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
-        Resent-Cc:Resent-Message-ID; bh=pglHjp1be88ovPoKqF2KdA8KHzjD+SK0osh4u3fcrwM=;
-        t=1653656747; x=1654866347; b=IX/KTzNroAyX0zjY5oTOIZLXj6279Vt+fsSPgBjHqBqPvUN
-        4L0068edISA25tpqUZCPqGSMb1ZcltVT7hGYCXw4o0+kFt21VtMO1/QVGyh6o9aqIYaoeDpl6maLJ
-        OS7K1uNvkhh/5DzIGvbLicndzD0cnKVLa/Wkz22lJTzqoy/JSlpECLZ3DoWVozZp+5AdHCAx2vGHT
-        z552yp9vQedvPnW3FDIi5t6eih57uxqe3/m285W1H6PQyd/3FjhZe5QfHymaG0TdeMgkeM/U1TuNu
-        Z34ASbzlZjiF4BIlsDegnRjb8FzXvC2y4oHWabsIcd9ceYoOyskRMW1d5hOE2KEQ==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.95)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1nuZeq-00636Z-PL;
-        Fri, 27 May 2022 15:05:36 +0200
-Message-ID: <e2339dcea553f9121f2d3aad29f7428c2060f25f.camel@sipsolutions.net>
+        Fri, 27 May 2022 09:10:05 -0400
+Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3A29122B66
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 06:10:03 -0700 (PDT)
+Received: by mail-lj1-x229.google.com with SMTP id 1so4890636ljp.8
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 06:10:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=SPCeKo76snNBaZflfILsWsg+w+6SDoLhW+Bf3h1esco=;
+        b=EgU6cO2MCsWQ3U9+SJovGeo8nu/gZZvKHrNMSr9tHG2MiwhH5YDSfb21co30HxxWhN
+         zq5Yh57eUTtPkztDWsWwlF0SsQHnAgngAv5zFCFeR4Y6xZhSM1FhnEUVbeXQimhHV9V+
+         sbDEClhd8iLvrTaMNgNg6mrJMpkuytdKVoRbBa+nomUh4ws3rTg/UxSePZIRIQrJzzl7
+         s8dhsMh8M996+hm8mM3eh1AaUK7sBbWANiczyt7XOXvMx5EBkWJ+FgQKI5usj5NCdArS
+         0CJLY73+5a2p7wipXrQTpRYqQARNmzgTuzVwf9B19Teu0O3XD/3UBjrMRYWaRF4CArK7
+         4Kfw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=SPCeKo76snNBaZflfILsWsg+w+6SDoLhW+Bf3h1esco=;
+        b=w5lmki2cPpO+FpoAYEtROwcUw1L7Oz6DC9z3dSX/RBOnkdnMIAyNFX5YSPFbmvQfLs
+         w0iCHNDOUH+H2pWElJ+SDpI1WTvY8sN3lNEf3N7uaKRtxaRd+S6cu6n2OQpVR4lV10ki
+         MmuhPIjLPt7ySLWNa+J/WMPYOsYVek/u9dhvjwmmwYB9sLFTqIeQGOyln4VtfTM2C7lB
+         CZFqWeQZ2fc/q42bXExGOVfGFVBiNxpOrT8HLP7JOW81Zo/puRWTr+T5IeEAPTRoc+NR
+         0dj0uX69BfDCumLZPF2XpA/OgfL3VepC4Qlqr0nLwc6HuVIZkizv2jAWdWAnDXO7FGio
+         AcTA==
+X-Gm-Message-State: AOAM530AFKwZMKLfkFWqAvemnSoUlADtMnQFrCFQQMYmez64cpHnAnxd
+        +cuq1vw925Wi6PZnc2AwJw2evJbCIaxiHiv/x9ZDbQ==
+X-Google-Smtp-Source: ABdhPJxa897czqy8wh91rT78lxnjMja10GdJDTyzo0KIWH/laQKH/u7ZOU0aRbn3PuOk2dtYQK5Zcjp9BtTDBKBTBWc=
+X-Received: by 2002:a2e:9696:0:b0:253:edca:d93c with SMTP id
+ q22-20020a2e9696000000b00253edcad93cmr14234693lji.92.1653657001495; Fri, 27
+ May 2022 06:10:01 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220525111756.GA15955@axis.com> <20220526010111.755166-1-davidgow@google.com>
+ <e2339dcea553f9121f2d3aad29f7428c2060f25f.camel@sipsolutions.net>
+In-Reply-To: <e2339dcea553f9121f2d3aad29f7428c2060f25f.camel@sipsolutions.net>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Fri, 27 May 2022 15:09:50 +0200
+Message-ID: <CACT4Y+ZVrx9VudKV5enB0=iMCBCEVzhCAu_pmxBcygBZP_yxfg@mail.gmail.com>
 Subject: Re: [RFC PATCH v3] UML: add support for KASAN under x86_64
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     David Gow <davidgow@google.com>,
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     David Gow <davidgow@google.com>,
         Vincent Whitchurch <vincent.whitchurch@axis.com>,
         Patricia Alfonso <trishalfonso@google.com>,
         Jeff Dike <jdike@addtoit.com>,
         Richard Weinberger <richard@nod.at>,
         anton.ivanov@cambridgegreys.com,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Brendan Higgins <brendanhiggins@google.com>
-Cc:     kasan-dev <kasan-dev@googlegroups.com>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        kasan-dev <kasan-dev@googlegroups.com>,
         linux-um@lists.infradead.org, LKML <linux-kernel@vger.kernel.org>,
         Daniel Latypov <dlatypov@google.com>
-Date:   Fri, 27 May 2022 15:05:35 +0200
-In-Reply-To: <20220526010111.755166-1-davidgow@google.com>
-References: <20220525111756.GA15955@axis.com>
-         <20220526010111.755166-1-davidgow@google.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.1 (3.44.1-1.fc36) 
-MIME-Version: 1.0
-X-malware-bazaar: not-scanned
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-05-25 at 18:01 -0700, David Gow wrote:
-> From: Patricia Alfonso <trishalfonso@google.com>
->=20
-> Make KASAN run on User Mode Linux on x86_64.
+On Fri, 27 May 2022 at 15:05, Johannes Berg <johannes@sipsolutions.net> wrote:
+>
+> On Wed, 2022-05-25 at 18:01 -0700, David Gow wrote:
+> > From: Patricia Alfonso <trishalfonso@google.com>
+> >
+> > Make KASAN run on User Mode Linux on x86_64.
+>
+> FWIW, I just added this to my virtual lab which I use as CI tests, and
+> it immediately found a use-after-free bug in mac80211!
+>
+> I did note (this is more for kasan-dev@) that the "freed by" is fairly
+> much useless when using kfree_rcu(), it might be worthwhile to annotate
+> that somehow, so the stack trace is recorded by kfree_rcu() already,
+> rather than just showing the RCU callback used for that.
 
-FWIW, I just added this to my virtual lab which I use as CI tests, and
-it immediately found a use-after-free bug in mac80211!
-
-I did note (this is more for kasan-dev@) that the "freed by" is fairly
-much useless when using kfree_rcu(), it might be worthwhile to annotate
-that somehow, so the stack trace is recorded by kfree_rcu() already,
-rather than just showing the RCU callback used for that.
-
-johannes
+KASAN is doing it for several years now, see e.g.:
+https://groups.google.com/g/syzkaller-bugs/c/eTW9zom4O2o/m/_v7cOo2RFwAJ
