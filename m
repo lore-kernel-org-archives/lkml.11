@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB110C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:11:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79C20C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:11:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352928AbiE0MJ6 (ORCPT
+        id S1352976AbiE0MKE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 08:09:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56490 "EHLO
+        Fri, 27 May 2022 08:10:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353289AbiE0L4W (ORCPT
+        with ESMTP id S1353365AbiE0L40 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:56:22 -0400
+        Fri, 27 May 2022 07:56:26 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D776913C0BB;
-        Fri, 27 May 2022 04:50:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AD94F0E;
+        Fri, 27 May 2022 04:51:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6B1FE61D56;
-        Fri, 27 May 2022 11:50:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7663FC385A9;
-        Fri, 27 May 2022 11:50:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D577F61DCB;
+        Fri, 27 May 2022 11:51:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E32D1C34100;
+        Fri, 27 May 2022 11:51:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653652231;
-        bh=t+CWp4gJ78L2N63BE4YI9JQVYhLl6AuUO2Wxjs1ljEU=;
+        s=korg; t=1653652300;
+        bh=YAaAnfdN5DGX6izEPZPLbxRmKyDvGykDk8xyS2lO+OE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a5fXfR3KIL7N//1rhonICF5FIK/LjEXrHNoHOOn6MdJb/LWJUfMYpOzSApY+ORP2O
-         bYGnQ8yp5xhtcu2O6y2lEHJhKZo2xfA1bv5HKhQVqDZv4hO9aFaE3mQLEi8fbGnDqE
-         mbC3kFj0CvvXos2vG1OBMlXHrwC06cJmAXjRzg8M=
+        b=kZFcN63ofW0dVQb0XsYRQWu+WcagdtVjl2VG/Ecj37G04vTU8mwQZ1+ZRiNCYrGnK
+         1iGkA/QowVl2GdjJjdJjktSBMsQVXkplE6pk1KA84TL6xKSIe1fJmLvdWc80vzmah+
+         fwiTJ8qYXlKrQd/cQlTKmDnd6AFg2Z92dYNjjX3Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Biggers <ebiggers@kernel.org>,
-        Eric Biggers <ebiggers@google.com>,
+        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Arnd Bergmann <arnd@arndb.de>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.10 119/163] random: document crng_fast_key_erasure() destination possibility
-Date:   Fri, 27 May 2022 10:49:59 +0200
-Message-Id: <20220527084844.606058923@linuxfoundation.org>
+Subject: [PATCH 5.10 131/163] arm: use fallback for random_get_entropy() instead of zero
+Date:   Fri, 27 May 2022 10:50:11 +0200
+Message-Id: <20220527084846.386459325@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
 References: <20220527084828.156494029@linuxfoundation.org>
@@ -52,42 +53,34 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 8717627d6ac53251ee012c3c7aca392f29f38a42 upstream.
+commit ff8a8f59c99f6a7c656387addc4d9f2247d75077 upstream.
 
-This reverts 35a33ff3807d ("random: use memmove instead of memcpy for
-remaining 32 bytes"), which was made on a totally bogus basis. The thing
-it was worried about overlapping came from the stack, not from one of
-its arguments, as Eric pointed out.
+In the event that random_get_entropy() can't access a cycle counter or
+similar, falling back to returning 0 is really not the best we can do.
+Instead, at least calling random_get_entropy_fallback() would be
+preferable, because that always needs to return _something_, even
+falling back to jiffies eventually. It's not as though
+random_get_entropy_fallback() is super high precision or guaranteed to
+be entropic, but basically anything that's not zero all the time is
+better than returning zero all the time.
 
-But the fact that this confusion even happened draws attention to the
-fact that it's a bit non-obvious that the random_data parameter can
-alias chacha_state, and in fact should do so when the caller can't rely
-on the stack being cleared in a timely manner. So this commit documents
-that.
-
-Reported-by: Eric Biggers <ebiggers@kernel.org>
-Reviewed-by: Eric Biggers <ebiggers@google.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    7 +++++++
- 1 file changed, 7 insertions(+)
+ arch/arm/include/asm/timex.h |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -320,6 +320,13 @@ static void crng_reseed(void)
-  * the resultant ChaCha state to the user, along with the second
-  * half of the block containing 32 bytes of random data that may
-  * be used; random_data_len may not be greater than 32.
-+ *
-+ * The returned ChaCha state contains within it a copy of the old
-+ * key value, at index 4, so the state should always be zeroed out
-+ * immediately after using in order to maintain forward secrecy.
-+ * If the state cannot be erased in a timely manner, then it is
-+ * safer to set the random_data parameter to &chacha_state[4] so
-+ * that this function overwrites it before returning.
-  */
- static void crng_fast_key_erasure(u8 key[CHACHA_KEY_SIZE],
- 				  u32 chacha_state[CHACHA_STATE_WORDS],
+--- a/arch/arm/include/asm/timex.h
++++ b/arch/arm/include/asm/timex.h
+@@ -11,5 +11,6 @@
+ 
+ typedef unsigned long cycles_t;
+ #define get_cycles()	({ cycles_t c; read_current_timer(&c) ? 0 : c; })
++#define random_get_entropy() (((unsigned long)get_cycles()) ?: random_get_entropy_fallback())
+ 
+ #endif
 
 
