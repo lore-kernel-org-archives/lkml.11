@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6195FC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F164C433FE
 	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:05:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349053AbiE0IFE (ORCPT
+        id S1348673AbiE0IEz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 04:05:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55316 "EHLO
+        Fri, 27 May 2022 04:04:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244703AbiE0IEs (ORCPT
+        with ESMTP id S1348803AbiE0IEo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 04:04:48 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A3417FF592
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 01:04:47 -0700 (PDT)
+        Fri, 27 May 2022 04:04:44 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EDFA1FD37A
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 01:04:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653638686;
+        s=mimecast20190719; t=1653638681;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=329kwVYlUvTHO0LeA/plITFrudtBaaBxKIDFkDJlGH8=;
-        b=FkVvh/Cz+klKl0bBbWL+d8VwyMJLgHG+2q8s68T6StDD4BqxjS3Eaf/NMrgsc0V3eFzhdJ
-        uwjvQ83cOOJp90xZjJ7+xOPcW4BfV8+NA1x6Os9wFfe/ElrMS/0R1IxGpiRexIOOFOwrD6
-        btkPEgZW2FF4d+n6uhe4odQI+UKlpV0=
+        bh=tSmHChhkeGhveeNkT0xXj48o/ZM3uoGgnCvlBhi+Jhs=;
+        b=d1qOsHqUhIPPTLPRx02nn35nb+HaeqBhC0XSRGZ5xCgsG15tWQO2pRCzyZpC3DQgjepPG4
+        WVvuK7NL0H+mSYrflKNdVN1NXKFtJoqMKpBuUUMJBKovn6Ulz+zpOLLoooodFF3/08Gr8N
+        GPwNaH/tFx7c97oM1VwnMg+QWHCbBQg=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-216-dMEdTzJWOrCpZMOLi9hD9A-1; Fri, 27 May 2022 04:04:41 -0400
-X-MC-Unique: dMEdTzJWOrCpZMOLi9hD9A-1
+ us-mta-255-0jWaW6A2OoOHPARON6hnyQ-1; Fri, 27 May 2022 04:04:25 -0400
+X-MC-Unique: 0jWaW6A2OoOHPARON6hnyQ-1
 Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id D2FAD811E76;
-        Fri, 27 May 2022 08:04:40 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id F1E26858F0C;
+        Fri, 27 May 2022 08:04:24 +0000 (UTC)
 Received: from gshan.redhat.com (ovpn-12-91.pek2.redhat.com [10.72.12.91])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 87E762026D64;
-        Fri, 27 May 2022 08:04:34 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id C3DA62026D64;
+        Fri, 27 May 2022 08:04:14 +0000 (UTC)
 From:   Gavin Shan <gshan@redhat.com>
 To:     kvmarm@lists.cs.columbia.edu
 Cc:     maz@kernel.org, linux-kernel@vger.kernel.org, eauger@redhat.com,
@@ -47,9 +47,9 @@ Cc:     maz@kernel.org, linux-kernel@vger.kernel.org, eauger@redhat.com,
         james.morse@arm.com, mark.rutland@arm.com,
         shannon.zhaosl@gmail.com, shijie@amperemail.onmicrosoft.com,
         shan.gavin@gmail.com
-Subject: [PATCH v7 07/22] KVM: arm64: Support EVENT_UNREGISTER hypercall
-Date:   Fri, 27 May 2022 16:02:38 +0800
-Message-Id: <20220527080253.1562538-8-gshan@redhat.com>
+Subject: [PATCH v7 05/22] KVM: arm64: Support EVENT_{ENABLE, DISABLE} hypercall
+Date:   Fri, 27 May 2022 16:02:36 +0800
+Message-Id: <20220527080253.1562538-6-gshan@redhat.com>
 In-Reply-To: <20220527080253.1562538-1-gshan@redhat.com>
 References: <20220527080253.1562538-1-gshan@redhat.com>
 MIME-Version: 1.0
@@ -60,29 +60,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This supports EVENT_UNREGISTER hypercall. No event will be delivered
-to guest after it's unregistered.
+This supports EVENT_{ENABLE, DISABLE} hypercall. The event can be
+pending, but never be delivered to guest until it's enabled.
 
-  * Reject if the event hasn't been registered.
+  * The request is rejected if the event isn't registered or pending
+    for unregistration.
 
-  * Return SDEI_PENDING if the event handler is running.
-
-  * The event is disabled automatically on unregistration.
+  * When the event is enabled, KVM_REQ_SDEI is set to so that the
+    event can be delivered to guest, if it has been pending. The
+    delivery logic will be implemented in subsequent patches. For
+    now, it's nothing other than a flag.
 
 Signed-off-by: Gavin Shan <gshan@redhat.com>
 ---
- arch/arm64/kvm/sdei.c | 36 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 36 insertions(+)
+ arch/arm64/include/asm/kvm_host.h |  1 +
+ arch/arm64/kvm/sdei.c             | 33 +++++++++++++++++++++++++++++++
+ 2 files changed, 34 insertions(+)
 
+diff --git a/arch/arm64/include/asm/kvm_host.h b/arch/arm64/include/asm/kvm_host.h
+index c9d053c2569e..79a0043a908c 100644
+--- a/arch/arm64/include/asm/kvm_host.h
++++ b/arch/arm64/include/asm/kvm_host.h
+@@ -47,6 +47,7 @@
+ #define KVM_REQ_RELOAD_GICv4	KVM_ARCH_REQ(4)
+ #define KVM_REQ_RELOAD_PMU	KVM_ARCH_REQ(5)
+ #define KVM_REQ_SUSPEND		KVM_ARCH_REQ(6)
++#define KVM_REQ_SDEI		KVM_ARCH_REQ(7)
+ 
+ #define KVM_DIRTY_LOG_MANUAL_CAPS   (KVM_DIRTY_LOG_MANUAL_PROTECT_ENABLE | \
+ 				     KVM_DIRTY_LOG_INITIALLY_SET)
 diff --git a/arch/arm64/kvm/sdei.c b/arch/arm64/kvm/sdei.c
-index 2fec2dcd02b0..b44ab302732d 100644
+index 40c2d585470d..a4046e7b21d8 100644
 --- a/arch/arm64/kvm/sdei.c
 +++ b/arch/arm64/kvm/sdei.c
-@@ -85,6 +85,39 @@ static unsigned long event_context(struct kvm_vcpu *vcpu)
- 	return ctxt->regs[param_id];
+@@ -41,6 +41,33 @@ static unsigned long event_register(struct kvm_vcpu *vcpu)
+ 	return SDEI_SUCCESS;
  }
  
-+static unsigned long event_unregister(struct kvm_vcpu *vcpu)
++static unsigned long event_enable(struct kvm_vcpu *vcpu, bool enable)
 +{
 +	struct kvm_sdei_vcpu *vsdei = vcpu->arch.sdei;
 +	unsigned int num = smccc_get_arg(vcpu, 1);
@@ -91,26 +106,20 @@ index 2fec2dcd02b0..b44ab302732d 100644
 +		return SDEI_INVALID_PARAMETERS;
 +
 +	/*
-+	 * Reject if the event isn't registered. It's allowed to
-+	 * unregister event which has been pending for that.
++	 * Reject if the event hasn't been registered or pending
++	 * for unregistration.
 +	 */
-+	if (!test_bit(num, &vsdei->registered)) {
-+		if (test_bit(num, &vsdei->running))
-+			return SDEI_PENDING;
-+		else
-+			return SDEI_DENIED;
++	if (!test_bit(num, &vsdei->registered))
++		return SDEI_DENIED;
++
++	if (enable) {
++		set_bit(num, &vsdei->enabled);
++		if (!(vcpu->arch.flags & KVM_ARM64_SDEI_MASKED) &&
++		    test_bit(num, &vsdei->pending))
++			kvm_make_request(KVM_REQ_SDEI, vcpu);
++	} else {
++		clear_bit(num, &vsdei->enabled);
 +	}
-+
-+	/*
-+	 * The event is disabled automatically on unregistration, even
-+	 * pending for that.
-+	 */
-+	clear_bit(num, &vsdei->enabled);
-+	clear_bit(num, &vsdei->registered);
-+
-+	/* Pending for unreigstration if the event handler is running */
-+	if (test_bit(num, &vsdei->running))
-+		return SDEI_PENDING;
 +
 +	return SDEI_SUCCESS;
 +}
@@ -118,12 +127,15 @@ index 2fec2dcd02b0..b44ab302732d 100644
  int kvm_sdei_call(struct kvm_vcpu *vcpu)
  {
  	struct kvm_sdei_vcpu *vsdei = vcpu->arch.sdei;
-@@ -115,6 +148,9 @@ int kvm_sdei_call(struct kvm_vcpu *vcpu)
- 	case SDEI_1_0_FN_SDEI_EVENT_CONTEXT:
- 		ret = event_context(vcpu);
+@@ -62,6 +89,12 @@ int kvm_sdei_call(struct kvm_vcpu *vcpu)
+ 	case SDEI_1_0_FN_SDEI_EVENT_REGISTER:
+ 		ret = event_register(vcpu);
  		break;
-+	case SDEI_1_0_FN_SDEI_EVENT_UNREGISTER:
-+		ret = event_unregister(vcpu);
++	case SDEI_1_0_FN_SDEI_EVENT_ENABLE:
++		ret = event_enable(vcpu, true);
++		break;
++	case SDEI_1_0_FN_SDEI_EVENT_DISABLE:
++		ret = event_enable(vcpu, false);
 +		break;
  	default:
  		ret = SDEI_NOT_SUPPORTED;
