@@ -2,139 +2,244 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0D86C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 09:30:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A015C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 09:30:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348941AbiE0JaU (ORCPT
+        id S1350593AbiE0Ja2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 05:30:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50540 "EHLO
+        Fri, 27 May 2022 05:30:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232733AbiE0JaT (ORCPT
+        with ESMTP id S1350555AbiE0JaX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 05:30:19 -0400
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55596B7D2;
-        Fri, 27 May 2022 02:30:18 -0700 (PDT)
-Received: by mail-pf1-x431.google.com with SMTP id f21so3880280pfa.3;
-        Fri, 27 May 2022 02:30:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Kb85+2Sd4OjNt+4J6/Cs/eNfwpCKX3GUphCee7XFrA0=;
-        b=dRA5kKlB4Vxde9Kn5agHxoJaXKC90MjU4QDOC+rZq4NLGVzOcNe9EKFibNOB1rPk5T
-         nl2pRDtCiHcdTQDz88k04+KJds+1OdZBIf2XJmViwOYUqIZ/MtRM4xzL2WIpzWVPKoWg
-         a9ahqPsBfneglleaPSt8iRTCBqKiN4QoA4reGENx5hugwB4qrUNK8a5KDQy2LqTysWgy
-         80ns+RyQVtTuv1KGWAOXqtEqGM8J/s4uGOchCsP4s9rgyu79tQyEFIVBNKM1PzI58bhu
-         pfIFqSkrKGl21TtR/UZkJzAnpiOakY0kE3v1ZltbS5HwUDlbxfr/qbNP46ItsiNi+BLF
-         wW9A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Kb85+2Sd4OjNt+4J6/Cs/eNfwpCKX3GUphCee7XFrA0=;
-        b=cXM0D5DKOTpzyr3GB5FQbj8P6c5gd09RnaPLp05v/vT8/ga1QKpPGOFJdXqiMtTT/z
-         UiNNsy5I1HRqUb7zv8eW66Lxjms4OmSQUKHlHDE05SVwlMPv3jdwuXhTEB2Znzqn6uDN
-         SF68BeYqyX4dKL3/K2aRKF8FJKW3xtGYaCPG8n0RAfcTP4PqZeM2W0/MOzOZg3LGDQYX
-         c4OTumAvSZP13n1d/Hd9mPmlXjoJYxIFKM70/nfLb5dx+3nI6z/BZaDNMbH4d5H/Z5br
-         yn2tm8n4bvsnbbyDX7ogS7EA4EKk9BkZMdOVIa5GkGTTt81ffx3AeLf4HadGOKADRAPP
-         iG0g==
-X-Gm-Message-State: AOAM533XPBZjrPyiSTkHfuYCn9j0af51CZx212wIbA9qUJoM18iQRI3F
-        STq9q2tWJ15yZFnWn6SK14/Pzr8a0ks=
-X-Google-Smtp-Source: ABdhPJxv3qbdZEQ+ZKYas5PE5Hw73EwjZbafG3koZF/0HUt4zVxZ1LvuI7uC/m+PGHV93tlQTJuj4Q==
-X-Received: by 2002:a65:6a15:0:b0:3f6:1815:f540 with SMTP id m21-20020a656a15000000b003f61815f540mr35560176pgu.45.1653643817739;
-        Fri, 27 May 2022 02:30:17 -0700 (PDT)
-Received: from [192.168.43.80] (subs32-116-206-28-49.three.co.id. [116.206.28.49])
-        by smtp.gmail.com with ESMTPSA id k71-20020a63844a000000b003db7de758besm3042313pgd.5.2022.05.27.02.30.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 27 May 2022 02:30:16 -0700 (PDT)
-Message-ID: <4ef24dae-bad0-9641-7eb9-7d8207d198be@gmail.com>
-Date:   Fri, 27 May 2022 16:30:11 +0700
+        Fri, 27 May 2022 05:30:23 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 611B81059C8
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 02:30:22 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id ED58C1F967;
+        Fri, 27 May 2022 09:30:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1653643820; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type;
+        bh=lChZ3kfPqOiQIGBbbKOf5O0euzOQVluYptAu5MuJjmI=;
+        b=Lo4mTgACrwbxXdGNT/W10C9bRQnbNP+3IlsK9S1gaGC4gYgwKOAGx7aJrbbO+XzDJUpEgJ
+        ESqo0OC2Rnax6bZ0QWWjN+IF5oWVwFL5TcHbEYoTJZWxMYFA57j6yRm0dIZhw2Lsb0bHyh
+        jhQuxFQ5wORG0yc3kjNZwgd2nTS99NI=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1653643820;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type;
+        bh=lChZ3kfPqOiQIGBbbKOf5O0euzOQVluYptAu5MuJjmI=;
+        b=XpHwPSiLRvXuW5MIh3rkqaUQURfvmJ0ulgL1CAoHYh410ePKZcojrFZ037MTuqbAefw3rI
+        QQlIOqi+A5+pbUBg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 9CA7F139C4;
+        Fri, 27 May 2022 09:30:20 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id QNCiJCyakGK1VAAAMHmgww
+        (envelope-from <chrubis@suse.cz>); Fri, 27 May 2022 09:30:20 +0000
+Date:   Fri, 27 May 2022 11:32:27 +0200
+From:   Cyril Hrubis <chrubis@suse.cz>
+To:     ltp@lists.linux.it, linux-kernel@vger.kernel.org,
+        libc-alpha@sourceware.org
+Cc:     lwn@lwn.net, akpm@linux-foundation.org,
+        torvalds@linux-foundation.org
+Subject: [ANNOUNCE] The Linux Test Project has been released for MAY 2022 
+Message-ID: <YpCaq7VEb6d5HPBF@yuki>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH net] net/ipv6: Change accept_unsolicited_na to
- accept_untracked_na
-Content-Language: en-US
-To:     Arun Ajith S <aajith@arista.com>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org, dsahern@kernel.org,
-        yoshfuji@linux-ipv6.org, kuba@kernel.org, pabeni@redhat.com,
-        gilligan@arista.com, noureddine@arista.com, gk@arista.com
-References: <20220527073111.14336-1-aajith@arista.com>
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-In-Reply-To: <20220527073111.14336-1-aajith@arista.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/27/22 14:31, Arun Ajith S wrote:
-> This change expands the current implementation to match the RFC. The
-> sysctl knob is also renamed to accept_untracked_na to better reflect the
-> implementation.
->
+Good news everyone,
 
-Say in imperative, "Expand and rename accept_unsolicited na to
-accept_untracked_na" in both commit/patch subject and message.
+the Linux Test Project test suite stable release for *May 2022* has been
+released.
 
-> -accept_unsolicited_na - BOOLEAN
-> +accept_untracked_na - BOOLEAN
->  	Add a new neighbour cache entry in STALE state for routers on receiving an
-> -	unsolicited neighbour advertisement with target link-layer address option
-> -	specified. This is as per router-side behavior documented in RFC9131.
-> -	This has lower precedence than drop_unsolicited_na.
-> +	neighbour advertisement with target link-layer address option specified
-> +	if a corresponding entry is not already present.
-> +	This is as per router-side behavior documented in RFC9131.
->  
-> -	 ====   ======  ======  ==============================================
-> -	 drop   accept  fwding                   behaviour
-> -	 ----   ------  ------  ----------------------------------------------
-> -	    1        X       X  Drop NA packet and don't pass up the stack
-> -	    0        0       X  Pass NA packet up the stack, don't update NC
-> -	    0        1       0  Pass NA packet up the stack, don't update NC
-> -	    0        1       1  Pass NA packet up the stack, and add a STALE
-> -	                        NC entry
-> -	 ====   ======  ======  ==============================================
-> +	This has lower precedence than drop_unsolicited_na.
->  
+Since the last release 298 patches by 25 authors were merged.
 
-I think you should have made similar logical expansion of drop_unsolicited_na to
-drop_untracked_na. Otherwise, ...
+Patch review is what most of the projects struggle with and LTP is no
+different. If you can spare some effort helping with the patch review is more
+than welcomed.
 
->  	/* RFC 9131 updates original Neighbour Discovery RFC 4861.
-> -	 * An unsolicited NA can now create a neighbour cache entry
-> -	 * on routers if it has Target LL Address option.
-> +	 * NAs with Target LL Address option without a corresponding
-> +	 * entry in the neighbour cache can now create a STALE neighbour
-> +	 * cache entry on routers.
->  	 *
-> -	 * drop   accept  fwding                   behaviour
-> -	 * ----   ------  ------  ----------------------------------------------
-> -	 *    1        X       X  Drop NA packet and don't pass up the stack
-> -	 *    0        0       X  Pass NA packet up the stack, don't update NC
-> -	 *    0        1       0  Pass NA packet up the stack, don't update NC
-> -	 *    0        1       1  Pass NA packet up the stack, and add a STALE
-> -	 *                          NC entry
-> -	 * Note that we don't do a (daddr == all-routers-mcast) check.
-> +	 *   entry accept  fwding  solicited        behaviour
-> +	 * ------- ------  ------  ---------    ----------------------
-> +	 * present      X       X         0     Set state to STALE
-> +	 * present      X       X         1     Set state to REACHABLE
-> +	 *  absent      0       X         X     Do nothing
-> +	 *  absent      1       0         X     Do nothing
-> +	 *  absent      1       1         X     Add a new STALE entry
->  	 */
+NOTABLE CHANGES
+===============
 
-The Documentation/ diff above drops behavior table but in the code comment
-it is updated. Why didn't update in Documentation/ instead?
+* New tests
+  - kvm_pagefault01: aka CVE-2021-38198
+  - fcntl39: test for DN_RENAME (dnotify)
+  - io_control01: first cgroup IO controller test
+  - keyctl09: test encrypted keys with provided decrypted data
+  - memcontrol03, memcontrol04: tests that cgroup memory is partitioned correctly under pressure
+  - setsockopt09: regression test for use-after-free in prb_retire_rx_blk_timer_expired()
+  - setsockopt09: regression test for double free of rx_owner_map aka CVE-2021-22600
+  - pty07: regression test for use-after-free in vt_ioctl()
+  - pty06: regression test for VT_DISALLOCATE freeing in-use virtual console
+  - pidfd_getfd01 basic functional test
+  - pidfd_getfd02 basic error test
+  - pidfd_open04 test with PIDFD_NONBLOCK flag
+  - futex_waitv01 error tests
+  - futex_waitv02 basic functional test with private memory
+  - futex_waitv03 basic functional test with shared memory
+  - inotify11: test opening files after receiving IN_DELETE
+               regression test for a37d9a17f099 (fsnotify: invalidate dcache before IN_DELETE event)
+  - statx09 test for STATX_ATTR_VERITY
+  - wqueue09 tests WATCH_META_LOSS_NOTIFICATION event
+  - wqueue08 tests WATCH_META_REMOVAL_NOTIFICATION event
+  - wqueue07 tests NOTIFY_KEY_SETATTR event
+  - wqueue06 tests NOTIFY_KEY_CLEARED event
+  - wqueue05 tests NOTIFY_KEY_INVALIDATED event
+  - wqueue04 tests NOTIFY_KEY_LINKED event
+  - wqueue03 tests NOTIFY_KEY_REVOKED event
+  - wqueue02 tests NOTIFY_KEY_UNLINKED event
+  - wqueue01 tests NOTIFY_KEY_UPDATED event
 
-And my nitpick: for consistency, prefer en-US words over en-UK or mixed
-varieties when writing (s/behaviour/behavior/gc, s/neighbour/neighbor/gc).
+* Increased coverage
+  - fanotify14, fanotify16: Add tests for FAN_REPORT_TARGET_FID and FAN_RENAME
+  - futex_waitv01: Add test verifies EINVAL for invalid nr_futexes
+  - getcontext01: Test rewritten so that it actually jumps back
+  - fstat02: Validate st_nlink as well
+  - sched_get_priority_max01, sched_get_priority_min01: Add missing policies
+
+* KVM library was written for LTP
+  - a simple library that can spin up a VM and execute payload
+  - see also https://github.com/linux-test-project/ltp/wiki/KVM-Test-API
+
+* The concept of test runtime was introduced
+  - for details see https://people.kernel.org/metan/test-timeout-and-runtime
+
+* Removed tests
+  - syslog tests as these were testing mostly userspace syslog daemon
+    and were broken for most of the syslog daemon implementations
+
+* The test library was fixed to terminate all leftover processes in the case
+  that the main test process dies or exits
+
+* New sparse check for {} terminator for struct arrays in tst_test has been
+  implemented
+
+* Shell library improvements
+  - added support for $TST_FORMAT_DEVICE (.format_device in C API)
+  - preparations for shell API get support for testing on all filesystems (.all_filesystems in C API)
+  - getopts cleanup and changes how is the library sources,
+    which resulted in much simpler library code
+
+* Userns tests were rewritten into the new test API
+
+* Mountns tests were rewritten into the new test API
+
+* 33 tests were rewritten to the new library
+
++ The usual amount of fixes and cleanups
+
+WHAT IS IN THE QUEUE
+====================
+
+In-flight patches include:
+
+- CGroup shell test rewrite that should fix many problems
+
+
+NOTABLE CHANGES IN NETWORK TESTS
+================================
+brought to you by Petr Vorel
+
+* Several fixes (e.g. important nfs_lib: Fix fsid randomisation)
+
+* Ongoing discussion where should be SCTP testsuite home
+
+
+DOWNLOAD AND LINKS
+==================
+
+The latest version of the test-suite contains 3000+ tests for the Linux
+and can be downloaded at:
+
+https://github.com/linux-test-project/ltp/releases/tag/20220527
+
+The project pages as well as GIT repository are hosted on GitHub:
+
+https://github.com/linux-test-project/ltp
+http://linux-test-project.github.io/
+
+If you ever wondered how to write a LTP testcase, don't miss our developer
+documentation at:
+
+https://github.com/linux-test-project/ltp/wiki/Test-Writing-Guidelines
+
+https://github.com/linux-test-project/ltp/wiki/C-Test-API
+
+https://github.com/linux-test-project/ltp/wiki/C-Test-Network-API
+
+https://github.com/linux-test-project/ltp/wiki/Shell-Test-API
+
+https://github.com/linux-test-project/ltp/wiki/C-Test-Case-Tutorial
+
+https://github.com/linux-test-project/ltp/wiki/BuildSystem
+
+Patches, new tests, bugs, comments or questions should go to to our mailing
+list at ltp@lists.linux.it.
+
+CREDITS
+=======
+
+Many thanks to the people contributing to this release:
+
+git shortlog -s -e -n 20220121..
+
+    72  Petr Vorel <pvorel@suse.cz>
+    51  Cyril Hrubis <chrubis@suse.cz>
+    42  Andrea Cervesato <andrea.cervesato@suse.de>
+    22  Li Wang <liwang@redhat.com>
+    21  Richard Palethorpe <rpalethorpe@suse.com>
+    17  Martin Doucha <mdoucha@suse.cz>
+    15  Yang Xu <xuyang2018.jy@fujitsu.com>
+    10  Jan Stancek <jstancek@redhat.com>
+    10  Zhao Gongyi <zhaogongyi@huawei.com>
+     7  Amir Goldstein <amir73il@gmail.com>
+     6  Dai Shili <daisl.fnst@fujitsu.com>
+     6  Bogdan Lezhepekov <blezhepekov@suse.de>
+     4  tangmeng <tangmeng@uniontech.com>
+     2  Chunyu Hu <chuhu@redhat.com>
+     2  Kushal Chand <kushalkataria5@gmail.com>
+     2  xiaoshoukui <xiaoshoukui@ruijie.com.cn>
+     1  Alexander Ivanov <alexander.ivanov@virtuozzo.com>
+     1  Alexander Kanavin <alex@linutronix.de>
+     1  Andrea Arcangeli <aarcange@redhat.com>
+     1  Edward Liaw via ltp <ltp@lists.linux.it>
+     1  Fabrice Fontaine <fontaine.fabrice@gmail.com>
+     1  Pavel Tikhomirov <ptikhomirov@virtuozzo.com>
+     1  Wang Kunfeng via ltp <ltp@lists.linux.it>
+     1  Yael Tzur via ltp <ltp@lists.linux.it>
+     1  ihsinme <ihsinme@gmail.com>
+
+And also thanks to patch reviewers:
+
+git log 20220121.. | grep -Ei '(reviewed|acked)-by:' | sed 's/.*by: //' | sort | uniq -c | sort -n -r
+
+    148 Cyril Hrubis <chrubis@suse.cz>
+    105 Petr Vorel <pvorel@suse.cz>
+     73 Li Wang <liwang@redhat.com>
+     21 Yang Xu <xuyang2018.jy@fujitsu.com>
+     17 Richard Palethorpe <rpalethorpe@suse.com>
+     10 Martin Doucha <mdoucha@suse.cz>
+      6 Jan Stancek <jstancek@redhat.com>
+      1 Waiman Long <longman@redhat.com>
+      1 Jan Kara <jack@suse.cz>
+      1 Gabriel Krisman Bertazi <krisman@collabora.com>
+      1 Andrea Cervesato <andrea.cervesato@suse.de>
+      1 Alexey Kodanev <aleksei.kodanev@bell-sw.com>
 
 -- 
-An old man doll... just what I always wanted! - Clara
+Cyril Hrubis
+chrubis@suse.cz
