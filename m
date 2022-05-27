@@ -2,412 +2,252 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B57ABC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 07:57:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B679C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 07:57:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348685AbiE0H5H (ORCPT
+        id S1348614AbiE0H5P (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 03:57:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47956 "EHLO
+        Fri, 27 May 2022 03:57:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348631AbiE0H4o (ORCPT
+        with ESMTP id S1348724AbiE0H5C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 03:56:44 -0400
-Received: from EUR01-VE1-obe.outbound.protection.outlook.com (mail-eopbgr140055.outbound.protection.outlook.com [40.107.14.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3E13286CC;
-        Fri, 27 May 2022 00:56:27 -0700 (PDT)
+        Fri, 27 May 2022 03:57:02 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2079.outbound.protection.outlook.com [40.107.220.79])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62AC0FC4D4
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 00:56:53 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SksrJB5PROUZNNaUJXZeiGIobgT1GU61/MxKojYQwxTPQn2drAX6pn12hEzFA9/tHM8M110Lo7Q647IWnm8701TiamDGEs8DjxdJ19mOdMu0flvcVKymF6XZgt5wPENRGDcqva3g3QCT9ZzlY59tAxZnkrAnq5S8FBCJciV2H6CE47h5eMrDeDpgEnLhFojhRPBgX709CX20vcvBzNd9GDsPLtPzN9U0no6T7Sp7Ptr+EfW+/jWunlk4G1OOZGKXXGH0J5daRpazCExPD0mI09JI9huppEFJzIcXe/Eige13XUy1K1l0qg4N25ZsdRLxaWCpN0/YcpnsRJ5Y/BbJBA==
+ b=LXjGNHsKRc6IYc5o9ZJe+4jorDBWXakC0LfLCl9twUsMmiXVnP31P44p9D1rxMWqSCavm0lK8AL1JB2006uBtbrBDDvCihNWMh3b6zLExkiGJmaZ6UYAktNXCfVLMsNaGdAvxPEKYcVHLCnsgv3ojcWlDypNrDet3G5zIRYm5VhkBpMHxp/BYp78yzhRQECXeIuSOdcfKalZJR3nP6xJI6IMz1oxbZGrYho1jKlCLTaPSISJLbIzbtyf2aj/Fh5ur8ooWVHe4i2KPwekEtKdtE6TprKBhcEvSV8uMJ9JMoJDczueBA8x0y1E9iAIgMFdXubFOYMErlzEVE1gIPAghg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=qQeBloCpJOl0eK33OGGKc46Vz8dIC1EjwKaUywJZCkk=;
- b=oIV1+7y97c9TG8v+JrGE86BdjFIsO5Lk9ul700yiFfTR1qHNx96Q9p9/wVz5gdx6vJyNkV7srs5tbtrx8DSUZShY0UBP6+UKyuXI3TYT5mECKKPXbM6GPD2CXarsq5T2Olmr8TClmEWcA/H1lyaL5ggbkZvIVxo+U8r/MdfXHn6NVv6YgCBL4j8CxhwRrMhMPO3LTVktk48wM00WA1u6cqL6nNo4/sNO0z27rG7SOqDQK6mnbbv/lIyv9ft8ZzMPlYw/1UfSkrA1BE6O5CEktsdZo11UlSNAqxhtidMgYQfSIOV/xwQxBWpVWSMCEJljV4Mk3/aB1+LxnMF51DxxwA==
+ bh=EGEksX6Lz+OtHCWIZF18baqRLSh7ikC3K1CnQsGGFBg=;
+ b=iN5lKpNauqpHmXdyq8dl/S7PAO+jVqpDhZEylQANumFAlK7GJN/wMwMszeefYjKO5MGM4fNIVlOgPfb8Ulw6WNyhiMnd99ToLhcX8rJYxLc73uasDgrMtIL83j+mTNA6pELsNYrS1moGFUJOBqJng8widCZqvx0xKVNq+lVZV4AB/aVe3KxAsiV4oMdFkoHxrJDRLUBTxmukIMGc8Xlg4WdtysGq1NCGk0Cif4e7wu/YhA2ge/Bjc4cxKOmb7fooindSWh9G1/UWEsrVE2MaAvxsEFF16eWrxtegA3lg7DfDcZF83XovlkNwJj2khjtRVdigM1lGCD8Qi9gRXRfQFA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qQeBloCpJOl0eK33OGGKc46Vz8dIC1EjwKaUywJZCkk=;
- b=IBpJ2E97YgzmeKdbcv3KQcTiM8qEIVNh5YTIk5F1CyKlylEJn87xtgtFUnUJYI2Mnt9/ufSAzdvA7hh5GIGqNBZgIvR7PIx/Q9bqemVzYGc5177XUOBMlMygnsQjud33Ha0C2sjWCKmcvEvhqnaqSdLwE9lZuo34SA+KXpkIkLU=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from AM6PR04MB6341.eurprd04.prod.outlook.com (2603:10a6:20b:d8::14)
- by VI1PR04MB4590.eurprd04.prod.outlook.com (2603:10a6:803:6d::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.13; Fri, 27 May
- 2022 07:56:24 +0000
-Received: from AM6PR04MB6341.eurprd04.prod.outlook.com
- ([fe80::bc48:7565:c619:62c3]) by AM6PR04MB6341.eurprd04.prod.outlook.com
- ([fe80::bc48:7565:c619:62c3%7]) with mapi id 15.20.5293.015; Fri, 27 May 2022
- 07:56:24 +0000
-From:   Ming Qian <ming.qian@nxp.com>
-To:     mchehab@kernel.org, mirela.rabulea@oss.nxp.com,
-        hverkuil-cisco@xs4all.nl
-Cc:     shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
-        festevam@gmail.com, linux-imx@nxp.com, linux-media@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH] media: imx-jpeg: Implement drain using v4l2-mem2mem helpers
-Date:   Fri, 27 May 2022 15:54:37 +0800
-Message-Id: <20220527075437.16882-5-ming.qian@nxp.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527075437.16882-1-ming.qian@nxp.com>
-References: <20220527075437.16882-1-ming.qian@nxp.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SI2PR06CA0007.apcprd06.prod.outlook.com
- (2603:1096:4:186::9) To AM6PR04MB6341.eurprd04.prod.outlook.com
- (2603:10a6:20b:d8::14)
+ bh=EGEksX6Lz+OtHCWIZF18baqRLSh7ikC3K1CnQsGGFBg=;
+ b=nsVO4Qdps8r7j5CdInq+aZw1Eg+oBfDJB+ukUvmOBpFhoZbDrHj2izn3YwI0PAfd+ewtJU3rssdKnQ5jQ+UvWmM7sJ4+b2xSwehN0jEqpJvcD9qOISe3eL1cgdXvQuF0QHmvet7wnWtVgwDAvKxSBVqms1KjydXJ6n9+xoKcX8w=
+Received: from DM5PR12MB2469.namprd12.prod.outlook.com (2603:10b6:4:af::38) by
+ CO6PR12MB5427.namprd12.prod.outlook.com (2603:10b6:5:358::13) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5293.13; Fri, 27 May 2022 07:56:51 +0000
+Received: from DM5PR12MB2469.namprd12.prod.outlook.com
+ ([fe80::95af:3466:5c5f:1202]) by DM5PR12MB2469.namprd12.prod.outlook.com
+ ([fe80::95af:3466:5c5f:1202%2]) with mapi id 15.20.5293.016; Fri, 27 May 2022
+ 07:56:49 +0000
+From:   "Chen, Guchun" <Guchun.Chen@amd.com>
+To:     Dan Carpenter <dan.carpenter@oracle.com>,
+        "kbuild@lists.01.org" <kbuild@lists.01.org>,
+        "Deucher, Alexander" <Alexander.Deucher@amd.com>
+CC:     "kbuild-all@lists.01.org" <kbuild-all@lists.01.org>,
+        "lkp@intel.com" <lkp@intel.com>,
+        "amd-gfx@lists.freedesktop.org" <amd-gfx@lists.freedesktop.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [kbuild] drivers/gpu/drm/amd/amdgpu/amdgpu_discovery.c:1433
+ amdgpu_discovery_get_vcn_info() error: buffer overflow
+ 'adev->vcn.vcn_codec_disable_mask' 2 <= 3
+Thread-Topic: [kbuild] drivers/gpu/drm/amd/amdgpu/amdgpu_discovery.c:1433
+ amdgpu_discovery_get_vcn_info() error: buffer overflow
+ 'adev->vcn.vcn_codec_disable_mask' 2 <= 3
+Thread-Index: AQHYcZ3tJ4Zoo/IFU0+KlIe76VbZta0yWxKw
+Date:   Fri, 27 May 2022 07:56:48 +0000
+Message-ID: <DM5PR12MB246988B514599DF631847549F1D89@DM5PR12MB2469.namprd12.prod.outlook.com>
+References: <202205271546.oV14N2r8-lkp@intel.com>
+In-Reply-To: <202205271546.oV14N2r8-lkp@intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 2ed5a76c-81ef-4276-9d55-08da3fb673fa
+x-ms-traffictypediagnostic: CO6PR12MB5427:EE_
+x-microsoft-antispam-prvs: <CO6PR12MB5427769D0D935A78ABE6FBEFF1D89@CO6PR12MB5427.namprd12.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 2xgLf75ypkDp2CYFkyxdPFG7vritciKfW3pS6fehPRrJjntDIhUfVjUd26ZlzKr8DjgAPHJuftiMVt8f2EFB+1mzs+72KfwCSA9zXozhzDbBH1H/1RzDM7uA49IUwPgnwKGDN4n1VmYqMqptW2Ds+a4DQtOxTJcRF7tFkLsu7Pf3jfkMW+GYUUic4Mb31jq/xvMVcDZ7Bzfvw5MTVIzdwLyFyH5njc6lOdUL4jEVkS6LIB4l6g8KN01jVbd00ujZ5cH7H1tTrGH/CC6xGOeOJ+cb1iWeeexpnstzQEsCSErx270GHlexi2wsgibzI50VFwsEBqLT6xdyOnvROEIuU577QS5pvg/nY9sIFb6JirmP8RKF1NNoZb4IRUOMJcCOkztSIvrLpeA9fGuj71pKPwcpO5ZsyiXVZrVSjs9BAdfE14qDk+umzOuZk9vN89uj/A1i/7RgcbzlYN13TTxQ/DWBTai/KOXwK/ITo/KvnV5TiZAY7XL4TvOWn1XAvlVBtlG4Jmp/xW/3wAb7FATdldv17+USCt7bHpDFRq/OqetoGolRZK4k1YOu0LePE6fPbWLfxjzqWReTxwEPtexUCJqBJCuup+ggQimd9udkxMSyTownMVQb5BTXlDrGCjtVtHgL8bD0xcx2nYiBJNy0qlzGwvqTWkGBWSJTuIDmL2tbdrBTC2px6R+zI7FwsQXx35eaJ/IJu8IgnpXMLDPGWWMc8/BPQ+zZjVDjMDDbD0Au0N+uFjxjVv98jySCu2wgxs6YgMyCV8EO1/WJpV4pRM/4WSmClaRNMgNCBhesATY=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR12MB2469.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(53546011)(9686003)(26005)(86362001)(83380400001)(7696005)(6506007)(38100700002)(33656002)(55016003)(186003)(6636002)(316002)(110136005)(5660300002)(4326008)(66946007)(52536014)(76116006)(66476007)(66556008)(66446008)(8676002)(8936002)(64756008)(508600001)(38070700005)(45080400002)(122000001)(2906002)(71200400001)(966005)(54906003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?a9f7D4VeclIUFQdIpfdcTYCKbapV0PSnkBUu80se0tINke65PDaBkhhT7vg1?=
+ =?us-ascii?Q?hPpGxY+M4mFKkDntjQwna+ZHZkvHlDEWGd5WR7JwO1++L4T5hE8o+xcgmHDB?=
+ =?us-ascii?Q?r75f+ab8umO/Hz1IDT4IMl7GsHMIB3wl8ljvykC09xYlfnQ+HeYh6RLh1F7f?=
+ =?us-ascii?Q?PV/LDlV4CpZnXqDpFXRnHAvxOrOPBgccUFs19vIYJpRNzCmvGumaDG2kiKy7?=
+ =?us-ascii?Q?ZWrfYO++tazRn3ktRE6LK1+QO2w1W5dlJCfWmDA3+Ha7IEDu+FxK8e9M8jI6?=
+ =?us-ascii?Q?K5jpjG0ooMm1vmRFasafL2hYWgxqzjYTmuHUPYO0vklw6hxqBeOYRtMxCiPp?=
+ =?us-ascii?Q?4Gth7svQ1EBO8FXlxh5FS3J8c+1Wv10u39wrwgFQf+aXYSZQprL8yMQZUvhf?=
+ =?us-ascii?Q?AKkkY0uwxhhzoOfGtZExBIbemuRLB9KA+L93/7qZ8h6ehpP9CzovTlyQm7E+?=
+ =?us-ascii?Q?T9MO++sGqb65/XCO7h4G+kZDdqv+Ibf09zmeZ/WTs/brF8eQoLUlu27oEgmL?=
+ =?us-ascii?Q?KlRj6U+hdOz+p+OXFri/5uMRJZ6NR+xfbXIwdbn21+feSgWBKFcUKlN1/P4B?=
+ =?us-ascii?Q?2UPs1Zp6q03r9WscLelR9YVgGqZu/qSFi+vyHiK9A1KKzJ9UFeeDY5ImYhnd?=
+ =?us-ascii?Q?02kkGoXpP4pQ0iaeCinIeTvdiz0LIntDEy/qu1H57ITQI1X2ZJj9ozmt3Iy+?=
+ =?us-ascii?Q?6/+HAe6i6genHCUIqi00xWAgoT5uVJbeC828yRU2kKfZ5O6VxZ01Ce+0JF0t?=
+ =?us-ascii?Q?edskiiiAw9nfh6ye83vN21ujr9Vr9mOxeWM1qzx8OwJQ/4Ob2t7tiYMCkFe/?=
+ =?us-ascii?Q?D3q8+IsyRTuIZdaZAPGY0EbSnlnz1SD6M4Bh+pa/qaTvOgaiLHVCVAGekl2r?=
+ =?us-ascii?Q?AeNJTAn+ad0xKsTzSHHei9MDoAlinQfVCb++1iCJRAxmkoGQ/poNc7jY+K6d?=
+ =?us-ascii?Q?OzgX03DUnC4uhFK3Mt3AKebzfF0l9DdNZ9G1VwMn6yGRAqbHTJoFS0n0HM8k?=
+ =?us-ascii?Q?VfebeVOkcHhx2DTTP6r6OlYk92WxzeJibD8QULBRncS2ej7tmI/JpJ3X3VkK?=
+ =?us-ascii?Q?Tr61kka1r1fRE6pn/o0bKdms1I/5dPCAJagHRAVyqyjnr7wLWjoyRSVKI3Jc?=
+ =?us-ascii?Q?Fxs5kjZnO2yU0TbafazC+pgCNESIAdAY+gp5OCcfLrTWmRoUfSP+zd4Xfdck?=
+ =?us-ascii?Q?2Dt9lZ1IOPvyHoxZqIkGDkhdD004JDlVWmBvSizHinu8F+ci20aFZj0x7eCC?=
+ =?us-ascii?Q?9863ad1hvowfyq6R+CPRryuEfvhDICXkhDXwj+rghlOM77EhPUIJ5mwNBmTh?=
+ =?us-ascii?Q?qq2Qn71j+HHqhrcPI64F8/dXpoEBX5ckgLxT0qB/H7cIDnJdXznakLwuouwt?=
+ =?us-ascii?Q?yCV9aStcHV2tuE7pPNBKvWvSIibfgA5tx7SGfWtPhzPObTfbcbT/VrUp2Ew7?=
+ =?us-ascii?Q?vH+t9IMgYoyexPDBoO3exfeTLFTvBNNNbnKfFlNflGdM60TFs5alVD6g8lVg?=
+ =?us-ascii?Q?EUsRSQkMdT6DrmGGxg7zLNMPh/0RpmCrvgg486jOIWa6P5xGRO1c9U+5AW1T?=
+ =?us-ascii?Q?nCJNqpaxCKlxrHkY9gyNMlVrES78xKdRjCXQPgtessrPJ+3tXLNtXRmfJHUJ?=
+ =?us-ascii?Q?HGlIJsYHUns/GUMZ8WS3AJMgvkQ4WSaLRAc7xzRTqAL3WXUbo0jrvuXF0MkQ?=
+ =?us-ascii?Q?SLLSmHl8L9UsYlTotD19U2tNdrkAmQTj+NHjK4XSJgYxQ+qoRAVp0D3bNKRF?=
+ =?us-ascii?Q?Pd1Qg1sv9w=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1b1d5780-1a97-4e1f-680a-08da3fb66542
-X-MS-TrafficTypeDiagnostic: VI1PR04MB4590:EE_
-X-Microsoft-Antispam-PRVS: <VI1PR04MB4590AB8AD34AECF61AE0BCC7E7D89@VI1PR04MB4590.eurprd04.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: QQpzC+EC7ClZf0e9wZoqQpd6Ci31M7iiymh81d6NDXChmfwSkaljCpbxhh+ZLg0k9IOLt+pS4ORHXqXjhpiISQnPzVE6RhIy+pKAn7s8OAYBvRc/vanlCE2L+7f8JDA6ukMqLH8V+xYnDGZ/P0rveLJ3meY7/zOrDsZTW547gjxpCgGqD5NoSG8hLJ1K7Rm9XDP49IXdp6b/eOwkTJY0otzi67P7mCeDhyUUpoU1IA/ukYD92ZRHRexNkTac75xxQLzRWFN8n/ttM9tPduqti9XoKQxVOtS9vIKa5ifDmFMXTrqHp/6syKmIUHPEW6tN4DKKxUK8EblOahKJcqzOelUuWGI+5lvJxmBn8qih6lYUVNtV0hFCDXZQjaYjsOV9TCu6jZHv5XALhG8keo6R5kYtIiMG/lOmV2+XTt1vdnKjuZarRh4Uj1ZZ/kpKCQQXrzY+1kUTWM2wqPeX5mnbGJS6FmjN5BsBxrX7YXqEIQsYjIvrOGE0p5t+qsECpZbhPGplaXzQsb51OVx1AC6UwRGrVRfqI5O2bsN+DUqMAyRfLbIUIz9REK+MkTsqhdvXn0sTEij1GUOrf64p0+NWtQS5L52x4WGXSn6XLP2CfJD3dIcb+IjTIOb0tsZonwVEuh3bm7rRGgk5XUAHB/2aMEWJf36sl1Bp2fZCO6vh1O61XG2OaOHjxpc3i+icQnbUMiZ8zr0vkhIQuLAnIOCoSQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR04MB6341.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(66946007)(86362001)(4326008)(8676002)(38350700002)(66476007)(66556008)(2906002)(38100700002)(316002)(36756003)(6666004)(52116002)(6506007)(83380400001)(44832011)(2616005)(6512007)(186003)(1076003)(26005)(508600001)(6486002)(8936002)(7416002)(5660300002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?a7CY+upb0ZGoEmx2f3bdXjA6Wk6iH7sMJ/J0LciC1my4S1AzLyWLLalhOWpQ?=
- =?us-ascii?Q?hCr4cLo6MeCzo5UmBY3VH47DMamzMapP4gGNM6KjEx9KpKu8c/X++yia6Xio?=
- =?us-ascii?Q?giHXOBJsBhumutWKwMZxZdY5fsuplavd1Bq1hCA0w0+oLTGYSaJL7CoRSFtf?=
- =?us-ascii?Q?TOWpcHHSnKDX+O/BaZJdRjisa5Ul9MoDLYW60/aB5licCqEHWLQ1jgray97w?=
- =?us-ascii?Q?EkwcyBX5wL7sI9Q2wwXWrLI0z4yefslseueQ7jXewuRNQgVXpuCqX21hjQff?=
- =?us-ascii?Q?F/iiWCvAeKaHEfmOkJG4WijLPM6iL1CRniitD450Z3fnSX6at0qZD4WFAN8I?=
- =?us-ascii?Q?varw2YPuNQD4o0HuDEVhxmnPgnZVsKN8UyDHYKO1FPFElO7uo8KEQHLVbt1b?=
- =?us-ascii?Q?WoXYcVoQAxZVVNWZ51IxP1Ll1PvFw1FXP2JgmahycIBZrpqb6DVY1KrHADI5?=
- =?us-ascii?Q?hQJGnusApZABx2bgKc4KTKQ6Ft/LeIfWzUCPiITKe8f6yy6Jf+NEYkoJZ8dU?=
- =?us-ascii?Q?5Goi8qijNkY4a7DVuT5gqrHfMUGRHqR93WIc37KDzanTxMh8CMKJXelM6xrf?=
- =?us-ascii?Q?P1qdC+4dgB+aalw4yCXaNH5dNGkTMa5WoChR1KEYtV6oeXmzz5OPquMGJ2fl?=
- =?us-ascii?Q?ZDH111ytTPXo8Pp6cv05kGA4hDX1y1IZ2bCne/F91tXEe4lid4KR0TRlKx09?=
- =?us-ascii?Q?Og9T+U075XtWLAVmhCYSdpaWgb2c53MFlElc406ltfb23TBvtz6uAA+ulAcA?=
- =?us-ascii?Q?vUq3IgeWeEEdPlaR5+N9rslaYWn8XV8e4mAI3zKIifGsVC/V8KMGwePqqDLc?=
- =?us-ascii?Q?NKcyWuXcfBsgPyEz9Qd/EiQZVF8KHS24FmUhsT4GXsDkVU22ML2TCoZKTH9q?=
- =?us-ascii?Q?P9P7YngAuMgjl06QXrvXqdRJF5YfGhxBgfygYLkThDxzq4xUY/0IEK6yegoK?=
- =?us-ascii?Q?qrLlwqBgJYt5kC3XZ0wSV3e7lwudISWRi3ma+LAqh/Idies81bWNUIRHgoRA?=
- =?us-ascii?Q?elCyUII2JApTMA7JNuuMQq7H0jjLxamVdl3vH7QaY+5XYyWd5JVQdvUn3Efa?=
- =?us-ascii?Q?II5FZ3zDDvHeJA5iDRPfBWqgBdSCm2y4Lklh378YFYmLJpde4SNEaN1s1Uu1?=
- =?us-ascii?Q?8BSTN1PaxK+otKA0EkyTg9B3HNIhuGFn19k2bng/5SdRXBF8w3bSuK0LeUYE?=
- =?us-ascii?Q?/FQeXMf8OKSYMzWcs8/50DPa0U1NTNZSFo2XMK8qNf7J9BIuWpxt/W7SJuh9?=
- =?us-ascii?Q?fp9aW+b8jxVtoNf0DhpJm8IxRR/7f5WR/D5ouxLwRrK3ik/HoI8gbCNqefaO?=
- =?us-ascii?Q?IvgexwxJZ1l3LpsC4DtCKOSiiIdJtYFs5bmuHwXfbdnRYsqWiR6Xvg0TfpT9?=
- =?us-ascii?Q?NtxnkjJnvh9HTecs4wPhdP+oAmlRJ/zC5BFacI+Z/9APiHJaEjYkKEM2LUb+?=
- =?us-ascii?Q?lCHr0mgysa+9egOar5jaH8THM5u3FXzhIdNTmk+a4vw5SDMm2MyfJLvX4KUJ?=
- =?us-ascii?Q?hBY5zuwRh1xr+Ruf3iaB0+31g/+fM+947yNBBtctrjhB/S5hOCW8Q4Pnn1Re?=
- =?us-ascii?Q?LBRMk7PQdZWaTTbqn0V+x7lPvTM0QabcdGRPol+MVZ60fI3thv5b+yh8Rfd7?=
- =?us-ascii?Q?xGsv8JgCaWfRFvKr3BMNq2AWSWLoYF3rXFtZEtXHc3NF6xgG8yCz7Mk/+VhC?=
- =?us-ascii?Q?cUK9oJ8afTM7Mf6mp4+lcmKGdbAF7SzG+VqS3JaVwZOb/mDSs1/WfMA+UojK?=
- =?us-ascii?Q?hsaUpL9gPA=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1b1d5780-1a97-4e1f-680a-08da3fb66542
-X-MS-Exchange-CrossTenant-AuthSource: AM6PR04MB6341.eurprd04.prod.outlook.com
+X-OriginatorOrg: amd.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 May 2022 07:56:24.4763
+X-MS-Exchange-CrossTenant-AuthSource: DM5PR12MB2469.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2ed5a76c-81ef-4276-9d55-08da3fb673fa
+X-MS-Exchange-CrossTenant-originalarrivaltime: 27 May 2022 07:56:48.8279
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: eP2X2ZGxS+ljWicVnm05xERbGUrjjOX6ohoIWl2X+QCEQaAhdp4j2y3hia/cEVEXvqnbyEMJy7jhvuy82x0kpA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4590
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: JSDEGPsCoKnSQLzjY22SuBoXqa9xbvrPxCB3WGkSxrkBc3UkbZG6QvWm6QTWtIxokMfylOgPoJV7tq8pHws+EQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO6PR12MB5427
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-v4l2 m2m has supplied some helper function to handle drain,
-so the driver can use the helper function directly.
+A patch was available already to protect against such scenario.
 
-Signed-off-by: Ming Qian <ming.qian@nxp.com>
----
- .../media/platform/nxp/imx-jpeg/mxc-jpeg.c    | 155 +++++++++---------
- .../media/platform/nxp/imx-jpeg/mxc-jpeg.h    |   2 -
- 2 files changed, 73 insertions(+), 84 deletions(-)
+https://patchwork.freedesktop.org/patch/486289/, "drm/amdgpu/discovery: val=
+idate VCN and SDMA instances"
 
-diff --git a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c
-index 9719eab7bc83..521560c6ba83 100644
---- a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c
-+++ b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c
-@@ -558,6 +558,18 @@ static void mxc_jpeg_free_slot_data(struct mxc_jpeg_dev *jpeg,
- 	jpeg->slot_data[slot].used = false;
- }
- 
-+static void mxc_jpeg_check_and_set_last_buffer(struct mxc_jpeg_ctx *ctx,
-+					       struct vb2_v4l2_buffer *src_buf,
-+					       struct vb2_v4l2_buffer *dst_buf)
-+{
-+	if (v4l2_m2m_is_last_draining_src_buf(ctx->fh.m2m_ctx, src_buf)) {
-+		dst_buf->flags |= V4L2_BUF_FLAG_LAST;
-+		v4l2_m2m_mark_stopped(ctx->fh.m2m_ctx);
-+		notify_eos(ctx);
-+		ctx->header_parsed = false;
-+	}
-+}
-+
- static irqreturn_t mxc_jpeg_dec_irq(int irq, void *priv)
- {
- 	struct mxc_jpeg_dev *jpeg = priv;
-@@ -633,6 +645,7 @@ static irqreturn_t mxc_jpeg_dec_irq(int irq, void *priv)
- 		dev_dbg(dev, "Decoder DHT cfg finished. Start decoding...\n");
- 		goto job_unlock;
- 	}
-+
- 	if (jpeg->mode == MXC_JPEG_ENCODE) {
- 		payload = readl(reg + MXC_SLOT_OFFSET(slot, SLOT_BUF_PTR));
- 		vb2_set_plane_payload(&dst_buf->vb2_buf, 0, payload);
-@@ -661,6 +674,7 @@ static irqreturn_t mxc_jpeg_dec_irq(int irq, void *priv)
- 
- buffers_done:
- 	jpeg->slot_data[slot].used = false; /* unused, but don't free */
-+	mxc_jpeg_check_and_set_last_buffer(ctx, src_buf, dst_buf);
- 	v4l2_m2m_src_buf_remove(ctx->fh.m2m_ctx);
- 	v4l2_m2m_dst_buf_remove(ctx->fh.m2m_ctx);
- 	v4l2_m2m_buf_done(src_buf, buf_state);
-@@ -1028,6 +1042,7 @@ static void mxc_jpeg_device_run(void *priv)
- 		jpeg_src_buf->jpeg_parse_error = true;
- 	}
- 	if (jpeg_src_buf->jpeg_parse_error) {
-+		mxc_jpeg_check_and_set_last_buffer(ctx, src_buf, dst_buf);
- 		v4l2_m2m_src_buf_remove(ctx->fh.m2m_ctx);
- 		v4l2_m2m_dst_buf_remove(ctx->fh.m2m_ctx);
- 		v4l2_m2m_buf_done(src_buf, VB2_BUF_STATE_ERROR);
-@@ -1078,45 +1093,33 @@ static void mxc_jpeg_device_run(void *priv)
- 	spin_unlock_irqrestore(&ctx->mxc_jpeg->hw_lock, flags);
- }
- 
--static void mxc_jpeg_set_last_buffer_dequeued(struct mxc_jpeg_ctx *ctx)
--{
--	struct vb2_queue *q;
--
--	ctx->stopped = 1;
--	q = v4l2_m2m_get_dst_vq(ctx->fh.m2m_ctx);
--	if (!list_empty(&q->done_list))
--		return;
--
--	q->last_buffer_dequeued = true;
--	wake_up(&q->done_wq);
--	ctx->stopped = 0;
--	ctx->header_parsed = false;
--}
--
- static int mxc_jpeg_decoder_cmd(struct file *file, void *priv,
- 				struct v4l2_decoder_cmd *cmd)
- {
- 	struct v4l2_fh *fh = file->private_data;
- 	struct mxc_jpeg_ctx *ctx = mxc_jpeg_fh_to_ctx(fh);
--	struct device *dev = ctx->mxc_jpeg->dev;
- 	int ret;
- 
- 	ret = v4l2_m2m_ioctl_try_decoder_cmd(file, fh, cmd);
- 	if (ret < 0)
- 		return ret;
- 
--	if (cmd->cmd == V4L2_DEC_CMD_STOP) {
--		dev_dbg(dev, "Received V4L2_DEC_CMD_STOP");
--		if (v4l2_m2m_num_src_bufs_ready(fh->m2m_ctx) == 0) {
--			/* No more src bufs, notify app EOS */
--			notify_eos(ctx);
--			mxc_jpeg_set_last_buffer_dequeued(ctx);
--		} else {
--			/* will send EOS later*/
--			ctx->stopping = 1;
--		}
-+	if (!vb2_is_streaming(v4l2_m2m_get_src_vq(fh->m2m_ctx)))
-+		return 0;
-+
-+	ret = v4l2_m2m_ioctl_decoder_cmd(file, priv, cmd);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (cmd->cmd == V4L2_DEC_CMD_STOP &&
-+	    v4l2_m2m_has_stopped(fh->m2m_ctx)) {
-+		notify_eos(ctx);
-+		ctx->header_parsed = false;
- 	}
- 
-+	if (cmd->cmd == V4L2_DEC_CMD_START &&
-+	    v4l2_m2m_has_stopped(fh->m2m_ctx))
-+		vb2_clear_last_buffer_dequeued(&fh->m2m_ctx->cap_q_ctx.q);
- 	return 0;
- }
- 
-@@ -1125,24 +1128,27 @@ static int mxc_jpeg_encoder_cmd(struct file *file, void *priv,
- {
- 	struct v4l2_fh *fh = file->private_data;
- 	struct mxc_jpeg_ctx *ctx = mxc_jpeg_fh_to_ctx(fh);
--	struct device *dev = ctx->mxc_jpeg->dev;
- 	int ret;
- 
- 	ret = v4l2_m2m_ioctl_try_encoder_cmd(file, fh, cmd);
- 	if (ret < 0)
- 		return ret;
- 
--	if (cmd->cmd == V4L2_ENC_CMD_STOP) {
--		dev_dbg(dev, "Received V4L2_ENC_CMD_STOP");
--		if (v4l2_m2m_num_src_bufs_ready(fh->m2m_ctx) == 0) {
--			/* No more src bufs, notify app EOS */
--			notify_eos(ctx);
--			mxc_jpeg_set_last_buffer_dequeued(ctx);
--		} else {
--			/* will send EOS later*/
--			ctx->stopping = 1;
--		}
--	}
-+	if (!vb2_is_streaming(v4l2_m2m_get_src_vq(fh->m2m_ctx)) ||
-+	    !vb2_is_streaming(v4l2_m2m_get_dst_vq(fh->m2m_ctx)))
-+		return 0;
-+
-+	ret = v4l2_m2m_ioctl_encoder_cmd(file, fh, cmd);
-+	if (ret < 0)
-+		return 0;
-+
-+	if (cmd->cmd == V4L2_ENC_CMD_STOP &&
-+	    v4l2_m2m_has_stopped(fh->m2m_ctx))
-+		notify_eos(ctx);
-+
-+	if (cmd->cmd == V4L2_ENC_CMD_START &&
-+	    v4l2_m2m_has_stopped(fh->m2m_ctx))
-+		vb2_clear_last_buffer_dequeued(&fh->m2m_ctx->cap_q_ctx.q);
- 
- 	return 0;
- }
-@@ -1198,6 +1204,8 @@ static int mxc_jpeg_start_streaming(struct vb2_queue *q, unsigned int count)
- 	struct mxc_jpeg_q_data *q_data = mxc_jpeg_get_q_data(ctx, q->type);
- 	int ret;
- 
-+	v4l2_m2m_update_start_streaming_state(ctx->fh.m2m_ctx, q);
-+
- 	if (ctx->mxc_jpeg->mode == MXC_JPEG_DECODE && V4L2_TYPE_IS_CAPTURE(q->type))
- 		ctx->source_change = 0;
- 	dev_dbg(ctx->mxc_jpeg->dev, "Start streaming ctx=%p", ctx);
-@@ -1229,11 +1237,15 @@ static void mxc_jpeg_stop_streaming(struct vb2_queue *q)
- 			break;
- 		v4l2_m2m_buf_done(vbuf, VB2_BUF_STATE_ERROR);
- 	}
--	pm_runtime_put_sync(&ctx->mxc_jpeg->pdev->dev);
--	if (V4L2_TYPE_IS_OUTPUT(q->type)) {
--		ctx->stopping = 0;
--		ctx->stopped = 0;
-+
-+	v4l2_m2m_update_stop_streaming_state(ctx->fh.m2m_ctx, q);
-+	if (V4L2_TYPE_IS_OUTPUT(q->type) &&
-+	    v4l2_m2m_has_stopped(ctx->fh.m2m_ctx)) {
-+		notify_eos(ctx);
-+		ctx->header_parsed = false;
- 	}
-+
-+	pm_runtime_put_sync(&ctx->mxc_jpeg->pdev->dev);
- }
- 
- static int mxc_jpeg_valid_comp_id(struct device *dev,
-@@ -1432,6 +1444,20 @@ static void mxc_jpeg_buf_queue(struct vb2_buffer *vb)
- 	struct mxc_jpeg_ctx *ctx = vb2_get_drv_priv(vb->vb2_queue);
- 	struct mxc_jpeg_src_buf *jpeg_src_buf;
- 
-+	if (V4L2_TYPE_IS_CAPTURE(vb->vb2_queue->type) &&
-+	    vb2_is_streaming(vb->vb2_queue) &&
-+	    v4l2_m2m_dst_buf_is_last(ctx->fh.m2m_ctx)) {
-+		struct mxc_jpeg_q_data *q_data;
-+
-+		q_data = mxc_jpeg_get_q_data(ctx, vb->vb2_queue->type);
-+		vbuf->field = V4L2_FIELD_NONE;
-+		vbuf->sequence = q_data->sequence++;
-+		v4l2_m2m_last_buffer_done(ctx->fh.m2m_ctx, vbuf);
-+		notify_eos(ctx);
-+		ctx->header_parsed = false;
-+		return;
-+	}
-+
- 	if (vb->vb2_queue->type == V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE)
- 		goto end;
- 
-@@ -1480,24 +1506,11 @@ static int mxc_jpeg_buf_prepare(struct vb2_buffer *vb)
- 			return -EINVAL;
- 		}
- 	}
--	return 0;
--}
--
--static void mxc_jpeg_buf_finish(struct vb2_buffer *vb)
--{
--	struct vb2_v4l2_buffer *vbuf = to_vb2_v4l2_buffer(vb);
--	struct mxc_jpeg_ctx *ctx = vb2_get_drv_priv(vb->vb2_queue);
--	struct vb2_queue *q = vb->vb2_queue;
--
--	if (V4L2_TYPE_IS_OUTPUT(vb->type))
--		return;
--	if (!ctx->stopped)
--		return;
--	if (list_empty(&q->done_list)) {
--		vbuf->flags |= V4L2_BUF_FLAG_LAST;
--		ctx->stopped = 0;
--		ctx->header_parsed = false;
-+	if (V4L2_TYPE_IS_CAPTURE(vb->vb2_queue->type)) {
-+		vb2_set_plane_payload(vb, 0, 0);
-+		vb2_set_plane_payload(vb, 1, 0);
- 	}
-+	return 0;
- }
- 
- static const struct vb2_ops mxc_jpeg_qops = {
-@@ -1506,7 +1519,6 @@ static const struct vb2_ops mxc_jpeg_qops = {
- 	.wait_finish		= vb2_ops_wait_finish,
- 	.buf_out_validate	= mxc_jpeg_buf_out_validate,
- 	.buf_prepare		= mxc_jpeg_buf_prepare,
--	.buf_finish             = mxc_jpeg_buf_finish,
- 	.start_streaming	= mxc_jpeg_start_streaming,
- 	.stop_streaming		= mxc_jpeg_stop_streaming,
- 	.buf_queue		= mxc_jpeg_buf_queue,
-@@ -2009,27 +2021,6 @@ static int mxc_jpeg_subscribe_event(struct v4l2_fh *fh,
- 	}
- }
- 
--static int mxc_jpeg_dqbuf(struct file *file, void *priv,
--			  struct v4l2_buffer *buf)
--{
--	struct v4l2_fh *fh = file->private_data;
--	struct mxc_jpeg_ctx *ctx = mxc_jpeg_fh_to_ctx(priv);
--	struct device *dev = ctx->mxc_jpeg->dev;
--	int num_src_ready = v4l2_m2m_num_src_bufs_ready(fh->m2m_ctx);
--	int ret;
--
--	dev_dbg(dev, "DQBUF type=%d, index=%d", buf->type, buf->index);
--	if (ctx->stopping == 1 && num_src_ready == 0) {
--		/* No more src bufs, notify app EOS */
--		notify_eos(ctx);
--		ctx->stopping = 0;
--		mxc_jpeg_set_last_buffer_dequeued(ctx);
--	}
--
--	ret = v4l2_m2m_dqbuf(file, fh->m2m_ctx, buf);
--	return ret;
--}
--
- static const struct v4l2_ioctl_ops mxc_jpeg_ioctl_ops = {
- 	.vidioc_querycap		= mxc_jpeg_querycap,
- 	.vidioc_enum_fmt_vid_cap	= mxc_jpeg_enum_fmt_vid_cap,
-@@ -2053,7 +2044,7 @@ static const struct v4l2_ioctl_ops mxc_jpeg_ioctl_ops = {
- 	.vidioc_encoder_cmd		= mxc_jpeg_encoder_cmd,
- 
- 	.vidioc_qbuf			= v4l2_m2m_ioctl_qbuf,
--	.vidioc_dqbuf			= mxc_jpeg_dqbuf,
-+	.vidioc_dqbuf			= v4l2_m2m_ioctl_dqbuf,
- 
- 	.vidioc_create_bufs		= v4l2_m2m_ioctl_create_bufs,
- 	.vidioc_prepare_buf		= v4l2_m2m_ioctl_prepare_buf,
-diff --git a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.h b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.h
-index d439be6e4acf..c508d41a906f 100644
---- a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.h
-+++ b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.h
-@@ -92,8 +92,6 @@ struct mxc_jpeg_ctx {
- 	struct mxc_jpeg_q_data		cap_q;
- 	struct v4l2_fh			fh;
- 	enum mxc_jpeg_enc_state		enc_state;
--	unsigned int			stopping;
--	unsigned int			stopped;
- 	unsigned int			slot;
- 	unsigned int			source_change;
- 	bool				header_parsed;
--- 
-2.36.1
+Regards,
+Guchun
+
+-----Original Message-----
+From: amd-gfx <amd-gfx-bounces@lists.freedesktop.org> On Behalf Of Dan Carp=
+enter
+Sent: Friday, May 27, 2022 3:46 PM
+To: kbuild@lists.01.org; Deucher, Alexander <Alexander.Deucher@amd.com>
+Cc: kbuild-all@lists.01.org; lkp@intel.com; amd-gfx@lists.freedesktop.org; =
+linux-kernel@vger.kernel.org
+Subject: [kbuild] drivers/gpu/drm/amd/amdgpu/amdgpu_discovery.c:1433 amdgpu=
+_discovery_get_vcn_info() error: buffer overflow 'adev->vcn.vcn_codec_disab=
+le_mask' 2 <=3D 3
+
+[ kbuild bot sent this warning on May 4 but I never heard back and it's
+  May 27 now so sending a duplicate warning is probably for the best. -dan]
+
+tree:   https://nam11.safelinks.protection.outlook.com/?url=3Dhttps%3A%2F%2=
+Fgit.kernel.org%2Fpub%2Fscm%2Flinux%2Fkernel%2Fgit%2Ftorvalds%2Flinux.git&a=
+mp;data=3D05%7C01%7Cguchun.chen%40amd.com%7Cfc2110078e5c4790337808da3fb50de=
+6%7C3dd8961fe4884e608e11a82d994e183d%7C0%7C0%7C637892344114571722%7CUnknown=
+%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6=
+Mn0%3D%7C3000%7C%7C%7C&amp;sdata=3D4AYyKswjTmjKoNdRpOxWPW2R2o2RU5CkrYRuelaC=
+afA%3D&amp;reserved=3D0  master
+head:   7e284070abe53d448517b80493863595af4ab5f0
+commit: 622469c87fc3e6c90a980be3e2287d82bd55c977 drm/amdgpu/discovery: add =
+a function to parse the vcn info table
+config: arc-randconfig-m031-20220524 (https://nam11.safelinks.protection.ou=
+tlook.com/?url=3Dhttps%3A%2F%2Fdownload.01.org%2F0day-ci%2Farchive%2F202205=
+27%2F202205271546.oV14N2r8-lkp%40intel.com%2Fconfig&amp;data=3D05%7C01%7Cgu=
+chun.chen%40amd.com%7Cfc2110078e5c4790337808da3fb50de6%7C3dd8961fe4884e608e=
+11a82d994e183d%7C0%7C0%7C637892344114571722%7CUnknown%7CTWFpbGZsb3d8eyJWIjo=
+iMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C=
+&amp;sdata=3DosyRhU3i%2Fdnwcu%2Fz9T0278PTeEFuM%2BAWw8zR43ir%2FhQ%3D&amp;res=
+erved=3D0 )
+compiler: arceb-elf-gcc (GCC) 11.3.0
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+
+smatch warnings:
+drivers/gpu/drm/amd/amdgpu/amdgpu_discovery.c:1433 amdgpu_discovery_get_vcn=
+_info() error: buffer overflow 'adev->vcn.vcn_codec_disable_mask' 2 <=3D 3
+
+vim +1433 drivers/gpu/drm/amd/amdgpu/amdgpu_discovery.c
+
+622469c87fc3e6 Alex Deucher 2022-03-30  1403  int amdgpu_discovery_get_vcn_=
+info(struct amdgpu_device *adev)
+622469c87fc3e6 Alex Deucher 2022-03-30  1404  {
+622469c87fc3e6 Alex Deucher 2022-03-30  1405  	struct binary_header *bhdr;
+622469c87fc3e6 Alex Deucher 2022-03-30  1406  	union vcn_info *vcn_info;
+622469c87fc3e6 Alex Deucher 2022-03-30  1407  	u16 offset;
+622469c87fc3e6 Alex Deucher 2022-03-30  1408  	int v;
+622469c87fc3e6 Alex Deucher 2022-03-30  1409 =20
+622469c87fc3e6 Alex Deucher 2022-03-30  1410  	if (!adev->mman.discovery_bi=
+n) {
+622469c87fc3e6 Alex Deucher 2022-03-30  1411  		DRM_ERROR("ip discovery uni=
+nitialized\n");
+622469c87fc3e6 Alex Deucher 2022-03-30  1412  		return -EINVAL;
+622469c87fc3e6 Alex Deucher 2022-03-30  1413  	}
+622469c87fc3e6 Alex Deucher 2022-03-30  1414 =20
+622469c87fc3e6 Alex Deucher 2022-03-30  1415  	if (adev->vcn.num_vcn_inst >=
+ VCN_INFO_TABLE_MAX_NUM_INSTANCES) {
+
+Capped to 4
+
+622469c87fc3e6 Alex Deucher 2022-03-30  1416  		dev_err(adev->dev, "invalid=
+ vcn instances\n");
+622469c87fc3e6 Alex Deucher 2022-03-30  1417  		return -EINVAL;
+622469c87fc3e6 Alex Deucher 2022-03-30  1418  	}
+622469c87fc3e6 Alex Deucher 2022-03-30  1419 =20
+622469c87fc3e6 Alex Deucher 2022-03-30  1420  	bhdr =3D (struct binary_head=
+er *)adev->mman.discovery_bin;
+622469c87fc3e6 Alex Deucher 2022-03-30  1421  	offset =3D le16_to_cpu(bhdr-=
+>table_list[VCN_INFO].offset);
+622469c87fc3e6 Alex Deucher 2022-03-30  1422 =20
+622469c87fc3e6 Alex Deucher 2022-03-30  1423  	if (!offset) {
+622469c87fc3e6 Alex Deucher 2022-03-30  1424  		dev_err(adev->dev, "invalid=
+ vcn table offset\n");
+622469c87fc3e6 Alex Deucher 2022-03-30  1425  		return -EINVAL;
+622469c87fc3e6 Alex Deucher 2022-03-30  1426  	}
+622469c87fc3e6 Alex Deucher 2022-03-30  1427 =20
+622469c87fc3e6 Alex Deucher 2022-03-30  1428  	vcn_info =3D (union vcn_info=
+ *)(adev->mman.discovery_bin + offset);
+622469c87fc3e6 Alex Deucher 2022-03-30  1429 =20
+622469c87fc3e6 Alex Deucher 2022-03-30  1430  	switch (le16_to_cpu(vcn_info=
+->v1.header.version_major)) {
+622469c87fc3e6 Alex Deucher 2022-03-30  1431  	case 1:
+622469c87fc3e6 Alex Deucher 2022-03-30  1432  		for (v =3D 0; v < adev->vcn=
+.num_vcn_inst; v++) {
+622469c87fc3e6 Alex Deucher 2022-03-30 @1433  			adev->vcn.vcn_codec_disabl=
+e_mask[v] =3D
+
+But this array doesn't have 4 elements
+
+622469c87fc3e6 Alex Deucher 2022-03-30  1434  				le32_to_cpu(vcn_info->v1.=
+instance_info[v].fuse_data.all_bits);
+622469c87fc3e6 Alex Deucher 2022-03-30  1435  		}
+622469c87fc3e6 Alex Deucher 2022-03-30  1436  		break;
+622469c87fc3e6 Alex Deucher 2022-03-30  1437  	default:
+622469c87fc3e6 Alex Deucher 2022-03-30  1438  		dev_err(adev->dev,
+622469c87fc3e6 Alex Deucher 2022-03-30  1439  			"Unhandled VCN info table =
+%d.%d\n",
+622469c87fc3e6 Alex Deucher 2022-03-30  1440  			le16_to_cpu(vcn_info->v1.h=
+eader.version_major),
+622469c87fc3e6 Alex Deucher 2022-03-30  1441  			le16_to_cpu(vcn_info->v1.h=
+eader.version_minor));
+622469c87fc3e6 Alex Deucher 2022-03-30  1442  		return -EINVAL;
+622469c87fc3e6 Alex Deucher 2022-03-30  1443  	}
+622469c87fc3e6 Alex Deucher 2022-03-30  1444  	return 0;
+f39f5bb1c9d68d Xiaojie Yuan 2019-06-20  1445  }
+
+--
+0-DAY CI Kernel Test Service
+https://nam11.safelinks.protection.outlook.com/?url=3Dhttps%3A%2F%2F01.org%=
+2Flkp&amp;data=3D05%7C01%7Cguchun.chen%40amd.com%7Cfc2110078e5c4790337808da=
+3fb50de6%7C3dd8961fe4884e608e11a82d994e183d%7C0%7C0%7C637892344114571722%7C=
+Unknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiL=
+CJXVCI6Mn0%3D%7C3000%7C%7C%7C&amp;sdata=3DFEZiW7nVnlbPvQRbf2TUEbh15BsdY0tRL=
+KvWFtPknuA%3D&amp;reserved=3D0
+_______________________________________________
+kbuild mailing list -- kbuild@lists.01.org To unsubscribe send an email to =
+kbuild-leave@lists.01.org
 
