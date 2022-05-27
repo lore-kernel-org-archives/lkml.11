@@ -2,47 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F4E9C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 09:01:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16326C4321E
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 09:01:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349631AbiE0JBt (ORCPT
+        id S1350468AbiE0JBy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 05:01:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59792 "EHLO
+        Fri, 27 May 2022 05:01:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350442AbiE0I76 (ORCPT
+        with ESMTP id S1350480AbiE0JAA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 04:59:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 491FB765C;
-        Fri, 27 May 2022 01:55:54 -0700 (PDT)
+        Fri, 27 May 2022 05:00:00 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A6EA46667;
+        Fri, 27 May 2022 01:56:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D3DB461D91;
-        Fri, 27 May 2022 08:55:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EAA4C385B8;
-        Fri, 27 May 2022 08:55:52 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 5C22FCE238F;
+        Fri, 27 May 2022 08:56:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 353CAC385A9;
+        Fri, 27 May 2022 08:55:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653641753;
-        bh=Yy5gQPcfw9NC/kuApdrxoyH05hh4EnBXxxCCeB24uyw=;
+        s=korg; t=1653641759;
+        bh=RUEsyhJFnaOVYv98/ybfm3mKHtkusHDBD7ScaWxPpOI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vMA6kDG7Qjqjs8HGxmqmnpjctGDQaABSw/10hAdxT3cgRznt4bGuRicxE/jqFdcDA
-         fAQ6yMJxB973r0mazlxYMEUszbsnm2xThFoK6jON5He085aMhRHjcX69If9Y20KOGl
-         P/U8CIcRrzORgYh3HaG/vt+ih585qLsOyC3lq/ls=
+        b=rqygeeeycRlaqkSXXnvPao9H8kgXd9ePWZwwtyEyorN3WKTgoPkPNHJyMPDoE5caQ
+         NcsYuLT8T3UAwcHeQhqUw5pz9Trqt7VDIfkILZNG6AISTSxHC2q/TyiDMwDL0qb1Wj
+         2436yYkU+M4iELFAoBeLYODdagBKpl3NBO2SS6Rc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Veronika Kabatova <vkabatov@redhat.com>,
-        Aristeu Rozanski <aris@redhat.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        dann frazier <dann.frazier@canonical.com>
-Subject: [PATCH 5.18 46/47] ACPI: sysfs: Fix BERT error region memory mapping
-Date:   Fri, 27 May 2022 10:50:26 +0200
-Message-Id: <20220527084808.833542561@linuxfoundation.org>
+        stable@vger.kernel.org, Edward Matijevic <motolav@gmail.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.18 47/47] ALSA: ctxfi: Add SB046x PCI ID
+Date:   Fri, 27 May 2022 10:50:27 +0200
+Message-Id: <20220527084808.977367716@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220527084801.223648383@linuxfoundation.org>
 References: <20220527084801.223648383@linuxfoundation.org>
@@ -54,85 +49,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+From: Edward Matijevic <motolav@gmail.com>
 
-commit 1bbc21785b7336619fb6a67f1fff5afdaf229acc upstream.
+commit 1b073ebb174d0c7109b438e0a5eb4495137803ec upstream.
 
-Currently the sysfs interface maps the BERT error region as "memory"
-(through acpi_os_map_memory()) in order to copy the error records into
-memory buffers through memory operations (eg memory_read_from_buffer()).
+Adds the PCI ID for X-Fi cards sold under the Platnum and XtremeMusic names
 
-The OS system cannot detect whether the BERT error region is part of
-system RAM or it is "device memory" (eg BMC memory) and therefore it
-cannot detect which memory attributes the bus to memory support (and
-corresponding kernel mapping, unless firmware provides the required
-information).
+Before: snd_ctxfi 0000:05:05.0: chip 20K1 model Unknown (1102:0021) is found
+After: snd_ctxfi 0000:05:05.0: chip 20K1 model SB046x (1102:0021) is found
 
-The acpi_os_map_memory() arch backend implementation determines the
-mapping attributes. On arm64, if the BERT error region is not present in
-the EFI memory map, the error region is mapped as device-nGnRnE; this
-triggers alignment faults since memcpy unaligned accesses are not
-allowed in device-nGnRnE regions.
+[ This is only about defining the model name string, and the rest is
+  handled just like before, as a default unknown device.
+  Edward confirmed that the stuff has been working fine -- tiwai ]
 
-The ACPI sysfs code cannot therefore map by default the BERT error
-region with memory semantics but should use a safer default.
-
-Change the sysfs code to map the BERT error region as MMIO (through
-acpi_os_map_iomem()) and use the memcpy_fromio() interface to read the
-error region into the kernel buffer.
-
-Link: https://lore.kernel.org/linux-arm-kernel/31ffe8fc-f5ee-2858-26c5-0fd8bdd68702@arm.com
-Link: https://lore.kernel.org/linux-acpi/CAJZ5v0g+OVbhuUUDrLUCfX_mVqY_e8ubgLTU98=jfjTeb4t+Pw@mail.gmail.com
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Tested-by: Veronika Kabatova <vkabatov@redhat.com>
-Tested-by: Aristeu Rozanski <aris@redhat.com>
-Acked-by: Ard Biesheuvel <ardb@kernel.org>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Cc: dann frazier <dann.frazier@canonical.com>
+Signed-off-by: Edward Matijevic <motolav@gmail.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/cae7d1a4-8bd9-7dfe-7427-db7e766f7272@gmail.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/acpi/sysfs.c |   25 ++++++++++++++++++-------
- 1 file changed, 18 insertions(+), 7 deletions(-)
+ sound/pci/ctxfi/ctatc.c      |    2 ++
+ sound/pci/ctxfi/cthardware.h |    3 ++-
+ 2 files changed, 4 insertions(+), 1 deletion(-)
 
---- a/drivers/acpi/sysfs.c
-+++ b/drivers/acpi/sysfs.c
-@@ -415,19 +415,30 @@ static ssize_t acpi_data_show(struct fil
- 			      loff_t offset, size_t count)
- {
- 	struct acpi_data_attr *data_attr;
--	void *base;
--	ssize_t rc;
-+	void __iomem *base;
-+	ssize_t size;
+--- a/sound/pci/ctxfi/ctatc.c
++++ b/sound/pci/ctxfi/ctatc.c
+@@ -36,6 +36,7 @@
+ 			    | ((IEC958_AES3_CON_FS_48000) << 24))
  
- 	data_attr = container_of(bin_attr, struct acpi_data_attr, attr);
-+	size = data_attr->attr.size;
+ static const struct snd_pci_quirk subsys_20k1_list[] = {
++	SND_PCI_QUIRK(PCI_VENDOR_ID_CREATIVE, 0x0021, "SB046x", CTSB046X),
+ 	SND_PCI_QUIRK(PCI_VENDOR_ID_CREATIVE, 0x0022, "SB055x", CTSB055X),
+ 	SND_PCI_QUIRK(PCI_VENDOR_ID_CREATIVE, 0x002f, "SB055x", CTSB055X),
+ 	SND_PCI_QUIRK(PCI_VENDOR_ID_CREATIVE, 0x0029, "SB073x", CTSB073X),
+@@ -64,6 +65,7 @@ static const struct snd_pci_quirk subsys
  
--	base = acpi_os_map_memory(data_attr->addr, data_attr->attr.size);
-+	if (offset < 0)
-+		return -EINVAL;
-+
-+	if (offset >= size)
-+		return 0;
-+
-+	if (count > size - offset)
-+		count = size - offset;
-+
-+	base = acpi_os_map_iomem(data_attr->addr, size);
- 	if (!base)
- 		return -ENOMEM;
--	rc = memory_read_from_buffer(buf, count, &offset, base,
--				     data_attr->attr.size);
--	acpi_os_unmap_memory(base, data_attr->attr.size);
+ static const char *ct_subsys_name[NUM_CTCARDS] = {
+ 	/* 20k1 models */
++	[CTSB046X]	= "SB046x",
+ 	[CTSB055X]	= "SB055x",
+ 	[CTSB073X]	= "SB073x",
+ 	[CTUAA]		= "UAA",
+--- a/sound/pci/ctxfi/cthardware.h
++++ b/sound/pci/ctxfi/cthardware.h
+@@ -26,8 +26,9 @@ enum CHIPTYP {
  
--	return rc;
-+	memcpy_fromio(buf, base + offset, count);
-+
-+	acpi_os_unmap_iomem(base, size);
-+
-+	return count;
- }
- 
- static int acpi_bert_data_init(void *th, struct acpi_data_attr *data_attr)
+ enum CTCARDS {
+ 	/* 20k1 models */
++	CTSB046X,
++	CT20K1_MODEL_FIRST = CTSB046X,
+ 	CTSB055X,
+-	CT20K1_MODEL_FIRST = CTSB055X,
+ 	CTSB073X,
+ 	CTUAA,
+ 	CT20K1_UNKNOWN,
 
 
