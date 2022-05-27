@@ -2,81 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A444C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 06:37:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9ED1C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 06:38:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343642AbiE0Gh4 (ORCPT
+        id S1343599AbiE0Gif (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 02:37:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47368 "EHLO
+        Fri, 27 May 2022 02:38:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229561AbiE0Ghu (ORCPT
+        with ESMTP id S240528AbiE0Gib (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 02:37:50 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF9E0E2771;
-        Thu, 26 May 2022 23:37:49 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L8Zm553FJzRhQZ;
-        Fri, 27 May 2022 14:34:45 +0800 (CST)
-Received: from dggpemm500018.china.huawei.com (7.185.36.111) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 27 May 2022 14:37:47 +0800
-Received: from localhost.localdomain (10.175.112.125) by
- dggpemm500018.china.huawei.com (7.185.36.111) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 27 May 2022 14:37:47 +0800
-From:   keliu <liuke94@huawei.com>
-To:     <robh@kernel.org>, <gregkh@linuxfoundation.org>,
-        <jirislaby@kernel.org>, <linux-serial@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     keliu <liuke94@huawei.com>
-Subject: [PATCH] serdev: Directly use ida_alloc()/free()
-Date:   Fri, 27 May 2022 06:59:16 +0000
-Message-ID: <20220527065916.2359005-1-liuke94@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 27 May 2022 02:38:31 -0400
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12253E2771
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 23:38:27 -0700 (PDT)
+Received: by mail-pg1-x530.google.com with SMTP id s68so3158511pgs.10
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 23:38:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=xNO87R/X/d1Qe/nRsB/dim8tX8ZL4WufoTOu5cyuOLU=;
+        b=lJ/mfvsOzOUWYJ9ZynEattJvk88vSDphJsOwWXz8R7g+nzXguFfbpxWv6Tl06d51zS
+         kAlRbiWt3fqTRRpiJ3G7JVeqoNxshv+DmCOn0K3yiJr9J2EolwUgwXkS8fINllRLK6HV
+         sEffYKJqVt8U8n+pR0D79bVj6+iI2p49adtutzTOH7wXXSJ5ni7Puqa2I214KRnTwBrn
+         ewi9al7E59ARfQ8OxRqZFU4wzWil0apn2g5SLwi8F8kewa795cNfsqa8zbYL33LqV9Z7
+         mP6DLFIye3xLzdWXT4Q3A4WSFZUkeJKGsQz2rUTdO1dUM2hSZjd4MYibPEt4d3Aa7ZaT
+         XlTw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=xNO87R/X/d1Qe/nRsB/dim8tX8ZL4WufoTOu5cyuOLU=;
+        b=NzSoW2mWRn7QXeL5qFK8uBXL5ktt4G/8PYraw5CYe7cetSA9nk/buKtGfyNHvhxx1b
+         oncrfJzoBj7ze59NgYFz1I2QvM0uoPqGkBk04chxQEpY6zMhAX4FGN7d4NbJRrjHIVt1
+         uSaPH9vUp9sUZysJqzAA22NlOI60QFjAcM6+Z7aCLiPTHxayFVUsEkZC/vHYTmXVll1I
+         DFAr6DQkWM8UfkB8/UP+KqnUpkWmnhYVJy1fBtHIRQ58J0CsGcCWueLoaAxk4sfE+Ex6
+         aok/mIAkh94rHNXL6kabKLLtSK7V6DGhI0A+DJTdScUisDJWgQe+bKfRVDLujdq4fcFT
+         dZSA==
+X-Gm-Message-State: AOAM530dkTlw2Ef3BkPuNpp+mbAL2EwWJRmxWwKynBrHfH4/aacJ3g7g
+        MKUAljh/a5OBPs4Uh6DswPxlxEZCfDDTPFVo
+X-Google-Smtp-Source: ABdhPJzJ39IUYHF1G2Lbp7RevnHGuQ+O/gkk+bzGl2T9fQVkWQAAiD1mbZS/i6n2eNKPfygDXKAbwA==
+X-Received: by 2002:a63:2bd8:0:b0:3fa:faf9:e6d5 with SMTP id r207-20020a632bd8000000b003fafaf9e6d5mr7845959pgr.247.1653633506414;
+        Thu, 26 May 2022 23:38:26 -0700 (PDT)
+Received: from leoy-ThinkPad-X240s (n058152048195.netvigator.com. [58.152.48.195])
+        by smtp.gmail.com with ESMTPSA id s187-20020a625ec4000000b0050dc7628155sm2632585pfb.47.2022.05.26.23.38.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 May 2022 23:38:26 -0700 (PDT)
+Date:   Fri, 27 May 2022 14:38:21 +0800
+From:   Leo Yan <leo.yan@linaro.org>
+To:     James Clark <james.clark@arm.com>
+Cc:     German Gomez <german.gomez@arm.com>, linux-kernel@vger.kernel.org,
+        linux-perf-users@vger.kernel.org, acme@kernel.org,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>
+Subject: Re: [PATCH] perf test arm-spe: Check if perf-record hangs when
+ recording workload with forks
+Message-ID: <20220527063821.GB829807@leoy-ThinkPad-X240s>
+References: <20220228165655.3920-1-german.gomez@arm.com>
+ <95ede14c-8dc2-d285-9f5b-8d6ee6797f00@arm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.112.125]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500018.china.huawei.com (7.185.36.111)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <95ede14c-8dc2-d285-9f5b-8d6ee6797f00@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use ida_alloc()/ida_free() instead of deprecated
-ida_simple_get()/ida_simple_remove() .
+On Fri, May 13, 2022 at 02:03:52PM +0100, James Clark wrote:
+> 
+> 
+> On 28/02/2022 16:56, German Gomez wrote:
+> > Add shell test to check if perf-record hangs when recording an arm_spe
+> > event with forks.
+> > 
+> > The test FAILS if the Kernel is not patched with Commit 961c391217 ("perf:
+> > Always wake the parent event").
+> > 
+> > Unpatched Kernel:
+> > 
+> >   $ perf test -v 90
+> >   90: Check Arm SPE doesn't hang when there are forks
+> >   --- start ---
+> >   test child forked, pid 14232
+> >   Recording workload with fork
+> >   Log lines = 90 /tmp/__perf_test.stderr.0Nu0U
+> >   Log lines after 1 second = 90 /tmp/__perf_test.stderr.0Nu0U
+> >   SPE hang test: FAIL
+> >   test child finished with -1
+> >   ---- end ----
+> >   Check Arm SPE trace data in workload with forks: FAILED!
+> > 
+> > Patched Kernel:
+> > 
+> >   $ perf test -v 90
+> >   90: Check Arm SPE doesn't hang when there are forks
+> >   --- start ---
+> >   test child forked, pid 2930
+> >   Compiling test program...
+> >   Recording workload...
+> >   Log lines = 478 /tmp/__perf_test.log.026AI
+> >   Log lines after 1 second = 557 /tmp/__perf_test.log.026AI
+> >   SPE hang test: PASS
+> >   Cleaning up files...
+> >   test child finished with 0
+> >   ---- end ----
+> >   Check Arm SPE trace data in workload with forks: Ok
+> > 
+> > Signed-off-by: German Gomez <german.gomez@arm.com>
+> 
+> Reviewed-by: James Clark <james.clark@arm.com>
 
-Signed-off-by: keliu <liuke94@huawei.com>
----
- drivers/tty/serdev/core.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Thanks for review and popping up this patch, James.  LGTM:
 
-diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-index 0180e1e4e75d..213f8cb99661 100644
---- a/drivers/tty/serdev/core.c
-+++ b/drivers/tty/serdev/core.c
-@@ -75,7 +75,7 @@ static bool is_serdev_device(const struct device *dev)
- static void serdev_ctrl_release(struct device *dev)
- {
- 	struct serdev_controller *ctrl = to_serdev_controller(dev);
--	ida_simple_remove(&ctrl_ida, ctrl->nr);
-+	ida_free(&ctrl_ida, ctrl->nr);
- 	kfree(ctrl);
- }
- 
-@@ -486,7 +486,7 @@ struct serdev_controller *serdev_controller_alloc(struct device *parent,
- 	if (!ctrl)
- 		return NULL;
- 
--	id = ida_simple_get(&ctrl_ida, 0, 0, GFP_KERNEL);
-+	id = ida_alloc(&ctrl_ida, GFP_KERNEL);
- 	if (id < 0) {
- 		dev_err(parent,
- 			"unable to allocate serdev controller identifier.\n");
--- 
-2.25.1
-
+Reviewed-by: Leo Yan <leo.yan@linaro.org>
