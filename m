@@ -2,47 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D57CC4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEA38C38A2B
 	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:17:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353796AbiE0MQW (ORCPT
+        id S1354035AbiE0MRD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 08:16:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49818 "EHLO
+        Fri, 27 May 2022 08:17:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352263AbiE0MCi (ORCPT
+        with ESMTP id S1352588AbiE0MD4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 08:02:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54C651269A0;
-        Fri, 27 May 2022 04:53:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0BD2961DD0;
-        Fri, 27 May 2022 11:53:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18175C385A9;
-        Fri, 27 May 2022 11:53:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653652397;
-        bh=6k4JH3MCHIPlIoQ+f9lJhN3Yqi52fdTMrhU+Tn3/WXo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yqedq+OqJnLaLg0HUgDAW1HUOWFc7YZ1E0DECzNUX2YhOSWo+96ZA+hSDdvOvCdO0
-         0zcLwVXgT4SJDoWAXjeevoEr9N0XX/LA4XedQSuYgY89hq+BhJLACEotvpB2A1D94E
-         zRMcK5DitxuxrMefbjKEWohqIu8ShgXKOu1IWmUE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.15 121/145] random: use first 128 bits of input as fast init
-Date:   Fri, 27 May 2022 10:50:22 +0200
-Message-Id: <20220527084905.316714298@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084850.364560116@linuxfoundation.org>
-References: <20220527084850.364560116@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Fri, 27 May 2022 08:03:56 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42D63149164;
+        Fri, 27 May 2022 04:53:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653652415; x=1685188415;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=ZtvwdBswObarSG+JCXhEU2uLIuCFq0FhxZEUfuA19u0=;
+  b=JkHtmSU14EYPemC5M4HQJJx9j/G/ZQU1yT9zaveePaTwWc4O0JWdDAfE
+   pneG/5C1mO8ytIuuErHVG38kE/5YSAmTd1cyRxVOQnH1cGnP0SRaJcvy9
+   4bmtMBYJh/TrOX2CZbwGEzsrdX6gJ3Rr9HK1E+0BRP0JuyEmD1Xfp3KC/
+   SBS0wo2jKbrM01rHxFjjLnbGI1bWGnhT7jh9R8tQHmif8jGwpLlziZhn3
+   ibq/JsMOPngsC7jiWfBdxat8is/o/NXi+7kI4hOIxE37mqZ13Snptdd42
+   M/t0RMrK8v2Okg5GdBlWKz6+0yhtbi5BFhAHW0BmmezFgRzEptFL17fRE
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10359"; a="274464808"
+X-IronPort-AV: E=Sophos;i="5.91,255,1647327600"; 
+   d="scan'208";a="274464808"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2022 04:53:34 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,255,1647327600"; 
+   d="scan'208";a="746889599"
+Received: from dev2 (HELO DEV2.igk.intel.com) ([10.237.148.94])
+  by orsmga005.jf.intel.com with ESMTP; 27 May 2022 04:53:32 -0700
+From:   =?UTF-8?q?Amadeusz=20S=C5=82awi=C5=84ski?= 
+        <amadeuszx.slawinski@linux.intel.com>
+To:     Vineet Gupta <vgupta@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     Guenter Roeck <linux@roeck-us.net>,
+        linux-snps-arc@lists.infradead.org,
+        linux-m68k@lists.linux-m68k.org, sparclinux@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Amadeusz=20S=C5=82awi=C5=84ski?= 
+        <amadeuszx.slawinski@linux.intel.com>,
+        Cezary Rojewski <cezary.rojewski@intel.com>
+Subject: [PATCH v2 1/3] ARC: bitops: Change __fls to return unsigned long
+Date:   Fri, 27 May 2022 13:53:43 +0200
+Message-Id: <20220527115345.2588775-2-amadeuszx.slawinski@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220527115345.2588775-1-amadeuszx.slawinski@linux.intel.com>
+References: <20220527115345.2588775-1-amadeuszx.slawinski@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -50,307 +64,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+As per asm-generic definition and other architectures __fls should
+return unsigned long.
 
-commit 5c3b747ef54fa2a7318776777f6044540d99f721 upstream.
+No functional change is expected as return value should fit in unsigned
+long.
 
-Before, the first 64 bytes of input, regardless of how entropic it was,
-would be used to mutate the crng base key directly, and none of those
-bytes would be credited as having entropy. Then 256 bits of credited
-input would be accumulated, and only then would the rng transition from
-the earlier "fast init" phase into being actually initialized.
-
-The thinking was that by mixing and matching fast init and real init, an
-attacker who compromised the fast init state, considered easy to do
-given how little entropy might be in those first 64 bytes, would then be
-able to bruteforce bits from the actual initialization. By keeping these
-separate, bruteforcing became impossible.
-
-However, by not crediting potentially creditable bits from those first 64
-bytes of input, we delay initialization, and actually make the problem
-worse, because it means the user is drawing worse random numbers for a
-longer period of time.
-
-Instead, we can take the first 128 bits as fast init, and allow them to
-be credited, and then hold off on the next 128 bits until they've
-accumulated. This is still a wide enough margin to prevent bruteforcing
-the rng state, while still initializing much faster.
-
-Then, rather than trying to piecemeal inject into the base crng key at
-various points, instead just extract from the pool when we need it, for
-the crng_init==0 phase. Performance may even be better for the various
-inputs here, since there are likely more calls to mix_pool_bytes() then
-there are to get_random_bytes() during this phase of system execution.
-
-Since the preinit injection code is gone, bootloader randomness can then
-do something significantly more straight forward, removing the weird
-system_wq hack in hwgenerator randomness.
-
-Cc: Theodore Ts'o <tytso@mit.edu>
-Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Cezary Rojewski <cezary.rojewski@intel.com>
+Signed-off-by: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
 ---
- drivers/char/random.c |  146 ++++++++++++++++----------------------------------
- 1 file changed, 49 insertions(+), 97 deletions(-)
+ arch/arc/include/asm/bitops.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -233,10 +233,7 @@ static void _warn_unseeded_randomness(co
-  *
-  *********************************************************************/
- 
--enum {
--	CRNG_RESEED_INTERVAL = 300 * HZ,
--	CRNG_INIT_CNT_THRESH = 2 * CHACHA_KEY_SIZE
--};
-+enum { CRNG_RESEED_INTERVAL = 300 * HZ };
- 
- static struct {
- 	u8 key[CHACHA_KEY_SIZE] __aligned(__alignof__(long));
-@@ -260,6 +257,8 @@ static DEFINE_PER_CPU(struct crng, crngs
- 
- /* Used by crng_reseed() to extract a new seed from the input pool. */
- static bool drain_entropy(void *buf, size_t nbytes);
-+/* Used by crng_make_state() to extract a new seed when crng_init==0. */
-+static void extract_entropy(void *buf, size_t nbytes);
- 
+diff --git a/arch/arc/include/asm/bitops.h b/arch/arc/include/asm/bitops.h
+index bdb7e190a294..f5a936496f06 100644
+--- a/arch/arc/include/asm/bitops.h
++++ b/arch/arc/include/asm/bitops.h
+@@ -82,7 +82,7 @@ static inline __attribute__ ((const)) int fls(unsigned int x)
  /*
-  * This extracts a new crng key from the input pool, but only if there is a
-@@ -384,17 +383,20 @@ static void crng_make_state(u32 chacha_s
- 	/*
- 	 * For the fast path, we check whether we're ready, unlocked first, and
- 	 * then re-check once locked later. In the case where we're really not
--	 * ready, we do fast key erasure with the base_crng directly, because
--	 * this is what crng_pre_init_inject() mutates during early init.
-+	 * ready, we do fast key erasure with the base_crng directly, extracting
-+	 * when crng_init==0.
- 	 */
- 	if (!crng_ready()) {
- 		bool ready;
- 
- 		spin_lock_irqsave(&base_crng.lock, flags);
- 		ready = crng_ready();
--		if (!ready)
-+		if (!ready) {
-+			if (crng_init == 0)
-+				extract_entropy(base_crng.key, sizeof(base_crng.key));
- 			crng_fast_key_erasure(base_crng.key, chacha_state,
- 					      random_data, random_data_len);
-+		}
- 		spin_unlock_irqrestore(&base_crng.lock, flags);
- 		if (!ready)
- 			return;
-@@ -435,48 +437,6 @@ static void crng_make_state(u32 chacha_s
- 	local_unlock_irqrestore(&crngs.lock, flags);
- }
- 
--/*
-- * This function is for crng_init == 0 only. It loads entropy directly
-- * into the crng's key, without going through the input pool. It is,
-- * generally speaking, not very safe, but we use this only at early
-- * boot time when it's better to have something there rather than
-- * nothing.
-- *
-- * If account is set, then the crng_init_cnt counter is incremented.
-- * This shouldn't be set by functions like add_device_randomness(),
-- * where we can't trust the buffer passed to it is guaranteed to be
-- * unpredictable (so it might not have any entropy at all).
-- */
--static void crng_pre_init_inject(const void *input, size_t len, bool account)
--{
--	static int crng_init_cnt = 0;
--	struct blake2s_state hash;
--	unsigned long flags;
--
--	blake2s_init(&hash, sizeof(base_crng.key));
--
--	spin_lock_irqsave(&base_crng.lock, flags);
--	if (crng_init != 0) {
--		spin_unlock_irqrestore(&base_crng.lock, flags);
--		return;
--	}
--
--	blake2s_update(&hash, base_crng.key, sizeof(base_crng.key));
--	blake2s_update(&hash, input, len);
--	blake2s_final(&hash, base_crng.key);
--
--	if (account) {
--		crng_init_cnt += min_t(size_t, len, CRNG_INIT_CNT_THRESH - crng_init_cnt);
--		if (crng_init_cnt >= CRNG_INIT_CNT_THRESH)
--			crng_init = 1;
--	}
--
--	spin_unlock_irqrestore(&base_crng.lock, flags);
--
--	if (crng_init == 1)
--		pr_notice("fast init done\n");
--}
--
- static void _get_random_bytes(void *buf, size_t nbytes)
- {
- 	u32 chacha_state[CHACHA_STATE_WORDS];
-@@ -789,7 +749,8 @@ EXPORT_SYMBOL(get_random_bytes_arch);
- 
- enum {
- 	POOL_BITS = BLAKE2S_HASH_SIZE * 8,
--	POOL_MIN_BITS = POOL_BITS /* No point in settling for less. */
-+	POOL_MIN_BITS = POOL_BITS, /* No point in settling for less. */
-+	POOL_FAST_INIT_BITS = POOL_MIN_BITS / 2
- };
- 
- /* For notifying userspace should write into /dev/random. */
-@@ -826,24 +787,6 @@ static void mix_pool_bytes(const void *i
- 	spin_unlock_irqrestore(&input_pool.lock, flags);
- }
- 
--static void credit_entropy_bits(size_t nbits)
--{
--	unsigned int entropy_count, orig, add;
--
--	if (!nbits)
--		return;
--
--	add = min_t(size_t, nbits, POOL_BITS);
--
--	do {
--		orig = READ_ONCE(input_pool.entropy_count);
--		entropy_count = min_t(unsigned int, POOL_BITS, orig + add);
--	} while (cmpxchg(&input_pool.entropy_count, orig, entropy_count) != orig);
--
--	if (!crng_ready() && entropy_count >= POOL_MIN_BITS)
--		crng_reseed();
--}
--
- /*
-  * This is an HKDF-like construction for using the hashed collected entropy
-  * as a PRF key, that's then expanded block-by-block.
-@@ -909,6 +852,33 @@ static bool drain_entropy(void *buf, siz
- 	return true;
- }
- 
-+static void credit_entropy_bits(size_t nbits)
-+{
-+	unsigned int entropy_count, orig, add;
-+	unsigned long flags;
-+
-+	if (!nbits)
-+		return;
-+
-+	add = min_t(size_t, nbits, POOL_BITS);
-+
-+	do {
-+		orig = READ_ONCE(input_pool.entropy_count);
-+		entropy_count = min_t(unsigned int, POOL_BITS, orig + add);
-+	} while (cmpxchg(&input_pool.entropy_count, orig, entropy_count) != orig);
-+
-+	if (!crng_ready() && entropy_count >= POOL_MIN_BITS)
-+		crng_reseed();
-+	else if (unlikely(crng_init == 0 && entropy_count >= POOL_FAST_INIT_BITS)) {
-+		spin_lock_irqsave(&base_crng.lock, flags);
-+		if (crng_init == 0) {
-+			extract_entropy(base_crng.key, sizeof(base_crng.key));
-+			crng_init = 1;
-+		}
-+		spin_unlock_irqrestore(&base_crng.lock, flags);
-+	}
-+}
-+
- 
- /**********************************************************************
-  *
-@@ -951,9 +921,9 @@ static bool drain_entropy(void *buf, siz
-  * entropy as specified by the caller. If the entropy pool is full it will
-  * block until more entropy is needed.
-  *
-- * add_bootloader_randomness() is the same as add_hwgenerator_randomness() or
-- * add_device_randomness(), depending on whether or not the configuration
-- * option CONFIG_RANDOM_TRUST_BOOTLOADER is set.
-+ * add_bootloader_randomness() is called by bootloader drivers, such as EFI
-+ * and device tree, and credits its input depending on whether or not the
-+ * configuration option CONFIG_RANDOM_TRUST_BOOTLOADER is set.
-  *
-  * add_interrupt_randomness() uses the interrupt timing as random
-  * inputs to the entropy pool. Using the cycle counters and the irq source
-@@ -1033,9 +1003,6 @@ void add_device_randomness(const void *b
- 	unsigned long entropy = random_get_entropy();
- 	unsigned long flags;
- 
--	if (crng_init == 0 && size)
--		crng_pre_init_inject(buf, size, false);
--
- 	spin_lock_irqsave(&input_pool.lock, flags);
- 	_mix_pool_bytes(&entropy, sizeof(entropy));
- 	_mix_pool_bytes(buf, size);
-@@ -1151,12 +1118,6 @@ void rand_initialize_disk(struct gendisk
- void add_hwgenerator_randomness(const void *buffer, size_t count,
- 				size_t entropy)
- {
--	if (unlikely(crng_init == 0 && entropy < POOL_MIN_BITS)) {
--		crng_pre_init_inject(buffer, count, true);
--		mix_pool_bytes(buffer, count);
--		return;
--	}
--
- 	/*
- 	 * Throttle writing if we're above the trickle threshold.
- 	 * We'll be woken up again once below POOL_MIN_BITS, when
-@@ -1164,7 +1125,7 @@ void add_hwgenerator_randomness(const vo
- 	 * CRNG_RESEED_INTERVAL has elapsed.
- 	 */
- 	wait_event_interruptible_timeout(random_write_wait,
--			!system_wq || kthread_should_stop() ||
-+			kthread_should_stop() ||
- 			input_pool.entropy_count < POOL_MIN_BITS,
- 			CRNG_RESEED_INTERVAL);
- 	mix_pool_bytes(buffer, count);
-@@ -1173,17 +1134,14 @@ void add_hwgenerator_randomness(const vo
- EXPORT_SYMBOL_GPL(add_hwgenerator_randomness);
- 
- /*
-- * Handle random seed passed by bootloader.
-- * If the seed is trustworthy, it would be regarded as hardware RNGs. Otherwise
-- * it would be regarded as device data.
-- * The decision is controlled by CONFIG_RANDOM_TRUST_BOOTLOADER.
-+ * Handle random seed passed by bootloader, and credit it if
-+ * CONFIG_RANDOM_TRUST_BOOTLOADER is set.
+  * __fls: Similar to fls, but zero based (0-31)
   */
- void add_bootloader_randomness(const void *buf, size_t size)
+-static inline __attribute__ ((const)) int __fls(unsigned long x)
++static inline __attribute__ ((const)) unsigned long __fls(unsigned long x)
  {
-+	mix_pool_bytes(buf, size);
- 	if (trust_bootloader)
--		add_hwgenerator_randomness(buf, size, size * 8);
--	else
--		add_device_randomness(buf, size);
-+		credit_entropy_bits(size * 8);
- }
- EXPORT_SYMBOL_GPL(add_bootloader_randomness);
- 
-@@ -1283,13 +1241,8 @@ static void mix_interrupt_randomness(str
- 	fast_pool->last = jiffies;
- 	local_irq_enable();
- 
--	if (unlikely(crng_init == 0)) {
--		crng_pre_init_inject(pool, sizeof(pool), true);
--		mix_pool_bytes(pool, sizeof(pool));
--	} else {
--		mix_pool_bytes(pool, sizeof(pool));
--		credit_entropy_bits(1);
--	}
-+	mix_pool_bytes(pool, sizeof(pool));
-+	credit_entropy_bits(1);
- 
- 	memzero_explicit(pool, sizeof(pool));
- }
-@@ -1311,8 +1264,7 @@ void add_interrupt_randomness(int irq)
- 	if (new_count & MIX_INFLIGHT)
- 		return;
- 
--	if (new_count < 64 && (!time_is_before_jiffies(fast_pool->last + HZ) ||
--			       unlikely(crng_init == 0)))
-+	if (new_count < 64 && !time_is_before_jiffies(fast_pool->last + HZ))
- 		return;
- 
- 	if (unlikely(!fast_pool->mix.func))
-
+ 	if (!x)
+ 		return 0;
+@@ -131,7 +131,7 @@ static inline __attribute__ ((const)) int fls(unsigned int x)
+ /*
+  * __fls: Similar to fls, but zero based (0-31). Also 0 if no bit set
+  */
+-static inline __attribute__ ((const)) int __fls(unsigned long x)
++static inline __attribute__ ((const)) unsigned long __fls(unsigned long x)
+ {
+ 	/* FLS insn has exactly same semantics as the API */
+ 	return	__builtin_arc_fls(x);
+-- 
+2.25.1
 
