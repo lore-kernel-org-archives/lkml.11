@@ -2,115 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7736DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 15:58:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 516BDC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 15:58:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354177AbiE0P6L (ORCPT
+        id S1354073AbiE0P6O (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 11:58:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45428 "EHLO
+        Fri, 27 May 2022 11:58:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353864AbiE0P5W (ORCPT
+        with ESMTP id S1353916AbiE0P5J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 11:57:22 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16CAA66697;
-        Fri, 27 May 2022 08:56:52 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: alyssa)
-        with ESMTPSA id 3D3D51F463CB
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1653667011;
-        bh=n5RHKvs6olD8LksjT484qw9Rh0JisRhUIQ7ggPkOqx4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Q6kTO5Ap+i5kmaF5um389IzxbauaGndK+JrcD4hEezqh4whcGeSqpoC5zDuWw57KI
-         8fh+bDAIu8408A79BVtUamQIZPLFV90q8BABnbTh44p5m/jr3XQRDvEP68ncgCedK7
-         iWk55rkqi/komv0pBkw1cQB5acBLw5+u+DvpIejXBAgHDD4NeyeS1JVK49uoVmHCS2
-         mbrHXxwVcX6JnH811NUonPSSXnHqfm2ChKbnZSgvS/P41yiK/z0a3BBHsiTV5+ccK9
-         oLlgD/Myd6w2UL6nCNj7WWOM5ohWFrt2ikdxXL5RtRt+P5YoENL4mecu8Xj8kkWW7F
-         NZnyFvgN0M2lA==
-Date:   Fri, 27 May 2022 11:56:36 -0400
-From:   Alyssa Rosenzweig <alyssa@collabora.com>
-To:     Dmitry Osipenko <dmitry.osipenko@collabora.com>
-Cc:     David Airlie <airlied@linux.ie>, Gerd Hoffmann <kraxel@redhat.com>,
-        Gurchetan Singh <gurchetansingh@chromium.org>,
-        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
-        Daniel Almeida <daniel.almeida@collabora.com>,
-        Gert Wollny <gert.wollny@collabora.com>,
-        Gustavo Padovan <gustavo.padovan@collabora.com>,
-        Daniel Stone <daniel@fooishbar.org>,
-        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Rob Herring <robh@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
-        Rob Clark <robdclark@gmail.com>,
-        Emil Velikov <emil.l.velikov@gmail.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Qiang Yu <yuq825@gmail.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Christian K??nig <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Tomasz Figa <tfiga@chromium.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        Dmitry Osipenko <digetx@gmail.com>,
-        linux-tegra@vger.kernel.org, linux-media@vger.kernel.org,
-        linaro-mm-sig@lists.linaro.org, amd-gfx@lists.freedesktop.org,
-        intel-gfx@lists.freedesktop.org, kernel@collabora.com
-Subject: Re: [PATCH v6 04/22] drm/panfrost: Fix shrinker list corruption by
- madvise IOCTL
-Message-ID: <YpD0tCuCd7HzwWg6@maud>
-References: <20220526235040.678984-1-dmitry.osipenko@collabora.com>
- <20220526235040.678984-5-dmitry.osipenko@collabora.com>
+        Fri, 27 May 2022 11:57:09 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E2A9A60044
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 08:56:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653667002;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Mp+uwMRPnuRsZiZ9Kz2NLFRaPoq+EAB2LDuMVK5icXw=;
+        b=F6v4J9YshvVQhDqUEeTPSBgv0eFxzM+UvoYL347hMMsX+oVK1FH12TObEgPf6bG692ugDP
+        A5Gbhcs2U0XfoEqge8qqJVtD3XRNSHGTKumV2FmrfIaHxSJ0an+fYHcNvAMkdtRedhDhwh
+        CbiiJ3gS2jJ4OJQTaWhaB19TsoJLbAc=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-384-b2e1gTZ7NICr_EkU5VIDhA-1; Fri, 27 May 2022 11:56:39 -0400
+X-MC-Unique: b2e1gTZ7NICr_EkU5VIDhA-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0C23A80B71A;
+        Fri, 27 May 2022 15:56:39 +0000 (UTC)
+Received: from fedora.redhat.com (unknown [10.40.192.126])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C918C2166B26;
+        Fri, 27 May 2022 15:56:36 +0000 (UTC)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Siddharth Chandrasekaran <sidcha@amazon.de>,
+        Yuan Yao <yuan.yao@linux.intel.com>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v5 18/37] KVM: x86: hyper-v: Introduce fast guest_hv_cpuid_has_l2_tlb_flush() check
+Date:   Fri, 27 May 2022 17:55:27 +0200
+Message-Id: <20220527155546.1528910-19-vkuznets@redhat.com>
+In-Reply-To: <20220527155546.1528910-1-vkuznets@redhat.com>
+References: <20220527155546.1528910-1-vkuznets@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220526235040.678984-5-dmitry.osipenko@collabora.com>
+Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Acked-by: Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>
+Introduce a helper to quickly check if KVM needs to handle VMCALL/VMMCALL
+from L2 in L0 to process L2 TLB flush requests.
 
-On Fri, May 27, 2022 at 02:50:22AM +0300, Dmitry Osipenko wrote:
-> Calling madvise IOCTL twice on BO causes memory shrinker list corruption
-> and crashes kernel because BO is already on the list and it's added to
-> the list again, while BO should be removed from from the list before it's
-> re-added. Fix it.
-> 
-> Cc: stable@vger.kernel.org
-> Fixes: 013b65101315 ("drm/panfrost: Add madvise and shrinker support")
-> Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
-> ---
->  drivers/gpu/drm/panfrost/panfrost_drv.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/panfrost/panfrost_drv.c b/drivers/gpu/drm/panfrost/panfrost_drv.c
-> index 087e69b98d06..b1e6d238674f 100644
-> --- a/drivers/gpu/drm/panfrost/panfrost_drv.c
-> +++ b/drivers/gpu/drm/panfrost/panfrost_drv.c
-> @@ -433,8 +433,8 @@ static int panfrost_ioctl_madvise(struct drm_device *dev, void *data,
->  
->  	if (args->retained) {
->  		if (args->madv == PANFROST_MADV_DONTNEED)
-> -			list_add_tail(&bo->base.madv_list,
-> -				      &pfdev->shrinker_list);
-> +			list_move_tail(&bo->base.madv_list,
-> +				       &pfdev->shrinker_list);
->  		else if (args->madv == PANFROST_MADV_WILLNEED)
->  			list_del_init(&bo->base.madv_list);
->  	}
-> -- 
-> 2.35.3
-> 
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+---
+ arch/x86/include/asm/kvm_host.h | 1 +
+ arch/x86/kvm/hyperv.c           | 6 ++++++
+ arch/x86/kvm/hyperv.h           | 7 +++++++
+ 3 files changed, 14 insertions(+)
+
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index 16fdea767209..25113cc9b050 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -642,6 +642,7 @@ struct kvm_vcpu_hv {
+ 		u32 enlightenments_eax; /* HYPERV_CPUID_ENLIGHTMENT_INFO.EAX */
+ 		u32 enlightenments_ebx; /* HYPERV_CPUID_ENLIGHTMENT_INFO.EBX */
+ 		u32 syndbg_cap_eax; /* HYPERV_CPUID_SYNDBG_PLATFORM_CAPABILITIES.EAX */
++		u32 nested_features_eax; /* HYPERV_CPUID_NESTED_FEATURES.EAX */
+ 	} cpuid_cache;
+ 
+ 	struct kvm_vcpu_hv_tlb_flush_fifo tlb_flush_fifo[HV_NR_TLB_FLUSH_FIFOS];
+diff --git a/arch/x86/kvm/hyperv.c b/arch/x86/kvm/hyperv.c
+index 740190917c1c..4396d75588d8 100644
+--- a/arch/x86/kvm/hyperv.c
++++ b/arch/x86/kvm/hyperv.c
+@@ -2229,6 +2229,12 @@ void kvm_hv_set_cpuid(struct kvm_vcpu *vcpu)
+ 		hv_vcpu->cpuid_cache.syndbg_cap_eax = entry->eax;
+ 	else
+ 		hv_vcpu->cpuid_cache.syndbg_cap_eax = 0;
++
++	entry = kvm_find_cpuid_entry(vcpu, HYPERV_CPUID_NESTED_FEATURES, 0);
++	if (entry)
++		hv_vcpu->cpuid_cache.nested_features_eax = entry->eax;
++	else
++		hv_vcpu->cpuid_cache.nested_features_eax = 0;
+ }
+ 
+ int kvm_hv_set_enforce_cpuid(struct kvm_vcpu *vcpu, bool enforce)
+diff --git a/arch/x86/kvm/hyperv.h b/arch/x86/kvm/hyperv.h
+index 7778b3a5913c..2aa6fb7fc599 100644
+--- a/arch/x86/kvm/hyperv.h
++++ b/arch/x86/kvm/hyperv.h
+@@ -170,6 +170,13 @@ static inline void kvm_hv_vcpu_empty_flush_tlb(struct kvm_vcpu *vcpu, bool is_gu
+ 	kfifo_reset_out(&tlb_flush_fifo->entries);
+ }
+ 
++static inline bool guest_hv_cpuid_has_l2_tlb_flush(struct kvm_vcpu *vcpu)
++{
++	struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
++
++	return hv_vcpu && (hv_vcpu->cpuid_cache.nested_features_eax & HV_X64_NESTED_DIRECT_FLUSH);
++}
++
+ static inline bool kvm_hv_is_tlb_flush_hcall(struct kvm_vcpu *vcpu)
+ {
+ 	struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
+-- 
+2.35.3
+
