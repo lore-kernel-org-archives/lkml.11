@@ -2,126 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91C2AC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 06:06:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ABB6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 06:08:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239951AbiE0GGy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 02:06:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48942 "EHLO
+        id S241311AbiE0GIW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 02:08:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233378AbiE0GGu (ORCPT
+        with ESMTP id S231739AbiE0GIR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 02:06:50 -0400
-Received: from conssluserg-01.nifty.com (conssluserg-01.nifty.com [210.131.2.80])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E96BD13D2A;
-        Thu, 26 May 2022 23:06:48 -0700 (PDT)
-Received: from mail-pg1-f175.google.com (mail-pg1-f175.google.com [209.85.215.175]) (authenticated)
-        by conssluserg-01.nifty.com with ESMTP id 24R66Ki6015921;
-        Fri, 27 May 2022 15:06:20 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-01.nifty.com 24R66Ki6015921
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1653631580;
-        bh=uOIDWJ8nKzaQ9BGe8N8M3AtTjWOiIAuF9sunOv+fNxY=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=Q/hghU838DgUDVdTkg2Jck4N4OhCRplB5FYYBOPWKSYFF9sxNLbnBBgLvNrg5CtLo
-         VX+78YcZyJNpBCd5r3QpBQsVDYLuQui6aryDrTagkb/Lw7CKBbWSb/NGQUx1afJw1W
-         jwqypzo9drZ7n/1mY7FtHffNVqtGU0FkLrYmH4fl6wbG520+ooJK4PTCf+puGmuQ+l
-         hwNuEqMlyvn1/jlzypyH597omXMz0me0FneCFJ4ge+WgnmvscndxBlFY9ne5ZDSiNg
-         RwJAUNdPsXtzqGoTOgXxlgoTXg4GKoRJGtwDIv2vavGcWJmPE3BBO+JUPCXyP8CzaO
-         Pw9XClt8tYOWg==
-X-Nifty-SrcIP: [209.85.215.175]
-Received: by mail-pg1-f175.google.com with SMTP id 137so3124178pgb.5;
-        Thu, 26 May 2022 23:06:20 -0700 (PDT)
-X-Gm-Message-State: AOAM532DJMlndZFkmrXPZ3RfOiHDoXQLSlp7y3uGlCaEZEaKXXzyw+63
-        1TuvB2nTIIDV9X1CSQAT4pSH/vVa75brYbQX0pw=
-X-Google-Smtp-Source: ABdhPJzzO5dyztT/2btdqC4Zkc22mLsfsDF2KfG2J/NwIT8XsiiObhGku8b0kdM9W+kSN8gAWSNG43N2Q47sjPYEGJQ=
-X-Received: by 2002:a05:6a00:234b:b0:519:c7c:e58b with SMTP id
- j11-20020a056a00234b00b005190c7ce58bmr8125105pfj.32.1653631579782; Thu, 26
- May 2022 23:06:19 -0700 (PDT)
+        Fri, 27 May 2022 02:08:17 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0E2E13F00
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 23:08:15 -0700 (PDT)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.53])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4L8Z7g2rQmz1JBcS;
+        Fri, 27 May 2022 14:06:39 +0800 (CST)
+Received: from dggpemm500018.china.huawei.com (7.185.36.111) by
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 27 May 2022 14:08:12 +0800
+Received: from localhost.localdomain (10.175.112.125) by
+ dggpemm500018.china.huawei.com (7.185.36.111) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 27 May 2022 14:08:11 +0800
+From:   keliu <liuke94@huawei.com>
+To:     <TheSven73@gmail.com>, <gregkh@linuxfoundation.org>,
+        <linux-staging@lists.linux.dev>, <linux-kernel@vger.kernel.org>
+CC:     keliu <liuke94@huawei.com>
+Subject: [PATCH] staging: fieldbus: Directly use ida_alloc()/free()
+Date:   Fri, 27 May 2022 06:29:38 +0000
+Message-ID: <20220527062938.2356319-1-liuke94@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220523142431.10ff2f77@canb.auug.org.au> <20220523154758.11668628@canb.auug.org.au>
- <20220523162307.45dycvqld7maaj7l@treble> <CAK7LNAR5XWPhmTJV42sYiFCDan6DfB8gsOCJOWiqz4MV1cdE4Q@mail.gmail.com>
- <20220527044711.hrqxx5gz3jghydax@treble>
-In-Reply-To: <20220527044711.hrqxx5gz3jghydax@treble>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Fri, 27 May 2022 15:04:57 +0900
-X-Gmail-Original-Message-ID: <CAK7LNATeHZK+qv9e375fsZwtiuUE_MrfBA9Rhzz3uY8tF4EXUg@mail.gmail.com>
-Message-ID: <CAK7LNATeHZK+qv9e375fsZwtiuUE_MrfBA9Rhzz3uY8tF4EXUg@mail.gmail.com>
-Subject: Re: linux-next: manual merge of the tip tree with the kbuild tree
-To:     Josh Poimboeuf <jpoimboe@kernel.org>
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.112.125]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500018.china.huawei.com (7.185.36.111)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 27, 2022 at 1:47 PM Josh Poimboeuf <jpoimboe@kernel.org> wrote:
->
-> On Fri, May 27, 2022 at 11:19:02AM +0900, Masahiro Yamada wrote:
-> > [1] original behavior in Josh's commit
-> >
-> > $ git checkout 753da4179d08b625d8df72e97724e22749969fd3
-> > $ make defconfig
-> > $ make -j8 kernel/
-> > $ head -n 1   kernel/.fork.o.cmd
-> >
-> >
-> > I do not see the "--linked" parameter in the objtool command.
-> >
-> >
-> >
-> >
-> > [2] behavior in linux-next
-> >
-> >
-> > $ git checkout next-20220523
-> > $ make defconfig
-> > $ make -j8 kernel/
-> > $ head -n 1   kernel/.fork.o.cmd
-> >
-> > I see the "--linked" parameter in the objtool command.
-> >
-> > kernel/fork.o  is a direct output from GCC,
-> > not from linker.
->
-> Yes, good catch.  That flag should only be used for linked objects like
-> vmlinux.o or some_module.o.
->
-> Objtool only runs on such objects when CONFIG_LTO_CLANG,
-> CONFIG_X86_KERNEL_IBT, or CONFIG_NOINSTR_VALIDATION (vmlinux.o-only) is
-> enabled.
->
-> --
-> Josh
+Use ida_alloc()/ida_free() instead of deprecated
+ida_simple_get()/ida_simple_remove() .
 
+Signed-off-by: keliu <liuke94@huawei.com>
+---
+ drivers/staging/fieldbus/anybuss/arcx-anybus.c | 6 +++---
+ drivers/staging/fieldbus/dev_core.c            | 4 ++--
+ 2 files changed, 5 insertions(+), 5 deletions(-)
 
-When CONFIG_LTO_CLANG=y or CONFIG_X86_KERNEL_IBT=y
-is "--linked" necessary for single-object modules?
-
-
-"single-object module" means a module that consists of only one object.
-
-See this figure:
-https://patchwork.kernel.org/project/linux-kbuild/patch/20220513113930.10488-6-masahiroy@kernel.org/
-
-
-
-
-In your commit, --linked is passed to all *.prelink.o
-whether it consists of a single object or links
-multiple objects.
-
-
-
-
-
+diff --git a/drivers/staging/fieldbus/anybuss/arcx-anybus.c b/drivers/staging/fieldbus/anybuss/arcx-anybus.c
+index 9af2e63050d1..381d710aa6ce 100644
+--- a/drivers/staging/fieldbus/anybuss/arcx-anybus.c
++++ b/drivers/staging/fieldbus/anybuss/arcx-anybus.c
+@@ -282,7 +282,7 @@ static int controller_probe(struct platform_device *pdev)
+ 		}
+ 	}
+ 
+-	id = ida_simple_get(&controller_index_ida, 0, 0, GFP_KERNEL);
++	id = ida_alloc(&controller_index_ida, GFP_KERNEL);
+ 	if (id < 0) {
+ 		err = id;
+ 		goto out_reset;
+@@ -315,7 +315,7 @@ static int controller_probe(struct platform_device *pdev)
+ out_dev:
+ 	put_device(cd->class_dev);
+ out_ida:
+-	ida_simple_remove(&controller_index_ida, id);
++	ida_free(&controller_index_ida, id);
+ out_reset:
+ 	gpiod_set_value_cansleep(cd->reset_gpiod, 1);
+ 	return err;
+@@ -327,7 +327,7 @@ static int controller_remove(struct platform_device *pdev)
+ 	int id = cd->class_dev->id;
+ 
+ 	device_unregister(cd->class_dev);
+-	ida_simple_remove(&controller_index_ida, id);
++	ida_free(&controller_index_ida, id);
+ 	gpiod_set_value_cansleep(cd->reset_gpiod, 1);
+ 	return 0;
+ }
+diff --git a/drivers/staging/fieldbus/dev_core.c b/drivers/staging/fieldbus/dev_core.c
+index 5aab734606ea..b5e55890001e 100644
+--- a/drivers/staging/fieldbus/dev_core.c
++++ b/drivers/staging/fieldbus/dev_core.c
+@@ -251,7 +251,7 @@ static void __fieldbus_dev_unregister(struct fieldbus_dev *fb)
+ 		return;
+ 	device_destroy(&fieldbus_class, fb->cdev.dev);
+ 	cdev_del(&fb->cdev);
+-	ida_simple_remove(&fieldbus_ida, fb->id);
++	ida_free(&fieldbus_ida, fb->id);
+ }
+ 
+ void fieldbus_dev_unregister(struct fieldbus_dev *fb)
+@@ -294,7 +294,7 @@ static int __fieldbus_dev_register(struct fieldbus_dev *fb)
+ err_dev_create:
+ 	cdev_del(&fb->cdev);
+ err_cdev:
+-	ida_simple_remove(&fieldbus_ida, fb->id);
++	ida_free(&fieldbus_ida, fb->id);
+ 	return err;
+ }
+ 
 -- 
-Best Regards
-Masahiro Yamada
+2.25.1
+
