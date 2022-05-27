@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC231C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:12:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CB83C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:12:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351971AbiE0MMb (ORCPT
+        id S1343795AbiE0MMg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 08:12:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54662 "EHLO
+        Fri, 27 May 2022 08:12:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344083AbiE0L5S (ORCPT
+        with ESMTP id S1352492AbiE0LzY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:57:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D31D6356;
-        Fri, 27 May 2022 04:52:02 -0700 (PDT)
+        Fri, 27 May 2022 07:55:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 578B614AF7C;
+        Fri, 27 May 2022 04:48:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8782961DB2;
-        Fri, 27 May 2022 11:52:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E026C385A9;
-        Fri, 27 May 2022 11:52:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BD09661DBF;
+        Fri, 27 May 2022 11:48:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BECE6C3411B;
+        Fri, 27 May 2022 11:48:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653652321;
-        bh=S0GE2QBe3vQH8SstAe6gAuiluPqa7/LtbKcsMUsmrik=;
+        s=korg; t=1653652115;
+        bh=0m6IMPAF3aFYuYZnc9e3p4j0SYuukOg9VWQ2U6J8brs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X8AwUcx4QR7ZaYGNKdZe2PzAfoDYsKWFoEclowRSmP/uCksuMeubrvc0qQIVAuQjF
-         /EdWMmfSeZF9AsLvCY6QxlkIGtPRrRFdw8oYLZEtJFjSUkgEyWX6+m0zR7FAHjncWC
-         +Ey+Edd8MajUBxljkDRmltGvXp2reup9ZOKtUKHc=
+        b=OkH5RJkXjB/HvkKgRml4cEjR+0ZE7d0iSNl9C3TfP+9sAOTlilNkxuqjH47pWCU7k
+         PlV/SbJlkzpRPpRPBc5EBoee9fmVFDqeJ1PjbozjYYBqZtI49d9pHHYCGiPu6hIK15
+         hhZIr+gDHnYIaoJMjvxxJ930ihhFZvCoG9/o5dhc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Arnd Bergmann <arnd@arndb.de>, Helge Deller <deller@gmx.de>,
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.10 124/163] parisc: define get_cycles macro for arch-override
-Date:   Fri, 27 May 2022 10:50:04 +0200
-Message-Id: <20220527084845.201162594@linuxfoundation.org>
+Subject: [PATCH 5.10 089/163] random: group sysctl functions
+Date:   Fri, 27 May 2022 10:49:29 +0200
+Message-Id: <20220527084840.463963749@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
 References: <20220527084828.156494029@linuxfoundation.org>
@@ -52,37 +52,86 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 8865bbe6ba1120e67f72201b7003a16202cd42be upstream.
+commit 0deff3c43206c24e746b1410f11125707ad3040e upstream.
 
-PA-RISC defines a get_cycles() function, but it does not do the usual
-`#define get_cycles get_cycles` dance, making it impossible for generic
-code to see if an arch-specific function was defined. While the
-get_cycles() ifdef is not currently used, the following timekeeping
-patch in this series will depend on the macro existing (or not existing)
-when defining random_get_entropy().
+This pulls all of the sysctl-focused functions into the sixth labeled
+section.
 
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Acked-by: Helge Deller <deller@gmx.de>
+No functional changes.
+
+Cc: Theodore Ts'o <tytso@mit.edu>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/parisc/include/asm/timex.h |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/char/random.c |   35 ++++++++++++++++++++++++++++++-----
+ 1 file changed, 30 insertions(+), 5 deletions(-)
 
---- a/arch/parisc/include/asm/timex.h
-+++ b/arch/parisc/include/asm/timex.h
-@@ -13,9 +13,10 @@
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -1693,9 +1693,34 @@ const struct file_operations urandom_fop
+ 	.llseek = noop_llseek,
+ };
  
- typedef unsigned long cycles_t;
++
+ /********************************************************************
+  *
+- * Sysctl interface
++ * Sysctl interface.
++ *
++ * These are partly unused legacy knobs with dummy values to not break
++ * userspace and partly still useful things. They are usually accessible
++ * in /proc/sys/kernel/random/ and are as follows:
++ *
++ * - boot_id - a UUID representing the current boot.
++ *
++ * - uuid - a random UUID, different each time the file is read.
++ *
++ * - poolsize - the number of bits of entropy that the input pool can
++ *   hold, tied to the POOL_BITS constant.
++ *
++ * - entropy_avail - the number of bits of entropy currently in the
++ *   input pool. Always <= poolsize.
++ *
++ * - write_wakeup_threshold - the amount of entropy in the input pool
++ *   below which write polls to /dev/random will unblock, requesting
++ *   more entropy, tied to the POOL_MIN_BITS constant. It is writable
++ *   to avoid breaking old userspaces, but writing to it does not
++ *   change any behavior of the RNG.
++ *
++ * - urandom_min_reseed_secs - fixed to the meaningless value "60".
++ *   It is writable to avoid breaking old userspaces, but writing
++ *   to it does not change any behavior of the RNG.
+  *
+  ********************************************************************/
  
--static inline cycles_t get_cycles (void)
-+static inline cycles_t get_cycles(void)
- {
- 	return mfctl(16);
- }
-+#define get_cycles get_cycles
+@@ -1703,8 +1728,8 @@ const struct file_operations urandom_fop
  
- #endif
+ #include <linux/sysctl.h>
+ 
+-static int random_min_urandom_seed = 60;
+-static int random_write_wakeup_bits = POOL_MIN_BITS;
++static int sysctl_random_min_urandom_seed = 60;
++static int sysctl_random_write_wakeup_bits = POOL_MIN_BITS;
+ static int sysctl_poolsize = POOL_BITS;
+ static char sysctl_bootid[16];
+ 
+@@ -1762,14 +1787,14 @@ struct ctl_table random_table[] = {
+ 	},
+ 	{
+ 		.procname	= "write_wakeup_threshold",
+-		.data		= &random_write_wakeup_bits,
++		.data		= &sysctl_random_write_wakeup_bits,
+ 		.maxlen		= sizeof(int),
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dointvec,
+ 	},
+ 	{
+ 		.procname	= "urandom_min_reseed_secs",
+-		.data		= &random_min_urandom_seed,
++		.data		= &sysctl_random_min_urandom_seed,
+ 		.maxlen		= sizeof(int),
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dointvec,
 
 
