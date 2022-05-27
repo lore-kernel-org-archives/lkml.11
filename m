@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B647CC41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C682EC4167E
 	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:11:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353295AbiE0MLB (ORCPT
+        id S1353341AbiE0MLF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 08:11:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57542 "EHLO
+        Fri, 27 May 2022 08:11:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351602AbiE0L4v (ORCPT
+        with ESMTP id S1353179AbiE0L4Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:56:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40D845FAE;
-        Fri, 27 May 2022 04:51:58 -0700 (PDT)
+        Fri, 27 May 2022 07:56:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 604CA134E3F;
+        Fri, 27 May 2022 04:49:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6DA90B824D2;
-        Fri, 27 May 2022 11:51:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA65FC34100;
-        Fri, 27 May 2022 11:51:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E1AE861D56;
+        Fri, 27 May 2022 11:49:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC72FC385A9;
+        Fri, 27 May 2022 11:49:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653652315;
-        bh=AkmbyX7kj5nPzG+eUDjqwRv35ba6cPqLkRss36eEYDQ=;
+        s=korg; t=1653652196;
+        bh=mZa8wpVOo+dJnkNkQMXBJ4VZGlqIRUrqht3GYNIezqI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yGm4FLrnOuj1ONq1I27bNK62ZSbrR4YVt3seJ0UqGp3HnX//8lOzGh7V9fTu9Wl8Q
-         3x5cBfEZdBsjrle5CTL4cKZqVQQpKlvszMY0E6oMzz8IyrBkTyryHX8OTuVhqcuMtI
-         swlOZXM5nH4r3Rw7hpBUxasMDHa2mvtvy5UUlUCk=
+        b=YU98psK8ECVovn56BuQyhCc1vT6/iTlAy1xIFmU4z1If5PW+jZKfkC05uNLK+/02R
+         4WDPp3WKz2iuCLFW7L0buEwNmA2dsYxCO/Fcs+3m0PszHHlpEJKjVnUQ1KguzxpTyC
+         7qLgFZ57/xcfbo7zwOYRMs3Diujw6yfNnbnaqatc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org
-Subject: [PATCH 5.10 133/163] x86/tsc: Use fallback for random_get_entropy() instead of zero
-Date:   Fri, 27 May 2022 10:50:13 +0200
-Message-Id: <20220527084846.711636071@linuxfoundation.org>
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.15 088/145] random: make consistent usage of crng_ready()
+Date:   Fri, 27 May 2022 10:49:49 +0200
+Message-Id: <20220527084901.347242398@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
-References: <20220527084828.156494029@linuxfoundation.org>
+In-Reply-To: <20220527084850.364560116@linuxfoundation.org>
+References: <20220527084850.364560116@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,71 +52,89 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 3bd4abc07a267e6a8b33d7f8717136e18f921c53 upstream.
+commit a96cfe2d427064325ecbf56df8816c6b871ec285 upstream.
 
-In the event that random_get_entropy() can't access a cycle counter or
-similar, falling back to returning 0 is suboptimal. Instead, fallback
-to calling random_get_entropy_fallback(), which isn't extremely high
-precision or guaranteed to be entropic, but is certainly better than
-returning zero all the time.
+Rather than sometimes checking `crng_init < 2`, we should always use the
+crng_ready() macro, so that should we change anything later, it's
+consistent. Additionally, that macro already has a likely() around it,
+which means we don't need to open code our own likely() and unlikely()
+annotations.
 
-If CONFIG_X86_TSC=n, then it's possible for the kernel to run on systems
-without RDTSC, such as 486 and certain 586, so the fallback code is only
-required for that case.
-
-As well, fix up both the new function and the get_cycles() function from
-which it was derived to use cpu_feature_enabled() rather than
-boot_cpu_has(), and use !IS_ENABLED() instead of #ifndef.
-
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Borislav Petkov <bp@alien8.de>
-Cc: x86@kernel.org
+Cc: Theodore Ts'o <tytso@mit.edu>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/include/asm/timex.h |    9 +++++++++
- arch/x86/include/asm/tsc.h   |    7 +++----
- 2 files changed, 12 insertions(+), 4 deletions(-)
+ drivers/char/random.c |   19 +++++++------------
+ 1 file changed, 7 insertions(+), 12 deletions(-)
 
---- a/arch/x86/include/asm/timex.h
-+++ b/arch/x86/include/asm/timex.h
-@@ -5,6 +5,15 @@
- #include <asm/processor.h>
- #include <asm/tsc.h>
- 
-+static inline unsigned long random_get_entropy(void)
-+{
-+	if (!IS_ENABLED(CONFIG_X86_TSC) &&
-+	    !cpu_feature_enabled(X86_FEATURE_TSC))
-+		return random_get_entropy_fallback();
-+	return rdtsc();
-+}
-+#define random_get_entropy random_get_entropy
-+
- /* Assume we use the PIT time source for the clock tick */
- #define CLOCK_TICK_RATE		PIT_TICK_RATE
- 
---- a/arch/x86/include/asm/tsc.h
-+++ b/arch/x86/include/asm/tsc.h
-@@ -20,13 +20,12 @@ extern void disable_TSC(void);
- 
- static inline cycles_t get_cycles(void)
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -125,18 +125,13 @@ static void try_to_generate_entropy(void
+  */
+ int wait_for_random_bytes(void)
  {
--#ifndef CONFIG_X86_TSC
--	if (!boot_cpu_has(X86_FEATURE_TSC))
-+	if (!IS_ENABLED(CONFIG_X86_TSC) &&
-+	    !cpu_feature_enabled(X86_FEATURE_TSC))
- 		return 0;
--#endif
+-	if (likely(crng_ready()))
+-		return 0;
 -
- 	return rdtsc();
+-	do {
++	while (!crng_ready()) {
+ 		int ret;
+ 		ret = wait_event_interruptible_timeout(crng_init_wait, crng_ready(), HZ);
+ 		if (ret)
+ 			return ret > 0 ? 0 : ret;
+-
+ 		try_to_generate_entropy();
+-	} while (!crng_ready());
+-
++	}
+ 	return 0;
  }
-+#define get_cycles get_cycles
+ EXPORT_SYMBOL(wait_for_random_bytes);
+@@ -293,7 +288,7 @@ static void crng_reseed(void)
+ 		++next_gen;
+ 	WRITE_ONCE(base_crng.generation, next_gen);
+ 	WRITE_ONCE(base_crng.birth, jiffies);
+-	if (crng_init < 2) {
++	if (!crng_ready()) {
+ 		crng_init = 2;
+ 		finalize_init = true;
+ 	}
+@@ -361,7 +356,7 @@ static void crng_make_state(u32 chacha_s
+ 	 * ready, we do fast key erasure with the base_crng directly, because
+ 	 * this is what crng_pre_init_inject() mutates during early init.
+ 	 */
+-	if (unlikely(!crng_ready())) {
++	if (!crng_ready()) {
+ 		bool ready;
  
- extern struct system_counterval_t convert_art_to_tsc(u64 art);
- extern struct system_counterval_t convert_art_ns_to_tsc(u64 art_ns);
+ 		spin_lock_irqsave(&base_crng.lock, flags);
+@@ -804,7 +799,7 @@ static void credit_entropy_bits(size_t n
+ 		entropy_count = min_t(unsigned int, POOL_BITS, orig + add);
+ 	} while (cmpxchg(&input_pool.entropy_count, orig, entropy_count) != orig);
+ 
+-	if (crng_init < 2 && entropy_count >= POOL_MIN_BITS)
++	if (!crng_ready() && entropy_count >= POOL_MIN_BITS)
+ 		crng_reseed();
+ }
+ 
+@@ -961,7 +956,7 @@ int __init rand_initialize(void)
+ 	extract_entropy(base_crng.key, sizeof(base_crng.key));
+ 	++base_crng.generation;
+ 
+-	if (arch_init && trust_cpu && crng_init < 2) {
++	if (arch_init && trust_cpu && !crng_ready()) {
+ 		crng_init = 2;
+ 		pr_notice("crng init done (trusting CPU's manufacturer)\n");
+ 	}
+@@ -1550,7 +1545,7 @@ static long random_ioctl(struct file *f,
+ 	case RNDRESEEDCRNG:
+ 		if (!capable(CAP_SYS_ADMIN))
+ 			return -EPERM;
+-		if (crng_init < 2)
++		if (!crng_ready())
+ 			return -ENODATA;
+ 		crng_reseed();
+ 		return 0;
 
 
