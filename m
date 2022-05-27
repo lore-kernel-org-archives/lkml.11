@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D5B0C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B647CC41535
 	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:11:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353251AbiE0MKt (ORCPT
+        id S1353295AbiE0MLB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 08:10:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57152 "EHLO
+        Fri, 27 May 2022 08:11:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353212AbiE0L4T (ORCPT
+        with ESMTP id S1351602AbiE0L4v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:56:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF48D15EA72;
-        Fri, 27 May 2022 04:50:07 -0700 (PDT)
+        Fri, 27 May 2022 07:56:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40D845FAE;
+        Fri, 27 May 2022 04:51:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 74194B824CA;
-        Fri, 27 May 2022 11:50:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB3E7C34100;
-        Fri, 27 May 2022 11:50:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6DA90B824D2;
+        Fri, 27 May 2022 11:51:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA65FC34100;
+        Fri, 27 May 2022 11:51:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653652205;
-        bh=7HTA8dBismSNtEddUBqn+LQFyLT1UhrR03jQn5QntLw=;
+        s=korg; t=1653652315;
+        bh=AkmbyX7kj5nPzG+eUDjqwRv35ba6cPqLkRss36eEYDQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jJ68XqT6fd2ooorFvTeaotE9Mx0bcUgypZjeXqK0iCZEsAixloC0whrqBInkaEq+c
-         ivtp/FpWeiFKlJtqE/b7MosReklaezKR3QHCLL0sTjoT8HFZHsWjpVnPbBvEKpBUdk
-         HtELIW437Q/P2ZLXzSD6Cw6AMjUGQLcW0zTSX8rs=
+        b=yGm4FLrnOuj1ONq1I27bNK62ZSbrR4YVt3seJ0UqGp3HnX//8lOzGh7V9fTu9Wl8Q
+         3x5cBfEZdBsjrle5CTL4cKZqVQQpKlvszMY0E6oMzz8IyrBkTyryHX8OTuVhqcuMtI
+         swlOZXM5nH4r3Rw7hpBUxasMDHa2mvtvy5UUlUCk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.15 084/145] random: give sysctl_random_min_urandom_seed a more sensible value
-Date:   Fri, 27 May 2022 10:49:45 +0200
-Message-Id: <20220527084900.805851290@linuxfoundation.org>
+        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org
+Subject: [PATCH 5.10 133/163] x86/tsc: Use fallback for random_get_entropy() instead of zero
+Date:   Fri, 27 May 2022 10:50:13 +0200
+Message-Id: <20220527084846.711636071@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084850.364560116@linuxfoundation.org>
-References: <20220527084850.364560116@linuxfoundation.org>
+In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
+References: <20220527084828.156494029@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,39 +53,71 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit d0efdf35a6a71d307a250199af6fce122a7c7e11 upstream.
+commit 3bd4abc07a267e6a8b33d7f8717136e18f921c53 upstream.
 
-This isn't used by anything or anywhere, but we can't delete it due to
-compatibility. So at least give it the correct value of what it's
-supposed to be instead of a garbage one.
+In the event that random_get_entropy() can't access a cycle counter or
+similar, falling back to returning 0 is suboptimal. Instead, fallback
+to calling random_get_entropy_fallback(), which isn't extremely high
+precision or guaranteed to be entropic, but is certainly better than
+returning zero all the time.
 
-Cc: Theodore Ts'o <tytso@mit.edu>
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+If CONFIG_X86_TSC=n, then it's possible for the kernel to run on systems
+without RDTSC, such as 486 and certain 586, so the fallback code is only
+required for that case.
+
+As well, fix up both the new function and the get_cycles() function from
+which it was derived to use cpu_feature_enabled() rather than
+boot_cpu_has(), and use !IS_ENABLED() instead of #ifndef.
+
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: x86@kernel.org
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/x86/include/asm/timex.h |    9 +++++++++
+ arch/x86/include/asm/tsc.h   |    7 +++----
+ 2 files changed, 12 insertions(+), 4 deletions(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -1619,7 +1619,7 @@ const struct file_operations urandom_fop
-  *   to avoid breaking old userspaces, but writing to it does not
-  *   change any behavior of the RNG.
-  *
-- * - urandom_min_reseed_secs - fixed to the meaningless value "60".
-+ * - urandom_min_reseed_secs - fixed to the value CRNG_RESEED_INTERVAL.
-  *   It is writable to avoid breaking old userspaces, but writing
-  *   to it does not change any behavior of the RNG.
-  *
-@@ -1629,7 +1629,7 @@ const struct file_operations urandom_fop
+--- a/arch/x86/include/asm/timex.h
++++ b/arch/x86/include/asm/timex.h
+@@ -5,6 +5,15 @@
+ #include <asm/processor.h>
+ #include <asm/tsc.h>
  
- #include <linux/sysctl.h>
++static inline unsigned long random_get_entropy(void)
++{
++	if (!IS_ENABLED(CONFIG_X86_TSC) &&
++	    !cpu_feature_enabled(X86_FEATURE_TSC))
++		return random_get_entropy_fallback();
++	return rdtsc();
++}
++#define random_get_entropy random_get_entropy
++
+ /* Assume we use the PIT time source for the clock tick */
+ #define CLOCK_TICK_RATE		PIT_TICK_RATE
  
--static int sysctl_random_min_urandom_seed = 60;
-+static int sysctl_random_min_urandom_seed = CRNG_RESEED_INTERVAL / HZ;
- static int sysctl_random_write_wakeup_bits = POOL_MIN_BITS;
- static int sysctl_poolsize = POOL_BITS;
- static u8 sysctl_bootid[UUID_SIZE];
+--- a/arch/x86/include/asm/tsc.h
++++ b/arch/x86/include/asm/tsc.h
+@@ -20,13 +20,12 @@ extern void disable_TSC(void);
+ 
+ static inline cycles_t get_cycles(void)
+ {
+-#ifndef CONFIG_X86_TSC
+-	if (!boot_cpu_has(X86_FEATURE_TSC))
++	if (!IS_ENABLED(CONFIG_X86_TSC) &&
++	    !cpu_feature_enabled(X86_FEATURE_TSC))
+ 		return 0;
+-#endif
+-
+ 	return rdtsc();
+ }
++#define get_cycles get_cycles
+ 
+ extern struct system_counterval_t convert_art_to_tsc(u64 art);
+ extern struct system_counterval_t convert_art_ns_to_tsc(u64 art_ns);
 
 
