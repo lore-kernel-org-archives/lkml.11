@@ -2,49 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E080BC43217
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:51:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AA31C43219
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:51:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352334AbiE0LuU (ORCPT
+        id S1352457AbiE0Lu2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 07:50:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57120 "EHLO
+        Fri, 27 May 2022 07:50:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241735AbiE0LrJ (ORCPT
+        with ESMTP id S1351957AbiE0LrY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:47:09 -0400
+        Fri, 27 May 2022 07:47:24 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A83DF13C084;
-        Fri, 27 May 2022 04:43:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C01A414ACAA;
+        Fri, 27 May 2022 04:43:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A19A961D46;
-        Fri, 27 May 2022 11:43:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABE40C385A9;
-        Fri, 27 May 2022 11:43:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 728CE61D51;
+        Fri, 27 May 2022 11:43:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80047C385A9;
+        Fri, 27 May 2022 11:43:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653651785;
-        bh=N4I2vRnlz5HhcFVb3tpYEZeesn0q49B0+WAvsvwec5E=;
+        s=korg; t=1653651790;
+        bh=ZDfu5CQCYc0Tiz0YhFCXWlPQPKh8EEqa7qJFhykOJGs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TNwRBDbJWhFPrm25OpprEfkoFfh8nWoifYWUVMFsIo5/LcToHhXKl+rLQtmlsTbMH
-         qc5ZZrjYoSJYVd3lNgIPi0QVU7T9fz/koBPh1dpo4Wda6QQAJLhS2CEcHRpT90gqpM
-         SN76DhnVmXuIENPHb0ILUyuaq6QkSl/6GQa/y/V0=
+        b=UmDxHezdF+LBQqPYbl8qrivt11XkgHEVEkcUL7AIfqiTHkUisfaqWbceNxqOSvAmk
+         ubKecuykbn5PurstGs+vXZgfqUztil7QoFM1595+zEMEkLfauWiHrSpoXFZygcMLR9
+         t/Pai5xavMNdhIVv/BW9V8rvn4GbrFYUpf6jJvpg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Benjamin Herrenschmidt <benh@ozlabs.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.17 073/111] powerpc: define get_cycles macro for arch-override
-Date:   Fri, 27 May 2022 10:49:45 +0200
-Message-Id: <20220527084829.811811836@linuxfoundation.org>
+Subject: [PATCH 5.10 050/163] random: access input_pool_data directly rather than through pointer
+Date:   Fri, 27 May 2022 10:48:50 +0200
+Message-Id: <20220527084835.015625227@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084819.133490171@linuxfoundation.org>
-References: <20220527084819.133490171@linuxfoundation.org>
+In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
+References: <20220527084828.156494029@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -55,35 +52,72 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 408835832158df0357e18e96da7f2d1ed6b80e7f upstream.
+commit 6c0eace6e1499712583b6ee62d95161e8b3449f5 upstream.
 
-PowerPC defines a get_cycles() function, but it does not do the usual
-`#define get_cycles get_cycles` dance, making it impossible for generic
-code to see if an arch-specific function was defined. While the
-get_cycles() ifdef is not currently used, the following timekeeping
-patch in this series will depend on the macro existing (or not existing)
-when defining random_get_entropy().
+This gets rid of another abstraction we no longer need. It would be nice
+if we could instead make pool an array rather than a pointer, but the
+latent entropy plugin won't be able to do its magic in that case. So
+instead we put all accesses to the input pool's actual data through the
+input_pool_data array directly.
 
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Benjamin Herrenschmidt <benh@ozlabs.org>
-Cc: Paul Mackerras <paulus@samba.org>
-Acked-by: Michael Ellerman <mpe@ellerman.id.au>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/include/asm/timex.h |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/char/random.c |   21 ++++++++-------------
+ 1 file changed, 8 insertions(+), 13 deletions(-)
 
---- a/arch/powerpc/include/asm/timex.h
-+++ b/arch/powerpc/include/asm/timex.h
-@@ -19,6 +19,7 @@ static inline cycles_t get_cycles(void)
- {
- 	return mftb();
- }
-+#define get_cycles get_cycles
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -496,17 +496,12 @@ MODULE_PARM_DESC(ratelimit_disable, "Dis
+ static u32 input_pool_data[POOL_WORDS] __latent_entropy;
  
- #endif	/* __KERNEL__ */
- #endif	/* _ASM_POWERPC_TIMEX_H */
+ static struct {
+-	/* read-only data: */
+-	u32 *pool;
+-
+-	/* read-write data: */
+ 	spinlock_t lock;
+ 	u16 add_ptr;
+ 	u16 input_rotate;
+ 	int entropy_count;
+ } input_pool = {
+ 	.lock = __SPIN_LOCK_UNLOCKED(input_pool.lock),
+-	.pool = input_pool_data
+ };
+ 
+ static ssize_t extract_entropy(void *buf, size_t nbytes, int min);
+@@ -544,15 +539,15 @@ static void _mix_pool_bytes(const void *
+ 		i = (i - 1) & POOL_WORDMASK;
+ 
+ 		/* XOR in the various taps */
+-		w ^= input_pool.pool[i];
+-		w ^= input_pool.pool[(i + POOL_TAP1) & POOL_WORDMASK];
+-		w ^= input_pool.pool[(i + POOL_TAP2) & POOL_WORDMASK];
+-		w ^= input_pool.pool[(i + POOL_TAP3) & POOL_WORDMASK];
+-		w ^= input_pool.pool[(i + POOL_TAP4) & POOL_WORDMASK];
+-		w ^= input_pool.pool[(i + POOL_TAP5) & POOL_WORDMASK];
++		w ^= input_pool_data[i];
++		w ^= input_pool_data[(i + POOL_TAP1) & POOL_WORDMASK];
++		w ^= input_pool_data[(i + POOL_TAP2) & POOL_WORDMASK];
++		w ^= input_pool_data[(i + POOL_TAP3) & POOL_WORDMASK];
++		w ^= input_pool_data[(i + POOL_TAP4) & POOL_WORDMASK];
++		w ^= input_pool_data[(i + POOL_TAP5) & POOL_WORDMASK];
+ 
+ 		/* Mix the result back in with a twist */
+-		input_pool.pool[i] = (w >> 3) ^ twist_table[w & 7];
++		input_pool_data[i] = (w >> 3) ^ twist_table[w & 7];
+ 
+ 		/*
+ 		 * Normally, we add 7 bits of rotation to the pool.
+@@ -1369,7 +1364,7 @@ static void extract_buf(u8 *out)
+ 
+ 	/* Generate a hash across the pool */
+ 	spin_lock_irqsave(&input_pool.lock, flags);
+-	blake2s_update(&state, (const u8 *)input_pool.pool, POOL_BYTES);
++	blake2s_update(&state, (const u8 *)input_pool_data, POOL_BYTES);
+ 	blake2s_final(&state, hash); /* final zeros out state */
+ 
+ 	/*
 
 
