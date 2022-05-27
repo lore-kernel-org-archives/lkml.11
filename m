@@ -2,179 +2,254 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC7E7C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 09:48:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAB77C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 09:50:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350674AbiE0Jsj (ORCPT
+        id S1350681AbiE0Jtt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 05:48:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39742 "EHLO
+        Fri, 27 May 2022 05:49:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233600AbiE0Jsh (ORCPT
+        with ESMTP id S233600AbiE0Jtp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 05:48:37 -0400
-Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2A1B1053CC;
-        Fri, 27 May 2022 02:48:35 -0700 (PDT)
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24R8bIO4028812;
-        Fri, 27 May 2022 02:42:41 -0700
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3gau9d06cw-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 27 May 2022 02:42:41 -0700
-Received: from m0045851.ppops.net (m0045851.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24R9TOib031092;
-        Fri, 27 May 2022 02:42:41 -0700
-Received: from nam12-bn8-obe.outbound.protection.outlook.com (mail-bn8nam12lp2177.outbound.protection.outlook.com [104.47.55.177])
-        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3gau9d06cv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 27 May 2022 02:42:41 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kQhAb28tDGMWYMrb4bVS97xrj54uX5pYFeDwjqATCCHyXarwDuWzyFXPOTJCWrirFBxRfotvbDw5lVrc453/0IjmLhJFFiIE108w6V+9g+ANw1p6EE5H1lTRIsYrtauNAC9R6hajMRLKX++jFkG6FWRwqnGhXxlfFM69VpRFEKYabJWuyem1XlHRFu0oQlkmJ7d+eU73qMM6C6GEA7hhjn6b7znPgDsE/X1vZGcKIyXplk+Qu8iaPiWvWQAGbliUw+s+RNoAgDPyyhNVncVdmNuKy1jNRVhzV9KglKLjU2k3mRwpxoptCCREsC4ki66/4Y2xJjXsgrvxdsB1tNcfKA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=2xAhG7e6mN2jZDlvs6JfnISadiV8koTokZLr4h9TyUg=;
- b=YnrXq+1lZIdeOEz+B0sy0/E7FCAAfi80z2buVw0KoouVKN+unOAX0lJnsxPgRgbMeai84gmMZxu0cm9626Ym9/Nd+h365B0jS1HYIRzg8df3Vwrdo1nG+4mnc53covxrjd3s7aggUiRh9sW8qoamLpvuQWSu0WOa2bnoPmokpbUmlAYCBSzOzPfraq/1wx+uG0CbtZj0l9oI1DdrDS2cOouvvUxxnp0Ur6NdFBa+hugcgWR8vCz6D2TnKBsZX2RBFf9bIEigE+25Px2TS4ADx/1eXOrr8GZnhaatJ/wpQfS++bTnav0FuYl+GZf29sLcxmwSsWaASJ9u49HDOGdosg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
- dkim=pass header.d=marvell.com; arc=none
+        Fri, 27 May 2022 05:49:45 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9427B106364;
+        Fri, 27 May 2022 02:49:44 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id z15so5159829wrg.11;
+        Fri, 27 May 2022 02:49:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2xAhG7e6mN2jZDlvs6JfnISadiV8koTokZLr4h9TyUg=;
- b=eKvPTWoB4yL5HU88RPYuqe8B7jz1cehFez4TKu41CgX5bCtD4sAhcZEFgPxqKMcsRs2mZSzsAwv2X/7/dqYdyLmTKIhB4Xx/0fIaF5kfwc/738jyJ9/hU2sM4RkT8T/PFBcqAD34hP+8pxm1YFxLYthPSmtQP2xdwF6R8Mlfy6Y=
-Received: from PH0PR18MB4425.namprd18.prod.outlook.com (2603:10b6:510:ef::13)
- by DM5PR18MB0939.namprd18.prod.outlook.com (2603:10b6:3:32::9) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5293.13; Fri, 27 May 2022 09:42:39 +0000
-Received: from PH0PR18MB4425.namprd18.prod.outlook.com
- ([fe80::e4ab:7780:fb1a:8fda]) by PH0PR18MB4425.namprd18.prod.outlook.com
- ([fe80::e4ab:7780:fb1a:8fda%6]) with mapi id 15.20.5293.016; Fri, 27 May 2022
- 09:42:38 +0000
-From:   Shijith Thotton <sthotton@marvell.com>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-CC:     Arnaud Ebalard <arno@natisbad.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Boris Brezillon <bbrezillon@kernel.org>,
-        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
-        Jerin Jacob Kollanukkaran <jerinj@marvell.com>,
-        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
-        Srujana Challa <schalla@marvell.com>,
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=m5bhK0uuFpLsSa23o9aOkF1WGUPThssNTQf5QyxyuwE=;
+        b=gzubcYVM/O9mZoQOrIoCLFARZILBxl76EnsbMDjmDLTR1xdGgM3OG3wU9FQACapiSL
+         eL2LQzmlh4IdYNGcbQMcOxalzdMOuqTc3zpFIlOZqXkTcmpDp1k27p6YuXR2ShuRpeqc
+         RSLyZu2yLTX/jFHhFJjFGzsoiOVEnV5nzqJM7ieRQ9rZp3sVPZ3FouRFXMVX+N/jbKdJ
+         N9By0IHK+dr/SciAK+LQVs1q/vaJNg5QtBPKurLokkGCf99jLaSpkSVGGXuSlQ3Egmr7
+         Cs0nRTnRdZxiAzT9f06hM9Rti9btnT7RhBjyE5n5dtQ+RjH13xo3NIt8ntEHavYnWqe0
+         2hcA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=m5bhK0uuFpLsSa23o9aOkF1WGUPThssNTQf5QyxyuwE=;
+        b=g9zxJvrX3FH6QcKL4CyNwSaxKlucV0qCdHBphjDww+C5FTqL3do8ey+ZtlNUZY1l1Z
+         qzzw/CeAVbOH6b/qb2Ge97N+MzWrGbOIIqlHWt0UjkT6ylDbNNd9mlG9OaL6hUGms/wT
+         F8ms/qPvYbYJ/+ZWY/x/5or5V4chSahEFsZmYVGto32Nt5zl0rVhcmfxJ8wzj0NhLSVQ
+         Xitnc6PeQqQPfvjazaASI124ij3nkoV0HecWek5DhQsf622kKdpf4DpeiP0Qb5B5k5+c
+         hPNaxcD6em12eBkz6l0v+PPwJRM9nz00w6y51bi05oRvGdwGeugSPaCzni8z+3QhVYqQ
+         sI8w==
+X-Gm-Message-State: AOAM5313RXNHWxpsxtXVRgQW1LCiXPvVkM4YiJrkf3J+ft+samLEfkCC
+        ZdBUUJwUE1lzcxpuUxUWvWQ=
+X-Google-Smtp-Source: ABdhPJzRcMe77jX+bSVANL7BNzVOXlNv/j6Idml3JlAMJdczhtyBa2UE66MOq9xxg++HaI7eeruEEQ==
+X-Received: by 2002:a05:6000:1acc:b0:20f:e35e:450 with SMTP id i12-20020a0560001acc00b0020fe35e0450mr17993001wry.531.1653644982985;
+        Fri, 27 May 2022 02:49:42 -0700 (PDT)
+Received: from baligh-ThinkCentre-M720q.iliad.local (freebox.vlq16.iliad.fr. [213.36.7.13])
+        by smtp.googlemail.com with ESMTPSA id o15-20020a5d58cf000000b0020d02ddf4d0sm1257376wrf.69.2022.05.27.02.49.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 27 May 2022 02:49:42 -0700 (PDT)
+From:   Baligh Gasmi <gasmibal@gmail.com>
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     Baligh Gasmi <gasmibal@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Harman Kalra <hkalra@marvell.com>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        Kees Cook <keescook@chromium.org>,
-        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: RE: [EXT] Re: [PATCH] crypto: octeontx2: fix potential null pointer
- access
-Thread-Topic: [EXT] Re: [PATCH] crypto: octeontx2: fix potential null pointer
- access
-Thread-Index: AQHYcZ+WFeoConjOvkuT00xCknB1x60yYvIAgAAVW7A=
-Date:   Fri, 27 May 2022 09:42:38 +0000
-Message-ID: <PH0PR18MB4425D53564C735899CDCD6D4D9D89@PH0PR18MB4425.namprd18.prod.outlook.com>
-References: <da89ba20819ad3ca6b99f9ef056f2bc1b076dc6d.1653632699.git.sthotton@marvell.com>
- <20220527082352.GP2168@kadam>
-In-Reply-To: <20220527082352.GP2168@kadam>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: a1779b23-d952-4a4a-f781-08da3fc53cb5
-x-ms-traffictypediagnostic: DM5PR18MB0939:EE_
-x-microsoft-antispam-prvs: <DM5PR18MB0939167ADF8BDECACC2DFCAAD9D89@DM5PR18MB0939.namprd18.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: QWycI/8lxqw0CAbwMFlepv1DLisr9zp52fXE9/7KZwn9UhrJ9ftpICbhZ6bJ06GmTv5CmOkzpy1uQPoNjRbQSykm2IH4gx4ZJA7mH0GJIijSnaoGrQP2FPmBVOZ17CL8At8ZWPP0EP9XPEeEbGfKG4/L88Ljk4D6In8SU1jbu8lBrqS+U/X4KYmz5sKiKJFxQKvT0BTDKO+5+Du9RuyAD+smUWE81Gu7yMB/x0cloNjEG3HCJxXgYLCdF2F7AiHnF2V2cfI67nDd4Q2fChfJUmeMYyepMOZzftjkrqQ3i+AXV4gGEUHO0izlPATZz+j2OTKBPim9NHtx5fvkEzwpXOAi8hvmrJ/coQDZN9yHKqudybAvmZlo5VdIYLhkl9JG+m8rP0vWIEzRqO0MQGD3QFNB1WkQcNfrmF3Vsd6GtQT47a8K616CcH33xnWVao7NXRl+4PgD/6MdfU6FIC/Kq0vULkMuvyP0bvjhaXk8FMHSFJk1G4gEDShevfl1UO7KhxHO8PZhhibbt/ukyHp1yspwXSblEYXTbAi4GJSKMapMBstVOMAQ5zmPXUxwRlVE60hrv54rPHPvEOEwo3vW95MtqfxO8PT/7v/A1cwS/HZcTMV+9tbdaEnhhnBLdiuVryYb4eOetjtJd5FzptzGZMcxF9QQNLVGKtQdvVLXBg7DYrWrWe/hBpA7RAbEgEyxApcW1itvtlIlsUSdFanuTA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR18MB4425.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(7416002)(33656002)(52536014)(2906002)(6916009)(86362001)(6506007)(26005)(9686003)(4744005)(122000001)(8936002)(7696005)(54906003)(38070700005)(38100700002)(316002)(71200400001)(186003)(66556008)(66946007)(66446008)(66476007)(8676002)(64756008)(4326008)(508600001)(55016003)(76116006)(5660300002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?RErqqi08WS+dFhJhVyvZUaX8ZWzF9Sd3MZkW5gA6l0LZ9hxzAkPforTX26re?=
- =?us-ascii?Q?NlDcf+lJC8DgdbR+LfzDQa4C37lyT9WFcqMCCgIiD+yQgbKvN4olwxNyBoEC?=
- =?us-ascii?Q?rESQb5T38IA5uQ7udEZnfi87KZDq+bksaEiL5cMPYv/N09S5g4XxtnHV2vZw?=
- =?us-ascii?Q?RDNqA2Er3ADR7Jo3ed856VZ+21GVc638SAPNjTf40kSK74AWwSdK3gP3k38A?=
- =?us-ascii?Q?a2qJf5VJ2VJ3u1rJYYQ7IvNF9EkxLE2chRQDGd1QP8tcJEkDVrlILDyqKZCK?=
- =?us-ascii?Q?hJ6DHFcnBn48z/tvNYXv7VOt2Qceslm4U9nHbCGo8Gkk/hGOXJiBJKkM1MfA?=
- =?us-ascii?Q?VUXviurgBnClc0CrTFEGSVEYw9aakKcZVzJ11Im7oUXiCC0c1WD5t2jQBnGA?=
- =?us-ascii?Q?8MlASqcgYRtC16MwtLFFEWR8H1MW0IJIpLA2rFsZGTs7naKJb06YPrj0+kC4?=
- =?us-ascii?Q?l8+mPD9e/QZpQojGJ5OpGwc4FATrYuOdxyV4NiY0OooH5+gwxljoQ3FtXFeG?=
- =?us-ascii?Q?RaMXGicswJ2aLJG5i7ewysVUxlo8ccWDibmDrudODyqnOt4/frX4Q5+mh8Qk?=
- =?us-ascii?Q?RWmodT7LKaLQIrT5mQrfSb/pG2l614ap5Ut+c/l4VzM/wCD23QlZqr1FvAdL?=
- =?us-ascii?Q?hz3zH1i6NFddTBFy2tWyQMz03xMgmYt+u3zMWzqyP4+FZbEChf+Nq7TJ8Ibu?=
- =?us-ascii?Q?nPHa6enqxAYH65bi/SW7DwKxwHNq3D+FPrHaEg3VN8GsDeV7gsix1aJ7hJOZ?=
- =?us-ascii?Q?g9Tfq4W52ShHdFOf5U06JzrPIFkKTClGsFRt6u4e/OblwOktnqW1/2heO7Da?=
- =?us-ascii?Q?Xkj1k73/6mcjKymGTCzbDXetYqLPCNWj3o8EOpA2JRK5ej2lQRX4qT7R+i99?=
- =?us-ascii?Q?ZKTQdunOLYCkHrIVP718xICR437rMu+DhvBN8p910xP/z3x2XShXQHw2ZqFG?=
- =?us-ascii?Q?B4aZIWVUGmgpVPztsLZEoDJaogS1OZRpaSxBnQUTEsmpAQACQpxPy4p7Wrpk?=
- =?us-ascii?Q?OZXJg4XfaSirYbYa++HOVv4Ar8KIIEvOuO9fXvK9DFodRRHA1W6tykprDr2n?=
- =?us-ascii?Q?X/yZuPmYzXN0B+egyoKEs7Zyt4nrCE6IxX1reEAee2gb0aTYImmfNOEODhMy?=
- =?us-ascii?Q?3kJk/vk9ES90Ohw04CI8u6NWF7SCK9OsUXr8KaqR64aukCFD30hU34p0LMeO?=
- =?us-ascii?Q?KGWYXmUBghHyZnzDopBH1dfldJnOTV0ogfrDkkrCa4WrXBnZhx3M4/pW62f6?=
- =?us-ascii?Q?KuC+ZGdntfmCICKh7ooG2nbBe31Xo41S3DutxI4Pudutl8BGkxED+KSuzFtS?=
- =?us-ascii?Q?Y9yQk5q6lcpxpaf0okiwLnkpxMx8vfl/A4388w9V8gynGx2uPsS/VDb4+JCO?=
- =?us-ascii?Q?BF2w4VB0GyIVtsMt/tOcxyiUCFbB5k3rDF5CFV0c6YrH61ymTSUhdVGN9x1b?=
- =?us-ascii?Q?y0T86gymCBKh7tMp8ag2cV66ytRLGUiXub2UdobBczR75i9e87UrpeqiYL5j?=
- =?us-ascii?Q?ibafL7720sJ+oX1Bo8JCoVpafYedI897QVmDkw4iErp7wO0xDxOrvOobk0+f?=
- =?us-ascii?Q?QFdi9aBcqBPGJMCRpVHZvlwwGBA+RrKG+Z/cbu7J8FX69HG4mu2/YyBGYwl3?=
- =?us-ascii?Q?0JIZxo72/Q/KtodZKdSrzjVIcgb91RKfT/pgzimQ39fMKCBJqUchRddigIr9?=
- =?us-ascii?Q?HNKT6Jx9AXIts/DZCeBC20NSaOMgkUPwBz1B6lT4zulKIfJGtvcnUJ5FybfN?=
- =?us-ascii?Q?kOqIipShXA=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        linux-wireless@vger.kernel.org (open list:MAC80211),
+        netdev@vger.kernel.org (open list:NETWORKING [GENERAL]),
+        linux-kernel@vger.kernel.org (open list)
+Subject: [RFC PATCH v1 1/1] mac80211: use AQL airtime for expected throughput.
+Date:   Fri, 27 May 2022 11:49:28 +0200
+Message-Id: <20220527094928.3153984-1-gasmibal@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-X-OriginatorOrg: marvell.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR18MB4425.namprd18.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a1779b23-d952-4a4a-f781-08da3fc53cb5
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 May 2022 09:42:38.5699
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: a8g/3TIpv3+qCUvzVnxKRxusB9XrItbazj83EISd33ixPbOaQ6FhY/K1KVfOhzgttSi9jQneoqtWkclflbAZHQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR18MB0939
-X-Proofpoint-GUID: k17D2LFnaBBLo1BHEKKy5J1TK1DnVmyp
-X-Proofpoint-ORIG-GUID: 1iolz-WtDEFvnEQtuz24mDf3TEkv-W2V
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-27_03,2022-05-25_02,2022-02-23_01
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
->> diff --git a/drivers/crypto/marvell/octeontx2/otx2_cptpf_ucode.c
->b/drivers/crypto/marvell/octeontx2/otx2_cptpf_ucode.c
->> index 9cba2f714c7e..b91401929fc6 100644
->> --- a/drivers/crypto/marvell/octeontx2/otx2_cptpf_ucode.c
->> +++ b/drivers/crypto/marvell/octeontx2/otx2_cptpf_ucode.c
->> @@ -1605,7 +1605,11 @@ int otx2_cpt_dl_custom_egrp_create(struct
->otx2_cptpf_dev *cptpf,
->>  		if (!strncasecmp(val, "se", 2) && strchr(val, ':')) {
->>  			if (has_se || ucode_idx)
->>  				goto err_print;
->> -			tmp =3D strim(strsep(&val, ":"));
->> +			tmp =3D strsep(&val, ":");
->> +			if (tmp !=3D NULL)
->> +				tmp =3D strim(tmp);
->> +			else
->> +				goto err_print;
->
->The check is not needed here, but if it were then the better way to
->write this would be:
->
->		tmp =3D strsep(&val, ":");
->		if (!tmp)
->			goto err_print;
->		tmp =3D strim(tmp);
->
->Always to error handling, not success handling.  checkpatch.pl --strict
->will complain about the !=3D NULL.
->
+Since the integration of AQL, packet TX airtime estimation is
+calculated and counted to be used for the dequeue limit.
 
-Will change the check as mentioned.
+Use this estimated airtime to compute expected throughput for
+each station.
 
-Thanks,
-Shijith
+It will be a generic mac80211 implementation. If the driver has
+get_expected_throughput implementation, it will be used instead.
+
+Useful for L2 routing protocols, like B.A.T.M.A.N.
+
+Signed-off-by: Baligh Gasmi <gasmibal@gmail.com>
+---
+ net/mac80211/driver-ops.h |  2 ++
+ net/mac80211/sta_info.c   | 39 +++++++++++++++++++++++++++++++++++++++
+ net/mac80211/sta_info.h   | 12 ++++++++++++
+ net/mac80211/status.c     |  3 ++-
+ net/mac80211/tx.c         |  8 +++++++-
+ 5 files changed, 62 insertions(+), 2 deletions(-)
+
+diff --git a/net/mac80211/driver-ops.h b/net/mac80211/driver-ops.h
+index 4e2fc1a08681..4331b79647fa 100644
+--- a/net/mac80211/driver-ops.h
++++ b/net/mac80211/driver-ops.h
+@@ -1142,6 +1142,8 @@ static inline u32 drv_get_expected_throughput(struct ieee80211_local *local,
+ 	trace_drv_get_expected_throughput(&sta->sta);
+ 	if (local->ops->get_expected_throughput && sta->uploaded)
+ 		ret = local->ops->get_expected_throughput(&local->hw, &sta->sta);
++	else
++		ret = ewma_avg_est_tp_read(&sta->status_stats.avg_est_tp);
+ 	trace_drv_return_u32(local, ret);
+ 
+ 	return ret;
+diff --git a/net/mac80211/sta_info.c b/net/mac80211/sta_info.c
+index 91fbb1ee5c38..f39d7ec2238d 100644
+--- a/net/mac80211/sta_info.c
++++ b/net/mac80211/sta_info.c
+@@ -1985,6 +1985,45 @@ void ieee80211_sta_update_pending_airtime(struct ieee80211_local *local,
+ 			       tx_pending, 0);
+ }
+ 
++void ieee80211_sta_update_tp(struct ieee80211_local *local,
++			     struct sta_info *sta,
++			     struct sk_buff *skb,
++			     u16 tx_time_est,
++			     bool ack, int retry)
++{
++	unsigned long diff = 0;
++	struct rate_control_ref *ref = NULL;
++
++	if (!skb || !sta || !tx_time_est)
++		return;
++
++	if (test_sta_flag(sta, WLAN_STA_RATE_CONTROL))
++		ref = sta->rate_ctrl;
++
++	if (ref && ref->ops->get_expected_throughput)
++		return;
++
++	if (local->ops->get_expected_throughput)
++		return;
++
++	tx_time_est += ack ? 4 : 0;
++	tx_time_est += retry ? retry * 2 : 2;
++
++	sta->tx_stats.tp_tx_size += (skb->len * 8) * 1000;
++	sta->tx_stats.tp_tx_time_est += tx_time_est;
++
++	diff = jiffies - sta->status_stats.last_tp_update;
++	if (diff > HZ / 10) {
++		ewma_avg_est_tp_add(&sta->status_stats.avg_est_tp,
++				    sta->tx_stats.tp_tx_size /
++				    sta->tx_stats.tp_tx_time_est);
++
++		sta->tx_stats.tp_tx_size = 0;
++		sta->tx_stats.tp_tx_time_est = 0;
++		sta->status_stats.last_tp_update = jiffies;
++	}
++}
++
+ int sta_info_move_state(struct sta_info *sta,
+ 			enum ieee80211_sta_state new_state)
+ {
+diff --git a/net/mac80211/sta_info.h b/net/mac80211/sta_info.h
+index 379fd367197f..0c1ebf8d87ef 100644
+--- a/net/mac80211/sta_info.h
++++ b/net/mac80211/sta_info.h
+@@ -123,6 +123,7 @@ enum ieee80211_sta_info_flags {
+ #define HT_AGG_STATE_STOP_CB		7
+ #define HT_AGG_STATE_SENT_ADDBA		8
+ 
++DECLARE_EWMA(avg_est_tp, 8, 16)
+ DECLARE_EWMA(avg_signal, 10, 8)
+ enum ieee80211_agg_stop_reason {
+ 	AGG_STOP_DECLINED,
+@@ -157,6 +158,12 @@ void ieee80211_register_airtime(struct ieee80211_txq *txq,
+ 
+ struct sta_info;
+ 
++void ieee80211_sta_update_tp(struct ieee80211_local *local,
++			     struct sta_info *sta,
++			     struct sk_buff *skb,
++			     u16 tx_time_est,
++			     bool ack, int retry);
++
+ /**
+  * struct tid_ampdu_tx - TID aggregation information (Tx).
+  *
+@@ -567,6 +574,7 @@ struct ieee80211_fragment_cache {
+  * @status_stats.last_ack_signal: last ACK signal
+  * @status_stats.ack_signal_filled: last ACK signal validity
+  * @status_stats.avg_ack_signal: average ACK signal
++ * @status_stats.avg_est_tp: average expected throughput
+  * @frags: fragment cache
+  */
+ struct sta_info {
+@@ -641,6 +649,8 @@ struct sta_info {
+ 		s8 last_ack_signal;
+ 		bool ack_signal_filled;
+ 		struct ewma_avg_signal avg_ack_signal;
++		struct ewma_avg_est_tp avg_est_tp;
++		unsigned long last_tp_update;
+ 	} status_stats;
+ 
+ 	/* Updated from TX path only, no locking requirements */
+@@ -650,6 +660,8 @@ struct sta_info {
+ 		struct ieee80211_tx_rate last_rate;
+ 		struct rate_info last_rate_info;
+ 		u64 msdu[IEEE80211_NUM_TIDS + 1];
++		u32 tp_tx_size;
++		u32 tp_tx_time_est;
+ 	} tx_stats;
+ 	u16 tid_seq[IEEE80211_QOS_CTL_TID_MASK + 1];
+ 
+diff --git a/net/mac80211/status.c b/net/mac80211/status.c
+index e81e8a5bb774..293a0f14a3ad 100644
+--- a/net/mac80211/status.c
++++ b/net/mac80211/status.c
+@@ -18,7 +18,6 @@
+ #include "led.h"
+ #include "wme.h"
+ 
+-
+ void ieee80211_tx_status_irqsafe(struct ieee80211_hw *hw,
+ 				 struct sk_buff *skb)
+ {
+@@ -1138,6 +1137,8 @@ void ieee80211_tx_status_ext(struct ieee80211_hw *hw,
+ 	ack_signal_valid =
+ 		!!(info->status.flags & IEEE80211_TX_STATUS_ACK_SIGNAL_VALID);
+ 
++	ieee80211_sta_update_tp(local, sta, skb, tx_time_est, acked, retry_count);
++
+ 	if (pubsta) {
+ 		struct ieee80211_sub_if_data *sdata = sta->sdata;
+ 
+diff --git a/net/mac80211/tx.c b/net/mac80211/tx.c
+index b6b20f38de0e..364cca1d688e 100644
+--- a/net/mac80211/tx.c
++++ b/net/mac80211/tx.c
+@@ -3634,6 +3634,7 @@ struct sk_buff *ieee80211_tx_dequeue(struct ieee80211_hw *hw,
+ 	struct ieee80211_tx_data tx;
+ 	ieee80211_tx_result r;
+ 	struct ieee80211_vif *vif = txq->vif;
++	struct rate_control_ref *ref = NULL;
+ 
+ 	WARN_ON_ONCE(softirq_count() == 0);
+ 
+@@ -3792,8 +3793,13 @@ struct sk_buff *ieee80211_tx_dequeue(struct ieee80211_hw *hw,
+ encap_out:
+ 	IEEE80211_SKB_CB(skb)->control.vif = vif;
+ 
++	if (tx.sta && test_sta_flag(tx.sta, WLAN_STA_RATE_CONTROL))
++		ref = tx.sta->rate_ctrl;
++
+ 	if (vif &&
+-	    wiphy_ext_feature_isset(local->hw.wiphy, NL80211_EXT_FEATURE_AQL)) {
++	    ((!local->ops->get_expected_throughput &&
++	     (!ref || !ref->ops->get_expected_throughput)) ||
++	    wiphy_ext_feature_isset(local->hw.wiphy, NL80211_EXT_FEATURE_AQL))) {
+ 		bool ampdu = txq->ac != IEEE80211_AC_VO;
+ 		u32 airtime;
+ 
+-- 
+2.36.1
+
