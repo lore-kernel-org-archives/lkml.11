@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06CA8C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:57:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A4FFC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:57:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349995AbiE0L5R (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 07:57:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40292 "EHLO
+        id S243753AbiE0L52 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 07:57:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353033AbiE0LvJ (ORCPT
+        with ESMTP id S1353064AbiE0LvK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:51:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B70651053F1;
-        Fri, 27 May 2022 04:46:37 -0700 (PDT)
+        Fri, 27 May 2022 07:51:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B819132A32;
+        Fri, 27 May 2022 04:46:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 162E361D94;
-        Fri, 27 May 2022 11:46:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EB9FC385A9;
-        Fri, 27 May 2022 11:46:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C6319B824D6;
+        Fri, 27 May 2022 11:46:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 132E5C3411C;
+        Fri, 27 May 2022 11:46:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653651996;
-        bh=BlPUSq4NXxaVerrK3wlsEA2VYB0g37GE3yAVYt5V2tU=;
+        s=korg; t=1653651999;
+        bh=gRkETQJvr2FxHDr9oXch+XuY+cPLZ3ZZHS7YjlX3Skc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mCvuL2kXbvte0z9u/b9V9slpPgAi6u7Ruz/dKpDFMhNJluc71NWQkvsdeplKKs0I5
-         eBuBW4tTOeLk3Hv6A9V9BexBPrMPeBwuUb0qE6kmU68cpttL+SpJ6xLx9XQOX6RTbU
-         nKMw/a4sJPK4gNG81a4TdNt29nDvcF+hLrwKsFOg=
+        b=K9H4wINm9xsvejfBbZGCu/Lk9xP8Nf/gB0RmVO8ZZCINYZfaEt0ll4H4U7us56xI2
+         zNIfAcuD8D9ev3l0DA+ezHHTLcXS5wwzv/yukC/+91vzVWyTC+CeOCcVuqaG5fr+tT
+         Z+fEGO4+u/yNrZg9DnUQlRwWGc0vXs5Ec+V1LlXs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jens Axboe <axboe@kernel.dk>,
-        Al Viro <viro@zeniv.linux.org.uk>,
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Eric Biggers <ebiggers@google.com>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.17 108/111] random: wire up fops->splice_{read,write}_iter()
-Date:   Fri, 27 May 2022 10:50:20 +0200
-Message-Id: <20220527084834.539636961@linuxfoundation.org>
+Subject: [PATCH 5.10 082/163] random: remove useless header comment
+Date:   Fri, 27 May 2022 10:49:22 +0200
+Message-Id: <20220527084839.321082317@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084819.133490171@linuxfoundation.org>
-References: <20220527084819.133490171@linuxfoundation.org>
+In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
+References: <20220527084828.156494029@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,45 +50,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jens Axboe <axboe@kernel.dk>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 79025e727a846be6fd215ae9cdb654368ac3f9a6 upstream.
+commit 6071a6c0fba2d747742cadcbb3ba26ed756ed73b upstream.
 
-Now that random/urandom is using {read,write}_iter, we can wire it up to
-using the generic splice handlers.
+This really adds nothing at all useful.
 
-Fixes: 36e2c7421f02 ("fs: don't allow splice read/write without explicit ops")
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-[Jason: added the splice_write path. Note that sendfile() and such still
- does not work for read, though it does for write, because of a file
- type restriction in splice_direct_to_actor(), which I'll address
- separately.]
-Cc: Al Viro <viro@zeniv.linux.org.uk>
+Cc: Theodore Ts'o <tytso@mit.edu>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Reviewed-by: Eric Biggers <ebiggers@google.com>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ include/linux/random.h |    6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -1384,6 +1384,8 @@ const struct file_operations random_fops
- 	.compat_ioctl = compat_ptr_ioctl,
- 	.fasync = random_fasync,
- 	.llseek = noop_llseek,
-+	.splice_read = generic_file_splice_read,
-+	.splice_write = iter_file_splice_write,
- };
- 
- const struct file_operations urandom_fops = {
-@@ -1393,6 +1395,8 @@ const struct file_operations urandom_fop
- 	.compat_ioctl = compat_ptr_ioctl,
- 	.fasync = random_fasync,
- 	.llseek = noop_llseek,
-+	.splice_read = generic_file_splice_read,
-+	.splice_write = iter_file_splice_write,
- };
- 
+--- a/include/linux/random.h
++++ b/include/linux/random.h
+@@ -1,9 +1,5 @@
+ /* SPDX-License-Identifier: GPL-2.0 */
+-/*
+- * include/linux/random.h
+- *
+- * Include file for the random number generator.
+- */
++
+ #ifndef _LINUX_RANDOM_H
+ #define _LINUX_RANDOM_H
  
 
 
