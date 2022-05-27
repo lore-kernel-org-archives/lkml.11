@@ -2,131 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC83FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 07:30:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6123C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 07:30:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346671AbiE0HaL (ORCPT
+        id S1346505AbiE0Ha1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 03:30:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39890 "EHLO
+        Fri, 27 May 2022 03:30:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347099AbiE0HaG (ORCPT
+        with ESMTP id S241885AbiE0HaP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 03:30:06 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A71B2F68B6;
-        Fri, 27 May 2022 00:30:02 -0700 (PDT)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L8byf1kn7zjX8L;
-        Fri, 27 May 2022 15:28:58 +0800 (CST)
-Received: from dggpemm500018.china.huawei.com (7.185.36.111) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 27 May 2022 15:30:00 +0800
-Received: from localhost.localdomain (10.175.112.125) by
- dggpemm500018.china.huawei.com (7.185.36.111) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 27 May 2022 15:30:00 +0800
-From:   keliu <liuke94@huawei.com>
-To:     <bjorn.andersson@linaro.org>, <mathieu.poirier@linaro.org>,
-        <linux-remoteproc@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     keliu <liuke94@huawei.com>
-Subject: [PATCH] rpmsg: Directly use ida_alloc()/free()
-Date:   Fri, 27 May 2022 07:51:29 +0000
-Message-ID: <20220527075129.2475594-1-liuke94@huawei.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.112.125]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemm500018.china.huawei.com (7.185.36.111)
-X-CFilter-Loop: Reflected
+        Fri, 27 May 2022 03:30:15 -0400
+Received: from out30-45.freemail.mail.aliyun.com (out30-45.freemail.mail.aliyun.com [115.124.30.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42617F68A9;
+        Fri, 27 May 2022 00:30:13 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=16;SR=0;TI=SMTPD_---0VEW9CAs_1653636609;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VEW9CAs_1653636609)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 27 May 2022 15:30:09 +0800
+Message-ID: <1653636601.072258-2-xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH V6 2/9] virtio: use virtio_reset_device() when possible
+Date:   Fri, 27 May 2022 15:30:01 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     tglx@linutronix.de, peterz@infradead.org, paulmck@kernel.org,
+        maz@kernel.org, pasic@linux.ibm.com, cohuck@redhat.com,
+        eperezma@redhat.com, lulu@redhat.com, sgarzare@redhat.com,
+        Vineeth Vijayan <vneethv@linux.ibm.com>,
+        Peter Oberparleiter <oberpar@linux.ibm.com>,
+        linux-s390@vger.kernel.org, mst@redhat.com, jasowang@redhat.com,
+        virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org
+References: <20220527060120.20964-1-jasowang@redhat.com>
+ <20220527060120.20964-3-jasowang@redhat.com>
+In-Reply-To: <20220527060120.20964-3-jasowang@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use ida_alloc()/ida_free() instead of deprecated
-ida_simple_get()/ida_simple_remove() .
+On Fri, 27 May 2022 14:01:13 +0800, Jason Wang <jasowang@redhat.com> wrote:
+> This allows us to do common extension without duplicating code.
+>
+> Cc: Thomas Gleixner <tglx@linutronix.de>
+> Cc: Peter Zijlstra <peterz@infradead.org>
+> Cc: "Paul E. McKenney" <paulmck@kernel.org>
+> Cc: Marc Zyngier <maz@kernel.org>
+> Cc: Halil Pasic <pasic@linux.ibm.com>
+> Cc: Cornelia Huck <cohuck@redhat.com>
+> Cc: Vineeth Vijayan <vneethv@linux.ibm.com>
+> Cc: Peter Oberparleiter <oberpar@linux.ibm.com>
+> Cc: linux-s390@vger.kernel.org
+> Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+> Signed-off-by: Jason Wang <jasowang@redhat.com>
 
-Signed-off-by: keliu <liuke94@huawei.com>
----
- drivers/rpmsg/rpmsg_char.c | 10 +++++-----
- drivers/rpmsg/rpmsg_ctrl.c | 10 +++++-----
- 2 files changed, 10 insertions(+), 10 deletions(-)
+Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 
-diff --git a/drivers/rpmsg/rpmsg_char.c b/drivers/rpmsg/rpmsg_char.c
-index b6183d4f62a2..7daa21d92f20 100644
---- a/drivers/rpmsg/rpmsg_char.c
-+++ b/drivers/rpmsg/rpmsg_char.c
-@@ -342,8 +342,8 @@ static void rpmsg_eptdev_release_device(struct device *dev)
- {
- 	struct rpmsg_eptdev *eptdev = dev_to_eptdev(dev);
- 
--	ida_simple_remove(&rpmsg_ept_ida, dev->id);
--	ida_simple_remove(&rpmsg_minor_ida, MINOR(eptdev->dev.devt));
-+	ida_free(&rpmsg_ept_ida, dev->id);
-+	ida_free(&rpmsg_minor_ida, MINOR(eptdev->dev.devt));
- 	kfree(eptdev);
- }
- 
-@@ -389,7 +389,7 @@ static int rpmsg_chrdev_eptdev_add(struct rpmsg_eptdev *eptdev, struct rpmsg_cha
- 		goto free_eptdev;
- 	dev->devt = MKDEV(MAJOR(rpmsg_major), ret);
- 
--	ret = ida_simple_get(&rpmsg_ept_ida, 0, 0, GFP_KERNEL);
-+	ret = ida_alloc(&rpmsg_ept_ida, GFP_KERNEL);
- 	if (ret < 0)
- 		goto free_minor_ida;
- 	dev->id = ret;
-@@ -405,9 +405,9 @@ static int rpmsg_chrdev_eptdev_add(struct rpmsg_eptdev *eptdev, struct rpmsg_cha
- 	return ret;
- 
- free_ept_ida:
--	ida_simple_remove(&rpmsg_ept_ida, dev->id);
-+	ida_free(&rpmsg_ept_ida, dev->id);
- free_minor_ida:
--	ida_simple_remove(&rpmsg_minor_ida, MINOR(dev->devt));
-+	ida_free(&rpmsg_minor_ida, MINOR(dev->devt));
- free_eptdev:
- 	put_device(dev);
- 	kfree(eptdev);
-diff --git a/drivers/rpmsg/rpmsg_ctrl.c b/drivers/rpmsg/rpmsg_ctrl.c
-index 107da70fdbaa..8418e2ea0716 100644
---- a/drivers/rpmsg/rpmsg_ctrl.c
-+++ b/drivers/rpmsg/rpmsg_ctrl.c
-@@ -130,8 +130,8 @@ static void rpmsg_ctrldev_release_device(struct device *dev)
- {
- 	struct rpmsg_ctrldev *ctrldev = dev_to_ctrldev(dev);
- 
--	ida_simple_remove(&rpmsg_ctrl_ida, dev->id);
--	ida_simple_remove(&rpmsg_minor_ida, MINOR(dev->devt));
-+	ida_free(&rpmsg_ctrl_ida, dev->id);
-+	ida_free(&rpmsg_minor_ida, MINOR(dev->devt));
- 	kfree(ctrldev);
- }
- 
-@@ -161,7 +161,7 @@ static int rpmsg_ctrldev_probe(struct rpmsg_device *rpdev)
- 		goto free_ctrldev;
- 	dev->devt = MKDEV(MAJOR(rpmsg_major), ret);
- 
--	ret = ida_simple_get(&rpmsg_ctrl_ida, 0, 0, GFP_KERNEL);
-+	ret = ida_alloc(&rpmsg_ctrl_ida, GFP_KERNEL);
- 	if (ret < 0)
- 		goto free_minor_ida;
- 	dev->id = ret;
-@@ -179,9 +179,9 @@ static int rpmsg_ctrldev_probe(struct rpmsg_device *rpdev)
- 	return ret;
- 
- free_ctrl_ida:
--	ida_simple_remove(&rpmsg_ctrl_ida, dev->id);
-+	ida_free(&rpmsg_ctrl_ida, dev->id);
- free_minor_ida:
--	ida_simple_remove(&rpmsg_minor_ida, MINOR(dev->devt));
-+	ida_free(&rpmsg_minor_ida, MINOR(dev->devt));
- free_ctrldev:
- 	put_device(dev);
- 	kfree(ctrldev);
--- 
-2.25.1
-
+> ---
+>  drivers/virtio/virtio.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/virtio/virtio.c b/drivers/virtio/virtio.c
+> index 938e975029d4..aa1eb5132767 100644
+> --- a/drivers/virtio/virtio.c
+> +++ b/drivers/virtio/virtio.c
+> @@ -430,7 +430,7 @@ int register_virtio_device(struct virtio_device *dev)
+>
+>  	/* We always start by resetting the device, in case a previous
+>  	 * driver messed it up.  This also tests that code path a little. */
+> -	dev->config->reset(dev);
+> +	virtio_reset_device(dev);
+>
+>  	/* Acknowledge that we've seen the device. */
+>  	virtio_add_status(dev, VIRTIO_CONFIG_S_ACKNOWLEDGE);
+> @@ -496,7 +496,7 @@ int virtio_device_restore(struct virtio_device *dev)
+>
+>  	/* We always start by resetting the device, in case a previous
+>  	 * driver messed it up. */
+> -	dev->config->reset(dev);
+> +	virtio_reset_device(dev);
+>
+>  	/* Acknowledge that we've seen the device. */
+>  	virtio_add_status(dev, VIRTIO_CONFIG_S_ACKNOWLEDGE);
+> --
+> 2.25.1
+>
