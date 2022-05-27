@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3404C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:42:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 889C9C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:42:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351712AbiE0Lme (ORCPT
+        id S1348782AbiE0Lml (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 07:42:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44330 "EHLO
+        Fri, 27 May 2022 07:42:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351604AbiE0LlZ (ORCPT
+        with ESMTP id S1351615AbiE0Ll0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:41:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 596E61269A1;
-        Fri, 27 May 2022 04:39:52 -0700 (PDT)
+        Fri, 27 May 2022 07:41:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7D23132A13;
+        Fri, 27 May 2022 04:39:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 133CEB824D9;
-        Fri, 27 May 2022 11:39:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CD43C385A9;
-        Fri, 27 May 2022 11:39:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 46E2261CB7;
+        Fri, 27 May 2022 11:39:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56770C385A9;
+        Fri, 27 May 2022 11:39:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653651589;
-        bh=ZE8Oti+fu3e1FxWiLUTqce4e2vXw7qouPFIc2w4kBJs=;
+        s=korg; t=1653651592;
+        bh=uj3PWkntSgc2BvEr73fKOzWl7XThnKc5sJCSUsn1IBk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dP/zqrSNHHYeiWGOVYLv1i+Ldcpa9f1NWUgDEus236UCIJSMV6omFW+TwTlswaMDD
-         5DEremEd6ObZFH8Ds2bIDq+0f38UGxRfZ9QV5n0UMR4DL2dlb73yfRaUdFj3ismbU4
-         LNWIh1gGJ2oVCLs224F/VhbnIK9EFcfeqpUtKC4E=
+        b=B/qUJ8MlhCEkYTbXHApU6EPkORi94RSB1iq0J5PSrTs/iLJB6sJEpT8movgPPDnny
+         FbST1gakne6TFKgDqhAYUplzoyilXMYnQg7GOU2otE1ZKRzgSKs8XIjftFZ2OunSfK
+         W4R6tgXhZ7xA2q3uZ1dXdkYt7SjxXpGnuMvA9Z0w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
-        Jann Horn <jannh@google.com>,
+        stable@vger.kernel.org, Herbert Xu <herbert@gondor.apana.org.au>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.17 061/111] random: do not allow user to keep crng key around on stack
-Date:   Fri, 27 May 2022 10:49:33 +0200
-Message-Id: <20220527084828.191546873@linuxfoundation.org>
+Subject: [PATCH 5.10 027/163] lib/crypto: sha1: re-roll loops to reduce code size
+Date:   Fri, 27 May 2022 10:48:27 +0200
+Message-Id: <20220527084831.982749838@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084819.133490171@linuxfoundation.org>
-References: <20220527084819.133490171@linuxfoundation.org>
+In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
+References: <20220527084828.156494029@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,96 +53,156 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit aba120cc101788544aa3e2c30c8da88513892350 upstream.
+commit 9a1536b093bb5bf60689021275fd24d513bb8db0 upstream.
 
-The fast key erasure RNG design relies on the key that's used to be used
-and then discarded. We do this, making judicious use of
-memzero_explicit().  However, reads to /dev/urandom and calls to
-getrandom() involve a copy_to_user(), and userspace can use FUSE or
-userfaultfd, or make a massive call, dynamically remap memory addresses
-as it goes, and set the process priority to idle, in order to keep a
-kernel stack alive indefinitely. By probing
-/proc/sys/kernel/random/entropy_avail to learn when the crng key is
-refreshed, a malicious userspace could mount this attack every 5 minutes
-thereafter, breaking the crng's forward secrecy.
+With SHA-1 no longer being used for anything performance oriented, and
+also soon to be phased out entirely, we can make up for the space added
+by unrolled BLAKE2s by simply re-rolling SHA-1. Since SHA-1 is so much
+more complex, re-rolling it more or less takes care of the code size
+added by BLAKE2s. And eventually, hopefully we'll see SHA-1 removed
+entirely from most small kernel builds.
 
-In order to fix this, we just overwrite the stack's key with the first
-32 bytes of the "free" fast key erasure output. If we're returning <= 32
-bytes to the user, then we can still return those bytes directly, so
-that short reads don't become slower. And for long reads, the difference
-is hopefully lost in the amortization, so it doesn't change much, with
-that amortization helping variously for medium reads.
-
-We don't need to do this for get_random_bytes() and the various
-kernel-space callers, and later, if we ever switch to always batching,
-this won't be necessary either, so there's no need to change the API of
-these functions.
-
-Cc: Theodore Ts'o <tytso@mit.edu>
-Reviewed-by: Jann Horn <jannh@google.com>
-Fixes: c92e040d575a ("random: add backtracking protection to the CRNG")
-Fixes: 186873c549df ("random: use simpler fast key erasure flow on per-cpu keys")
+Cc: Herbert Xu <herbert@gondor.apana.org.au>
+Cc: Ard Biesheuvel <ardb@kernel.org>
+Tested-by: Geert Uytterhoeven <geert@linux-m68k.org>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   35 +++++++++++++++++++++++------------
- 1 file changed, 23 insertions(+), 12 deletions(-)
+ lib/sha1.c |   95 ++++++++-----------------------------------------------------
+ 1 file changed, 14 insertions(+), 81 deletions(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -532,19 +532,29 @@ static ssize_t get_random_bytes_user(voi
- 	if (!nbytes)
- 		return 0;
+--- a/lib/sha1.c
++++ b/lib/sha1.c
+@@ -9,6 +9,7 @@
+ #include <linux/kernel.h>
+ #include <linux/export.h>
+ #include <linux/bitops.h>
++#include <linux/string.h>
+ #include <crypto/sha.h>
+ #include <asm/unaligned.h>
  
--	len = min_t(size_t, 32, nbytes);
--	crng_make_state(chacha_state, output, len);
--
--	if (copy_to_user(buf, output, len))
--		return -EFAULT;
--	nbytes -= len;
--	buf += len;
--	ret += len;
-+	/*
-+	 * Immediately overwrite the ChaCha key at index 4 with random
-+	 * bytes, in case userspace causes copy_to_user() below to sleep
-+	 * forever, so that we still retain forward secrecy in that case.
-+	 */
-+	crng_make_state(chacha_state, (u8 *)&chacha_state[4], CHACHA_KEY_SIZE);
-+	/*
-+	 * However, if we're doing a read of len <= 32, we don't need to
-+	 * use chacha_state after, so we can simply return those bytes to
-+	 * the user directly.
-+	 */
-+	if (nbytes <= CHACHA_KEY_SIZE) {
-+		ret = copy_to_user(buf, &chacha_state[4], nbytes) ? -EFAULT : nbytes;
-+		goto out_zero_chacha;
-+	}
+@@ -55,7 +56,8 @@
+ #define SHA_ROUND(t, input, fn, constant, A, B, C, D, E) do { \
+ 	__u32 TEMP = input(t); setW(t, TEMP); \
+ 	E += TEMP + rol32(A,5) + (fn) + (constant); \
+-	B = ror32(B, 2); } while (0)
++	B = ror32(B, 2); \
++	TEMP = E; E = D; D = C; C = B; B = A; A = TEMP; } while (0)
  
--	while (nbytes) {
-+	do {
- 		if (large_request && need_resched()) {
--			if (signal_pending(current))
-+			if (signal_pending(current)) {
-+				if (!ret)
-+					ret = -ERESTARTSYS;
- 				break;
-+			}
- 			schedule();
- 		}
+ #define T_0_15(t, A, B, C, D, E)  SHA_ROUND(t, SHA_SRC, (((C^D)&B)^D) , 0x5a827999, A, B, C, D, E )
+ #define T_16_19(t, A, B, C, D, E) SHA_ROUND(t, SHA_MIX, (((C^D)&B)^D) , 0x5a827999, A, B, C, D, E )
+@@ -84,6 +86,7 @@
+ void sha1_transform(__u32 *digest, const char *data, __u32 *array)
+ {
+ 	__u32 A, B, C, D, E;
++	unsigned int i = 0;
  
-@@ -561,10 +571,11 @@ static ssize_t get_random_bytes_user(voi
- 		nbytes -= len;
- 		buf += len;
- 		ret += len;
--	}
-+	} while (nbytes);
+ 	A = digest[0];
+ 	B = digest[1];
+@@ -92,94 +95,24 @@ void sha1_transform(__u32 *digest, const
+ 	E = digest[4];
  
--	memzero_explicit(chacha_state, sizeof(chacha_state));
- 	memzero_explicit(output, sizeof(output));
-+out_zero_chacha:
-+	memzero_explicit(chacha_state, sizeof(chacha_state));
- 	return ret;
- }
+ 	/* Round 1 - iterations 0-16 take their input from 'data' */
+-	T_0_15( 0, A, B, C, D, E);
+-	T_0_15( 1, E, A, B, C, D);
+-	T_0_15( 2, D, E, A, B, C);
+-	T_0_15( 3, C, D, E, A, B);
+-	T_0_15( 4, B, C, D, E, A);
+-	T_0_15( 5, A, B, C, D, E);
+-	T_0_15( 6, E, A, B, C, D);
+-	T_0_15( 7, D, E, A, B, C);
+-	T_0_15( 8, C, D, E, A, B);
+-	T_0_15( 9, B, C, D, E, A);
+-	T_0_15(10, A, B, C, D, E);
+-	T_0_15(11, E, A, B, C, D);
+-	T_0_15(12, D, E, A, B, C);
+-	T_0_15(13, C, D, E, A, B);
+-	T_0_15(14, B, C, D, E, A);
+-	T_0_15(15, A, B, C, D, E);
++	for (; i < 16; ++i)
++		T_0_15(i, A, B, C, D, E);
  
+ 	/* Round 1 - tail. Input from 512-bit mixing array */
+-	T_16_19(16, E, A, B, C, D);
+-	T_16_19(17, D, E, A, B, C);
+-	T_16_19(18, C, D, E, A, B);
+-	T_16_19(19, B, C, D, E, A);
++	for (; i < 20; ++i)
++		T_16_19(i, A, B, C, D, E);
+ 
+ 	/* Round 2 */
+-	T_20_39(20, A, B, C, D, E);
+-	T_20_39(21, E, A, B, C, D);
+-	T_20_39(22, D, E, A, B, C);
+-	T_20_39(23, C, D, E, A, B);
+-	T_20_39(24, B, C, D, E, A);
+-	T_20_39(25, A, B, C, D, E);
+-	T_20_39(26, E, A, B, C, D);
+-	T_20_39(27, D, E, A, B, C);
+-	T_20_39(28, C, D, E, A, B);
+-	T_20_39(29, B, C, D, E, A);
+-	T_20_39(30, A, B, C, D, E);
+-	T_20_39(31, E, A, B, C, D);
+-	T_20_39(32, D, E, A, B, C);
+-	T_20_39(33, C, D, E, A, B);
+-	T_20_39(34, B, C, D, E, A);
+-	T_20_39(35, A, B, C, D, E);
+-	T_20_39(36, E, A, B, C, D);
+-	T_20_39(37, D, E, A, B, C);
+-	T_20_39(38, C, D, E, A, B);
+-	T_20_39(39, B, C, D, E, A);
++	for (; i < 40; ++i)
++		T_20_39(i, A, B, C, D, E);
+ 
+ 	/* Round 3 */
+-	T_40_59(40, A, B, C, D, E);
+-	T_40_59(41, E, A, B, C, D);
+-	T_40_59(42, D, E, A, B, C);
+-	T_40_59(43, C, D, E, A, B);
+-	T_40_59(44, B, C, D, E, A);
+-	T_40_59(45, A, B, C, D, E);
+-	T_40_59(46, E, A, B, C, D);
+-	T_40_59(47, D, E, A, B, C);
+-	T_40_59(48, C, D, E, A, B);
+-	T_40_59(49, B, C, D, E, A);
+-	T_40_59(50, A, B, C, D, E);
+-	T_40_59(51, E, A, B, C, D);
+-	T_40_59(52, D, E, A, B, C);
+-	T_40_59(53, C, D, E, A, B);
+-	T_40_59(54, B, C, D, E, A);
+-	T_40_59(55, A, B, C, D, E);
+-	T_40_59(56, E, A, B, C, D);
+-	T_40_59(57, D, E, A, B, C);
+-	T_40_59(58, C, D, E, A, B);
+-	T_40_59(59, B, C, D, E, A);
++	for (; i < 60; ++i)
++		T_40_59(i, A, B, C, D, E);
+ 
+ 	/* Round 4 */
+-	T_60_79(60, A, B, C, D, E);
+-	T_60_79(61, E, A, B, C, D);
+-	T_60_79(62, D, E, A, B, C);
+-	T_60_79(63, C, D, E, A, B);
+-	T_60_79(64, B, C, D, E, A);
+-	T_60_79(65, A, B, C, D, E);
+-	T_60_79(66, E, A, B, C, D);
+-	T_60_79(67, D, E, A, B, C);
+-	T_60_79(68, C, D, E, A, B);
+-	T_60_79(69, B, C, D, E, A);
+-	T_60_79(70, A, B, C, D, E);
+-	T_60_79(71, E, A, B, C, D);
+-	T_60_79(72, D, E, A, B, C);
+-	T_60_79(73, C, D, E, A, B);
+-	T_60_79(74, B, C, D, E, A);
+-	T_60_79(75, A, B, C, D, E);
+-	T_60_79(76, E, A, B, C, D);
+-	T_60_79(77, D, E, A, B, C);
+-	T_60_79(78, C, D, E, A, B);
+-	T_60_79(79, B, C, D, E, A);
++	for (; i < 80; ++i)
++		T_60_79(i, A, B, C, D, E);
+ 
+ 	digest[0] += A;
+ 	digest[1] += B;
 
 
