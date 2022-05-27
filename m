@@ -2,78 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 896ECC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:06:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0A53C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:06:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348654AbiE0IGE (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 04:06:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56402 "EHLO
+        id S229799AbiE0IG1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 04:06:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349354AbiE0IFk (ORCPT
+        with ESMTP id S1349538AbiE0IFz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 04:05:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9EBFFF583;
-        Fri, 27 May 2022 01:05:38 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A72AEB8222A;
-        Fri, 27 May 2022 08:05:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98AD4C34100;
-        Fri, 27 May 2022 08:05:35 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="JFi+EfgR"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1653638734;
+        Fri, 27 May 2022 04:05:55 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 38C5E104CB3
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 01:05:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653638748;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=egFvemp/OO1mIsOgG16kHg3dT2DLh+FIRIYNI2ypg1o=;
-        b=JFi+EfgRmro9BNBYct10wu2NqaGsDCM1eL8d2JwRDvzg5xWPo8x7Rh24VzOSx2NFzckLJe
-        0aAptJtLns/CyhwzsWBYEi4EgtOOi8peLurn1ys0P4JQkEoLa92s5jC4nBVVr9Q5BqCwtJ
-        YxXNKSTKkW/vR1DhfzYugZIPo237BXI=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 85d4a319 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Fri, 27 May 2022 08:05:33 +0000 (UTC)
-Date:   Fri, 27 May 2022 10:05:22 +0200
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     Eric Biggers <ebiggers@kernel.org>
-Cc:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        herbert@gondor.apana.org.au, gaochao <gaochao49@huawei.com>,
-        Ard Biesheuvel <ardb@kernel.org>
-Subject: Re: [PATCH crypto] crypto: blake2s - remove shash module
-Message-ID: <YpCGQvpirQWaAiRF@zx2c4.com>
-References: <20220526092026.207936-1-Jason@zx2c4.com>
- <Yo/Afs61tFwnaOV8@sol.localdomain>
+        bh=9CfhejkXuPa7WByuloODhCqAxTblZ1S6BbTJI/JlxSk=;
+        b=H4TxWfSTloVWg5uz34FyZyE4oq/Xei6kkoW0QEGnOW5bSLUrkbAIZsv8GWjcmQjjWQa1Ac
+        GG9LoUogh2grYaYKFPJzr4K7tAkJf/yzMNDsQGE3nhxs0mKk6hkdvEY0deIlVO2TdvppyX
+        VbcQcSzfaGug5LVCUjXkHqIB1i7XcDo=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-287-9XtA_8I5PWyJEkWbwAHphQ-1; Fri, 27 May 2022 04:05:41 -0400
+X-MC-Unique: 9XtA_8I5PWyJEkWbwAHphQ-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2B34B1C161B3;
+        Fri, 27 May 2022 08:05:41 +0000 (UTC)
+Received: from gshan.redhat.com (ovpn-12-91.pek2.redhat.com [10.72.12.91])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id A7D442026D64;
+        Fri, 27 May 2022 08:05:30 +0000 (UTC)
+From:   Gavin Shan <gshan@redhat.com>
+To:     kvmarm@lists.cs.columbia.edu
+Cc:     maz@kernel.org, linux-kernel@vger.kernel.org, eauger@redhat.com,
+        oupton@google.com, Jonathan.Cameron@huawei.com,
+        pbonzini@redhat.com, vkuznets@redhat.com, will@kernel.org,
+        james.morse@arm.com, mark.rutland@arm.com,
+        shannon.zhaosl@gmail.com, shijie@amperemail.onmicrosoft.com,
+        shan.gavin@gmail.com
+Subject: [PATCH v7 14/22] KVM: arm64: Support EVENT_SIGNAL hypercall
+Date:   Fri, 27 May 2022 16:02:45 +0800
+Message-Id: <20220527080253.1562538-15-gshan@redhat.com>
+In-Reply-To: <20220527080253.1562538-1-gshan@redhat.com>
+References: <20220527080253.1562538-1-gshan@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <Yo/Afs61tFwnaOV8@sol.localdomain>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hey Eric,
+This supports EVENT_SIGNAL hypercall. It's used to inject the
+software signaled event, whose number is zero. The KVM_REQ_SDEI
+request is raised if the PE is unmasked and the event has been
+enabled.
 
-On Thu, May 26, 2022 at 11:01:34AM -0700, Eric Biggers wrote:
-> On Thu, May 26, 2022 at 11:20:26AM +0200, Jason A. Donenfeld wrote:
-> > BLAKE2s has no use as an shash and no use is likely to ever come up.
-> 
-> I'm not sure about that.  Anyone who is already using shash (for supporting
+Signed-off-by: Gavin Shan <gshan@redhat.com>
+---
+ arch/arm64/kvm/sdei.c         | 28 ++++++++++++++++++++++++++++
+ include/uapi/linux/arm_sdei.h |  3 +++
+ 2 files changed, 31 insertions(+)
 
-I'll tweak the language of the commit message.
+diff --git a/arch/arm64/kvm/sdei.c b/arch/arm64/kvm/sdei.c
+index 0bea1b2f9452..a55797fce06a 100644
+--- a/arch/arm64/kvm/sdei.c
++++ b/arch/arm64/kvm/sdei.c
+@@ -232,6 +232,31 @@ static unsigned long pe_mask(struct kvm_vcpu *vcpu, bool mask)
+ 	return SDEI_SUCCESS;
+ }
+ 
++static unsigned long event_signal(struct kvm_vcpu *vcpu)
++{
++	struct kvm_sdei_vcpu *vsdei = vcpu->arch.sdei;
++	unsigned int num = smccc_get_arg(vcpu, 1);
++
++	if (num >= KVM_NR_SDEI_EVENTS)
++		return SDEI_INVALID_PARAMETERS;
++
++	/*
++	 * The event must be software signaled event, whose
++	 * number is zero.
++	 */
++	if (num != SDEI_SW_SIGNALED_EVENT ||
++	    !test_bit(num, &vsdei->registered))
++		return SDEI_INVALID_PARAMETERS;
++
++	if (!test_and_set_bit(num, &vsdei->pending)) {
++		if (!(vcpu->arch.flags & KVM_ARM64_SDEI_MASKED) &&
++		    test_bit(num, &vsdei->enabled))
++			kvm_make_request(KVM_REQ_SDEI, vcpu);
++	}
++
++	return SDEI_SUCCESS;
++}
++
+ static unsigned long event_reset(struct kvm_vcpu *vcpu, bool private)
+ {
+ 	struct kvm_sdei_vcpu *vsdei = vcpu->arch.sdei;
+@@ -303,6 +328,9 @@ int kvm_sdei_call(struct kvm_vcpu *vcpu)
+ 	case SDEI_1_0_FN_SDEI_PE_UNMASK:
+ 		ret = pe_mask(vcpu, false);
+ 		break;
++	case SDEI_1_1_FN_SDEI_EVENT_SIGNAL:
++		ret = event_signal(vcpu);
++		break;
+ 	case SDEI_1_0_FN_SDEI_PRIVATE_RESET:
+ 		ret = event_reset(vcpu, true);
+ 		break;
+diff --git a/include/uapi/linux/arm_sdei.h b/include/uapi/linux/arm_sdei.h
+index af0630ba5437..72b07114bbfa 100644
+--- a/include/uapi/linux/arm_sdei.h
++++ b/include/uapi/linux/arm_sdei.h
+@@ -22,9 +22,12 @@
+ #define SDEI_1_0_FN_SDEI_PE_UNMASK			SDEI_1_0_FN(0x0C)
+ #define SDEI_1_0_FN_SDEI_INTERRUPT_BIND			SDEI_1_0_FN(0x0D)
+ #define SDEI_1_0_FN_SDEI_INTERRUPT_RELEASE		SDEI_1_0_FN(0x0E)
++#define SDEI_1_1_FN_SDEI_EVENT_SIGNAL			SDEI_1_0_FN(0x0F)
+ #define SDEI_1_0_FN_SDEI_PRIVATE_RESET			SDEI_1_0_FN(0x11)
+ #define SDEI_1_0_FN_SDEI_SHARED_RESET			SDEI_1_0_FN(0x12)
+ 
++#define SDEI_SW_SIGNALED_EVENT		0
++
+ #define SDEI_VERSION_MAJOR_SHIFT			48
+ #define SDEI_VERSION_MAJOR_MASK				0x7fff
+ #define SDEI_VERSION_MINOR_SHIFT			32
+-- 
+2.23.0
 
-> More importantly, this is removing quite a bit of test coverage because the
-> extra self-tests in crypto/testmgr.c are more comprehensive than what
-> lib/crypto/blake2s-selftest.c does.  For example they test the case where the
-> input data is misaligned, as well as the case where the code is executed in a
-> context where SIMD instructions are unavailable.
-> 
-> In order for this to be acceptable, I think you'd need to update
-> blake2s-selftest.c to be more comprehensive.
-
-There actually already is some alignment tests. But I'll add some more
-and also compare implementations. v2 incoming.
-
-Jason
