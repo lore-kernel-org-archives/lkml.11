@@ -2,46 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE476C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:39:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 858CDC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:39:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243621AbiE0Ljb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 07:39:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45642 "EHLO
+        id S1351475AbiE0Lji (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 07:39:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351465AbiE0Lio (ORCPT
+        with ESMTP id S1351478AbiE0Lir (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:38:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0809E106A6E;
-        Fri, 27 May 2022 04:38:20 -0700 (PDT)
+        Fri, 27 May 2022 07:38:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE2451157DB;
+        Fri, 27 May 2022 04:38:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ED61AB82466;
-        Fri, 27 May 2022 11:38:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CDB1C385A9;
-        Fri, 27 May 2022 11:38:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 11CADB824D9;
+        Fri, 27 May 2022 11:38:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 526B0C36AF5;
+        Fri, 27 May 2022 11:38:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653651497;
-        bh=0Cl6RwgLZ683pUXVRBAUU69djwhzRF9IwBEwOkpm2d0=;
+        s=korg; t=1653651500;
+        bh=16LFNup+v25/VvNo3CxgLkxi4CTpG2cxX/qybxkt+Iw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wweQhpqsF/LdD4GRkr6orrw00rQpfPdgcZ4JXytsayL+OSABkLmt0Z0pNawltVEoh
-         AhITs1T9Bt7tFQSOED1JoAIy+OaGQVKrP5cdQIhxPVP1uRyvRsgYXQytXMZLaUZbka
-         VQS4+Bf23YZGRJTBAQHrEjOhHesFbGU6SN0ROY5s=
+        b=g5IP7/G5zu3RFbiq9RdD6jAHCmEP9nnUA/UjnCc5zWMDVloGdCsMhBEaRr/wJY2gk
+         sectZcGEgEcUzuFDJDAUG7nQVLR86oWJBO0e3t2uMauyHDt+hVe8XnfHP+YprnMPPN
+         QlGBaERpeIZdQvFss7yuYpyx3J8/JpAlCJI65n6Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
-        Eric Biggers <ebiggers@google.com>,
+        stable@vger.kernel.org, Matt Mackall <mpm@selenic.com>,
+        Theodore Tso <tytso@mit.edu>,
         Herbert Xu <herbert@gondor.apana.org.au>,
+        Eric Biggers <ebiggers@google.com>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.10 017/163] crypto: x86/blake2s - define shash_alg structs using macros
-Date:   Fri, 27 May 2022 10:48:17 +0200
-Message-Id: <20220527084830.582395329@linuxfoundation.org>
+Subject: [PATCH 5.17 042/111] random: pull add_hwgenerator_randomness() declaration into random.h
+Date:   Fri, 27 May 2022 10:49:14 +0200
+Message-Id: <20220527084825.418150401@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
-References: <20220527084828.156494029@linuxfoundation.org>
+In-Reply-To: <20220527084819.133490171@linuxfoundation.org>
+References: <20220527084819.133490171@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,115 +53,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Biggers <ebiggers@google.com>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 1aa90f4cf034ed4f016a02330820ac0551a6c13c upstream.
+commit b777c38239fec5a528e59f55b379e31b1a187524 upstream.
 
-The shash_alg structs for the four variants of BLAKE2s are identical
-except for the algorithm name, driver name, and digest size.  So, avoid
-code duplication by using a macro to define these structs.
+add_hwgenerator_randomness() is a function implemented and documented
+inside of random.c. It is the way that hardware RNGs push data into it.
+Therefore, it should be declared in random.h. Otherwise sparse complains
+with:
 
-Acked-by: Ard Biesheuvel <ardb@kernel.org>
-Signed-off-by: Eric Biggers <ebiggers@google.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+random.c:1137:6: warning: symbol 'add_hwgenerator_randomness' was not declared. Should it be static?
+
+The alternative would be to include hw_random.h into random.c, but that
+wouldn't really be good for anything except slowing down compile time.
+
+Cc: Matt Mackall <mpm@selenic.com>
+Cc: Theodore Ts'o <tytso@mit.edu>
+Acked-by: Herbert Xu <herbert@gondor.apana.org.au>
+Reviewed-by: Eric Biggers <ebiggers@google.com>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/crypto/blake2s-glue.c |   84 +++++++++++------------------------------
- 1 file changed, 23 insertions(+), 61 deletions(-)
+ drivers/char/hw_random/core.c |    1 +
+ include/linux/hw_random.h     |    2 --
+ include/linux/random.h        |    2 ++
+ 3 files changed, 3 insertions(+), 2 deletions(-)
 
---- a/arch/x86/crypto/blake2s-glue.c
-+++ b/arch/x86/crypto/blake2s-glue.c
-@@ -129,67 +129,29 @@ static int crypto_blake2s_final(struct s
- 	return 0;
- }
+--- a/drivers/char/hw_random/core.c
++++ b/drivers/char/hw_random/core.c
+@@ -15,6 +15,7 @@
+ #include <linux/err.h>
+ #include <linux/fs.h>
+ #include <linux/hw_random.h>
++#include <linux/random.h>
+ #include <linux/kernel.h>
+ #include <linux/kthread.h>
+ #include <linux/sched/signal.h>
+--- a/include/linux/hw_random.h
++++ b/include/linux/hw_random.h
+@@ -60,7 +60,5 @@ extern int devm_hwrng_register(struct de
+ /** Unregister a Hardware Random Number Generator driver. */
+ extern void hwrng_unregister(struct hwrng *rng);
+ extern void devm_hwrng_unregister(struct device *dve, struct hwrng *rng);
+-/** Feed random bits into the pool. */
+-extern void add_hwgenerator_randomness(const void *buffer, size_t count, size_t entropy);
  
--static struct shash_alg blake2s_algs[] = {{
--	.base.cra_name		= "blake2s-128",
--	.base.cra_driver_name	= "blake2s-128-x86",
--	.base.cra_flags		= CRYPTO_ALG_OPTIONAL_KEY,
--	.base.cra_ctxsize	= sizeof(struct blake2s_tfm_ctx),
--	.base.cra_priority	= 200,
--	.base.cra_blocksize     = BLAKE2S_BLOCK_SIZE,
--	.base.cra_module	= THIS_MODULE,
--
--	.digestsize		= BLAKE2S_128_HASH_SIZE,
--	.setkey			= crypto_blake2s_setkey,
--	.init			= crypto_blake2s_init,
--	.update			= crypto_blake2s_update,
--	.final			= crypto_blake2s_final,
--	.descsize		= sizeof(struct blake2s_state),
--}, {
--	.base.cra_name		= "blake2s-160",
--	.base.cra_driver_name	= "blake2s-160-x86",
--	.base.cra_flags		= CRYPTO_ALG_OPTIONAL_KEY,
--	.base.cra_ctxsize	= sizeof(struct blake2s_tfm_ctx),
--	.base.cra_priority	= 200,
--	.base.cra_blocksize     = BLAKE2S_BLOCK_SIZE,
--	.base.cra_module	= THIS_MODULE,
--
--	.digestsize		= BLAKE2S_160_HASH_SIZE,
--	.setkey			= crypto_blake2s_setkey,
--	.init			= crypto_blake2s_init,
--	.update			= crypto_blake2s_update,
--	.final			= crypto_blake2s_final,
--	.descsize		= sizeof(struct blake2s_state),
--}, {
--	.base.cra_name		= "blake2s-224",
--	.base.cra_driver_name	= "blake2s-224-x86",
--	.base.cra_flags		= CRYPTO_ALG_OPTIONAL_KEY,
--	.base.cra_ctxsize	= sizeof(struct blake2s_tfm_ctx),
--	.base.cra_priority	= 200,
--	.base.cra_blocksize     = BLAKE2S_BLOCK_SIZE,
--	.base.cra_module	= THIS_MODULE,
--
--	.digestsize		= BLAKE2S_224_HASH_SIZE,
--	.setkey			= crypto_blake2s_setkey,
--	.init			= crypto_blake2s_init,
--	.update			= crypto_blake2s_update,
--	.final			= crypto_blake2s_final,
--	.descsize		= sizeof(struct blake2s_state),
--}, {
--	.base.cra_name		= "blake2s-256",
--	.base.cra_driver_name	= "blake2s-256-x86",
--	.base.cra_flags		= CRYPTO_ALG_OPTIONAL_KEY,
--	.base.cra_ctxsize	= sizeof(struct blake2s_tfm_ctx),
--	.base.cra_priority	= 200,
--	.base.cra_blocksize     = BLAKE2S_BLOCK_SIZE,
--	.base.cra_module	= THIS_MODULE,
--
--	.digestsize		= BLAKE2S_256_HASH_SIZE,
--	.setkey			= crypto_blake2s_setkey,
--	.init			= crypto_blake2s_init,
--	.update			= crypto_blake2s_update,
--	.final			= crypto_blake2s_final,
--	.descsize		= sizeof(struct blake2s_state),
--}};
-+#define BLAKE2S_ALG(name, driver_name, digest_size)			\
-+	{								\
-+		.base.cra_name		= name,				\
-+		.base.cra_driver_name	= driver_name,			\
-+		.base.cra_priority	= 200,				\
-+		.base.cra_flags		= CRYPTO_ALG_OPTIONAL_KEY,	\
-+		.base.cra_blocksize	= BLAKE2S_BLOCK_SIZE,		\
-+		.base.cra_ctxsize	= sizeof(struct blake2s_tfm_ctx), \
-+		.base.cra_module	= THIS_MODULE,			\
-+		.digestsize		= digest_size,			\
-+		.setkey			= crypto_blake2s_setkey,	\
-+		.init			= crypto_blake2s_init,		\
-+		.update			= crypto_blake2s_update,	\
-+		.final			= crypto_blake2s_final,		\
-+		.descsize		= sizeof(struct blake2s_state),	\
-+	}
-+
-+static struct shash_alg blake2s_algs[] = {
-+	BLAKE2S_ALG("blake2s-128", "blake2s-128-x86", BLAKE2S_128_HASH_SIZE),
-+	BLAKE2S_ALG("blake2s-160", "blake2s-160-x86", BLAKE2S_160_HASH_SIZE),
-+	BLAKE2S_ALG("blake2s-224", "blake2s-224-x86", BLAKE2S_224_HASH_SIZE),
-+	BLAKE2S_ALG("blake2s-256", "blake2s-256-x86", BLAKE2S_256_HASH_SIZE),
-+};
+ #endif /* LINUX_HWRANDOM_H_ */
+--- a/include/linux/random.h
++++ b/include/linux/random.h
+@@ -32,6 +32,8 @@ static inline void add_latent_entropy(vo
+ extern void add_input_randomness(unsigned int type, unsigned int code,
+ 				 unsigned int value) __latent_entropy;
+ extern void add_interrupt_randomness(int irq) __latent_entropy;
++extern void add_hwgenerator_randomness(const void *buffer, size_t count,
++				       size_t entropy);
  
- static int __init blake2s_mod_init(void)
- {
+ extern void get_random_bytes(void *buf, size_t nbytes);
+ extern int wait_for_random_bytes(void);
 
 
