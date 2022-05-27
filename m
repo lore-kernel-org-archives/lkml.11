@@ -2,113 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 388CDC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 18:00:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F424C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 18:00:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351836AbiE0SAL (ORCPT
+        id S1353638AbiE0SAb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 14:00:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54098 "EHLO
+        Fri, 27 May 2022 14:00:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353462AbiE0SAF (ORCPT
+        with ESMTP id S236195AbiE0SA0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 14:00:05 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE0AF5044C
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 11:00:03 -0700 (PDT)
-Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24RGA4KE007173;
-        Fri, 27 May 2022 17:59:16 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id; s=corp-2021-07-09;
- bh=GwnebTzOd5wOseRW/GGVCpRp/qP0tcU6Vg3nLISbrpI=;
- b=dBeVkQgnGItGMNHBJL0tjsELF0e8bXbIOqUVfyOImmsOCfxgThk+2JuKYK7JS5vm702S
- QprPYaXZ6F2iOFs7u9Vz5NfFMfHD3p8Yv7gyLKWJFbeErlIp3X+C+EwlkIgXdAU7nZL/
- StXbY81etx7TS19rhA5gP4hRKF1PONehdsrAdMEeyglVncgk5J/QsFTRZTHEgjx6hF5M
- bZzI1vqOrGwnrNKCoQTOhAQXzc41jjFILuiR6extRG640ZMSA5nRmW1hU/f/35MrBvqF
- uZEfrJrl3ORTamL52r+iaC7TNxXn7Lk67u9eblY4pMPVGB876b2Z9vBwdZxNthfAD8S8 Pw== 
-Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3g93tdyqhy-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 27 May 2022 17:59:15 +0000
-Received: from pps.filterd (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 24RHo4Sm007602;
-        Fri, 27 May 2022 17:59:14 GMT
-Received: from bostrovs-us.us.oracle.com (bostrovs-us.us.oracle.com [10.152.12.19])
-        by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3g93x1xpnr-1;
-        Fri, 27 May 2022 17:59:14 +0000
-From:   Boris Ostrovsky <boris.ostrovsky@oracle.com>
-To:     xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org
-Cc:     jgross@suse.com, sstabellini@kernel.org,
-        oleksandr_tyshchenko@epam.com, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com
-Subject: [PATCH] MAINTAINERS: Update Xen maintainership
-Date:   Fri, 27 May 2022 13:57:05 -0400
-Message-Id: <1653674225-10447-1-git-send-email-boris.ostrovsky@oracle.com>
-X-Mailer: git-send-email 1.8.3.1
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.486,18.0.874
- definitions=2022-05-27_05:2022-05-27,2022-05-27 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 spamscore=0 malwarescore=0
- mlxlogscore=999 bulkscore=0 suspectscore=0 adultscore=0 mlxscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2204290000
- definitions=main-2205270087
-X-Proofpoint-GUID: QhWoUm9D1nSCVjvVtXBiIk70L5n3x3dH
-X-Proofpoint-ORIG-GUID: QhWoUm9D1nSCVjvVtXBiIk70L5n3x3dH
+        Fri, 27 May 2022 14:00:26 -0400
+Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3453550B12
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 11:00:24 -0700 (PDT)
+Date:   Fri, 27 May 2022 11:00:17 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1653674423;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=AaaAMzLpeI48jX20qadDEE94Y5QgilfKbSZgSl/Mg04=;
+        b=WgGWiCdDkR17PNNmWrPNLcWUAjlERKTL2FiPPNCewH8GcKY1d+hbVdm9ms+2QpSeBpMc0g
+        ge7HpZJh3TJcC8qK66q1oOVlCFXgohOpE7nPzpF1akuVaUy7K4YL7zkq0k1FGeFxnADG0F
+        lJlhCW/iDMNlWLI1Qu/vGjc395PNvyw=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Roman Gushchin <roman.gushchin@linux.dev>
+To:     Dave Chinner <dchinner@redhat.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org,
+        Kent Overstreet <kent.overstreet@gmail.com>,
+        Hillf Danton <hdanton@sina.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Muchun Song <songmuchun@bytedance.com>
+Subject: Re: [PATCH v4 3/6] mm: shrinkers: provide shrinkers with names
+Message-ID: <YpERsTsgjlGYEnDv@carbon>
+References: <20220525202600.2910982-1-roman.gushchin@linux.dev>
+ <20220525202600.2910982-4-roman.gushchin@linux.dev>
+ <YpCaOmL2NfcLEAHi@rh>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YpCaOmL2NfcLEAHi@rh>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Due to time constraints I am stepping down as maintainter. I will stay
-as reviewer for x86 code (for which create a separate category).
+On Fri, May 27, 2022 at 07:30:34PM +1000, Dave Chinner wrote:
+> On Wed, May 25, 2022 at 01:25:57PM -0700, Roman Gushchin wrote:
+> > Currently shrinkers are anonymous objects. For debugging purposes they
+> > can be identified by count/scan function names, but it's not always
+> > useful: e.g. for superblock's shrinkers it's nice to have at least
+> > an idea of to which superblock the shrinker belongs.
+> > 
+> > This commit adds names to shrinkers. register_shrinker() and
+> > prealloc_shrinker() functions are extended to take a format and
+> > arguments to master a name.
+> > 
+> > In some cases it's not possible to determine a good name at the time
+> > when a shrinker is allocated. For such cases shrinker_debugfs_rename()
+> > is provided.
+> > 
+> > After this change the shrinker debugfs directory looks like:
+> >   $ cd /sys/kernel/debug/shrinker/
+> >   $ ls
+> >     dqcache-16          sb-hugetlbfs-17  sb-rootfs-2      sb-tmpfs-49
+> >     kfree_rcu-0         sb-hugetlbfs-33  sb-securityfs-6  sb-tracefs-13
+> >     sb-aio-20           sb-iomem-12      sb-selinuxfs-22  sb-xfs:vda1-36
+> >     sb-anon_inodefs-15  sb-mqueue-21     sb-sockfs-8      sb-zsmalloc-19
+> >     sb-bdev-3           sb-nsfs-4        sb-sysfs-26      shadow-18
+> >     sb-bpf-32           sb-pipefs-14     sb-tmpfs-1       thp_deferred_split-10
+> >     sb-btrfs:vda2-24    sb-proc-25       sb-tmpfs-27      thp_zero-9
+> >     sb-cgroup2-30       sb-proc-39       sb-tmpfs-29      xfs_buf-vda1-37
+> >     sb-configfs-23      sb-proc-41       sb-tmpfs-35      xfs_inodegc-vda1-38
+> 
+> sb-xfs:vda1-36
+> xfs_buf-vda1-37
+> xfs_inodegc-vda1-38
+> 
+> That's a parsing nightmare right there. Please use the same format
+> for everything. You have <subsystem>-<type>:<instance>-<id> for
+> superblock stuff, but <subsys>_<type>-<instance>-<id> for the XFS
+> stuff. Make it consistent so we aren't reduced to pulling out our
+> hair trying to parse this in any useful way:
+> 
+> sb-xfs:vda1-36
+> xfs-buf:vda1-37
+> xfs-inodegc:vda1-38
 
-Stefano is now maintainer for Xen hypervisor interface and Oleksandr has
-graciously agreed to become a reviewer.
+Ok, good point, will do in the next version.
 
-Signed-off-by: Boris Ostrovsky <boris.ostrovsky@oracle.com>
----
- MAINTAINERS | 18 ++++++++++++------
- 1 file changed, 12 insertions(+), 6 deletions(-)
+> 
+> FWIW, how we are supposed to know what actually owns these:
+> 
+> sb-tmpfs-1
+> sb-tmpfs-27
+> sb-tmpfs-29
+> sb-tmpfs-35
+> sb-tmpfs-49
+> 
+> tmpfs-27 might own all the memory - how do we link that back to a
+> mount point, container, user, workload, etc?
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index d6d879cb0afd..b879c4e6750e 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -21549,23 +21549,29 @@ F:	arch/arm64/include/asm/xen/
- F:	arch/arm64/xen/
- 
- XEN HYPERVISOR INTERFACE
--M:	Boris Ostrovsky <boris.ostrovsky@oracle.com>
- M:	Juergen Gross <jgross@suse.com>
--R:	Stefano Stabellini <sstabellini@kernel.org>
-+M:	Stefano Stabellini <sstabellini@kernel.org>
-+R:	Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
- L:	xen-devel@lists.xenproject.org (moderated for non-subscribers)
- S:	Supported
- T:	git git://git.kernel.org/pub/scm/linux/kernel/git/xen/tip.git
- F:	Documentation/ABI/stable/sysfs-hypervisor-xen
- F:	Documentation/ABI/testing/sysfs-hypervisor-xen
--F:	arch/x86/include/asm/pvclock-abi.h
--F:	arch/x86/include/asm/xen/
--F:	arch/x86/platform/pvh/
--F:	arch/x86/xen/
- F:	drivers/*/xen-*front.c
- F:	drivers/xen/
- F:	include/uapi/xen/
- F:	include/xen/
- 
-+XEN HYPERVISOR X86
-+M:	Juergen Gross <jgross@suse.com>
-+R:	Boris Ostrovsky <boris.ostrovsky@oracle.com>
-+L:	xen-devel@lists.xenproject.org (moderated for non-subscribers)
-+S:	Supported
-+F:	arch/x86/include/asm/pvclock-abi.h
-+F:	arch/x86/include/asm/xen/
-+F:	arch/x86/platform/pvh/
-+F:	arch/x86/xen/
-+
- XEN NETWORK BACKEND DRIVER
- M:	Wei Liu <wei.liu@kernel.org>
- M:	Paul Durrant <paul@xen.org>
--- 
-1.8.3.1
+I agree, but I've no good idea what to use as an id. We can't put the mount
+point, user, group etc together in the file name - it will be too lengthy
+(and mount namespaces are making it even more complicated).
 
+Maybe we can add a symlink to the mount point from within the directory?
+
+Do you have any ideas here?
+
+Thanks!
