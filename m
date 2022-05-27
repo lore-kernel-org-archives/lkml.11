@@ -2,61 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEA38C38A2B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FCBAC38A06
 	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:17:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354035AbiE0MRD (ORCPT
+        id S1353915AbiE0MQy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 08:17:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49906 "EHLO
+        Fri, 27 May 2022 08:16:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352588AbiE0MD4 (ORCPT
+        with ESMTP id S1352591AbiE0MD4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 27 May 2022 08:03:56 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42D63149164;
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53F6C149167;
         Fri, 27 May 2022 04:53:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653652415; x=1685188415;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=ZtvwdBswObarSG+JCXhEU2uLIuCFq0FhxZEUfuA19u0=;
-  b=JkHtmSU14EYPemC5M4HQJJx9j/G/ZQU1yT9zaveePaTwWc4O0JWdDAfE
-   pneG/5C1mO8ytIuuErHVG38kE/5YSAmTd1cyRxVOQnH1cGnP0SRaJcvy9
-   4bmtMBYJh/TrOX2CZbwGEzsrdX6gJ3Rr9HK1E+0BRP0JuyEmD1Xfp3KC/
-   SBS0wo2jKbrM01rHxFjjLnbGI1bWGnhT7jh9R8tQHmif8jGwpLlziZhn3
-   ibq/JsMOPngsC7jiWfBdxat8is/o/NXi+7kI4hOIxE37mqZ13Snptdd42
-   M/t0RMrK8v2Okg5GdBlWKz6+0yhtbi5BFhAHW0BmmezFgRzEptFL17fRE
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10359"; a="274464808"
-X-IronPort-AV: E=Sophos;i="5.91,255,1647327600"; 
-   d="scan'208";a="274464808"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2022 04:53:34 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,255,1647327600"; 
-   d="scan'208";a="746889599"
-Received: from dev2 (HELO DEV2.igk.intel.com) ([10.237.148.94])
-  by orsmga005.jf.intel.com with ESMTP; 27 May 2022 04:53:32 -0700
-From:   =?UTF-8?q?Amadeusz=20S=C5=82awi=C5=84ski?= 
-        <amadeuszx.slawinski@linux.intel.com>
-To:     Vineet Gupta <vgupta@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     Guenter Roeck <linux@roeck-us.net>,
-        linux-snps-arc@lists.infradead.org,
-        linux-m68k@lists.linux-m68k.org, sparclinux@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Amadeusz=20S=C5=82awi=C5=84ski?= 
-        <amadeuszx.slawinski@linux.intel.com>,
-        Cezary Rojewski <cezary.rojewski@intel.com>
-Subject: [PATCH v2 1/3] ARC: bitops: Change __fls to return unsigned long
-Date:   Fri, 27 May 2022 13:53:43 +0200
-Message-Id: <20220527115345.2588775-2-amadeuszx.slawinski@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220527115345.2588775-1-amadeuszx.slawinski@linux.intel.com>
-References: <20220527115345.2588775-1-amadeuszx.slawinski@linux.intel.com>
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id C05F3CE251E;
+        Fri, 27 May 2022 11:53:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D69B1C385A9;
+        Fri, 27 May 2022 11:53:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1653652412;
+        bh=Trgz+USAQPCv1R/UHnPbOXYDe7Kd+M22X+yARLpqOVw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=S/mBx2tYmJUCpW8bqp++vvbYOzKfyaZKkxh0NektANSwoqMAXnp8fBOYS1HEV7QsQ
+         TxJFTnE5LPDGdtvIzRZWeigzFQ+2cPQF/TgA1Hwr3AEKqpX1erArpvGGm3Q74LY4DD
+         Qnq20wyDGmlN0+/UmepvVJibkJ+5OhPaBJv4FJXk=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.10 134/163] um: use fallback for random_get_entropy() instead of zero
+Date:   Fri, 27 May 2022 10:50:14 +0200
+Message-Id: <20220527084846.858153394@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
+References: <20220527084828.156494029@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -64,40 +53,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As per asm-generic definition and other architectures __fls should
-return unsigned long.
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-No functional change is expected as return value should fit in unsigned
-long.
+commit 9f13fb0cd11ed2327abff69f6501a2c124c88b5a upstream.
 
-Reviewed-by: Cezary Rojewski <cezary.rojewski@intel.com>
-Signed-off-by: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
+In the event that random_get_entropy() can't access a cycle counter or
+similar, falling back to returning 0 is really not the best we can do.
+Instead, at least calling random_get_entropy_fallback() would be
+preferable, because that always needs to return _something_, even
+falling back to jiffies eventually. It's not as though
+random_get_entropy_fallback() is super high precision or guaranteed to
+be entropic, but basically anything that's not zero all the time is
+better than returning zero all the time.
+
+This is accomplished by just including the asm-generic code like on
+other architectures, which means we can get rid of the empty stub
+function here.
+
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Richard Weinberger <richard@nod.at>
+Cc: Anton Ivanov <anton.ivanov@cambridgegreys.com>
+Acked-by: Johannes Berg <johannes@sipsolutions.net>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arc/include/asm/bitops.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/um/include/asm/timex.h |    9 ++-------
+ 1 file changed, 2 insertions(+), 7 deletions(-)
 
-diff --git a/arch/arc/include/asm/bitops.h b/arch/arc/include/asm/bitops.h
-index bdb7e190a294..f5a936496f06 100644
---- a/arch/arc/include/asm/bitops.h
-+++ b/arch/arc/include/asm/bitops.h
-@@ -82,7 +82,7 @@ static inline __attribute__ ((const)) int fls(unsigned int x)
- /*
-  * __fls: Similar to fls, but zero based (0-31)
-  */
--static inline __attribute__ ((const)) int __fls(unsigned long x)
-+static inline __attribute__ ((const)) unsigned long __fls(unsigned long x)
- {
- 	if (!x)
- 		return 0;
-@@ -131,7 +131,7 @@ static inline __attribute__ ((const)) int fls(unsigned int x)
- /*
-  * __fls: Similar to fls, but zero based (0-31). Also 0 if no bit set
-  */
--static inline __attribute__ ((const)) int __fls(unsigned long x)
-+static inline __attribute__ ((const)) unsigned long __fls(unsigned long x)
- {
- 	/* FLS insn has exactly same semantics as the API */
- 	return	__builtin_arc_fls(x);
--- 
-2.25.1
+--- a/arch/um/include/asm/timex.h
++++ b/arch/um/include/asm/timex.h
+@@ -2,13 +2,8 @@
+ #ifndef __UM_TIMEX_H
+ #define __UM_TIMEX_H
+ 
+-typedef unsigned long cycles_t;
+-
+-static inline cycles_t get_cycles (void)
+-{
+-	return 0;
+-}
+-
+ #define CLOCK_TICK_RATE (HZ)
+ 
++#include <asm-generic/timex.h>
++
+ #endif
+
 
