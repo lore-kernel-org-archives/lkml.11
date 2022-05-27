@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29B1AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:58:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D662C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:58:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348481AbiE0I57 (ORCPT
+        id S1350012AbiE0I6F (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 04:57:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33046 "EHLO
+        Fri, 27 May 2022 04:58:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350355AbiE0IzR (ORCPT
+        with ESMTP id S1350322AbiE0IzP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 04:55:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F09AD5C852;
-        Fri, 27 May 2022 01:53:40 -0700 (PDT)
+        Fri, 27 May 2022 04:55:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C83EFF5B2;
+        Fri, 27 May 2022 01:53:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6D1A361D52;
-        Fri, 27 May 2022 08:53:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E25BC385A9;
-        Fri, 27 May 2022 08:53:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EB7C9B82338;
+        Fri, 27 May 2022 08:53:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EE9BC385B8;
+        Fri, 27 May 2022 08:53:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653641619;
-        bh=+cyULwU6ekpt09vWb0ZsOkvCDHbbJFY9snnOY1CUj18=;
+        s=korg; t=1653641612;
+        bh=/Gw6JxSblTcQmHQxjs4vzcY1zzrhrhZ0RHEaHE/MKOI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BJ6aO8GIMDKH7583bk1kSjpFfEpINKQ12FqGPgGK5uSqea+EM69DLOma6F/xvueSM
-         KoKy6EiBbj8yG2zq20SA7vF/L7LpUvy0R87MtFLg6I7tgpNAqim7nJbzBh3baE5BU9
-         7r6PO1H4L7B8LZuknZiNdAY6RZSfVO9ZVMogpVAA=
+        b=0usj+ikIuTOGt8aPkaAvw31tTjo3Um7y/M5ZzlnrNaWiimnQhacK49XVJSVnkX/tA
+         TZaePVN0IvXr488rZuHEQqRwDVXKqDWezN6xeDXAl2xhR8L3OELPHeQYKlYQA9hRcQ
+         AacpzIwvFQwNtggyoUxWdeVXJTghNvFIelZXKWfc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.18 36/47] random: remove extern from functions in header
-Date:   Fri, 27 May 2022 10:50:16 +0200
-Message-Id: <20220527084807.306082742@linuxfoundation.org>
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.18 31/47] random: remove ratelimiting for in-kernel unseeded randomness
+Date:   Fri, 27 May 2022 10:50:11 +0200
+Message-Id: <20220527084806.597924164@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220527084801.223648383@linuxfoundation.org>
 References: <20220527084801.223648383@linuxfoundation.org>
@@ -50,148 +52,198 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 7782cfeca7d420e8bb707613d4cfb0f7ff29bb3a upstream.
+commit cc1e127bfa95b5fb2f9307e7168bf8b2b45b4c5e upstream.
 
-Accoriding to the kernel style guide, having `extern` on functions in
-headers is old school and deprecated, and doesn't add anything. So remove
-them from random.h, and tidy up the file a little bit too.
+The CONFIG_WARN_ALL_UNSEEDED_RANDOM debug option controls whether the
+kernel warns about all unseeded randomness or just the first instance.
+There's some complicated rate limiting and comparison to the previous
+caller, such that even with CONFIG_WARN_ALL_UNSEEDED_RANDOM enabled,
+developers still don't see all the messages or even an accurate count of
+how many were missed. This is the result of basically parallel
+mechanisms aimed at accomplishing more or less the same thing, added at
+different points in random.c history, which sort of compete with the
+first-instance-only limiting we have now.
 
+It turns out, however, that nobody cares about the first unseeded
+randomness instance of in-kernel users. The same first user has been
+there for ages now, and nobody is doing anything about it. It isn't even
+clear that anybody _can_ do anything about it. Most places that can do
+something about it have switched over to using get_random_bytes_wait()
+or wait_for_random_bytes(), which is the right thing to do, but there is
+still much code that needs randomness sometimes during init, and as a
+geeneral rule, if you're not using one of the _wait functions or the
+readiness notifier callback, you're bound to be doing it wrong just
+based on that fact alone.
+
+So warning about this same first user that can't easily change is simply
+not an effective mechanism for anything at all. Users can't do anything
+about it, as the Kconfig text points out -- the problem isn't in
+userspace code -- and kernel developers don't or more often can't react
+to it.
+
+Instead, show the warning for all instances when CONFIG_WARN_ALL_UNSEEDED_RANDOM
+is set, so that developers can debug things need be, or if it isn't set,
+don't show a warning at all.
+
+At the same time, CONFIG_WARN_ALL_UNSEEDED_RANDOM now implies setting
+random.ratelimit_disable=1 on by default, since if you care about one
+you probably care about the other too. And we can clean up usage around
+the related urandom_warning ratelimiter as well (whose behavior isn't
+changing), so that it properly counts missed messages after the 10
+message threshold is reached.
+
+Cc: Theodore Ts'o <tytso@mit.edu>
+Cc: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/random.h |   77 +++++++++++++++++++------------------------------
- 1 file changed, 31 insertions(+), 46 deletions(-)
+ drivers/char/random.c |   61 ++++++++++++++------------------------------------
+ lib/Kconfig.debug     |    3 --
+ 2 files changed, 19 insertions(+), 45 deletions(-)
 
---- a/include/linux/random.h
-+++ b/include/linux/random.h
-@@ -12,13 +12,12 @@
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -86,11 +86,10 @@ static DEFINE_SPINLOCK(random_ready_chai
+ static RAW_NOTIFIER_HEAD(random_ready_chain);
  
- struct notifier_block;
+ /* Control how we warn userspace. */
+-static struct ratelimit_state unseeded_warning =
+-	RATELIMIT_STATE_INIT("warn_unseeded_randomness", HZ, 3);
+ static struct ratelimit_state urandom_warning =
+ 	RATELIMIT_STATE_INIT("warn_urandom_randomness", HZ, 3);
+-static int ratelimit_disable __read_mostly;
++static int ratelimit_disable __read_mostly =
++	IS_ENABLED(CONFIG_WARN_ALL_UNSEEDED_RANDOM);
+ module_param_named(ratelimit_disable, ratelimit_disable, int, 0644);
+ MODULE_PARM_DESC(ratelimit_disable, "Disable random ratelimit suppression");
  
--extern void add_device_randomness(const void *, size_t);
--extern void add_bootloader_randomness(const void *, size_t);
--extern void add_input_randomness(unsigned int type, unsigned int code,
--				 unsigned int value) __latent_entropy;
--extern void add_interrupt_randomness(int irq) __latent_entropy;
--extern void add_hwgenerator_randomness(const void *buffer, size_t count,
--				       size_t entropy);
-+void add_device_randomness(const void *, size_t);
-+void add_bootloader_randomness(const void *, size_t);
-+void add_input_randomness(unsigned int type, unsigned int code,
-+			  unsigned int value) __latent_entropy;
-+void add_interrupt_randomness(int irq) __latent_entropy;
-+void add_hwgenerator_randomness(const void *buffer, size_t count, size_t entropy);
- 
- #if defined(LATENT_ENTROPY_PLUGIN) && !defined(__CHECKER__)
- static inline void add_latent_entropy(void)
-@@ -26,30 +25,20 @@ static inline void add_latent_entropy(vo
- 	add_device_randomness((const void *)&latent_entropy, sizeof(latent_entropy));
+@@ -181,27 +180,15 @@ static void process_random_ready_list(vo
+ 	spin_unlock_irqrestore(&random_ready_chain_lock, flags);
  }
- #else
--static inline void add_latent_entropy(void) {}
-+static inline void add_latent_entropy(void) { }
- #endif
  
- #if IS_ENABLED(CONFIG_VMGENID)
--extern void add_vmfork_randomness(const void *unique_vm_id, size_t size);
--extern int register_random_vmfork_notifier(struct notifier_block *nb);
--extern int unregister_random_vmfork_notifier(struct notifier_block *nb);
-+void add_vmfork_randomness(const void *unique_vm_id, size_t size);
-+int register_random_vmfork_notifier(struct notifier_block *nb);
-+int unregister_random_vmfork_notifier(struct notifier_block *nb);
- #else
- static inline int register_random_vmfork_notifier(struct notifier_block *nb) { return 0; }
- static inline int unregister_random_vmfork_notifier(struct notifier_block *nb) { return 0; }
- #endif
+-#define warn_unseeded_randomness(previous) \
+-	_warn_unseeded_randomness(__func__, (void *)_RET_IP_, (previous))
++#define warn_unseeded_randomness() \
++	_warn_unseeded_randomness(__func__, (void *)_RET_IP_)
  
--extern void get_random_bytes(void *buf, size_t nbytes);
--extern int wait_for_random_bytes(void);
--extern int __init random_init(const char *command_line);
--extern bool rng_is_initialized(void);
--extern int register_random_ready_notifier(struct notifier_block *nb);
--extern int unregister_random_ready_notifier(struct notifier_block *nb);
--extern size_t __must_check get_random_bytes_arch(void *buf, size_t nbytes);
--
--#ifndef MODULE
--extern const struct file_operations random_fops, urandom_fops;
+-static void _warn_unseeded_randomness(const char *func_name, void *caller, void **previous)
++static void _warn_unseeded_randomness(const char *func_name, void *caller)
+ {
+-#ifdef CONFIG_WARN_ALL_UNSEEDED_RANDOM
+-	const bool print_once = false;
+-#else
+-	static bool print_once __read_mostly;
 -#endif
 -
-+void get_random_bytes(void *buf, size_t nbytes);
-+size_t __must_check get_random_bytes_arch(void *buf, size_t nbytes);
- u32 get_random_u32(void);
- u64 get_random_u64(void);
- static inline unsigned int get_random_int(void)
-@@ -81,11 +70,17 @@ static inline unsigned long get_random_l
- 
- static inline unsigned long get_random_canary(void)
- {
--	unsigned long val = get_random_long();
--
--	return val & CANARY_MASK;
-+	return get_random_long() & CANARY_MASK;
+-	if (print_once || crng_ready() ||
+-	    (previous && (caller == READ_ONCE(*previous))))
++	if (!IS_ENABLED(CONFIG_WARN_ALL_UNSEEDED_RANDOM) || crng_ready())
+ 		return;
+-	WRITE_ONCE(*previous, caller);
+-#ifndef CONFIG_WARN_ALL_UNSEEDED_RANDOM
+-	print_once = true;
+-#endif
+-	if (__ratelimit(&unseeded_warning))
+-		printk_deferred(KERN_NOTICE "random: %s called from %pS with crng_init=%d\n",
+-				func_name, caller, crng_init);
++	printk_deferred(KERN_NOTICE "random: %s called from %pS with crng_init=%d\n",
++			func_name, caller, crng_init);
  }
  
-+unsigned long randomize_page(unsigned long start, unsigned long range);
-+
-+int __init random_init(const char *command_line);
-+bool rng_is_initialized(void);
-+int wait_for_random_bytes(void);
-+int register_random_ready_notifier(struct notifier_block *nb);
-+int unregister_random_ready_notifier(struct notifier_block *nb);
-+
- /* Calls wait_for_random_bytes() and then calls get_random_bytes(buf, nbytes).
-  * Returns the result of the call to wait_for_random_bytes. */
- static inline int get_random_bytes_wait(void *buf, size_t nbytes)
-@@ -109,8 +104,6 @@ declare_get_random_var_wait(int)
- declare_get_random_var_wait(long)
- #undef declare_get_random_var
  
--unsigned long randomize_page(unsigned long start, unsigned long range);
+@@ -454,9 +441,7 @@ static void _get_random_bytes(void *buf,
+  */
+ void get_random_bytes(void *buf, size_t nbytes)
+ {
+-	static void *previous;
 -
- /*
-  * This is designed to be standalone for just prandom
-  * users, but for now we include it from <linux/random.h>
-@@ -121,22 +114,10 @@ unsigned long randomize_page(unsigned lo
- #ifdef CONFIG_ARCH_RANDOM
- # include <asm/archrandom.h>
- #else
--static inline bool __must_check arch_get_random_long(unsigned long *v)
--{
--	return false;
--}
--static inline bool __must_check arch_get_random_int(unsigned int *v)
--{
--	return false;
--}
--static inline bool __must_check arch_get_random_seed_long(unsigned long *v)
--{
--	return false;
--}
--static inline bool __must_check arch_get_random_seed_int(unsigned int *v)
--{
--	return false;
--}
-+static inline bool __must_check arch_get_random_long(unsigned long *v) { return false; }
-+static inline bool __must_check arch_get_random_int(unsigned int *v) { return false; }
-+static inline bool __must_check arch_get_random_seed_long(unsigned long *v) { return false; }
-+static inline bool __must_check arch_get_random_seed_int(unsigned int *v) { return false; }
- #endif
+-	warn_unseeded_randomness(&previous);
++	warn_unseeded_randomness();
+ 	_get_random_bytes(buf, nbytes);
+ }
+ EXPORT_SYMBOL(get_random_bytes);
+@@ -552,10 +537,9 @@ u64 get_random_u64(void)
+ 	u64 ret;
+ 	unsigned long flags;
+ 	struct batched_entropy *batch;
+-	static void *previous;
+ 	unsigned long next_gen;
  
- /*
-@@ -160,8 +141,12 @@ static inline bool __init arch_get_rando
- #endif
+-	warn_unseeded_randomness(&previous);
++	warn_unseeded_randomness();
  
- #ifdef CONFIG_SMP
--extern int random_prepare_cpu(unsigned int cpu);
--extern int random_online_cpu(unsigned int cpu);
-+int random_prepare_cpu(unsigned int cpu);
-+int random_online_cpu(unsigned int cpu);
-+#endif
-+
-+#ifndef MODULE
-+extern const struct file_operations random_fops, urandom_fops;
- #endif
+ 	if  (!crng_ready()) {
+ 		_get_random_bytes(&ret, sizeof(ret));
+@@ -591,10 +575,9 @@ u32 get_random_u32(void)
+ 	u32 ret;
+ 	unsigned long flags;
+ 	struct batched_entropy *batch;
+-	static void *previous;
+ 	unsigned long next_gen;
  
- #endif /* _LINUX_RANDOM_H */
+-	warn_unseeded_randomness(&previous);
++	warn_unseeded_randomness();
+ 
+ 	if  (!crng_ready()) {
+ 		_get_random_bytes(&ret, sizeof(ret));
+@@ -821,16 +804,9 @@ static void credit_init_bits(size_t nbit
+ 		wake_up_interruptible(&crng_init_wait);
+ 		kill_fasync(&fasync, SIGIO, POLL_IN);
+ 		pr_notice("crng init done\n");
+-		if (unseeded_warning.missed) {
+-			pr_notice("%d get_random_xx warning(s) missed due to ratelimiting\n",
+-				  unseeded_warning.missed);
+-			unseeded_warning.missed = 0;
+-		}
+-		if (urandom_warning.missed) {
++		if (urandom_warning.missed)
+ 			pr_notice("%d urandom warning(s) missed due to ratelimiting\n",
+ 				  urandom_warning.missed);
+-			urandom_warning.missed = 0;
+-		}
+ 	} else if (orig < POOL_EARLY_BITS && new >= POOL_EARLY_BITS) {
+ 		spin_lock_irqsave(&base_crng.lock, flags);
+ 		/* Check if crng_init is CRNG_EMPTY, to avoid race with crng_reseed(). */
+@@ -948,10 +924,6 @@ int __init rand_initialize(void)
+ 	else if (arch_init && trust_cpu)
+ 		credit_init_bits(BLAKE2S_BLOCK_SIZE * 8);
+ 
+-	if (ratelimit_disable) {
+-		urandom_warning.interval = 0;
+-		unseeded_warning.interval = 0;
+-	}
+ 	return 0;
+ }
+ 
+@@ -1438,11 +1410,14 @@ static ssize_t urandom_read(struct file
+ 	if (!crng_ready())
+ 		try_to_generate_entropy();
+ 
+-	if (!crng_ready() && maxwarn > 0) {
+-		maxwarn--;
+-		if (__ratelimit(&urandom_warning))
++	if (!crng_ready()) {
++		if (!ratelimit_disable && maxwarn <= 0)
++			++urandom_warning.missed;
++		else if (ratelimit_disable || __ratelimit(&urandom_warning)) {
++			--maxwarn;
+ 			pr_notice("%s: uninitialized urandom read (%zd bytes read)\n",
+ 				  current->comm, nbytes);
++		}
+ 	}
+ 
+ 	return get_random_bytes_user(buf, nbytes);
+--- a/lib/Kconfig.debug
++++ b/lib/Kconfig.debug
+@@ -1616,8 +1616,7 @@ config WARN_ALL_UNSEEDED_RANDOM
+ 	  so architecture maintainers really need to do what they can
+ 	  to get the CRNG seeded sooner after the system is booted.
+ 	  However, since users cannot do anything actionable to
+-	  address this, by default the kernel will issue only a single
+-	  warning for the first use of unseeded randomness.
++	  address this, by default this option is disabled.
+ 
+ 	  Say Y here if you want to receive warnings for all uses of
+ 	  unseeded randomness.  This will be of use primarily for
 
 
