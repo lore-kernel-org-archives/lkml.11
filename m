@@ -2,221 +2,511 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E062BC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 09:02:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04F94C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 09:02:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349908AbiE0JCP convert rfc822-to-8bit (ORCPT
+        id S1349563AbiE0JC0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 05:02:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52684 "EHLO
+        Fri, 27 May 2022 05:02:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350562AbiE0JAH (ORCPT
+        with ESMTP id S1350590AbiE0JAK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 05:00:07 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFD256C570
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 01:56:16 -0700 (PDT)
-Received: from kwepemi100011.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L8dt45DhwzjWxw;
-        Fri, 27 May 2022 16:55:08 +0800 (CST)
-Received: from kwepemi500016.china.huawei.com (7.221.188.220) by
- kwepemi100011.china.huawei.com (7.221.188.134) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 27 May 2022 16:56:11 +0800
-Received: from kwepemi500016.china.huawei.com ([7.221.188.220]) by
- kwepemi500016.china.huawei.com ([7.221.188.220]) with mapi id 15.01.2375.024;
- Fri, 27 May 2022 16:56:11 +0800
-From:   "Zhouguanghui (OS Kernel)" <zhouguanghui1@huawei.com>
-To:     Anshuman Khandual <anshuman.khandual@arm.com>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "rppt@kernel.org" <rppt@kernel.org>,
-        "will@kernel.org" <will@kernel.org>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "xuqiang (M)" <xuqiang36@huawei.com>
-Subject: Re: [PATCH v2] arm64: Expand the static memblock memory table
-Thread-Topic: [PATCH v2] arm64: Expand the static memblock memory table
-Thread-Index: AQHYaePxMXVmORJiq0CmXcJ5Ica/dg==
-Date:   Fri, 27 May 2022 08:56:11 +0000
-Message-ID: <5d9390e36e6148e49284af3a7233accb@huawei.com>
-References: <20220517114309.10228-1-zhouguanghui1@huawei.com>
- <de0788c0-a5a8-cf5b-5f20-eb9e99cd62ca@arm.com>
-Accept-Language: zh-CN, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.174.178.157]
-Content-Type: text/plain; charset="iso-2022-jp"
-Content-Transfer-Encoding: 8BIT
+        Fri, 27 May 2022 05:00:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8043219C33;
+        Fri, 27 May 2022 01:56:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EFF9461CB7;
+        Fri, 27 May 2022 08:56:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3C46C385A9;
+        Fri, 27 May 2022 08:56:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1653641778;
+        bh=m/WayzKQ2sQH0unzhO7ev677XcMs5UCQ4qjoYDgR/EE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=cua3tJmU3FbBRw49DE+ZWVJpg6FhFJBapZY+dCyKqLrWOgiYRl7F9Rbv0pHDv5Rf0
+         zspcPNEmqR6QsOLF+wTyb+8SQIbRVZGyeJkBYTCjLSqO4DhbAFJW5b10zQEcEAm3on
+         YTchzPJtfebsZGPhLUSUbtss7miNJghWv9C1f+dg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Eric Biggers <ebiggers@google.com>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.17 034/111] random: group entropy collection functions
+Date:   Fri, 27 May 2022 10:49:06 +0200
+Message-Id: <20220527084824.283285016@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220527084819.133490171@linuxfoundation.org>
+References: <20220527084819.133490171@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Anshuman,
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-在 2022/5/18 12:40, Anshuman Khandual 写道:
-> Hi Zhou,
-> 
-> A small nit.
-> 
-> This changes generic memblock to accommodate arm64 specific scenario.
-> Keeping the subject line as 'mm/memblock: ...' might be better.
-> 
+commit 92c653cf14400946f376a29b828d6af7e01f38dd upstream.
 
-I will add memblock to the subject line.
+This pulls all of the entropy collection-focused functions into the
+fourth labeled section.
 
-> On 5/17/22 17:13, Zhou Guanghui wrote:
->> In a system using HBM, a multi-bit ECC error occurs, and the BIOS
->> saves the corresponding area (for example, 2 MB). When the system
->> restarts next time, these areas are isolated and not reported or
->> reported as EFI_UNUSABLE_MEMORY. Both of them lead to an increase
-> 
-> Which cases dont get reported rather than as EFI_UNUSABLE_MEMORY ? Is
-> this supported on arm64 platform via mainline kernel ?
-> 
+No functional changes.
 
-The BIOS determines how to report the memory area that cannot be used to 
-the kernel. Do not report the memory area to the kernel or inform the 
-kernel that the memory area is unusable.
+Cc: Theodore Ts'o <tytso@mit.edu>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Reviewed-by: Eric Biggers <ebiggers@google.com>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/char/random.c |  370 +++++++++++++++++++++++++++-----------------------
+ 1 file changed, 206 insertions(+), 164 deletions(-)
 
->> in the number of memblocks, whereas EFI_UNUSABLE_MEMORY leads to
->> a larger number of memblocks.
->>
->> For example, if the EFI_UNUSABLE_MEMORY type is reported:
->> ...
->> memory[0x92]    [0x0000200834a00000-0x0000200835bfffff], 0x0000000001200000 bytes on node 7 flags: 0x0
->> memory[0x93]    [0x0000200835c00000-0x0000200835dfffff], 0x0000000000200000 bytes on node 7 flags: 0x4
->> memory[0x94]    [0x0000200835e00000-0x00002008367fffff], 0x0000000000a00000 bytes on node 7 flags: 0x0
->> memory[0x95]    [0x0000200836800000-0x00002008369fffff], 0x0000000000200000 bytes on node 7 flags: 0x4
->> memory[0x96]    [0x0000200836a00000-0x0000200837bfffff], 0x0000000001200000 bytes on node 7 flags: 0x0
->> memory[0x97]    [0x0000200837c00000-0x0000200837dfffff], 0x0000000000200000 bytes on node 7 flags: 0x4
->> memory[0x98]    [0x0000200837e00000-0x000020087fffffff], 0x0000000048200000 bytes on node 7 flags: 0x0
->> memory[0x99]    [0x0000200880000000-0x0000200bcfffffff], 0x0000000350000000 bytes on node 6 flags: 0x0
->> memory[0x9a]    [0x0000200bd0000000-0x0000200bd01fffff], 0x0000000000200000 bytes on node 6 flags: 0x4
->> memory[0x9b]    [0x0000200bd0200000-0x0000200bd07fffff], 0x0000000000600000 bytes on node 6 flags: 0x0
->> memory[0x9c]    [0x0000200bd0800000-0x0000200bd09fffff], 0x0000000000200000 bytes on node 6 flags: 0x4
->> memory[0x9d]    [0x0000200bd0a00000-0x0000200fcfffffff], 0x00000003ff600000 bytes on node 6 flags: 0x0
->> memory[0x9e]    [0x0000200fd0000000-0x0000200fd01fffff], 0x0000000000200000 bytes on node 6 flags: 0x4
->> memory[0x9f]    [0x0000200fd0200000-0x0000200fffffffff], 0x000000002fe00000 bytes on node 6 flags: 0x0
-> 
-> Got it.
-> 
->> ...
->>
->> If the size of the init memblock regions is exceeded before the
->> array size can be resized, the excess memory will be lost.
-> 
-> Could you please elaborate more on why additional memblock regions can
-> not be accommodated via memblock array resizing ?
-> 
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -1039,60 +1039,112 @@ static bool drain_entropy(void *buf, siz
+ 	return true;
+ }
+ 
+-struct fast_pool {
+-	union {
+-		u32 pool32[4];
+-		u64 pool64[2];
+-	};
+-	unsigned long last;
+-	u16 reg_idx;
+-	u8 count;
+-};
++
++/**********************************************************************
++ *
++ * Entropy collection routines.
++ *
++ * The following exported functions are used for pushing entropy into
++ * the above entropy accumulation routines:
++ *
++ *	void add_device_randomness(const void *buf, size_t size);
++ *	void add_input_randomness(unsigned int type, unsigned int code,
++ *	                          unsigned int value);
++ *	void add_disk_randomness(struct gendisk *disk);
++ *	void add_hwgenerator_randomness(const void *buffer, size_t count,
++ *					size_t entropy);
++ *	void add_bootloader_randomness(const void *buf, size_t size);
++ *	void add_interrupt_randomness(int irq);
++ *
++ * add_device_randomness() adds data to the input pool that
++ * is likely to differ between two devices (or possibly even per boot).
++ * This would be things like MAC addresses or serial numbers, or the
++ * read-out of the RTC. This does *not* credit any actual entropy to
++ * the pool, but it initializes the pool to different values for devices
++ * that might otherwise be identical and have very little entropy
++ * available to them (particularly common in the embedded world).
++ *
++ * add_input_randomness() uses the input layer interrupt timing, as well
++ * as the event type information from the hardware.
++ *
++ * add_disk_randomness() uses what amounts to the seek time of block
++ * layer request events, on a per-disk_devt basis, as input to the
++ * entropy pool. Note that high-speed solid state drives with very low
++ * seek times do not make for good sources of entropy, as their seek
++ * times are usually fairly consistent.
++ *
++ * The above two routines try to estimate how many bits of entropy
++ * to credit. They do this by keeping track of the first and second
++ * order deltas of the event timings.
++ *
++ * add_hwgenerator_randomness() is for true hardware RNGs, and will credit
++ * entropy as specified by the caller. If the entropy pool is full it will
++ * block until more entropy is needed.
++ *
++ * add_bootloader_randomness() is the same as add_hwgenerator_randomness() or
++ * add_device_randomness(), depending on whether or not the configuration
++ * option CONFIG_RANDOM_TRUST_BOOTLOADER is set.
++ *
++ * add_interrupt_randomness() uses the interrupt timing as random
++ * inputs to the entropy pool. Using the cycle counters and the irq source
++ * as inputs, it feeds the input pool roughly once a second or after 64
++ * interrupts, crediting 1 bit of entropy for whichever comes first.
++ *
++ **********************************************************************/
++
++static bool trust_cpu __ro_after_init = IS_ENABLED(CONFIG_RANDOM_TRUST_CPU);
++static int __init parse_trust_cpu(char *arg)
++{
++	return kstrtobool(arg, &trust_cpu);
++}
++early_param("random.trust_cpu", parse_trust_cpu);
+ 
+ /*
+- * This is a fast mixing routine used by the interrupt randomness
+- * collector.  It's hardcoded for an 128 bit pool and assumes that any
+- * locks that might be needed are taken by the caller.
++ * The first collection of entropy occurs at system boot while interrupts
++ * are still turned off. Here we push in RDSEED, a timestamp, and utsname().
++ * Depending on the above configuration knob, RDSEED may be considered
++ * sufficient for initialization. Note that much earlier setup may already
++ * have pushed entropy into the input pool by the time we get here.
+  */
+-static void fast_mix(u32 pool[4])
++int __init rand_initialize(void)
+ {
+-	u32 a = pool[0],	b = pool[1];
+-	u32 c = pool[2],	d = pool[3];
+-
+-	a += b;			c += d;
+-	b = rol32(b, 6);	d = rol32(d, 27);
+-	d ^= a;			b ^= c;
++	size_t i;
++	ktime_t now = ktime_get_real();
++	bool arch_init = true;
++	unsigned long rv;
+ 
+-	a += b;			c += d;
+-	b = rol32(b, 16);	d = rol32(d, 14);
+-	d ^= a;			b ^= c;
++	for (i = 0; i < BLAKE2S_BLOCK_SIZE; i += sizeof(rv)) {
++		if (!arch_get_random_seed_long_early(&rv) &&
++		    !arch_get_random_long_early(&rv)) {
++			rv = random_get_entropy();
++			arch_init = false;
++		}
++		mix_pool_bytes(&rv, sizeof(rv));
++	}
++	mix_pool_bytes(&now, sizeof(now));
++	mix_pool_bytes(utsname(), sizeof(*(utsname())));
+ 
+-	a += b;			c += d;
+-	b = rol32(b, 6);	d = rol32(d, 27);
+-	d ^= a;			b ^= c;
++	extract_entropy(base_crng.key, sizeof(base_crng.key));
++	++base_crng.generation;
+ 
+-	a += b;			c += d;
+-	b = rol32(b, 16);	d = rol32(d, 14);
+-	d ^= a;			b ^= c;
++	if (arch_init && trust_cpu && crng_init < 2) {
++		crng_init = 2;
++		pr_notice("crng init done (trusting CPU's manufacturer)\n");
++	}
+ 
+-	pool[0] = a;  pool[1] = b;
+-	pool[2] = c;  pool[3] = d;
++	if (ratelimit_disable) {
++		urandom_warning.interval = 0;
++		unseeded_warning.interval = 0;
++	}
++	return 0;
+ }
+ 
+-/*********************************************************************
+- *
+- * Entropy input management
+- *
+- *********************************************************************/
+-
+ /* There is one of these per entropy source */
+ struct timer_rand_state {
+ 	cycles_t last_time;
+ 	long last_delta, last_delta2;
+ };
+ 
+-#define INIT_TIMER_RAND_STATE { INITIAL_JIFFIES, };
+-
+ /*
+  * Add device- or boot-specific data to the input pool to help
+  * initialize it.
+@@ -1116,8 +1168,6 @@ void add_device_randomness(const void *b
+ }
+ EXPORT_SYMBOL(add_device_randomness);
+ 
+-static struct timer_rand_state input_timer_state = INIT_TIMER_RAND_STATE;
+-
+ /*
+  * This function adds entropy to the entropy "pool" by using timing
+  * delays.  It uses the timer_rand_state structure to make an estimate
+@@ -1179,8 +1229,9 @@ void add_input_randomness(unsigned int t
+ 			  unsigned int value)
+ {
+ 	static unsigned char last_value;
++	static struct timer_rand_state input_timer_state = { INITIAL_JIFFIES };
+ 
+-	/* ignore autorepeat and the like */
++	/* Ignore autorepeat and the like. */
+ 	if (value == last_value)
+ 		return;
+ 
+@@ -1190,6 +1241,119 @@ void add_input_randomness(unsigned int t
+ }
+ EXPORT_SYMBOL_GPL(add_input_randomness);
+ 
++#ifdef CONFIG_BLOCK
++void add_disk_randomness(struct gendisk *disk)
++{
++	if (!disk || !disk->random)
++		return;
++	/* First major is 1, so we get >= 0x200 here. */
++	add_timer_randomness(disk->random, 0x100 + disk_devt(disk));
++}
++EXPORT_SYMBOL_GPL(add_disk_randomness);
++
++void rand_initialize_disk(struct gendisk *disk)
++{
++	struct timer_rand_state *state;
++
++	/*
++	 * If kzalloc returns null, we just won't use that entropy
++	 * source.
++	 */
++	state = kzalloc(sizeof(struct timer_rand_state), GFP_KERNEL);
++	if (state) {
++		state->last_time = INITIAL_JIFFIES;
++		disk->random = state;
++	}
++}
++#endif
++
++/*
++ * Interface for in-kernel drivers of true hardware RNGs.
++ * Those devices may produce endless random bits and will be throttled
++ * when our pool is full.
++ */
++void add_hwgenerator_randomness(const void *buffer, size_t count,
++				size_t entropy)
++{
++	if (unlikely(crng_init == 0)) {
++		size_t ret = crng_fast_load(buffer, count);
++		mix_pool_bytes(buffer, ret);
++		count -= ret;
++		buffer += ret;
++		if (!count || crng_init == 0)
++			return;
++	}
++
++	/*
++	 * Throttle writing if we're above the trickle threshold.
++	 * We'll be woken up again once below POOL_MIN_BITS, when
++	 * the calling thread is about to terminate, or once
++	 * CRNG_RESEED_INTERVAL has elapsed.
++	 */
++	wait_event_interruptible_timeout(random_write_wait,
++			!system_wq || kthread_should_stop() ||
++			input_pool.entropy_count < POOL_MIN_BITS,
++			CRNG_RESEED_INTERVAL);
++	mix_pool_bytes(buffer, count);
++	credit_entropy_bits(entropy);
++}
++EXPORT_SYMBOL_GPL(add_hwgenerator_randomness);
++
++/*
++ * Handle random seed passed by bootloader.
++ * If the seed is trustworthy, it would be regarded as hardware RNGs. Otherwise
++ * it would be regarded as device data.
++ * The decision is controlled by CONFIG_RANDOM_TRUST_BOOTLOADER.
++ */
++void add_bootloader_randomness(const void *buf, size_t size)
++{
++	if (IS_ENABLED(CONFIG_RANDOM_TRUST_BOOTLOADER))
++		add_hwgenerator_randomness(buf, size, size * 8);
++	else
++		add_device_randomness(buf, size);
++}
++EXPORT_SYMBOL_GPL(add_bootloader_randomness);
++
++struct fast_pool {
++	union {
++		u32 pool32[4];
++		u64 pool64[2];
++	};
++	unsigned long last;
++	u16 reg_idx;
++	u8 count;
++};
++
++/*
++ * This is a fast mixing routine used by the interrupt randomness
++ * collector. It's hardcoded for an 128 bit pool and assumes that any
++ * locks that might be needed are taken by the caller.
++ */
++static void fast_mix(u32 pool[4])
++{
++	u32 a = pool[0],	b = pool[1];
++	u32 c = pool[2],	d = pool[3];
++
++	a += b;			c += d;
++	b = rol32(b, 6);	d = rol32(d, 27);
++	d ^= a;			b ^= c;
++
++	a += b;			c += d;
++	b = rol32(b, 16);	d = rol32(d, 14);
++	d ^= a;			b ^= c;
++
++	a += b;			c += d;
++	b = rol32(b, 6);	d = rol32(d, 27);
++	d ^= a;			b ^= c;
++
++	a += b;			c += d;
++	b = rol32(b, 16);	d = rol32(d, 14);
++	d ^= a;			b ^= c;
++
++	pool[0] = a;  pool[1] = b;
++	pool[2] = c;  pool[3] = d;
++}
++
+ static DEFINE_PER_CPU(struct fast_pool, irq_randomness);
+ 
+ static u32 get_reg(struct fast_pool *f, struct pt_regs *regs)
+@@ -1259,22 +1423,11 @@ void add_interrupt_randomness(int irq)
+ 
+ 	fast_pool->count = 0;
+ 
+-	/* award one bit for the contents of the fast pool */
++	/* Award one bit for the contents of the fast pool. */
+ 	credit_entropy_bits(1);
+ }
+ EXPORT_SYMBOL_GPL(add_interrupt_randomness);
+ 
+-#ifdef CONFIG_BLOCK
+-void add_disk_randomness(struct gendisk *disk)
+-{
+-	if (!disk || !disk->random)
+-		return;
+-	/* first major is 1, so we get >= 0x200 here */
+-	add_timer_randomness(disk->random, 0x100 + disk_devt(disk));
+-}
+-EXPORT_SYMBOL_GPL(add_disk_randomness);
+-#endif
+-
+ /*
+  * Each time the timer fires, we expect that we got an unpredictable
+  * jump in the cycle counter. Even if the timer is running on another
+@@ -1324,73 +1477,6 @@ static void try_to_generate_entropy(void
+ 	mix_pool_bytes(&stack.now, sizeof(stack.now));
+ }
+ 
+-static bool trust_cpu __ro_after_init = IS_ENABLED(CONFIG_RANDOM_TRUST_CPU);
+-static int __init parse_trust_cpu(char *arg)
+-{
+-	return kstrtobool(arg, &trust_cpu);
+-}
+-early_param("random.trust_cpu", parse_trust_cpu);
+-
+-/*
+- * Note that setup_arch() may call add_device_randomness()
+- * long before we get here. This allows seeding of the pools
+- * with some platform dependent data very early in the boot
+- * process. But it limits our options here. We must use
+- * statically allocated structures that already have all
+- * initializations complete at compile time. We should also
+- * take care not to overwrite the precious per platform data
+- * we were given.
+- */
+-int __init rand_initialize(void)
+-{
+-	size_t i;
+-	ktime_t now = ktime_get_real();
+-	bool arch_init = true;
+-	unsigned long rv;
+-
+-	for (i = 0; i < BLAKE2S_BLOCK_SIZE; i += sizeof(rv)) {
+-		if (!arch_get_random_seed_long_early(&rv) &&
+-		    !arch_get_random_long_early(&rv)) {
+-			rv = random_get_entropy();
+-			arch_init = false;
+-		}
+-		mix_pool_bytes(&rv, sizeof(rv));
+-	}
+-	mix_pool_bytes(&now, sizeof(now));
+-	mix_pool_bytes(utsname(), sizeof(*(utsname())));
+-
+-	extract_entropy(base_crng.key, sizeof(base_crng.key));
+-	++base_crng.generation;
+-
+-	if (arch_init && trust_cpu && crng_init < 2) {
+-		crng_init = 2;
+-		pr_notice("crng init done (trusting CPU's manufacturer)\n");
+-	}
+-
+-	if (ratelimit_disable) {
+-		urandom_warning.interval = 0;
+-		unseeded_warning.interval = 0;
+-	}
+-	return 0;
+-}
+-
+-#ifdef CONFIG_BLOCK
+-void rand_initialize_disk(struct gendisk *disk)
+-{
+-	struct timer_rand_state *state;
+-
+-	/*
+-	 * If kzalloc returns null, we just won't use that entropy
+-	 * source.
+-	 */
+-	state = kzalloc(sizeof(struct timer_rand_state), GFP_KERNEL);
+-	if (state) {
+-		state->last_time = INITIAL_JIFFIES;
+-		disk->random = state;
+-	}
+-}
+-#endif
+-
+ static ssize_t urandom_read(struct file *file, char __user *buf, size_t nbytes,
+ 			    loff_t *ppos)
+ {
+@@ -1685,47 +1771,3 @@ static int __init random_sysctls_init(vo
+ }
+ device_initcall(random_sysctls_init);
+ #endif	/* CONFIG_SYSCTL */
+-
+-/* Interface for in-kernel drivers of true hardware RNGs.
+- * Those devices may produce endless random bits and will be throttled
+- * when our pool is full.
+- */
+-void add_hwgenerator_randomness(const void *buffer, size_t count,
+-				size_t entropy)
+-{
+-	if (unlikely(crng_init == 0)) {
+-		size_t ret = crng_fast_load(buffer, count);
+-		mix_pool_bytes(buffer, ret);
+-		count -= ret;
+-		buffer += ret;
+-		if (!count || crng_init == 0)
+-			return;
+-	}
+-
+-	/* Throttle writing if we're above the trickle threshold.
+-	 * We'll be woken up again once below POOL_MIN_BITS, when
+-	 * the calling thread is about to terminate, or once
+-	 * CRNG_RESEED_INTERVAL has elapsed.
+-	 */
+-	wait_event_interruptible_timeout(random_write_wait,
+-			!system_wq || kthread_should_stop() ||
+-			input_pool.entropy_count < POOL_MIN_BITS,
+-			CRNG_RESEED_INTERVAL);
+-	mix_pool_bytes(buffer, count);
+-	credit_entropy_bits(entropy);
+-}
+-EXPORT_SYMBOL_GPL(add_hwgenerator_randomness);
+-
+-/* Handle random seed passed by bootloader.
+- * If the seed is trustworthy, it would be regarded as hardware RNGs. Otherwise
+- * it would be regarded as device data.
+- * The decision is controlled by CONFIG_RANDOM_TRUST_BOOTLOADER.
+- */
+-void add_bootloader_randomness(const void *buf, size_t size)
+-{
+-	if (IS_ENABLED(CONFIG_RANDOM_TRUST_BOOTLOADER))
+-		add_hwgenerator_randomness(buf, size, size * 8);
+-	else
+-		add_device_randomness(buf, size);
+-}
+-EXPORT_SYMBOL_GPL(add_bootloader_randomness);
 
-As described in the memblock_double_array function: We don't allow 
-resizing until we know about the reserved regions of memory that aren' 
-not suitable for allocation.
 
->>
->> Signed-off-by: Zhou Guanghui <zhouguanghui1@huawei.com>
->> ---
->>   arch/arm64/include/asm/memory.h |  9 +++++++++
->>   mm/memblock.c                   | 14 +++++++++-----
->>   2 files changed, 18 insertions(+), 5 deletions(-)
->>
->> diff --git a/arch/arm64/include/asm/memory.h b/arch/arm64/include/asm/memory.h
->> index 0af70d9abede..eda61c0389c4 100644
->> --- a/arch/arm64/include/asm/memory.h
->> +++ b/arch/arm64/include/asm/memory.h
->> @@ -364,6 +364,15 @@ void dump_mem_limit(void);
->>   # define INIT_MEMBLOCK_RESERVED_REGIONS	(INIT_MEMBLOCK_REGIONS + NR_CPUS + 1)
->>   #endif
->>   
->> +/*
->> + * memory regions which marked with flag MEMBLOCK_NOMAP may divide a continuous
->> + * memory block into multiple parts. As a result, the number of memory regions
->> + * is large.
->> + */
->> +#ifdef CONFIG_EFI
-> 
-> Could not memblock regions tagged with MEMBLOCK_NOMAP flag not present
-> on non-EFI systems ? Just wondering, are there not some other scenarios
-> which will also require expanded static memblock array.
-
-Systems using devicetree can also have "no-map" memory. However, in this 
-case, the expanded static memblock array is required only when a large 
-number of such no-map reserved memories are manually added. I don't know 
-if any users will do that.
-
-Documentation/devicetree/bindings/reserved-memory/reserved-memory.yaml
-
-As to whether other scenarios also require expanded static memblock 
-arrays, I really don't know.
-
-> 
->> +#define INIT_MEMBLOCK_MEMORY_REGIONS	1024
->> +#endif
->> +
->>   #include <asm-generic/memory_model.h>
->>   
->>   #endif /* __ASM_MEMORY_H */
->> diff --git a/mm/memblock.c b/mm/memblock.c
->> index e4f03a6e8e56..7c63571a69d7 100644
->> --- a/mm/memblock.c
->> +++ b/mm/memblock.c
->> @@ -29,6 +29,10 @@
->>   # define INIT_MEMBLOCK_RESERVED_REGIONS		INIT_MEMBLOCK_REGIONS
->>   #endif
->>   
->> +#ifndef INIT_MEMBLOCK_MEMORY_REGIONS
->> +#define INIT_MEMBLOCK_MEMORY_REGIONS		INIT_MEMBLOCK_REGIONS
->> +#endif
-> 
-> Why create an additional macro INIT_MEMBLOCK_MEMORY_REGIONS ? Why cannot
-> INIT_MEMBLOCK_REGIONS be defined in the platform directly like the other
-> macro INIT_MEMBLOCK_RESERVED_REGIONS ?
-> 
-
-The number of reserved memblocks does not need to be increased.
-
->> +
->>   /**
->>    * DOC: memblock overview
->>    *
->> @@ -55,9 +59,9 @@
->>    * the allocator metadata. The "memory" and "reserved" types are nicely
->>    * wrapped with struct memblock. This structure is statically
->>    * initialized at build time. The region arrays are initially sized to
->> - * %INIT_MEMBLOCK_REGIONS for "memory" and %INIT_MEMBLOCK_RESERVED_REGIONS
->> - * for "reserved". The region array for "physmem" is initially sized to
->> - * %INIT_PHYSMEM_REGIONS.
->> + * %INIT_MEMBLOCK_MEMORY_REGIONS for "memory" and
->> + * %INIT_MEMBLOCK_RESERVED_REGIONS for "reserved". The region array
->> + * for "physmem" is initially sized to %INIT_PHYSMEM_REGIONS.
->>    * The memblock_allow_resize() enables automatic resizing of the region
->>    * arrays during addition of new regions. This feature should be used
->>    * with care so that memory allocated for the region array will not
->> @@ -102,7 +106,7 @@ unsigned long min_low_pfn;
->>   unsigned long max_pfn;
->>   unsigned long long max_possible_pfn;
->>   
->> -static struct memblock_region memblock_memory_init_regions[INIT_MEMBLOCK_REGIONS] __initdata_memblock;
->> +static struct memblock_region memblock_memory_init_regions[INIT_MEMBLOCK_MEMORY_REGIONS] __initdata_memblock;
->>   static struct memblock_region memblock_reserved_init_regions[INIT_MEMBLOCK_RESERVED_REGIONS] __initdata_memblock;
->>   #ifdef CONFIG_HAVE_MEMBLOCK_PHYS_MAP
->>   static struct memblock_region memblock_physmem_init_regions[INIT_PHYSMEM_REGIONS];
->> @@ -111,7 +115,7 @@ static struct memblock_region memblock_physmem_init_regions[INIT_PHYSMEM_REGIONS
->>   struct memblock memblock __initdata_memblock = {
->>   	.memory.regions		= memblock_memory_init_regions,
->>   	.memory.cnt		= 1,	/* empty dummy entry */
->> -	.memory.max		= INIT_MEMBLOCK_REGIONS,
->> +	.memory.max		= INIT_MEMBLOCK_MEMORY_REGIONS,
->>   	.memory.name		= "memory",
->>   
->>   	.reserved.regions	= memblock_reserved_init_regions,
-> 
-> - Anshuman
-> 
-
-Thanks, Anshuman
