@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B45DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 15:59:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0098BC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 15:59:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353641AbiE0P7B (ORCPT
+        id S1345707AbiE0P7I (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 11:59:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43326 "EHLO
+        Fri, 27 May 2022 11:59:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354011AbiE0P5X (ORCPT
+        with ESMTP id S1349148AbiE0P5g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 11:57:23 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CE3E476281
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 08:57:05 -0700 (PDT)
+        Fri, 27 May 2022 11:57:36 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E652C63BD9
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 08:57:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653667024;
+        s=mimecast20190719; t=1653667045;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ry63xFrwO6O2lt3NumR064ix6uPD5MMi+epdiiFne5w=;
-        b=KjC/+pzb2hfdZamjdn8G3VY2B/1jkuQ0diIiYWTZaoCcpbVzCF/CmV8Ah7Uvfbs7vdZJhi
-        RbJC77kpJK3bzjHX/KM2ZJSlN8oRoWsuYv6JTtgTWGEr0QN3kV/XtTD9mcs++LUZK+pOV5
-        Sk1a2Yuyi5RHRMVYa+Xa/WWYzraz85Q=
+        bh=0KF+8ImE87X/jRor6TysxHRJbU1o17Pa9uwwIhivVEs=;
+        b=WHedcvyALe+2HtJtTf2sIIbJXECL/HK+NMUDzq7hSSH/haSonrydDi2J0mi7z8Zj8YOOqT
+        RRiv1TZQO9VPHzCHnCIcWNJzwgok0t5wfcIGOydG906fwBxuByd9llZ4CpiO7lXfUYDZy7
+        sFXsVLadwobOQ9raVUIQBVQETAkJUec=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-26-hyRRrNw4NCyypEobIz6nlQ-1; Fri, 27 May 2022 11:57:03 -0400
-X-MC-Unique: hyRRrNw4NCyypEobIz6nlQ-1
+ us-mta-435-1g6X8Gm2Pzq5Zwv_9BI50A-1; Fri, 27 May 2022 11:57:20 -0400
+X-MC-Unique: 1g6X8Gm2Pzq5Zwv_9BI50A-1
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E9034101A54E;
-        Fri, 27 May 2022 15:57:02 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2EC61185A7BA;
+        Fri, 27 May 2022 15:57:20 +0000 (UTC)
 Received: from fedora.redhat.com (unknown [10.40.192.126])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id DC1702166B26;
-        Fri, 27 May 2022 15:57:00 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 38BD52166B29;
+        Fri, 27 May 2022 15:57:16 +0000 (UTC)
 From:   Vitaly Kuznetsov <vkuznets@redhat.com>
 To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -49,9 +49,9 @@ Cc:     Sean Christopherson <seanjc@google.com>,
         Siddharth Chandrasekaran <sidcha@amazon.de>,
         Yuan Yao <yuan.yao@linux.intel.com>,
         linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v5 27/37] KVM: selftests: Fill in vm->vpages_mapped bitmap in virt_map() too
-Date:   Fri, 27 May 2022 17:55:36 +0200
-Message-Id: <20220527155546.1528910-28-vkuznets@redhat.com>
+Subject: [PATCH v5 33/37] KVM: selftests: nSVM: Allocate Hyper-V partition assist and VP assist pages
+Date:   Fri, 27 May 2022 17:55:42 +0200
+Message-Id: <20220527155546.1528910-34-vkuznets@redhat.com>
 In-Reply-To: <20220527155546.1528910-1-vkuznets@redhat.com>
 References: <20220527155546.1528910-1-vkuznets@redhat.com>
 MIME-Version: 1.0
@@ -62,28 +62,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Similar to vm_vaddr_alloc(), virt_map() needs to reflect the mapping
-in vm->vpages_mapped.
+In preparation to testing Hyper-V L2 TLB flush hypercalls, allocate VP
+assist and Partition assist pages and link them to 'struct svm_test_data'.
 
+Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
 Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 ---
- tools/testing/selftests/kvm/lib/kvm_util.c | 3 +++
- 1 file changed, 3 insertions(+)
+ tools/testing/selftests/kvm/include/x86_64/svm_util.h | 10 ++++++++++
+ tools/testing/selftests/kvm/lib/x86_64/svm.c          | 10 ++++++++++
+ 2 files changed, 20 insertions(+)
 
-diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
-index 1665a220abcb..936be9c9f870 100644
---- a/tools/testing/selftests/kvm/lib/kvm_util.c
-+++ b/tools/testing/selftests/kvm/lib/kvm_util.c
-@@ -1445,6 +1445,9 @@ void virt_map(struct kvm_vm *vm, uint64_t vaddr, uint64_t paddr,
- 		virt_pg_map(vm, vaddr, paddr);
- 		vaddr += page_size;
- 		paddr += page_size;
+diff --git a/tools/testing/selftests/kvm/include/x86_64/svm_util.h b/tools/testing/selftests/kvm/include/x86_64/svm_util.h
+index 136ba6a5d027..3922e4842c68 100644
+--- a/tools/testing/selftests/kvm/include/x86_64/svm_util.h
++++ b/tools/testing/selftests/kvm/include/x86_64/svm_util.h
+@@ -36,6 +36,16 @@ struct svm_test_data {
+ 	void *msr; /* gva */
+ 	void *msr_hva;
+ 	uint64_t msr_gpa;
 +
-+		sparsebit_set(vm->vpages_mapped,
-+			vaddr >> vm->page_shift);
- 	}
- }
++	/* Hyper-V VP assist page */
++	void *vp_assist; /* gva */
++	void *vp_assist_hva;
++	uint64_t vp_assist_gpa;
++
++	/* Hyper-V Partition assist page */
++	void *partition_assist; /* gva */
++	void *partition_assist_hva;
++	uint64_t partition_assist_gpa;
+ };
  
+ #define stgi()			\
+diff --git a/tools/testing/selftests/kvm/lib/x86_64/svm.c b/tools/testing/selftests/kvm/lib/x86_64/svm.c
+index 736ee4a23df6..c284e8f87f5c 100644
+--- a/tools/testing/selftests/kvm/lib/x86_64/svm.c
++++ b/tools/testing/selftests/kvm/lib/x86_64/svm.c
+@@ -48,6 +48,16 @@ vcpu_alloc_svm(struct kvm_vm *vm, vm_vaddr_t *p_svm_gva)
+ 	svm->msr_gpa = addr_gva2gpa(vm, (uintptr_t)svm->msr);
+ 	memset(svm->msr_hva, 0, getpagesize());
+ 
++	svm->vp_assist = (void *)vm_vaddr_alloc_page(vm);
++	svm->vp_assist_hva = addr_gva2hva(vm, (uintptr_t)svm->vp_assist);
++	svm->vp_assist_gpa = addr_gva2gpa(vm, (uintptr_t)svm->vp_assist);
++	memset(svm->vp_assist_hva, 0, getpagesize());
++
++	svm->partition_assist = (void *)vm_vaddr_alloc_page(vm);
++	svm->partition_assist_hva = addr_gva2hva(vm, (uintptr_t)svm->partition_assist);
++	svm->partition_assist_gpa = addr_gva2gpa(vm, (uintptr_t)svm->partition_assist);
++	memset(svm->partition_assist_hva, 0, getpagesize());
++
+ 	*p_svm_gva = svm_gva;
+ 	return svm;
+ }
 -- 
 2.35.3
 
