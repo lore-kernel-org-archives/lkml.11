@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A4FFC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:57:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D880C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:57:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243753AbiE0L52 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 07:57:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41934 "EHLO
+        id S1346986AbiE0L5m (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 07:57:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353064AbiE0LvK (ORCPT
+        with ESMTP id S1353110AbiE0LvT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:51:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B819132A32;
-        Fri, 27 May 2022 04:46:42 -0700 (PDT)
+        Fri, 27 May 2022 07:51:19 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB470140401;
+        Fri, 27 May 2022 04:46:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C6319B824D6;
-        Fri, 27 May 2022 11:46:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 132E5C3411C;
-        Fri, 27 May 2022 11:46:38 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 29D78CE2511;
+        Fri, 27 May 2022 11:46:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29971C34100;
+        Fri, 27 May 2022 11:46:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653651999;
-        bh=gRkETQJvr2FxHDr9oXch+XuY+cPLZ3ZZHS7YjlX3Skc=;
+        s=korg; t=1653652005;
+        bh=trZ59+XpiQPUmzkHj3yrl4lopt/Bhj9dNgOw0Ox5BlY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K9H4wINm9xsvejfBbZGCu/Lk9xP8Nf/gB0RmVO8ZZCINYZfaEt0ll4H4U7us56xI2
-         zNIfAcuD8D9ev3l0DA+ezHHTLcXS5wwzv/yukC/+91vzVWyTC+CeOCcVuqaG5fr+tT
-         Z+fEGO4+u/yNrZg9DnUQlRwWGc0vXs5Ec+V1LlXs=
+        b=n4Sqq8v4T5K79MI8MRzpdbevGqofgxq5pR0qqkIFzh558NI+dMaWL2YjzFH5uYb8Q
+         Aa5KfwfoYvnsf5v/QpeTyJnYD+/Gbx9zANKc0A1av84ocbCwdSqzDSWHq5M70CINQ+
+         7hEUjZNgiPTrw+BUAwQWYV7gP2ZHE24iX2E62cMc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        stable@vger.kernel.org,
         Dominik Brodowski <linux@dominikbrodowski.net>,
-        Eric Biggers <ebiggers@google.com>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.10 082/163] random: remove useless header comment
-Date:   Fri, 27 May 2022 10:49:22 +0200
-Message-Id: <20220527084839.321082317@linuxfoundation.org>
+Subject: [PATCH 5.17 109/111] random: check for signals after page of pool writes
+Date:   Fri, 27 May 2022 10:50:21 +0200
+Message-Id: <20220527084834.659525831@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
-References: <20220527084828.156494029@linuxfoundation.org>
+In-Reply-To: <20220527084819.133490171@linuxfoundation.org>
+References: <20220527084819.133490171@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,31 +52,99 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 6071a6c0fba2d747742cadcbb3ba26ed756ed73b upstream.
+commit 1ce6c8d68f8ac587f54d0a271ac594d3d51f3efb upstream.
 
-This really adds nothing at all useful.
+get_random_bytes_user() checks for signals after producing a PAGE_SIZE
+worth of output, just like /dev/zero does. write_pool() is doing
+basically the same work (actually, slightly more expensive), and so
+should stop to check for signals in the same way. Let's also name it
+write_pool_user() to match get_random_bytes_user(), so this won't be
+misused in the future.
 
-Cc: Theodore Ts'o <tytso@mit.edu>
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
-Reviewed-by: Eric Biggers <ebiggers@google.com>
+Before this patch, massive writes to /dev/urandom would tie up the
+process for an extremely long time and make it unterminatable. After, it
+can be successfully interrupted. The following test program can be used
+to see this works as intended:
+
+  #include <unistd.h>
+  #include <fcntl.h>
+  #include <signal.h>
+  #include <stdio.h>
+
+  static unsigned char x[~0U];
+
+  static void handle(int) { }
+
+  int main(int argc, char *argv[])
+  {
+    pid_t pid = getpid(), child;
+    int fd;
+    signal(SIGUSR1, handle);
+    if (!(child = fork())) {
+      for (;;)
+        kill(pid, SIGUSR1);
+    }
+    fd = open("/dev/urandom", O_WRONLY);
+    pause();
+    printf("interrupted after writing %zd bytes\n", write(fd, x, sizeof(x)));
+    close(fd);
+    kill(child, SIGTERM);
+    return 0;
+  }
+
+Result before: "interrupted after writing 2147479552 bytes"
+Result after: "interrupted after writing 4096 bytes"
+
+Cc: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/random.h |    6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
+ drivers/char/random.c |   14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
 
---- a/include/linux/random.h
-+++ b/include/linux/random.h
-@@ -1,9 +1,5 @@
- /* SPDX-License-Identifier: GPL-2.0 */
--/*
-- * include/linux/random.h
-- *
-- * Include file for the random number generator.
-- */
-+
- #ifndef _LINUX_RANDOM_H
- #define _LINUX_RANDOM_H
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -1253,7 +1253,7 @@ static __poll_t random_poll(struct file
+ 	return crng_ready() ? EPOLLIN | EPOLLRDNORM : EPOLLOUT | EPOLLWRNORM;
+ }
  
+-static ssize_t write_pool(struct iov_iter *iter)
++static ssize_t write_pool_user(struct iov_iter *iter)
+ {
+ 	u8 block[BLAKE2S_BLOCK_SIZE];
+ 	ssize_t ret = 0;
+@@ -1268,7 +1268,13 @@ static ssize_t write_pool(struct iov_ite
+ 		mix_pool_bytes(block, copied);
+ 		if (!iov_iter_count(iter) || copied != sizeof(block))
+ 			break;
+-		cond_resched();
++
++		BUILD_BUG_ON(PAGE_SIZE % sizeof(block) != 0);
++		if (ret % PAGE_SIZE == 0) {
++			if (signal_pending(current))
++				break;
++			cond_resched();
++		}
+ 	}
+ 
+ 	memzero_explicit(block, sizeof(block));
+@@ -1277,7 +1283,7 @@ static ssize_t write_pool(struct iov_ite
+ 
+ static ssize_t random_write_iter(struct kiocb *kiocb, struct iov_iter *iter)
+ {
+-	return write_pool(iter);
++	return write_pool_user(iter);
+ }
+ 
+ static ssize_t urandom_read_iter(struct kiocb *kiocb, struct iov_iter *iter)
+@@ -1344,7 +1350,7 @@ static long random_ioctl(struct file *f,
+ 		ret = import_single_range(WRITE, p, len, &iov, &iter);
+ 		if (unlikely(ret))
+ 			return ret;
+-		ret = write_pool(&iter);
++		ret = write_pool_user(&iter);
+ 		if (unlikely(ret < 0))
+ 			return ret;
+ 		/* Since we're crediting, enforce that it was all written into the pool. */
 
 
