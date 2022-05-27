@@ -2,101 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83833C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 01:50:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAACCC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 01:56:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233165AbiE0BuA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 21:50:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40788 "EHLO
+        id S233478AbiE0Bzz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 21:55:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233258AbiE0Btz (ORCPT
+        with ESMTP id S233163AbiE0Bzy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 21:49:55 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE22DE2758;
-        Thu, 26 May 2022 18:49:54 -0700 (PDT)
+        Thu, 26 May 2022 21:55:54 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E1B3E2777;
+        Thu, 26 May 2022 18:55:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653616194; x=1685152194;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=kut1lyhhg+8YOva3L1ERzYHZ76rCQIBn6vcFl8mahxg=;
-  b=CMShrFktcY0NLyPNxmttBRR/xL8ehJK5Au/otaUsEhJt34VwXKUcY7XQ
-   QbjW1KTa2mfHxXx2Fj0OKjyQRQy99LK2y0HxOwrdNkuq5xi0f4OCOFbOr
-   +GLiTYL593qQCVl+8dLsMs0kcCGdJwF3gMkzxwGOETKNXBzSetLtuwKZD
-   kvkEjDLcpYnGVlBs9xNvv6s3TJlhi/voiiApKirWHm1al0FqXkOrrWjU6
-   xYjArUS7ittlou6gYWz3pbFPXHPNTJeenz9hC70qYbzygpUna/+EWmSQ6
-   2jX+XiFAurMfrEkyfS1LElxct8PsGNMbiCrwjxC+fi1MRD0lMDS5n6S0R
+  t=1653616553; x=1685152553;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=4L9nxHFmH9oqt+vCvoDGP6r7G7H9tIQDSf9b5cZbxqE=;
+  b=HxgWM/SjpX40NTTPRLy8LZ+JbNsdb0vWOSkorBql3T74CfreNEPqTn1E
+   YO/rFFxYFs/V1bA8UG8oXu9U4dozB1YX1c5FqWhzrhrVLsftUK18kSXpl
+   p6KfxZzO2J3iR2TotN13YiyZjDK6+0I8JGEgcgLDAeIM9Dz/OibEc15Y3
+   wew9c2L4XlLAHujFX33DvomtXfiCy92rA/qgZdnOvSvclgrlC3n50UUt9
+   eS9C5KAM5+Hf0HvVpYtVYPEL8iyPSQlBjcwFzMvtigF4eKJ2zlx9fDYL2
+   T0HygirJYu6rHVgpTpMKwjIhbqVNMp+SRgkA/JuftwCWPa6/UsfCPKsH4
    w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10359"; a="274451648"
+X-IronPort-AV: E=McAfee;i="6400,9594,10359"; a="274356482"
 X-IronPort-AV: E=Sophos;i="5.91,254,1647327600"; 
-   d="scan'208";a="274451648"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 May 2022 18:49:54 -0700
-X-ExtLoop1: 1
+   d="scan'208";a="274356482"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 May 2022 18:55:51 -0700
 X-IronPort-AV: E=Sophos;i="5.91,254,1647327600"; 
-   d="scan'208";a="631230192"
-Received: from linux.intel.com ([10.54.29.200])
-  by fmsmga008.fm.intel.com with ESMTP; 26 May 2022 18:49:53 -0700
-Received: from linux.intel.com (ssid-ilbpg3-teeminta.png.intel.com [10.88.227.74])
-        (using TLSv1.2 with cipher DHE-RSA-AES128-SHA (128/128 bits))
-        (No client certificate requested)
-        by linux.intel.com (Postfix) with ESMTPS id 116F7580B54;
-        Thu, 26 May 2022 18:49:49 -0700 (PDT)
-Date:   Fri, 27 May 2022 09:47:09 +0800
-From:   Tan Tee Min <tee.min.tan@linux.intel.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Dan Murphy <dmurphy@ti.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org, Voon Wei Feng <weifeng.voon@intel.com>,
-        Sit Michael Wei Hong <michael.wei.hong.sit@intel.com>,
-        Ling Pei Lee <pei.lee.ling@intel.com>,
-        Looi Hong Aun <hong.aun.looi@intel.com>,
-        Wong Vee Khee <vee.khee.wong@intel.com>,
-        Tan Tee Min <tee.min.tan@intel.com>
-Subject: Re: [PATCH net-next v2 1/1] net: phy: dp83867: retrigger SGMII AN
- when link change
-Message-ID: <20220527014709.GA26992@linux.intel.com>
-References: <20220526090347.128742-1-tee.min.tan@linux.intel.com>
- <Yo9zTmMduwel8XeZ@lunn.ch>
+   d="scan'208";a="704879564"
+Received: from leiwang7-mobl.ccr.corp.intel.com (HELO [10.254.211.236]) ([10.254.211.236])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 May 2022 18:55:49 -0700
+Message-ID: <be0d476a-b309-5177-2e98-d0a683785d4a@intel.com>
+Date:   Fri, 27 May 2022 09:55:46 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yo9zTmMduwel8XeZ@lunn.ch>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.9.1
+Subject: Re: [PATCH v7 1/8] KVM: VMX: Introduce PKS VMCS fields
+Content-Language: en-US
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     pbonzini@redhat.com, vkuznets@redhat.com, wanpengli@tencent.com,
+        jmattson@google.com, joro@8bytes.org, chenyi.qiang@intel.com,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220424101557.134102-1-lei4.wang@intel.com>
+ <20220424101557.134102-2-lei4.wang@intel.com> <Yo1GW/7OuRooi3nT@google.com>
+From:   "Wang, Lei" <lei4.wang@intel.com>
+In-Reply-To: <Yo1GW/7OuRooi3nT@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 26, 2022 at 02:32:14PM +0200, Andrew Lunn wrote:
-> On Thu, May 26, 2022 at 05:03:47PM +0800, Tan Tee Min wrote:
-> > This could cause an issue during power up, when PHY is up prior to MAC.
-> > At this condition, once MAC side SGMII is up, MAC side SGMII wouldn`t
-> > receive new in-band message from TI PHY with correct link status, speed
-> > and duplex info.
-> > 
-> > As suggested by TI, implemented a SW solution here to retrigger SGMII
-> > Auto-Neg whenever there is a link change.
-> 
-> Is there a bit in the PHY which reports host side link? There is no
-> point triggering an AN if there is already link.
-> 
->       Andrew
+On 5/25/2022 4:55 AM, Sean Christopherson wrote:
+> Uber nit, PKRS isn't saved if VMX doesn't support the entry control.
+>    Every VM exit saves PKRS into guest-state area if VM_ENTRY_LOAD_IA32_PKRS
+>    is supported by the CPU.
+>
+> With that tweak,
 
-Thanks for your comment.
-
-There is no register bit in TI PHY which reports the SGMII AN link status.
-But, there is a bit that only reports the SGMII AN completion status.
-
-In this case, the PHY side SGMII AN has been already completed prior to MAC is up.
-So, once MAC side SGMII is up, MAC side SGMII wouldn`t receive any new
-in-band message from TI PHY.
-
-Thanks,
-Tee Min
+Make sense, will fix it.
 
