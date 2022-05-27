@@ -2,49 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F37A9C43217
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:11:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42E32C4321E
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:11:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353169AbiE0MKd (ORCPT
+        id S1353227AbiE0MKo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 08:10:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54612 "EHLO
+        Fri, 27 May 2022 08:10:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353433AbiE0L4e (ORCPT
+        with ESMTP id S1353221AbiE0L4T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:56:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C99DA3889;
-        Fri, 27 May 2022 04:51:51 -0700 (PDT)
+        Fri, 27 May 2022 07:56:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42BC613C0B3;
+        Fri, 27 May 2022 04:50:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6C57CB824CA;
-        Fri, 27 May 2022 11:51:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC40BC385A9;
-        Fri, 27 May 2022 11:51:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C4ADF61D56;
+        Fri, 27 May 2022 11:50:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFF55C385A9;
+        Fri, 27 May 2022 11:50:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653652309;
-        bh=N4I2vRnlz5HhcFVb3tpYEZeesn0q49B0+WAvsvwec5E=;
+        s=korg; t=1653652208;
+        bh=0gBkQ6wLl5EpKBmIFvV+KeU4l2koaTdbhqt98TGAaLc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iYb1SSuW8s8o5r4sbk3v4hAxZuN2lE38M/sd/2ukD1v0dgkf2ep7PBC1q4XpJXM2S
-         I3Ce9LcyAEQzOXB3tDS9NuJXFc+HyzeE9Belc+Nvig+t/E4pHKOVRpmkBuQ3jRcMUo
-         xJZAtnrsfOh0Ubbt1gjcgFaGFbg4cDvfB/Pe6xY8=
+        b=IJtQAgOK/fyzIOik7BNLLoEJ9otQLTYJEcEaz5+MIthFc8HmXL9nlBzUWS7EFwS5e
+         DMCAQbpEh5ZMaWS1913DEYpMMeTgwsjnDcmrLEMZcHc56wQr79tLsIGbpd/dpLazKT
+         JSd/jsoleSIRR98KrrPSYQHlWd2g4/i6Q/bu4bpw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Benjamin Herrenschmidt <benh@ozlabs.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.15 108/145] powerpc: define get_cycles macro for arch-override
-Date:   Fri, 27 May 2022 10:50:09 +0200
-Message-Id: <20220527084903.663694172@linuxfoundation.org>
+Subject: [PATCH 5.10 111/163] random: re-add removed comment about get_random_{u32,u64} reseeding
+Date:   Fri, 27 May 2022 10:49:51 +0200
+Message-Id: <20220527084843.612366451@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084850.364560116@linuxfoundation.org>
-References: <20220527084850.364560116@linuxfoundation.org>
+In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
+References: <20220527084828.156494029@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -55,35 +52,35 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 408835832158df0357e18e96da7f2d1ed6b80e7f upstream.
+commit dd7aa36e535797926d8eb311da7151919130139d upstream.
 
-PowerPC defines a get_cycles() function, but it does not do the usual
-`#define get_cycles get_cycles` dance, making it impossible for generic
-code to see if an arch-specific function was defined. While the
-get_cycles() ifdef is not currently used, the following timekeeping
-patch in this series will depend on the macro existing (or not existing)
-when defining random_get_entropy().
+The comment about get_random_{u32,u64}() not invoking reseeding got
+added in an unrelated commit, that then was recently reverted by
+0313bc278dac ("Revert "random: block in /dev/urandom""). So this adds
+that little comment snippet back, and improves the wording a bit too.
 
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Benjamin Herrenschmidt <benh@ozlabs.org>
-Cc: Paul Mackerras <paulus@samba.org>
-Acked-by: Michael Ellerman <mpe@ellerman.id.au>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/include/asm/timex.h |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/char/random.c |    7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
---- a/arch/powerpc/include/asm/timex.h
-+++ b/arch/powerpc/include/asm/timex.h
-@@ -19,6 +19,7 @@ static inline cycles_t get_cycles(void)
- {
- 	return mftb();
- }
-+#define get_cycles get_cycles
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -226,9 +226,10 @@ static void _warn_unseeded_randomness(co
+  *
+  * These interfaces will return the requested number of random bytes
+  * into the given buffer or as a return value. This is equivalent to
+- * a read from /dev/urandom. The integer family of functions may be
+- * higher performance for one-off random integers, because they do a
+- * bit of buffering.
++ * a read from /dev/urandom. The u32, u64, int, and long family of
++ * functions may be higher performance for one-off random integers,
++ * because they do a bit of buffering and do not invoke reseeding
++ * until the buffer is emptied.
+  *
+  *********************************************************************/
  
- #endif	/* __KERNEL__ */
- #endif	/* _ASM_POWERPC_TIMEX_H */
 
 
