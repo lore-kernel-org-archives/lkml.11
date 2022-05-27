@@ -2,309 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0E0DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 07:08:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42374C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 07:09:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345094AbiE0HIb (ORCPT
+        id S1346472AbiE0HJP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 03:08:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45726 "EHLO
+        Fri, 27 May 2022 03:09:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344839AbiE0HHw (ORCPT
+        with ESMTP id S1345711AbiE0HIC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 03:07:52 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54B38F68BC;
-        Fri, 27 May 2022 00:07:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1653635237; x=1685171237;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=uic6oDeWS+H0LA/TvhlzAfI4UGeugTgDQ5T8H6H+DWg=;
-  b=EKs08AsiBWeZeiXLjCdmTxD7kCHmyAvpl4NhmwFkEO2gvORWlgePm+ZW
-   WD9mOtVij+AhiZR+FvAka9nxIKNyA/xnAeJrYi2T9DvMWW+XJCqRwKcE3
-   66y81v6suBWac8eOOoov83V6RWO520roX5iJFEsJvhfVzRva2nLNDBe33
-   aJZE3X99Eey4uO9LHAHH9oAyCMo10Cpk9WKnq/Ks8mbqVtiODyk++TWYv
-   QGhBliJD3vwcMGzPfYHMZrFZPnInp1E//laL2QS6XHbzh3jpJwLGk91mh
-   czGMA0PQVYE294Dyc/De90gVVsmzYgfNv4vu5huTB7y20lDCeL16RC061
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.91,254,1647327600"; 
-   d="scan'208";a="97536372"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 27 May 2022 00:07:16 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+        Fri, 27 May 2022 03:08:02 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CEE9F74B3
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 00:07:31 -0700 (PDT)
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.56])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4L8bTm0PpMzDqS0;
+        Fri, 27 May 2022 15:07:24 +0800 (CST)
+Received: from dggpemm500018.china.huawei.com (7.185.36.111) by
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 27 May 2022 00:07:16 -0700
-Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Fri, 27 May 2022 00:07:11 -0700
-From:   Arun Ramadoss <arun.ramadoss@microchip.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Woojung Huh <woojung.huh@microchip.com>,
-        <UNGLinuxDriver@microchip.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "Russell King" <linux@armlinux.org.uk>
-Subject: [RFC Patch net-next 11/17] net: dsa: microchip: move the setup, get_phy_flags & mtu to ksz_common
-Date:   Fri, 27 May 2022 12:33:52 +0530
-Message-ID: <20220527070358.25490-12-arun.ramadoss@microchip.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527070358.25490-1-arun.ramadoss@microchip.com>
-References: <20220527070358.25490-1-arun.ramadoss@microchip.com>
+ 15.1.2375.24; Fri, 27 May 2022 15:07:29 +0800
+Received: from localhost.localdomain (10.175.112.125) by
+ dggpemm500018.china.huawei.com (7.185.36.111) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 27 May 2022 15:07:29 +0800
+From:   keliu <liuke94@huawei.com>
+To:     <siglesias@igalia.com>, <jens.taprogge@taprogge.org>,
+        <gregkh@linuxfoundation.org>,
+        <industrypack-devel@lists.sourceforge.net>,
+        <linux-kernel@vger.kernel.org>
+CC:     keliu <liuke94@huawei.com>
+Subject: [PATCH] drivers: ipack: Directly use ida_alloc()/free()
+Date:   Fri, 27 May 2022 07:28:58 +0000
+Message-ID: <20220527072858.2383526-1-liuke94@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.112.125]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500018.china.huawei.com (7.185.36.111)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch assigns the .setup, get_phy_flags & mtu  hook of ksz8795 and
-ksz9477 in dsa_switch_ops to ksz_common. And the individual switches
-setup implementations are called based on the ksz_dev_ops.  For
-get_phy_flags hooks,checks whether the chip is ksz8863/kss8793 then it
-returns error for port1.
+Use ida_alloc()/ida_free() instead of deprecated
+ida_simple_get()/ida_simple_remove() .
 
-Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
+Signed-off-by: keliu <liuke94@huawei.com>
 ---
- drivers/net/dsa/microchip/ksz8795.c    | 17 ++-------
- drivers/net/dsa/microchip/ksz9477.c    | 14 ++++----
- drivers/net/dsa/microchip/ksz_common.c | 50 ++++++++++++++++++++++++++
- drivers/net/dsa/microchip/ksz_common.h |  7 ++++
- 4 files changed, 68 insertions(+), 20 deletions(-)
+ drivers/ipack/ipack.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-index 528de481b319..1058b6883caa 100644
---- a/drivers/net/dsa/microchip/ksz8795.c
-+++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -898,18 +898,6 @@ static void ksz8_w_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 val)
- 	}
- }
+diff --git a/drivers/ipack/ipack.c b/drivers/ipack/ipack.c
+index b1c3198355e7..21d0456c229c 100644
+--- a/drivers/ipack/ipack.c
++++ b/drivers/ipack/ipack.c
+@@ -207,7 +207,7 @@ struct ipack_bus_device *ipack_bus_register(struct device *parent, int slots,
+ 	if (!bus)
+ 		return NULL;
  
--static u32 ksz8_sw_get_phy_flags(struct dsa_switch *ds, int port)
--{
--	/* Silicon Errata Sheet (DS80000830A):
--	 * Port 1 does not work with LinkMD Cable-Testing.
--	 * Port 1 does not respond to received PAUSE control frames.
--	 */
--	if (!port)
--		return MICREL_KSZ8_P1_ERRATA;
--
--	return 0;
--}
--
- static void ksz8_cfg_port_member(struct ksz_device *dev, int port, u8 member)
+-	bus_nr = ida_simple_get(&ipack_ida, 0, 0, GFP_KERNEL);
++	bus_nr = ida_alloc(&ipack_ida, GFP_KERNEL);
+ 	if (bus_nr < 0) {
+ 		kfree(bus);
+ 		return NULL;
+@@ -237,7 +237,7 @@ int ipack_bus_unregister(struct ipack_bus_device *bus)
  {
- 	u8 data;
-@@ -1476,8 +1464,8 @@ static void ksz8_get_caps(struct ksz_device *dev, int port,
- 
- static const struct dsa_switch_ops ksz8_switch_ops = {
- 	.get_tag_protocol	= ksz_get_tag_protocol,
--	.get_phy_flags		= ksz8_sw_get_phy_flags,
--	.setup			= ksz8_setup,
-+	.get_phy_flags		= ksz_get_phy_flags,
-+	.setup			= ksz_setup,
- 	.phy_read		= ksz_phy_read16,
- 	.phy_write		= ksz_phy_write16,
- 	.phylink_get_caps	= ksz_phylink_get_caps,
-@@ -1544,6 +1532,7 @@ static void ksz8_switch_exit(struct ksz_device *dev)
+ 	bus_for_each_dev(&ipack_bus_type, NULL, bus,
+ 		ipack_unregister_bus_member);
+-	ida_simple_remove(&ipack_ida, bus->bus_nr);
++	ida_free(&ipack_ida, bus->bus_nr);
+ 	kfree(bus);
+ 	return 0;
  }
- 
- static const struct ksz_dev_ops ksz8_dev_ops = {
-+	.setup = ksz8_setup,
- 	.get_port_addr = ksz8_get_port_addr,
- 	.cfg_port_member = ksz8_cfg_port_member,
- 	.flush_dyn_mac_table = ksz8_flush_dyn_mac_table,
-diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index d70e0c32b309..d7474d9d4384 100644
---- a/drivers/net/dsa/microchip/ksz9477.c
-+++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -47,9 +47,8 @@ static void ksz9477_port_cfg32(struct ksz_device *dev, int port, int offset,
- 			   bits, set ? bits : 0);
- }
- 
--static int ksz9477_change_mtu(struct dsa_switch *ds, int port, int mtu)
-+static int ksz9477_change_mtu(struct ksz_device *dev, int port, int mtu)
- {
--	struct ksz_device *dev = ds->priv;
- 	u16 frame_size, max_frame = 0;
- 	int i;
- 
-@@ -65,7 +64,7 @@ static int ksz9477_change_mtu(struct dsa_switch *ds, int port, int mtu)
- 				  REG_SW_MTU_MASK, max_frame);
- }
- 
--static int ksz9477_max_mtu(struct dsa_switch *ds, int port)
-+static int ksz9477_max_mtu(struct ksz_device *dev, int port)
- {
- 	return KSZ9477_MAX_FRAME_SIZE - VLAN_ETH_HLEN - ETH_FCS_LEN;
- }
-@@ -1296,7 +1295,7 @@ static int ksz9477_setup(struct dsa_switch *ds)
- 
- static const struct dsa_switch_ops ksz9477_switch_ops = {
- 	.get_tag_protocol	= ksz_get_tag_protocol,
--	.setup			= ksz9477_setup,
-+	.setup			= ksz_setup,
- 	.phy_read		= ksz_phy_read16,
- 	.phy_write		= ksz_phy_write16,
- 	.phylink_mac_link_down	= ksz_mac_link_down,
-@@ -1320,8 +1319,8 @@ static const struct dsa_switch_ops ksz9477_switch_ops = {
- 	.port_mirror_add	= ksz_port_mirror_add,
- 	.port_mirror_del	= ksz_port_mirror_del,
- 	.get_stats64		= ksz_get_stats64,
--	.port_change_mtu	= ksz9477_change_mtu,
--	.port_max_mtu		= ksz9477_max_mtu,
-+	.port_change_mtu	= ksz_change_mtu,
-+	.port_max_mtu		= ksz_max_mtu,
- };
- 
- static u32 ksz9477_get_port_addr(int port, int offset)
-@@ -1382,6 +1381,7 @@ static void ksz9477_switch_exit(struct ksz_device *dev)
- }
- 
- static const struct ksz_dev_ops ksz9477_dev_ops = {
-+	.setup = ksz9477_setup,
- 	.get_port_addr = ksz9477_get_port_addr,
- 	.cfg_port_member = ksz9477_cfg_port_member,
- 	.flush_dyn_mac_table = ksz9477_flush_dyn_mac_table,
-@@ -1405,6 +1405,8 @@ static const struct ksz_dev_ops ksz9477_dev_ops = {
- 	.fdb_del = ksz9477_fdb_del,
- 	.mdb_add = ksz9477_mdb_add,
- 	.mdb_del = ksz9477_mdb_del,
-+	.change_mtu = ksz9477_change_mtu,
-+	.max_mtu = ksz9477_max_mtu,
- 	.shutdown = ksz9477_reset_switch,
- 	.init = ksz9477_switch_init,
- 	.exit = ksz9477_switch_exit,
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index 8f79ff1ac648..19f8e492d3aa 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -16,6 +16,7 @@
- #include <linux/if_bridge.h>
- #include <linux/of_device.h>
- #include <linux/of_net.h>
-+#include <linux/micrel_phy.h>
- #include <net/dsa.h>
- #include <net/switchdev.h>
- 
-@@ -593,6 +594,14 @@ static void ksz_update_port_member(struct ksz_device *dev, int port)
- 	dev->dev_ops->cfg_port_member(dev, port, port_member | cpu_port);
- }
- 
-+int ksz_setup(struct dsa_switch *ds)
-+{
-+	struct ksz_device *dev = ds->priv;
-+
-+	return dev->dev_ops->setup(ds);
-+}
-+EXPORT_SYMBOL_GPL(ksz_setup);
-+
- static void port_r_cnt(struct ksz_device *dev, int port)
- {
- 	struct ksz_port_mib *mib = &dev->ports[port].mib;
-@@ -692,6 +701,23 @@ int ksz_phy_write16(struct dsa_switch *ds, int addr, int reg, u16 val)
- }
- EXPORT_SYMBOL_GPL(ksz_phy_write16);
- 
-+u32 ksz_get_phy_flags(struct dsa_switch *ds, int port)
-+{
-+	struct ksz_device *dev = ds->priv;
-+
-+	if (dev->chip_id == KSZ8830_CHIP_ID) {
-+		/* Silicon Errata Sheet (DS80000830A):
-+		 * Port 1 does not work with LinkMD Cable-Testing.
-+		 * Port 1 does not respond to received PAUSE control frames.
-+		 */
-+		if (!port)
-+			return MICREL_KSZ8_P1_ERRATA;
-+	}
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(ksz_get_phy_flags);
-+
- void ksz_mac_link_down(struct dsa_switch *ds, int port, unsigned int mode,
- 		       phy_interface_t interface)
- {
-@@ -981,6 +1007,30 @@ void ksz_port_mirror_del(struct dsa_switch *ds, int port,
- }
- EXPORT_SYMBOL_GPL(ksz_port_mirror_del);
- 
-+int ksz_change_mtu(struct dsa_switch *ds, int port, int mtu)
-+{
-+	struct ksz_device *dev = ds->priv;
-+	int ret = -EOPNOTSUPP;
-+
-+	if (dev->dev_ops->change_mtu)
-+		ret = dev->dev_ops->change_mtu(dev, port, mtu);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(ksz_change_mtu);
-+
-+int ksz_max_mtu(struct dsa_switch *ds, int port)
-+{
-+	struct ksz_device *dev = ds->priv;
-+	int ret = -EOPNOTSUPP;
-+
-+	if (dev->dev_ops->max_mtu)
-+		ret = dev->dev_ops->max_mtu(dev, port);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(ksz_max_mtu);
-+
- static int ksz_switch_detect(struct ksz_device *dev)
- {
- 	u8 id1, id2;
-diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index 133b1a257868..f7275c4f633a 100644
---- a/drivers/net/dsa/microchip/ksz_common.h
-+++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -161,6 +161,7 @@ struct alu_struct {
- };
- 
- struct ksz_dev_ops {
-+	int (*setup)(struct dsa_switch *ds);
- 	u32 (*get_port_addr)(int port, int offset);
- 	void (*cfg_port_member)(struct ksz_device *dev, int port, u8 member);
- 	void (*flush_dyn_mac_table)(struct ksz_device *dev, int port);
-@@ -207,6 +208,8 @@ struct ksz_dev_ops {
- 	int (*get_stp_reg)(void);
- 	void (*get_caps)(struct ksz_device *dev, int port,
- 			 struct phylink_config *config);
-+	int (*change_mtu)(struct ksz_device *dev, int port, int mtu);
-+	int (*max_mtu)(struct ksz_device *dev, int port);
- 	void (*freeze_mib)(struct ksz_device *dev, int port, bool freeze);
- 	void (*port_init_cnt)(struct ksz_device *dev, int port);
- 	int (*shutdown)(struct ksz_device *dev);
-@@ -232,8 +235,10 @@ extern const struct ksz_chip_data ksz_switch_chips[];
- 
- /* Common DSA access functions */
- 
-+int ksz_setup(struct dsa_switch *ds);
- int ksz_phy_read16(struct dsa_switch *ds, int addr, int reg);
- int ksz_phy_write16(struct dsa_switch *ds, int addr, int reg, u16 val);
-+u32 ksz_get_phy_flags(struct dsa_switch *ds, int port);
- void ksz_mac_link_down(struct dsa_switch *ds, int port, unsigned int mode,
- 		       phy_interface_t interface);
- int ksz_sset_count(struct dsa_switch *ds, int port, int sset);
-@@ -274,6 +279,8 @@ int ksz_port_mirror_add(struct dsa_switch *ds, int port,
- 			bool ingress, struct netlink_ext_ack *extack);
- void ksz_port_mirror_del(struct dsa_switch *ds, int port,
- 			 struct dsa_mall_mirror_tc_entry *mirror);
-+int ksz_change_mtu(struct dsa_switch *ds, int port, int mtu);
-+int ksz_max_mtu(struct dsa_switch *ds, int port);
- 
- /* Common register access functions */
- 
 -- 
-2.36.1
+2.25.1
 
