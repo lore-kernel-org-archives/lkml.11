@@ -2,116 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97C7FC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 00:37:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5484DC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 00:37:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230526AbiE0AhG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 20:37:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35540 "EHLO
+        id S231355AbiE0Ahk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 20:37:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229934AbiE0AhF (ORCPT
+        with ESMTP id S229907AbiE0Ahe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 20:37:05 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A20BB30540
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 17:37:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653611823; x=1685147823;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=DVAKz+z7unl2ZeUfJywVPkHBwMKOYVaMFgQfUcfVF08=;
-  b=mtFFSw2zZYg9cmLisoa+tK8P21cVHmogJTFumblXNZRPlAHuLha6VEjM
-   KXJXvoiRV+q+eYnAxZeXy1BIzRDpAdeBouXNrix5uNpfhkWMzzGaVMemc
-   Sp3PdCI5vIOWLAqI/g2SDs7qrLck0IzjDGHmOGpRf1Lv+ksKajl6cZxT3
-   WoWH4gjeKKBPOjstYN7sQkmOpKm9yj5kKXfRToywAE7jxuggczYCpaWcI
-   RcBVKG7TPy36/wWChI5BehnkjQkys+NC09N1zS+mUVMBCYHf67s3zqAGe
-   sxWOfVhe/ESv1e2HcjNaGBzsz/7p2XZD0sQ+XTBFq2DYgLQQxKGJKlLR5
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10359"; a="337384121"
-X-IronPort-AV: E=Sophos;i="5.91,252,1647327600"; 
-   d="scan'208";a="337384121"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 May 2022 17:37:03 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,252,1647327600"; 
-   d="scan'208";a="549867791"
-Received: from lkp-server01.sh.intel.com (HELO db63a1be7222) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 26 May 2022 17:37:02 -0700
-Received: from kbuild by db63a1be7222 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nuNyP-0004HW-B2;
-        Fri, 27 May 2022 00:37:01 +0000
-Date:   Fri, 27 May 2022 08:36:10 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Russell King <rmk+kernel@armlinux.org.uk>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [rmk-arm:zii 46/96] drivers/net/dsa/bcm_sf2.c:744:30: warning:
- unused variable 'priv'
-Message-ID: <202205270808.9IZEVfpD-lkp@intel.com>
+        Thu, 26 May 2022 20:37:34 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 787332FE68;
+        Thu, 26 May 2022 17:37:32 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id cs3-20020a17090af50300b001e0808b5838so3049633pjb.1;
+        Thu, 26 May 2022 17:37:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=o8YtTw+oDCXU/4zH8awJvWQVJSa2A0oeSPAlTFu35oc=;
+        b=XysUOxsCZTA4tY9LMzb0tMf+3Q+xmUq8iL386QEmY+GPfU5w0ZDUuhP8a7/bk0pLP4
+         iKk2pQ+bqHy0mHg9MLGvB2r8XnZFkKmle+A2W7bqbtpUxDKzghor2G02oa0dn9OmGLrv
+         SRn/25vXXOSBzAavHMbf8VavHPLLrIWi/r0zrsY6gCsa+zSuoXMb57SeEMtnfOuzXEgy
+         0ZALNkPYwL8l1TWuQ4OiZSS23scBBmjRPwXh92M4yjJ7wclxwtnzumuTnWPwHsLpWkAe
+         2d812mErgNGeiW74n4tc2PGTYZ03ay6a92jC79uVGiUoBB9U21SZRU6u8IIX21CTs35R
+         q0XQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=o8YtTw+oDCXU/4zH8awJvWQVJSa2A0oeSPAlTFu35oc=;
+        b=cQZVKRl1+30DIEjsNb8HeBNAHDe+1symEBzI5ICRc29gvQqwg1KgPSIAbr9XMA5je+
+         5/dIlPP2GiAFXFwjrfdnvr/emvzD67wQpsnKoPU/c6Wzp3wQ8eBKpOG5pE0JqYcKTBg+
+         BcxQaGgTE+atzSwHIwnCe4EbqvAAy8uFZNnFaPXi/uNNPJ0OUNsqtdl8zdd2/6Dx9BKU
+         lQB34UEiNR5RxBAtN2VTWl4wl8L0oZTREFvHMFdtcvolqrf9tcSKSEQfsU4iYTWCZlaL
+         D67zLaaSNkUPRg0aR9xLOY8UWvishSo6hUQCthu5Q73GidykutCAWWGe4yDZOotaJJty
+         XrRg==
+X-Gm-Message-State: AOAM531201tmaM51Qg4/63D/1YcOePRpvqUvrT8kNgdinl5742Jb+ZmP
+        rekM1CC/8prXHpAqc9UpHQg=
+X-Google-Smtp-Source: ABdhPJxv24rJD58rDnyXaJGBU6rRUJs7YcEj2PS7/yxvHNWfDAx2pYPKbR8RP2moU7m/x+FiYxiQyw==
+X-Received: by 2002:a17:90b:3510:b0:1e0:b82:7558 with SMTP id ls16-20020a17090b351000b001e00b827558mr5354821pjb.21.1653611851658;
+        Thu, 26 May 2022 17:37:31 -0700 (PDT)
+Received: from localhost ([2620:10d:c090:400::4:ac0e])
+        by smtp.gmail.com with ESMTPSA id i16-20020a170902cf1000b00161929fb1adsm2176193plg.54.2022.05.26.17.37.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 May 2022 17:37:31 -0700 (PDT)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Thu, 26 May 2022 14:37:29 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Waiman Long <longman@redhat.com>
+Cc:     Frederic Weisbecker <frederic@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Paul Gortmaker <paul.gortmaker@windriver.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Marcelo Tosatti <mtosatti@redhat.com>,
+        Phil Auld <pauld@redhat.com>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Daniel Bristot de Oliveira <bristot@kernel.org>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        rcu@vger.kernel.org
+Subject: Re: [RFC PATCH 4/4] cpuset: Support RCU-NOCB toggle on v2 root
+ partitions
+Message-ID: <YpAdSW8JXVPOoNJl@slm.duckdns.org>
+References: <20220525221055.1152307-1-frederic@kernel.org>
+ <20220525221055.1152307-5-frederic@kernel.org>
+ <Yo/FGcG+uiBh88sT@slm.duckdns.org>
+ <20220526225141.GA1214445@lothringen>
+ <YpAHEt0j30vBw9au@slm.duckdns.org>
+ <9e44bb00-955a-dbc6-a863-be649e0c701f@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <9e44bb00-955a-dbc6-a863-be649e0c701f@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.armlinux.org.uk/~rmk/linux-arm zii
-head:   c753f621782532ea52e3fc51d84128421e546ee6
-commit: 18d04811ce6c67fcd6a047f4323216e153590ba1 [46/96] net: dsa: bcm_sf2: fix pause mode validation
-config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20220527/202205270808.9IZEVfpD-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-1) 11.3.0
-reproduce (this is a W=1 build):
-        git remote add rmk-arm git://git.armlinux.org.uk/~rmk/linux-arm
-        git fetch --no-tags rmk-arm zii
-        git checkout 18d04811ce6c67fcd6a047f4323216e153590ba1
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/net/dsa/
+On Thu, May 26, 2022 at 08:28:43PM -0400, Waiman Long wrote:
+> I am thinking along the line that it will not be hierarchical. However,
+> cpuset can be useful if we want to have multiple isolated partitions
+> underneath the top cpuset with different isolation attributes, but no more
+> sub-isolated partition with sub-attributes underneath them. IOW, we can only
+> set them at the first level under top_cpuset. Will that be useful?
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+At that point, I'd just prefer to have it under /proc or /sys.
 
-All warnings (new ones prefixed by >>):
-
-   drivers/net/dsa/bcm_sf2.c: In function 'bcm_sf2_sw_validate':
->> drivers/net/dsa/bcm_sf2.c:744:30: warning: unused variable 'priv' [-Wunused-variable]
-     744 |         struct bcm_sf2_priv *priv = bcm_sf2_to_priv(ds);
-         |                              ^~~~
-
-
-vim +/priv +744 drivers/net/dsa/bcm_sf2.c
-
-   739	
-   740	static void bcm_sf2_sw_validate(struct dsa_switch *ds, int port,
-   741					unsigned long *supported,
-   742					struct phylink_link_state *state)
-   743	{
- > 744		struct bcm_sf2_priv *priv = bcm_sf2_to_priv(ds);
-   745		__ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = { 0, };
-   746		u32 caps;
-   747	
-   748		caps = dsa_to_port(ds, port)->pl_config.mac_capabilities;
-   749	
-   750		/* Pause modes are only programmed for these modes - see FIXME 3.
-   751		 * So, as pause modes are not configured for other modes, disable
-   752		 * support for them.
-   753		 */
-   754		if (!(state->interface == PHY_INTERFACE_MODE_RGMII ||
-   755		      state->interface == PHY_INTERFACE_MODE_RGMII_TXID ||
-   756		      state->interface == PHY_INTERFACE_MODE_MII ||
-   757		      state->interface == PHY_INTERFACE_MODE_REVMII))
-   758			caps &= ~(MAC_ASYM_PAUSE | MAC_SYM_PAUSE);
-   759	
-   760		/* Allow all the expected bits */
-   761		phylink_set(mask, Autoneg);
-   762		phylink_set_port_modes(mask);
-   763		phylink_get_linkmodes(mask, state->interface, caps);
-   764	
-   765		linkmode_and(supported, supported, mask);
-   766		linkmode_and(state->advertising, state->advertising, mask);
-   767	}
-   768	
+Thanks.
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+tejun
