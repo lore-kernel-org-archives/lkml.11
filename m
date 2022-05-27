@@ -2,215 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 861FAC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 10:48:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62F11C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 10:50:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351042AbiE0KsC (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 06:48:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57116 "EHLO
+        id S245587AbiE0KuM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 06:50:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242000AbiE0Krx (ORCPT
+        with ESMTP id S242000AbiE0KuJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 06:47:53 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E12F2AE5
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 03:47:52 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id gi33so8014455ejc.3
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 03:47:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ru3bkI46cGQXTo5hSsyPFl2jKgUjs/czASVw2IToYVQ=;
-        b=RMTaAYIppb0iNIn8vopS7Cr2YesNwAFvN/zYLCGwwZnvleh4l/JCv/+kYqZdwKcee7
-         Lg8Y0lEiEHp3O09jIAvbsiGMCAk2PZLifDV+rHZwg6OjCTYBay55PolLGo88EDQKUQzp
-         jHq+2oUZSI1bUZ9KYQWpjHoUG20T4W5PoDpyuhrIENGOFMEnWt2f1XGgYwRPVuXE9HRw
-         VwED6xqVVAjjq118lr/sHCgSJY/yf7BWOQ6oUFwAsWilhCkmpdXWa5oj5o/UHkBlMxJx
-         eWECxyCBfNP6rjELVFh8yNPx8Qzp04sdzNjrCKbIKzs4icqcY93H62xhW7qn7pXWOHQ/
-         lZMw==
+        Fri, 27 May 2022 06:50:09 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 65F1912B02B
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 03:50:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653648607;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=l2Lh+gpGDkrHKWoEv+QKFc0qknv05ZH2I5oLoT3BQ3w=;
+        b=ez9AvT1B4NZ/MUDoOykLozkTNl8FJXcGC15qzLS0DRTXuXdkh63SwQEPnVC0UWwRtiA3sC
+        2hxEopK8rrOzSipx/hZOzvb/vrd6hHPHXKOFv7/uc0fl5/eBb83K2zzHvMBs3A0eDTi5ga
+        WXKypaY0X0DhTZWNPXoeAi2l7lEuYk8=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-387-yJuHBR7mOgqLnyaEAAbrJA-1; Fri, 27 May 2022 06:50:06 -0400
+X-MC-Unique: yJuHBR7mOgqLnyaEAAbrJA-1
+Received: by mail-wm1-f72.google.com with SMTP id m10-20020a05600c3b0a00b003948b870a8dso4645661wms.2
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 03:50:06 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ru3bkI46cGQXTo5hSsyPFl2jKgUjs/czASVw2IToYVQ=;
-        b=adwfcJUKzBaiq2ZsuxCbNYnw0GuqE3jEBrqbvt2k+yW2F9K1+xXLAA8WSDJU0FRuuK
-         fiN4KtALLH6CqBIxL+JO998e3bxwQJ+pNP5fNTIv6v3yM7/0Rvkc7NZi7f85IX8hoU2g
-         mV91bplq6TVv6FwcCA81wU5vkFJppu5C91PgX0Omr3hAYZsiX+l0ewbWyHfd9LooErBg
-         kVI3PorIdSkSGmFDcWSa1ptawQXdW4ZoBGZqXejEM1HoqqIchYJIvDgKmCYejqg3LXIN
-         HIC9j2txp194cpHhZPiNYcsmR6WOrztbEQyD0Ii/snvdcv3OD91ekNwj08pDPYpEtCfe
-         xJWQ==
-X-Gm-Message-State: AOAM530fbGW8AmkPAM5o0Wr54eXSWXxhqtuQ0Vvxu0d/dtezJPcWkvyG
-        zC9sMzHynFJcwCpe2/ybuto=
-X-Google-Smtp-Source: ABdhPJwAjCaIQcHY9NNC4R29tI2fkFnzMUb9DOAXPD6YcxngDNqPknClEYm3JJz3kuq3hLflhiqVCg==
-X-Received: by 2002:a17:907:868e:b0:6ff:39e0:2653 with SMTP id qa14-20020a170907868e00b006ff39e02653mr1898679ejc.734.1653648471075;
-        Fri, 27 May 2022 03:47:51 -0700 (PDT)
-Received: from orion.localdomain ([93.99.228.15])
-        by smtp.gmail.com with ESMTPSA id pg5-20020a170907204500b006f3ef214e6asm1321234ejb.208.2022.05.27.03.47.48
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=l2Lh+gpGDkrHKWoEv+QKFc0qknv05ZH2I5oLoT3BQ3w=;
+        b=21pkoYYB/muzoYit4Gw5n8kXYv7l2mADQpdW3waaLaVrB2sUDVml8hxh+tjw2y5v6w
+         jT2Stvbta9SwBnaI8ClfWSCbmN/eGU1dOQRgpclh5BAw4W6FY1hHGMn3RjhPVIp0QXdO
+         7/25fdFsZmqeHkFt/mEjl6hi+QPucmu9CILI65iZK3SKv2UCB8NHQMRj0WQv7SMqiRZ9
+         3wHgv8ZeupPM8GU/LmDE5IapUu24hcqveoSHY3d3S4xZX193ZEtVtporng0C1X36AAqV
+         1g2cPe0BWopWveWSWK9Orp4WuaGJ4/lJUpgQIk2V5jXM4QVCup5AfFP+iADm8jO4RgWh
+         zONA==
+X-Gm-Message-State: AOAM530eDaNmYr8B29pc0t46sx+cNdgFsRest8w2OC/zri66xqVqqJji
+        lClN/ejOLCnOzuYqs8f6vlVDb/Y0yohcOA4WiTtX3OTepAUJb8JD+hiwzB7wJRB6K/V8k5W/M7O
+        gJzOqtZ/X+8WH7RpkWzijucsl
+X-Received: by 2002:adf:d1e7:0:b0:20f:dd30:489b with SMTP id g7-20020adfd1e7000000b0020fdd30489bmr19682800wrd.94.1653648605107;
+        Fri, 27 May 2022 03:50:05 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyS7mTUl4muodaOxpb3A92/00mQUnf2JML65CurJrTdcEaXMLxZDQNgec7W8o6+Bm+X58NZew==
+X-Received: by 2002:adf:d1e7:0:b0:20f:dd30:489b with SMTP id g7-20020adfd1e7000000b0020fdd30489bmr19682778wrd.94.1653648604834;
+        Fri, 27 May 2022 03:50:04 -0700 (PDT)
+Received: from redhat.com ([2.55.130.213])
+        by smtp.gmail.com with ESMTPSA id r2-20020a7bc082000000b00397402ae674sm1828344wmh.11.2022.05.27.03.50.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 May 2022 03:47:49 -0700 (PDT)
-Received: by orion.localdomain (Postfix, from userid 1003)
-        id 4DC43A028E; Fri, 27 May 2022 12:48:18 +0200 (CEST)
-From:   =?UTF-8?q?Jakub=20Mat=C4=9Bna?= <matenajakub@gmail.com>
-To:     akpm@linux-foundation.org
-Cc:     linux-mm@kvack.org, patches@lists.linux.dev,
-        linux-kernel@vger.kernel.org, vbabka@suse.cz, mhocko@kernel.org,
-        mgorman@techsingularity.net, willy@infradead.org,
-        liam.howlett@oracle.com, hughd@google.com, kirill@shutemov.name,
-        riel@surriel.com, rostedt@goodmis.org, peterz@infradead.org,
-        =?UTF-8?q?Jakub=20Mat=C4=9Bna?= <matenajakub@gmail.com>
-Subject: [PATCH 1/2] [PATCH 1/2] mm: refactor of vma_merge()
-Date:   Fri, 27 May 2022 12:48:09 +0200
-Message-Id: <20220527104810.24736-2-matenajakub@gmail.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220527104810.24736-1-matenajakub@gmail.com>
-References: <20220527104810.24736-1-matenajakub@gmail.com>
+        Fri, 27 May 2022 03:50:04 -0700 (PDT)
+Date:   Fri, 27 May 2022 06:50:00 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org, tglx@linutronix.de,
+        peterz@infradead.org, paulmck@kernel.org, maz@kernel.org,
+        pasic@linux.ibm.com, cohuck@redhat.com, eperezma@redhat.com,
+        lulu@redhat.com, sgarzare@redhat.com, xuanzhuo@linux.alibaba.com,
+        Vineeth Vijayan <vneethv@linux.ibm.com>,
+        Peter Oberparleiter <oberpar@linux.ibm.com>,
+        linux-s390@vger.kernel.org
+Subject: Re: [PATCH V6 9/9] virtio: use WARN_ON() to warning illegal status
+ value
+Message-ID: <20220527064118-mutt-send-email-mst@kernel.org>
+References: <20220527060120.20964-1-jasowang@redhat.com>
+ <20220527060120.20964-10-jasowang@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220527060120.20964-10-jasowang@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Refactor vma_merge() to make it shorter and more understandable.
-Main change is the elimination of code duplicity in the case of
-merge next check. This is done by first doing checks and caching
-the results before executing the merge itself. The variable 'area' is
-divided into 'mid' and 'res' as previously it was used for two purposes,
-as the middle VMA between prev and next and also as the result of the
-merge itself. Exit paths are also unified.
+At a minimum, I don't see why it's part of the series. Host can always
+crash the guest if it wants to ...
+The point of BUG_ON is device or driver is already corrupted so we
+should not try to drive it.  If you still want this in pls come up with
+a better commit log explaining the why.
 
-Signed-off-by: Jakub Matěna <matenajakub@gmail.com>
----
- mm/mmap.c | 87 +++++++++++++++++++++++--------------------------------
- 1 file changed, 37 insertions(+), 50 deletions(-)
+On Fri, May 27, 2022 at 02:01:20PM +0800, Jason Wang wrote:
+> We used to use BUG_ON() in virtio_device_ready() to detect illegal
 
-diff --git a/mm/mmap.c b/mm/mmap.c
-index 3aa839f81e63..bd0dde2ad3e2 100644
---- a/mm/mmap.c
-+++ b/mm/mmap.c
-@@ -1170,8 +1170,10 @@ struct vm_area_struct *vma_merge(struct mm_struct *mm,
- 			struct anon_vma_name *anon_name)
- {
- 	pgoff_t pglen = (end - addr) >> PAGE_SHIFT;
--	struct vm_area_struct *area, *next;
--	int err;
-+	struct vm_area_struct *mid, *next, *res;
-+	int err = -1;
-+	bool merge_prev = false;
-+	bool merge_next = false;
- 
- 	/*
- 	 * We later require that vma->vm_flags == vm_flags,
-@@ -1181,75 +1183,60 @@ struct vm_area_struct *vma_merge(struct mm_struct *mm,
- 		return NULL;
- 
- 	next = vma_next(mm, prev);
--	area = next;
--	if (area && area->vm_end == end)		/* cases 6, 7, 8 */
-+	mid = next;
-+	if (next && next->vm_end == end)		/* cases 6, 7, 8 */
- 		next = next->vm_next;
- 
- 	/* verify some invariant that must be enforced by the caller */
- 	VM_WARN_ON(prev && addr <= prev->vm_start);
--	VM_WARN_ON(area && end > area->vm_end);
-+	VM_WARN_ON(mid && end > mid->vm_end);
- 	VM_WARN_ON(addr >= end);
- 
--	/*
--	 * Can it merge with the predecessor?
--	 */
-+	/* Can we merge the predecessor? */
- 	if (prev && prev->vm_end == addr &&
- 			mpol_equal(vma_policy(prev), policy) &&
- 			can_vma_merge_after(prev, vm_flags,
- 					    anon_vma, file, pgoff,
- 					    vm_userfaultfd_ctx, anon_name)) {
--		/*
--		 * OK, it can.  Can we now merge in the successor as well?
--		 */
--		if (next && end == next->vm_start &&
--				mpol_equal(policy, vma_policy(next)) &&
--				can_vma_merge_before(next, vm_flags,
--						     anon_vma, file,
--						     pgoff+pglen,
--						     vm_userfaultfd_ctx, anon_name) &&
--				is_mergeable_anon_vma(prev->anon_vma,
--						      next->anon_vma, NULL)) {
--							/* cases 1, 6 */
--			err = __vma_adjust(prev, prev->vm_start,
--					 next->vm_end, prev->vm_pgoff, NULL,
--					 prev);
--		} else					/* cases 2, 5, 7 */
--			err = __vma_adjust(prev, prev->vm_start,
--					 end, prev->vm_pgoff, NULL, prev);
--		if (err)
--			return NULL;
--		khugepaged_enter_vma_merge(prev, vm_flags);
--		return prev;
-+		merge_prev = true;
- 	}
--
--	/*
--	 * Can this new request be merged in front of next?
--	 */
-+	/* Can we merge the successor? */
- 	if (next && end == next->vm_start &&
- 			mpol_equal(policy, vma_policy(next)) &&
- 			can_vma_merge_before(next, vm_flags,
- 					     anon_vma, file, pgoff+pglen,
- 					     vm_userfaultfd_ctx, anon_name)) {
-+		merge_next = true;
-+	}
-+	/* Can we merge both the predecessor and the successor? */
-+	if (merge_prev && merge_next &&
-+			is_mergeable_anon_vma(prev->anon_vma,
-+				next->anon_vma, NULL)) {	 /* cases 1, 6 */
-+		err = __vma_adjust(prev, prev->vm_start,
-+					next->vm_end, prev->vm_pgoff, NULL,
-+					prev);
-+		res = prev;
-+	} else if (merge_prev) {			/* cases 2, 5, 7 */
-+		err = __vma_adjust(prev, prev->vm_start,
-+					end, prev->vm_pgoff, NULL, prev);
-+		res = prev;
-+	} else if (merge_next) {
- 		if (prev && addr < prev->vm_end)	/* case 4 */
- 			err = __vma_adjust(prev, prev->vm_start,
--					 addr, prev->vm_pgoff, NULL, next);
--		else {					/* cases 3, 8 */
--			err = __vma_adjust(area, addr, next->vm_end,
--					 next->vm_pgoff - pglen, NULL, next);
--			/*
--			 * In case 3 area is already equal to next and
--			 * this is a noop, but in case 8 "area" has
--			 * been removed and next was expanded over it.
--			 */
--			area = next;
--		}
--		if (err)
--			return NULL;
--		khugepaged_enter_vma_merge(area, vm_flags);
--		return area;
-+					addr, prev->vm_pgoff, NULL, next);
-+		else					/* cases 3, 8 */
-+			err = __vma_adjust(mid, addr, next->vm_end,
-+					next->vm_pgoff - pglen, NULL, next);
-+		res = next;
- 	}
- 
--	return NULL;
-+	/*
-+	 * Cannot merge with predecessor or successor or error in __vma_adjust?
-+	 */
-+	if (err)
-+		return NULL;
-+	khugepaged_enter_vma_merge(res, vm_flags);
-+	return res;
- }
- 
- /*
--- 
-2.35.1
+not really, BUG_ON just crashes the kernel.  we detect by checking
+status.
+
+> status value, this seems sub-optimal since the value is under the
+> control of the device. Switch to use WARN_ON() instead.
+
+some people use crash on warn so ...
+
+> 
+> Cc: Thomas Gleixner <tglx@linutronix.de>
+> Cc: Peter Zijlstra <peterz@infradead.org>
+> Cc: "Paul E. McKenney" <paulmck@kernel.org>
+> Cc: Marc Zyngier <maz@kernel.org>
+> Cc: Halil Pasic <pasic@linux.ibm.com>
+> Cc: Cornelia Huck <cohuck@redhat.com>
+> Cc: Vineeth Vijayan <vneethv@linux.ibm.com>
+> Cc: Peter Oberparleiter <oberpar@linux.ibm.com>
+> Cc: linux-s390@vger.kernel.org
+> Signed-off-by: Jason Wang <jasowang@redhat.com>
+
+> ---
+>  include/linux/virtio_config.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/include/linux/virtio_config.h b/include/linux/virtio_config.h
+> index d4edfd7d91bb..9a36051ceb76 100644
+> --- a/include/linux/virtio_config.h
+> +++ b/include/linux/virtio_config.h
+> @@ -255,7 +255,7 @@ void virtio_device_ready(struct virtio_device *dev)
+>  {
+>  	unsigned status = dev->config->get_status(dev);
+>  
+> -	BUG_ON(status & VIRTIO_CONFIG_S_DRIVER_OK);
+> +	WARN_ON(status & VIRTIO_CONFIG_S_DRIVER_OK);
+>  
+
+we lose debuggability as guest will try to continue.
+if we are doing this let us print a helpful message and dump a lot of
+state right here.
+
+>  	/*
+>  	 * The virtio_synchronize_cbs() makes sure vring_interrupt()
+> -- 
+> 2.25.1
 
