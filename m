@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CEEDC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65BB6C4332F
 	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 09:06:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350847AbiE0JFZ (ORCPT
+        id S1350753AbiE0JFU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 05:05:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60742 "EHLO
+        Fri, 27 May 2022 05:05:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350840AbiE0JAp (ORCPT
+        with ESMTP id S1350933AbiE0JAy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 05:00:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 696D5939E4;
-        Fri, 27 May 2022 01:57:13 -0700 (PDT)
+        Fri, 27 May 2022 05:00:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9306312AB20;
+        Fri, 27 May 2022 01:57:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 218D5B823D9;
-        Fri, 27 May 2022 08:57:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44EEBC385B8;
-        Fri, 27 May 2022 08:57:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C851B61DA5;
+        Fri, 27 May 2022 08:57:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DFBCC385A9;
+        Fri, 27 May 2022 08:57:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653641830;
-        bh=PI9wF56zKrfi07MLCXgjjjfQXCRyWevrkV50RAwJeS8=;
+        s=korg; t=1653641850;
+        bh=FLDQ8jXXf+rzTfvd68tEfxnY/tVpbGuZhFLS2YJhHJ8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i+6M4CdxxeCdy8mrP6Avben0clEz7aa3suhuO130Hr2s6Ij9D8Bdj/cKdt4wbZZk9
-         7QMbpcq4jnyxFhqPMwCi5SgHO6cvFyDgOLrw9T64tTp0EcQjCd0fz+9S1j8xDRhCrz
-         7Brld3Ueg97J6i8zUHgd1YBN9hKttmTZyJtfUXpE=
+        b=a3hBZn9N3o8qgnsLeVtGSYUvN0GHyAn4N6Hnc95v2nyYsjfdW4G0X6KIsOWFCFc/P
+         657Xl+I0//9YpQ5aL96F2E+uVyNyInDkRIkoHSmupDRUoHdo48aFFM9HUipf0UKaGp
+         AWsmQMKh4yIi7VUFHGfabw3m9rzNb30qk6lWDprM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Eric Biggers <ebiggers@google.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.17 030/111] random: remove whitespace and reorder includes
-Date:   Fri, 27 May 2022 10:49:02 +0200
-Message-Id: <20220527084823.735530817@linuxfoundation.org>
+        stable@vger.kernel.org, Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Mark-PK Tsai <mark-pk.tsai@mediatek.com>
+Subject: [PATCH 5.10 008/163] media: vim2m: initialize the media device earlier
+Date:   Fri, 27 May 2022 10:48:08 +0200
+Message-Id: <20220527084829.344105551@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084819.133490171@linuxfoundation.org>
-References: <20220527084819.133490171@linuxfoundation.org>
+In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
+References: <20220527084828.156494029@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,35 +50,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 
-commit 87e7d5abad0cbc9312dea7f889a57d294c1a5fcc upstream.
+commit 1a28dce222a6ece725689ad58c0cf4a1b48894f4 upstream.
 
-This is purely cosmetic. Future work involves figuring out which of
-these headers we need and which we don't.
+Before the video device node is registered, the v4l2_dev.mdev
+pointer must be set in order to correctly associate the video
+device with the media device. Move the initialization of the
+media device up.
 
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
-Reviewed-by: Eric Biggers <ebiggers@google.com>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Mark-PK Tsai <mark-pk.tsai@mediatek.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/media/test-drivers/vim2m.c |   14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -193,11 +193,10 @@
- #include <linux/syscalls.h>
- #include <linux/completion.h>
- #include <linux/uuid.h>
-+#include <linux/uaccess.h>
- #include <crypto/chacha.h>
- #include <crypto/blake2s.h>
+--- a/drivers/media/test-drivers/vim2m.c
++++ b/drivers/media/test-drivers/vim2m.c
+@@ -1339,12 +1339,6 @@ static int vim2m_probe(struct platform_d
+ 		goto error_dev;
+ 	}
+ 
+-	ret = video_register_device(vfd, VFL_TYPE_VIDEO, 0);
+-	if (ret) {
+-		v4l2_err(&dev->v4l2_dev, "Failed to register video device\n");
+-		goto error_m2m;
+-	}
 -
- #include <asm/processor.h>
--#include <linux/uaccess.h>
- #include <asm/irq.h>
- #include <asm/irq_regs.h>
- #include <asm/io.h>
+ #ifdef CONFIG_MEDIA_CONTROLLER
+ 	dev->mdev.dev = &pdev->dev;
+ 	strscpy(dev->mdev.model, "vim2m", sizeof(dev->mdev.model));
+@@ -1353,7 +1347,15 @@ static int vim2m_probe(struct platform_d
+ 	media_device_init(&dev->mdev);
+ 	dev->mdev.ops = &m2m_media_ops;
+ 	dev->v4l2_dev.mdev = &dev->mdev;
++#endif
+ 
++	ret = video_register_device(vfd, VFL_TYPE_VIDEO, 0);
++	if (ret) {
++		v4l2_err(&dev->v4l2_dev, "Failed to register video device\n");
++		goto error_m2m;
++	}
++
++#ifdef CONFIG_MEDIA_CONTROLLER
+ 	ret = v4l2_m2m_register_media_controller(dev->m2m_dev, vfd,
+ 						 MEDIA_ENT_F_PROC_VIDEO_SCALER);
+ 	if (ret) {
 
 
