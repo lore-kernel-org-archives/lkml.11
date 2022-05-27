@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7541C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:59:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F411C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:59:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232904AbiE0L66 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 07:58:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41100 "EHLO
+        id S1352268AbiE0L7D (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 07:59:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352909AbiE0LvA (ORCPT
+        with ESMTP id S1353193AbiE0Lv0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:51:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 137BC1260C;
-        Fri, 27 May 2022 04:46:24 -0700 (PDT)
+        Fri, 27 May 2022 07:51:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DB6F146773;
+        Fri, 27 May 2022 04:47:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C6CC6B824D7;
-        Fri, 27 May 2022 11:46:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3CAFDC385A9;
-        Fri, 27 May 2022 11:46:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C096C61D19;
+        Fri, 27 May 2022 11:47:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBB4BC385A9;
+        Fri, 27 May 2022 11:46:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653651981;
-        bh=mqr+CmKBFFHkb8QDzclxqHbsHvaX+z4Z1RjSRFRczNg=;
+        s=korg; t=1653652020;
+        bh=mcPIvvpE6dulN5Xat5qqXk4JwHaVYipAgps6oQ+Ix88=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MwGc2JK80H+EtwCd48u/DvvJzOrjG69OAWL33/UzZ5R1gZtji/lMaYyp0GqIvwOyW
-         wc2nlCPKFoZlmYo+bky/KYvKmo1b0YuDkLtICoQNnZGWQ4rJQnZzDJQaqj83gOXhRM
-         sJg35rUhLYFakUkUbrrmKi6z3HNPNdn3MZMhAgkg=
+        b=HX7KhWPSPj/JjuKsKPCXArB3fvSww86VAbfc8c2ybnP0cY80lONm+U2xTSe7Cw0T8
+         ehAFF46kY7FoRfB8kmcPNjx2d3AA0V6nCMUIQEzN5XKy0FbVKwt/UF/s0yH29P+8Vv
+         7ZVW4Rgf3fQJe8dx+0hfpC7wwVeQ9sgV5YFbot8s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
         Dominik Brodowski <linux@dominikbrodowski.net>,
+        Eric Biggers <ebiggers@google.com>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.10 080/163] random: deobfuscate irq u32/u64 contributions
-Date:   Fri, 27 May 2022 10:49:20 +0200
-Message-Id: <20220527084839.070610200@linuxfoundation.org>
+Subject: [PATCH 5.10 084/163] random: group initialization wait functions
+Date:   Fri, 27 May 2022 10:49:24 +0200
+Message-Id: <20220527084839.582767437@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
 References: <20220527084828.156494029@linuxfoundation.org>
@@ -51,121 +53,410 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit b2f408fe403800c91a49f6589d95b6759ce1b30b upstream.
+commit 5f1bb112006b104b3e2a1e1b39bbb9b2617581e6 upstream.
 
-In the irq handler, we fill out 16 bytes differently on 32-bit and
-64-bit platforms, and for 32-bit vs 64-bit cycle counters, which doesn't
-always correspond with the bitness of the platform. Whether or not you
-like this strangeness, it is a matter of fact.  But it might not be a
-fact you well realized until now, because the code that loaded the irq
-info into 4 32-bit words was quite confusing.  Instead, this commit
-makes everything explicit by having separate (compile-time) branches for
-32-bit and 64-bit types.
+This pulls all of the readiness waiting-focused functions into the first
+labeled section.
+
+No functional changes.
 
 Cc: Theodore Ts'o <tytso@mit.edu>
 Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Reviewed-by: Eric Biggers <ebiggers@google.com>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   49 ++++++++++++++++++++++++++++---------------------
- 1 file changed, 28 insertions(+), 21 deletions(-)
+ drivers/char/random.c |  333 +++++++++++++++++++++++++-------------------------
+ 1 file changed, 172 insertions(+), 161 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -283,7 +283,10 @@ static void mix_pool_bytes(const void *i
- }
+@@ -201,44 +201,197 @@
+ #include <asm/irq_regs.h>
+ #include <asm/io.h>
  
- struct fast_pool {
--	u32 pool[4];
-+	union {
-+		u32 pool32[4];
-+		u64 pool64[2];
-+	};
- 	unsigned long last;
- 	u16 reg_idx;
- 	u8 count;
-@@ -294,10 +297,10 @@ struct fast_pool {
-  * collector.  It's hardcoded for an 128 bit pool and assumes that any
-  * locks that might be needed are taken by the caller.
+-enum {
+-	POOL_BITS = BLAKE2S_HASH_SIZE * 8,
+-	POOL_MIN_BITS = POOL_BITS /* No point in settling for less. */
+-};
+-
+-/*
+- * Static global variables
+- */
+-static DECLARE_WAIT_QUEUE_HEAD(random_write_wait);
+-static struct fasync_struct *fasync;
+-
+-static DEFINE_SPINLOCK(random_ready_list_lock);
+-static LIST_HEAD(random_ready_list);
++/*********************************************************************
++ *
++ * Initialization and readiness waiting.
++ *
++ * Much of the RNG infrastructure is devoted to various dependencies
++ * being able to wait until the RNG has collected enough entropy and
++ * is ready for safe consumption.
++ *
++ *********************************************************************/
+ 
+ /*
+  * crng_init =  0 --> Uninitialized
+  *		1 --> Initialized
+  *		2 --> Initialized from input_pool
+  *
+- * crng_init is protected by primary_crng->lock, and only increases
++ * crng_init is protected by base_crng->lock, and only increases
+  * its value (from 0->1->2).
   */
--static void fast_mix(struct fast_pool *f)
-+static void fast_mix(u32 pool[4])
- {
--	u32 a = f->pool[0],	b = f->pool[1];
--	u32 c = f->pool[2],	d = f->pool[3];
-+	u32 a = pool[0],	b = pool[1];
-+	u32 c = pool[2],	d = pool[3];
+ static int crng_init = 0;
+ #define crng_ready() (likely(crng_init > 1))
+-static int crng_init_cnt = 0;
+-static void process_random_ready_list(void);
+-static void _get_random_bytes(void *buf, size_t nbytes);
++/* Various types of waiters for crng_init->2 transition. */
++static DECLARE_WAIT_QUEUE_HEAD(crng_init_wait);
++static struct fasync_struct *fasync;
++static DEFINE_SPINLOCK(random_ready_list_lock);
++static LIST_HEAD(random_ready_list);
  
- 	a += b;			c += d;
- 	b = rol32(b, 6);	d = rol32(d, 27);
-@@ -315,9 +318,8 @@ static void fast_mix(struct fast_pool *f
- 	b = rol32(b, 16);	d = rol32(d, 14);
- 	d ^= a;			b ^= c;
++/* Control how we warn userspace. */
+ static struct ratelimit_state unseeded_warning =
+ 	RATELIMIT_STATE_INIT("warn_unseeded_randomness", HZ, 3);
+ static struct ratelimit_state urandom_warning =
+ 	RATELIMIT_STATE_INIT("warn_urandom_randomness", HZ, 3);
+-
+ static int ratelimit_disable __read_mostly;
+-
+ module_param_named(ratelimit_disable, ratelimit_disable, int, 0644);
+ MODULE_PARM_DESC(ratelimit_disable, "Disable random ratelimit suppression");
  
--	f->pool[0] = a;  f->pool[1] = b;
--	f->pool[2] = c;  f->pool[3] = d;
--	f->count++;
-+	pool[0] = a;  pool[1] = b;
-+	pool[2] = c;  pool[3] = d;
++/*
++ * Returns whether or not the input pool has been seeded and thus guaranteed
++ * to supply cryptographically secure random numbers. This applies to: the
++ * /dev/urandom device, the get_random_bytes function, and the get_random_{u32,
++ * ,u64,int,long} family of functions.
++ *
++ * Returns: true if the input pool has been seeded.
++ *          false if the input pool has not been seeded.
++ */
++bool rng_is_initialized(void)
++{
++	return crng_ready();
++}
++EXPORT_SYMBOL(rng_is_initialized);
++
++/* Used by wait_for_random_bytes(), and considered an entropy collector, below. */
++static void try_to_generate_entropy(void);
++
++/*
++ * Wait for the input pool to be seeded and thus guaranteed to supply
++ * cryptographically secure random numbers. This applies to: the /dev/urandom
++ * device, the get_random_bytes function, and the get_random_{u32,u64,int,long}
++ * family of functions. Using any of these functions without first calling
++ * this function forfeits the guarantee of security.
++ *
++ * Returns: 0 if the input pool has been seeded.
++ *          -ERESTARTSYS if the function was interrupted by a signal.
++ */
++int wait_for_random_bytes(void)
++{
++	if (likely(crng_ready()))
++		return 0;
++
++	do {
++		int ret;
++		ret = wait_event_interruptible_timeout(crng_init_wait, crng_ready(), HZ);
++		if (ret)
++			return ret > 0 ? 0 : ret;
++
++		try_to_generate_entropy();
++	} while (!crng_ready());
++
++	return 0;
++}
++EXPORT_SYMBOL(wait_for_random_bytes);
++
++/*
++ * Add a callback function that will be invoked when the input
++ * pool is initialised.
++ *
++ * returns: 0 if callback is successfully added
++ *	    -EALREADY if pool is already initialised (callback not called)
++ *	    -ENOENT if module for callback is not alive
++ */
++int add_random_ready_callback(struct random_ready_callback *rdy)
++{
++	struct module *owner;
++	unsigned long flags;
++	int err = -EALREADY;
++
++	if (crng_ready())
++		return err;
++
++	owner = rdy->owner;
++	if (!try_module_get(owner))
++		return -ENOENT;
++
++	spin_lock_irqsave(&random_ready_list_lock, flags);
++	if (crng_ready())
++		goto out;
++
++	owner = NULL;
++
++	list_add(&rdy->list, &random_ready_list);
++	err = 0;
++
++out:
++	spin_unlock_irqrestore(&random_ready_list_lock, flags);
++
++	module_put(owner);
++
++	return err;
++}
++EXPORT_SYMBOL(add_random_ready_callback);
++
++/*
++ * Delete a previously registered readiness callback function.
++ */
++void del_random_ready_callback(struct random_ready_callback *rdy)
++{
++	unsigned long flags;
++	struct module *owner = NULL;
++
++	spin_lock_irqsave(&random_ready_list_lock, flags);
++	if (!list_empty(&rdy->list)) {
++		list_del_init(&rdy->list);
++		owner = rdy->owner;
++	}
++	spin_unlock_irqrestore(&random_ready_list_lock, flags);
++
++	module_put(owner);
++}
++EXPORT_SYMBOL(del_random_ready_callback);
++
++static void process_random_ready_list(void)
++{
++	unsigned long flags;
++	struct random_ready_callback *rdy, *tmp;
++
++	spin_lock_irqsave(&random_ready_list_lock, flags);
++	list_for_each_entry_safe(rdy, tmp, &random_ready_list, list) {
++		struct module *owner = rdy->owner;
++
++		list_del_init(&rdy->list);
++		rdy->func(rdy);
++		module_put(owner);
++	}
++	spin_unlock_irqrestore(&random_ready_list_lock, flags);
++}
++
++#define warn_unseeded_randomness(previous) \
++	_warn_unseeded_randomness(__func__, (void *)_RET_IP_, (previous))
++
++static void _warn_unseeded_randomness(const char *func_name, void *caller, void **previous)
++{
++#ifdef CONFIG_WARN_ALL_UNSEEDED_RANDOM
++	const bool print_once = false;
++#else
++	static bool print_once __read_mostly;
++#endif
++
++	if (print_once || crng_ready() ||
++	    (previous && (caller == READ_ONCE(*previous))))
++		return;
++	WRITE_ONCE(*previous, caller);
++#ifndef CONFIG_WARN_ALL_UNSEEDED_RANDOM
++	print_once = true;
++#endif
++	if (__ratelimit(&unseeded_warning))
++		printk_deferred(KERN_NOTICE "random: %s called from %pS with crng_init=%d\n",
++				func_name, caller, crng_init);
++}
++
++
++enum {
++	POOL_BITS = BLAKE2S_HASH_SIZE * 8,
++	POOL_MIN_BITS = POOL_BITS /* No point in settling for less. */
++};
++
++/*
++ * Static global variables
++ */
++static DECLARE_WAIT_QUEUE_HEAD(random_write_wait);
++
++static int crng_init_cnt = 0;
++
+ /**********************************************************************
+  *
+  * OS independent entropy store.   Here are the functions which handle
+@@ -322,22 +475,6 @@ static void fast_mix(u32 pool[4])
+ 	pool[2] = c;  pool[3] = d;
  }
  
- static void process_random_ready_list(void)
-@@ -784,29 +786,34 @@ void add_interrupt_randomness(int irq)
- 	struct pt_regs *regs = get_irq_regs();
- 	unsigned long now = jiffies;
- 	cycles_t cycles = random_get_entropy();
--	u32 c_high, j_high;
--	u64 ip;
+-static void process_random_ready_list(void)
+-{
+-	unsigned long flags;
+-	struct random_ready_callback *rdy, *tmp;
+-
+-	spin_lock_irqsave(&random_ready_list_lock, flags);
+-	list_for_each_entry_safe(rdy, tmp, &random_ready_list, list) {
+-		struct module *owner = rdy->owner;
+-
+-		list_del_init(&rdy->list);
+-		rdy->func(rdy);
+-		module_put(owner);
+-	}
+-	spin_unlock_irqrestore(&random_ready_list_lock, flags);
+-}
+-
+ static void credit_entropy_bits(size_t nbits)
+ {
+ 	unsigned int entropy_count, orig, add;
+@@ -387,8 +524,6 @@ static DEFINE_PER_CPU(struct crng, crngs
+ 	.lock = INIT_LOCAL_LOCK(crngs.lock),
+ };
  
- 	if (cycles == 0)
- 		cycles = get_reg(fast_pool, regs);
--	c_high = (sizeof(cycles) > 4) ? cycles >> 32 : 0;
--	j_high = (sizeof(now) > 4) ? now >> 32 : 0;
--	fast_pool->pool[0] ^= cycles ^ j_high ^ irq;
--	fast_pool->pool[1] ^= now ^ c_high;
--	ip = regs ? instruction_pointer(regs) : _RET_IP_;
--	fast_pool->pool[2] ^= ip;
--	fast_pool->pool[3] ^=
--		(sizeof(ip) > 4) ? ip >> 32 : get_reg(fast_pool, regs);
+-static DECLARE_WAIT_QUEUE_HEAD(crng_init_wait);
+-
+ /*
+  * crng_fast_load() can be called by code in the interrupt service
+  * path.  So we can't afford to dilly-dally. Returns the number of
+@@ -909,29 +1044,6 @@ static bool drain_entropy(void *buf, siz
+ 	return true;
+ }
  
--	fast_mix(fast_pool);
-+	if (sizeof(cycles) == 8)
-+		fast_pool->pool64[0] ^= cycles ^ rol64(now, 32) ^ irq;
-+	else {
-+		fast_pool->pool32[0] ^= cycles ^ irq;
-+		fast_pool->pool32[1] ^= now;
-+	}
-+
-+	if (sizeof(unsigned long) == 8)
-+		fast_pool->pool64[1] ^= regs ? instruction_pointer(regs) : _RET_IP_;
-+	else {
-+		fast_pool->pool32[2] ^= regs ? instruction_pointer(regs) : _RET_IP_;
-+		fast_pool->pool32[3] ^= get_reg(fast_pool, regs);
-+	}
-+
-+	fast_mix(fast_pool->pool32);
-+	++fast_pool->count;
+-#define warn_unseeded_randomness(previous) \
+-	_warn_unseeded_randomness(__func__, (void *)_RET_IP_, (previous))
+-
+-static void _warn_unseeded_randomness(const char *func_name, void *caller, void **previous)
+-{
+-#ifdef CONFIG_WARN_ALL_UNSEEDED_RANDOM
+-	const bool print_once = false;
+-#else
+-	static bool print_once __read_mostly;
+-#endif
+-
+-	if (print_once || crng_ready() ||
+-	    (previous && (caller == READ_ONCE(*previous))))
+-		return;
+-	WRITE_ONCE(*previous, caller);
+-#ifndef CONFIG_WARN_ALL_UNSEEDED_RANDOM
+-	print_once = true;
+-#endif
+-	if (__ratelimit(&unseeded_warning))
+-		printk_deferred(KERN_NOTICE "random: %s called from %pS with crng_init=%d\n",
+-				func_name, caller, crng_init);
+-}
+-
+ /*
+  * This function is the exported kernel interface.  It returns some
+  * number of good random numbers, suitable for key generation, seeding
+@@ -1033,107 +1145,6 @@ static void try_to_generate_entropy(void
+ }
  
- 	if (unlikely(crng_init == 0)) {
- 		if (fast_pool->count >= 64 &&
--		    crng_fast_load(fast_pool->pool, sizeof(fast_pool->pool)) > 0) {
-+		    crng_fast_load(fast_pool->pool32, sizeof(fast_pool->pool32)) > 0) {
- 			fast_pool->count = 0;
- 			fast_pool->last = now;
- 			if (spin_trylock(&input_pool.lock)) {
--				_mix_pool_bytes(&fast_pool->pool, sizeof(fast_pool->pool));
-+				_mix_pool_bytes(&fast_pool->pool32, sizeof(fast_pool->pool32));
- 				spin_unlock(&input_pool.lock);
- 			}
- 		}
-@@ -820,7 +827,7 @@ void add_interrupt_randomness(int irq)
- 		return;
- 
- 	fast_pool->last = now;
--	_mix_pool_bytes(&fast_pool->pool, sizeof(fast_pool->pool));
-+	_mix_pool_bytes(&fast_pool->pool32, sizeof(fast_pool->pool32));
- 	spin_unlock(&input_pool.lock);
- 
- 	fast_pool->count = 0;
+ /*
+- * Wait for the urandom pool to be seeded and thus guaranteed to supply
+- * cryptographically secure random numbers. This applies to: the /dev/urandom
+- * device, the get_random_bytes function, and the get_random_{u32,u64,int,long}
+- * family of functions. Using any of these functions without first calling
+- * this function forfeits the guarantee of security.
+- *
+- * Returns: 0 if the urandom pool has been seeded.
+- *          -ERESTARTSYS if the function was interrupted by a signal.
+- */
+-int wait_for_random_bytes(void)
+-{
+-	if (likely(crng_ready()))
+-		return 0;
+-
+-	do {
+-		int ret;
+-		ret = wait_event_interruptible_timeout(crng_init_wait, crng_ready(), HZ);
+-		if (ret)
+-			return ret > 0 ? 0 : ret;
+-
+-		try_to_generate_entropy();
+-	} while (!crng_ready());
+-
+-	return 0;
+-}
+-EXPORT_SYMBOL(wait_for_random_bytes);
+-
+-/*
+- * Returns whether or not the urandom pool has been seeded and thus guaranteed
+- * to supply cryptographically secure random numbers. This applies to: the
+- * /dev/urandom device, the get_random_bytes function, and the get_random_{u32,
+- * ,u64,int,long} family of functions.
+- *
+- * Returns: true if the urandom pool has been seeded.
+- *          false if the urandom pool has not been seeded.
+- */
+-bool rng_is_initialized(void)
+-{
+-	return crng_ready();
+-}
+-EXPORT_SYMBOL(rng_is_initialized);
+-
+-/*
+- * Add a callback function that will be invoked when the nonblocking
+- * pool is initialised.
+- *
+- * returns: 0 if callback is successfully added
+- *	    -EALREADY if pool is already initialised (callback not called)
+- *	    -ENOENT if module for callback is not alive
+- */
+-int add_random_ready_callback(struct random_ready_callback *rdy)
+-{
+-	struct module *owner;
+-	unsigned long flags;
+-	int err = -EALREADY;
+-
+-	if (crng_ready())
+-		return err;
+-
+-	owner = rdy->owner;
+-	if (!try_module_get(owner))
+-		return -ENOENT;
+-
+-	spin_lock_irqsave(&random_ready_list_lock, flags);
+-	if (crng_ready())
+-		goto out;
+-
+-	owner = NULL;
+-
+-	list_add(&rdy->list, &random_ready_list);
+-	err = 0;
+-
+-out:
+-	spin_unlock_irqrestore(&random_ready_list_lock, flags);
+-
+-	module_put(owner);
+-
+-	return err;
+-}
+-EXPORT_SYMBOL(add_random_ready_callback);
+-
+-/*
+- * Delete a previously registered readiness callback function.
+- */
+-void del_random_ready_callback(struct random_ready_callback *rdy)
+-{
+-	unsigned long flags;
+-	struct module *owner = NULL;
+-
+-	spin_lock_irqsave(&random_ready_list_lock, flags);
+-	if (!list_empty(&rdy->list)) {
+-		list_del_init(&rdy->list);
+-		owner = rdy->owner;
+-	}
+-	spin_unlock_irqrestore(&random_ready_list_lock, flags);
+-
+-	module_put(owner);
+-}
+-EXPORT_SYMBOL(del_random_ready_callback);
+-
+-/*
+  * This function will use the architecture-specific hardware random
+  * number generator if it is available. It is not recommended for
+  * use. Use get_random_bytes() instead. It returns the number of
 
 
