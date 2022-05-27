@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA24EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:38:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7298EC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:38:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351448AbiE0LiS (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 07:38:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44218 "EHLO
+        id S234414AbiE0Li0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 07:38:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351400AbiE0LiB (ORCPT
+        with ESMTP id S1351392AbiE0LiG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:38:01 -0400
+        Fri, 27 May 2022 07:38:06 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5C235C745;
-        Fri, 27 May 2022 04:37:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10E376EB0F;
+        Fri, 27 May 2022 04:37:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 72DFB61CE6;
-        Fri, 27 May 2022 11:37:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 814B3C385A9;
-        Fri, 27 May 2022 11:37:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 61DA361CE2;
+        Fri, 27 May 2022 11:37:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 714B9C3411A;
+        Fri, 27 May 2022 11:37:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653651467;
-        bh=xge8s2qT/It6plxGzNdBURTCDS57IQPE84hOj0yKTqs=;
+        s=korg; t=1653651470;
+        bh=0MYS7OwGSsxOj9r4dJeXvJnS30+TdN5SqX5eby8CsFw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1sAnODiq9XIqbA4n3Dhm4+DIoKtxE+fLBssWwD14VmrnfOrHy2WmH/mXEqVsoH1vh
-         7PxYAbhSd4r3ZcoPCQ2xc1zdsEYviFaDqKV1jPhzeqAoodhyPE7gFRzxznaYTmUBZY
-         MsNoh+axq1UrgXy6gN5w2vQ5n+YB36sjxnTQobkI=
+        b=YAoDOc0rTPq4AR7UCkkG6R3zzJeuC5yqZsu8uqtLuwf+2C7tvFhRXPXW1E/rL/1A9
+         jAZlT/VfTU0bf9Ok82BbPRVeTFX1P3GQVSafRas/godTOOCfMbr80GKE3etKo7b2BD
+         gUxx4pYLqWxsC58tXB8STrvDZFEg/byQVj392XCM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.15 006/145] MAINTAINERS: add git tree for random.c
-Date:   Fri, 27 May 2022 10:48:27 +0200
-Message-Id: <20220527084851.427802617@linuxfoundation.org>
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Eric Biggers <ebiggers@google.com>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.17 041/111] random: check for crng_init == 0 in add_device_randomness()
+Date:   Fri, 27 May 2022 10:49:13 +0200
+Message-Id: <20220527084825.267606569@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084850.364560116@linuxfoundation.org>
-References: <20220527084850.364560116@linuxfoundation.org>
+In-Reply-To: <20220527084819.133490171@linuxfoundation.org>
+References: <20220527084819.133490171@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,26 +52,32 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 9bafaa9375cbf892033f188d8cb624ae328754b5 upstream.
+commit 1daf2f387652bf3a7044aea042f5023b3f6b189b upstream.
 
-This is handy not just for humans, but also so that the 0-day bot can
-automatically test posted mailing list patches against the right tree.
+This has no real functional change, as crng_pre_init_inject() (and
+before that, crng_slow_init()) always checks for == 0, not >= 2. So
+correct the outer unlocked change to reflect that. Before this used
+crng_ready(), which was not correct.
 
+Cc: Theodore Ts'o <tytso@mit.edu>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Reviewed-by: Eric Biggers <ebiggers@google.com>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- MAINTAINERS |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/char/random.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -15721,6 +15721,7 @@ F:	arch/mips/generic/board-ranchu.c
- RANDOM NUMBER DRIVER
- M:	"Theodore Ts'o" <tytso@mit.edu>
- M:	Jason A. Donenfeld <Jason@zx2c4.com>
-+T:	git https://git.kernel.org/pub/scm/linux/kernel/git/crng/random.git
- S:	Maintained
- F:	drivers/char/random.c
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -1020,7 +1020,7 @@ void add_device_randomness(const void *b
+ 	unsigned long time = random_get_entropy() ^ jiffies;
+ 	unsigned long flags;
  
+-	if (!crng_ready() && size)
++	if (crng_init == 0 && size)
+ 		crng_pre_init_inject(buf, size, false, false);
+ 
+ 	spin_lock_irqsave(&input_pool.lock, flags);
 
 
