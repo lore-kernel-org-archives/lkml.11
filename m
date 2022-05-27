@@ -2,84 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0FBAC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 09:26:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D89B5C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 09:26:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344258AbiE0JZ7 (ORCPT
+        id S1350500AbiE0J01 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 05:25:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45990 "EHLO
+        Fri, 27 May 2022 05:26:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235388AbiE0JZz (ORCPT
+        with ESMTP id S1350494AbiE0J0T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 05:25:55 -0400
-Received: from smtp.smtpout.orange.fr (smtp09.smtpout.orange.fr [80.12.242.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA1D9F6898
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 02:25:53 -0700 (PDT)
-Received: from pop-os.home ([90.11.191.102])
-        by smtp.orange.fr with ESMTPA
-        id uWE9n3MmXOXCyuWEAnkQcb; Fri, 27 May 2022 11:25:51 +0200
-X-ME-Helo: pop-os.home
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Fri, 27 May 2022 11:25:51 +0200
-X-ME-IP: 90.11.191.102
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>
-Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        netdev@vger.kernel.org
-Subject: [PATCH] net: enetc: Use pci_release_region() to release some resources
-Date:   Fri, 27 May 2022 11:25:47 +0200
-Message-Id: <b0dcb6124717d13900e48b2f1fa697b922f672b2.1653643529.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.34.1
+        Fri, 27 May 2022 05:26:19 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC7FB6176
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 02:26:17 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L8fVT6PKNzRhSQ;
+        Fri, 27 May 2022 17:23:13 +0800 (CST)
+Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
+ (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 27 May
+ 2022 17:26:15 +0800
+From:   Miaohe Lin <linmiaohe@huawei.com>
+To:     <akpm@linux-foundation.org>
+CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
+        <linmiaohe@huawei.com>
+Subject: [PATCH 3/3] mm/swapfile: fix possible data races of inuse_pages
+Date:   Fri, 27 May 2022 17:26:26 +0800
+Message-ID: <20220527092626.31883-4-linmiaohe@huawei.com>
+X-Mailer: git-send-email 2.23.0
+In-Reply-To: <20220527092626.31883-1-linmiaohe@huawei.com>
+References: <20220527092626.31883-1-linmiaohe@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.124.27]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some resources are allocated using pci_request_region().
-It is more straightforward to release them with pci_release_region().
+si->inuse_pages could still be accessed concurrently now. The plain reads
+outside si->lock critical section, i.e. swap_show and si_swapinfo, which
+results in data races. But these should be ok because they're just used
+for showing swap info.
 
-Fixes: 231ece36f50d ("enetc: Add mdio bus driver for the PCIe MDIO endpoint")
-
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
 ---
-This patch is speculative, mainly based on the inconsistency between some
-function's names.
-Using pci_request_mem_regions() would also have things look consistent.
-
-Review with care.
----
- drivers/net/ethernet/freescale/enetc/enetc_pci_mdio.c | 4 ++--
+ mm/swapfile.c | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc_pci_mdio.c b/drivers/net/ethernet/freescale/enetc/enetc_pci_mdio.c
-index 15f37c5b8dc1..dafb26f81f95 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc_pci_mdio.c
-+++ b/drivers/net/ethernet/freescale/enetc/enetc_pci_mdio.c
-@@ -69,7 +69,7 @@ static int enetc_pci_mdio_probe(struct pci_dev *pdev,
- 	return 0;
+diff --git a/mm/swapfile.c b/mm/swapfile.c
+index e033a53a99df..29d7ca9eaa3c 100644
+--- a/mm/swapfile.c
++++ b/mm/swapfile.c
+@@ -2649,7 +2649,7 @@ static int swap_show(struct seq_file *swap, void *v)
+ 	}
  
- err_mdiobus_reg:
--	pci_release_mem_regions(pdev);
-+	pci_release_region(pdev, 0);
- err_pci_mem_reg:
- 	pci_disable_device(pdev);
- err_pci_enable:
-@@ -88,7 +88,7 @@ static void enetc_pci_mdio_remove(struct pci_dev *pdev)
- 	mdiobus_unregister(bus);
- 	mdio_priv = bus->priv;
- 	iounmap(mdio_priv->hw->port);
--	pci_release_mem_regions(pdev);
-+	pci_release_region(pdev, 0);
- 	pci_disable_device(pdev);
- }
+ 	bytes = si->pages << (PAGE_SHIFT - 10);
+-	inuse = si->inuse_pages << (PAGE_SHIFT - 10);
++	inuse = READ_ONCE(si->inuse_pages) << (PAGE_SHIFT - 10);
  
+ 	file = si->swap_file;
+ 	len = seq_file_path(swap, file, " \t\n\\");
+@@ -3268,7 +3268,7 @@ void si_swapinfo(struct sysinfo *val)
+ 		struct swap_info_struct *si = swap_info[type];
+ 
+ 		if ((si->flags & SWP_USED) && !(si->flags & SWP_WRITEOK))
+-			nr_to_be_unused += si->inuse_pages;
++			nr_to_be_unused += READ_ONCE(si->inuse_pages);
+ 	}
+ 	val->freeswap = atomic_long_read(&nr_swap_pages) + nr_to_be_unused;
+ 	val->totalswap = total_swap_pages + nr_to_be_unused;
 -- 
-2.34.1
+2.23.0
 
