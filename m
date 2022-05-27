@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 321BEC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:37:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91AB6C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:37:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351360AbiE0Lhi (ORCPT
+        id S1351402AbiE0Lhs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 07:37:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43844 "EHLO
+        Fri, 27 May 2022 07:37:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351333AbiE0Lh3 (ORCPT
+        with ESMTP id S1345594AbiE0Lhm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:37:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78CDD63380;
-        Fri, 27 May 2022 04:37:28 -0700 (PDT)
+        Fri, 27 May 2022 07:37:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 738066540C;
+        Fri, 27 May 2022 04:37:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1631BB824D9;
-        Fri, 27 May 2022 11:37:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B987C385A9;
-        Fri, 27 May 2022 11:37:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EC9D761CE2;
+        Fri, 27 May 2022 11:37:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0485DC34113;
+        Fri, 27 May 2022 11:37:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653651445;
-        bh=j2VFwEiy5AqGYcr1GVEs82OBxC5PnBk4BsCsWy+UcgY=;
+        s=korg; t=1653651452;
+        bh=amemK8Q9YbQzV/hIYUpP+5+ychYfZ9KcS9kDPk/te5c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wWFWIlU9IdOxUwrP3FLp+v60WdRff7TvMbfI71IhmLOxr3jOsdrfjCTrmPxOJ7x4q
-         GOBoUR7LrRHWhvwUhFAGgIHDXt40FFr+81lA1bhyOgg8xmXWw3EWreo0T8347Ro39I
-         hBPklm0vl8C82xtrL0/LNi/DteYDdY/czC1I4YSc=
+        b=bIuoGKPcsD4I0+vMHmg/YpdHDERhXAFnOxsdkwULULHPCNVCbHHdDEMS2wsldx311
+         iTVWwljACoWNI2JC8Kwt5OMvNcpzJ31WgHPktDXNxWp/iLIOFCi9PnpqKk8RqOptqK
+         NAGtTAlZmgSJGMuA09uZNtGg8EnGx3OR6NXbYADo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        stable@vger.kernel.org,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.10 021/163] crypto: blake2s - optimize blake2s initialization
-Date:   Fri, 27 May 2022 10:48:21 +0200
-Message-Id: <20220527084831.110196319@linuxfoundation.org>
+Subject: [PATCH 5.17 046/111] random: cleanup UUID handling
+Date:   Fri, 27 May 2022 10:49:18 +0200
+Message-Id: <20220527084825.965332823@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
-References: <20220527084828.156494029@linuxfoundation.org>
+In-Reply-To: <20220527084819.133490171@linuxfoundation.org>
+References: <20220527084819.133490171@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,132 +50,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Biggers <ebiggers@google.com>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 42ad8cf821f0d8564c393e9ad7d00a1a271d18ae upstream.
+commit 64276a9939ff414f2f0db38036cf4e1a0a703394 upstream.
 
-If no key was provided, then don't waste time initializing the block
-buffer, as its initial contents won't be used.
+Rather than hard coding various lengths, we can use the right constants.
+Strings should be `char *` while buffers should be `u8 *`. Rather than
+have a nonsensical and unused maxlength, just remove it. Finally, use
+snprintf instead of sprintf, just out of good hygiene.
 
-Also, make crypto_blake2s_init() and blake2s() call a single internal
-function __blake2s_init() which treats the key as optional, rather than
-conditionally calling blake2s_init() or blake2s_init_key().  This
-reduces the compiled code size, as previously both blake2s_init() and
-blake2s_init_key() were being inlined into these two callers, except
-when the key size passed to blake2s() was a compile-time constant.
+As well, remove the old comment about returning a binary UUID via the
+binary sysctl syscall. That syscall was removed from the kernel in 5.5,
+and actually, the "uuid_strategy" function and related infrastructure
+for even serving it via the binary sysctl syscall was removed with
+894d2491153a ("sysctl drivers: Remove dead binary sysctl support") back
+in 2.6.33.
 
-These optimizations aren't that significant for BLAKE2s.  However, the
-equivalent optimizations will be more significant for BLAKE2b, as
-everything is twice as big in BLAKE2b.  And it's good to keep things
-consistent rather than making optimizations for BLAKE2b but not BLAKE2s.
-
-Signed-off-by: Eric Biggers <ebiggers@google.com>
-Acked-by: Ard Biesheuvel <ardb@kernel.org>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/crypto/blake2s.h          |   53 +++++++++++++++++++-------------------
- include/crypto/internal/blake2s.h |    5 ---
- 2 files changed, 28 insertions(+), 30 deletions(-)
+ drivers/char/random.c |   29 +++++++++++++----------------
+ 1 file changed, 13 insertions(+), 16 deletions(-)
 
---- a/include/crypto/blake2s.h
-+++ b/include/crypto/blake2s.h
-@@ -43,29 +43,34 @@ enum blake2s_iv {
- 	BLAKE2S_IV7 = 0x5BE0CD19UL,
- };
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -1661,22 +1661,25 @@ const struct file_operations urandom_fop
+ static int sysctl_random_min_urandom_seed = 60;
+ static int sysctl_random_write_wakeup_bits = POOL_MIN_BITS;
+ static int sysctl_poolsize = POOL_BITS;
+-static char sysctl_bootid[16];
++static u8 sysctl_bootid[UUID_SIZE];
  
--void blake2s_update(struct blake2s_state *state, const u8 *in, size_t inlen);
--void blake2s_final(struct blake2s_state *state, u8 *out);
--
--static inline void blake2s_init_param(struct blake2s_state *state,
--				      const u32 param)
-+static inline void __blake2s_init(struct blake2s_state *state, size_t outlen,
-+				  const void *key, size_t keylen)
+ /*
+  * This function is used to return both the bootid UUID, and random
+- * UUID.  The difference is in whether table->data is NULL; if it is,
++ * UUID. The difference is in whether table->data is NULL; if it is,
+  * then a new UUID is generated and returned to the user.
+- *
+- * If the user accesses this via the proc interface, the UUID will be
+- * returned as an ASCII string in the standard UUID format; if via the
+- * sysctl system call, as 16 bytes of binary data.
+  */
+ static int proc_do_uuid(struct ctl_table *table, int write, void *buffer,
+ 			size_t *lenp, loff_t *ppos)
  {
--	*state = (struct blake2s_state){{
--		BLAKE2S_IV0 ^ param,
--		BLAKE2S_IV1,
--		BLAKE2S_IV2,
--		BLAKE2S_IV3,
--		BLAKE2S_IV4,
--		BLAKE2S_IV5,
--		BLAKE2S_IV6,
--		BLAKE2S_IV7,
--	}};
-+	state->h[0] = BLAKE2S_IV0 ^ (0x01010000 | keylen << 8 | outlen);
-+	state->h[1] = BLAKE2S_IV1;
-+	state->h[2] = BLAKE2S_IV2;
-+	state->h[3] = BLAKE2S_IV3;
-+	state->h[4] = BLAKE2S_IV4;
-+	state->h[5] = BLAKE2S_IV5;
-+	state->h[6] = BLAKE2S_IV6;
-+	state->h[7] = BLAKE2S_IV7;
-+	state->t[0] = 0;
-+	state->t[1] = 0;
-+	state->f[0] = 0;
-+	state->f[1] = 0;
-+	state->buflen = 0;
-+	state->outlen = outlen;
-+	if (keylen) {
-+		memcpy(state->buf, key, keylen);
-+		memset(&state->buf[keylen], 0, BLAKE2S_BLOCK_SIZE - keylen);
-+		state->buflen = BLAKE2S_BLOCK_SIZE;
-+	}
- }
- 
- static inline void blake2s_init(struct blake2s_state *state,
- 				const size_t outlen)
- {
--	blake2s_init_param(state, 0x01010000 | outlen);
--	state->outlen = outlen;
-+	__blake2s_init(state, outlen, NULL, 0);
- }
- 
- static inline void blake2s_init_key(struct blake2s_state *state,
-@@ -75,12 +80,12 @@ static inline void blake2s_init_key(stru
- 	WARN_ON(IS_ENABLED(DEBUG) && (!outlen || outlen > BLAKE2S_HASH_SIZE ||
- 		!key || !keylen || keylen > BLAKE2S_KEY_SIZE));
- 
--	blake2s_init_param(state, 0x01010000 | keylen << 8 | outlen);
--	memcpy(state->buf, key, keylen);
--	state->buflen = BLAKE2S_BLOCK_SIZE;
--	state->outlen = outlen;
-+	__blake2s_init(state, outlen, key, keylen);
- }
- 
-+void blake2s_update(struct blake2s_state *state, const u8 *in, size_t inlen);
-+void blake2s_final(struct blake2s_state *state, u8 *out);
+-	struct ctl_table fake_table;
+-	unsigned char buf[64], tmp_uuid[16], *uuid;
++	u8 tmp_uuid[UUID_SIZE], *uuid;
++	char uuid_string[UUID_STRING_LEN + 1];
++	struct ctl_table fake_table = {
++		.data = uuid_string,
++		.maxlen = UUID_STRING_LEN
++	};
 +
- static inline void blake2s(u8 *out, const u8 *in, const u8 *key,
- 			   const size_t outlen, const size_t inlen,
- 			   const size_t keylen)
-@@ -91,11 +96,7 @@ static inline void blake2s(u8 *out, cons
- 		outlen > BLAKE2S_HASH_SIZE || keylen > BLAKE2S_KEY_SIZE ||
- 		(!key && keylen)));
++	if (write)
++		return -EPERM;
  
--	if (keylen)
--		blake2s_init_key(&state, outlen, key, keylen);
--	else
--		blake2s_init(&state, outlen);
+ 	uuid = table->data;
+ 	if (!uuid) {
+@@ -1691,12 +1694,8 @@ static int proc_do_uuid(struct ctl_table
+ 		spin_unlock(&bootid_spinlock);
+ 	}
+ 
+-	sprintf(buf, "%pU", uuid);
 -
-+	__blake2s_init(&state, outlen, key, keylen);
- 	blake2s_update(&state, in, inlen);
- 	blake2s_final(&state, out);
- }
---- a/include/crypto/internal/blake2s.h
-+++ b/include/crypto/internal/blake2s.h
-@@ -93,10 +93,7 @@ static inline int crypto_blake2s_init(st
- 	struct blake2s_state *state = shash_desc_ctx(desc);
- 	unsigned int outlen = crypto_shash_digestsize(desc->tfm);
- 
--	if (tctx->keylen)
--		blake2s_init_key(state, outlen, tctx->key, tctx->keylen);
--	else
--		blake2s_init(state, outlen);
-+	__blake2s_init(state, outlen, tctx->key, tctx->keylen);
- 	return 0;
+-	fake_table.data = buf;
+-	fake_table.maxlen = sizeof(buf);
+-
+-	return proc_dostring(&fake_table, write, buffer, lenp, ppos);
++	snprintf(uuid_string, sizeof(uuid_string), "%pU", uuid);
++	return proc_dostring(&fake_table, 0, buffer, lenp, ppos);
  }
  
+ static struct ctl_table random_table[] = {
+@@ -1731,13 +1730,11 @@ static struct ctl_table random_table[] =
+ 	{
+ 		.procname	= "boot_id",
+ 		.data		= &sysctl_bootid,
+-		.maxlen		= 16,
+ 		.mode		= 0444,
+ 		.proc_handler	= proc_do_uuid,
+ 	},
+ 	{
+ 		.procname	= "uuid",
+-		.maxlen		= 16,
+ 		.mode		= 0444,
+ 		.proc_handler	= proc_do_uuid,
+ 	},
 
 
