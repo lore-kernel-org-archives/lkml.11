@@ -2,130 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2B48C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 16:27:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE6F0C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 16:27:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353999AbiE0Q1Z (ORCPT
+        id S1354127AbiE0Q1w (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 12:27:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33976 "EHLO
+        Fri, 27 May 2022 12:27:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232903AbiE0Q1W (ORCPT
+        with ESMTP id S232903AbiE0Q1q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 12:27:22 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2E6E5340DE
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 09:27:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653668841;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=hCQWiLeW5qUsRPrZU5r1fc6h36nurC5ojFEAsj8ddWE=;
-        b=dZe+12grPakHrpmXzOMMj9Ar4/0vv1EJbVm0ZkxiUl9Na4V/ldeQ6KLaYnZVIC04tJf8qQ
-        yffBLlVUaYGJPvCyw+CtYQPtJPEWOBXT9x1gjogqOnOiDh68ukT13ZFFV1m0RMXdRs0V+c
-        B1UsNoMKoIa6PQ7wUQkKykILnicKc8s=
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
- [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-588-UIpH9tJeMKaTLfb6y7llNg-1; Fri, 27 May 2022 12:27:20 -0400
-X-MC-Unique: UIpH9tJeMKaTLfb6y7llNg-1
-Received: by mail-qt1-f198.google.com with SMTP id t25-20020a05622a181900b002f3b32a6e30so4826007qtc.11
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 09:27:20 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:organization:user-agent:mime-version
-         :content-transfer-encoding;
-        bh=hCQWiLeW5qUsRPrZU5r1fc6h36nurC5ojFEAsj8ddWE=;
-        b=aBLhXdSa6s33LDjTH6nT01KBjoJTMhUWgow5uZomKtfekSGJh7PDZxPKYwzy/Ot/GX
-         gDnZhgmFYcI26pTHzRsG8hLflp3d2fudWnvkkm4acyo23wEKcfCGV3dwqut/cWKntflh
-         ASe1dk/VD2LVAzG37rXMnLM+Bc9bzLy384MICZbrxy2KLCBdKSTMxOxoI8OFQd7mztyK
-         RGbMUdXasCSjgumryCbSOdfLvxw7q5KzhhqKDhTq1foD4qB9KoACnIUB58syKyiyBnaT
-         E+S9WwMkOd9YJkNhZ+EpuXMXU1m4XD9+0N/47SX+Lz5yl5RX8lLP+3rb13RUQ4/lYtvT
-         WTEA==
-X-Gm-Message-State: AOAM530mXFcv6KDL/6XYke14CM4/8g56sB41483eyvG/X6MUBbQIcCuE
-        RAgFKBOTtqWW/U38+cktbZxPL8USTNBBDUA3YzYpS/YNbCuHoVsWOkcLEheePRASE0rZPkJzU6E
-        +Q69HSkMKOHozie337iiUqvd/
-X-Received: by 2002:a05:622a:8c:b0:2fb:4df4:3421 with SMTP id o12-20020a05622a008c00b002fb4df43421mr10819796qtw.144.1653668839655;
-        Fri, 27 May 2022 09:27:19 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyiVpHPTtun+A+ekQ9OvBfz2OZyj/VWxMpfPUOhnLBH21qzgnM33CVE7ErnqS3tvCVpXeyueA==
-X-Received: by 2002:a05:622a:8c:b0:2fb:4df4:3421 with SMTP id o12-20020a05622a008c00b002fb4df43421mr10819780qtw.144.1653668839419;
-        Fri, 27 May 2022 09:27:19 -0700 (PDT)
-Received: from [192.168.8.138] (static-71-184-137-158.bstnma.ftas.verizon.net. [71.184.137.158])
-        by smtp.gmail.com with ESMTPSA id f13-20020a05622a1a0d00b002f39b99f695sm2899986qtb.47.2022.05.27.09.27.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 May 2022 09:27:18 -0700 (PDT)
-Message-ID: <d8a12051e71ec322f489beed252576e16802a172.camel@redhat.com>
-Subject: Re: [PATCH 5/5] drm/nouveau: Fix spelling typo in comments
-From:   Lyude Paul <lyude@redhat.com>
-To:     1064094935@qq.com, Ben Skeggs <bskeggs@redhat.com>
-Cc:     Karol Herbst <kherbst@redhat.com>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, pengfuyuan <pengfuyuan@kylinos.cn>,
-        k2ci <kernel-bot@kylinos.cn>
-Date:   Fri, 27 May 2022 12:27:17 -0400
-In-Reply-To: <tencent_655C23622640268A069B49A6A5ADDEECB508@qq.com>
-References: <tencent_655C23622640268A069B49A6A5ADDEECB508@qq.com>
-Organization: Red Hat Inc.
+        Fri, 27 May 2022 12:27:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D046B340F1;
+        Fri, 27 May 2022 09:27:45 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8920AB824C9;
+        Fri, 27 May 2022 16:27:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1C57C385A9;
+        Fri, 27 May 2022 16:27:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653668863;
+        bh=PRaPi35zkOUa2ee/LGAevmhlOaftEQU94uTYvSbtIYs=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=AUdwYQFnQL+oIJZpQBq82jSSk/heA2LObEFqnWPTzgh2mrOIXni7GDPG92ZByPDAk
+         CXin4Wfey4ZAbnSrcb4b9JF9zdlkzUnIJyGTlytzZNg9j35uWmSLNL0n6xTt1iHWX6
+         GN5QE2cHwLcpHdl8DWmcaC6mP3HldR9n21UzSajhcjyB7DZ8b7ZNP81SzbRcaPyaK1
+         otrfDC0N16l12UKtoxCh5N87Wq41JO+dF94S0HDlIXuHW93p74TPJNaWaYVXufzCts
+         UNreNLMeRwR0EM7IHX0B9C9lArH3Anry9wqsz4BPdA9v+MFBr9rL8X0o5TOhCO2ktv
+         bWLDU2W0wVVPA==
+Message-ID: <459385ee7ccf4fcf3e22d4a11b4f438d648422bf.camel@kernel.org>
+Subject: Re: [PATCH v7 03/25] kallsyms: increase maximum kernel symbol
+ length to 512
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
+        David Howells <dhowells@redhat.com>
+Cc:     Miguel Ojeda <ojeda@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        rust-for-linux <rust-for-linux@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Alex Gaynor <alex.gaynor@gmail.com>,
+        Wedson Almeida Filho <wedsonaf@google.com>,
+        Gary Guo <gary@garyguo.net>, Boqun Feng <boqun.feng@gmail.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        live-patching@vger.kernel.org, linux-perf-users@vger.kernel.org
+Date:   Fri, 27 May 2022 19:25:57 +0300
+In-Reply-To: <CANiq72m6ttD9QpB3nW-5B+M1seknv0GZ4-DqtF85qTg6Lvxnhg@mail.gmail.com>
+References: <20220523020209.11810-1-ojeda@kernel.org>
+         <20220523020209.11810-4-ojeda@kernel.org> <YovvIQeN3lmOYzJO@kernel.org>
+         <CANiq72m6ttD9QpB3nW-5B+M1seknv0GZ4-DqtF85qTg6Lvxnhg@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.1 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Reviewed-by: Lyude Paul <lyude@redhat.com>
+On Tue, 2022-05-24 at 20:07 +0200, Miguel Ojeda wrote:
+> On Mon, May 23, 2022 at 10:33 PM Jarkko Sakkinen <jarkko@kernel.org> wrot=
+e:
+> >=20
+> > There's no description what the patch does.
+>=20
+> I am not sure what you mean. Both the subject and the last paragraph
+> describe what the patch does, while the rest gives the rationale
+> behind it.
+>=20
+> Cheers,
+> Miguel
 
-Do you need me to push this to drm-misc? Or will this be pushed as one series?
+The honest answer: I don't actually remember what I was thinking=C2=A0
+(other stuff stole my focus) but my comment neither makes much
+sense to me. Please just ignore it, and apologies for causing
+confusion.
 
-On Fri, 2022-05-27 at 12:22 +0800, 1064094935@qq.com wrote:
-> From: pengfuyuan <pengfuyuan@kylinos.cn>
-> 
-> Fix spelling typo in comments.
-> 
-> Reported-by: k2ci <kernel-bot@kylinos.cn>
-> Signed-off-by: pengfuyuan <pengfuyuan@kylinos.cn>
-> ---
->  drivers/gpu/drm/nouveau/include/nvhw/drf.h | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/nouveau/include/nvhw/drf.h
-> b/drivers/gpu/drm/nouveau/include/nvhw/drf.h
-> index bd0fc41446e2..d6969c0e2f29 100644
-> --- a/drivers/gpu/drm/nouveau/include/nvhw/drf.h
-> +++ b/drivers/gpu/drm/nouveau/include/nvhw/drf.h
-> @@ -190,7 +190,7 @@
->  #define DRF_MD_(X,_1,_2,_3,_4,_5,_6,_7,_8,_9,_10,IMPL,...) IMPL
->  #define DRF_MD(A...) DRF_MD_(X, ##A, DRF_MD_I, DRF_MD_N)(X, ##A)
->  
-> -/* Helper for testing against field value in aribtrary object */
-> +/* Helper for testing against field value in arbitrary object */
->  #define DRF_TV_N(X,e,p,o,d,r, 
-> f,cmp,v)                                          \
->         NVVAL_TEST_X(DRF_RD_X(e, (p), (o), d##_##r   ), d##_##r##_##f, cmp,
-> (v))
->  #define
-> DRF_TV_I(X,e,p,o,d,r,i,f,cmp,v)                                          \
-> @@ -198,7 +198,7 @@
->  #define DRF_TV_(X,_1,_2,_3,_4,_5,_6,_7,_8,_9,IMPL,...) IMPL
->  #define DRF_TV(A...) DRF_TV_(X, ##A, DRF_TV_I, DRF_TV_N)(X, ##A)
->  
-> -/* Helper for testing against field definition in aribtrary object */
-> +/* Helper for testing against field definition in arbitrary object */
->  #define DRF_TD_N(X,e,p,o,d,r, 
-> f,cmp,v)                                                          \
->         NVVAL_TEST_X(DRF_RD_X(e, (p), (o), d##_##r   ), d##_##r##_##f, cmp,
-> d##_##r##_##f##_##v)
->  #define
-> DRF_TD_I(X,e,p,o,d,r,i,f,cmp,v)                                             
->              \
+There's something I'm looking into in my spare time right now.
+I'm experimenting with interfacing keyring types to Rust. The
+first step, I guess, is to provide a Rust abstraction for
+assoc_array.
 
--- 
-Cheers,
- Lyude Paul (she/her)
- Software Engineer at Red Hat
+I've skimmed through the patch set and have now *rough* idea of
+patterns and techniques. My opens are more on the process side
+of things since there's no yet mainline subtree.
 
+If I send a patch or patch sets, would this be a good workflow:
+
+1. RFC tag.
+2. In the cover letter denote the patch set version, which was
+   used the baseline.
+
+Linux keyring is without argument a kind of subsystem that would
+hugely benefit of the Rust work, as it is both user space facing=C2=A0
+nd handling a vast amount of user's confidential data.=20
+
+BR, Jarkko
