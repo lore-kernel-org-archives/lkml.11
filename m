@@ -2,174 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3AF4C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:54:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14B01C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:55:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345207AbiE0Iym (ORCPT
+        id S1350194AbiE0Iyt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 04:54:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33222 "EHLO
+        Fri, 27 May 2022 04:54:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350156AbiE0Ixd (ORCPT
+        with ESMTP id S1350167AbiE0IxY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 04:53:33 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B63F47059;
-        Fri, 27 May 2022 01:52:50 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 8E01FCE23C7;
-        Fri, 27 May 2022 08:52:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62E39C385B8;
-        Fri, 27 May 2022 08:52:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653641567;
-        bh=J1anhnQln/EliotBsnMe08GPXBpw3kfeLcgjnsnc5jM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DVId/TZpVD+nCDOa99YwZ6b79TIDgjRocsVU8gbV1NbnuEH633pFv9sS2RZTONgLR
-         ogaeYU9q/VsHklskXb8Zbz+3Js+eTHUnYkf82d80KOHgD6n4GqAvh7G0HeuQrWrZup
-         PM2843HIucqZrNNM5uQddDM0/3+TlG5VrC9qWHng=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Joe Perches <joe@perches.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.18 28/47] random: use symbolic constants for crng_init states
-Date:   Fri, 27 May 2022 10:50:08 +0200
-Message-Id: <20220527084806.035134906@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084801.223648383@linuxfoundation.org>
-References: <20220527084801.223648383@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Fri, 27 May 2022 04:53:24 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2E20C46B3F
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 01:52:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653641569;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=cUv5tpS5RGrDYRnAjsYwiC+v1VkMuttRdgrw+2d7f3M=;
+        b=J22HiRiXNwVBo8FO/ASP43BByGmfKE7BEgxbdKxHh2tG85rmgptoWqfD/h3Bkuwn1rzcuc
+        NuD0Dvcw/cxTUiQYRLOXQmkahfq+Ge16LWPpCKs93hdDaoxhu4F/+85EJWkQclm2XdJapI
+        /RXDwqF7vJ0ugKDHm0zhgsGWZ291lns=
+Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
+ [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-371-ybN1uBEnPueY11CtWvZ5xQ-1; Fri, 27 May 2022 04:52:48 -0400
+X-MC-Unique: ybN1uBEnPueY11CtWvZ5xQ-1
+Received: by mail-qt1-f200.google.com with SMTP id w21-20020a05622a135500b002f3b801f51eso3827562qtk.23
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 01:52:48 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=cUv5tpS5RGrDYRnAjsYwiC+v1VkMuttRdgrw+2d7f3M=;
+        b=7k1f0E6JUBBi7PaJSsE7yRf/18rudQVInFdd8TU9k7ndeeJPawulYdpOxo8RyVuSUN
+         L8cXQqGhiN6oCWfMUsPhecTWT53RURk39g1qXMlfouKKllUaEseQZ11cruA+880LSKO0
+         6/UoxpTBwmY2tLEmAZL+RrCOLph4aTNaOgJK69OjUWqcqdo/QI2flV5r1jgwBMCq5dmh
+         EE0hJfF9Cf0u0GPiW+FPL0idaY41kE5qlLNG4J5epa2CF4KVRS/WWr5Fp9UEKGuY/fvW
+         xzrxoGswAQBAc2mw9Lh+/+LLGEl8SwWeot/fj11FrF7CjrnCLlbFkQ2HeP0JLDAMMHet
+         8rFw==
+X-Gm-Message-State: AOAM5329AOAs3o4VrljFhmDJVZa2UT9itp0EH+7+QuK1jd4E+EbPk7Gd
+        H453eOH3MV+MqUlELSHKpco09dDmXgiI8rNRclUFDc5xe0GI6NN20QyJ++mr/dIHisThsu4BAzR
+        +P5vhALZdnpFMkiukwWpG3S6B0aFAz7oEzLMkOAKc
+X-Received: by 2002:a05:622a:1a08:b0:2fb:e220:271b with SMTP id f8-20020a05622a1a0800b002fbe220271bmr6997228qtb.221.1653641567530;
+        Fri, 27 May 2022 01:52:47 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwKqH0anNdhavibGTRGCo+d9MXqgc9ldarPAg5gL/d0srfgCERUMp8nLOCw758Ke0YknAIw06QDtuklBZExwkw=
+X-Received: by 2002:a05:622a:1a08:b0:2fb:e220:271b with SMTP id
+ f8-20020a05622a1a0800b002fbe220271bmr6997219qtb.221.1653641567335; Fri, 27
+ May 2022 01:52:47 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220527060120.20964-1-jasowang@redhat.com> <20220527060120.20964-3-jasowang@redhat.com>
+In-Reply-To: <20220527060120.20964-3-jasowang@redhat.com>
+From:   Eugenio Perez Martin <eperezma@redhat.com>
+Date:   Fri, 27 May 2022 10:52:11 +0200
+Message-ID: <CAJaqyWf+afFW-JxF1wpYm5mvO3Am7BDMQX+X+SOe=+B_LA-ceA@mail.gmail.com>
+Subject: Re: [PATCH V6 2/9] virtio: use virtio_reset_device() when possible
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     Michael Tsirkin <mst@redhat.com>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>, tglx@linutronix.de,
+        peterz@infradead.org, paulmck@kernel.org, maz@kernel.org,
+        Halil Pasic <pasic@linux.ibm.com>,
+        Cornelia Huck <cohuck@redhat.com>, Cindy Lu <lulu@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        xuanzhuo@linux.alibaba.com,
+        Vineeth Vijayan <vneethv@linux.ibm.com>,
+        Peter Oberparleiter <oberpar@linux.ibm.com>,
+        linux-s390@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+On Fri, May 27, 2022 at 8:01 AM Jason Wang <jasowang@redhat.com> wrote:
+>
+> This allows us to do common extension without duplicating code.
+>
+> Cc: Thomas Gleixner <tglx@linutronix.de>
+> Cc: Peter Zijlstra <peterz@infradead.org>
+> Cc: "Paul E. McKenney" <paulmck@kernel.org>
+> Cc: Marc Zyngier <maz@kernel.org>
+> Cc: Halil Pasic <pasic@linux.ibm.com>
+> Cc: Cornelia Huck <cohuck@redhat.com>
+> Cc: Vineeth Vijayan <vneethv@linux.ibm.com>
+> Cc: Peter Oberparleiter <oberpar@linux.ibm.com>
+> Cc: linux-s390@vger.kernel.org
+> Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+> Signed-off-by: Jason Wang <jasowang@redhat.com>
 
-commit e3d2c5e79a999aa4e7d6f0127e16d3da5a4ff70d upstream.
+Reviewed-by: Eugenio P=C3=A9rez <eperezma@redhat.com>
 
-crng_init represents a state machine, with three states, and various
-rules for transitions. For the longest time, we've been managing these
-with "0", "1", and "2", and expecting people to figure it out. To make
-the code more obvious, replace these with proper enum values
-representing the transition, and then redocument what each of these
-states mean.
-
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
-Cc: Joe Perches <joe@perches.com>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/char/random.c |   38 +++++++++++++++++++-------------------
- 1 file changed, 19 insertions(+), 19 deletions(-)
-
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -70,16 +70,16 @@
-  *********************************************************************/
- 
- /*
-- * crng_init =  0 --> Uninitialized
-- *		1 --> Initialized
-- *		2 --> Initialized from input_pool
-- *
-  * crng_init is protected by base_crng->lock, and only increases
-- * its value (from 0->1->2).
-+ * its value (from empty->early->ready).
-  */
--static int crng_init = 0;
--#define crng_ready() (likely(crng_init > 1))
--/* Various types of waiters for crng_init->2 transition. */
-+static enum {
-+	CRNG_EMPTY = 0, /* Little to no entropy collected */
-+	CRNG_EARLY = 1, /* At least POOL_EARLY_BITS collected */
-+	CRNG_READY = 2  /* Fully initialized with POOL_READY_BITS collected */
-+} crng_init = CRNG_EMPTY;
-+#define crng_ready() (likely(crng_init >= CRNG_READY))
-+/* Various types of waiters for crng_init->CRNG_READY transition. */
- static DECLARE_WAIT_QUEUE_HEAD(crng_init_wait);
- static struct fasync_struct *fasync;
- static DEFINE_SPINLOCK(random_ready_chain_lock);
-@@ -282,7 +282,7 @@ static void crng_reseed(void)
- 	WRITE_ONCE(base_crng.generation, next_gen);
- 	WRITE_ONCE(base_crng.birth, jiffies);
- 	if (!crng_ready()) {
--		crng_init = 2;
-+		crng_init = CRNG_READY;
- 		finalize_init = true;
- 	}
- 	spin_unlock_irqrestore(&base_crng.lock, flags);
-@@ -376,7 +376,7 @@ static void crng_make_state(u32 chacha_s
- 	 * For the fast path, we check whether we're ready, unlocked first, and
- 	 * then re-check once locked later. In the case where we're really not
- 	 * ready, we do fast key erasure with the base_crng directly, extracting
--	 * when crng_init==0.
-+	 * when crng_init is CRNG_EMPTY.
- 	 */
- 	if (!crng_ready()) {
- 		bool ready;
-@@ -384,7 +384,7 @@ static void crng_make_state(u32 chacha_s
- 		spin_lock_irqsave(&base_crng.lock, flags);
- 		ready = crng_ready();
- 		if (!ready) {
--			if (crng_init == 0)
-+			if (crng_init == CRNG_EMPTY)
- 				extract_entropy(base_crng.key, sizeof(base_crng.key));
- 			crng_fast_key_erasure(base_crng.key, chacha_state,
- 					      random_data, random_data_len);
-@@ -738,8 +738,8 @@ EXPORT_SYMBOL(get_random_bytes_arch);
- 
- enum {
- 	POOL_BITS = BLAKE2S_HASH_SIZE * 8,
--	POOL_INIT_BITS = POOL_BITS, /* No point in settling for less. */
--	POOL_FAST_INIT_BITS = POOL_INIT_BITS / 2
-+	POOL_READY_BITS = POOL_BITS, /* When crng_init->CRNG_READY */
-+	POOL_EARLY_BITS = POOL_READY_BITS / 2 /* When crng_init->CRNG_EARLY */
- };
- 
- static struct {
-@@ -834,13 +834,13 @@ static void credit_init_bits(size_t nbit
- 		init_bits = min_t(unsigned int, POOL_BITS, orig + add);
- 	} while (cmpxchg(&input_pool.init_bits, orig, init_bits) != orig);
- 
--	if (!crng_ready() && init_bits >= POOL_INIT_BITS)
-+	if (!crng_ready() && init_bits >= POOL_READY_BITS)
- 		crng_reseed();
--	else if (unlikely(crng_init == 0 && init_bits >= POOL_FAST_INIT_BITS)) {
-+	else if (unlikely(crng_init == CRNG_EMPTY && init_bits >= POOL_EARLY_BITS)) {
- 		spin_lock_irqsave(&base_crng.lock, flags);
--		if (crng_init == 0) {
-+		if (crng_init == CRNG_EMPTY) {
- 			extract_entropy(base_crng.key, sizeof(base_crng.key));
--			crng_init = 1;
-+			crng_init = CRNG_EARLY;
- 		}
- 		spin_unlock_irqrestore(&base_crng.lock, flags);
- 	}
-@@ -1561,7 +1561,7 @@ const struct file_operations urandom_fop
-  *
-  * - write_wakeup_threshold - the amount of entropy in the input pool
-  *   below which write polls to /dev/random will unblock, requesting
-- *   more entropy, tied to the POOL_INIT_BITS constant. It is writable
-+ *   more entropy, tied to the POOL_READY_BITS constant. It is writable
-  *   to avoid breaking old userspaces, but writing to it does not
-  *   change any behavior of the RNG.
-  *
-@@ -1576,7 +1576,7 @@ const struct file_operations urandom_fop
- #include <linux/sysctl.h>
- 
- static int sysctl_random_min_urandom_seed = CRNG_RESEED_INTERVAL / HZ;
--static int sysctl_random_write_wakeup_bits = POOL_INIT_BITS;
-+static int sysctl_random_write_wakeup_bits = POOL_READY_BITS;
- static int sysctl_poolsize = POOL_BITS;
- static u8 sysctl_bootid[UUID_SIZE];
- 
-
+> ---
+>  drivers/virtio/virtio.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/virtio/virtio.c b/drivers/virtio/virtio.c
+> index 938e975029d4..aa1eb5132767 100644
+> --- a/drivers/virtio/virtio.c
+> +++ b/drivers/virtio/virtio.c
+> @@ -430,7 +430,7 @@ int register_virtio_device(struct virtio_device *dev)
+>
+>         /* We always start by resetting the device, in case a previous
+>          * driver messed it up.  This also tests that code path a little.=
+ */
+> -       dev->config->reset(dev);
+> +       virtio_reset_device(dev);
+>
+>         /* Acknowledge that we've seen the device. */
+>         virtio_add_status(dev, VIRTIO_CONFIG_S_ACKNOWLEDGE);
+> @@ -496,7 +496,7 @@ int virtio_device_restore(struct virtio_device *dev)
+>
+>         /* We always start by resetting the device, in case a previous
+>          * driver messed it up. */
+> -       dev->config->reset(dev);
+> +       virtio_reset_device(dev);
+>
+>         /* Acknowledge that we've seen the device. */
+>         virtio_add_status(dev, VIRTIO_CONFIG_S_ACKNOWLEDGE);
+> --
+> 2.25.1
+>
 
