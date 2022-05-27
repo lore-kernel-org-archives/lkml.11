@@ -2,268 +2,248 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 488B3C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:51:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D92EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:51:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237859AbiE0Ivl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 04:51:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57160 "EHLO
+        id S1350039AbiE0Ivq (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 04:51:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349987AbiE0IvV (ORCPT
+        with ESMTP id S1349963AbiE0IvW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 04:51:21 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D22452AC53;
-        Fri, 27 May 2022 01:51:17 -0700 (PDT)
+        Fri, 27 May 2022 04:51:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC67F47AC1;
+        Fri, 27 May 2022 01:51:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 8D87CCE234D;
-        Fri, 27 May 2022 08:51:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38FB6C385A9;
-        Fri, 27 May 2022 08:51:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 543F661D40;
+        Fri, 27 May 2022 08:51:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00005C385A9;
+        Fri, 27 May 2022 08:51:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653641474;
-        bh=IGOsXSlnt3oTDeRyqlMES/yY6b1S4ruEp2zGgq9n+5Q=;
-        h=From:To:Cc:Subject:Date:From;
-        b=OimFunxxkQm0fLeLFAsRw86vPPDm7sQLd5Un48LXmCVYOT4rsR0db0nes3WHfjKfH
-         exT9O76GCbDT7lvhPkyQRFo+M59jCSpXZEZptOLgayk+AF7TTf3HeHwU8IZutqu28p
-         h1zYoKQUz1Oz7Pi7f/GNcMr070xTG2zxLaojyP/g=
+        s=korg; t=1653641477;
+        bh=HQsc8otsv7u+2Tj5xdkrWbErI4iRtS3Paezz2mnv6yk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=wLBTIR7mW93C3wX2aLExzliWPJJt7ktXwyCTpVtVTtAJOiUOZOd4HAbF6qeyqfmgx
+         XU+7Au41bUPmxLzSR6S2cWXGBTRTo6mhXcjN5f0lEfyWgD6xt6vi+gtULt/lX+0puN
+         zGnPv20C5vbn72B4kAQFBG6dLapPqJ/aFr0P1aT4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-Subject: [PATCH 5.18 00/47] 5.18.1-rc1 review
-Date:   Fri, 27 May 2022 10:49:40 +0200
-Message-Id: <20220527084801.223648383@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Stephen Brennan <stephen.s.brennan@oracle.com>,
+        Douglas Anderson <dianders@chromium.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.10 001/163] lockdown: also lock down previous kgdb use
+Date:   Fri, 27 May 2022 10:48:01 +0200
+Message-Id: <20220527084828.365808165@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-MIME-Version: 1.0
+In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
+References: <20220527084828.156494029@linuxfoundation.org>
 User-Agent: quilt/0.66
 X-stable: review
 X-Patchwork-Hint: ignore
-X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.18.1-rc1.gz
-X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-X-KernelTest-Branch: linux-5.18.y
-X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
-X-KernelTest-Version: 5.18.1-rc1
-X-KernelTest-Deadline: 2022-05-29T08:48+00:00
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the start of the stable review cycle for the 5.18.1 release.
-There are 47 patches in this series, all will be posted as a response
-to this one.  If anyone has any issues with these being applied, please
-let me know.
+From: Daniel Thompson <daniel.thompson@linaro.org>
 
-Responses should be made by Sun, 29 May 2022 08:46:45 +0000.
-Anything received after that time might be too late.
+commit eadb2f47a3ced5c64b23b90fd2a3463f63726066 upstream.
 
-The whole patch series can be found in one patch at:
-	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.18.1-rc1.gz
-or in the git tree and branch at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.18.y
-and the diffstat can be found below.
+KGDB and KDB allow read and write access to kernel memory, and thus
+should be restricted during lockdown.  An attacker with access to a
+serial port (for example, via a hypervisor console, which some cloud
+vendors provide over the network) could trigger the debugger so it is
+important that the debugger respect the lockdown mode when/if it is
+triggered.
 
-thanks,
+Fix this by integrating lockdown into kdb's existing permissions
+mechanism.  Unfortunately kgdb does not have any permissions mechanism
+(although it certainly could be added later) so, for now, kgdb is simply
+and brutally disabled by immediately exiting the gdb stub without taking
+any action.
 
-greg k-h
+For lockdowns established early in the boot (e.g. the normal case) then
+this should be fine but on systems where kgdb has set breakpoints before
+the lockdown is enacted than "bad things" will happen.
 
--------------
-Pseudo-Shortlog of commits:
+CVE: CVE-2022-21499
+Co-developed-by: Stephen Brennan <stephen.s.brennan@oracle.com>
+Signed-off-by: Stephen Brennan <stephen.s.brennan@oracle.com>
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
+Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ include/linux/security.h    |    2 +
+ kernel/debug/debug_core.c   |   24 +++++++++++++++++
+ kernel/debug/kdb/kdb_main.c |   62 +++++++++++++++++++++++++++++++++++++++++---
+ security/security.c         |    2 +
+ 4 files changed, 87 insertions(+), 3 deletions(-)
 
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    Linux 5.18.1-rc1
-
-Edward Matijevic <motolav@gmail.com>
-    ALSA: ctxfi: Add SB046x PCI ID
-
-Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-    ACPI: sysfs: Fix BERT error region memory mapping
-
-Jason A. Donenfeld <Jason@zx2c4.com>
-    random: check for signals after page of pool writes
-
-Jens Axboe <axboe@kernel.dk>
-    random: wire up fops->splice_{read,write}_iter()
-
-Jens Axboe <axboe@kernel.dk>
-    random: convert to using fops->write_iter()
-
-Jens Axboe <axboe@kernel.dk>
-    random: convert to using fops->read_iter()
-
-Jason A. Donenfeld <Jason@zx2c4.com>
-    random: unify batched entropy implementations
-
-Jason A. Donenfeld <Jason@zx2c4.com>
-    random: move randomize_page() into mm where it belongs
-
-Jason A. Donenfeld <Jason@zx2c4.com>
-    random: move initialization functions out of hot pages
-
-Jason A. Donenfeld <Jason@zx2c4.com>
-    random: make consistent use of buf and len
-
-Jason A. Donenfeld <Jason@zx2c4.com>
-    random: use proper return types on get_random_{int,long}_wait()
-
-Jason A. Donenfeld <Jason@zx2c4.com>
-    random: remove extern from functions in header
-
-Jason A. Donenfeld <Jason@zx2c4.com>
-    random: use static branch for crng_ready()
-
-Jason A. Donenfeld <Jason@zx2c4.com>
-    random: credit architectural init the exact amount
-
-Jason A. Donenfeld <Jason@zx2c4.com>
-    random: handle latent entropy and command line from random_init()
-
-Jason A. Donenfeld <Jason@zx2c4.com>
-    random: use proper jiffies comparison macro
-
-Jason A. Donenfeld <Jason@zx2c4.com>
-    random: remove ratelimiting for in-kernel unseeded randomness
-
-Jason A. Donenfeld <Jason@zx2c4.com>
-    random: move initialization out of reseeding hot path
-
-Jason A. Donenfeld <Jason@zx2c4.com>
-    random: avoid initializing twice in credit race
-
-Jason A. Donenfeld <Jason@zx2c4.com>
-    random: use symbolic constants for crng_init states
-
-Jason A. Donenfeld <Jason@zx2c4.com>
-    siphash: use one source of truth for siphash permutations
-
-Jason A. Donenfeld <Jason@zx2c4.com>
-    random: help compiler out with fast_mix() by using simpler arguments
-
-Jason A. Donenfeld <Jason@zx2c4.com>
-    random: do not use input pool from hard IRQs
-
-Jason A. Donenfeld <Jason@zx2c4.com>
-    random: order timer entropy functions below interrupt functions
-
-Jason A. Donenfeld <Jason@zx2c4.com>
-    random: do not pretend to handle premature next security model
-
-Jason A. Donenfeld <Jason@zx2c4.com>
-    random: use first 128 bits of input as fast init
-
-Jason A. Donenfeld <Jason@zx2c4.com>
-    random: do not use batches when !crng_ready()
-
-Jason A. Donenfeld <Jason@zx2c4.com>
-    random: insist on random_get_entropy() existing in order to simplify
-
-Jason A. Donenfeld <Jason@zx2c4.com>
-    xtensa: use fallback for random_get_entropy() instead of zero
-
-Jason A. Donenfeld <Jason@zx2c4.com>
-    sparc: use fallback for random_get_entropy() instead of zero
-
-Jason A. Donenfeld <Jason@zx2c4.com>
-    um: use fallback for random_get_entropy() instead of zero
-
-Jason A. Donenfeld <Jason@zx2c4.com>
-    x86/tsc: Use fallback for random_get_entropy() instead of zero
-
-Jason A. Donenfeld <Jason@zx2c4.com>
-    nios2: use fallback for random_get_entropy() instead of zero
-
-Jason A. Donenfeld <Jason@zx2c4.com>
-    arm: use fallback for random_get_entropy() instead of zero
-
-Jason A. Donenfeld <Jason@zx2c4.com>
-    mips: use fallback for random_get_entropy() instead of just c0 random
-
-Jason A. Donenfeld <Jason@zx2c4.com>
-    riscv: use fallback for random_get_entropy() instead of zero
-
-Jason A. Donenfeld <Jason@zx2c4.com>
-    m68k: use fallback for random_get_entropy() instead of zero
-
-Jason A. Donenfeld <Jason@zx2c4.com>
-    timekeeping: Add raw clock fallback for random_get_entropy()
-
-Jason A. Donenfeld <Jason@zx2c4.com>
-    powerpc: define get_cycles macro for arch-override
-
-Jason A. Donenfeld <Jason@zx2c4.com>
-    alpha: define get_cycles macro for arch-override
-
-Jason A. Donenfeld <Jason@zx2c4.com>
-    parisc: define get_cycles macro for arch-override
-
-Jason A. Donenfeld <Jason@zx2c4.com>
-    s390: define get_cycles macro for arch-override
-
-Jason A. Donenfeld <Jason@zx2c4.com>
-    ia64: define get_cycles macro for arch-override
-
-Jason A. Donenfeld <Jason@zx2c4.com>
-    init: call time_init() before rand_initialize()
-
-Jason A. Donenfeld <Jason@zx2c4.com>
-    random: fix sysctl documentation nits
-
-Basavaraj Natikar <Basavaraj.Natikar@amd.com>
-    HID: amd_sfh: Add support for sensor discovery
-
-Daniel Thompson <daniel.thompson@linaro.org>
-    lockdown: also lock down previous kgdb use
-
-
--------------
-
-Diffstat:
-
- Documentation/admin-guide/sysctl/kernel.rst |    8 +-
- Makefile                                    |    4 +-
- arch/alpha/include/asm/timex.h              |    1 +
- arch/arm/include/asm/timex.h                |    1 +
- arch/ia64/include/asm/timex.h               |    1 +
- arch/m68k/include/asm/timex.h               |    2 +-
- arch/mips/include/asm/timex.h               |   17 +-
- arch/nios2/include/asm/timex.h              |    3 +
- arch/parisc/include/asm/timex.h             |    3 +-
- arch/powerpc/include/asm/timex.h            |    1 +
- arch/riscv/include/asm/timex.h              |    2 +-
- arch/s390/include/asm/timex.h               |    1 +
- arch/sparc/include/asm/timex_32.h           |    4 +-
- arch/um/include/asm/timex.h                 |    9 +-
- arch/x86/include/asm/timex.h                |    9 +
- arch/x86/include/asm/tsc.h                  |    7 +-
- arch/xtensa/include/asm/timex.h             |    6 +-
- drivers/acpi/sysfs.c                        |   25 +-
- drivers/char/random.c                       | 1213 +++++++++++----------------
- drivers/hid/amd-sfh-hid/amd_sfh_client.c    |   11 +
- drivers/hid/amd-sfh-hid/amd_sfh_pcie.c      |    7 +
- drivers/hid/amd-sfh-hid/amd_sfh_pcie.h      |    4 +
- include/linux/mm.h                          |    1 +
- include/linux/prandom.h                     |   23 +-
- include/linux/random.h                      |   92 +-
- include/linux/security.h                    |    2 +
- include/linux/siphash.h                     |   28 +
- include/linux/timex.h                       |    8 +
- init/main.c                                 |   13 +-
- kernel/debug/debug_core.c                   |   24 +
- kernel/debug/kdb/kdb_main.c                 |   62 +-
- kernel/time/timekeeping.c                   |   15 +
- lib/Kconfig.debug                           |    3 +-
- lib/siphash.c                               |   32 +-
- mm/util.c                                   |   32 +
- security/security.c                         |    2 +
- sound/pci/ctxfi/ctatc.c                     |    2 +
- sound/pci/ctxfi/cthardware.h                |    3 +-
- 38 files changed, 821 insertions(+), 860 deletions(-)
+--- a/include/linux/security.h
++++ b/include/linux/security.h
+@@ -121,10 +121,12 @@ enum lockdown_reason {
+ 	LOCKDOWN_DEBUGFS,
+ 	LOCKDOWN_XMON_WR,
+ 	LOCKDOWN_BPF_WRITE_USER,
++	LOCKDOWN_DBG_WRITE_KERNEL,
+ 	LOCKDOWN_INTEGRITY_MAX,
+ 	LOCKDOWN_KCORE,
+ 	LOCKDOWN_KPROBES,
+ 	LOCKDOWN_BPF_READ,
++	LOCKDOWN_DBG_READ_KERNEL,
+ 	LOCKDOWN_PERF,
+ 	LOCKDOWN_TRACEFS,
+ 	LOCKDOWN_XMON_RW,
+--- a/kernel/debug/debug_core.c
++++ b/kernel/debug/debug_core.c
+@@ -56,6 +56,7 @@
+ #include <linux/vmacache.h>
+ #include <linux/rcupdate.h>
+ #include <linux/irq.h>
++#include <linux/security.h>
+ 
+ #include <asm/cacheflush.h>
+ #include <asm/byteorder.h>
+@@ -756,6 +757,29 @@ cpu_master_loop:
+ 				continue;
+ 			kgdb_connected = 0;
+ 		} else {
++			/*
++			 * This is a brutal way to interfere with the debugger
++			 * and prevent gdb being used to poke at kernel memory.
++			 * This could cause trouble if lockdown is applied when
++			 * there is already an active gdb session. For now the
++			 * answer is simply "don't do that". Typically lockdown
++			 * *will* be applied before the debug core gets started
++			 * so only developers using kgdb for fairly advanced
++			 * early kernel debug can be biten by this. Hopefully
++			 * they are sophisticated enough to take care of
++			 * themselves, especially with help from the lockdown
++			 * message printed on the console!
++			 */
++			if (security_locked_down(LOCKDOWN_DBG_WRITE_KERNEL)) {
++				if (IS_ENABLED(CONFIG_KGDB_KDB)) {
++					/* Switch back to kdb if possible... */
++					dbg_kdb_mode = 1;
++					continue;
++				} else {
++					/* ... otherwise just bail */
++					break;
++				}
++			}
+ 			error = gdb_serial_stub(ks);
+ 		}
+ 
+--- a/kernel/debug/kdb/kdb_main.c
++++ b/kernel/debug/kdb/kdb_main.c
+@@ -45,6 +45,7 @@
+ #include <linux/proc_fs.h>
+ #include <linux/uaccess.h>
+ #include <linux/slab.h>
++#include <linux/security.h>
+ #include "kdb_private.h"
+ 
+ #undef	MODULE_PARAM_PREFIX
+@@ -197,10 +198,62 @@ struct task_struct *kdb_curr_task(int cp
+ }
+ 
+ /*
+- * Check whether the flags of the current command and the permissions
+- * of the kdb console has allow a command to be run.
++ * Update the permissions flags (kdb_cmd_enabled) to match the
++ * current lockdown state.
++ *
++ * Within this function the calls to security_locked_down() are "lazy". We
++ * avoid calling them if the current value of kdb_cmd_enabled already excludes
++ * flags that might be subject to lockdown. Additionally we deliberately check
++ * the lockdown flags independently (even though read lockdown implies write
++ * lockdown) since that results in both simpler code and clearer messages to
++ * the user on first-time debugger entry.
++ *
++ * The permission masks during a read+write lockdown permits the following
++ * flags: INSPECT, SIGNAL, REBOOT (and ALWAYS_SAFE).
++ *
++ * The INSPECT commands are not blocked during lockdown because they are
++ * not arbitrary memory reads. INSPECT covers the backtrace family (sometimes
++ * forcing them to have no arguments) and lsmod. These commands do expose
++ * some kernel state but do not allow the developer seated at the console to
++ * choose what state is reported. SIGNAL and REBOOT should not be controversial,
++ * given these are allowed for root during lockdown already.
++ */
++static void kdb_check_for_lockdown(void)
++{
++	const int write_flags = KDB_ENABLE_MEM_WRITE |
++				KDB_ENABLE_REG_WRITE |
++				KDB_ENABLE_FLOW_CTRL;
++	const int read_flags = KDB_ENABLE_MEM_READ |
++			       KDB_ENABLE_REG_READ;
++
++	bool need_to_lockdown_write = false;
++	bool need_to_lockdown_read = false;
++
++	if (kdb_cmd_enabled & (KDB_ENABLE_ALL | write_flags))
++		need_to_lockdown_write =
++			security_locked_down(LOCKDOWN_DBG_WRITE_KERNEL);
++
++	if (kdb_cmd_enabled & (KDB_ENABLE_ALL | read_flags))
++		need_to_lockdown_read =
++			security_locked_down(LOCKDOWN_DBG_READ_KERNEL);
++
++	/* De-compose KDB_ENABLE_ALL if required */
++	if (need_to_lockdown_write || need_to_lockdown_read)
++		if (kdb_cmd_enabled & KDB_ENABLE_ALL)
++			kdb_cmd_enabled = KDB_ENABLE_MASK & ~KDB_ENABLE_ALL;
++
++	if (need_to_lockdown_write)
++		kdb_cmd_enabled &= ~write_flags;
++
++	if (need_to_lockdown_read)
++		kdb_cmd_enabled &= ~read_flags;
++}
++
++/*
++ * Check whether the flags of the current command, the permissions of the kdb
++ * console and the lockdown state allow a command to be run.
+  */
+-static inline bool kdb_check_flags(kdb_cmdflags_t flags, int permissions,
++static bool kdb_check_flags(kdb_cmdflags_t flags, int permissions,
+ 				   bool no_args)
+ {
+ 	/* permissions comes from userspace so needs massaging slightly */
+@@ -1194,6 +1247,9 @@ static int kdb_local(kdb_reason_t reason
+ 		kdb_curr_task(raw_smp_processor_id());
+ 
+ 	KDB_DEBUG_STATE("kdb_local 1", reason);
++
++	kdb_check_for_lockdown();
++
+ 	kdb_go_count = 0;
+ 	if (reason == KDB_REASON_DEBUG) {
+ 		/* special case below */
+--- a/security/security.c
++++ b/security/security.c
+@@ -59,10 +59,12 @@ const char *const lockdown_reasons[LOCKD
+ 	[LOCKDOWN_DEBUGFS] = "debugfs access",
+ 	[LOCKDOWN_XMON_WR] = "xmon write access",
+ 	[LOCKDOWN_BPF_WRITE_USER] = "use of bpf to write user RAM",
++	[LOCKDOWN_DBG_WRITE_KERNEL] = "use of kgdb/kdb to write kernel RAM",
+ 	[LOCKDOWN_INTEGRITY_MAX] = "integrity",
+ 	[LOCKDOWN_KCORE] = "/proc/kcore access",
+ 	[LOCKDOWN_KPROBES] = "use of kprobes",
+ 	[LOCKDOWN_BPF_READ] = "use of bpf to read kernel RAM",
++	[LOCKDOWN_DBG_READ_KERNEL] = "use of kgdb/kdb to read kernel RAM",
+ 	[LOCKDOWN_PERF] = "unsafe use of perf",
+ 	[LOCKDOWN_TRACEFS] = "use of tracefs",
+ 	[LOCKDOWN_XMON_RW] = "xmon read and write access",
 
 
