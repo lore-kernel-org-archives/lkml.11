@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E8ADC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:57:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06CA8C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:57:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240457AbiE0L5B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 07:57:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41072 "EHLO
+        id S1349995AbiE0L5R (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 07:57:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352977AbiE0LvE (ORCPT
+        with ESMTP id S1353033AbiE0LvJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:51:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46BEE66AD5;
-        Fri, 27 May 2022 04:46:32 -0700 (PDT)
+        Fri, 27 May 2022 07:51:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B70651053F1;
+        Fri, 27 May 2022 04:46:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1CA2E61D94;
-        Fri, 27 May 2022 11:46:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22ECAC385A9;
-        Fri, 27 May 2022 11:46:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 162E361D94;
+        Fri, 27 May 2022 11:46:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EB9FC385A9;
+        Fri, 27 May 2022 11:46:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653651990;
-        bh=ZdWzXFsXEYwjkTdi4Ho7WDOoLXL0Z7KWiEWGYTe0WUI=;
+        s=korg; t=1653651996;
+        bh=BlPUSq4NXxaVerrK3wlsEA2VYB0g37GE3yAVYt5V2tU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VawjEX01s5JnyOUnab+/2YMzBxTw7/feKIZQu5xzzYJHW7vEO5+ZAU605Ubsb/XNk
-         Q8J3HF8M8vlI6FSVqTra4wvwFAwsXDOx+gIwi6LpWeuSCqLOCABizWDp04gG4+WK/e
-         KiN936FW2jNPiJ4sJfWHAKf8zOu5oGBaJp6M7JQY=
+        b=mCvuL2kXbvte0z9u/b9V9slpPgAi6u7Ruz/dKpDFMhNJluc71NWQkvsdeplKKs0I5
+         eBuBW4tTOeLk3Hv6A9V9BexBPrMPeBwuUb0qE6kmU68cpttL+SpJ6xLx9XQOX6RTbU
+         nKMw/a4sJPK4gNG81a4TdNt29nDvcF+hLrwKsFOg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Eric Biggers <ebiggers@google.com>,
+        stable@vger.kernel.org, Jens Axboe <axboe@kernel.dk>,
+        Al Viro <viro@zeniv.linux.org.uk>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.10 081/163] random: introduce drain_entropy() helper to declutter crng_reseed()
-Date:   Fri, 27 May 2022 10:49:21 +0200
-Message-Id: <20220527084839.186766373@linuxfoundation.org>
+Subject: [PATCH 5.17 108/111] random: wire up fops->splice_{read,write}_iter()
+Date:   Fri, 27 May 2022 10:50:20 +0200
+Message-Id: <20220527084834.539636961@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
-References: <20220527084828.156494029@linuxfoundation.org>
+In-Reply-To: <20220527084819.133490171@linuxfoundation.org>
+References: <20220527084819.133490171@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,86 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Jens Axboe <axboe@kernel.dk>
 
-commit 246c03dd899164d0186b6d685d6387f228c28d93 upstream.
+commit 79025e727a846be6fd215ae9cdb654368ac3f9a6 upstream.
 
-In preparation for separating responsibilities, break out the entropy
-count management part of crng_reseed() into its own function.
+Now that random/urandom is using {read,write}_iter, we can wire it up to
+using the generic splice handlers.
 
-No functional changes.
-
-Cc: Theodore Ts'o <tytso@mit.edu>
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
-Reviewed-by: Eric Biggers <ebiggers@google.com>
+Fixes: 36e2c7421f02 ("fs: don't allow splice read/write without explicit ops")
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+[Jason: added the splice_write path. Note that sendfile() and such still
+ does not work for read, though it does for write, because of a file
+ type restriction in splice_direct_to_actor(), which I'll address
+ separately.]
+Cc: Al Viro <viro@zeniv.linux.org.uk>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   36 +++++++++++++++++++++++-------------
- 1 file changed, 23 insertions(+), 13 deletions(-)
+ drivers/char/random.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -260,6 +260,7 @@ static struct {
+@@ -1384,6 +1384,8 @@ const struct file_operations random_fops
+ 	.compat_ioctl = compat_ptr_ioctl,
+ 	.fasync = random_fasync,
+ 	.llseek = noop_llseek,
++	.splice_read = generic_file_splice_read,
++	.splice_write = iter_file_splice_write,
  };
  
- static void extract_entropy(void *buf, size_t nbytes);
-+static bool drain_entropy(void *buf, size_t nbytes);
+ const struct file_operations urandom_fops = {
+@@ -1393,6 +1395,8 @@ const struct file_operations urandom_fop
+ 	.compat_ioctl = compat_ptr_ioctl,
+ 	.fasync = random_fasync,
+ 	.llseek = noop_llseek,
++	.splice_read = generic_file_splice_read,
++	.splice_write = iter_file_splice_write,
+ };
  
- static void crng_reseed(void);
- 
-@@ -456,23 +457,13 @@ static void crng_slow_load(const void *c
- static void crng_reseed(void)
- {
- 	unsigned long flags;
--	int entropy_count;
- 	unsigned long next_gen;
- 	u8 key[CHACHA_KEY_SIZE];
- 	bool finalize_init = false;
- 
--	/*
--	 * First we make sure we have POOL_MIN_BITS of entropy in the pool,
--	 * and then we drain all of it. Only then can we extract a new key.
--	 */
--	do {
--		entropy_count = READ_ONCE(input_pool.entropy_count);
--		if (entropy_count < POOL_MIN_BITS)
--			return;
--	} while (cmpxchg(&input_pool.entropy_count, entropy_count, 0) != entropy_count);
--	extract_entropy(key, sizeof(key));
--	wake_up_interruptible(&random_write_wait);
--	kill_fasync(&fasync, SIGIO, POLL_OUT);
-+	/* Only reseed if we can, to prevent brute forcing a small amount of new bits. */
-+	if (!drain_entropy(key, sizeof(key)))
-+		return;
- 
- 	/*
- 	 * We copy the new key into the base_crng, overwriting the old one,
-@@ -900,6 +891,25 @@ static void extract_entropy(void *buf, s
- 	memzero_explicit(&block, sizeof(block));
- }
- 
-+/*
-+ * First we make sure we have POOL_MIN_BITS of entropy in the pool, and then we
-+ * set the entropy count to zero (but don't actually touch any data). Only then
-+ * can we extract a new key with extract_entropy().
-+ */
-+static bool drain_entropy(void *buf, size_t nbytes)
-+{
-+	unsigned int entropy_count;
-+	do {
-+		entropy_count = READ_ONCE(input_pool.entropy_count);
-+		if (entropy_count < POOL_MIN_BITS)
-+			return false;
-+	} while (cmpxchg(&input_pool.entropy_count, entropy_count, 0) != entropy_count);
-+	extract_entropy(buf, nbytes);
-+	wake_up_interruptible(&random_write_wait);
-+	kill_fasync(&fasync, SIGIO, POLL_OUT);
-+	return true;
-+}
-+
- #define warn_unseeded_randomness(previous) \
- 	_warn_unseeded_randomness(__func__, (void *)_RET_IP_, (previous))
  
 
 
