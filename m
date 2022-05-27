@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08460C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:53:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DD08C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:53:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352234AbiE0Lw6 (ORCPT
+        id S1352243AbiE0LxF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 07:52:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40396 "EHLO
+        Fri, 27 May 2022 07:53:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352042AbiE0Lsj (ORCPT
+        with ESMTP id S1352001AbiE0LtA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:48:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECA9314CA10;
-        Fri, 27 May 2022 04:43:50 -0700 (PDT)
+        Fri, 27 May 2022 07:49:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A1F414CA24;
+        Fri, 27 May 2022 04:43:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3197B61D46;
-        Fri, 27 May 2022 11:43:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B442C385A9;
-        Fri, 27 May 2022 11:43:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3492961D19;
+        Fri, 27 May 2022 11:43:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40074C385A9;
+        Fri, 27 May 2022 11:43:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653651829;
-        bh=vTKQqfjX4F70+FXW6akEB42FGx0gbfSWX/LAI81xnYI=;
+        s=korg; t=1653651832;
+        bh=tdJgFI6BSEbMlog94O8U41zIwpESdHgVPKAWwGejSCQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BQezBE2J3DCjn6bhiBf4hGHs2TzvnT5a57tM2hV+CCOAzGAQFiZ37ziCLC7d7Skoa
-         pP0LYjj43hS/C6EO2eAWwL6fDXz4iTMxI6F6xwSZ1rM0ppaLtLOjcE9AVD2jE8CoAX
-         cCZb8H6oehapT9sOg76W2nSXbkdRLhrONOiNmQ8w=
+        b=INhsmkjCokptIP2CzLUYBYeWwxwQMPtjzEFTvC4SfTRmH5msO4kie62GYcBxLesFX
+         44GkHXB000+QM5Qlf6ilG52xnJeOnLn+mImnF370mlhN2zBKuJn7p4twiFJtaqbeHJ
+         8HTq0g+geqzRHgvcGXh/bxPQQs+cCMpOcrQqtZc4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sultan Alsawaf <sultan@kerneltoast.com>,
-        Eric Biggers <ebiggers@google.com>,
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
         Dominik Brodowski <linux@dominikbrodowski.net>,
+        Eric Biggers <ebiggers@google.com>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.15 042/145] random: make credit_entropy_bits() always safe
-Date:   Fri, 27 May 2022 10:49:03 +0200
-Message-Id: <20220527084855.991765846@linuxfoundation.org>
+Subject: [PATCH 5.15 048/145] random: inline leaves of rand_initialize()
+Date:   Fri, 27 May 2022 10:49:09 +0200
+Message-Id: <20220527084856.620146704@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220527084850.364560116@linuxfoundation.org>
 References: <20220527084850.364560116@linuxfoundation.org>
@@ -53,86 +53,142 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit a49c010e61e1938be851f5e49ac219d49b704103 upstream.
+commit 8566417221fcec51346ec164e920dacb979c6b5f upstream.
 
-This is called from various hwgenerator drivers, so rather than having
-one "safe" version for userspace and one "unsafe" version for the
-kernel, just make everything safe; the checks are cheap and sensible to
-have anyway.
+This is a preparatory commit for the following one. We simply inline the
+various functions that rand_initialize() calls that have no other
+callers. The compiler was doing this anyway before. Doing this will
+allow us to reorganize this after. We can then move the trust_cpu and
+parse_trust_cpu definitions a bit closer to where they're actually used,
+which makes the code easier to read.
 
-Reported-by: Sultan Alsawaf <sultan@kerneltoast.com>
-Reviewed-by: Eric Biggers <ebiggers@google.com>
+Cc: Theodore Ts'o <tytso@mit.edu>
 Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Reviewed-by: Eric Biggers <ebiggers@google.com>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   29 +++++++++--------------------
- 1 file changed, 9 insertions(+), 20 deletions(-)
+ drivers/char/random.c |   90 ++++++++++++++++++--------------------------------
+ 1 file changed, 33 insertions(+), 57 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -447,18 +447,15 @@ static void process_random_ready_list(vo
- 	spin_unlock_irqrestore(&random_ready_list_lock, flags);
- }
+@@ -476,42 +476,6 @@ static DECLARE_WAIT_QUEUE_HEAD(crng_init
  
--/*
-- * Credit (or debit) the entropy store with n bits of entropy.
-- * Use credit_entropy_bits_safe() if the value comes from userspace
-- * or otherwise should be checked for extreme values.
-- */
- static void credit_entropy_bits(int nbits)
- {
- 	int entropy_count, orig;
+ static void invalidate_batched_entropy(void);
  
--	if (!nbits)
-+	if (nbits <= 0)
- 		return;
- 
-+	nbits = min(nbits, POOL_BITS);
-+
- 	do {
- 		orig = READ_ONCE(input_pool.entropy_count);
- 		entropy_count = min(POOL_BITS, orig + nbits);
-@@ -470,18 +467,6 @@ static void credit_entropy_bits(int nbit
- 		crng_reseed(&primary_crng, true);
- }
- 
--static int credit_entropy_bits_safe(int nbits)
+-static bool trust_cpu __ro_after_init = IS_ENABLED(CONFIG_RANDOM_TRUST_CPU);
+-static int __init parse_trust_cpu(char *arg)
 -{
--	if (nbits < 0)
--		return -EINVAL;
+-	return kstrtobool(arg, &trust_cpu);
+-}
+-early_param("random.trust_cpu", parse_trust_cpu);
 -
--	/* Cap the value to avoid overflows */
--	nbits = min(nbits, POOL_BITS);
+-static bool __init crng_init_try_arch_early(void)
+-{
+-	int i;
+-	bool arch_init = true;
+-	unsigned long rv;
 -
--	credit_entropy_bits(nbits);
--	return 0;
+-	for (i = 4; i < 16; i++) {
+-		if (!arch_get_random_seed_long_early(&rv) &&
+-		    !arch_get_random_long_early(&rv)) {
+-			rv = random_get_entropy();
+-			arch_init = false;
+-		}
+-		primary_crng.state[i] ^= rv;
+-	}
+-
+-	return arch_init;
 -}
 -
- /*********************************************************************
-  *
-  * CRNG using CHACHA20
-@@ -1526,7 +1511,10 @@ static long random_ioctl(struct file *f,
- 			return -EPERM;
- 		if (get_user(ent_count, p))
- 			return -EFAULT;
--		return credit_entropy_bits_safe(ent_count);
-+		if (ent_count < 0)
-+			return -EINVAL;
-+		credit_entropy_bits(ent_count);
-+		return 0;
- 	case RNDADDENTROPY:
- 		if (!capable(CAP_SYS_ADMIN))
- 			return -EPERM;
-@@ -1539,7 +1527,8 @@ static long random_ioctl(struct file *f,
- 		retval = write_pool((const char __user *)p, size);
- 		if (retval < 0)
- 			return retval;
--		return credit_entropy_bits_safe(ent_count);
-+		credit_entropy_bits(ent_count);
-+		return 0;
- 	case RNDZAPENTCNT:
- 	case RNDCLEARPOOL:
- 		/*
+-static void __init crng_initialize(void)
+-{
+-	extract_entropy(&primary_crng.state[4], sizeof(u32) * 12);
+-	if (crng_init_try_arch_early() && trust_cpu && crng_init < 2) {
+-		invalidate_batched_entropy();
+-		crng_init = 2;
+-		pr_notice("crng init done (trusting CPU's manufacturer)\n");
+-	}
+-	primary_crng.init_time = jiffies - CRNG_RESEED_INTERVAL - 1;
+-}
+-
+ /*
+  * crng_fast_load() can be called by code in the interrupt service
+  * path.  So we can't afford to dilly-dally. Returns the number of
+@@ -1220,17 +1184,28 @@ int __must_check get_random_bytes_arch(v
+ }
+ EXPORT_SYMBOL(get_random_bytes_arch);
+ 
++static bool trust_cpu __ro_after_init = IS_ENABLED(CONFIG_RANDOM_TRUST_CPU);
++static int __init parse_trust_cpu(char *arg)
++{
++	return kstrtobool(arg, &trust_cpu);
++}
++early_param("random.trust_cpu", parse_trust_cpu);
++
+ /*
+- * init_std_data - initialize pool with system data
+- *
+- * This function clears the pool's entropy count and mixes some system
+- * data into the pool to prepare it for use. The pool is not cleared
+- * as that can only decrease the entropy in the pool.
++ * Note that setup_arch() may call add_device_randomness()
++ * long before we get here. This allows seeding of the pools
++ * with some platform dependent data very early in the boot
++ * process. But it limits our options here. We must use
++ * statically allocated structures that already have all
++ * initializations complete at compile time. We should also
++ * take care not to overwrite the precious per platform data
++ * we were given.
+  */
+-static void __init init_std_data(void)
++int __init rand_initialize(void)
+ {
+ 	int i;
+ 	ktime_t now = ktime_get_real();
++	bool arch_init = true;
+ 	unsigned long rv;
+ 
+ 	mix_pool_bytes(&now, sizeof(now));
+@@ -1241,22 +1216,23 @@ static void __init init_std_data(void)
+ 		mix_pool_bytes(&rv, sizeof(rv));
+ 	}
+ 	mix_pool_bytes(utsname(), sizeof(*(utsname())));
+-}
+ 
+-/*
+- * Note that setup_arch() may call add_device_randomness()
+- * long before we get here. This allows seeding of the pools
+- * with some platform dependent data very early in the boot
+- * process. But it limits our options here. We must use
+- * statically allocated structures that already have all
+- * initializations complete at compile time. We should also
+- * take care not to overwrite the precious per platform data
+- * we were given.
+- */
+-int __init rand_initialize(void)
+-{
+-	init_std_data();
+-	crng_initialize();
++	extract_entropy(&primary_crng.state[4], sizeof(u32) * 12);
++	for (i = 4; i < 16; i++) {
++		if (!arch_get_random_seed_long_early(&rv) &&
++		    !arch_get_random_long_early(&rv)) {
++			rv = random_get_entropy();
++			arch_init = false;
++		}
++		primary_crng.state[i] ^= rv;
++	}
++	if (arch_init && trust_cpu && crng_init < 2) {
++		invalidate_batched_entropy();
++		crng_init = 2;
++		pr_notice("crng init done (trusting CPU's manufacturer)\n");
++	}
++	primary_crng.init_time = jiffies - CRNG_RESEED_INTERVAL - 1;
++
+ 	if (ratelimit_disable) {
+ 		urandom_warning.interval = 0;
+ 		unseeded_warning.interval = 0;
 
 
