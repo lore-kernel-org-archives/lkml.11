@@ -2,120 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65825C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 10:08:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26832C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 10:09:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230182AbiE0KI6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 06:08:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36940 "EHLO
+        id S1350833AbiE0KJQ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 06:09:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350833AbiE0KIw (ORCPT
+        with ESMTP id S232492AbiE0KJL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 06:08:52 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B3DC1271B6;
-        Fri, 27 May 2022 03:08:51 -0700 (PDT)
-Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4L8gTJ13c2zgYFH;
-        Fri, 27 May 2022 18:07:16 +0800 (CST)
-Received: from dggpemm500018.china.huawei.com (7.185.36.111) by
- dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 27 May 2022 18:08:49 +0800
-Received: from localhost.localdomain (10.175.112.125) by
- dggpemm500018.china.huawei.com (7.185.36.111) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 27 May 2022 18:08:49 +0800
-From:   keliu <liuke94@huawei.com>
-To:     <sean@mess.org>, <mchehab@kernel.org>,
-        <linux-media@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     keliu <liuke94@huawei.com>
-Subject: [PATCH] media: rc: Directly use ida_free()
-Date:   Fri, 27 May 2022 10:30:17 +0000
-Message-ID: <20220527103017.3374446-1-liuke94@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 27 May 2022 06:09:11 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B28A41269B6
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 03:09:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=Xkq6oyv4mezzHkhYu3k0ysYU7hK3/0lw10H+rsE+PlI=; b=PRZL9dbVRl1FFJvrwBgq86f+oS
+        6maaVMtUpXNuMslDolwTLBgQHw7aWPt3HDcVeBB9tFFhCPxFZ6/tGnpvpR26WZxNhbMnGUhyCrNqL
+        PU/EuoFa0y3jtAPDKjhKjYa2gw3K51qcbhYAs1p2hw1/p4peDlPvgj5D1QYQPlyJtBquVQRPi1wDo
+        cbh/DpFe6RXSfMkv4bZ6E/MCAKBpGVCGUIi2uZPQgMPYLti1NOGd0ooG6rQxa9HxqriPyQ7gcdVBI
+        KEjzLTFMjd4UE9MQH0HfWgkwsz6qpXUPqfaD8nx9AKf8tYOeTGCzusWnq1rSNuq4Fao2kuuVE1zqT
+        P8lO91vg==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nuWtp-002090-Ha; Fri, 27 May 2022 10:08:53 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id BA27F980F6C; Fri, 27 May 2022 12:08:51 +0200 (CEST)
+Date:   Fri, 27 May 2022 12:08:51 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     kernel test robot <lkp@intel.com>
+Cc:     Borislav Petkov <bp@suse.de>, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [peterz-queue:objtool/urgent 9/9]
+ arch/x86/include/asm/extable.h:47:86: warning: 'noreturn' function does
+ return
+Message-ID: <20220527100851.GT2578@worktop.programming.kicks-ass.net>
+References: <202205262227.2m2DJfpJ-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.112.125]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemm500018.china.huawei.com (7.185.36.111)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202205262227.2m2DJfpJ-lkp@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use ida_alloc()/ida_free() instead of deprecated
-ida_simple_get()/ida_simple_remove() .
+On Thu, May 26, 2022 at 10:11:34PM +0800, kernel test robot wrote:
+> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git objtool/urgent
+> head:   43c6fc6a431b43163dc3950543dd87b986f25945
+> commit: 43c6fc6a431b43163dc3950543dd87b986f25945 [9/9] x86/extable: Annotate ex_handler_msr_mce() as a dead end
+> config: x86_64-randconfig-a013 (https://download.01.org/0day-ci/archive/20220526/202205262227.2m2DJfpJ-lkp@intel.com/config)
+> compiler: gcc-11 (Debian 11.3.0-1) 11.3.0
+> reproduce (this is a W=1 build):
+>         # https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git/commit/?id=43c6fc6a431b43163dc3950543dd87b986f25945
+>         git remote add peterz-queue https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git
+>         git fetch --no-tags peterz-queue objtool/urgent
+>         git checkout 43c6fc6a431b43163dc3950543dd87b986f25945
+>         # save the config file
+>         mkdir build_dir && cp config build_dir/.config
+>         make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash arch/x86/mm/
+> 
+> If you fix the issue, kindly add following tag where applicable
+> Reported-by: kernel test robot <lkp@intel.com>
+> 
+> All warnings (new ones prefixed by >>):
+> 
+>    In file included from arch/x86/include/asm/uaccess.h:13,
+>                     from include/linux/uaccess.h:11,
+>                     from arch/x86/mm/extable.c:3:
+>    arch/x86/include/asm/extable.h: In function 'ex_handler_msr_mce':
+> >> arch/x86/include/asm/extable.h:47:86: warning: 'noreturn' function does return
+>       47 | static inline void __noreturn ex_handler_msr_mce(struct pt_regs *regs, bool wrmsr) { }
+>          |                                                                                      ^
+> 
+> 
+> vim +/noreturn +47 arch/x86/include/asm/extable.h
+> 
+>     43	
+>     44	#ifdef CONFIG_X86_MCE
+>     45	extern void __noreturn ex_handler_msr_mce(struct pt_regs *regs, bool wrmsr);
+>     46	#else
+>   > 47	static inline void __noreturn ex_handler_msr_mce(struct pt_regs *regs, bool wrmsr) { }
+>     48	#endif
+>     49	
 
-Signed-off-by: keliu <liuke94@huawei.com>
----
- drivers/media/rc/lirc_dev.c | 6 +++---
- drivers/media/rc/rc-main.c  | 6 +++---
- 2 files changed, 6 insertions(+), 6 deletions(-)
+This seems to cure...
 
-diff --git a/drivers/media/rc/lirc_dev.c b/drivers/media/rc/lirc_dev.c
-index 765375bda0c6..6cc8c14cf855 100644
---- a/drivers/media/rc/lirc_dev.c
-+++ b/drivers/media/rc/lirc_dev.c
-@@ -715,7 +715,7 @@ int lirc_register(struct rc_dev *dev)
- 	const char *rx_type, *tx_type;
- 	int err, minor;
+--- a/arch/x86/include/asm/extable.h
++++ b/arch/x86/include/asm/extable.h
+@@ -44,7 +44,11 @@ extern void early_fixup_exception(struct
+ #ifdef CONFIG_X86_MCE
+ extern void __noreturn ex_handler_msr_mce(struct pt_regs *regs, bool wrmsr);
+ #else
+-static inline void __noreturn ex_handler_msr_mce(struct pt_regs *regs, bool wrmsr) { }
++static inline void __noreturn ex_handler_msr_mce(struct pt_regs *regs, bool wrmsr)
++{
++	for (;;)
++		cpu_relax();
++}
+ #endif
  
--	minor = ida_simple_get(&lirc_ida, 0, RC_DEV_MAX, GFP_KERNEL);
-+	minor = ida_alloc_max(&lirc_ida, RC_DEV_MAX-1, GFP_KERNEL);
- 	if (minor < 0)
- 		return minor;
- 
-@@ -760,7 +760,7 @@ int lirc_register(struct rc_dev *dev)
- 	return 0;
- 
- out_ida:
--	ida_simple_remove(&lirc_ida, minor);
-+	ida_free(&lirc_ida, minor);
- 	return err;
- }
- 
-@@ -778,7 +778,7 @@ void lirc_unregister(struct rc_dev *dev)
- 	spin_unlock_irqrestore(&dev->lirc_fh_lock, flags);
- 
- 	cdev_device_del(&dev->lirc_cdev, &dev->lirc_dev);
--	ida_simple_remove(&lirc_ida, MINOR(dev->lirc_dev.devt));
-+	ida_free(&lirc_ida, MINOR(dev->lirc_dev.devt));
- }
- 
- int __init lirc_dev_init(void)
-diff --git a/drivers/media/rc/rc-main.c b/drivers/media/rc/rc-main.c
-index b90438a71c80..aff7c8da1e2f 100644
---- a/drivers/media/rc/rc-main.c
-+++ b/drivers/media/rc/rc-main.c
-@@ -1897,7 +1897,7 @@ int rc_register_device(struct rc_dev *dev)
- 	if (!dev)
- 		return -EINVAL;
- 
--	minor = ida_simple_get(&rc_ida, 0, RC_DEV_MAX, GFP_KERNEL);
-+	minor = ida_alloc_max(&rc_ida, RC_DEV_MAX-1, GFP_KERNEL);
- 	if (minor < 0)
- 		return minor;
- 
-@@ -1980,7 +1980,7 @@ int rc_register_device(struct rc_dev *dev)
- out_raw:
- 	ir_raw_event_free(dev);
- out_minor:
--	ida_simple_remove(&rc_ida, minor);
-+	ida_free(&rc_ida, minor);
- 	return rc;
- }
- EXPORT_SYMBOL_GPL(rc_register_device);
-@@ -2040,7 +2040,7 @@ void rc_unregister_device(struct rc_dev *dev)
- 
- 	device_del(&dev->dev);
- 
--	ida_simple_remove(&rc_ida, dev->minor);
-+	ida_free(&rc_ida, dev->minor);
- 
- 	if (!dev->managed_alloc)
- 		rc_free_device(dev);
--- 
-2.25.1
+ #if defined(CONFIG_BPF_JIT) && defined(CONFIG_X86_64)
 
