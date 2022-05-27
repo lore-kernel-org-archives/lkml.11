@@ -2,105 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB4B4C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 16:00:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E258CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 16:00:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354092AbiE0QAU (ORCPT
+        id S1354113AbiE0QAZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 12:00:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45416 "EHLO
+        Fri, 27 May 2022 12:00:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353874AbiE0P4q (ORCPT
+        with ESMTP id S1349598AbiE0P6A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 11:56:46 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2731752B27
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 08:56:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653666997;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=pDMtuQHCKDck2X6AJwzMNfVZUyOuSlNQEZTxeqxbFoc=;
-        b=YrpkxP9JX2lhWNrJXqkNqJeiJ7D3JwDGewa+GGLv9wYvYxJhxSUx/F7IXFep8lm2qBaOLY
-        LjQW0F5RV/Dpzmn72I1cqyB7UzuLzF4UkvUH6KKJlACpQC64JMmTkQSiaPyWEuWBRC0oSg
-        H7z+RY6GjBpw2M9JoEYc5RMwREnuWtA=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-563-P_j2Fu7DOS2Z-kgHsQ47NQ-1; Fri, 27 May 2022 11:56:34 -0400
-X-MC-Unique: P_j2Fu7DOS2Z-kgHsQ47NQ-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 663BB8339D6;
-        Fri, 27 May 2022 15:56:33 +0000 (UTC)
-Received: from fedora.redhat.com (unknown [10.40.192.126])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 2EC812166B26;
-        Fri, 27 May 2022 15:56:31 +0000 (UTC)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Siddharth Chandrasekaran <sidcha@amazon.de>,
-        Yuan Yao <yuan.yao@linux.intel.com>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v5 16/37] KVM: x86: hyper-v: Introduce kvm_hv_is_tlb_flush_hcall()
-Date:   Fri, 27 May 2022 17:55:25 +0200
-Message-Id: <20220527155546.1528910-17-vkuznets@redhat.com>
-In-Reply-To: <20220527155546.1528910-1-vkuznets@redhat.com>
-References: <20220527155546.1528910-1-vkuznets@redhat.com>
+        Fri, 27 May 2022 11:58:00 -0400
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEB5A2870A
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 08:57:58 -0700 (PDT)
+Received: by mail-wm1-x335.google.com with SMTP id p5-20020a1c2905000000b003970dd5404dso2985292wmp.0
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 08:57:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=+nhRSW0HB0IrL3AsaUbgyELmuQlg7AADB3tpFmkYZW4=;
+        b=ODsEChw49WJ2jXA7phOq9UZH0sa+uGOmARNU0dKT8ELNxeavTeP0ERYA525+wh7RW7
+         9p0HVYaFdK9NPOtwfoYX/3YxuBlVrTS/PvOIFREHdr6i3F0FZXNsx0jO1emEFXlOq8jk
+         UzaGW0oM2FSWqXu3ovPYxFW396ckgz81nYoroROMlRcdxD5HFF4bvmOf1FwwjwwS9E5M
+         9OWKi+EmtrlVAGJDI4ujDWdfiaOGYNygBvMJh+7eICZSsg2874r1YcHaLvmgsnell5CV
+         XhDsg+s/QhI5QzdQAgcnyrDgPgAhweQ+452ZY+E8TlGN2qWg3aPW1kMEF3SuGryy6ig8
+         Mrkw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=+nhRSW0HB0IrL3AsaUbgyELmuQlg7AADB3tpFmkYZW4=;
+        b=m3BS89FUvVxzbTR+o4QS6u0fj18piQq8deYKMbpHu1NukMimRvFgfZIIxX/3vGwv9G
+         bo6JB3jwic7V0jU7PU+iVczoHjluibHhYdAklJczAjja4VrPQF5W8ogBRLSxuC+xLyXe
+         f4+E0iTIz5N0eIYFrWBSgSnXRnpYL4XFR7xOoeRw/MoaGLFL+ZBibasPzXoR2er4Jz8w
+         +/BLs7OFRhTXw/3WsXDitVi9M9GXhTkTGk1nzW/OT9vehgXjBuIr4/dKjmWXDRQjbfbo
+         eg7SKUJnu/Hm71keAOyf2Orue77yuVgnH+tNmycXPBlw3wHYZ4QqVvx12LpJKwFjOQOC
+         dn1A==
+X-Gm-Message-State: AOAM531HiOALWJ9KvMTUghJqhyQH4uCZyxXC7eAmSn1Nib0WyxH9Ei4q
+        RUtM7lXgxsiEmnurv7twyaIkfxJjFkiIOwqvOdyJOQ==
+X-Google-Smtp-Source: ABdhPJxCxbqWMUiPiaxpL5cuYifbkFM3KgEr5xj/06bdSvjWoV1r4auP+JYDEsowOpR+ZxfLquMI36O6bB/NtFlBkII=
+X-Received: by 2002:a05:600c:2305:b0:397:44a4:d3cb with SMTP id
+ 5-20020a05600c230500b0039744a4d3cbmr7538356wmo.115.1653667077089; Fri, 27 May
+ 2022 08:57:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
+References: <20220527040407.4193232-1-irogers@google.com> <YpCeo6APNtXvrTPJ@hirez.programming.kicks-ass.net>
+ <76dce5d3-6c69-e403-c4d9-f882967a4467@linux.intel.com>
+In-Reply-To: <76dce5d3-6c69-e403-c4d9-f882967a4467@linux.intel.com>
+From:   Ian Rogers <irogers@google.com>
+Date:   Fri, 27 May 2022 08:57:43 -0700
+Message-ID: <CAP-5=fU4Anbx2R=L7VD3Pa_5e5nvkgSW2FNJg5+c5MJfcHcQgw@mail.gmail.com>
+Subject: Re: [PATCH v2] perf metrics: Add literal for system TSC frequency
+To:     Andi Kleen <ak@linux.intel.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>, perry.taylor@intel.com,
+        caleb.biggers@intel.com, kshipra.bopardikar@intel.com,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        James Clark <james.clark@arm.com>,
+        John Garry <john.garry@huawei.com>,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        Stephane Eranian <eranian@google.com>,
+        Thomas Gleixner <tglx@linutronix.de>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The newly introduced helper checks whether vCPU is performing a
-Hyper-V TLB flush hypercall. This is required to filter out L2 TLB
-flush hypercalls for processing.
+On Fri, May 27, 2022 at 7:54 AM Andi Kleen <ak@linux.intel.com> wrote:
+>
+>
+> On 5/27/2022 2:49 AM, Peter Zijlstra wrote:
+> > On Thu, May 26, 2022 at 09:04:07PM -0700, Ian Rogers wrote:
+> >> Such a literal is useful to calculate things like the average frequency
+> >> [1]. The TSC frequency isn't exposed by sysfs although some experimental
+> >> drivers look to add it [2]. This change computes the value using the
+> >> frequency in /proc/cpuinfo which is accurate at least on Intel
+> >> processors.
+>
+> It would be better to use CPUID if available which is far more accurate.
+> Also I believe newer Intel CPUs drop the frequency in the brand string.
 
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
----
- arch/x86/kvm/hyperv.h | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+But on v1 you also said it was broken for certain architectures. The
+point of the tests and warnings is to identify this case.
 
-diff --git a/arch/x86/kvm/hyperv.h b/arch/x86/kvm/hyperv.h
-index 207d24efdc5a..dc46c5ed5d18 100644
---- a/arch/x86/kvm/hyperv.h
-+++ b/arch/x86/kvm/hyperv.h
-@@ -171,6 +171,24 @@ static inline void kvm_hv_vcpu_empty_flush_tlb(struct kvm_vcpu *vcpu)
- 
- 	kfifo_reset_out(&tlb_flush_fifo->entries);
- }
-+
-+static inline bool kvm_hv_is_tlb_flush_hcall(struct kvm_vcpu *vcpu)
-+{
-+	struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
-+	u16 code;
-+
-+	if (!hv_vcpu)
-+		return false;
-+
-+	code = is_64_bit_hypercall(vcpu) ? kvm_rcx_read(vcpu) :
-+					   kvm_rax_read(vcpu);
-+
-+	return (code == HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE ||
-+		code == HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST ||
-+		code == HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE_EX ||
-+		code == HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST_EX);
-+}
-+
- void kvm_hv_vcpu_flush_tlb(struct kvm_vcpu *vcpu);
- 
- 
--- 
-2.35.3
+> BTW it also has the problem that if perf script is run on some other
+> system to compute metrics it won't work.
 
+Yep. We don't yet support recording then reporting metrics on a
+different system. There would be a bunch to do to support this.
+
+> >
+> > This all seems bonghits inspired... and perf actually does expose the
+> > tsc frequency. What do you think is in perf_event_mmap_page::time_* ?
+>
+>
+> That's not really available to perf stat, which is the primary metrics user.
+
+So we have 3 approaches:
+
+1) read /proc/cpuinfo: pros: easy in comparison to other approaches.
+cons: will break in the future, will need a cross system strategy
+2) use cpuid: pros: can be made to work across systems cons: not
+available for all Intel architectures
+3) mmap: pros: more stable API than cpuinfo vendor string. cons: could
+end up with new events purely to gather a TSC frequency and associated
+complexity around permissions, etc.
+
+I feel we can bike shed and go between the 3 approaches almost
+endlessly. I'd rather get something in and iterate. How the approach
+breaks can motivate the next steps and the tests added here will
+capture when it does break, not just when a metric is first used. I
+mentioned this on V1 and requested feedback, this is just implementing
+what I said I'd do to V1.
+
+Thanks,
+Ian
+
+> -Andi
+>
+>
+>
