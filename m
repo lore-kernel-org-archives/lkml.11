@@ -2,213 +2,328 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F5DAC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 20:25:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DD8AC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 20:32:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354626AbiE0UYD (ORCPT
+        id S1350959AbiE0UcO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 16:24:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55448 "EHLO
+        Fri, 27 May 2022 16:32:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350999AbiE0UXq (ORCPT
+        with ESMTP id S230135AbiE0UcN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 16:23:46 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 151F5762A5;
-        Fri, 27 May 2022 13:23:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653683026; x=1685219026;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=we50vFAyOeuOv6jwX5WK96mXXpg6UR0sW4gUrfQGrW8=;
-  b=JpmrE9UAzcguJspS/xBDr7dsV6YPKKjuGkVjZlg+o4Ohhc7qiaksJe13
-   jrQ8ojFUrpr7M6liU9YJTcRWd4M2UTWRFTt69sgI5M1sk64z6oc8AxhrR
-   f4M16M2jMR6rYclWb5+/fsuU5iMJsIxBoIEtqM+pi33+t4yCkqsrdU0MG
-   0kvyDO+JJ77t91hkDRldcHbJlkM0VszBmmt0pr084dzz1tkwLmU7TfPHE
-   4UZw7JvwPEnrtqGaEPieqxs94FsQkQsv9bEJxKHrIA5KERkioFsEebMSm
-   UmtCS8pSKlyX/ktdCe5HrL7xIZ1qqXlynFvyFLg8gW2B45jnto3t9Q5GG
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10360"; a="274578109"
-X-IronPort-AV: E=Sophos;i="5.91,256,1647327600"; 
-   d="scan'208";a="274578109"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2022 13:23:45 -0700
-X-IronPort-AV: E=Sophos;i="5.91,256,1647327600"; 
-   d="scan'208";a="678142753"
-Received: from rhweight-mobl.amr.corp.intel.com (HELO rhweight-mobl.ra.intel.com) ([10.209.106.48])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2022 13:23:44 -0700
-From:   Russ Weight <russell.h.weight@intel.com>
-To:     mdf@kernel.org, hao.wu@intel.com, yilun.xu@intel.com,
-        lee.jones@linaro.org, linux-fpga@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     trix@redhat.com, marpagan@redhat.com, lgoncalv@redhat.com,
-        matthew.gerlach@linux.intel.com,
-        basheer.ahmed.muddebihal@intel.com, tianfei.zhang@intel.com,
-        Russ Weight <russell.h.weight@intel.com>
-Subject: [PATCH v22 3/5] fpga: m10bmc-sec: expose max10 flash update count
-Date:   Fri, 27 May 2022 13:23:28 -0700
-Message-Id: <20220527202330.839555-4-russell.h.weight@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220527202330.839555-1-russell.h.weight@intel.com>
-References: <20220527202330.839555-1-russell.h.weight@intel.com>
+        Fri, 27 May 2022 16:32:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACF271269B0;
+        Fri, 27 May 2022 13:32:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D57E9B825F5;
+        Fri, 27 May 2022 20:32:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D468C385B8;
+        Fri, 27 May 2022 20:32:06 +0000 (UTC)
+Date:   Fri, 27 May 2022 16:32:05 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     LKML <linux-kernel@vger.kernel.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Peter Zijlstra <peterz@infradead.org>, x86@kernel.org
+Subject: [PATCH v5] ftrace: Add FTRACE_MCOUNT_MAX_OFFSET to avoid adding
+ weak function
+Message-ID: <20220527163205.421c7828@gandalf.local.home>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Extend the MAX10 BMC Secure Update driver to provide a sysfs file to
-expose the flash update count.
+From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
 
-Reviewed-by: Tom Rix <trix@redhat.com>
-Tested-by: Tianfei Zhang <tianfei.zhang@intel.com>
-Acked-by: Xu Yilun <yilun.xu@intel.com>
-Signed-off-by: Russ Weight <russell.h.weight@intel.com>
----
-v22:
-  - Added Tested-by tag from Tianfei and Acked-by tag from Yilun.
-  - Updated KernelVersion and Date in ABI documentation to 5.20 and
-    Sep 2022 respectively.
-v21:
-  - Replace WARN_ON(FLASH_COUNT_SIZE % stride) with a more elaborate test.
-    Return -EINVAL and write a message to the kernel log. Call WARN_ON_ONCE().
-v20:
-  - No change
-v19:
-  - Change "card bmc" naming back to "m10 bmc" naming to be consistent
-    with the parent driver.
-v18:
-  - No change
-v17:
-  - Update the Date and KernelVersion for the ABI documentation to Jul 2022
-    and 5.19 respectively.
-  - Change "m10bmc" in symbol names to "cardbmc" to reflect the fact that the
-    future devices will not necessarily use the MAX10.
-v16:
-  - No Change
-v15:
-  - Updated the Dates and KernelVersions in the ABI documentation
-v14:
-  - No change
-v13:
-  - Updated ABI documentation date and kernel version
-v12:
-  - Updated Date and KernelVersion fields in ABI documentation
-v11:
-  - No change
-v10:
-  - Changed the path expression in the sysfs documentation to
-    replace the n3000 reference with something more generic to
-    accomodate other devices that use the same driver.
-v9:
-  - Rebased to 5.12-rc2 next
-  - Updated Date and KernelVersion in ABI documentation
-v8:
-  - Previously patch 3/6, otherwise no change
-v7:
-  - Updated Date and KernelVersion in ABI documentation
-v6:
-  - Changed flash_count_show() parameter list to achieve
-    reverse-christmas tree format.
-  - Added WARN_ON() call for (FLASH_COUNT_SIZE / stride) to ensure
-    that the proper count is passed to regmap_bulk_read().
-v5:
-  - Renamed sysfs node user_flash_count to flash_count and updated the
-    sysfs documentation accordingly.
-v4:
-  - Moved the sysfs file for displaying the flash count from the
-    FPGA Security Manager class driver to here. The
-    m10bmc_user_flash_count() function is removed and the
-    functionality is moved into a user_flash_count_show()
-    function.
-  - Added ABI documentation for the new sysfs entry
-v3:
-  - Changed: iops -> sops, imgr -> smgr, IFPGA_ -> FPGA_, ifpga_ to fpga_
-  - Changed "MAX10 BMC Secure Engine driver" to "MAX10 BMC Secure Update
-    driver"
-  - Removed wrapper functions (m10bmc_raw_*, m10bmc_sys_*). The
-    underlying functions are now called directly.
-v2:
-  - Renamed get_qspi_flash_count() to m10bmc_user_flash_count()
-  - Minor code cleanup per review comments
-  - Added m10bmc_ prefix to functions in m10bmc_iops structure
----
- .../sysfs-driver-intel-m10-bmc-sec-update     |  8 ++++
- drivers/fpga/intel-m10-bmc-sec-update.c       | 43 +++++++++++++++++++
- 2 files changed, 51 insertions(+)
+If an unused weak function was traced, it's call to fentry will still
+exist, which gets added into the __mcount_loc table. Ftrace will use
+kallsyms to retrieve the name for each location in __mcount_loc to display
+it in the available_filter_functions and used to enable functions via the
+name matching in set_ftrace_filter/notrace. Enabling these functions do
+nothing but enable an unused call to ftrace_caller. If a traced weak
+function is overridden, the symbol of the function would be used for it,
+which will either created duplicate names, or if the previous function was
+not traced, it would be incorrectly be listed in available_filter_functions
+as a function that can be traced.
 
-diff --git a/Documentation/ABI/testing/sysfs-driver-intel-m10-bmc-sec-update b/Documentation/ABI/testing/sysfs-driver-intel-m10-bmc-sec-update
-index a208367e6956..6114e15885e5 100644
---- a/Documentation/ABI/testing/sysfs-driver-intel-m10-bmc-sec-update
-+++ b/Documentation/ABI/testing/sysfs-driver-intel-m10-bmc-sec-update
-@@ -27,3 +27,11 @@ Description:	Read only. Returns the root entry hash for the BMC image
- 		"hash not programmed".  This file is only visible if the
- 		underlying device supports it.
- 		Format: string.
-+
-+What:		/sys/bus/platform/drivers/intel-m10bmc-sec-update/.../security/flash_count
-+Date:		Sep 2022
-+KernelVersion:	5.20
-+Contact:	Russ Weight <russell.h.weight@intel.com>
-+Description:	Read only. Returns number of times the secure update
-+		staging area has been flashed.
-+		Format: "%u".
-diff --git a/drivers/fpga/intel-m10-bmc-sec-update.c b/drivers/fpga/intel-m10-bmc-sec-update.c
-index f9f39d2cfe5b..25b21f116976 100644
---- a/drivers/fpga/intel-m10-bmc-sec-update.c
-+++ b/drivers/fpga/intel-m10-bmc-sec-update.c
-@@ -78,7 +78,50 @@ DEVICE_ATTR_SEC_REH_RO(bmc, BMC_PROG_MAGIC, BMC_PROG_ADDR, BMC_REH_ADDR);
- DEVICE_ATTR_SEC_REH_RO(sr, SR_PROG_MAGIC, SR_PROG_ADDR, SR_REH_ADDR);
- DEVICE_ATTR_SEC_REH_RO(pr, PR_PROG_MAGIC, PR_PROG_ADDR, PR_REH_ADDR);
+This became an issue with BPF[1] as there are tooling that enables the
+direct callers via ftrace but then checks to see if the functions were
+actually enabled. The case of one function that was marked notrace, but
+was followed by an unused weak function that was traced. The unused
+function's call to fentry was added to the __mcount_loc section, and
+kallsyms retrieved the untraced function's symbol as the weak function was
+overridden. Since the untraced function would not get traced, the BPF
+check would detect this and fail.
+
+The real fix would be to fix kallsyms to not show addresses of weak
+functions as the function before it. But that would require adding code in
+the build to add function size to kallsyms so that it can know when the
+function ends instead of just using the start of the next known symbol.
+
+In the mean time, this is a work around. Add a FTRACE_MCOUNT_MAX_OFFSET
+macro that if defined, ftrace will ignore any function that has its call
+to fentry/mcount that has an offset from the symbol that is greater than
+FTRACE_MCOUNT_MAX_OFFSET.
+
+If CONFIG_HAVE_FENTRY is defined for x86, define FTRACE_MCOUNT_MAX_OFFSET
+to zero (unless IBT is enabled), which will have ftrace ignore all locations
+that are not at the start of the function (or one after the ENDBR
+instruction).
+
+A worker thread is added at boot up to scan all the ftrace record entries,
+and will mark any that fail the FTRACE_MCOUNT_MAX_OFFSET test as disabled.
+They will still appear in the available_filter_functions file as:
+
+  __ftrace_invalid_address___<invalid-offset>
+
+(showing the offset that caused it to be invalid).
+
+This is required for tools that use libtracefs (like trace-cmd does) that
+scan the available_filter_functions and enable set_ftrace_filter and
+set_ftrace_notrace using indexes of the function listed in the file (this
+is a speedup, as enabling thousands of files via names is an O(n^2)
+operation and can take minutes to complete, where the indexing takes less
+than a second).
+
+The invalid functions cannot be removed from available_filter_functions as
+the names there correspond to the ftrace records in the array that manages
+them (and the indexing depends on this).
+
+[1] https://lore.kernel.org/all/20220412094923.0abe90955e5db486b7bca279@kernel.org/
+
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+---
+Changes from v4: https://lkml.kernel.org/r/20220526141912.794c2786@gandalf.local.home
+
+ - Had to add logic to keep the invalid functions displayed in
+   available_filter_functions as libtracefs depends on it (as the indexing
+   API depends on it). Instead of not showing the invalid functions,
+   show them as: __ftrace_invalid_address___<invalid-offset>
+
+ - Moved the include of ibt.h into the #ifdef that requires it.
+
+ arch/x86/include/asm/ftrace.h |   7 ++
+ kernel/trace/ftrace.c         | 137 +++++++++++++++++++++++++++++++++-
+ 2 files changed, 142 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/include/asm/ftrace.h b/arch/x86/include/asm/ftrace.h
+index 024d9797646e..b5ef474be858 100644
+--- a/arch/x86/include/asm/ftrace.h
++++ b/arch/x86/include/asm/ftrace.h
+@@ -9,6 +9,13 @@
+ # define MCOUNT_ADDR		((unsigned long)(__fentry__))
+ #define MCOUNT_INSN_SIZE	5 /* sizeof mcount call */
  
-+#define FLASH_COUNT_SIZE 4096	/* count stored as inverted bit vector */
++/* Ignore unused weak functions which will have non zero offsets */
++#ifdef CONFIG_HAVE_FENTRY
++# include <asm/ibt.h>
++/* Add offset for endbr64 if IBT enabled */
++# define FTRACE_MCOUNT_MAX_OFFSET	ENDBR_INSN_SIZE
++#endif
 +
-+static ssize_t flash_count_show(struct device *dev,
-+				struct device_attribute *attr, char *buf)
+ #ifdef CONFIG_DYNAMIC_FTRACE
+ #define ARCH_SUPPORTS_FTRACE_OPS 1
+ #endif
+diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
+index d653ef4febc5..b861756e4002 100644
+--- a/kernel/trace/ftrace.c
++++ b/kernel/trace/ftrace.c
+@@ -45,6 +45,8 @@
+ #include "trace_output.h"
+ #include "trace_stat.h"
+ 
++#define FTRACE_INVALID_FUNCTION		"__ftrace_invalid_address__"
++
+ #define FTRACE_WARN_ON(cond)			\
+ 	({					\
+ 		int ___r = cond;		\
+@@ -3654,6 +3656,105 @@ static void add_trampoline_func(struct seq_file *m, struct ftrace_ops *ops,
+ 		seq_printf(m, " ->%pS", ptr);
+ }
+ 
++#ifdef FTRACE_MCOUNT_MAX_OFFSET
++/*
++ * Weak functions can still have an mcount/fentry that is saved in
++ * the __mcount_loc section. These can be detected by having a
++ * symbol offset of greater than FTRACE_MCOUNT_MAX_OFFSET, as the
++ * symbol found by kallsyms is not the function that the mcount/fentry
++ * is part of. The offset is much greater in these cases.
++ *
++ * Test the record to make sure that the ip points to a valid kallsyms
++ * and if not, mark it disabled.
++ */
++static int test_for_valid_rec(struct dyn_ftrace *rec)
 +{
-+	struct m10bmc_sec *sec = dev_get_drvdata(dev);
-+	unsigned int stride, num_bits;
-+	u8 *flash_buf;
-+	int cnt, ret;
++	char str[KSYM_SYMBOL_LEN];
++	unsigned long offset;
++	const char *ret;
 +
-+	stride = regmap_get_reg_stride(sec->m10bmc->regmap);
-+	num_bits = FLASH_COUNT_SIZE * 8;
++	ret = kallsyms_lookup(rec->ip, NULL, &offset, NULL, str);
 +
-+	flash_buf = kmalloc(FLASH_COUNT_SIZE, GFP_KERNEL);
-+	if (!flash_buf)
-+		return -ENOMEM;
-+
-+	if (FLASH_COUNT_SIZE % stride) {
-+		dev_err(sec->dev,
-+			"FLASH_COUNT_SIZE (0x%x) not aligned to stride (0x%x)\n",
-+			FLASH_COUNT_SIZE, stride);
-+		WARN_ON_ONCE(1);
-+		return -EINVAL;
++	/* Weak functions can cause invalid addresses */
++	if (!ret || offset > FTRACE_MCOUNT_MAX_OFFSET) {
++		rec->flags |= FTRACE_FL_DISABLED;
++		return 0;
 +	}
-+
-+	ret = regmap_bulk_read(sec->m10bmc->regmap, STAGING_FLASH_COUNT,
-+			       flash_buf, FLASH_COUNT_SIZE / stride);
-+	if (ret) {
-+		dev_err(sec->dev,
-+			"failed to read flash count: %x cnt %x: %d\n",
-+			STAGING_FLASH_COUNT, FLASH_COUNT_SIZE / stride, ret);
-+		goto exit_free;
-+	}
-+	cnt = num_bits - bitmap_weight((unsigned long *)flash_buf, num_bits);
-+
-+exit_free:
-+	kfree(flash_buf);
-+
-+	return ret ? : sysfs_emit(buf, "%u\n", cnt);
++	return 1;
 +}
-+static DEVICE_ATTR_RO(flash_count);
 +
- static struct attribute *m10bmc_security_attrs[] = {
-+	&dev_attr_flash_count.attr,
- 	&dev_attr_bmc_root_entry_hash.attr,
- 	&dev_attr_sr_root_entry_hash.attr,
- 	&dev_attr_pr_root_entry_hash.attr,
++static struct workqueue_struct *ftrace_check_wq __initdata;
++static struct work_struct ftrace_check_work __initdata;
++
++/*
++ * Scan all the mcount/fentry entries to make sure they are valid.
++ */
++static __init void ftrace_check_work_func(struct work_struct *work)
++{
++	struct ftrace_page *pg;
++	struct dyn_ftrace *rec;
++
++	mutex_lock(&ftrace_lock);
++	do_for_each_ftrace_rec(pg, rec) {
++		test_for_valid_rec(rec);
++	} while_for_each_ftrace_rec();
++	mutex_unlock(&ftrace_lock);
++}
++
++static int __init ftrace_check_for_weak_functions(void)
++{
++	INIT_WORK(&ftrace_check_work, ftrace_check_work_func);
++
++	ftrace_check_wq = alloc_workqueue("ftrace_check_wq", WQ_UNBOUND, 0);
++
++	queue_work(ftrace_check_wq, &ftrace_check_work);
++	return 0;
++}
++
++static int __init ftrace_check_sync(void)
++{
++	/* Make sure the ftrace_check updates are finished */
++	if (ftrace_check_wq)
++		destroy_workqueue(ftrace_check_wq);
++	return 0;
++}
++
++late_initcall_sync(ftrace_check_sync);
++subsys_initcall(ftrace_check_for_weak_functions);
++
++static int print_rec(struct seq_file *m, unsigned long ip)
++{
++	unsigned long offset;
++	char str[KSYM_SYMBOL_LEN];
++	char *modname;
++	const char *ret;
++
++	ret = kallsyms_lookup(ip, NULL, &offset, &modname, str);
++	/* Weak functions can cause invalid addresses */
++	if (!ret || offset > FTRACE_MCOUNT_MAX_OFFSET) {
++		snprintf(str, KSYM_SYMBOL_LEN, "%s_%ld",
++			 FTRACE_INVALID_FUNCTION, offset);
++		ret = NULL;
++	}
++
++	seq_puts(m, str);
++	if (modname)
++		seq_printf(m, " [%s]", modname);
++	return ret == NULL ? -1 : 0;
++}
++#else
++static inline int test_for_valid_rec(struct dyn_ftrace *rec)
++{
++	return 1;
++}
++
++static inline int print_rec(struct seq_file *m, unsigned long ip)
++{
++	seq_printf(m, "%ps", (void *)ip);
++	return 0;
++}
++#endif
++
+ static int t_show(struct seq_file *m, void *v)
+ {
+ 	struct ftrace_iterator *iter = m->private;
+@@ -3678,7 +3779,13 @@ static int t_show(struct seq_file *m, void *v)
+ 	if (!rec)
+ 		return 0;
+ 
+-	seq_printf(m, "%ps", (void *)rec->ip);
++	if (print_rec(m, rec->ip)) {
++		/* This should only happen when a rec is disabled */
++		WARN_ON_ONCE(!(rec->flags & FTRACE_FL_DISABLED));
++		seq_putc(m, '\n');
++		return 0;
++	}
++
+ 	if (iter->flags & FTRACE_ITER_ENABLED) {
+ 		struct ftrace_ops *ops;
+ 
+@@ -3996,6 +4103,24 @@ add_rec_by_index(struct ftrace_hash *hash, struct ftrace_glob *func_g,
+ 	return 0;
+ }
+ 
++#ifdef FTRACE_MCOUNT_MAX_OFFSET
++static int lookup_ip(unsigned long ip, char **modname, char *str)
++{
++	unsigned long offset;
++
++	kallsyms_lookup(ip, NULL, &offset, modname, str);
++	if (offset > FTRACE_MCOUNT_MAX_OFFSET)
++		return -1;
++	return 0;
++}
++#else
++static int lookup_ip(unsigned long ip, char **modname, char *str)
++{
++	kallsyms_lookup(ip, NULL, NULL, modname, str);
++	return 0;
++}
++#endif
++
+ static int
+ ftrace_match_record(struct dyn_ftrace *rec, struct ftrace_glob *func_g,
+ 		struct ftrace_glob *mod_g, int exclude_mod)
+@@ -4003,7 +4128,11 @@ ftrace_match_record(struct dyn_ftrace *rec, struct ftrace_glob *func_g,
+ 	char str[KSYM_SYMBOL_LEN];
+ 	char *modname;
+ 
+-	kallsyms_lookup(rec->ip, NULL, NULL, &modname, str);
++	if (lookup_ip(rec->ip, &modname, str)) {
++		/* This should only happen when a rec is disabled */
++		WARN_ON_ONCE(!(rec->flags & FTRACE_FL_DISABLED));
++		return 0;
++	}
+ 
+ 	if (mod_g) {
+ 		int mod_matches = (modname) ? ftrace_match(modname, mod_g) : 0;
+@@ -6830,6 +6959,10 @@ void ftrace_module_enable(struct module *mod)
+ 		if (ftrace_start_up)
+ 			cnt += referenced_filters(rec);
+ 
++		/* Weak functions should still be ignored */
++		if (!test_for_valid_rec(rec))
++			continue;
++
+ 		rec->flags &= ~FTRACE_FL_DISABLED;
+ 		rec->flags += cnt;
+ 
 -- 
-2.25.1
+2.35.1
 
