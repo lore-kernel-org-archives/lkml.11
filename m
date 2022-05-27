@@ -2,121 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B233C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 09:04:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 889F9C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 09:04:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344297AbiE0JEg (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 05:04:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52152 "EHLO
+        id S234768AbiE0JEp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 05:04:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350539AbiE0JAF (ORCPT
+        with ESMTP id S1350406AbiE0I7y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 05:00:05 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D3E9F06;
-        Fri, 27 May 2022 01:56:12 -0700 (PDT)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4L8dsT26d5zbbs5;
-        Fri, 27 May 2022 16:54:37 +0800 (CST)
-Received: from dggpemm500018.china.huawei.com (7.185.36.111) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 27 May 2022 16:56:10 +0800
-Received: from localhost.localdomain (10.175.112.125) by
- dggpemm500018.china.huawei.com (7.185.36.111) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 27 May 2022 16:56:10 +0800
-From:   keliu <liuke94@huawei.com>
-To:     <jic23@kernel.org>, <lars@metafoo.de>, <linux-iio@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     keliu <liuke94@huawei.com>
-Subject: [PATCH] iio:  Directly use ida_alloc()/free()
-Date:   Fri, 27 May 2022 09:17:39 +0000
-Message-ID: <20220527091739.2949426-1-liuke94@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 27 May 2022 04:59:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 045345DD01;
+        Fri, 27 May 2022 01:55:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 25E7561CB7;
+        Fri, 27 May 2022 08:55:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4E9CC385A9;
+        Fri, 27 May 2022 08:55:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1653641745;
+        bh=6kI8yzffPb1Y2zoMAnVPuSD3+gXWH64NJ8kHrC8DPZ8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=DflxiKYannHnDCv4N8CpqTGAUTqzhLbqw5nFxpQ8axWFsWbQW8npUtkP1ky4ZfvUr
+         qoRpOAF1C39JtjLNOATyuHdd6ZFENQsvGJMAtWHcC85fAiBUIMcWSeNANn7EkDmiiz
+         X3CBACQtHvqaAJK1zlHEeccteTs3pwc3uTtZQvqY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.18 45/47] random: check for signals after page of pool writes
+Date:   Fri, 27 May 2022 10:50:25 +0200
+Message-Id: <20220527084808.686141336@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220527084801.223648383@linuxfoundation.org>
+References: <20220527084801.223648383@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.112.125]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpemm500018.china.huawei.com (7.185.36.111)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use ida_alloc()/ida_free() instead of deprecated
-ida_simple_get()/ida_simple_remove() .
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-Signed-off-by: keliu <liuke94@huawei.com>
+commit 1ce6c8d68f8ac587f54d0a271ac594d3d51f3efb upstream.
+
+get_random_bytes_user() checks for signals after producing a PAGE_SIZE
+worth of output, just like /dev/zero does. write_pool() is doing
+basically the same work (actually, slightly more expensive), and so
+should stop to check for signals in the same way. Let's also name it
+write_pool_user() to match get_random_bytes_user(), so this won't be
+misused in the future.
+
+Before this patch, massive writes to /dev/urandom would tie up the
+process for an extremely long time and make it unterminatable. After, it
+can be successfully interrupted. The following test program can be used
+to see this works as intended:
+
+  #include <unistd.h>
+  #include <fcntl.h>
+  #include <signal.h>
+  #include <stdio.h>
+
+  static unsigned char x[~0U];
+
+  static void handle(int) { }
+
+  int main(int argc, char *argv[])
+  {
+    pid_t pid = getpid(), child;
+    int fd;
+    signal(SIGUSR1, handle);
+    if (!(child = fork())) {
+      for (;;)
+        kill(pid, SIGUSR1);
+    }
+    fd = open("/dev/urandom", O_WRONLY);
+    pause();
+    printf("interrupted after writing %zd bytes\n", write(fd, x, sizeof(x)));
+    close(fd);
+    kill(child, SIGTERM);
+    return 0;
+  }
+
+Result before: "interrupted after writing 2147479552 bytes"
+Result after: "interrupted after writing 4096 bytes"
+
+Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/industrialio-core.c    | 6 +++---
- drivers/iio/industrialio-trigger.c | 6 +++---
- 2 files changed, 6 insertions(+), 6 deletions(-)
+ drivers/char/random.c |   14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index e1ed44dec2ab..41daa10cd63d 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -1618,7 +1618,7 @@ static void iio_dev_release(struct device *device)
- 
- 	iio_device_detach_buffers(indio_dev);
- 
--	ida_simple_remove(&iio_ida, iio_dev_opaque->id);
-+	ida_free(&iio_ida, iio_dev_opaque->id);
- 	kfree(iio_dev_opaque);
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -1291,7 +1291,7 @@ static __poll_t random_poll(struct file
+ 	return crng_ready() ? EPOLLIN | EPOLLRDNORM : EPOLLOUT | EPOLLWRNORM;
  }
  
-@@ -1660,7 +1660,7 @@ struct iio_dev *iio_device_alloc(struct device *parent, int sizeof_priv)
- 	mutex_init(&iio_dev_opaque->info_exist_lock);
- 	INIT_LIST_HEAD(&iio_dev_opaque->channel_attr_list);
- 
--	iio_dev_opaque->id = ida_simple_get(&iio_ida, 0, 0, GFP_KERNEL);
-+	iio_dev_opaque->id = ida_alloc(&iio_ida, GFP_KERNEL);
- 	if (iio_dev_opaque->id < 0) {
- 		/* cannot use a dev_err as the name isn't available */
- 		pr_err("failed to get device id\n");
-@@ -1669,7 +1669,7 @@ struct iio_dev *iio_device_alloc(struct device *parent, int sizeof_priv)
+-static ssize_t write_pool(struct iov_iter *iter)
++static ssize_t write_pool_user(struct iov_iter *iter)
+ {
+ 	u8 block[BLAKE2S_BLOCK_SIZE];
+ 	ssize_t ret = 0;
+@@ -1306,7 +1306,13 @@ static ssize_t write_pool(struct iov_ite
+ 		mix_pool_bytes(block, copied);
+ 		if (!iov_iter_count(iter) || copied != sizeof(block))
+ 			break;
+-		cond_resched();
++
++		BUILD_BUG_ON(PAGE_SIZE % sizeof(block) != 0);
++		if (ret % PAGE_SIZE == 0) {
++			if (signal_pending(current))
++				break;
++			cond_resched();
++		}
  	}
  
- 	if (dev_set_name(&indio_dev->dev, "iio:device%d", iio_dev_opaque->id)) {
--		ida_simple_remove(&iio_ida, iio_dev_opaque->id);
-+		ida_free(&iio_ida, iio_dev_opaque->id);
- 		kfree(iio_dev_opaque);
- 		return NULL;
- 	}
-diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
-index f504ed351b3e..6eb9b721676e 100644
---- a/drivers/iio/industrialio-trigger.c
-+++ b/drivers/iio/industrialio-trigger.c
-@@ -71,7 +71,7 @@ int __iio_trigger_register(struct iio_trigger *trig_info,
+ 	memzero_explicit(block, sizeof(block));
+@@ -1315,7 +1321,7 @@ static ssize_t write_pool(struct iov_ite
  
- 	trig_info->owner = this_mod;
- 
--	trig_info->id = ida_simple_get(&iio_trigger_ida, 0, 0, GFP_KERNEL);
-+	trig_info->id = ida_alloc(&iio_trigger_ida, GFP_KERNEL);
- 	if (trig_info->id < 0)
- 		return trig_info->id;
- 
-@@ -98,7 +98,7 @@ int __iio_trigger_register(struct iio_trigger *trig_info,
- 	mutex_unlock(&iio_trigger_list_lock);
- 	device_del(&trig_info->dev);
- error_unregister_id:
--	ida_simple_remove(&iio_trigger_ida, trig_info->id);
-+	ida_free(&iio_trigger_ida, trig_info->id);
- 	return ret;
+ static ssize_t random_write_iter(struct kiocb *kiocb, struct iov_iter *iter)
+ {
+-	return write_pool(iter);
++	return write_pool_user(iter);
  }
- EXPORT_SYMBOL(__iio_trigger_register);
-@@ -109,7 +109,7 @@ void iio_trigger_unregister(struct iio_trigger *trig_info)
- 	list_del(&trig_info->list);
- 	mutex_unlock(&iio_trigger_list_lock);
  
--	ida_simple_remove(&iio_trigger_ida, trig_info->id);
-+	ida_free(&iio_trigger_ida, trig_info->id);
- 	/* Possible issue in here */
- 	device_del(&trig_info->dev);
- }
--- 
-2.25.1
+ static ssize_t urandom_read_iter(struct kiocb *kiocb, struct iov_iter *iter)
+@@ -1389,7 +1395,7 @@ static long random_ioctl(struct file *f,
+ 		ret = import_single_range(WRITE, p, len, &iov, &iter);
+ 		if (unlikely(ret))
+ 			return ret;
+-		ret = write_pool(&iter);
++		ret = write_pool_user(&iter);
+ 		if (unlikely(ret < 0))
+ 			return ret;
+ 		/* Since we're crediting, enforce that it was all written into the pool. */
+
 
