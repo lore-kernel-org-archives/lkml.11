@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65169C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 06:01:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6866DC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 06:02:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243882AbiE0GBz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 02:01:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37992 "EHLO
+        id S244303AbiE0GCX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 02:02:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243768AbiE0GBt (ORCPT
+        with ESMTP id S244014AbiE0GCL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 02:01:49 -0400
+        Fri, 27 May 2022 02:02:11 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 30631FC6
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 23:01:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C199A25C6
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 23:01:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653631303;
+        s=mimecast20190719; t=1653631318;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=lynSeVT1NfwEzANWSPivWToMg2lFwBVUR0GD7hlFiwg=;
-        b=QUPta452Lv7Wg5guaezfZZL10WyT3/b85Jtpu0EpiZqKUlxtaou8R6aizVmIX+5p2kEHdk
-        JXC9aIMvm+XX00lx+twB989AB2+AMzN3qMtdlntYmunj9i7U37yFc54Im9YHplafS52NwT
-        i05fBWv20+hcFt3VeQV+gPNH2Cl7PPw=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=OVF7ZOKQjlZaNtrOn5007e/TWK4CcFV8q+LPrrFaKRw=;
+        b=SxbdWtSj0EdOOQSKHxUhotr7qMArGJDJJN77SIycB6V19zuHutbl4cPILkIRDQKOXFI7SM
+        syARxJ/T8LCurzOyVSd0uQHtb6Q90QGy2+G6lHqNbkLw+4DGbuNtboZGglyzhIhICHee0O
+        9Ywhx0+yYfut9RsaxlPWRns6VRtvo/4=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-587-mZNTa0xxM2Os7yz2KbfjHg-1; Fri, 27 May 2022 02:01:40 -0400
-X-MC-Unique: mZNTa0xxM2Os7yz2KbfjHg-1
+ us-mta-179-gElugDpbOLqiMMZF789AsA-1; Fri, 27 May 2022 02:01:57 -0400
+X-MC-Unique: gElugDpbOLqiMMZF789AsA-1
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B1B3E811E7A;
-        Fri, 27 May 2022 06:01:39 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 80D05382ECD2;
+        Fri, 27 May 2022 06:01:56 +0000 (UTC)
 Received: from localhost.localdomain (ovpn-13-240.pek2.redhat.com [10.72.13.240])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 608292166B26;
-        Fri, 27 May 2022 06:01:31 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A7CD52166B26;
+        Fri, 27 May 2022 06:01:49 +0000 (UTC)
 From:   Jason Wang <jasowang@redhat.com>
 To:     mst@redhat.com, jasowang@redhat.com,
         virtualization@lists.linux-foundation.org,
@@ -49,9 +49,9 @@ Cc:     tglx@linutronix.de, peterz@infradead.org, paulmck@kernel.org,
         Vineeth Vijayan <vneethv@linux.ibm.com>,
         Peter Oberparleiter <oberpar@linux.ibm.com>,
         linux-s390@vger.kernel.org
-Subject: [PATCH V6 1/9] virtio: use virtio_device_ready() in virtio_device_restore()
-Date:   Fri, 27 May 2022 14:01:12 +0800
-Message-Id: <20220527060120.20964-2-jasowang@redhat.com>
+Subject: [PATCH V6 3/9] virtio: introduce config op to synchronize vring callbacks
+Date:   Fri, 27 May 2022 14:01:14 +0800
+Message-Id: <20220527060120.20964-4-jasowang@redhat.com>
 In-Reply-To: <20220527060120.20964-1-jasowang@redhat.com>
 References: <20220527060120.20964-1-jasowang@redhat.com>
 MIME-Version: 1.0
@@ -62,10 +62,12 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stefano Garzarella <sgarzare@redhat.com>
-
-It will allow us to do extension on virtio_device_ready() without
-duplicating code.
+This patch introduces new virtio config op to vring
+callbacks. Transport specific method is required to make sure the
+write before this function is visible to the vring_interrupt() that is
+called after the return of this function. For the transport that
+doesn't provide synchronize_vqs(), use synchornize_rcu() which
+synchronize with IRQ implicitly as a fallback.
 
 Cc: Thomas Gleixner <tglx@linutronix.de>
 Cc: Peter Zijlstra <peterz@infradead.org>
@@ -77,28 +79,61 @@ Cc: Vineeth Vijayan <vneethv@linux.ibm.com>
 Cc: Peter Oberparleiter <oberpar@linux.ibm.com>
 Cc: linux-s390@vger.kernel.org
 Reviewed-by: Cornelia Huck <cohuck@redhat.com>
-Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
 Signed-off-by: Jason Wang <jasowang@redhat.com>
 ---
- drivers/virtio/virtio.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ include/linux/virtio_config.h | 25 +++++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
 
-diff --git a/drivers/virtio/virtio.c b/drivers/virtio/virtio.c
-index ce424c16997d..938e975029d4 100644
---- a/drivers/virtio/virtio.c
-+++ b/drivers/virtio/virtio.c
-@@ -526,8 +526,9 @@ int virtio_device_restore(struct virtio_device *dev)
- 			goto err;
- 	}
+diff --git a/include/linux/virtio_config.h b/include/linux/virtio_config.h
+index b341dd62aa4d..25be018810a7 100644
+--- a/include/linux/virtio_config.h
++++ b/include/linux/virtio_config.h
+@@ -57,6 +57,11 @@ struct virtio_shm_region {
+  *		include a NULL entry for vqs unused by driver
+  *	Returns 0 on success or error status
+  * @del_vqs: free virtqueues found by find_vqs().
++ * @synchronize_cbs: synchronize with the virtqueue callbacks (optional)
++ *      The function guarantees that all memory operations on the
++ *      queue before it are visible to the vring_interrupt() that is
++ *      called after it.
++ *      vdev: the virtio_device
+  * @get_features: get the array of feature bits for this device.
+  *	vdev: the virtio_device
+  *	Returns the first 64 feature bits (all we currently need).
+@@ -89,6 +94,7 @@ struct virtio_config_ops {
+ 			const char * const names[], const bool *ctx,
+ 			struct irq_affinity *desc);
+ 	void (*del_vqs)(struct virtio_device *);
++	void (*synchronize_cbs)(struct virtio_device *);
+ 	u64 (*get_features)(struct virtio_device *vdev);
+ 	int (*finalize_features)(struct virtio_device *vdev);
+ 	const char *(*bus_name)(struct virtio_device *vdev);
+@@ -217,6 +223,25 @@ int virtio_find_vqs_ctx(struct virtio_device *vdev, unsigned nvqs,
+ 				      desc);
+ }
  
--	/* Finally, tell the device we're all set */
--	virtio_add_status(dev, VIRTIO_CONFIG_S_DRIVER_OK);
-+	/* If restore didn't do it, mark device DRIVER_OK ourselves. */
-+	if (!(dev->config->get_status(dev) & VIRTIO_CONFIG_S_DRIVER_OK))
-+		virtio_device_ready(dev);
- 
- 	virtio_config_enable(dev);
- 
++/**
++ * virtio_synchronize_cbs - synchronize with virtqueue callbacks
++ * @vdev: the device
++ */
++static inline
++void virtio_synchronize_cbs(struct virtio_device *dev)
++{
++	if (dev->config->synchronize_cbs) {
++		dev->config->synchronize_cbs(dev);
++	} else {
++		/*
++		 * A best effort fallback to synchronize with
++		 * interrupts, preemption and softirq disabled
++		 * regions. See comment above synchronize_rcu().
++		 */
++		synchronize_rcu();
++	}
++}
++
+ /**
+  * virtio_device_ready - enable vq use in probe function
+  * @vdev: the device
 -- 
 2.25.1
 
