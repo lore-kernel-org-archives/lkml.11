@@ -2,136 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8300CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 09:13:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9767C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 09:13:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345425AbiE0JNE (ORCPT
+        id S1345830AbiE0JNT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 05:13:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60936 "EHLO
+        Fri, 27 May 2022 05:13:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350528AbiE0JMR (ORCPT
+        with ESMTP id S1350538AbiE0JMS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 05:12:17 -0400
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5CA9140402
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 02:09:13 -0700 (PDT)
-Received: by mail-yb1-xb33.google.com with SMTP id v26so6956732ybd.2
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 02:09:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=TG+iSsiIbLTbPNNUL0ORzg2RkUZbD1rwYMRW4iLJ3AU=;
-        b=fyD49Th59LU888uf582LKdFMlTJSAarmXQqeFevtl8BYVsIVRx4+iX3lyi7uFdKsLZ
-         Rlgl0gCcsPo9iRtcUchSVBJclKPisbAleBC+OWDN0LXvzCaVtZcdtQW99sh0IS3BRCa9
-         mYgE62zU/KspvzwVKo3rMik0y01+tK/agY2mJAhS7XzYKGi5Oqc4einUiM4Dj9Rd2cjd
-         AXzfcu9DoMkGLUCRGzfnjdF+elltlbAcYApGu6eLqo77KjhPXQ9vX5KVdaSTjcQ7K3bZ
-         G8ShbVWhJQ7ACH3DohXPMiyEQashOEhFeFd0cP/s8Y0Q4VSLNXYrE4W0nvJdZwexB+Ek
-         vo3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=TG+iSsiIbLTbPNNUL0ORzg2RkUZbD1rwYMRW4iLJ3AU=;
-        b=CJW0DKmX0KZVejAPSfL3wv4Vj8ilEYrHX5Be7asB1zmnhlMv+UzZ4d11SqMNGonPGc
-         xQjJHcWADQRXnzb714JZA1c6duu6OCFVU/ZJpMxZhMPlvs+m3vmxBe2VbvoDkrvlKj6O
-         cXrHNziM9itmDfXZx66MjCBmawbptJu0F6pyzLEseBYu120WoMwZe8/2HIylJx05qYhq
-         CiQddelXWUdnY0dAmiWNIdkSdeDwc6dNeJgGT+J++3FYS79v7GT5qPOGtWDHBTf4dd1B
-         kpAeY6urhpLFvbndUlaZCmk/hj76y4ZT/PffZXY4hxCRpbr5A5cg4zloWKnRWmBz9+I8
-         7YhA==
-X-Gm-Message-State: AOAM5338nkDEKCIynQtH3yRKqQEgU5FHreoCR/I2lkMoZJDXPJnY44rT
-        UXFH3QKVIsQ0IpAdmxL92iyjbkhn+yfUSCuFLKSX+g==
-X-Google-Smtp-Source: ABdhPJzt2Un82eGkxlq/rmaV5PzNC/frN7c/GhKnhyecHR7dNF2Jdb8nRS9M3VYPNJoD0Tj0UBS5EfkS6EJKaQW0eaE=
-X-Received: by 2002:a05:6902:1004:b0:64f:4748:e8be with SMTP id
- w4-20020a056902100400b0064f4748e8bemr37872350ybt.537.1653642553018; Fri, 27
- May 2022 02:09:13 -0700 (PDT)
+        Fri, 27 May 2022 05:12:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BF8B1356BA;
+        Fri, 27 May 2022 02:09:36 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D6054B823FD;
+        Fri, 27 May 2022 09:09:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A761C385B8;
+        Fri, 27 May 2022 09:09:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653642573;
+        bh=bES5tOhJ++GeKlJcRtlWQOd/879zYMEsJsfOCJP4Bgs=;
+        h=From:To:Cc:Subject:Date:From;
+        b=VbS1JMH/Wlp7ysFxnOoANd9rG3VsFEAbhYnbg5CLGGdbSrVHuuztfdEmzQJfmcAK6
+         Js/ZGD+gBvq34X4WCURQ5mZGTJT0ZWBrcgUzJDeR4nVPQLSXcc/pX7Flwni2MqfF03
+         UHl7/msvaZ+/rK/67ti/ZHPa3yFEuzJn0dkgpJA/IFc9rKlTLbbOrwTQ1qDKIw9ZN3
+         W0jjMn4AFYFxKpR+JEy5jFW8TUE71cLiDUR0PdTw5sgIKnSD9/eXPp5Yi5ma0Rc7q+
+         n3K7DFRnYibsCiddsToPHvxKh5r/JyTvNQbYggBlBW8DTWnZde8LgqkIQHKbnXA8hP
+         3YopCQsW4TVqw==
+Received: from mchehab by mail.kernel.org with local (Exim 4.95)
+        (envelope-from <mchehab@kernel.org>)
+        id 1nuVyM-008KD3-TZ;
+        Fri, 27 May 2022 11:09:30 +0200
+From:   Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Andi Shyti <andi.shyti@linux.intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        John Harrison <John.C.Harrison@Intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Lucas De Marchi <lucas.demarchi@intel.com>,
+        Matt Roper <matthew.d.roper@intel.com>,
+        Matthew Auld <matthew.auld@intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, mauro.chehab@linux.intel.com,
+        Tvrtko Ursulin <tvrtko.ursulin@intel.com>,
+        Sushma Venkatesh Reddy <sushma.venkatesh.reddy@intel.com>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Dave Airlie <airlied@redhat.com>,
+        Jon Bloomfield <jon.bloomfield@intel.com>,
+        Jani Nikula <jani.nikula@intel.com>, stable@vger.kernel.org
+Subject: [PATCH] drm/i915: don't flush TLB on GEN8
+Date:   Fri, 27 May 2022 11:09:29 +0200
+Message-Id: <b6417c5bf1b0ee8e093712264f325bd1268ed1e4.1653642514.git.mchehab@kernel.org>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-References: <814e20c19b110209ee12ecae7cb05f8a78d021c8.1653625820.git.baolin.wang@linux.alibaba.com>
-In-Reply-To: <814e20c19b110209ee12ecae7cb05f8a78d021c8.1653625820.git.baolin.wang@linux.alibaba.com>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Fri, 27 May 2022 14:39:01 +0530
-Message-ID: <CA+G9fYuND9eW5qBEvcfjPuW=wobQq5bu5Bzr3QOX3YUT-Qsviw@mail.gmail.com>
-Subject: Re: [PATCH] arm64/hugetlb: Fix building errors in huge_ptep_clear_flush()
-To:     Baolin Wang <baolin.wang@linux.alibaba.com>
-Cc:     torvalds@linux-foundation.org, catalin.marinas@arm.com,
-        will@kernel.org, akpm@linux-foundation.org,
-        anshuman.khandual@arm.com, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 27 May 2022 at 10:21, Baolin Wang <baolin.wang@linux.alibaba.com> w=
-rote:
->
-> Fix below building errors which was caused by commit ae07562909f3
-> ("mm: change huge_ptep_clear_flush() to return the original pte")
-> interacting with commit fb396bb459c1 ("arm64/hugetlb: Drop TLB flush
-> from get_clear_flush()").
->
-> Due to the new get_clear_contig() has dropped TLB flush, we should
-> add an explicit TLB flush in huge_ptep_clear_flush() to keep original
-> semantics when changing to use new get_clear_contig().
->
-> "
-> arch/arm64/mm/hugetlbpage.c: In function =E2=80=98huge_ptep_clear_flush=
-=E2=80=99:
-> arch/arm64/mm/hugetlbpage.c:515:9: error: implicit declaration of
-> function =E2=80=98get_clear_flush=E2=80=99; did you mean =E2=80=98ptep_cl=
-ear_flush=E2=80=99?
-> [-Werror=3Dimplicit-function-declaration]
->   515 |  return get_clear_flush(vma->vm_mm, addr, ptep, pgsize, ncontig);
->       |         ^~~~~~~~~~~~~~~
->       |         ptep_clear_flush
-> "
->
+i915 selftest hangcheck is causing the i915 driver timeouts, as
+reported by Intel CI:
 
-This patch tested on arm, arm64, i386 and x86 with gcc-11 and clang-14.
+	http://gfx-ci.fi.intel.com/cibuglog-ng/issuefilterassoc/24297?query_key=42a999f48fa6ecce068bc8126c069be7c31153b4
 
-> Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
-> Suggested-by: Catalin Marinas <catalin.marinas@arm.com>
-> Signed-off-by: Baolin Wang <baolin.wang@linux.alibaba.com>
-> Cc: Catalin Marinas <catalin.marinas@arm.com>
-> Cc: Anshuman Khandual <anshuman.khandual@arm.com>
-> Cc: Andrew Morton <akpm@linux-foundation.org>
+When such test runs, the only output is:
 
-Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
+	[   68.811639] i915: Performing live selftests with st_random_seed=0xe138eac7 st_timeout=500
+	[   68.811792] i915: Running hangcheck
+	[   68.811859] i915: Running intel_hangcheck_live_selftests/igt_hang_sanitycheck
+	[   68.816910] i915 0000:00:02.0: [drm] Cannot find any crtc or sizes
+	[   68.841597] i915: Running intel_hangcheck_live_selftests/igt_reset_nop
+	[   69.346347] igt_reset_nop: 80 resets
+	[   69.362695] i915: Running intel_hangcheck_live_selftests/igt_reset_nop_engine
+	[   69.863559] igt_reset_nop_engine(rcs0): 709 resets
+	[   70.364924] igt_reset_nop_engine(bcs0): 903 resets
+	[   70.866005] igt_reset_nop_engine(vcs0): 659 resets
+	[   71.367934] igt_reset_nop_engine(vcs1): 549 resets
+	[   71.869259] igt_reset_nop_engine(vecs0): 553 resets
+	[   71.882592] i915: Running intel_hangcheck_live_selftests/igt_reset_idle_engine
+	[   72.383554] rcs0: Completed 16605 idle resets
+	[   72.884599] bcs0: Completed 18641 idle resets
+	[   73.385592] vcs0: Completed 17517 idle resets
+	[   73.886658] vcs1: Completed 15474 idle resets
+	[   74.387600] vecs0: Completed 17983 idle resets
+	[   74.387667] i915: Running intel_hangcheck_live_selftests/igt_reset_active_engine
+	[   74.889017] rcs0: Completed 747 active resets
+	[   75.174240] intel_engine_reset(bcs0) failed, err:-110
+	[   75.174301] bcs0: Completed 525 active resets
 
-> ---
->  arch/arm64/mm/hugetlbpage.c | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
->
-> diff --git a/arch/arm64/mm/hugetlbpage.c b/arch/arm64/mm/hugetlbpage.c
-> index 0f0c17dfeb9c..e2a5ec9fdc0d 100644
-> --- a/arch/arm64/mm/hugetlbpage.c
-> +++ b/arch/arm64/mm/hugetlbpage.c
-> @@ -507,12 +507,15 @@ pte_t huge_ptep_clear_flush(struct vm_area_struct *=
-vma,
->  {
->         size_t pgsize;
->         int ncontig;
-> +       pte_t orig_pte;
->
->         if (!pte_cont(READ_ONCE(*ptep)))
->                 return ptep_clear_flush(vma, addr, ptep);
->
->         ncontig =3D find_num_contig(vma->vm_mm, addr, ptep, &pgsize);
-> -       return get_clear_flush(vma->vm_mm, addr, ptep, pgsize, ncontig);
-> +       orig_pte =3D get_clear_contig(vma->vm_mm, addr, ptep, pgsize, nco=
-ntig);
-> +       flush_tlb_range(vma, addr, addr + pgsize * ncontig);
-> +       return orig_pte;
->  }
->
->  static int __init hugetlbpage_init(void)
-> --
-> 2.27.0
->
+After that, the machine just silently hangs.
+
+The root cause is that the flush TLB logic is not working as
+expected on GEN8.
+
+Tested on an Intel NUC5i7RYB with an i7-5557U Broadwell CPU.
+
+This patch partially reverts the logic by skipping GEN8 from
+the TLB cache flush.
+
+Cc: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+Cc: Sushma Venkatesh Reddy <sushma.venkatesh.reddy@intel.com>
+Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
+Cc: Dave Airlie <airlied@redhat.com>
+Cc: Jon Bloomfield <jon.bloomfield@intel.com>
+Cc: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+Cc: Jani Nikula <jani.nikula@intel.com>
+Cc: stable@vger.kernel.org # Kernel 5.17 and upper
+
+Fixes: 494c2c9b630e ("drm/i915: Flush TLBs before releasing backing store")
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+---
+
+Patch resent, as the first version was using an old email. That's what happens
+when writing patches on old test machines ;-)
+
+ drivers/gpu/drm/i915/gt/intel_gt.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/gpu/drm/i915/gt/intel_gt.c b/drivers/gpu/drm/i915/gt/intel_gt.c
+index 034182f85501..7965a77e5046 100644
+--- a/drivers/gpu/drm/i915/gt/intel_gt.c
++++ b/drivers/gpu/drm/i915/gt/intel_gt.c
+@@ -1191,10 +1191,10 @@ void intel_gt_invalidate_tlbs(struct intel_gt *gt)
+ 	if (GRAPHICS_VER(i915) == 12) {
+ 		regs = gen12_regs;
+ 		num = ARRAY_SIZE(gen12_regs);
+-	} else if (GRAPHICS_VER(i915) >= 8 && GRAPHICS_VER(i915) <= 11) {
++	} else if (GRAPHICS_VER(i915) > 8 && GRAPHICS_VER(i915) <= 11) {
+ 		regs = gen8_regs;
+ 		num = ARRAY_SIZE(gen8_regs);
+-	} else if (GRAPHICS_VER(i915) < 8) {
++	} else if (GRAPHICS_VER(i915) <= 8) {
+ 		return;
+ 	}
+ 
+-- 
+2.36.1
 
 
---
-Linaro LKFT
-https://lkft.linaro.org
