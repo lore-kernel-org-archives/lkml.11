@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ED64C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:02:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AC5DC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:02:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344614AbiE0MCD (ORCPT
+        id S1352102AbiE0MCN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 08:02:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41328 "EHLO
+        Fri, 27 May 2022 08:02:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351083AbiE0LwO (ORCPT
+        with ESMTP id S1352081AbiE0Lt4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:52:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C9DF14A270;
-        Fri, 27 May 2022 04:47:31 -0700 (PDT)
+        Fri, 27 May 2022 07:49:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73C79106A45;
+        Fri, 27 May 2022 04:44:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9C85461D19;
-        Fri, 27 May 2022 11:47:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4B7DC385A9;
-        Fri, 27 May 2022 11:47:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B0B59B824D2;
+        Fri, 27 May 2022 11:44:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25AB4C385A9;
+        Fri, 27 May 2022 11:44:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653652050;
-        bh=ZdWzXFsXEYwjkTdi4Ho7WDOoLXL0Z7KWiEWGYTe0WUI=;
+        s=korg; t=1653651844;
+        bh=e2vokvoRbRzLhCP2hbE6rLdYK8oIbpw8kVNUH1b8o14=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g1ACWNLdx53HkJWEPClDIcfw1hxK+lH0Or3VawbGc6O2r81IqhI3mhZZ7X+VfLyS1
-         Up7djMGv/q33CBtsIF5W/4Hw8U3EaPF/OphDhGBSzPGowOAxVqhvXogMfqmO6O0AR/
-         9czisH6PTcyjjnq3T8FBn1KIIwTtNEW8eKe7c7YY=
+        b=MjaZyfzjydMaxu3aX7oyH2b350TOl6WByyE4U2Xx96huI7gp4rsAyTURR6O8DXmrD
+         d2+IZfsTL/WV8gCGlkVqFIaIpOD7sCkUcusLCPS0IHPE16jdEsOJCExamj91DaPM3b
+         BBPL/BuOt8rMa45s1illuDFtiAlXPLBrbSSZKSP0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Eric Biggers <ebiggers@google.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.15 063/145] random: introduce drain_entropy() helper to declutter crng_reseed()
-Date:   Fri, 27 May 2022 10:49:24 +0200
-Message-Id: <20220527084858.201073523@linuxfoundation.org>
+        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.17 090/111] random: help compiler out with fast_mix() by using simpler arguments
+Date:   Fri, 27 May 2022 10:50:02 +0200
+Message-Id: <20220527084832.178099361@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084850.364560116@linuxfoundation.org>
-References: <20220527084850.364560116@linuxfoundation.org>
+In-Reply-To: <20220527084819.133490171@linuxfoundation.org>
+References: <20220527084819.133490171@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,84 +50,92 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 246c03dd899164d0186b6d685d6387f228c28d93 upstream.
+commit 791332b3cbb080510954a4c152ce02af8832eac9 upstream.
 
-In preparation for separating responsibilities, break out the entropy
-count management part of crng_reseed() into its own function.
+Now that fast_mix() has more than one caller, gcc no longer inlines it.
+That's fine. But it also doesn't handle the compound literal argument we
+pass it very efficiently, nor does it handle the loop as well as it
+could. So just expand the code to spell out this function so that it
+generates the same code as it did before. Performance-wise, this now
+behaves as it did before the last commit. The difference in actual code
+size on x86 is 45 bytes, which is less than a cache line.
 
-No functional changes.
-
-Cc: Theodore Ts'o <tytso@mit.edu>
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
-Reviewed-by: Eric Biggers <ebiggers@google.com>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   36 +++++++++++++++++++++++-------------
- 1 file changed, 23 insertions(+), 13 deletions(-)
+ drivers/char/random.c |   44 +++++++++++++++++++++++---------------------
+ 1 file changed, 23 insertions(+), 21 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -260,6 +260,7 @@ static struct {
- };
- 
- static void extract_entropy(void *buf, size_t nbytes);
-+static bool drain_entropy(void *buf, size_t nbytes);
- 
- static void crng_reseed(void);
- 
-@@ -456,23 +457,13 @@ static void crng_slow_load(const void *c
- static void crng_reseed(void)
+@@ -1029,25 +1029,30 @@ static DEFINE_PER_CPU(struct fast_pool,
+  * and therefore this has no security on its own. s represents the
+  * four-word SipHash state, while v represents a two-word input.
+  */
+-static void fast_mix(unsigned long s[4], const unsigned long v[2])
++static void fast_mix(unsigned long s[4], unsigned long v1, unsigned long v2)
  {
- 	unsigned long flags;
--	int entropy_count;
- 	unsigned long next_gen;
- 	u8 key[CHACHA_KEY_SIZE];
- 	bool finalize_init = false;
- 
--	/*
--	 * First we make sure we have POOL_MIN_BITS of entropy in the pool,
--	 * and then we drain all of it. Only then can we extract a new key.
--	 */
--	do {
--		entropy_count = READ_ONCE(input_pool.entropy_count);
--		if (entropy_count < POOL_MIN_BITS)
--			return;
--	} while (cmpxchg(&input_pool.entropy_count, entropy_count, 0) != entropy_count);
--	extract_entropy(key, sizeof(key));
--	wake_up_interruptible(&random_write_wait);
--	kill_fasync(&fasync, SIGIO, POLL_OUT);
-+	/* Only reseed if we can, to prevent brute forcing a small amount of new bits. */
-+	if (!drain_entropy(key, sizeof(key)))
-+		return;
- 
- 	/*
- 	 * We copy the new key into the base_crng, overwriting the old one,
-@@ -900,6 +891,25 @@ static void extract_entropy(void *buf, s
- 	memzero_explicit(&block, sizeof(block));
+-	size_t i;
+-
+-	for (i = 0; i < 2; ++i) {
+-		s[3] ^= v[i];
+ #ifdef CONFIG_64BIT
+-		s[0] += s[1]; s[1] = rol64(s[1], 13); s[1] ^= s[0]; s[0] = rol64(s[0], 32);
+-		s[2] += s[3]; s[3] = rol64(s[3], 16); s[3] ^= s[2];
+-		s[0] += s[3]; s[3] = rol64(s[3], 21); s[3] ^= s[0];
+-		s[2] += s[1]; s[1] = rol64(s[1], 17); s[1] ^= s[2]; s[2] = rol64(s[2], 32);
++#define PERM() do { \
++	s[0] += s[1]; s[1] = rol64(s[1], 13); s[1] ^= s[0]; s[0] = rol64(s[0], 32); \
++	s[2] += s[3]; s[3] = rol64(s[3], 16); s[3] ^= s[2]; \
++	s[0] += s[3]; s[3] = rol64(s[3], 21); s[3] ^= s[0]; \
++	s[2] += s[1]; s[1] = rol64(s[1], 17); s[1] ^= s[2]; s[2] = rol64(s[2], 32); \
++} while (0)
+ #else
+-		s[0] += s[1]; s[1] = rol32(s[1],  5); s[1] ^= s[0]; s[0] = rol32(s[0], 16);
+-		s[2] += s[3]; s[3] = rol32(s[3],  8); s[3] ^= s[2];
+-		s[0] += s[3]; s[3] = rol32(s[3],  7); s[3] ^= s[0];
+-		s[2] += s[1]; s[1] = rol32(s[1], 13); s[1] ^= s[2]; s[2] = rol32(s[2], 16);
++#define PERM() do { \
++	s[0] += s[1]; s[1] = rol32(s[1],  5); s[1] ^= s[0]; s[0] = rol32(s[0], 16); \
++	s[2] += s[3]; s[3] = rol32(s[3],  8); s[3] ^= s[2]; \
++	s[0] += s[3]; s[3] = rol32(s[3],  7); s[3] ^= s[0]; \
++	s[2] += s[1]; s[1] = rol32(s[1], 13); s[1] ^= s[2]; s[2] = rol32(s[2], 16); \
++} while (0)
+ #endif
+-		s[0] ^= v[i];
+-	}
++
++	s[3] ^= v1;
++	PERM();
++	s[0] ^= v1;
++	s[3] ^= v2;
++	PERM();
++	s[0] ^= v2;
  }
  
-+/*
-+ * First we make sure we have POOL_MIN_BITS of entropy in the pool, and then we
-+ * set the entropy count to zero (but don't actually touch any data). Only then
-+ * can we extract a new key with extract_entropy().
-+ */
-+static bool drain_entropy(void *buf, size_t nbytes)
-+{
-+	unsigned int entropy_count;
-+	do {
-+		entropy_count = READ_ONCE(input_pool.entropy_count);
-+		if (entropy_count < POOL_MIN_BITS)
-+			return false;
-+	} while (cmpxchg(&input_pool.entropy_count, entropy_count, 0) != entropy_count);
-+	extract_entropy(buf, nbytes);
-+	wake_up_interruptible(&random_write_wait);
-+	kill_fasync(&fasync, SIGIO, POLL_OUT);
-+	return true;
-+}
-+
- #define warn_unseeded_randomness(previous) \
- 	_warn_unseeded_randomness(__func__, (void *)_RET_IP_, (previous))
+ #ifdef CONFIG_SMP
+@@ -1117,10 +1122,8 @@ void add_interrupt_randomness(int irq)
+ 	struct pt_regs *regs = get_irq_regs();
+ 	unsigned int new_count;
  
+-	fast_mix(fast_pool->pool, (unsigned long[2]){
+-		entropy,
+-		(regs ? instruction_pointer(regs) : _RET_IP_) ^ swab(irq)
+-	});
++	fast_mix(fast_pool->pool, entropy,
++		 (regs ? instruction_pointer(regs) : _RET_IP_) ^ swab(irq));
+ 	new_count = ++fast_pool->count;
+ 
+ 	if (new_count & MIX_INFLIGHT)
+@@ -1160,8 +1163,7 @@ static void add_timer_randomness(struct
+ 	 * sometime after, so mix into the fast pool.
+ 	 */
+ 	if (in_hardirq()) {
+-		fast_mix(this_cpu_ptr(&irq_randomness)->pool,
+-			 (unsigned long[2]){ entropy, num });
++		fast_mix(this_cpu_ptr(&irq_randomness)->pool, entropy, num);
+ 	} else {
+ 		spin_lock_irqsave(&input_pool.lock, flags);
+ 		_mix_pool_bytes(&entropy, sizeof(entropy));
 
 
