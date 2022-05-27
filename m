@@ -2,46 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C3B9C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:52:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43569C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:52:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241956AbiE0LwB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 07:52:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58474 "EHLO
+        id S1350385AbiE0LwN (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 07:52:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351974AbiE0LsH (ORCPT
+        with ESMTP id S1351973AbiE0LsH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 27 May 2022 07:48:07 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76C5714AC89;
-        Fri, 27 May 2022 04:43:36 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6859813C0A3;
+        Fri, 27 May 2022 04:43:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 39998CE1164;
-        Fri, 27 May 2022 11:43:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43017C385A9;
-        Fri, 27 May 2022 11:43:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3131561D46;
+        Fri, 27 May 2022 11:43:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B914C385A9;
+        Fri, 27 May 2022 11:43:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653651811;
-        bh=zvNJAXoilwDxTtaE7iGov4VsUnmsvHqf6cJHqz+4f5k=;
+        s=korg; t=1653651817;
+        bh=zFpqevov713IApAhxZIYYGITbtiR7g4GdXbh3vBpcEk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0zCw4X1xqvOE+57h7SDmHUsNw+iXWRAWKZDvl9ZGZWXwOICINVL4/HJH9Nsv8FxlO
-         hgI4nfEZ2hoOULUYU2TfODhxl0MIAl5u3TjwyJi0uO5e7tNsvW5q22XG9je8pXBrZv
-         VfGZTHnJvxKld1ShL5zP2P0Y6FgX+3rVHOyhHkh4=
+        b=ph9B4zfRhAO8dORVOEefJIdU9JT+HCIci/WDeLGx6GBj3CYSTWQs/nyc9Xc1aycAl
+         l+ZmvZI7UN2KIKdG9QAxHTCPhtzQ33w+El+oFGZZP14+SD+gPr1IciBFKoMSgPo4hN
+         E/ZqGsGnQjgypm1jCxHCgoFLysqtXA8XkmoF4UzM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
-        Eric Biggers <ebiggers@google.com>,
+        stable@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
         Dominik Brodowski <linux@dominikbrodowski.net>,
+        Eric Biggers <ebiggers@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.15 046/145] random: use RDSEED instead of RDRAND in entropy extraction
-Date:   Fri, 27 May 2022 10:49:07 +0200
-Message-Id: <20220527084856.405945867@linuxfoundation.org>
+Subject: [PATCH 5.10 062/163] random: remove batched entropy locking
+Date:   Fri, 27 May 2022 10:49:02 +0200
+Message-Id: <20220527084836.683995896@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084850.364560116@linuxfoundation.org>
-References: <20220527084850.364560116@linuxfoundation.org>
+In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
+References: <20220527084828.156494029@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,101 +56,151 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 28f425e573e906a4c15f8392cc2b1561ef448595 upstream.
+commit 77760fd7f7ae3dfd03668204e708d1568d75447d upstream.
 
-When /dev/random was directly connected with entropy extraction, without
-any expansion stage, extract_buf() was called for every 10 bytes of data
-read from /dev/random. For that reason, RDRAND was used rather than
-RDSEED. At the same time, crng_reseed() was still only called every 5
-minutes, so there RDSEED made sense.
+Rather than use spinlocks to protect batched entropy, we can instead
+disable interrupts locally, since we're dealing with per-cpu data, and
+manage resets with a basic generation counter. At the same time, we
+can't quite do this on PREEMPT_RT, where we still want spinlocks-as-
+mutexes semantics. So we use a local_lock_t, which provides the right
+behavior for each. Because this is a per-cpu lock, that generation
+counter is still doing the necessary CPU-to-CPU communication.
 
-Those olden days were also a time when the entropy collector did not use
-a cryptographic hash function, which meant most bets were off in terms
-of real preimage resistance. For that reason too it didn't matter
-_that_ much whether RDSEED was mixed in before or after entropy
-extraction; both choices were sort of bad.
+This should improve performance a bit. It will also fix the linked splat
+that Jonathan received with a PROVE_RAW_LOCK_NESTING=y.
 
-But now we have a cryptographic hash function at work, and with that we
-get real preimage resistance. We also now only call extract_entropy()
-every 5 minutes, rather than every 10 bytes. This allows us to do two
-important things.
-
-First, we can switch to using RDSEED in extract_entropy(), as Dominik
-suggested. Second, we can ensure that RDSEED input always goes into the
-cryptographic hash function with other things before being used
-directly. This eliminates a category of attacks in which the CPU knows
-the current state of the crng and knows that we're going to xor RDSEED
-into it, and so it computes a malicious RDSEED. By going through our
-hash function, it would require the CPU to compute a preimage on the
-fly, which isn't going to happen.
-
-Cc: Theodore Ts'o <tytso@mit.edu>
-Reviewed-by: Eric Biggers <ebiggers@google.com>
+Reviewed-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
-Suggested-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Reviewed-by: Eric Biggers <ebiggers@google.com>
+Suggested-by: Andy Lutomirski <luto@kernel.org>
+Reported-by: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
+Tested-by: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
+Link: https://lore.kernel.org/lkml/YfMa0QgsjCVdRAvJ@latitude/
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   22 +++++++++-------------
- 1 file changed, 9 insertions(+), 13 deletions(-)
+ drivers/char/random.c |   55 +++++++++++++++++++++++++-------------------------
+ 1 file changed, 28 insertions(+), 27 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -727,13 +727,8 @@ static void crng_reseed(struct crng_stat
- 					CHACHA_KEY_SIZE);
- 	}
- 	spin_lock_irqsave(&crng->lock, flags);
--	for (i = 0; i < 8; i++) {
--		unsigned long rv;
--		if (!arch_get_random_seed_long(&rv) &&
--		    !arch_get_random_long(&rv))
--			rv = random_get_entropy();
--		crng->state[i + 4] ^= buf.key[i] ^ rv;
--	}
-+	for (i = 0; i < 8; i++)
-+		crng->state[i + 4] ^= buf.key[i];
- 	memzero_explicit(&buf, sizeof(buf));
- 	WRITE_ONCE(crng->init_time, jiffies);
- 	spin_unlock_irqrestore(&crng->lock, flags);
-@@ -1054,16 +1049,17 @@ static void extract_entropy(void *buf, s
+@@ -1721,13 +1721,16 @@ struct ctl_table random_table[] = {
+ };
+ #endif	/* CONFIG_SYSCTL */
+ 
++static atomic_t batch_generation = ATOMIC_INIT(0);
++
+ struct batched_entropy {
+ 	union {
+ 		u64 entropy_u64[CHACHA_BLOCK_SIZE / sizeof(u64)];
+ 		u32 entropy_u32[CHACHA_BLOCK_SIZE / sizeof(u32)];
+ 	};
++	local_lock_t lock;
+ 	unsigned int position;
+-	spinlock_t batch_lock;
++	int generation;
+ };
+ 
+ /*
+@@ -1739,7 +1742,7 @@ struct batched_entropy {
+  * point prior.
+  */
+ static DEFINE_PER_CPU(struct batched_entropy, batched_entropy_u64) = {
+-	.batch_lock = __SPIN_LOCK_UNLOCKED(batched_entropy_u64.lock),
++	.lock = INIT_LOCAL_LOCK(batched_entropy_u64.lock)
+ };
+ 
+ u64 get_random_u64(void)
+@@ -1748,67 +1751,65 @@ u64 get_random_u64(void)
  	unsigned long flags;
- 	u8 seed[BLAKE2S_HASH_SIZE], next_key[BLAKE2S_HASH_SIZE];
- 	struct {
--		unsigned long rdrand[32 / sizeof(long)];
-+		unsigned long rdseed[32 / sizeof(long)];
- 		size_t counter;
- 	} block;
- 	size_t i;
+ 	struct batched_entropy *batch;
+ 	static void *previous;
++	int next_gen;
  
- 	trace_extract_entropy(nbytes, input_pool.entropy_count);
+ 	warn_unseeded_randomness(&previous);
  
--	for (i = 0; i < ARRAY_SIZE(block.rdrand); ++i) {
--		if (!arch_get_random_long(&block.rdrand[i]))
--			block.rdrand[i] = random_get_entropy();
-+	for (i = 0; i < ARRAY_SIZE(block.rdseed); ++i) {
-+		if (!arch_get_random_seed_long(&block.rdseed[i]) &&
-+		    !arch_get_random_long(&block.rdseed[i]))
-+			block.rdseed[i] = random_get_entropy();
++	local_lock_irqsave(&batched_entropy_u64.lock, flags);
+ 	batch = raw_cpu_ptr(&batched_entropy_u64);
+-	spin_lock_irqsave(&batch->batch_lock, flags);
+-	if (batch->position % ARRAY_SIZE(batch->entropy_u64) == 0) {
++
++	next_gen = atomic_read(&batch_generation);
++	if (batch->position % ARRAY_SIZE(batch->entropy_u64) == 0 ||
++	    next_gen != batch->generation) {
+ 		extract_crng((u8 *)batch->entropy_u64);
+ 		batch->position = 0;
++		batch->generation = next_gen;
  	}
++
+ 	ret = batch->entropy_u64[batch->position++];
+-	spin_unlock_irqrestore(&batch->batch_lock, flags);
++	local_unlock_irqrestore(&batched_entropy_u64.lock, flags);
+ 	return ret;
+ }
+ EXPORT_SYMBOL(get_random_u64);
  
- 	spin_lock_irqsave(&input_pool.lock, flags);
-@@ -1071,7 +1067,7 @@ static void extract_entropy(void *buf, s
- 	/* seed = HASHPRF(last_key, entropy_input) */
- 	blake2s_final(&input_pool.hash, seed);
+ static DEFINE_PER_CPU(struct batched_entropy, batched_entropy_u32) = {
+-	.batch_lock = __SPIN_LOCK_UNLOCKED(batched_entropy_u32.lock),
++	.lock = INIT_LOCAL_LOCK(batched_entropy_u32.lock)
+ };
++
+ u32 get_random_u32(void)
+ {
+ 	u32 ret;
+ 	unsigned long flags;
+ 	struct batched_entropy *batch;
+ 	static void *previous;
++	int next_gen;
  
--	/* next_key = HASHPRF(seed, RDRAND || 0) */
-+	/* next_key = HASHPRF(seed, RDSEED || 0) */
- 	block.counter = 0;
- 	blake2s(next_key, (u8 *)&block, seed, sizeof(next_key), sizeof(block), sizeof(seed));
- 	blake2s_init_key(&input_pool.hash, BLAKE2S_HASH_SIZE, next_key, sizeof(next_key));
-@@ -1081,7 +1077,7 @@ static void extract_entropy(void *buf, s
+ 	warn_unseeded_randomness(&previous);
  
- 	while (nbytes) {
- 		i = min_t(size_t, nbytes, BLAKE2S_HASH_SIZE);
--		/* output = HASHPRF(seed, RDRAND || ++counter) */
-+		/* output = HASHPRF(seed, RDSEED || ++counter) */
- 		++block.counter;
- 		blake2s(buf, (u8 *)&block, seed, i, sizeof(block), sizeof(seed));
- 		nbytes -= i;
++	local_lock_irqsave(&batched_entropy_u32.lock, flags);
+ 	batch = raw_cpu_ptr(&batched_entropy_u32);
+-	spin_lock_irqsave(&batch->batch_lock, flags);
+-	if (batch->position % ARRAY_SIZE(batch->entropy_u32) == 0) {
++
++	next_gen = atomic_read(&batch_generation);
++	if (batch->position % ARRAY_SIZE(batch->entropy_u32) == 0 ||
++	    next_gen != batch->generation) {
+ 		extract_crng((u8 *)batch->entropy_u32);
+ 		batch->position = 0;
++		batch->generation = next_gen;
+ 	}
++
+ 	ret = batch->entropy_u32[batch->position++];
+-	spin_unlock_irqrestore(&batch->batch_lock, flags);
++	local_unlock_irqrestore(&batched_entropy_u32.lock, flags);
+ 	return ret;
+ }
+ EXPORT_SYMBOL(get_random_u32);
+ 
+ /* It's important to invalidate all potential batched entropy that might
+  * be stored before the crng is initialized, which we can do lazily by
+- * simply resetting the counter to zero so that it's re-extracted on the
+- * next usage. */
++ * bumping the generation counter.
++ */
+ static void invalidate_batched_entropy(void)
+ {
+-	int cpu;
+-	unsigned long flags;
+-
+-	for_each_possible_cpu(cpu) {
+-		struct batched_entropy *batched_entropy;
+-
+-		batched_entropy = per_cpu_ptr(&batched_entropy_u32, cpu);
+-		spin_lock_irqsave(&batched_entropy->batch_lock, flags);
+-		batched_entropy->position = 0;
+-		spin_unlock(&batched_entropy->batch_lock);
+-
+-		batched_entropy = per_cpu_ptr(&batched_entropy_u64, cpu);
+-		spin_lock(&batched_entropy->batch_lock);
+-		batched_entropy->position = 0;
+-		spin_unlock_irqrestore(&batched_entropy->batch_lock, flags);
+-	}
++	atomic_inc(&batch_generation);
+ }
+ 
+ /**
 
 
