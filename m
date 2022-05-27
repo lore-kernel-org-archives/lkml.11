@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B7E6C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 09:02:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72B57C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 09:02:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349940AbiE0JCk (ORCPT
+        id S1350319AbiE0JCq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 05:02:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55996 "EHLO
+        Fri, 27 May 2022 05:02:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350599AbiE0JAL (ORCPT
+        with ESMTP id S1350531AbiE0JAD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 05:00:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B665031DE5;
-        Fri, 27 May 2022 01:56:23 -0700 (PDT)
+        Fri, 27 May 2022 05:00:03 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85AA2106566;
+        Fri, 27 May 2022 01:56:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2AFB4B823E1;
-        Fri, 27 May 2022 08:56:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 464ADC385B8;
-        Fri, 27 May 2022 08:56:09 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id DE5C2CE23C9;
+        Fri, 27 May 2022 08:56:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4357C385B8;
+        Fri, 27 May 2022 08:56:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653641770;
-        bh=TKtKwCRmNQngjBUJ2nTn1VXui/HBhuKGLvNVpp+LRBY=;
+        s=korg; t=1653641767;
+        bh=2wSHEEurpZQC1OfwEv0aR4844pcEFDJ9Ix5fkH0x0Gs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BFmavDjENWcVyPyJ+hawRgdedT20x3/5HxJAypujJf9POHO6uYogtHglWFPI4QVcH
-         3YfTIF+fkw9dXqNw5AkGdtsL2qP5vWkrfGVuVSNZWcIbmrE5A0+rg3PvafNGd3rsab
-         mOxZ5fTu2OD9izNnBuEXXi34CiDNLGT2d0oqfCMU=
+        b=cw8mwaa6Uw3nztn6usLdRkjkBJh7jiECjQo8p/vJKjIUX0+FdUZeLxsqJS5VnbFLA
+         uUJ0bAwNGBvNoC5vhIGvyUFlkz3tJyQMYhXKkYspsylnOAAXOm/VaJJcbXe/Zp4Vbq
+         IdNqFo99wZHLRY4CvoK3EBN6tdeGSFXDx9MhxWJY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
-        Eric Biggers <ebiggers@google.com>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.17 033/111] random: group entropy extraction functions
-Date:   Fri, 27 May 2022 10:49:05 +0200
-Message-Id: <20220527084824.160650233@linuxfoundation.org>
+        stable@vger.kernel.org, Yongkang Jia <kangel@zju.edu.cn>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Vegard Nossum <vegard.nossum@oracle.com>
+Subject: [PATCH 5.10 004/163] KVM: x86/mmu: fix NULL pointer dereference on guest INVPCID
+Date:   Fri, 27 May 2022 10:48:04 +0200
+Message-Id: <20220527084828.810813962@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084819.133490171@linuxfoundation.org>
-References: <20220527084819.133490171@linuxfoundation.org>
+In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
+References: <20220527084828.156494029@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,290 +50,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Paolo Bonzini <pbonzini@redhat.com>
 
-commit a5ed7cb1a7732ef11959332d507889fbc39ebbb4 upstream.
+commit 9f46c187e2e680ecd9de7983e4d081c3391acc76 upstream.
 
-This pulls all of the entropy extraction-focused functions into the
-third labeled section.
+With shadow paging enabled, the INVPCID instruction results in a call
+to kvm_mmu_invpcid_gva.  If INVPCID is executed with CR0.PG=0, the
+invlpg callback is not set and the result is a NULL pointer dereference.
+Fix it trivially by checking for mmu->invlpg before every call.
 
-No functional changes.
+There are other possibilities:
 
-Cc: Theodore Ts'o <tytso@mit.edu>
-Reviewed-by: Eric Biggers <ebiggers@google.com>
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+- check for CR0.PG, because KVM (like all Intel processors after P5)
+  flushes guest TLB on CR0.PG changes so that INVPCID/INVLPG are a
+  nop with paging disabled
+
+- check for EFER.LMA, because KVM syncs and flushes when switching
+  MMU contexts outside of 64-bit mode
+
+All of these are tricky, go for the simple solution.  This is CVE-2022-1789.
+
+Reported-by: Yongkang Jia <kangel@zju.edu.cn>
+Cc: stable@vger.kernel.org
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+[fix conflict due to missing b9e5603c2a3accbadfec570ac501a54431a6bdba]
+Signed-off-by: Vegard Nossum <vegard.nossum@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |  216 +++++++++++++++++++++++++-------------------------
- 1 file changed, 109 insertions(+), 107 deletions(-)
+ arch/x86/kvm/mmu/mmu.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -895,23 +895,36 @@ size_t __must_check get_random_bytes_arc
- }
- EXPORT_SYMBOL(get_random_bytes_arch);
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -5178,14 +5178,16 @@ void kvm_mmu_invpcid_gva(struct kvm_vcpu
+ 	uint i;
  
-+
-+/**********************************************************************
-+ *
-+ * Entropy accumulation and extraction routines.
-+ *
-+ * Callers may add entropy via:
-+ *
-+ *     static void mix_pool_bytes(const void *in, size_t nbytes)
-+ *
-+ * After which, if added entropy should be credited:
-+ *
-+ *     static void credit_entropy_bits(size_t nbits)
-+ *
-+ * Finally, extract entropy via these two, with the latter one
-+ * setting the entropy count to zero and extracting only if there
-+ * is POOL_MIN_BITS entropy credited prior:
-+ *
-+ *     static void extract_entropy(void *buf, size_t nbytes)
-+ *     static bool drain_entropy(void *buf, size_t nbytes)
-+ *
-+ **********************************************************************/
-+
- enum {
- 	POOL_BITS = BLAKE2S_HASH_SIZE * 8,
- 	POOL_MIN_BITS = POOL_BITS /* No point in settling for less. */
- };
+ 	if (pcid == kvm_get_active_pcid(vcpu)) {
+-		mmu->invlpg(vcpu, gva, mmu->root_hpa);
++		if (mmu->invlpg)
++			mmu->invlpg(vcpu, gva, mmu->root_hpa);
+ 		tlb_flush = true;
+ 	}
  
--/*
-- * Static global variables
-- */
-+/* For notifying userspace should write into /dev/random. */
- static DECLARE_WAIT_QUEUE_HEAD(random_write_wait);
- 
--/**********************************************************************
-- *
-- * OS independent entropy store.   Here are the functions which handle
-- * storing entropy in an entropy pool.
-- *
-- **********************************************************************/
--
- static struct {
- 	struct blake2s_state hash;
- 	spinlock_t lock;
-@@ -924,28 +937,106 @@ static struct {
- 	.lock = __SPIN_LOCK_UNLOCKED(input_pool.lock),
- };
- 
--static void extract_entropy(void *buf, size_t nbytes);
--static bool drain_entropy(void *buf, size_t nbytes);
--
--static void crng_reseed(void);
-+static void _mix_pool_bytes(const void *in, size_t nbytes)
-+{
-+	blake2s_update(&input_pool.hash, in, nbytes);
-+}
- 
- /*
-  * This function adds bytes into the entropy "pool".  It does not
-  * update the entropy estimate.  The caller should call
-  * credit_entropy_bits if this is appropriate.
-  */
--static void _mix_pool_bytes(const void *in, size_t nbytes)
-+static void mix_pool_bytes(const void *in, size_t nbytes)
- {
--	blake2s_update(&input_pool.hash, in, nbytes);
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&input_pool.lock, flags);
-+	_mix_pool_bytes(in, nbytes);
-+	spin_unlock_irqrestore(&input_pool.lock, flags);
- }
- 
--static void mix_pool_bytes(const void *in, size_t nbytes)
-+static void credit_entropy_bits(size_t nbits)
-+{
-+	unsigned int entropy_count, orig, add;
-+
-+	if (!nbits)
-+		return;
-+
-+	add = min_t(size_t, nbits, POOL_BITS);
-+
-+	do {
-+		orig = READ_ONCE(input_pool.entropy_count);
-+		entropy_count = min_t(unsigned int, POOL_BITS, orig + add);
-+	} while (cmpxchg(&input_pool.entropy_count, orig, entropy_count) != orig);
-+
-+	if (crng_init < 2 && entropy_count >= POOL_MIN_BITS)
-+		crng_reseed();
-+}
-+
-+/*
-+ * This is an HKDF-like construction for using the hashed collected entropy
-+ * as a PRF key, that's then expanded block-by-block.
-+ */
-+static void extract_entropy(void *buf, size_t nbytes)
- {
- 	unsigned long flags;
-+	u8 seed[BLAKE2S_HASH_SIZE], next_key[BLAKE2S_HASH_SIZE];
-+	struct {
-+		unsigned long rdseed[32 / sizeof(long)];
-+		size_t counter;
-+	} block;
-+	size_t i;
-+
-+	for (i = 0; i < ARRAY_SIZE(block.rdseed); ++i) {
-+		if (!arch_get_random_seed_long(&block.rdseed[i]) &&
-+		    !arch_get_random_long(&block.rdseed[i]))
-+			block.rdseed[i] = random_get_entropy();
-+	}
- 
- 	spin_lock_irqsave(&input_pool.lock, flags);
--	_mix_pool_bytes(in, nbytes);
-+
-+	/* seed = HASHPRF(last_key, entropy_input) */
-+	blake2s_final(&input_pool.hash, seed);
-+
-+	/* next_key = HASHPRF(seed, RDSEED || 0) */
-+	block.counter = 0;
-+	blake2s(next_key, (u8 *)&block, seed, sizeof(next_key), sizeof(block), sizeof(seed));
-+	blake2s_init_key(&input_pool.hash, BLAKE2S_HASH_SIZE, next_key, sizeof(next_key));
-+
- 	spin_unlock_irqrestore(&input_pool.lock, flags);
-+	memzero_explicit(next_key, sizeof(next_key));
-+
-+	while (nbytes) {
-+		i = min_t(size_t, nbytes, BLAKE2S_HASH_SIZE);
-+		/* output = HASHPRF(seed, RDSEED || ++counter) */
-+		++block.counter;
-+		blake2s(buf, (u8 *)&block, seed, i, sizeof(block), sizeof(seed));
-+		nbytes -= i;
-+		buf += i;
-+	}
-+
-+	memzero_explicit(seed, sizeof(seed));
-+	memzero_explicit(&block, sizeof(block));
-+}
-+
-+/*
-+ * First we make sure we have POOL_MIN_BITS of entropy in the pool, and then we
-+ * set the entropy count to zero (but don't actually touch any data). Only then
-+ * can we extract a new key with extract_entropy().
-+ */
-+static bool drain_entropy(void *buf, size_t nbytes)
-+{
-+	unsigned int entropy_count;
-+	do {
-+		entropy_count = READ_ONCE(input_pool.entropy_count);
-+		if (entropy_count < POOL_MIN_BITS)
-+			return false;
-+	} while (cmpxchg(&input_pool.entropy_count, entropy_count, 0) != entropy_count);
-+	extract_entropy(buf, nbytes);
-+	wake_up_interruptible(&random_write_wait);
-+	kill_fasync(&fasync, SIGIO, POLL_OUT);
-+	return true;
- }
- 
- struct fast_pool {
-@@ -988,24 +1079,6 @@ static void fast_mix(u32 pool[4])
- 	pool[2] = c;  pool[3] = d;
- }
- 
--static void credit_entropy_bits(size_t nbits)
--{
--	unsigned int entropy_count, orig, add;
--
--	if (!nbits)
--		return;
--
--	add = min_t(size_t, nbits, POOL_BITS);
--
--	do {
--		orig = READ_ONCE(input_pool.entropy_count);
--		entropy_count = min_t(unsigned int, POOL_BITS, orig + add);
--	} while (cmpxchg(&input_pool.entropy_count, orig, entropy_count) != orig);
--
--	if (crng_init < 2 && entropy_count >= POOL_MIN_BITS)
--		crng_reseed();
--}
--
- /*********************************************************************
-  *
-  * Entropy input management
-@@ -1202,77 +1275,6 @@ void add_disk_randomness(struct gendisk
- EXPORT_SYMBOL_GPL(add_disk_randomness);
- #endif
- 
--/*********************************************************************
-- *
-- * Entropy extraction routines
-- *
-- *********************************************************************/
--
--/*
-- * This is an HKDF-like construction for using the hashed collected entropy
-- * as a PRF key, that's then expanded block-by-block.
-- */
--static void extract_entropy(void *buf, size_t nbytes)
--{
--	unsigned long flags;
--	u8 seed[BLAKE2S_HASH_SIZE], next_key[BLAKE2S_HASH_SIZE];
--	struct {
--		unsigned long rdseed[32 / sizeof(long)];
--		size_t counter;
--	} block;
--	size_t i;
--
--	for (i = 0; i < ARRAY_SIZE(block.rdseed); ++i) {
--		if (!arch_get_random_seed_long(&block.rdseed[i]) &&
--		    !arch_get_random_long(&block.rdseed[i]))
--			block.rdseed[i] = random_get_entropy();
--	}
--
--	spin_lock_irqsave(&input_pool.lock, flags);
--
--	/* seed = HASHPRF(last_key, entropy_input) */
--	blake2s_final(&input_pool.hash, seed);
--
--	/* next_key = HASHPRF(seed, RDSEED || 0) */
--	block.counter = 0;
--	blake2s(next_key, (u8 *)&block, seed, sizeof(next_key), sizeof(block), sizeof(seed));
--	blake2s_init_key(&input_pool.hash, BLAKE2S_HASH_SIZE, next_key, sizeof(next_key));
--
--	spin_unlock_irqrestore(&input_pool.lock, flags);
--	memzero_explicit(next_key, sizeof(next_key));
--
--	while (nbytes) {
--		i = min_t(size_t, nbytes, BLAKE2S_HASH_SIZE);
--		/* output = HASHPRF(seed, RDSEED || ++counter) */
--		++block.counter;
--		blake2s(buf, (u8 *)&block, seed, i, sizeof(block), sizeof(seed));
--		nbytes -= i;
--		buf += i;
--	}
--
--	memzero_explicit(seed, sizeof(seed));
--	memzero_explicit(&block, sizeof(block));
--}
--
--/*
-- * First we make sure we have POOL_MIN_BITS of entropy in the pool, and then we
-- * set the entropy count to zero (but don't actually touch any data). Only then
-- * can we extract a new key with extract_entropy().
-- */
--static bool drain_entropy(void *buf, size_t nbytes)
--{
--	unsigned int entropy_count;
--	do {
--		entropy_count = READ_ONCE(input_pool.entropy_count);
--		if (entropy_count < POOL_MIN_BITS)
--			return false;
--	} while (cmpxchg(&input_pool.entropy_count, entropy_count, 0) != entropy_count);
--	extract_entropy(buf, nbytes);
--	wake_up_interruptible(&random_write_wait);
--	kill_fasync(&fasync, SIGIO, POLL_OUT);
--	return true;
--}
--
- /*
-  * Each time the timer fires, we expect that we got an unpredictable
-  * jump in the cycle counter. Even if the timer is running on another
+ 	for (i = 0; i < KVM_MMU_NUM_PREV_ROOTS; i++) {
+ 		if (VALID_PAGE(mmu->prev_roots[i].hpa) &&
+ 		    pcid == kvm_get_pcid(vcpu, mmu->prev_roots[i].pgd)) {
+-			mmu->invlpg(vcpu, gva, mmu->prev_roots[i].hpa);
++			if (mmu->invlpg)
++				mmu->invlpg(vcpu, gva, mmu->prev_roots[i].hpa);
+ 			tlb_flush = true;
+ 		}
+ 	}
 
 
