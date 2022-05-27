@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC562C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:21:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 322D6C43217
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:21:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352665AbiE0MUI (ORCPT
+        id S1353603AbiE0MUP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 08:20:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42330 "EHLO
+        Fri, 27 May 2022 08:20:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353649AbiE0MGI (ORCPT
+        with ESMTP id S1353409AbiE0MFz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 08:06:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D3581666BE;
-        Fri, 27 May 2022 04:55:07 -0700 (PDT)
+        Fri, 27 May 2022 08:05:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D82E5158963;
+        Fri, 27 May 2022 04:54:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C21861CD6;
-        Fri, 27 May 2022 11:55:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4988BC385A9;
-        Fri, 27 May 2022 11:55:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6F377B824D7;
+        Fri, 27 May 2022 11:54:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4617C385A9;
+        Fri, 27 May 2022 11:54:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653652506;
-        bh=RUEsyhJFnaOVYv98/ybfm3mKHtkusHDBD7ScaWxPpOI=;
+        s=korg; t=1653652471;
+        bh=JBblxC1+YmpuUv6Lwi1ZNhpwnmlUhG7n8r3PcPaXdS4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QptRGjrppCetVetN43rf6sotoIFqxWkmxqAl29ojQEEJu7JB3fR0M2B8Wwa1QT7Xe
-         K4hZ9YWCVdbefGRufXcM1lOPHEz0emQvoAzb0qQgZt6GJtRyAsPnb2EFM6ehe8qO7L
-         NdGv/hg0/vVV3SvoBIp6HSEuzLsStSlpWD4SbU44=
+        b=YoIyVy6tLWqsbl3bSHjdaqcYUXdOUcocM/650PUY9SvxqA6visGIZGFzR+uRVgSML
+         YSBrZSi825RxoOSDMzKm/v13cHlrtJCrRTKZj45fopcmtN9Za2XQ4JMJhHNtEHIXkn
+         HM+itW5AmSobvVHHztUElbbr0YLgINvAoSYcH4wM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Edward Matijevic <motolav@gmail.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.10 163/163] ALSA: ctxfi: Add SB046x PCI ID
-Date:   Fri, 27 May 2022 10:50:43 +0200
-Message-Id: <20220527084850.931243828@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.10 150/163] random: handle latent entropy and command line from random_init()
+Date:   Fri, 27 May 2022 10:50:30 +0200
+Message-Id: <20220527084849.198680678@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
 References: <20220527084828.156494029@linuxfoundation.org>
@@ -49,59 +50,117 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Edward Matijevic <motolav@gmail.com>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 1b073ebb174d0c7109b438e0a5eb4495137803ec upstream.
+commit 2f14062bb14b0fcfcc21e6dc7d5b5c0d25966164 upstream.
 
-Adds the PCI ID for X-Fi cards sold under the Platnum and XtremeMusic names
+Currently, start_kernel() adds latent entropy and the command line to
+the entropy bool *after* the RNG has been initialized, deferring when
+it's actually used by things like stack canaries until the next time
+the pool is seeded. This surely is not intended.
 
-Before: snd_ctxfi 0000:05:05.0: chip 20K1 model Unknown (1102:0021) is found
-After: snd_ctxfi 0000:05:05.0: chip 20K1 model SB046x (1102:0021) is found
+Rather than splitting up which entropy gets added where and when between
+start_kernel() and random_init(), just do everything in random_init(),
+which should eliminate these kinds of bugs in the future.
 
-[ This is only about defining the model name string, and the rest is
-  handled just like before, as a default unknown device.
-  Edward confirmed that the stuff has been working fine -- tiwai ]
+While we're at it, rename the awkwardly titled "rand_initialize()" to
+the more standard "random_init()" nomenclature.
 
-Signed-off-by: Edward Matijevic <motolav@gmail.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/cae7d1a4-8bd9-7dfe-7427-db7e766f7272@gmail.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/ctxfi/ctatc.c      |    2 ++
- sound/pci/ctxfi/cthardware.h |    3 ++-
- 2 files changed, 4 insertions(+), 1 deletion(-)
+ drivers/char/random.c  |   13 ++++++++-----
+ include/linux/random.h |   16 +++++++---------
+ init/main.c            |   10 +++-------
+ 3 files changed, 18 insertions(+), 21 deletions(-)
 
---- a/sound/pci/ctxfi/ctatc.c
-+++ b/sound/pci/ctxfi/ctatc.c
-@@ -36,6 +36,7 @@
- 			    | ((IEC958_AES3_CON_FS_48000) << 24))
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -888,12 +888,13 @@ early_param("random.trust_bootloader", p
  
- static const struct snd_pci_quirk subsys_20k1_list[] = {
-+	SND_PCI_QUIRK(PCI_VENDOR_ID_CREATIVE, 0x0021, "SB046x", CTSB046X),
- 	SND_PCI_QUIRK(PCI_VENDOR_ID_CREATIVE, 0x0022, "SB055x", CTSB055X),
- 	SND_PCI_QUIRK(PCI_VENDOR_ID_CREATIVE, 0x002f, "SB055x", CTSB055X),
- 	SND_PCI_QUIRK(PCI_VENDOR_ID_CREATIVE, 0x0029, "SB073x", CTSB073X),
-@@ -64,6 +65,7 @@ static const struct snd_pci_quirk subsys
+ /*
+  * The first collection of entropy occurs at system boot while interrupts
+- * are still turned off. Here we push in RDSEED, a timestamp, and utsname().
+- * Depending on the above configuration knob, RDSEED may be considered
+- * sufficient for initialization. Note that much earlier setup may already
+- * have pushed entropy into the input pool by the time we get here.
++ * are still turned off. Here we push in latent entropy, RDSEED, a timestamp,
++ * utsname(), and the command line. Depending on the above configuration knob,
++ * RDSEED may be considered sufficient for initialization. Note that much
++ * earlier setup may already have pushed entropy into the input pool by the
++ * time we get here.
+  */
+-int __init rand_initialize(void)
++int __init random_init(const char *command_line)
+ {
+ 	size_t i;
+ 	ktime_t now = ktime_get_real();
+@@ -915,6 +916,8 @@ int __init rand_initialize(void)
+ 	}
+ 	_mix_pool_bytes(&now, sizeof(now));
+ 	_mix_pool_bytes(utsname(), sizeof(*(utsname())));
++	_mix_pool_bytes(command_line, strlen(command_line));
++	add_latent_entropy();
  
- static const char *ct_subsys_name[NUM_CTCARDS] = {
- 	/* 20k1 models */
-+	[CTSB046X]	= "SB046x",
- 	[CTSB055X]	= "SB055x",
- 	[CTSB073X]	= "SB073x",
- 	[CTUAA]		= "UAA",
---- a/sound/pci/ctxfi/cthardware.h
-+++ b/sound/pci/ctxfi/cthardware.h
-@@ -26,8 +26,9 @@ enum CHIPTYP {
+ 	if (crng_ready())
+ 		crng_reseed();
+--- a/include/linux/random.h
++++ b/include/linux/random.h
+@@ -14,26 +14,24 @@ struct notifier_block;
  
- enum CTCARDS {
- 	/* 20k1 models */
-+	CTSB046X,
-+	CT20K1_MODEL_FIRST = CTSB046X,
- 	CTSB055X,
--	CT20K1_MODEL_FIRST = CTSB055X,
- 	CTSB073X,
- 	CTUAA,
- 	CT20K1_UNKNOWN,
+ extern void add_device_randomness(const void *, size_t);
+ extern void add_bootloader_randomness(const void *, size_t);
++extern void add_input_randomness(unsigned int type, unsigned int code,
++				 unsigned int value) __latent_entropy;
++extern void add_interrupt_randomness(int irq) __latent_entropy;
++extern void add_hwgenerator_randomness(const void *buffer, size_t count,
++				       size_t entropy);
+ 
+ #if defined(LATENT_ENTROPY_PLUGIN) && !defined(__CHECKER__)
+ static inline void add_latent_entropy(void)
+ {
+-	add_device_randomness((const void *)&latent_entropy,
+-			      sizeof(latent_entropy));
++	add_device_randomness((const void *)&latent_entropy, sizeof(latent_entropy));
+ }
+ #else
+ static inline void add_latent_entropy(void) {}
+ #endif
+ 
+-extern void add_input_randomness(unsigned int type, unsigned int code,
+-				 unsigned int value) __latent_entropy;
+-extern void add_interrupt_randomness(int irq) __latent_entropy;
+-extern void add_hwgenerator_randomness(const void *buffer, size_t count,
+-				       size_t entropy);
+-
+ extern void get_random_bytes(void *buf, size_t nbytes);
+ extern int wait_for_random_bytes(void);
+-extern int __init rand_initialize(void);
++extern int __init random_init(const char *command_line);
+ extern bool rng_is_initialized(void);
+ extern int register_random_ready_notifier(struct notifier_block *nb);
+ extern int unregister_random_ready_notifier(struct notifier_block *nb);
+--- a/init/main.c
++++ b/init/main.c
+@@ -957,15 +957,11 @@ asmlinkage __visible void __init __no_sa
+ 	/*
+ 	 * For best initial stack canary entropy, prepare it after:
+ 	 * - setup_arch() for any UEFI RNG entropy and boot cmdline access
+-	 * - timekeeping_init() for ktime entropy used in rand_initialize()
++	 * - timekeeping_init() for ktime entropy used in random_init()
+ 	 * - time_init() for making random_get_entropy() work on some platforms
+-	 * - rand_initialize() to get any arch-specific entropy like RDRAND
+-	 * - add_latent_entropy() to get any latent entropy
+-	 * - adding command line entropy
++	 * - random_init() to initialize the RNG from from early entropy sources
+ 	 */
+-	rand_initialize();
+-	add_latent_entropy();
+-	add_device_randomness(command_line, strlen(command_line));
++	random_init(command_line);
+ 	boot_init_stack_canary();
+ 
+ 	perf_event_init();
 
 
