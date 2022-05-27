@@ -2,183 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D8D3C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 10:30:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48B13C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 10:35:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350994AbiE0K36 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 06:29:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60868 "EHLO
+        id S240583AbiE0Kev (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 06:34:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350613AbiE0K3v (ORCPT
+        with ESMTP id S230355AbiE0Kes (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 06:29:51 -0400
+        Fri, 27 May 2022 06:34:48 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DFC06129EC5
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 03:29:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 472341053F1
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 03:34:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653647390;
+        s=mimecast20190719; t=1653647687;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=LwZPFqIRJiz/mjivgVRtjcs5bLzTBRhho+OpN7zzsp8=;
-        b=USHyu2VNzjzRI0VSg0YZMSdr4mqsR/IhZ9QUv/bMC0wXqEq+crfLM+Wfwq/c1dp3mf5dC4
-        DvmWU5egMsrBxW4HoI58UTs71Y1bQ/HomhLdSYEHLJLzXgkMvQKo3bbq7kDVxBvPmA97Xg
-        VYqcRs1vhYnbUMuWST5F50pJv48aiC8=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=J1xQ8OiQHH9ksLcm4a9s84IyD29bInrw0vUd6yz8xCk=;
+        b=AWRryVfY6HJn6AMJFvSSwvNFE/3shn7k4GiIQLhBwuik2v0QTUNHEe+TQXFTo229LAUYfD
+        iq4IXDPUSQ4k7yTnhAFXfEOv4k65EkwIQFEijIJ+qBlg3muI1ZBO7vc9an+i0ajxsvvgDy
+        iKPTJudh/VzGG2nkAdjXVdwUQHhqBk8=
+Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
+ [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-75-V5UyI_NlOUCh8KMCZTJNDA-1; Fri, 27 May 2022 06:29:48 -0400
-X-MC-Unique: V5UyI_NlOUCh8KMCZTJNDA-1
-Received: by mail-wm1-f70.google.com with SMTP id n25-20020a05600c3b9900b0039733081b4dso2482319wms.7
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 03:29:48 -0700 (PDT)
+ us-mta-203-HRTQFRngOnKjpBnDtietgg-1; Fri, 27 May 2022 06:34:45 -0400
+X-MC-Unique: HRTQFRngOnKjpBnDtietgg-1
+Received: by mail-qk1-f200.google.com with SMTP id bj2-20020a05620a190200b005084968bb24so3502778qkb.23
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 03:34:45 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=LwZPFqIRJiz/mjivgVRtjcs5bLzTBRhho+OpN7zzsp8=;
-        b=sCGjY9ghLX5WYV5e6zS8LgKED4XEvwCxiBZCCCMAmUiqLKGWB/AQgOsf41qsVW+sz3
-         wkKwY1HvkermJFg+9BGZM/gV9YT2dmhjMlRGKKGNVeSGD2rbzXywLknI519HWkoLIIJU
-         rXz2e9GNAylrBR2RJT0N05vu2khMQY25QDm57gMgO1lT5Z89nuhAqL99Lqf8WDSGbiRl
-         NXO+mmd1voCXBpWLH1naDm1GLbVj9TcrUpC9O0hCSCsNsc3Ypeg0R/RR7oVZD3voYHxn
-         xT0DUIwuI38Q9W7cppMt3xMaeLn38fCXCxCnGaA9QM5Dv8mIlSCLp4cn6m0gR8dIsjFL
-         nhQA==
-X-Gm-Message-State: AOAM532Et08AvG1VEJAH5CPYVEWDTTm3d8staCxGMfsBfME0zi11mtwc
-        5gYx8pTjBGgOGyFjsxi7+GYVhX+KaI4Qh3s00CxmQQEWn+ELIC/LwiEHTPOHDycM3WHri95GURQ
-        ZhoyccglHQEg94g52k3lusbeX
-X-Received: by 2002:a05:600c:268a:b0:397:48d4:f6ad with SMTP id 10-20020a05600c268a00b0039748d4f6admr6433899wmt.134.1653647387638;
-        Fri, 27 May 2022 03:29:47 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwIfPwi/cxkq5NvC1Uj/iwugQqN4hK/nrAnna0hSd9oRlJyVgf6OS4vhXpx6o3Vxd5nu2q/BA==
-X-Received: by 2002:a05:600c:268a:b0:397:48d4:f6ad with SMTP id 10-20020a05600c268a00b0039748d4f6admr6433879wmt.134.1653647387417;
-        Fri, 27 May 2022 03:29:47 -0700 (PDT)
-Received: from redhat.com ([2.55.130.213])
-        by smtp.gmail.com with ESMTPSA id n1-20020adfe341000000b0020e68dd2598sm1351811wrj.97.2022.05.27.03.29.44
+        bh=J1xQ8OiQHH9ksLcm4a9s84IyD29bInrw0vUd6yz8xCk=;
+        b=DaD6Olha+E3EVOGkCcF/ixWR7bWYVyseYDYvhQWWrGT+x8cPIlvvgIVb9fcKW1/K+G
+         phkEHarF2I7rr31Ys/QjNi3u//xGTjSao3hXF2VeIGJrFBywdd348/Zb0MphTAY9IVQQ
+         UxKSeEohn1aw7q4q7qwjHIz2GuaNlwXA6AO/h5gricCCNi/tWMasKTAkjTGm3DG6mUIl
+         kKAh4Us1ayfltyNCu3j0aYtVk8O6kQQJiQv1jujKj1HawS8sZZqq24tyIBjWhdsphzet
+         /tXs2oa+J2Iw0U/HvHCElI7pEITEKMkXfmktxrI/eSpNz0XTxq/EbSfJLJW2A6qgHoK8
+         y1tQ==
+X-Gm-Message-State: AOAM533582BOsYD9l9U+/NbqyWcF11KP26KNWW7iS2nuNGfSVJGsLaNp
+        vantek3KBOHp4o5EjF9fOnwe5EaKkCTmUoU7kPwUaNHtV2UuHs0mEOKWBXH5Nb+LTRaq3yOVbwn
+        S2DQiGEQQLObr2SfLgpY4M+D1
+X-Received: by 2002:a05:620a:4042:b0:6a5:aded:fe52 with SMTP id i2-20020a05620a404200b006a5adedfe52mr5591557qko.365.1653647685391;
+        Fri, 27 May 2022 03:34:45 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwqxv+VTwgq+LPdZICQyGqh24jAfcU1fwHBx1WzLpbtJcUIqfLL3McbVD+9ZVGHmS3yYq9xJg==
+X-Received: by 2002:a05:620a:4042:b0:6a5:aded:fe52 with SMTP id i2-20020a05620a404200b006a5adedfe52mr5591538qko.365.1653647685166;
+        Fri, 27 May 2022 03:34:45 -0700 (PDT)
+Received: from sgarzare-redhat (host-87-12-25-16.business.telecomitalia.it. [87.12.25.16])
+        by smtp.gmail.com with ESMTPSA id h19-20020a05620a401300b006a10c8d5d96sm2802962qko.3.2022.05.27.03.34.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 May 2022 03:29:46 -0700 (PDT)
-Date:   Fri, 27 May 2022 06:29:42 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     keliu <liuke94@huawei.com>
-Cc:     mpm@selenic.com, herbert@gondor.apana.org.au, minyard@acm.org,
-        sudipm.mukherjee@gmail.com, arnd@arndb.de,
-        gregkh@linuxfoundation.org, lvivier@redhat.com,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] drivers: char: Directly use ida_alloc()/free()
-Message-ID: <20220527062822-mutt-send-email-mst@kernel.org>
-References: <20220527074422.2475104-1-liuke94@huawei.com>
+        Fri, 27 May 2022 03:34:44 -0700 (PDT)
+Date:   Fri, 27 May 2022 12:34:36 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     mst@redhat.com, virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org, tglx@linutronix.de,
+        peterz@infradead.org, paulmck@kernel.org, maz@kernel.org,
+        pasic@linux.ibm.com, cohuck@redhat.com, eperezma@redhat.com,
+        lulu@redhat.com, xuanzhuo@linux.alibaba.com,
+        Vineeth Vijayan <vneethv@linux.ibm.com>,
+        Peter Oberparleiter <oberpar@linux.ibm.com>,
+        linux-s390@vger.kernel.org
+Subject: Re: [PATCH V6 2/9] virtio: use virtio_reset_device() when possible
+Message-ID: <20220527103436.erqkgeh34prlvssh@sgarzare-redhat>
+References: <20220527060120.20964-1-jasowang@redhat.com>
+ <20220527060120.20964-3-jasowang@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <20220527074422.2475104-1-liuke94@huawei.com>
+In-Reply-To: <20220527060120.20964-3-jasowang@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 27, 2022 at 07:44:22AM +0000, keliu wrote:
-> Use ida_alloc()/ida_free() instead of deprecated
-> ida_simple_get()/ida_simple_remove() .
-> 
-> Signed-off-by: keliu <liuke94@huawei.com>
+On Fri, May 27, 2022 at 02:01:13PM +0800, Jason Wang wrote:
+>This allows us to do common extension without duplicating code.
+>
+>Cc: Thomas Gleixner <tglx@linutronix.de>
+>Cc: Peter Zijlstra <peterz@infradead.org>
+>Cc: "Paul E. McKenney" <paulmck@kernel.org>
+>Cc: Marc Zyngier <maz@kernel.org>
+>Cc: Halil Pasic <pasic@linux.ibm.com>
+>Cc: Cornelia Huck <cohuck@redhat.com>
+>Cc: Vineeth Vijayan <vneethv@linux.ibm.com>
+>Cc: Peter Oberparleiter <oberpar@linux.ibm.com>
+>Cc: linux-s390@vger.kernel.org
+>Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+>Signed-off-by: Jason Wang <jasowang@redhat.com>
+>---
+> drivers/virtio/virtio.c | 4 ++--
+> 1 file changed, 2 insertions(+), 2 deletions(-)
 
+Maybe I had already reviewed it :-), anyway:
 
-virtio bits
-
-Acked-by: Michael S. Tsirkin <mst@redhat.com>
-
-
-pls cc people that commented on a similar patch in the past though.
-
-Thanks!
-
-> ---
->  drivers/char/hw_random/virtio-rng.c | 6 +++---
->  drivers/char/ipmi/ipmi_msghandler.c | 4 ++--
->  drivers/char/ppdev.c                | 6 +++---
->  3 files changed, 8 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/char/hw_random/virtio-rng.c b/drivers/char/hw_random/virtio-rng.c
-> index e856df7e285c..0ee602963c50 100644
-> --- a/drivers/char/hw_random/virtio-rng.c
-> +++ b/drivers/char/hw_random/virtio-rng.c
-> @@ -135,7 +135,7 @@ static int probe_common(struct virtio_device *vdev)
->  	if (!vi)
->  		return -ENOMEM;
->  
-> -	vi->index = index = ida_simple_get(&rng_index_ida, 0, 0, GFP_KERNEL);
-> +	vi->index = index = ida_alloc(&rng_index_ida, GFP_KERNEL);
->  	if (index < 0) {
->  		err = index;
->  		goto err_ida;
-> @@ -165,7 +165,7 @@ static int probe_common(struct virtio_device *vdev)
->  	return 0;
->  
->  err_find:
-> -	ida_simple_remove(&rng_index_ida, index);
-> +	ida_free(&rng_index_ida, index);
->  err_ida:
->  	kfree(vi);
->  	return err;
-> @@ -183,7 +183,7 @@ static void remove_common(struct virtio_device *vdev)
->  		hwrng_unregister(&vi->hwrng);
->  	virtio_reset_device(vdev);
->  	vdev->config->del_vqs(vdev);
-> -	ida_simple_remove(&rng_index_ida, vi->index);
-> +	ida_free(&rng_index_ida, vi->index);
->  	kfree(vi);
->  }
->  
-> diff --git a/drivers/char/ipmi/ipmi_msghandler.c b/drivers/char/ipmi/ipmi_msghandler.c
-> index f1827257ef0e..c1584ed24a6b 100644
-> --- a/drivers/char/ipmi/ipmi_msghandler.c
-> +++ b/drivers/char/ipmi/ipmi_msghandler.c
-> @@ -3018,7 +3018,7 @@ static void cleanup_bmc_work(struct work_struct *work)
->  	int id = bmc->pdev.id; /* Unregister overwrites id */
->  
->  	platform_device_unregister(&bmc->pdev);
-> -	ida_simple_remove(&ipmi_bmc_ida, id);
-> +	ida_free(&ipmi_bmc_ida, id);
->  }
->  
->  static void
-> @@ -3134,7 +3134,7 @@ static int __ipmi_bmc_register(struct ipmi_smi *intf,
->  
->  		bmc->pdev.name = "ipmi_bmc";
->  
-> -		rv = ida_simple_get(&ipmi_bmc_ida, 0, 0, GFP_KERNEL);
-> +		rv = ida_alloc(&ipmi_bmc_ida, GFP_KERNEL);
->  		if (rv < 0) {
->  			kfree(bmc);
->  			goto out;
-> diff --git a/drivers/char/ppdev.c b/drivers/char/ppdev.c
-> index 38b46c7d1737..f6024d97fe70 100644
-> --- a/drivers/char/ppdev.c
-> +++ b/drivers/char/ppdev.c
-> @@ -299,7 +299,7 @@ static int register_device(int minor, struct pp_struct *pp)
->  		goto err;
->  	}
->  
-> -	index = ida_simple_get(&ida_index, 0, 0, GFP_KERNEL);
-> +	index = ida_alloc(&ida_index, GFP_KERNEL);
->  	memset(&ppdev_cb, 0, sizeof(ppdev_cb));
->  	ppdev_cb.irq_func = pp_irq;
->  	ppdev_cb.flags = (pp->flags & PP_EXCL) ? PARPORT_FLAG_EXCL : 0;
-> @@ -310,7 +310,7 @@ static int register_device(int minor, struct pp_struct *pp)
->  	if (!pdev) {
->  		pr_warn("%s: failed to register device!\n", name);
->  		rc = -ENXIO;
-> -		ida_simple_remove(&ida_index, index);
-> +		ida_free(&ida_index, index);
->  		goto err;
->  	}
->  
-> @@ -750,7 +750,7 @@ static int pp_release(struct inode *inode, struct file *file)
->  
->  	if (pp->pdev) {
->  		parport_unregister_device(pp->pdev);
-> -		ida_simple_remove(&ida_index, pp->index);
-> +		ida_free(&ida_index, pp->index);
->  		pp->pdev = NULL;
->  		pr_debug(CHRDEV "%x: unregistered pardevice\n", minor);
->  	}
-> -- 
-> 2.25.1
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
 
