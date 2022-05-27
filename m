@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 372AFC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:58:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC744C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:58:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352270AbiE0L6n (ORCPT
+        id S1352142AbiE0L6v (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 07:58:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40122 "EHLO
+        Fri, 27 May 2022 07:58:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352734AbiE0Lut (ORCPT
+        with ESMTP id S1352764AbiE0Luv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:50:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A95C14D16;
-        Fri, 27 May 2022 04:45:10 -0700 (PDT)
+        Fri, 27 May 2022 07:50:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC1B218B36;
+        Fri, 27 May 2022 04:45:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ADC0AB824D2;
-        Fri, 27 May 2022 11:45:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0324DC385A9;
-        Fri, 27 May 2022 11:45:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 751BCB824D6;
+        Fri, 27 May 2022 11:45:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB9E0C385A9;
+        Fri, 27 May 2022 11:45:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653651907;
-        bh=0ycG1C8R9RfHAaw3cLJ3/vzUv+464neREcYcVWVG6kQ=;
+        s=korg; t=1653651913;
+        bh=Ve6NfPpdS1r05uyDwxztOFOgYNEeL5kzJRoMP9JvtMs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PSuFYvQXJ8Pese6ia7XBIFbQo3BjJrDmpOoNJaXxXCnfZ8X1ZS4RqzGKtmKOqVtnq
-         0KXuPWzwsGNoFkG0t5IKltQzLqDYff0XRMuZ2XDboj/JIdrMCtq6hFeX4lLNXrlwxb
-         RoErF6s23OfKqpuN1/SH9rvwpIP3kfm3FexCe5TI=
+        b=gwm9/CYtUV5+WAw9B01qpcmPOqGqwLV0jP4AyRltUyYsO02gPPkXOvaHdhsD7wZLa
+         3Tj6EalI0zXJQ2U192srWx+OQuMtr3yBHDz6se1yHx2X+gWRd69pCCb0zraFdkeAqd
+         rXq5NJgr7tWcMzGSZEiTyrrc/Ktp3vqusAVLIyg4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
         Dominik Brodowski <linux@dominikbrodowski.net>,
         Jann Horn <jannh@google.com>,
         Eric Biggers <ebiggers@google.com>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.15 056/145] random: zero buffer after reading entropy from userspace
-Date:   Fri, 27 May 2022 10:49:17 +0200
-Message-Id: <20220527084857.515086023@linuxfoundation.org>
+Subject: [PATCH 5.10 073/163] random: remove outdated INT_MAX >> 6 check in urandom_read()
+Date:   Fri, 27 May 2022 10:49:13 +0200
+Message-Id: <20220527084838.164887740@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084850.364560116@linuxfoundation.org>
-References: <20220527084850.364560116@linuxfoundation.org>
+In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
+References: <20220527084828.156494029@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -54,49 +54,48 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 7b5164fb1279bf0251371848e40bae646b59b3a8 upstream.
+commit 434537ae54ad37e93555de21b6ac8133d6d773a9 upstream.
 
-This buffer may contain entropic data that shouldn't stick around longer
-than needed, so zero out the temporary buffer at the end of write_pool().
+In 79a8468747c5 ("random: check for increase of entropy_count because of
+signed conversion"), a number of checks were added around what values
+were passed to account(), because account() was doing fancy fixed point
+fractional arithmetic, and a user had some ability to pass large values
+directly into it. One of things in that commit was limiting those values
+to INT_MAX >> 6. The first >> 3 was for bytes to bits, and the next >> 3
+was for bits to 1/8 fractional bits.
 
+However, for several years now, urandom reads no longer touch entropy
+accounting, and so this check serves no purpose. The current flow is:
+
+urandom_read_nowarn()-->get_random_bytes_user()-->chacha20_block()
+
+Of course, we don't want that size_t to be truncated when adding it into
+the ssize_t. But we arrive at urandom_read_nowarn() in the first place
+either via ordinary fops, which limits reads to MAX_RW_COUNT, or via
+getrandom() which limits reads to INT_MAX.
+
+Cc: Theodore Ts'o <tytso@mit.edu>
 Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Reviewed-by: Jann Horn <jannh@google.com>
 Reviewed-by: Eric Biggers <ebiggers@google.com>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+ drivers/char/random.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -1336,19 +1336,24 @@ static __poll_t random_poll(struct file
- static int write_pool(const char __user *ubuf, size_t count)
+@@ -1286,9 +1286,8 @@ void rand_initialize_disk(struct gendisk
+ static ssize_t urandom_read_nowarn(struct file *file, char __user *buf,
+ 				   size_t nbytes, loff_t *ppos)
  {
- 	size_t len;
-+	int ret = 0;
- 	u8 block[BLAKE2S_BLOCK_SIZE];
+-	int ret;
++	ssize_t ret;
  
- 	while (count) {
- 		len = min(count, sizeof(block));
--		if (copy_from_user(block, ubuf, len))
--			return -EFAULT;
-+		if (copy_from_user(block, ubuf, len)) {
-+			ret = -EFAULT;
-+			goto out;
-+		}
- 		count -= len;
- 		ubuf += len;
- 		mix_pool_bytes(block, len);
- 		cond_resched();
- 	}
- 
--	return 0;
-+out:
-+	memzero_explicit(block, sizeof(block));
-+	return ret;
- }
- 
- static ssize_t random_write(struct file *file, const char __user *buffer,
+-	nbytes = min_t(size_t, nbytes, INT_MAX >> 6);
+ 	ret = get_random_bytes_user(buf, nbytes);
+ 	trace_urandom_read(nbytes, input_pool.entropy_count);
+ 	return ret;
 
 
