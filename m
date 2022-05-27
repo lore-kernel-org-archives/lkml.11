@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C83FDC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:46:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A24A4C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:46:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351818AbiE0LqY (ORCPT
+        id S1345738AbiE0Lqd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 07:46:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58478 "EHLO
+        Fri, 27 May 2022 07:46:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351721AbiE0Lo2 (ORCPT
+        with ESMTP id S1351909AbiE0LpI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:44:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8132B9D065;
-        Fri, 27 May 2022 04:41:16 -0700 (PDT)
+        Fri, 27 May 2022 07:45:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA9D1140C1;
+        Fri, 27 May 2022 04:41:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F110A61C3F;
-        Fri, 27 May 2022 11:41:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D518C385A9;
-        Fri, 27 May 2022 11:41:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8E5E7B82466;
+        Fri, 27 May 2022 11:41:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6990C385A9;
+        Fri, 27 May 2022 11:41:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653651675;
-        bh=J5xJYi+i64ykzs9x/0F9qkD+abvNKXxxEEBjmLewFAs=;
+        s=korg; t=1653651684;
+        bh=VpQApCs5/lvsmf8+1uF4l3TjOpcku2gXN53TYSaWCMc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QBzSJUvDkw2y3TZNbClogfdQjlLOREb+p23ADj0yWEUCyEo2ACRcNg+m/8HpIdG32
-         PQOt3bfIlxlrPDi9YQh1FvDW3vQ4zKDughQBtn8vkkIutGdawhdRF2SYvFwLsObVw4
-         wMH24wjTzfkC1EAvsuB9JB0hKHeZcRMA/ltv25LU=
+        b=o+7WJOsfajqbh39PS0gewIeBNcF3PkALt6XGQ4jQBzsbubO0Jmf/PoNU7HBfvHDm7
+         kFof7yXAzJvFxvG8XnCF+aqWhocs9Sc3RWMKQAQIMdDmiEE6RNztpLR5zW7hAiwT3l
+         yRkdd2r04Dg5U2KXUgY87/gFgPXECAvWUEVcgV9w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
+        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.10 046/163] random: remove unused OUTPUT_POOL constants
-Date:   Fri, 27 May 2022 10:48:46 +0200
-Message-Id: <20220527084834.448254110@linuxfoundation.org>
+Subject: [PATCH 5.15 021/145] random: dont reset crng_init_cnt on urandom_read()
+Date:   Fri, 27 May 2022 10:48:42 +0200
+Message-Id: <20220527084853.465853776@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
-References: <20220527084828.156494029@linuxfoundation.org>
+In-Reply-To: <20220527084850.364560116@linuxfoundation.org>
+References: <20220527084850.364560116@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,44 +49,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Jann Horn <jannh@google.com>
 
-commit 0f63702718c91d89c922081ac1e6baeddc2d8b1a upstream.
+commit 6c8e11e08a5b74bb8a5cdd5cbc1e5143df0fba72 upstream.
 
-We no longer have an output pool. Rather, we have just a wakeup bits
-threshold for /dev/random reads, presumably so that processes don't
-hang. This value, random_write_wakeup_bits, is configurable anyway. So
-all the no longer usefully named OUTPUT_POOL constants were doing was
-setting a reasonable default for random_write_wakeup_bits. This commit
-gets rid of the constants and just puts it all in the default value of
-random_write_wakeup_bits.
+At the moment, urandom_read() (used for /dev/urandom) resets crng_init_cnt
+to zero when it is called at crng_init<2. This is inconsistent: We do it
+for /dev/urandom reads, but not for the equivalent
+getrandom(GRND_INSECURE).
 
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+(And worse, as Jason pointed out, we're only doing this as long as
+maxwarn>0.)
+
+crng_init_cnt is only read in crng_fast_load(); it is relevant at
+crng_init==0 for determining when to switch to crng_init==1 (and where in
+the RNG state array to write).
+
+As far as I understand:
+
+ - crng_init==0 means "we have nothing, we might just be returning the same
+   exact numbers on every boot on every machine, we don't even have
+   non-cryptographic randomness; we should shove every bit of entropy we
+   can get into the RNG immediately"
+ - crng_init==1 means "well we have something, it might not be
+   cryptographic, but at least we're not gonna return the same data every
+   time or whatever, it's probably good enough for TCP and ASLR and stuff;
+   we now have time to build up actual cryptographic entropy in the input
+   pool"
+ - crng_init==2 means "this is supposed to be cryptographically secure now,
+   but we'll keep adding more entropy just to be sure".
+
+The current code means that if someone is pulling data from /dev/urandom
+fast enough at crng_init==0, we'll keep resetting crng_init_cnt, and we'll
+never make forward progress to crng_init==1. It seems to be intended to
+prevent an attacker from bruteforcing the contents of small individual RNG
+inputs on the way from crng_init==0 to crng_init==1, but that's misguided;
+crng_init==1 isn't supposed to provide proper cryptographic security
+anyway, RNG users who care about getting secure RNG output have to wait
+until crng_init==2.
+
+This code was inconsistent, and it probably made things worse - just get
+rid of it.
+
+Signed-off-by: Jann Horn <jannh@google.com>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/char/random.c |    4 ----
+ 1 file changed, 4 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -363,8 +363,6 @@
-  */
- #define INPUT_POOL_SHIFT	12
- #define INPUT_POOL_WORDS	(1 << (INPUT_POOL_SHIFT-5))
--#define OUTPUT_POOL_SHIFT	10
--#define OUTPUT_POOL_WORDS	(1 << (OUTPUT_POOL_SHIFT-5))
- #define EXTRACT_SIZE		(BLAKE2S_HASH_SIZE / 2)
+@@ -1831,7 +1831,6 @@ urandom_read_nowarn(struct file *file, c
+ static ssize_t
+ urandom_read(struct file *file, char __user *buf, size_t nbytes, loff_t *ppos)
+ {
+-	unsigned long flags;
+ 	static int maxwarn = 10;
  
- /*
-@@ -382,7 +380,7 @@
-  * should wake up processes which are selecting or polling on write
-  * access to /dev/random.
-  */
--static int random_write_wakeup_bits = 28 * OUTPUT_POOL_WORDS;
-+static int random_write_wakeup_bits = 28 * (1 << 5);
+ 	if (!crng_ready() && maxwarn > 0) {
+@@ -1839,9 +1838,6 @@ urandom_read(struct file *file, char __u
+ 		if (__ratelimit(&urandom_warning))
+ 			pr_notice("%s: uninitialized urandom read (%zd bytes read)\n",
+ 				  current->comm, nbytes);
+-		spin_lock_irqsave(&primary_crng.lock, flags);
+-		crng_init_cnt = 0;
+-		spin_unlock_irqrestore(&primary_crng.lock, flags);
+ 	}
  
- /*
-  * Originally, we used a primitive polynomial of degree .poolwords
+ 	return urandom_read_nowarn(file, buf, nbytes, ppos);
 
 
