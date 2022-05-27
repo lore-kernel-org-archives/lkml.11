@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8465EC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 15:56:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 984B0C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 15:56:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353775AbiE0P4M (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 11:56:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42590 "EHLO
+        id S236357AbiE0P4R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 11:56:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353741AbiE0P4F (ORCPT
+        with ESMTP id S1353767AbiE0P4K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 11:56:05 -0400
+        Fri, 27 May 2022 11:56:10 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 23CA113F916
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 08:56:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D727813F91F
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 08:56:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653666962;
+        s=mimecast20190719; t=1653666967;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=yioUTyJ6xxvIedDB/i3lQbU7dDRBhg0fAhZ9BNNi/B0=;
-        b=LiMw4vXANb9WK0uYVe+v/WzEm0+uAKt5mHL8TPIjiJiOkriFnE3cZRTltLs9WqgvPkNjIZ
-        Si1Bz0guLcNfb59F9H/arhCuLicrmh8i1SQ4NZ4F093Mhmo9CD8uuuJHr/MGH+fCAOwn5o
-        giQIXui0Ob8vcXlnCrfUOeGaXU2OnAs=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=/APf0+6vsA+UZyNg0hQeqFHGEXDqIt7eYWfXluy3q5w=;
+        b=MNZGl/lPouFGVRdk7w2TlEPZP/YdkbBS8M1qDiXagM19hgPqU1YAfPrGdTggO0YTXuOWek
+        87fkZoEv0eMXIxLID82PQHic7Kt+p5U/F9JjTOIqj3tyiRpSvJ0CV+9sDUTP+FkPHeUL3c
+        gZl+5N8sgODEBzmRBG+ktTN74Xs9aSI=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-526-KViqrbViM0CTwCpUUUCyGQ-1; Fri, 27 May 2022 11:55:59 -0400
-X-MC-Unique: KViqrbViM0CTwCpUUUCyGQ-1
+ us-mta-610-h3XiYSWwMTeZSI8UzsMDAQ-1; Fri, 27 May 2022 11:56:03 -0400
+X-MC-Unique: h3XiYSWwMTeZSI8UzsMDAQ-1
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 79ADC397968D;
-        Fri, 27 May 2022 15:55:58 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 43572811E75;
+        Fri, 27 May 2022 15:56:03 +0000 (UTC)
 Received: from fedora.redhat.com (unknown [10.40.192.126])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id DE8412166B26;
-        Fri, 27 May 2022 15:55:55 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 50AEE2166B26;
+        Fri, 27 May 2022 15:56:01 +0000 (UTC)
 From:   Vitaly Kuznetsov <vkuznets@redhat.com>
 To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -49,9 +48,9 @@ Cc:     Sean Christopherson <seanjc@google.com>,
         Siddharth Chandrasekaran <sidcha@amazon.de>,
         Yuan Yao <yuan.yao@linux.intel.com>,
         linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v5 03/37] KVM: x86: hyper-v: Introduce TLB flush fifo
-Date:   Fri, 27 May 2022 17:55:12 +0200
-Message-Id: <20220527155546.1528910-4-vkuznets@redhat.com>
+Subject: [PATCH v5 05/37] KVM: x86: hyper-v: Handle HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST{,EX} calls gently
+Date:   Fri, 27 May 2022 17:55:14 +0200
+Message-Id: <20220527155546.1528910-6-vkuznets@redhat.com>
 In-Reply-To: <20220527155546.1528910-1-vkuznets@redhat.com>
 References: <20220527155546.1528910-1-vkuznets@redhat.com>
 MIME-Version: 1.0
@@ -62,229 +61,210 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To allow flushing individual GVAs instead of always flushing the whole
-VPID a per-vCPU structure to pass the requests is needed. Use standard
-'kfifo' to queue two types of entries: individual GVA (GFN + up to 4095
-following GFNs in the lower 12 bits) and 'flush all'.
-
-The size of the fifo is arbitrary set to '16'.
-
-Note, kvm_hv_flush_tlb() only queues 'flush all' entries for now and
-kvm_hv_vcpu_flush_tlb() doesn't actually read the fifo just resets the
-queue before doing full TLB flush so the functional change is very
-small but the infrastructure is prepared to handle individual GVA
-flush requests.
+Currently, HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST{,EX} calls are handled
+the exact same way as HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE{,EX}: by
+flushing the whole VPID and this is sub-optimal. Switch to handling
+these requests with 'flush_tlb_gva()' hooks instead. Use the newly
+introduced TLB flush fifo to queue the requests.
 
 Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 ---
- arch/x86/include/asm/kvm_host.h | 20 +++++++++++++++
- arch/x86/kvm/hyperv.c           | 45 +++++++++++++++++++++++++++++++++
- arch/x86/kvm/hyperv.h           | 16 ++++++++++++
- arch/x86/kvm/x86.c              |  8 +++---
- arch/x86/kvm/x86.h              |  1 +
- 5 files changed, 86 insertions(+), 4 deletions(-)
+ arch/x86/kvm/hyperv.c | 100 +++++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 88 insertions(+), 12 deletions(-)
 
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index 01384145b366..422f1a34f09e 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -25,6 +25,7 @@
- #include <linux/clocksource.h>
- #include <linux/irqbypass.h>
- #include <linux/hyperv.h>
-+#include <linux/kfifo.h>
- 
- #include <asm/apic.h>
- #include <asm/pvclock-abi.h>
-@@ -600,6 +601,23 @@ struct kvm_vcpu_hv_synic {
- 	bool dont_zero_synic_pages;
- };
- 
-+/* The maximum number of entries on the TLB flush fifo. */
-+#define KVM_HV_TLB_FLUSH_FIFO_SIZE (16)
-+/*
-+ * Note: the following 'magic' entry is made up by KVM to avoid putting
-+ * anything besides GVA on the TLB flush fifo. It is theoretically possible
-+ * to observe a request to flush 4095 PFNs starting from 0xfffffffffffff000
-+ * which will look identical. KVM's action to 'flush everything' instead of
-+ * flushing these particular addresses is, however, fully legitimate as
-+ * flushing more than requested is always OK.
-+ */
-+#define KVM_HV_TLB_FLUSHALL_ENTRY  ((u64)-1)
-+
-+struct kvm_vcpu_hv_tlb_flush_fifo {
-+	spinlock_t write_lock;
-+	DECLARE_KFIFO(entries, u64, KVM_HV_TLB_FLUSH_FIFO_SIZE);
-+};
-+
- /* Hyper-V per vcpu emulation context */
- struct kvm_vcpu_hv {
- 	struct kvm_vcpu *vcpu;
-@@ -619,6 +637,8 @@ struct kvm_vcpu_hv {
- 		u32 enlightenments_ebx; /* HYPERV_CPUID_ENLIGHTMENT_INFO.EBX */
- 		u32 syndbg_cap_eax; /* HYPERV_CPUID_SYNDBG_PLATFORM_CAPABILITIES.EAX */
- 	} cpuid_cache;
-+
-+	struct kvm_vcpu_hv_tlb_flush_fifo tlb_flush_fifo;
- };
- 
- /* Xen HVM per vcpu emulation context */
 diff --git a/arch/x86/kvm/hyperv.c b/arch/x86/kvm/hyperv.c
-index b402ad059eb9..c8b22bf67577 100644
+index 762b0b699fdf..956072592e2f 100644
 --- a/arch/x86/kvm/hyperv.c
 +++ b/arch/x86/kvm/hyperv.c
-@@ -29,6 +29,7 @@
- #include <linux/kvm_host.h>
- #include <linux/highmem.h>
- #include <linux/sched/cputime.h>
-+#include <linux/spinlock.h>
- #include <linux/eventfd.h>
- 
- #include <asm/apicdef.h>
-@@ -954,6 +955,9 @@ static int kvm_hv_vcpu_init(struct kvm_vcpu *vcpu)
- 
- 	hv_vcpu->vp_index = vcpu->vcpu_idx;
- 
-+	INIT_KFIFO(hv_vcpu->tlb_flush_fifo.entries);
-+	spin_lock_init(&hv_vcpu->tlb_flush_fifo.write_lock);
-+
- 	return 0;
+@@ -1806,32 +1806,82 @@ static u64 kvm_get_sparse_vp_set(struct kvm *kvm, struct kvm_hv_hcall *hc,
+ 				  sparse_banks, consumed_xmm_halves, offset);
  }
  
-@@ -1789,6 +1793,35 @@ static u64 kvm_get_sparse_vp_set(struct kvm *kvm, struct kvm_hv_hcall *hc,
- 			      var_cnt * sizeof(*sparse_banks));
- }
- 
-+static void hv_tlb_flush_enqueue(struct kvm_vcpu *vcpu)
+-static void hv_tlb_flush_enqueue(struct kvm_vcpu *vcpu)
++static int kvm_hv_get_tlb_flush_entries(struct kvm *kvm, struct kvm_hv_hcall *hc, u64 entries[],
++					int consumed_xmm_halves, gpa_t offset)
 +{
-+	struct kvm_vcpu_hv_tlb_flush_fifo *tlb_flush_fifo;
-+	struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
-+	u64 entry = KVM_HV_TLB_FLUSHALL_ENTRY;
-+
-+	if (!hv_vcpu)
-+		return;
-+
-+	tlb_flush_fifo = &hv_vcpu->tlb_flush_fifo;
-+
-+	kfifo_in_spinlocked(&tlb_flush_fifo->entries, &entry, 1, &tlb_flush_fifo->write_lock);
++	return kvm_hv_get_hc_data(kvm, hc, hc->rep_cnt, hc->rep_cnt,
++				  entries, consumed_xmm_halves, offset);
 +}
 +
-+void kvm_hv_vcpu_flush_tlb(struct kvm_vcpu *vcpu)
-+{
-+	struct kvm_vcpu_hv_tlb_flush_fifo *tlb_flush_fifo;
-+	struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
-+
-+	kvm_vcpu_flush_tlb_guest(vcpu);
-+
-+	if (!hv_vcpu)
-+		return;
-+
-+	tlb_flush_fifo = &hv_vcpu->tlb_flush_fifo;
-+
-+	kfifo_reset_out(&tlb_flush_fifo->entries);
-+}
-+
- static u64 kvm_hv_flush_tlb(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
++static void hv_tlb_flush_enqueue(struct kvm_vcpu *vcpu, u64 *entries, int count)
  {
- 	struct kvm *kvm = vcpu->kvm;
-@@ -1797,6 +1830,8 @@ static u64 kvm_hv_flush_tlb(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
+ 	struct kvm_vcpu_hv_tlb_flush_fifo *tlb_flush_fifo;
+ 	struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
+ 	u64 entry = KVM_HV_TLB_FLUSHALL_ENTRY;
++	unsigned long flags;
+ 
+ 	if (!hv_vcpu)
+ 		return;
+ 
+ 	tlb_flush_fifo = &hv_vcpu->tlb_flush_fifo;
+ 
+-	kfifo_in_spinlocked(&tlb_flush_fifo->entries, &entry, 1, &tlb_flush_fifo->write_lock);
++	spin_lock_irqsave(&tlb_flush_fifo->write_lock, flags);
++
++	/*
++	 * All entries should fit on the fifo leaving one free for 'flush all'
++	 * entry in case another request comes in. In case there's not enough
++	 * space, just put 'flush all' entry there.
++	 */
++	if (count && entries && count < kfifo_avail(&tlb_flush_fifo->entries)) {
++		WARN_ON(kfifo_in(&tlb_flush_fifo->entries, entries, count) != count);
++		goto out_unlock;
++	}
++
++	/*
++	 * Note: full fifo always contains 'flush all' entry, no need to check the
++	 * return value.
++	 */
++	kfifo_in(&tlb_flush_fifo->entries, &entry, 1);
++
++out_unlock:
++	spin_unlock_irqrestore(&tlb_flush_fifo->write_lock, flags);
+ }
+ 
+ void kvm_hv_vcpu_flush_tlb(struct kvm_vcpu *vcpu)
+ {
+ 	struct kvm_vcpu_hv_tlb_flush_fifo *tlb_flush_fifo;
+ 	struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
++	u64 entries[KVM_HV_TLB_FLUSH_FIFO_SIZE];
++	int i, j, count;
++	gva_t gva;
+ 
+-	kvm_vcpu_flush_tlb_guest(vcpu);
+-
+-	if (!hv_vcpu)
++	if (!tdp_enabled || !hv_vcpu) {
++		kvm_vcpu_flush_tlb_guest(vcpu);
+ 		return;
++	}
+ 
+ 	tlb_flush_fifo = &hv_vcpu->tlb_flush_fifo;
+ 
++	count = kfifo_out(&tlb_flush_fifo->entries, entries, KVM_HV_TLB_FLUSH_FIFO_SIZE);
++
++	for (i = 0; i < count; i++) {
++		if (entries[i] == KVM_HV_TLB_FLUSHALL_ENTRY)
++			goto out_flush_all;
++
++		/*
++		 * Lower 12 bits of 'address' encode the number of additional
++		 * pages to flush.
++		 */
++		gva = entries[i] & PAGE_MASK;
++		for (j = 0; j < (entries[i] & ~PAGE_MASK) + 1; j++)
++			static_call(kvm_x86_flush_tlb_gva)(vcpu, gva + j * PAGE_SIZE);
++
++		++vcpu->stat.tlb_flush;
++	}
++	return;
++
++out_flush_all:
++	kvm_vcpu_flush_tlb_guest(vcpu);
+ 	kfifo_reset_out(&tlb_flush_fifo->entries);
+ }
+ 
+@@ -1841,11 +1891,21 @@ static u64 kvm_hv_flush_tlb(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
+ 	struct hv_tlb_flush_ex flush_ex;
+ 	struct hv_tlb_flush flush;
  	DECLARE_BITMAP(vcpu_mask, KVM_MAX_VCPUS);
++	/*
++	 * Normally, there can be no more than 'KVM_HV_TLB_FLUSH_FIFO_SIZE'
++	 * entries on the TLB flush fifo. The last entry, however, needs to be
++	 * always left free for 'flush all' entry which gets placed when
++	 * there is not enough space to put all the requested entries.
++	 */
++	u64 __tlb_flush_entries[KVM_HV_TLB_FLUSH_FIFO_SIZE - 1];
++	u64 *tlb_flush_entries;
  	u64 valid_bank_mask;
  	u64 sparse_banks[KVM_HV_MAX_SPARSE_VCPU_SET_BITS];
-+	struct kvm_vcpu *v;
-+	unsigned long i;
+ 	struct kvm_vcpu *v;
+ 	unsigned long i;
  	bool all_cpus;
++	int consumed_xmm_halves = 0;
++	gpa_t data_offset;
  
  	/*
-@@ -1876,10 +1911,20 @@ static u64 kvm_hv_flush_tlb(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
+ 	 * The Hyper-V TLFS doesn't allow more than 64 sparse banks, e.g. the
+@@ -1861,10 +1921,12 @@ static u64 kvm_hv_flush_tlb(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
+ 			flush.address_space = hc->ingpa;
+ 			flush.flags = hc->outgpa;
+ 			flush.processor_mask = sse128_lo(hc->xmm[0]);
++			consumed_xmm_halves = 1;
+ 		} else {
+ 			if (unlikely(kvm_read_guest(kvm, hc->ingpa,
+ 						    &flush, sizeof(flush))))
+ 				return HV_STATUS_INVALID_HYPERCALL_INPUT;
++			data_offset = sizeof(flush);
+ 		}
+ 
+ 		trace_kvm_hv_flush_tlb(flush.processor_mask,
+@@ -1888,10 +1950,12 @@ static u64 kvm_hv_flush_tlb(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
+ 			flush_ex.flags = hc->outgpa;
+ 			memcpy(&flush_ex.hv_vp_set,
+ 			       &hc->xmm[0], sizeof(hc->xmm[0]));
++			consumed_xmm_halves = 2;
+ 		} else {
+ 			if (unlikely(kvm_read_guest(kvm, hc->ingpa, &flush_ex,
+ 						    sizeof(flush_ex))))
+ 				return HV_STATUS_INVALID_HYPERCALL_INPUT;
++			data_offset = sizeof(flush_ex);
+ 		}
+ 
+ 		trace_kvm_hv_flush_tlb_ex(flush_ex.hv_vp_set.valid_bank_mask,
+@@ -1907,25 +1971,37 @@ static u64 kvm_hv_flush_tlb(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
+ 			return HV_STATUS_INVALID_HYPERCALL_INPUT;
+ 
+ 		if (all_cpus)
+-			goto do_flush;
++			goto read_flush_entries;
+ 
+ 		if (!hc->var_cnt)
+ 			goto ret_success;
+ 
+-		if (kvm_get_sparse_vp_set(kvm, hc, sparse_banks, 2,
+-					  offsetof(struct hv_tlb_flush_ex,
+-						   hv_vp_set.bank_contents)))
++		if (kvm_get_sparse_vp_set(kvm, hc, sparse_banks, consumed_xmm_halves,
++					  data_offset))
++			return HV_STATUS_INVALID_HYPERCALL_INPUT;
++		data_offset += hc->var_cnt * sizeof(sparse_banks[0]);
++		consumed_xmm_halves += hc->var_cnt;
++	}
++
++read_flush_entries:
++	if (hc->code == HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE ||
++	    hc->code == HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE_EX ||
++	    hc->rep_cnt > ARRAY_SIZE(__tlb_flush_entries)) {
++		tlb_flush_entries = NULL;
++	} else {
++		if (kvm_hv_get_tlb_flush_entries(kvm, hc, __tlb_flush_entries,
++						consumed_xmm_halves, data_offset))
+ 			return HV_STATUS_INVALID_HYPERCALL_INPUT;
++		tlb_flush_entries = __tlb_flush_entries;
+ 	}
+ 
+-do_flush:
+ 	/*
+ 	 * vcpu->arch.cr3 may not be up-to-date for running vCPUs so we can't
  	 * analyze it here, flush TLB regardless of the specified address space.
  	 */
  	if (all_cpus) {
-+		kvm_for_each_vcpu(i, v, kvm)
-+			hv_tlb_flush_enqueue(v);
-+
+ 		kvm_for_each_vcpu(i, v, kvm)
+-			hv_tlb_flush_enqueue(v);
++			hv_tlb_flush_enqueue(v, tlb_flush_entries, hc->rep_cnt);
+ 
  		kvm_make_all_cpus_request(kvm, KVM_REQ_HV_TLB_FLUSH);
  	} else {
- 		sparse_set_to_vcpu_mask(kvm, sparse_banks, valid_bank_mask, vcpu_mask);
+@@ -1935,7 +2011,7 @@ static u64 kvm_hv_flush_tlb(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
+ 			v = kvm_get_vcpu(kvm, i);
+ 			if (!v)
+ 				continue;
+-			hv_tlb_flush_enqueue(v);
++			hv_tlb_flush_enqueue(v, tlb_flush_entries, hc->rep_cnt);
+ 		}
  
-+		for_each_set_bit(i, vcpu_mask, KVM_MAX_VCPUS) {
-+			v = kvm_get_vcpu(kvm, i);
-+			if (!v)
-+				continue;
-+			hv_tlb_flush_enqueue(v);
-+		}
-+
  		kvm_make_vcpus_request_mask(kvm, KVM_REQ_HV_TLB_FLUSH, vcpu_mask);
- 	}
- 
-diff --git a/arch/x86/kvm/hyperv.h b/arch/x86/kvm/hyperv.h
-index da2737f2a956..e5b32266ff7d 100644
---- a/arch/x86/kvm/hyperv.h
-+++ b/arch/x86/kvm/hyperv.h
-@@ -147,4 +147,20 @@ int kvm_vm_ioctl_hv_eventfd(struct kvm *kvm, struct kvm_hyperv_eventfd *args);
- int kvm_get_hv_cpuid(struct kvm_vcpu *vcpu, struct kvm_cpuid2 *cpuid,
- 		     struct kvm_cpuid_entry2 __user *entries);
- 
-+
-+static inline void kvm_hv_vcpu_empty_flush_tlb(struct kvm_vcpu *vcpu)
-+{
-+	struct kvm_vcpu_hv_tlb_flush_fifo *tlb_flush_fifo;
-+	struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
-+
-+	if (!hv_vcpu || !kvm_check_request(KVM_REQ_HV_TLB_FLUSH, vcpu))
-+		return;
-+
-+	tlb_flush_fifo = &hv_vcpu->tlb_flush_fifo;
-+
-+	kfifo_reset_out(&tlb_flush_fifo->entries);
-+}
-+void kvm_hv_vcpu_flush_tlb(struct kvm_vcpu *vcpu);
-+
-+
- #endif
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index e83afc454769..9ce894c30292 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -3337,7 +3337,7 @@ static void kvm_vcpu_flush_tlb_all(struct kvm_vcpu *vcpu)
- 	static_call(kvm_x86_flush_tlb_all)(vcpu);
- }
- 
--static void kvm_vcpu_flush_tlb_guest(struct kvm_vcpu *vcpu)
-+void kvm_vcpu_flush_tlb_guest(struct kvm_vcpu *vcpu)
- {
- 	++vcpu->stat.tlb_flush;
- 
-@@ -3372,14 +3372,14 @@ void kvm_service_local_tlb_flush_requests(struct kvm_vcpu *vcpu)
- {
- 	if (kvm_check_request(KVM_REQ_TLB_FLUSH_CURRENT, vcpu)) {
- 		kvm_vcpu_flush_tlb_current(vcpu);
--		kvm_clear_request(KVM_REQ_HV_TLB_FLUSH, vcpu);
-+		kvm_hv_vcpu_empty_flush_tlb(vcpu);
- 	}
- 
- 	if (kvm_check_request(KVM_REQ_TLB_FLUSH_GUEST, vcpu)) {
- 		kvm_vcpu_flush_tlb_guest(vcpu);
--		kvm_clear_request(KVM_REQ_HV_TLB_FLUSH, vcpu);
-+		kvm_hv_vcpu_empty_flush_tlb(vcpu);
- 	} else if (kvm_check_request(KVM_REQ_HV_TLB_FLUSH, vcpu)) {
--		kvm_vcpu_flush_tlb_guest(vcpu);
-+		kvm_hv_vcpu_flush_tlb(vcpu);
- 	}
- }
- EXPORT_SYMBOL_GPL(kvm_service_local_tlb_flush_requests);
-diff --git a/arch/x86/kvm/x86.h b/arch/x86/kvm/x86.h
-index 588792f00334..2324f496c500 100644
---- a/arch/x86/kvm/x86.h
-+++ b/arch/x86/kvm/x86.h
-@@ -58,6 +58,7 @@ static inline unsigned int __shrink_ple_window(unsigned int val,
- 
- #define MSR_IA32_CR_PAT_DEFAULT  0x0007040600070406ULL
- 
-+void kvm_vcpu_flush_tlb_guest(struct kvm_vcpu *vcpu);
- void kvm_service_local_tlb_flush_requests(struct kvm_vcpu *vcpu);
- int kvm_check_nested_events(struct kvm_vcpu *vcpu);
- 
 -- 
 2.35.3
 
