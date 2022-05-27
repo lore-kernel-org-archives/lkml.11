@@ -2,139 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BDF5C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:11:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96FB4C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:12:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345259AbiE0ILo (ORCPT
+        id S1348794AbiE0IMI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 04:11:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34596 "EHLO
+        Fri, 27 May 2022 04:12:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229513AbiE0ILn (ORCPT
+        with ESMTP id S1348552AbiE0IMC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 04:11:43 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0961CFD34E
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 01:11:42 -0700 (PDT)
-Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4L8ct70rR3zbbhg;
-        Fri, 27 May 2022 16:10:07 +0800 (CST)
-Received: from dggpemm500018.china.huawei.com (7.185.36.111) by
- dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 27 May 2022 16:11:40 +0800
-Received: from localhost.localdomain (10.175.112.125) by
- dggpemm500018.china.huawei.com (7.185.36.111) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 27 May 2022 16:11:40 +0800
-From:   keliu <liuke94@huawei.com>
-To:     <rdunlap@infradead.org>, <gregkh@linuxfoundation.org>,
-        <christian.gromm@microchip.com>, <linux-kernel@vger.kernel.org>
-CC:     keliu <liuke94@huawei.com>
-Subject: [PATCH] most: Directly use ida_alloc()/free()
-Date:   Fri, 27 May 2022 08:33:09 +0000
-Message-ID: <20220527083309.2553087-1-liuke94@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 27 May 2022 04:12:02 -0400
+Received: from einhorn-mail-out.in-berlin.de (einhorn.in-berlin.de [192.109.42.8])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FDFAFF583
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 01:12:00 -0700 (PDT)
+X-Envelope-From: thomas@x-berg.in-berlin.de
+Received: from x-berg.in-berlin.de (x-change.in-berlin.de [217.197.86.40])
+        by einhorn.in-berlin.de  with ESMTPS id 24R8BXrA2041257
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Fri, 27 May 2022 10:11:34 +0200
+Received: from thomas by x-berg.in-berlin.de with local (Exim 4.94.2)
+        (envelope-from <thomas@x-berg.in-berlin.de>)
+        id 1nuV4H-0002o2-H9; Fri, 27 May 2022 10:11:33 +0200
+Date:   Fri, 27 May 2022 10:11:33 +0200
+From:   Thomas Osterried <thomas@osterried.de>
+To:     Duoming Zhou <duoming@zju.edu.cn>
+Cc:     netdev@vger.kernel.org, jreuter@yaina.de, ralf@linux-mips.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, linux-kernel@vger.kernel.org,
+        linux-hams@vger.kernel.org, thomas@osterried.de
+Subject: Re: [PATCH net] ax25: Fix ax25 session cleanup problem in
+ ax25_release
+Message-ID: <YpCHtRoxEXU7UAji@x-berg.in-berlin.de>
+References: <20220525112850.102363-1-duoming@zju.edu.cn>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.112.125]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemm500018.china.huawei.com (7.185.36.111)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220525112850.102363-1-duoming@zju.edu.cn>
+Sender: Thomas Osterried <thomas@x-berg.in-berlin.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use ida_alloc()/ida_free() instead of deprecated
-ida_simple_get()/ida_simple_remove() .
 
-Signed-off-by: keliu <liuke94@huawei.com>
----
- drivers/most/core.c      | 10 +++++-----
- drivers/most/most_cdev.c |  6 +++---
- 2 files changed, 8 insertions(+), 8 deletions(-)
+I Tested several cases: this patch works as expected.
 
-diff --git a/drivers/most/core.c b/drivers/most/core.c
-index e4412c7d25b0..81d60d4ee8c2 100644
---- a/drivers/most/core.c
-+++ b/drivers/most/core.c
-@@ -1286,7 +1286,7 @@ int most_register_interface(struct most_interface *iface)
- 	    !iface->poison_channel || (iface->num_channels > MAX_CHANNELS))
- 		return -EINVAL;
- 
--	id = ida_simple_get(&mdev_id, 0, 0, GFP_KERNEL);
-+	id = ida_alloc(&mdev_id, GFP_KERNEL);
- 	if (id < 0) {
- 		dev_err(iface->dev, "Failed to allocate device ID\n");
- 		return id;
-@@ -1294,7 +1294,7 @@ int most_register_interface(struct most_interface *iface)
- 
- 	iface->p = kzalloc(sizeof(*iface->p), GFP_KERNEL);
- 	if (!iface->p) {
--		ida_simple_remove(&mdev_id, id);
-+		ida_free(&mdev_id, id);
- 		return -ENOMEM;
- 	}
- 
-@@ -1308,7 +1308,7 @@ int most_register_interface(struct most_interface *iface)
- 		dev_err(iface->dev, "Failed to register interface device\n");
- 		kfree(iface->p);
- 		put_device(iface->dev);
--		ida_simple_remove(&mdev_id, id);
-+		ida_free(&mdev_id, id);
- 		return -ENOMEM;
- 	}
- 
-@@ -1366,7 +1366,7 @@ int most_register_interface(struct most_interface *iface)
- 	}
- 	kfree(iface->p);
- 	device_unregister(iface->dev);
--	ida_simple_remove(&mdev_id, id);
-+	ida_free(&mdev_id, id);
- 	return -ENOMEM;
- }
- EXPORT_SYMBOL_GPL(most_register_interface);
-@@ -1397,7 +1397,7 @@ void most_deregister_interface(struct most_interface *iface)
- 		device_unregister(&c->dev);
- 	}
- 
--	ida_simple_remove(&mdev_id, iface->p->dev_id);
-+	ida_free(&mdev_id, iface->p->dev_id);
- 	kfree(iface->p);
- 	device_unregister(iface->dev);
- }
-diff --git a/drivers/most/most_cdev.c b/drivers/most/most_cdev.c
-index 3722f9abd7b9..27913b1c8128 100644
---- a/drivers/most/most_cdev.c
-+++ b/drivers/most/most_cdev.c
-@@ -100,7 +100,7 @@ static void destroy_cdev(struct comp_channel *c)
- 
- static void destroy_channel(struct comp_channel *c)
- {
--	ida_simple_remove(&comp.minor_id, MINOR(c->devno));
-+	ida_free(&comp.minor_id, MINOR(c->devno));
- 	kfifo_free(&c->fifo);
- 	kfree(c);
- }
-@@ -424,7 +424,7 @@ static int comp_probe(struct most_interface *iface, int channel_id,
- 	if (c)
- 		return -EEXIST;
- 
--	current_minor = ida_simple_get(&comp.minor_id, 0, 0, GFP_KERNEL);
-+	current_minor = ida_alloc(&comp.minor_id, GFP_KERNEL);
- 	if (current_minor < 0)
- 		return current_minor;
- 
-@@ -471,7 +471,7 @@ static int comp_probe(struct most_interface *iface, int channel_id,
- err_free_c:
- 	kfree(c);
- err_remove_ida:
--	ida_simple_remove(&comp.minor_id, current_minor);
-+	ida_free(&comp.minor_id, current_minor);
- 	return retval;
- }
- 
--- 
-2.25.1
+Anyone else testet it?
 
+vy 73,
+	- Thomas  dl9sau
+
+
+On Wed, May 25, 2022 at 07:28:50PM +0800, Duoming Zhou wrote:
+> The timers of ax25 are used for correct session cleanup.
+> If we use ax25_release() to close ax25 sessions and
+> ax25_dev is not null, the del_timer_sync() functions in
+> ax25_release() will execute. As a result, the sessions
+> could not be cleaned up correctly, because the timers
+> have stopped.
+> 
+> This patch adds a device_up flag in ax25_dev in order to
+> judge whether the device is up. If there are sessions to
+> be cleaned up, the del_timer_sync() in ax25_release() will
+> not execute. As a result the sessions could be cleaned up
+> correctly.
+> 
+> Fixes: 82e31755e55f ("ax25: Fix UAF bugs in ax25 timers")
+> Reported-by: Thomas Osterried <thomas@osterried.de>
+> Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+> ---
+>  include/net/ax25.h  |  1 +
+>  net/ax25/af_ax25.c  | 13 ++++++++-----
+>  net/ax25/ax25_dev.c |  1 +
+>  3 files changed, 10 insertions(+), 5 deletions(-)
+> 
+> diff --git a/include/net/ax25.h b/include/net/ax25.h
+> index 0f9790c455b..a427a05672e 100644
+> --- a/include/net/ax25.h
+> +++ b/include/net/ax25.h
+> @@ -228,6 +228,7 @@ typedef struct ax25_dev {
+>  	ax25_dama_info		dama;
+>  #endif
+>  	refcount_t		refcount;
+> +	bool device_up;
+>  } ax25_dev;
+>  
+>  typedef struct ax25_cb {
+> diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
+> index 363d47f9453..47ce6b630cc 100644
+> --- a/net/ax25/af_ax25.c
+> +++ b/net/ax25/af_ax25.c
+> @@ -81,6 +81,7 @@ static void ax25_kill_by_device(struct net_device *dev)
+>  
+>  	if ((ax25_dev = ax25_dev_ax25dev(dev)) == NULL)
+>  		return;
+> +	ax25_dev->device_up = false;
+>  
+>  	spin_lock_bh(&ax25_list_lock);
+>  again:
+> @@ -1053,11 +1054,13 @@ static int ax25_release(struct socket *sock)
+>  		ax25_destroy_socket(ax25);
+>  	}
+>  	if (ax25_dev) {
+> -		del_timer_sync(&ax25->timer);
+> -		del_timer_sync(&ax25->t1timer);
+> -		del_timer_sync(&ax25->t2timer);
+> -		del_timer_sync(&ax25->t3timer);
+> -		del_timer_sync(&ax25->idletimer);
+> +		if (!ax25_dev->device_up) {
+> +			del_timer_sync(&ax25->timer);
+> +			del_timer_sync(&ax25->t1timer);
+> +			del_timer_sync(&ax25->t2timer);
+> +			del_timer_sync(&ax25->t3timer);
+> +			del_timer_sync(&ax25->idletimer);
+> +		}
+>  		dev_put_track(ax25_dev->dev, &ax25_dev->dev_tracker);
+>  		ax25_dev_put(ax25_dev);
+>  	}
+> diff --git a/net/ax25/ax25_dev.c b/net/ax25/ax25_dev.c
+> index d2a244e1c26..5451be15e07 100644
+> --- a/net/ax25/ax25_dev.c
+> +++ b/net/ax25/ax25_dev.c
+> @@ -62,6 +62,7 @@ void ax25_dev_device_up(struct net_device *dev)
+>  	ax25_dev->dev     = dev;
+>  	dev_hold_track(dev, &ax25_dev->dev_tracker, GFP_ATOMIC);
+>  	ax25_dev->forward = NULL;
+> +	ax25_dev->device_up = true;
+>  
+>  	ax25_dev->values[AX25_VALUES_IPDEFMODE] = AX25_DEF_IPDEFMODE;
+>  	ax25_dev->values[AX25_VALUES_AXDEFMODE] = AX25_DEF_AXDEFMODE;
+> -- 
+> 2.17.1
+> 
