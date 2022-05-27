@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20B48C4167B
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:11:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F37A9C43217
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:11:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353199AbiE0MKj (ORCPT
+        id S1353169AbiE0MKd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 08:10:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57788 "EHLO
+        Fri, 27 May 2022 08:10:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243846AbiE0L4u (ORCPT
+        with ESMTP id S1353433AbiE0L4e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:56:50 -0400
+        Fri, 27 May 2022 07:56:34 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC5BB55BD;
-        Fri, 27 May 2022 04:51:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C99DA3889;
+        Fri, 27 May 2022 04:51:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6D4C5B824D6;
-        Fri, 27 May 2022 11:51:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD35FC385A9;
-        Fri, 27 May 2022 11:51:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6C57CB824CA;
+        Fri, 27 May 2022 11:51:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC40BC385A9;
+        Fri, 27 May 2022 11:51:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653652312;
-        bh=sbrL44tMkKlNhB/ubeCGu9MeR5vV2zIzvhWF5VTfUMs=;
+        s=korg; t=1653652309;
+        bh=N4I2vRnlz5HhcFVb3tpYEZeesn0q49B0+WAvsvwec5E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z6SNLyJvnHE+QjOe2hJgjLUDsHnR46fOM+iZGjg1/aEk+Ea5YuLQhTr6wANklrp3p
-         iqVCgqofvrYPQO6oHLrFpOg5/kv1jp6FxNywrUaBCROlpP0bJkXJhFo0bUW1WmkOHc
-         qP50HEUDF7kR6ZVGVLuooSj+wZs1AAzM/TqGp3zU=
+        b=iYb1SSuW8s8o5r4sbk3v4hAxZuN2lE38M/sd/2ukD1v0dgkf2ep7PBC1q4XpJXM2S
+         I3Ce9LcyAEQzOXB3tDS9NuJXFc+HyzeE9Belc+Nvig+t/E4pHKOVRpmkBuQ3jRcMUo
+         xJZAtnrsfOh0Ubbt1gjcgFaGFbg4cDvfB/Pe6xY8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
         Arnd Bergmann <arnd@arndb.de>,
-        "David S. Miller" <davem@davemloft.net>,
+        Benjamin Herrenschmidt <benh@ozlabs.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.15 117/145] sparc: use fallback for random_get_entropy() instead of zero
-Date:   Fri, 27 May 2022 10:50:18 +0200
-Message-Id: <20220527084904.660380560@linuxfoundation.org>
+Subject: [PATCH 5.15 108/145] powerpc: define get_cycles macro for arch-override
+Date:   Fri, 27 May 2022 10:50:09 +0200
+Message-Id: <20220527084903.663694172@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220527084850.364560116@linuxfoundation.org>
 References: <20220527084850.364560116@linuxfoundation.org>
@@ -53,41 +55,35 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit ac9756c79797bb98972736b13cfb239fd2cffb79 upstream.
+commit 408835832158df0357e18e96da7f2d1ed6b80e7f upstream.
 
-In the event that random_get_entropy() can't access a cycle counter or
-similar, falling back to returning 0 is really not the best we can do.
-Instead, at least calling random_get_entropy_fallback() would be
-preferable, because that always needs to return _something_, even
-falling back to jiffies eventually. It's not as though
-random_get_entropy_fallback() is super high precision or guaranteed to
-be entropic, but basically anything that's not zero all the time is
-better than returning zero all the time.
-
-This is accomplished by just including the asm-generic code like on
-other architectures, which means we can get rid of the empty stub
-function here.
+PowerPC defines a get_cycles() function, but it does not do the usual
+`#define get_cycles get_cycles` dance, making it impossible for generic
+code to see if an arch-specific function was defined. While the
+get_cycles() ifdef is not currently used, the following timekeeping
+patch in this series will depend on the macro existing (or not existing)
+when defining random_get_entropy().
 
 Cc: Thomas Gleixner <tglx@linutronix.de>
 Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: David S. Miller <davem@davemloft.net>
+Cc: Benjamin Herrenschmidt <benh@ozlabs.org>
+Cc: Paul Mackerras <paulus@samba.org>
+Acked-by: Michael Ellerman <mpe@ellerman.id.au>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/sparc/include/asm/timex_32.h |    4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ arch/powerpc/include/asm/timex.h |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/arch/sparc/include/asm/timex_32.h
-+++ b/arch/sparc/include/asm/timex_32.h
-@@ -9,8 +9,6 @@
+--- a/arch/powerpc/include/asm/timex.h
++++ b/arch/powerpc/include/asm/timex.h
+@@ -19,6 +19,7 @@ static inline cycles_t get_cycles(void)
+ {
+ 	return mftb();
+ }
++#define get_cycles get_cycles
  
- #define CLOCK_TICK_RATE	1193180 /* Underlying HZ */
- 
--/* XXX Maybe do something better at some point... -DaveM */
--typedef unsigned long cycles_t;
--#define get_cycles()	(0)
-+#include <asm-generic/timex.h>
- 
- #endif
+ #endif	/* __KERNEL__ */
+ #endif	/* _ASM_POWERPC_TIMEX_H */
 
 
