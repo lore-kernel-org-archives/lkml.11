@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AA31C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BE28C4321E
 	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:51:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352457AbiE0Lu2 (ORCPT
+        id S1352401AbiE0LuX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 07:50:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56486 "EHLO
+        Fri, 27 May 2022 07:50:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351957AbiE0LrY (ORCPT
+        with ESMTP id S1351691AbiE0LrT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:47:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C01A414ACAA;
-        Fri, 27 May 2022 04:43:19 -0700 (PDT)
+        Fri, 27 May 2022 07:47:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05A8C14AC85;
+        Fri, 27 May 2022 04:43:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 728CE61D51;
-        Fri, 27 May 2022 11:43:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80047C385A9;
-        Fri, 27 May 2022 11:43:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 30447B824D2;
+        Fri, 27 May 2022 11:43:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9ACF5C34100;
+        Fri, 27 May 2022 11:43:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653651790;
-        bh=ZDfu5CQCYc0Tiz0YhFCXWlPQPKh8EEqa7qJFhykOJGs=;
+        s=korg; t=1653651788;
+        bh=RG6VjW3XhSd7agEEKPH/P8cAoVf6or+rlbFXWJgkVVg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UmDxHezdF+LBQqPYbl8qrivt11XkgHEVEkcUL7AIfqiTHkUisfaqWbceNxqOSvAmk
-         ubKecuykbn5PurstGs+vXZgfqUztil7QoFM1595+zEMEkLfauWiHrSpoXFZygcMLR9
-         t/Pai5xavMNdhIVv/BW9V8rvn4GbrFYUpf6jJvpg=
+        b=FZqK6HahljKjy8OMkTNnt1OW0w3NgtbqzqKe3ZErCpoeyErCQl6bzx2CUqO4zzSWo
+         wLqEQyuAvgdB1qiFSdNCcZunpEnyjTyCco8UC9eJZWkI9tzQVa52dxJuzgdFx29Rmp
+         X6R2yFOxS2iMi1SCb1tiJ1IwOcQ5Fm+KRVOOZpzw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.10 050/163] random: access input_pool_data directly rather than through pointer
-Date:   Fri, 27 May 2022 10:48:50 +0200
-Message-Id: <20220527084835.015625227@linuxfoundation.org>
+Subject: [PATCH 5.15 034/145] random: simplify arithmetic function flow in account()
+Date:   Fri, 27 May 2022 10:48:55 +0200
+Message-Id: <20220527084855.002200371@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
-References: <20220527084828.156494029@linuxfoundation.org>
+In-Reply-To: <20220527084850.364560116@linuxfoundation.org>
+References: <20220527084850.364560116@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,72 +52,58 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 6c0eace6e1499712583b6ee62d95161e8b3449f5 upstream.
+commit a254a0e4093fce8c832414a83940736067eed515 upstream.
 
-This gets rid of another abstraction we no longer need. It would be nice
-if we could instead make pool an array rather than a pointer, but the
-latent entropy plugin won't be able to do its magic in that case. So
-instead we put all accesses to the input pool's actual data through the
-input_pool_data array directly.
+Now that have_bytes is never modified, we can simplify this function.
+First, we move the check for negative entropy_count to be first. That
+ensures that subsequent reads of this will be non-negative. Then,
+have_bytes and ibytes can be folded into their one use site in the
+min_t() function.
 
+Suggested-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   21 ++++++++-------------
- 1 file changed, 8 insertions(+), 13 deletions(-)
+ drivers/char/random.c |   17 ++++++-----------
+ 1 file changed, 6 insertions(+), 11 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -496,17 +496,12 @@ MODULE_PARM_DESC(ratelimit_disable, "Dis
- static u32 input_pool_data[POOL_WORDS] __latent_entropy;
+@@ -1293,7 +1293,7 @@ EXPORT_SYMBOL_GPL(add_disk_randomness);
+  */
+ static size_t account(size_t nbytes, int min)
+ {
+-	int entropy_count, orig, have_bytes;
++	int entropy_count, orig;
+ 	size_t ibytes, nfrac;
  
- static struct {
--	/* read-only data: */
--	u32 *pool;
+ 	BUG_ON(input_pool.entropy_count > POOL_FRACBITS);
+@@ -1301,20 +1301,15 @@ static size_t account(size_t nbytes, int
+ 	/* Can we pull enough? */
+ retry:
+ 	entropy_count = orig = READ_ONCE(input_pool.entropy_count);
+-	ibytes = nbytes;
+-	/* never pull more than available */
+-	have_bytes = entropy_count >> (POOL_ENTROPY_SHIFT + 3);
 -
--	/* read-write data: */
- 	spinlock_t lock;
- 	u16 add_ptr;
- 	u16 input_rotate;
- 	int entropy_count;
- } input_pool = {
- 	.lock = __SPIN_LOCK_UNLOCKED(input_pool.lock),
--	.pool = input_pool_data
- };
- 
- static ssize_t extract_entropy(void *buf, size_t nbytes, int min);
-@@ -544,15 +539,15 @@ static void _mix_pool_bytes(const void *
- 		i = (i - 1) & POOL_WORDMASK;
- 
- 		/* XOR in the various taps */
--		w ^= input_pool.pool[i];
--		w ^= input_pool.pool[(i + POOL_TAP1) & POOL_WORDMASK];
--		w ^= input_pool.pool[(i + POOL_TAP2) & POOL_WORDMASK];
--		w ^= input_pool.pool[(i + POOL_TAP3) & POOL_WORDMASK];
--		w ^= input_pool.pool[(i + POOL_TAP4) & POOL_WORDMASK];
--		w ^= input_pool.pool[(i + POOL_TAP5) & POOL_WORDMASK];
-+		w ^= input_pool_data[i];
-+		w ^= input_pool_data[(i + POOL_TAP1) & POOL_WORDMASK];
-+		w ^= input_pool_data[(i + POOL_TAP2) & POOL_WORDMASK];
-+		w ^= input_pool_data[(i + POOL_TAP3) & POOL_WORDMASK];
-+		w ^= input_pool_data[(i + POOL_TAP4) & POOL_WORDMASK];
-+		w ^= input_pool_data[(i + POOL_TAP5) & POOL_WORDMASK];
- 
- 		/* Mix the result back in with a twist */
--		input_pool.pool[i] = (w >> 3) ^ twist_table[w & 7];
-+		input_pool_data[i] = (w >> 3) ^ twist_table[w & 7];
- 
- 		/*
- 		 * Normally, we add 7 bits of rotation to the pool.
-@@ -1369,7 +1364,7 @@ static void extract_buf(u8 *out)
- 
- 	/* Generate a hash across the pool */
- 	spin_lock_irqsave(&input_pool.lock, flags);
--	blake2s_update(&state, (const u8 *)input_pool.pool, POOL_BYTES);
-+	blake2s_update(&state, (const u8 *)input_pool_data, POOL_BYTES);
- 	blake2s_final(&state, hash); /* final zeros out state */
- 
- 	/*
+-	if (have_bytes < 0)
+-		have_bytes = 0;
+-	ibytes = min_t(size_t, ibytes, have_bytes);
+-	if (ibytes < min)
+-		ibytes = 0;
+-
+ 	if (WARN_ON(entropy_count < 0)) {
+ 		pr_warn("negative entropy count: count %d\n", entropy_count);
+ 		entropy_count = 0;
+ 	}
++
++	/* never pull more than available */
++	ibytes = min_t(size_t, nbytes, entropy_count >> (POOL_ENTROPY_SHIFT + 3));
++	if (ibytes < min)
++		ibytes = 0;
+ 	nfrac = ibytes << (POOL_ENTROPY_SHIFT + 3);
+ 	if ((size_t)entropy_count > nfrac)
+ 		entropy_count -= nfrac;
 
 
