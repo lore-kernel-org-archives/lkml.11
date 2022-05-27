@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 032A6C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 06:34:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 579FDC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 06:34:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343579AbiE0GeV (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 02:34:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35666 "EHLO
+        id S245697AbiE0GeZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 02:34:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245554AbiE0GeE (ORCPT
+        with ESMTP id S245561AbiE0GeS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 02:34:04 -0400
+        Fri, 27 May 2022 02:34:18 -0400
 Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AE405C86A
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 23:34:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBD0E5E14C
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 23:34:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653633242; x=1685169242;
+  t=1653633251; x=1685169251;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=SaezIU2KemVpoNQHn3KxEWZBO5XA8cmu4TjU1ZF0rFA=;
-  b=iH8mHNo0DQqMk5ROoMwByOrKqEOLlIk32jFNA59H2kO3xpcLm3mRKCNz
-   +bLuJ0WN6j3ebUukOGPPJ3C9ewsxg2B6p0A5AbyRD56aXWlw0AUAY7G/B
-   ke210XoBBowxfIl6BCe2/D8jv1X6mSqwN1e4zjXg+GQl4FtfbPCp6x7y2
-   LZ3yUrO7jb6dOORNH3brWqLxuB0oGVCxxY8YWdmN1N1ytLlS+PV3nsnAp
-   Drf36Epq4Ut0N3m8EXPqGB5Ohl9KMtG/EBACdOFDNURK2egKMvb5SRv8C
-   KrqDXkUYBqljUoFsHDs+tOSljk+yR1+OP8jI6E3lsOdTQFXrsAa6yZyg4
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10359"; a="335044847"
+  bh=e6QO4/f2d5ksEADm5yEq5XT7V7SUplsTUbaoXwowz1g=;
+  b=NudlK8gZTCqX6qKcG/FZjDyUEWOZzp9qGO1kYOYsmR54DEVy3QjUrQyM
+   LEbvK7Hqng4fEMziMKW80Hneo/xDnS5yNtgxgz9IbbR/Wm5eC3YgFfqwL
+   KzDniVj76ABNuiB/ZC2SQmLwXvlB2megRvRaP1HHjlqAaNDpvzyMgaAi4
+   6MmPaisWrxykNlwgfmKyoR0gcO31VJGYJjTknrNHje779FVwdPlmwcnYR
+   1wlNEh4FxeY8r07IF87QU3DAMWpgxz5megsjM3Je5z+qQOt2sZ++KL4yl
+   BZi5KzojCrWkvwj55zW3DcelhBkQVAoQajbnr2pQekBHZpGBWzfGVsCGo
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10359"; a="335044869"
 X-IronPort-AV: E=Sophos;i="5.91,254,1647327600"; 
-   d="scan'208";a="335044847"
+   d="scan'208";a="335044869"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 May 2022 23:34:02 -0700
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 May 2022 23:34:11 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,254,1647327600"; 
-   d="scan'208";a="718688412"
+   d="scan'208";a="718688453"
 Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by fmsmga001.fm.intel.com with ESMTP; 26 May 2022 23:33:58 -0700
+  by fmsmga001.fm.intel.com with ESMTP; 26 May 2022 23:34:08 -0700
 From:   Lu Baolu <baolu.lu@linux.intel.com>
 To:     Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
         Ashok Raj <ashok.raj@intel.com>,
@@ -49,9 +48,9 @@ Cc:     Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
         Jacob jun Pan <jacob.jun.pan@intel.com>,
         iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
         Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH 02/12] iommu/vt-d: Remove for_each_device_domain()
-Date:   Fri, 27 May 2022 14:30:09 +0800
-Message-Id: <20220527063019.3112905-3-baolu.lu@linux.intel.com>
+Subject: [PATCH 05/12] iommu/vt-d: Unncessary spinlock for root table alloc and free
+Date:   Fri, 27 May 2022 14:30:12 +0800
+Message-Id: <20220527063019.3112905-6-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220527063019.3112905-1-baolu.lu@linux.intel.com>
 References: <20220527063019.3112905-1-baolu.lu@linux.intel.com>
@@ -61,139 +60,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The per-device device_domain_info data could be retrieved from the
-device itself. There's no need to search a global list.
+The IOMMU root table is allocated and freed in the IOMMU initialization
+code in static boot or hot-plug paths. There's no need for a spinlock.
 
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/intel/iommu.h |  2 --
- drivers/iommu/intel/iommu.c | 25 -------------------------
- drivers/iommu/intel/pasid.c | 37 +++++++++++--------------------------
- 3 files changed, 11 insertions(+), 53 deletions(-)
+ drivers/iommu/intel/iommu.c | 18 +++++-------------
+ 1 file changed, 5 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-index 8a6d64d726c0..2f4a5b9509c0 100644
---- a/drivers/iommu/intel/iommu.h
-+++ b/drivers/iommu/intel/iommu.h
-@@ -727,8 +727,6 @@ extern int dmar_ir_support(void);
- void *alloc_pgtable_page(int node);
- void free_pgtable_page(void *vaddr);
- struct intel_iommu *domain_get_iommu(struct dmar_domain *domain);
--int for_each_device_domain(int (*fn)(struct device_domain_info *info,
--				     void *data), void *data);
- void iommu_flush_write_buffer(struct intel_iommu *iommu);
- int intel_iommu_enable_pasid(struct intel_iommu *iommu, struct device *dev);
- struct intel_iommu *device_to_iommu(struct device *dev, u8 *bus, u8 *devfn);
 diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index cacae8bdaa65..6549b09d7f32 100644
+index bbdd3417a1b1..2d5f02b85de8 100644
 --- a/drivers/iommu/intel/iommu.c
 +++ b/drivers/iommu/intel/iommu.c
-@@ -316,31 +316,6 @@ static int iommu_skip_te_disable;
+@@ -809,14 +809,12 @@ static int device_context_mapped(struct intel_iommu *iommu, u8 bus, u8 devfn)
  
- static DEFINE_SPINLOCK(device_domain_lock);
- static LIST_HEAD(device_domain_list);
--
--/*
-- * Iterate over elements in device_domain_list and call the specified
-- * callback @fn against each element.
-- */
--int for_each_device_domain(int (*fn)(struct device_domain_info *info,
--				     void *data), void *data)
--{
--	int ret = 0;
+ static void free_context_table(struct intel_iommu *iommu)
+ {
+-	int i;
 -	unsigned long flags;
--	struct device_domain_info *info;
--
--	spin_lock_irqsave(&device_domain_lock, flags);
--	list_for_each_entry(info, &device_domain_list, global) {
--		ret = fn(info, data);
--		if (ret) {
--			spin_unlock_irqrestore(&device_domain_lock, flags);
--			return ret;
--		}
--	}
--	spin_unlock_irqrestore(&device_domain_lock, flags);
--
--	return 0;
--}
--
- const struct iommu_ops intel_iommu_ops;
+ 	struct context_entry *context;
++	int i;
++
++	if (!iommu->root_entry)
++		return;
  
- static bool translation_pre_enabled(struct intel_iommu *iommu)
-diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
-index b2ac5869286f..0627d6465f25 100644
---- a/drivers/iommu/intel/pasid.c
-+++ b/drivers/iommu/intel/pasid.c
-@@ -103,36 +103,20 @@ device_detach_pasid_table(struct device_domain_info *info,
+-	spin_lock_irqsave(&iommu->lock, flags);
+-	if (!iommu->root_entry) {
+-		goto out;
+-	}
+ 	for (i = 0; i < ROOT_ENTRY_NR; i++) {
+ 		context = iommu_context_addr(iommu, i, 0, 0);
+ 		if (context)
+@@ -828,12 +826,10 @@ static void free_context_table(struct intel_iommu *iommu)
+ 		context = iommu_context_addr(iommu, i, 0x80, 0);
+ 		if (context)
+ 			free_pgtable_page(context);
+-
+ 	}
++
+ 	free_pgtable_page(iommu->root_entry);
+ 	iommu->root_entry = NULL;
+-out:
+-	spin_unlock_irqrestore(&iommu->lock, flags);
  }
  
- struct pasid_table_opaque {
--	struct pasid_table	**pasid_table;
--	int			segment;
--	int			bus;
--	int			devfn;
-+	struct pasid_table	*pasid_table;
- };
- 
--static int search_pasid_table(struct device_domain_info *info, void *opaque)
--{
--	struct pasid_table_opaque *data = opaque;
--
--	if (info->iommu->segment == data->segment &&
--	    info->bus == data->bus &&
--	    info->devfn == data->devfn &&
--	    info->pasid_table) {
--		*data->pasid_table = info->pasid_table;
--		return 1;
--	}
--
--	return 0;
--}
--
- static int get_alias_pasid_table(struct pci_dev *pdev, u16 alias, void *opaque)
+ #ifdef CONFIG_DMAR_DEBUG
+@@ -1232,7 +1228,6 @@ static void domain_unmap(struct dmar_domain *domain, unsigned long start_pfn,
+ static int iommu_alloc_root_entry(struct intel_iommu *iommu)
  {
- 	struct pasid_table_opaque *data = opaque;
-+	struct device_domain_info *info;
+ 	struct root_entry *root;
+-	unsigned long flags;
  
--	data->segment = pci_domain_nr(pdev->bus);
--	data->bus = PCI_BUS_NUM(alias);
--	data->devfn = alias & 0xff;
-+	info = dev_iommu_priv_get(&pdev->dev);
-+	if (!info || !info->pasid_table)
-+		return 0;
+ 	root = (struct root_entry *)alloc_pgtable_page(iommu->node);
+ 	if (!root) {
+@@ -1242,10 +1237,7 @@ static int iommu_alloc_root_entry(struct intel_iommu *iommu)
+ 	}
  
--	return for_each_device_domain(&search_pasid_table, data);
-+	data->pasid_table = info->pasid_table;
-+	return 1;
+ 	__iommu_flush_cache(iommu, root, ROOT_SIZE);
+-
+-	spin_lock_irqsave(&iommu->lock, flags);
+ 	iommu->root_entry = root;
+-	spin_unlock_irqrestore(&iommu->lock, flags);
+ 
+ 	return 0;
  }
- 
- /*
-@@ -141,9 +125,9 @@ static int get_alias_pasid_table(struct pci_dev *pdev, u16 alias, void *opaque)
-  */
- int intel_pasid_alloc_table(struct device *dev)
- {
-+	struct pasid_table_opaque data = { NULL };
- 	struct device_domain_info *info;
- 	struct pasid_table *pasid_table;
--	struct pasid_table_opaque data;
- 	struct page *pages;
- 	u32 max_pasid = 0;
- 	int ret, order;
-@@ -155,11 +139,12 @@ int intel_pasid_alloc_table(struct device *dev)
- 		return -EINVAL;
- 
- 	/* DMA alias device already has a pasid table, use it: */
--	data.pasid_table = &pasid_table;
- 	ret = pci_for_each_dma_alias(to_pci_dev(dev),
- 				     &get_alias_pasid_table, &data);
--	if (ret)
-+	if (ret) {
-+		pasid_table = data.pasid_table;
- 		goto attach_out;
-+	}
- 
- 	pasid_table = kzalloc(sizeof(*pasid_table), GFP_KERNEL);
- 	if (!pasid_table)
 -- 
 2.25.1
 
