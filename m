@@ -2,43 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEB0FC4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABB32C4167D
 	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 09:06:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351146AbiE0JF4 (ORCPT
+        id S1350984AbiE0JFf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 05:05:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55964 "EHLO
+        Fri, 27 May 2022 05:05:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350660AbiE0JAP (ORCPT
+        with ESMTP id S1350739AbiE0JAg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 05:00:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 638DF62129;
-        Fri, 27 May 2022 01:56:37 -0700 (PDT)
+        Fri, 27 May 2022 05:00:36 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C8927037E;
+        Fri, 27 May 2022 01:56:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EC2E361D92;
-        Fri, 27 May 2022 08:56:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BFF0C385B8;
-        Fri, 27 May 2022 08:56:32 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 73475CE238F;
+        Fri, 27 May 2022 08:56:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E221C34100;
+        Fri, 27 May 2022 08:56:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653641793;
-        bh=o/vWndbOaURYXkT/zS2MSGUMqwWluO4wbWkZcZ5tb8Y=;
+        s=korg; t=1653641811;
+        bh=kK+727lFJ/EMNk+O4EfQALlAPBxYd7tgSmT3zvBhMYo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Rq1kbe53k9UrtvSRg3c1WRMyg7KnYaZuR7lNUgHGJE2/vTbtyHwenLJUa/b/MYbaO
-         UEPP4BlMsmxB7eiqP7ruZwnlutrHDiIdns0e+C3XGhHx/n7++tKieeP48ujwH1LfeR
-         eOCS7xJQEa+X3lsZhIt0GiPFIfZ+yYLRjPf8an50=
+        b=nrapQck22FRSPip7GcEvg1Aogyil+PRdPrfibqS9+Un9lu4Ukn2CiTRnxYoOkNs4l
+         wjlyc0V3BA8F01NzEMz2mB/iBOjduZFNfCC2XdjELa6CskLDH6Pcng5YZvSK8xhMha
+         8Y/H3b2waKx28gGCbbBDnC7lL45PkDPZXudrSVCs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Theodore Tso <tytso@mit.edu>,
+        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Sultan Alsawaf <sultan@kerneltoast.com>,
         Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.17 036/111] random: group sysctl functions
-Date:   Fri, 27 May 2022 10:49:08 +0200
-Message-Id: <20220527084824.550347557@linuxfoundation.org>
+Subject: [PATCH 5.17 038/111] random: defer fast pool mixing to worker
+Date:   Fri, 27 May 2022 10:49:10 +0200
+Message-Id: <20220527084824.877637447@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220527084819.133490171@linuxfoundation.org>
 References: <20220527084819.133490171@linuxfoundation.org>
@@ -52,92 +57,155 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 0deff3c43206c24e746b1410f11125707ad3040e upstream.
+commit 58340f8e952b613e0ead0bed58b97b05bf4743c5 upstream.
 
-This pulls all of the sysctl-focused functions into the sixth labeled
-section.
+On PREEMPT_RT, it's problematic to take spinlocks from hard irq
+handlers. We can fix this by deferring to a workqueue the dumping of
+the fast pool into the input pool.
 
-No functional changes.
+We accomplish this with some careful rules on fast_pool->count:
 
+  - When it's incremented to >= 64, we schedule the work.
+  - If the top bit is set, we never schedule the work, even if >= 64.
+  - The worker is responsible for setting it back to 0 when it's done.
+
+There are two small issues around using workqueues for this purpose that
+we work around.
+
+The first issue is that mix_interrupt_randomness() might be migrated to
+another CPU during CPU hotplug. This issue is rectified by checking that
+it hasn't been migrated (after disabling irqs). If it has been migrated,
+then we set the count to zero, so that when the CPU comes online again,
+it can requeue the work. As part of this, we switch to using an
+atomic_t, so that the increment in the irq handler doesn't wipe out the
+zeroing if the CPU comes back online while this worker is running.
+
+The second issue is that, though relatively minor in effect, we probably
+want to make sure we get a consistent view of the pool onto the stack,
+in case it's interrupted by an irq while reading. To do this, we don't
+reenable irqs until after the copy. There are only 18 instructions
+between the cli and sti, so this is a pretty tiny window.
+
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Peter Zijlstra <peterz@infradead.org>
 Cc: Theodore Ts'o <tytso@mit.edu>
+Cc: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
+Acked-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Reviewed-by: Sultan Alsawaf <sultan@kerneltoast.com>
 Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   37 +++++++++++++++++++++++++++++++------
- 1 file changed, 31 insertions(+), 6 deletions(-)
+ drivers/char/random.c |   63 ++++++++++++++++++++++++++++++++++++++------------
+ 1 file changed, 49 insertions(+), 14 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -1693,9 +1693,34 @@ const struct file_operations urandom_fop
- 	.llseek = noop_llseek,
+@@ -1178,9 +1178,10 @@ struct fast_pool {
+ 		u32 pool32[4];
+ 		u64 pool64[2];
+ 	};
++	struct work_struct mix;
+ 	unsigned long last;
++	atomic_t count;
+ 	u16 reg_idx;
+-	u8 count;
  };
  
-+
- /********************************************************************
-  *
-- * Sysctl interface
-+ * Sysctl interface.
-+ *
-+ * These are partly unused legacy knobs with dummy values to not break
-+ * userspace and partly still useful things. They are usually accessible
-+ * in /proc/sys/kernel/random/ and are as follows:
-+ *
-+ * - boot_id - a UUID representing the current boot.
-+ *
-+ * - uuid - a random UUID, different each time the file is read.
-+ *
-+ * - poolsize - the number of bits of entropy that the input pool can
-+ *   hold, tied to the POOL_BITS constant.
-+ *
-+ * - entropy_avail - the number of bits of entropy currently in the
-+ *   input pool. Always <= poolsize.
-+ *
-+ * - write_wakeup_threshold - the amount of entropy in the input pool
-+ *   below which write polls to /dev/random will unblock, requesting
-+ *   more entropy, tied to the POOL_MIN_BITS constant. It is writable
-+ *   to avoid breaking old userspaces, but writing to it does not
-+ *   change any behavior of the RNG.
-+ *
-+ * - urandom_min_reseed_secs - fixed to the meaningless value "60".
-+ *   It is writable to avoid breaking old userspaces, but writing
-+ *   to it does not change any behavior of the RNG.
-  *
-  ********************************************************************/
- 
-@@ -1703,8 +1728,8 @@ const struct file_operations urandom_fop
- 
- #include <linux/sysctl.h>
- 
--static int random_min_urandom_seed = 60;
--static int random_write_wakeup_bits = POOL_MIN_BITS;
-+static int sysctl_random_min_urandom_seed = 60;
-+static int sysctl_random_write_wakeup_bits = POOL_MIN_BITS;
- static int sysctl_poolsize = POOL_BITS;
- static char sysctl_bootid[16];
- 
-@@ -1761,14 +1786,14 @@ static struct ctl_table random_table[] =
- 	},
- 	{
- 		.procname	= "write_wakeup_threshold",
--		.data		= &random_write_wakeup_bits,
-+		.data		= &sysctl_random_write_wakeup_bits,
- 		.maxlen		= sizeof(int),
- 		.mode		= 0644,
- 		.proc_handler	= proc_dointvec,
- 	},
- 	{
- 		.procname	= "urandom_min_reseed_secs",
--		.data		= &random_min_urandom_seed,
-+		.data		= &sysctl_random_min_urandom_seed,
- 		.maxlen		= sizeof(int),
- 		.mode		= 0644,
- 		.proc_handler	= proc_dointvec,
-@@ -1799,4 +1824,4 @@ static int __init random_sysctls_init(vo
- 	return 0;
+ /*
+@@ -1230,12 +1231,49 @@ static u32 get_reg(struct fast_pool *f,
+ 	return *ptr;
  }
- device_initcall(random_sysctls_init);
--#endif	/* CONFIG_SYSCTL */
-+#endif
+ 
++static void mix_interrupt_randomness(struct work_struct *work)
++{
++	struct fast_pool *fast_pool = container_of(work, struct fast_pool, mix);
++	u32 pool[4];
++
++	/* Check to see if we're running on the wrong CPU due to hotplug. */
++	local_irq_disable();
++	if (fast_pool != this_cpu_ptr(&irq_randomness)) {
++		local_irq_enable();
++		/*
++		 * If we are unlucky enough to have been moved to another CPU,
++		 * during CPU hotplug while the CPU was shutdown then we set
++		 * our count to zero atomically so that when the CPU comes
++		 * back online, it can enqueue work again. The _release here
++		 * pairs with the atomic_inc_return_acquire in
++		 * add_interrupt_randomness().
++		 */
++		atomic_set_release(&fast_pool->count, 0);
++		return;
++	}
++
++	/*
++	 * Copy the pool to the stack so that the mixer always has a
++	 * consistent view, before we reenable irqs again.
++	 */
++	memcpy(pool, fast_pool->pool32, sizeof(pool));
++	atomic_set(&fast_pool->count, 0);
++	fast_pool->last = jiffies;
++	local_irq_enable();
++
++	mix_pool_bytes(pool, sizeof(pool));
++	credit_entropy_bits(1);
++	memzero_explicit(pool, sizeof(pool));
++}
++
+ void add_interrupt_randomness(int irq)
+ {
++	enum { MIX_INFLIGHT = 1U << 31 };
+ 	struct fast_pool *fast_pool = this_cpu_ptr(&irq_randomness);
+ 	struct pt_regs *regs = get_irq_regs();
+ 	unsigned long now = jiffies;
+ 	cycles_t cycles = random_get_entropy();
++	unsigned int new_count;
+ 
+ 	if (cycles == 0)
+ 		cycles = get_reg(fast_pool, regs);
+@@ -1255,12 +1293,13 @@ void add_interrupt_randomness(int irq)
+ 	}
+ 
+ 	fast_mix(fast_pool->pool32);
+-	++fast_pool->count;
++	/* The _acquire here pairs with the atomic_set_release in mix_interrupt_randomness(). */
++	new_count = (unsigned int)atomic_inc_return_acquire(&fast_pool->count);
+ 
+ 	if (unlikely(crng_init == 0)) {
+-		if (fast_pool->count >= 64 &&
++		if (new_count >= 64 &&
+ 		    crng_fast_load(fast_pool->pool32, sizeof(fast_pool->pool32)) > 0) {
+-			fast_pool->count = 0;
++			atomic_set(&fast_pool->count, 0);
+ 			fast_pool->last = now;
+ 			if (spin_trylock(&input_pool.lock)) {
+ 				_mix_pool_bytes(&fast_pool->pool32, sizeof(fast_pool->pool32));
+@@ -1270,20 +1309,16 @@ void add_interrupt_randomness(int irq)
+ 		return;
+ 	}
+ 
+-	if ((fast_pool->count < 64) && !time_after(now, fast_pool->last + HZ))
++	if (new_count & MIX_INFLIGHT)
+ 		return;
+ 
+-	if (!spin_trylock(&input_pool.lock))
++	if (new_count < 64 && !time_after(now, fast_pool->last + HZ))
+ 		return;
+ 
+-	fast_pool->last = now;
+-	_mix_pool_bytes(&fast_pool->pool32, sizeof(fast_pool->pool32));
+-	spin_unlock(&input_pool.lock);
+-
+-	fast_pool->count = 0;
+-
+-	/* Award one bit for the contents of the fast pool. */
+-	credit_entropy_bits(1);
++	if (unlikely(!fast_pool->mix.func))
++		INIT_WORK(&fast_pool->mix, mix_interrupt_randomness);
++	atomic_or(MIX_INFLIGHT, &fast_pool->count);
++	queue_work_on(raw_smp_processor_id(), system_highpri_wq, &fast_pool->mix);
+ }
+ EXPORT_SYMBOL_GPL(add_interrupt_randomness);
+ 
 
 
