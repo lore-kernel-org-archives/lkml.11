@@ -2,101 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E4BCC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 15:58:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A152C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 15:58:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353990AbiE0P62 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 11:58:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42732 "EHLO
+        id S240328AbiE0P6i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 11:58:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353847AbiE0P5Y (ORCPT
+        with ESMTP id S1354031AbiE0P5Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 27 May 2022 11:57:24 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BBE4DED78D
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 08:57:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653667032;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=RZJZWfsaByLj0ij8xQqPbsK2IaQ+e2uUS77uqtBhMFM=;
-        b=HNYC9/HkZ5ZlNoRScTJCx0QNiAj8i3/Wh8fBM5eN2qk8IIFpqCKEBKpir6pxIewhFawTBu
-        t/evJJVLzxoI/VrwSfXpC0p3nSANRMT7juyNxNd8GmSZBUZliWaPoc2tfLLqSGdB3z/7Mp
-        soYmBYm345g7I5pd8WIbcBfsJWsDljc=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-582-tHEDPbcbPs6HXRL3C8C4EQ-1; Fri, 27 May 2022 11:57:08 -0400
-X-MC-Unique: tHEDPbcbPs6HXRL3C8C4EQ-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id F3F64101A54E;
-        Fri, 27 May 2022 15:57:07 +0000 (UTC)
-Received: from fedora.redhat.com (unknown [10.40.192.126])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B50372166B26;
-        Fri, 27 May 2022 15:57:05 +0000 (UTC)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Siddharth Chandrasekaran <sidcha@amazon.de>,
-        Yuan Yao <yuan.yao@linux.intel.com>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v5 29/37] KVM: selftests: Export _vm_get_page_table_entry()
-Date:   Fri, 27 May 2022 17:55:38 +0200
-Message-Id: <20220527155546.1528910-30-vkuznets@redhat.com>
-In-Reply-To: <20220527155546.1528910-1-vkuznets@redhat.com>
-References: <20220527155546.1528910-1-vkuznets@redhat.com>
+Received: from conssluserg-01.nifty.com (conssluserg-01.nifty.com [210.131.2.80])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 366E1E15D4;
+        Fri, 27 May 2022 08:57:11 -0700 (PDT)
+Received: from mail-pj1-f54.google.com (mail-pj1-f54.google.com [209.85.216.54]) (authenticated)
+        by conssluserg-01.nifty.com with ESMTP id 24RFuqOk028702;
+        Sat, 28 May 2022 00:56:53 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-01.nifty.com 24RFuqOk028702
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1653667013;
+        bh=PA6XyD/D6HG8M6irseqU8qzIX5vvd3VEI+LGWM7fjiE=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=kSOCR3gCFab/jTHmTELXTDXk+hGIuZptGJR+5pX1I/A0NThoIE4FDEMrlzijbmwly
+         YUbo5AUSJyMBCZE5HJHZsuadQ6t7k9Se1/nDZlPYKAk4ODE2/GQRTZyAT6IruVLv4b
+         oIpnTF7vY4/HcK0Ddpboj87+0IeNxq+H9+GFprhUO52I29OXaUHYLK4j5NsAUNqzXS
+         7pnDjwyv4XRf6788QVKIaC4Tr9jaDlg6sckk+KFqEBiz79uN7IM3GHtZbGXixDout9
+         TOJN20m+85FwmJT0sdsdHK+tO7+u6zm0r2hX2mIp3vrRntRLLMYJJGTHQZ7M7qZMWO
+         w/mMgFAYfaVAQ==
+X-Nifty-SrcIP: [209.85.216.54]
+Received: by mail-pj1-f54.google.com with SMTP id qe5-20020a17090b4f8500b001e26126abccso2689657pjb.0;
+        Fri, 27 May 2022 08:56:52 -0700 (PDT)
+X-Gm-Message-State: AOAM531d+97GMMYerrc7Rk9VAin5P82P+a4atmWFgmrq/QDT5eOxRRAy
+        3/8SUAm4rWTyR+xLtINJeVdDWXfv4pldRcs+PcA=
+X-Google-Smtp-Source: ABdhPJyzgbwKouLhue0pWOSkA4y536KbEctvagZNS0aJMMSJDL2D422HSRK7IZlnsKLwOTFSJDRTZS25B630WBPZWaw=
+X-Received: by 2002:a17:902:f68f:b0:162:23c6:e61b with SMTP id
+ l15-20020a170902f68f00b0016223c6e61bmr26055413plg.136.1653667012039; Fri, 27
+ May 2022 08:56:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
+References: <20220527143931.2161635-1-masahiroy@kernel.org> <133bcb8b-2321-6acb-ea2d-3ab82af19dcb@gmx.de>
+In-Reply-To: <133bcb8b-2321-6acb-ea2d-3ab82af19dcb@gmx.de>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Sat, 28 May 2022 00:55:29 +0900
+X-Gmail-Original-Message-ID: <CAK7LNATYbNzfZSOMz02ToE-dN1Bcck0qGWTHHcB-ask49JnAgA@mail.gmail.com>
+Message-ID: <CAK7LNATYbNzfZSOMz02ToE-dN1Bcck0qGWTHHcB-ask49JnAgA@mail.gmail.com>
+Subject: Re: [PATCH] parisc: fix the exit status of arch/parisc/nm
+To:     Helge Deller <deller@gmx.de>
+Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Parisc List <linux-parisc@vger.kernel.org>,
+        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Make it possible for tests to mangle guest's page table entries in
-addition to just getting them (available with vm_get_page_table_entry()).
+On Sat, May 28, 2022 at 12:32 AM Helge Deller <deller@gmx.de> wrote:
+>
+> On 5/27/22 16:39, Masahiro Yamada wrote:
+> > Parisc overrides 'nm' with a shell script. I was hit by a false-positive
+> > error of $(NM) because this script returns the exit code of grep instead
+> > of ${CROSS_COMPILE}nm. (grep exits with 1 if no lines were selected)
+> >
+> > I tried to fix it, but in the code review, Helge suggested to remove it
+> > entirely. [1]
+> >
+> > This script was added in 2003. [2]
+> >
+> > Presumably, it was a workaround for old toolchains (but even the parisc
+> > maintainer does not know the detail any more).
+> >
+> > Hopefully recent tools should work fine.
+> >
+> > [1]: https://lore.kernel.org/all/1c12cd26-d8aa-4498-f4c0-29478b9578fe@gmx.de/
+> > [2]: https://git.kernel.org/pub/scm/linux/kernel/git/history/history.git/commit/?id=36eaa6e4c0e0b6950136b956b72fd08155b92ca3
+> >
+> > Suggested-by: Helge Deller <deller@gmx.de>
+> > Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+>
+> Acked-by: Helge Deller <deller@gmx.de>
+>
+> Thank you!
+> Helge
+>
 
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
----
- tools/testing/selftests/kvm/include/x86_64/processor.h | 1 +
- tools/testing/selftests/kvm/lib/x86_64/processor.c     | 3 +--
- 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/include/x86_64/processor.h b/tools/testing/selftests/kvm/include/x86_64/processor.h
-index 9ac244fdce73..76cfd7f70add 100644
---- a/tools/testing/selftests/kvm/include/x86_64/processor.h
-+++ b/tools/testing/selftests/kvm/include/x86_64/processor.h
-@@ -475,6 +475,7 @@ void vcpu_init_descriptor_tables(struct kvm_vm *vm, uint32_t vcpuid);
- void vm_install_exception_handler(struct kvm_vm *vm, int vector,
- 			void (*handler)(struct ex_regs *));
- 
-+uint64_t *_vm_get_page_table_entry(struct kvm_vm *vm, int vcpuid, uint64_t vaddr);
- uint64_t vm_get_page_table_entry(struct kvm_vm *vm, int vcpuid, uint64_t vaddr);
- void vm_set_page_table_entry(struct kvm_vm *vm, int vcpuid, uint64_t vaddr,
- 			     uint64_t pte);
-diff --git a/tools/testing/selftests/kvm/lib/x86_64/processor.c b/tools/testing/selftests/kvm/lib/x86_64/processor.c
-index 33ea5e9955d9..dfe54a970410 100644
---- a/tools/testing/selftests/kvm/lib/x86_64/processor.c
-+++ b/tools/testing/selftests/kvm/lib/x86_64/processor.c
-@@ -246,8 +246,7 @@ void virt_pg_map(struct kvm_vm *vm, uint64_t vaddr, uint64_t paddr)
- 	__virt_pg_map(vm, vaddr, paddr, X86_PAGE_SIZE_4K);
- }
- 
--static uint64_t *_vm_get_page_table_entry(struct kvm_vm *vm, int vcpuid,
--						       uint64_t vaddr)
-+uint64_t *_vm_get_page_table_entry(struct kvm_vm *vm, int vcpuid, uint64_t vaddr)
- {
- 	uint16_t index[4];
- 	uint64_t *pml4e, *pdpe, *pde;
+I just forgot to change the patch subject.
+
+I changed it to
+
+"parisc: remove arch/parisc/nm"
+
+Applied to linux-kbuild.
+Thanks for the ack.
+
+
+
 -- 
-2.35.3
-
+Best Regards
+Masahiro Yamada
