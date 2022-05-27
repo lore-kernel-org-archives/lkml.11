@@ -2,133 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62F11C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 10:50:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01851C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 10:52:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245587AbiE0KuM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 06:50:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35270 "EHLO
+        id S1349765AbiE0KwZ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 06:52:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242000AbiE0KuJ (ORCPT
+        with ESMTP id S236319AbiE0KwX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 06:50:09 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 65F1912B02B
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 03:50:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653648607;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=l2Lh+gpGDkrHKWoEv+QKFc0qknv05ZH2I5oLoT3BQ3w=;
-        b=ez9AvT1B4NZ/MUDoOykLozkTNl8FJXcGC15qzLS0DRTXuXdkh63SwQEPnVC0UWwRtiA3sC
-        2hxEopK8rrOzSipx/hZOzvb/vrd6hHPHXKOFv7/uc0fl5/eBb83K2zzHvMBs3A0eDTi5ga
-        WXKypaY0X0DhTZWNPXoeAi2l7lEuYk8=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-387-yJuHBR7mOgqLnyaEAAbrJA-1; Fri, 27 May 2022 06:50:06 -0400
-X-MC-Unique: yJuHBR7mOgqLnyaEAAbrJA-1
-Received: by mail-wm1-f72.google.com with SMTP id m10-20020a05600c3b0a00b003948b870a8dso4645661wms.2
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 03:50:06 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=l2Lh+gpGDkrHKWoEv+QKFc0qknv05ZH2I5oLoT3BQ3w=;
-        b=21pkoYYB/muzoYit4Gw5n8kXYv7l2mADQpdW3waaLaVrB2sUDVml8hxh+tjw2y5v6w
-         jT2Stvbta9SwBnaI8ClfWSCbmN/eGU1dOQRgpclh5BAw4W6FY1hHGMn3RjhPVIp0QXdO
-         7/25fdFsZmqeHkFt/mEjl6hi+QPucmu9CILI65iZK3SKv2UCB8NHQMRj0WQv7SMqiRZ9
-         3wHgv8ZeupPM8GU/LmDE5IapUu24hcqveoSHY3d3S4xZX193ZEtVtporng0C1X36AAqV
-         1g2cPe0BWopWveWSWK9Orp4WuaGJ4/lJUpgQIk2V5jXM4QVCup5AfFP+iADm8jO4RgWh
-         zONA==
-X-Gm-Message-State: AOAM530eDaNmYr8B29pc0t46sx+cNdgFsRest8w2OC/zri66xqVqqJji
-        lClN/ejOLCnOzuYqs8f6vlVDb/Y0yohcOA4WiTtX3OTepAUJb8JD+hiwzB7wJRB6K/V8k5W/M7O
-        gJzOqtZ/X+8WH7RpkWzijucsl
-X-Received: by 2002:adf:d1e7:0:b0:20f:dd30:489b with SMTP id g7-20020adfd1e7000000b0020fdd30489bmr19682800wrd.94.1653648605107;
-        Fri, 27 May 2022 03:50:05 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyS7mTUl4muodaOxpb3A92/00mQUnf2JML65CurJrTdcEaXMLxZDQNgec7W8o6+Bm+X58NZew==
-X-Received: by 2002:adf:d1e7:0:b0:20f:dd30:489b with SMTP id g7-20020adfd1e7000000b0020fdd30489bmr19682778wrd.94.1653648604834;
-        Fri, 27 May 2022 03:50:04 -0700 (PDT)
-Received: from redhat.com ([2.55.130.213])
-        by smtp.gmail.com with ESMTPSA id r2-20020a7bc082000000b00397402ae674sm1828344wmh.11.2022.05.27.03.50.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 May 2022 03:50:04 -0700 (PDT)
-Date:   Fri, 27 May 2022 06:50:00 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, tglx@linutronix.de,
-        peterz@infradead.org, paulmck@kernel.org, maz@kernel.org,
-        pasic@linux.ibm.com, cohuck@redhat.com, eperezma@redhat.com,
-        lulu@redhat.com, sgarzare@redhat.com, xuanzhuo@linux.alibaba.com,
-        Vineeth Vijayan <vneethv@linux.ibm.com>,
-        Peter Oberparleiter <oberpar@linux.ibm.com>,
-        linux-s390@vger.kernel.org
-Subject: Re: [PATCH V6 9/9] virtio: use WARN_ON() to warning illegal status
- value
-Message-ID: <20220527064118-mutt-send-email-mst@kernel.org>
-References: <20220527060120.20964-1-jasowang@redhat.com>
- <20220527060120.20964-10-jasowang@redhat.com>
+        Fri, 27 May 2022 06:52:23 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEF6255480
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 03:52:21 -0700 (PDT)
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.53])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4L8hRV5VkYz1JCTk;
+        Fri, 27 May 2022 18:50:46 +0800 (CST)
+Received: from dggpemm500018.china.huawei.com (7.185.36.111) by
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 27 May 2022 18:52:19 +0800
+Received: from localhost.localdomain (10.175.112.125) by
+ dggpemm500018.china.huawei.com (7.185.36.111) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 27 May 2022 18:52:19 +0800
+From:   keliu <liuke94@huawei.com>
+To:     <johan@kernel.org>, <elder@kernel.org>,
+        <gregkh@linuxfoundation.org>, <greybus-dev@lists.linaro.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     keliu <liuke94@huawei.com>
+Subject: [PATCH] drivers: greybus: Directly use ida_alloc()/free()
+Date:   Fri, 27 May 2022 11:13:48 +0000
+Message-ID: <20220527111348.3444003-1-liuke94@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220527060120.20964-10-jasowang@redhat.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.112.125]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm500018.china.huawei.com (7.185.36.111)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-At a minimum, I don't see why it's part of the series. Host can always
-crash the guest if it wants to ...
-The point of BUG_ON is device or driver is already corrupted so we
-should not try to drive it.  If you still want this in pls come up with
-a better commit log explaining the why.
+Use ida_alloc()/ida_free() instead of deprecated
+ida_simple_get()/ida_simple_remove() .
 
-On Fri, May 27, 2022 at 02:01:20PM +0800, Jason Wang wrote:
-> We used to use BUG_ON() in virtio_device_ready() to detect illegal
+Signed-off-by: keliu <liuke94@huawei.com>
+---
+ drivers/greybus/es2.c       |  4 ++--
+ drivers/greybus/hd.c        | 12 ++++++------
+ drivers/greybus/interface.c |  8 ++++----
+ 3 files changed, 12 insertions(+), 12 deletions(-)
 
-not really, BUG_ON just crashes the kernel.  we detect by checking
-status.
-
-> status value, this seems sub-optimal since the value is under the
-> control of the device. Switch to use WARN_ON() instead.
-
-some people use crash on warn so ...
-
-> 
-> Cc: Thomas Gleixner <tglx@linutronix.de>
-> Cc: Peter Zijlstra <peterz@infradead.org>
-> Cc: "Paul E. McKenney" <paulmck@kernel.org>
-> Cc: Marc Zyngier <maz@kernel.org>
-> Cc: Halil Pasic <pasic@linux.ibm.com>
-> Cc: Cornelia Huck <cohuck@redhat.com>
-> Cc: Vineeth Vijayan <vneethv@linux.ibm.com>
-> Cc: Peter Oberparleiter <oberpar@linux.ibm.com>
-> Cc: linux-s390@vger.kernel.org
-> Signed-off-by: Jason Wang <jasowang@redhat.com>
-
-> ---
->  include/linux/virtio_config.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/include/linux/virtio_config.h b/include/linux/virtio_config.h
-> index d4edfd7d91bb..9a36051ceb76 100644
-> --- a/include/linux/virtio_config.h
-> +++ b/include/linux/virtio_config.h
-> @@ -255,7 +255,7 @@ void virtio_device_ready(struct virtio_device *dev)
->  {
->  	unsigned status = dev->config->get_status(dev);
->  
-> -	BUG_ON(status & VIRTIO_CONFIG_S_DRIVER_OK);
-> +	WARN_ON(status & VIRTIO_CONFIG_S_DRIVER_OK);
->  
-
-we lose debuggability as guest will try to continue.
-if we are doing this let us print a helpful message and dump a lot of
-state right here.
-
->  	/*
->  	 * The virtio_synchronize_cbs() makes sure vring_interrupt()
-> -- 
-> 2.25.1
+diff --git a/drivers/greybus/es2.c b/drivers/greybus/es2.c
+index e89cca015095..c861fb2acd8a 100644
+--- a/drivers/greybus/es2.c
++++ b/drivers/greybus/es2.c
+@@ -522,7 +522,7 @@ static int es2_cport_allocate(struct gb_host_device *hd, int cport_id,
+ 		return -EINVAL;
+ 	}
+ 
+-	return ida_simple_get(id_map, ida_start, ida_end, GFP_KERNEL);
++	return ida_alloc_range(id_map, ida_start, ida_end - 1, GFP_KERNEL);
+ }
+ 
+ static void es2_cport_release(struct gb_host_device *hd, u16 cport_id)
+@@ -535,7 +535,7 @@ static void es2_cport_release(struct gb_host_device *hd, u16 cport_id)
+ 		return;
+ 	}
+ 
+-	ida_simple_remove(&hd->cport_id_map, cport_id);
++	ida_free(&hd->cport_id_map, cport_id);
+ }
+ 
+ static int cport_enable(struct gb_host_device *hd, u16 cport_id,
+diff --git a/drivers/greybus/hd.c b/drivers/greybus/hd.c
+index 72b21bf2d7d3..6ff5b0cfd539 100644
+--- a/drivers/greybus/hd.c
++++ b/drivers/greybus/hd.c
+@@ -50,7 +50,7 @@ int gb_hd_cport_reserve(struct gb_host_device *hd, u16 cport_id)
+ 	struct ida *id_map = &hd->cport_id_map;
+ 	int ret;
+ 
+-	ret = ida_simple_get(id_map, cport_id, cport_id + 1, GFP_KERNEL);
++	ret = ida_alloc_range(id_map, cport_id, cport_id, GFP_KERNEL);
+ 	if (ret < 0) {
+ 		dev_err(&hd->dev, "failed to reserve cport %u\n", cport_id);
+ 		return ret;
+@@ -64,7 +64,7 @@ void gb_hd_cport_release_reserved(struct gb_host_device *hd, u16 cport_id)
+ {
+ 	struct ida *id_map = &hd->cport_id_map;
+ 
+-	ida_simple_remove(id_map, cport_id);
++	ida_free(id_map, cport_id);
+ }
+ EXPORT_SYMBOL_GPL(gb_hd_cport_release_reserved);
+ 
+@@ -89,7 +89,7 @@ int gb_hd_cport_allocate(struct gb_host_device *hd, int cport_id,
+ 		return -EINVAL;
+ 	}
+ 
+-	return ida_simple_get(id_map, ida_start, ida_end, GFP_KERNEL);
++	return ida_alloc_range(id_map, ida_start, ida_end - 1, GFP_KERNEL);
+ }
+ 
+ /* Locking: Caller guarantees serialisation */
+@@ -100,7 +100,7 @@ void gb_hd_cport_release(struct gb_host_device *hd, u16 cport_id)
+ 		return;
+ 	}
+ 
+-	ida_simple_remove(&hd->cport_id_map, cport_id);
++	ida_free(&hd->cport_id_map, cport_id);
+ }
+ 
+ static void gb_hd_release(struct device *dev)
+@@ -111,7 +111,7 @@ static void gb_hd_release(struct device *dev)
+ 
+ 	if (hd->svc)
+ 		gb_svc_put(hd->svc);
+-	ida_simple_remove(&gb_hd_bus_id_map, hd->bus_id);
++	ida_free(&gb_hd_bus_id_map, hd->bus_id);
+ 	ida_destroy(&hd->cport_id_map);
+ 	kfree(hd);
+ }
+@@ -162,7 +162,7 @@ struct gb_host_device *gb_hd_create(struct gb_hd_driver *driver,
+ 	if (!hd)
+ 		return ERR_PTR(-ENOMEM);
+ 
+-	ret = ida_simple_get(&gb_hd_bus_id_map, 1, 0, GFP_KERNEL);
++	ret = ida_alloc_min(&gb_hd_bus_id_map, 1, GFP_KERNEL);
+ 	if (ret < 0) {
+ 		kfree(hd);
+ 		return ERR_PTR(ret);
+diff --git a/drivers/greybus/interface.c b/drivers/greybus/interface.c
+index 9ec949a438ef..f685e5f7b7b1 100644
+--- a/drivers/greybus/interface.c
++++ b/drivers/greybus/interface.c
+@@ -131,8 +131,8 @@ static int gb_interface_route_create(struct gb_interface *intf)
+ 	int ret;
+ 
+ 	/* Allocate an interface device id. */
+-	ret = ida_simple_get(&svc->device_id_map,
+-			     GB_SVC_DEVICE_ID_MIN, GB_SVC_DEVICE_ID_MAX + 1,
++	ret = ida_alloc_range(&svc->device_id_map,
++			     GB_SVC_DEVICE_ID_MIN, GB_SVC_DEVICE_ID_MAX,
+ 			     GFP_KERNEL);
+ 	if (ret < 0) {
+ 		dev_err(&intf->dev, "failed to allocate device id: %d\n", ret);
+@@ -165,7 +165,7 @@ static int gb_interface_route_create(struct gb_interface *intf)
+ 	 * XXX anymore.
+ 	 */
+ err_ida_remove:
+-	ida_simple_remove(&svc->device_id_map, device_id);
++	ida_free(&svc->device_id_map, device_id);
+ 
+ 	return ret;
+ }
+@@ -178,7 +178,7 @@ static void gb_interface_route_destroy(struct gb_interface *intf)
+ 		return;
+ 
+ 	gb_svc_route_destroy(svc, svc->ap_intf_id, intf->interface_id);
+-	ida_simple_remove(&svc->device_id_map, intf->device_id);
++	ida_free(&svc->device_id_map, intf->device_id);
+ 	intf->device_id = GB_INTERFACE_DEVICE_ID_BAD;
+ }
+ 
+-- 
+2.25.1
 
