@@ -2,46 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80441C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:09:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E70EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:09:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352562AbiE0MI5 (ORCPT
+        id S1352773AbiE0MJG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 08:08:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57142 "EHLO
+        Fri, 27 May 2022 08:09:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353305AbiE0L4X (ORCPT
+        with ESMTP id S1353303AbiE0L4X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 27 May 2022 07:56:23 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9FC113CA0B;
-        Fri, 27 May 2022 04:50:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB79B106A7A;
+        Fri, 27 May 2022 04:50:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 455E561D56;
-        Fri, 27 May 2022 11:50:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52B7BC385A9;
-        Fri, 27 May 2022 11:50:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4748961D9B;
+        Fri, 27 May 2022 11:50:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5570CC385A9;
+        Fri, 27 May 2022 11:50:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653652246;
-        bh=1WMc/E9fz9+3aV9kLfMjQCuQ2UeXYT4lRhJsZ6GhPu4=;
+        s=korg; t=1653652249;
+        bh=vzwuZWnm6kpqwOb+2kD3Qz0bX3zG6yU4MW7xDk9XB+o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jmMDXq/5F9NZFyTj8lRu9Z/p/KuRv1PSkbyZOXT7Ik9MVi8FdCiCWlu9IXLGtbsTP
-         Hn3vHVdVs74UvOQqV1KNekXejoFpe+8bYyDaSn7jyN87aMd57vczfYOL0+GszXwDWh
-         cL3p/zJcONwzOlsxIDpLj0zwC53KtGjWPqfYGKDo=
+        b=lKU0vi4GvWBXW3c7tyP1yO4DmTyUg6wXQrb9pJ+3PkzJNKW0U28ebTXn87sRv5kbA
+         goQWEoHIYxma5NNDf8ZMyTaYoP+wIsb5qgxAR8+eYaShCcit4jBAfuZwqlqny1dBcR
+         Pjpe7FWIDY4kPUrNE4UKA2/jOfoZiSkvfYADqQrw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>,
-        Stafford Horne <shorne@gmail.com>,
+        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Richard Henderson <rth@twiddle.net>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.10 121/163] init: call time_init() before rand_initialize()
-Date:   Fri, 27 May 2022 10:50:01 +0200
-Message-Id: <20220527084844.841135009@linuxfoundation.org>
+Subject: [PATCH 5.15 107/145] alpha: define get_cycles macro for arch-override
+Date:   Fri, 27 May 2022 10:50:08 +0200
+Message-Id: <20220527084903.533958942@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
-References: <20220527084828.156494029@linuxfoundation.org>
+In-Reply-To: <20220527084850.364560116@linuxfoundation.org>
+References: <20220527084850.364560116@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,48 +55,34 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit fe222a6ca2d53c38433cba5d3be62a39099e708e upstream.
+commit 1097710bc9660e1e588cf2186a35db3d95c4d258 upstream.
 
-Currently time_init() is called after rand_initialize(), but
-rand_initialize() makes use of the timer on various platforms, and
-sometimes this timer needs to be initialized by time_init() first. In
-order for random_get_entropy() to not return zero during early boot when
-it's potentially used as an entropy source, reverse the order of these
-two calls. The block doing random initialization was right before
-time_init() before, so changing the order shouldn't have any complicated
-effects.
+Alpha defines a get_cycles() function, but it does not do the usual
+`#define get_cycles get_cycles` dance, making it impossible for generic
+code to see if an arch-specific function was defined. While the
+get_cycles() ifdef is not currently used, the following timekeeping
+patch in this series will depend on the macro existing (or not existing)
+when defining random_get_entropy().
 
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Reviewed-by: Stafford Horne <shorne@gmail.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Richard Henderson <rth@twiddle.net>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Acked-by: Matt Turner <mattst88@gmail.com>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- init/main.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/alpha/include/asm/timex.h |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/init/main.c
-+++ b/init/main.c
-@@ -952,11 +952,13 @@ asmlinkage __visible void __init __no_sa
- 	hrtimers_init();
- 	softirq_init();
- 	timekeeping_init();
-+	time_init();
+--- a/arch/alpha/include/asm/timex.h
++++ b/arch/alpha/include/asm/timex.h
+@@ -28,5 +28,6 @@ static inline cycles_t get_cycles (void)
+ 	__asm__ __volatile__ ("rpcc %0" : "=r"(ret));
+ 	return ret;
+ }
++#define get_cycles get_cycles
  
- 	/*
- 	 * For best initial stack canary entropy, prepare it after:
- 	 * - setup_arch() for any UEFI RNG entropy and boot cmdline access
- 	 * - timekeeping_init() for ktime entropy used in rand_initialize()
-+	 * - time_init() for making random_get_entropy() work on some platforms
- 	 * - rand_initialize() to get any arch-specific entropy like RDRAND
- 	 * - add_latent_entropy() to get any latent entropy
- 	 * - adding command line entropy
-@@ -966,7 +968,6 @@ asmlinkage __visible void __init __no_sa
- 	add_device_randomness(command_line, strlen(command_line));
- 	boot_init_stack_canary();
- 
--	time_init();
- 	perf_event_init();
- 	profile_init();
- 	call_function_init();
+ #endif
 
 
