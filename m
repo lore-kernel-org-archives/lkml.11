@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95607C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:49:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1AE4C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:49:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244787AbiE0LtW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 07:49:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56484 "EHLO
+        id S238607AbiE0Lt0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 07:49:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352128AbiE0Lp2 (ORCPT
+        with ESMTP id S1352038AbiE0LpR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:45:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C121512B00E;
-        Fri, 27 May 2022 04:42:00 -0700 (PDT)
+        Fri, 27 May 2022 07:45:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20E2413FD72;
+        Fri, 27 May 2022 04:41:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 44DAC61CDB;
-        Fri, 27 May 2022 11:42:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55121C385A9;
-        Fri, 27 May 2022 11:41:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 408E7B824D8;
+        Fri, 27 May 2022 11:41:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FEB4C385A9;
+        Fri, 27 May 2022 11:41:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653651719;
-        bh=05oCL9/vwRD2ONushJmIq7RlXP0+bm7pgIUFoypvMaI=;
+        s=korg; t=1653651705;
+        bh=1gYXjOiQ/z90nRzb8U321OxJ4EeK2vYVDyO9CPVnJcY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eSpHC8VFNhePE/OTeA+qqdyjjmUPhBHihr4YFtgivU0PWPTbhmwgEqk3Bzj6+s2A1
-         jui0f1U6k6oHFrQhbwy7s/yOPfW4jbI40DQYoqJEZbV4Xt1wElXybIH6C3Iu3E1xCg
-         ru6I4WK+hCdayUV33ZEy/Esy2J+eVreSAD+Hnflw=
+        b=UlUf2fYsROZXikyjxEsaUndw/nCbTy5JdQz4emaM/MA2dl+EKIyMlOOv3gi1DJ3Sy
+         wRcOIJW74D3cDhWs2ag0KcDlGI0GWdlEopzj1SgV7K1z3t5f/RO4PXjSxQ9Hcv/9wa
+         kVIQIliEGZJadH4omyaHskquXJc8W4cOJNAnZpkw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.15 036/145] random: access primary_pool directly rather than through pointer
-Date:   Fri, 27 May 2022 10:48:57 +0200
-Message-Id: <20220527084855.276368548@linuxfoundation.org>
+Subject: [PATCH 5.15 031/145] random: cleanup fractional entropy shift constants
+Date:   Fri, 27 May 2022 10:48:52 +0200
+Message-Id: <20220527084854.599461457@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220527084850.364560116@linuxfoundation.org>
 References: <20220527084850.364560116@linuxfoundation.org>
@@ -49,70 +49,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dominik Brodowski <linux@dominikbrodowski.net>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit ebf7606388732ecf2821ca21087e9446cb4a5b57 upstream.
+commit 18263c4e8e62f7329f38f5eadc568751242ca89c upstream.
 
-Both crng_initialize_primary() and crng_init_try_arch_early() are
-only called for the primary_pool. Accessing it directly instead of
-through a function parameter simplifies the code.
+The entropy estimator is calculated in terms of 1/8 bits, which means
+there are various constants where things are shifted by 3. Move these
+into our pool info enum with the other relevant constants. While we're
+at it, move an English assertion about sizes into a proper BUILD_BUG_ON
+so that the compiler can ensure this invariant.
 
-Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ drivers/char/random.c |   28 +++++++++++++---------------
+ 1 file changed, 13 insertions(+), 15 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -762,7 +762,7 @@ static bool crng_init_try_arch(struct cr
- 	return arch_init;
- }
+@@ -359,16 +359,6 @@
+ /* #define ADD_INTERRUPT_BENCH */
  
--static bool __init crng_init_try_arch_early(struct crng_state *crng)
-+static bool __init crng_init_try_arch_early(void)
- {
- 	int i;
- 	bool arch_init = true;
-@@ -774,7 +774,7 @@ static bool __init crng_init_try_arch_ea
- 			rv = random_get_entropy();
- 			arch_init = false;
- 		}
--		crng->state[i] ^= rv;
-+		primary_crng.state[i] ^= rv;
+ /*
+- * To allow fractional bits to be tracked, the entropy_count field is
+- * denominated in units of 1/8th bits.
+- *
+- * 2*(POOL_ENTROPY_SHIFT + poolbitshift) must <= 31, or the multiply in
+- * credit_entropy_bits() needs to be 64 bits wide.
+- */
+-#define POOL_ENTROPY_SHIFT 3
+-#define POOL_ENTROPY_BITS() (input_pool.entropy_count >> POOL_ENTROPY_SHIFT)
+-
+-/*
+  * If the entropy count falls under this number of bits, then we
+  * should wake up processes which are selecting or polling on write
+  * access to /dev/random.
+@@ -425,8 +415,13 @@ enum poolinfo {
+ 	POOL_WORDMASK = POOL_WORDS - 1,
+ 	POOL_BYTES = POOL_WORDS * sizeof(u32),
+ 	POOL_BITS = POOL_BYTES * 8,
+-	POOL_BITSHIFT = ilog2(POOL_WORDS) + 5,
+-	POOL_FRACBITS = POOL_WORDS << (POOL_ENTROPY_SHIFT + 5),
++	POOL_BITSHIFT = ilog2(POOL_BITS),
++
++	/* To allow fractional bits to be tracked, the entropy_count field is
++	 * denominated in units of 1/8th bits. */
++	POOL_ENTROPY_SHIFT = 3,
++#define POOL_ENTROPY_BITS() (input_pool.entropy_count >> POOL_ENTROPY_SHIFT)
++	POOL_FRACBITS = POOL_BITS << POOL_ENTROPY_SHIFT,
+ 
+ 	/* x^128 + x^104 + x^76 + x^51 +x^25 + x + 1 */
+ 	POOL_TAP1 = 104,
+@@ -652,6 +647,9 @@ static void credit_entropy_bits(int nbit
+ 	int entropy_count, entropy_bits, orig;
+ 	int nfrac = nbits << POOL_ENTROPY_SHIFT;
+ 
++	/* Ensure that the multiplication can avoid being 64 bits wide. */
++	BUILD_BUG_ON(2 * (POOL_ENTROPY_SHIFT + POOL_BITSHIFT) > 31);
++
+ 	if (!nbits)
+ 		return;
+ 
+@@ -687,13 +685,13 @@ retry:
+ 		/* The +2 corresponds to the /4 in the denominator */
+ 
+ 		do {
+-			unsigned int anfrac = min(pnfrac, POOL_FRACBITS/2);
++			unsigned int anfrac = min(pnfrac, POOL_FRACBITS / 2);
+ 			unsigned int add =
+-				((POOL_FRACBITS - entropy_count)*anfrac*3) >> s;
++				((POOL_FRACBITS - entropy_count) * anfrac * 3) >> s;
+ 
+ 			entropy_count += add;
+ 			pnfrac -= anfrac;
+-		} while (unlikely(entropy_count < POOL_FRACBITS-2 && pnfrac));
++		} while (unlikely(entropy_count < POOL_FRACBITS - 2 && pnfrac));
  	}
  
- 	return arch_init;
-@@ -788,16 +788,16 @@ static void crng_initialize_secondary(st
- 	crng->init_time = jiffies - CRNG_RESEED_INTERVAL - 1;
- }
- 
--static void __init crng_initialize_primary(struct crng_state *crng)
-+static void __init crng_initialize_primary(void)
- {
--	_extract_entropy(&crng->state[4], sizeof(u32) * 12);
--	if (crng_init_try_arch_early(crng) && trust_cpu && crng_init < 2) {
-+	_extract_entropy(&primary_crng.state[4], sizeof(u32) * 12);
-+	if (crng_init_try_arch_early() && trust_cpu && crng_init < 2) {
- 		invalidate_batched_entropy();
- 		numa_crng_init();
- 		crng_init = 2;
- 		pr_notice("crng init done (trusting CPU's manufacturer)\n");
- 	}
--	crng->init_time = jiffies - CRNG_RESEED_INTERVAL - 1;
-+	primary_crng.init_time = jiffies - CRNG_RESEED_INTERVAL - 1;
- }
- 
- static void crng_finalize_init(struct crng_state *crng)
-@@ -1698,7 +1698,7 @@ int __init rand_initialize(void)
- 	init_std_data();
- 	if (crng_need_final_init)
- 		crng_finalize_init(&primary_crng);
--	crng_initialize_primary(&primary_crng);
-+	crng_initialize_primary();
- 	crng_global_init_time = jiffies;
- 	if (ratelimit_disable) {
- 		urandom_warning.interval = 0;
+ 	if (WARN_ON(entropy_count < 0)) {
 
 
