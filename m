@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAADCC4167B
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 09:06:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D612C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 09:06:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351027AbiE0JFp (ORCPT
+        id S1351553AbiE0JGe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 05:05:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56412 "EHLO
+        Fri, 27 May 2022 05:06:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350683AbiE0JAT (ORCPT
+        with ESMTP id S1350272AbiE0I6r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 05:00:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D43463BCF;
-        Fri, 27 May 2022 01:56:43 -0700 (PDT)
+        Fri, 27 May 2022 04:58:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88EF557112;
+        Fri, 27 May 2022 01:55:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5F572B823D9;
-        Fri, 27 May 2022 08:56:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D941C385B8;
-        Fri, 27 May 2022 08:56:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E26061CB7;
+        Fri, 27 May 2022 08:55:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0AD3C385A9;
+        Fri, 27 May 2022 08:55:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653641801;
-        bh=rM3kl0vv2bjgSwp+qxFhlAqocre7jchX693t5VQTPnQ=;
+        s=korg; t=1653641715;
+        bh=pT6zFsldiOjbn+Msv4GLJ981a80hVZ4IhcIP0RG0+aA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MGJ2zRJzsuKE0HI74QbCBVNxG1sdXtbP/hCMSg87YJE4jG4Z4BJJyv2htyAnNtV+7
-         Enj+Ko34TGwHXrPXjM6ZexfQIU1dVjI6yRUqpCf0en1k37eldCivq4QGAQUZCEMv+1
-         SD1oM7ID3BlBhq4jOm8tnN+jUd+v2Ayp2EUcIs7k=
+        b=TAJsPAvLqGTKxj2M/SzexQJLFXxVreC6T/Uv6yVQ8xMLUuoalpRLvWOMkPR6Qj/w/
+         SuhCqIOBj2/jLKwmnH3rbBtDyHJIjwzxz/0GY870+gXPxUQO1l6sLGMmwlC1JCoqdO
+         hYYrnAQj2AmylTdMnpxUA1sFTxnJNCIjkGKopev0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Eric Biggers <ebiggers@google.com>,
         Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.17 037/111] random: rewrite header introductory comment
-Date:   Fri, 27 May 2022 10:49:09 +0200
-Message-Id: <20220527084824.699721210@linuxfoundation.org>
+Subject: [PATCH 5.17 024/111] random: remove ifdefd out interrupt bench
+Date:   Fri, 27 May 2022 10:48:56 +0200
+Message-Id: <20220527084822.907731130@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220527084819.133490171@linuxfoundation.org>
 References: <20220527084819.133490171@linuxfoundation.org>
@@ -53,10 +53,12 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 5f75d9f3babea8ae0a2d06724656874f41d317f5 upstream.
+commit 95e6060c20a7f5db60163274c5222a725ac118f9 upstream.
 
-Now that we've re-documented the various sections, we can remove the
-outdated text here and replace it with a high-level overview.
+With tools like kbench9000 giving more finegrained responses, and this
+basically never having been used ever since it was initially added,
+let's just get rid of this. There *is* still work to be done on the
+interrupt handler, but this really isn't the way it's being developed.
 
 Cc: Theodore Ts'o <tytso@mit.edu>
 Reviewed-by: Eric Biggers <ebiggers@google.com>
@@ -64,198 +66,97 @@ Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |  179 +++++---------------------------------------------
- 1 file changed, 19 insertions(+), 160 deletions(-)
+ Documentation/admin-guide/sysctl/kernel.rst |    9 ------
+ drivers/char/random.c                       |   40 ----------------------------
+ 2 files changed, 49 deletions(-)
 
+--- a/Documentation/admin-guide/sysctl/kernel.rst
++++ b/Documentation/admin-guide/sysctl/kernel.rst
+@@ -1042,15 +1042,6 @@ This is a directory, with the following
+   are woken up. This file is writable for compatibility purposes, but
+   writing to it has no effect on any RNG behavior.
+ 
+-If ``drivers/char/random.c`` is built with ``ADD_INTERRUPT_BENCH``
+-defined, these additional entries are present:
+-
+-* ``add_interrupt_avg_cycles``: the average number of cycles between
+-  interrupts used to feed the pool;
+-
+-* ``add_interrupt_avg_deviation``: the standard deviation seen on the
+-  number of cycles between interrupts used to feed the pool.
+-
+ 
+ randomize_va_space
+ ==================
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -2,168 +2,27 @@
- /*
-  * Copyright (C) 2017-2022 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
-  * Copyright Matt Mackall <mpm@selenic.com>, 2003, 2004, 2005
-- * Copyright Theodore Ts'o, 1994, 1995, 1996, 1997, 1998, 1999.  All
-- * rights reserved.
-- */
--
--/*
-- * Exported interfaces ---- output
-- * ===============================
-- *
-- * There are four exported interfaces; two for use within the kernel,
-- * and two for use from userspace.
-- *
-- * Exported interfaces ---- userspace output
-- * -----------------------------------------
-- *
-- * The userspace interfaces are two character devices /dev/random and
-- * /dev/urandom.  /dev/random is suitable for use when very high
-- * quality randomness is desired (for example, for key generation or
-- * one-time pads), as it will only return a maximum of the number of
-- * bits of randomness (as estimated by the random number generator)
-- * contained in the entropy pool.
-- *
-- * The /dev/urandom device does not have this limit, and will return
-- * as many bytes as are requested.  As more and more random bytes are
-- * requested without giving time for the entropy pool to recharge,
-- * this will result in random numbers that are merely cryptographically
-- * strong.  For many applications, however, this is acceptable.
-- *
-- * Exported interfaces ---- kernel output
-- * --------------------------------------
-- *
-- * The primary kernel interfaces are:
-- *
-- *	void get_random_bytes(void *buf, size_t nbytes);
-- *	u32 get_random_u32()
-- *	u64 get_random_u64()
-- *	unsigned int get_random_int()
-- *	unsigned long get_random_long()
-- *
-- * These interfaces will return the requested number of random bytes
-- * into the given buffer or as a return value. This is equivalent to a
-- * read from /dev/urandom. The get_random_{u32,u64,int,long}() family
-- * of functions may be higher performance for one-off random integers,
-- * because they do a bit of buffering.
-- *
-- * prandom_u32()
-- * -------------
-- *
-- * For even weaker applications, see the pseudorandom generator
-- * prandom_u32(), prandom_max(), and prandom_bytes().  If the random
-- * numbers aren't security-critical at all, these are *far* cheaper.
-- * Useful for self-tests, random error simulation, randomized backoffs,
-- * and any other application where you trust that nobody is trying to
-- * maliciously mess with you by guessing the "random" numbers.
-- *
-- * Exported interfaces ---- input
-- * ==============================
-- *
-- * The current exported interfaces for gathering environmental noise
-- * from the devices are:
-- *
-- *	void add_device_randomness(const void *buf, size_t size);
-- *	void add_input_randomness(unsigned int type, unsigned int code,
-- *                                unsigned int value);
-- *	void add_interrupt_randomness(int irq);
-- *	void add_disk_randomness(struct gendisk *disk);
-- *	void add_hwgenerator_randomness(const void *buffer, size_t count,
-- *					size_t entropy);
-- *	void add_bootloader_randomness(const void *buf, size_t size);
-- *
-- * add_device_randomness() is for adding data to the random pool that
-- * is likely to differ between two devices (or possibly even per boot).
-- * This would be things like MAC addresses or serial numbers, or the
-- * read-out of the RTC. This does *not* add any actual entropy to the
-- * pool, but it initializes the pool to different values for devices
-- * that might otherwise be identical and have very little entropy
-- * available to them (particularly common in the embedded world).
-- *
-- * add_input_randomness() uses the input layer interrupt timing, as well as
-- * the event type information from the hardware.
-- *
-- * add_interrupt_randomness() uses the interrupt timing as random
-- * inputs to the entropy pool. Using the cycle counters and the irq source
-- * as inputs, it feeds the randomness roughly once a second.
-- *
-- * add_disk_randomness() uses what amounts to the seek time of block
-- * layer request events, on a per-disk_devt basis, as input to the
-- * entropy pool. Note that high-speed solid state drives with very low
-- * seek times do not make for good sources of entropy, as their seek
-- * times are usually fairly consistent.
-- *
-- * All of these routines try to estimate how many bits of randomness a
-- * particular randomness source.  They do this by keeping track of the
-- * first and second order deltas of the event timings.
-- *
-- * add_hwgenerator_randomness() is for true hardware RNGs, and will credit
-- * entropy as specified by the caller. If the entropy pool is full it will
-- * block until more entropy is needed.
-- *
-- * add_bootloader_randomness() is the same as add_hwgenerator_randomness() or
-- * add_device_randomness(), depending on whether or not the configuration
-- * option CONFIG_RANDOM_TRUST_BOOTLOADER is set.
-- *
-- * Ensuring unpredictability at system startup
-- * ============================================
-- *
-- * When any operating system starts up, it will go through a sequence
-- * of actions that are fairly predictable by an adversary, especially
-- * if the start-up does not involve interaction with a human operator.
-- * This reduces the actual number of bits of unpredictability in the
-- * entropy pool below the value in entropy_count.  In order to
-- * counteract this effect, it helps to carry information in the
-- * entropy pool across shut-downs and start-ups.  To do this, put the
-- * following lines an appropriate script which is run during the boot
-- * sequence:
-- *
-- *	echo "Initializing random number generator..."
-- *	random_seed=/var/run/random-seed
-- *	# Carry a random seed from start-up to start-up
-- *	# Load and then save the whole entropy pool
-- *	if [ -f $random_seed ]; then
-- *		cat $random_seed >/dev/urandom
-- *	else
-- *		touch $random_seed
-- *	fi
-- *	chmod 600 $random_seed
-- *	dd if=/dev/urandom of=$random_seed count=1 bs=512
-- *
-- * and the following lines in an appropriate script which is run as
-- * the system is shutdown:
-- *
-- *	# Carry a random seed from shut-down to start-up
-- *	# Save the whole entropy pool
-- *	echo "Saving random seed..."
-- *	random_seed=/var/run/random-seed
-- *	touch $random_seed
-- *	chmod 600 $random_seed
-- *	dd if=/dev/urandom of=$random_seed count=1 bs=512
-- *
-- * For example, on most modern systems using the System V init
-- * scripts, such code fragments would be found in
-- * /etc/rc.d/init.d/random.  On older Linux systems, the correct script
-- * location might be in /etc/rcb.d/rc.local or /etc/rc.d/rc.0.
-- *
-- * Effectively, these commands cause the contents of the entropy pool
-- * to be saved at shut-down time and reloaded into the entropy pool at
-- * start-up.  (The 'dd' in the addition to the bootup script is to
-- * make sure that /etc/random-seed is different for every start-up,
-- * even if the system crashes without executing rc.0.)  Even with
-- * complete knowledge of the start-up activities, predicting the state
-- * of the entropy pool requires knowledge of the previous history of
-- * the system.
-- *
-- * Configuring the /dev/random driver under Linux
-- * ==============================================
-+ * Copyright Theodore Ts'o, 1994, 1995, 1996, 1997, 1998, 1999. All rights reserved.
-  *
-- * The /dev/random driver under Linux uses minor numbers 8 and 9 of
-- * the /dev/mem major number (#1).  So if your system does not have
-- * /dev/random and /dev/urandom created already, they can be created
-- * by using the commands:
-+ * This driver produces cryptographically secure pseudorandom data. It is divided
-+ * into roughly six sections, each with a section header:
-  *
-- *	mknod /dev/random c 1 8
-- *	mknod /dev/urandom c 1 9
-+ *   - Initialization and readiness waiting.
-+ *   - Fast key erasure RNG, the "crng".
-+ *   - Entropy accumulation and extraction routines.
-+ *   - Entropy collection routines.
-+ *   - Userspace reader/writer interfaces.
-+ *   - Sysctl interface.
-+ *
-+ * The high level overview is that there is one input pool, into which
-+ * various pieces of data are hashed. Some of that data is then "credited" as
-+ * having a certain number of bits of entropy. When enough bits of entropy are
-+ * available, the hash is finalized and handed as a key to a stream cipher that
-+ * expands it indefinitely for various consumers. This key is periodically
-+ * refreshed as the various entropy collectors, described below, add data to the
-+ * input pool and credit it. There is currently no Fortuna-like scheduler
-+ * involved, which can lead to malicious entropy sources causing a premature
-+ * reseed, and the entropy estimates are, at best, conservative guesses.
-  */
+@@ -240,8 +240,6 @@
+ #define CREATE_TRACE_POINTS
+ #include <trace/events/random.h>
  
- #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+-/* #define ADD_INTERRUPT_BENCH */
+-
+ enum {
+ 	POOL_BITS = BLAKE2S_HASH_SIZE * 8,
+ 	POOL_MIN_BITS = POOL_BITS /* No point in settling for less. */
+@@ -808,27 +806,6 @@ EXPORT_SYMBOL_GPL(add_input_randomness);
+ 
+ static DEFINE_PER_CPU(struct fast_pool, irq_randomness);
+ 
+-#ifdef ADD_INTERRUPT_BENCH
+-static unsigned long avg_cycles, avg_deviation;
+-
+-#define AVG_SHIFT 8 /* Exponential average factor k=1/256 */
+-#define FIXED_1_2 (1 << (AVG_SHIFT - 1))
+-
+-static void add_interrupt_bench(cycles_t start)
+-{
+-	long delta = random_get_entropy() - start;
+-
+-	/* Use a weighted moving average */
+-	delta = delta - ((avg_cycles + FIXED_1_2) >> AVG_SHIFT);
+-	avg_cycles += delta;
+-	/* And average deviation */
+-	delta = abs(delta) - ((avg_deviation + FIXED_1_2) >> AVG_SHIFT);
+-	avg_deviation += delta;
+-}
+-#else
+-#define add_interrupt_bench(x)
+-#endif
+-
+ static u32 get_reg(struct fast_pool *f, struct pt_regs *regs)
+ {
+ 	u32 *ptr = (u32 *)regs;
+@@ -865,7 +842,6 @@ void add_interrupt_randomness(int irq)
+ 		(sizeof(ip) > 4) ? ip >> 32 : get_reg(fast_pool, regs);
+ 
+ 	fast_mix(fast_pool);
+-	add_interrupt_bench(cycles);
+ 
+ 	if (unlikely(crng_init == 0)) {
+ 		if (fast_pool->count >= 64 &&
+@@ -1574,22 +1550,6 @@ static struct ctl_table random_table[] =
+ 		.mode		= 0444,
+ 		.proc_handler	= proc_do_uuid,
+ 	},
+-#ifdef ADD_INTERRUPT_BENCH
+-	{
+-		.procname	= "add_interrupt_avg_cycles",
+-		.data		= &avg_cycles,
+-		.maxlen		= sizeof(avg_cycles),
+-		.mode		= 0444,
+-		.proc_handler	= proc_doulongvec_minmax,
+-	},
+-	{
+-		.procname	= "add_interrupt_avg_deviation",
+-		.data		= &avg_deviation,
+-		.maxlen		= sizeof(avg_deviation),
+-		.mode		= 0444,
+-		.proc_handler	= proc_doulongvec_minmax,
+-	},
+-#endif
+ 	{ }
+ };
+ 
 
 
