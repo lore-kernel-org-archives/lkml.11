@@ -2,112 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D065C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 01:32:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEB34C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 01:34:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232327AbiE0BcQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 21:32:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55190 "EHLO
+        id S232528AbiE0Bek (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 21:34:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230161AbiE0BcN (ORCPT
+        with ESMTP id S232400AbiE0Beg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 21:32:13 -0400
-Received: from mail105.syd.optusnet.com.au (mail105.syd.optusnet.com.au [211.29.132.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5B6D5554A5;
-        Thu, 26 May 2022 18:32:12 -0700 (PDT)
-Received: from dread.disaster.area (pa49-181-2-147.pa.nsw.optusnet.com.au [49.181.2.147])
-        by mail105.syd.optusnet.com.au (Postfix) with ESMTPS id 6ABCA10E6C82;
-        Fri, 27 May 2022 11:32:09 +1000 (AEST)
-Received: from dave by dread.disaster.area with local (Exim 4.92.3)
-        (envelope-from <david@fromorbit.com>)
-        id 1nuOpk-00GqFC-1C; Fri, 27 May 2022 11:32:08 +1000
-Date:   Fri, 27 May 2022 11:32:08 +1000
-From:   Dave Chinner <david@fromorbit.com>
-To:     Mel Gorman <mgorman@techsingularity.net>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        "Darrick J. Wong" <djwong@kernel.org>,
-        Dave Chinner <dchinner@redhat.com>, Jan Kara <jack@suse.cz>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Linux-NFS <linux-nfs@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Linux-XFS <linux-xfs@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] mm/page_alloc: Always attempt to allocate at least one
- page during bulk allocation
-Message-ID: <20220527013208.GT1098723@dread.disaster.area>
-References: <20220526091210.GC3441@techsingularity.net>
+        Thu, 26 May 2022 21:34:36 -0400
+Received: from out30-54.freemail.mail.aliyun.com (out30-54.freemail.mail.aliyun.com [115.124.30.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6B3362BDE
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 18:34:34 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0VEUq88P_1653615271;
+Received: from 30.32.82.202(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0VEUq88P_1653615271)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 27 May 2022 09:34:32 +0800
+Message-ID: <d6f64c75-053d-57e0-a997-176758523d9e@linux.alibaba.com>
+Date:   Fri, 27 May 2022 09:34:59 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220526091210.GC3441@techsingularity.net>
-X-Optus-CM-Score: 0
-X-Optus-CM-Analysis: v=2.4 cv=deDjYVbe c=1 sm=1 tr=0 ts=62902a1b
-        a=ivVLWpVy4j68lT4lJFbQgw==:117 a=ivVLWpVy4j68lT4lJFbQgw==:17
-        a=kj9zAlcOel0A:10 a=oZkIemNP1mAA:10 a=VwQbUJbxAAAA:8 a=R_Myd5XaAAAA:8
-        a=20KFwNOVAAAA:8 a=7-415B0cAAAA:8 a=rgy_-LtZnV2ddjrNTikA:9
-        a=CjuIK1q_8ugA:10 a=AjGcO6oz07-iQ99wixmX:22 a=L2g4Dz8VuBQ37YGmWQah:22
-        a=biEYGPWJfzWAr4FL6Ov7:22
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH] mm/hugetlb: Remove unnecessary
+ huge_ptep_set_access_flags() in hugetlb_mcopy_atomic_pte()
+To:     Anshuman Khandual <anshuman.khandual@arm.com>,
+        mike.kravetz@oracle.com, akpm@linux-foundation.org,
+        songmuchun@bytedance.com
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org
+References: <7cd55152c1a00910afda570d1543a97198b3665b.1653468078.git.baolin.wang@linux.alibaba.com>
+ <428c7c69-6ac1-51d5-7c26-5f31de61a909@arm.com>
+From:   Baolin Wang <baolin.wang@linux.alibaba.com>
+In-Reply-To: <428c7c69-6ac1-51d5-7c26-5f31de61a909@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 26, 2022 at 10:12:10AM +0100, Mel Gorman wrote:
-> Peter Pavlisko reported the following problem on kernel bugzilla 216007.
-> 
-> 	When I try to extract an uncompressed tar archive (2.6 milion
-> 	files, 760.3 GiB in size) on newly created (empty) XFS file system,
-> 	after first low tens of gigabytes extracted the process hangs in
-> 	iowait indefinitely. One CPU core is 100% occupied with iowait,
-> 	the other CPU core is idle (on 2-core Intel Celeron G1610T).
-> 
-> It was bisected to c9fa563072e1 ("xfs: use alloc_pages_bulk_array() for
-> buffers") but XFS is only the messenger. The problem is that nothing
-> is waking kswapd to reclaim some pages at a time the PCP lists cannot
-> be refilled until some reclaim happens. The bulk allocator checks that
-> there are some pages in the array and the original intent was that a bulk
-> allocator did not necessarily need all the requested pages and it was
-> best to return as quickly as possible. This was fine for the first user
-> of the API but both NFS and XFS require the requested number of pages
-> be available before making progress. Both could be adjusted to call the
-> page allocator directly if a bulk allocation fails but it puts a burden on
-> users of the API. Adjust the semantics to attempt at least one allocation
-> via __alloc_pages() before returning so kswapd is woken if necessary.
-> 
-> It was reported via bugzilla that the patch addressed the problem and
-> that the tar extraction completed successfully. This may also address
-> bug 215975 but has yet to be confirmed.
-> 
-> BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=216007
-> BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=215975
-> Fixes: 387ba26fb1cb ("mm/page_alloc: add a bulk page allocator")
-> Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
-> Cc: <stable@vger.kernel.org> # v5.13+
-> ---
->  mm/page_alloc.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-> index 0e42038382c1..5ced6cb260ed 100644
-> --- a/mm/page_alloc.c
-> +++ b/mm/page_alloc.c
-> @@ -5324,8 +5324,8 @@ unsigned long __alloc_pages_bulk(gfp_t gfp, int preferred_nid,
->  		page = __rmqueue_pcplist(zone, 0, ac.migratetype, alloc_flags,
->  								pcp, pcp_list);
->  		if (unlikely(!page)) {
-> -			/* Try and get at least one page */
-> -			if (!nr_populated)
-> +			/* Try and allocate at least one page */
-> +			if (!nr_account)
->  				goto failed_irq;
->  			break;
->  		}
 
-Looks like a sane fix to me.
 
-Acked-by: Dave Chinner <dchinner@redhat.com>
+On 5/26/2022 3:01 PM, Anshuman Khandual wrote:
+> 
+> 
+> On 5/25/22 15:56, Baolin Wang wrote:
+>> There is no need to update the hugetlb access flags after just setting the
+>> hugetlb page table entry by set_huge_pte_at(), since the page table entry
+>> value has no changes. Thus remove the unnecessary huge_ptep_set_access_flags()
+> 
+> WARNING: Possible unwrapped commit description (prefer a maximum 75 chars per line)
+> #9:
+> value has no changes. Thus remove the unnecessary huge_ptep_set_access_flags()
+> 
+> total: 0 errors, 1 warnings, 8 lines checked
 
--- 
-Dave Chinner
-david@fromorbit.com
+Sure, will remove checkpatch warning in next verion.
+
+> 
+>> in hugetlb_mcopy_atomic_pte().
+>>
+>> Signed-off-by: Baolin Wang <baolin.wang@linux.alibaba.com>
+> 
+> Otherwise LGTM,
+> 
+> Reviewed-by: Anshuman Khandual <anshuman.khandual@arm.com>
+
+Thanks. Also thanks to Muchun and Mike for reviewing.
