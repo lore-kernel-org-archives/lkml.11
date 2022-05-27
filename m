@@ -2,130 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9532DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 07:04:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4F23C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 07:05:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344788AbiE0HEX (ORCPT
+        id S1344870AbiE0HFe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 03:04:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41596 "EHLO
+        Fri, 27 May 2022 03:05:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244763AbiE0HEV (ORCPT
+        with ESMTP id S239584AbiE0HFc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 03:04:21 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58396E2777
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 00:04:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653635060; x=1685171060;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=h6nZL9pLWIn5hicXJICcK6gt8B4QWF8L2t2kqdB3Nts=;
-  b=bbMzw1XUa6bynoQI6jXrrGxahY5xapXs0ulLzLtWcW9dsLzGFLmk54UW
-   v4+Rk945lKrwR5vBakBE3NY0JO9Tp8LIHKobJVyChkOVNnP0hDVHeuUq0
-   FkDTdIJBUKXW4/wIuTKuX/PQsRt18ABI0umnhM/+pGlukjpmkNbCDAJqV
-   ba/VyK5OxXWbkodjuM/GE5Ti4q+ZCNOvKqi3oRhR3CM3E4pl1WjaZbh8J
-   pcCNUdcvP9+TYdyprUr/UUjtdhQeFxMfQ2zwd8FOJ9O8jg+zA9mnxmL+k
-   XOvU7ABRTlrGDPaVyxgM41jpetIJWxv6MilKyqOGTcmjTFanYpAUSbQ0e
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10359"; a="256475518"
+        Fri, 27 May 2022 03:05:32 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AA18E2777;
+        Fri, 27 May 2022 00:05:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1653635127; x=1685171127;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=UvMpghii5UOJUtFGUhwLAlb6IkBq4PX0+OgGfu4XxpE=;
+  b=toz3dqgcLFZSnpVBxS5sP6OvqL9PLo8zatbbyhpZHqNxVKAcTEwA/t9s
+   KJMuf+nx8EKwJVvvMhgyQDGnhU0Ea6LnonFqM7UHLb5JGKmmz8ZsXwssR
+   Kbke8G5VeVK7kW9MiOOgT+ajtq2cTcBkHb3KJZOGvxCneQqBXdC/OIash
+   MpXrUBmZC3upCrMH0S3rCu9t7vGBxreQ8JOl5pDVQOG8w3aMUJrJaA2ZO
+   qSMHI+wfdMWlRyiM647PDVwvBDPIl8uUJUNhqO5Ri3nGzxxJKIcyLq3r9
+   7Mr09IGsLr4PApedBuK0PHzPdpegRudrlUz7ttvsrlPQf5jIo829Jao5N
+   g==;
 X-IronPort-AV: E=Sophos;i="5.91,254,1647327600"; 
-   d="scan'208";a="256475518"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2022 00:04:19 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,254,1647327600"; 
-   d="scan'208";a="550009877"
-Received: from lkp-server01.sh.intel.com (HELO db63a1be7222) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 27 May 2022 00:04:18 -0700
-Received: from kbuild by db63a1be7222 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nuU1B-0004VO-Pz;
-        Fri, 27 May 2022 07:04:17 +0000
-Date:   Fri, 27 May 2022 15:03:52 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Florian Westphal <fw@strlen.de>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [netfilter-nf-next:testing 6/11]
- net/netfilter/nf_nat_proto.c:721:25: warning: unused variable 'skb'
-Message-ID: <202205271540.880v8PNJ-lkp@intel.com>
+   d="scan'208";a="165953276"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 27 May 2022 00:05:25 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Fri, 27 May 2022 00:05:25 -0700
+Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Fri, 27 May 2022 00:05:20 -0700
+From:   Arun Ramadoss <arun.ramadoss@microchip.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     Woojung Huh <woojung.huh@microchip.com>,
+        <UNGLinuxDriver@microchip.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "Russell King" <linux@armlinux.org.uk>
+Subject: [RFC Patch net-next 00/17] net: dsa: microchip: common spi probe for the ksz series switches
+Date:   Fri, 27 May 2022 12:33:41 +0530
+Message-ID: <20220527070358.25490-1-arun.ramadoss@microchip.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf-next.git testing
-head:   1baa240a3c6507449f4a3cd150dddacf69d95fb5
-commit: 93d6b481397f4c62da1568b463a4d4b254578c37 [6/11] netfilter: make hook functions accept only one argument
-config: i386-randconfig-a014-20211029 (https://download.01.org/0day-ci/archive/20220527/202205271540.880v8PNJ-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-1) 11.3.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf-next.git/commit/?id=93d6b481397f4c62da1568b463a4d4b254578c37
-        git remote add netfilter-nf-next git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf-next.git
-        git fetch --no-tags netfilter-nf-next testing
-        git checkout 93d6b481397f4c62da1568b463a4d4b254578c37
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash net/netfilter/
+This patch series aims to refactor the ksz_switch_register routine to have the
+common flow for the ksz series switch. At present ksz8795.c & ksz9477.c have
+its own dsa_switch_ops and switch detect functionality.
+In ksz_switch_register, ksz_dev_ops is assigned based on the function parameter
+passed by the individual ksz8/ksz9477 switch register function. And then switch
+detect is performed based on the ksz_dev_ops.detect hook.  This patch modifies
+the ksz_switch_register such a way that switch detect is performed first, based
+on the chip ksz_dev_ops is assigned to ksz_device structure. It ensures the
+common flow for the existing as well as LAN937x switches.
+It also replaces the individual dsa_switch_ops structure to common
+dsa_switch_ops in the ksz_common.  Based on the ksz_dev_ops hook pointer,
+particular functionality for the switches may or may not executed.
+Finally replaces the two spi probes such as ksz8795_spi.c and ksz9477_spi.c to
+common ksz_spi.c. These switches have different regmap config and it is
+differentited using the platform data.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Arun Ramadoss (17):
+  net: dsa: microchip: ksz9477: cleanup the ksz9477_switch_detect
+  net: dsa: microchip: move switch chip_id detection to ksz_common
+  net: dsa: microchip: move tag_protocol to ksz_common
+  net: dsa: microchip: ksz9477: use ksz_read_phy16 & ksz_write_phy16
+  net: dsa: microchip: move vlan functionality to ksz_common
+  net: dsa: microchip: move the port mirror to ksz_common
+  net: dsa: microchip: get P_STP_CTRL in ksz_port_stp_state by
+    ksz_dev_ops
+  net: dsa: microchip: update the ksz_phylink_get_caps
+  net: dsa: microchip: update the ksz_port_mdb_add/del
+  net: dsa: microchip: update fdb add/del/dump in ksz_common
+  net: dsa: microchip: move the setup, get_phy_flags & mtu to ksz_common
+  net: dsa: microchip: common dsa_switch_ops for ksz switches
+  net: dsa: microchip: ksz9477: separate phylink mode from switch
+    register
+  net: dsa: microchip: move ksz_dev_ops to ksz_common.c
+  net: dsa: microchip: remove the ksz8/ksz9477_switch_register
+  net: dsa: microchip: common menuconfig for ksz series switch
+  net: dsa: microchip: common ksz_spi_probe for ksz switches
 
-All warnings (new ones prefixed by >>):
+ drivers/net/dsa/microchip/Kconfig             |  42 +-
+ drivers/net/dsa/microchip/Makefile            |  10 +-
+ drivers/net/dsa/microchip/ksz8.h              |  46 ++
+ drivers/net/dsa/microchip/ksz8795.c           | 309 +++++------
+ drivers/net/dsa/microchip/ksz8795_reg.h       |  13 -
+ drivers/net/dsa/microchip/ksz8863_smi.c       |   2 +-
+ drivers/net/dsa/microchip/ksz9477.c           | 225 ++------
+ drivers/net/dsa/microchip/ksz9477.h           |  58 ++
+ drivers/net/dsa/microchip/ksz9477_i2c.c       |   2 +-
+ drivers/net/dsa/microchip/ksz9477_reg.h       |   1 -
+ drivers/net/dsa/microchip/ksz9477_spi.c       | 150 -----
+ drivers/net/dsa/microchip/ksz_common.c        | 521 +++++++++++++-----
+ drivers/net/dsa/microchip/ksz_common.h        |  91 +--
+ .../microchip/{ksz8795_spi.c => ksz_spi.c}    |  85 ++-
+ 14 files changed, 821 insertions(+), 734 deletions(-)
+ create mode 100644 drivers/net/dsa/microchip/ksz9477.h
+ delete mode 100644 drivers/net/dsa/microchip/ksz9477_spi.c
+ rename drivers/net/dsa/microchip/{ksz8795_spi.c => ksz_spi.c} (61%)
 
-   net/netfilter/nf_nat_proto.c: In function 'nf_nat_ipv4_out':
->> net/netfilter/nf_nat_proto.c:721:25: warning: unused variable 'skb' [-Wunused-variable]
-     721 |         struct sk_buff *skb = state->skb;
-         |                         ^~~
-   net/netfilter/nf_nat_proto.c: In function 'nf_nat_ipv6_out':
-   net/netfilter/nf_nat_proto.c:960:25: warning: unused variable 'skb' [-Wunused-variable]
-     960 |         struct sk_buff *skb = state->skb;
-         |                         ^~~
 
-
-vim +/skb +721 net/netfilter/nf_nat_proto.c
-
-   717	
-   718	static unsigned int
-   719	nf_nat_ipv4_out(const struct nf_hook_state *state)
-   720	{
- > 721		struct sk_buff *skb = state->skb;
-   722	#ifdef CONFIG_XFRM
-   723		const struct nf_conn *ct;
-   724		enum ip_conntrack_info ctinfo;
-   725		int err;
-   726	#endif
-   727		unsigned int ret;
-   728	
-   729		ret = nf_nat_ipv4_fn(state);
-   730	#ifdef CONFIG_XFRM
-   731		if (ret != NF_ACCEPT)
-   732			return ret;
-   733	
-   734		if (IPCB(skb)->flags & IPSKB_XFRM_TRANSFORMED)
-   735			return ret;
-   736	
-   737		ct = nf_ct_get(skb, &ctinfo);
-   738		if (ct) {
-   739			enum ip_conntrack_dir dir = CTINFO2DIR(ctinfo);
-   740	
-   741			if (ct->tuplehash[dir].tuple.src.u3.ip !=
-   742			     ct->tuplehash[!dir].tuple.dst.u3.ip ||
-   743			    (ct->tuplehash[dir].tuple.dst.protonum != IPPROTO_ICMP &&
-   744			     ct->tuplehash[dir].tuple.src.u.all !=
-   745			     ct->tuplehash[!dir].tuple.dst.u.all)) {
-   746				err = nf_xfrm_me_harder(state->net, skb, AF_INET);
-   747				if (err < 0)
-   748					ret = NF_DROP_ERR(err);
-   749			}
-   750		}
-   751	#endif
-   752		return ret;
-   753	}
-   754	
-
+base-commit: 7e062cda7d90543ac8c7700fc7c5527d0c0f22ad
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.36.1
+
