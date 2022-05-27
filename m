@@ -2,94 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B3FDC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:37:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A59F3C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:37:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349879AbiE0Ihh (ORCPT
+        id S1349900AbiE0Ihj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 04:37:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48290 "EHLO
+        Fri, 27 May 2022 04:37:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349807AbiE0Igc (ORCPT
+        with ESMTP id S1349870AbiE0IhF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 04:36:32 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65EDA104C8A;
-        Fri, 27 May 2022 01:36:08 -0700 (PDT)
-Date:   Fri, 27 May 2022 08:36:05 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1653640566;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=5Ncx3ivK+ZwISDSMM4kljdgZQUQznePRbXqDSNVCPmE=;
-        b=fTTxCW7zVN7TKDWD5M/Q/2czmvsoVTxTbbFD1ye7ID9y4pcAtm9VW6PQE9O7YZzyznz2Ui
-        NYmMkIf1LZyM1JYePlZcnnQU3t8HubddwdHZvFRBVg0oIwA2iUyTZ064/OhxctMPH73qeQ
-        sCfw5Ck0ZctrXsRZDfFpkxpOPdIMITOh7PmzEq5BSYSQJrMWKbnESU32JBodIuwOyQNLVi
-        1pfaSGUG2kiJWjqCjJ5x+x51/RvK7tzadc3OxUlIEFxQXUfh1FURGlTbX1an5+l61HF04v
-        lg6RPOeP+TwxUeHUdvgN4tSPQRTyTTfvPDMRBQfbUoFifx1bCZaXlpfvMiRkMg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1653640566;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=5Ncx3ivK+ZwISDSMM4kljdgZQUQznePRbXqDSNVCPmE=;
-        b=OGbA8qT2C+y+Pf40HcWB9uFhvcP29hW3VukTKZ2lAGK9g2I4xE3/dxbfOMaAWK5ivR+dtx
-        SPLgbZjS68jLRYBA==
-From:   "tip-bot2 for Thomas Gleixner" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: timers/core] Merge tag 'timers-v5.19-rc1' of
- https://git.linaro.org/people/daniel.lezcano/linux into timers/core
-Cc:     x86@kernel.org, linux-kernel@vger.kernel.org
-In-Reply-To: <b5a83e54-1ee1-f910-4be4-bc3bf1015243@linaro.org>
-References: <b5a83e54-1ee1-f910-4be4-bc3bf1015243@linaro.org>
+        Fri, 27 May 2022 04:37:05 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F154F192B2
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 01:36:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653640583; x=1685176583;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=Cr+4lf/zpQclBXO0IoLNmYQESexu1rZv00QwnaWl+7k=;
+  b=KDhP4x9iseuoq50/ZY3/91ZGt7oCg8cVtHPIVxTKH0SFKL2Ya8dWPDCf
+   WIRK/6VOdaZwXNPwDUPpTc82+rqdCUrwgXsalZegmcjXjoW/Wq+5EGHG8
+   Az1HSV7AHMcFNwcoRBf1o7ferUChJ+ow2/jDKOEfYFJX+kyGixGoN5ka9
+   OzfBYgQzaS2XAw2zjiFl8fIjADjJaGoSqT8zsUdYPeGlo5OIp8Q5hRdgH
+   ZjcsofgEBD+rhc9WSTUDx5DLdYQai/EqW8+qSp53YZU1oY3FQq8D0pQr8
+   Qi3+9AdiL5CgIlZ4JsdlalOOejKPjuzvWXdfvpra5BD4aGwfV0QKM7+D3
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10359"; a="299765148"
+X-IronPort-AV: E=Sophos;i="5.91,254,1647327600"; 
+   d="scan'208";a="299765148"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2022 01:36:23 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,254,1647327600"; 
+   d="scan'208";a="550096056"
+Received: from lkp-server01.sh.intel.com (HELO db63a1be7222) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 27 May 2022 01:36:21 -0700
+Received: from kbuild by db63a1be7222 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nuVSH-0004Zi-8c;
+        Fri, 27 May 2022 08:36:21 +0000
+Date:   Fri, 27 May 2022 16:35:41 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Cong Wang <cong.wang@bytedance.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [congwang:sch_bpf 4/4] net/sched/sch_api.c:369:20: warning:
+ assignment to 'struct tcf_chain *' from 'int' makes pointer from integer
+ without a cast
+Message-ID: <202205271641.Dn0NkZ82-lkp@intel.com>
 MIME-Version: 1.0
-Message-ID: <165364056563.4207.1413260323155955493.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the timers/core branch of tip:
+tree:   https://github.com/congwang/linux.git sch_bpf
+head:   d7144f4291a2882e698a6d9d83f7e614d97be9c8
+commit: d7144f4291a2882e698a6d9d83f7e614d97be9c8 [4/4] net_sched: introduce helper bpf_skb_tc_classify()
+config: mips-xway_defconfig (https://download.01.org/0day-ci/archive/20220527/202205271641.Dn0NkZ82-lkp@intel.com/config)
+compiler: mips-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/congwang/linux/commit/d7144f4291a2882e698a6d9d83f7e614d97be9c8
+        git remote add congwang https://github.com/congwang/linux.git
+        git fetch --no-tags congwang sch_bpf
+        git checkout d7144f4291a2882e698a6d9d83f7e614d97be9c8
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash net/sched/
 
-Commit-ID:     57963a92a70b037aa22544fbc34742e5be689c04
-Gitweb:        https://git.kernel.org/tip/57963a92a70b037aa22544fbc34742e5be689c04
-Author:        Thomas Gleixner <tglx@linutronix.de>
-AuthorDate:    Fri, 27 May 2022 10:32:08 +02:00
-Committer:     Thomas Gleixner <tglx@linutronix.de>
-CommitterDate: Fri, 27 May 2022 10:32:08 +02:00
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Merge tag 'timers-v5.19-rc1' of https://git.linaro.org/people/daniel.lezcano/linux into timers/core
+All warnings (new ones prefixed by >>):
 
-Pull clockevent/clocksource driver updates from Daniel Lezcano:
+   net/sched/sch_api.c: In function '____bpf_skb_tc_classify':
+   net/sched/sch_api.c:369:22: error: implicit declaration of function 'tcf_get_next_chain' [-Werror=implicit-function-declaration]
+     369 |         for (chain = tcf_get_next_chain(block, NULL);
+         |                      ^~~~~~~~~~~~~~~~~~
+>> net/sched/sch_api.c:369:20: warning: assignment to 'struct tcf_chain *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
+     369 |         for (chain = tcf_get_next_chain(block, NULL);
+         |                    ^
+   net/sched/sch_api.c:371:20: warning: assignment to 'struct tcf_chain *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
+     371 |              chain = tcf_get_next_chain(block, chain)) {
+         |                    ^
+   cc1: some warnings being treated as errors
 
-  - Add Mediatek MT8186 DT bindings (Allen-KH Cheng)
 
-  - Remove dead code corresponding of the IXP4xx board removal (Linus
-    Walleij)
+vim +369 net/sched/sch_api.c
 
-  - Add CLOCK_EVT_FEAT_C3STOP flag for the RISC-V SBI timer (Samuel
-    Holland)
+   334	
+   335	BPF_CALL_3(bpf_skb_tc_classify, struct sk_buff *, skb, int, ifindex, u32, handle)
+   336	{
+   337		struct net *net = dev_net(skb->dev);
+   338		const struct Qdisc_class_ops *cops;
+   339		struct tcf_result res = {};
+   340		struct tcf_block *block;
+   341		struct tcf_chain *chain;
+   342		struct net_device *dev;
+   343		unsigned long cl = 0;
+   344		struct Qdisc *q;
+   345		int result;
+   346	
+   347		rcu_read_lock();
+   348		dev = dev_get_by_index_rcu(net, ifindex);
+   349		if (!dev)
+   350			goto out;
+   351		q = qdisc_lookup_rcu(dev, handle);
+   352		if (!q)
+   353			goto out;
+   354	
+   355		cops = q->ops->cl_ops;
+   356		if (!cops)
+   357			goto out;
+   358		if (!cops->tcf_block)
+   359			goto out;
+   360		if (TC_H_MIN(handle)) {
+   361			cl = cops->find(q, handle);
+   362			if (cl == 0)
+   363				goto out;
+   364		}
+   365		block = cops->tcf_block(q, cl, NULL);
+   366		if (!block)
+   367			goto out;
+   368	
+ > 369		for (chain = tcf_get_next_chain(block, NULL);
+   370		     chain;
+   371		     chain = tcf_get_next_chain(block, chain)) {
+   372			struct tcf_proto *tp;
+   373	
+   374			result = tcf_classify(skb, NULL, tp, &res, false);
+   375			if (result  >= 0) {
+   376	#ifdef CONFIG_NET_CLS_ACT
+   377				switch (result) {
+   378				case TC_ACT_QUEUED:
+   379				case TC_ACT_STOLEN:
+   380				case TC_ACT_TRAP:
+   381					fallthrough;
+   382				case TC_ACT_SHOT:
+   383					rcu_read_unlock();
+   384					return 0;
+   385				}
+   386	#endif
+   387			}
+   388		}
+   389	out:
+   390		rcu_read_unlock();
+   391		return res.class;
+   392	}
+   393	
 
-  - Do not return an error if there are multiple definitions of the sp804
-    timers in the DT (Andre Przywara)
-
-  - Add the missing SPDX identifier (Thomas Gleixner)
-
-  - Remove an unncessary NULL check as it is done right before at probe
-    time for the timer-ti-dm (Dan Carpenter)
-
-  - Fix the irq_of_parse_and_map() return code check on onexas-nps
-    (Krzysztof Kozlowski)
-
-Link: https://lore.kernel.org/lkml/b5a83e54-1ee1-f910-4be4-bc3bf1015243@linaro.org
----
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
