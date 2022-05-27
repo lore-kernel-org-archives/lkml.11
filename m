@@ -2,565 +2,318 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C124C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:01:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89B8DC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:02:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351144AbiE0LBL (ORCPT
+        id S1351172AbiE0LCa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 07:01:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58454 "EHLO
+        Fri, 27 May 2022 07:02:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350718AbiE0LAv (ORCPT
+        with ESMTP id S1351166AbiE0LCY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:00:51 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4B8412E317;
-        Fri, 27 May 2022 04:00:45 -0700 (PDT)
-X-UUID: f220f07f2db4448fb51e08d8d46917af-20220527
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:caf70086-58a1-4c38-9259-f44112be8012,OB:0,LO
-        B:10,IP:0,URL:5,TC:0,Content:-5,EDM:0,RT:0,SF:100,FILE:0,RULE:Release_Ham,
-        ACTION:release,TS:100
-X-CID-INFO: VERSION:1.1.5,REQID:caf70086-58a1-4c38-9259-f44112be8012,OB:0,LOB:
-        10,IP:0,URL:5,TC:0,Content:-5,EDM:0,RT:0,SF:100,FILE:0,RULE:Spam_GS981B3D,
-        ACTION:quarantine,TS:100
-X-CID-META: VersionHash:2a19b09,CLOUDID:3aaabb47-4fb1-496b-8f1d-39e733fed1ea,C
-        OID:eb55281456c7,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:1,File:nil,QS:0,BEC:nil
-X-UUID: f220f07f2db4448fb51e08d8d46917af-20220527
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
-        (envelope-from <johnson.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 729402786; Fri, 27 May 2022 19:00:39 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Fri, 27 May 2022 19:00:38 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 27 May 2022 19:00:38 +0800
-From:   Johnson Wang <johnson.wang@mediatek.com>
-To:     <cw00.choi@samsung.com>, <krzk+dt@kernel.org>,
-        <robh+dt@kernel.org>, <kyungmin.park@samsung.com>
-CC:     <khilman@kernel.org>, <linux-pm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>, <jia-wei.chang@mediatek.com>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Johnson Wang <johnson.wang@mediatek.com>
-Subject: [PATCH v6 2/2] PM / devfreq: mediatek: Introduce MediaTek CCI devfreq driver
-Date:   Fri, 27 May 2022 19:00:36 +0800
-Message-ID: <20220527110036.8810-3-johnson.wang@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220527110036.8810-1-johnson.wang@mediatek.com>
-References: <20220527110036.8810-1-johnson.wang@mediatek.com>
+        Fri, 27 May 2022 07:02:24 -0400
+Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9D03712E33C
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 04:02:20 -0700 (PDT)
+Received: from localhost.localdomain.localdomain (unknown [10.2.5.46])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Cxj+a3r5BiSRAEAA--.20871S2;
+        Fri, 27 May 2022 19:02:15 +0800 (CST)
+From:   Jianmin Lv <lvjianmin@loongson.cn>
+To:     Thomas Gleixner <tglx@linutronix.de>, Marc Zyngier <maz@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, Xuefeng Li <lixuefeng@loongson.cn>,
+        Huacai Chen <chenhuacai@gmail.com>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Huacai Chen <chenhuacai@loongson.cn>,
+        Jianmin Lv <lvjianmin@loongson.cn>
+Subject: [PATCH RFC V2 00/10] irqchip: Add LoongArch-related irqchip drivers
+Date:   Fri, 27 May 2022 19:02:10 +0800
+Message-Id: <1653649335-11998-1-git-send-email-lvjianmin@loongson.cn>
+X-Mailer: git-send-email 1.8.3.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: AQAAf9Cxj+a3r5BiSRAEAA--.20871S2
+X-Coremail-Antispam: 1UD129KBjvJXoWxKFyrWFy5Cr4rWF17CFWUtwb_yoWfZw17pF
+        43Ar1aqF1UtryYqr15Aw48XFy5Grn3Jw4DJ3WxtryxXrykCr1DKr1UJF95ZryxArWxXr1U
+        ZFyjqw4UGw1UCr7anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvS14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26ryj6F1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4j
+        6r4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
+        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
+        I7IYx2IY67AKxVWUGVWUXwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
+        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY1x0262kKe7AKxVWU
+        AVWUtwCY02Avz4vE-syl42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2
+        IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v2
+        6r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2
+        IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVW3JVWrJr1lIxAIcVC2z280
+        aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43
+        ZEXa7VU18sqtUUUUU==
+X-CM-SenderInfo: 5oymxthqpl0qxorr0wxvrqhubq/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We introduce a devfreq driver for the MediaTek Cache Coherent Interconnect
-(CCI) used by some MediaTek SoCs.
+LoongArch is a new RISC ISA, which is a bit like MIPS or RISC-V.
+LoongArch includes a reduced 32-bit version (LA32R), a standard 32-bit
+version (LA32S) and a 64-bit version (LA64). LoongArch use ACPI as its
+boot protocol LoongArch-specific interrupt controllers (similar to APIC)
+are already added in the ACPI Specification 6.5(which may be published in
+early June this year and the board is reviewing the draft).
 
-In this driver, we use the passive devfreq driver to get target frequencies
-and adjust voltages accordingly. In MT8183 and MT8186, the MediaTek CCI
-is supplied by the same regulators with the little core CPUs.
+Currently, LoongArch based processors (e.g. Loongson-3A5000) can only
+work together with LS7A chipsets. The irq chips in LoongArch computers
+include CPUINTC (CPU Core Interrupt Controller), LIOINTC (Legacy I/O
+Interrupt Controller), EIOINTC (Extended I/O Interrupt Controller),
+HTVECINTC (Hyper-Transport Vector Interrupt Controller), PCH-PIC (Main
+Interrupt Controller in LS7A chipset), PCH-LPC (LPC Interrupt Controller
+in LS7A chipset) and PCH-MSI (MSI Interrupt Controller).
 
-Signed-off-by: Jia-Wei Chang <jia-wei.chang@mediatek.com>
-Signed-off-by: Johnson Wang <johnson.wang@mediatek.com>
-Acked-by: Chanwoo Choi <cw00.choi@samsung.com>
----
-This patch depends on "devfreq-testing"[1].
-[1]https://git.kernel.org/pub/scm/linux/kernel/git/chanwoo/linux.git/log/?h=devfreq-testing
----
- drivers/devfreq/Kconfig           |  10 +
- drivers/devfreq/Makefile          |   1 +
- drivers/devfreq/mtk-cci-devfreq.c | 441 ++++++++++++++++++++++++++++++
- 3 files changed, 452 insertions(+)
- create mode 100644 drivers/devfreq/mtk-cci-devfreq.c
+CPUINTC is a per-core controller (in CPU), LIOINTC/EIOINTC/HTVECINTC are
+per-package controllers (in CPU), while PCH-PIC/PCH-LPC/PCH-MSI are all
+controllers out of CPU (i.e., in chipsets). These controllers (in other
+words, irqchips) are linked in a hierarchy, and there are two models of
+hierarchy (legacy model and extended model). 
 
-diff --git a/drivers/devfreq/Kconfig b/drivers/devfreq/Kconfig
-index 87eb2b837e68..9754d8b31621 100644
---- a/drivers/devfreq/Kconfig
-+++ b/drivers/devfreq/Kconfig
-@@ -120,6 +120,16 @@ config ARM_TEGRA_DEVFREQ
- 	  It reads ACTMON counters of memory controllers and adjusts the
- 	  operating frequencies and voltages with OPP support.
- 
-+config ARM_MEDIATEK_CCI_DEVFREQ
-+	tristate "MEDIATEK CCI DEVFREQ Driver"
-+	depends on ARM_MEDIATEK_CPUFREQ || COMPILE_TEST
-+	select DEVFREQ_GOV_PASSIVE
-+	help
-+	  This adds a devfreq driver for MediaTek Cache Coherent Interconnect
-+	  which is shared the same regulators with the cpu cluster. It can track
-+	  buck voltages and update a proper CCI frequency. Use the notification
-+	  to get the regulator status.
-+
- config ARM_RK3399_DMC_DEVFREQ
- 	tristate "ARM RK3399 DMC DEVFREQ Driver"
- 	depends on (ARCH_ROCKCHIP && HAVE_ARM_SMCCC) || \
-diff --git a/drivers/devfreq/Makefile b/drivers/devfreq/Makefile
-index 0b6be92a25d9..bf40d04928d0 100644
---- a/drivers/devfreq/Makefile
-+++ b/drivers/devfreq/Makefile
-@@ -11,6 +11,7 @@ obj-$(CONFIG_DEVFREQ_GOV_PASSIVE)	+= governor_passive.o
- obj-$(CONFIG_ARM_EXYNOS_BUS_DEVFREQ)	+= exynos-bus.o
- obj-$(CONFIG_ARM_IMX_BUS_DEVFREQ)	+= imx-bus.o
- obj-$(CONFIG_ARM_IMX8M_DDRC_DEVFREQ)	+= imx8m-ddrc.o
-+obj-$(CONFIG_ARM_MEDIATEK_CCI_DEVFREQ)	+= mtk-cci-devfreq.o
- obj-$(CONFIG_ARM_RK3399_DMC_DEVFREQ)	+= rk3399_dmc.o
- obj-$(CONFIG_ARM_SUN8I_A33_MBUS_DEVFREQ)	+= sun8i-a33-mbus.o
- obj-$(CONFIG_ARM_TEGRA_DEVFREQ)		+= tegra30-devfreq.o
-diff --git a/drivers/devfreq/mtk-cci-devfreq.c b/drivers/devfreq/mtk-cci-devfreq.c
-new file mode 100644
-index 000000000000..df42da35b312
---- /dev/null
-+++ b/drivers/devfreq/mtk-cci-devfreq.c
-@@ -0,0 +1,441 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Copyright (C) 2022 MediaTek Inc.
-+ */
-+
-+#include <linux/clk.h>
-+#include <linux/devfreq.h>
-+#include <linux/minmax.h>
-+#include <linux/module.h>
-+#include <linux/of.h>
-+#include <linux/of_device.h>
-+#include <linux/platform_device.h>
-+#include <linux/pm_opp.h>
-+#include <linux/regulator/consumer.h>
-+
-+struct mtk_ccifreq_platform_data {
-+	int min_volt_shift;
-+	int max_volt_shift;
-+	int proc_max_volt;
-+	int sram_min_volt;
-+	int sram_max_volt;
-+};
-+
-+struct mtk_ccifreq_drv {
-+	struct device *dev;
-+	struct devfreq *devfreq;
-+	struct regulator *proc_reg;
-+	struct regulator *sram_reg;
-+	struct clk *cci_clk;
-+	struct clk *inter_clk;
-+	int inter_voltage;
-+	unsigned long pre_freq;
-+	/* Avoid race condition for regulators between notify and policy */
-+	struct mutex reg_lock;
-+	struct notifier_block opp_nb;
-+	const struct mtk_ccifreq_platform_data *soc_data;
-+	int vtrack_max;
-+};
-+
-+static int mtk_ccifreq_set_voltage(struct mtk_ccifreq_drv *drv, int new_voltage)
-+{
-+	const struct mtk_ccifreq_platform_data *soc_data = drv->soc_data;
-+	struct device *dev = drv->dev;
-+	int pre_voltage, pre_vsram, new_vsram, vsram, voltage, ret;
-+	int retry_max = drv->vtrack_max;
-+
-+	if (!drv->sram_reg) {
-+		ret = regulator_set_voltage(drv->proc_reg, new_voltage,
-+					    drv->soc_data->proc_max_volt);
-+		return ret;
-+	}
-+
-+	pre_voltage = regulator_get_voltage(drv->proc_reg);
-+	if (pre_voltage < 0) {
-+		dev_err(dev, "invalid vproc value: %d\n", pre_voltage);
-+		return pre_voltage;
-+	}
-+
-+	pre_vsram = regulator_get_voltage(drv->sram_reg);
-+	if (pre_vsram < 0) {
-+		dev_err(dev, "invalid vsram value: %d\n", pre_vsram);
-+		return pre_vsram;
-+	}
-+
-+	new_vsram = clamp(new_voltage + soc_data->min_volt_shift,
-+			  soc_data->sram_min_volt, soc_data->sram_max_volt);
-+
-+	do {
-+		if (pre_voltage <= new_voltage) {
-+			vsram = clamp(pre_voltage + soc_data->max_volt_shift,
-+				      soc_data->sram_min_volt, new_vsram);
-+			ret = regulator_set_voltage(drv->sram_reg, vsram,
-+						    soc_data->sram_max_volt);
-+			if (ret)
-+				return ret;
-+
-+			if (vsram == soc_data->sram_max_volt ||
-+			    new_vsram == soc_data->sram_min_volt)
-+				voltage = new_voltage;
-+			else
-+				voltage = vsram - soc_data->min_volt_shift;
-+
-+			ret = regulator_set_voltage(drv->proc_reg, voltage,
-+						    soc_data->proc_max_volt);
-+			if (ret) {
-+				regulator_set_voltage(drv->sram_reg, pre_vsram,
-+						      soc_data->sram_max_volt);
-+				return ret;
-+			}
-+		} else if (pre_voltage > new_voltage) {
-+			voltage = max(new_voltage,
-+				      pre_vsram - soc_data->max_volt_shift);
-+			ret = regulator_set_voltage(drv->proc_reg, voltage,
-+						    soc_data->proc_max_volt);
-+			if (ret)
-+				return ret;
-+
-+			if (voltage == new_voltage)
-+				vsram = new_vsram;
-+			else
-+				vsram = max(new_vsram,
-+					    voltage + soc_data->min_volt_shift);
-+
-+			ret = regulator_set_voltage(drv->sram_reg, vsram,
-+						    soc_data->sram_max_volt);
-+			if (ret) {
-+				regulator_set_voltage(drv->proc_reg, pre_voltage,
-+						      soc_data->proc_max_volt);
-+				return ret;
-+			}
-+		}
-+
-+		pre_voltage = voltage;
-+		pre_vsram = vsram;
-+
-+		if (--retry_max < 0) {
-+			dev_err(dev,
-+				"over loop count, failed to set voltage\n");
-+			return -EINVAL;
-+		}
-+	} while (voltage != new_voltage || vsram != new_vsram);
-+
-+	return 0;
-+}
-+
-+static int mtk_ccifreq_target(struct device *dev, unsigned long *freq,
-+			      u32 flags)
-+{
-+	struct mtk_ccifreq_drv *drv = dev_get_drvdata(dev);
-+	struct clk *cci_pll = clk_get_parent(drv->cci_clk);
-+	struct dev_pm_opp *opp;
-+	unsigned long opp_rate;
-+	int voltage, pre_voltage, inter_voltage, target_voltage, ret;
-+
-+	if (!drv)
-+		return -EINVAL;
-+
-+	if (drv->pre_freq == *freq)
-+		return 0;
-+
-+	inter_voltage = drv->inter_voltage;
-+
-+	opp_rate = *freq;
-+	opp = devfreq_recommended_opp(dev, &opp_rate, 1);
-+	if (IS_ERR(opp)) {
-+		dev_err(dev, "failed to find opp for freq: %ld\n", opp_rate);
-+		return PTR_ERR(opp);
-+	}
-+
-+	mutex_lock(&drv->reg_lock);
-+
-+	voltage = dev_pm_opp_get_voltage(opp);
-+	dev_pm_opp_put(opp);
-+
-+	pre_voltage = regulator_get_voltage(drv->proc_reg);
-+	if (pre_voltage < 0) {
-+		dev_err(dev, "invalid vproc value: %d\n", pre_voltage);
-+		ret = pre_voltage;
-+		goto out_unlock;
-+	}
-+
-+	/* scale up: set voltage first then freq. */
-+	target_voltage = max(inter_voltage, voltage);
-+	if (pre_voltage <= target_voltage) {
-+		ret = mtk_ccifreq_set_voltage(drv, target_voltage);
-+		if (ret) {
-+			dev_err(dev, "failed to scale up voltage\n");
-+			goto out_restore_voltage;
-+		}
-+	}
-+
-+	/* switch the cci clock to intermediate clock source. */
-+	ret = clk_set_parent(drv->cci_clk, drv->inter_clk);
-+	if (ret) {
-+		dev_err(dev, "failed to re-parent cci clock\n");
-+		goto out_restore_voltage;
-+	}
-+
-+	/* set the original clock to target rate. */
-+	ret = clk_set_rate(cci_pll, *freq);
-+	if (ret) {
-+		dev_err(dev, "failed to set cci pll rate: %d\n", ret);
-+		clk_set_parent(drv->cci_clk, cci_pll);
-+		goto out_restore_voltage;
-+	}
-+
-+	/* switch the cci clock back to the original clock source. */
-+	ret = clk_set_parent(drv->cci_clk, cci_pll);
-+	if (ret) {
-+		dev_err(dev, "failed to re-parent cci clock\n");
-+		mtk_ccifreq_set_voltage(drv, inter_voltage);
-+		goto out_unlock;
-+	}
-+
-+	/*
-+	 * If the new voltage is lower than the intermediate voltage or the
-+	 * original voltage, scale down to the new voltage.
-+	 */
-+	if (voltage < inter_voltage || voltage < pre_voltage) {
-+		ret = mtk_ccifreq_set_voltage(drv, voltage);
-+		if (ret) {
-+			dev_err(dev, "failed to scale down voltage\n");
-+			goto out_unlock;
-+		}
-+	}
-+
-+	drv->pre_freq = *freq;
-+	mutex_unlock(&drv->reg_lock);
-+
-+	return 0;
-+
-+out_restore_voltage:
-+	mtk_ccifreq_set_voltage(drv, pre_voltage);
-+
-+out_unlock:
-+	mutex_unlock(&drv->reg_lock);
-+	return ret;
-+}
-+
-+static int mtk_ccifreq_opp_notifier(struct notifier_block *nb,
-+				    unsigned long event, void *data)
-+{
-+	struct dev_pm_opp *opp = data;
-+	struct mtk_ccifreq_drv *drv;
-+	unsigned long freq, volt;
-+
-+	drv = container_of(nb, struct mtk_ccifreq_drv, opp_nb);
-+
-+	if (event == OPP_EVENT_ADJUST_VOLTAGE) {
-+		freq = dev_pm_opp_get_freq(opp);
-+
-+		mutex_lock(&drv->reg_lock);
-+		/* current opp item is changed */
-+		if (freq == drv->pre_freq) {
-+			volt = dev_pm_opp_get_voltage(opp);
-+			mtk_ccifreq_set_voltage(drv, volt);
-+		}
-+		mutex_unlock(&drv->reg_lock);
-+	}
-+
-+	return 0;
-+}
-+
-+static struct devfreq_dev_profile mtk_ccifreq_profile = {
-+	.target = mtk_ccifreq_target,
-+};
-+
-+static int mtk_ccifreq_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct mtk_ccifreq_drv *drv;
-+	struct devfreq_passive_data *passive_data;
-+	struct dev_pm_opp *opp;
-+	unsigned long rate, opp_volt;
-+	int ret;
-+
-+	drv = devm_kzalloc(dev, sizeof(*drv), GFP_KERNEL);
-+	if (!drv)
-+		return -ENOMEM;
-+
-+	drv->dev = dev;
-+	drv->soc_data = (const struct mtk_ccifreq_platform_data *)
-+				of_device_get_match_data(&pdev->dev);
-+	mutex_init(&drv->reg_lock);
-+	platform_set_drvdata(pdev, drv);
-+
-+	drv->cci_clk = devm_clk_get(dev, "cci");
-+	if (IS_ERR(drv->cci_clk)) {
-+		ret = PTR_ERR(drv->cci_clk);
-+		return dev_err_probe(dev, ret,
-+				     "failed to get cci clk: %d\n", ret);
-+	}
-+
-+	drv->inter_clk = devm_clk_get(dev, "intermediate");
-+	if (IS_ERR(drv->inter_clk)) {
-+		ret = PTR_ERR(drv->inter_clk);
-+		return dev_err_probe(dev, ret,
-+				     "failed to get intermediate clk: %d\n", ret);
-+	}
-+
-+	drv->proc_reg = devm_regulator_get_optional(dev, "proc");
-+	if (IS_ERR(drv->proc_reg)) {
-+		ret = PTR_ERR(drv->proc_reg);
-+		return dev_err_probe(dev, ret,
-+				     "failed to get proc regulator: %d\n", ret);
-+	}
-+
-+	ret = regulator_enable(drv->proc_reg);
-+	if (ret) {
-+		dev_err(dev, "failed to enable proc regulator\n");
-+		return ret;
-+	}
-+
-+	drv->sram_reg = devm_regulator_get_optional(dev, "sram");
-+	if (IS_ERR(drv->sram_reg))
-+		drv->sram_reg = NULL;
-+	else {
-+		ret = regulator_enable(drv->sram_reg);
-+		if (ret) {
-+			dev_err(dev, "failed to enable sram regulator\n");
-+			goto out_free_resources;
-+		}
-+	}
-+
-+	/*
-+	 * We assume min voltage is 0 and tracking target voltage using
-+	 * min_volt_shift for each iteration.
-+	 * The retry_max is 3 times of expected iteration count.
-+	 */
-+	drv->vtrack_max = 3 * DIV_ROUND_UP(max(drv->soc_data->sram_max_volt,
-+					       drv->soc_data->proc_max_volt),
-+					   drv->soc_data->min_volt_shift);
-+
-+	ret = clk_prepare_enable(drv->cci_clk);
-+	if (ret)
-+		goto out_free_resources;
-+
-+	ret = dev_pm_opp_of_add_table(dev);
-+	if (ret) {
-+		dev_err(dev, "failed to add opp table: %d\n", ret);
-+		goto out_disable_cci_clk;
-+	}
-+
-+	rate = clk_get_rate(drv->inter_clk);
-+	opp = dev_pm_opp_find_freq_ceil(dev, &rate);
-+	if (IS_ERR(opp)) {
-+		ret = PTR_ERR(opp);
-+		dev_err(dev, "failed to get intermediate opp: %d\n", ret);
-+		goto out_remove_opp_table;
-+	}
-+	drv->inter_voltage = dev_pm_opp_get_voltage(opp);
-+	dev_pm_opp_put(opp);
-+
-+	rate = U32_MAX;
-+	opp = dev_pm_opp_find_freq_floor(drv->dev, &rate);
-+	if (IS_ERR(opp)) {
-+		dev_err(dev, "failed to get opp\n");
-+		ret = PTR_ERR(opp);
-+		goto out_remove_opp_table;
-+	}
-+
-+	opp_volt = dev_pm_opp_get_voltage(opp);
-+	dev_pm_opp_put(opp);
-+	ret = mtk_ccifreq_set_voltage(drv, opp_volt);
-+	if (ret) {
-+		dev_err(dev, "failed to scale to highest voltage %lu in proc_reg\n",
-+			opp_volt);
-+		goto out_remove_opp_table;
-+	}
-+
-+	passive_data = devm_kzalloc(dev, sizeof(*passive_data), GFP_KERNEL);
-+	if (!passive_data) {
-+		ret = -ENOMEM;
-+		goto out_remove_opp_table;
-+	}
-+
-+	passive_data->parent_type = CPUFREQ_PARENT_DEV;
-+	drv->devfreq = devm_devfreq_add_device(dev, &mtk_ccifreq_profile,
-+					       DEVFREQ_GOV_PASSIVE,
-+					       passive_data);
-+	if (IS_ERR(drv->devfreq)) {
-+		ret = -EPROBE_DEFER;
-+		dev_err(dev, "failed to add devfreq device: %ld\n",
-+			PTR_ERR(drv->devfreq));
-+		goto out_remove_opp_table;
-+	}
-+
-+	drv->opp_nb.notifier_call = mtk_ccifreq_opp_notifier;
-+	ret = dev_pm_opp_register_notifier(dev, &drv->opp_nb);
-+	if (ret) {
-+		dev_err(dev, "failed to register opp notifier: %d\n", ret);
-+		goto out_remove_opp_table;
-+	}
-+	return 0;
-+
-+out_remove_opp_table:
-+	dev_pm_opp_of_remove_table(dev);
-+
-+out_disable_cci_clk:
-+	clk_disable_unprepare(drv->cci_clk);
-+
-+out_free_resources:
-+	if (regulator_is_enabled(drv->proc_reg))
-+		regulator_disable(drv->proc_reg);
-+	if (drv->sram_reg && regulator_is_enabled(drv->sram_reg))
-+		regulator_disable(drv->sram_reg);
-+
-+	return ret;
-+}
-+
-+static int mtk_ccifreq_remove(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct mtk_ccifreq_drv *drv;
-+
-+	drv = platform_get_drvdata(pdev);
-+
-+	dev_pm_opp_unregister_notifier(dev, &drv->opp_nb);
-+	dev_pm_opp_of_remove_table(dev);
-+	clk_disable_unprepare(drv->cci_clk);
-+	regulator_disable(drv->proc_reg);
-+	if (drv->sram_reg)
-+		regulator_disable(drv->sram_reg);
-+
-+	return 0;
-+}
-+
-+static const struct mtk_ccifreq_platform_data mt8183_platform_data = {
-+	.min_volt_shift = 100000,
-+	.max_volt_shift = 200000,
-+	.proc_max_volt = 1150000,
-+};
-+
-+static const struct mtk_ccifreq_platform_data mt8186_platform_data = {
-+	.min_volt_shift = 100000,
-+	.max_volt_shift = 250000,
-+	.proc_max_volt = 1118750,
-+	.sram_min_volt = 850000,
-+	.sram_max_volt = 1118750,
-+};
-+
-+static const struct of_device_id mtk_ccifreq_machines[] = {
-+	{ .compatible = "mediatek,mt8183-cci", .data = &mt8183_platform_data },
-+	{ .compatible = "mediatek,mt8186-cci", .data = &mt8186_platform_data },
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(of, mtk_ccifreq_machines);
-+
-+static struct platform_driver mtk_ccifreq_platdrv = {
-+	.probe	= mtk_ccifreq_probe,
-+	.remove	= mtk_ccifreq_remove,
-+	.driver = {
-+		.name = "mtk-ccifreq",
-+		.of_match_table = mtk_ccifreq_machines,
-+	},
-+};
-+module_platform_driver(mtk_ccifreq_platdrv);
-+
-+MODULE_DESCRIPTION("MediaTek CCI devfreq driver");
-+MODULE_AUTHOR("Jia-Wei Chang <jia-wei.chang@mediatek.com>");
-+MODULE_LICENSE("GPL v2");
+Legacy IRQ model:
+
+In this model, the IPI (Inter-Processor Interrupt) and CPU Local Timer
+interrupt go to CPUINTC directly, CPU UARTS interrupts go to LIOINTC,
+while all other devices interrupts go to PCH-PIC/PCH-LPC/PCH-MSI and
+gathered by HTVECINTC, and then go to LIOINTC, and then CPUINTC.
+
+ +---------------------------------------------+
+ |                                             |
+ |    +-----+     +---------+     +-------+    |
+ |    | IPI | --> | CPUINTC | <-- | Timer |    |
+ |    +-----+     +---------+     +-------+    |
+ |                     ^                       |
+ |                     |                       |
+ |                +---------+     +-------+    |
+ |                | LIOINTC | <-- | UARTs |    |
+ |                +---------+     +-------+    |
+ |                     ^                       |
+ |                     |                       |
+ |               +-----------+                 |
+ |               | HTVECINTC |                 |
+ |               +-----------+                 |
+ |                ^         ^                  |
+ |                |         |                  |
+ |          +---------+ +---------+            |
+ |          | PCH-PIC | | PCH-MSI |            |
+ |          +---------+ +---------+            |
+ |            ^     ^           ^              |
+ |            |     |           |              |
+ |    +---------+ +---------+ +---------+      |
+ |    | PCH-LPC | | Devices | | Devices |      |
+ |    +---------+ +---------+ +---------+      |
+ |         ^                                   |
+ |         |                                   |
+ |    +---------+                              |
+ |    | Devices |                              |
+ |    +---------+                              |
+ |                                             |
+ |                                             |
+ +---------------------------------------------+
+
+Extended IRQ model:
+
+In this model, the IPI (Inter-Processor Interrupt) and CPU Local Timer
+interrupt go to CPUINTC directly, CPU UARTS interrupts go to LIOINTC,
+while all other devices interrupts go to PCH-PIC/PCH-LPC/PCH-MSI and
+gathered by EIOINTC, and then go to to CPUINTC directly.
+
+ +--------------------------------------------------------+
+ |                                                        |
+ |         +-----+     +---------+     +-------+          |
+ |         | IPI | --> | CPUINTC | <-- | Timer |          |
+ |         +-----+     +---------+     +-------+          |
+ |                      ^       ^                         |
+ |                      |       |                         |
+ |               +---------+ +---------+     +-------+    |
+ |               | EIOINTC | | LIOINTC | <-- | UARTs |    |
+ |               +---------+ +---------+     +-------+    |
+ |                ^       ^                               |
+ |                |       |                               |
+ |         +---------+ +---------+                        |
+ |         | PCH-PIC | | PCH-MSI |                        |
+ |         +---------+ +---------+                        |
+ |           ^     ^           ^                          |
+ |           |     |           |                          |
+ |   +---------+ +---------+ +---------+                  |
+ |   | PCH-LPC | | Devices | | Devices |                  |
+ |   +---------+ +---------+ +---------+                  |
+ |        ^                                               |
+ |        |                                               |
+ |   +---------+                                          |
+ |   | Devices |                                          |
+ |   +---------+                                          |
+ |                                                        |
+ |                                                        |
+ +--------------------------------------------------------+
+
+The hierarchy model is constructed by parsing irq contronler structures
+in MADT. Some controllers((e.g. LIOINTC, HTVECINTC, EIOINTC and PCH-LPC)
+are hardcodingly connected to their parents, so their irqdomins are
+separately routed to their parents in a fixed way. Some controllers
+(e.g. PCH-PIC and PCH-MSI) could be routed to different parents for different
+CPU. The firmware will config EIOINTC for the newer CPU and config HTVECINTC
+for old CPU in MADT. By this way, PCH-PIC and PCH-MSI irqdomain can only be
+routed one parent irqdomin: HTVECINTC or EIOINTC.
+
+
+Example of irqchip topology in a system with  two chipsets:
+
+ +------------------------------------------------------------+
+ |                                                            |
+ |                     +------------------+                   |
+ |                     |      CPUINTC     |                   |
+ |                     +------------------+                   |
+ |                     ^                  ^                   |
+ |                     |                  |                   |
+ |          +----------+                  +----------+        |
+ |          | EIOINTC 0|                  | EIOINTC 1|        |
+ |          +----------+                  +----------+        |
+ |          ^          ^                  ^          ^        |
+ |          |          |                  |          |        |
+ | +----------+   +----------+   +----------+    +----------+ |
+ | | PCH-PIC 0|   | PCH-MSI 0|   | PCH-PIC 1|    | PCH-MSI 1| |
+ | +----------+   +----------+   +----------+    +----------+ |
+ |                                                            |
+ |                                                            |
+ +------------------------------------------------------------+
+
+For systems with two chipsets, there are tow group(consists of EIOINTC, PCH-PIC and PCH-MSI) irqdomains, 
+and each group has same node id. So we defined a structure to mantain the relation of node and it's parent irqdomain.
+
+struct acpi_vector_group {
+        int node;
+        struct irq_domain *parent;
+};
+
+The initialization and use of acpi_vector_group array are following:
+
+1 Entry of struct acpi_vector_group array initialization:
+
+By parsing MCFG, the node id（from bit44-47 of Base Address）of each pci segment is extracted. And from MADT, we have the node id of each EIOINTC.
+
+entrys[pci segment].node = node id of pci segment
+entrys[pci segment].parent = EIOINTC irqdomain(node id of EIOINTC == node id of pci segment)
+
+2 Get parent irqdomain for PCH-PIC:
+
+From MADT, we have the node id of each PCH-PIC(from bit44-47 of Base Address).
+if (node of entry i == node of PCH-PIC)
+	return entrys[i].parent;
+
+entrys[pci segment].node = node id of pci segment
+entrys[pci segment].parent = EIOINTC irqdomain(node id of EIOINTC == node id of pci segment)
+
+3 Get parent irqdomain for PCH-MSI of pci segment:
+
+	return entrys[pci segment].parent;
+
+4 How to select a correct irqdomain to map irq for a device?
+For devices using legacy irq behind PCH-PIC, GSI is used to select correct PCH-PIC irqdomain.
+For devices using msi irq behind PCH-MSI, the pci segmen of the device is used to select correct PCH-MSI irqdomain.
+
+
+Cross-compile tool chain to build kernel:
+https://github.com/loongson/build-tools/releases/latest/download/loongarch64-clfs-20211202-cross-tools.tar.xz
+
+A CLFS-based Linux distro:
+https://github.com/loongson/build-tools/releases/latest/download/loongarch64-clfs-system-2021-12-02.tar.bz2
+
+Loongson and LoongArch documentations:
+https://github.com/loongson/LoongArch-Documentation
+
+
+V1 -> V2:
+1, Remove queued patches;
+2, Move common logic of DT/ACPI probing to common functions;
+3, Split .suspend()/.resume() functions to separate patches.
+
+V2 -> V3:
+1, Fix a bug for loongson-pch-pic probe;
+2, Some minor improvements for LPC controller.
+
+V3 -> V4:
+1, Rework the CPU interrupt controller driver;
+2, Some minor improvements for other controllers.
+
+V4 -> V5:
+1, Add a description of LoonArch's IRQ model;
+2, Support multiple EIOINTCs in one system;
+3, Some minor improvements for other controllers.
+
+V5 -> V6:
+1, Attach a fwnode to CPUINTC irq domain;
+2, Use raw spinlock instead of generic spinlock;
+3, Improve the method of restoring EIOINTC state;
+4, Update documentation, comments and commit messages.
+
+V6 -> V7:
+1, Fix build warnings reported by kernel test robot.
+
+V7 -> V8:
+1, Add arguments sanity checking for irqchip init functions;
+2, Support Loongson-3C5000 (One NUMA Node includes 4 EIOINTC Node).
+
+V8 -> V9:
+1, Rebase on 5.17-rc5;
+2, Update cover letter;
+3, Some small improvements.
+
+V9 -> V10:
+1, Rebase on 5.17-rc6;
+2, Fix build warnings reported by kernel test robot.
+
+V10 -> V11:
+1, Rebase on 5.18-rc4;
+2, Fix irq affinity setting for EIOINTC;
+3, Fix hwirq allocation failure for EIOINTC.
+
+V11 -> RFC:
+1, Refactored the way to build irqchip hierarchy topology.
+
+RFC -> RFC V2:
+1, Move all IO-interrupt related code to driver/irqchip from arch directory.
+2. Add description for an example of two chipsets system.
+
+Huacai Chen (1):
+  irqchip: Adjust Kconfig for Loongson
+
+Jianmin Lv (9):
+  irqchip: Add LoongArch CPU interrupt controller support
+  irqchip/loongson-pch-pic: Add ACPI init support
+  irqchip/loongson-pch-pic: Add suspend/resume support
+  irqchip/loongson-pch-msi: Add ACPI init support
+  irqchip/loongson-htvec: Add ACPI init support
+  irqchip/loongson-htvec: Add suspend/resume support
+  irqchip/loongson-liointc: Add ACPI init support
+  irqchip: Add Loongson Extended I/O interrupt controller support
+  irqchip: Add Loongson PCH LPC controller support
+
+ drivers/irqchip/Kconfig                    |  38 ++-
+ drivers/irqchip/Makefile                   |   3 +
+ drivers/irqchip/irq-loongarch-cpu.c        | 115 +++++++++
+ drivers/irqchip/irq-loongarch-pic-common.c | 201 +++++++++++++++
+ drivers/irqchip/irq-loongarch-pic-common.h |  44 ++++
+ drivers/irqchip/irq-loongson-eiointc.c     | 385 +++++++++++++++++++++++++++++
+ drivers/irqchip/irq-loongson-htvec.c       | 148 ++++++++---
+ drivers/irqchip/irq-loongson-liointc.c     | 216 ++++++++++------
+ drivers/irqchip/irq-loongson-pch-lpc.c     | 220 +++++++++++++++++
+ drivers/irqchip/irq-loongson-pch-msi.c     | 138 +++++++----
+ drivers/irqchip/irq-loongson-pch-pic.c     | 197 +++++++++++++--
+ include/linux/cpuhotplug.h                 |   1 +
+ 12 files changed, 1519 insertions(+), 187 deletions(-)
+ create mode 100644 drivers/irqchip/irq-loongarch-cpu.c
+ create mode 100644 drivers/irqchip/irq-loongarch-pic-common.c
+ create mode 100644 drivers/irqchip/irq-loongarch-pic-common.h
+ create mode 100644 drivers/irqchip/irq-loongson-eiointc.c
+ create mode 100644 drivers/irqchip/irq-loongson-pch-lpc.c
+
 -- 
-2.18.0
+1.8.3.1
 
