@@ -2,55 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF41FC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 10:47:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51757C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 10:48:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345991AbiE0Krz (ORCPT
+        id S1349516AbiE0Kr6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 06:47:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57018 "EHLO
+        Fri, 27 May 2022 06:47:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239766AbiE0Krw (ORCPT
+        with ESMTP id S245161AbiE0Krx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 06:47:52 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D1A16549
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 03:47:51 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id v15so2480864edl.9
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 03:47:51 -0700 (PDT)
+        Fri, 27 May 2022 06:47:53 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0FF71AD
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 03:47:52 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id v15so2480914edl.9
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 03:47:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=/fT1it2KZU2gPXkEvlWdCKHS58rx52JxhTKoYGvWFsI=;
-        b=RRHjbEWLo2//B4DPzz6ni5o3BsNnS6apiG3aXTQnDHlIWIIzK1KijymcswiWzlHFtY
-         f4mkpH7cLheY6r/TX6hJMUhSaomWTESb3RUoKXH78dVbYDcmz3byk7MprwemE3lMoHSW
-         wUK8bcIJJz2Bz+wUoLKwSwowL5/Xky9sXpdWuaXefgSn90q6kXSIt12TUok6I4kXq8fD
-         IYrnZbMGB2z/eoeNFjIU+Rp07MPbWuCQpNtw+/QZHXQl3HVcKre9Qsw+Itnwwu3Zx7ge
-         +D41kdUtz7/9UjllTAR1Z+MUwIwRF9gRjD2uxegnYRu+HC+WtUnOj5wkl/Sn33XOCida
-         +Qgg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=E8hw1YxRdyFQiBunbdOQafA0vLjTqdy9/4gfOonLrFg=;
+        b=cMw3nqupRwb9iJ0bAiEPeAgnOBYM1beNn1TObGXfHMIOMS1sTGGaToiA5nWxbTPG23
+         7Bz8Tf9v6QAYxGl16dxbYfTSm7cMnx29cgprRiQll1k8U5uaKV9vxmnxwM/ichP5gcNC
+         2MhV/Fgj+5yEwdzZBeNIph23msVCY1g5rCZhKgrErykccuFP7ubdDpN+0sMnTjuyAXgD
+         WlQzdnKIlZD5ZXUjz2BiatWWlSOPzWc4K+AATgFhBrhSUWAhmb/cxMDw9moE2hFmKj7M
+         tL+7T6Ejx28GCXKEAeHuZe351Sitn3HNDzC0SQ+cSYB/9oTan6ZNM36uDM5QH6P2nfo8
+         yO6g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=/fT1it2KZU2gPXkEvlWdCKHS58rx52JxhTKoYGvWFsI=;
-        b=jMLh13Nv0D+cwokfbTZJ1lqK6A2WjB7SlCWeSyk2y2Z+LUplgL0F1Pf1YfmV/IIjGf
-         lmPlrm9Z1z8rXxGvoZbNU8dLPbXLYUqioYMJuIghJx5tOpRi7KB1vrTXifDX4ikgpEgw
-         nza+SYth2F3LNmloTeYQdNiW8gaXAYUSTAaljZSMuNV1u7gbaJdxEW/wwNzfDBO5KBGb
-         f6fEBuLFSV7NogizUlg1nmbp0BSF77Rx8DwAQ+KT3+9E2PlwANXMD1juQXsM9BpoFlJc
-         FT05xdYt1jpzldpoNDhLk0tO8xNl0cncbnwbLcfatYyNzEwt/0IPVr4+wqHLKYaTTZQj
-         7eig==
-X-Gm-Message-State: AOAM530un/eCrMf9mJvV5HVu+YwpkfSH3zB3Bv2/JxpBxTnJk17hC8BC
-        xkhkIwYY3b/1COt49z3P6lrB0sOCf2/BovB0
-X-Google-Smtp-Source: ABdhPJwd8nCaOgRfb6mdXbAKJwYlhIYmPv5Kq25qkC6wi7PtkgjVQe2mNDQE+tW1St0c5Vc6Lsh7gQ==
-X-Received: by 2002:a05:6402:4392:b0:42b:612:b275 with SMTP id o18-20020a056402439200b0042b0612b275mr41609136edc.288.1653648470130;
-        Fri, 27 May 2022 03:47:50 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=E8hw1YxRdyFQiBunbdOQafA0vLjTqdy9/4gfOonLrFg=;
+        b=rSaXEa/CoWZaJxL28cytNr3yNsZbc1RlFG1zbkTCUnGWoyMFKWf6hqB9j05Hz+fdnv
+         ZLUq2H8PFPL3zTxG6/NrjvvP4uwWSbYHdTYj4+qX3KKzn7BzSWs/V5m61UxpPx70uvdt
+         W88/tVc6SDb2ILOR33/1DoS5VU0smiq9CuP0YZRIvD6yt0I5G3XVuE1A3SO5Jq0+XnZ0
+         oveq2+JyFNgnm4Ufr3bWk9q/pGH0+/thhafqPvxMQ3W5hbcHTqgBa8weB5YU+1AwbWoa
+         UbRzaz0i5y6xb7bStiq5GXcdJdSQW5YIG57FI2vlSbHxTjSVLRqvBMGv8keFIxD+s1XE
+         A9YA==
+X-Gm-Message-State: AOAM533QagcjufrFJp3jVhxKt69V9JBg/S3MEeYoFPlaqGniXhHS4sAJ
+        bWN9y3LpK5SRE1PqlDl4CyE=
+X-Google-Smtp-Source: ABdhPJyTYr0OkS3+nT4wN/g4MnpnJWE858fclOQNBvUdUSBEzGJbKuxqnWjjUb04IleiIrgnKZ+Spw==
+X-Received: by 2002:a05:6402:1cc1:b0:413:2b12:fc49 with SMTP id ds1-20020a0564021cc100b004132b12fc49mr43833744edb.118.1653648471305;
+        Fri, 27 May 2022 03:47:51 -0700 (PDT)
 Received: from orion.localdomain ([93.99.228.15])
-        by smtp.gmail.com with ESMTPSA id c13-20020a50d64d000000b0042617ba63cfsm1926153edj.89.2022.05.27.03.47.48
+        by smtp.gmail.com with ESMTPSA id v4-20020a50a444000000b0042ab87ea713sm777389edb.22.2022.05.27.03.47.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Fri, 27 May 2022 03:47:49 -0700 (PDT)
 Received: by orion.localdomain (Postfix, from userid 1003)
-        id 4BD67A028F; Fri, 27 May 2022 12:48:18 +0200 (CEST)
+        id 5148EA0293; Fri, 27 May 2022 12:48:18 +0200 (CEST)
 From:   =?UTF-8?q?Jakub=20Mat=C4=9Bna?= <matenajakub@gmail.com>
 To:     akpm@linux-foundation.org
 Cc:     linux-mm@kvack.org, patches@lists.linux.dev,
@@ -59,10 +59,12 @@ Cc:     linux-mm@kvack.org, patches@lists.linux.dev,
         liam.howlett@oracle.com, hughd@google.com, kirill@shutemov.name,
         riel@surriel.com, rostedt@goodmis.org, peterz@infradead.org,
         =?UTF-8?q?Jakub=20Mat=C4=9Bna?= <matenajakub@gmail.com>
-Subject: [PATCH 0/2] Refactor of vma_merge and new merge call
-Date:   Fri, 27 May 2022 12:48:08 +0200
-Message-Id: <20220527104810.24736-1-matenajakub@gmail.com>
+Subject: [PATCH 2/2] [PATCH 2/2] mm: add merging after mremap resize
+Date:   Fri, 27 May 2022 12:48:10 +0200
+Message-Id: <20220527104810.24736-3-matenajakub@gmail.com>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220527104810.24736-1-matenajakub@gmail.com>
+References: <20220527104810.24736-1-matenajakub@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -70,26 +72,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I am currently working on my master's thesis trying to increase
-number of merges of VMAs currently failing because of page offset
-incompatibility and difference in their anon_vmas. The following
-refactor and added merge call included in this series is just two
-smaller upgrades I created along the way.
+When mremap call results in expansion, it might be possible to merge the
+VMA with the next VMA which might become adjacent. This patch adds
+vma_merge call after the expansion is done to try and merge.
 
-The rest of the work is still being worked on but was send to mailing
-list as a RFC:
-https://lore.kernel.org/all/20220516125405.1675-1-matenajakub@gmail.com/
+Signed-off-by: Jakub Matěna <matenajakub@gmail.com>
+---
+ mm/mremap.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-This patch series is based on tag v5.18-rc2.
-
-Jakub Matěna (2):
-  mm: refactor of vma_merge()
-  mm: add merging after mremap resize
-
- mm/mmap.c   | 87 +++++++++++++++++++++++------------------------------
- mm/mremap.c |  8 +++--
- 2 files changed, 43 insertions(+), 52 deletions(-)
-
+diff --git a/mm/mremap.c b/mm/mremap.c
+index 303d3290b938..c41237e62156 100644
+--- a/mm/mremap.c
++++ b/mm/mremap.c
+@@ -9,6 +9,7 @@
+  */
+ 
+ #include <linux/mm.h>
++#include <linux/mm_inline.h>
+ #include <linux/hugetlb.h>
+ #include <linux/shm.h>
+ #include <linux/ksm.h>
+@@ -1022,8 +1023,11 @@ SYSCALL_DEFINE5(mremap, unsigned long, addr, unsigned long, old_len,
+ 				}
+ 			}
+ 
+-			if (vma_adjust(vma, vma->vm_start, addr + new_len,
+-				       vma->vm_pgoff, NULL)) {
++			vma = vma_merge(mm, vma, addr + old_len, addr + new_len,
++					vma->vm_flags, vma->anon_vma, vma->vm_file,
++					vma->vm_pgoff + (old_len >> PAGE_SHIFT), vma_policy(vma),
++					vma->vm_userfaultfd_ctx, anon_vma_name(vma));
++			if (!vma) {
+ 				vm_unacct_memory(pages);
+ 				ret = -ENOMEM;
+ 				goto out;
 -- 
 2.35.1
 
