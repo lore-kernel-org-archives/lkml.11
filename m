@@ -2,170 +2,208 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFA51C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:46:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 275A7C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:46:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349907AbiE0Iqk (ORCPT
+        id S1349926AbiE0Iqv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 04:46:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42056 "EHLO
+        Fri, 27 May 2022 04:46:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349846AbiE0Iq0 (ORCPT
+        with ESMTP id S1349898AbiE0Iqg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 04:46:26 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46AE510FF1
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 01:46:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653641184; x=1685177184;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=AXatNATnQZ0DI67P8R1G6wp0tjlAKIb0dIHnp7dElFI=;
-  b=k7T1UuJ8B+5skJxYRuzUk3aG1Zx7NgbnDJENQz062AKfWYj5+Q89WpUz
-   s9WRbpjK0rhOUU7aUBzL7T52n6QLrxGM+bo4hKF7iCu7jVFmG+O1W+I7B
-   Ikl4WjJWAesbkZNzM0U+/dQPvLYBnyv2RW1Vyyk2IrDWrYbzxnvk/WHgv
-   JahhOgtP0Vo58058udcp7TLUSvhlauzmxXCZqmf3Y21zNTEn4Jr8CHkKU
-   YMoX4e656xpXUI5j3H8nsFgXRUUU4LxquAFeCLPW3oS2U8l6kfMc+ocuc
-   deHZE6l9JXdiRlY5z4PnscfBqNFFef00a3N5FT0h3zgS3gRj5YeKuP8Gf
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10359"; a="337470703"
-X-IronPort-AV: E=Sophos;i="5.91,254,1647327600"; 
-   d="scan'208";a="337470703"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2022 01:46:23 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,254,1647327600"; 
-   d="scan'208";a="579508443"
-Received: from lkp-server01.sh.intel.com (HELO db63a1be7222) ([10.239.97.150])
-  by fmsmga007.fm.intel.com with ESMTP; 27 May 2022 01:46:22 -0700
-Received: from kbuild by db63a1be7222 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nuVbx-0004aG-Nu;
-        Fri, 27 May 2022 08:46:21 +0000
-Date:   Fri, 27 May 2022 16:45:59 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [congwang:sch_bpf 3/4] net/core/filter.c:10495:31: sparse: sparse:
- symbol 'tc_qdisc_verifier_ops' was not declared. Should it be static?
-Message-ID: <202205271637.tUd44QTA-lkp@intel.com>
+        Fri, 27 May 2022 04:46:36 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D09E12ACB;
+        Fri, 27 May 2022 01:46:33 -0700 (PDT)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.53])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4L8dfL4dGyz1JC7l;
+        Fri, 27 May 2022 16:44:58 +0800 (CST)
+Received: from dggpemm500018.china.huawei.com (7.185.36.111) by
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 27 May 2022 16:46:31 +0800
+Received: from localhost.localdomain (10.175.112.125) by
+ dggpemm500018.china.huawei.com (7.185.36.111) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 27 May 2022 16:46:30 +0800
+From:   keliu <liuke94@huawei.com>
+To:     <peter.chen@kernel.org>, <gregkh@linuxfoundation.org>,
+        <balbi@kernel.org>, <heikki.krogerus@linux.intel.com>,
+        <mdevaev@gmail.com>, <maze@google.com>, <ruslan.bilovol@gmail.com>,
+        <phil@raspberrypi.com>, <libaokun1@huawei.com>,
+        <dan.carpenter@oracle.com>, <akpm@linux-foundation.org>,
+        <brauner@kernel.org>, <songmuchun@bytedance.com>,
+        <dh10.jung@samsung.com>, <linux-usb@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     keliu <liuke94@huawei.com>
+Subject: [PATCH] drivers: usb: Directly use ida_alloc()/free()
+Date:   Fri, 27 May 2022 09:08:00 +0000
+Message-ID: <20220527090800.2881397-1-liuke94@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.112.125]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500018.china.huawei.com (7.185.36.111)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/congwang/linux.git sch_bpf
-head:   d7144f4291a2882e698a6d9d83f7e614d97be9c8
-commit: 97c6ce6081d2ec9913eefd690183e4857c8b6cf5 [3/4] net_sched: introduce eBPF based Qdisc
-config: x86_64-randconfig-s021 (https://download.01.org/0day-ci/archive/20220527/202205271637.tUd44QTA-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-1) 11.3.0
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.4-14-g5a0004b5-dirty
-        # https://github.com/congwang/linux/commit/97c6ce6081d2ec9913eefd690183e4857c8b6cf5
-        git remote add congwang https://github.com/congwang/linux.git
-        git fetch --no-tags congwang sch_bpf
-        git checkout 97c6ce6081d2ec9913eefd690183e4857c8b6cf5
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=x86_64 SHELL=/bin/bash
+Use ida_alloc()/ida_free() instead of deprecated
+ida_simple_get()/ida_simple_remove() .
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: keliu <liuke94@huawei.com>
+---
+ drivers/usb/chipidea/core.c             | 6 +++---
+ drivers/usb/gadget/function/f_hid.c     | 6 +++---
+ drivers/usb/gadget/function/f_printer.c | 6 +++---
+ drivers/usb/gadget/function/rndis.c     | 4 ++--
+ drivers/usb/typec/class.c               | 8 ++++----
+ 5 files changed, 15 insertions(+), 15 deletions(-)
 
-
-sparse warnings: (new ones prefixed by >>)
-   net/core/filter.c:1411:39: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected struct sock_filter const *filter @@     got struct sock_filter [noderef] __user *filter @@
-   net/core/filter.c:1411:39: sparse:     expected struct sock_filter const *filter
-   net/core/filter.c:1411:39: sparse:     got struct sock_filter [noderef] __user *filter
-   net/core/filter.c:1489:39: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected struct sock_filter const *filter @@     got struct sock_filter [noderef] __user *filter @@
-   net/core/filter.c:1489:39: sparse:     expected struct sock_filter const *filter
-   net/core/filter.c:1489:39: sparse:     got struct sock_filter [noderef] __user *filter
-   net/core/filter.c:2296:45: sparse: sparse: incorrect type in argument 2 (different base types) @@     expected restricted __be32 [usertype] daddr @@     got unsigned int [usertype] ipv4_nh @@
-   net/core/filter.c:2296:45: sparse:     expected restricted __be32 [usertype] daddr
-   net/core/filter.c:2296:45: sparse:     got unsigned int [usertype] ipv4_nh
-   net/core/filter.c:10472:31: sparse: sparse: symbol 'sk_filter_verifier_ops' was not declared. Should it be static?
-   net/core/filter.c:10479:27: sparse: sparse: symbol 'sk_filter_prog_ops' was not declared. Should it be static?
-   net/core/filter.c:10483:31: sparse: sparse: symbol 'tc_cls_act_verifier_ops' was not declared. Should it be static?
-   net/core/filter.c:10491:27: sparse: sparse: symbol 'tc_cls_act_prog_ops' was not declared. Should it be static?
->> net/core/filter.c:10495:31: sparse: sparse: symbol 'tc_qdisc_verifier_ops' was not declared. Should it be static?
->> net/core/filter.c:10503:27: sparse: sparse: symbol 'tc_qdisc_prog_ops' was not declared. Should it be static?
-   net/core/filter.c:10507:31: sparse: sparse: symbol 'xdp_verifier_ops' was not declared. Should it be static?
-   net/core/filter.c:10518:31: sparse: sparse: symbol 'cg_skb_verifier_ops' was not declared. Should it be static?
-   net/core/filter.c:10524:27: sparse: sparse: symbol 'cg_skb_prog_ops' was not declared. Should it be static?
-   net/core/filter.c:10528:31: sparse: sparse: symbol 'lwt_in_verifier_ops' was not declared. Should it be static?
-   net/core/filter.c:10534:27: sparse: sparse: symbol 'lwt_in_prog_ops' was not declared. Should it be static?
-   net/core/filter.c:10538:31: sparse: sparse: symbol 'lwt_out_verifier_ops' was not declared. Should it be static?
-   net/core/filter.c:10544:27: sparse: sparse: symbol 'lwt_out_prog_ops' was not declared. Should it be static?
-   net/core/filter.c:10548:31: sparse: sparse: symbol 'lwt_xmit_verifier_ops' was not declared. Should it be static?
-   net/core/filter.c:10555:27: sparse: sparse: symbol 'lwt_xmit_prog_ops' was not declared. Should it be static?
-   net/core/filter.c:10559:31: sparse: sparse: symbol 'lwt_seg6local_verifier_ops' was not declared. Should it be static?
-   net/core/filter.c:10565:27: sparse: sparse: symbol 'lwt_seg6local_prog_ops' was not declared. Should it be static?
-   net/core/filter.c:10569:31: sparse: sparse: symbol 'cg_sock_verifier_ops' was not declared. Should it be static?
-   net/core/filter.c:10575:27: sparse: sparse: symbol 'cg_sock_prog_ops' was not declared. Should it be static?
-   net/core/filter.c:10578:31: sparse: sparse: symbol 'cg_sock_addr_verifier_ops' was not declared. Should it be static?
-   net/core/filter.c:10584:27: sparse: sparse: symbol 'cg_sock_addr_prog_ops' was not declared. Should it be static?
-   net/core/filter.c:10587:31: sparse: sparse: symbol 'sock_ops_verifier_ops' was not declared. Should it be static?
-   net/core/filter.c:10593:27: sparse: sparse: symbol 'sock_ops_prog_ops' was not declared. Should it be static?
-   net/core/filter.c:10596:31: sparse: sparse: symbol 'sk_skb_verifier_ops' was not declared. Should it be static?
-   net/core/filter.c:10603:27: sparse: sparse: symbol 'sk_skb_prog_ops' was not declared. Should it be static?
-   net/core/filter.c:10606:31: sparse: sparse: symbol 'sk_msg_verifier_ops' was not declared. Should it be static?
-   net/core/filter.c:10613:27: sparse: sparse: symbol 'sk_msg_prog_ops' was not declared. Should it be static?
-   net/core/filter.c:10616:31: sparse: sparse: symbol 'flow_dissector_verifier_ops' was not declared. Should it be static?
-   net/core/filter.c:10622:27: sparse: sparse: symbol 'flow_dissector_prog_ops' was not declared. Should it be static?
-   net/core/filter.c:10951:31: sparse: sparse: symbol 'sk_reuseport_verifier_ops' was not declared. Should it be static?
-   net/core/filter.c:10957:27: sparse: sparse: symbol 'sk_reuseport_prog_ops' was not declared. Should it be static?
-   net/core/filter.c:11159:27: sparse: sparse: symbol 'sk_lookup_prog_ops' was not declared. Should it be static?
-   net/core/filter.c:11163:31: sparse: sparse: symbol 'sk_lookup_verifier_ops' was not declared. Should it be static?
-   net/core/filter.c:247:32: sparse: sparse: cast to restricted __be16
-   net/core/filter.c:274:32: sparse: sparse: cast to restricted __be32
-   net/core/filter.c:1910:43: sparse: sparse: incorrect type in argument 2 (different base types) @@     expected restricted __wsum [usertype] diff @@     got unsigned long long [usertype] to @@
-   net/core/filter.c:1910:43: sparse:     expected restricted __wsum [usertype] diff
-   net/core/filter.c:1910:43: sparse:     got unsigned long long [usertype] to
-   net/core/filter.c:1913:36: sparse: sparse: incorrect type in argument 2 (different base types) @@     expected restricted __be16 [usertype] old @@     got unsigned long long [usertype] from @@
-   net/core/filter.c:1913:36: sparse:     expected restricted __be16 [usertype] old
-   net/core/filter.c:1913:36: sparse:     got unsigned long long [usertype] from
-   net/core/filter.c:1913:42: sparse: sparse: incorrect type in argument 3 (different base types) @@     expected restricted __be16 [usertype] new @@     got unsigned long long [usertype] to @@
-   net/core/filter.c:1913:42: sparse:     expected restricted __be16 [usertype] new
-   net/core/filter.c:1913:42: sparse:     got unsigned long long [usertype] to
-   net/core/filter.c:1916:36: sparse: sparse: incorrect type in argument 2 (different base types) @@     expected restricted __be32 [usertype] from @@     got unsigned long long [usertype] from @@
-   net/core/filter.c:1916:36: sparse:     expected restricted __be32 [usertype] from
-   net/core/filter.c:1916:36: sparse:     got unsigned long long [usertype] from
-   net/core/filter.c:1916:42: sparse: sparse: incorrect type in argument 3 (different base types) @@     expected restricted __be32 [usertype] to @@     got unsigned long long [usertype] to @@
-   net/core/filter.c:1916:42: sparse:     expected restricted __be32 [usertype] to
-   net/core/filter.c:1916:42: sparse:     got unsigned long long [usertype] to
-   net/core/filter.c:1961:59: sparse: sparse: incorrect type in argument 3 (different base types) @@     expected restricted __wsum [usertype] diff @@     got unsigned long long [usertype] to @@
-   net/core/filter.c:1961:59: sparse:     expected restricted __wsum [usertype] diff
-   net/core/filter.c:1961:59: sparse:     got unsigned long long [usertype] to
-   net/core/filter.c:1964:52: sparse: sparse: incorrect type in argument 3 (different base types) @@     expected restricted __be16 [usertype] from @@     got unsigned long long [usertype] from @@
-   net/core/filter.c:1964:52: sparse:     expected restricted __be16 [usertype] from
-   net/core/filter.c:1964:52: sparse:     got unsigned long long [usertype] from
-   net/core/filter.c:1964:58: sparse: sparse: incorrect type in argument 4 (different base types) @@     expected restricted __be16 [usertype] to @@     got unsigned long long [usertype] to @@
-   net/core/filter.c:1964:58: sparse:     expected restricted __be16 [usertype] to
-   net/core/filter.c:1964:58: sparse:     got unsigned long long [usertype] to
-   net/core/filter.c:1967:52: sparse: sparse: incorrect type in argument 3 (different base types) @@     expected restricted __be32 [usertype] from @@     got unsigned long long [usertype] from @@
-   net/core/filter.c:1967:52: sparse:     expected restricted __be32 [usertype] from
-   net/core/filter.c:1967:52: sparse:     got unsigned long long [usertype] from
-   net/core/filter.c:1967:58: sparse: sparse: incorrect type in argument 4 (different base types) @@     expected restricted __be32 [usertype] to @@     got unsigned long long [usertype] to @@
-   net/core/filter.c:1967:58: sparse:     expected restricted __be32 [usertype] to
-   net/core/filter.c:1967:58: sparse:     got unsigned long long [usertype] to
-   net/core/filter.c:2013:28: sparse: sparse: incorrect type in return expression (different base types) @@     expected unsigned long long @@     got restricted __wsum @@
-   net/core/filter.c:2013:28: sparse:     expected unsigned long long
-   net/core/filter.c:2013:28: sparse:     got restricted __wsum
-   net/core/filter.c:2035:35: sparse: sparse: incorrect type in return expression (different base types) @@     expected unsigned long long @@     got restricted __wsum [usertype] csum @@
-   net/core/filter.c:2035:35: sparse:     expected unsigned long long
-   net/core/filter.c:2035:35: sparse:     got restricted __wsum [usertype] csum
-   net/core/filter.c:5645:17: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned int [usertype] spi @@     got restricted __be32 const [usertype] spi @@
-   net/core/filter.c:5645:17: sparse:     expected unsigned int [usertype] spi
-   net/core/filter.c:5645:17: sparse:     got restricted __be32 const [usertype] spi
-   net/core/filter.c:5653:33: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned int [usertype] remote_ipv4 @@     got restricted __be32 const [usertype] a4 @@
-   net/core/filter.c:5653:33: sparse:     expected unsigned int [usertype] remote_ipv4
-   net/core/filter.c:5653:33: sparse:     got restricted __be32 const [usertype] a4
-
-Please review and possibly fold the followup patch.
-
+diff --git a/drivers/usb/chipidea/core.c b/drivers/usb/chipidea/core.c
+index 5359b2a2e4d2..ab8fd4d96836 100644
+--- a/drivers/usb/chipidea/core.c
++++ b/drivers/usb/chipidea/core.c
+@@ -853,7 +853,7 @@ struct platform_device *ci_hdrc_add_device(struct device *dev,
+ 	if (ret)
+ 		return ERR_PTR(ret);
+ 
+-	id = ida_simple_get(&ci_ida, 0, 0, GFP_KERNEL);
++	id = ida_alloc(&ci_ida, GFP_KERNEL);
+ 	if (id < 0)
+ 		return ERR_PTR(id);
+ 
+@@ -883,7 +883,7 @@ struct platform_device *ci_hdrc_add_device(struct device *dev,
+ err:
+ 	platform_device_put(pdev);
+ put_id:
+-	ida_simple_remove(&ci_ida, id);
++	ida_free(&ci_ida, id);
+ 	return ERR_PTR(ret);
+ }
+ EXPORT_SYMBOL_GPL(ci_hdrc_add_device);
+@@ -892,7 +892,7 @@ void ci_hdrc_remove_device(struct platform_device *pdev)
+ {
+ 	int id = pdev->id;
+ 	platform_device_unregister(pdev);
+-	ida_simple_remove(&ci_ida, id);
++	ida_free(&ci_ida, id);
+ }
+ EXPORT_SYMBOL_GPL(ci_hdrc_remove_device);
+ 
+diff --git a/drivers/usb/gadget/function/f_hid.c b/drivers/usb/gadget/function/f_hid.c
+index ca0a7d9eaa34..84e834e512dc 100644
+--- a/drivers/usb/gadget/function/f_hid.c
++++ b/drivers/usb/gadget/function/f_hid.c
+@@ -1028,9 +1028,9 @@ static inline int hidg_get_minor(void)
+ {
+ 	int ret;
+ 
+-	ret = ida_simple_get(&hidg_ida, 0, 0, GFP_KERNEL);
++	ret = ida_alloc(&hidg_ida, GFP_KERNEL);
+ 	if (ret >= HIDG_MINORS) {
+-		ida_simple_remove(&hidg_ida, ret);
++		ida_free(&hidg_ida, ret);
+ 		ret = -ENODEV;
+ 	}
+ 
+@@ -1175,7 +1175,7 @@ static const struct config_item_type hid_func_type = {
+ 
+ static inline void hidg_put_minor(int minor)
+ {
+-	ida_simple_remove(&hidg_ida, minor);
++	ida_free(&hidg_ida, minor);
+ }
+ 
+ static void hidg_free_inst(struct usb_function_instance *f)
+diff --git a/drivers/usb/gadget/function/f_printer.c b/drivers/usb/gadget/function/f_printer.c
+index abec5c58f525..eb325940566c 100644
+--- a/drivers/usb/gadget/function/f_printer.c
++++ b/drivers/usb/gadget/function/f_printer.c
+@@ -1316,9 +1316,9 @@ static inline int gprinter_get_minor(void)
+ {
+ 	int ret;
+ 
+-	ret = ida_simple_get(&printer_ida, 0, 0, GFP_KERNEL);
++	ret = ida_alloc(&printer_ida, GFP_KERNEL);
+ 	if (ret >= PRINTER_MINORS) {
+-		ida_simple_remove(&printer_ida, ret);
++		ida_free(&printer_ida, ret);
+ 		ret = -ENODEV;
+ 	}
+ 
+@@ -1327,7 +1327,7 @@ static inline int gprinter_get_minor(void)
+ 
+ static inline void gprinter_put_minor(int minor)
+ {
+-	ida_simple_remove(&printer_ida, minor);
++	ida_free(&printer_ida, minor);
+ }
+ 
+ static int gprinter_setup(int);
+diff --git a/drivers/usb/gadget/function/rndis.c b/drivers/usb/gadget/function/rndis.c
+index 713efd9aefde..14e803862940 100644
+--- a/drivers/usb/gadget/function/rndis.c
++++ b/drivers/usb/gadget/function/rndis.c
+@@ -869,12 +869,12 @@ EXPORT_SYMBOL_GPL(rndis_msg_parser);
+ 
+ static inline int rndis_get_nr(void)
+ {
+-	return ida_simple_get(&rndis_ida, 0, 0, GFP_KERNEL);
++	return ida_alloc(&rndis_ida, GFP_KERNEL);
+ }
+ 
+ static inline void rndis_put_nr(int nr)
+ {
+-	ida_simple_remove(&rndis_ida, nr);
++	ida_free(&rndis_ida, nr);
+ }
+ 
+ struct rndis_params *rndis_register(void (*resp_avail)(void *v), void *v)
+diff --git a/drivers/usb/typec/class.c b/drivers/usb/typec/class.c
+index ee0e520707dd..6d7d69d09ed4 100644
+--- a/drivers/usb/typec/class.c
++++ b/drivers/usb/typec/class.c
+@@ -474,7 +474,7 @@ static int altmode_id_get(struct device *dev)
+ 	else
+ 		ids = &to_typec_port(dev)->mode_ids;
+ 
+-	return ida_simple_get(ids, 0, 0, GFP_KERNEL);
++	return ida_alloc(ids, GFP_KERNEL);
+ }
+ 
+ static void altmode_id_remove(struct device *dev, int id)
+@@ -488,7 +488,7 @@ static void altmode_id_remove(struct device *dev, int id)
+ 	else
+ 		ids = &to_typec_port(dev)->mode_ids;
+ 
+-	ida_simple_remove(ids, id);
++	ida_free(ids, id);
+ }
+ 
+ static void typec_altmode_release(struct device *dev)
+@@ -1599,7 +1599,7 @@ static void typec_release(struct device *dev)
+ {
+ 	struct typec_port *port = to_typec_port(dev);
+ 
+-	ida_simple_remove(&typec_index_ida, port->id);
++	ida_free(&typec_index_ida, port->id);
+ 	ida_destroy(&port->mode_ids);
+ 	typec_switch_put(port->sw);
+ 	typec_mux_put(port->mux);
+@@ -2042,7 +2042,7 @@ struct typec_port *typec_register_port(struct device *parent,
+ 	if (!port)
+ 		return ERR_PTR(-ENOMEM);
+ 
+-	id = ida_simple_get(&typec_index_ida, 0, 0, GFP_KERNEL);
++	id = ida_alloc(&typec_index_ida, GFP_KERNEL);
+ 	if (id < 0) {
+ 		kfree(port);
+ 		return ERR_PTR(id);
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.25.1
+
