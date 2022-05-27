@@ -2,183 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F31B2C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 13:36:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78DF8C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 13:39:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352281AbiE0Ngo (ORCPT
+        id S1352423AbiE0Nja (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 09:36:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38648 "EHLO
+        Fri, 27 May 2022 09:39:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235855AbiE0Ngl (ORCPT
+        with ESMTP id S240544AbiE0Nj2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 09:36:41 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C32F35C378;
-        Fri, 27 May 2022 06:36:37 -0700 (PDT)
-Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24RDNkix007065;
-        Fri, 27 May 2022 13:36:34 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : reply-to : subject : to : cc : references : from :
- in-reply-to : content-type : content-transfer-encoding; s=pp1;
- bh=UvFfAb7XzrtbZWcakjYDQFR097d/QQ6h3USU5tf9mOU=;
- b=Dgepv199RVUJ5xaCICOhCfrCKHv6E+cWaiobNYIRVwwIUgQ8FRvTr5ur8M4q7kKRF7S3
- hQmREqzcTV+aBs/Cp1ZrlD34l1nNWzdmlxPDjflZrZJDFFX2jNwO40arVXC+Rojls6C3
- 89mSdxY///C8T10LYEP4gBNoPnE2ZSCTn0eMt7IiVxiuxYN7a6NDjf1Tc8k3rHKS98S7
- tjpcIi8nTm8mAYrILujes+mJhrEcRi381vJUS1ig7Ms58nLvUP3sPh/e7VK7Cn4O5t7B
- h5ojqQREfZpaIzwwwn5Z+mb2VxYUJEEfRMSaV6I4Myw8uDf+yPrgxAFHeSWez91ZmA0q Vw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3gayg807ty-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 27 May 2022 13:36:34 +0000
-Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24RDUW4L002489;
-        Fri, 27 May 2022 13:36:33 GMT
-Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3gayg807tp-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 27 May 2022 13:36:33 +0000
-Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
-        by ppma03wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24RDYWhL013836;
-        Fri, 27 May 2022 13:36:33 GMT
-Received: from b01cxnp23033.gho.pok.ibm.com (b01cxnp23033.gho.pok.ibm.com [9.57.198.28])
-        by ppma03wdc.us.ibm.com with ESMTP id 3gabgmf0d4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 27 May 2022 13:36:33 +0000
-Received: from b01ledav001.gho.pok.ibm.com (b01ledav001.gho.pok.ibm.com [9.57.199.106])
-        by b01cxnp23033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24RDaWPQ39387498
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 27 May 2022 13:36:32 GMT
-Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 7F91F28058;
-        Fri, 27 May 2022 13:36:32 +0000 (GMT)
-Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 2EDE828065;
-        Fri, 27 May 2022 13:36:32 +0000 (GMT)
-Received: from [9.60.75.219] (unknown [9.60.75.219])
-        by b01ledav001.gho.pok.ibm.com (Postfix) with ESMTP;
-        Fri, 27 May 2022 13:36:32 +0000 (GMT)
-Message-ID: <9364a1b7-9060-20aa-b0d6-88c41a30e7d4@linux.ibm.com>
-Date:   Fri, 27 May 2022 09:36:32 -0400
+        Fri, 27 May 2022 09:39:28 -0400
+Received: from mail-vs1-xe2b.google.com (mail-vs1-xe2b.google.com [IPv6:2607:f8b0:4864:20::e2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F70A146741
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 06:39:25 -0700 (PDT)
+Received: by mail-vs1-xe2b.google.com with SMTP id j7so4267728vsp.12
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 06:39:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=hqlg/w/fu3XfRPgdp6en7FxQt+ggN/0l4WsjVJitcVw=;
+        b=E2N132fvML6LrBTQk8CEDkWoE7iy6xHPtSdsWWbkkJ9qx2SDmdbsk/2gZz41g52LIE
+         TcZrptshVkbF1zidVo3NqoiA1Uj+rRgGCrItspUx/MsbD65NZ8wCsJ+43tj4gSeOdyJT
+         PDceHpT5Vc6O6aiNnu+WO7zRsm/ZUcsQBLdfKAu0+d55JKS4L707dtA0tKPlQhZPO4AQ
+         oOFpQsdwi00qCGrzgNViGIUY0Y1RE5lk7BpBlg5pEVPibtdTb9whrFBl5rzaxws2CT+a
+         sBxIiY+cNOSyLigrEBXnMpZvAUdhsyip742SYxRJRmSF4QJYeqSgWjShR9cflZxibk0M
+         Uodw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hqlg/w/fu3XfRPgdp6en7FxQt+ggN/0l4WsjVJitcVw=;
+        b=AyB24sn5t2FkFSZbK1AsC02C59xYUEty4/YUi6YxB5SmsUxZC6M0Q5QHKJUmrH4rNr
+         8wX1VXnHOcKfhh3XGP+sZ7RgMsy7Wfo4C5vu0rvdKNPdcXCC7kxBEM0QeYlnDBkH3dvG
+         Do/PnOYMwU2eKJ/JbfRORJ5bOHJHv+fRH2NvJMc6Eg8LKVhGLLvX6yP9PUJM+ZV7Mp2R
+         2YKxtypHFftnPOi6zl64rwZAQMC0mA6fViM7QHy27FzO3MQra9TMqQFWVLjeGMaG6moo
+         ZGyNOE7JTQHBb5wq4eO35aSwAyBMN+/oWAOI8ZGSQkAOjH+irBMUPHekj2JnB8nahkXL
+         67JQ==
+X-Gm-Message-State: AOAM530rFMwToG3J0TtDBq4npjHX0IbNqEQuTnf19vYrFme/1Cvtf6ve
+        hHSBjVSqypy1AKqIgLsWgu8YcMR43ZP1hfg4b2M=
+X-Google-Smtp-Source: ABdhPJySDv0PWTGe7FNJUI4axliR/+waikOZH4xVOoaC6lc/giZe/1RKNxnwujNEmpiXphYOtn97ISHWrkU6BVu3v/M=
+X-Received: by 2002:a67:d808:0:b0:337:8cab:6c00 with SMTP id
+ e8-20020a67d808000000b003378cab6c00mr14451432vsj.66.1653658764178; Fri, 27
+ May 2022 06:39:24 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Reply-To: jjherne@linux.ibm.com
-Subject: Re: [PATCH v19 11/20] s390/vfio-ap: prepare for dynamic update of
- guest's APCB on queue probe/remove
-Content-Language: en-US
-To:     Tony Krowiak <akrowiak@linux.ibm.com>, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     freude@linux.ibm.com, borntraeger@de.ibm.com, cohuck@redhat.com,
-        mjrosato@linux.ibm.com, pasic@linux.ibm.com,
-        alex.williamson@redhat.com, kwankhede@nvidia.com,
-        fiuczy@linux.ibm.com
-References: <20220404221039.1272245-1-akrowiak@linux.ibm.com>
- <20220404221039.1272245-12-akrowiak@linux.ibm.com>
-From:   "Jason J. Herne" <jjherne@linux.ibm.com>
-Organization: IBM
-In-Reply-To: <20220404221039.1272245-12-akrowiak@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: xRlckxqCRc19NbXDI99X_qHWEu4qeofs
-X-Proofpoint-ORIG-GUID: bBkFK8XaS7mL1iDBCEYFcvvYWPergox1
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-27_03,2022-05-27_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0
- priorityscore=1501 malwarescore=0 phishscore=0 lowpriorityscore=0
- bulkscore=0 adultscore=0 mlxlogscore=999 clxscore=1015 mlxscore=0
- impostorscore=0 suspectscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2204290000 definitions=main-2205270063
+References: <20220527032504.30341-1-yee.lee@mediatek.com>
+In-Reply-To: <20220527032504.30341-1-yee.lee@mediatek.com>
+From:   patrick wang <patrick.wang.shcn@gmail.com>
+Date:   Fri, 27 May 2022 21:39:11 +0800
+Message-ID: <CAGcnep9B+z8QG4f4kkW8NF+fM1Kgj=NOV=YRhLK4yK74jbqpAw@mail.gmail.com>
+Subject: Re: [PATCH] mm: kmemleak: Skip check in kmemleak_*_phys when pfn
+ bound is not ready
+To:     yee.lee@mediatek.com
+Cc:     linux-kernel@vger.kernel.org, Kuan-Ying.lee@mediatek.com,
+        Andrew.Yang@mediatek.com, Sunny.Kao@mediatek.com,
+        chinwen.chang@mediatek.com,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        "open list:MEMORY MANAGEMENT" <linux-mm@kvack.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/4/22 18:10, Tony Krowiak wrote:
-> The callback functions for probing and removing a queue device must take
-> and release the locks required to perform a dynamic update of a guest's
-> APCB in the proper order.
-> 
-> The proper order for taking the locks is:
-> 
->          matrix_dev->guests_lock => kvm->lock => matrix_dev->mdevs_lock
-> 
-> The proper order for releasing the locks is:
-> 
->          matrix_dev->mdevs_lock => kvm->lock => matrix_dev->guests_lock
-> 
-> A new helper function is introduced to be used by the probe callback to
-> acquire the required locks. Since the probe callback only has
-> access to a queue device when it is called, the helper function will find
-> the ap_matrix_mdev object to which the queue device's APQN is assigned and
-> return it so the KVM guest to which the mdev is attached can be dynamically
-> updated.
-> 
-> Note that in order to find the ap_matrix_mdev (matrix_mdev) object, it is
-> necessary to search the matrix_dev->mdev_list. This presents a
-> locking order dilemma because the matrix_dev->mdevs_lock can't be taken to
-> protect against changes to the list while searching for the matrix_mdev to
-> which a queue device's APQN is assigned. This is due to the fact that the
-> proper locking order requires that the matrix_dev->mdevs_lock be taken
-> after both the matrix_mdev->kvm->lock and the matrix_dev->mdevs_lock.
-> Consequently, the matrix_dev->guests_lock will be used to protect against
-> removal of a matrix_mdev object from the list while a queue device is
-> being probed. This necessitates changes to the mdev probe/remove
-> callback functions to take the matrix_dev->guests_lock prior to removing
-> a matrix_mdev object from the list.
-> 
-> A new macro is also introduced to acquire the locks required to dynamically
-> update the guest's APCB in the proper order when a queue device is
-> removed.
-> 
-> Signed-off-by: Tony Krowiak <akrowiak@linux.ibm.com>
+On Fri, May 27, 2022 at 11:25 AM <yee.lee@mediatek.com> wrote:
+>
+> From: Yee Lee <yee.lee@mediatek.com>
+>
+> In some archs (arm64), memblock allocates memory in boot time when
+> the pfn boundary (max_pfn/min_pfn) is not ready. The lowmen checks in
+> kmemleak_*_phys() drop those blocks and cause some false leak alarms
+> on common kernel objects.
+>
+> Kmemleak output: (Qemu/arm64)
+> unreferenced object 0xffff0000c0170a00 (size 128):
+>   comm "swapper/0", pid 1, jiffies 4294892404 (age 126.208s)
+>   hex dump (first 32 bytes):
+>     62 61 73 65 00 00 00 00 00 00 00 00 00 00 00 00  base............
+>     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+>   backtrace:
+>     [<(____ptrval____)>] __kmalloc_track_caller+0x1b0/0x2e4
+>     [<(____ptrval____)>] kstrdup_const+0x8c/0xc4
+>     [<(____ptrval____)>] kvasprintf_const+0xbc/0xec
+>     [<(____ptrval____)>] kobject_set_name_vargs+0x58/0xe4
+>     [<(____ptrval____)>] kobject_add+0x84/0x100
+>     [<(____ptrval____)>] __of_attach_node_sysfs+0x78/0xec
+>     [<(____ptrval____)>] of_core_init+0x68/0x104
+>     [<(____ptrval____)>] driver_init+0x28/0x48
+>     [<(____ptrval____)>] do_basic_setup+0x14/0x28
+>     [<(____ptrval____)>] kernel_init_freeable+0x110/0x178
+>     [<(____ptrval____)>] kernel_init+0x20/0x1a0
+>     [<(____ptrval____)>] ret_from_fork+0x10/0x20
+>
+> This patch relaxs the boundary checking in kmemleak_*_phys api
+> if max_low_pfn is uninitialzed.
+>
+> Fixes: 23c2d4 (mm: kmemleak: take a full lowmem check in kmemleak_*_phy)
+> Signed-off-by: Yee Lee <yee.lee@mediatek.com>
 > ---
->   drivers/s390/crypto/vfio_ap_ops.c | 126 +++++++++++++++++++++---------
->   1 file changed, 88 insertions(+), 38 deletions(-)
-> 
-> diff --git a/drivers/s390/crypto/vfio_ap_ops.c b/drivers/s390/crypto/vfio_ap_ops.c
-> index 2219b1069ceb..080a733f7cd2 100644
-> --- a/drivers/s390/crypto/vfio_ap_ops.c
-> +++ b/drivers/s390/crypto/vfio_ap_ops.c
-> @@ -116,6 +116,74 @@ static const struct vfio_device_ops vfio_ap_matrix_dev_ops;
->   	mutex_unlock(&matrix_dev->guests_lock);		\
->   })
->   
-> +/**
-> + * vfio_ap_mdev_get_update_locks_for_apqn: retrieve the matrix mdev to which an
-> + *					   APQN is assigned and acquire the
-> + *					   locks required to update the APCB of
-> + *					   the KVM guest to which the mdev is
-> + *					   attached.
-> + *
-> + * @apqn: the APQN of a queue device.
-> + *
-> + * The proper locking order is:
-> + * 1. matrix_dev->guests_lock: required to use the KVM pointer to update a KVM
-> + *			       guest's APCB.
-> + * 2. matrix_mdev->kvm->lock:  required to update a guest's APCB
-> + * 3. matrix_dev->mdevs_lock:  required to access data stored in a matrix_mdev
-> + *
-> + * Note: If @apqn is not assigned to a matrix_mdev, the matrix_mdev->kvm->lock
-> + *	 will not be taken.
-> + *
-> + * Return: the ap_matrix_mdev object to which @apqn is assigned or NULL if @apqn
-> + *	   is not assigned to an ap_matrix_mdev.
-> + */
-> +static struct ap_matrix_mdev *vfio_ap_mdev_get_update_locks_for_apqn(int apqn)
+>  mm/kmemleak.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+>
+> diff --git a/mm/kmemleak.c b/mm/kmemleak.c
+> index a182f5ddaf68..6b2af544aa0f 100644
+> --- a/mm/kmemleak.c
+> +++ b/mm/kmemleak.c
+> @@ -1132,7 +1132,7 @@ EXPORT_SYMBOL(kmemleak_no_scan);
+>  void __ref kmemleak_alloc_phys(phys_addr_t phys, size_t size, int min_count,
+>                                gfp_t gfp)
+>  {
+> -       if (PHYS_PFN(phys) >= min_low_pfn && PHYS_PFN(phys) < max_low_pfn)
+> +       if (!max_low_pfn || (PHYS_PFN(phys) >= min_low_pfn && PHYS_PFN(phys) < max_low_pfn))
 
-vfio_ap_mdev_get_update_locks_for_apqn is "crazy long".
-How about:
-   get_mdev_for_apqn()
+Just skip checking will bring the crash possibility back. Seems it's beyond
+these interfaces' handle scope for this situation, since "min_low_pfn" and
+"max_low_pfn" are depending on arches.
 
-This function is static and the terms mdev and apqn are specific enough that I
-don't think it needs to start with vfio_ap. And there is no need to state in
-the function name that locks are acquired. That point will be obvious to anyone
-reading the prologue or the code.
-
-Aside from that, Reviewed-by: Jason J. Herne <jjherne@linux.ibm.com>
-
--- 
--- Jason J. Herne (jjherne@linux.ibm.com)
+>                 kmemleak_alloc(__va(phys), size, min_count, gfp);
+>  }
+>  EXPORT_SYMBOL(kmemleak_alloc_phys);
+> @@ -1146,7 +1146,7 @@ EXPORT_SYMBOL(kmemleak_alloc_phys);
+>   */
+>  void __ref kmemleak_free_part_phys(phys_addr_t phys, size_t size)
+>  {
+> -       if (PHYS_PFN(phys) >= min_low_pfn && PHYS_PFN(phys) < max_low_pfn)
+> +       if (!max_low_pfn || (PHYS_PFN(phys) >= min_low_pfn && PHYS_PFN(phys) < max_low_pfn))
+>                 kmemleak_free_part(__va(phys), size);
+>  }
+>  EXPORT_SYMBOL(kmemleak_free_part_phys);
+> @@ -1158,7 +1158,7 @@ EXPORT_SYMBOL(kmemleak_free_part_phys);
+>   */
+>  void __ref kmemleak_not_leak_phys(phys_addr_t phys)
+>  {
+> -       if (PHYS_PFN(phys) >= min_low_pfn && PHYS_PFN(phys) < max_low_pfn)
+> +       if (!max_low_pfn || (PHYS_PFN(phys) >= min_low_pfn && PHYS_PFN(phys) < max_low_pfn))
+>                 kmemleak_not_leak(__va(phys));
+>  }
+>  EXPORT_SYMBOL(kmemleak_not_leak_phys);
+> @@ -1170,7 +1170,7 @@ EXPORT_SYMBOL(kmemleak_not_leak_phys);
+>   */
+>  void __ref kmemleak_ignore_phys(phys_addr_t phys)
+>  {
+> -       if (PHYS_PFN(phys) >= min_low_pfn && PHYS_PFN(phys) < max_low_pfn)
+> +       if (!max_low_pfn || (PHYS_PFN(phys) >= min_low_pfn && PHYS_PFN(phys) < max_low_pfn))
+>                 kmemleak_ignore(__va(phys));
+>  }
+>  EXPORT_SYMBOL(kmemleak_ignore_phys);
+> --
+> 2.18.0
+>
