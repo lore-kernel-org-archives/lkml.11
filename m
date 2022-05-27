@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7330EC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC18CC41535
 	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:17:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353573AbiE0MP2 (ORCPT
+        id S1353657AbiE0MPx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 08:15:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46788 "EHLO
+        Fri, 27 May 2022 08:15:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352775AbiE0MA4 (ORCPT
+        with ESMTP id S1352468AbiE0MAb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 08:00:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26107340DB;
-        Fri, 27 May 2022 04:52:51 -0700 (PDT)
+        Fri, 27 May 2022 08:00:31 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2BBFEE3A;
+        Fri, 27 May 2022 04:52:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D045161DCD;
-        Fri, 27 May 2022 11:52:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0701C385A9;
-        Fri, 27 May 2022 11:52:50 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 3603CCE251C;
+        Fri, 27 May 2022 11:52:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4455EC34100;
+        Fri, 27 May 2022 11:52:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653652371;
-        bh=D9xC7tn6/OQ/5iRy4mlmzda2gCcLi44NCVnSzSSRzbU=;
+        s=korg; t=1653652341;
+        bh=IPrm7l7Y4DEnj3K/unR0h1dsLN/bo46PUM9Qs6lbRoE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jh+pSbf4WbN8BaotTd29eXtq1ccc19qo4mUSUh2QPUphrRHvkFsQtRgOWbND2znm9
-         EsqI4c3PJo6yprVWSjaHoSJ9m7HI+PlJgIHsqpbMH2cqVgacLpcke8CfShdMEI7wta
-         DUVvfr0lBGvzmaw64B+Mzjy1ZlkoYAym8s8w9dSQ=
+        b=dbSZhSPG1Up7qXR68joGSy4PRi3vWylRBNFsROdIONnyTFCTHKF9SBKwme59iRovW
+         LYPTQuqhTs3bjXr7eBLpV7fm/NuHAdWmxxbnNKtUVhjxyJQfkYfptTz/UF34HlQ0y5
+         ta83A66Qnfljk/EP29BXu536agzrG+0uS0Mmhj50=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.10 143/163] random: help compiler out with fast_mix() by using simpler arguments
-Date:   Fri, 27 May 2022 10:50:23 +0200
-Message-Id: <20220527084848.194523755@linuxfoundation.org>
+        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Arnd Bergmann <arnd@arndb.de>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.10 122/163] ia64: define get_cycles macro for arch-override
+Date:   Fri, 27 May 2022 10:50:02 +0200
+Message-Id: <20220527084844.961664055@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
 References: <20220527084828.156494029@linuxfoundation.org>
@@ -50,92 +52,32 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 791332b3cbb080510954a4c152ce02af8832eac9 upstream.
+commit 57c0900b91d8891ab43f0e6b464d059fda51d102 upstream.
 
-Now that fast_mix() has more than one caller, gcc no longer inlines it.
-That's fine. But it also doesn't handle the compound literal argument we
-pass it very efficiently, nor does it handle the loop as well as it
-could. So just expand the code to spell out this function so that it
-generates the same code as it did before. Performance-wise, this now
-behaves as it did before the last commit. The difference in actual code
-size on x86 is 45 bytes, which is less than a cache line.
+Itanium defines a get_cycles() function, but it does not do the usual
+`#define get_cycles get_cycles` dance, making it impossible for generic
+code to see if an arch-specific function was defined. While the
+get_cycles() ifdef is not currently used, the following timekeeping
+patch in this series will depend on the macro existing (or not existing)
+when defining random_get_entropy().
 
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   44 +++++++++++++++++++++++---------------------
- 1 file changed, 23 insertions(+), 21 deletions(-)
+ arch/ia64/include/asm/timex.h |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -1031,25 +1031,30 @@ static DEFINE_PER_CPU(struct fast_pool,
-  * and therefore this has no security on its own. s represents the
-  * four-word SipHash state, while v represents a two-word input.
-  */
--static void fast_mix(unsigned long s[4], const unsigned long v[2])
-+static void fast_mix(unsigned long s[4], unsigned long v1, unsigned long v2)
- {
--	size_t i;
--
--	for (i = 0; i < 2; ++i) {
--		s[3] ^= v[i];
- #ifdef CONFIG_64BIT
--		s[0] += s[1]; s[1] = rol64(s[1], 13); s[1] ^= s[0]; s[0] = rol64(s[0], 32);
--		s[2] += s[3]; s[3] = rol64(s[3], 16); s[3] ^= s[2];
--		s[0] += s[3]; s[3] = rol64(s[3], 21); s[3] ^= s[0];
--		s[2] += s[1]; s[1] = rol64(s[1], 17); s[1] ^= s[2]; s[2] = rol64(s[2], 32);
-+#define PERM() do { \
-+	s[0] += s[1]; s[1] = rol64(s[1], 13); s[1] ^= s[0]; s[0] = rol64(s[0], 32); \
-+	s[2] += s[3]; s[3] = rol64(s[3], 16); s[3] ^= s[2]; \
-+	s[0] += s[3]; s[3] = rol64(s[3], 21); s[3] ^= s[0]; \
-+	s[2] += s[1]; s[1] = rol64(s[1], 17); s[1] ^= s[2]; s[2] = rol64(s[2], 32); \
-+} while (0)
- #else
--		s[0] += s[1]; s[1] = rol32(s[1],  5); s[1] ^= s[0]; s[0] = rol32(s[0], 16);
--		s[2] += s[3]; s[3] = rol32(s[3],  8); s[3] ^= s[2];
--		s[0] += s[3]; s[3] = rol32(s[3],  7); s[3] ^= s[0];
--		s[2] += s[1]; s[1] = rol32(s[1], 13); s[1] ^= s[2]; s[2] = rol32(s[2], 16);
-+#define PERM() do { \
-+	s[0] += s[1]; s[1] = rol32(s[1],  5); s[1] ^= s[0]; s[0] = rol32(s[0], 16); \
-+	s[2] += s[3]; s[3] = rol32(s[3],  8); s[3] ^= s[2]; \
-+	s[0] += s[3]; s[3] = rol32(s[3],  7); s[3] ^= s[0]; \
-+	s[2] += s[1]; s[1] = rol32(s[1], 13); s[1] ^= s[2]; s[2] = rol32(s[2], 16); \
-+} while (0)
- #endif
--		s[0] ^= v[i];
--	}
-+
-+	s[3] ^= v1;
-+	PERM();
-+	s[0] ^= v1;
-+	s[3] ^= v2;
-+	PERM();
-+	s[0] ^= v2;
+--- a/arch/ia64/include/asm/timex.h
++++ b/arch/ia64/include/asm/timex.h
+@@ -39,6 +39,7 @@ get_cycles (void)
+ 	ret = ia64_getreg(_IA64_REG_AR_ITC);
+ 	return ret;
  }
++#define get_cycles get_cycles
  
- #ifdef CONFIG_SMP
-@@ -1119,10 +1124,8 @@ void add_interrupt_randomness(int irq)
- 	struct pt_regs *regs = get_irq_regs();
- 	unsigned int new_count;
- 
--	fast_mix(fast_pool->pool, (unsigned long[2]){
--		entropy,
--		(regs ? instruction_pointer(regs) : _RET_IP_) ^ swab(irq)
--	});
-+	fast_mix(fast_pool->pool, entropy,
-+		 (regs ? instruction_pointer(regs) : _RET_IP_) ^ swab(irq));
- 	new_count = ++fast_pool->count;
- 
- 	if (new_count & MIX_INFLIGHT)
-@@ -1162,8 +1165,7 @@ static void add_timer_randomness(struct
- 	 * sometime after, so mix into the fast pool.
- 	 */
- 	if (in_irq()) {
--		fast_mix(this_cpu_ptr(&irq_randomness)->pool,
--			 (unsigned long[2]){ entropy, num });
-+		fast_mix(this_cpu_ptr(&irq_randomness)->pool, entropy, num);
- 	} else {
- 		spin_lock_irqsave(&input_pool.lock, flags);
- 		_mix_pool_bytes(&entropy, sizeof(entropy));
+ extern void ia64_cpu_local_tick (void);
+ extern unsigned long long ia64_native_sched_clock (void);
 
 
