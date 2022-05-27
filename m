@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AD05C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EAECC433F5
 	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:17:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353525AbiE0MPV (ORCPT
+        id S1353365AbiE0MPL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 08:15:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49848 "EHLO
+        Fri, 27 May 2022 08:15:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352403AbiE0MA1 (ORCPT
+        with ESMTP id S1352712AbiE0MAu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 08:00:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D840CD12E;
-        Fri, 27 May 2022 04:52:24 -0700 (PDT)
+        Fri, 27 May 2022 08:00:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D55238BC7;
+        Fri, 27 May 2022 04:52:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 38BAB61DD0;
-        Fri, 27 May 2022 11:52:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A7C9C385A9;
-        Fri, 27 May 2022 11:52:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E780A61D9F;
+        Fri, 27 May 2022 11:52:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0FBFC385A9;
+        Fri, 27 May 2022 11:52:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653652335;
-        bh=N+njQa8dbPvGRCd+m8kR8WWw+lhJD4cHuiN1wI+6arY=;
+        s=korg; t=1653652365;
+        bh=ttMzrB/0rNkJjH7iM1jtjNb98Lhq7MGGZDMluDL9J0g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FD+27LUXrEN7IC9MbWDVCTEtUCSeTSTWpgF4DTWnKSbQTCH4EOXsy0B5ME1eUvUN7
-         dFO2OaBt7dTgfkDupzHu62ITsjwYWLOujXpEEKl/l52NDeKKGLdFS7fanDq9yQ/oSL
-         QXRDNCyAAWnMFI+DIZ1C9UaLOiWRd+gEyODlKDFA=
+        b=pb2s6Y6MdLGJ+Qrv95aTSY25ooqmJcDnUJnEX7ednQ4yjwjs+3af9NCuMaQhhOXp7
+         4zWhMhIvG6NSYtypsfFLKffOoefLrCyF4vxnO70OxYXfzRhkB5vRUsg2tkq7ukIHm9
+         p6pvitbZHgj+YSJHuRLzwfFzYGiMJYLVnpIbdIBY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>,
+        Filipe Manana <fdmanana@suse.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Borislav Petkov <bp@alien8.de>, Theodore Tso <tytso@mit.edu>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.15 111/145] riscv: use fallback for random_get_entropy() instead of zero
-Date:   Fri, 27 May 2022 10:50:12 +0200
-Message-Id: <20220527084904.029665777@linuxfoundation.org>
+Subject: [PATCH 5.10 142/163] random: do not use input pool from hard IRQs
+Date:   Fri, 27 May 2022 10:50:22 +0200
+Message-Id: <20220527084848.047372120@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084850.364560116@linuxfoundation.org>
-References: <20220527084850.364560116@linuxfoundation.org>
+In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
+References: <20220527084828.156494029@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -54,38 +54,145 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 6d01238623faa9425f820353d2066baf6c9dc872 upstream.
+commit e3e33fc2ea7fcefd0d761db9d6219f83b4248f5c upstream.
 
-In the event that random_get_entropy() can't access a cycle counter or
-similar, falling back to returning 0 is really not the best we can do.
-Instead, at least calling random_get_entropy_fallback() would be
-preferable, because that always needs to return _something_, even
-falling back to jiffies eventually. It's not as though
-random_get_entropy_fallback() is super high precision or guaranteed to
-be entropic, but basically anything that's not zero all the time is
-better than returning zero all the time.
+Years ago, a separate fast pool was added for interrupts, so that the
+cost associated with taking the input pool spinlocks and mixing into it
+would be avoided in places where latency is critical. However, one
+oversight was that add_input_randomness() and add_disk_randomness()
+still sometimes are called directly from the interrupt handler, rather
+than being deferred to a thread. This means that some unlucky interrupts
+will be caught doing a blake2s_compress() call and potentially spinning
+on input_pool.lock, which can also be taken by unprivileged users by
+writing into /dev/urandom.
+
+In order to fix this, add_timer_randomness() now checks whether it is
+being called from a hard IRQ and if so, just mixes into the per-cpu IRQ
+fast pool using fast_mix(), which is much faster and can be done
+lock-free. A nice consequence of this, as well, is that it means hard
+IRQ context FPU support is likely no longer useful.
+
+The entropy estimation algorithm used by add_timer_randomness() is also
+somewhat different than the one used for add_interrupt_randomness(). The
+former looks at deltas of deltas of deltas, while the latter just waits
+for 64 interrupts for one bit or for one second since the last bit. In
+order to bridge these, and since add_interrupt_randomness() runs after
+an add_timer_randomness() that's called from hard IRQ, we add to the
+fast pool credit the related amount, and then subtract one to account
+for add_interrupt_randomness()'s contribution.
+
+A downside of this, however, is that the num argument is potentially
+attacker controlled, which puts a bit more pressure on the fast_mix()
+sponge to do more than it's really intended to do. As a mitigating
+factor, the first 96 bits of input aren't attacker controlled (a cycle
+counter followed by zeros), which means it's essentially two rounds of
+siphash rather than one, which is somewhat better. It's also not that
+much different from add_interrupt_randomness()'s use of the irq stack
+instruction pointer register.
 
 Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Paul Walmsley <paul.walmsley@sifive.com>
-Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
-Reviewed-by: Palmer Dabbelt <palmer@rivosinc.com>
+Cc: Filipe Manana <fdmanana@suse.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/riscv/include/asm/timex.h |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/char/random.c |   51 +++++++++++++++++++++++++++++++++++---------------
+ 1 file changed, 36 insertions(+), 15 deletions(-)
 
---- a/arch/riscv/include/asm/timex.h
-+++ b/arch/riscv/include/asm/timex.h
-@@ -41,7 +41,7 @@ static inline u32 get_cycles_hi(void)
- static inline unsigned long random_get_entropy(void)
- {
- 	if (unlikely(clint_time_val == NULL))
--		return 0;
-+		return random_get_entropy_fallback();
- 	return get_cycles();
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -1086,6 +1086,7 @@ static void mix_interrupt_randomness(str
+ 	 * we don't wind up "losing" some.
+ 	 */
+ 	unsigned long pool[2];
++	unsigned int count;
+ 
+ 	/* Check to see if we're running on the wrong CPU due to hotplug. */
+ 	local_irq_disable();
+@@ -1099,12 +1100,13 @@ static void mix_interrupt_randomness(str
+ 	 * consistent view, before we reenable irqs again.
+ 	 */
+ 	memcpy(pool, fast_pool->pool, sizeof(pool));
++	count = fast_pool->count;
+ 	fast_pool->count = 0;
+ 	fast_pool->last = jiffies;
+ 	local_irq_enable();
+ 
+ 	mix_pool_bytes(pool, sizeof(pool));
+-	credit_init_bits(1);
++	credit_init_bits(max(1u, (count & U16_MAX) / 64));
+ 
+ 	memzero_explicit(pool, sizeof(pool));
  }
- #define random_get_entropy()	random_get_entropy()
+@@ -1144,22 +1146,30 @@ struct timer_rand_state {
+ 
+ /*
+  * This function adds entropy to the entropy "pool" by using timing
+- * delays.  It uses the timer_rand_state structure to make an estimate
+- * of how many bits of entropy this call has added to the pool.
+- *
+- * The number "num" is also added to the pool - it should somehow describe
+- * the type of event which just happened.  This is currently 0-255 for
+- * keyboard scan codes, and 256 upwards for interrupts.
++ * delays. It uses the timer_rand_state structure to make an estimate
++ * of how many bits of entropy this call has added to the pool. The
++ * value "num" is also added to the pool; it should somehow describe
++ * the type of event that just happened.
+  */
+ static void add_timer_randomness(struct timer_rand_state *state, unsigned int num)
+ {
+ 	unsigned long entropy = random_get_entropy(), now = jiffies, flags;
+ 	long delta, delta2, delta3;
++	unsigned int bits;
+ 
+-	spin_lock_irqsave(&input_pool.lock, flags);
+-	_mix_pool_bytes(&entropy, sizeof(entropy));
+-	_mix_pool_bytes(&num, sizeof(num));
+-	spin_unlock_irqrestore(&input_pool.lock, flags);
++	/*
++	 * If we're in a hard IRQ, add_interrupt_randomness() will be called
++	 * sometime after, so mix into the fast pool.
++	 */
++	if (in_irq()) {
++		fast_mix(this_cpu_ptr(&irq_randomness)->pool,
++			 (unsigned long[2]){ entropy, num });
++	} else {
++		spin_lock_irqsave(&input_pool.lock, flags);
++		_mix_pool_bytes(&entropy, sizeof(entropy));
++		_mix_pool_bytes(&num, sizeof(num));
++		spin_unlock_irqrestore(&input_pool.lock, flags);
++	}
+ 
+ 	if (crng_ready())
+ 		return;
+@@ -1190,11 +1200,22 @@ static void add_timer_randomness(struct
+ 		delta = delta3;
+ 
+ 	/*
+-	 * delta is now minimum absolute delta.
+-	 * Round down by 1 bit on general principles,
+-	 * and limit entropy estimate to 12 bits.
++	 * delta is now minimum absolute delta. Round down by 1 bit
++	 * on general principles, and limit entropy estimate to 11 bits.
++	 */
++	bits = min(fls(delta >> 1), 11);
++
++	/*
++	 * As mentioned above, if we're in a hard IRQ, add_interrupt_randomness()
++	 * will run after this, which uses a different crediting scheme of 1 bit
++	 * per every 64 interrupts. In order to let that function do accounting
++	 * close to the one in this function, we credit a full 64/64 bit per bit,
++	 * and then subtract one to account for the extra one added.
+ 	 */
+-	credit_init_bits(min_t(unsigned int, fls(delta >> 1), 11));
++	if (in_irq())
++		this_cpu_ptr(&irq_randomness)->count += max(1u, bits * 64) - 1;
++	else
++		credit_init_bits(bits);
+ }
+ 
+ void add_input_randomness(unsigned int type, unsigned int code,
 
 
