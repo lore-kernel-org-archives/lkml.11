@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 320B1C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11252C433EF
 	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:04:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352460AbiE0MDo (ORCPT
+        id S1350758AbiE0MDh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 08:03:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55314 "EHLO
+        Fri, 27 May 2022 08:03:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352481AbiE0LzY (ORCPT
+        with ESMTP id S1352450AbiE0LzW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:55:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 103FF14AF73;
-        Fri, 27 May 2022 04:48:34 -0700 (PDT)
+        Fri, 27 May 2022 07:55:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B1B715AB16;
+        Fri, 27 May 2022 04:48:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 74CB5B824D6;
-        Fri, 27 May 2022 11:48:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB607C34100;
-        Fri, 27 May 2022 11:48:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C883961D9F;
+        Fri, 27 May 2022 11:48:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2EC1C34113;
+        Fri, 27 May 2022 11:48:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653652112;
-        bh=vtFNrDwG4XkEmWxVaHM5wkzf3qnqfc1b2p90edXAux0=;
+        s=korg; t=1653652109;
+        bh=lnFjtwLUDdubcl79VcwkRkWPLGZJDO44WzGc606Jztc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PLoL+GbSBJfvSZ6lTsl3XFrkWiFGkkjyFTeAYr30a8KUSBcSjlv2mrGR9pdE2gGe4
-         3Uu3Iv8yB4UDvHZHBkzzGjIWuE2V3eOi2js1pJg7QWUySgy8OlWjeyPtVrDgzNTT9H
-         hST2mT1FMGhbOLuhEDmRjiQ43rbkHV8kIvyCWMKU=
+        b=WBIekkopKjRYQTq3S6IZD8EMvVfNXooJ6IgRXrmpH1mehCRJLeaIqGii4gbN7f8zM
+         wCxsJ7rw/LXGNmYC8Fh/PqO9QZBt6U6tMx9OW6DP+0RLbmB1+TOu7vM3Q4EQnSmLrI
+         Zu1X63cdd7Hp8YQmFoWU2JVkcPLsZWLN6Oa/okW8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
         Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.15 074/145] random: do not take pool spinlock at boot
-Date:   Fri, 27 May 2022 10:49:35 +0200
-Message-Id: <20220527084859.513239128@linuxfoundation.org>
+Subject: [PATCH 5.10 098/163] random: only wake up writers after zap if threshold was passed
+Date:   Fri, 27 May 2022 10:49:38 +0200
+Message-Id: <20220527084841.587135020@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084850.364560116@linuxfoundation.org>
-References: <20220527084850.364560116@linuxfoundation.org>
+In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
+References: <20220527084828.156494029@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,35 +52,32 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit afba0b80b977b2a8f16234f2acd982f82710ba33 upstream.
+commit a3f9e8910e1584d7725ef7d5ac870920d42d0bb4 upstream.
 
-Since rand_initialize() is run while interrupts are still off and
-nothing else is running, we don't need to repeatedly take and release
-the pool spinlock, especially in the RDSEED loop.
+The only time that we need to wake up /dev/random writers on
+RNDCLEARPOOL/RNDZAPPOOL is when we're changing from a value that is
+greater than or equal to POOL_MIN_BITS to zero, because if we're
+changing from below POOL_MIN_BITS to zero, the writers are already
+unblocked.
 
-Reviewed-by: Eric Biggers <ebiggers@google.com>
+Cc: Theodore Ts'o <tytso@mit.edu>
 Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/char/random.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -978,10 +978,10 @@ int __init rand_initialize(void)
- 			rv = random_get_entropy();
- 			arch_init = false;
+@@ -1582,7 +1582,7 @@ static long random_ioctl(struct file *f,
+ 		 */
+ 		if (!capable(CAP_SYS_ADMIN))
+ 			return -EPERM;
+-		if (xchg(&input_pool.entropy_count, 0)) {
++		if (xchg(&input_pool.entropy_count, 0) >= POOL_MIN_BITS) {
+ 			wake_up_interruptible(&random_write_wait);
+ 			kill_fasync(&fasync, SIGIO, POLL_OUT);
  		}
--		mix_pool_bytes(&rv, sizeof(rv));
-+		_mix_pool_bytes(&rv, sizeof(rv));
- 	}
--	mix_pool_bytes(&now, sizeof(now));
--	mix_pool_bytes(utsname(), sizeof(*(utsname())));
-+	_mix_pool_bytes(&now, sizeof(now));
-+	_mix_pool_bytes(utsname(), sizeof(*(utsname())));
- 
- 	extract_entropy(base_crng.key, sizeof(base_crng.key));
- 	++base_crng.generation;
 
 
