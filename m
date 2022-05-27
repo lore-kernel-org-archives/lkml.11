@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1568AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:40:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3256BC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:40:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351544AbiE0Lkq (ORCPT
+        id S1345158AbiE0Lkv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 07:40:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45688 "EHLO
+        Fri, 27 May 2022 07:40:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351677AbiE0Lj7 (ORCPT
+        with ESMTP id S1351625AbiE0Lj4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:39:59 -0400
+        Fri, 27 May 2022 07:39:56 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CA5F13B8E2;
-        Fri, 27 May 2022 04:38:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63B0D134E04;
+        Fri, 27 May 2022 04:38:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E6319B824DC;
-        Fri, 27 May 2022 11:38:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B947C385A9;
-        Fri, 27 May 2022 11:38:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C6258B82466;
+        Fri, 27 May 2022 11:38:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33E98C385A9;
+        Fri, 27 May 2022 11:38:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653651536;
-        bh=aARjXd9mcvbcdHWE51vJ2pbllbwuZ37CccrqNv/hH70=;
+        s=korg; t=1653651530;
+        bh=mC/9GikzS8f2FfdEMT+0hg7kDAl1vwOz2+EJxxrpi88=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Our8FRp6Cn5pCkcxaqtWsZoJ2Y/hL2h3MCiuB2z76svoqS+p34ts5KaEJiopNTCX4
-         21OPFSsrZ+t6WAp4l0LihK1rzkrMyllj7tdc0+B7sR7f+OdTWF8BK2NuDx/oJRllJa
-         wxOWauNBvtrE8A/lj6Ii9Oz9DjqmsTve9/c0kvRs=
+        b=RYDW+L9ZEUclCrq5o40EGGN/EIJF8EyT8p2hPdt4fh/EHeDRDH8M9bxHwPRhc+/yS
+         4MWUTgrmZWZHV7z+wduTzmaz+Kv7N+tqZBpgMzJjeX++vz/pmnqPsQY6aFC5QyJ2fx
+         3eWgEQUYN1if8h08iAR157S9mzyprYcdAYo38Aig=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.15 014/145] random: do not sign extend bytes for rotation when mixing
-Date:   Fri, 27 May 2022 10:48:35 +0200
-Message-Id: <20220527084852.723796949@linuxfoundation.org>
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.17 055/111] random: check for signal and try earlier when generating entropy
+Date:   Fri, 27 May 2022 10:49:27 +0200
+Message-Id: <20220527084827.253743083@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084850.364560116@linuxfoundation.org>
-References: <20220527084850.364560116@linuxfoundation.org>
+In-Reply-To: <20220527084819.133490171@linuxfoundation.org>
+References: <20220527084819.133490171@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,31 +52,56 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 0d9488ffbf2faddebc6bac055bfa6c93b94056a3 upstream.
+commit 3e504d2026eb6c8762cd6040ae57db166516824a upstream.
 
-By using `char` instead of `unsigned char`, certain platforms will sign
-extend the byte when `w = rol32(*bytes++, input_rotate)` is called,
-meaning that bit 7 is overrepresented when mixing. This isn't a real
-problem (unless the mixer itself is already broken) since it's still
-invertible, but it's not quite correct either. Fix this by using an
-explicit unsigned type.
+Rather than waiting a full second in an interruptable waiter before
+trying to generate entropy, try to generate entropy first and wait
+second. While waiting one second might give an extra second for getting
+entropy from elsewhere, we're already pretty late in the init process
+here, and whatever else is generating entropy will still continue to
+contribute. This has implications on signal handling: we call
+try_to_generate_entropy() from wait_for_random_bytes(), and
+wait_for_random_bytes() always uses wait_event_interruptible_timeout()
+when waiting, since it's called by userspace code in restartable
+contexts, where signals can pend. Since try_to_generate_entropy() now
+runs first, if a signal is pending, it's necessary for
+try_to_generate_entropy() to check for signals, since it won't hit the
+wait until after try_to_generate_entropy() has returned. And even before
+this change, when entering a busy loop in try_to_generate_entropy(), we
+should have been checking to see if any signals are pending, so that a
+process doesn't get stuck in that loop longer than expected.
 
+Cc: Theodore Ts'o <tytso@mit.edu>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/char/random.c |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -547,7 +547,7 @@ static void _mix_pool_bytes(struct entro
- 	unsigned long i, tap1, tap2, tap3, tap4, tap5;
- 	int input_rotate;
- 	int wordmask = r->poolinfo->poolwords - 1;
--	const char *bytes = in;
-+	const unsigned char *bytes = in;
- 	__u32 w;
+@@ -127,10 +127,11 @@ int wait_for_random_bytes(void)
+ {
+ 	while (!crng_ready()) {
+ 		int ret;
++
++		try_to_generate_entropy();
+ 		ret = wait_event_interruptible_timeout(crng_init_wait, crng_ready(), HZ);
+ 		if (ret)
+ 			return ret > 0 ? 0 : ret;
+-		try_to_generate_entropy();
+ 	}
+ 	return 0;
+ }
+@@ -1369,7 +1370,7 @@ static void try_to_generate_entropy(void
+ 		return;
  
- 	tap1 = r->poolinfo->tap1;
+ 	timer_setup_on_stack(&stack.timer, entropy_timer, 0);
+-	while (!crng_ready()) {
++	while (!crng_ready() && !signal_pending(current)) {
+ 		if (!timer_pending(&stack.timer))
+ 			mod_timer(&stack.timer, jiffies + 1);
+ 		mix_pool_bytes(&stack.cycles, sizeof(stack.cycles));
 
 
