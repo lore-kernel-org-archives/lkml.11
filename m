@@ -2,322 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F498C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB39AC4321E
 	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:56:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352721AbiE0Lzi (ORCPT
+        id S1352855AbiE0Lzm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 07:55:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41024 "EHLO
+        Fri, 27 May 2022 07:55:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352786AbiE0Luv (ORCPT
+        with ESMTP id S1352798AbiE0Lux (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:50:51 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0409132741
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 04:45:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653651918; x=1685187918;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Ku6DON7XdpvGJoLwbB79r2uuBcp/VCl2MGDwRymTj14=;
-  b=PolJLCZ1nCig/j3RiufAnZVDVWDZsUqhfCZsS9HP/PvmfbGJSjthLVwB
-   U3ro7FxLihJl/7N+2f9Hk7C0UECiL4FHpBt3/6N+Y5DRla3/4QkJHPccm
-   +O3336KQw+YZWhKpmF/MSjH06FZxEqFUYMbYOb+1dCGQHp8PuyiayJedi
-   BhGrtqB5YmenkgihGnUbWNRCz/jSV6Nicu3oiwgzM9dQn0mNMcLQ2mzbi
-   mJj9SKqMkxwfT+n4UHLsOjOF2hMyvpxAV1bspWgxF5kpw8fZoEDrYQe0i
-   X2+dYH3z8nMpXMy3va7Q0xZiftU1dFANdFJnw+7wDVPKGKc/fgoFyQ48H
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10359"; a="274186151"
-X-IronPort-AV: E=Sophos;i="5.91,255,1647327600"; 
-   d="scan'208";a="274186151"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2022 04:45:18 -0700
-X-IronPort-AV: E=Sophos;i="5.91,255,1647327600"; 
-   d="scan'208";a="603835273"
-Received: from jtongex-mobl.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.254.35.135])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2022 04:45:14 -0700
-Message-ID: <dcd9a112fd5761d9cd2c741e52e7ecb3cf06a66e.camel@intel.com>
-Subject: Re: [PATCH v7 1/5] x86/tdx: Add TDX Guest attestation interface
- driver
-From:   Kai Huang <kai.huang@intel.com>
-To:     Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org
-Cc:     "H . Peter Anvin" <hpa@zytor.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Wander Lairson Costa <wander@redhat.com>,
-        Isaku Yamahata <isaku.yamahata@gmail.com>,
-        marcelo.cerri@canonical.com, tim.gardner@canonical.com,
-        khalid.elmously@canonical.com, philip.cox@canonical.com,
-        linux-kernel@vger.kernel.org
-Date:   Fri, 27 May 2022 23:45:12 +1200
-In-Reply-To: <20220524040517.703581-2-sathyanarayanan.kuppuswamy@linux.intel.com>
-References: <20220524040517.703581-1-sathyanarayanan.kuppuswamy@linux.intel.com>
-         <20220524040517.703581-2-sathyanarayanan.kuppuswamy@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        Fri, 27 May 2022 07:50:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 260FF1157DC;
+        Fri, 27 May 2022 04:45:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B6EF761D5C;
+        Fri, 27 May 2022 11:45:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6B99C385A9;
+        Fri, 27 May 2022 11:45:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1653651928;
+        bh=juTMfNnHEkEI/4BATlKimk/kcIE2Ppl9SYmbPPmO7cs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=DnKR8p7h/hT9fQQ6j1LPd5EyK50mCq3TnL1D0naK0zfJ0mHNIYBM50g/VUwkYRYGV
+         wPW3WE7rQgzuCEUjhYS6BFFpKAub2zKbbTlfJYoU8gV5UoJr8GNCQ9ECtLvXQTVHMg
+         LYzGigc0rs1kEz3SG6oUPDWLnqloUHAb3bP/pg2I=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        Eric Biggers <ebiggers@google.com>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.15 058/145] random: tie batched entropy generation to base_crng generation
+Date:   Fri, 27 May 2022 10:49:19 +0200
+Message-Id: <20220527084857.700085331@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220527084850.364560116@linuxfoundation.org>
+References: <20220527084850.364560116@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-05-23 at 21:05 -0700, Kuppuswamy Sathyanarayanan wrote:
-> In TDX guest, attestation is used to verify the trustworthiness of a TD
-> to other entities before provisioning secrets to the TD.
-> 
-> One usage example is, when a TD guest uses encrypted drive and if the
-> decryption keys required to access the drive are stored in a secure 3rd
-> party keyserver, the key server can use attestation to verify TD's
-> trustworthiness and release the decryption keys to the TD.
-> 
-> The attestation process consists of two steps: TDREPORT generation and
-> Quote generation.
-> 
-> TDREPORT (TDREPORT_STRUCT) is a fixed-size data structure generated by
-> the TDX module which contains TD-specific information (such as TD
-> measurements), platform security version, and the MAC to protect the
-> integrity of the TDREPORT. The TD kernel uses TDCALL[TDG.MR.REPORT] to
-> get the TDREPORT from the TDX module. A user-provided 64-Byte
-> REPORTDATA is used as input and included in the TDREPORT. Typically it
-> can be some nonce provided by attestation service so the TDREPORT can
-> be verified uniquely. More details about TDREPORT can be found in
-> Intel TDX Module specification, section titled "TDG.MR.REPORT Leaf".
-> 
-> TDREPORT can only be verified on local platform as the MAC key is bound
-> to the platform. To support remote verification of the TDREPORT, TDX
-> leverages Intel SGX Quote Enclave (QE) to verify the TDREPORT locally
-> and convert it to a remote verifiable Quote.
-> 
-> After getting the TDREPORT, the second step of the attestation process
-> is to send it to the QE to generate the Quote. TDX doesn't support SGX
-> inside the TD, so the QE can be deployed in the host, or in another
-> legacy VM with SGX support. How to send the TDREPORT to QE and receive
-> the Quote is implementation and deployment specific.
-> 
-> Implement a basic attestation driver to allow TD userspace to get the
-> TDREPORT. The TD userspace attestation software can get the TDREPORT
-> and then choose whatever communication channel available (i.e. vsock)
-> to send the TDREPORT to QE and receive the Quote.
-> 
-> Also note that explicit access permissions are not enforced in this
-> driver because the quote and measurements are not a secret. However
-> the access permissions of the device node can be used to set any
-> desired access policy. The udev default is usually root access
-> only.
-> 
-> Operations like getting TDREPORT or Quote generation involves sending
-> a blob of data as input and getting another blob of data as output. It
-> was considered to use a sysfs interface for this, but it doesn't fit
-> well into the standard sysfs model for configuring values. It would be
-> possible to do read/write on files, but it would need multiple file
-> descriptors, which would be somewhat messy. IOCTLs seems to be the best
-> fitting and simplest model for this use case. Also, the REPORTDATA used
-> in TDREPORT generation can possibly come from attestation service to
-> uniquely verify the Quote (like per instance verification). In such
-> case, since REPORTDATA is a secret, using sysfs to share it is insecure
-> compared to sending it via IOCTL.
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-Acked-by: Kai Huang <kai.huang@intel.com>
+commit 0791e8b655cc373718f0f58800fdc625a3447ac5 upstream.
 
-> 
-> Reviewed-by: Tony Luck <tony.luck@intel.com>
-> Reviewed-by: Andi Kleen <ak@linux.intel.com>
-> Acked-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-> Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-> ---
->  arch/x86/coco/tdx/Makefile      |   2 +-
->  arch/x86/coco/tdx/attest.c      | 118 ++++++++++++++++++++++++++++++++
->  arch/x86/include/uapi/asm/tdx.h |  42 ++++++++++++
->  3 files changed, 161 insertions(+), 1 deletion(-)
->  create mode 100644 arch/x86/coco/tdx/attest.c
->  create mode 100644 arch/x86/include/uapi/asm/tdx.h
-> 
-> diff --git a/arch/x86/coco/tdx/Makefile b/arch/x86/coco/tdx/Makefile
-> index 46c55998557d..d2db3e6770e5 100644
-> --- a/arch/x86/coco/tdx/Makefile
-> +++ b/arch/x86/coco/tdx/Makefile
-> @@ -1,3 +1,3 @@
->  # SPDX-License-Identifier: GPL-2.0
->  
-> -obj-y += tdx.o tdcall.o
-> +obj-y += tdx.o tdcall.o attest.o
-> diff --git a/arch/x86/coco/tdx/attest.c b/arch/x86/coco/tdx/attest.c
-> new file mode 100644
-> index 000000000000..24db0bad4923
-> --- /dev/null
-> +++ b/arch/x86/coco/tdx/attest.c
-> @@ -0,0 +1,118 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * attest.c - TDX guest attestation interface driver.
-> + *
-> + * Implements user interface to trigger attestation process.
-> + *
-> + * Copyright (C) 2022 Intel Corporation
-> + *
-> + */
-> +
-> +#define pr_fmt(fmt) "x86/tdx: attest: " fmt
-> +
-> +#include <linux/miscdevice.h>
-> +#include <linux/mm.h>
-> +#include <linux/io.h>
-> +#include <asm/tdx.h>
-> +#include <uapi/asm/tdx.h>
-> +
-> +#define DRIVER_NAME "tdx-attest"
-> +
-> +/* TDREPORT module call leaf ID */
-> +#define TDX_GET_REPORT			4
-> +
-> +static struct miscdevice miscdev;
-> +
-> +static long tdx_get_report(void __user *argp)
-> +{
-> +	void *reportdata = NULL, *tdreport = NULL;
-> +	long ret;
-> +
-> +	/* Allocate buffer space for REPORTDATA */
-> +	reportdata = kmalloc(TDX_REPORTDATA_LEN, GFP_KERNEL);
-> +	if (!reportdata)
-> +		return -ENOMEM;
-> +
-> +	/* Allocate buffer space for TDREPORT */
-> +	tdreport = kmalloc(TDX_REPORT_LEN, GFP_KERNEL);
-> +	if (!tdreport) {
-> +		ret = -ENOMEM;
-> +		goto out;
-> +	}
-> +
-> +	/* Copy REPORTDATA from the user buffer */
-> +	if (copy_from_user(reportdata, argp, TDX_REPORTDATA_LEN)) {
-> +		ret = -EFAULT;
-> +		goto out;
-> +	}
-> +
-> +	/*
-> +	 * Generate TDREPORT using "TDG.MR.REPORT" TDCALL.
-> +	 *
-> +	 * Get the TDREPORT using REPORTDATA as input. Refer to
-> +	 * section 22.3.3 TDG.MR.REPORT leaf in the TDX Module 1.0
-> +	 * Specification for detailed information.
-> +	 */
-> +	ret = __tdx_module_call(TDX_GET_REPORT, virt_to_phys(tdreport),
-> +				virt_to_phys(reportdata), 0, 0, NULL);
-> +	if (ret) {
-> +		pr_debug("TDREPORT TDCALL failed, status:%lx\n", ret);
-> +		ret = -EIO;
-> +		goto out;
-> +	}
-> +
-> +	/* Copy TDREPORT back to the user buffer */
-> +	if (copy_to_user(argp, tdreport, TDX_REPORT_LEN))
-> +		ret = -EFAULT;
-> +
-> +out:
-> +	kfree(reportdata);
-> +	kfree(tdreport);
-> +	return ret;
-> +}
-> +
-> +static long tdx_attest_ioctl(struct file *file, unsigned int cmd,
-> +			     unsigned long arg)
-> +{
-> +	void __user *argp = (void __user *)arg;
-> +	long ret = -EINVAL;
-> +
-> +	switch (cmd) {
-> +	case TDX_CMD_GET_REPORT:
-> +		ret = tdx_get_report(argp);
-> +		break;
-> +	default:
-> +		pr_debug("cmd %d not supported\n", cmd);
-> +		break;
-> +	}
-> +
-> +	return ret;
-> +}
-> +
-> +static const struct file_operations tdx_attest_fops = {
-> +	.owner		= THIS_MODULE,
-> +	.unlocked_ioctl	= tdx_attest_ioctl,
-> +	.llseek		= no_llseek,
-> +};
-> +
-> +static int __init tdx_attestation_init(void)
-> +{
-> +	int ret;
-> +
-> +	/* Make sure we are in a valid TDX platform */
-> +	if (!cpu_feature_enabled(X86_FEATURE_TDX_GUEST))
-> +		return -EIO;
-> +
-> +	miscdev.name = DRIVER_NAME;
-> +	miscdev.minor = MISC_DYNAMIC_MINOR;
-> +	miscdev.fops = &tdx_attest_fops;
-> +
-> +	ret = misc_register(&miscdev);
-> +	if (ret) {
-> +		pr_err("misc device registration failed\n");
-> +		return ret;
-> +	}
-> +
-> +	return 0;
-> +}
-> +device_initcall(tdx_attestation_init)
-> diff --git a/arch/x86/include/uapi/asm/tdx.h b/arch/x86/include/uapi/asm/tdx.h
-> new file mode 100644
-> index 000000000000..8b57dea67eab
-> --- /dev/null
-> +++ b/arch/x86/include/uapi/asm/tdx.h
-> @@ -0,0 +1,42 @@
-> +/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-> +#ifndef _UAPI_ASM_X86_TDX_H
-> +#define _UAPI_ASM_X86_TDX_H
-> +
-> +#include <linux/types.h>
-> +#include <linux/ioctl.h>
-> +
-> +/* Length of the REPORTDATA used in TDG.MR.REPORT TDCALL */
-> +#define TDX_REPORTDATA_LEN		64
-> +
-> +/* Length of TDREPORT used in TDG.MR.REPORT TDCALL */
-> +#define TDX_REPORT_LEN			1024
-> +
-> +/**
-> + * struct tdx_report_req: Get TDREPORT using REPORTDATA as input.
-> + *
-> + * @reportdata : User-defined 64-Byte REPORTDATA to be included into
-> + *		 TDREPORT. Typically it can be some nonce provided by
-> + *		 attestation service, so the generated TDREPORT can be
-> + *		 uniquely verified.
-> + * @tdreport   : TDREPORT output from TDCALL[TDG.MR.REPORT] of size
-> + *		 TDX_REPORT_LEN.
-> + *
-> + * Used in TDX_CMD_GET_REPORT IOCTL request.
-> + */
-> +struct tdx_report_req {
-> +	union {
-> +		__u8 reportdata[TDX_REPORTDATA_LEN];
-> +		__u8 tdreport[TDX_REPORT_LEN];
-> +	};
-> +};
-> +
-> +/*
-> + * TDX_CMD_GET_REPORT - Get TDREPORT using TDCALL[TDG.MR.REPORT]
-> + *
-> + * Return 0 on success, -EIO on TDCALL execution failure, and
-> + * standard errno on other general error cases.
-> + *
-> + */
-> +#define TDX_CMD_GET_REPORT		_IOWR('T', 0x01, struct tdx_report_req)
-> +
-> +#endif /* _UAPI_ASM_X86_TDX_H */
+Now that we have an explicit base_crng generation counter, we don't need
+a separate one for batched entropy. Rather, we can just move the
+generation forward every time we change crng_init state or update the
+base_crng key.
+
+Cc: Theodore Ts'o <tytso@mit.edu>
+Reviewed-by: Eric Biggers <ebiggers@google.com>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/char/random.c |   29 ++++++++---------------------
+ 1 file changed, 8 insertions(+), 21 deletions(-)
+
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -430,8 +430,6 @@ static DEFINE_PER_CPU(struct crng, crngs
+ 
+ static DECLARE_WAIT_QUEUE_HEAD(crng_init_wait);
+ 
+-static void invalidate_batched_entropy(void);
+-
+ /*
+  * crng_fast_load() can be called by code in the interrupt service
+  * path.  So we can't afford to dilly-dally. Returns the number of
+@@ -454,7 +452,7 @@ static size_t crng_fast_load(const void
+ 		src++; crng_init_cnt++; len--; ret++;
+ 	}
+ 	if (crng_init_cnt >= CRNG_INIT_CNT_THRESH) {
+-		invalidate_batched_entropy();
++		++base_crng.generation;
+ 		crng_init = 1;
+ 	}
+ 	spin_unlock_irqrestore(&base_crng.lock, flags);
+@@ -531,7 +529,6 @@ static void crng_reseed(void)
+ 	WRITE_ONCE(base_crng.generation, next_gen);
+ 	WRITE_ONCE(base_crng.birth, jiffies);
+ 	if (crng_init < 2) {
+-		invalidate_batched_entropy();
+ 		crng_init = 2;
+ 		finalize_init = true;
+ 	}
+@@ -1256,8 +1253,9 @@ int __init rand_initialize(void)
+ 	mix_pool_bytes(utsname(), sizeof(*(utsname())));
+ 
+ 	extract_entropy(base_crng.key, sizeof(base_crng.key));
++	++base_crng.generation;
++
+ 	if (arch_init && trust_cpu && crng_init < 2) {
+-		invalidate_batched_entropy();
+ 		crng_init = 2;
+ 		pr_notice("crng init done (trusting CPU's manufacturer)\n");
+ 	}
+@@ -1597,8 +1595,6 @@ struct ctl_table random_table[] = {
+ };
+ #endif	/* CONFIG_SYSCTL */
+ 
+-static atomic_t batch_generation = ATOMIC_INIT(0);
+-
+ struct batched_entropy {
+ 	union {
+ 		/*
+@@ -1612,8 +1608,8 @@ struct batched_entropy {
+ 		u32 entropy_u32[CHACHA_BLOCK_SIZE * 3 / (2 * sizeof(u32))];
+ 	};
+ 	local_lock_t lock;
++	unsigned long generation;
+ 	unsigned int position;
+-	int generation;
+ };
+ 
+ /*
+@@ -1633,14 +1629,14 @@ u64 get_random_u64(void)
+ 	unsigned long flags;
+ 	struct batched_entropy *batch;
+ 	static void *previous;
+-	int next_gen;
++	unsigned long next_gen;
+ 
+ 	warn_unseeded_randomness(&previous);
+ 
+ 	local_lock_irqsave(&batched_entropy_u64.lock, flags);
+ 	batch = raw_cpu_ptr(&batched_entropy_u64);
+ 
+-	next_gen = atomic_read(&batch_generation);
++	next_gen = READ_ONCE(base_crng.generation);
+ 	if (batch->position >= ARRAY_SIZE(batch->entropy_u64) ||
+ 	    next_gen != batch->generation) {
+ 		_get_random_bytes(batch->entropy_u64, sizeof(batch->entropy_u64));
+@@ -1667,14 +1663,14 @@ u32 get_random_u32(void)
+ 	unsigned long flags;
+ 	struct batched_entropy *batch;
+ 	static void *previous;
+-	int next_gen;
++	unsigned long next_gen;
+ 
+ 	warn_unseeded_randomness(&previous);
+ 
+ 	local_lock_irqsave(&batched_entropy_u32.lock, flags);
+ 	batch = raw_cpu_ptr(&batched_entropy_u32);
+ 
+-	next_gen = atomic_read(&batch_generation);
++	next_gen = READ_ONCE(base_crng.generation);
+ 	if (batch->position >= ARRAY_SIZE(batch->entropy_u32) ||
+ 	    next_gen != batch->generation) {
+ 		_get_random_bytes(batch->entropy_u32, sizeof(batch->entropy_u32));
+@@ -1690,15 +1686,6 @@ u32 get_random_u32(void)
+ }
+ EXPORT_SYMBOL(get_random_u32);
+ 
+-/* It's important to invalidate all potential batched entropy that might
+- * be stored before the crng is initialized, which we can do lazily by
+- * bumping the generation counter.
+- */
+-static void invalidate_batched_entropy(void)
+-{
+-	atomic_inc(&batch_generation);
+-}
+-
+ /**
+  * randomize_page - Generate a random, page aligned address
+  * @start:	The smallest acceptable address the caller will take.
+
 
