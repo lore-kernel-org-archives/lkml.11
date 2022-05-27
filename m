@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8C04C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:39:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49874C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:39:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233840AbiE0LjS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 07:39:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45686 "EHLO
+        id S238228AbiE0LjX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 07:39:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351544AbiE0LiS (ORCPT
+        with ESMTP id S1351489AbiE0Li0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:38:18 -0400
+        Fri, 27 May 2022 07:38:26 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C38613128C;
-        Fri, 27 May 2022 04:38:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4199FFD36B;
+        Fri, 27 May 2022 04:38:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DAC58B824D9;
-        Fri, 27 May 2022 11:38:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53639C385A9;
-        Fri, 27 May 2022 11:38:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EB589B824D8;
+        Fri, 27 May 2022 11:38:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 377A4C34100;
+        Fri, 27 May 2022 11:38:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653651488;
-        bh=wMG8sy08PtHLqDNvhD47l/6HA04VxlwOybToP8zWv68=;
+        s=korg; t=1653651494;
+        bh=xkJaroxh/n21Fq3lWERfCpo9pDNRfSiPUirThCsWka4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S9tkKoSPaJ3bOKCD5GQW91+tMQi+0Xvqbsqbcklfy/4G5kx/v64TAtFPqMcPCDKZV
-         bQYSE7lb+2m0hP4g+C6A7DgbRfe3kW71TysRaSSVnwQyueP0nRBatEm7ms/yjE5kcm
-         xEer95JhKkh0WjyWva3Tpq2OUL543rAFFL59QH0c=
+        b=L6wDeo3GZKHeUAFh8u4gaiNozKqmpsTzPy6MzNf6hJn/4vU9OlEWlMCaAg0wqKbHM
+         /7MAVai6++rRwny4dwDOUNTF1tBtR5TSXxT8P0plmC5N8Re7/CzI26Pj6uA+GC2+Ez
+         zPWFUTFT7FuomgurgAEqX3ES6sZn2SpWDJ1Ni8hs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -36,12 +36,12 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Geert Uytterhoeven <geert@linux-m68k.org>,
         Ard Biesheuvel <ardb@kernel.org>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.15 008/145] lib/crypto: blake2s: move hmac construction into wireguard
-Date:   Fri, 27 May 2022 10:48:29 +0200
-Message-Id: <20220527084851.772743140@linuxfoundation.org>
+Subject: [PATCH 5.10 026/163] lib/crypto: blake2s: move hmac construction into wireguard
+Date:   Fri, 27 May 2022 10:48:26 +0200
+Message-Id: <20220527084831.864904102@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084850.364560116@linuxfoundation.org>
-References: <20220527084850.364560116@linuxfoundation.org>
+In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
+References: <20220527084828.156494029@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -268,7 +268,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 -}
 -EXPORT_SYMBOL(blake2s256_hmac);
 -
- static int __init blake2s_mod_init(void)
+ static int __init mod_init(void)
  {
  	if (!IS_ENABLED(CONFIG_CRYPTO_MANAGER_DISABLE_TESTS) &&
 
