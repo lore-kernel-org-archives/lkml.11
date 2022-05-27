@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7BCBC43217
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:42:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10BCCC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:42:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351737AbiE0LmB (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 07:42:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45756 "EHLO
+        id S240205AbiE0LmH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 07:42:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351630AbiE0Lkt (ORCPT
+        with ESMTP id S1351599AbiE0Lks (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:40:49 -0400
+        Fri, 27 May 2022 07:40:48 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2258913C34C;
-        Fri, 27 May 2022 04:39:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 225A51269B6;
+        Fri, 27 May 2022 04:39:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A5FA761CB7;
-        Fri, 27 May 2022 11:39:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4DD9C385A9;
-        Fri, 27 May 2022 11:39:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B2BEC61CC4;
+        Fri, 27 May 2022 11:39:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2938C385A9;
+        Fri, 27 May 2022 11:39:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653651575;
-        bh=RCjUC63k93zeo8gThW8lUvjsEHUUCfLr2HkXszXk9zg=;
+        s=korg; t=1653651572;
+        bh=zeCNXD/6mPqe80gmC393S7dCSxWXSaOLreAdBp1vAWM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sP9mY1aiORS6v7kx0Ubl9b5A+GW6bvdwwUCzweLQIlP9Gt0rr11/7651urd4h4h9U
-         bWYDLrKx4ZBFj4UOsgvg7WCyqQwMh1iktkD8IxmclB2j/d6T5mOMvmv6gPaMz5QfVS
-         bEO5RhnNHdVIzUwZ+wsfctzdZAsznHXd/51YHjuQ=
+        b=Pd7Ei37aHQ0hR6vY3igaES7G0d6JcrolhQHcxFlHvHNfIrs3+A6hlxNsx9aSv1wCE
+         jEzxOIjJJDbe5VxCmHDWk1x207HmzjEDzwXUHSAWeP+WMky+YCATdGpWUWomrIKOFT
+         XeGq3LF/DPaIOS1rDYuAmRjlFCLA5BJceHVAe6mg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.15 018/145] random: use IS_ENABLED(CONFIG_NUMA) instead of ifdefs
-Date:   Fri, 27 May 2022 10:48:39 +0200
-Message-Id: <20220527084853.168845601@linuxfoundation.org>
+Subject: [PATCH 5.10 034/163] random: mix bootloader randomness into pool
+Date:   Fri, 27 May 2022 10:48:34 +0200
+Message-Id: <20220527084832.870245906@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084850.364560116@linuxfoundation.org>
-References: <20220527084850.364560116@linuxfoundation.org>
+In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
+References: <20220527084828.156494029@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,98 +51,42 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 7b87324112df2e1f9b395217361626362dcfb9fb upstream.
+commit 57826feeedb63b091f807ba8325d736775d39afd upstream.
 
-Rather than an awkward combination of ifdefs and __maybe_unused, we can
-ensure more source gets parsed, regardless of the configuration, by
-using IS_ENABLED for the CONFIG_NUMA conditional code. This makes things
-cleaner and easier to follow.
+If we're trusting bootloader randomness, crng_fast_load() is called by
+add_hwgenerator_randomness(), which sets us to crng_init==1. However,
+usually it is only called once for an initial 64-byte push, so bootloader
+entropy will not mix any bytes into the input pool. So it's conceivable
+that crng_init==1 when crng_initialize_primary() is called later, but
+then the input pool is empty. When that happens, the crng state key will
+be overwritten with extracted output from the empty input pool. That's
+bad.
 
-I've confirmed that on !CONFIG_NUMA, we don't wind up with excess code
-by accident; the generated object file is the same.
+In contrast, if we're not trusting bootloader randomness, we call
+crng_slow_load() *and* we call mix_pool_bytes(), so that later
+crng_initialize_primary() isn't drawing on nothing.
 
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+In order to prevent crng_initialize_primary() from extracting an empty
+pool, have the trusted bootloader case mirror that of the untrusted
+bootloader case, mixing the input into the pool.
+
+[linux@dominikbrodowski.net: rewrite commit message]
+Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   32 ++++++++++++--------------------
- 1 file changed, 12 insertions(+), 20 deletions(-)
+ drivers/char/random.c |    1 +
+ 1 file changed, 1 insertion(+)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -759,7 +759,6 @@ static int credit_entropy_bits_safe(stru
+@@ -2301,6 +2301,7 @@ void add_hwgenerator_randomness(const ch
  
- static DECLARE_WAIT_QUEUE_HEAD(crng_init_wait);
- 
--#ifdef CONFIG_NUMA
- /*
-  * Hack to deal with crazy userspace progams when they are all trying
-  * to access /dev/urandom in parallel.  The programs are almost
-@@ -767,7 +766,6 @@ static DECLARE_WAIT_QUEUE_HEAD(crng_init
-  * their brain damage.
-  */
- static struct crng_state **crng_node_pool __read_mostly;
--#endif
- 
- static void invalidate_batched_entropy(void);
- static void numa_crng_init(void);
-@@ -815,7 +813,7 @@ static bool __init crng_init_try_arch_ea
- 	return arch_init;
- }
- 
--static void __maybe_unused crng_initialize_secondary(struct crng_state *crng)
-+static void crng_initialize_secondary(struct crng_state *crng)
- {
- 	chacha_init_consts(crng->state);
- 	_get_random_bytes(&crng->state[4], sizeof(__u32) * 12);
-@@ -866,7 +864,6 @@ static void crng_finalize_init(struct cr
- 	}
- }
- 
--#ifdef CONFIG_NUMA
- static void do_numa_crng_init(struct work_struct *work)
- {
- 	int i;
-@@ -893,29 +890,24 @@ static DECLARE_WORK(numa_crng_init_work,
- 
- static void numa_crng_init(void)
- {
--	schedule_work(&numa_crng_init_work);
-+	if (IS_ENABLED(CONFIG_NUMA))
-+		schedule_work(&numa_crng_init_work);
- }
- 
- static struct crng_state *select_crng(void)
- {
--	struct crng_state **pool;
--	int nid = numa_node_id();
--
--	/* pairs with cmpxchg_release() in do_numa_crng_init() */
--	pool = READ_ONCE(crng_node_pool);
--	if (pool && pool[nid])
--		return pool[nid];
--
--	return &primary_crng;
--}
--#else
--static void numa_crng_init(void) {}
-+	if (IS_ENABLED(CONFIG_NUMA)) {
-+		struct crng_state **pool;
-+		int nid = numa_node_id();
-+
-+		/* pairs with cmpxchg_release() in do_numa_crng_init() */
-+		pool = READ_ONCE(crng_node_pool);
-+		if (pool && pool[nid])
-+			return pool[nid];
-+	}
- 
--static struct crng_state *select_crng(void)
--{
- 	return &primary_crng;
- }
--#endif
- 
- /*
-  * crng_fast_load() can be called by code in the interrupt service
+ 	if (unlikely(crng_init == 0)) {
+ 		size_t ret = crng_fast_load(buffer, count);
++		mix_pool_bytes(poolp, buffer, ret);
+ 		count -= ret;
+ 		buffer += ret;
+ 		if (!count || crng_init == 0)
 
 
