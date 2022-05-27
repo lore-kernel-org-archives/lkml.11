@@ -2,151 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F6EEC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 17:51:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8D60C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 17:54:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351404AbiE0Rv3 (ORCPT
+        id S1353577AbiE0RyX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 13:51:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33046 "EHLO
+        Fri, 27 May 2022 13:54:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232102AbiE0RvZ (ORCPT
+        with ESMTP id S1349832AbiE0RyW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 13:51:25 -0400
-Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-eopbgr60065.outbound.protection.outlook.com [40.107.6.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6058D12A;
-        Fri, 27 May 2022 10:51:23 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XBKEvgQGMWCYzjkfmG42G5FhTpRJrSmWVBR9ZXNd2a6dasfneKbG3cK51wP12XADeNuHjV7wyCyYf428ca4zYTLqoT3O5ft5OcX2MsV3DZeDltFDN9mWV0diZHFA03ZFYM8AHOT4JXdgNfxv6ya7P49j5GMLqGj+Xenq/73mLeUZKFN9UY1323Tq3++q9fzp+hYBnEhcHvhHmTX474/VSNo//QbS7wrq8Qh8gaVCzWIaelFm6moh1KfCxnEfZT7VkNYS2X55N58Nr59hwFrc//jUWSsdYgeY89MoMpwYpB32RnwP1mABVsltx2lYuqijhTQCSu2cp+94vMH438AaFA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=iLr293ciDS4H+MfdiOONgzGiv1kwf86LLKFK58rH0y8=;
- b=mh8AR7w250RfYpFIgt+Nl7qWEcYuKeM9E6u90ernvdG3MRvx5thKtgf8bIC70/qkoSLgWGJKcJBv10RbWaiA23XJuKW6YcJS8ZMVk/9iny9h0ZeLgoym9PjedmAbafo2RbUJ0k9HrhFSl7FDtNr8JwN7uIjBG9UG3G9yvvQ8wJLIZdpJz+RDuFk/7MSC8QqmTTHBsJoLAjZDt3Zydx6u7o67WUNluYFwIRVYjH7cFqilMq9FHNgJ3vy3qUIopu+FpxWelpvSdFCRcrUdRqNmZGl8WFVCQ3+b0rGF2uMVY5jBc08JF0eY7jaU20gadR2L0LPv5RiDc6hyw9oTxE5iIQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iLr293ciDS4H+MfdiOONgzGiv1kwf86LLKFK58rH0y8=;
- b=dT6Ow04/Zu0JSJx89GwPu65OYt5ez3W/rknVCswhcrnOElMK1k7J4fO7KxHkxNQUV51GXKoKpMTNauGZeM5AA4SmM4IcL0puQYB265TbKQBSZ6+VEw4afBHWKF+Im5g5h9k370/CNguk1C9Cm/4TH9ZFBi5YCF8SDr6OyiGCumE=
-Received: from AM9PR04MB8397.eurprd04.prod.outlook.com (2603:10a6:20b:3b5::5)
- by AS8PR04MB8499.eurprd04.prod.outlook.com (2603:10a6:20b:342::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.15; Fri, 27 May
- 2022 17:51:21 +0000
-Received: from AM9PR04MB8397.eurprd04.prod.outlook.com
- ([fe80::4865:22f8:b72a:2cd1]) by AM9PR04MB8397.eurprd04.prod.outlook.com
- ([fe80::4865:22f8:b72a:2cd1%5]) with mapi id 15.20.5293.016; Fri, 27 May 2022
- 17:51:09 +0000
-From:   Claudiu Manoil <claudiu.manoil@nxp.com>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH] net: enetc: Use pci_release_region() to release some
- resources
-Thread-Topic: [PATCH] net: enetc: Use pci_release_region() to release some
- resources
-Thread-Index: AQHYcavCsFlf4vEGkk+HPnY37e6cTK0y/S5A
-Date:   Fri, 27 May 2022 17:51:08 +0000
-Message-ID: <AM9PR04MB8397145BCF0042D9148417E196D89@AM9PR04MB8397.eurprd04.prod.outlook.com>
-References: <b0dcb6124717d13900e48b2f1fa697b922f672b2.1653643529.git.christophe.jaillet@wanadoo.fr>
-In-Reply-To: <b0dcb6124717d13900e48b2f1fa697b922f672b2.1653643529.git.christophe.jaillet@wanadoo.fr>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 092463fc-2cb9-4490-0f40-08da40097af2
-x-ms-traffictypediagnostic: AS8PR04MB8499:EE_
-x-microsoft-antispam-prvs: <AS8PR04MB8499B7CCEE7596A8BA35B2C796D89@AS8PR04MB8499.eurprd04.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: QnZU+mMWRoJMSPH1rPsiFtFJytvNGhScr9WCZRKHhTQI2LHxfLLUnZF0RVQtToaVEQV4w5BJc0DcUSignMWZ3F436x3m5My4m+3TeTutvhS2tq+UxlEDzWHcOg5NUcnEc3C2j1lkwkFFWyBdspFf3feZAl6VFm5OMAd3AzNXlhwxpLu/60vQx+yd56K3GRWmwWZ0O/Jva3frVhWz7KDW+YJbJvLYETEIogKJJ0whDdWfYjAY0xUnk5nvy/UAyreRQJF4KheBjzsvJsNRDrSukfT4pNZWfyqZskQmgXHCt9g2C6BpTwEhCnZNO+mwDtby+c8nsJIy/fxWay7wz6mNxGwEcV4HSuk27h1iS3u/aB6Um3YISniV+JIBxjk78pBkpbPCgs6waQ4e9pg2MSSTesYNyKdT0ALzkWq5/9emUa6obiUSTMy1mzE4kY7IhHmNz6pv998srN8Ruh24NVAdZHgfJglOK6GfGkFkpNn3fRbaxnP0HSlo3KMEDeO4ucO51CJDY8+cFogb2JrdpWrz1viikl1CKrs/zmwYsAGIHSH/BUalJDc4bY18RNFzhHgDQWr1Pxy/LdRQFEjVl0xv2Mys/W+iL0EQAo/pWcyIpHhHqMkPez9lk7QH8FIYHkkePbWYys6BO3jM+bD84wxMZRyw0KsgSOv4nDYOlYZuQUGHYeyZHaxUblttD7tYHytjZhB7cS/iBeSN8HuW6PQVpw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR04MB8397.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(55236004)(8676002)(186003)(508600001)(33656002)(2906002)(86362001)(6506007)(7696005)(52536014)(26005)(9686003)(8936002)(71200400001)(4744005)(44832011)(5660300002)(53546011)(122000001)(38070700005)(38100700002)(54906003)(316002)(76116006)(110136005)(83380400001)(55016003)(66446008)(64756008)(66476007)(66946007)(66556008)(4326008);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?L3N1NAMTgiMynfXnkqXkAltQA3o2VfiaUuuRHop+KVYMZaErGMnL1BUsUUmK?=
- =?us-ascii?Q?QrCW1paNiLjsrrItkBq/ADlLyIJH/FqYfZDq9AJ2ZKK5HkOT+LLC38sqmTv6?=
- =?us-ascii?Q?dFVHkOls0wHIIAwlv1e22pzQGeLkBF/ZVVcRKt80l16E1KyC2Mb4ssEjeJaN?=
- =?us-ascii?Q?yFWO73IHCg9kXlJa9XUPDcyGlvAhLnoMbYX0WF9YLlCkZB06h5dVD49AJzUf?=
- =?us-ascii?Q?IdGCiLoKPYMgJo2K9tnFyzw0kjUsGlERR+mKb5IeRjpi1CGsY20guNGEQD0E?=
- =?us-ascii?Q?xYfMJdpRmBMqfADwxaDUX4CLOiMcyqQEj5byb8hycSs4x+FjkMcBVczB0dhM?=
- =?us-ascii?Q?cVi8diJFUdaFzf+DDwT8EAsLqcRFBoGPqaaiS9kpGyTSNsEhHwDCLR1ZVZlA?=
- =?us-ascii?Q?9O28rc0jvjnuuKjk+pjBMNJSkTgQAT5zmrAe0TjNzKOROwui9nCvyG/4fhC3?=
- =?us-ascii?Q?IZrkD3vdyZQ4nQqCPnT/NVoM7d+FOF/2WlA52siQTunXcj77GnpiJ72YDJcd?=
- =?us-ascii?Q?MkRT4lNaEx1TBVq4ul84YJnVEWC7qpMenPI1ctdi+HSbGjIEExrNjnzFrkuZ?=
- =?us-ascii?Q?oS7r0A92+qNLdV1jG5i5ZB+ycj6t30J1MWYuvwH6/EwdLzuCs0TGW/A0BR4R?=
- =?us-ascii?Q?TcUz7qbwY1h9R3ibrqz5Pd3gi4mVkDaJdeixDOVU9n1YPPIrqIAuD+wDjkaW?=
- =?us-ascii?Q?kPWUfl2XBdwuVc+11W0neg/wfZNAH4chPoVH3oEawAYrWLTVZUHo/xokqG6h?=
- =?us-ascii?Q?/cND6rmp30pZ19Px7z/5Lh37oNM2+OdZTrOUghNnM3OIRwdhhhpol6q2iv1k?=
- =?us-ascii?Q?YMnyQ7meMlKTkyCGa37Jl74Mn9qM6pahyFyKxUb0IcRVgZhYMA0ipYloHABV?=
- =?us-ascii?Q?ZgddaJ3SOrJoUMc/DeGudu8+VTrrjGXW5X2RIP7TZhybJnVM3v6kFJBJHu3g?=
- =?us-ascii?Q?8PTYDyhVcu7jKt9GO2rwsuFO8AYVTAkubLvvUr54Uu7juGk3By4VuhxP85H6?=
- =?us-ascii?Q?o7k1phQJKFydsY/JyX3ABMfL7sT80n9QqoLsY8CtmBVjaNKdYfiILpvQx1AH?=
- =?us-ascii?Q?vL0r4DwUctx3CR6MIx3dAekpgd8nXHxZhluIb5OlUIvYyqn2nBtTvtxmehOZ?=
- =?us-ascii?Q?EbxLjOGle93qlVIV9pRiGReP5tWCy2zncWGAkDqlX9/29wBHaqBVACUePula?=
- =?us-ascii?Q?OUi2+chdqiojAGE4IEANAyLUp531iufjo74wP+CJ4rVtrf74JkaZhoVFSeh+?=
- =?us-ascii?Q?6cOXKUX18DRHD41NxAwtCA1sZBggaFQz1TtOQnH2TySY/v3RII8ubtT425nW?=
- =?us-ascii?Q?41rYNZ2tmoNxBsWVQMIrT+i2HKIgPcWVTXiReIQG/Eawhuy4EuE4sX7kPo/T?=
- =?us-ascii?Q?A8FREtJg8efXGDnGBfubxg9qYOpcHJ1LhgVuVU8mZTWM7/yPmS7Ty52VTptK?=
- =?us-ascii?Q?oqyVL+DkW033UPeMJhOTSeCSeniN3u9gwJ8mK77gFkEB2X8VZa9EQug8yu4f?=
- =?us-ascii?Q?sdhYNhys1YMy+vZzePhke1DRompqVRzXb01sfEC0ox7sZXtFalGKelln7hfG?=
- =?us-ascii?Q?IDS++A8+qQsI0vToDh2NrbG/5smekyrI2V0VCpeUPMv7u+h1WiXtCD8Y1pGB?=
- =?us-ascii?Q?A6BmtB063+r1Wv6dfr2/EoYIpaKVzwz1x85+fZ66YRXdXlbzd+/eOeChMYZu?=
- =?us-ascii?Q?69Q/batEh0JjZSKooFAMK4nPHrORmVVIlnedM6KHGLS89wafcU8mw3JjyHQj?=
- =?us-ascii?Q?36irSwwO4A=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AM9PR04MB8397.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 092463fc-2cb9-4490-0f40-08da40097af2
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 May 2022 17:51:08.7288
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: fJlLjxULo5CmS301IXF44QoVhhELzPrw4+pwTRdc3JBFbDFVnwnRHMc5P6oDiebYrbBVg0ANNRL8sTTl6McDdg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB8499
+        Fri, 27 May 2022 13:54:22 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6323A88A8;
+        Fri, 27 May 2022 10:54:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1653674062; x=1685210062;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references;
+  bh=l3rjmybN1CpswS9ijer3aRVunkWPQ59t8L40dSpAj00=;
+  b=ErgiRQNDFTaiCQ/8iCgddNtko6dopHQnRcl3ocEwMzkruLP5TsSFE4b5
+   awsoftjap3mtPcLw6tvYXvd4aY5OgQDdB7fFtq4/fb1lx+JxyqRmCDQBY
+   S8AaSB+tcexquforeONn+gfdEeuAv2TerYuyWJOI6A8S9xFhvy4u3UGja
+   Y=;
+Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
+  by alexa-out.qualcomm.com with ESMTP; 27 May 2022 10:54:21 -0700
+X-QCInternal: smtphost
+Received: from ironmsg01-blr.qualcomm.com ([10.86.208.130])
+  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/AES256-SHA; 27 May 2022 10:54:19 -0700
+X-QCInternal: smtphost
+Received: from c-sbhanu-linux.qualcomm.com ([10.242.50.201])
+  by ironmsg01-blr.qualcomm.com with ESMTP; 27 May 2022 23:24:04 +0530
+Received: by c-sbhanu-linux.qualcomm.com (Postfix, from userid 2344807)
+        id 6DE9A1846; Fri, 27 May 2022 23:24:03 +0530 (IST)
+From:   Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
+To:     adrian.hunter@intel.com, ulf.hansson@linaro.org,
+        wsa+renesas@sang-engineering.com, shawn.lin@rock-chips.com,
+        yoshihiro.shimoda.uh@renesas.com, digetx@gmail.com,
+        quic_asutoshd@quicinc.com
+Cc:     linux-arm-msm@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, quic_rampraka@quicinc.com,
+        quic_pragalla@quicinc.com, quic_sartgarg@quicinc.com,
+        quic_nitirawa@quicinc.com, quic_sayalil@quicinc.com,
+        Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>,
+        Liangliang Lu <quic_luliang@quicinc.com>,
+        "Bao D . Nguyen" <quic_nguyenb@quicinc.com>
+Subject: [PATCH V8 4/5] mmc: debugfs: Add debug fs error state entry for mmc driver
+Date:   Fri, 27 May 2022 23:23:55 +0530
+Message-Id: <1653674036-21829-5-git-send-email-quic_c_sbhanu@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1653674036-21829-1-git-send-email-quic_c_sbhanu@quicinc.com>
+References: <1653674036-21829-1-git-send-email-quic_c_sbhanu@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> -----Original Message-----
-> From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-> Sent: Friday, May 27, 2022 12:26 PM
-[...]
-> Subject: [PATCH] net: enetc: Use pci_release_region() to release some
-> resources
->=20
-> Some resources are allocated using pci_request_region().
-> It is more straightforward to release them with pci_release_region().
->=20
-> Fixes: 231ece36f50d ("enetc: Add mdio bus driver for the PCIe MDIO
-> endpoint")
->=20
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-> ---
-> This patch is speculative, mainly based on the inconsistency between some
-> function's names.
-> Using pci_request_mem_regions() would also have things look consistent.
->=20
-> Review with care.
-> ---
+Add debug fs entry error state to query eMMC and SD card errors statistics.
+If any errors occurred in eMMC and SD card driver level then
+err_state value will be set to 1.
 
-Since the external MDIO registers are located in BAR 0 of the PCIe endpoint=
- device,
-the driver requests specifically the BAR 0 mem region and should release th=
-e same
-region. So the fix is valid. Thanks.
+Signed-off-by: Liangliang Lu <quic_luliang@quicinc.com>
+Signed-off-by: Sayali Lokhande <quic_sayalil@quicinc.com>
+Signed-off-by: Bao D. Nguyen <quic_nguyenb@quicinc.com>
+Signed-off-by: Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
+Acked-by: Adrian Hunter <adrian.hunter@intel.com>
+---
+ drivers/mmc/core/debugfs.c | 23 +++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
 
-Reviewed-by: Claudiu Manoil <claudiu.manoil@nxp.com>
+diff --git a/drivers/mmc/core/debugfs.c b/drivers/mmc/core/debugfs.c
+index 6aa5a60..75e98ec 100644
+--- a/drivers/mmc/core/debugfs.c
++++ b/drivers/mmc/core/debugfs.c
+@@ -223,6 +223,27 @@ static int mmc_clock_opt_set(void *data, u64 val)
+ DEFINE_DEBUGFS_ATTRIBUTE(mmc_clock_fops, mmc_clock_opt_get, mmc_clock_opt_set,
+ 	"%llu\n");
+ 
++static int mmc_err_state_get(void *data, u64 *val)
++{
++	struct mmc_host *host = data;
++	int i;
++
++	if (!host)
++		return -EINVAL;
++
++	*val = 0;
++	for (i = 0; i < MMC_ERR_MAX; i++) {
++		if (host->err_stats[i]) {
++			*val = 1;
++			break;
++		}
++	}
++
++	return 0;
++}
++
++DEFINE_DEBUGFS_ATTRIBUTE(mmc_err_state, mmc_err_state_get, NULL, "%llu\n");
++
+ static int mmc_err_stats_show(struct seq_file *file, void *data)
+ {
+ 	struct mmc_host *host = (struct mmc_host *)file->private;
+@@ -289,6 +310,8 @@ void mmc_add_host_debugfs(struct mmc_host *host)
+ 	debugfs_create_file_unsafe("clock", S_IRUSR | S_IWUSR, root, host,
+ 				   &mmc_clock_fops);
+ 
++	debugfs_create_file_unsafe("err_state", 0600, root, host,
++			    &mmc_err_state);
+ 	debugfs_create_file("err_stats", 0600, root, host,
+ 			    &mmc_err_stats_fops);
+ 
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member 
+of Code Aurora Forum, hosted by The Linux Foundation
+
