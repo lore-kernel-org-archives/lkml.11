@@ -2,164 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D01BEC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:07:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC782C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:09:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343998AbiE0LH4 (ORCPT
+        id S1344037AbiE0LJf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 07:07:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51812 "EHLO
+        Fri, 27 May 2022 07:09:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232852AbiE0LHy (ORCPT
+        with ESMTP id S232852AbiE0LJc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:07:54 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3640CE039
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 04:07:52 -0700 (PDT)
-Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4L8hnN6ln2zgYBn;
-        Fri, 27 May 2022 19:06:16 +0800 (CST)
-Received: from dggpemm500018.china.huawei.com (7.185.36.111) by
- dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 27 May 2022 19:07:50 +0800
-Received: from localhost.localdomain (10.175.112.125) by
- dggpemm500018.china.huawei.com (7.185.36.111) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 27 May 2022 19:07:49 +0800
-From:   keliu <liuke94@huawei.com>
-To:     <jk@ozlabs.org>, <joel@jms.id.au>, <alistair@popple.id.au>,
-        <eajames@linux.ibm.com>, <linux-fsi@lists.ozlabs.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     keliu <liuke94@huawei.com>
-Subject: [PATCH] drivers: fsi: Directly use ida_alloc()/free()
-Date:   Fri, 27 May 2022 11:29:19 +0000
-Message-ID: <20220527112919.3444659-1-liuke94@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 27 May 2022 07:09:32 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 218411059DC;
+        Fri, 27 May 2022 04:09:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1653649768;
+        bh=LXvhbb1TDZmpuAdxq+zNy5DrHla/6ICyoxOl9PNrOE4=;
+        h=X-UI-Sender-Class:Date:From:To:Cc:Subject;
+        b=Ie6pu8Zq95Pdjva3A0Ga4TtvkqnXyAb9Xrzptfx6/nA/IpendMAe5QZnUd619zFGL
+         OV2O7WZXVgYgnt6dRZ045WiFk4nno3qe1DfLcGyBwCEIS6TGrbkYZr1TVWN54ni+Ql
+         arc3FJ8Oh3H98YrUJoaHLEfViHrr3BTs4lohNBUE=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.100.20] ([46.142.34.80]) by mail.gmx.net (mrgmx004
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MKsnP-1oFnaX1ceD-00LCEV; Fri, 27
+ May 2022 13:09:28 +0200
+Message-ID: <e61d1f3e-2532-6ab4-81cb-9e1a6649df3b@gmx.de>
+Date:   Fri, 27 May 2022 13:09:27 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.112.125]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpemm500018.china.huawei.com (7.185.36.111)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+From:   Ronald Warsow <rwarsow@gmx.de>
+To:     linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org
+Content-Language: de-DE
+Subject: Re: [PATCH 5.18 00/47] 5.18.1-rc1 review
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Provags-ID: V03:K1:AksC5+mhqQN8QJmHMcL9f3NL6aYX8wFlkwlv+y6G6PRfbpWiyUa
+ Blwlhw4SA+OOItxht0X4BNjGL+MoVsLP4Kgmd3CuDxM1SRmB2cGHgiExOsY0YpLf0vFUGTp
+ GBLfUB6Kjxy3oxGLv+Zc3YGOkxTP0Xmi0Bq3LP1ETMFlvvxIC1NwrPRHa4ial030/cb3iXE
+ gYkX7SMl46WvpZa24elpg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:mFXXk9TO+8c=:OQPL8XnleFFknKFcxj0T5k
+ yljc62Cwa5gYgiimMVKhd4W8GxOAgrrx6J7x1+ghr9pMwzH0LDKsYO7TjXS+bcLT5ABW9HlwY
+ 7KqTzdu+ONJMdJ+zQrcA65G/w83NYCs7U997Yq4al+MKo43YK/Ss9py8Ltab/OP/TJftkVU38
+ kfFNii4KB6dp0BAmVHvJRv0iTPl7EfK/o4hmqj+/Zk+07gLW1qoRCkcrTxVswPgHYvXFBdnXT
+ WtDXwXrJOJj6A4056GdQ/JWBc8MarI+/4S0SMp0CUxai99oVqIOo7NkNI11opkKVaZ4KHj2cE
+ D8jCkK3zkXhNa8PLna7pE2MysKqlYfEZWBQy9bnHGD4YH0yjvBBNUEqq91CdyXYUD+P5Snh6o
+ qzaqblwdLch+vdR350ASI/IoesRN94v5pW6m1v+yDlzE835CmfvI/AvvFEyuO0VGYh3wShXaw
+ xuxztyzMqNo1u9ZHeFkNfNzy2evNE1z6du717Guyfjrgr7K605Mt2EKqfqhz89bxy2YsDYmLZ
+ 8IJhNTGI7e9H16ZbAPLIZvvqSWwWIByPW82WAO9NHRxL8CZkyE61Izss/WKrQgS0izv8EZd3v
+ x8ytfNeB1onib2nJjjmNytBUAavoOqlMkC9X5pF3P8uW2f1vQfAgH19U5aD9F/71sK9bGRwxa
+ aY1Zj8DuaAR3T7dr1NAuAAKVSKUOVDzmuBZ4g9F61/0bxxbP4AO7EUEWkV91RS6/ZjqqSHxZv
+ WGo9lE7BIyLEpQEnhH9xLhGqQlh7jUCWxHjP9hpgSMVbtLg00K3IfeIUGVRK0T/Fa08J7LB9V
+ jE8hLbul7kOP5Naff/M+wIgtfLywC5c8KkDV26IaQWY484UYrQCtf04LwSiPliGHwsw3eqqvB
+ hcpNGttvHble1svqK8FCma4ngtGTgVt4hRfM7Llw+z2T2RhMSzMpRyxQjYqCYoxaIFRMPbiYC
+ qNTzsaxeT9bZ43CqTEkmmC7DZ52tl/cLvK68yvXjfjK+c46FmFyJH75yoqqnDXF7mGjgl6KLx
+ b9LhWxY12P2A9S1SYdBJqAMdwvPQ8zL90noU40Y3ylbc6jNHxcA+u1slo51nywtSTU3MfO2Pj
+ mXKWuhcmPqnVq9XSag/4qu22jhMY4fn/IOF
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use ida_alloc()/ida_free() instead of deprecated
-ida_simple_get()/ida_simple_remove() .
+hallo Greg
 
-Signed-off-by: keliu <liuke94@huawei.com>
----
- drivers/fsi/fsi-core.c | 12 ++++++------
- drivers/fsi/fsi-occ.c  | 19 ++++++++++---------
- 2 files changed, 16 insertions(+), 15 deletions(-)
+5.18.1-rc1
 
-diff --git a/drivers/fsi/fsi-core.c b/drivers/fsi/fsi-core.c
-index 3a7b78e36701..a85f97a9ddf0 100644
---- a/drivers/fsi/fsi-core.c
-+++ b/drivers/fsi/fsi-core.c
-@@ -951,7 +951,7 @@ static int __fsi_get_new_minor(struct fsi_slave *slave, enum fsi_dev_type type,
- 	if (cid >= 0 && cid < 16 && type < 4) {
- 		/* Try reserving the legacy number */
- 		id = (cid << 4) | type;
--		id = ida_simple_get(&fsi_minor_ida, id, id + 1, GFP_KERNEL);
-+		id = ida_alloc_range(&fsi_minor_ida, id, id, GFP_KERNEL);
- 		if (id >= 0) {
- 			*out_index = fsi_adjust_index(cid);
- 			*out_dev = fsi_base_dev + id;
-@@ -962,7 +962,7 @@ static int __fsi_get_new_minor(struct fsi_slave *slave, enum fsi_dev_type type,
- 			return id;
- 		/* Fallback to non-legacy allocation */
- 	}
--	id = ida_simple_get(&fsi_minor_ida, FSI_CHAR_LEGACY_TOP,
-+	id = ida_alloc_range(&fsi_minor_ida, FSI_CHAR_LEGACY_TOP,
- 			    FSI_CHAR_MAX_DEVICES, GFP_KERNEL);
- 	if (id < 0)
- 		return id;
-@@ -980,7 +980,7 @@ EXPORT_SYMBOL_GPL(fsi_get_new_minor);
- 
- void fsi_free_minor(dev_t dev)
- {
--	ida_simple_remove(&fsi_minor_ida, MINOR(dev));
-+	ida_free(&fsi_minor_ida, MINOR(dev));
- }
- EXPORT_SYMBOL_GPL(fsi_free_minor);
- 
-@@ -1313,13 +1313,13 @@ int fsi_master_register(struct fsi_master *master)
- 	struct device_node *np;
- 
- 	mutex_init(&master->scan_lock);
--	master->idx = ida_simple_get(&master_ida, 0, INT_MAX, GFP_KERNEL);
-+	master->idx = ida_alloc_max(&master_ida, INT_MAX - 1, GFP_KERNEL);
- 	dev_set_name(&master->dev, "fsi%d", master->idx);
- 	master->dev.class = &fsi_master_class;
- 
- 	rc = device_register(&master->dev);
- 	if (rc) {
--		ida_simple_remove(&master_ida, master->idx);
-+		ida_free(&master_ida, master->idx);
- 		return rc;
- 	}
- 
-@@ -1337,7 +1337,7 @@ EXPORT_SYMBOL_GPL(fsi_master_register);
- void fsi_master_unregister(struct fsi_master *master)
- {
- 	if (master->idx >= 0) {
--		ida_simple_remove(&master_ida, master->idx);
-+		ida_free(&master_ida, master->idx);
- 		master->idx = -1;
- 	}
- 
-diff --git a/drivers/fsi/fsi-occ.c b/drivers/fsi/fsi-occ.c
-index c9cc75fbdfb9..9240eb0379d7 100644
---- a/drivers/fsi/fsi-occ.c
-+++ b/drivers/fsi/fsi-occ.c
-@@ -630,17 +630,18 @@ static int occ_probe(struct platform_device *pdev)
- 		rc = of_property_read_u32(dev->of_node, "reg", &reg);
- 		if (!rc) {
- 			/* make sure we don't have a duplicate from dts */
--			occ->idx = ida_simple_get(&occ_ida, reg, reg + 1,
--						  GFP_KERNEL);
-+			occ->idx = ida_alloc_range(&occ_ida, reg, reg,
-+					GFP_KERNEL);
- 			if (occ->idx < 0)
--				occ->idx = ida_simple_get(&occ_ida, 1, INT_MAX,
--							  GFP_KERNEL);
-+				occ->idx = ida_alloc_range(&occ_ida, 1,
-+						INT_MAX - 1, GFP_KERNEL);
- 		} else {
--			occ->idx = ida_simple_get(&occ_ida, 1, INT_MAX,
--						  GFP_KERNEL);
-+			occ->idx = ida_alloc_range(&occ_ida, 1,
-+					INT_MAX - 1, GFP_KERNEL);
- 		}
- 	} else {
--		occ->idx = ida_simple_get(&occ_ida, 1, INT_MAX, GFP_KERNEL);
-+		occ->idx = ida_alloc_range(&occ_ida, 1, INT_MAX - 1,
-+							GFP_KERNEL);
- 	}
- 
- 	platform_set_drvdata(pdev, occ);
-@@ -654,7 +655,7 @@ static int occ_probe(struct platform_device *pdev)
- 	rc = misc_register(&occ->mdev);
- 	if (rc) {
- 		dev_err(dev, "failed to register miscdevice: %d\n", rc);
--		ida_simple_remove(&occ_ida, occ->idx);
-+		ida_free(&occ_ida, occ->idx);
- 		kvfree(occ->buffer);
- 		return rc;
- 	}
-@@ -677,7 +678,7 @@ static int occ_remove(struct platform_device *pdev)
- 
- 	device_for_each_child(&pdev->dev, NULL, occ_unregister_child);
- 
--	ida_simple_remove(&occ_ida, occ->idx);
-+	ida_free(&occ_ida, occ->idx);
- 
- 	return 0;
- }
--- 
-2.25.1
+compiles [1], boots and runs here on x86_64
+(Intel i5-11400, Fedora 36)
+
+Thanks
+
+Tested-by: Ronald Warsow <rwarsow@gmx.de
+
+
+[1]
+not without similar warnings I mentioned here:
+
+https://marc.info/?l=linux-kernel&m=165333405018563&w=4
+
+Ronald
 
