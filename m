@@ -2,122 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4531AC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 10:16:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FD3FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 10:18:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239353AbiE0KQS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 06:16:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49860 "EHLO
+        id S1350868AbiE0KSW (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 06:18:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350881AbiE0KQP (ORCPT
+        with ESMTP id S238860AbiE0KST (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 06:16:15 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5D7FDE80;
-        Fri, 27 May 2022 03:16:12 -0700 (PDT)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L8gfN17CNzgYpP;
-        Fri, 27 May 2022 18:15:08 +0800 (CST)
-Received: from dggpemm500018.china.huawei.com (7.185.36.111) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 27 May 2022 18:16:10 +0800
-Received: from localhost.localdomain (10.175.112.125) by
- dggpemm500018.china.huawei.com (7.185.36.111) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 27 May 2022 18:16:10 +0800
-From:   keliu <liuke94@huawei.com>
-To:     <dmitry.torokhov@gmail.com>, <marcoshalano@gmail.com>,
-        <michael@michaelcullen.name>, <linux-input@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     keliu <liuke94@huawei.com>
-Subject: [PATCH] drivers: input:  Directly use ida_alloc()/free()
-Date:   Fri, 27 May 2022 10:37:40 +0000
-Message-ID: <20220527103740.3442548-1-liuke94@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 27 May 2022 06:18:19 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3BB9119041;
+        Fri, 27 May 2022 03:18:16 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 4F93021A82;
+        Fri, 27 May 2022 10:18:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1653646695; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=zdMs09AnTtfFvrgYtK3KzdxRxmAO5MEvsM9WFqB0nzs=;
+        b=orTgCFfFMH8yAZPzpnfNW6kO3LtkeQnLt3aKTfI8pTYoaWRT3CHBLtzYibYurI2aNotAic
+        kF8vS9Gsc+CzAUxk3dqjx7g5mcQ94N2cgYW1tBsWyqAoMDuyOhAx9FjZP55/qsM3xi81uS
+        YlWM5n8+hSkF2zJyfatp/H1up2LpqlI=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1653646695;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=zdMs09AnTtfFvrgYtK3KzdxRxmAO5MEvsM9WFqB0nzs=;
+        b=ty27jRvTTyxEIPbE3rBNRRqz5JjMe+7VYG+lzOImzHy0r+mdlXS2Nu9ZvC8lXheuKonlWj
+        jFcKA55GznJn9KAQ==
+Received: from quack3.suse.cz (unknown [10.100.224.230])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 2EC2B2C141;
+        Fri, 27 May 2022 10:18:15 +0000 (UTC)
+Received: by quack3.suse.cz (Postfix, from userid 1000)
+        id 9C5BEA0632; Fri, 27 May 2022 12:18:14 +0200 (CEST)
+Date:   Fri, 27 May 2022 12:18:14 +0200
+From:   Jan Kara <jack@suse.cz>
+To:     yebin <yebin10@huawei.com>
+Cc:     Jan Kara <jack@suse.cz>, Ritesh Harjani <ritesh.list@gmail.com>,
+        tytso@mit.edu, adilger.kernel@dilger.ca,
+        linux-ext4@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH -next] ext4: fix super block checksum incorrect after
+ mount
+Message-ID: <20220527101814.jedaubf5ytztfyal@quack3.lan>
+References: <20220525012904.1604737-1-yebin10@huawei.com>
+ <20220525075123.rx5v7fe6ocn354wn@riteshh-domain>
+ <20220525115400.kr3urpp3cf3hybvi@quack3.lan>
+ <629096FA.6030801@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.112.125]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpemm500018.china.huawei.com (7.185.36.111)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <629096FA.6030801@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use ida_alloc()/ida_free() instead of deprecated
-ida_simple_get()/ida_simple_remove() .
+On Fri 27-05-22 17:16:42, yebin wrote:
+> On 2022/5/25 19:54, Jan Kara wrote:
+> > On Wed 25-05-22 13:21:23, Ritesh Harjani wrote:
+> > > On 22/05/25 09:29AM, Ye Bin wrote:
+> > > > We got issue as follows:
+> > > > [home]# mount  /dev/sda  test
+> > > > EXT4-fs (sda): warning: mounting fs with errors, running e2fsck is recommended
+> > > > [home]# dmesg
+> > > > EXT4-fs (sda): warning: mounting fs with errors, running e2fsck is recommended
+> > > > EXT4-fs (sda): Errors on filesystem, clearing orphan list.
+> > > > EXT4-fs (sda): recovery complete
+> > > > EXT4-fs (sda): mounted filesystem with ordered data mode. Quota mode: none.
+> > > > [home]# debugfs /dev/sda
+> > > > debugfs 1.46.5 (30-Dec-2021)
+> > > > Checksum errors in superblock!  Retrying...
+> > > > 
+> > > > Reason is ext4_orphan_cleanup will reset ‘s_last_orphan’ but not update
+> > > > super block checksum.
+> > > > To solve above issue, defer update super block checksum after ext4_orphan_cleanup.
+> > > I agree with the analysis. However after [1], I think all updates to superblock
+> > > (including checksum computation) should be done within buffer lock.
+> > > (lock_buffer(), unlock_buffer()).
+> > > 
+> > > [1]: https://lore.kernel.org/all/20201216101844.22917-4-jack@suse.cz/
+> > So technically you're right that we should hold buffer lock all the time
+> > from before we modify superblock buffer until we recompute the checksum (so
+> > that we avoid writing superblock with mismatched checksum). To do this we'd
+> > have to put checksum recomputations and superblock buffer locking into
+> > ext4_orphan_cleanup() around setting of es->s_last_orphan (in three places
+> > there AFAICS). A bit tedious but it would actually also fix a (theoretical)
+> > race that someone decides to write out superblock after we set
+> > s_last_orphan but before we set the checksum.
+> > 
+> > Overall I'm not convinced this is really necessary so I'd be OK even with
+> > what Ye suggested. That is IMHO better than mostly pointless locking just
+> > around checksum computation because that just makes reader wonder why is it
+> > needed...
+> > 
+> > 								Honza
+> Thanks for your reply.
+> Does my patch need to be adjusted?
 
-Signed-off-by: keliu <liuke94@huawei.com>
----
- drivers/input/input.c         | 8 ++++----
- drivers/input/joystick/xpad.c | 6 +++---
- 2 files changed, 7 insertions(+), 7 deletions(-)
+No, I don't think so. What you did is an improvement over current state and
+if in the future we find more rigorous approach for orphan cleanup is
+needed we can do that. So feel free to add:
 
-diff --git a/drivers/input/input.c b/drivers/input/input.c
-index 1365c9dfb5f2..1e4a275795f9 100644
---- a/drivers/input/input.c
-+++ b/drivers/input/input.c
-@@ -2618,15 +2618,15 @@ int input_get_new_minor(int legacy_base, unsigned int legacy_num,
- 	 * locking is needed here.
- 	 */
- 	if (legacy_base >= 0) {
--		int minor = ida_simple_get(&input_ida,
-+		int minor = ida_alloc_range(&input_ida,
- 					   legacy_base,
--					   legacy_base + legacy_num,
-+					   legacy_base + legacy_num - 1,
- 					   GFP_KERNEL);
- 		if (minor >= 0 || !allow_dynamic)
- 			return minor;
- 	}
- 
--	return ida_simple_get(&input_ida,
-+	return ida_alloc_range(&input_ida,
- 			      INPUT_FIRST_DYNAMIC_DEV, INPUT_MAX_CHAR_DEVICES,
- 			      GFP_KERNEL);
- }
-@@ -2641,7 +2641,7 @@ EXPORT_SYMBOL(input_get_new_minor);
-  */
- void input_free_minor(unsigned int minor)
- {
--	ida_simple_remove(&input_ida, minor);
-+	ida_free(&input_ida, minor);
- }
- EXPORT_SYMBOL(input_free_minor);
- 
-diff --git a/drivers/input/joystick/xpad.c b/drivers/input/joystick/xpad.c
-index 18190b529bca..fafc0d5703dc 100644
---- a/drivers/input/joystick/xpad.c
-+++ b/drivers/input/joystick/xpad.c
-@@ -1456,7 +1456,7 @@ static int xpad_led_probe(struct usb_xpad *xpad)
- 	if (!led)
- 		return -ENOMEM;
- 
--	xpad->pad_nr = ida_simple_get(&xpad_pad_seq, 0, 0, GFP_KERNEL);
-+	xpad->pad_nr = ida_alloc(&xpad_pad_seq, GFP_KERNEL);
- 	if (xpad->pad_nr < 0) {
- 		error = xpad->pad_nr;
- 		goto err_free_mem;
-@@ -1479,7 +1479,7 @@ static int xpad_led_probe(struct usb_xpad *xpad)
- 	return 0;
- 
- err_free_id:
--	ida_simple_remove(&xpad_pad_seq, xpad->pad_nr);
-+	ida_free(&xpad_pad_seq, xpad->pad_nr);
- err_free_mem:
- 	kfree(led);
- 	xpad->led = NULL;
-@@ -1492,7 +1492,7 @@ static void xpad_led_disconnect(struct usb_xpad *xpad)
- 
- 	if (xpad_led) {
- 		led_classdev_unregister(&xpad_led->led_cdev);
--		ida_simple_remove(&xpad_pad_seq, xpad->pad_nr);
-+		ida_free(&xpad_pad_seq, xpad->pad_nr);
- 		kfree(xpad_led);
- 	}
- }
+Reviewed-by: Jan Kara <jack@suse.cz>
+
+								Honza
+
+> > > With lock changes added, feel free to add -
+> > > 
+> > > Reviewed-by: Ritesh Harjani <ritesh.list@gmail.com>
+> > > 
+> > > 
+> > > > 
+> > > > Signed-off-by: Ye Bin <yebin10@huawei.com>
+> > > > ---
+> > > >   fs/ext4/super.c | 16 ++++++++--------
+> > > >   1 file changed, 8 insertions(+), 8 deletions(-)
+> > > > 
+> > > > diff --git a/fs/ext4/super.c b/fs/ext4/super.c
+> > > > index f9a3ad683b4a..c47204029429 100644
+> > > > --- a/fs/ext4/super.c
+> > > > +++ b/fs/ext4/super.c
+> > > > @@ -5300,14 +5300,6 @@ static int __ext4_fill_super(struct fs_context *fc, struct super_block *sb)
+> > > >   		err = percpu_counter_init(&sbi->s_freeinodes_counter, freei,
+> > > >   					  GFP_KERNEL);
+> > > >   	}
+> > > > -	/*
+> > > > -	 * Update the checksum after updating free space/inode
+> > > > -	 * counters.  Otherwise the superblock can have an incorrect
+> > > > -	 * checksum in the buffer cache until it is written out and
+> > > > -	 * e2fsprogs programs trying to open a file system immediately
+> > > > -	 * after it is mounted can fail.
+> > > > -	 */
+> > > > -	ext4_superblock_csum_set(sb);
+> > > >   	if (!err)
+> > > >   		err = percpu_counter_init(&sbi->s_dirs_counter,
+> > > >   					  ext4_count_dirs(sb), GFP_KERNEL);
+> > > > @@ -5365,6 +5357,14 @@ static int __ext4_fill_super(struct fs_context *fc, struct super_block *sb)
+> > > >   	EXT4_SB(sb)->s_mount_state |= EXT4_ORPHAN_FS;
+> > > >   	ext4_orphan_cleanup(sb, es);
+> > > >   	EXT4_SB(sb)->s_mount_state &= ~EXT4_ORPHAN_FS;
+> > > > +	/*
+> > > > +	 * Update the checksum after updating free space/inode counters and
+> > > > +	 * ext4_orphan_cleanup. Otherwise the superblock can have an incorrect
+> > > > +	 * checksum in the buffer cache until it is written out and
+> > > > +	 * e2fsprogs programs trying to open a file system immediately
+> > > > +	 * after it is mounted can fail.
+> > > > +	 */
+> > > > +	ext4_superblock_csum_set(sb);
+> > > >   	if (needs_recovery) {
+> > > >   		ext4_msg(sb, KERN_INFO, "recovery complete");
+> > > >   		err = ext4_mark_recovery_complete(sb, es);
+> > > > --
+> > > > 2.31.1
+> > > > 
+> 
 -- 
-2.25.1
-
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
