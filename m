@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91908C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:56:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36EF6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:56:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350181AbiE0I4l (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 04:56:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58158 "EHLO
+        id S232097AbiE0I4w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 04:56:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350503AbiE0Iz0 (ORCPT
+        with ESMTP id S1350460AbiE0IzX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 04:55:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D09015C874;
-        Fri, 27 May 2022 01:54:07 -0700 (PDT)
+        Fri, 27 May 2022 04:55:23 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C80AE108ABC;
+        Fri, 27 May 2022 01:54:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 694DEB823D9;
-        Fri, 27 May 2022 08:54:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81FB9C385A9;
-        Fri, 27 May 2022 08:54:04 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 063EDCE237A;
+        Fri, 27 May 2022 08:54:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F353AC34100;
+        Fri, 27 May 2022 08:53:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653641645;
-        bh=tdJgFI6BSEbMlog94O8U41zIwpESdHgVPKAWwGejSCQ=;
+        s=korg; t=1653641638;
+        bh=U66YyZ1t+Wm7G0wK12W5dhdAKSxCoUPe06VVrd3J6Sw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A4Cd04XJHh9M942xrkkf9uoILUUkQOt/GZLdJ1VI6opp7H0tPMZX08aSOpXOQrq1J
-         2sc+akQSuPrWk0wjp/53X7eDuoJZghv9X1gxGVlp2M9rgjCtGwOZNhJLPZxj6fjfTY
-         39AZI6MUdAag8EqLhGMSlB8gPUabkQHnMEnAffcs=
+        b=RBlTAumYByHxXt3ANh82N41tltnX07b8NgN7ocT4zyjrZ4UxRm8shQ0HOB4/cMCSZ
+         CawjdHsnzuJiw3xLWBCePYhAYh5/kvE9eXmjwmQ5ZJ3IX1BVG4eXLtgYCaSD0bq7OB
+         i7V1y5cybiDlZk/2fBZ0cSY7rMS/AfH15p3hrNGo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
         Eric Biggers <ebiggers@google.com>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.17 013/111] random: inline leaves of rand_initialize()
-Date:   Fri, 27 May 2022 10:48:45 +0200
-Message-Id: <20220527084821.044236791@linuxfoundation.org>
+Subject: [PATCH 5.17 012/111] random: get rid of secondary crngs
+Date:   Fri, 27 May 2022 10:48:44 +0200
+Message-Id: <20220527084820.922972262@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220527084819.133490171@linuxfoundation.org>
 References: <20220527084819.133490171@linuxfoundation.org>
@@ -53,142 +52,362 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 8566417221fcec51346ec164e920dacb979c6b5f upstream.
+commit a9412d510ab9a9ba411fea612903631d2e1f1601 upstream.
 
-This is a preparatory commit for the following one. We simply inline the
-various functions that rand_initialize() calls that have no other
-callers. The compiler was doing this anyway before. Doing this will
-allow us to reorganize this after. We can then move the trust_cpu and
-parse_trust_cpu definitions a bit closer to where they're actually used,
-which makes the code easier to read.
+As the comment said, this is indeed a "hack". Since it was introduced,
+it's been a constant state machine nightmare, with lots of subtle early
+boot issues and a wildly complex set of machinery to keep everything in
+sync. Rather than continuing to play whack-a-mole with this approach,
+this commit simply removes it entirely. This commit is preparation for
+"random: use simpler fast key erasure flow on per-cpu keys" in this
+series, which introduces a simpler (and faster) mechanism to accomplish
+the same thing.
 
 Cc: Theodore Ts'o <tytso@mit.edu>
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Reviewed-by: Eric Biggers <ebiggers@google.com>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   90 ++++++++++++++++++--------------------------------
- 1 file changed, 33 insertions(+), 57 deletions(-)
+ drivers/char/random.c |  227 +++++++++++---------------------------------------
+ 1 file changed, 54 insertions(+), 173 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -476,42 +476,6 @@ static DECLARE_WAIT_QUEUE_HEAD(crng_init
+@@ -323,14 +323,11 @@ static struct crng_state primary_crng =
+  * its value (from 0->1->2).
+  */
+ static int crng_init = 0;
+-static bool crng_need_final_init = false;
+ #define crng_ready() (likely(crng_init > 1))
+ static int crng_init_cnt = 0;
+-static unsigned long crng_global_init_time = 0;
+ #define CRNG_INIT_CNT_THRESH (2 * CHACHA_KEY_SIZE)
+-static void _extract_crng(struct crng_state *crng, u8 out[CHACHA_BLOCK_SIZE]);
+-static void _crng_backtrack_protect(struct crng_state *crng,
+-				    u8 tmp[CHACHA_BLOCK_SIZE], int used);
++static void extract_crng(u8 out[CHACHA_BLOCK_SIZE]);
++static void crng_backtrack_protect(u8 tmp[CHACHA_BLOCK_SIZE], int used);
+ static void process_random_ready_list(void);
+ static void _get_random_bytes(void *buf, int nbytes);
  
- static void invalidate_batched_entropy(void);
+@@ -365,7 +362,7 @@ static struct {
  
--static bool trust_cpu __ro_after_init = IS_ENABLED(CONFIG_RANDOM_TRUST_CPU);
--static int __init parse_trust_cpu(char *arg)
--{
--	return kstrtobool(arg, &trust_cpu);
--}
--early_param("random.trust_cpu", parse_trust_cpu);
+ static void extract_entropy(void *buf, size_t nbytes);
+ 
+-static void crng_reseed(struct crng_state *crng);
++static void crng_reseed(void);
+ 
+ /*
+  * This function adds bytes into the entropy "pool".  It does not
+@@ -464,7 +461,7 @@ static void credit_entropy_bits(int nbit
+ 	trace_credit_entropy_bits(nbits, entropy_count, _RET_IP_);
+ 
+ 	if (crng_init < 2 && entropy_count >= POOL_MIN_BITS)
+-		crng_reseed(&primary_crng);
++		crng_reseed();
+ }
+ 
+ /*********************************************************************
+@@ -477,16 +474,7 @@ static void credit_entropy_bits(int nbit
+ 
+ static DECLARE_WAIT_QUEUE_HEAD(crng_init_wait);
+ 
+-/*
+- * Hack to deal with crazy userspace progams when they are all trying
+- * to access /dev/urandom in parallel.  The programs are almost
+- * certainly doing something terribly wrong, but we'll work around
+- * their brain damage.
+- */
+-static struct crng_state **crng_node_pool __read_mostly;
 -
--static bool __init crng_init_try_arch_early(void)
+ static void invalidate_batched_entropy(void);
+-static void numa_crng_init(void);
+ 
+ static bool trust_cpu __ro_after_init = IS_ENABLED(CONFIG_RANDOM_TRUST_CPU);
+ static int __init parse_trust_cpu(char *arg)
+@@ -495,24 +483,6 @@ static int __init parse_trust_cpu(char *
+ }
+ early_param("random.trust_cpu", parse_trust_cpu);
+ 
+-static bool crng_init_try_arch(struct crng_state *crng)
 -{
 -	int i;
 -	bool arch_init = true;
 -	unsigned long rv;
 -
 -	for (i = 4; i < 16; i++) {
--		if (!arch_get_random_seed_long_early(&rv) &&
--		    !arch_get_random_long_early(&rv)) {
+-		if (!arch_get_random_seed_long(&rv) &&
+-		    !arch_get_random_long(&rv)) {
 -			rv = random_get_entropy();
 -			arch_init = false;
 -		}
--		primary_crng.state[i] ^= rv;
+-		crng->state[i] ^= rv;
 -	}
 -
 -	return arch_init;
 -}
 -
--static void __init crng_initialize(void)
+ static bool __init crng_init_try_arch_early(void)
+ {
+ 	int i;
+@@ -531,100 +501,17 @@ static bool __init crng_init_try_arch_ea
+ 	return arch_init;
+ }
+ 
+-static void crng_initialize_secondary(struct crng_state *crng)
 -{
--	extract_entropy(&primary_crng.state[4], sizeof(u32) * 12);
--	if (crng_init_try_arch_early() && trust_cpu && crng_init < 2) {
--		invalidate_batched_entropy();
--		crng_init = 2;
--		pr_notice("crng init done (trusting CPU's manufacturer)\n");
+-	chacha_init_consts(crng->state);
+-	_get_random_bytes(&crng->state[4], sizeof(u32) * 12);
+-	crng_init_try_arch(crng);
+-	crng->init_time = jiffies - CRNG_RESEED_INTERVAL - 1;
+-}
+-
+-static void __init crng_initialize_primary(void)
++static void __init crng_initialize(void)
+ {
+ 	extract_entropy(&primary_crng.state[4], sizeof(u32) * 12);
+ 	if (crng_init_try_arch_early() && trust_cpu && crng_init < 2) {
+ 		invalidate_batched_entropy();
+-		numa_crng_init();
+ 		crng_init = 2;
+ 		pr_notice("crng init done (trusting CPU's manufacturer)\n");
+ 	}
+ 	primary_crng.init_time = jiffies - CRNG_RESEED_INTERVAL - 1;
+ }
+ 
+-static void crng_finalize_init(void)
+-{
+-	if (!system_wq) {
+-		/* We can't call numa_crng_init until we have workqueues,
+-		 * so mark this for processing later. */
+-		crng_need_final_init = true;
+-		return;
 -	}
--	primary_crng.init_time = jiffies - CRNG_RESEED_INTERVAL - 1;
+-
+-	invalidate_batched_entropy();
+-	numa_crng_init();
+-	crng_init = 2;
+-	crng_need_final_init = false;
+-	process_random_ready_list();
+-	wake_up_interruptible(&crng_init_wait);
+-	kill_fasync(&fasync, SIGIO, POLL_IN);
+-	pr_notice("crng init done\n");
+-	if (unseeded_warning.missed) {
+-		pr_notice("%d get_random_xx warning(s) missed due to ratelimiting\n",
+-			  unseeded_warning.missed);
+-		unseeded_warning.missed = 0;
+-	}
+-	if (urandom_warning.missed) {
+-		pr_notice("%d urandom warning(s) missed due to ratelimiting\n",
+-			  urandom_warning.missed);
+-		urandom_warning.missed = 0;
+-	}
+-}
+-
+-static void do_numa_crng_init(struct work_struct *work)
+-{
+-	int i;
+-	struct crng_state *crng;
+-	struct crng_state **pool;
+-
+-	pool = kcalloc(nr_node_ids, sizeof(*pool), GFP_KERNEL | __GFP_NOFAIL);
+-	for_each_online_node(i) {
+-		crng = kmalloc_node(sizeof(struct crng_state),
+-				    GFP_KERNEL | __GFP_NOFAIL, i);
+-		spin_lock_init(&crng->lock);
+-		crng_initialize_secondary(crng);
+-		pool[i] = crng;
+-	}
+-	/* pairs with READ_ONCE() in select_crng() */
+-	if (cmpxchg_release(&crng_node_pool, NULL, pool) != NULL) {
+-		for_each_node(i)
+-			kfree(pool[i]);
+-		kfree(pool);
+-	}
+-}
+-
+-static DECLARE_WORK(numa_crng_init_work, do_numa_crng_init);
+-
+-static void numa_crng_init(void)
+-{
+-	if (IS_ENABLED(CONFIG_NUMA))
+-		schedule_work(&numa_crng_init_work);
+-}
+-
+-static struct crng_state *select_crng(void)
+-{
+-	if (IS_ENABLED(CONFIG_NUMA)) {
+-		struct crng_state **pool;
+-		int nid = numa_node_id();
+-
+-		/* pairs with cmpxchg_release() in do_numa_crng_init() */
+-		pool = READ_ONCE(crng_node_pool);
+-		if (pool && pool[nid])
+-			return pool[nid];
+-	}
+-
+-	return &primary_crng;
 -}
 -
  /*
   * crng_fast_load() can be called by code in the interrupt service
   * path.  So we can't afford to dilly-dally. Returns the number of
-@@ -1220,17 +1184,28 @@ int __must_check get_random_bytes_arch(v
+@@ -702,68 +589,71 @@ static int crng_slow_load(const u8 *cp,
+ 	return 1;
  }
- EXPORT_SYMBOL(get_random_bytes_arch);
  
-+static bool trust_cpu __ro_after_init = IS_ENABLED(CONFIG_RANDOM_TRUST_CPU);
-+static int __init parse_trust_cpu(char *arg)
-+{
-+	return kstrtobool(arg, &trust_cpu);
-+}
-+early_param("random.trust_cpu", parse_trust_cpu);
-+
- /*
-- * init_std_data - initialize pool with system data
-- *
-- * This function clears the pool's entropy count and mixes some system
-- * data into the pool to prepare it for use. The pool is not cleared
-- * as that can only decrease the entropy in the pool.
-+ * Note that setup_arch() may call add_device_randomness()
-+ * long before we get here. This allows seeding of the pools
-+ * with some platform dependent data very early in the boot
-+ * process. But it limits our options here. We must use
-+ * statically allocated structures that already have all
-+ * initializations complete at compile time. We should also
-+ * take care not to overwrite the precious per platform data
-+ * we were given.
-  */
--static void __init init_std_data(void)
-+int __init rand_initialize(void)
+-static void crng_reseed(struct crng_state *crng)
++static void crng_reseed(void)
  {
- 	int i;
- 	ktime_t now = ktime_get_real();
-+	bool arch_init = true;
- 	unsigned long rv;
+ 	unsigned long flags;
+-	int i;
++	int i, entropy_count;
+ 	union {
+ 		u8 block[CHACHA_BLOCK_SIZE];
+ 		u32 key[8];
+ 	} buf;
  
- 	mix_pool_bytes(&now, sizeof(now));
-@@ -1241,22 +1216,23 @@ static void __init init_std_data(void)
- 		mix_pool_bytes(&rv, sizeof(rv));
- 	}
- 	mix_pool_bytes(utsname(), sizeof(*(utsname())));
--}
- 
--/*
-- * Note that setup_arch() may call add_device_randomness()
-- * long before we get here. This allows seeding of the pools
-- * with some platform dependent data very early in the boot
-- * process. But it limits our options here. We must use
-- * statically allocated structures that already have all
-- * initializations complete at compile time. We should also
-- * take care not to overwrite the precious per platform data
-- * we were given.
-- */
--int __init rand_initialize(void)
--{
--	init_std_data();
--	crng_initialize();
-+	extract_entropy(&primary_crng.state[4], sizeof(u32) * 12);
-+	for (i = 4; i < 16; i++) {
-+		if (!arch_get_random_seed_long_early(&rv) &&
-+		    !arch_get_random_long_early(&rv)) {
-+			rv = random_get_entropy();
-+			arch_init = false;
-+		}
-+		primary_crng.state[i] ^= rv;
-+	}
-+	if (arch_init && trust_cpu && crng_init < 2) {
+-	if (crng == &primary_crng) {
+-		int entropy_count;
+-		do {
+-			entropy_count = READ_ONCE(input_pool.entropy_count);
+-			if (entropy_count < POOL_MIN_BITS)
+-				return;
+-		} while (cmpxchg(&input_pool.entropy_count, entropy_count, 0) != entropy_count);
+-		extract_entropy(buf.key, sizeof(buf.key));
+-		wake_up_interruptible(&random_write_wait);
+-		kill_fasync(&fasync, SIGIO, POLL_OUT);
+-	} else {
+-		_extract_crng(&primary_crng, buf.block);
+-		_crng_backtrack_protect(&primary_crng, buf.block,
+-					CHACHA_KEY_SIZE);
+-	}
+-	spin_lock_irqsave(&crng->lock, flags);
++	do {
++		entropy_count = READ_ONCE(input_pool.entropy_count);
++		if (entropy_count < POOL_MIN_BITS)
++			return;
++	} while (cmpxchg(&input_pool.entropy_count, entropy_count, 0) != entropy_count);
++	extract_entropy(buf.key, sizeof(buf.key));
++	wake_up_interruptible(&random_write_wait);
++	kill_fasync(&fasync, SIGIO, POLL_OUT);
++
++	spin_lock_irqsave(&primary_crng.lock, flags);
+ 	for (i = 0; i < 8; i++)
+-		crng->state[i + 4] ^= buf.key[i];
++		primary_crng.state[i + 4] ^= buf.key[i];
+ 	memzero_explicit(&buf, sizeof(buf));
+-	WRITE_ONCE(crng->init_time, jiffies);
+-	spin_unlock_irqrestore(&crng->lock, flags);
+-	if (crng == &primary_crng && crng_init < 2)
+-		crng_finalize_init();
++	WRITE_ONCE(primary_crng.init_time, jiffies);
++	spin_unlock_irqrestore(&primary_crng.lock, flags);
++	if (crng_init < 2) {
 +		invalidate_batched_entropy();
 +		crng_init = 2;
-+		pr_notice("crng init done (trusting CPU's manufacturer)\n");
++		process_random_ready_list();
++		wake_up_interruptible(&crng_init_wait);
++		kill_fasync(&fasync, SIGIO, POLL_IN);
++		pr_notice("crng init done\n");
++		if (unseeded_warning.missed) {
++			pr_notice("%d get_random_xx warning(s) missed due to ratelimiting\n",
++				  unseeded_warning.missed);
++			unseeded_warning.missed = 0;
++		}
++		if (urandom_warning.missed) {
++			pr_notice("%d urandom warning(s) missed due to ratelimiting\n",
++				  urandom_warning.missed);
++			urandom_warning.missed = 0;
++		}
 +	}
-+	primary_crng.init_time = jiffies - CRNG_RESEED_INTERVAL - 1;
-+
+ }
+ 
+-static void _extract_crng(struct crng_state *crng, u8 out[CHACHA_BLOCK_SIZE])
++static void extract_crng(u8 out[CHACHA_BLOCK_SIZE])
+ {
+ 	unsigned long flags, init_time;
+ 
+ 	if (crng_ready()) {
+-		init_time = READ_ONCE(crng->init_time);
+-		if (time_after(READ_ONCE(crng_global_init_time), init_time) ||
+-		    time_after(jiffies, init_time + CRNG_RESEED_INTERVAL))
+-			crng_reseed(crng);
+-	}
+-	spin_lock_irqsave(&crng->lock, flags);
+-	chacha20_block(&crng->state[0], out);
+-	if (crng->state[12] == 0)
+-		crng->state[13]++;
+-	spin_unlock_irqrestore(&crng->lock, flags);
+-}
+-
+-static void extract_crng(u8 out[CHACHA_BLOCK_SIZE])
+-{
+-	_extract_crng(select_crng(), out);
++		init_time = READ_ONCE(primary_crng.init_time);
++		if (time_after(jiffies, init_time + CRNG_RESEED_INTERVAL))
++			crng_reseed();
++	}
++	spin_lock_irqsave(&primary_crng.lock, flags);
++	chacha20_block(&primary_crng.state[0], out);
++	if (primary_crng.state[12] == 0)
++		primary_crng.state[13]++;
++	spin_unlock_irqrestore(&primary_crng.lock, flags);
+ }
+ 
+ /*
+  * Use the leftover bytes from the CRNG block output (if there is
+  * enough) to mutate the CRNG key to provide backtracking protection.
+  */
+-static void _crng_backtrack_protect(struct crng_state *crng,
+-				    u8 tmp[CHACHA_BLOCK_SIZE], int used)
++static void crng_backtrack_protect(u8 tmp[CHACHA_BLOCK_SIZE], int used)
+ {
+ 	unsigned long flags;
+ 	u32 *s, *d;
+@@ -774,17 +664,12 @@ static void _crng_backtrack_protect(stru
+ 		extract_crng(tmp);
+ 		used = 0;
+ 	}
+-	spin_lock_irqsave(&crng->lock, flags);
++	spin_lock_irqsave(&primary_crng.lock, flags);
+ 	s = (u32 *)&tmp[used];
+-	d = &crng->state[4];
++	d = &primary_crng.state[4];
+ 	for (i = 0; i < 8; i++)
+ 		*d++ ^= *s++;
+-	spin_unlock_irqrestore(&crng->lock, flags);
+-}
+-
+-static void crng_backtrack_protect(u8 tmp[CHACHA_BLOCK_SIZE], int used)
+-{
+-	_crng_backtrack_protect(select_crng(), tmp, used);
++	spin_unlock_irqrestore(&primary_crng.lock, flags);
+ }
+ 
+ static ssize_t extract_crng_user(void __user *buf, size_t nbytes)
+@@ -1371,10 +1256,7 @@ static void __init init_std_data(void)
+ int __init rand_initialize(void)
+ {
+ 	init_std_data();
+-	if (crng_need_final_init)
+-		crng_finalize_init();
+-	crng_initialize_primary();
+-	crng_global_init_time = jiffies;
++	crng_initialize();
  	if (ratelimit_disable) {
  		urandom_warning.interval = 0;
  		unseeded_warning.interval = 0;
+@@ -1544,8 +1426,7 @@ static long random_ioctl(struct file *f,
+ 			return -EPERM;
+ 		if (crng_init < 2)
+ 			return -ENODATA;
+-		crng_reseed(&primary_crng);
+-		WRITE_ONCE(crng_global_init_time, jiffies - 1);
++		crng_reseed();
+ 		return 0;
+ 	default:
+ 		return -EINVAL;
 
 
