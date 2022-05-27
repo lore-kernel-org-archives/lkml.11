@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E24A7C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:43:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 407EEC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:43:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235761AbiE0LnN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 07:43:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45184 "EHLO
+        id S231983AbiE0LnS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 07:43:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351701AbiE0Ll2 (ORCPT
+        with ESMTP id S1351607AbiE0Ll6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:41:28 -0400
+        Fri, 27 May 2022 07:41:58 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AB9162BE5;
-        Fri, 27 May 2022 04:39:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D3BF1339DB;
+        Fri, 27 May 2022 04:40:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1628561D19;
-        Fri, 27 May 2022 11:39:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 230C4C385A9;
-        Fri, 27 May 2022 11:39:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 722A861D27;
+        Fri, 27 May 2022 11:40:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DD0EC385A9;
+        Fri, 27 May 2022 11:40:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653651598;
-        bh=ala25M/On/9ldOxK5Rpy89ehIRvhHOgMr0s9fvI87B8=;
+        s=korg; t=1653651615;
+        bh=xZ9N0in4G15OcftiGqivaOgy9jmbWqCjama5P7l+R9o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wvn2n8gv271xr9V0JRLs33v0ebnRGcSJsqUxqr3mZz7kHuzlXagjDdDecT0bivDdw
-         rPn3XSladcETwx22k9CFqRFvNzDnECyzeXABt3W/HOCTVU14GPcGGn4dMpeEh1Zwi9
-         LN6xJS101r+zigjhalU+gbW0LxTXsuKUvo16pNpM=
+        b=xC0pN4zO7MmoR5GU0XLWu/6tmoQ1RTcHMWu1XWqrk4QHDoauSRVa2DVX7u+hrD8yE
+         +C6Aq5FAizUxrilvRY09Ef8QLoF0GgjHXyqqqnAeFitMow7FF6iKzvnpnOF6ttD0E4
+         DZEw7poYJ9OaMiiGqTmOLuqsvr2vjuE7AukMis04=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        stable@vger.kernel.org,
         Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.17 053/111] random: make consistent usage of crng_ready()
-Date:   Fri, 27 May 2022 10:49:25 +0200
-Message-Id: <20220527084826.965361996@linuxfoundation.org>
+Subject: [PATCH 5.15 023/145] random: cleanup poolinfo abstraction
+Date:   Fri, 27 May 2022 10:48:44 +0200
+Message-Id: <20220527084853.695924806@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084819.133490171@linuxfoundation.org>
-References: <20220527084819.133490171@linuxfoundation.org>
+In-Reply-To: <20220527084850.364560116@linuxfoundation.org>
+References: <20220527084850.364560116@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,89 +51,189 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit a96cfe2d427064325ecbf56df8816c6b871ec285 upstream.
+commit 91ec0fe138f107232cb36bc6112211db37cb5306 upstream.
 
-Rather than sometimes checking `crng_init < 2`, we should always use the
-crng_ready() macro, so that should we change anything later, it's
-consistent. Additionally, that macro already has a likely() around it,
-which means we don't need to open code our own likely() and unlikely()
-annotations.
+Now that we're only using one polynomial, we can cleanup its
+representation into constants, instead of passing around pointers
+dynamically to select different polynomials. This improves the codegen
+and makes the code a bit more straightforward.
 
-Cc: Theodore Ts'o <tytso@mit.edu>
 Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   19 +++++++------------
- 1 file changed, 7 insertions(+), 12 deletions(-)
+ drivers/char/random.c |   67 ++++++++++++++++++++++----------------------------
+ 1 file changed, 30 insertions(+), 37 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -125,18 +125,13 @@ static void try_to_generate_entropy(void
+@@ -430,14 +430,20 @@ static int random_write_wakeup_bits = 28
+  * polynomial which improves the resulting TGFSR polynomial to be
+  * irreducible, which we have made here.
   */
- int wait_for_random_bytes(void)
+-static const struct poolinfo {
+-	int poolbitshift, poolwords, poolbytes, poolfracbits;
+-#define S(x) ilog2(x)+5, (x), (x)*4, (x) << (ENTROPY_SHIFT+5)
+-	int tap1, tap2, tap3, tap4, tap5;
+-} poolinfo_table[] = {
+-	/* was: x^128 + x^103 + x^76 + x^51 +x^25 + x + 1 */
++enum poolinfo {
++	POOL_WORDS = 128,
++	POOL_WORDMASK = POOL_WORDS - 1,
++	POOL_BYTES = POOL_WORDS * sizeof(u32),
++	POOL_BITS = POOL_BYTES * 8,
++	POOL_BITSHIFT = ilog2(POOL_WORDS) + 5,
++	POOL_FRACBITS = POOL_WORDS << (ENTROPY_SHIFT + 5),
++
+ 	/* x^128 + x^104 + x^76 + x^51 +x^25 + x + 1 */
+-	{ S(128),	104,	76,	51,	25,	1 },
++	POOL_TAP1 = 104,
++	POOL_TAP2 = 76,
++	POOL_TAP3 = 51,
++	POOL_TAP4 = 25,
++	POOL_TAP5 = 1
+ };
+ 
+ /*
+@@ -503,7 +509,6 @@ MODULE_PARM_DESC(ratelimit_disable, "Dis
+ struct entropy_store;
+ struct entropy_store {
+ 	/* read-only data: */
+-	const struct poolinfo *poolinfo;
+ 	__u32 *pool;
+ 	const char *name;
+ 
+@@ -525,7 +530,6 @@ static void crng_reseed(struct crng_stat
+ static __u32 input_pool_data[INPUT_POOL_WORDS] __latent_entropy;
+ 
+ static struct entropy_store input_pool = {
+-	.poolinfo = &poolinfo_table[0],
+ 	.name = "input",
+ 	.lock = __SPIN_LOCK_UNLOCKED(input_pool.lock),
+ 	.pool = input_pool_data
+@@ -548,33 +552,26 @@ static __u32 const twist_table[8] = {
+ static void _mix_pool_bytes(struct entropy_store *r, const void *in,
+ 			    int nbytes)
  {
--	if (likely(crng_ready()))
--		return 0;
+-	unsigned long i, tap1, tap2, tap3, tap4, tap5;
++	unsigned long i;
+ 	int input_rotate;
+-	int wordmask = r->poolinfo->poolwords - 1;
+ 	const unsigned char *bytes = in;
+ 	__u32 w;
+ 
+-	tap1 = r->poolinfo->tap1;
+-	tap2 = r->poolinfo->tap2;
+-	tap3 = r->poolinfo->tap3;
+-	tap4 = r->poolinfo->tap4;
+-	tap5 = r->poolinfo->tap5;
 -
--	do {
-+	while (!crng_ready()) {
- 		int ret;
- 		ret = wait_event_interruptible_timeout(crng_init_wait, crng_ready(), HZ);
- 		if (ret)
- 			return ret > 0 ? 0 : ret;
+ 	input_rotate = r->input_rotate;
+ 	i = r->add_ptr;
+ 
+ 	/* mix one byte at a time to simplify size handling and churn faster */
+ 	while (nbytes--) {
+ 		w = rol32(*bytes++, input_rotate);
+-		i = (i - 1) & wordmask;
++		i = (i - 1) & POOL_WORDMASK;
+ 
+ 		/* XOR in the various taps */
+ 		w ^= r->pool[i];
+-		w ^= r->pool[(i + tap1) & wordmask];
+-		w ^= r->pool[(i + tap2) & wordmask];
+-		w ^= r->pool[(i + tap3) & wordmask];
+-		w ^= r->pool[(i + tap4) & wordmask];
+-		w ^= r->pool[(i + tap5) & wordmask];
++		w ^= r->pool[(i + POOL_TAP1) & POOL_WORDMASK];
++		w ^= r->pool[(i + POOL_TAP2) & POOL_WORDMASK];
++		w ^= r->pool[(i + POOL_TAP3) & POOL_WORDMASK];
++		w ^= r->pool[(i + POOL_TAP4) & POOL_WORDMASK];
++		w ^= r->pool[(i + POOL_TAP5) & POOL_WORDMASK];
+ 
+ 		/* Mix the result back in with a twist */
+ 		r->pool[i] = (w >> 3) ^ twist_table[w & 7];
+@@ -672,7 +669,6 @@ static void process_random_ready_list(vo
+ static void credit_entropy_bits(struct entropy_store *r, int nbits)
+ {
+ 	int entropy_count, orig;
+-	const int pool_size = r->poolinfo->poolfracbits;
+ 	int nfrac = nbits << ENTROPY_SHIFT;
+ 
+ 	if (!nbits)
+@@ -706,25 +702,25 @@ retry:
+ 		 * turns no matter how large nbits is.
+ 		 */
+ 		int pnfrac = nfrac;
+-		const int s = r->poolinfo->poolbitshift + ENTROPY_SHIFT + 2;
++		const int s = POOL_BITSHIFT + ENTROPY_SHIFT + 2;
+ 		/* The +2 corresponds to the /4 in the denominator */
+ 
+ 		do {
+-			unsigned int anfrac = min(pnfrac, pool_size/2);
++			unsigned int anfrac = min(pnfrac, POOL_FRACBITS/2);
+ 			unsigned int add =
+-				((pool_size - entropy_count)*anfrac*3) >> s;
++				((POOL_FRACBITS - entropy_count)*anfrac*3) >> s;
+ 
+ 			entropy_count += add;
+ 			pnfrac -= anfrac;
+-		} while (unlikely(entropy_count < pool_size-2 && pnfrac));
++		} while (unlikely(entropy_count < POOL_FRACBITS-2 && pnfrac));
+ 	}
+ 
+ 	if (WARN_ON(entropy_count < 0)) {
+ 		pr_warn("negative entropy/overflow: pool %s count %d\n",
+ 			r->name, entropy_count);
+ 		entropy_count = 0;
+-	} else if (entropy_count > pool_size)
+-		entropy_count = pool_size;
++	} else if (entropy_count > POOL_FRACBITS)
++		entropy_count = POOL_FRACBITS;
+ 	if (cmpxchg(&r->entropy_count, orig, entropy_count) != orig)
+ 		goto retry;
+ 
+@@ -741,13 +737,11 @@ retry:
+ 
+ static int credit_entropy_bits_safe(struct entropy_store *r, int nbits)
+ {
+-	const int nbits_max = r->poolinfo->poolwords * 32;
 -
- 		try_to_generate_entropy();
--	} while (!crng_ready());
--
-+	}
+ 	if (nbits < 0)
+ 		return -EINVAL;
+ 
+ 	/* Cap the value to avoid overflows */
+-	nbits = min(nbits,  nbits_max);
++	nbits = min(nbits,  POOL_BITS);
+ 
+ 	credit_entropy_bits(r, nbits);
  	return 0;
- }
- EXPORT_SYMBOL(wait_for_random_bytes);
-@@ -291,7 +286,7 @@ static void crng_reseed(void)
- 		++next_gen;
- 	WRITE_ONCE(base_crng.generation, next_gen);
- 	WRITE_ONCE(base_crng.birth, jiffies);
--	if (crng_init < 2) {
-+	if (!crng_ready()) {
- 		crng_init = 2;
- 		finalize_init = true;
- 	}
-@@ -359,7 +354,7 @@ static void crng_make_state(u32 chacha_s
- 	 * ready, we do fast key erasure with the base_crng directly, because
- 	 * this is what crng_pre_init_inject() mutates during early init.
- 	 */
--	if (unlikely(!crng_ready())) {
-+	if (!crng_ready()) {
- 		bool ready;
+@@ -1343,7 +1337,7 @@ static size_t account(struct entropy_sto
+ 	int entropy_count, orig, have_bytes;
+ 	size_t ibytes, nfrac;
  
- 		spin_lock_irqsave(&base_crng.lock, flags);
-@@ -802,7 +797,7 @@ static void credit_entropy_bits(size_t n
- 		entropy_count = min_t(unsigned int, POOL_BITS, orig + add);
- 	} while (cmpxchg(&input_pool.entropy_count, orig, entropy_count) != orig);
+-	BUG_ON(r->entropy_count > r->poolinfo->poolfracbits);
++	BUG_ON(r->entropy_count > POOL_FRACBITS);
  
--	if (crng_init < 2 && entropy_count >= POOL_MIN_BITS)
-+	if (!crng_ready() && entropy_count >= POOL_MIN_BITS)
- 		crng_reseed();
- }
+ 	/* Can we pull enough? */
+ retry:
+@@ -1409,8 +1403,7 @@ static void extract_buf(struct entropy_s
  
-@@ -959,7 +954,7 @@ int __init rand_initialize(void)
- 	extract_entropy(base_crng.key, sizeof(base_crng.key));
- 	++base_crng.generation;
+ 	/* Generate a hash across the pool */
+ 	spin_lock_irqsave(&r->lock, flags);
+-	blake2s_update(&state, (const u8 *)r->pool,
+-		       r->poolinfo->poolwords * sizeof(*r->pool));
++	blake2s_update(&state, (const u8 *)r->pool, POOL_BYTES);
+ 	blake2s_final(&state, hash); /* final zeros out state */
  
--	if (arch_init && trust_cpu && crng_init < 2) {
-+	if (arch_init && trust_cpu && !crng_ready()) {
- 		crng_init = 2;
- 		pr_notice("crng init done (trusting CPU's manufacturer)\n");
- 	}
-@@ -1548,7 +1543,7 @@ static long random_ioctl(struct file *f,
- 	case RNDRESEEDCRNG:
- 		if (!capable(CAP_SYS_ADMIN))
- 			return -EPERM;
--		if (crng_init < 2)
-+		if (!crng_ready())
- 			return -ENODATA;
- 		crng_reseed();
- 		return 0;
+ 	/*
+@@ -1766,7 +1759,7 @@ static void __init init_std_data(struct
+ 	unsigned long rv;
+ 
+ 	mix_pool_bytes(r, &now, sizeof(now));
+-	for (i = r->poolinfo->poolbytes; i > 0; i -= sizeof(rv)) {
++	for (i = POOL_BYTES; i > 0; i -= sizeof(rv)) {
+ 		if (!arch_get_random_seed_long(&rv) &&
+ 		    !arch_get_random_long(&rv))
+ 			rv = random_get_entropy();
 
 
