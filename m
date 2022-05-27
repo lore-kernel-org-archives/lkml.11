@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7013AC4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CBDEC4167D
 	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:01:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352838AbiE0MA7 (ORCPT
+        id S1352734AbiE0MAu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 08:00:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40268 "EHLO
+        Fri, 27 May 2022 08:00:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352837AbiE0Luz (ORCPT
+        with ESMTP id S1352852AbiE0Lu4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:50:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6858E12FED3;
-        Fri, 27 May 2022 04:45:54 -0700 (PDT)
+        Fri, 27 May 2022 07:50:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB69813327A;
+        Fri, 27 May 2022 04:46:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2680FB82466;
-        Fri, 27 May 2022 11:45:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8887AC385A9;
-        Fri, 27 May 2022 11:45:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 614BC61D5C;
+        Fri, 27 May 2022 11:46:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EBF2C385A9;
+        Fri, 27 May 2022 11:46:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653651951;
-        bh=hwxcHasEV/bb2nOwjqLI3dCmvo+Iqwr+zYuY74pKObQ=;
+        s=korg; t=1653651966;
+        bh=i2Ls4FRmXeR8s7LWB/7GTRBtb7/HOAyQN4vOp63lBFU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UPq9S/jJBJUmAp2csFwK0hO00S1Yjn9/4iJJprsCjDSCuanLKN+6iHx60CzeCavsb
-         8XcnKvjwwWhnxCzkpDVEXAqomEaDGE3kzOPjWe09cAfBiXt6xexJc46J7troS9FS4q
-         9W3L0NW0kCKox/QNi0wXRFG8rEVSjthJvO9C/VJ4=
+        b=r/6vxyr9+Xu2toyO97LIXyku8MEzD46lo6U00BWNYQ7ZkXgO8yz4EebGPswvQZ4Jf
+         9JPjwNnA8Uk0bCB51MrED1jU+LdfHADO6oPzUTW9c2PEo0N+ZAwdpqJwbxbXVA70mW
+         MMT/guHNwdaUlRHp1azO22/YYv8KmVUQ9/aLdoIw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,12 +37,12 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Dominik Brodowski <linux@dominikbrodowski.net>,
         Eric Biggers <ebiggers@google.com>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.10 068/163] random: do not xor RDRAND when writing into /dev/random
-Date:   Fri, 27 May 2022 10:49:08 +0200
-Message-Id: <20220527084837.422272677@linuxfoundation.org>
+Subject: [PATCH 5.15 053/145] random: use hash function for crng_slow_load()
+Date:   Fri, 27 May 2022 10:49:14 +0200
+Message-Id: <20220527084857.202733440@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
-References: <20220527084828.156494029@linuxfoundation.org>
+In-Reply-To: <20220527084850.364560116@linuxfoundation.org>
+References: <20220527084850.364560116@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,17 +53,14 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 91c2afca290ed3034841c8c8532e69ed9e16cf34 upstream.
+commit 66e4c2b9541503d721e936cc3898c9f25f4591ff upstream.
 
-Continuing the reasoning of "random: ensure early RDSEED goes through
-mixer on init", we don't want RDRAND interacting with anything without
-going through the mixer function, as a backdoored CPU could presumably
-cancel out data during an xor, which it'd have a harder time doing when
-being forced through a cryptographic hash function. There's actually no
-need at all to be calling RDRAND in write_pool(), because before we
-extract from the pool, we always do so with 32 bytes of RDSEED hashed in
-at that stage. Xoring at this stage is needless and introduces a minor
-liability.
+Since we have a hash function that's really fast, and the goal of
+crng_slow_load() is reportedly to "touch all of the crng's state", we
+can just hash the old state together with the new state and call it a
+day. This way we dont need to reason about another LFSR or worry about
+various attacks there. This code is only ever used at early boot and
+then never again.
 
 Cc: Theodore Ts'o <tytso@mit.edu>
 Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
@@ -71,38 +68,67 @@ Reviewed-by: Eric Biggers <ebiggers@google.com>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   14 ++------------
- 1 file changed, 2 insertions(+), 12 deletions(-)
+ drivers/char/random.c |   40 ++++++++++++++--------------------------
+ 1 file changed, 14 insertions(+), 26 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -1305,25 +1305,15 @@ static __poll_t random_poll(struct file
- static int write_pool(const char __user *buffer, size_t count)
+@@ -477,42 +477,30 @@ static size_t crng_fast_load(const u8 *c
+  * all), and (2) it doesn't have the performance constraints of
+  * crng_fast_load().
+  *
+- * So we do something more comprehensive which is guaranteed to touch
+- * all of the primary_crng's state, and which uses a LFSR with a
+- * period of 255 as part of the mixing algorithm.  Finally, we do
+- * *not* advance crng_init_cnt since buffer we may get may be something
+- * like a fixed DMI table (for example), which might very well be
+- * unique to the machine, but is otherwise unvarying.
++ * So, we simply hash the contents in with the current key. Finally,
++ * we do *not* advance crng_init_cnt since buffer we may get may be
++ * something like a fixed DMI table (for example), which might very
++ * well be unique to the machine, but is otherwise unvarying.
+  */
+-static int crng_slow_load(const u8 *cp, size_t len)
++static void crng_slow_load(const u8 *cp, size_t len)
  {
- 	size_t bytes;
--	u32 t, buf[16];
-+	u8 buf[BLAKE2S_BLOCK_SIZE];
- 	const char __user *p = buffer;
+ 	unsigned long flags;
+-	static u8 lfsr = 1;
+-	u8 tmp;
+-	unsigned int i, max = sizeof(base_crng.key);
+-	const u8 *src_buf = cp;
+-	u8 *dest_buf = base_crng.key;
++	struct blake2s_state hash;
++
++	blake2s_init(&hash, sizeof(base_crng.key));
  
- 	while (count > 0) {
--		int b, i = 0;
--
- 		bytes = min(count, sizeof(buf));
--		if (copy_from_user(&buf, p, bytes))
-+		if (copy_from_user(buf, p, bytes))
- 			return -EFAULT;
--
--		for (b = bytes; b > 0; b -= sizeof(u32), i++) {
--			if (!arch_get_random_int(&t))
--				break;
--			buf[i] ^= t;
--		}
--
- 		count -= bytes;
- 		p += bytes;
--
- 		mix_pool_bytes(buf, bytes);
- 		cond_resched();
+ 	if (!spin_trylock_irqsave(&base_crng.lock, flags))
+-		return 0;
++		return;
+ 	if (crng_init != 0) {
+ 		spin_unlock_irqrestore(&base_crng.lock, flags);
+-		return 0;
++		return;
  	}
+-	if (len > max)
+-		max = len;
+ 
+-	for (i = 0; i < max; i++) {
+-		tmp = lfsr;
+-		lfsr >>= 1;
+-		if (tmp & 1)
+-			lfsr ^= 0xE1;
+-		tmp = dest_buf[i % sizeof(base_crng.key)];
+-		dest_buf[i % sizeof(base_crng.key)] ^= src_buf[i % len] ^ lfsr;
+-		lfsr += (tmp << 3) | (tmp >> 5);
+-	}
++	blake2s_update(&hash, base_crng.key, sizeof(base_crng.key));
++	blake2s_update(&hash, cp, len);
++	blake2s_final(&hash, base_crng.key);
++
+ 	spin_unlock_irqrestore(&base_crng.lock, flags);
+-	return 1;
+ }
+ 
+ static void crng_reseed(void)
 
 
