@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7298EC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:38:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BBADC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:38:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234414AbiE0Li0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 07:38:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45158 "EHLO
+        id S233981AbiE0Lic (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 07:38:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351392AbiE0LiG (ORCPT
+        with ESMTP id S1351451AbiE0LiO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:38:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10E376EB0F;
-        Fri, 27 May 2022 04:37:51 -0700 (PDT)
+        Fri, 27 May 2022 07:38:14 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49FBF66FB0;
+        Fri, 27 May 2022 04:38:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 61DA361CE2;
-        Fri, 27 May 2022 11:37:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 714B9C3411A;
-        Fri, 27 May 2022 11:37:50 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 6EA89CE2511;
+        Fri, 27 May 2022 11:37:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82F48C385A9;
+        Fri, 27 May 2022 11:37:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653651470;
-        bh=0MYS7OwGSsxOj9r4dJeXvJnS30+TdN5SqX5eby8CsFw=;
+        s=korg; t=1653651476;
+        bh=W7ML/ooXjpvPGn0k5AMTGOwT7fa9NaEu/m2lh1oz+78=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YAoDOc0rTPq4AR7UCkkG6R3zzJeuC5yqZsu8uqtLuwf+2C7tvFhRXPXW1E/rL/1A9
-         jAZlT/VfTU0bf9Ok82BbPRVeTFX1P3GQVSafRas/godTOOCfMbr80GKE3etKo7b2BD
-         gUxx4pYLqWxsC58tXB8STrvDZFEg/byQVj392XCM=
+        b=DE/VCJr/uP1RlLxt2/5WonuH8IptV3Y1c9l3XGVxOPdPPX6smir2ofN4PIGBJVJDh
+         9cm5hiXD1WqxXkBbRc5P9/b5+D17og048Crns2l4FSWd4/9ZD0uSx17/NdEz40G//X
+         Ms08WKmaW/P9Z2LkKg0RJlE9YOiQ796FnkHNIFFQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Eric Biggers <ebiggers@google.com>,
+        stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.17 041/111] random: check for crng_init == 0 in add_device_randomness()
-Date:   Fri, 27 May 2022 10:49:13 +0200
-Message-Id: <20220527084825.267606569@linuxfoundation.org>
+Subject: [PATCH 5.10 024/163] crypto: blake2s - include <linux/bug.h> instead of <asm/bug.h>
+Date:   Fri, 27 May 2022 10:48:24 +0200
+Message-Id: <20220527084831.551011843@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084819.133490171@linuxfoundation.org>
-References: <20220527084819.133490171@linuxfoundation.org>
+In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
+References: <20220527084828.156494029@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,34 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Eric Biggers <ebiggers@google.com>
 
-commit 1daf2f387652bf3a7044aea042f5023b3f6b189b upstream.
+commit bbda6e0f1303953c855ee3669655a81b69fbe899 upstream.
 
-This has no real functional change, as crng_pre_init_inject() (and
-before that, crng_slow_init()) always checks for == 0, not >= 2. So
-correct the outer unlocked change to reflect that. Before this used
-crng_ready(), which was not correct.
+Address the following checkpatch warning:
 
-Cc: Theodore Ts'o <tytso@mit.edu>
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
-Reviewed-by: Eric Biggers <ebiggers@google.com>
+	WARNING: Use #include <linux/bug.h> instead of <asm/bug.h>
+
+Signed-off-by: Eric Biggers <ebiggers@google.com>
+Acked-by: Ard Biesheuvel <ardb@kernel.org>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/crypto/blake2s.h |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -1020,7 +1020,7 @@ void add_device_randomness(const void *b
- 	unsigned long time = random_get_entropy() ^ jiffies;
- 	unsigned long flags;
+--- a/include/crypto/blake2s.h
++++ b/include/crypto/blake2s.h
+@@ -6,12 +6,11 @@
+ #ifndef _CRYPTO_BLAKE2S_H
+ #define _CRYPTO_BLAKE2S_H
  
--	if (!crng_ready() && size)
-+	if (crng_init == 0 && size)
- 		crng_pre_init_inject(buf, size, false, false);
++#include <linux/bug.h>
+ #include <linux/types.h>
+ #include <linux/kernel.h>
+ #include <linux/string.h>
  
- 	spin_lock_irqsave(&input_pool.lock, flags);
+-#include <asm/bug.h>
+-
+ enum blake2s_lengths {
+ 	BLAKE2S_BLOCK_SIZE = 64,
+ 	BLAKE2S_HASH_SIZE = 32,
 
 
