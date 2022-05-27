@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39B8BC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:17:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 117E8C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:17:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352528AbiE0MRi (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 08:17:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49850 "EHLO
+        id S242143AbiE0MRm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 08:17:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352988AbiE0MFX (ORCPT
+        with ESMTP id S1353191AbiE0MFp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 08:05:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE70614FC97;
-        Fri, 27 May 2022 04:53:57 -0700 (PDT)
+        Fri, 27 May 2022 08:05:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1F431632B0;
+        Fri, 27 May 2022 04:54:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 54DED61DD0;
-        Fri, 27 May 2022 11:53:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62CD5C385A9;
-        Fri, 27 May 2022 11:53:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0ACCD61D9F;
+        Fri, 27 May 2022 11:54:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16D10C385A9;
+        Fri, 27 May 2022 11:54:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653652435;
-        bh=qPZzSGPSAPvHAMl7l+SqxXuoM/1wgL8hLc6NH6gAuXc=;
+        s=korg; t=1653652450;
+        bh=a1325iiTRt3uoSvhs7UFiDu+NUMt3odXV5Q1QN3rOtI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nmWNw5XqnbXXPOiCfgTvs/8vUoX3W9yjkIve2b1zPSzEE9Yr/xVAMQZk+XEBU9c8a
-         CmvQCFzZZdMUIyNgWrb+/XSOLNaf2ZzmQQCgpyGCZ/NeHOZrLVILt6ziZq70FGudZk
-         /vSN06+3/LEGrsWjk2XK60cg2gTenssOjipXHhtg=
+        b=wkS8yzzjDfczvZxPYUENMfaP815P/LQeEiBTia3Hb3jqa3VWf87zvR4zN78ux4/4H
+         SDhr7mGOhPu88keOhLzOdXW3XBa2P2gjTm8z3y+b6KToMfoGnLsHn5PR10eGv7MnfJ
+         rADY2LcEB7oTnzpG+BYwchEaqT5Y4xAkdopDiN4Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.15 138/145] random: move initialization functions out of hot pages
-Date:   Fri, 27 May 2022 10:50:39 +0200
-Message-Id: <20220527084907.173477522@linuxfoundation.org>
+Subject: [PATCH 5.15 140/145] random: unify batched entropy implementations
+Date:   Fri, 27 May 2022 10:50:41 +0200
+Message-Id: <20220527084907.443561946@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220527084850.364560116@linuxfoundation.org>
 References: <20220527084850.364560116@linuxfoundation.org>
@@ -52,172 +51,188 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 560181c27b582557d633ecb608110075433383af upstream.
+commit 3092adcef3ffd2ef59634998297ca8358461ebce upstream.
 
-Much of random.c is devoted to initializing the rng and accounting for
-when a sufficient amount of entropy has been added. In a perfect world,
-this would all happen during init, and so we could mark these functions
-as __init. But in reality, this isn't the case: sometimes the rng only
-finishes initializing some seconds after system init is finished.
+There are currently two separate batched entropy implementations, for
+u32 and u64, with nearly identical code, with the goal of avoiding
+unaligned memory accesses and letting the buffers be used more
+efficiently. Having to maintain these two functions independently is a
+bit of a hassle though, considering that they always need to be kept in
+sync.
 
-For this reason, at the moment, a whole host of functions that are only
-used relatively close to system init and then never again are intermixed
-with functions that are used in hot code all the time. This creates more
-cache misses than necessary.
+This commit factors them out into a type-generic macro, so that the
+expansion produces the same code as before, such that diffing the
+assembly shows no differences. This will also make it easier in the
+future to add u16 and u8 batches.
 
-In order to pack the hot code closer together, this commit moves the
-initialization functions that can't be marked as __init into
-.text.unlikely by way of the __cold attribute.
+This was initially tested using an always_inline function and letting
+gcc constant fold the type size in, but the code gen was less efficient,
+and in general it was more verbose and harder to follow. So this patch
+goes with the boring macro solution, similar to what's already done for
+the _wait functions in random.h.
 
-Of particular note is moving credit_init_bits() into a macro wrapper
-that inlines the crng_ready() static branch check. This avoids a
-function call to a nop+ret, and most notably prevents extra entropy
-arithmetic from being computed in mix_interrupt_randomness().
-
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Cc: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   40 ++++++++++++++++++----------------------
- 1 file changed, 18 insertions(+), 22 deletions(-)
+ drivers/char/random.c |  145 ++++++++++++++++++--------------------------------
+ 1 file changed, 54 insertions(+), 91 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -109,7 +109,7 @@ bool rng_is_initialized(void)
- }
- EXPORT_SYMBOL(rng_is_initialized);
- 
--static void crng_set_ready(struct work_struct *work)
-+static void __cold crng_set_ready(struct work_struct *work)
- {
- 	static_branch_enable(&crng_is_ready);
- }
-@@ -148,7 +148,7 @@ EXPORT_SYMBOL(wait_for_random_bytes);
-  * returns: 0 if callback is successfully added
-  *	    -EALREADY if pool is already initialised (callback not called)
+@@ -511,99 +511,62 @@ out_zero_chacha:
+  * provided by this function is okay, the function wait_for_random_bytes()
+  * should be called and return 0 at least once at any point prior.
   */
--int register_random_ready_notifier(struct notifier_block *nb)
-+int __cold register_random_ready_notifier(struct notifier_block *nb)
- {
- 	unsigned long flags;
- 	int ret = -EALREADY;
-@@ -167,7 +167,7 @@ EXPORT_SYMBOL(register_random_ready_noti
- /*
-  * Delete a previously registered readiness callback function.
-  */
--int unregister_random_ready_notifier(struct notifier_block *nb)
-+int __cold unregister_random_ready_notifier(struct notifier_block *nb)
- {
- 	unsigned long flags;
- 	int ret;
-@@ -179,7 +179,7 @@ int unregister_random_ready_notifier(str
- }
- EXPORT_SYMBOL(unregister_random_ready_notifier);
+-struct batched_entropy {
+-	union {
+-		/*
+-		 * We make this 1.5x a ChaCha block, so that we get the
+-		 * remaining 32 bytes from fast key erasure, plus one full
+-		 * block from the detached ChaCha state. We can increase
+-		 * the size of this later if needed so long as we keep the
+-		 * formula of (integer_blocks + 0.5) * CHACHA_BLOCK_SIZE.
+-		 */
+-		u64 entropy_u64[CHACHA_BLOCK_SIZE * 3 / (2 * sizeof(u64))];
+-		u32 entropy_u32[CHACHA_BLOCK_SIZE * 3 / (2 * sizeof(u32))];
+-	};
+-	local_lock_t lock;
+-	unsigned long generation;
+-	unsigned int position;
+-};
  
--static void process_random_ready_list(void)
-+static void __cold process_random_ready_list(void)
- {
- 	unsigned long flags;
++#define DEFINE_BATCHED_ENTROPY(type)						\
++struct batch_ ##type {								\
++	/*									\
++	 * We make this 1.5x a ChaCha block, so that we get the			\
++	 * remaining 32 bytes from fast key erasure, plus one full		\
++	 * block from the detached ChaCha state. We can increase		\
++	 * the size of this later if needed so long as we keep the		\
++	 * formula of (integer_blocks + 0.5) * CHACHA_BLOCK_SIZE.		\
++	 */									\
++	type entropy[CHACHA_BLOCK_SIZE * 3 / (2 * sizeof(type))];		\
++	local_lock_t lock;							\
++	unsigned long generation;						\
++	unsigned int position;							\
++};										\
++										\
++static DEFINE_PER_CPU(struct batch_ ##type, batched_entropy_ ##type) = {	\
++	.lock = INIT_LOCAL_LOCK(batched_entropy_ ##type.lock),			\
++	.position = UINT_MAX							\
++};										\
++										\
++type get_random_ ##type(void)							\
++{										\
++	type ret;								\
++	unsigned long flags;							\
++	struct batch_ ##type *batch;						\
++	unsigned long next_gen;							\
++										\
++	warn_unseeded_randomness();						\
++										\
++	if  (!crng_ready()) {							\
++		_get_random_bytes(&ret, sizeof(ret));				\
++		return ret;							\
++	}									\
++										\
++	local_lock_irqsave(&batched_entropy_ ##type.lock, flags);		\
++	batch = raw_cpu_ptr(&batched_entropy_##type);				\
++										\
++	next_gen = READ_ONCE(base_crng.generation);				\
++	if (batch->position >= ARRAY_SIZE(batch->entropy) ||			\
++	    next_gen != batch->generation) {					\
++		_get_random_bytes(batch->entropy, sizeof(batch->entropy));	\
++		batch->position = 0;						\
++		batch->generation = next_gen;					\
++	}									\
++										\
++	ret = batch->entropy[batch->position];					\
++	batch->entropy[batch->position] = 0;					\
++	++batch->position;							\
++	local_unlock_irqrestore(&batched_entropy_ ##type.lock, flags);		\
++	return ret;								\
++}										\
++EXPORT_SYMBOL(get_random_ ##type);
  
-@@ -189,15 +189,9 @@ static void process_random_ready_list(vo
- }
- 
- #define warn_unseeded_randomness() \
--	_warn_unseeded_randomness(__func__, (void *)_RET_IP_)
+-static DEFINE_PER_CPU(struct batched_entropy, batched_entropy_u64) = {
+-	.lock = INIT_LOCAL_LOCK(batched_entropy_u64.lock),
+-	.position = UINT_MAX
+-};
 -
--static void _warn_unseeded_randomness(const char *func_name, void *caller)
+-u64 get_random_u64(void)
 -{
--	if (!IS_ENABLED(CONFIG_WARN_ALL_UNSEEDED_RANDOM) || crng_ready())
--		return;
--	printk_deferred(KERN_NOTICE "random: %s called from %pS with crng_init=%d\n",
--			func_name, caller, crng_init);
+-	u64 ret;
+-	unsigned long flags;
+-	struct batched_entropy *batch;
+-	unsigned long next_gen;
+-
+-	warn_unseeded_randomness();
+-
+-	if  (!crng_ready()) {
+-		_get_random_bytes(&ret, sizeof(ret));
+-		return ret;
+-	}
+-
+-	local_lock_irqsave(&batched_entropy_u64.lock, flags);
+-	batch = raw_cpu_ptr(&batched_entropy_u64);
+-
+-	next_gen = READ_ONCE(base_crng.generation);
+-	if (batch->position >= ARRAY_SIZE(batch->entropy_u64) ||
+-	    next_gen != batch->generation) {
+-		_get_random_bytes(batch->entropy_u64, sizeof(batch->entropy_u64));
+-		batch->position = 0;
+-		batch->generation = next_gen;
+-	}
+-
+-	ret = batch->entropy_u64[batch->position];
+-	batch->entropy_u64[batch->position] = 0;
+-	++batch->position;
+-	local_unlock_irqrestore(&batched_entropy_u64.lock, flags);
+-	return ret;
 -}
-+	if (IS_ENABLED(CONFIG_WARN_ALL_UNSEEDED_RANDOM) && !crng_ready()) \
-+		printk_deferred(KERN_NOTICE "random: %s called from %pS with crng_init=%d\n", \
-+				__func__, (void *)_RET_IP_, crng_init)
+-EXPORT_SYMBOL(get_random_u64);
+-
+-static DEFINE_PER_CPU(struct batched_entropy, batched_entropy_u32) = {
+-	.lock = INIT_LOCAL_LOCK(batched_entropy_u32.lock),
+-	.position = UINT_MAX
+-};
+-
+-u32 get_random_u32(void)
+-{
+-	u32 ret;
+-	unsigned long flags;
+-	struct batched_entropy *batch;
+-	unsigned long next_gen;
+-
+-	warn_unseeded_randomness();
+-
+-	if  (!crng_ready()) {
+-		_get_random_bytes(&ret, sizeof(ret));
+-		return ret;
+-	}
+-
+-	local_lock_irqsave(&batched_entropy_u32.lock, flags);
+-	batch = raw_cpu_ptr(&batched_entropy_u32);
+-
+-	next_gen = READ_ONCE(base_crng.generation);
+-	if (batch->position >= ARRAY_SIZE(batch->entropy_u32) ||
+-	    next_gen != batch->generation) {
+-		_get_random_bytes(batch->entropy_u32, sizeof(batch->entropy_u32));
+-		batch->position = 0;
+-		batch->generation = next_gen;
+-	}
+-
+-	ret = batch->entropy_u32[batch->position];
+-	batch->entropy_u32[batch->position] = 0;
+-	++batch->position;
+-	local_unlock_irqrestore(&batched_entropy_u32.lock, flags);
+-	return ret;
+-}
+-EXPORT_SYMBOL(get_random_u32);
++DEFINE_BATCHED_ENTROPY(u64)
++DEFINE_BATCHED_ENTROPY(u32)
  
- 
- /*********************************************************************
-@@ -616,7 +610,7 @@ EXPORT_SYMBOL(get_random_u32);
-  * This function is called when the CPU is coming up, with entry
-  * CPUHP_RANDOM_PREPARE, which comes before CPUHP_WORKQUEUE_PREP.
-  */
--int random_prepare_cpu(unsigned int cpu)
-+int __cold random_prepare_cpu(unsigned int cpu)
- {
- 	/*
- 	 * When the cpu comes back online, immediately invalidate both
-@@ -791,13 +785,15 @@ static void extract_entropy(void *buf, s
- 	memzero_explicit(&block, sizeof(block));
- }
- 
--static void credit_init_bits(size_t bits)
-+#define credit_init_bits(bits) if (!crng_ready()) _credit_init_bits(bits)
-+
-+static void __cold _credit_init_bits(size_t bits)
- {
- 	static struct execute_work set_ready;
- 	unsigned int new, orig, add;
- 	unsigned long flags;
- 
--	if (crng_ready() || !bits)
-+	if (!bits)
- 		return;
- 
- 	add = min_t(size_t, bits, POOL_BITS);
-@@ -976,7 +972,7 @@ EXPORT_SYMBOL_GPL(add_hwgenerator_random
-  * Handle random seed passed by bootloader, and credit it if
-  * CONFIG_RANDOM_TRUST_BOOTLOADER is set.
-  */
--void add_bootloader_randomness(const void *buf, size_t len)
-+void __cold add_bootloader_randomness(const void *buf, size_t len)
- {
- 	mix_pool_bytes(buf, len);
- 	if (trust_bootloader)
-@@ -1022,7 +1018,7 @@ static void fast_mix(unsigned long s[4],
-  * This function is called when the CPU has just come online, with
-  * entry CPUHP_AP_RANDOM_ONLINE, just after CPUHP_AP_WORKQUEUE_ONLINE.
-  */
--int random_online_cpu(unsigned int cpu)
-+int __cold random_online_cpu(unsigned int cpu)
- {
- 	/*
- 	 * During CPU shutdown and before CPU onlining, add_interrupt_
-@@ -1177,7 +1173,7 @@ static void add_timer_randomness(struct
- 	if (in_hardirq())
- 		this_cpu_ptr(&irq_randomness)->count += max(1u, bits * 64) - 1;
- 	else
--		credit_init_bits(bits);
-+		_credit_init_bits(bits);
- }
- 
- void add_input_randomness(unsigned int type, unsigned int code, unsigned int value)
-@@ -1205,7 +1201,7 @@ void add_disk_randomness(struct gendisk
- }
- EXPORT_SYMBOL_GPL(add_disk_randomness);
- 
--void rand_initialize_disk(struct gendisk *disk)
-+void __cold rand_initialize_disk(struct gendisk *disk)
- {
- 	struct timer_rand_state *state;
- 
-@@ -1234,7 +1230,7 @@ void rand_initialize_disk(struct gendisk
-  *
-  * So the re-arming always happens in the entropy loop itself.
-  */
--static void entropy_timer(struct timer_list *t)
-+static void __cold entropy_timer(struct timer_list *t)
- {
- 	credit_init_bits(1);
- }
-@@ -1243,7 +1239,7 @@ static void entropy_timer(struct timer_l
-  * If we have an actual cycle counter, see if we can
-  * generate enough entropy with timing noise
-  */
--static void try_to_generate_entropy(void)
-+static void __cold try_to_generate_entropy(void)
- {
- 	struct {
- 		unsigned long entropy;
+ #ifdef CONFIG_SMP
+ /*
 
 
