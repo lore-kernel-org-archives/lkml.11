@@ -2,717 +2,322 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 570C0C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F498C43219
 	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:56:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352569AbiE0Lz1 (ORCPT
+        id S1352721AbiE0Lzi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 07:55:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40116 "EHLO
+        Fri, 27 May 2022 07:55:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352594AbiE0Lug (ORCPT
+        with ESMTP id S1352786AbiE0Luv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:50:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91C2114FCA9;
-        Fri, 27 May 2022 04:44:52 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B2DD0B824D7;
-        Fri, 27 May 2022 11:44:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5CF8C385A9;
-        Fri, 27 May 2022 11:44:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653651889;
-        bh=AsfRo6bKXMJTpmYLft4tQ1RlzBMrmGoPUlJWFIHt8gw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FbuaqwgLrW08eEbikABgSILc+FEybvAXS7IGTrJWc/8I06Rk0n67ujt4TXwVtTEa2
-         F7Qu1EO50cVQrm6A3YRvoGi+CMJTbzhBOuYbFZINbvASYCvGzlD2DGYA/2RNhffn5O
-         TfE7mUS09boM2H5lXwRZMzwYYpikHWog82lcc85g=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Jann Horn <jannh@google.com>,
-        Eric Biggers <ebiggers@google.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.15 054/145] random: make more consistent use of integer types
-Date:   Fri, 27 May 2022 10:49:15 +0200
-Message-Id: <20220527084857.317034967@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084850.364560116@linuxfoundation.org>
-References: <20220527084850.364560116@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Fri, 27 May 2022 07:50:51 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0409132741
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 04:45:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653651918; x=1685187918;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=Ku6DON7XdpvGJoLwbB79r2uuBcp/VCl2MGDwRymTj14=;
+  b=PolJLCZ1nCig/j3RiufAnZVDVWDZsUqhfCZsS9HP/PvmfbGJSjthLVwB
+   U3ro7FxLihJl/7N+2f9Hk7C0UECiL4FHpBt3/6N+Y5DRla3/4QkJHPccm
+   +O3336KQw+YZWhKpmF/MSjH06FZxEqFUYMbYOb+1dCGQHp8PuyiayJedi
+   BhGrtqB5YmenkgihGnUbWNRCz/jSV6Nicu3oiwgzM9dQn0mNMcLQ2mzbi
+   mJj9SKqMkxwfT+n4UHLsOjOF2hMyvpxAV1bspWgxF5kpw8fZoEDrYQe0i
+   X2+dYH3z8nMpXMy3va7Q0xZiftU1dFANdFJnw+7wDVPKGKc/fgoFyQ48H
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10359"; a="274186151"
+X-IronPort-AV: E=Sophos;i="5.91,255,1647327600"; 
+   d="scan'208";a="274186151"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2022 04:45:18 -0700
+X-IronPort-AV: E=Sophos;i="5.91,255,1647327600"; 
+   d="scan'208";a="603835273"
+Received: from jtongex-mobl.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.254.35.135])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2022 04:45:14 -0700
+Message-ID: <dcd9a112fd5761d9cd2c741e52e7ecb3cf06a66e.camel@intel.com>
+Subject: Re: [PATCH v7 1/5] x86/tdx: Add TDX Guest attestation interface
+ driver
+From:   Kai Huang <kai.huang@intel.com>
+To:     Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org
+Cc:     "H . Peter Anvin" <hpa@zytor.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Wander Lairson Costa <wander@redhat.com>,
+        Isaku Yamahata <isaku.yamahata@gmail.com>,
+        marcelo.cerri@canonical.com, tim.gardner@canonical.com,
+        khalid.elmously@canonical.com, philip.cox@canonical.com,
+        linux-kernel@vger.kernel.org
+Date:   Fri, 27 May 2022 23:45:12 +1200
+In-Reply-To: <20220524040517.703581-2-sathyanarayanan.kuppuswamy@linux.intel.com>
+References: <20220524040517.703581-1-sathyanarayanan.kuppuswamy@linux.intel.com>
+         <20220524040517.703581-2-sathyanarayanan.kuppuswamy@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+On Mon, 2022-05-23 at 21:05 -0700, Kuppuswamy Sathyanarayanan wrote:
+> In TDX guest, attestation is used to verify the trustworthiness of a TD
+> to other entities before provisioning secrets to the TD.
+> 
+> One usage example is, when a TD guest uses encrypted drive and if the
+> decryption keys required to access the drive are stored in a secure 3rd
+> party keyserver, the key server can use attestation to verify TD's
+> trustworthiness and release the decryption keys to the TD.
+> 
+> The attestation process consists of two steps: TDREPORT generation and
+> Quote generation.
+> 
+> TDREPORT (TDREPORT_STRUCT) is a fixed-size data structure generated by
+> the TDX module which contains TD-specific information (such as TD
+> measurements), platform security version, and the MAC to protect the
+> integrity of the TDREPORT. The TD kernel uses TDCALL[TDG.MR.REPORT] to
+> get the TDREPORT from the TDX module. A user-provided 64-Byte
+> REPORTDATA is used as input and included in the TDREPORT. Typically it
+> can be some nonce provided by attestation service so the TDREPORT can
+> be verified uniquely. More details about TDREPORT can be found in
+> Intel TDX Module specification, section titled "TDG.MR.REPORT Leaf".
+> 
+> TDREPORT can only be verified on local platform as the MAC key is bound
+> to the platform. To support remote verification of the TDREPORT, TDX
+> leverages Intel SGX Quote Enclave (QE) to verify the TDREPORT locally
+> and convert it to a remote verifiable Quote.
+> 
+> After getting the TDREPORT, the second step of the attestation process
+> is to send it to the QE to generate the Quote. TDX doesn't support SGX
+> inside the TD, so the QE can be deployed in the host, or in another
+> legacy VM with SGX support. How to send the TDREPORT to QE and receive
+> the Quote is implementation and deployment specific.
+> 
+> Implement a basic attestation driver to allow TD userspace to get the
+> TDREPORT. The TD userspace attestation software can get the TDREPORT
+> and then choose whatever communication channel available (i.e. vsock)
+> to send the TDREPORT to QE and receive the Quote.
+> 
+> Also note that explicit access permissions are not enforced in this
+> driver because the quote and measurements are not a secret. However
+> the access permissions of the device node can be used to set any
+> desired access policy. The udev default is usually root access
+> only.
+> 
+> Operations like getting TDREPORT or Quote generation involves sending
+> a blob of data as input and getting another blob of data as output. It
+> was considered to use a sysfs interface for this, but it doesn't fit
+> well into the standard sysfs model for configuring values. It would be
+> possible to do read/write on files, but it would need multiple file
+> descriptors, which would be somewhat messy. IOCTLs seems to be the best
+> fitting and simplest model for this use case. Also, the REPORTDATA used
+> in TDREPORT generation can possibly come from attestation service to
+> uniquely verify the Quote (like per instance verification). In such
+> case, since REPORTDATA is a secret, using sysfs to share it is insecure
+> compared to sending it via IOCTL.
 
-commit 04ec96b768c9dd43946b047c3da60dcc66431370 upstream.
+Acked-by: Kai Huang <kai.huang@intel.com>
 
-We've been using a flurry of int, unsigned int, size_t, and ssize_t.
-Let's unify all of this into size_t where it makes sense, as it does in
-most places, and leave ssize_t for return values with possible errors.
-
-In addition, keeping with the convention of other functions in this
-file, functions that are dealing with raw bytes now take void *
-consistently instead of a mix of that and u8 *, because much of the time
-we're actually passing some other structure that is then interpreted as
-bytes by the function.
-
-We also take the opportunity to fix the outdated and incorrect comment
-in get_random_bytes_arch().
-
-Cc: Theodore Ts'o <tytso@mit.edu>
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
-Reviewed-by: Jann Horn <jannh@google.com>
-Reviewed-by: Eric Biggers <ebiggers@google.com>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/char/random.c         |  125 ++++++++++++++++++------------------------
- include/linux/hw_random.h     |    2 
- include/linux/random.h        |   10 +--
- include/trace/events/random.h |   79 ++++++++++++--------------
- 4 files changed, 100 insertions(+), 116 deletions(-)
-
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -69,7 +69,7 @@
-  *
-  * The primary kernel interfaces are:
-  *
-- *	void get_random_bytes(void *buf, int nbytes);
-+ *	void get_random_bytes(void *buf, size_t nbytes);
-  *	u32 get_random_u32()
-  *	u64 get_random_u64()
-  *	unsigned int get_random_int()
-@@ -97,14 +97,14 @@
-  * The current exported interfaces for gathering environmental noise
-  * from the devices are:
-  *
-- *	void add_device_randomness(const void *buf, unsigned int size);
-+ *	void add_device_randomness(const void *buf, size_t size);
-  *	void add_input_randomness(unsigned int type, unsigned int code,
-  *                                unsigned int value);
-  *	void add_interrupt_randomness(int irq);
-  *	void add_disk_randomness(struct gendisk *disk);
-- *	void add_hwgenerator_randomness(const char *buffer, size_t count,
-+ *	void add_hwgenerator_randomness(const void *buffer, size_t count,
-  *					size_t entropy);
-- *	void add_bootloader_randomness(const void *buf, unsigned int size);
-+ *	void add_bootloader_randomness(const void *buf, size_t size);
-  *
-  * add_device_randomness() is for adding data to the random pool that
-  * is likely to differ between two devices (or possibly even per boot).
-@@ -268,7 +268,7 @@ static int crng_init = 0;
- #define crng_ready() (likely(crng_init > 1))
- static int crng_init_cnt = 0;
- static void process_random_ready_list(void);
--static void _get_random_bytes(void *buf, int nbytes);
-+static void _get_random_bytes(void *buf, size_t nbytes);
- 
- static struct ratelimit_state unseeded_warning =
- 	RATELIMIT_STATE_INIT("warn_unseeded_randomness", HZ, 3);
-@@ -290,7 +290,7 @@ MODULE_PARM_DESC(ratelimit_disable, "Dis
- static struct {
- 	struct blake2s_state hash;
- 	spinlock_t lock;
--	int entropy_count;
-+	unsigned int entropy_count;
- } input_pool = {
- 	.hash.h = { BLAKE2S_IV0 ^ (0x01010000 | BLAKE2S_HASH_SIZE),
- 		    BLAKE2S_IV1, BLAKE2S_IV2, BLAKE2S_IV3, BLAKE2S_IV4,
-@@ -308,18 +308,12 @@ static void crng_reseed(void);
-  * update the entropy estimate.  The caller should call
-  * credit_entropy_bits if this is appropriate.
-  */
--static void _mix_pool_bytes(const void *in, int nbytes)
-+static void _mix_pool_bytes(const void *in, size_t nbytes)
- {
- 	blake2s_update(&input_pool.hash, in, nbytes);
- }
- 
--static void __mix_pool_bytes(const void *in, int nbytes)
--{
--	trace_mix_pool_bytes_nolock(nbytes, _RET_IP_);
--	_mix_pool_bytes(in, nbytes);
--}
--
--static void mix_pool_bytes(const void *in, int nbytes)
-+static void mix_pool_bytes(const void *in, size_t nbytes)
- {
- 	unsigned long flags;
- 
-@@ -383,18 +377,18 @@ static void process_random_ready_list(vo
- 	spin_unlock_irqrestore(&random_ready_list_lock, flags);
- }
- 
--static void credit_entropy_bits(int nbits)
-+static void credit_entropy_bits(size_t nbits)
- {
--	int entropy_count, orig;
-+	unsigned int entropy_count, orig, add;
- 
--	if (nbits <= 0)
-+	if (!nbits)
- 		return;
- 
--	nbits = min(nbits, POOL_BITS);
-+	add = min_t(size_t, nbits, POOL_BITS);
- 
- 	do {
- 		orig = READ_ONCE(input_pool.entropy_count);
--		entropy_count = min(POOL_BITS, orig + nbits);
-+		entropy_count = min_t(unsigned int, POOL_BITS, orig + add);
- 	} while (cmpxchg(&input_pool.entropy_count, orig, entropy_count) != orig);
- 
- 	trace_credit_entropy_bits(nbits, entropy_count, _RET_IP_);
-@@ -443,10 +437,10 @@ static void invalidate_batched_entropy(v
-  * path.  So we can't afford to dilly-dally. Returns the number of
-  * bytes processed from cp.
-  */
--static size_t crng_fast_load(const u8 *cp, size_t len)
-+static size_t crng_fast_load(const void *cp, size_t len)
- {
- 	unsigned long flags;
--	u8 *p;
-+	const u8 *src = (const u8 *)cp;
- 	size_t ret = 0;
- 
- 	if (!spin_trylock_irqsave(&base_crng.lock, flags))
-@@ -455,10 +449,9 @@ static size_t crng_fast_load(const u8 *c
- 		spin_unlock_irqrestore(&base_crng.lock, flags);
- 		return 0;
- 	}
--	p = base_crng.key;
- 	while (len > 0 && crng_init_cnt < CRNG_INIT_CNT_THRESH) {
--		p[crng_init_cnt % sizeof(base_crng.key)] ^= *cp;
--		cp++; crng_init_cnt++; len--; ret++;
-+		base_crng.key[crng_init_cnt % sizeof(base_crng.key)] ^= *src;
-+		src++; crng_init_cnt++; len--; ret++;
- 	}
- 	if (crng_init_cnt >= CRNG_INIT_CNT_THRESH) {
- 		invalidate_batched_entropy();
-@@ -482,7 +475,7 @@ static size_t crng_fast_load(const u8 *c
-  * something like a fixed DMI table (for example), which might very
-  * well be unique to the machine, but is otherwise unvarying.
-  */
--static void crng_slow_load(const u8 *cp, size_t len)
-+static void crng_slow_load(const void *cp, size_t len)
- {
- 	unsigned long flags;
- 	struct blake2s_state hash;
-@@ -656,14 +649,15 @@ static void crng_make_state(u32 chacha_s
- static ssize_t get_random_bytes_user(void __user *buf, size_t nbytes)
- {
- 	bool large_request = nbytes > 256;
--	ssize_t ret = 0, len;
-+	ssize_t ret = 0;
-+	size_t len;
- 	u32 chacha_state[CHACHA_STATE_WORDS];
- 	u8 output[CHACHA_BLOCK_SIZE];
- 
- 	if (!nbytes)
- 		return 0;
- 
--	len = min_t(ssize_t, 32, nbytes);
-+	len = min_t(size_t, 32, nbytes);
- 	crng_make_state(chacha_state, output, len);
- 
- 	if (copy_to_user(buf, output, len))
-@@ -683,7 +677,7 @@ static ssize_t get_random_bytes_user(voi
- 		if (unlikely(chacha_state[12] == 0))
- 			++chacha_state[13];
- 
--		len = min_t(ssize_t, nbytes, CHACHA_BLOCK_SIZE);
-+		len = min_t(size_t, nbytes, CHACHA_BLOCK_SIZE);
- 		if (copy_to_user(buf, output, len)) {
- 			ret = -EFAULT;
- 			break;
-@@ -721,7 +715,7 @@ struct timer_rand_state {
-  * the entropy pool having similar initial state across largely
-  * identical devices.
-  */
--void add_device_randomness(const void *buf, unsigned int size)
-+void add_device_randomness(const void *buf, size_t size)
- {
- 	unsigned long time = random_get_entropy() ^ jiffies;
- 	unsigned long flags;
-@@ -749,7 +743,7 @@ static struct timer_rand_state input_tim
-  * keyboard scan codes, and 256 upwards for interrupts.
-  *
-  */
--static void add_timer_randomness(struct timer_rand_state *state, unsigned num)
-+static void add_timer_randomness(struct timer_rand_state *state, unsigned int num)
- {
- 	struct {
- 		long jiffies;
-@@ -793,7 +787,7 @@ static void add_timer_randomness(struct
- 	 * Round down by 1 bit on general principles,
- 	 * and limit entropy estimate to 12 bits.
- 	 */
--	credit_entropy_bits(min_t(int, fls(delta >> 1), 11));
-+	credit_entropy_bits(min_t(unsigned int, fls(delta >> 1), 11));
- }
- 
- void add_input_randomness(unsigned int type, unsigned int code,
-@@ -874,8 +868,8 @@ void add_interrupt_randomness(int irq)
- 	add_interrupt_bench(cycles);
- 
- 	if (unlikely(crng_init == 0)) {
--		if ((fast_pool->count >= 64) &&
--		    crng_fast_load((u8 *)fast_pool->pool, sizeof(fast_pool->pool)) > 0) {
-+		if (fast_pool->count >= 64 &&
-+		    crng_fast_load(fast_pool->pool, sizeof(fast_pool->pool)) > 0) {
- 			fast_pool->count = 0;
- 			fast_pool->last = now;
- 			if (spin_trylock(&input_pool.lock)) {
-@@ -893,7 +887,7 @@ void add_interrupt_randomness(int irq)
- 		return;
- 
- 	fast_pool->last = now;
--	__mix_pool_bytes(&fast_pool->pool, sizeof(fast_pool->pool));
-+	_mix_pool_bytes(&fast_pool->pool, sizeof(fast_pool->pool));
- 	spin_unlock(&input_pool.lock);
- 
- 	fast_pool->count = 0;
-@@ -1002,18 +996,18 @@ static void _warn_unseeded_randomness(co
-  * wait_for_random_bytes() should be called and return 0 at least once
-  * at any point prior.
-  */
--static void _get_random_bytes(void *buf, int nbytes)
-+static void _get_random_bytes(void *buf, size_t nbytes)
- {
- 	u32 chacha_state[CHACHA_STATE_WORDS];
- 	u8 tmp[CHACHA_BLOCK_SIZE];
--	ssize_t len;
-+	size_t len;
- 
- 	trace_get_random_bytes(nbytes, _RET_IP_);
- 
- 	if (!nbytes)
- 		return;
- 
--	len = min_t(ssize_t, 32, nbytes);
-+	len = min_t(size_t, 32, nbytes);
- 	crng_make_state(chacha_state, buf, len);
- 	nbytes -= len;
- 	buf += len;
-@@ -1036,7 +1030,7 @@ static void _get_random_bytes(void *buf,
- 	memzero_explicit(chacha_state, sizeof(chacha_state));
- }
- 
--void get_random_bytes(void *buf, int nbytes)
-+void get_random_bytes(void *buf, size_t nbytes)
- {
- 	static void *previous;
- 
-@@ -1197,25 +1191,19 @@ EXPORT_SYMBOL(del_random_ready_callback)
- 
- /*
-  * This function will use the architecture-specific hardware random
-- * number generator if it is available.  The arch-specific hw RNG will
-- * almost certainly be faster than what we can do in software, but it
-- * is impossible to verify that it is implemented securely (as
-- * opposed, to, say, the AES encryption of a sequence number using a
-- * key known by the NSA).  So it's useful if we need the speed, but
-- * only if we're willing to trust the hardware manufacturer not to
-- * have put in a back door.
-- *
-- * Return number of bytes filled in.
-+ * number generator if it is available. It is not recommended for
-+ * use. Use get_random_bytes() instead. It returns the number of
-+ * bytes filled in.
-  */
--int __must_check get_random_bytes_arch(void *buf, int nbytes)
-+size_t __must_check get_random_bytes_arch(void *buf, size_t nbytes)
- {
--	int left = nbytes;
-+	size_t left = nbytes;
- 	u8 *p = buf;
- 
- 	trace_get_random_bytes_arch(left, _RET_IP_);
- 	while (left) {
- 		unsigned long v;
--		int chunk = min_t(int, left, sizeof(unsigned long));
-+		size_t chunk = min_t(size_t, left, sizeof(unsigned long));
- 
- 		if (!arch_get_random_long(&v))
- 			break;
-@@ -1248,12 +1236,12 @@ early_param("random.trust_cpu", parse_tr
-  */
- int __init rand_initialize(void)
- {
--	int i;
-+	size_t i;
- 	ktime_t now = ktime_get_real();
- 	bool arch_init = true;
- 	unsigned long rv;
- 
--	for (i = BLAKE2S_BLOCK_SIZE; i > 0; i -= sizeof(rv)) {
-+	for (i = 0; i < BLAKE2S_BLOCK_SIZE; i += sizeof(rv)) {
- 		if (!arch_get_random_seed_long_early(&rv) &&
- 		    !arch_get_random_long_early(&rv)) {
- 			rv = random_get_entropy();
-@@ -1302,7 +1290,7 @@ static ssize_t urandom_read_nowarn(struc
- 
- 	nbytes = min_t(size_t, nbytes, INT_MAX >> 6);
- 	ret = get_random_bytes_user(buf, nbytes);
--	trace_urandom_read(8 * nbytes, 0, input_pool.entropy_count);
-+	trace_urandom_read(nbytes, input_pool.entropy_count);
- 	return ret;
- }
- 
-@@ -1346,19 +1334,18 @@ static __poll_t random_poll(struct file
- 	return mask;
- }
- 
--static int write_pool(const char __user *buffer, size_t count)
-+static int write_pool(const char __user *ubuf, size_t count)
- {
--	size_t bytes;
--	u8 buf[BLAKE2S_BLOCK_SIZE];
--	const char __user *p = buffer;
--
--	while (count > 0) {
--		bytes = min(count, sizeof(buf));
--		if (copy_from_user(buf, p, bytes))
-+	size_t len;
-+	u8 block[BLAKE2S_BLOCK_SIZE];
-+
-+	while (count) {
-+		len = min(count, sizeof(block));
-+		if (copy_from_user(block, ubuf, len))
- 			return -EFAULT;
--		count -= bytes;
--		p += bytes;
--		mix_pool_bytes(buf, bytes);
-+		count -= len;
-+		ubuf += len;
-+		mix_pool_bytes(block, len);
- 		cond_resched();
- 	}
- 
-@@ -1368,7 +1355,7 @@ static int write_pool(const char __user
- static ssize_t random_write(struct file *file, const char __user *buffer,
- 			    size_t count, loff_t *ppos)
- {
--	size_t ret;
-+	int ret;
- 
- 	ret = write_pool(buffer, count);
- 	if (ret)
-@@ -1464,8 +1451,6 @@ const struct file_operations urandom_fop
- SYSCALL_DEFINE3(getrandom, char __user *, buf, size_t, count, unsigned int,
- 		flags)
- {
--	int ret;
--
- 	if (flags & ~(GRND_NONBLOCK | GRND_RANDOM | GRND_INSECURE))
- 		return -EINVAL;
- 
-@@ -1480,6 +1465,8 @@ SYSCALL_DEFINE3(getrandom, char __user *
- 		count = INT_MAX;
- 
- 	if (!(flags & GRND_INSECURE) && !crng_ready()) {
-+		int ret;
-+
- 		if (flags & GRND_NONBLOCK)
- 			return -EAGAIN;
- 		ret = wait_for_random_bytes();
-@@ -1741,7 +1728,7 @@ unsigned long randomize_page(unsigned lo
-  * Those devices may produce endless random bits and will be throttled
-  * when our pool is full.
-  */
--void add_hwgenerator_randomness(const char *buffer, size_t count,
-+void add_hwgenerator_randomness(const void *buffer, size_t count,
- 				size_t entropy)
- {
- 	if (unlikely(crng_init == 0)) {
-@@ -1772,7 +1759,7 @@ EXPORT_SYMBOL_GPL(add_hwgenerator_random
-  * it would be regarded as device data.
-  * The decision is controlled by CONFIG_RANDOM_TRUST_BOOTLOADER.
-  */
--void add_bootloader_randomness(const void *buf, unsigned int size)
-+void add_bootloader_randomness(const void *buf, size_t size)
- {
- 	if (IS_ENABLED(CONFIG_RANDOM_TRUST_BOOTLOADER))
- 		add_hwgenerator_randomness(buf, size, size * 8);
---- a/include/linux/hw_random.h
-+++ b/include/linux/hw_random.h
-@@ -61,6 +61,6 @@ extern int devm_hwrng_register(struct de
- extern void hwrng_unregister(struct hwrng *rng);
- extern void devm_hwrng_unregister(struct device *dve, struct hwrng *rng);
- /** Feed random bits into the pool. */
--extern void add_hwgenerator_randomness(const char *buffer, size_t count, size_t entropy);
-+extern void add_hwgenerator_randomness(const void *buffer, size_t count, size_t entropy);
- 
- #endif /* LINUX_HWRANDOM_H_ */
---- a/include/linux/random.h
-+++ b/include/linux/random.h
-@@ -20,8 +20,8 @@ struct random_ready_callback {
- 	struct module *owner;
- };
- 
--extern void add_device_randomness(const void *, unsigned int);
--extern void add_bootloader_randomness(const void *, unsigned int);
-+extern void add_device_randomness(const void *, size_t);
-+extern void add_bootloader_randomness(const void *, size_t);
- 
- #if defined(LATENT_ENTROPY_PLUGIN) && !defined(__CHECKER__)
- static inline void add_latent_entropy(void)
-@@ -37,13 +37,13 @@ extern void add_input_randomness(unsigne
- 				 unsigned int value) __latent_entropy;
- extern void add_interrupt_randomness(int irq) __latent_entropy;
- 
--extern void get_random_bytes(void *buf, int nbytes);
-+extern void get_random_bytes(void *buf, size_t nbytes);
- extern int wait_for_random_bytes(void);
- extern int __init rand_initialize(void);
- extern bool rng_is_initialized(void);
- extern int add_random_ready_callback(struct random_ready_callback *rdy);
- extern void del_random_ready_callback(struct random_ready_callback *rdy);
--extern int __must_check get_random_bytes_arch(void *buf, int nbytes);
-+extern size_t __must_check get_random_bytes_arch(void *buf, size_t nbytes);
- 
- #ifndef MODULE
- extern const struct file_operations random_fops, urandom_fops;
-@@ -87,7 +87,7 @@ static inline unsigned long get_random_c
- 
- /* Calls wait_for_random_bytes() and then calls get_random_bytes(buf, nbytes).
-  * Returns the result of the call to wait_for_random_bytes. */
--static inline int get_random_bytes_wait(void *buf, int nbytes)
-+static inline int get_random_bytes_wait(void *buf, size_t nbytes)
- {
- 	int ret = wait_for_random_bytes();
- 	get_random_bytes(buf, nbytes);
---- a/include/trace/events/random.h
-+++ b/include/trace/events/random.h
-@@ -9,13 +9,13 @@
- #include <linux/tracepoint.h>
- 
- TRACE_EVENT(add_device_randomness,
--	TP_PROTO(int bytes, unsigned long IP),
-+	TP_PROTO(size_t bytes, unsigned long IP),
- 
- 	TP_ARGS(bytes, IP),
- 
- 	TP_STRUCT__entry(
--		__field(	  int,	bytes			)
--		__field(unsigned long,	IP			)
-+		__field(size_t,		bytes	)
-+		__field(unsigned long,	IP	)
- 	),
- 
- 	TP_fast_assign(
-@@ -23,18 +23,18 @@ TRACE_EVENT(add_device_randomness,
- 		__entry->IP		= IP;
- 	),
- 
--	TP_printk("bytes %d caller %pS",
-+	TP_printk("bytes %zu caller %pS",
- 		__entry->bytes, (void *)__entry->IP)
- );
- 
- DECLARE_EVENT_CLASS(random__mix_pool_bytes,
--	TP_PROTO(int bytes, unsigned long IP),
-+	TP_PROTO(size_t bytes, unsigned long IP),
- 
- 	TP_ARGS(bytes, IP),
- 
- 	TP_STRUCT__entry(
--		__field(	  int,	bytes			)
--		__field(unsigned long,	IP			)
-+		__field(size_t,		bytes	)
-+		__field(unsigned long,	IP	)
- 	),
- 
- 	TP_fast_assign(
-@@ -42,12 +42,12 @@ DECLARE_EVENT_CLASS(random__mix_pool_byt
- 		__entry->IP		= IP;
- 	),
- 
--	TP_printk("input pool: bytes %d caller %pS",
-+	TP_printk("input pool: bytes %zu caller %pS",
- 		  __entry->bytes, (void *)__entry->IP)
- );
- 
- DEFINE_EVENT(random__mix_pool_bytes, mix_pool_bytes,
--	TP_PROTO(int bytes, unsigned long IP),
-+	TP_PROTO(size_t bytes, unsigned long IP),
- 
- 	TP_ARGS(bytes, IP)
- );
-@@ -59,13 +59,13 @@ DEFINE_EVENT(random__mix_pool_bytes, mix
- );
- 
- TRACE_EVENT(credit_entropy_bits,
--	TP_PROTO(int bits, int entropy_count, unsigned long IP),
-+	TP_PROTO(size_t bits, size_t entropy_count, unsigned long IP),
- 
- 	TP_ARGS(bits, entropy_count, IP),
- 
- 	TP_STRUCT__entry(
--		__field(	  int,	bits			)
--		__field(	  int,	entropy_count		)
-+		__field(size_t,		bits			)
-+		__field(size_t,		entropy_count		)
- 		__field(unsigned long,	IP			)
- 	),
- 
-@@ -75,34 +75,34 @@ TRACE_EVENT(credit_entropy_bits,
- 		__entry->IP		= IP;
- 	),
- 
--	TP_printk("input pool: bits %d entropy_count %d caller %pS",
-+	TP_printk("input pool: bits %zu entropy_count %zu caller %pS",
- 		  __entry->bits, __entry->entropy_count, (void *)__entry->IP)
- );
- 
- TRACE_EVENT(add_input_randomness,
--	TP_PROTO(int input_bits),
-+	TP_PROTO(size_t input_bits),
- 
- 	TP_ARGS(input_bits),
- 
- 	TP_STRUCT__entry(
--		__field(	  int,	input_bits		)
-+		__field(size_t,	input_bits		)
- 	),
- 
- 	TP_fast_assign(
- 		__entry->input_bits	= input_bits;
- 	),
- 
--	TP_printk("input_pool_bits %d", __entry->input_bits)
-+	TP_printk("input_pool_bits %zu", __entry->input_bits)
- );
- 
- TRACE_EVENT(add_disk_randomness,
--	TP_PROTO(dev_t dev, int input_bits),
-+	TP_PROTO(dev_t dev, size_t input_bits),
- 
- 	TP_ARGS(dev, input_bits),
- 
- 	TP_STRUCT__entry(
--		__field(	dev_t,	dev			)
--		__field(	  int,	input_bits		)
-+		__field(dev_t,		dev			)
-+		__field(size_t,		input_bits		)
- 	),
- 
- 	TP_fast_assign(
-@@ -110,17 +110,17 @@ TRACE_EVENT(add_disk_randomness,
- 		__entry->input_bits	= input_bits;
- 	),
- 
--	TP_printk("dev %d,%d input_pool_bits %d", MAJOR(__entry->dev),
-+	TP_printk("dev %d,%d input_pool_bits %zu", MAJOR(__entry->dev),
- 		  MINOR(__entry->dev), __entry->input_bits)
- );
- 
- DECLARE_EVENT_CLASS(random__get_random_bytes,
--	TP_PROTO(int nbytes, unsigned long IP),
-+	TP_PROTO(size_t nbytes, unsigned long IP),
- 
- 	TP_ARGS(nbytes, IP),
- 
- 	TP_STRUCT__entry(
--		__field(	  int,	nbytes			)
-+		__field(size_t,		nbytes			)
- 		__field(unsigned long,	IP			)
- 	),
- 
-@@ -129,29 +129,29 @@ DECLARE_EVENT_CLASS(random__get_random_b
- 		__entry->IP		= IP;
- 	),
- 
--	TP_printk("nbytes %d caller %pS", __entry->nbytes, (void *)__entry->IP)
-+	TP_printk("nbytes %zu caller %pS", __entry->nbytes, (void *)__entry->IP)
- );
- 
- DEFINE_EVENT(random__get_random_bytes, get_random_bytes,
--	TP_PROTO(int nbytes, unsigned long IP),
-+	TP_PROTO(size_t nbytes, unsigned long IP),
- 
- 	TP_ARGS(nbytes, IP)
- );
- 
- DEFINE_EVENT(random__get_random_bytes, get_random_bytes_arch,
--	TP_PROTO(int nbytes, unsigned long IP),
-+	TP_PROTO(size_t nbytes, unsigned long IP),
- 
- 	TP_ARGS(nbytes, IP)
- );
- 
- DECLARE_EVENT_CLASS(random__extract_entropy,
--	TP_PROTO(int nbytes, int entropy_count),
-+	TP_PROTO(size_t nbytes, size_t entropy_count),
- 
- 	TP_ARGS(nbytes, entropy_count),
- 
- 	TP_STRUCT__entry(
--		__field(	  int,	nbytes			)
--		__field(	  int,	entropy_count		)
-+		__field(  size_t,	nbytes			)
-+		__field(  size_t,	entropy_count		)
- 	),
- 
- 	TP_fast_assign(
-@@ -159,37 +159,34 @@ DECLARE_EVENT_CLASS(random__extract_entr
- 		__entry->entropy_count	= entropy_count;
- 	),
- 
--	TP_printk("input pool: nbytes %d entropy_count %d",
-+	TP_printk("input pool: nbytes %zu entropy_count %zu",
- 		  __entry->nbytes, __entry->entropy_count)
- );
- 
- 
- DEFINE_EVENT(random__extract_entropy, extract_entropy,
--	TP_PROTO(int nbytes, int entropy_count),
-+	TP_PROTO(size_t nbytes, size_t entropy_count),
- 
- 	TP_ARGS(nbytes, entropy_count)
- );
- 
- TRACE_EVENT(urandom_read,
--	TP_PROTO(int got_bits, int pool_left, int input_left),
-+	TP_PROTO(size_t nbytes, size_t entropy_count),
- 
--	TP_ARGS(got_bits, pool_left, input_left),
-+	TP_ARGS(nbytes, entropy_count),
- 
- 	TP_STRUCT__entry(
--		__field(	  int,	got_bits		)
--		__field(	  int,	pool_left		)
--		__field(	  int,	input_left		)
-+		__field( size_t,	nbytes		)
-+		__field( size_t,	entropy_count	)
- 	),
- 
- 	TP_fast_assign(
--		__entry->got_bits	= got_bits;
--		__entry->pool_left	= pool_left;
--		__entry->input_left	= input_left;
-+		__entry->nbytes		= nbytes;
-+		__entry->entropy_count	= entropy_count;
- 	),
- 
--	TP_printk("got_bits %d nonblocking_pool_entropy_left %d "
--		  "input_entropy_left %d", __entry->got_bits,
--		  __entry->pool_left, __entry->input_left)
-+	TP_printk("reading: nbytes %zu entropy_count %zu",
-+		  __entry->nbytes, __entry->entropy_count)
- );
- 
- TRACE_EVENT(prandom_u32,
-
+> 
+> Reviewed-by: Tony Luck <tony.luck@intel.com>
+> Reviewed-by: Andi Kleen <ak@linux.intel.com>
+> Acked-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+> Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+> ---
+>  arch/x86/coco/tdx/Makefile      |   2 +-
+>  arch/x86/coco/tdx/attest.c      | 118 ++++++++++++++++++++++++++++++++
+>  arch/x86/include/uapi/asm/tdx.h |  42 ++++++++++++
+>  3 files changed, 161 insertions(+), 1 deletion(-)
+>  create mode 100644 arch/x86/coco/tdx/attest.c
+>  create mode 100644 arch/x86/include/uapi/asm/tdx.h
+> 
+> diff --git a/arch/x86/coco/tdx/Makefile b/arch/x86/coco/tdx/Makefile
+> index 46c55998557d..d2db3e6770e5 100644
+> --- a/arch/x86/coco/tdx/Makefile
+> +++ b/arch/x86/coco/tdx/Makefile
+> @@ -1,3 +1,3 @@
+>  # SPDX-License-Identifier: GPL-2.0
+>  
+> -obj-y += tdx.o tdcall.o
+> +obj-y += tdx.o tdcall.o attest.o
+> diff --git a/arch/x86/coco/tdx/attest.c b/arch/x86/coco/tdx/attest.c
+> new file mode 100644
+> index 000000000000..24db0bad4923
+> --- /dev/null
+> +++ b/arch/x86/coco/tdx/attest.c
+> @@ -0,0 +1,118 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * attest.c - TDX guest attestation interface driver.
+> + *
+> + * Implements user interface to trigger attestation process.
+> + *
+> + * Copyright (C) 2022 Intel Corporation
+> + *
+> + */
+> +
+> +#define pr_fmt(fmt) "x86/tdx: attest: " fmt
+> +
+> +#include <linux/miscdevice.h>
+> +#include <linux/mm.h>
+> +#include <linux/io.h>
+> +#include <asm/tdx.h>
+> +#include <uapi/asm/tdx.h>
+> +
+> +#define DRIVER_NAME "tdx-attest"
+> +
+> +/* TDREPORT module call leaf ID */
+> +#define TDX_GET_REPORT			4
+> +
+> +static struct miscdevice miscdev;
+> +
+> +static long tdx_get_report(void __user *argp)
+> +{
+> +	void *reportdata = NULL, *tdreport = NULL;
+> +	long ret;
+> +
+> +	/* Allocate buffer space for REPORTDATA */
+> +	reportdata = kmalloc(TDX_REPORTDATA_LEN, GFP_KERNEL);
+> +	if (!reportdata)
+> +		return -ENOMEM;
+> +
+> +	/* Allocate buffer space for TDREPORT */
+> +	tdreport = kmalloc(TDX_REPORT_LEN, GFP_KERNEL);
+> +	if (!tdreport) {
+> +		ret = -ENOMEM;
+> +		goto out;
+> +	}
+> +
+> +	/* Copy REPORTDATA from the user buffer */
+> +	if (copy_from_user(reportdata, argp, TDX_REPORTDATA_LEN)) {
+> +		ret = -EFAULT;
+> +		goto out;
+> +	}
+> +
+> +	/*
+> +	 * Generate TDREPORT using "TDG.MR.REPORT" TDCALL.
+> +	 *
+> +	 * Get the TDREPORT using REPORTDATA as input. Refer to
+> +	 * section 22.3.3 TDG.MR.REPORT leaf in the TDX Module 1.0
+> +	 * Specification for detailed information.
+> +	 */
+> +	ret = __tdx_module_call(TDX_GET_REPORT, virt_to_phys(tdreport),
+> +				virt_to_phys(reportdata), 0, 0, NULL);
+> +	if (ret) {
+> +		pr_debug("TDREPORT TDCALL failed, status:%lx\n", ret);
+> +		ret = -EIO;
+> +		goto out;
+> +	}
+> +
+> +	/* Copy TDREPORT back to the user buffer */
+> +	if (copy_to_user(argp, tdreport, TDX_REPORT_LEN))
+> +		ret = -EFAULT;
+> +
+> +out:
+> +	kfree(reportdata);
+> +	kfree(tdreport);
+> +	return ret;
+> +}
+> +
+> +static long tdx_attest_ioctl(struct file *file, unsigned int cmd,
+> +			     unsigned long arg)
+> +{
+> +	void __user *argp = (void __user *)arg;
+> +	long ret = -EINVAL;
+> +
+> +	switch (cmd) {
+> +	case TDX_CMD_GET_REPORT:
+> +		ret = tdx_get_report(argp);
+> +		break;
+> +	default:
+> +		pr_debug("cmd %d not supported\n", cmd);
+> +		break;
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+> +static const struct file_operations tdx_attest_fops = {
+> +	.owner		= THIS_MODULE,
+> +	.unlocked_ioctl	= tdx_attest_ioctl,
+> +	.llseek		= no_llseek,
+> +};
+> +
+> +static int __init tdx_attestation_init(void)
+> +{
+> +	int ret;
+> +
+> +	/* Make sure we are in a valid TDX platform */
+> +	if (!cpu_feature_enabled(X86_FEATURE_TDX_GUEST))
+> +		return -EIO;
+> +
+> +	miscdev.name = DRIVER_NAME;
+> +	miscdev.minor = MISC_DYNAMIC_MINOR;
+> +	miscdev.fops = &tdx_attest_fops;
+> +
+> +	ret = misc_register(&miscdev);
+> +	if (ret) {
+> +		pr_err("misc device registration failed\n");
+> +		return ret;
+> +	}
+> +
+> +	return 0;
+> +}
+> +device_initcall(tdx_attestation_init)
+> diff --git a/arch/x86/include/uapi/asm/tdx.h b/arch/x86/include/uapi/asm/tdx.h
+> new file mode 100644
+> index 000000000000..8b57dea67eab
+> --- /dev/null
+> +++ b/arch/x86/include/uapi/asm/tdx.h
+> @@ -0,0 +1,42 @@
+> +/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+> +#ifndef _UAPI_ASM_X86_TDX_H
+> +#define _UAPI_ASM_X86_TDX_H
+> +
+> +#include <linux/types.h>
+> +#include <linux/ioctl.h>
+> +
+> +/* Length of the REPORTDATA used in TDG.MR.REPORT TDCALL */
+> +#define TDX_REPORTDATA_LEN		64
+> +
+> +/* Length of TDREPORT used in TDG.MR.REPORT TDCALL */
+> +#define TDX_REPORT_LEN			1024
+> +
+> +/**
+> + * struct tdx_report_req: Get TDREPORT using REPORTDATA as input.
+> + *
+> + * @reportdata : User-defined 64-Byte REPORTDATA to be included into
+> + *		 TDREPORT. Typically it can be some nonce provided by
+> + *		 attestation service, so the generated TDREPORT can be
+> + *		 uniquely verified.
+> + * @tdreport   : TDREPORT output from TDCALL[TDG.MR.REPORT] of size
+> + *		 TDX_REPORT_LEN.
+> + *
+> + * Used in TDX_CMD_GET_REPORT IOCTL request.
+> + */
+> +struct tdx_report_req {
+> +	union {
+> +		__u8 reportdata[TDX_REPORTDATA_LEN];
+> +		__u8 tdreport[TDX_REPORT_LEN];
+> +	};
+> +};
+> +
+> +/*
+> + * TDX_CMD_GET_REPORT - Get TDREPORT using TDCALL[TDG.MR.REPORT]
+> + *
+> + * Return 0 on success, -EIO on TDCALL execution failure, and
+> + * standard errno on other general error cases.
+> + *
+> + */
+> +#define TDX_CMD_GET_REPORT		_IOWR('T', 0x01, struct tdx_report_req)
+> +
+> +#endif /* _UAPI_ASM_X86_TDX_H */
 
