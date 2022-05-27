@@ -2,55 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF1CAC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:40:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 358C6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:40:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351524AbiE0Lkb (ORCPT
+        id S1351536AbiE0Lke (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 07:40:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45562 "EHLO
+        Fri, 27 May 2022 07:40:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351658AbiE0Lj6 (ORCPT
+        with ESMTP id S1351679AbiE0LkA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:39:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3377913B8D1;
-        Fri, 27 May 2022 04:38:59 -0700 (PDT)
+        Fri, 27 May 2022 07:40:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4D2913B8F6;
+        Fri, 27 May 2022 04:39:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D6BA2B824D6;
-        Fri, 27 May 2022 11:38:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA558C385A9;
-        Fri, 27 May 2022 11:38:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3646C61C3F;
+        Fri, 27 May 2022 11:39:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40EB8C385A9;
+        Fri, 27 May 2022 11:38:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653651533;
-        bh=X1XNy8TH7ZpSDPxThdHUSlYhCXZLMFIpqWoo35o6R1U=;
+        s=korg; t=1653651539;
+        bh=GkJ2hQVuIH413bDUm/mBPKu7FkevDDIPxj+f5coBLP8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lP0XTB3YtWzo/y2wr9KK3wQ5PFWplRHSPo2eURlov+P9DeJZPZ0MnWjlhfaXU7L2q
-         GEYHonSLtLN9js7Wv20mZxUtRvWT6rLM+rtZvccZMwTrqZ5ulYE8JK11eoBd9Crwl/
-         7x3ELExn+NcrbgZJctDeCWyspXDymBMURf2R8c0U=
+        b=FIcpkWdV/AZgpjFz9ynaZfMtq7aTC9jM5JzfW3fLt7DIfiL35kvMSu0v+oj1KFOiH
+         VnS2XdKvr/71CXB9v/kTL4xSyz4S793Jyq7ZKZ+xPqUZdM/BQwfZxh66AJKY7zpNrF
+         NCRW8pdaWIc5H6XAHCKDysT7UV4SKq0ihhh5wpiI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Dexuan Cui <decui@microsoft.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Wei Liu <wei.liu@kernel.org>, linux-hyperv@vger.kernel.org,
-        x86@kernel.org, Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        stable@vger.kernel.org,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.10 030/163] random: remove unused irq_flags argument from add_interrupt_randomness()
-Date:   Fri, 27 May 2022 10:48:30 +0200
-Message-Id: <20220527084832.356162983@linuxfoundation.org>
+Subject: [PATCH 5.17 056/111] random: skip fast_init if hwrng provides large chunk of entropy
+Date:   Fri, 27 May 2022 10:49:28 +0200
+Message-Id: <20220527084827.391877284@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
-References: <20220527084828.156494029@linuxfoundation.org>
+In-Reply-To: <20220527084819.133490171@linuxfoundation.org>
+References: <20220527084819.133490171@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -59,104 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 703f7066f40599c290babdb79dd61319264987e9 upstream.
+commit af704c856e888fb044b058d731d61b46eeec499d upstream.
 
-Since commit
-   ee3e00e9e7101 ("random: use registers from interrupted code for CPU's w/o a cycle counter")
+At boot time, EFI calls add_bootloader_randomness(), which in turn calls
+add_hwgenerator_randomness(). Currently add_hwgenerator_randomness()
+feeds the first 64 bytes of randomness to the "fast init"
+non-crypto-grade phase. But if add_hwgenerator_randomness() gets called
+with more than POOL_MIN_BITS of entropy, there's no point in passing it
+off to the "fast init" stage, since that's enough entropy to bootstrap
+the real RNG. The "fast init" stage is just there to provide _something_
+in the case where we don't have enough entropy to properly bootstrap the
+RNG. But if we do have enough entropy to bootstrap the RNG, the current
+logic doesn't serve a purpose. So, in the case where we're passed
+greater than or equal to POOL_MIN_BITS of entropy, this commit makes us
+skip the "fast init" phase.
 
-the irq_flags argument is no longer used.
-
-Remove unused irq_flags.
-
-Cc: Borislav Petkov <bp@alien8.de>
-Cc: Dave Hansen <dave.hansen@linux.intel.com>
-Cc: Dexuan Cui <decui@microsoft.com>
-Cc: H. Peter Anvin <hpa@zytor.com>
-Cc: Haiyang Zhang <haiyangz@microsoft.com>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: K. Y. Srinivasan <kys@microsoft.com>
-Cc: Stephen Hemminger <sthemmin@microsoft.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Wei Liu <wei.liu@kernel.org>
-Cc: linux-hyperv@vger.kernel.org
-Cc: x86@kernel.org
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Acked-by: Wei Liu <wei.liu@kernel.org>
+Cc: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/cpu/mshyperv.c |    2 +-
- drivers/char/random.c          |    4 ++--
- drivers/hv/vmbus_drv.c         |    2 +-
- include/linux/random.h         |    2 +-
- kernel/irq/handle.c            |    2 +-
- 5 files changed, 6 insertions(+), 6 deletions(-)
+ drivers/char/random.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/x86/kernel/cpu/mshyperv.c
-+++ b/arch/x86/kernel/cpu/mshyperv.c
-@@ -84,7 +84,7 @@ DEFINE_IDTENTRY_SYSVEC(sysvec_hyperv_sti
- 	inc_irq_stat(hyperv_stimer0_count);
- 	if (hv_stimer0_handler)
- 		hv_stimer0_handler();
--	add_interrupt_randomness(HYPERV_STIMER0_VECTOR, 0);
-+	add_interrupt_randomness(HYPERV_STIMER0_VECTOR);
- 	ack_APIC_irq();
- 
- 	set_irq_regs(old_regs);
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -200,7 +200,7 @@
-  *	void add_device_randomness(const void *buf, unsigned int size);
-  * 	void add_input_randomness(unsigned int type, unsigned int code,
-  *                                unsigned int value);
-- *	void add_interrupt_randomness(int irq, int irq_flags);
-+ *	void add_interrupt_randomness(int irq);
-  * 	void add_disk_randomness(struct gendisk *disk);
-  *	void add_hwgenerator_randomness(const char *buffer, size_t count,
-  *					size_t entropy);
-@@ -1273,7 +1273,7 @@ static __u32 get_reg(struct fast_pool *f
- 	return *ptr;
- }
- 
--void add_interrupt_randomness(int irq, int irq_flags)
-+void add_interrupt_randomness(int irq)
+@@ -1123,7 +1123,7 @@ void rand_initialize_disk(struct gendisk
+ void add_hwgenerator_randomness(const void *buffer, size_t count,
+ 				size_t entropy)
  {
- 	struct entropy_store	*r;
- 	struct fast_pool	*fast_pool = this_cpu_ptr(&irq_randomness);
---- a/drivers/hv/vmbus_drv.c
-+++ b/drivers/hv/vmbus_drv.c
-@@ -1351,7 +1351,7 @@ static void vmbus_isr(void)
- 			tasklet_schedule(&hv_cpu->msg_dpc);
- 	}
- 
--	add_interrupt_randomness(hv_get_vector(), 0);
-+	add_interrupt_randomness(hv_get_vector());
- }
- 
- /*
---- a/include/linux/random.h
-+++ b/include/linux/random.h
-@@ -35,7 +35,7 @@ static inline void add_latent_entropy(vo
- 
- extern void add_input_randomness(unsigned int type, unsigned int code,
- 				 unsigned int value) __latent_entropy;
--extern void add_interrupt_randomness(int irq, int irq_flags) __latent_entropy;
-+extern void add_interrupt_randomness(int irq) __latent_entropy;
- 
- extern void get_random_bytes(void *buf, int nbytes);
- extern int wait_for_random_bytes(void);
---- a/kernel/irq/handle.c
-+++ b/kernel/irq/handle.c
-@@ -195,7 +195,7 @@ irqreturn_t handle_irq_event_percpu(stru
- 
- 	retval = __handle_irq_event_percpu(desc, &flags);
- 
--	add_interrupt_randomness(desc->irq_data.irq, flags);
-+	add_interrupt_randomness(desc->irq_data.irq);
- 
- 	if (!noirqdebug)
- 		note_interrupt(desc, retval);
+-	if (unlikely(crng_init == 0)) {
++	if (unlikely(crng_init == 0 && entropy < POOL_MIN_BITS)) {
+ 		size_t ret = crng_pre_init_inject(buffer, count, true);
+ 		mix_pool_bytes(buffer, ret);
+ 		count -= ret;
 
 
