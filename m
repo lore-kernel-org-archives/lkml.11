@@ -2,244 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A015C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 09:30:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 462CDC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 09:30:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350593AbiE0Ja2 (ORCPT
+        id S1350578AbiE0Jas (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 05:30:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50674 "EHLO
+        Fri, 27 May 2022 05:30:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350555AbiE0JaX (ORCPT
+        with ESMTP id S1350230AbiE0Jar (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 05:30:23 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 611B81059C8
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 02:30:22 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        Fri, 27 May 2022 05:30:47 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 00B8266AE2
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 02:30:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653643845;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ps73Vyt4yN+27PJzPF0JTccmiXVswx7yZqJIriLMxWk=;
+        b=CHS10T2AEDPne/HtUkhr8Rd8UUBrX/xjMG8SXL3rxe8rIgiESMnWcVodxyANIj1qlND0DH
+        DbAE3OGA04f8IRhWHZxKM1VkFiVQCWg3SLCC4YGRDjDergxPkD1poXMyUlbP/G7rTRiWvG
+        AR47g3RoXjJIfBtovA68lxTYmyqMCVk=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-456-iCDgyNaKOam64PAuHzOeKw-1; Fri, 27 May 2022 05:30:41 -0400
+X-MC-Unique: iCDgyNaKOam64PAuHzOeKw-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id ED58C1F967;
-        Fri, 27 May 2022 09:30:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1653643820; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type;
-        bh=lChZ3kfPqOiQIGBbbKOf5O0euzOQVluYptAu5MuJjmI=;
-        b=Lo4mTgACrwbxXdGNT/W10C9bRQnbNP+3IlsK9S1gaGC4gYgwKOAGx7aJrbbO+XzDJUpEgJ
-        ESqo0OC2Rnax6bZ0QWWjN+IF5oWVwFL5TcHbEYoTJZWxMYFA57j6yRm0dIZhw2Lsb0bHyh
-        jhQuxFQ5wORG0yc3kjNZwgd2nTS99NI=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1653643820;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type;
-        bh=lChZ3kfPqOiQIGBbbKOf5O0euzOQVluYptAu5MuJjmI=;
-        b=XpHwPSiLRvXuW5MIh3rkqaUQURfvmJ0ulgL1CAoHYh410ePKZcojrFZ037MTuqbAefw3rI
-        QQlIOqi+A5+pbUBg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 9CA7F139C4;
-        Fri, 27 May 2022 09:30:20 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id QNCiJCyakGK1VAAAMHmgww
-        (envelope-from <chrubis@suse.cz>); Fri, 27 May 2022 09:30:20 +0000
-Date:   Fri, 27 May 2022 11:32:27 +0200
-From:   Cyril Hrubis <chrubis@suse.cz>
-To:     ltp@lists.linux.it, linux-kernel@vger.kernel.org,
-        libc-alpha@sourceware.org
-Cc:     lwn@lwn.net, akpm@linux-foundation.org,
-        torvalds@linux-foundation.org
-Subject: [ANNOUNCE] The Linux Test Project has been released for MAY 2022 
-Message-ID: <YpCaq7VEb6d5HPBF@yuki>
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7F80B1D32375;
+        Fri, 27 May 2022 09:30:40 +0000 (UTC)
+Received: from rh (vpn2-54-35.bne.redhat.com [10.64.54.35])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id CF8E0492C3B;
+        Fri, 27 May 2022 09:30:39 +0000 (UTC)
+Received: from localhost ([::1] helo=rh)
+        by rh with esmtps  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <dchinner@redhat.com>)
+        id 1nuWIm-00CFqS-4E; Fri, 27 May 2022 19:30:36 +1000
+Date:   Fri, 27 May 2022 19:30:34 +1000
+From:   Dave Chinner <dchinner@redhat.com>
+To:     Roman Gushchin <roman.gushchin@linux.dev>
+Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org,
+        Kent Overstreet <kent.overstreet@gmail.com>,
+        Hillf Danton <hdanton@sina.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Muchun Song <songmuchun@bytedance.com>
+Subject: Re: [PATCH v4 3/6] mm: shrinkers: provide shrinkers with names
+Message-ID: <YpCaOmL2NfcLEAHi@rh>
+References: <20220525202600.2910982-1-roman.gushchin@linux.dev>
+ <20220525202600.2910982-4-roman.gushchin@linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20220525202600.2910982-4-roman.gushchin@linux.dev>
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Good news everyone,
+On Wed, May 25, 2022 at 01:25:57PM -0700, Roman Gushchin wrote:
+> Currently shrinkers are anonymous objects. For debugging purposes they
+> can be identified by count/scan function names, but it's not always
+> useful: e.g. for superblock's shrinkers it's nice to have at least
+> an idea of to which superblock the shrinker belongs.
+> 
+> This commit adds names to shrinkers. register_shrinker() and
+> prealloc_shrinker() functions are extended to take a format and
+> arguments to master a name.
+> 
+> In some cases it's not possible to determine a good name at the time
+> when a shrinker is allocated. For such cases shrinker_debugfs_rename()
+> is provided.
+> 
+> After this change the shrinker debugfs directory looks like:
+>   $ cd /sys/kernel/debug/shrinker/
+>   $ ls
+>     dqcache-16          sb-hugetlbfs-17  sb-rootfs-2      sb-tmpfs-49
+>     kfree_rcu-0         sb-hugetlbfs-33  sb-securityfs-6  sb-tracefs-13
+>     sb-aio-20           sb-iomem-12      sb-selinuxfs-22  sb-xfs:vda1-36
+>     sb-anon_inodefs-15  sb-mqueue-21     sb-sockfs-8      sb-zsmalloc-19
+>     sb-bdev-3           sb-nsfs-4        sb-sysfs-26      shadow-18
+>     sb-bpf-32           sb-pipefs-14     sb-tmpfs-1       thp_deferred_split-10
+>     sb-btrfs:vda2-24    sb-proc-25       sb-tmpfs-27      thp_zero-9
+>     sb-cgroup2-30       sb-proc-39       sb-tmpfs-29      xfs_buf-vda1-37
+>     sb-configfs-23      sb-proc-41       sb-tmpfs-35      xfs_inodegc-vda1-38
 
-the Linux Test Project test suite stable release for *May 2022* has been
-released.
+sb-xfs:vda1-36
+xfs_buf-vda1-37
+xfs_inodegc-vda1-38
 
-Since the last release 298 patches by 25 authors were merged.
+That's a parsing nightmare right there. Please use the same format
+for everything. You have <subsystem>-<type>:<instance>-<id> for
+superblock stuff, but <subsys>_<type>-<instance>-<id> for the XFS
+stuff. Make it consistent so we aren't reduced to pulling out our
+hair trying to parse this in any useful way:
 
-Patch review is what most of the projects struggle with and LTP is no
-different. If you can spare some effort helping with the patch review is more
-than welcomed.
+sb-xfs:vda1-36
+xfs-buf:vda1-37
+xfs-inodegc:vda1-38
 
-NOTABLE CHANGES
-===============
+FWIW, how we are supposed to know what actually owns these:
 
-* New tests
-  - kvm_pagefault01: aka CVE-2021-38198
-  - fcntl39: test for DN_RENAME (dnotify)
-  - io_control01: first cgroup IO controller test
-  - keyctl09: test encrypted keys with provided decrypted data
-  - memcontrol03, memcontrol04: tests that cgroup memory is partitioned correctly under pressure
-  - setsockopt09: regression test for use-after-free in prb_retire_rx_blk_timer_expired()
-  - setsockopt09: regression test for double free of rx_owner_map aka CVE-2021-22600
-  - pty07: regression test for use-after-free in vt_ioctl()
-  - pty06: regression test for VT_DISALLOCATE freeing in-use virtual console
-  - pidfd_getfd01 basic functional test
-  - pidfd_getfd02 basic error test
-  - pidfd_open04 test with PIDFD_NONBLOCK flag
-  - futex_waitv01 error tests
-  - futex_waitv02 basic functional test with private memory
-  - futex_waitv03 basic functional test with shared memory
-  - inotify11: test opening files after receiving IN_DELETE
-               regression test for a37d9a17f099 (fsnotify: invalidate dcache before IN_DELETE event)
-  - statx09 test for STATX_ATTR_VERITY
-  - wqueue09 tests WATCH_META_LOSS_NOTIFICATION event
-  - wqueue08 tests WATCH_META_REMOVAL_NOTIFICATION event
-  - wqueue07 tests NOTIFY_KEY_SETATTR event
-  - wqueue06 tests NOTIFY_KEY_CLEARED event
-  - wqueue05 tests NOTIFY_KEY_INVALIDATED event
-  - wqueue04 tests NOTIFY_KEY_LINKED event
-  - wqueue03 tests NOTIFY_KEY_REVOKED event
-  - wqueue02 tests NOTIFY_KEY_UNLINKED event
-  - wqueue01 tests NOTIFY_KEY_UPDATED event
+sb-tmpfs-1
+sb-tmpfs-27
+sb-tmpfs-29
+sb-tmpfs-35
+sb-tmpfs-49
 
-* Increased coverage
-  - fanotify14, fanotify16: Add tests for FAN_REPORT_TARGET_FID and FAN_RENAME
-  - futex_waitv01: Add test verifies EINVAL for invalid nr_futexes
-  - getcontext01: Test rewritten so that it actually jumps back
-  - fstat02: Validate st_nlink as well
-  - sched_get_priority_max01, sched_get_priority_min01: Add missing policies
+tmpfs-27 might own all the memory - how do we link that back to a
+mount point, container, user, workload, etc?
 
-* KVM library was written for LTP
-  - a simple library that can spin up a VM and execute payload
-  - see also https://github.com/linux-test-project/ltp/wiki/KVM-Test-API
+Cheers,
 
-* The concept of test runtime was introduced
-  - for details see https://people.kernel.org/metan/test-timeout-and-runtime
-
-* Removed tests
-  - syslog tests as these were testing mostly userspace syslog daemon
-    and were broken for most of the syslog daemon implementations
-
-* The test library was fixed to terminate all leftover processes in the case
-  that the main test process dies or exits
-
-* New sparse check for {} terminator for struct arrays in tst_test has been
-  implemented
-
-* Shell library improvements
-  - added support for $TST_FORMAT_DEVICE (.format_device in C API)
-  - preparations for shell API get support for testing on all filesystems (.all_filesystems in C API)
-  - getopts cleanup and changes how is the library sources,
-    which resulted in much simpler library code
-
-* Userns tests were rewritten into the new test API
-
-* Mountns tests were rewritten into the new test API
-
-* 33 tests were rewritten to the new library
-
-+ The usual amount of fixes and cleanups
-
-WHAT IS IN THE QUEUE
-====================
-
-In-flight patches include:
-
-- CGroup shell test rewrite that should fix many problems
-
-
-NOTABLE CHANGES IN NETWORK TESTS
-================================
-brought to you by Petr Vorel
-
-* Several fixes (e.g. important nfs_lib: Fix fsid randomisation)
-
-* Ongoing discussion where should be SCTP testsuite home
-
-
-DOWNLOAD AND LINKS
-==================
-
-The latest version of the test-suite contains 3000+ tests for the Linux
-and can be downloaded at:
-
-https://github.com/linux-test-project/ltp/releases/tag/20220527
-
-The project pages as well as GIT repository are hosted on GitHub:
-
-https://github.com/linux-test-project/ltp
-http://linux-test-project.github.io/
-
-If you ever wondered how to write a LTP testcase, don't miss our developer
-documentation at:
-
-https://github.com/linux-test-project/ltp/wiki/Test-Writing-Guidelines
-
-https://github.com/linux-test-project/ltp/wiki/C-Test-API
-
-https://github.com/linux-test-project/ltp/wiki/C-Test-Network-API
-
-https://github.com/linux-test-project/ltp/wiki/Shell-Test-API
-
-https://github.com/linux-test-project/ltp/wiki/C-Test-Case-Tutorial
-
-https://github.com/linux-test-project/ltp/wiki/BuildSystem
-
-Patches, new tests, bugs, comments or questions should go to to our mailing
-list at ltp@lists.linux.it.
-
-CREDITS
-=======
-
-Many thanks to the people contributing to this release:
-
-git shortlog -s -e -n 20220121..
-
-    72  Petr Vorel <pvorel@suse.cz>
-    51  Cyril Hrubis <chrubis@suse.cz>
-    42  Andrea Cervesato <andrea.cervesato@suse.de>
-    22  Li Wang <liwang@redhat.com>
-    21  Richard Palethorpe <rpalethorpe@suse.com>
-    17  Martin Doucha <mdoucha@suse.cz>
-    15  Yang Xu <xuyang2018.jy@fujitsu.com>
-    10  Jan Stancek <jstancek@redhat.com>
-    10  Zhao Gongyi <zhaogongyi@huawei.com>
-     7  Amir Goldstein <amir73il@gmail.com>
-     6  Dai Shili <daisl.fnst@fujitsu.com>
-     6  Bogdan Lezhepekov <blezhepekov@suse.de>
-     4  tangmeng <tangmeng@uniontech.com>
-     2  Chunyu Hu <chuhu@redhat.com>
-     2  Kushal Chand <kushalkataria5@gmail.com>
-     2  xiaoshoukui <xiaoshoukui@ruijie.com.cn>
-     1  Alexander Ivanov <alexander.ivanov@virtuozzo.com>
-     1  Alexander Kanavin <alex@linutronix.de>
-     1  Andrea Arcangeli <aarcange@redhat.com>
-     1  Edward Liaw via ltp <ltp@lists.linux.it>
-     1  Fabrice Fontaine <fontaine.fabrice@gmail.com>
-     1  Pavel Tikhomirov <ptikhomirov@virtuozzo.com>
-     1  Wang Kunfeng via ltp <ltp@lists.linux.it>
-     1  Yael Tzur via ltp <ltp@lists.linux.it>
-     1  ihsinme <ihsinme@gmail.com>
-
-And also thanks to patch reviewers:
-
-git log 20220121.. | grep -Ei '(reviewed|acked)-by:' | sed 's/.*by: //' | sort | uniq -c | sort -n -r
-
-    148 Cyril Hrubis <chrubis@suse.cz>
-    105 Petr Vorel <pvorel@suse.cz>
-     73 Li Wang <liwang@redhat.com>
-     21 Yang Xu <xuyang2018.jy@fujitsu.com>
-     17 Richard Palethorpe <rpalethorpe@suse.com>
-     10 Martin Doucha <mdoucha@suse.cz>
-      6 Jan Stancek <jstancek@redhat.com>
-      1 Waiman Long <longman@redhat.com>
-      1 Jan Kara <jack@suse.cz>
-      1 Gabriel Krisman Bertazi <krisman@collabora.com>
-      1 Andrea Cervesato <andrea.cervesato@suse.de>
-      1 Alexey Kodanev <aleksei.kodanev@bell-sw.com>
-
+Dave.
 -- 
-Cyril Hrubis
-chrubis@suse.cz
+Dave Chinner
+dchinner@redhat.com
+
