@@ -2,384 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1F51C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 10:05:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A079DC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 10:06:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350817AbiE0KF5 (ORCPT
+        id S1343514AbiE0KG0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 06:05:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52314 "EHLO
+        Fri, 27 May 2022 06:06:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350933AbiE0KFR (ORCPT
+        with ESMTP id S1350833AbiE0KGB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 06:05:17 -0400
-Received: from conuserg-08.nifty.com (conuserg-08.nifty.com [210.131.2.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57B77106577;
-        Fri, 27 May 2022 03:05:15 -0700 (PDT)
-Received: from grover.sesame (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
-        by conuserg-08.nifty.com with ESMTP id 24RA2hPS029808;
-        Fri, 27 May 2022 19:02:46 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-08.nifty.com 24RA2hPS029808
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1653645767;
-        bh=SoYyI3Vl79XcBz6rKgrVB3f/gawTaflZ8wkhRbY1iyg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XmDVyTj3RAdPhHU5BIen4d8chFB1j4LYP9aySeubfNAwwwx54tXgW0uenkt6cpMQl
-         9yENuYy1d66gB+F3GIQV49sgVIuEjVQDfH8OReZtfb/It9F8aIRVcZLuNYj28BKkhM
-         qbVqEoIqTX3G7SzsawvdryZyxV3uIsZ0vIr4vXf0GDVjObrGqvnTASdYzhOPK0a3MD
-         TgF5G4ubxLppVzjsF5kAGuijrMV8LMCUPVz9MbOyTMysOkOauMU2ITO65zN/VFqCis
-         XMrYu7jZI51VjCihrFNt7eJOU/tqBFEKYqkh0yAKQAt5GUPKDso8RGPdgya0ItmQ6b
-         PpUQdTCzHPMVg==
-X-Nifty-SrcIP: [133.32.177.133]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     linux-kbuild@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>, llvm@lists.linux.dev,
-        Helge Deller <deller@gmx.de>, linux-parisc@vger.kernel.org,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Nicolas Schier <nicolas@fjasle.eu>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Sedat Dilek <sedat.dilek@gmail.com>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>
-Subject: [PATCH v7 2/8] kbuild: do not create *.prelink.o for Clang LTO or IBT
-Date:   Fri, 27 May 2022 19:01:49 +0900
-Message-Id: <20220527100155.1996314-3-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220527100155.1996314-1-masahiroy@kernel.org>
-References: <20220527100155.1996314-1-masahiroy@kernel.org>
+        Fri, 27 May 2022 06:06:01 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0413F11CA32
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 03:05:58 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id q15so4773445edb.11
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 03:05:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=amarulasolutions.com; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=XO2hMhBNxgx/7TUo7q5hJUYtHpkBHllPRW2Qz6ze9MU=;
+        b=Ynb2zIxQqTfUQ31nIcmQHvLnuM4+B56fwXc8Nqk5ai6IHMUwW0SkxXsX7b+apjVzMl
+         lb6Gvk5FBxU+Hceep9vWqUwdaBmQVHKw4UHfu5F4dG+rBqJ/6I9cZaglEhysfenrPFTS
+         l35X19h1cSa9p9HEu/gmJVF3gZl57awP3VUNI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=XO2hMhBNxgx/7TUo7q5hJUYtHpkBHllPRW2Qz6ze9MU=;
+        b=HYej0RKMdpZt+xk2Vo/c1Ws9CE9ifRBJOmNn30PilXl9kZOzQ3SWpLyYM/5eZPaCDn
+         KYKB/2eiD7o8af3qLZVtXlXe6URHWn1nINooDegIamZetPB+AeXD3LLfnrpCWBY5/M9Z
+         uebxsqg478ITVyiBdmWxbd4DLAAWdPdybYhn/pIR7K5B5EFUnSnqDAKo3PLn4izM+m6Y
+         zAhSLsRNdS+RqX2wZph7cRXe56V8CVxd3c7q82/X0OQPcHzkYJ0UlXfC78y1/n9rtqzC
+         HlW97myjFXNKI2nCo8U7kfWM7WNhGD97UwTR/ZJOG5u45HA+8NP8ZifoCqunQs5sPqOF
+         nCIA==
+X-Gm-Message-State: AOAM532AyvxQl67Qa6e5ED0WQkr58UTPRBGvj1Fz9Agw2iYl2qiAWg5T
+        5UP8TI17a4/bEiifX3udR9btyg==
+X-Google-Smtp-Source: ABdhPJzjEUgEnwu83xVICmetJe6KIo2pNhiM9LyPqQWtChwb56MNYN056FGAeAfU5VJ2yRExyZqCbQ==
+X-Received: by 2002:a05:6402:320f:b0:42b:c876:4e34 with SMTP id g15-20020a056402320f00b0042bc8764e34mr13061196eda.201.1653645956312;
+        Fri, 27 May 2022 03:05:56 -0700 (PDT)
+Received: from tom-ThinkPad-T14s-Gen-2i (net-188-217-53-154.cust.vodafonedsl.it. [188.217.53.154])
+        by smtp.gmail.com with ESMTPSA id e4-20020a170906c00400b006fec8e8eff6sm1320036ejz.176.2022.05.27.03.05.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 27 May 2022 03:05:55 -0700 (PDT)
+Date:   Fri, 27 May 2022 12:05:53 +0200
+From:   Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
+To:     Ming Qian <ming.qian@nxp.com>
+Cc:     "mchehab@kernel.org" <mchehab@kernel.org>,
+        "Mirela Rabulea (OSS)" <mirela.rabulea@oss.nxp.com>,
+        "hverkuil-cisco@xs4all.nl" <hverkuil-cisco@xs4all.nl>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        "festevam@gmail.com" <festevam@gmail.com>,
+        dl-linux-imx <linux-imx@nxp.com>,
+        "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [EXT] Re: [PATCH] media: imx-jpeg: Leave a blank space before
+ the configuration data
+Message-ID: <20220527100553.GA25548@tom-ThinkPad-T14s-Gen-2i>
+References: <20220527075437.16882-1-ming.qian@nxp.com>
+ <20220527075437.16882-3-ming.qian@nxp.com>
+ <20220527093824.GF11217@tom-ThinkPad-T14s-Gen-2i>
+ <AM6PR04MB634165DE21CEE8B6780CB817E7D89@AM6PR04MB6341.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <AM6PR04MB634165DE21CEE8B6780CB817E7D89@AM6PR04MB6341.eurprd04.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When CONFIG_LTO_CLANG=y, additional intermediate *.prelink.o is created
-for each module. Also, objtool is postponed until LLVM IR is converted
-to ELF.
+On Fri, May 27, 2022 at 09:52:48AM +0000, Ming Qian wrote:
+> > From: Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
+> > Sent: 2022年5月27日 17:38
+> > To: Ming Qian <ming.qian@nxp.com>
+> > Cc: mchehab@kernel.org; Mirela Rabulea (OSS)
+> > <mirela.rabulea@oss.nxp.com>; hverkuil-cisco@xs4all.nl;
+> > shawnguo@kernel.org; s.hauer@pengutronix.de; kernel@pengutronix.de;
+> > festevam@gmail.com; dl-linux-imx <linux-imx@nxp.com>;
+> > linux-media@vger.kernel.org; linux-kernel@vger.kernel.org;
+> > devicetree@vger.kernel.org; linux-arm-kernel@lists.infradead.org
+> > Subject: [EXT] Re: [PATCH] media: imx-jpeg: Leave a blank space before the
+> > configuration data
+> > 
+> > Caution: EXT Email
+> > 
+> > Hi Ming,
+> > I think have some comments on the code for this would be nice for the future
+> > 
+> > On Fri, May 27, 2022 at 03:54:35PM +0800, Ming Qian wrote:
+> > > There is a hardware bug that it will load the first 128 bytes of
+> > > configuration data twice, it will led to some configure error.
+> > > so shift the configuration data 128 bytes, and make the first 128
+> > > bytes all zero, then hardware will load the 128 zero twice,
+> > 
+> > From what I've understood you initialize cfg_stm with zeros then you start to
+> > write the configuration from 0x80 (128 bytes), avoiding the hw issue right?
+> > 
+> 
 
-CONFIG_X86_KERNEL_IBT works in a similar way to postpone objtool until
-objects are merged together.
+Hi Ming,
 
-This commit stops generating *.prelink.o, so the build flow will look
-similar with/without LTO.
+> HI Tommaso,
+>     Yes, you're right, there is a hardware bug.
+> I want to write the configuration data from the offset 0x80,
+> And set the first 128 bytes to zero.
+> Then the hardware bug can be avoided.
 
-The following figures show how the LTO build currently works, and
-how this commit is changing it.
+Thanks for your clarification!
+Unfortunately I can't test this on a real board but the implementation looks
+good to me. Only thing is missing I think we need some notes to keep
+track of this known issue (for the sake of clarity just a note on why we
+start to write from 0x80)
 
-Current build flow
-==================
+Reviewed-by: Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
 
- [1] single-object module
+Thanks,
+Tommaso
 
-                                      $(LD)
-           $(CC)                     +objtool              $(LD)
-    foo.c --------------------> foo.o -----> foo.prelink.o -----> foo.ko
-                              (LLVM IR)          (ELF)       |
-                                                             |
-                                                 foo.mod.o --/
+> 
+> Ming.
+> 
+> 
+> > > and ignore them as garbage.
+> > > then the configuration data can be loaded correctly
+> > >
+> > > Signed-off-by: Ming Qian <ming.qian@nxp.com>
+> > > Reviewed-by: Mirela Rabulea <mirela.rabulea@nxp.com>
+> > > ---
+> > >  drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c | 3 ++-
+> > >  1 file changed, 2 insertions(+), 1 deletion(-)
+> > >
+> > > diff --git a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c
+> > > b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c
+> > > index 734e1b65fbc7..ad4213e020f3 100644
+> > > --- a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c
+> > > +++ b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c
+> > > @@ -519,6 +519,7 @@ static bool mxc_jpeg_alloc_slot_data(struct
+> > mxc_jpeg_dev *jpeg,
+> > >                                    GFP_ATOMIC);
+> > >       if (!cfg_stm)
+> > >               goto err;
+> > > +     memset(cfg_stm, 0, MXC_JPEG_MAX_CFG_STREAM);
+> > >       jpeg->slot_data[slot].cfg_stream_vaddr = cfg_stm;
+> > >
+> > >  skip_alloc:
+> > > @@ -755,7 +756,7 @@ static unsigned int mxc_jpeg_setup_cfg_stream(void
+> > *cfg_stream_vaddr,
+> > >                                             u32 fourcc,
+> > >                                             u16 w, u16 h)  {
+> > > -     unsigned int offset = 0;
+> > > +     unsigned int offset = 0x80;
+> > >       u8 *cfg = (u8 *)cfg_stream_vaddr;
+> > >       struct mxc_jpeg_sof *sof;
+> > >       struct mxc_jpeg_sos *sos;
+> > > --
+> > > 2.36.1
+> > >
+> > 
+> > Thanks,
+> > Tommaso
+> > 
+> > --
+> > Tommaso Merciai
+> > Embedded Linux Engineer
+> > tommaso.merciai@amarulasolutions.com
+> > __________________________________
+> > 
+> > Amarula Solutions SRL
+> > Via Le Canevare 30, 31100 Treviso, Veneto, IT T. +39 042 243 5310
+> > info@amarulasolutions.com
+> > https://eur01.safelinks.protection.outlook.com/?url=http%3A%2F%2Fwww.am
+> > arulasolutions.com%2F&amp;data=05%7C01%7Cming.qian%40nxp.com%7C1
+> > d15c3ca5ba248ae53bc08da3fc4a75b%7C686ea1d3bc2b4c6fa92cd99c5c3016
+> > 35%7C0%7C0%7C637892411093606090%7CUnknown%7CTWFpbGZsb3d8eyJ
+> > WIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7
+> > C3000%7C%7C%7C&amp;sdata=2%2FZlmaidIXmpurQBNW56roQgaWnY7IElP
+> > OJzhFaZlow%3D&amp;reserved=0
 
- [2] multi-object module
-                                      $(LD)
-           $(CC)         $(AR)       +objtool               $(LD)
-    foo1.c -----> foo1.o -----> foo.o -----> foo.prelink.o -----> foo.ko
-                           |  (archive)          (ELF)       |
-    foo2.c -----> foo2.o --/                                 |
-                 (LLVM IR)                       foo.mod.o --/
-
-  One confusion is foo.o in multi-object module is an archive despite of
-  its suffix.
-
-New build flow
-==============
-
- [1] single-object module
-
-  Since there is only one object, there is no need to keep the LLVM IR.
-  Use $(CC)+$(LD) to generate an ELF object in one build rule. When LTO
-  is disabled, $(LD) is unneeded because $(CC) produces an ELF object.
-
-               $(CC)+$(LD)+objtool              $(LD)
-    foo.c ----------------------------> foo.o ---------> foo.ko
-                                        (ELF)     |
-                                                  |
-                                      foo.mod.o --/
-
- [2] multi-object module
-
-  Previously, $(AR) was used to combine LLVM bitcode into an archive,
-  but there was no technical reason to do so. Use $(LD) to merge them
-  into a single ELF object.
-
-                               $(LD)
-             $(CC)            +objtool          $(LD)
-    foo1.c ---------> foo1.o ---------> foo.o ---------> foo.ko
-                                 |      (ELF)     |
-    foo2.c ---------> foo2.o ----/                |
-                     (LLVM IR)        foo.mod.o --/
-
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-Reviewed-by: Nicolas Schier <nicolas@fjasle.eu>
-Tested-by: Nathan Chancellor <nathan@kernel.org>
-Reviewed-by: Sami Tolvanen <samitolvanen@google.com>
-Tested-by: Sedat Dilek <sedat.dilek@gmail.com> # LLVM-14 (x86-64)
----
-
-(no changes since v2)
-
-Changes in v2:
- - replace the chain of $(if ...) with $(and )
-
- scripts/Kbuild.include    |  4 +++
- scripts/Makefile.build    | 60 ++++++++++++---------------------------
- scripts/Makefile.lib      |  7 -----
- scripts/Makefile.modfinal |  5 ++--
- scripts/Makefile.modpost  |  9 ++----
- scripts/mod/modpost.c     |  7 -----
- 6 files changed, 26 insertions(+), 66 deletions(-)
-
-diff --git a/scripts/Kbuild.include b/scripts/Kbuild.include
-index 3514c2149e9d..455a0a6ce12d 100644
---- a/scripts/Kbuild.include
-+++ b/scripts/Kbuild.include
-@@ -15,6 +15,10 @@ pound := \#
- # Name of target with a '.' as filename prefix. foo/bar.o => foo/.bar.o
- dot-target = $(dir $@).$(notdir $@)
- 
-+###
-+# Name of target with a '.tmp_' as filename prefix. foo/bar.o => foo/.tmp_bar.o
-+tmp-target = $(dir $@).tmp_$(notdir $@)
-+
- ###
- # The temporary file to save gcc -MMD generated dependencies must not
- # contain a comma
-diff --git a/scripts/Makefile.build b/scripts/Makefile.build
-index f80196eef03a..23e1fb19f9ad 100644
---- a/scripts/Makefile.build
-+++ b/scripts/Makefile.build
-@@ -88,10 +88,6 @@ endif
- targets-for-modules := $(foreach x, o mod $(if $(CONFIG_TRIM_UNUSED_KSYMS), usyms), \
- 				$(patsubst %.o, %.$x, $(filter %.o, $(obj-m))))
- 
--ifneq ($(CONFIG_LTO_CLANG)$(CONFIG_X86_KERNEL_IBT),)
--targets-for-modules += $(patsubst %.o, %.prelink.o, $(filter %.o, $(obj-m)))
--endif
--
- ifdef need-modorder
- targets-for-modules += $(obj)/modules.order
- endif
-@@ -152,8 +148,16 @@ $(obj)/%.ll: $(src)/%.c FORCE
- # The C file is compiled and updated dependency information is generated.
- # (See cmd_cc_o_c + relevant part of rule_cc_o_c)
- 
-+is-single-obj-m = $(and $(part-of-module),$(filter $@, $(obj-m)),y)
-+
-+ifdef CONFIG_LTO_CLANG
-+cmd_ld_single_m = $(if $(is-single-obj-m), ; $(LD) $(ld_flags) -r -o $(tmp-target) $@; mv $(tmp-target) $@)
-+endif
-+
- quiet_cmd_cc_o_c = CC $(quiet_modtag)  $@
--      cmd_cc_o_c = $(CC) $(c_flags) -c -o $@ $< $(cmd_objtool)
-+      cmd_cc_o_c = $(CC) $(c_flags) -c -o $@ $< \
-+		$(cmd_ld_single_m) \
-+		$(cmd_objtool)
- 
- ifdef CONFIG_MODVERSIONS
- # When module versioning is enabled the following steps are executed:
-@@ -219,7 +223,7 @@ objtool_args =								\
- 	$(if $(CONFIG_STACK_VALIDATION), --stackval)			\
- 	$(if $(CONFIG_HAVE_STATIC_CALL_INLINE), --static-call)		\
- 	--uaccess							\
--	$(if $($(CONFIG_LTO_CLANG)$(CONFIG_X86_KERNEL_IBT)), --link)	\
-+	$(if $(delay-objtool), --link)					\
- 	$(if $(part-of-module), --module)				\
- 	$(if $(CONFIG_GCOV_KERNEL), --no-unreachable)
- 
-@@ -228,21 +232,16 @@ cmd_gen_objtooldep = $(if $(objtool-enabled), { echo ; echo '$@: $$(wildcard $(o
- 
- endif # CONFIG_OBJTOOL
- 
--ifneq ($(CONFIG_LTO_CLANG)$(CONFIG_X86_KERNEL_IBT),)
--
--# Skip objtool for LLVM bitcode
--$(obj)/%.o: objtool-enabled :=
--
--else
- 
- # 'OBJECT_FILES_NON_STANDARD := y': skip objtool checking for a directory
- # 'OBJECT_FILES_NON_STANDARD_foo.o := 'y': skip objtool checking for a file
- # 'OBJECT_FILES_NON_STANDARD_foo.o := 'n': override directory skip for a file
- 
--$(obj)/%.o: objtool-enabled = $(if $(filter-out y%, \
--	$(OBJECT_FILES_NON_STANDARD_$(basetarget).o)$(OBJECT_FILES_NON_STANDARD)n),y)
-+is-standard-object = $(if $(filter-out y%, $(OBJECT_FILES_NON_STANDARD_$(basetarget).o)$(OBJECT_FILES_NON_STANDARD)n),y)
- 
--endif
-+delay-objtool := $(or $(CONFIG_LTO_CLANG),$(CONFIG_X86_KERNEL_IBT))
-+
-+$(obj)/%.o: objtool-enabled = $(if $(is-standard-object),$(if $(delay-objtool),$(is-single-obj-m),y))
- 
- ifdef CONFIG_TRIM_UNUSED_KSYMS
- cmd_gen_ksymdeps = \
-@@ -271,24 +270,6 @@ $(obj)/%.o: $(src)/%.c $(recordmcount_source) FORCE
- 	$(call if_changed_rule,cc_o_c)
- 	$(call cmd,force_checksrc)
- 
--ifneq ($(CONFIG_LTO_CLANG)$(CONFIG_X86_KERNEL_IBT),)
--# Module .o files may contain LLVM bitcode, compile them into native code
--# before ELF processing
--quiet_cmd_cc_prelink_modules = LD [M]  $@
--      cmd_cc_prelink_modules =						\
--	$(LD) $(ld_flags) -r -o $@					\
--		--whole-archive $(filter-out FORCE,$^)			\
--		$(cmd_objtool)
--
--# objtool was skipped for LLVM bitcode, run it now that we have compiled
--# modules into native code
--$(obj)/%.prelink.o: objtool-enabled = y
--$(obj)/%.prelink.o: part-of-module := y
--
--$(obj)/%.prelink.o: $(obj)/%.o FORCE
--	$(call if_changed,cc_prelink_modules)
--endif
--
- cmd_mod = echo $(addprefix $(obj)/, $(call real-search, $*.o, .o, -objs -y -m)) | \
- 	$(AWK) -v RS='( |\n)' '!x[$$0]++' > $@
- 
-@@ -298,7 +279,7 @@ $(obj)/%.mod: FORCE
- # List module undefined symbols
- cmd_undefined_syms = $(NM) $< | sed -n 's/^  *U //p' > $@
- 
--$(obj)/%.usyms: $(obj)/%$(mod-prelink-ext).o FORCE
-+$(obj)/%.usyms: $(obj)/%.o FORCE
- 	$(call if_changed,undefined_syms)
- 
- quiet_cmd_cc_lst_c = MKLST   $@
-@@ -420,16 +401,11 @@ $(obj)/modules.order: $(obj-m) FORCE
- $(obj)/lib.a: $(lib-y) FORCE
- 	$(call if_changed,ar)
- 
--ifneq ($(CONFIG_LTO_CLANG)$(CONFIG_X86_KERNEL_IBT),)
--quiet_cmd_link_multi-m = AR [M]  $@
--cmd_link_multi-m =						\
--	rm -f $@; 						\
--	$(AR) cDPrsT $@ @$(patsubst %.o,%.mod,$@)
--else
- quiet_cmd_link_multi-m = LD [M]  $@
--      cmd_link_multi-m = $(LD) $(ld_flags) -r -o $@ @$(patsubst %.o,%.mod,$@)
--endif
-+      cmd_link_multi-m = $(LD) $(ld_flags) -r -o $@ @$(patsubst %.o,%.mod,$@) $(cmd_objtool)
- 
-+$(multi-obj-m): objtool-enabled := $(delay-objtool)
-+$(multi-obj-m): part-of-module := y
- $(multi-obj-m): %.o: %.mod FORCE
- 	$(call if_changed,link_multi-m)
- $(call multi_depend, $(multi-obj-m), .o, -objs -y -m)
-diff --git a/scripts/Makefile.lib b/scripts/Makefile.lib
-index 0453a1904646..f75138385449 100644
---- a/scripts/Makefile.lib
-+++ b/scripts/Makefile.lib
-@@ -225,13 +225,6 @@ dtc_cpp_flags  = -Wp,-MMD,$(depfile).pre.tmp -nostdinc                    \
- 		 $(addprefix -I,$(DTC_INCLUDE))                          \
- 		 -undef -D__DTS__
- 
--ifneq ($(CONFIG_LTO_CLANG)$(CONFIG_X86_KERNEL_IBT),)
--# With CONFIG_LTO_CLANG, .o files in modules might be LLVM bitcode, so we
--# need to run LTO to compile them into native code (.lto.o) before further
--# processing.
--mod-prelink-ext := .prelink
--endif
--
- # Useful for describing the dependency of composite objects
- # Usage:
- #   $(call multi_depend, multi_used_targets, suffix_to_remove, suffix_to_add)
-diff --git a/scripts/Makefile.modfinal b/scripts/Makefile.modfinal
-index 7f39599e9fae..35100e981f4a 100644
---- a/scripts/Makefile.modfinal
-+++ b/scripts/Makefile.modfinal
-@@ -9,7 +9,7 @@ __modfinal:
- include include/config/auto.conf
- include $(srctree)/scripts/Kbuild.include
- 
--# for c_flags and mod-prelink-ext
-+# for c_flags
- include $(srctree)/scripts/Makefile.lib
- 
- # find all modules listed in modules.order
-@@ -54,9 +54,8 @@ if_changed_except = $(if $(call newer_prereqs_except,$(2))$(cmd-check),      \
- 	$(cmd);                                                              \
- 	printf '%s\n' 'cmd_$@ := $(make-cmd)' > $(dot-target).cmd, @:)
- 
--
- # Re-generate module BTFs if either module's .ko or vmlinux changed
--$(modules): %.ko: %$(mod-prelink-ext).o %.mod.o scripts/module.lds $(if $(KBUILD_BUILTIN),vmlinux) FORCE
-+$(modules): %.ko: %.o %.mod.o scripts/module.lds $(if $(KBUILD_BUILTIN),vmlinux) FORCE
- 	+$(call if_changed_except,ld_ko_o,vmlinux)
- ifdef CONFIG_DEBUG_INFO_BTF_MODULES
- 	+$(if $(newer-prereqs),$(call cmd,btf_ko))
-diff --git a/scripts/Makefile.modpost b/scripts/Makefile.modpost
-index 8b343480813d..911606496341 100644
---- a/scripts/Makefile.modpost
-+++ b/scripts/Makefile.modpost
-@@ -41,9 +41,6 @@ __modpost:
- include include/config/auto.conf
- include $(srctree)/scripts/Kbuild.include
- 
--# for mod-prelink-ext
--include $(srctree)/scripts/Makefile.lib
--
- MODPOST = scripts/mod/modpost								\
- 	$(if $(CONFIG_MODVERSIONS),-m)							\
- 	$(if $(CONFIG_MODULE_SRCVERSION_ALL),-a)					\
-@@ -117,8 +114,6 @@ $(input-symdump):
- 	@echo >&2 '         Modules may not have dependencies or modversions.'
- 	@echo >&2 '         You may get many unresolved symbol warnings.'
- 
--modules := $(sort $(shell cat $(MODORDER)))
--
- # KBUILD_MODPOST_WARN can be set to avoid error out in case of undefined symbols
- ifneq ($(KBUILD_MODPOST_WARN)$(filter-out $(existing-input-symdump), $(input-symdump)),)
- MODPOST += -w
-@@ -127,9 +122,9 @@ endif
- # Read out modules.order to pass in modpost.
- # Otherwise, allmodconfig would fail with "Argument list too long".
- quiet_cmd_modpost = MODPOST $@
--      cmd_modpost = sed 's/\.ko$$/$(mod-prelink-ext)\.o/' $< | $(MODPOST) -T -
-+      cmd_modpost = sed 's/ko$$/o/' $< | $(MODPOST) -T -
- 
--$(output-symdump): $(MODORDER) $(input-symdump) $(modules:.ko=$(mod-prelink-ext).o) FORCE
-+$(output-symdump): $(MODORDER) $(input-symdump) FORCE
- 	$(call if_changed,modpost)
- 
- targets += $(output-symdump)
-diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index b70a31b4245a..e74224a6a8e8 100644
---- a/scripts/mod/modpost.c
-+++ b/scripts/mod/modpost.c
-@@ -1903,10 +1903,6 @@ static char *remove_dot(char *s)
- 		size_t m = strspn(s + n + 1, "0123456789");
- 		if (m && (s[n + m + 1] == '.' || s[n + m + 1] == 0))
- 			s[n] = 0;
--
--		/* strip trailing .prelink */
--		if (strends(s, ".prelink"))
--			s[strlen(s) - 8] = '\0';
- 	}
- 	return s;
- }
-@@ -2028,9 +2024,6 @@ static void read_symbols(const char *modname)
- 		/* strip trailing .o */
- 		tmp = NOFAIL(strdup(modname));
- 		tmp[strlen(tmp) - 2] = '\0';
--		/* strip trailing .prelink */
--		if (strends(tmp, ".prelink"))
--			tmp[strlen(tmp) - 8] = '\0';
- 		mod = new_module(tmp);
- 		free(tmp);
- 	}
 -- 
-2.32.0
+Tommaso Merciai
+Embedded Linux Engineer
+tommaso.merciai@amarulasolutions.com
+__________________________________
 
+Amarula Solutions SRL
+Via Le Canevare 30, 31100 Treviso, Veneto, IT
+T. +39 042 243 5310
+info@amarulasolutions.com
+www.amarulasolutions.com
