@@ -2,112 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF630C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 10:04:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E9B9C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 10:04:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350759AbiE0KEY (ORCPT
+        id S1350769AbiE0KEi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 06:04:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50894 "EHLO
+        Fri, 27 May 2022 06:04:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238247AbiE0KEV (ORCPT
+        with ESMTP id S1350767AbiE0KEf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 06:04:21 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16CAA106A56;
-        Fri, 27 May 2022 03:04:20 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id ck4so7698182ejb.8;
-        Fri, 27 May 2022 03:04:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=xRSTmBtHtIY4PjpL0e2GqDS2gPDdmkS49tDAKosAVXU=;
-        b=n4MLJQoBakTDPpzTh3wUO7Vs2fY2Dz89UBIBNMvNQMK9sBc9U6Mm2OZxtlwRXPx9td
-         NGoCzSyGD7PKMWcjclDaCAI+OKcKDzKlFpSzVPMnq55OSw+eeo+Vpmcezc4al282Oo91
-         agoFbeU+aOUxrLi8tUlpmvJX3HhE6wno8m1aC09jOgcmYIUKi2RX/nJMG26YN5hFEfY2
-         XgQlDRvvBzrzdr75uF1foXhVt3/hGHzghgPOzfjGbg438sb/JQbgmJRmnucLtSFT9kLB
-         AMM2vWmcNjkCUxfzsUCOjRzH7Di2oskSlMGgas3zFeAfTOIXQCcQja7rK0MD2+ekUsIu
-         Kv4w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=xRSTmBtHtIY4PjpL0e2GqDS2gPDdmkS49tDAKosAVXU=;
-        b=QN43s0c6DPz9WMRDHOl4xO2LPVaHg73py3CYE9+PD4mbZa80A7THFPJ1cCn8Q0kZY2
-         7fiF7bbVzIVKG6ZLiWC0MJciBsm3eelbMZmeAnBzYRtu/DrhJIM3ERnwPYrimA5Xrg79
-         UJ5gEFX2CIGbp3FwzHsx+RmGw86gIes7UvIEhhs3tn8IOPGjj6weyY9XDihKG9cmYpte
-         cdnOPMAPpr9qQcFuweC+WbPU5yAnYPcTmrkP72KXcPewY8KPLudwNyyT+l1e9cLhJW7e
-         bGz2EAY60gHBvEMjNecTKAqywJguWOiGt/ura266H+AkPQDJnbnTCRmCQulnYRAw3NRF
-         heyQ==
-X-Gm-Message-State: AOAM533G2ONVP4GErCBBQIASMOp4kU+j+waW5qsXIIaetqTW0pmWQ25T
-        ATEI80wfnxiSwiOPExfsseA=
-X-Google-Smtp-Source: ABdhPJw7kA2HNU05BoAPuckfDoIpMbjctRC4Y91Ac+KMDOqTR4tMKAXEDeMLnq8bts7rF3ooofhPoA==
-X-Received: by 2002:a17:906:7d83:b0:6ce:fee:9256 with SMTP id v3-20020a1709067d8300b006ce0fee9256mr38322696ejo.647.1653645858511;
-        Fri, 27 May 2022 03:04:18 -0700 (PDT)
-Received: from gmail.com (563BA16F.dsl.pool.telekom.hu. [86.59.161.111])
-        by smtp.gmail.com with ESMTPSA id w7-20020a170906130700b006f3ef214dfesm1296659ejb.100.2022.05.27.03.04.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 May 2022 03:04:17 -0700 (PDT)
-Sender: Ingo Molnar <mingo.kernel.org@gmail.com>
-Date:   Fri, 27 May 2022 12:04:14 +0200
-From:   Ingo Molnar <mingo@kernel.org>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Peter Zijlstra <peterz@infradead.org>, x86@kernel.org
-Subject: Re: [PATCH v2] ftrace: Add FTRACE_MCOUNT_MAX_OFFSET to avoid adding
- weak function
-Message-ID: <YpCiHlBjj99hALbV@gmail.com>
-References: <20220525180553.419eac77@gandalf.local.home>
- <Yo7q6dwphFexGuRA@gmail.com>
- <20220526091106.1eb2287a@gandalf.local.home>
+        Fri, 27 May 2022 06:04:35 -0400
+Received: from conuserg-08.nifty.com (conuserg-08.nifty.com [210.131.2.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70C981116D2;
+        Fri, 27 May 2022 03:04:32 -0700 (PDT)
+Received: from grover.sesame (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
+        by conuserg-08.nifty.com with ESMTP id 24RA2hPR029808;
+        Fri, 27 May 2022 19:02:45 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-08.nifty.com 24RA2hPR029808
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1653645765;
+        bh=qwd23UnZbO+5y7U7znABEi6dbpFFNIV0E++LnxqEYTU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=mBTnB1DbKOnCmX5Ya77nr4wiY61xCAd2gDVGZleMKQiezhhRhnn5kcWqlcmPRVA68
+         UfK15SyTlR56+ygHUSR1HFmo5wuekHdC+np4qWSLtNaCqiwqeu+6qNM1GMGSII4a1y
+         NI6ntzouNqgU8FYUcdnaZVDpeWLoUuIx5StuCA/S65ebk2424eIKQhY+iphgwiR/rG
+         LDJyNveUt1Yg2z2YSQ+Ud66mKIjX+UpnItrhq9abbiz+3jY2dYxqeqBaInsuUv1Clq
+         WM7nRpQAXN+6s5hbIQxRd1+8l26aYDPi3LTrXIqJFttc0dKni0YR/6G2WKOyCb/JHA
+         F1CMKUgoAlaTA==
+X-Nifty-SrcIP: [133.32.177.133]
+From:   Masahiro Yamada <masahiroy@kernel.org>
+To:     linux-kbuild@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Peter Zijlstra <peterz@infradead.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>, llvm@lists.linux.dev,
+        Helge Deller <deller@gmx.de>, linux-parisc@vger.kernel.org,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>
+Subject: [PATCH v7 1/8] kbuild: replace $(linked-object) with CONFIG options
+Date:   Fri, 27 May 2022 19:01:48 +0900
+Message-Id: <20220527100155.1996314-2-masahiroy@kernel.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220527100155.1996314-1-masahiroy@kernel.org>
+References: <20220527100155.1996314-1-masahiroy@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220526091106.1eb2287a@gandalf.local.home>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+*.prelink.o is created when CONFIG_LTO_CLANG or CONFIG_X86_KERNEL_IBT
+is enabled.
 
-* Steven Rostedt <rostedt@goodmis.org> wrote:
+Replace $(linked-object) with $(CONFIG_LTO_CLANG)$(CONFIG_X86_KERNEL_IBT)
+so you will get better idea when the --link option is passed.
 
-> On Thu, 26 May 2022 04:50:17 +0200
-> Ingo Molnar <mingo@kernel.org> wrote:
-> 
-> 
-> > > The real fix would be to fix kallsyms to not show address of weak
-> > > functions as the function before it. But that would require adding code in
-> > > the build to add function size to kallsyms so that it can know when the
-> > > function ends instead of just using the start of the next known symbol.  
-> > 
-> > Yeah, so I actually have a (prototype...) objtool based kallsyms 
-> > implementation in the (way too large) fast-headers tree that is both faster 
-> > & allows such details in principle:
-> 
-> Nice.
-> 
-> Will this work for other architectures too?
+No functional change is intended.
 
-For those which implement objtool, it certainly should: as we parse through 
-each object file during the build, generating kallsyms data structures is 
-relatively straightforward.
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+---
 
-Objtool availability is a big gating condition though. :-/
+Changes in v7:
+  - New patch
 
-[ ... and still Acked-by on -v4 too. ]
+ scripts/Makefile.build | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-Thanks,
+diff --git a/scripts/Makefile.build b/scripts/Makefile.build
+index 06400504150b..f80196eef03a 100644
+--- a/scripts/Makefile.build
++++ b/scripts/Makefile.build
+@@ -219,7 +219,7 @@ objtool_args =								\
+ 	$(if $(CONFIG_STACK_VALIDATION), --stackval)			\
+ 	$(if $(CONFIG_HAVE_STATIC_CALL_INLINE), --static-call)		\
+ 	--uaccess							\
+-	$(if $(linked-object), --link)					\
++	$(if $($(CONFIG_LTO_CLANG)$(CONFIG_X86_KERNEL_IBT)), --link)	\
+ 	$(if $(part-of-module), --module)				\
+ 	$(if $(CONFIG_GCOV_KERNEL), --no-unreachable)
+ 
+@@ -284,7 +284,6 @@ quiet_cmd_cc_prelink_modules = LD [M]  $@
+ # modules into native code
+ $(obj)/%.prelink.o: objtool-enabled = y
+ $(obj)/%.prelink.o: part-of-module := y
+-$(obj)/%.prelink.o: linked-object := y
+ 
+ $(obj)/%.prelink.o: $(obj)/%.o FORCE
+ 	$(call if_changed,cc_prelink_modules)
+-- 
+2.32.0
 
-	Ingo
