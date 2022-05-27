@@ -2,148 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CA65C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 17:54:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BB3EC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 17:57:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354413AbiE0Ryl (ORCPT
+        id S1351478AbiE0R5r (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 13:54:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42716 "EHLO
+        Fri, 27 May 2022 13:57:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354370AbiE0Ry1 (ORCPT
+        with ESMTP id S234833AbiE0R5p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 13:54:27 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E06E5D9E88;
-        Fri, 27 May 2022 10:54:26 -0700 (PDT)
+        Fri, 27 May 2022 13:57:45 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C861E5044C;
+        Fri, 27 May 2022 10:57:42 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id n10so5214742pjh.5;
+        Fri, 27 May 2022 10:57:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1653674067; x=1685210067;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=UN3lY1Pk+MR3I3jKJRMZqOMcLEDD883OqErweoErmtI=;
-  b=wLZ0gezmVjLw2DeG+h2ojFKetLaCtiEnN4WIiaH/kITbUZlfWl0YdRsD
-   fNihuypFZUQWaz7eKBc28vY20WF+zNOEJCgNZz8XpaMs0nwodpr4DtBcY
-   TYXK645xqRDXfXmu3J127spvKYVZaVCMJ2RhSN8exxCKoAegVX2ZS/tqS
-   8=;
-Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
-  by alexa-out.qualcomm.com with ESMTP; 27 May 2022 10:54:27 -0700
-X-QCInternal: smtphost
-Received: from ironmsg01-blr.qualcomm.com ([10.86.208.130])
-  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 27 May 2022 10:54:25 -0700
-X-QCInternal: smtphost
-Received: from c-sbhanu-linux.qualcomm.com ([10.242.50.201])
-  by ironmsg01-blr.qualcomm.com with ESMTP; 27 May 2022 23:24:03 +0530
-Received: by c-sbhanu-linux.qualcomm.com (Postfix, from userid 2344807)
-        id 42B63184A; Fri, 27 May 2022 23:24:02 +0530 (IST)
-From:   Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
-To:     adrian.hunter@intel.com, ulf.hansson@linaro.org,
-        wsa+renesas@sang-engineering.com, shawn.lin@rock-chips.com,
-        yoshihiro.shimoda.uh@renesas.com, digetx@gmail.com,
-        quic_asutoshd@quicinc.com
-Cc:     linux-arm-msm@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, quic_rampraka@quicinc.com,
-        quic_pragalla@quicinc.com, quic_sartgarg@quicinc.com,
-        quic_nitirawa@quicinc.com, quic_sayalil@quicinc.com,
-        Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>,
-        Liangliang Lu <quic_luliang@quicinc.com>,
-        "Bao D . Nguyen" <quic_nguyenb@quicinc.com>
-Subject: [PATCH V8 3/5] mmc: debugfs: Add debug fs entry for mmc driver
-Date:   Fri, 27 May 2022 23:23:54 +0530
-Message-Id: <1653674036-21829-4-git-send-email-quic_c_sbhanu@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1653674036-21829-1-git-send-email-quic_c_sbhanu@quicinc.com>
-References: <1653674036-21829-1-git-send-email-quic_c_sbhanu@quicinc.com>
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=c5QFowwOZJQmkHEp2EzjttzGFfwdBQSpAUNmh7E93SI=;
+        b=fHm7TFJ4g/dP9hNS1doPpoMon9EyokDJ7EgXIpneOiB+O/7BscHvKG8nzXcTBGf/4a
+         ll5l0n1Ev1EAa6FRIopSWJR8B9HLiRsCeNIlAxLUjp701hAPft8xgjYXwof4uhbKHNrx
+         CdimHHhAquLgf6I2r68ijBczd4xNL+Opf1xcAvBllW+ruJZHq6N76CaspwW3mbTjUyQc
+         9BJe9UA3SCIsrjC3Axb+dyHDq35iQdq8VUvz7+nGscLwd8PH0DgtHiaZmNvpfRiXppZ7
+         pu4tuHB+GDYVjQTr+jC3EXwzF7dj9iNlX8cnpenTFfrIS+ZgvqFltCAdxAOgVwniQPhn
+         GTAg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=c5QFowwOZJQmkHEp2EzjttzGFfwdBQSpAUNmh7E93SI=;
+        b=4fy10v+zJZxLin3rMc9a4k97JOo2iy4oOsBj9KHvRe1eyyiLHZ5ouXSwVea1EXbNi8
+         mqwlZF+863IhnW+KVJbKTyO7j1v2lR3x+56PwlMlgTpPDxoLUaMH9O+KCHzu8UFHxYlf
+         zG99j/NkNv+zfO0KDzymUCPySLCVnYVZRysbJRgz4qtlNcn0Kip3+j3PLowVmREoftc8
+         tHAmKUFHwVcXAJ7d5/fNrkbqsFQUiBkjzul0ZkhjylvbLc3zImxLMOzfiusl0pv0sRbp
+         1oZO7+Yb27/29Y2PltUjInuPgtfWznc+flWiRsGNrqtHD065R7DqbOfu+pIVYuqUcjws
+         tGPw==
+X-Gm-Message-State: AOAM533cFikTaEBZ3JeM6WyK6yiC2CGLNTF36v4X4NLsXNW3b5qTGX73
+        iI+p3uZjn3J7xRFbxVuolwQ=
+X-Google-Smtp-Source: ABdhPJwdud74IhEwCnCm2GpVwX5cKHpOXGXwDkM4SjvD5+chTcQarv0embQkFjRPc+d8qqzNMZBM/g==
+X-Received: by 2002:a17:902:e809:b0:163:9baf:1fbc with SMTP id u9-20020a170902e80900b001639baf1fbcmr3519201plg.54.1653674262311;
+        Fri, 27 May 2022 10:57:42 -0700 (PDT)
+Received: from f34-buildvm.eng.vmware.com ([66.170.99.2])
+        by smtp.gmail.com with ESMTPSA id y63-20020a638a42000000b003fadfd7be5asm3680740pgd.18.2022.05.27.10.57.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 27 May 2022 10:57:41 -0700 (PDT)
+From:   Shreenidhi Shedi <yesshedi@gmail.com>
+X-Google-Original-From: Shreenidhi Shedi <sshedi@vmware.com>
+To:     srivatsa@csail.mit.edu, amakhalov@vmware.com, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        hpa@zytor.com
+Cc:     virtualization@lists.linux-foundation.org, pv-drivers@vmware.com,
+        x86@kernel.org, linux-kernel@vger.kernel.org, yesshedi@gmail.com,
+        stable@vger.kernel.org, Shreenidhi Shedi <sshedi@vmware.com>
+Subject: [PATCH v3] x86/vmware: use unsigned integer for shifting
+Date:   Fri, 27 May 2022 23:27:37 +0530
+Message-Id: <20220527175737.915284-1-sshedi@vmware.com>
+X-Mailer: git-send-email 2.36.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add debug fs entry to query eMMC and SD card errors statistics
+From: Shreenidhi Shedi <sshedi@vmware.com>
 
-Signed-off-by: Liangliang Lu <quic_luliang@quicinc.com>
-Signed-off-by: Sayali Lokhande <quic_sayalil@quicinc.com>
-Signed-off-by: Bao D. Nguyen <quic_nguyenb@quicinc.com>
-Signed-off-by: Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
-Acked-by: Adrian Hunter <adrian.hunter@intel.com>
+Shifting signed 32-bit value by 31 bits is implementation-defined
+behaviour. Using unsigned is better option for this.
+
+Fixes: 4cca6ea04d31 ("x86/apic: Allow x2apic without IR on VMware platform")
+Cc: stable@vger.kernel.org
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
 ---
- drivers/mmc/core/debugfs.c | 56 ++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 56 insertions(+)
+ arch/x86/kernel/cpu/vmware.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/mmc/core/debugfs.c b/drivers/mmc/core/debugfs.c
-index 3fdbc80..6aa5a60 100644
---- a/drivers/mmc/core/debugfs.c
-+++ b/drivers/mmc/core/debugfs.c
-@@ -223,6 +223,59 @@ static int mmc_clock_opt_set(void *data, u64 val)
- DEFINE_DEBUGFS_ATTRIBUTE(mmc_clock_fops, mmc_clock_opt_get, mmc_clock_opt_set,
- 	"%llu\n");
- 
-+static int mmc_err_stats_show(struct seq_file *file, void *data)
-+{
-+	struct mmc_host *host = (struct mmc_host *)file->private;
-+	const char *desc[MMC_ERR_MAX] = {
-+		[MMC_ERR_CMD_TIMEOUT] = "Command Timeout Occurred",
-+		[MMC_ERR_CMD_CRC] = "Command CRC Errors Occurred",
-+		[MMC_ERR_DAT_TIMEOUT] = "Data Timeout Occurred",
-+		[MMC_ERR_DAT_CRC] = "Data CRC Errors Occurred",
-+		[MMC_ERR_AUTO_CMD] = "Auto-Cmd Error Occurred",
-+		[MMC_ERR_ADMA] = "ADMA Error Occurred",
-+		[MMC_ERR_TUNING] = "Tuning Error Occurred",
-+		[MMC_ERR_CMDQ_RED] = "CMDQ RED Errors",
-+		[MMC_ERR_CMDQ_GCE] = "CMDQ GCE Errors",
-+		[MMC_ERR_CMDQ_ICCE] = "CMDQ ICCE Errors",
-+		[MMC_ERR_REQ_TIMEOUT] = "Request Timedout",
-+		[MMC_ERR_CMDQ_REQ_TIMEOUT] = "CMDQ Request Timedout",
-+		[MMC_ERR_ICE_CFG] = "ICE Config Errors",
-+		[MMC_ERR_CTRL_TIMEOUT] = "Controller Timedout errors",
-+		[MMC_ERR_UNEXPECTED_IRQ] = "Unexpected IRQ errors",
-+	};
-+	int i;
-+
-+	for (i = 0; i < MMC_ERR_MAX; i++) {
-+		if (desc[i])
-+			seq_printf(file, "# %s:\t %d\n",
-+					desc[i], host->err_stats[i]);
-+	}
-+
-+	return 0;
-+}
-+
-+static int mmc_err_stats_open(struct inode *inode, struct file *file)
-+{
-+	return single_open(file, mmc_err_stats_show, inode->i_private);
-+}
-+
-+static ssize_t mmc_err_stats_write(struct file *filp, const char __user *ubuf,
-+				   size_t cnt, loff_t *ppos)
-+{
-+	struct mmc_host *host = filp->f_mapping->host->i_private;
-+
-+	pr_debug("%s: Resetting MMC error statistics\n", __func__);
-+	memset(host->err_stats, 0, sizeof(host->err_stats));
-+
-+	return cnt;
-+}
-+
-+static const struct file_operations mmc_err_stats_fops = {
-+	.open	= mmc_err_stats_open,
-+	.read	= seq_read,
-+	.write	= mmc_err_stats_write,
-+};
-+
- void mmc_add_host_debugfs(struct mmc_host *host)
+diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
+index c04b933f4..02039ec35 100644
+--- a/arch/x86/kernel/cpu/vmware.c
++++ b/arch/x86/kernel/cpu/vmware.c
+@@ -476,8 +476,8 @@ static bool __init vmware_legacy_x2apic_available(void)
  {
- 	struct dentry *root;
-@@ -236,6 +289,9 @@ void mmc_add_host_debugfs(struct mmc_host *host)
- 	debugfs_create_file_unsafe("clock", S_IRUSR | S_IWUSR, root, host,
- 				   &mmc_clock_fops);
- 
-+	debugfs_create_file("err_stats", 0600, root, host,
-+			    &mmc_err_stats_fops);
-+
- #ifdef CONFIG_FAIL_MMC_REQUEST
- 	if (fail_request)
- 		setup_fault_attr(&fail_default_attr, fail_request);
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member 
-of Code Aurora Forum, hosted by The Linux Foundation
+ 	uint32_t eax, ebx, ecx, edx;
+ 	VMWARE_CMD(GETVCPU_INFO, eax, ebx, ecx, edx);
+-	return (eax & (1 << VMWARE_CMD_VCPU_RESERVED)) == 0 &&
+-	       (eax & (1 << VMWARE_CMD_LEGACY_X2APIC)) != 0;
++	return !(eax & BIT(VMWARE_CMD_VCPU_RESERVED)) &&
++		(eax & BIT(VMWARE_CMD_LEGACY_X2APIC));
+ }
+
+ #ifdef CONFIG_AMD_MEM_ENCRYPT
+--
+2.36.1
 
