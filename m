@@ -2,97 +2,191 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2EE3C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 07:55:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74494C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 07:56:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235044AbiE0HzV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 03:55:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46558 "EHLO
+        id S1348165AbiE0H4G (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 03:56:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240727AbiE0HzP (ORCPT
+        with ESMTP id S245061AbiE0H4D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 03:55:15 -0400
-Received: from ssh248.corpemail.net (ssh248.corpemail.net [210.51.61.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E91265C662
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 00:55:10 -0700 (PDT)
-Received: from ([60.208.111.195])
-        by ssh248.corpemail.net ((D)) with ASMTP (SSL) id VCE00104;
-        Fri, 27 May 2022 15:55:04 +0800
-Received: from localhost.localdomain (10.200.104.97) by
- jtjnmail201603.home.langchao.com (10.100.2.3) with Microsoft SMTP Server id
- 15.1.2308.27; Fri, 27 May 2022 15:55:04 +0800
-From:   Bo Liu <liubo03@inspur.com>
-To:     <pbonzini@redhat.com>, <tglx@linutronix.de>, <mingo@redhat.com>,
-        <bp@alien8.de>, <dave.hansen@linux.intel.com>, <x86@kernel.org>,
-        <ardb@kernel.org>
-CC:     <kvm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-efi@vger.kernel.org>, <platform-driver-x86@vger.kernel.org>,
-        Bo Liu <liubo03@inspur.com>
-Subject: [PATCH] x86: Fix all occurences of "the the"
-Date:   Fri, 27 May 2022 02:14:00 -0400
-Message-ID: <20220527061400.5694-1-liubo03@inspur.com>
-X-Mailer: git-send-email 2.18.2
+        Fri, 27 May 2022 03:56:03 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BA1E8FC4D5
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 00:56:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653638161;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=CA+R9olX9BNKnTqlZ0IZTGggNbz8tWHe/TMK4H707bg=;
+        b=GEbm+M0Uh8bOTcLwyH9jFYqBm2qu9VC9q9xp7OTAA/6bhIXcDpMTHbhAE5NYXy7BcR0P9a
+        m+VIwTq1PkZPE+mQWn2n6mXWpZGDQRBcsGo39drsHP0V6alxadw4Jv+I0QKzkQQ3JqKPK6
+        ljFxC118vMhWEiQ+9K6fTfxOpY3VFGI=
+Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
+ [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-30-PYf2yTWHOmmyYeDEIn5NYg-1; Fri, 27 May 2022 03:56:00 -0400
+X-MC-Unique: PYf2yTWHOmmyYeDEIn5NYg-1
+Received: by mail-qk1-f199.google.com with SMTP id s9-20020ae9f709000000b006a3e88115b7so3270165qkg.20
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 00:56:00 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=CA+R9olX9BNKnTqlZ0IZTGggNbz8tWHe/TMK4H707bg=;
+        b=MqqNL2ronHRYOVSmzWfIsQumtiv77bIzpSy6bCPClsRJSELgl34O0liAyD3x+yM3I0
+         U5opVH36n/ewTHattodoZAGlam3snHUD6y7x1nG3wHn6Wp2M2TwyXs058hFu2O8pqnTy
+         Pl1phPEX6wfSndRlhK4CqFIWwZVJ0PL49KBrfWwchbFQRaLXxLKpCFnOvqjZw4iOUnBp
+         OSAFS9+1UO8Wr9poM92FwX/9f2BaUzmRSKW5g0v+13ptjArPn/RnOVfev7NgVr3TxGql
+         pcZ1ESoSpijWIujAe5y+GCYAx/wSRhcNZQPDcpf0fAQ8rl1NJ1Z4GrNWkRXdxu48T6Mx
+         24QQ==
+X-Gm-Message-State: AOAM531Er644M0+oq1P2u4dyOmIu4lEfK1F76jWkx3SZJ7nZ7jOak63E
+        6fa8GY2zfAtdq66aaw3lhvd4BwpGlgnsm1KMZ6n0TzRkw5WtuI9YZ0fspqUThr3HWm9T9p8B0uZ
+        wxi+044EnjnDX8C++MMCZlC/bEQZ6jyA5MEX1zTOb
+X-Received: by 2002:a05:6214:400e:b0:462:5d6:5f47 with SMTP id kd14-20020a056214400e00b0046205d65f47mr31100677qvb.70.1653638160363;
+        Fri, 27 May 2022 00:56:00 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJylroTpRZpeeO0qtJQiqEAiLIxT6iU6LRe7ndfiDx59PJHC+Rmgm12rix1MW2ISsQFjDw6wHv3KBekDpydjKiM=
+X-Received: by 2002:a05:6214:400e:b0:462:5d6:5f47 with SMTP id
+ kd14-20020a056214400e00b0046205d65f47mr31100652qvb.70.1653638160151; Fri, 27
+ May 2022 00:56:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.200.104.97]
-tUid:   2022527155504451bf6831600ff91ca03effc82286c60
-X-Abuse-Reports-To: service@corp-email.com
-Abuse-Reports-To: service@corp-email.com
-X-Complaints-To: service@corp-email.com
-X-Report-Abuse-To: service@corp-email.com
+References: <20220526124338.36247-1-eperezma@redhat.com> <PH0PR12MB54819C6C6DAF6572AEADC1AEDCD99@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <CACGkMEu1YenjBHAssP=FvKX6WxDQ5Aa50r-BsnkfR4zqNTk6hg@mail.gmail.com>
+In-Reply-To: <CACGkMEu1YenjBHAssP=FvKX6WxDQ5Aa50r-BsnkfR4zqNTk6hg@mail.gmail.com>
+From:   Eugenio Perez Martin <eperezma@redhat.com>
+Date:   Fri, 27 May 2022 09:55:24 +0200
+Message-ID: <CAJaqyWfzoORc7V=xqdyLsdRPRYGNJBvWaPcZDhOb1vJWhbixoA@mail.gmail.com>
+Subject: Re: [PATCH v4 0/4] Implement vdpasim stop operation
+To:     Parav Pandit <parav@nvidia.com>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "martinh@xilinx.com" <martinh@xilinx.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        "martinpo@xilinx.com" <martinpo@xilinx.com>,
+        "lvivier@redhat.com" <lvivier@redhat.com>,
+        "pabloc@xilinx.com" <pabloc@xilinx.com>,
+        Eli Cohen <elic@nvidia.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Xie Yongji <xieyongji@bytedance.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Zhang Min <zhang.min9@zte.com.cn>,
+        Wu Zongyong <wuzongyong@linux.alibaba.com>,
+        "lulu@redhat.com" <lulu@redhat.com>,
+        Zhu Lingshan <lingshan.zhu@intel.com>,
+        "Piotr.Uminski@intel.com" <Piotr.Uminski@intel.com>,
+        Si-Wei Liu <si-wei.liu@oracle.com>,
+        "ecree.xilinx@gmail.com" <ecree.xilinx@gmail.com>,
+        "gautam.dawar@amd.com" <gautam.dawar@amd.com>,
+        "habetsm.xilinx@gmail.com" <habetsm.xilinx@gmail.com>,
+        "tanuj.kamde@amd.com" <tanuj.kamde@amd.com>,
+        "hanand@xilinx.com" <hanand@xilinx.com>,
+        "dinang@xilinx.com" <dinang@xilinx.com>,
+        Longpeng <longpeng2@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Rather than waiting for the bots to fix these one-by-one,
-fix all occurences of "the the" throughout arch/x86.
+On Fri, May 27, 2022 at 4:26 AM Jason Wang <jasowang@redhat.com> wrote:
+>
+> On Thu, May 26, 2022 at 8:54 PM Parav Pandit <parav@nvidia.com> wrote:
+> >
+> >
+> >
+> > > From: Eugenio P=C3=A9rez <eperezma@redhat.com>
+> > > Sent: Thursday, May 26, 2022 8:44 AM
+> >
+> > > Implement stop operation for vdpa_sim devices, so vhost-vdpa will off=
+er
+> > >
+> > > that backend feature and userspace can effectively stop the device.
+> > >
+> > >
+> > >
+> > > This is a must before get virtqueue indexes (base) for live migration=
+,
+> > >
+> > > since the device could modify them after userland gets them. There ar=
+e
+> > >
+> > > individual ways to perform that action for some devices
+> > >
+> > > (VHOST_NET_SET_BACKEND, VHOST_VSOCK_SET_RUNNING, ...) but there
+> > > was no
+> > >
+> > > way to perform it for any vhost device (and, in particular, vhost-vdp=
+a).
+> > >
+> > >
+> > >
+> > > After the return of ioctl with stop !=3D 0, the device MUST finish an=
+y
+> > >
+> > > pending operations like in flight requests. It must also preserve all
+> > >
+> > > the necessary state (the virtqueue vring base plus the possible devic=
+e
+> > >
+> > > specific states) that is required for restoring in the future. The
+> > >
+> > > device must not change its configuration after that point.
+> > >
+> > >
+> > >
+> > > After the return of ioctl with stop =3D=3D 0, the device can continue
+> > >
+> > > processing buffers as long as typical conditions are met (vq is enabl=
+ed,
+> > >
+> > > DRIVER_OK status bit is enabled, etc).
+> >
+> > Just to be clear, we are adding vdpa level new ioctl() that doesn=E2=80=
+=99t map to any mechanism in the virtio spec.
+>
+> We try to provide forward compatibility to VIRTIO_CONFIG_S_STOP. That
+> means it is expected to implement at least a subset of
+> VIRTIO_CONFIG_S_STOP.
+>
 
-Signed-off-by: Bo Liu <liubo03@inspur.com>
----
- arch/x86/kvm/vmx/vmx.c               | 2 +-
- arch/x86/kvm/x86.c                   | 2 +-
- arch/x86/platform/efi/efi_thunk_64.S | 2 +-
- 3 files changed, 3 insertions(+), 3 deletions(-)
+Appending a link to the proposal, just for reference [1].
 
-diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index e0d3bea73b28..e1aa14743cdb 100644
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -6221,7 +6221,7 @@ static noinstr void vmx_l1d_flush(struct kvm_vcpu *vcpu)
- 	int size = PAGE_SIZE << L1D_CACHE_ORDER;
- 
- 	/*
--	 * This code is only executed when the the flush mode is 'cond' or
-+	 * This code is only executed when the flush mode is 'cond' or
- 	 * 'always'
- 	 */
- 	if (static_branch_likely(&vmx_l1d_flush_cond)) {
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index b5aeed18b9f5..921b1139c303 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -11940,7 +11940,7 @@ void kvm_arch_destroy_vm(struct kvm *kvm)
- 	if (current->mm == kvm->mm) {
- 		/*
- 		 * Free memory regions allocated on behalf of userspace,
--		 * unless the the memory map has changed due to process exit
-+		 * unless the memory map has changed due to process exit
- 		 * or fd copying.
- 		 */
- 		mutex_lock(&kvm->slots_lock);
-diff --git a/arch/x86/platform/efi/efi_thunk_64.S b/arch/x86/platform/efi/efi_thunk_64.S
-index 854dd81804b7..9ffe2bad27d5 100644
---- a/arch/x86/platform/efi/efi_thunk_64.S
-+++ b/arch/x86/platform/efi/efi_thunk_64.S
-@@ -8,7 +8,7 @@
-  * The below thunking functions are only used after ExitBootServices()
-  * has been called. This simplifies things considerably as compared with
-  * the early EFI thunking because we can leave all the kernel state
-- * intact (GDT, IDT, etc) and simply invoke the the 32-bit EFI runtime
-+ * intact (GDT, IDT, etc) and simply invoke the 32-bit EFI runtime
-  * services from __KERNEL32_CS. This means we can continue to service
-  * interrupts across an EFI mixed mode call.
-  *
--- 
-2.27.0
+> >
+> > Why can't we use this ioctl() to indicate driver to start/stop the devi=
+ce instead of driving it through the driver_ok?
+>
+
+Parav, I'm not sure I follow you here.
+
+By the proposal, the resume of the device is (From qemu POV):
+1. To configure all data vqs and cvq (addr, num, ...)
+2. To enable only CVQ, not data vqs
+3. To send DRIVER_OK
+4. Wait for all buffers of CVQ to be used
+5. To enable all others data vqs (individual ioctl at the moment)
+
+Where can we fit the resume (as "stop(false)") here? If the device is
+stopped (as if we send stop(true) before DRIVER_OK), we don't read CVQ
+first. If we send it right after (or instead) DRIVER_OK, data buffers
+can reach data vqs before configuring RSS.
+
+> So the idea is to add capability that does not exist in the spec. Then
+> came the stop/resume which can't be done via DRIVER_OK. I think we
+> should only allow the stop/resume to succeed after DRIVER_OK is set.
+>
+> > This is in the context of other discussion we had in the LM series.
+>
+> Do you see any issue that blocks the live migration?
+>
+> Thanks
+>
 
