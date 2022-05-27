@@ -2,96 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5149C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 07:39:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 785B1C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 07:40:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347661AbiE0Hjt (ORCPT
+        id S1347620AbiE0Hkl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 03:39:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38282 "EHLO
+        Fri, 27 May 2022 03:40:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232238AbiE0Hjq (ORCPT
+        with ESMTP id S232238AbiE0Hkk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 03:39:46 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA050F7499
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 00:39:42 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 6A69021A80;
-        Fri, 27 May 2022 07:39:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1653637181; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=vdLnFJ4Ca5m70NTfEe0fB3jkyyeyrGYENaDbY2LnlAQ=;
-        b=F5332/+CQarJTGYGB9b5Rjf6swUovv7TqCGsImQmrM4HqyetLFpij/t+LkR+TwpM8AGG8a
-        1FCo4+U08R33qZHPR140w3VrZRji7h3fbOrzjXyAJCl6sZMeAbbZU3pMQqnHSpJj25Hj9/
-        ySh05iKIVOrjHYMCOy0W6GdgG2Jt31I=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1653637181;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=vdLnFJ4Ca5m70NTfEe0fB3jkyyeyrGYENaDbY2LnlAQ=;
-        b=yULVFRxKbGI0ARdRFA5fv3z9TvOGXU7HaG6mbZTRHXFRyb5pYRdRTx52CbO/Pd0jlDmujP
-        gVlKfs1852/cExDA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 4E81013A84;
-        Fri, 27 May 2022 07:39:41 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id HNB2Ej2AkGL5JwAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Fri, 27 May 2022 07:39:41 +0000
-Message-ID: <f25c03d7-d9e2-2ae3-4dcc-0d054a15ad2c@suse.cz>
-Date:   Fri, 27 May 2022 09:39:41 +0200
+        Fri, 27 May 2022 03:40:40 -0400
+Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87BFAF7495;
+        Fri, 27 May 2022 00:40:38 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R571e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=alimailimapcm10staff010182156082;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0VEW88T-_1653637234;
+Received: from localhost(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0VEW88T-_1653637234)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 27 May 2022 15:40:35 +0800
+From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+To:     olivierdautricourt@gmail.com
+Cc:     sr@denx.de, vkoul@kernel.org, dmaengine@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: [PATCH v2] dmaengine: altera-msgdma: Fix kernel-doc
+Date:   Fri, 27 May 2022 15:40:08 +0800
+Message-Id: <20220527074008.8458-1-jiapeng.chong@linux.alibaba.com>
+X-Mailer: git-send-email 2.20.1.7.g153144c
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH 3/3] mm: hugetlb_vmemmap: cleanup
- CONFIG_HUGETLB_PAGE_FREE_VMEMMAP*
-Content-Language: en-US
-To:     Muchun Song <songmuchun@bytedance.com>, mike.kravetz@oracle.com,
-        akpm@linux-foundation.org, david@redhat.com
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        smuchun@bytedance.com
-References: <20220404074652.68024-1-songmuchun@bytedance.com>
- <20220404074652.68024-4-songmuchun@bytedance.com>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <20220404074652.68024-4-songmuchun@bytedance.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/4/22 09:46, Muchun Song wrote:
-> --- a/mm/hugetlb_vmemmap.c
-> +++ b/mm/hugetlb_vmemmap.c
-> @@ -188,7 +188,7 @@
->  #define RESERVE_VMEMMAP_NR		1U
->  #define RESERVE_VMEMMAP_SIZE		(RESERVE_VMEMMAP_NR << PAGE_SHIFT)
->  
-> -DEFINE_STATIC_KEY_MAYBE(CONFIG_HUGETLB_PAGE_FREE_VMEMMAP_DEFAULT_ON,
-> +DEFINE_STATIC_KEY_MAYBE(CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP_DEFAULT_ON,
->  			hugetlb_optimize_vmemmap_key);
->  EXPORT_SYMBOL(hugetlb_optimize_vmemmap_key);
+Fix the following W=1 kernel warnings:
 
-Hi,
+drivers/dma/altera-msgdma.c:927: warning: expecting prototype for
+msgdma_dma_remove(). Prototype was for msgdma_remove() instead.
 
-looks like just below here you forgot to update:
+drivers/dma/altera-msgdma.c:758: warning: expecting prototype for
+msgdma_chan_remove(). Prototype was for msgdma_dev_remove() instead.
 
-static enum vmemmap_optimize_mode vmemmap_optimize_mode =
-        IS_ENABLED(CONFIG_HUGETLB_PAGE_FREE_VMEMMAP_DEFAULT_ON);
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+---
+Changes in v2:
+  -Make the commit message more clearer,replace msgdma_remove()
+with msgdma_dma_remove() in doc.
 
-so it refers to CONFIG name that no longer exists?
+ drivers/dma/altera-msgdma.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Vlastimil
+diff --git a/drivers/dma/altera-msgdma.c b/drivers/dma/altera-msgdma.c
+index 6f56dfd375e3..4153c2edb049 100644
+--- a/drivers/dma/altera-msgdma.c
++++ b/drivers/dma/altera-msgdma.c
+@@ -749,7 +749,7 @@ static irqreturn_t msgdma_irq_handler(int irq, void *data)
+ }
+ 
+ /**
+- * msgdma_chan_remove - Channel remove function
++ * msgdma_dev_remove() - Device remove function
+  * @mdev: Pointer to the Altera mSGDMA device structure
+  */
+ static void msgdma_dev_remove(struct msgdma_device *mdev)
+@@ -918,7 +918,7 @@ static int msgdma_probe(struct platform_device *pdev)
+ }
+ 
+ /**
+- * msgdma_dma_remove - Driver remove function
++ * msgdma_remove() - Driver remove function
+  * @pdev: Pointer to the platform_device structure
+  *
+  * Return: Always '0'
+-- 
+2.20.1.7.g153144c
 
