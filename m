@@ -2,216 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A526C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:38:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA452C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:38:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349882AbiE0Ii1 (ORCPT
+        id S1349847AbiE0Iio (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 04:38:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48010 "EHLO
+        Fri, 27 May 2022 04:38:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349926AbiE0IiB (ORCPT
+        with ESMTP id S1349875AbiE0IiO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 04:38:01 -0400
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F38881B4;
-        Fri, 27 May 2022 01:37:04 -0700 (PDT)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 24R8axc3102241;
-        Fri, 27 May 2022 03:36:59 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1653640619;
-        bh=y6OTPqS+vc9WZO3WlEaGQoJIO2Ga4vGpk/QBM5b6uQ0=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=VSOWX3hnuk6LUKawQbwyP0VSh+j3fhdpjAjXD/jgvN5QV6NfgGLegBf5d8uxAI3IL
-         wE0xkGDvU6M4HVPMPNisBlaT9FL9uTUs3Ws0ZZA5Chn2930LKMqCpMOh0JAUSd841N
-         GyErZ1EyG5dUWyheAw1NbE9LLuRi6MkIMlP8IhsM=
-Received: from DLEE102.ent.ti.com (dlee102.ent.ti.com [157.170.170.32])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 24R8axM5013346
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 27 May 2022 03:36:59 -0500
-Received: from DLEE103.ent.ti.com (157.170.170.33) by DLEE102.ent.ti.com
- (157.170.170.32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Fri, 27
- May 2022 03:36:58 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE103.ent.ti.com
- (157.170.170.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Fri, 27 May 2022 03:36:59 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 24R8avnI060753;
-        Fri, 27 May 2022 03:36:58 -0500
-From:   Rahul T R <r-ravikumar@ti.com>
-To:     <robh+dt@kernel.org>, <nm@ti.com>, <vigneshr@ti.com>,
-        <kishon@ti.com>, <krzysztof.kozlowski+dt@linaro.org>
-CC:     <lee.jones@linaro.org>, <rogerq@kernel.org>,
-        <devicetree@vger.kernel.org>, <kristo@kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <s-anna@ti.com>,
-        Vijay Pothukuchi <vijayp@ti.com>,
-        Rahul T R <r-ravikumar@ti.com>
-Subject: [PATCH 2/3] arm64: dts: ti: k3-j721e-*: Add dts nodes for EHRPWMs
-Date:   Fri, 27 May 2022 14:05:55 +0530
-Message-ID: <20220527083556.18864-3-r-ravikumar@ti.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220527083556.18864-1-r-ravikumar@ti.com>
-References: <20220527083556.18864-1-r-ravikumar@ti.com>
+        Fri, 27 May 2022 04:38:14 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 582A1108AB1
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 01:37:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653640658; x=1685176658;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=e8+pSY1x+l3uGIZDMc8m/MwYXF+f6ONLrv/OSYV1yzM=;
+  b=joOc++CJ9PdHOtT75aGoFOIl2JZHVwh/1xsrCVA8m+iadCC5My9WfeRx
+   PLPWVwxzfVPjTNEIV6EwvaUZ/5kqOtn9uuBsgLVN1oThsmpG41kEeLrbZ
+   1PHwhHCVT6Qc35fYGCblOhK1hCwX84/aNlDIuD+ukMxbbZY371tgfDdeI
+   EB3exAkodQlrsbbc4vwyvx4g/QNzVRRe/jvfif5Bx4VC5hkmSD/KJ7siF
+   2qgF5dS4SyAJJP+LOKH5NCl8pi4YFG6D7s3pgmDo+rzDzYqkHsMeNhVx6
+   Rg+5BsOfXt6XswbnRYsku/pDKSURNWb8KCcerIqD9eS5weyEItwmpIOxE
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10359"; a="337469172"
+X-IronPort-AV: E=Sophos;i="5.91,254,1647327600"; 
+   d="scan'208";a="337469172"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2022 01:37:37 -0700
+X-IronPort-AV: E=Sophos;i="5.91,254,1647327600"; 
+   d="scan'208";a="746823906"
+Received: from aslawinx-mobl.ger.corp.intel.com (HELO [10.99.249.33]) ([10.99.249.33])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2022 01:37:35 -0700
+Message-ID: <04c05bd5-63c7-bbac-889c-6e9897f7b990@linux.intel.com>
+Date:   Fri, 27 May 2022 10:37:33 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 1/2] ARC: bitops: Change __fls to return unsigned long
+Content-Language: en-US
+To:     Vineet Gupta <vgupta@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     linux-snps-arc@lists.infradead.org,
+        linux-m68k@lists.linux-m68k.org, linux-kernel@vger.kernel.org
+References: <20220525144844.1571705-1-amadeuszx.slawinski@linux.intel.com>
+ <20220525144844.1571705-2-amadeuszx.slawinski@linux.intel.com>
+ <17bdbca6-8352-50a8-0a3e-49ffe09422a2@kernel.org>
+From:   =?UTF-8?Q?Amadeusz_S=c5=82awi=c5=84ski?= 
+        <amadeuszx.slawinski@linux.intel.com>
+In-Reply-To: <17bdbca6-8352-50a8-0a3e-49ffe09422a2@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vijay Pothukuchi <vijayp@ti.com>
+On 5/26/2022 5:42 AM, Vineet Gupta wrote:
+> Hi,
+> 
+> On 5/25/22 07:48, Amadeusz Sławiński wrote:
+>> As per asm-generic definition and other architectures __fls should
+>> return unsigned long.
+>>
+>> No functional change is expected as return value should fit in unsigned
+>> long.
+>>
+>> Signed-off-by: Amadeusz Sławiński<amadeuszx.slawinski@linux.intel.com>
+> 
+> Applied to for-curr.
+> 
+> Thx,
+> -Vineet
 
-Add dts nodes for 6 EHRPWM instances on SoC
-
-Signed-off-by: Vijay Pothukuchi <vijayp@ti.com>
-Signed-off-by: Rahul T R <r-ravikumar@ti.com>
----
- .../dts/ti/k3-j721e-common-proc-board.dts     | 24 +++++++
- arch/arm64/boot/dts/ti/k3-j721e-main.dtsi     | 62 ++++++++++++++++++-
- arch/arm64/boot/dts/ti/k3-j721e-sk.dts        | 24 +++++++
- 3 files changed, 109 insertions(+), 1 deletion(-)
-
-diff --git a/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dts b/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dts
-index 2bc26a296496..f7d02fa4d6fc 100644
---- a/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dts
-+++ b/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dts
-@@ -995,3 +995,27 @@
- &main_mcan13 {
- 	status = "disabled";
- };
-+
-+&main_ehrpwm0 {
-+	status = "disabled";
-+};
-+
-+&main_ehrpwm1 {
-+	status = "disabled";
-+};
-+
-+&main_ehrpwm2 {
-+	status = "disabled";
-+};
-+
-+&main_ehrpwm3 {
-+	status = "disabled";
-+};
-+
-+&main_ehrpwm4 {
-+	status = "disabled";
-+};
-+
-+&main_ehrpwm5 {
-+	status = "disabled";
-+};
-diff --git a/arch/arm64/boot/dts/ti/k3-j721e-main.dtsi b/arch/arm64/boot/dts/ti/k3-j721e-main.dtsi
-index 43b6cf5791ee..3ae3d1cc6570 100644
---- a/arch/arm64/boot/dts/ti/k3-j721e-main.dtsi
-+++ b/arch/arm64/boot/dts/ti/k3-j721e-main.dtsi
-@@ -66,7 +66,67 @@
- 			#mux-control-cells = <1>;
- 			mux-reg-masks = <0x4000 0x8000000>, /* USB0 to SERDES0/3 mux */
- 					<0x4010 0x8000000>; /* USB1 to SERDES1/2 mux */
--	    };
-+		};
-+
-+		ehrpwm_tbclk: clock@4140 {
-+			compatible = "ti,am654-ehrpwm-tbclk", "syscon";
-+			reg = <0x4140 0x18>;
-+			#clock-cells = <1>;
-+		};
-+	};
-+
-+	main_ehrpwm0: pwm@3000000 {
-+		compatible = "ti,am654-ehrpwm", "ti,am3352-ehrpwm";
-+		#pwm-cells = <3>;
-+		reg = <0x0 0x3000000 0x0 0x100>;
-+		power-domains = <&k3_pds 83 TI_SCI_PD_EXCLUSIVE>;
-+		clocks = <&ehrpwm_tbclk 0>, <&k3_clks 83 0>;
-+		clock-names = "tbclk", "fck";
-+	};
-+
-+	main_ehrpwm1: pwm@3010000 {
-+		compatible = "ti,am654-ehrpwm", "ti,am3352-ehrpwm";
-+		#pwm-cells = <3>;
-+		reg = <0x0 0x3010000 0x0 0x100>;
-+		power-domains = <&k3_pds 84 TI_SCI_PD_EXCLUSIVE>;
-+		clocks = <&ehrpwm_tbclk 1>, <&k3_clks 84 0>;
-+		clock-names = "tbclk", "fck";
-+	};
-+
-+	main_ehrpwm2: pwm@3020000 {
-+		compatible = "ti,am654-ehrpwm", "ti,am3352-ehrpwm";
-+		#pwm-cells = <3>;
-+		reg = <0x0 0x3020000 0x0 0x100>;
-+		power-domains = <&k3_pds 85 TI_SCI_PD_EXCLUSIVE>;
-+		clocks = <&ehrpwm_tbclk 2>, <&k3_clks 85 0>;
-+		clock-names = "tbclk", "fck";
-+	};
-+
-+	main_ehrpwm3: pwm@3030000 {
-+		compatible = "ti,am654-ehrpwm", "ti,am3352-ehrpwm";
-+		#pwm-cells = <3>;
-+		reg = <0x0 0x3030000 0x0 0x100>;
-+		power-domains = <&k3_pds 86 TI_SCI_PD_EXCLUSIVE>;
-+		clocks = <&ehrpwm_tbclk 3>, <&k3_clks 86 0>;
-+		clock-names = "tbclk", "fck";
-+	};
-+
-+	main_ehrpwm4: pwm@3040000 {
-+		compatible = "ti,am654-ehrpwm", "ti,am3352-ehrpwm";
-+		#pwm-cells = <3>;
-+		reg = <0x0 0x3040000 0x0 0x100>;
-+		power-domains = <&k3_pds 87 TI_SCI_PD_EXCLUSIVE>;
-+		clocks = <&ehrpwm_tbclk 4>, <&k3_clks 87 0>;
-+		clock-names = "tbclk", "fck";
-+	};
-+
-+	main_ehrpwm5: pwm@3050000 {
-+		compatible = "ti,am654-ehrpwm", "ti,am3352-ehrpwm";
-+		#pwm-cells = <3>;
-+		reg = <0x0 0x3050000 0x0 0x100>;
-+		power-domains = <&k3_pds 88 TI_SCI_PD_EXCLUSIVE>;
-+		clocks = <&ehrpwm_tbclk 5>, <&k3_clks 88 0>;
-+		clock-names = "tbclk", "fck";
- 	};
- 
- 	gic500: interrupt-controller@1800000 {
-diff --git a/arch/arm64/boot/dts/ti/k3-j721e-sk.dts b/arch/arm64/boot/dts/ti/k3-j721e-sk.dts
-index 80358cba6954..98a55778f3fe 100644
---- a/arch/arm64/boot/dts/ti/k3-j721e-sk.dts
-+++ b/arch/arm64/boot/dts/ti/k3-j721e-sk.dts
-@@ -1129,3 +1129,27 @@
- 	memory-region = <&c71_0_dma_memory_region>,
- 			<&c71_0_memory_region>;
- };
-+
-+&main_ehrpwm0 {
-+	status = "disabled";
-+};
-+
-+&main_ehrpwm1 {
-+	status = "disabled";
-+};
-+
-+&main_ehrpwm2 {
-+	status = "disabled";
-+};
-+
-+&main_ehrpwm3 {
-+	status = "disabled";
-+};
-+
-+&main_ehrpwm4 {
-+	status = "disabled";
-+};
-+
-+&main_ehrpwm5 {
-+	status = "disabled";
-+};
--- 
-2.17.1
-
+And apparently __fls is defined in two places in ARC header and I only 
+changed one, should I send incremental patch on top of already merged 
+one or v2?
