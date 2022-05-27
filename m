@@ -2,100 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 256F2C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 09:14:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11191C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 09:15:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350107AbiE0JOC (ORCPT
+        id S1345049AbiE0JPz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 05:14:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35714 "EHLO
+        Fri, 27 May 2022 05:15:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350268AbiE0JNL (ORCPT
+        with ESMTP id S236098AbiE0JPv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 05:13:11 -0400
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F382A5E16D;
-        Fri, 27 May 2022 02:13:09 -0700 (PDT)
-Received: by mail-wr1-x42b.google.com with SMTP id j25so5055810wrb.6;
-        Fri, 27 May 2022 02:13:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=RetBFMCG9lpCLQ9GX70HNv/afENGPmJuOklOwoJiSPQ=;
-        b=ZQzyFVLp2dzDfjoAsp+7ZPY0X7JBg5tzdnvBkc7uQnGV83c10Sr1XPTlos1jrEsUT1
-         C3OazIfS1PM+ifZ4BvTZHzp6L80SBBywV4vDDNzIE+6bcVIKccnpdiLbS0RfO41NiAhT
-         m3i95T6UBdPqQOmakprbQwctYjhsBtCw8f88ecv53H9W/LKylsWYPG5Y9wPm1TGVA0Nj
-         aXGZONEFX7snSTyARs8L3uT4z23vge+hYk6gfdLfa5fRI7ysCXcprdoQFfhVAW+bou33
-         6bgZ9JOLjHUNM/ikf7kRfrfvLiaeKQcJW/4VxHAmraVEjdcqex0Mm1AXAjQaoC7qhlGY
-         KtwA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=RetBFMCG9lpCLQ9GX70HNv/afENGPmJuOklOwoJiSPQ=;
-        b=MZolrHWbgxwQWhyTPCnBlaW6H+zz506kuZWu+CmWWHkairALTdBr3BDxQGz9o0PMQ1
-         lUgl4xLaZbb1vBikVGei1qhS+JcKueFBp6sOtOtfOBlY6ayYbuVQpVFekk4X/sITQ+qs
-         VcF1ZTJzfncz7dZaMyz7W/xxZ8n8Sd6BM/SVAYMSkSXE58rbbXYQNguxBBPeTgvf5/Aa
-         Y5LddAB6AXGJ3yFkk0fud/CQ6nYnGzFbNxRpGnOTb/fcej/RiuclcInJu1suzmpWWWJ0
-         2pJGKxCntHaca5t7+UXdMI4sV6Id9HtBs5/CRlr8ixVx2pUvwYiwoGi8qjO2EMsZgZnX
-         d4/A==
-X-Gm-Message-State: AOAM533PQjSYv2d9fnDfQZOIkmyjJ5dxTBwI6fNbGLEGNIupveZXxwcA
-        1s1J1G8YLWSEIvKg4+1e2/k+f8zNpW4=
-X-Google-Smtp-Source: ABdhPJwtWKYLZA55ZTOzSRd4thmuCkh/99+ZZ5lCisRvMKaSENv9Y2FPT/alaE3MhJ+wR45C+2Pxkw==
-X-Received: by 2002:a5d:64e4:0:b0:20f:eb22:1af1 with SMTP id g4-20020a5d64e4000000b0020feb221af1mr16226781wri.437.1653642788602;
-        Fri, 27 May 2022 02:13:08 -0700 (PDT)
-Received: from debian (host-2-98-37-191.as13285.net. [2.98.37.191])
-        by smtp.gmail.com with ESMTPSA id 8-20020a1c0208000000b003942a244ed1sm1615289wmc.22.2022.05.27.02.13.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 May 2022 02:13:08 -0700 (PDT)
-Date:   Fri, 27 May 2022 10:13:06 +0100
-From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-To:     Johannes Berg <johannes.berg@intel.com>,
-        Gregory Greenman <gregory.greenman@intel.com>
-Cc:     Luca Coelho <luciano.coelho@intel.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, torvalds@linux-foundation.org
-Subject: mainline build failure due to c1918196427b ("iwlwifi: pcie: simplify
- MSI-X cause mapping")
-Message-ID: <YpCWIlVFd7JDPfT+@debian>
+        Fri, 27 May 2022 05:15:51 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD7B2D8B;
+        Fri, 27 May 2022 02:15:50 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 9CD141F990;
+        Fri, 27 May 2022 09:15:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1653642949; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=4PNcFgUhLhWREVrd3nkcrMfGa8Rtl91s/gZZxYxrErY=;
+        b=efW0VoM/ZOnFbsB7wh1BLUOlR/w3Gb/noJyvk8GhslDhaQzHL4xqVldI7YgzuCGJ5fhAbQ
+        Ac53qMKQ9Gmumpc8CIj09F26o0wgBuiGmcpbwZl/7reojra8yV9WysDlt+jgIS8o+MX67G
+        meteaOONF6AoWH8wAIjJLbIP+tUMSbY=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1653642949;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=4PNcFgUhLhWREVrd3nkcrMfGa8Rtl91s/gZZxYxrErY=;
+        b=il3mgRpfqvUjjTgi7eXKWBdtb8O2Jp0b1nA2zZxzUjdfcaqQzz/LcEDKqkll3eJuFHPIis
+        F7eQ4tSZzIP75+AA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 44BAA139C4;
+        Fri, 27 May 2022 09:15:49 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id sZjxDcWWkGLITgAAMHmgww
+        (envelope-from <lhenriques@suse.de>); Fri, 27 May 2022 09:15:49 +0000
+Received: from localhost (brahms.olymp [local])
+        by brahms.olymp (OpenSMTPD) with ESMTPA id ba8c5f5d;
+        Fri, 27 May 2022 09:16:27 +0000 (UTC)
+From:   =?utf-8?Q?Lu=C3=ADs_Henriques?= <lhenriques@suse.de>
+To:     Xiubo Li <xiubli@redhat.com>
+Cc:     Jeff Layton <jlayton@kernel.org>,
+        Ilya Dryomov <idryomov@gmail.com>, ceph-devel@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ceph: use correct index when encoding client supported
+ features
+References: <20220524160627.20893-1-lhenriques@suse.de>
+        <d1f22b3b-7415-0fdb-e702-24f2a7b0b939@redhat.com>
+Date:   Fri, 27 May 2022 10:16:27 +0100
+In-Reply-To: <d1f22b3b-7415-0fdb-e702-24f2a7b0b939@redhat.com> (Xiubo Li's
+        message of "Thu, 26 May 2022 08:55:15 +0800")
+Message-ID: <87h75bwd1w.fsf@brahms.olymp>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi All,
+Xiubo Li <xiubli@redhat.com> writes:
 
-The latest mainline kernel branch fails to build for mips allmodconfig
-with the error:
+> On 5/25/22 12:06 AM, Lu=C3=ADs Henriques wrote:
+>> Feature bits have to be encoded into the correct locations.  This hasn't
+>> been an issue so far because the only hole in the feature bits was in bit
+>> 10 (CEPHFS_FEATURE_RECLAIM_CLIENT), which is located in the 2nd byte.  W=
+hen
+>> adding more bits that go beyond the this 2nd byte, the bug will show up.
+>>
+>> Fixes: 9ba1e224538a ("ceph: allocate the correct amount of extra bytes f=
+or the session features")
+>> Signed-off-by: Lu=C3=ADs Henriques <lhenriques@suse.de>
+>> ---
+>>   fs/ceph/mds_client.c | 7 +++++--
+>>   fs/ceph/mds_client.h | 2 --
+>>   2 files changed, 5 insertions(+), 4 deletions(-)
+>>
+>> I hope I got this code right.  I found this issue when trying to add an
+>> extra feature bit that would go beyond bit 15 and that wasn't showing up
+>> on the MDS side.
+>>
+>> diff --git a/fs/ceph/mds_client.c b/fs/ceph/mds_client.c
+>> index 1bd3e1bb0fdf..77e742b6fd30 100644
+>> --- a/fs/ceph/mds_client.c
+>> +++ b/fs/ceph/mds_client.c
+>> @@ -1220,14 +1220,17 @@ static int encode_supported_features(void **p, v=
+oid *end)
+>>   	if (count > 0) {
+>>   		size_t i;
+>>   		size_t size =3D FEATURE_BYTES(count);
+>> +		unsigned long bit;
+>>=20=20=20
+>>   		if (WARN_ON_ONCE(*p + 4 + size > end))
+>>   			return -ERANGE;
+>>=20=20=20
+>>   		ceph_encode_32(p, size);
+>>   		memset(*p, 0, size);
+>> -		for (i =3D 0; i < count; i++)
+>> -			((unsigned char*)(*p))[i / 8] |=3D BIT(feature_bits[i] % 8);
+>> +		for (i =3D 0; i < count; i++) {
+>> +			bit =3D feature_bits[i];
+>> +			((unsigned char *)(*p))[bit / 8] |=3D BIT(bit % 8);
+>> +		}
+>>   		*p +=3D size;
+>>   	} else {
+>>   		if (WARN_ON_ONCE(*p + 4 > end))
+>> diff --git a/fs/ceph/mds_client.h b/fs/ceph/mds_client.h
+>> index 33497846e47e..12901e3a6823 100644
+>> --- a/fs/ceph/mds_client.h
+>> +++ b/fs/ceph/mds_client.h
+>> @@ -45,8 +45,6 @@ enum ceph_feature_type {
+>>   	CEPHFS_FEATURE_MULTI_RECONNECT,		\
+>>   	CEPHFS_FEATURE_DELEG_INO,		\
+>>   	CEPHFS_FEATURE_METRIC_COLLECT,		\
+>> -						\
+>> -	CEPHFS_FEATURE_MAX,			\
+>>   }
+>>   #define CEPHFS_FEATURES_CLIENT_REQUIRED {}
+>>=20=20=20
+>
+> LGTM. Just one small fix in the comment, since you have removed the=20
+> 'CEPHFS_FEATURE_MAX', which makes no sense any more:
 
-drivers/net/wireless/intel/iwlwifi/pcie/trans.c:1093: error: "CAUSE" redefined [-Werror]
- 1093 | #define CAUSE(reg, mask)                                                \
-      | 
-In file included from ./arch/mips/include/asm/ptrace.h:19,
-                 from ./include/linux/sched/signal.h:14,
-                 from ./include/linux/rcuwait.h:6,
-                 from ./include/linux/percpu-rwsem.h:7,
-                 from ./include/linux/fs.h:33,
-                 from ./arch/mips/include/asm/elf.h:12,
-                 from ./include/linux/elf.h:6,
-                 from ./include/linux/module.h:19,
-                 from ./include/linux/device/driver.h:21,
-                 from ./include/linux/device.h:32,
-                 from ./include/linux/pci.h:37,
-                 from drivers/net/wireless/intel/iwlwifi/pcie/trans.c:7:
-./arch/mips/include/uapi/asm/ptrace.h:18: note: this is the location of the previous definition
-   18 | #define CAUSE           65
+Ah, yeah.  I missed that.  Thanks!
 
-git bisect pointed to c1918196427b ("iwlwifi: pcie: simplify MSI-X cause mapping")
+Cheers,
+--=20
+Lu=C3=ADs
 
-And, reverting it on top of mainline branch has fixed the build failure.
 
---
-Regards
-Sudip
+> diff --git a/fs/ceph/mds_client.h b/fs/ceph/mds_client.h
+> index 33497846e47e..ac49344ea79e 100644
+> --- a/fs/ceph/mds_client.h
+> +++ b/fs/ceph/mds_client.h
+> @@ -33,10 +33,6 @@ enum ceph_feature_type {
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 CEPHFS_FEATURE_MAX =3D CEPHFS=
+_FEATURE_METRIC_COLLECT,
+>  =C2=A0};
+>
+> -/*
+> - * This will always have the highest feature bit value
+> - * as the last element of the array.
+> - */
+>  =C2=A0#define CEPHFS_FEATURES_CLIENT_SUPPORTED {=C2=A0=C2=A0=C2=A0=C2=A0=
+ \
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0, 1, 2, 3, 4, 5, 6, 7,=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0 \
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 CEPHFS_FEATURE_MIMIC,=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0 \
+>
+> Merged into the testing branch.
+>
+> Thanks Luis.
+>
+> -- Xiubo
+>
