@@ -2,94 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E9B9C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 10:04:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F771C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 10:04:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350769AbiE0KEi (ORCPT
+        id S1350781AbiE0KEp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 06:04:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51228 "EHLO
+        Fri, 27 May 2022 06:04:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350767AbiE0KEf (ORCPT
+        with ESMTP id S1350762AbiE0KEi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 06:04:35 -0400
-Received: from conuserg-08.nifty.com (conuserg-08.nifty.com [210.131.2.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70C981116D2;
-        Fri, 27 May 2022 03:04:32 -0700 (PDT)
-Received: from grover.sesame (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
-        by conuserg-08.nifty.com with ESMTP id 24RA2hPR029808;
-        Fri, 27 May 2022 19:02:45 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-08.nifty.com 24RA2hPR029808
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1653645765;
-        bh=qwd23UnZbO+5y7U7znABEi6dbpFFNIV0E++LnxqEYTU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mBTnB1DbKOnCmX5Ya77nr4wiY61xCAd2gDVGZleMKQiezhhRhnn5kcWqlcmPRVA68
-         UfK15SyTlR56+ygHUSR1HFmo5wuekHdC+np4qWSLtNaCqiwqeu+6qNM1GMGSII4a1y
-         NI6ntzouNqgU8FYUcdnaZVDpeWLoUuIx5StuCA/S65ebk2424eIKQhY+iphgwiR/rG
-         LDJyNveUt1Yg2z2YSQ+Ud66mKIjX+UpnItrhq9abbiz+3jY2dYxqeqBaInsuUv1Clq
-         WM7nRpQAXN+6s5hbIQxRd1+8l26aYDPi3LTrXIqJFttc0dKni0YR/6G2WKOyCb/JHA
-         F1CMKUgoAlaTA==
-X-Nifty-SrcIP: [133.32.177.133]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     linux-kbuild@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>, llvm@lists.linux.dev,
-        Helge Deller <deller@gmx.de>, linux-parisc@vger.kernel.org,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Subject: [PATCH v7 1/8] kbuild: replace $(linked-object) with CONFIG options
-Date:   Fri, 27 May 2022 19:01:48 +0900
-Message-Id: <20220527100155.1996314-2-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220527100155.1996314-1-masahiroy@kernel.org>
-References: <20220527100155.1996314-1-masahiroy@kernel.org>
+        Fri, 27 May 2022 06:04:38 -0400
+Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C265106A69;
+        Fri, 27 May 2022 03:04:37 -0700 (PDT)
+Received: by mail-yb1-xb34.google.com with SMTP id x137so7097402ybg.5;
+        Fri, 27 May 2022 03:04:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5JIYIoPQbAr8+N/6Btv1Jhwnhm7d6XglBceN1Qe6Sgg=;
+        b=RyObOFEt9mrpw1GFgsf97COA3nU0+H88/3PXIdOj5Fnkf4HBbF7C68+ZciXfCILMYf
+         b6hexwK6RaYMbIHqqjO0c2FbFFbMOB1/PhMDDu3kNUkWxnu/lFbJ+6VjEvCmENqwmwQP
+         /9KEPyvyrWQW86Uto87PtYyVxtKsXIdSufp/YJMGGS0FihaaBkb1VSqLi3/K7INqaE61
+         jPr4SprPehyy7tyc3El0xf+3pKgv9S1ZKQrs90IpPDE3QGq5finBWG0Z3uW3ds++wrSM
+         ZaTO2rb2+Cftee2Z9rgG9aGsMThyRMADCLbHlgdD9VAiyboBOyaMdFNVvwM6flGW5H2s
+         6Fag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5JIYIoPQbAr8+N/6Btv1Jhwnhm7d6XglBceN1Qe6Sgg=;
+        b=VI85LRBcUnR/4nd4Y8lArP16KybcdAmfaxFY3nZS3calFbHwmCl+GEXS0k+ga1cjAk
+         hnVrosaRNI7QByPtLjkoHybxfSUgXUOOS4cHW7Eih4b1PuqnDQcs/R3YmIlw4vmqjONR
+         6dykMJrQNWrtMkBntu/I1PLWMia7U9yiVAjHK2p/P0bSu4/RB/Zc2Jhrjwxgs5eB5K0D
+         fHmYGTr/pW8O9l4RNwl23xy+x34aNk+IwWjR/7LAyl7hYOk801gfRyTY1il9S/57fUFl
+         tMqTHZ3RWP5q5Cw0zj1fNWRHcGuq3jY/w5P3FWL5Sr+aQPy3ku3iIpaG1uqqQjuZn8tI
+         fsrA==
+X-Gm-Message-State: AOAM530mwyRK56vpfV/U4TCMFptx2wS/HvyKDF96x/g5Q0vuVxpgmKoN
+        VZxarzh8VzkzLUVuUFqHKEK8V9ahn5sSX2eyhPeVrmlEP1A=
+X-Google-Smtp-Source: ABdhPJxFjKSnq7Y/HKDtruNHyzaSMSuJHcQI86uptqpuKtH7XmDC5NFFJhzVoMiNXmnwoNMYzowzX9ss0zn0OqY420M=
+X-Received: by 2002:a25:40b:0:b0:65b:5f11:2b5b with SMTP id
+ 11-20020a25040b000000b0065b5f112b5bmr1049941ybe.520.1653645876784; Fri, 27
+ May 2022 03:04:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <CAOuPNLjGWp4+Ub_Ccaw+tx1NQrNcqyjUG5K30uPH3uYTF_wxfw@mail.gmail.com>
+ <CAOuPNLgzBA2Sbn6vS4856LwYyBo67OYKQp49+xpwX=Bi+KpLZg@mail.gmail.com> <65f1b675-84ac-b5da-6075-2a9f0353ab37@quicinc.com>
+In-Reply-To: <65f1b675-84ac-b5da-6075-2a9f0353ab37@quicinc.com>
+From:   Pintu Agarwal <pintu.ping@gmail.com>
+Date:   Fri, 27 May 2022 15:34:25 +0530
+Message-ID: <CAOuPNLh-NJ=GK63+iHFE-th9J8yfWZg_S3xmLgHGM_-nCFexvg@mail.gmail.com>
+Subject: Re: Queries: Using ifdef CONFIG condition in dts files
+To:     "T.Michael Turney" <quic_mturney@quicinc.com>
+Cc:     open list <linux-kernel@vger.kernel.org>, robh+dt@kernel.org,
+        devicetree@vger.kernel.org, frowand.list@gmail.com,
+        linux-mm <linux-mm@kvack.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-*.prelink.o is created when CONFIG_LTO_CLANG or CONFIG_X86_KERNEL_IBT
-is enabled.
+Hi,
 
-Replace $(linked-object) with $(CONFIG_LTO_CLANG)$(CONFIG_X86_KERNEL_IBT)
-so you will get better idea when the --link option is passed.
+On Thu, 26 May 2022 at 19:53, T.Michael Turney <quic_mturney@quicinc.com> wrote:
+>
+> Kernel developers correct me where I go astray, but this seems like the
+> CONFIG_XYZ value is not available in this file.  This would explain why
+> the disable case works.
+>
+> At top of dtsi file are you #include <config.h> or whatever the correct
+> syntax is to see the CONFIG values?
 
-No functional change is intended.
+Thanks for your comments.
+No, I could not find any specific config,h to be included to make the
+CONFIG values visible to dts.
 
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
----
+Thanks,
+Pintu
 
-Changes in v7:
-  - New patch
-
- scripts/Makefile.build | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/scripts/Makefile.build b/scripts/Makefile.build
-index 06400504150b..f80196eef03a 100644
---- a/scripts/Makefile.build
-+++ b/scripts/Makefile.build
-@@ -219,7 +219,7 @@ objtool_args =								\
- 	$(if $(CONFIG_STACK_VALIDATION), --stackval)			\
- 	$(if $(CONFIG_HAVE_STATIC_CALL_INLINE), --static-call)		\
- 	--uaccess							\
--	$(if $(linked-object), --link)					\
-+	$(if $($(CONFIG_LTO_CLANG)$(CONFIG_X86_KERNEL_IBT)), --link)	\
- 	$(if $(part-of-module), --module)				\
- 	$(if $(CONFIG_GCOV_KERNEL), --no-unreachable)
- 
-@@ -284,7 +284,6 @@ quiet_cmd_cc_prelink_modules = LD [M]  $@
- # modules into native code
- $(obj)/%.prelink.o: objtool-enabled = y
- $(obj)/%.prelink.o: part-of-module := y
--$(obj)/%.prelink.o: linked-object := y
- 
- $(obj)/%.prelink.o: $(obj)/%.o FORCE
- 	$(call if_changed,cc_prelink_modules)
--- 
-2.32.0
-
+>
+> On 5/26/2022 1:46 AM, Pintu Agarwal wrote:
+> > Hi,
+> >
+> > I have a generic question regarding conditional compilation options in
+> > dts/dtsi files.
+> > Our Kernel version is: 4.14
+> > Let's say I have a Kernel config such as CONFIG_XYZ.
+> > This driver uses a CMA reserved memory and its node is defined in a
+> > mysoc.dtsi file.
+> > Like:
+> > #if defined(CONFIG_XYZ)
+> > &reserved_mem {
+> >          xyz_region: xyz_region {
+> >                  compatible = "shared-dma-pool";
+> >                  reusable;
+> >                  size = <0x600000>;
+> >          };
+> > };
+> > #endif
+> >
+> > The problem is as follows:
+> > a) The same kernel/dts source is shared across 2 product versions.
+> > b) In one product we need to enable this CONFIG_XYZ but in another
+> > product we need to disable it.
+> > c) When we disable the CONFIG we wanted this dts node also to be
+> > disabled together.
+> > d) When we add "#if defined(CONFIG_XYZ)" check in the dtsi file, it
+> > works if the CONFIG is disabled, but it does not work if CONFIG is
+> > enabled (node is not getting created).
+> > e) This mysoc.dtsi file is getting included in many other dts files,
+> > so we cannot add a compilation check in Makefile. We will end up
+> > renaming many files just to protect this one change.
+> >
+> > Is there any other better way to handle this situation ?
+> >
+> > I see that in latest kernel we have a conditional compilation added like this:
+> > #ifdef SOC_HAS_USB2_CH2
+> > https://elixir.bootlin.com/linux/latest/source/arch/arm64/boot/dts/renesas/salvator-common.dtsi#L1028
+> >
+> > But the same is not recognized by the device tree compiler when using
+> > kernel CONFIG_ check.
+> >
+> > Is it the device-tree compiler issue which got fixed in the latest version ?
+> > Or, is it because Kernel config cannot be shared with device-tree ?
+> >
+> > Please let us know if there is any other opinion.
+> >
+> >
+> > Thank you.
+> >
+> > Regards,
+> > Pintu
