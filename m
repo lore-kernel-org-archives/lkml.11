@@ -2,106 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16326C4321E
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 09:01:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EC52C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 09:02:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350468AbiE0JBy (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 05:01:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54970 "EHLO
+        id S234069AbiE0JCG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 05:02:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350480AbiE0JAA (ORCPT
+        with ESMTP id S1350481AbiE0JAA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 27 May 2022 05:00:00 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A6EA46667;
-        Fri, 27 May 2022 01:56:03 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 5C22FCE238F;
-        Fri, 27 May 2022 08:56:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 353CAC385A9;
-        Fri, 27 May 2022 08:55:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653641759;
-        bh=RUEsyhJFnaOVYv98/ybfm3mKHtkusHDBD7ScaWxPpOI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rqygeeeycRlaqkSXXnvPao9H8kgXd9ePWZwwtyEyorN3WKTgoPkPNHJyMPDoE5caQ
-         NcsYuLT8T3UAwcHeQhqUw5pz9Trqt7VDIfkILZNG6AISTSxHC2q/TyiDMwDL0qb1Wj
-         2436yYkU+M4iELFAoBeLYODdagBKpl3NBO2SS6Rc=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Edward Matijevic <motolav@gmail.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.18 47/47] ALSA: ctxfi: Add SB046x PCI ID
-Date:   Fri, 27 May 2022 10:50:27 +0200
-Message-Id: <20220527084808.977367716@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084801.223648383@linuxfoundation.org>
-References: <20220527084801.223648383@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1D82E5E143
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 01:56:02 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6D209143D;
+        Fri, 27 May 2022 01:56:02 -0700 (PDT)
+Received: from [10.163.36.66] (unknown [10.163.36.66])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id AF9463F73D;
+        Fri, 27 May 2022 01:55:57 -0700 (PDT)
+Message-ID: <ded8ff72-3938-15ce-577b-42ea2daa3c9c@arm.com>
+Date:   Fri, 27 May 2022 14:25:54 +0530
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] arm64/hugetlb: Fix building errors in
+ huge_ptep_clear_flush()
+Content-Language: en-US
+To:     Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Gavin Shan <gshan@redhat.com>, torvalds@linux-foundation.org
+Cc:     catalin.marinas@arm.com, will@kernel.org,
+        akpm@linux-foundation.org, naresh.kamboju@linaro.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <814e20c19b110209ee12ecae7cb05f8a78d021c8.1653625820.git.baolin.wang@linux.alibaba.com>
+ <4707e621-c167-8fff-b210-9babb6a3f2df@redhat.com>
+ <a7322d0d-ea60-d2e5-4ac2-df0077b25671@linux.alibaba.com>
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+In-Reply-To: <a7322d0d-ea60-d2e5-4ac2-df0077b25671@linux.alibaba.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Edward Matijevic <motolav@gmail.com>
-
-commit 1b073ebb174d0c7109b438e0a5eb4495137803ec upstream.
-
-Adds the PCI ID for X-Fi cards sold under the Platnum and XtremeMusic names
-
-Before: snd_ctxfi 0000:05:05.0: chip 20K1 model Unknown (1102:0021) is found
-After: snd_ctxfi 0000:05:05.0: chip 20K1 model SB046x (1102:0021) is found
-
-[ This is only about defining the model name string, and the rest is
-  handled just like before, as a default unknown device.
-  Edward confirmed that the stuff has been working fine -- tiwai ]
-
-Signed-off-by: Edward Matijevic <motolav@gmail.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/cae7d1a4-8bd9-7dfe-7427-db7e766f7272@gmail.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- sound/pci/ctxfi/ctatc.c      |    2 ++
- sound/pci/ctxfi/cthardware.h |    3 ++-
- 2 files changed, 4 insertions(+), 1 deletion(-)
-
---- a/sound/pci/ctxfi/ctatc.c
-+++ b/sound/pci/ctxfi/ctatc.c
-@@ -36,6 +36,7 @@
- 			    | ((IEC958_AES3_CON_FS_48000) << 24))
- 
- static const struct snd_pci_quirk subsys_20k1_list[] = {
-+	SND_PCI_QUIRK(PCI_VENDOR_ID_CREATIVE, 0x0021, "SB046x", CTSB046X),
- 	SND_PCI_QUIRK(PCI_VENDOR_ID_CREATIVE, 0x0022, "SB055x", CTSB055X),
- 	SND_PCI_QUIRK(PCI_VENDOR_ID_CREATIVE, 0x002f, "SB055x", CTSB055X),
- 	SND_PCI_QUIRK(PCI_VENDOR_ID_CREATIVE, 0x0029, "SB073x", CTSB073X),
-@@ -64,6 +65,7 @@ static const struct snd_pci_quirk subsys
- 
- static const char *ct_subsys_name[NUM_CTCARDS] = {
- 	/* 20k1 models */
-+	[CTSB046X]	= "SB046x",
- 	[CTSB055X]	= "SB055x",
- 	[CTSB073X]	= "SB073x",
- 	[CTUAA]		= "UAA",
---- a/sound/pci/ctxfi/cthardware.h
-+++ b/sound/pci/ctxfi/cthardware.h
-@@ -26,8 +26,9 @@ enum CHIPTYP {
- 
- enum CTCARDS {
- 	/* 20k1 models */
-+	CTSB046X,
-+	CT20K1_MODEL_FIRST = CTSB046X,
- 	CTSB055X,
--	CT20K1_MODEL_FIRST = CTSB055X,
- 	CTSB073X,
- 	CTUAA,
- 	CT20K1_UNKNOWN,
 
 
+On 5/27/22 14:12, Baolin Wang wrote:
+> 
+> 
+> On 5/27/2022 3:12 PM, Gavin Shan wrote:
+>> Hi Baolin,
+>>
+>> On 5/27/22 12:51 PM, Baolin Wang wrote:
+>>> Fix below building errors which was caused by commit ae07562909f3
+>>> ("mm: change huge_ptep_clear_flush() to return the original pte")
+>>> interacting with commit fb396bb459c1 ("arm64/hugetlb: Drop TLB flush
+>>> from get_clear_flush()").
+>>>
+>>> Due to the new get_clear_contig() has dropped TLB flush, we should
+>>> add an explicit TLB flush in huge_ptep_clear_flush() to keep original
+>>> semantics when changing to use new get_clear_contig().
+>>>
+>>> "
+>>> arch/arm64/mm/hugetlbpage.c: In function ‘huge_ptep_clear_flush’:
+>>> arch/arm64/mm/hugetlbpage.c:515:9: error: implicit declaration of
+>>> function ‘get_clear_flush’; did you mean ‘ptep_clear_flush’?
+>>> [-Werror=implicit-function-declaration]
+>>>    515 |  return get_clear_flush(vma->vm_mm, addr, ptep, pgsize, ncontig);
+>>>        |         ^~~~~~~~~~~~~~~
+>>>        |         ptep_clear_flush
+>>> "
+>>>
+>>> Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+>>> Suggested-by: Catalin Marinas <catalin.marinas@arm.com>
+>>> Signed-off-by: Baolin Wang <baolin.wang@linux.alibaba.com>
+>>> Cc: Catalin Marinas <catalin.marinas@arm.com>
+>>> Cc: Anshuman Khandual <anshuman.khandual@arm.com>
+>>> Cc: Andrew Morton <akpm@linux-foundation.org>
+>>> ---
+>>>   arch/arm64/mm/hugetlbpage.c | 5 ++++-
+>>>   1 file changed, 4 insertions(+), 1 deletion(-)
+>>>
+>>
+>> I ran to the compiling failure either and it would be caused by
+>> commit fb396bb459c1 ("arm64/hugetlb: Drop TLB flush from get_clear_flush()").
+>> It's worthy to have a "Fixes" tag. With those fixed:
+> 
+> Thanks for reminding. IMHO, better to add 2 related commits' fix tag. Linus, could you help to add them when applying this patch, or need a resend? Thanks.
+> 
+> Fixes: ae07562909f3 ("mm: change huge_ptep_clear_flush() to return the original pte")
+> Fixes: fb396bb459c1 ("arm64/hugetlb: Drop TLB flush from get_clear_flush()").
+
+Although this merge conflict happened in flight, the earlier commit ae07562909f3
+came afterwards by which time get_clear_contig() has been added without required
+TLB flush. Hence seems like 'Fixes:' tag applies to the earlier commit itself.
+
+Nonetheless LGTM.
+
+Reviewed-by: Anshuman Khandual <anshuman.khandual@arm.com>
+
+> 
+>>
+>> Reviewed-by: Gavin Shan <gshan@redhat.com>
+>>
+>>
+>>> diff --git a/arch/arm64/mm/hugetlbpage.c b/arch/arm64/mm/hugetlbpage.c
+>>> index 0f0c17dfeb9c..e2a5ec9fdc0d 100644
+>>> --- a/arch/arm64/mm/hugetlbpage.c
+>>> +++ b/arch/arm64/mm/hugetlbpage.c
+>>> @@ -507,12 +507,15 @@ pte_t huge_ptep_clear_flush(struct vm_area_struct *vma,
+>>>   {
+>>>       size_t pgsize;
+>>>       int ncontig;
+>>> +    pte_t orig_pte;
+>>>       if (!pte_cont(READ_ONCE(*ptep)))
+>>>           return ptep_clear_flush(vma, addr, ptep);
+>>>       ncontig = find_num_contig(vma->vm_mm, addr, ptep, &pgsize);
+>>> -    return get_clear_flush(vma->vm_mm, addr, ptep, pgsize, ncontig);
+>>> +    orig_pte = get_clear_contig(vma->vm_mm, addr, ptep, pgsize, ncontig);
+>>> +    flush_tlb_range(vma, addr, addr + pgsize * ncontig);
+>>> +    return orig_pte;
+>>>   }
+>>>   static int __init hugetlbpage_init(void)
+>>>
+>>
+>> Thanks,
+>> Gavin
