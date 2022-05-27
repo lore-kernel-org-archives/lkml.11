@@ -2,191 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74494C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 07:56:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67D70C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 07:56:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348165AbiE0H4G (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 03:56:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47218 "EHLO
+        id S236479AbiE0H4T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 03:56:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245061AbiE0H4D (ORCPT
+        with ESMTP id S1348173AbiE0H4P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 03:56:03 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BA1E8FC4D5
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 00:56:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653638161;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=CA+R9olX9BNKnTqlZ0IZTGggNbz8tWHe/TMK4H707bg=;
-        b=GEbm+M0Uh8bOTcLwyH9jFYqBm2qu9VC9q9xp7OTAA/6bhIXcDpMTHbhAE5NYXy7BcR0P9a
-        m+VIwTq1PkZPE+mQWn2n6mXWpZGDQRBcsGo39drsHP0V6alxadw4Jv+I0QKzkQQ3JqKPK6
-        ljFxC118vMhWEiQ+9K6fTfxOpY3VFGI=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-30-PYf2yTWHOmmyYeDEIn5NYg-1; Fri, 27 May 2022 03:56:00 -0400
-X-MC-Unique: PYf2yTWHOmmyYeDEIn5NYg-1
-Received: by mail-qk1-f199.google.com with SMTP id s9-20020ae9f709000000b006a3e88115b7so3270165qkg.20
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 00:56:00 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=CA+R9olX9BNKnTqlZ0IZTGggNbz8tWHe/TMK4H707bg=;
-        b=MqqNL2ronHRYOVSmzWfIsQumtiv77bIzpSy6bCPClsRJSELgl34O0liAyD3x+yM3I0
-         U5opVH36n/ewTHattodoZAGlam3snHUD6y7x1nG3wHn6Wp2M2TwyXs058hFu2O8pqnTy
-         Pl1phPEX6wfSndRlhK4CqFIWwZVJ0PL49KBrfWwchbFQRaLXxLKpCFnOvqjZw4iOUnBp
-         OSAFS9+1UO8Wr9poM92FwX/9f2BaUzmRSKW5g0v+13ptjArPn/RnOVfev7NgVr3TxGql
-         pcZ1ESoSpijWIujAe5y+GCYAx/wSRhcNZQPDcpf0fAQ8rl1NJ1Z4GrNWkRXdxu48T6Mx
-         24QQ==
-X-Gm-Message-State: AOAM531Er644M0+oq1P2u4dyOmIu4lEfK1F76jWkx3SZJ7nZ7jOak63E
-        6fa8GY2zfAtdq66aaw3lhvd4BwpGlgnsm1KMZ6n0TzRkw5WtuI9YZ0fspqUThr3HWm9T9p8B0uZ
-        wxi+044EnjnDX8C++MMCZlC/bEQZ6jyA5MEX1zTOb
-X-Received: by 2002:a05:6214:400e:b0:462:5d6:5f47 with SMTP id kd14-20020a056214400e00b0046205d65f47mr31100677qvb.70.1653638160363;
-        Fri, 27 May 2022 00:56:00 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJylroTpRZpeeO0qtJQiqEAiLIxT6iU6LRe7ndfiDx59PJHC+Rmgm12rix1MW2ISsQFjDw6wHv3KBekDpydjKiM=
-X-Received: by 2002:a05:6214:400e:b0:462:5d6:5f47 with SMTP id
- kd14-20020a056214400e00b0046205d65f47mr31100652qvb.70.1653638160151; Fri, 27
- May 2022 00:56:00 -0700 (PDT)
+        Fri, 27 May 2022 03:56:15 -0400
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2065.outbound.protection.outlook.com [40.107.21.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADD79103D;
+        Fri, 27 May 2022 00:56:11 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=JaAeraRvzG2j81Uemj7mYVa4WyO+seuYv0xIFO5Liegx43ImaoArDALFsD8Vks7svApI+I7yl3xEHmiZCMHJ+N5eRlyUG6SOC2suNjCO3yiPx/PovPjqvHD03goPxeSlz0INO9Hi2tTWn9JUC+cNWTc+tKFJST7cgj7iksp802hv8XZT+sw4cVXBXo+Cq1iCxFtF5hWS4p7LJBiF5ypMvg/UXl6vrMFVHy4TtvNFyuXmU4jk/iIorg1ojYGiRykmrPHO5JdQF76rxxNvKCY+9iFvwbofwOXA1hdwNm6yqMd5JP76bh4+uknSsXyUpaWlze2Nogbk4A+jRobdPcaiAg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Q1oyS7Ku2eSEJO9OijTuoY1Rm2r5eE04oGvzV4/cGY0=;
+ b=MaI0Lh45c/aKdvXT21wAiAdhRm1jRHpyY1NO3A7iecGoyry/ijvwhA1d1gipyu8edkHa8vR00/U133rcGLRlkTOtXBZ3kqDqilbo19n5gZVTKnyAcCVmwnS9Eo+1jC0/D3kVU1Ywhs6is0sjjAAvF2Ih2zuJf03uK1y6JI0UbHwH+RsO/cpOOGyIS27pV3w1sQuBHsuz82SK4oXXs2DifsbT24VoHgw9vPMxWsqpF9VT+JJebSDK92AkRD56WJSG+/lU63SFz0RpoSpt89SAEaeoBDhKyHUsPrz8gD+/D0uYYJ+HBurhfzt8LE/go21+4LpPgwJIto4aVUuCSoqkTw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Q1oyS7Ku2eSEJO9OijTuoY1Rm2r5eE04oGvzV4/cGY0=;
+ b=VSd56sdcIdwvRCsoHTqSd+YU63CKdHput2qtH/vjRFA5YS/1R/rp3Iw4UkjUFpu2iYDeNTyKhjh+8/DY45q0/1C46FAoMshGvDeqRu7KfN9FSkIQ8qDEo47BbujathTrtGRpq4JlaqqgKNusfWs3dhkZOrtMzSUYw8og1z9i1Sw=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from AM6PR04MB6341.eurprd04.prod.outlook.com (2603:10a6:20b:d8::14)
+ by VI1PR04MB4590.eurprd04.prod.outlook.com (2603:10a6:803:6d::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.13; Fri, 27 May
+ 2022 07:56:08 +0000
+Received: from AM6PR04MB6341.eurprd04.prod.outlook.com
+ ([fe80::bc48:7565:c619:62c3]) by AM6PR04MB6341.eurprd04.prod.outlook.com
+ ([fe80::bc48:7565:c619:62c3%7]) with mapi id 15.20.5293.015; Fri, 27 May 2022
+ 07:56:08 +0000
+From:   Ming Qian <ming.qian@nxp.com>
+To:     mchehab@kernel.org, mirela.rabulea@oss.nxp.com,
+        hverkuil-cisco@xs4all.nl
+Cc:     shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
+        festevam@gmail.com, linux-imx@nxp.com, linux-media@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH] media: imx-jpeg: Correct some definition according specification
+Date:   Fri, 27 May 2022 15:54:33 +0800
+Message-Id: <20220527075437.16882-1-ming.qian@nxp.com>
+X-Mailer: git-send-email 2.36.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SI2PR06CA0007.apcprd06.prod.outlook.com
+ (2603:1096:4:186::9) To AM6PR04MB6341.eurprd04.prod.outlook.com
+ (2603:10a6:20b:d8::14)
 MIME-Version: 1.0
-References: <20220526124338.36247-1-eperezma@redhat.com> <PH0PR12MB54819C6C6DAF6572AEADC1AEDCD99@PH0PR12MB5481.namprd12.prod.outlook.com>
- <CACGkMEu1YenjBHAssP=FvKX6WxDQ5Aa50r-BsnkfR4zqNTk6hg@mail.gmail.com>
-In-Reply-To: <CACGkMEu1YenjBHAssP=FvKX6WxDQ5Aa50r-BsnkfR4zqNTk6hg@mail.gmail.com>
-From:   Eugenio Perez Martin <eperezma@redhat.com>
-Date:   Fri, 27 May 2022 09:55:24 +0200
-Message-ID: <CAJaqyWfzoORc7V=xqdyLsdRPRYGNJBvWaPcZDhOb1vJWhbixoA@mail.gmail.com>
-Subject: Re: [PATCH v4 0/4] Implement vdpasim stop operation
-To:     Parav Pandit <parav@nvidia.com>
-Cc:     Jason Wang <jasowang@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "martinh@xilinx.com" <martinh@xilinx.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        "martinpo@xilinx.com" <martinpo@xilinx.com>,
-        "lvivier@redhat.com" <lvivier@redhat.com>,
-        "pabloc@xilinx.com" <pabloc@xilinx.com>,
-        Eli Cohen <elic@nvidia.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Xie Yongji <xieyongji@bytedance.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Zhang Min <zhang.min9@zte.com.cn>,
-        Wu Zongyong <wuzongyong@linux.alibaba.com>,
-        "lulu@redhat.com" <lulu@redhat.com>,
-        Zhu Lingshan <lingshan.zhu@intel.com>,
-        "Piotr.Uminski@intel.com" <Piotr.Uminski@intel.com>,
-        Si-Wei Liu <si-wei.liu@oracle.com>,
-        "ecree.xilinx@gmail.com" <ecree.xilinx@gmail.com>,
-        "gautam.dawar@amd.com" <gautam.dawar@amd.com>,
-        "habetsm.xilinx@gmail.com" <habetsm.xilinx@gmail.com>,
-        "tanuj.kamde@amd.com" <tanuj.kamde@amd.com>,
-        "hanand@xilinx.com" <hanand@xilinx.com>,
-        "dinang@xilinx.com" <dinang@xilinx.com>,
-        Longpeng <longpeng2@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 504c8dd5-3e6f-4403-e89a-08da3fb65b9e
+X-MS-TrafficTypeDiagnostic: VI1PR04MB4590:EE_
+X-Microsoft-Antispam-PRVS: <VI1PR04MB4590701FC5DD0BC548986443E7D89@VI1PR04MB4590.eurprd04.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: dkdTgxMDDRGGVNaUuyDkVhlDgKkwRCuk0EMJrBH/BR0Rrxww34UlbwYeA2Xg05FDC+J+CD+XOICsH2w5o/7/3N+rZ7+mqRzVjC8/nWTqLF0REZTp5Af0HcYozbM8IKtY+DuqD1Wd4Lm3BPcUNIFABCUE8Ey6qTZTZ9eA/erBEpFLCfykXUCm40uvTLizQ7k1ImEXTACrArlZobWDnKhMSpAl4a710/3+bqVgCjPIxykAfOOij8+qhvwGAjpYFpdwZVl9kBODq9ZKdzmgB037sv4TygVRPX4bxF+AuYZtBj70zbz5FERZWS8qzm51gKVsEiWnERz7w++cTP0wfo3LzfpI8ano+AVOjxF01oeo/Cqwv0f1+UuAsMIuySk1x6YgzVB0fjC1BFGrY3xwi82SL8guyKqobnjgCtazgwGfzIQHZZb9WHOnr4KBafIht+xCPfRK4LWnHj+BewRsz9BNw9fReUgFm++flpiT1Yw59kf4QjR1lVnUuXnV2XZbpOEb8GcoXIVQSz3vognOyrPgCzF7BnHFWZJ87RUg48Wpo9FTEFfegGbdoKC1BQxkBwOKeOoHZMUXyvuzfHommuHtGZe0ceZa+dw74tzCs0bHBMRI6lVpLt9MLPqMy62SHwTwCOkAZUjxpF8SrqNRgVjpjXtwsKyW+PZcavniILhQE4S6mMJ9wnRzCLaSKHusyelUYbEvykoLmSMgkRLelDgF5A==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR04MB6341.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(66946007)(86362001)(4326008)(8676002)(38350700002)(66476007)(66556008)(2906002)(38100700002)(316002)(36756003)(6666004)(52116002)(6506007)(83380400001)(44832011)(2616005)(6512007)(186003)(1076003)(26005)(508600001)(6486002)(8936002)(7416002)(5660300002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?RG10AhKUKk5PLAKWhOvNuhM85A1/iIc7G07wVh2OBzEP2lQYJiGQGbhtz+oR?=
+ =?us-ascii?Q?wJctvGB6srqCbT3dg0ASfT5VEtP8KAKkvumlREp5QzwO7O0gRo6Q9JGlnkTl?=
+ =?us-ascii?Q?x2WEJSFFZ7ssHGh0/LM/HihfPKz4sm1sS01QpJxr4VA0YotREDBPLNlWZ6VF?=
+ =?us-ascii?Q?WKP0xmlQObSgsvWlOmMxGCkrlvgzGlRkezInY5lqwFnE9A0odWbywM/p/zPS?=
+ =?us-ascii?Q?l3f1pVTqt0Luf76yDuLPCVz2MQUpiQfI0W/t6TLGYH+i+//0pn11dMpUlrSB?=
+ =?us-ascii?Q?4tqjO3fgtNXW/P/Wc+BOEGdtXH37D5sa0pr/DN9dAxQzgfTpfaHS9r6KASZK?=
+ =?us-ascii?Q?N6yNVVnj/6AvsaftuMsQeRW/tWlPTArPJMc9Md0pXWG/iQcKuMcxIJGmFXGh?=
+ =?us-ascii?Q?uL0tKdy1huSadiCVycUSX0mJnl1AFMWKTmggrDK165X9Rv5JttsmJ5ftJ6Ni?=
+ =?us-ascii?Q?hbiakOxUtqcV8CDYCi23z2rGFR/I0PaKNflGefhPmSLuKSNzhC7xnzzLTWfk?=
+ =?us-ascii?Q?ovNHvyReDCn8tb7g5orW7WOfqvduJsKZNo6JodRBkZwZGnE7p4pmR+IS4PI2?=
+ =?us-ascii?Q?M516eCMlfThtLCorHhafZv3r7F0plwXuNv5iCSRxiDnK2QM5pkxsefnchZxV?=
+ =?us-ascii?Q?tVs5zaDTTUeNUwR8g4c8VfQz/jzk0bpLusa6fWUqW8gNxafYCTG1nZtozQmp?=
+ =?us-ascii?Q?+/d/0X6Pxvqf1hEE/dfPVvfm7tcpHjh9B0zCzhCJ3+vIbiiEWLEF12Fc6ZQ8?=
+ =?us-ascii?Q?n2ahPIq1Irm8+Solg1AnSXOMrWnSZal2arUwvxSc/mAoU1f1uIZUFclQ1yJb?=
+ =?us-ascii?Q?0nYU2HAykcq8yjjSW/2qbuf4x2582UxtQnbY3f8O71fWizdvYK78ysS+xIOQ?=
+ =?us-ascii?Q?RxvFDQ6Lw18Ft1ScPwnx7gC5ZFrPgRAzU71Smjz2E0j/opDn0Z4+cwEydZwC?=
+ =?us-ascii?Q?2nWWqzT3CjzYUPv03GjXehBBRMn68kuSQGA7CFTBTlDyKIoskmKvbYJsXSjT?=
+ =?us-ascii?Q?ScE9o81dE+Lj2Qe5+bUJFVfHS3TIgR6LxAFCUhl6V+g4DAF1QFmaN9FcCFHL?=
+ =?us-ascii?Q?4kvINac9YVC9hHCxsDRHWy8hx1pnORxlErlvps8W2i0OEdTxcBDBzfG1WORT?=
+ =?us-ascii?Q?nkCR8NwDBcu4C4PHChIUNxUO887TX//0Kg7Yc2Jir54x/1DgaoSmFZ7mu5ql?=
+ =?us-ascii?Q?58bLKLSEAeGOksyLhYoZEq2cJqJptujmOINgnA1GcVCeQYVSygX1pULAQWcA?=
+ =?us-ascii?Q?zgJF8nT5BTa4Naa9wLrsSae6pxh5bgAUDKEskA5lFLPc0ldkp9GxjYBLUShx?=
+ =?us-ascii?Q?ZMzjjPzJAXLl8WTQHH35knsKGH6K4ynpXM3mKvLrkc3RE0iwZhQ5C+Z8gfNu?=
+ =?us-ascii?Q?JaDQimf3MDHZ6/I2rnGBNe64Ydntdm56vsuegmM5chVkx+74j7VHcZarVjzx?=
+ =?us-ascii?Q?X1dlSJstERmR1WjFUUHIUxs9hubGKE223VgSPZzDV7ZayIEMgHuTKHpJ6W1T?=
+ =?us-ascii?Q?UH0viYSzsK6S5au6mAq32i3OPPLZ+BrMQaDcODMfArIdwWDMlshylUtdjJP0?=
+ =?us-ascii?Q?8ObyoEPs8+473mJqZE9sCyhRGyJy1kxmZWBN4Q1guFavieWwZOjtTWiCHQtS?=
+ =?us-ascii?Q?hyIHrzqeoQ0KHEDR1/duCT/LVEzqf38sVB3qZ40HnSDMFV3OmQwtwtH8UolS?=
+ =?us-ascii?Q?9UGnpjehFWsLIXJrFgp/TERBDPjNiTEY8wZmsMRvWcfLXgboFOxTMlIoODbr?=
+ =?us-ascii?Q?XO4j99mrhg=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 504c8dd5-3e6f-4403-e89a-08da3fb65b9e
+X-MS-Exchange-CrossTenant-AuthSource: AM6PR04MB6341.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 May 2022 07:56:08.3209
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: wHfaQuOODDzr0PwpdEbN62vL2dgLqaKyAsd8/vvti5P+9Wu2QBGD8p1W1KPx0t+27dYEoo+FFuhsRAYNDd05Tw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4590
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 27, 2022 at 4:26 AM Jason Wang <jasowang@redhat.com> wrote:
->
-> On Thu, May 26, 2022 at 8:54 PM Parav Pandit <parav@nvidia.com> wrote:
-> >
-> >
-> >
-> > > From: Eugenio P=C3=A9rez <eperezma@redhat.com>
-> > > Sent: Thursday, May 26, 2022 8:44 AM
-> >
-> > > Implement stop operation for vdpa_sim devices, so vhost-vdpa will off=
-er
-> > >
-> > > that backend feature and userspace can effectively stop the device.
-> > >
-> > >
-> > >
-> > > This is a must before get virtqueue indexes (base) for live migration=
-,
-> > >
-> > > since the device could modify them after userland gets them. There ar=
-e
-> > >
-> > > individual ways to perform that action for some devices
-> > >
-> > > (VHOST_NET_SET_BACKEND, VHOST_VSOCK_SET_RUNNING, ...) but there
-> > > was no
-> > >
-> > > way to perform it for any vhost device (and, in particular, vhost-vdp=
-a).
-> > >
-> > >
-> > >
-> > > After the return of ioctl with stop !=3D 0, the device MUST finish an=
-y
-> > >
-> > > pending operations like in flight requests. It must also preserve all
-> > >
-> > > the necessary state (the virtqueue vring base plus the possible devic=
-e
-> > >
-> > > specific states) that is required for restoring in the future. The
-> > >
-> > > device must not change its configuration after that point.
-> > >
-> > >
-> > >
-> > > After the return of ioctl with stop =3D=3D 0, the device can continue
-> > >
-> > > processing buffers as long as typical conditions are met (vq is enabl=
-ed,
-> > >
-> > > DRIVER_OK status bit is enabled, etc).
-> >
-> > Just to be clear, we are adding vdpa level new ioctl() that doesn=E2=80=
-=99t map to any mechanism in the virtio spec.
->
-> We try to provide forward compatibility to VIRTIO_CONFIG_S_STOP. That
-> means it is expected to implement at least a subset of
-> VIRTIO_CONFIG_S_STOP.
->
+the register CAST_NOMFRSIZE_LO should be equal to CAST_STATUS16
+the register CAST_NOMFRSIZE_HI should be equal to CAST_STATUS17
+the register CAST_OFBSIZE_LO should be equal to CAST_STATUS18
+the register CAST_OFBSIZE_HI should be equal to CAST_STATUS19
 
-Appending a link to the proposal, just for reference [1].
+Signed-off-by: Ming Qian <ming.qian@nxp.com>
+---
+ drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.h | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-> >
-> > Why can't we use this ioctl() to indicate driver to start/stop the devi=
-ce instead of driving it through the driver_ok?
->
-
-Parav, I'm not sure I follow you here.
-
-By the proposal, the resume of the device is (From qemu POV):
-1. To configure all data vqs and cvq (addr, num, ...)
-2. To enable only CVQ, not data vqs
-3. To send DRIVER_OK
-4. Wait for all buffers of CVQ to be used
-5. To enable all others data vqs (individual ioctl at the moment)
-
-Where can we fit the resume (as "stop(false)") here? If the device is
-stopped (as if we send stop(true) before DRIVER_OK), we don't read CVQ
-first. If we send it right after (or instead) DRIVER_OK, data buffers
-can reach data vqs before configuring RSS.
-
-> So the idea is to add capability that does not exist in the spec. Then
-> came the stop/resume which can't be done via DRIVER_OK. I think we
-> should only allow the stop/resume to succeed after DRIVER_OK is set.
->
-> > This is in the context of other discussion we had in the LM series.
->
-> Do you see any issue that blocks the live migration?
->
-> Thanks
->
+diff --git a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.h b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.h
+index e7e8954754b1..07655502f4bd 100644
+--- a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.h
++++ b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.h
+@@ -53,10 +53,10 @@
+ #define CAST_REC_REGS_SEL		CAST_STATUS4
+ #define CAST_LUMTH			CAST_STATUS5
+ #define CAST_CHRTH			CAST_STATUS6
+-#define CAST_NOMFRSIZE_LO		CAST_STATUS7
+-#define CAST_NOMFRSIZE_HI		CAST_STATUS8
+-#define CAST_OFBSIZE_LO			CAST_STATUS9
+-#define CAST_OFBSIZE_HI			CAST_STATUS10
++#define CAST_NOMFRSIZE_LO		CAST_STATUS16
++#define CAST_NOMFRSIZE_HI		CAST_STATUS17
++#define CAST_OFBSIZE_LO			CAST_STATUS18
++#define CAST_OFBSIZE_HI			CAST_STATUS19
+ 
+ #define MXC_MAX_SLOTS	1 /* TODO use all 4 slots*/
+ /* JPEG-Decoder Wrapper Slot Registers 0..3 */
+-- 
+2.36.1
 
