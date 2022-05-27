@@ -2,148 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84429C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99C61C4167D
 	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:07:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352866AbiE0MFQ (ORCPT
+        id S1352916AbiE0MFV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 08:05:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57536 "EHLO
+        Fri, 27 May 2022 08:05:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353292AbiE0L4W (ORCPT
+        with ESMTP id S1353306AbiE0L4X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:56:22 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C068131F1A;
-        Fri, 27 May 2022 04:50:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653652231; x=1685188231;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=8Pv1I1Nns+I2QLs1eslBaZaz+CjfC1UGQQpD+Gz2iAk=;
-  b=mxqncneW1ZdY+V8kbWzw9qroLJxt1MrrZoNgFtcZORF5DiF1j0koNcNA
-   Q1LQRi+wG0OVVt8zRBlKVlDlYq/WdPw1mRAumNAWxOyB34jwp5up2KjQG
-   pbCibHeTevO7ZDlibNYrXnShjdjxEYl/mWpuylJdMO92w0BTsarujgK5T
-   mQnA0KYO8lAPrkdwE9ZRKpiDn5HX7B0vY3wV8/ulyfzn1atR8fVb6x6cs
-   MiOVhtZ0i+RhBhsXMQFiHdm/evR9Z3yzwVfYvS+Q1XHcj7wtNFFJli9JN
-   BZYfAJU+RUa//mwviEz6q6Jf4I0NWrsNaehmZnsZdrgf82QKQKRW5UoJb
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10359"; a="262078060"
-X-IronPort-AV: E=Sophos;i="5.91,255,1647327600"; 
-   d="scan'208";a="262078060"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2022 04:50:30 -0700
-X-IronPort-AV: E=Sophos;i="5.91,255,1647327600"; 
-   d="scan'208";a="705112301"
-Received: from tdietric-mobl.ger.corp.intel.com (HELO linux.intel.com) ([10.252.54.13])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2022 04:50:26 -0700
-Received: from localhost ([127.0.0.1] helo=maurocar-mobl2)
-        by linux.intel.com with esmtps  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-        (Exim 4.95)
-        (envelope-from <mauro.chehab@linux.intel.com>)
-        id 1nuYU2-000PFu-Ro;
-        Fri, 27 May 2022 13:50:22 +0200
-Date:   Fri, 27 May 2022 13:50:22 +0200
-From:   Mauro Carvalho Chehab <mauro.chehab@linux.intel.com>
-To:     Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
-Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Andi Shyti <andi.shyti@linux.intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        John Harrison <John.C.Harrison@Intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Lucas De Marchi <lucas.demarchi@intel.com>,
-        Matt Roper <matthew.d.roper@intel.com>,
-        Matthew Auld <matthew.auld@intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org,
-        Tvrtko Ursulin <tvrtko.ursulin@intel.com>,
-        Sushma Venkatesh Reddy <sushma.venkatesh.reddy@intel.com>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Dave Airlie <airlied@redhat.com>,
-        Jon Bloomfield <jon.bloomfield@intel.com>,
-        Jani Nikula <jani.nikula@intel.com>, stable@vger.kernel.org
-Subject: Re: [PATCH] drm/i915: don't flush TLB on GEN8
-Message-ID: <20220527135022.0dd0891d@maurocar-mobl2>
-In-Reply-To: <d981f429-d01f-4576-2e5c-0ae153d24df1@linux.intel.com>
-References: <b6417c5bf1b0ee8e093712264f325bd1268ed1e4.1653642514.git.mchehab@kernel.org>
-        <d981f429-d01f-4576-2e5c-0ae153d24df1@linux.intel.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-redhat-linux-gnu)
+        Fri, 27 May 2022 07:56:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB7F9BE4;
+        Fri, 27 May 2022 04:50:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 383EB61D9B;
+        Fri, 27 May 2022 11:50:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46356C385A9;
+        Fri, 27 May 2022 11:50:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1653652252;
+        bh=bSVPVgeyCECwaJ5Y0bqjpISwHhKTwbz8Yl8nQDHYOKA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Lqr429bvzu1gzBjSgqCF2C8n1sMoOGdrg13LgxpfHwCv+2WXviWkRJNdgGg5qhi+P
+         oXpd+RD466qLGaQKFyv8G8SnQW3BoRbIJlyhxTQt7pfL3EfN7294aUtivRnskid9Xn
+         GOn9EyeuxD54v+fhLtVZY9RYU+jiXi0gCoKJEi8U=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Theodore Tso <tytso@mit.edu>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.10 112/163] random: mix build-time latent entropy into pool at init
+Date:   Fri, 27 May 2022 10:49:52 +0200
+Message-Id: <20220527084843.740936868@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
+References: <20220527084828.156494029@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 27 May 2022 11:55:42 +0100
-Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com> wrote:
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-> On 27/05/2022 10:09, Mauro Carvalho Chehab wrote:
-> > i915 selftest hangcheck is causing the i915 driver timeouts, as
-> > reported by Intel CI:
-> > 
-> > 	http://gfx-ci.fi.intel.com/cibuglog-ng/issuefilterassoc/24297?query_key=42a999f48fa6ecce068bc8126c069be7c31153b4
-> > 
-> > When such test runs, the only output is:
-> > 
-> > 	[   68.811639] i915: Performing live selftests with st_random_seed=0xe138eac7 st_timeout=500
-> > 	[   68.811792] i915: Running hangcheck
-> > 	[   68.811859] i915: Running intel_hangcheck_live_selftests/igt_hang_sanitycheck
-> > 	[   68.816910] i915 0000:00:02.0: [drm] Cannot find any crtc or sizes
-> > 	[   68.841597] i915: Running intel_hangcheck_live_selftests/igt_reset_nop
-> > 	[   69.346347] igt_reset_nop: 80 resets
-> > 	[   69.362695] i915: Running intel_hangcheck_live_selftests/igt_reset_nop_engine
-> > 	[   69.863559] igt_reset_nop_engine(rcs0): 709 resets
-> > 	[   70.364924] igt_reset_nop_engine(bcs0): 903 resets
-> > 	[   70.866005] igt_reset_nop_engine(vcs0): 659 resets
-> > 	[   71.367934] igt_reset_nop_engine(vcs1): 549 resets
-> > 	[   71.869259] igt_reset_nop_engine(vecs0): 553 resets
-> > 	[   71.882592] i915: Running intel_hangcheck_live_selftests/igt_reset_idle_engine
-> > 	[   72.383554] rcs0: Completed 16605 idle resets
-> > 	[   72.884599] bcs0: Completed 18641 idle resets
-> > 	[   73.385592] vcs0: Completed 17517 idle resets
-> > 	[   73.886658] vcs1: Completed 15474 idle resets
-> > 	[   74.387600] vecs0: Completed 17983 idle resets
-> > 	[   74.387667] i915: Running intel_hangcheck_live_selftests/igt_reset_active_engine
-> > 	[   74.889017] rcs0: Completed 747 active resets
-> > 	[   75.174240] intel_engine_reset(bcs0) failed, err:-110
-> > 	[   75.174301] bcs0: Completed 525 active resets
-> > 
-> > After that, the machine just silently hangs.
-> > 
-> > The root cause is that the flush TLB logic is not working as
-> > expected on GEN8.
-> > 
-> > Tested on an Intel NUC5i7RYB with an i7-5557U Broadwell CPU.
-> > 
-> > This patch partially reverts the logic by skipping GEN8 from
-> > the TLB cache flush.  
-> 
-> Since I am pretty sure no such failures were spotted when merging the 
-> feature I assume the failure is sporadic and/or limited to some 
-> configurations? Do you have any details there? Because it is an 
-> important security issue we should not revert it lightly.
+commit 1754abb3e7583c570666fa1e1ee5b317e88c89a0 upstream.
 
-It occurs every time here:
-	https://intel-gfx-ci.01.org/tree/drm-tip/fi-bdw-5557u.html
+Prior, the "input_pool_data" array needed no real initialization, and so
+it was easy to mark it with __latent_entropy to populate it during
+compile-time. In switching to using a hash function, this required us to
+specifically initialize it to some specific state, which means we
+dropped the __latent_entropy attribute. An unfortunate side effect was
+this meant the pool was no longer seeded using compile-time random data.
+In order to bring this back, we declare an array in rand_initialize()
+with __latent_entropy and call mix_pool_bytes() on that at init, which
+accomplishes the same thing as before. We make this __initconst, so that
+it doesn't take up space at runtime after init.
 
-It also happens on my own NUC5i7RYB every time when the TLB patch is 
-applied. Reverting it (or applying this fix) is enough for hangcheck
-to pass.
+Fixes: 6e8ec2552c7d ("random: use computational hash for entropy extraction")
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Reviewed-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/char/random.c |    5 +++++
+ 1 file changed, 5 insertions(+)
 
-I suspect that TLB flush never happens there, causing ETIMEOUT at
-hangcheck.
-
-It could indeed be limited to some specific setups. I dunno.
-The only Gen8 machine I have access is my own NUC. So, I can't
-test it elsewhere.
-
-Regards,
-Mauro
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -972,6 +972,11 @@ int __init rand_initialize(void)
+ 	bool arch_init = true;
+ 	unsigned long rv;
+ 
++#if defined(LATENT_ENTROPY_PLUGIN)
++	static const u8 compiletime_seed[BLAKE2S_BLOCK_SIZE] __initconst __latent_entropy;
++	_mix_pool_bytes(compiletime_seed, sizeof(compiletime_seed));
++#endif
++
+ 	for (i = 0; i < BLAKE2S_BLOCK_SIZE; i += sizeof(rv)) {
+ 		if (!arch_get_random_seed_long_early(&rv) &&
+ 		    !arch_get_random_long_early(&rv)) {
 
 
