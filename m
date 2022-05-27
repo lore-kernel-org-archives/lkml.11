@@ -2,67 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2941EC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 22:59:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8119C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 22:59:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355106AbiE0W7j (ORCPT
+        id S1353333AbiE0W7p (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 18:59:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59798 "EHLO
+        Fri, 27 May 2022 18:59:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353186AbiE0W72 (ORCPT
+        with ESMTP id S1355078AbiE0W73 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 18:59:28 -0400
+        Fri, 27 May 2022 18:59:29 -0400
 Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FC3E13327E
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB5EF13327A
         for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 15:59:28 -0700 (PDT)
-Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24RKa7a7031976;
-        Fri, 27 May 2022 22:59:04 GMT
+Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24RKmdHX024170;
+        Fri, 27 May 2022 22:59:09 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : content-transfer-encoding : content-type :
- mime-version; s=corp-2021-07-09;
- bh=Hv1f9nzRIRgOjLnyq76u1nwHP098Cmk1ys2Z+2fIVT4=;
- b=YOw7dWP7X6dNQJibHzKysbzBETuHUJjuPkWuQJQZ1XySh06S/lUEpydGU0SgZ9NUFtAl
- Sj29XV+u7POBehkH9FMIw7AEBE51GGO8KgeLCYG+mP0RlOcQWy1fHT+7S/AJNtwWTb7W
- /80+167PZlfdgp7KlR/EB5xSqVtv9+ID+fRFEYJe+KdekNgKE1/EUMvpedQC9oP7RfmE
- UZFNOI2wVErRbSUi0t6GlqROafwLgJglBaHuFb0L2xf6C7kGLjNxmiJ/yP3qVqqL4tpi
- uwPgxAxpvl4WoEgxb92j1UtW4L1OurQskQ/UXGoEk9yjMSz9ODIcvYUly4VPU4DpVBsJ ig== 
-Received: from phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta02.appoci.oracle.com [147.154.114.232])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3g93tc0bun-1
+ subject : date : message-id : in-reply-to : references :
+ content-transfer-encoding : content-type : mime-version;
+ s=corp-2021-07-09; bh=Kg2wNYIJEkQndu7x1BiocycJELO1I9KZm0qOzqkH0XU=;
+ b=YGXP9G+iS5HfdIaszJDKWKA5MVJuhBji8zD9uzUxOoKG/4YbODGebL6kJWP8u6K7Ae1k
+ l5gzIv5LQl4nf+RHGOy+xzSJLbBpKAXPdH/3hEvQIn+UisNTLAjXxhGac+vxvA9+gQ5K
+ +pG/jRXRs7+F9SdTaqyGKmYhVkmaDDq1dx9ZnabRrvgIJ/NOWfLBSaQzUOmEKXR4Tyy+
+ mK/PWHuvvNcpmP1dr/9MtPgL8PYE8scHFv1IzytOY1/HtTpsJSWFedlCtFbuRyPRBBEG
+ 16chjfNbl/i13Oga5BJJtLYllileP1uACE+Ie34x2kGV3ahEuEN9fraZHoRIkdAS7sml TA== 
+Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.appoci.oracle.com [130.35.103.27])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3g93tb0cbp-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 27 May 2022 22:59:04 +0000
-Received: from pps.filterd (phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 24RMoWma015163;
-        Fri, 27 May 2022 22:59:03 GMT
-Received: from nam11-bn8-obe.outbound.protection.outlook.com (mail-bn8nam11lp2177.outbound.protection.outlook.com [104.47.58.177])
-        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3g93x2xs7h-1
+        Fri, 27 May 2022 22:59:08 +0000
+Received: from pps.filterd (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 24RMpXnH031770;
+        Fri, 27 May 2022 22:59:07 GMT
+Received: from nam11-co1-obe.outbound.protection.outlook.com (mail-co1nam11lp2171.outbound.protection.outlook.com [104.47.56.171])
+        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3g93wsts0f-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 27 May 2022 22:59:03 +0000
+        Fri, 27 May 2022 22:59:07 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jdC1i8SaXSkGFKe8JuPbsEuwDc1TxbeXf6h+iuxmU/BL7N/DBpL5eqRClmYfeA3edr0/Oi8+Pq5v62oz4217Fja3MG1ITZZpQbZtwXvt3Jd6D5vah+tE2ftVqymi+ebjOzsZhommai4PEhHlfQvJl+XuEObiyRfWU98jXvuAHZmhg+oxtnJjl3alBndsbZEoL8sADE7xarN1wna1vMB8lc9zOBsf5l28piuGJkzjrVFZgk8nadWaHyZo211T8EQ1Szk/QZabdDkmSfXRAoz5aEvHiBYD+eTS6F+BwUOouizQO6NTnCccRWOoT8mB+AulF2eSZgDnHR6ovZiygjayEw==
+ b=cirKwvHnACku+qjS3vCc0KFIxKlFTENSse2El9tDJlOiV5ZuxWemxFppl6bvybaJ6nGmintLgOklFFWA5I+oVm98BgzS1pJaWzTrFWPhpdO2dhFUBp1eGKOm8AKUsMRSPNrot9asjM/0FdZWF0LSze1r0NR8iPDrD1vMFLs+GPzXlb22LpFSa2ztBTOBMugNqLE+VD+/fc3Bys4UuqzmT0dt7O5JiWHSE7bXxmak58wCtD0LD4bpig7YS1MTzIu79cpKnPy8YBBUTeMA8ctzEfqBcwWH0LcqHrsEHV6/v5rExVHix+xA9gZnceMgRdA+oP4Fgf/Dla3Dd7RnFG6WRg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Hv1f9nzRIRgOjLnyq76u1nwHP098Cmk1ys2Z+2fIVT4=;
- b=J41YajpuuMK2MSjaATMt+SEtsmT036z100Z+jSjP8buin4iygWIJV581UqDM9O/9HlomMIulCUsSKY+G563J/TCR2htt7tgSak+kuNYR8f2vPfqFkQMrktOFjbmeJEy9TmTptQoD2+HHn08LCrHEGbPog0Kn8wP+sQClRUZhPxTfxbJ6ChCAzfU1Q+SgsYPt23QUphRyYv/+uEHX+fGe4NWEZ9Ioh7RO324yDQsWplaMu9XQDtzMETgB43zoP6IIQ4E/H7Z+lZHhAPjtRTSTLN5zIkOIcWmR+jVRdR4lVRtQL/uGFJoU+RZf0Aq/wNBB6tBuQO/dEUY8rpFI6aH/9w==
+ bh=Kg2wNYIJEkQndu7x1BiocycJELO1I9KZm0qOzqkH0XU=;
+ b=bCDm6TJzGNHhL+eWqyvgznbE4Q8Kth9LsBdj6TyMJ0O1VB60dyL82psdMGYAtSzdESv4RnIIfki7m0htcUYsP1nbrFkO5OmTGU699TWe9gkhvP7LFkOGNPYJXNpKX/Szh+WrkZRLQW1fI6rmAaC6RLiNwJ4N5WnPw7j9ikTpDUvG2FdAol4On640WPtU1td1ofoLI8YKuthJ9BGWZ30Nc9CgpG8MYmd0pusyTgLzWHFU9ZvBcMql0xWevFMbYICOszIuqPGlMR2fzjmZYLOCjCAShxX8mFJO+AZNWPANaxhm2O7xQA4Ye/K50Ose6TeBJBvuXeh7jnasCK7jEQ8bwQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
  dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Hv1f9nzRIRgOjLnyq76u1nwHP098Cmk1ys2Z+2fIVT4=;
- b=xKZlk2rZG8wf1u2nxc7Klz5smKIc5JR2csBSJJ7fT65cDzeA/l3e0FQ/e1AB3neGnYD6Vf1suVfIdSAT8LmhthdTi2h62jpOtykNVz26b/BxPoS3TddKqtCVHcnBl5kqNHafilT2IrRpNQ/fF06mVm0SHHmHEwWh3hAF17ZTvD0=
+ bh=Kg2wNYIJEkQndu7x1BiocycJELO1I9KZm0qOzqkH0XU=;
+ b=alfQuvlss2Tj6pUSqac5vXY6fL9B6RvBzIGH+wZ4yIJY8mdeJ9hkaoGPIaSUAJc4LBAV6a5F8225ltOB53gfshsT4s+kcVY+d+GZyXU4x5NJBD36c53CeyF1hJXQ6+CQG7958Yq63ga7W7BlGMiQh3NWTDLmydl/7GkHmEXX5d4=
 Received: from BY5PR10MB4196.namprd10.prod.outlook.com (2603:10b6:a03:20d::23)
- by DS7PR10MB4831.namprd10.prod.outlook.com (2603:10b6:5:3ab::13) with
+ by CH0PR10MB5068.namprd10.prod.outlook.com (2603:10b6:610:c7::17) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.13; Fri, 27 May
- 2022 22:59:01 +0000
+ 2022 22:59:04 +0000
 Received: from BY5PR10MB4196.namprd10.prod.outlook.com
  ([fe80::2125:9bb7:bfeb:81f9]) by BY5PR10MB4196.namprd10.prod.outlook.com
  ([fe80::2125:9bb7:bfeb:81f9%9]) with mapi id 15.20.5293.016; Fri, 27 May 2022
- 22:59:00 +0000
+ 22:59:04 +0000
 From:   Mike Kravetz <mike.kravetz@oracle.com>
 To:     linux-kernel@vger.kernel.org, linux-mm@kvack.org
 Cc:     Muchun Song <songmuchun@bytedance.com>,
@@ -76,10 +76,12 @@ Cc:     Muchun Song <songmuchun@bytedance.com>,
         Christian Borntraeger <borntraeger@linux.ibm.com>,
         Andrew Morton <akpm@linux-foundation.org>,
         Mike Kravetz <mike.kravetz@oracle.com>
-Subject: [RFC PATCH 0/3] hugetlb: speed up linear address scanning
-Date:   Fri, 27 May 2022 15:58:46 -0700
-Message-Id: <20220527225849.284839-1-mike.kravetz@oracle.com>
+Subject: [RFC PATCH 2/3] hugetlb: do not update address in huge_pmd_unshare
+Date:   Fri, 27 May 2022 15:58:48 -0700
+Message-Id: <20220527225849.284839-3-mike.kravetz@oracle.com>
 X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220527225849.284839-1-mike.kravetz@oracle.com>
+References: <20220527225849.284839-1-mike.kravetz@oracle.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: MWHPR17CA0091.namprd17.prod.outlook.com
@@ -87,83 +89,261 @@ X-ClientProxiedBy: MWHPR17CA0091.namprd17.prod.outlook.com
  (2603:10b6:a03:20d::23)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 79cd8584-7775-450d-3a2c-08da40347cb8
-X-MS-TrafficTypeDiagnostic: DS7PR10MB4831:EE_
-X-Microsoft-Antispam-PRVS: <DS7PR10MB4831208112387059EFA24619E2D89@DS7PR10MB4831.namprd10.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 673bd517-9cf6-44da-b946-08da40347f64
+X-MS-TrafficTypeDiagnostic: CH0PR10MB5068:EE_
+X-Microsoft-Antispam-PRVS: <CH0PR10MB5068F143AC465BDA849DC2E8E2D89@CH0PR10MB5068.namprd10.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: OVEAY9fWPUodjdgFVLMPpd0JVeznHLSVMFnf+OawRcwdBv/dYUwiF4utM/rGnRXAdvvNGYP8ML0ufXVRKLiFSWQ6dlTOQJEv7D01aP1KSm64wL8gcjJAXDubvyV4aCSS4k1ZKPUzRK5ZHg7+NXSfIrfhk3lU4Azn0W2PiOuTQizDyToY6IXjzOLKDu/EvBmH5JFFnO0iDOdeQCLQSK6TN62lJnjtmZ5PUBfNQXK7SUZ2/WdrH4VfjpDDIfkoHd7pOeFm747P6NdcpgptSs6REPNUY3boxrTAZ9xrJLTeqiIfbu0lntySLJlSCa0qvUc8R1TR2W2qvcf3l4NQyxKO0N7aEjCtveRdJkraRussqsELXzHI8g1f0nzKEJM87DhXK7SFUzOqcxe5J8RbOaa9hZt240HgKoTrFrhhrkFudBFr+0pBuDHSN+TwT6wGdrkHZMaoBI+lc3HwprJcQBcIdM76gF747L2ccYJaJC04PD5Nv6CvZbXIoPVc1qPs26BfBVzHJyOWwqRgPMgJs/SflnWMLRjS4XTHOaZy38Z99JlNCjmrVbPJYjttKA7jf7t1Q35Mc9+CVlv3cB/KN8zVSqCnwddIWGWPNjIEXHXIpDkigIh4dPVfLmwyhXAj3naAlngXpDKhXZco1179tl7EoyiblBBoDd5/VGpRq1tHZyGpW9bvNO1vShR7QyAyrlCUyNsnO0L3OIPA6/jQuIYCzA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR10MB4196.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(26005)(6506007)(6512007)(6666004)(5660300002)(2906002)(52116002)(508600001)(44832011)(8936002)(316002)(86362001)(66556008)(66476007)(66946007)(4326008)(8676002)(6486002)(4744005)(54906003)(7416002)(36756003)(83380400001)(38100700002)(38350700002)(2616005)(1076003)(107886003)(186003);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 2NxYY/Rpe6iyp3IIpw8ixSAdkqos5Ftptyc4uo6WLSfpGW2xix6rz+0m8cgsivx/t3PALnhEYIDccShrDrEYt0hDlCk1WS0xcbYqt4t+9BAqAeqc4I5cLQ9TYzblOZmctAx/VpXbaNy6soJW0/WlCTw7QmdlMgU9zQRQPwMCz9+0jTnAgaD3zDe4WH70PcuJ3Yj/aMMjYCg6zxKWtFrhedNhAOHDLDiXO2aEGSBML7rQNUaxc4kjJp4NyXe5Abp4R5KW2alOsr4wCG+P6KXR6oWn46ZpTKqjNsyJHTFEUQd6fPh/efGlxT1oqdwm5fEUnMPnkzN7e1Y3xsUprEsWLAd4Wy3kJpjmrD+d9ZQ8X8ABRAcJaFvA259NTLhJP2u/JUgfMyS5tvgRwwrQ8io4KNFNJIYkvjNFsnAQdNUkCv9FOK3mqyKyleTdrZ1FKSmrVlURcQwyuDyNKOdrOxb7USHp0tnf9K1W6cNLz0fU79jnt16P/Ow8ckMrCuVu5RR5WfUX7pivhkRTEOWq2Oehp70POMIhBBsSTMw5IJahE7pNlXXyEXc9Hgomzn6UqoHNM2mAAXa6fh3jtWg1oXfC85BK6kwOjAIUEVdlCNY/4e2BLSArkkxm+6Sg6j+AIuZxsi/h6GZjZNaWZIehzQJ0sdUNl8kaeZg0kF6hP6CjzS2tAm90vFeGeLmYJvcHS+koBsVP4wJG8r0m7j6MUWvJb5NTUQDFaj6DrI5FhYzrUoQ=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR10MB4196.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(6486002)(8676002)(36756003)(107886003)(54906003)(86362001)(4326008)(316002)(66946007)(66556008)(7416002)(52116002)(8936002)(508600001)(44832011)(66476007)(26005)(15650500001)(6506007)(2906002)(83380400001)(6666004)(186003)(2616005)(38350700002)(6512007)(38100700002)(1076003)(5660300002)(14583001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?UYnPmjwKGOORuDdbUhPifeO5Dm/lRJ7RVOCimQQa0VjG2Sz4ogHb0RDxNQAC?=
- =?us-ascii?Q?6fx/DLFiajYsynXDW1nOzuWfE08T+2+n5zf4LQSNcQ8GGRHghEjexloLDZOt?=
- =?us-ascii?Q?Bzgs1B47aFHxa/aW6Px1EupsyWr0HI6j7JijQeS9vFJJsBQl5hfStYT+hfLd?=
- =?us-ascii?Q?bCVJGJMor+D2cMF9WNUwjRZd9YtPbcr7mTaDxBd8+KBi8VllgSwiEs4vV20r?=
- =?us-ascii?Q?6fhbjgIIfF5v/Y8dgMB+S6EubCv5DyTg3r81d3WVWEgmugQ+/jpgChmXqhQu?=
- =?us-ascii?Q?NprGa8tD0HQ1oFgPVe4m2l2R+Mw8hYgODamq5ECTbQZFBSXOSPTmNW+c6n3P?=
- =?us-ascii?Q?zem5Zcd65kOn/5QxfDFjSamYjZa+7AOldAPuQemnSe/GRXuP86GbX+Uo1BeQ?=
- =?us-ascii?Q?SSgrYUmDh7DUPNftCHDNaDYjpVyvOSkSJsUTqN0Y0HGfYnO8jRGMdmLoL+ad?=
- =?us-ascii?Q?TMJBuEmxDN1FxKNoC7VcbJ7cEMsNNulJ+bNydFZFU0CXJfqhy87MLRhqOCl/?=
- =?us-ascii?Q?u4wL+calr/d5ayjJiJj2YYtwjoxqQfFcYmGgXUK8pEV/e8UTYBCDRdbpRz3m?=
- =?us-ascii?Q?qoeuVgy2ojlkM1n9WcPgBzn5LwEKBvyveNHspXn3niLP8gSKa/n44jAyLyFU?=
- =?us-ascii?Q?iKb8CdewBoSd0wR1uNET5K85Lfg5dP6/+lWIk6bk5Yl7tCcefEKIi7lxcl2n?=
- =?us-ascii?Q?d+vCHOmyzAe37wexC+UO9nHvKlYcfDTM/0bxM0DcADNmpWR4e1xs5wVC/Zrz?=
- =?us-ascii?Q?/lo6eCo+TqhvBr0M3+r4qfWMcpoIZAnUKl2zEpxAJHhAVcgDWHxd4I+tHXhY?=
- =?us-ascii?Q?lwAF4mx3INe4ZffQYYDGzmOr3CQiezXz/Qrq6L3hK8mAZCw/U07/xK8EzWw7?=
- =?us-ascii?Q?0VerBVhsriLTR5huYtyo9JSR+OypLFBmQtQcRllxSz3PXjdE+ZzJjzlGXbp0?=
- =?us-ascii?Q?CHefGX+vkgGxfbn7ajnpr86McQeSL87DsUHTpxEpSlv05QXcjlRihNahO5/R?=
- =?us-ascii?Q?OlyaaYCjWVwROUM5GVyj1RyfcofuWmfRgn6flr/RZxZezoaIkIfB4esE9byM?=
- =?us-ascii?Q?TOCUg/H1WoR2a6lgvU9WgkhWlUODaW5GBdCDlRJ4YU4Q7ip5u0gVmk1S1EsL?=
- =?us-ascii?Q?QQk+m9vzKEvEpUgWI61SZaIk8Y6wlOHhdEvBTPJ6469eGPnwdzS4SFzmYbTu?=
- =?us-ascii?Q?wVr3kNyi6oMzKD1JdpHSSF9eYkHOMSoqZX7rJDgl2oiA2uy/Wen4IBf3YC7M?=
- =?us-ascii?Q?FuoIcPt9M9j0NnH9xVv67N6XZBp9xsPegE73Mfl1IzwqAAVp5o/X/qcpbB7b?=
- =?us-ascii?Q?kyVDnYoLfdcE7B9U+s6qFMU6zFDzFpjCcZEpUmc2s762+luvB+YwaHvCpveQ?=
- =?us-ascii?Q?/j4a9TEedbAA4hh/5ibYTRf+FAcY/G97sEnR62V6qf8rBPl2PHk/qbK2Ew0+?=
- =?us-ascii?Q?XycKKc1l1QGDPJMm8JeCUo0ak5Kz4FY4u2mS7zar16iWspKihlPq5JVw/FWU?=
- =?us-ascii?Q?xnKZQq2B9D/26gpHCzFidTM1RffR/VDLmiYhlehMS8yUPX4psY0s3ga1AkMy?=
- =?us-ascii?Q?7nuMwFRRptbrQSqgrMziE5qAZPTMlayhSLBgGmXDdGCA+Q6KUr+s0XXb3GFa?=
- =?us-ascii?Q?R2ofHyo7Fx8nFjZ8Kz65Fqe+mj/dNtU/5z4/gBjXm9fBKWrdppe/d5haBYhD?=
- =?us-ascii?Q?K+7Nty8S7k+VOU5O4mcHPyz/sx9rTkLgJUSz/sfek2kQBqUkeK4HPBxcZh6y?=
- =?us-ascii?Q?iVAh1rtPlRz9+QXKktnXQQYIIHhmz9w=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?vk1bUjEFIz+LdaSqiBOJajAqpl9sb+zg2w0mjtEwmKbVlZ9eI+2vVW0jQXN5?=
+ =?us-ascii?Q?0+r2ephpO3AMAFhFl5m39XVjtnK20eoI0bU+JQw96AKrFrrZnAJp7YInuxqO?=
+ =?us-ascii?Q?EQZeo8cUIpoFs8Z5YZVBepjHpYqosnsYG7UyutoxJUkJBj/Iwmf2gsLnNF8y?=
+ =?us-ascii?Q?RYIr9XY0AuHLSjOwqIJG/aNj0EEYwcEChwH3JNTtjeFldBXa18ogq9v3tMMI?=
+ =?us-ascii?Q?3Fl9R7vITSXNU6ixDr3eeh36a5c5mzEnqOtNIbEJBsoqdZj/6uE56dRkKXU0?=
+ =?us-ascii?Q?N9H/iUw+KbjJ1cOCLxkOpYJPnRLe054oVN3OvF6qG6xXKerFWQxOAh+lk/ae?=
+ =?us-ascii?Q?XumowqhyNqidQxO69J8vI/XROhcp1UsaGlH3bKNulAwImKSfBcwk0MfeySSh?=
+ =?us-ascii?Q?N+yEHm+0x4FOhmdir7b6FqEBG3Gn6SV/OV48z6+Y8KDqUkbu0xu3OlQWM3s9?=
+ =?us-ascii?Q?klviMoS6nQGjXrO/gcR9KEHnBIK+ChyZ/URDh1Oa8hmCEylAw9nnBctuUVWc?=
+ =?us-ascii?Q?8QoQc1hIpuqF8fE+PKQ+HF84pd1byylzky1kjynBZsaEtqazl+6WufY6p3RU?=
+ =?us-ascii?Q?fbCewjzm6TLssgI9Mx4/F1gtVPSKQhK/rhpWExV/xeR3XdWW/Javp6nJ3j7s?=
+ =?us-ascii?Q?YJaSdBRzx/SqlpbMFCHMet3BuLVthmzN9twfWgC3Icq6BAvcqXPp2vReUchb?=
+ =?us-ascii?Q?JX6YPuBKMHOQgUsuE8Up4JIXhoXuzTcVmtxwGj7l/mhkjZCT0rVjMID5chjE?=
+ =?us-ascii?Q?9bt1J+WWqVO2J08SzarpXJGs/Ff2tblTEfVyS6d7GwGkr5H7/icSKQrOdbcw?=
+ =?us-ascii?Q?lfrOt+V6AcSUaVcmMscZ2IsDgXCdL6kolxXoSyKDyqKuLMzMNL46PMKFjGYw?=
+ =?us-ascii?Q?Er/C/+jMCbUHmc5wn+pjhQKLhTU1ZrYV9dQp+dnpzHak5Io0pqxBdx5T1nrZ?=
+ =?us-ascii?Q?Fa1J3kVqpbpvIIpm7oIcvS42lu2uOaWIacQmf76xx5Ox/jqhZgd1JxoOXU4O?=
+ =?us-ascii?Q?R9+2PJbqPeYzB7Li7DCWl/u1VnlkiHVQl37CuLsAr4wWDHU3c4BT34QX9k/W?=
+ =?us-ascii?Q?T0PbcUgf234FZ2rEQRyLafEPOIhCfPQ8IymYpOeVNgEjn8wzW66OPlZjFb4E?=
+ =?us-ascii?Q?y1+5kEX/MsP+NkALANpr56YzE3C89d2gLpcTYWVUDLJQ6O0Nk/4PGfrvGFFb?=
+ =?us-ascii?Q?e4U1RDARoPd1juqjP0J+kBPmm1SMIfSRoMNRvLOqeqmGo+NxSyxKE4pN349W?=
+ =?us-ascii?Q?sm47276n0Qq4eNPeE/oZNfrF6iHAlvOpQaoe/3TsCIFvv6TZISLudTDFP02y?=
+ =?us-ascii?Q?13OeW51CH7ctu+Ab376BFEd4ee3nKJ7W+cxUMYTBZV7PNnMdSwvTMVefkDXk?=
+ =?us-ascii?Q?p70t48rZbCBiUC+69HparD/nGtvf7o/Mtga24dDjHwrxVS9ltqkHOYcROQM+?=
+ =?us-ascii?Q?BThYCRPc1Q+m7TMzBNYMawmWbZNKhpU+w/u7vlum4WSO/sVsL2INCei2pB5u?=
+ =?us-ascii?Q?FQ9FOfqPo9SFKTNT693UUahEGt0JbUIC4uqPC2rKSrX8E6J51HAJN/ICsh3j?=
+ =?us-ascii?Q?AEKp3zGGXc81IoX9CIki1NGu4QNv4QLsagA8vyljpfN60M6jd8UqCwhh0Iur?=
+ =?us-ascii?Q?yEFG8Jla66gClvdH7NULlFSKjan47qM9dDhtxFLrGWX+3yljgVihdg9KpzTa?=
+ =?us-ascii?Q?dixvamRr6JxbpwEbuBuCC7O7+Vi96xgWdwOmDkxqsCKU95T5FHTbLjlD3nVS?=
+ =?us-ascii?Q?mKNVGmnVMOyLAziZ/eSZ+QeY+vDYn+U=3D?=
 X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 79cd8584-7775-450d-3a2c-08da40347cb8
+X-MS-Exchange-CrossTenant-Network-Message-Id: 673bd517-9cf6-44da-b946-08da40347f64
 X-MS-Exchange-CrossTenant-AuthSource: BY5PR10MB4196.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 May 2022 22:59:00.6895
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 May 2022 22:59:04.8474
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: huLo6g7ms2YEIWbJjceFxNOBBGgV4ooh+CVWXW5dws/UMVIHYq2wrbN3fZRwfLI/O0XMQvoWaEnp3fb+Fq2ocA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR10MB4831
+X-MS-Exchange-CrossTenant-UserPrincipalName: bgB9tGkDMie7KxZrrHHo84Gg7pwqqqAITR8rg1tLN3uv0r+o7sWYHHOy4xo5JU2+3TcVvk7uzvh+hLQaaVPwYA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR10MB5068
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.486,18.0.874
  definitions=2022-05-27_07:2022-05-27,2022-05-27 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 mlxscore=0 mlxlogscore=493
- spamscore=0 suspectscore=0 adultscore=0 bulkscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2204290000
- definitions=main-2205270111
-X-Proofpoint-GUID: ptRljKxhGI6ahLyEaWy5sXmyZbY_rQOK
-X-Proofpoint-ORIG-GUID: ptRljKxhGI6ahLyEaWy5sXmyZbY_rQOK
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 suspectscore=0
+ malwarescore=0 phishscore=0 mlxlogscore=999 adultscore=0 mlxscore=0
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2205270111
+X-Proofpoint-GUID: ak9l4zlU8484jy7Y2cVramGWqttby6aF
+X-Proofpoint-ORIG-GUID: ak9l4zlU8484jy7Y2cVramGWqttby6aF
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-At unmap, fork and remap time hugetlb address ranges are linearly
-scanned.  We can optimize these scans if the ranges are sparsely
-populated.  Also, enable page table "Lazy copy" for hugetlb at fork.
+As an optimization for loops sequentially processing hugetlb address
+ranges, huge_pmd_unshare would update a passed address if it unshared a
+pmd.  Updating a loop control variable outside the loop like this is
+generally a bad idea.  These loops are now using hugetlb_mask_last_hp
+to optimize scanning when non-present ptes are discovered.  The same
+can be done when huge_pmd_unshare returns 1 indicating a pmd was
+unshared.
 
-Mike Kravetz (3):
-  hugetlb: skip to end of PT page mapping when pte not present
-  hugetlb: do not update address in huge_pmd_unshare
-  hugetlb: Lazy page table copies in fork()
+Remove address update from huge_pmd_unshare.  Change the passed argument
+type and update all callers.  In loops sequentially processing addresses
+use hugetlb_mask_last_hp to update address if pmd is unshared.
 
- include/linux/hugetlb.h |   5 +-
- mm/hugetlb.c            | 104 ++++++++++++++++++++++++++++------------
- mm/memory.c             |   2 +-
- mm/rmap.c               |   4 +-
- 4 files changed, 79 insertions(+), 36 deletions(-)
+Signed-off-by: Mike Kravetz <mike.kravetz@oracle.com>
+---
+ include/linux/hugetlb.h |  4 ++--
+ mm/hugetlb.c            | 46 ++++++++++++++++++-----------------------
+ mm/rmap.c               |  4 ++--
+ 3 files changed, 24 insertions(+), 30 deletions(-)
 
+diff --git a/include/linux/hugetlb.h b/include/linux/hugetlb.h
+index 25078a0ea1d8..307c8f6e6752 100644
+--- a/include/linux/hugetlb.h
++++ b/include/linux/hugetlb.h
+@@ -196,7 +196,7 @@ pte_t *huge_pte_offset(struct mm_struct *mm,
+ 		       unsigned long addr, unsigned long sz);
+ unsigned long hugetlb_mask_last_hp(struct hstate *h);
+ int huge_pmd_unshare(struct mm_struct *mm, struct vm_area_struct *vma,
+-				unsigned long *addr, pte_t *ptep);
++				unsigned long addr, pte_t *ptep);
+ void adjust_range_if_pmd_sharing_possible(struct vm_area_struct *vma,
+ 				unsigned long *start, unsigned long *end);
+ struct page *follow_huge_addr(struct mm_struct *mm, unsigned long address,
+@@ -243,7 +243,7 @@ static inline struct address_space *hugetlb_page_mapping_lock_write(
+ 
+ static inline int huge_pmd_unshare(struct mm_struct *mm,
+ 					struct vm_area_struct *vma,
+-					unsigned long *addr, pte_t *ptep)
++					unsigned long addr, pte_t *ptep)
+ {
+ 	return 0;
+ }
+diff --git a/mm/hugetlb.c b/mm/hugetlb.c
+index a2db878b2255..c7d3fbf3ec05 100644
+--- a/mm/hugetlb.c
++++ b/mm/hugetlb.c
+@@ -4940,7 +4940,6 @@ int move_hugetlb_page_tables(struct vm_area_struct *vma,
+ 	struct mm_struct *mm = vma->vm_mm;
+ 	unsigned long old_end = old_addr + len;
+ 	unsigned long last_addr_mask;
+-	unsigned long old_addr_copy;
+ 	pte_t *src_pte, *dst_pte;
+ 	struct mmu_notifier_range range;
+ 	bool shared_pmd = false;
+@@ -4968,14 +4967,10 @@ int move_hugetlb_page_tables(struct vm_area_struct *vma,
+ 		if (huge_pte_none(huge_ptep_get(src_pte)))
+ 			continue;
+ 
+-		/* old_addr arg to huge_pmd_unshare() is a pointer and so the
+-		 * arg may be modified. Pass a copy instead to preserve the
+-		 * value in old_addr.
+-		 */
+-		old_addr_copy = old_addr;
+-
+-		if (huge_pmd_unshare(mm, vma, &old_addr_copy, src_pte)) {
++		if (huge_pmd_unshare(mm, vma, old_addr, src_pte)) {
+ 			shared_pmd = true;
++			old_addr |= last_addr_mask;
++			new_addr |= last_addr_mask;
+ 			continue;
+ 		}
+ 
+@@ -5040,10 +5035,11 @@ static void __unmap_hugepage_range(struct mmu_gather *tlb, struct vm_area_struct
+ 		}
+ 
+ 		ptl = huge_pte_lock(h, mm, ptep);
+-		if (huge_pmd_unshare(mm, vma, &address, ptep)) {
++		if (huge_pmd_unshare(mm, vma, address, ptep)) {
+ 			spin_unlock(ptl);
+ 			tlb_flush_pmd_range(tlb, address & PUD_MASK, PUD_SIZE);
+ 			force_flush = true;
++			address |= last_addr_mask;
+ 			continue;
+ 		}
+ 
+@@ -6327,7 +6323,7 @@ unsigned long hugetlb_change_protection(struct vm_area_struct *vma,
+ 			continue;
+ 		}
+ 		ptl = huge_pte_lock(h, mm, ptep);
+-		if (huge_pmd_unshare(mm, vma, &address, ptep)) {
++		if (huge_pmd_unshare(mm, vma, address, ptep)) {
+ 			/*
+ 			 * When uffd-wp is enabled on the vma, unshare
+ 			 * shouldn't happen at all.  Warn about it if it
+@@ -6337,6 +6333,7 @@ unsigned long hugetlb_change_protection(struct vm_area_struct *vma,
+ 			pages++;
+ 			spin_unlock(ptl);
+ 			shared_pmd = true;
++			address |= last_addr_mask;
+ 			continue;
+ 		}
+ 		pte = huge_ptep_get(ptep);
+@@ -6760,11 +6757,11 @@ pte_t *huge_pmd_share(struct mm_struct *mm, struct vm_area_struct *vma,
+  *	    0 the underlying pte page is not shared, or it is the last user
+  */
+ int huge_pmd_unshare(struct mm_struct *mm, struct vm_area_struct *vma,
+-					unsigned long *addr, pte_t *ptep)
++					unsigned long addr, pte_t *ptep)
+ {
+-	pgd_t *pgd = pgd_offset(mm, *addr);
+-	p4d_t *p4d = p4d_offset(pgd, *addr);
+-	pud_t *pud = pud_offset(p4d, *addr);
++	pgd_t *pgd = pgd_offset(mm, addr);
++	p4d_t *p4d = p4d_offset(pgd, addr);
++	pud_t *pud = pud_offset(p4d, addr);
+ 
+ 	i_mmap_assert_write_locked(vma->vm_file->f_mapping);
+ 	BUG_ON(page_count(virt_to_page(ptep)) == 0);
+@@ -6774,14 +6771,6 @@ int huge_pmd_unshare(struct mm_struct *mm, struct vm_area_struct *vma,
+ 	pud_clear(pud);
+ 	put_page(virt_to_page(ptep));
+ 	mm_dec_nr_pmds(mm);
+-	/*
+-	 * This update of passed address optimizes loops sequentially
+-	 * processing addresses in increments of huge page size (PMD_SIZE
+-	 * in this case).  By clearing the pud, a PUD_SIZE area is unmapped.
+-	 * Update address to the 'last page' in the cleared area so that
+-	 * calling loop can move to first page past this area.
+-	 */
+-	*addr |= PUD_SIZE - PMD_SIZE;
+ 	return 1;
+ }
+ 
+@@ -6793,7 +6782,7 @@ pte_t *huge_pmd_share(struct mm_struct *mm, struct vm_area_struct *vma,
+ }
+ 
+ int huge_pmd_unshare(struct mm_struct *mm, struct vm_area_struct *vma,
+-				unsigned long *addr, pte_t *ptep)
++				unsigned long addr, pte_t *ptep)
+ {
+ 	return 0;
+ }
+@@ -6902,6 +6891,13 @@ unsigned long hugetlb_mask_last_hp(struct hstate *h)
+ /* See description above.  Architectures can provide their own version. */
+ __weak unsigned long hugetlb_mask_last_hp(struct hstate *h)
+ {
++	unsigned long hp_size = huge_page_size(h);
++
++#ifdef CONFIG_ARCH_WANT_HUGE_PMD_SHARE
++	if (hp_size == PMD_SIZE)	/* required for pmd sharing */
++		return PUD_SIZE - PMD_SIZE;
++#endif
++
+ 	return ~(0);
+ }
+ 
+@@ -7128,14 +7124,12 @@ void hugetlb_unshare_all_pmds(struct vm_area_struct *vma)
+ 	mmu_notifier_invalidate_range_start(&range);
+ 	i_mmap_lock_write(vma->vm_file->f_mapping);
+ 	for (address = start; address < end; address += PUD_SIZE) {
+-		unsigned long tmp = address;
+-
+ 		ptep = huge_pte_offset(mm, address, sz);
+ 		if (!ptep)
+ 			continue;
+ 		ptl = huge_pte_lock(h, mm, ptep);
+ 		/* We don't want 'address' to be changed */
+-		huge_pmd_unshare(mm, vma, &tmp, ptep);
++		huge_pmd_unshare(mm, vma, address, ptep);
+ 		spin_unlock(ptl);
+ 	}
+ 	flush_hugetlb_tlb_range(vma, start, end);
+diff --git a/mm/rmap.c b/mm/rmap.c
+index 5bcb334cd6f2..45b04e2e83ab 100644
+--- a/mm/rmap.c
++++ b/mm/rmap.c
+@@ -1559,7 +1559,7 @@ static bool try_to_unmap_one(struct folio *folio, struct vm_area_struct *vma,
+ 				 */
+ 				VM_BUG_ON(!(flags & TTU_RMAP_LOCKED));
+ 
+-				if (huge_pmd_unshare(mm, vma, &address, pvmw.pte)) {
++				if (huge_pmd_unshare(mm, vma, address, pvmw.pte)) {
+ 					flush_tlb_range(vma, range.start, range.end);
+ 					mmu_notifier_invalidate_range(mm, range.start,
+ 								      range.end);
+@@ -1923,7 +1923,7 @@ static bool try_to_migrate_one(struct folio *folio, struct vm_area_struct *vma,
+ 				 */
+ 				VM_BUG_ON(!(flags & TTU_RMAP_LOCKED));
+ 
+-				if (huge_pmd_unshare(mm, vma, &address, pvmw.pte)) {
++				if (huge_pmd_unshare(mm, vma, address, pvmw.pte)) {
+ 					flush_tlb_range(vma, range.start, range.end);
+ 					mmu_notifier_invalidate_range(mm, range.start,
+ 								      range.end);
 -- 
 2.35.3
 
