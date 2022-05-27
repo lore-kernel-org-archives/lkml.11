@@ -2,174 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01851C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 10:52:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E923AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 10:56:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349765AbiE0KwZ (ORCPT
+        id S1351028AbiE0K4C (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 06:52:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40196 "EHLO
+        Fri, 27 May 2022 06:56:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236319AbiE0KwX (ORCPT
+        with ESMTP id S1348666AbiE0Kz6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 06:52:23 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEF6255480
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 03:52:21 -0700 (PDT)
-Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.53])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4L8hRV5VkYz1JCTk;
-        Fri, 27 May 2022 18:50:46 +0800 (CST)
-Received: from dggpemm500018.china.huawei.com (7.185.36.111) by
- dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 27 May 2022 18:52:19 +0800
-Received: from localhost.localdomain (10.175.112.125) by
- dggpemm500018.china.huawei.com (7.185.36.111) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 27 May 2022 18:52:19 +0800
-From:   keliu <liuke94@huawei.com>
-To:     <johan@kernel.org>, <elder@kernel.org>,
-        <gregkh@linuxfoundation.org>, <greybus-dev@lists.linaro.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     keliu <liuke94@huawei.com>
-Subject: [PATCH] drivers: greybus: Directly use ida_alloc()/free()
-Date:   Fri, 27 May 2022 11:13:48 +0000
-Message-ID: <20220527111348.3444003-1-liuke94@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 27 May 2022 06:55:58 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 96D4912E309
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 03:55:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653648956;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=gGQcppmnDaS/J3TRXiziyA5gL0rtQs0/Sd1uzUmYxEU=;
+        b=TX/g3FXr8yz7Z4SKaqizhItgcvzPTwiWs0UnO8RLql2ZHXLrE2lKFmltLJ5ce6ogyCaDhz
+        ouvtKFLXGk4YeaN6GwgYLwfU/yQCE1a5tCf2rYiwgU5NI2oGD3uAQplMj+KX0jiUH9ITDp
+        5O/lrqM8QeB445XnLCX8/8ysK6lxKYQ=
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
+ [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-488-R_MOWH4MMMqk-gAkFfdE7w-1; Fri, 27 May 2022 06:55:55 -0400
+X-MC-Unique: R_MOWH4MMMqk-gAkFfdE7w-1
+Received: by mail-ej1-f72.google.com with SMTP id i7-20020a170906850700b006fec53a78c3so2271475ejx.1
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 03:55:55 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=gGQcppmnDaS/J3TRXiziyA5gL0rtQs0/Sd1uzUmYxEU=;
+        b=lnAJgrMkTHUk9bQepcDNFVmncadDEaVQMkOj9sEQ/Kmyrav5Gda1EweRnBSQhYsgfV
+         1wEIdYHHiLJifIQ64/k3fvUgEa3R21DDQv34IOpZB1LYPOiwIz66hgoFpZoMBgAPei1Q
+         k2SURvhgJcuMC8+DiynE9d9ZeKEBXyVILKEqCURGJYKu1P66fyM4o0k/VCYTXxdvRnQa
+         0GUMM5Gfy0kHav0gAsath5GKP+FDUByDZ/ch5qxcE9Zh7EiMeYwgAA802+5ceKAzXWwo
+         YaR9O6DIpQCoOmXSgbZaFn7eiqLIebMC1OS3DizGvItyAcgUP+Wzf/EESyP3wXxJElX3
+         AdNg==
+X-Gm-Message-State: AOAM531X0M5Q5PngoqM+gmi/yJgUZ2JXlWgy3URlT2+OLyY5PLGcKnpC
+        fijPtEsBLgWH1x13C6Jg5PLjpryfD3OdiO50LivY9t+gtBvgHZRH/HP5GHWbJQ6td5B10pqU4av
+        inxLoAUQvdN3fi4MZjxGjeOio
+X-Received: by 2002:a17:907:8a03:b0:6fe:c10d:4bf8 with SMTP id sc3-20020a1709078a0300b006fec10d4bf8mr27371022ejc.308.1653648953915;
+        Fri, 27 May 2022 03:55:53 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzyjSEByHUT1dN2e6dwR/wwQsgGO85W9JgRso9Wz+PFfyejclX0Yhn5dm9pxNJ4ZMKkOZKFiA==
+X-Received: by 2002:a17:907:8a03:b0:6fe:c10d:4bf8 with SMTP id sc3-20020a1709078a0300b006fec10d4bf8mr27371006ejc.308.1653648953659;
+        Fri, 27 May 2022 03:55:53 -0700 (PDT)
+Received: from redhat.com ([2.55.130.213])
+        by smtp.gmail.com with ESMTPSA id fm6-20020a1709072ac600b006fec98edf3asm1318544ejc.166.2022.05.27.03.55.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 27 May 2022 03:55:53 -0700 (PDT)
+Date:   Fri, 27 May 2022 06:55:44 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Parav Pandit <parav@nvidia.com>
+Cc:     Eugenio =?iso-8859-1?Q?P=E9rez?= <eperezma@redhat.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Jason Wang <jasowang@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "martinh@xilinx.com" <martinh@xilinx.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        "martinpo@xilinx.com" <martinpo@xilinx.com>,
+        "lvivier@redhat.com" <lvivier@redhat.com>,
+        "pabloc@xilinx.com" <pabloc@xilinx.com>,
+        Eli Cohen <elic@nvidia.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Xie Yongji <xieyongji@bytedance.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Zhang Min <zhang.min9@zte.com.cn>,
+        Wu Zongyong <wuzongyong@linux.alibaba.com>,
+        "lulu@redhat.com" <lulu@redhat.com>,
+        Zhu Lingshan <lingshan.zhu@intel.com>,
+        "Piotr.Uminski@intel.com" <Piotr.Uminski@intel.com>,
+        Si-Wei Liu <si-wei.liu@oracle.com>,
+        "ecree.xilinx@gmail.com" <ecree.xilinx@gmail.com>,
+        "gautam.dawar@amd.com" <gautam.dawar@amd.com>,
+        "habetsm.xilinx@gmail.com" <habetsm.xilinx@gmail.com>,
+        "tanuj.kamde@amd.com" <tanuj.kamde@amd.com>,
+        "hanand@xilinx.com" <hanand@xilinx.com>,
+        "dinang@xilinx.com" <dinang@xilinx.com>,
+        Longpeng <longpeng2@huawei.com>
+Subject: Re: [PATCH v4 0/4] Implement vdpasim stop operation
+Message-ID: <20220527065442-mutt-send-email-mst@kernel.org>
+References: <20220526124338.36247-1-eperezma@redhat.com>
+ <PH0PR12MB54819C6C6DAF6572AEADC1AEDCD99@PH0PR12MB5481.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.112.125]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemm500018.china.huawei.com (7.185.36.111)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <PH0PR12MB54819C6C6DAF6572AEADC1AEDCD99@PH0PR12MB5481.namprd12.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use ida_alloc()/ida_free() instead of deprecated
-ida_simple_get()/ida_simple_remove() .
+On Thu, May 26, 2022 at 12:54:32PM +0000, Parav Pandit wrote:
+> 
+> 
+> > From: Eugenio Pérez <eperezma@redhat.com>
+> > Sent: Thursday, May 26, 2022 8:44 AM
+> 
+> > Implement stop operation for vdpa_sim devices, so vhost-vdpa will offer
+> > 
+> > that backend feature and userspace can effectively stop the device.
+> > 
+> > 
+> > 
+> > This is a must before get virtqueue indexes (base) for live migration,
+> > 
+> > since the device could modify them after userland gets them. There are
+> > 
+> > individual ways to perform that action for some devices
+> > 
+> > (VHOST_NET_SET_BACKEND, VHOST_VSOCK_SET_RUNNING, ...) but there
+> > was no
+> > 
+> > way to perform it for any vhost device (and, in particular, vhost-vdpa).
+> > 
+> > 
+> > 
+> > After the return of ioctl with stop != 0, the device MUST finish any
+> > 
+> > pending operations like in flight requests. It must also preserve all
+> > 
+> > the necessary state (the virtqueue vring base plus the possible device
+> > 
+> > specific states) that is required for restoring in the future. The
+> > 
+> > device must not change its configuration after that point.
+> > 
+> > 
+> > 
+> > After the return of ioctl with stop == 0, the device can continue
+> > 
+> > processing buffers as long as typical conditions are met (vq is enabled,
+> > 
+> > DRIVER_OK status bit is enabled, etc).
+> 
+> Just to be clear, we are adding vdpa level new ioctl() that doesn’t map to any mechanism in the virtio spec.
+> 
+> Why can't we use this ioctl() to indicate driver to start/stop the device instead of driving it through the driver_ok?
+> This is in the context of other discussion we had in the LM series.
 
-Signed-off-by: keliu <liuke94@huawei.com>
----
- drivers/greybus/es2.c       |  4 ++--
- drivers/greybus/hd.c        | 12 ++++++------
- drivers/greybus/interface.c |  8 ++++----
- 3 files changed, 12 insertions(+), 12 deletions(-)
+If there's something in the spec that does this then let's use that.
+Unfortunately the LM series seems to be stuck on moving
+bits around with the admin virtqueue ...
 
-diff --git a/drivers/greybus/es2.c b/drivers/greybus/es2.c
-index e89cca015095..c861fb2acd8a 100644
---- a/drivers/greybus/es2.c
-+++ b/drivers/greybus/es2.c
-@@ -522,7 +522,7 @@ static int es2_cport_allocate(struct gb_host_device *hd, int cport_id,
- 		return -EINVAL;
- 	}
- 
--	return ida_simple_get(id_map, ida_start, ida_end, GFP_KERNEL);
-+	return ida_alloc_range(id_map, ida_start, ida_end - 1, GFP_KERNEL);
- }
- 
- static void es2_cport_release(struct gb_host_device *hd, u16 cport_id)
-@@ -535,7 +535,7 @@ static void es2_cport_release(struct gb_host_device *hd, u16 cport_id)
- 		return;
- 	}
- 
--	ida_simple_remove(&hd->cport_id_map, cport_id);
-+	ida_free(&hd->cport_id_map, cport_id);
- }
- 
- static int cport_enable(struct gb_host_device *hd, u16 cport_id,
-diff --git a/drivers/greybus/hd.c b/drivers/greybus/hd.c
-index 72b21bf2d7d3..6ff5b0cfd539 100644
---- a/drivers/greybus/hd.c
-+++ b/drivers/greybus/hd.c
-@@ -50,7 +50,7 @@ int gb_hd_cport_reserve(struct gb_host_device *hd, u16 cport_id)
- 	struct ida *id_map = &hd->cport_id_map;
- 	int ret;
- 
--	ret = ida_simple_get(id_map, cport_id, cport_id + 1, GFP_KERNEL);
-+	ret = ida_alloc_range(id_map, cport_id, cport_id, GFP_KERNEL);
- 	if (ret < 0) {
- 		dev_err(&hd->dev, "failed to reserve cport %u\n", cport_id);
- 		return ret;
-@@ -64,7 +64,7 @@ void gb_hd_cport_release_reserved(struct gb_host_device *hd, u16 cport_id)
- {
- 	struct ida *id_map = &hd->cport_id_map;
- 
--	ida_simple_remove(id_map, cport_id);
-+	ida_free(id_map, cport_id);
- }
- EXPORT_SYMBOL_GPL(gb_hd_cport_release_reserved);
- 
-@@ -89,7 +89,7 @@ int gb_hd_cport_allocate(struct gb_host_device *hd, int cport_id,
- 		return -EINVAL;
- 	}
- 
--	return ida_simple_get(id_map, ida_start, ida_end, GFP_KERNEL);
-+	return ida_alloc_range(id_map, ida_start, ida_end - 1, GFP_KERNEL);
- }
- 
- /* Locking: Caller guarantees serialisation */
-@@ -100,7 +100,7 @@ void gb_hd_cport_release(struct gb_host_device *hd, u16 cport_id)
- 		return;
- 	}
- 
--	ida_simple_remove(&hd->cport_id_map, cport_id);
-+	ida_free(&hd->cport_id_map, cport_id);
- }
- 
- static void gb_hd_release(struct device *dev)
-@@ -111,7 +111,7 @@ static void gb_hd_release(struct device *dev)
- 
- 	if (hd->svc)
- 		gb_svc_put(hd->svc);
--	ida_simple_remove(&gb_hd_bus_id_map, hd->bus_id);
-+	ida_free(&gb_hd_bus_id_map, hd->bus_id);
- 	ida_destroy(&hd->cport_id_map);
- 	kfree(hd);
- }
-@@ -162,7 +162,7 @@ struct gb_host_device *gb_hd_create(struct gb_hd_driver *driver,
- 	if (!hd)
- 		return ERR_PTR(-ENOMEM);
- 
--	ret = ida_simple_get(&gb_hd_bus_id_map, 1, 0, GFP_KERNEL);
-+	ret = ida_alloc_min(&gb_hd_bus_id_map, 1, GFP_KERNEL);
- 	if (ret < 0) {
- 		kfree(hd);
- 		return ERR_PTR(ret);
-diff --git a/drivers/greybus/interface.c b/drivers/greybus/interface.c
-index 9ec949a438ef..f685e5f7b7b1 100644
---- a/drivers/greybus/interface.c
-+++ b/drivers/greybus/interface.c
-@@ -131,8 +131,8 @@ static int gb_interface_route_create(struct gb_interface *intf)
- 	int ret;
- 
- 	/* Allocate an interface device id. */
--	ret = ida_simple_get(&svc->device_id_map,
--			     GB_SVC_DEVICE_ID_MIN, GB_SVC_DEVICE_ID_MAX + 1,
-+	ret = ida_alloc_range(&svc->device_id_map,
-+			     GB_SVC_DEVICE_ID_MIN, GB_SVC_DEVICE_ID_MAX,
- 			     GFP_KERNEL);
- 	if (ret < 0) {
- 		dev_err(&intf->dev, "failed to allocate device id: %d\n", ret);
-@@ -165,7 +165,7 @@ static int gb_interface_route_create(struct gb_interface *intf)
- 	 * XXX anymore.
- 	 */
- err_ida_remove:
--	ida_simple_remove(&svc->device_id_map, device_id);
-+	ida_free(&svc->device_id_map, device_id);
- 
- 	return ret;
- }
-@@ -178,7 +178,7 @@ static void gb_interface_route_destroy(struct gb_interface *intf)
- 		return;
- 
- 	gb_svc_route_destroy(svc, svc->ap_intf_id, intf->interface_id);
--	ida_simple_remove(&svc->device_id_map, intf->device_id);
-+	ida_free(&svc->device_id_map, intf->device_id);
- 	intf->device_id = GB_INTERFACE_DEVICE_ID_BAD;
- }
- 
 -- 
-2.25.1
+MST
 
