@@ -2,49 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 858CDC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:39:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EAF7C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:39:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351475AbiE0Lji (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 07:39:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44910 "EHLO
+        id S242108AbiE0Ljn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 07:39:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351478AbiE0Lir (ORCPT
+        with ESMTP id S1351510AbiE0LjM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:38:47 -0400
+        Fri, 27 May 2022 07:39:12 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE2451157DB;
-        Fri, 27 May 2022 04:38:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A8601269A8;
+        Fri, 27 May 2022 04:38:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 11CADB824D9;
-        Fri, 27 May 2022 11:38:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 526B0C36AF5;
-        Fri, 27 May 2022 11:38:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E727DB824D7;
+        Fri, 27 May 2022 11:38:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53406C385A9;
+        Fri, 27 May 2022 11:38:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653651500;
-        bh=16LFNup+v25/VvNo3CxgLkxi4CTpG2cxX/qybxkt+Iw=;
+        s=korg; t=1653651503;
+        bh=aThohqI3+tLHQBF+zhv1hQ2mbcYDqYGaf7VMa0ZpgaQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g5IP7/G5zu3RFbiq9RdD6jAHCmEP9nnUA/UjnCc5zWMDVloGdCsMhBEaRr/wJY2gk
-         sectZcGEgEcUzuFDJDAUG7nQVLR86oWJBO0e3t2uMauyHDt+hVe8XnfHP+YprnMPPN
-         QlGBaERpeIZdQvFss7yuYpyx3J8/JpAlCJI65n6Q=
+        b=M7QyT12oHTA9wwbkLVX4XIGMpMf7p6i/V9oAoDrOJKEC+8EYSqwOGdbVHbicdFXV7
+         UapMDDhFGPvRi0/jv+AuSjbw1iOWbSXmiotnDIWSOfzCrJkFmH6iR6MQb5+MCv2r5a
+         K9YoLCEW9Lt9iq2N2EoFQYOYwSNOY9tddaOFVgoY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Matt Mackall <mpm@selenic.com>,
-        Theodore Tso <tytso@mit.edu>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        stable@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
         Eric Biggers <ebiggers@google.com>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.17 042/111] random: pull add_hwgenerator_randomness() declaration into random.h
-Date:   Fri, 27 May 2022 10:49:14 +0200
-Message-Id: <20220527084825.418150401@linuxfoundation.org>
+Subject: [PATCH 5.10 018/163] crypto: blake2s - remove unneeded includes
+Date:   Fri, 27 May 2022 10:48:18 +0200
+Message-Id: <20220527084830.706787393@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084819.133490171@linuxfoundation.org>
-References: <20220527084819.133490171@linuxfoundation.org>
+In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
+References: <20220527084828.156494029@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,63 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Eric Biggers <ebiggers@google.com>
 
-commit b777c38239fec5a528e59f55b379e31b1a187524 upstream.
+commit df412e7efda1e2c5b5fcb06701bba77434cbd1e8 upstream.
 
-add_hwgenerator_randomness() is a function implemented and documented
-inside of random.c. It is the way that hardware RNGs push data into it.
-Therefore, it should be declared in random.h. Otherwise sparse complains
-with:
+It doesn't make sense for the generic implementation of BLAKE2s to
+include <crypto/internal/simd.h> and <linux/jump_label.h>, as these are
+things that would only be useful in an architecture-specific
+implementation.  Remove these unnecessary includes.
 
-random.c:1137:6: warning: symbol 'add_hwgenerator_randomness' was not declared. Should it be static?
-
-The alternative would be to include hw_random.h into random.c, but that
-wouldn't really be good for anything except slowing down compile time.
-
-Cc: Matt Mackall <mpm@selenic.com>
-Cc: Theodore Ts'o <tytso@mit.edu>
-Acked-by: Herbert Xu <herbert@gondor.apana.org.au>
-Reviewed-by: Eric Biggers <ebiggers@google.com>
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Acked-by: Ard Biesheuvel <ardb@kernel.org>
+Signed-off-by: Eric Biggers <ebiggers@google.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/hw_random/core.c |    1 +
- include/linux/hw_random.h     |    2 --
- include/linux/random.h        |    2 ++
- 3 files changed, 3 insertions(+), 2 deletions(-)
+ crypto/blake2s_generic.c |    2 --
+ 1 file changed, 2 deletions(-)
 
---- a/drivers/char/hw_random/core.c
-+++ b/drivers/char/hw_random/core.c
-@@ -15,6 +15,7 @@
- #include <linux/err.h>
- #include <linux/fs.h>
- #include <linux/hw_random.h>
-+#include <linux/random.h>
+--- a/crypto/blake2s_generic.c
++++ b/crypto/blake2s_generic.c
+@@ -4,11 +4,9 @@
+  */
+ 
+ #include <crypto/internal/blake2s.h>
+-#include <crypto/internal/simd.h>
+ #include <crypto/internal/hash.h>
+ 
+ #include <linux/types.h>
+-#include <linux/jump_label.h>
  #include <linux/kernel.h>
- #include <linux/kthread.h>
- #include <linux/sched/signal.h>
---- a/include/linux/hw_random.h
-+++ b/include/linux/hw_random.h
-@@ -60,7 +60,5 @@ extern int devm_hwrng_register(struct de
- /** Unregister a Hardware Random Number Generator driver. */
- extern void hwrng_unregister(struct hwrng *rng);
- extern void devm_hwrng_unregister(struct device *dve, struct hwrng *rng);
--/** Feed random bits into the pool. */
--extern void add_hwgenerator_randomness(const void *buffer, size_t count, size_t entropy);
+ #include <linux/module.h>
  
- #endif /* LINUX_HWRANDOM_H_ */
---- a/include/linux/random.h
-+++ b/include/linux/random.h
-@@ -32,6 +32,8 @@ static inline void add_latent_entropy(vo
- extern void add_input_randomness(unsigned int type, unsigned int code,
- 				 unsigned int value) __latent_entropy;
- extern void add_interrupt_randomness(int irq) __latent_entropy;
-+extern void add_hwgenerator_randomness(const void *buffer, size_t count,
-+				       size_t entropy);
- 
- extern void get_random_bytes(void *buf, size_t nbytes);
- extern int wait_for_random_bytes(void);
 
 
