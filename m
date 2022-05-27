@@ -2,210 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7ADBC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 21:30:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4D5DC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 21:30:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354836AbiE0VaC (ORCPT
+        id S1354751AbiE0VaF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 17:30:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44364 "EHLO
+        Fri, 27 May 2022 17:30:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354755AbiE0V3q (ORCPT
+        with ESMTP id S1354795AbiE0V36 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 17:29:46 -0400
-Received: from relay01.th.seeweb.it (relay01.th.seeweb.it [5.144.164.162])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79A6F2BB2A
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 14:29:43 -0700 (PDT)
-Received: from localhost.localdomain (abxh119.neoplus.adsl.tpnet.pl [83.9.1.119])
-        by m-r1.th.seeweb.it (Postfix) with ESMTPA id C74EB2058B;
-        Fri, 27 May 2022 23:29:40 +0200 (CEST)
-From:   Konrad Dybcio <konrad.dybcio@somainline.org>
-To:     ~postmarketos/upstreaming@lists.sr.ht,
-        linux-arm-msm@vger.kernel.org, bjorn.andersson@linaro.org,
-        linux-arm-kernel@lists.infradead.org,
-        iommu@lists.linux-foundation.org
-Cc:     martin.botka@somainline.org,
-        angelogioacchino.delregno@somainline.org,
-        marijn.suijten@somainline.org, jamipkettunen@somainline.org,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Andy Gross <agross@kernel.org>, Joerg Roedel <joro@8bytes.org>,
-        Will Deacon <will@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Clark <robdclark@gmail.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 4/6] iommu/qcom: Add support for AArch64 IOMMU pagetables
-Date:   Fri, 27 May 2022 23:28:59 +0200
-Message-Id: <20220527212901.29268-5-konrad.dybcio@somainline.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527212901.29268-1-konrad.dybcio@somainline.org>
-References: <20220527212901.29268-1-konrad.dybcio@somainline.org>
+        Fri, 27 May 2022 17:29:58 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1810DAEE10
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 14:29:56 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id l20-20020a17090a409400b001dd2a9d555bso5434632pjg.0
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 14:29:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EhXfUexqjilsLMChy39uhcV1ViCwU++I4yhRQJkaZ9M=;
+        b=YikbCdocbI5qO1dQMuyOh0SqpeFVValjgg+9sIP0Hnbdx8vcc35LjVNcaDh2t4siHl
+         DfPHj4nlYG/aBGyg7e/MI2pHbLioW18FalPCT60WQBERxfymZs9Q3tdHVc3fTR59FxWS
+         3Bvpm6l6+dstlEaOlkAU6teMa9GrlMDMa4Sq0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EhXfUexqjilsLMChy39uhcV1ViCwU++I4yhRQJkaZ9M=;
+        b=iGywDlENfGGD1SBaCFZdC7SshEUy5Wy7wFqMYsMLuU231rl2xLvm7b1uPkX6Wujy+d
+         K4rnzl6XKDoMns8GjAmvCDVR0dRZcX8wW5SjCtwKNZM1uLfgaryenYO05uSSITM+pUDT
+         MbNgWCX1xv3kz4Y2a7p95fKzk8IoYCsWVnH9jZ132/eOvYNrfIJLza6tq7HSrpNzptTt
+         jixr7Qg4LUWXzqfUmQPV5dt+orWE/DcRVJwrfW0UxVspQirV4eRWYB3vAem/mvoYrMU8
+         Fr4LNvBCTI9ex6J9nVXeVhuf34mi+Rgai2oE/zwwjZOjiyYSEubbhno8cpiSkzCVXQz/
+         amQA==
+X-Gm-Message-State: AOAM5328VBbvm5yNVQoAMpKxXjPMgs0tAz+qbC+nBR9ahYtxOX3HIdza
+        GxT3i6NKTsa21vak3jctZBNXmg==
+X-Google-Smtp-Source: ABdhPJz3HqXfRsgeMrWPsWIMJ38E+s2sWT9IeHysdsoRnUT+uAv5B4J6/nBIgj9+oE/8GN+ldRhKNQ==
+X-Received: by 2002:a17:90b:1b08:b0:1df:f11a:7d51 with SMTP id nu8-20020a17090b1b0800b001dff11a7d51mr10498457pjb.190.1653686995383;
+        Fri, 27 May 2022 14:29:55 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id d4-20020a170902c18400b001637d72b314sm4063638pld.10.2022.05.27.14.29.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 27 May 2022 14:29:55 -0700 (PDT)
+From:   Kees Cook <keescook@chromium.org>
+To:     Ming Qian <ming.qian@nxp.com>
+Cc:     Kees Cook <keescook@chromium.org>, Shijie Qin <shijie.qin@nxp.com>,
+        Zhou Peng <eagle.zhou@nxp.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        "Gustavo A . R . Silva" <gustavoars@kernel.org>,
+        linux-media@vger.kernel.org,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Nicolas Dufresne <nicolas.dufresne@collabora.com>,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: [PATCH] media: amphion: Replace zero-length array with flexible-array member
+Date:   Fri, 27 May 2022 14:29:53 -0700
+Message-Id: <20220527212953.797574-1-keescook@chromium.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1378; h=from:subject; bh=nqnneLVAuOT5XH2WR1t/JGWDTSepj3ryGFJRhd1e9ok=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBikULQd851CKNz88uKVchNrNuHHm0hg5svRrMslIp5 rredE36JAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYpFC0AAKCRCJcvTf3G3AJvCfD/ 0dREGfK+ZOxhiWJMFctrUirIMxBqf1GXmaCp2v/YfkGXFq0EvC/hZvAEIu2uS1Cp8W62lo9Y6XSEtd 4WRBoKXW9rzILaNK8bSgc1AlMWDL5qn4z2JYKpRYyKVRrSXiIbv8urqUh9LZEexktxwPBYzG9eq4s2 +PyUb2wCPF9mkjvgK6fnjhXvxnzl9ImJpnwl8U7Hc9JnzWr7MIcfLoaE5/Ibmz4VIS3wAnar84Yq1g mdj3p1sp0wnyZjfXG7Jsv5pcHr/+c+oXIS9Gg3It8IlQHZhzNiEnk47HrSqWdywHebzH2vHdnqmWLU qSd4Q3hD47GJyqHVsI9pclDV7swsL6g24UQfuzzWS9AWE+quL2xYq5pRMb4NV6j3+iykgzl2XJeZDd 2p7uFzXmVyo8vsKjp6dUv/T5cjMK2He52fD0oEfmLqhYXgXAMvLWYFc23J5vHkCUdAPVfkEv85Bhgk saRqs+wvHitDjYzE51SjJbTns1MEbTb0tEAmtEyuxq7USFZAN612DBxTX6ykQEQBkOrv5PtJsTBDIh 7QtS7aAJlqt3UD8u6YxqIXoCHWr+jIbaZqwp2BbDw3QjiK7xoJ5eLbc/MTpsQ9yZM61QJVhkTd+vfn 5j2J+zhEUxNzXP8muXgSjnTKIbIgNnp40gPs4cv9v81RRq005RM4tmxp8xgQ==
+X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
+There is a regular need in the kernel to provide a way to declare
+having a dynamically sized set of trailing elements in a structure.
+Kernel code should always use “flexible array members”[1] for these
+cases. The older style of one-element or zero-length arrays should no
+longer be used[2][3].
 
-Some IOMMUs associated with some TZ firmwares may support switching
-to the AArch64 pagetable format by sending a "set pagetable format"
-scm command indicating the IOMMU secure ID and the context number
-to switch.
+[1] https://en.wikipedia.org/wiki/Flexible_array_member
+[2] https://www.kernel.org/doc/html/latest/process/deprecated.html#zero-length-and-one-element-arrays
+[3] https://github.com/KSPP/linux/issues/78
 
-Add a DT property "qcom,use-aarch64-pagetables" for this driver to
-send this command to the secure world and to switch the pagetable
-format to benefit of the ARM64 IOMMU pagetables, where possible.
-
-Note that, even though the command should be valid to switch each
-context, the property is made global because:
-1. It doesn't make too much sense to switch only one or two
-   context(s) to AA64 instead of just the entire thing
-2. Some IOMMUs will go crazy and produce spectacular results when
-   trying to mix up the pagetables on a per-context basis.
-
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
-Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
-Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+Fixes: 9f599f351e86 ("media: amphion: add vpu core driver")
+Cc: Ming Qian <ming.qian@nxp.com>
+Cc: Shijie Qin <shijie.qin@nxp.com>
+Cc: Zhou Peng <eagle.zhou@nxp.com>
+Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc: Gustavo A. R. Silva <gustavoars@kernel.org>
+Cc: linux-media@vger.kernel.org
+Signed-off-by: Kees Cook <keescook@chromium.org>
 ---
- .../devicetree/bindings/iommu/qcom,iommu.txt  |  2 +
- drivers/iommu/arm/arm-smmu/qcom_iommu.c       | 54 +++++++++++++++----
- 2 files changed, 47 insertions(+), 9 deletions(-)
+ drivers/media/platform/amphion/vpu_dbg.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/iommu/qcom,iommu.txt b/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
-index ba0b77889f02..72ae0595efff 100644
---- a/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
-+++ b/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
-@@ -47,6 +47,8 @@ to non-secure vs secure interrupt line.
-                      secure lines.  (Ie. if the iommu contains secure
-                      context banks)
- - qcom,ctx-num     : The number associated to the context bank
-+- qcom,use-aarch64-pagetables : Switch to AArch64 pagetable format on all
-+                                contexts declared in this IOMMU
- 
- 
- ** Examples:
-diff --git a/drivers/iommu/arm/arm-smmu/qcom_iommu.c b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-index 129e322f56a6..530aa92bf6a1 100644
---- a/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-+++ b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-@@ -52,6 +52,7 @@ struct qcom_iommu_dev {
- 	void __iomem		*local_base;
- 	u32			 sec_id;
- 	u8			 num_ctxs;
-+	bool			 use_aarch64_pt;
- 	struct qcom_iommu_ctx	*ctxs[];   /* indexed by asid-1 */
+diff --git a/drivers/media/platform/amphion/vpu_dbg.c b/drivers/media/platform/amphion/vpu_dbg.c
+index da62bd718fb8..f72c8a506b22 100644
+--- a/drivers/media/platform/amphion/vpu_dbg.c
++++ b/drivers/media/platform/amphion/vpu_dbg.c
+@@ -27,7 +27,7 @@ struct print_buf_desc {
+ 	u32 bytes;
+ 	u32 read;
+ 	u32 write;
+-	char buffer[0];
++	char buffer[];
  };
  
-@@ -164,11 +165,17 @@ static void qcom_iommu_tlb_inv_range_nosync(unsigned long iova, size_t size,
- 	reg = leaf ? ARM_SMMU_CB_S1_TLBIVAL : ARM_SMMU_CB_S1_TLBIVA;
- 
- 	for (i = 0; i < fwspec->num_ids; i++) {
-+		struct qcom_iommu_dev *qcom_iommu = qcom_domain->iommu;
- 		struct qcom_iommu_ctx *ctx = to_ctx(qcom_domain, fwspec->ids[i]);
- 		size_t s = size;
- 
--		iova = (iova >> 12) << 12;
--		iova |= ctx->asid;
-+		if (qcom_iommu->use_aarch64_pt) {
-+			iova >>= 12;
-+			iova |= (unsigned long)ctx->asid << 48;
-+		} else {
-+			iova &= (1UL << 12) - 1UL;
-+			iova |= ctx->asid;
-+		}
- 		do {
- 			iommu_writel(ctx, reg, iova);
- 			iova += granule;
-@@ -248,6 +255,8 @@ static int qcom_iommu_init_domain(struct iommu_domain *domain,
- 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
- 	struct io_pgtable_ops *pgtbl_ops;
- 	struct io_pgtable_cfg pgtbl_cfg;
-+	enum io_pgtable_fmt pgtbl_fmt;
-+	unsigned long ias, oas;
- 	int i, ret = 0;
- 	u32 reg;
- 
-@@ -255,10 +264,19 @@ static int qcom_iommu_init_domain(struct iommu_domain *domain,
- 	if (qcom_domain->iommu)
- 		goto out_unlock;
- 
-+	if (qcom_iommu->use_aarch64_pt) {
-+		pgtbl_fmt = ARM_64_LPAE_S1;
-+		ias = oas = 48;
-+	} else {
-+		pgtbl_fmt = ARM_32_LPAE_S1;
-+		ias = 32;
-+		oas = 40;
-+	}
-+
- 	pgtbl_cfg = (struct io_pgtable_cfg) {
- 		.pgsize_bitmap	= qcom_iommu_ops.pgsize_bitmap,
--		.ias		= 32,
--		.oas		= 40,
-+		.ias		= ias,
-+		.oas		= oas,
- 		.tlb		= &qcom_flush_ops,
- 		.iommu_dev	= qcom_iommu->dev,
- 	};
-@@ -266,7 +284,7 @@ static int qcom_iommu_init_domain(struct iommu_domain *domain,
- 	qcom_domain->iommu = qcom_iommu;
- 	qcom_domain->fwspec = fwspec;
- 
--	pgtbl_ops = alloc_io_pgtable_ops(ARM_32_LPAE_S1, &pgtbl_cfg, qcom_domain);
-+	pgtbl_ops = alloc_io_pgtable_ops(pgtbl_fmt, &pgtbl_cfg, qcom_domain);
- 	if (!pgtbl_ops) {
- 		dev_err(qcom_iommu->dev, "failed to allocate pagetable ops\n");
- 		ret = -ENOMEM;
-@@ -280,6 +298,7 @@ static int qcom_iommu_init_domain(struct iommu_domain *domain,
- 
- 	for (i = 0; i < fwspec->num_ids; i++) {
- 		struct qcom_iommu_ctx *ctx = to_ctx(qcom_domain, fwspec->ids[i]);
-+		u32 tcr[2];
- 
- 		if (!ctx->secure_init) {
- 			ret = qcom_scm_restore_sec_cfg(qcom_iommu->sec_id, ctx->asid);
-@@ -292,11 +311,25 @@ static int qcom_iommu_init_domain(struct iommu_domain *domain,
- 
- 		qcom_iommu_reset_ctx(ctx);
- 
-+
-+		tcr[0] = arm_smmu_lpae_tcr(&pgtbl_cfg);
-+		tcr[1] = arm_smmu_lpae_tcr2(&pgtbl_cfg);
-+
-+		if (!qcom_iommu->use_aarch64_pt) {
-+			tcr[0] |= ARM_SMMU_TCR_EAE;
-+		} else {
-+			/* This shall not fail, or spectacular things happen! */
-+			if (qcom_scm_iommu_set_pt_format(qcom_iommu->sec_id, ctx->asid, 1)) {
-+				dev_warn(qcom_iommu->dev, "Cannot set AArch64 pt format\n");
-+				goto out_clear_iommu;
-+			}
-+
-+			tcr[1] |= ARM_SMMU_TCR2_AS;
-+		}
-+
- 		/* TCR */
--		iommu_writel(ctx, ARM_SMMU_CB_TCR2,
--				arm_smmu_lpae_tcr2(&pgtbl_cfg));
--		iommu_writel(ctx, ARM_SMMU_CB_TCR,
--			     arm_smmu_lpae_tcr(&pgtbl_cfg) | ARM_SMMU_TCR_EAE);
-+		iommu_writel(ctx, ARM_SMMU_CB_TCR2, tcr[1]);
-+		iommu_writel(ctx, ARM_SMMU_CB_TCR, tcr[0]);
- 
- 		/* TTBRs */
- 		iommu_writeq(ctx, ARM_SMMU_CB_TTBR0,
-@@ -844,6 +877,9 @@ static int qcom_iommu_device_probe(struct platform_device *pdev)
- 		return -ENODEV;
- 	}
- 
-+	if (of_property_read_bool(dev->of_node, "qcom,use-aarch64-pagetables"))
-+		qcom_iommu->use_aarch64_pt = true;
-+
- 	if (qcom_iommu_has_secure_context(qcom_iommu)) {
- 		ret = qcom_iommu_sec_ptbl_init(dev);
- 		if (ret) {
+ static char *vb2_stat_name[] = {
 -- 
-2.36.1
+2.32.0
 
