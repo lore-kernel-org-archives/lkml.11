@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CD94C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFA1CC433F5
 	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 06:35:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343539AbiE0Gex (ORCPT
+        id S1344678AbiE0Ge5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 02:34:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35844 "EHLO
+        Fri, 27 May 2022 02:34:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245580AbiE0GeG (ORCPT
+        with ESMTP id S245730AbiE0GeZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 02:34:06 -0400
+        Fri, 27 May 2022 02:34:25 -0400
 Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8367F5D5F3
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 23:34:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F01365FF38
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 23:34:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653633245; x=1685169245;
+  t=1653633264; x=1685169264;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=yJ+JykYvRSOpRXDas5V4JVVkM1LJ8CN7dy1o4SqFzqA=;
-  b=ellXRRXoMXsPrfHzg9IKMs6A9eV2S10vmXbs7MPlptlVepPRTkUMh3YV
-   GT2KIFhrOQ3E51Dxh8LnlV0OWUtt1zcdG+0Cz25rU14ChmmgTMZu/nDZX
-   M5hlsL+AXWZn/ewRk2iqpxe1eUcSCYGIRcXgYhVKocKCXdIgWwXc3ntC8
-   J06J78Cybl7aOuBsIrONhQgc78ljP/sgVNcIS8voRF2jhvc5ikyNPjyuB
-   bAWEqtASY8WbZfD8Rx29TC8th/pJNddqyYtfvrJ7Ej1vsqsDyJHT9nse6
-   8PbrVuywDQ8m/BXDfOZsQ5G6lLFawpjE2oOVaDJdEWyn3gWrHv2BQTCQ5
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10359"; a="335044851"
+  bh=RLgt8GpnD0r5X5XNCxy8KVU7WroIhMRrSOoUkBm0OtU=;
+  b=oCk2JnRwT37NDNE0atdGMtZz8uqP9U6HZDdloKtDpA8EAatNEIwSYBLe
+   wqQb3AZhRg4nfoUa9/p1n+QKR8bBb5HoWNNLkm2fpefACj62slOORrdn1
+   V/zaH7Bs9acUY5mT12xcVRJebgEf7wwpDdcXhnaDSgpqgWkONZlOe+p8o
+   8tvZSqFyJDgHAtCnHNcTau+42HhN2rqGud4qfOH4ac5/1fNCvCfE7D0o6
+   ZcQNIN2C8x5a+6O09vnvN5qQCA0nzzOm6ec9dWfrnr1st2GsFiDTFRqrm
+   kZbzA7lxilZcXlJ1Aadgoq0AaVHhIl5w6OULuK5n3OYkhzIUHwHtB9HHv
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10359"; a="335044918"
 X-IronPort-AV: E=Sophos;i="5.91,254,1647327600"; 
-   d="scan'208";a="335044851"
+   d="scan'208";a="335044918"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 May 2022 23:34:05 -0700
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 May 2022 23:34:24 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,254,1647327600"; 
-   d="scan'208";a="718688425"
+   d="scan'208";a="718688729"
 Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by fmsmga001.fm.intel.com with ESMTP; 26 May 2022 23:34:02 -0700
+  by fmsmga001.fm.intel.com with ESMTP; 26 May 2022 23:34:21 -0700
 From:   Lu Baolu <baolu.lu@linux.intel.com>
 To:     Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
         Ashok Raj <ashok.raj@intel.com>,
@@ -49,9 +49,9 @@ Cc:     Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
         Jacob jun Pan <jacob.jun.pan@intel.com>,
         iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
         Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH 03/12] iommu/vt-d: Remove clearing translation data in disable_dmar_iommu()
-Date:   Fri, 27 May 2022 14:30:10 +0800
-Message-Id: <20220527063019.3112905-4-baolu.lu@linux.intel.com>
+Subject: [PATCH 09/12] iommu/vt-d: Check device list of domain in domain free path
+Date:   Fri, 27 May 2022 14:30:16 +0800
+Message-Id: <20220527063019.3112905-10-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220527063019.3112905-1-baolu.lu@linux.intel.com>
 References: <20220527063019.3112905-1-baolu.lu@linux.intel.com>
@@ -61,56 +61,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The disable_dmar_iommu() is called when IOMMU initialzation fails or
-the IOMMU is hot-removed from the system. In both cases, there is no
-need to clear the IOMMU translation data structures for devices.
-
-On the initialization path, the device probing only happens after the
-IOMMU is initialized successfully, hence there're no translation data
-structures.
-
-On the hot-remove path, there is no real use case where the IOMMU is
-hot-removed, but the devices that it manages are still alive in the
-system. The translation data structures were torn down during device
-release, hence there's no need to repeat it in IOMMU hot-remove path
-either.
-
-So, let's remove this unnecessary code.
+When the IOMMU domain is about to be freed, it should not be set on any
+device. Instead of silently dealing with some bug cases, it's better to
+trigger a warning to report and fix any potential bugs at the first time.
 
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/intel/iommu.c | 15 ---------------
- 1 file changed, 15 deletions(-)
+ drivers/iommu/intel/iommu.c | 17 ++---------------
+ 1 file changed, 2 insertions(+), 15 deletions(-)
 
 diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 6549b09d7f32..25d4c5200526 100644
+index 2e195a639502..6f3119c68cd2 100644
 --- a/drivers/iommu/intel/iommu.c
 +++ b/drivers/iommu/intel/iommu.c
-@@ -1715,24 +1715,9 @@ static int iommu_init_domains(struct intel_iommu *iommu)
+@@ -294,7 +294,6 @@ static LIST_HEAD(dmar_satc_units);
+ /* bitmap for indexing intel_iommus */
+ static int g_num_of_iommus;
  
- static void disable_dmar_iommu(struct intel_iommu *iommu)
+-static void domain_remove_dev_info(struct dmar_domain *domain);
+ static void dmar_remove_one_dev_info(struct device *dev);
+ static void __dmar_remove_one_dev_info(struct device_domain_info *info);
+ 
+@@ -1835,9 +1834,8 @@ static inline int guestwidth_to_adjustwidth(int gaw)
+ 
+ static void domain_exit(struct dmar_domain *domain)
  {
+-
+-	/* Remove associated devices and clear attached or cached domains */
+-	domain_remove_dev_info(domain);
++	if (WARN_ON(!list_empty(&domain->devices)))
++		return;
+ 
+ 	if (domain->pgd) {
+ 		LIST_HEAD(freelist);
+@@ -2328,17 +2326,6 @@ static void domain_context_clear_one(struct device_domain_info *info, u8 bus, u8
+ 	__iommu_flush_dev_iotlb(info, 0, MAX_AGAW_PFN_WIDTH);
+ }
+ 
+-static void domain_remove_dev_info(struct dmar_domain *domain)
+-{
 -	struct device_domain_info *info, *tmp;
 -	unsigned long flags;
 -
- 	if (!iommu->domain_ids)
- 		return;
- 
 -	spin_lock_irqsave(&device_domain_lock, flags);
--	list_for_each_entry_safe(info, tmp, &device_domain_list, global) {
--		if (info->iommu != iommu)
--			continue;
--
--		if (!info->dev || !info->domain)
--			continue;
--
+-	list_for_each_entry_safe(info, tmp, &domain->devices, link)
 -		__dmar_remove_one_dev_info(info);
--	}
 -	spin_unlock_irqrestore(&device_domain_lock, flags);
+-}
 -
- 	if (iommu->gcmd & DMA_GCMD_TE)
- 		iommu_disable_translation(iommu);
- }
+ static int domain_setup_first_level(struct intel_iommu *iommu,
+ 				    struct dmar_domain *domain,
+ 				    struct device *dev,
 -- 
 2.25.1
 
