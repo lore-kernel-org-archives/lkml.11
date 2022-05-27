@@ -2,47 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F44FC47081
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC5EEC433EF
 	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:17:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353965AbiE0MRA (ORCPT
+        id S1354159AbiE0MRM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 08:17:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40586 "EHLO
+        Fri, 27 May 2022 08:17:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352281AbiE0MEP (ORCPT
+        with ESMTP id S1352379AbiE0MEP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 27 May 2022 08:04:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2996F1498E6;
-        Fri, 27 May 2022 04:53:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B6A3D61DCA;
-        Fri, 27 May 2022 11:53:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3592C385A9;
-        Fri, 27 May 2022 11:53:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653652415;
-        bh=fK+EYPrd5lQ9qg+4y8Rv8XqXi3DjkYgu9k/7iGQiEjU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A0JSQiA1lZl8QItm8T4lg9xrL+hX+TemE9vjuzYKrKwBuUyWpZj2EXtBZnMO23yXR
-         zzNOwmfX7XdkvmdvhTtsNQJDmr9pLbkMRtKm3DeCsy7c+uH1kW6m/+l7WutxezJqN8
-         sGZtft19OO5YO5XUxu4VgYkeTM+rvlihx0g7zxMQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.10 147/163] random: move initialization out of reseeding hot path
-Date:   Fri, 27 May 2022 10:50:27 +0200
-Message-Id: <20220527084848.813886467@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
-References: <20220527084828.156494029@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8235914A268;
+        Fri, 27 May 2022 04:53:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653652420; x=1685188420;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=vuMs6VJt08rsTnYrQbFKCLWhZ1eIAOf5fKrz74zRkw0=;
+  b=bkPxNI9RMPjF243yqx64n7hGe3o1zbhmam6Q7T1qyyzxjBNOFX8lWNfg
+   dot/BQ94Zqm81fAZDBaH4pOwZIE8u8tvmhZ3qndsphXo9MBgxQ0TU7W0k
+   7nzUAp0XhYocvZorU11YbtVxxMzxYEk6GjHJleObRv6In4hbjBnlgVVLj
+   uRX+iDKGOZiA24toUMy98APepXn4YU/euI2g6NQNKwKdPyYlrww+iQPkt
+   PifgNhOYiNCG/GbvY6g1rRTqszHzRSiCD0Neiht24KAavtr+XFBtMlQ9E
+   RbwEzEWPCdj8VpodQTiREcAiG2Ma2S1aOvD5dv4iKIEtZFiTEZ9Njrd58
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10359"; a="274464822"
+X-IronPort-AV: E=Sophos;i="5.91,255,1647327600"; 
+   d="scan'208";a="274464822"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2022 04:53:40 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,255,1647327600"; 
+   d="scan'208";a="746889640"
+Received: from dev2 (HELO DEV2.igk.intel.com) ([10.237.148.94])
+  by orsmga005.jf.intel.com with ESMTP; 27 May 2022 04:53:37 -0700
+From:   =?UTF-8?q?Amadeusz=20S=C5=82awi=C5=84ski?= 
+        <amadeuszx.slawinski@linux.intel.com>
+To:     Vineet Gupta <vgupta@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     Guenter Roeck <linux@roeck-us.net>,
+        linux-snps-arc@lists.infradead.org,
+        linux-m68k@lists.linux-m68k.org, sparclinux@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Amadeusz=20S=C5=82awi=C5=84ski?= 
+        <amadeuszx.slawinski@linux.intel.com>,
+        Cezary Rojewski <cezary.rojewski@intel.com>
+Subject: [PATCH v2 3/3] sparc64: bitops: Change __fls to return unsigned long
+Date:   Fri, 27 May 2022 13:53:45 +0200
+Message-Id: <20220527115345.2588775-4-amadeuszx.slawinski@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220527115345.2588775-1-amadeuszx.slawinski@linux.intel.com>
+References: <20220527115345.2588775-1-amadeuszx.slawinski@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -50,95 +64,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+As per asm-generic definition and other architectures __fls should
+return unsigned long.
 
-commit 68c9c8b192c6dae9be6278e98ee44029d5da2d31 upstream.
+No functional change is expected as return value should fit in unsigned
+long.
 
-Initialization happens once -- by way of credit_init_bits() -- and then
-it never happens again. Therefore, it doesn't need to be in
-crng_reseed(), which is a hot path that is called multiple times. It
-also doesn't make sense to have there, as initialization activity is
-better associated with initialization routines.
-
-After the prior commit, crng_reseed() now won't be called by multiple
-concurrent callers, which means that we can safely move the
-"finialize_init" logic into crng_init_bits() unconditionally.
-
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Cezary Rojewski <cezary.rojewski@intel.com>
+Signed-off-by: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
 ---
- drivers/char/random.c |   42 +++++++++++++++++++-----------------------
- 1 file changed, 19 insertions(+), 23 deletions(-)
+ arch/sparc/include/asm/bitops_64.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -266,7 +266,6 @@ static void crng_reseed(void)
- 	unsigned long flags;
- 	unsigned long next_gen;
- 	u8 key[CHACHA_KEY_SIZE];
--	bool finalize_init = false;
+diff --git a/arch/sparc/include/asm/bitops_64.h b/arch/sparc/include/asm/bitops_64.h
+index 005a8ae858f1..cdac39bd7b32 100644
+--- a/arch/sparc/include/asm/bitops_64.h
++++ b/arch/sparc/include/asm/bitops_64.h
+@@ -24,7 +24,7 @@ void clear_bit(unsigned long nr, volatile unsigned long *addr);
+ void change_bit(unsigned long nr, volatile unsigned long *addr);
  
- 	extract_entropy(key, sizeof(key));
+ int fls(unsigned int word);
+-int __fls(unsigned long word);
++unsigned long __fls(unsigned long word);
  
-@@ -283,28 +282,10 @@ static void crng_reseed(void)
- 		++next_gen;
- 	WRITE_ONCE(base_crng.generation, next_gen);
- 	WRITE_ONCE(base_crng.birth, jiffies);
--	if (!crng_ready()) {
-+	if (!crng_ready())
- 		crng_init = CRNG_READY;
--		finalize_init = true;
--	}
- 	spin_unlock_irqrestore(&base_crng.lock, flags);
- 	memzero_explicit(key, sizeof(key));
--	if (finalize_init) {
--		process_random_ready_list();
--		wake_up_interruptible(&crng_init_wait);
--		kill_fasync(&fasync, SIGIO, POLL_IN);
--		pr_notice("crng init done\n");
--		if (unseeded_warning.missed) {
--			pr_notice("%d get_random_xx warning(s) missed due to ratelimiting\n",
--				  unseeded_warning.missed);
--			unseeded_warning.missed = 0;
--		}
--		if (urandom_warning.missed) {
--			pr_notice("%d urandom warning(s) missed due to ratelimiting\n",
--				  urandom_warning.missed);
--			urandom_warning.missed = 0;
--		}
--	}
- }
+ #include <asm-generic/bitops/non-atomic.h>
  
- /*
-@@ -836,10 +817,25 @@ static void credit_init_bits(size_t nbit
- 		new = min_t(unsigned int, POOL_BITS, orig + add);
- 	} while (cmpxchg(&input_pool.init_bits, orig, new) != orig);
- 
--	if (orig < POOL_READY_BITS && new >= POOL_READY_BITS)
--		crng_reseed();
--	else if (orig < POOL_EARLY_BITS && new >= POOL_EARLY_BITS) {
-+	if (orig < POOL_READY_BITS && new >= POOL_READY_BITS) {
-+		crng_reseed(); /* Sets crng_init to CRNG_READY under base_crng.lock. */
-+		process_random_ready_list();
-+		wake_up_interruptible(&crng_init_wait);
-+		kill_fasync(&fasync, SIGIO, POLL_IN);
-+		pr_notice("crng init done\n");
-+		if (unseeded_warning.missed) {
-+			pr_notice("%d get_random_xx warning(s) missed due to ratelimiting\n",
-+				  unseeded_warning.missed);
-+			unseeded_warning.missed = 0;
-+		}
-+		if (urandom_warning.missed) {
-+			pr_notice("%d urandom warning(s) missed due to ratelimiting\n",
-+				  urandom_warning.missed);
-+			urandom_warning.missed = 0;
-+		}
-+	} else if (orig < POOL_EARLY_BITS && new >= POOL_EARLY_BITS) {
- 		spin_lock_irqsave(&base_crng.lock, flags);
-+		/* Check if crng_init is CRNG_EMPTY, to avoid race with crng_reseed(). */
- 		if (crng_init == CRNG_EMPTY) {
- 			extract_entropy(base_crng.key, sizeof(base_crng.key));
- 			crng_init = CRNG_EARLY;
-
+-- 
+2.25.1
 
