@@ -2,39 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43A06C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 07:12:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D9A1C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 07:13:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346163AbiE0HMZ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 03:12:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49052 "EHLO
+        id S235628AbiE0HN1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 03:13:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347620AbiE0HMI (ORCPT
+        with ESMTP id S232415AbiE0HNW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 03:12:08 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CF1FDB3
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 00:11:35 -0700 (PDT)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L8bW33QqyzRhR3;
-        Fri, 27 May 2022 15:08:31 +0800 (CST)
+        Fri, 27 May 2022 03:13:22 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 090B0B7ED;
+        Fri, 27 May 2022 00:13:21 -0700 (PDT)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4L8bZm75p1zbc2f;
+        Fri, 27 May 2022 15:11:44 +0800 (CST)
 Received: from dggpemm500018.china.huawei.com (7.185.36.111) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 27 May 2022 15:11:33 +0800
+ 15.1.2375.24; Fri, 27 May 2022 15:13:18 +0800
 Received: from localhost.localdomain (10.175.112.125) by
  dggpemm500018.china.huawei.com (7.185.36.111) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 27 May 2022 15:11:33 +0800
+ 15.1.2375.24; Fri, 27 May 2022 15:13:17 +0800
 From:   keliu <liuke94@huawei.com>
-To:     <mst@redhat.com>, <jasowang@redhat.com>,
-        <virtualization@lists.linux-foundation.org>,
-        <linux-kernel@vger.kernel.org>
+To:     <rafael@kernel.org>, <daniel.lezcano@linaro.org>,
+        <amitk@kernel.org>, <rui.zhang@intel.com>,
+        <linux-pm@vger.kernel.org>, <linux-kernel@vger.kernel.org>
 CC:     keliu <liuke94@huawei.com>
-Subject: [PATCH] virtio: Directly use ida_alloc()/free()
-Date:   Fri, 27 May 2022 07:33:02 +0000
-Message-ID: <20220527073302.2474073-1-liuke94@huawei.com>
+Subject: [PATCH] thermal: Directly use ida_alloc()/free()
+Date:   Fri, 27 May 2022 07:34:45 +0000
+Message-ID: <20220527073445.2474380-1-liuke94@huawei.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
@@ -52,40 +51,94 @@ ida_simple_get()/ida_simple_remove() .
 
 Signed-off-by: keliu <liuke94@huawei.com>
 ---
- drivers/virtio/virtio.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/thermal/thermal_core.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/virtio/virtio.c b/drivers/virtio/virtio.c
-index 22f15f444f75..143f94652306 100644
---- a/drivers/virtio/virtio.c
-+++ b/drivers/virtio/virtio.c
-@@ -413,7 +413,7 @@ int register_virtio_device(struct virtio_device *dev)
- 	device_initialize(&dev->dev);
+diff --git a/drivers/thermal/thermal_core.c b/drivers/thermal/thermal_core.c
+index 82654dc8382b..b36c348a110b 100644
+--- a/drivers/thermal/thermal_core.c
++++ b/drivers/thermal/thermal_core.c
+@@ -667,7 +667,7 @@ int thermal_zone_bind_cooling_device(struct thermal_zone_device *tz,
+ 	dev->target = THERMAL_NO_TARGET;
+ 	dev->weight = weight;
  
- 	/* Assign a unique device index and hence name. */
--	err = ida_simple_get(&virtio_index_ida, 0, 0, GFP_KERNEL);
-+	err = ida_alloc(&virtio_index_ida, GFP_KERNEL);
- 	if (err < 0)
- 		goto out;
+-	result = ida_simple_get(&tz->ida, 0, 0, GFP_KERNEL);
++	result = ida_alloc(&tz->ida, GFP_KERNEL);
+ 	if (result < 0)
+ 		goto free_mem;
  
-@@ -451,7 +451,7 @@ int register_virtio_device(struct virtio_device *dev)
- out_of_node_put:
- 	of_node_put(dev->dev.of_node);
- out_ida_remove:
--	ida_simple_remove(&virtio_index_ida, dev->index);
-+	ida_free(&virtio_index_ida, dev->index);
- out:
- 	virtio_add_status(dev, VIRTIO_CONFIG_S_FAILED);
- 	return err;
-@@ -469,7 +469,7 @@ void unregister_virtio_device(struct virtio_device *dev)
- 	int index = dev->index; /* save for after device release */
- 
- 	device_unregister(&dev->dev);
--	ida_simple_remove(&virtio_index_ida, index);
-+	ida_free(&virtio_index_ida, index);
+@@ -721,7 +721,7 @@ int thermal_zone_bind_cooling_device(struct thermal_zone_device *tz,
+ remove_symbol_link:
+ 	sysfs_remove_link(&tz->device.kobj, dev->name);
+ release_ida:
+-	ida_simple_remove(&tz->ida, dev->id);
++	ida_free(&tz->ida, dev->id);
+ free_mem:
+ 	kfree(dev);
+ 	return result;
+@@ -768,7 +768,7 @@ int thermal_zone_unbind_cooling_device(struct thermal_zone_device *tz,
+ 	device_remove_file(&tz->device, &pos->weight_attr);
+ 	device_remove_file(&tz->device, &pos->attr);
+ 	sysfs_remove_link(&tz->device.kobj, pos->name);
+-	ida_simple_remove(&tz->ida, pos->id);
++	ida_free(&tz->ida, pos->id);
+ 	kfree(pos);
+ 	return 0;
  }
- EXPORT_SYMBOL_GPL(unregister_virtio_device);
+@@ -901,7 +901,7 @@ __thermal_cooling_device_register(struct device_node *np,
+ 	if (!cdev)
+ 		return ERR_PTR(-ENOMEM);
  
+-	ret = ida_simple_get(&thermal_cdev_ida, 0, 0, GFP_KERNEL);
++	ret = ida_alloc(&thermal_cdev_ida, GFP_KERNEL);
+ 	if (ret < 0)
+ 		goto out_kfree_cdev;
+ 	cdev->id = ret;
+@@ -951,7 +951,7 @@ __thermal_cooling_device_register(struct device_node *np,
+ 	put_device(&cdev->device);
+ 	cdev = NULL;
+ out_ida_remove:
+-	ida_simple_remove(&thermal_cdev_ida, id);
++	ida_free(&thermal_cdev_ida, id);
+ out_kfree_cdev:
+ 	kfree(cdev);
+ 	return ERR_PTR(ret);
+@@ -1110,7 +1110,7 @@ void thermal_cooling_device_unregister(struct thermal_cooling_device *cdev)
+ 
+ 	mutex_unlock(&thermal_list_lock);
+ 
+-	ida_simple_remove(&thermal_cdev_ida, cdev->id);
++	ida_free(&thermal_cdev_ida, cdev->id);
+ 	device_del(&cdev->device);
+ 	thermal_cooling_device_destroy_sysfs(cdev);
+ 	kfree(cdev->type);
+@@ -1227,7 +1227,7 @@ thermal_zone_device_register(const char *type, int trips, int mask,
+ 	INIT_LIST_HEAD(&tz->thermal_instances);
+ 	ida_init(&tz->ida);
+ 	mutex_init(&tz->lock);
+-	id = ida_simple_get(&thermal_tz_ida, 0, 0, GFP_KERNEL);
++	id = ida_alloc(&thermal_tz_ida, GFP_KERNEL);
+ 	if (id < 0) {
+ 		result = id;
+ 		goto free_tz;
+@@ -1318,7 +1318,7 @@ thermal_zone_device_register(const char *type, int trips, int mask,
+ 	put_device(&tz->device);
+ 	tz = NULL;
+ remove_id:
+-	ida_simple_remove(&thermal_tz_ida, id);
++	ida_free(&thermal_tz_ida, id);
+ free_tz:
+ 	kfree(tz);
+ 	return ERR_PTR(result);
+@@ -1378,7 +1378,7 @@ void thermal_zone_device_unregister(struct thermal_zone_device *tz)
+ 	thermal_set_governor(tz, NULL);
+ 
+ 	thermal_remove_hwmon_sysfs(tz);
+-	ida_simple_remove(&thermal_tz_ida, tz->id);
++	ida_free(&thermal_tz_ida, tz->id);
+ 	ida_destroy(&tz->ida);
+ 	mutex_destroy(&tz->lock);
+ 	device_unregister(&tz->device);
 -- 
 2.25.1
 
