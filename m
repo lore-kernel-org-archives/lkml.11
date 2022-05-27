@@ -2,132 +2,211 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 631E9C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 10:44:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1B17C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 10:44:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350602AbiE0KoF (ORCPT
+        id S1351038AbiE0Koc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 06:44:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47160 "EHLO
+        Fri, 27 May 2022 06:44:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350977AbiE0KoD (ORCPT
+        with ESMTP id S1351008AbiE0Ko0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 06:44:03 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8822341985
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 03:44:02 -0700 (PDT)
+        Fri, 27 May 2022 06:44:26 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7BC8460BB7
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 03:44:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653648241;
+        s=mimecast20190719; t=1653648262;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=NHkSj7X5NKgJK27qI3S4gtnz+ks1f17QdsvgCRP5aYk=;
-        b=V0Pn6Wf/7L+IuMW5KLkW2MW69H3cUhYrniwixM5xf4sZCujFLfiT6ugsp8bZQS0Y8Oa4nj
-        Q7nUa7fIHFKvt6KfMhjqhv6imKFo7ZrPG/UinQZuFRXKKC2WJBEdK6JZ1l/3wr4muLdJjE
-        JCztG8nJxJdSi6P+TDkEhYU17GQOc3w=
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=KkHoZ2rI1ZmWrFNbT4d5/e9glIVN8+RwmXeLMke2PRE=;
+        b=F7WhV0V+z9WoZKbtXU9D8pmzmS4MxflIa565rIjH9tbJ6KVeTkE1VPrvgnG0eIUcZqD4iU
+        nIR8vwGi9mWcV0+k7LvuUfnlRCrnkl85DVl3YgMnz/6Kv1TwFHYf9C1aFBS+sxNDPtsQX3
+        QSDjoh5CvWMH4dc4pDxfjVOsywIcn9M=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-96-qgV3NnC9Nl-1jS02mYygBA-1; Fri, 27 May 2022 06:43:58 -0400
-X-MC-Unique: qgV3NnC9Nl-1jS02mYygBA-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+ us-mta-637-f5eAJ1IQOnWqeCAj7gFfag-1; Fri, 27 May 2022 06:44:19 -0400
+X-MC-Unique: f5eAJ1IQOnWqeCAj7gFfag-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 67CD4101AA46;
-        Fri, 27 May 2022 10:43:57 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C82968032E5;
+        Fri, 27 May 2022 10:44:18 +0000 (UTC)
 Received: from warthog.procyon.org.uk (unknown [10.33.36.8])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0A789C27E8F;
-        Fri, 27 May 2022 10:43:55 +0000 (UTC)
-Subject: [PATCH v3 0/9] cifs: Use iov_iters down to the network transport
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 688EC1678F;
+        Fri, 27 May 2022 10:44:17 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+Subject: [PATCH v3 3/9] cifs: Add some helper functions
 From:   David Howells <dhowells@redhat.com>
 To:     Steve French <smfrench@gmail.com>
-Cc:     linux-cifs@vger.kernel.org,
+Cc:     Steve French <sfrench@samba.org>,
         Shyam Prasad N <nspmangalore@gmail.com>,
         Rohith Surabattula <rohiths.msft@gmail.com>,
-        Steve French <sfrench@samba.org>, dhowells@redhat.com,
+        linux-cifs@vger.kernel.org, dhowells@redhat.com,
         Shyam Prasad N <nspmangalore@gmail.com>,
         Rohith Surabattula <rohiths.msft@gmail.com>,
         Jeff Layton <jlayton@kernel.org>,
         Al Viro <viro@zeniv.linux.org.uk>, linux-cifs@vger.kernel.org,
         linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Fri, 27 May 2022 11:43:55 +0100
-Message-ID: <165364823513.3334034.11209090728654641458.stgit@warthog.procyon.org.uk>
+Date:   Fri, 27 May 2022 11:44:16 +0100
+Message-ID: <165364825674.3334034.3356201708659748648.stgit@warthog.procyon.org.uk>
+In-Reply-To: <165364823513.3334034.11209090728654641458.stgit@warthog.procyon.org.uk>
+References: <165364823513.3334034.11209090728654641458.stgit@warthog.procyon.org.uk>
 User-Agent: StGit/1.4
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
+X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Add some helper functions to manipulate the folio marks by iterating
+through a list of folios held in an xarray rather than using a page list.
 
-Hi Steve,
-
-Here's a third version of a subset of my cifs-experimental branch.  It
-alters the cifs driver to pass iov_iters down to the lowest layers where
-they can be passed to the network transport.
-
-ver #3)
-- I fixed some things in the RDMA interface after running xfstests.  It now
-  correctly chops up requests so that they'll actually fit within the
-  available SGE slots, both for short and bulk requests.
-
-- I also fixed both the cifs_readahead and cifs_writepages algorithms, so
-  those now work properly - and I found and fixed a memory leak too.
-
-cifs over softRoCE RDMA got as far as generic/138 before the RXE driver
-  deadlocked itself.  I've posted a bug report for that.  Lockdep spotted
-  the bug right away on mount.
-
-cifs over softIWarp RDMA got as far as generic/006 before triggering a UAF
-in the reconnect code, spotted by KASAN.  Both this and the above fail on
-the vanilla kernel also.
-
-Beyond the 6 main patches, there are two patches which add some trace
-points (if they look of interest to you, I can properly fill out the commit
-log) and the patch to make softiwarp work - all three of which can be
-dropped.
-
-I've pushed the patches here also:
-
-	https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git/log/?h=cifs-for-sfrench
-
-David
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: Steve French <sfrench@samba.org>
+cc: Shyam Prasad N <nspmangalore@gmail.com>
+cc: Rohith Surabattula <rohiths.msft@gmail.com>
+cc: linux-cifs@vger.kernel.org
 ---
-David Howells (8):
-      iov_iter: Add a function to extract an iter's buffers to a bvec iter
-      iov_iter: Add a general purpose iteration function
-      cifs: Add some helper functions
-      cifs: Add a function to read into an iter from a socket
-      cifs: Change the I/O paths to use an iterator rather than a page list
-      cifs: Remove unused code
-      cifs: Trace writedata page wrangling
-      cifs: Add some RDMA send tracepoints
 
-Namjae Jeon (1):
-      cifs, ksmbd: Fix MAX_SGE count for softiwarp
+ fs/cifs/cifsfs.h  |    3 ++
+ fs/cifs/cifssmb.c |   94 +++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 97 insertions(+)
 
-
- fs/cifs/cifsencrypt.c     |   40 +-
- fs/cifs/cifsfs.h          |    6 +
- fs/cifs/cifsglob.h        |   29 +-
- fs/cifs/cifsproto.h       |   11 +-
- fs/cifs/cifssmb.c         |  276 +++++--
- fs/cifs/connect.c         |   16 +
- fs/cifs/file.c            | 1434 ++++++++++++++-----------------------
- fs/cifs/fscache.c         |   22 +-
- fs/cifs/fscache.h         |   10 +-
- fs/cifs/misc.c            |  109 ---
- fs/cifs/smb2ops.c         |  367 +++++-----
- fs/cifs/smb2pdu.c         |   44 +-
- fs/cifs/smbdirect.c       |  335 ++++-----
- fs/cifs/smbdirect.h       |    6 +-
- fs/cifs/trace.h           |  161 +++++
- fs/cifs/transport.c       |   37 +-
- fs/ksmbd/transport_rdma.c |    2 +-
- include/linux/uio.h       |    8 +
- lib/iov_iter.c            |  133 ++++
- 19 files changed, 1470 insertions(+), 1576 deletions(-)
+diff --git a/fs/cifs/cifsfs.h b/fs/cifs/cifsfs.h
+index c0542bdcd06b..34ad965cde21 100644
+--- a/fs/cifs/cifsfs.h
++++ b/fs/cifs/cifsfs.h
+@@ -110,6 +110,9 @@ extern int cifs_file_strict_mmap(struct file * , struct vm_area_struct *);
+ extern const struct file_operations cifs_dir_ops;
+ extern int cifs_dir_open(struct inode *inode, struct file *file);
+ extern int cifs_readdir(struct file *file, struct dir_context *ctx);
++extern void cifs_pages_written_back(struct inode *inode, loff_t start, unsigned int len);
++extern void cifs_pages_write_failed(struct inode *inode, loff_t start, unsigned int len);
++extern void cifs_pages_write_redirty(struct inode *inode, loff_t start, unsigned int len);
+ 
+ /* Functions related to dir entries */
+ extern const struct dentry_operations cifs_dentry_ops;
+diff --git a/fs/cifs/cifssmb.c b/fs/cifs/cifssmb.c
+index 47e927c4ff8d..2eedffef6f53 100644
+--- a/fs/cifs/cifssmb.c
++++ b/fs/cifs/cifssmb.c
+@@ -27,6 +27,7 @@
+ #include "cifsglob.h"
+ #include "cifsacl.h"
+ #include "cifsproto.h"
++#include "cifsfs.h"
+ #include "cifs_unicode.h"
+ #include "cifs_debug.h"
+ #include "smb2proto.h"
+@@ -1928,6 +1929,99 @@ cifs_writedata_release(struct kref *refcount)
+ 	kfree(wdata);
+ }
+ 
++/*
++ * Completion of write to server.
++ */
++void cifs_pages_written_back(struct inode *inode, loff_t start, unsigned int len)
++{
++	struct address_space *mapping = inode->i_mapping;
++	struct folio *folio;
++	pgoff_t end;
++
++	XA_STATE(xas, &mapping->i_pages, start / PAGE_SIZE);
++
++	if (!len)
++		return;
++
++	rcu_read_lock();
++
++	end = (start + len - 1) / PAGE_SIZE;
++	xas_for_each(&xas, folio, end) {
++		if (!folio_test_writeback(folio)) {
++			WARN_ONCE(1, "bad %x @%llx page %lx %lx\n",
++				  len, start, folio_index(folio), end);
++			continue;
++		}
++
++		folio_detach_private(folio);
++		folio_end_writeback(folio);
++	}
++
++	rcu_read_unlock();
++}
++
++/*
++ * Failure of write to server.
++ */
++void cifs_pages_write_failed(struct inode *inode, loff_t start, unsigned int len)
++{
++	struct address_space *mapping = inode->i_mapping;
++	struct folio *folio;
++	pgoff_t end;
++
++	XA_STATE(xas, &mapping->i_pages, start / PAGE_SIZE);
++
++	if (!len)
++		return;
++
++	rcu_read_lock();
++
++	end = (start + len - 1) / PAGE_SIZE;
++	xas_for_each(&xas, folio, end) {
++		if (!folio_test_writeback(folio)) {
++			WARN_ONCE(1, "bad %x @%llx page %lx %lx\n",
++				  len, start, folio_index(folio), end);
++			continue;
++		}
++
++		folio_set_error(folio);
++		folio_end_writeback(folio);
++	}
++
++	rcu_read_unlock();
++}
++
++/*
++ * Redirty pages after a temporary failure.
++ */
++void cifs_pages_write_redirty(struct inode *inode, loff_t start, unsigned int len)
++{
++	struct address_space *mapping = inode->i_mapping;
++	struct folio *folio;
++	pgoff_t end;
++
++	XA_STATE(xas, &mapping->i_pages, start / PAGE_SIZE);
++
++	if (!len)
++		return;
++
++	rcu_read_lock();
++
++	end = (start + len - 1) / PAGE_SIZE;
++	xas_for_each(&xas, folio, end) {
++		if (!folio_test_writeback(folio)) {
++			WARN_ONCE(1, "bad %x @%llx page %lx %lx\n",
++				  len, start, folio_index(folio), end);
++			continue;
++		}
++
++		filemap_dirty_folio(folio->mapping, folio);
++		folio_end_writeback(folio);
++	}
++
++	rcu_read_unlock();
++}
++
+ /*
+  * Write failed with a retryable error. Resend the write request. It's also
+  * possible that the page was redirtied so re-clean the page.
 
 
