@@ -2,101 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A152C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 15:58:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71E62C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 15:58:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240328AbiE0P6i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 11:58:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48350 "EHLO
+        id S1354123AbiE0P6p (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 11:58:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354031AbiE0P5Y (ORCPT
+        with ESMTP id S1354033AbiE0P5Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 27 May 2022 11:57:24 -0400
-Received: from conssluserg-01.nifty.com (conssluserg-01.nifty.com [210.131.2.80])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 366E1E15D4;
-        Fri, 27 May 2022 08:57:11 -0700 (PDT)
-Received: from mail-pj1-f54.google.com (mail-pj1-f54.google.com [209.85.216.54]) (authenticated)
-        by conssluserg-01.nifty.com with ESMTP id 24RFuqOk028702;
-        Sat, 28 May 2022 00:56:53 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-01.nifty.com 24RFuqOk028702
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1653667013;
-        bh=PA6XyD/D6HG8M6irseqU8qzIX5vvd3VEI+LGWM7fjiE=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=kSOCR3gCFab/jTHmTELXTDXk+hGIuZptGJR+5pX1I/A0NThoIE4FDEMrlzijbmwly
-         YUbo5AUSJyMBCZE5HJHZsuadQ6t7k9Se1/nDZlPYKAk4ODE2/GQRTZyAT6IruVLv4b
-         oIpnTF7vY4/HcK0Ddpboj87+0IeNxq+H9+GFprhUO52I29OXaUHYLK4j5NsAUNqzXS
-         7pnDjwyv4XRf6788QVKIaC4Tr9jaDlg6sckk+KFqEBiz79uN7IM3GHtZbGXixDout9
-         TOJN20m+85FwmJT0sdsdHK+tO7+u6zm0r2hX2mIp3vrRntRLLMYJJGTHQZ7M7qZMWO
-         w/mMgFAYfaVAQ==
-X-Nifty-SrcIP: [209.85.216.54]
-Received: by mail-pj1-f54.google.com with SMTP id qe5-20020a17090b4f8500b001e26126abccso2689657pjb.0;
-        Fri, 27 May 2022 08:56:52 -0700 (PDT)
-X-Gm-Message-State: AOAM531d+97GMMYerrc7Rk9VAin5P82P+a4atmWFgmrq/QDT5eOxRRAy
-        3/8SUAm4rWTyR+xLtINJeVdDWXfv4pldRcs+PcA=
-X-Google-Smtp-Source: ABdhPJyzgbwKouLhue0pWOSkA4y536KbEctvagZNS0aJMMSJDL2D422HSRK7IZlnsKLwOTFSJDRTZS25B630WBPZWaw=
-X-Received: by 2002:a17:902:f68f:b0:162:23c6:e61b with SMTP id
- l15-20020a170902f68f00b0016223c6e61bmr26055413plg.136.1653667012039; Fri, 27
- May 2022 08:56:52 -0700 (PDT)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 42906E64C8
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 08:57:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653667031;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=hI5tcymMyNY0x/KbxdPcK+U4n8lHpHeb3PjdglObBsg=;
+        b=a5lVHyQOgkdQZsaKi+HwgA2ac2pSI5RDJy4eSIsIPJ51liFpN4v1kgvxhm30KqMJruxzQ5
+        BQWNkhrFJPhv+rKm02Od4SRUX/THhUN/9rqdrLMCuJCgmVTEJ3eE97gMRIc59BLwT0anNs
+        +kBIaLoupbwoyZjFIBWr6mi4xyPCTvs=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-467-74MUcPQqNLWDR1WDHMPJ3w-1; Fri, 27 May 2022 11:57:06 -0400
+X-MC-Unique: 74MUcPQqNLWDR1WDHMPJ3w-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6BFD039F9CA2;
+        Fri, 27 May 2022 15:57:05 +0000 (UTC)
+Received: from fedora.redhat.com (unknown [10.40.192.126])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 344012166B26;
+        Fri, 27 May 2022 15:57:03 +0000 (UTC)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Siddharth Chandrasekaran <sidcha@amazon.de>,
+        Yuan Yao <yuan.yao@linux.intel.com>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v5 28/37] KVM: selftests: Export vm_vaddr_unused_gap() to make it possible to request unmapped ranges
+Date:   Fri, 27 May 2022 17:55:37 +0200
+Message-Id: <20220527155546.1528910-29-vkuznets@redhat.com>
+In-Reply-To: <20220527155546.1528910-1-vkuznets@redhat.com>
+References: <20220527155546.1528910-1-vkuznets@redhat.com>
 MIME-Version: 1.0
-References: <20220527143931.2161635-1-masahiroy@kernel.org> <133bcb8b-2321-6acb-ea2d-3ab82af19dcb@gmx.de>
-In-Reply-To: <133bcb8b-2321-6acb-ea2d-3ab82af19dcb@gmx.de>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Sat, 28 May 2022 00:55:29 +0900
-X-Gmail-Original-Message-ID: <CAK7LNATYbNzfZSOMz02ToE-dN1Bcck0qGWTHHcB-ask49JnAgA@mail.gmail.com>
-Message-ID: <CAK7LNATYbNzfZSOMz02ToE-dN1Bcck0qGWTHHcB-ask49JnAgA@mail.gmail.com>
-Subject: Re: [PATCH] parisc: fix the exit status of arch/parisc/nm
-To:     Helge Deller <deller@gmx.de>
-Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Parisc List <linux-parisc@vger.kernel.org>,
-        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, May 28, 2022 at 12:32 AM Helge Deller <deller@gmx.de> wrote:
->
-> On 5/27/22 16:39, Masahiro Yamada wrote:
-> > Parisc overrides 'nm' with a shell script. I was hit by a false-positive
-> > error of $(NM) because this script returns the exit code of grep instead
-> > of ${CROSS_COMPILE}nm. (grep exits with 1 if no lines were selected)
-> >
-> > I tried to fix it, but in the code review, Helge suggested to remove it
-> > entirely. [1]
-> >
-> > This script was added in 2003. [2]
-> >
-> > Presumably, it was a workaround for old toolchains (but even the parisc
-> > maintainer does not know the detail any more).
-> >
-> > Hopefully recent tools should work fine.
-> >
-> > [1]: https://lore.kernel.org/all/1c12cd26-d8aa-4498-f4c0-29478b9578fe@gmx.de/
-> > [2]: https://git.kernel.org/pub/scm/linux/kernel/git/history/history.git/commit/?id=36eaa6e4c0e0b6950136b956b72fd08155b92ca3
-> >
-> > Suggested-by: Helge Deller <deller@gmx.de>
-> > Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
->
-> Acked-by: Helge Deller <deller@gmx.de>
->
-> Thank you!
-> Helge
->
+Currently, tests can only request a new vaddr range by using
+vm_vaddr_alloc()/vm_vaddr_alloc_page()/vm_vaddr_alloc_pages() but
+these functions allocate and map physical pages too. Make it possible
+to request unmapped range too.
 
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+---
+ tools/testing/selftests/kvm/include/kvm_util_base.h | 1 +
+ tools/testing/selftests/kvm/lib/kvm_util.c          | 4 ++--
+ 2 files changed, 3 insertions(+), 2 deletions(-)
 
-I just forgot to change the patch subject.
-
-I changed it to
-
-"parisc: remove arch/parisc/nm"
-
-Applied to linux-kbuild.
-Thanks for the ack.
-
-
-
+diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
+index 92cef0ffb19e..8273fe93c4f6 100644
+--- a/tools/testing/selftests/kvm/include/kvm_util_base.h
++++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
+@@ -169,6 +169,7 @@ void vm_mem_region_set_flags(struct kvm_vm *vm, uint32_t slot, uint32_t flags);
+ void vm_mem_region_move(struct kvm_vm *vm, uint32_t slot, uint64_t new_gpa);
+ void vm_mem_region_delete(struct kvm_vm *vm, uint32_t slot);
+ void vm_vcpu_add(struct kvm_vm *vm, uint32_t vcpuid);
++vm_vaddr_t vm_vaddr_unused_gap(struct kvm_vm *vm, size_t sz, vm_vaddr_t vaddr_min);
+ vm_vaddr_t vm_vaddr_alloc(struct kvm_vm *vm, size_t sz, vm_vaddr_t vaddr_min);
+ vm_vaddr_t vm_vaddr_alloc_pages(struct kvm_vm *vm, int nr_pages);
+ vm_vaddr_t vm_vaddr_alloc_page(struct kvm_vm *vm);
+diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
+index 936be9c9f870..37df67780787 100644
+--- a/tools/testing/selftests/kvm/lib/kvm_util.c
++++ b/tools/testing/selftests/kvm/lib/kvm_util.c
+@@ -1263,8 +1263,8 @@ void vm_vcpu_add(struct kvm_vm *vm, uint32_t vcpuid)
+  * TEST_ASSERT failure occurs for invalid input or no area of at least
+  * sz unallocated bytes >= vaddr_min is available.
+  */
+-static vm_vaddr_t vm_vaddr_unused_gap(struct kvm_vm *vm, size_t sz,
+-				      vm_vaddr_t vaddr_min)
++vm_vaddr_t vm_vaddr_unused_gap(struct kvm_vm *vm, size_t sz,
++			       vm_vaddr_t vaddr_min)
+ {
+ 	uint64_t pages = (sz + vm->page_size - 1) >> vm->page_shift;
+ 
 -- 
-Best Regards
-Masahiro Yamada
+2.35.3
+
