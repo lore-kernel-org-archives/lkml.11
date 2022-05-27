@@ -2,67 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37997C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:24:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BCDFC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:27:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349579AbiE0IYp (ORCPT
+        id S1348889AbiE0I1s (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 04:24:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49110 "EHLO
+        Fri, 27 May 2022 04:27:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240686AbiE0IYi (ORCPT
+        with ESMTP id S234417AbiE0I1q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 04:24:38 -0400
-Received: from out30-45.freemail.mail.aliyun.com (out30-45.freemail.mail.aliyun.com [115.124.30.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46DC5366AC
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 01:24:37 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R991e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0VEWM8cC_1653639872;
-Received: from 30.32.82.202(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0VEWM8cC_1653639872)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Fri, 27 May 2022 16:24:33 +0800
-Message-ID: <c674af89-5596-3298-1730-47c0bfe6230d@linux.alibaba.com>
-Date:   Fri, 27 May 2022 16:25:00 +0800
+        Fri, 27 May 2022 04:27:46 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A112213E09
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 01:27:44 -0700 (PDT)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4L8dFY3tkXzjX5S;
+        Fri, 27 May 2022 16:26:57 +0800 (CST)
+Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 27 May 2022 16:27:38 +0800
+Received: from mdc.huawei.com (10.175.112.208) by
+ dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 27 May 2022 16:27:37 +0800
+From:   Chen Jun <chenjun102@huawei.com>
+To:     <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <will@kernel.org>,
+        <catalin.marinas@arm.com>
+CC:     <xuqiang36@huawei.com>
+Subject: [PATCH] arm64/smp: check !ipi_desc[i] in arch_show_interrupts
+Date:   Fri, 27 May 2022 08:22:36 +0000
+Message-ID: <20220527082236.78037-1-chenjun102@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [syzbot] upstream build error (18)
-To:     syzbot <syzbot+a0b95614aef2afe9e488@syzkaller.appspotmail.com>,
-        anshuman.khandual@arm.com, catalin.marinas@arm.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        mike.kravetz@oracle.com, songmuchun@bytedance.com,
-        syzkaller-bugs@googlegroups.com, will@kernel.org
-References: <000000000000f2655205dff90da9@google.com>
-From:   Baolin Wang <baolin.wang@linux.alibaba.com>
-In-Reply-To: <000000000000f2655205dff90da9@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [10.175.112.208]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500006.china.huawei.com (7.185.36.236)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+There is a potential dereferencing null pointer issue in
+arch_show_interrupts.
 
-On 5/27/2022 3:14 PM, syzbot wrote:
-> Hello,
-> 
-> syzbot found the following issue on:
-> 
-> HEAD commit:    7e284070abe5 Merge tag 'for-5.19/dm-changes' of git://git...
-> git tree:       upstream
-> console output: https://syzkaller.appspot.com/x/log.txt?x=1233ae81f00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=854cea6cbaeb1d1b
-> dashboard link: https://syzkaller.appspot.com/bug?extid=a0b95614aef2afe9e488
-> compiler:       aarch64-linux-gnu-gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> userspace arch: arm64
-> 
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+a0b95614aef2afe9e488@syzkaller.appspotmail.com
-> 
-> arch/arm64/mm/hugetlbpage.c:515:9: error: implicit declaration of function 'get_clear_flush'; did you mean 'ptep_clear_flush'? [-Werror=implicit-function-declaration]
-> arch/arm64/mm/hugetlbpage.c:515:9: error: incompatible types when returning type 'int' but 'pte_t' was expected
-> arch/arm64/mm/hugetlbpage.c:516:1: error: control reaches end of non-void function [-Werror=return-type]
+Problem 1:
+int arch_show_interrupts(struct seq_file *p, int prec)
+        for (i = 0; i < NR_IPI; i++) {
+                seq_printf(p, "%10u ", irq_desc_kstat_cpu(ipi_desc[i],
+			cpu));
 
-I've sent out a fix patch [1], please try it. Thanks.
+Only ipi_desc[0..nr_ipi - 1] are initialized in set_smp_ipi_range.
+and ipi_desc[nr_ipi..NR_IPI] are NULL.
+irq_desc_kstat_cpu will dereference NULL pointer.
+For now, the problem can not be triggered, because NR_IPI is always
+equal to nr_ipi.
 
-[1] 
-https://lore.kernel.org/all/814e20c19b110209ee12ecae7cb05f8a78d021c8.1653625820.git.baolin.wang@linux.alibaba.com/
+Problem 2:
+If request_percpu_irq failed in set_smp_ipi_range, ipi_desc[i]
+would be NULL.
+irq_desc_kstat_cpu will dereference NULL pointer.
+
+check !ipi_desc[i] (as arm does) to avoid the problem.
+
+Signed-off-by: Chen Jun <chenjun102@huawei.com>
+---
+ arch/arm64/kernel/smp.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/arch/arm64/kernel/smp.c b/arch/arm64/kernel/smp.c
+index 62ed361a4376..3d54f464428b 100644
+--- a/arch/arm64/kernel/smp.c
++++ b/arch/arm64/kernel/smp.c
+@@ -781,6 +781,9 @@ int arch_show_interrupts(struct seq_file *p, int prec)
+ 	unsigned int cpu, i;
+ 
+ 	for (i = 0; i < NR_IPI; i++) {
++		if (!ipi_desc[i])
++			continue;
++
+ 		seq_printf(p, "%*s%u:%s", prec - 1, "IPI", i,
+ 			   prec >= 4 ? " " : "");
+ 		for_each_online_cpu(cpu)
+-- 
+2.17.1
+
