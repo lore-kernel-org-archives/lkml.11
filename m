@@ -2,50 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2461C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:40:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F5B9C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:40:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351577AbiE0Ljw (ORCPT
+        id S1351457AbiE0LkL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 07:39:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45638 "EHLO
+        Fri, 27 May 2022 07:40:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351419AbiE0LjP (ORCPT
+        with ESMTP id S1351574AbiE0LjP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 27 May 2022 07:39:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBE37EBE82;
-        Fri, 27 May 2022 04:38:29 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C642132778;
+        Fri, 27 May 2022 04:38:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D86E1B824D6;
-        Fri, 27 May 2022 11:38:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C0FFC385A9;
-        Fri, 27 May 2022 11:38:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3BEE461CB7;
+        Fri, 27 May 2022 11:38:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4988CC385A9;
+        Fri, 27 May 2022 11:38:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653651506;
-        bh=aB/IfmTPypZrb7iAtYiks+SNwarQEJGkQSwZ4SEfByI=;
+        s=korg; t=1653651509;
+        bh=SW6KoCPu7r19e77UcCdKF4o/skbGK1MFZ1TBGk8IlsE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LVwLUGJv7PbwH+zaaNoBkNvA0ljXvSNuTk7AUK5Bq2pmx4ld511McCa0Upybp2OVZ
-         2E1fjy3lD998Q9BRIl1nis7cWZobWBDYkmMVixnf5hs/JjfBpEEEU6zxr+tXEfdgbi
-         Fxd0VpBPpspiok4A/BCNm3PkCCxCzN1tNcsvuxiw=
+        b=11meKyftx6zkitji46hGm4WZKWpmjmgakmNM24UsS9ERlyRO0g6Y+9BHzOzYWEV/H
+         boM7/pkCbcObB99yYSYrK9hjGvMUqPDz9KNCOro2nCiJS6s86NTQJYyWP4RilRukVf
+         YsFyKrjsgx2SVHE0jT92KlP93GJO/a12RN6zSjyk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Theodore Tso <tytso@mit.edu>,
-        Sultan Alsawaf <sultan@kerneltoast.com>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.17 043/111] random: clear fast pool, crng, and batches in cpuhp bring up
-Date:   Fri, 27 May 2022 10:49:15 +0200
-Message-Id: <20220527084825.544022635@linuxfoundation.org>
+Subject: [PATCH 5.10 019/163] crypto: blake2s - move update and final logic to internal/blake2s.h
+Date:   Fri, 27 May 2022 10:48:19 +0200
+Message-Id: <20220527084830.826405614@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084819.133490171@linuxfoundation.org>
-References: <20220527084819.133490171@linuxfoundation.org>
+In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
+References: <20220527084828.156494029@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -54,217 +51,146 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Eric Biggers <ebiggers@google.com>
 
-commit 3191dd5a1179ef0fad5a050a1702ae98b6251e8f upstream.
+commit 057edc9c8bb2d5ff5b058b521792c392428a0714 upstream.
 
-For the irq randomness fast pool, rather than having to use expensive
-atomics, which were visibly the most expensive thing in the entire irq
-handler, simply take care of the extreme edge case of resetting count to
-zero in the cpuhp online handler, just after workqueues have been
-reenabled. This simplifies the code a bit and lets us use vanilla
-variables rather than atomics, and performance should be improved.
+Move most of blake2s_update() and blake2s_final() into new inline
+functions __blake2s_update() and __blake2s_final() in
+include/crypto/internal/blake2s.h so that this logic can be shared by
+the shash helper functions.  This will avoid duplicating this logic
+between the library and shash implementations.
 
-As well, very early on when the CPU comes up, while interrupts are still
-disabled, we clear out the per-cpu crng and its batches, so that it
-always starts with fresh randomness.
-
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Theodore Ts'o <tytso@mit.edu>
-Cc: Sultan Alsawaf <sultan@kerneltoast.com>
-Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-Acked-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Eric Biggers <ebiggers@google.com>
+Acked-by: Ard Biesheuvel <ardb@kernel.org>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c      |   62 ++++++++++++++++++++++++++++++++++-----------
- include/linux/cpuhotplug.h |    2 +
- include/linux/random.h     |    5 +++
- kernel/cpu.c               |   11 +++++++
- 4 files changed, 65 insertions(+), 15 deletions(-)
+ include/crypto/internal/blake2s.h |   41 ++++++++++++++++++++++++++++++++
+ lib/crypto/blake2s.c              |   48 ++++++--------------------------------
+ 2 files changed, 49 insertions(+), 40 deletions(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -698,6 +698,25 @@ u32 get_random_u32(void)
+--- a/include/crypto/internal/blake2s.h
++++ b/include/crypto/internal/blake2s.h
+@@ -4,6 +4,7 @@
+ #define BLAKE2S_INTERNAL_H
+ 
+ #include <crypto/blake2s.h>
++#include <linux/string.h>
+ 
+ struct blake2s_tfm_ctx {
+ 	u8 key[BLAKE2S_KEY_SIZE];
+@@ -23,4 +24,44 @@ static inline void blake2s_set_lastblock
+ 	state->f[0] = -1;
  }
- EXPORT_SYMBOL(get_random_u32);
  
-+#ifdef CONFIG_SMP
-+/*
-+ * This function is called when the CPU is coming up, with entry
-+ * CPUHP_RANDOM_PREPARE, which comes before CPUHP_WORKQUEUE_PREP.
-+ */
-+int random_prepare_cpu(unsigned int cpu)
-+{
-+	/*
-+	 * When the cpu comes back online, immediately invalidate both
-+	 * the per-cpu crng and all batches, so that we serve fresh
-+	 * randomness.
-+	 */
-+	per_cpu_ptr(&crngs, cpu)->generation = ULONG_MAX;
-+	per_cpu_ptr(&batched_entropy_u32, cpu)->position = UINT_MAX;
-+	per_cpu_ptr(&batched_entropy_u64, cpu)->position = UINT_MAX;
-+	return 0;
-+}
-+#endif
++typedef void (*blake2s_compress_t)(struct blake2s_state *state,
++				   const u8 *block, size_t nblocks, u32 inc);
 +
- /**
-  * randomize_page - Generate a random, page aligned address
-  * @start:	The smallest acceptable address the caller will take.
-@@ -1183,7 +1202,7 @@ struct fast_pool {
- 	};
- 	struct work_struct mix;
- 	unsigned long last;
--	atomic_t count;
-+	unsigned int count;
- 	u16 reg_idx;
- };
- 
-@@ -1219,6 +1238,29 @@ static void fast_mix(u32 pool[4])
- 
- static DEFINE_PER_CPU(struct fast_pool, irq_randomness);
- 
-+#ifdef CONFIG_SMP
-+/*
-+ * This function is called when the CPU has just come online, with
-+ * entry CPUHP_AP_RANDOM_ONLINE, just after CPUHP_AP_WORKQUEUE_ONLINE.
-+ */
-+int random_online_cpu(unsigned int cpu)
++static inline void __blake2s_update(struct blake2s_state *state,
++				    const u8 *in, size_t inlen,
++				    blake2s_compress_t compress)
 +{
-+	/*
-+	 * During CPU shutdown and before CPU onlining, add_interrupt_
-+	 * randomness() may schedule mix_interrupt_randomness(), and
-+	 * set the MIX_INFLIGHT flag. However, because the worker can
-+	 * be scheduled on a different CPU during this period, that
-+	 * flag will never be cleared. For that reason, we zero out
-+	 * the flag here, which runs just after workqueues are onlined
-+	 * for the CPU again. This also has the effect of setting the
-+	 * irq randomness count to zero so that new accumulated irqs
-+	 * are fresh.
-+	 */
-+	per_cpu_ptr(&irq_randomness, cpu)->count = 0;
-+	return 0;
-+}
-+#endif
++	const size_t fill = BLAKE2S_BLOCK_SIZE - state->buflen;
 +
- static u32 get_reg(struct fast_pool *f, struct pt_regs *regs)
++	if (unlikely(!inlen))
++		return;
++	if (inlen > fill) {
++		memcpy(state->buf + state->buflen, in, fill);
++		(*compress)(state, state->buf, 1, BLAKE2S_BLOCK_SIZE);
++		state->buflen = 0;
++		in += fill;
++		inlen -= fill;
++	}
++	if (inlen > BLAKE2S_BLOCK_SIZE) {
++		const size_t nblocks = DIV_ROUND_UP(inlen, BLAKE2S_BLOCK_SIZE);
++		/* Hash one less (full) block than strictly possible */
++		(*compress)(state, in, nblocks - 1, BLAKE2S_BLOCK_SIZE);
++		in += BLAKE2S_BLOCK_SIZE * (nblocks - 1);
++		inlen -= BLAKE2S_BLOCK_SIZE * (nblocks - 1);
++	}
++	memcpy(state->buf + state->buflen, in, inlen);
++	state->buflen += inlen;
++}
++
++static inline void __blake2s_final(struct blake2s_state *state, u8 *out,
++				   blake2s_compress_t compress)
++{
++	blake2s_set_lastblock(state);
++	memset(state->buf + state->buflen, 0,
++	       BLAKE2S_BLOCK_SIZE - state->buflen); /* Padding */
++	(*compress)(state, state->buf, 1, state->buflen);
++	cpu_to_le32_array(state->h, ARRAY_SIZE(state->h));
++	memcpy(out, state->h, state->outlen);
++}
++
+ #endif /* BLAKE2S_INTERNAL_H */
+--- a/lib/crypto/blake2s.c
++++ b/lib/crypto/blake2s.c
+@@ -15,55 +15,23 @@
+ #include <linux/module.h>
+ #include <linux/init.h>
+ #include <linux/bug.h>
+-#include <asm/unaligned.h>
++
++#if IS_ENABLED(CONFIG_CRYPTO_ARCH_HAVE_LIB_BLAKE2S)
++#  define blake2s_compress blake2s_compress_arch
++#else
++#  define blake2s_compress blake2s_compress_generic
++#endif
+ 
+ void blake2s_update(struct blake2s_state *state, const u8 *in, size_t inlen)
  {
- 	u32 *ptr = (u32 *)regs;
-@@ -1243,15 +1285,6 @@ static void mix_interrupt_randomness(str
- 	local_irq_disable();
- 	if (fast_pool != this_cpu_ptr(&irq_randomness)) {
- 		local_irq_enable();
--		/*
--		 * If we are unlucky enough to have been moved to another CPU,
--		 * during CPU hotplug while the CPU was shutdown then we set
--		 * our count to zero atomically so that when the CPU comes
--		 * back online, it can enqueue work again. The _release here
--		 * pairs with the atomic_inc_return_acquire in
--		 * add_interrupt_randomness().
--		 */
--		atomic_set_release(&fast_pool->count, 0);
- 		return;
- 	}
- 
-@@ -1260,7 +1293,7 @@ static void mix_interrupt_randomness(str
- 	 * consistent view, before we reenable irqs again.
- 	 */
- 	memcpy(pool, fast_pool->pool32, sizeof(pool));
--	atomic_set(&fast_pool->count, 0);
-+	fast_pool->count = 0;
- 	fast_pool->last = jiffies;
- 	local_irq_enable();
- 
-@@ -1296,14 +1329,13 @@ void add_interrupt_randomness(int irq)
- 	}
- 
- 	fast_mix(fast_pool->pool32);
--	/* The _acquire here pairs with the atomic_set_release in mix_interrupt_randomness(). */
--	new_count = (unsigned int)atomic_inc_return_acquire(&fast_pool->count);
-+	new_count = ++fast_pool->count;
- 
- 	if (unlikely(crng_init == 0)) {
- 		if (new_count >= 64 &&
- 		    crng_pre_init_inject(fast_pool->pool32, sizeof(fast_pool->pool32),
- 					 true, true) > 0) {
--			atomic_set(&fast_pool->count, 0);
-+			fast_pool->count = 0;
- 			fast_pool->last = now;
- 			if (spin_trylock(&input_pool.lock)) {
- 				_mix_pool_bytes(&fast_pool->pool32, sizeof(fast_pool->pool32));
-@@ -1321,7 +1353,7 @@ void add_interrupt_randomness(int irq)
- 
- 	if (unlikely(!fast_pool->mix.func))
- 		INIT_WORK(&fast_pool->mix, mix_interrupt_randomness);
--	atomic_or(MIX_INFLIGHT, &fast_pool->count);
-+	fast_pool->count |= MIX_INFLIGHT;
- 	queue_work_on(raw_smp_processor_id(), system_highpri_wq, &fast_pool->mix);
+-	const size_t fill = BLAKE2S_BLOCK_SIZE - state->buflen;
+-
+-	if (unlikely(!inlen))
+-		return;
+-	if (inlen > fill) {
+-		memcpy(state->buf + state->buflen, in, fill);
+-		if (IS_ENABLED(CONFIG_CRYPTO_ARCH_HAVE_LIB_BLAKE2S))
+-			blake2s_compress_arch(state, state->buf, 1,
+-					      BLAKE2S_BLOCK_SIZE);
+-		else
+-			blake2s_compress_generic(state, state->buf, 1,
+-						 BLAKE2S_BLOCK_SIZE);
+-		state->buflen = 0;
+-		in += fill;
+-		inlen -= fill;
+-	}
+-	if (inlen > BLAKE2S_BLOCK_SIZE) {
+-		const size_t nblocks = DIV_ROUND_UP(inlen, BLAKE2S_BLOCK_SIZE);
+-		/* Hash one less (full) block than strictly possible */
+-		if (IS_ENABLED(CONFIG_CRYPTO_ARCH_HAVE_LIB_BLAKE2S))
+-			blake2s_compress_arch(state, in, nblocks - 1,
+-					      BLAKE2S_BLOCK_SIZE);
+-		else
+-			blake2s_compress_generic(state, in, nblocks - 1,
+-						 BLAKE2S_BLOCK_SIZE);
+-		in += BLAKE2S_BLOCK_SIZE * (nblocks - 1);
+-		inlen -= BLAKE2S_BLOCK_SIZE * (nblocks - 1);
+-	}
+-	memcpy(state->buf + state->buflen, in, inlen);
+-	state->buflen += inlen;
++	__blake2s_update(state, in, inlen, blake2s_compress);
  }
- EXPORT_SYMBOL_GPL(add_interrupt_randomness);
---- a/include/linux/cpuhotplug.h
-+++ b/include/linux/cpuhotplug.h
-@@ -100,6 +100,7 @@ enum cpuhp_state {
- 	CPUHP_AP_ARM_CACHE_B15_RAC_DEAD,
- 	CPUHP_PADATA_DEAD,
- 	CPUHP_AP_DTPM_CPU_DEAD,
-+	CPUHP_RANDOM_PREPARE,
- 	CPUHP_WORKQUEUE_PREP,
- 	CPUHP_POWER_NUMA_PREPARE,
- 	CPUHP_HRTIMERS_PREPARE,
-@@ -240,6 +241,7 @@ enum cpuhp_state {
- 	CPUHP_AP_PERF_CSKY_ONLINE,
- 	CPUHP_AP_WATCHDOG_ONLINE,
- 	CPUHP_AP_WORKQUEUE_ONLINE,
-+	CPUHP_AP_RANDOM_ONLINE,
- 	CPUHP_AP_RCUTREE_ONLINE,
- 	CPUHP_AP_BASE_CACHEINFO_ONLINE,
- 	CPUHP_AP_ONLINE_DYN,
---- a/include/linux/random.h
-+++ b/include/linux/random.h
-@@ -156,4 +156,9 @@ static inline bool __init arch_get_rando
+ EXPORT_SYMBOL(blake2s_update);
+ 
+ void blake2s_final(struct blake2s_state *state, u8 *out)
+ {
+ 	WARN_ON(IS_ENABLED(DEBUG) && !out);
+-	blake2s_set_lastblock(state);
+-	memset(state->buf + state->buflen, 0,
+-	       BLAKE2S_BLOCK_SIZE - state->buflen); /* Padding */
+-	if (IS_ENABLED(CONFIG_CRYPTO_ARCH_HAVE_LIB_BLAKE2S))
+-		blake2s_compress_arch(state, state->buf, 1, state->buflen);
+-	else
+-		blake2s_compress_generic(state, state->buf, 1, state->buflen);
+-	cpu_to_le32_array(state->h, ARRAY_SIZE(state->h));
+-	memcpy(out, state->h, state->outlen);
++	__blake2s_final(state, out, blake2s_compress);
+ 	memzero_explicit(state, sizeof(*state));
  }
- #endif
- 
-+#ifdef CONFIG_SMP
-+extern int random_prepare_cpu(unsigned int cpu);
-+extern int random_online_cpu(unsigned int cpu);
-+#endif
-+
- #endif /* _LINUX_RANDOM_H */
---- a/kernel/cpu.c
-+++ b/kernel/cpu.c
-@@ -34,6 +34,7 @@
- #include <linux/scs.h>
- #include <linux/percpu-rwsem.h>
- #include <linux/cpuset.h>
-+#include <linux/random.h>
- 
- #include <trace/events/power.h>
- #define CREATE_TRACE_POINTS
-@@ -1659,6 +1660,11 @@ static struct cpuhp_step cpuhp_hp_states
- 		.startup.single		= perf_event_init_cpu,
- 		.teardown.single	= perf_event_exit_cpu,
- 	},
-+	[CPUHP_RANDOM_PREPARE] = {
-+		.name			= "random:prepare",
-+		.startup.single		= random_prepare_cpu,
-+		.teardown.single	= NULL,
-+	},
- 	[CPUHP_WORKQUEUE_PREP] = {
- 		.name			= "workqueue:prepare",
- 		.startup.single		= workqueue_prepare_cpu,
-@@ -1782,6 +1788,11 @@ static struct cpuhp_step cpuhp_hp_states
- 		.startup.single		= workqueue_online_cpu,
- 		.teardown.single	= workqueue_offline_cpu,
- 	},
-+	[CPUHP_AP_RANDOM_ONLINE] = {
-+		.name			= "random:online",
-+		.startup.single		= random_online_cpu,
-+		.teardown.single	= NULL,
-+	},
- 	[CPUHP_AP_RCUTREE_ONLINE] = {
- 		.name			= "RCU/tree:online",
- 		.startup.single		= rcutree_online_cpu,
+ EXPORT_SYMBOL(blake2s_final);
 
 
