@@ -2,102 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D2F0C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 01:36:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3CEAC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 01:40:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232648AbiE0Bga (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 21:36:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37478 "EHLO
+        id S232905AbiE0Bkg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 21:40:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232400AbiE0Bg0 (ORCPT
+        with ESMTP id S232035AbiE0Bka (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 21:36:26 -0400
-X-Greylist: delayed 125 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 26 May 2022 18:36:23 PDT
-Received: from ssh248.corpemail.net (ssh248.corpemail.net [210.51.61.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB4F729CBE
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 18:36:21 -0700 (PDT)
-Received: from ([60.208.111.195])
-        by ssh248.corpemail.net ((D)) with ASMTP (SSL) id VWJ00111;
-        Fri, 27 May 2022 09:34:11 +0800
-Received: from localhost.localdomain (10.200.104.97) by
- jtjnmail201603.home.langchao.com (10.100.2.3) with Microsoft SMTP Server id
- 15.1.2308.27; Fri, 27 May 2022 09:34:10 +0800
-From:   Bo Liu <liubo03@inspur.com>
-To:     <mst@redhat.com>, <david@redhat.com>, <jasowang@redhat.com>
-CC:     <virtualization@lists.linux-foundation.org>,
-        <linux-kernel@vger.kernel.org>, Bo Liu <liubo03@inspur.com>
-Subject: [PATCH] virtio_balloon: check virtqueue_add_outbuf() return value
-Date:   Thu, 26 May 2022 21:34:01 -0400
-Message-ID: <20220527013401.2196-1-liubo03@inspur.com>
-X-Mailer: git-send-email 2.18.2
+        Thu, 26 May 2022 21:40:30 -0400
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6E11C8BCF
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 18:40:29 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id n18so2916203plg.5
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 18:40:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=rsCeaKQYu2owUyCBDwtZbNFjRtUaibD4xCTBzD5NHwQ=;
+        b=h5Os058/7Tkd1AvepTU0323lt2cG3mwUjYbiF3arFls/6rkKiXILKvCHrwLRQsySnZ
+         96/cCr2uqYFgpmz9nwuM3rG0f2J7xv5nQ0hqC6+iVv8nc4HgwHmTAlochAsZhfhqI83i
+         saL36v4tANwGgUtHRDRXTByMQY8bwYbtQ/ll7KeQkIdOsJMyc1FvNm6aEzlzHG2k8jqo
+         +V8bpsIxil8gc9piiCPIB8XYrUg5bo5kaXjbukdEC3xyym+MtICa2qY2Tcir2U37jJ1m
+         4ORO+Hu35zYgIWw/XT9PYNPw2QnLNZ1+Eb9F16UCV9gkZsq4Szql++3KR1rUZ5VhzQ/k
+         YUJQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rsCeaKQYu2owUyCBDwtZbNFjRtUaibD4xCTBzD5NHwQ=;
+        b=uexQF+HnD0GR/h3IgkrqGy+2JUsSn0XGn2AvpogRaBkQvqeP6n4J7374zv4fIK/hny
+         +YYkytaYFfyQUSzPpqtUePBxDigpZhCY/bTyoK4ANq1jdnkR7+K7hzrG0WChnvkIVJzx
+         g5smaAzjJWWvqV/E++p7UzlXGPOzoNMjjFIUU98lchmZmoOT/akAr7irbsrzwGd2r/ym
+         9ejS5qEJX6yY3kvu/Ex0y68wqh7OjcNsMjkJM7wEZa471X9b2rwqHgUou5aFtKRKAhCe
+         lVoYD4ocM6YWDRkAjff/Q/lI/hnLYrZzCA8z9NZnGyyyxa+fYQDz3kagGjRRptjO5U0F
+         KQZQ==
+X-Gm-Message-State: AOAM530kZcZUr8Np8vulS5H2aPBiywaojyNouhb05rnR2QFG+5V3jGyt
+        SxCliaF62UuQeOPIvKeW4hNlVkKmK3J+u4iPVJ41RA==
+X-Google-Smtp-Source: ABdhPJzk910Eqiuu/69sbIFt/rEQ4I6MtCDwrXFQ/nJqkbUlb/6Ny4mXvfFnPS95wsU6a5b8EAwIeusUd82ItqgJ2NA=
+X-Received: by 2002:a17:902:b58b:b0:162:2e01:9442 with SMTP id
+ a11-20020a170902b58b00b001622e019442mr20257616pls.6.1653615629019; Thu, 26
+ May 2022 18:40:29 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.200.104.97]
-tUid:   202252709341106a152b69564d3472b2363ee94035093
-X-Abuse-Reports-To: service@corp-email.com
-Abuse-Reports-To: service@corp-email.com
-X-Complaints-To: service@corp-email.com
-X-Report-Abuse-To: service@corp-email.com
+References: <348dc099-737d-94ba-55ad-2db285084c73@openvz.org> <YpAnqqY/c3Y5ZkPG@casper.infradead.org>
+In-Reply-To: <YpAnqqY/c3Y5ZkPG@casper.infradead.org>
+From:   Shakeel Butt <shakeelb@google.com>
+Date:   Thu, 26 May 2022 18:40:18 -0700
+Message-ID: <CALvZod7iyO5Ti5xhzq36UjDFNAmfEyPk1MQv_t4kUHKuPCeNng@mail.gmail.com>
+Subject: Re: [PATCH] XArray: handle XA_FLAGS_ACCOUNT in xas_split_alloc
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     Vasily Averin <vvs@openvz.org>, kernel@openvz.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        Johannes Weiner <hannes@cmpxchg.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-virtqueue_add_outbuf() can fail, when it fails, there is no need
-to call the funciont virtqueue_kick().
+On Thu, May 26, 2022 at 6:21 PM Matthew Wilcox <willy@infradead.org> wrote:
+>
+> On Wed, May 25, 2022 at 11:26:37AM +0300, Vasily Averin wrote:
+> > Commit 7b785645e8f1 ("mm: fix page cache convergence regression")
+> > added support of new XA_FLAGS_ACCOUNT flag into all Xarray allocation
+> > functions. Later commit 8fc75643c5e1 ("XArray: add xas_split")
+> > introduced xas_split_alloc() but missed about XA_FLAGS_ACCOUNT
+> > processing.
+>
+> Thanks, Vasily.
+>
+> Johannes, Shakeel, is this right?  I don't fully understand the accounting
+> stuff.
+>
 
-Signed-off-by: Bo Liu <liubo03@inspur.com>
----
- drivers/virtio/virtio_balloon.c | 18 +++++++++++-------
- 1 file changed, 11 insertions(+), 7 deletions(-)
+If called from __filemap_add_folio() then this is correct.
 
-diff --git a/drivers/virtio/virtio_balloon.c b/drivers/virtio/virtio_balloon.c
-index b9737da6c4dd..0d7da4d95e1e 100644
---- a/drivers/virtio/virtio_balloon.c
-+++ b/drivers/virtio/virtio_balloon.c
-@@ -153,16 +153,18 @@ static void tell_host(struct virtio_balloon *vb, struct virtqueue *vq)
- {
- 	struct scatterlist sg;
- 	unsigned int len;
-+	int err;
- 
- 	sg_init_one(&sg, vb->pfns, sizeof(vb->pfns[0]) * vb->num_pfns);
- 
- 	/* We should always be able to add one buffer to an empty queue. */
--	virtqueue_add_outbuf(vq, &sg, 1, vb, GFP_KERNEL);
--	virtqueue_kick(vq);
--
--	/* When host has read buffer, this completes via balloon_ack */
--	wait_event(vb->acked, virtqueue_get_buf(vq, &len));
-+	err = virtqueue_add_outbuf(vq, &sg, 1, vb, GFP_KERNEL);
-+	if (!err) {
-+		virtqueue_kick(vq);
- 
-+		/* When host has read buffer, this completes via balloon_ack */
-+		wait_event(vb->acked, virtqueue_get_buf(vq, &len));
-+	}
- }
- 
- static int virtballoon_free_page_report(struct page_reporting_dev_info *pr_dev_info,
-@@ -382,6 +384,7 @@ static void stats_handle_request(struct virtio_balloon *vb)
- 	struct virtqueue *vq;
- 	struct scatterlist sg;
- 	unsigned int len, num_stats;
-+	int err;
- 
- 	num_stats = update_balloon_stats(vb);
- 
-@@ -389,8 +392,9 @@ static void stats_handle_request(struct virtio_balloon *vb)
- 	if (!virtqueue_get_buf(vq, &len))
- 		return;
- 	sg_init_one(&sg, vb->stats, sizeof(vb->stats[0]) * num_stats);
--	virtqueue_add_outbuf(vq, &sg, 1, vb, GFP_KERNEL);
--	virtqueue_kick(vq);
-+	err = virtqueue_add_outbuf(vq, &sg, 1, vb, GFP_KERNEL);
-+	if (!err)
-+		virtqueue_kick(vq);
- }
- 
- static inline s64 towards_target(struct virtio_balloon *vb)
--- 
-2.27.0
+However from split_huge_page_to_list(), we can not use the memcg from
+current as that codepath is called from reclaim which can be triggered
+by processes of other memcgs.
 
+> > Signed-off-by: Vasily Averin <vvs@openvz.org>
+> > ---
+> >  lib/xarray.c | 2 ++
+> >  1 file changed, 2 insertions(+)
+> >
+> > diff --git a/lib/xarray.c b/lib/xarray.c
+> > index 54e646e8e6ee..5f5b42e6f842 100644
+> > --- a/lib/xarray.c
+> > +++ b/lib/xarray.c
+> > @@ -1013,6 +1013,8 @@ void xas_split_alloc(struct xa_state *xas, void *entry, unsigned int order,
+> >       if (xas->xa_shift + XA_CHUNK_SHIFT > order)
+> >               return;
+> >
+> > +     if (xas->xa->xa_flags & XA_FLAGS_ACCOUNT)
+> > +             gfp |= __GFP_ACCOUNT;
+> >       do {
+> >               unsigned int i;
+> >               void *sibling = NULL;
+> > --
+> > 2.31.1
+> >
