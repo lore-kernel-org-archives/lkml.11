@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E761C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:44:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 724EDC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:44:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351668AbiE0Lo2 (ORCPT
+        id S1351742AbiE0Lof (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 07:44:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57456 "EHLO
+        Fri, 27 May 2022 07:44:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351728AbiE0Lnf (ORCPT
+        with ESMTP id S1351832AbiE0LoA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:43:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B224C13F404;
-        Fri, 27 May 2022 04:40:46 -0700 (PDT)
+        Fri, 27 May 2022 07:44:00 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C15A106A45;
+        Fri, 27 May 2022 04:41:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0874961CE7;
-        Fri, 27 May 2022 11:40:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1503DC385A9;
-        Fri, 27 May 2022 11:40:44 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 16523CE2511;
+        Fri, 27 May 2022 11:40:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2250DC385A9;
+        Fri, 27 May 2022 11:40:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653651645;
-        bh=kVj1uQ8j1LBI6A7xCBQ/58jeMjipFUDYx3+qpPNc57o=;
+        s=korg; t=1653651657;
+        bh=aOprigIcG/hpSAFQqHtR2NrqFIOQ6+qE+2D3VkQdaoU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C9UbYxrRHAiaXzq2/SPtAwnoIgG3EA3aTSUe5ThnAIHyEqHDE21grPOxRD5rLBvi6
-         217+cRYBF7XWMRBcj0poKTiAopTGp4TkDmRApUjrWi7x6t1frJg8qpa/BUfC4C/Ru8
-         rvL4F63IDPewzf+2TcCF94hmGnz1Rbg/6K2u6D2w=
+        b=pAcxjOFuoJNwkonmM5uClXAxtyJCbApeuglmS9N5vl4uB9aZxDFnnIzSmsnRIZgfU
+         ozoxG3IL4uTjWiDyZudZ30Ys9PKsoQaoEk2g9nKEZ7pFVpuPA7MEeXJY4UbDVgPCoE
+         GZEBav1E9Fr4JiPqZOU+LkbNEpgYAUOaZvQDFKSg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-crypto@vger.kernel.org,
+        stable@vger.kernel.org,
         Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.10 037/163] random: early initialization of ChaCha constants
-Date:   Fri, 27 May 2022 10:48:37 +0200
-Message-Id: <20220527084833.264806705@linuxfoundation.org>
+Subject: [PATCH 5.10 044/163] random: remove unused extract_entropy() reserved argument
+Date:   Fri, 27 May 2022 10:48:44 +0200
+Message-Id: <20220527084834.198560148@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
 References: <20220527084828.156494029@linuxfoundation.org>
@@ -52,73 +50,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dominik Brodowski <linux@dominikbrodowski.net>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 96562f286884e2db89c74215b199a1084b5fb7f7 upstream.
+commit 8b2d953b91e7f60200c24067ab17b77cc7bfd0d4 upstream.
 
-Previously, the ChaCha constants for the primary pool were only
-initialized in crng_initialize_primary(), called by rand_initialize().
-However, some randomness is actually extracted from the primary pool
-beforehand, e.g. by kmem_cache_create(). Therefore, statically
-initialize the ChaCha constants for the primary pool.
+This argument is always set to zero, as a result of us not caring about
+keeping a certain amount reserved in the pool these days. So just remove
+it and cleanup the function signatures.
 
-Cc: Herbert Xu <herbert@gondor.apana.org.au>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: <linux-crypto@vger.kernel.org>
-Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c   |    5 ++++-
- include/crypto/chacha.h |   15 +++++++++++----
- 2 files changed, 15 insertions(+), 5 deletions(-)
+ drivers/char/random.c |   17 +++++++----------
+ 1 file changed, 7 insertions(+), 10 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -457,6 +457,10 @@ struct crng_state {
- 
- static struct crng_state primary_crng = {
- 	.lock = __SPIN_LOCK_UNLOCKED(primary_crng.lock),
-+	.state[0] = CHACHA_CONSTANT_EXPA,
-+	.state[1] = CHACHA_CONSTANT_ND_3,
-+	.state[2] = CHACHA_CONSTANT_2_BY,
-+	.state[3] = CHACHA_CONSTANT_TE_K,
+@@ -519,7 +519,7 @@ struct entropy_store {
  };
  
- /*
-@@ -823,7 +827,6 @@ static void crng_initialize_secondary(st
+ static ssize_t extract_entropy(struct entropy_store *r, void *buf,
+-			       size_t nbytes, int min, int rsvd);
++			       size_t nbytes, int min);
+ static ssize_t _extract_entropy(struct entropy_store *r, void *buf,
+ 				size_t nbytes);
  
- static void __init crng_initialize_primary(struct crng_state *crng)
+@@ -989,7 +989,7 @@ static void crng_reseed(struct crng_stat
+ 	} buf;
+ 
+ 	if (r) {
+-		num = extract_entropy(r, &buf, 32, 16, 0);
++		num = extract_entropy(r, &buf, 32, 16);
+ 		if (num == 0)
+ 			return;
+ 	} else {
+@@ -1327,8 +1327,7 @@ EXPORT_SYMBOL_GPL(add_disk_randomness);
+  * This function decides how many bytes to actually take from the
+  * given pool, and also debits the entropy count accordingly.
+  */
+-static size_t account(struct entropy_store *r, size_t nbytes, int min,
+-		      int reserved)
++static size_t account(struct entropy_store *r, size_t nbytes, int min)
  {
--	chacha_init_consts(crng->state);
- 	_extract_entropy(&input_pool, &crng->state[4], sizeof(__u32) * 12, 0);
- 	if (crng_init_try_arch_early(crng) && trust_cpu && crng_init < 2) {
- 		invalidate_batched_entropy();
---- a/include/crypto/chacha.h
-+++ b/include/crypto/chacha.h
-@@ -47,12 +47,19 @@ static inline void hchacha_block(const u
- 		hchacha_block_generic(state, out, nrounds);
+ 	int entropy_count, orig, have_bytes;
+ 	size_t ibytes, nfrac;
+@@ -1342,7 +1341,7 @@ retry:
+ 	/* never pull more than available */
+ 	have_bytes = entropy_count >> (ENTROPY_SHIFT + 3);
+ 
+-	if ((have_bytes -= reserved) < 0)
++	if (have_bytes < 0)
+ 		have_bytes = 0;
+ 	ibytes = min_t(size_t, ibytes, have_bytes);
+ 	if (ibytes < min)
+@@ -1448,15 +1447,13 @@ static ssize_t _extract_entropy(struct e
+  * returns it in a buffer.
+  *
+  * The min parameter specifies the minimum amount we can pull before
+- * failing to avoid races that defeat catastrophic reseeding while the
+- * reserved parameter indicates how much entropy we must leave in the
+- * pool after each pull to avoid starving other readers.
++ * failing to avoid races that defeat catastrophic reseeding.
+  */
+ static ssize_t extract_entropy(struct entropy_store *r, void *buf,
+-				 size_t nbytes, int min, int reserved)
++				 size_t nbytes, int min)
+ {
+ 	trace_extract_entropy(r->name, nbytes, ENTROPY_BITS(r), _RET_IP_);
+-	nbytes = account(r, nbytes, min, reserved);
++	nbytes = account(r, nbytes, min);
+ 	return _extract_entropy(r, buf, nbytes);
  }
  
-+enum chacha_constants { /* expand 32-byte k */
-+	CHACHA_CONSTANT_EXPA = 0x61707865U,
-+	CHACHA_CONSTANT_ND_3 = 0x3320646eU,
-+	CHACHA_CONSTANT_2_BY = 0x79622d32U,
-+	CHACHA_CONSTANT_TE_K = 0x6b206574U
-+};
-+
- static inline void chacha_init_consts(u32 *state)
- {
--	state[0]  = 0x61707865; /* "expa" */
--	state[1]  = 0x3320646e; /* "nd 3" */
--	state[2]  = 0x79622d32; /* "2-by" */
--	state[3]  = 0x6b206574; /* "te k" */
-+	state[0]  = CHACHA_CONSTANT_EXPA;
-+	state[1]  = CHACHA_CONSTANT_ND_3;
-+	state[2]  = CHACHA_CONSTANT_2_BY;
-+	state[3]  = CHACHA_CONSTANT_TE_K;
- }
- 
- void chacha_init_arch(u32 *state, const u32 *key, const u8 *iv);
 
 
