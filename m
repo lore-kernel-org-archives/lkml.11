@@ -2,144 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25291C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 07:44:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EE31C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 07:44:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347816AbiE0HoJ (ORCPT
+        id S1347942AbiE0Hor (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 03:44:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51988 "EHLO
+        Fri, 27 May 2022 03:44:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347281AbiE0HoF (ORCPT
+        with ESMTP id S1345997AbiE0Hon (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 03:44:05 -0400
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 120B3580E3;
-        Fri, 27 May 2022 00:44:04 -0700 (PDT)
-Received: from linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net (linux.microsoft.com [13.77.154.182])
-        by linux.microsoft.com (Postfix) with ESMTPSA id AE81A20B894E;
-        Fri, 27 May 2022 00:44:03 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com AE81A20B894E
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1653637443;
-        bh=BqceaaB5hBl3Vdpl++pTxf2fnnPWlB8F9bTl6Y9k448=;
-        h=From:To:Subject:Date:From;
-        b=qw7Y2r8RIOI00XuOdIDpCshUlX8CV8et9wcK8CMOlcJ16rAZ2Ch/MimR2gv8uZUrJ
-         I4St6RhB1yecJFKPO0PUEtrVc98XZIOShAC1IvObhWvoeArmSw61roc+uScxlK5o/S
-         fos4AtRaRrOHv3DkG2irs8atet5Mf6bFTvEl+hpo=
-From:   Saurabh Sengar <ssengar@linux.microsoft.com>
-To:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org, decui@microsoft.com,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ssengar@microsoft.com, mikelley@microsoft.com
-Subject: [RESEND PATCH v2] Drivers: hv: vmbus: Don't assign VMbus channel interrupts to isolated CPUs
-Date:   Fri, 27 May 2022 00:43:59 -0700
-Message-Id: <1653637439-23060-1-git-send-email-ssengar@linux.microsoft.com>
-X-Mailer: git-send-email 1.8.3.1
+        Fri, 27 May 2022 03:44:43 -0400
+Received: from smtp.smtpout.orange.fr (smtp10.smtpout.orange.fr [80.12.242.132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B1D35EDD5
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 00:44:42 -0700 (PDT)
+Received: from [192.168.1.18] ([90.11.191.102])
+        by smtp.orange.fr with ESMTPA
+        id uUeEnKNQ90JImuUeFnsE7E; Fri, 27 May 2022 09:44:40 +0200
+X-ME-Helo: [192.168.1.18]
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Fri, 27 May 2022 09:44:40 +0200
+X-ME-IP: 90.11.191.102
+Message-ID: <cd80d7b8-a753-25f7-2f7f-dfb45f69acd6@wanadoo.fr>
+Date:   Fri, 27 May 2022 09:44:38 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] rpmsg: Directly use ida_alloc()/free()
+Content-Language: fr
+To:     keliu <liuke94@huawei.com>, bjorn.andersson@linaro.org,
+        mathieu.poirier@linaro.org, linux-remoteproc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220527075129.2475594-1-liuke94@huawei.com>
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+In-Reply-To: <20220527075129.2475594-1-liuke94@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When initially assigning a VMbus channel interrupt to a CPU, don’t choose
-a managed IRQ isolated CPU (as specified on the kernel boot line with
-parameter 'isolcpus=managed_irq,<#cpu>'). Also, when using sysfs to change
-the CPU that a VMbus channel will interrupt, don't allow changing to a
-managed IRQ isolated CPU.
+Le 27/05/2022 à 09:51, keliu a écrit :
+> Use ida_alloc()/ida_free() instead of deprecated
+> ida_simple_get()/ida_simple_remove() .
+> 
+> Signed-off-by: keliu <liuke94@huawei.com>
+> ---
+>   drivers/rpmsg/rpmsg_char.c | 10 +++++-----
+>   drivers/rpmsg/rpmsg_ctrl.c | 10 +++++-----
+>   2 files changed, 10 insertions(+), 10 deletions(-)
+> 
+> diff --git a/drivers/rpmsg/rpmsg_char.c b/drivers/rpmsg/rpmsg_char.c
+> index b6183d4f62a2..7daa21d92f20 100644
+> --- a/drivers/rpmsg/rpmsg_char.c
+> +++ b/drivers/rpmsg/rpmsg_char.c
+> @@ -342,8 +342,8 @@ static void rpmsg_eptdev_release_device(struct device *dev)
+>   {
+>   	struct rpmsg_eptdev *eptdev = dev_to_eptdev(dev);
+>   
+> -	ida_simple_remove(&rpmsg_ept_ida, dev->id);
+> -	ida_simple_remove(&rpmsg_minor_ida, MINOR(eptdev->dev.devt));
+> +	ida_free(&rpmsg_ept_ida, dev->id);
+> +	ida_free(&rpmsg_minor_ida, MINOR(eptdev->dev.devt));
+>   	kfree(eptdev);
+>   }
+>   
+> @@ -389,7 +389,7 @@ static int rpmsg_chrdev_eptdev_add(struct rpmsg_eptdev *eptdev, struct rpmsg_cha
+>   		goto free_eptdev;
+>   	dev->devt = MKDEV(MAJOR(rpmsg_major), ret);
+>   
+> -	ret = ida_simple_get(&rpmsg_ept_ida, 0, 0, GFP_KERNEL);
+> +	ret = ida_alloc(&rpmsg_ept_ida, GFP_KERNEL);
 
-Signed-off-by: Saurabh Sengar <ssengar@linux.microsoft.com>
----
-v2: * Resending v2 with minor correction, please discard the earlier v2
-    * better commit message
-    * Added back empty line, removed by mistake
-    * Removed error print for sysfs error
 
- drivers/hv/channel_mgmt.c | 17 ++++++++++++-----
- drivers/hv/vmbus_drv.c    |  4 ++++
- 2 files changed, 16 insertions(+), 5 deletions(-)
+Hi,
 
-diff --git a/drivers/hv/channel_mgmt.c b/drivers/hv/channel_mgmt.c
-index 97d8f56..127a05b 100644
---- a/drivers/hv/channel_mgmt.c
-+++ b/drivers/hv/channel_mgmt.c
-@@ -21,6 +21,7 @@
- #include <linux/cpu.h>
- #include <linux/hyperv.h>
- #include <asm/mshyperv.h>
-+#include <linux/sched/isolation.h>
- 
- #include "hyperv_vmbus.h"
- 
-@@ -728,16 +729,20 @@ static void init_vp_index(struct vmbus_channel *channel)
- 	u32 i, ncpu = num_online_cpus();
- 	cpumask_var_t available_mask;
- 	struct cpumask *allocated_mask;
-+	const struct cpumask *hk_mask = housekeeping_cpumask(HK_TYPE_MANAGED_IRQ);
- 	u32 target_cpu;
- 	int numa_node;
- 
- 	if (!perf_chn ||
--	    !alloc_cpumask_var(&available_mask, GFP_KERNEL)) {
-+	    !alloc_cpumask_var(&available_mask, GFP_KERNEL) ||
-+	    cpumask_empty(hk_mask)) {
- 		/*
- 		 * If the channel is not a performance critical
- 		 * channel, bind it to VMBUS_CONNECT_CPU.
- 		 * In case alloc_cpumask_var() fails, bind it to
- 		 * VMBUS_CONNECT_CPU.
-+		 * If all the cpus are isolated, bind it to
-+		 * VMBUS_CONNECT_CPU.
- 		 */
- 		channel->target_cpu = VMBUS_CONNECT_CPU;
- 		if (perf_chn)
-@@ -758,17 +763,19 @@ static void init_vp_index(struct vmbus_channel *channel)
- 		}
- 		allocated_mask = &hv_context.hv_numa_map[numa_node];
- 
--		if (cpumask_equal(allocated_mask, cpumask_of_node(numa_node))) {
-+retry:
-+		cpumask_xor(available_mask, allocated_mask, cpumask_of_node(numa_node));
-+		cpumask_and(available_mask, available_mask, hk_mask);
-+
-+		if (cpumask_empty(available_mask)) {
- 			/*
- 			 * We have cycled through all the CPUs in the node;
- 			 * reset the allocated map.
- 			 */
- 			cpumask_clear(allocated_mask);
-+			goto retry;
- 		}
- 
--		cpumask_xor(available_mask, allocated_mask,
--			    cpumask_of_node(numa_node));
--
- 		target_cpu = cpumask_first(available_mask);
- 		cpumask_set_cpu(target_cpu, allocated_mask);
- 
-diff --git a/drivers/hv/vmbus_drv.c b/drivers/hv/vmbus_drv.c
-index 714d549..547ae33 100644
---- a/drivers/hv/vmbus_drv.c
-+++ b/drivers/hv/vmbus_drv.c
-@@ -21,6 +21,7 @@
- #include <linux/kernel_stat.h>
- #include <linux/clockchips.h>
- #include <linux/cpu.h>
-+#include <linux/sched/isolation.h>
- #include <linux/sched/task_stack.h>
- 
- #include <linux/delay.h>
-@@ -1770,6 +1771,9 @@ static ssize_t target_cpu_store(struct vmbus_channel *channel,
- 	if (target_cpu >= nr_cpumask_bits)
- 		return -EINVAL;
- 
-+	if (!cpumask_test_cpu(target_cpu, housekeeping_cpumask(HK_TYPE_MANAGED_IRQ)))
-+		return -EINVAL;
-+
- 	/* No CPUs should come up or down during this. */
- 	cpus_read_lock();
- 
--- 
-1.8.3.1
+You missed ida_simple_get() a few lines above that shoud become 
+ida_alloc_max() here.
+
+CJ
+
+
+>   	if (ret < 0)
+>   		goto free_minor_ida;
+>   	dev->id = ret;
+> @@ -405,9 +405,9 @@ static int rpmsg_chrdev_eptdev_add(struct rpmsg_eptdev *eptdev, struct rpmsg_cha
+>   	return ret;
+>   
+>   free_ept_ida:
+> -	ida_simple_remove(&rpmsg_ept_ida, dev->id);
+> +	ida_free(&rpmsg_ept_ida, dev->id);
+>   free_minor_ida:
+> -	ida_simple_remove(&rpmsg_minor_ida, MINOR(dev->devt));
+> +	ida_free(&rpmsg_minor_ida, MINOR(dev->devt));
+>   free_eptdev:
+>   	put_device(dev);
+>   	kfree(eptdev);
+> diff --git a/drivers/rpmsg/rpmsg_ctrl.c b/drivers/rpmsg/rpmsg_ctrl.c
+> index 107da70fdbaa..8418e2ea0716 100644
+> --- a/drivers/rpmsg/rpmsg_ctrl.c
+> +++ b/drivers/rpmsg/rpmsg_ctrl.c
+> @@ -130,8 +130,8 @@ static void rpmsg_ctrldev_release_device(struct device *dev)
+>   {
+>   	struct rpmsg_ctrldev *ctrldev = dev_to_ctrldev(dev);
+>   
+> -	ida_simple_remove(&rpmsg_ctrl_ida, dev->id);
+> -	ida_simple_remove(&rpmsg_minor_ida, MINOR(dev->devt));
+> +	ida_free(&rpmsg_ctrl_ida, dev->id);
+> +	ida_free(&rpmsg_minor_ida, MINOR(dev->devt));
+>   	kfree(ctrldev);
+>   }
+>   
+> @@ -161,7 +161,7 @@ static int rpmsg_ctrldev_probe(struct rpmsg_device *rpdev)
+>   		goto free_ctrldev;
+>   	dev->devt = MKDEV(MAJOR(rpmsg_major), ret);
+>   
+> -	ret = ida_simple_get(&rpmsg_ctrl_ida, 0, 0, GFP_KERNEL);
+> +	ret = ida_alloc(&rpmsg_ctrl_ida, GFP_KERNEL);
+>   	if (ret < 0)
+>   		goto free_minor_ida;
+>   	dev->id = ret;
+> @@ -179,9 +179,9 @@ static int rpmsg_ctrldev_probe(struct rpmsg_device *rpdev)
+>   	return ret;
+>   
+>   free_ctrl_ida:
+> -	ida_simple_remove(&rpmsg_ctrl_ida, dev->id);
+> +	ida_free(&rpmsg_ctrl_ida, dev->id);
+>   free_minor_ida:
+> -	ida_simple_remove(&rpmsg_minor_ida, MINOR(dev->devt));
+> +	ida_free(&rpmsg_minor_ida, MINOR(dev->devt));
+>   free_ctrldev:
+>   	put_device(dev);
+>   	kfree(ctrldev);
 
