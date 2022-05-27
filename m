@@ -2,42 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDA00C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:01:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A020C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:01:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352203AbiE0MAF (ORCPT
+        id S1352311AbiE0MAL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 08:00:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41280 "EHLO
+        Fri, 27 May 2022 08:00:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352054AbiE0Lvg (ORCPT
+        with ESMTP id S1353171AbiE0LvX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:51:36 -0400
+        Fri, 27 May 2022 07:51:23 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C696013B8F9;
-        Fri, 27 May 2022 04:47:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8EC3146763;
+        Fri, 27 May 2022 04:46:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A847F61D56;
-        Fri, 27 May 2022 11:47:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7CC4C34100;
-        Fri, 27 May 2022 11:47:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BCDC161D19;
+        Fri, 27 May 2022 11:46:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCBDBC385A9;
+        Fri, 27 May 2022 11:46:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653652044;
-        bh=2oUbVd+6dHSAZdRKmcjumSINDFPdE0+wqNXdZSaOxHI=;
+        s=korg; t=1653652017;
+        bh=Yy5gQPcfw9NC/kuApdrxoyH05hh4EnBXxxCCeB24uyw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=orIvsSwElZ5so4lG5c5l4uGPSB7rIGqddpPjwajXRvoBmVwOFryYj66znN7cO8l7p
-         803MXau2IM1mHJHgH0TNsUf/Jp4788wdddP+LApIk10GFSejsmFdb6w0QzxKff+ltL
-         6N9jFcIRg6g+2M2bIW5oLByXPe9/kWsGDOCyBiTw=
+        b=pqh8z+m+v3QW8DDUkhKwzymCHNTBC3CHngPQQ5sR5tyNGJbIz2BzqnmNLc5ftMpGk
+         HoOYnvsX3tTrodci24pdk+G7DvCKoDASQ0Hamfj3xmXU2fIDyvBT9ispXm3/tsOf7Y
+         DVtjnYwu/gfa7FgjtfmUtO2fxAqa0aMzc1NT9TMk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.17 104/111] random: move randomize_page() into mm where it belongs
-Date:   Fri, 27 May 2022 10:50:16 +0200
-Message-Id: <20220527084833.997496542@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Veronika Kabatova <vkabatov@redhat.com>,
+        Aristeu Rozanski <aris@redhat.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        dann frazier <dann.frazier@canonical.com>
+Subject: [PATCH 5.17 110/111] ACPI: sysfs: Fix BERT error region memory mapping
+Date:   Fri, 27 May 2022 10:50:22 +0200
+Message-Id: <20220527084834.798679404@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220527084819.133490171@linuxfoundation.org>
 References: <20220527084819.133490171@linuxfoundation.org>
@@ -49,134 +54,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
 
-commit 5ad7dd882e45d7fe432c32e896e2aaa0b21746ea upstream.
+commit 1bbc21785b7336619fb6a67f1fff5afdaf229acc upstream.
 
-randomize_page is an mm function. It is documented like one. It contains
-the history of one. It has the naming convention of one. It looks
-just like another very similar function in mm, randomize_stack_top().
-And it has always been maintained and updated by mm people. There is no
-need for it to be in random.c. In the "which shape does not look like
-the other ones" test, pointing to randomize_page() is correct.
+Currently the sysfs interface maps the BERT error region as "memory"
+(through acpi_os_map_memory()) in order to copy the error records into
+memory buffers through memory operations (eg memory_read_from_buffer()).
 
-So move randomize_page() into mm/util.c, right next to the similar
-randomize_stack_top() function.
+The OS system cannot detect whether the BERT error region is part of
+system RAM or it is "device memory" (eg BMC memory) and therefore it
+cannot detect which memory attributes the bus to memory support (and
+corresponding kernel mapping, unless firmware provides the required
+information).
 
-This commit contains no actual code changes.
+The acpi_os_map_memory() arch backend implementation determines the
+mapping attributes. On arm64, if the BERT error region is not present in
+the EFI memory map, the error region is mapped as device-nGnRnE; this
+triggers alignment faults since memcpy unaligned accesses are not
+allowed in device-nGnRnE regions.
 
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+The ACPI sysfs code cannot therefore map by default the BERT error
+region with memory semantics but should use a safer default.
+
+Change the sysfs code to map the BERT error region as MMIO (through
+acpi_os_map_iomem()) and use the memcpy_fromio() interface to read the
+error region into the kernel buffer.
+
+Link: https://lore.kernel.org/linux-arm-kernel/31ffe8fc-f5ee-2858-26c5-0fd8bdd68702@arm.com
+Link: https://lore.kernel.org/linux-acpi/CAJZ5v0g+OVbhuUUDrLUCfX_mVqY_e8ubgLTU98=jfjTeb4t+Pw@mail.gmail.com
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Tested-by: Veronika Kabatova <vkabatov@redhat.com>
+Tested-by: Aristeu Rozanski <aris@redhat.com>
+Acked-by: Ard Biesheuvel <ardb@kernel.org>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Cc: dann frazier <dann.frazier@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c  |   32 --------------------------------
- include/linux/mm.h     |    1 +
- include/linux/random.h |    2 --
- mm/util.c              |   32 ++++++++++++++++++++++++++++++++
- 4 files changed, 33 insertions(+), 34 deletions(-)
+ drivers/acpi/sysfs.c |   25 ++++++++++++++++++-------
+ 1 file changed, 18 insertions(+), 7 deletions(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -622,38 +622,6 @@ int __cold random_prepare_cpu(unsigned i
- }
- #endif
- 
--/**
-- * randomize_page - Generate a random, page aligned address
-- * @start:	The smallest acceptable address the caller will take.
-- * @range:	The size of the area, starting at @start, within which the
-- *		random address must fall.
-- *
-- * If @start + @range would overflow, @range is capped.
-- *
-- * NOTE: Historical use of randomize_range, which this replaces, presumed that
-- * @start was already page aligned.  We now align it regardless.
-- *
-- * Return: A page aligned address within [start, start + range).  On error,
-- * @start is returned.
-- */
--unsigned long randomize_page(unsigned long start, unsigned long range)
--{
--	if (!PAGE_ALIGNED(start)) {
--		range -= PAGE_ALIGN(start) - start;
--		start = PAGE_ALIGN(start);
--	}
--
--	if (start > ULONG_MAX - range)
--		range = ULONG_MAX - start;
--
--	range >>= PAGE_SHIFT;
--
--	if (range == 0)
--		return start;
--
--	return start + (get_random_long() % range << PAGE_SHIFT);
--}
--
- /*
-  * This function will use the architecture-specific hardware random
-  * number generator if it is available. It is not recommended for
---- a/include/linux/mm.h
-+++ b/include/linux/mm.h
-@@ -2678,6 +2678,7 @@ extern int install_special_mapping(struc
- 				   unsigned long flags, struct page **pages);
- 
- unsigned long randomize_stack_top(unsigned long stack_top);
-+unsigned long randomize_page(unsigned long start, unsigned long range);
- 
- extern unsigned long get_unmapped_area(struct file *, unsigned long, unsigned long, unsigned long, unsigned long);
- 
---- a/include/linux/random.h
-+++ b/include/linux/random.h
-@@ -64,8 +64,6 @@ static inline unsigned long get_random_c
- 	return get_random_long() & CANARY_MASK;
- }
- 
--unsigned long randomize_page(unsigned long start, unsigned long range);
--
- int __init random_init(const char *command_line);
- bool rng_is_initialized(void);
- int wait_for_random_bytes(void);
---- a/mm/util.c
-+++ b/mm/util.c
-@@ -343,6 +343,38 @@ unsigned long randomize_stack_top(unsign
- #endif
- }
- 
-+/**
-+ * randomize_page - Generate a random, page aligned address
-+ * @start:	The smallest acceptable address the caller will take.
-+ * @range:	The size of the area, starting at @start, within which the
-+ *		random address must fall.
-+ *
-+ * If @start + @range would overflow, @range is capped.
-+ *
-+ * NOTE: Historical use of randomize_range, which this replaces, presumed that
-+ * @start was already page aligned.  We now align it regardless.
-+ *
-+ * Return: A page aligned address within [start, start + range).  On error,
-+ * @start is returned.
-+ */
-+unsigned long randomize_page(unsigned long start, unsigned long range)
-+{
-+	if (!PAGE_ALIGNED(start)) {
-+		range -= PAGE_ALIGN(start) - start;
-+		start = PAGE_ALIGN(start);
-+	}
-+
-+	if (start > ULONG_MAX - range)
-+		range = ULONG_MAX - start;
-+
-+	range >>= PAGE_SHIFT;
-+
-+	if (range == 0)
-+		return start;
-+
-+	return start + (get_random_long() % range << PAGE_SHIFT);
-+}
-+
- #ifdef CONFIG_ARCH_WANT_DEFAULT_TOPDOWN_MMAP_LAYOUT
- unsigned long arch_randomize_brk(struct mm_struct *mm)
+--- a/drivers/acpi/sysfs.c
++++ b/drivers/acpi/sysfs.c
+@@ -415,19 +415,30 @@ static ssize_t acpi_data_show(struct fil
+ 			      loff_t offset, size_t count)
  {
+ 	struct acpi_data_attr *data_attr;
+-	void *base;
+-	ssize_t rc;
++	void __iomem *base;
++	ssize_t size;
+ 
+ 	data_attr = container_of(bin_attr, struct acpi_data_attr, attr);
++	size = data_attr->attr.size;
+ 
+-	base = acpi_os_map_memory(data_attr->addr, data_attr->attr.size);
++	if (offset < 0)
++		return -EINVAL;
++
++	if (offset >= size)
++		return 0;
++
++	if (count > size - offset)
++		count = size - offset;
++
++	base = acpi_os_map_iomem(data_attr->addr, size);
+ 	if (!base)
+ 		return -ENOMEM;
+-	rc = memory_read_from_buffer(buf, count, &offset, base,
+-				     data_attr->attr.size);
+-	acpi_os_unmap_memory(base, data_attr->attr.size);
+ 
+-	return rc;
++	memcpy_fromio(buf, base + offset, count);
++
++	acpi_os_unmap_iomem(base, size);
++
++	return count;
+ }
+ 
+ static int acpi_bert_data_init(void *th, struct acpi_data_attr *data_attr)
 
 
