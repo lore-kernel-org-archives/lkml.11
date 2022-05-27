@@ -2,177 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AED0C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:21:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A003C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:21:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241557AbiE0MV3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 08:21:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58048 "EHLO
+        id S244746AbiE0MVj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 08:21:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353384AbiE0MLG (ORCPT
+        with ESMTP id S1345614AbiE0MLz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 08:11:06 -0400
-Received: from mail-oa1-x2e.google.com (mail-oa1-x2e.google.com [IPv6:2001:4860:4864:20::2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DE9514C755;
-        Fri, 27 May 2022 04:58:49 -0700 (PDT)
-Received: by mail-oa1-x2e.google.com with SMTP id 586e51a60fabf-f2a4c51c45so5474547fac.9;
-        Fri, 27 May 2022 04:58:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:reply-to:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=riYAAbHRq92K+lwWVOP6j+tCvpF9+fWD5d6/UiGVh3M=;
-        b=iPwRxPV2145O5j0i2udTirgYfsApHfipu9c9nyWpwIRHsdQqkzditjcyd5WrM6DPuv
-         pTlM3xrtQ/VSAy59YZWk26Ko61+REu5+SeNsglqU72jwkVkPYwfOfrLngv8b5xo9rUek
-         pbLw+86M1Pqioj0EnZcO1SXeV9a1yJ89XkCZ52cY+gvvLiqC2Nv8AMjN1j311NKP0soa
-         Ys27UvHfKNTay9dEM265vlWmi8j92oiwCa3g8jjsHQRLf1hunTLVcm7wbbEpuwSPDW4+
-         CxEH4C7cc6vG0LVqMtLl84lZ+WN9FIs+z1ri7lb4SecBOQ9rlAOLJyUEhSDR5VgjqL0/
-         j1Fg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :reply-to:references:mime-version:content-disposition:in-reply-to;
-        bh=riYAAbHRq92K+lwWVOP6j+tCvpF9+fWD5d6/UiGVh3M=;
-        b=Yr/oVDZiac4xgGp0M/k+tHNta2mY8jwpuUANhVaCWXSlNjKPyjyt5G2k4LlAiS5LlE
-         Gkg7+6f1IhBgeK556vUPWE9u9Yb8sjSLYogjDHm34NiIhonzLDwQ3X0V8FMuD/dHJOp8
-         jyeEw7MWmMNjONTrxejQI/sJ+AR+1v22aDP3WDsC/9+3C3XVaN3orxAAhol1FXuoSMem
-         6Gd1rnDGltqPIE3wbIB7THJK+lDUHHHGDI2xHJTdvaB/Hvz8j+NFFJbPR85MTBsFbcac
-         8mgARIFsy549i9cYzg9i5FOwKSrSiMwqpA/TyZtpHIt/AtuxFFivFbI/WIkuXjDJI+tV
-         1xFQ==
-X-Gm-Message-State: AOAM532W9S5A4wsLYdwBR1m16ete1bCvEgpQ7CDKox9jg8Jn5xXlQC7K
-        8s+Ts7g9nzUKckBQVlszGA==
-X-Google-Smtp-Source: ABdhPJxJjIIYyrcib/I+TdXI7CjKXK7Wk/Zyx+OzIi2pCj0tEGYDCPowZiVCZFfWGv92m5fD99xGlQ==
-X-Received: by 2002:a05:6870:4788:b0:ee:3a:8ab3 with SMTP id c8-20020a056870478800b000ee003a8ab3mr3546603oaq.231.1653652728251;
-        Fri, 27 May 2022 04:58:48 -0700 (PDT)
-Received: from serve.minyard.net (serve.minyard.net. [2001:470:b8f6:1b::1])
-        by smtp.gmail.com with ESMTPSA id r36-20020a05683044a400b0060ae5f10973sm1654569otv.15.2022.05.27.04.58.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 May 2022 04:58:47 -0700 (PDT)
-Sender: Corey Minyard <tcminyard@gmail.com>
-Received: from minyard.net (unknown [IPv6:2001:470:b8f6:1b:9845:e734:5235:fb48])
-        by serve.minyard.net (Postfix) with ESMTPSA id AA0FE1800B7;
-        Fri, 27 May 2022 11:58:46 +0000 (UTC)
-Date:   Fri, 27 May 2022 06:58:45 -0500
-From:   Corey Minyard <minyard@acm.org>
-To:     keliu <liuke94@huawei.com>
-Cc:     mpm@selenic.com, herbert@gondor.apana.org.au,
-        sudipm.mukherjee@gmail.com, arnd@arndb.de,
-        gregkh@linuxfoundation.org, mst@redhat.com, lvivier@redhat.com,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] drivers: char: Directly use ida_alloc()/free()
-Message-ID: <20220527115845.GJ3767252@minyard.net>
-Reply-To: minyard@acm.org
-References: <20220527074422.2475104-1-liuke94@huawei.com>
+        Fri, 27 May 2022 08:11:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB2A715A768;
+        Fri, 27 May 2022 04:58:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 227D161E2A;
+        Fri, 27 May 2022 11:58:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3CA1C385A9;
+        Fri, 27 May 2022 11:58:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1653652735;
+        bh=8Xvx2MIcxZDbHjwzkoQfpdoBGzgQWatAXhXPa8e5VS4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=NxrpKW7mg//pPsL6j290DqQ/0N6GhSBhKSII4E0w0OISVoHPKMcFtW9UVLfi3r7NK
+         isd/D24Ta81ZcCsYDR7tMr5wAfy6aadELVtckgKiuz+vscBNtlg1oL7jnQHxlkj0BI
+         fn8YkSVONlR49C1VEoo3EOXKIEWGaEI7OV2D/v20=
+Date:   Fri, 27 May 2022 13:49:16 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Zhang Yuchen <zhangyuchen.lcr@bytedance.com>
+Cc:     akpm@linux-foundation.org, david@redhat.com, peterz@infradead.org,
+        mingo@redhat.com, ast@kernel.org, linux-kernel@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-s390@vger.kernel.org,
+        linux-api@vger.kernel.org, fam.zheng@bytedance.com
+Subject: Re: [PATCH] procfs: add syscall statistics
+Message-ID: <YpC6vAKILgsugi+B@kroah.com>
+References: <20220527110959.54559-1-zhangyuchen.lcr@bytedance.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220527074422.2475104-1-liuke94@huawei.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220527110959.54559-1-zhangyuchen.lcr@bytedance.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 27, 2022 at 07:44:22AM +0000, keliu wrote:
-> Use ida_alloc()/ida_free() instead of deprecated
-> ida_simple_get()/ida_simple_remove() .
+On Fri, May 27, 2022 at 07:09:59PM +0800, Zhang Yuchen wrote:
+> Add /proc/syscalls to display percpu syscall count.
 > 
-> Signed-off-by: keliu <liuke94@huawei.com>
+> We need a less resource-intensive way to count syscall per cpu
+> for system problem location.
+
+Why?
+
+How is this less resource intensive than perf?
+
+> There is a similar utility syscount in the BCC project, but syscount
+> has a high performance cost.
+
+What is that cost?
+
+> The following is a comparison on the same machine, using UnixBench
+> System Call Overhead:
+> 
+>     ┏━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━┓
+>     ┃ Change        ┃ Unixbench Score ┃ Loss   ┃
+>     ┡━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━┩
+>     │ no change     │ 1072.6          │ ---    │
+>     │ syscall count │ 982.5           │ 8.40%  │
+>     │ bpf syscount  │ 614.2           │ 42.74% │
+>     └───────────────┴─────────────────┴────────┘
+
+Again, what about perf?
+
+> UnixBench System Call Use sys_gettid to test, this system call only reads
+> one variable, so the performance penalty seems large. When tested with
+> fork, the test scores were almost the same.
+> 
+> So the conclusion is that it does not have a significant impact on system
+> call performance.
+
+8% is huge for a system-wide decrease in performance.  Who would ever
+use this?
+
+> This function depends on CONFIG_FTRACE_SYSCALLS because the system call
+> number is stored in syscall_metadata.
+> 
+> Signed-off-by: Zhang Yuchen <zhangyuchen.lcr@bytedance.com>
 > ---
->  drivers/char/hw_random/virtio-rng.c | 6 +++---
->  drivers/char/ipmi/ipmi_msghandler.c | 4 ++--
->  drivers/char/ppdev.c                | 6 +++---
->  3 files changed, 8 insertions(+), 8 deletions(-)
-
-If you want this to go into individual maintainer trees, you will need
-to split it up.  Otherwise, how are you planning to get this change
-into the kernel?
-
--corey
-
+>  Documentation/filesystems/proc.rst       | 28 +++++++++
+>  arch/arm64/include/asm/syscall_wrapper.h |  2 +-
+>  arch/s390/include/asm/syscall_wrapper.h  |  4 +-
+>  arch/x86/include/asm/syscall_wrapper.h   |  2 +-
+>  fs/proc/Kconfig                          |  7 +++
+>  fs/proc/Makefile                         |  1 +
+>  fs/proc/syscall.c                        | 79 ++++++++++++++++++++++++
+>  include/linux/syscalls.h                 | 51 +++++++++++++--
+>  8 files changed, 165 insertions(+), 9 deletions(-)
+>  create mode 100644 fs/proc/syscall.c
 > 
-> diff --git a/drivers/char/hw_random/virtio-rng.c b/drivers/char/hw_random/virtio-rng.c
-> index e856df7e285c..0ee602963c50 100644
-> --- a/drivers/char/hw_random/virtio-rng.c
-> +++ b/drivers/char/hw_random/virtio-rng.c
-> @@ -135,7 +135,7 @@ static int probe_common(struct virtio_device *vdev)
->  	if (!vi)
->  		return -ENOMEM;
+> diff --git a/Documentation/filesystems/proc.rst b/Documentation/filesystems/proc.rst
+> index 1bc91fb8c321..80394a98a192 100644
+> --- a/Documentation/filesystems/proc.rst
+> +++ b/Documentation/filesystems/proc.rst
+> @@ -686,6 +686,7 @@ files are there, and which are missing.
+>   fs 	      File system parameters, currently nfs/exports	(2.4)
+>   ide          Directory containing info about the IDE subsystem
+>   interrupts   Interrupt usage
+> + syscalls     Syscall count for each cpu
+>   iomem 	      Memory map					(2.4)
+>   ioports      I/O port usage
+>   irq 	      Masks for irq to cpu affinity			(2.4)(smp?)
+> @@ -1225,6 +1226,33 @@ Provides counts of softirq handlers serviced since boot time, for each CPU.
+>      HRTIMER:         0          0          0          0
+>  	RCU:      1678       1769       2178       2250
 >  
-> -	vi->index = index = ida_simple_get(&rng_index_ida, 0, 0, GFP_KERNEL);
-> +	vi->index = index = ida_alloc(&rng_index_ida, GFP_KERNEL);
->  	if (index < 0) {
->  		err = index;
->  		goto err_ida;
-> @@ -165,7 +165,7 @@ static int probe_common(struct virtio_device *vdev)
->  	return 0;
->  
->  err_find:
-> -	ida_simple_remove(&rng_index_ida, index);
-> +	ida_free(&rng_index_ida, index);
->  err_ida:
->  	kfree(vi);
->  	return err;
-> @@ -183,7 +183,7 @@ static void remove_common(struct virtio_device *vdev)
->  		hwrng_unregister(&vi->hwrng);
->  	virtio_reset_device(vdev);
->  	vdev->config->del_vqs(vdev);
-> -	ida_simple_remove(&rng_index_ida, vi->index);
-> +	ida_free(&rng_index_ida, vi->index);
->  	kfree(vi);
->  }
->  
-> diff --git a/drivers/char/ipmi/ipmi_msghandler.c b/drivers/char/ipmi/ipmi_msghandler.c
-> index f1827257ef0e..c1584ed24a6b 100644
-> --- a/drivers/char/ipmi/ipmi_msghandler.c
-> +++ b/drivers/char/ipmi/ipmi_msghandler.c
-> @@ -3018,7 +3018,7 @@ static void cleanup_bmc_work(struct work_struct *work)
->  	int id = bmc->pdev.id; /* Unregister overwrites id */
->  
->  	platform_device_unregister(&bmc->pdev);
-> -	ida_simple_remove(&ipmi_bmc_ida, id);
-> +	ida_free(&ipmi_bmc_ida, id);
->  }
->  
->  static void
-> @@ -3134,7 +3134,7 @@ static int __ipmi_bmc_register(struct ipmi_smi *intf,
->  
->  		bmc->pdev.name = "ipmi_bmc";
->  
-> -		rv = ida_simple_get(&ipmi_bmc_ida, 0, 0, GFP_KERNEL);
-> +		rv = ida_alloc(&ipmi_bmc_ida, GFP_KERNEL);
->  		if (rv < 0) {
->  			kfree(bmc);
->  			goto out;
-> diff --git a/drivers/char/ppdev.c b/drivers/char/ppdev.c
-> index 38b46c7d1737..f6024d97fe70 100644
-> --- a/drivers/char/ppdev.c
-> +++ b/drivers/char/ppdev.c
-> @@ -299,7 +299,7 @@ static int register_device(int minor, struct pp_struct *pp)
->  		goto err;
->  	}
->  
-> -	index = ida_simple_get(&ida_index, 0, 0, GFP_KERNEL);
-> +	index = ida_alloc(&ida_index, GFP_KERNEL);
->  	memset(&ppdev_cb, 0, sizeof(ppdev_cb));
->  	ppdev_cb.irq_func = pp_irq;
->  	ppdev_cb.flags = (pp->flags & PP_EXCL) ? PARPORT_FLAG_EXCL : 0;
-> @@ -310,7 +310,7 @@ static int register_device(int minor, struct pp_struct *pp)
->  	if (!pdev) {
->  		pr_warn("%s: failed to register device!\n", name);
->  		rc = -ENXIO;
-> -		ida_simple_remove(&ida_index, index);
-> +		ida_free(&ida_index, index);
->  		goto err;
->  	}
->  
-> @@ -750,7 +750,7 @@ static int pp_release(struct inode *inode, struct file *file)
->  
->  	if (pp->pdev) {
->  		parport_unregister_device(pp->pdev);
-> -		ida_simple_remove(&ida_index, pp->index);
-> +		ida_free(&ida_index, pp->index);
->  		pp->pdev = NULL;
->  		pr_debug(CHRDEV "%x: unregistered pardevice\n", minor);
->  	}
-> -- 
-> 2.25.1
-> 
+> +syscalls
+> +~~~~~~~~
+> +
+> +Provides counts of syscall since boot time, for each cpu.
+> +
+> +::
+> +
+> +    > cat /proc/syscalls
+> +               CPU0       CPU1       CPU2       CPU3
+> +      0:       3743       3099       3770       3242   sys_read
+> +      1:        222        559        822        522   sys_write
+> +      2:          0          0          0          0   sys_open
+> +      3:       6481      18754      12077       7349   sys_close
+> +      4:      11362      11120      11343      10665   sys_newstat
+> +      5:       5224      13880       8578       5971   sys_newfstat
+> +      6:       1228       1269       1459       1508   sys_newlstat
+> +      7:         90         43         64         67   sys_poll
+> +      8:       1635       1000       2071       1161   sys_lseek
+> +    .... omit the middle line ....
+> +    441:          0          0          0          0   sys_epoll_pwait2
+> +    442:          0          0          0          0   sys_mount_setattr
+> +    443:          0          0          0          0   sys_quotactl_fd
+> +    447:          0          0          0          0   sys_memfd_secret
+> +    448:          0          0          0          0   sys_process_mrelease
+> +    449:          0          0          0          0   sys_futex_waitv
+> +    450:          0          0          0          0   sys_set_mempolicy_home_node
+
+So for systems with large numbers of CPUs, these are huge lines?  Have
+you tested this on large systems?  If so, how big?
+
+thanks,
+
+greg k-h
