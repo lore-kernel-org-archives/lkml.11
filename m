@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D66EC46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D149C38A05
 	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:56:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353245AbiE0L4U (ORCPT
+        id S1353329AbiE0L4Y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 07:56:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40136 "EHLO
+        Fri, 27 May 2022 07:56:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352822AbiE0Luy (ORCPT
+        with ESMTP id S1352844AbiE0Lu4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:50:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04DDA12E315;
-        Fri, 27 May 2022 04:45:38 -0700 (PDT)
+        Fri, 27 May 2022 07:50:56 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC2F2132A0B;
+        Fri, 27 May 2022 04:46:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9127B61D19;
-        Fri, 27 May 2022 11:45:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E62EC385A9;
-        Fri, 27 May 2022 11:45:36 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 6D4D5CE2511;
+        Fri, 27 May 2022 11:46:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E56AC385A9;
+        Fri, 27 May 2022 11:46:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653651937;
-        bh=HQRLgKRyRSQC8LMC/Ac6yzyMh6PiUC8L4qllERK7JFQ=;
+        s=korg; t=1653651960;
+        bh=yLXlgNDwc3M6yVpHiI52bGwxKJCHaWRA55AS1O+jWyU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tj/lyVJo/YVqGr/26Mfo2OZmvGHHfDPP1kKllAAThsWP1CPU2R3//MAByT9YA8N86
-         /eysUBIqe4ONH1P/aMfTdKLcr3uG/IA4IoJdPzlj3rLdjdurhi1qK6qI81VQngHMdg
-         zwNFVUxMBi7GyZwg04ymhtHTsprrCTYK0BT1PHH8=
+        b=Z9SaRS4750CVUPYgEPpjGOdY1SrfVfxPk58vbQSSl0f0w6O6guTv5mvpcuBddVkJH
+         4VwTNFvGn1MStjzTHqnaUvuFo7scfBcURb761gARgJ+T2ZNPk4QJA3rApDF8CXw1aa
+         bNbGHb9rEnlSKs1vLCAwDL6EB8cy6jMjqezo1qMA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
-        Eric Biggers <ebiggers@google.com>,
+        stable@vger.kernel.org,
         Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.15 059/145] random: remove ifdefd out interrupt bench
-Date:   Fri, 27 May 2022 10:49:20 +0200
-Message-Id: <20220527084857.795723883@linuxfoundation.org>
+Subject: [PATCH 5.17 094/111] random: move initialization out of reseeding hot path
+Date:   Fri, 27 May 2022 10:50:06 +0200
+Message-Id: <20220527084832.696256284@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084850.364560116@linuxfoundation.org>
-References: <20220527084850.364560116@linuxfoundation.org>
+In-Reply-To: <20220527084819.133490171@linuxfoundation.org>
+References: <20220527084819.133490171@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,110 +52,93 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 95e6060c20a7f5db60163274c5222a725ac118f9 upstream.
+commit 68c9c8b192c6dae9be6278e98ee44029d5da2d31 upstream.
 
-With tools like kbench9000 giving more finegrained responses, and this
-basically never having been used ever since it was initially added,
-let's just get rid of this. There *is* still work to be done on the
-interrupt handler, but this really isn't the way it's being developed.
+Initialization happens once -- by way of credit_init_bits() -- and then
+it never happens again. Therefore, it doesn't need to be in
+crng_reseed(), which is a hot path that is called multiple times. It
+also doesn't make sense to have there, as initialization activity is
+better associated with initialization routines.
 
-Cc: Theodore Ts'o <tytso@mit.edu>
-Reviewed-by: Eric Biggers <ebiggers@google.com>
+After the prior commit, crng_reseed() now won't be called by multiple
+concurrent callers, which means that we can safely move the
+"finialize_init" logic into crng_init_bits() unconditionally.
+
 Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/admin-guide/sysctl/kernel.rst |    9 ------
- drivers/char/random.c                       |   40 ----------------------------
- 2 files changed, 49 deletions(-)
+ drivers/char/random.c |   42 +++++++++++++++++++-----------------------
+ 1 file changed, 19 insertions(+), 23 deletions(-)
 
---- a/Documentation/admin-guide/sysctl/kernel.rst
-+++ b/Documentation/admin-guide/sysctl/kernel.rst
-@@ -1031,15 +1031,6 @@ This is a directory, with the following
-   are woken up. This file is writable for compatibility purposes, but
-   writing to it has no effect on any RNG behavior.
- 
--If ``drivers/char/random.c`` is built with ``ADD_INTERRUPT_BENCH``
--defined, these additional entries are present:
--
--* ``add_interrupt_avg_cycles``: the average number of cycles between
--  interrupts used to feed the pool;
--
--* ``add_interrupt_avg_deviation``: the standard deviation seen on the
--  number of cycles between interrupts used to feed the pool.
--
- 
- randomize_va_space
- ==================
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -240,8 +240,6 @@
- #define CREATE_TRACE_POINTS
- #include <trace/events/random.h>
+@@ -264,7 +264,6 @@ static void crng_reseed(void)
+ 	unsigned long flags;
+ 	unsigned long next_gen;
+ 	u8 key[CHACHA_KEY_SIZE];
+-	bool finalize_init = false;
  
--/* #define ADD_INTERRUPT_BENCH */
--
- enum {
- 	POOL_BITS = BLAKE2S_HASH_SIZE * 8,
- 	POOL_MIN_BITS = POOL_BITS /* No point in settling for less. */
-@@ -808,27 +806,6 @@ EXPORT_SYMBOL_GPL(add_input_randomness);
+ 	extract_entropy(key, sizeof(key));
  
- static DEFINE_PER_CPU(struct fast_pool, irq_randomness);
+@@ -281,28 +280,10 @@ static void crng_reseed(void)
+ 		++next_gen;
+ 	WRITE_ONCE(base_crng.generation, next_gen);
+ 	WRITE_ONCE(base_crng.birth, jiffies);
+-	if (!crng_ready()) {
++	if (!crng_ready())
+ 		crng_init = CRNG_READY;
+-		finalize_init = true;
+-	}
+ 	spin_unlock_irqrestore(&base_crng.lock, flags);
+ 	memzero_explicit(key, sizeof(key));
+-	if (finalize_init) {
+-		process_random_ready_list();
+-		wake_up_interruptible(&crng_init_wait);
+-		kill_fasync(&fasync, SIGIO, POLL_IN);
+-		pr_notice("crng init done\n");
+-		if (unseeded_warning.missed) {
+-			pr_notice("%d get_random_xx warning(s) missed due to ratelimiting\n",
+-				  unseeded_warning.missed);
+-			unseeded_warning.missed = 0;
+-		}
+-		if (urandom_warning.missed) {
+-			pr_notice("%d urandom warning(s) missed due to ratelimiting\n",
+-				  urandom_warning.missed);
+-			urandom_warning.missed = 0;
+-		}
+-	}
+ }
  
--#ifdef ADD_INTERRUPT_BENCH
--static unsigned long avg_cycles, avg_deviation;
--
--#define AVG_SHIFT 8 /* Exponential average factor k=1/256 */
--#define FIXED_1_2 (1 << (AVG_SHIFT - 1))
--
--static void add_interrupt_bench(cycles_t start)
--{
--	long delta = random_get_entropy() - start;
--
--	/* Use a weighted moving average */
--	delta = delta - ((avg_cycles + FIXED_1_2) >> AVG_SHIFT);
--	avg_cycles += delta;
--	/* And average deviation */
--	delta = abs(delta) - ((avg_deviation + FIXED_1_2) >> AVG_SHIFT);
--	avg_deviation += delta;
--}
--#else
--#define add_interrupt_bench(x)
--#endif
--
- static u32 get_reg(struct fast_pool *f, struct pt_regs *regs)
- {
- 	u32 *ptr = (u32 *)regs;
-@@ -865,7 +842,6 @@ void add_interrupt_randomness(int irq)
- 		(sizeof(ip) > 4) ? ip >> 32 : get_reg(fast_pool, regs);
+ /*
+@@ -834,10 +815,25 @@ static void credit_init_bits(size_t nbit
+ 		new = min_t(unsigned int, POOL_BITS, orig + add);
+ 	} while (cmpxchg(&input_pool.init_bits, orig, new) != orig);
  
- 	fast_mix(fast_pool);
--	add_interrupt_bench(cycles);
- 
- 	if (unlikely(crng_init == 0)) {
- 		if (fast_pool->count >= 64 &&
-@@ -1575,22 +1551,6 @@ struct ctl_table random_table[] = {
- 		.mode		= 0444,
- 		.proc_handler	= proc_do_uuid,
- 	},
--#ifdef ADD_INTERRUPT_BENCH
--	{
--		.procname	= "add_interrupt_avg_cycles",
--		.data		= &avg_cycles,
--		.maxlen		= sizeof(avg_cycles),
--		.mode		= 0444,
--		.proc_handler	= proc_doulongvec_minmax,
--	},
--	{
--		.procname	= "add_interrupt_avg_deviation",
--		.data		= &avg_deviation,
--		.maxlen		= sizeof(avg_deviation),
--		.mode		= 0444,
--		.proc_handler	= proc_doulongvec_minmax,
--	},
--#endif
- 	{ }
- };
- #endif	/* CONFIG_SYSCTL */
+-	if (orig < POOL_READY_BITS && new >= POOL_READY_BITS)
+-		crng_reseed();
+-	else if (orig < POOL_EARLY_BITS && new >= POOL_EARLY_BITS) {
++	if (orig < POOL_READY_BITS && new >= POOL_READY_BITS) {
++		crng_reseed(); /* Sets crng_init to CRNG_READY under base_crng.lock. */
++		process_random_ready_list();
++		wake_up_interruptible(&crng_init_wait);
++		kill_fasync(&fasync, SIGIO, POLL_IN);
++		pr_notice("crng init done\n");
++		if (unseeded_warning.missed) {
++			pr_notice("%d get_random_xx warning(s) missed due to ratelimiting\n",
++				  unseeded_warning.missed);
++			unseeded_warning.missed = 0;
++		}
++		if (urandom_warning.missed) {
++			pr_notice("%d urandom warning(s) missed due to ratelimiting\n",
++				  urandom_warning.missed);
++			urandom_warning.missed = 0;
++		}
++	} else if (orig < POOL_EARLY_BITS && new >= POOL_EARLY_BITS) {
+ 		spin_lock_irqsave(&base_crng.lock, flags);
++		/* Check if crng_init is CRNG_EMPTY, to avoid race with crng_reseed(). */
+ 		if (crng_init == CRNG_EMPTY) {
+ 			extract_entropy(base_crng.key, sizeof(base_crng.key));
+ 			crng_init = CRNG_EARLY;
 
 
