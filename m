@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12A57C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:04:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 792AFC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:04:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239557AbiE0MER (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 08:04:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57788 "EHLO
+        id S1352682AbiE0MEb (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 08:04:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352941AbiE0Lzq (ORCPT
+        with ESMTP id S1353054AbiE0L4J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:55:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7898815E489;
-        Fri, 27 May 2022 04:49:18 -0700 (PDT)
+        Fri, 27 May 2022 07:56:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F56D14CA0E;
+        Fri, 27 May 2022 04:49:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 13B1C61D9F;
-        Fri, 27 May 2022 11:49:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C8C7C385A9;
-        Fri, 27 May 2022 11:49:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A535FB8091D;
+        Fri, 27 May 2022 11:49:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12ED8C385A9;
+        Fri, 27 May 2022 11:49:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653652157;
-        bh=mZa8wpVOo+dJnkNkQMXBJ4VZGlqIRUrqht3GYNIezqI=;
+        s=korg; t=1653652175;
+        bh=Ll8VB7zcS546EdeqPpDbCytInxlMVmtoBs8Refp006I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RXV+1nfzEVJyr3JE6vyMR4ay1ISz6tArPWx2mlj/XK8LqU6LzZmEob/FCD5JMhBSh
-         6O7CRxZ1iohz4SC5YPhbhsNtApq3XRXnV8rDBwNjBSzlkimH42JZ54+2EzzgoMelLz
-         OvrbNMMJUCgNZXlUzGBgh+FUuWURqIORi29sDvPQ=
+        b=GzuyzXuTIB8NuicAUawtMtiblZkq3+SdmWIvkmBFr4v/fzB1MJeo5RnySG582vSox
+         qA1LBRjBnjTYBso3grTQTZPFT6NPqxQudcR+t1AcIM1PdHrP53Rr5v7WQjWlxZngKQ
+         yPn3h7acyfaMPhFgv7TYeZB9QlkuLo3RDjewt2cA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
+        stable@vger.kernel.org, Jan Varho <jan.varho@gmail.com>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.10 106/163] random: make consistent usage of crng_ready()
-Date:   Fri, 27 May 2022 10:49:46 +0200
-Message-Id: <20220527084842.789948970@linuxfoundation.org>
+Subject: [PATCH 5.15 095/145] random: do not split fast init input in add_hwgenerator_randomness()
+Date:   Fri, 27 May 2022 10:49:56 +0200
+Message-Id: <20220527084902.216336594@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
-References: <20220527084828.156494029@linuxfoundation.org>
+In-Reply-To: <20220527084850.364560116@linuxfoundation.org>
+References: <20220527084850.364560116@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,91 +49,87 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Jan Varho <jan.varho@gmail.com>
 
-commit a96cfe2d427064325ecbf56df8816c6b871ec285 upstream.
+commit 527a9867af29ff89f278d037db704e0ed50fb666 upstream.
 
-Rather than sometimes checking `crng_init < 2`, we should always use the
-crng_ready() macro, so that should we change anything later, it's
-consistent. Additionally, that macro already has a likely() around it,
-which means we don't need to open code our own likely() and unlikely()
-annotations.
+add_hwgenerator_randomness() tries to only use the required amount of input
+for fast init, but credits all the entropy, rather than a fraction of
+it. Since it's hard to determine how much entropy is left over out of a
+non-unformly random sample, either give it all to fast init or credit
+it, but don't attempt to do both. In the process, we can clean up the
+injection code to no longer need to return a value.
 
-Cc: Theodore Ts'o <tytso@mit.edu>
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Signed-off-by: Jan Varho <jan.varho@gmail.com>
+[Jason: expanded commit message]
+Fixes: 73c7733f122e ("random: do not throw away excess input to crng_fast_load")
+Cc: stable@vger.kernel.org # 5.17+, requires af704c856e88
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   19 +++++++------------
- 1 file changed, 7 insertions(+), 12 deletions(-)
+ drivers/char/random.c |   23 ++++++-----------------
+ 1 file changed, 6 insertions(+), 17 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -125,18 +125,13 @@ static void try_to_generate_entropy(void
+@@ -439,11 +439,8 @@ static void crng_make_state(u32 chacha_s
+  * This shouldn't be set by functions like add_device_randomness(),
+  * where we can't trust the buffer passed to it is guaranteed to be
+  * unpredictable (so it might not have any entropy at all).
+- *
+- * Returns the number of bytes processed from input, which is bounded
+- * by CRNG_INIT_CNT_THRESH if account is true.
   */
- int wait_for_random_bytes(void)
+-static size_t crng_pre_init_inject(const void *input, size_t len, bool account)
++static void crng_pre_init_inject(const void *input, size_t len, bool account)
  {
--	if (likely(crng_ready()))
+ 	static int crng_init_cnt = 0;
+ 	struct blake2s_state hash;
+@@ -454,18 +451,15 @@ static size_t crng_pre_init_inject(const
+ 	spin_lock_irqsave(&base_crng.lock, flags);
+ 	if (crng_init != 0) {
+ 		spin_unlock_irqrestore(&base_crng.lock, flags);
 -		return 0;
--
--	do {
-+	while (!crng_ready()) {
- 		int ret;
- 		ret = wait_event_interruptible_timeout(crng_init_wait, crng_ready(), HZ);
- 		if (ret)
- 			return ret > 0 ? 0 : ret;
--
- 		try_to_generate_entropy();
--	} while (!crng_ready());
--
-+	}
- 	return 0;
- }
- EXPORT_SYMBOL(wait_for_random_bytes);
-@@ -293,7 +288,7 @@ static void crng_reseed(void)
- 		++next_gen;
- 	WRITE_ONCE(base_crng.generation, next_gen);
- 	WRITE_ONCE(base_crng.birth, jiffies);
--	if (crng_init < 2) {
-+	if (!crng_ready()) {
- 		crng_init = 2;
- 		finalize_init = true;
++		return;
  	}
-@@ -361,7 +356,7 @@ static void crng_make_state(u32 chacha_s
- 	 * ready, we do fast key erasure with the base_crng directly, because
- 	 * this is what crng_pre_init_inject() mutates during early init.
- 	 */
--	if (unlikely(!crng_ready())) {
-+	if (!crng_ready()) {
- 		bool ready;
  
- 		spin_lock_irqsave(&base_crng.lock, flags);
-@@ -804,7 +799,7 @@ static void credit_entropy_bits(size_t n
- 		entropy_count = min_t(unsigned int, POOL_BITS, orig + add);
- 	} while (cmpxchg(&input_pool.entropy_count, orig, entropy_count) != orig);
+-	if (account)
+-		len = min_t(size_t, len, CRNG_INIT_CNT_THRESH - crng_init_cnt);
+-
+ 	blake2s_update(&hash, base_crng.key, sizeof(base_crng.key));
+ 	blake2s_update(&hash, input, len);
+ 	blake2s_final(&hash, base_crng.key);
  
--	if (crng_init < 2 && entropy_count >= POOL_MIN_BITS)
-+	if (!crng_ready() && entropy_count >= POOL_MIN_BITS)
- 		crng_reseed();
+ 	if (account) {
+-		crng_init_cnt += len;
++		crng_init_cnt += min_t(size_t, len, CRNG_INIT_CNT_THRESH - crng_init_cnt);
+ 		if (crng_init_cnt >= CRNG_INIT_CNT_THRESH) {
+ 			++base_crng.generation;
+ 			crng_init = 1;
+@@ -476,8 +470,6 @@ static size_t crng_pre_init_inject(const
+ 
+ 	if (crng_init == 1)
+ 		pr_notice("fast init done\n");
+-
+-	return len;
  }
  
-@@ -961,7 +956,7 @@ int __init rand_initialize(void)
- 	extract_entropy(base_crng.key, sizeof(base_crng.key));
- 	++base_crng.generation;
- 
--	if (arch_init && trust_cpu && crng_init < 2) {
-+	if (arch_init && trust_cpu && !crng_ready()) {
- 		crng_init = 2;
- 		pr_notice("crng init done (trusting CPU's manufacturer)\n");
+ static void _get_random_bytes(void *buf, size_t nbytes)
+@@ -1138,12 +1130,9 @@ void add_hwgenerator_randomness(const vo
+ 				size_t entropy)
+ {
+ 	if (unlikely(crng_init == 0 && entropy < POOL_MIN_BITS)) {
+-		size_t ret = crng_pre_init_inject(buffer, count, true);
+-		mix_pool_bytes(buffer, ret);
+-		count -= ret;
+-		buffer += ret;
+-		if (!count || crng_init == 0)
+-			return;
++		crng_pre_init_inject(buffer, count, true);
++		mix_pool_bytes(buffer, count);
++		return;
  	}
-@@ -1550,7 +1545,7 @@ static long random_ioctl(struct file *f,
- 	case RNDRESEEDCRNG:
- 		if (!capable(CAP_SYS_ADMIN))
- 			return -EPERM;
--		if (crng_init < 2)
-+		if (!crng_ready())
- 			return -ENODATA;
- 		crng_reseed();
- 		return 0;
+ 
+ 	/*
 
 
