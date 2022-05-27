@@ -2,100 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4756CC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 03:43:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80C78C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 03:49:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239260AbiE0DnS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 26 May 2022 23:43:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53588 "EHLO
+        id S239455AbiE0Dts (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 26 May 2022 23:49:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229768AbiE0DnP (ORCPT
+        with ESMTP id S229768AbiE0Dto (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 26 May 2022 23:43:15 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9D21A196
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 20:43:13 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id h11so3934982eda.8
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 20:43:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=SPBb+g0viJg5NqTEyDBHqBkftk1kmk7JjYgXXaPHViY=;
-        b=QU3l08rm3NqbUG4rASTLaS9tNuaMKT998BWPJJS6SNMsHt6Nj82cqHJ09FZe56QEYz
-         ItovWKnHQvkgOX0S9uKQ5o+SRbcNcwsRrja5IRwjub0+ItN6yzbgpTUB4iWoPPAH/viN
-         iWBtDpLr0KpZjXTH6wz7YJOUUEkerlOMA+sxM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=SPBb+g0viJg5NqTEyDBHqBkftk1kmk7JjYgXXaPHViY=;
-        b=lp6s8YHsk7Fh4mJ6GOJYyaNpXsIX7N4ArPUOKjdwkdm/kVnxtEdSidnGknE2MKHKkk
-         G0/6ltC0goD0QQ8sPUflPxMY2IN5nT9SYUVmHONE4Xwf0lqVl4p7x0Mu8Yqy7BHhj+pO
-         FuHcc2dTrd14AbHrFeHedi2eIR12CbciPlPci/p1v9Tdv1O64pHOpWLgSNY3mKRUNIJL
-         2KZMVMdJp70aY6CcI7gnSWJxda2hI9JiP4gk7JAoNxkBOjkqhM1TW6/JyEQ9sV1mZU9H
-         KgG9i0mbHdhiSvsY1G8u9wHf+uJWlGfC6MCcXH02JT2ygX8/1cEQ2SUiKgFh/0cgOwCS
-         6ZBg==
-X-Gm-Message-State: AOAM5331x56USMPPM8sU5OpZ/yHBkKH6kxOQ5rOBlOTlzhsHJ49KPHaD
-        MfrrZwqXKrX1w5q7xJp0R+SduckivS0wLtW0Tt4=
-X-Google-Smtp-Source: ABdhPJynvn8cu457o8cEZNw32ObUEZVbWzD4ICYRWFzVW+pXo/sd8JnYKoSa1n67HwkRoa/urljFew==
-X-Received: by 2002:a05:6402:3686:b0:42b:764:60c6 with SMTP id ej6-20020a056402368600b0042b076460c6mr39563401edb.384.1653622992267;
-        Thu, 26 May 2022 20:43:12 -0700 (PDT)
-Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com. [209.85.221.46])
-        by smtp.gmail.com with ESMTPSA id d21-20020a170906641500b006febce7081esm1055763ejm.177.2022.05.26.20.43.11
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 26 May 2022 20:43:11 -0700 (PDT)
-Received: by mail-wr1-f46.google.com with SMTP id t6so4281457wra.4
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 20:43:11 -0700 (PDT)
-X-Received: by 2002:a5d:6152:0:b0:210:1864:2fbc with SMTP id
- y18-20020a5d6152000000b0021018642fbcmr753156wrt.97.1653622990694; Thu, 26 May
- 2022 20:43:10 -0700 (PDT)
+        Thu, 26 May 2022 23:49:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BF93B0D11;
+        Thu, 26 May 2022 20:49:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C05B61D76;
+        Fri, 27 May 2022 03:49:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D748C385A9;
+        Fri, 27 May 2022 03:49:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653623382;
+        bh=D3GZP6fleTWhoFCBrTzOU6j74QipwUFxxLvVwr0pU/0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=tJYPOCiwACHoA6gz2mr86oT4blc545XfmkckujqLvZZxC77zEMLzeH3PWJhMyd0aH
+         El1JGn7e16gh2ymjCcTCfLVRHobvGN6C3/Kb5K3JoZ9QUVNkmJWX7R0TySjsLu8p6S
+         tstrp0aLNOHigSU7TeBgKbGkPvQlxxsJqENYcGJBs8psmhkNOJq8d1OZdnQzFq8Lio
+         nJqc1TC2G+/H5QWMJWSG4q79d6a4Q/W4893B/TIl8AiJkmEoDwV1mPYIzzPpjZrhzH
+         AzO0wzzbUGGz34KkoYbQi1AlT6bDEHeCVA3wqixuy7cuN3LdhvMHUyFlBUgOLic5EZ
+         svVn5zKj6cIrw==
+Date:   Thu, 26 May 2022 20:49:41 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Thomas Osterried <thomas@osterried.de>
+Cc:     Lu Wei <luwei32@huawei.com>, jreuter@yaina.de, ralf@linux-mips.org,
+        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        linux-hams@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next] ax25: merge repeat codes in
+ ax25_dev_device_down()
+Message-ID: <20220526204941.0a56bf5d@kernel.org>
+In-Reply-To: <YoQj7eND7/2KSBFs@x-berg.in-berlin.de>
+References: <20220516062804.254742-1-luwei32@huawei.com>
+        <YoQj7eND7/2KSBFs@x-berg.in-berlin.de>
 MIME-Version: 1.0
-References: <CA+G9fYtDBZaBGkEp5tRMM5C1xHEKeyyNK1S4WoKvrOoFxGm4KQ@mail.gmail.com>
- <ac245d62-2295-8cf6-6808-4a6eb6bdbd21@linux.alibaba.com>
-In-Reply-To: <ac245d62-2295-8cf6-6808-4a6eb6bdbd21@linux.alibaba.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Thu, 26 May 2022 20:42:54 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wjgGW_jsjZxKLcKCf4Di22vzJU6K56j0Oe8Td6RgKrc+A@mail.gmail.com>
-Message-ID: <CAHk-=wjgGW_jsjZxKLcKCf4Di22vzJU6K56j0Oe8Td6RgKrc+A@mail.gmail.com>
-Subject: Re: mm: change huge_ptep_clear_flush() to return the original pte
-To:     Baolin Wang <baolin.wang@linux.alibaba.com>
-Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Linux-Next Mailing List <linux-next@vger.kernel.org>,
-        lkft-triage@lists.linaro.org,
-        Linux regressions mailing list <regressions@lists.linux.dev>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Matthew Wilcox <willy@infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 26, 2022 at 8:36 PM Baolin Wang
-<baolin.wang@linux.alibaba.com> wrote:
->
-> That is caused by commit:
->
-> 00df1f1a133b ("mm: change huge_ptep_clear_flush() to return the original
-> pte")
->
-> interacting with commit:
->
-> fb396bb459c1 ("arm64/hugetlb: Drop TLB flush from get_clear_flush()")
->
-> And Catalin has fixed the conflict with below changes [1], not sure why
-> it is not merged.
+On Wed, 18 May 2022 00:38:37 +0200 Thomas Osterried wrote:
+> 1. We need time for questions and discussions
+> 
+> In the past, we had several problems with patches that went upstream which
+> obviously not have been tested.
+> We have several requests by our community at linux-hams, that we need
+> to have a chance to read a patch proposal, and have time to test it,
+> before things become worse.
 
-Argh. Nobody informed me (or if they did, I clearly missed it).
+Any input on:
 
-> Linus, should I send a proper patch to fix this conflict for you?
+https://patchwork.kernel.org/project/netdevbpf/patch/20220525112850.102363-1-duoming@zju.edu.cn/
 
-Yeah, somebody please send me a proper tested fix-up patch with commit
-message etc.
-
-Thanks,
-
-              Linus
+?
