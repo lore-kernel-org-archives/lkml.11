@@ -2,177 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D014CC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:38:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEFCBC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:39:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349972AbiE0Iiu (ORCPT
+        id S1349958AbiE0IjB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 04:38:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52000 "EHLO
+        Fri, 27 May 2022 04:39:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350019AbiE0Ii1 (ORCPT
+        with ESMTP id S1349891AbiE0Ih7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 04:38:27 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88A6765D09;
-        Fri, 27 May 2022 01:37:48 -0700 (PDT)
-Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.57])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4L8dSF3f8qz1JCSM;
-        Fri, 27 May 2022 16:36:13 +0800 (CST)
-Received: from dggpemm500018.china.huawei.com (7.185.36.111) by
- dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 27 May 2022 16:37:46 +0800
-Received: from localhost.localdomain (10.175.112.125) by
- dggpemm500018.china.huawei.com (7.185.36.111) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 27 May 2022 16:37:45 +0800
-From:   keliu <liuke94@huawei.com>
-To:     <hao.wu@intel.com>, <trix@redhat.com>, <mdf@kernel.org>,
-        <yilun.xu@intel.com>, <linux-fpga@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     keliu <liuke94@huawei.com>
-Subject: [PATCH] fpga: Directly use ida_alloc()/free()
-Date:   Fri, 27 May 2022 08:59:15 +0000
-Message-ID: <20220527085915.2798928-1-liuke94@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 27 May 2022 04:37:59 -0400
+Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE2FA1078BC;
+        Fri, 27 May 2022 01:36:59 -0700 (PDT)
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 24R8amxv025473;
+        Fri, 27 May 2022 03:36:48 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1653640608;
+        bh=j3g2qof5jQ7uAXfAUoi+PBASzboPSxW3V7N2l+lUYjw=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=zG28+Vpm9Qruu52yW1WC5V+U4Oujy1ML3Ngj2DJicdzuIWLb3dhcum3KWNUYMSC74
+         npF5pTWqNuLojmvNEWNq603r4jXQHGZy58OtVW8yZMeZ4GS5wq5rIYcGwGWbjSazm2
+         zQe6X3V7d6fWE8LTFE9XPDpoO1gEz/zqVcVa1ioE=
+Received: from DFLE103.ent.ti.com (dfle103.ent.ti.com [10.64.6.24])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 24R8amn1091522
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 27 May 2022 03:36:48 -0500
+Received: from DFLE113.ent.ti.com (10.64.6.34) by DFLE103.ent.ti.com
+ (10.64.6.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Fri, 27
+ May 2022 03:36:47 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE113.ent.ti.com
+ (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Fri, 27 May 2022 03:36:47 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 24R8akLg027352;
+        Fri, 27 May 2022 03:36:47 -0500
+From:   Rahul T R <r-ravikumar@ti.com>
+To:     <robh+dt@kernel.org>, <nm@ti.com>, <vigneshr@ti.com>,
+        <kishon@ti.com>, <krzysztof.kozlowski+dt@linaro.org>
+CC:     <lee.jones@linaro.org>, <rogerq@kernel.org>,
+        <devicetree@vger.kernel.org>, <kristo@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <s-anna@ti.com>,
+        Rahul T R <r-ravikumar@ti.com>
+Subject: [PATCH 1/3] dt-bindings: mfd: ti,j721e-system-controller: Add clock property
+Date:   Fri, 27 May 2022 14:05:54 +0530
+Message-ID: <20220527083556.18864-2-r-ravikumar@ti.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220527083556.18864-1-r-ravikumar@ti.com>
+References: <20220527083556.18864-1-r-ravikumar@ti.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.112.125]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500018.china.huawei.com (7.185.36.111)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use ida_alloc()/ida_free() instead of deprecated
-ida_simple_get()/ida_simple_remove() .
+Add a pattern property for clock, also update the example with
+a clock node
 
-Signed-off-by: keliu <liuke94@huawei.com>
+Signed-off-by: Rahul T R <r-ravikumar@ti.com>
 ---
- drivers/fpga/dfl.c         | 4 ++--
- drivers/fpga/fpga-bridge.c | 6 +++---
- drivers/fpga/fpga-mgr.c    | 6 +++---
- drivers/fpga/fpga-region.c | 6 +++---
- 4 files changed, 11 insertions(+), 11 deletions(-)
+ .../bindings/mfd/ti,j721e-system-controller.yaml     | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/drivers/fpga/dfl.c b/drivers/fpga/dfl.c
-index 599bb21d86af..2dff0c626cc6 100644
---- a/drivers/fpga/dfl.c
-+++ b/drivers/fpga/dfl.c
-@@ -342,7 +342,7 @@ static void release_dfl_dev(struct device *dev)
- 	if (ddev->mmio_res.parent)
- 		release_resource(&ddev->mmio_res);
+diff --git a/Documentation/devicetree/bindings/mfd/ti,j721e-system-controller.yaml b/Documentation/devicetree/bindings/mfd/ti,j721e-system-controller.yaml
+index fa86691ebf16..e774a7f0bb08 100644
+--- a/Documentation/devicetree/bindings/mfd/ti,j721e-system-controller.yaml
++++ b/Documentation/devicetree/bindings/mfd/ti,j721e-system-controller.yaml
+@@ -48,6 +48,12 @@ patternProperties:
+     description:
+       This is the SERDES lane control mux.
  
--	ida_simple_remove(&dfl_device_ida, ddev->id);
-+	ida_free(&dfl_device_ida, ddev->id);
- 	kfree(ddev->irqs);
- 	kfree(ddev);
- }
-@@ -360,7 +360,7 @@ dfl_dev_add(struct dfl_feature_platform_data *pdata,
- 	if (!ddev)
- 		return ERR_PTR(-ENOMEM);
- 
--	id = ida_simple_get(&dfl_device_ida, 0, 0, GFP_KERNEL);
-+	id = ida_alloc(&dfl_device_ida, GFP_KERNEL);
- 	if (id < 0) {
- 		dev_err(&pdev->dev, "unable to get id\n");
- 		kfree(ddev);
-diff --git a/drivers/fpga/fpga-bridge.c b/drivers/fpga/fpga-bridge.c
-index 16f2b164a178..727704431f61 100644
---- a/drivers/fpga/fpga-bridge.c
-+++ b/drivers/fpga/fpga-bridge.c
-@@ -342,7 +342,7 @@ fpga_bridge_register(struct device *parent, const char *name,
- 	if (!bridge)
- 		return ERR_PTR(-ENOMEM);
- 
--	id = ida_simple_get(&fpga_bridge_ida, 0, 0, GFP_KERNEL);
-+	id = ida_alloc(&fpga_bridge_ida, GFP_KERNEL);
- 	if (id < 0) {
- 		ret = id;
- 		goto error_kfree;
-@@ -375,7 +375,7 @@ fpga_bridge_register(struct device *parent, const char *name,
- 	return bridge;
- 
- error_device:
--	ida_simple_remove(&fpga_bridge_ida, id);
-+	ida_free(&fpga_bridge_ida, id);
- error_kfree:
- 	kfree(bridge);
- 
-@@ -407,7 +407,7 @@ static void fpga_bridge_dev_release(struct device *dev)
- {
- 	struct fpga_bridge *bridge = to_fpga_bridge(dev);
- 
--	ida_simple_remove(&fpga_bridge_ida, bridge->dev.id);
-+	ida_free(&fpga_bridge_ida, bridge->dev.id);
- 	kfree(bridge);
- }
- 
-diff --git a/drivers/fpga/fpga-mgr.c b/drivers/fpga/fpga-mgr.c
-index d49a9ce34568..2955a21beebe 100644
---- a/drivers/fpga/fpga-mgr.c
-+++ b/drivers/fpga/fpga-mgr.c
-@@ -622,7 +622,7 @@ fpga_mgr_register_full(struct device *parent, const struct fpga_manager_info *in
- 	if (!mgr)
- 		return ERR_PTR(-ENOMEM);
- 
--	id = ida_simple_get(&fpga_mgr_ida, 0, 0, GFP_KERNEL);
-+	id = ida_alloc(&fpga_mgr_ida, GFP_KERNEL);
- 	if (id < 0) {
- 		ret = id;
- 		goto error_kfree;
-@@ -661,7 +661,7 @@ fpga_mgr_register_full(struct device *parent, const struct fpga_manager_info *in
- 	return mgr;
- 
- error_device:
--	ida_simple_remove(&fpga_mgr_ida, id);
-+	ida_free(&fpga_mgr_ida, id);
- error_kfree:
- 	kfree(mgr);
- 
-@@ -785,7 +785,7 @@ static void fpga_mgr_dev_release(struct device *dev)
- {
- 	struct fpga_manager *mgr = to_fpga_manager(dev);
- 
--	ida_simple_remove(&fpga_mgr_ida, mgr->dev.id);
-+	ida_free(&fpga_mgr_ida, mgr->dev.id);
- 	kfree(mgr);
- }
- 
-diff --git a/drivers/fpga/fpga-region.c b/drivers/fpga/fpga-region.c
-index b0ac18de4885..18bcaa1926dd 100644
---- a/drivers/fpga/fpga-region.c
-+++ b/drivers/fpga/fpga-region.c
-@@ -202,7 +202,7 @@ fpga_region_register_full(struct device *parent, const struct fpga_region_info *
- 	if (!region)
- 		return ERR_PTR(-ENOMEM);
- 
--	id = ida_simple_get(&fpga_region_ida, 0, 0, GFP_KERNEL);
-+	id = ida_alloc(&fpga_region_ida, GFP_KERNEL);
- 	if (id < 0) {
- 		ret = id;
- 		goto err_free;
-@@ -234,7 +234,7 @@ fpga_region_register_full(struct device *parent, const struct fpga_region_info *
- 	return region;
- 
- err_remove:
--	ida_simple_remove(&fpga_region_ida, id);
-+	ida_free(&fpga_region_ida, id);
- err_free:
- 	kfree(region);
- 
-@@ -283,7 +283,7 @@ static void fpga_region_dev_release(struct device *dev)
- {
- 	struct fpga_region *region = to_fpga_region(dev);
- 
--	ida_simple_remove(&fpga_region_ida, region->dev.id);
-+	ida_free(&fpga_region_ida, region->dev.id);
- 	kfree(region);
- }
- 
++  "^clock@[0-9a-f]+$":
++    type: object
++    $ref: ../clock/ti,am654-ehrpwm-tbclk.yaml#
++    description:
++      This is TI syscon gate clk.
++
+ required:
+   - compatible
+   - reg
+@@ -79,5 +85,11 @@ examples:
+                 <0x40c0 0x3>, <0x40c4 0x3>, <0x40c8 0x3>, <0x40cc 0x3>;
+                 /* SERDES4 lane0/1/2/3 select */
+         };
++
++        ehrpwm_tbclk: clock@4140 {
++                compatible = "ti,am654-ehrpwm-tbclk", "syscon";
++                reg = <0x4140 0x18>;
++                #clock-cells = <1>;
++        };
+     };
+ ...
 -- 
-2.25.1
+2.17.1
 
