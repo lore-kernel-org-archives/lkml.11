@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32FF2C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:52:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3340C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:52:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240028AbiE0Iwf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 04:52:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33402 "EHLO
+        id S1350084AbiE0Iwm (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 04:52:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350096AbiE0IwE (ORCPT
+        with ESMTP id S1350054AbiE0IwG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 04:52:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D10495A168;
-        Fri, 27 May 2022 01:51:52 -0700 (PDT)
+        Fri, 27 May 2022 04:52:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E9A258399;
+        Fri, 27 May 2022 01:51:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1A6A7B823D9;
-        Fri, 27 May 2022 08:51:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B9EBC385A9;
-        Fri, 27 May 2022 08:51:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0585361D3D;
+        Fri, 27 May 2022 08:51:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF19EC385A9;
+        Fri, 27 May 2022 08:51:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653641509;
-        bh=IrtVp04WXrGF+u/Jx0GCro9bCp6PLkr34Fu9nMRutX8=;
+        s=korg; t=1653641516;
+        bh=YAaAnfdN5DGX6izEPZPLbxRmKyDvGykDk8xyS2lO+OE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GDRgCiaI2zm+Vc8dptGLGjOIm7uxO2F2Ih0KfgmRKHRjLckAgXO9TpK43alsZJD8b
-         1SAF4wJor9F2vgqpccUCXb2RhnI2QsuvXA/SU5qMUVZIt1gnDJq9eOzaJ13xHNXTRU
-         RyfIDpNohWzo+QHwvsrNtU2MmvWY+ZS3WqR09M7I=
+        b=zY2bBCbGCyhfJoVq74PmU19U68SprSNk+ldoQrkp6Jg4haYSFLRQRaiGQgZbNtbEi
+         4dID7qfJ+0hd1Oks7zAQWpu6LNwmK4zBixv0MuKnohMQ2rZqPKrR515SNF3AnvPpPp
+         f/kfAWkAABr4rEts9O5i5aYkzLv5bIpZqLSQ+1Ic=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>,
-        Stafford Horne <shorne@gmail.com>,
+        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Arnd Bergmann <arnd@arndb.de>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.18 04/47] init: call time_init() before rand_initialize()
-Date:   Fri, 27 May 2022 10:49:44 +0200
-Message-Id: <20220527084801.829543626@linuxfoundation.org>
+Subject: [PATCH 5.18 14/47] arm: use fallback for random_get_entropy() instead of zero
+Date:   Fri, 27 May 2022 10:49:54 +0200
+Message-Id: <20220527084803.662215479@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220527084801.223648383@linuxfoundation.org>
 References: <20220527084801.223648383@linuxfoundation.org>
@@ -51,48 +53,34 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit fe222a6ca2d53c38433cba5d3be62a39099e708e upstream.
+commit ff8a8f59c99f6a7c656387addc4d9f2247d75077 upstream.
 
-Currently time_init() is called after rand_initialize(), but
-rand_initialize() makes use of the timer on various platforms, and
-sometimes this timer needs to be initialized by time_init() first. In
-order for random_get_entropy() to not return zero during early boot when
-it's potentially used as an entropy source, reverse the order of these
-two calls. The block doing random initialization was right before
-time_init() before, so changing the order shouldn't have any complicated
-effects.
+In the event that random_get_entropy() can't access a cycle counter or
+similar, falling back to returning 0 is really not the best we can do.
+Instead, at least calling random_get_entropy_fallback() would be
+preferable, because that always needs to return _something_, even
+falling back to jiffies eventually. It's not as though
+random_get_entropy_fallback() is super high precision or guaranteed to
+be entropic, but basically anything that's not zero all the time is
+better than returning zero all the time.
 
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Reviewed-by: Stafford Horne <shorne@gmail.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- init/main.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/arm/include/asm/timex.h |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/init/main.c
-+++ b/init/main.c
-@@ -1035,11 +1035,13 @@ asmlinkage __visible void __init __no_sa
- 	softirq_init();
- 	timekeeping_init();
- 	kfence_init();
-+	time_init();
+--- a/arch/arm/include/asm/timex.h
++++ b/arch/arm/include/asm/timex.h
+@@ -11,5 +11,6 @@
  
- 	/*
- 	 * For best initial stack canary entropy, prepare it after:
- 	 * - setup_arch() for any UEFI RNG entropy and boot cmdline access
- 	 * - timekeeping_init() for ktime entropy used in rand_initialize()
-+	 * - time_init() for making random_get_entropy() work on some platforms
- 	 * - rand_initialize() to get any arch-specific entropy like RDRAND
- 	 * - add_latent_entropy() to get any latent entropy
- 	 * - adding command line entropy
-@@ -1049,7 +1051,6 @@ asmlinkage __visible void __init __no_sa
- 	add_device_randomness(command_line, strlen(command_line));
- 	boot_init_stack_canary();
+ typedef unsigned long cycles_t;
+ #define get_cycles()	({ cycles_t c; read_current_timer(&c) ? 0 : c; })
++#define random_get_entropy() (((unsigned long)get_cycles()) ?: random_get_entropy_fallback())
  
--	time_init();
- 	perf_event_init();
- 	profile_init();
- 	call_function_init();
+ #endif
 
 
