@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1AE4C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:49:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16C46C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:49:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238607AbiE0Lt0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 07:49:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56322 "EHLO
+        id S1352025AbiE0Ltf (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 07:49:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352038AbiE0LpR (ORCPT
+        with ESMTP id S1352232AbiE0Lpf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:45:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20E2413FD72;
-        Fri, 27 May 2022 04:41:48 -0700 (PDT)
+        Fri, 27 May 2022 07:45:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6CA814641E;
+        Fri, 27 May 2022 04:42:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 408E7B824D8;
-        Fri, 27 May 2022 11:41:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FEB4C385A9;
-        Fri, 27 May 2022 11:41:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 14B8E61CDB;
+        Fri, 27 May 2022 11:42:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20321C385A9;
+        Fri, 27 May 2022 11:42:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653651705;
-        bh=1gYXjOiQ/z90nRzb8U321OxJ4EeK2vYVDyO9CPVnJcY=;
+        s=korg; t=1653651734;
+        bh=Af/mC/zq4tKhaB0LwhH5Vk0R8nnqO8wO9ms7HejQAZU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UlUf2fYsROZXikyjxEsaUndw/nCbTy5JdQz4emaM/MA2dl+EKIyMlOOv3gi1DJ3Sy
-         wRcOIJW74D3cDhWs2ag0KcDlGI0GWdlEopzj1SgV7K1z3t5f/RO4PXjSxQ9Hcv/9wa
-         kVIQIliEGZJadH4omyaHskquXJc8W4cOJNAnZpkw=
+        b=pD7bvtrPlS8ERDSZdLnMF1C9HtNY1paDKTXP8kQC3kSr+1h23VSWODCAXYJ4VF2cn
+         EqFqQXeQ5L5nOguwHk16ogaJW4k36bpEzqgXj4wVnX1uULGHmlTRms8Dlz1uEXxEix
+         vjl0yabrZINAziZkVc3+W60xvhGOJmhe9rDWxB70=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
+        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Arnd Bergmann <arnd@arndb.de>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.15 031/145] random: cleanup fractional entropy shift constants
-Date:   Fri, 27 May 2022 10:48:52 +0200
-Message-Id: <20220527084854.599461457@linuxfoundation.org>
+Subject: [PATCH 5.17 077/111] mips: use fallback for random_get_entropy() instead of just c0 random
+Date:   Fri, 27 May 2022 10:49:49 +0200
+Message-Id: <20220527084830.372270403@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084850.364560116@linuxfoundation.org>
-References: <20220527084850.364560116@linuxfoundation.org>
+In-Reply-To: <20220527084819.133490171@linuxfoundation.org>
+References: <20220527084819.133490171@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,82 +54,64 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 18263c4e8e62f7329f38f5eadc568751242ca89c upstream.
+commit 1c99c6a7c3c599a68321b01b9ec243215ede5a68 upstream.
 
-The entropy estimator is calculated in terms of 1/8 bits, which means
-there are various constants where things are shifted by 3. Move these
-into our pool info enum with the other relevant constants. While we're
-at it, move an English assertion about sizes into a proper BUILD_BUG_ON
-so that the compiler can ensure this invariant.
+For situations in which we don't have a c0 counter register available,
+we've been falling back to reading the c0 "random" register, which is
+usually bounded by the amount of TLB entries and changes every other
+cycle or so. This means it wraps extremely often. We can do better by
+combining this fast-changing counter with a potentially slower-changing
+counter from random_get_entropy_fallback() in the more significant bits.
+This commit combines the two, taking into account that the changing bits
+are in a different bit position depending on the CPU model. In addition,
+we previously were falling back to 0 for ancient CPUs that Linux does
+not support anyway; remove that dead path entirely.
 
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Tested-by: Maciej W. Rozycki <macro@orcam.me.uk>
+Acked-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   28 +++++++++++++---------------
- 1 file changed, 13 insertions(+), 15 deletions(-)
+ arch/mips/include/asm/timex.h |   17 ++++++++---------
+ 1 file changed, 8 insertions(+), 9 deletions(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -359,16 +359,6 @@
- /* #define ADD_INTERRUPT_BENCH */
+--- a/arch/mips/include/asm/timex.h
++++ b/arch/mips/include/asm/timex.h
+@@ -76,25 +76,24 @@ static inline cycles_t get_cycles(void)
+ 	else
+ 		return 0;	/* no usable counter */
+ }
++#define get_cycles get_cycles
  
  /*
-- * To allow fractional bits to be tracked, the entropy_count field is
-- * denominated in units of 1/8th bits.
+  * Like get_cycles - but where c0_count is not available we desperately
+  * use c0_random in an attempt to get at least a little bit of entropy.
 - *
-- * 2*(POOL_ENTROPY_SHIFT + poolbitshift) must <= 31, or the multiply in
-- * credit_entropy_bits() needs to be 64 bits wide.
-- */
--#define POOL_ENTROPY_SHIFT 3
--#define POOL_ENTROPY_BITS() (input_pool.entropy_count >> POOL_ENTROPY_SHIFT)
--
--/*
-  * If the entropy count falls under this number of bits, then we
-  * should wake up processes which are selecting or polling on write
-  * access to /dev/random.
-@@ -425,8 +415,13 @@ enum poolinfo {
- 	POOL_WORDMASK = POOL_WORDS - 1,
- 	POOL_BYTES = POOL_WORDS * sizeof(u32),
- 	POOL_BITS = POOL_BYTES * 8,
--	POOL_BITSHIFT = ilog2(POOL_WORDS) + 5,
--	POOL_FRACBITS = POOL_WORDS << (POOL_ENTROPY_SHIFT + 5),
-+	POOL_BITSHIFT = ilog2(POOL_BITS),
+- * R6000 and R6000A neither have a count register nor a random register.
+- * That leaves no entropy source in the CPU itself.
+  */
+ static inline unsigned long random_get_entropy(void)
+ {
+-	unsigned int prid = read_c0_prid();
+-	unsigned int imp = prid & PRID_IMP_MASK;
++	unsigned int c0_random;
+ 
+-	if (can_use_mips_counter(prid))
++	if (can_use_mips_counter(read_c0_prid()))
+ 		return read_c0_count();
+-	else if (likely(imp != PRID_IMP_R6000 && imp != PRID_IMP_R6000A))
+-		return read_c0_random();
 +
-+	/* To allow fractional bits to be tracked, the entropy_count field is
-+	 * denominated in units of 1/8th bits. */
-+	POOL_ENTROPY_SHIFT = 3,
-+#define POOL_ENTROPY_BITS() (input_pool.entropy_count >> POOL_ENTROPY_SHIFT)
-+	POOL_FRACBITS = POOL_BITS << POOL_ENTROPY_SHIFT,
++	if (cpu_has_3kex)
++		c0_random = (read_c0_random() >> 8) & 0x3f;
+ 	else
+-		return 0;	/* no usable register */
++		c0_random = read_c0_random() & 0x3f;
++	return (random_get_entropy_fallback() << 6) | (0x3f - c0_random);
+ }
+ #define random_get_entropy random_get_entropy
  
- 	/* x^128 + x^104 + x^76 + x^51 +x^25 + x + 1 */
- 	POOL_TAP1 = 104,
-@@ -652,6 +647,9 @@ static void credit_entropy_bits(int nbit
- 	int entropy_count, entropy_bits, orig;
- 	int nfrac = nbits << POOL_ENTROPY_SHIFT;
- 
-+	/* Ensure that the multiplication can avoid being 64 bits wide. */
-+	BUILD_BUG_ON(2 * (POOL_ENTROPY_SHIFT + POOL_BITSHIFT) > 31);
-+
- 	if (!nbits)
- 		return;
- 
-@@ -687,13 +685,13 @@ retry:
- 		/* The +2 corresponds to the /4 in the denominator */
- 
- 		do {
--			unsigned int anfrac = min(pnfrac, POOL_FRACBITS/2);
-+			unsigned int anfrac = min(pnfrac, POOL_FRACBITS / 2);
- 			unsigned int add =
--				((POOL_FRACBITS - entropy_count)*anfrac*3) >> s;
-+				((POOL_FRACBITS - entropy_count) * anfrac * 3) >> s;
- 
- 			entropy_count += add;
- 			pnfrac -= anfrac;
--		} while (unlikely(entropy_count < POOL_FRACBITS-2 && pnfrac));
-+		} while (unlikely(entropy_count < POOL_FRACBITS - 2 && pnfrac));
- 	}
- 
- 	if (WARN_ON(entropy_count < 0)) {
 
 
