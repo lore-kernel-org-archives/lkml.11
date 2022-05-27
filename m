@@ -2,153 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B72A6C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 23:41:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7055AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 23:45:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355179AbiE0Xlb (ORCPT
+        id S1355186AbiE0XpG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 19:41:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42536 "EHLO
+        Fri, 27 May 2022 19:45:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355155AbiE0XlY (ORCPT
+        with ESMTP id S232365AbiE0XpE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 19:41:24 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B9E1B1E9
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 16:41:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653694881; x=1685230881;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=DyHYUP0eMBKDXeZ8DPCN5gb/ahXDmU6YjnjDnB5h0kI=;
-  b=ggvc/kWh07q3D6xHMTCTVBmWcBcnIvhDOcL7/trAQ2t4eEZg7McHrQH5
-   m+jRWjtChsyppTG/V2ySG8MkutSnppoNivCooi4zZzDoQeNq3Ie+RFgJo
-   TDr+0au9uGrUDJrJEPaD6JNHaxDyTDjNkbyb2XmhJlj/sGHCehTKMd4Fb
-   cQ8Ps8qSXzXRkFO4TvT8zALnBG34Kk9pkZMabaST9dtJ6ZUs0PGB9ECyq
-   9U+EcAxjLEXeeJq2Mwr1iU3D1NCcskv2AIY6osQDkm6U5qiaYBC7m3cAo
-   OtS5XihpjvT/hCUAm7a2Lr2PxycAjnwIHuzXGMdQXF4pYRRbwghs/S6om
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10360"; a="274698929"
-X-IronPort-AV: E=Sophos;i="5.91,257,1647327600"; 
-   d="scan'208";a="274698929"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2022 16:41:21 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,257,1647327600"; 
-   d="scan'208";a="561009804"
-Received: from lkp-server01.sh.intel.com (HELO db63a1be7222) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 27 May 2022 16:41:19 -0700
-Received: from kbuild by db63a1be7222 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nuja3-0005E7-4n;
-        Fri, 27 May 2022 23:41:19 +0000
-Date:   Sat, 28 May 2022 07:40:31 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Mark Brown <broonie@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Catalin Marinas <catalin.marinas@arm.com>
-Subject: arch/arm64/kernel/signal.c:663:43: sparse: sparse: incorrect type in
- argument 1 (different address spaces)
-Message-ID: <202205280710.c7k1K4sD-lkp@intel.com>
+        Fri, 27 May 2022 19:45:04 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EE8065D23
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 16:45:02 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id j10so8886863lfe.12
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 16:45:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=shutemov-name.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=IALt29wlC4JKslLVMsLFRhR5StYJLg09Im2CzgSWtjU=;
+        b=BSKfdkBpBFTf6f+PiPWq/EXSKA9i8id4uv80ipDYcRnsAuJgnz/nDzvg02VDbWclCK
+         1TAP2co9doBzOdEdmkdVHP8qaNrTPtRuT7tuB4UXYWjHiP/oWai5WXRAVAtk8lZJeJik
+         zzPZ5AQ/Epvcm6XRPzH+jWa0V+SFaFv+OGLsrS5r+m8oB253MVhhyqZL447hADuQyV/y
+         0Nw031lvGm96EZhNUMbUaK4GF3vPSZO4tONyWX2dqdmllE0icr1nUcfAF1zNjNLeSSkl
+         zCA+TmnbcOmXugIUnJ8to7IfOB1iJr1RLAiQPDxiXgFXwZMeedcnL2Mva5gSpKT5gaWg
+         qJJA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=IALt29wlC4JKslLVMsLFRhR5StYJLg09Im2CzgSWtjU=;
+        b=EfZZNQzbXFHSgDV/g3PBFuG06PHaGPz4SBSmkDylWxoUdLBZox1u62ku/pRjH01+fP
+         3LVZN20q6cADpHK8bRaHNpPkcC7SB/SGiU+9Rpl8PCZCgl6PLrRN71fOb8uiNSG+yXR+
+         j1MepJ8YxHjz7m0U1oT4Bo5nyPkvxJ2D7b2JWq+t+e6c2pH1YvJtgQAnE5j1ThBmb7Jb
+         +DhQg3JM6asZKZsX/xSWGp7JhKSVw3DVgG1AdXm/M90QROPGkOdCUzhPq/CtQJhlPdza
+         wE2TeGdloXmqgUmNp2c5b2dJHJ0L5bCyWeeLkKaI3muUc13HFIpz1iDZqGnAR34KnlQA
+         NYmg==
+X-Gm-Message-State: AOAM530zzR6syPVTP7ucvMJuf1byvmh5JUnC1MB62ExoDPfHmQU9/ULX
+        55lINVjAwPMDhxMOnVqfhk0fUw==
+X-Google-Smtp-Source: ABdhPJztWwtE94iIyLx6oVtYfG/pmmvgHHVHI/8vyuAAuATDZ9rdARTLukXZNRS229FkwcWe0iv5VQ==
+X-Received: by 2002:a05:6512:130a:b0:477:b632:27eb with SMTP id x10-20020a056512130a00b00477b63227ebmr31008546lfu.131.1653695100867;
+        Fri, 27 May 2022 16:45:00 -0700 (PDT)
+Received: from box.localdomain ([86.57.175.117])
+        by smtp.gmail.com with ESMTPSA id q20-20020a05651232b400b00473c87152bcsm1061360lfe.127.2022.05.27.16.45.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 27 May 2022 16:45:00 -0700 (PDT)
+Received: by box.localdomain (Postfix, from userid 1000)
+        id 783451094B9; Sat, 28 May 2022 02:46:57 +0300 (+03)
+Date:   Sat, 28 May 2022 02:46:57 +0300
+From:   "Kirill A. Shutemov" <kirill@shutemov.name>
+To:     Jakub =?utf-8?Q?Mat=C4=9Bna?= <matenajakub@gmail.com>
+Cc:     akpm@linux-foundation.org, linux-mm@kvack.org,
+        patches@lists.linux.dev, linux-kernel@vger.kernel.org,
+        vbabka@suse.cz, mhocko@kernel.org, mgorman@techsingularity.net,
+        willy@infradead.org, liam.howlett@oracle.com, hughd@google.com,
+        riel@surriel.com, rostedt@goodmis.org, peterz@infradead.org
+Subject: Re: [PATCH 2/2] [PATCH 2/2] mm: add merging after mremap resize
+Message-ID: <20220527234657.nsn6e7jjwttblzyi@box.shutemov.name>
+References: <20220527104810.24736-1-matenajakub@gmail.com>
+ <20220527104810.24736-3-matenajakub@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220527104810.24736-3-matenajakub@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   bf272460d744112bacd4c4d562592decbf0edf64
-commit: a1f4ccd25cc256255813f584f10e5527369d4a02 arm64/sme: Provide Kconfig for SME
-date:   5 weeks ago
-config: arm64-randconfig-s032-20220527 (https://download.01.org/0day-ci/archive/20220528/202205280710.c7k1K4sD-lkp@intel.com/config)
-compiler: aarch64-linux-gcc (GCC) 11.3.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-14-g5a0004b5-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=a1f4ccd25cc256255813f584f10e5527369d4a02
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout a1f4ccd25cc256255813f584f10e5527369d4a02
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=arm64 SHELL=/bin/bash arch/arm64/kernel/
+On Fri, May 27, 2022 at 12:48:10PM +0200, Jakub Matěna wrote:
+> When mremap call results in expansion, it might be possible to merge the
+> VMA with the next VMA which might become adjacent. This patch adds
+> vma_merge call after the expansion is done to try and merge.
+> 
+> Signed-off-by: Jakub Matěna <matenajakub@gmail.com>
+> ---
+>  mm/mremap.c | 8 ++++++--
+>  1 file changed, 6 insertions(+), 2 deletions(-)
+> 
+> diff --git a/mm/mremap.c b/mm/mremap.c
+> index 303d3290b938..c41237e62156 100644
+> --- a/mm/mremap.c
+> +++ b/mm/mremap.c
+> @@ -9,6 +9,7 @@
+>   */
+>  
+>  #include <linux/mm.h>
+> +#include <linux/mm_inline.h>
+>  #include <linux/hugetlb.h>
+>  #include <linux/shm.h>
+>  #include <linux/ksm.h>
+> @@ -1022,8 +1023,11 @@ SYSCALL_DEFINE5(mremap, unsigned long, addr, unsigned long, old_len,
+>  				}
+>  			}
+>  
+> -			if (vma_adjust(vma, vma->vm_start, addr + new_len,
+> -				       vma->vm_pgoff, NULL)) {
+> +			vma = vma_merge(mm, vma, addr + old_len, addr + new_len,
+> +					vma->vm_flags, vma->anon_vma, vma->vm_file,
+> +					vma->vm_pgoff + (old_len >> PAGE_SHIFT), vma_policy(vma),
+> +					vma->vm_userfaultfd_ctx, anon_vma_name(vma));
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+The arguement list gets busy. Maybe some variables would help.
+Calculation around vm_pgoff is not obvious and requires some explanation.
 
-
-sparse warnings: (new ones prefixed by >>)
->> arch/arm64/kernel/signal.c:663:43: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected struct user_ctxs [noderef] __user *user @@     got struct user_ctxs * @@
-   arch/arm64/kernel/signal.c:663:43: sparse:     expected struct user_ctxs [noderef] __user *user
-   arch/arm64/kernel/signal.c:663:43: sparse:     got struct user_ctxs *
-   arch/arm64/kernel/signal.c:933:26: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected void ( [noderef] [usertype] __user *[assigned] [usertype] sigtramp )( ... ) @@     got void * @@
-   arch/arm64/kernel/signal.c:933:26: sparse:     expected void ( [noderef] [usertype] __user *[assigned] [usertype] sigtramp )( ... )
-   arch/arm64/kernel/signal.c:933:26: sparse:     got void *
->> arch/arm64/kernel/signal.c:394:35: sparse: sparse: dereference of noderef expression
->> arch/arm64/kernel/signal.c:394:35: sparse: sparse: dereference of noderef expression
-   arch/arm64/kernel/signal.c:428:53: sparse: sparse: dereference of noderef expression
-   arch/arm64/kernel/signal.c:428:53: sparse: sparse: dereference of noderef expression
-
-vim +663 arch/arm64/kernel/signal.c
-
-47ccb02868cead Dave Martin      2017-06-15  620  
-2c020ed8d148f7 Catalin Marinas  2012-03-05  621  static int restore_sigframe(struct pt_regs *regs,
-2c020ed8d148f7 Catalin Marinas  2012-03-05  622  			    struct rt_sigframe __user *sf)
-2c020ed8d148f7 Catalin Marinas  2012-03-05  623  {
-2c020ed8d148f7 Catalin Marinas  2012-03-05  624  	sigset_t set;
-2c020ed8d148f7 Catalin Marinas  2012-03-05  625  	int i, err;
-47ccb02868cead Dave Martin      2017-06-15  626  	struct user_ctxs user;
-2c020ed8d148f7 Catalin Marinas  2012-03-05  627  
-2c020ed8d148f7 Catalin Marinas  2012-03-05  628  	err = __copy_from_user(&set, &sf->uc.uc_sigmask, sizeof(set));
-2c020ed8d148f7 Catalin Marinas  2012-03-05  629  	if (err == 0)
-2c020ed8d148f7 Catalin Marinas  2012-03-05  630  		set_current_blocked(&set);
-2c020ed8d148f7 Catalin Marinas  2012-03-05  631  
-2c020ed8d148f7 Catalin Marinas  2012-03-05  632  	for (i = 0; i < 31; i++)
-2c020ed8d148f7 Catalin Marinas  2012-03-05  633  		__get_user_error(regs->regs[i], &sf->uc.uc_mcontext.regs[i],
-2c020ed8d148f7 Catalin Marinas  2012-03-05  634  				 err);
-2c020ed8d148f7 Catalin Marinas  2012-03-05  635  	__get_user_error(regs->sp, &sf->uc.uc_mcontext.sp, err);
-2c020ed8d148f7 Catalin Marinas  2012-03-05  636  	__get_user_error(regs->pc, &sf->uc.uc_mcontext.pc, err);
-2c020ed8d148f7 Catalin Marinas  2012-03-05  637  	__get_user_error(regs->pstate, &sf->uc.uc_mcontext.pstate, err);
-2c020ed8d148f7 Catalin Marinas  2012-03-05  638  
-2c020ed8d148f7 Catalin Marinas  2012-03-05  639  	/*
-2c020ed8d148f7 Catalin Marinas  2012-03-05  640  	 * Avoid sys_rt_sigreturn() restarting.
-2c020ed8d148f7 Catalin Marinas  2012-03-05  641  	 */
-17c28958600928 Dave Martin      2017-08-01  642  	forget_syscall(regs);
-2c020ed8d148f7 Catalin Marinas  2012-03-05  643  
-dbd4d7ca563fd0 Mark Rutland     2016-03-01  644  	err |= !valid_user_regs(&regs->user_regs, current);
-47ccb02868cead Dave Martin      2017-06-15  645  	if (err == 0)
-47ccb02868cead Dave Martin      2017-06-15  646  		err = parse_user_sigframe(&user, sf);
-2c020ed8d148f7 Catalin Marinas  2012-03-05  647  
-6d502b6ba1b267 Suzuki K Poulose 2020-01-13  648  	if (err == 0 && system_supports_fpsimd()) {
-8cd969d28fd284 Dave Martin      2017-10-31  649  		if (!user.fpsimd)
-8cd969d28fd284 Dave Martin      2017-10-31  650  			return -EINVAL;
-8cd969d28fd284 Dave Martin      2017-10-31  651  
-8cd969d28fd284 Dave Martin      2017-10-31  652  		if (user.sve) {
-8cd969d28fd284 Dave Martin      2017-10-31  653  			if (!system_supports_sve())
-8cd969d28fd284 Dave Martin      2017-10-31  654  				return -EINVAL;
-8cd969d28fd284 Dave Martin      2017-10-31  655  
-8cd969d28fd284 Dave Martin      2017-10-31  656  			err = restore_sve_fpsimd_context(&user);
-8cd969d28fd284 Dave Martin      2017-10-31  657  		} else {
-47ccb02868cead Dave Martin      2017-06-15  658  			err = restore_fpsimd_context(user.fpsimd);
-8cd969d28fd284 Dave Martin      2017-10-31  659  		}
-8cd969d28fd284 Dave Martin      2017-10-31  660  	}
-2c020ed8d148f7 Catalin Marinas  2012-03-05  661  
-39782210eb7e87 Mark Brown       2022-04-19  662  	if (err == 0 && system_supports_sme() && user.za)
-39782210eb7e87 Mark Brown       2022-04-19 @663  		err = restore_za_context(&user);
-39782210eb7e87 Mark Brown       2022-04-19  664  
-2c020ed8d148f7 Catalin Marinas  2012-03-05  665  	return err;
-2c020ed8d148f7 Catalin Marinas  2012-03-05  666  }
-2c020ed8d148f7 Catalin Marinas  2012-03-05  667  
-
-:::::: The code at line 663 was first introduced by commit
-:::::: 39782210eb7e87634d96cacb6ece370bc59d74ba arm64/sme: Implement ZA signal handling
-
-:::::: TO: Mark Brown <broonie@kernel.org>
-:::::: CC: Catalin Marinas <catalin.marinas@arm.com>
+> +			if (!vma) {
+>  				vm_unacct_memory(pages);
+>  				ret = -ENOMEM;
+>  				goto out;
+> -- 
+> 2.35.1
+> 
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+ Kirill A. Shutemov
