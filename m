@@ -2,160 +2,306 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67424C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:03:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6D16C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:04:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242605AbiE0IDk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 04:03:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53620 "EHLO
+        id S237253AbiE0IEB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 04:04:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348313AbiE0IDg (ORCPT
+        with ESMTP id S1348560AbiE0IDt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 04:03:36 -0400
-Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB563FF58A;
-        Fri, 27 May 2022 01:03:31 -0700 (PDT)
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24R6eshZ013603;
-        Fri, 27 May 2022 00:57:44 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=pfpt0220; bh=VDnFvteMFLJMKe8wl7YI99gfac2Lg0oXYmlxdZuYXzk=;
- b=ee7IpkFNMEp+qJnCYldxmTbQZ5xpiyOq8f8JkUt1t/PPTRdZ96nVRvsRTgKvAEbkdZ/p
- 4XHMBHbIksogizVyfdtY+rstpfA/QynX7hJ8fQ2r0hkY+fQciPz50yPBykEeLTmT3xh3
- otdXTx3W3TB7jYwoyGdSKBahKMnD3D8vN3yx4M10+BpR0hp2fmpS70nt3DDjkZU0o3Kz
- K4e6RnDyWj2riPWNC7u1gX14wXZ4WPhQE88Z9W7olU+TX7lLf1oD/FJGd69YfI3gidlI
- 2hDpxdnF2PDACvcOjftVAB/mBDo+1lDS8AVM4Bj2IgBYpYvG/0tN9z+Hce+uEeDMceex Tw== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3gaf2rtjrk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Fri, 27 May 2022 00:57:43 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 27 May
- 2022 00:57:41 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 27 May 2022 00:57:41 -0700
-Received: from localhost.localdomain (unknown [10.28.34.29])
-        by maili.marvell.com (Postfix) with ESMTP id DE1333F706A;
-        Fri, 27 May 2022 00:57:38 -0700 (PDT)
-From:   Shijith Thotton <sthotton@marvell.com>
-To:     Arnaud Ebalard <arno@natisbad.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Boris Brezillon <bbrezillon@kernel.org>
-CC:     Shijith Thotton <sthotton@marvell.com>,
-        <linux-crypto@vger.kernel.org>, <jerinj@marvell.com>,
-        <sgoutham@marvell.com>, Srujana Challa <schalla@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Kees Cook <keescook@chromium.org>,
-        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: [PATCH] crypto: octeontx2: add firmware version in devlink info
-Date:   Fri, 27 May 2022 13:24:48 +0530
-Message-ID: <421b1fbe94a82e678887260f768478c11daa1e32.1653589007.git.sthotton@marvell.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 27 May 2022 04:03:49 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 15111102753
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 01:03:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653638627;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=CT8ZCTvZFdAX+p3wnFweEaCytomahmIYJ7xKHAPoTSA=;
+        b=EoRfwJji5d4Vn+8kLECtmStENfXJijsr1odl+xrUT/bFE4eiY99ZDePk/JPLGrfxVnwRzI
+        1kRyVmel38OQeFqTiusUwDRO0IP9mu8+bTQIHsZjRJQbq3NnlJDdZeu9MequfeTjHjSSeL
+        pdaYVdAXyMXPd2QtFbm2cCY+d0k2qME=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-68-c6P6qpKrMbKAr03NZkc4uA-1; Fri, 27 May 2022 04:03:43 -0400
+X-MC-Unique: c6P6qpKrMbKAr03NZkc4uA-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 94F541C161A3;
+        Fri, 27 May 2022 08:03:42 +0000 (UTC)
+Received: from gshan.redhat.com (ovpn-12-91.pek2.redhat.com [10.72.12.91])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 686A82026D07;
+        Fri, 27 May 2022 08:03:33 +0000 (UTC)
+From:   Gavin Shan <gshan@redhat.com>
+To:     kvmarm@lists.cs.columbia.edu
+Cc:     maz@kernel.org, linux-kernel@vger.kernel.org, eauger@redhat.com,
+        oupton@google.com, Jonathan.Cameron@huawei.com,
+        pbonzini@redhat.com, vkuznets@redhat.com, will@kernel.org,
+        james.morse@arm.com, mark.rutland@arm.com,
+        shannon.zhaosl@gmail.com, shijie@amperemail.onmicrosoft.com,
+        shan.gavin@gmail.com
+Subject: [PATCH v7 00/22] Support SDEI Virtualization
+Date:   Fri, 27 May 2022 16:02:31 +0800
+Message-Id: <20220527080253.1562538-1-gshan@redhat.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: TF_yE3dCLGnInHXZU6UkxIyt7jjnZ3uT
-X-Proofpoint-GUID: TF_yE3dCLGnInHXZU6UkxIyt7jjnZ3uT
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-27_02,2022-05-25_02,2022-02-23_01
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Added running firmware version information of AE, SE and IE components
-in devlink info.
+This series intends to virtualize Software Delegated Exception Interface
+(SDEI), which is defined by DEN0054C (v1.1). It allows the hypervisor to
+deliver NMI-alike SDEI event to guest and it's needed by Async PF to
+deliver page-not-present notification from hypervisor to guest. The code
+and the required qemu changes can be found from:
 
-Signed-off-by: Shijith Thotton <sthotton@marvell.com>
----
- .../marvell/octeontx2/otx2_cpt_devlink.c      | 40 ++++++++++++++++++-
- .../marvell/octeontx2/otx2_cptpf_ucode.c      |  2 +-
- .../marvell/octeontx2/otx2_cptpf_ucode.h      |  3 ++
- 3 files changed, 42 insertions(+), 3 deletions(-)
+   https://developer.arm.com/documentation/den0054/c
+   https://github.com/gwshan/linux    ("kvm/arm64_sdei")
+   https://github.com/gwshan/qemu     ("kvm/arm64_sdei")
 
-diff --git a/drivers/crypto/marvell/octeontx2/otx2_cpt_devlink.c b/drivers/crypto/marvell/octeontx2/otx2_cpt_devlink.c
-index bb02e0db3615..7503f6b18ac5 100644
---- a/drivers/crypto/marvell/octeontx2/otx2_cpt_devlink.c
-+++ b/drivers/crypto/marvell/octeontx2/otx2_cpt_devlink.c
-@@ -51,11 +51,47 @@ static const struct devlink_param otx2_cpt_dl_params[] = {
- 			     NULL),
- };
+The design is quite strightforward by following the specification. The
+(SDEI) events are classified into the shared and private ones according
+to their scope. The shared event is system or VM scoped, but the private
+event is vcpu scoped. This implementation doesn't support the shared
+event because all the needed events are private. Besides, the critial
+events aren't supported by the implementation either. It means all events
+are normal in terms of priority.
+
+There are several objects (data structures) introduced to help on the
+event registration, enablement, disablement, unregistration, reset,
+delivery and handling.
+
+  * kvm_sdei_event_handler
+    SDEI event handler, which is provided through EVENT_REGISTER
+    hypercall, is called when the SDEI event is delivered from
+    host to guest.
+    
+  * kvm_sdei_event_context
+    The saved (preempted) context when SDEI event is delivered
+    for handling.
+    
+  * kvm_sdei_vcpu
+    SDEI events and their states.
+
+The patches are organized as below:
+
+  PATCH[01-02] Preparatory work to extend smccc_get_argx() and refactor
+               hypercall routing mechanism
+  PATCH[03]    Adds SDEI virtualization infrastructure
+  PATCH[04-16] Supports various SDEI hypercalls and event handling
+  PATCH[17]    Exposes SDEI capability
+  PATCH[18-19] Support SDEI migration
+  PATCH[20]    Adds document about SDEI
+  PATCH[21-22] SDEI related selftest cases
+
+The previous revisions can be found:
+
+  v6: https://lore.kernel.org/lkml/20220403153911.12332-4-gshan@redhat.com/T/
+  v5: https://lore.kernel.org/kvmarm/20220322080710.51727-1-gshan@redhat.com/
+  v4: https://lore.kernel.org/kvmarm/20210815001352.81927-1-gshan@redhat.com/
+  v3: https://lore.kernel.org/kvmarm/20210507083124.43347-1-gshan@redhat.com/
+  v2: https://lore.kernel.org/kvmarm/20210209032733.99996-1-gshan@redhat.com/
+  v1: https://lore.kernel.org/kvmarm/20200817100531.83045-1-gshan@redhat.com/
+
+Testing
+=======
+[1] The selftest case included in this series works fine. The default SDEI
+    event, whose number is zero, can be registered, enabled, raised. The
+    SDEI event handler can be invoked.
+
+    [host]# pwd
+    /home/gavin/sandbox/linux.main/tools/testing/selftests/kvm
+    [root@virtlab-arm01 kvm]# ./aarch64/sdei 
+
+        NR_VCPUS: 2    SDEI Event: 0x00000000
+
+    --- VERSION
+        Version:              1.1 (vendor: 0x4b564d)
+    --- FEATURES
+        Shared event slots:   0
+        Private event slots:  0
+        Relative mode:        No
+    --- PRIVATE_RESET
+    --- SHARED_RESET
+    --- PE_UNMASK
+    --- EVENT_GET_INFO
+        Type:                 Private
+        Priority:             Normal
+        Signaled:             Yes
+    --- EVENT_REGISTER
+    --- EVENT_ENABLE
+    --- EVENT_SIGNAL
+        Handled:              Yes
+        IRQ:                  No
+        Status:               Registered-Enabled-Running
+        PC/PSTATE:            000000000040232c 00000000600003c5
+        Regs:                 0000000000000000 0000000000000000
+                              0000000000000000 0000000000000000
+    --- PE_MASK
+    --- EVENT_DISABLE
+    --- EVENT_UNREGISTER
+
+        Result: OK
+
+[2] There are additional patches in the following repositories to create
+    procfs entries, allowing to inject SDEI event from host side. The
+    SDEI client in the guest side registers the SDEI default event, whose
+    number is zero. Also, the QEMU exports SDEI ACPI table and supports
+    migration for SDEI.
+
+    https://github.com/gwshan/linux    ("kvm/arm64_sdei")
+    https://github.com/gwshan/qemu     ("kvm/arm64_sdei")
+
+    [2.1] Start the guests and migrate the source VM to the destination
+          VM.
+
+    [host]# /home/gavin/sandbox/qemu.main/build/qemu-system-aarch64       \
+            -accel kvm -machine virt,gic-version=host                     \
+            -cpu host -smp 6,sockets=2,cores=3,threads=1                  \
+            -m 1024M,slots=16,maxmem=64G                                  \
+               :                                                          \
+            -kernel /home/gavin/sandbox/linux.guest/arch/arm64/boot/Image \
+            -initrd /home/gavin/sandbox/images/rootfs.cpio.xz             \
+            -append earlycon=pl011,mmio,0x9000000                         \
+               :
+
+    [host]# /home/gavin/sandbox/qemu.main/build/qemu-system-aarch64       \
+            -accel kvm -machine virt,gic-version=host                     \
+            -cpu host -smp 6,sockets=2,cores=3,threads=1                  \
+            -m 1024M,slots=16,maxmem=64G                                  \
+               :                                                          \
+            -kernel /home/gavin/sandbox/linux.guest/arch/arm64/boot/Image \
+            -initrd /home/gavin/sandbox/images/rootfs.cpio.xz             \
+            -append earlycon=pl011,mmio,0x9000000                         \
+            -incoming tcp:0:4444                                          \
+               :
+
+    [2.2] Check kernel log on the source VM. The SDEI service is enabled
+          and the default SDEI event (0x0) is enabled.
+
+     [guest-src]# dmesg | grep -i sdei
+     ACPI: SDEI 0x000000005BC80000 000024 \
+                (v00 BOCHS  BXPC     00000001 BXPC 00000001)
+     sdei: SDEIv1.1 (0x4b564d) detected in firmware.
+     SDEI TEST: Version 1.1, Vendor 0x4b564d
+     sdei_init: SDEI event (0x0) registered
+     sdei_init: SDEI event (0x0) enabled
+
  
--static int otx2_cpt_devlink_info_get(struct devlink *devlink,
-+static int otx2_cpt_dl_info_firmware_version_put(struct devlink_info_req *req,
-+						 struct otx2_cpt_eng_grp_info grp[],
-+						 const char *ver_name, int eng_type)
-+{
-+	struct otx2_cpt_engs_rsvd *eng;
-+	int i;
-+
-+	for (i = 0; i < OTX2_CPT_MAX_ENGINE_GROUPS; i++) {
-+		eng = find_engines_by_type(&grp[i], eng_type);
-+		if (eng)
-+			return devlink_info_version_running_put(req, ver_name,
-+								eng->ucode->ver_str);
-+	}
-+
-+	return 0;
-+}
-+
-+static int otx2_cpt_devlink_info_get(struct devlink *dl,
- 				     struct devlink_info_req *req,
- 				     struct netlink_ext_ack *extack)
- {
--	return devlink_info_driver_name_put(req, "rvu_cptpf");
-+	struct otx2_cpt_devlink *cpt_dl = devlink_priv(dl);
-+	struct otx2_cptpf_dev *cptpf = cpt_dl->cptpf;
-+	int err;
-+
-+	err = devlink_info_driver_name_put(req, "rvu_cptpf");
-+	if (err)
-+		return err;
-+
-+	err = otx2_cpt_dl_info_firmware_version_put(req, cptpf->eng_grps.grp,
-+						    "fw.ae", OTX2_CPT_AE_TYPES);
-+	if (err)
-+		return err;
-+
-+	err = otx2_cpt_dl_info_firmware_version_put(req, cptpf->eng_grps.grp,
-+						    "fw.se", OTX2_CPT_SE_TYPES);
-+	if (err)
-+		return err;
-+
-+	return otx2_cpt_dl_info_firmware_version_put(req, cptpf->eng_grps.grp,
-+						    "fw.ie", OTX2_CPT_IE_TYPES);
- }
- 
- static const struct devlink_ops otx2_cpt_devlink_ops = {
-diff --git a/drivers/crypto/marvell/octeontx2/otx2_cptpf_ucode.c b/drivers/crypto/marvell/octeontx2/otx2_cptpf_ucode.c
-index 9cba2f714c7e..46ffb7ae982c 100644
---- a/drivers/crypto/marvell/octeontx2/otx2_cptpf_ucode.c
-+++ b/drivers/crypto/marvell/octeontx2/otx2_cptpf_ucode.c
-@@ -476,7 +476,7 @@ static int cpt_ucode_load_fw(struct pci_dev *pdev, struct fw_info_t *fw_info)
- 	return ret;
- }
- 
--static struct otx2_cpt_engs_rsvd *find_engines_by_type(
-+struct otx2_cpt_engs_rsvd *find_engines_by_type(
- 					struct otx2_cpt_eng_grp_info *eng_grp,
- 					int eng_type)
- {
-diff --git a/drivers/crypto/marvell/octeontx2/otx2_cptpf_ucode.h b/drivers/crypto/marvell/octeontx2/otx2_cptpf_ucode.h
-index 8f4d4e5f531a..e69320a54b5d 100644
---- a/drivers/crypto/marvell/octeontx2/otx2_cptpf_ucode.h
-+++ b/drivers/crypto/marvell/octeontx2/otx2_cptpf_ucode.h
-@@ -166,4 +166,7 @@ int otx2_cpt_dl_custom_egrp_create(struct otx2_cptpf_dev *cptpf,
- int otx2_cpt_dl_custom_egrp_delete(struct otx2_cptpf_dev *cptpf,
- 				   struct devlink_param_gset_ctx *ctx);
- void otx2_cpt_print_uc_dbg_info(struct otx2_cptpf_dev *cptpf);
-+struct otx2_cpt_engs_rsvd *find_engines_by_type(
-+					struct otx2_cpt_eng_grp_info *eng_grp,
-+					int eng_type);
- #endif /* __OTX2_CPTPF_UCODE_H */
+     (qemu) migrate -d tcp:localhost:4444
+
+    [2.3] Migrate the source VM to the destination VM. Inject SDEI event
+          to the destination VM. The event is raised and handled.
+
+    (qemu) migrate -d tcp:localhost:4444
+
+    [host]# echo 0 > /proc/kvm/kvm-5360/vcpu-1
+
+    [guest-dst]#
+    =========== SDEI Event (CPU#1) ===========
+    Event: 0000000000000000  Parameter: 00000000dabfdabf
+    PC:    ffff800008cbb554  PSTATE: 00000000604000c5  SP: ffff800009c7bde0
+    Regs:    00000000000016ee ffff00001ffd2e28 00000000000016ed 0000000000000001 
+             ffff800016c28000 0000000000000000 0000000000000000 0000000000000000 
+             0000000000000000 0000000000000000 0000000000000000 0000000000000000 
+             0000000000000000 0000000000000000 0000000000000000 0000000000000000 
+             0000000000000000 0000000000000000 0000000000000000 ffff800009399008 
+             ffff8000097d9af0 ffff8000097d99f8 ffff8000093a8db8 ffff8000097d9b18 
+             0000000000000000 0000000000000000 ffff000000339d00 0000000000000000 
+             0000000000000000 ffff800009c7bde0 ffff800008cbb5c4 
+    Context: 00000000000016ee ffff00001ffd2e28 00000000000016ed 0000000000000001 
+             ffff800016c28000 03ffffffffffffff 000000024325db59 ffff8000097de190 
+             ffff00000033a790 ffff800008cbb814 0000000000000a30 0000000000000000 
+
+Changelog
+========= 
+v7:
+   * Rebased to v5.19.rc1                                     (Gavin)
+   * Add hypercall ranges for routing                         (Oliver)
+   * Remove support to the critical event and redesigned
+     data structures. Function names are also modified
+     as Oliver suggested                                      (Oliver)
+   * Deliver event when it's enabled or the specific PE
+     is unmasked                                              (Oliver)
+   * Improve EVENT_COMPLETE_AND_RESUME hypercall to resume
+     from the specified address                               (Oliver) 
+   * Add patches for SDEI migration and documentation         (Gavin)
+   * Misc comments from Oliver Upon                           (Oliver)
+v6:
+   * Rebased to v5.18.rc1                                     (Gavin)
+   * Pass additional argument to smccc_get_arg()              (Oliver) 
+   * Add preparatory patch to route hypercalls based on their
+     owners                                                   (Oliver)
+   * Remove the support for shared event.                     (Oliver/Gavin)
+   * Remove the support for migration and add-on patches to
+     support it in future                                     (Oliver)
+   * The events are exposed by KVM instead of VMM             (Oliver)
+   * kvm_sdei_state.h is dropped and all the structures are
+     folded into the corresponding ones in kvm_sdei.h         (Oliver)
+   * Rename 'struct kvm_sdei_registered_event' to
+     'struct kvm_sdei_event'                                  (Oliver)
+   * Misc comments from Oliver Upon                           (Oliver)  
+v5/v4/v3/v2/v1:
+   * Skipped here and please visit the history by
+     https://lore.kernel.org/lkml/20220403153911.12332-4-gshan@redhat.com/T/
+
+Gavin Shan (22):
+  KVM: arm64: Extend smccc_get_argx()
+  KVM: arm64: Route hypercalls based on their owner
+  KVM: arm64: Add SDEI virtualization infrastructure
+  KVM: arm64: Support EVENT_REGISTER hypercall
+  KVM: arm64: Support EVENT_{ENABLE, DISABLE} hypercall
+  KVM: arm64: Support EVENT_CONTEXT hypercall
+  KVM: arm64: Support EVENT_UNREGISTER hypercall
+  KVM: arm64: Support EVENT_STATUS hypercall
+  KVM: arm64: Support EVENT_GET_INFO hypercall
+  KVM: arm64: Support PE_{MASK, UNMASK} hypercall
+  KVM: arm64: Support {PRIVATE, SHARED}_RESET hypercall
+  KVM: arm64: Support event injection and delivery
+  KVM: arm64: Support EVENT_{COMPLETE, COMPLETE_AND_RESUME} hypercall
+  KVM: arm64: Support EVENT_SIGNAL hypercall
+  KVM: arm64: Support SDEI_FEATURES hypercall
+  KVM: arm64: Support SDEI_VERSION hypercall
+  KVM: arm64: Expose SDEI capbility and service
+  KVM: arm64: Allow large sized pseudo firmware registers
+  KVM: arm64: Support SDEI event migration
+  KVM: arm64: Add SDEI document
+  selftests: KVM: aarch64: Add SDEI case in hypercall tests
+  selftests: KVM: aarch64: Add SDEI test case
+
+ Documentation/virt/kvm/api.rst                |  11 +
+ Documentation/virt/kvm/arm/hypercalls.rst     |   4 +
+ Documentation/virt/kvm/arm/sdei.rst           |  64 ++
+ arch/arm64/include/asm/kvm_host.h             |   3 +
+ arch/arm64/include/asm/kvm_sdei.h             |  81 +++
+ arch/arm64/include/uapi/asm/kvm.h             |  18 +
+ arch/arm64/kvm/Makefile                       |   2 +-
+ arch/arm64/kvm/arm.c                          |   8 +
+ arch/arm64/kvm/hypercalls.c                   | 182 +++--
+ arch/arm64/kvm/psci.c                         |  14 +-
+ arch/arm64/kvm/pvtime.c                       |   2 +-
+ arch/arm64/kvm/sdei.c                         | 676 ++++++++++++++++++
+ arch/arm64/kvm/trng.c                         |   4 +-
+ include/kvm/arm_hypercalls.h                  |  19 +-
+ include/linux/arm-smccc.h                     |   7 +
+ include/uapi/linux/arm_sdei.h                 |   8 +
+ include/uapi/linux/kvm.h                      |   1 +
+ tools/testing/selftests/kvm/Makefile          |   1 +
+ .../selftests/kvm/aarch64/hypercalls.c        |  11 +-
+ tools/testing/selftests/kvm/aarch64/sdei.c    | 450 ++++++++++++
+ 20 files changed, 1499 insertions(+), 67 deletions(-)
+ create mode 100644 Documentation/virt/kvm/arm/sdei.rst
+ create mode 100644 arch/arm64/include/asm/kvm_sdei.h
+ create mode 100644 arch/arm64/kvm/sdei.c
+ create mode 100644 tools/testing/selftests/kvm/aarch64/sdei.c
+
 -- 
-2.25.1
+2.23.0
 
