@@ -2,90 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D904C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 23:41:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14E7CC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 23:41:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354078AbiE0XhX (ORCPT
+        id S1355152AbiE0XlW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 19:37:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34260 "EHLO
+        Fri, 27 May 2022 19:41:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231626AbiE0XhW (ORCPT
+        with ESMTP id S1352495AbiE0XlS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 19:37:22 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C62CB7DE
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 16:37:21 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id j10so8871072lfe.12
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 16:37:21 -0700 (PDT)
+        Fri, 27 May 2022 19:41:18 -0400
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E21522F6
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 16:41:15 -0700 (PDT)
+Received: by mail-yb1-xb2a.google.com with SMTP id v26so10327901ybd.2
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 16:41:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=shutemov-name.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=J+HEM1XZa0sy/b3V0gcwypiEOba1ZZAFxr2ass/Bc/k=;
-        b=KaiJVkdhS9GxcUZdH7TXoY1kzZIbIL0KGrXTtPH5vePuGcMbiuQz0wFdE/sZxznQXm
-         Ij+X6IJxXLKGUi3PNdt1yuRitQzFbNpUTjqY6DyQybVIUFPibzEQgjH/hGp7iRdUsP24
-         67agV3aZTV/fDEuduTEIOxX/V/rfUSmCcfK4oJ1wexCdLLv8boBR/OHgrC7gh0Z9JLDI
-         xfoDUHMarvR4VhTQPSPoDMueMxhLIs8TKd7o5GyU90nSAN2/qYNTvhXs3xBaF4U0mqd/
-         sljAlT3BpxRD+1a0WwOA7BIaEAtjPNllKi4bRd7AD6BUWfcZEze72uxYz2kImwzNXsJY
-         E98A==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=i6fxNe1Yr6PM7bPFKoIRTPqlhmZN8j/BfeWdZm7S+GE=;
+        b=kh+ddXudedr/FfFvhJB31s60mRvJ61namZkEwazfz5hKURIbMiIzy59PZfFNwztdbo
+         EuA/8/g2Shr45xriJg7oTsLTLYol/pLhi6xS3K45Uwp/CPioC9tIHhBUMrOyN+cmRHAH
+         4louErDjJjimWMfZiJTYRLUZCH86PxlLRpYaaTln4aUHrNM1/dCz1C0ERRQf4MEFxvay
+         +3vZmR8YG5zewoq7jQKqY/jdprEpklh8LIdX9/B7mmyT+/SgFPrUIqpzU2Hix5xAWJHw
+         H4ePD6ixeJJApDOVfWgW2mw0r/coqR1QswjYnLY0bJGcyi3+cZunR8QzaELqxi/8c1C0
+         8FWg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=J+HEM1XZa0sy/b3V0gcwypiEOba1ZZAFxr2ass/Bc/k=;
-        b=eMjZ11G94lcG5ohWbd5mporMMVabRFpCkdu37YF22RT9mUzQWiMQH9lkaJA1XMnH1k
-         yLdxE9Zd3+coPXDXJtOv/VGYfH9mU7rue2yedWmnLQ8uoBfbDgDbf7aQNMymeQNqoKoj
-         IXlQlUn/4qa/YaTpKycrTVtoxZBM+blQTA5CNagqFMjpB76MO9aHOBiiUOVRjE9he3jX
-         00w/NYUvKit1K5dSd3IgnCPB/kZdJGltu+2lOs3onmyLVGkBK7LNWvdwCeKp1AeHD+HB
-         PMmZxsi1qtnq+YBsCwzNwP7oaSygrJZsEUiBJ2rp1S9wo0icU8vHi0XMEUJHp/PqoIst
-         q/Jg==
-X-Gm-Message-State: AOAM531OK6zxNRZEDF8BtzoBHbbQU1AJaD1/LkbSi6AHg/Oc+1CQWlvD
-        U2+T5ocd0CyYV9+T++jE9cUrRg==
-X-Google-Smtp-Source: ABdhPJya26gfWjXOurelttGI3jMJSVrxfCHFs3URpcAcCY2mOlGUtdts0WB3wFjgiifG5/VPAwXMmA==
-X-Received: by 2002:ac2:5e73:0:b0:478:9aca:4a00 with SMTP id a19-20020ac25e73000000b004789aca4a00mr12438267lfr.394.1653694640018;
-        Fri, 27 May 2022 16:37:20 -0700 (PDT)
-Received: from box.localdomain ([86.57.175.117])
-        by smtp.gmail.com with ESMTPSA id o22-20020ac24c56000000b00477b11144e9sm1061804lfk.66.2022.05.27.16.37.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 May 2022 16:37:18 -0700 (PDT)
-Received: by box.localdomain (Postfix, from userid 1000)
-        id 86A191094B9; Sat, 28 May 2022 02:39:15 +0300 (+03)
-Date:   Sat, 28 May 2022 02:39:15 +0300
-From:   "Kirill A. Shutemov" <kirill@shutemov.name>
-To:     Jakub =?utf-8?Q?Mat=C4=9Bna?= <matenajakub@gmail.com>
-Cc:     akpm@linux-foundation.org, linux-mm@kvack.org,
-        patches@lists.linux.dev, linux-kernel@vger.kernel.org,
-        vbabka@suse.cz, mhocko@kernel.org, mgorman@techsingularity.net,
-        willy@infradead.org, liam.howlett@oracle.com, hughd@google.com,
-        riel@surriel.com, rostedt@goodmis.org, peterz@infradead.org
-Subject: Re: [PATCH 1/2] [PATCH 1/2] mm: refactor of vma_merge()
-Message-ID: <20220527233915.55oe6jittuogavot@box.shutemov.name>
-References: <20220527104810.24736-1-matenajakub@gmail.com>
- <20220527104810.24736-2-matenajakub@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=i6fxNe1Yr6PM7bPFKoIRTPqlhmZN8j/BfeWdZm7S+GE=;
+        b=fiNtpoNS81SISetB8WV0nARIVrHR9uzPYBZM81W0xglMqCdI2mvTwXYuoT06PC1nMb
+         J+ui7/pgIrkQJVhExgHkmah8MYmHZsqjQRlwywe/WIvVlUW9vo2PkknYdbrSyRiKK6Yx
+         6lTe8mUOxP750Z84C4MLdSWtWlCZM78ipMkVWK7HpTMuHEUzFSlkOx01H1tqlj9dodAL
+         rrdN9QIVeNwqanWOX4AvQ6ap0VqCEIJLHSaVe7wiyQFbPQ0z9AxcEZtV0k0RyFsdL83H
+         O4wnrHRtZmbzO9HT6MOvYuiXDNPoWwHddrpZ17kME2ORQQ5WDsSpAY4PS1gSIhQsIQRd
+         8UNg==
+X-Gm-Message-State: AOAM532BEV5e2Yy0cN2+aAhwuih7pSIvdaLVVNtsKIMYA5GluBMbIX4v
+        miyvIDvZcaQhYtRS8NJsgpcfgCJGECriMKFB2ZM=
+X-Google-Smtp-Source: ABdhPJxXE8RcGKITbfw6RqG9GXDU78NhnsekVk7tM1yeTVB7yk+R8s15LGau3IhaA6ubVznIFuJUNbFyDrBtslEK9qc=
+X-Received: by 2002:a25:bccb:0:b0:655:879e:e1b2 with SMTP id
+ l11-20020a25bccb000000b00655879ee1b2mr15636924ybm.364.1653694875094; Fri, 27
+ May 2022 16:41:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220527104810.24736-2-matenajakub@gmail.com>
+References: <YpCUzStDnSgQLNFN@debian> <CAHk-=wg0uGAX5DYZq+tY2KeUAR8DtR91YE1y9CkPMKkKOyE4jg@mail.gmail.com>
+In-Reply-To: <CAHk-=wg0uGAX5DYZq+tY2KeUAR8DtR91YE1y9CkPMKkKOyE4jg@mail.gmail.com>
+From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Date:   Sat, 28 May 2022 00:40:38 +0100
+Message-ID: <CADVatmNGPbSdRNQuwJEWAaPtqb3vBYRjvsuBpoRUnhEHj=X5GQ@mail.gmail.com>
+Subject: Re: mainline build failure due to f1e4c916f97f ("drm/edid: add EDID
+ block count and size helpers")
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Jani Nikula <jani.nikula@intel.com>,
+        =?UTF-8?B?VmlsbGUgU3lyasOkbMOk?= <ville.syrjala@linux.intel.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 27, 2022 at 12:48:09PM +0200, Jakub Matěna wrote:
-> Refactor vma_merge() to make it shorter and more understandable.
-> Main change is the elimination of code duplicity in the case of
-> merge next check. This is done by first doing checks and caching
-> the results before executing the merge itself. The variable 'area' is
-> divided into 'mid' and 'res' as previously it was used for two purposes,
-> as the middle VMA between prev and next and also as the result of the
-> merge itself. Exit paths are also unified.
-> 
-> Signed-off-by: Jakub Matěna <matenajakub@gmail.com>
+On Fri, May 27, 2022 at 7:56 PM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
+>
+> On Fri, May 27, 2022 at 2:07 AM Sudip Mukherjee
+> <sudipm.mukherjee@gmail.com> wrote:
+> >
+> >         declared with attribute error: BUILD_BUG_ON failed: sizeof(*edid) != EDID_LENGTH
+> >
+> > And, reverting it on top of mainline branch has fixed the build failure.
+>
+> Hmm. That BUILD_BUG_ON() looks entirely correct, and if that sizeof()
+> doesn't work, then the code doesn't work.
 
-You've ignored my ack. Or is there substantial changes that you want me to
-review again?
+<snip>
+
+>
+> Very strange. It would be interesting to know where that sizeof goes
+> wrong, but it would seem to be something very peculiar to your build
+> environment (either that config, or your compiler).
+
+I just tested with various values, sizeof(*edid) is 144 bytes at that place.
+
+My last good build was with fdaf9a5840ac ("Merge tag 'folio-5.19' of
+git://git.infradead.org/users/willy/pagecache")
+And my setup has not changed in anyway since then. Also verified the
+build failure on my laptop.
+
 
 -- 
- Kirill A. Shutemov
+Regards
+Sudip
