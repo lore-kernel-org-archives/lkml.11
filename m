@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F577C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 953C8C4332F
 	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:55:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350209AbiE0Iy5 (ORCPT
+        id S1350243AbiE0IzK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 04:54:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33232 "EHLO
+        Fri, 27 May 2022 04:55:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350202AbiE0IyL (ORCPT
+        with ESMTP id S1350189AbiE0IyK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 04:54:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AAB15D666;
-        Fri, 27 May 2022 01:53:02 -0700 (PDT)
+        Fri, 27 May 2022 04:54:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44F08544F6;
+        Fri, 27 May 2022 01:52:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 62CDA61D3D;
-        Fri, 27 May 2022 08:53:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06CB4C385B8;
-        Fri, 27 May 2022 08:53:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 05FD161D3B;
+        Fri, 27 May 2022 08:52:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB374C36AE7;
+        Fri, 27 May 2022 08:52:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653641581;
-        bh=sbrL44tMkKlNhB/ubeCGu9MeR5vV2zIzvhWF5VTfUMs=;
+        s=korg; t=1653641578;
+        bh=yLXlgNDwc3M6yVpHiI52bGwxKJCHaWRA55AS1O+jWyU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=daBNSY7PYEjz/zc0HMH85ASTdblQxCWIblU6BxtiqFonpTCgxJ0Ma/QIaT6BYOJqN
-         Ba7mw0XVMHWzKCWa0HhtzO34/23ltjYP0Dri3jEWQObh0QGBzaULktEYBAdKFBIgdd
-         wJjMfHsneyF31jkzhn/osdHKVKY4myL0PTCwAzTE=
+        b=n1tLtarbEIg94fDtNH02PVVMvdQaSzezrh+yKMJSPIH5GHTshYwBZzPzGwo9fwBiw
+         gO3dSljv8MIJ9V1vXP0EYXP/TMUnDxaIgALHVAjnAm//ceA7/QqpSdWUdK/3/9yn6z
+         agoeaesTvytaLlUTt2JUj5/tckGhY2738Nvu533s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Arnd Bergmann <arnd@arndb.de>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.18 18/47] sparc: use fallback for random_get_entropy() instead of zero
-Date:   Fri, 27 May 2022 10:49:58 +0200
-Message-Id: <20220527084804.340940050@linuxfoundation.org>
+Subject: [PATCH 5.18 30/47] random: move initialization out of reseeding hot path
+Date:   Fri, 27 May 2022 10:50:10 +0200
+Message-Id: <20220527084806.466052475@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220527084801.223648383@linuxfoundation.org>
 References: <20220527084801.223648383@linuxfoundation.org>
@@ -53,41 +52,93 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit ac9756c79797bb98972736b13cfb239fd2cffb79 upstream.
+commit 68c9c8b192c6dae9be6278e98ee44029d5da2d31 upstream.
 
-In the event that random_get_entropy() can't access a cycle counter or
-similar, falling back to returning 0 is really not the best we can do.
-Instead, at least calling random_get_entropy_fallback() would be
-preferable, because that always needs to return _something_, even
-falling back to jiffies eventually. It's not as though
-random_get_entropy_fallback() is super high precision or guaranteed to
-be entropic, but basically anything that's not zero all the time is
-better than returning zero all the time.
+Initialization happens once -- by way of credit_init_bits() -- and then
+it never happens again. Therefore, it doesn't need to be in
+crng_reseed(), which is a hot path that is called multiple times. It
+also doesn't make sense to have there, as initialization activity is
+better associated with initialization routines.
 
-This is accomplished by just including the asm-generic code like on
-other architectures, which means we can get rid of the empty stub
-function here.
+After the prior commit, crng_reseed() now won't be called by multiple
+concurrent callers, which means that we can safely move the
+"finialize_init" logic into crng_init_bits() unconditionally.
 
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: David S. Miller <davem@davemloft.net>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/sparc/include/asm/timex_32.h |    4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/char/random.c |   42 +++++++++++++++++++-----------------------
+ 1 file changed, 19 insertions(+), 23 deletions(-)
 
---- a/arch/sparc/include/asm/timex_32.h
-+++ b/arch/sparc/include/asm/timex_32.h
-@@ -9,8 +9,6 @@
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -264,7 +264,6 @@ static void crng_reseed(void)
+ 	unsigned long flags;
+ 	unsigned long next_gen;
+ 	u8 key[CHACHA_KEY_SIZE];
+-	bool finalize_init = false;
  
- #define CLOCK_TICK_RATE	1193180 /* Underlying HZ */
+ 	extract_entropy(key, sizeof(key));
  
--/* XXX Maybe do something better at some point... -DaveM */
--typedef unsigned long cycles_t;
--#define get_cycles()	(0)
-+#include <asm-generic/timex.h>
+@@ -281,28 +280,10 @@ static void crng_reseed(void)
+ 		++next_gen;
+ 	WRITE_ONCE(base_crng.generation, next_gen);
+ 	WRITE_ONCE(base_crng.birth, jiffies);
+-	if (!crng_ready()) {
++	if (!crng_ready())
+ 		crng_init = CRNG_READY;
+-		finalize_init = true;
+-	}
+ 	spin_unlock_irqrestore(&base_crng.lock, flags);
+ 	memzero_explicit(key, sizeof(key));
+-	if (finalize_init) {
+-		process_random_ready_list();
+-		wake_up_interruptible(&crng_init_wait);
+-		kill_fasync(&fasync, SIGIO, POLL_IN);
+-		pr_notice("crng init done\n");
+-		if (unseeded_warning.missed) {
+-			pr_notice("%d get_random_xx warning(s) missed due to ratelimiting\n",
+-				  unseeded_warning.missed);
+-			unseeded_warning.missed = 0;
+-		}
+-		if (urandom_warning.missed) {
+-			pr_notice("%d urandom warning(s) missed due to ratelimiting\n",
+-				  urandom_warning.missed);
+-			urandom_warning.missed = 0;
+-		}
+-	}
+ }
  
- #endif
+ /*
+@@ -834,10 +815,25 @@ static void credit_init_bits(size_t nbit
+ 		new = min_t(unsigned int, POOL_BITS, orig + add);
+ 	} while (cmpxchg(&input_pool.init_bits, orig, new) != orig);
+ 
+-	if (orig < POOL_READY_BITS && new >= POOL_READY_BITS)
+-		crng_reseed();
+-	else if (orig < POOL_EARLY_BITS && new >= POOL_EARLY_BITS) {
++	if (orig < POOL_READY_BITS && new >= POOL_READY_BITS) {
++		crng_reseed(); /* Sets crng_init to CRNG_READY under base_crng.lock. */
++		process_random_ready_list();
++		wake_up_interruptible(&crng_init_wait);
++		kill_fasync(&fasync, SIGIO, POLL_IN);
++		pr_notice("crng init done\n");
++		if (unseeded_warning.missed) {
++			pr_notice("%d get_random_xx warning(s) missed due to ratelimiting\n",
++				  unseeded_warning.missed);
++			unseeded_warning.missed = 0;
++		}
++		if (urandom_warning.missed) {
++			pr_notice("%d urandom warning(s) missed due to ratelimiting\n",
++				  urandom_warning.missed);
++			urandom_warning.missed = 0;
++		}
++	} else if (orig < POOL_EARLY_BITS && new >= POOL_EARLY_BITS) {
+ 		spin_lock_irqsave(&base_crng.lock, flags);
++		/* Check if crng_init is CRNG_EMPTY, to avoid race with crng_reseed(). */
+ 		if (crng_init == CRNG_EMPTY) {
+ 			extract_entropy(base_crng.key, sizeof(base_crng.key));
+ 			crng_init = CRNG_EARLY;
 
 
