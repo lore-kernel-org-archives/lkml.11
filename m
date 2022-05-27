@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55C0BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 09:04:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27149C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 09:04:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350336AbiE0JEY (ORCPT
+        id S1350352AbiE0JE3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 05:04:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52188 "EHLO
+        Fri, 27 May 2022 05:04:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351005AbiE0JA7 (ORCPT
+        with ESMTP id S1350461AbiE0I77 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 05:00:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FF4312E303;
-        Fri, 27 May 2022 01:57:42 -0700 (PDT)
+        Fri, 27 May 2022 04:59:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E04795D5C0;
+        Fri, 27 May 2022 01:55:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D06A561D95;
-        Fri, 27 May 2022 08:57:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9224FC385A9;
-        Fri, 27 May 2022 08:57:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6CC4361CB7;
+        Fri, 27 May 2022 08:55:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47306C385B8;
+        Fri, 27 May 2022 08:55:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653641861;
-        bh=990WoEyuRRvfbwVuvkDYqR86oUyJ+h0thqUuANnC+6k=;
+        s=korg; t=1653641756;
+        bh=Ve6NfPpdS1r05uyDwxztOFOgYNEeL5kzJRoMP9JvtMs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E1tLBaVkQtVrmHS4uLFZ5GdUAP8q/zvrbCtdXo2BGIRkypkM/QSZZZG+YqEGwhGTy
-         hw419BVpuZThnSgvpyQvzKQ6HcMSr0fz0RCz7ebJq/Szt5UQMgVKGMOSQw5OjVY/79
-         RjadzNWjl9C9pHMJyhFK7+ZvIPc1huL/h2uN1DHQ=
+        b=ZY4FmL6y8TdecJTQaoJNhliuhozPzUuSd40UHPGC28C4TsmiizEgo11eqf7ax32j+
+         eVbASixqPL/JkzOB0FM+2zO01u+a8MckK2qpqMAe9CrBX+aO+8UIBXGeeTDaMSdvQq
+         b/rNhxOlG5SdrKzhawc8ywIgbmu3Yyylv/7TVc1w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jeff Shaw <jeffrey.b.shaw@intel.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Subject: [PATCH 5.15 003/145] [PATCH 5.15] ice: fix crash at allocation failure
-Date:   Fri, 27 May 2022 10:48:24 +0200
-Message-Id: <20220527084850.902754615@linuxfoundation.org>
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Jann Horn <jannh@google.com>,
+        Eric Biggers <ebiggers@google.com>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.17 020/111] random: remove outdated INT_MAX >> 6 check in urandom_read()
+Date:   Fri, 27 May 2022 10:48:52 +0200
+Message-Id: <20220527084822.188475049@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084850.364560116@linuxfoundation.org>
-References: <20220527084850.364560116@linuxfoundation.org>
+In-Reply-To: <20220527084819.133490171@linuxfoundation.org>
+References: <20220527084819.133490171@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,36 +52,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-From: Magnus Karlsson <magnus.karlsson@intel.com>
+commit 434537ae54ad37e93555de21b6ac8133d6d773a9 upstream.
 
-Fix a crash in the zero-copy driver that occurs when it fails to
-allocate buffers from user-space. This crash can easily be triggered
-by a malicious program that does not provide any buffers in the fill
-ring for the kernel to use.
+In 79a8468747c5 ("random: check for increase of entropy_count because of
+signed conversion"), a number of checks were added around what values
+were passed to account(), because account() was doing fancy fixed point
+fractional arithmetic, and a user had some ability to pass large values
+directly into it. One of things in that commit was limiting those values
+to INT_MAX >> 6. The first >> 3 was for bytes to bits, and the next >> 3
+was for bits to 1/8 fractional bits.
 
-Note that this bug does not exist in upstream since the batched buffer
-allocation interface got introduced in 5.16 and replaced this code.
+However, for several years now, urandom reads no longer touch entropy
+accounting, and so this check serves no purpose. The current flow is:
 
-Reported-by: Jeff Shaw <jeffrey.b.shaw@intel.com>
-Tested-by: Jeff Shaw <jeffrey.b.shaw@intel.com>
-Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
-Acked-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+urandom_read_nowarn()-->get_random_bytes_user()-->chacha20_block()
+
+Of course, we don't want that size_t to be truncated when adding it into
+the ssize_t. But we arrive at urandom_read_nowarn() in the first place
+either via ordinary fops, which limits reads to MAX_RW_COUNT, or via
+getrandom() which limits reads to INT_MAX.
+
+Cc: Theodore Ts'o <tytso@mit.edu>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Reviewed-by: Jann Horn <jannh@google.com>
+Reviewed-by: Eric Biggers <ebiggers@google.com>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/ice/ice_xsk.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/char/random.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
---- a/drivers/net/ethernet/intel/ice/ice_xsk.c
-+++ b/drivers/net/ethernet/intel/ice/ice_xsk.c
-@@ -378,7 +378,7 @@ bool ice_alloc_rx_bufs_zc(struct ice_rin
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -1286,9 +1286,8 @@ void rand_initialize_disk(struct gendisk
+ static ssize_t urandom_read_nowarn(struct file *file, char __user *buf,
+ 				   size_t nbytes, loff_t *ppos)
+ {
+-	int ret;
++	ssize_t ret;
  
- 	do {
- 		*xdp = xsk_buff_alloc(rx_ring->xsk_pool);
--		if (!xdp) {
-+		if (!*xdp) {
- 			ok = false;
- 			break;
- 		}
+-	nbytes = min_t(size_t, nbytes, INT_MAX >> 6);
+ 	ret = get_random_bytes_user(buf, nbytes);
+ 	trace_urandom_read(nbytes, input_pool.entropy_count);
+ 	return ret;
 
 
