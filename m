@@ -2,48 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCF50C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:47:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32465C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:47:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351876AbiE0LrY (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 07:47:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56480 "EHLO
+        id S243564AbiE0Lra (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 07:47:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352144AbiE0Lp3 (ORCPT
+        with ESMTP id S1352143AbiE0Lp3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 27 May 2022 07:45:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 526F7133250;
-        Fri, 27 May 2022 04:42:06 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E3EC132A2E;
+        Fri, 27 May 2022 04:42:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3607761D50;
-        Fri, 27 May 2022 11:42:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42BE8C385A9;
-        Fri, 27 May 2022 11:42:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 39CAB61D53;
+        Fri, 27 May 2022 11:42:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43DC2C385A9;
+        Fri, 27 May 2022 11:42:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653651725;
-        bh=N+njQa8dbPvGRCd+m8kR8WWw+lhJD4cHuiN1wI+6arY=;
+        s=korg; t=1653651722;
+        bh=RG6VjW3XhSd7agEEKPH/P8cAoVf6or+rlbFXWJgkVVg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K5v7JD5gnBPv3o35wXmmgZwQ9d4Of+Rmc5P4ls++lF8a613oDLwJkdCQKp4e1eiQg
-         uaZAY3ZvFyTIi4r6gpv25GrIpcqZ1LVnLtGUX8Ay6b7pu/nFTviwkTM3j8G2YOGaJr
-         Qaq96VUMnX7Tsp8ktV1e47odRBZX6kvtgtlgSHh4=
+        b=s5rsRHQ5LnTb9kKfhdBjpIyUD1a2J8DagqOanwrwjteKljiiH4BkRrXgo211sOgk6
+         81omEzMCWH5cewV5VCReHaqk8bw9kdWznp6Lnx8aCuk1IvWIV2aZe0HBsiLUel+vtS
+         FnyCZHtIb2JzaE6MH+I7llQCjeuBonnaSGKLEA9c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>,
+        stable@vger.kernel.org,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.17 076/111] riscv: use fallback for random_get_entropy() instead of zero
-Date:   Fri, 27 May 2022 10:49:48 +0200
-Message-Id: <20220527084830.218540795@linuxfoundation.org>
+Subject: [PATCH 5.10 052/163] random: simplify arithmetic function flow in account()
+Date:   Fri, 27 May 2022 10:48:52 +0200
+Message-Id: <20220527084835.269206185@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084819.133490171@linuxfoundation.org>
-References: <20220527084819.133490171@linuxfoundation.org>
+In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
+References: <20220527084828.156494029@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -54,38 +51,58 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 6d01238623faa9425f820353d2066baf6c9dc872 upstream.
+commit a254a0e4093fce8c832414a83940736067eed515 upstream.
 
-In the event that random_get_entropy() can't access a cycle counter or
-similar, falling back to returning 0 is really not the best we can do.
-Instead, at least calling random_get_entropy_fallback() would be
-preferable, because that always needs to return _something_, even
-falling back to jiffies eventually. It's not as though
-random_get_entropy_fallback() is super high precision or guaranteed to
-be entropic, but basically anything that's not zero all the time is
-better than returning zero all the time.
+Now that have_bytes is never modified, we can simplify this function.
+First, we move the check for negative entropy_count to be first. That
+ensures that subsequent reads of this will be non-negative. Then,
+have_bytes and ibytes can be folded into their one use site in the
+min_t() function.
 
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Paul Walmsley <paul.walmsley@sifive.com>
-Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
-Reviewed-by: Palmer Dabbelt <palmer@rivosinc.com>
+Suggested-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/riscv/include/asm/timex.h |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/char/random.c |   17 ++++++-----------
+ 1 file changed, 6 insertions(+), 11 deletions(-)
 
---- a/arch/riscv/include/asm/timex.h
-+++ b/arch/riscv/include/asm/timex.h
-@@ -41,7 +41,7 @@ static inline u32 get_cycles_hi(void)
- static inline unsigned long random_get_entropy(void)
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -1293,7 +1293,7 @@ EXPORT_SYMBOL_GPL(add_disk_randomness);
+  */
+ static size_t account(size_t nbytes, int min)
  {
- 	if (unlikely(clint_time_val == NULL))
--		return 0;
-+		return random_get_entropy_fallback();
- 	return get_cycles();
- }
- #define random_get_entropy()	random_get_entropy()
+-	int entropy_count, orig, have_bytes;
++	int entropy_count, orig;
+ 	size_t ibytes, nfrac;
+ 
+ 	BUG_ON(input_pool.entropy_count > POOL_FRACBITS);
+@@ -1301,20 +1301,15 @@ static size_t account(size_t nbytes, int
+ 	/* Can we pull enough? */
+ retry:
+ 	entropy_count = orig = READ_ONCE(input_pool.entropy_count);
+-	ibytes = nbytes;
+-	/* never pull more than available */
+-	have_bytes = entropy_count >> (POOL_ENTROPY_SHIFT + 3);
+-
+-	if (have_bytes < 0)
+-		have_bytes = 0;
+-	ibytes = min_t(size_t, ibytes, have_bytes);
+-	if (ibytes < min)
+-		ibytes = 0;
+-
+ 	if (WARN_ON(entropy_count < 0)) {
+ 		pr_warn("negative entropy count: count %d\n", entropy_count);
+ 		entropy_count = 0;
+ 	}
++
++	/* never pull more than available */
++	ibytes = min_t(size_t, nbytes, entropy_count >> (POOL_ENTROPY_SHIFT + 3));
++	if (ibytes < min)
++		ibytes = 0;
+ 	nfrac = ibytes << (POOL_ENTROPY_SHIFT + 3);
+ 	if ((size_t)entropy_count > nfrac)
+ 		entropy_count -= nfrac;
 
 
