@@ -2,91 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC944C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 07:32:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15B78C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 07:32:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346951AbiE0Hcp (ORCPT
+        id S1347145AbiE0Hcr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 03:32:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46408 "EHLO
+        Fri, 27 May 2022 03:32:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230332AbiE0Hci (ORCPT
+        with ESMTP id S1347154AbiE0Hcn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 03:32:38 -0400
-Received: from smtp.smtpout.orange.fr (smtp08.smtpout.orange.fr [80.12.242.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17B40F688C
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 00:32:34 -0700 (PDT)
-Received: from [192.168.1.18] ([90.11.191.102])
-        by smtp.orange.fr with ESMTPA
-        id uUSUn7gyWN260uUSUnhRNX; Fri, 27 May 2022 09:32:32 +0200
-X-ME-Helo: [192.168.1.18]
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Fri, 27 May 2022 09:32:32 +0200
-X-ME-IP: 90.11.191.102
-Message-ID: <a3e0df04-fb94-ef38-c2dc-1c41e6c721d9@wanadoo.fr>
-Date:   Fri, 27 May 2022 09:32:30 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH] mac80211: Directly use ida_alloc()/free()
-Content-Language: en-AU
-To:     liuke94@huawei.com
-References: <20220527074132.2474867-1-liuke94@huawei.com>
-Cc:     davem@davemloft.net, edumazet@google.com,
-        johannes@sipsolutions.net, kuba@kernel.org, kvalo@kernel.org,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-In-Reply-To: <20220527074132.2474867-1-liuke94@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        Fri, 27 May 2022 03:32:43 -0400
+Received: from out199-1.us.a.mail.aliyun.com (out199-1.us.a.mail.aliyun.com [47.90.199.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94979F748B;
+        Fri, 27 May 2022 00:32:42 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=16;SR=0;TI=SMTPD_---0VEW8612_1653636756;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VEW8612_1653636756)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 27 May 2022 15:32:37 +0800
+Message-ID: <1653636748.5919-5-xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH V6 5/9] virtio-mmio: implement synchronize_cbs()
+Date:   Fri, 27 May 2022 15:32:28 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     tglx@linutronix.de, peterz@infradead.org, paulmck@kernel.org,
+        maz@kernel.org, pasic@linux.ibm.com, cohuck@redhat.com,
+        eperezma@redhat.com, lulu@redhat.com, sgarzare@redhat.com,
+        Vineeth Vijayan <vneethv@linux.ibm.com>,
+        Peter Oberparleiter <oberpar@linux.ibm.com>,
+        linux-s390@vger.kernel.org, mst@redhat.com, jasowang@redhat.com,
+        virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org
+References: <20220527060120.20964-1-jasowang@redhat.com>
+ <20220527060120.20964-6-jasowang@redhat.com>
+In-Reply-To: <20220527060120.20964-6-jasowang@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Fri, 27 May 2022 14:01:16 +0800, Jason Wang <jasowang@redhat.com> wrote:
+> Simply synchronize the platform irq that is used by us.
+>
+> Cc: Thomas Gleixner <tglx@linutronix.de>
+> Cc: Peter Zijlstra <peterz@infradead.org>
+> Cc: "Paul E. McKenney" <paulmck@kernel.org>
+> Cc: Marc Zyngier <maz@kernel.org>
+> Cc: Halil Pasic <pasic@linux.ibm.com>
+> Cc: Cornelia Huck <cohuck@redhat.com>
+> Cc: Vineeth Vijayan <vneethv@linux.ibm.com>
+> Cc: Peter Oberparleiter <oberpar@linux.ibm.com>
+> Cc: linux-s390@vger.kernel.org
+> Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+> Signed-off-by: Jason Wang <jasowang@redhat.com>
 
-Le 27/05/2022 à 09:41, keliu a écrit :
-> Use ida_alloc()/ida_free() instead of deprecated
-> ida_simple_get()/ida_simple_remove() .
-> 
-> Signed-off-by: keliu <liuke94-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+
 > ---
->   drivers/net/wireless/mac80211_hwsim.c | 6 +++---
->   1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wireless/mac80211_hwsim.c
-> index e9ec63e0e395..6ad884d9e9a4 100644
-> --- a/drivers/net/wireless/mac80211_hwsim.c
-> +++ b/drivers/net/wireless/mac80211_hwsim.c
-> @@ -290,8 +290,8 @@ static inline int hwsim_net_set_netgroup(struct net *net)
->   {
->   	struct hwsim_net *hwsim_net = net_generic(net, hwsim_net_id);
->   
-> -	hwsim_net->netgroup = ida_simple_get(&hwsim_netgroup_ida,
-> -					     0, 0, GFP_KERNEL);
-> +	hwsim_net->netgroup = ida_alloc(&hwsim_netgroup_ida,
-> +					     GFP_KERNEL);
-Nitpick: GFP_KERNEL should be on the same line if there is enough space 
-or aligned with &hwsim_netgroup_ida
-
-
-Out of curiosity, how do you generate these patches?
-(coccinelle should be the perfect tool for it, but I thought it would 
-already deal with alignment)
-
-CJ
-
->   	return hwsim_net->netgroup >= 0 ? 0 : -ENOMEM;
->   }
->   
-> @@ -4733,7 +4733,7 @@ static void __net_exit hwsim_exit_net(struct net *net)
->   					 NULL);
->   	}
->   
-> -	ida_simple_remove(&hwsim_netgroup_ida, hwsim_net_get_netgroup(net));
-> +	ida_free(&hwsim_netgroup_ida, hwsim_net_get_netgroup(net));
->   }
->   
->   static struct pernet_operations hwsim_net_ops = {
-
+>  drivers/virtio/virtio_mmio.c | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+>
+> diff --git a/drivers/virtio/virtio_mmio.c b/drivers/virtio/virtio_mmio.c
+> index 839684d672af..c9699a59f93c 100644
+> --- a/drivers/virtio/virtio_mmio.c
+> +++ b/drivers/virtio/virtio_mmio.c
+> @@ -345,6 +345,13 @@ static void vm_del_vqs(struct virtio_device *vdev)
+>  	free_irq(platform_get_irq(vm_dev->pdev, 0), vm_dev);
+>  }
+>
+> +static void vm_synchronize_cbs(struct virtio_device *vdev)
+> +{
+> +	struct virtio_mmio_device *vm_dev = to_virtio_mmio_device(vdev);
+> +
+> +	synchronize_irq(platform_get_irq(vm_dev->pdev, 0));
+> +}
+> +
+>  static struct virtqueue *vm_setup_vq(struct virtio_device *vdev, unsigned int index,
+>  				  void (*callback)(struct virtqueue *vq),
+>  				  const char *name, bool ctx)
+> @@ -541,6 +548,7 @@ static const struct virtio_config_ops virtio_mmio_config_ops = {
+>  	.finalize_features = vm_finalize_features,
+>  	.bus_name	= vm_bus_name,
+>  	.get_shm_region = vm_get_shm_region,
+> +	.synchronize_cbs = vm_synchronize_cbs,
+>  };
+>
+>
+> --
+> 2.25.1
+>
