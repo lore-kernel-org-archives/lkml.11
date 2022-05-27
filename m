@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1991AC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:21:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC562C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:21:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353539AbiE0MUM (ORCPT
+        id S1352665AbiE0MUI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 08:20:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57424 "EHLO
+        Fri, 27 May 2022 08:20:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353466AbiE0MF6 (ORCPT
+        with ESMTP id S1353649AbiE0MGI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 08:05:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B54411649B9;
-        Fri, 27 May 2022 04:54:42 -0700 (PDT)
+        Fri, 27 May 2022 08:06:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D3581666BE;
+        Fri, 27 May 2022 04:55:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4297BB824D7;
-        Fri, 27 May 2022 11:54:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E768C385A9;
-        Fri, 27 May 2022 11:54:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C21861CD6;
+        Fri, 27 May 2022 11:55:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4988BC385A9;
+        Fri, 27 May 2022 11:55:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653652480;
-        bh=Op0bUEBLc+mstggcGsP0fcSHMSekjU6xTMmOlWoR4Sc=;
+        s=korg; t=1653652506;
+        bh=RUEsyhJFnaOVYv98/ybfm3mKHtkusHDBD7ScaWxPpOI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kV3gH0fbINFfyHjDzAXAIH9EkeDBHRyKjLAJL/6lvPKf4utSNUW2i5WvYzedMqbqW
-         7dlksPn38+7NANmsgUiLkwLyOf/dbPatEuX7avJYwn7mKO9W6lFYjdZpWkqBe2faEh
-         R3XWawhTQHxLfueZLjKSDu2GByMzuwrvbfj8WWT8=
+        b=QptRGjrppCetVetN43rf6sotoIFqxWkmxqAl29ojQEEJu7JB3fR0M2B8Wwa1QT7Xe
+         K4hZ9YWCVdbefGRufXcM1lOPHEz0emQvoAzb0qQgZt6GJtRyAsPnb2EFM6ehe8qO7L
+         NdGv/hg0/vVV3SvoBIp6HSEuzLsStSlpWD4SbU44=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.10 146/163] random: avoid initializing twice in credit race
-Date:   Fri, 27 May 2022 10:50:26 +0200
-Message-Id: <20220527084848.685327342@linuxfoundation.org>
+        stable@vger.kernel.org, Edward Matijevic <motolav@gmail.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.10 163/163] ALSA: ctxfi: Add SB046x PCI ID
+Date:   Fri, 27 May 2022 10:50:43 +0200
+Message-Id: <20220527084850.931243828@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
 References: <20220527084828.156494029@linuxfoundation.org>
@@ -50,54 +49,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Edward Matijevic <motolav@gmail.com>
 
-commit fed7ef061686cc813b1f3d8d0edc6c35b4d3537b upstream.
+commit 1b073ebb174d0c7109b438e0a5eb4495137803ec upstream.
 
-Since all changes of crng_init now go through credit_init_bits(), we can
-fix a long standing race in which two concurrent callers of
-credit_init_bits() have the new bit count >= some threshold, but are
-doing so with crng_init as a lower threshold, checked outside of a lock,
-resulting in crng_reseed() or similar being called twice.
+Adds the PCI ID for X-Fi cards sold under the Platnum and XtremeMusic names
 
-In order to fix this, we can use the original cmpxchg value of the bit
-count, and only change crng_init when the bit count transitions from
-below a threshold to meeting the threshold.
+Before: snd_ctxfi 0000:05:05.0: chip 20K1 model Unknown (1102:0021) is found
+After: snd_ctxfi 0000:05:05.0: chip 20K1 model SB046x (1102:0021) is found
 
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+[ This is only about defining the model name string, and the rest is
+  handled just like before, as a default unknown device.
+  Edward confirmed that the stuff has been working fine -- tiwai ]
+
+Signed-off-by: Edward Matijevic <motolav@gmail.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/cae7d1a4-8bd9-7dfe-7427-db7e766f7272@gmail.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ sound/pci/ctxfi/ctatc.c      |    2 ++
+ sound/pci/ctxfi/cthardware.h |    3 ++-
+ 2 files changed, 4 insertions(+), 1 deletion(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -823,7 +823,7 @@ static void extract_entropy(void *buf, s
+--- a/sound/pci/ctxfi/ctatc.c
++++ b/sound/pci/ctxfi/ctatc.c
+@@ -36,6 +36,7 @@
+ 			    | ((IEC958_AES3_CON_FS_48000) << 24))
  
- static void credit_init_bits(size_t nbits)
- {
--	unsigned int init_bits, orig, add;
-+	unsigned int new, orig, add;
- 	unsigned long flags;
+ static const struct snd_pci_quirk subsys_20k1_list[] = {
++	SND_PCI_QUIRK(PCI_VENDOR_ID_CREATIVE, 0x0021, "SB046x", CTSB046X),
+ 	SND_PCI_QUIRK(PCI_VENDOR_ID_CREATIVE, 0x0022, "SB055x", CTSB055X),
+ 	SND_PCI_QUIRK(PCI_VENDOR_ID_CREATIVE, 0x002f, "SB055x", CTSB055X),
+ 	SND_PCI_QUIRK(PCI_VENDOR_ID_CREATIVE, 0x0029, "SB073x", CTSB073X),
+@@ -64,6 +65,7 @@ static const struct snd_pci_quirk subsys
  
- 	if (crng_ready() || !nbits)
-@@ -833,12 +833,12 @@ static void credit_init_bits(size_t nbit
+ static const char *ct_subsys_name[NUM_CTCARDS] = {
+ 	/* 20k1 models */
++	[CTSB046X]	= "SB046x",
+ 	[CTSB055X]	= "SB055x",
+ 	[CTSB073X]	= "SB073x",
+ 	[CTUAA]		= "UAA",
+--- a/sound/pci/ctxfi/cthardware.h
++++ b/sound/pci/ctxfi/cthardware.h
+@@ -26,8 +26,9 @@ enum CHIPTYP {
  
- 	do {
- 		orig = READ_ONCE(input_pool.init_bits);
--		init_bits = min_t(unsigned int, POOL_BITS, orig + add);
--	} while (cmpxchg(&input_pool.init_bits, orig, init_bits) != orig);
-+		new = min_t(unsigned int, POOL_BITS, orig + add);
-+	} while (cmpxchg(&input_pool.init_bits, orig, new) != orig);
- 
--	if (!crng_ready() && init_bits >= POOL_READY_BITS)
-+	if (orig < POOL_READY_BITS && new >= POOL_READY_BITS)
- 		crng_reseed();
--	else if (unlikely(crng_init == CRNG_EMPTY && init_bits >= POOL_EARLY_BITS)) {
-+	else if (orig < POOL_EARLY_BITS && new >= POOL_EARLY_BITS) {
- 		spin_lock_irqsave(&base_crng.lock, flags);
- 		if (crng_init == CRNG_EMPTY) {
- 			extract_entropy(base_crng.key, sizeof(base_crng.key));
+ enum CTCARDS {
+ 	/* 20k1 models */
++	CTSB046X,
++	CT20K1_MODEL_FIRST = CTSB046X,
+ 	CTSB055X,
+-	CT20K1_MODEL_FIRST = CTSB055X,
+ 	CTSB073X,
+ 	CTUAA,
+ 	CT20K1_UNKNOWN,
 
 
