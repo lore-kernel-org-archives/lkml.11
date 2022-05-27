@@ -2,76 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF75AC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 10:16:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4531AC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 10:16:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350872AbiE0KQJ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 06:16:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49472 "EHLO
+        id S239353AbiE0KQS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 06:16:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240890AbiE0KQI (ORCPT
+        with ESMTP id S1350881AbiE0KQP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 06:16:08 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87596106A6A;
-        Fri, 27 May 2022 03:16:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1653646567; x=1685182567;
-  h=from:to:cc:subject:date:message-id;
-  bh=JjbnnMSRoLOJod2CWxV4vK/Y2fmBbrZOVMe5g6r53VA=;
-  b=vorBKOXolH+pd6ENe7q1O0mgSGiwVvt9J5Hsxny5z7wYg2MAIezGOHLm
-   DBHSZvlMTlmGMiGat1LBrWL2RokXeBy5AvQBwMtEPmnoLdkJ7U/Faf/Em
-   LwYGopqOf7JLa445Dv3VIZYWt4JbHd5qy3iGTixRaOFpuogsUADUSu1eI
-   I=;
-Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
-  by alexa-out.qualcomm.com with ESMTP; 27 May 2022 03:16:07 -0700
-X-QCInternal: smtphost
-Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
-  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 27 May 2022 03:16:06 -0700
-X-QCInternal: smtphost
-Received: from hyd-lablnx377.qualcomm.com ([10.204.178.226])
-  by ironmsg02-blr.qualcomm.com with ESMTP; 27 May 2022 15:45:48 +0530
-Received: by hyd-lablnx377.qualcomm.com (Postfix, from userid 4035820)
-        id DB92520F2F; Fri, 27 May 2022 15:45:47 +0530 (IST)
-From:   Sai Teja Aluvala <quic_saluvala@quicinc.com>
-To:     marcel@holtmann.org, johan.hedberg@gmail.com, luiz.dentz@gmail.com
-Cc:     mka@chromium.org, linux-kernel@vger.kernel.org,
-        linux-bluetooth@vger.kernel.org, quic_hemantg@quicinc.com,
-        quic_bgodavar@quicinc.com, quic_rjliao@quicinc.com,
-        quic_hbandi@quicinc.com, abhishekpandit@chromium.org,
-        mcchou@chromium.org, Sai Teja Aluvala <quic_saluvala@quicinc.com>
-Subject: [RESEND v1] Bluetooth: hci_qca: Return wakeup for qca_wakeup
-Date:   Fri, 27 May 2022 15:45:43 +0530
-Message-Id: <1653646543-349-1-git-send-email-quic_saluvala@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        Fri, 27 May 2022 06:16:15 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5D7FDE80;
+        Fri, 27 May 2022 03:16:12 -0700 (PDT)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L8gfN17CNzgYpP;
+        Fri, 27 May 2022 18:15:08 +0800 (CST)
+Received: from dggpemm500018.china.huawei.com (7.185.36.111) by
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 27 May 2022 18:16:10 +0800
+Received: from localhost.localdomain (10.175.112.125) by
+ dggpemm500018.china.huawei.com (7.185.36.111) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 27 May 2022 18:16:10 +0800
+From:   keliu <liuke94@huawei.com>
+To:     <dmitry.torokhov@gmail.com>, <marcoshalano@gmail.com>,
+        <michael@michaelcullen.name>, <linux-input@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     keliu <liuke94@huawei.com>
+Subject: [PATCH] drivers: input:  Directly use ida_alloc()/free()
+Date:   Fri, 27 May 2022 10:37:40 +0000
+Message-ID: <20220527103740.3442548-1-liuke94@huawei.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.112.125]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500018.china.huawei.com (7.185.36.111)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This fixes the return value of qca_wakeup(), since
-.wakeup work inversely with original .prevent_wake.
+Use ida_alloc()/ida_free() instead of deprecated
+ida_simple_get()/ida_simple_remove() .
 
-Fixes: 4539ca67fe8ed (Bluetooth: Rename driver .prevent_wake to .wakeup)
-Signed-off-by: Sai Teja Aluvala <quic_saluvala@quicinc.com>
+Signed-off-by: keliu <liuke94@huawei.com>
 ---
- drivers/bluetooth/hci_qca.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/input/input.c         | 8 ++++----
+ drivers/input/joystick/xpad.c | 6 +++---
+ 2 files changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/bluetooth/hci_qca.c b/drivers/bluetooth/hci_qca.c
-index eab34e2..8df1101 100644
---- a/drivers/bluetooth/hci_qca.c
-+++ b/drivers/bluetooth/hci_qca.c
-@@ -1588,7 +1588,7 @@ static bool qca_wakeup(struct hci_dev *hdev)
- 	wakeup = device_may_wakeup(hu->serdev->ctrl->dev.parent);
- 	bt_dev_dbg(hu->hdev, "wakeup status : %d", wakeup);
+diff --git a/drivers/input/input.c b/drivers/input/input.c
+index 1365c9dfb5f2..1e4a275795f9 100644
+--- a/drivers/input/input.c
++++ b/drivers/input/input.c
+@@ -2618,15 +2618,15 @@ int input_get_new_minor(int legacy_base, unsigned int legacy_num,
+ 	 * locking is needed here.
+ 	 */
+ 	if (legacy_base >= 0) {
+-		int minor = ida_simple_get(&input_ida,
++		int minor = ida_alloc_range(&input_ida,
+ 					   legacy_base,
+-					   legacy_base + legacy_num,
++					   legacy_base + legacy_num - 1,
+ 					   GFP_KERNEL);
+ 		if (minor >= 0 || !allow_dynamic)
+ 			return minor;
+ 	}
  
--	return !wakeup;
-+	return wakeup;
+-	return ida_simple_get(&input_ida,
++	return ida_alloc_range(&input_ida,
+ 			      INPUT_FIRST_DYNAMIC_DEV, INPUT_MAX_CHAR_DEVICES,
+ 			      GFP_KERNEL);
  }
+@@ -2641,7 +2641,7 @@ EXPORT_SYMBOL(input_get_new_minor);
+  */
+ void input_free_minor(unsigned int minor)
+ {
+-	ida_simple_remove(&input_ida, minor);
++	ida_free(&input_ida, minor);
+ }
+ EXPORT_SYMBOL(input_free_minor);
  
- static int qca_regulator_init(struct hci_uart *hu)
+diff --git a/drivers/input/joystick/xpad.c b/drivers/input/joystick/xpad.c
+index 18190b529bca..fafc0d5703dc 100644
+--- a/drivers/input/joystick/xpad.c
++++ b/drivers/input/joystick/xpad.c
+@@ -1456,7 +1456,7 @@ static int xpad_led_probe(struct usb_xpad *xpad)
+ 	if (!led)
+ 		return -ENOMEM;
+ 
+-	xpad->pad_nr = ida_simple_get(&xpad_pad_seq, 0, 0, GFP_KERNEL);
++	xpad->pad_nr = ida_alloc(&xpad_pad_seq, GFP_KERNEL);
+ 	if (xpad->pad_nr < 0) {
+ 		error = xpad->pad_nr;
+ 		goto err_free_mem;
+@@ -1479,7 +1479,7 @@ static int xpad_led_probe(struct usb_xpad *xpad)
+ 	return 0;
+ 
+ err_free_id:
+-	ida_simple_remove(&xpad_pad_seq, xpad->pad_nr);
++	ida_free(&xpad_pad_seq, xpad->pad_nr);
+ err_free_mem:
+ 	kfree(led);
+ 	xpad->led = NULL;
+@@ -1492,7 +1492,7 @@ static void xpad_led_disconnect(struct usb_xpad *xpad)
+ 
+ 	if (xpad_led) {
+ 		led_classdev_unregister(&xpad_led->led_cdev);
+-		ida_simple_remove(&xpad_pad_seq, xpad->pad_nr);
++		ida_free(&xpad_pad_seq, xpad->pad_nr);
+ 		kfree(xpad_led);
+ 	}
+ }
 -- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc.
+2.25.1
 
