@@ -2,80 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 785B1C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 07:40:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E6F3C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 07:42:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347620AbiE0Hkl (ORCPT
+        id S1347759AbiE0Hmt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 03:40:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38870 "EHLO
+        Fri, 27 May 2022 03:42:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232238AbiE0Hkk (ORCPT
+        with ESMTP id S232238AbiE0Hmp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 03:40:40 -0400
-Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87BFAF7495;
-        Fri, 27 May 2022 00:40:38 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R571e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=alimailimapcm10staff010182156082;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0VEW88T-_1653637234;
-Received: from localhost(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0VEW88T-_1653637234)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Fri, 27 May 2022 15:40:35 +0800
-From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-To:     olivierdautricourt@gmail.com
-Cc:     sr@denx.de, vkoul@kernel.org, dmaengine@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: [PATCH v2] dmaengine: altera-msgdma: Fix kernel-doc
-Date:   Fri, 27 May 2022 15:40:08 +0800
-Message-Id: <20220527074008.8458-1-jiapeng.chong@linux.alibaba.com>
-X-Mailer: git-send-email 2.20.1.7.g153144c
+        Fri, 27 May 2022 03:42:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40032580C2;
+        Fri, 27 May 2022 00:42:43 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F2DE4B82379;
+        Fri, 27 May 2022 07:42:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B984C385A9;
+        Fri, 27 May 2022 07:42:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653637360;
+        bh=kvLjAhJUZwOT1jSXRhS7yxJi0KEXNe4QNcBlgYBEkCk=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=bfrpP6Z208UuGf0ZWRZOLe8jn9Had31vzTrUGj94sXAnL2AmRM8geJK1tNSzBe1S5
+         /AohfMD6pJpkPRB9mGJqyIc6K12BTyqh1BViohz8l6zJNuKmb5i8b8uEp6bVbmqGx4
+         s12M6Qc/TnI3fIfv/+KO0bcP1fBXIQoUEvUAo+FwHvXOFZqN0jSNopIZevDQ7MsbNc
+         2cjm48JvpCvkVJUU3lRTqplybMnSMEuhBF00HjFx+rlimvOPRIoCTzgaI2ZTzLrJHe
+         wEXNlN1P6+H+/ZXTlKHrSFLl/6c21I2XQE1xskvta1EF8eeXJgbxz2axvPx/aSgoux
+         8SjkU2pG/FULw==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     liuke94@huawei.com, davem@davemloft.net, edumazet@google.com,
+        johannes@sipsolutions.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com
+Subject: Re: [PATCH] mac80211: Directly use ida_alloc()/free()
+References: <20220527074132.2474867-1-liuke94@huawei.com>
+        <a3e0df04-fb94-ef38-c2dc-1c41e6c721d9@wanadoo.fr>
+Date:   Fri, 27 May 2022 10:42:33 +0300
+In-Reply-To: <a3e0df04-fb94-ef38-c2dc-1c41e6c721d9@wanadoo.fr> (Christophe
+        JAILLET's message of "Fri, 27 May 2022 09:32:30 +0200")
+Message-ID: <87czfzxvyu.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix the following W=1 kernel warnings:
+Christophe JAILLET <christophe.jaillet@wanadoo.fr> writes:
 
-drivers/dma/altera-msgdma.c:927: warning: expecting prototype for
-msgdma_dma_remove(). Prototype was for msgdma_remove() instead.
+> Le 27/05/2022 =C3=A0 09:41, keliu a =C3=A9crit=C2=A0:
+>> Use ida_alloc()/ida_free() instead of deprecated
+>> ida_simple_get()/ida_simple_remove() .
+>>
+>> Signed-off-by: keliu <liuke94-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 
-drivers/dma/altera-msgdma.c:758: warning: expecting prototype for
-msgdma_chan_remove(). Prototype was for msgdma_dev_remove() instead.
+Heh, this email address got me confused :) I guess you (Christophe) use
+gmane and it's just some obfuscation done by gmane?
 
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
----
-Changes in v2:
-  -Make the commit message more clearer,replace msgdma_remove()
-with msgdma_dma_remove() in doc.
+--=20
+https://patchwork.kernel.org/project/linux-wireless/list/
 
- drivers/dma/altera-msgdma.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/dma/altera-msgdma.c b/drivers/dma/altera-msgdma.c
-index 6f56dfd375e3..4153c2edb049 100644
---- a/drivers/dma/altera-msgdma.c
-+++ b/drivers/dma/altera-msgdma.c
-@@ -749,7 +749,7 @@ static irqreturn_t msgdma_irq_handler(int irq, void *data)
- }
- 
- /**
-- * msgdma_chan_remove - Channel remove function
-+ * msgdma_dev_remove() - Device remove function
-  * @mdev: Pointer to the Altera mSGDMA device structure
-  */
- static void msgdma_dev_remove(struct msgdma_device *mdev)
-@@ -918,7 +918,7 @@ static int msgdma_probe(struct platform_device *pdev)
- }
- 
- /**
-- * msgdma_dma_remove - Driver remove function
-+ * msgdma_remove() - Driver remove function
-  * @pdev: Pointer to the platform_device structure
-  *
-  * Return: Always '0'
--- 
-2.20.1.7.g153144c
-
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
+hes
