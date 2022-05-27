@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C9F9C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 06:41:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B9E2C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 06:44:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343801AbiE0Glq (ORCPT
+        id S1343919AbiE0GoW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 02:41:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57668 "EHLO
+        Fri, 27 May 2022 02:44:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243375AbiE0Glo (ORCPT
+        with ESMTP id S243636AbiE0GoS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 02:41:44 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCD4768FAC
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 23:41:43 -0700 (PDT)
-Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4L8ZtJ2PCYzbbhg;
-        Fri, 27 May 2022 14:40:08 +0800 (CST)
+        Fri, 27 May 2022 02:44:18 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE547ED7AB
+        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 23:44:15 -0700 (PDT)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.57])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4L8ZxF2QNbz1JCRb;
+        Fri, 27 May 2022 14:42:41 +0800 (CST)
 Received: from dggpemm500018.china.huawei.com (7.185.36.111) by
- dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 27 May 2022 14:41:40 +0800
+ 15.1.2375.24; Fri, 27 May 2022 14:44:14 +0800
 Received: from localhost.localdomain (10.175.112.125) by
  dggpemm500018.china.huawei.com (7.185.36.111) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 27 May 2022 14:41:40 +0800
+ 15.1.2375.24; Fri, 27 May 2022 14:44:13 +0800
 From:   keliu <liuke94@huawei.com>
-To:     <joro@8bytes.org>, <will@kernel.org>,
-        <iommu@lists.linux-foundation.org>, <linux-kernel@vger.kernel.org>
+To:     <lee.jones@linaro.org>, <linux-kernel@vger.kernel.org>
 CC:     keliu <liuke94@huawei.com>
-Subject: [PATCH] drivers: iommu: Directly use ida_alloc()/free()
-Date:   Fri, 27 May 2022 07:03:07 +0000
-Message-ID: <20220527070307.2359150-1-liuke94@huawei.com>
+Subject: [PATCH] drivers: mfd: Directly use ida_alloc()/free()
+Date:   Fri, 27 May 2022 07:05:43 +0000
+Message-ID: <20220527070543.2359316-1-liuke94@huawei.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
 X-Originating-IP: [10.175.112.125]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
  dggpemm500018.china.huawei.com (7.185.36.111)
 X-CFilter-Loop: Reflected
 Precedence: bulk
@@ -51,40 +50,40 @@ ida_simple_get()/ida_simple_remove() .
 
 Signed-off-by: keliu <liuke94@huawei.com>
 ---
- drivers/iommu/iommu.c | 6 +++---
+ drivers/mfd/intel-lpss.c | 6 +++---
  1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 857d4c2fd1a2..8d56146a0b44 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -595,7 +595,7 @@ static void iommu_group_release(struct kobject *kobj)
- 	if (group->iommu_data_release)
- 		group->iommu_data_release(group->iommu_data);
+diff --git a/drivers/mfd/intel-lpss.c b/drivers/mfd/intel-lpss.c
+index cfbee2cfba6b..f6628874d7f1 100644
+--- a/drivers/mfd/intel-lpss.c
++++ b/drivers/mfd/intel-lpss.c
+@@ -405,7 +405,7 @@ int intel_lpss_probe(struct device *dev,
  
--	ida_simple_remove(&iommu_group_ida, group->id);
-+	ida_free(&iommu_group_ida, group->id);
+ 	intel_lpss_init_dev(lpss);
  
- 	if (group->default_domain)
- 		iommu_domain_free(group->default_domain);
-@@ -635,7 +635,7 @@ struct iommu_group *iommu_group_alloc(void)
- 	INIT_LIST_HEAD(&group->entry);
- 	BLOCKING_INIT_NOTIFIER_HEAD(&group->notifier);
+-	lpss->devid = ida_simple_get(&intel_lpss_devid_ida, 0, 0, GFP_KERNEL);
++	lpss->devid = ida_alloc(&intel_lpss_devid_ida, GFP_KERNEL);
+ 	if (lpss->devid < 0)
+ 		return lpss->devid;
  
--	ret = ida_simple_get(&iommu_group_ida, 0, 0, GFP_KERNEL);
-+	ret = ida_alloc(&iommu_group_ida, GFP_KERNEL);
- 	if (ret < 0) {
- 		kfree(group);
- 		return ERR_PTR(ret);
-@@ -645,7 +645,7 @@ struct iommu_group *iommu_group_alloc(void)
- 	ret = kobject_init_and_add(&group->kobj, &iommu_group_ktype,
- 				   NULL, "%d", group->id);
- 	if (ret) {
--		ida_simple_remove(&iommu_group_ida, group->id);
-+		ida_free(&iommu_group_ida, group->id);
- 		kobject_put(&group->kobj);
- 		return ERR_PTR(ret);
- 	}
+@@ -442,7 +442,7 @@ int intel_lpss_probe(struct device *dev,
+ 	intel_lpss_unregister_clock(lpss);
+ 
+ err_clk_register:
+-	ida_simple_remove(&intel_lpss_devid_ida, lpss->devid);
++	ida_free(&intel_lpss_devid_ida, lpss->devid);
+ 
+ 	return ret;
+ }
+@@ -456,7 +456,7 @@ void intel_lpss_remove(struct device *dev)
+ 	intel_lpss_debugfs_remove(lpss);
+ 	intel_lpss_ltr_hide(lpss);
+ 	intel_lpss_unregister_clock(lpss);
+-	ida_simple_remove(&intel_lpss_devid_ida, lpss->devid);
++	ida_free(&intel_lpss_devid_ida, lpss->devid);
+ }
+ EXPORT_SYMBOL_GPL(intel_lpss_remove);
+ 
 -- 
 2.25.1
 
