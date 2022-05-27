@@ -2,252 +2,293 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B679C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 07:57:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F39FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 07:57:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348614AbiE0H5P (ORCPT
+        id S1348361AbiE0H4n (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 03:57:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49074 "EHLO
+        Fri, 27 May 2022 03:56:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348724AbiE0H5C (ORCPT
+        with ESMTP id S1348446AbiE0H4Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 03:57:02 -0400
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2079.outbound.protection.outlook.com [40.107.220.79])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62AC0FC4D4
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 00:56:53 -0700 (PDT)
+        Fri, 27 May 2022 03:56:25 -0400
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2065.outbound.protection.outlook.com [40.107.21.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DA183134C;
+        Fri, 27 May 2022 00:56:22 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LXjGNHsKRc6IYc5o9ZJe+4jorDBWXakC0LfLCl9twUsMmiXVnP31P44p9D1rxMWqSCavm0lK8AL1JB2006uBtbrBDDvCihNWMh3b6zLExkiGJmaZ6UYAktNXCfVLMsNaGdAvxPEKYcVHLCnsgv3ojcWlDypNrDet3G5zIRYm5VhkBpMHxp/BYp78yzhRQECXeIuSOdcfKalZJR3nP6xJI6IMz1oxbZGrYho1jKlCLTaPSISJLbIzbtyf2aj/Fh5ur8ooWVHe4i2KPwekEtKdtE6TprKBhcEvSV8uMJ9JMoJDczueBA8x0y1E9iAIgMFdXubFOYMErlzEVE1gIPAghg==
+ b=QyI9lwTKeWjbWwTfBSLrbzKAnYMM3ePNvIuNODI2NDMbA2QVhoHLZUP4R2qdRvgomU+bdl+jphItc8d7PDT2MtL5Vythhf3H4wICdArG/H+MVKeK2NWfSnJ3lVizwMfd1EwlSk+B+tsxUnR8CMYqJKK/Nk3gcpF859O0C159XLcWXDrVDtEQaFoztEWJ4PavxqruxJwx10BfiHmvbHWNtRfA5eB/vlUVp05cJ/lVKNbme2Z1ikoDNSWNwRdyLtKP6OWbdO5Ka2ZYJ570ZlAFiblZp+o5mKgIX97gV2HMjrOXC8ocZARmLZcZXUdYWisBNdEY/ouoNxYFsOoYISp0xg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=EGEksX6Lz+OtHCWIZF18baqRLSh7ikC3K1CnQsGGFBg=;
- b=iN5lKpNauqpHmXdyq8dl/S7PAO+jVqpDhZEylQANumFAlK7GJN/wMwMszeefYjKO5MGM4fNIVlOgPfb8Ulw6WNyhiMnd99ToLhcX8rJYxLc73uasDgrMtIL83j+mTNA6pELsNYrS1moGFUJOBqJng8widCZqvx0xKVNq+lVZV4AB/aVe3KxAsiV4oMdFkoHxrJDRLUBTxmukIMGc8Xlg4WdtysGq1NCGk0Cif4e7wu/YhA2ge/Bjc4cxKOmb7fooindSWh9G1/UWEsrVE2MaAvxsEFF16eWrxtegA3lg7DfDcZF83XovlkNwJj2khjtRVdigM1lGCD8Qi9gRXRfQFA==
+ bh=4A+DPtgO+MrYVokTtepeqXQdm3jt+NdKnEBhb0r6ZjE=;
+ b=Km5tWAFEnMNgds6eq9ursbO7zshoc/l1JC62y5CoJLmt1Ay1O2SczDSQy992SfVC7xND85z2FDuZ3xtOfUtzgdGNhYCRJPAM1oBKskpHcnpYpSiS6dqLpwQoq30/7dCQ1CnpNASkAbXOB8E1gSMGs+AGbWxExsDOMEluy+9hCxedVH3s1RqYkU7HqQeLJqP7jCtHdV71RBi/TDu/aqGOCuCl1tR1wpBMZzG0m6lXEgfg5zTNoAd0l/s/iw8E6qwUq9WcKi4ARkLWeQT9zMABkQ26qsqAfM7KtWCA8sjrVEnZJmTtb1fj+9t3wcNp5y/fP7IDuQhtVWmf2xepbkDTjw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=EGEksX6Lz+OtHCWIZF18baqRLSh7ikC3K1CnQsGGFBg=;
- b=nsVO4Qdps8r7j5CdInq+aZw1Eg+oBfDJB+ukUvmOBpFhoZbDrHj2izn3YwI0PAfd+ewtJU3rssdKnQ5jQ+UvWmM7sJ4+b2xSwehN0jEqpJvcD9qOISe3eL1cgdXvQuF0QHmvet7wnWtVgwDAvKxSBVqms1KjydXJ6n9+xoKcX8w=
-Received: from DM5PR12MB2469.namprd12.prod.outlook.com (2603:10b6:4:af::38) by
- CO6PR12MB5427.namprd12.prod.outlook.com (2603:10b6:5:358::13) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5293.13; Fri, 27 May 2022 07:56:51 +0000
-Received: from DM5PR12MB2469.namprd12.prod.outlook.com
- ([fe80::95af:3466:5c5f:1202]) by DM5PR12MB2469.namprd12.prod.outlook.com
- ([fe80::95af:3466:5c5f:1202%2]) with mapi id 15.20.5293.016; Fri, 27 May 2022
- 07:56:49 +0000
-From:   "Chen, Guchun" <Guchun.Chen@amd.com>
-To:     Dan Carpenter <dan.carpenter@oracle.com>,
-        "kbuild@lists.01.org" <kbuild@lists.01.org>,
-        "Deucher, Alexander" <Alexander.Deucher@amd.com>
-CC:     "kbuild-all@lists.01.org" <kbuild-all@lists.01.org>,
-        "lkp@intel.com" <lkp@intel.com>,
-        "amd-gfx@lists.freedesktop.org" <amd-gfx@lists.freedesktop.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [kbuild] drivers/gpu/drm/amd/amdgpu/amdgpu_discovery.c:1433
- amdgpu_discovery_get_vcn_info() error: buffer overflow
- 'adev->vcn.vcn_codec_disable_mask' 2 <= 3
-Thread-Topic: [kbuild] drivers/gpu/drm/amd/amdgpu/amdgpu_discovery.c:1433
- amdgpu_discovery_get_vcn_info() error: buffer overflow
- 'adev->vcn.vcn_codec_disable_mask' 2 <= 3
-Thread-Index: AQHYcZ3tJ4Zoo/IFU0+KlIe76VbZta0yWxKw
-Date:   Fri, 27 May 2022 07:56:48 +0000
-Message-ID: <DM5PR12MB246988B514599DF631847549F1D89@DM5PR12MB2469.namprd12.prod.outlook.com>
-References: <202205271546.oV14N2r8-lkp@intel.com>
-In-Reply-To: <202205271546.oV14N2r8-lkp@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 2ed5a76c-81ef-4276-9d55-08da3fb673fa
-x-ms-traffictypediagnostic: CO6PR12MB5427:EE_
-x-microsoft-antispam-prvs: <CO6PR12MB5427769D0D935A78ABE6FBEFF1D89@CO6PR12MB5427.namprd12.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 2xgLf75ypkDp2CYFkyxdPFG7vritciKfW3pS6fehPRrJjntDIhUfVjUd26ZlzKr8DjgAPHJuftiMVt8f2EFB+1mzs+72KfwCSA9zXozhzDbBH1H/1RzDM7uA49IUwPgnwKGDN4n1VmYqMqptW2Ds+a4DQtOxTJcRF7tFkLsu7Pf3jfkMW+GYUUic4Mb31jq/xvMVcDZ7Bzfvw5MTVIzdwLyFyH5njc6lOdUL4jEVkS6LIB4l6g8KN01jVbd00ujZ5cH7H1tTrGH/CC6xGOeOJ+cb1iWeeexpnstzQEsCSErx270GHlexi2wsgibzI50VFwsEBqLT6xdyOnvROEIuU577QS5pvg/nY9sIFb6JirmP8RKF1NNoZb4IRUOMJcCOkztSIvrLpeA9fGuj71pKPwcpO5ZsyiXVZrVSjs9BAdfE14qDk+umzOuZk9vN89uj/A1i/7RgcbzlYN13TTxQ/DWBTai/KOXwK/ITo/KvnV5TiZAY7XL4TvOWn1XAvlVBtlG4Jmp/xW/3wAb7FATdldv17+USCt7bHpDFRq/OqetoGolRZK4k1YOu0LePE6fPbWLfxjzqWReTxwEPtexUCJqBJCuup+ggQimd9udkxMSyTownMVQb5BTXlDrGCjtVtHgL8bD0xcx2nYiBJNy0qlzGwvqTWkGBWSJTuIDmL2tbdrBTC2px6R+zI7FwsQXx35eaJ/IJu8IgnpXMLDPGWWMc8/BPQ+zZjVDjMDDbD0Au0N+uFjxjVv98jySCu2wgxs6YgMyCV8EO1/WJpV4pRM/4WSmClaRNMgNCBhesATY=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR12MB2469.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(53546011)(9686003)(26005)(86362001)(83380400001)(7696005)(6506007)(38100700002)(33656002)(55016003)(186003)(6636002)(316002)(110136005)(5660300002)(4326008)(66946007)(52536014)(76116006)(66476007)(66556008)(66446008)(8676002)(8936002)(64756008)(508600001)(38070700005)(45080400002)(122000001)(2906002)(71200400001)(966005)(54906003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?a9f7D4VeclIUFQdIpfdcTYCKbapV0PSnkBUu80se0tINke65PDaBkhhT7vg1?=
- =?us-ascii?Q?hPpGxY+M4mFKkDntjQwna+ZHZkvHlDEWGd5WR7JwO1++L4T5hE8o+xcgmHDB?=
- =?us-ascii?Q?r75f+ab8umO/Hz1IDT4IMl7GsHMIB3wl8ljvykC09xYlfnQ+HeYh6RLh1F7f?=
- =?us-ascii?Q?PV/LDlV4CpZnXqDpFXRnHAvxOrOPBgccUFs19vIYJpRNzCmvGumaDG2kiKy7?=
- =?us-ascii?Q?ZWrfYO++tazRn3ktRE6LK1+QO2w1W5dlJCfWmDA3+Ha7IEDu+FxK8e9M8jI6?=
- =?us-ascii?Q?K5jpjG0ooMm1vmRFasafL2hYWgxqzjYTmuHUPYO0vklw6hxqBeOYRtMxCiPp?=
- =?us-ascii?Q?4Gth7svQ1EBO8FXlxh5FS3J8c+1Wv10u39wrwgFQf+aXYSZQprL8yMQZUvhf?=
- =?us-ascii?Q?AKkkY0uwxhhzoOfGtZExBIbemuRLB9KA+L93/7qZ8h6ehpP9CzovTlyQm7E+?=
- =?us-ascii?Q?T9MO++sGqb65/XCO7h4G+kZDdqv+Ibf09zmeZ/WTs/brF8eQoLUlu27oEgmL?=
- =?us-ascii?Q?KlRj6U+hdOz+p+OXFri/5uMRJZ6NR+xfbXIwdbn21+feSgWBKFcUKlN1/P4B?=
- =?us-ascii?Q?2UPs1Zp6q03r9WscLelR9YVgGqZu/qSFi+vyHiK9A1KKzJ9UFeeDY5ImYhnd?=
- =?us-ascii?Q?02kkGoXpP4pQ0iaeCinIeTvdiz0LIntDEy/qu1H57ITQI1X2ZJj9ozmt3Iy+?=
- =?us-ascii?Q?6/+HAe6i6genHCUIqi00xWAgoT5uVJbeC828yRU2kKfZ5O6VxZ01Ce+0JF0t?=
- =?us-ascii?Q?edskiiiAw9nfh6ye83vN21ujr9Vr9mOxeWM1qzx8OwJQ/4Ob2t7tiYMCkFe/?=
- =?us-ascii?Q?D3q8+IsyRTuIZdaZAPGY0EbSnlnz1SD6M4Bh+pa/qaTvOgaiLHVCVAGekl2r?=
- =?us-ascii?Q?AeNJTAn+ad0xKsTzSHHei9MDoAlinQfVCb++1iCJRAxmkoGQ/poNc7jY+K6d?=
- =?us-ascii?Q?OzgX03DUnC4uhFK3Mt3AKebzfF0l9DdNZ9G1VwMn6yGRAqbHTJoFS0n0HM8k?=
- =?us-ascii?Q?VfebeVOkcHhx2DTTP6r6OlYk92WxzeJibD8QULBRncS2ej7tmI/JpJ3X3VkK?=
- =?us-ascii?Q?Tr61kka1r1fRE6pn/o0bKdms1I/5dPCAJagHRAVyqyjnr7wLWjoyRSVKI3Jc?=
- =?us-ascii?Q?Fxs5kjZnO2yU0TbafazC+pgCNESIAdAY+gp5OCcfLrTWmRoUfSP+zd4Xfdck?=
- =?us-ascii?Q?2Dt9lZ1IOPvyHoxZqIkGDkhdD004JDlVWmBvSizHinu8F+ci20aFZj0x7eCC?=
- =?us-ascii?Q?9863ad1hvowfyq6R+CPRryuEfvhDICXkhDXwj+rghlOM77EhPUIJ5mwNBmTh?=
- =?us-ascii?Q?qq2Qn71j+HHqhrcPI64F8/dXpoEBX5ckgLxT0qB/H7cIDnJdXznakLwuouwt?=
- =?us-ascii?Q?yCV9aStcHV2tuE7pPNBKvWvSIibfgA5tx7SGfWtPhzPObTfbcbT/VrUp2Ew7?=
- =?us-ascii?Q?vH+t9IMgYoyexPDBoO3exfeTLFTvBNNNbnKfFlNflGdM60TFs5alVD6g8lVg?=
- =?us-ascii?Q?EUsRSQkMdT6DrmGGxg7zLNMPh/0RpmCrvgg486jOIWa6P5xGRO1c9U+5AW1T?=
- =?us-ascii?Q?nCJNqpaxCKlxrHkY9gyNMlVrES78xKdRjCXQPgtessrPJ+3tXLNtXRmfJHUJ?=
- =?us-ascii?Q?HGlIJsYHUns/GUMZ8WS3AJMgvkQ4WSaLRAc7xzRTqAL3WXUbo0jrvuXF0MkQ?=
- =?us-ascii?Q?SLLSmHl8L9UsYlTotD19U2tNdrkAmQTj+NHjK4XSJgYxQ+qoRAVp0D3bNKRF?=
- =?us-ascii?Q?Pd1Qg1sv9w=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+ bh=4A+DPtgO+MrYVokTtepeqXQdm3jt+NdKnEBhb0r6ZjE=;
+ b=XQd4gxTzChWllkvA7ytZ0EA5JARwqoMk44W7SIopLejlB72jmCI/hSbFqAofQtCQFPnMhGy3E65H1u7WEYWsKhkNco9r3Q5V41C+G54WNotBCOiSu27n5fq2TDXl5S+F6DinrbtakNg/toZ8DNKGjCcO+uyYSU1H7s08V1Y0HCM=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from AM6PR04MB6341.eurprd04.prod.outlook.com (2603:10a6:20b:d8::14)
+ by VI1PR04MB4590.eurprd04.prod.outlook.com (2603:10a6:803:6d::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.13; Fri, 27 May
+ 2022 07:56:20 +0000
+Received: from AM6PR04MB6341.eurprd04.prod.outlook.com
+ ([fe80::bc48:7565:c619:62c3]) by AM6PR04MB6341.eurprd04.prod.outlook.com
+ ([fe80::bc48:7565:c619:62c3%7]) with mapi id 15.20.5293.015; Fri, 27 May 2022
+ 07:56:20 +0000
+From:   Ming Qian <ming.qian@nxp.com>
+To:     mchehab@kernel.org, mirela.rabulea@oss.nxp.com,
+        hverkuil-cisco@xs4all.nl
+Cc:     shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
+        festevam@gmail.com, linux-imx@nxp.com, linux-media@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH] media: imx-jpeg: Align upwards buffer size
+Date:   Fri, 27 May 2022 15:54:36 +0800
+Message-Id: <20220527075437.16882-4-ming.qian@nxp.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220527075437.16882-1-ming.qian@nxp.com>
+References: <20220527075437.16882-1-ming.qian@nxp.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SI2PR06CA0007.apcprd06.prod.outlook.com
+ (2603:1096:4:186::9) To AM6PR04MB6341.eurprd04.prod.outlook.com
+ (2603:10a6:20b:d8::14)
 MIME-Version: 1.0
-X-OriginatorOrg: amd.com
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 50faa715-9206-4e90-c6d2-08da3fb662f0
+X-MS-TrafficTypeDiagnostic: VI1PR04MB4590:EE_
+X-Microsoft-Antispam-PRVS: <VI1PR04MB4590FF253179A775B4FB5422E7D89@VI1PR04MB4590.eurprd04.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 32Ch+W1FIS7fxUPryehSy9pU4B0fJRzlkK7m757sqc6ETg/0ChKnntcAQbHSCFhbUha8TmIPn2abTII2c8XbsBe0x/TtSaadVkff+j/OSXRi+Vtf8rT0TWqiQgyajmnj7W9AhgOYCuSaSZOPUbZeoLy0IQYi3yV9Nq5vlIGTwDwyftJYLyiD8Jwj2yRM/Hrix8YDSmX6grbQ0gwp2m+zAgM3wbNHnxGrL9UcA4Q8R0DwFpzr0k7XviaeI1Jhp8hb7ZRDPjWEATHg1te/X46Rb+YtHrO2NPNnK6N+k/Tz7b7LwY6rXm1QJuohYF0ryDsc86FtFusw1bEvb7eDSivbDCoTk99CkcKgztzsus+BYtuN6lxZhrM7AyQzHPVbwY7m1PDkeqt+F64PW0/KfElM6iDacox/OuXsKHNl13jFmgXRI/mIooK2q6C3VpZJ7yLeVqZUvYxBffEahJrNo/BeApDlI83XfLFeGGVEDmKFpZcszAFMvYB28GzY8kjtg0dgzsMeqLcA2AxoVeCv4hTtkLZXfLcPMeOqigWWLtH2ECvBGRlLOO4CEgEOfe/zCRI0tN0pD70uyPMWzpDyAmPLCyG1EuDUE8IcdNctkFdNTU+oew+HAdZ2QrnXBuFoQEWWUtpgrZIwvfrguo1KbOlRfNcH8SYTht+FCDdte2od+kO3e94QzHOyTxFvAv20iyjSl173O5fFQuLeC0w3Yndu6A==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR04MB6341.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(66946007)(86362001)(4326008)(8676002)(38350700002)(66476007)(66556008)(2906002)(38100700002)(316002)(36756003)(6666004)(52116002)(6506007)(83380400001)(44832011)(2616005)(6512007)(186003)(1076003)(26005)(508600001)(6486002)(8936002)(7416002)(5660300002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?D7Mx+R23pGJdhAo6VvEpsoF8ZAl8Xz9hcg0YwC4k/Ni5jMFoN6OwopD0PRPZ?=
+ =?us-ascii?Q?KZf0SJsgwTk2nXoej8Glou8CaefiKvFHuWmaj2Lt40YQx9wUuUw+gd5Miaf4?=
+ =?us-ascii?Q?gzlrsZq/btMAHsx19Uc+pC8HjrVilgxhYTV7wlfqTthiPKV2Z3YJrCDPi58p?=
+ =?us-ascii?Q?MheIg0SpR9oYhLFx+T+CG8qn50dF3jdbB278+L8TQeRjoAHFdnmfVxAOG4x+?=
+ =?us-ascii?Q?imDWgBL2Gij+29m28tWQ4/KmsKHxVBVxkDSo6VkF+420CHp/2VxiXP8hXHi1?=
+ =?us-ascii?Q?cKFVBcxEQA4oQvzZ37VHW9ySN7vS5nBAyJEeQOr7LaIyV98l/paCLVpgyXKn?=
+ =?us-ascii?Q?PYfx+VwmrqDmMycu5AFnslH7/7/uJhqWOFEFiFafzjbaZIsn7EHcKifhMM6Q?=
+ =?us-ascii?Q?86Dl++peVf3kEupXqTGED5tJxsAZoY21LYXxbUAfFgdCIXTW6CYWypypy/4q?=
+ =?us-ascii?Q?dmawQ7VF18ge8LlHGFQsbjES/Qx5DgZAUW1hodCns920nATZTgWOEUhGrcJe?=
+ =?us-ascii?Q?l0Y0RNvmnNxUjf3wlTuYan+6fbNhp68L1UB3f+xVpQK/RHy58gmYd+6vzh3O?=
+ =?us-ascii?Q?WUFvP9y3E6TdxGUpjK4xnKovnZrfHKCbKdpiPkyVMongEjNkV9nWfm87zzsS?=
+ =?us-ascii?Q?9ZYVN0OdqaYuejCDa6suAU8jRtHRBbBec5j6UC4VSvDPVFy+kV1a+hzjYfp1?=
+ =?us-ascii?Q?iHpvxamQLBWElHFtqCQ+BO0huCvyUuX5j3ZH/KeEDnB4tfTrLxqpl8jhuJHn?=
+ =?us-ascii?Q?ZAeWisxJOnmLDkqSvCzhuUsMv0ycJjHpNpRqj2uv4Uh/1yMY5U1DM6RZCV/P?=
+ =?us-ascii?Q?ohR51aImJRryKRGA2C8p+UGGslZncz58bBx0Wg9vW/Po6DLkgIKa0AWTkywA?=
+ =?us-ascii?Q?xhjg9crh1mO7EPDOvqSyKDImv/jcURcD4AE9GpwiwrIshGL0eLt+ZeJpaKY/?=
+ =?us-ascii?Q?SkQP8VtUsO+UgLFAtJBtjnztJzL/ISuJsnQbKE2oPKdvRspRSbtfIas8Pduh?=
+ =?us-ascii?Q?AZ9d+viyl4cg7j1E8Cr6yxJsQOlAjPuXJkITOJIXpW6DZBWhTBf7YdmRgmOC?=
+ =?us-ascii?Q?LU1FsvHqO0uJ8vk4EY5mJrSunjp6YjHUlR/DREPwKSgg3/2JzYO7TOO+JCl0?=
+ =?us-ascii?Q?dI/pq3tmw3pKBvyCi6vyxbYHDafop6vzIyZaQ3ncIxf/5p0sC72csLMlwipF?=
+ =?us-ascii?Q?v5AcMNhouCRQ+leQe0/qjeo+ohcZuheyLW09EK2S+4jrMaS31LYpy5aAwOFR?=
+ =?us-ascii?Q?s+Y98u5sLVFJMrMPzCKywA1Lk+3e9VW+06fWuoBaluZvQGMZZeYFWudtPC10?=
+ =?us-ascii?Q?KqicpHNs2CANJbbnwtqEmS7hbH+bI66tcRNU0j+KrK8RQ0fH1H4sqZ98JVmn?=
+ =?us-ascii?Q?g4f7Htiu3Ib3gcBerMNe1QCYnU7Bpup5CJlx24N8SBBxXDzrl3tOiK6T8iuU?=
+ =?us-ascii?Q?ToEDG4vgQiiOlE1FJUItaDKJsSddSBAfyDgDYD7ynfu0gKMyAXg111dS/b63?=
+ =?us-ascii?Q?FVOUnKZwZU/sFRbiisAcy4MsN1yjkyBth93XrY04AQ73rQqQXifK8ZxN8lso?=
+ =?us-ascii?Q?Z/6uObIXIAdjBySd6rHWIYmtjViIiXO521k5UYNJoaYZQ2ESUimr9g8/wV0S?=
+ =?us-ascii?Q?PryVXXNDyGHv852RpMcFRSO6ZPRJuPELybIfFmvnPO+XvXUpgquIIQA2GcGN?=
+ =?us-ascii?Q?PrVLXCnqmlkquif8pvrQt21nd6SAzX1cQ6Z7X15l9gUij4GpObVOiKalcQqg?=
+ =?us-ascii?Q?EHviXdA/ng=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 50faa715-9206-4e90-c6d2-08da3fb662f0
+X-MS-Exchange-CrossTenant-AuthSource: AM6PR04MB6341.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM5PR12MB2469.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2ed5a76c-81ef-4276-9d55-08da3fb673fa
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 May 2022 07:56:48.8279
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 May 2022 07:56:20.5234
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: JSDEGPsCoKnSQLzjY22SuBoXqa9xbvrPxCB3WGkSxrkBc3UkbZG6QvWm6QTWtIxokMfylOgPoJV7tq8pHws+EQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO6PR12MB5427
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: n1TreHkBpRBBnE5SUMjgACnHBBMK6ZUsZbhhw+7Zm1Tci/vapRSt56ld2arH9834gES1kEpQ8Dam9HL5n/LKDA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4590
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A patch was available already to protect against such scenario.
+The hardware can support any image size WxH,
+with arbitrary W (image width) and H (image height) dimensions.
 
-https://patchwork.freedesktop.org/patch/486289/, "drm/amdgpu/discovery: val=
-idate VCN and SDMA instances"
+Align upwards buffer size for both encoder and decoder.
+and leave the picture resolution unchanged.
 
-Regards,
-Guchun
+For decoder, the risk of memory out of bounds can be avoided.
+For both encoder and decoder, the driver will lift the limitation of
+resolution alignment.
 
------Original Message-----
-From: amd-gfx <amd-gfx-bounces@lists.freedesktop.org> On Behalf Of Dan Carp=
-enter
-Sent: Friday, May 27, 2022 3:46 PM
-To: kbuild@lists.01.org; Deucher, Alexander <Alexander.Deucher@amd.com>
-Cc: kbuild-all@lists.01.org; lkp@intel.com; amd-gfx@lists.freedesktop.org; =
-linux-kernel@vger.kernel.org
-Subject: [kbuild] drivers/gpu/drm/amd/amdgpu/amdgpu_discovery.c:1433 amdgpu=
-_discovery_get_vcn_info() error: buffer overflow 'adev->vcn.vcn_codec_disab=
-le_mask' 2 <=3D 3
+For example, the decoder can support jpeg whose resolution is 227x149
+the encoder can support nv12 1080P, won't change it to 1920x1072.
 
-[ kbuild bot sent this warning on May 4 but I never heard back and it's
-  May 27 now so sending a duplicate warning is probably for the best. -dan]
+Signed-off-by: Ming Qian <ming.qian@nxp.com>
+---
+ .../media/platform/nxp/imx-jpeg/mxc-jpeg.c    | 88 ++++++++-----------
+ 1 file changed, 37 insertions(+), 51 deletions(-)
 
-tree:   https://nam11.safelinks.protection.outlook.com/?url=3Dhttps%3A%2F%2=
-Fgit.kernel.org%2Fpub%2Fscm%2Flinux%2Fkernel%2Fgit%2Ftorvalds%2Flinux.git&a=
-mp;data=3D05%7C01%7Cguchun.chen%40amd.com%7Cfc2110078e5c4790337808da3fb50de=
-6%7C3dd8961fe4884e608e11a82d994e183d%7C0%7C0%7C637892344114571722%7CUnknown=
-%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6=
-Mn0%3D%7C3000%7C%7C%7C&amp;sdata=3D4AYyKswjTmjKoNdRpOxWPW2R2o2RU5CkrYRuelaC=
-afA%3D&amp;reserved=3D0  master
-head:   7e284070abe53d448517b80493863595af4ab5f0
-commit: 622469c87fc3e6c90a980be3e2287d82bd55c977 drm/amdgpu/discovery: add =
-a function to parse the vcn info table
-config: arc-randconfig-m031-20220524 (https://nam11.safelinks.protection.ou=
-tlook.com/?url=3Dhttps%3A%2F%2Fdownload.01.org%2F0day-ci%2Farchive%2F202205=
-27%2F202205271546.oV14N2r8-lkp%40intel.com%2Fconfig&amp;data=3D05%7C01%7Cgu=
-chun.chen%40amd.com%7Cfc2110078e5c4790337808da3fb50de6%7C3dd8961fe4884e608e=
-11a82d994e183d%7C0%7C0%7C637892344114571722%7CUnknown%7CTWFpbGZsb3d8eyJWIjo=
-iMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C=
-&amp;sdata=3DosyRhU3i%2Fdnwcu%2Fz9T0278PTeEFuM%2BAWw8zR43ir%2FhQ%3D&amp;res=
-erved=3D0 )
-compiler: arceb-elf-gcc (GCC) 11.3.0
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-
-smatch warnings:
-drivers/gpu/drm/amd/amdgpu/amdgpu_discovery.c:1433 amdgpu_discovery_get_vcn=
-_info() error: buffer overflow 'adev->vcn.vcn_codec_disable_mask' 2 <=3D 3
-
-vim +1433 drivers/gpu/drm/amd/amdgpu/amdgpu_discovery.c
-
-622469c87fc3e6 Alex Deucher 2022-03-30  1403  int amdgpu_discovery_get_vcn_=
-info(struct amdgpu_device *adev)
-622469c87fc3e6 Alex Deucher 2022-03-30  1404  {
-622469c87fc3e6 Alex Deucher 2022-03-30  1405  	struct binary_header *bhdr;
-622469c87fc3e6 Alex Deucher 2022-03-30  1406  	union vcn_info *vcn_info;
-622469c87fc3e6 Alex Deucher 2022-03-30  1407  	u16 offset;
-622469c87fc3e6 Alex Deucher 2022-03-30  1408  	int v;
-622469c87fc3e6 Alex Deucher 2022-03-30  1409 =20
-622469c87fc3e6 Alex Deucher 2022-03-30  1410  	if (!adev->mman.discovery_bi=
-n) {
-622469c87fc3e6 Alex Deucher 2022-03-30  1411  		DRM_ERROR("ip discovery uni=
-nitialized\n");
-622469c87fc3e6 Alex Deucher 2022-03-30  1412  		return -EINVAL;
-622469c87fc3e6 Alex Deucher 2022-03-30  1413  	}
-622469c87fc3e6 Alex Deucher 2022-03-30  1414 =20
-622469c87fc3e6 Alex Deucher 2022-03-30  1415  	if (adev->vcn.num_vcn_inst >=
- VCN_INFO_TABLE_MAX_NUM_INSTANCES) {
-
-Capped to 4
-
-622469c87fc3e6 Alex Deucher 2022-03-30  1416  		dev_err(adev->dev, "invalid=
- vcn instances\n");
-622469c87fc3e6 Alex Deucher 2022-03-30  1417  		return -EINVAL;
-622469c87fc3e6 Alex Deucher 2022-03-30  1418  	}
-622469c87fc3e6 Alex Deucher 2022-03-30  1419 =20
-622469c87fc3e6 Alex Deucher 2022-03-30  1420  	bhdr =3D (struct binary_head=
-er *)adev->mman.discovery_bin;
-622469c87fc3e6 Alex Deucher 2022-03-30  1421  	offset =3D le16_to_cpu(bhdr-=
->table_list[VCN_INFO].offset);
-622469c87fc3e6 Alex Deucher 2022-03-30  1422 =20
-622469c87fc3e6 Alex Deucher 2022-03-30  1423  	if (!offset) {
-622469c87fc3e6 Alex Deucher 2022-03-30  1424  		dev_err(adev->dev, "invalid=
- vcn table offset\n");
-622469c87fc3e6 Alex Deucher 2022-03-30  1425  		return -EINVAL;
-622469c87fc3e6 Alex Deucher 2022-03-30  1426  	}
-622469c87fc3e6 Alex Deucher 2022-03-30  1427 =20
-622469c87fc3e6 Alex Deucher 2022-03-30  1428  	vcn_info =3D (union vcn_info=
- *)(adev->mman.discovery_bin + offset);
-622469c87fc3e6 Alex Deucher 2022-03-30  1429 =20
-622469c87fc3e6 Alex Deucher 2022-03-30  1430  	switch (le16_to_cpu(vcn_info=
-->v1.header.version_major)) {
-622469c87fc3e6 Alex Deucher 2022-03-30  1431  	case 1:
-622469c87fc3e6 Alex Deucher 2022-03-30  1432  		for (v =3D 0; v < adev->vcn=
-.num_vcn_inst; v++) {
-622469c87fc3e6 Alex Deucher 2022-03-30 @1433  			adev->vcn.vcn_codec_disabl=
-e_mask[v] =3D
-
-But this array doesn't have 4 elements
-
-622469c87fc3e6 Alex Deucher 2022-03-30  1434  				le32_to_cpu(vcn_info->v1.=
-instance_info[v].fuse_data.all_bits);
-622469c87fc3e6 Alex Deucher 2022-03-30  1435  		}
-622469c87fc3e6 Alex Deucher 2022-03-30  1436  		break;
-622469c87fc3e6 Alex Deucher 2022-03-30  1437  	default:
-622469c87fc3e6 Alex Deucher 2022-03-30  1438  		dev_err(adev->dev,
-622469c87fc3e6 Alex Deucher 2022-03-30  1439  			"Unhandled VCN info table =
-%d.%d\n",
-622469c87fc3e6 Alex Deucher 2022-03-30  1440  			le16_to_cpu(vcn_info->v1.h=
-eader.version_major),
-622469c87fc3e6 Alex Deucher 2022-03-30  1441  			le16_to_cpu(vcn_info->v1.h=
-eader.version_minor));
-622469c87fc3e6 Alex Deucher 2022-03-30  1442  		return -EINVAL;
-622469c87fc3e6 Alex Deucher 2022-03-30  1443  	}
-622469c87fc3e6 Alex Deucher 2022-03-30  1444  	return 0;
-f39f5bb1c9d68d Xiaojie Yuan 2019-06-20  1445  }
-
---
-0-DAY CI Kernel Test Service
-https://nam11.safelinks.protection.outlook.com/?url=3Dhttps%3A%2F%2F01.org%=
-2Flkp&amp;data=3D05%7C01%7Cguchun.chen%40amd.com%7Cfc2110078e5c4790337808da=
-3fb50de6%7C3dd8961fe4884e608e11a82d994e183d%7C0%7C0%7C637892344114571722%7C=
-Unknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiL=
-CJXVCI6Mn0%3D%7C3000%7C%7C%7C&amp;sdata=3DFEZiW7nVnlbPvQRbf2TUEbh15BsdY0tRL=
-KvWFtPknuA%3D&amp;reserved=3D0
-_______________________________________________
-kbuild mailing list -- kbuild@lists.01.org To unsubscribe send an email to =
-kbuild-leave@lists.01.org
+diff --git a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c
+index ad4213e020f3..9719eab7bc83 100644
+--- a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c
++++ b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c
+@@ -888,8 +888,8 @@ static void mxc_jpeg_config_enc_desc(struct vb2_buffer *out_buf,
+ 	jpeg->slot_data[slot].cfg_stream_size =
+ 			mxc_jpeg_setup_cfg_stream(cfg_stream_vaddr,
+ 						  q_data->fmt->fourcc,
+-						  q_data->w_adjusted,
+-						  q_data->h_adjusted);
++						  q_data->w,
++						  q_data->h);
+ 
+ 	/* chain the config descriptor with the encoding descriptor */
+ 	cfg_desc->next_descpt_ptr = desc_handle | MXC_NXT_DESCPT_EN;
+@@ -971,7 +971,7 @@ static bool mxc_jpeg_source_change(struct mxc_jpeg_ctx *ctx,
+ 				      &q_data_cap->h_adjusted,
+ 				      q_data_cap->h_adjusted, /* adjust up */
+ 				      MXC_JPEG_MAX_HEIGHT,
+-				      q_data_cap->fmt->v_align,
++				      0,
+ 				      0);
+ 
+ 		/* setup bytesperline/sizeimage for capture queue */
+@@ -1155,18 +1155,30 @@ static int mxc_jpeg_queue_setup(struct vb2_queue *q,
+ {
+ 	struct mxc_jpeg_ctx *ctx = vb2_get_drv_priv(q);
+ 	struct mxc_jpeg_q_data *q_data = NULL;
++	struct mxc_jpeg_q_data tmp_q;
+ 	int i;
+ 
+ 	q_data = mxc_jpeg_get_q_data(ctx, q->type);
+ 	if (!q_data)
+ 		return -EINVAL;
+ 
++	tmp_q.fmt = q_data->fmt;
++	tmp_q.w = q_data->w_adjusted;
++	tmp_q.h = q_data->h_adjusted;
++	for (i = 0; i < MXC_JPEG_MAX_PLANES; i++) {
++		tmp_q.bytesperline[i] = q_data->bytesperline[i];
++		tmp_q.sizeimage[i] = q_data->sizeimage[i];
++	}
++	mxc_jpeg_sizeimage(&tmp_q);
++	for (i = 0; i < MXC_JPEG_MAX_PLANES; i++)
++		tmp_q.sizeimage[i] = max(tmp_q.sizeimage[i], q_data->sizeimage[i]);
++
+ 	/* Handle CREATE_BUFS situation - *nplanes != 0 */
+ 	if (*nplanes) {
+ 		if (*nplanes != q_data->fmt->colplanes)
+ 			return -EINVAL;
+ 		for (i = 0; i < *nplanes; i++) {
+-			if (sizes[i] < q_data->sizeimage[i])
++			if (sizes[i] < tmp_q.sizeimage[i])
+ 				return -EINVAL;
+ 		}
+ 		return 0;
+@@ -1175,7 +1187,7 @@ static int mxc_jpeg_queue_setup(struct vb2_queue *q,
+ 	/* Handle REQBUFS situation */
+ 	*nplanes = q_data->fmt->colplanes;
+ 	for (i = 0; i < *nplanes; i++)
+-		sizes[i] = q_data->sizeimage[i];
++		sizes[i] = tmp_q.sizeimage[i];
+ 
+ 	return 0;
+ }
+@@ -1375,11 +1387,6 @@ static int mxc_jpeg_parse(struct mxc_jpeg_ctx *ctx, struct vb2_buffer *vb)
+ 	}
+ 	q_data_out->w = header.frame.width;
+ 	q_data_out->h = header.frame.height;
+-	if (header.frame.width % 8 != 0 || header.frame.height % 8 != 0) {
+-		dev_err(dev, "JPEG width or height not multiple of 8: %dx%d\n",
+-			header.frame.width, header.frame.height);
+-		return -EINVAL;
+-	}
+ 	if (header.frame.width > MXC_JPEG_MAX_WIDTH ||
+ 	    header.frame.height > MXC_JPEG_MAX_HEIGHT) {
+ 		dev_err(dev, "JPEG width or height should be <= 8192: %dx%d\n",
+@@ -1742,22 +1749,17 @@ static int mxc_jpeg_try_fmt(struct v4l2_format *f, const struct mxc_jpeg_fmt *fm
+ 	pix_mp->num_planes = fmt->colplanes;
+ 	pix_mp->pixelformat = fmt->fourcc;
+ 
+-	/*
+-	 * use MXC_JPEG_H_ALIGN instead of fmt->v_align, for vertical
+-	 * alignment, to loosen up the alignment to multiple of 8,
+-	 * otherwise NV12-1080p fails as 1080 is not a multiple of 16
+-	 */
++	pix_mp->width = w;
++	pix_mp->height = h;
+ 	v4l_bound_align_image(&w,
+-			      MXC_JPEG_MIN_WIDTH,
+-			      w, /* adjust downwards*/
++			      w, /* adjust upwards*/
++			      MXC_JPEG_MAX_WIDTH,
+ 			      fmt->h_align,
+ 			      &h,
+-			      MXC_JPEG_MIN_HEIGHT,
+-			      h, /* adjust downwards*/
+-			      MXC_JPEG_H_ALIGN,
++			      h, /* adjust upwards*/
++			      MXC_JPEG_MAX_HEIGHT,
++			      0,
+ 			      0);
+-	pix_mp->width = w; /* negotiate the width */
+-	pix_mp->height = h; /* negotiate the height */
+ 
+ 	/* get user input into the tmp_q */
+ 	tmp_q.w = w;
+@@ -1883,35 +1885,19 @@ static int mxc_jpeg_s_fmt(struct mxc_jpeg_ctx *ctx,
+ 
+ 	q_data->w_adjusted = q_data->w;
+ 	q_data->h_adjusted = q_data->h;
+-	if (jpeg->mode == MXC_JPEG_DECODE) {
+-		/*
+-		 * align up the resolution for CAST IP,
+-		 * but leave the buffer resolution unchanged
+-		 */
+-		v4l_bound_align_image(&q_data->w_adjusted,
+-				      q_data->w_adjusted,  /* adjust upwards */
+-				      MXC_JPEG_MAX_WIDTH,
+-				      q_data->fmt->h_align,
+-				      &q_data->h_adjusted,
+-				      q_data->h_adjusted, /* adjust upwards */
+-				      MXC_JPEG_MAX_HEIGHT,
+-				      q_data->fmt->v_align,
+-				      0);
+-	} else {
+-		/*
+-		 * align down the resolution for CAST IP,
+-		 * but leave the buffer resolution unchanged
+-		 */
+-		v4l_bound_align_image(&q_data->w_adjusted,
+-				      MXC_JPEG_MIN_WIDTH,
+-				      q_data->w_adjusted, /* adjust downwards*/
+-				      q_data->fmt->h_align,
+-				      &q_data->h_adjusted,
+-				      MXC_JPEG_MIN_HEIGHT,
+-				      q_data->h_adjusted, /* adjust downwards*/
+-				      q_data->fmt->v_align,
+-				      0);
+-	}
++	/*
++	 * align up the resolution for CAST IP,
++	 * but leave the buffer resolution unchanged
++	 */
++	v4l_bound_align_image(&q_data->w_adjusted,
++			      q_data->w_adjusted,  /* adjust upwards */
++			      MXC_JPEG_MAX_WIDTH,
++			      q_data->fmt->h_align,
++			      &q_data->h_adjusted,
++			      q_data->h_adjusted, /* adjust upwards */
++			      MXC_JPEG_MAX_HEIGHT,
++			      q_data->fmt->v_align,
++			      0);
+ 
+ 	for (i = 0; i < pix_mp->num_planes; i++) {
+ 		q_data->bytesperline[i] = pix_mp->plane_fmt[i].bytesperline;
+-- 
+2.36.1
 
