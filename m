@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0866DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 15:59:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A0D5C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 15:59:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354196AbiE0P7S (ORCPT
+        id S1353988AbiE0P7Y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 11:59:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46672 "EHLO
+        Fri, 27 May 2022 11:59:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353981AbiE0P5q (ORCPT
+        with ESMTP id S1354098AbiE0P5r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 11:57:46 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F1E77115CB4
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 08:57:30 -0700 (PDT)
+        Fri, 27 May 2022 11:57:47 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4962111993E
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 08:57:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653667049;
+        s=mimecast20190719; t=1653667055;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=PMGMCLNhqiUeaujI8Ot2b+irym76Itty/ZcA/JdnSj4=;
-        b=APX5tAwqGsevVPp7MxzTeoS2g12H9avKsrDjnpM/kcFoe8jH+8bqWKQnEp24s10e3aLNPQ
-        /sbqqtQL8m/6jEMpnxt02ymauTIdtUfktYeHxPbml1+3jWXhrrRcW8/kj1vLqBhiEWpr1R
-        rtEdbxdgrrToMle3BqevReZdgMXRXpU=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=6i4ig/R8rMzs2AbGp9PmmaZ4npm6FEPMuif5WYyDsbY=;
+        b=ZsDsu/vqLAwf3QVg01kvnqx4q+u76XX8yoIIlqNAyyKMq5oZd5dJfbbbFyvOC6fA3N3rHt
+        UuQPZ7qtc6fiZ+kBhR2g4I/U2A2xSmulkoD7LZOyWfjWoevgvMJVQ0oErfvTGXhF8JU0PU
+        3sz2BLFH4CEBwdWYco8amojAc8XdeC0=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-465-7v-jAiyYOCWV5sec3TD_3w-1; Fri, 27 May 2022 11:57:26 -0400
-X-MC-Unique: 7v-jAiyYOCWV5sec3TD_3w-1
+ us-mta-588-UYwIxpYfM0m8FMHUnnkmjw-1; Fri, 27 May 2022 11:57:32 -0400
+X-MC-Unique: UYwIxpYfM0m8FMHUnnkmjw-1
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 19C762949BC6;
-        Fri, 27 May 2022 15:57:26 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A68DA85A5BC;
+        Fri, 27 May 2022 15:57:31 +0000 (UTC)
 Received: from fedora.redhat.com (unknown [10.40.192.126])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 860902166B26;
-        Fri, 27 May 2022 15:57:23 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 455AB2166B26;
+        Fri, 27 May 2022 15:57:29 +0000 (UTC)
 From:   Vitaly Kuznetsov <vkuznets@redhat.com>
 To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -49,9 +49,9 @@ Cc:     Sean Christopherson <seanjc@google.com>,
         Siddharth Chandrasekaran <sidcha@amazon.de>,
         Yuan Yao <yuan.yao@linux.intel.com>,
         linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v5 35/37] KVM: selftests: evmcs_test: Introduce L2 TLB flush test
-Date:   Fri, 27 May 2022 17:55:44 +0200
-Message-Id: <20220527155546.1528910-36-vkuznets@redhat.com>
+Subject: [PATCH v5 37/37] KVM: selftests: hyperv_svm_test: Introduce L2 TLB flush test
+Date:   Fri, 27 May 2022 17:55:46 +0200
+Message-Id: <20220527155546.1528910-38-vkuznets@redhat.com>
 In-Reply-To: <20220527155546.1528910-1-vkuznets@redhat.com>
 References: <20220527155546.1528910-1-vkuznets@redhat.com>
 MIME-Version: 1.0
@@ -63,129 +63,125 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 Enable Hyper-V L2 TLB flush and check that Hyper-V TLB flush hypercalls
-from L2 don't exit to L1 unless 'TlbLockCount' is set in the
-Partition assist page.
+from L2 don't exit to L1 unless 'TlbLockCount' is set in the Partition
+assist page.
 
 Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
 Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 ---
- .../selftests/kvm/include/x86_64/evmcs.h      |  2 +
- .../testing/selftests/kvm/x86_64/evmcs_test.c | 42 ++++++++++++++++++-
- 2 files changed, 42 insertions(+), 2 deletions(-)
+ .../selftests/kvm/x86_64/hyperv_svm_test.c    | 54 +++++++++++++++++--
+ 1 file changed, 50 insertions(+), 4 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/include/x86_64/evmcs.h b/tools/testing/selftests/kvm/include/x86_64/evmcs.h
-index 9c965ba73dec..36c0a67d8602 100644
---- a/tools/testing/selftests/kvm/include/x86_64/evmcs.h
-+++ b/tools/testing/selftests/kvm/include/x86_64/evmcs.h
-@@ -252,6 +252,8 @@ struct hv_enlightened_vmcs {
- #define HV_X64_MSR_VP_ASSIST_PAGE_ADDRESS_MASK	\
- 		(~((1ull << HV_X64_MSR_VP_ASSIST_PAGE_ADDRESS_SHIFT) - 1))
+diff --git a/tools/testing/selftests/kvm/x86_64/hyperv_svm_test.c b/tools/testing/selftests/kvm/x86_64/hyperv_svm_test.c
+index 994b33fd8724..2d938523ae27 100644
+--- a/tools/testing/selftests/kvm/x86_64/hyperv_svm_test.c
++++ b/tools/testing/selftests/kvm/x86_64/hyperv_svm_test.c
+@@ -42,6 +42,9 @@ struct hv_enlightenments {
+  */
+ #define VMCB_HV_NESTED_ENLIGHTENMENTS (1U << 31)
  
-+#define HV_VMX_SYNTHETIC_EXIT_REASON_TRAP_AFTER_FLUSH 0x10000031
++#define HV_SVM_EXITCODE_ENL 0xF0000000
++#define HV_SVM_ENL_EXITCODE_TRAP_AFTER_FLUSH   (1)
 +
- extern struct hv_enlightened_vmcs *current_evmcs;
- extern struct hv_vp_assist_page *current_vp_assist;
+ void l2_guest_code(void)
+ {
+ 	GUEST_SYNC(3);
+@@ -57,11 +60,25 @@ void l2_guest_code(void)
  
-diff --git a/tools/testing/selftests/kvm/x86_64/evmcs_test.c b/tools/testing/selftests/kvm/x86_64/evmcs_test.c
-index e161c6dd7a02..e644622e4b51 100644
---- a/tools/testing/selftests/kvm/x86_64/evmcs_test.c
-+++ b/tools/testing/selftests/kvm/x86_64/evmcs_test.c
-@@ -16,6 +16,7 @@
- 
- #include "kvm_util.h"
- 
-+#include "hyperv.h"
- #include "vmx.h"
- 
- #define VCPU_ID		5
-@@ -66,15 +67,27 @@ void l2_guest_code(void)
- 	vmcall();
- 	rdmsr_gs_base(); /* intercepted */
+ 	GUEST_SYNC(5);
  
 +	/* L2 TLB flush tests */
-+	hyperv_hypercall(HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE | HV_HYPERCALL_FAST_BIT, 0x0,
-+			 HV_FLUSH_ALL_VIRTUAL_ADDRESS_SPACES | HV_FLUSH_ALL_PROCESSORS);
-+	rdmsr_fs_base();
-+	hyperv_hypercall(HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE | HV_HYPERCALL_FAST_BIT, 0x0,
-+			 HV_FLUSH_ALL_VIRTUAL_ADDRESS_SPACES | HV_FLUSH_ALL_PROCESSORS);
-+	/* Make sure we're no issuing Hyper-V TLB flush call again */
++	hyperv_hypercall(HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE |
++			 HV_HYPERCALL_FAST_BIT, 0x0,
++			 HV_FLUSH_ALL_VIRTUAL_ADDRESS_SPACES |
++			 HV_FLUSH_ALL_PROCESSORS);
++	rdmsr(MSR_FS_BASE);
++	hyperv_hypercall(HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE |
++			 HV_HYPERCALL_FAST_BIT, 0x0,
++			 HV_FLUSH_ALL_VIRTUAL_ADDRESS_SPACES |
++			 HV_FLUSH_ALL_PROCESSORS);
++	/* Make sure we're not issuing Hyper-V TLB flush call again */
 +	__asm__ __volatile__ ("mov $0xdeadbeef, %rcx");
 +
  	/* Done, exit to L1 and never come back.  */
- 	vmcall();
+ 	vmmcall();
  }
  
--void guest_code(struct vmx_pages *vmx_pages)
-+void guest_code(struct vmx_pages *vmx_pages, vm_vaddr_t pgs_gpa)
+-static void __attribute__((__flatten__)) guest_code(struct svm_test_data *svm)
++static void __attribute__((__flatten__)) guest_code(struct svm_test_data *svm,
++						    vm_vaddr_t pgs_gpa)
  {
- #define L2_GUEST_STACK_SIZE 64
  	unsigned long l2_guest_stack[L2_GUEST_STACK_SIZE];
- 
-+	wrmsr(HV_X64_MSR_GUEST_OS_ID, HYPERV_LINUX_OS_ID);
-+	wrmsr(HV_X64_MSR_HYPERCALL, pgs_gpa);
-+
- 	x2apic_enable();
+ 	struct vmcb *vmcb = svm->vmcb;
+@@ -70,13 +87,23 @@ static void __attribute__((__flatten__)) guest_code(struct svm_test_data *svm)
  
  	GUEST_SYNC(1);
-@@ -104,6 +117,14 @@ void guest_code(struct vmx_pages *vmx_pages)
- 	vmwrite(PIN_BASED_VM_EXEC_CONTROL, vmreadz(PIN_BASED_VM_EXEC_CONTROL) |
- 		PIN_BASED_NMI_EXITING);
+ 
+-	wrmsr(HV_X64_MSR_GUEST_OS_ID, (u64)0x8100 << 48);
++	wrmsr(HV_X64_MSR_GUEST_OS_ID, HYPERV_LINUX_OS_ID);
++	wrmsr(HV_X64_MSR_HYPERCALL, pgs_gpa);
++	enable_vp_assist(svm->vp_assist_gpa, svm->vp_assist);
+ 
+ 	GUEST_ASSERT(svm->vmcb_gpa);
+ 	/* Prepare for L2 execution. */
+ 	generic_svm_setup(svm, l2_guest_code,
+ 			  &l2_guest_stack[L2_GUEST_STACK_SIZE]);
  
 +	/* L2 TLB flush setup */
-+	current_evmcs->partition_assist_page = vmx_pages->partition_assist_gpa;
-+	current_evmcs->hv_enlightenments_control.nested_flush_hypercall = 1;
-+	current_evmcs->hv_vm_id = 1;
-+	current_evmcs->hv_vp_id = 1;
++	hve->partition_assist_page = svm->partition_assist_gpa;
++	hve->hv_enlightenments_control.nested_flush_hypercall = 1;
++	hve->hv_vm_id = 1;
++	hve->hv_vp_id = 1;
 +	current_vp_assist->nested_control.features.directhypercall = 1;
-+	*(u32 *)(vmx_pages->partition_assist) = 0;
++	*(u32 *)(svm->partition_assist) = 0;
 +
- 	GUEST_ASSERT(!vmlaunch());
- 	GUEST_ASSERT(vmptrstz() == vmx_pages->enlightened_vmcs_gpa);
+ 	GUEST_SYNC(2);
+ 	run_guest(vmcb, svm->vmcb_gpa);
+ 	GUEST_ASSERT(vmcb->control.exit_code == SVM_EXIT_VMMCALL);
+@@ -111,6 +138,20 @@ static void __attribute__((__flatten__)) guest_code(struct svm_test_data *svm)
+ 	GUEST_ASSERT(vmcb->control.exit_code == SVM_EXIT_MSR);
+ 	vmcb->save.rip += 2; /* rdmsr */
  
-@@ -148,6 +169,18 @@ void guest_code(struct vmx_pages *vmx_pages)
- 	GUEST_ASSERT(vmreadz(VM_EXIT_REASON) == EXIT_REASON_MSR_READ);
- 	current_evmcs->guest_rip += 2; /* rdmsr */
- 
++
 +	/*
 +	 * L2 TLB flush test. First VMCALL should be handled directly by L0,
 +	 * no VMCALL exit expected.
 +	 */
-+	GUEST_ASSERT(!vmresume());
-+	GUEST_ASSERT(vmreadz(VM_EXIT_REASON) == EXIT_REASON_MSR_READ);
-+	current_evmcs->guest_rip += 2; /* rdmsr */
++	run_guest(vmcb, svm->vmcb_gpa);
++	GUEST_ASSERT(vmcb->control.exit_code == SVM_EXIT_MSR);
++	vmcb->save.rip += 2; /* rdmsr */
 +	/* Enable synthetic vmexit */
-+	*(u32 *)(vmx_pages->partition_assist) = 1;
-+	GUEST_ASSERT(!vmresume());
-+	GUEST_ASSERT(vmreadz(VM_EXIT_REASON) == HV_VMX_SYNTHETIC_EXIT_REASON_TRAP_AFTER_FLUSH);
++	*(u32 *)(svm->partition_assist) = 1;
++	run_guest(vmcb, svm->vmcb_gpa);
++	GUEST_ASSERT(vmcb->control.exit_code == HV_SVM_EXITCODE_ENL);
++	GUEST_ASSERT(vmcb->control.exit_info_1 == HV_SVM_ENL_EXITCODE_TRAP_AFTER_FLUSH);
 +
- 	GUEST_ASSERT(!vmresume());
- 	GUEST_ASSERT(vmreadz(VM_EXIT_REASON) == EXIT_REASON_VMCALL);
- 	GUEST_SYNC(11);
-@@ -200,6 +233,7 @@ static void save_restore_vm(struct kvm_vm *vm)
+ 	run_guest(vmcb, svm->vmcb_gpa);
+ 	GUEST_ASSERT(vmcb->control.exit_code == SVM_EXIT_VMMCALL);
+ 	GUEST_SYNC(6);
+@@ -121,7 +162,7 @@ static void __attribute__((__flatten__)) guest_code(struct svm_test_data *svm)
  int main(int argc, char *argv[])
  {
- 	vm_vaddr_t vmx_pages_gva = 0;
+ 	vm_vaddr_t nested_gva = 0;
+-
 +	vm_vaddr_t hcall_page;
- 
  	struct kvm_vm *vm;
  	struct kvm_run *run;
-@@ -216,11 +250,15 @@ int main(int argc, char *argv[])
- 		exit(KSFT_SKIP);
- 	}
- 
+ 	struct ucall uc;
+@@ -136,7 +177,12 @@ int main(int argc, char *argv[])
+ 	vcpu_set_hv_cpuid(vm, VCPU_ID);
+ 	run = vcpu_state(vm, VCPU_ID);
+ 	vcpu_alloc_svm(vm, &nested_gva);
+-	vcpu_args_set(vm, VCPU_ID, 1, nested_gva);
++
 +	hcall_page = vm_vaddr_alloc_pages(vm, 1);
 +	memset(addr_gva2hva(vm, hcall_page), 0x0,  getpagesize());
 +
- 	vcpu_set_hv_cpuid(vm, VCPU_ID);
- 	vcpu_enable_evmcs(vm, VCPU_ID);
- 
- 	vcpu_alloc_vmx(vm, &vmx_pages_gva);
--	vcpu_args_set(vm, VCPU_ID, 1, vmx_pages_gva);
-+	vcpu_args_set(vm, VCPU_ID, 2, vmx_pages_gva, addr_gva2gpa(vm, hcall_page));
++	vcpu_args_set(vm, VCPU_ID, 2, nested_gva, addr_gva2gpa(vm, hcall_page));
 +	vcpu_set_msr(vm, VCPU_ID, HV_X64_MSR_VP_INDEX, VCPU_ID);
  
- 	vm_init_descriptor_tables(vm);
- 	vcpu_init_descriptor_tables(vm, VCPU_ID);
+ 	for (stage = 1;; stage++) {
+ 		_vcpu_run(vm, VCPU_ID);
 -- 
 2.35.3
 
