@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06A68C4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D57CC4707E
 	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:17:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353742AbiE0MQM (ORCPT
+        id S1353796AbiE0MQW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 08:16:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50076 "EHLO
+        Fri, 27 May 2022 08:16:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352086AbiE0MCM (ORCPT
+        with ESMTP id S1352263AbiE0MCi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 08:02:12 -0400
+        Fri, 27 May 2022 08:02:38 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BAF16543A;
-        Fri, 27 May 2022 04:53:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54C651269A0;
+        Fri, 27 May 2022 04:53:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3B9D761DDC;
-        Fri, 27 May 2022 11:53:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B133C385A9;
-        Fri, 27 May 2022 11:53:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0BD2961DD0;
+        Fri, 27 May 2022 11:53:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18175C385A9;
+        Fri, 27 May 2022 11:53:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653652388;
-        bh=skffQboV8c/985QdjL92WeOA8BgibaGlonTmFO6Z4MI=;
+        s=korg; t=1653652397;
+        bh=6k4JH3MCHIPlIoQ+f9lJhN3Yqi52fdTMrhU+Tn3/WXo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EH+Mqjyw1HkfQe49/hXlfeVIR7eKruHJTzg70T3QNR0F/YDga56FI/SGb3w1F2x+8
-         QiDxZLiu8Nnw47jtH4AMH1ksbEWEPU51piS9gZMLcC2frZIXFRzffxWRJsjE1ojmTh
-         vo/7JXTurMpuWciafqLtslEmsLjB0UTezdNOSipY=
+        b=yqedq+OqJnLaLg0HUgDAW1HUOWFc7YZ1E0DECzNUX2YhOSWo+96ZA+hSDdvOvCdO0
+         0zcLwVXgT4SJDoWAXjeevoEr9N0XX/LA4XedQSuYgY89hq+BhJLACEotvpB2A1D94E
+         zRMcK5DitxuxrMefbjKEWohqIu8ShgXKOu1IWmUE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
         Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.15 130/145] random: remove ratelimiting for in-kernel unseeded randomness
-Date:   Fri, 27 May 2022 10:50:31 +0200
-Message-Id: <20220527084906.300082073@linuxfoundation.org>
+Subject: [PATCH 5.15 121/145] random: use first 128 bits of input as fast init
+Date:   Fri, 27 May 2022 10:50:22 +0200
+Message-Id: <20220527084905.316714298@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220527084850.364560116@linuxfoundation.org>
 References: <20220527084850.364560116@linuxfoundation.org>
@@ -52,198 +52,305 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit cc1e127bfa95b5fb2f9307e7168bf8b2b45b4c5e upstream.
+commit 5c3b747ef54fa2a7318776777f6044540d99f721 upstream.
 
-The CONFIG_WARN_ALL_UNSEEDED_RANDOM debug option controls whether the
-kernel warns about all unseeded randomness or just the first instance.
-There's some complicated rate limiting and comparison to the previous
-caller, such that even with CONFIG_WARN_ALL_UNSEEDED_RANDOM enabled,
-developers still don't see all the messages or even an accurate count of
-how many were missed. This is the result of basically parallel
-mechanisms aimed at accomplishing more or less the same thing, added at
-different points in random.c history, which sort of compete with the
-first-instance-only limiting we have now.
+Before, the first 64 bytes of input, regardless of how entropic it was,
+would be used to mutate the crng base key directly, and none of those
+bytes would be credited as having entropy. Then 256 bits of credited
+input would be accumulated, and only then would the rng transition from
+the earlier "fast init" phase into being actually initialized.
 
-It turns out, however, that nobody cares about the first unseeded
-randomness instance of in-kernel users. The same first user has been
-there for ages now, and nobody is doing anything about it. It isn't even
-clear that anybody _can_ do anything about it. Most places that can do
-something about it have switched over to using get_random_bytes_wait()
-or wait_for_random_bytes(), which is the right thing to do, but there is
-still much code that needs randomness sometimes during init, and as a
-geeneral rule, if you're not using one of the _wait functions or the
-readiness notifier callback, you're bound to be doing it wrong just
-based on that fact alone.
+The thinking was that by mixing and matching fast init and real init, an
+attacker who compromised the fast init state, considered easy to do
+given how little entropy might be in those first 64 bytes, would then be
+able to bruteforce bits from the actual initialization. By keeping these
+separate, bruteforcing became impossible.
 
-So warning about this same first user that can't easily change is simply
-not an effective mechanism for anything at all. Users can't do anything
-about it, as the Kconfig text points out -- the problem isn't in
-userspace code -- and kernel developers don't or more often can't react
-to it.
+However, by not crediting potentially creditable bits from those first 64
+bytes of input, we delay initialization, and actually make the problem
+worse, because it means the user is drawing worse random numbers for a
+longer period of time.
 
-Instead, show the warning for all instances when CONFIG_WARN_ALL_UNSEEDED_RANDOM
-is set, so that developers can debug things need be, or if it isn't set,
-don't show a warning at all.
+Instead, we can take the first 128 bits as fast init, and allow them to
+be credited, and then hold off on the next 128 bits until they've
+accumulated. This is still a wide enough margin to prevent bruteforcing
+the rng state, while still initializing much faster.
 
-At the same time, CONFIG_WARN_ALL_UNSEEDED_RANDOM now implies setting
-random.ratelimit_disable=1 on by default, since if you care about one
-you probably care about the other too. And we can clean up usage around
-the related urandom_warning ratelimiter as well (whose behavior isn't
-changing), so that it properly counts missed messages after the 10
-message threshold is reached.
+Then, rather than trying to piecemeal inject into the base crng key at
+various points, instead just extract from the pool when we need it, for
+the crng_init==0 phase. Performance may even be better for the various
+inputs here, since there are likely more calls to mix_pool_bytes() then
+there are to get_random_bytes() during this phase of system execution.
+
+Since the preinit injection code is gone, bootloader randomness can then
+do something significantly more straight forward, removing the weird
+system_wq hack in hwgenerator randomness.
 
 Cc: Theodore Ts'o <tytso@mit.edu>
 Cc: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   61 ++++++++++++++------------------------------------
- lib/Kconfig.debug     |    3 --
- 2 files changed, 19 insertions(+), 45 deletions(-)
+ drivers/char/random.c |  146 ++++++++++++++++----------------------------------
+ 1 file changed, 49 insertions(+), 97 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -86,11 +86,10 @@ static DEFINE_SPINLOCK(random_ready_chai
- static RAW_NOTIFIER_HEAD(random_ready_chain);
+@@ -233,10 +233,7 @@ static void _warn_unseeded_randomness(co
+  *
+  *********************************************************************/
  
- /* Control how we warn userspace. */
--static struct ratelimit_state unseeded_warning =
--	RATELIMIT_STATE_INIT("warn_unseeded_randomness", HZ, 3);
- static struct ratelimit_state urandom_warning =
- 	RATELIMIT_STATE_INIT("warn_urandom_randomness", HZ, 3);
--static int ratelimit_disable __read_mostly;
-+static int ratelimit_disable __read_mostly =
-+	IS_ENABLED(CONFIG_WARN_ALL_UNSEEDED_RANDOM);
- module_param_named(ratelimit_disable, ratelimit_disable, int, 0644);
- MODULE_PARM_DESC(ratelimit_disable, "Disable random ratelimit suppression");
+-enum {
+-	CRNG_RESEED_INTERVAL = 300 * HZ,
+-	CRNG_INIT_CNT_THRESH = 2 * CHACHA_KEY_SIZE
+-};
++enum { CRNG_RESEED_INTERVAL = 300 * HZ };
  
-@@ -183,27 +182,15 @@ static void process_random_ready_list(vo
- 	spin_unlock_irqrestore(&random_ready_chain_lock, flags);
- }
+ static struct {
+ 	u8 key[CHACHA_KEY_SIZE] __aligned(__alignof__(long));
+@@ -260,6 +257,8 @@ static DEFINE_PER_CPU(struct crng, crngs
  
--#define warn_unseeded_randomness(previous) \
--	_warn_unseeded_randomness(__func__, (void *)_RET_IP_, (previous))
-+#define warn_unseeded_randomness() \
-+	_warn_unseeded_randomness(__func__, (void *)_RET_IP_)
+ /* Used by crng_reseed() to extract a new seed from the input pool. */
+ static bool drain_entropy(void *buf, size_t nbytes);
++/* Used by crng_make_state() to extract a new seed when crng_init==0. */
++static void extract_entropy(void *buf, size_t nbytes);
  
--static void _warn_unseeded_randomness(const char *func_name, void *caller, void **previous)
-+static void _warn_unseeded_randomness(const char *func_name, void *caller)
- {
--#ifdef CONFIG_WARN_ALL_UNSEEDED_RANDOM
--	const bool print_once = false;
--#else
--	static bool print_once __read_mostly;
--#endif
--
--	if (print_once || crng_ready() ||
--	    (previous && (caller == READ_ONCE(*previous))))
-+	if (!IS_ENABLED(CONFIG_WARN_ALL_UNSEEDED_RANDOM) || crng_ready())
- 		return;
--	WRITE_ONCE(*previous, caller);
--#ifndef CONFIG_WARN_ALL_UNSEEDED_RANDOM
--	print_once = true;
--#endif
--	if (__ratelimit(&unseeded_warning))
--		printk_deferred(KERN_NOTICE "random: %s called from %pS with crng_init=%d\n",
--				func_name, caller, crng_init);
-+	printk_deferred(KERN_NOTICE "random: %s called from %pS with crng_init=%d\n",
-+			func_name, caller, crng_init);
- }
+ /*
+  * This extracts a new crng key from the input pool, but only if there is a
+@@ -384,17 +383,20 @@ static void crng_make_state(u32 chacha_s
+ 	/*
+ 	 * For the fast path, we check whether we're ready, unlocked first, and
+ 	 * then re-check once locked later. In the case where we're really not
+-	 * ready, we do fast key erasure with the base_crng directly, because
+-	 * this is what crng_pre_init_inject() mutates during early init.
++	 * ready, we do fast key erasure with the base_crng directly, extracting
++	 * when crng_init==0.
+ 	 */
+ 	if (!crng_ready()) {
+ 		bool ready;
  
- 
-@@ -456,9 +443,7 @@ static void _get_random_bytes(void *buf,
-  */
- void get_random_bytes(void *buf, size_t nbytes)
- {
--	static void *previous;
--
--	warn_unseeded_randomness(&previous);
-+	warn_unseeded_randomness();
- 	_get_random_bytes(buf, nbytes);
- }
- EXPORT_SYMBOL(get_random_bytes);
-@@ -554,10 +539,9 @@ u64 get_random_u64(void)
- 	u64 ret;
- 	unsigned long flags;
- 	struct batched_entropy *batch;
--	static void *previous;
- 	unsigned long next_gen;
- 
--	warn_unseeded_randomness(&previous);
-+	warn_unseeded_randomness();
- 
- 	if  (!crng_ready()) {
- 		_get_random_bytes(&ret, sizeof(ret));
-@@ -593,10 +577,9 @@ u32 get_random_u32(void)
- 	u32 ret;
- 	unsigned long flags;
- 	struct batched_entropy *batch;
--	static void *previous;
- 	unsigned long next_gen;
- 
--	warn_unseeded_randomness(&previous);
-+	warn_unseeded_randomness();
- 
- 	if  (!crng_ready()) {
- 		_get_random_bytes(&ret, sizeof(ret));
-@@ -823,16 +806,9 @@ static void credit_init_bits(size_t nbit
- 		wake_up_interruptible(&crng_init_wait);
- 		kill_fasync(&fasync, SIGIO, POLL_IN);
- 		pr_notice("crng init done\n");
--		if (unseeded_warning.missed) {
--			pr_notice("%d get_random_xx warning(s) missed due to ratelimiting\n",
--				  unseeded_warning.missed);
--			unseeded_warning.missed = 0;
--		}
--		if (urandom_warning.missed) {
-+		if (urandom_warning.missed)
- 			pr_notice("%d urandom warning(s) missed due to ratelimiting\n",
- 				  urandom_warning.missed);
--			urandom_warning.missed = 0;
--		}
- 	} else if (orig < POOL_EARLY_BITS && new >= POOL_EARLY_BITS) {
  		spin_lock_irqsave(&base_crng.lock, flags);
- 		/* Check if crng_init is CRNG_EMPTY, to avoid race with crng_reseed(). */
-@@ -945,10 +921,6 @@ int __init rand_initialize(void)
- 	else if (arch_init && trust_cpu)
- 		credit_init_bits(BLAKE2S_BLOCK_SIZE * 8);
- 
--	if (ratelimit_disable) {
--		urandom_warning.interval = 0;
--		unseeded_warning.interval = 0;
--	}
- 	return 0;
+ 		ready = crng_ready();
+-		if (!ready)
++		if (!ready) {
++			if (crng_init == 0)
++				extract_entropy(base_crng.key, sizeof(base_crng.key));
+ 			crng_fast_key_erasure(base_crng.key, chacha_state,
+ 					      random_data, random_data_len);
++		}
+ 		spin_unlock_irqrestore(&base_crng.lock, flags);
+ 		if (!ready)
+ 			return;
+@@ -435,48 +437,6 @@ static void crng_make_state(u32 chacha_s
+ 	local_unlock_irqrestore(&crngs.lock, flags);
  }
  
-@@ -1394,11 +1366,14 @@ static ssize_t urandom_read(struct file
+-/*
+- * This function is for crng_init == 0 only. It loads entropy directly
+- * into the crng's key, without going through the input pool. It is,
+- * generally speaking, not very safe, but we use this only at early
+- * boot time when it's better to have something there rather than
+- * nothing.
+- *
+- * If account is set, then the crng_init_cnt counter is incremented.
+- * This shouldn't be set by functions like add_device_randomness(),
+- * where we can't trust the buffer passed to it is guaranteed to be
+- * unpredictable (so it might not have any entropy at all).
+- */
+-static void crng_pre_init_inject(const void *input, size_t len, bool account)
+-{
+-	static int crng_init_cnt = 0;
+-	struct blake2s_state hash;
+-	unsigned long flags;
+-
+-	blake2s_init(&hash, sizeof(base_crng.key));
+-
+-	spin_lock_irqsave(&base_crng.lock, flags);
+-	if (crng_init != 0) {
+-		spin_unlock_irqrestore(&base_crng.lock, flags);
+-		return;
+-	}
+-
+-	blake2s_update(&hash, base_crng.key, sizeof(base_crng.key));
+-	blake2s_update(&hash, input, len);
+-	blake2s_final(&hash, base_crng.key);
+-
+-	if (account) {
+-		crng_init_cnt += min_t(size_t, len, CRNG_INIT_CNT_THRESH - crng_init_cnt);
+-		if (crng_init_cnt >= CRNG_INIT_CNT_THRESH)
+-			crng_init = 1;
+-	}
+-
+-	spin_unlock_irqrestore(&base_crng.lock, flags);
+-
+-	if (crng_init == 1)
+-		pr_notice("fast init done\n");
+-}
+-
+ static void _get_random_bytes(void *buf, size_t nbytes)
  {
- 	static int maxwarn = 10;
+ 	u32 chacha_state[CHACHA_STATE_WORDS];
+@@ -789,7 +749,8 @@ EXPORT_SYMBOL(get_random_bytes_arch);
  
--	if (!crng_ready() && maxwarn > 0) {
--		maxwarn--;
--		if (__ratelimit(&urandom_warning))
-+	if (!crng_ready()) {
-+		if (!ratelimit_disable && maxwarn <= 0)
-+			++urandom_warning.missed;
-+		else if (ratelimit_disable || __ratelimit(&urandom_warning)) {
-+			--maxwarn;
- 			pr_notice("%s: uninitialized urandom read (%zd bytes read)\n",
- 				  current->comm, nbytes);
+ enum {
+ 	POOL_BITS = BLAKE2S_HASH_SIZE * 8,
+-	POOL_MIN_BITS = POOL_BITS /* No point in settling for less. */
++	POOL_MIN_BITS = POOL_BITS, /* No point in settling for less. */
++	POOL_FAST_INIT_BITS = POOL_MIN_BITS / 2
+ };
+ 
+ /* For notifying userspace should write into /dev/random. */
+@@ -826,24 +787,6 @@ static void mix_pool_bytes(const void *i
+ 	spin_unlock_irqrestore(&input_pool.lock, flags);
+ }
+ 
+-static void credit_entropy_bits(size_t nbits)
+-{
+-	unsigned int entropy_count, orig, add;
+-
+-	if (!nbits)
+-		return;
+-
+-	add = min_t(size_t, nbits, POOL_BITS);
+-
+-	do {
+-		orig = READ_ONCE(input_pool.entropy_count);
+-		entropy_count = min_t(unsigned int, POOL_BITS, orig + add);
+-	} while (cmpxchg(&input_pool.entropy_count, orig, entropy_count) != orig);
+-
+-	if (!crng_ready() && entropy_count >= POOL_MIN_BITS)
+-		crng_reseed();
+-}
+-
+ /*
+  * This is an HKDF-like construction for using the hashed collected entropy
+  * as a PRF key, that's then expanded block-by-block.
+@@ -909,6 +852,33 @@ static bool drain_entropy(void *buf, siz
+ 	return true;
+ }
+ 
++static void credit_entropy_bits(size_t nbits)
++{
++	unsigned int entropy_count, orig, add;
++	unsigned long flags;
++
++	if (!nbits)
++		return;
++
++	add = min_t(size_t, nbits, POOL_BITS);
++
++	do {
++		orig = READ_ONCE(input_pool.entropy_count);
++		entropy_count = min_t(unsigned int, POOL_BITS, orig + add);
++	} while (cmpxchg(&input_pool.entropy_count, orig, entropy_count) != orig);
++
++	if (!crng_ready() && entropy_count >= POOL_MIN_BITS)
++		crng_reseed();
++	else if (unlikely(crng_init == 0 && entropy_count >= POOL_FAST_INIT_BITS)) {
++		spin_lock_irqsave(&base_crng.lock, flags);
++		if (crng_init == 0) {
++			extract_entropy(base_crng.key, sizeof(base_crng.key));
++			crng_init = 1;
 +		}
- 	}
++		spin_unlock_irqrestore(&base_crng.lock, flags);
++	}
++}
++
  
- 	return get_random_bytes_user(buf, nbytes);
---- a/lib/Kconfig.debug
-+++ b/lib/Kconfig.debug
-@@ -1559,8 +1559,7 @@ config WARN_ALL_UNSEEDED_RANDOM
- 	  so architecture maintainers really need to do what they can
- 	  to get the CRNG seeded sooner after the system is booted.
- 	  However, since users cannot do anything actionable to
--	  address this, by default the kernel will issue only a single
--	  warning for the first use of unseeded randomness.
-+	  address this, by default this option is disabled.
+ /**********************************************************************
+  *
+@@ -951,9 +921,9 @@ static bool drain_entropy(void *buf, siz
+  * entropy as specified by the caller. If the entropy pool is full it will
+  * block until more entropy is needed.
+  *
+- * add_bootloader_randomness() is the same as add_hwgenerator_randomness() or
+- * add_device_randomness(), depending on whether or not the configuration
+- * option CONFIG_RANDOM_TRUST_BOOTLOADER is set.
++ * add_bootloader_randomness() is called by bootloader drivers, such as EFI
++ * and device tree, and credits its input depending on whether or not the
++ * configuration option CONFIG_RANDOM_TRUST_BOOTLOADER is set.
+  *
+  * add_interrupt_randomness() uses the interrupt timing as random
+  * inputs to the entropy pool. Using the cycle counters and the irq source
+@@ -1033,9 +1003,6 @@ void add_device_randomness(const void *b
+ 	unsigned long entropy = random_get_entropy();
+ 	unsigned long flags;
  
- 	  Say Y here if you want to receive warnings for all uses of
- 	  unseeded randomness.  This will be of use primarily for
+-	if (crng_init == 0 && size)
+-		crng_pre_init_inject(buf, size, false);
+-
+ 	spin_lock_irqsave(&input_pool.lock, flags);
+ 	_mix_pool_bytes(&entropy, sizeof(entropy));
+ 	_mix_pool_bytes(buf, size);
+@@ -1151,12 +1118,6 @@ void rand_initialize_disk(struct gendisk
+ void add_hwgenerator_randomness(const void *buffer, size_t count,
+ 				size_t entropy)
+ {
+-	if (unlikely(crng_init == 0 && entropy < POOL_MIN_BITS)) {
+-		crng_pre_init_inject(buffer, count, true);
+-		mix_pool_bytes(buffer, count);
+-		return;
+-	}
+-
+ 	/*
+ 	 * Throttle writing if we're above the trickle threshold.
+ 	 * We'll be woken up again once below POOL_MIN_BITS, when
+@@ -1164,7 +1125,7 @@ void add_hwgenerator_randomness(const vo
+ 	 * CRNG_RESEED_INTERVAL has elapsed.
+ 	 */
+ 	wait_event_interruptible_timeout(random_write_wait,
+-			!system_wq || kthread_should_stop() ||
++			kthread_should_stop() ||
+ 			input_pool.entropy_count < POOL_MIN_BITS,
+ 			CRNG_RESEED_INTERVAL);
+ 	mix_pool_bytes(buffer, count);
+@@ -1173,17 +1134,14 @@ void add_hwgenerator_randomness(const vo
+ EXPORT_SYMBOL_GPL(add_hwgenerator_randomness);
+ 
+ /*
+- * Handle random seed passed by bootloader.
+- * If the seed is trustworthy, it would be regarded as hardware RNGs. Otherwise
+- * it would be regarded as device data.
+- * The decision is controlled by CONFIG_RANDOM_TRUST_BOOTLOADER.
++ * Handle random seed passed by bootloader, and credit it if
++ * CONFIG_RANDOM_TRUST_BOOTLOADER is set.
+  */
+ void add_bootloader_randomness(const void *buf, size_t size)
+ {
++	mix_pool_bytes(buf, size);
+ 	if (trust_bootloader)
+-		add_hwgenerator_randomness(buf, size, size * 8);
+-	else
+-		add_device_randomness(buf, size);
++		credit_entropy_bits(size * 8);
+ }
+ EXPORT_SYMBOL_GPL(add_bootloader_randomness);
+ 
+@@ -1283,13 +1241,8 @@ static void mix_interrupt_randomness(str
+ 	fast_pool->last = jiffies;
+ 	local_irq_enable();
+ 
+-	if (unlikely(crng_init == 0)) {
+-		crng_pre_init_inject(pool, sizeof(pool), true);
+-		mix_pool_bytes(pool, sizeof(pool));
+-	} else {
+-		mix_pool_bytes(pool, sizeof(pool));
+-		credit_entropy_bits(1);
+-	}
++	mix_pool_bytes(pool, sizeof(pool));
++	credit_entropy_bits(1);
+ 
+ 	memzero_explicit(pool, sizeof(pool));
+ }
+@@ -1311,8 +1264,7 @@ void add_interrupt_randomness(int irq)
+ 	if (new_count & MIX_INFLIGHT)
+ 		return;
+ 
+-	if (new_count < 64 && (!time_is_before_jiffies(fast_pool->last + HZ) ||
+-			       unlikely(crng_init == 0)))
++	if (new_count < 64 && !time_is_before_jiffies(fast_pool->last + HZ))
+ 		return;
+ 
+ 	if (unlikely(!fast_pool->mix.func))
 
 
