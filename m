@@ -2,123 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8471DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 09:04:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC21FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 09:04:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350491AbiE0JEA (ORCPT
+        id S1344501AbiE0JEK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 05:04:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54970 "EHLO
+        Fri, 27 May 2022 05:04:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350852AbiE0JAq (ORCPT
+        with ESMTP id S1350887AbiE0JAu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 05:00:46 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D00D108AAD;
-        Fri, 27 May 2022 01:57:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1653641837; x=1685177837;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Cz0az1bh7WDnZV2yku+ue+sCkR00jjhrmoI17Su6PQ4=;
-  b=I6SA6TdD/TDx9TN8xWS73h69+5XWUTNWdGGDj2cBAnE9/qEDWFju6YFO
-   ycrLYH2v+YpbwVZjoYe2nUt3he8PQXwQzyCkg3+TkHnoHJD/bYrfRFpRh
-   1lSJTVOyQsPt1IcUuNsP2UGWqRlU3CmiFYQo9hXwthATjnAQ7aTKCoUDC
-   M=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 27 May 2022 01:57:17 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2022 01:57:01 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Fri, 27 May 2022 01:56:40 -0700
-Received: from hu-pkondeti-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Fri, 27 May 2022 01:56:38 -0700
-Date:   Fri, 27 May 2022 14:26:33 +0530
-From:   Pavan Kondeti <quic_pkondeti@quicinc.com>
-To:     Prashanth K <quic_prashk@quicinc.com>
-CC:     Matthias Brugger <matthias.bgg@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Pavankumar Kondeti <quic_pkondeti@quicinc.com>,
-        Pratham Pratap <quic_ppratap@quicinc.com>,
-        <linux-usb@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] usb: common: usb-conn-gpio: Allow wakeup from system
- suspend
-Message-ID: <20220527085633.GB17518@hu-pkondeti-hyd.qualcomm.com>
-References: <1653634146-12215-1-git-send-email-quic_prashk@quicinc.com>
+        Fri, 27 May 2022 05:00:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6CC91271A6;
+        Fri, 27 May 2022 01:57:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 169C061D95;
+        Fri, 27 May 2022 08:57:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B37D8C385A9;
+        Fri, 27 May 2022 08:57:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1653641842;
+        bh=QcOMKaT4J7Ghs3nz7/91Y7A+Xfvmn2VdmyL7SNTPNkM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=wt5wG4SFNvq7lSywWO7MYWCFKx631lW3IdXA75w8+DhUctYT8FuFPHbCuQY7iXGwD
+         4pEbWLvKzLXzEuLry1m7XBd9qDuEStqyBPJSFFi4S7mVgDkbYL6hjipKWipGAT9jhs
+         LNWr+x5e2zZVyE4lQSZava3KF2eDldMVJlpc7YDw=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Mark-PK Tsai <mark-pk.tsai@mediatek.com>
+Subject: [PATCH 5.10 007/163] media: vim2m: Register video device after setting up internals
+Date:   Fri, 27 May 2022 10:48:07 +0200
+Message-Id: <20220527084829.196500718@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
+References: <20220527084828.156494029@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <1653634146-12215-1-git-send-email-quic_prashk@quicinc.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 27, 2022 at 12:19:06PM +0530, Prashanth K wrote:
-> Currently the VBUS/ID detection interrupts are disabled during system
-> suspend. So the USB cable connect/disconnect event can't wakeup the
-> system from low power mode. To allow this, we keep these interrupts
-> enabled and configure them as wakeup capable. This behavior can be
-> controlled through device wakeup source policy by the user space.
-> 
-> Signed-off-by: Prashanth K <quic_prashk@quicinc.com>
-> ---
->  drivers/usb/common/usb-conn-gpio.c | 17 +++++++++++++++++
->  1 file changed, 17 insertions(+)
-> 
-> diff --git a/drivers/usb/common/usb-conn-gpio.c b/drivers/usb/common/usb-conn-gpio.c
-> index 395f9bb..b39c9f1c 100644
-> --- a/drivers/usb/common/usb-conn-gpio.c
-> +++ b/drivers/usb/common/usb-conn-gpio.c
-> @@ -257,6 +257,7 @@ static int usb_conn_probe(struct platform_device *pdev)
->  	}
->  
->  	platform_set_drvdata(pdev, info);
-> +	device_set_wakeup_capable(&pdev->dev, true);
->  
->  	/* Perform initial detection */
->  	usb_conn_queue_dwork(info, 0);
-> @@ -286,6 +287,14 @@ static int __maybe_unused usb_conn_suspend(struct device *dev)
->  {
->  	struct usb_conn_info *info = dev_get_drvdata(dev);
->  
-> +	if (device_may_wakeup(dev)) {
-> +		if (info->id_gpiod)
-> +			enable_irq_wake(info->id_irq);
-> +		if (info->vbus_gpiod)
-> +			enable_irq_wake(info->vbus_irq);
-> +		return 0;
-> +	}
-> +
->  	if (info->id_gpiod)
->  		disable_irq(info->id_irq);
->  	if (info->vbus_gpiod)
-> @@ -300,6 +309,14 @@ static int __maybe_unused usb_conn_resume(struct device *dev)
->  {
->  	struct usb_conn_info *info = dev_get_drvdata(dev);
->  
-> +	if (device_may_wakeup(dev)) {
-> +		if (info->id_gpiod)
-> +			disable_irq_wake(info->id_irq);
-> +		if (info->vbus_gpiod)
-> +			disable_irq_wake(info->vbus_irq);
-> +		return 0;
-> +	}
-> +
->  	pinctrl_pm_select_default_state(dev);
->  
->  	if (info->id_gpiod)
+From: Sakari Ailus <sakari.ailus@linux.intel.com>
 
-Looks good to me.
+commit cf7f34777a5b4100a3a44ff95f3d949c62892bdd upstream.
 
-Thanks,
-Pavan
+Prevent NULL (or close to NULL) pointer dereference in various places by
+registering the video device only when the V4L2 m2m framework has been set
+up.
+
+Fixes: commit 96d8eab5d0a1 ("V4L/DVB: [v5,2/2] v4l: Add a mem-to-mem videobuf framework test device")
+Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Mark-PK Tsai <mark-pk.tsai@mediatek.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/media/test-drivers/vim2m.c |   20 +++++++++++---------
+ 1 file changed, 11 insertions(+), 9 deletions(-)
+
+--- a/drivers/media/test-drivers/vim2m.c
++++ b/drivers/media/test-drivers/vim2m.c
+@@ -1325,12 +1325,6 @@ static int vim2m_probe(struct platform_d
+ 	vfd->lock = &dev->dev_mutex;
+ 	vfd->v4l2_dev = &dev->v4l2_dev;
+ 
+-	ret = video_register_device(vfd, VFL_TYPE_VIDEO, 0);
+-	if (ret) {
+-		v4l2_err(&dev->v4l2_dev, "Failed to register video device\n");
+-		goto error_v4l2;
+-	}
+-
+ 	video_set_drvdata(vfd, dev);
+ 	v4l2_info(&dev->v4l2_dev,
+ 		  "Device registered as /dev/video%d\n", vfd->num);
+@@ -1345,6 +1339,12 @@ static int vim2m_probe(struct platform_d
+ 		goto error_dev;
+ 	}
+ 
++	ret = video_register_device(vfd, VFL_TYPE_VIDEO, 0);
++	if (ret) {
++		v4l2_err(&dev->v4l2_dev, "Failed to register video device\n");
++		goto error_m2m;
++	}
++
+ #ifdef CONFIG_MEDIA_CONTROLLER
+ 	dev->mdev.dev = &pdev->dev;
+ 	strscpy(dev->mdev.model, "vim2m", sizeof(dev->mdev.model));
+@@ -1358,7 +1358,7 @@ static int vim2m_probe(struct platform_d
+ 						 MEDIA_ENT_F_PROC_VIDEO_SCALER);
+ 	if (ret) {
+ 		v4l2_err(&dev->v4l2_dev, "Failed to init mem2mem media controller\n");
+-		goto error_dev;
++		goto error_v4l2;
+ 	}
+ 
+ 	ret = media_device_register(&dev->mdev);
+@@ -1373,11 +1373,13 @@ static int vim2m_probe(struct platform_d
+ error_m2m_mc:
+ 	v4l2_m2m_unregister_media_controller(dev->m2m_dev);
+ #endif
+-error_dev:
++error_v4l2:
+ 	video_unregister_device(&dev->vfd);
+ 	/* vim2m_device_release called by video_unregister_device to release various objects */
+ 	return ret;
+-error_v4l2:
++error_m2m:
++	v4l2_m2m_release(dev->m2m_dev);
++error_dev:
+ 	v4l2_device_unregister(&dev->v4l2_dev);
+ error_free:
+ 	kfree(dev);
+
+
