@@ -2,158 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A59F3C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:37:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02E88C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:37:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349900AbiE0Ihj (ORCPT
+        id S1348442AbiE0Iht (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 04:37:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49730 "EHLO
+        Fri, 27 May 2022 04:37:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349870AbiE0IhF (ORCPT
+        with ESMTP id S1349831AbiE0IhP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 04:37:05 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F154F192B2
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 01:36:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653640583; x=1685176583;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=Cr+4lf/zpQclBXO0IoLNmYQESexu1rZv00QwnaWl+7k=;
-  b=KDhP4x9iseuoq50/ZY3/91ZGt7oCg8cVtHPIVxTKH0SFKL2Ya8dWPDCf
-   WIRK/6VOdaZwXNPwDUPpTc82+rqdCUrwgXsalZegmcjXjoW/Wq+5EGHG8
-   Az1HSV7AHMcFNwcoRBf1o7ferUChJ+ow2/jDKOEfYFJX+kyGixGoN5ka9
-   OzfBYgQzaS2XAw2zjiFl8fIjADjJaGoSqT8zsUdYPeGlo5OIp8Q5hRdgH
-   ZjcsofgEBD+rhc9WSTUDx5DLdYQai/EqW8+qSp53YZU1oY3FQq8D0pQr8
-   Qi3+9AdiL5CgIlZ4JsdlalOOejKPjuzvWXdfvpra5BD4aGwfV0QKM7+D3
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10359"; a="299765148"
-X-IronPort-AV: E=Sophos;i="5.91,254,1647327600"; 
-   d="scan'208";a="299765148"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2022 01:36:23 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,254,1647327600"; 
-   d="scan'208";a="550096056"
-Received: from lkp-server01.sh.intel.com (HELO db63a1be7222) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 27 May 2022 01:36:21 -0700
-Received: from kbuild by db63a1be7222 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nuVSH-0004Zi-8c;
-        Fri, 27 May 2022 08:36:21 +0000
-Date:   Fri, 27 May 2022 16:35:41 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Cong Wang <cong.wang@bytedance.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [congwang:sch_bpf 4/4] net/sched/sch_api.c:369:20: warning:
- assignment to 'struct tcf_chain *' from 'int' makes pointer from integer
- without a cast
-Message-ID: <202205271641.Dn0NkZ82-lkp@intel.com>
+        Fri, 27 May 2022 04:37:15 -0400
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDB6664BEC;
+        Fri, 27 May 2022 01:36:30 -0700 (PDT)
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 24R8aEDj046324;
+        Fri, 27 May 2022 03:36:14 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1653640574;
+        bh=mOjyc69RQmsty71vyEDq/gFIx8VXd/jFX/msZkJ46Iw=;
+        h=From:To:CC:Subject:Date;
+        b=mSwMGFD7ei+PaTirj5kL+FDoNAprFj4PMeRE5X5p1moVg5uy6Ml9N4t6BDyoCgkVT
+         /6hTffaecEpWHNI6gf8EqmWhzgGBIgOQ6JB9GXYNk+22H33PVSk/TnGnu5s+S0uM6G
+         qzzWdtFgDASsBaKoQYD6LnMD/VwFsu89ZOvYmr1s=
+Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 24R8aEnh015743
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 27 May 2022 03:36:14 -0500
+Received: from DFLE106.ent.ti.com (10.64.6.27) by DFLE114.ent.ti.com
+ (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Fri, 27
+ May 2022 03:36:14 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE106.ent.ti.com
+ (10.64.6.27) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Fri, 27 May 2022 03:36:13 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 24R8aCIo105296;
+        Fri, 27 May 2022 03:36:13 -0500
+From:   Rahul T R <r-ravikumar@ti.com>
+To:     <robh+dt@kernel.org>, <nm@ti.com>, <vigneshr@ti.com>,
+        <kishon@ti.com>, <krzysztof.kozlowski+dt@linaro.org>
+CC:     <lee.jones@linaro.org>, <rogerq@kernel.org>,
+        <devicetree@vger.kernel.org>, <kristo@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <s-anna@ti.com>,
+        Rahul T R <r-ravikumar@ti.com>
+Subject: [PATCH 0/3] Enable RPi header on j721e sk
+Date:   Fri, 27 May 2022 14:05:53 +0530
+Message-ID: <20220527083556.18864-1-r-ravikumar@ti.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/congwang/linux.git sch_bpf
-head:   d7144f4291a2882e698a6d9d83f7e614d97be9c8
-commit: d7144f4291a2882e698a6d9d83f7e614d97be9c8 [4/4] net_sched: introduce helper bpf_skb_tc_classify()
-config: mips-xway_defconfig (https://download.01.org/0day-ci/archive/20220527/202205271641.Dn0NkZ82-lkp@intel.com/config)
-compiler: mips-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/congwang/linux/commit/d7144f4291a2882e698a6d9d83f7e614d97be9c8
-        git remote add congwang https://github.com/congwang/linux.git
-        git fetch --no-tags congwang sch_bpf
-        git checkout d7144f4291a2882e698a6d9d83f7e614d97be9c8
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash net/sched/
+The following series of patches enables RPi header
+on j721e sk. It is a 40 pin io expasion header which
+brings out i2c5, ehrpwm 2,3 and some pins of gpio 0,1
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Rahul T R (1):
+  dt-bindings: mfd: ti,j721e-system-controller: Add clock property
 
-All warnings (new ones prefixed by >>):
+Sinthu Raja (1):
+  arm64: dts: ti: k3-j721e-sk: Add pinmux for RPi Header
 
-   net/sched/sch_api.c: In function '____bpf_skb_tc_classify':
-   net/sched/sch_api.c:369:22: error: implicit declaration of function 'tcf_get_next_chain' [-Werror=implicit-function-declaration]
-     369 |         for (chain = tcf_get_next_chain(block, NULL);
-         |                      ^~~~~~~~~~~~~~~~~~
->> net/sched/sch_api.c:369:20: warning: assignment to 'struct tcf_chain *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
-     369 |         for (chain = tcf_get_next_chain(block, NULL);
-         |                    ^
-   net/sched/sch_api.c:371:20: warning: assignment to 'struct tcf_chain *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
-     371 |              chain = tcf_get_next_chain(block, chain)) {
-         |                    ^
-   cc1: some warnings being treated as errors
+Vijay Pothukuchi (1):
+  arm64: dts: ti: k3-j721e-*: Add dts nodes for EHRPWMs
 
-
-vim +369 net/sched/sch_api.c
-
-   334	
-   335	BPF_CALL_3(bpf_skb_tc_classify, struct sk_buff *, skb, int, ifindex, u32, handle)
-   336	{
-   337		struct net *net = dev_net(skb->dev);
-   338		const struct Qdisc_class_ops *cops;
-   339		struct tcf_result res = {};
-   340		struct tcf_block *block;
-   341		struct tcf_chain *chain;
-   342		struct net_device *dev;
-   343		unsigned long cl = 0;
-   344		struct Qdisc *q;
-   345		int result;
-   346	
-   347		rcu_read_lock();
-   348		dev = dev_get_by_index_rcu(net, ifindex);
-   349		if (!dev)
-   350			goto out;
-   351		q = qdisc_lookup_rcu(dev, handle);
-   352		if (!q)
-   353			goto out;
-   354	
-   355		cops = q->ops->cl_ops;
-   356		if (!cops)
-   357			goto out;
-   358		if (!cops->tcf_block)
-   359			goto out;
-   360		if (TC_H_MIN(handle)) {
-   361			cl = cops->find(q, handle);
-   362			if (cl == 0)
-   363				goto out;
-   364		}
-   365		block = cops->tcf_block(q, cl, NULL);
-   366		if (!block)
-   367			goto out;
-   368	
- > 369		for (chain = tcf_get_next_chain(block, NULL);
-   370		     chain;
-   371		     chain = tcf_get_next_chain(block, chain)) {
-   372			struct tcf_proto *tp;
-   373	
-   374			result = tcf_classify(skb, NULL, tp, &res, false);
-   375			if (result  >= 0) {
-   376	#ifdef CONFIG_NET_CLS_ACT
-   377				switch (result) {
-   378				case TC_ACT_QUEUED:
-   379				case TC_ACT_STOLEN:
-   380				case TC_ACT_TRAP:
-   381					fallthrough;
-   382				case TC_ACT_SHOT:
-   383					rcu_read_unlock();
-   384					return 0;
-   385				}
-   386	#endif
-   387			}
-   388		}
-   389	out:
-   390		rcu_read_unlock();
-   391		return res.class;
-   392	}
-   393	
+ .../mfd/ti,j721e-system-controller.yaml       |  12 +++
+ .../dts/ti/k3-j721e-common-proc-board.dts     |  24 +++++
+ arch/arm64/boot/dts/ti/k3-j721e-main.dtsi     |  62 ++++++++++-
+ arch/arm64/boot/dts/ti/k3-j721e-sk.dts        | 101 +++++++++++++++++-
+ 4 files changed, 193 insertions(+), 6 deletions(-)
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.17.1
+
