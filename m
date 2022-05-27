@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBC19C3526F
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:17:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D65FC388F3
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:17:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353722AbiE0MQI (ORCPT
+        id S1353825AbiE0MQ1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 08:16:08 -0400
+        Fri, 27 May 2022 08:16:27 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244780AbiE0MBY (ORCPT
+        with ESMTP id S1352420AbiE0MC6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 08:01:24 -0400
+        Fri, 27 May 2022 08:02:58 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A3DB4A3DF;
-        Fri, 27 May 2022 04:53:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05F05134E1A;
+        Fri, 27 May 2022 04:53:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 584DA61DB1;
-        Fri, 27 May 2022 11:53:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66E3FC385A9;
-        Fri, 27 May 2022 11:53:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 170DB61DB2;
+        Fri, 27 May 2022 11:53:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27633C385A9;
+        Fri, 27 May 2022 11:53:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653652385;
-        bh=6szvqkdjoU+O8bp4LyOclQVEm9CULO8mYqsEvKUxCeE=;
+        s=korg; t=1653652394;
+        bh=o4soIyc1vQYJQ67dGq9GBUeAqDilcx63IcfzN7572IA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cOiwkOrHBDqmoTdSDqEKzKFMUwF7ASi+FqgK7AUlpZkgfS5HUtqqUCZcO1xIcAJ6F
-         egaEPRoCp8N11cGttNNydvQDQ2O5hhaxxomzJcHFitbzszKKhcW8RMOrlD82UNa4U7
-         QZELce4i/L4QkRuRdrXx52zqdd1bb0Yp3EZi3o8g=
+        b=qdm18dDrdoa7uthILGgrsHoKzko7AUwh1PczUoYlFKChyvfXsCFSdsiUGjp/pGxak
+         OkfBZPhwNKP5vOAm51CTT1gA1nIwmcsSQvraCQufuZAkeZSe2hFSbr6fRNmFpn75Ih
+         nxRfrmkGrB8xYR+zckint7QdAQhzDgfrGCgPLb3Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Joe Perches <joe@perches.com>,
+        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Max Filippov <jcmvbkbc@gmail.com>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.10 145/163] random: use symbolic constants for crng_init states
-Date:   Fri, 27 May 2022 10:50:25 +0200
-Message-Id: <20220527084848.554998845@linuxfoundation.org>
+Subject: [PATCH 5.10 136/163] xtensa: use fallback for random_get_entropy() instead of zero
+Date:   Fri, 27 May 2022 10:50:16 +0200
+Message-Id: <20220527084847.139730026@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
 References: <20220527084828.156494029@linuxfoundation.org>
@@ -53,123 +53,49 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit e3d2c5e79a999aa4e7d6f0127e16d3da5a4ff70d upstream.
+commit e10e2f58030c5c211d49042a8c2a1b93d40b2ffb upstream.
 
-crng_init represents a state machine, with three states, and various
-rules for transitions. For the longest time, we've been managing these
-with "0", "1", and "2", and expecting people to figure it out. To make
-the code more obvious, replace these with proper enum values
-representing the transition, and then redocument what each of these
-states mean.
+In the event that random_get_entropy() can't access a cycle counter or
+similar, falling back to returning 0 is really not the best we can do.
+Instead, at least calling random_get_entropy_fallback() would be
+preferable, because that always needs to return _something_, even
+falling back to jiffies eventually. It's not as though
+random_get_entropy_fallback() is super high precision or guaranteed to
+be entropic, but basically anything that's not zero all the time is
+better than returning zero all the time.
 
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
-Cc: Joe Perches <joe@perches.com>
+This is accomplished by just including the asm-generic code like on
+other architectures, which means we can get rid of the empty stub
+function here.
+
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Acked-by: Max Filippov <jcmvbkbc@gmail.com>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   38 +++++++++++++++++++-------------------
- 1 file changed, 19 insertions(+), 19 deletions(-)
+ arch/xtensa/include/asm/timex.h |    6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -70,16 +70,16 @@
-  *********************************************************************/
+--- a/arch/xtensa/include/asm/timex.h
++++ b/arch/xtensa/include/asm/timex.h
+@@ -29,10 +29,6 @@
+ 
+ extern unsigned long ccount_freq;
+ 
+-typedef unsigned long long cycles_t;
+-
+-#define get_cycles()	(0)
+-
+ void local_timer_setup(unsigned cpu);
  
  /*
-- * crng_init =  0 --> Uninitialized
-- *		1 --> Initialized
-- *		2 --> Initialized from input_pool
-- *
-  * crng_init is protected by base_crng->lock, and only increases
-- * its value (from 0->1->2).
-+ * its value (from empty->early->ready).
-  */
--static int crng_init = 0;
--#define crng_ready() (likely(crng_init > 1))
--/* Various types of waiters for crng_init->2 transition. */
-+static enum {
-+	CRNG_EMPTY = 0, /* Little to no entropy collected */
-+	CRNG_EARLY = 1, /* At least POOL_EARLY_BITS collected */
-+	CRNG_READY = 2  /* Fully initialized with POOL_READY_BITS collected */
-+} crng_init = CRNG_EMPTY;
-+#define crng_ready() (likely(crng_init >= CRNG_READY))
-+/* Various types of waiters for crng_init->CRNG_READY transition. */
- static DECLARE_WAIT_QUEUE_HEAD(crng_init_wait);
- static struct fasync_struct *fasync;
- static DEFINE_SPINLOCK(random_ready_chain_lock);
-@@ -284,7 +284,7 @@ static void crng_reseed(void)
- 	WRITE_ONCE(base_crng.generation, next_gen);
- 	WRITE_ONCE(base_crng.birth, jiffies);
- 	if (!crng_ready()) {
--		crng_init = 2;
-+		crng_init = CRNG_READY;
- 		finalize_init = true;
- 	}
- 	spin_unlock_irqrestore(&base_crng.lock, flags);
-@@ -378,7 +378,7 @@ static void crng_make_state(u32 chacha_s
- 	 * For the fast path, we check whether we're ready, unlocked first, and
- 	 * then re-check once locked later. In the case where we're really not
- 	 * ready, we do fast key erasure with the base_crng directly, extracting
--	 * when crng_init==0.
-+	 * when crng_init is CRNG_EMPTY.
- 	 */
- 	if (!crng_ready()) {
- 		bool ready;
-@@ -386,7 +386,7 @@ static void crng_make_state(u32 chacha_s
- 		spin_lock_irqsave(&base_crng.lock, flags);
- 		ready = crng_ready();
- 		if (!ready) {
--			if (crng_init == 0)
-+			if (crng_init == CRNG_EMPTY)
- 				extract_entropy(base_crng.key, sizeof(base_crng.key));
- 			crng_fast_key_erasure(base_crng.key, chacha_state,
- 					      random_data, random_data_len);
-@@ -740,8 +740,8 @@ EXPORT_SYMBOL(get_random_bytes_arch);
+@@ -59,4 +55,6 @@ static inline void set_linux_timer (unsi
+ 	xtensa_set_sr(ccompare, SREG_CCOMPARE + LINUX_TIMER);
+ }
  
- enum {
- 	POOL_BITS = BLAKE2S_HASH_SIZE * 8,
--	POOL_INIT_BITS = POOL_BITS, /* No point in settling for less. */
--	POOL_FAST_INIT_BITS = POOL_INIT_BITS / 2
-+	POOL_READY_BITS = POOL_BITS, /* When crng_init->CRNG_READY */
-+	POOL_EARLY_BITS = POOL_READY_BITS / 2 /* When crng_init->CRNG_EARLY */
- };
- 
- static struct {
-@@ -836,13 +836,13 @@ static void credit_init_bits(size_t nbit
- 		init_bits = min_t(unsigned int, POOL_BITS, orig + add);
- 	} while (cmpxchg(&input_pool.init_bits, orig, init_bits) != orig);
- 
--	if (!crng_ready() && init_bits >= POOL_INIT_BITS)
-+	if (!crng_ready() && init_bits >= POOL_READY_BITS)
- 		crng_reseed();
--	else if (unlikely(crng_init == 0 && init_bits >= POOL_FAST_INIT_BITS)) {
-+	else if (unlikely(crng_init == CRNG_EMPTY && init_bits >= POOL_EARLY_BITS)) {
- 		spin_lock_irqsave(&base_crng.lock, flags);
--		if (crng_init == 0) {
-+		if (crng_init == CRNG_EMPTY) {
- 			extract_entropy(base_crng.key, sizeof(base_crng.key));
--			crng_init = 1;
-+			crng_init = CRNG_EARLY;
- 		}
- 		spin_unlock_irqrestore(&base_crng.lock, flags);
- 	}
-@@ -1517,7 +1517,7 @@ const struct file_operations urandom_fop
-  *
-  * - write_wakeup_threshold - the amount of entropy in the input pool
-  *   below which write polls to /dev/random will unblock, requesting
-- *   more entropy, tied to the POOL_INIT_BITS constant. It is writable
-+ *   more entropy, tied to the POOL_READY_BITS constant. It is writable
-  *   to avoid breaking old userspaces, but writing to it does not
-  *   change any behavior of the RNG.
-  *
-@@ -1532,7 +1532,7 @@ const struct file_operations urandom_fop
- #include <linux/sysctl.h>
- 
- static int sysctl_random_min_urandom_seed = CRNG_RESEED_INTERVAL / HZ;
--static int sysctl_random_write_wakeup_bits = POOL_INIT_BITS;
-+static int sysctl_random_write_wakeup_bits = POOL_READY_BITS;
- static int sysctl_poolsize = POOL_BITS;
- static u8 sysctl_bootid[UUID_SIZE];
- 
++#include <asm-generic/timex.h>
++
+ #endif	/* _XTENSA_TIMEX_H */
 
 
