@@ -2,46 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E99DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:54:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AB59C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:54:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344053AbiE0Ix7 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 04:53:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58738 "EHLO
+        id S240520AbiE0IyO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 04:54:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350065AbiE0IxK (ORCPT
+        with ESMTP id S1350122AbiE0IxR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 04:53:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FA1F5C74A;
-        Fri, 27 May 2022 01:52:37 -0700 (PDT)
+        Fri, 27 May 2022 04:53:17 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D15D35D1A7;
+        Fri, 27 May 2022 01:52:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 15E5561D3D;
-        Fri, 27 May 2022 08:52:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B69D4C34100;
-        Fri, 27 May 2022 08:52:35 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 3803BCE23CA;
+        Fri, 27 May 2022 08:52:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4910EC385A9;
+        Fri, 27 May 2022 08:52:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653641556;
-        bh=Trgz+USAQPCv1R/UHnPbOXYDe7Kd+M22X+yARLpqOVw=;
+        s=korg; t=1653641559;
+        bh=98St9OrtHbbRVAdO+jU3+kGdwQ99rQXlaybGEOoQDes=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=w7tDwd2tUwyQZQnW2Rml27p+hsB8vwgs5eIDJXTDb03trH6zO4NTq9IyAvAhGuRES
-         AtvnqjuR4LbaJN38J3nJQk9UYhj8YWrIfTmGJUG/aS6ZZcG22YG5JpgsjJI/bN+Z5O
-         Z99qC9SbGGxAejAZxeSTeNw31LUOY48OSciehhzc=
+        b=pbgWOZG3FaIo/IOFxFtMjIL1o38Izqb8LXy6zDLj9At9DfzFBk1zVVJg6F1bnrecu
+         Uskmm/w09+bL0GpFLa5moC3yAB/kNf0rzE+7LyTpRJkgnxMuBIGIy9z7CK+oqOwA3I
+         PmjtK3wyl4BNsEMs1mS0hPnasSCYTRvxykahk6eg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.18 17/47] um: use fallback for random_get_entropy() instead of zero
-Date:   Fri, 27 May 2022 10:49:57 +0200
-Message-Id: <20220527084804.121132542@linuxfoundation.org>
+        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.18 26/47] random: help compiler out with fast_mix() by using simpler arguments
+Date:   Fri, 27 May 2022 10:50:06 +0200
+Message-Id: <20220527084805.634759759@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220527084801.223648383@linuxfoundation.org>
 References: <20220527084801.223648383@linuxfoundation.org>
@@ -55,49 +49,92 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 9f13fb0cd11ed2327abff69f6501a2c124c88b5a upstream.
+commit 791332b3cbb080510954a4c152ce02af8832eac9 upstream.
 
-In the event that random_get_entropy() can't access a cycle counter or
-similar, falling back to returning 0 is really not the best we can do.
-Instead, at least calling random_get_entropy_fallback() would be
-preferable, because that always needs to return _something_, even
-falling back to jiffies eventually. It's not as though
-random_get_entropy_fallback() is super high precision or guaranteed to
-be entropic, but basically anything that's not zero all the time is
-better than returning zero all the time.
+Now that fast_mix() has more than one caller, gcc no longer inlines it.
+That's fine. But it also doesn't handle the compound literal argument we
+pass it very efficiently, nor does it handle the loop as well as it
+could. So just expand the code to spell out this function so that it
+generates the same code as it did before. Performance-wise, this now
+behaves as it did before the last commit. The difference in actual code
+size on x86 is 45 bytes, which is less than a cache line.
 
-This is accomplished by just including the asm-generic code like on
-other architectures, which means we can get rid of the empty stub
-function here.
-
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Richard Weinberger <richard@nod.at>
-Cc: Anton Ivanov <anton.ivanov@cambridgegreys.com>
-Acked-by: Johannes Berg <johannes@sipsolutions.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/um/include/asm/timex.h |    9 ++-------
- 1 file changed, 2 insertions(+), 7 deletions(-)
+ drivers/char/random.c |   44 +++++++++++++++++++++++---------------------
+ 1 file changed, 23 insertions(+), 21 deletions(-)
 
---- a/arch/um/include/asm/timex.h
-+++ b/arch/um/include/asm/timex.h
-@@ -2,13 +2,8 @@
- #ifndef __UM_TIMEX_H
- #define __UM_TIMEX_H
- 
--typedef unsigned long cycles_t;
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -1068,25 +1068,30 @@ static DEFINE_PER_CPU(struct fast_pool,
+  * and therefore this has no security on its own. s represents the
+  * four-word SipHash state, while v represents a two-word input.
+  */
+-static void fast_mix(unsigned long s[4], const unsigned long v[2])
++static void fast_mix(unsigned long s[4], unsigned long v1, unsigned long v2)
+ {
+-	size_t i;
 -
--static inline cycles_t get_cycles (void)
--{
--	return 0;
--}
--
- #define CLOCK_TICK_RATE (HZ)
- 
-+#include <asm-generic/timex.h>
-+
+-	for (i = 0; i < 2; ++i) {
+-		s[3] ^= v[i];
+ #ifdef CONFIG_64BIT
+-		s[0] += s[1]; s[1] = rol64(s[1], 13); s[1] ^= s[0]; s[0] = rol64(s[0], 32);
+-		s[2] += s[3]; s[3] = rol64(s[3], 16); s[3] ^= s[2];
+-		s[0] += s[3]; s[3] = rol64(s[3], 21); s[3] ^= s[0];
+-		s[2] += s[1]; s[1] = rol64(s[1], 17); s[1] ^= s[2]; s[2] = rol64(s[2], 32);
++#define PERM() do { \
++	s[0] += s[1]; s[1] = rol64(s[1], 13); s[1] ^= s[0]; s[0] = rol64(s[0], 32); \
++	s[2] += s[3]; s[3] = rol64(s[3], 16); s[3] ^= s[2]; \
++	s[0] += s[3]; s[3] = rol64(s[3], 21); s[3] ^= s[0]; \
++	s[2] += s[1]; s[1] = rol64(s[1], 17); s[1] ^= s[2]; s[2] = rol64(s[2], 32); \
++} while (0)
+ #else
+-		s[0] += s[1]; s[1] = rol32(s[1],  5); s[1] ^= s[0]; s[0] = rol32(s[0], 16);
+-		s[2] += s[3]; s[3] = rol32(s[3],  8); s[3] ^= s[2];
+-		s[0] += s[3]; s[3] = rol32(s[3],  7); s[3] ^= s[0];
+-		s[2] += s[1]; s[1] = rol32(s[1], 13); s[1] ^= s[2]; s[2] = rol32(s[2], 16);
++#define PERM() do { \
++	s[0] += s[1]; s[1] = rol32(s[1],  5); s[1] ^= s[0]; s[0] = rol32(s[0], 16); \
++	s[2] += s[3]; s[3] = rol32(s[3],  8); s[3] ^= s[2]; \
++	s[0] += s[3]; s[3] = rol32(s[3],  7); s[3] ^= s[0]; \
++	s[2] += s[1]; s[1] = rol32(s[1], 13); s[1] ^= s[2]; s[2] = rol32(s[2], 16); \
++} while (0)
  #endif
+-		s[0] ^= v[i];
+-	}
++
++	s[3] ^= v1;
++	PERM();
++	s[0] ^= v1;
++	s[3] ^= v2;
++	PERM();
++	s[0] ^= v2;
+ }
+ 
+ #ifdef CONFIG_SMP
+@@ -1156,10 +1161,8 @@ void add_interrupt_randomness(int irq)
+ 	struct pt_regs *regs = get_irq_regs();
+ 	unsigned int new_count;
+ 
+-	fast_mix(fast_pool->pool, (unsigned long[2]){
+-		entropy,
+-		(regs ? instruction_pointer(regs) : _RET_IP_) ^ swab(irq)
+-	});
++	fast_mix(fast_pool->pool, entropy,
++		 (regs ? instruction_pointer(regs) : _RET_IP_) ^ swab(irq));
+ 	new_count = ++fast_pool->count;
+ 
+ 	if (new_count & MIX_INFLIGHT)
+@@ -1199,8 +1202,7 @@ static void add_timer_randomness(struct
+ 	 * sometime after, so mix into the fast pool.
+ 	 */
+ 	if (in_hardirq()) {
+-		fast_mix(this_cpu_ptr(&irq_randomness)->pool,
+-			 (unsigned long[2]){ entropy, num });
++		fast_mix(this_cpu_ptr(&irq_randomness)->pool, entropy, num);
+ 	} else {
+ 		spin_lock_irqsave(&input_pool.lock, flags);
+ 		_mix_pool_bytes(&entropy, sizeof(entropy));
 
 
