@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 803C2C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:46:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8CDEC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:46:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351768AbiE0Lql (ORCPT
+        id S1352560AbiE0LqH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 07:46:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57118 "EHLO
+        Fri, 27 May 2022 07:46:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351976AbiE0LpM (ORCPT
+        with ESMTP id S1351837AbiE0LoB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:45:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CD47132766;
-        Fri, 27 May 2022 04:41:37 -0700 (PDT)
+        Fri, 27 May 2022 07:44:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 710B013F43C;
+        Fri, 27 May 2022 04:41:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A5D1D61CB7;
-        Fri, 27 May 2022 11:41:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2D76C385A9;
-        Fri, 27 May 2022 11:41:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0D6C361D22;
+        Fri, 27 May 2022 11:41:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12165C385A9;
+        Fri, 27 May 2022 11:40:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653651696;
-        bh=VpQApCs5/lvsmf8+1uF4l3TjOpcku2gXN53TYSaWCMc=;
+        s=korg; t=1653651660;
+        bh=IPrm7l7Y4DEnj3K/unR0h1dsLN/bo46PUM9Qs6lbRoE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kPgKBnhRZ82f9wUZEk9HkEj89/vG59heGmdtDLQOPFa/rTMRbE/YhQRpmaE2u6E8D
-         vKxFU04gApbD0xaw4UEvL2kVTfIa+tbhOkkKgwv1LGYA9p66cNDrc/kEoDoJqQiVbC
-         zkoAXac80NqC30bCTwfK8UPqMaTjIblcfR30mTDw=
+        b=FDuELd8XK78idI6nsi4egY0lO/SZJmv72FcNmInNAna4dgc3zpjVzk7091MlJlOC8
+         +HnunhdRAq+ZyNmh+52ZKBTIDWdcP5ogxBfD6H1tcexGKMcZq8KiFNaWA4UIztgp3b
+         FFZvS3Ze/Pn47WfUxaxHeZp3xMWH+xRlywjpWf3U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
+        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Arnd Bergmann <arnd@arndb.de>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.10 039/163] random: dont reset crng_init_cnt on urandom_read()
-Date:   Fri, 27 May 2022 10:48:39 +0200
-Message-Id: <20220527084833.519888990@linuxfoundation.org>
+Subject: [PATCH 5.17 069/111] ia64: define get_cycles macro for arch-override
+Date:   Fri, 27 May 2022 10:49:41 +0200
+Message-Id: <20220527084829.303759570@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
-References: <20220527084828.156494029@linuxfoundation.org>
+In-Reply-To: <20220527084819.133490171@linuxfoundation.org>
+References: <20220527084819.133490171@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,74 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jann Horn <jannh@google.com>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 6c8e11e08a5b74bb8a5cdd5cbc1e5143df0fba72 upstream.
+commit 57c0900b91d8891ab43f0e6b464d059fda51d102 upstream.
 
-At the moment, urandom_read() (used for /dev/urandom) resets crng_init_cnt
-to zero when it is called at crng_init<2. This is inconsistent: We do it
-for /dev/urandom reads, but not for the equivalent
-getrandom(GRND_INSECURE).
+Itanium defines a get_cycles() function, but it does not do the usual
+`#define get_cycles get_cycles` dance, making it impossible for generic
+code to see if an arch-specific function was defined. While the
+get_cycles() ifdef is not currently used, the following timekeeping
+patch in this series will depend on the macro existing (or not existing)
+when defining random_get_entropy().
 
-(And worse, as Jason pointed out, we're only doing this as long as
-maxwarn>0.)
-
-crng_init_cnt is only read in crng_fast_load(); it is relevant at
-crng_init==0 for determining when to switch to crng_init==1 (and where in
-the RNG state array to write).
-
-As far as I understand:
-
- - crng_init==0 means "we have nothing, we might just be returning the same
-   exact numbers on every boot on every machine, we don't even have
-   non-cryptographic randomness; we should shove every bit of entropy we
-   can get into the RNG immediately"
- - crng_init==1 means "well we have something, it might not be
-   cryptographic, but at least we're not gonna return the same data every
-   time or whatever, it's probably good enough for TCP and ASLR and stuff;
-   we now have time to build up actual cryptographic entropy in the input
-   pool"
- - crng_init==2 means "this is supposed to be cryptographically secure now,
-   but we'll keep adding more entropy just to be sure".
-
-The current code means that if someone is pulling data from /dev/urandom
-fast enough at crng_init==0, we'll keep resetting crng_init_cnt, and we'll
-never make forward progress to crng_init==1. It seems to be intended to
-prevent an attacker from bruteforcing the contents of small individual RNG
-inputs on the way from crng_init==0 to crng_init==1, but that's misguided;
-crng_init==1 isn't supposed to provide proper cryptographic security
-anyway, RNG users who care about getting secure RNG output have to wait
-until crng_init==2.
-
-This code was inconsistent, and it probably made things worse - just get
-rid of it.
-
-Signed-off-by: Jann Horn <jannh@google.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    4 ----
- 1 file changed, 4 deletions(-)
+ arch/ia64/include/asm/timex.h |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -1831,7 +1831,6 @@ urandom_read_nowarn(struct file *file, c
- static ssize_t
- urandom_read(struct file *file, char __user *buf, size_t nbytes, loff_t *ppos)
- {
--	unsigned long flags;
- 	static int maxwarn = 10;
+--- a/arch/ia64/include/asm/timex.h
++++ b/arch/ia64/include/asm/timex.h
+@@ -39,6 +39,7 @@ get_cycles (void)
+ 	ret = ia64_getreg(_IA64_REG_AR_ITC);
+ 	return ret;
+ }
++#define get_cycles get_cycles
  
- 	if (!crng_ready() && maxwarn > 0) {
-@@ -1839,9 +1838,6 @@ urandom_read(struct file *file, char __u
- 		if (__ratelimit(&urandom_warning))
- 			pr_notice("%s: uninitialized urandom read (%zd bytes read)\n",
- 				  current->comm, nbytes);
--		spin_lock_irqsave(&primary_crng.lock, flags);
--		crng_init_cnt = 0;
--		spin_unlock_irqrestore(&primary_crng.lock, flags);
- 	}
- 
- 	return urandom_read_nowarn(file, buf, nbytes, ppos);
+ extern void ia64_cpu_local_tick (void);
+ extern unsigned long long ia64_native_sched_clock (void);
 
 
