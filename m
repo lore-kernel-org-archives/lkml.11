@@ -2,209 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0B1CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 10:44:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C76CFC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 10:45:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351040AbiE0Kop (ORCPT
+        id S1351062AbiE0Koy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 06:44:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47484 "EHLO
+        Fri, 27 May 2022 06:44:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351026AbiE0KoZ (ORCPT
+        with ESMTP id S1351029AbiE0Koo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 06:44:25 -0400
+        Fri, 27 May 2022 06:44:44 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 208E84ECF8
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 03:44:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 959F34091B
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 03:44:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653648248;
+        s=mimecast20190719; t=1653648271;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=LcoEuAPcwDzMg++aENdi5jY2iq2FEX/aLrEgv58jz10=;
-        b=etRkiD1v5znWyd9VdCP93ChXn3R686k3gLHYqGXXprdWsjkWEelKgceEQxYjap7KRVLuXb
-        JucNOXfNUV8Rx7rDONkLE6CHD5dmtWbTwuk8WR1w29dbqVoO/YJQ6baR8u/liTdRVBKy7f
-        M8bqeIjiFUZJISBNopVTHDirbREYvvg=
+        bh=JPjH9LzUL2EEkZyPk4S7m1LZ52Vs/cmjg6eI3uOHDjw=;
+        b=AM7A0h0KrYnxtZ281+BaSCA0CzwaAk/1Pb50r1IZuYhTCL5j68uC7O6E+SO6aFcJi3WaNG
+        U/w1+OTmrpV8FWJa3DJDd9NHyatGhKI7NvAcDvZfoPMQ7f5Q64L+KqbyW1NhkyOvzLNK+j
+        z0Ol05Ow9HGlnfUbYfIU1BpUZToyz68=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-460-7TgUnxAROpqUMzuaBvIVRw-1; Fri, 27 May 2022 06:44:05 -0400
-X-MC-Unique: 7TgUnxAROpqUMzuaBvIVRw-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+ us-mta-550-BRMLVPihOmCQ4QFxvgp8Fw-1; Fri, 27 May 2022 06:44:26 -0400
+X-MC-Unique: BRMLVPihOmCQ4QFxvgp8Fw-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 8A705185A79C;
-        Fri, 27 May 2022 10:44:04 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E7F068032E5;
+        Fri, 27 May 2022 10:44:25 +0000 (UTC)
 Received: from warthog.procyon.org.uk (unknown [10.33.36.8])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 45ECF40EC002;
-        Fri, 27 May 2022 10:44:03 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A252D492CA2;
+        Fri, 27 May 2022 10:44:24 +0000 (UTC)
 Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
         Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
         Kingdom.
         Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH v3 1/9] iov_iter: Add a function to extract an iter's buffers
- to a bvec iter
+Subject: [PATCH v3 4/9] cifs: Add a function to read into an iter from a
+ socket
 From:   David Howells <dhowells@redhat.com>
 To:     Steve French <smfrench@gmail.com>
-Cc:     dhowells@redhat.com, Shyam Prasad N <nspmangalore@gmail.com>,
+Cc:     Steve French <sfrench@samba.org>,
+        Shyam Prasad N <nspmangalore@gmail.com>,
+        Rohith Surabattula <rohiths.msft@gmail.com>,
+        linux-cifs@vger.kernel.org, dhowells@redhat.com,
+        Shyam Prasad N <nspmangalore@gmail.com>,
         Rohith Surabattula <rohiths.msft@gmail.com>,
         Jeff Layton <jlayton@kernel.org>,
         Al Viro <viro@zeniv.linux.org.uk>, linux-cifs@vger.kernel.org,
         linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Fri, 27 May 2022 11:44:02 +0100
-Message-ID: <165364824259.3334034.5837838050291740324.stgit@warthog.procyon.org.uk>
+Date:   Fri, 27 May 2022 11:44:23 +0100
+Message-ID: <165364826398.3334034.12541600783145647319.stgit@warthog.procyon.org.uk>
 In-Reply-To: <165364823513.3334034.11209090728654641458.stgit@warthog.procyon.org.uk>
 References: <165364823513.3334034.11209090728654641458.stgit@warthog.procyon.org.uk>
 User-Agent: StGit/1.4
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Copy cifs's setup_aio_ctx_iter() and to lib/iov_iter.c and generalise it as
-extract_iter_to_iter().  This allocates and sets up an array of bio_vecs
-for all the page fragments in an I/O iterator and sets a second supplied
-iterator to bvec-type pointing to the array.
-
-This is can be used when setting up for a direct I/O or an asynchronous I/O
-to set up a record of the page fragments that are going to contribute to
-the buffer, paging them all in to prevent DIO->mmap loops and allowing the
-original iterator to be deallocated (it may be on the stack of the caller).
-
-Note that extract_iter_to_iter() doesn't actually need to make a separate
-allocation for the page array.  It can place the page array at the end of
-the bvec array storage, provided it traverses both arrays from the 0th
-element forwards.
+Add a helper function to read data from a socket into the given iterator.
 
 Signed-off-by: David Howells <dhowells@redhat.com>
+cc: Steve French <sfrench@samba.org>
+cc: Shyam Prasad N <nspmangalore@gmail.com>
+cc: Rohith Surabattula <rohiths.msft@gmail.com>
+cc: linux-cifs@vger.kernel.org
 ---
 
- include/linux/uio.h |    4 ++
- lib/iov_iter.c      |   93 +++++++++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 97 insertions(+)
+ fs/cifs/cifsproto.h |    3 +++
+ fs/cifs/connect.c   |   16 ++++++++++++++++
+ 2 files changed, 19 insertions(+)
 
-diff --git a/include/linux/uio.h b/include/linux/uio.h
-index 739285fe5a2f..5a3c6f296b96 100644
---- a/include/linux/uio.h
-+++ b/include/linux/uio.h
-@@ -236,6 +236,10 @@ ssize_t iov_iter_get_pages(struct iov_iter *i, struct page **pages,
- 			size_t maxsize, unsigned maxpages, size_t *start);
- ssize_t iov_iter_get_pages_alloc(struct iov_iter *i, struct page ***pages,
- 			size_t maxsize, size_t *start);
-+ssize_t extract_iter_to_iter(struct iov_iter *orig,
-+			     size_t orig_len,
-+			     struct iov_iter *new,
-+			     struct bio_vec **_bv);
- int iov_iter_npages(const struct iov_iter *i, int maxpages);
- void iov_iter_restore(struct iov_iter *i, struct iov_iter_state *state);
- 
-diff --git a/lib/iov_iter.c b/lib/iov_iter.c
-index 6dd5330f7a99..8db34ddd23be 100644
---- a/lib/iov_iter.c
-+++ b/lib/iov_iter.c
-@@ -1696,6 +1696,99 @@ ssize_t iov_iter_get_pages_alloc(struct iov_iter *i,
+diff --git a/fs/cifs/cifsproto.h b/fs/cifs/cifsproto.h
+index 0df3b24a0bf4..dd4931308ea6 100644
+--- a/fs/cifs/cifsproto.h
++++ b/fs/cifs/cifsproto.h
+@@ -245,6 +245,9 @@ extern int cifs_read_page_from_socket(struct TCP_Server_Info *server,
+ 					unsigned int page_offset,
+ 					unsigned int to_read);
+ extern int cifs_setup_cifs_sb(struct cifs_sb_info *cifs_sb);
++extern int cifs_read_iter_from_socket(struct TCP_Server_Info *server,
++				      struct iov_iter *iter,
++				      unsigned int to_read);
+ extern int cifs_match_super(struct super_block *, void *);
+ extern int cifs_mount(struct cifs_sb_info *cifs_sb, struct smb3_fs_context *ctx);
+ extern void cifs_umount(struct cifs_sb_info *);
+diff --git a/fs/cifs/connect.c b/fs/cifs/connect.c
+index 42e14f408856..0d532d559f70 100644
+--- a/fs/cifs/connect.c
++++ b/fs/cifs/connect.c
+@@ -764,6 +764,22 @@ cifs_read_page_from_socket(struct TCP_Server_Info *server, struct page *page,
+ 	return cifs_readv_from_socket(server, &smb_msg);
  }
- EXPORT_SYMBOL(iov_iter_get_pages_alloc);
  
-+/**
-+ * extract_iter_to_iter - Extract the pages from one iterator into another
-+ * @orig: The original iterator
-+ * @orig_len: The amount of iterator to copy
-+ * @new: The iterator to be set up
-+ * @_bv: Where to store the allocated bvec table pointer, if allocated
-+ *
-+ * Extract the page fragments from the given amount of the source iterator and
-+ * build up a second iterator that refers to all of those bits.  This allows
-+ * the original iterator to disposed of.
-+ *
-+ * If a bvec array is created, the number of pages in the array is returned and
-+ * a pointer to the array is saved into *@_bv;
-+ */
-+ssize_t extract_iter_to_iter(struct iov_iter *orig,
-+			     size_t orig_len,
-+			     struct iov_iter *new,
-+			     struct bio_vec **_bv)
++int
++cifs_read_iter_from_socket(struct TCP_Server_Info *server, struct iov_iter *iter,
++			   unsigned int to_read)
 +{
-+	struct bio_vec *bv = NULL;
-+	struct page **pages;
-+	unsigned int cur_npages;
-+	unsigned int max_pages = iov_iter_npages(orig, INT_MAX);
-+	unsigned int npages = 0;
-+	unsigned int i;
-+	size_t count = orig_len;
-+	ssize_t ret;
-+	size_t bv_size, pg_size;
-+	size_t start;
-+	size_t len;
++	struct msghdr smb_msg;
++	int ret;
 +
-+	*_bv = NULL;
-+
-+	if (iov_iter_is_kvec(orig) || iov_iter_is_discard(orig)) {
-+		*new = *orig;
-+		iov_iter_advance(orig, count);
-+		return 0;
-+	}
-+
-+	bv_size = array_size(max_pages, sizeof(*bv));
-+	bv = kvmalloc(bv_size, GFP_KERNEL);
-+	if (!bv)
-+		return -ENOMEM;
-+
-+	/* Put the page list at the end of the bvec list storage.  bvec
-+	 * elements are larger than page pointers, so as long as we work
-+	 * 0->last, we should be fine.
-+	 */
-+	pg_size = array_size(max_pages, sizeof(*pages));
-+	pages = (void *)bv + bv_size - pg_size;
-+
-+	while (count && npages < max_pages) {
-+		ret = iov_iter_get_pages(orig, pages, count, max_pages - npages,
-+					 &start);
-+		if (ret < 0) {
-+			pr_err("Couldn't get user pages (rc=%zd)\n", ret);
-+			break;
-+		}
-+
-+		if (ret > count) {
-+			pr_err("get_pages rc=%zd more than %zu\n", ret, count);
-+			break;
-+		}
-+
-+		iov_iter_advance(orig, ret);
-+		count -= ret;
-+		ret += start;
-+		cur_npages = DIV_ROUND_UP(ret, PAGE_SIZE);
-+
-+		if (npages + cur_npages > max_pages) {
-+			pr_err("Out of bvec array capacity (%u vs %u)\n",
-+			       npages + cur_npages, max_pages);
-+			break;
-+		}
-+
-+		for (i = 0; i < cur_npages; i++) {
-+			len = ret > PAGE_SIZE ? PAGE_SIZE : ret;
-+			bv[npages + i].bv_page	 = *pages++;
-+			bv[npages + i].bv_offset = start;
-+			bv[npages + i].bv_len	 = len - start;
-+			ret -= len;
-+			start = 0;
-+		}
-+
-+		npages += cur_npages;
-+	}
-+
-+	*_bv = bv;
-+	iov_iter_bvec(new, iov_iter_rw(orig), bv, npages, orig_len - count);
-+	return npages;
++	smb_msg.msg_iter = *iter;
++	if (smb_msg.msg_iter.count > to_read)
++		smb_msg.msg_iter.count = to_read;
++	ret = cifs_readv_from_socket(server, &smb_msg);
++	if (ret > 0)
++		iov_iter_advance(iter, ret);
++	return ret;
 +}
-+EXPORT_SYMBOL(extract_iter_to_iter);
 +
- size_t csum_and_copy_from_iter(void *addr, size_t bytes, __wsum *csum,
- 			       struct iov_iter *i)
+ static bool
+ is_smb_response(struct TCP_Server_Info *server, unsigned char type)
  {
 
 
