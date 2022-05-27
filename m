@@ -2,100 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27149C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 09:04:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B233C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 09:04:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350352AbiE0JE3 (ORCPT
+        id S1344297AbiE0JEg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 05:04:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60744 "EHLO
+        Fri, 27 May 2022 05:04:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350461AbiE0I77 (ORCPT
+        with ESMTP id S1350539AbiE0JAF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 04:59:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E04795D5C0;
-        Fri, 27 May 2022 01:55:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6CC4361CB7;
-        Fri, 27 May 2022 08:55:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47306C385B8;
-        Fri, 27 May 2022 08:55:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653641756;
-        bh=Ve6NfPpdS1r05uyDwxztOFOgYNEeL5kzJRoMP9JvtMs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZY4FmL6y8TdecJTQaoJNhliuhozPzUuSd40UHPGC28C4TsmiizEgo11eqf7ax32j+
-         eVbASixqPL/JkzOB0FM+2zO01u+a8MckK2qpqMAe9CrBX+aO+8UIBXGeeTDaMSdvQq
-         b/rNhxOlG5SdrKzhawc8ywIgbmu3Yyylv/7TVc1w=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Jann Horn <jannh@google.com>,
-        Eric Biggers <ebiggers@google.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.17 020/111] random: remove outdated INT_MAX >> 6 check in urandom_read()
-Date:   Fri, 27 May 2022 10:48:52 +0200
-Message-Id: <20220527084822.188475049@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084819.133490171@linuxfoundation.org>
-References: <20220527084819.133490171@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Fri, 27 May 2022 05:00:05 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D3E9F06;
+        Fri, 27 May 2022 01:56:12 -0700 (PDT)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4L8dsT26d5zbbs5;
+        Fri, 27 May 2022 16:54:37 +0800 (CST)
+Received: from dggpemm500018.china.huawei.com (7.185.36.111) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 27 May 2022 16:56:10 +0800
+Received: from localhost.localdomain (10.175.112.125) by
+ dggpemm500018.china.huawei.com (7.185.36.111) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 27 May 2022 16:56:10 +0800
+From:   keliu <liuke94@huawei.com>
+To:     <jic23@kernel.org>, <lars@metafoo.de>, <linux-iio@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     keliu <liuke94@huawei.com>
+Subject: [PATCH] iio:  Directly use ida_alloc()/free()
+Date:   Fri, 27 May 2022 09:17:39 +0000
+Message-ID: <20220527091739.2949426-1-liuke94@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.112.125]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500018.china.huawei.com (7.185.36.111)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+Use ida_alloc()/ida_free() instead of deprecated
+ida_simple_get()/ida_simple_remove() .
 
-commit 434537ae54ad37e93555de21b6ac8133d6d773a9 upstream.
-
-In 79a8468747c5 ("random: check for increase of entropy_count because of
-signed conversion"), a number of checks were added around what values
-were passed to account(), because account() was doing fancy fixed point
-fractional arithmetic, and a user had some ability to pass large values
-directly into it. One of things in that commit was limiting those values
-to INT_MAX >> 6. The first >> 3 was for bytes to bits, and the next >> 3
-was for bits to 1/8 fractional bits.
-
-However, for several years now, urandom reads no longer touch entropy
-accounting, and so this check serves no purpose. The current flow is:
-
-urandom_read_nowarn()-->get_random_bytes_user()-->chacha20_block()
-
-Of course, we don't want that size_t to be truncated when adding it into
-the ssize_t. But we arrive at urandom_read_nowarn() in the first place
-either via ordinary fops, which limits reads to MAX_RW_COUNT, or via
-getrandom() which limits reads to INT_MAX.
-
-Cc: Theodore Ts'o <tytso@mit.edu>
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
-Reviewed-by: Jann Horn <jannh@google.com>
-Reviewed-by: Eric Biggers <ebiggers@google.com>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: keliu <liuke94@huawei.com>
 ---
- drivers/char/random.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/iio/industrialio-core.c    | 6 +++---
+ drivers/iio/industrialio-trigger.c | 6 +++---
+ 2 files changed, 6 insertions(+), 6 deletions(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -1286,9 +1286,8 @@ void rand_initialize_disk(struct gendisk
- static ssize_t urandom_read_nowarn(struct file *file, char __user *buf,
- 				   size_t nbytes, loff_t *ppos)
- {
--	int ret;
-+	ssize_t ret;
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index e1ed44dec2ab..41daa10cd63d 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -1618,7 +1618,7 @@ static void iio_dev_release(struct device *device)
  
--	nbytes = min_t(size_t, nbytes, INT_MAX >> 6);
- 	ret = get_random_bytes_user(buf, nbytes);
- 	trace_urandom_read(nbytes, input_pool.entropy_count);
+ 	iio_device_detach_buffers(indio_dev);
+ 
+-	ida_simple_remove(&iio_ida, iio_dev_opaque->id);
++	ida_free(&iio_ida, iio_dev_opaque->id);
+ 	kfree(iio_dev_opaque);
+ }
+ 
+@@ -1660,7 +1660,7 @@ struct iio_dev *iio_device_alloc(struct device *parent, int sizeof_priv)
+ 	mutex_init(&iio_dev_opaque->info_exist_lock);
+ 	INIT_LIST_HEAD(&iio_dev_opaque->channel_attr_list);
+ 
+-	iio_dev_opaque->id = ida_simple_get(&iio_ida, 0, 0, GFP_KERNEL);
++	iio_dev_opaque->id = ida_alloc(&iio_ida, GFP_KERNEL);
+ 	if (iio_dev_opaque->id < 0) {
+ 		/* cannot use a dev_err as the name isn't available */
+ 		pr_err("failed to get device id\n");
+@@ -1669,7 +1669,7 @@ struct iio_dev *iio_device_alloc(struct device *parent, int sizeof_priv)
+ 	}
+ 
+ 	if (dev_set_name(&indio_dev->dev, "iio:device%d", iio_dev_opaque->id)) {
+-		ida_simple_remove(&iio_ida, iio_dev_opaque->id);
++		ida_free(&iio_ida, iio_dev_opaque->id);
+ 		kfree(iio_dev_opaque);
+ 		return NULL;
+ 	}
+diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
+index f504ed351b3e..6eb9b721676e 100644
+--- a/drivers/iio/industrialio-trigger.c
++++ b/drivers/iio/industrialio-trigger.c
+@@ -71,7 +71,7 @@ int __iio_trigger_register(struct iio_trigger *trig_info,
+ 
+ 	trig_info->owner = this_mod;
+ 
+-	trig_info->id = ida_simple_get(&iio_trigger_ida, 0, 0, GFP_KERNEL);
++	trig_info->id = ida_alloc(&iio_trigger_ida, GFP_KERNEL);
+ 	if (trig_info->id < 0)
+ 		return trig_info->id;
+ 
+@@ -98,7 +98,7 @@ int __iio_trigger_register(struct iio_trigger *trig_info,
+ 	mutex_unlock(&iio_trigger_list_lock);
+ 	device_del(&trig_info->dev);
+ error_unregister_id:
+-	ida_simple_remove(&iio_trigger_ida, trig_info->id);
++	ida_free(&iio_trigger_ida, trig_info->id);
  	return ret;
-
+ }
+ EXPORT_SYMBOL(__iio_trigger_register);
+@@ -109,7 +109,7 @@ void iio_trigger_unregister(struct iio_trigger *trig_info)
+ 	list_del(&trig_info->list);
+ 	mutex_unlock(&iio_trigger_list_lock);
+ 
+-	ida_simple_remove(&iio_trigger_ida, trig_info->id);
++	ida_free(&iio_trigger_ida, trig_info->id);
+ 	/* Possible issue in here */
+ 	device_del(&trig_info->dev);
+ }
+-- 
+2.25.1
 
