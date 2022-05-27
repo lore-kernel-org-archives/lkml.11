@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BC69C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:48:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0E66C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:48:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351860AbiE0LsO (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 07:48:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58540 "EHLO
+        id S232184AbiE0Ls2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 07:48:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352422AbiE0Lp5 (ORCPT
+        with ESMTP id S1352524AbiE0LqE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:45:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99D141498C4;
-        Fri, 27 May 2022 04:42:34 -0700 (PDT)
+        Fri, 27 May 2022 07:46:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4CA31498D1;
+        Fri, 27 May 2022 04:42:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C1A6661CDB;
-        Fri, 27 May 2022 11:42:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE951C385A9;
-        Fri, 27 May 2022 11:42:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 65B15B824E0;
+        Fri, 27 May 2022 11:42:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8611C385A9;
+        Fri, 27 May 2022 11:42:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653651752;
-        bh=6cEbCemrHSo5uu84Ne4VBpDDNncNXsxqhB5T/ss4p+Q=;
+        s=korg; t=1653651764;
+        bh=AkmbyX7kj5nPzG+eUDjqwRv35ba6cPqLkRss36eEYDQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hfHZoJYTwRSwIVCuVfORbKP0pfrcSfLo80YxoIXV9rGAVE6aHGoEfEQ/VyS7Mu4xW
-         JBJ0c6M0sDwE+zVZt9ExrfR+GLTZ3Hjg30oXJRvRBeBQ3psFJkrC9g8ptHK4o5YO0w
-         3hNKaWtyBXFPKWv1O92hkaKYRd+kumSYCaxgjLVY=
+        b=YZkbgQSLUoPYqzsHpUxQ7ANaaXO29vjLMjYNjQhFRZoWSG9xbgIynvpUvN37oZ6u+
+         I6YLQujgZr4dtugg16fIt7COuhu/Eb46BJS3M4QAyrIu3QTYElmuaEJTR8Zp6v1/8r
+         RSDcMs4qxjHl2lf4GR+x4niMJ51BM7QC4goOUh+8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.10 055/163] random: only call crng_finalize_init() for primary_crng
-Date:   Fri, 27 May 2022 10:48:55 +0200
-Message-Id: <20220527084835.705561080@linuxfoundation.org>
+        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org
+Subject: [PATCH 5.17 080/111] x86/tsc: Use fallback for random_get_entropy() instead of zero
+Date:   Fri, 27 May 2022 10:49:52 +0200
+Message-Id: <20220527084830.796831598@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
-References: <20220527084828.156494029@linuxfoundation.org>
+In-Reply-To: <20220527084819.133490171@linuxfoundation.org>
+References: <20220527084819.133490171@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,65 +50,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dominik Brodowski <linux@dominikbrodowski.net>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 9d5505f1eebeca778074a0260ed077fd85f8792c upstream.
+commit 3bd4abc07a267e6a8b33d7f8717136e18f921c53 upstream.
 
-crng_finalize_init() returns instantly if it is called for another pool
-than primary_crng. The test whether crng_finalize_init() is still required
-can be moved to the relevant caller in crng_reseed(), and
-crng_need_final_init can be reset to false if crng_finalize_init() is
-called with workqueues ready. Then, no previous callsite will call
-crng_finalize_init() unless it is needed, and we can get rid of the
-superfluous function parameter.
+In the event that random_get_entropy() can't access a cycle counter or
+similar, falling back to returning 0 is suboptimal. Instead, fallback
+to calling random_get_entropy_fallback(), which isn't extremely high
+precision or guaranteed to be entropic, but is certainly better than
+returning zero all the time.
 
-Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
+If CONFIG_X86_TSC=n, then it's possible for the kernel to run on systems
+without RDTSC, such as 486 and certain 586, so the fallback code is only
+required for that case.
+
+As well, fix up both the new function and the get_cycles() function from
+which it was derived to use cpu_feature_enabled() rather than
+boot_cpu_has(), and use !IS_ENABLED() instead of #ifndef.
+
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: x86@kernel.org
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ arch/x86/include/asm/timex.h |    9 +++++++++
+ arch/x86/include/asm/tsc.h   |    7 +++----
+ 2 files changed, 12 insertions(+), 4 deletions(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -800,10 +800,8 @@ static void __init crng_initialize_prima
- 	primary_crng.init_time = jiffies - CRNG_RESEED_INTERVAL - 1;
- }
+--- a/arch/x86/include/asm/timex.h
++++ b/arch/x86/include/asm/timex.h
+@@ -5,6 +5,15 @@
+ #include <asm/processor.h>
+ #include <asm/tsc.h>
  
--static void crng_finalize_init(struct crng_state *crng)
-+static void crng_finalize_init(void)
- {
--	if (crng != &primary_crng || crng_init >= 2)
--		return;
- 	if (!system_wq) {
- 		/* We can't call numa_crng_init until we have workqueues,
- 		 * so mark this for processing later. */
-@@ -814,6 +812,7 @@ static void crng_finalize_init(struct cr
- 	invalidate_batched_entropy();
- 	numa_crng_init();
- 	crng_init = 2;
-+	crng_need_final_init = false;
- 	process_random_ready_list();
- 	wake_up_interruptible(&crng_init_wait);
- 	kill_fasync(&fasync, SIGIO, POLL_IN);
-@@ -980,7 +979,8 @@ static void crng_reseed(struct crng_stat
- 	memzero_explicit(&buf, sizeof(buf));
- 	WRITE_ONCE(crng->init_time, jiffies);
- 	spin_unlock_irqrestore(&crng->lock, flags);
--	crng_finalize_init(crng);
-+	if (crng == &primary_crng && crng_init < 2)
-+		crng_finalize_init();
- }
++static inline unsigned long random_get_entropy(void)
++{
++	if (!IS_ENABLED(CONFIG_X86_TSC) &&
++	    !cpu_feature_enabled(X86_FEATURE_TSC))
++		return random_get_entropy_fallback();
++	return rdtsc();
++}
++#define random_get_entropy random_get_entropy
++
+ /* Assume we use the PIT time source for the clock tick */
+ #define CLOCK_TICK_RATE		PIT_TICK_RATE
  
- static void _extract_crng(struct crng_state *crng, u8 out[CHACHA_BLOCK_SIZE])
-@@ -1697,7 +1697,7 @@ int __init rand_initialize(void)
+--- a/arch/x86/include/asm/tsc.h
++++ b/arch/x86/include/asm/tsc.h
+@@ -20,13 +20,12 @@ extern void disable_TSC(void);
+ 
+ static inline cycles_t get_cycles(void)
  {
- 	init_std_data();
- 	if (crng_need_final_init)
--		crng_finalize_init(&primary_crng);
-+		crng_finalize_init();
- 	crng_initialize_primary();
- 	crng_global_init_time = jiffies;
- 	if (ratelimit_disable) {
+-#ifndef CONFIG_X86_TSC
+-	if (!boot_cpu_has(X86_FEATURE_TSC))
++	if (!IS_ENABLED(CONFIG_X86_TSC) &&
++	    !cpu_feature_enabled(X86_FEATURE_TSC))
+ 		return 0;
+-#endif
+-
+ 	return rdtsc();
+ }
++#define get_cycles get_cycles
+ 
+ extern struct system_counterval_t convert_art_to_tsc(u64 art);
+ extern struct system_counterval_t convert_art_ns_to_tsc(u64 art_ns);
 
 
