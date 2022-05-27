@@ -2,111 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ABB6C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 06:08:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 719A4C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 06:09:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241311AbiE0GIW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 02:08:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54644 "EHLO
+        id S244144AbiE0GJg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 02:09:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231739AbiE0GIR (ORCPT
+        with ESMTP id S231739AbiE0GJe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 02:08:17 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0E2E13F00
-        for <linux-kernel@vger.kernel.org>; Thu, 26 May 2022 23:08:15 -0700 (PDT)
-Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.53])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4L8Z7g2rQmz1JBcS;
-        Fri, 27 May 2022 14:06:39 +0800 (CST)
-Received: from dggpemm500018.china.huawei.com (7.185.36.111) by
- dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 27 May 2022 14:08:12 +0800
-Received: from localhost.localdomain (10.175.112.125) by
- dggpemm500018.china.huawei.com (7.185.36.111) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 27 May 2022 14:08:11 +0800
-From:   keliu <liuke94@huawei.com>
-To:     <TheSven73@gmail.com>, <gregkh@linuxfoundation.org>,
-        <linux-staging@lists.linux.dev>, <linux-kernel@vger.kernel.org>
-CC:     keliu <liuke94@huawei.com>
-Subject: [PATCH] staging: fieldbus: Directly use ida_alloc()/free()
-Date:   Fri, 27 May 2022 06:29:38 +0000
-Message-ID: <20220527062938.2356319-1-liuke94@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 27 May 2022 02:09:34 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3FD2EC30F;
+        Thu, 26 May 2022 23:09:32 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: usama.anjum)
+        with ESMTPSA id 9A8821F4586E
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1653631770;
+        bh=QDvkzQfshs+H3XbXXQFYpToDQlyGSs72CHoJHIP8Ex8=;
+        h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
+        b=Ox3jhkJFETCcFw2A5gzziNeeEFvqPo2K5bhLw7g2CjmfftBbDBfGiSOBTAqieLons
+         +W9aPrp5pIFZcNqqExYU3fTnJi1cgQRS/IvveT0k5dEs6oKzTN8tesBfZjQV0fvMb6
+         /UABjhP6xrLsLYfBVS4OyYyuCO2kMOUgr4zULsx8xUeRHDWG9HVyqJTqxD0tVT3Yji
+         eFzqBhE6dFymf10vrcIgz7eYQeoxT2EXLopPWs4PJIJoNZp8/CN7y9ZqMzsDR3oIoj
+         whRBydsQHl3XvJja6SWAYXCzpYEfcx3Ao5Eb8D4cor0Mu50ScN4o/IlO9yvKFaEaKs
+         JKmkixSlwOatA==
+Message-ID: <193aad3f-82dd-76a8-a44c-5000ab203dc2@collabora.com>
+Date:   Fri, 27 May 2022 11:09:23 +0500
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.112.125]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpemm500018.china.huawei.com (7.185.36.111)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Cc:     usama.anjum@collabora.com, Christian Kellner <ckellner@redhat.com>,
+        Alexander Larsson <alexl@redhat.com>,
+        Alberto Ruiz <aruiz@redhat.com>,
+        Peter Jones <pjones@redhat.com>,
+        Lennart Poettering <lennart@poettering.net>,
+        Colin Walters <walters@verbum.org>,
+        Chung-Chiang Cheng <cccheng@synology.com>,
+        OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>,
+        Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH v3 3/3] selftests/filesystems: add a vfat RENAME_EXCHANGE
+ test
+Content-Language: en-US
+To:     Javier Martinez Canillas <javierm@redhat.com>,
+        linux-kernel@vger.kernel.org
+References: <20220526134119.242182-1-javierm@redhat.com>
+ <20220526134119.242182-4-javierm@redhat.com>
+From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
+In-Reply-To: <20220526134119.242182-4-javierm@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use ida_alloc()/ida_free() instead of deprecated
-ida_simple_get()/ida_simple_remove() .
+On 5/26/22 6:41 PM, Javier Martinez Canillas wrote:
+> Add a test for the renameat2 RENAME_EXCHANGE support in vfat, but split it
+> in a tool that just does the rename exchange and a script that is run by
+> the kselftests framework on `make TARGETS="filesystems/fat" kselftest`.
+> 
+> That way the script can be easily extended to test other file operations.
+> 
+> The script creates a 1 MiB disk image, that is then formated with a vfat
+> filesystem and mounted using a loop device. That way all file operations
+> are done on an ephemeral filesystem.
+> 
+> Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+Acked-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
 
-Signed-off-by: keliu <liuke94@huawei.com>
----
- drivers/staging/fieldbus/anybuss/arcx-anybus.c | 6 +++---
- drivers/staging/fieldbus/dev_core.c            | 4 ++--
- 2 files changed, 5 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/staging/fieldbus/anybuss/arcx-anybus.c b/drivers/staging/fieldbus/anybuss/arcx-anybus.c
-index 9af2e63050d1..381d710aa6ce 100644
---- a/drivers/staging/fieldbus/anybuss/arcx-anybus.c
-+++ b/drivers/staging/fieldbus/anybuss/arcx-anybus.c
-@@ -282,7 +282,7 @@ static int controller_probe(struct platform_device *pdev)
- 		}
- 	}
- 
--	id = ida_simple_get(&controller_index_ida, 0, 0, GFP_KERNEL);
-+	id = ida_alloc(&controller_index_ida, GFP_KERNEL);
- 	if (id < 0) {
- 		err = id;
- 		goto out_reset;
-@@ -315,7 +315,7 @@ static int controller_probe(struct platform_device *pdev)
- out_dev:
- 	put_device(cd->class_dev);
- out_ida:
--	ida_simple_remove(&controller_index_ida, id);
-+	ida_free(&controller_index_ida, id);
- out_reset:
- 	gpiod_set_value_cansleep(cd->reset_gpiod, 1);
- 	return err;
-@@ -327,7 +327,7 @@ static int controller_remove(struct platform_device *pdev)
- 	int id = cd->class_dev->id;
- 
- 	device_unregister(cd->class_dev);
--	ida_simple_remove(&controller_index_ida, id);
-+	ida_free(&controller_index_ida, id);
- 	gpiod_set_value_cansleep(cd->reset_gpiod, 1);
- 	return 0;
- }
-diff --git a/drivers/staging/fieldbus/dev_core.c b/drivers/staging/fieldbus/dev_core.c
-index 5aab734606ea..b5e55890001e 100644
---- a/drivers/staging/fieldbus/dev_core.c
-+++ b/drivers/staging/fieldbus/dev_core.c
-@@ -251,7 +251,7 @@ static void __fieldbus_dev_unregister(struct fieldbus_dev *fb)
- 		return;
- 	device_destroy(&fieldbus_class, fb->cdev.dev);
- 	cdev_del(&fb->cdev);
--	ida_simple_remove(&fieldbus_ida, fb->id);
-+	ida_free(&fieldbus_ida, fb->id);
- }
- 
- void fieldbus_dev_unregister(struct fieldbus_dev *fb)
-@@ -294,7 +294,7 @@ static int __fieldbus_dev_register(struct fieldbus_dev *fb)
- err_dev_create:
- 	cdev_del(&fb->cdev);
- err_cdev:
--	ida_simple_remove(&fieldbus_ida, fb->id);
-+	ida_free(&fieldbus_ida, fb->id);
- 	return err;
- }
- 
 -- 
-2.25.1
-
+Muhammad Usama Anjum
