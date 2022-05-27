@@ -2,291 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90194C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 10:06:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA756C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 10:07:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350884AbiE0KFD (ORCPT
+        id S1350804AbiE0KHI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 06:05:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51864 "EHLO
+        Fri, 27 May 2022 06:07:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350791AbiE0KE4 (ORCPT
+        with ESMTP id S1350831AbiE0KHD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 06:04:56 -0400
-Received: from conuserg-08.nifty.com (conuserg-08.nifty.com [210.131.2.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F28B1116EA;
-        Fri, 27 May 2022 03:04:46 -0700 (PDT)
-Received: from grover.sesame (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
-        by conuserg-08.nifty.com with ESMTP id 24RA2hPU029808;
-        Fri, 27 May 2022 19:02:48 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-08.nifty.com 24RA2hPU029808
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1653645768;
-        bh=63AM9Y7KFJuXBvKXOmj6kJdz+ZNVbwHrp42ZdIFptX0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RW1wttQF3Oea8ArmryxA7c5OlRphy4XLSdTGnKXoDhQDvP5OS0CvMg6u22wNMneYx
-         MmO+ShRV77S1L7Kw29gY8hdiRenlRehQa9VP/A7EW8Q74MIo5gh55tpvyRw/EjcNDt
-         FtZa4M+gKZRkV1J7Xeaw1CpPiJZPNC+qWSvPi6SIOT+q7f3UQqnuWYNdCbUsSk7eeK
-         VXAsUTwKMj0SR86wH6e551ECa1syR07zSaD6957dxD4pxsoSxokifNvrkHppOu8zAW
-         mngXMEsnyFXgvcZ5tdQ8cgd6TbzUkBzBfMsFXGJzFu11tESBdN4bw0fStXUmgTILtj
-         rmlIrYn4jxCTQ==
-X-Nifty-SrcIP: [133.32.177.133]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     linux-kbuild@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>, llvm@lists.linux.dev,
-        Helge Deller <deller@gmx.de>, linux-parisc@vger.kernel.org,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Sedat Dilek <sedat.dilek@gmail.com>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Tom Rix <trix@redhat.com>
-Subject: [PATCH v7 4/8] kbuild: check static EXPORT_SYMBOL* by script instead of modpost
-Date:   Fri, 27 May 2022 19:01:51 +0900
-Message-Id: <20220527100155.1996314-5-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220527100155.1996314-1-masahiroy@kernel.org>
-References: <20220527100155.1996314-1-masahiroy@kernel.org>
+        Fri, 27 May 2022 06:07:03 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 679208FD41
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 03:07:00 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id l20-20020a17090a409400b001dd2a9d555bso3972301pjg.0
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 03:07:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oq3zK8XqR9nMwWZwXePmBSIgomGYIVajuwM2hdD7Hjo=;
+        b=K/zdyJneFK1xeK2FB1J37H0n37VhRUlG64dLbnJeI/um5dho1xi/cHqIe/2fKLKEVM
+         QIC3W9YGc31R+RuGJ/MJ960dYEsi2Rr8McFBSvovtcKWlVpn+I8IjyNJEkfYjxIs3P/l
+         Z4uKwckiFEsrS7KAP7o6HpwX5Lg2CLkgrUHlouJeWDkLsDS9pNyN4Px4ZICdd/nahFFu
+         LWCkC6k1gbtfU8WZL/3DMCGLeC8gXymf7bVA9dIGDnWLAh6XfnreH+moluFWWYf4CRWO
+         zlm86sDREegQYFNsZiIRMp7uB7+N6/OgeBq1UjYxOpby0pGmNsZF8hEVVuwyJ5S+WHD+
+         vzTg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oq3zK8XqR9nMwWZwXePmBSIgomGYIVajuwM2hdD7Hjo=;
+        b=HZU4KtKb9ySTHXA0fVQa2G+TiLul2N5c5v67JWOTJVxgAX8pc1fYwUWHDQHatvQw5F
+         t2ag2UbCiv+fNQXIDpwLcvF3vLOdCBAa7IN71/33WtrUCD2L7GFal3tXnAw/hPOuXdBN
+         DO5kkTYqaa1jkcpcjp/N/2dwaP/6cm8RqdGU+2R8ev/mqwUqVGu7u1tQy717PflRMNNW
+         IS2pi7yc+r+FWhlFapWiJqpHq34Kj7EdEqRSiHlT9Erhr+Vlr9Ct9l824w3NcGGYq2MX
+         q5HbJzk3F3jUy03NziXCHxLNG6IkkOWOwmjE+3aG3rqcgOXU/ziybM9JD5L6zEdRF9X4
+         W9zg==
+X-Gm-Message-State: AOAM533dUClccWAiX5SPZnPh1tXQrpZE0G6OSAtFZNk/bqtHOp/bUnck
+        0Xhyf3Se8xiZKjBID0ye+rM=
+X-Google-Smtp-Source: ABdhPJwNM81uvxUW12Ps2OhrOu0tnOnxN00PMC2hAqI2+tTt8+glgHOcyWMuMVFXvCdlRDOg5DwAmQ==
+X-Received: by 2002:a17:902:d549:b0:163:7f27:f748 with SMTP id z9-20020a170902d54900b001637f27f748mr6584533plf.116.1653646019672;
+        Fri, 27 May 2022 03:06:59 -0700 (PDT)
+Received: from localhost.localdomain (47-72-206-164.dsl.dyn.ihug.co.nz. [47.72.206.164])
+        by smtp.gmail.com with ESMTPSA id z187-20020a6233c4000000b0050dc76281aesm3078104pfz.136.2022.05.27.03.06.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 27 May 2022 03:06:59 -0700 (PDT)
+From:   Barry Song <21cnbao@gmail.com>
+To:     akpm@linux-foundation.org, catalin.marinas@arm.com,
+        will@kernel.org, linux-mm@kvack.org
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        zhangshiming@oppo.com, guojian@oppo.com, hanchuanhua@oppo.com,
+        Barry Song <v-songbaohua@oppo.com>,
+        "Huang, Ying" <ying.huang@intel.com>,
+        Minchan Kim <minchan@kernel.org>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Hugh Dickins <hughd@google.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        Steven Price <steven.price@arm.com>,
+        Yang Shi <shy828301@gmail.com>
+Subject: [PATCH v2] arm64: enable THP_SWAP for arm64
+Date:   Fri, 27 May 2022 22:06:44 +1200
+Message-Id: <20220527100644.293717-1-21cnbao@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The 'static' specifier and EXPORT_SYMBOL() are an odd combination.
+From: Barry Song <v-songbaohua@oppo.com>
 
-Commit 15bfc2348d54 ("modpost: check for static EXPORT_SYMBOL*
-functions") tried to detect it, but this check has false negatives.
+THP_SWAP has been proved to improve the swap throughput significantly
+on x86_64 according to commit bd4c82c22c367e ("mm, THP, swap: delay
+splitting THP after swapped out").
+As long as arm64 uses 4K page size, it is quite similar with x86_64
+by having 2MB PMD THP. So we are going to get similar improvement.
+For other page sizes such as 16KB and 64KB, PMD might be too large.
+Negative side effects such as IO latency might be a problem. Thus,
+we can only safely enable the counterpart of X86_64.
+A corner case is that MTE has an assumption that only base pages
+can be swapped. We won't enable THP_SWP for ARM64 hardware with
+MTE support until MTE is re-arched.
 
-Here is the sample code.
-
-  Makefile:
-
-    obj-y += foo1.o foo2.o
-
-  foo1.c:
-
-    #include <linux/export.h>
-    static void foo(void) {}
-    EXPORT_SYMBOL(foo);
-
-  foo2.c:
-
-    void foo(void) {}
-
-foo1.c exports the static symbol 'foo', but modpost cannot catch it
-because it is fooled by foo2.c, which has a global symbol with the
-same name.
-
-s->is_static is cleared if a global symbol with the same name is found
-somewhere, but EXPORT_SYMBOL() and the global symbol do not necessarily
-belong to the same compilation unit.
-
-This check should be done per compilation unit, but I do not know how
-to do it in modpost. modpost runs against vmlinux.o or modules, which
-merges multiple objects, then forgets their origin.
-
-modpost cannot parse individual objects because they may not be ELF but
-LLVM IR when CONFIG_LTO_CLANG=y.
-
-Add a simple bash script to parse the output from ${NM}. This works for
-CONFIG_LTO_CLANG=y because llvm-nm can dump symbols of LLVM IR files.
-
-Revert 15bfc2348d54.
-
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
-Tested-by: Nathan Chancellor <nathan@kernel.org>
-Tested-by: Sedat Dilek <sedat.dilek@gmail.com> # LLVM-14 (x86-64)
+Cc: "Huang, Ying" <ying.huang@intel.com>
+Cc: Minchan Kim <minchan@kernel.org>
+Cc: Johannes Weiner <hannes@cmpxchg.org>
+Cc: Hugh Dickins <hughd@google.com>
+Cc: Andrea Arcangeli <aarcange@redhat.com>
+Cc: Anshuman Khandual <anshuman.khandual@arm.com>
+Cc: Steven Price <steven.price@arm.com>
+Cc: Yang Shi <shy828301@gmail.com>
+Signed-off-by: Barry Song <v-songbaohua@oppo.com>
 ---
+ arch/arm64/Kconfig               |  1 +
+ arch/arm64/include/asm/pgtable.h |  2 ++
+ include/linux/huge_mm.h          | 12 ++++++++++++
+ mm/swap_slots.c                  |  2 +-
+ 4 files changed, 16 insertions(+), 1 deletion(-)
 
-Changes in v7:
-  - Fix sparc64 build (skip the line if the number of fields is less than 3)
-
-Changes in v5:
-  - Add more comments in the script
-
-Changes in v4:
-  - New patch
-
- scripts/Makefile.build     |  4 +++
- scripts/check-local-export | 65 ++++++++++++++++++++++++++++++++++++++
- scripts/mod/modpost.c      | 28 +---------------
- 3 files changed, 70 insertions(+), 27 deletions(-)
- create mode 100755 scripts/check-local-export
-
-diff --git a/scripts/Makefile.build b/scripts/Makefile.build
-index 23e1fb19f9ad..0135b4e7f78b 100644
---- a/scripts/Makefile.build
-+++ b/scripts/Makefile.build
-@@ -248,9 +248,12 @@ cmd_gen_ksymdeps = \
- 	$(CONFIG_SHELL) $(srctree)/scripts/gen_ksymdeps.sh $@ >> $(dot-target).cmd
- endif
+diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+index a4968845e67f..5306009df2dc 100644
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -101,6 +101,7 @@ config ARM64
+ 	select ARCH_WANT_HUGETLB_PAGE_OPTIMIZE_VMEMMAP
+ 	select ARCH_WANT_LD_ORPHAN_WARN
+ 	select ARCH_WANTS_NO_INSTR
++	select ARCH_WANTS_THP_SWAP if ARM64_4K_PAGES
+ 	select ARCH_HAS_UBSAN_SANITIZE_ALL
+ 	select ARM_AMBA
+ 	select ARM_ARCH_TIMER
+diff --git a/arch/arm64/include/asm/pgtable.h b/arch/arm64/include/asm/pgtable.h
+index 0b6632f18364..06076139c72c 100644
+--- a/arch/arm64/include/asm/pgtable.h
++++ b/arch/arm64/include/asm/pgtable.h
+@@ -45,6 +45,8 @@
+ 	__flush_tlb_range(vma, addr, end, PUD_SIZE, false, 1)
+ #endif /* CONFIG_TRANSPARENT_HUGEPAGE */
  
-+cmd_check_local_export = $(srctree)/scripts/check-local-export $@
++#define arch_thp_swp_supported !system_supports_mte
 +
- define rule_cc_o_c
- 	$(call cmd_and_fixdep,cc_o_c)
- 	$(call cmd,gen_ksymdeps)
-+	$(call cmd,check_local_export)
- 	$(call cmd,checksrc)
- 	$(call cmd,checkdoc)
- 	$(call cmd,gen_objtooldep)
-@@ -261,6 +264,7 @@ endef
- define rule_as_o_S
- 	$(call cmd_and_fixdep,as_o_S)
- 	$(call cmd,gen_ksymdeps)
-+	$(call cmd,check_local_export)
- 	$(call cmd,gen_objtooldep)
- 	$(call cmd,gen_symversions_S)
- endef
-diff --git a/scripts/check-local-export b/scripts/check-local-export
-new file mode 100755
-index 000000000000..017119d89cd2
---- /dev/null
-+++ b/scripts/check-local-export
-@@ -0,0 +1,65 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0-only
-+#
-+# Copyright (C) 2022 Masahiro Yamada <masahiroy@kernel.org>
-+#
-+# Exit with error if a local exported symbol is found.
-+# EXPORT_SYMBOL should be used for global symbols.
-+
-+set -e
-+
-+declare -A symbol_types
-+declare -a export_symbols
-+
-+exit_code=0
-+
-+while read value type name
-+do
-+	# Skip the number of fields is less than 3.
-+	#
-+	# case 1)
-+	#   For undefined symbols, the first field (value) is empty.
-+	#   The outout looks like this:
-+	#     "                 U _printk"
-+	#   It is unneeded to record undefined symbols.
-+	#
-+	# case 2)
-+	#   For Clang LTO, llvm-nm outputs a line with type 't' but empty name:
-+	#     "---------------- t"
-+	if [[ -z ${name} ]]; then
-+		continue
-+	fi
-+
-+	# save (name, type) in the associative array
-+	symbol_types[${name}]=${type}
-+
-+	# append the exported symbol to the array
-+	if [[ ${name} == __ksymtab_* ]]; then
-+		export_symbols+=(${name#__ksymtab_})
-+	fi
-+
-+	# If there is no symbol in the object, ${NM} (both GNU nm and llvm-nm)
-+	# shows 'no symbols' diagnostic (but exits with 0). It is harmless and
-+	# hidden by '2>/dev/null'. However, it suppresses real error messages
-+	# as well. Add a hand-crafted error message here.
-+	#
-+	# Use --quiet instead of 2>/dev/null when we upgrade the minimum version
-+	# of binutils to 2.37, llvm to 13.0.0.
-+	#
-+	# Then, the following line will be really simple:
-+	#   done < <(${NM} --quiet ${1})
-+done < <(${NM} ${1} 2>/dev/null || { echo "${0}: ${NM} failed" >&2; false; } )
-+
-+# Catch error in the process substitution
-+wait $!
-+
-+for name in "${export_symbols[@]}"
-+do
-+	# nm(3) says "If lowercase, the symbol is usually local"
-+	if [[ ${symbol_types[$name]} =~ [a-z] ]]; then
-+		echo "$@: error: local symbol '${name}' was exported" >&2
-+		exit_code=1
-+	fi
-+done
-+
-+exit ${exit_code}
-diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index e74224a6a8e8..9269735f85c5 100644
---- a/scripts/mod/modpost.c
-+++ b/scripts/mod/modpost.c
-@@ -212,7 +212,6 @@ struct symbol {
- 	unsigned int crc;
- 	bool crc_valid;
- 	bool weak;
--	bool is_static;		/* true if symbol is not global */
- 	bool is_gpl_only;	/* exported by EXPORT_SYMBOL_GPL */
- 	char name[];
- };
-@@ -242,7 +241,7 @@ static struct symbol *alloc_symbol(const char *name)
- 
- 	memset(s, 0, sizeof(*s));
- 	strcpy(s->name, name);
--	s->is_static = true;
-+
- 	return s;
+ /*
+  * Outside of a few very special situations (e.g. hibernation), we always
+  * use broadcast TLB invalidation instructions, therefore a spurious page
+diff --git a/include/linux/huge_mm.h b/include/linux/huge_mm.h
+index de29821231c9..4ddaf6ad73ef 100644
+--- a/include/linux/huge_mm.h
++++ b/include/linux/huge_mm.h
+@@ -461,4 +461,16 @@ static inline int split_folio_to_list(struct folio *folio,
+ 	return split_huge_page_to_list(&folio->page, list);
  }
  
-@@ -2064,20 +2063,6 @@ static void read_symbols(const char *modname)
- 					     sym_get_data(&info, sym));
++/*
++ * archs that select ARCH_WANTS_THP_SWAP but don't support THP_SWP due to
++ * limitations in the implementation like arm64 MTE can override this to
++ * false
++ */
++#ifndef arch_thp_swp_supported
++static inline bool arch_thp_swp_supported(void)
++{
++	return true;
++}
++#endif
++
+ #endif /* _LINUX_HUGE_MM_H */
+diff --git a/mm/swap_slots.c b/mm/swap_slots.c
+index 2a65a89b5b4d..10b94d64cc25 100644
+--- a/mm/swap_slots.c
++++ b/mm/swap_slots.c
+@@ -307,7 +307,7 @@ swp_entry_t folio_alloc_swap(struct folio *folio)
+ 	entry.val = 0;
+ 
+ 	if (folio_test_large(folio)) {
+-		if (IS_ENABLED(CONFIG_THP_SWAP))
++		if (IS_ENABLED(CONFIG_THP_SWAP) && arch_thp_swp_supported())
+ 			get_swap_pages(1, &entry, folio_nr_pages(folio));
+ 		goto out;
  	}
- 
--	// check for static EXPORT_SYMBOL_* functions && global vars
--	for (sym = info.symtab_start; sym < info.symtab_stop; sym++) {
--		unsigned char bind = ELF_ST_BIND(sym->st_info);
--
--		if (bind == STB_GLOBAL || bind == STB_WEAK) {
--			struct symbol *s =
--				find_symbol(remove_dot(info.strtab +
--						       sym->st_name));
--
--			if (s)
--				s->is_static = false;
--		}
--	}
--
- 	check_sec_ref(modname, &info);
- 
- 	if (!mod->is_vmlinux) {
-@@ -2507,7 +2492,6 @@ static void read_dump(const char *fname)
- 			mod->from_dump = true;
- 		}
- 		s = sym_add_exported(symname, mod, gpl_only);
--		s->is_static = false;
- 		sym_set_crc(s, crc);
- 		sym_update_namespace(symname, namespace);
- 	}
-@@ -2572,7 +2556,6 @@ int main(int argc, char **argv)
- 	char *missing_namespace_deps = NULL;
- 	char *dump_write = NULL, *files_source = NULL;
- 	int opt;
--	int n;
- 	LIST_HEAD(dump_lists);
- 	struct dump_list *dl, *dl2;
- 
-@@ -2648,15 +2631,6 @@ int main(int argc, char **argv)
- 	if (sec_mismatch_count && !sec_mismatch_warn_only)
- 		error("Section mismatches detected.\n"
- 		      "Set CONFIG_SECTION_MISMATCH_WARN_ONLY=y to allow them.\n");
--	for (n = 0; n < SYMBOL_HASH_SIZE; n++) {
--		struct symbol *s;
--
--		for (s = symbolhash[n]; s; s = s->next) {
--			if (s->is_static)
--				error("\"%s\" [%s] is a static EXPORT_SYMBOL\n",
--				      s->name, s->module->name);
--		}
--	}
- 
- 	if (nr_unresolved > MAX_UNRESOLVED_REPORTS)
- 		warn("suppressed %u unresolved symbol warnings because there were too many)\n",
 -- 
-2.32.0
+2.25.1
 
