@@ -2,54 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29533C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1645BC433EF
 	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 22:25:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351667AbiE0WZm (ORCPT
+        id S1349596AbiE0WZj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 18:25:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57494 "EHLO
+        Fri, 27 May 2022 18:25:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238322AbiE0WZh (ORCPT
+        with ESMTP id S229977AbiE0WZg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 18:25:37 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C245B39818
+        Fri, 27 May 2022 18:25:36 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57ADA3818A
         for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 15:25:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1653690335; x=1685226335;
   h=date:from:to:cc:subject:message-id:mime-version:
    content-transfer-encoding;
-  bh=BhBpZHIZWgMKbLkUH5+JOXI8LyYh9I3a43j7pg0i2j0=;
-  b=eAKGWzxddVDaJdgOVxXqSwcKVIRoNa31UPzEW3BxAmn8AHLXE2h/4Zzj
-   nUV1cxVObzfTqkEsIFTd67/dohnBphpQ+nSpy5+2X3hsPBlzJknC0itzs
-   b/s8VaR8efo7d3UQYqcKuOVVuc8FTheav2ZA+WePOiA/w3rXxSXsysgLM
-   ZTiorY4JCBQ7onB0LxoSPIUKPOd98LtE7XpTdYvzvvEx9uTfzUc5+bunK
-   ofWHdsLDEEIT+oGjT3Iu2WisIcxBI26syVBK/dPvpQGFdhSakuyudGAxK
-   ElZo2sos72wv1ysIZCJXDuP15fKbAss/DoR2+ABXgeZgCPrk21l9wasD0
+  bh=bx388u8MjiE+vam0cGXMUtpLNhSDn9oIYiuIRElVYCk=;
+  b=dasLNd+I6KeIqkItBUd/et+AhLF/RVEGuSC9X4Z8ruFrKVXtqZRVo+Qz
+   DP6pskkNr9O/6JjTYQtRFJXGlmOugIEoUing9rjTmiuPfOtEyKFwRRq8O
+   bwct25ZhhCDyi6hdz73AJql9+HPS8nUod/ufGdEIEx293v03p3OvCtYg5
+   n2JEsQOmz4d7eefxOiU8Ivv6x/zO984bte4KL8KBoGAQ25AgAzBlS6Bxp
+   34ZPTBXzOjioQPk9BJK5xY1zVtwvfnn0MNXutrsLdT3iCmZfXI3C5NKOe
+   yTZaM6hE550WVa1NCVZ2uj1M5DVli6Mf/WARKP0bEPonxcOi1YTYnJruB
    Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10360"; a="256662301"
+X-IronPort-AV: E=McAfee;i="6400,9594,10360"; a="274689258"
 X-IronPort-AV: E=Sophos;i="5.91,256,1647327600"; 
-   d="scan'208";a="256662301"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2022 15:25:35 -0700
+   d="scan'208";a="274689258"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2022 15:25:35 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,256,1647327600"; 
-   d="scan'208";a="747282948"
+   d="scan'208";a="579836220"
 Received: from lkp-server01.sh.intel.com (HELO db63a1be7222) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 27 May 2022 15:25:34 -0700
+  by fmsmga007.fm.intel.com with ESMTP; 27 May 2022 15:25:34 -0700
 Received: from kbuild by db63a1be7222 with local (Exim 4.95)
         (envelope-from <lkp@intel.com>)
-        id 1nuiOj-0005BL-E6;
+        id 1nuiOj-0005BF-C4;
         Fri, 27 May 2022 22:25:33 +0000
-Date:   Sat, 28 May 2022 06:24:39 +0800
+Date:   Sat, 28 May 2022 06:24:56 +0800
 From:   kernel test robot <lkp@intel.com>
 To:     "x86-ml" <x86@kernel.org>
 Cc:     linux-kernel@vger.kernel.org
-Subject: [tip:x86/mm] BUILD SUCCESS
- e19d11267f0e6c8aff2d15d2dfed12365b4c9184
-Message-ID: <62914fa7.dmolsByGFg1FA5Yd%lkp@intel.com>
+Subject: [tip:perf/urgent] BUILD SUCCESS
+ 8b4dd2d8627e88dc3bd71bf29c48aaae2b69572b
+Message-ID: <62914fb8.VWAjAWt+D27X4mfM%lkp@intel.com>
 User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -58,13 +58,13 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/mm
-branch HEAD: e19d11267f0e6c8aff2d15d2dfed12365b4c9184  x86/mm: Use PAGE_ALIGNED(x) instead of IS_ALIGNED(x, PAGE_SIZE)
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git perf/urgent
+branch HEAD: 8b4dd2d8627e88dc3bd71bf29c48aaae2b69572b  perf/core: Remove unused local variable
 
-elapsed time: 721m
+elapsed time: 723m
 
-configs tested: 169
-configs skipped: 72
+configs tested: 175
+configs skipped: 4
 
 The following configs have been built successfully.
 More configs may be tested in the coming days.
@@ -97,6 +97,9 @@ arc                     haps_hs_smp_defconfig
 powerpc                 mpc8540_ads_defconfig
 sh                            hp6xx_defconfig
 mips                 decstation_r4k_defconfig
+sh                            titan_defconfig
+sh                           sh2007_defconfig
+openrisc                         alldefconfig
 arm                          pxa3xx_defconfig
 sh                ecovec24-romimage_defconfig
 mips                         bigsur_defconfig
@@ -130,10 +133,11 @@ sh                     magicpanelr2_defconfig
 sh                   sh7724_generic_defconfig
 arm                      footbridge_defconfig
 sh                  sh7785lcr_32bit_defconfig
-sh                           sh2007_defconfig
 sh                         microdev_defconfig
 s390                       zfcpdump_defconfig
 arm                        trizeps4_defconfig
+m68k                        m5407c3_defconfig
+arc                            hsdk_defconfig
 arm                        shmobile_defconfig
 nios2                         10m50_defconfig
 arm                          lpd270_defconfig
@@ -219,6 +223,8 @@ mips                          malta_defconfig
 mips                      pic32mzda_defconfig
 powerpc                       ebony_defconfig
 mips                           ip28_defconfig
+mips                         tb0287_defconfig
+powerpc                      obs600_defconfig
 arm                        mvebu_v5_defconfig
 mips                  cavium_octeon_defconfig
 mips                           ip22_defconfig
