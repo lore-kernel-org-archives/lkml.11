@@ -2,58 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19510C47082
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:17:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4148C38A2C
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:17:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354246AbiE0MRR (ORCPT
+        id S1354104AbiE0MRH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 08:17:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49896 "EHLO
+        Fri, 27 May 2022 08:17:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352575AbiE0MDz (ORCPT
+        with ESMTP id S1352342AbiE0MEP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 08:03:55 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B279146766;
-        Fri, 27 May 2022 04:53:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653652413; x=1685188413;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=PLSGSElS+sb7LwGXdt/dcalTmumgey26T1nkiNfjmgo=;
-  b=HXZl34fb35ca7l+fR027e1dv6/baoKuyQUkYbsD/LHXFLV4tyXMwnYjS
-   tVX88kfQqsv6gYj9MLSCPCXnPvVInva2d6lMiA+zB1HremBJ7Yc6XttCP
-   CzCwy6uNtlkCFu3QlPYymdDd9kFioxbyMKoxoCQXErpgsTw6h8u11Dvz1
-   FHYGluYJ50R8OMlXRehuzjPkI8hI00EQDtWg3A502FMkYZbflIYsjCWkz
-   lBv0VnzHSmldHo2hL8W3dKiKaIOPND2JfoWA2bzWkn2QmP3hWhURaZRaq
-   hECPH8zcfP8d3gSjdlrHG5Upw1LjDDlLVNF6hv2Ns5z5kRuU+kRwz3L9J
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10359"; a="274464803"
-X-IronPort-AV: E=Sophos;i="5.91,255,1647327600"; 
-   d="scan'208";a="274464803"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2022 04:53:32 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,255,1647327600"; 
-   d="scan'208";a="746889566"
-Received: from dev2 (HELO DEV2.igk.intel.com) ([10.237.148.94])
-  by orsmga005.jf.intel.com with ESMTP; 27 May 2022 04:53:30 -0700
-From:   =?UTF-8?q?Amadeusz=20S=C5=82awi=C5=84ski?= 
-        <amadeuszx.slawinski@linux.intel.com>
-To:     Vineet Gupta <vgupta@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     Guenter Roeck <linux@roeck-us.net>,
-        linux-snps-arc@lists.infradead.org,
-        linux-m68k@lists.linux-m68k.org, sparclinux@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Amadeusz=20S=C5=82awi=C5=84ski?= 
-        <amadeuszx.slawinski@linux.intel.com>
-Subject: [PATCH v2 0/3] bitops: __fls adjustments
-Date:   Fri, 27 May 2022 13:53:42 +0200
-Message-Id: <20220527115345.2588775-1-amadeuszx.slawinski@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 27 May 2022 08:04:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C9E014CA28;
+        Fri, 27 May 2022 04:53:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 97D3561DB1;
+        Fri, 27 May 2022 11:53:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A24A6C34118;
+        Fri, 27 May 2022 11:53:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1653652418;
+        bh=FHmPyj2D2tGbC8s1f5us7ysnhTDu4Fn5V+6b2VESaaE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=NDKwLKa3JR34fk15FPqFAG2nxDZkK8Jppkex/BALRmLHeXcBY5SMIwSsnn58drDr7
+         YcahS9REiZh2BKJkCOoKbbzrKBm+b83Cq+3lk+pb7hogJDn/fkHL1MeneK/o0TIJEJ
+         BtEZvzH8v8ldwQ8GcoavE5U4PejSoKw7r9jnwaZI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.15 135/145] random: remove extern from functions in header
+Date:   Fri, 27 May 2022 10:50:36 +0200
+Message-Id: <20220527084906.816395677@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220527084850.364560116@linuxfoundation.org>
+References: <20220527084850.364560116@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -61,26 +48,138 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Apparently on few architectures __fls is defined incorrectly. Fix this
-by adjusting declarations to asm-generic ones.
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-As far as I can tell there should be no functional changes, but I don't
-have devices to test it, so it was only compile tested.
+commit 7782cfeca7d420e8bb707613d4cfb0f7ff29bb3a upstream.
 
-Changes in v2:
-  - change both declarations in ARC header (pointed by Guenter Roeck)
-  - also change sparc64 declaration (pointed by Guenter Roeck)
+Accoriding to the kernel style guide, having `extern` on functions in
+headers is old school and deprecated, and doesn't add anything. So remove
+them from random.h, and tidy up the file a little bit too.
 
-Amadeusz Sławiński (3):
-  ARC: bitops: Change __fls to return unsigned long
-  m68k: bitops: Change __fls to return and accept unsigned long
-  sparc64: bitops: Change __fls to return unsigned long
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ include/linux/random.h |   71 +++++++++++++++++++------------------------------
+ 1 file changed, 28 insertions(+), 43 deletions(-)
 
- arch/arc/include/asm/bitops.h      | 4 ++--
- arch/m68k/include/asm/bitops.h     | 2 +-
- arch/sparc/include/asm/bitops_64.h | 2 +-
- 3 files changed, 4 insertions(+), 4 deletions(-)
+--- a/include/linux/random.h
++++ b/include/linux/random.h
+@@ -12,13 +12,12 @@
+ 
+ struct notifier_block;
+ 
+-extern void add_device_randomness(const void *, size_t);
+-extern void add_bootloader_randomness(const void *, size_t);
+-extern void add_input_randomness(unsigned int type, unsigned int code,
+-				 unsigned int value) __latent_entropy;
+-extern void add_interrupt_randomness(int irq) __latent_entropy;
+-extern void add_hwgenerator_randomness(const void *buffer, size_t count,
+-				       size_t entropy);
++void add_device_randomness(const void *, size_t);
++void add_bootloader_randomness(const void *, size_t);
++void add_input_randomness(unsigned int type, unsigned int code,
++			  unsigned int value) __latent_entropy;
++void add_interrupt_randomness(int irq) __latent_entropy;
++void add_hwgenerator_randomness(const void *buffer, size_t count, size_t entropy);
+ 
+ #if defined(LATENT_ENTROPY_PLUGIN) && !defined(__CHECKER__)
+ static inline void add_latent_entropy(void)
+@@ -26,21 +25,11 @@ static inline void add_latent_entropy(vo
+ 	add_device_randomness((const void *)&latent_entropy, sizeof(latent_entropy));
+ }
+ #else
+-static inline void add_latent_entropy(void) {}
+-#endif
+-
+-extern void get_random_bytes(void *buf, size_t nbytes);
+-extern int wait_for_random_bytes(void);
+-extern int __init random_init(const char *command_line);
+-extern bool rng_is_initialized(void);
+-extern int register_random_ready_notifier(struct notifier_block *nb);
+-extern int unregister_random_ready_notifier(struct notifier_block *nb);
+-extern size_t __must_check get_random_bytes_arch(void *buf, size_t nbytes);
+-
+-#ifndef MODULE
+-extern const struct file_operations random_fops, urandom_fops;
++static inline void add_latent_entropy(void) { }
+ #endif
+ 
++void get_random_bytes(void *buf, size_t nbytes);
++size_t __must_check get_random_bytes_arch(void *buf, size_t nbytes);
+ u32 get_random_u32(void);
+ u64 get_random_u64(void);
+ static inline unsigned int get_random_int(void)
+@@ -72,11 +61,17 @@ static inline unsigned long get_random_l
+ 
+ static inline unsigned long get_random_canary(void)
+ {
+-	unsigned long val = get_random_long();
+-
+-	return val & CANARY_MASK;
++	return get_random_long() & CANARY_MASK;
+ }
+ 
++unsigned long randomize_page(unsigned long start, unsigned long range);
++
++int __init random_init(const char *command_line);
++bool rng_is_initialized(void);
++int wait_for_random_bytes(void);
++int register_random_ready_notifier(struct notifier_block *nb);
++int unregister_random_ready_notifier(struct notifier_block *nb);
++
+ /* Calls wait_for_random_bytes() and then calls get_random_bytes(buf, nbytes).
+  * Returns the result of the call to wait_for_random_bytes. */
+ static inline int get_random_bytes_wait(void *buf, size_t nbytes)
+@@ -100,8 +95,6 @@ declare_get_random_var_wait(int)
+ declare_get_random_var_wait(long)
+ #undef declare_get_random_var
+ 
+-unsigned long randomize_page(unsigned long start, unsigned long range);
+-
+ /*
+  * This is designed to be standalone for just prandom
+  * users, but for now we include it from <linux/random.h>
+@@ -112,22 +105,10 @@ unsigned long randomize_page(unsigned lo
+ #ifdef CONFIG_ARCH_RANDOM
+ # include <asm/archrandom.h>
+ #else
+-static inline bool __must_check arch_get_random_long(unsigned long *v)
+-{
+-	return false;
+-}
+-static inline bool __must_check arch_get_random_int(unsigned int *v)
+-{
+-	return false;
+-}
+-static inline bool __must_check arch_get_random_seed_long(unsigned long *v)
+-{
+-	return false;
+-}
+-static inline bool __must_check arch_get_random_seed_int(unsigned int *v)
+-{
+-	return false;
+-}
++static inline bool __must_check arch_get_random_long(unsigned long *v) { return false; }
++static inline bool __must_check arch_get_random_int(unsigned int *v) { return false; }
++static inline bool __must_check arch_get_random_seed_long(unsigned long *v) { return false; }
++static inline bool __must_check arch_get_random_seed_int(unsigned int *v) { return false; }
+ #endif
+ 
+ /*
+@@ -151,8 +132,12 @@ static inline bool __init arch_get_rando
+ #endif
+ 
+ #ifdef CONFIG_SMP
+-extern int random_prepare_cpu(unsigned int cpu);
+-extern int random_online_cpu(unsigned int cpu);
++int random_prepare_cpu(unsigned int cpu);
++int random_online_cpu(unsigned int cpu);
++#endif
++
++#ifndef MODULE
++extern const struct file_operations random_fops, urandom_fops;
+ #endif
+ 
+ #endif /* _LINUX_RANDOM_H */
 
--- 
-2.25.1
 
