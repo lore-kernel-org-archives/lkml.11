@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A184BC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:59:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94563C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:59:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352062AbiE0L7a (ORCPT
+        id S1352125AbiE0L7h (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 07:59:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40414 "EHLO
+        Fri, 27 May 2022 07:59:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351958AbiE0Lvd (ORCPT
+        with ESMTP id S1353296AbiE0Lvc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:51:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D2E5149A81;
-        Fri, 27 May 2022 04:47:16 -0700 (PDT)
+        Fri, 27 May 2022 07:51:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F24AA1498F9;
+        Fri, 27 May 2022 04:47:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C8C7461D56;
-        Fri, 27 May 2022 11:47:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3289C34100;
-        Fri, 27 May 2022 11:47:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6A63BB824D8;
+        Fri, 27 May 2022 11:47:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFC32C34113;
+        Fri, 27 May 2022 11:47:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653652035;
-        bh=TKtKwCRmNQngjBUJ2nTn1VXui/HBhuKGLvNVpp+LRBY=;
+        s=korg; t=1653652032;
+        bh=eTiNwnTuZEIS520BxGxeULXm+yAoNMpLHA1evdbh5pc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NJzA25oT1fXNHWisl8pUwLyEN3R65VhNVaGefwDN8GHXg45Vl1n8w0h1exNSr+mH2
-         jZezhSkWptHfcbHTG6kR/JsarvZNQVsARBH6CSrZDN03FYeDxDUQWYThm95i79kX1r
-         rzWPxhVAymSk9YwVTWxUZvicCg2stXjaL59TcfkQ=
+        b=gGXpRQtABIBiFni0a+2ZnWQ3WYX2aaKXGFVDRJg15IoiNHqiHb+85dapTMJ0yAj6j
+         zHKa6tw0FOnOUwBxXKEMeA5d7ZEa1d/HsOqA34+E2zYKiq590k1SD1hTljnO/QfZU8
+         cr3XXkOJJFUQptdbRQ3sZh7UxdYWWGrqXR/sr378=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,12 +37,12 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Eric Biggers <ebiggers@google.com>,
         Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.10 086/163] random: group entropy extraction functions
-Date:   Fri, 27 May 2022 10:49:26 +0200
-Message-Id: <20220527084839.888122118@linuxfoundation.org>
+Subject: [PATCH 5.15 070/145] random: group userspace read/write functions
+Date:   Fri, 27 May 2022 10:49:31 +0200
+Message-Id: <20220527084858.959447964@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
-References: <20220527084828.156494029@linuxfoundation.org>
+In-Reply-To: <20220527084850.364560116@linuxfoundation.org>
+References: <20220527084850.364560116@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,10 +53,10 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit a5ed7cb1a7732ef11959332d507889fbc39ebbb4 upstream.
+commit a6adf8e7a605250b911e94793fd077933709ff9e upstream.
 
-This pulls all of the entropy extraction-focused functions into the
-third labeled section.
+This pulls all of the userspace read/write-focused functions into the
+fifth labeled section.
 
 No functional changes.
 
@@ -66,275 +66,168 @@ Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |  216 +++++++++++++++++++++++++-------------------------
- 1 file changed, 109 insertions(+), 107 deletions(-)
+ drivers/char/random.c |  125 ++++++++++++++++++++++++++++++--------------------
+ 1 file changed, 77 insertions(+), 48 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -895,23 +895,36 @@ size_t __must_check get_random_bytes_arc
+@@ -1477,30 +1477,61 @@ static void try_to_generate_entropy(void
+ 	mix_pool_bytes(&stack.now, sizeof(stack.now));
  }
- EXPORT_SYMBOL(get_random_bytes_arch);
  
+-static ssize_t urandom_read(struct file *file, char __user *buf, size_t nbytes,
+-			    loff_t *ppos)
 +
 +/**********************************************************************
 + *
-+ * Entropy accumulation and extraction routines.
++ * Userspace reader/writer interfaces.
 + *
-+ * Callers may add entropy via:
++ * getrandom(2) is the primary modern interface into the RNG and should
++ * be used in preference to anything else.
 + *
-+ *     static void mix_pool_bytes(const void *in, size_t nbytes)
++ * Reading from /dev/random has the same functionality as calling
++ * getrandom(2) with flags=0. In earlier versions, however, it had
++ * vastly different semantics and should therefore be avoided, to
++ * prevent backwards compatibility issues.
 + *
-+ * After which, if added entropy should be credited:
++ * Reading from /dev/urandom has the same functionality as calling
++ * getrandom(2) with flags=GRND_INSECURE. Because it does not block
++ * waiting for the RNG to be ready, it should not be used.
 + *
-+ *     static void credit_entropy_bits(size_t nbits)
++ * Writing to either /dev/random or /dev/urandom adds entropy to
++ * the input pool but does not credit it.
 + *
-+ * Finally, extract entropy via these two, with the latter one
-+ * setting the entropy count to zero and extracting only if there
-+ * is POOL_MIN_BITS entropy credited prior:
++ * Polling on /dev/random indicates when the RNG is initialized, on
++ * the read side, and when it wants new entropy, on the write side.
 + *
-+ *     static void extract_entropy(void *buf, size_t nbytes)
-+ *     static bool drain_entropy(void *buf, size_t nbytes)
++ * Both /dev/random and /dev/urandom have the same set of ioctls for
++ * adding entropy, getting the entropy count, zeroing the count, and
++ * reseeding the crng.
 + *
 + **********************************************************************/
 +
- enum {
- 	POOL_BITS = BLAKE2S_HASH_SIZE * 8,
- 	POOL_MIN_BITS = POOL_BITS /* No point in settling for less. */
- };
- 
--/*
-- * Static global variables
-- */
-+/* For notifying userspace should write into /dev/random. */
- static DECLARE_WAIT_QUEUE_HEAD(random_write_wait);
- 
--/**********************************************************************
-- *
-- * OS independent entropy store.   Here are the functions which handle
-- * storing entropy in an entropy pool.
-- *
-- **********************************************************************/
--
- static struct {
- 	struct blake2s_state hash;
- 	spinlock_t lock;
-@@ -924,28 +937,106 @@ static struct {
- 	.lock = __SPIN_LOCK_UNLOCKED(input_pool.lock),
- };
- 
--static void extract_entropy(void *buf, size_t nbytes);
--static bool drain_entropy(void *buf, size_t nbytes);
--
--static void crng_reseed(void);
-+static void _mix_pool_bytes(const void *in, size_t nbytes)
-+{
-+	blake2s_update(&input_pool.hash, in, nbytes);
-+}
- 
- /*
-  * This function adds bytes into the entropy "pool".  It does not
-  * update the entropy estimate.  The caller should call
-  * credit_entropy_bits if this is appropriate.
-  */
--static void _mix_pool_bytes(const void *in, size_t nbytes)
-+static void mix_pool_bytes(const void *in, size_t nbytes)
++SYSCALL_DEFINE3(getrandom, char __user *, buf, size_t, count, unsigned int,
++		flags)
  {
--	blake2s_update(&input_pool.hash, in, nbytes);
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&input_pool.lock, flags);
-+	_mix_pool_bytes(in, nbytes);
-+	spin_unlock_irqrestore(&input_pool.lock, flags);
- }
+-	static int maxwarn = 10;
++	if (flags & ~(GRND_NONBLOCK | GRND_RANDOM | GRND_INSECURE))
++		return -EINVAL;
  
--static void mix_pool_bytes(const void *in, size_t nbytes)
-+static void credit_entropy_bits(size_t nbits)
-+{
-+	unsigned int entropy_count, orig, add;
-+
-+	if (!nbits)
-+		return;
-+
-+	add = min_t(size_t, nbits, POOL_BITS);
-+
-+	do {
-+		orig = READ_ONCE(input_pool.entropy_count);
-+		entropy_count = min_t(unsigned int, POOL_BITS, orig + add);
-+	} while (cmpxchg(&input_pool.entropy_count, orig, entropy_count) != orig);
-+
-+	if (crng_init < 2 && entropy_count >= POOL_MIN_BITS)
-+		crng_reseed();
-+}
-+
-+/*
-+ * This is an HKDF-like construction for using the hashed collected entropy
-+ * as a PRF key, that's then expanded block-by-block.
-+ */
-+static void extract_entropy(void *buf, size_t nbytes)
- {
- 	unsigned long flags;
-+	u8 seed[BLAKE2S_HASH_SIZE], next_key[BLAKE2S_HASH_SIZE];
-+	struct {
-+		unsigned long rdseed[32 / sizeof(long)];
-+		size_t counter;
-+	} block;
-+	size_t i;
-+
-+	for (i = 0; i < ARRAY_SIZE(block.rdseed); ++i) {
-+		if (!arch_get_random_seed_long(&block.rdseed[i]) &&
-+		    !arch_get_random_long(&block.rdseed[i]))
-+			block.rdseed[i] = random_get_entropy();
-+	}
+-	if (!crng_ready() && maxwarn > 0) {
+-		maxwarn--;
+-		if (__ratelimit(&urandom_warning))
+-			pr_notice("%s: uninitialized urandom read (%zd bytes read)\n",
+-				  current->comm, nbytes);
+-	}
++	/*
++	 * Requesting insecure and blocking randomness at the same time makes
++	 * no sense.
++	 */
++	if ((flags & (GRND_INSECURE | GRND_RANDOM)) == (GRND_INSECURE | GRND_RANDOM))
++		return -EINVAL;
  
- 	spin_lock_irqsave(&input_pool.lock, flags);
--	_mix_pool_bytes(in, nbytes);
-+
-+	/* seed = HASHPRF(last_key, entropy_input) */
-+	blake2s_final(&input_pool.hash, seed);
-+
-+	/* next_key = HASHPRF(seed, RDSEED || 0) */
-+	block.counter = 0;
-+	blake2s(next_key, (u8 *)&block, seed, sizeof(next_key), sizeof(block), sizeof(seed));
-+	blake2s_init_key(&input_pool.hash, BLAKE2S_HASH_SIZE, next_key, sizeof(next_key));
-+
- 	spin_unlock_irqrestore(&input_pool.lock, flags);
-+	memzero_explicit(next_key, sizeof(next_key));
-+
-+	while (nbytes) {
-+		i = min_t(size_t, nbytes, BLAKE2S_HASH_SIZE);
-+		/* output = HASHPRF(seed, RDSEED || ++counter) */
-+		++block.counter;
-+		blake2s(buf, (u8 *)&block, seed, i, sizeof(block), sizeof(seed));
-+		nbytes -= i;
-+		buf += i;
-+	}
-+
-+	memzero_explicit(seed, sizeof(seed));
-+	memzero_explicit(&block, sizeof(block));
-+}
-+
-+/*
-+ * First we make sure we have POOL_MIN_BITS of entropy in the pool, and then we
-+ * set the entropy count to zero (but don't actually touch any data). Only then
-+ * can we extract a new key with extract_entropy().
-+ */
-+static bool drain_entropy(void *buf, size_t nbytes)
-+{
-+	unsigned int entropy_count;
-+	do {
-+		entropy_count = READ_ONCE(input_pool.entropy_count);
-+		if (entropy_count < POOL_MIN_BITS)
-+			return false;
-+	} while (cmpxchg(&input_pool.entropy_count, entropy_count, 0) != entropy_count);
-+	extract_entropy(buf, nbytes);
-+	wake_up_interruptible(&random_write_wait);
-+	kill_fasync(&fasync, SIGIO, POLL_OUT);
-+	return true;
- }
+-	return get_random_bytes_user(buf, nbytes);
+-}
++	if (count > INT_MAX)
++		count = INT_MAX;
  
- struct fast_pool {
-@@ -988,24 +1079,6 @@ static void fast_mix(u32 pool[4])
- 	pool[2] = c;  pool[3] = d;
- }
- 
--static void credit_entropy_bits(size_t nbits)
+-static ssize_t random_read(struct file *file, char __user *buf, size_t nbytes,
+-			   loff_t *ppos)
 -{
--	unsigned int entropy_count, orig, add;
+-	int ret;
++	if (!(flags & GRND_INSECURE) && !crng_ready()) {
++		int ret;
+ 
+-	ret = wait_for_random_bytes();
+-	if (ret != 0)
+-		return ret;
+-	return get_random_bytes_user(buf, nbytes);
++		if (flags & GRND_NONBLOCK)
++			return -EAGAIN;
++		ret = wait_for_random_bytes();
++		if (unlikely(ret))
++			return ret;
++	}
++	return get_random_bytes_user(buf, count);
+ }
+ 
+ static __poll_t random_poll(struct file *file, poll_table *wait)
+@@ -1552,6 +1583,32 @@ static ssize_t random_write(struct file
+ 	return (ssize_t)count;
+ }
+ 
++static ssize_t urandom_read(struct file *file, char __user *buf, size_t nbytes,
++			    loff_t *ppos)
++{
++	static int maxwarn = 10;
++
++	if (!crng_ready() && maxwarn > 0) {
++		maxwarn--;
++		if (__ratelimit(&urandom_warning))
++			pr_notice("%s: uninitialized urandom read (%zd bytes read)\n",
++				  current->comm, nbytes);
++	}
++
++	return get_random_bytes_user(buf, nbytes);
++}
++
++static ssize_t random_read(struct file *file, char __user *buf, size_t nbytes,
++			   loff_t *ppos)
++{
++	int ret;
++
++	ret = wait_for_random_bytes();
++	if (ret != 0)
++		return ret;
++	return get_random_bytes_user(buf, nbytes);
++}
++
+ static long random_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
+ {
+ 	int size, ent_count;
+@@ -1560,7 +1617,7 @@ static long random_ioctl(struct file *f,
+ 
+ 	switch (cmd) {
+ 	case RNDGETENTCNT:
+-		/* inherently racy, no point locking */
++		/* Inherently racy, no point locking. */
+ 		if (put_user(input_pool.entropy_count, p))
+ 			return -EFAULT;
+ 		return 0;
+@@ -1636,34 +1693,6 @@ const struct file_operations urandom_fop
+ 	.llseek = noop_llseek,
+ };
+ 
+-SYSCALL_DEFINE3(getrandom, char __user *, buf, size_t, count, unsigned int,
+-		flags)
+-{
+-	if (flags & ~(GRND_NONBLOCK | GRND_RANDOM | GRND_INSECURE))
+-		return -EINVAL;
 -
--	if (!nbits)
--		return;
+-	/*
+-	 * Requesting insecure and blocking randomness at the same time makes
+-	 * no sense.
+-	 */
+-	if ((flags & (GRND_INSECURE | GRND_RANDOM)) == (GRND_INSECURE | GRND_RANDOM))
+-		return -EINVAL;
 -
--	add = min_t(size_t, nbits, POOL_BITS);
+-	if (count > INT_MAX)
+-		count = INT_MAX;
 -
--	do {
--		orig = READ_ONCE(input_pool.entropy_count);
--		entropy_count = min_t(unsigned int, POOL_BITS, orig + add);
--	} while (cmpxchg(&input_pool.entropy_count, orig, entropy_count) != orig);
+-	if (!(flags & GRND_INSECURE) && !crng_ready()) {
+-		int ret;
 -
--	if (crng_init < 2 && entropy_count >= POOL_MIN_BITS)
--		crng_reseed();
+-		if (flags & GRND_NONBLOCK)
+-			return -EAGAIN;
+-		ret = wait_for_random_bytes();
+-		if (unlikely(ret))
+-			return ret;
+-	}
+-	return get_random_bytes_user(buf, count);
 -}
 -
- /*********************************************************************
+ /********************************************************************
   *
-  * Entropy input management
-@@ -1202,77 +1275,6 @@ void add_disk_randomness(struct gendisk
- EXPORT_SYMBOL_GPL(add_disk_randomness);
- #endif
- 
--/*********************************************************************
-- *
-- * Entropy extraction routines
-- *
-- *********************************************************************/
--
--/*
-- * This is an HKDF-like construction for using the hashed collected entropy
-- * as a PRF key, that's then expanded block-by-block.
-- */
--static void extract_entropy(void *buf, size_t nbytes)
--{
--	unsigned long flags;
--	u8 seed[BLAKE2S_HASH_SIZE], next_key[BLAKE2S_HASH_SIZE];
--	struct {
--		unsigned long rdseed[32 / sizeof(long)];
--		size_t counter;
--	} block;
--	size_t i;
--
--	for (i = 0; i < ARRAY_SIZE(block.rdseed); ++i) {
--		if (!arch_get_random_seed_long(&block.rdseed[i]) &&
--		    !arch_get_random_long(&block.rdseed[i]))
--			block.rdseed[i] = random_get_entropy();
--	}
--
--	spin_lock_irqsave(&input_pool.lock, flags);
--
--	/* seed = HASHPRF(last_key, entropy_input) */
--	blake2s_final(&input_pool.hash, seed);
--
--	/* next_key = HASHPRF(seed, RDSEED || 0) */
--	block.counter = 0;
--	blake2s(next_key, (u8 *)&block, seed, sizeof(next_key), sizeof(block), sizeof(seed));
--	blake2s_init_key(&input_pool.hash, BLAKE2S_HASH_SIZE, next_key, sizeof(next_key));
--
--	spin_unlock_irqrestore(&input_pool.lock, flags);
--	memzero_explicit(next_key, sizeof(next_key));
--
--	while (nbytes) {
--		i = min_t(size_t, nbytes, BLAKE2S_HASH_SIZE);
--		/* output = HASHPRF(seed, RDSEED || ++counter) */
--		++block.counter;
--		blake2s(buf, (u8 *)&block, seed, i, sizeof(block), sizeof(seed));
--		nbytes -= i;
--		buf += i;
--	}
--
--	memzero_explicit(seed, sizeof(seed));
--	memzero_explicit(&block, sizeof(block));
--}
--
--/*
-- * First we make sure we have POOL_MIN_BITS of entropy in the pool, and then we
-- * set the entropy count to zero (but don't actually touch any data). Only then
-- * can we extract a new key with extract_entropy().
-- */
--static bool drain_entropy(void *buf, size_t nbytes)
--{
--	unsigned int entropy_count;
--	do {
--		entropy_count = READ_ONCE(input_pool.entropy_count);
--		if (entropy_count < POOL_MIN_BITS)
--			return false;
--	} while (cmpxchg(&input_pool.entropy_count, entropy_count, 0) != entropy_count);
--	extract_entropy(buf, nbytes);
--	wake_up_interruptible(&random_write_wait);
--	kill_fasync(&fasync, SIGIO, POLL_OUT);
--	return true;
--}
--
- /*
-  * Each time the timer fires, we expect that we got an unpredictable
-  * jump in the cycle counter. Even if the timer is running on another
+  * Sysctl interface
 
 
