@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D45FC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 09:01:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B6A1C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 09:01:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350353AbiE0JBX (ORCPT
+        id S1350428AbiE0JBa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 05:01:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60738 "EHLO
+        Fri, 27 May 2022 05:01:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350300AbiE0I6j (ORCPT
+        with ESMTP id S1350320AbiE0I7D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 04:58:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 712F7123884;
-        Fri, 27 May 2022 01:55:06 -0700 (PDT)
+        Fri, 27 May 2022 04:59:03 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D634B59091;
+        Fri, 27 May 2022 01:55:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 029CEB823DD;
-        Fri, 27 May 2022 08:55:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B078C385A9;
-        Fri, 27 May 2022 08:55:03 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 21CF9CE237A;
+        Fri, 27 May 2022 08:55:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23808C385A9;
+        Fri, 27 May 2022 08:55:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653641703;
-        bh=0ycG1C8R9RfHAaw3cLJ3/vzUv+464neREcYcVWVG6kQ=;
+        s=korg; t=1653641726;
+        bh=mqr+CmKBFFHkb8QDzclxqHbsHvaX+z4Z1RjSRFRczNg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JPONJSJ9ZVopTqZ/QzVYyk+bCTd3kIPiDGnYdF/3s34v28gii25ivJ0TigzX/MaVB
-         EWqOoH+4xPADhJv1WPdfUkZOsi5T+TtyNqg+QyqPu9ZUWARZpPviaK0nS06APoHAUO
-         bgWuAwfW9sMPiQhFWkOBrmzcfP2jVacIhvGhCjaM=
+        b=mJhz5S5hFWoq/eZf004BVGtij3bVkJ6iMA9p0OLyRmCb+OA3tOdtE9+A8B7wwjiDx
+         nrB+S7FrTYGid4Sue0x6hrbBOsMpcSpdl6yY8zD3P1gr6RWLqCZ5Ej7E5/KYAkbYp3
+         0ODRzaAQoI0IzxHcnC5ZYaarVy259P2nU++Zq2UQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
         Dominik Brodowski <linux@dominikbrodowski.net>,
-        Jann Horn <jannh@google.com>,
-        Eric Biggers <ebiggers@google.com>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.17 021/111] random: zero buffer after reading entropy from userspace
-Date:   Fri, 27 May 2022 10:48:53 +0200
-Message-Id: <20220527084822.362277500@linuxfoundation.org>
+Subject: [PATCH 5.17 027/111] random: deobfuscate irq u32/u64 contributions
+Date:   Fri, 27 May 2022 10:48:59 +0200
+Message-Id: <20220527084823.344476921@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220527084819.133490171@linuxfoundation.org>
 References: <20220527084819.133490171@linuxfoundation.org>
@@ -54,49 +52,121 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 7b5164fb1279bf0251371848e40bae646b59b3a8 upstream.
+commit b2f408fe403800c91a49f6589d95b6759ce1b30b upstream.
 
-This buffer may contain entropic data that shouldn't stick around longer
-than needed, so zero out the temporary buffer at the end of write_pool().
+In the irq handler, we fill out 16 bytes differently on 32-bit and
+64-bit platforms, and for 32-bit vs 64-bit cycle counters, which doesn't
+always correspond with the bitness of the platform. Whether or not you
+like this strangeness, it is a matter of fact.  But it might not be a
+fact you well realized until now, because the code that loaded the irq
+info into 4 32-bit words was quite confusing.  Instead, this commit
+makes everything explicit by having separate (compile-time) branches for
+32-bit and 64-bit types.
 
+Cc: Theodore Ts'o <tytso@mit.edu>
 Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
-Reviewed-by: Jann Horn <jannh@google.com>
-Reviewed-by: Eric Biggers <ebiggers@google.com>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+ drivers/char/random.c |   49 ++++++++++++++++++++++++++++---------------------
+ 1 file changed, 28 insertions(+), 21 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -1336,19 +1336,24 @@ static __poll_t random_poll(struct file
- static int write_pool(const char __user *ubuf, size_t count)
- {
- 	size_t len;
-+	int ret = 0;
- 	u8 block[BLAKE2S_BLOCK_SIZE];
- 
- 	while (count) {
- 		len = min(count, sizeof(block));
--		if (copy_from_user(block, ubuf, len))
--			return -EFAULT;
-+		if (copy_from_user(block, ubuf, len)) {
-+			ret = -EFAULT;
-+			goto out;
-+		}
- 		count -= len;
- 		ubuf += len;
- 		mix_pool_bytes(block, len);
- 		cond_resched();
- 	}
- 
--	return 0;
-+out:
-+	memzero_explicit(block, sizeof(block));
-+	return ret;
+@@ -283,7 +283,10 @@ static void mix_pool_bytes(const void *i
  }
  
- static ssize_t random_write(struct file *file, const char __user *buffer,
+ struct fast_pool {
+-	u32 pool[4];
++	union {
++		u32 pool32[4];
++		u64 pool64[2];
++	};
+ 	unsigned long last;
+ 	u16 reg_idx;
+ 	u8 count;
+@@ -294,10 +297,10 @@ struct fast_pool {
+  * collector.  It's hardcoded for an 128 bit pool and assumes that any
+  * locks that might be needed are taken by the caller.
+  */
+-static void fast_mix(struct fast_pool *f)
++static void fast_mix(u32 pool[4])
+ {
+-	u32 a = f->pool[0],	b = f->pool[1];
+-	u32 c = f->pool[2],	d = f->pool[3];
++	u32 a = pool[0],	b = pool[1];
++	u32 c = pool[2],	d = pool[3];
+ 
+ 	a += b;			c += d;
+ 	b = rol32(b, 6);	d = rol32(d, 27);
+@@ -315,9 +318,8 @@ static void fast_mix(struct fast_pool *f
+ 	b = rol32(b, 16);	d = rol32(d, 14);
+ 	d ^= a;			b ^= c;
+ 
+-	f->pool[0] = a;  f->pool[1] = b;
+-	f->pool[2] = c;  f->pool[3] = d;
+-	f->count++;
++	pool[0] = a;  pool[1] = b;
++	pool[2] = c;  pool[3] = d;
+ }
+ 
+ static void process_random_ready_list(void)
+@@ -784,29 +786,34 @@ void add_interrupt_randomness(int irq)
+ 	struct pt_regs *regs = get_irq_regs();
+ 	unsigned long now = jiffies;
+ 	cycles_t cycles = random_get_entropy();
+-	u32 c_high, j_high;
+-	u64 ip;
+ 
+ 	if (cycles == 0)
+ 		cycles = get_reg(fast_pool, regs);
+-	c_high = (sizeof(cycles) > 4) ? cycles >> 32 : 0;
+-	j_high = (sizeof(now) > 4) ? now >> 32 : 0;
+-	fast_pool->pool[0] ^= cycles ^ j_high ^ irq;
+-	fast_pool->pool[1] ^= now ^ c_high;
+-	ip = regs ? instruction_pointer(regs) : _RET_IP_;
+-	fast_pool->pool[2] ^= ip;
+-	fast_pool->pool[3] ^=
+-		(sizeof(ip) > 4) ? ip >> 32 : get_reg(fast_pool, regs);
+ 
+-	fast_mix(fast_pool);
++	if (sizeof(cycles) == 8)
++		fast_pool->pool64[0] ^= cycles ^ rol64(now, 32) ^ irq;
++	else {
++		fast_pool->pool32[0] ^= cycles ^ irq;
++		fast_pool->pool32[1] ^= now;
++	}
++
++	if (sizeof(unsigned long) == 8)
++		fast_pool->pool64[1] ^= regs ? instruction_pointer(regs) : _RET_IP_;
++	else {
++		fast_pool->pool32[2] ^= regs ? instruction_pointer(regs) : _RET_IP_;
++		fast_pool->pool32[3] ^= get_reg(fast_pool, regs);
++	}
++
++	fast_mix(fast_pool->pool32);
++	++fast_pool->count;
+ 
+ 	if (unlikely(crng_init == 0)) {
+ 		if (fast_pool->count >= 64 &&
+-		    crng_fast_load(fast_pool->pool, sizeof(fast_pool->pool)) > 0) {
++		    crng_fast_load(fast_pool->pool32, sizeof(fast_pool->pool32)) > 0) {
+ 			fast_pool->count = 0;
+ 			fast_pool->last = now;
+ 			if (spin_trylock(&input_pool.lock)) {
+-				_mix_pool_bytes(&fast_pool->pool, sizeof(fast_pool->pool));
++				_mix_pool_bytes(&fast_pool->pool32, sizeof(fast_pool->pool32));
+ 				spin_unlock(&input_pool.lock);
+ 			}
+ 		}
+@@ -820,7 +827,7 @@ void add_interrupt_randomness(int irq)
+ 		return;
+ 
+ 	fast_pool->last = now;
+-	_mix_pool_bytes(&fast_pool->pool, sizeof(fast_pool->pool));
++	_mix_pool_bytes(&fast_pool->pool32, sizeof(fast_pool->pool32));
+ 	spin_unlock(&input_pool.lock);
+ 
+ 	fast_pool->count = 0;
 
 
