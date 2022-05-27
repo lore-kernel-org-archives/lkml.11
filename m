@@ -2,100 +2,195 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48B13C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 10:35:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C867C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 10:35:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240583AbiE0Kev (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 06:34:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35128 "EHLO
+        id S241331AbiE0Kfd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 06:35:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230355AbiE0Kes (ORCPT
+        with ESMTP id S230355AbiE0Kf3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 06:34:48 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 472341053F1
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 03:34:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653647687;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=J1xQ8OiQHH9ksLcm4a9s84IyD29bInrw0vUd6yz8xCk=;
-        b=AWRryVfY6HJn6AMJFvSSwvNFE/3shn7k4GiIQLhBwuik2v0QTUNHEe+TQXFTo229LAUYfD
-        iq4IXDPUSQ4k7yTnhAFXfEOv4k65EkwIQFEijIJ+qBlg3muI1ZBO7vc9an+i0ajxsvvgDy
-        iKPTJudh/VzGG2nkAdjXVdwUQHhqBk8=
-Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
- [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-203-HRTQFRngOnKjpBnDtietgg-1; Fri, 27 May 2022 06:34:45 -0400
-X-MC-Unique: HRTQFRngOnKjpBnDtietgg-1
-Received: by mail-qk1-f200.google.com with SMTP id bj2-20020a05620a190200b005084968bb24so3502778qkb.23
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 03:34:45 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=J1xQ8OiQHH9ksLcm4a9s84IyD29bInrw0vUd6yz8xCk=;
-        b=DaD6Olha+E3EVOGkCcF/ixWR7bWYVyseYDYvhQWWrGT+x8cPIlvvgIVb9fcKW1/K+G
-         phkEHarF2I7rr31Ys/QjNi3u//xGTjSao3hXF2VeIGJrFBywdd348/Zb0MphTAY9IVQQ
-         UxKSeEohn1aw7q4q7qwjHIz2GuaNlwXA6AO/h5gricCCNi/tWMasKTAkjTGm3DG6mUIl
-         kKAh4Us1ayfltyNCu3j0aYtVk8O6kQQJiQv1jujKj1HawS8sZZqq24tyIBjWhdsphzet
-         /tXs2oa+J2Iw0U/HvHCElI7pEITEKMkXfmktxrI/eSpNz0XTxq/EbSfJLJW2A6qgHoK8
-         y1tQ==
-X-Gm-Message-State: AOAM533582BOsYD9l9U+/NbqyWcF11KP26KNWW7iS2nuNGfSVJGsLaNp
-        vantek3KBOHp4o5EjF9fOnwe5EaKkCTmUoU7kPwUaNHtV2UuHs0mEOKWBXH5Nb+LTRaq3yOVbwn
-        S2DQiGEQQLObr2SfLgpY4M+D1
-X-Received: by 2002:a05:620a:4042:b0:6a5:aded:fe52 with SMTP id i2-20020a05620a404200b006a5adedfe52mr5591557qko.365.1653647685391;
-        Fri, 27 May 2022 03:34:45 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwqxv+VTwgq+LPdZICQyGqh24jAfcU1fwHBx1WzLpbtJcUIqfLL3McbVD+9ZVGHmS3yYq9xJg==
-X-Received: by 2002:a05:620a:4042:b0:6a5:aded:fe52 with SMTP id i2-20020a05620a404200b006a5adedfe52mr5591538qko.365.1653647685166;
-        Fri, 27 May 2022 03:34:45 -0700 (PDT)
-Received: from sgarzare-redhat (host-87-12-25-16.business.telecomitalia.it. [87.12.25.16])
-        by smtp.gmail.com with ESMTPSA id h19-20020a05620a401300b006a10c8d5d96sm2802962qko.3.2022.05.27.03.34.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 May 2022 03:34:44 -0700 (PDT)
-Date:   Fri, 27 May 2022 12:34:36 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     mst@redhat.com, virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, tglx@linutronix.de,
-        peterz@infradead.org, paulmck@kernel.org, maz@kernel.org,
-        pasic@linux.ibm.com, cohuck@redhat.com, eperezma@redhat.com,
-        lulu@redhat.com, xuanzhuo@linux.alibaba.com,
-        Vineeth Vijayan <vneethv@linux.ibm.com>,
-        Peter Oberparleiter <oberpar@linux.ibm.com>,
-        linux-s390@vger.kernel.org
-Subject: Re: [PATCH V6 2/9] virtio: use virtio_reset_device() when possible
-Message-ID: <20220527103436.erqkgeh34prlvssh@sgarzare-redhat>
-References: <20220527060120.20964-1-jasowang@redhat.com>
- <20220527060120.20964-3-jasowang@redhat.com>
+        Fri, 27 May 2022 06:35:29 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACBA21078BA;
+        Fri, 27 May 2022 03:35:28 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 5CD621F8B5;
+        Fri, 27 May 2022 10:35:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1653647727; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=5FSJoV8fyODoIeus7C+ZOqbM6V+rdyM5MW/EB0jGZhg=;
+        b=lZ4R+09BI7oCUROykElkZtExU3MC2o5/GA4qjwqbfJRif0pw+SFgCoaFWOMplVJRTW1ZId
+        /PKDZY87B/Xa6gqeHA1h6GjAvgcOdDndJcjO+sGvX+7eQs9KgrhIP83w6rWD37t+6+HSq4
+        18R21vZzmYyc2mMtDRp+sLU1pXdhqIc=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1653647727;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=5FSJoV8fyODoIeus7C+ZOqbM6V+rdyM5MW/EB0jGZhg=;
+        b=m0AVBa177TUk1M+dEEB3xnUQW0JFaICGQzEjpFN0I3LCXaYi39kc4XS3Q3Z2CnrD3h9xeR
+        rkdV/zmWQ0P7J3AA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 3448A13A84;
+        Fri, 27 May 2022 10:35:27 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id g0zaC2+pkGKOcAAAMHmgww
+        (envelope-from <iivanov@suse.de>); Fri, 27 May 2022 10:35:27 +0000
+From:   "Ivan T. Ivanov" <iivanov@suse.de>
+To:     Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>
+Cc:     "Ivan T. Ivanov" <iivanov@suse.de>,
+        Phil Elwell <phil@raspberrypi.org>,
+        kernel test robot <lkp@intel.com>, linux-clk@vger.kernel.org,
+        linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-riscv@lists.infradead.org
+Subject: [PATCH v3] clk: bcm2835: Round UART input clock up
+Date:   Fri, 27 May 2022 13:29:00 +0300
+Message-Id: <20220527102900.144894-1-iivanov@suse.de>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20220527060120.20964-3-jasowang@redhat.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 27, 2022 at 02:01:13PM +0800, Jason Wang wrote:
->This allows us to do common extension without duplicating code.
->
->Cc: Thomas Gleixner <tglx@linutronix.de>
->Cc: Peter Zijlstra <peterz@infradead.org>
->Cc: "Paul E. McKenney" <paulmck@kernel.org>
->Cc: Marc Zyngier <maz@kernel.org>
->Cc: Halil Pasic <pasic@linux.ibm.com>
->Cc: Cornelia Huck <cohuck@redhat.com>
->Cc: Vineeth Vijayan <vneethv@linux.ibm.com>
->Cc: Peter Oberparleiter <oberpar@linux.ibm.com>
->Cc: linux-s390@vger.kernel.org
->Reviewed-by: Cornelia Huck <cohuck@redhat.com>
->Signed-off-by: Jason Wang <jasowang@redhat.com>
->---
-> drivers/virtio/virtio.c | 4 ++--
-> 1 file changed, 2 insertions(+), 2 deletions(-)
+It was reported that RPi3[1] and RPi Zero 2W boards have issues with
+the Bluetooth. It turns out that when switching from initial to
+operation speed host and device no longer can talk each other because
+host uses incorrect UART baud rate.
 
-Maybe I had already reviewed it :-), anyway:
+The UART driver used in this case is amba-pl011. Original fix, see
+below Github link[2], was inside pl011 module, but somehow it didn't
+look as the right place to fix. Beside that this original rounding
+function is not exactly perfect for all possible clock values. So I
+deiced to move the hack to the platform which actually need it.
 
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+The UART clock is initialised to be as close to the requested
+frequency as possible without exceeding it. Now that there is a
+clock manager that returns the actual frequencies, an expected
+48MHz clock is reported as 47999625. If the requested baud rate
+== requested clock/16, there is no headroom and the slight
+reduction in actual clock rate results in failure.
+
+If increasing a clock by less than 0.1% changes it from ..999..
+to ..000.., round it up.
+
+[1] https://bugzilla.suse.com/show_bug.cgi?id=1188238
+[2] https://github.com/raspberrypi/linux/commit/ab3f1b39537f6d3825b8873006fbe2fc5ff057b7
+
+Cc: Phil Elwell <phil@raspberrypi.org>
+Signed-off-by: Ivan T. Ivanov <iivanov@suse.de>
+---
+
+Changes since v2
+* Added more information in commit message
+* Changed hand crafted round function with the one form math.h
+
+Changes since v1
+Make bcm2835_clock_round() static to fix following warning
+when compiling for riscv:
+drivers/clk/bcm/clk-bcm2835.c:997:15: warning: no previous prototype for 'bcm2835_clock_round' [-Wmissing-prototypes]
+Reported-by: kernel test robot <lkp@intel.com>
+
+ drivers/clk/bcm/clk-bcm2835.c | 32 ++++++++++++++++++++++++++++++--
+ 1 file changed, 30 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/clk/bcm/clk-bcm2835.c b/drivers/clk/bcm/clk-bcm2835.c
+index 48a1eb9f2d55..cee59990a57b 100644
+--- a/drivers/clk/bcm/clk-bcm2835.c
++++ b/drivers/clk/bcm/clk-bcm2835.c
+@@ -30,6 +30,7 @@
+ #include <linux/debugfs.h>
+ #include <linux/delay.h>
+ #include <linux/io.h>
++#include <linux/math.h>
+ #include <linux/module.h>
+ #include <linux/of_device.h>
+ #include <linux/platform_device.h>
+@@ -502,6 +503,8 @@ struct bcm2835_clock_data {
+ 	bool low_jitter;
+ 
+ 	u32 tcnt_mux;
++
++	bool round_up;
+ };
+ 
+ struct bcm2835_gate_data {
+@@ -993,12 +996,31 @@ static long bcm2835_clock_rate_from_divisor(struct bcm2835_clock *clock,
+ 	return temp;
+ }
+ 
++static unsigned long bcm2835_clock_round(unsigned long clk)
++{
++	unsigned long scaler;
++
++	scaler = 1;
++	while (scaler * 100000 < clk)
++		scaler *= 10;
++
++	/*
++	 * If increasing a clock by less than 0.1% changes it
++	 * from ..999.. to ..000.., round up.
++	 */
++	if ((clk + scaler - 1) / scaler % 1000 == 0)
++		clk = roundup(clk, scaler);
++
++	return clk;
++}
++
+ static unsigned long bcm2835_clock_get_rate(struct clk_hw *hw,
+ 					    unsigned long parent_rate)
+ {
+ 	struct bcm2835_clock *clock = bcm2835_clock_from_hw(hw);
+ 	struct bcm2835_cprman *cprman = clock->cprman;
+ 	const struct bcm2835_clock_data *data = clock->data;
++	unsigned long rate;
+ 	u32 div;
+ 
+ 	if (data->int_bits == 0 && data->frac_bits == 0)
+@@ -1006,7 +1028,12 @@ static unsigned long bcm2835_clock_get_rate(struct clk_hw *hw,
+ 
+ 	div = cprman_read(cprman, data->div_reg);
+ 
+-	return bcm2835_clock_rate_from_divisor(clock, parent_rate, div);
++	rate = bcm2835_clock_rate_from_divisor(clock, parent_rate, div);
++
++	if (data->round_up)
++		rate = bcm2835_clock_round(rate);
++
++	return rate;
+ }
+ 
+ static void bcm2835_clock_wait_busy(struct bcm2835_clock *clock)
+@@ -2143,7 +2170,8 @@ static const struct bcm2835_clk_desc clk_desc_array[] = {
+ 		.div_reg = CM_UARTDIV,
+ 		.int_bits = 10,
+ 		.frac_bits = 12,
+-		.tcnt_mux = 28),
++		.tcnt_mux = 28,
++		.round_up = true),
+ 
+ 	/* TV encoder clock.  Only operating frequency is 108Mhz.  */
+ 	[BCM2835_CLOCK_VEC]	= REGISTER_PER_CLK(
+-- 
+2.35.3
 
