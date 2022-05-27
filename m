@@ -2,119 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC844C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 10:37:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49FAEC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 10:39:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242349AbiE0Khg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 06:37:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37470 "EHLO
+        id S1350519AbiE0Kje (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 06:39:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237584AbiE0Khe (ORCPT
+        with ESMTP id S236433AbiE0Kjb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 06:37:34 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A1BDFD346
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 03:37:30 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id t26so4929134edt.0
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 03:37:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=W7So3PhdjMp2KqaM3P3rQkSF+4mUlCLPgYovIk/NSCw=;
-        b=PUNht9tdP2C3Y0PIKz6i9gtrFmX5JYDN+SFx9BcvHPe7WZ5grwHH0ZBECn0W/r19w7
-         zA4gwdCw9lJ4dBRXH+KW5K1Pt2GaIUXYtfSrMLIO2gYh8+AOJYQp3IqKPzSjQkkn557m
-         jjEE/Oiz8tv8c3ALgpqeBRpPuqK7sZG5QrY69q6sUqjCIdi8m9a2LEv7OWADoxoyDiKe
-         fxR1olI4lOgUqF4n3yNYok4YnYPEOeC+FDy12b7l3zISaS2KUQxX+rDo8p4Y3F8FSW/D
-         7o3RU8OJsTFTOtCqkABeInsEy9xkU1a3ntiJfQxMMmKjeZhTa1HgR0tXv+SrNV8oUxxT
-         ZXbA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=W7So3PhdjMp2KqaM3P3rQkSF+4mUlCLPgYovIk/NSCw=;
-        b=LyPHcuvY7mZwA0GogXCFqNdI/Ut7ZyRhZ9I5c3COXfHG2s6P327krFW8oICAUUicRZ
-         iABp39nVujerW5ULHxnoSTNSpaqPXe4rZP+V63+Sj4eQqepP6Qlyzie5cPky5rhy61F2
-         xTHVNrpie+zNakJEO7uXFfPN0wUl0RmkxXIXcMW6N99LAOo2bN5WxuC0LAnwRWxtDOMP
-         /G1pDvCv8gGlut5EFnGa+XXPpdhiRnY4S7TeUwdfipjUUaMg4NAXwOgxvw+e8Xdfhadb
-         YOBxheEG0gvHXilKLA/0XvVvn+PerHfkuWMK5aOvsyJPq2wTSFnlkMxH6r35/UjnMc+8
-         VA2A==
-X-Gm-Message-State: AOAM532H7ZmwmbEYPtkmx6WWaxHUVP91TgJiwxIsjk6XgsVy4r4vtmIT
-        laZuksp3Laxm6B7dQ9k4rgscLX955eg=
-X-Google-Smtp-Source: ABdhPJyrKJcw27l2xBcyc43CQC+hE9P1wSWSmQlKC2t+8P6LD18L9aqjR/BvIXhIB/J4a4118sln8Q==
-X-Received: by 2002:a05:6402:350f:b0:428:43a1:647d with SMTP id b15-20020a056402350f00b0042843a1647dmr6677317edd.62.1653647849163;
-        Fri, 27 May 2022 03:37:29 -0700 (PDT)
-Received: from gmail.com (563BA16F.dsl.pool.telekom.hu. [86.59.161.111])
-        by smtp.gmail.com with ESMTPSA id b17-20020a056402351100b0042bc97322desm1984603edd.43.2022.05.27.03.37.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 May 2022 03:37:28 -0700 (PDT)
-Sender: Ingo Molnar <mingo.kernel.org@gmail.com>
-Date:   Fri, 27 May 2022 12:37:24 +0200
-From:   Ingo Molnar <mingo@kernel.org>
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     X86 ML <x86@kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>
-Subject: Re: [RFC PATCH 2/3] x86/microcode: Default-disable late loading
-Message-ID: <YpCp5B7noKAt+91A@gmail.com>
-References: <20220524185324.28395-1-bp@alien8.de>
- <20220524185324.28395-3-bp@alien8.de>
+        Fri, 27 May 2022 06:39:31 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7B5412AB0B;
+        Fri, 27 May 2022 03:39:29 -0700 (PDT)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.56])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4L8h8f6sbXz1JCT4;
+        Fri, 27 May 2022 18:37:54 +0800 (CST)
+Received: from dggpemm500019.china.huawei.com (7.185.36.180) by
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 27 May 2022 18:39:27 +0800
+Received: from dggpemm500018.china.huawei.com (7.185.36.111) by
+ dggpemm500019.china.huawei.com (7.185.36.180) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 27 May 2022 18:39:27 +0800
+Received: from dggpemm500018.china.huawei.com ([7.185.36.111]) by
+ dggpemm500018.china.huawei.com ([7.185.36.111]) with mapi id 15.01.2375.024;
+ Fri, 27 May 2022 18:39:27 +0800
+From:   "liuke (AQ)" <liuke94@huawei.com>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        "dmitry.torokhov@gmail.com" <dmitry.torokhov@gmail.com>,
+        "marcoshalano@gmail.com" <marcoshalano@gmail.com>,
+        "michael@michaelcullen.name" <michael@michaelcullen.name>,
+        "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: =?utf-8?B?562U5aSNOiBbUEFUQ0hdIGRyaXZlcnM6IGlucHV0OiBEaXJlY3RseSB1c2Ug?=
+ =?utf-8?Q?ida=5Falloc()/free()?=
+Thread-Topic: [PATCH] drivers: input: Directly use ida_alloc()/free()
+Thread-Index: AQHYcbSHLUrWQUvpK0y1LgSRmZdBNq0yiBRg
+Date:   Fri, 27 May 2022 10:39:27 +0000
+Message-ID: <9c53080c64424a5ba9d33e789dbd1180@huawei.com>
+References: <20220527103740.3442548-1-liuke94@huawei.com>
+ <159368be-82fa-f42c-9658-88cd0e1f1882@wanadoo.fr>
+In-Reply-To: <159368be-82fa-f42c-9658-88cd0e1f1882@wanadoo.fr>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.174.177.142]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220524185324.28395-3-bp@alien8.de>
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-* Borislav Petkov <bp@alien8.de> wrote:
-
-> From: Borislav Petkov <bp@suse.de>
-> 
-> It is dangerous and it should not be used anyway - there's a nice early
-> loading already.
-> 
-> Requested-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-> Signed-off-by: Borislav Petkov <bp@suse.de>
-> ---
->  arch/x86/Kconfig                     | 11 +++++++++++
->  arch/x86/kernel/cpu/common.c         |  2 ++
->  arch/x86/kernel/cpu/microcode/core.c |  7 ++++++-
->  3 files changed, 19 insertions(+), 1 deletion(-)
-> 
-> diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-> index 1c0da2dbfb26..33891b82fb65 100644
-> --- a/arch/x86/Kconfig
-> +++ b/arch/x86/Kconfig
-> @@ -1345,6 +1345,17 @@ config MICROCODE_AMD
->  	  If you select this option, microcode patch loading support for AMD
->  	  processors will be enabled.
->  
-> +config MICROCODE_LATE_LOADING
-> +	bool "Late microcode loading (DANGEROUS)"
-> +	default n
-> +	depends on MICROCODE
-> +	help
-
-( Small nit: 'default n' is the default, there's no need to list it 
-  explicitly - and that's the convention as well. )
-
-> +	  Loading microcode late, when the system is up and executing instructions
-> +	  is a tricky business and should be avoided if possible. Just the sequence
-> +	  of synchronizing all cores and SMT threads is one fragile dance which does
-> +	  not guarantee that cores might not softlock after the loading. Therefore,
-> +	  use this at your own risk. Late loading taints the kernel too.
-
-Might make sense to outline here valid circumstances under which late 
-loading is used? Such as some weird kernel package that doesn't have the 
-latest firmware included in the initrd?
-
-Because it's hard (for me) to see any valid circumstance under which late 
-loading should be supported at all TBH: new kernels where this patch is 
-active would come with a modern package.
-
-Ie. we should consider removing late loading altogether.
-
-Thanks,
-
-	Ingo
+U29ycnkgLCAgSSdsbCBiZSBjYXJlZnVsIG5leHQgdGltZSAuDQoNCi0tLS0t6YKu5Lu25Y6f5Lu2
+LS0tLS0NCuWPkeS7tuS6ujogQ2hyaXN0b3BoZSBKQUlMTEVUIDxjaHJpc3RvcGhlLmphaWxsZXRA
+d2FuYWRvby5mcj4gDQrlj5HpgIHml7bpl7Q6IDIwMjLlubQ15pyIMjfml6UgMTg6MjgNCuaUtuS7
+tuS6ujogbGl1a2UgKEFRKSA8bGl1a2U5NEBodWF3ZWkuY29tPjsgZG1pdHJ5LnRvcm9raG92QGdt
+YWlsLmNvbTsgbWFyY29zaGFsYW5vQGdtYWlsLmNvbTsgbWljaGFlbEBtaWNoYWVsY3VsbGVuLm5h
+bWU7IGxpbnV4LWlucHV0QHZnZXIua2VybmVsLm9yZzsgbGludXgta2VybmVsQHZnZXIua2VybmVs
+Lm9yZw0K5Li76aKYOiBSZTogW1BBVENIXSBkcml2ZXJzOiBpbnB1dDogRGlyZWN0bHkgdXNlIGlk
+YV9hbGxvYygpL2ZyZWUoKQ0KDQpIaSwNCg0KTGUgMjcvMDUvMjAyMiDDoCAxMjozNywga2VsaXUg
+YSDDqWNyaXTCoDoNCj4gVXNlIGlkYV9hbGxvYygpL2lkYV9mcmVlKCkgaW5zdGVhZCBvZiBkZXBy
+ZWNhdGVkDQo+IGlkYV9zaW1wbGVfZ2V0KCkvaWRhX3NpbXBsZV9yZW1vdmUoKSAuDQo+IA0KPiBT
+aWduZWQtb2ZmLWJ5OiBrZWxpdSA8bGl1a2U5NEBodWF3ZWkuY29tPg0KPiAtLS0NCj4gICBkcml2
+ZXJzL2lucHV0L2lucHV0LmMgICAgICAgICB8IDggKysrKy0tLS0NCj4gICBkcml2ZXJzL2lucHV0
+L2pveXN0aWNrL3hwYWQuYyB8IDYgKysrLS0tDQo+ICAgMiBmaWxlcyBjaGFuZ2VkLCA3IGluc2Vy
+dGlvbnMoKyksIDcgZGVsZXRpb25zKC0pDQo+IA0KPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9pbnB1
+dC9pbnB1dC5jIGIvZHJpdmVycy9pbnB1dC9pbnB1dC5jIGluZGV4IA0KPiAxMzY1YzlkZmI1ZjIu
+LjFlNGEyNzU3OTVmOSAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy9pbnB1dC9pbnB1dC5jDQo+ICsr
+KyBiL2RyaXZlcnMvaW5wdXQvaW5wdXQuYw0KPiBAQCAtMjYxOCwxNSArMjYxOCwxNSBAQCBpbnQg
+aW5wdXRfZ2V0X25ld19taW5vcihpbnQgbGVnYWN5X2Jhc2UsIHVuc2lnbmVkIGludCBsZWdhY3lf
+bnVtLA0KPiAgIAkgKiBsb2NraW5nIGlzIG5lZWRlZCBoZXJlLg0KPiAgIAkgKi8NCj4gICAJaWYg
+KGxlZ2FjeV9iYXNlID49IDApIHsNCj4gLQkJaW50IG1pbm9yID0gaWRhX3NpbXBsZV9nZXQoJmlu
+cHV0X2lkYSwNCj4gKwkJaW50IG1pbm9yID0gaWRhX2FsbG9jX3JhbmdlKCZpbnB1dF9pZGEsDQo+
+ICAgCQkJCQkgICBsZWdhY3lfYmFzZSwNCj4gLQkJCQkJICAgbGVnYWN5X2Jhc2UgKyBsZWdhY3lf
+bnVtLA0KPiArCQkJCQkgICBsZWdhY3lfYmFzZSArIGxlZ2FjeV9udW0gLSAxLA0KDQpZb3UgZ290
+IG15IHBvaW50LCB0aGluZ3MgYXJlIGdvaW5nIGluIHRoZSByaWdodCBkaXJlY3Rpb24uDQpUaGlz
+IG9uZSBpcyBjb3JyZWN0Li4uDQoNCj4gICAJCQkJCSAgIEdGUF9LRVJORUwpOw0KPiAgIAkJaWYg
+KG1pbm9yID49IDAgfHwgIWFsbG93X2R5bmFtaWMpDQo+ICAgCQkJcmV0dXJuIG1pbm9yOw0KPiAg
+IAl9DQo+ICAgDQo+IC0JcmV0dXJuIGlkYV9zaW1wbGVfZ2V0KCZpbnB1dF9pZGEsDQo+ICsJcmV0
+dXJuIGlkYV9hbGxvY19yYW5nZSgmaW5wdXRfaWRhLA0KPiAgIAkJCSAgICAgIElOUFVUX0ZJUlNU
+X0RZTkFNSUNfREVWLCBJTlBVVF9NQVhfQ0hBUl9ERVZJQ0VTLA0KDQouLi4gYnV0IHlvdSBtaXNz
+ZWQgdGhlIC0xIGhlcmUuDQoNCkFsc28gbWF5YmUgYW4gZXhwbGFuYXRpb24gb2Ygd2h5IHRoaXMg
+LTEgYXJlIGludHJvZHVjZWQgd291bGQgaGVscCByZXZpZXdlcnMuIChpZiBuZWVkZWQsIEkgdGhp
+bmsgSSBhbHJlYWR5IHdyb3RlIHNvbWUsIGp1c3QgYXNrKQ0KDQpDSg0KDQo+ICAgCQkJICAgICAg
+R0ZQX0tFUk5FTCk7DQo+ICAgfQ0KPiBAQCAtMjY0MSw3ICsyNjQxLDcgQEAgRVhQT1JUX1NZTUJP
+TChpbnB1dF9nZXRfbmV3X21pbm9yKTsNCj4gICAgKi8NCj4gICB2b2lkIGlucHV0X2ZyZWVfbWlu
+b3IodW5zaWduZWQgaW50IG1pbm9yKQ0KPiAgIHsNCj4gLQlpZGFfc2ltcGxlX3JlbW92ZSgmaW5w
+dXRfaWRhLCBtaW5vcik7DQo+ICsJaWRhX2ZyZWUoJmlucHV0X2lkYSwgbWlub3IpOw0KPiAgIH0N
+Cj4gICBFWFBPUlRfU1lNQk9MKGlucHV0X2ZyZWVfbWlub3IpOw0KPiAgIA0KPiBkaWZmIC0tZ2l0
+IGEvZHJpdmVycy9pbnB1dC9qb3lzdGljay94cGFkLmMgDQo+IGIvZHJpdmVycy9pbnB1dC9qb3lz
+dGljay94cGFkLmMgaW5kZXggMTgxOTBiNTI5YmNhLi5mYWZjMGQ1NzAzZGMgDQo+IDEwMDY0NA0K
+PiAtLS0gYS9kcml2ZXJzL2lucHV0L2pveXN0aWNrL3hwYWQuYw0KPiArKysgYi9kcml2ZXJzL2lu
+cHV0L2pveXN0aWNrL3hwYWQuYw0KPiBAQCAtMTQ1Niw3ICsxNDU2LDcgQEAgc3RhdGljIGludCB4
+cGFkX2xlZF9wcm9iZShzdHJ1Y3QgdXNiX3hwYWQgKnhwYWQpDQo+ICAgCWlmICghbGVkKQ0KPiAg
+IAkJcmV0dXJuIC1FTk9NRU07DQo+ICAgDQo+IC0JeHBhZC0+cGFkX25yID0gaWRhX3NpbXBsZV9n
+ZXQoJnhwYWRfcGFkX3NlcSwgMCwgMCwgR0ZQX0tFUk5FTCk7DQo+ICsJeHBhZC0+cGFkX25yID0g
+aWRhX2FsbG9jKCZ4cGFkX3BhZF9zZXEsIEdGUF9LRVJORUwpOw0KPiAgIAlpZiAoeHBhZC0+cGFk
+X25yIDwgMCkgew0KPiAgIAkJZXJyb3IgPSB4cGFkLT5wYWRfbnI7DQo+ICAgCQlnb3RvIGVycl9m
+cmVlX21lbTsNCj4gQEAgLTE0NzksNyArMTQ3OSw3IEBAIHN0YXRpYyBpbnQgeHBhZF9sZWRfcHJv
+YmUoc3RydWN0IHVzYl94cGFkICp4cGFkKQ0KPiAgIAlyZXR1cm4gMDsNCj4gICANCj4gICBlcnJf
+ZnJlZV9pZDoNCj4gLQlpZGFfc2ltcGxlX3JlbW92ZSgmeHBhZF9wYWRfc2VxLCB4cGFkLT5wYWRf
+bnIpOw0KPiArCWlkYV9mcmVlKCZ4cGFkX3BhZF9zZXEsIHhwYWQtPnBhZF9ucik7DQo+ICAgZXJy
+X2ZyZWVfbWVtOg0KPiAgIAlrZnJlZShsZWQpOw0KPiAgIAl4cGFkLT5sZWQgPSBOVUxMOw0KPiBA
+QCAtMTQ5Miw3ICsxNDkyLDcgQEAgc3RhdGljIHZvaWQgeHBhZF9sZWRfZGlzY29ubmVjdChzdHJ1
+Y3QgdXNiX3hwYWQgDQo+ICp4cGFkKQ0KPiAgIA0KPiAgIAlpZiAoeHBhZF9sZWQpIHsNCj4gICAJ
+CWxlZF9jbGFzc2Rldl91bnJlZ2lzdGVyKCZ4cGFkX2xlZC0+bGVkX2NkZXYpOw0KPiAtCQlpZGFf
+c2ltcGxlX3JlbW92ZSgmeHBhZF9wYWRfc2VxLCB4cGFkLT5wYWRfbnIpOw0KPiArCQlpZGFfZnJl
+ZSgmeHBhZF9wYWRfc2VxLCB4cGFkLT5wYWRfbnIpOw0KPiAgIAkJa2ZyZWUoeHBhZF9sZWQpOw0K
+PiAgIAl9DQo+ICAgfQ0KDQo=
