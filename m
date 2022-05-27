@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2151C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:57:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9B53C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:57:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350281AbiE0I5p (ORCPT
+        id S1349621AbiE0I5w (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 04:57:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57668 "EHLO
+        Fri, 27 May 2022 04:57:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350397AbiE0IzU (ORCPT
+        with ESMTP id S1350369AbiE0IzS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 04:55:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CA6C10788C;
-        Fri, 27 May 2022 01:53:49 -0700 (PDT)
+        Fri, 27 May 2022 04:55:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96C10106A44;
+        Fri, 27 May 2022 01:53:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E84CAB823DE;
-        Fri, 27 May 2022 08:53:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B1A9C385B8;
-        Fri, 27 May 2022 08:53:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E993D61D54;
+        Fri, 27 May 2022 08:53:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91E1DC385A9;
+        Fri, 27 May 2022 08:53:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653641626;
-        bh=Pu004UeJieE94Qq4MdYdoSkCJ8QNo7YEbeiPXnVO3xA=;
+        s=korg; t=1653641623;
+        bh=/taNfpjeICuWWVktR629JPn5TweCvJIQlqTEdvykcDA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZEdCjGJdeGxqRodZtnydGfMxN+RoVbdsC55eE1XRbDzCA6G3e0VEViEur2EHaQtSr
-         TwNPeek3U8QDXQAb9ME2McsYKiKWQ7mO73NI8ox1+4cAp0MJeKR1hGO+dtss3DY/NH
-         IwYQ/k5AgGK0j92PmlMXZTIRnyQQWt3O3JKeKV9E=
+        b=lLSqcDLFnlHdAywpT1ZdmUxPZTtu2Kdtnuku60PPS8dC7U7IlZN3vbqdxLF6eG9il
+         uJK94uDmU67yaLZH+9hMSQYH+i5Aa+1Fp5CgtWK1/L8+LY6DgpPXmpAKv3dw78kafC
+         b69hbMsUOo3RDO+I4fqTlyAuPuaJ8sb32kS13emo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.18 37/47] random: use proper return types on get_random_{int,long}_wait()
-Date:   Fri, 27 May 2022 10:50:17 +0200
-Message-Id: <20220527084807.437298401@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Eric Biggers <ebiggers@google.com>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.17 010/111] random: fix locking in crng_fast_load()
+Date:   Fri, 27 May 2022 10:48:42 +0200
+Message-Id: <20220527084820.568796827@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084801.223648383@linuxfoundation.org>
-References: <20220527084801.223648383@linuxfoundation.org>
+In-Reply-To: <20220527084819.133490171@linuxfoundation.org>
+References: <20220527084819.133490171@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,46 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Dominik Brodowski <linux@dominikbrodowski.net>
 
-commit 7c3a8a1db5e03d02cc0abb3357a84b8b326dfac3 upstream.
+commit 7c2fe2b32bf76441ff5b7a425b384e5f75aa530a upstream.
 
-Before these were returning signed values, but the API is intended to be
-used with unsigned values.
+crng_init is protected by primary_crng->lock, so keep holding that lock
+when incrementing crng_init from 0 to 1 in crng_fast_load(). The call to
+pr_notice() can wait until the lock is released; this code path cannot
+be reached twice, as crng_fast_load() aborts early if crng_init > 0.
 
+Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Reviewed-by: Eric Biggers <ebiggers@google.com>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/random.h |   14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ drivers/char/random.c |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
---- a/include/linux/random.h
-+++ b/include/linux/random.h
-@@ -90,18 +90,18 @@ static inline int get_random_bytes_wait(
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -647,12 +647,13 @@ static size_t crng_fast_load(const u8 *c
+ 		p[crng_init_cnt % CHACHA_KEY_SIZE] ^= *cp;
+ 		cp++; crng_init_cnt++; len--; ret++;
+ 	}
+-	spin_unlock_irqrestore(&primary_crng.lock, flags);
+ 	if (crng_init_cnt >= CRNG_INIT_CNT_THRESH) {
+ 		invalidate_batched_entropy();
+ 		crng_init = 1;
+-		pr_notice("fast init done\n");
+ 	}
++	spin_unlock_irqrestore(&primary_crng.lock, flags);
++	if (crng_init == 1)
++		pr_notice("fast init done\n");
  	return ret;
  }
  
--#define declare_get_random_var_wait(var) \
--	static inline int get_random_ ## var ## _wait(var *out) { \
-+#define declare_get_random_var_wait(name, ret_type) \
-+	static inline int get_random_ ## name ## _wait(ret_type *out) { \
- 		int ret = wait_for_random_bytes(); \
- 		if (unlikely(ret)) \
- 			return ret; \
--		*out = get_random_ ## var(); \
-+		*out = get_random_ ## name(); \
- 		return 0; \
- 	}
--declare_get_random_var_wait(u32)
--declare_get_random_var_wait(u64)
--declare_get_random_var_wait(int)
--declare_get_random_var_wait(long)
-+declare_get_random_var_wait(u32, u32)
-+declare_get_random_var_wait(u64, u32)
-+declare_get_random_var_wait(int, unsigned int)
-+declare_get_random_var_wait(long, unsigned long)
- #undef declare_get_random_var
- 
- /*
 
 
