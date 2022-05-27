@@ -2,100 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16E35C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 07:38:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5149C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 07:39:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347856AbiE0HiH (ORCPT
+        id S1347661AbiE0Hjt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 03:38:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33764 "EHLO
+        Fri, 27 May 2022 03:39:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347965AbiE0HiE (ORCPT
+        with ESMTP id S232238AbiE0Hjq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 03:38:04 -0400
-X-Greylist: delayed 60 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 27 May 2022 00:38:01 PDT
-Received: from smtpcmd12131.aruba.it (smtpcmd12131.aruba.it [62.149.156.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7EA2832EF2
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 00:38:01 -0700 (PDT)
-Received: from [192.168.1.56] ([79.0.204.227])
-        by Aruba Outgoing Smtp  with ESMTPSA
-        id uUWnnv5ojPF2euUWonSDZm; Fri, 27 May 2022 09:36:59 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=aruba.it; s=a1;
-        t=1653637019; bh=9m8PWiplWqc8fhBbjEa1jbrDQ3eBFjsCCd+tIXGM9jU=;
-        h=Date:MIME-Version:Subject:To:From:Content-Type;
-        b=lhtLDKW/CIB+x6eXzVWgsrjsqbXuEpXe0a/GGwYxQDfMIhetOxiNFuT4rFRiQmotu
-         BnQ2NyaYTyW9NzsBcGnKq5oLzmnp8xCYwQ3PPRE72uuShQTSZ6PK9H9aw93jrpGpM4
-         3tybIt/aMw1lrRNOV/u+5vQehk+wzpnaFKe8sU7+jeU/g+YHPYZLXixHNK4p2ReC8z
-         z8eG0YGvG1u9DRafMU9kIKE/51lFdPYctFQwezyCZ60e9DnKcLY4wCmg/jEK6lOFGa
-         tgW8atnOnIYtrmYj8qMl3N032rP3zRLXCxbz985cQ2LLvGrVWV0TPyMiF7KKYUITXc
-         K9HCdTnbZ+UAw==
-Message-ID: <98e236c5-fe7e-51bf-3817-2aa721fe79bc@enneenne.com>
-Date:   Fri, 27 May 2022 09:36:57 +0200
+        Fri, 27 May 2022 03:39:46 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA050F7499
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 00:39:42 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 6A69021A80;
+        Fri, 27 May 2022 07:39:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1653637181; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=vdLnFJ4Ca5m70NTfEe0fB3jkyyeyrGYENaDbY2LnlAQ=;
+        b=F5332/+CQarJTGYGB9b5Rjf6swUovv7TqCGsImQmrM4HqyetLFpij/t+LkR+TwpM8AGG8a
+        1FCo4+U08R33qZHPR140w3VrZRji7h3fbOrzjXyAJCl6sZMeAbbZU3pMQqnHSpJj25Hj9/
+        ySh05iKIVOrjHYMCOy0W6GdgG2Jt31I=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1653637181;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=vdLnFJ4Ca5m70NTfEe0fB3jkyyeyrGYENaDbY2LnlAQ=;
+        b=yULVFRxKbGI0ARdRFA5fv3z9TvOGXU7HaG6mbZTRHXFRyb5pYRdRTx52CbO/Pd0jlDmujP
+        gVlKfs1852/cExDA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 4E81013A84;
+        Fri, 27 May 2022 07:39:41 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id HNB2Ej2AkGL5JwAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Fri, 27 May 2022 07:39:41 +0000
+Message-ID: <f25c03d7-d9e2-2ae3-4dcc-0d054a15ad2c@suse.cz>
+Date:   Fri, 27 May 2022 09:39:41 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.9.1
-Subject: Re: [PATCH] pps: clients: Directly use ida_alloc()/free()
+Subject: Re: [PATCH 3/3] mm: hugetlb_vmemmap: cleanup
+ CONFIG_HUGETLB_PAGE_FREE_VMEMMAP*
 Content-Language: en-US
-To:     keliu <liuke94@huawei.com>, gregkh@linuxfoundation.org,
-        andriy.shevchenko@linux.intel.com, linux-kernel@vger.kernel.org
-References: <20220527072520.2374615-1-liuke94@huawei.com>
-From:   Rodolfo Giometti <giometti@enneenne.com>
-In-Reply-To: <20220527072520.2374615-1-liuke94@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Muchun Song <songmuchun@bytedance.com>, mike.kravetz@oracle.com,
+        akpm@linux-foundation.org, david@redhat.com
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        smuchun@bytedance.com
+References: <20220404074652.68024-1-songmuchun@bytedance.com>
+ <20220404074652.68024-4-songmuchun@bytedance.com>
+From:   Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <20220404074652.68024-4-songmuchun@bytedance.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-CMAE-Envelope: MS4xfMhSGK3GclRvkLVKhOgOOUjAZHnB2831GNoZMz5vI0bLr4xLHXYjWH+qMG2167U7CMPlnBN+754UAP1IjThi84qdJjx0MXuh56mspf+r9LwXLPbuG+bd
- nsiWhhLSExSDFbif44nt0sHRVJ5lZSpoT2wjP57P2qX6Iy14mcNB63txv7jEbpDVmsyN7YXuy/PU7EMp85n6Sd1rFZiPtkgNsgoU9aX0/OSveRThWJRioKsY
- UZqhthlt/a3Rv2cf/h2lm75KglSwJlP66SPHHp48VJkU91B90Vfd58eXVRFMoNCEETZlfIJ/NtiHg3h6T4E+Iw==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 27/05/22 09:25, keliu wrote:
-> Use ida_alloc()/ida_free() instead of deprecated
-> ida_simple_get()/ida_simple_remove() .
-> 
-> Signed-off-by: keliu <liuke94@huawei.com>
+On 4/4/22 09:46, Muchun Song wrote:
+> --- a/mm/hugetlb_vmemmap.c
+> +++ b/mm/hugetlb_vmemmap.c
+> @@ -188,7 +188,7 @@
+>  #define RESERVE_VMEMMAP_NR		1U
+>  #define RESERVE_VMEMMAP_SIZE		(RESERVE_VMEMMAP_NR << PAGE_SHIFT)
+>  
+> -DEFINE_STATIC_KEY_MAYBE(CONFIG_HUGETLB_PAGE_FREE_VMEMMAP_DEFAULT_ON,
+> +DEFINE_STATIC_KEY_MAYBE(CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP_DEFAULT_ON,
+>  			hugetlb_optimize_vmemmap_key);
+>  EXPORT_SYMBOL(hugetlb_optimize_vmemmap_key);
 
-Acked-by: Rodolfo Giometti <giometti@enneenne.com>
+Hi,
 
-> ---
->   drivers/pps/clients/pps_parport.c | 6 +++---
->   1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/pps/clients/pps_parport.c b/drivers/pps/clients/pps_parport.c
-> index 42f93d4c6ee3..af972cdc04b5 100644
-> --- a/drivers/pps/clients/pps_parport.c
-> +++ b/drivers/pps/clients/pps_parport.c
-> @@ -148,7 +148,7 @@ static void parport_attach(struct parport *port)
->   		return;
->   	}
->   
-> -	index = ida_simple_get(&pps_client_index, 0, 0, GFP_KERNEL);
-> +	index = ida_alloc(&pps_client_index, GFP_KERNEL);
->   	memset(&pps_client_cb, 0, sizeof(pps_client_cb));
->   	pps_client_cb.private = device;
->   	pps_client_cb.irq_func = parport_irq;
-> @@ -188,7 +188,7 @@ static void parport_attach(struct parport *port)
->   err_unregister_dev:
->   	parport_unregister_device(device->pardev);
->   err_free:
-> -	ida_simple_remove(&pps_client_index, index);
-> +	ida_free(&pps_client_index, index);
->   	kfree(device);
->   }
->   
-> @@ -208,7 +208,7 @@ static void parport_detach(struct parport *port)
->   	pps_unregister_source(device->pps);
->   	parport_release(pardev);
->   	parport_unregister_device(pardev);
-> -	ida_simple_remove(&pps_client_index, device->index);
-> +	ida_free(&pps_client_index, device->index);
->   	kfree(device);
->   }
->   
+looks like just below here you forgot to update:
 
--- 
-GNU/Linux Solutions                  e-mail: giometti@enneenne.com
-Linux Device Driver                          giometti@linux.it
-Embedded Systems                     phone:  +39 349 2432127
-UNIX programming                     skype:  rodolfo.giometti
+static enum vmemmap_optimize_mode vmemmap_optimize_mode =
+        IS_ENABLED(CONFIG_HUGETLB_PAGE_FREE_VMEMMAP_DEFAULT_ON);
+
+so it refers to CONFIG name that no longer exists?
+
+Vlastimil
+
