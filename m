@@ -2,91 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15B78C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 07:32:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2E75C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 07:33:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347145AbiE0Hcr (ORCPT
+        id S1347154AbiE0HdL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 03:32:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47074 "EHLO
+        Fri, 27 May 2022 03:33:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347154AbiE0Hcn (ORCPT
+        with ESMTP id S237172AbiE0HdD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 03:32:43 -0400
-Received: from out199-1.us.a.mail.aliyun.com (out199-1.us.a.mail.aliyun.com [47.90.199.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94979F748B;
-        Fri, 27 May 2022 00:32:42 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=16;SR=0;TI=SMTPD_---0VEW8612_1653636756;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VEW8612_1653636756)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Fri, 27 May 2022 15:32:37 +0800
-Message-ID: <1653636748.5919-5-xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH V6 5/9] virtio-mmio: implement synchronize_cbs()
-Date:   Fri, 27 May 2022 15:32:28 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     tglx@linutronix.de, peterz@infradead.org, paulmck@kernel.org,
-        maz@kernel.org, pasic@linux.ibm.com, cohuck@redhat.com,
-        eperezma@redhat.com, lulu@redhat.com, sgarzare@redhat.com,
-        Vineeth Vijayan <vneethv@linux.ibm.com>,
-        Peter Oberparleiter <oberpar@linux.ibm.com>,
-        linux-s390@vger.kernel.org, mst@redhat.com, jasowang@redhat.com,
-        virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org
-References: <20220527060120.20964-1-jasowang@redhat.com>
- <20220527060120.20964-6-jasowang@redhat.com>
-In-Reply-To: <20220527060120.20964-6-jasowang@redhat.com>
+        Fri, 27 May 2022 03:33:03 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4339CF688C;
+        Fri, 27 May 2022 00:33:01 -0700 (PDT)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.57])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4L8c1V6yPNz1JCRn;
+        Fri, 27 May 2022 15:31:26 +0800 (CST)
+Received: from dggpemm500018.china.huawei.com (7.185.36.111) by
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 27 May 2022 15:32:59 +0800
+Received: from localhost.localdomain (10.175.112.125) by
+ dggpemm500018.china.huawei.com (7.185.36.111) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 27 May 2022 15:32:59 +0800
+From:   keliu <liuke94@huawei.com>
+To:     <ulf.hansson@linaro.org>, <axboe@kernel.dk>, <Avri.Altman@wdc.com>,
+        <adrian.hunter@intel.com>, <shawn.lin@rock-chips.com>,
+        <CLoehle@hyperstone.com>, <swboyd@chromium.org>,
+        <digetx@gmail.com>, <bigeasy@linutronix.de>,
+        <wsa+renesas@sang-engineering.com>,
+        <yoshihiro.shimoda.uh@renesas.com>, <dev@lynxeye.de>,
+        <liuke94@huawei.com>, <linux-mmc@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH] mmc: core: Directly use ida_free()
+Date:   Fri, 27 May 2022 07:54:28 +0000
+Message-ID: <20220527075428.2475782-1-liuke94@huawei.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.112.125]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemm500018.china.huawei.com (7.185.36.111)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 27 May 2022 14:01:16 +0800, Jason Wang <jasowang@redhat.com> wrote:
-> Simply synchronize the platform irq that is used by us.
->
-> Cc: Thomas Gleixner <tglx@linutronix.de>
-> Cc: Peter Zijlstra <peterz@infradead.org>
-> Cc: "Paul E. McKenney" <paulmck@kernel.org>
-> Cc: Marc Zyngier <maz@kernel.org>
-> Cc: Halil Pasic <pasic@linux.ibm.com>
-> Cc: Cornelia Huck <cohuck@redhat.com>
-> Cc: Vineeth Vijayan <vneethv@linux.ibm.com>
-> Cc: Peter Oberparleiter <oberpar@linux.ibm.com>
-> Cc: linux-s390@vger.kernel.org
-> Reviewed-by: Cornelia Huck <cohuck@redhat.com>
-> Signed-off-by: Jason Wang <jasowang@redhat.com>
+Use ida_free() instead of deprecated
+ida_simple_remove() .
 
-Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Signed-off-by: keliu <liuke94@huawei.com>
+---
+ drivers/mmc/core/block.c | 8 ++++----
+ drivers/mmc/core/host.c  | 2 +-
+ 2 files changed, 5 insertions(+), 5 deletions(-)
 
-> ---
->  drivers/virtio/virtio_mmio.c | 8 ++++++++
->  1 file changed, 8 insertions(+)
->
-> diff --git a/drivers/virtio/virtio_mmio.c b/drivers/virtio/virtio_mmio.c
-> index 839684d672af..c9699a59f93c 100644
-> --- a/drivers/virtio/virtio_mmio.c
-> +++ b/drivers/virtio/virtio_mmio.c
-> @@ -345,6 +345,13 @@ static void vm_del_vqs(struct virtio_device *vdev)
->  	free_irq(platform_get_irq(vm_dev->pdev, 0), vm_dev);
->  }
->
-> +static void vm_synchronize_cbs(struct virtio_device *vdev)
-> +{
-> +	struct virtio_mmio_device *vm_dev = to_virtio_mmio_device(vdev);
-> +
-> +	synchronize_irq(platform_get_irq(vm_dev->pdev, 0));
-> +}
-> +
->  static struct virtqueue *vm_setup_vq(struct virtio_device *vdev, unsigned int index,
->  				  void (*callback)(struct virtqueue *vq),
->  				  const char *name, bool ctx)
-> @@ -541,6 +548,7 @@ static const struct virtio_config_ops virtio_mmio_config_ops = {
->  	.finalize_features = vm_finalize_features,
->  	.bus_name	= vm_bus_name,
->  	.get_shm_region = vm_get_shm_region,
-> +	.synchronize_cbs = vm_synchronize_cbs,
->  };
->
->
-> --
-> 2.25.1
->
+diff --git a/drivers/mmc/core/block.c b/drivers/mmc/core/block.c
+index 506dc900f5c7..c8d702db483d 100644
+--- a/drivers/mmc/core/block.c
++++ b/drivers/mmc/core/block.c
+@@ -204,7 +204,7 @@ static void mmc_blk_kref_release(struct kref *ref)
+ 	int devidx;
+ 
+ 	devidx = mmc_get_devidx(md->disk);
+-	ida_simple_remove(&mmc_blk_ida, devidx);
++	ida_free(&mmc_blk_ida, devidx);
+ 
+ 	mutex_lock(&open_lock);
+ 	md->disk->private_data = NULL;
+@@ -2495,7 +2495,7 @@ static struct mmc_blk_data *mmc_blk_alloc_req(struct mmc_card *card,
+  err_kfree:
+ 	kfree(md);
+  out:
+-	ida_simple_remove(&mmc_blk_ida, devidx);
++	ida_free(&mmc_blk_ida, devidx);
+ 	return ERR_PTR(ret);
+ }
+ 
+@@ -2621,7 +2621,7 @@ static void mmc_blk_rpmb_device_release(struct device *dev)
+ {
+ 	struct mmc_rpmb_data *rpmb = dev_get_drvdata(dev);
+ 
+-	ida_simple_remove(&mmc_rpmb_ida, rpmb->id);
++	ida_free(&mmc_rpmb_ida, rpmb->id);
+ 	kfree(rpmb);
+ }
+ 
+@@ -2643,7 +2643,7 @@ static int mmc_blk_alloc_rpmb_part(struct mmc_card *card,
+ 
+ 	rpmb = kzalloc(sizeof(*rpmb), GFP_KERNEL);
+ 	if (!rpmb) {
+-		ida_simple_remove(&mmc_rpmb_ida, devidx);
++		ida_free(&mmc_rpmb_ida, devidx);
+ 		return -ENOMEM;
+ 	}
+ 
+diff --git a/drivers/mmc/core/host.c b/drivers/mmc/core/host.c
+index 2ed2b4d5e5a5..9332e82e175a 100644
+--- a/drivers/mmc/core/host.c
++++ b/drivers/mmc/core/host.c
+@@ -76,7 +76,7 @@ static void mmc_host_classdev_release(struct device *dev)
+ 	struct mmc_host *host = cls_dev_to_mmc_host(dev);
+ 	wakeup_source_unregister(host->ws);
+ 	if (of_alias_get_id(host->parent->of_node, "mmc") < 0)
+-		ida_simple_remove(&mmc_host_ida, host->index);
++		ida_free(&mmc_host_ida, host->index);
+ 	kfree(host);
+ }
+ 
+-- 
+2.25.1
+
