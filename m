@@ -2,72 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E5E5C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:46:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00A7AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:46:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349855AbiE0IqA (ORCPT
+        id S1349880AbiE0Iqa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 04:46:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41738 "EHLO
+        Fri, 27 May 2022 04:46:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349833AbiE0Ip4 (ORCPT
+        with ESMTP id S1349856AbiE0Iq0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 04:45:56 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D13A60049;
-        Fri, 27 May 2022 01:45:55 -0700 (PDT)
+        Fri, 27 May 2022 04:46:26 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7643A634F;
+        Fri, 27 May 2022 01:46:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653641155; x=1685177155;
+  t=1653641184; x=1685177184;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=9bepD47vCeMvE7f7fT/wncmqPaqG2rgfKFf1L1RcCWQ=;
-  b=I9FSyVjEloRTCgm8ZGtGpOa5xK40Q5pQjQQYAMougG6S2vcuDN7gddnH
-   yVsjF8b8R8HpXJvLQq9qBdyYrCg19864isCOeC9NY/HdUfrxexi6nB+61
-   QLere64zHaRNsZgKFKf8Czl968Ova36AvU+1SqyH40H6Xh1pIUF5idsE0
-   r7FTxVpsVSiJGtDqSjRgW+IEc2XRi8kHYH3jp48Ch3/t9qjb2ED9g5lxv
-   2M+IjX53839UznJEUwpE/KehlfSEf7pmq0K7vRDlEKCTPZYEpVFRgJq2A
-   UXl/YTaivHu8vG3SQREzKGRvBQ+FkIOAfjR3FcQAmjwBWTbShl2MF9RjD
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10359"; a="256495633"
+  bh=YKsDt6Azr1nuJYOFtdAXGL2S2Sin9T2sVAVbgDSU0NU=;
+  b=beP3AtmtB4KM6G0F/tZYeOujB4JSO2CwTjFG/ThpBlg+PGvg5EuBT+UB
+   hWymzH6aLXOuILPwQURejQabiq8HZxWPpP87MtskaFJJdj9dKYggNodIi
+   02WPksD25103WGrZdwjcxb1EzV+XJkxVmLBHLtOhO5tsDiktA+BELh0pr
+   BCLdho5MBZxnyNi9VliDkCj9rJr97JSz0bURFovs2z8n0hGwT4UVScnyY
+   XwCP8icRfvI9uEwbOHZ3BwlyT4OiZ1ZQyimhmTfCNieRd+QLn283LtXFE
+   bzl32ySlHWuqkpi1IKnZqZX8BRhHMkwPA84Gpu0CLeP3WbZLGBIVyGQvr
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10359"; a="335073627"
 X-IronPort-AV: E=Sophos;i="5.91,254,1647327600"; 
-   d="scan'208";a="256495633"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2022 01:45:55 -0700
+   d="scan'208";a="335073627"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2022 01:46:23 -0700
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,254,1647327600"; 
-   d="scan'208";a="631495516"
-Received: from silpixa00400314.ir.intel.com (HELO silpixa00400314) ([10.237.222.76])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2022 01:45:53 -0700
-Date:   Fri, 27 May 2022 09:45:46 +0100
-From:   Giovanni Cabiddu <giovanni.cabiddu@intel.com>
-To:     Andre Przywara <andre.przywara@arm.com>
-Cc:     yoan.picchi@arm.com, ardb@kernel.org, davem@davemloft.net,
-        herbert@gondor.apana.org.au, linux-crypto@vger.kernel.org,
-        linux-kernel@vger.kernel.org, qat-linux@intel.com
-Subject: Re: [RFC PATCH 2/2] Removes the x86 dependency on the QAT drivers
-Message-ID: <YpCPulwFuNHHtw1V@silpixa00400314>
-References: <CAMj1kXGAiA-SkTFD5EgcacYao0RKT7oK0AxvxkR7Ho_KZSGXCw@mail.gmail.com>
- <8f6d8d1f-2872-15b9-d38b-1e8eb26f781b@foss.arm.com>
- <YoyOg/kYGtO+nQac@silpixa00400314>
- <20220525141239.48589f25@donnerap.cambridge.arm.com>
+   d="scan'208";a="718795000"
+Received: from lkp-server01.sh.intel.com (HELO db63a1be7222) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 27 May 2022 01:46:22 -0700
+Received: from kbuild by db63a1be7222 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nuVbx-0004aE-Ml;
+        Fri, 27 May 2022 08:46:21 +0000
+Date:   Fri, 27 May 2022 16:46:01 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Hongchen Zhang <zhanghongchen@loongson.cn>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>
+Cc:     kbuild-all@lists.01.org, cgroups@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Hongchen Zhang <zhanghongchen@loongson.cn>
+Subject: Re: [PATCH] cgroup: wait for css offline when rmdir
+Message-ID: <202205271657.MRX54zi5-lkp@intel.com>
+References: <1653619158-27607-1-git-send-email-zhanghongchen@loongson.cn>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220525141239.48589f25@donnerap.cambridge.arm.com>
-Organization: Intel Research and Development Ireland Ltd - Co. Reg. #308263 -
- Collinstown Industrial Park, Leixlip, County Kildare - Ireland
+In-Reply-To: <1653619158-27607-1-git-send-email-zhanghongchen@loongson.cn>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 25, 2022 at 02:12:39PM +0100, Andre Przywara wrote:
-> So testing this in BE is a bit more involved, and the practicality of such
-> a setup is very questionable. If you are concerned, should we just say:
-> 	depends on PCI && !CPU_BIG_ENDIAN
-> At least until we have reports that confirm proper BE operation?
-Sounds reasonable.
+Hi Hongchen,
 
-Thanks,
+Thank you for the patch! Perhaps something to improve:
+
+[auto build test WARNING on tj-cgroup/for-next]
+[also build test WARNING on v5.18 next-20220527]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Hongchen-Zhang/cgroup-wait-for-css-offline-when-rmdir/20220527-104105
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/tj/cgroup.git for-next
+config: um-i386_defconfig (https://download.01.org/0day-ci/archive/20220527/202205271657.MRX54zi5-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-1) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/9cd51af8f62de826ed76ffb6a63dce3d14926a03
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Hongchen-Zhang/cgroup-wait-for-css-offline-when-rmdir/20220527-104105
+        git checkout 9cd51af8f62de826ed76ffb6a63dce3d14926a03
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=um SUBARCH=i386 SHELL=/bin/bash kernel/cgroup/
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> kernel/cgroup/cgroup.c:3024:6: warning: no previous prototype for 'cgroup_wait_css_offline' [-Wmissing-prototypes]
+    3024 | void cgroup_wait_css_offline(struct cgroup *cgrp)
+         |      ^~~~~~~~~~~~~~~~~~~~~~~
+
+
+vim +/cgroup_wait_css_offline +3024 kernel/cgroup/cgroup.c
+
+  3022	
+  3023	/* wait all cgrp's csses become offlined */
+> 3024	void cgroup_wait_css_offline(struct cgroup *cgrp)
+  3025	{
+  3026		struct cgroup_subsys *ss;
+  3027		int ssid;
+  3028	
+  3029		lockdep_assert_held(&cgroup_mutex);
+  3030		for_each_subsys(ss, ssid) {
+  3031			struct cgroup_subsys_state *css = cgroup_css(cgrp, ss);
+  3032			DEFINE_WAIT(wait);
+  3033	
+  3034			if (!css || !percpu_ref_is_dying(&css->refcnt))
+  3035				continue;
+  3036	
+  3037			prepare_to_wait(&cgrp->offline_waitq, &wait,
+  3038					TASK_UNINTERRUPTIBLE);
+  3039	
+  3040			mutex_unlock(&cgroup_mutex);
+  3041			schedule();
+  3042			finish_wait(&cgrp->offline_waitq, &wait);
+  3043	
+  3044			mutex_lock(&cgroup_mutex);
+  3045		}
+  3046	}
+  3047	
 
 -- 
-Giovanni
+0-DAY CI Kernel Test Service
+https://01.org/lkp
