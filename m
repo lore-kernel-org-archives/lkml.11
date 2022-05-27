@@ -2,23 +2,23 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73FA7C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 21:29:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3A80C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 21:29:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354760AbiE0V3t (ORCPT
+        id S1354756AbiE0V3x (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 17:29:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44272 "EHLO
+        Fri, 27 May 2022 17:29:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244000AbiE0V3l (ORCPT
+        with ESMTP id S1354752AbiE0V3q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 17:29:41 -0400
-Received: from relay01.th.seeweb.it (relay01.th.seeweb.it [5.144.164.162])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6E176CA96
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 14:29:39 -0700 (PDT)
+        Fri, 27 May 2022 17:29:46 -0400
+Received: from relay03.th.seeweb.it (relay03.th.seeweb.it [5.144.164.164])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27EF46C563
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 14:29:42 -0700 (PDT)
 Received: from localhost.localdomain (abxh119.neoplus.adsl.tpnet.pl [83.9.1.119])
-        by m-r1.th.seeweb.it (Postfix) with ESMTPA id B24AB20543;
-        Fri, 27 May 2022 23:29:36 +0200 (CEST)
+        by m-r1.th.seeweb.it (Postfix) with ESMTPA id 768342057C;
+        Fri, 27 May 2022 23:29:39 +0200 (CEST)
 From:   Konrad Dybcio <konrad.dybcio@somainline.org>
 To:     ~postmarketos/upstreaming@lists.sr.ht,
         linux-arm-msm@vger.kernel.org, bjorn.andersson@linaro.org,
@@ -28,16 +28,12 @@ Cc:     martin.botka@somainline.org,
         angelogioacchino.delregno@somainline.org,
         marijn.suijten@somainline.org, jamipkettunen@somainline.org,
         Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Andy Gross <agross@kernel.org>, Joerg Roedel <joro@8bytes.org>,
-        Will Deacon <will@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Clark <robdclark@gmail.com>,
+        Rob Clark <robdclark@gmail.com>, Will Deacon <will@kernel.org>,
         Robin Murphy <robin.murphy@arm.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 1/6] iommu/qcom: Use the asid read from device-tree if specified
-Date:   Fri, 27 May 2022 23:28:56 +0200
-Message-Id: <20220527212901.29268-2-konrad.dybcio@somainline.org>
+        Joerg Roedel <joro@8bytes.org>, linux-kernel@vger.kernel.org
+Subject: [PATCH 3/6] iommu/qcom: Properly reset the IOMMU context
+Date:   Fri, 27 May 2022 23:28:58 +0200
+Message-Id: <20220527212901.29268-4-konrad.dybcio@somainline.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220527212901.29268-1-konrad.dybcio@somainline.org>
 References: <20220527212901.29268-1-konrad.dybcio@somainline.org>
@@ -49,78 +45,65 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
 
-As specified in this driver, the context banks are 0x1000 apart.
-Problem is that sometimes the context number (our asid) does not
-match this logic and we end up using the wrong one: this starts
-being a problem in the case that we need to send TZ commands
-to do anything on a specific context.
-
-For this reason, read the ASID from the DT if the property
-"qcom,ctx-num" is present on the IOMMU context node.
+To avoid context faults reset the context entirely on detach and
+to ensure a fresh clean start also do a complete reset before
+programming the context for domain initialization.
 
 Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
 Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
 Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
 ---
- .../devicetree/bindings/iommu/qcom,iommu.txt   |  1 +
- drivers/iommu/arm/arm-smmu/qcom_iommu.c        | 18 +++++++++++++++---
- 2 files changed, 16 insertions(+), 3 deletions(-)
+ drivers/iommu/arm/arm-smmu/qcom_iommu.c | 23 +++++++++++++++++++++--
+ 1 file changed, 21 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iommu/qcom,iommu.txt b/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
-index 059139abce35..ba0b77889f02 100644
---- a/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
-+++ b/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
-@@ -46,6 +46,7 @@ to non-secure vs secure interrupt line.
-                      for routing of context bank irq's to secure vs non-
-                      secure lines.  (Ie. if the iommu contains secure
-                      context banks)
-+- qcom,ctx-num     : The number associated to the context bank
- 
- 
- ** Examples:
 diff --git a/drivers/iommu/arm/arm-smmu/qcom_iommu.c b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-index 4c077c38fbd6..1728d4d7fe25 100644
+index 75f353866c40..129e322f56a6 100644
 --- a/drivers/iommu/arm/arm-smmu/qcom_iommu.c
 +++ b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-@@ -566,7 +566,8 @@ static int qcom_iommu_of_xlate(struct device *dev, struct of_phandle_args *args)
- 	 * index into qcom_iommu->ctxs:
- 	 */
- 	if (WARN_ON(asid < 1) ||
--	    WARN_ON(asid > qcom_iommu->num_ctxs)) {
-+	    WARN_ON(asid > qcom_iommu->num_ctxs) ||
-+	    WARN_ON(qcom_iommu->ctxs[asid - 1] == NULL)) {
- 		put_device(&iommu_pdev->dev);
- 		return -EINVAL;
- 	}
-@@ -654,7 +655,8 @@ static int qcom_iommu_sec_ptbl_init(struct device *dev)
- 
- static int get_asid(const struct device_node *np)
- {
--	u32 reg;
-+	u32 reg, val;
-+	int asid;
- 
- 	/* read the "reg" property directly to get the relative address
- 	 * of the context bank, and calculate the asid from that:
-@@ -662,7 +664,17 @@ static int get_asid(const struct device_node *np)
- 	if (of_property_read_u32_index(np, "reg", 0, &reg))
- 		return -ENODEV;
- 
--	return reg / 0x1000;      /* context banks are 0x1000 apart */
-+	/*
-+	 * Context banks are 0x1000 apart but, in some cases, the ASID
-+	 * number doesn't match to this logic and needs to be passed
-+	 * from the DT configuration explicitly.
-+	 */
-+	if (of_property_read_u32(np, "qcom,ctx-num", &val))
-+		asid = reg / 0x1000;
-+	else
-+		asid = val;
-+
-+	return asid;
+@@ -223,6 +223,23 @@ static irqreturn_t qcom_iommu_fault(int irq, void *dev)
+ 	return IRQ_HANDLED;
  }
  
- static int qcom_iommu_ctx_probe(struct platform_device *pdev)
++static void qcom_iommu_reset_ctx(struct qcom_iommu_ctx *ctx)
++{
++	iommu_writel(ctx, ARM_SMMU_CB_FAR, 0);
++	iommu_writel(ctx, ARM_SMMU_CB_FSR, 0);
++	iommu_writel(ctx, ARM_SMMU_CB_S1_MAIR1, 0);
++	iommu_writel(ctx, ARM_SMMU_CB_PAR, 0);
++	iommu_writel(ctx, ARM_SMMU_CB_S1_MAIR0, 0);
++	iommu_writel(ctx, ARM_SMMU_CB_SCTLR, 0);
++	iommu_writel(ctx, ARM_SMMU_CB_TCR2, 0);
++	iommu_writel(ctx, ARM_SMMU_CB_TCR, 0);
++	iommu_writeq(ctx, ARM_SMMU_CB_TTBR0, 0);
++	iommu_writeq(ctx, ARM_SMMU_CB_TTBR1, 0);
++
++	/* Should we issue a TLBSYNC there instead? */
++	wmb();
++}
++
+ static int qcom_iommu_init_domain(struct iommu_domain *domain,
+ 				  struct qcom_iommu_dev *qcom_iommu,
+ 				  struct device *dev)
+@@ -273,6 +290,8 @@ static int qcom_iommu_init_domain(struct iommu_domain *domain,
+ 			ctx->secure_init = true;
+ 		}
+ 
++		qcom_iommu_reset_ctx(ctx);
++
+ 		/* TCR */
+ 		iommu_writel(ctx, ARM_SMMU_CB_TCR2,
+ 				arm_smmu_lpae_tcr2(&pgtbl_cfg));
+@@ -406,8 +425,8 @@ static void qcom_iommu_detach_dev(struct iommu_domain *domain, struct device *de
+ 	for (i = 0; i < fwspec->num_ids; i++) {
+ 		struct qcom_iommu_ctx *ctx = to_ctx(qcom_domain, fwspec->ids[i]);
+ 
+-		/* Disable the context bank: */
+-		iommu_writel(ctx, ARM_SMMU_CB_SCTLR, 0);
++		/* Disable and reset the context bank */
++		qcom_iommu_reset_ctx(ctx);
+ 
+ 		ctx->domain = NULL;
+ 	}
 -- 
 2.36.1
 
