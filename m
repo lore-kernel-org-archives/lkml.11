@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 981ABC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:07:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E768C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:07:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343845AbiE0IH1 (ORCPT
+        id S1349453AbiE0IHf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 04:07:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56452 "EHLO
+        Fri, 27 May 2022 04:07:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348794AbiE0IHG (ORCPT
+        with ESMTP id S1349649AbiE0IGh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 04:07:06 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 18762FF583
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 01:06:36 -0700 (PDT)
+        Fri, 27 May 2022 04:06:37 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5EA3D28992
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 01:06:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653638795;
+        s=mimecast20190719; t=1653638777;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Au77dj9BaZM3OWaXsQH00UFj+i5VHc/ijY2zkDDcEiA=;
-        b=PWqAC5U9qp4+DKRFLCrgMVnrQZcCsRFShu8PJXjXzmyxeRwLraF70YPl38ZWL/GezbcjkL
-        FM7q+1vcuynkvLznnnhScqIIqhpSZDaRvbjG6ek3cMOOdeKo2oUDDL4bYpNieUL88riVpG
-        YL/PaGmGFZZmh0SuiYrcdscfLgY6Rpo=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=JmejXcqy3igKfzXfj854zdtX6ccYIqInqbAINc4o8Ro=;
+        b=axBVPih2HEsB7qqTA3BZFfPkuK9iPlUOMHlSQGv593m2Dd1yVwtn5KodXPHyitEsaMWpyB
+        sun1H+WHSck8ADgZiv4SlYmGid8EO1Sca3GG6EHhh0CJEHeT5fsmmOnGPKN8F7D+jiw/S3
+        uJwi1owrVaSRGYDpYaR9iMhp2gbo2HY=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-456-qa_RcJv4PtiKr0mqIkal9A-1; Fri, 27 May 2022 04:06:32 -0400
-X-MC-Unique: qa_RcJv4PtiKr0mqIkal9A-1
+ us-mta-267-quDHT6L0NL646pHc2VDpBw-1; Fri, 27 May 2022 04:06:14 -0400
+X-MC-Unique: quDHT6L0NL646pHc2VDpBw-1
 Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 99C0A2949BB5;
-        Fri, 27 May 2022 08:06:31 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id BD19480418C;
+        Fri, 27 May 2022 08:06:13 +0000 (UTC)
 Received: from gshan.redhat.com (ovpn-12-91.pek2.redhat.com [10.72.12.91])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 08B782026D64;
-        Fri, 27 May 2022 08:06:21 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 822C72026D64;
+        Fri, 27 May 2022 08:06:05 +0000 (UTC)
 From:   Gavin Shan <gshan@redhat.com>
 To:     kvmarm@lists.cs.columbia.edu
 Cc:     maz@kernel.org, linux-kernel@vger.kernel.org, eauger@redhat.com,
@@ -47,9 +47,9 @@ Cc:     maz@kernel.org, linux-kernel@vger.kernel.org, eauger@redhat.com,
         james.morse@arm.com, mark.rutland@arm.com,
         shannon.zhaosl@gmail.com, shijie@amperemail.onmicrosoft.com,
         shan.gavin@gmail.com
-Subject: [PATCH v7 20/22] KVM: arm64: Add SDEI document
-Date:   Fri, 27 May 2022 16:02:51 +0800
-Message-Id: <20220527080253.1562538-21-gshan@redhat.com>
+Subject: [PATCH v7 18/22] KVM: arm64: Allow large sized pseudo firmware registers
+Date:   Fri, 27 May 2022 16:02:49 +0800
+Message-Id: <20220527080253.1562538-19-gshan@redhat.com>
 In-Reply-To: <20220527080253.1562538-1-gshan@redhat.com>
 References: <20220527080253.1562538-1-gshan@redhat.com>
 MIME-Version: 1.0
@@ -60,85 +60,95 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This adds SDEI document, to explain what has been missed from the
-specification and the pesudo firmware registers used for migration.
+Currently, the sizes of all pseudo firmware registers are 64 bits.
+The value from user space is copied to a local 64-bits variable,
+which is passed on in kvm_arm_set_fw_reg(). It works perfectly
+until large sized pseudo firmware registers are added for SDEI
+event handlers, states and context.
+
+This copies the user space's value to local 64-bits variable
+and passes the local variable on, only if the pseudo firmware
+register is 64-bits in size. No functional change intended.
 
 Signed-off-by: Gavin Shan <gshan@redhat.com>
 ---
- Documentation/virt/kvm/arm/sdei.rst | 64 +++++++++++++++++++++++++++++
- 1 file changed, 64 insertions(+)
- create mode 100644 Documentation/virt/kvm/arm/sdei.rst
+ arch/arm64/kvm/hypercalls.c | 23 +++++++++++++++++------
+ 1 file changed, 17 insertions(+), 6 deletions(-)
 
-diff --git a/Documentation/virt/kvm/arm/sdei.rst b/Documentation/virt/kvm/arm/sdei.rst
-new file mode 100644
-index 000000000000..ba1539978b2c
---- /dev/null
-+++ b/Documentation/virt/kvm/arm/sdei.rst
-@@ -0,0 +1,64 @@
-+.. SPDX-License-Identifier: GPL-2.0
+diff --git a/arch/arm64/kvm/hypercalls.c b/arch/arm64/kvm/hypercalls.c
+index aaa5197ffe83..8e0df54d1422 100644
+--- a/arch/arm64/kvm/hypercalls.c
++++ b/arch/arm64/kvm/hypercalls.c
+@@ -406,14 +406,20 @@ int kvm_arm_get_fw_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
+ 	return 0;
+ }
+ 
+-static int kvm_arm_set_fw_reg_bmap(struct kvm_vcpu *vcpu, u64 reg_id, u64 val)
++static int kvm_arm_set_fw_reg_bmap(struct kvm_vcpu *vcpu,
++				   const struct kvm_one_reg *reg)
+ {
+ 	int ret = 0;
+ 	struct kvm *kvm = vcpu->kvm;
+ 	struct kvm_smccc_features *smccc_feat = &kvm->arch.smccc_feat;
+ 	unsigned long *fw_reg_bmap, fw_reg_features;
++	void __user *uaddr = (void __user *)(long)reg->addr;
++	u64 val;
+ 
+-	switch (reg_id) {
++	if (copy_from_user(&val, uaddr, KVM_REG_SIZE(reg->id)))
++		return -EFAULT;
 +
-+=====================================
-+SDEI Virtualization Support for ARM64
-+=====================================
++	switch (reg->id) {
+ 	case KVM_REG_ARM_STD_BMAP:
+ 		fw_reg_bmap = &smccc_feat->std_bmap;
+ 		fw_reg_features = KVM_ARM_SMCCC_STD_FEATURES;
+@@ -454,15 +460,14 @@ int kvm_arm_set_fw_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
+ 	u64 val;
+ 	int wa_level;
+ 
+-	if (copy_from_user(&val, uaddr, KVM_REG_SIZE(reg->id)))
+-		return -EFAULT;
+-
+ 	switch (reg->id) {
+ 	case KVM_REG_ARM_PSCI_VERSION:
+ 	{
+ 		bool wants_02;
+ 
+ 		wants_02 = test_bit(KVM_ARM_VCPU_PSCI_0_2, vcpu->arch.features);
++		if (copy_from_user(&val, uaddr, KVM_REG_SIZE(reg->id)))
++			return -EFAULT;
+ 
+ 		switch (val) {
+ 		case KVM_ARM_PSCI_0_1:
+@@ -483,6 +488,9 @@ int kvm_arm_set_fw_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
+ 
+ 	case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_1:
+ 	case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3:
++		if (copy_from_user(&val, uaddr, KVM_REG_SIZE(reg->id)))
++			return -EFAULT;
 +
-+ARM specification DEN0054/C defines Software Delegated Exception Interface
-+(SDEI). It provides a mechanism for registering and servicing system events
-+from system firmware. The interface is offered by a higher exception level
-+to a lower exception level, in other words by a secure platform firmware
-+to hypervisor or hypervisor to OS or both.
+ 		if (val & ~KVM_REG_FEATURE_LEVEL_MASK)
+ 			return -EINVAL;
+ 
+@@ -492,6 +500,9 @@ int kvm_arm_set_fw_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
+ 		return 0;
+ 
+ 	case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2:
++		if (copy_from_user(&val, uaddr, KVM_REG_SIZE(reg->id)))
++			return -EFAULT;
 +
-+https://developer.arm.com/documentation/den0054/c
-+
-+KVM/arm64 implementation follows the specification to support the defined
-+hypercalls so that the system events can be registered and serviced from
-+KVM hypervisor to the guest OS. However, some of specified functionalities
-+are missed by the implementation.
-+
-+  * The shared event is not supported. It means all supported events are
-+    private. They need to be registered, enabled, disabled, unregistered
-+    and reset from one particular PE (vCPU).
-+
-+  * The critical priority is not supported. It means all supported events
-+    have normal priority. So there is no preemption between two events
-+    in the critical and normal priorities. One event can be running at
-+    once on one particular PE (vCPU).
-+
-+  * Interrupt binding event is not supported. It means all supported
-+    events triggered by software.
-+
-+  * Relative mode for the event handler's address is not supported.
-+    The event handler address is always an absolute address.
-+
-+The event handlers, states and context need to be migrated. Several pseudo
-+firmware registers are added for this.
-+
-+  * KVM_REG_ARM_SDEI_EVENT_HANDLER_0
-+    KVM_REG_ARM_SDEI_EVENT_HANDLER_1
-+    KVM_REG_ARM_SDEI_EVENT_HANDLER_2
-+    KVM_REG_ARM_SDEI_EVENT_HANDLER_3
-+
-+    The event handler's address and argument for events, whose number
-+    are 0, 1, 2 and 3 respectively. Currently, there are only two
-+    supported events, which are Software Signaled Event (0) and Async
-+    PF Event (1). So the first two registers are only used. zeroes are
-+    returned on reading KVM_REG_ARM_SDEI_EVENT_HANDLER_{2, 3}, and the
-+    values written to them are ignored.
-+
-+  * KVM_REG_ARM_SDEI_EVENT_REGISTERED
-+    KVM_REG_ARM_SDEI_EVENT_ENABLED
-+    KVM_REG_ARM_SDEI_EVENT_RUNNING
-+    KVM_REG_ARM_SDEI_EVENT_PENDING
-+
-+    They are mapped to the registered, enabled, running and pending
-+    bitmap respectively.
-+
-+  * KVM_REG_ARM_SDEI_EVENT_CONTEXT
-+
-+    The interrupted context.
-+
-+  * KVM_REG_ARM_SDEI_PE_STATE
-+
-+    Relect the SDEI masked state on the PE (vCPU).
+ 		if (val & ~(KVM_REG_FEATURE_LEVEL_MASK |
+ 			    KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2_ENABLED))
+ 			return -EINVAL;
+@@ -529,7 +540,7 @@ int kvm_arm_set_fw_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
+ 	case KVM_REG_ARM_STD_BMAP:
+ 	case KVM_REG_ARM_STD_HYP_BMAP:
+ 	case KVM_REG_ARM_VENDOR_HYP_BMAP:
+-		return kvm_arm_set_fw_reg_bmap(vcpu, reg->id, val);
++		return kvm_arm_set_fw_reg_bmap(vcpu, reg);
+ 	default:
+ 		return -ENOENT;
+ 	}
 -- 
 2.23.0
 
