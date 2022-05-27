@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46D8CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:47:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B07B8C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:47:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351686AbiE0Lq7 (ORCPT
+        id S1351863AbiE0LrB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 07:46:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57454 "EHLO
+        Fri, 27 May 2022 07:47:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352023AbiE0LpQ (ORCPT
+        with ESMTP id S1352067AbiE0LpU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:45:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05E7C132776;
-        Fri, 27 May 2022 04:41:44 -0700 (PDT)
+        Fri, 27 May 2022 07:45:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0199140401;
+        Fri, 27 May 2022 04:41:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 63D68B824D6;
-        Fri, 27 May 2022 11:41:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2BA0C385A9;
-        Fri, 27 May 2022 11:41:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7D8A661CE7;
+        Fri, 27 May 2022 11:41:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C07BC34100;
+        Fri, 27 May 2022 11:41:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653651702;
-        bh=RCjUC63k93zeo8gThW8lUvjsEHUUCfLr2HkXszXk9zg=;
+        s=korg; t=1653651707;
+        bh=Ca/av4HY0exhaMWqnerAnWuF1QOI4lsHmT1pw78Fx1E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=x4Hh0HjGvjaNkmvipBYKl2ncKqVg5wL/eysfFlNm7FKHrHe7iD3KAjxW6tRnv5IPA
-         xIJYjn2ZGu5yC2cjIwT+ZMvAH8XcLx9Cxrq5Y/2+y+McGs84s4282AyZFul4aUAecn
-         NVZISDHWxWrixjRpq8nFVeBacXWC+dT6Y2KozVnA=
+        b=SSbexPcXX9bp2INgPMtzhyo+NeLBQTFI8bEq0iH8G4DVL51riyN5vCMC6Whg4Y37h
+         7VF4zX0l30BgbjsUM57yHze2vk8wrA/nbjVBPYzZtzCEc4kNzU0W696qODjtO03bsg
+         DO2KY6dlbewxPDwMpEH/WxHO1oiVp3GD424gF0PA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.10 036/163] random: use IS_ENABLED(CONFIG_NUMA) instead of ifdefs
-Date:   Fri, 27 May 2022 10:48:36 +0200
-Message-Id: <20220527084833.128444079@linuxfoundation.org>
+        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Arnd Bergmann <arnd@arndb.de>, Theodore Tso <tytso@mit.edu>
+Subject: [PATCH 5.17 074/111] timekeeping: Add raw clock fallback for random_get_entropy()
+Date:   Fri, 27 May 2022 10:49:46 +0200
+Message-Id: <20220527084829.962361074@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
-References: <20220527084828.156494029@linuxfoundation.org>
+In-Reply-To: <20220527084819.133490171@linuxfoundation.org>
+References: <20220527084819.133490171@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,98 +52,98 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 7b87324112df2e1f9b395217361626362dcfb9fb upstream.
+commit 1366992e16bddd5e2d9a561687f367f9f802e2e4 upstream.
 
-Rather than an awkward combination of ifdefs and __maybe_unused, we can
-ensure more source gets parsed, regardless of the configuration, by
-using IS_ENABLED for the CONFIG_NUMA conditional code. This makes things
-cleaner and easier to follow.
+The addition of random_get_entropy_fallback() provides access to
+whichever time source has the highest frequency, which is useful for
+gathering entropy on platforms without available cycle counters. It's
+not necessarily as good as being able to quickly access a cycle counter
+that the CPU has, but it's still something, even when it falls back to
+being jiffies-based.
 
-I've confirmed that on !CONFIG_NUMA, we don't wind up with excess code
-by accident; the generated object file is the same.
+In the event that a given arch does not define get_cycles(), falling
+back to the get_cycles() default implementation that returns 0 is really
+not the best we can do. Instead, at least calling
+random_get_entropy_fallback() would be preferable, because that always
+needs to return _something_, even falling back to jiffies eventually.
+It's not as though random_get_entropy_fallback() is super high precision
+or guaranteed to be entropic, but basically anything that's not zero all
+the time is better than returning zero all the time.
 
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Finally, since random_get_entropy_fallback() is used during extremely
+early boot when randomizing freelists in mm_init(), it can be called
+before timekeeping has been initialized. In that case there really is
+nothing we can do; jiffies hasn't even started ticking yet. So just give
+up and return 0.
+
+Suggested-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   32 ++++++++++++--------------------
- 1 file changed, 12 insertions(+), 20 deletions(-)
+ include/linux/timex.h     |    8 ++++++++
+ kernel/time/timekeeping.c |   15 +++++++++++++++
+ 2 files changed, 23 insertions(+)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -759,7 +759,6 @@ static int credit_entropy_bits_safe(stru
+--- a/include/linux/timex.h
++++ b/include/linux/timex.h
+@@ -62,6 +62,8 @@
+ #include <linux/types.h>
+ #include <linux/param.h>
  
- static DECLARE_WAIT_QUEUE_HEAD(crng_init_wait);
- 
--#ifdef CONFIG_NUMA
- /*
-  * Hack to deal with crazy userspace progams when they are all trying
-  * to access /dev/urandom in parallel.  The programs are almost
-@@ -767,7 +766,6 @@ static DECLARE_WAIT_QUEUE_HEAD(crng_init
-  * their brain damage.
-  */
- static struct crng_state **crng_node_pool __read_mostly;
--#endif
- 
- static void invalidate_batched_entropy(void);
- static void numa_crng_init(void);
-@@ -815,7 +813,7 @@ static bool __init crng_init_try_arch_ea
- 	return arch_init;
- }
- 
--static void __maybe_unused crng_initialize_secondary(struct crng_state *crng)
-+static void crng_initialize_secondary(struct crng_state *crng)
- {
- 	chacha_init_consts(crng->state);
- 	_get_random_bytes(&crng->state[4], sizeof(__u32) * 12);
-@@ -866,7 +864,6 @@ static void crng_finalize_init(struct cr
- 	}
- }
- 
--#ifdef CONFIG_NUMA
- static void do_numa_crng_init(struct work_struct *work)
- {
- 	int i;
-@@ -893,29 +890,24 @@ static DECLARE_WORK(numa_crng_init_work,
- 
- static void numa_crng_init(void)
- {
--	schedule_work(&numa_crng_init_work);
-+	if (IS_ENABLED(CONFIG_NUMA))
-+		schedule_work(&numa_crng_init_work);
- }
- 
- static struct crng_state *select_crng(void)
- {
--	struct crng_state **pool;
--	int nid = numa_node_id();
--
--	/* pairs with cmpxchg_release() in do_numa_crng_init() */
--	pool = READ_ONCE(crng_node_pool);
--	if (pool && pool[nid])
--		return pool[nid];
--
--	return &primary_crng;
--}
--#else
--static void numa_crng_init(void) {}
-+	if (IS_ENABLED(CONFIG_NUMA)) {
-+		struct crng_state **pool;
-+		int nid = numa_node_id();
++unsigned long random_get_entropy_fallback(void);
 +
-+		/* pairs with cmpxchg_release() in do_numa_crng_init() */
-+		pool = READ_ONCE(crng_node_pool);
-+		if (pool && pool[nid])
-+			return pool[nid];
-+	}
+ #include <asm/timex.h>
  
--static struct crng_state *select_crng(void)
--{
- 	return &primary_crng;
- }
--#endif
+ #ifndef random_get_entropy
+@@ -74,8 +76,14 @@
+  *
+  * By default we use get_cycles() for this purpose, but individual
+  * architectures may override this in their asm/timex.h header file.
++ * If a given arch does not have get_cycles(), then we fallback to
++ * using random_get_entropy_fallback().
+  */
++#ifdef get_cycles
+ #define random_get_entropy()	((unsigned long)get_cycles())
++#else
++#define random_get_entropy()	random_get_entropy_fallback()
++#endif
+ #endif
  
  /*
-  * crng_fast_load() can be called by code in the interrupt service
+--- a/kernel/time/timekeeping.c
++++ b/kernel/time/timekeeping.c
+@@ -17,6 +17,7 @@
+ #include <linux/clocksource.h>
+ #include <linux/jiffies.h>
+ #include <linux/time.h>
++#include <linux/timex.h>
+ #include <linux/tick.h>
+ #include <linux/stop_machine.h>
+ #include <linux/pvclock_gtod.h>
+@@ -2380,6 +2381,20 @@ static int timekeeping_validate_timex(co
+ 	return 0;
+ }
+ 
++/**
++ * random_get_entropy_fallback - Returns the raw clock source value,
++ * used by random.c for platforms with no valid random_get_entropy().
++ */
++unsigned long random_get_entropy_fallback(void)
++{
++	struct tk_read_base *tkr = &tk_core.timekeeper.tkr_mono;
++	struct clocksource *clock = READ_ONCE(tkr->clock);
++
++	if (unlikely(timekeeping_suspended || !clock))
++		return 0;
++	return clock->read(clock);
++}
++EXPORT_SYMBOL_GPL(random_get_entropy_fallback);
+ 
+ /**
+  * do_adjtimex() - Accessor function to NTP __do_adjtimex function
 
 
