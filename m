@@ -2,47 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E237C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:14:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA6FEC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:14:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345505AbiE0MOC (ORCPT
+        id S1345006AbiE0MOM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 08:14:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46870 "EHLO
+        Fri, 27 May 2022 08:14:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351890AbiE0L7C (ORCPT
+        with ESMTP id S1352442AbiE0MAa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:59:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9144A6468;
-        Fri, 27 May 2022 04:52:11 -0700 (PDT)
+        Fri, 27 May 2022 08:00:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A78B7BC1E;
+        Fri, 27 May 2022 04:52:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 689DD61DB2;
-        Fri, 27 May 2022 11:52:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7429CC385A9;
-        Fri, 27 May 2022 11:52:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 262FEB824D2;
+        Fri, 27 May 2022 11:52:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86D54C385A9;
+        Fri, 27 May 2022 11:52:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653652329;
-        bh=YVFCm9IvwmgkDNWZPZYSkH8bYCAZpNilJPeiWNu6Xuk=;
+        s=korg; t=1653652326;
+        bh=vzwuZWnm6kpqwOb+2kD3Qz0bX3zG6yU4MW7xDk9XB+o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iLQc6Hqzr8rxjf59hCBRu64HvPunj4rcjLhhFhAX2HU66s+2bjCSgvHadWpmpV7yV
-         DvAWhuSFg81Ter+RbW7nrjnr+X8MH/+jBVGidreyc5eeTdhbQ+z49dr7L856LzPwnU
-         G7UVnNniD8M1D9aAKQlBCMH5cfvEfGK3bCUCtpbg=
+        b=M9SRzo+93eTZHTZJnB9OJ1XKrEKL1N2CC6Qb67/WfhweiitM9+u8D33G4Hhg0qafw
+         fBpaF9sxHznXsAqiDJM0X7hJCfkojfXT+pX0ekQCqeNDHY2zEeBy/7wkp2kn0RL4i3
+         OEhMfMQSierNMeziXwXSthGXoiCChN7dH0yopYOo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
         Arnd Bergmann <arnd@arndb.de>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Richard Henderson <rth@twiddle.net>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.15 110/145] m68k: use fallback for random_get_entropy() instead of zero
-Date:   Fri, 27 May 2022 10:50:11 +0200
-Message-Id: <20220527084903.908315802@linuxfoundation.org>
+Subject: [PATCH 5.10 125/163] alpha: define get_cycles macro for arch-override
+Date:   Fri, 27 May 2022 10:50:05 +0200
+Message-Id: <20220527084845.365676632@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084850.364560116@linuxfoundation.org>
-References: <20220527084850.364560116@linuxfoundation.org>
+In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
+References: <20220527084828.156494029@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,36 +55,34 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 0f392c95391f2d708b12971a07edaa7973f9eece upstream.
+commit 1097710bc9660e1e588cf2186a35db3d95c4d258 upstream.
 
-In the event that random_get_entropy() can't access a cycle counter or
-similar, falling back to returning 0 is really not the best we can do.
-Instead, at least calling random_get_entropy_fallback() would be
-preferable, because that always needs to return _something_, even
-falling back to jiffies eventually. It's not as though
-random_get_entropy_fallback() is super high precision or guaranteed to
-be entropic, but basically anything that's not zero all the time is
-better than returning zero all the time.
+Alpha defines a get_cycles() function, but it does not do the usual
+`#define get_cycles get_cycles` dance, making it impossible for generic
+code to see if an arch-specific function was defined. While the
+get_cycles() ifdef is not currently used, the following timekeeping
+patch in this series will depend on the macro existing (or not existing)
+when defining random_get_entropy().
 
 Cc: Thomas Gleixner <tglx@linutronix.de>
 Cc: Arnd Bergmann <arnd@arndb.de>
-Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Richard Henderson <rth@twiddle.net>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Acked-by: Matt Turner <mattst88@gmail.com>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/m68k/include/asm/timex.h |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/alpha/include/asm/timex.h |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/arch/m68k/include/asm/timex.h
-+++ b/arch/m68k/include/asm/timex.h
-@@ -35,7 +35,7 @@ static inline unsigned long random_get_e
- {
- 	if (mach_random_get_entropy)
- 		return mach_random_get_entropy();
--	return 0;
-+	return random_get_entropy_fallback();
+--- a/arch/alpha/include/asm/timex.h
++++ b/arch/alpha/include/asm/timex.h
+@@ -28,5 +28,6 @@ static inline cycles_t get_cycles (void)
+ 	__asm__ __volatile__ ("rpcc %0" : "=r"(ret));
+ 	return ret;
  }
- #define random_get_entropy	random_get_entropy
++#define get_cycles get_cycles
  
+ #endif
 
 
