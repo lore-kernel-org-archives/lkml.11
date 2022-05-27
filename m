@@ -2,215 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B257C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 21:16:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EEABC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 21:18:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354738AbiE0VQz (ORCPT
+        id S1354707AbiE0VSe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 17:16:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41502 "EHLO
+        Fri, 27 May 2022 17:18:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354709AbiE0VQo (ORCPT
+        with ESMTP id S231696AbiE0VSa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 17:16:44 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FBC1EE34
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 14:16:43 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id f21so10834935ejh.11
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 14:16:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ru3bkI46cGQXTo5hSsyPFl2jKgUjs/czASVw2IToYVQ=;
-        b=EKUNVPeMnRd274p6w7NzjRvrzG+1Vzb7NNsyThVrB39jtt3BmGdNB/FDIDQ8Je0Wkx
-         79yb+Ur+1BNH3EWYCuXMnj0n4tKugWeTV/s6bQcmOjS/M4BzSwrdWhCKYflx5cS6JWwZ
-         6DG2nqaH9HMKivoo/hcCev2L4qhr4MGxmXJuLLmrTD17/fsjm24k+7Z6PCvgZjDVyqex
-         Bx2LBogNAW2x+xspwzeZH54qtfWtb71D/v7ScGfgxdAqBegWi/gd0KzBvqIG2+af8VY0
-         kcnb24+Fo8IxXa+Yi9DSTzWv7OhloaWyqJX/a0queK5D4HGlSoS2mC1nVepbi8KmB/pm
-         bUFA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ru3bkI46cGQXTo5hSsyPFl2jKgUjs/czASVw2IToYVQ=;
-        b=E6HRJdst92PUBvwx2uuBnWmZ2iCQDUzujmPNtrnEglZ/ETPtZV4QTe/mHye/Cj0M24
-         BhnYwvl9L9wsE/36KA5dEgxEkOPfAhGacqGGTrSqIDnfLlyHw5vNA+qUTTcIzmtx6bvz
-         UQPs26l64SdLggrPKJHzgi9y/xDqJYr4RiKdJ6Ps0QVBbLFrTL+sX7HM166ZUoypLSSs
-         W/9jG8nDBhYIcLo4lRSFPxUz/0SteOFKHh56PZp8w3JFzRBVKVW2OFqhFqh8BVh7d/gW
-         lgDOXUgaFa0yR+4a4i3Nup/hVFjPvsciE0MFfmQKzac5eXnzC7MDO0TkpmDeu0M5qKCv
-         vB7w==
-X-Gm-Message-State: AOAM533SkXr8NcGzv6EGmGPlCn0VFIbVxGa5DhfGNibjn1/msmP7u7Pt
-        EIVaotokOIh3y1rt8gpniAE=
-X-Google-Smtp-Source: ABdhPJw7il9s5g0FRdrNg4rA7uzSJ8eWBPX96AILajtYjt+pBgDXP+GyifzqQ2lxEqw4rM0JJ4VDpA==
-X-Received: by 2002:a17:907:3e09:b0:6ff:20f:9b1a with SMTP id hp9-20020a1709073e0900b006ff020f9b1amr19318212ejc.679.1653686201666;
-        Fri, 27 May 2022 14:16:41 -0700 (PDT)
-Received: from orion.localdomain ([93.99.228.15])
-        by smtp.gmail.com with ESMTPSA id m22-20020a17090679d600b006f3ef214da9sm1814854ejo.15.2022.05.27.14.16.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 May 2022 14:16:40 -0700 (PDT)
-Received: by orion.localdomain (Postfix, from userid 1003)
-        id 11BDFA0018; Fri, 27 May 2022 23:17:10 +0200 (CEST)
-From:   =?UTF-8?q?Jakub=20Mat=C4=9Bna?= <matenajakub@gmail.com>
-To:     akpm@linux-foundation.org
-Cc:     linux-mm@kvack.org, patches@lists.linux.dev,
-        linux-kernel@vger.kernel.org, vbabka@suse.cz, mhocko@kernel.org,
-        mgorman@techsingularity.net, willy@infradead.org,
-        liam.howlett@oracle.com, hughd@google.com, kirill@shutemov.name,
-        riel@surriel.com, rostedt@goodmis.org, peterz@infradead.org,
-        =?UTF-8?q?Jakub=20Mat=C4=9Bna?= <matenajakub@gmail.com>
-Subject: [PATCH v2 1/2] [PATCH 1/2] mm: refactor of vma_merge()
-Date:   Fri, 27 May 2022 23:17:07 +0200
-Message-Id: <20220527211708.839033-2-matenajakub@gmail.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220527211708.839033-1-matenajakub@gmail.com>
-References: <20220527211708.839033-1-matenajakub@gmail.com>
+        Fri, 27 May 2022 17:18:30 -0400
+Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C1A6344DE
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 14:18:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=deltatee.com; s=20200525; h=Subject:In-Reply-To:From:References:Cc:To:
+        MIME-Version:Date:Message-ID:content-disposition;
+        bh=O99FaYOLB7MsXQa3iMzC2xEVsgEFVjWYWHz4InXbSvo=; b=HXKzvJ+xwea7+hgScoCr4n6RHT
+        E/0MCos7qtPFRZqt9LGNlJCs78nBHSenfsHcRKoN7uPdSxusrFlVBauC6V5fjrODJjfP98kyr5H8z
+        S4NNHv0wn517c4iIdSi8tvkSfI5Q5MaZe3YzPE8BsA280ZSau/lx7fumKOBiMeaSz12gu0wpX3BbV
+        t1MJ5YJ8XsVbBEqH9LgFcbReSsL4xnkZ2wyq0LvhC3JphmI614tbkGjS2U+fvjCMH/0eN3DvWDkdI
+        +YtoPGyXNqiqD3aBfmnO0m9d0l137fBBVeO1bmYzWGOnJKI3wlIci5p2auHOlAkRSmMU2oq+xa7+2
+        HYpCptTQ==;
+Received: from guinness.priv.deltatee.com ([172.16.1.162])
+        by ale.deltatee.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <logang@deltatee.com>)
+        id 1nuhLj-0099V3-86; Fri, 27 May 2022 15:18:24 -0600
+Message-ID: <9a6005e3-4840-ce3b-9586-99ff74ad9382@deltatee.com>
+Date:   Fri, 27 May 2022 15:18:20 -0600
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Content-Language: en-CA
+To:     kernel test robot <lkp@intel.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Song Liu <song@kernel.org>, Christoph Hellwig <hch@lst.de>
+References: <202205280426.NVpnRyuP-lkp@intel.com>
+From:   Logan Gunthorpe <logang@deltatee.com>
+In-Reply-To: <202205280426.NVpnRyuP-lkp@intel.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 172.16.1.162
+X-SA-Exim-Rcpt-To: lkp@intel.com, kbuild-all@lists.01.org, linux-kernel@vger.kernel.org, song@kernel.org, hch@lst.de
+X-SA-Exim-Mail-From: logang@deltatee.com
+Subject: Re: drivers/md/raid5-ppl.c:632:57: sparse: sparse: incorrect type in
+ argument 3 (different base types)
+X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
+X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Refactor vma_merge() to make it shorter and more understandable.
-Main change is the elimination of code duplicity in the case of
-merge next check. This is done by first doing checks and caching
-the results before executing the merge itself. The variable 'area' is
-divided into 'mid' and 'res' as previously it was used for two purposes,
-as the middle VMA between prev and next and also as the result of the
-merge itself. Exit paths are also unified.
 
-Signed-off-by: Jakub Matěna <matenajakub@gmail.com>
----
- mm/mmap.c | 87 +++++++++++++++++++++++--------------------------------
- 1 file changed, 37 insertions(+), 50 deletions(-)
 
-diff --git a/mm/mmap.c b/mm/mmap.c
-index 3aa839f81e63..bd0dde2ad3e2 100644
---- a/mm/mmap.c
-+++ b/mm/mmap.c
-@@ -1170,8 +1170,10 @@ struct vm_area_struct *vma_merge(struct mm_struct *mm,
- 			struct anon_vma_name *anon_name)
- {
- 	pgoff_t pglen = (end - addr) >> PAGE_SHIFT;
--	struct vm_area_struct *area, *next;
--	int err;
-+	struct vm_area_struct *mid, *next, *res;
-+	int err = -1;
-+	bool merge_prev = false;
-+	bool merge_next = false;
- 
- 	/*
- 	 * We later require that vma->vm_flags == vm_flags,
-@@ -1181,75 +1183,60 @@ struct vm_area_struct *vma_merge(struct mm_struct *mm,
- 		return NULL;
- 
- 	next = vma_next(mm, prev);
--	area = next;
--	if (area && area->vm_end == end)		/* cases 6, 7, 8 */
-+	mid = next;
-+	if (next && next->vm_end == end)		/* cases 6, 7, 8 */
- 		next = next->vm_next;
- 
- 	/* verify some invariant that must be enforced by the caller */
- 	VM_WARN_ON(prev && addr <= prev->vm_start);
--	VM_WARN_ON(area && end > area->vm_end);
-+	VM_WARN_ON(mid && end > mid->vm_end);
- 	VM_WARN_ON(addr >= end);
- 
--	/*
--	 * Can it merge with the predecessor?
--	 */
-+	/* Can we merge the predecessor? */
- 	if (prev && prev->vm_end == addr &&
- 			mpol_equal(vma_policy(prev), policy) &&
- 			can_vma_merge_after(prev, vm_flags,
- 					    anon_vma, file, pgoff,
- 					    vm_userfaultfd_ctx, anon_name)) {
--		/*
--		 * OK, it can.  Can we now merge in the successor as well?
--		 */
--		if (next && end == next->vm_start &&
--				mpol_equal(policy, vma_policy(next)) &&
--				can_vma_merge_before(next, vm_flags,
--						     anon_vma, file,
--						     pgoff+pglen,
--						     vm_userfaultfd_ctx, anon_name) &&
--				is_mergeable_anon_vma(prev->anon_vma,
--						      next->anon_vma, NULL)) {
--							/* cases 1, 6 */
--			err = __vma_adjust(prev, prev->vm_start,
--					 next->vm_end, prev->vm_pgoff, NULL,
--					 prev);
--		} else					/* cases 2, 5, 7 */
--			err = __vma_adjust(prev, prev->vm_start,
--					 end, prev->vm_pgoff, NULL, prev);
--		if (err)
--			return NULL;
--		khugepaged_enter_vma_merge(prev, vm_flags);
--		return prev;
-+		merge_prev = true;
- 	}
--
--	/*
--	 * Can this new request be merged in front of next?
--	 */
-+	/* Can we merge the successor? */
- 	if (next && end == next->vm_start &&
- 			mpol_equal(policy, vma_policy(next)) &&
- 			can_vma_merge_before(next, vm_flags,
- 					     anon_vma, file, pgoff+pglen,
- 					     vm_userfaultfd_ctx, anon_name)) {
-+		merge_next = true;
-+	}
-+	/* Can we merge both the predecessor and the successor? */
-+	if (merge_prev && merge_next &&
-+			is_mergeable_anon_vma(prev->anon_vma,
-+				next->anon_vma, NULL)) {	 /* cases 1, 6 */
-+		err = __vma_adjust(prev, prev->vm_start,
-+					next->vm_end, prev->vm_pgoff, NULL,
-+					prev);
-+		res = prev;
-+	} else if (merge_prev) {			/* cases 2, 5, 7 */
-+		err = __vma_adjust(prev, prev->vm_start,
-+					end, prev->vm_pgoff, NULL, prev);
-+		res = prev;
-+	} else if (merge_next) {
- 		if (prev && addr < prev->vm_end)	/* case 4 */
- 			err = __vma_adjust(prev, prev->vm_start,
--					 addr, prev->vm_pgoff, NULL, next);
--		else {					/* cases 3, 8 */
--			err = __vma_adjust(area, addr, next->vm_end,
--					 next->vm_pgoff - pglen, NULL, next);
--			/*
--			 * In case 3 area is already equal to next and
--			 * this is a noop, but in case 8 "area" has
--			 * been removed and next was expanded over it.
--			 */
--			area = next;
--		}
--		if (err)
--			return NULL;
--		khugepaged_enter_vma_merge(area, vm_flags);
--		return area;
-+					addr, prev->vm_pgoff, NULL, next);
-+		else					/* cases 3, 8 */
-+			err = __vma_adjust(mid, addr, next->vm_end,
-+					next->vm_pgoff - pglen, NULL, next);
-+		res = next;
- 	}
- 
--	return NULL;
-+	/*
-+	 * Cannot merge with predecessor or successor or error in __vma_adjust?
-+	 */
-+	if (err)
-+		return NULL;
-+	khugepaged_enter_vma_merge(res, vm_flags);
-+	return res;
- }
- 
- /*
--- 
-2.35.1
+On 2022-05-27 14:46, kernel test robot wrote:
+> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+> head:   7e284070abe53d448517b80493863595af4ab5f0
+> commit: b0920ede081b3f1659872f80ce552305610675a6 md/raid5: Add __rcu annotation to struct disk_info
+> date:   5 weeks ago
+> config: csky-randconfig-s032-20220524 (https://download.01.org/0day-ci/archive/20220528/202205280426.NVpnRyuP-lkp@intel.com/config)
+> compiler: csky-linux-gcc (GCC) 11.3.0
+> reproduce:
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # apt-get install sparse
+>         # sparse version: v0.6.4-14-g5a0004b5-dirty
+>         # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=b0920ede081b3f1659872f80ce552305610675a6
+>         git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+>         git fetch --no-tags linus master
+>         git checkout b0920ede081b3f1659872f80ce552305610675a6
+>         # save the config file
+>         mkdir build_dir && cp config build_dir/.config
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=csky SHELL=/bin/bash drivers/md/
+> 
+> If you fix the issue, kindly add following tag where applicable
+> Reported-by: kernel test robot <lkp@intel.com>
+> 
+> 
+> sparse warnings: (new ones prefixed by >>)
+>    drivers/md/raid5-ppl.c: note: in included file:
+>    drivers/md/raid5.h:271:14: sparse: sparse: array of flexible structures
+>>> drivers/md/raid5-ppl.c:632:57: sparse: sparse: incorrect type in argument 3 (different base types) @@     expected unsigned int opf @@     got restricted gfp_t [usertype] @@
+>    drivers/md/raid5-ppl.c:632:57: sparse:     expected unsigned int opf
+>    drivers/md/raid5-ppl.c:632:57: sparse:     got restricted gfp_t [usertype]
+>>> drivers/md/raid5-ppl.c:633:61: sparse: sparse: incorrect type in argument 4 (different base types) @@     expected restricted gfp_t [usertype] gfp_mask @@     got unsigned long long @@
+>    drivers/md/raid5-ppl.c:633:61: sparse:     expected restricted gfp_t [usertype] gfp_mask
+>    drivers/md/raid5-ppl.c:633:61: sparse:     got unsigned long long
+>    drivers/md/raid5-ppl.c:886:30: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct md_rdev *rdev @@     got struct md_rdev [noderef] __rcu *rdev @@
+>    drivers/md/raid5-ppl.c:886:30: sparse:     expected struct md_rdev *rdev
+>    drivers/md/raid5-ppl.c:886:30: sparse:     got struct md_rdev [noderef] __rcu *rdev
+>    drivers/md/raid5-ppl.c:937:29: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct md_rdev *parity_rdev @@     got struct md_rdev [noderef] __rcu *rdev @@
+>    drivers/md/raid5-ppl.c:937:29: sparse:     expected struct md_rdev *parity_rdev
+>    drivers/md/raid5-ppl.c:937:29: sparse:     got struct md_rdev [noderef] __rcu *rdev
+>    drivers/md/raid5-ppl.c:1407:54: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected struct md_rdev *rdev @@     got struct md_rdev [noderef] __rcu *rdev @@
+>    drivers/md/raid5-ppl.c:1407:54: sparse:     expected struct md_rdev *rdev
+>    drivers/md/raid5-ppl.c:1407:54: sparse:     got struct md_rdev [noderef] __rcu *rdev
+> 
+> vim +632 drivers/md/raid5-ppl.c
+> 
+> 1532d9e87e8b23 Tomasz Majchrzak  2017-12-27  607  
+> 1532d9e87e8b23 Tomasz Majchrzak  2017-12-27  608  static void ppl_do_flush(struct ppl_io_unit *io)
+> 1532d9e87e8b23 Tomasz Majchrzak  2017-12-27  609  {
+> 1532d9e87e8b23 Tomasz Majchrzak  2017-12-27  610  	struct ppl_log *log = io->log;
+> 1532d9e87e8b23 Tomasz Majchrzak  2017-12-27  611  	struct ppl_conf *ppl_conf = log->ppl_conf;
+> 1532d9e87e8b23 Tomasz Majchrzak  2017-12-27  612  	struct r5conf *conf = ppl_conf->mddev->private;
+> 1532d9e87e8b23 Tomasz Majchrzak  2017-12-27  613  	int raid_disks = conf->raid_disks;
+> 1532d9e87e8b23 Tomasz Majchrzak  2017-12-27  614  	int flushed_disks = 0;
+> 1532d9e87e8b23 Tomasz Majchrzak  2017-12-27  615  	int i;
+> 1532d9e87e8b23 Tomasz Majchrzak  2017-12-27  616  
+> 1532d9e87e8b23 Tomasz Majchrzak  2017-12-27  617  	atomic_set(&io->pending_flushes, raid_disks);
+> 1532d9e87e8b23 Tomasz Majchrzak  2017-12-27  618  
+> 1532d9e87e8b23 Tomasz Majchrzak  2017-12-27  619  	for_each_set_bit(i, &log->disk_flush_bitmap, raid_disks) {
+> 1532d9e87e8b23 Tomasz Majchrzak  2017-12-27  620  		struct md_rdev *rdev;
+> 1532d9e87e8b23 Tomasz Majchrzak  2017-12-27  621  		struct block_device *bdev = NULL;
+> 1532d9e87e8b23 Tomasz Majchrzak  2017-12-27  622  
+> 1532d9e87e8b23 Tomasz Majchrzak  2017-12-27  623  		rcu_read_lock();
+> 1532d9e87e8b23 Tomasz Majchrzak  2017-12-27  624  		rdev = rcu_dereference(conf->disks[i].rdev);
+> 1532d9e87e8b23 Tomasz Majchrzak  2017-12-27  625  		if (rdev && !test_bit(Faulty, &rdev->flags))
+> 1532d9e87e8b23 Tomasz Majchrzak  2017-12-27  626  			bdev = rdev->bdev;
+> 1532d9e87e8b23 Tomasz Majchrzak  2017-12-27  627  		rcu_read_unlock();
+> 1532d9e87e8b23 Tomasz Majchrzak  2017-12-27  628  
+> 1532d9e87e8b23 Tomasz Majchrzak  2017-12-27  629  		if (bdev) {
+> 1532d9e87e8b23 Tomasz Majchrzak  2017-12-27  630  			struct bio *bio;
+> 1532d9e87e8b23 Tomasz Majchrzak  2017-12-27  631  
+> 609be1066731fe Christoph Hellwig 2022-01-24 @632  			bio = bio_alloc_bioset(bdev, 0, GFP_NOIO,
+> 609be1066731fe Christoph Hellwig 2022-01-24 @633  					       REQ_OP_WRITE | REQ_PREFLUSH,
+> 609be1066731fe Christoph Hellwig 2022-01-24  634  					       &ppl_conf->flush_bs);
 
+Something is odd about this report. Seems like the new sparse errors
+were caused by this commit, not the one I sent that was noted at the top
+of this email.
+
+Looks like the arguments in bio_alloc_bioset are incorrectly reversed in
+609be10667 and this hasn't been fixed yet, at least not in Linus's tree.
+
+The patch I sent (b0920ede081b3f) may have introduced some of the rdev
+sparse warnings in this report, but these were fixed up a couple commits
+later (4f4ee2bf3).
+
+Logan
