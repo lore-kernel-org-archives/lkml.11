@@ -2,144 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F164C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:05:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A55BC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:05:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348673AbiE0IEz (ORCPT
+        id S1348539AbiE0IF3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 04:04:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55160 "EHLO
+        Fri, 27 May 2022 04:05:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348803AbiE0IEo (ORCPT
+        with ESMTP id S1348662AbiE0IEz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 04:04:44 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EDFA1FD37A
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 01:04:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653638681;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=tSmHChhkeGhveeNkT0xXj48o/ZM3uoGgnCvlBhi+Jhs=;
-        b=d1qOsHqUhIPPTLPRx02nn35nb+HaeqBhC0XSRGZ5xCgsG15tWQO2pRCzyZpC3DQgjepPG4
-        WVvuK7NL0H+mSYrflKNdVN1NXKFtJoqMKpBuUUMJBKovn6Ulz+zpOLLoooodFF3/08Gr8N
-        GPwNaH/tFx7c97oM1VwnMg+QWHCbBQg=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-255-0jWaW6A2OoOHPARON6hnyQ-1; Fri, 27 May 2022 04:04:25 -0400
-X-MC-Unique: 0jWaW6A2OoOHPARON6hnyQ-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id F1E26858F0C;
-        Fri, 27 May 2022 08:04:24 +0000 (UTC)
-Received: from gshan.redhat.com (ovpn-12-91.pek2.redhat.com [10.72.12.91])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id C3DA62026D64;
-        Fri, 27 May 2022 08:04:14 +0000 (UTC)
-From:   Gavin Shan <gshan@redhat.com>
-To:     kvmarm@lists.cs.columbia.edu
-Cc:     maz@kernel.org, linux-kernel@vger.kernel.org, eauger@redhat.com,
-        oupton@google.com, Jonathan.Cameron@huawei.com,
-        pbonzini@redhat.com, vkuznets@redhat.com, will@kernel.org,
-        james.morse@arm.com, mark.rutland@arm.com,
-        shannon.zhaosl@gmail.com, shijie@amperemail.onmicrosoft.com,
-        shan.gavin@gmail.com
-Subject: [PATCH v7 05/22] KVM: arm64: Support EVENT_{ENABLE, DISABLE} hypercall
-Date:   Fri, 27 May 2022 16:02:36 +0800
-Message-Id: <20220527080253.1562538-6-gshan@redhat.com>
-In-Reply-To: <20220527080253.1562538-1-gshan@redhat.com>
-References: <20220527080253.1562538-1-gshan@redhat.com>
+        Fri, 27 May 2022 04:04:55 -0400
+Received: from smtp.smtpout.orange.fr (smtp03.smtpout.orange.fr [80.12.242.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D94EFF5A2
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 01:04:49 -0700 (PDT)
+Received: from [192.168.1.18] ([90.11.191.102])
+        by smtp.orange.fr with ESMTPA
+        id uUxinqBKs26JCuUxinnMVg; Fri, 27 May 2022 10:04:47 +0200
+X-ME-Helo: [192.168.1.18]
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Fri, 27 May 2022 10:04:47 +0200
+X-ME-IP: 90.11.191.102
+Message-ID: <fa54e172-ef9d-fba5-ad37-72a6698c7cb8@wanadoo.fr>
+Date:   Fri, 27 May 2022 10:04:46 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.4
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+X-Mozilla-News-Host: news://news.gmane.org:119
+Content-Language: fr
+To:     kch@nvidia.com
+Cc:     jasowang@redhat.com, linux-block@vger.kernel.org, mst@redhat.com,
+        pbonzini@redhat.com, stefanha@redhat.com,
+        virtualization@lists.linux-foundation.org,
+        keliu <liuke94@huawei.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: Re: [PATCH 4/4] virtio-blk: remove deprecated ida_simple_XXX()
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This supports EVENT_{ENABLE, DISABLE} hypercall. The event can be
-pending, but never be delivered to guest until it's enabled.
+(Resend, my email client sent it as HTML. So sorry for the duplicate)
 
-  * The request is rejected if the event isn't registered or pending
-    for unregistration.
 
-  * When the event is enabled, KVM_REQ_SDEI is set to so that the
-    event can be delivered to guest, if it has been pending. The
-    delivery logic will be implemented in subsequent patches. For
-    now, it's nothing other than a flag.
+Hi,
 
-Signed-off-by: Gavin Shan <gshan@redhat.com>
----
- arch/arm64/include/asm/kvm_host.h |  1 +
- arch/arm64/kvm/sdei.c             | 33 +++++++++++++++++++++++++++++++
- 2 files changed, 34 insertions(+)
+ > diff --git a/drivers/block/virtio_blk.c b/drivers/block/virtio_blk.c
+ > index 74c3a48cd1e5..e05748337dd1 100644
+ > --- a/drivers/block/virtio_blk.c
+ > +++ b/drivers/block/virtio_blk.c
+ > @@ -720,8 +720,8 @@ static int virtblk_probe(struct virtio_device *vdev)
+ > 		return -EINVAL;
+ > 	}
+ >
+ >-	err = ida_simple_get(&vd_index_ida, 0, minor_to_index(1 << MINORBITS),
+ >-			     GFP_KERNEL);
+ >+	err = ida_alloc_max(&vd_index_ida, minor_to_index(1 << MINORBITS),
+ >+			    GFP_KERNEL);
+ > 	if (err < 0)
+ > 		goto out;
+ > 	index = err;
 
-diff --git a/arch/arm64/include/asm/kvm_host.h b/arch/arm64/include/asm/kvm_host.h
-index c9d053c2569e..79a0043a908c 100644
---- a/arch/arm64/include/asm/kvm_host.h
-+++ b/arch/arm64/include/asm/kvm_host.h
-@@ -47,6 +47,7 @@
- #define KVM_REQ_RELOAD_GICv4	KVM_ARCH_REQ(4)
- #define KVM_REQ_RELOAD_PMU	KVM_ARCH_REQ(5)
- #define KVM_REQ_SUSPEND		KVM_ARCH_REQ(6)
-+#define KVM_REQ_SDEI		KVM_ARCH_REQ(7)
- 
- #define KVM_DIRTY_LOG_MANUAL_CAPS   (KVM_DIRTY_LOG_MANUAL_PROTECT_ENABLE | \
- 				     KVM_DIRTY_LOG_INITIALLY_SET)
-diff --git a/arch/arm64/kvm/sdei.c b/arch/arm64/kvm/sdei.c
-index 40c2d585470d..a4046e7b21d8 100644
---- a/arch/arm64/kvm/sdei.c
-+++ b/arch/arm64/kvm/sdei.c
-@@ -41,6 +41,33 @@ static unsigned long event_register(struct kvm_vcpu *vcpu)
- 	return SDEI_SUCCESS;
- }
- 
-+static unsigned long event_enable(struct kvm_vcpu *vcpu, bool enable)
-+{
-+	struct kvm_sdei_vcpu *vsdei = vcpu->arch.sdei;
-+	unsigned int num = smccc_get_arg(vcpu, 1);
-+
-+	if (num >= KVM_NR_SDEI_EVENTS)
-+		return SDEI_INVALID_PARAMETERS;
-+
-+	/*
-+	 * Reject if the event hasn't been registered or pending
-+	 * for unregistration.
-+	 */
-+	if (!test_bit(num, &vsdei->registered))
-+		return SDEI_DENIED;
-+
-+	if (enable) {
-+		set_bit(num, &vsdei->enabled);
-+		if (!(vcpu->arch.flags & KVM_ARM64_SDEI_MASKED) &&
-+		    test_bit(num, &vsdei->pending))
-+			kvm_make_request(KVM_REQ_SDEI, vcpu);
-+	} else {
-+		clear_bit(num, &vsdei->enabled);
-+	}
-+
-+	return SDEI_SUCCESS;
-+}
-+
- int kvm_sdei_call(struct kvm_vcpu *vcpu)
- {
- 	struct kvm_sdei_vcpu *vsdei = vcpu->arch.sdei;
-@@ -62,6 +89,12 @@ int kvm_sdei_call(struct kvm_vcpu *vcpu)
- 	case SDEI_1_0_FN_SDEI_EVENT_REGISTER:
- 		ret = event_register(vcpu);
- 		break;
-+	case SDEI_1_0_FN_SDEI_EVENT_ENABLE:
-+		ret = event_enable(vcpu, true);
-+		break;
-+	case SDEI_1_0_FN_SDEI_EVENT_DISABLE:
-+		ret = event_enable(vcpu, false);
-+		break;
- 	default:
- 		ret = SDEI_NOT_SUPPORTED;
- 	}
--- 
-2.23.0
+
+this patch, already applied to -next, is wrong.
+
+
+The upper bound of ida_simple_get() is exlcusive, while the one of 
+ida_alloc_max() is inclusive.
+
+So, 'minor_to_index(1 << MINORBITS)' should be 'minor_to_index(1 << 
+MINORBITS) - 1' here.
+
+
+(adding keliu in cc: because he is proposing the same kind of patches, 
+so he will see how to to these changes that are slighly tricky)
+
+
+CJ
 
