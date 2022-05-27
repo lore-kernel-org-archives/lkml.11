@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AB3DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:02:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66022C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:03:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352365AbiE0MCw (ORCPT
+        id S1350718AbiE0MC6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 08:02:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54552 "EHLO
+        Fri, 27 May 2022 08:02:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352299AbiE0Lxj (ORCPT
+        with ESMTP id S1351971AbiE0LyS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:53:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DF6E158959;
-        Fri, 27 May 2022 04:47:44 -0700 (PDT)
+        Fri, 27 May 2022 07:54:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24EB3158973;
+        Fri, 27 May 2022 04:47:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 00FC2B824DB;
-        Fri, 27 May 2022 11:47:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62E1CC385A9;
-        Fri, 27 May 2022 11:47:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D4578B824D2;
+        Fri, 27 May 2022 11:47:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45B85C385A9;
+        Fri, 27 May 2022 11:47:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653652061;
-        bh=zRqnFMXIDw2Yu96Nrl9zsNmWv/5/4NOdYhmH9t607/c=;
+        s=korg; t=1653652064;
+        bh=m1t48f8J1t5GlS2HZ+kgwhOatWjtlZrYDKKdcmlt4Co=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eWmA/H9tz34esRs76XFeY+N/tKZyIvVugxzh52Bj7bAv1N9QOBP4R1Inmb6xZrD6y
-         uTYvefknk2pTvKvIFWWoZDgZs6XuSCdtUa11SXLqJk3OrqPwV1IAqfuLqVfK6Dp/2z
-         aUKdU7XkXBy6vWVrVcykrUlnc+SzW0840h25Rwv0=
+        b=ABBLQ8zT8yLeaGgCmpc2uvamtas35mwapEcuiigMilgNf/7rzcHdLGlzR0T4bk17Y
+         z+LOFzX7wv9BCwnDhPEDj/gjOHZSokIoWmLfzuYaNw3f8zsP2kxVpCn5VObn5qKTAO
+         Jp/51TfeCXAHwgwJLX7nmQ7iD/PhrMjJIIMEQcKo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jens Axboe <axboe@kernel.dk>,
-        Al Viro <viro@zeniv.linux.org.uk>,
+        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Theodore Tso <tytso@mit.edu>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.17 106/111] random: convert to using fops->read_iter()
-Date:   Fri, 27 May 2022 10:50:18 +0200
-Message-Id: <20220527084834.270012151@linuxfoundation.org>
+Subject: [PATCH 5.15 061/145] random: add proper SPDX header
+Date:   Fri, 27 May 2022 10:49:22 +0200
+Message-Id: <20220527084857.992170339@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084819.133490171@linuxfoundation.org>
-References: <20220527084819.133490171@linuxfoundation.org>
+In-Reply-To: <20220527084850.364560116@linuxfoundation.org>
+References: <20220527084850.364560116@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,191 +51,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jens Axboe <axboe@kernel.dk>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 1b388e7765f2eaa137cf5d92b47ef5925ad83ced upstream.
+commit a07fdae346c35c6ba286af1c88e0effcfa330bf9 upstream.
 
-This is a pre-requisite to wiring up splice() again for the random
-and urandom drivers. It also allows us to remove the INT_MAX check in
-getrandom(), because import_single_range() applies capping internally.
+Convert the current license into the SPDX notation of "(GPL-2.0 OR
+BSD-3-Clause)". This infers GPL-2.0 from the text "ALTERNATIVELY, this
+product may be distributed under the terms of the GNU General Public
+License, in which case the provisions of the GPL are required INSTEAD OF
+the above restrictions" and it infers BSD-3-Clause from the verbatim
+BSD 3 clause license in the file.
 
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-[Jason: rewrote get_random_bytes_user() to simplify and also incorporate
- additional suggestions from Al.]
-Cc: Al Viro <viro@zeniv.linux.org.uk>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Theodore Ts'o <tytso@mit.edu>
+Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   66 ++++++++++++++++++++++----------------------------
- 1 file changed, 30 insertions(+), 36 deletions(-)
+ drivers/char/random.c |   37 +------------------------------------
+ 1 file changed, 1 insertion(+), 36 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -52,6 +52,7 @@
- #include <linux/uuid.h>
- #include <linux/uaccess.h>
- #include <linux/siphash.h>
-+#include <linux/uio.h>
- #include <crypto/chacha.h>
- #include <crypto/blake2s.h>
- #include <asm/processor.h>
-@@ -446,13 +447,13 @@ void get_random_bytes(void *buf, size_t
- }
- EXPORT_SYMBOL(get_random_bytes);
+@@ -1,44 +1,9 @@
++// SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause)
+ /*
+- * random.c -- A strong random number generator
+- *
+  * Copyright (C) 2017-2022 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
+- *
+  * Copyright Matt Mackall <mpm@selenic.com>, 2003, 2004, 2005
+- *
+  * Copyright Theodore Ts'o, 1994, 1995, 1996, 1997, 1998, 1999.  All
+  * rights reserved.
+- *
+- * Redistribution and use in source and binary forms, with or without
+- * modification, are permitted provided that the following conditions
+- * are met:
+- * 1. Redistributions of source code must retain the above copyright
+- *    notice, and the entire permission notice in its entirety,
+- *    including the disclaimer of warranties.
+- * 2. Redistributions in binary form must reproduce the above copyright
+- *    notice, this list of conditions and the following disclaimer in the
+- *    documentation and/or other materials provided with the distribution.
+- * 3. The name of the author may not be used to endorse or promote
+- *    products derived from this software without specific prior
+- *    written permission.
+- *
+- * ALTERNATIVELY, this product may be distributed under the terms of
+- * the GNU General Public License, in which case the provisions of the GPL are
+- * required INSTEAD OF the above restrictions.  (This clause is
+- * necessary due to a potential bad interaction between the GPL and
+- * the restrictions contained in a BSD-style copyright.)
+- *
+- * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESS OR IMPLIED
+- * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE, ALL OF
+- * WHICH ARE HEREBY DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR BE
+- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+- * OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+- * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
+- * USE OF THIS SOFTWARE, EVEN IF NOT ADVISED OF THE POSSIBILITY OF SUCH
+- * DAMAGE.
+  */
  
--static ssize_t get_random_bytes_user(void __user *ubuf, size_t len)
-+static ssize_t get_random_bytes_user(struct iov_iter *iter)
- {
--	size_t block_len, left, ret = 0;
- 	u32 chacha_state[CHACHA_STATE_WORDS];
--	u8 output[CHACHA_BLOCK_SIZE];
-+	u8 block[CHACHA_BLOCK_SIZE];
-+	size_t ret = 0, copied;
- 
--	if (!len)
-+	if (unlikely(!iov_iter_count(iter)))
- 		return 0;
- 
- 	/*
-@@ -466,30 +467,22 @@ static ssize_t get_random_bytes_user(voi
- 	 * use chacha_state after, so we can simply return those bytes to
- 	 * the user directly.
- 	 */
--	if (len <= CHACHA_KEY_SIZE) {
--		ret = len - copy_to_user(ubuf, &chacha_state[4], len);
-+	if (iov_iter_count(iter) <= CHACHA_KEY_SIZE) {
-+		ret = copy_to_iter(&chacha_state[4], CHACHA_KEY_SIZE, iter);
- 		goto out_zero_chacha;
- 	}
- 
- 	for (;;) {
--		chacha20_block(chacha_state, output);
-+		chacha20_block(chacha_state, block);
- 		if (unlikely(chacha_state[12] == 0))
- 			++chacha_state[13];
- 
--		block_len = min_t(size_t, len, CHACHA_BLOCK_SIZE);
--		left = copy_to_user(ubuf, output, block_len);
--		if (left) {
--			ret += block_len - left;
--			break;
--		}
--
--		ubuf += block_len;
--		ret += block_len;
--		len -= block_len;
--		if (!len)
-+		copied = copy_to_iter(block, sizeof(block), iter);
-+		ret += copied;
-+		if (!iov_iter_count(iter) || copied != sizeof(block))
- 			break;
- 
--		BUILD_BUG_ON(PAGE_SIZE % CHACHA_BLOCK_SIZE != 0);
-+		BUILD_BUG_ON(PAGE_SIZE % sizeof(block) != 0);
- 		if (ret % PAGE_SIZE == 0) {
- 			if (signal_pending(current))
- 				break;
-@@ -497,7 +490,7 @@ static ssize_t get_random_bytes_user(voi
- 		}
- 	}
- 
--	memzero_explicit(output, sizeof(output));
-+	memzero_explicit(block, sizeof(block));
- out_zero_chacha:
- 	memzero_explicit(chacha_state, sizeof(chacha_state));
- 	return ret ? ret : -EFAULT;
-@@ -1226,6 +1219,10 @@ static void __cold try_to_generate_entro
- 
- SYSCALL_DEFINE3(getrandom, char __user *, ubuf, size_t, len, unsigned int, flags)
- {
-+	struct iov_iter iter;
-+	struct iovec iov;
-+	int ret;
-+
- 	if (flags & ~(GRND_NONBLOCK | GRND_RANDOM | GRND_INSECURE))
- 		return -EINVAL;
- 
-@@ -1236,19 +1233,18 @@ SYSCALL_DEFINE3(getrandom, char __user *
- 	if ((flags & (GRND_INSECURE | GRND_RANDOM)) == (GRND_INSECURE | GRND_RANDOM))
- 		return -EINVAL;
- 
--	if (len > INT_MAX)
--		len = INT_MAX;
--
- 	if (!crng_ready() && !(flags & GRND_INSECURE)) {
--		int ret;
--
- 		if (flags & GRND_NONBLOCK)
- 			return -EAGAIN;
- 		ret = wait_for_random_bytes();
- 		if (unlikely(ret))
- 			return ret;
- 	}
--	return get_random_bytes_user(ubuf, len);
-+
-+	ret = import_single_range(READ, ubuf, len, &iov, &iter);
-+	if (unlikely(ret))
-+		return ret;
-+	return get_random_bytes_user(&iter);
- }
- 
- static __poll_t random_poll(struct file *file, poll_table *wait)
-@@ -1292,8 +1288,7 @@ static ssize_t random_write(struct file
- 	return (ssize_t)len;
- }
- 
--static ssize_t urandom_read(struct file *file, char __user *ubuf,
--			    size_t len, loff_t *ppos)
-+static ssize_t urandom_read_iter(struct kiocb *kiocb, struct iov_iter *iter)
- {
- 	static int maxwarn = 10;
- 
-@@ -1302,23 +1297,22 @@ static ssize_t urandom_read(struct file
- 			++urandom_warning.missed;
- 		else if (ratelimit_disable || __ratelimit(&urandom_warning)) {
- 			--maxwarn;
--			pr_notice("%s: uninitialized urandom read (%zd bytes read)\n",
--				  current->comm, len);
-+			pr_notice("%s: uninitialized urandom read (%zu bytes read)\n",
-+				  current->comm, iov_iter_count(iter));
- 		}
- 	}
- 
--	return get_random_bytes_user(ubuf, len);
-+	return get_random_bytes_user(iter);
- }
- 
--static ssize_t random_read(struct file *file, char __user *ubuf,
--			   size_t len, loff_t *ppos)
-+static ssize_t random_read_iter(struct kiocb *kiocb, struct iov_iter *iter)
- {
- 	int ret;
- 
- 	ret = wait_for_random_bytes();
- 	if (ret != 0)
- 		return ret;
--	return get_random_bytes_user(ubuf, len);
-+	return get_random_bytes_user(iter);
- }
- 
- static long random_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
-@@ -1380,7 +1374,7 @@ static int random_fasync(int fd, struct
- }
- 
- const struct file_operations random_fops = {
--	.read = random_read,
-+	.read_iter = random_read_iter,
- 	.write = random_write,
- 	.poll = random_poll,
- 	.unlocked_ioctl = random_ioctl,
-@@ -1390,7 +1384,7 @@ const struct file_operations random_fops
- };
- 
- const struct file_operations urandom_fops = {
--	.read = urandom_read,
-+	.read_iter = urandom_read_iter,
- 	.write = random_write,
- 	.unlocked_ioctl = random_ioctl,
- 	.compat_ioctl = compat_ptr_ioctl,
+ /*
 
 
