@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CB35C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:02:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D26A8C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 12:02:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352204AbiE0MCY (ORCPT
+        id S1352228AbiE0MCe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 08:02:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40340 "EHLO
+        Fri, 27 May 2022 08:02:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352055AbiE0LtH (ORCPT
+        with ESMTP id S1352058AbiE0LtH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 27 May 2022 07:49:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6530F13128A;
-        Fri, 27 May 2022 04:44:01 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6367613CA31;
+        Fri, 27 May 2022 04:44:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EAEE2B8091D;
-        Fri, 27 May 2022 11:43:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35EF1C385A9;
-        Fri, 27 May 2022 11:43:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D00361D6F;
+        Fri, 27 May 2022 11:44:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39F06C385A9;
+        Fri, 27 May 2022 11:44:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653651838;
-        bh=zvNJAXoilwDxTtaE7iGov4VsUnmsvHqf6cJHqz+4f5k=;
+        s=korg; t=1653651841;
+        bh=XxK0OtvwNhgUMCOyhriJ/+qNy/K+HjGgOW3wfyCgR3A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BqvEu44qxgEJ6hTw4zDBF68UOAEp5rld95SYP6icdqkG6yCSCwEyRRS08WnvPvat2
-         jswQtMcywz3RB9gCiuhxLd3h61uSkXsbCoGMC8uNY9vlT8DVQsPPBdn/7nDZotawzW
-         kHqOBzAmej97dOS7sVJ6v735E1FR6zeG7SO5yuRw=
+        b=xJKFUIvPRkBwbQ4R9IU27Boaarc1ETTPtxix/DlcppZD4jbk2N3kKfsa3E7dNH5w+
+         Uw0gHapxM5iPWtZtHTZJWhlX/8ZuamkOkVISn1NOujCLlHZOqQA+3ZRfGv89lVje33
+         UOYqSoV/S2RYOq1uarU/hoZCyTUc/oPtuXMnBkgo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
-        Eric Biggers <ebiggers@google.com>,
         Dominik Brodowski <linux@dominikbrodowski.net>,
+        Eric Biggers <ebiggers@google.com>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.10 064/163] random: use RDSEED instead of RDRAND in entropy extraction
-Date:   Fri, 27 May 2022 10:49:04 +0200
-Message-Id: <20220527084836.940612093@linuxfoundation.org>
+Subject: [PATCH 5.15 049/145] random: ensure early RDSEED goes through mixer on init
+Date:   Fri, 27 May 2022 10:49:10 +0200
+Message-Id: <20220527084856.727135806@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
-References: <20220527084828.156494029@linuxfoundation.org>
+In-Reply-To: <20220527084850.364560116@linuxfoundation.org>
+References: <20220527084850.364560116@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,101 +53,56 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 28f425e573e906a4c15f8392cc2b1561ef448595 upstream.
+commit a02cf3d0dd77244fd5333ac48d78871de459ae6d upstream.
 
-When /dev/random was directly connected with entropy extraction, without
-any expansion stage, extract_buf() was called for every 10 bytes of data
-read from /dev/random. For that reason, RDRAND was used rather than
-RDSEED. At the same time, crng_reseed() was still only called every 5
-minutes, so there RDSEED made sense.
-
-Those olden days were also a time when the entropy collector did not use
-a cryptographic hash function, which meant most bets were off in terms
-of real preimage resistance. For that reason too it didn't matter
-_that_ much whether RDSEED was mixed in before or after entropy
-extraction; both choices were sort of bad.
-
-But now we have a cryptographic hash function at work, and with that we
-get real preimage resistance. We also now only call extract_entropy()
-every 5 minutes, rather than every 10 bytes. This allows us to do two
-important things.
-
-First, we can switch to using RDSEED in extract_entropy(), as Dominik
-suggested. Second, we can ensure that RDSEED input always goes into the
-cryptographic hash function with other things before being used
-directly. This eliminates a category of attacks in which the CPU knows
-the current state of the crng and knows that we're going to xor RDSEED
-into it, and so it computes a malicious RDSEED. By going through our
-hash function, it would require the CPU to compute a preimage on the
-fly, which isn't going to happen.
+Continuing the reasoning of "random: use RDSEED instead of RDRAND in
+entropy extraction" from this series, at init time we also don't want to
+be xoring RDSEED directly into the crng. Instead it's safer to put it
+into our entropy collector and then re-extract it, so that it goes
+through a hash function with preimage resistance. As a matter of hygiene,
+we also order these now so that the RDSEED byte are hashed in first,
+followed by the bytes that are likely more predictable (e.g. utsname()).
 
 Cc: Theodore Ts'o <tytso@mit.edu>
-Reviewed-by: Eric Biggers <ebiggers@google.com>
 Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
-Suggested-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Reviewed-by: Eric Biggers <ebiggers@google.com>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   22 +++++++++-------------
- 1 file changed, 9 insertions(+), 13 deletions(-)
+ drivers/char/random.c |   16 +++++-----------
+ 1 file changed, 5 insertions(+), 11 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -727,13 +727,8 @@ static void crng_reseed(struct crng_stat
- 					CHACHA_KEY_SIZE);
- 	}
- 	spin_lock_irqsave(&crng->lock, flags);
--	for (i = 0; i < 8; i++) {
--		unsigned long rv;
+@@ -1208,24 +1208,18 @@ int __init rand_initialize(void)
+ 	bool arch_init = true;
+ 	unsigned long rv;
+ 
+-	mix_pool_bytes(&now, sizeof(now));
+ 	for (i = BLAKE2S_BLOCK_SIZE; i > 0; i -= sizeof(rv)) {
 -		if (!arch_get_random_seed_long(&rv) &&
 -		    !arch_get_random_long(&rv))
 -			rv = random_get_entropy();
--		crng->state[i + 4] ^= buf.key[i] ^ rv;
+-		mix_pool_bytes(&rv, sizeof(rv));
 -	}
-+	for (i = 0; i < 8; i++)
-+		crng->state[i + 4] ^= buf.key[i];
- 	memzero_explicit(&buf, sizeof(buf));
- 	WRITE_ONCE(crng->init_time, jiffies);
- 	spin_unlock_irqrestore(&crng->lock, flags);
-@@ -1054,16 +1049,17 @@ static void extract_entropy(void *buf, s
- 	unsigned long flags;
- 	u8 seed[BLAKE2S_HASH_SIZE], next_key[BLAKE2S_HASH_SIZE];
- 	struct {
--		unsigned long rdrand[32 / sizeof(long)];
-+		unsigned long rdseed[32 / sizeof(long)];
- 		size_t counter;
- 	} block;
- 	size_t i;
- 
- 	trace_extract_entropy(nbytes, input_pool.entropy_count);
- 
--	for (i = 0; i < ARRAY_SIZE(block.rdrand); ++i) {
--		if (!arch_get_random_long(&block.rdrand[i]))
--			block.rdrand[i] = random_get_entropy();
-+	for (i = 0; i < ARRAY_SIZE(block.rdseed); ++i) {
-+		if (!arch_get_random_seed_long(&block.rdseed[i]) &&
-+		    !arch_get_random_long(&block.rdseed[i]))
-+			block.rdseed[i] = random_get_entropy();
+-	mix_pool_bytes(utsname(), sizeof(*(utsname())));
+-
+-	extract_entropy(&primary_crng.state[4], sizeof(u32) * 12);
+-	for (i = 4; i < 16; i++) {
+ 		if (!arch_get_random_seed_long_early(&rv) &&
+ 		    !arch_get_random_long_early(&rv)) {
+ 			rv = random_get_entropy();
+ 			arch_init = false;
+ 		}
+-		primary_crng.state[i] ^= rv;
++		mix_pool_bytes(&rv, sizeof(rv));
  	}
- 
- 	spin_lock_irqsave(&input_pool.lock, flags);
-@@ -1071,7 +1067,7 @@ static void extract_entropy(void *buf, s
- 	/* seed = HASHPRF(last_key, entropy_input) */
- 	blake2s_final(&input_pool.hash, seed);
- 
--	/* next_key = HASHPRF(seed, RDRAND || 0) */
-+	/* next_key = HASHPRF(seed, RDSEED || 0) */
- 	block.counter = 0;
- 	blake2s(next_key, (u8 *)&block, seed, sizeof(next_key), sizeof(block), sizeof(seed));
- 	blake2s_init_key(&input_pool.hash, BLAKE2S_HASH_SIZE, next_key, sizeof(next_key));
-@@ -1081,7 +1077,7 @@ static void extract_entropy(void *buf, s
- 
- 	while (nbytes) {
- 		i = min_t(size_t, nbytes, BLAKE2S_HASH_SIZE);
--		/* output = HASHPRF(seed, RDRAND || ++counter) */
-+		/* output = HASHPRF(seed, RDSEED || ++counter) */
- 		++block.counter;
- 		blake2s(buf, (u8 *)&block, seed, i, sizeof(block), sizeof(seed));
- 		nbytes -= i;
++	mix_pool_bytes(&now, sizeof(now));
++	mix_pool_bytes(utsname(), sizeof(*(utsname())));
++
++	extract_entropy(&primary_crng.state[4], sizeof(u32) * 12);
+ 	if (arch_init && trust_cpu && crng_init < 2) {
+ 		invalidate_batched_entropy();
+ 		crng_init = 2;
 
 
