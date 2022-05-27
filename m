@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32465C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:47:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52C76C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 11:47:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243564AbiE0Lra (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 07:47:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58518 "EHLO
+        id S232577AbiE0Lrg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 07:47:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352143AbiE0Lp3 (ORCPT
+        with ESMTP id S1352174AbiE0Lpa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 07:45:29 -0400
+        Fri, 27 May 2022 07:45:30 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E3EC132A2E;
-        Fri, 27 May 2022 04:42:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0602140867;
+        Fri, 27 May 2022 04:42:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 39CAB61D53;
-        Fri, 27 May 2022 11:42:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43DC2C385A9;
-        Fri, 27 May 2022 11:42:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2ADDE61D54;
+        Fri, 27 May 2022 11:42:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C768C385A9;
+        Fri, 27 May 2022 11:42:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653651722;
-        bh=RG6VjW3XhSd7agEEKPH/P8cAoVf6or+rlbFXWJgkVVg=;
+        s=korg; t=1653651728;
+        bh=6cEbCemrHSo5uu84Ne4VBpDDNncNXsxqhB5T/ss4p+Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s5rsRHQ5LnTb9kKfhdBjpIyUD1a2J8DagqOanwrwjteKljiiH4BkRrXgo211sOgk6
-         81omEzMCWH5cewV5VCReHaqk8bw9kdWznp6Lnx8aCuk1IvWIV2aZe0HBsiLUel+vtS
-         FnyCZHtIb2JzaE6MH+I7llQCjeuBonnaSGKLEA9c=
+        b=pu45vBSQwglbAk7zFDlbwlFHrFVbFSM2EmnZPi2367HpB/YjBrgqpaiTV85+J+V/I
+         N1dtGsJlge/L3VwKDOIOmZcz4CJRxXpN9dz4ayWme9CJpvzkJ9kXeW54q8V76xahIx
+         8au+TnwCNhNRGgf38TVcjXFmu1Ef3NVWq41GfiYQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.10 052/163] random: simplify arithmetic function flow in account()
-Date:   Fri, 27 May 2022 10:48:52 +0200
-Message-Id: <20220527084835.269206185@linuxfoundation.org>
+Subject: [PATCH 5.15 037/145] random: only call crng_finalize_init() for primary_crng
+Date:   Fri, 27 May 2022 10:48:58 +0200
+Message-Id: <20220527084855.384796466@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084828.156494029@linuxfoundation.org>
-References: <20220527084828.156494029@linuxfoundation.org>
+In-Reply-To: <20220527084850.364560116@linuxfoundation.org>
+References: <20220527084850.364560116@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,60 +49,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Dominik Brodowski <linux@dominikbrodowski.net>
 
-commit a254a0e4093fce8c832414a83940736067eed515 upstream.
+commit 9d5505f1eebeca778074a0260ed077fd85f8792c upstream.
 
-Now that have_bytes is never modified, we can simplify this function.
-First, we move the check for negative entropy_count to be first. That
-ensures that subsequent reads of this will be non-negative. Then,
-have_bytes and ibytes can be folded into their one use site in the
-min_t() function.
+crng_finalize_init() returns instantly if it is called for another pool
+than primary_crng. The test whether crng_finalize_init() is still required
+can be moved to the relevant caller in crng_reseed(), and
+crng_need_final_init can be reset to false if crng_finalize_init() is
+called with workqueues ready. Then, no previous callsite will call
+crng_finalize_init() unless it is needed, and we can get rid of the
+superfluous function parameter.
 
-Suggested-by: Dominik Brodowski <linux@dominikbrodowski.net>
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   17 ++++++-----------
- 1 file changed, 6 insertions(+), 11 deletions(-)
+ drivers/char/random.c |   10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -1293,7 +1293,7 @@ EXPORT_SYMBOL_GPL(add_disk_randomness);
-  */
- static size_t account(size_t nbytes, int min)
- {
--	int entropy_count, orig, have_bytes;
-+	int entropy_count, orig;
- 	size_t ibytes, nfrac;
+@@ -800,10 +800,8 @@ static void __init crng_initialize_prima
+ 	primary_crng.init_time = jiffies - CRNG_RESEED_INTERVAL - 1;
+ }
  
- 	BUG_ON(input_pool.entropy_count > POOL_FRACBITS);
-@@ -1301,20 +1301,15 @@ static size_t account(size_t nbytes, int
- 	/* Can we pull enough? */
- retry:
- 	entropy_count = orig = READ_ONCE(input_pool.entropy_count);
--	ibytes = nbytes;
--	/* never pull more than available */
--	have_bytes = entropy_count >> (POOL_ENTROPY_SHIFT + 3);
--
--	if (have_bytes < 0)
--		have_bytes = 0;
--	ibytes = min_t(size_t, ibytes, have_bytes);
--	if (ibytes < min)
--		ibytes = 0;
--
- 	if (WARN_ON(entropy_count < 0)) {
- 		pr_warn("negative entropy count: count %d\n", entropy_count);
- 		entropy_count = 0;
- 	}
-+
-+	/* never pull more than available */
-+	ibytes = min_t(size_t, nbytes, entropy_count >> (POOL_ENTROPY_SHIFT + 3));
-+	if (ibytes < min)
-+		ibytes = 0;
- 	nfrac = ibytes << (POOL_ENTROPY_SHIFT + 3);
- 	if ((size_t)entropy_count > nfrac)
- 		entropy_count -= nfrac;
+-static void crng_finalize_init(struct crng_state *crng)
++static void crng_finalize_init(void)
+ {
+-	if (crng != &primary_crng || crng_init >= 2)
+-		return;
+ 	if (!system_wq) {
+ 		/* We can't call numa_crng_init until we have workqueues,
+ 		 * so mark this for processing later. */
+@@ -814,6 +812,7 @@ static void crng_finalize_init(struct cr
+ 	invalidate_batched_entropy();
+ 	numa_crng_init();
+ 	crng_init = 2;
++	crng_need_final_init = false;
+ 	process_random_ready_list();
+ 	wake_up_interruptible(&crng_init_wait);
+ 	kill_fasync(&fasync, SIGIO, POLL_IN);
+@@ -980,7 +979,8 @@ static void crng_reseed(struct crng_stat
+ 	memzero_explicit(&buf, sizeof(buf));
+ 	WRITE_ONCE(crng->init_time, jiffies);
+ 	spin_unlock_irqrestore(&crng->lock, flags);
+-	crng_finalize_init(crng);
++	if (crng == &primary_crng && crng_init < 2)
++		crng_finalize_init();
+ }
+ 
+ static void _extract_crng(struct crng_state *crng, u8 out[CHACHA_BLOCK_SIZE])
+@@ -1697,7 +1697,7 @@ int __init rand_initialize(void)
+ {
+ 	init_std_data();
+ 	if (crng_need_final_init)
+-		crng_finalize_init(&primary_crng);
++		crng_finalize_init();
+ 	crng_initialize_primary();
+ 	crng_global_init_time = jiffies;
+ 	if (ratelimit_disable) {
 
 
