@@ -2,47 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4C3FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:56:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AD9AC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:56:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244914AbiE0I4H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 04:56:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33190 "EHLO
+        id S240637AbiE0I4R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 04:56:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350288AbiE0IzN (ORCPT
+        with ESMTP id S1350331AbiE0IzQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 04:55:13 -0400
+        Fri, 27 May 2022 04:55:16 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5680456C1A;
-        Fri, 27 May 2022 01:53:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FD68FF5A7;
+        Fri, 27 May 2022 01:53:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C48BB61D3B;
-        Fri, 27 May 2022 08:53:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B450EC385A9;
-        Fri, 27 May 2022 08:53:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C485F61D52;
+        Fri, 27 May 2022 08:53:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E10FC385A9;
+        Fri, 27 May 2022 08:53:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653641606;
-        bh=VE0MZcfVCX48PpUeR6WLyjNWh+G3BrDwXKBAS/YkfIM=;
+        s=korg; t=1653641616;
+        bh=/VSZyAVjaetEfzPX1m1jLK2kGsRXWlfOtDgLaLcG9Cw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uZ8N1nQBwFYercAmLkMGpAcKSLknJXsR7L/a4ZblLV76rNpNNYRznd1WFBn0+QyLt
-         hmKzfqZkbmUNKpaP3BiqRKat3hRZEhu6HZcF0bXyaDes2Q1spmH/YNbaSEKGX5BViy
-         bwz7NRetmneb5cXRJoNd6EZlNSTyBU8YjpcpNzX0=
+        b=kY16p7aRh+MQHIOZ1kXsO6ihY667Ncp7zl3E6Xr4W4oYmiNSkPgz4RdppCmElzexO
+         zZUSOB7M1lSJNjYJHAi8IYIoPNl+56TPV2+RJAwufZnCTdVwhyX9BTuTiFdUPAG6BP
+         ZnsRA2bGx7HDGX5pBGCrwyYMCQbpXksqTY0DXbEI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Filipe Manana <fdmanana@suse.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Borislav Petkov <bp@alien8.de>, Theodore Tso <tytso@mit.edu>,
+        stable@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Eric Biggers <ebiggers@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.18 25/47] random: do not use input pool from hard IRQs
-Date:   Fri, 27 May 2022 10:50:05 +0200
-Message-Id: <20220527084805.494749910@linuxfoundation.org>
+Subject: [PATCH 5.17 009/111] random: remove batched entropy locking
+Date:   Fri, 27 May 2022 10:48:41 +0200
+Message-Id: <20220527084820.419381242@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527084801.223648383@linuxfoundation.org>
-References: <20220527084801.223648383@linuxfoundation.org>
+In-Reply-To: <20220527084819.133490171@linuxfoundation.org>
+References: <20220527084819.133490171@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,145 +55,151 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit e3e33fc2ea7fcefd0d761db9d6219f83b4248f5c upstream.
+commit 77760fd7f7ae3dfd03668204e708d1568d75447d upstream.
 
-Years ago, a separate fast pool was added for interrupts, so that the
-cost associated with taking the input pool spinlocks and mixing into it
-would be avoided in places where latency is critical. However, one
-oversight was that add_input_randomness() and add_disk_randomness()
-still sometimes are called directly from the interrupt handler, rather
-than being deferred to a thread. This means that some unlucky interrupts
-will be caught doing a blake2s_compress() call and potentially spinning
-on input_pool.lock, which can also be taken by unprivileged users by
-writing into /dev/urandom.
+Rather than use spinlocks to protect batched entropy, we can instead
+disable interrupts locally, since we're dealing with per-cpu data, and
+manage resets with a basic generation counter. At the same time, we
+can't quite do this on PREEMPT_RT, where we still want spinlocks-as-
+mutexes semantics. So we use a local_lock_t, which provides the right
+behavior for each. Because this is a per-cpu lock, that generation
+counter is still doing the necessary CPU-to-CPU communication.
 
-In order to fix this, add_timer_randomness() now checks whether it is
-being called from a hard IRQ and if so, just mixes into the per-cpu IRQ
-fast pool using fast_mix(), which is much faster and can be done
-lock-free. A nice consequence of this, as well, is that it means hard
-IRQ context FPU support is likely no longer useful.
+This should improve performance a bit. It will also fix the linked splat
+that Jonathan received with a PROVE_RAW_LOCK_NESTING=y.
 
-The entropy estimation algorithm used by add_timer_randomness() is also
-somewhat different than the one used for add_interrupt_randomness(). The
-former looks at deltas of deltas of deltas, while the latter just waits
-for 64 interrupts for one bit or for one second since the last bit. In
-order to bridge these, and since add_interrupt_randomness() runs after
-an add_timer_randomness() that's called from hard IRQ, we add to the
-fast pool credit the related amount, and then subtract one to account
-for add_interrupt_randomness()'s contribution.
-
-A downside of this, however, is that the num argument is potentially
-attacker controlled, which puts a bit more pressure on the fast_mix()
-sponge to do more than it's really intended to do. As a mitigating
-factor, the first 96 bits of input aren't attacker controlled (a cycle
-counter followed by zeros), which means it's essentially two rounds of
-siphash rather than one, which is somewhat better. It's also not that
-much different from add_interrupt_randomness()'s use of the irq stack
-instruction pointer register.
-
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Filipe Manana <fdmanana@suse.com>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Borislav Petkov <bp@alien8.de>
-Cc: Theodore Ts'o <tytso@mit.edu>
+Reviewed-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Reviewed-by: Eric Biggers <ebiggers@google.com>
+Suggested-by: Andy Lutomirski <luto@kernel.org>
+Reported-by: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
+Tested-by: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
+Link: https://lore.kernel.org/lkml/YfMa0QgsjCVdRAvJ@latitude/
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   51 +++++++++++++++++++++++++++++++++++---------------
- 1 file changed, 36 insertions(+), 15 deletions(-)
+ drivers/char/random.c |   55 +++++++++++++++++++++++++-------------------------
+ 1 file changed, 28 insertions(+), 27 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -1123,6 +1123,7 @@ static void mix_interrupt_randomness(str
- 	 * we don't wind up "losing" some.
- 	 */
- 	unsigned long pool[2];
-+	unsigned int count;
+@@ -1731,13 +1731,16 @@ static int __init random_sysctls_init(vo
+ device_initcall(random_sysctls_init);
+ #endif	/* CONFIG_SYSCTL */
  
- 	/* Check to see if we're running on the wrong CPU due to hotplug. */
- 	local_irq_disable();
-@@ -1136,12 +1137,13 @@ static void mix_interrupt_randomness(str
- 	 * consistent view, before we reenable irqs again.
- 	 */
- 	memcpy(pool, fast_pool->pool, sizeof(pool));
-+	count = fast_pool->count;
- 	fast_pool->count = 0;
- 	fast_pool->last = jiffies;
- 	local_irq_enable();
- 
- 	mix_pool_bytes(pool, sizeof(pool));
--	credit_init_bits(1);
-+	credit_init_bits(max(1u, (count & U16_MAX) / 64));
- 
- 	memzero_explicit(pool, sizeof(pool));
- }
-@@ -1181,22 +1183,30 @@ struct timer_rand_state {
++static atomic_t batch_generation = ATOMIC_INIT(0);
++
+ struct batched_entropy {
+ 	union {
+ 		u64 entropy_u64[CHACHA_BLOCK_SIZE / sizeof(u64)];
+ 		u32 entropy_u32[CHACHA_BLOCK_SIZE / sizeof(u32)];
+ 	};
++	local_lock_t lock;
+ 	unsigned int position;
+-	spinlock_t batch_lock;
++	int generation;
+ };
  
  /*
-  * This function adds entropy to the entropy "pool" by using timing
-- * delays.  It uses the timer_rand_state structure to make an estimate
-- * of how many bits of entropy this call has added to the pool.
-- *
-- * The number "num" is also added to the pool - it should somehow describe
-- * the type of event which just happened.  This is currently 0-255 for
-- * keyboard scan codes, and 256 upwards for interrupts.
-+ * delays. It uses the timer_rand_state structure to make an estimate
-+ * of how many bits of entropy this call has added to the pool. The
-+ * value "num" is also added to the pool; it should somehow describe
-+ * the type of event that just happened.
+@@ -1749,7 +1752,7 @@ struct batched_entropy {
+  * point prior.
   */
- static void add_timer_randomness(struct timer_rand_state *state, unsigned int num)
- {
- 	unsigned long entropy = random_get_entropy(), now = jiffies, flags;
- 	long delta, delta2, delta3;
-+	unsigned int bits;
+ static DEFINE_PER_CPU(struct batched_entropy, batched_entropy_u64) = {
+-	.batch_lock = __SPIN_LOCK_UNLOCKED(batched_entropy_u64.lock),
++	.lock = INIT_LOCAL_LOCK(batched_entropy_u64.lock)
+ };
  
--	spin_lock_irqsave(&input_pool.lock, flags);
--	_mix_pool_bytes(&entropy, sizeof(entropy));
--	_mix_pool_bytes(&num, sizeof(num));
--	spin_unlock_irqrestore(&input_pool.lock, flags);
-+	/*
-+	 * If we're in a hard IRQ, add_interrupt_randomness() will be called
-+	 * sometime after, so mix into the fast pool.
-+	 */
-+	if (in_hardirq()) {
-+		fast_mix(this_cpu_ptr(&irq_randomness)->pool,
-+			 (unsigned long[2]){ entropy, num });
-+	} else {
-+		spin_lock_irqsave(&input_pool.lock, flags);
-+		_mix_pool_bytes(&entropy, sizeof(entropy));
-+		_mix_pool_bytes(&num, sizeof(num));
-+		spin_unlock_irqrestore(&input_pool.lock, flags);
-+	}
+ u64 get_random_u64(void)
+@@ -1758,67 +1761,65 @@ u64 get_random_u64(void)
+ 	unsigned long flags;
+ 	struct batched_entropy *batch;
+ 	static void *previous;
++	int next_gen;
  
- 	if (crng_ready())
- 		return;
-@@ -1227,11 +1237,22 @@ static void add_timer_randomness(struct
- 		delta = delta3;
+ 	warn_unseeded_randomness(&previous);
  
- 	/*
--	 * delta is now minimum absolute delta.
--	 * Round down by 1 bit on general principles,
--	 * and limit entropy estimate to 12 bits.
-+	 * delta is now minimum absolute delta. Round down by 1 bit
-+	 * on general principles, and limit entropy estimate to 11 bits.
-+	 */
-+	bits = min(fls(delta >> 1), 11);
++	local_lock_irqsave(&batched_entropy_u64.lock, flags);
+ 	batch = raw_cpu_ptr(&batched_entropy_u64);
+-	spin_lock_irqsave(&batch->batch_lock, flags);
+-	if (batch->position % ARRAY_SIZE(batch->entropy_u64) == 0) {
 +
-+	/*
-+	 * As mentioned above, if we're in a hard IRQ, add_interrupt_randomness()
-+	 * will run after this, which uses a different crediting scheme of 1 bit
-+	 * per every 64 interrupts. In order to let that function do accounting
-+	 * close to the one in this function, we credit a full 64/64 bit per bit,
-+	 * and then subtract one to account for the extra one added.
- 	 */
--	credit_init_bits(min_t(unsigned int, fls(delta >> 1), 11));
-+	if (in_hardirq())
-+		this_cpu_ptr(&irq_randomness)->count += max(1u, bits * 64) - 1;
-+	else
-+		credit_init_bits(bits);
++	next_gen = atomic_read(&batch_generation);
++	if (batch->position % ARRAY_SIZE(batch->entropy_u64) == 0 ||
++	    next_gen != batch->generation) {
+ 		extract_crng((u8 *)batch->entropy_u64);
+ 		batch->position = 0;
++		batch->generation = next_gen;
+ 	}
++
+ 	ret = batch->entropy_u64[batch->position++];
+-	spin_unlock_irqrestore(&batch->batch_lock, flags);
++	local_unlock_irqrestore(&batched_entropy_u64.lock, flags);
+ 	return ret;
+ }
+ EXPORT_SYMBOL(get_random_u64);
+ 
+ static DEFINE_PER_CPU(struct batched_entropy, batched_entropy_u32) = {
+-	.batch_lock = __SPIN_LOCK_UNLOCKED(batched_entropy_u32.lock),
++	.lock = INIT_LOCAL_LOCK(batched_entropy_u32.lock)
+ };
++
+ u32 get_random_u32(void)
+ {
+ 	u32 ret;
+ 	unsigned long flags;
+ 	struct batched_entropy *batch;
+ 	static void *previous;
++	int next_gen;
+ 
+ 	warn_unseeded_randomness(&previous);
+ 
++	local_lock_irqsave(&batched_entropy_u32.lock, flags);
+ 	batch = raw_cpu_ptr(&batched_entropy_u32);
+-	spin_lock_irqsave(&batch->batch_lock, flags);
+-	if (batch->position % ARRAY_SIZE(batch->entropy_u32) == 0) {
++
++	next_gen = atomic_read(&batch_generation);
++	if (batch->position % ARRAY_SIZE(batch->entropy_u32) == 0 ||
++	    next_gen != batch->generation) {
+ 		extract_crng((u8 *)batch->entropy_u32);
+ 		batch->position = 0;
++		batch->generation = next_gen;
+ 	}
++
+ 	ret = batch->entropy_u32[batch->position++];
+-	spin_unlock_irqrestore(&batch->batch_lock, flags);
++	local_unlock_irqrestore(&batched_entropy_u32.lock, flags);
+ 	return ret;
+ }
+ EXPORT_SYMBOL(get_random_u32);
+ 
+ /* It's important to invalidate all potential batched entropy that might
+  * be stored before the crng is initialized, which we can do lazily by
+- * simply resetting the counter to zero so that it's re-extracted on the
+- * next usage. */
++ * bumping the generation counter.
++ */
+ static void invalidate_batched_entropy(void)
+ {
+-	int cpu;
+-	unsigned long flags;
+-
+-	for_each_possible_cpu(cpu) {
+-		struct batched_entropy *batched_entropy;
+-
+-		batched_entropy = per_cpu_ptr(&batched_entropy_u32, cpu);
+-		spin_lock_irqsave(&batched_entropy->batch_lock, flags);
+-		batched_entropy->position = 0;
+-		spin_unlock(&batched_entropy->batch_lock);
+-
+-		batched_entropy = per_cpu_ptr(&batched_entropy_u64, cpu);
+-		spin_lock(&batched_entropy->batch_lock);
+-		batched_entropy->position = 0;
+-		spin_unlock_irqrestore(&batched_entropy->batch_lock, flags);
+-	}
++	atomic_inc(&batch_generation);
  }
  
- void add_input_randomness(unsigned int type, unsigned int code,
+ /**
 
 
