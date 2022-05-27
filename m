@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC453C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:55:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C591AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 27 May 2022 08:56:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350259AbiE0Izy (ORCPT
+        id S1350286AbiE0Iz6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 04:55:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58838 "EHLO
+        Fri, 27 May 2022 04:55:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350196AbiE0Iyg (ORCPT
+        with ESMTP id S1350256AbiE0IzL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 04:54:36 -0400
+        Fri, 27 May 2022 04:55:11 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C136A5A2E3;
-        Fri, 27 May 2022 01:53:17 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15B125E145;
+        Fri, 27 May 2022 01:53:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0217861D3E;
-        Fri, 27 May 2022 08:53:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 752CCC385B8;
-        Fri, 27 May 2022 08:53:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3FBE561D76;
+        Fri, 27 May 2022 08:53:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F277BC34113;
+        Fri, 27 May 2022 08:53:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653641596;
-        bh=iCWXMb960TC0fIUvQaNI3MVhpABJYPoc4oZGpjNWs94=;
+        s=korg; t=1653641599;
+        bh=GBSSo1SdWGFVIqS3WFo+LcamyW0E68eULV9dEbsBGV4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tch57Dsl4BVojG7aGgGal7ThowwW7/KJ920h54Ssz0plWFv6+gBBWhxZ6y4gBZU+X
-         bfJ3fYjaCXsfEZgFW83RqgoJTsSPPpIu9EHLrS9SBM6mNe4aAr10rxpHufnD2SmHmo
-         5DjonutogBkBteo1BFoYpU7D9klwdTKq7XTS70W0=
+        b=i1ZkMs41Lr0CABn1WX1MRlpsm6BkUQKfU6Ache9eY4un2JcEJL+XBFldnnKHUPhef
+         pcNq1WWn6UrgIavMdJnG95v1h0GBnqlgrrNzGGQqIqZrjkVAzAyMaYNP/IPJOcOBQZ
+         37uiYZuk5KY8UMa8ZcS7Mz0qye07F+651XjHOuxk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Nadia Heninger <nadiah@cs.ucsd.edu>,
+        Tom Ristenpart <ristenpart@cornell.edu>,
+        Eric Biggers <ebiggers@google.com>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.18 22/47] random: use first 128 bits of input as fast init
-Date:   Fri, 27 May 2022 10:50:02 +0200
-Message-Id: <20220527084805.052097150@linuxfoundation.org>
+Subject: [PATCH 5.18 23/47] random: do not pretend to handle premature next security model
+Date:   Fri, 27 May 2022 10:50:03 +0200
+Message-Id: <20220527084805.191749932@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220527084801.223648383@linuxfoundation.org>
 References: <20220527084801.223648383@linuxfoundation.org>
@@ -52,305 +54,477 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 5c3b747ef54fa2a7318776777f6044540d99f721 upstream.
+commit e85c0fc1d94c52483a603651748d4c76d6aa1c6b upstream.
 
-Before, the first 64 bytes of input, regardless of how entropic it was,
-would be used to mutate the crng base key directly, and none of those
-bytes would be credited as having entropy. Then 256 bits of credited
-input would be accumulated, and only then would the rng transition from
-the earlier "fast init" phase into being actually initialized.
+Per the thread linked below, "premature next" is not considered to be a
+realistic threat model, and leads to more serious security problems.
 
-The thinking was that by mixing and matching fast init and real init, an
-attacker who compromised the fast init state, considered easy to do
-given how little entropy might be in those first 64 bytes, would then be
-able to bruteforce bits from the actual initialization. By keeping these
-separate, bruteforcing became impossible.
+"Premature next" is the scenario in which:
 
-However, by not crediting potentially creditable bits from those first 64
-bytes of input, we delay initialization, and actually make the problem
-worse, because it means the user is drawing worse random numbers for a
-longer period of time.
+- Attacker compromises the current state of a fully initialized RNG via
+  some kind of infoleak.
+- New bits of entropy are added directly to the key used to generate the
+  /dev/urandom stream, without any buffering or pooling.
+- Attacker then, somehow having read access to /dev/urandom, samples RNG
+  output and brute forces the individual new bits that were added.
+- Result: the RNG never "recovers" from the initial compromise, a
+  so-called violation of what academics term "post-compromise security".
 
-Instead, we can take the first 128 bits as fast init, and allow them to
-be credited, and then hold off on the next 128 bits until they've
-accumulated. This is still a wide enough margin to prevent bruteforcing
-the rng state, while still initializing much faster.
+The usual solutions to this involve some form of delaying when entropy
+gets mixed into the crng. With Fortuna, this involves multiple input
+buckets. With what the Linux RNG was trying to do prior, this involves
+entropy estimation.
 
-Then, rather than trying to piecemeal inject into the base crng key at
-various points, instead just extract from the pool when we need it, for
-the crng_init==0 phase. Performance may even be better for the various
-inputs here, since there are likely more calls to mix_pool_bytes() then
-there are to get_random_bytes() during this phase of system execution.
+However, by delaying when entropy gets mixed in, it also means that RNG
+compromises are extremely dangerous during the window of time before
+the RNG has gathered enough entropy, during which time nonces may become
+predictable (or repeated), ephemeral keys may not be secret, and so
+forth. Moreover, it's unclear how realistic "premature next" is from an
+attack perspective, if these attacks even make sense in practice.
 
-Since the preinit injection code is gone, bootloader randomness can then
-do something significantly more straight forward, removing the weird
-system_wq hack in hwgenerator randomness.
+Put together -- and discussed in more detail in the thread below --
+these constitute grounds for just doing away with the current code that
+pretends to handle premature next. I say "pretends" because it wasn't
+doing an especially great job at it either; should we change our mind
+about this direction, we would probably implement Fortuna to "fix" the
+"problem", in which case, removing the pretend solution still makes
+sense.
 
+This also reduces the crng reseed period from 5 minutes down to 1
+minute. The rationale from the thread might lead us toward reducing that
+even further in the future (or even eliminating it), but that remains a
+topic of a future commit.
+
+At a high level, this patch changes semantics from:
+
+    Before: Seed for the first time after 256 "bits" of estimated
+    entropy have been accumulated since the system booted. Thereafter,
+    reseed once every five minutes, but only if 256 new "bits" have been
+    accumulated since the last reseeding.
+
+    After: Seed for the first time after 256 "bits" of estimated entropy
+    have been accumulated since the system booted. Thereafter, reseed
+    once every minute.
+
+Most of this patch is renaming and removing: POOL_MIN_BITS becomes
+POOL_INIT_BITS, credit_entropy_bits() becomes credit_init_bits(),
+crng_reseed() loses its "force" parameter since it's now always true,
+the drain_entropy() function no longer has any use so it's removed,
+entropy estimation is skipped if we've already init'd, the various
+notifiers for "low on entropy" are now only active prior to init, and
+finally, some documentation comments are cleaned up here and there.
+
+Link: https://lore.kernel.org/lkml/YmlMGx6+uigkGiZ0@zx2c4.com/
 Cc: Theodore Ts'o <tytso@mit.edu>
-Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+Cc: Nadia Heninger <nadiah@cs.ucsd.edu>
+Cc: Tom Ristenpart <ristenpart@cornell.edu>
+Reviewed-by: Eric Biggers <ebiggers@google.com>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |  146 ++++++++++++++++----------------------------------
- 1 file changed, 49 insertions(+), 97 deletions(-)
+ drivers/char/random.c |  186 ++++++++++++++++++--------------------------------
+ 1 file changed, 68 insertions(+), 118 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -231,10 +231,7 @@ static void _warn_unseeded_randomness(co
+@@ -15,14 +15,12 @@
+  *   - Sysctl interface.
+  *
+  * The high level overview is that there is one input pool, into which
+- * various pieces of data are hashed. Some of that data is then "credited" as
+- * having a certain number of bits of entropy. When enough bits of entropy are
+- * available, the hash is finalized and handed as a key to a stream cipher that
+- * expands it indefinitely for various consumers. This key is periodically
+- * refreshed as the various entropy collectors, described below, add data to the
+- * input pool and credit it. There is currently no Fortuna-like scheduler
+- * involved, which can lead to malicious entropy sources causing a premature
+- * reseed, and the entropy estimates are, at best, conservative guesses.
++ * various pieces of data are hashed. Prior to initialization, some of that
++ * data is then "credited" as having a certain number of bits of entropy.
++ * When enough bits of entropy are available, the hash is finalized and
++ * handed as a key to a stream cipher that expands it indefinitely for
++ * various consumers. This key is periodically refreshed as the various
++ * entropy collectors, described below, add data to the input pool.
+  */
+ 
+ #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+@@ -231,7 +229,10 @@ static void _warn_unseeded_randomness(co
   *
   *********************************************************************/
  
--enum {
--	CRNG_RESEED_INTERVAL = 300 * HZ,
--	CRNG_INIT_CNT_THRESH = 2 * CHACHA_KEY_SIZE
--};
-+enum { CRNG_RESEED_INTERVAL = 300 * HZ };
+-enum { CRNG_RESEED_INTERVAL = 300 * HZ };
++enum {
++	CRNG_RESEED_START_INTERVAL = HZ,
++	CRNG_RESEED_INTERVAL = 60 * HZ
++};
  
  static struct {
  	u8 key[CHACHA_KEY_SIZE] __aligned(__alignof__(long));
-@@ -258,6 +255,8 @@ static DEFINE_PER_CPU(struct crng, crngs
+@@ -253,26 +254,18 @@ static DEFINE_PER_CPU(struct crng, crngs
+ 	.lock = INIT_LOCAL_LOCK(crngs.lock),
+ };
  
- /* Used by crng_reseed() to extract a new seed from the input pool. */
- static bool drain_entropy(void *buf, size_t nbytes, bool force);
-+/* Used by crng_make_state() to extract a new seed when crng_init==0. */
-+static void extract_entropy(void *buf, size_t nbytes);
- 
- /*
-  * This extracts a new crng key from the input pool, but only if there is a
-@@ -382,17 +381,20 @@ static void crng_make_state(u32 chacha_s
- 	/*
- 	 * For the fast path, we check whether we're ready, unlocked first, and
- 	 * then re-check once locked later. In the case where we're really not
--	 * ready, we do fast key erasure with the base_crng directly, because
--	 * this is what crng_pre_init_inject() mutates during early init.
-+	 * ready, we do fast key erasure with the base_crng directly, extracting
-+	 * when crng_init==0.
- 	 */
- 	if (!crng_ready()) {
- 		bool ready;
- 
- 		spin_lock_irqsave(&base_crng.lock, flags);
- 		ready = crng_ready();
--		if (!ready)
-+		if (!ready) {
-+			if (crng_init == 0)
-+				extract_entropy(base_crng.key, sizeof(base_crng.key));
- 			crng_fast_key_erasure(base_crng.key, chacha_state,
- 					      random_data, random_data_len);
-+		}
- 		spin_unlock_irqrestore(&base_crng.lock, flags);
- 		if (!ready)
- 			return;
-@@ -433,48 +435,6 @@ static void crng_make_state(u32 chacha_s
- 	local_unlock_irqrestore(&crngs.lock, flags);
- }
+-/* Used by crng_reseed() to extract a new seed from the input pool. */
+-static bool drain_entropy(void *buf, size_t nbytes, bool force);
+-/* Used by crng_make_state() to extract a new seed when crng_init==0. */
++/* Used by crng_reseed() and crng_make_state() to extract a new seed from the input pool. */
+ static void extract_entropy(void *buf, size_t nbytes);
  
 -/*
-- * This function is for crng_init == 0 only. It loads entropy directly
-- * into the crng's key, without going through the input pool. It is,
-- * generally speaking, not very safe, but we use this only at early
-- * boot time when it's better to have something there rather than
-- * nothing.
-- *
-- * If account is set, then the crng_init_cnt counter is incremented.
-- * This shouldn't be set by functions like add_device_randomness(),
-- * where we can't trust the buffer passed to it is guaranteed to be
-- * unpredictable (so it might not have any entropy at all).
+- * This extracts a new crng key from the input pool, but only if there is a
+- * sufficient amount of entropy available or force is true, in order to
+- * mitigate bruteforcing of newly added bits.
 - */
--static void crng_pre_init_inject(const void *input, size_t len, bool account)
--{
--	static int crng_init_cnt = 0;
--	struct blake2s_state hash;
--	unsigned long flags;
--
--	blake2s_init(&hash, sizeof(base_crng.key));
--
--	spin_lock_irqsave(&base_crng.lock, flags);
--	if (crng_init != 0) {
--		spin_unlock_irqrestore(&base_crng.lock, flags);
--		return;
--	}
--
--	blake2s_update(&hash, base_crng.key, sizeof(base_crng.key));
--	blake2s_update(&hash, input, len);
--	blake2s_final(&hash, base_crng.key);
--
--	if (account) {
--		crng_init_cnt += min_t(size_t, len, CRNG_INIT_CNT_THRESH - crng_init_cnt);
--		if (crng_init_cnt >= CRNG_INIT_CNT_THRESH)
--			crng_init = 1;
--	}
--
--	spin_unlock_irqrestore(&base_crng.lock, flags);
--
--	if (crng_init == 1)
--		pr_notice("fast init done\n");
--}
--
- static void _get_random_bytes(void *buf, size_t nbytes)
+-static void crng_reseed(bool force)
++/* This extracts a new crng key from the input pool. */
++static void crng_reseed(void)
  {
- 	u32 chacha_state[CHACHA_STATE_WORDS];
-@@ -787,7 +747,8 @@ EXPORT_SYMBOL(get_random_bytes_arch);
+ 	unsigned long flags;
+ 	unsigned long next_gen;
+ 	u8 key[CHACHA_KEY_SIZE];
+ 	bool finalize_init = false;
+ 
+-	/* Only reseed if we can, to prevent brute forcing a small amount of new bits. */
+-	if (!drain_entropy(key, sizeof(key), force))
+-		return;
++	extract_entropy(key, sizeof(key));
+ 
+ 	/*
+ 	 * We copy the new key into the base_crng, overwriting the old one,
+@@ -344,10 +337,10 @@ static void crng_fast_key_erasure(u8 key
+ }
+ 
+ /*
+- * Return whether the crng seed is considered to be sufficiently
+- * old that a reseeding might be attempted. This happens if the last
+- * reseeding was CRNG_RESEED_INTERVAL ago, or during early boot, at
+- * an interval proportional to the uptime.
++ * Return whether the crng seed is considered to be sufficiently old
++ * that a reseeding is needed. This happens if the last reseeding
++ * was CRNG_RESEED_INTERVAL ago, or during early boot, at an interval
++ * proportional to the uptime.
+  */
+ static bool crng_has_old_seed(void)
+ {
+@@ -359,7 +352,7 @@ static bool crng_has_old_seed(void)
+ 		if (uptime >= CRNG_RESEED_INTERVAL / HZ * 2)
+ 			WRITE_ONCE(early_boot, false);
+ 		else
+-			interval = max_t(unsigned int, 5 * HZ,
++			interval = max_t(unsigned int, CRNG_RESEED_START_INTERVAL,
+ 					 (unsigned int)uptime / 2 * HZ);
+ 	}
+ 	return time_after(jiffies, READ_ONCE(base_crng.birth) + interval);
+@@ -401,11 +394,11 @@ static void crng_make_state(u32 chacha_s
+ 	}
+ 
+ 	/*
+-	 * If the base_crng is old enough, we try to reseed, which in turn
+-	 * bumps the generation counter that we check below.
++	 * If the base_crng is old enough, we reseed, which in turn bumps the
++	 * generation counter that we check below.
+ 	 */
+ 	if (unlikely(crng_has_old_seed()))
+-		crng_reseed(false);
++		crng_reseed();
+ 
+ 	local_lock_irqsave(&crngs.lock, flags);
+ 	crng = raw_cpu_ptr(&crngs);
+@@ -734,30 +727,24 @@ EXPORT_SYMBOL(get_random_bytes_arch);
+  *
+  * After which, if added entropy should be credited:
+  *
+- *     static void credit_entropy_bits(size_t nbits)
++ *     static void credit_init_bits(size_t nbits)
+  *
+- * Finally, extract entropy via these two, with the latter one
+- * setting the entropy count to zero and extracting only if there
+- * is POOL_MIN_BITS entropy credited prior or force is true:
++ * Finally, extract entropy via:
+  *
+  *     static void extract_entropy(void *buf, size_t nbytes)
+- *     static bool drain_entropy(void *buf, size_t nbytes, bool force)
+  *
+  **********************************************************************/
  
  enum {
  	POOL_BITS = BLAKE2S_HASH_SIZE * 8,
--	POOL_MIN_BITS = POOL_BITS /* No point in settling for less. */
-+	POOL_MIN_BITS = POOL_BITS, /* No point in settling for less. */
-+	POOL_FAST_INIT_BITS = POOL_MIN_BITS / 2
+-	POOL_MIN_BITS = POOL_BITS, /* No point in settling for less. */
+-	POOL_FAST_INIT_BITS = POOL_MIN_BITS / 2
++	POOL_INIT_BITS = POOL_BITS, /* No point in settling for less. */
++	POOL_FAST_INIT_BITS = POOL_INIT_BITS / 2
  };
  
- /* For notifying userspace should write into /dev/random. */
-@@ -824,24 +785,6 @@ static void mix_pool_bytes(const void *i
- 	spin_unlock_irqrestore(&input_pool.lock, flags);
+-/* For notifying userspace should write into /dev/random. */
+-static DECLARE_WAIT_QUEUE_HEAD(random_write_wait);
+-
+ static struct {
+ 	struct blake2s_state hash;
+ 	spinlock_t lock;
+-	unsigned int entropy_count;
++	unsigned int init_bits;
+ } input_pool = {
+ 	.hash.h = { BLAKE2S_IV0 ^ (0x01010000 | BLAKE2S_HASH_SIZE),
+ 		    BLAKE2S_IV1, BLAKE2S_IV2, BLAKE2S_IV3, BLAKE2S_IV4,
+@@ -772,9 +759,9 @@ static void _mix_pool_bytes(const void *
  }
  
--static void credit_entropy_bits(size_t nbits)
+ /*
+- * This function adds bytes into the entropy "pool".  It does not
+- * update the entropy estimate.  The caller should call
+- * credit_entropy_bits if this is appropriate.
++ * This function adds bytes into the input pool. It does not
++ * update the initialization bit counter; the caller should call
++ * credit_init_bits if this is appropriate.
+  */
+ static void mix_pool_bytes(const void *in, size_t nbytes)
+ {
+@@ -831,43 +818,24 @@ static void extract_entropy(void *buf, s
+ 	memzero_explicit(&block, sizeof(block));
+ }
+ 
+-/*
+- * First we make sure we have POOL_MIN_BITS of entropy in the pool unless force
+- * is true, and then we set the entropy count to zero (but don't actually touch
+- * any data). Only then can we extract a new key with extract_entropy().
+- */
+-static bool drain_entropy(void *buf, size_t nbytes, bool force)
 -{
--	unsigned int entropy_count, orig, add;
--
--	if (!nbits)
--		return;
--
--	add = min_t(size_t, nbits, POOL_BITS);
--
+-	unsigned int entropy_count;
 -	do {
+-		entropy_count = READ_ONCE(input_pool.entropy_count);
+-		if (!force && entropy_count < POOL_MIN_BITS)
+-			return false;
+-	} while (cmpxchg(&input_pool.entropy_count, entropy_count, 0) != entropy_count);
+-	extract_entropy(buf, nbytes);
+-	wake_up_interruptible(&random_write_wait);
+-	kill_fasync(&fasync, SIGIO, POLL_OUT);
+-	return true;
+-}
+-
+-static void credit_entropy_bits(size_t nbits)
++static void credit_init_bits(size_t nbits)
+ {
+-	unsigned int entropy_count, orig, add;
++	unsigned int init_bits, orig, add;
+ 	unsigned long flags;
+ 
+-	if (!nbits)
++	if (crng_ready() || !nbits)
+ 		return;
+ 
+ 	add = min_t(size_t, nbits, POOL_BITS);
+ 
+ 	do {
 -		orig = READ_ONCE(input_pool.entropy_count);
 -		entropy_count = min_t(unsigned int, POOL_BITS, orig + add);
 -	} while (cmpxchg(&input_pool.entropy_count, orig, entropy_count) != orig);
 -
 -	if (!crng_ready() && entropy_count >= POOL_MIN_BITS)
 -		crng_reseed(false);
--}
--
- /*
-  * This is an HKDF-like construction for using the hashed collected entropy
-  * as a PRF key, that's then expanded block-by-block.
-@@ -907,6 +850,33 @@ static bool drain_entropy(void *buf, siz
- 	return true;
- }
- 
-+static void credit_entropy_bits(size_t nbits)
-+{
-+	unsigned int entropy_count, orig, add;
-+	unsigned long flags;
+-	else if (unlikely(crng_init == 0 && entropy_count >= POOL_FAST_INIT_BITS)) {
++		orig = READ_ONCE(input_pool.init_bits);
++		init_bits = min_t(unsigned int, POOL_BITS, orig + add);
++	} while (cmpxchg(&input_pool.init_bits, orig, init_bits) != orig);
 +
-+	if (!nbits)
++	if (!crng_ready() && init_bits >= POOL_INIT_BITS)
++		crng_reseed();
++	else if (unlikely(crng_init == 0 && init_bits >= POOL_FAST_INIT_BITS)) {
+ 		spin_lock_irqsave(&base_crng.lock, flags);
+ 		if (crng_init == 0) {
+ 			extract_entropy(base_crng.key, sizeof(base_crng.key));
+@@ -978,13 +946,10 @@ int __init rand_initialize(void)
+ 	_mix_pool_bytes(&now, sizeof(now));
+ 	_mix_pool_bytes(utsname(), sizeof(*(utsname())));
+ 
+-	extract_entropy(base_crng.key, sizeof(base_crng.key));
+-	++base_crng.generation;
+-
+-	if (arch_init && trust_cpu && !crng_ready()) {
+-		crng_init = 2;
+-		pr_notice("crng init done (trusting CPU's manufacturer)\n");
+-	}
++	if (crng_ready())
++		crng_reseed();
++	else if (arch_init && trust_cpu)
++		credit_init_bits(BLAKE2S_BLOCK_SIZE * 8);
+ 
+ 	if (ratelimit_disable) {
+ 		urandom_warning.interval = 0;
+@@ -1038,6 +1003,9 @@ static void add_timer_randomness(struct
+ 	_mix_pool_bytes(&num, sizeof(num));
+ 	spin_unlock_irqrestore(&input_pool.lock, flags);
+ 
++	if (crng_ready())
 +		return;
 +
-+	add = min_t(size_t, nbits, POOL_BITS);
-+
-+	do {
-+		orig = READ_ONCE(input_pool.entropy_count);
-+		entropy_count = min_t(unsigned int, POOL_BITS, orig + add);
-+	} while (cmpxchg(&input_pool.entropy_count, orig, entropy_count) != orig);
-+
-+	if (!crng_ready() && entropy_count >= POOL_MIN_BITS)
-+		crng_reseed(false);
-+	else if (unlikely(crng_init == 0 && entropy_count >= POOL_FAST_INIT_BITS)) {
-+		spin_lock_irqsave(&base_crng.lock, flags);
-+		if (crng_init == 0) {
-+			extract_entropy(base_crng.key, sizeof(base_crng.key));
-+			crng_init = 1;
-+		}
-+		spin_unlock_irqrestore(&base_crng.lock, flags);
-+	}
-+}
-+
+ 	/*
+ 	 * Calculate number of bits of randomness we probably added.
+ 	 * We take into account the first, second and third-order deltas
+@@ -1068,7 +1036,7 @@ static void add_timer_randomness(struct
+ 	 * Round down by 1 bit on general principles,
+ 	 * and limit entropy estimate to 12 bits.
+ 	 */
+-	credit_entropy_bits(min_t(unsigned int, fls(delta >> 1), 11));
++	credit_init_bits(min_t(unsigned int, fls(delta >> 1), 11));
+ }
  
- /**********************************************************************
-  *
-@@ -950,9 +920,9 @@ static bool drain_entropy(void *buf, siz
-  * entropy as specified by the caller. If the entropy pool is full it will
-  * block until more entropy is needed.
-  *
-- * add_bootloader_randomness() is the same as add_hwgenerator_randomness() or
-- * add_device_randomness(), depending on whether or not the configuration
-- * option CONFIG_RANDOM_TRUST_BOOTLOADER is set.
-+ * add_bootloader_randomness() is called by bootloader drivers, such as EFI
-+ * and device tree, and credits its input depending on whether or not the
-+ * configuration option CONFIG_RANDOM_TRUST_BOOTLOADER is set.
-  *
-  * add_vmfork_randomness() adds a unique (but not necessarily secret) ID
-  * representing the current instance of a VM to the pool, without crediting,
-@@ -1036,9 +1006,6 @@ void add_device_randomness(const void *b
- 	unsigned long entropy = random_get_entropy();
- 	unsigned long flags;
- 
--	if (crng_init == 0 && size)
--		crng_pre_init_inject(buf, size, false);
--
- 	spin_lock_irqsave(&input_pool.lock, flags);
- 	_mix_pool_bytes(&entropy, sizeof(entropy));
- 	_mix_pool_bytes(buf, size);
-@@ -1154,12 +1121,6 @@ void rand_initialize_disk(struct gendisk
+ void add_input_randomness(unsigned int type, unsigned int code,
+@@ -1121,18 +1089,15 @@ void rand_initialize_disk(struct gendisk
  void add_hwgenerator_randomness(const void *buffer, size_t count,
  				size_t entropy)
  {
--	if (unlikely(crng_init == 0 && entropy < POOL_MIN_BITS)) {
--		crng_pre_init_inject(buffer, count, true);
--		mix_pool_bytes(buffer, count);
--		return;
--	}
--
++	mix_pool_bytes(buffer, count);
++	credit_init_bits(entropy);
++
  	/*
- 	 * Throttle writing if we're above the trickle threshold.
- 	 * We'll be woken up again once below POOL_MIN_BITS, when
-@@ -1167,7 +1128,7 @@ void add_hwgenerator_randomness(const vo
- 	 * CRNG_RESEED_INTERVAL has elapsed.
+-	 * Throttle writing if we're above the trickle threshold.
+-	 * We'll be woken up again once below POOL_MIN_BITS, when
+-	 * the calling thread is about to terminate, or once
+-	 * CRNG_RESEED_INTERVAL has elapsed.
++	 * Throttle writing to once every CRNG_RESEED_INTERVAL, unless
++	 * we're not yet initialized.
  	 */
- 	wait_event_interruptible_timeout(random_write_wait,
--			!system_wq || kthread_should_stop() ||
-+			kthread_should_stop() ||
- 			input_pool.entropy_count < POOL_MIN_BITS,
- 			CRNG_RESEED_INTERVAL);
- 	mix_pool_bytes(buffer, count);
-@@ -1176,17 +1137,14 @@ void add_hwgenerator_randomness(const vo
+-	wait_event_interruptible_timeout(random_write_wait,
+-			kthread_should_stop() ||
+-			input_pool.entropy_count < POOL_MIN_BITS,
+-			CRNG_RESEED_INTERVAL);
+-	mix_pool_bytes(buffer, count);
+-	credit_entropy_bits(entropy);
++	if (!kthread_should_stop() && crng_ready())
++		schedule_timeout_interruptible(CRNG_RESEED_INTERVAL);
+ }
  EXPORT_SYMBOL_GPL(add_hwgenerator_randomness);
  
- /*
-- * Handle random seed passed by bootloader.
-- * If the seed is trustworthy, it would be regarded as hardware RNGs. Otherwise
-- * it would be regarded as device data.
-- * The decision is controlled by CONFIG_RANDOM_TRUST_BOOTLOADER.
-+ * Handle random seed passed by bootloader, and credit it if
-+ * CONFIG_RANDOM_TRUST_BOOTLOADER is set.
-  */
- void add_bootloader_randomness(const void *buf, size_t size)
+@@ -1144,7 +1109,7 @@ void add_bootloader_randomness(const voi
  {
-+	mix_pool_bytes(buf, size);
+ 	mix_pool_bytes(buf, size);
  	if (trust_bootloader)
--		add_hwgenerator_randomness(buf, size, size * 8);
--	else
--		add_device_randomness(buf, size);
-+		credit_entropy_bits(size * 8);
+-		credit_entropy_bits(size * 8);
++		credit_init_bits(size * 8);
  }
  EXPORT_SYMBOL_GPL(add_bootloader_randomness);
  
-@@ -1320,13 +1278,8 @@ static void mix_interrupt_randomness(str
- 	fast_pool->last = jiffies;
+@@ -1160,7 +1125,7 @@ void add_vmfork_randomness(const void *u
+ {
+ 	add_device_randomness(unique_vm_id, size);
+ 	if (crng_ready()) {
+-		crng_reseed(true);
++		crng_reseed();
+ 		pr_notice("crng reseeded due to virtual machine fork\n");
+ 	}
+ 	blocking_notifier_call_chain(&vmfork_chain, 0, NULL);
+@@ -1279,7 +1244,7 @@ static void mix_interrupt_randomness(str
  	local_irq_enable();
  
--	if (unlikely(crng_init == 0)) {
--		crng_pre_init_inject(pool, sizeof(pool), true);
--		mix_pool_bytes(pool, sizeof(pool));
--	} else {
--		mix_pool_bytes(pool, sizeof(pool));
--		credit_entropy_bits(1);
--	}
-+	mix_pool_bytes(pool, sizeof(pool));
-+	credit_entropy_bits(1);
+ 	mix_pool_bytes(pool, sizeof(pool));
+-	credit_entropy_bits(1);
++	credit_init_bits(1);
  
  	memzero_explicit(pool, sizeof(pool));
  }
-@@ -1348,8 +1301,7 @@ void add_interrupt_randomness(int irq)
- 	if (new_count & MIX_INFLIGHT)
- 		return;
+@@ -1326,7 +1291,7 @@ EXPORT_SYMBOL_GPL(add_interrupt_randomne
+  */
+ static void entropy_timer(struct timer_list *t)
+ {
+-	credit_entropy_bits(1);
++	credit_init_bits(1);
+ }
  
--	if (new_count < 64 && (!time_is_before_jiffies(fast_pool->last + HZ) ||
--			       unlikely(crng_init == 0)))
-+	if (new_count < 64 && !time_is_before_jiffies(fast_pool->last + HZ))
- 		return;
+ /*
+@@ -1419,16 +1384,8 @@ SYSCALL_DEFINE3(getrandom, char __user *
  
- 	if (unlikely(!fast_pool->mix.func))
+ static __poll_t random_poll(struct file *file, poll_table *wait)
+ {
+-	__poll_t mask;
+-
+ 	poll_wait(file, &crng_init_wait, wait);
+-	poll_wait(file, &random_write_wait, wait);
+-	mask = 0;
+-	if (crng_ready())
+-		mask |= EPOLLIN | EPOLLRDNORM;
+-	if (input_pool.entropy_count < POOL_MIN_BITS)
+-		mask |= EPOLLOUT | EPOLLWRNORM;
+-	return mask;
++	return crng_ready() ? EPOLLIN | EPOLLRDNORM : EPOLLOUT | EPOLLWRNORM;
+ }
+ 
+ static int write_pool(const char __user *ubuf, size_t count)
+@@ -1508,7 +1465,7 @@ static long random_ioctl(struct file *f,
+ 	switch (cmd) {
+ 	case RNDGETENTCNT:
+ 		/* Inherently racy, no point locking. */
+-		if (put_user(input_pool.entropy_count, p))
++		if (put_user(input_pool.init_bits, p))
+ 			return -EFAULT;
+ 		return 0;
+ 	case RNDADDTOENTCNT:
+@@ -1518,7 +1475,7 @@ static long random_ioctl(struct file *f,
+ 			return -EFAULT;
+ 		if (ent_count < 0)
+ 			return -EINVAL;
+-		credit_entropy_bits(ent_count);
++		credit_init_bits(ent_count);
+ 		return 0;
+ 	case RNDADDENTROPY:
+ 		if (!capable(CAP_SYS_ADMIN))
+@@ -1532,27 +1489,20 @@ static long random_ioctl(struct file *f,
+ 		retval = write_pool((const char __user *)p, size);
+ 		if (retval < 0)
+ 			return retval;
+-		credit_entropy_bits(ent_count);
++		credit_init_bits(ent_count);
+ 		return 0;
+ 	case RNDZAPENTCNT:
+ 	case RNDCLEARPOOL:
+-		/*
+-		 * Clear the entropy pool counters. We no longer clear
+-		 * the entropy pool, as that's silly.
+-		 */
++		/* No longer has any effect. */
+ 		if (!capable(CAP_SYS_ADMIN))
+ 			return -EPERM;
+-		if (xchg(&input_pool.entropy_count, 0) >= POOL_MIN_BITS) {
+-			wake_up_interruptible(&random_write_wait);
+-			kill_fasync(&fasync, SIGIO, POLL_OUT);
+-		}
+ 		return 0;
+ 	case RNDRESEEDCRNG:
+ 		if (!capable(CAP_SYS_ADMIN))
+ 			return -EPERM;
+ 		if (!crng_ready())
+ 			return -ENODATA;
+-		crng_reseed(false);
++		crng_reseed();
+ 		return 0;
+ 	default:
+ 		return -EINVAL;
+@@ -1604,7 +1554,7 @@ const struct file_operations urandom_fop
+  *
+  * - write_wakeup_threshold - the amount of entropy in the input pool
+  *   below which write polls to /dev/random will unblock, requesting
+- *   more entropy, tied to the POOL_MIN_BITS constant. It is writable
++ *   more entropy, tied to the POOL_INIT_BITS constant. It is writable
+  *   to avoid breaking old userspaces, but writing to it does not
+  *   change any behavior of the RNG.
+  *
+@@ -1619,7 +1569,7 @@ const struct file_operations urandom_fop
+ #include <linux/sysctl.h>
+ 
+ static int sysctl_random_min_urandom_seed = CRNG_RESEED_INTERVAL / HZ;
+-static int sysctl_random_write_wakeup_bits = POOL_MIN_BITS;
++static int sysctl_random_write_wakeup_bits = POOL_INIT_BITS;
+ static int sysctl_poolsize = POOL_BITS;
+ static u8 sysctl_bootid[UUID_SIZE];
+ 
+@@ -1675,7 +1625,7 @@ static struct ctl_table random_table[] =
+ 	},
+ 	{
+ 		.procname	= "entropy_avail",
+-		.data		= &input_pool.entropy_count,
++		.data		= &input_pool.init_bits,
+ 		.maxlen		= sizeof(int),
+ 		.mode		= 0444,
+ 		.proc_handler	= proc_dointvec,
 
 
