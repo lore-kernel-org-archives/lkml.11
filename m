@@ -2,78 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CDE9C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 12:12:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DFD2C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 12:13:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235192AbiE1MMw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 28 May 2022 08:12:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56028 "EHLO
+        id S235274AbiE1MNi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 28 May 2022 08:13:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229685AbiE1MMt (ORCPT
+        with ESMTP id S235203AbiE1MNg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 28 May 2022 08:12:49 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA0451CFFA;
-        Sat, 28 May 2022 05:12:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653739968; x=1685275968;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=NZkH5yC96HiWlzsDjnYwGEjVnotLgpV0mtwsk3uj0n4=;
-  b=L5id6vwKBZOvhRhj+VWHJJT8Zqq6YQWEc+Z1U0SmXjpJb2aoa+VBKAIt
-   p/lj0iT3b4VKPLu4hUFm+cZfrFMYX7vBKPSkIVVd2FXcRlD/POyvNqJYG
-   S1G9dvDTBFDM7utaWWdSyCjfbBrloG7s5YLzCO5ltvJRnpcuwzN3FHo0C
-   E0139ri8B3X+BQOquUN4bUCQjBsubqJ9tN3FKtzdqPhBGewqb1tyVSlvI
-   K3b9CFusD9y3vb4+YOyJSU5T4/G0kJ9R6U9veKdIawrr0J7UmdC1giuPW
-   2pEr8w5B2HLGUa2i4kRNjD3yhjm/FNq2ohxYqJJBIppMTlquU9M8i6tr2
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10360"; a="255158072"
-X-IronPort-AV: E=Sophos;i="5.91,258,1647327600"; 
-   d="scan'208";a="255158072"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 May 2022 05:12:48 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,258,1647327600"; 
-   d="scan'208";a="719251537"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.135])
-  by fmsmga001.fm.intel.com with ESMTP; 28 May 2022 05:12:47 -0700
-Date:   Sat, 28 May 2022 20:05:03 +0800
-From:   Xu Yilun <yilun.xu@intel.com>
-To:     tien.sung.ang@intel.com
-Cc:     mdf@kernel.org, hao.wu@intel.com, trix@redhat.com,
-        linux-fpga@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] fpga: altera-cvp: Truncated bitstream error support
-Message-ID: <20220528120503.GB175058@yilunxu-OptiPlex-7050>
-References: <b0fd6c41-f8a4-bb3a-d05a-2ea17d4ffc80@redhat.com>
- <20220519093907.2883394-1-tien.sung.ang@intel.com>
+        Sat, 28 May 2022 08:13:36 -0400
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29A981D0C1
+        for <linux-kernel@vger.kernel.org>; Sat, 28 May 2022 05:13:35 -0700 (PDT)
+Received: by mail-wm1-x333.google.com with SMTP id p19so3961218wmg.2
+        for <linux-kernel@vger.kernel.org>; Sat, 28 May 2022 05:13:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=mNWkEQxztGAhGpLE9wPG3tVmhXvaKJfP7n8Uzm8Bfkw=;
+        b=o9WofFj3GcLbd+k+AYKA1UTxb45ypSG2boO+2oiAK7SNNOQ/Ty0npbI0vcWkhRLHdb
+         GjhopuD9/iRAftrX/lu1dQBlnkoTu8UKJJHc4Qf3IZ0j22MmsmA146pzgWNTi4VCgJAo
+         FivfWqDdOjsjKfbTRNIuYtG4YjavKDSRP6LBjYxThm8Hxhly5mzKnmbabDoSb0RbGuvy
+         7L7j9LApPKZkQJUpgxuq1ZSW2d/pEvjhmNgUYWPO6FdEOn5gl8dOxZhniC45akGfvC5v
+         6ArW94J3e6eiq8+91roYXcGCC3XIJM940Ik03ScgLa4XkAv9nN4wInUA9vmuc0T0OSd5
+         V+eQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=mNWkEQxztGAhGpLE9wPG3tVmhXvaKJfP7n8Uzm8Bfkw=;
+        b=Njfci6ibBhqtoW66r/Qm7e6p7TrywDlRZcS9L+uCpUfdIZL267ORVY2B4EEsyfrTZo
+         o8+JRruYP3vnqs0VIFlEz+WezBuLZRuK+NA72MWkzA73fapsfkIN/T4VRNDGgAkn26Y5
+         G2e5BhpHitx7RF6Gm6p8iPWiOCR8e2QCMc67Xry/h5TLurLCZf1k9bkS0xTrp3E4CftU
+         YUe9vYSdZLo26eCmQVrKyNcSDHlcM88J6Tdag3sKNOvGuV7oixU1JsPvxdtFlJIgW+Rq
+         7qDjAWTC4DVALVJQQurMHTrxKL54HfC/vH7QYAUkzA0NPL217ZhCJZ8KZaO3mAJkL4/4
+         h0WQ==
+X-Gm-Message-State: AOAM531a376MucrQ8j7NtM/LjPt3vuH7WHHuh9AAGpfn8SSIsPzTEvcD
+        HsatnTmsLMUdTqVlstYhg4nHb0MEAFw=
+X-Google-Smtp-Source: ABdhPJwSesuiohtxkUoHbYH8eErO2XjkbMpb70PMEusTxdlGejP/SYYtqgq55+BC7kt8MImi3WSkog==
+X-Received: by 2002:a05:600c:4e4d:b0:397:5009:bcf1 with SMTP id e13-20020a05600c4e4d00b003975009bcf1mr11091743wmq.66.1653740013611;
+        Sat, 28 May 2022 05:13:33 -0700 (PDT)
+Received: from debian (host-2-98-37-191.as13285.net. [2.98.37.191])
+        by smtp.gmail.com with ESMTPSA id az18-20020adfe192000000b0021020517639sm1420829wrb.102.2022.05.28.05.13.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 28 May 2022 05:13:33 -0700 (PDT)
+Date:   Sat, 28 May 2022 13:13:31 +0100
+From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Jani Nikula <jani.nikula@intel.com>,
+        Ville =?iso-8859-1?Q?Syrj=E4l=E4?= 
+        <ville.syrjala@linux.intel.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: mainline build failure due to f1e4c916f97f ("drm/edid: add EDID
+ block count and size helpers")
+Message-ID: <YpIR67FMtTGCwARZ@debian>
+References: <YpCUzStDnSgQLNFN@debian>
+ <CAHk-=wg0uGAX5DYZq+tY2KeUAR8DtR91YE1y9CkPMKkKOyE4jg@mail.gmail.com>
+ <CADVatmNGPbSdRNQuwJEWAaPtqb3vBYRjvsuBpoRUnhEHj=X5GQ@mail.gmail.com>
+ <CAHk-=wisQd8yiPX=SsK3eFiakKo713hq4SyqPWsJ-oyAmLFefQ@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220519093907.2883394-1-tien.sung.ang@intel.com>
+In-Reply-To: <CAHk-=wisQd8yiPX=SsK3eFiakKo713hq4SyqPWsJ-oyAmLFefQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 19, 2022 at 05:39:07PM +0800, tien.sung.ang@intel.com wrote:
-> Thanks for bringing this up. Yes, you are right that the fpga_mgr sees this
-> as an error irrespective of the value. The CvP driver is changed now to just
-> indicate the correct error which recommends a retry. To me understanding,
-> EAGAIN was this. The fpga manager now looks like is going to return a CvP
-> failure in short. 
-> A BUSY state does not seem to be able to solve this issue. 
-> Even an extended time-out didn't resolve this error state. The current time-out
-> is set to 10seconds.   
-> However, the main objective is to also handle the error if the CvP firmware
-> is not responsive. The error_path flow is to reset the CVP mode and HIP_CLK_SEL bit
+On Fri, May 27, 2022 at 06:04:14PM -0700, Linus Torvalds wrote:
+> On Fri, May 27, 2022 at 4:41 PM Sudip Mukherjee
+> <sudipm.mukherjee@gmail.com> wrote:
+> >
+> > I just tested with various values, sizeof(*edid) is 144 bytes at that place.
+> 
+> Hmm. What compiler do you have? Because it seems very broken.
+> 
+> You don't actually have to try with various sizes, you could have just
+> done something like
+> 
+>  int size_of_edid(const struct edid *edid)
+>  {
+>         return sizeof(*edid);
+>  }
+> 
+> and then "make drivers/gpu/drm/drm_edid.s" to generate assembly and
+> see what it looks like (obviously removing the BUG_ON() in order to
+> build).
 
-Please add your main objective to commit message.
+just tried this with
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- drivers/gpu/drm/drm_edid.s
 
-Thanks,
-Yilun
+> 
+> That obviously generates code like
+> 
+>         movl    $128, %eax
+>         ret
 
-> as recommended by the firmware engineers. 
-> The flow prescribed here is also an identical copy of working CvP driver 
-> which is also owned by Intel. This driver is a downstream driver which is 
-> not part of the Linux kernel. We are now porting this differences over to 
-> the current upstream CvP driver. 
+and for me it looks like:
+
+.L1030: 
+        .word   .LC40
+        .word   .LC41
+        .word   -1431655765
+        .word   .LC39
+        .size   drm_edid_to_sad, .-drm_edid_to_sad
+        .align  2
+        .global size_of_edid
+        .syntax unified
+        .arm
+        .type   size_of_edid, %function
+size_of_edid:
+        @ args = 0, pretend = 0, frame = 0
+        @ frame_needed = 1, uses_anonymous_args = 0
+        mov     ip, sp  @,
+        push    {fp, ip, lr, pc}        @
+        sub     fp, ip, #4      @,,
+@ drivers/gpu/drm/drm_edid.c:1573: }
+        mov     r0, #144        @,
+        ldmfd   sp, {fp, sp, pc}        @
+        .size   size_of_edid, .-size_of_edid
+
+
+
+--
+Regards
+Sudip
