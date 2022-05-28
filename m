@@ -2,96 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36B79C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 08:01:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44CFDC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 08:03:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239750AbiE1IBY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 28 May 2022 04:01:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48544 "EHLO
+        id S230515AbiE1IDf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 28 May 2022 04:03:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230315AbiE1IBU (ORCPT
+        with ESMTP id S229998AbiE1IDc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 28 May 2022 04:01:20 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B93C11FB
-        for <linux-kernel@vger.kernel.org>; Sat, 28 May 2022 01:01:17 -0700 (PDT)
-Received: from ptz.office.stw.pengutronix.de ([2a0a:edc0:0:900:1d::77] helo=[127.0.0.1])
-        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
-        (envelope-from <a.fatoum@pengutronix.de>)
-        id 1nurNe-0002bB-Am; Sat, 28 May 2022 10:01:02 +0200
-Message-ID: <9f278f81-1125-8c54-8f37-922e7b2129a9@pengutronix.de>
-Date:   Sat, 28 May 2022 10:00:48 +0200
+        Sat, 28 May 2022 04:03:32 -0400
+Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::221])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62284219
+        for <linux-kernel@vger.kernel.org>; Sat, 28 May 2022 01:03:29 -0700 (PDT)
+Received: (Authenticated sender: alex@ghiti.fr)
+        by mail.gandi.net (Postfix) with ESMTPSA id DCC9E24000A;
+        Sat, 28 May 2022 08:03:23 +0000 (UTC)
+Message-ID: <fcb6d1aa-78bb-cfad-7655-cbab59f8d5c3@ghiti.fr>
+Date:   Sat, 28 May 2022 10:03:23 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-From:   Ahmad Fatoum <a.fatoum@pengutronix.de>
-Subject: Re: kismet: WARNING: unmet direct dependencies detected for
- CRYPTO_DEV_FSL_CAAM_BLOB_GEN when selected by TRUSTED_KEYS_CAAM
-To:     kernel test robot <lkp@intel.com>
-Cc:     Paul Gazzillo <paul@pgazz.com>,
-        Necip Fazil Yildiran <fazilyildiran@gmail.com>,
-        kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        David Gstir <david@sigma-star.at>,
-        Pankaj Gupta <pankaj.gupta@nxp.com>
-References: <202205281527.o6zXpTYo-lkp@intel.com>
+ Thunderbird/91.8.0
+Subject: Re: [syzbot] riscv/fixes test error: lost connection to test machine
 Content-Language: en-US
-In-Reply-To: <202205281527.o6zXpTYo-lkp@intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:900:1d::77
-X-SA-Exim-Mail-From: a.fatoum@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+To:     Dmitry Vyukov <dvyukov@google.com>,
+        Alexandre Ghiti <alexandre.ghiti@canonical.com>
+Cc:     syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        syzbot <syzbot+2c5da6a0a16a0c4f34aa@syzkaller.appspotmail.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>
+References: <000000000000d0437b05dffdd1de@google.com>
+ <CACT4Y+Y8DOKJtwhRsyNT7G26C3Fx_oeibpXn43Ks0RtYYdZG3g@mail.gmail.com>
+ <36f4745f-0e47-4f49-8f4e-ff7544f163d8n@googlegroups.com>
+ <CACT4Y+Zy7wLdeRCa+ZH-swo9ut=U6pEk4rP461QE1m-gT6s-uQ@mail.gmail.com>
+ <a55430c3-a0bc-4af6-b7e2-20f2e0d091b2n@googlegroups.com>
+ <CACT4Y+ar18tcxx0tOthV0JBrmWsLXtXAjXVFX4sac5k1UGJ7Lw@mail.gmail.com>
+From:   Alexandre Ghiti <alex@ghiti.fr>
+In-Reply-To: <CACT4Y+ar18tcxx0tOthV0JBrmWsLXtXAjXVFX4sac5k1UGJ7Lw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On 5/27/22 19:04, Dmitry Vyukov wrote:
+> On Fri, 27 May 2022 at 16:01, Alexandre Ghiti
+> <alexandre.ghiti@canonical.com> wrote:
+>> On Friday, May 27, 2022 at 3:55:24 PM UTC+2 Dmitry Vyukov wrote:
+>>> On Fri, 27 May 2022 at 15:50, Alexandre Ghiti
+>>> <alexand...@canonical.com> wrote:
+>>>> On Friday, May 27, 2022 at 3:02:01 PM UTC+2 Dmitry Vyukov wrote:
+>>>>> On Fri, 27 May 2022 at 14:55, syzbot
+>>>>> <syzbot+2c5da6...@syzkaller.appspotmail.com> wrote:
+>>>>>> Hello,
+>>>>>>
+>>>>>> syzbot found the following issue on:
+>>>>>>
+>>>>>> HEAD commit: c932edeaf6d6 riscv: dts: microchip: fix gpio1 reg property..
+>>>>>> git tree: git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git fixes
+>>>>>> console output: https://syzkaller.appspot.com/x/log.txt?x=1418add5f00000
+>>>>>> kernel config: https://syzkaller.appspot.com/x/.config?x=aa6b5702bdf14a17
+>>>>>> dashboard link: https://syzkaller.appspot.com/bug?extid=2c5da6a0a16a0c4f34aa
+>>>>>> compiler: riscv64-linux-gnu-gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+>>>>>> userspace arch: riscv64
+>>>>>>
+>>>>>> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+>>>>>> Reported-by: syzbot+2c5da6...@syzkaller.appspotmail.com
+>>>>> The CONFIG_KASAN_VMALLOC allows riscv kernel to boot, but now Go
+>>>>> processes started crashing with:
+>>>>>
+>>>>> 1970/01/01 00:06:55 fuzzer started
+>>>>> runtime: lfstack.push invalid packing: node=0xffffff5908a940 cnt=0x1
+>>>>> packed=0xffff5908a9400001 -> node=0xffff5908a940
+>>>>> fatal error: lfstack.push
+>>>>> runtime stack:
+>>>>> runtime.throw({0x30884c, 0xc})
+>>>>> /usr/local/go/src/runtime/panic.go:1198 +0x60
+>>>>> runtime.(*lfstack).push(0xdb3850, 0xffffff5908a940)
+>>>>> /usr/local/go/src/runtime/lfstack.go:30 +0x1a8
+>>>>>
+>>>>> Go runtime tries to shove some data into the upper 16 bits of pointers
+>>>>> assuming they are unused.
+>>>>> However, the original pointer node=0xffffff5908a940 suggest riscv now
+>>>>> has 56-bit users-space address space?
+>>>>
+>>>> Yes, sv57 was merged recently.
+>>>>
+>>>>> Documentation/riscv/vm-layout.rst claims 48-bit pointers:
+>>>>> "
+>>>>> The RISC-V privileged architecture document states that the 64bit addresses
+>>>>> "must have bits 63–48 all equal to bit 47, or else a page-fault exception will
+>>>>> occur.":
+>>>>
+>>>> Thanks for pointing that, I extracted that from the specification before sv57 was specified, I'll fix that.
+>>>>
+>>>> The current kernel code will use sv57 as it is supported and advertised by qemu, and to my knowledge, you can't downgrade to sv48 unless by re-compiling qemu using the following:
+>>>>
+>>>> diff --git a/target/riscv/csr.c b/target/riscv/csr.c
+>>>> index 6dbe9b541f..a64b50ed75 100644
+>>>> --- a/target/riscv/csr.c
+>>>> +++ b/target/riscv/csr.c
+>>>> @@ -637,7 +637,7 @@ static const char valid_vm_1_10_64[16] = {
+>>>> [VM_1_10_MBARE] = 1,
+>>>> [VM_1_10_SV39] = 1,
+>>>> [VM_1_10_SV48] = 1,
+>>>> - [VM_1_10_SV57] = 1
+>>>> + [VM_1_10_SV57] = 0
+>>>> };
+>>>>
+>>>> /* Machine Information Registers */
+>>>>
+>>>>> ...
+>>>>> 0000000000000000 | 0 | 0000003fffffffff | 256 GB |
+>>>>> user-space virtual memory, different per mm
+>>>>> "
+>>> There is no kernel config to force SV48/39, right?
+>>
+>> No, we rely on what the hardware advertises, if it supports sv57, we'll go for sv57, if not, we'll try sv48...etc. I had some patches to force the downgrade by using the device tree but they never got merged though.
+> +original CC list
+>
+> FTR sent Go runtime change to support SV57:
+> https://go-review.googlesource.com/c/go/+/409055
 
-On 28.05.22 09:42, kernel test robot wrote:
-> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-> head:   9d004b2f4fea97cde123e7f1939b80e77bf2e695
-> commit: e9c5048c2de1913d0bcd589bc1487810c2e24bc1 KEYS: trusted: Introduce support for NXP CAAM-based trusted keys
-> date:   5 days ago
-> config: (https://download.01.org/0day-ci/archive/20220528/202205281527.o6zXpTYo-lkp@intel.com/config)
-> reproduce:
->         # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=e9c5048c2de1913d0bcd589bc1487810c2e24bc1
->         git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
->         git fetch --no-tags linus master
->         git checkout e9c5048c2de1913d0bcd589bc1487810c2e24bc1
->         # 1. reproduce by kismet
->            # install kmax per https://github.com/paulgazz/kmax/blob/master/README.md
->            kismet --linux-ksrc=linux --selectees CONFIG_CRYPTO_DEV_FSL_CAAM_BLOB_GEN --selectors CONFIG_TRUSTED_KEYS_CAAM -a=arm64
->         # 2. reproduce by make
->            # save the config file to linux source tree
->            cd linux
->            make ARCH=arm64 olddefconfig
-> 
-> If you fix the issue, kindly add following tag where applicable
-> Reported-by: kernel test robot <lkp@intel.com>
-> 
-> 
-> kismet warnings: (new ones prefixed by >>)
->>> kismet: WARNING: unmet direct dependencies detected for CRYPTO_DEV_FSL_CAAM_BLOB_GEN when selected by TRUSTED_KEYS_CAAM
 
-The referenced config file doesn't have anything CAAM related enabled.
-
-I looked again at the Kconfig and CRYPTO_DEV_FSL_CAAM_BLOB_GEN depends on
-CRYPTO_DEV_FSL_CAAM_JR. TRUSTED_KEYS_CAAM depends on
-CRYPTO_DEV_FSL_CAAM_JR >= TRUSTED_KEYS and only then selects
-CRYPTO_DEV_FSL_CAAM_BLOB_GEN, which still looks correct to me.
-
-Could one of the authors elaborate what issue is being reported here?
-
-Cheers,
-Ahmad
-
-> 
+Thank you for that, I'll pull that into Ubuntu when merged. Do you know 
+if any other programming language does the same and would need a fix too?
 
 
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+>
+> _______________________________________________
+> linux-riscv mailing list
+> linux-riscv@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-riscv
