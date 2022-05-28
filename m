@@ -2,107 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70BFFC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 02:52:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 047A4C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 02:52:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352927AbiE1CwR (ORCPT
+        id S1355565AbiE1Cwy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 22:52:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35300 "EHLO
+        Fri, 27 May 2022 22:52:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231347AbiE1CwP (ORCPT
+        with ESMTP id S231347AbiE1Cww (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 22:52:15 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2A19880C6
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 19:52:13 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.54])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4L95l155Gvz1JCTL;
-        Sat, 28 May 2022 10:50:37 +0800 (CST)
-Received: from [10.174.177.76] (10.174.177.76) by
- canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 28 May 2022 10:52:11 +0800
-Subject: Re: [PATCH] mm/vmscan: don't try to reclaim freed folios
-To:     Matthew Wilcox <willy@infradead.org>
-CC:     <akpm@linux-foundation.org>, <linux-mm@kvack.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20220527080451.48549-1-linmiaohe@huawei.com>
- <YpDoAZtQtQf6U8D2@casper.infradead.org>
-From:   Miaohe Lin <linmiaohe@huawei.com>
-Message-ID: <e0502c7c-b71d-5356-fcc3-7c048c25d827@huawei.com>
-Date:   Sat, 28 May 2022 10:52:11 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        Fri, 27 May 2022 22:52:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08193880C6;
+        Fri, 27 May 2022 19:52:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 98A9B61D29;
+        Sat, 28 May 2022 02:52:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10E88C34114;
+        Sat, 28 May 2022 02:52:50 +0000 (UTC)
+Received: from rostedt by gandalf.local.home with local (Exim 4.95)
+        (envelope-from <rostedt@goodmis.org>)
+        id 1numZN-000LKR-0j;
+        Fri, 27 May 2022 22:52:49 -0400
+Message-ID: <20220528025248.861126787@goodmis.org>
+User-Agent: quilt/0.66
+Date:   Fri, 27 May 2022 22:50:29 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        stable@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>
+Subject: [for-next][PATCH 01/23] tracing: Have event format check not flag %p* on
+ __get_dynamic_array()
+References: <20220528025028.850906216@goodmis.org>
 MIME-Version: 1.0
-In-Reply-To: <YpDoAZtQtQf6U8D2@casper.infradead.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.177.76]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=UTF-8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/5/27 23:02, Matthew Wilcox wrote:
-> On Fri, May 27, 2022 at 04:04:51PM +0800, Miaohe Lin wrote:
->> If folios were freed from under us, there's no need to reclaim them. Skip
->> these folios to save lots of cpu cycles and avoid possible unnecessary
->> disk IO.
->>
->> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
->> ---
->>  mm/vmscan.c | 8 +++++++-
->>  1 file changed, 7 insertions(+), 1 deletion(-)
->>
->> diff --git a/mm/vmscan.c b/mm/vmscan.c
->> index f7d9a683e3a7..646dd1efad32 100644
->> --- a/mm/vmscan.c
->> +++ b/mm/vmscan.c
->> @@ -1556,12 +1556,18 @@ static unsigned int shrink_page_list(struct list_head *page_list,
->>  		folio = lru_to_folio(page_list);
->>  		list_del(&folio->lru);
->>  
->> +		nr_pages = folio_nr_pages(folio);
->> +		if (folio_ref_count(folio) == 1) {
->> +			/* folio was freed from under us. So we are done. */
->> +			WARN_ON(!folio_put_testzero(folio));
-> 
-> What?  No.  This can absolutely happen.  We have a refcount on the folio,
-> which means that any other thread can temporarily raise the refcount,
+From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
 
-IIUC, the folio is only in the isolated page_list now and it's not in the page cache, swap cache, pagetable or
-under any use. So there should be no way that any other thread can temporarily raise the refcount when
-folio_ref_count == 1. Or am I miss something?
+The print fmt check against trace events to make sure that the format does
+not use pointers that may be freed from the time of the trace to the time
+the event is read, gives a false positive on %pISpc when reading data that
+was saved in __get_dynamic_array() when it is perfectly fine to do so, as
+the data being read is on the ring buffer.
 
-> so this WARN_ON can trigger.  Also, we don't hold the folio locked,
-> or an extra reference, so nr_pages is unstable because it can be split.
+Link: https://lore.kernel.org/all/20220407144524.2a592ed6@canb.auug.org.au/
 
-Yes, you're right. When folio_ref_count != 1, nr_pages is unstable. Will fix it if v2 is possible. :)
+Cc: stable@vger.kernel.org
+Fixes: 5013f454a352c ("tracing: Add check of trace event print fmts for dereferencing pointers")
+Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+---
+ kernel/trace/trace_events.c | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
 
-Thanks a lot for review and comment!
-
-> 
->> +			goto free_it;
->> +		}
->> +
->>  		if (!folio_trylock(folio))
->>  			goto keep;
->>  
->>  		VM_BUG_ON_FOLIO(folio_test_active(folio), folio);
->>  
->> -		nr_pages = folio_nr_pages(folio);
->>  
->>  		/* Account the number of base pages */
->>  		sc->nr_scanned += nr_pages;
->> -- 
->> 2.23.0
->>
->>
-> 
-> .
-> 
-
+diff --git a/kernel/trace/trace_events.c b/kernel/trace/trace_events.c
+index 78f313b7b315..d5913487821a 100644
+--- a/kernel/trace/trace_events.c
++++ b/kernel/trace/trace_events.c
+@@ -392,12 +392,6 @@ static void test_event_printk(struct trace_event_call *call)
+ 			if (!(dereference_flags & (1ULL << arg)))
+ 				goto next_arg;
+ 
+-			/* Check for __get_sockaddr */;
+-			if (str_has_prefix(fmt + i, "__get_sockaddr(")) {
+-				dereference_flags &= ~(1ULL << arg);
+-				goto next_arg;
+-			}
+-
+ 			/* Find the REC-> in the argument */
+ 			c = strchr(fmt + i, ',');
+ 			r = strstr(fmt + i, "REC->");
+@@ -413,7 +407,14 @@ static void test_event_printk(struct trace_event_call *call)
+ 				a = strchr(fmt + i, '&');
+ 				if ((a && (a < r)) || test_field(r, call))
+ 					dereference_flags &= ~(1ULL << arg);
++			} else if ((r = strstr(fmt + i, "__get_dynamic_array(")) &&
++				   (!c || r < c)) {
++				dereference_flags &= ~(1ULL << arg);
++			} else if ((r = strstr(fmt + i, "__get_sockaddr(")) &&
++				   (!c || r < c)) {
++				dereference_flags &= ~(1ULL << arg);
+ 			}
++
+ 		next_arg:
+ 			i--;
+ 			arg++;
+-- 
+2.35.1
