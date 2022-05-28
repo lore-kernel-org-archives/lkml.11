@@ -2,90 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C897BC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 06:03:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6437C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 06:10:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352013AbiE1GDk (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 28 May 2022 02:03:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33656 "EHLO
+        id S233232AbiE1GKc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 28 May 2022 02:10:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345565AbiE1GDi (ORCPT
+        with ESMTP id S229936AbiE1GK3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 28 May 2022 02:03:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E34E0E89;
-        Fri, 27 May 2022 23:03:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7ACC66006F;
-        Sat, 28 May 2022 06:03:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 841F9C34100;
-        Sat, 28 May 2022 06:03:35 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="K0OIAWzO"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1653717813;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=GF7VjLFgiF5zpZMXcSFyff94LimgXWs95WRATQEPxYA=;
-        b=K0OIAWzOqREoXV9uGyMOvgB9b3b4MKsd7E0R7IdiEAhnAxGWy/Nw7IrtjgEoS45IlY3GVg
-        HfGMR0igEsV9VNvqIwRAJd5syulQWm+501dqvMp8Xry/N6g448HDjhDyxEa4WLFzgpto0J
-        KLoI7wtPPm4PY/9ZGuw0tjsUWOyeaE8=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id bccbbaf2 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Sat, 28 May 2022 06:03:33 +0000 (UTC)
-Received: by mail-yw1-f174.google.com with SMTP id 00721157ae682-300312ba5e2so66819067b3.0;
-        Fri, 27 May 2022 23:03:32 -0700 (PDT)
-X-Gm-Message-State: AOAM533sX327+L83sWenjLaQENk444s/4aev3yqGERjYXz420IEWYlgq
-        LMTsnF8TTCFwGvv13K7sNUJKTWVCDcUe8qWcCAU=
-X-Google-Smtp-Source: ABdhPJx7kIdKfof/beGFj7bZoDoFCT+m+IGoZWZAq4FGS7cKeiLX9j0Z6DV1TlAe6vL1n0gnzC/HhlozxgVDZ8q7uF4=
-X-Received: by 2002:a0d:cd04:0:b0:300:4784:caa3 with SMTP id
- p4-20020a0dcd04000000b003004784caa3mr19079647ywd.231.1653717811259; Fri, 27
- May 2022 23:03:31 -0700 (PDT)
+        Sat, 28 May 2022 02:10:29 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECC3023162
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 23:10:27 -0700 (PDT)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L9B630ddszRhW6;
+        Sat, 28 May 2022 14:07:23 +0800 (CST)
+Received: from localhost.localdomain (10.175.112.125) by
+ dggpeml500026.china.huawei.com (7.185.36.106) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sat, 28 May 2022 14:10:25 +0800
+From:   Yuanzheng Song <songyuanzheng@huawei.com>
+To:     <tobin@kernel.org>, <akpm@linux-foundation.org>
+CC:     <linux-kernel@vger.kernel.org>,
+        Yuanzheng Song <songyuanzheng@huawei.com>
+Subject: [PATCH] tools/vm/slabinfo: use alphabetic order when two values are equal
+Date:   Sat, 28 May 2022 06:31:17 +0000
+Message-ID: <20220528063117.935158-1-songyuanzheng@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Received: by 2002:a05:7110:6403:b0:17b:2ce3:1329 with HTTP; Fri, 27 May 2022
- 23:03:30 -0700 (PDT)
-In-Reply-To: <20220527223833.GA3166370@roeck-us.net>
-References: <20220527084828.156494029@linuxfoundation.org> <20220527141421.GA13810@duo.ucw.cz>
- <YpD0CVWSiEqiM+8b@kroah.com> <6aed0c5c-bb99-0593-1609-87371db26f44@roeck-us.net>
- <YpE+S2H301IsZYzv@zx2c4.com> <20220527223833.GA3166370@roeck-us.net>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Sat, 28 May 2022 08:03:30 +0200
-X-Gmail-Original-Message-ID: <CAHmME9pPc12jRM4rbuE1Z=TjMg3YdWr3g1dJfifi1YjLQqUdDg@mail.gmail.com>
-Message-ID: <CAHmME9pPc12jRM4rbuE1Z=TjMg3YdWr3g1dJfifi1YjLQqUdDg@mail.gmail.com>
-Subject: Re: [PATCH 5.10 000/163] 5.10.119-rc1 review
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Pavel Machek <pavel@denx.de>, Chris.Paterson2@renesas.com,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.112.125]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpeml500026.china.huawei.com (7.185.36.106)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/28/22, Guenter Roeck <linux@roeck-us.net> wrote:
-> On Fri, May 27, 2022 at 11:10:35PM +0200, Jason A. Donenfeld wrote:
->> Hi Guenter,
->>
->> On Fri, May 27, 2022 at 09:59:14AM -0700, Guenter Roeck wrote:
->> > Given that we (ChromeOS) have been hit by rng related
->> > issues before (specifically boot stalls on some hardware), I am quite
->> > concerned about the possible impact of this series for stable releases.
->>
->> The urandom try_to_generate_entropy() change from 5.18 wasn't backported.
->>
->
-> Was it not backported on purpose or is it missing ?
->
+When the number of partial slabs in each cache is the same (e.g., the
+value are 0), the results of the `slabinfo -X -N5` and `slabinfo -P -N5`
+are different.
 
-On purpose, on account of the concern that you expressed. Hence I
-mentioned it in response to your message.
+/ # slabinfo -X -N5
+...
+Slabs sorted by number of partial slabs
+---------------------------------------
+Name                   Objects Objsize           Space Slabs/Part/Cpu  O/S O %Fr %Ef Flg
+inode_cache              15180     392         6217728        758/0/1   20 1   0  95 a
+kernfs_node_cache        22494      88         2002944        488/0/1   46 0   0  98
+shmem_inode_cache          663     464          319488         38/0/1   17 1   0  96
+biovec-max                  50    3072          163840          4/0/1   10 3   0  93 A
+dentry                   19050     136         2600960        633/0/2   30 0   0  99 a
 
-Jason
+/ # slabinfo -P -N5
+Name                   Objects Objsize           Space Slabs/Part/Cpu  O/S O %Fr %Ef Flg
+bdev_cache                  32     984           32.7K          1/0/1   16 2   0  96 Aa
+ext4_inode_cache            42     752           32.7K          1/0/1   21 2   0  96 a
+dentry                   19050     136            2.6M        633/0/2   30 0   0  99 a
+TCPv6                       17    1840           32.7K          0/0/1   17 3   0  95 A
+RAWv6                       18     856           16.3K          0/0/1   18 2   0  94 A
+
+This problem is caused by the sort_slabs(). So let's use alphabetic order
+when two values are equal in the sort_slabs().
+
+By the way, the content of the `slabinfo -h` is not aligned because the
+`-P|--partial		Sort by number of partial slabs` uses tabs instead
+of spaces. So let's use spaces instead of tabs to fix it.
+
+Fixes: 1106b205a3fe ("tools/vm/slabinfo: add partial slab listing to -X")
+Signed-off-by: Yuanzheng Song <songyuanzheng@huawei.com>
+---
+ tools/vm/slabinfo.c | 32 ++++++++++++++++++++++----------
+ 1 file changed, 22 insertions(+), 10 deletions(-)
+
+diff --git a/tools/vm/slabinfo.c b/tools/vm/slabinfo.c
+index 9b68658b6bb8..3ae985dc24b6 100644
+--- a/tools/vm/slabinfo.c
++++ b/tools/vm/slabinfo.c
+@@ -125,7 +125,7 @@ static void usage(void)
+ 		"-n|--numa              Show NUMA information\n"
+ 		"-N|--lines=K           Show the first K slabs\n"
+ 		"-o|--ops               Show kmem_cache_ops\n"
+-		"-P|--partial		Sort by number of partial slabs\n"
++		"-P|--partial           Sort by number of partial slabs\n"
+ 		"-r|--report            Detailed report on single slabs\n"
+ 		"-s|--shrink            Shrink slabs\n"
+ 		"-S|--Size              Sort by size\n"
+@@ -1045,15 +1045,27 @@ static void sort_slabs(void)
+ 		for (s2 = s1 + 1; s2 < slabinfo + slabs; s2++) {
+ 			int result;
+ 
+-			if (sort_size)
+-				result = slab_size(s1) < slab_size(s2);
+-			else if (sort_active)
+-				result = slab_activity(s1) < slab_activity(s2);
+-			else if (sort_loss)
+-				result = slab_waste(s1) < slab_waste(s2);
+-			else if (sort_partial)
+-				result = s1->partial < s2->partial;
+-			else
++			if (sort_size) {
++				if (slab_size(s1) == slab_size(s2))
++					result = strcasecmp(s1->name, s2->name);
++				else
++					result = slab_size(s1) < slab_size(s2);
++			} else if (sort_active) {
++				if (slab_activity(s1) == slab_activity(s2))
++					result = strcasecmp(s1->name, s2->name);
++				else
++					result = slab_activity(s1) < slab_activity(s2);
++			} else if (sort_loss) {
++				if (slab_waste(s1) == slab_waste(s2))
++					result = strcasecmp(s1->name, s2->name);
++				else
++					result = slab_waste(s1) < slab_waste(s2);
++			} else if (sort_partial) {
++				if (s1->partial == s2->partial)
++					result = strcasecmp(s1->name, s2->name);
++				else
++					result = s1->partial < s2->partial;
++			} else
+ 				result = strcasecmp(s1->name, s2->name);
+ 
+ 			if (show_inverted)
+-- 
+2.25.1
+
