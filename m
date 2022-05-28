@@ -2,25 +2,25 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71C6AC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 07:59:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A52A4C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 08:01:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230284AbiE1H7o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 28 May 2022 03:59:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47556 "EHLO
+        id S230367AbiE1IBG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 28 May 2022 04:01:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229998AbiE1H7h (ORCPT
+        with ESMTP id S229998AbiE1IBD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 28 May 2022 03:59:37 -0400
-Received: from smtp.smtpout.orange.fr (smtp04.smtpout.orange.fr [80.12.242.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFED3D7A
-        for <linux-kernel@vger.kernel.org>; Sat, 28 May 2022 00:59:35 -0700 (PDT)
+        Sat, 28 May 2022 04:01:03 -0400
+Received: from smtp.smtpout.orange.fr (smtp06.smtpout.orange.fr [80.12.242.128])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CBD41142
+        for <linux-kernel@vger.kernel.org>; Sat, 28 May 2022 01:00:58 -0700 (PDT)
 Received: from pop-os.home ([90.11.191.102])
         by smtp.orange.fr with ESMTPA
-        id urMBnT8ApIaWOurMCnw1Bl; Sat, 28 May 2022 09:59:33 +0200
+        id urNWn1xHmP8ApurNWnc56v; Sat, 28 May 2022 10:00:56 +0200
 X-ME-Helo: pop-os.home
 X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Sat, 28 May 2022 09:59:33 +0200
+X-ME-Date: Sat, 28 May 2022 10:00:56 +0200
 X-ME-IP: 90.11.191.102
 From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 To:     tglx@linutronix.de, Liam Girdwood <lgirdwood@gmail.com>,
@@ -29,9 +29,9 @@ To:     tglx@linutronix.de, Liam Girdwood <lgirdwood@gmail.com>,
 Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
         Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
         alsa-devel@alsa-project.org
-Subject: [PATCH] ASoC: ux500: Remove some leftover from the "Replace GPLv2 boilerplate/reference with SPDX" rules
-Date:   Sat, 28 May 2022 09:59:22 +0200
-Message-Id: <84d94977c57deee9e85249f18394ebf8d72497bc.1653724723.git.christophe.jaillet@wanadoo.fr>
+Subject: [PATCH] ASoC: ab8500: Remove some leftover from the "Replace GPLv2 boilerplate/reference with SPDX" rules
+Date:   Sat, 28 May 2022 10:00:53 +0200
+Message-Id: <28c0833d4a11f8f75f385e5aad93c23721b06c7e.1653724847.git.christophe.jaillet@wanadoo.fr>
 X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -45,134 +45,36 @@ Remove them as well.
 
 Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 ---
- sound/soc/ux500/mop500.c        | 2 --
- sound/soc/ux500/mop500_ab8500.c | 2 --
- sound/soc/ux500/mop500_ab8500.h | 2 --
- sound/soc/ux500/ux500_msp_dai.c | 2 --
- sound/soc/ux500/ux500_msp_dai.h | 2 --
- sound/soc/ux500/ux500_msp_i2s.c | 2 --
- sound/soc/ux500/ux500_msp_i2s.h | 2 --
- sound/soc/ux500/ux500_pcm.c     | 2 --
- sound/soc/ux500/ux500_pcm.h     | 2 --
- 9 files changed, 18 deletions(-)
+ sound/soc/codecs/ab8500-codec.c | 2 --
+ sound/soc/codecs/ab8500-codec.h | 2 --
+ 2 files changed, 4 deletions(-)
 
-diff --git a/sound/soc/ux500/mop500.c b/sound/soc/ux500/mop500.c
-index 4f41bb0ab2b0..fdd55d772b8e 100644
---- a/sound/soc/ux500/mop500.c
-+++ b/sound/soc/ux500/mop500.c
-@@ -4,8 +4,6 @@
-  *
-  * Author: Ola Lilja (ola.o.lilja@stericsson.com)
+diff --git a/sound/soc/codecs/ab8500-codec.c b/sound/soc/codecs/ab8500-codec.c
+index aefafb0b7b97..cbd4a92cb06c 100644
+--- a/sound/soc/codecs/ab8500-codec.c
++++ b/sound/soc/codecs/ab8500-codec.c
+@@ -12,8 +12,6 @@
+  *         Mikko Sarmanne <mikko.sarmanne@symbio.com>,
+  *         Jarmo K. Kuronen <jarmo.kuronen@symbio.com>,
   *         for ST-Ericsson.
 - *
 - * License terms:
   */
  
- #include <asm/mach-types.h>
-diff --git a/sound/soc/ux500/mop500_ab8500.c b/sound/soc/ux500/mop500_ab8500.c
-index 1ea1729984a9..e5e73a2bd9fe 100644
---- a/sound/soc/ux500/mop500_ab8500.c
-+++ b/sound/soc/ux500/mop500_ab8500.c
-@@ -5,8 +5,6 @@
-  * Author: Ola Lilja <ola.o.lilja@stericsson.com>,
-  *         Kristoffer Karlsson <kristoffer.karlsson@stericsson.com>
+ #include <linux/kernel.h>
+diff --git a/sound/soc/codecs/ab8500-codec.h b/sound/soc/codecs/ab8500-codec.h
+index 0ac87d0446c2..2a6f6409f1f8 100644
+--- a/sound/soc/codecs/ab8500-codec.h
++++ b/sound/soc/codecs/ab8500-codec.h
+@@ -11,8 +11,6 @@
+  *         Mikko J. Lehto <mikko.lehto@symbio.com>,
+  *         Mikko Sarmanne <mikko.sarmanne@symbio.com>,
   *         for ST-Ericsson.
 - *
 - * License terms:
   */
  
- #include <linux/module.h>
-diff --git a/sound/soc/ux500/mop500_ab8500.h b/sound/soc/ux500/mop500_ab8500.h
-index 087ef246d87d..98de80a9cc4f 100644
---- a/sound/soc/ux500/mop500_ab8500.h
-+++ b/sound/soc/ux500/mop500_ab8500.h
-@@ -4,8 +4,6 @@
-  *
-  * Author: Ola Lilja <ola.o.lilja@stericsson.com>
-  *         for ST-Ericsson.
-- *
-- * License terms:
-  */
- 
- #ifndef MOP500_AB8500_H
-diff --git a/sound/soc/ux500/ux500_msp_dai.c b/sound/soc/ux500/ux500_msp_dai.c
-index 21052378a32e..56532b62faf3 100644
---- a/sound/soc/ux500/ux500_msp_dai.c
-+++ b/sound/soc/ux500/ux500_msp_dai.c
-@@ -5,8 +5,6 @@
-  * Author: Ola Lilja <ola.o.lilja@stericsson.com>,
-  *         Roger Nilsson <roger.xr.nilsson@stericsson.com>
-  *         for ST-Ericsson.
-- *
-- * License terms:
-  */
- 
- #include <linux/module.h>
-diff --git a/sound/soc/ux500/ux500_msp_dai.h b/sound/soc/ux500/ux500_msp_dai.h
-index fcd4b26f5d2d..30bf70838196 100644
---- a/sound/soc/ux500/ux500_msp_dai.h
-+++ b/sound/soc/ux500/ux500_msp_dai.h
-@@ -5,8 +5,6 @@
-  * Author: Ola Lilja <ola.o.lilja@stericsson.com>,
-  *         Roger Nilsson <roger.xr.nilsson@stericsson.com>
-  *         for ST-Ericsson.
-- *
-- * License terms:
-  */
- 
- #ifndef UX500_msp_dai_H
-diff --git a/sound/soc/ux500/ux500_msp_i2s.c b/sound/soc/ux500/ux500_msp_i2s.c
-index fd0b88bb7921..d113411a19f8 100644
---- a/sound/soc/ux500/ux500_msp_i2s.c
-+++ b/sound/soc/ux500/ux500_msp_i2s.c
-@@ -6,8 +6,6 @@
-  *         Roger Nilsson <roger.xr.nilsson@stericsson.com>,
-  *         Sandeep Kaushik <sandeep.kaushik@st.com>
-  *         for ST-Ericsson.
-- *
-- * License terms:
-  */
- 
- #include <linux/module.h>
-diff --git a/sound/soc/ux500/ux500_msp_i2s.h b/sound/soc/ux500/ux500_msp_i2s.h
-index 756b3973af9a..d45b5e2831cc 100644
---- a/sound/soc/ux500/ux500_msp_i2s.h
-+++ b/sound/soc/ux500/ux500_msp_i2s.h
-@@ -4,8 +4,6 @@
-  *
-  * Author: Ola Lilja <ola.o.lilja@stericsson.com>,
-  *         for ST-Ericsson.
-- *
-- * License terms:
-  */
- 
- 
-diff --git a/sound/soc/ux500/ux500_pcm.c b/sound/soc/ux500/ux500_pcm.c
-index 18191084b8b8..d3802e5ef196 100644
---- a/sound/soc/ux500/ux500_pcm.c
-+++ b/sound/soc/ux500/ux500_pcm.c
-@@ -5,8 +5,6 @@
-  * Author: Ola Lilja <ola.o.lilja@stericsson.com>,
-  *         Roger Nilsson <roger.xr.nilsson@stericsson.com>
-  *         for ST-Ericsson.
-- *
-- * License terms:
-  */
- 
- #include <asm/page.h>
-diff --git a/sound/soc/ux500/ux500_pcm.h b/sound/soc/ux500/ux500_pcm.h
-index ff3ef7223db6..bd4348ebf9a1 100644
---- a/sound/soc/ux500/ux500_pcm.h
-+++ b/sound/soc/ux500/ux500_pcm.h
-@@ -5,8 +5,6 @@
-  * Author: Ola Lilja <ola.o.lilja@stericsson.com>,
-  *         Roger Nilsson <roger.xr.nilsson@stericsson.com>
-  *         for ST-Ericsson.
-- *
-- * License terms:
-  */
- #ifndef UX500_PCM_H
- #define UX500_PCM_H
+ #ifndef AB8500_CODEC_REGISTERS_H
 -- 
 2.34.1
 
