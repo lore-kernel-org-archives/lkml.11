@@ -2,135 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 514E3C433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 17:28:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A61EFC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 17:35:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239158AbiE1R2i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 28 May 2022 13:28:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58378 "EHLO
+        id S239230AbiE1Ret (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 28 May 2022 13:34:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231777AbiE1R2g (ORCPT
+        with ESMTP id S231777AbiE1Rer (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 28 May 2022 13:28:36 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 225F12662;
-        Sat, 28 May 2022 10:28:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1653758903;
-        bh=lR1SmAw3TFZ2GVQGx6Xrltu1975YzeKIyfCgmu3IbmI=;
-        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=TwY7VeAEA96tsQkihp6Y53kt7fF5IFdDfZK0kJxOBVZ3BN2JoTOn2gxG+EPBXayd0
-         1TwauGiZ+ZSWnFHxazRzYiuBm8Wp4/7b3LubTm90l5WpGZl8Em0bmA6eslfp46oUzy
-         YonBZifAugCbrq9EgfOvRT9SQtNkdIyKqODPRRa0=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.20.60] ([92.116.176.6]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MryXN-1nRjkI0V9B-00nyNC; Sat, 28
- May 2022 19:28:23 +0200
-Message-ID: <90a293d4-698f-5c9a-9435-3a26ea0ae97f@gmx.de>
-Date:   Sat, 28 May 2022 19:28:08 +0200
+        Sat, 28 May 2022 13:34:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02DC7312;
+        Sat, 28 May 2022 10:34:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E4E160F68;
+        Sat, 28 May 2022 17:34:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5889EC34100;
+        Sat, 28 May 2022 17:34:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653759286;
+        bh=yeRDBl3fGRJ9paZDzF8sBkWNRLREA17JNf2uoZPoAxQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=tGY92kiHIY5uu81GQg6aYbmwqKmgip2QGDziFjy9V3v9/0XQ8GAzn+d4B9pCXL2fP
+         FE68JZqPJB0r6USanjHvDqmKaAICBmCUmUOEWqSh9YmCIqdSeDXavmGgN/6Mq8PNkw
+         QmipkaFFyLUqBT4EE3qHQI1/sne+y1IgaSUT/6bmjugB/rE5/XUnSiCuZlZzM+dqb8
+         snNWSqPzVIcQo/dQHR51GfMQWpC0uqdKYhKo13BlXxTOtFhzPiXFqaN6PTK2PwJ3Mj
+         +qP7HYMFUt+ldBzbqQFMkQ+NiF92Ys3zRD1BPWuowHO9B6SjGhzpPT0vE5HyfJm8OS
+         5y0a7T4Us611g==
+Date:   Sat, 28 May 2022 18:43:37 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Dmitry Rokosov <DDRokosov@sberdevices.ru>
+Cc:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>,
+        "stano.jakubek@gmail.com" <stano.jakubek@gmail.com>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
+        "stephan@gerhold.net" <stephan@gerhold.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 3/3] dt-bindings: iio: accel: add dt-binding schema
+ for msa311 accel driver
+Message-ID: <20220528184337.0855c8cc@jic23-huawei>
+In-Reply-To: <20220525183255.lc7hmmcfj47yrxc3@CAB-WSD-L081021.sigma.sbrf.ru>
+References: <20220525181532.6805-1-ddrokosov@sberdevices.ru>
+        <20220525181532.6805-4-ddrokosov@sberdevices.ru>
+        <20220525183255.lc7hmmcfj47yrxc3@CAB-WSD-L081021.sigma.sbrf.ru>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH] fbdev: vesafb: Fix a use-after-free due early fb_info
- cleanup
-Content-Language: en-US
-To:     Javier Martinez Canillas <javierm@redhat.com>,
-        linux-kernel@vger.kernel.org
-Cc:     Pascal Ernster <dri-devel@hardfalcon.net>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org
-References: <20220526194752.307192-1-javierm@redhat.com>
-From:   Helge Deller <deller@gmx.de>
-In-Reply-To: <20220526194752.307192-1-javierm@redhat.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:Q/afMmrV6TEcA8Ald4h2sa2uBYvXhgfWAKP3dhZtZKDXuX7L5bR
- 7U8+ZHdeYUwdMiakb0VwOYuClbKKl+haWFBSOYmF+SHHED0qpI0GIqLlrUB0RXSFWtrqhTb
- AkERe7Q+TtAfR5JiIGY4CIOfm1wpUd4Ipilwn4bw331ESA1gn2Hyv3EYZgRMgmYDnN0B/kz
- dL+IkvX24bMKe5Hhl+kdQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:XqlM8cU89UE=:eTOTT44CHSOooba+fOdkyo
- y1MrLZk9ZF2hFIn2zAV64IipZRcch4TDAmcOQt1UnVDoWfg8AlPW7kQyvq5Mb0gcIb7YTmMb+
- Ln6ECUlnPq6IjylwUES9rrADlRUQrT8TxSUSTLlfppRpi/I1tEWt1UIgPkQj3qKiyBDp0T2cW
- pVPFSD+DWm3PhsvpO1MKsvFNuQyNzj5SE9NYvrhnZMTSXCWEREmugIRmXUXV5N8HXsgFx+1by
- 0vLeeaxz1f9yPwz8CNloOIkA8JGoGYDg0nc3ih94KY2nQqw99TwbRy5Qv8iL6wqu6C2gRFaqg
- g5U3IMGg/uDbjSmr+IMTOU6PB22HmuyLFAjMPTfCNKOYfXUjX7Iq50hAN+LYQhPunEIwxK+qr
- fmqigX0CR00JfCnzuQYt+EFZo7Kt00ocWT2prVauDK4heXV4gwJtzcSVkyy4tKIwYs1LXTIHy
- NBMByrSq6ZBIYXVmCyvzobNlk8yQ8Edznm5TG19y+B7C3W/mogQAdbSvpl2rWLhuaZMIvnzZQ
- d90hIfQeIHW3iU4UUwfQxkTvmKBQSaHgIeAfYG9fqWPL3qC1pHnNNIdc0QQ/EWXTdoxz2O/cA
- vwJHUPPsHbBHNbZ14vv1OAOPZEoSHnawhbLrQDkbAEL43nM0ZWeoSd7MjsgSbxe33DhVDPfcA
- FVwFhff+sw0KW9pyjcLj2n2bssGVitMJ/8PnASUnAaS4uW6DPyLCBBziIRhexGjAx6+r90zfJ
- BPW1qpm6QsDSDLMA5k7eZ30AWoWbJAPFPnZW/Z84HZ5TKNN2LvsF48abqc7EdxxFlbo2v1psQ
- qLU8Pv+vleI3K0geCzXBa33Y/nQK1T8UmMfPLpun4LWaH9J66oMwuSMOO1JmUrLp5+5u7lAY5
- dszI+2Z36wvyMgor8SOD2QfU2JvAh3jYYFkdDNtjy/RMFuaGcDCEkJQaQxVvMl26N3jMBGAyn
- xAI7dWt09WCE7bmZPWqmXRjZ4RGnBPKrTjIMSpIgk40wdhpLe9Z3fr32/HAsOs9q8X9Ga7siv
- NNUnlntJml8yv33RX450oCMkteJrBGzYkUvSqFnKSllLwHNuPpGc1JF8Ahn1iw1HXDlB6jkQe
- dk+elHRX383UtQQk6OeBRavSUqvawhcFUufJ7Htlgz07/c9V6b5L258Zw==
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/26/22 21:47, Javier Martinez Canillas wrote:
-> Commit b3c9a924aab6 ("fbdev: vesafb: Cleanup fb_info in .fb_destroy rath=
-er
-> than .remove") fixed a use-after-free error due the vesafb driver freein=
-g
-> the fb_info in the .remove handler instead of doing it in .fb_destroy.
->
-> This can happen if the .fb_destroy callback is executed after the .remov=
-e
-> callback, since the former tries to access a pointer freed by the latter=
-.
->
-> But that change didn't take into account that another possible scenario =
-is
-> that .fb_destroy is called before the .remove callback. For example, if =
-no
-> process has the fbdev chardev opened by the time the driver is removed.
->
-> If that's the case, fb_info will be freed when unregister_framebuffer() =
-is
-> called, making the fb_info pointer accessed in vesafb_remove() after tha=
-t
-> to no longer be valid.
->
-> To prevent that, move the expression containing the info->par to happen
-> before the unregister_framebuffer() function call.
->
-> Fixes: b3c9a924aab6 ("fbdev: vesafb: Cleanup fb_info in .fb_destroy rath=
-er than .remove")
-> Reported-by: Pascal Ernster <dri-devel@hardfalcon.net>
-> Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+On Wed, 25 May 2022 18:32:45 +0000
+Dmitry Rokosov <DDRokosov@sberdevices.ru> wrote:
 
-applied to the fbdev git tree.
+> Hello Jonathan and Rob,
+> 
+> I didn't change two places which you mentioned in the v1 review, please
+> find my comments below.
+> 
+> On Wed, May 25, 2022 at 06:15:33PM +0000, Dmitry Rokosov wrote:
+> 
+> > +  interrupt-names:
+> > +    const: irq  
+> I stay interrupt-names node here, because otherwise dt_binding_check
+> command shows such a warning:
+> 
+> ====
+>   CHECK   Documentation/devicetree/bindings/iio/accel/memsensing,msa311.example.dt.yaml
+> Documentation/devicetree/bindings/iio/accel/memsensing,msa311.example.dt.yaml: accelerometer@62: 'interrupt-names' does not match any of the regexes: 'pinctrl-[0-9]+'
+> ====
+> 
+> I can't delete this node from the example as well, because it's required for
+> msa311 dts i2c irq declaration.
 
-Thanks!
-Helge
+Sorry, you've lost me - what breaks if you drop it from the example?
+I'd expect to see no interrupt-names being documented or in the example.
+
+> 
+> Please help me to resolve this problem properly if possible. If we can
+> ignore such warning I'll delete interrupt-names in the next patchset's
+> version.
+
+We can't ignore the warning, so this comes down to what am I missing with
+the need for it in the example...
+
+> 
+> > +examples:
+> > +  - |
+> > +    #include <dt-bindings/interrupt-controller/irq.h>
+> > +    i2c {
+> > +        #address-cells = <1>;
+> > +        #size-cells = <0>;
+> > +  
+> Properties #address-cells and #size-cells are still located in the
+> schema example, because otherwise dt_binding_check raises the below 
+> warnings if we delete these properties:
+
+They should be there for the i2c node, (as they are required for an i2c bus master
+node) but you had them documented as being in the msa311 node.  If it's
+not in the
+accelerometer@62 {
+
+}
+
+section of the example documetnation doesn't belong on this file (it will be
+elsewhere). 
+
+The request is to drop the documentation of them (as we are documenting
+the msa311 part of the binding only).  They should indeed still be there
+in the example.
+
+Jonathan
 
 
-> ---
->
->  drivers/video/fbdev/vesafb.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/video/fbdev/vesafb.c b/drivers/video/fbdev/vesafb.c
-> index e25e8de5ff67..929d4775cb4b 100644
-> --- a/drivers/video/fbdev/vesafb.c
-> +++ b/drivers/video/fbdev/vesafb.c
-> @@ -490,11 +490,12 @@ static int vesafb_remove(struct platform_device *p=
-dev)
->  {
->  	struct fb_info *info =3D platform_get_drvdata(pdev);
->
-> -	/* vesafb_destroy takes care of info cleanup */
-> -	unregister_framebuffer(info);
->  	if (((struct vesafb_par *)(info->par))->region)
->  		release_region(0x3c0, 32);
->
-> +	/* vesafb_destroy takes care of info cleanup */
-> +	unregister_framebuffer(info);
-> +
->  	return 0;
->  }
->
+
+> 
+> =====
+>   DTC     Documentation/devicetree/bindings/iio/accel/memsensing,msa311.example.dt.yaml
+> Documentation/devicetree/bindings/iio/accel/memsensing,msa311.example.dts:27.17-30: Warning (reg_format): /example-0/i2c/accelerometer@62:reg: property has invalid length (4 bytes) (#address-cells == 2, #size-cells == 1)
+> Documentation/devicetree/bindings/iio/accel/memsensing,msa311.example.dt.yaml: Warning (pci_device_reg): Failed prerequisite 'reg_format'
+> Documentation/devicetree/bindings/iio/accel/memsensing,msa311.example.dt.yaml: Warning (pci_device_bus_num): Failed prerequisite 'reg_format'
+> Documentation/devicetree/bindings/iio/accel/memsensing,msa311.example.dt.yaml: Warning (simple_bus_reg): Failed prerequisite 'reg_format'
+> Documentation/devicetree/bindings/iio/accel/memsensing,msa311.example.dts:24.13-32.11: Warning (i2c_bus_bridge): /example-0/i2c: incorrect #address-cells for I2C bus
+> Documentation/devicetree/bindings/iio/accel/memsensing,msa311.example.dts:24.13-32.11: Warning (i2c_bus_bridge): /example-0/i2c: incorrect #size-cells for I2C bus
+> Documentation/devicetree/bindings/iio/accel/memsensing,msa311.example.dt.yaml: Warning (i2c_bus_reg): Failed prerequisite 'reg_format'
+> Documentation/devicetree/bindings/iio/accel/memsensing,msa311.example.dt.yaml: Warning (i2c_bus_reg): Failed prerequisite 'i2c_bus_bridge'
+> Documentation/devicetree/bindings/iio/accel/memsensing,msa311.example.dt.yaml: Warning (spi_bus_reg): Failed prerequisite 'reg_format'
+> Documentation/devicetree/bindings/iio/accel/memsensing,msa311.example.dts:25.30-31.15: Warning (avoid_default_addr_size): /example-0/i2c/accelerometer@62: Relying on default #address-cells value
+> Documentation/devicetree/bindings/iio/accel/memsensing,msa311.example.dts:25.30-31.15: Warning (avoid_default_addr_size): /example-0/i2c/accelerometer@62: Relying on default #size-cells value
+> Documentation/devicetree/bindings/iio/accel/memsensing,msa311.example.dt.yaml: Warning (unique_unit_address_if_enabled): Failed prerequisite 'avoid_default_addr_size'
+> =====
+> 
+> What is best way to resolve such issues without providing #address-cells
+> and #size-cells values?
+> 
 
