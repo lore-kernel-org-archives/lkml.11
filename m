@@ -2,107 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87F00C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 01:34:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A7E4C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 01:37:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355602AbiE1Bew (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 21:34:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34752 "EHLO
+        id S235947AbiE1Bhj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 21:37:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355594AbiE1BeT (ORCPT
+        with ESMTP id S231660AbiE1Bhe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 21:34:19 -0400
-Received: from EX-PRD-EDGE02.vmware.com (EX-PRD-EDGE02.vmware.com [208.91.3.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57E6613C360;
-        Fri, 27 May 2022 18:34:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-    s=s1024; d=vmware.com;
-    h=from:to:cc:subject:date:message-id:in-reply-to:mime-version:
-      content-type;
-    bh=SV77H0OmyZG86LnB/951XAXqvbh/6VYp/F55lWugqXA=;
-    b=S15dg09BnC4T0Xi+kMSDnJesKcsySgCtOzrbZ69bN2uUH65mYGX1vLznzoOPL4
-      aOXvtEhfWvRCKHkLl+GUpGm01KJbLiJIsXvm87zWtNoptkmk5OiGMCwvpV3gvF
-      95YwxSldpuj1ZcQqnwZnj8KCNcxh7UE37AilLjDwuchrMpY=
-Received: from sc9-mailhost2.vmware.com (10.113.161.72) by
- EX-PRD-EDGE02.vmware.com (10.188.245.7) with Microsoft SMTP Server id
- 15.1.2308.14; Fri, 27 May 2022 18:19:09 -0700
-Received: from htb-1n-eng-dhcp122.eng.vmware.com (unknown [10.20.114.216])
-        by sc9-mailhost2.vmware.com (Postfix) with ESMTP id 139C220267;
-        Fri, 27 May 2022 18:19:13 -0700 (PDT)
-Received: by htb-1n-eng-dhcp122.eng.vmware.com (Postfix, from userid 0)
-        id 050FCAA2B9; Fri, 27 May 2022 18:19:13 -0700 (PDT)
-From:   Ronak Doshi <doshir@vmware.com>
-To:     <netdev@vger.kernel.org>
-CC:     Ronak Doshi <doshir@vmware.com>,
-        VMware PV-Drivers Reviewers <pv-drivers@vmware.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        Fri, 27 May 2022 21:37:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76EDF1271BA;
+        Fri, 27 May 2022 18:37:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C94A61BE9;
+        Sat, 28 May 2022 01:37:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CC11C385A9;
+        Sat, 28 May 2022 01:37:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653701852;
+        bh=0A4GDS0/xoWk9h+94rvB7hZvdBuYFPiKZbBmCrPpur4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=EgVunYxNG9zVa6HGSDa9fnF7jafFHulZ1dvn3cVJHIaOzxJZAlr72t4YipRYRBoVX
+         3zucd9EkoB0vfJUyz4E6nrjEEnhXB0/qD2JE7l3hd6btX0Dbg2LsacvBGDKqK5c/9P
+         e30Sl8s0yZJobB6wmWfJ8eL9l54f7tHvWLMCs3Mwp4xNINwE+4PPuBiVviGbP6Qitg
+         eAUlIkZnSezAFJfBSLyQMHCV4SkXP5KmpcQff7ji57oihyLxhzeM3foi+jdeMUdyAo
+         yMEKMHcPlSQrhKbPfoSqEF1xOgzyk3glcygsdfNVnyvKVKRQ6ppjXqHhbBktfRq9eD
+         prh4uw7JjieGQ==
+Date:   Fri, 27 May 2022 18:37:30 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Carlos Fernandez <carlos.fernandez@technica-engineering.de>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: [PATCH net-next 8/8] vmxnet3: update to version 7
-Date:   Fri, 27 May 2022 18:17:58 -0700
-Message-ID: <20220528011758.7024-9-doshir@vmware.com>
-X-Mailer: git-send-email 2.11.0
-In-Reply-To: <20220528011758.7024-1-doshir@vmware.com>
-References: <20220528011758.7024-1-doshir@vmware.com>
+        Era Mayflower <mayflowerera@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net] net: macsec: Retrieve MACSec-XPN attributes before
+ offloading
+Message-ID: <20220527183730.144bb400@kernel.org>
+In-Reply-To: <AM9PR08MB67886ABF9BF353568A56B29BDBD99@AM9PR08MB6788.eurprd08.prod.outlook.com>
+References: <AM9PR08MB67886ABF9BF353568A56B29BDBD99@AM9PR08MB6788.eurprd08.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-Received-SPF: None (EX-PRD-EDGE02.vmware.com: doshir@vmware.com does not
- designate permitted sender hosts)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-With all vmxnet3 version 7 changes incorporated in the vmxnet3 driver,
-the driver can configure emulation to run at vmxnet3 version 7, provided
-the emulation advertises support for version 7.
+On Thu, 26 May 2022 12:28:00 +0000 Carlos Fernandez wrote:
+> From: Carlos Fernandez <carlos.fernandez@technica-engineering.de>
+> To: "David S. Miller" <davem@davemloft.net>, Eric Dumazet  <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni  <pabeni@redhat.com>, Era Mayflower <mayflowerera@gmail.com>,  "netdev@vger.kernel.org" <netdev@vger.kernel.org>,  "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+> CC: Carlos Fernandez <carlos.fernandez@technica-engineering.de>
+> Subject: [PATCH net] net: macsec: Retrieve MACSec-XPN attributes before  offloading
+> Date: Thu, 26 May 2022 12:28:00 +0000
+> 
+> From 149a8fbcf7a410ed6be0e660d5b83eb9f17decc6 Mon Sep 17 00:00:00 2001
+> From: Carlos Fernandez <carlos.fernandez@technica-engineering.de>
+> Date: Tue, 24 May 2022 12:29:52 +0200
+> Subject: [PATCH net] net: macsec: Retrieve MACSec-XPN attributes before
+>  offloading
+> 
+> When MACsec offloading is used with XPN, before mdo_add_rxsa
+> and mdo_add_txsa functions are called, the key salt is not
+> copied to the macsec context struct. Offloaded phys will need
+> this data when performing offloading.
 
-Signed-off-by: Ronak Doshi <doshir@vmware.com>
-Acked-by: Guolin Yang <gyang@vmware.com>
----
- drivers/net/vmxnet3/vmxnet3_drv.c | 7 ++++++-
- drivers/net/vmxnet3/vmxnet3_int.h | 4 ++--
- 2 files changed, 8 insertions(+), 3 deletions(-)
+Now git can't detect the patch at all:
 
-diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
-index aa96441ea86c..e88c5459abd5 100644
---- a/drivers/net/vmxnet3/vmxnet3_drv.c
-+++ b/drivers/net/vmxnet3/vmxnet3_drv.c
-@@ -3659,7 +3659,12 @@ vmxnet3_probe_device(struct pci_dev *pdev,
- 		goto err_alloc_pci;
- 
- 	ver = VMXNET3_READ_BAR1_REG(adapter, VMXNET3_REG_VRRS);
--	if (ver & (1 << VMXNET3_REV_6)) {
-+	if (ver & (1 << VMXNET3_REV_7)) {
-+		VMXNET3_WRITE_BAR1_REG(adapter,
-+				       VMXNET3_REG_VRRS,
-+				       1 << VMXNET3_REV_7);
-+		adapter->version = VMXNET3_REV_7 + 1;
-+	} else if (ver & (1 << VMXNET3_REV_6)) {
- 		VMXNET3_WRITE_BAR1_REG(adapter,
- 				       VMXNET3_REG_VRRS,
- 				       1 << VMXNET3_REV_6);
-diff --git a/drivers/net/vmxnet3/vmxnet3_int.h b/drivers/net/vmxnet3/vmxnet3_int.h
-index cb87731f5f1c..3367db23aa13 100644
---- a/drivers/net/vmxnet3/vmxnet3_int.h
-+++ b/drivers/net/vmxnet3/vmxnet3_int.h
-@@ -69,12 +69,12 @@
- /*
-  * Version numbers
-  */
--#define VMXNET3_DRIVER_VERSION_STRING   "1.6.0.0-k"
-+#define VMXNET3_DRIVER_VERSION_STRING   "1.7.0.0-k"
- 
- /* Each byte of this 32-bit integer encodes a version number in
-  * VMXNET3_DRIVER_VERSION_STRING.
-  */
--#define VMXNET3_DRIVER_VERSION_NUM      0x01060000
-+#define VMXNET3_DRIVER_VERSION_NUM      0x01070000
- 
- #if defined(CONFIG_PCI_MSI)
- 	/* RSS only makes sense if MSI-X is supported. */
--- 
-2.11.0
+$ git pw series apply 645266
+Patch is empty.
+When you have resolved this problem, run "git am --continue".
+If you prefer to skip this patch, run "git am --skip" instead.
+To restore the original branch and stop patching, run "git am --abort".
 
+:(
