@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 605C4C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 02:53:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C897BC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 02:53:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355641AbiE1CxH (ORCPT
+        id S1355643AbiE1CxJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 22:53:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35772 "EHLO
+        Fri, 27 May 2022 22:53:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353107AbiE1Cwx (ORCPT
+        with ESMTP id S1353003AbiE1Cwx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 27 May 2022 22:52:53 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FFF5880C6
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 19:52:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A81B712E301
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 19:52:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 18F0561D44
-        for <linux-kernel@vger.kernel.org>; Sat, 28 May 2022 02:52:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 848DAC385A9;
-        Sat, 28 May 2022 02:52:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 20E8961D2F
+        for <linux-kernel@vger.kernel.org>; Sat, 28 May 2022 02:52:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84434C3411E;
+        Sat, 28 May 2022 02:52:50 +0000 (UTC)
 Received: from rostedt by gandalf.local.home with local (Exim 4.95)
         (envelope-from <rostedt@goodmis.org>)
-        id 1numZO-000LPR-LG;
-        Fri, 27 May 2022 22:52:50 -0400
-Message-ID: <20220528025250.483799146@goodmis.org>
+        id 1numZN-000LM5-I3;
+        Fri, 27 May 2022 22:52:49 -0400
+Message-ID: <20220528025249.397616848@goodmis.org>
 User-Agent: quilt/0.66
-Date:   Fri, 27 May 2022 22:50:38 -0400
+Date:   Fri, 27 May 2022 22:50:32 -0400
 From:   Steven Rostedt <rostedt@goodmis.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Ingo Molnar <mingo@kernel.org>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Clark Williams <williams@redhat.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Daniel Bristot de Oliveira <bristot@kernel.org>
-Subject: [for-next][PATCH 10/23] tracing/timerlat: Print stacktrace in the IRQ handler if needed
+        Yuntao Wang <ytcoode@gmail.com>
+Subject: [for-next][PATCH 04/23] ftrace: Deal with error return code of the ftrace_process_locs()
+ function
 References: <20220528025028.850906216@goodmis.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -46,64 +44,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Bristot de Oliveira <bristot@kernel.org>
+From: Yuntao Wang <ytcoode@gmail.com>
 
-If print_stack and stop_tracing_us are set, and stop_tracing_us is hit
-with latency higher than or equal to print_stack, print the
-stack at the IRQ handler as it is useful to define the root cause for
-the IRQ latency.
+The ftrace_process_locs() function may return -ENOMEM error code, which
+should be handled by the callers.
 
-Link: https://lkml.kernel.org/r/fd04530ce98ae9270e41bb124ee5bf67b05ecfed.1652175637.git.bristot@kernel.org
+Link: https://lkml.kernel.org/r/20220120065949.1813231-1-ytcoode@gmail.com
 
-Cc: Juri Lelli <juri.lelli@redhat.com>
-Cc: Clark Williams <williams@redhat.com>
-Cc: Ingo Molnar <mingo@redhat.com>
-Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
+Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
 Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 ---
- Documentation/trace/timerlat-tracer.rst |  5 +++--
- kernel/trace/trace_osnoise.c            | 13 +++++++++++++
- 2 files changed, 16 insertions(+), 2 deletions(-)
+ kernel/trace/ftrace.c | 17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
 
-diff --git a/Documentation/trace/timerlat-tracer.rst b/Documentation/trace/timerlat-tracer.rst
-index 64d1fe6e9b93..d643c95c01eb 100644
---- a/Documentation/trace/timerlat-tracer.rst
-+++ b/Documentation/trace/timerlat-tracer.rst
-@@ -74,8 +74,9 @@ directory. The timerlat configs are:
-  - stop_tracing_total_us: stop the system tracing if a
-    timer latency at the *thread* context is higher than the configured
-    value happens. Writing 0 disables this option.
-- - print_stack: save the stack of the IRQ occurrence, and print
--   it after the *thread context* event".
-+ - print_stack: save the stack of the IRQ occurrence. The stack is printed
-+   after the *thread context* event, or at the IRQ handler if *stop_tracing_us*
-+   is hit.
+diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
+index 6c5b12669e06..737e895e2aad 100644
+--- a/kernel/trace/ftrace.c
++++ b/kernel/trace/ftrace.c
+@@ -6864,11 +6864,16 @@ void ftrace_module_enable(struct module *mod)
  
- timerlat and osnoise
- ----------------------------
-diff --git a/kernel/trace/trace_osnoise.c b/kernel/trace/trace_osnoise.c
-index 6494ca27ea6f..9b204ee3c6f5 100644
---- a/kernel/trace/trace_osnoise.c
-+++ b/kernel/trace/trace_osnoise.c
-@@ -1580,6 +1580,19 @@ static enum hrtimer_restart timerlat_irq(struct hrtimer *timer)
+ void ftrace_module_init(struct module *mod)
+ {
++	int ret;
++
+ 	if (ftrace_disabled || !mod->num_ftrace_callsites)
+ 		return;
  
- 	if (osnoise_data.stop_tracing) {
- 		if (time_to_us(diff) >= osnoise_data.stop_tracing) {
+-	ftrace_process_locs(mod, mod->ftrace_callsites,
+-			    mod->ftrace_callsites + mod->num_ftrace_callsites);
++	ret = ftrace_process_locs(mod, mod->ftrace_callsites,
++				  mod->ftrace_callsites + mod->num_ftrace_callsites);
++	if (ret)
++		pr_warn("ftrace: failed to allocate entries for module '%s' functions\n",
++			mod->name);
+ }
+ 
+ static void save_ftrace_mod_rec(struct ftrace_mod_map *mod_map,
+@@ -7201,15 +7206,19 @@ void __init ftrace_init(void)
+ 	pr_info("ftrace: allocating %ld entries in %ld pages\n",
+ 		count, count / ENTRIES_PER_PAGE + 1);
+ 
+-	last_ftrace_enabled = ftrace_enabled = 1;
+-
+ 	ret = ftrace_process_locs(NULL,
+ 				  __start_mcount_loc,
+ 				  __stop_mcount_loc);
++	if (ret) {
++		pr_warn("ftrace: failed to allocate entries for functions\n");
++		goto failed;
++	}
+ 
+ 	pr_info("ftrace: allocated %ld pages with %ld groups\n",
+ 		ftrace_number_of_pages, ftrace_number_of_groups);
+ 
++	last_ftrace_enabled = ftrace_enabled = 1;
 +
-+			/*
-+			 * At this point, if stop_tracing is set and <= print_stack,
-+			 * print_stack is set and would be printed in the thread handler.
-+			 *
-+			 * Thus, print the stack trace as it is helpful to define the
-+			 * root cause of an IRQ latency.
-+			 */
-+			if (osnoise_data.stop_tracing <= osnoise_data.print_stack) {
-+				timerlat_save_stack(0);
-+				timerlat_dump_stack(time_to_us(diff));
-+			}
-+
- 			osnoise_stop_tracing();
- 			notify_new_max_latency(diff);
- 		}
+ 	set_ftrace_early_filters();
+ 
+ 	return;
 -- 
 2.35.1
