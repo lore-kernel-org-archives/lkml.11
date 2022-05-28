@@ -2,133 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA94BC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 23:23:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB7C7C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 23:31:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230155AbiE1XXk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 28 May 2022 19:23:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40256 "EHLO
+        id S230170AbiE1Xbr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 28 May 2022 19:31:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229529AbiE1XXi (ORCPT
+        with ESMTP id S230161AbiE1Xbo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 28 May 2022 19:23:38 -0400
-X-Greylist: delayed 1704 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 28 May 2022 16:23:36 PDT
-Received: from rome.phoronix.com (rome.phoronix.com [192.211.48.82])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAD8298595
-        for <linux-kernel@vger.kernel.org>; Sat, 28 May 2022 16:23:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=michaellarabel.com; s=default; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=rSkQingUjf0hyflP8WuA7Yt4okTQlQXsse1eci3zb2Y=; b=RYbFrKcbGCbNnF4uJU970TaQKP
-        /4iiKFnpuXCa51gGO0jPpteZTpHlXzJk6p3Pn7PfX4skjbsPFjE72+XSCFSXLKeSON/7JGSQbI5p9
-        h1eDWvfklSAbHWYk39B68dM+yocZ3WiGdMOzlsM6CKf5C+r1JKXy76ruA2kMq6LVmDmVgDEjlQoDO
-        LA+N79/GMCQMASLJDKZa0v9XFVSUkqobsOnXO/DMA6owOje+h6Ybl6cb9kCieyaaBwoq6eAWERJ7o
-        +LlA61ixjhb4HSJlhmeYDCH94rrLH1K1cgoSJ5ZVP53mAC29mp9SNti3elCsE3nhVA+xdM8O5nruA
-        wmajwwlQ==;
-Received: from c-73-176-63-28.hsd1.in.comcast.net ([73.176.63.28]:44418 helo=[192.168.1.42])
-        by rome.phoronix.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.95)
-        (envelope-from <Michael@MichaelLarabel.com>)
-        id 1nv5Kv-0005AW-7i;
-        Sat, 28 May 2022 18:55:08 -0400
-Message-ID: <134065a4-0446-bbbc-fca8-59f32798cf08@MichaelLarabel.com>
-Date:   Sat, 28 May 2022 17:54:51 -0500
+        Sat, 28 May 2022 19:31:44 -0400
+Received: from mail-vs1-xe35.google.com (mail-vs1-xe35.google.com [IPv6:2607:f8b0:4864:20::e35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40F33D11D;
+        Sat, 28 May 2022 16:31:42 -0700 (PDT)
+Received: by mail-vs1-xe35.google.com with SMTP id h4so7554076vsr.13;
+        Sat, 28 May 2022 16:31:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ZHkspVi7hYgWPjrkicA2Ka1cNGl3qopvOnZQ16mob5o=;
+        b=Gg3IQ+lg74QPdhRPZFKypPilx6JqlFfPJ+wKJjuWc7dfiDeqz7Ej4ejDTuBIvmfY8K
+         hOPfs9pNrSleU0crFRqa6VRLjFrpYl9twi0nfDuxYmDDujG/2/5YXwGWAjuH8NoAXpxO
+         4KwH2a3MSZ8Oy4R4BPM9eeIVbbVnkOYgnWq5DycK3dnUzRosv8FiZBFGZhP7eatjkt1N
+         Lh8kNIipt6Smw86Rqn42AIjJVfoxqkE024CI1V3uE2nYTV284vfqkAU+yx1kvh2R2KPh
+         TyVQMuWvodkAsmpi/mx3igk3w0kIrCQP0XviVaAwqzUtZHJOv94NUnqWo3/gvHpaLGXf
+         R4sg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ZHkspVi7hYgWPjrkicA2Ka1cNGl3qopvOnZQ16mob5o=;
+        b=OE0qujIKrM4iNT4caroX7zfNvYf0Qo4FRHIpN7sL3ey5ty9qZQhZPJhAOU/DdXSmxL
+         DRDO52ZhyvVPd5jIevGqKsAu2u9D4mPlE6vJkttokRoFEVjPf1JDKdp31F0JyeO1046b
+         xuom7v3nud8/sqxM9o7LTabQrOAui5MOVnw8glPJimzJaT7TgIe8anXxtbTQBKzSYW5w
+         IHogOHbN53xsrkO5m5rRQRN4EYkNXb0qTrXJeENNjF7r7/jx5cWvJr8/s2PGdml6zjzi
+         iVdAwbPocHZiDMt1dXySnKEc8CvTWMcWL+9Iwyrbi4KMOKk9mkL/MlvrtKDhVR61WL5I
+         N4uA==
+X-Gm-Message-State: AOAM532eLzxWcivt0WSAimJySdOYkL3bAYT/A/e+9jJgpqfXEH8rVkKN
+        2eE7mm3cgT8A4gbp5NzkR+lVjs6Uj55CV6V6ugs=
+X-Google-Smtp-Source: ABdhPJy0Acb1c3xSDsjiqAa+wurlHniC7DTliHnSjCHwZc1KOpXXeNt8sWJjTYXpw40/HtDl5zk/Uq4lxuGzoAoQ188=
+X-Received: by 2002:a67:b607:0:b0:337:b5b7:adc9 with SMTP id
+ d7-20020a67b607000000b00337b5b7adc9mr13395803vsm.17.1653780701218; Sat, 28
+ May 2022 16:31:41 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [patch v5] mm: lru_cache_disable: replace work queue
- synchronization with synchronize_rcu
-Content-Language: en-CA
-To:     Andrew Morton <akpm@linux-foundation.org>,
-        Marcelo Tosatti <mtosatti@redhat.com>
-Cc:     Borislav Petkov <bp@alien8.de>, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, Minchan Kim <minchan@kernel.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        "Paul E. McKenney" <paulmck@kernel.org>
-References: <YhUI1wUtV8yguijO@fuller.cnet> <YhUKRzEKxMvlGQ5n@fuller.cnet>
- <YiI+a9gTr/UBCf0X@fuller.cnet>
- <20220304163554.8872fe5d5a9d634f7a2884f5@linux-foundation.org>
- <Yin7hDxdt0s/x+fp@fuller.cnet> <YkWyLaom/r7jXgbA@zn.tnic>
- <YmrWK/KoU1zrAxPI@fuller.cnet>
- <20220528141809.732788db257253396462c79e@linux-foundation.org>
-From:   Michael Larabel <Michael@MichaelLarabel.com>
-In-Reply-To: <20220528141809.732788db257253396462c79e@linux-foundation.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - rome.phoronix.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - MichaelLarabel.com
-X-Get-Message-Sender-Via: rome.phoronix.com: authenticated_id: michael@michaellarabel.com
-X-Authenticated-Sender: rome.phoronix.com: michael@michaellarabel.com
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
+References: <20220526140226.2648689-1-trix@redhat.com> <CAKwvOdmPZXiMZRKyMfZVMmw-95XVocSZn3VVi3yJh0Bx1ONbJQ@mail.gmail.com>
+In-Reply-To: <CAKwvOdmPZXiMZRKyMfZVMmw-95XVocSZn3VVi3yJh0Bx1ONbJQ@mail.gmail.com>
+From:   Steve French <smfrench@gmail.com>
+Date:   Sat, 28 May 2022 18:31:30 -0500
+Message-ID: <CAH2r5mumSyxP8XUJjKwv9exh__NkCtG2HSiO-USqGo_7ZTb0yQ@mail.gmail.com>
+Subject: Re: [PATCH] cifs: set length when cifs_copy_pages_to_iter is successful
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Steve French <stfrench@microsoft.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        David Howells <dhowells@redhat.com>,
+        CIFS <linux-cifs@vger.kernel.org>,
+        samba-technical <samba-technical@lists.samba.org>,
+        LKML <linux-kernel@vger.kernel.org>, llvm@lists.linux.dev,
+        Tom Rix <trix@redhat.com>, Steve French <sfrench@samba.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/28/22 16:18, Andrew Morton wrote:
-> On Thu, 28 Apr 2022 15:00:11 -0300 Marcelo Tosatti <mtosatti@redhat.com> wrote:
+Presumably this was in Dave Howell's patch set which we took out of
+for-next to restructure in some of Al's feedback and some things found
+during testing. So nothing to fix in current mainline or for-next ...
+right?
+
+On Sat, May 28, 2022 at 3:40 PM Nick Desaulniers
+<ndesaulniers@google.com> wrote:
 >
->> On Thu, Mar 31, 2022 at 03:52:45PM +0200, Borislav Petkov wrote:
->>> On Thu, Mar 10, 2022 at 10:22:12AM -0300, Marcelo Tosatti wrote:
->> ...
->>
->>> Someone pointed me at this:
->>>
->>> https://www.phoronix.com/scan.php?page=news_item&px=Linux-518-Stress-NUMA-Goes-Boom
->>>
->>> which says this one causes a performance regression with stress-ng's
->>> NUMA test...
->> Michael,
->>
->> This is probably do_migrate_pages that is taking too long due to
->> synchronize_rcu().
->>
->> Switching to synchronize_rcu_expedited() should probably fix it...
->> Can you give it a try, please?
-> I guess not.
+> + Steve's @microsoft.com email addr.
 >
-> Is anyone else able to demonstrate a stress-ng performance regression
-> due to ff042f4a9b0508?  And if so, are they able to try Marcelo's
-> one-liner?
-
-
-Apologies I don't believe I got the email previously (or if it ended up 
-in spam or otherwise overlooked) so just noticed this thread now...
-
-I have the system around and will work on verifying it can reproduce 
-still and can then test the patch, should be able to get it tomorrow.
-
-Thanks and sorry about the delay.
-
-Michael
-
-
-
+> On Thu, May 26, 2022 at 7:02 AM Tom Rix <trix@redhat.com> wrote:
+> >
+> > clang build fails with
+> > fs/cifs/smb2ops.c:4984:7: error: variable 'length' is used uninitialized whenever 'if' condition is false [-Werror,-Wsometimes-uninitialized]
+> >   if (rdata->result != 0) {
+> >       ^~~~~~~~~~~~~~~~~~
+> >
+> > handle_read_data() returns the number of bytes handled by setting the length variable.
+> > This only happens in the copy_to_iter() branch, it needs to also happen in the
+> > cifs_copy_pages_to_iter() branch.  When cifs_copy_pages_to_iter() is successful,
+> > its parameter data_len is how many bytes were handled, so set length to data_len.
+> >
+> > Fixes: 67fd8cff2b0f ("cifs: Change the I/O paths to use an iterator rather than a page list")
+> > Signed-off-by: Tom Rix <trix@redhat.com>
+> > ---
+> >  fs/cifs/smb2ops.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/fs/cifs/smb2ops.c b/fs/cifs/smb2ops.c
+> > index 3630e132781f..bfad482ec186 100644
+> > --- a/fs/cifs/smb2ops.c
+> > +++ b/fs/cifs/smb2ops.c
+> > @@ -4988,7 +4988,7 @@ handle_read_data(struct TCP_Server_Info *server, struct mid_q_entry *mid,
+> >                                 dequeue_mid(mid, rdata->result);
+> >                         return 0;
+> >                 }
+> > -               rdata->got_bytes = pages_len;
+> > +               length = rdata->got_bytes = pages_len;
+> >
+> >         } else if (buf_len >= data_offset + data_len) {
+> >                 /* read response payload is in buf */
+> > --
+> > 2.27.0
+> >
 >
->> diff --git a/mm/swap.c b/mm/swap.c
->> index bceff0cb559c..04a8bbf9817a 100644
->> --- a/mm/swap.c
->> +++ b/mm/swap.c
->> @@ -879,7 +879,7 @@ void lru_cache_disable(void)
->>   	 * lru_disable_count = 0 will have exited the critical
->>   	 * section when synchronize_rcu() returns.
->>   	 */
->> -	synchronize_rcu();
->> +	synchronize_rcu_expedited();
->>   #ifdef CONFIG_SMP
->>   	__lru_add_drain_all(true);
->>   #else
->>
->>
+>
+> --
+> Thanks,
+> ~Nick Desaulniers
+
+
+
+-- 
+Thanks,
+
+Steve
