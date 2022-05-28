@@ -2,77 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ABC1C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 14:30:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B443C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 14:35:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236627AbiE1OaR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 28 May 2022 10:30:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46324 "EHLO
+        id S236664AbiE1Oe5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 28 May 2022 10:34:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234642AbiE1OaP (ORCPT
+        with ESMTP id S234642AbiE1Oey (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 28 May 2022 10:30:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1880318E09;
-        Sat, 28 May 2022 07:30:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C6E37B82756;
-        Sat, 28 May 2022 14:30:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 84DFAC34118;
-        Sat, 28 May 2022 14:30:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653748211;
-        bh=hEKQLCPp4VODteRKZhgYlzDwy/YWNyvsmJjZhfDrYK0=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=oJkFXgbYjjOkb90yYES4xBVEkBv01ffRG4eblilCBE7ySehdJcsOgLMW0PtTVypNL
-         1Fzl4X4yjJriYpXxv6jMyTBgjkab6cEjw0s90FIXv4scK7bpwmcntLhLeo+cJsSbIZ
-         rMOVDaUCvjMzLGjTP5MLMO2hPOL2A91twVh3Dbg2+5YSnCus51ouBUwMVSEDcY1EaR
-         eq8GmXvt4i7NyInW8y2sIoKkDbhoIp45upKFCYYUEwhE7JRrk/RPCGknYc9fxNYRBP
-         9xirWbmBlALuAh0mvB73yrFuIhwOKpUWwFYB2mM2hQwNwp3a+QxAtt6M8kNl4T/kGf
-         TPPxgWOeS8ECA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6C9DBF0394D;
-        Sat, 28 May 2022 14:30:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Sat, 28 May 2022 10:34:54 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2CECF192A0
+        for <linux-kernel@vger.kernel.org>; Sat, 28 May 2022 07:34:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653748491;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=XE622bwRFQLXoWlWGwkx558rDBHwnMuHGZROqrwvbw4=;
+        b=dYY7a3Rv5ALiQXiIMK80psAzVlu3N8EupopmJBFch3cnbPNib7UDOkDxeVK+h9nMDuKU6+
+        hBKAPzpg6klq3J0Gwf4UmTM42YOEkhiJQV/SM7qAvV6DqKc6Ew94HleHSxPHHjLBlCYHFu
+        ZUaMsmNzvejQ+zhYurYgpz68HcLOHco=
+Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
+ [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-20-G0VVI4GrPzaKlIIJFBnDSQ-1; Sat, 28 May 2022 10:34:48 -0400
+X-MC-Unique: G0VVI4GrPzaKlIIJFBnDSQ-1
+Received: by mail-qv1-f70.google.com with SMTP id 13-20020a0562140d4d00b004624a316484so5605575qvr.11
+        for <linux-kernel@vger.kernel.org>; Sat, 28 May 2022 07:34:48 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XE622bwRFQLXoWlWGwkx558rDBHwnMuHGZROqrwvbw4=;
+        b=5LSh8g3ZQiosvhBuYqd61Zx7DsKh0ykPuY4hp32QUvjV1LqAu5xB/7dn7P3Dwj/4Xe
+         PoDv0hiPItSZV1khIC9Xy+Sbq115lPzVIBHV73peIJaYtuw9exeqG60TaNkWweNceik8
+         HBWDKIzrxhoWq99gbpBjKqPzOXPdvEN4iFcz2T/F+WIzEMM/saHxnwnPY6WPNHAP0gDh
+         nA6OtZFFIYojakmNesvaMiXiaezbvoU2u94JNQ8JEB9qOwWK/u8Q998tVAhEGCf4/A20
+         ICrOKSWqxeHEiWFSdMFUIVg88Jk6JY9d8JlTqNZT2opN02fPuPoqPttyliMqW8vYciBu
+         Nzbg==
+X-Gm-Message-State: AOAM532Bc25OxIzIGgOTfipGTf8Rz5qSp+ATtfZ915p3JsUD5Msj3mr1
+        MGZvPeLfuf6ZKnjp36M0ytQ+cDpZ7J9k5pN7i0XBCcOlFcdjesTeOcrnC3UiSADGpMX62Vi6/xY
+        aJF45K5a7oKgTMl6cscRKUR+3
+X-Received: by 2002:a05:622a:186:b0:2f3:b5e1:8f2c with SMTP id s6-20020a05622a018600b002f3b5e18f2cmr37699904qtw.99.1653748487810;
+        Sat, 28 May 2022 07:34:47 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzfw+zDbPoW1PujPqrT77plf9K/dqh5eJc8Y+lAMBwBf227Q8xlr2ZkX6Cc6T3ziRTt2IzQLA==
+X-Received: by 2002:a05:622a:186:b0:2f3:b5e1:8f2c with SMTP id s6-20020a05622a018600b002f3b5e18f2cmr37699895qtw.99.1653748487608;
+        Sat, 28 May 2022 07:34:47 -0700 (PDT)
+Received: from dell-per740-01.7a2m.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id c131-20020a379a89000000b006a098381abcsm4541947qke.114.2022.05.28.07.34.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 28 May 2022 07:34:46 -0700 (PDT)
+From:   Tom Rix <trix@redhat.com>
+To:     bskeggs@redhat.com, kherbst@redhat.com, lyude@redhat.com,
+        airlied@linux.ie, daniel@ffwll.ch
+Cc:     dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, Tom Rix <trix@redhat.com>
+Subject: [PATCH] drm/nouveau/fifo/gv100-: set gv100_fifo_runlist storage-class to static
+Date:   Sat, 28 May 2022 10:18:36 -0400
+Message-Id: <20220528141836.4155970-1-trix@redhat.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: nfc: Directly use ida_alloc()/free()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165374821144.9964.14407131834890855073.git-patchwork-notify@kernel.org>
-Date:   Sat, 28 May 2022 14:30:11 +0000
-References: <20220527064225.2358248-1-liuke94@huawei.com>
-In-Reply-To: <20220527064225.2358248-1-liuke94@huawei.com>
-To:     Ke Liu <liuke94@huawei.com>
-Cc:     krzysztof.kozlowski@linaro.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+sparse reports
+drivers/gpu/drm/nouveau/nvkm/engine/fifo/gv100.c:56:1: warning: symbol 'gv100_fifo_runlist' was not declared. Should it be static?
 
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
+gv100_fifo_runlist is only used in gv100.c, so change it to static.
 
-On Fri, 27 May 2022 06:42:25 +0000 you wrote:
-> Use ida_alloc()/ida_free() instead of deprecated
-> ida_simple_get()/ida_simple_remove() .
-> 
-> Signed-off-by: keliu <liuke94@huawei.com>
-> ---
->  net/nfc/core.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+Signed-off-by: Tom Rix <trix@redhat.com>
+---
+ drivers/gpu/drm/nouveau/nvkm/engine/fifo/gv100.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Here is the summary with links:
-  - net: nfc: Directly use ida_alloc()/free()
-    https://git.kernel.org/netdev/net/c/911799172d2f
-
-You are awesome, thank you!
+diff --git a/drivers/gpu/drm/nouveau/nvkm/engine/fifo/gv100.c b/drivers/gpu/drm/nouveau/nvkm/engine/fifo/gv100.c
+index 70e16a91ac12..faf0fe9f704c 100644
+--- a/drivers/gpu/drm/nouveau/nvkm/engine/fifo/gv100.c
++++ b/drivers/gpu/drm/nouveau/nvkm/engine/fifo/gv100.c
+@@ -52,7 +52,7 @@ gv100_fifo_runlist_cgrp(struct nvkm_fifo_cgrp *cgrp,
+ 	nvkm_wo32(memory, offset + 0xc, 0x00000000);
+ }
+ 
+-const struct gk104_fifo_runlist_func
++static const struct gk104_fifo_runlist_func
+ gv100_fifo_runlist = {
+ 	.size = 16,
+ 	.cgrp = gv100_fifo_runlist_cgrp,
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.27.0
 
