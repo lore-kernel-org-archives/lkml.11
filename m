@@ -2,31 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9670C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 06:30:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7557C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 06:30:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355817AbiE1GaS (ORCPT
+        id S1355860AbiE1Ga0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 28 May 2022 02:30:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42910 "EHLO
+        Sat, 28 May 2022 02:30:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355831AbiE1G3u (ORCPT
+        with ESMTP id S1355823AbiE1G3u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 28 May 2022 02:29:50 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDE66377D3
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0A8E37039
         for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 23:29:38 -0700 (PDT)
-Received: from kwepemi500006.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4L9BZj5tX3zjX8d;
-        Sat, 28 May 2022 14:28:45 +0800 (CST)
+Received: from kwepemi100010.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L9BX92cMNzRhVV;
+        Sat, 28 May 2022 14:26:33 +0800 (CST)
 Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
- kwepemi500006.china.huawei.com (7.221.188.68) with Microsoft SMTP Server
+ kwepemi100010.china.huawei.com (7.221.188.54) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 28 May 2022 14:29:31 +0800
+ 15.1.2375.24; Sat, 28 May 2022 14:29:36 +0800
 Received: from localhost.localdomain (10.175.112.125) by
  kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 28 May 2022 14:29:30 +0800
+ 15.1.2375.24; Sat, 28 May 2022 14:29:34 +0800
 From:   Tong Tiangen <tongtiangen@huawei.com>
 To:     Mark Rutland <mark.rutland@arm.com>,
         James Morse <james.morse@arm.com>,
@@ -49,9 +49,9 @@ CC:     <linuxppc-dev@lists.ozlabs.org>,
         Xie XiuQi <xiexiuqi@huawei.com>,
         Guohanjun <guohanjun@huawei.com>,
         Tong Tiangen <tongtiangen@huawei.com>
-Subject: [PATCH -next v5 4/8] arm64: extable: cleanup redundant extable type EX_TYPE_FIXUP
-Date:   Sat, 28 May 2022 06:50:52 +0000
-Message-ID: <20220528065056.1034168-5-tongtiangen@huawei.com>
+Subject: [PATCH -next v5 7/8] arm64: add uaccess to machine check safe
+Date:   Sat, 28 May 2022 06:50:55 +0000
+Message-ID: <20220528065056.1034168-8-tongtiangen@huawei.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220528065056.1034168-1-tongtiangen@huawei.com>
 References: <20220528065056.1034168-1-tongtiangen@huawei.com>
@@ -66,88 +66,117 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently, extable type EX_TYPE_FIXUP is no place to use, We can safely
-remove it.
+If user access fail due to hardware memory error, only the relevant
+processes are affected, so killing the user process and isolate the
+error page with hardware memory errors is a more reasonable choice
+than kernel panic.
 
-Suggested-by: Mark Rutland <mark.rutland@arm.com>
 Signed-off-by: Tong Tiangen <tongtiangen@huawei.com>
 ---
- arch/arm64/include/asm/asm-extable.h | 20 ++++----------------
- arch/arm64/mm/extable.c              |  9 ---------
- 2 files changed, 4 insertions(+), 25 deletions(-)
+ arch/arm64/lib/copy_from_user.S | 8 ++++----
+ arch/arm64/lib/copy_to_user.S   | 8 ++++----
+ arch/arm64/mm/extable.c         | 8 ++++----
+ 3 files changed, 12 insertions(+), 12 deletions(-)
 
-diff --git a/arch/arm64/include/asm/asm-extable.h b/arch/arm64/include/asm/asm-extable.h
-index d01bd94cc4c2..1f2974467273 100644
---- a/arch/arm64/include/asm/asm-extable.h
-+++ b/arch/arm64/include/asm/asm-extable.h
-@@ -3,11 +3,10 @@
- #define __ASM_ASM_EXTABLE_H
+diff --git a/arch/arm64/lib/copy_from_user.S b/arch/arm64/lib/copy_from_user.S
+index 34e317907524..402dd48a4f93 100644
+--- a/arch/arm64/lib/copy_from_user.S
++++ b/arch/arm64/lib/copy_from_user.S
+@@ -25,7 +25,7 @@
+ 	.endm
  
- #define EX_TYPE_NONE			0
--#define EX_TYPE_FIXUP			1
--#define EX_TYPE_BPF			2
--#define EX_TYPE_UACCESS_ERR_ZERO	3
--#define EX_TYPE_LOAD_UNALIGNED_ZEROPAD	4
--#define EX_TYPE_KACCESS_ERR_ZERO	5
-+#define EX_TYPE_BPF			1
-+#define EX_TYPE_UACCESS_ERR_ZERO	2
-+#define EX_TYPE_LOAD_UNALIGNED_ZEROPAD	3
-+#define EX_TYPE_KACCESS_ERR_ZERO	4
+ 	.macro strb1 reg, ptr, val
+-	strb \reg, [\ptr], \val
++	USER(9998f, strb \reg, [\ptr], \val)
+ 	.endm
  
- #ifdef __ASSEMBLY__
+ 	.macro ldrh1 reg, ptr, val
+@@ -33,7 +33,7 @@
+ 	.endm
  
-@@ -20,14 +19,6 @@
- 	.short		(data);				\
- 	.popsection;
+ 	.macro strh1 reg, ptr, val
+-	strh \reg, [\ptr], \val
++	USER(9998f, strh \reg, [\ptr], \val)
+ 	.endm
  
--/*
-- * Create an exception table entry for `insn`, which will branch to `fixup`
-- * when an unhandled fault is taken.
-- */
--	.macro		_asm_extable, insn, fixup
--	__ASM_EXTABLE_RAW(\insn, \fixup, EX_TYPE_FIXUP, 0)
--	.endm
--
- /*
-  * Create an exception table entry for uaccess `insn`, which will branch to `fixup`
-  * when an unhandled fault is taken.
-@@ -62,9 +53,6 @@
- 	".short		(" data ")\n"			\
- 	".popsection\n"
+ 	.macro ldr1 reg, ptr, val
+@@ -41,7 +41,7 @@
+ 	.endm
  
--#define _ASM_EXTABLE(insn, fixup) \
--	__ASM_EXTABLE_RAW(#insn, #fixup, __stringify(EX_TYPE_FIXUP), "0")
--
- #define EX_DATA_REG_ERR_SHIFT	0
- #define EX_DATA_REG_ERR		GENMASK(4, 0)
- #define EX_DATA_REG_ZERO_SHIFT	5
+ 	.macro str1 reg, ptr, val
+-	str \reg, [\ptr], \val
++	USER(9998f, str \reg, [\ptr], \val)
+ 	.endm
+ 
+ 	.macro ldp1 reg1, reg2, ptr, val
+@@ -49,7 +49,7 @@
+ 	.endm
+ 
+ 	.macro stp1 reg1, reg2, ptr, val
+-	stp \reg1, \reg2, [\ptr], \val
++	USER(9998f, stp \reg1, \reg2, [\ptr], \val)
+ 	.endm
+ 
+ end	.req	x5
+diff --git a/arch/arm64/lib/copy_to_user.S b/arch/arm64/lib/copy_to_user.S
+index 802231772608..4134bdb3a8b0 100644
+--- a/arch/arm64/lib/copy_to_user.S
++++ b/arch/arm64/lib/copy_to_user.S
+@@ -20,7 +20,7 @@
+  *	x0 - bytes not copied
+  */
+ 	.macro ldrb1 reg, ptr, val
+-	ldrb  \reg, [\ptr], \val
++	USER(9998f, ldrb  \reg, [\ptr], \val)
+ 	.endm
+ 
+ 	.macro strb1 reg, ptr, val
+@@ -28,7 +28,7 @@
+ 	.endm
+ 
+ 	.macro ldrh1 reg, ptr, val
+-	ldrh  \reg, [\ptr], \val
++	USER(9998f, ldrh  \reg, [\ptr], \val)
+ 	.endm
+ 
+ 	.macro strh1 reg, ptr, val
+@@ -36,7 +36,7 @@
+ 	.endm
+ 
+ 	.macro ldr1 reg, ptr, val
+-	ldr \reg, [\ptr], \val
++	USER(9998f, ldr \reg, [\ptr], \val)
+ 	.endm
+ 
+ 	.macro str1 reg, ptr, val
+@@ -44,7 +44,7 @@
+ 	.endm
+ 
+ 	.macro ldp1 reg1, reg2, ptr, val
+-	ldp \reg1, \reg2, [\ptr], \val
++	USER(9998f, ldp \reg1, \reg2, [\ptr], \val)
+ 	.endm
+ 
+ 	.macro stp1 reg1, reg2, ptr, val
 diff --git a/arch/arm64/mm/extable.c b/arch/arm64/mm/extable.c
-index 056591e5ca80..228d681a8715 100644
+index c301dcf6335f..8ca8d9639f9f 100644
 --- a/arch/arm64/mm/extable.c
 +++ b/arch/arm64/mm/extable.c
-@@ -16,13 +16,6 @@ get_ex_fixup(const struct exception_table_entry *ex)
- 	return ((unsigned long)&ex->fixup + ex->fixup);
- }
- 
--static bool ex_handler_fixup(const struct exception_table_entry *ex,
--			     struct pt_regs *regs)
--{
--	regs->pc = get_ex_fixup(ex);
--	return true;
--}
--
- static bool ex_handler_uaccess_err_zero(const struct exception_table_entry *ex,
- 					struct pt_regs *regs)
- {
-@@ -72,8 +65,6 @@ bool fixup_exception(struct pt_regs *regs)
+@@ -86,10 +86,10 @@ bool fixup_exception_mc(struct pt_regs *regs)
+ 	if (!ex)
  		return false;
  
- 	switch (ex->type) {
--	case EX_TYPE_FIXUP:
--		return ex_handler_fixup(ex, regs);
- 	case EX_TYPE_BPF:
- 		return ex_handler_bpf(ex, regs);
- 	case EX_TYPE_UACCESS_ERR_ZERO:
+-	/*
+-	 * This is not complete, More Machine check safe extable type can
+-	 * be processed here.
+-	 */
++	switch (ex->type) {
++	case EX_TYPE_UACCESS_ERR_ZERO:
++		return ex_handler_uaccess_err_zero(ex, regs);
++	}
+ 
+ 	return false;
+ }
 -- 
 2.25.1
 
