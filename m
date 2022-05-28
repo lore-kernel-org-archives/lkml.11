@@ -2,88 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7919C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 16:52:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89C78C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 17:01:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238620AbiE1Qw0 convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 28 May 2022 12:52:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55544 "EHLO
+        id S238682AbiE1RBT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 28 May 2022 13:01:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235367AbiE1QwZ (ORCPT
+        with ESMTP id S234364AbiE1RBQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 28 May 2022 12:52:25 -0400
-Received: from relay5.hostedemail.com (smtprelay0017.hostedemail.com [216.40.44.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3559B15FCA
-        for <linux-kernel@vger.kernel.org>; Sat, 28 May 2022 09:52:22 -0700 (PDT)
-Received: from omf01.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay06.hostedemail.com (Postfix) with ESMTP id 6DCAD2F1A9;
-        Sat, 28 May 2022 16:52:19 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf01.hostedemail.com (Postfix) with ESMTPA id CD3EC60011;
-        Sat, 28 May 2022 16:52:14 +0000 (UTC)
-Message-ID: <d470331985c7d82c6e5bb6d548ab610479416761.camel@perches.com>
-Subject: Re: [PATCH v3 4/4] drm/msm/adreno: Fix up formatting
-From:   Joe Perches <joe@perches.com>
-To:     Konrad Dybcio <konrad.dybcio@somainline.org>,
-        ~postmarketos/upstreaming@lists.sr.ht
-Cc:     martin.botka@somainline.org,
-        angelogioacchino.delregno@somainline.org,
-        marijn.suijten@somainline.org, jamipkettunen@somainline.org,
-        Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Akhil P Oommen <quic_akhilpo@quicinc.com>,
-        Vladimir Lypak <vladimir.lypak@gmail.com>,
-        Emma Anholt <emma@anholt.net>,
-        Jonathan Marek <jonathan@marek.ca>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        freedreno@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Date:   Sat, 28 May 2022 09:52:14 -0700
-In-Reply-To: <20220528160353.157870-4-konrad.dybcio@somainline.org>
-References: <20220528160353.157870-1-konrad.dybcio@somainline.org>
-         <20220528160353.157870-4-konrad.dybcio@somainline.org>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 8BIT
-User-Agent: Evolution 3.44.1-0ubuntu1 
+        Sat, 28 May 2022 13:01:16 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5A3215826;
+        Sat, 28 May 2022 10:01:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 946A7CE0AD4;
+        Sat, 28 May 2022 17:01:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08DB0C34100;
+        Sat, 28 May 2022 17:01:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653757271;
+        bh=oC6vgq4nGfLuTy6kjDyr8VfSddTB81F1fW/kUUzh1vY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=QU26R+3iOGigiZ/xysvUEWkmaMWOFbMcQd5jgZmXagq7lhzODFD/9pjK1MiB2qXXO
+         eOHMV/e3kNo7pt6fIy2FU1hSxuj+Ly0pVrtKvZsZ55nJH3vhPkLqe011LTbelBLwEV
+         eUw234dERYiPOJNm2IFOBDu37mw6OdwbQcpZjHuKW5DMARqhSBEMjypL92YKI556f7
+         GwdUqR8U2RRCxWP6wrdmK/9ehY6AlnnXok+6yMLeNUYQQ0mFkGkdUesLwk+p7EbUnT
+         MYUxTmDI9NW0SyjGaiP1dsHv/3ozDTppiUKpFvebV/xkpUupjpvm/vo+C3lFJOGxlX
+         ei8qux+6bvW9A==
+Date:   Sat, 28 May 2022 18:10:04 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Dmitry Rokosov <DDRokosov@sberdevices.ru>
+Cc:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
+        "lorenzo.bianconi83@gmail.com" <lorenzo.bianconi83@gmail.com>,
+        "srinivas.pandruvada@linux.intel.com" 
+        <srinivas.pandruvada@linux.intel.com>,
+        "teodora.baluta@intel.com" <teodora.baluta@intel.com>,
+        "narcisaanamaria12@gmail.com" <narcisaanamaria12@gmail.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 0/5] iio: treewide: rearrange iio trig get/register
+Message-ID: <20220528181004.286e696d@jic23-huawei>
+In-Reply-To: <20220524181150.9240-1-ddrokosov@sberdevices.ru>
+References: <20220524181150.9240-1-ddrokosov@sberdevices.ru>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-X-Rspamd-Server: rspamout08
-X-Rspamd-Queue-Id: CD3EC60011
-X-Stat-Signature: hguqrzykifma4fuxzhcnc6wiq5pkkp7b
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX19HTwQEza4v02RuQBSx/8pguy5mblJPov4=
-X-HE-Tag: 1653756734-471035
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 2022-05-28 at 18:03 +0200, Konrad Dybcio wrote:
-> Leading spaces are not something checkpatch likes, and it says so when
-> they are present. Use tabs consistently to indent function body and
-> unwrap a 83-char-long line, as 100 is cool nowadays.
+On Tue, 24 May 2022 18:14:37 +0000
+Dmitry Rokosov <DDRokosov@sberdevices.ru> wrote:
 
-unassociated trivia:
+> The following patchset resolves problems with iio_trigger_get() and
+> iio_trigger_register() call order in the different IIO drivers.
+> 
+> IIO trigger interface function iio_trigger_get() should be called after
+> iio_trigger_register() (or its devm analogue) strictly, because of
+> iio_trigger_get() acquires module refcnt based on the trigger->owner
+> pointer, which is initialized inside iio_trigger_register() to
+> THIS_MODULE.
+> If this call order is wrong, the next iio_trigger_put() (from sysfs
+> callback or "delete module" path) will dereference "default" module
+> refcnt, which is incorrect behaviour.
 
-> diff --git a/drivers/gpu/drm/msm/adreno/adreno_gpu.h b/drivers/gpu/drm/msm/adreno/adreno_gpu.h
-[]
-> @@ -199,7 +199,7 @@ static inline int adreno_is_a420(struct adreno_gpu *gpu)
->  
->  static inline int adreno_is_a430(struct adreno_gpu *gpu)
->  {
-> -       return gpu->revn == 430;
-> +	return gpu->revn == 430;
->  }
+Hi Dmitry,
 
-looks like these could/should return bool
+Series applied to the fixes-togreg branch of iio.git and marked for stable.
 
->  static inline int adreno_is_a506(struct adreno_gpu *gpu)
-> @@ -239,7 +239,7 @@ static inline int adreno_is_a540(struct adreno_gpu *gpu)
->  
->  static inline int adreno_is_a618(struct adreno_gpu *gpu)
->  {
-> -       return gpu->revn == 618;
-> +	return gpu->revn == 618;
->  }
+Do you think it's also worth adding a runtime warning in iio_trigger_get()
+on !trig->owner so that we catch any cases of this introduced in the future?
 
-etc...
+Thanks,
+
+Jonathan
+
+> 
+> Changes v1->v2:
+>     - provide tag Fixes: for all patches
+> 
+> Dmitry Rokosov (5):
+>   iio:accel:bma180: rearrange iio trigger get and register
+>   iio:accel:kxcjk-1013: rearrange iio trigger get and register
+>   iio:accel:mxc4005: rearrange iio trigger get and register
+>   iio:chemical:ccs811: rearrange iio trigger get and register
+>   iio:humidity:hts221: rearrange iio trigger get and register
+> 
+>  drivers/iio/accel/bma180.c           | 3 ++-
+>  drivers/iio/accel/kxcjk-1013.c       | 4 ++--
+>  drivers/iio/accel/mxc4005.c          | 4 ++--
+>  drivers/iio/chemical/ccs811.c        | 4 ++--
+>  drivers/iio/humidity/hts221_buffer.c | 5 ++++-
+>  5 files changed, 12 insertions(+), 8 deletions(-)
+> 
+
