@@ -2,87 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 118F8C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 09:47:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 878ACC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 09:50:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233365AbiE1JrR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 28 May 2022 05:47:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41106 "EHLO
+        id S233517AbiE1JuY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 28 May 2022 05:50:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241279AbiE1Jqf (ORCPT
+        with ESMTP id S232570AbiE1JuR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 28 May 2022 05:46:35 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42FE465D3;
-        Sat, 28 May 2022 02:46:34 -0700 (PDT)
-Received: from kwepemi500015.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L9Gxh3NvrzjX0P;
-        Sat, 28 May 2022 17:45:28 +0800 (CST)
-Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
- kwepemi500015.china.huawei.com (7.221.188.92) with Microsoft SMTP Server
+        Sat, 28 May 2022 05:50:17 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D976CE0EE;
+        Sat, 28 May 2022 02:50:14 -0700 (PDT)
+Received: from dggpeml500023.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4L9H1L4J6KzgYQ2;
+        Sat, 28 May 2022 17:48:38 +0800 (CST)
+Received: from [10.67.110.112] (10.67.110.112) by
+ dggpeml500023.china.huawei.com (7.185.36.114) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 28 May 2022 17:46:32 +0800
-Received: from huawei.com (10.175.127.227) by kwepemm600009.china.huawei.com
- (7.193.23.164) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sat, 28 May
- 2022 17:46:31 +0800
-From:   Yu Kuai <yukuai3@huawei.com>
-To:     <paolo.valente@linaro.org>, <axboe@kernel.dk>, <tj@kernel.org>
-CC:     <linux-block@vger.kernel.org>, <cgroups@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <yukuai3@huawei.com>,
-        <yi.zhang@huawei.com>
-Subject: [PATCH -next v3 6/6] block, bfq: remove dead code for updating 'rq_in_driver'
-Date:   Sat, 28 May 2022 17:59:58 +0800
-Message-ID: <20220528095958.270455-7-yukuai3@huawei.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220528095958.270455-1-yukuai3@huawei.com>
-References: <20220528095958.270455-1-yukuai3@huawei.com>
+ 15.1.2375.24; Sat, 28 May 2022 17:50:13 +0800
+Subject: Re: [PATCH -next, v2] powerpc: add support for syscall stack
+ randomization
+From:   xiujianfeng <xiujianfeng@huawei.com>
+To:     <mpe@ellerman.id.au>, <benh@kernel.crashing.org>,
+        <paulus@samba.org>, <npiggin@gmail.com>,
+        <christophe.leroy@csgroup.eu>, <tglx@linutronix.de>,
+        <mark.rutland@arm.com>
+CC:     <linuxppc-dev@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>,
+        <linux-hardening@vger.kernel.org>
+References: <20220516073225.112875-1-xiujianfeng@huawei.com>
+Message-ID: <e7b0d68b-914d-7283-827c-101988923929@huawei.com>
+Date:   Sat, 28 May 2022 17:50:12 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemm600009.china.huawei.com (7.193.23.164)
+In-Reply-To: <20220516073225.112875-1-xiujianfeng@huawei.com>
+Content-Type: text/plain; charset="gbk"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.110.112]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpeml500023.china.huawei.com (7.185.36.114)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Such code are not even compiled since they are inside marco "#if 0".
+friendly ping....
 
-Signed-off-by: Yu Kuai <yukuai3@huawei.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
----
- block/bfq-iosched.c | 16 ----------------
- 1 file changed, 16 deletions(-)
-
-diff --git a/block/bfq-iosched.c b/block/bfq-iosched.c
-index 8c7020f8cdf2..79e6a60d61d8 100644
---- a/block/bfq-iosched.c
-+++ b/block/bfq-iosched.c
-@@ -2321,22 +2321,6 @@ static sector_t get_sdist(sector_t last_pos, struct request *rq)
- 	return 0;
- }
- 
--#if 0 /* Still not clear if we can do without next two functions */
--static void bfq_activate_request(struct request_queue *q, struct request *rq)
--{
--	struct bfq_data *bfqd = q->elevator->elevator_data;
--
--	bfqd->rq_in_driver++;
--}
--
--static void bfq_deactivate_request(struct request_queue *q, struct request *rq)
--{
--	struct bfq_data *bfqd = q->elevator->elevator_data;
--
--	bfqd->rq_in_driver--;
--}
--#endif
--
- static void bfq_remove_request(struct request_queue *q,
- 			       struct request *rq)
- {
--- 
-2.31.1
-
+ÔÚ 2022/5/16 15:32, Xiu Jianfeng Ð´µÀ:
+> Add support for adding a random offset to the stack while handling
+> syscalls. This patch uses mftb() instead of get_random_int() for better
+> performance.
+>
+> In order to avoid unconditional stack canaries on syscall entry (due to
+> the use of alloca()), also disable stack protector to avoid triggering
+> needless checks and slowing down the entry path. As there is no general
+> way to control stack protector coverage with a function attribute, this
+> must be disabled at the compilation unit level.
+>
+> Signed-off-by: Xiu Jianfeng <xiujianfeng@huawei.com>
+>
+> ---
+> Changes in v2:
+>    -move choose choose_random_kstack_offset() to the end of system_call_exception
+>    -allow full 6 (10) bits of entropy
+>    -disable stack-protector for interrupt.c
+> ---
+>   arch/powerpc/Kconfig            |  1 +
+>   arch/powerpc/kernel/Makefile    |  7 +++++++
+>   arch/powerpc/kernel/interrupt.c | 19 ++++++++++++++++++-
+>   3 files changed, 26 insertions(+), 1 deletion(-)
+>
+> diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
+> index 98309eeae09c..2f0019a0054e 100644
+> --- a/arch/powerpc/Kconfig
+> +++ b/arch/powerpc/Kconfig
+> @@ -192,6 +192,7 @@ config PPC
+>   	select HAVE_ARCH_KASAN			if PPC32 && PPC_PAGE_SHIFT <= 14
+>   	select HAVE_ARCH_KASAN_VMALLOC		if PPC32 && PPC_PAGE_SHIFT <= 14
+>   	select HAVE_ARCH_KFENCE			if PPC_BOOK3S_32 || PPC_8xx || 40x
+> +	select HAVE_ARCH_RANDOMIZE_KSTACK_OFFSET
+>   	select HAVE_ARCH_KGDB
+>   	select HAVE_ARCH_MMAP_RND_BITS
+>   	select HAVE_ARCH_MMAP_RND_COMPAT_BITS	if COMPAT
+> diff --git a/arch/powerpc/kernel/Makefile b/arch/powerpc/kernel/Makefile
+> index 4ddd161aef32..5c5e85b8229b 100644
+> --- a/arch/powerpc/kernel/Makefile
+> +++ b/arch/powerpc/kernel/Makefile
+> @@ -40,6 +40,13 @@ CFLAGS_cputable.o += -DDISABLE_BRANCH_PROFILING
+>   CFLAGS_btext.o += -DDISABLE_BRANCH_PROFILING
+>   endif
+>   
+> +#ifdef CONFIG_RANDOMIZE_KSTACK_OFFSET
+> +# Remove stack protector to avoid triggering unneeded stack canary
+> +# checks due to randomize_kstack_offset.
+> +CFLAGS_REMOVE_interrupt.o = -fstack-protector -fstack-protector-strong
+> +CFLAGS_interrupt.o += -fno-stack-protector
+> +#endif
+> +
+>   obj-y				:= cputable.o syscalls.o \
+>   				   irq.o align.o signal_$(BITS).o pmc.o vdso.o \
+>   				   process.o systbl.o idle.o \
+> diff --git a/arch/powerpc/kernel/interrupt.c b/arch/powerpc/kernel/interrupt.c
+> index 784ea3289c84..d7cdcb6fc336 100644
+> --- a/arch/powerpc/kernel/interrupt.c
+> +++ b/arch/powerpc/kernel/interrupt.c
+> @@ -4,6 +4,7 @@
+>   #include <linux/err.h>
+>   #include <linux/compat.h>
+>   #include <linux/sched/debug.h> /* for show_regs */
+> +#include <linux/randomize_kstack.h>
+>   
+>   #include <asm/kup.h>
+>   #include <asm/cputime.h>
+> @@ -78,10 +79,12 @@ notrace long system_call_exception(long r3, long r4, long r5,
+>   				   long r6, long r7, long r8,
+>   				   unsigned long r0, struct pt_regs *regs)
+>   {
+> +	long ret;
+>   	syscall_fn f;
+>   
+>   	kuap_lock();
+>   
+> +	add_random_kstack_offset();
+>   	regs->orig_gpr3 = r3;
+>   
+>   	if (IS_ENABLED(CONFIG_PPC_IRQ_SOFT_MASK_DEBUG))
+> @@ -229,7 +232,21 @@ notrace long system_call_exception(long r3, long r4, long r5,
+>   		f = (void *)sys_call_table[r0];
+>   	}
+>   
+> -	return f(r3, r4, r5, r6, r7, r8);
+> +	ret = f(r3, r4, r5, r6, r7, r8);
+> +	/*
+> +	 * Ultimately, this value will get limited by KSTACK_OFFSET_MAX(),
+> +	 * so the maximum stack offset is 1k bytes(10 bits).
+> +	 *
+> +	 * The actual entropy will be further reduced by the compiler when
+> +	 * applying stack alignment constraints: the powerpc architecture
+> +	 * may have two kinds of stack alignment(16-bytes and 8-bytes).
+> +	 *
+> +	 * So the resulting 6 or 7 bits of entropy is seen in SP[9:4] or SP[9:3].
+> +	 *
+> +	 */
+> +	choose_random_kstack_offset(mftb());
+> +
+> +	return ret;
+>   }
+>   
+>   static notrace void booke_load_dbcr0(void)
