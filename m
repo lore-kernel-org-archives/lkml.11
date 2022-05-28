@@ -2,116 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E56BEC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 13:20:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0191C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 13:30:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235801AbiE1NUn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 28 May 2022 09:20:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38886 "EHLO
+        id S235941AbiE1Naj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 28 May 2022 09:30:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235473AbiE1NUl (ORCPT
+        with ESMTP id S235803AbiE1Nah (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 28 May 2022 09:20:41 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A3BF1A075
-        for <linux-kernel@vger.kernel.org>; Sat, 28 May 2022 06:20:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653744040; x=1685280040;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=B6GjmZla1IYWF1L39TEwqEHfBiLiRLbmuaimjYhTGPI=;
-  b=b6kCPLbbKm14PFSdjWS7FVguq0XkzcCO8nOgtnsFLJqyBsWhucbfONkp
-   Yhxr4EWlueLzWWSqaPBMfckBsxl0/oOE6xDwBYYbF2+Wj0eC6343I8Iw8
-   QgU86Lw3//vmSlHw+cgA/9hPPhrTtfMCkJnqGXArRt4Pv79P7dsjH8Awl
-   1ubRoFELvuZklZbTuUk9C4I01I32/2JSCy7tEwI9sSf1E094yDdB5ety4
-   sPqp0FZ3wUH5WxxQd1VATLua+mrYQslLhEm3v6Eah0FSDK1BPSkDgOZdA
-   4AV5DD/6EFddpdJXJqVBn0WFG617MV95twXnFiDz60zjhxSIHsfOBS3xX
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10360"; a="335325060"
-X-IronPort-AV: E=Sophos;i="5.91,258,1647327600"; 
-   d="scan'208";a="335325060"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 May 2022 06:20:40 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,258,1647327600"; 
-   d="scan'208";a="665857340"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 28 May 2022 06:20:38 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nuwMv-0000E6-UO;
-        Sat, 28 May 2022 13:20:37 +0000
-Date:   Sat, 28 May 2022 21:20:29 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Jason A. Donenfeld" <zx2c4@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        0day robot <lkp@intel.com>
-Subject: lib/crypto/blake2s-selftest.c:630:1: warning: the frame size of 1032
- bytes is larger than 1024 bytes
-Message-ID: <202205282155.LdL0Vb6J-lkp@intel.com>
+        Sat, 28 May 2022 09:30:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A513E1A80A;
+        Sat, 28 May 2022 06:30:36 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3AAFA60EE3;
+        Sat, 28 May 2022 13:30:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C38DBC34100;
+        Sat, 28 May 2022 13:30:33 +0000 (UTC)
+Date:   Sat, 28 May 2022 09:30:32 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     LKML <linux-kernel@vger.kernel.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Peter Zijlstra <peterz@infradead.org>, x86@kernel.org
+Subject: Re: [PATCH v6] ftrace: Add FTRACE_MCOUNT_MAX_OFFSET to avoid adding
+ weak function
+Message-ID: <20220528093032.6d2f4147@gandalf.local.home>
+In-Reply-To: <20220527234003.2719e6c6@gandalf.local.home>
+References: <20220527234003.2719e6c6@gandalf.local.home>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/intel-lab-lkp/linux/commits/UPDATE-20220528-180939/Jason-A-Donenfeld/crypto-blake2s-remove-shash-module/20220526-172214
-head:   54e31fb223170c2e7f3a6c3b1f3b438e32788f43
-commit: 54e31fb223170c2e7f3a6c3b1f3b438e32788f43 crypto: blake2s - remove shash module
-date:   3 hours ago
-config: h8300-randconfig-r015-20220524 (https://download.01.org/0day-ci/archive/20220528/202205282155.LdL0Vb6J-lkp@intel.com/config)
-compiler: h8300-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/54e31fb223170c2e7f3a6c3b1f3b438e32788f43
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review UPDATE-20220528-180939/Jason-A-Donenfeld/crypto-blake2s-remove-shash-module/20220526-172214
-        git checkout 54e31fb223170c2e7f3a6c3b1f3b438e32788f43
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=h8300 SHELL=/bin/bash lib/crypto/
+On Fri, 27 May 2022 23:40:03 -0400
+Steven Rostedt <rostedt@goodmis.org> wrote:
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+> @@ -6830,6 +6960,10 @@ void ftrace_module_enable(struct module *mod)
+>  		if (ftrace_start_up)
+>  			cnt += referenced_filters(rec);
+>  
+> +		/* Weak functions should still be ignored */
+> +		if (!test_for_valid_rec(rec))
+> +			continue;
 
-All warnings (new ones prefixed by >>):
+This also needs to clear the other flags.
 
-   lib/crypto/blake2s-selftest.c: In function 'blake2s_selftest':
->> lib/crypto/blake2s-selftest.c:630:1: warning: the frame size of 1032 bytes is larger than 1024 bytes [-Wframe-larger-than=]
-     630 | }
-         | ^
+As this is for module load, it does a two stage setup. That is to make the
+correct state of the ftrace locations in the module. As the updates to NOP
+is done before the text is set to RO, and if tracing is enabled/disabled
+during this time, it will trigger a BUG as it detects executable code
+running in RW text. To solve that, the initial setting of the records of
+the module is done with the DISABLE flag set, so they are ignored by the
+enabling and disabling of ftrace. All the module ftrace locations are set to
+NOP.
 
-Kconfig warnings: (for reference only)
-   WARNING: unmet direct dependencies detected for DRM_GEM_SHMEM_HELPER
-   Depends on HAS_IOMEM && DRM && MMU
-   Selected by
-   - DRM_SSD130X && HAS_IOMEM && DRM
+This function is called after the text is set to ro and we enable the
+module functions based on the flags set. But if we are ignoring the record
+(as kvm has weak functions), we need to not only skip the setting of the
+code, but need to clear the flags to state they are not set. Otherwise it
+screws up the accounting of ftrace, and ftrace will WARN and disable itself.
+
+-- Steve
 
 
-vim +630 lib/crypto/blake2s-selftest.c
 
-54e31fb223170c Jason A. Donenfeld 2022-05-28  612  
-54e31fb223170c Jason A. Donenfeld 2022-05-28  613  		memcpy(&state1, &state, sizeof(state1));
-54e31fb223170c Jason A. Donenfeld 2022-05-28  614  		blake2s_compress(&state1, blocks, 1, BLAKE2S_BLOCK_SIZE);
-54e31fb223170c Jason A. Donenfeld 2022-05-28  615  		for (l = 1; l < sizeof(long); ++l) {
-54e31fb223170c Jason A. Donenfeld 2022-05-28  616  			memcpy(unaligned_block + l, blocks,
-54e31fb223170c Jason A. Donenfeld 2022-05-28  617  			       BLAKE2S_BLOCK_SIZE);
-54e31fb223170c Jason A. Donenfeld 2022-05-28  618  			memcpy(&state2, &state, sizeof(state2));
-54e31fb223170c Jason A. Donenfeld 2022-05-28  619  			blake2s_compress(&state2, unaligned_block + l, 1,
-54e31fb223170c Jason A. Donenfeld 2022-05-28  620  					 BLAKE2S_BLOCK_SIZE);
-54e31fb223170c Jason A. Donenfeld 2022-05-28  621  			if (memcmp(&state1, &state2, sizeof(state1))) {
-54e31fb223170c Jason A. Donenfeld 2022-05-28  622  				pr_err("blake2s random compress align %d self-test %d: FAIL\n",
-54e31fb223170c Jason A. Donenfeld 2022-05-28  623  				       l, i + 1);
-54e31fb223170c Jason A. Donenfeld 2022-05-28  624  				success = false;
-54e31fb223170c Jason A. Donenfeld 2022-05-28  625  			}
-54e31fb223170c Jason A. Donenfeld 2022-05-28  626  		}
-54e31fb223170c Jason A. Donenfeld 2022-05-28  627  	}
-54e31fb223170c Jason A. Donenfeld 2022-05-28  628  
-66d7fb94e4ffe5 Jason A. Donenfeld 2019-11-08  629  	return success;
-66d7fb94e4ffe5 Jason A. Donenfeld 2019-11-08 @630  }
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+> +
+>  		rec->flags &= ~FTRACE_FL_DISABLED;
+>  		rec->flags += cnt;
+>  
+
