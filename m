@@ -2,89 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CECA6C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 04:33:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5C2EC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 04:34:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355676AbiE1EdR (ORCPT
+        id S1355779AbiE1EeM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 28 May 2022 00:33:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54128 "EHLO
+        Sat, 28 May 2022 00:34:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238534AbiE1EdP (ORCPT
+        with ESMTP id S1355688AbiE1EeJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 28 May 2022 00:33:15 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF14E5D5FE;
-        Fri, 27 May 2022 21:33:13 -0700 (PDT)
-Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.57])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4L981F0KGDzDqSf;
-        Sat, 28 May 2022 12:33:05 +0800 (CST)
-Received: from dggpemm500018.china.huawei.com (7.185.36.111) by
- dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 28 May 2022 12:33:11 +0800
-Received: from localhost.localdomain (10.175.112.125) by
- dggpemm500018.china.huawei.com (7.185.36.111) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 28 May 2022 12:33:11 +0800
-From:   Ke Liu <liuke94@huawei.com>
-To:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Ke Liu <liuke94@huawei.com>
-Subject: [PATCH] net: phy: Directly use ida_alloc()/free()
-Date:   Sat, 28 May 2022 04:54:37 +0000
-Message-ID: <20220528045437.102232-1-liuke94@huawei.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.112.125]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500018.china.huawei.com (7.185.36.111)
-X-CFilter-Loop: Reflected
+        Sat, 28 May 2022 00:34:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B09A5D5FE;
+        Fri, 27 May 2022 21:34:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AA44660B56;
+        Sat, 28 May 2022 04:34:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 13C91C34100;
+        Sat, 28 May 2022 04:34:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653712448;
+        bh=Zz0PDhW/cfQuL+8IPPj/9mTD5ewL3zI9sgHvV+Vf2+c=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=EU+m/8lcL9GyxUSVPJlOf2o0N1yKnwUJYvaAz05Lb0zmr22bjWEjrFXqViRieXa/L
+         8o6XKyz79FBPeMVhvb7PbOhbVaBQekn9FPJ1J8yoCjet1aiZVbIr590tmDufy5TzRs
+         7Cxu6/5DWf6IpI6pYTt6yxW+Mzj+RtnPJMi+CH4JBx2feDjFLsUyECHXTig0QDCGy/
+         +f7ygVpfNZ7CIfCnIbgOAx+6HvwfUH1CjNcM/TKkLWfugui0qbc6U93AS7ryTRjvlA
+         wIWdyGPs4ZvmEp07NvYIK9/DgPM6EQTPHsqrIkcHmA7k8wY7gptZ3i6GOBOyqqE/wf
+         yos3eKKAo2+1A==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 020DEF03942;
+        Sat, 28 May 2022 04:34:08 +0000 (UTC)
+Subject: Re: [GIT PULL] Compute Express Link for 5.19
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <CAPcyv4gmk-69G+eqtxqeNUoy0G9XPvdTJg1h32_F9qudbx4SOw@mail.gmail.com>
+References: <CAPcyv4gmk-69G+eqtxqeNUoy0G9XPvdTJg1h32_F9qudbx4SOw@mail.gmail.com>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <CAPcyv4gmk-69G+eqtxqeNUoy0G9XPvdTJg1h32_F9qudbx4SOw@mail.gmail.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/cxl/cxl tags/cxl-for-5.19
+X-PR-Tracked-Commit-Id: 34e37b4c432cd0f1842b352fde4b8878b4166888
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 9d004b2f4fea97cde123e7f1939b80e77bf2e695
+Message-Id: <165371244800.8420.17303389715375838317.pr-tracker-bot@kernel.org>
+Date:   Sat, 28 May 2022 04:34:08 +0000
+To:     Dan Williams <dan.j.williams@intel.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-cxl@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use ida_alloc()/ida_free() instead of deprecated
-ida_simple_get()/ida_simple_remove().
+The pull request you sent on Fri, 27 May 2022 16:02:53 -0700:
 
-Signed-off-by: Ke Liu <liuke94@huawei.com>
----
- drivers/net/phy/fixed_phy.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+> git://git.kernel.org/pub/scm/linux/kernel/git/cxl/cxl tags/cxl-for-5.19
 
-diff --git a/drivers/net/phy/fixed_phy.c b/drivers/net/phy/fixed_phy.c
-index c65fb5f5d2dc..03abe6233bbb 100644
---- a/drivers/net/phy/fixed_phy.c
-+++ b/drivers/net/phy/fixed_phy.c
-@@ -180,7 +180,7 @@ static void fixed_phy_del(int phy_addr)
- 			if (fp->link_gpiod)
- 				gpiod_put(fp->link_gpiod);
- 			kfree(fp);
--			ida_simple_remove(&phy_fixed_ida, phy_addr);
-+			ida_free(&phy_fixed_ida, phy_addr);
- 			return;
- 		}
- 	}
-@@ -244,13 +244,13 @@ static struct phy_device *__fixed_phy_register(unsigned int irq,
- 	}
- 
- 	/* Get the next available PHY address, up to PHY_MAX_ADDR */
--	phy_addr = ida_simple_get(&phy_fixed_ida, 0, PHY_MAX_ADDR, GFP_KERNEL);
-+	phy_addr = ida_alloc_max(&phy_fixed_ida, PHY_MAX_ADDR - 1, GFP_KERNEL);
- 	if (phy_addr < 0)
- 		return ERR_PTR(phy_addr);
- 
- 	ret = fixed_phy_add_gpiod(irq, phy_addr, status, gpiod);
- 	if (ret < 0) {
--		ida_simple_remove(&phy_fixed_ida, phy_addr);
-+		ida_free(&phy_fixed_ida, phy_addr);
- 		return ERR_PTR(ret);
- 	}
- 
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/9d004b2f4fea97cde123e7f1939b80e77bf2e695
+
+Thank you!
+
 -- 
-2.25.1
-
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
