@@ -2,225 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5CE3C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 10:08:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96502C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 10:09:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344727AbiE1KIc (ORCPT
+        id S1353507AbiE1KJ3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 28 May 2022 06:08:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34326 "EHLO
+        Sat, 28 May 2022 06:09:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353537AbiE1KIU (ORCPT
+        with ESMTP id S1351073AbiE1KJ0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 28 May 2022 06:08:20 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 334E820BC5
-        for <linux-kernel@vger.kernel.org>; Sat, 28 May 2022 03:08:04 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id u3so8715679wrg.3
-        for <linux-kernel@vger.kernel.org>; Sat, 28 May 2022 03:08:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=+ld2qp0qk5nXcYqBUMPdBbYoV5PQ+Ec1SRfmrADsZqo=;
-        b=aCwSqd9Klz71oU62cK3Hou0JutUcuA0XlTeD12lNZNtex7w7vIaWDeC8XBl292UfmE
-         lNiLmHU9ZRT0PCwpBeBc/+quSVrd/PpqnNrJ0uvRY6JbH1WHBPXRfIR9Xge8QGcfxONA
-         s/IzBkMKJ0+UzcoF8RM2HuyqBg7l13/DVI6sDJcDBiL83ofxpJ1VoQ7k/4SqoHC5Ft+6
-         Qy+Ly7xE4s7wCWTM105qTQnVdaWhFH8dW1PLHw4EtYQXR2Q3jKolUWwYULVDjbc6tpuZ
-         +62q3vyYhPgFRg7hinh8wvpJEBeYnw+P27Wbsflq8D6qvz/V8SKuQqH9Xztsi51PcSpM
-         CzMA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=+ld2qp0qk5nXcYqBUMPdBbYoV5PQ+Ec1SRfmrADsZqo=;
-        b=g03suJNPpk8V0LSONPBooFk+a8ivw3j1WC+eTPvFe3zBgF32u8FmkdHgEAuME9ffjF
-         iMaESxvqBInFkkl3kuC3kAXGdAKYVqnKwCuImtipxZckuAirr+iDE6IBc2JCFSDtb0iO
-         e44ztLJ1dKueGVYo0IZkZ8hgmsC1WCaUx0kCb2RPbqg+Ugm5PSgedg6zaKZUCz5jdPt8
-         yRLZuapB7qOGt9wR0e6mFx+RDoKt4W6zBRGnTY+GG3FCTaKQzLNLUhNMeNt+kfWol+YH
-         6lOlacZoXtSUSTxy45pmntu5/t4k/U5c5EYHiQ5VRoEwubc0v5t5B8SJ5mdOX2NzHTea
-         NaWQ==
-X-Gm-Message-State: AOAM5311B0Fjx2Wi8iBdNiZQNKjBRGVy4pJcQCAcaVmK+4sAWxyfDdD8
-        X+kir5vaqEeftRNFrGUXuLHvttxP1Ro=
-X-Google-Smtp-Source: ABdhPJxOB6yFEiXhzFOOjFz046H9QL3g3S+5T05O9gwDyfPHjShlEzJ0SzLSElgPFRh5szncHmDj7A==
-X-Received: by 2002:adf:fb4c:0:b0:20f:d4e7:b84f with SMTP id c12-20020adffb4c000000b0020fd4e7b84fmr25264715wrs.406.1653732482611;
-        Sat, 28 May 2022 03:08:02 -0700 (PDT)
-Received: from debian (host-2-98-37-191.as13285.net. [2.98.37.191])
-        by smtp.gmail.com with ESMTPSA id v1-20020a5d4b01000000b0020d0435c97bsm3816915wrq.92.2022.05.28.03.08.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 28 May 2022 03:08:02 -0700 (PDT)
-Date:   Sat, 28 May 2022 11:07:59 +0100
-From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Jani Nikula <jani.nikula@intel.com>,
-        Ville =?iso-8859-1?Q?Syrj=E4l=E4?= 
-        <ville.syrjala@linux.intel.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: mainline build failure due to f1e4c916f97f ("drm/edid: add EDID
- block count and size helpers")
-Message-ID: <YpH0f4BaWxmlxwYp@debian>
-References: <YpCUzStDnSgQLNFN@debian>
- <CAHk-=wg0uGAX5DYZq+tY2KeUAR8DtR91YE1y9CkPMKkKOyE4jg@mail.gmail.com>
- <CADVatmNGPbSdRNQuwJEWAaPtqb3vBYRjvsuBpoRUnhEHj=X5GQ@mail.gmail.com>
- <CAHk-=wisQd8yiPX=SsK3eFiakKo713hq4SyqPWsJ-oyAmLFefQ@mail.gmail.com>
+        Sat, 28 May 2022 06:09:26 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC3E1FF3;
+        Sat, 28 May 2022 03:09:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653732565; x=1685268565;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=ssEQf9Dr8zA9ORwC07rfd2cEchsyeE8yAERhKLbsJHU=;
+  b=jmb7ztuZ4MWj6wo/xYTt72IqiCOETRrGWrrTGfrz644LwF9NnbWLhOhj
+   Pb9vopepUUpP31DpO2HtG3UK7pG/o4qkAAO/ohetdM84TA6uiw5RZc3ly
+   EpR+pKL3QAO9ViELEH+3F4FJA2lKJjD7iPdZtrPtewSY0PeOkegsYLHBD
+   +Fe9Z/RqsCyokFzWrXJAkyTwkiGFZof47TZEKEds2TyGf4KdwJ+mPEplr
+   1WbQbL9yi0u7zs+8+kfUmdLoCXTKpIVxryERIkIGKiNvI63o97wmzwn/8
+   Kd1GN5Gh6PjtyKa1AwoRpINfs8YAk2KZV5ThDr3XVzWf7F29O/a0UJnin
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10360"; a="256728597"
+X-IronPort-AV: E=Sophos;i="5.91,258,1647327600"; 
+   d="scan'208";a="256728597"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 May 2022 03:09:25 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,258,1647327600"; 
+   d="scan'208";a="719230050"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.135])
+  by fmsmga001.fm.intel.com with ESMTP; 28 May 2022 03:09:23 -0700
+Date:   Sat, 28 May 2022 18:01:40 +0800
+From:   Xu Yilun <yilun.xu@intel.com>
+To:     tien.sung.ang@intel.com
+Cc:     mdf@kernel.org, hao.wu@intel.com, trix@redhat.com,
+        linux-fpga@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] fpga: altera-cvp: Truncated bitstream error support
+Message-ID: <20220528100140.GC175008@yilunxu-OptiPlex-7050>
+References: <3911c8c7-da6d-e6f2-c747-3b601d9cdacc@redhat.com>
+ <20220519043412.2805706-1-tien.sung.ang@intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="7fp69rSQSZSnEaKc"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAHk-=wisQd8yiPX=SsK3eFiakKo713hq4SyqPWsJ-oyAmLFefQ@mail.gmail.com>
+In-Reply-To: <20220519043412.2805706-1-tien.sung.ang@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
---7fp69rSQSZSnEaKc
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-
-Hi Linus,
-
-On Fri, May 27, 2022 at 06:04:14PM -0700, Linus Torvalds wrote:
-> On Fri, May 27, 2022 at 4:41 PM Sudip Mukherjee
-> <sudipm.mukherjee@gmail.com> wrote:
-> >
-> > I just tested with various values, sizeof(*edid) is 144 bytes at that place.
+On Thu, May 19, 2022 at 12:34:12PM +0800, tien.sung.ang@intel.com wrote:
+> The send_buf is always used throughout the life-span of the CvP driver.
+> Hence, we thought it would be wise to just pre-allocate it one time
+> at the start of the probe/init.
+> It is also fine if we do it in the altera_cvp_write. The only issue we
+> see in this is that, a minor hit on the performance as you need to 
+> then, allocate the buffer on every new CvP FPGA configuration write.
 > 
-> Hmm. What compiler do you have? Because it seems very broken.
+> As for STEP 16, the previous implementation checks the Error latch bit
+> which stores the previous transaction's result. If an error occurs
+> prior to this, the driver would throw an error which is not right.
+> The correct step is to just check for the current CvP error status 
+> from the register.
+> Hope that is fine with you. Thanks
 
-I am using gcc version 11.3.1 20220517 (GCC). And I am not just building
-spear3xx_defconfig, I am building all the arm configs with the same
-compiler in the same setup and only spear3xx_defconfig started failing.
-I am attaching a build summary report generated on 26th May, all arm builds
-passed, even allmodconfig.
+Please comment inline in the mail, like others do.
 
-> 
-
-<snip>
-
-> 
-> But it obviously doesn't happen for me or for most other people, so
-> it's something in your setup. Unusual compiler?
-
-And, just to verify its not my setup or the compiler I use, I took a fresh
-Debian Bullseye docker, installed 'gcc-arm-linux-gnueabi' from Debian and I see
-the same build failure with spear3xx_defconfig. This gcc from Debian Bullseye
-is: gcc version 10.2.1 20210110 (Debian 10.2.1-6).
-
-
---
-Regards
-Sudip
-
---7fp69rSQSZSnEaKc
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: attachment; filename="report_babf0bb978e3.log"
-
-HEAD -> babf0bb978e3 ("Merge tag 'xfs-5.19-for-linus' of git://git.kernel.org/pub/scm/fs/xfs/xfs-linux")
-
-allmodconfig -> pass
-am200epdkit_defconfig -> pass
-aspeed_g4_defconfig -> pass
-aspeed_g5_defconfig -> pass
-assabet_defconfig -> pass
-at91_dt_defconfig -> pass
-axm55xx_defconfig -> pass
-badge4_defconfig -> pass
-bcm2835_defconfig -> pass
-cerfcube_defconfig -> pass
-clps711x_defconfig -> pass
-cm_x300_defconfig -> pass
-cns3420vb_defconfig -> pass
-colibri_pxa270_defconfig -> pass
-colibri_pxa300_defconfig -> pass
-collie_defconfig -> pass
-corgi_defconfig -> pass
-davinci_all_defconfig -> pass
-dove_defconfig -> pass
-ep93xx_defconfig -> pass
-eseries_pxa_defconfig -> pass
-exynos_defconfig -> pass
-ezx_defconfig -> pass
-footbridge_defconfig -> pass
-gemini_defconfig -> pass
-h3600_defconfig -> pass
-h5000_defconfig -> pass
-hackkit_defconfig -> pass
-hisi_defconfig -> pass
-imx_v4_v5_defconfig -> pass
-imx_v6_v7_defconfig -> pass
-imxrt_defconfig -> pass
-integrator_defconfig -> pass
-iop32x_defconfig -> pass
-ixp4xx_defconfig -> pass
-jornada720_defconfig -> pass
-keystone_defconfig -> pass
-lart_defconfig -> pass
-lpc18xx_defconfig -> pass
-lpc32xx_defconfig -> pass
-lpd270_defconfig -> pass
-lubbock_defconfig -> pass
-magician_defconfig -> pass
-mainstone_defconfig -> pass
-milbeaut_m10v_defconfig -> pass
-mini2440_defconfig -> pass
-mmp2_defconfig -> pass
-moxart_defconfig -> pass
-mps2_defconfig -> pass
-multi_v4t_defconfig -> pass
-multi_v5_defconfig -> pass
-multi_v7_defconfig -> pass
-mv78xx0_defconfig -> pass
-mvebu_v5_defconfig -> pass
-mvebu_v7_defconfig -> pass
-mxs_defconfig -> pass
-neponset_defconfig -> pass
-netwinder_defconfig -> pass
-nhk8815_defconfig -> pass
-omap1_defconfig -> pass
-omap2plus_defconfig -> pass
-orion5x_defconfig -> pass
-oxnas_v6_defconfig -> pass
-palmz72_defconfig -> pass
-pcm027_defconfig -> pass
-pleb_defconfig -> pass
-pxa168_defconfig -> pass
-pxa255-idp_defconfig -> pass
-pxa3xx_defconfig -> pass
-pxa910_defconfig -> pass
-pxa_defconfig -> pass
-qcom_defconfig -> pass
-realview_defconfig -> pass
-rpc_defconfig -> pass
-s3c2410_defconfig -> pass
-s3c6400_defconfig -> pass
-s5pv210_defconfig -> pass
-sama5_defconfig -> pass
-sama7_defconfig -> pass
-shannon_defconfig -> pass
-shmobile_defconfig -> pass
-simpad_defconfig -> pass
-socfpga_defconfig -> pass
-spear13xx_defconfig -> pass
-spear3xx_defconfig -> failed
-spear6xx_defconfig -> pass
-spitz_defconfig -> pass
-stm32_defconfig -> pass
-sunxi_defconfig -> pass
-tct_hammer_defconfig -> pass
-tegra_defconfig -> pass
-trizeps4_defconfig -> pass
-u8500_defconfig -> pass
-versatile_defconfig -> pass
-vexpress_defconfig -> pass
-vf610m4_defconfig -> pass
-viper_defconfig -> pass
-vt8500_v6_v7_defconfig -> pass
-xcep_defconfig -> pass
-zeus_defconfig -> pass
-
---7fp69rSQSZSnEaKc--
+Thanks,
+Yilun
