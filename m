@@ -2,108 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33266C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 09:39:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCA0CC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 09:41:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233111AbiE1Jji (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 28 May 2022 05:39:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38682 "EHLO
+        id S233287AbiE1Jly (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 28 May 2022 05:41:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232644AbiE1Jjg (ORCPT
+        with ESMTP id S232644AbiE1Jlv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 28 May 2022 05:39:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F41D17A80;
-        Sat, 28 May 2022 02:39:35 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DF4B6B816F4;
-        Sat, 28 May 2022 09:39:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A44A0C34100;
-        Sat, 28 May 2022 09:39:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653730772;
-        bh=+jA1Bp8CM4ALpWYkpR1+uBpuu0hpBW+rO9hvYyLjKl0=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=R5eNYLn1ow1UI70uVvuT4iPgQcBxFl80oB08uCUMIJ9KOXreHpAxmDLZ6VY7GT3We
-         ARlfgaYb+MX0G+/RWiYp9vQpBMBC5W1VkFtDShi8dVCyQShQWqGAYWGk/6TORQouY0
-         u8rvHXPAgNyMfP/d68ngBv4QTQ1ZCWc71JAxlHuf/GBAppno033kBVOqWdqTYIdTEh
-         hJjevcPqPw6Ob/wC4AjfLfgTioVz2UGfIprhchOkHYKue8tRMaJjg4pMM9kwu9KGAa
-         0X3mzg67Vvg11O3/8HS4tQx0BRVqjZAL/Mg1GBcYD0nxcRxfVVRVY2m7zRF0I/Imss
-         PP5f90UNJkWQg==
-Received: by mail-oi1-f177.google.com with SMTP id r68so8405023oie.12;
-        Sat, 28 May 2022 02:39:32 -0700 (PDT)
-X-Gm-Message-State: AOAM532cEVFodTrzV0rwFv9GzRUTKAQROMOCtRQXfcRkkpZN4XWD/Ih1
-        SaxU8eolWncXFEkTUsXpww4fk5rbK2PPmdPvAMY=
-X-Google-Smtp-Source: ABdhPJzvrE4SMNE48ZhDXunAUOmUjnaHS3ik+lHHctxdvkid9O+w6XgXzWtWXjh9d3Ly4N8zafm37B4N9P26GH1r2nI=
-X-Received: by 2002:a05:6808:e8d:b0:322:bac0:2943 with SMTP id
- k13-20020a0568080e8d00b00322bac02943mr6081516oil.126.1653730771880; Sat, 28
- May 2022 02:39:31 -0700 (PDT)
+        Sat, 28 May 2022 05:41:51 -0400
+Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 350C61C111;
+        Sat, 28 May 2022 02:41:46 -0700 (PDT)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+        by mail.sberdevices.ru (Postfix) with ESMTP id 8C7BB5FD04;
+        Sat, 28 May 2022 12:41:42 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+        s=mail; t=1653730902;
+        bh=Ex77ge4+cVuN9VwweqWv0CsC0vVpo2OdRP2djs/jzgg=;
+        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
+        b=KoOHTF7M9/JlRuF2m+QKeCoDpTcLM/8r2P6SOgZVim4uUOODb0JFQ73lS6dNiRxT+
+         KqPiay2xPpfJr4KmiARud8MhGikuSvnEDIRssIPiap8ExLF/0nOwp9v15zSu7QDkp9
+         lRtzvIvyZOBwMZecyLCZDQLmLrqy6ukthfqZ/b9QjJ++KV/gMGa7zyDYqF864AJobI
+         IUyXdRO/eCAMVIkGdwwtq7tun3B8beh1AfwUJo53FyZbfR6m8mCVV+R+QCZV6FaE5c
+         CqXBwPn2oNeeg0/zJSjp75RZ8AwImWdvvsdZEJCGH2VwgDqnkK9lpLQG8dbc5XDYDU
+         +4yQ+nLQUGw5w==
+Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
+        by mail.sberdevices.ru (Postfix) with ESMTP;
+        Sat, 28 May 2022 12:41:32 +0300 (MSK)
+From:   Aleksey Romanov <AVRomanov@sberdevices.ru>
+To:     "minchan@kernel.org" <minchan@kernel.org>,
+        "ngupta@vflare.org" <ngupta@vflare.org>,
+        "senozhatsky@chromium.org" <senozhatsky@chromium.org>,
+        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
+        "axboe@chromium.org" <axboe@chromium.org>
+CC:     kernel <kernel@sberdevices.ru>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "mnitenko@gmail.com" <mnitenko@gmail.com>
+Subject: Re: [RFC PATCH v1] zram: experimental patch with entropy calculation
+Thread-Topic: [RFC PATCH v1] zram: experimental patch with entropy calculation
+Thread-Index: AQHYbGz3WSsk9a8KK0ibVrkSkBx6g60z4D2A
+Date:   Sat, 28 May 2022 09:30:53 +0000
+Message-ID: <20220528093121.zqejxapd7xxrbu5c@cab-wsm-0029881>
+References: <20220520171309.26768-1-avromanov@sberdevices.ru>
+In-Reply-To: <20220520171309.26768-1-avromanov@sberdevices.ru>
+Accept-Language: ru-RU, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.16.1.12]
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <62DE108081885948A39634B3871D0FB7@sberdevices.ru>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <ea51a17e00a10f3ab25d94b9a5885eb9142aa12b.1653377840.git.geert@linux-m68k.org>
- <CAMj1kXEUiuSLLcuQ-H7A4djyJF_rdr9bD4JrCP_p98Qg3K=Fow@mail.gmail.com>
-In-Reply-To: <CAMj1kXEUiuSLLcuQ-H7A4djyJF_rdr9bD4JrCP_p98Qg3K=Fow@mail.gmail.com>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Sat, 28 May 2022 11:39:20 +0200
-X-Gmail-Original-Message-ID: <CAMj1kXF8XUGrLQq+A04_nNEBQzq=8AsyXGQ-ZJoVqxFUeAoH0A@mail.gmail.com>
-Message-ID: <CAMj1kXF8XUGrLQq+A04_nNEBQzq=8AsyXGQ-ZJoVqxFUeAoH0A@mail.gmail.com>
-Subject: Re: [PATCH v2] efi: EFI_DISABLE_RUNTIME should depend on EFI
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Javier Martinez Canillas <javierm@redhat.com>,
-        linux-efi <linux-efi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/05/28 05:16:00 #19603934
+X-KSMG-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 28 May 2022 at 11:24, Ard Biesheuvel <ardb@kernel.org> wrote:
->
-> On Tue, 24 May 2022 at 09:37, Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> >
-> > The EFI_DISABLE_RUNTIME config option controls the use of Extensible
-> > Firmware Interface (EFI) runtime services, which matters only if EFI
-> > support is enabled.
-> >
-> > Hence add a dependency on EFI, to prevent asking the user about this
-> > control knob when configuring a kernel without EFI support.
-> >
-> > Fixes: a031651ff2144a3d ("efi: Allow to enable EFI runtime services by default on RT")
-> > Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> > Acked-by: Javier Martinez Canillas <javierm@redhat.com>
-> > ---
-> > v2:
-> >   - Add Acked-by,
-> >   - Fix typo s/with/without/.
-> > ---
-> >  drivers/firmware/efi/Kconfig | 1 +
-> >  1 file changed, 1 insertion(+)
-> >
->
-> Can we just move this option into the menu/endmenu scope that already
-> depends on EFI?
->
+I also try this for /lib and /bin direcories. See results below.
 
-We can, and there are other candidates as well. So I'll drop this
-patch, and send out another one that covers some other options too.
+/lib folder as .tar (not compressed):
++-----+-------------+------------+--------+--------------+-------------+
+| ent |  orig_size  | compr_size |  time  | instructions | branches    |
++-----+-------------+------------+--------+--------------+-------------+
+|  Y  | 16527126528 | 5921855963 | 16.46s | 71366805304  | 11693084550 |
++-----+-------------+------------+--------+--------------+-------------+
+|  N  | 16527126528 | 5594516871 | 21.87s | 112664002524 | 16184998761 |
++-----+-------------+------------+--------+--------------+-------------+
 
-Thanks,
-Ard.
-
-
-> > diff --git a/drivers/firmware/efi/Kconfig b/drivers/firmware/efi/Kconfig
-> > index 4720ba98cec312e7..ff6e7bfa8355cfc2 100644
-> > --- a/drivers/firmware/efi/Kconfig
-> > +++ b/drivers/firmware/efi/Kconfig
-> > @@ -299,6 +299,7 @@ config EFI_CUSTOM_SSDT_OVERLAYS
-> >
-> >  config EFI_DISABLE_RUNTIME
-> >         bool "Disable EFI runtime services support by default"
-> > +       depends on EFI
-> >         default y if PREEMPT_RT
-> >         help
-> >           Allow to disable the EFI runtime services support by default. This can
-> > --
-> > 2.25.1
-> >
+/bin folder as .tar (not compressed):
++-----+------------+------------+--------+--------------+------------+
+| ent | orig_size  | compr_size |  time  | instructions | branches   |
++-----+------------+------------+--------+--------------+------------+
+|  Y  | 5594516871 | 387226648  | 4.772s | 35688596793  | 4486177586 |
++-----+------------+------------+--------+--------------+------------+
+|  N  | 5594516871 | 326629907  | 5.811s | 43886087430  | 5161907045 |
++-----+------------+------------+--------+--------------+------------+=
