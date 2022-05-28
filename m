@@ -2,186 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAD14C4332F
-	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 22:47:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D211CC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 23:21:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229921AbiE1Wrw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 28 May 2022 18:47:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54182 "EHLO
+        id S230101AbiE1XVL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 28 May 2022 19:21:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229805AbiE1Wrt (ORCPT
+        with ESMTP id S229529AbiE1XVI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 28 May 2022 18:47:49 -0400
-Received: from mail-ot1-x336.google.com (mail-ot1-x336.google.com [IPv6:2607:f8b0:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F5DE5BE6F;
-        Sat, 28 May 2022 15:47:48 -0700 (PDT)
-Received: by mail-ot1-x336.google.com with SMTP id t14-20020a9d66ce000000b0060af9ed4b87so5339847otm.9;
-        Sat, 28 May 2022 15:47:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=TKshfHkC5Pvf7ig5EiZ4GmSmW76KnvCWjyhV6RL/CDU=;
-        b=UwshPpQ3sv/eETtkjsspaFEbkyclPdvMYuf8CQ4Sn6hG2bEMM5qxfNc3Pb7jrYWQ4F
-         0fNtNnhxPe0veQ8CPqxyUgnC/l97XfyLlZ497jO8Rx2CHz1gzOssU0HjhlXRsFPhsUZk
-         KBugrFVKBwr6/k9jenpSUTVUilY4zY4OeuxaVZDRNZxi/Hi7651QEuZ7Saju5+RuHNWd
-         qckO+i5aZsUjhbCGOAJPUsQwor+yJpyq3lC4c+kAMk0Krsnldcd1gV1XqDdMJrQHoUKN
-         XKQ8PoSs/5/G7bidV8+wHJ0V4i76l2fBL4rUwR+f1JkHJZHnrmKl21JpeRA8V1Utrv+K
-         PPdQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=TKshfHkC5Pvf7ig5EiZ4GmSmW76KnvCWjyhV6RL/CDU=;
-        b=XLYxNlZb2OMSjSC/hjB/HG2B3FunAe5jf2XJxVaEOBlNNzd91pbDZCxjMhj/dn/cKy
-         z61rWEEQpucV2HAlUpe9BQWNRkyNMdjNMXfR/cBUo6G3wp6JtYa+hp+tIjPi3PlIYQ3c
-         BPrNYzAqkXxXkxsxNBp670IFPfsjxxJ8AXXRawkfWArc1X0CF5G3wUxN05vIlszuAtM9
-         CWnv+FtQC9RYmeEQl3brtXZbi7qE0uugkFMEi8zympjWvQ4db5B3h1Lgg8+6vifYPhL3
-         DdZl7lyVFBzPjbTzCWiZUzXBwKTYVAm6a9rTOqWpEVM/B9pbb4dDHCjVePGD+WPEgcUy
-         ozuw==
-X-Gm-Message-State: AOAM530bNjg00BCyL7T3qPeAzQL6FQ+jx2/X3iJ175otIDCiLQTA8Am6
-        eL71iitmYV1EFiEFoFLuzAk=
-X-Google-Smtp-Source: ABdhPJzfxwBZO8/g/x9lRQ5QRk4I7bGfdsN1gA1y2exJEV+YZZXTThQMguwqH9qoNE8Ad3BAzHwvfg==
-X-Received: by 2002:a05:6830:b85:b0:605:4e76:f077 with SMTP id a5-20020a0568300b8500b006054e76f077mr18436775otv.211.1653778067577;
-        Sat, 28 May 2022 15:47:47 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id r33-20020a056870582100b000f169cbbb32sm1865092oap.43.2022.05.28.15.47.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 28 May 2022 15:47:46 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Sat, 28 May 2022 15:47:45 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Nicolas Schier <nicolas@fjasle.eu>,
-        Peter Zijlstra <peterz@infradead.org>,
-        linux-modules@vger.kernel.org, llvm@lists.linux.dev,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Sami Tolvanen <samitolvanen@google.com>
-Subject: Re: [PATCH v6 01/10] modpost: extract symbol versions from *.cmd
- files
-Message-ID: <20220528224745.GA2501857@roeck-us.net>
-References: <20220513113930.10488-1-masahiroy@kernel.org>
- <20220513113930.10488-2-masahiroy@kernel.org>
+        Sat, 28 May 2022 19:21:08 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D93E68E199
+        for <linux-kernel@vger.kernel.org>; Sat, 28 May 2022 16:21:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653780064; x=1685316064;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=xkD1V8Zp+AhxWPoBDamev0naFgMpz7P5t4PQTwU+x2k=;
+  b=FiUomkk7TAoTLoWc/HBDwxAE0urvqjEtNhtbPvnn0tjkSU1D7GtYmjT/
+   y+5bHdUUYhoDoI/qCjKhjgHBXzXK6R9O4J1rg9WzhjQ0byzPgywZvIqfm
+   tSRB0m4jmkdGdyIxjZlsaf3jQMhkO81+3Eq3Wnyy6QH5xhYfFYce0DWkN
+   GnpyL8Q8f7I2l6YdMF0u8KLAj02uVGhQcYMQYy1E2hGvEfYmnnTXuTwIv
+   m+VeOFLUmEAoSC4oEZkUbcaWGg0dL2tea7L/l/htXBCW29kgrvCrL3KHV
+   J4zqD66HeoYdUyq25lKteM4zoXtJc1nqCLcRtuFjXy7ZSVxOJfac8vk1d
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10361"; a="335374316"
+X-IronPort-AV: E=Sophos;i="5.91,259,1647327600"; 
+   d="scan'208";a="335374316"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 May 2022 16:21:03 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,259,1647327600"; 
+   d="scan'208";a="705655142"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by orsmga004.jf.intel.com with ESMTP; 28 May 2022 16:21:02 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nv5jx-0000bI-Hu;
+        Sat, 28 May 2022 23:21:01 +0000
+Date:   Sun, 29 May 2022 07:20:41 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Heiko Carstens <hca@linux.ibm.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: arch/s390/include/uapi/../../../../lib/xz/xz_dec_stream.c:393:28:
+ sparse: sparse: incorrect type in argument 1 (different base types)
+Message-ID: <202205290744.Ox0ZyhF1-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220513113930.10488-2-masahiroy@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   9d004b2f4fea97cde123e7f1939b80e77bf2e695
+commit: edd4a8667355607345b76d5652adc0f300a28970 s390/boot: get rid of startup archive
+date:   3 weeks ago
+config: s390-randconfig-s032-20220529 (https://download.01.org/0day-ci/archive/20220529/202205290744.Ox0ZyhF1-lkp@intel.com/config)
+compiler: s390-linux-gcc (GCC) 11.3.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-14-g5a0004b5-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=edd4a8667355607345b76d5652adc0f300a28970
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout edd4a8667355607345b76d5652adc0f300a28970
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=s390 SHELL=/bin/bash
 
-On Fri, May 13, 2022 at 08:39:21PM +0900, Masahiro Yamada wrote:
-> Currently, CONFIG_MODVERSIONS needs extra link to embed the symbol
-> versions into ELF objects. Then, modpost extracts the version CRCs
-> from them.
-> 
-[ ... ]
-> This commit changes modpost to extract CRCs from *.cmd files instead of
-> from ELF objects.
-> 
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> Reviewed-by: Nicolas Schier <nicolas@fjasle.eu>
-> Tested-by: Nathan Chancellor <nathan@kernel.org>
-> Reviewed-by: Sami Tolvanen <samitolvanen@google.com>
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-This patch results in
 
-._muldi3_di.o.cmd: No such file or directory
+sparse warnings: (new ones prefixed by >>)
+   arch/s390/boot/decompressor.c: note: in included file (through arch/s390/include/uapi/../../../../lib/decompress_unxz.c):
+>> arch/s390/include/uapi/../../../../lib/xz/xz_dec_stream.c:393:28: sparse: sparse: incorrect type in argument 1 (different base types) @@     expected restricted __le32 const [usertype] *p @@     got unsigned int const [usertype] * @@
+   arch/s390/include/uapi/../../../../lib/xz/xz_dec_stream.c:393:28: sparse:     expected restricted __le32 const [usertype] *p
+   arch/s390/include/uapi/../../../../lib/xz/xz_dec_stream.c:393:28: sparse:     got unsigned int const [usertype] *
+   arch/s390/include/uapi/../../../../lib/xz/xz_dec_stream.c:427:48: sparse: sparse: incorrect type in argument 1 (different base types) @@     expected restricted __le32 const [usertype] *p @@     got unsigned int const [usertype] * @@
+   arch/s390/include/uapi/../../../../lib/xz/xz_dec_stream.c:427:48: sparse:     expected restricted __le32 const [usertype] *p
+   arch/s390/include/uapi/../../../../lib/xz/xz_dec_stream.c:427:48: sparse:     got unsigned int const [usertype] *
+   arch/s390/include/uapi/../../../../lib/xz/xz_dec_stream.c:435:37: sparse: sparse: incorrect type in argument 1 (different base types) @@     expected restricted __le32 const [usertype] *p @@     got unsigned int const [usertype] * @@
+   arch/s390/include/uapi/../../../../lib/xz/xz_dec_stream.c:435:37: sparse:     expected restricted __le32 const [usertype] *p
+   arch/s390/include/uapi/../../../../lib/xz/xz_dec_stream.c:435:37: sparse:     got unsigned int const [usertype] *
+   arch/s390/include/uapi/../../../../lib/xz/xz_dec_stream.c:459:28: sparse: sparse: incorrect type in argument 1 (different base types) @@     expected restricted __le32 const [usertype] *p @@     got unsigned int const [usertype] * @@
+   arch/s390/include/uapi/../../../../lib/xz/xz_dec_stream.c:459:28: sparse:     expected restricted __le32 const [usertype] *p
+   arch/s390/include/uapi/../../../../lib/xz/xz_dec_stream.c:459:28: sparse:     got unsigned int const [usertype] *
 
-when building parisc64:defconfig, and
+vim +393 arch/s390/include/uapi/../../../../lib/xz/xz_dec_stream.c
 
-._divsi3.o.cmd: No such file or directory
+24fa0402a9b6a5 Lasse Collin 2011-01-12  385  
+24fa0402a9b6a5 Lasse Collin 2011-01-12  386  /* Decode the Stream Header field (the first 12 bytes of the .xz Stream). */
+24fa0402a9b6a5 Lasse Collin 2011-01-12  387  static enum xz_ret dec_stream_header(struct xz_dec *s)
+24fa0402a9b6a5 Lasse Collin 2011-01-12  388  {
+24fa0402a9b6a5 Lasse Collin 2011-01-12  389  	if (!memeq(s->temp.buf, HEADER_MAGIC, HEADER_MAGIC_SIZE))
+24fa0402a9b6a5 Lasse Collin 2011-01-12  390  		return XZ_FORMAT_ERROR;
+24fa0402a9b6a5 Lasse Collin 2011-01-12  391  
+24fa0402a9b6a5 Lasse Collin 2011-01-12  392  	if (xz_crc32(s->temp.buf + HEADER_MAGIC_SIZE, 2, 0)
+24fa0402a9b6a5 Lasse Collin 2011-01-12 @393  			!= get_le32(s->temp.buf + HEADER_MAGIC_SIZE + 2))
+24fa0402a9b6a5 Lasse Collin 2011-01-12  394  		return XZ_DATA_ERROR;
+24fa0402a9b6a5 Lasse Collin 2011-01-12  395  
+24fa0402a9b6a5 Lasse Collin 2011-01-12  396  	if (s->temp.buf[HEADER_MAGIC_SIZE] != 0)
+24fa0402a9b6a5 Lasse Collin 2011-01-12  397  		return XZ_OPTIONS_ERROR;
+24fa0402a9b6a5 Lasse Collin 2011-01-12  398  
+24fa0402a9b6a5 Lasse Collin 2011-01-12  399  	/*
+24fa0402a9b6a5 Lasse Collin 2011-01-12  400  	 * Of integrity checks, we support only none (Check ID = 0) and
+24fa0402a9b6a5 Lasse Collin 2011-01-12  401  	 * CRC32 (Check ID = 1). However, if XZ_DEC_ANY_CHECK is defined,
+24fa0402a9b6a5 Lasse Collin 2011-01-12  402  	 * we will accept other check types too, but then the check won't
+24fa0402a9b6a5 Lasse Collin 2011-01-12  403  	 * be verified and a warning (XZ_UNSUPPORTED_CHECK) will be given.
+24fa0402a9b6a5 Lasse Collin 2011-01-12  404  	 */
+4f8d7abaa413c3 Lasse Collin 2021-10-11  405  	if (s->temp.buf[HEADER_MAGIC_SIZE + 1] > XZ_CHECK_MAX)
+4f8d7abaa413c3 Lasse Collin 2021-10-11  406  		return XZ_OPTIONS_ERROR;
+4f8d7abaa413c3 Lasse Collin 2021-10-11  407  
+24fa0402a9b6a5 Lasse Collin 2011-01-12  408  	s->check_type = s->temp.buf[HEADER_MAGIC_SIZE + 1];
+24fa0402a9b6a5 Lasse Collin 2011-01-12  409  
 
-when building csky:allmodconfig.
+:::::: The code at line 393 was first introduced by commit
+:::::: 24fa0402a9b6a537e87e38341e78b7da86486846 decompressors: add XZ decompressor module
 
-Reverting this patch (and the subsequent kbuild patches to avoid
-conflicts) fixes the problem for both architectures. In case it
-helps, the complete build log when rebuilding an image for csky
-is as follows.
+:::::: TO: Lasse Collin <lasse.collin@tukaani.org>
+:::::: CC: Linus Torvalds <torvalds@linux-foundation.org>
 
-#
-# No change to .config
-#
-  HOSTCC  scripts/mod/modpost.o
-  HOSTLD  scripts/mod/modpost
-  CALL    scripts/atomic/check-atomics.sh
-  CALL    scripts/checksyscalls.sh
-  CHK     include/generated/compile.h
-  SO2S    arch/csky/kernel/vdso/vdso-syms.S
-  AS      arch/csky/kernel/vdso/vdso-syms.o
-  AR      arch/csky/kernel/vdso/built-in.a
-  AR      arch/csky/kernel/built-in.a
-  CHK     kernel/kheaders_data.tar.xz
-  GEN     .version
-  CHK     include/generated/compile.h
-  UPD     include/generated/compile.h
-  CC      init/version.o
-  AR      init/built-in.a
-  LD      vmlinux.o
-  MODPOST vmlinux.symvers
-._divsi3.o.cmd: No such file or directory
-make[1]: *** [scripts/Makefile.modpost:59: vmlinux.symvers] Error 1
-make: *** [Makefile:1159: vmlinux] Error 2
-
-This was seen with gcc 11.2 and 11.3.
-
-Guenter
-
----
-bisect on mainline:
-
-# bad: [9d004b2f4fea97cde123e7f1939b80e77bf2e695] Merge tag 'cxl-for-5.19' of git://git.kernel.org/pub/scm/linux/kernel/git/cxl/cxl
-# good: [4b0986a3613c92f4ec1bdc7f60ec66fea135991f] Linux 5.18
-git bisect start 'HEAD' 'v5.18'
-# good: [86c87bea6b42100c67418af690919c44de6ede6e] Merge tag 'devicetree-for-5.19' of git://git.kernel.org/pub/scm/linux/kernel/git/robh/linux
-git bisect good 86c87bea6b42100c67418af690919c44de6ede6e
-# good: [c011dd537ffe47462051930413fed07dbdc80313] Merge tag 'arm-soc-5.19' of git://git.kernel.org/pub/scm/linux/kernel/git/soc/soc
-git bisect good c011dd537ffe47462051930413fed07dbdc80313
-# bad: [df202b452fe6c6d6f1351bad485e2367ef1e644e] Merge tag 'kbuild-v5.19' of git://git.kernel.org/pub/scm/linux/kernel/git/masahiroy/linux-kbuild
-git bisect bad df202b452fe6c6d6f1351bad485e2367ef1e644e
-# good: [d4dcdc53c492a7b9fa9031cb85e238b21208ada2] Merge tag 'qcom-arm64-for-5.19' of git://git.kernel.org/pub/scm/linux/kernel/git/qcom/linux into arm/dt
-git bisect good d4dcdc53c492a7b9fa9031cb85e238b21208ada2
-# good: [ae862183285cbb2ef9032770d98ffa9becffe9d5] Merge tag 'arm-dt-5.19' of git://git.kernel.org/pub/scm/linux/kernel/git/soc/soc
-git bisect good ae862183285cbb2ef9032770d98ffa9becffe9d5
-# good: [cc3c470ae4ad758b8ddad825ab199f7eaa8b0a9e] Merge tag 'arm-drivers-5.19' of git://git.kernel.org/pub/scm/linux/kernel/git/soc/soc
-git bisect good cc3c470ae4ad758b8ddad825ab199f7eaa8b0a9e
-# good: [ecf0aa5317b0ad6bb015128a5b763c954fd58708] Merge tag 'arm-multiplatform-5.19-1' of git://git.kernel.org/pub/scm/linux/kernel/git/soc/soc
-git bisect good ecf0aa5317b0ad6bb015128a5b763c954fd58708
-# good: [4484054816cab940fc2fde23fa989174fec889d0] modpost: use doubly linked list for dump_lists
-git bisect good 4484054816cab940fc2fde23fa989174fec889d0
-# good: [16477cdfefdb494235a675cc80563d736991d833] Merge tag 'asm-generic-5.19' of git://git.kernel.org/pub/scm/linux/kernel/git/arnd/asm-generic
-git bisect good 16477cdfefdb494235a675cc80563d736991d833
-# good: [a44abaca0e196cfeef2374ed663b97daa1ad112a] modpost: move *.mod.c generation to write_mod_c_files()
-git bisect good a44abaca0e196cfeef2374ed663b97daa1ad112a
-# good: [69c4cc99bbcbf3ef2e1901b569954e9226180840] modpost: add sym_find_with_module() helper
-git bisect good 69c4cc99bbcbf3ef2e1901b569954e9226180840
-# bad: [7b4537199a4a8480b8c3ba37a2d44765ce76cd9b] kbuild: link symbol CRCs at final link, removing CONFIG_MODULE_REL_CRCS
-git bisect bad 7b4537199a4a8480b8c3ba37a2d44765ce76cd9b
-# bad: [f292d875d0dc700b3af0bef04c5abc1dc7b3b62c] modpost: extract symbol versions from *.cmd files
-git bisect bad f292d875d0dc700b3af0bef04c5abc1dc7b3b62c
-# first bad commit: [f292d875d0dc700b3af0bef04c5abc1dc7b3b62c] modpost: extract symbol versions from *.cmd files
-
----
-bisect on kbuild-5.19:
-
-# bad: [5ce2176b81f77366bd02c27509b83049f0020544] genksyms: adjust the output format to modpost
-# good: [3123109284176b1532874591f7c81f3837bbdc17] Linux 5.18-rc1
-git bisect start 'HEAD' 'v5.18-rc1'
-# good: [70ddb48db4aaddd3c2a7d8802463e15b21ce8525] modpost: move struct namespace_list to modpost.c
-git bisect good 70ddb48db4aaddd3c2a7d8802463e15b21ce8525
-# good: [e76cc48d8e6df5d949284132981db73d2dd8c6b5] modpost: make sym_add_exported() always allocate a new symbol
-git bisect good e76cc48d8e6df5d949284132981db73d2dd8c6b5
-# good: [78e9e56af3858bf2c52c065daa6c8bee0d72048c] kbuild: record symbol versions in *.cmd files
-git bisect good 78e9e56af3858bf2c52c065daa6c8bee0d72048c
-# good: [69c4cc99bbcbf3ef2e1901b569954e9226180840] modpost: add sym_find_with_module() helper
-git bisect good 69c4cc99bbcbf3ef2e1901b569954e9226180840
-# bad: [7b4537199a4a8480b8c3ba37a2d44765ce76cd9b] kbuild: link symbol CRCs at final link, removing CONFIG_MODULE_REL_CRCS
-git bisect bad 7b4537199a4a8480b8c3ba37a2d44765ce76cd9b
-# bad: [f292d875d0dc700b3af0bef04c5abc1dc7b3b62c] modpost: extract symbol versions from *.cmd files
-git bisect bad f292d875d0dc700b3af0bef04c5abc1dc7b3b62c
-# first bad commit: [f292d875d0dc700b3af0bef04c5abc1dc7b3b62c] modpost: extract symbol versions from *.cmd files
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
