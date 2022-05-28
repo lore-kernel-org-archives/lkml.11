@@ -2,187 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F1B7C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 15:51:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6C05C4332F
+	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 15:54:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238047AbiE1Pvp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 28 May 2022 11:51:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58996 "EHLO
+        id S238128AbiE1PyJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 28 May 2022 11:54:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238043AbiE1Pvm (ORCPT
+        with ESMTP id S233115AbiE1PyI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 28 May 2022 11:51:42 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 472F3F6A;
-        Sat, 28 May 2022 08:51:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653753101; x=1685289101;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=CFrbHpnVeSUfFa9hJ0kyjcpJ28gU4L6TqI/eG/r0hJA=;
-  b=dzM+wr1ThCWZtYmmVslzboWTvpDpZQprAz4VGSwl5N50fwQd7hmpV3gR
-   NcZ5CYFu23xY+Yyx3+CnHgAEaCvrxX8tJiLSEUfq71g0NbIZ8SybeDQKL
-   l3DXcLn9h9jTFHf90mNy9IzRtOOFZDBDYDnlPsoBWqIwfPV0yClYnGMA4
-   3GodGzLwAPHLMU93xYhEh0LEfC0p1b9+R+JfThjMy1L3jt9RrEE7Vk59G
-   uChjsL5hhayFSt6keShktRBQLQHW3uSD3EmAkQYlWCtk+Meb2Uh48y/JA
-   TCEgyVJ1i6PaJTswC5JY8t59VB35IdgPE8YBGpw/0xJIU6keNUQhcsFLz
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10361"; a="272257542"
-X-IronPort-AV: E=Sophos;i="5.91,258,1647327600"; 
-   d="scan'208";a="272257542"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 May 2022 08:51:41 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,258,1647327600"; 
-   d="scan'208";a="604441656"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.135])
-  by orsmga008.jf.intel.com with ESMTP; 28 May 2022 08:51:38 -0700
-Date:   Sat, 28 May 2022 23:43:55 +0800
-From:   Xu Yilun <yilun.xu@intel.com>
-To:     keliu <liuke94@huawei.com>
-Cc:     hao.wu@intel.com, trix@redhat.com, mdf@kernel.org,
-        linux-fpga@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] fpga: Directly use ida_alloc()/free()
-Message-ID: <20220528154355.GA183426@yilunxu-OptiPlex-7050>
-References: <20220527085915.2798928-1-liuke94@huawei.com>
+        Sat, 28 May 2022 11:54:08 -0400
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32C6E14D08
+        for <linux-kernel@vger.kernel.org>; Sat, 28 May 2022 08:54:07 -0700 (PDT)
+Received: by mail-il1-f197.google.com with SMTP id j5-20020a922005000000b002d1c2659644so4938347ile.8
+        for <linux-kernel@vger.kernel.org>; Sat, 28 May 2022 08:54:07 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=YBWhcnEjzHwhtIpcyV3G+n8eZtSERP7GIZTa1mABrIQ=;
+        b=52rpTVjK2LKuNKFOHjgGSgEM2tT3fumauq70k3vLQTw4ZdT7gp8uGw61PU49Go78Md
+         QY2U/wfFKDVHg0gIJ+pw1VNOLRz1a07TCdy670P/a1cx5bEQ6tGAHOZL2HjJkiM0xUXP
+         PWK14rqJhONO2zZfhnUSGqyiFtxiVo54hRybXdgCG2O80TJq6zjUJgznxLKgJbQFjgvI
+         3+L1zTC9/2JON+yY22fmlTqUvl4oWun2ttIVy6plt+USJOSPO2pVYNifHl3ySwzSwMNP
+         ldWzS0IBAYBiPrwZ4PDQ6R7WeVfhVyM3YeuJ1JTFtpTTYvn3TR7YvYVu8GX+TgsNuKhZ
+         d4eg==
+X-Gm-Message-State: AOAM530JpxzGQpmkDuQ960f3RglG1eUiIC8ZNIkKrlRTyTX/4ZdN3YQn
+        E5NyCfISilllBf1VV6OQx4uthEld4D5earsXsnXT250aoCHM
+X-Google-Smtp-Source: ABdhPJwTNKsZOz0VuH2CDi/nZXLiPnNA99ONMHbUdPNx2ZnXvdt0LIAdyw5/ox49nfzscenMJtLWAbvHVF4r+11UKgpGAIDqxHkP
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220527085915.2798928-1-liuke94@huawei.com>
+X-Received: by 2002:a05:6638:1350:b0:331:9b1:e917 with SMTP id
+ u16-20020a056638135000b0033109b1e917mr1334598jad.131.1653753246569; Sat, 28
+ May 2022 08:54:06 -0700 (PDT)
+Date:   Sat, 28 May 2022 08:54:06 -0700
+In-Reply-To: <000000000000ae0adf05db4b6f66@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000cee18105e0146e2d@google.com>
+Subject: Re: [syzbot] KASAN: use-after-free Read in j1939_xtp_rx_dat_one (3)
+From:   syzbot <syzbot+a9dce1ff45c3bbeceb3a@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, elver@google.com, hdanton@sina.com,
+        john.ogness@linutronix.de, kernel@pengutronix.de, kuba@kernel.org,
+        linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux@rempel-privat.de, mkl@pengutronix.de, netdev@vger.kernel.org,
+        pabeni@redhat.com, pmladek@suse.com, robin@protonic.nl,
+        rostedt@goodmis.org, socketcan@hartkopp.net,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 27, 2022 at 08:59:15AM +0000, keliu wrote:
-> Use ida_alloc()/ida_free() instead of deprecated
-> ida_simple_get()/ida_simple_remove() .
-> 
-> Signed-off-by: keliu <liuke94@huawei.com>
+syzbot suspects this issue was fixed by commit:
 
-Acked-by: Xu Yilun <yilun.xu@intel.com>
+commit 701850dc0c31bfadf75a0a74af7d2c97859945ec
+Author: Marco Elver <elver@google.com>
+Date:   Tue May 3 07:38:44 2022 +0000
 
-> ---
->  drivers/fpga/dfl.c         | 4 ++--
->  drivers/fpga/fpga-bridge.c | 6 +++---
->  drivers/fpga/fpga-mgr.c    | 6 +++---
->  drivers/fpga/fpga-region.c | 6 +++---
->  4 files changed, 11 insertions(+), 11 deletions(-)
-> 
-> diff --git a/drivers/fpga/dfl.c b/drivers/fpga/dfl.c
-> index 599bb21d86af..2dff0c626cc6 100644
-> --- a/drivers/fpga/dfl.c
-> +++ b/drivers/fpga/dfl.c
-> @@ -342,7 +342,7 @@ static void release_dfl_dev(struct device *dev)
->  	if (ddev->mmio_res.parent)
->  		release_resource(&ddev->mmio_res);
->  
-> -	ida_simple_remove(&dfl_device_ida, ddev->id);
-> +	ida_free(&dfl_device_ida, ddev->id);
->  	kfree(ddev->irqs);
->  	kfree(ddev);
->  }
-> @@ -360,7 +360,7 @@ dfl_dev_add(struct dfl_feature_platform_data *pdata,
->  	if (!ddev)
->  		return ERR_PTR(-ENOMEM);
->  
-> -	id = ida_simple_get(&dfl_device_ida, 0, 0, GFP_KERNEL);
-> +	id = ida_alloc(&dfl_device_ida, GFP_KERNEL);
->  	if (id < 0) {
->  		dev_err(&pdev->dev, "unable to get id\n");
->  		kfree(ddev);
-> diff --git a/drivers/fpga/fpga-bridge.c b/drivers/fpga/fpga-bridge.c
-> index 16f2b164a178..727704431f61 100644
-> --- a/drivers/fpga/fpga-bridge.c
-> +++ b/drivers/fpga/fpga-bridge.c
-> @@ -342,7 +342,7 @@ fpga_bridge_register(struct device *parent, const char *name,
->  	if (!bridge)
->  		return ERR_PTR(-ENOMEM);
->  
-> -	id = ida_simple_get(&fpga_bridge_ida, 0, 0, GFP_KERNEL);
-> +	id = ida_alloc(&fpga_bridge_ida, GFP_KERNEL);
->  	if (id < 0) {
->  		ret = id;
->  		goto error_kfree;
-> @@ -375,7 +375,7 @@ fpga_bridge_register(struct device *parent, const char *name,
->  	return bridge;
->  
->  error_device:
-> -	ida_simple_remove(&fpga_bridge_ida, id);
-> +	ida_free(&fpga_bridge_ida, id);
->  error_kfree:
->  	kfree(bridge);
->  
-> @@ -407,7 +407,7 @@ static void fpga_bridge_dev_release(struct device *dev)
->  {
->  	struct fpga_bridge *bridge = to_fpga_bridge(dev);
->  
-> -	ida_simple_remove(&fpga_bridge_ida, bridge->dev.id);
-> +	ida_free(&fpga_bridge_ida, bridge->dev.id);
->  	kfree(bridge);
->  }
->  
-> diff --git a/drivers/fpga/fpga-mgr.c b/drivers/fpga/fpga-mgr.c
-> index d49a9ce34568..2955a21beebe 100644
-> --- a/drivers/fpga/fpga-mgr.c
-> +++ b/drivers/fpga/fpga-mgr.c
-> @@ -622,7 +622,7 @@ fpga_mgr_register_full(struct device *parent, const struct fpga_manager_info *in
->  	if (!mgr)
->  		return ERR_PTR(-ENOMEM);
->  
-> -	id = ida_simple_get(&fpga_mgr_ida, 0, 0, GFP_KERNEL);
-> +	id = ida_alloc(&fpga_mgr_ida, GFP_KERNEL);
->  	if (id < 0) {
->  		ret = id;
->  		goto error_kfree;
-> @@ -661,7 +661,7 @@ fpga_mgr_register_full(struct device *parent, const struct fpga_manager_info *in
->  	return mgr;
->  
->  error_device:
-> -	ida_simple_remove(&fpga_mgr_ida, id);
-> +	ida_free(&fpga_mgr_ida, id);
->  error_kfree:
->  	kfree(mgr);
->  
-> @@ -785,7 +785,7 @@ static void fpga_mgr_dev_release(struct device *dev)
->  {
->  	struct fpga_manager *mgr = to_fpga_manager(dev);
->  
-> -	ida_simple_remove(&fpga_mgr_ida, mgr->dev.id);
-> +	ida_free(&fpga_mgr_ida, mgr->dev.id);
->  	kfree(mgr);
->  }
->  
-> diff --git a/drivers/fpga/fpga-region.c b/drivers/fpga/fpga-region.c
-> index b0ac18de4885..18bcaa1926dd 100644
-> --- a/drivers/fpga/fpga-region.c
-> +++ b/drivers/fpga/fpga-region.c
-> @@ -202,7 +202,7 @@ fpga_region_register_full(struct device *parent, const struct fpga_region_info *
->  	if (!region)
->  		return ERR_PTR(-ENOMEM);
->  
-> -	id = ida_simple_get(&fpga_region_ida, 0, 0, GFP_KERNEL);
-> +	id = ida_alloc(&fpga_region_ida, GFP_KERNEL);
->  	if (id < 0) {
->  		ret = id;
->  		goto err_free;
-> @@ -234,7 +234,7 @@ fpga_region_register_full(struct device *parent, const struct fpga_region_info *
->  	return region;
->  
->  err_remove:
-> -	ida_simple_remove(&fpga_region_ida, id);
-> +	ida_free(&fpga_region_ida, id);
->  err_free:
->  	kfree(region);
->  
-> @@ -283,7 +283,7 @@ static void fpga_region_dev_release(struct device *dev)
->  {
->  	struct fpga_region *region = to_fpga_region(dev);
->  
-> -	ida_simple_remove(&fpga_region_ida, region->dev.id);
-> +	ida_free(&fpga_region_ida, region->dev.id);
->  	kfree(region);
->  }
->  
-> -- 
-> 2.25.1
+    printk, tracing: fix console tracepoint
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=153df725f00000
+start commit:   ae085d7f9365 mm: kfence: fix missing objcg housekeeping fo..
+git tree:       upstream
+kernel config:  https://syzkaller.appspot.com/x/.config?x=6bae4cd50262530e
+dashboard link: https://syzkaller.appspot.com/bug?extid=a9dce1ff45c3bbeceb3a
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12529653700000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14b64ea5700000
+
+If the result looks correct, please mark the issue as fixed by replying with:
+
+#syz fix: printk, tracing: fix console tracepoint
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
