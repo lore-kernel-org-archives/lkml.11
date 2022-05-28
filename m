@@ -2,106 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29B35C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 09:14:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACF22C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 09:19:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232509AbiE1JOt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 28 May 2022 05:14:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57014 "EHLO
+        id S232580AbiE1JTe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 28 May 2022 05:19:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232350AbiE1JOn (ORCPT
+        with ESMTP id S232310AbiE1JTa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 28 May 2022 05:14:43 -0400
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 084365FB0;
-        Sat, 28 May 2022 02:14:41 -0700 (PDT)
-Received: by mail-pf1-x433.google.com with SMTP id y1so6306188pfr.6;
-        Sat, 28 May 2022 02:14:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=2cmreXVkKeTuS3iLda3uDJCEUdvooYyM7QNARThfArQ=;
-        b=VTRt1uLhMTgIvoICyNK1K4DvISkrJto6QUdz42wHaQhFckzhegvbpDenZo1DkDOsuP
-         lECoEOynKmg/Ze93ddslExgRDFXN9ZEbbT1sN8I3ZE3dxVWd4hlEJojzEDtVC5S2ybDx
-         O3M+kDI7BSFLOBRuRtDow343Wthn0enWane8a0D/6JK/s/DByaq1I/aGT/qZjQ7apeCh
-         Ha8lnoT/XUfmfTN1KsCGh6lhI7O9pEP+07R/QL6uVc0mJWjbA7+kJsDHxnynuIKyVGN2
-         THFWA0HQz1gfwdpeePJEmsooJz2NNv2A39aBeDwiGXjIAuwoq8++Fuw5S7FjQsgxaBM2
-         fLCA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=2cmreXVkKeTuS3iLda3uDJCEUdvooYyM7QNARThfArQ=;
-        b=I3zhliva6ngHBRPLd07FeJIx0YSD5BNEHZYkg16Y0IVNthuQlXrckA40YGWDy21CtI
-         tGJ0UCAXkvsj1r1BHsMSEn54QPjdarr7makFXtI6Z5ZbokxIOWSIAYVxmT/0Ss2vX10X
-         gzLo6l60K7YDramKWhGu9wQOCZyKjzCwRu9XGKiodYfmO2YpKqY0AMFy7w+5NH832gjH
-         PxNxWGuW9oXFZSQ7taKN/JlGG1I/hKiPevA2LEkyC/LoWoGBCJgppYiTIYd6ipxe8AkC
-         oR0JhxwWcI3ILk34XAVbN/q+WPFxQfd5Ux0fTXCOvOsUcCvy9US7vzMNsefHKJoOEbM5
-         bdZg==
-X-Gm-Message-State: AOAM533F6jXlcsiJZjCRJ8x5XB0nI9TyxkfC1xwQqIgltKwM2m3aDz8X
-        UY9L3QHegzQYMvGNNeVUTtykz0iu+OzkSjbh
-X-Google-Smtp-Source: ABdhPJxTZ3//L0+n/S1b5h79f4IEubXD+U1hWPngiQJyYJKXN7Cu3aGrFpYqFoZGccOa0dTRsa6SPA==
-X-Received: by 2002:a05:6a00:15c5:b0:518:9848:4915 with SMTP id o5-20020a056a0015c500b0051898484915mr30768636pfu.62.1653729280076;
-        Sat, 28 May 2022 02:14:40 -0700 (PDT)
-Received: from debian.me (subs02-180-214-232-83.three.co.id. [180.214.232.83])
-        by smtp.gmail.com with ESMTPSA id l12-20020a170902f68c00b0016198062800sm5320179plg.161.2022.05.28.02.14.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 28 May 2022 02:14:39 -0700 (PDT)
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-To:     linux-doc@vger.kernel.org
-Cc:     Bagas Sanjaya <bagasdotme@gmail.com>,
-        Nikolai Kondrashov <spbnick@gmail.com>,
-        Jiri Kosina <jikos@kernel.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
-        llvm@lists.linux.dev, linux-input@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] HID: uclogic: add missing function name in uclogic_params_hid_dbg() kernel-doc comment
-Date:   Sat, 28 May 2022 16:14:03 +0700
-Message-Id: <20220528091403.160169-3-bagasdotme@gmail.com>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220528091403.160169-1-bagasdotme@gmail.com>
-References: <20220528091403.160169-1-bagasdotme@gmail.com>
+        Sat, 28 May 2022 05:19:30 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F558D6;
+        Sat, 28 May 2022 02:19:29 -0700 (PDT)
+Received: from canpemm500006.china.huawei.com (unknown [172.30.72.57])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4L9GMX63WBzDqSc;
+        Sat, 28 May 2022 17:19:20 +0800 (CST)
+Received: from container.huawei.com (10.175.104.82) by
+ canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sat, 28 May 2022 17:19:27 +0800
+From:   Ziyang Xuan <william.xuanziyang@huawei.com>
+To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <ap420073@gmail.com>
+Subject: [PATCH net] macsec: fix UAF bug for real_dev
+Date:   Sat, 28 May 2022 17:36:59 +0800
+Message-ID: <20220528093659.3186312-1-william.xuanziyang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.104.82]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ canpemm500006.china.huawei.com (7.192.105.130)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-uclogic_params_hid_dbg() is public void function. The comment for
-kernel-doc, however, lack its function name on short description, thus
-triggers "missing initial short description" warning.
+Create a new macsec device but not get reference to real_dev. That can
+not ensure that real_dev is freed after macsec. That will trigger the
+UAF bug for real_dev as following:
 
-Add the function name to fix the warning.
+==================================================================
+BUG: KASAN: use-after-free in macsec_get_iflink+0x5f/0x70 drivers/net/macsec.c:3662
+Call Trace:
+ ...
+ macsec_get_iflink+0x5f/0x70 drivers/net/macsec.c:3662
+ dev_get_iflink+0x73/0xe0 net/core/dev.c:637
+ default_operstate net/core/link_watch.c:42 [inline]
+ rfc2863_policy+0x233/0x2d0 net/core/link_watch.c:54
+ linkwatch_do_dev+0x2a/0x150 net/core/link_watch.c:161
 
-Fixes: a228809fa6f39c ("HID: uclogic: Move param printing to a function")
-Cc: Nikolai Kondrashov <spbnick@gmail.com>
-Cc: Jiri Kosina <jikos@kernel.org>
-Cc: Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Cc: "José Expósito" <jose.exposito89@gmail.com>
-Cc: llvm@lists.linux.dev
-Cc: linux-input@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
+Allocated by task 22209:
+ ...
+ alloc_netdev_mqs+0x98/0x1100 net/core/dev.c:10549
+ rtnl_create_link+0x9d7/0xc00 net/core/rtnetlink.c:3235
+ veth_newlink+0x20e/0xa90 drivers/net/veth.c:1748
+
+Freed by task 8:
+ ...
+ kfree+0xd6/0x4d0 mm/slub.c:4552
+ kvfree+0x42/0x50 mm/util.c:615
+ device_release+0x9f/0x240 drivers/base/core.c:2229
+ kobject_cleanup lib/kobject.c:673 [inline]
+ kobject_release lib/kobject.c:704 [inline]
+ kref_put include/linux/kref.h:65 [inline]
+ kobject_put+0x1c8/0x540 lib/kobject.c:721
+ netdev_run_todo+0x72e/0x10b0 net/core/dev.c:10327
+
+After commit faab39f63c1f ("net: allow out-of-order netdev unregistration")
+and commit e5f80fcf869a ("ipv6: give an IPv6 dev to blackhole_netdev"), we
+can add dev_hold_track() in macsec_dev_init() and dev_put_track() in
+macsec_free_netdev() to fix the problem.
+
+Fixes: 2bce1ebed17d ("macsec: fix refcnt leak in module exit routine")
+Reported-by: syzbot+d0e94b65ac259c29ce7a@syzkaller.appspotmail.com
+Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
 ---
- drivers/hid/hid-uclogic-params.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/macsec.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/hid/hid-uclogic-params.c b/drivers/hid/hid-uclogic-params.c
-index 71501453de12e4..0319e3f1527f1d 100644
---- a/drivers/hid/hid-uclogic-params.c
-+++ b/drivers/hid/hid-uclogic-params.c
-@@ -102,7 +102,7 @@ static void uclogic_params_frame_hid_dbg(
+diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
+index 832f09ac075e..75f85e809a89 100644
+--- a/drivers/net/macsec.c
++++ b/drivers/net/macsec.c
+@@ -107,6 +107,7 @@ struct pcpu_secy_stats {
+ struct macsec_dev {
+ 	struct macsec_secy secy;
+ 	struct net_device *real_dev;
++	netdevice_tracker dev_tracker;
+ 	struct pcpu_secy_stats __percpu *stats;
+ 	struct list_head secys;
+ 	struct gro_cells gro_cells;
+@@ -3459,6 +3460,9 @@ static int macsec_dev_init(struct net_device *dev)
+ 	if (is_zero_ether_addr(dev->broadcast))
+ 		memcpy(dev->broadcast, real_dev->broadcast, dev->addr_len);
+ 
++	/* Get macsec's reference to real_dev */
++	dev_hold_track(real_dev, &macsec->dev_tracker, GFP_KERNEL);
++
+ 	return 0;
  }
  
- /**
-- * Dump tablet interface parameters with hid_dbg().
-+ * uclogic_params_hid_dbg - Dump tablet interface parameters with hid_dbg().
-  *
-  * @hdev:	The HID device the parameters describe.
-  * @params:	The parameters to dump.
+@@ -3704,6 +3708,8 @@ static void macsec_free_netdev(struct net_device *dev)
+ 	free_percpu(macsec->stats);
+ 	free_percpu(macsec->secy.tx_sc.stats);
+ 
++	/* Get rid of the macsec's reference to real_dev */
++	dev_put_track(macsec->real_dev, &macsec->dev_tracker);
+ }
+ 
+ static void macsec_setup(struct net_device *dev)
 -- 
-An old man doll... just what I always wanted! - Clara
+2.25.1
 
