@@ -2,115 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60AA5C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 01:57:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88009C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 01:59:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352031AbiE1B5q (ORCPT
+        id S1354932AbiE1B7K (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 21:57:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58906 "EHLO
+        Fri, 27 May 2022 21:59:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238672AbiE1B5p (ORCPT
+        with ESMTP id S1354085AbiE1B7J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 21:57:45 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8DE4BA187
-        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 18:57:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653703062;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=1uLC+oxcDJJvepGvd1tVraFd6/ac0FDp72aGh5ZnEtc=;
-        b=SrTHV7M4JgZlUiW8gLOT6e4XsJRio9+mSimysNm+Gw/wlX9PWSEBu46Z19Z5zRZNdY7iE8
-        iAsHT9SEnsFdx0BHDsI7hHyO4yY0CKUzoPnA98ZDB8yFw4ByKge/S6kmDlljnViU+WhsA2
-        yQR3neeKvADUdfzwA+rWZn9qnm1skec=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-417-XtU76bs8N6eAyLxgcrHZAA-1; Fri, 27 May 2022 21:57:38 -0400
-X-MC-Unique: XtU76bs8N6eAyLxgcrHZAA-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 621D9800882;
-        Sat, 28 May 2022 01:57:38 +0000 (UTC)
-Received: from llong.com (unknown [10.22.33.184])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B8D1C40EC002;
-        Sat, 28 May 2022 01:57:37 +0000 (UTC)
-From:   Waiman Long <longman@redhat.com>
-To:     John Stultz <john.stultz@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Feng Tang <feng.tang@intel.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Michael Larabel <Michael@phoronix.com>,
-        Joe Mario <jmario@redhat.com>,
-        Michey Mehta <mimehta@redhat.com>,
-        Waiman Long <longman@redhat.com>
-Subject: [PATCH] clocksource: Make clocksource watchdog check with WATCHDOG_INTERVAL period
-Date:   Fri, 27 May 2022 21:57:14 -0400
-Message-Id: <20220528015714.109442-1-longman@redhat.com>
+        Fri, 27 May 2022 21:59:09 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 612A25C874;
+        Fri, 27 May 2022 18:59:08 -0700 (PDT)
+Received: from kwepemi500023.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L94ZL5yRjzjX2J;
+        Sat, 28 May 2022 09:58:02 +0800 (CST)
+Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
+ kwepemi500023.china.huawei.com (7.221.188.76) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sat, 28 May 2022 09:59:06 +0800
+Received: from huawei.com (10.175.127.227) by kwepemm600009.china.huawei.com
+ (7.193.23.164) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sat, 28 May
+ 2022 09:59:05 +0800
+From:   Yu Kuai <yukuai3@huawei.com>
+To:     <josef@toxicpanda.com>, <axboe@kernel.dk>, <ming.lei@redhat.com>,
+        <yukuai3@huawei.com>
+CC:     <linux-block@vger.kernel.org>, <nbd@other.debian.org>,
+        <linux-kernel@vger.kernel.org>, <yi.zhang@huawei.com>
+Subject: [PATCH -next v4 1/6] nbd: call genl_unregister_family() first in nbd_cleanup()
+Date:   Sat, 28 May 2022 10:12:30 +0800
+Message-ID: <20220528021235.2120995-2-yukuai3@huawei.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220528021235.2120995-1-yukuai3@huawei.com>
+References: <20220528021235.2120995-1-yukuai3@huawei.com>
 MIME-Version: 1.0
-Content-type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ kwepemm600009.china.huawei.com (7.193.23.164)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since commit c86ff8c55b8a ("clocksource: Avoid accidental unstable
-marking of clocksource"), a new WD_READ_SKIP value was introduced
-as a possible return value of cs_watchdog_read() to skip the current
-check. However, this has an undesriable side effect of extending the
-time gap between csnow and cs_last to more than one WATCHDOG_INTERVAL
-(0.5s) in case of intermittent WD_READ_SKIP's.
+Otherwise there may be race between module removal and the handling of
+netlink command, which can lead to the oops as shown below:
 
-There was an instance of reported clocksource watchdog failure with
-the time skew of 485us where the uncertainly threshold is 400us. In
-that particular case, the (now - last) gap was about 2s. Looking at
-the dmesg log, it was clear there was a successful cs_watchdog_read()
-followed by 3 skips and then another successful cs_watchdog_read().
+  BUG: kernel NULL pointer dereference, address: 0000000000000098
+  Oops: 0002 [#1] SMP PTI
+  CPU: 1 PID: 31299 Comm: nbd-client Tainted: G            E     5.14.0-rc4
+  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996)
+  RIP: 0010:down_write+0x1a/0x50
+  Call Trace:
+   start_creating+0x89/0x130
+   debugfs_create_dir+0x1b/0x130
+   nbd_start_device+0x13d/0x390 [nbd]
+   nbd_genl_connect+0x42f/0x748 [nbd]
+   genl_family_rcv_msg_doit.isra.0+0xec/0x150
+   genl_rcv_msg+0xe5/0x1e0
+   netlink_rcv_skb+0x55/0x100
+   genl_rcv+0x29/0x40
+   netlink_unicast+0x1a8/0x250
+   netlink_sendmsg+0x21b/0x430
+   ____sys_sendmsg+0x2a4/0x2d0
+   ___sys_sendmsg+0x81/0xc0
+   __sys_sendmsg+0x62/0xb0
+   __x64_sys_sendmsg+0x1f/0x30
+   do_syscall_64+0x3b/0xc0
+   entry_SYSCALL_64_after_hwframe+0x44/0xae
+  Modules linked in: nbd(E-)
 
-If there is an existing skew between the hpet (watchdog) and tsc
-clocksource, enlarging the period by 4x will certainly increase the
-measured skew causing it to exceed the threshold in this case. Fix
-this variable period problem by resetting the CLOCK_SOURCE_WATCHDOG bit
-after each WD_READ_SKIP to force the reloading of wd_last and cs_last
-in the next round. This ensures that we have two consecutive successful
-cs_watchdog_read()'s before checking the clock skew.
-
-Fixes: c86ff8c55b8a ("clocksource: Avoid accidental unstable marking of clocksource")
-Reported-by: Michael Larabel <Michael@phoronix.com>
-Signed-off-by: Waiman Long <longman@redhat.com>
+Signed-off-by: Hou Tao <houtao1@huawei.com>
+Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+Reviewed-by: Josef Bacik <josef@toxicpanda.com>
 ---
- kernel/time/clocksource.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ drivers/block/nbd.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/kernel/time/clocksource.c b/kernel/time/clocksource.c
-index cee5da1e54c4..173e052c12b6 100644
---- a/kernel/time/clocksource.c
-+++ b/kernel/time/clocksource.c
-@@ -411,9 +411,18 @@ static void clocksource_watchdog(struct timer_list *unused)
- 		read_ret = cs_watchdog_read(cs, &csnow, &wdnow);
+diff --git a/drivers/block/nbd.c b/drivers/block/nbd.c
+index ac8b045c777c..a73e853f5833 100644
+--- a/drivers/block/nbd.c
++++ b/drivers/block/nbd.c
+@@ -2528,6 +2528,12 @@ static void __exit nbd_cleanup(void)
+ 	struct nbd_device *nbd;
+ 	LIST_HEAD(del_list);
  
- 		if (read_ret != WD_READ_SUCCESS) {
--			if (read_ret == WD_READ_UNSTABLE)
-+			if (read_ret == WD_READ_UNSTABLE) {
- 				/* Clock readout unreliable, so give it up. */
- 				__clocksource_unstable(cs);
-+			} else { /* WD_READ_SKIP */
-+				/*
-+				 * Watchdog clock unstable at the moment,
-+				 * discard the stored wd_last and cs_last to
-+				 * make sure the gap between now and last
-+				 * is always one WATCHDOG_INTERVAL.
-+				 */
-+				cs->flags &= ~CLOCK_SOURCE_WATCHDOG;
-+			}
- 			continue;
- 		}
++	/*
++	 * Unregister netlink interface prior to waiting
++	 * for the completion of netlink commands.
++	 */
++	genl_unregister_family(&nbd_genl_family);
++
+ 	nbd_dbg_close();
+ 
+ 	mutex_lock(&nbd_index_mutex);
+@@ -2546,7 +2552,6 @@ static void __exit nbd_cleanup(void)
+ 	destroy_workqueue(nbd_del_wq);
+ 
+ 	idr_destroy(&nbd_index_idr);
+-	genl_unregister_family(&nbd_genl_family);
+ 	unregister_blkdev(NBD_MAJOR, "nbd");
+ }
  
 -- 
 2.31.1
