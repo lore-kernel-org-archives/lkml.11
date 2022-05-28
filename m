@@ -2,72 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC6D6C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 18:56:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F710C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 19:57:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229628AbiE1S4L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 28 May 2022 14:56:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55540 "EHLO
+        id S229640AbiE1T5b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 28 May 2022 15:57:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229583AbiE1S4G (ORCPT
+        with ESMTP id S229590AbiE1T5U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 28 May 2022 14:56:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3B1E50B32;
-        Sat, 28 May 2022 11:56:02 -0700 (PDT)
+        Sat, 28 May 2022 15:57:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D5826D977;
+        Sat, 28 May 2022 12:50:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9957160DF6;
-        Sat, 28 May 2022 18:43:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 02810C34118;
-        Sat, 28 May 2022 18:43:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653763411;
-        bh=TBFfBotOezaoBQQcGf+0AQ0cSsdjrTCn0ywW+8wNTHk=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=bgCPg6dsoVMJnEjU1AZF8jnJoqWQk+YmTUW+zXZfJDQxakyV/wHok2fqrVnJo7b6D
-         PlDTJs8xWO4z/isjtlpEEewdOut6F+9SqQ35kEf64gHHNh7LkKtPTqQzjfNTBQmf4y
-         d3NPZOAtJ5z2GMIkIJ7QhApZJ6q5WrtwB9LPMG3JrqNBzjFAvRluq//dO8X8L2nwsQ
-         pReVfxiRyDtyaeFC/PuabblGL/O7p/Q6IkQcHiG6qhvB2OYUrwDA1PM5C21CwfAtqY
-         yoTrlm+BYfDijkNrTVYI1RL6b68E4SCNd71xvUCySxJ/OAIrGwKl2ATYL8ht5LRwhs
-         45Q7GKsouW0mQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B9E11F03944;
-        Sat, 28 May 2022 18:43:30 +0000 (UTC)
-Subject: Re: [GIT PULL] Hyper-V next for 5.19
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220528163001.43ripr5agsesyq7o@liuwe-devbox-debian-v2>
-References: <20220528163001.43ripr5agsesyq7o@liuwe-devbox-debian-v2>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220528163001.43ripr5agsesyq7o@liuwe-devbox-debian-v2>
-X-PR-Tracked-Remote: ssh://git@gitolite.kernel.org/pub/scm/linux/kernel/git/hyperv/linux.git tags/hyperv-next-signed-20220528
-X-PR-Tracked-Commit-Id: d27423bf048dcb5e15f04286d001c66685e30c29
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: f56dbdda4322d33d485f3d30f3aabba71de9098c
-Message-Id: <165376341075.28289.7698327766130070455.pr-tracker-bot@kernel.org>
-Date:   Sat, 28 May 2022 18:43:30 +0000
-To:     Wei Liu <wei.liu@kernel.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Wei Liu <wei.liu@kernel.org>,
-        Linux on Hyper-V List <linux-hyperv@vger.kernel.org>,
-        Linux Kernel List <linux-kernel@vger.kernel.org>,
-        kys@microsoft.com, haiyangz@microsoft.com, decui@microsoft.com,
-        sthemmin@microsoft.com, Michael Kelley <mikelley@microsoft.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8A9ADB808CF;
+        Sat, 28 May 2022 19:33:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1E26C34100;
+        Sat, 28 May 2022 19:33:17 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="fXoFtTQf"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1653766396;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=+oBgNWCrCEfj77D+ymOiG9RDteGb169SqLkPBOWO8Ns=;
+        b=fXoFtTQfnuJBuQgF5I58jGt4fA7UvpU8LkrjsTeolpiULl7ACEY7MdrNmpFwZHs58etUr0
+        Yct7vmxpXsfHOUI68UI829BkROs6/lSLGFYMf1189zSj2zOE3ZNd4/RIzhKzKCWPPUbE5A
+        aPdNFJMKazJAX+kIqYQIErkwi4IAI+s=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id b1635e8f (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Sat, 28 May 2022 19:33:16 +0000 (UTC)
+Received: by mail-yb1-f171.google.com with SMTP id p13so1544812ybm.1;
+        Sat, 28 May 2022 12:33:15 -0700 (PDT)
+X-Gm-Message-State: AOAM533lO2OukQsjs2QOYhYYE8OQ9KXHQ30g6q9nmtzKbLm+8oLN67fQ
+        mzunD2oMZl3Pw84VZ/mhx/lMydPhdwYSvDkwsCM=
+X-Google-Smtp-Source: ABdhPJzSW7684S4JNrSQrof2q+N+nw7cgyupNrKx6SfXHvW9mwZtBj5oUTatTQV4ucp6vaOpKvJEX+1xTYrWcPAR93k=
+X-Received: by 2002:a25:c803:0:b0:654:f985:9bbb with SMTP id
+ y3-20020a25c803000000b00654f9859bbbmr21106059ybf.267.1653766394856; Sat, 28
+ May 2022 12:33:14 -0700 (PDT)
+MIME-Version: 1.0
+References: <YpCGQvpirQWaAiRF@zx2c4.com> <20220527081106.63227-1-Jason@zx2c4.com>
+ <YpGeIT1KHv9QwF4X@sol.localdomain> <YpHx7arH4lLaZuhm@zx2c4.com> <YpJZqJd9j1gEOdTe@sol.localdomain>
+In-Reply-To: <YpJZqJd9j1gEOdTe@sol.localdomain>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Sat, 28 May 2022 21:33:03 +0200
+X-Gmail-Original-Message-ID: <CAHmME9ozranfubv1qGbVvOWhmFpTn8OuALB0KY2yvJZJLcw3eg@mail.gmail.com>
+Message-ID: <CAHmME9ozranfubv1qGbVvOWhmFpTn8OuALB0KY2yvJZJLcw3eg@mail.gmail.com>
+Subject: Re: [PATCH crypto v2] crypto: blake2s - remove shash module
+To:     Eric Biggers <ebiggers@kernel.org>
+Cc:     Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        gaochao <gaochao49@huawei.com>, Ard Biesheuvel <ardb@kernel.org>,
+        stable <stable@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Sat, 28 May 2022 16:30:01 +0000:
+On Sat, May 28, 2022 at 7:19 PM Eric Biggers <ebiggers@kernel.org> wrote:
+>
+> On Sat, May 28, 2022 at 11:57:01AM +0200, Jason A. Donenfeld wrote:
+> > > Also, the wrong value is being passed for the 'inc' argument.
+> >
+> > Are you sure? Not sure I'm seeing what you are on first glance.
+>
+> Yes, 'inc' is the increment amount per block.  It needs to always be
+> BLAKE2S_BLOCK_SIZE unless a partial block is being processed.
 
-> ssh://git@gitolite.kernel.org/pub/scm/linux/kernel/git/hyperv/linux.git tags/hyperv-next-signed-20220528
+Bingo, thanks. v+1 coming up.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/f56dbdda4322d33d485f3d30f3aabba71de9098c
-
-Thank you!
-
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+Jason
