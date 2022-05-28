@@ -2,69 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00309C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 18:25:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC6D6C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 18:56:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238194AbiE1SZv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 28 May 2022 14:25:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32814 "EHLO
+        id S229628AbiE1S4L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 28 May 2022 14:56:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237730AbiE1SZs (ORCPT
+        with ESMTP id S229583AbiE1S4G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 28 May 2022 14:25:48 -0400
+        Sat, 28 May 2022 14:56:06 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D187F175B4;
-        Sat, 28 May 2022 11:25:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3B1E50B32;
+        Sat, 28 May 2022 11:56:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F269E60A20;
-        Sat, 28 May 2022 18:25:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 5CAFCC34113;
-        Sat, 28 May 2022 18:25:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9957160DF6;
+        Sat, 28 May 2022 18:43:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 02810C34118;
+        Sat, 28 May 2022 18:43:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653762320;
-        bh=ZjLfmuTmPkGzbOfQreDoS2xmlwZDMJs2YBv5v6dYJvU=;
+        s=k20201202; t=1653763411;
+        bh=TBFfBotOezaoBQQcGf+0AQ0cSsdjrTCn0ywW+8wNTHk=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=YfwlycYSWZkuNu2wZJl9zcvqmQaMUZfN9NZiFVGym6niuPcYLlbirAKjoWneF2UKR
-         iggCd4h5JnquD9SG7JGlPcxDMcfx3N9SpYSKqCzPBXonAodQTnfYiZztKOeoh/Q7bH
-         jZNmwGxPkpa/+69+Zlz858aEryFboHqhp3fcrFpL/zmDprByNVsTxhvBye97+nJvqD
-         jOvdP6M3y4z+R7pU4jKA4/0yAMGUS/vWOt25kKe5uIA3jA4+zqFQSHmRwpBteRwMTY
-         ves0V+WhPVvXwwNmvOnT1shToRfCfgMHfcTkbD/twFmGE8BA/z+natkeifIGdFBgAh
-         f3uBuAWtKevaA==
+        b=bgCPg6dsoVMJnEjU1AZF8jnJoqWQk+YmTUW+zXZfJDQxakyV/wHok2fqrVnJo7b6D
+         PlDTJs8xWO4z/isjtlpEEewdOut6F+9SqQ35kEf64gHHNh7LkKtPTqQzjfNTBQmf4y
+         d3NPZOAtJ5z2GMIkIJ7QhApZJ6q5WrtwB9LPMG3JrqNBzjFAvRluq//dO8X8L2nwsQ
+         pReVfxiRyDtyaeFC/PuabblGL/O7p/Q6IkQcHiG6qhvB2OYUrwDA1PM5C21CwfAtqY
+         yoTrlm+BYfDijkNrTVYI1RL6b68E4SCNd71xvUCySxJ/OAIrGwKl2ATYL8ht5LRwhs
+         45Q7GKsouW0mQ==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 4AF58F03942;
-        Sat, 28 May 2022 18:25:20 +0000 (UTC)
-Subject: Re: [GIT PULL] bulk pin control changes for v5.19
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B9E11F03944;
+        Sat, 28 May 2022 18:43:30 +0000 (UTC)
+Subject: Re: [GIT PULL] Hyper-V next for 5.19
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <CACRpkdYvRzWUzySWR-VNo87_Kg0M_d7cKcyHruPW9fMTeet9XA@mail.gmail.com>
-References: <CACRpkdYvRzWUzySWR-VNo87_Kg0M_d7cKcyHruPW9fMTeet9XA@mail.gmail.com>
+In-Reply-To: <20220528163001.43ripr5agsesyq7o@liuwe-devbox-debian-v2>
+References: <20220528163001.43ripr5agsesyq7o@liuwe-devbox-debian-v2>
 X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <CACRpkdYvRzWUzySWR-VNo87_Kg0M_d7cKcyHruPW9fMTeet9XA@mail.gmail.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-pinctrl.git tags/pinctrl-v5.19-1
-X-PR-Tracked-Commit-Id: 83969805cc716a7dc6b296c3fb1bc7e5cd7ca321
+X-PR-Tracked-Message-Id: <20220528163001.43ripr5agsesyq7o@liuwe-devbox-debian-v2>
+X-PR-Tracked-Remote: ssh://git@gitolite.kernel.org/pub/scm/linux/kernel/git/hyperv/linux.git tags/hyperv-next-signed-20220528
+X-PR-Tracked-Commit-Id: d27423bf048dcb5e15f04286d001c66685e30c29
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 907bb57aa7b471872aab2f2e83e9713a145673f9
-Message-Id: <165376232029.16759.3445799523793577165.pr-tracker-bot@kernel.org>
-Date:   Sat, 28 May 2022 18:25:20 +0000
-To:     Linus Walleij <linus.walleij@linaro.org>
+X-PR-Merge-Commit-Id: f56dbdda4322d33d485f3d30f3aabba71de9098c
+Message-Id: <165376341075.28289.7698327766130070455.pr-tracker-bot@kernel.org>
+Date:   Sat, 28 May 2022 18:43:30 +0000
+To:     Wei Liu <wei.liu@kernel.org>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+        Wei Liu <wei.liu@kernel.org>,
+        Linux on Hyper-V List <linux-hyperv@vger.kernel.org>,
+        Linux Kernel List <linux-kernel@vger.kernel.org>,
+        kys@microsoft.com, haiyangz@microsoft.com, decui@microsoft.com,
+        sthemmin@microsoft.com, Michael Kelley <mikelley@microsoft.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Sat, 28 May 2022 11:34:40 +0200:
+The pull request you sent on Sat, 28 May 2022 16:30:01 +0000:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-pinctrl.git tags/pinctrl-v5.19-1
+> ssh://git@gitolite.kernel.org/pub/scm/linux/kernel/git/hyperv/linux.git tags/hyperv-next-signed-20220528
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/907bb57aa7b471872aab2f2e83e9713a145673f9
+https://git.kernel.org/torvalds/c/f56dbdda4322d33d485f3d30f3aabba71de9098c
 
 Thank you!
 
