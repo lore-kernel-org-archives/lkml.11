@@ -2,84 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E848C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 16:27:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92CEEC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 16:30:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238415AbiE1Q1c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 28 May 2022 12:27:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44978 "EHLO
+        id S238514AbiE1QaJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 28 May 2022 12:30:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238380AbiE1Q12 (ORCPT
+        with ESMTP id S238385AbiE1QaG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 28 May 2022 12:27:28 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4378140EB
-        for <linux-kernel@vger.kernel.org>; Sat, 28 May 2022 09:27:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=YTEqwGZRFNtxwUVIHGKs3ZV8xkp5O0m4kBntoOiZZ5o=; b=UoeecDCn63hZqFXDKKu7wml7az
-        aDkNJDVHKkIbDz8zPADZEFb1GVkC1iDSW/wo/oVZVfKPaeL5U8zf3LLVvPIV976inQkhlPGwWjWIz
-        Vyi8oJ5PnQrmx03jNiZz9XrRMd7rKu9eTJDoSu1/v4MdHy52iXnNUvkn4M07+kmwWjnhrxUXr3Wab
-        H6crFaO+FEyTxl+NUvcDe2CZwvn/Q2MrILFQF0b1K9h6udPL7zyzJAX9aykBFoBUfLu26YTLwPr/r
-        Kvi43yU6VV/nosb6HooM/lQa2dP8IUh6YE8SHkm7mE4YlaufDp0nraysMwsmQkf+NTGl8VaE8obkv
-        AYTjZpmg==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nuzHT-002yuE-Gc; Sat, 28 May 2022 16:27:11 +0000
-Date:   Sat, 28 May 2022 17:27:11 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     bh1scw@gmail.com
-Cc:     Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Roman Gushchin <roman.gushchin@linux.dev>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org,
-        Muchun Song <songmuchun@bytedance.com>
-Subject: Re: [PATCH] mm/slub: replace alloc_pages with folio_alloc
-Message-ID: <YpJNX7PN8hAFgVwj@casper.infradead.org>
-References: <20220528161157.3934825-1-bh1scw@gmail.com>
+        Sat, 28 May 2022 12:30:06 -0400
+Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE20A12AAC;
+        Sat, 28 May 2022 09:30:04 -0700 (PDT)
+Received: by mail-wm1-f43.google.com with SMTP id l188-20020a1c25c5000000b003978df8a1e2so2173948wml.1;
+        Sat, 28 May 2022 09:30:04 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=n2j0NQuXTr3/UzYzmLJXJBWH2KDlRsWiyk09n6SroQA=;
+        b=KnLKNM15j+kSLGUS5/imiesbqLM4hbfhsUTwZasPrIjIpKmnobLt7MdaZZSIqnsf+5
+         4sSWKOaP5YK7TwRp43I8gEa1foSvzpX6VNmrigTcqvoZsYehprSaHl8oy/YvesIDV4VV
+         VpK0Re7Pe323Xab//WIsWfiVwwxIj7TYaVusBhEbS1zSf3Vj26F4jgigYbZ5ZZCJ6+bd
+         6UzrJ52oBFOfOMt/rgMg5jb27nN2mFgrV2+8TeweYm8C19rqgjE+CGuaXlSSKPulnd6l
+         0hkpR+D1yA4b43eG/xOby1i26gCEu0cLv3qn8Qhni+D6FPTLHcjlkPu7PoVMCDrGIuvl
+         9T6g==
+X-Gm-Message-State: AOAM530YMf8qJynpOV+ENyFmm6/QAdikGePxT4N637Avoer67Dpf5egY
+        m8pfCLH3SlwR6lngZr9TWWE=
+X-Google-Smtp-Source: ABdhPJyYAoJtuZ6Vyark2oPrPA4ZOu3ScR68ym2u8fGkiyptAKT2OAYB4ZLztN/uvm19nlXeZ84P2w==
+X-Received: by 2002:a05:600c:154d:b0:394:8582:58f3 with SMTP id f13-20020a05600c154d00b00394858258f3mr11864933wmg.90.1653755403230;
+        Sat, 28 May 2022 09:30:03 -0700 (PDT)
+Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
+        by smtp.gmail.com with ESMTPSA id k7-20020a1ca107000000b00394708a3d7dsm5371820wme.15.2022.05.28.09.30.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 28 May 2022 09:30:02 -0700 (PDT)
+Date:   Sat, 28 May 2022 16:30:01 +0000
+From:   Wei Liu <wei.liu@kernel.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Wei Liu <wei.liu@kernel.org>,
+        Linux on Hyper-V List <linux-hyperv@vger.kernel.org>,
+        Linux Kernel List <linux-kernel@vger.kernel.org>,
+        kys@microsoft.com, haiyangz@microsoft.com, decui@microsoft.com,
+        sthemmin@microsoft.com, Michael Kelley <mikelley@microsoft.com>
+Subject: [GIT PULL] Hyper-V next for 5.19
+Message-ID: <20220528163001.43ripr5agsesyq7o@liuwe-devbox-debian-v2>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220528161157.3934825-1-bh1scw@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, May 29, 2022 at 12:11:58AM +0800, bh1scw@gmail.com wrote:
-> From: Fanjun Kong <bh1scw@gmail.com>
-> 
-> This patch will use folio allocation functions for allocating pages.
+Hi Linus,
 
-That's not actually a good idea.  folio_alloc() will do the
-prep_transhuge_page() step which isn't needed for slab.
+The following changes since commit af2d861d4cd2a4da5137f795ee3509e6f944a25b:
 
-> Signed-off-by: Fanjun Kong <bh1scw@gmail.com>
-> ---
->  mm/slub.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/mm/slub.c b/mm/slub.c
-> index e5535020e0fd..00c4049a17d6 100644
-> --- a/mm/slub.c
-> +++ b/mm/slub.c
-> @@ -1794,9 +1794,9 @@ static inline struct slab *alloc_slab_page(gfp_t flags, int node,
->  	unsigned int order = oo_order(oo);
->  
->  	if (node == NUMA_NO_NODE)
-> -		folio = (struct folio *)alloc_pages(flags, order);
-> +		folio = (struct folio *)folio_alloc(flags, order);
->  	else
-> -		folio = (struct folio *)__alloc_pages_node(node, flags, order);
-> +		folio = (struct folio *)__folio_alloc_node(node, flags, order);
->  
->  	if (!folio)
->  		return NULL;
-> -- 
-> 2.36.0
-> 
-> 
+  Linux 5.18-rc4 (2022-04-24 14:51:22 -0700)
+
+are available in the Git repository at:
+
+  ssh://git@gitolite.kernel.org/pub/scm/linux/kernel/git/hyperv/linux.git tags/hyperv-next-signed-20220528
+
+for you to fetch changes up to d27423bf048dcb5e15f04286d001c66685e30c29:
+
+  hv_balloon: Fix balloon_probe() and balloon_remove() error handling (2022-05-26 10:04:57 +0000)
+
+----------------------------------------------------------------
+hyperv-next for 5.19
+ - Harden hv_sock driver (Andrea Parri)
+ - Harden Hyper-V PCI driver (Andrea Parri)
+ - Fix multi-MSI for Hyper-V PCI driver (Jeffrey Hugo)
+ - Fix Hyper-V PCI to reduce boot time (Dexuan Cui)
+ - Remove code for long EOL'ed Hyper-V versions (Michael Kelley, Saurabh Sengar)
+ - Fix balloon driver error handling (Shradha Gupta)
+ - Fix a typo in vmbus driver (Julia Lawall)
+ - Ignore vmbus IMC device (Michael Kelley)
+ - Add a new error message to Hyper-V DRM driver (Saurabh Sengar)
+
+----------------------------------------------------------------
+Andrea Parri (Microsoft) (13):
+      Drivers: hv: vmbus: Fix handling of messages with transaction ID of zero
+      PCI: hv: Use vmbus_requestor to generate transaction IDs for VMbus hardening
+      Drivers: hv: vmbus: Introduce vmbus_sendpacket_getid()
+      Drivers: hv: vmbus: Introduce vmbus_request_addr_match()
+      Drivers: hv: vmbus: Introduce {lock,unlock}_requestor()
+      PCI: hv: Fix synchronization between channel callback and hv_compose_msi_msg()
+      hv_sock: Check hv_pkt_iter_first_raw()'s return value
+      hv_sock: Copy packets sent by Hyper-V out of the ring buffer
+      hv_sock: Add validation for untrusted Hyper-V values
+      Drivers: hv: vmbus: Accept hv_sock offers in isolated guests
+      Drivers: hv: vmbus: Refactor the ring-buffer iterator functions
+      PCI: hv: Add validation for untrusted Hyper-V values
+      PCI: hv: Fix synchronization between channel callback and hv_pci_bus_exit()
+
+Dexuan Cui (1):
+      PCI: hv: Do not set PCI_COMMAND_MEMORY to reduce VM boot time
+
+Jeffrey Hugo (4):
+      PCI: hv: Fix multi-MSI to allow more than one MSI vector
+      PCI: hv: Fix hv_arch_irq_unmask() for multi-MSI
+      PCI: hv: Reuse existing IRTE allocation in compose_msi_msg()
+      PCI: hv: Fix interrupt mapping for multi-MSI
+
+Julia Lawall (1):
+      Drivers: hv: vmbus: fix typo in comment
+
+Michael Kelley (6):
+      Drivers: hv: vmbus: Add VMbus IMC device to unsupported list
+      x86/hyperv: Disable hardlockup detector by default in Hyper-V guests
+      Drivers: hv: vmbus: Remove support for Hyper-V 2008 and Hyper-V 2008R2/Win7
+      scsi: storvsc: Remove support for Hyper-V 2008 and 2008R2/Win7
+      video: hyperv_fb: Remove support for Hyper-V 2008 and 2008R2/Win7
+      drm/hyperv: Remove support for Hyper-V 2008 and 2008R2/Win7
+
+Saurabh Sengar (2):
+      drm/hyperv: Add error message for fb size greater than allocated
+      scsi: storvsc: Removing Pre Win8 related logic
+
+Shradha Gupta (1):
+      hv_balloon: Fix balloon_probe() and balloon_remove() error handling
+
+ arch/x86/kernel/cpu/mshyperv.c              |   2 +
+ drivers/gpu/drm/hyperv/hyperv_drm_modeset.c |   5 +-
+ drivers/gpu/drm/hyperv/hyperv_drm_proto.c   |  23 +--
+ drivers/hv/channel.c                        | 116 +++++++++----
+ drivers/hv/channel_mgmt.c                   |  40 +++--
+ drivers/hv/connection.c                     |   6 +-
+ drivers/hv/hv_balloon.c                     |  21 ++-
+ drivers/hv/hyperv_vmbus.h                   |   2 +-
+ drivers/hv/ring_buffer.c                    |  46 +++---
+ drivers/hv/vmbus_drv.c                      |  60 ++-----
+ drivers/pci/controller/pci-hyperv.c         | 243 +++++++++++++++++++++-------
+ drivers/scsi/storvsc_drv.c                  | 191 ++++++----------------
+ drivers/video/fbdev/hyperv_fb.c             |  23 +--
+ include/linux/hyperv.h                      |  97 ++++++-----
+ net/vmw_vsock/hyperv_transport.c            |  21 ++-
+ 15 files changed, 477 insertions(+), 419 deletions(-)
