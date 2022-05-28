@@ -2,67 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CDE5C433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 15:21:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9791FC433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 15:25:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237506AbiE1PUy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 28 May 2022 11:20:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42796 "EHLO
+        id S237553AbiE1PZo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 28 May 2022 11:25:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237228AbiE1PUx (ORCPT
+        with ESMTP id S237114AbiE1PZk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 28 May 2022 11:20:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 979F310E4;
-        Sat, 28 May 2022 08:20:52 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 376ED60EFC;
-        Sat, 28 May 2022 15:20:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29BA3C34100;
-        Sat, 28 May 2022 15:20:51 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="qE1HKzO2"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1653751247;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=9JkDzc0LO3wwyFpVhlqaIJZm7f0ZEKGy7IvUB5AiIpI=;
-        b=qE1HKzO2mc8ewbLzhWfVQyEPkHOa+2D7Ml/eLEuVPkrCEBvtuW3xvL2S6BnY/PYYwusLRG
-        fMKl15b/0LtL9NsDhP8+jYOLU3+/cSZkGmLeK0qeYL+QIKzwJxoaoqFdPE/wN/NgNiEqVE
-        6SXy6tnLK9/UtdSBhRVvNIF1zwRAgf8=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 12101297 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Sat, 28 May 2022 15:20:46 +0000 (UTC)
-Received: by mail-yw1-f169.google.com with SMTP id 00721157ae682-2ff7b90e635so73364547b3.5;
-        Sat, 28 May 2022 08:20:46 -0700 (PDT)
-X-Gm-Message-State: AOAM530H3tqmjsHvzdCMrhsmOqJVCzbCgkOeEB1//nKQu74nZ0JWSCW/
-        BU5acq5JyrG0M6xN/eELYavh30cz6YidhlUuVw8=
-X-Google-Smtp-Source: ABdhPJxa9gI6GUshjPfnm31KDdrjwhQZ6ZM+t9sLo1ouvhBaw0GtT9VkU9LdsporNFZiEcwJ2OdJylg3+Tv1n1tTCuw=
-X-Received: by 2002:a0d:ea14:0:b0:300:4bc2:ee31 with SMTP id
- t20-20020a0dea14000000b003004bc2ee31mr19524491ywe.396.1653751245268; Sat, 28
- May 2022 08:20:45 -0700 (PDT)
+        Sat, 28 May 2022 11:25:40 -0400
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEE356379;
+        Sat, 28 May 2022 08:25:39 -0700 (PDT)
+Received: by mail-wm1-x333.google.com with SMTP id r9-20020a1c4409000000b00397345f2c6fso503628wma.4;
+        Sat, 28 May 2022 08:25:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=iCcNhyM6zqp+JP2s/nhVAwZzn6FcQLeW7/wEey8U9vk=;
+        b=InMqMHEdIPCtUsGGMI9YYTYACfK9DIejbgRjwjE85QyaAvuB+dPsn07gk4GMYMHVhR
+         2HNdEqPAjnktH4Cm3Vuz+NbQM9MfikOH4Ommb69vdRNssWc9YUl80RHAjZS6YYUh6qei
+         rTLn/Y308LaRQhbKffYFOHOxdys8wCseyNpgSNmLBt4oAyxXLoJh0BxmN3xixkerbto+
+         6hINeMGkULOA9LPKKk4ZtdVhFtLNJqoMdXsMVn4/C+Hr3h8JkS0q1lwwaSG0PXV7648r
+         1+tUXT0qkb4KaxhRRck6zG6KZWwyeoXoYXOrwHI81U13gnJl8SnCSXkPNuk3LA8WlccR
+         4R/Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=iCcNhyM6zqp+JP2s/nhVAwZzn6FcQLeW7/wEey8U9vk=;
+        b=h7m+6AMxN2KmthDn+J6yEd4dmR65viy414S9V51Z2uu210Eg4ezW3GeGmDshyT/2Nn
+         GyGX5flEmexA4pL5kpjR8a4PLX6OMX2EKlxbSiJ07uAGGWDtH5hbirRm1coYZrsGFQjs
+         npMGYBn/fzyXpYeV/RXkrpQCUJdwexe7MqQM6+d/TbfocXg1hJc4hf+XYVgdG42NNYpR
+         92RRNwFdBSR//ACclwr54ePnWwwCwgcr8dG4pcvFIFVrL9yJmmHYv18uzWptptC6bWlv
+         +FnGUIRFC89PiiII0HuIJFtcVnlGNnmzWDoYMm09PRPpOur6CJRvsNWmpATlX1/RK976
+         q5Cw==
+X-Gm-Message-State: AOAM532jHStUSw3lfH1kQNYbu5JU0lW11srvJn4z5bERziKL2QN/JnGc
+        CqnnV7qzJuYC7eGLKOeuGA0=
+X-Google-Smtp-Source: ABdhPJzFIVYw3G+uLtGylp0NKAcMjv1c2kHDJTjLVb+abUfYsgdjHx99Q3N2zVAEvv1/hN5LiQaEag==
+X-Received: by 2002:a05:600c:5126:b0:39a:eede:5bf4 with SMTP id o38-20020a05600c512600b0039aeede5bf4mr723149wms.81.1653751538388;
+        Sat, 28 May 2022 08:25:38 -0700 (PDT)
+Received: from debian (host-2-98-37-191.as13285.net. [2.98.37.191])
+        by smtp.gmail.com with ESMTPSA id bg34-20020a05600c3ca200b003974df805c7sm5769385wmb.8.2022.05.28.08.25.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 28 May 2022 08:25:37 -0700 (PDT)
+Date:   Sat, 28 May 2022 16:25:35 +0100
+From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, slade@sladewatkins.com
+Subject: Re: [PATCH 5.17 000/111] 5.17.12-rc1 review
+Message-ID: <YpI+7yNURQTMq9G+@debian>
+References: <20220527084819.133490171@linuxfoundation.org>
 MIME-Version: 1.0
-Received: by 2002:a05:7110:6403:b0:17b:2ce3:1329 with HTTP; Sat, 28 May 2022
- 08:20:44 -0700 (PDT)
-In-Reply-To: <01a7891f-7295-3be2-73f3-5405b1e18f45@molgen.mpg.de>
-References: <01a7891f-7295-3be2-73f3-5405b1e18f45@molgen.mpg.de>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Sat, 28 May 2022 17:20:44 +0200
-X-Gmail-Original-Message-ID: <CAHmME9oFDjHjxR8xvns3VCDqGhtUDvEf7rhEy0fgD7NOmkKn=Q@mail.gmail.com>
-Message-ID: <CAHmME9oFDjHjxR8xvns3VCDqGhtUDvEf7rhEy0fgD7NOmkKn=Q@mail.gmail.com>
-Subject: Re: ./include/crypto/poly1305.h:56:46: error: 'CONFIG_CRYPTO_LIB_POLY1305_RSIZE'
- undeclared here
-To:     Paul Menzel <pmenzel@molgen.mpg.de>
-Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220527084819.133490171@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Revert already sent:
-https://lore.kernel.org/lkml/20220528110918.256550-1-Jason@zx2c4.com/
+Hi Greg,
+
+On Fri, May 27, 2022 at 10:48:32AM +0200, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.17.12 release.
+> There are 111 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Sun, 29 May 2022 08:46:36 +0000.
+> Anything received after that time might be too late.
+
+Build test:
+mips (gcc version 11.3.1 20220517): 60 configs -> no failure
+arm (gcc version 11.3.1 20220517): 100 configs -> no new failure
+arm64 (gcc version 11.3.1 20220517): 3 configs -> no failure
+x86_64 (gcc version 11.3.1 20220517): 4 configs -> no failure
+
+Boot test:
+x86_64: Booted on my test laptop. No regression.
+arm64: Booted on rpi4b (4GB model). No regression. [1]
+mips: Booted on ci20 board. No regression. [2]
+
+[1]. https://openqa.qa.codethink.co.uk/tests/1223
+[2]. https://openqa.qa.codethink.co.uk/tests/1224
+
+Tested-by: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
+
+--
+Regards
+Sudip
+
