@@ -2,165 +2,236 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13981C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 11:14:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B284C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 11:16:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243172AbiE1LOb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 28 May 2022 07:14:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47846 "EHLO
+        id S1350713AbiE1LQt (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 28 May 2022 07:16:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234274AbiE1LO0 (ORCPT
+        with ESMTP id S1344472AbiE1LQs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 28 May 2022 07:14:26 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44EF41F606
-        for <linux-kernel@vger.kernel.org>; Sat, 28 May 2022 04:14:25 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L9Jrm3qcrzRhRL;
-        Sat, 28 May 2022 19:11:20 +0800 (CST)
-Received: from dggpemm500018.china.huawei.com (7.185.36.111) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 28 May 2022 19:14:23 +0800
-Received: from localhost.localdomain (10.175.112.125) by
- dggpemm500018.china.huawei.com (7.185.36.111) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 28 May 2022 19:14:23 +0800
-From:   Ke Liu <liuke94@huawei.com>
-To:     <jk@ozlabs.org>
-CC:     <joel@jms.id.au>, <alistair@popple.id.au>, <eajames@linux.ibm.com>,
-        <linux-fsi@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>,
-        Ke Liu <liuke94@huawei.com>
-Subject: [PATCH v2] drivers: fsi: Directly use ida_alloc()/free()
-Date:   Sat, 28 May 2022 11:35:52 +0000
-Message-ID: <20220528113552.1889871-1-liuke94@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Sat, 28 May 2022 07:16:48 -0400
+Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26AD56176
+        for <linux-kernel@vger.kernel.org>; Sat, 28 May 2022 04:16:46 -0700 (PDT)
+Received: by mail-yb1-xb36.google.com with SMTP id v106so4821374ybi.0
+        for <linux-kernel@vger.kernel.org>; Sat, 28 May 2022 04:16:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=aynPQhFd4QowP/synFgC+gJRCfVWqlJfAHAl/f5sodI=;
+        b=RmvTGYmwT9R/iHk+HOhOiW+2kawtZE6T3ZcSq1jzJYlPlGT0V7QdVhvHvYXzuySdok
+         aU039m620v6BnC4X7vxHaBmcAacbfWnqvPqaWRI0HfHqt7Tdg5HO6utrjOcY9txjlvNK
+         h+3Gjut3EQU3Z9gLOsQnovevUVp0NaWMtc2DeSQIkKNN5uB7nk9ZqBwqLNqXB3LF0ikw
+         VCBUPW/4dOwTT9l2654etavGqmuNptYg/fk0X/ERS5uDsJlw3HW0vxBEIbD3ZRCDBXTE
+         ERCcAmF6tpJ/tO4uyeQvIt+tqAovtprHNQCFlnqO9CAAy8KYmofnjLa+GJ4y/j2jWWAp
+         5GHQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=aynPQhFd4QowP/synFgC+gJRCfVWqlJfAHAl/f5sodI=;
+        b=At6J+/Bk5uYu6R7cv7uzAIqLHcHP+QkH923t0ebfan9fo6a2VEReyH9+NRuP7xy1IG
+         Cvc3Q4ZYGl2LCNh+YkupY/+7E91YOMgzTuW43zysuPttlCFwlTHtADKSKHSHr4ZtMwsO
+         oIqv3fZ/+SNbULnPBITmxEBUFlYRrg8w1QsWlawSOpuLBfVm0Sn+bednTqsaKxpDcU4U
+         rg7iGLlY12MqBT5nYOEqQ+dBT8ErUpSRn9aldchQUerWu4PeMMkQLYQ24pwBdGgXG0e9
+         BfB7l/knV0g7Q2Nc8iiWkIIlH2IaB8kplb2W93M7Z6P2X6cD0FtqzP1B10IFh781j1R3
+         6XlQ==
+X-Gm-Message-State: AOAM533TgHt01HBSJlthYnilE/ZUYZ7/KdB8Yoe+Mq83CmLhJE2cCiql
+        q945sTm3UFntLkKLTXtyeGwi7ZKzcpI35wmgBYb86LMUIGl17g==
+X-Google-Smtp-Source: ABdhPJyw4l9/bTxWtm1Wuv8umtQzikDlVVU4x7kzxAi/JfhnqiR9c0Ijml8+5GfV3R9b7Y5J26fTVQO1Y8K/xq1ZjeE=
+X-Received: by 2002:a25:bb83:0:b0:653:ede9:90ae with SMTP id
+ y3-20020a25bb83000000b00653ede990aemr20065902ybg.474.1653736605255; Sat, 28
+ May 2022 04:16:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.112.125]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemm500018.china.huawei.com (7.185.36.111)
-X-CFilter-Loop: Reflected
+References: <20220527084801.223648383@linuxfoundation.org>
+In-Reply-To: <20220527084801.223648383@linuxfoundation.org>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Sat, 28 May 2022 16:46:34 +0530
+Message-ID: <CA+G9fYuF15QF7dSkp8zdN=8AbBrhbj=skuSE5_k4uETtkBk6rA@mail.gmail.com>
+Subject: Re: [PATCH 5.18 00/47] 5.18.1-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use ida_alloc()/ida_free() instead of deprecated
-ida_simple_get()/ida_simple_remove().
+On Fri, 27 May 2022 at 14:21, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> This is the start of the stable review cycle for the 5.18.1 release.
+> There are 47 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Sun, 29 May 2022 08:46:45 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-=
+5.18.1-rc1.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
+-rc.git linux-5.18.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-Signed-off-by: Ke Liu <liuke94@huawei.com>
----
-v2 fix some bad modify
----
- drivers/fsi/fsi-core.c | 14 +++++++-------
- drivers/fsi/fsi-occ.c  | 17 ++++++++---------
- 2 files changed, 15 insertions(+), 16 deletions(-)
+Results from Linaro=E2=80=99s test farm.
+No regressions on arm64, arm, x86_64, and i386.
 
-diff --git a/drivers/fsi/fsi-core.c b/drivers/fsi/fsi-core.c
-index 3a7b78e36701..10ef611058f0 100644
---- a/drivers/fsi/fsi-core.c
-+++ b/drivers/fsi/fsi-core.c
-@@ -951,7 +951,7 @@ static int __fsi_get_new_minor(struct fsi_slave *slave, enum fsi_dev_type type,
- 	if (cid >= 0 && cid < 16 && type < 4) {
- 		/* Try reserving the legacy number */
- 		id = (cid << 4) | type;
--		id = ida_simple_get(&fsi_minor_ida, id, id + 1, GFP_KERNEL);
-+		id = ida_alloc_range(&fsi_minor_ida, id, id, GFP_KERNEL);
- 		if (id >= 0) {
- 			*out_index = fsi_adjust_index(cid);
- 			*out_dev = fsi_base_dev + id;
-@@ -962,8 +962,8 @@ static int __fsi_get_new_minor(struct fsi_slave *slave, enum fsi_dev_type type,
- 			return id;
- 		/* Fallback to non-legacy allocation */
- 	}
--	id = ida_simple_get(&fsi_minor_ida, FSI_CHAR_LEGACY_TOP,
--			    FSI_CHAR_MAX_DEVICES, GFP_KERNEL);
-+	id = ida_alloc_range(&fsi_minor_ida, FSI_CHAR_LEGACY_TOP,
-+			    FSI_CHAR_MAX_DEVICES - 1, GFP_KERNEL);
- 	if (id < 0)
- 		return id;
- 	*out_index = fsi_adjust_index(id);
-@@ -980,7 +980,7 @@ EXPORT_SYMBOL_GPL(fsi_get_new_minor);
- 
- void fsi_free_minor(dev_t dev)
- {
--	ida_simple_remove(&fsi_minor_ida, MINOR(dev));
-+	ida_free(&fsi_minor_ida, MINOR(dev));
- }
- EXPORT_SYMBOL_GPL(fsi_free_minor);
- 
-@@ -1313,13 +1313,13 @@ int fsi_master_register(struct fsi_master *master)
- 	struct device_node *np;
- 
- 	mutex_init(&master->scan_lock);
--	master->idx = ida_simple_get(&master_ida, 0, INT_MAX, GFP_KERNEL);
-+	master->idx = ida_alloc(&master_ida, GFP_KERNEL);
- 	dev_set_name(&master->dev, "fsi%d", master->idx);
- 	master->dev.class = &fsi_master_class;
- 
- 	rc = device_register(&master->dev);
- 	if (rc) {
--		ida_simple_remove(&master_ida, master->idx);
-+		ida_free(&master_ida, master->idx);
- 		return rc;
- 	}
- 
-@@ -1337,7 +1337,7 @@ EXPORT_SYMBOL_GPL(fsi_master_register);
- void fsi_master_unregister(struct fsi_master *master)
- {
- 	if (master->idx >= 0) {
--		ida_simple_remove(&master_ida, master->idx);
-+		ida_free(&master_ida, master->idx);
- 		master->idx = -1;
- 	}
- 
-diff --git a/drivers/fsi/fsi-occ.c b/drivers/fsi/fsi-occ.c
-index c9cc75fbdfb9..63af5cad1015 100644
---- a/drivers/fsi/fsi-occ.c
-+++ b/drivers/fsi/fsi-occ.c
-@@ -630,17 +630,16 @@ static int occ_probe(struct platform_device *pdev)
- 		rc = of_property_read_u32(dev->of_node, "reg", &reg);
- 		if (!rc) {
- 			/* make sure we don't have a duplicate from dts */
--			occ->idx = ida_simple_get(&occ_ida, reg, reg + 1,
--						  GFP_KERNEL);
-+			occ->idx = ida_alloc_range(&occ_ida, reg, reg,
-+						GFP_KERNEL);
- 			if (occ->idx < 0)
--				occ->idx = ida_simple_get(&occ_ida, 1, INT_MAX,
--							  GFP_KERNEL);
-+				occ->idx = ida_alloc_min(&occ_ida, 1,
-+							GFP_KERNEL);
- 		} else {
--			occ->idx = ida_simple_get(&occ_ida, 1, INT_MAX,
--						  GFP_KERNEL);
-+			occ->idx = ida_alloc_min(&occ_ida, 1, GFP_KERNEL);
- 		}
- 	} else {
--		occ->idx = ida_simple_get(&occ_ida, 1, INT_MAX, GFP_KERNEL);
-+		occ->idx = ida_alloc_min(&occ_ida, 1, GFP_KERNEL);
- 	}
- 
- 	platform_set_drvdata(pdev, occ);
-@@ -654,7 +653,7 @@ static int occ_probe(struct platform_device *pdev)
- 	rc = misc_register(&occ->mdev);
- 	if (rc) {
- 		dev_err(dev, "failed to register miscdevice: %d\n", rc);
--		ida_simple_remove(&occ_ida, occ->idx);
-+		ida_free(&occ_ida, occ->idx);
- 		kvfree(occ->buffer);
- 		return rc;
- 	}
-@@ -677,7 +676,7 @@ static int occ_remove(struct platform_device *pdev)
- 
- 	device_for_each_child(&pdev->dev, NULL, occ_unregister_child);
- 
--	ida_simple_remove(&occ_ida, occ->idx);
-+	ida_free(&occ_ida, occ->idx);
- 
- 	return 0;
- }
--- 
-2.25.1
+Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
+## Build
+* kernel: 5.18.1-rc1
+* git: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
+* git branch: linux-5.18.y
+* git commit: 10e6e3d47333297adf359541602af804d4a51482
+* git describe: v5.18-48-g10e6e3d47333
+* test details:
+https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.18.y/build/v5.18=
+-48-g10e6e3d47333/
+
+## Test Regressions (compared to v5.18)
+No test regressions found.
+
+## Metric Regressions (compared to v5.18)
+No metric regressions found.
+
+## Test Fixes (compared to v5.18)
+No test fixes found.
+
+## Metric Fixes (compared to v5.18)
+No metric fixes found.
+
+## Test result summary
+total: 100569, pass: 87698, fail: 1382, skip: 11489
+
+## Build Summary
+* arc: 10 total, 10 passed, 0 failed
+* arm: 296 total, 293 passed, 3 failed
+* arm64: 47 total, 47 passed, 0 failed
+* i386: 44 total, 40 passed, 4 failed
+* mips: 41 total, 38 passed, 3 failed
+* parisc: 14 total, 14 passed, 0 failed
+* powerpc: 59 total, 56 passed, 3 failed
+* riscv: 27 total, 27 passed, 0 failed
+* s390: 26 total, 23 passed, 3 failed
+* sh: 26 total, 24 passed, 2 failed
+* sparc: 14 total, 14 passed, 0 failed
+* x86_64: 47 total, 46 passed, 1 failed
+
+## Test suites summary
+* fwts
+* igt-gpu-tools
+* kselftest-android
+* kselftest-arm64
+* kselftest-breakpoints
+* kselftest-capabilities
+* kselftest-cgroup
+* kselftest-clone3
+* kselftest-core
+* kselftest-cpu-hotplug
+* kselftest-cpufreq
+* kselftest-drivers
+* kselftest-efivarfs
+* kselftest-filesystems
+* kselftest-firmware
+* kselftest-fpu
+* kselftest-futex
+* kselftest-gpio
+* kselftest-intel_pstate
+* kselftest-ipc
+* kselftest-ir
+* kselftest-kcmp
+* kselftest-kexec
+* kselftest-kvm
+* kselftest-lib
+* kselftest-livepatch
+* kselftest-membarrier
+* kselftest-memfd
+* kselftest-memory-hotplug
+* kselftest-mincore
+* kselftest-mount
+* kselftest-mqueue
+* kselftest-net
+* kselftest-openat2
+* kselftest-pid_namespace
+* kselftest-pidfd
+* kselftest-proc
+* kselftest-pstore
+* kselftest-ptrace
+* kselftest-rseq
+* kselftest-rtc
+* kselftest-seccomp
+* kselftest-sigaltstack
+* kselftest-size
+* kselftest-splice
+* kselftest-static_keys
+* kselftest-sync
+* kselftest-sysctl
+* kselftest-timens
+* kselftest-timers
+* kselftest-tmpfs
+* kselftest-tpm2
+* kselftest-user
+* kselftest-vm
+* kselftest-x86
+* kselftest-zram
+* kunit
+* kvm-unit-tests
+* libgpiod
+* libhugetlbfs
+* linux-log-parser
+* ltp-cap_bounds-tests
+* ltp-commands-tests
+* ltp-containers-tests
+* ltp-controllers-tests
+* ltp-cpuhotplug-tests
+* ltp-crypto-tests
+* ltp-cve-tests
+* ltp-cve-tests
+* ltp-dio-tests
+* ltp-fcntl-locktests-tests
+* ltp-filecaps-tests
+* ltp-fs-tests
+* ltp-fs_bind-tests
+* ltp-fs_perms_simple-tests
+* ltp-fsx-tests
+* ltp-hugetlb-tests
+* ltp-io-tests
+* ltp-ipc-tests
+* ltp-math-tests
+* ltp-mm-tests
+* ltp-nptl-tests
+* ltp-open-posix-tests
+* ltp-pty-tests
+* ltp-sched-tests
+* ltp-securebits-tests
+* ltp-syscalls-tests
+* ltp-tracing-tests
+* network-basic-tests
+* packetdrill
+* perf
+* perf/Zstd-perf.data-compression
+* prep-inline
+* rcutorture
+* ssuite
+* v4l2-compliance
+* vdso
+
+--
+Linaro LKFT
+https://lkft.linaro.org
