@@ -2,233 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4953C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 17:23:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE01CC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 17:25:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239062AbiE1RX1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 28 May 2022 13:23:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52496 "EHLO
+        id S239117AbiE1RZS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 28 May 2022 13:25:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231777AbiE1RXW (ORCPT
+        with ESMTP id S231777AbiE1RZP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 28 May 2022 13:23:22 -0400
-Received: from netrider.rowland.org (netrider.rowland.org [192.131.102.5])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id B71F611A1E
-        for <linux-kernel@vger.kernel.org>; Sat, 28 May 2022 10:23:20 -0700 (PDT)
-Received: (qmail 129814 invoked by uid 1000); 28 May 2022 13:23:20 -0400
-Date:   Sat, 28 May 2022 13:23:20 -0400
-From:   Alan Stern <stern@rowland.harvard.edu>
-To:     syzbot <syzbot+02b16343704b3af1667e@syzkaller.appspotmail.com>
-Cc:     andreyknvl@gmail.com, gregkh@linuxfoundation.org,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Subject: Re: [syzbot] WARNING in driver_unregister
-Message-ID: <YpJaiGRcRjDzRxQC@rowland.harvard.edu>
-References: <YpJNQN6++raKTXS5@rowland.harvard.edu>
- <0000000000005b7a1b05e0156265@google.com>
+        Sat, 28 May 2022 13:25:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34B8111A32;
+        Sat, 28 May 2022 10:25:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E3998B807ED;
+        Sat, 28 May 2022 17:25:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7C3BC34100;
+        Sat, 28 May 2022 17:25:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653758711;
+        bh=GdCxg+Hoqs4A5uVj70itM0dbHtrrCFfc1B7A5Kv46nA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=FB63uImwGdFeA5/Z9TrQifFVx/+xCf8Ko2Rs/y5W1IGoJgSyHuusfcef+E3g5pzy0
+         Km4W1kx70qfQf5Pcq85PNL1yqX+IoErx9DlI6pXZhgBS4CUkEm5Pr+ewB7aF7BDcJ6
+         oF+VyBFJdXZEu/JQiZguzZt6E3DTAlA5QLOKTo6J1jlB1qzFlNbrvuqFJLUCAJWIZk
+         FDN6Pf+SOodovwP2l9MG9/ltlvjKAR21XFLRERbzwHpepBiU94sx2rSdFlbtVe5bOD
+         +TvKE9R46jwb9jmG6LvZw7mikGNzOrZjLYwC51QtBSLmAX9n+/tKgjN8Ol0EkwM9d+
+         8bmRuMnT0/PqQ==
+Date:   Sat, 28 May 2022 18:34:05 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Joe Simmons-Talbott <joetalbott@gmail.com>
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/1] iio: Prefer octal over symbolic permissions.
+Message-ID: <20220528183405.22b55033@jic23-huawei>
+In-Reply-To: <20220527185651.465204-1-joetalbott@gmail.com>
+References: <20220527185651.465204-1-joetalbott@gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0000000000005b7a1b05e0156265@google.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, May 28, 2022 at 10:02:12AM -0700, syzbot wrote:
-> Hello,
+On Fri, 27 May 2022 14:56:52 -0400
+Joe Simmons-Talbott <joetalbott@gmail.com> wrote:
+
+> As reported by checkpatch.pl use ocatl permissions rather than symbolic
+> permissions.
 > 
-> syzbot has tested the proposed patch but the reproducer is still triggering an issue:
-> WARNING in driver_unregister
+> Signed-off-by: Joe Simmons-Talbott <joetalbott@gmail.com>
+
+Hi Joe,
+
+Why the resend?  Given change of description, I'm guessing this is v2
+because of feedback on a similar patch elsewhere. If so, please
+put the version number in the patch log and provide a changelog
+below the ---
+
+Hmm. I guess I don't really mind cleaning this up though it is
+some churn in core code which is usually something we try to avoid
+for fairly trivial style reasons.
+
+One request inline (though I suspect it applies in several places,
+I just haven't checked ;)
+
+Thanks,
+
+Jonathan
+
+> ---
+>  drivers/iio/industrialio-buffer.c  | 12 ++++++------
+>  drivers/iio/industrialio-core.c    | 10 +++++-----
+>  drivers/iio/industrialio-trigger.c |  4 ++--
+>  3 files changed, 13 insertions(+), 13 deletions(-)
 > 
-> ------------[ cut here ]------------
-> Unexpected driver unregister!
-> WARNING: CPU: 0 PID: 2335 at drivers/base/driver.c:194 driver_unregister drivers/base/driver.c:194 [inline]
-> WARNING: CPU: 0 PID: 2335 at drivers/base/driver.c:194 driver_unregister+0x8c/0xb0 drivers/base/driver.c:191
-> Modules linked in:
-> CPU: 0 PID: 2335 Comm: syz-executor.0 Not tainted 5.18.0-rc5-syzkaller-00157-g97fa5887cf28-dirty #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> RIP: 0010:driver_unregister drivers/base/driver.c:194 [inline]
-> RIP: 0010:driver_unregister+0x8c/0xb0 drivers/base/driver.c:191
-> Code: 68 4c 89 e7 e8 65 b9 db fe 48 89 ef e8 fd a0 ff ff 5d 41 5c e9 75 fa 78 fe e8 70 fa 78 fe 48 c7 c7 80 7a 81 86 e8 12 96 ee 02 <0f> 0b 5d 41 5c e9 5a fa 78 fe e8 75 93 ad fe eb 96 e8 6e 93 ad fe
-> RSP: 0018:ffffc9000267fa78 EFLAGS: 00010282
-> RAX: 0000000000000000 RBX: ffff888118006050 RCX: 0000000000000000
-> RDX: ffff888114fe8000 RSI: ffffffff812bdce8 RDI: fffff520004cff41
-> RBP: ffff888118006098 R08: 0000000000000000 R09: 0000000000000001
-> R10: ffffffff812b86be R11: 0000000000000000 R12: 0000000000000000
-> R13: ffff888118006008 R14: ffff88811785e7a8 R15: ffff888100219ca0
-> FS:  0000000000000000(0000) GS:ffff8881f6800000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 00007fc6f40b3718 CR3: 0000000007825000 CR4: 00000000003506f0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> Call Trace:
->  <TASK>
->  usb_gadget_unregister_driver+0x48/0x70 drivers/usb/gadget/udc/core.c:1590
->  raw_release+0x18b/0x290 drivers/usb/gadget/legacy/raw_gadget.c:412
+> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+> index b078eb2f3c9d..c27f74a3c0f3 100644
+> --- a/drivers/iio/industrialio-buffer.c
+> +++ b/drivers/iio/industrialio-buffer.c
+> @@ -1391,17 +1391,17 @@ static ssize_t direction_show(struct device *dev,
+>  	}
+>  }
+>  
+> -static DEVICE_ATTR(length, S_IRUGO | S_IWUSR, iio_buffer_read_length,
+> +static DEVICE_ATTR(length, 0644, iio_buffer_read_length,
+>  		   iio_buffer_write_length);
+>  static struct device_attribute dev_attr_length_ro = __ATTR(length,
+> -	S_IRUGO, iio_buffer_read_length, NULL);
+> -static DEVICE_ATTR(enable, S_IRUGO | S_IWUSR,
+> +	0444, iio_buffer_read_length, NULL);
+> +static DEVICE_ATTR(enable, 0644,
+>  		   iio_buffer_show_enable, iio_buffer_store_enable);
+> -static DEVICE_ATTR(watermark, S_IRUGO | S_IWUSR,
+> +static DEVICE_ATTR(watermark, 0644,
+>  		   iio_buffer_show_watermark, iio_buffer_store_watermark);
+>  static struct device_attribute dev_attr_watermark_ro = __ATTR(watermark,
+> -	S_IRUGO, iio_buffer_show_watermark, NULL);
+> -static DEVICE_ATTR(data_available, S_IRUGO,
+> +	0444, iio_buffer_show_watermark, NULL);
+> +static DEVICE_ATTR(data_available, 0444,
+>  		iio_dma_show_data_available, NULL);
 
-Let's try getting some better information about what's really happening.
+a side effect of this change a slight shortening of how long the above
+two lines will be if combined into one.  It's now sub 80 chars
+I think, so please make them a single line.  Also check for similar
+cases elsewhere.
 
-Alan Stern
 
-#syz test: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/usb.git 97fa5887cf28
+>  static DEVICE_ATTR_RO(direction);
+>  
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> index e1ed44dec2ab..35de348d686e 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -1114,12 +1114,12 @@ int __iio_device_attr_init(struct device_attribute *dev_attr,
+>  	dev_attr->attr.name = name;
+>  
+>  	if (readfunc) {
+> -		dev_attr->attr.mode |= S_IRUGO;
+> +		dev_attr->attr.mode |= 0444;
+>  		dev_attr->show = readfunc;
+>  	}
+>  
+>  	if (writefunc) {
+> -		dev_attr->attr.mode |= S_IWUSR;
+> +		dev_attr->attr.mode |= 0200;
+>  		dev_attr->store = writefunc;
+>  	}
+>  
+> @@ -1401,7 +1401,7 @@ static ssize_t iio_show_dev_name(struct device *dev,
+>  	return sysfs_emit(buf, "%s\n", indio_dev->name);
+>  }
+>  
+> -static DEVICE_ATTR(name, S_IRUGO, iio_show_dev_name, NULL);
+> +static DEVICE_ATTR(name, 0444, iio_show_dev_name, NULL);
+>  
+>  static ssize_t iio_show_dev_label(struct device *dev,
+>  				 struct device_attribute *attr,
+> @@ -1411,7 +1411,7 @@ static ssize_t iio_show_dev_label(struct device *dev,
+>  	return sysfs_emit(buf, "%s\n", indio_dev->label);
+>  }
+>  
+> -static DEVICE_ATTR(label, S_IRUGO, iio_show_dev_label, NULL);
+> +static DEVICE_ATTR(label, 0444, iio_show_dev_label, NULL);
+>  
+>  static ssize_t iio_show_timestamp_clock(struct device *dev,
+>  					struct device_attribute *attr,
+> @@ -1509,7 +1509,7 @@ int iio_device_register_sysfs_group(struct iio_dev *indio_dev,
+>  	return 0;
+>  }
+>  
+> -static DEVICE_ATTR(current_timestamp_clock, S_IRUGO | S_IWUSR,
+> +static DEVICE_ATTR(current_timestamp_clock, 0644,
+>  		   iio_show_timestamp_clock, iio_store_timestamp_clock);
+>  
+>  static int iio_device_register_sysfs(struct iio_dev *indio_dev)
+> diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
+> index f504ed351b3e..e22a35634f2c 100644
+> --- a/drivers/iio/industrialio-trigger.c
+> +++ b/drivers/iio/industrialio-trigger.c
+> @@ -54,7 +54,7 @@ static ssize_t iio_trigger_read_name(struct device *dev,
+>  	return sysfs_emit(buf, "%s\n", trig->name);
+>  }
+>  
+> -static DEVICE_ATTR(name, S_IRUGO, iio_trigger_read_name, NULL);
+> +static DEVICE_ATTR(name, 0444, iio_trigger_read_name, NULL);
+>  
+>  static struct attribute *iio_trig_dev_attrs[] = {
+>  	&dev_attr_name.attr,
+> @@ -494,7 +494,7 @@ static ssize_t iio_trigger_write_current(struct device *dev,
+>  	return ret;
+>  }
+>  
+> -static DEVICE_ATTR(current_trigger, S_IRUGO | S_IWUSR,
+> +static DEVICE_ATTR(current_trigger, 0644,
+>  		   iio_trigger_read_current,
+>  		   iio_trigger_write_current);
+>  
 
-Index: usb-devel/drivers/usb/gadget/legacy/raw_gadget.c
-===================================================================
---- usb-devel.orig/drivers/usb/gadget/legacy/raw_gadget.c
-+++ usb-devel/drivers/usb/gadget/legacy/raw_gadget.c
-@@ -11,6 +11,7 @@
- #include <linux/ctype.h>
- #include <linux/debugfs.h>
- #include <linux/delay.h>
-+#include <linux/idr.h>
- #include <linux/kref.h>
- #include <linux/miscdevice.h>
- #include <linux/module.h>
-@@ -36,6 +37,9 @@ MODULE_LICENSE("GPL");
- 
- /*----------------------------------------------------------------------*/
- 
-+static DEFINE_IDA(driver_id_numbers);
-+#define DRIVER_DRIVER_NAME_LENGTH_MAX	32
-+
- #define RAW_EVENT_QUEUE_SIZE	16
- 
- struct raw_event_queue {
-@@ -160,6 +164,9 @@ struct raw_dev {
- 	/* Reference to misc device: */
- 	struct device			*dev;
- 
-+	/* Make driver names unique */
-+	int				driver_id_number;
-+
- 	/* Protected by lock: */
- 	enum dev_state			state;
- 	bool				gadget_registered;
-@@ -188,6 +195,7 @@ static struct raw_dev *dev_new(void)
- 	spin_lock_init(&dev->lock);
- 	init_completion(&dev->ep0_done);
- 	raw_event_queue_init(&dev->queue);
-+	dev->driver_id_number = -1;
- 	return dev;
- }
- 
-@@ -198,6 +206,9 @@ static void dev_free(struct kref *kref)
- 
- 	kfree(dev->udc_name);
- 	kfree(dev->driver.udc_name);
-+	kfree(dev->driver.driver.name);
-+	if (dev->driver_id_number >= 0)
-+		ida_free(&driver_id_numbers, dev->driver_id_number);
- 	if (dev->req) {
- 		if (dev->ep0_urb_queued)
- 			usb_ep_dequeue(dev->gadget->ep0, dev->req);
-@@ -398,6 +409,7 @@ static int raw_release(struct inode *ino
- 	spin_unlock_irqrestore(&dev->lock, flags);
- 
- 	if (unregister) {
-+		dev_info(dev->dev, "Unregistering driver %d at %px", dev->driver_id_number, dev);
- 		ret = usb_gadget_unregister_driver(&dev->driver);
- 		if (ret != 0)
- 			dev_err(dev->dev,
-@@ -421,6 +433,7 @@ static int raw_ioctl_init(struct raw_dev
- 	struct usb_raw_init arg;
- 	char *udc_driver_name;
- 	char *udc_device_name;
-+	char *driver_driver_name;
- 	unsigned long flags;
- 
- 	if (copy_from_user(&arg, (void __user *)value, sizeof(arg)))
-@@ -439,36 +452,44 @@ static int raw_ioctl_init(struct raw_dev
- 		return -EINVAL;
- 	}
- 
-+	ret = ida_alloc(&driver_id_numbers, GFP_KERNEL);
-+	if (ret < 0)
-+		return ret;
-+	dev->driver_id_number = ret;
-+
-+	driver_driver_name = kmalloc(DRIVER_DRIVER_NAME_LENGTH_MAX, GFP_KERNEL);
-+	if (!driver_driver_name) {
-+		ret = -ENOMEM;
-+		goto out_free_driver_id_number;
-+	}
-+	snprintf(driver_driver_name, DRIVER_DRIVER_NAME_LENGTH_MAX,
-+				DRIVER_NAME ".%d", dev->driver_id_number);
-+
- 	udc_driver_name = kmalloc(UDC_NAME_LENGTH_MAX, GFP_KERNEL);
--	if (!udc_driver_name)
--		return -ENOMEM;
-+	if (!udc_driver_name) {
-+		ret = -ENOMEM;
-+		goto out_free_driver_driver_name;
-+	}
- 	ret = strscpy(udc_driver_name, &arg.driver_name[0],
- 				UDC_NAME_LENGTH_MAX);
--	if (ret < 0) {
--		kfree(udc_driver_name);
--		return ret;
--	}
-+	if (ret < 0)
-+		goto out_free_udc_driver_name;
- 	ret = 0;
- 
- 	udc_device_name = kmalloc(UDC_NAME_LENGTH_MAX, GFP_KERNEL);
- 	if (!udc_device_name) {
--		kfree(udc_driver_name);
--		return -ENOMEM;
-+		ret = -ENOMEM;
-+		goto out_free_udc_driver_name;
- 	}
- 	ret = strscpy(udc_device_name, &arg.device_name[0],
- 				UDC_NAME_LENGTH_MAX);
--	if (ret < 0) {
--		kfree(udc_driver_name);
--		kfree(udc_device_name);
--		return ret;
--	}
-+	if (ret < 0)
-+		goto out_free_udc_device_name;
- 	ret = 0;
- 
- 	spin_lock_irqsave(&dev->lock, flags);
- 	if (dev->state != STATE_DEV_OPENED) {
- 		dev_dbg(dev->dev, "fail, device is not opened\n");
--		kfree(udc_driver_name);
--		kfree(udc_device_name);
- 		ret = -EINVAL;
- 		goto out_unlock;
- 	}
-@@ -483,14 +504,24 @@ static int raw_ioctl_init(struct raw_dev
- 	dev->driver.suspend = gadget_suspend;
- 	dev->driver.resume = gadget_resume;
- 	dev->driver.reset = gadget_reset;
--	dev->driver.driver.name = DRIVER_NAME;
-+	dev->driver.driver.name = driver_driver_name;
- 	dev->driver.udc_name = udc_device_name;
- 	dev->driver.match_existing_only = 1;
- 
- 	dev->state = STATE_DEV_INITIALIZED;
-+	spin_unlock_irqrestore(&dev->lock, flags);
-+	return ret;
- 
- out_unlock:
- 	spin_unlock_irqrestore(&dev->lock, flags);
-+out_free_udc_device_name:
-+	kfree(udc_device_name);
-+out_free_udc_driver_name:
-+	kfree(udc_driver_name);
-+out_free_driver_driver_name:
-+	kfree(driver_driver_name);
-+out_free_driver_id_number:
-+	ida_free(&driver_id_numbers, dev->driver_id_number);
- 	return ret;
- }
- 
-@@ -510,6 +541,7 @@ static int raw_ioctl_run(struct raw_dev
- 	}
- 	spin_unlock_irqrestore(&dev->lock, flags);
- 
-+	dev_info(dev->dev, "Registering driver %d at %px", dev->driver_id_number, dev);
- 	ret = usb_gadget_register_driver(&dev->driver);
- 
- 	spin_lock_irqsave(&dev->lock, flags);
