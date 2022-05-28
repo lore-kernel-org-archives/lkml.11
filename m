@@ -2,83 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8E31C4332F
-	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 02:50:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70BFFC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 02:52:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352586AbiE1Cup (ORCPT
+        id S1352927AbiE1CwR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 22:50:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34492 "EHLO
+        Fri, 27 May 2022 22:52:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231347AbiE1Cum (ORCPT
+        with ESMTP id S231347AbiE1CwP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 22:50:42 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BD61104CB1;
-        Fri, 27 May 2022 19:50:41 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id q92-20020a17090a17e500b001e0817e77f6so8603491pja.5;
-        Fri, 27 May 2022 19:50:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=P5xo1bFB58EAueBxvGYMNkb/9Rel1/20oqO8YBkucTI=;
-        b=WW6gGfj2rUYzPhJZfPXkW25p/BgNz69+WlVMWV93xGmhTkmrDDYvBLwPtD5F2g5rGl
-         6m3/V0T1LwdOxsLvBfzSeLL0aB4lDEZDTC/UuDROGmt8viYcVABDg9TcV/+nwCe8XtYl
-         L+YNjKd/yQXMe/MWTi20z+6nxWWHXxIWDX3Y7awSCBtdlB3oEH/m6T+mO68njuGF7eUD
-         exDSMQjbBHcye3tuiXk37ayul6ieUbJgG9Kjk67woW2uSsLmx0CYpahQ4PCQyz6g6h0Y
-         OPG8mDETUJpJSWNaUJFRUFf4wIHZ/IDakB07ZqtLgQJBNs3dA1BomWWlJzJ5xM1Db9in
-         rFmg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=P5xo1bFB58EAueBxvGYMNkb/9Rel1/20oqO8YBkucTI=;
-        b=PC1sGTv8T5lVzCAqI0zKK7vufa+FLJsNm3q0s6KE7/M65htjnBiENZpa3JngBV0gnG
-         YSCrc4mXIvU75+ytUI9Cf3rwEydXaMptUrKAirkSecm0i4TaaXQ5NUsoP9AZ4fT8HMn6
-         QrrOLFYsMYlykz53fF4ONcKYeZfHXaP2YRcWJK/treVyAaxcEtzvoSyJcbZtG3gPhpfP
-         YaKiZ48E+NyKYILVAnMZ+5GE2PcQ9l/QlfmV2A9nzpcki5S7w/SvcU6mOE/+o+YNV22V
-         FSOejgSBedq3d18rT6z9TRfmaiY+lfqDg8Qoysgas9yZ0un7IZzkemu5uNBGTM0HBBD3
-         IXdA==
-X-Gm-Message-State: AOAM5320aFE4kgQNuoUv9hguuVeJ/NXxBkToAjppP60zDdcPYiEpu3CM
-        pBC8G5FgN74t8f1hVWXFiQtmSgCe5pg77/TD
-X-Google-Smtp-Source: ABdhPJyBBoY4gi4gpyiJHe78GElVwaPt02zpBTmBcU15D7aK/DkadqwDcUehW0Kf7mlQjhoe0hE1cA==
-X-Received: by 2002:a17:90b:224a:b0:1e0:f91:3a3f with SMTP id hk10-20020a17090b224a00b001e00f913a3fmr11415343pjb.62.1653706240713;
-        Fri, 27 May 2022 19:50:40 -0700 (PDT)
-Received: from localhost (subs02-180-214-232-11.three.co.id. [180.214.232.11])
-        by smtp.gmail.com with ESMTPSA id s7-20020a170902988700b0015e8d4eb267sm4513964plp.177.2022.05.27.19.50.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 May 2022 19:50:40 -0700 (PDT)
-Date:   Sat, 28 May 2022 09:50:37 +0700
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Subject: Re: [PATCH 5.18 00/47] 5.18.1-rc1 review
-Message-ID: <YpGN/S5ioNbJqEeW@debian.me>
-References: <20220527084801.223648383@linuxfoundation.org>
+        Fri, 27 May 2022 22:52:15 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2A19880C6
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 19:52:13 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.54])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4L95l155Gvz1JCTL;
+        Sat, 28 May 2022 10:50:37 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sat, 28 May 2022 10:52:11 +0800
+Subject: Re: [PATCH] mm/vmscan: don't try to reclaim freed folios
+To:     Matthew Wilcox <willy@infradead.org>
+CC:     <akpm@linux-foundation.org>, <linux-mm@kvack.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20220527080451.48549-1-linmiaohe@huawei.com>
+ <YpDoAZtQtQf6U8D2@casper.infradead.org>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <e0502c7c-b71d-5356-fcc3-7c048c25d827@huawei.com>
+Date:   Sat, 28 May 2022 10:52:11 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220527084801.223648383@linuxfoundation.org>
+In-Reply-To: <YpDoAZtQtQf6U8D2@casper.infradead.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 27, 2022 at 10:49:40AM +0200, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.18.1 release.
-> There are 47 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+On 2022/5/27 23:02, Matthew Wilcox wrote:
+> On Fri, May 27, 2022 at 04:04:51PM +0800, Miaohe Lin wrote:
+>> If folios were freed from under us, there's no need to reclaim them. Skip
+>> these folios to save lots of cpu cycles and avoid possible unnecessary
+>> disk IO.
+>>
+>> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+>> ---
+>>  mm/vmscan.c | 8 +++++++-
+>>  1 file changed, 7 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/mm/vmscan.c b/mm/vmscan.c
+>> index f7d9a683e3a7..646dd1efad32 100644
+>> --- a/mm/vmscan.c
+>> +++ b/mm/vmscan.c
+>> @@ -1556,12 +1556,18 @@ static unsigned int shrink_page_list(struct list_head *page_list,
+>>  		folio = lru_to_folio(page_list);
+>>  		list_del(&folio->lru);
+>>  
+>> +		nr_pages = folio_nr_pages(folio);
+>> +		if (folio_ref_count(folio) == 1) {
+>> +			/* folio was freed from under us. So we are done. */
+>> +			WARN_ON(!folio_put_testzero(folio));
+> 
+> What?  No.  This can absolutely happen.  We have a refcount on the folio,
+> which means that any other thread can temporarily raise the refcount,
+
+IIUC, the folio is only in the isolated page_list now and it's not in the page cache, swap cache, pagetable or
+under any use. So there should be no way that any other thread can temporarily raise the refcount when
+folio_ref_count == 1. Or am I miss something?
+
+> so this WARN_ON can trigger.  Also, we don't hold the folio locked,
+> or an extra reference, so nr_pages is unstable because it can be split.
+
+Yes, you're right. When folio_ref_count != 1, nr_pages is unstable. Will fix it if v2 is possible. :)
+
+Thanks a lot for review and comment!
+
+> 
+>> +			goto free_it;
+>> +		}
+>> +
+>>  		if (!folio_trylock(folio))
+>>  			goto keep;
+>>  
+>>  		VM_BUG_ON_FOLIO(folio_test_active(folio), folio);
+>>  
+>> -		nr_pages = folio_nr_pages(folio);
+>>  
+>>  		/* Account the number of base pages */
+>>  		sc->nr_scanned += nr_pages;
+>> -- 
+>> 2.23.0
+>>
+>>
+> 
+> .
 > 
 
-Successfully cross-compiled for arm64 (bcm2711_defconfig, GCC 12.1.0).
-
-Tested-by: Bagas Sanjaya <bagasdotme@gmail.com>
-
--- 
-An old man doll... just what I always wanted! - Clara
