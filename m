@@ -2,99 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D1C1C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 10:47:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B092C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 10:50:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355915AbiE1Kre (ORCPT
+        id S1355816AbiE1KuX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 28 May 2022 06:47:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33742 "EHLO
+        Sat, 28 May 2022 06:50:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355438AbiE1Kr0 (ORCPT
+        with ESMTP id S234108AbiE1Kt7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 28 May 2022 06:47:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 416E51C123
-        for <linux-kernel@vger.kernel.org>; Sat, 28 May 2022 03:47:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EC333B816FC
-        for <linux-kernel@vger.kernel.org>; Sat, 28 May 2022 10:47:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D341C34116
-        for <linux-kernel@vger.kernel.org>; Sat, 28 May 2022 10:47:06 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="eVuGEnTz"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1653734823;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=yvkMObBvQuESLA3tgiCHwDOneR72VGk01RLTWqPCrPE=;
-        b=eVuGEnTz50Yxrpvt4R+sJiw58MkzfBHJi0LvrcE1kbAC7fBLcpjtiBRV4uMcHWHAoDXD7x
-        83hvWoDoXVi9k+/xKkdBDfJ5RZxWOUEoGpszpc0izU9pDMSdlfSZiOBYd5+9outKADwy1c
-        6CiHVPazpO02XsvnputRGNWGQDWocfs=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id fd50f0d3 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO)
-        for <linux-kernel@vger.kernel.org>;
-        Sat, 28 May 2022 10:47:03 +0000 (UTC)
-Received: by mail-yb1-f171.google.com with SMTP id z186so7463432ybz.3
-        for <linux-kernel@vger.kernel.org>; Sat, 28 May 2022 03:47:03 -0700 (PDT)
-X-Gm-Message-State: AOAM532VE0+7Zxqck7o8ljPBAx9BJXg4gPn5dsvnTPBMlVesdEYdHYIO
-        2w12J2Fd2g3GfPiAkwxlzcHKExubxUEqKngypy4=
-X-Google-Smtp-Source: ABdhPJyixFhRilZFN5H2fag0QpJjlKI3j15XAKBazx0G7U79AaI/W1qBFYBPpv2ari2zWqKUNAsz/nhQz+HgD3RCdKk=
-X-Received: by 2002:a25:9389:0:b0:65b:afb6:4295 with SMTP id
- a9-20020a259389000000b0065bafb64295mr5470004ybm.373.1653734822539; Sat, 28
- May 2022 03:47:02 -0700 (PDT)
+        Sat, 28 May 2022 06:49:59 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F415113D66
+        for <linux-kernel@vger.kernel.org>; Sat, 28 May 2022 03:49:57 -0700 (PDT)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.56])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4L9JLF5Zd1z1JC5R;
+        Sat, 28 May 2022 18:48:21 +0800 (CST)
+Received: from dggpemm500018.china.huawei.com (7.185.36.111) by
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sat, 28 May 2022 18:49:56 +0800
+Received: from huawei.com (10.175.112.125) by dggpemm500018.china.huawei.com
+ (7.185.36.111) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sat, 28 May
+ 2022 18:49:55 +0800
+From:   Yue Zou <zouyue3@huawei.com>
+To:     <sfr@canb.auug.org.au>, <akpm@linux-foundation.org>,
+        <mhiramat@kernel.org>, <rostedt@goodmis.org>,
+        <ahalaney@redhat.com>, <vbabka@suse.cz>, <Jason@zx2c4.com>,
+        <mark-pk.tsai@mediatek.com>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH -next] smp: Move stub from main.c into smp.h
+Date:   Sat, 28 May 2022 11:11:22 +0000
+Message-ID: <20220528111122.1888581-1-zouyue3@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <YpH84wrg4ZxIkkie@debian>
-In-Reply-To: <YpH84wrg4ZxIkkie@debian>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Sat, 28 May 2022 12:46:51 +0200
-X-Gmail-Original-Message-ID: <CAHmME9qHRd-t8mupAG1w0jV-uE5UNrMeRO+8-0b_4N1cCPyM+w@mail.gmail.com>
-Message-ID: <CAHmME9qHRd-t8mupAG1w0jV-uE5UNrMeRO+8-0b_4N1cCPyM+w@mail.gmail.com>
-Subject: Re: mainline build failure due to 8bdc2a190105 ("crypto: poly1305 -
- cleanup stray CRYPTO_LIB_POLY1305_RSIZE")
-To:     Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.112.125]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemm500018.china.huawei.com (7.185.36.111)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Sudip,
+Move the stubs in init/main.c for !CONFIG_SMP to smp.h
+since these definitions for CONFIG_SMP are in smp.h already.
 
-On Sat, May 28, 2022 at 12:43 PM Sudip Mukherjee
-<sudipm.mukherjee@gmail.com> wrote:
->
-> Hi All,
->
-> The latest mainline kernel branch fails to build for:
->
-> arm: imx_v6_v7_defconfig and multi_v7_defconfig
-> mips: decstation_64_defconfig, decstation_defconfig, decstation_r4k_defconfig
->
-> with errors like:
->
-> In file included from crypto/chacha20poly1305.c:13:
-> ./include/crypto/poly1305.h:56:46: error: 'CONFIG_CRYPTO_LIB_POLY1305_RSIZE' undeclared here (not in a function); did you mean 'CONFIG_CRYPTO_POLY1305_MODULE'?
->    56 |                 struct poly1305_key opaque_r[CONFIG_CRYPTO_LIB_POLY1305_RSIZE];
->       |                                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->
->
-> git bisect pointed to 8bdc2a190105 ("crypto: poly1305 - cleanup stray CRYPTO_LIB_POLY1305_RSIZE")
->
-> I have checked .config to confirm that it contains:
->
-> CONFIG_CRYPTO_CHACHA20POLY1305=m
-> # CONFIG_CRYPTO_LIB_POLY1305 is not set
->
-> so, CONFIG_CRYPTO_LIB_POLY1305_RSIZE will not be defined as it now
-> depends on CONFIG_CRYPTO_LIB_POLY1305.
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yue Zou <zouyue3@huawei.com>
+---
+ include/linux/smp.h | 4 ++++
+ init/main.c         | 5 -----
+ 2 files changed, 4 insertions(+), 5 deletions(-)
 
-Indeed. There's this v2:
-https://lore.kernel.org/all/20220527201931.63955-1-Jason@zx2c4.com/
+diff --git a/include/linux/smp.h b/include/linux/smp.h
+index a80ab58ae3f1..bc42f6f8415a 100644
+--- a/include/linux/smp.h
++++ b/include/linux/smp.h
+@@ -183,6 +183,10 @@ static inline int get_boot_cpu_id(void)
+ 
+ #else /* !SMP */
+ 
++static const unsigned int setup_max_cpus = NR_CPUS;
++static inline void setup_nr_cpu_ids(void) { }
++static inline void smp_prepare_cpus(unsigned int maxcpus) { }
++
+ static inline void smp_send_stop(void) { }
+ 
+ /*
+diff --git a/init/main.c b/init/main.c
+index 0f452ae3b20f..3c432b28c78f 100644
+--- a/init/main.c
++++ b/init/main.c
+@@ -602,11 +602,6 @@ static int __init rdinit_setup(char *str)
+ }
+ __setup("rdinit=", rdinit_setup);
+ 
+-#ifndef CONFIG_SMP
+-static const unsigned int setup_max_cpus = NR_CPUS;
+-static inline void setup_nr_cpu_ids(void) { }
+-static inline void smp_prepare_cpus(unsigned int maxcpus) { }
+-#endif
+ 
+ /*
+  * We need to store the untouched command line for future reference.
+-- 
+2.25.1
 
-I'll send a v1/v2 interdiff shortly.
-
-Jason
