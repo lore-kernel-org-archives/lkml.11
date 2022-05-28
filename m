@@ -2,275 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60531C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 09:37:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33266C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 09:39:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233014AbiE1JhS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 28 May 2022 05:37:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36938 "EHLO
+        id S233111AbiE1Jji (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 28 May 2022 05:39:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232851AbiE1Jg6 (ORCPT
+        with ESMTP id S232644AbiE1Jjg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 28 May 2022 05:36:58 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05AA017065;
-        Sat, 28 May 2022 02:36:54 -0700 (PDT)
-Received: from kwepemi500016.china.huawei.com (unknown [172.30.72.56])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4L9Gjx5TbPz1JCBy;
-        Sat, 28 May 2022 17:35:17 +0800 (CST)
-Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
- kwepemi500016.china.huawei.com (7.221.188.220) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 28 May 2022 17:36:52 +0800
-Received: from huawei.com (10.175.127.227) by kwepemm600009.china.huawei.com
- (7.193.23.164) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sat, 28 May
- 2022 17:36:51 +0800
-From:   Yu Kuai <yukuai3@huawei.com>
-To:     <tj@kernel.org>, <axboe@kernel.dk>, <paolo.valente@linaro.org>
-CC:     <cgroups@vger.kernel.org>, <linux-block@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <yukuai3@huawei.com>,
-        <yi.zhang@huawei.com>
-Subject: [PATCH -next v7 2/3] block, bfq: refactor the counting of 'num_groups_with_pending_reqs'
-Date:   Sat, 28 May 2022 17:50:19 +0800
-Message-ID: <20220528095020.186970-3-yukuai3@huawei.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220528095020.186970-1-yukuai3@huawei.com>
-References: <20220528095020.186970-1-yukuai3@huawei.com>
+        Sat, 28 May 2022 05:39:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F41D17A80;
+        Sat, 28 May 2022 02:39:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DF4B6B816F4;
+        Sat, 28 May 2022 09:39:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A44A0C34100;
+        Sat, 28 May 2022 09:39:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653730772;
+        bh=+jA1Bp8CM4ALpWYkpR1+uBpuu0hpBW+rO9hvYyLjKl0=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=R5eNYLn1ow1UI70uVvuT4iPgQcBxFl80oB08uCUMIJ9KOXreHpAxmDLZ6VY7GT3We
+         ARlfgaYb+MX0G+/RWiYp9vQpBMBC5W1VkFtDShi8dVCyQShQWqGAYWGk/6TORQouY0
+         u8rvHXPAgNyMfP/d68ngBv4QTQ1ZCWc71JAxlHuf/GBAppno033kBVOqWdqTYIdTEh
+         hJjevcPqPw6Ob/wC4AjfLfgTioVz2UGfIprhchOkHYKue8tRMaJjg4pMM9kwu9KGAa
+         0X3mzg67Vvg11O3/8HS4tQx0BRVqjZAL/Mg1GBcYD0nxcRxfVVRVY2m7zRF0I/Imss
+         PP5f90UNJkWQg==
+Received: by mail-oi1-f177.google.com with SMTP id r68so8405023oie.12;
+        Sat, 28 May 2022 02:39:32 -0700 (PDT)
+X-Gm-Message-State: AOAM532cEVFodTrzV0rwFv9GzRUTKAQROMOCtRQXfcRkkpZN4XWD/Ih1
+        SaxU8eolWncXFEkTUsXpww4fk5rbK2PPmdPvAMY=
+X-Google-Smtp-Source: ABdhPJzvrE4SMNE48ZhDXunAUOmUjnaHS3ik+lHHctxdvkid9O+w6XgXzWtWXjh9d3Ly4N8zafm37B4N9P26GH1r2nI=
+X-Received: by 2002:a05:6808:e8d:b0:322:bac0:2943 with SMTP id
+ k13-20020a0568080e8d00b00322bac02943mr6081516oil.126.1653730771880; Sat, 28
+ May 2022 02:39:31 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- kwepemm600009.china.huawei.com (7.193.23.164)
-X-CFilter-Loop: Reflected
+References: <ea51a17e00a10f3ab25d94b9a5885eb9142aa12b.1653377840.git.geert@linux-m68k.org>
+ <CAMj1kXEUiuSLLcuQ-H7A4djyJF_rdr9bD4JrCP_p98Qg3K=Fow@mail.gmail.com>
+In-Reply-To: <CAMj1kXEUiuSLLcuQ-H7A4djyJF_rdr9bD4JrCP_p98Qg3K=Fow@mail.gmail.com>
+From:   Ard Biesheuvel <ardb@kernel.org>
+Date:   Sat, 28 May 2022 11:39:20 +0200
+X-Gmail-Original-Message-ID: <CAMj1kXF8XUGrLQq+A04_nNEBQzq=8AsyXGQ-ZJoVqxFUeAoH0A@mail.gmail.com>
+Message-ID: <CAMj1kXF8XUGrLQq+A04_nNEBQzq=8AsyXGQ-ZJoVqxFUeAoH0A@mail.gmail.com>
+Subject: Re: [PATCH v2] efi: EFI_DISABLE_RUNTIME should depend on EFI
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Javier Martinez Canillas <javierm@redhat.com>,
+        linux-efi <linux-efi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently, bfq can't handle sync io concurrently as long as they
-are not issued from root group. This is because
-'bfqd->num_groups_with_pending_reqs > 0' is always true in
-bfq_asymmetric_scenario().
+On Sat, 28 May 2022 at 11:24, Ard Biesheuvel <ardb@kernel.org> wrote:
+>
+> On Tue, 24 May 2022 at 09:37, Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+> >
+> > The EFI_DISABLE_RUNTIME config option controls the use of Extensible
+> > Firmware Interface (EFI) runtime services, which matters only if EFI
+> > support is enabled.
+> >
+> > Hence add a dependency on EFI, to prevent asking the user about this
+> > control knob when configuring a kernel without EFI support.
+> >
+> > Fixes: a031651ff2144a3d ("efi: Allow to enable EFI runtime services by default on RT")
+> > Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+> > Acked-by: Javier Martinez Canillas <javierm@redhat.com>
+> > ---
+> > v2:
+> >   - Add Acked-by,
+> >   - Fix typo s/with/without/.
+> > ---
+> >  drivers/firmware/efi/Kconfig | 1 +
+> >  1 file changed, 1 insertion(+)
+> >
+>
+> Can we just move this option into the menu/endmenu scope that already
+> depends on EFI?
+>
 
-The way that bfqg is counted into 'num_groups_with_pending_reqs':
+We can, and there are other candidates as well. So I'll drop this
+patch, and send out another one that covers some other options too.
 
-Before this patch:
- 1) root group will never be counted.
- 2) Count if bfqg or it's child bfqgs have pending requests.
- 3) Don't count if bfqg and it's child bfqgs complete all the requests.
+Thanks,
+Ard.
 
-After this patch:
- 1) root group is counted.
- 2) Count if bfqg have at least one bfqq that is marked busy.
- 3) Don't count if bfqg doesn't have any busy bfqqs.
 
-The main reason to use busy state of bfqq instead of 'pending requests'
-is that bfqq can stay busy after dispatching the last request if idling
-is needed for service guarantees.
-
-With this change, the occasion that only one group is activated can be
-detected, and next patch will support concurrent sync io in the
-occasion.
-
-This patch also rename 'num_groups_with_pending_reqs' to
-'num_groups_with_busy_queues'.
-
-Signed-off-by: Yu Kuai <yukuai3@huawei.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
----
- block/bfq-iosched.c | 46 ++-----------------------------------
- block/bfq-iosched.h | 55 ++++++---------------------------------------
- block/bfq-wf2q.c    | 19 ++++------------
- 3 files changed, 13 insertions(+), 107 deletions(-)
-
-diff --git a/block/bfq-iosched.c b/block/bfq-iosched.c
-index 0d46cb728bbf..eb1da1bd5eb4 100644
---- a/block/bfq-iosched.c
-+++ b/block/bfq-iosched.c
-@@ -852,7 +852,7 @@ static bool bfq_asymmetric_scenario(struct bfq_data *bfqd,
- 
- 	return varied_queue_weights || multiple_classes_busy
- #ifdef CONFIG_BFQ_GROUP_IOSCHED
--	       || bfqd->num_groups_with_pending_reqs > 0
-+	       || bfqd->num_groups_with_busy_queues > 0
- #endif
- 		;
- }
-@@ -970,48 +970,6 @@ void __bfq_weights_tree_remove(struct bfq_data *bfqd,
- void bfq_weights_tree_remove(struct bfq_data *bfqd,
- 			     struct bfq_queue *bfqq)
- {
--	struct bfq_entity *entity = bfqq->entity.parent;
--
--	for_each_entity(entity) {
--		struct bfq_sched_data *sd = entity->my_sched_data;
--
--		if (sd->next_in_service || sd->in_service_entity) {
--			/*
--			 * entity is still active, because either
--			 * next_in_service or in_service_entity is not
--			 * NULL (see the comments on the definition of
--			 * next_in_service for details on why
--			 * in_service_entity must be checked too).
--			 *
--			 * As a consequence, its parent entities are
--			 * active as well, and thus this loop must
--			 * stop here.
--			 */
--			break;
--		}
--
--		/*
--		 * The decrement of num_groups_with_pending_reqs is
--		 * not performed immediately upon the deactivation of
--		 * entity, but it is delayed to when it also happens
--		 * that the first leaf descendant bfqq of entity gets
--		 * all its pending requests completed. The following
--		 * instructions perform this delayed decrement, if
--		 * needed. See the comments on
--		 * num_groups_with_pending_reqs for details.
--		 */
--		if (entity->in_groups_with_pending_reqs) {
--			entity->in_groups_with_pending_reqs = false;
--			bfqd->num_groups_with_pending_reqs--;
--		}
--	}
--
--	/*
--	 * Next function is invoked last, because it causes bfqq to be
--	 * freed if the following holds: bfqq is not in service and
--	 * has no dispatched request. DO NOT use bfqq after the next
--	 * function invocation.
--	 */
- 	__bfq_weights_tree_remove(bfqd, bfqq,
- 				  &bfqd->queue_weights_tree);
- }
-@@ -7118,7 +7076,7 @@ static int bfq_init_queue(struct request_queue *q, struct elevator_type *e)
- 	bfqd->idle_slice_timer.function = bfq_idle_slice_timer;
- 
- 	bfqd->queue_weights_tree = RB_ROOT_CACHED;
--	bfqd->num_groups_with_pending_reqs = 0;
-+	bfqd->num_groups_with_busy_queues = 0;
- 
- 	INIT_LIST_HEAD(&bfqd->active_list);
- 	INIT_LIST_HEAD(&bfqd->idle_list);
-diff --git a/block/bfq-iosched.h b/block/bfq-iosched.h
-index d92adbdd70ee..6c6cd984d769 100644
---- a/block/bfq-iosched.h
-+++ b/block/bfq-iosched.h
-@@ -197,9 +197,6 @@ struct bfq_entity {
- 	/* flag, set to request a weight, ioprio or ioprio_class change  */
- 	int prio_changed;
- 
--	/* flag, set if the entity is counted in groups_with_pending_reqs */
--	bool in_groups_with_pending_reqs;
--
- 	/* last child queue of entity created (for non-leaf entities) */
- 	struct bfq_queue *last_bfqq_created;
- };
-@@ -496,52 +493,14 @@ struct bfq_data {
- 	struct rb_root_cached queue_weights_tree;
- 
- 	/*
--	 * Number of groups with at least one descendant process that
--	 * has at least one request waiting for completion. Note that
--	 * this accounts for also requests already dispatched, but not
--	 * yet completed. Therefore this number of groups may differ
--	 * (be larger) than the number of active groups, as a group is
--	 * considered active only if its corresponding entity has
--	 * descendant queues with at least one request queued. This
--	 * number is used to decide whether a scenario is symmetric.
--	 * For a detailed explanation see comments on the computation
--	 * of the variable asymmetric_scenario in the function
--	 * bfq_better_to_idle().
--	 *
--	 * However, it is hard to compute this number exactly, for
--	 * groups with multiple descendant processes. Consider a group
--	 * that is inactive, i.e., that has no descendant process with
--	 * pending I/O inside BFQ queues. Then suppose that
--	 * num_groups_with_pending_reqs is still accounting for this
--	 * group, because the group has descendant processes with some
--	 * I/O request still in flight. num_groups_with_pending_reqs
--	 * should be decremented when the in-flight request of the
--	 * last descendant process is finally completed (assuming that
--	 * nothing else has changed for the group in the meantime, in
--	 * terms of composition of the group and active/inactive state of child
--	 * groups and processes). To accomplish this, an additional
--	 * pending-request counter must be added to entities, and must
--	 * be updated correctly. To avoid this additional field and operations,
--	 * we resort to the following tradeoff between simplicity and
--	 * accuracy: for an inactive group that is still counted in
--	 * num_groups_with_pending_reqs, we decrement
--	 * num_groups_with_pending_reqs when the first descendant
--	 * process of the group remains with no request waiting for
--	 * completion.
--	 *
--	 * Even this simpler decrement strategy requires a little
--	 * carefulness: to avoid multiple decrements, we flag a group,
--	 * more precisely an entity representing a group, as still
--	 * counted in num_groups_with_pending_reqs when it becomes
--	 * inactive. Then, when the first descendant queue of the
--	 * entity remains with no request waiting for completion,
--	 * num_groups_with_pending_reqs is decremented, and this flag
--	 * is reset. After this flag is reset for the entity,
--	 * num_groups_with_pending_reqs won't be decremented any
--	 * longer in case a new descendant queue of the entity remains
--	 * with no request waiting for completion.
-+	 * Number of groups with at least one bfqq that is marked busy,
-+	 * and this number is used to decide whether a scenario is symmetric.
-+	 * Note that bfqq is busy doesn't mean that the bfqq contains requests.
-+	 * If idling is needed for service guarantees, bfqq will stay busy
-+	 * after dispatching the last request, see details in
-+	 * __bfq_bfqq_expire().
- 	 */
--	unsigned int num_groups_with_pending_reqs;
-+	unsigned int num_groups_with_busy_queues;
- 
- 	/*
- 	 * Per-class (RT, BE, IDLE) number of bfq_queues containing
-diff --git a/block/bfq-wf2q.c b/block/bfq-wf2q.c
-index b97e33688335..48ca7922035c 100644
---- a/block/bfq-wf2q.c
-+++ b/block/bfq-wf2q.c
-@@ -221,13 +221,15 @@ static bool bfq_no_longer_next_in_service(struct bfq_entity *entity)
- static void bfq_inc_busy_queues(struct bfq_queue *bfqq)
- {
- 	bfqq->bfqd->busy_queues[bfqq->ioprio_class - 1]++;
--	bfqq_group(bfqq)->busy_queues++;
-+	if (!(bfqq_group(bfqq)->busy_queues++))
-+		bfqq->bfqd->num_groups_with_busy_queues++;
- }
- 
- static void bfq_dec_busy_queues(struct bfq_queue *bfqq)
- {
- 	bfqq->bfqd->busy_queues[bfqq->ioprio_class - 1]--;
--	bfqq_group(bfqq)->busy_queues--;
-+	if (!(--bfqq_group(bfqq)->busy_queues))
-+		bfqq->bfqd->num_groups_with_busy_queues--;
- }
- 
- #else /* CONFIG_BFQ_GROUP_IOSCHED */
-@@ -1006,19 +1008,6 @@ static void __bfq_activate_entity(struct bfq_entity *entity,
- 		entity->on_st_or_in_serv = true;
- 	}
- 
--#ifdef CONFIG_BFQ_GROUP_IOSCHED
--	if (!bfq_entity_to_bfqq(entity)) { /* bfq_group */
--		struct bfq_group *bfqg =
--			container_of(entity, struct bfq_group, entity);
--		struct bfq_data *bfqd = bfqg->bfqd;
--
--		if (!entity->in_groups_with_pending_reqs) {
--			entity->in_groups_with_pending_reqs = true;
--			bfqd->num_groups_with_pending_reqs++;
--		}
--	}
--#endif
--
- 	bfq_update_fin_time_enqueue(entity, st, backshifted);
- }
- 
--- 
-2.31.1
-
+> > diff --git a/drivers/firmware/efi/Kconfig b/drivers/firmware/efi/Kconfig
+> > index 4720ba98cec312e7..ff6e7bfa8355cfc2 100644
+> > --- a/drivers/firmware/efi/Kconfig
+> > +++ b/drivers/firmware/efi/Kconfig
+> > @@ -299,6 +299,7 @@ config EFI_CUSTOM_SSDT_OVERLAYS
+> >
+> >  config EFI_DISABLE_RUNTIME
+> >         bool "Disable EFI runtime services support by default"
+> > +       depends on EFI
+> >         default y if PREEMPT_RT
+> >         help
+> >           Allow to disable the EFI runtime services support by default. This can
+> > --
+> > 2.25.1
+> >
