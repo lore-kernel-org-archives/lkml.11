@@ -2,92 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8EE9C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 11:09:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13981C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 11:14:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234678AbiE1LJt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 28 May 2022 07:09:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42124 "EHLO
+        id S243172AbiE1LOb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 28 May 2022 07:14:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234274AbiE1LJs (ORCPT
+        with ESMTP id S234274AbiE1LO0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 28 May 2022 07:09:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0AC9201A0;
-        Sat, 28 May 2022 04:09:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6D89A60DDD;
-        Sat, 28 May 2022 11:09:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A38CC34100;
-        Sat, 28 May 2022 11:09:46 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="lPzlkdhB"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1653736182;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=izQRZXBrrgVPYreeMxjNooSE8gWHxKL6jmIqcXOidA4=;
-        b=lPzlkdhBDz88X3eko3eT2hJaidAdx2VFBc0jCwUTVdjT/YrAB927BU6yMKQQvKuGenMx7n
-        jNymODsB08EPIIuYV6mlSdSkQFL9yxT/TcLMvid9M/sLTcCYECvJDbPuJm0KzdBlH0QI/H
-        5w7ARQNXYoXzzjuW24z0rqye7YALAlk=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 1364098c (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Sat, 28 May 2022 11:09:42 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        kernel test robot <lkp@intel.com>
-Subject: [PATCH] Revert "crypto: poly1305 - cleanup stray CRYPTO_LIB_POLY1305_RSIZE"
-Date:   Sat, 28 May 2022 13:09:18 +0200
-Message-Id: <20220528110918.256550-1-Jason@zx2c4.com>
-In-Reply-To: <CAHmME9pS1ODLqJ8rw0hzH5+ZrUW8pwC2nkeD4mLVG4swp8BnQQ@mail.gmail.com>
-References: <CAHmME9pS1ODLqJ8rw0hzH5+ZrUW8pwC2nkeD4mLVG4swp8BnQQ@mail.gmail.com>
+        Sat, 28 May 2022 07:14:26 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44EF41F606
+        for <linux-kernel@vger.kernel.org>; Sat, 28 May 2022 04:14:25 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L9Jrm3qcrzRhRL;
+        Sat, 28 May 2022 19:11:20 +0800 (CST)
+Received: from dggpemm500018.china.huawei.com (7.185.36.111) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sat, 28 May 2022 19:14:23 +0800
+Received: from localhost.localdomain (10.175.112.125) by
+ dggpemm500018.china.huawei.com (7.185.36.111) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sat, 28 May 2022 19:14:23 +0800
+From:   Ke Liu <liuke94@huawei.com>
+To:     <jk@ozlabs.org>
+CC:     <joel@jms.id.au>, <alistair@popple.id.au>, <eajames@linux.ibm.com>,
+        <linux-fsi@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>,
+        Ke Liu <liuke94@huawei.com>
+Subject: [PATCH v2] drivers: fsi: Directly use ida_alloc()/free()
+Date:   Sat, 28 May 2022 11:35:52 +0000
+Message-ID: <20220528113552.1889871-1-liuke94@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.112.125]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpemm500018.china.huawei.com (7.185.36.111)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This reverts commit 8bdc2a190105e862dfe7a4033f2fd385b7e58ae8.
+Use ida_alloc()/ida_free() instead of deprecated
+ida_simple_get()/ida_simple_remove().
 
-It got merged a bit prematurely and shortly after the kernel test
-robot and Sudip pointed out build failures.
-
-We could attempt to fix this by listing the dependencies piecemeal, but
-it's not as obvious as it looks: drivers like caam use this macro in
-headers even if there's no .o compiled in that makes use of it. So
-actually fixing this might require a bit more of a comprehensive
-approach, rather than whack-a-mole with hunting down which drivers use
-which headers which use this macro.
-
-Therefore, this commit just reverts the change, and maybe the problem
-can be visited on the next rainy day.
-
-Reported-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Reported-by: kernel test robot <lkp@intel.com>
-Fixes: 8bdc2a190105 ("crypto: poly1305 - cleanup stray CRYPTO_LIB_POLY1305_RSIZE")
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Ke Liu <liuke94@huawei.com>
 ---
- lib/crypto/Kconfig | 1 -
- 1 file changed, 1 deletion(-)
+v2 fix some bad modify
+---
+ drivers/fsi/fsi-core.c | 14 +++++++-------
+ drivers/fsi/fsi-occ.c  | 17 ++++++++---------
+ 2 files changed, 15 insertions(+), 16 deletions(-)
 
-diff --git a/lib/crypto/Kconfig b/lib/crypto/Kconfig
-index a143ddf9279a..9856e291f414 100644
---- a/lib/crypto/Kconfig
-+++ b/lib/crypto/Kconfig
-@@ -85,7 +85,6 @@ config CRYPTO_LIB_POLY1305_RSIZE
- 	default 11 if X86_64
- 	default 9 if ARM || ARM64
- 	default 1
--	depends on CRYPTO_LIB_POLY1305
+diff --git a/drivers/fsi/fsi-core.c b/drivers/fsi/fsi-core.c
+index 3a7b78e36701..10ef611058f0 100644
+--- a/drivers/fsi/fsi-core.c
++++ b/drivers/fsi/fsi-core.c
+@@ -951,7 +951,7 @@ static int __fsi_get_new_minor(struct fsi_slave *slave, enum fsi_dev_type type,
+ 	if (cid >= 0 && cid < 16 && type < 4) {
+ 		/* Try reserving the legacy number */
+ 		id = (cid << 4) | type;
+-		id = ida_simple_get(&fsi_minor_ida, id, id + 1, GFP_KERNEL);
++		id = ida_alloc_range(&fsi_minor_ida, id, id, GFP_KERNEL);
+ 		if (id >= 0) {
+ 			*out_index = fsi_adjust_index(cid);
+ 			*out_dev = fsi_base_dev + id;
+@@ -962,8 +962,8 @@ static int __fsi_get_new_minor(struct fsi_slave *slave, enum fsi_dev_type type,
+ 			return id;
+ 		/* Fallback to non-legacy allocation */
+ 	}
+-	id = ida_simple_get(&fsi_minor_ida, FSI_CHAR_LEGACY_TOP,
+-			    FSI_CHAR_MAX_DEVICES, GFP_KERNEL);
++	id = ida_alloc_range(&fsi_minor_ida, FSI_CHAR_LEGACY_TOP,
++			    FSI_CHAR_MAX_DEVICES - 1, GFP_KERNEL);
+ 	if (id < 0)
+ 		return id;
+ 	*out_index = fsi_adjust_index(id);
+@@ -980,7 +980,7 @@ EXPORT_SYMBOL_GPL(fsi_get_new_minor);
  
- config CRYPTO_ARCH_HAVE_LIB_POLY1305
- 	tristate
+ void fsi_free_minor(dev_t dev)
+ {
+-	ida_simple_remove(&fsi_minor_ida, MINOR(dev));
++	ida_free(&fsi_minor_ida, MINOR(dev));
+ }
+ EXPORT_SYMBOL_GPL(fsi_free_minor);
+ 
+@@ -1313,13 +1313,13 @@ int fsi_master_register(struct fsi_master *master)
+ 	struct device_node *np;
+ 
+ 	mutex_init(&master->scan_lock);
+-	master->idx = ida_simple_get(&master_ida, 0, INT_MAX, GFP_KERNEL);
++	master->idx = ida_alloc(&master_ida, GFP_KERNEL);
+ 	dev_set_name(&master->dev, "fsi%d", master->idx);
+ 	master->dev.class = &fsi_master_class;
+ 
+ 	rc = device_register(&master->dev);
+ 	if (rc) {
+-		ida_simple_remove(&master_ida, master->idx);
++		ida_free(&master_ida, master->idx);
+ 		return rc;
+ 	}
+ 
+@@ -1337,7 +1337,7 @@ EXPORT_SYMBOL_GPL(fsi_master_register);
+ void fsi_master_unregister(struct fsi_master *master)
+ {
+ 	if (master->idx >= 0) {
+-		ida_simple_remove(&master_ida, master->idx);
++		ida_free(&master_ida, master->idx);
+ 		master->idx = -1;
+ 	}
+ 
+diff --git a/drivers/fsi/fsi-occ.c b/drivers/fsi/fsi-occ.c
+index c9cc75fbdfb9..63af5cad1015 100644
+--- a/drivers/fsi/fsi-occ.c
++++ b/drivers/fsi/fsi-occ.c
+@@ -630,17 +630,16 @@ static int occ_probe(struct platform_device *pdev)
+ 		rc = of_property_read_u32(dev->of_node, "reg", &reg);
+ 		if (!rc) {
+ 			/* make sure we don't have a duplicate from dts */
+-			occ->idx = ida_simple_get(&occ_ida, reg, reg + 1,
+-						  GFP_KERNEL);
++			occ->idx = ida_alloc_range(&occ_ida, reg, reg,
++						GFP_KERNEL);
+ 			if (occ->idx < 0)
+-				occ->idx = ida_simple_get(&occ_ida, 1, INT_MAX,
+-							  GFP_KERNEL);
++				occ->idx = ida_alloc_min(&occ_ida, 1,
++							GFP_KERNEL);
+ 		} else {
+-			occ->idx = ida_simple_get(&occ_ida, 1, INT_MAX,
+-						  GFP_KERNEL);
++			occ->idx = ida_alloc_min(&occ_ida, 1, GFP_KERNEL);
+ 		}
+ 	} else {
+-		occ->idx = ida_simple_get(&occ_ida, 1, INT_MAX, GFP_KERNEL);
++		occ->idx = ida_alloc_min(&occ_ida, 1, GFP_KERNEL);
+ 	}
+ 
+ 	platform_set_drvdata(pdev, occ);
+@@ -654,7 +653,7 @@ static int occ_probe(struct platform_device *pdev)
+ 	rc = misc_register(&occ->mdev);
+ 	if (rc) {
+ 		dev_err(dev, "failed to register miscdevice: %d\n", rc);
+-		ida_simple_remove(&occ_ida, occ->idx);
++		ida_free(&occ_ida, occ->idx);
+ 		kvfree(occ->buffer);
+ 		return rc;
+ 	}
+@@ -677,7 +676,7 @@ static int occ_remove(struct platform_device *pdev)
+ 
+ 	device_for_each_child(&pdev->dev, NULL, occ_unregister_child);
+ 
+-	ida_simple_remove(&occ_ida, occ->idx);
++	ida_free(&occ_ida, occ->idx);
+ 
+ 	return 0;
+ }
 -- 
-2.35.1
+2.25.1
 
