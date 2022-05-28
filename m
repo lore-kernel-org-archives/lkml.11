@@ -2,75 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 351BDC433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 12:52:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B14FC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 12:53:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235526AbiE1Mwt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 28 May 2022 08:52:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48766 "EHLO
+        id S235576AbiE1Mxp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 28 May 2022 08:53:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235477AbiE1Mwr (ORCPT
+        with ESMTP id S235477AbiE1Mxn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 28 May 2022 08:52:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9349FDEF5;
-        Sat, 28 May 2022 05:52:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Sat, 28 May 2022 08:53:43 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72E5D26C3
+        for <linux-kernel@vger.kernel.org>; Sat, 28 May 2022 05:53:42 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 26CB160EBB;
-        Sat, 28 May 2022 12:52:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBB13C34100;
-        Sat, 28 May 2022 12:52:41 +0000 (UTC)
-Date:   Sat, 28 May 2022 08:52:40 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, x86@kernel.org
-Subject: Re: [PATCH v4] ftrace: Add FTRACE_MCOUNT_MAX_OFFSET to avoid adding
- weak function
-Message-ID: <20220528085240.6f9238f2@gandalf.local.home>
-In-Reply-To: <YpIKdfPYrztMLOep@hirez.programming.kicks-ass.net>
-References: <20220526141912.794c2786@gandalf.local.home>
-        <20220527083043.022e8e36@gandalf.local.home>
-        <YpIKdfPYrztMLOep@hirez.programming.kicks-ass.net>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4L9M6s122Jz4xZ0;
+        Sat, 28 May 2022 22:53:41 +1000 (AEST)
+From:   Michael Ellerman <patch-notifications@ellerman.id.au>
+To:     Paul Mackerras <paulus@samba.org>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+In-Reply-To: <f20a14be1a29fa0a9ebcfc5ebf05eb69c5120d10.1653370502.git.christophe.leroy@csgroup.eu>
+References: <f20a14be1a29fa0a9ebcfc5ebf05eb69c5120d10.1653370502.git.christophe.leroy@csgroup.eu>
+Subject: Re: [PATCH] powerpc/xics: Include missing header
+Message-Id: <165374238642.3058522.17561339833531045735.b4-ty@ellerman.id.au>
+Date:   Sat, 28 May 2022 22:53:06 +1000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 28 May 2022 13:41:41 +0200
-Peter Zijlstra <peterz@infradead.org> wrote:
-
-> In what order does available_filter_functions print the symbols?
+On Tue, 24 May 2022 07:35:10 +0200, Christophe Leroy wrote:
+> Include of_adresses.h to get of_iomap() prototype.
 > 
-> The pending FGKASLR patches randomize kallsyms order and anything that
-> prints symbols in address order will be a security leak.
+> 
 
-Yes it is sorted, but tracefs is by default root accessible only.
+Applied to powerpc/next.
 
-An admin can change the owner of it via normal chmod/chown permissions, but
-they get to keep the security pieces if they do.
+[1/1] powerpc/xics: Include missing header
+      https://git.kernel.org/powerpc/c/14554d92c1c5a127dd0dab8fce8f08bf70d8b39b
 
-There's other things in tracefs that can pose security issues if
-unprivileged users are allowed to read, which is why the default permissions
-of files is rw-r----. 
-
-Thus, I'm not worried about it. And why the security paranoid can always
-lockdown tracing, which will completely disable tracefs and access to all
-its files.
-
--- Steve
+cheers
