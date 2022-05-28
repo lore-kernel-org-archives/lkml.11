@@ -2,94 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D16F8C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 21:09:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BCD0C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 21:17:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230012AbiE1VJV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 28 May 2022 17:09:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36198 "EHLO
+        id S230034AbiE1VQ6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 28 May 2022 17:16:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230004AbiE1VJT (ORCPT
+        with ESMTP id S229660AbiE1VQz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 28 May 2022 17:09:19 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08BADDC23E
-        for <linux-kernel@vger.kernel.org>; Sat, 28 May 2022 14:09:13 -0700 (PDT)
-Received: from mail-yb1-f179.google.com ([209.85.219.179]) by
- mrelayeu.kundenserver.de (mreue109 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1M1HmG-1nwhJN46XK-002qij for <linux-kernel@vger.kernel.org>; Sat, 28 May
- 2022 23:09:12 +0200
-Received: by mail-yb1-f179.google.com with SMTP id f34so243502ybj.6
-        for <linux-kernel@vger.kernel.org>; Sat, 28 May 2022 14:09:11 -0700 (PDT)
-X-Gm-Message-State: AOAM531pk2Zul7NBOdAWRsUvkg/DrFImupst5RWbG54btPWLFSqHk/KE
-        ihEA0o1JHSyvDOoVcHdD2p0u5t/I6WbsCPJ22fk=
-X-Google-Smtp-Source: ABdhPJzYWcxVMSVO35SjnuTA/wM3uXbL0KS/JIGSkpi4QT9U3HrCaqV40mr9DwdV/Jk6nh6hQeh9t/VVFkm1NyZMo88=
-X-Received: by 2002:a25:db8a:0:b0:65c:b04a:f612 with SMTP id
- g132-20020a25db8a000000b0065cb04af612mr2641390ybf.106.1653772150854; Sat, 28
- May 2022 14:09:10 -0700 (PDT)
-MIME-Version: 1.0
-References: <YpCUzStDnSgQLNFN@debian> <CAHk-=wg0uGAX5DYZq+tY2KeUAR8DtR91YE1y9CkPMKkKOyE4jg@mail.gmail.com>
- <CADVatmNGPbSdRNQuwJEWAaPtqb3vBYRjvsuBpoRUnhEHj=X5GQ@mail.gmail.com>
- <CAHk-=wisQd8yiPX=SsK3eFiakKo713hq4SyqPWsJ-oyAmLFefQ@mail.gmail.com>
- <YpIR67FMtTGCwARZ@debian> <CAHk-=wjuyHE=1wLgHncub8FfgeyYqfWYsy4-YrhAvq9991h_Aw@mail.gmail.com>
- <CAHk-=wi_hJV0V=Ecg2dzbe2P_H1XKTu6VP_AtCH6u=tis31ayg@mail.gmail.com>
- <CAK8P3a0-QyOQiieEvM0yQb43XbCtPmeao8UvoAsdFnjCxYPz7Q@mail.gmail.com> <CAHk-=whfmwzjF4eBPYS6pHFqHVzJF3m=2h=gRWSRyHks8V=ABA@mail.gmail.com>
-In-Reply-To: <CAHk-=whfmwzjF4eBPYS6pHFqHVzJF3m=2h=gRWSRyHks8V=ABA@mail.gmail.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Sat, 28 May 2022 23:08:54 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a2DRBrDmfhz2GbMOqNBufNKS7K7XyeE1Px3AhqAuSZD4A@mail.gmail.com>
-Message-ID: <CAK8P3a2DRBrDmfhz2GbMOqNBufNKS7K7XyeE1Px3AhqAuSZD4A@mail.gmail.com>
-Subject: Re: mainline build failure due to f1e4c916f97f ("drm/edid: add EDID
- block count and size helpers")
+        Sat, 28 May 2022 17:16:55 -0400
+Received: from p-impout004.msg.pkvw.co.charter.net (p-impout004aa.msg.pkvw.co.charter.net [47.43.26.135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A83DDBC1D
+        for <linux-kernel@vger.kernel.org>; Sat, 28 May 2022 14:16:54 -0700 (PDT)
+Received: from 2603-8090-2005-39b3-0000-0000-0000-100e.res6.spectrum.com.com ([24.31.246.181])
+        by cmsmtp with ESMTP
+        id v3mLnd6IdgPEBv3mNnEtss; Sat, 28 May 2022 21:15:24 +0000
+X-Authority-Analysis: v=2.4 cv=b8OhX/Kx c=1 sm=1 tr=0 ts=629290ec
+ a=cAe/7qmlxnd6JlJqP68I9A==:117 a=cAe/7qmlxnd6JlJqP68I9A==:17
+ a=IkcTkHD0fZMA:10 a=yQdBAQUQAAAA:8 a=ag1SF4gXAAAA:8 a=trFUbqFmGWvzTRzaABQA:9
+ a=QEXdDO2ut3YA:10 a=SzazLyfi1tnkUD6oumHU:22 a=Yupwre4RP9_Eg_Bd0iYG:22
+From:   Larry Finger <Larry.Finger@lwfinger.net>
 To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Viresh Kumar <vireshk@kernel.org>,
-        Shiraz Hashim <shiraz.linux.kernel@gmail.com>,
-        Jani Nikula <jani.nikula@intel.com>,
-        =?UTF-8?B?VmlsbGUgU3lyasOkbMOk?= <ville.syrjala@linux.intel.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        SoC Team <soc@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:LIXoI/tffUZbQoiOmHLO2DPSVcCUQYDnvIRnB/9lzZfeK4GvTKb
- zY9XTydRF64x4Dim+fm/Hu49TLxxAWJAJ/GihRPh87zUXZztIFWcrr1M65chSCBCyPYVMwE
- IoxcOxDOL2Bz5nsBzO1pIQdCEm4dMzDMTINpxLfe//QRfDgL7rDiAYGUYhL0r/9Z5RTDoKP
- SKDSLteSCcuHgtgHeK6Nw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:cmAGbJWAj6Y=:s/Y43WCfHdabfHghVA7zP1
- M2DrcO7qLLvvxPk9GScr3xjgMqbG8zaYb8BG36k5iU6VCL+VXRpwumDHJzZlg8zNxX1+qwtDG
- HqbTgiIOuOwMQHPUXgH009OdawdG9h6VBpsfXwv76xG1mhjsvwrLP2JR9/2EdqZHL3v9qmsfJ
- VOyRwD8k9gFmty8UCIq7c8RoH8cL+UHsg3xhv2BAm02flSfiGfdDU/PisiiypssI88v9LbhCQ
- 15EbbMp99R/5Ty4fHHk5gJgnlBRxtRgJ0I/iNbE0dCQMQZnrhyhnbz1wxJx7Q5uvc3K2e7gbF
- TK5rVjxMgNP7CrOfgP5uya3rBJj5rcSc3nfqNmqIg1t2Y4PJHuuvCGFbdxh6JVHIXNmS2A4BG
- wjj/7mMcFNtKG+IzwYCnEiuJM9QHPUtUmvU6YHCdwEBK+DFoRQBpQuH8AHemLdZvBS3wU0yMU
- rJdc1HWS95WvPNCMsz744FpNNVxiVejJ1bk34FlK2Gcr+56DHFc1aIVd06ZFcXLYGT3yTpaix
- 6e7ONoQQzueUx9lYG1zwJKuc8HqbtAxdvjDPAW/BUnrjQcjkZerOGENfbN8quB5qGhUAZAkwg
- NsdK7pNMk9NXX5LXGwW4K1+blT6YXw7Y0y/IpMfG6YeAvN/FWhgNhHpwrrRa/dxn0ESxewIsj
- 4HyoFymlF7tOfoX0tb5LR3hJu9ONX6EU/I06r+9P7rHPOBJpTopTbLuk1iCQqFj4Xtg/Kf7QQ
- xeLHKptxmSk5+hXwOVzoHkhJYOvVZBrdgJ1wvQ==
+Cc:     linux-kernel@vger.kernel.org,
+        Larry Finger <Larry.Finger@lwfinger.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: [PATCH 1/2] staging: r8188eu: Fix warning of array overflow in ioctl_linux.c
+Date:   Sat, 28 May 2022 16:14:51 -0500
+Message-Id: <20220528211452.32134-2-Larry.Finger@lwfinger.net>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220528211452.32134-1-Larry.Finger@lwfinger.net>
+References: <20220528211452.32134-1-Larry.Finger@lwfinger.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-CMAE-Envelope: MS4xfEjnjlCsUNQ/npLE95r0nZ9hwCv3p+ErZWc3AUtLno9KIFC3X2gscqkS9TaZX4GXD521d2Af1oG1OrDhJVUmGCuvC+I1cHD9dP3x2Lle4S3GAusxjlWq
+ mx7PAc+mEjXFxUJ/TWXj0EAaP6S5lPFVUUNtEeUCw0//ThpL34L7klFwB1+FcUcwReJ451VTSbOcTS62BiDQ7tuhopxLPwS8vY4McsqSJffTh1BNQDgCd5+e
+ JyBlnGutjb3ivvyu7OD5Kkwpm3Km2LBN37j6Pj+PUzjJ9CD6G/siDJ0f94R02/VB6WUZi8YCfVvZUberTacO1H6V0dct7kEdVIHSyGCRp/3q3ytdTf1TBq2d
+ lSLa1d+zzvf+CenM97fyrLS5yE8u8gbeq3wXqPwvhfbuOBHey+o=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, May 28, 2022 at 10:31 PM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
-> On Sat, May 28, 2022 at 11:59 AM Arnd Bergmann <arnd@arndb.de> wrote:
-> >
-> > It's CONFIG_ARM_AEABI, which is normally set everywhere. Without this
-> > option, you the kernel is built for the old 'OABI' that forces all non-packed
-> > struct members to be at least 16-bit aligned.
->
-> Looks like forced word (32 bit) alignment to me.
+Building with -Warray-bounds results in the following warning plus others
+related to the same problem:
 
-Ah, of course, I keep mixing it up with the odd structure alignment of m68k,
-which does the opposite and aligns struct members to no more than 16 bits.
+CC [M]  drivers/staging/r8188eu/os_dep/ioctl_linux.o
+In function ‘wpa_set_encryption’,
+    inlined from ‘rtw_wx_set_enc_ext’ at drivers/staging/r8188eu/os_dep/ioctl_linux.c:1868:9:
+drivers/staging/r8188eu/os_dep/ioctl_linux.c:412:41: warning: array subscript ‘struct ndis_802_11_wep[0]’ is partly outside array bounds of ‘void[25]’ [-Warray-bounds]
+  412 |                         pwep->KeyLength = wep_key_len;
+      |                         ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~
+In file included from drivers/staging/r8188eu/os_dep/../include/osdep_service.h:19,
+                 from drivers/staging/r8188eu/os_dep/ioctl_linux.c:4:
+In function ‘kmalloc’,
+    inlined from ‘kzalloc’ at ./include/linux/slab.h:733:9,
+    inlined from ‘wpa_set_encryption’ at drivers/staging/r8188eu/os_dep/ioctl_linux.c:408:11,
+    inlined from ‘rtw_wx_set_enc_ext’ at drivers/staging/r8188eu/os_dep/ioctl_linux.c:1868:9:
+./include/linux/slab.h:605:16: note: object of size [17, 25] allocated by ‘__kmalloc’
+  605 |         return __kmalloc(size, flags);
+      |                ^~~~~~~~~~~~~~~~~~~~~~
+./include/linux/slab.h:600:24: note: object of size [17, 25] allocated by ‘kmem_cache_alloc_trace’
+  600 |                 return kmem_cache_alloc_trace(
+      |                        ^~~~~~~~~~~~~~~~~~~~~~~
+  601 |                                 kmalloc_caches[kmalloc_type(flags)][index],
+      |                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  602 |                                 flags, size);
+      |                                 ~~~~~~~~~~~~
 
-        Arnd
+Although it is unlikely that anyone is still using WEP encryption, the
+size of the allocation needs to be increased just in case.
+
+Fixes commit 2b42bd58b321 ("staging: r8188eu: introduce new os_dep dir for RTL8188eu driver")
+
+Fixes: 2b42bd58b321 ("staging: r8188eu: introduce new os_dep dir for RTL8188eu driver")
+Signed-off-by: Larry Finger <Larry.Finger@lwfinger.net>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/staging/r8188eu/os_dep/ioctl_linux.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/staging/r8188eu/os_dep/ioctl_linux.c b/drivers/staging/r8188eu/os_dep/ioctl_linux.c
+index eb9375b0c660..ce3dcfc812e9 100644
+--- a/drivers/staging/r8188eu/os_dep/ioctl_linux.c
++++ b/drivers/staging/r8188eu/os_dep/ioctl_linux.c
+@@ -404,7 +404,7 @@ static int wpa_set_encryption(struct net_device *dev, struct ieee_param *param,
+ 
+ 		if (wep_key_len > 0) {
+ 			wep_key_len = wep_key_len <= 5 ? 5 : 13;
+-			wep_total_len = wep_key_len + FIELD_OFFSET(struct ndis_802_11_wep, KeyMaterial);
++			wep_total_len = wep_key_len + sizeof(*pwep);
+ 			pwep = kzalloc(wep_total_len, GFP_KERNEL);
+ 			if (!pwep)
+ 				goto exit;
+-- 
+2.36.1
+
