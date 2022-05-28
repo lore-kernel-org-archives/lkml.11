@@ -2,300 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76D5DC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 15:49:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F1B7C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 15:51:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351005AbiE1PtY (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 28 May 2022 11:49:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56382 "EHLO
+        id S238047AbiE1Pvp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 28 May 2022 11:51:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344876AbiE1PtO (ORCPT
+        with ESMTP id S238043AbiE1Pvm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 28 May 2022 11:49:14 -0400
-Received: from conuserg-10.nifty.com (conuserg-10.nifty.com [210.131.2.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 840F412A;
-        Sat, 28 May 2022 08:49:11 -0700 (PDT)
-Received: from grover.sesame (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
-        by conuserg-10.nifty.com with ESMTP id 24SFlthN010610;
-        Sun, 29 May 2022 00:47:57 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-10.nifty.com 24SFlthN010610
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1653752878;
-        bh=5leKPORFlta7S8/2ppM4PVrBXwYq/YHCsbo5q5GZZGw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YVczqZLK4g5wTY9Zadm4ebIhkk1uqTE+rV5SA6qD97oyeL9tcX+GdHlD4skCKnK31
-         02fuOs9PiJFaF+x8fUtmWzZrDsUxfkYEi26YF1zt3X3ya7hBqrK0L155wyyijZIFx5
-         /+cOMffA7wD7gyvhu0n3EK84jplYza5HQswZmyWhWLIa6od8L/LxJmgXCTS6hR5hWd
-         dM0yGJTCZEnCC5gACR1gf0coCzB3dZr3Nnn8YLaN73H3RzkwwOhp2QEIhncbcysXFl
-         JFf03uoZdyY7FKBw7xORc3D5oNtgbsUb4Wz/A3Hpi7qQ3lpY76RALE481k5yaBrsqg
-         gLmkUxeVSNnlA==
-X-Nifty-SrcIP: [133.32.177.133]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     linux-kbuild@vger.kernel.org
-Cc:     Nick Desaulniers <ndesaulniers@google.com>,
-        linux-kernel@vger.kernel.org, Josh Poimboeuf <jpoimboe@redhat.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>
-Subject: [PATCH 4/4] kbuild: factor out the common objtool arguments
-Date:   Sun, 29 May 2022 00:47:04 +0900
-Message-Id: <20220528154704.2576290-4-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220528154704.2576290-1-masahiroy@kernel.org>
-References: <20220528154704.2576290-1-masahiroy@kernel.org>
+        Sat, 28 May 2022 11:51:42 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 472F3F6A;
+        Sat, 28 May 2022 08:51:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653753101; x=1685289101;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=CFrbHpnVeSUfFa9hJ0kyjcpJ28gU4L6TqI/eG/r0hJA=;
+  b=dzM+wr1ThCWZtYmmVslzboWTvpDpZQprAz4VGSwl5N50fwQd7hmpV3gR
+   NcZ5CYFu23xY+Yyx3+CnHgAEaCvrxX8tJiLSEUfq71g0NbIZ8SybeDQKL
+   l3DXcLn9h9jTFHf90mNy9IzRtOOFZDBDYDnlPsoBWqIwfPV0yClYnGMA4
+   3GodGzLwAPHLMU93xYhEh0LEfC0p1b9+R+JfThjMy1L3jt9RrEE7Vk59G
+   uChjsL5hhayFSt6keShktRBQLQHW3uSD3EmAkQYlWCtk+Meb2Uh48y/JA
+   TCEgyVJ1i6PaJTswC5JY8t59VB35IdgPE8YBGpw/0xJIU6keNUQhcsFLz
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10361"; a="272257542"
+X-IronPort-AV: E=Sophos;i="5.91,258,1647327600"; 
+   d="scan'208";a="272257542"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 May 2022 08:51:41 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,258,1647327600"; 
+   d="scan'208";a="604441656"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.135])
+  by orsmga008.jf.intel.com with ESMTP; 28 May 2022 08:51:38 -0700
+Date:   Sat, 28 May 2022 23:43:55 +0800
+From:   Xu Yilun <yilun.xu@intel.com>
+To:     keliu <liuke94@huawei.com>
+Cc:     hao.wu@intel.com, trix@redhat.com, mdf@kernel.org,
+        linux-fpga@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] fpga: Directly use ida_alloc()/free()
+Message-ID: <20220528154355.GA183426@yilunxu-OptiPlex-7050>
+References: <20220527085915.2798928-1-liuke94@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220527085915.2798928-1-liuke94@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-scripts/Makefile.build and scripts/link-vmlinux.sh have similar setups
-for the objtool arguments.
+On Fri, May 27, 2022 at 08:59:15AM +0000, keliu wrote:
+> Use ida_alloc()/ida_free() instead of deprecated
+> ida_simple_get()/ida_simple_remove() .
+> 
+> Signed-off-by: keliu <liuke94@huawei.com>
 
-It is difficult to factor out them because the vmlinux build rule is
-written in a shell script. It is somewhat tedious to touch the two
-files every time a new objtool option is supported.
+Acked-by: Xu Yilun <yilun.xu@intel.com>
 
-To reduce the code duplication, implement everything about objtool in
-Makefile.
-
-Move the objtool for vmlinux.o into scripts/Makefile.vmlinux_o.
-
-Move the common macros to Makefile.lib so they are shared by
-Makefile.build and Makefile.vmlinux_o.
-
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
----
-
- scripts/Makefile.build     | 26 --------------
- scripts/Makefile.lib       | 26 ++++++++++++++
- scripts/Makefile.vmlinux_o | 26 ++++++++++++++
- scripts/link-vmlinux.sh    | 71 --------------------------------------
- 4 files changed, 52 insertions(+), 97 deletions(-)
-
-diff --git a/scripts/Makefile.build b/scripts/Makefile.build
-index 4cb7145071b9..1f01ac65c0cd 100644
---- a/scripts/Makefile.build
-+++ b/scripts/Makefile.build
-@@ -210,38 +210,12 @@ cmd_record_mcount = $(if $(findstring $(strip $(CC_FLAGS_FTRACE)),$(_c_flags)),
- 	$(sub_cmd_record_mcount))
- endif # CONFIG_FTRACE_MCOUNT_USE_RECORDMCOUNT
- 
--ifdef CONFIG_OBJTOOL
--
--objtool := $(objtree)/tools/objtool/objtool
--
--objtool_args =								\
--	$(if $(CONFIG_HAVE_JUMP_LABEL_HACK), --hacks=jump_label)	\
--	$(if $(CONFIG_HAVE_NOINSTR_HACK), --hacks=noinstr)		\
--	$(if $(CONFIG_X86_KERNEL_IBT), --ibt)				\
--	$(if $(CONFIG_FTRACE_MCOUNT_USE_OBJTOOL), --mcount)		\
--	$(if $(CONFIG_UNWINDER_ORC), --orc)				\
--	$(if $(CONFIG_RETPOLINE), --retpoline)				\
--	$(if $(CONFIG_SLS), --sls)					\
--	$(if $(CONFIG_STACK_VALIDATION), --stackval)			\
--	$(if $(CONFIG_HAVE_STATIC_CALL_INLINE), --static-call)		\
--	--uaccess							\
--	$(if $(delay-objtool), --link)					\
--	$(if $(part-of-module), --module)				\
--	$(if $(CONFIG_GCOV_KERNEL), --no-unreachable)
--
--cmd_objtool = $(if $(objtool-enabled), ; $(objtool) $(objtool_args) $@)
--cmd_gen_objtooldep = $(if $(objtool-enabled), { echo ; echo '$@: $$(wildcard $(objtool))' ; } >> $(dot-target).cmd)
--
--endif # CONFIG_OBJTOOL
--
- # 'OBJECT_FILES_NON_STANDARD := y': skip objtool checking for a directory
- # 'OBJECT_FILES_NON_STANDARD_foo.o := 'y': skip objtool checking for a file
- # 'OBJECT_FILES_NON_STANDARD_foo.o := 'n': override directory skip for a file
- 
- is-standard-object = $(if $(filter-out y%, $(OBJECT_FILES_NON_STANDARD_$(basetarget).o)$(OBJECT_FILES_NON_STANDARD)n),y)
- 
--delay-objtool := $(or $(CONFIG_LTO_CLANG),$(CONFIG_X86_KERNEL_IBT))
--
- $(obj)/%.o: objtool-enabled = $(if $(is-standard-object),$(if $(delay-objtool),$(is-single-obj-m),y))
- 
- ifdef CONFIG_TRIM_UNUSED_KSYMS
-diff --git a/scripts/Makefile.lib b/scripts/Makefile.lib
-index f75138385449..f691fb231ce5 100644
---- a/scripts/Makefile.lib
-+++ b/scripts/Makefile.lib
-@@ -225,6 +225,32 @@ dtc_cpp_flags  = -Wp,-MMD,$(depfile).pre.tmp -nostdinc                    \
- 		 $(addprefix -I,$(DTC_INCLUDE))                          \
- 		 -undef -D__DTS__
- 
-+ifdef CONFIG_OBJTOOL
-+
-+objtool := $(objtree)/tools/objtool/objtool
-+
-+objtool_args =								\
-+	$(if $(CONFIG_HAVE_JUMP_LABEL_HACK), --hacks=jump_label)	\
-+	$(if $(CONFIG_HAVE_NOINSTR_HACK), --hacks=noinstr)		\
-+	$(if $(CONFIG_X86_KERNEL_IBT), --ibt)				\
-+	$(if $(CONFIG_FTRACE_MCOUNT_USE_OBJTOOL), --mcount)		\
-+	$(if $(CONFIG_UNWINDER_ORC), --orc)				\
-+	$(if $(CONFIG_RETPOLINE), --retpoline)				\
-+	$(if $(CONFIG_SLS), --sls)					\
-+	$(if $(CONFIG_STACK_VALIDATION), --stackval)			\
-+	$(if $(CONFIG_HAVE_STATIC_CALL_INLINE), --static-call)		\
-+	--uaccess							\
-+	$(if $(delay-objtool), --link)					\
-+	$(if $(part-of-module), --module)				\
-+	$(if $(CONFIG_GCOV_KERNEL), --no-unreachable)
-+
-+delay-objtool := $(or $(CONFIG_LTO_CLANG),$(CONFIG_X86_KERNEL_IBT))
-+
-+cmd_objtool = $(if $(objtool-enabled), ; $(objtool) $(objtool_args) $@)
-+cmd_gen_objtooldep = $(if $(objtool-enabled), { echo ; echo '$@: $$(wildcard $(objtool))' ; } >> $(dot-target).cmd)
-+
-+endif # CONFIG_OBJTOOL
-+
- # Useful for describing the dependency of composite objects
- # Usage:
- #   $(call multi_depend, multi_used_targets, suffix_to_remove, suffix_to_add)
-diff --git a/scripts/Makefile.vmlinux_o b/scripts/Makefile.vmlinux_o
-index a9b375ca86d5..3c97a1564947 100644
---- a/scripts/Makefile.vmlinux_o
-+++ b/scripts/Makefile.vmlinux_o
-@@ -6,6 +6,9 @@ __default: vmlinux.o
- include include/config/auto.conf
- include $(srctree)/scripts/Kbuild.include
- 
-+# for objtool
-+include $(srctree)/scripts/Makefile.lib
-+
- # Generate a linker script to ensure correct ordering of initcalls for Clang LTO
- # ---------------------------------------------------------------------------
- 
-@@ -24,6 +27,27 @@ ifdef CONFIG_LTO_CLANG
- initcalls-lds := .tmp_initcalls.lds
- endif
- 
-+# objtool for vmlinux.o
-+# ---------------------------------------------------------------------------
-+#
-+# For LTO and IBT, objtool doesn't run on individual translation units.
-+# Run everything on vmlinux instead.
-+
-+objtool-enabled := $(or $(delay-objtool),$(CONFIG_NOINSTR_VALIDATION))
-+
-+# Reuse objtool_args defined in scripts/Makefile.lib if LTO or IBT is enabled.
-+#
-+# Add some more flags as needed.
-+# --no-unreachable and --link might be added twice, but it is fine.
-+#
-+# Expand objtool_args to a simple variable to avoid circular reference.
-+
-+objtool_args := \
-+	$(if $(delay-objtool),$(objtool_args)) \
-+	$(if $(CONFIG_NOINSTR_VALIDATION), --noinstr) \
-+	$(if $(CONFIG_GCOV_KERNEL), --no-unreachable) \
-+	--link
-+
- # Link of vmlinux.o used for section mismatch analysis
- # ---------------------------------------------------------------------------
- 
-@@ -33,9 +57,11 @@ quiet_cmd_ld_vmlinux.o = LD      $@
- 	$(addprefix -T , $(initcalls-lds)) \
- 	--whole-archive $(KBUILD_VMLINUX_OBJS) --no-whole-archive \
- 	--start-group $(KBUILD_VMLINUX_LIBS) --end-group \
-+	$(cmd_objtool)
- 
- define rule_ld_vmlinux.o
- 	$(call cmd_and_savecmd,ld_vmlinux.o)
-+	$(call cmd,gen_objtooldep)
- endef
- 
- vmlinux.o: $(initcalls-lds) $(KBUILD_VMLINUX_OBJS) $(KBUILD_VMLINUX_LIBS) FORCE
-diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
-index 90680b6bd710..1ac4e180fa3f 100755
---- a/scripts/link-vmlinux.sh
-+++ b/scripts/link-vmlinux.sh
-@@ -45,76 +45,6 @@ info()
- 	printf "  %-7s %s\n" "${1}" "${2}"
- }
- 
--objtool_link()
--{
--	local objtoolcmd;
--	local objtoolopt;
--
--	if ! is_enabled CONFIG_OBJTOOL; then
--		return;
--	fi
--
--	if is_enabled CONFIG_LTO_CLANG || is_enabled CONFIG_X86_KERNEL_IBT; then
--
--		# For LTO and IBT, objtool doesn't run on individual
--		# translation units.  Run everything on vmlinux instead.
--
--		if is_enabled CONFIG_HAVE_JUMP_LABEL_HACK; then
--			objtoolopt="${objtoolopt} --hacks=jump_label"
--		fi
--
--		if is_enabled CONFIG_HAVE_NOINSTR_HACK; then
--			objtoolopt="${objtoolopt} --hacks=noinstr"
--		fi
--
--		if is_enabled CONFIG_X86_KERNEL_IBT; then
--			objtoolopt="${objtoolopt} --ibt"
--		fi
--
--		if is_enabled CONFIG_FTRACE_MCOUNT_USE_OBJTOOL; then
--			objtoolopt="${objtoolopt} --mcount"
--		fi
--
--		if is_enabled CONFIG_UNWINDER_ORC; then
--			objtoolopt="${objtoolopt} --orc"
--		fi
--
--		if is_enabled CONFIG_RETPOLINE; then
--			objtoolopt="${objtoolopt} --retpoline"
--		fi
--
--		if is_enabled CONFIG_SLS; then
--			objtoolopt="${objtoolopt} --sls"
--		fi
--
--		if is_enabled CONFIG_STACK_VALIDATION; then
--			objtoolopt="${objtoolopt} --stackval"
--		fi
--
--		if is_enabled CONFIG_HAVE_STATIC_CALL_INLINE; then
--			objtoolopt="${objtoolopt} --static-call"
--		fi
--
--		objtoolopt="${objtoolopt} --uaccess"
--	fi
--
--	if is_enabled CONFIG_NOINSTR_VALIDATION; then
--		objtoolopt="${objtoolopt} --noinstr"
--	fi
--
--	if [ -n "${objtoolopt}" ]; then
--
--		if is_enabled CONFIG_GCOV_KERNEL; then
--			objtoolopt="${objtoolopt} --no-unreachable"
--		fi
--
--		objtoolopt="${objtoolopt} --link"
--
--		info OBJTOOL ${1}
--		tools/objtool/objtool ${objtoolopt} ${1}
--	fi
--}
--
- # Link of vmlinux
- # ${1} - output file
- # ${2}, ${3}, ... - optional extra .o files
-@@ -298,7 +228,6 @@ ${MAKE} -f "${srctree}/scripts/Makefile.build" obj=init need-builtin=1
- 
- #link vmlinux.o
- ${MAKE} -f "${srctree}/scripts/Makefile.vmlinux_o"
--objtool_link vmlinux.o
- 
- # Generate the list of objects in vmlinux
- for f in ${KBUILD_VMLINUX_OBJS} ${KBUILD_VMLINUX_LIBS}; do
--- 
-2.32.0
-
+> ---
+>  drivers/fpga/dfl.c         | 4 ++--
+>  drivers/fpga/fpga-bridge.c | 6 +++---
+>  drivers/fpga/fpga-mgr.c    | 6 +++---
+>  drivers/fpga/fpga-region.c | 6 +++---
+>  4 files changed, 11 insertions(+), 11 deletions(-)
+> 
+> diff --git a/drivers/fpga/dfl.c b/drivers/fpga/dfl.c
+> index 599bb21d86af..2dff0c626cc6 100644
+> --- a/drivers/fpga/dfl.c
+> +++ b/drivers/fpga/dfl.c
+> @@ -342,7 +342,7 @@ static void release_dfl_dev(struct device *dev)
+>  	if (ddev->mmio_res.parent)
+>  		release_resource(&ddev->mmio_res);
+>  
+> -	ida_simple_remove(&dfl_device_ida, ddev->id);
+> +	ida_free(&dfl_device_ida, ddev->id);
+>  	kfree(ddev->irqs);
+>  	kfree(ddev);
+>  }
+> @@ -360,7 +360,7 @@ dfl_dev_add(struct dfl_feature_platform_data *pdata,
+>  	if (!ddev)
+>  		return ERR_PTR(-ENOMEM);
+>  
+> -	id = ida_simple_get(&dfl_device_ida, 0, 0, GFP_KERNEL);
+> +	id = ida_alloc(&dfl_device_ida, GFP_KERNEL);
+>  	if (id < 0) {
+>  		dev_err(&pdev->dev, "unable to get id\n");
+>  		kfree(ddev);
+> diff --git a/drivers/fpga/fpga-bridge.c b/drivers/fpga/fpga-bridge.c
+> index 16f2b164a178..727704431f61 100644
+> --- a/drivers/fpga/fpga-bridge.c
+> +++ b/drivers/fpga/fpga-bridge.c
+> @@ -342,7 +342,7 @@ fpga_bridge_register(struct device *parent, const char *name,
+>  	if (!bridge)
+>  		return ERR_PTR(-ENOMEM);
+>  
+> -	id = ida_simple_get(&fpga_bridge_ida, 0, 0, GFP_KERNEL);
+> +	id = ida_alloc(&fpga_bridge_ida, GFP_KERNEL);
+>  	if (id < 0) {
+>  		ret = id;
+>  		goto error_kfree;
+> @@ -375,7 +375,7 @@ fpga_bridge_register(struct device *parent, const char *name,
+>  	return bridge;
+>  
+>  error_device:
+> -	ida_simple_remove(&fpga_bridge_ida, id);
+> +	ida_free(&fpga_bridge_ida, id);
+>  error_kfree:
+>  	kfree(bridge);
+>  
+> @@ -407,7 +407,7 @@ static void fpga_bridge_dev_release(struct device *dev)
+>  {
+>  	struct fpga_bridge *bridge = to_fpga_bridge(dev);
+>  
+> -	ida_simple_remove(&fpga_bridge_ida, bridge->dev.id);
+> +	ida_free(&fpga_bridge_ida, bridge->dev.id);
+>  	kfree(bridge);
+>  }
+>  
+> diff --git a/drivers/fpga/fpga-mgr.c b/drivers/fpga/fpga-mgr.c
+> index d49a9ce34568..2955a21beebe 100644
+> --- a/drivers/fpga/fpga-mgr.c
+> +++ b/drivers/fpga/fpga-mgr.c
+> @@ -622,7 +622,7 @@ fpga_mgr_register_full(struct device *parent, const struct fpga_manager_info *in
+>  	if (!mgr)
+>  		return ERR_PTR(-ENOMEM);
+>  
+> -	id = ida_simple_get(&fpga_mgr_ida, 0, 0, GFP_KERNEL);
+> +	id = ida_alloc(&fpga_mgr_ida, GFP_KERNEL);
+>  	if (id < 0) {
+>  		ret = id;
+>  		goto error_kfree;
+> @@ -661,7 +661,7 @@ fpga_mgr_register_full(struct device *parent, const struct fpga_manager_info *in
+>  	return mgr;
+>  
+>  error_device:
+> -	ida_simple_remove(&fpga_mgr_ida, id);
+> +	ida_free(&fpga_mgr_ida, id);
+>  error_kfree:
+>  	kfree(mgr);
+>  
+> @@ -785,7 +785,7 @@ static void fpga_mgr_dev_release(struct device *dev)
+>  {
+>  	struct fpga_manager *mgr = to_fpga_manager(dev);
+>  
+> -	ida_simple_remove(&fpga_mgr_ida, mgr->dev.id);
+> +	ida_free(&fpga_mgr_ida, mgr->dev.id);
+>  	kfree(mgr);
+>  }
+>  
+> diff --git a/drivers/fpga/fpga-region.c b/drivers/fpga/fpga-region.c
+> index b0ac18de4885..18bcaa1926dd 100644
+> --- a/drivers/fpga/fpga-region.c
+> +++ b/drivers/fpga/fpga-region.c
+> @@ -202,7 +202,7 @@ fpga_region_register_full(struct device *parent, const struct fpga_region_info *
+>  	if (!region)
+>  		return ERR_PTR(-ENOMEM);
+>  
+> -	id = ida_simple_get(&fpga_region_ida, 0, 0, GFP_KERNEL);
+> +	id = ida_alloc(&fpga_region_ida, GFP_KERNEL);
+>  	if (id < 0) {
+>  		ret = id;
+>  		goto err_free;
+> @@ -234,7 +234,7 @@ fpga_region_register_full(struct device *parent, const struct fpga_region_info *
+>  	return region;
+>  
+>  err_remove:
+> -	ida_simple_remove(&fpga_region_ida, id);
+> +	ida_free(&fpga_region_ida, id);
+>  err_free:
+>  	kfree(region);
+>  
+> @@ -283,7 +283,7 @@ static void fpga_region_dev_release(struct device *dev)
+>  {
+>  	struct fpga_region *region = to_fpga_region(dev);
+>  
+> -	ida_simple_remove(&fpga_region_ida, region->dev.id);
+> +	ida_free(&fpga_region_ida, region->dev.id);
+>  	kfree(region);
+>  }
+>  
+> -- 
+> 2.25.1
