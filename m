@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B44BFC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 02:53:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DDCEC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 02:53:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345101AbiE1Cxs (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 22:53:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35870 "EHLO
+        id S230042AbiE1Cxv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 27 May 2022 22:53:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355603AbiE1Cw4 (ORCPT
+        with ESMTP id S1355601AbiE1Cw4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 27 May 2022 22:52:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C85D12E302;
-        Fri, 27 May 2022 19:52:55 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A432912E304
+        for <linux-kernel@vger.kernel.org>; Fri, 27 May 2022 19:52:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ED1B9B82697;
-        Sat, 28 May 2022 02:52:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB4D4C34113;
-        Sat, 28 May 2022 02:52:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F202CB8268F
+        for <linux-kernel@vger.kernel.org>; Sat, 28 May 2022 02:52:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFFABC34118;
+        Sat, 28 May 2022 02:52:51 +0000 (UTC)
 Received: from rostedt by gandalf.local.home with local (Exim 4.95)
         (envelope-from <rostedt@goodmis.org>)
-        id 1numZP-000LSq-Ny;
-        Fri, 27 May 2022 22:52:51 -0400
-Message-ID: <20220528025251.580898616@goodmis.org>
+        id 1numZO-000LQ1-RH;
+        Fri, 27 May 2022 22:52:50 -0400
+Message-ID: <20220528025250.675966313@goodmis.org>
 User-Agent: quilt/0.66
-Date:   Fri, 27 May 2022 22:50:44 -0400
+Date:   Fri, 27 May 2022 22:50:39 -0400
 From:   Steven Rostedt <rostedt@goodmis.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Ingo Molnar <mingo@kernel.org>,
         Andrew Morton <akpm@linux-foundation.org>,
-        stable@vger.kernel.org,
-        "Masami Hiramatsu (Google)" <mhiramat@kernel.org>,
-        Gautam Menghani <gautammenghani201@gmail.com>
-Subject: [for-next][PATCH 16/23] tracing: Initialize integer variable to prevent garbage return value
+        Juri Lelli <juri.lelli@redhat.com>,
+        Clark Williams <williams@redhat.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Daniel Bristot de Oliveira <bristot@kernel.org>
+Subject: [for-next][PATCH 11/23] tracing/timerlat: Do not wakeup the thread if the trace stops at the
+ IRQ
 References: <20220528025028.850906216@goodmis.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -45,36 +46,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gautam Menghani <gautammenghani201@gmail.com>
+From: Daniel Bristot de Oliveira <bristot@kernel.org>
 
-Initialize the integer variable to 0 to fix the clang scan warning:
-Undefined or garbage value returned to caller
-[core.uninitialized.UndefReturn]
-        return ret;
+There is no need to wakeup the timerlat/ thread if stop tracing is hit
+at the timerlat's IRQ handler.
 
-Link: https://lkml.kernel.org/r/20220522061826.1751-1-gautammenghani201@gmail.com
+Return before waking up timerlat's thread.
 
-Cc: stable@vger.kernel.org
-Fixes: 8993665abcce ("tracing/boot: Support multiple handlers for per-event histogram")
-Acked-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
-Signed-off-by: Gautam Menghani <gautammenghani201@gmail.com>
+Link: https://lkml.kernel.org/r/b392356c91b56aedd2b289513cc56a84cf87e60d.1652175637.git.bristot@kernel.org
+
+Cc: Juri Lelli <juri.lelli@redhat.com>
+Cc: Clark Williams <williams@redhat.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
 Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 ---
- kernel/trace/trace_boot.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/trace/trace_osnoise.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/kernel/trace/trace_boot.c b/kernel/trace/trace_boot.c
-index 0580287d7a0d..778200dd8ede 100644
---- a/kernel/trace/trace_boot.c
-+++ b/kernel/trace/trace_boot.c
-@@ -300,7 +300,7 @@ trace_boot_hist_add_handlers(struct xbc_node *hnode, char **bufp,
- {
- 	struct xbc_node *node;
- 	const char *p, *handler;
--	int ret;
-+	int ret = 0;
+diff --git a/kernel/trace/trace_osnoise.c b/kernel/trace/trace_osnoise.c
+index 9b204ee3c6f5..035ec8b84e12 100644
+--- a/kernel/trace/trace_osnoise.c
++++ b/kernel/trace/trace_osnoise.c
+@@ -1595,6 +1595,8 @@ static enum hrtimer_restart timerlat_irq(struct hrtimer *timer)
  
- 	handler = xbc_node_get_data(hnode);
+ 			osnoise_stop_tracing();
+ 			notify_new_max_latency(diff);
++
++			return HRTIMER_NORESTART;
+ 		}
+ 	}
  
 -- 
 2.35.1
