@@ -2,236 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B284C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 11:16:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAFCCC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 11:40:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350713AbiE1LQt (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 28 May 2022 07:16:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50250 "EHLO
+        id S234971AbiE1LkS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 28 May 2022 07:40:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344472AbiE1LQs (ORCPT
+        with ESMTP id S234741AbiE1LkO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 28 May 2022 07:16:48 -0400
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26AD56176
-        for <linux-kernel@vger.kernel.org>; Sat, 28 May 2022 04:16:46 -0700 (PDT)
-Received: by mail-yb1-xb36.google.com with SMTP id v106so4821374ybi.0
-        for <linux-kernel@vger.kernel.org>; Sat, 28 May 2022 04:16:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=aynPQhFd4QowP/synFgC+gJRCfVWqlJfAHAl/f5sodI=;
-        b=RmvTGYmwT9R/iHk+HOhOiW+2kawtZE6T3ZcSq1jzJYlPlGT0V7QdVhvHvYXzuySdok
-         aU039m620v6BnC4X7vxHaBmcAacbfWnqvPqaWRI0HfHqt7Tdg5HO6utrjOcY9txjlvNK
-         h+3Gjut3EQU3Z9gLOsQnovevUVp0NaWMtc2DeSQIkKNN5uB7nk9ZqBwqLNqXB3LF0ikw
-         VCBUPW/4dOwTT9l2654etavGqmuNptYg/fk0X/ERS5uDsJlw3HW0vxBEIbD3ZRCDBXTE
-         ERCcAmF6tpJ/tO4uyeQvIt+tqAovtprHNQCFlnqO9CAAy8KYmofnjLa+GJ4y/j2jWWAp
-         5GHQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=aynPQhFd4QowP/synFgC+gJRCfVWqlJfAHAl/f5sodI=;
-        b=At6J+/Bk5uYu6R7cv7uzAIqLHcHP+QkH923t0ebfan9fo6a2VEReyH9+NRuP7xy1IG
-         Cvc3Q4ZYGl2LCNh+YkupY/+7E91YOMgzTuW43zysuPttlCFwlTHtADKSKHSHr4ZtMwsO
-         oIqv3fZ/+SNbULnPBITmxEBUFlYRrg8w1QsWlawSOpuLBfVm0Sn+bednTqsaKxpDcU4U
-         rg7iGLlY12MqBT5nYOEqQ+dBT8ErUpSRn9aldchQUerWu4PeMMkQLYQ24pwBdGgXG0e9
-         BfB7l/knV0g7Q2Nc8iiWkIIlH2IaB8kplb2W93M7Z6P2X6cD0FtqzP1B10IFh781j1R3
-         6XlQ==
-X-Gm-Message-State: AOAM533TgHt01HBSJlthYnilE/ZUYZ7/KdB8Yoe+Mq83CmLhJE2cCiql
-        q945sTm3UFntLkKLTXtyeGwi7ZKzcpI35wmgBYb86LMUIGl17g==
-X-Google-Smtp-Source: ABdhPJyw4l9/bTxWtm1Wuv8umtQzikDlVVU4x7kzxAi/JfhnqiR9c0Ijml8+5GfV3R9b7Y5J26fTVQO1Y8K/xq1ZjeE=
-X-Received: by 2002:a25:bb83:0:b0:653:ede9:90ae with SMTP id
- y3-20020a25bb83000000b00653ede990aemr20065902ybg.474.1653736605255; Sat, 28
- May 2022 04:16:45 -0700 (PDT)
+        Sat, 28 May 2022 07:40:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15318167DD;
+        Sat, 28 May 2022 04:40:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BC5A7B80EAE;
+        Sat, 28 May 2022 11:40:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 68A31C34118;
+        Sat, 28 May 2022 11:40:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653738011;
+        bh=ZHpRnFQkeQtmCAXLllnoeiBMgN6AR5loMUWSyWMqj38=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=tHv4xzJIVLE7nNzO8MQ4KGbhH82tAQSNStVEI4ylZaL0oP9YoGTqZAz6VvqImcHpg
+         lusq22zRSMJ0Uha/huKJPtrh+cZR6tDWc+yRnOSZlmcmLOgOmBoqHCut0lBiKUJAoQ
+         UDfblPV9QptlLSDsKJzxyopjgbDHhvIMAOSIVmKR0hH+7yhpyPRccwUz17Qaqr6ZMA
+         QBwNRKdHt39j469HA2IIDmnkAm9ksLBZ6lZ8HjR2LChznS7x4aqrzS9XdoVDjmr+HX
+         McxoonhcxUB+gDbEisyZbxlxzQnQeSvVysWx9Bw7QX40gGYSJRRlqf9ApmJBuG7lXT
+         eakuXHko9XsHg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 515ACF03942;
+        Sat, 28 May 2022 11:40:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20220527084801.223648383@linuxfoundation.org>
-In-Reply-To: <20220527084801.223648383@linuxfoundation.org>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Sat, 28 May 2022 16:46:34 +0530
-Message-ID: <CA+G9fYuF15QF7dSkp8zdN=8AbBrhbj=skuSE5_k4uETtkBk6rA@mail.gmail.com>
-Subject: Re: [PATCH 5.18 00/47] 5.18.1-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] net/smc: fixes for converting from "struct
+ smc_cdc_tx_pend **" to "struct smc_wr_tx_pend_priv *"
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165373801132.32245.12112811414781251794.git-patchwork-notify@kernel.org>
+Date:   Sat, 28 May 2022 11:40:11 +0000
+References: <20220528065457.93676-1-guangguan.wang@linux.alibaba.com>
+In-Reply-To: <20220528065457.93676-1-guangguan.wang@linux.alibaba.com>
+To:     Guangguan Wang <guangguan.wang@linux.alibaba.com>
+Cc:     kgraul@linux.ibm.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, edumazet@google.com, linux-s390@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 27 May 2022 at 14:21, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> This is the start of the stable review cycle for the 5.18.1 release.
-> There are 47 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Sun, 29 May 2022 08:46:45 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
->         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-=
-5.18.1-rc1.gz
-> or in the git tree and branch at:
->         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
--rc.git linux-5.18.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
+Hello:
 
-Results from Linaro=E2=80=99s test farm.
-No regressions on arm64, arm, x86_64, and i386.
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
+On Sat, 28 May 2022 14:54:57 +0800 you wrote:
+> "struct smc_cdc_tx_pend **" can not directly convert
+> to "struct smc_wr_tx_pend_priv *".
+> 
+> Fixes: 2bced6aefa3d ("net/smc: put slot when connection is killed")
+> Signed-off-by: Guangguan Wang <guangguan.wang@linux.alibaba.com>
+> ---
+>  net/smc/smc_cdc.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-## Build
-* kernel: 5.18.1-rc1
-* git: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
-* git branch: linux-5.18.y
-* git commit: 10e6e3d47333297adf359541602af804d4a51482
-* git describe: v5.18-48-g10e6e3d47333
-* test details:
-https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.18.y/build/v5.18=
--48-g10e6e3d47333/
+Here is the summary with links:
+  - [net] net/smc: fixes for converting from "struct smc_cdc_tx_pend **" to "struct smc_wr_tx_pend_priv *"
+    https://git.kernel.org/netdev/net/c/e225c9a5a74b
 
-## Test Regressions (compared to v5.18)
-No test regressions found.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-## Metric Regressions (compared to v5.18)
-No metric regressions found.
 
-## Test Fixes (compared to v5.18)
-No test fixes found.
-
-## Metric Fixes (compared to v5.18)
-No metric fixes found.
-
-## Test result summary
-total: 100569, pass: 87698, fail: 1382, skip: 11489
-
-## Build Summary
-* arc: 10 total, 10 passed, 0 failed
-* arm: 296 total, 293 passed, 3 failed
-* arm64: 47 total, 47 passed, 0 failed
-* i386: 44 total, 40 passed, 4 failed
-* mips: 41 total, 38 passed, 3 failed
-* parisc: 14 total, 14 passed, 0 failed
-* powerpc: 59 total, 56 passed, 3 failed
-* riscv: 27 total, 27 passed, 0 failed
-* s390: 26 total, 23 passed, 3 failed
-* sh: 26 total, 24 passed, 2 failed
-* sparc: 14 total, 14 passed, 0 failed
-* x86_64: 47 total, 46 passed, 1 failed
-
-## Test suites summary
-* fwts
-* igt-gpu-tools
-* kselftest-android
-* kselftest-arm64
-* kselftest-breakpoints
-* kselftest-capabilities
-* kselftest-cgroup
-* kselftest-clone3
-* kselftest-core
-* kselftest-cpu-hotplug
-* kselftest-cpufreq
-* kselftest-drivers
-* kselftest-efivarfs
-* kselftest-filesystems
-* kselftest-firmware
-* kselftest-fpu
-* kselftest-futex
-* kselftest-gpio
-* kselftest-intel_pstate
-* kselftest-ipc
-* kselftest-ir
-* kselftest-kcmp
-* kselftest-kexec
-* kselftest-kvm
-* kselftest-lib
-* kselftest-livepatch
-* kselftest-membarrier
-* kselftest-memfd
-* kselftest-memory-hotplug
-* kselftest-mincore
-* kselftest-mount
-* kselftest-mqueue
-* kselftest-net
-* kselftest-openat2
-* kselftest-pid_namespace
-* kselftest-pidfd
-* kselftest-proc
-* kselftest-pstore
-* kselftest-ptrace
-* kselftest-rseq
-* kselftest-rtc
-* kselftest-seccomp
-* kselftest-sigaltstack
-* kselftest-size
-* kselftest-splice
-* kselftest-static_keys
-* kselftest-sync
-* kselftest-sysctl
-* kselftest-timens
-* kselftest-timers
-* kselftest-tmpfs
-* kselftest-tpm2
-* kselftest-user
-* kselftest-vm
-* kselftest-x86
-* kselftest-zram
-* kunit
-* kvm-unit-tests
-* libgpiod
-* libhugetlbfs
-* linux-log-parser
-* ltp-cap_bounds-tests
-* ltp-commands-tests
-* ltp-containers-tests
-* ltp-controllers-tests
-* ltp-cpuhotplug-tests
-* ltp-crypto-tests
-* ltp-cve-tests
-* ltp-cve-tests
-* ltp-dio-tests
-* ltp-fcntl-locktests-tests
-* ltp-filecaps-tests
-* ltp-fs-tests
-* ltp-fs_bind-tests
-* ltp-fs_perms_simple-tests
-* ltp-fsx-tests
-* ltp-hugetlb-tests
-* ltp-io-tests
-* ltp-ipc-tests
-* ltp-math-tests
-* ltp-mm-tests
-* ltp-nptl-tests
-* ltp-open-posix-tests
-* ltp-pty-tests
-* ltp-sched-tests
-* ltp-securebits-tests
-* ltp-syscalls-tests
-* ltp-tracing-tests
-* network-basic-tests
-* packetdrill
-* perf
-* perf/Zstd-perf.data-compression
-* prep-inline
-* rcutorture
-* ssuite
-* v4l2-compliance
-* vdso
-
---
-Linaro LKFT
-https://lkft.linaro.org
