@@ -2,101 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECB13C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 01:33:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1977C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 01:33:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352136AbiE1BdE (ORCPT
+        id S1355472AbiE1Bdd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 27 May 2022 21:33:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33268 "EHLO
+        Fri, 27 May 2022 21:33:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233464AbiE1BdC (ORCPT
+        with ESMTP id S233464AbiE1BdY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 27 May 2022 21:33:02 -0400
-Received: from mail-vk1-xa29.google.com (mail-vk1-xa29.google.com [IPv6:2607:f8b0:4864:20::a29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B504131F3D;
-        Fri, 27 May 2022 18:33:01 -0700 (PDT)
-Received: by mail-vk1-xa29.google.com with SMTP id e144so2729109vke.9;
-        Fri, 27 May 2022 18:33:01 -0700 (PDT)
+        Fri, 27 May 2022 21:33:24 -0400
+X-Greylist: delayed 902 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 27 May 2022 18:33:22 PDT
+Received: from EX-PRD-EDGE02.vmware.com (EX-PRD-EDGE02.vmware.com [208.91.3.34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 006B3132A00;
+        Fri, 27 May 2022 18:33:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=n4DAZBdaLL/g6XFS6QgCms1Gzfa6QkrtgLsny1wbvW4=;
-        b=BtqFQ7cmMvO0yOXNuk12Hw1NTanwTkbaQejWyG3Nsv5ZHHVeStXXa3bUpNFRX7PGVx
-         Ai3eRhdX6w+xOBf+9jS/KhQYnILdIEY4ETFV11JedpGg+IZdDuzs4aLmkj+eEHn2cuct
-         q0aOETPZlYrySEnnGstvUKV5sWGwUIXZILYarVWzFopCks63LWM8Iyi/cXhAYeQgJRNH
-         REj9K9xqh4UntdObju9EavOcTNPgQzsuuWVwlNe1carn2yUfyHO0QuWRM60DOZAqeKvD
-         I4dH4NJAJZT6aRQAXjbuxvX5/bqcDctu/ZBRfVpSbzNn6P5+lOXutcMj3G9j2wvyT1Om
-         Sd6w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=n4DAZBdaLL/g6XFS6QgCms1Gzfa6QkrtgLsny1wbvW4=;
-        b=mo06tJ/6K/W/+NWeglULAL1z8cZkrAefvKSfiGeqPMuI7JcSqz8CA4B0z4YqH40kHq
-         j43PNJWArBqt0dx3O44qcEnz5+VWLZrC0y6a1lUZCye9zZrRix3nb8THDBs/eXTGOq86
-         aDinoyvT9hLUNGkB4P/MpdCMDoZjIoqmMqAJX2UlbAvpWEGOhnT0XMyf7eV0NVj0JNEQ
-         vfqnw5LMRfECoH/8Y37oXMbSrTPEaeJT6ZHwPHxywRhgW/14CAGRzyqlNbPQ1RP3evfb
-         zUyGOoSpZH+gkltie/CaU3aek2qY3JljjaE50W7ZcCgD8883D5oROC4/DQZ69LQU3y7k
-         mi6A==
-X-Gm-Message-State: AOAM530aBTyMp1VlA8bMzmzqaoHxUE8+vTketk0cpaxMzZw8EFzyiM0r
-        kf2Z/auxItwQvG0UPr2Gx/y3iZwHiLbs4hg9L0oaKy9FO3o=
-X-Google-Smtp-Source: ABdhPJzAtDsFq2sRy+UlcoUFE+V6lAuAcSUAFj7SFgcdrYcD1arLZQoX3iEUIQGdcKoOz9vr2/8xG9K2S7A4FMvLJ9U=
-X-Received: by 2002:a05:6122:2027:b0:35a:19c8:3ec7 with SMTP id
- l39-20020a056122202700b0035a19c83ec7mr3903786vkd.4.1653701580256; Fri, 27 May
- 2022 18:33:00 -0700 (PDT)
+    s=s1024; d=vmware.com;
+    h=from:to:cc:subject:date:message-id:mime-version:content-type;
+    bh=0QdeZQpzPFKxooAPc4/wcd9vahVJt/ODCSvM5mr14K4=;
+    b=nJ+jrEWuMu5pX+ni7svuEwXM+GJLnKF/F4i5WQ9SCQAr/pQOJuAWvgk2bytj7O
+      8Ms/qWeiERmN5W99FxPGhWMWhbdTSQlX4UgNz7dqxE1NY+wVrv08ob4pV7Nsow
+      dZtidINfIUam+kpSn5G+Yt4a9jgt16TtQ66NfTJvA4JXdGk=
+Received: from sc9-mailhost3.vmware.com (10.113.161.73) by
+ EX-PRD-EDGE02.vmware.com (10.188.245.7) with Microsoft SMTP Server id
+ 15.1.2308.14; Fri, 27 May 2022 18:18:09 -0700
+Received: from htb-1n-eng-dhcp122.eng.vmware.com (unknown [10.20.114.216])
+        by sc9-mailhost3.vmware.com (Postfix) with ESMTP id 10AB32027C;
+        Fri, 27 May 2022 18:18:13 -0700 (PDT)
+Received: by htb-1n-eng-dhcp122.eng.vmware.com (Postfix, from userid 0)
+        id 00197AA2B9; Fri, 27 May 2022 18:18:12 -0700 (PDT)
+From:   Ronak Doshi <doshir@vmware.com>
+To:     <netdev@vger.kernel.org>
+CC:     Ronak Doshi <doshir@vmware.com>,
+        VMware PV-Drivers Reviewers <pv-drivers@vmware.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: [PATCH net-next 0/8] vmxnet3: upgrade to version 7
+Date:   Fri, 27 May 2022 18:17:50 -0700
+Message-ID: <20220528011758.7024-1-doshir@vmware.com>
+X-Mailer: git-send-email 2.11.0
 MIME-Version: 1.0
-References: <20220526232606.64174-1-yang.lee@linux.alibaba.com>
-In-Reply-To: <20220526232606.64174-1-yang.lee@linux.alibaba.com>
-From:   Steve French <smfrench@gmail.com>
-Date:   Fri, 27 May 2022 20:32:49 -0500
-Message-ID: <CAH2r5muhKEaxgwJQG7s46h1v+1CHVEP441+x+W4dBk77QbYK2Q@mail.gmail.com>
-Subject: Re: [PATCH -next] cifs: Remove duplicated include in cifssmb.c
-To:     Yang Li <yang.lee@linux.alibaba.com>
-Cc:     Steve French <sfrench@samba.org>,
-        CIFS <linux-cifs@vger.kernel.org>,
-        samba-technical <samba-technical@lists.samba.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Abaci Robot <abaci@linux.alibaba.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+Received-SPF: None (EX-PRD-EDGE02.vmware.com: doshir@vmware.com does not
+ designate permitted sender hosts)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I don't see this line (ie the include cifsfs.h) in fs/cifs/cifssmb.c
-anymore could you do a "git blame" and find where that line was added
-in for-next?
+vmxnet3 emulation has recently added several new features including
+support for uniform passthrough(UPT). To make UPT work vmxnet3 has
+to be enhanced as per the new specification. This patch series
+extends the vmxnet3 driver to leverage these new features.
 
-On Thu, May 26, 2022 at 11:27 PM Yang Li <yang.lee@linux.alibaba.com> wrote:
->
-> Fix following includecheck warning:
-> ./fs/cifs/cifssmb.c: cifsfs.h is included more than once.
->
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
-> ---
->  fs/cifs/cifssmb.c | 1 -
->  1 file changed, 1 deletion(-)
->
-> diff --git a/fs/cifs/cifssmb.c b/fs/cifs/cifssmb.c
-> index e3457356ec11..193009f1421b 100644
-> --- a/fs/cifs/cifssmb.c
-> +++ b/fs/cifs/cifssmb.c
-> @@ -28,7 +28,6 @@
->  #include "cifsglob.h"
->  #include "cifsacl.h"
->  #include "cifsproto.h"
-> -#include "cifsfs.h"
->  #include "cifs_unicode.h"
->  #include "cifs_debug.h"
->  #include "smb2proto.h"
-> --
-> 2.20.1.7.g153144c
->
+Compatibility is maintained using existing vmxnet3 versioning mechanism as
+follows:
+ - new features added to vmxnet3 emulation are associated with new vmxnet3
+   version viz. vmxnet3 version 7.
+ - emulation advertises all the versions it supports to the driver.
+ - during initialization, vmxnet3 driver picks the highest version number
+ supported by both the emulation and the driver and configures emulation
+ to run at that version.
 
+In particular, following changes are introduced:
+
+Patch 1:
+  This patch introduces utility macros for vmxnet3 version 7 comparison
+  and updates Copyright information.
+
+Patch 2:
+  This patch adds new capability registers to fine control enablement of
+  individual features based on emulation and passthrough.
+
+Patch 3:
+  This patch adds support for large passthrough BAR register.
+
+Patch 4:
+  This patch adds support for out of order rx completion processing.
+
+Patch 5:
+  This patch introduces new command to set ring buffer sizes to pass this
+  information to the hardware.
+
+Patch 6:
+  For better performance, hardware has a requirement to limit number of TSO
+  descriptors. This patch adds that support.
+
+Patch 7:
+  With vmxnet3 version 7, new descriptor fields are used to indicate
+  encapsulation offload.
+
+Patch 8:
+  With all vmxnet3 version 7 changes incorporated in the vmxnet3 driver,
+  with this patch, the driver can configure emulation to run at vmxnet3
+  version 7.
+
+Ronak Doshi (8):
+  vmxnet3: prepare for version 7 changes
+  vmxnet3: add support for capability registers
+  vmxnet3: add support for large passthrough BAR register
+  vmxnet3: add support for out of order rx completion
+  vmxnet3: add command to set ring buffer sizes
+  vmxnet3: limit number of TXDs used for TSO packet
+  vmxnet3: use ext1 field to indicate encapsulated packet
+  vmxnet3: update to version 7
+
+ drivers/net/vmxnet3/Makefile          |   2 +-
+ drivers/net/vmxnet3/upt1_defs.h       |   2 +-
+ drivers/net/vmxnet3/vmxnet3_defs.h    |  80 ++++++++--
+ drivers/net/vmxnet3/vmxnet3_drv.c     | 291 ++++++++++++++++++++++++++++++----
+ drivers/net/vmxnet3/vmxnet3_ethtool.c | 116 ++++++++++++--
+ drivers/net/vmxnet3/vmxnet3_int.h     |  24 ++-
+ 6 files changed, 457 insertions(+), 58 deletions(-)
 
 -- 
-Thanks,
+2.11.0
 
-Steve
