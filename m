@@ -2,139 +2,213 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D864C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 07:12:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B404CC433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 07:34:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349321AbiE1HMQ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 28 May 2022 03:12:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55646 "EHLO
+        id S229877AbiE1Hej (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 28 May 2022 03:34:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229636AbiE1HMM (ORCPT
+        with ESMTP id S229661AbiE1Hef (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 28 May 2022 03:12:12 -0400
-Received: from conssluserg-06.nifty.com (conssluserg-06.nifty.com [210.131.2.91])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BDBF2DE8;
-        Sat, 28 May 2022 00:12:09 -0700 (PDT)
-Received: from mail-pj1-f51.google.com (mail-pj1-f51.google.com [209.85.216.51]) (authenticated)
-        by conssluserg-06.nifty.com with ESMTP id 24S7Bllt002344;
-        Sat, 28 May 2022 16:11:48 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-06.nifty.com 24S7Bllt002344
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1653721908;
-        bh=Ke5jHo8VtsnIBuHnKcTafO9UNs8CqmDY9CjC7LoWcyg=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=SvcSdFCEKE8RRXBMIA7XpimKe+J6UWfLaXXEF+jpQfgdH3GrR8iY9q+ZsIV8xpUKG
-         St5ue4XgFERGiF+RT4A6EvCeqUvsstIYFgPOqpteV32R21Bjx2ckbRlHWHpo47vG/u
-         I88KuEAfS8feRvZ1Zeu6e8/TF4z9c0qR3/CeLnvYu1SNlyr0FGFXmOg9qe8kTiydNj
-         XOVejqH6RrgBpRp8OhPPt43V0mzC7828XWYpqPtFLDDVU5P4JWiXvfNQNb71p9BZqb
-         gtsgVUBMyYe+u8aEOVKUYCS6ptlP6MLeS0ATaUDDjS8saLcJzCjLZSIqfyqyfzvrf5
-         uzrCpOzyd8HEA==
-X-Nifty-SrcIP: [209.85.216.51]
-Received: by mail-pj1-f51.google.com with SMTP id c10-20020a17090a4d0a00b001e283823a00so2764637pjg.0;
-        Sat, 28 May 2022 00:11:48 -0700 (PDT)
-X-Gm-Message-State: AOAM531zQaVWxXBQqYCASmimnbBy+RekmmU/IR17+KK2VGxCk/LQZG+4
-        pzucTx50/0ztqOSeHxet2oVIXgtpbU9sW/8gtuE=
-X-Google-Smtp-Source: ABdhPJxIgcs0jv5kYFRTIFUI+PolCz13bwvjdRWJmELBANgzVLOZHuuZI+qAblhvtkFaI4hepCODALq+NqXohlAZTOc=
-X-Received: by 2002:a17:90a:9b08:b0:1e2:837f:bcce with SMTP id
- f8-20020a17090a9b0800b001e2837fbccemr5889109pjp.144.1653721907307; Sat, 28
- May 2022 00:11:47 -0700 (PDT)
+        Sat, 28 May 2022 03:34:35 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 103D127B02
+        for <linux-kernel@vger.kernel.org>; Sat, 28 May 2022 00:34:33 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id j10so9759932lfe.12
+        for <linux-kernel@vger.kernel.org>; Sat, 28 May 2022 00:34:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kvaser.com; s=google;
+        h=message-id:date:mime-version:user-agent:from:subject:to:cc
+         :references:content-language:in-reply-to:content-transfer-encoding;
+        bh=t2lzf8K9LIhbMSrsb1mnmZ8oZMw1QczwDQJGV0vktEo=;
+        b=MiEKjeoYhuHognjz/t8DwsKvKfA3v2ARI8ntHo0Cb/q7x3tTFMlGYmAkiHjmpo/3aM
+         aIYCTvHOoSN95dBACwAgthJ9eKY/vSYCO4d3/oqjruipDeM0In7BGAJiig2I2rXtoJRE
+         9I+4lLkzivgTHge89hJCiJVS8anmQhWAFzFiXLJc4RTfcRAU+c6onIfKJ+eTu0Cw0rmq
+         0qXeyaND7t4pWf/pM6yXxAS8fXfA9ow+ilpLkwAmQC41QG1bW56qbScVKvlYVumjE/Ic
+         hr3aIMW92zKcFKiu5ONUr+r5kDtoN0hWcuvje7hHwtj035wEw2wk5TX7ZyVvEcUryNX5
+         m/AQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
+         :subject:to:cc:references:content-language:in-reply-to
+         :content-transfer-encoding;
+        bh=t2lzf8K9LIhbMSrsb1mnmZ8oZMw1QczwDQJGV0vktEo=;
+        b=yK0lpyCGSmgLZao4Mvp2080sbeFKrGajT78h1jAB5yyO0+e5kB0Rz7mOEMh9PMtWfH
+         uhQT0RGjVxSOrQ04jF5+5uaIOqw+GAqP2aVtkAZ1Is2AOUX7qLfoyFwZU29jMs87hN3B
+         pq6QPdTMqnNkUmkj2s+1whEmpJDwxJ58QWUcWGZp74MRXgrWM+TaYqcx1F3eQ9feP/cD
+         IzbCdbUWUTkUPGDr2qPeL5/t8/Y0PKWnUQEmqsrOHlrGDxhqst8ddhxg0zeDy39n2OFb
+         ajiL+Ru+VMB+D/xgSav+BmwwleiDgLhlQJL9Pl06gLeTqiIBx/sCbVrUTkOqoyrfoa5L
+         SK4Q==
+X-Gm-Message-State: AOAM5306hW+joL84F0GMf/Qrby5WLqm+mLx0Za/iul6fUQSq2be7v/wA
+        ExK+6bPRHr9z8CAaN4sfO4kMng==
+X-Google-Smtp-Source: ABdhPJxvqpjrChid/beZBXnp91CAveI6IIJLEsZzanXlUWd7AiX7NgSikmvuZTGcB73uiS099IRuAQ==
+X-Received: by 2002:a05:6512:2204:b0:478:68d9:bb45 with SMTP id h4-20020a056512220400b0047868d9bb45mr21694335lfu.453.1653723271271;
+        Sat, 28 May 2022 00:34:31 -0700 (PDT)
+Received: from [192.168.16.143] (h-155-4-68-234.A785.priv.bahnhof.se. [155.4.68.234])
+        by smtp.gmail.com with ESMTPSA id i40-20020a0565123e2800b0047866f9b642sm1205604lfv.224.2022.05.28.00.34.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 28 May 2022 00:34:30 -0700 (PDT)
+Message-ID: <20ae75a3-13a9-a7a2-6b0d-3df73703e001@kvaser.com>
+Date:   Sat, 28 May 2022 09:34:47 +0200
 MIME-Version: 1.0
-References: <20220527100155.1996314-1-masahiroy@kernel.org>
- <20220527100155.1996314-2-masahiroy@kernel.org> <CA+icZUX_xeZ8k-3YZppGbuYzeypU8f_iz_-tuMJ1bg0dhikH8A@mail.gmail.com>
-In-Reply-To: <CA+icZUX_xeZ8k-3YZppGbuYzeypU8f_iz_-tuMJ1bg0dhikH8A@mail.gmail.com>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Sat, 28 May 2022 16:10:22 +0900
-X-Gmail-Original-Message-ID: <CAK7LNARyyomaAS1FK6CMbXKB69RzZMA-hDHL1wzLsuHtCkckyw@mail.gmail.com>
-Message-ID: <CAK7LNARyyomaAS1FK6CMbXKB69RzZMA-hDHL1wzLsuHtCkckyw@mail.gmail.com>
-Subject: Re: [PATCH v7 1/8] kbuild: replace $(linked-object) with CONFIG options
-To:     Sedat Dilek <sedat.dilek@gmail.com>
-Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        clang-built-linux <llvm@lists.linux.dev>,
-        Helge Deller <deller@gmx.de>,
-        Parisc List <linux-parisc@vger.kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+From:   Jimmy Assarsson <extja@kvaser.com>
+Subject: Re: [PATCH 01/12] can: kvaser_usb_leaf: Fix overread with an invalid
+ command
+To:     Anssi Hannula <anssi.hannula@bitwise.fi>
+Cc:     linux-can@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
+        linux-kernel@vger.kernel.org
+References: <20220516134748.3724796-1-anssi.hannula@bitwise.fi>
+ <20220516134748.3724796-2-anssi.hannula@bitwise.fi>
+Content-Language: en-US
+In-Reply-To: <20220516134748.3724796-2-anssi.hannula@bitwise.fi>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, May 28, 2022 at 11:32 AM Sedat Dilek <sedat.dilek@gmail.com> wrote:
->
-> On Fri, May 27, 2022 at 1:56 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
-> >
-> > *.prelink.o is created when CONFIG_LTO_CLANG or CONFIG_X86_KERNEL_IBT
-> > is enabled.
-> >
-> > Replace $(linked-object) with $(CONFIG_LTO_CLANG)$(CONFIG_X86_KERNEL_IBT)
-> > so you will get better idea when the --link option is passed.
-> >
-> > No functional change is intended.
-> >
-> > Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
->
-> Hi Masahiroy,
->
-> I was not CCed on the cover-letter and only on some patches in this series.
->
-> So, I have re-tested this series by pulling from kbuild.git#kbuild
-> (saw later you renewed the parisc/nm patch).
->
-> While testing my selfmade LLVM version 14.0.4 (PGO + ThinLTO
-> optimized) toolchain I included this series.
->
-> Just built fine and I was able to boot on bare metal.
->
-> -Sedat -
->
+On 5/16/22 15:47, Anssi Hannula wrote:
+> For command events read from the device,
+> kvaser_usb_leaf_read_bulk_callback() verifies that cmd->len does not
+> exceed the size of the received data, but the actual kvaser_cmd handlers
+> will happily read any kvaser_cmd fields without checking for cmd->len.
+> 
+> This can cause an overread if the last cmd in the buffer is shorter than
+> expected for the command type (with cmd->len showing the actual short
+> size).
+> 
+> Maximum overread seems to be 22 bytes (CMD_LEAF_LOG_MESSAGE), some of
+> which are delivered to userspace as-is.
+> 
+> Fix that by verifying the length of command before handling it.
+> 
+> This issue can only occur after RX URBs have been set up, i.e. the
+> interface has been opened at least once.
+> 
+> Fixes: 080f40a6fa28 ("can: kvaser_usb: Add support for Kvaser CAN/USB devices")
+> Signed-off-by: Anssi Hannula <anssi.hannula@bitwise.fi>
 
-Thanks for your testing!
-
-I added your Tested-by tag.
+Looks good to me.
+Tested-by: Jimmy Assarsson <extja@kvaser.com>
 
 
-
-
-
-> > ---
-> >
-> > Changes in v7:
-> >   - New patch
-> >
-> >  scripts/Makefile.build | 3 +--
-> >  1 file changed, 1 insertion(+), 2 deletions(-)
-> >
-> > diff --git a/scripts/Makefile.build b/scripts/Makefile.build
-> > index 06400504150b..f80196eef03a 100644
-> > --- a/scripts/Makefile.build
-> > +++ b/scripts/Makefile.build
-> > @@ -219,7 +219,7 @@ objtool_args =                                                              \
-> >         $(if $(CONFIG_STACK_VALIDATION), --stackval)                    \
-> >         $(if $(CONFIG_HAVE_STATIC_CALL_INLINE), --static-call)          \
-> >         --uaccess                                                       \
-> > -       $(if $(linked-object), --link)                                  \
-> > +       $(if $($(CONFIG_LTO_CLANG)$(CONFIG_X86_KERNEL_IBT)), --link)    \
-> >         $(if $(part-of-module), --module)                               \
-> >         $(if $(CONFIG_GCOV_KERNEL), --no-unreachable)
-> >
-> > @@ -284,7 +284,6 @@ quiet_cmd_cc_prelink_modules = LD [M]  $@
-> >  # modules into native code
-> >  $(obj)/%.prelink.o: objtool-enabled = y
-> >  $(obj)/%.prelink.o: part-of-module := y
-> > -$(obj)/%.prelink.o: linked-object := y
-> >
-> >  $(obj)/%.prelink.o: $(obj)/%.o FORCE
-> >         $(call if_changed,cc_prelink_modules)
-> > --
-> > 2.32.0
-> >
-
-
-
--- 
-Best Regards
-Masahiro Yamada
+> ---
+> 
+> A simpler option would be to just zero-pad the data into a
+> stack-allocated struct kvaser_cmd without knowledge of the needed
+> minimum size (so no tables needed), though that would mean incomplete
+> commands would get passed on silently.
+> 
+>   .../net/can/usb/kvaser_usb/kvaser_usb_leaf.c  | 75 +++++++++++++++++++
+>   1 file changed, 75 insertions(+)
+> 
+> diff --git a/drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c b/drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c
+> index c805b999c543..d9f40b9702a5 100644
+> --- a/drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c
+> +++ b/drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c
+> @@ -320,6 +320,38 @@ struct kvaser_cmd {
+>   	} u;
+>   } __packed;
+>   
+> +#define CMD_SIZE_ANY 0xff
+> +#define kvaser_fsize(field) sizeof_field(struct kvaser_cmd, field)
+> +
+> +static const u8 kvaser_usb_leaf_cmd_sizes_leaf[] = {
+> +	[CMD_START_CHIP_REPLY]		= kvaser_fsize(u.simple),
+> +	[CMD_STOP_CHIP_REPLY]		= kvaser_fsize(u.simple),
+> +	[CMD_GET_CARD_INFO_REPLY]	= kvaser_fsize(u.cardinfo),
+> +	[CMD_TX_ACKNOWLEDGE]		= kvaser_fsize(u.tx_acknowledge_header),
+> +	[CMD_GET_SOFTWARE_INFO_REPLY]	= kvaser_fsize(u.leaf.softinfo),
+> +	[CMD_RX_STD_MESSAGE]		= kvaser_fsize(u.leaf.rx_can),
+> +	[CMD_RX_EXT_MESSAGE]		= kvaser_fsize(u.leaf.rx_can),
+> +	[CMD_LEAF_LOG_MESSAGE]		= kvaser_fsize(u.leaf.log_message),
+> +	[CMD_CHIP_STATE_EVENT]		= kvaser_fsize(u.leaf.chip_state_event),
+> +	[CMD_CAN_ERROR_EVENT]		= kvaser_fsize(u.leaf.error_event),
+> +	/* ignored events: */
+> +	[CMD_FLUSH_QUEUE_REPLY]		= CMD_SIZE_ANY,
+> +};
+> +
+> +static const u8 kvaser_usb_leaf_cmd_sizes_usbcan[] = {
+> +	[CMD_START_CHIP_REPLY]		= kvaser_fsize(u.simple),
+> +	[CMD_STOP_CHIP_REPLY]		= kvaser_fsize(u.simple),
+> +	[CMD_GET_CARD_INFO_REPLY]	= kvaser_fsize(u.cardinfo),
+> +	[CMD_TX_ACKNOWLEDGE]		= kvaser_fsize(u.tx_acknowledge_header),
+> +	[CMD_GET_SOFTWARE_INFO_REPLY]	= kvaser_fsize(u.usbcan.softinfo),
+> +	[CMD_RX_STD_MESSAGE]		= kvaser_fsize(u.usbcan.rx_can),
+> +	[CMD_RX_EXT_MESSAGE]		= kvaser_fsize(u.usbcan.rx_can),
+> +	[CMD_CHIP_STATE_EVENT]		= kvaser_fsize(u.usbcan.chip_state_event),
+> +	[CMD_CAN_ERROR_EVENT]		= kvaser_fsize(u.usbcan.error_event),
+> +	/* ignored events: */
+> +	[CMD_USBCAN_CLOCK_OVERFLOW_EVENT] = CMD_SIZE_ANY,
+> +};
+> +
+>   /* Summary of a kvaser error event, for a unified Leaf/Usbcan error
+>    * handling. Some discrepancies between the two families exist:
+>    *
+> @@ -387,6 +419,43 @@ static const struct kvaser_usb_dev_cfg kvaser_usb_leaf_dev_cfg_32mhz = {
+>   	.bittiming_const = &kvaser_usb_leaf_bittiming_const,
+>   };
+>   
+> +static int kvaser_usb_leaf_verify_size(const struct kvaser_usb *dev,
+> +				       const struct kvaser_cmd *cmd)
+> +{
+> +	/* buffer size >= cmd->len ensured by caller */
+> +	u8 min_size = 0;
+> +
+> +	switch (dev->card_data.leaf.family) {
+> +	case KVASER_LEAF:
+> +		if (cmd->id < ARRAY_SIZE(kvaser_usb_leaf_cmd_sizes_leaf))
+> +			min_size = kvaser_usb_leaf_cmd_sizes_leaf[cmd->id];
+> +		break;
+> +	case KVASER_USBCAN:
+> +		if (cmd->id < ARRAY_SIZE(kvaser_usb_leaf_cmd_sizes_usbcan))
+> +			min_size = kvaser_usb_leaf_cmd_sizes_usbcan[cmd->id];
+> +		break;
+> +	}
+> +
+> +	if (min_size == CMD_SIZE_ANY)
+> +		return 0;
+> +
+> +	if (min_size) {
+> +		min_size += CMD_HEADER_LEN;
+> +		if (cmd->len >= min_size)
+> +			return 0;
+> +
+> +		dev_err_ratelimited(&dev->intf->dev,
+> +				    "Received command %u too short (size %u, needed %u)",
+> +				    cmd->id, cmd->len, min_size);
+> +		return -EIO;
+> +	}
+> +
+> +	dev_warn_ratelimited(&dev->intf->dev,
+> +			     "Unhandled command (%d, size %d)\n",
+> +			     cmd->id, cmd->len);
+> +	return -EINVAL;
+> +}
+> +
+>   static void *
+>   kvaser_usb_leaf_frame_to_cmd(const struct kvaser_usb_net_priv *priv,
+>   			     const struct sk_buff *skb, int *cmd_len,
+> @@ -492,6 +561,9 @@ static int kvaser_usb_leaf_wait_cmd(const struct kvaser_usb *dev, u8 id,
+>   end:
+>   	kfree(buf);
+>   
+> +	if (err == 0)
+> +		err = kvaser_usb_leaf_verify_size(dev, cmd);
+> +
+>   	return err;
+>   }
+>   
+> @@ -1113,6 +1185,9 @@ static void kvaser_usb_leaf_stop_chip_reply(const struct kvaser_usb *dev,
+>   static void kvaser_usb_leaf_handle_command(const struct kvaser_usb *dev,
+>   					   const struct kvaser_cmd *cmd)
+>   {
+> +	if (kvaser_usb_leaf_verify_size(dev, cmd) < 0)
+> +		return;
+> +
+>   	switch (cmd->id) {
+>   	case CMD_START_CHIP_REPLY:
+>   		kvaser_usb_leaf_start_chip_reply(dev, cmd);
