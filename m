@@ -2,99 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FCEDC433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 17:41:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60336C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 17:55:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239270AbiE1RlV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 28 May 2022 13:41:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42728 "EHLO
+        id S239298AbiE1Rza (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 28 May 2022 13:55:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236088AbiE1RlU (ORCPT
+        with ESMTP id S236088AbiE1RzY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 28 May 2022 13:41:20 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BB16E2
-        for <linux-kernel@vger.kernel.org>; Sat, 28 May 2022 10:41:19 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id t5so8864982edc.2
-        for <linux-kernel@vger.kernel.org>; Sat, 28 May 2022 10:41:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pP5sQR3QwXNtypqdUBNCTZlpu49d035rXCG+jxDoA2s=;
-        b=Z70GBvzBscFi3wczPp/1gBU54OJpVhVtHdRLTSfj2K/6zYlVoev9uCuNVqs5HUSD6f
-         AxHO+J2LAuG3MqxfhY3/pQ1sdLe7lXw7Q1xxXU6eXyGm/7Xyqf/1CmirEGCn6tq8hsj1
-         FuIAAeHZ2rF1M229MhVKggd35Tg9CBjRlQDRo=
+        Sat, 28 May 2022 13:55:24 -0400
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62AED120B2
+        for <linux-kernel@vger.kernel.org>; Sat, 28 May 2022 10:55:23 -0700 (PDT)
+Received: by mail-il1-f199.google.com with SMTP id a12-20020a92c54c000000b002d2f39932e8so4029437ilj.19
+        for <linux-kernel@vger.kernel.org>; Sat, 28 May 2022 10:55:23 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pP5sQR3QwXNtypqdUBNCTZlpu49d035rXCG+jxDoA2s=;
-        b=D6E9odeooxvxE3srZAOCb64CEBtlY/c4u2X1ZLwxTvXA3GcilImSTfbOVnd2gsJIt1
-         v6h9RZzullZ2UXrpGnwFHjEsgKaZkaiuMVMqhv4qbUdP15xxSPE5KvjjfgMPaUdYzPo1
-         e8pXWGDAQQEspwB3alIBBO82mLwfWiFjSgVm+N3u9YC8H+XjmUmsgTBiQfynhy5B22vT
-         mI1eAW4lOFSNO+nU/XlgxIB3VquVTJw5NzhztjIEZ7cHfSmChOhu4bLuGOfdUDYB4TBn
-         AQfZf2zwlO84je8OC2N0imEOzU9AcLZzTIF9ejRZgavtTHuCFOuaaRrO/ZnoJQn60XVn
-         r7KQ==
-X-Gm-Message-State: AOAM533SJmYimIwUKQ9l3cDSYBVYRxPsYJBieDqmR6DRTPGbbzfYgt9k
-        5IiWGYwNUMlFIyng09agHXXlUMSEv5/+dYZY
-X-Google-Smtp-Source: ABdhPJwJzGMD+Me5AgUkGzc3LSd1Rt0x0OGscCQfIqdo/57cS2Ls0ZxS1zocQOMmbuJzoE0Q/GeRVQ==
-X-Received: by 2002:aa7:dc09:0:b0:42a:aadd:8e71 with SMTP id b9-20020aa7dc09000000b0042aaadd8e71mr50558464edu.41.1653759677531;
-        Sat, 28 May 2022 10:41:17 -0700 (PDT)
-Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com. [209.85.221.54])
-        by smtp.gmail.com with ESMTPSA id c23-20020a50f617000000b0042b765c2448sm3718820edn.80.2022.05.28.10.41.16
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 28 May 2022 10:41:16 -0700 (PDT)
-Received: by mail-wr1-f54.google.com with SMTP id t6so9653167wra.4
-        for <linux-kernel@vger.kernel.org>; Sat, 28 May 2022 10:41:16 -0700 (PDT)
-X-Received: by 2002:adf:dcc5:0:b0:210:1f95:c5d0 with SMTP id
- x5-20020adfdcc5000000b002101f95c5d0mr5490672wrm.97.1653759675983; Sat, 28 May
- 2022 10:41:15 -0700 (PDT)
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=8fXjU/ZbiGyVhFFAYJKqBjQvQpcxyuo7di2DSV4UV84=;
+        b=Nh4Znj961WwB1f/sX98XRKMCqfRLQTuVKmsMxpwELcZI6/rfuUhCgxUwrEhHu4Sio8
+         3QIq+1GOWKDJnmmAk3YDMYkRm/wIQGDmsHzfg+kCO5qqnK5f5tuTe7Vgs1ZoxYSFDrA0
+         FaETMWMEiguHr+JC3wcv+8tFkd6k1cfBFnLxgeQGxnEAitRLNP1lQSP44Ln1JBYOnwL3
+         eGeiSWOQ4a9kme9RMMTpDxACVcfr9zsygZa/fbNp7ZNJAOl9pOGSKOegZnh3hIpplvSu
+         yVueWGfueiK2QXmwrH1xjDkXORnzpzN2j5GKkbPfL/sKrcnXiuN22yL641vMVR2DajrW
+         O39A==
+X-Gm-Message-State: AOAM532exI75NsWy+16H2MIhOzlT9gfgvtrKGKDJy4mstI5z6iW+SBoc
+        Yh79DvvZX8xRrvJrqzGlNzVsZ4/5U1AHM2A/E0WxeImWD9v3
+X-Google-Smtp-Source: ABdhPJxO7aUCkjM0UfdDnQmD0Nmu7o0bFfpzSg9h0WdtoBHyB4e3jjNpAPbow6+7PDw+VkBvkbHA+vS0vQakdK4WHNKEg4bcKpQ0
 MIME-Version: 1.0
-References: <YpCUzStDnSgQLNFN@debian> <CAHk-=wg0uGAX5DYZq+tY2KeUAR8DtR91YE1y9CkPMKkKOyE4jg@mail.gmail.com>
- <CADVatmNGPbSdRNQuwJEWAaPtqb3vBYRjvsuBpoRUnhEHj=X5GQ@mail.gmail.com>
- <CAHk-=wisQd8yiPX=SsK3eFiakKo713hq4SyqPWsJ-oyAmLFefQ@mail.gmail.com> <YpIR67FMtTGCwARZ@debian>
-In-Reply-To: <YpIR67FMtTGCwARZ@debian>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Sat, 28 May 2022 10:40:59 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wjuyHE=1wLgHncub8FfgeyYqfWYsy4-YrhAvq9991h_Aw@mail.gmail.com>
-Message-ID: <CAHk-=wjuyHE=1wLgHncub8FfgeyYqfWYsy4-YrhAvq9991h_Aw@mail.gmail.com>
-Subject: Re: mainline build failure due to f1e4c916f97f ("drm/edid: add EDID
- block count and size helpers")
-To:     Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Cc:     Jani Nikula <jani.nikula@intel.com>,
-        =?UTF-8?B?VmlsbGUgU3lyasOkbMOk?= <ville.syrjala@linux.intel.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+X-Received: by 2002:a05:6638:3002:b0:32d:acc7:4a7a with SMTP id
+ r2-20020a056638300200b0032dacc74a7amr25577537jak.14.1653760522347; Sat, 28
+ May 2022 10:55:22 -0700 (PDT)
+Date:   Sat, 28 May 2022 10:55:22 -0700
+In-Reply-To: <YpJaiGRcRjDzRxQC@rowland.harvard.edu>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000007a6b3605e01620c8@google.com>
+Subject: Re: [syzbot] WARNING in driver_unregister
+From:   syzbot <syzbot+02b16343704b3af1667e@syzkaller.appspotmail.com>
+To:     andreyknvl@gmail.com, gregkh@linuxfoundation.org,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        stern@rowland.harvard.edu, syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, May 28, 2022 at 5:13 AM Sudip Mukherjee
-<sudipm.mukherjee@gmail.com> wrote:
->
-> just tried this with
-> make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- drivers/gpu/drm/drm_edid.s
->
-> size_of_edid:
->         mov     r0, #144        @,
->         ldmfd   sp, {fp, sp, pc}        @
+Hello,
 
-So digging a bit deeper - since I have am arm compiler after all - I
-note that 'sizeof(detailed_timings)' is 88.
+syzbot has tested the proposed patch and the reproducer did not trigger any issue:
 
-Which is completely wrong. It should be 72 bytes (an array of 4
-structures, each 18 bytes in size).
+Reported-and-tested-by: syzbot+02b16343704b3af1667e@syzkaller.appspotmail.com
 
-I have not dug deeper, but that is clearly the issue.
+Tested on:
 
-Now, why that only happens on that spear3xx_defconfig, I have no idea.
+commit:         97fa5887 USB: new quirk for Dell Gen 2 devices
+git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/usb.git
+kernel config:  https://syzkaller.appspot.com/x/.config?x=d7b232ec3adf5c8d
+dashboard link: https://syzkaller.appspot.com/bug?extid=02b16343704b3af1667e
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=10f44625f00000
 
-             Linus
+Note: testing is done by a robot and is best-effort only.
