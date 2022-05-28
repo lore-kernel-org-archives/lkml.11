@@ -2,123 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C9ECC4332F
-	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 07:36:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0859CC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 07:36:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242683AbiE1Her (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 28 May 2022 03:34:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35534 "EHLO
+        id S229818AbiE1HgG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 28 May 2022 03:36:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229976AbiE1Hek (ORCPT
+        with ESMTP id S229611AbiE1HgD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 28 May 2022 03:34:40 -0400
-Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6072C2714F
-        for <linux-kernel@vger.kernel.org>; Sat, 28 May 2022 00:34:38 -0700 (PDT)
-Received: by mail-lj1-x22c.google.com with SMTP id s20so6957991ljd.10
-        for <linux-kernel@vger.kernel.org>; Sat, 28 May 2022 00:34:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kvaser.com; s=google;
-        h=message-id:date:mime-version:user-agent:from:subject:to:cc
-         :references:content-language:in-reply-to:content-transfer-encoding;
-        bh=ePMiwdznKuL/1LiEbFemCYK7m9HSy56ettCK3qVn2dw=;
-        b=J9HbMUrZcHWMAgLZDSrfLRbuzUUYGqOQ0gA9eTxL7nCCaC0EgM0+bBRAPccMYtQCVK
-         74TJRHzCZgPrDuQjtPgXCYS3slqj1JAqRug3vwK2OT3l/JbpKVvqV/PSt5+WWeuu/Qs4
-         qJeK7YbNA7eRdo19mWVC42jRhdMUtdcZKUUdY7roJbfFz+/feLimkIlfLEVkDBNGgRFx
-         Ns0FrjRMZfRBHl4psUtRtvcr8r3AOyFvkU7sr3cpJ+5mRKrTMl4wDshvMSw3noouZF4v
-         o7L1aelntWzQ8SO765Dy9tE/x00wrVnu+9t+Zlv0DvRPrSsZnsef6+rZluS9Ehiomf+Z
-         aKhw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
-         :subject:to:cc:references:content-language:in-reply-to
-         :content-transfer-encoding;
-        bh=ePMiwdznKuL/1LiEbFemCYK7m9HSy56ettCK3qVn2dw=;
-        b=Hqg1gO8VUakTkP5gzEnsGJsBJd4CL22eS8T3YqeAivfaFqtlj+mZZkcg3mtcvsHWsO
-         DYuUeYvyqnIfL/tdcVGkN3ysAqPvn12bXNm/YH94Ky7o3fHKomJiNkQ3K4OXy9P3cfgk
-         ziKJ/kL0q2UGhJfQu88Go8j1HnQ0rMGhggwfoNEnXpK0nHjnl8sGts4TJUiJZGijporb
-         4z1KUelg2qKttIu63HHHiY3vcMDA275L3zqQ29pObpHaoaBfRFjFYgRklk5+TiU+3WRx
-         dLNKApyQgQJBLyCTL+T9tdfmmuU9tCuBtg8oClOOhsx8z0wQjD1tbbtYf05sj8WLKWbE
-         ahLQ==
-X-Gm-Message-State: AOAM532ZVcahI3BZwaACRSX7ia5XyXdVPyqt3g2tMSMzaiRU5xCVTH9r
-        J18h6hXUYGTZBIkY3cwWdwZh0w==
-X-Google-Smtp-Source: ABdhPJyXMMmFwV4S0d+momqzLdkJW5J7YiUoERQ63Y5Qy6n83GtmHUhJ2C5BzbSXkF1G66DospBc0A==
-X-Received: by 2002:a2e:bc19:0:b0:253:ee6d:7abf with SMTP id b25-20020a2ebc19000000b00253ee6d7abfmr16009268ljf.448.1653723276647;
-        Sat, 28 May 2022 00:34:36 -0700 (PDT)
-Received: from [192.168.16.143] (h-155-4-68-234.A785.priv.bahnhof.se. [155.4.68.234])
-        by smtp.gmail.com with ESMTPSA id o8-20020a056512050800b004744bfd620fsm1204621lfb.236.2022.05.28.00.34.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 28 May 2022 00:34:36 -0700 (PDT)
-Message-ID: <096c5828-2b86-d689-e1cb-ba7de8abbf6f@kvaser.com>
-Date:   Sat, 28 May 2022 09:34:53 +0200
+        Sat, 28 May 2022 03:36:03 -0400
+Received: from isilmar-4.linta.de (isilmar-4.linta.de [136.243.71.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6514F286FD
+        for <linux-kernel@vger.kernel.org>; Sat, 28 May 2022 00:36:02 -0700 (PDT)
+X-isilmar-external: YES
+X-isilmar-external: YES
+X-isilmar-external: YES
+X-isilmar-external: YES
+X-isilmar-external: YES
+X-isilmar-external: YES
+X-isilmar-external: YES
+Received: from owl.dominikbrodowski.net (owl.brodo.linta [10.2.0.111])
+        by isilmar-4.linta.de (Postfix) with ESMTPSA id 1E36C20000E;
+        Sat, 28 May 2022 07:36:00 +0000 (UTC)
+Received: by owl.dominikbrodowski.net (Postfix, from userid 1000)
+        id 9A242807BE; Sat, 28 May 2022 09:26:19 +0200 (CEST)
+Date:   Sat, 28 May 2022 09:26:19 +0200
+From:   Dominik Brodowski <linux@dominikbrodowski.net>
+To:     cgel.zte@gmail.com
+Cc:     f.fainelli@gmail.com, bcm-kernel-feedback-list@broadcom.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: Re: [PATCH] pcmcia: Use platform_get_irq() to get the interrupt
+Message-ID: <YpHOm784dpzeVoBr@owl.dominikbrodowski.net>
+References: <20220309053732.2081252-1-chi.minghao@zte.com.cn>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-From:   Jimmy Assarsson <extja@kvaser.com>
-Subject: Re: [PATCH 02/12] can: kvaser_usb: Fix use of uninitialized
- completion
-To:     Anssi Hannula <anssi.hannula@bitwise.fi>
-Cc:     linux-can@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-kernel@vger.kernel.org
-References: <20220516134748.3724796-1-anssi.hannula@bitwise.fi>
- <20220516134748.3724796-3-anssi.hannula@bitwise.fi>
-Content-Language: en-US
-In-Reply-To: <20220516134748.3724796-3-anssi.hannula@bitwise.fi>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220309053732.2081252-1-chi.minghao@zte.com.cn>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/16/22 15:47, Anssi Hannula wrote:
-> flush_comp is initialized when CMD_FLUSH_QUEUE is sent to the device and
-> completed when the device sends CMD_FLUSH_QUEUE_RESP.
+Am Wed, Mar 09, 2022 at 05:37:32AM +0000 schrieb cgel.zte@gmail.com:
+> From: Minghao Chi <chi.minghao@zte.com.cn>
 > 
-> This causes completion of uninitialized completion if the device sends
-> CMD_FLUSH_QUEUE_RESP before CMD_FLUSH_QUEUE is ever sent (e.g. as a
-> response to a flush by a previously bound driver, or a misbehaving
-> device).
+> It is not recommened to use platform_get_resource(pdev, IORESOURCE_IRQ)
+> for requesting IRQ's resources any more, as they can be not ready yet in
+> case of DT-booting.
 > 
-> Fix that by initializing flush_comp in kvaser_usb_init_one() like the
-> other completions.
+> platform_get_irq() instead is a recommended way for getting IRQ even if
+> it was not retrieved earlier.
 > 
-> This issue is only triggerable after RX URBs have been set up, i.e. the
-> interface has been opened at least once.
+> It also makes code simpler because we're getting "int" value right away
+> and no conversion from resource to int is required.
 > 
-> Fixes: aec5fb2268b7 ("can: kvaser_usb: Add support for Kvaser USB hydra family")
-> Signed-off-by: Anssi Hannula <anssi.hannula@bitwise.fi>
+> Reported-by: Zeal Robot <zealci@zte.com.cn>
+> Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
 
-Looks good to me.
-Tested-by: Jimmy Assarsson <extja@kvaser.com>
+Applied to the pcmcia tree.
 
-
-> ---
->   drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c  | 1 +
->   drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c | 2 +-
->   2 files changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c b/drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c
-> index e67658b53d02..47bff40c36b6 100644
-> --- a/drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c
-> +++ b/drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c
-> @@ -673,6 +673,7 @@ static int kvaser_usb_init_one(struct kvaser_usb *dev,
->   	init_usb_anchor(&priv->tx_submitted);
->   	init_completion(&priv->start_comp);
->   	init_completion(&priv->stop_comp);
-> +	init_completion(&priv->flush_comp);
->   	priv->can.ctrlmode_supported = 0;
->   
->   	priv->dev = dev;
-> diff --git a/drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c b/drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c
-> index a26823c5b62a..4e90a4b7f95a 100644
-> --- a/drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c
-> +++ b/drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c
-> @@ -1910,7 +1910,7 @@ static int kvaser_usb_hydra_flush_queue(struct kvaser_usb_net_priv *priv)
->   {
->   	int err;
->   
-> -	init_completion(&priv->flush_comp);
-> +	reinit_completion(&priv->flush_comp);
->   
->   	err = kvaser_usb_hydra_send_simple_cmd(priv->dev, CMD_FLUSH_QUEUE,
->   					       priv->channel);
+Thanks,
+	Dominik
