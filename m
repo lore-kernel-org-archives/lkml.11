@@ -2,60 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1E9BC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 21:17:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C283FC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 21:17:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230049AbiE1VRA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 28 May 2022 17:17:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44396 "EHLO
+        id S230070AbiE1VRH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 28 May 2022 17:17:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230021AbiE1VQz (ORCPT
+        with ESMTP id S230043AbiE1VRA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 28 May 2022 17:16:55 -0400
-X-Greylist: delayed 90 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 28 May 2022 14:16:53 PDT
+        Sat, 28 May 2022 17:17:00 -0400
 Received: from p-impout004.msg.pkvw.co.charter.net (p-impout004aa.msg.pkvw.co.charter.net [47.43.26.135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87ED0BC13
-        for <linux-kernel@vger.kernel.org>; Sat, 28 May 2022 14:16:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AD34BC22
+        for <linux-kernel@vger.kernel.org>; Sat, 28 May 2022 14:16:58 -0700 (PDT)
 Received: from 2603-8090-2005-39b3-0000-0000-0000-100e.res6.spectrum.com.com ([24.31.246.181])
         by cmsmtp with ESMTP
-        id v3mLnd6IdgPEBv3mLnEtsa; Sat, 28 May 2022 21:15:21 +0000
-X-Authority-Analysis: v=2.4 cv=b8OhX/Kx c=1 sm=1 tr=0 ts=629290e9
+        id v3mLnd6IdgPEBv3mRnEttK; Sat, 28 May 2022 21:15:27 +0000
+X-Authority-Analysis: v=2.4 cv=b8OhX/Kx c=1 sm=1 tr=0 ts=629290ef
  a=cAe/7qmlxnd6JlJqP68I9A==:117 a=cAe/7qmlxnd6JlJqP68I9A==:17
- a=IkcTkHD0fZMA:10 a=yQdBAQUQAAAA:8 a=OUNqcoRDPagEZD6Yk-wA:9 a=QEXdDO2ut3YA:10
- a=SzazLyfi1tnkUD6oumHU:22
+ a=IkcTkHD0fZMA:10 a=yQdBAQUQAAAA:8 a=ag1SF4gXAAAA:8 a=VTP6l_gzy7p3D2MEsWYA:9
+ a=QEXdDO2ut3YA:10 a=SzazLyfi1tnkUD6oumHU:22 a=Yupwre4RP9_Eg_Bd0iYG:22
 From:   Larry Finger <Larry.Finger@lwfinger.net>
 To:     Linus Torvalds <torvalds@linux-foundation.org>
 Cc:     linux-kernel@vger.kernel.org,
         Larry Finger <Larry.Finger@lwfinger.net>
-Subject: [PATCH 0/2] Fix some compile warnings in v5.18+
-Date:   Sat, 28 May 2022 16:14:50 -0500
-Message-Id: <20220528211452.32134-1-Larry.Finger@lwfinger.net>
+Subject: [PATCH 2/2] staging: r8188eu: Fix undersized array in rtw_xmit.c
+Date:   Sat, 28 May 2022 16:14:52 -0500
+Message-Id: <20220528211452.32134-3-Larry.Finger@lwfinger.net>
 X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220528211452.32134-1-Larry.Finger@lwfinger.net>
+References: <20220528211452.32134-1-Larry.Finger@lwfinger.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-CMAE-Envelope: MS4xfL01EtJBTZhAxsRLA7g7829WUUPZ2voFUKSBTpeoMndJYhEwrDvLE9DNF8LOyJBS1GJRSfEZh+qJE1Op5qDcwEs9DLKjh60yioI0fylC1klA4LCTtMy5
- P+7euDN03RXxF6/XCnQRIonPnSA6rCStA/D4SRMioI/Lq0rMlRTE2L7ewosQ99ceucjTXvHv/unxZzbFnc6cwaSP0Wm63xKGlcKOKMVdVVSzARUuMI64mfpC
- VeHkOzSh+yn++5Aje88+5AU5jAopfGTV9aigg5R2lQRTYs2JwJarxXRGZHrQlOPs6oEY32XeaxfWjgO5V5sqP2u+mETXA5wdYvsF6fX+NoeXAm8nXghgprZ+
- ZK8Ec5Le
+X-CMAE-Envelope: MS4xfCKOQQzV5sOO9cpih/JLzLJJTp15WGk9mISv+QgUqDYfcYI/tir+unI3M3xTKrn+NhGSR1B9rx2jBSbsr5NgAKU3m8jLxlCQOEMRkdVBjajeSaGfIyUD
+ uxTCXA2QXgFpHviPswnrPca6aoa05TOG4Pjaa15BmU0Ut16Q0FSW6O24GRVm8bFJ3JgYBx7iVlaCGhmDKIP4e23ftSK/vBS8D6sbicjAdYIFirRVkINPxBoP
+ oyP2Q31ravRqgLCYTZ9k3/wsDQ/W4Jd1WVDc6y8rW40BhngY+5TxiDOeAgLuzzujeRnq9pJDvWnLjZVzTtKCNGMi1o+4i4sUtmDIjVEGYqz+E9yLsHYFBVFS
+ yHWhZELH
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Building driver r8188eu in staging with -warray-bounds exposes two places
-where arrays are too small.
+Compiling with -warray-bounds yields the following warning:
 
+drivers/staging/r8188eu/core/rtw_xmit.c: In function ‘rtw_alloc_hwxmits’:
+drivers/staging/r8188eu/core/rtw_xmit.c:1493:24: warning: array subscript 4 is outside array bounds of ‘void[64]’ [-Warray-bounds]
+ 1493 |                 hwxmits[4] .sta_queue = &pxmitpriv->be_pending;
+      |                 ~~~~~~~^~~
+In file included from drivers/staging/r8188eu/core/../include/osdep_service.h:19,
+                 from drivers/staging/r8188eu/core/rtw_xmit.c:6:
+In function ‘kmalloc’,
+    inlined from ‘kzalloc’ at ./include/linux/slab.h:733:9,
+    inlined from ‘rtw_alloc_hwxmits’ at drivers/staging/r8188eu/core/rtw_xmit.c:1484:23:
+./include/linux/slab.h:600:24: note: at offset 64 into object of size 64 allocated by ‘kmem_cache_alloc_trace’
+  600 |                 return kmem_cache_alloc_trace(
+      |                        ^~~~~~~~~~~~~~~~~~~~~~~
+  601 |                                 kmalloc_caches[kmalloc_type(flags)][index],
+      |                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  602 |                                 flags, size);
+      |
+
+This warning arises because macro HWXMIT_ENTRY is too small.
+
+Fixes commit 7884fc0a1473 ("staging: r8188eu: introduce new include dir
+for RTL8188eu driver")
+
+Fixes: 7884fc0a1473 ("staging: r8188eu: introduce new include dir for RTL8188eu driver")
 Signed-off-by: Larry Finger <Larry.Finger@lwfinger.net>
+Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/staging/r8188eu/include/rtw_xmit.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-
-Larry Finger (2):
-  staging: r8188eu: Fix warning of array overflow in ioctl_linux.c
-  staging: r8188eu: Fix undersized array in rtw_xmit.c
-
- drivers/staging/r8188eu/include/rtw_xmit.h   | 2 +-
- drivers/staging/r8188eu/os_dep/ioctl_linux.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
-
+diff --git a/drivers/staging/r8188eu/include/rtw_xmit.h b/drivers/staging/r8188eu/include/rtw_xmit.h
+index b2df1480d66b..27fa536f51ee 100644
+--- a/drivers/staging/r8188eu/include/rtw_xmit.h
++++ b/drivers/staging/r8188eu/include/rtw_xmit.h
+@@ -69,7 +69,7 @@ do {							\
+ 	dot11txpn.val = dot11txpn.val == 0xffffffffffffULL ? 0 : (dot11txpn.val+1);\
+ } while (0)
+ 
+-#define HWXMIT_ENTRY	4
++#define HWXMIT_ENTRY	5
+ 
+ #define TXDESC_SIZE 32
+ 
 -- 
 2.36.1
 
