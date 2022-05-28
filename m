@@ -2,120 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACF22C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 09:19:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5062CC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 28 May 2022 09:19:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232580AbiE1JTe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 28 May 2022 05:19:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38158 "EHLO
+        id S240401AbiE1JTu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 28 May 2022 05:19:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232310AbiE1JTa (ORCPT
+        with ESMTP id S1348569AbiE1JTr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 28 May 2022 05:19:30 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F558D6;
-        Sat, 28 May 2022 02:19:29 -0700 (PDT)
-Received: from canpemm500006.china.huawei.com (unknown [172.30.72.57])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4L9GMX63WBzDqSc;
-        Sat, 28 May 2022 17:19:20 +0800 (CST)
-Received: from container.huawei.com (10.175.104.82) by
- canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 28 May 2022 17:19:27 +0800
-From:   Ziyang Xuan <william.xuanziyang@huawei.com>
-To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <ap420073@gmail.com>
-Subject: [PATCH net] macsec: fix UAF bug for real_dev
-Date:   Sat, 28 May 2022 17:36:59 +0800
-Message-ID: <20220528093659.3186312-1-william.xuanziyang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Sat, 28 May 2022 05:19:47 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B41101DA5B;
+        Sat, 28 May 2022 02:19:44 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id l20-20020a17090a409400b001dd2a9d555bso6373899pjg.0;
+        Sat, 28 May 2022 02:19:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=qyK+J/hMtuTUruA03PI6DqGG/StA1icCX4LUIGhocgc=;
+        b=qH8W6PWPfinC6W1dsB4Sh5n9Avx4kcrU4u9XphkM2vutqAIZIZfuxvSgEku6RuyGUH
+         xOsWr5B0fZM8kd/Eyvujie2EKIuzLNSvPL4su90pOnHxFOjEO2H+GvM31W5sps0oh+6n
+         d7iDS3eoURZkBgQy/jIwy6CmdOQzQ8cy4jM50sBNNrO94vuz9img9JYhu3hlHHYe7In7
+         9QanKQQDiRaZme05dowaMoHM/gXt1IbuU/YCXEfGGndC17K6Cs4tH14v6H0IyslLkThB
+         BFH6/y/UyDRBfFU98RUxJy9LYGwIWObnh7sErMYOv+x48u8/U83Vf557WibMsF6K5g0M
+         EU1w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=qyK+J/hMtuTUruA03PI6DqGG/StA1icCX4LUIGhocgc=;
+        b=aBlNhVg/6GXQ0lXUpFSoiN4T1zeuMxuFQi4cyDDHeCHOjgoDz304r6qh4yvEIeCNIO
+         8n5M69oHBsa3+YNN241K9FX1f5KbMwOtdcB480UaotBMGcA66txrkh5HM4RWh5ryKeGK
+         WbxwxgbZ7pUkEgeLmrgXFxt7ALifftSta++HzDeHt6mNbze0BQwzVfQMMRz53qBlYYNy
+         r0WpTtk13ud2uZa9ZlmFhL3MaWg8+49UoBBFVGzioNNgzCmxlZbVoQPZra1yO8/XkkHv
+         y63D94UWaYcXljPicVQyMtGDWvKUj3oPyQG+u1ixRysfB5f549GSZqlSbk7uu0NMhnIF
+         KBRw==
+X-Gm-Message-State: AOAM531uAiCkSzo7MfbcA9IkBw4QPS10K6O9r9Lu9iDZvYQeVBPgvWsc
+        cpvyvoh0B3sveGd5y40p9oU=
+X-Google-Smtp-Source: ABdhPJz8YrzZDOOQcB3GYgrLZBT1lADYS4fKl4Nj0eDpS1sI6mRcXpUiCWa3V+ND/KF5ciK8FwKHEA==
+X-Received: by 2002:a17:90b:314b:b0:1e0:5517:1730 with SMTP id ip11-20020a17090b314b00b001e055171730mr12521555pjb.57.1653729584100;
+        Sat, 28 May 2022 02:19:44 -0700 (PDT)
+Received: from [172.16.4.4] ([219.142.146.208])
+        by smtp.gmail.com with ESMTPSA id b8-20020a170903228800b001639e80eb55sm2742984plh.139.2022.05.28.02.19.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 28 May 2022 02:19:43 -0700 (PDT)
+Message-ID: <bd03ca71-1875-2e94-8040-533034f76ee5@gmail.com>
+Date:   Sat, 28 May 2022 17:19:38 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.82]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- canpemm500006.china.huawei.com (7.192.105.130)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] PCI: mediatek-gen3: Fix refcount leak in
+ mtk_pcie_init_irq_domains
+Content-Language: en-US
+To:     Miles Chen <miles.chen@mediatek.com>
+Cc:     bhelgaas@google.com, jianjun.wang@mediatek.com, kw@linux.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-pci@vger.kernel.org,
+        lorenzo.pieralisi@arm.com, matthias.bgg@gmail.com, maz@kernel.org,
+        robh@kernel.org, ryder.lee@mediatek.com
+References: <20220526110246.53502-1-linmq006@gmail.com>
+ <20220527084525.7170-1-miles.chen@mediatek.com>
+From:   Miaoqian Lin <linmq006@gmail.com>
+In-Reply-To: <20220527084525.7170-1-miles.chen@mediatek.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Create a new macsec device but not get reference to real_dev. That can
-not ensure that real_dev is freed after macsec. That will trigger the
-UAF bug for real_dev as following:
+Hi Miles,
 
-==================================================================
-BUG: KASAN: use-after-free in macsec_get_iflink+0x5f/0x70 drivers/net/macsec.c:3662
-Call Trace:
- ...
- macsec_get_iflink+0x5f/0x70 drivers/net/macsec.c:3662
- dev_get_iflink+0x73/0xe0 net/core/dev.c:637
- default_operstate net/core/link_watch.c:42 [inline]
- rfc2863_policy+0x233/0x2d0 net/core/link_watch.c:54
- linkwatch_do_dev+0x2a/0x150 net/core/link_watch.c:161
+On 2022/5/27 16:45, Miles Chen wrote:
+> Hi Miaoqian,
+>
+>> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+>> ---
+>> drivers/pci/controller/pcie-mediatek-gen3.c | 1 +
+>> 1 file changed, 1 insertion(+)
+>>
+>> diff --git a/drivers/pci/controller/pcie-mediatek-gen3.c b/drivers/pci/controller/pcie-mediatek-gen3.c
+>> index 3e8d70bfabc6..da8e9db0abdf 100644
+>> --- a/drivers/pci/controller/pcie-mediatek-gen3.c
+>> +++ b/drivers/pci/controller/pcie-mediatek-gen3.c
+>> @@ -600,6 +600,7 @@ static int mtk_pcie_init_irq_domains(struct mtk_gen3_pcie *pcie)
+>> 						  &intx_domain_ops, pcie);
+>> 	if (!pcie->intx_domain) {
+>> 		dev_err(dev, "failed to create INTx IRQ domain\n");
+>> +		of_node_put(intc_node);
+>> 		return -ENODEV;
+>> 	}
+> Thanks for doing this.
+>
+> I checked mtk_pcie_init_irq_domains() and there are multiple exit paths like
+> err_msi_domain and err_msi_bottom_domain and the normal path which also
+> need of_node_put(intc_node).
 
-Allocated by task 22209:
- ...
- alloc_netdev_mqs+0x98/0x1100 net/core/dev.c:10549
- rtnl_create_link+0x9d7/0xc00 net/core/rtnetlink.c:3235
- veth_newlink+0x20e/0xa90 drivers/net/veth.c:1748
+Thanks for your reply,
 
-Freed by task 8:
- ...
- kfree+0xd6/0x4d0 mm/slub.c:4552
- kvfree+0x42/0x50 mm/util.c:615
- device_release+0x9f/0x240 drivers/base/core.c:2229
- kobject_cleanup lib/kobject.c:673 [inline]
- kobject_release lib/kobject.c:704 [inline]
- kref_put include/linux/kref.h:65 [inline]
- kobject_put+0x1c8/0x540 lib/kobject.c:721
- netdev_run_todo+0x72e/0x10b0 net/core/dev.c:10327
+I didn't add of_node_put() in other paths because I am not sure if the reference passed through irq_domain_add_linear(), since intc_node is passed to irq_domain_add_linear().
 
-After commit faab39f63c1f ("net: allow out-of-order netdev unregistration")
-and commit e5f80fcf869a ("ipv6: give an IPv6 dev to blackhole_netdev"), we
-can add dev_hold_track() in macsec_dev_init() and dev_put_track() in
-macsec_free_netdev() to fix the problem.
+__irq_domain_add() keeps &node->fwnode in the irq_domain structure.
 
-Fixes: 2bce1ebed17d ("macsec: fix refcnt leak in module exit routine")
-Reported-by: syzbot+d0e94b65ac259c29ce7a@syzkaller.appspotmail.com
-Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
----
- drivers/net/macsec.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+and use fwnode_handle_get() to get the reference of fwnode, but I still uncertain.
 
-diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
-index 832f09ac075e..75f85e809a89 100644
---- a/drivers/net/macsec.c
-+++ b/drivers/net/macsec.c
-@@ -107,6 +107,7 @@ struct pcpu_secy_stats {
- struct macsec_dev {
- 	struct macsec_secy secy;
- 	struct net_device *real_dev;
-+	netdevice_tracker dev_tracker;
- 	struct pcpu_secy_stats __percpu *stats;
- 	struct list_head secys;
- 	struct gro_cells gro_cells;
-@@ -3459,6 +3460,9 @@ static int macsec_dev_init(struct net_device *dev)
- 	if (is_zero_ether_addr(dev->broadcast))
- 		memcpy(dev->broadcast, real_dev->broadcast, dev->addr_len);
- 
-+	/* Get macsec's reference to real_dev */
-+	dev_hold_track(real_dev, &macsec->dev_tracker, GFP_KERNEL);
-+
- 	return 0;
- }
- 
-@@ -3704,6 +3708,8 @@ static void macsec_free_netdev(struct net_device *dev)
- 	free_percpu(macsec->stats);
- 	free_percpu(macsec->secy.tx_sc.stats);
- 
-+	/* Get rid of the macsec's reference to real_dev */
-+	dev_put_track(macsec->real_dev, &macsec->dev_tracker);
- }
- 
- static void macsec_setup(struct net_device *dev)
--- 
-2.25.1
+If the reference don't needed anymore after irq_domain_add_linear(),
 
+your suggestion looks fine, and I will submit v2.
+
+> Maybe we can move the of_node_put(intc_node) to #54 below and cover
+> all possible paths?
+>
+>
+> cheers,
+> Miles
+>
+> e.g.,
+>
+> static int mtk_pcie_init_irq_domains(struct mtk_gen3_pcie *pcie)
+> {
+> 	struct device *dev = pcie->dev;
+> 	struct device_node *intc_node, *node = dev->of_node;
+> 	int ret;
+>
+> 	raw_spin_lock_init(&pcie->irq_lock);
+>
+> 	/* Setup INTx */
+> 	intc_node = of_get_child_by_name(node, "interrupt-controller");
+> 	if (!intc_node) {
+> 		dev_err(dev, "missing interrupt-controller node\n");
+> 		return -ENODEV;
+> 	}
+>
+> 	pcie->intx_domain = irq_domain_add_linear(intc_node, PCI_NUM_INTX,
+> 						  &intx_domain_ops, pcie);
+> 	of_node_put(intc_node);
+> 	if (!pcie->intx_domain) {
+> 		dev_err(dev, "failed to create INTx IRQ domain\n");
+> 		return -ENODEV;
+> 	}
+>
+> 	/* Setup MSI */
+> 	mutex_init(&pcie->lock);
+>
+> 	pcie->msi_bottom_domain = irq_domain_add_linear(node, PCIE_MSI_IRQS_NUM,
+> 				  &mtk_msi_bottom_domain_ops, pcie);
+> 	if (!pcie->msi_bottom_domain) {
+> 		dev_err(dev, "failed to create MSI bottom domain\n");
+> 		ret = -ENODEV;
+> 		goto err_msi_bottom_domain;
+> 	}
+>
+> 	pcie->msi_domain = pci_msi_create_irq_domain(dev->fwnode,
+> 						     &mtk_msi_domain_info,
+> 						     pcie->msi_bottom_domain);
+> 	if (!pcie->msi_domain) {
+> 		dev_err(dev, "failed to create MSI domain\n");
+> 		ret = -ENODEV;
+> 		goto err_msi_domain;
+> 	}
+>
+> 	return 0;
+>
+> err_msi_domain:
+> 	irq_domain_remove(pcie->msi_bottom_domain);
+> err_msi_bottom_domain:
+> 	irq_domain_remove(pcie->intx_domain);
+>
+> 	return ret;
+> }
+>> -- 
+>> 2.25.1
+>
