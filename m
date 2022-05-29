@@ -2,210 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68828C4332F
-	for <linux-kernel@archiver.kernel.org>; Sun, 29 May 2022 14:17:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DE0BC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 29 May 2022 14:21:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230370AbiE2OR5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 29 May 2022 10:17:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51012 "EHLO
+        id S230390AbiE2OVT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 29 May 2022 10:21:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229987AbiE2ORz (ORCPT
+        with ESMTP id S230268AbiE2OVR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 29 May 2022 10:17:55 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B83A42497
-        for <linux-kernel@vger.kernel.org>; Sun, 29 May 2022 07:17:54 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id e2so11612208wrc.1
-        for <linux-kernel@vger.kernel.org>; Sun, 29 May 2022 07:17:54 -0700 (PDT)
+        Sun, 29 May 2022 10:21:17 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDB83427E7
+        for <linux-kernel@vger.kernel.org>; Sun, 29 May 2022 07:21:15 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id rq11so16556749ejc.4
+        for <linux-kernel@vger.kernel.org>; Sun, 29 May 2022 07:21:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=/RnfxhSLHWEjSCyFNvqAeRKPEvIyVsMYATgYIDOeUYE=;
-        b=gtGgZD/A1/wTM853GAqUrzpPiZ5JaqQgtxz+HIjUCukO7rPAU7rGdCnCHCuzr8IEOe
-         xfEhOT4GDWCzwuF+23FGd3GCro32fdfh09W/IU4IJamxOQD1a52gVbQDC4vknRgz7TEo
-         Wx4IUS0oRYKipYrAM8Sy2PbERc+c8+xf5u8sqe5kKPX91pX0r9b87Fj67VGTk4OkiFza
-         d+6ofh9TpQaFhGKGRoG2A2vmOFguK1zlstIBAqrbl1Whcz6LKiC44n+eKMfAnmwjKPvy
-         Oxm282ZARG3io0owHbZ6tNQx4nTQyLxfNmZah8lYdJMZMNjpNq2pCEQbyGCF/mhl1Q2k
-         I0Fg==
+        bh=mjEHI99lRLZjmbE7yN5Vc3uafp8LIX67QIeSikjP+0k=;
+        b=OCeCSM0Ry0XbkH3vo8R5rjfeiu9FUSChFE03CHQn6qKTZRM0/iYC9P4vI0nQ5r0n0i
+         ia5LdpuIlrZvVawm2FoS1oKwbi9nDkIS3wHe/lPYRjQuAwZw4e5nJsaA6wDg8rr3e5Vg
+         gTYlwBLCUGZPOhHtZmEgyNxJC9tlOy4WUsH8TJhAExS42VnHEr3ehbo5kc0zP2Bb/mj1
+         VxFBtjt3C+Pvtv7MilgHgY99AQI7wXUJye84573LdQTx3fHFgBo7HTxie1Zbl7Fk7D7z
+         7mY9RMhNa036KyHlDKF3XBzp5v0/A9v3ifgnYCltJyRKQ1w2/R5L8AZGJSUV842i+XA8
+         PZTQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=/RnfxhSLHWEjSCyFNvqAeRKPEvIyVsMYATgYIDOeUYE=;
-        b=aX2V8MjDm89y5+xkyHg8YZLjfRFZOASNd6wPGhJkAEVFvbERIXGhsCmSm+F9edpCHU
-         zExmQlOs7S48UVB0j/+HBXhMd9/sGf+GUhS7oaekezk0UyWU0srQr5O4JiiYEC0TAkXc
-         gR/uYNj0KBECFOcdfmO0d6IMf7/+ex2pJTpoUQrjafDD02jaQ3GfMsodkzkqn5noI1t8
-         7rGG9uO+02CzogeVOZMnTQoCyCA3LFKEVuqaouMQhOJv7ElXFI6KLlcIR+cQvS1kIH2/
-         ALtHuyFoAfFRd3UugDSkohIwsez3B0svtpiaUzI3c5EjAzrY9x8C/ijk/mC20eIC4eHb
-         uojg==
-X-Gm-Message-State: AOAM5322wwu7X8zygfcJNY/e46iqCUMG+zosPTVjOWhahKvOgi2h7Jhm
-        dHmA4M4qegF9WKZ7+zu3PxqJ1A==
-X-Google-Smtp-Source: ABdhPJxxj2WCq+u40b+fBt+evXm6Gk2mAMTOS6PArrddcDWFCfj9E/42mU/De1uVcnixaNi7YmD03w==
-X-Received: by 2002:a5d:59ae:0:b0:20f:d007:be25 with SMTP id p14-20020a5d59ae000000b0020fd007be25mr30003634wrr.336.1653833872723;
-        Sun, 29 May 2022 07:17:52 -0700 (PDT)
+        bh=mjEHI99lRLZjmbE7yN5Vc3uafp8LIX67QIeSikjP+0k=;
+        b=QNspC0JYfYynd1c1WLSbeptoHbLevY19c2cHybOTYD2MwckCb3EVHxXiL5Ac+lEL/0
+         Q9D1rkmEaXrB5wr1E3E+xEYf0cEI/bk8DSgFqz871mCU8j15/gqnezoBWy684gcv6tFZ
+         1uGKo9XlB0I3fa2M2w1/8gNmDOedXmSqo64PEa89A49N4dYR8mcyF8wuinzqg9oNv0U0
+         JqXvg7CF0PPszLzBYCqReTQY+lkgt8Y+4CgeiI5rTo7Cy2J1IjNTjW2n0X51COFTq7lQ
+         2iBrCkYjuMOZBuUP2ngIfG0gxdznEgtb/Qi6liIg0kn6giQ1JH2JiOQT4SO9rm6D7lPS
+         KpYQ==
+X-Gm-Message-State: AOAM531bZ1R3rJFKXbp6iL3WjWiFMrD0TjUa1asYNxks0592CBzaGI9Z
+        JZi5H2LKH8BiJk+JTQy+++tBNg==
+X-Google-Smtp-Source: ABdhPJzaG3/GPj6E2gGmWOpmT5Z1QKhy7X39c3X4fuDnHgON7JWi/LN3waHAzmpyV3pW+sNopILVoQ==
+X-Received: by 2002:a17:906:44b:b0:6f8:d325:bb84 with SMTP id e11-20020a170906044b00b006f8d325bb84mr45532026eja.174.1653834074197;
+        Sun, 29 May 2022 07:21:14 -0700 (PDT)
 Received: from [192.168.0.177] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id e9-20020a5d5949000000b002103136623esm1230449wri.85.2022.05.29.07.17.51
+        by smtp.gmail.com with ESMTPSA id x25-20020a50f199000000b0042dd109b212sm356606edl.3.2022.05.29.07.21.13
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 29 May 2022 07:17:52 -0700 (PDT)
-Message-ID: <bdbf2fa9-214e-e9f3-5389-87864104e07d@linaro.org>
-Date:   Sun, 29 May 2022 16:17:51 +0200
+        Sun, 29 May 2022 07:21:13 -0700 (PDT)
+Message-ID: <c4c17cde-686b-4f4e-65dc-9b8c41894bf2@linaro.org>
+Date:   Sun, 29 May 2022 16:21:12 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.9.1
-Subject: Re: [PATCH V3] dt-bindings: dma: fsl-edma: Convert to DT schema
+Subject: Re: [PATCH] dt-bindings: input: use generic node names
 Content-Language: en-US
-To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>, vkoul@kernel.org,
-        dmaengine@vger.kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, joy.zou@nxp.com,
-        Peng Fan <peng.fan@nxp.com>
-References: <20220527020507.392765-1-peng.fan@oss.nxp.com>
+To:     Jeff LaBundy <jeff@labundy.com>
+Cc:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-input@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Andreas Kemnade <andreas@kemnade.info>
+References: <20220524093136.7980-1-krzysztof.kozlowski@linaro.org>
+ <20220527224401.GA395557@nixie71>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220527020507.392765-1-peng.fan@oss.nxp.com>
+In-Reply-To: <20220527224401.GA395557@nixie71>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 27/05/2022 04:05, Peng Fan (OSS) wrote:
-> From: Peng Fan <peng.fan@nxp.com>
+On 28/05/2022 00:44, Jeff LaBundy wrote:
+> Hi Krzysztof,
 > 
-> Convert the eDMA controller binding to DT schema.
+> On Tue, May 24, 2022 at 11:31:36AM +0200, Krzysztof Kozlowski wrote:
+>> Devicetree specification expects nodes to have generic names, if
+>> possible, so replace custom ones with something generic.  For gpio-keys,
+>> the more popular format is "key-xxx" instead of "xxx-key", so choose the
+>> first one.
+>>
+>> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>>
+>> ---
+>>
+>> Cc: Andreas Kemnade <andreas@kemnade.info>
+>> ---
+>>  .../devicetree/bindings/input/fsl,mpr121-touchkey.yaml        | 4 ++--
+>>  Documentation/devicetree/bindings/input/gpio-keys.yaml        | 4 ++--
+>>  Documentation/devicetree/bindings/input/iqs269a.yaml          | 2 +-
+>>  Documentation/devicetree/bindings/input/iqs626a.yaml          | 2 +-
 > 
-> Signed-off-by: Peng Fan <peng.fan@nxp.com>
-> ---
+> For iqs*a.yaml:
 > 
-> V3:
->   Address Krzysztof's comments, for reg/interrupts/clock-names
+> Acked-by: Jeff LaBundy <jeff@labundy.com>
 > 
-> V2:
->   Typo fix
->   Correct interrupts/interrupt-names/AllOf
-> 
-> 
->  .../devicetree/bindings/dma/fsl,edma.yaml     | 155 ++++++++++++++++++
->  .../devicetree/bindings/dma/fsl-edma.txt      | 111 -------------
->  arch/arm64/boot/dts/freescale/imx93.dtsi      |   2 +-
->  3 files changed, 156 insertions(+), 112 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/dma/fsl,edma.yaml
->  delete mode 100644 Documentation/devicetree/bindings/dma/fsl-edma.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/dma/fsl,edma.yaml b/Documentation/devicetree/bindings/dma/fsl,edma.yaml
-> new file mode 100644
-> index 000000000000..050e6cd57727
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/dma/fsl,edma.yaml
-> @@ -0,0 +1,155 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/dma/fsl,edma.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Freescale enhanced Direct Memory Access(eDMA) Controller
-> +
-> +description: |
-> +  The eDMA channels have multiplex capability by programmable
-> +  memory-mapped registers. channels are split into two groups, called
-> +  DMAMUX0 and DMAMUX1, specific DMA request source can only be multiplexed
-> +  by any channel of certain group, DMAMUX0 or DMAMUX1, but not both.
-> +
-> +maintainers:
-> +  - Peng Fan <peng.fan@nxp.com>
-> +
-> +properties:
-> +  compatible:
-> +    oneOf:
-> +      - enum:
-> +          - fsl,vf610-edma
-> +          - fsl,imx7ulp-edma
-> +      - items:
-> +          - const: fsl,ls1028a-edma
-> +          - const: fsl,vf610-edma
-> +
-> +  reg:
-> +    minItems: 2
-> +    maxItems: 3
-> +
-> +  interrupts:
-> +    minItems: 2
-> +    maxItems: 17
-> +
-> +  interrupt-names:
-> +    minItems: 2
-> +    maxItems: 17
-> +
-> +  "#dma-cells":
-> +    const: 2
-> +
-> +  dma-channels:
-> +    const: 32
-> +
-> +  clocks:
-> +    maxItems: 2
-> +
-> +  clock-names:
-> +    maxItems: 2
-> +
-> +  big-endian:
-> +    description: |
-> +      If present registers and hardware scatter/gather descriptors of the
-> +      eDMA are implemented in big endian mode, otherwise in little mode.
-> +    type: boolean
-> +
-> +required:
-> +  - "#dma-cells"
-> +  - compatible
-> +  - reg
-> +  - interrupts
-> +  - clocks
-> +  - dma-channels
-> +
-> +allOf:
-> +  - $ref: "dma-controller.yaml#"
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            const: fsl,vf610-edma
-> +    then:
-> +      properties:
-> +        clock-names:
-> +          items:
-> +            - const: dmamux0
-> +            - const: dmamux1
-> +        interrupts:
-> +          maxItems: 2
-> +        interrupt-names:
-> +          items:
-> +            - const: edma-tx
-> +            - const: edma-err
-> +        reg:
-> +          maxItems: 3
-> +
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            const: fsl,imx7ulp-edma
-> +    then:
-> +      properties:
-> +        clock-names:
-> +          items:
-> +            - const: dma
-> +            - const: dmamux0
-> +        interrupts:
-> +          maxItems: 17
+> Does there happen to be a list of preferred names based on device
+> function, or is it simply a matter of what seems to be most common?
 
-Looks good, although the information about order of interrupts is lost
-during conversion. The original bindings had:
-"total 16 channel interrupt and 1 error interrupt(located in the last)"
-
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Devicetree spec has examples of names, but of course it does not cover
+many of cases. Here I chosen mixture of device function and most common
+(e.g. touch for touch controller).
 
 
 Best regards,
