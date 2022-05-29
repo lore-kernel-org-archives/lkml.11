@@ -2,98 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04076C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 29 May 2022 05:57:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 332B2C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 29 May 2022 06:11:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230201AbiE2F5U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 29 May 2022 01:57:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56156 "EHLO
+        id S229462AbiE2GL3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 29 May 2022 02:11:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230423AbiE2F4Y (ORCPT
+        with ESMTP id S229441AbiE2GL0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 29 May 2022 01:56:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 069816B0A2
-        for <linux-kernel@vger.kernel.org>; Sat, 28 May 2022 22:56:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9687B60DED
-        for <linux-kernel@vger.kernel.org>; Sun, 29 May 2022 05:56:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D742C3411C;
-        Sun, 29 May 2022 05:56:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653803781;
-        bh=IJu+gkphhFylVDsQzhP8KOtGyF6aW9neo4uSaI2lipk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gXUTrQO6ZFLlgIQrh39yuohMijrv1AGoz4cZf4mzpmJgJNKBlnTG1oFJ7gNnRkKGL
-         +Ls9+4ziGmn3YWT+tngfnuZxDnRk9IkOZcDigGgivbo9yRCd7Ea/bFEAW7wwY5XISi
-         DtFlDDC5lJM3B+4R+esdPxurYgqs5L+cnDdjB8d9ztAlbSYALIHgBNW7Fv4FU6Edcf
-         k/tEMelO8S/J0kl19Yq5xMh5xSZ4dJBarecR2BREdvz/4fd9L5YAEo2z2UZ5jDkpGf
-         zZSNozKaVsc72uFiFG+Drn2Vtd0OLKE4ONw0zf1mHuhkqf39awJrEOCnJlwK0oeDm6
-         3M1jT8Ud4GB9A==
-From:   Gao Xiang <xiang@kernel.org>
-To:     linux-erofs@lists.ozlabs.org, Chao Yu <chao@kernel.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Gao Xiang <hsiangkao@linux.alibaba.com>
-Subject: [PATCH 3/3] erofs: simplify z_erofs_pcluster_readmore()
-Date:   Sun, 29 May 2022 13:54:25 +0800
-Message-Id: <20220529055425.226363-4-xiang@kernel.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220529055425.226363-1-xiang@kernel.org>
-References: <20220529055425.226363-1-xiang@kernel.org>
+        Sun, 29 May 2022 02:11:26 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA85CDCD
+        for <linux-kernel@vger.kernel.org>; Sat, 28 May 2022 23:11:25 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nvC93-0005yj-Rj; Sun, 29 May 2022 08:11:21 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nvC91-005CYc-6N; Sun, 29 May 2022 08:11:17 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nvC8z-00Cp2h-74; Sun, 29 May 2022 08:11:17 +0200
+Date:   Sun, 29 May 2022 08:11:15 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc:     Michael Hennerich <michael.hennerich@analog.com>,
+        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/4] Input: adp5588-keys - switch to using managed
+ resources
+Message-ID: <20220529061115.ew52jiknnebaofwd@pengutronix.de>
+References: <20220528045631.289821-1-dmitry.torokhov@gmail.com>
+ <20220528045631.289821-3-dmitry.torokhov@gmail.com>
+ <20220528193755.lncxrpgmyiy4hprm@pengutronix.de>
+ <YpMC/90883D286nG@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="frimy6xcganxv6jb"
+Content-Disposition: inline
+In-Reply-To: <YpMC/90883D286nG@google.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gao Xiang <hsiangkao@linux.alibaba.com>
 
-Get rid of unnecessary label `skip'. No logic changes.
+--frimy6xcganxv6jb
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Gao Xiang <hsiangkao@linux.alibaba.com>
----
- fs/erofs/zdata.c | 23 ++++++++++-------------
- 1 file changed, 10 insertions(+), 13 deletions(-)
+On Sat, May 28, 2022 at 10:22:07PM -0700, Dmitry Torokhov wrote:
+> On Sat, May 28, 2022 at 09:37:55PM +0200, Uwe Kleine-K=F6nig wrote:
+> > On Fri, May 27, 2022 at 09:56:30PM -0700, Dmitry Torokhov wrote:
+> > > This simplifies error handling in probe() and reduces amount of expli=
+cit
+> > > code in remove().
+> > >=20
+> > > Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+> > > ---
+> > >  drivers/input/keyboard/adp5588-keys.c | 111 +++++++++++-------------=
+--
+> > >  1 file changed, 45 insertions(+), 66 deletions(-)
+> > >=20
+> > > diff --git a/drivers/input/keyboard/adp5588-keys.c b/drivers/input/ke=
+yboard/adp5588-keys.c
+> > > index ac21873ba1d7..df84a2998ed2 100644
+> > > --- a/drivers/input/keyboard/adp5588-keys.c
+> > > +++ b/drivers/input/keyboard/adp5588-keys.c
+> > > @@ -182,6 +182,21 @@ static int adp5588_build_gpiomap(struct adp5588_=
+kpad *kpad,
+> > >  	return n_unused;
+> > >  }
+> > > =20
+> > > +static void adp5588_gpio_do_teardown(void *_kpad)
+> > > +{
+> > > +	struct adp5588_kpad *kpad =3D _kpad;
+> > > +	struct device *dev =3D &kpad->client->dev;
+> > > +	const struct adp5588_kpad_platform_data *pdata =3D dev_get_platdata=
+(dev);
+> > > +	const struct adp5588_gpio_platform_data *gpio_data =3D pdata->gpio_=
+data;
+> > > +	int error;
+> > > +
+> > > +	error =3D gpio_data->teardown(kpad->client,
+> > > +				    kpad->gc.base, kpad->gc.ngpio,
+> > > +				    gpio_data->context);
+> > > +	if (error)
+> > > +		dev_warn(&kpad->client->dev, "teardown failed %d\n", error);
+> > > +}
+> >=20
+> > I think the more sensible approach is to drop support for setup and
+> > teardown. Maybe even rip all usage of adp5588_gpio_platform_data.
+>=20
+> That will come with the transition to device tree/device properties. For
+> now wanted to keep existing functionality intact.
 
-diff --git a/fs/erofs/zdata.c b/fs/erofs/zdata.c
-index 6dd858f94e44..b33fb64b3393 100644
---- a/fs/erofs/zdata.c
-+++ b/fs/erofs/zdata.c
-@@ -1436,22 +1436,19 @@ static void z_erofs_pcluster_readmore(struct z_erofs_decompress_frontend *f,
- 		struct page *page;
- 
- 		page = erofs_grab_cache_page_nowait(inode->i_mapping, index);
--		if (!page)
--			goto skip;
--
--		if (PageUptodate(page)) {
--			unlock_page(page);
-+		if (page) {
-+			if (PageUptodate(page)) {
-+				unlock_page(page);
-+			} else {
-+				err = z_erofs_do_read_page(f, page, pagepool);
-+				if (err)
-+					erofs_err(inode->i_sb,
-+						  "readmore error at page %lu @ nid %llu",
-+						  index, EROFS_I(inode)->nid);
-+			}
- 			put_page(page);
--			goto skip;
- 		}
- 
--		err = z_erofs_do_read_page(f, page, pagepool);
--		if (err)
--			erofs_err(inode->i_sb,
--				  "readmore error at page %lu @ nid %llu",
--				  index, EROFS_I(inode)->nid);
--		put_page(page);
--skip:
- 		if (cur < PAGE_SIZE)
- 			break;
- 		cur = (index << PAGE_SHIFT) - 1;
--- 
-2.30.2
+That's up to you. I wouldn't spend an effort to clean up a feature that
+is about to be removed.
 
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--frimy6xcganxv6jb
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmKTDn8ACgkQwfwUeK3K
+7AnSsAf+Li4Te/1P7RLCFRukMaq/G/Nk0rAzAumXFSuwji793S+4vSZ9eyZ7Pnhe
+CJ/acu83ObTmrSgzZb4qLLdBRqKZnNOKzL8794Lhcqec8mp1nxAZEMTWu06s1m9U
+6Qp6Cs/oVkT9s4VK/enKhF45+mWFnFnKTGlYnOYXmrxNQBtbWODVtqfTvPkQX7Cb
+PfE2Hf1kswfBmdpBeH98FuhL7KcITV12qibOwPbacvMCNNkPoIV4C/QlVTAiZ2fM
+1ee15bDGhupbbrNvggB7p/lWI/HzJ5GTDLGLwB0PqKWGt1I0KqMcPntehSsl2TGm
+lbs1ykRMB892fVxkKQY6drmRKEi/nQ==
+=2t1U
+-----END PGP SIGNATURE-----
+
+--frimy6xcganxv6jb--
