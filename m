@@ -2,152 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1218BC433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 29 May 2022 19:14:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BADDAC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 29 May 2022 19:19:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231741AbiE2TOq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 29 May 2022 15:14:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36300 "EHLO
+        id S231755AbiE2TTK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 29 May 2022 15:19:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229811AbiE2TOo (ORCPT
+        with ESMTP id S229811AbiE2TTH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 29 May 2022 15:14:44 -0400
-Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B7A06339D;
-        Sun, 29 May 2022 12:14:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-        d=metrotek.ru; s=mail;
-        h=from:subject:date:message-id:to:cc:mime-version:content-type:in-reply-to:
-         references;
-        bh=vFlESYymQ2NwgPjDD5rnm4pnn9bLsxAU7uc0Vcg/HFQ=;
-        b=hqTG3eQbjt2+IPv1cb/ST7Rmb7hNatjIXvs4fnEMZttKi1vJFf0gsqeyHq1IdcyNvG0pqxaQDEI/m
-         XUoirehnVg6ck8sOagRXYlF1IUq7VEv15ah2DQpDuvzII/jfKxeX6rZMBJZ7HT5zr2tlow1ZmYJ+Ft
-         Qv4B454NEQtH3y1TFMff9OpQyr25IUBI8z3YbNIKGKDqvo2hau0z7uynke2HC6PvNsy7sNSo3rUyGu
-         SCcPXPNe9EqKxeylOfledOF/HOdN20Tm8bd2CSoGgNMiZ/K6224Oh7vA8XDBtLw+95tUnDgz8Lo8GY
-         X6bNaDF9yH5T5beg91hxg5R9eTlaJ1Q==
-X-Kerio-Anti-Spam:  Build: [Engines: 2.16.3.1424, Stamp: 3], Multi: [Enabled, t: (0.000009,0.015434)], BW: [Enabled, t: (0.000014,0.000001)], RTDA: [Enabled, t: (0.073164), Hit: No, Details: v2.39.0; Id: 15.52k1mk.1g48jr39u.jv95; mclb], total: 0(700)
-X-Footer: bWV0cm90ZWsucnU=
-Received: from x260 ([178.70.36.174])
-        (authenticated user i.bornyakov@metrotek.ru)
-        by mail.pr-group.ru with ESMTPSA
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
-        Sun, 29 May 2022 22:14:13 +0300
-Date:   Sun, 29 May 2022 21:51:58 +0300
-From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
-To:     Conor.Dooley@microchip.com
-Cc:     yilun.xu@intel.com, mdf@kernel.org, hao.wu@intel.com,
-        trix@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-fpga@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        system@metrotek.ru
-Subject: Re: [PATCH v13 2/3] fpga: microchip-spi: add Microchip MPF FPGA
- manager
-Message-ID: <20220529185158.gjoxrb65gpnh4g3k@x260>
-References: <20220526181344.2088-1-i.bornyakov@metrotek.ru>
- <20220526181344.2088-3-i.bornyakov@metrotek.ru>
- <20220529123954.GB185904@yilunxu-OptiPlex-7050>
- <3d44115c-08c8-07ee-e707-617cfbe0352f@microchip.com>
+        Sun, 29 May 2022 15:19:07 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CD956C0EF;
+        Sun, 29 May 2022 12:19:05 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id y13so17302194eje.2;
+        Sun, 29 May 2022 12:19:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=wc+EE6uFclfQj0Z++trSIQDhAONqieaeq0cvRbIdEio=;
+        b=BlHzcGTrKIpNrIPqJBGVqSC3Fmx0nmtG91acp41+I2sSr3UwjOBg7PTUW2jugiyjOS
+         KV8gAeOQp1DF/XZ9Pooh/305TP+Doq4JtQ0i8yC2Av2Uz2LdEKbs+j/83L4p2STY1KYx
+         En+nLsDLwEMuFHglSNpbCLREVZyMiC0ZGljmE6AXUHKafD5ej5j3ZPMkpy6pzasMO3IQ
+         YFcV65NJBFwWCiRBCdOIGxUgh/6rkm9bY7FuQkIDBQxHwPesIXk/xjTinHFakSnFUihs
+         TZY2FgsN57eQPwg+TpyxneWO62ff16jYV2HpwWXkdDu7CPj6cTmh9S5XEfpOm6bfxalB
+         r1EA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=wc+EE6uFclfQj0Z++trSIQDhAONqieaeq0cvRbIdEio=;
+        b=Szvc/BCyxNM/RQ2RMyY1MfL2vqxd8TRCamsxHd/VE0L4f35hh3hzJzhQDavkOmwVEI
+         Mf2MUxZq/ZOGFaL+7t16qWfDVdicFnstV3H7fcFEAgzRb935nRblJJEmDrzN6zcDLXgY
+         uIDi+4oi3ZfJ5YgNKjweSdMzsgRC7qUNc2BWU+rL52krVjq2V6KI/8RNYVFMsS/H58DV
+         z5ewQVdfwgzDYp6GspnldtVBLcrU30cj++prq0Q59L+I3/yZ/Ar3V4YHh35dOElJYd9z
+         IxgozviHg7kGd8UsjxdbVypWiZe2tQWBa++75Nf3Y1KNEZ4M8szUBUFAy55+ghoodO8S
+         J7kw==
+X-Gm-Message-State: AOAM531sIZZXFBZVV+zJWR6zr4sDC771/XfiNuPbWomvL0OWSUXgTgAG
+        i4+oZg8fQXNDnCJUpB4FTrkBTszFxcUgUNRbkZIeNdwvE5U=
+X-Google-Smtp-Source: ABdhPJzCykqQ15vSmNqR86SAPkvkeK17qhqbNMfKxY3rcmoGgzF/riVWYcYCENQrz5Q479KG33OuWkNZXm5nuyzqvrU=
+X-Received: by 2002:a17:907:7f21:b0:6ff:10b:9cee with SMTP id
+ qf33-20020a1709077f2100b006ff010b9ceemr25697803ejc.302.1653851944022; Sun, 29
+ May 2022 12:19:04 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3d44115c-08c8-07ee-e707-617cfbe0352f@microchip.com>
+References: <20220526204552.832961-1-krzysztof.kozlowski@linaro.org> <20220526204552.832961-2-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220526204552.832961-2-krzysztof.kozlowski@linaro.org>
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date:   Sun, 29 May 2022 21:18:53 +0200
+Message-ID: <CAFBinCA=VXjR99AELCnV8nLbt=DinWhcpmKnC1jN0p6Dpx83Dw@mail.gmail.com>
+Subject: Re: [PATCH 2/2] ARM: dts: meson: adjust whitespace around '='
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
+        arm@kernel.org, soc@kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, May 29, 2022 at 01:03:10PM +0000, Conor.Dooley@microchip.com wrote:
-> On 29/05/2022 13:39, Xu Yilun wrote:
-> > On Thu, May 26, 2022 at 09:13:43PM +0300, Ivan Bornyakov wrote:
-> >> Add support to the FPGA manager for programming Microchip Polarfire
-> >> FPGAs over slave SPI interface with .dat formatted bitsream image.
-> > 
-> > From previous mail thread, there are still some hardware operations yet
-> > to be clarified, so I may need a Reviewed-by from Conor.Dooley@microchip.com.
-> 
-> Yeah, was really busy last week. Planning on giving this version a go
-> tomorrow. I *think* I explained the reason the status check needed to be a
-> sync_transfer() but it hasn't been reflected in a comment yet.
-> 
-> I didn't know the answers to the two other questions & passed them on to the
-> designers of the hardware blocks - but both are traveling so not got a
-> response yet. There's one bit of clarification I'd like from your:
-> 
-> >>> +static int mpf_ops_write(struct fpga_manager *mgr, const char *buf, size_t count)
-> >>> +{
-> >>> +	u8 tmp_buf[MPF_SPI_FRAME_SIZE + 1] = { MPF_SPI_FRAME, };
-> >>> +	struct mpf_priv *priv = mgr->priv;
-> >>> +	struct device *dev = &mgr->dev;
-> >>> +	struct spi_device *spi;
-> >>> +	int ret, i;
-> >>> +
-> >>> +	if (count % MPF_SPI_FRAME_SIZE) {
-> >>> +		dev_err(dev, "Bitstream size is not a multiple of %d\n",
-> >>> +			MPF_SPI_FRAME_SIZE);
-> >>> +		return -EINVAL;
-> >>> +	}
-> >>> +
-> >>> +	spi = priv->spi;
-> >>> +
-> >>> +	for (i = 0; i < count / MPF_SPI_FRAME_SIZE; i++) {
-> >>> +		memcpy(tmp_buf + 1, buf + i * MPF_SPI_FRAME_SIZE,
-> >>> +		       MPF_SPI_FRAME_SIZE);
-> >>> +
-> >>> +		ret = mpf_spi_write(spi, tmp_buf, sizeof(tmp_buf));
-> >>
-> >> As I mentioned before, is it possible we use spi_sync_transfer to avoid
-> >> memcpy the whole bitstream?
-> >
-> > Unfortunately, I didn't succeed with spi_sunc_transfer here. May be
-> > Conor or other folks with more insight on Microchip's HW would be able
-> > to eliminate this memcpy...
-> 
-> I understood this as being a question about why it was required to check
-> the status of the hardware between frames of the bitstream rather than
-> using spi_sync_transfer() to copy each frame back to back.
-> 
-> Is that correct?
+On Thu, May 26, 2022 at 10:45 PM Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
+>
+> Fix whitespace coding style: use single space instead of tabs or
+> multiple spaces around '=' sign in property assignment.  No functional
+> changes (same DTB).
+>
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 
-No.
-The issue here is memcpy() a bitstream data frame to temporary buffer
-before sending it to the device.
-The reason for memcpy() is that we need to send to the device 17 bytes:
-1st byte 0xEE and next 16 bytes - bitstream data.
-Possible solution to eliminate memcpy() is to use spi_sync_transfer()
-instead of spi_write() for sending bitstream frames, like so:
+Neil, I have seen that you applied this patch to the v5.20/arm64 branch.
+I am not sure if it's supposed to go there. If not: please add my
+reviewed-by when moving this patch.
 
-diff --git a/drivers/fpga/microchip-spi.c b/drivers/fpga/microchip-spi.c
-index 7579b0de119f..bf62ee7fd630 100644
---- a/drivers/fpga/microchip-spi.c
-+++ b/drivers/fpga/microchip-spi.c
-@@ -270,7 +270,8 @@ static int mpf_ops_write_init(struct fpga_manager *mgr,
 
- static int mpf_ops_write(struct fpga_manager *mgr, const char *buf, size_t count)
- {
--       u8 tmp_buf[MPF_SPI_FRAME_SIZE + 1] = { MPF_SPI_FRAME, };
-+       u8 spi_frame_command = MPF_SPI_FRAME;
-+       struct spi_transfer xfers[2] = { 0 };
-        struct mpf_priv *priv = mgr->priv;
-        struct device *dev = &mgr->dev;
-        struct spi_device *spi;
-@@ -285,10 +286,15 @@ static int mpf_ops_write(struct fpga_manager *mgr, const char *buf, size_t count
-        spi = priv->spi;
-
-        for (i = 0; i < count / MPF_SPI_FRAME_SIZE; i++) {
--               memcpy(tmp_buf + 1, buf + i * MPF_SPI_FRAME_SIZE,
--                      MPF_SPI_FRAME_SIZE);
-+               xfers[0].tx_buf = &spi_frame_command;
-+               xfers[0].len = 1;
-+               xfers[1].tx_buf = buf + i * MPF_SPI_FRAME_SIZE;
-+               xfers[1].len = MPF_SPI_FRAME_SIZE;
-+
-+               ret = mpf_poll_status(spi, 0);
-+               if (ret >= 0)
-+                       ret = spi_sync_transfer(spi, xfers, 2);
-
--               ret = mpf_spi_write(spi, tmp_buf, sizeof(tmp_buf));
-                if (ret) {
-                        dev_err(dev, "Failed to write bitstream frame %d/%zu\n",
-                                i, count / MPF_SPI_FRAME_SIZE);
-
-Note that this is not a working solution.
-
+Thank you!
+Martin
