@@ -2,71 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9CF8C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 29 May 2022 22:06:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F143C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 29 May 2022 22:36:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231908AbiE2WGi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 29 May 2022 18:06:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34958 "EHLO
+        id S230414AbiE2WgB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 29 May 2022 18:36:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231876AbiE2WGa (ORCPT
+        with ESMTP id S229515AbiE2Wf7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 29 May 2022 18:06:30 -0400
-Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF1C579810;
-        Sun, 29 May 2022 15:06:26 -0700 (PDT)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.nyi.internal (Postfix) with ESMTP id 4E21F5C00C4;
-        Sun, 29 May 2022 18:06:24 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Sun, 29 May 2022 18:06:24 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dxuuu.xyz; h=cc
-        :cc:content-transfer-encoding:date:date:from:from:in-reply-to
-        :message-id:mime-version:reply-to:sender:subject:subject:to:to;
-         s=fm3; t=1653861984; x=1653948384; bh=uL7tQhldtntuHotWwMklpuGYS
-        aIxV8IbejYp0K3iJKE=; b=wIeVqxy3qdgsMed2yxjJNZa4/nNcDhrZiKOTcBj88
-        U2L8abwfruqVW8OReKAFi+E0CuSMT4lDVH0rBBqu0D8MXWAXrV82DJAtXcdbfRyc
-        yhFPX8rv+DrgoMhXghj/NicuXwON2K4iXYNNOXA9HU7d7Fgy6y5wHFg4Y85Mbxfg
-        ikxZgkbxzrmgjXF3O3jNnYfW3fwivbAhGGOpSNXcJlSjkIFbbAp+cZmWYlr3Ioa7
-        oDSSR4yZYrwqftQcKtHmIQ/EEffjclcFyx3ix7ENZRuHQ4OlyM19UNdvLRs/xt5I
-        eb1331W0q+pNKiHjURQgZchiQ0mPO3d5/UhqfsBa7f3tg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :feedback-id:feedback-id:from:from:in-reply-to:message-id
-        :mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
-        1653861984; x=1653948384; bh=uL7tQhldtntuHotWwMklpuGYSaIxV8IbejY
-        p0K3iJKE=; b=PY7MAlvZURI82SB9CsAv3VVHXzMzZbhXYCeEZhPhMf3mQMMffdH
-        Dva1s6uF4fbHhZ2Veu5tcG2j+4R/SCQ9CMODicc7XEhaPfNrlVZFFYgbBq3ajzai
-        L4ZvZFmgDfUi41qcmsZLtZuuH3ld60Q+BnZDg87Hj/NBoysYoruNlEXofIEzspUX
-        FQirsTrIcd890qL776Y+Mly3et2nlLJJPoIBXmtHHcF5fIsVcEzZpb4X2FZph0bl
-        bPdJq/gatHsNP5izxD+iaPI+CIgrgT0pPh5t+ovKXP15zktXBm5NkpsP/hUHg6Y8
-        wGiXxEYpU4cTCdLfUDJ1sf3bqvA3GJhpLgQ==
-X-ME-Sender: <xms:YO6TYp5rd53qxjTWhThJGCggno6TyG1gvCgRuyQi_XpCcgYSlDszDw>
-    <xme:YO6TYm7iJtj3lIVAL1lOP3ZBNryw7Tinhn2GtOeQKljEfqsMzB65qJc4ZSU7cqfNf
-    JnehLdSrL11fdzitw>
-X-ME-Received: <xmr:YO6TYgeVxRDBBumrt1IYEHkAhPH8opzlV3UgsMCaGPB_mNLM7N-5WLRYvAp9X8M7>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrkeehgddtfecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecufghrlhcuvffnffculdejtddmnecujfgurhephffvve
-    fufffkofgggfestdekredtredttdenucfhrhhomhepffgrnhhivghlucgiuhcuoegugihu
-    segugihuuhhurdighiiiqeenucggtffrrghtthgvrhhnpedvgefgtefgleehhfeufeekud
-    dvgfeuvdfhgeeljeduudfffffgteeuudeiieekjeenucevlhhushhtvghrufhiiigvpedt
-    necurfgrrhgrmhepmhgrihhlfhhrohhmpegugihusegugihuuhhurdighiii
-X-ME-Proxy: <xmx:YO6TYiIqXGGDGbEUXATPZKu38axyc-gzNrfOXU2AgjNo-IIfoYCYcQ>
-    <xmx:YO6TYtJAtNGb51yz3VBdTSFKwQnHxtnJ5v-rpYXXMEVBdgjh25Gi8g>
-    <xmx:YO6TYrzhepquuWdCzn55GfTw-QGveiCRaZ3Hu4-GGEFCdQ__4B8fNg>
-    <xmx:YO6TYqGlcbib8ajqGdUeeWJ9RFUElUyoiM97Uakgxu62O-8iCChZKw>
-Feedback-ID: i6a694271:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
- 29 May 2022 18:06:23 -0400 (EDT)
-From:   Daniel Xu <dxu@dxuuu.xyz>
-To:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org
-Cc:     Daniel Xu <dxu@dxuuu.xyz>, linux-kernel@vger.kernel.org
-Subject: [PATCH bpf-next 0/2] Add PROG_TEST_RUN support to BPF_PROG_TYPE_KPROBE
-Date:   Sun, 29 May 2022 17:06:04 -0500
-Message-Id: <cover.1653861287.git.dxu@dxuuu.xyz>
+        Sun, 29 May 2022 18:35:59 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 770C650B2E
+        for <linux-kernel@vger.kernel.org>; Sun, 29 May 2022 15:35:57 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id b8so3432078edf.11
+        for <linux-kernel@vger.kernel.org>; Sun, 29 May 2022 15:35:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=28grDNGVVwgvkgCPe3HFvEYkJipC2Cb3fnAVX4fq0Lg=;
+        b=J5pOk7YAN5RiRnaTEd5KNJyjKchIaoV/9ff0ljMqAgtajGMDjG8KcERrFloK1EIMkR
+         SyIl5qdg/OzIYTqNk/DmY3FDbsJh+pAUJu2h7kHYD2qMC17GDJkAMIzq+MuB7ACiRJdy
+         KYUwNGYiXTLtVsT5NBGsJdqE4fUMIR19VQOn3XrZ8N0hT9V5gzA4ekE4rzsvJVWsRORy
+         KqVhhqLLCLxlKBPf8xHkt5J/ya+Vr24XCrNHnJuaDLMF9QsPeMGrihSe990IOanm5c1Y
+         KPdFo/Wer5nAb1eDbCwilyzjUljbMNwdiVIj0L5+FcVv3OECj4LPkBUYZPFoqsXtGycA
+         IfcA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=28grDNGVVwgvkgCPe3HFvEYkJipC2Cb3fnAVX4fq0Lg=;
+        b=shRHgrv8XgToEEQcLcDeD585GtTT3IoaqUHCxF2VcjX/RND6h9T9yKDc58cnQMKmEl
+         k2c6RS9RcWkcSsxE8j5TJe89Ow5buCk3adsdQmoND71l8lkooP5rNlYoN862sI0fbY2r
+         9PHUJ+BWpM1gwaFMz4LxlvmIbv0iQiDwlSORgbBphAFig708YXw5KwI3+nYixLMrzIYP
+         Wab8WRHtpu+DXkR7MuTxcQGmFQuTi//D90eSlrivKdjO8K4iudS8XQCHe6sfZoVS094L
+         sYkwJnpCcdSaNfMFDZkihvfTDMIfR5jv5plZcYeqSxFBlmcQWqYHMOd+Ph8/lscCRFvD
+         JrbA==
+X-Gm-Message-State: AOAM531+r4w7LuwxYE1CSMwR9egPTPYZDG/yNfGmEpqCegMYO4Ss1El9
+        5n10dytwUTWTRa1KD3p/IWw=
+X-Google-Smtp-Source: ABdhPJy36gFtvxZXqd/ef4i7J/Vur7da2Ugd78lWMuv8NEHUzvMn6fT0GPLCrZE9jkhNYCiNYTZePA==
+X-Received: by 2002:a05:6402:a42:b0:42b:c5e9:1495 with SMTP id bt2-20020a0564020a4200b0042bc5e91495mr25576734edb.323.1653863756112;
+        Sun, 29 May 2022 15:35:56 -0700 (PDT)
+Received: from marios-pc.home.mlevogiannis.gr (194.219.107.43.dsl.dyn.forthnet.gr. [194.219.107.43])
+        by smtp.gmail.com with ESMTPSA id u28-20020a50c05c000000b0042dc882c823sm697456edd.70.2022.05.29.15.35.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 29 May 2022 15:35:55 -0700 (PDT)
+From:   Marios Levogiannis <marios.levogiannis@gmail.com>
+To:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
+Cc:     Marios Levogiannis <marios.levogiannis@gmail.com>
+Subject: [PATCH] ALSA: hda/realtek - Fix microphone noise on ASUS TUF B550M-PLUS
+Date:   Mon, 30 May 2022 01:35:24 +0300
+Message-Id: <20220529223524.9057-1-marios.levogiannis@gmail.com>
 X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -74,39 +62,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patchset adds PROG_TEST_RUN support to BPF_PROG_TYPE_KPROBE progs.
-On top of being generally useful for unit testing kprobe progs, this
-feature more specifically helps solve a relability problem with bpftrace
-BEGIN and END probes.
+Set microphone pins 0x18 (rear) and 0x19 (front) to VREF_50 to fix the
+microphone noise on ASUS TUF B550M-PLUS which uses the ALCS1200A codec.
+The initial value was VREF_80.
 
-BEGIN and END probes are run exactly once at the beginning and end of a
-bpftrace tracing session, respectively. bpftrace currently implements
-the probes by creating two dummy functions and attaching the BEGIN and
-END progs, if defined, to those functions and calling the dummy
-functions as appropriate. This works pretty well most of the time except
-for when distros strip symbols from bpftrace. Every now and then this
-happens and users get confused. Having PROG_TEST_RUN support will help
-solve this issue by allowing us to directly trigger uprobes from
-userspace.
+The same issue is also present on Windows using both the default Windows
+driver and all tested Realtek drivers before version 6.0.9049.1. Comparing
+Realtek driver 6.0.9049.1 (the first one without the microphone noise) to
+Realtek driver 6.0.9047.1 (the last one with the microphone noise)
+revealed that the fix is the result of setting pins 0x18 and 0x19 to
+VREF_50.
 
-Admittedly, this is a pretty specific problem and could probably be
-solved other ways. However, PROG_TEST_RUN also makes unit testing more
-convenient, especially as users start building more complex tracing
-applications. So I see this as killing two birds with one stone.
+This fix may also work for other boards that have been reported to have
+the same microphone issue and use the ALC1150 and ALCS1200A codecs, since
+these codecs are similar and the fix in the Realtek driver on Windows is
+common for both. However, it is currently enabled only for ASUS TUF
+B550M-PLUS as this is the only board that could be tested.
+---
+ sound/pci/hda/patch_realtek.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-Daniel Xu (2):
-  bpf, test_run: Add PROG_TEST_RUN support to kprobe
-  Add PROG_TEST_RUN selftest for BPF_PROG_TYPE_KPROBE
-
- include/linux/bpf.h                           | 10 ++++
- kernel/trace/bpf_trace.c                      |  1 +
- net/bpf/test_run.c                            | 36 ++++++++++++
- .../selftests/bpf/prog_tests/kprobe_ctx.c     | 57 +++++++++++++++++++
- .../testing/selftests/bpf/progs/kprobe_ctx.c  | 33 +++++++++++
- 5 files changed, 137 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/kprobe_ctx.c
- create mode 100644 tools/testing/selftests/bpf/progs/kprobe_ctx.c
-
+diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
+index 89d610afa..f3ad454b3 100644
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -1981,6 +1981,7 @@ enum {
+ 	ALC1220_FIXUP_CLEVO_PB51ED_PINS,
+ 	ALC887_FIXUP_ASUS_AUDIO,
+ 	ALC887_FIXUP_ASUS_HMIC,
++	ALCS1200A_FIXUP_MIC_VREF,
+ };
+ 
+ static void alc889_fixup_coef(struct hda_codec *codec,
+@@ -2526,6 +2527,14 @@ static const struct hda_fixup alc882_fixups[] = {
+ 		.chained = true,
+ 		.chain_id = ALC887_FIXUP_ASUS_AUDIO,
+ 	},
++	[ALCS1200A_FIXUP_MIC_VREF] = {
++		.type = HDA_FIXUP_PINCTLS,
++		.v.pins = (const struct hda_pintbl[]) {
++			{ 0x18, PIN_VREF50 }, /* rear mic */
++			{ 0x19, PIN_VREF50 }, /* front mic */
++			{}
++		}
++	},
+ };
+ 
+ static const struct snd_pci_quirk alc882_fixup_tbl[] = {
+@@ -2563,6 +2572,7 @@ static const struct snd_pci_quirk alc882_fixup_tbl[] = {
+ 	SND_PCI_QUIRK(0x1043, 0x835f, "Asus Eee 1601", ALC888_FIXUP_EEE1601),
+ 	SND_PCI_QUIRK(0x1043, 0x84bc, "ASUS ET2700", ALC887_FIXUP_ASUS_BASS),
+ 	SND_PCI_QUIRK(0x1043, 0x8691, "ASUS ROG Ranger VIII", ALC882_FIXUP_GPIO3),
++	SND_PCI_QUIRK(0x1043, 0x8797, "ASUS TUF B550M-PLUS", ALCS1200A_FIXUP_MIC_VREF),
+ 	SND_PCI_QUIRK(0x104d, 0x9043, "Sony Vaio VGC-LN51JGB", ALC882_FIXUP_NO_PRIMARY_HP),
+ 	SND_PCI_QUIRK(0x104d, 0x9044, "Sony VAIO AiO", ALC882_FIXUP_NO_PRIMARY_HP),
+ 	SND_PCI_QUIRK(0x104d, 0x9047, "Sony Vaio TT", ALC889_FIXUP_VAIO_TT),
 -- 
 2.36.1
 
