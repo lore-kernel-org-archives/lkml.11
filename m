@@ -2,186 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33A1EC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 29 May 2022 22:43:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EF75C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 29 May 2022 22:48:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231653AbiE2WnT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 29 May 2022 18:43:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37558 "EHLO
+        id S231737AbiE2WsA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 29 May 2022 18:48:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230479AbiE2WnS (ORCPT
+        with ESMTP id S230479AbiE2Wr5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 29 May 2022 18:43:18 -0400
-X-Greylist: delayed 1560 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 29 May 2022 15:43:16 PDT
-Received: from rome.phoronix.com (rome.phoronix.com [192.211.48.82])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3037C5F8F9
-        for <linux-kernel@vger.kernel.org>; Sun, 29 May 2022 15:43:15 -0700 (PDT)
-Received: from c-73-176-63-28.hsd1.il.comcast.net ([73.176.63.28]:44530 helo=[192.168.1.42])
-        by rome.phoronix.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.95)
-        (envelope-from <Michael@phoronix.com>)
-        id 1nvRDf-0005u2-QN;
-        Sun, 29 May 2022 18:17:07 -0400
-Message-ID: <6a5b80e8-a614-5452-4cf0-b636fa9b23cc@phoronix.com>
-Date:   Sun, 29 May 2022 17:16:59 -0500
+        Sun, 29 May 2022 18:47:57 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2B1A644E3
+        for <linux-kernel@vger.kernel.org>; Sun, 29 May 2022 15:47:55 -0700 (PDT)
+Received: from [192.168.1.107] ([37.4.249.170]) by mrelayeu.kundenserver.de
+ (mreue012 [212.227.15.167]) with ESMTPSA (Nemesis) id
+ 1MF2YC-1o20Bu1rMO-00FUaY; Mon, 30 May 2022 00:47:06 +0200
+Message-ID: <bd8d4306-293e-6755-2f43-c027533d1ff2@i2se.com>
+Date:   Mon, 30 May 2022 00:47:04 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH] clocksource: Make clocksource watchdog check with
- WATCHDOG_INTERVAL period
-Content-Language: en-CA
-To:     Waiman Long <longman@redhat.com>,
+ Thunderbird/91.9.1
+Subject: Re: vchiq: Performance regression since 5.18-rc1
+Content-Language: en-US
+To:     Marcelo Tosatti <mtosatti@redhat.com>
+Cc:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Minchan Kim <minchan@kernel.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        Juri Lelli <juri.lelli@redhat.com>,
         Thomas Gleixner <tglx@linutronix.de>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Feng Tang <feng.tang@intel.com>,
         "Paul E. McKenney" <paulmck@kernel.org>,
-        John Stultz <jstultz@google.com>
-Cc:     linux-kernel@vger.kernel.org, Joe Mario <jmario@redhat.com>,
-        Michey Mehta <mimehta@redhat.com>
-References: <20220528015714.109442-1-longman@redhat.com>
- <fa2d516e-70b5-3012-9134-5ca325282bc4@redhat.com>
-From:   Michael Larabel <Michael@phoronix.com>
-In-Reply-To: <fa2d516e-70b5-3012-9134-5ca325282bc4@redhat.com>
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Phil Elwell <phil@raspberrypi.com>, regressions@lists.linux.dev
+References: <77d6d498-7dd9-03eb-60f2-d7e682bb1b20@i2se.com>
+ <YoszE8lQ9VcofLtX@linutronix.de> <Yo41ggMvkI1B9TeM@fuller.cnet>
+ <e0402350-687e-14b6-2e30-4b459afa9afb@i2se.com>
+ <Yo5NQS470wTuDq/f@fuller.cnet>
+From:   Stefan Wahren <stefan.wahren@i2se.com>
+In-Reply-To: <Yo5NQS470wTuDq/f@fuller.cnet>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - rome.phoronix.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - phoronix.com
-X-Get-Message-Sender-Via: rome.phoronix.com: authenticated_id: michael@phoronix.com
-X-Authenticated-Sender: rome.phoronix.com: michael@phoronix.com
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
+Content-Transfer-Encoding: 7bit
+X-Provags-ID: V03:K1:Q4/bnpQYeqTZyYV3rxCUCfh0mQig/0UfrYdXJ7wL/7l+YvbbS3Y
+ 57BojHvt+El4ipo4vGh+DT+flV0nRsZHN7p2etqR+eOlMtSq8lLZOO6HR2RC4WX6LvQ0h7g
+ g82AdyonYlGam+YlgSPwHk9cay4moHXj01AOIIy+hb5lg2AFOCAyOlDaLzZdZLjg1J0ssFq
+ G6SFcpG464ltDyCdw/XWA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:oOt7M8ZsNGA=:MVLExm6p1USWJejZUx5ppd
+ Y3n8O/ac1PQFSa31Qq1/HPpVVjsh6SSXGH8e5hoaLTMJweIzKh8/Ac4EAG+Wsk5c+IR5phq3F
+ B35r8/d5vI5K7D112JJ/WV5QEJckNCNGCna9DOdFxjhIOK6xiRyXbYuADsoNpSVNqAQDraBTM
+ iLQYawGmYOGebrqmHCTiaTDqS+HIF6HTrNkLEYkSSiKDLvpsXr8urnv5ti6EPWHO59lj2OcwE
+ Soa3eaLdzZwc7+xbWb7WSggzOovKn1Nxwda8lyQWJe/G7W7qlvL58rgKTyGGpSzKMgiAGlDJG
+ hCOhXjWdjHPEHYQfvivo8hi/CXASyuqQBH6hjksCVpY69ejhJy9zDQeIsCrbQWxHmZGWuSx7A
+ xyQP1utQ6MVflzQrUjYAEHwEL2lRv5mu7F7cEPMCODKW6V5tVEMgQY6A4sy0OSSSBxOUNMAZJ
+ LzMo//TQWhvN0/ZfAgMmttBs1HMSS8e5nfIuV0wKwA9SctqKGlEqCufrNGG+OVuCbjPn4pL4V
+ MDXRtDFYQrT5uhEpdNrsZjYNiGysGsglpe/Z+Yr3ishglRjeCA7FjLsBDsRycKxl/OZlmJ1zg
+ GMkZZa1KNRGjkcfqZXapqgbvhp/t55zgckuYtkTKtAJOAnbPqbB4zW9Fe0TvWbKZ3McD11Xtr
+ JpOuEKIvnk9GWAWeh4jrdQhQP/0j6tUBrLtP5MJ8xwyBg4tq/v8+ShZY/y0xKjoy+gp7Z0jqp
+ /g9lEkJSDhkUoiPXxRNwrzpc3x7q1L+yZoOesT72BJoIOzX2s+TCypsZh5M=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/27/22 21:07, Waiman Long wrote:
-> On 5/27/22 21:57, Waiman Long wrote:
->> Since commit c86ff8c55b8a ("clocksource: Avoid accidental unstable
->> marking of clocksource"), a new WD_READ_SKIP value was introduced
->> as a possible return value of cs_watchdog_read() to skip the current
->> check. However, this has an undesriable side effect of extending the
->> time gap between csnow and cs_last to more than one WATCHDOG_INTERVAL
->> (0.5s) in case of intermittent WD_READ_SKIP's.
+Am 25.05.22 um 17:37 schrieb Marcelo Tosatti:
+> On Wed, May 25, 2022 at 04:07:47PM +0200, Stefan Wahren wrote:
+>> Hi Marcelo,
 >>
->> There was an instance of reported clocksource watchdog failure with
->> the time skew of 485us where the uncertainly threshold is 400us. In
->> that particular case, the (now - last) gap was about 2s. Looking at
->> the dmesg log, it was clear there was a successful cs_watchdog_read()
->> followed by 3 skips and then another successful cs_watchdog_read().
->>
->> If there is an existing skew between the hpet (watchdog) and tsc
->> clocksource, enlarging the period by 4x will certainly increase the
->> measured skew causing it to exceed the threshold in this case. Fix
->> this variable period problem by resetting the CLOCK_SOURCE_WATCHDOG bit
->> after each WD_READ_SKIP to force the reloading of wd_last and cs_last
->> in the next round. This ensures that we have two consecutive successful
->> cs_watchdog_read()'s before checking the clock skew.
->>
->> Fixes: c86ff8c55b8a ("clocksource: Avoid accidental unstable marking 
->> of clocksource")
->> Reported-by: Michael Larabel <Michael@phoronix.com>
->> Signed-off-by: Waiman Long <longman@redhat.com>
->> ---
->>   kernel/time/clocksource.c | 11 ++++++++++-
->>   1 file changed, 10 insertions(+), 1 deletion(-)
->>
->> diff --git a/kernel/time/clocksource.c b/kernel/time/clocksource.c
->> index cee5da1e54c4..173e052c12b6 100644
->> --- a/kernel/time/clocksource.c
->> +++ b/kernel/time/clocksource.c
->> @@ -411,9 +411,18 @@ static void clocksource_watchdog(struct 
->> timer_list *unused)
->>           read_ret = cs_watchdog_read(cs, &csnow, &wdnow);
->>             if (read_ret != WD_READ_SUCCESS) {
->> -            if (read_ret == WD_READ_UNSTABLE)
->> +            if (read_ret == WD_READ_UNSTABLE) {
->>                   /* Clock readout unreliable, so give it up. */
->>                   __clocksource_unstable(cs);
->> +            } else { /* WD_READ_SKIP */
->> +                /*
->> +                 * Watchdog clock unstable at the moment,
->> +                 * discard the stored wd_last and cs_last to
->> +                 * make sure the gap between now and last
->> +                 * is always one WATCHDOG_INTERVAL.
->> +                 */
->> +                cs->flags &= ~CLOCK_SOURCE_WATCHDOG;
->> +            }
->>               continue;
->>           }
+>> Am 25.05.22 um 15:56 schrieb Marcelo Tosatti:
+>>> On Mon, May 23, 2022 at 09:09:07AM +0200, Sebastian Andrzej Siewior wrote:
+>>>> On 2022-05-22 01:22:00 [+0200], Stefan Wahren wrote:
+>>>>> Hi,
+>>>> Hi,
+>>>>
+>>>>> while testing the staging/vc04_services/interface/vchiq_arm driver with my
+>>>>> Raspberry Pi 3 B+ (multi_v7_defconfig) i noticed a huge performance
+>>>>> regression since [ff042f4a9b050895a42cae893cc01fa2ca81b95c] mm:
+>>>>> lru_cache_disable: replace work queue synchronization with synchronize_rcu
+>>>>>
+>>>>> Usually i run "vchiq_test -f 1" to see the driver is still working [1].
+>>>> What about
+>>>> 	https://lore.kernel.org/all/YmrWK%2FKoU1zrAxPI@fuller.cnet/
+>>>>
+>>>> Sebastian
+>>> Stefan,
+>>>
+>>> Can you please try the patch above ?
+>> this was the same as Paul send. I think i need more time for investigation,
+>> maybe there is an issue with the application.
+> To clarify: they are not the same patches.
+Thanks for pointing out. I will test it ASAP.
 >
-> Sorry, I accidentally use the old email address for John.
->
-> Cheers,
-> Longman
-
-
-I've tested this patch on the affected Daytona + Milan-X system and can 
-confirm it does fix the performance problem that led to this issue. 
-Though it is spamming the kernel log now every half-second with 
-clocksource messages,  not sure if that is intended/desirable behavior?
-
-
-[    0.000000] tsc: Fast TSC calibration using PIT
-[    0.000000] tsc: Detected 2195.990 MHz processor
-[    1.238759] clocksource: tsc-early: mask: 0xffffffffffffffff 
-max_cycles: 0x1fa766bc6ba, max_idle_ns: 440795275714 ns
-[    2.769608] clocksource: Switched to clocksource tsc-early
-[    3.263925] clocksource: wd-tsc-early-wd read-back delay of 292215ns, 
-clock-skew test skipped!
-[    3.743804] clocksource: wd-tsc-early-wd read-back delay of 268469ns, 
-clock-skew test skipped!
-[    3.935663] tsc: Refined TSC clocksource calibration: 2195.274 MHz
-[    3.935844] clocksource: tsc: mask: 0xffffffffffffffff max_cycles: 
-0x1fa4c255513, max_idle_ns: 440795289702 ns
-[    3.936449] clocksource: Switched to clocksource tsc
-[    4.255932] clocksource: wd-tsc-wd read-back delay of 260228ns, 
-clock-skew test skipped!
-[    4.767892] clocksource: wd-tsc-wd read-back delay of 272520ns, 
-clock-skew test skipped!
-[    5.247581] clocksource: wd-tsc-wd read-back delay of 200444ns, 
-clock-skew test skipped!
-[    5.759560] clocksource: wd-tsc-wd read-back delay of 165942ns, 
-clock-skew test skipped!
-[    6.239687] clocksource: wd-tsc-wd read-back delay of 232222ns, 
-clock-skew test skipped!
-[    7.264014] clocksource: wd-tsc-wd read-back delay of 282927ns, 
-clock-skew test skipped!
-[    7.743864] clocksource: wd-tsc-wd read-back delay of 288374ns, 
-clock-skew test skipped!
-[    8.255590] clocksource: wd-tsc-wd read-back delay of 206730ns, 
-clock-skew test skipped!
-[    8.767778] clocksource: wd-tsc-wd read-back delay of 267771ns, 
-clock-skew test skipped!
-[    9.247870] clocksource: wd-tsc-wd read-back delay of 224469ns, 
-clock-skew test skipped!
-[   10.239340] clocksource: wd-tsc-wd read-back delay of 109720ns, 
-clock-skew test skipped!
-[   12.255276] clocksource: wd-tsc-wd read-back delay of 104692ns, 
-clock-skew test skipped!
-[   16.255362] clocksource: wd-tsc-wd read-back delay of 122780ns, 
-clock-skew test skipped!
-[   17.759335] clocksource: wd-tsc-wd read-back delay of 155885ns, 
-clock-skew test skipped!
-[   18.239500] clocksource: wd-tsc-wd read-back delay of 176558ns, 
-clock-skew test skipped!
-[   18.751341] clocksource: wd-tsc-wd read-back delay of 157352ns, 
-clock-skew test skipped!
-[   19.263618] clocksource: wd-tsc-wd read-back delay of 177606ns, 
-clock-skew test skipped!
-[   19.743487] clocksource: wd-tsc-wd read-back delay of 157841ns, 
-clock-skew test skipped!
-[   20.255482] clocksource: wd-tsc-wd read-back delay of 157701ns, 
-clock-skew test skipped!
-[   20.767634] clocksource: wd-tsc-wd read-back delay of 173136ns, 
-clock-skew test skipped!
-[   21.247405] clocksource: wd-tsc-wd read-back delay of 175441ns, 
-clock-skew test skipped!
-...
-
-Thanks,
-Michael
-
+>> All i noticed so far is that in good case the CPU usage is around ~ 60 % and
+>> higher, while in bad case the CPU is almost idle. Also the issue is not
+>> reproducible with arm64/defconfig.
+>>
+>>>
+>>>
+>>> _______________________________________________
+>>> linux-arm-kernel mailing list
+>>> linux-arm-kernel@lists.infradead.org
+>>> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+>>
