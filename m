@@ -2,66 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04722C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 29 May 2022 06:19:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E4A8C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 29 May 2022 06:19:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229521AbiE2GTZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 29 May 2022 02:19:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38350 "EHLO
+        id S229545AbiE2GT1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 29 May 2022 02:19:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229460AbiE2GTF (ORCPT
+        with ESMTP id S229461AbiE2GTF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sun, 29 May 2022 02:19:05 -0400
-Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-eopbgr60137.outbound.protection.outlook.com [40.107.6.137])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5499D6C0DD;
+Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on2117.outbound.protection.outlook.com [40.107.104.117])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A2206C0E4;
         Sat, 28 May 2022 23:19:03 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JmHxASxSaaRCXsJdXhyRg3woEUD8hTVg/KrB6zriXAhumiHvPITFujl9cen/t1P24FgAOfkKpHoXGzNbGJb9Zf6M2Nf611/aZb6m0pxpIP+oyjk+p7XpGBV5T90mOgTpLgT5lhsqNdDss9A+ibR9Jx1tsSe20K56jUcmI57q/xqX/iDZQk9mBFnn8OR/4rbSLNXI+ml2NFiK+jDlXQjkYrKc3KT8zFRGOhHRujqma1MWrfl12oAurgMWEAJvSBl2ZABvOQ7pb25w2mq95eI1mTrJecG3oCjwrRiQnnOMM1dS0PnXBz6mUVRjYUch88HmcG1Cqiqjp+AQuQ3MMKJBTA==
+ b=ZaxEOpV2jXhstdpmOzArJ/dmF8hy7axDerabJ88mnnl/Sq3ISQ+3yghqrWtVC/NK5aFJBHly64cMM9/r0KLMCi4lK9b93yasa2CJzdUAFQtBpqU0Lb7hHEpTjkTPdDyNVAAX2AqDwm6bLzexvcxBHaclhUqgxU3kigsmZU48y9IIQTyglKrY4+s+HCZONx3xS9HOBmwQSncxgpsUkL7Rdf/ALcXHxjFZr3P72sLtByf+JMyFtFms3t6MQ+s9Gt/ZLhdDR9dpQX4OOgdM4qsiD4GDDfsbAWspXA468fM6Ms6gjLh3VTMPBcVmPinJViXKiRt1jlLuWbn0XEovNVmmDQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=7ekwVoXx/+aYjX3KlJSJLf75Avjb5+QFhAMoKN3Z/Tw=;
- b=RMYwbmn5xzdoS/dyoWr8dgeR46c8lgLj1ksZgCQzJwKU8OTMCN5qEHzOkW+cGyRBY5tjqMiU84gqPubN2SunXqDcT8ib4Tm9Ssab7LLoNwHfQrCukMG2HL5vDeYEfRcx2LIwZgJrwBYwCA3a44qQsDtFyCELWsipLlT+z6aLwQdgn6OIe4YKHozughTE5m2aIfD9Tw9ttANfdBls85PVv1G7rw1qdjDcUdyNzlMrUPi768MJ4g461o7sze17ocK4vs5pdA+566GewHpRpOtwhPxEW0vNLldwySlgS9UVM0um03hB/fzSc2cnFRE8jp8NgV1/O4LlB/IGqgwXwCq2lg==
+ bh=QxN4ZCNWz6VRgVj1BL6mki+n0goKOKfCF+2TlynNUbo=;
+ b=HycYUY07GVdboJnsMlYAEKXc80GniWkfYKPwNkfxaWxivMOx/lqsuMqApy69bkteX9ppSbbhZRH6ftziJRnXTXPgcmcK7VfWDQVMRGVNrMmH4bErIB0DaE8rq0FBeMj8KzxM6YQgDzdFZwoL/rkckfkDYeUCryF+DJgAtxHFeS3TDwMg+A1Fnn8AR+uscLWQhvbhWI5KG5XOIzyRMxMQK2VTEe1SResxbtCDRmlIULnNg7VmI0O7/MAdOHvpnoOZ9mqja79Km+aw37x7KYrokSAKlTQJvHbeXJz8zDuW4ZAv16z3ylwUWfibX5C7HvoV1IFvLGBjBdCDp74cL9B9dg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  193.8.40.94) smtp.rcpttodomain=kernel.org
- smtp.mailfrom=leica-geosystems.com.cn; dmarc=pass (p=quarantine sp=quarantine
- pct=100) action=none header.from=leica-geosystems.com.cn; dkim=none (message
- not signed); arc=none
+ smtp.mailfrom=leica-geosystems.com.cn; dmarc=none action=none
+ header.from=leica-geosystems.com.cn; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=leica-geosystems.com.cn; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7ekwVoXx/+aYjX3KlJSJLf75Avjb5+QFhAMoKN3Z/Tw=;
- b=w23Z0qXWqYGwJhugbE/WpFtDK0J61kdpvNFlztqkehNa+4LG30qycZ//hvdhmYdkBPMJDD4WiqCM9MeXMCPMPOlaxB6Szvo0BTyYOSI5ZpPXfmAgD0YoRB5T6/fc5WzcXVNJsCKgTsRyRN/bK2OP5+pH4u8cs99KzTPL8jxrPts=
-Received: from AS9P250CA0016.EURP250.PROD.OUTLOOK.COM (2603:10a6:20b:532::26)
- by AM5PR06MB2995.eurprd06.prod.outlook.com (2603:10a6:206:b::20) with
+ bh=QxN4ZCNWz6VRgVj1BL6mki+n0goKOKfCF+2TlynNUbo=;
+ b=jBxduFJkhLOOXLfTjiP/dKRd462Uopv5X4SoRFiK+bWYbPqD7vxj8u/VmZwr6nD5jmruarklY2jC8nuyV32iLS+TtPWmfXSc91KNDlJzO0XqggnZ0BL3XB17RKbZ22iML5Fr44Bq0Y75beG3TX398Jh9LKpKljISLF/gzZB1Fw0=
+Received: from AS9P250CA0014.EURP250.PROD.OUTLOOK.COM (2603:10a6:20b:532::15)
+ by GV1PR06MB8404.eurprd06.prod.outlook.com (2603:10a6:150:23::14) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.18; Sun, 29 May
- 2022 06:18:58 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.14; Sun, 29 May
+ 2022 06:19:01 +0000
 Received: from VE1EUR02FT016.eop-EUR02.prod.protection.outlook.com
- (2603:10a6:20b:532:cafe::d9) by AS9P250CA0016.outlook.office365.com
- (2603:10a6:20b:532::26) with Microsoft SMTP Server (version=TLS1_2,
+ (2603:10a6:20b:532:cafe::2c) by AS9P250CA0014.outlook.office365.com
+ (2603:10a6:20b:532::15) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.18 via Frontend
- Transport; Sun, 29 May 2022 06:18:57 +0000
+ Transport; Sun, 29 May 2022 06:19:00 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 193.8.40.94)
  smtp.mailfrom=leica-geosystems.com.cn; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=leica-geosystems.com.cn;
+ header.d=none;dmarc=none action=none header.from=leica-geosystems.com.cn;
 Received-SPF: Pass (protection.outlook.com: domain of leica-geosystems.com.cn
  designates 193.8.40.94 as permitted sender) receiver=protection.outlook.com;
  client-ip=193.8.40.94; helo=aherlnxbspsrv01.lgs-net.com; pr=C
 Received: from aherlnxbspsrv01.lgs-net.com (193.8.40.94) by
  VE1EUR02FT016.mail.protection.outlook.com (10.152.12.90) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5293.13 via Frontend Transport; Sun, 29 May 2022 06:18:57 +0000
+ 15.20.5293.13 via Frontend Transport; Sun, 29 May 2022 06:19:00 +0000
 From:   LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
 To:     jic23@kernel.org, lars@metafoo.de, robh+dt@kernel.org,
         tomas.melin@vaisala.com, andy.shevchenko@gmail.com,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         Qing-wu.Li@leica-geosystems.com.cn,
         thomas.haemmerle@leica-geosystems.com
-Cc:     linux-iio@vger.kernel.org, Rob Herring <robh@kernel.org>
-Subject: [PATCH V9 1/5] dt-bindings: iio: accel: sca3300: Document murata,scl3300
-Date:   Sun, 29 May 2022 06:18:49 +0000
-Message-Id: <20220529061853.3044893-2-Qing-wu.Li@leica-geosystems.com.cn>
+Cc:     linux-iio@vger.kernel.org
+Subject: [PATCH V9 5/5] iio: accel: sca3300: Add inclination channels
+Date:   Sun, 29 May 2022 06:18:53 +0000
+Message-Id: <20220529061853.3044893-6-Qing-wu.Li@leica-geosystems.com.cn>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220529061853.3044893-1-Qing-wu.Li@leica-geosystems.com.cn>
 References: <20220529061853.3044893-1-Qing-wu.Li@leica-geosystems.com.cn>
@@ -70,48 +69,220 @@ Content-Transfer-Encoding: 8bit
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
 Content-Type: text/plain
-X-MS-Office365-Filtering-Correlation-Id: 282bcb18-bdbf-4d43-c608-08da413b1d67
-X-MS-TrafficTypeDiagnostic: AM5PR06MB2995:EE_
-X-Microsoft-Antispam-PRVS: <AM5PR06MB2995DBF6A63E8A6D8DC83A6AD7DA9@AM5PR06MB2995.eurprd06.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 3af195a1-3923-4b59-fc6f-08da413b1f27
+X-MS-TrafficTypeDiagnostic: GV1PR06MB8404:EE_
+X-MS-Exchange-AtpMessageProperties: SA|SL
+X-Microsoft-Antispam-PRVS: <GV1PR06MB840484CD1FA2BA082ACFC5F5D7DA9@GV1PR06MB8404.eurprd06.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Jy7CfKVKRpy/7kTZ1nHWyNCmOFOBwxf1utWg1wBz49R5UsY7DVUdGCL9UuJo0JDXWgbjpWebnC9ZhZyUSZv1JfLWzfdh/vGAJVdn34OTU2vFi2Z8AGtPh6rfMS1fDTtiyakxxljpuHREuYI3Sg3KVIkKWT97D1gLjZWn0quwHEmw0xz4fQzYWOAbqLpB8/1C3RIMjKCOA8wM1dmOjRT34FBGx9mIUWNDBRCvmODt6d0d08R6wa3/eqMvUtODGwC8AZ3N1OokWoVbnP6dQDEb8QwKRv3y6GqDQlDd6dX5z1q8ZAjE3jHz7ObOv2J1UkKGefsZ4rd8he5ivz+KK59pXMHv3LRNj0anquVfdqNHnxUtZcZW5wmp/mraS5o9ptfaNl08chV1Mt4AuVnc7rNyhCjmZZE/9wgVvB95ZjfjZxKkogh45IS8O/roXjrQWzy4YgM65vLgEYqKJalLZlYGiFrVePTQ60nXkZBZgyD3IbaK4GAbPY0SIH7RT6yTf6OS3jQnJJDt/3C7FGuCzoRdRlXh270uwWZ0d5ejpDC9vIFot0NQZaO9tuteQBn98MIHG4V6SaukdcAkwtBIGrIVxZEc9iKnEaFkrnWSDiClpby198XcZCM4Aa4MhKZ656swXkU+dWtJzCn2fDSEjNs/BMvus5M19H0IuVnAb2aUj57/pmZN3fuY8d93lp2yGDFY
-X-Forefront-Antispam-Report: CIP:193.8.40.94;CTRY:CH;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:aherlnxbspsrv01.lgs-net.com;PTR:ahersrvdom50.leica-geosystems.com;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(5660300002)(6486002)(86362001)(6512007)(508600001)(26005)(2616005)(1076003)(956004)(8936002)(118246002)(40460700003)(6666004)(2906002)(4744005)(6506007)(186003)(47076005)(336012)(4326008)(8676002)(70586007)(70206006)(82310400005)(316002)(36736006)(36756003)(81166007)(36860700001)(356005);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: O0EZ1pkT8sfcpMt8VvhO39bZHe+4oWPVM0nfWMru8UHFOjA9FjoB6g2WZo4bbCpsTDbLoLhL5Usp4Quay/sgcgb0AuOApNWYQvESYLr35YwS0cFvoBZjF1R/srxFPEklZSSgmN42J2UHMIvtS6OK4wuYeLR/zHL7QhT14/MokkTw4vX4XQkm3v3cTikJKWanrMDGIhnlOGvdamrgZxA/N2Qh0x4V449cDPKQitFUOdlfCdzs6acYYr4XIP2ZAoO8yYfSM0M/+cMB0nh6B/kEfK6ACmX0FfPE+N45zaNRza8IC5gXIJ6VEvK8bFvMyF8+mkHtTP+nuNF5cpbzClzlU9EKt3v7jeyCXvz4WJm3lRGUeUXWUIcbm6Wi5SJ2A7sW5Sz4gWzWhCcmWJRS4aTmOySUCwl0DlzpTo6hcS+9lV9IFHWCTIcku8DZDD527T8pUrGFvD/V5X07/NPSPMAc3ZYIqJjI7Nh+rIheYrFZ3wnTnF+IT3bkbOYmLdz6F4RRs0gJOO4FQpNCSYiMl01VPlVzxYhNfK0ATTGRyiYgklMmpcqRF2MfTElkzcTWhgCR4Ba7l+hrwbWHCXmou7i5pHHHPq1tzx0jxGtYjWT6ADQUiq09A3VPIQoiM3WDghWgOYhk6wOBKhsP+0SF1yIIUMASwy3iwrN9oI5IbcOHBWcL/rxIPYyQdQ0PMvhXyZfC
+X-Forefront-Antispam-Report: CIP:193.8.40.94;CTRY:CH;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:aherlnxbspsrv01.lgs-net.com;PTR:ahersrvdom50.leica-geosystems.com;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(356005)(956004)(2616005)(8676002)(6512007)(70586007)(70206006)(316002)(4326008)(5660300002)(82310400005)(36736006)(26005)(36756003)(81166007)(118246002)(186003)(6666004)(336012)(6506007)(2906002)(47076005)(6486002)(508600001)(8936002)(83380400001)(36860700001)(1076003)(86362001)(40460700003);DIR:OUT;SFP:1102;
 X-OriginatorOrg: leica-geosystems.com.cn
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 May 2022 06:18:57.6062
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 May 2022 06:19:00.5592
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 282bcb18-bdbf-4d43-c608-08da413b1d67
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3af195a1-3923-4b59-fc6f-08da413b1f27
 X-MS-Exchange-CrossTenant-Id: 1b16ab3e-b8f6-4fe3-9f3e-2db7fe549f6a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=1b16ab3e-b8f6-4fe3-9f3e-2db7fe549f6a;Ip=[193.8.40.94];Helo=[aherlnxbspsrv01.lgs-net.com]
 X-MS-Exchange-CrossTenant-AuthSource: VE1EUR02FT016.eop-EUR02.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM5PR06MB2995
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV1PR06MB8404
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add DT bindings for Murata scl3300 inclinometer.
+Different from SCA3300, SCL3300 can output inclination angles.
+Angles are formed from acceleration with following equations:
+ANG_X = atan2(accx , sqrt(pow(accy , 2) + pow(accz , 2)))
+ANG_Y = atan2(accy , sqrt(pow(accx , 2) + pow(accz , 2)))
+ANG_Z = atan2(accz , sqrt(pow(accx , 2) + pow(accy , 2)))
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+The commit adds the output of the raw value, scale
+and scale_available of angles.
+
+New interfaces:
+  in_incli_scale
+  in_incli_scale_available
+  in_incli_x_raw
+  in_incli_y_raw
+  in_incli_z_raw
+Data converted by application of scale to degrees.
+
 Signed-off-by: LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
 ---
- Documentation/devicetree/bindings/iio/accel/murata,sca3300.yaml | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/iio/accel/sca3300.c | 76 +++++++++++++++++++++++++++++++++++--
+ 1 file changed, 73 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/accel/murata,sca3300.yaml b/Documentation/devicetree/bindings/iio/accel/murata,sca3300.yaml
-index 55fd3548e3b6..f6e2a16a710b 100644
---- a/Documentation/devicetree/bindings/iio/accel/murata,sca3300.yaml
-+++ b/Documentation/devicetree/bindings/iio/accel/murata,sca3300.yaml
-@@ -17,6 +17,7 @@ properties:
-   compatible:
-     enum:
-       - murata,sca3300
-+      - murata,scl3300
+diff --git a/drivers/iio/accel/sca3300.c b/drivers/iio/accel/sca3300.c
+index 9683dce21073..861f6906beee 100644
+--- a/drivers/iio/accel/sca3300.c
++++ b/drivers/iio/accel/sca3300.c
+@@ -44,12 +44,18 @@
+ #define SCA3300_VALUE_RS_ERROR	0x3
+ #define SCA3300_MASK_RS_STATUS	GENMASK(1, 0)
  
-   reg:
-     maxItems: 1
++#define SCL3300_REG_ANG_CTRL 0x0C
++#define SCL3300_ANG_ENABLE   0x1F
++
+ enum sca3300_scan_indexes {
+ 	SCA3300_ACC_X = 0,
+ 	SCA3300_ACC_Y,
+ 	SCA3300_ACC_Z,
+ 	SCA3300_TEMP,
+ 	SCA3300_TIMESTAMP,
++	SCA3300_INCLI_X,
++	SCA3300_INCLI_Y,
++	SCA3300_INCLI_Z,
+ };
+ 
+ #define SCA3300_ACCEL_CHANNEL(index, reg, axis) {			\
+@@ -73,6 +79,23 @@ enum sca3300_scan_indexes {
+ 	},								\
+ }
+ 
++#define SCA3300_INCLI_CHANNEL(index, reg, axis) {			\
++	.type = IIO_INCLI,						\
++	.address = reg,							\
++	.modified = 1,							\
++	.channel2 = IIO_MOD_##axis,					\
++	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),		\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),			\
++	.info_mask_shared_by_type_available = BIT(IIO_CHAN_INFO_SCALE), \
++	.scan_index = index,						\
++	.scan_type = {							\
++		.sign = 's',						\
++		.realbits = 16,						\
++		.storagebits = 16,					\
++		.endianness = IIO_CPU,					\
++	},								\
++}
++
+ #define SCA3300_TEMP_CHANNEL(index, reg) {				\
+ 		.type = IIO_TEMP,					\
+ 		.address = reg,						\
+@@ -106,15 +129,36 @@ static const int sca3300_accel_scale_map[] = {0, 1, 2, 2};
+ static const int scl3300_accel_scale[][2] = {{0, 167}, {0, 333}, {0, 83}};
+ static const int scl3300_accel_scale_map[] = {0, 1, 2};
+ 
++static const int scl3300_incli_scale[][2] = {{0, 5495}};
++static const int scl3300_incli_scale_map[] = {0, 0, 0};
++
+ static const int sca3300_avail_modes_map[] = {0, 1, 2, 3};
+ static const int scl3300_avail_modes_map[] = {0, 1, 3};
+ 
++static const struct iio_chan_spec scl3300_channels[] = {
++	SCA3300_ACCEL_CHANNEL(SCA3300_ACC_X, 0x1, X),
++	SCA3300_ACCEL_CHANNEL(SCA3300_ACC_Y, 0x2, Y),
++	SCA3300_ACCEL_CHANNEL(SCA3300_ACC_Z, 0x3, Z),
++	SCA3300_TEMP_CHANNEL(SCA3300_TEMP, 0x05),
++	IIO_CHAN_SOFT_TIMESTAMP(4),
++	SCA3300_INCLI_CHANNEL(SCA3300_INCLI_X, 0x09, X),
++	SCA3300_INCLI_CHANNEL(SCA3300_INCLI_Y, 0x0A, Y),
++	SCA3300_INCLI_CHANNEL(SCA3300_INCLI_Z, 0x0B, Z),
++};
++
+ static const unsigned long sca3300_scan_masks[] = {
+ 	BIT(SCA3300_ACC_X) | BIT(SCA3300_ACC_Y) | BIT(SCA3300_ACC_Z) |
+ 	BIT(SCA3300_TEMP),
+ 	0
+ };
+ 
++static const unsigned long scl3300_scan_masks[] = {
++	BIT(SCA3300_ACC_X) | BIT(SCA3300_ACC_Y) | BIT(SCA3300_ACC_Z) |
++	BIT(SCA3300_TEMP) |
++	BIT(SCA3300_INCLI_X) | BIT(SCA3300_INCLI_Y) | BIT(SCA3300_INCLI_Z),
++	0
++};
++
+ struct sca3300_chip_info {
+ 	const char *name;
+ 	const unsigned long *scan_masks;
+@@ -123,12 +167,16 @@ struct sca3300_chip_info {
+ 	u8 num_accel_scales;
+ 	const int (*accel_scale)[2];
+ 	const int *accel_scale_map;
++	const int (*incli_scale)[2];
++	const int *incli_scale_map;
++	u8 num_incli_scales;
+ 	u8 num_freqs;
+ 	const int *freq_table;
+ 	const int *freq_map;
+ 	const int *avail_modes_table;
+ 	u8 num_avail_modes;
+ 	u8 chip_id;
++	bool angle_supported;
+ };
+ 
+ /**
+@@ -167,21 +215,26 @@ static const struct sca3300_chip_info sca3300_chip_tbl[] = {
+ 		.avail_modes_table = sca3300_avail_modes_map,
+ 		.num_avail_modes = 4,
+ 		.chip_id = SCA3300_WHOAMI_ID,
++		.angle_supported = false,
+ 	},
+ 	{
+ 		.name = "scl3300",
+-		.scan_masks = sca3300_scan_masks,
+-		.channels = sca3300_channels,
+-		.num_channels = ARRAY_SIZE(sca3300_channels),
++		.scan_masks = scl3300_scan_masks,
++		.channels = scl3300_channels,
++		.num_channels = ARRAY_SIZE(scl3300_channels),
+ 		.num_accel_scales = ARRAY_SIZE(scl3300_accel_scale)*2,
+ 		.accel_scale = scl3300_accel_scale,
+ 		.accel_scale_map = scl3300_accel_scale_map,
++		.incli_scale = scl3300_incli_scale,
++		.incli_scale_map = scl3300_incli_scale_map,
++		.num_incli_scales =  ARRAY_SIZE(scl3300_incli_scale)*2,
+ 		.num_freqs = ARRAY_SIZE(scl3300_lp_freq),
+ 		.freq_table = scl3300_lp_freq,
+ 		.freq_map = scl3300_lp_freq_map,
+ 		.avail_modes_table = scl3300_avail_modes_map,
+ 		.num_avail_modes = 3,
+ 		.chip_id = SCL3300_WHOAMI_ID,
++		.angle_supported = true,
+ 	},
+ };
+ 
+@@ -400,6 +453,11 @@ static int sca3300_read_raw(struct iio_dev *indio_dev,
+ 		if (ret)
+ 			return ret;
+ 		switch (chan->type) {
++		case IIO_INCLI:
++			index = data->chip->incli_scale_map[index];
++			*val  = data->chip->incli_scale[index][0];
++			*val2 = data->chip->incli_scale[index][1];
++			return IIO_VAL_INT_PLUS_MICRO;
+ 		case IIO_ACCEL:
+ 			index = data->chip->accel_scale_map[index];
+ 			*val  = data->chip->accel_scale[index][0];
+@@ -486,6 +544,13 @@ static int sca3300_init(struct sca3300_data *sca_data,
+ 
+ 	sca_data->chip = &sca3300_chip_tbl[i];
+ 
++	if (sca_data->chip->angle_supported) {
++		ret = sca3300_write_reg(sca_data, SCL3300_REG_ANG_CTRL,
++					SCL3300_ANG_ENABLE);
++		if (ret)
++			return ret;
++	}
++
+ 	return 0;
+ }
+ 
+@@ -521,6 +586,11 @@ static int sca3300_read_avail(struct iio_dev *indio_dev,
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_SCALE:
+ 		switch (chan->type) {
++		case IIO_INCLI:
++			*vals = (const int *)data->chip->incli_scale;
++			*length = data->chip->num_incli_scales;
++			*type = IIO_VAL_INT_PLUS_MICRO;
++			return IIO_AVAIL_LIST;
+ 		case IIO_ACCEL:
+ 			*vals = (const int *)data->chip->accel_scale;
+ 			*length = data->chip->num_accel_scales;
 -- 
 2.25.1
 
