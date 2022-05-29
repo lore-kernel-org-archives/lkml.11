@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4614DC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 29 May 2022 10:51:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D563FC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 29 May 2022 10:51:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229908AbiE2Kvp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 29 May 2022 06:51:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36342 "EHLO
+        id S230007AbiE2Kvv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 29 May 2022 06:51:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229880AbiE2KvU (ORCPT
+        with ESMTP id S229896AbiE2KvY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 29 May 2022 06:51:20 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A757C4CD5D
-        for <linux-kernel@vger.kernel.org>; Sun, 29 May 2022 03:51:19 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id ck4so15968308ejb.8
-        for <linux-kernel@vger.kernel.org>; Sun, 29 May 2022 03:51:19 -0700 (PDT)
+        Sun, 29 May 2022 06:51:24 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63F674DF63
+        for <linux-kernel@vger.kernel.org>; Sun, 29 May 2022 03:51:23 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id c2so715693edf.5
+        for <linux-kernel@vger.kernel.org>; Sun, 29 May 2022 03:51:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=qgQq5YY5g1jPHR+HWdKtiA4Zjs/eV4wGZhb7rjwkR2c=;
-        b=CZp/I0K3BY1MJhVXmiwcSl4w55kavz2JEgA9VVfOUNFe9TYHUEI9o+r6NXa4RRh06P
-         M5Xmqkws+7WycCGLkbBVkeaW86bvoAR5S/kIn38WFdB8haiYQLILehufzOYpLXeu/TOA
-         uIvEJ+X8NKoFKkcN9Bwskyh6rraK0WMKWAkuUbc6/A0OKtkjij745oq5KYqRuohdXiAn
-         1V2eG0z9mltbHoD5rn24y7OJrjFfF4NV5HlMORcW4z7T4tZMhJpe8YoxVp7JXhmnC03M
-         fv2zvYOFGoo82UpCc779fZve3dkYARyOtE70iY92QUTgXpoq0PAlkMDHM9vAWU25/oYB
-         RbUg==
+        bh=tjHmH/k5OnwGTIX8JGp/u7wV+TKFsiA0hlmVPnIEjOI=;
+        b=nwkcY8aS85BC02SBgalxJjxF5X2sRSHiazRKBPvxeWltyh9GpA2Y/3GJSo5hGdRmle
+         B42JQYxzwweiSJ8LUiu/0L7nRLZ6OuJJM4d1ryf5X9RrEknmc6LB49n1uNuct3+wHA5l
+         ZZiG8LJYgR+o6V83OmVlIQD2lGL1/5W8Fnyf8x26d6EDCa1gnEsyVdHkdWfllYr35Zh5
+         nELvWJBSoAq9etnJ+aw4Jxf7FeK9Wr+4MMsMhRXm5xwggEt8NvoAm7rqHfnYDb4EV9ZI
+         HFvGZy0WrhlqoaLBJdbstaO/JeRuZwLzTfg9+ZCQgs1g4xMy15DZ6lRyq/WnTvn3Nu8e
+         lIWg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=qgQq5YY5g1jPHR+HWdKtiA4Zjs/eV4wGZhb7rjwkR2c=;
-        b=naB3X8eEmWuvbxCg9bseA5lDhd+Q8W4KwS/WNrRQLTIBaB1sTeMiB8gfP+5kYoKvnC
-         n3uDBwjpNA3MZj2xLbLjrw6bXz8Q7Fppv9XUbHOVkuNUgeARv7nPGroWSh7p0CvOKtVe
-         ULDTVHyynCkw9l6jK/KKxCcjZ7WLP/cguuZbuy2jdx9dUjfioJ72vFWlM6EXhM43xaTd
-         HRSQbK2bTbjjQJsQogryTSmxw5xbjZeH8e/4nr2RCTWt2T/9KyWS/VOG6WSUH8WLPWfP
-         ps3jxCmmQpfiInyRgy2SiBEz/4siMIYUSOv+FiWU/dQMBPBIehI+HFqucrXD2tCyLPGf
-         EoKA==
-X-Gm-Message-State: AOAM532VoDfkmbA2WlN0/hrQBIPtfcAbjgK306AED3KS8ArWiMkM36tv
-        soeZWNl5LlmAi6079jeX4/TsjT5F/vrxPL2f
-X-Google-Smtp-Source: ABdhPJwLrlyqp191ide0tQO3BUOEryml6g7D35IAw9JkMrAdj0vMgCpLMo/FFIQ2sXKYs9UF7t4QbA==
-X-Received: by 2002:a17:907:7207:b0:6ff:d25:ee3f with SMTP id dr7-20020a170907720700b006ff0d25ee3fmr20068800ejc.389.1653821478248;
-        Sun, 29 May 2022 03:51:18 -0700 (PDT)
+        bh=tjHmH/k5OnwGTIX8JGp/u7wV+TKFsiA0hlmVPnIEjOI=;
+        b=iRYbK+hJu6kT6XycsG2vYZBzitPRjZ3JOmsA1gq4Hb9ZVVKWXx7uL+FlB/HdJWITag
+         uprLkWdX41sv3bYGYO8dMbYB7mhXx3ztgOpYsfQdOGn+3RqvecN+Y19/pS56iDf2g92z
+         /6wsKBNRWVm6cvksZphuLijIzP/KSJLHi3qhk1mrVfw037/1Yg4Bt5wV2HgO9iGpVouy
+         GKM0e28RDLfZdpOb8p69kysl+2quewqLjCGhXdPRT3cIBFAJWxoZOGe5mpX7NgtPuOod
+         gTlVnOZyVn7aJ0+FZNjhVhfc36N3yGO9AJRlKPaBNVIffE0/xDTg2SR9l+VnNKI7dD+T
+         bTxw==
+X-Gm-Message-State: AOAM533gBnnPSl4b1Kj38xIQ7E6jPsJ2mTrBpOdRA0mwhxoDATYZL0ZU
+        Zq5yQP4eBTOoz3LhlMjG//vvbg==
+X-Google-Smtp-Source: ABdhPJzPfF++CclA17wW8Tsy2/nq+Rvo6+fQTJ+x5gV7m58QRmV067rGaFZx7OsF+daXLjfPYqqw1Q==
+X-Received: by 2002:a05:6402:1b1e:b0:42b:cf35:2621 with SMTP id by30-20020a0564021b1e00b0042bcf352621mr20338321edb.352.1653821481695;
+        Sun, 29 May 2022 03:51:21 -0700 (PDT)
 Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id w25-20020a50f119000000b0042b0fcfe966sm4746991edl.37.2022.05.29.03.51.17
+        by smtp.gmail.com with ESMTPSA id w25-20020a50f119000000b0042b0fcfe966sm4746991edl.37.2022.05.29.03.51.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 29 May 2022 03:51:17 -0700 (PDT)
+        Sun, 29 May 2022 03:51:21 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
@@ -60,9 +60,9 @@ To:     Rob Herring <robh+dt@kernel.org>,
         linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
 Cc:     David Wang <David_Wang6097@jabil.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 4/7] ARM: dts: ast2500-evb: fix board compatible
-Date:   Sun, 29 May 2022 12:49:25 +0200
-Message-Id: <20220529104928.79636-4-krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 7/7] ARM: dts: aspeed: centriq2400: use qcom compatible
+Date:   Sun, 29 May 2022 12:49:28 +0200
+Message-Id: <20220529104928.79636-7-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220529104928.79636-1-krzysztof.kozlowski@linaro.org>
 References: <20220529104928.79636-1-krzysztof.kozlowski@linaro.org>
@@ -72,27 +72,28 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The AST2500 EVB board should have dedicated compatible.
+"qualcomm" is not a documented compatible and instead "qcom" should be
+used.
 
-Fixes: 02440622656d ("arm/dst: Add Aspeed ast2500 device tree")
+Fixes: 3719a1b13056 ("ARM: dts: aspeed: Add Qualcomm Centriq 2400 REP BMC")
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- arch/arm/boot/dts/aspeed-ast2500-evb.dts | 2 +-
+ arch/arm/boot/dts/aspeed-bmc-arm-centriq2400-rep.dts | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/aspeed-ast2500-evb.dts b/arch/arm/boot/dts/aspeed-ast2500-evb.dts
-index 1d24b394ea4c..a497dd135491 100644
---- a/arch/arm/boot/dts/aspeed-ast2500-evb.dts
-+++ b/arch/arm/boot/dts/aspeed-ast2500-evb.dts
-@@ -5,7 +5,7 @@
+diff --git a/arch/arm/boot/dts/aspeed-bmc-arm-centriq2400-rep.dts b/arch/arm/boot/dts/aspeed-bmc-arm-centriq2400-rep.dts
+index 3395de96ee11..2e8b87783717 100644
+--- a/arch/arm/boot/dts/aspeed-bmc-arm-centriq2400-rep.dts
++++ b/arch/arm/boot/dts/aspeed-bmc-arm-centriq2400-rep.dts
+@@ -6,7 +6,7 @@
  
  / {
- 	model = "AST2500 EVB";
--	compatible = "aspeed,ast2500";
-+	compatible = "aspeed,ast2500-evb", "aspeed,ast2500";
+ 	model = "Qualcomm Centriq 2400  REP AST2520";
+-	compatible = "qualcomm,centriq2400-rep-bmc", "aspeed,ast2500";
++	compatible = "qcom,centriq2400-rep-bmc", "aspeed,ast2500";
  
- 	aliases {
- 		serial4 = &uart5;
+ 	chosen {
+ 		stdout-path = &uart5;
 -- 
 2.34.1
 
