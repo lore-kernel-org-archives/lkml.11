@@ -2,87 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1F82C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 29 May 2022 17:26:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 712C1C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 29 May 2022 17:32:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231362AbiE2RZ7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 29 May 2022 13:25:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40052 "EHLO
+        id S231373AbiE2Rcd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 29 May 2022 13:32:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229533AbiE2RZ6 (ORCPT
+        with ESMTP id S231364AbiE2Rca (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 29 May 2022 13:25:58 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7A2C8B0BB;
-        Sun, 29 May 2022 10:25:57 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id ck4so16915246ejb.8;
-        Sun, 29 May 2022 10:25:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=c26ugHmy9ja09gODy1exjCAJZkRaLqeGGMgK0d4WQcg=;
-        b=ZFJmfeQvAhPOCjatFFKnRUGMp8iCahLd6WSdmD5FUTjXGN7tkiFEZdcqVIA4GJUaqA
-         jHfAbrr2UUw3Q+q2LOhcox4xgpmPmrJS7iuyZTXCCPu8QGto0dNbwV9Fm95owLLAWtsP
-         UHuzSP30aaWhX189vTU9t885tQQ7GfnGCJmIqWuf4pfE9RXPjkYffkZL2FlZiunJHwri
-         RGX2pEJGFy93CeumJNQ69bgJ8WtZgLv/C9JO2AXkSprPxPf/DqsBHrsUWyDPcql3KRyd
-         v09P25eV7hIlfPUxFeSAyQVRNS/BL0Z5XM9Rs6yoy3Nc53mE7O4HTLQ+qZy4T4ghqXQu
-         cQDg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=c26ugHmy9ja09gODy1exjCAJZkRaLqeGGMgK0d4WQcg=;
-        b=DfH8BTAx4zy2tauYWkGnbxd4TngB1kEwWeWBJgbZQcOKOu7r/TFn+C+9lTmRVTbfGl
-         5Q66QX8vIsgE8a+zOu7ueMyw/mjC5XT8LfL44EVMx8IFHz5XYH7NOsdLUTMQaryRw8wT
-         RBYbD64MKtrmRYjPx9HbihmZIKhqY83HWcbZ1YiwF20udVYb5CL+gTIPq6L1+jXy/Y5C
-         7++baOIlPXMDNzozoz5PIRf1O6o6YCRRlN0hwK4uEQk/deb3UEeLhOcnAvwADgpFem/n
-         rY64VErTruzhxgkNyTpzUKrjU4eLSKZRDHhXCo6Vdsxw0QoYwWZiyV7ykYOUkTPbYBJ5
-         iOuQ==
-X-Gm-Message-State: AOAM53317fXKMIxX90KjxYV6gGjR9m1r+qquyzJ0Ki+GA+s+Sks6AlfF
-        AFclQhUeLfr0lvPKXFEIHWn2ovYtZ+k=
-X-Google-Smtp-Source: ABdhPJzfJaUCG0pdd92/vCJJjNTP1hoYXzeY00nShQGNz6yTDcl4DPVLmAW45Wwxv2UrpbYm9H7Yow==
-X-Received: by 2002:a17:907:7d86:b0:6ff:1598:b049 with SMTP id oz6-20020a1709077d8600b006ff1598b049mr19001426ejc.637.1653845156089;
-        Sun, 29 May 2022 10:25:56 -0700 (PDT)
-Received: from nam-dell ([2a02:8109:afbf:ed88:435:610d:d1eb:dc05])
-        by smtp.gmail.com with ESMTPSA id x12-20020a50d60c000000b0042bced44061sm5141339edi.10.2022.05.29.10.25.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 29 May 2022 10:25:55 -0700 (PDT)
-Date:   Sun, 29 May 2022 19:25:54 +0200
-From:   Nam Cao <namcaov@gmail.com>
-To:     olivier.dautricourt@orolia.com, vkoul@kernel.org, sr@denx.de
-Cc:     dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] dmaengine: altera-msgdma: correct mutex locking order
-Message-ID: <20220529172554.GA22554@nam-dell>
+        Sun, 29 May 2022 13:32:30 -0400
+Received: from conssluserg-06.nifty.com (conssluserg-06.nifty.com [210.131.2.91])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3BE4E00C;
+        Sun, 29 May 2022 10:32:28 -0700 (PDT)
+Received: from mail-pf1-f182.google.com (mail-pf1-f182.google.com [209.85.210.182]) (authenticated)
+        by conssluserg-06.nifty.com with ESMTP id 24THW0Ph026763;
+        Mon, 30 May 2022 02:32:00 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-06.nifty.com 24THW0Ph026763
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1653845521;
+        bh=PJmvZYGDP63aMnL4Yd3Xe0U7Djvz59KZkG+0G/8W6lI=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=tY4KV1xAR5/Zpm6597aHezsFqX4emA6FElnJ7lPEGUH+99C3D0mZlEdfD2guuixGt
+         NBnKkOZFs5vMmUWJ8/7CNU8qgg+bjgNdELEzI4FWa8geBTIUx02K3UN6nXe/FZQt1s
+         omw1lBMUc9gDF85BOdF1ftd6XSEtSNg3W8Fb3OLA+x4KILxyzyxUcrN3T41oakn4b6
+         kn0BTgKejUJkPElOvOaPCFIWvk/RbpNFukN8U1W+sCWGs1BBOZAk5LmdQB7hspMdm5
+         t8Wm6jHDQul6aEZu7KWDyZpwwyM24nOIJlWnK+58UykmA8EfbVKx5qdl1Ev06CGa9d
+         CrHjO8NiH2Kyw==
+X-Nifty-SrcIP: [209.85.210.182]
+Received: by mail-pf1-f182.google.com with SMTP id f21so8662645pfa.3;
+        Sun, 29 May 2022 10:32:00 -0700 (PDT)
+X-Gm-Message-State: AOAM530tlS0bv0vc8cS9sHyq+yGn/9jixCMiqOj09fIp4MxYvrHwJt1g
+        hIwDlDrA36Ts9Q/HOfBQ3ijpSEeWc6QD1koEJxY=
+X-Google-Smtp-Source: ABdhPJzZIrreolgyafL3/q0hGVRVntHJqsJIF/RwU2GjXBIoTcXZL2NWm5F+NsN7BtzDOw1Ku1Rm/1vu7PXASoJHXjE=
+X-Received: by 2002:a05:6a00:234b:b0:519:c7c:e58b with SMTP id
+ j11-20020a056a00234b00b005190c7ce58bmr19449243pfj.32.1653845519928; Sun, 29
+ May 2022 10:31:59 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20220528154704.2576290-1-masahiroy@kernel.org> <CA+icZUU7zUCD=xrrYLQyKkDMC-Fj-PFcmHbTiPU8ytOpYq8ZDw@mail.gmail.com>
+In-Reply-To: <CA+icZUU7zUCD=xrrYLQyKkDMC-Fj-PFcmHbTiPU8ytOpYq8ZDw@mail.gmail.com>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Mon, 30 May 2022 02:30:33 +0900
+X-Gmail-Original-Message-ID: <CAK7LNAQZE-JE67HGTzy7r7mRv_2Gzv0LWUOoVr82V9iNx4q-4g@mail.gmail.com>
+Message-ID: <CAK7LNAQZE-JE67HGTzy7r7mRv_2Gzv0LWUOoVr82V9iNx4q-4g@mail.gmail.com>
+Subject: Re: [PATCH 1/4] kbuild: remove redundant cleanups in scripts/link-vmlinux.sh
+To:     Sedat Dilek <sedat.dilek@gmail.com>
+Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Michal Marek <michal.lkml@markovi.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The order of spin_unlock and spin_lock seems wrong. Correct it.
+On Sun, May 29, 2022 at 11:38 PM Sedat Dilek <sedat.dilek@gmail.com> wrote:
+>
+> On Sat, May 28, 2022 at 10:20 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
+> >
+> > These are cleaned by the top Makefile.
+> >
+> > vmlinux.o and .vmlinux.d matches the '*.[aios]' and '.*.d' patterns
+> > respectively.
+> >
+> > Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+>
+> I applied this patchset on top of yesterday's kbuild.git#for-next
+> (today's did not fit due to "kbuild: do not try to parse *.cmd files
+> for objects provided by compiler").
+>
+> Might be related to this patchset or not:
+>
+> $ LC_ALL=C ll .*vmlinux*export*
+> -rw-r--r-- 1 dileks dileks 4.2K May 29 15:11 ..vmlinux.export.o.cmd
+> -rw-r--r-- 1 dileks dileks 508K May 29 15:11 .vmlinux.export.c
+> -rw-r--r-- 1 dileks dileks 2.6M May 29 15:11 .vmlinux.export.o
+>
+> You see the leading double-dot for ..vmlinux.export.o.cmd - intended or not?
 
-Signed-off-by: Nam Cao <namcaov@gmail.com>
----
- drivers/dma/altera-msgdma.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+This is intended.
 
-diff --git a/drivers/dma/altera-msgdma.c b/drivers/dma/altera-msgdma.c
-index 6f56dfd375e3..e35096c12abc 100644
---- a/drivers/dma/altera-msgdma.c
-+++ b/drivers/dma/altera-msgdma.c
-@@ -591,9 +591,9 @@ static void msgdma_chan_desc_cleanup(struct msgdma_device *mdev)
- 
- 		dmaengine_desc_get_callback(&desc->async_tx, &cb);
- 		if (dmaengine_desc_callback_valid(&cb)) {
--			spin_unlock(&mdev->lock);
--			dmaengine_desc_callback_invoke(&cb, NULL);
- 			spin_lock(&mdev->lock);
-+			dmaengine_desc_callback_invoke(&cb, NULL);
-+			spin_unlock(&mdev->lock);
- 		}
- 
- 		/* Run any dependencies, then free the descriptor */
+The source file (.vmlinux.export.c) is a dot file.
+
+.*.cmd prepends one more dot.
+
+
+
+>
+> Tested-by: Sedat Dilek <sedat.dilek@gmail.com> # LLVM-14 (x86-64)
+>
+> -Sedat-
+>
+> > ---
+> >
+> >  scripts/link-vmlinux.sh | 2 --
+> >  1 file changed, 2 deletions(-)
+> >
+> > diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
+> > index a7f6196c7e41..844fc0125d72 100755
+> > --- a/scripts/link-vmlinux.sh
+> > +++ b/scripts/link-vmlinux.sh
+> > @@ -309,8 +309,6 @@ cleanup()
+> >         rm -f System.map
+> >         rm -f vmlinux
+> >         rm -f vmlinux.map
+> > -       rm -f vmlinux.o
+> > -       rm -f .vmlinux.d
+> >         rm -f .vmlinux.objs
+> >         rm -f .vmlinux.export.c
+> >  }
+> > --
+> > 2.32.0
+> >
+
+
+
 -- 
-2.25.1
-
+Best Regards
+Masahiro Yamada
