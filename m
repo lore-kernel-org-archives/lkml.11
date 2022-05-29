@@ -2,1073 +2,269 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02B24C433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 29 May 2022 11:40:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3699C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 29 May 2022 11:42:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230102AbiE2Lks (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 29 May 2022 07:40:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33996 "EHLO
+        id S230111AbiE2Lmc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 29 May 2022 07:42:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229702AbiE2Lkp (ORCPT
+        with ESMTP id S229952AbiE2Lm2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 29 May 2022 07:40:45 -0400
-X-Greylist: delayed 450 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 29 May 2022 04:40:42 PDT
-Received: from vps.xff.cz (vps.xff.cz [195.181.215.36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E802532EC;
-        Sun, 29 May 2022 04:40:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=megous.com; s=mail;
-        t=1653823989; bh=Cgq1AFt4FcomK7VfDd+niFdKcnwlvlnz6kb7RolLMKc=;
-        h=Date:From:To:Cc:Subject:X-My-GPG-KeyId:References:From;
-        b=WvGPVP0cflfH6iivIiKB9b50A4Zh3VfAf88ELy/WjE1lSH1EZxBVaRnVJZnSjUkVA
-         Z9Vs/fqo4Sx5kzOR3ZV+oEeqtJkxF4sdzMxguqC9uj5UVq1jjYUWtWCrXfo9l4BWVD
-         SGkJEO4Z0ML7WxvInXQFDvAGYeAMtSi+muvfONrw=
-Date:   Sun, 29 May 2022 13:33:09 +0200
-From:   =?utf-8?Q?Ond=C5=99ej?= Jirman <megous@megous.com>
-To:     Tom Fitzhenry <tom@tom-fitzhenry.me.uk>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Samuel Holland <samuel@sholland.org>,
-        Martijn Braam <martijn@brixit.nl>
-Subject: Re: [PATCH 2/2] arm64: dts: rockchip: Add initial support for Pine64
- PinePhone Pro
-Message-ID: <20220529113309.imsy7j3cnl4ihc52@core>
-Mail-Followup-To: =?utf-8?Q?Ond=C5=99ej?= Jirman <megous@megous.com>,
-        Tom Fitzhenry <tom@tom-fitzhenry.me.uk>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Samuel Holland <samuel@sholland.org>,
-        Martijn Braam <martijn@brixit.nl>
-X-My-GPG-KeyId: EBFBDDE11FB918D44D1F56C1F9F0A873BE9777ED
- <https://xff.cz/key.txt>
-References: <20220529031705.278631-1-tom@tom-fitzhenry.me.uk>
- <20220529031705.278631-3-tom@tom-fitzhenry.me.uk>
+        Sun, 29 May 2022 07:42:28 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28A261208D
+        for <linux-kernel@vger.kernel.org>; Sun, 29 May 2022 04:42:27 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id f21so16070778ejh.11
+        for <linux-kernel@vger.kernel.org>; Sun, 29 May 2022 04:42:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=dSEhkI5/HjahBy6UP5TFGxBpf96/So5wb+ZELnO38Tk=;
+        b=B0+dB13nGah3aoB5h0BX1vGTeSIuLpvUZVLGLtOU0Ige3ZT7Mv86eaKeDjVSl5aEvR
+         5AJrO7tccJQCV7hFqelBIMJhSmPhSYXg/y78H5x0QMuIsN06pXbGaQhGGAfEsq2FDSq4
+         PVZRnrNmS5gOcJntVz3solI4hbyb5WHQhXBN6XVYnA7ke33TNXQbKWRDe36YULhJLY5b
+         oghCZfhfFdPHSrbVzZIqWcLAR3ZUSH9wmqvPpN+VrWPeivL/NVOmCc8bP/Cia/pFSmP9
+         TnrWTCP7m210d1AaRvZaNi9wIhJtO1MEu+R2sxKBzlXSU+R0IrUGfqVNw5DADZMWPYd7
+         sClw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=dSEhkI5/HjahBy6UP5TFGxBpf96/So5wb+ZELnO38Tk=;
+        b=mFgPsSCibWhNDJVF+LioNl0oHjsA+YPoilscFqOTn2Rg+afcNiyw2Q3e0CJruKvE87
+         O0k8Uh6thtjt8/dkKTjC4EaLz2amlj+P8TP1kAYLmeoootaCcyzoEcX58lluTFBRrrEo
+         EJRbGu2alVPaoyZpl8KHW7j+6h3ChEBbbfaDPIVDni4nFFHSCJreljZHnH9EdaoA9Nv0
+         ImshQb+ZBAORHcW0HzcpRYjPnZaKX8LCpB3Ke5xurA2USL20lX4jP1JNZj4B2zwKQugB
+         S75nZk/UdSoONUjbqlWpuokUINO45c92cVMy2G3aHdazo9mYn+wfddZlQOLknFMN4VHf
+         ELuw==
+X-Gm-Message-State: AOAM530vQqvdAl9UBLwA7OA7Iwy5Vo1gERXwyG5zl41a5QVbkDmk7jLQ
+        nTovw0Ubl2PjSzWtm0nJdCqbfw==
+X-Google-Smtp-Source: ABdhPJxiDFkuQV1fhHwlypWV/rr5uUGU6p0s8cO3IcKiJRhA1hAEp0D8+jLm8ghYfFiA/G/QDwr6NQ==
+X-Received: by 2002:a17:907:7f0b:b0:6ff:4502:9c2f with SMTP id qf11-20020a1709077f0b00b006ff45029c2fmr8130716ejc.532.1653824545674;
+        Sun, 29 May 2022 04:42:25 -0700 (PDT)
+Received: from [192.168.0.177] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id k16-20020a1709063e1000b006f4c557b7d2sm3088181eji.203.2022.05.29.04.42.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 29 May 2022 04:42:25 -0700 (PDT)
+Message-ID: <8c14368b-3d28-f6de-c7fa-1e00dd1ca2ba@linaro.org>
+Date:   Sun, 29 May 2022 13:42:24 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220529031705.278631-3-tom@tom-fitzhenry.me.uk>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v4 3/3] misc: uwb: nxp: sr1xx: UWB driver support for
+ sr1xx series chip
+Content-Language: en-US
+To:     Manjunatha Venkatesh <manjunatha.venkatesh@nxp.com>,
+        linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org,
+        will@kernel.org, axboe@kernel.dk, robh+dt@kernel.org
+Cc:     mb@lightnvm.io, ckeepax@opensource.cirrus.com, arnd@arndb.d,
+        mst@redhat.com, javier@javigon.com, mikelley@microsoft.com,
+        jasowang@redhat.com, sunilmut@microsoft.com,
+        bjorn.andersson@linaro.org, krzysztof.kozlowski+dt@linaro.org,
+        devicetree@vger.kernel.org, ashish.deshpande@nxp.com,
+        rvmanjumce@gmail.com
+References: <20220527184351.3829543-1-manjunatha.venkatesh@nxp.com>
+ <20220527184351.3829543-4-manjunatha.venkatesh@nxp.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220527184351.3829543-4-manjunatha.venkatesh@nxp.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Tom,
-
-On Sun, May 29, 2022 at 01:17:05PM +1000, Tom Fitzhenry wrote:
-> This is a basic DT that includes only features that are already
-> supported by mainline drivers.
+On 27/05/2022 20:43, Manjunatha Venkatesh wrote:
+> Ultra-wideband (UWB) is a short-range wireless communication protocol.
 > 
-> Tested to work: booting from eMMC, WiFi, charging.
+> NXP has SR1XX family of UWB Subsystems (UWBS) devices. SR1XX SOCs
+> are FiRa Compliant. SR1XX SOCs are flash less devices and they need
+> Firmware Download on every device boot. More details on the SR1XX Family
+> can be found at https://www.nxp.com/products/:UWB-TRIMENSION
 > 
-> Future patches will flesh out the DT. Some components, e.g. the panel,
-> are awaiting driver mainlining.
+> The sr1xx driver work the SR1XX Family of UWBS, and uses UWB Controller
+> Interface (UCI).  The corresponding details are available in the FiRa
+> Consortium Website (https://www.firaconsortium.org/).
 > 
-> This is derived from a combination of https://gitlab.com/pine64-org/linux
-> and https://megous.com/git/linux.
-
-this patch has a bunch of issues that were already fixed during discussions
-with Martijn as part of his effort to prepare an initial device tree for
-PinephonePro. (also noted below for your reference)
-
-I suggest to wait for the original author's submission.
-
-kind regards,
-	o.
-
-> https://wiki.pine64.org/wiki/PinePhone_Pro
+> Internally driver will handle two modes of operation.
+> 1.HBCI mode (sr1xx BootROM Code Interface)
+> Firmware download uses HBCI ptotocol packet structure which is
+> Nxp proprietary,Firmware File(.bin) stored in user space context
+> and during device init sequence pick the firmware packet in chunk
+> and send it to the driver with write() api call.
 > 
-> Co-developed-by: Ondrej Jirman <megous@megous.com>
-> Co-developed-by: Martijn Braam <martijn@brixit.nl>
-> Signed-off-by: Tom Fitzhenry <tom@tom-fitzhenry.me.uk>
+> After the firmware download sequence at the end UWBS will
+> send device status notification and its indication of device entered
+> UCI mode.
+> Here after any command/response/notification will follow
+> UCI packet structure.
+> 
+> 2.UCI mode (UWB Command interface)
+> Once Firmware download finishes sr1xx will switch to UCI mode.
+> Then driver exchange command/response/notification as per the FIRA UCI
+> standard format between user space and sr1xx device.
+> Any response or notification received from sr1xx through SPI line
+> will convey to user space.
+> 
+> Its Interrupt based driver and IO Handshake needed with SR1XX Family of
+> SOCs.
+> This driver needs dts config update as per the sr1xx data sheet.
+> Corresponding document available in Documentation/devicetree/bindings/uwb
+> 
+> Message-ID: <20220504171337.3416983-1-manjunatha.venkatesh@nxp.com>
+
+Same comment.
+
+
+> Signed-off-by: Manjunatha Venkatesh <manjunatha.venkatesh@nxp.com>
 > ---
->  arch/arm64/boot/dts/rockchip/Makefile         |   1 +
->  .../dts/rockchip/rk3399-pinephone-pro.dts     | 939 ++++++++++++++++++
->  2 files changed, 940 insertions(+)
->  create mode 100644 arch/arm64/boot/dts/rockchip/rk3399-pinephone-pro.dts
+> Changes since v3:
+>   - Commit Message Description updated
+>   - Renamed file from sr1xx.c to nxp-sr1xx.c
+>   - Removed unwanted header files
+>   - Removed sr1xx.h file since its not required for single source file
 > 
-> diff --git a/arch/arm64/boot/dts/rockchip/Makefile b/arch/arm64/boot/dts/rockchip/Makefile
-> index 4ae9f35434b8..c00e7922d974 100644
-> --- a/arch/arm64/boot/dts/rockchip/Makefile
-> +++ b/arch/arm64/boot/dts/rockchip/Makefile
-> @@ -41,6 +41,7 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-nanopi-neo4.dtb
->  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-nanopi-r4s.dtb
->  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-orangepi.dtb
->  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-pinebook-pro.dtb
-> +dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-pinephone-pro.dtb
->  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-puma-haikou.dtb
->  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-roc-pc.dtb
->  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-roc-pc-mezzanine.dtb
-> diff --git a/arch/arm64/boot/dts/rockchip/rk3399-pinephone-pro.dts b/arch/arm64/boot/dts/rockchip/rk3399-pinephone-pro.dts
+
+Thank you for your patch. There is something to discuss/improve.
+
+>  drivers/misc/Kconfig     |  12 +
+>  drivers/misc/Makefile    |   1 +
+>  drivers/misc/nxp-sr1xx.c | 834 +++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 847 insertions(+)
+>  create mode 100644 drivers/misc/nxp-sr1xx.c
+> 
+> diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
+> index 41d2bb0ae23a..4f81d5758940 100644
+> --- a/drivers/misc/Kconfig
+> +++ b/drivers/misc/Kconfig
+> @@ -483,6 +483,18 @@ config OPEN_DICE
+>  
+>  	  If unsure, say N.
+>  
+> +config NXP_UWB
+
+It is not a misc driver. It is communication driver, so closer to
+network. Please find appropriate subsystem.
+
+> +        tristate "Nxp UCI(Uwb Command Interface) protocol driver support"
+
+Isn't the name of company NXP?
+
+> +        depends on SPI
+> +        help
+> +        This option enables the UWB driver for Nxp sr1xx
+
+The same...
+
+> +        device. Such device supports UCI packet structure,
+> +        FiRa compliant.
+> +
+> +        Say Y here to compile support for sr1xx into the kernel or
+> +        say M to compile it as a module. The module will be called
+> +        sr1xx.ko
+> +
+>  source "drivers/misc/c2port/Kconfig"
+>  source "drivers/misc/eeprom/Kconfig"
+>  source "drivers/misc/cb710/Kconfig"
+> diff --git a/drivers/misc/Makefile b/drivers/misc/Makefile
+> index 70e800e9127f..d4e6e4f1ec29 100644
+> --- a/drivers/misc/Makefile
+> +++ b/drivers/misc/Makefile
+> @@ -60,3 +60,4 @@ obj-$(CONFIG_XILINX_SDFEC)	+= xilinx_sdfec.o
+>  obj-$(CONFIG_HISI_HIKEY_USB)	+= hisi_hikey_usb.o
+>  obj-$(CONFIG_HI6421V600_IRQ)	+= hi6421v600-irq.o
+>  obj-$(CONFIG_OPEN_DICE)		+= open-dice.o
+> +obj-$(CONFIG_NXP_UWB) 		+= nxp-sr1xx.o
+
+Looks like wrong order.
+
+> diff --git a/drivers/misc/nxp-sr1xx.c b/drivers/misc/nxp-sr1xx.c
 > new file mode 100644
-> index 000000000000..b1a486db1dfe
+> index 000000000000..25648712a61b
 > --- /dev/null
-> +++ b/arch/arm64/boot/dts/rockchip/rk3399-pinephone-pro.dts
-> @@ -0,0 +1,939 @@
-> +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+> +++ b/drivers/misc/nxp-sr1xx.c
+> @@ -0,0 +1,834 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
 > +/*
-> + * Copyright (c) 2020 Martijn Braam <martijn@brixit.nl>
-> + * Copyright (c) 2021 Kamil Trzciński <ayufan@ayufan.eu>
+> + * SPI driver for UWB SR1xx
+> + * Copyright (C) 2018-2022 NXP.
+> + *
+> + * Author: Manjunatha Venkatesh <manjunatha.venkatesh@nxp.com>
 > + */
+> +#include <linux/miscdevice.h>
+> +#include <linux/delay.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/of_gpio.h>
+> +#include <linux/spi/spi.h>
 > +
-> +// PinePhone Pro datasheet: https://files.pine64.org/doc/PinePhonePro/PinephonePro-Schematic-V1.0-20211127.pdf
+> +#define SR1XX_MAGIC 0xEA
+> +#define SR1XX_SET_PWR _IOW(SR1XX_MAGIC, 0x01, long)
+> +#define SR1XX_SET_FWD _IOW(SR1XX_MAGIC, 0x02, long)
 > +
-> +/dts-v1/;
-> +#include <dt-bindings/input/gpio-keys.h>
-> +#include <dt-bindings/input/linux-event-codes.h>
-> +#include <dt-bindings/usb/pd.h>
-> +#include <dt-bindings/leds/common.h>
-> +#include "rk3399.dtsi"
-> +#include "rk3399-opp.dtsi"
+> +#define UCI_HEADER_LEN 4
+> +#define HBCI_HEADER_LEN 4
+> +#define UCI_PAYLOAD_LEN_OFFSET 3
 > +
-> +/ {
-> +	model = "Pine64 PinePhonePro";
-> +	compatible = "pine64,pinephone-pro", "rockchip,rk3399";
+> +#define UCI_EXT_PAYLOAD_LEN_IND_OFFSET 1
+> +#define UCI_EXT_PAYLOAD_LEN_IND_OFFSET_MASK 0x80
+> +#define UCI_EXT_PAYLOAD_LEN_OFFSET 2
 > +
-> +	chosen {
-> +		bootargs = "earlycon=uart8250,mmio32,0xff1a0000";
-> +		stdout-path = "serial2:115200n8";
-> +	};
+> +#define SR1XX_TXBUF_SIZE 4200
+> +#define SR1XX_RXBUF_SIZE 4200
+> +#define SR1XX_MAX_TX_BUF_SIZE 4200
 > +
-> +	// Per "RK 3399 SARADC", page 8.
-> +	adc-keys {
-> +		compatible = "adc-keys";
-> +		io-channels = <&saradc 1>;
-> +		io-channel-names = "buttons";
-> +		keyup-threshold-microvolt = <1600000>;
-> +		poll-interval = <100>;
+> +#define MAX_RETRY_COUNT_FOR_IRQ_CHECK 100
+> +#define MAX_RETRY_COUNT_FOR_HANDSHAKE 1000
 > +
-> +		button-up {
-> +			label = "Volume Up";
-> +			linux,code = <KEY_VOLUMEUP>;
-> +			press-threshold-microvolt = <100000>;
-> +		};
-> +
-> +		button-down {
-> +			label = "Volume Down";
-> +			linux,code = <KEY_VOLUMEDOWN>;
-> +			press-threshold-microvolt = <300000>;
-> +		};
-> +	};
-> +
-> +	cluster1_opp_ppp: opp-table1b {
-> +		compatible = "operating-points-v2";
-> +		opp-shared;
-> +
-> +		opp00 {
-> +			opp-hz = /bits/ 64 <408000000>;
-> +			opp-microvolt = <800000>;
-> +			clock-latency-ns = <40000>;
-> +		};
-> +		opp01 {
-> +			opp-hz = /bits/ 64 <600000000>;
-> +			opp-microvolt = <800000>;
-> +		};
-> +		opp02 {
-> +			opp-hz = /bits/ 64 <816000000>;
-> +			opp-microvolt = <825000>;
-> +		};
-> +		opp03 {
-> +			opp-hz = /bits/ 64 <1008000000>;
-> +			opp-microvolt = <875000>;
-> +		};
-> +		opp04 {
-> +			opp-hz = /bits/ 64 <1200000000>;
-> +			opp-microvolt = <950000>;
-> +		};
-> +		opp05 {
-> +			opp-hz = /bits/ 64 <1416000000>;
-> +			opp-microvolt = <1025000>;
-> +		};
-> +	};
-> +
-> +	// Per "BACKLIGHT", page 16.
-> +	backlight: backlight {
-> +		compatible = "pwm-backlight";
-> +		pwms = <&pwm0 0 1000000 0>;
-> +		pwm-delay-us = <10000>;
-> +	};
-> +
-> +	// Per "RK3399 GPIO", page 11.
-> +	leds {
-> +		compatible = "gpio-leds";
-> +		pinctrl-names = "default";
-> +		pinctrl-0 = <&red_led_pin &green_led_pin &blue_led_pin>;
-> +
-> +		led-standby {
-> +			color = <LED_COLOR_ID_RED>;
-> +			default-state = "off";
-> +			function = LED_FUNCTION_STANDBY;
-> +			gpios = <&gpio4 RK_PD2 GPIO_ACTIVE_HIGH>;
-> +			label = "red:standby";
-> +			panic-indicator;
-> +			retain-state-suspended;
-> +		};
-> +
-> +		led-pwr {
-> +			color = <LED_COLOR_ID_GREEN>;
-> +			default-state = "on";
-> +			function = LED_FUNCTION_POWER;
-> +			gpios = <&gpio4 RK_PD5 GPIO_ACTIVE_HIGH>;
-> +			label = "green:disk-activity";
-> +		};
-> +
-> +		blue-charging {
-> +			color = <LED_COLOR_ID_BLUE>;
-> +			default-state = "off";
-> +			function = LED_FUNCTION_CHARGING;
-> +			gpios = <&gpio4 RK_PD6 GPIO_ACTIVE_HIGH>;
-> +			label = "blue:charging";
-> +		};
-> +	};
 
-^^ these are general indicator LEDs, they don't have a function marked on the
-chasis of the phone.
+(...)
 
-> +	gpio-key-power {
-> +		compatible = "gpio-keys";
-> +		pinctrl-names = "default";
-> +		pinctrl-0 = <&pwrbtn_pin>;
 > +
-> +		power {
-> +			debounce-interval = <20>;
-> +			// Per "PMU Controler", page 4.
-> +			gpios = <&gpio0 RK_PA5 GPIO_ACTIVE_LOW>;
-> +			label = "Power";
-> +			linux,code = <KEY_POWER>;
-> +			wakeup-source;
-> +		};
-> +	};
+> +static const struct dev_pm_ops sr1xx_dev_pm_ops = { SET_SYSTEM_SLEEP_PM_OPS(
+> +	sr1xx_dev_suspend, sr1xx_dev_resume) };
 > +
-> +	sdio_pwrseq: sdio-pwrseq {
-> +		compatible = "mmc-pwrseq-simple";
-> +		clocks = <&rk818 1>;
-> +		clock-names = "ext_clock";
-> +		pinctrl-names = "default";
-> +		pinctrl-0 = <&wifi_enable_h>;
-> +		post-power-on-delay-ms = <100>;
-> +		power-off-delay-us = <500000>;
-> +
-> +		/* WL_REG_ON on module */
-> +		reset-gpios = <&gpio0 RK_PB2 GPIO_ACTIVE_LOW>;
-> +	};
-> +
-> +	vibrator {
-> +		compatible = "gpio-vibrator";
-> +		// Per "GPIO", page 11.
-> +		enable-gpios = <&gpio3 RK_PB1 GPIO_ACTIVE_HIGH>;
-> +		// Per "Motor", page 17.
-> +		vcc-supply = <&vcc3v3_sys>;
-> +	};
-> +
-> +	/* Power tree */
-> +	/* Root power source */
-> +	vcc_sysin: vcc-sysin {
-> +		compatible = "regulator-fixed";
-> +		regulator-name = "vcc_sysin";
-> +		regulator-always-on;
-> +		regulator-boot-on;
-> +	};
-> +
-> +	vcc5v0_sys: vcc5v0-host-regulator {
-> +		compatible = "regulator-fixed";
-> +		regulator-name = "vcc5v0_sys";
-> +		regulator-min-microvolt = <5000000>;
-> +		regulator-max-microvolt = <5000000>;
-> +		regulator-always-on;
-> +		regulator-boot-on;
-> +		vin-supply = <&vcc_sysin>;
-> +
-> +		regulator-state-mem {
-> +			regulator-on-in-suspend;
-> +		};
-> +	};
-> +
-> +	vcc5v0_typec: vcc5v0-typec-regulator {
-> +		compatible = "regulator-fixed";
-> +		gpio = <&gpio0 RK_PA6 GPIO_ACTIVE_HIGH>;
-> +		pinctrl-names = "default";
-> +		pinctrl-0 = <&vcc5v0_typec_en>;
-> +		regulator-min-microvolt = <5000000>;
-> +		regulator-max-microvolt = <5000000>;
-> +		regulator-name = "vcc5v0_typec";
-> +		vin-supply = <&vcc5v0_sys>;
-> +		regulator-always-on;
-> +		regulator-boot-on;
-> +
-> +		regulator-state-mem {
-> +			regulator-on-in-suspend;
-> +		};
-> +	};
+> +static struct spi_driver sr1xx_driver = {
+> +	.driver = {
+> +		   .name = "sr1xx",
+> +		   .pm = &sr1xx_dev_pm_ops,
+> +		   .bus = &spi_bus_type,
+> +		   .owner = THIS_MODULE,
 
-^^^ this is not a regulator and doesn't switch on VBUS supply
-for type-c port. That's done by the otg_switch
+No, this was removed some years ago... Please run all regular static
+tools on your code sparse, smatch and coccinelle.
 
-> +	/* Main 3.3v supply */
-> +	vcc3v3_sys: wifi_bat: vcc3v3-sys {
-> +		compatible = "regulator-fixed";
-> +		regulator-name = "vcc3v3_sys";
-> +		regulator-always-on;
-> +		regulator-boot-on;
-> +		regulator-min-microvolt = <3300000>;
-> +		regulator-max-microvolt = <3300000>;
-> +		vin-supply = <&vcc_sysin>;
-> +
-> +		regulator-state-mem {
-> +			regulator-on-in-suspend;
-> +		};
-> +	};
-> +
-> +	vcc1v8_codec: vcc1v8-codec-regulator {
-> +		compatible = "regulator-fixed";
-> +		enable-active-high;
-> +		gpio = <&gpio3 RK_PA4 GPIO_ACTIVE_HIGH>;
-> +		pinctrl-names = "default";
-> +		pinctrl-0 = <&vcc1v8_codec_en>;
-> +		regulator-name = "vcc1v8_codec";
-> +		regulator-always-on;
-> +		regulator-boot-on;
-> +		regulator-min-microvolt = <1800000>;
-> +		regulator-max-microvolt = <1800000>;
-> +		vin-supply = <&vcc3v3_sys>;
-> +	};
-> +
-> +	/* MIPI DSI panel 1.8v supply */
-> +	vcc1v8_lcd: vcc1v8-lcd {
-> +		compatible = "regulator-fixed";
-> +		enable-active-high;
-> +		regulator-name = "vcc1v8_lcd";
-> +		regulator-min-microvolt = <1800000>;
-> +		regulator-max-microvolt = <1800000>;
-> +		vin-supply = <&vcc3v3_sys>;
-> +		gpio = <&gpio3 RK_PA5 GPIO_ACTIVE_HIGH>;
-> +		pinctrl-names = "default";
-> +		pinctrl-0 = <&display_pwren1>;
-> +	};
-> +
-> +	/* MIPI DSI panel 2.8v supply */
-> +	vcc2v8_lcd: vcc2v8-lcd {
-> +		compatible = "regulator-fixed";
-> +		enable-active-high;
-> +		regulator-name = "vcc2v8_lcd";
-> +		regulator-min-microvolt = <2800000>;
-> +		regulator-max-microvolt = <2800000>;
-> +		vin-supply = <&vcc3v3_sys>;
-> +		gpio = <&gpio3 RK_PA1 GPIO_ACTIVE_HIGH>;
-> +		pinctrl-names = "default";
-> +		pinctrl-0 = <&display_pwren>;
-> +	};
-> +
-> +	vcca1v8_s3: vcc1v8-s3 {
-> +		compatible = "regulator-fixed";
-> +		regulator-name = "vcca1v8_s3";
-> +		regulator-min-microvolt = <1800000>;
-> +		regulator-max-microvolt = <1800000>;
-> +		vin-supply = <&vcc3v3_sys>;
-> +		regulator-always-on;
-> +		regulator-boot-on;
-> +	};
-> +};
-> +
-> +&cpu_l0 {
-> +	cpu-supply = <&vdd_cpu_l>;
-> +};
-> +
-> +&cpu_l1 {
-> +	cpu-supply = <&vdd_cpu_l>;
-> +};
-> +
-> +&cpu_l2 {
-> +	cpu-supply = <&vdd_cpu_l>;
-> +};
-> +
-> +&cpu_l3 {
-> +	cpu-supply = <&vdd_cpu_l>;
-> +};
-> +
-> +&cpu_b0 {
-> +	cpu-supply = <&vdd_cpu_b>;
-> +	operating-points-v2 = <&cluster1_opp_ppp>;
-> +};
-> +
-> +&cpu_b1 {
-> +	cpu-supply = <&vdd_cpu_b>;
-> +	operating-points-v2 = <&cluster1_opp_ppp>;
-> +};
-> +
-> +&emmc_phy {
-> +	status = "okay";
-> +};
-> +
-> +&gpu {
-> +	mali-supply = <&vdd_gpu>;
-> +	status = "okay";
-> +};
-> +
-> +&i2c0 {
-> +	// Per "SCL clock frequency", page 30, RK818 datasheet.
-> +	clock-frequency = <400000>;
-> +	i2c-scl-rising-time-ns = <168>;
-> +	i2c-scl-falling-time-ns = <4>;
-> +	status = "okay";
-> +
-> +	// Per "PMIC RK818-3", page 13.
-> +	rk818: pmic@1c {
-> +		compatible = "rockchip,rk818";
-> +		reg = <0x1c>;
-> +		interrupt-parent = <&gpio1>;
-> +		interrupts = <RK_PC5 IRQ_TYPE_LEVEL_LOW>;
-> +		#clock-cells = <1>;
-> +		clock-output-names = "xin32k", "rk808-clkout2";
-> +		pinctrl-names = "default";
-> +		pinctrl-0 = <&pmic_int_l>;
-> +		rockchip,system-power-controller;
-> +		wakeup-source;
-> +		extcon = <&fusb0>;
-
-rk818 doesn't use extcon interface
-
-> +		vcc1-supply = <&vcc_sysin>;
-> +		vcc2-supply = <&vcc_sysin>;
-> +		vcc3-supply = <&vcc_sysin>;
-> +		vcc4-supply = <&vcc_sysin>;
-> +		vcc6-supply = <&vcc_sysin>;
-> +		vcc7-supply = <&vcc3v3_sys>;
-> +		vcc8-supply = <&vcc_sysin>;
-> +		vcc9-supply = <&vcc3v3_sys>;
-> +
-> +		regulators {
-> +			vdd_cpu_l: DCDC_REG1 {
-> +				regulator-name = "vdd_cpu_l";
-> +				regulator-always-on;
-> +				regulator-boot-on;
-> +				regulator-min-microvolt = <750000>;
-> +				regulator-max-microvolt = <1350000>;
-> +				regulator-ramp-delay = <6001>;
-> +				regulator-state-mem {
-> +					regulator-off-in-suspend;
-> +				};
-> +			};
-> +
-> +			vdd_center: DCDC_REG2 {
-> +				regulator-name = "vdd_center";
-> +				regulator-always-on;
-> +				regulator-boot-on;
-> +				regulator-min-microvolt = <800000>;
-> +				regulator-max-microvolt = <1350000>;
-> +				regulator-ramp-delay = <6001>;
-> +				regulator-state-mem {
-> +					regulator-off-in-suspend;
-> +				};
-> +			};
-> +
-> +			// DDR
-> +			vcc_ddr: DCDC_REG3 {
-> +				regulator-name = "vcc_ddr";
-> +				regulator-always-on;
-> +				regulator-boot-on;
-> +				regulator-state-mem {
-> +					// Power RAM while suspended.
-> +					regulator-on-in-suspend;
-> +				};
-> +			};
-> +
-> +			vcc_1v8: vcc_wl: DCDC_REG4 {
-> +				regulator-name = "vcc_1v8";
-> +				regulator-always-on;
-> +				regulator-boot-on;
-> +				regulator-min-microvolt = <1800000>;
-> +				regulator-max-microvolt = <1800000>;
-> +				regulator-state-mem {
-> +					regulator-on-in-suspend;
-> +					regulator-suspend-microvolt = <1800000>;
-> +				};
-> +			};
-> +
-> +			// Audio codec.
-> +			vcca3v0_codec: LDO_REG1 {
-> +				regulator-name = "vcca3v0_codec";
-> +				regulator-always-on;
-> +				regulator-boot-on;
-> +				regulator-min-microvolt = <3000000>;
-> +				regulator-max-microvolt = <3000000>;
-> +				regulator-state-mem {
-> +					regulator-off-in-suspend;
-> +				};
-> +			};
-> +
-> +			// Touch screen.
-> +			vcc3v0_touch: LDO_REG2 {
-> +				regulator-name = "vcc3v0_touch";
-> +				regulator-always-on;
-> +				regulator-boot-on;
-> +				regulator-min-microvolt = <3000000>;
-> +				regulator-max-microvolt = <3000000>;
-> +				regulator-state-mem {
-> +					regulator-off-in-suspend;
-> +				};
-> +			};
-> +
-> +			vcca1v8_codec: LDO_REG3 {
-> +				regulator-name = "vcca1v8_codec";
-> +				regulator-always-on;
-> +				regulator-boot-on;
-> +				regulator-min-microvolt = <1800000>;
-> +				regulator-max-microvolt = <1800000>;
-> +				regulator-state-mem {
-> +					regulator-off-in-suspend;
-> +				};
-> +			};
-> +
-> +			vcc_power_on: LDO_REG4 {
-> +				regulator-name = "vcc_power_on";
-> +				regulator-always-on;
-> +				regulator-boot-on;
-> +				regulator-min-microvolt = <3300000>;
-> +				regulator-max-microvolt = <3300000>;
-> +				regulator-state-mem {
-> +					regulator-on-in-suspend;
-> +					regulator-suspend-microvolt = <3300000>;
-> +				};
-> +			};
-> +
-> +			vcc_3v0: LDO_REG5 {
-> +				regulator-name = "vcc_3v0";
-> +				regulator-always-on;
-> +				regulator-boot-on;
-> +				regulator-min-microvolt = <3000000>;
-> +				regulator-max-microvolt = <3000000>;
-> +				regulator-state-mem {
-> +					regulator-on-in-suspend;
-> +					regulator-suspend-microvolt = <3000000>;
-> +				};
-> +			};
-> +
-> +			vcc_1v5: LDO_REG6 {
-> +				regulator-name = "vcc_1v5";
-> +				regulator-always-on;
-> +				regulator-boot-on;
-> +				regulator-min-microvolt = <1500000>;
-> +				regulator-max-microvolt = <1500000>;
-> +				regulator-state-mem {
-> +					regulator-on-in-suspend;
-> +					regulator-suspend-microvolt = <1500000>;
-> +				};
-> +			};
-> +
-> +			vcc1v8_dvp: LDO_REG7 {
-> +				regulator-name = "vcc1v8_dvp";
-> +				regulator-always-on;
-> +				regulator-boot-on;
-> +				regulator-min-microvolt = <1800000>;
-> +				regulator-max-microvolt = <1800000>;
-> +				regulator-state-mem {
-> +					regulator-off-in-suspend;
-> +				};
-> +			};
-> +
-> +			vcc3v3_s3: LDO_REG8 {
-> +				regulator-name = "vcc3v3_s3";
-> +				regulator-always-on;
-> +				regulator-boot-on;
-> +				regulator-min-microvolt = <3300000>;
-> +				regulator-max-microvolt = <3300000>;
-> +				regulator-state-mem {
-> +					regulator-off-in-suspend;
-> +				};
-> +			};
-> +
-> +			vccio_sd: LDO_REG9 {
-> +				regulator-name = "vccio_sd";
-> +				regulator-min-microvolt = <1800000>;
-> +				regulator-max-microvolt = <3300000>;
-> +				regulator-state-mem {
-> +					regulator-on-in-suspend;
-> +					regulator-suspend-microvolt = <3300000>;
-> +				};
-> +			};
-> +
-> +			vcc3v3_s0: SWITCH_REG {
-> +				regulator-name = "vcc3v3_s0";
-> +				regulator-always-on;
-> +				regulator-boot-on;
-> +				regulator-state-mem {
-> +					regulator-on-in-suspend;
-> +				};
-> +			};
-> +
-> +			boost_otg: DCDC_BOOST {
-> +				regulator-name = "boost_otg";
-> +				regulator-always-on;
-> +				regulator-boot-on;
-> +				regulator-min-microvolt = <5000000>;
-> +				regulator-max-microvolt = <5000000>;
-> +				regulator-state-mem {
-> +					regulator-on-in-suspend;
-> +					regulator-suspend-microvolt = <5000000>;
-> +				};
-> +			};
-> +
-> +			otg_switch: OTG_SWITCH {
-> +				regulator-name = "otg_switch";
-> +			};
-> +		};
-> +	};
-> +
-> +	vdd_cpu_b: regulator@40 {
-> +		compatible = "silergy,syr827";
-> +		reg = <0x40>;
-> +		fcs,suspend-voltage-selector = <1>;
-> +		pinctrl-names = "default";
-> +		pinctrl-0 = <&vsel1_pin>;
-> +		regulator-name = "vdd_cpu_b";
-> +		regulator-min-microvolt = <712500>;
-> +		regulator-max-microvolt = <1500000>;
-> +		regulator-ramp-delay = <1000>;
-> +		regulator-always-on;
-> +		regulator-boot-on;
-> +
-> +		regulator-state-mem {
-> +			regulator-off-in-suspend;
-> +		};
-> +	};
-> +
-> +	vdd_gpu: regulator@41 {
-> +		compatible = "silergy,syr828";
-> +		reg = <0x41>;
-> +		fcs,suspend-voltage-selector = <1>;
-> +		pinctrl-names = "default";
-> +		pinctrl-0 = <&vsel2_pin>;
-> +		regulator-name = "vdd_gpu";
-> +		regulator-min-microvolt = <712500>;
-> +		regulator-max-microvolt = <1500000>;
-> +		regulator-ramp-delay = <1000>;
-> +		regulator-always-on;
-> +		regulator-boot-on;
-> +
-> +		regulator-state-mem {
-> +			regulator-off-in-suspend;
-> +		};
-> +	};
-> +};
-> +
-> +&i2c1 {
-> +	i2c-scl-rising-time-ns = <300>;
-> +	i2c-scl-falling-time-ns = <15>;
-> +	status = "okay";
-> +};
-> +
-> +&i2c3 {
-> +	i2c-scl-rising-time-ns = <450>;
-> +	i2c-scl-falling-time-ns = <15>;
-> +	status = "okay";
-> +
-> +	// Per "Ambient Light", page 17.
-> +	light-sensor@48 {
-> +		compatible = "sensortek,stk3311";
-> +		reg = <0x48>;
-> +		interrupt-parent = <&gpio4>;
-> +		interrupts = <RK_PD3 IRQ_TYPE_EDGE_FALLING>;
-> +		pinctrl-names = "default";
-> +		pinctrl-0 = <&stk3311_int>;
-> +		vdd-supply = <&vcc_3v0>;
-> +		leda-supply = <&vcc_3v0>;
-> +	};
-> +};
-> +
-> +&i2c4 {
-> +	i2c-scl-rising-time-ns = <600>;
-> +	i2c-scl-falling-time-ns = <20>;
-> +	status = "okay";
-> +
-> +	// Per "TYPE-C", page 23.
-> +	fusb0: typec-portc@22 {
-> +		compatible = "fcs,fusb302";
-> +		reg = <0x22>;
-> +		interrupt-parent = <&gpio1>;
-> +		interrupts = <RK_PA2 IRQ_TYPE_LEVEL_LOW>;
-> +		pinctrl-names = "default";
-> +		pinctrl-0 = <&fusb0_int>;
-> +		vbus-supply = <&vcc5v0_typec>;
-> +
-> +		connector {
-> +			compatible = "usb-c-connector";
-> +			data-role = "dual";
-> +			label = "USB-C";
-> +			op-sink-microwatt = <1000000>;
-> +			power-role = "dual";
-> +			sink-pdos =
-> +				<PDO_FIXED(5000, 2500, PDO_FIXED_USB_COMM)>;
-> +			source-pdos =
-> +				<PDO_FIXED(5000, 1400, PDO_FIXED_USB_COMM)>;
-> +			try-power-role = "sink";
-> +
-> +			extcon-cables = <1 2 5 6 9 10 12 44>;
-> +			typec-altmodes = <0xff01 1 0x001c0c00 1>;
-
-^^^ these are not mainline bindings
-
-Mainline uses mode-switch / orientation-switch / usb-role-switch properties and
-altmodes node. Specified VDO (0x001c0c00) is also incorrect. And I don't think
-the phone can provide 1.4A at 5V (that would be 7W)
-
-VCC5V0_SYS can provide at most 2A and it's shared between modem, power amp for
-the speaker, and type-c VCONN which also has some power requirements (1W).
+There is no need for us to do the review of things pointed out by tools.
 
 
-> +			ports {
-> +				#address-cells = <1>;
-> +				#size-cells = <0>;
-> +
-> +				port@0 {
-> +					reg = <0>;
-> +
-> +					usbc_hs: endpoint {
-> +						remote-endpoint =
-> +							<&u2phy0_typec_hs>;
-> +					};
-> +				};
-> +
-> +				port@1 {
-> +					reg = <1>;
-> +
-> +					usbc_ss: endpoint {
-> +						remote-endpoint =
-> +							<&tcphy0_typec_ss>;
-> +					};
-> +				};
-> +
-> +				port@2 {
-> +					reg = <2>;
-> +
-> +					usbc_dp: endpoint {
-> +						remote-endpoint =
-> +							<&tcphy0_typec_dp>;
-> +					};
-> +				};
-> +			};
-> +		};
-> +	};
-> +
-> +	// Per "Gyro", page 17.
-> +	accelerometer@68 {
-> +		compatible = "invensense,mpu6500";
-> +		reg = <0x68>;
-> +		interrupt-parent = <&gpio1>;
-> +		interrupts = <RK_PC6 IRQ_TYPE_LEVEL_LOW>;
-> +		vdd-supply = <&vcc_1v8>;
-> +		vddio-supply = <&vcc_1v8>;
-> +
-> +		mount-matrix =
-> +			"1", "0", "0",
-> +			"0", "-1", "0",
-> +			"0", "0", "1";
-> +	};
+> +		   .of_match_table = sr1xx_dt_match,
+> +		    },
+> +	.probe = sr1xx_probe,
+> +	.remove = sr1xx_remove,
 > +};
 > +
-> +&io_domains {
-> +	status = "okay";
+> +static int __init sr1xx_dev_init(void)
+> +{
+> +	return spi_register_driver(&sr1xx_driver);
+> +}
 > +
-> +	bt656-supply = <&vcc1v8_dvp>;
-> +	audio-supply = <&vcca1v8_codec>;
-> +	sdmmc-supply = <&vccio_sd>;
-> +	gpio1830-supply = <&vcc_3v0>;
-> +};
+> +module_init(sr1xx_dev_init);
 > +
-> +&pmu_io_domains {
-> +	pmu1830-supply = <&vcc_1v8>;
-> +	status = "okay";
-> +};
-> +
-> +&pinctrl {
-> +	bt {
-> +		bt_enable_h: bt-enable-h {
-> +			rockchip,pins = <0 RK_PB1 RK_FUNC_GPIO &pcfg_pull_none>;
-> +		};
-> +
-> +		bt_host_wake_l: bt-host-wake-l {
-> +			rockchip,pins = <0 RK_PA4 RK_FUNC_GPIO &pcfg_pull_down>;
-> +		};
-> +
-> +		bt_wake_l: bt-wake-l {
-> +			rockchip,pins = <2 RK_PD2 RK_FUNC_GPIO &pcfg_pull_none>;
-> +		};
-> +	};
-> +
-> +	buttons {
-> +		pwrbtn_pin: pwrbtn-pin {
-> +			rockchip,pins = <0 RK_PA5 RK_FUNC_GPIO &pcfg_pull_up>;
-> +		};
-> +	};
-> +
-> +	fusb302x {
-> +		fusb0_int: fusb0-int {
-> +			rockchip,pins = <1 RK_PA2 RK_FUNC_GPIO &pcfg_pull_up>;
-> +		};
-> +	};
-> +
-> +	leds {
-> +		red_led_pin: red-led-pin {
-> +			rockchip,pins = <4 RK_PD2 RK_FUNC_GPIO &pcfg_pull_none>;
-> +		};
-> +
-> +		green_led_pin: green-led-pin {
-> +			rockchip,pins = <4 RK_PD5 RK_FUNC_GPIO &pcfg_pull_none>;
-> +		};
-> +
-> +		blue_led_pin: blue-led-pin {
-> +			rockchip,pins = <4 RK_PD6 RK_FUNC_GPIO &pcfg_pull_none>;
-> +		};
-> +	};
-> +
-> +	pmic {
-> +		pmic_int_l: pmic-int-l {
-> +			rockchip,pins = <1 RK_PC5 RK_FUNC_GPIO &pcfg_pull_up>;
-> +		};
-> +
-> +		vsel1_pin: vsel1-pin {
-> +			rockchip,pins = <1 RK_PC1 RK_FUNC_GPIO &pcfg_pull_down>;
-> +		};
-> +
-> +		vsel2_pin: vsel2-pin {
-> +			rockchip,pins = <1 RK_PB6 RK_FUNC_GPIO &pcfg_pull_down>;
-> +		};
-> +	};
-> +
-> +	sdcard {
-> +		sdmmc0_pwr_h: sdmmc0-pwr-h {
-> +			rockchip,pins = <0 RK_PA1 RK_FUNC_GPIO &pcfg_pull_none>;
-> +		};
-> +
-> +	};
-> +
-> +	sdio-pwrseq {
-> +		wifi_enable_h: wifi-enable-h {
-> +			rockchip,pins = <0 RK_PB2 RK_FUNC_GPIO &pcfg_pull_none>;
-> +		};
-> +	};
-> +
-> +	usb-typec {
-> +		vcc5v0_typec_en: vcc5v0_typec_en {
-> +			rockchip,pins = <0 RK_PA6 RK_FUNC_GPIO &pcfg_pull_up>;
-> +		};
-> +	};
-> +
-> +	dsi {
-> +		display_rst_l: display-rst-l {
-> +			rockchip,pins = <4 RK_PD1 RK_FUNC_GPIO &pcfg_pull_down>;
-> +		};
-> +
-> +		display_pwren: display-pwren {
-> +			rockchip,pins = <3 RK_PA1 RK_FUNC_GPIO &pcfg_pull_down>;
-> +		};
-> +
-> +		display_pwren1: display-pwren1 {
-> +			rockchip,pins = <3 RK_PA5 RK_FUNC_GPIO &pcfg_pull_down>;
-> +		};
-> +	};
-> +
-> +	stk3311 {
-> +		stk3311_int: stk3311-int {
-> +			rockchip,pins = <4 RK_PD3 RK_FUNC_GPIO &pcfg_pull_up>;
-> +		};
-> +	};
-> +
-> +	sound {
-> +		vcc1v8_codec_en: vcc1v8-codec-en {
-> +			rockchip,pins = <3 RK_PA4 RK_FUNC_GPIO &pcfg_pull_down>;
-> +		};
-> +	};
-> +};
-> +
-> +&pwm0 {
-> +	status = "okay";
-> +};
-> +
-> +&pwm1 {
-> +	status = "okay";
-> +};
-> +
-> +&pwm2 {
-> +	status = "okay";
-> +};
-> +
-> +// Per "SARADC", page 8.
-> +&saradc {
-> +	vref-supply = <&vcca1v8_s3>;
-> +	status = "okay";
-> +};
-> +
-> +&sdio0 {
-> +	bus-width = <4>;
-> +	cap-sd-highspeed;
-> +	cap-sdio-irq;
-> +	disable-wp;
-> +	keep-power-in-suspend;
-> +	mmc-pwrseq = <&sdio_pwrseq>;
-> +	non-removable;
-> +	pinctrl-names = "default";
-> +	pinctrl-0 = <&sdio0_bus4 &sdio0_cmd &sdio0_clk>;
-> +	sd-uhs-sdr104;
-> +	status = "okay";
-> +};
-> +
-> +// Per "SDMMC Controler", page 6.
-> +&sdmmc {
-> +	bus-width = <4>;
-> +	cap-sd-highspeed;
-> +	cd-gpios = <&gpio0 RK_PA7 GPIO_ACTIVE_LOW>;
-> +	disable-wp;
-> +	max-frequency = <150000000>;
-> +	pinctrl-names = "default";
-> +	pinctrl-0 = <&sdmmc_clk &sdmmc_cmd &sdmmc_cd &sdmmc_bus4>;
-> +	vmmc-supply = <&vcc3v3_sys>;
-> +	vqmmc-supply = <&vccio_sd>;
-> +	status = "okay";
-> +};
-> +
-> +&sdhci {
-> +	bus-width = <8>;
-> +	mmc-hs200-1_8v;
-> +	non-removable;
-> +	status = "okay";
-> +};
-> +
-> +&tcphy0 {
-> +	extcon = <&fusb0>;
-> +	status = "okay";
-> +};
+> +static void __exit sr1xx_dev_exit(void)
+> +{
+> +	spi_unregister_driver(&sr1xx_driver);
+> +}
 
-^^^ this does not work. fusb0 doesn't provide any extcon interface
-it only consumes one, just like tcphy0
+Why this isn't a module_spi_driver?
 
-> +&tcphy0_dp {
-> +	port {
-> +		tcphy0_typec_dp: endpoint {
-> +			remote-endpoint = <&usbc_dp>;
-> +		};
-> +	};
-> +};
 > +
-> +&tcphy0_usb3 {
-> +	port {
-> +		tcphy0_typec_ss: endpoint {
-> +			remote-endpoint = <&usbc_ss>;
-> +		};
-> +	};
-> +};
+> +module_exit(sr1xx_dev_exit);
 > +
-> +// Enable thermal sensors.
-> +&tsadc {
-> +	/* tshut mode 0:CRU 1:GPIO */
-> +	rockchip,hw-tshut-mode = <1>;
-> +	/* tshut polarity 0:LOW 1:HIGH */
-> +	rockchip,hw-tshut-polarity = <1>;
-> +	status = "okay";
-> +};
-> +
-> +&u2phy0 {
-> +	status = "okay";
-> +
-> +	u2phy0_otg: otg-port {
-> +		status = "okay";
-> +	};
-> +
-> +	u2phy0_host: host-port {
-> +		status = "okay";
-> +		phy-supply = <&vcc5v0_sys>;
-> +	};
-> +
-> +	port {
-> +		u2phy0_typec_hs: endpoint {
-> +			remote-endpoint = <&usbc_hs>;
-> +		};
-> +	};
-> +};
-> +
-> +&u2phy1 {
-> +	status = "okay";
-> +
-> +	u2phy1_otg: otg-port {
-> +		status = "okay";
-> +	};
-> +
-> +	u2phy1_host: host-port {
-> +		status = "okay";
-> +		phy-supply = <&vcc5v0_sys>;
-> +	};
-> +};
-> +
-> +&uart0 {
-> +	pinctrl-names = "default";
-> +	pinctrl-0 = <&uart0_xfer &uart0_cts &uart0_rts>;
-> +	uart-has-rtscts;
-> +	status = "okay";
-> +
-> +	// Per "WIFI/BT MODULE", page 19.
-> +	bluetooth {
-> +		compatible = "brcm,bcm4345c5";
-> +		clocks = <&rk818 1>;
-> +		clock-names = "lpo";
-> +		device-wakeup-gpios = <&gpio2 RK_PD2 GPIO_ACTIVE_HIGH>;
-> +		host-wakeup-gpios = <&gpio0 RK_PA4 GPIO_ACTIVE_HIGH>;
-> +		max-speed = <1500000>;
-> +		pinctrl-names = "default";
-> +		pinctrl-0 = <&bt_host_wake_l &bt_wake_l &bt_enable_h>;
-> +		shutdown-gpios = <&gpio0 RK_PB1 GPIO_ACTIVE_HIGH>;
-> +		vbat-supply = <&wifi_bat>;
-> +		vddio-supply = <&vcc_wl>;
-> +	};
-> +};
-> +
-> +&uart2 {
-> +	status = "okay";
-> +};
-> +
-> +&usb_host0_ehci {
-> +	status = "okay";
-> +};
-> +
-> +&usb_host0_ohci {
-> +	status = "okay";
-> +};
-> +
-> +&usb_host1_ehci {
-> +	status = "okay";
-> +};
-> +
-> +&usb_host1_ohci {
-> +	status = "okay";
-> +};
-> +
-> +&usbdrd3_0 {
-> +	status = "okay";
-> +};
-> +
-> +&usbdrd_dwc3_0 {
-> +	dr_mode = "peripheral";
-> +	status = "okay";
-> +};
-> +
-> +&vopb {
-> +	status = "okay";
-> +};
-> +
-> +&vopb_mmu {
-> +	status = "okay";
-> +};
-> +
-> +&vopl {
-> +	status = "okay";
-> +};
-> +
-> +&vopl_mmu {
-> +	status = "okay";
-> +};
-> -- 
-> 2.36.0
-> 
+> +MODULE_AUTHOR("Manjunatha Venkatesh <manjunatha.venkatesh@nxp.com>");
+> +MODULE_DESCRIPTION("NXP SR1XX SPI driver");
+> +MODULE_LICENSE("GPL");
+
+
+Best regards,
+Krzysztof
