@@ -2,85 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CB6FC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 29 May 2022 14:54:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 652CFC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 29 May 2022 15:03:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230480AbiE2Oyt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 29 May 2022 10:54:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35672 "EHLO
+        id S230491AbiE2PCz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 29 May 2022 11:02:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229907AbiE2Oys (ORCPT
+        with ESMTP id S229907AbiE2PCx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 29 May 2022 10:54:48 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9640F93476
-        for <linux-kernel@vger.kernel.org>; Sun, 29 May 2022 07:54:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653836087; x=1685372087;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=g42OSt55RshNZX376pV48g4FOU4+F/GIqEJhU5EeFCg=;
-  b=G5uP6jWMBl4M54OjwK8LLNZtApVZlk1bH20RamPZ0d/sOGTZWL5ErhYb
-   8RNOI5L6XJ9Mfvtm32Mn9YuQ7hrztwKl3L8LWiYuTqGZ61kGmkHoXupj0
-   HJNC66wJIajqdSrige19UkuwkbwttSc/3wYfVK1Jc6O/jmQHz3BwBdlOF
-   k8h9APLPfcMmD8Pi8/X8M/zLWznPv3O7XqXe3OtXAO80JiGdt3FP+nSEV
-   avAzrqkDxuyapb135saIOqj3m5Ai6t/yR+G0K9KJRwcsepzLhPrJhe79c
-   EEzfqKLG3zSmS5803Epd6hkrRRAUS4+4Own6BYkz80ba2nyU0NsubdYZ5
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10361"; a="255296869"
-X-IronPort-AV: E=Sophos;i="5.91,260,1647327600"; 
-   d="scan'208";a="255296869"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 May 2022 07:54:47 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,260,1647327600"; 
-   d="scan'208";a="632300781"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 29 May 2022 07:54:45 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nvKJZ-00015C-6f;
-        Sun, 29 May 2022 14:54:45 +0000
-Date:   Sun, 29 May 2022 22:54:28 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Ryan Lee <ryan.lee.analog@gmail.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Mark Brown <broonie@kernel.org>
-Subject: ld.lld: error: assignment to symbol init_pg_end does not converge
-Message-ID: <202205292206.HGk4JbY2-lkp@intel.com>
+        Sun, 29 May 2022 11:02:53 -0400
+Received: from ms.lwn.net (ms.lwn.net [45.79.88.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 406CA939A7;
+        Sun, 29 May 2022 08:02:51 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:281:8300:73::5f6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ms.lwn.net (Postfix) with ESMTPSA id A1F9E4B7;
+        Sun, 29 May 2022 15:02:50 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net A1F9E4B7
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
+        t=1653836570; bh=prfaPouyOR+h3OLn6aM3uj1MK/ywudByeFsbG2uZEBk=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=jDwL7ar7WO12Ocu9dHfPV7mvCf3la5OQj0lH43MGiZAU5r+c+kGhOr3Vv/paus2RG
+         jwdHU2GrkIIaOTUdsV4lg19YqsUa2AWM8nV99048dXHQll20XJ0z6XXYyXHHa7ykXj
+         5v/FCGN80wEBco05UGVKz9VP+VkJ+0CE3+lpUOPD9b/taubZcgc4/z+11lkoHx4jln
+         rpHCeGzwhRJGoQJMwBENyeUe3azTumzr4DKbAZoC9rXrh64Em0/3e853XBBWZ4iEP9
+         XlXdUe8kGBt4Ut9xeuvHUyccFQDTaZDD3pLb8J+u5EqIpcl/pVluGS2oZZbiNInR9p
+         d0k3HIEtAoAuA==
+From:   Jonathan Corbet <corbet@lwn.net>
+To:     Bagas Sanjaya <bagasdotme@gmail.com>, linux-doc@vger.kernel.org
+Cc:     Bagas Sanjaya <bagasdotme@gmail.com>,
+        kernel test robot <lkp@intel.com>,
+        Nikolai Kondrashov <spbnick@gmail.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        =?utf-8?Q?Jos=C3=A9?= =?utf-8?Q?_Exp=C3=B3sito?= 
+        <jose.exposito89@gmail.com>, llvm@lists.linux.dev,
+        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] HID: uclogic: remove extraneous asterisk on
+ uclogic_params_* static functions comments
+In-Reply-To: <20220528091403.160169-2-bagasdotme@gmail.com>
+References: <20220528091403.160169-1-bagasdotme@gmail.com>
+ <20220528091403.160169-2-bagasdotme@gmail.com>
+Date:   Sun, 29 May 2022 09:02:56 -0600
+Message-ID: <87tu988jq7.fsf@meer.lwn.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   664a393a2663a0f62fc1b18157ccae33dcdbb8c8
-commit: b58581136770569d2ee4300b10c7c0d76bb86250 ASoC: max98396: add amplifier driver
-date:   5 weeks ago
-config: arm64-randconfig-r011-20220529 (https://download.01.org/0day-ci/archive/20220529/202205292206.HGk4JbY2-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 0fbe3f3f486e01448121f7931a4ca29fac1504ab)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm64 cross compiling tool for clang build
-        # apt-get install binutils-aarch64-linux-gnu
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=b58581136770569d2ee4300b10c7c0d76bb86250
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout b58581136770569d2ee4300b10c7c0d76bb86250
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash
+Bagas Sanjaya <bagasdotme@gmail.com> writes:
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+> *uclogic_params_pen_inrange_to_str(), uclogic_params_pen_hid_dbg(), and
+> uclogic_params_frame_hid_dbg() are static functions but contain
+> double-asterisk (/** */) comment, which confuses kernel-doc as public
+> function for generating documentation.
+>
+> Remove the extraneous asterisk from these comments.
 
-All errors (new ones prefixed by >>):
+So there is nothing wrong with making kerneldoc comments for static
+functions, that is not where the problem lies.
 
->> ld.lld: error: assignment to symbol init_pg_end does not converge
+> Link: https://lore.kernel.org/linux-doc/202205272033.XFYlYj8k-lkp@intel.c=
+om/
+> Fixes: a228809fa6f39c ("HID: uclogic: Move param printing to a function")
+> Reported-by: kernel test robot <lkp@intel.com>
+> Cc: Nikolai Kondrashov <spbnick@gmail.com>
+> Cc: Jiri Kosina <jikos@kernel.org>
+> Cc: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+> Cc: "Jos=C3=A9 Exp=C3=B3sito" <jose.exposito89@gmail.com>
+> Cc: llvm@lists.linux.dev
+> Cc: linux-input@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+> Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
+> ---
+>  drivers/hid/hid-uclogic-params.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/hid/hid-uclogic-params.c b/drivers/hid/hid-uclogic-p=
+arams.c
+> index db838f16282d64..71501453de12e4 100644
+> --- a/drivers/hid/hid-uclogic-params.c
+> +++ b/drivers/hid/hid-uclogic-params.c
+> @@ -20,7 +20,7 @@
+>  #include <linux/ctype.h>
+>  #include <asm/unaligned.h>
+>=20=20
+> -/**
+> +/*
+>   * uclogic_params_pen_inrange_to_str() - Convert a pen in-range reportin=
+g type
+>   *                                       to a string.
+>   *
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+A more likely problem here is the blank between the function intro and
+the parameter description.
+
+> @@ -44,7 +44,7 @@ static const char *uclogic_params_pen_inrange_to_str(
+>  	}
+>  }
+>=20=20
+> -/**
+> +/*
+>   * Dump tablet interface pen parameters with hid_dbg(), indented with on=
+e tab.
+>   *
+
+Here too
+
+>   * @hdev:	The HID device the pen parameters describe.
+> @@ -76,7 +76,7 @@ static void uclogic_params_pen_hid_dbg(const struct hid=
+_device *hdev,
+>  		(pen->tilt_y_flipped ? "true" : "false"));
+>  }
+>=20=20
+> -/**
+> +/*
+>   * Dump tablet interface frame parameters with hid_dbg(), indented with =
+two
+>   * tabs.
+>   *
+
+Here, instead, this needs to be formatted as a proper kerneldoc comment
+with the function name.
+
+jon
