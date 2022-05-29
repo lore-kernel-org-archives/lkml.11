@@ -2,94 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42CB0C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 29 May 2022 06:48:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01A3AC433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 29 May 2022 07:04:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229618AbiE2GsR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 29 May 2022 02:48:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57464 "EHLO
+        id S229631AbiE2G65 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 29 May 2022 02:58:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229498AbiE2GsM (ORCPT
+        with ESMTP id S229498AbiE2G6y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 29 May 2022 02:48:12 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4247857B09;
-        Sat, 28 May 2022 23:48:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1653806887;
-        bh=p1d8gsvdZRJvpdzFJmwIHUfdLza0gG/lornWj/O9A0s=;
-        h=X-UI-Sender-Class:Date:From:To:Cc:Subject;
-        b=GGwBExcfGkL1sh9oeYKf1qDYdRDyiN0c5hL8Aj5WJBqoZoP+s9WTY59CGcxafpGwj
-         VEe3h8qPYLzG2vpkkuzHyIRN1UgGeWPiK0OVXav9Oqzdaz9urcSzd9nT6E3h54HVbF
-         +taf/YmzCwZBP0PzXJdXKCCxo/pSE6uytj7kfyMQ=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from ls3530 ([92.116.164.227]) by mail.gmx.net (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MtfNl-1ngHvs0J6F-00v5M9; Sun, 29
- May 2022 08:48:07 +0200
-Date:   Sun, 29 May 2022 08:47:51 +0200
-From:   Helge Deller <deller@gmx.de>
-To:     linux-omap@vger.kernel.org,
-        Janusz Krzysztofik <jmkrzyszt@gmail.com>,
-        linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Imre Deak <imre.deak@solidboot.com>,
-        Trilok Soni <soni.trilok@gmail.com>
-Subject: [PATCH] video: fbdev: omap: Add prototype for
- hwa742_update_window_async() to avoid build warning
-Message-ID: <YpMXF9luBc4Sjr9h@ls3530>
+        Sun, 29 May 2022 02:58:54 -0400
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B83D059339
+        for <linux-kernel@vger.kernel.org>; Sat, 28 May 2022 23:58:53 -0700 (PDT)
+Received: by mail-pf1-x433.google.com with SMTP id y1so7917424pfr.6
+        for <linux-kernel@vger.kernel.org>; Sat, 28 May 2022 23:58:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=58kX1OOtY+k2geYRZBJ22SUrbP3xr0N5heiBB7ymisg=;
+        b=QQMkfSRbOmYduM5Gj4biKbbn7LR7LhEhyEBloajkNlmMzNs06FSxUARL6CIT97KyZi
+         RI2jZOLuIPhRgdON7TtfzmTPVVdvH4AcFsRR4W8WI0gqsPE0CkZe74ZtuIA7v0nTELfV
+         IUcPfhGyfQ2O/+mYEVsFLDuuhwr4XrwCvAlh1gj8gPi7t34VwMjGSAnxtXPoZgvndlwT
+         sMw68riKbsqm/8kXgjrORiEQM3jpyxYHp5hfnVq/leWVXIg61LgFRzej10WDwxCwyYTw
+         2DtetQY6/8VBzUqOj9FU5ShRECIiGN3kNRA2fZemvd0EmJjGvP8Vb2CaG8x2JdZmnG2x
+         dEJA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=58kX1OOtY+k2geYRZBJ22SUrbP3xr0N5heiBB7ymisg=;
+        b=Tkt/XwsYbuye+O+ZxXGKRRkdiUw61LRhXuOmHcHwc8CtyDmym4GWYtaYmEoz8g1jv3
+         iow43577WSA8z1YNGEjYJh1NISdClS08XwuDYwrSiGGsM3S2yHVuQ3CCKJZpz+whmpDH
+         1KVcfTjY7ICQQAQGKD5ck4+sekbv4CJrkZjwCcmCh9Hv9TLzUy7jz+3XdhQh1uDmG1Lv
+         yRFN/9QpWBipdWVnTKCqV6nW8ybNAH8HhsCrfU4uAK/jJ65RktCIsNTS2w98/FNDcU+n
+         tI+fuXY36y2eXqIV5YpVUbtbWz7bZzl86wIqzn8paDdu5qCrsdMODmQXNlr0rq4QK4/c
+         pjMA==
+X-Gm-Message-State: AOAM532GHodbFjPaDEDwmX0ilzhVNVa+gBKl292HBZ6bqfJmoaKfnutB
+        5jLxM2LJhqKUmkDalWlfTA==
+X-Google-Smtp-Source: ABdhPJxEGR3dDy2jUScZ+pD2yimGgBZwPIYEaPeorkhSpd3ydXIIrp/EPekmnQ/VkNNClaX5+xrMUA==
+X-Received: by 2002:a63:f518:0:b0:3fa:6f09:aac5 with SMTP id w24-20020a63f518000000b003fa6f09aac5mr26652616pgh.515.1653807532273;
+        Sat, 28 May 2022 23:58:52 -0700 (PDT)
+Received: from localhost.localdomain ([144.202.91.207])
+        by smtp.gmail.com with ESMTPSA id y12-20020aa7804c000000b00512d13016d0sm6353062pfm.159.2022.05.28.23.58.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 28 May 2022 23:58:51 -0700 (PDT)
+From:   Zheyu Ma <zheyuma97@gmail.com>
+To:     eli.billauer@gmail.com, arnd@arndb.de, gregkh@linuxfoundation.org
+Cc:     linux-kernel@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>
+Subject: [PATCH v3] char: xillybus: Check endpoint type at probe time
+Date:   Sun, 29 May 2022 14:58:39 +0800
+Message-Id: <20220529065839.3817434-1-zheyuma97@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Provags-ID: V03:K1:FQb6lV/lgtWGi2gKjPz07Vslk0s1gCvq650guPHsNS97s10CCmF
- knxWpCyOY+gOAN5vFh6NjPmJadgrrS37YPARbom/08c+CldDAjK6D32IjlDtl3z5y8Iy6i7
- xBvUGGn26Kg0cYVzrANxZLMGqSxIIrFVATNA56yE7eIXH3N0NpKjN7Y6WNmozCaMeOnzw/0
- Ip1gXRwkd5fEo9mTGig0A==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:Vd2rMaVrGb4=:GEyCfahcwao0DK5RE6qCkA
- YxyXP5yVGGaNvc4VsKgWnguSEIFnM6yVA9n8ljEIFVN284bfRzqK/FEPAFkgEQUNKxArxdh22
- UqQutrJYJJ/KmFWkNaT9zc+BqVNekNqkoiZQ2zwF+SYRASY76X+CavD5kvzSHjRXqGkEH9NS3
- sLW07NoXroAmJaWhabGZl2IgrWVTiUCSwiVd+aWl9zerXWKPO4pDT68pnzw8fqKJ0jR2RcARn
- L0X7JwwAMOIyNlw2xe2KqV77E5ZoU+QJflB9h1/myHzEDmH/huZ2Dwd+tAljEmyDevRUbhWJf
- 54CK8KphaZ3Y/sLzeOP/OO9Md88fmPMcjLNvfi8mqyMeA1IYZ/800SBbCcWg8mJTqp7XwoJhJ
- fLcvLEmnjjgr4xMGJXhNQyMhA7oTkJS2hjha8mwgQkl6PC4FnUhMg6hOJ81tZ7mDEQJbvw/kg
- 4LEHaa//Ji49eby/8WVdTlwrM7EsX8OnysSleYWVTBLqKL1Eg5sC0f4lk/afrTLS00wYMNQNt
- i86neGHdwe+MnS/RkGoxRXJ36nsWIzHHFuX2onmGbnGjFjOp3YkoLswMvxKG/lfpB/AqpRCbe
- yqL9JZ5iwCax9NcQnLcWJXVX4KFZiOrDjh5uBRtC6NgNwc4ZJJ3LT7EdDycFJrhllnn3zZEVt
- fmhxtV6ZUEFD3WZ+pAT4ZdedJ4x8nNKn1ZIdKbY0WgGacO3CSISuwLQQaGhcbtzuNmc9YeLzg
- DTHTC6yl7V/PY42SoHP2jGc1D9EORK+628L4RzAqB2AJR/mWk4H600oejukyMORCJnUf2s40E
- On1w9WayGJ68RaqctcxPESPGRHNnWHpQdIs3oXkpjLVlTPYuY9Xg4QrvHu7qdKLA74TFcLX8l
- XhUEhQdQKkYGZnk4+JQL9E+wFf4ks73rp3XYPRceZtvvjfJ2uDEkKmzokNk7HIawjlON5mhtK
- gkOeZWZ3LLglc3oMkbHhDtpeApgIJR5rm52029NJuKW4cVr76YkSY+fXVjNvsfiShhNVusCSy
- SOTqCUXWdrYq1mkhvmAve2luXhXJC1JBzCRbAeFyNRXTMY5H/eGjYZr5lYx7GJLJTwf3eX+SR
- 112n0D8S6E6kWAoeXWuMeV4BP0JUcsO0GxdAEBhMHvqKE4OOYRF+8Vc3g==
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The symbol hwa742_update_window_async() is exported, but there is no
-prototype defined for it. That's why gcc complains:
+The driver submits bulk urb without checking the endpoint type is
+actually bulk.
 
-drivers-video-fbdev-omap-hwa742.c:warning:no-previous-prototype-for-hwa742=
-_update_window_async
+[    3.108690] usb 1-1: BOGUS urb xfer, pipe 3 != type 1
+[    3.108983] WARNING: CPU: 0 PID: 211 at drivers/usb/core/urb.c:503 usb_submit_urb+0xcd9/0x18b0
+[    3.110976] RIP: 0010:usb_submit_urb+0xcd9/0x18b0
+[    3.115318] Call Trace:
+[    3.115452]  <TASK>
+[    3.115570]  try_queue_bulk_in+0x43c/0x6e0 [xillyusb]
+[    3.115838]  xillyusb_probe+0x488/0x1230 [xillyusb]
 
-Add the prototype, but I wonder if we couldn't drop exporting the symbol
-instead. Since omapfb_update_window_async() is exported the same way,
-are there any users outside of the tree?
+Add a check at probe time to fix the bug.
 
-Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+---
+Changes in v3:
+    - Check the endpoint type more earlier
+Changes in v2:
+    - Check the endpoint type at probe time
+---
+ drivers/char/xillybus/xillyusb.c | 32 ++++++++++++++++++++++++++++++++
+ 1 file changed, 32 insertions(+)
 
-diff --git a/drivers/video/fbdev/omap/omapfb.h b/drivers/video/fbdev/omap/=
-omapfb.h
-index d930152c289c..0c753ccbc1c0 100644
-=2D-- a/drivers/video/fbdev/omap/omapfb.h
-+++ b/drivers/video/fbdev/omap/omapfb.h
-@@ -229,5 +229,9 @@ extern int  omapfb_update_window_async(struct fb_info =
-*fbi,
- 				       struct omapfb_update_window *win,
- 				       void (*callback)(void *),
- 				       void *callback_data);
-+extern int  hwa742_update_window_async(struct fb_info *fbi,
-+				       struct omapfb_update_window *win,
-+				       void (*callback)(void *),
-+				       void *callback_data);
+diff --git a/drivers/char/xillybus/xillyusb.c b/drivers/char/xillybus/xillyusb.c
+index dc3551796e5e..4ed19a2a04e3 100644
+--- a/drivers/char/xillybus/xillyusb.c
++++ b/drivers/char/xillybus/xillyusb.c
+@@ -167,6 +167,7 @@ struct xillyusb_dev {
+ 	struct device		*dev; /* For dev_err() and such */
+ 	struct kref		kref;
+ 	struct workqueue_struct	*workq;
++	struct usb_interface *intf;
+ 
+ 	int error;
+ 	spinlock_t error_lock; /* protect @error */
+@@ -1891,6 +1892,17 @@ static const struct file_operations xillyusb_fops = {
+ 
+ static int xillyusb_setup_base_eps(struct xillyusb_dev *xdev)
+ {
++	int ret;
++	struct usb_endpoint_descriptor *in, *out;
++
++	ret = usb_find_common_endpoints(xdev->intf->cur_altsetting, &in, &out, NULL, NULL);
++	if (ret)
++		return ret;
++
++	if (in->bEndpointAddress != (IN_EP_NUM | USB_DIR_IN) ||
++		out->bEndpointAddress != (MSG_EP_NUM | USB_DIR_OUT))
++		return -EINVAL;
++
+ 	xdev->msg_ep = endpoint_alloc(xdev, MSG_EP_NUM | USB_DIR_OUT,
+ 				      bulk_out_work, 1, 2);
+ 	if (!xdev->msg_ep)
+@@ -1916,6 +1928,21 @@ static int xillyusb_setup_base_eps(struct xillyusb_dev *xdev)
+ 	return -ENOMEM;
+ }
+ 
++static int xillyusb_check_endpoint(struct xillyusb_dev *xdev, u8 addr)
++{
++	int i;
++	struct usb_host_interface *if_desc = xdev->intf->altsetting;
++
++	for (i = 0; i < if_desc->desc.bNumEndpoints; i++) {
++		struct usb_endpoint_descriptor *ep = &if_desc->endpoint[i].desc;
++
++		if (ep->bEndpointAddress == addr && usb_endpoint_is_bulk_out(ep))
++			return 0;
++	}
++
++	return -EINVAL;
++}
++
+ static int setup_channels(struct xillyusb_dev *xdev,
+ 			  __le16 *chandesc,
+ 			  int num_channels)
+@@ -1962,6 +1989,10 @@ static int setup_channels(struct xillyusb_dev *xdev,
+ 			chan->out_log2_element_size = out_desc & 0x0f;
+ 			chan->out_log2_fifo_size =
+ 				((out_desc >> 8) & 0x1f) + 16;
++			if (xillyusb_check_endpoint(xdev, (i+2) | USB_DIR_OUT)) {
++				kfree(xdev->channels);
++				return -EINVAL;
++			}
+ 		}
+ 	}
+ 
+@@ -2125,6 +2156,7 @@ static int xillyusb_probe(struct usb_interface *interface,
+ 	mutex_init(&xdev->process_in_mutex);
+ 	mutex_init(&xdev->msg_mutex);
+ 
++	xdev->intf = interface;
+ 	xdev->udev = usb_get_dev(interface_to_usbdev(interface));
+ 	xdev->dev = &interface->dev;
+ 	xdev->error = 0;
+-- 
+2.25.1
 
- #endif /* __OMAPFB_H */
