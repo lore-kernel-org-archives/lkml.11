@@ -2,116 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D003C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 29 May 2022 11:33:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E91D0C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 29 May 2022 11:35:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230037AbiE2LdL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 29 May 2022 07:33:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52746 "EHLO
+        id S230055AbiE2Lf3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 29 May 2022 07:35:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229687AbiE2LdK (ORCPT
+        with ESMTP id S230043AbiE2Lf2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 29 May 2022 07:33:10 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCC229A99E
-        for <linux-kernel@vger.kernel.org>; Sun, 29 May 2022 04:33:08 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id er5so10294789edb.12
-        for <linux-kernel@vger.kernel.org>; Sun, 29 May 2022 04:33:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=oYubpWVRsUzLyCXJOwrRC4O3AFSC2FuuIFJIr4Av3e0=;
-        b=Y29g96s466pwqFnYFJ8i0nbhdgldu/XcleKYHRCT3BA2cAk5qwQMI9c331T7/5z6gf
-         rGADnh51S+Rzbz5NCfmMYtdVGdzygTphad6rXa3l+dmNK/UmF2SZhNk/uJKBDnbqii97
-         39reP/0lZ0NbQdLyrOBJZKleN8S6Lh61RrY2fMUF6TzR+JpjOSd5lQ/VbW0pxDE4UZ1C
-         z+OLnVsX5nm5HWZ/VeuNk0uluNqh0E5v+uYxXwEEFhWjeXI/bibl/Xe14K4UWTcLIA9Q
-         LhZ8EobRrjCqUCtya29ZtKAPMNcdpxRJ6J3g7zeWKWyFKDSyiE3zKNUPk/RSKtwDhw9t
-         crHg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=oYubpWVRsUzLyCXJOwrRC4O3AFSC2FuuIFJIr4Av3e0=;
-        b=iP/l2zBGLFJVywBc61j7Ui/Y17S0KtwaGCQ9ZZx63gnJ8Q8I60EqdvgZwdiuk2mAIN
-         mh0FqKimkNuMAtya4aSAhsRiRFGeVkyDtCQvU8FXBOIBqwGZOoTtz/IJ9WH0vrT/BKhV
-         riofoMwhsVPnHeOxzHXvBV0bYpXkifT2oISE3CBpjZBoCw4gy74qcSqrxH15PWYSdgpJ
-         pl1cZr/msxCVe4yTcZrFmKudnTcv+Gt26ilk5B13nIDEnMRPtkogb/hI8iwTZ8Qu5y2t
-         pqC+6r4iQ0GyE+BPDxrAgNXtnxnzPwIvepIJ4X+fLaEM7CsvfAbe9nYSbBS3LpgRlA/N
-         wG9g==
-X-Gm-Message-State: AOAM530/Bp/80XR0YgoZLxaQv6a6/QFlrfEX/fMF6c1WHKrmu18m35HH
-        PMmOnQZg3TBLsNEs74XlKcnfUw==
-X-Google-Smtp-Source: ABdhPJztdEDLeP3MqNT3t1sVz/K0A6o6vjUgPas543CtuJhuTQ1EIgyRaygjFGlClN0hPJRw/+Ps5A==
-X-Received: by 2002:a05:6402:510a:b0:42b:66c3:d4fd with SMTP id m10-20020a056402510a00b0042b66c3d4fdmr36058737edd.260.1653823987383;
-        Sun, 29 May 2022 04:33:07 -0700 (PDT)
-Received: from [192.168.0.177] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id l8-20020a056402254800b0042d7cd7d937sm2115751edb.2.2022.05.29.04.33.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 29 May 2022 04:33:06 -0700 (PDT)
-Message-ID: <c8acba2d-d65c-0c75-aed3-3e35ae654b12@linaro.org>
-Date:   Sun, 29 May 2022 13:33:05 +0200
+        Sun, 29 May 2022 07:35:28 -0400
+Received: from sonic306-22.consmr.mail.gq1.yahoo.com (sonic306-22.consmr.mail.gq1.yahoo.com [98.137.68.85])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB64C9A9A7
+        for <linux-kernel@vger.kernel.org>; Sun, 29 May 2022 04:35:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=att.net; s=s1024; t=1653824127; bh=RRgJoG/L4BQHnc1cT7FRAwecnMXwJlauasCSmqnyPAM=; h=Date:To:From:Subject:References:From:Subject:Reply-To; b=Fboj+JvTxf0ky+/oYaQqkzG43VBGoM7l+ewOJEENxaaomc5ITi9CS1vv1Im/X3+yfvXmM/Fd5ma+N+7TD5xUYemXYodC5IRIV/DlRc8gAaqhE1l6Xs9kbDAGiwUuzUjyRv4IbkkSEcjBLVUTh3osjLLImZQ06+SvopbvY9xGNec=
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1653824127; bh=nMBxSXruymYMWIVmmEPjdIlj2p/vMnVg3Uy6ZcpoO/F=; h=X-Sonic-MF:Date:To:From:Subject:From:Subject; b=jhRLL11SWLe7XzfH4wFjmae1+JL/G9ZfLL2L/3JILw3fM3auCyzKKEUTzK3dic5naJ/Pn9tvOG6H8R1+duwRsJNalyISb/Tped8BVZ8wpUJsEbV2azkpluSeNjj5tQry7/+F6kaZaV3BOVzO4HVmljHycL/q3ntEUsnmNDZB//khotyXc2Jn5n2mMcKkEd1EaP8jzJCeaXiIfwgB9T/DxLPjL47zU5Z3aj5s9GghAmww7xiPwdPbNLiBnB5WJArMlZPwYqBZfFgfWFMva115Dr0UXS2wP1yfHMeORqd66rEXZTmI2Kym+/yzRi7vo15HlZaKEMJcqWaGUEj7q36AHg==
+X-YMail-OSG: qsc4N60VM1lT.voDuqyBRRP1chLws0RRccxiCoSARPQR1NQGe7vq.V2jOKl8.yu
+ CnNuzfZiFb.j.oflBgIkldvk25vQpTQkccHOR9ipOybHRZz3mOkM8lfqdu18TmOPXY8OryY8_SQn
+ myMSq1sTgjxweLf13f.6.a2iLbPyvwSeIR3nz2yrVZ0F8Pdqqo74HKTJ_AJNMnOpPlZ4DYYEqFf9
+ 0SESFHFRHhxrQJEmUjnOLMfKGmxiOhBJI.mPqOkkxwsRkAvAXfsky3M7h67VxpN8nHFp8lDGrEbP
+ bRTrKhEFALMU6b5rVIzJCScJPmCpTt1EpYINCYHOQZQw4M2SG8b4yx6AEoamHDNPCOisvgNsh_Q5
+ 4dM3gfIrLuYSs2yyS1izDvAn7a1qNTxYWYymtc0ElZIMyN8Gg0Rq7g5BzJBdF0BQhY5uNCG7.RUM
+ 05ZxbjzPUplSf6v.QPf2e4EPCejx4IjMD0QI_qbOmeAkUgkjj45ZNV0pjoSrd6fivd3iA0rdloOZ
+ X6BNiIz6sMjrXe_NqnFxTljFXZeIVkimDQprrdkt6jc.ZDglI.fwWO6Td8T1HyhBvkdHDY5kztMP
+ YMufZrX1nZKp7hEfXf6KKrdL5mnsRjZPUVvgSj25XhILDkiy14veaTK16VQ.p6lAxIZG9aonBKyl
+ wOqAkRLFajyR0D0RcQOSVZ5Egpqe8epMGlQ4o1Hk_r0LMMZZZJ4G6sJAUr.agrAvPfr_GvkYmYSc
+ GxPe5nr0oaVRflgRvfN2RrYVvG_QgJxKDZ5hp8IPyLO5q0GQojq5z5zzJC6npcC1vOaocoWBSzUb
+ 7MzmdMiRiDD2GjwKIJ2UUs78YrS1ho1GXCm9D27_9HzmlbVs5hJMdsHKP9m5hsweK3Hmc6NT.Qh8
+ JlWd8nSeNVDpriSo5z.GdGvxVYOHTIg3hIpRCmMBCUNKj5C_4GNSf.uKabEj7lTGSVvgYngrS1Fj
+ PJ8xhZzFGmX6fbSbbX1hNwNUmspK1OifXFLSB8vFluy3In_m40gDWlXHIK1MlwKdbKVAPE8bn5A_
+ 1secPW6u_hnH7ywV9UV_VQZ2so000eehSE68aCdlO_4Y71uG6PRU4Q5ZKoWo0nGijrJEwPVSUDgk
+ 5brDVqn4y9fhQUWSCJ9j3MuN9rsbRNN01KwlkUeSkp2ncC8Sm_qvtzU1AfctQ3Kj_TtoTctTisrI
+ rOVahfHY9v5r.lGTyFgM1w_op3SWCYeZ7RfzQAhAWsIPMEiN7_pHH_XFfY0gDhWmqoKPI9JdrBpv
+ cEEMvqIvKboqAoQAbvqbMHj28s35eze7MoogFSGkrZ5jklJ..6p7KEEHnelNe6eR2GkuIc9snUhb
+ 3gCC_QA2v1DSizYgz973WpV2tSae6d.cHh1A2eLB5vfn02IIGX4C73I05K81gJY.zpG_dz4ndptO
+ .D3KaopOPctIJd0BUJVXWtF7IDt3pYEFeX8Oicm3X7poGcMVLW2KpspRmUPzB.kGB1SeKznw0o.V
+ HLyeTMf9On8jEFzgm1DWSGGUjEFcpzIDdBfINwz5r3cEgEaQrLHi4cXU9vn4GGmmcgsWtA3pZlI0
+ 7oyr3PKJR1bSGhGD6DYam3RI2a3Z7CvBAorlOcO4RWnkaZiUFLC8a_yDoxTJkkl3PMx.vVccotvk
+ EZa1fMz1Eh0YIQvPZHBLGOg7nMVBR5i9JAImVmfRCzNLJGH3gDRoIoiIN0gFCfWd6DlLrmCuZvxo
+ B3BEKJTUEqgpVkh2BUXnMyUWV1FGxMMevDPXkemBa4R6TisAwzZX_ki4B2TpDS_88OxFyynH87oq
+ zcQZ49eVsowX_xeZ1lXvru7HtgbmTLcUK.TkW0_Fi_pQt8qgDWoAMDfyUGnUNGr6dVWV4iu3TJy3
+ c4GgkfKyn6UUepqNvpDEgxZqW.Hk6oMkPrTeGmEnEnjmJwH7xybxFUdbt_DANMIqFSM3BmqD9Hab
+ Dh30NF4.OtS8aFQ.8A6ucQ3ns0j98WDxzZMd7YHgeCr5TtaWt4k41GI6UrGlS1g6x9DRMR8.H0dE
+ 5673l1bkBFU9vLWjzmHX7o5SR6u2xXqjp1p9.bCZkYT8eADE8ZKmqwYjw8B0RiBFEVwaXGit2NMt
+ yo4ZzL04wfQqpJg5F3NMbF2Jp7O4GMAHcv8Aa0mLlAKthMQtsi6r5Xx2Jt8QrlvYWHZnwI2nhrii
+ E8uFmfeRUunCBlwEHMTb3Y7RP1UK0nNh3hQyz3g0FlY.judvSwpeC6UIczaGFxzF7ReSZ1wpT65G
+ Er1F2CTBLO9jKhA--
+X-Sonic-MF: <lesrhorer@att.net>
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic306.consmr.mail.gq1.yahoo.com with HTTP; Sun, 29 May 2022 11:35:27 +0000
+Received: by hermes--canary-production-ne1-799d7bd497-7z8w4 (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID 45c10ca29e34986f6be115ab68704028;
+          Sun, 29 May 2022 11:35:25 +0000 (UTC)
+Message-ID: <dd7e69ce-41a4-cc5e-5a15-0ae9fc52aad0@att.net>
+Date:   Sun, 29 May 2022 06:35:19 -0500
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.9.1
-Subject: Re: [PATCH 2/3] dt-bindings: arm64: add BCM6858 soc to binding
- document
 Content-Language: en-US
-To:     Anand Gore <anand.gore@broadcom.com>,
-        Linux ARM List <linux-arm-kernel@lists.infradead.org>
-Cc:     dan.beygelman@broadcom.com, samyon.furman@broadcom.com,
-        florian.fainelli@broadcom.com,
-        William Zhang <william.zhang@broadcom.com>,
-        tomer.yacoby@broadcom.com, kursad.oney@broadcom.com,
-        joel.peshkin@broadcom.com,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220527171356.2461297-1-anand.gore@broadcom.com>
- <20220527101336.2.I2bc1418dd24a902e941c7073bbadab00568b4f5d@changeid>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220527101336.2.I2bc1418dd24a902e941c7073bbadab00568b4f5d@changeid>
-Content-Type: text/plain; charset=UTF-8
+To:     linux-kernel@vger.kernel.org, linux-modules@vger.kernel.org
+From:   Leslie Rhorer <lesrhorer@att.net>
+Subject: Modules list
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
+References: <dd7e69ce-41a4-cc5e-5a15-0ae9fc52aad0.ref@att.net>
+X-Mailer: WebService/1.1.20225 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.yahoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 27/05/2022 19:13, Anand Gore wrote:
-> Add BCM6858 SOC device tree description to bcmbca binding document.
-> 
-> Signed-off-by: Anand Gore <anand.gore@broadcom.com>
-> 
-> ---
-> 
->  .../devicetree/bindings/arm/bcm/brcm,bcmbca.yaml          | 8 ++++++++
->  1 file changed, 8 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/arm/bcm/brcm,bcmbca.yaml b/Documentation/devicetree/bindings/arm/bcm/brcm,bcmbca.yaml
-> index 24357cf09888..a63e355ba8f9 100644
-> --- a/Documentation/devicetree/bindings/arm/bcm/brcm,bcmbca.yaml
-> +++ b/Documentation/devicetree/bindings/arm/bcm/brcm,bcmbca.yaml
-> @@ -35,6 +35,14 @@ properties:
->            - const: brcm,bcm63178
->            - const: brcm,bcmbca
->  
-> +      - description: BCM6858 based boards
-> +        items:
-> +          - enum:
-> +              - brcm,bcm96858
-> +          - const: brcm,bcm6858
-> +          - const: brcm,bcmbca
-> +
-> +
-
-No need for two blank lines.
-
->  additionalProperties: true
->  
->  ...
-
-
-Best regards,
-Krzysztof
+	I sent a subscription to the linux-modules list which seemed to be 
+successful, but when I sent a message, it bounced.  I sent the message 
+to linux-modules@vger.kernel.org.  Did I do something wrong?
