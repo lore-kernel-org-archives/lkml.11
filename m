@@ -2,88 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8B03C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 29 May 2022 15:31:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADCC6C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 29 May 2022 15:36:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231160AbiE2PbD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 29 May 2022 11:31:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39018 "EHLO
+        id S231175AbiE2Pgg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 29 May 2022 11:36:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231154AbiE2PbB (ORCPT
+        with ESMTP id S231154AbiE2Pgd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 29 May 2022 11:31:01 -0400
-Received: from jari.cn (unknown [218.92.28.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AB9F83FBC4
-        for <linux-kernel@vger.kernel.org>; Sun, 29 May 2022 08:31:00 -0700 (PDT)
-Received: by ajax-webmail-localhost.localdomain (Coremail) ; Sun, 29 May
- 2022 23:25:54 +0800 (GMT+08:00)
-X-Originating-IP: [182.148.15.20]
-Date:   Sun, 29 May 2022 23:25:54 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   "XueBing Chen" <chenxuebing@jari.cn>
-To:     dinguyen@kernel.org
-Cc:     linux-kernel@vger.kernel.org
-Subject: [PATCH] nios2: clean up warnings found by checkpatch
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT6.0.1 build 20210329(c53f3fee)
- Copyright (c) 2002-2022 www.mailtech.cn
- mispb-4e503810-ca60-4ec8-a188-7102c18937cf-zhkzyfz.cn
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        Sun, 29 May 2022 11:36:33 -0400
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EE256BF78;
+        Sun, 29 May 2022 08:36:32 -0700 (PDT)
+Received: from [192.168.254.32] (unknown [47.189.24.195])
+        by linux.microsoft.com (Postfix) with ESMTPSA id ADE7620BA5BE;
+        Sun, 29 May 2022 08:36:31 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com ADE7620BA5BE
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1653838592;
+        bh=ROb/W/+2IsIw99UuNX/wvckTYE+xEoi+uH7gZDy4cXY=;
+        h=Date:Subject:To:References:From:In-Reply-To:From;
+        b=an5IEXSZmn1efYGvhIMQvq9/f9ZuUi9v5rC3SmrLUsSoW+56mQGsMUFPwSV4T6PcM
+         uqzKZFVpUESsFTgkg5K8PI1LbBxufNocS0EGYCIq/CZ6TUjk2UpEBTfKiumi0Zqp8Z
+         7FYeCTJxgsiCBulx+ZYsy4CKzcDMgjICBukMxrzY=
+Message-ID: <c42112ac-5606-347f-dfe7-ef941b77c6a5@linux.microsoft.com>
+Date:   Sun, 29 May 2022 10:36:30 -0500
 MIME-Version: 1.0
-Message-ID: <3132c1c.a93.181106c7d36.Coremail.chenxuebing@jari.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: AQAAfwD3AG+CkJNisyc6AA--.685W
-X-CM-SenderInfo: hfkh05pxhex0nj6mt2flof0/1tbiAQABCmFEYxsmmAACsr
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [RFC PATCH v2 05/20] objtool: Reorganize ORC types
+Content-Language: en-US
+To:     Chen Zhongjin <chenzhongjin@huawei.com>, jpoimboe@redhat.com,
+        peterz@infradead.org, mark.rutland@arm.com, broonie@kernel.org,
+        nobuta.keiya@fujitsu.com, sjitindarsingh@gmail.com,
+        catalin.marinas@arm.com, will@kernel.org,
+        jamorris@linux.microsoft.com, linux-arm-kernel@lists.infradead.org,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <e81e773678f88f7c2ff7480e2eb096973ec198db>
+ <20220524001637.1707472-1-madvenka@linux.microsoft.com>
+ <20220524001637.1707472-6-madvenka@linux.microsoft.com>
+ <ab3533a6-cb60-b553-e140-40b87fc09428@huawei.com>
+From:   "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
+In-Reply-To: <ab3533a6-cb60-b553-e140-40b87fc09428@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-CkNsZWFuIHVwIGEgaGFuZGZ1bCBvZiBjaGVja3BhdGNoIHdhcm5pbmdzOgotIFdBUk5JTkc6IFBy
-ZWZlciAndW5zaWduZWQgbG9uZycgb3ZlciAndW5zaWduZWQgbG9uZyBpbnQnCiAgYXMgdGhlIGlu
-dCBpcyB1bm5lY2Vzc2FyeQotIFdBUk5JTkc6IFByZWZlciAnbG9uZycgb3ZlciAnbG9uZyBpbnQn
-IGFzIHRoZSBpbnQgaXMgdW5uZWNlc3NhcnkKLSBXQVJOSU5HOiBQcmVmZXIgJ3Vuc2lnbmVkIGlu
-dCcgdG8gYmFyZSB1c2Ugb2YgJ3Vuc2lnbmVkJwoKU2lnbmVkLW9mZi1ieTogWHVlQmluZyBDaGVu
-IDxjaGVueHVlYmluZ0BqYXJpLmNuPgotLS0KIGFyY2gvbmlvczIvbGliL21lbWNweS5jIHwgMTYg
-KysrKysrKystLS0tLS0tLQogMSBmaWxlIGNoYW5nZWQsIDggaW5zZXJ0aW9ucygrKSwgOCBkZWxl
-dGlvbnMoLSkKCmRpZmYgLS1naXQgYS9hcmNoL25pb3MyL2xpYi9tZW1jcHkuYyBiL2FyY2gvbmlv
-czIvbGliL21lbWNweS5jCmluZGV4IDE3MTVmNWQyOGIxMS4uMjVhNTQxYjYwOWJhIDEwMDY0NAot
-LS0gYS9hcmNoL25pb3MyL2xpYi9tZW1jcHkuYworKysgYi9hcmNoL25pb3MyL2xpYi9tZW1jcHku
-YwpAQCAtMjIsNyArMjIsNyBAQAogLyogVHlwZSB0byB1c2UgZm9yIGFsaWduZWQgbWVtb3J5IG9w
-ZXJhdGlvbnMuCiAgICBUaGlzIHNob3VsZCBub3JtYWxseSBiZSB0aGUgYmlnZ2VzdCB0eXBlIHN1
-cHBvcnRlZCBieSBhIHNpbmdsZSBsb2FkCiAgICBhbmQgc3RvcmUuICAqLwotI2RlZmluZQlvcF90
-CXVuc2lnbmVkIGxvbmcgaW50CisjZGVmaW5lCW9wX3QJdW5zaWduZWQgbG9uZwogI2RlZmluZSBP
-UFNJWgkoc2l6ZW9mKG9wX3QpKQogCiAvKiBPcHRpbWFsIHR5cGUgZm9yIHN0b3JpbmcgYnl0ZXMg
-aW4gcmVnaXN0ZXJzLiAgKi8KQEAgLTY5LDcgKzY5LDcgQEAgZG8gewkJCQkJCQkJCVwKICAgIGJs
-b2NrIGJlZ2lubmluZyBhdCBEU1RQIHdpdGggTEVOIGBvcF90JyB3b3JkcyAobm90IExFTiBieXRl
-cyEpLgogICAgQm90aCBTUkNQIGFuZCBEU1RQIHNob3VsZCBiZSBhbGlnbmVkIGZvciBtZW1vcnkg
-b3BlcmF0aW9ucyBvbiBgb3BfdCdzLiAgKi8KIC8qIHN0cmVhbS1saW5lZCAocmVhZCB4OCArIHdy
-aXRlIHg4KSAqLwotc3RhdGljIHZvaWQgX3dvcmRjb3B5X2Z3ZF9hbGlnbmVkKGxvbmcgaW50IGRz
-dHAsIGxvbmcgaW50IHNyY3AsIHNpemVfdCBsZW4pCitzdGF0aWMgdm9pZCBfd29yZGNvcHlfZndk
-X2FsaWduZWQobG9uZyBkc3RwLCBsb25nIHNyY3AsIHNpemVfdCBsZW4pCiB7CiAJd2hpbGUgKGxl
-biA+IDcpIHsKIAkJcmVnaXN0ZXIgb3BfdCBhMCwgYTEsIGEyLCBhMywgYTQsIGE1LCBhNiwgYTc7
-CkBAIC0xMDksNyArMTA5LDcgQEAgc3RhdGljIHZvaWQgX3dvcmRjb3B5X2Z3ZF9hbGlnbmVkKGxv
-bmcgaW50IGRzdHAsIGxvbmcgaW50IHNyY3AsIHNpemVfdCBsZW4pCiAgICBEU1RQIHNob3VsZCBi
-ZSBhbGlnbmVkIGZvciBtZW1vcnkgb3BlcmF0aW9ucyBvbiBgb3BfdCdzLCBidXQgU1JDUCBtdXN0
-CiAgICAqbm90KiBiZSBhbGlnbmVkLiAgKi8KIC8qIHN0cmVhbS1saW5lZCAocmVhZCB4NCArIHdy
-aXRlIHg0KSAqLwotc3RhdGljIHZvaWQgX3dvcmRjb3B5X2Z3ZF9kZXN0X2FsaWduZWQobG9uZyBp
-bnQgZHN0cCwgbG9uZyBpbnQgc3JjcCwKK3N0YXRpYyB2b2lkIF93b3JkY29weV9md2RfZGVzdF9h
-bGlnbmVkKGxvbmcgZHN0cCwgbG9uZyBzcmNwLAogCQkJCQlzaXplX3QgbGVuKQogewogCW9wX3Qg
-YXA7CkBAIC0xNTksOCArMTU5LDggQEAgc3RhdGljIHZvaWQgX3dvcmRjb3B5X2Z3ZF9kZXN0X2Fs
-aWduZWQobG9uZyBpbnQgZHN0cCwgbG9uZyBpbnQgc3JjcCwKIAogdm9pZCAqbWVtY3B5KHZvaWQg
-KmRzdHBwLCBjb25zdCB2b2lkICpzcmNwcCwgc2l6ZV90IGxlbikKIHsKLQl1bnNpZ25lZCBsb25n
-IGludCBkc3RwID0gKGxvbmcgaW50KSBkc3RwcDsKLQl1bnNpZ25lZCBsb25nIGludCBzcmNwID0g
-KGxvbmcgaW50KSBzcmNwcDsKKwl1bnNpZ25lZCBsb25nIGRzdHAgPSAobG9uZykgZHN0cHA7CisJ
-dW5zaWduZWQgbG9uZyBzcmNwID0gKGxvbmcpIHNyY3BwOwogCiAJLyogQ29weSBmcm9tIHRoZSBi
-ZWdpbm5pbmcgdG8gdGhlIGVuZC4gICovCiAKQEAgLTE5MSwxMCArMTkxLDEwIEBAIHZvaWQgKm1l
-bWNweSh2b2lkICpkc3RwcCwgY29uc3Qgdm9pZCAqc3JjcHAsIHNpemVfdCBsZW4pCiAJcmV0dXJu
-IGRzdHBwOwogfQogCi12b2lkICptZW1jcHliKHZvaWQgKmRzdHBwLCBjb25zdCB2b2lkICpzcmNw
-cCwgdW5zaWduZWQgbGVuKQordm9pZCAqbWVtY3B5Yih2b2lkICpkc3RwcCwgY29uc3Qgdm9pZCAq
-c3JjcHAsIHVuc2lnbmVkIGludCBsZW4pCiB7Ci0JdW5zaWduZWQgbG9uZyBpbnQgZHN0cCA9IChs
-b25nIGludCkgZHN0cHA7Ci0JdW5zaWduZWQgbG9uZyBpbnQgc3JjcCA9IChsb25nIGludCkgc3Jj
-cHA7CisJdW5zaWduZWQgbG9uZyBkc3RwID0gKGxvbmcpIGRzdHBwOworCXVuc2lnbmVkIGxvbmcg
-c3JjcCA9IChsb25nKSBzcmNwcDsKIAogCUJZVEVfQ09QWV9GV0QoZHN0cCwgc3JjcCwgbGVuKTsK
-IAotLSAKMi4zNi4xCg==
+See my responses inline...
+
+On 5/24/22 09:27, Chen Zhongjin wrote:
+> 
+> 
+> On 2022/5/24 8:16, madvenka@linux.microsoft.com wrote:
+>> From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
+>>
+>> The ORC code needs to be reorganized into arch-specific and generic parts
+>> so that architectures other than X86 can use the generic parts.
+>>
+>> orc_types.h contains the following ORC definitions shared between objtool
+>> and the kernel:
+>>
+>> 	- ORC register definitions which are arch-specific.
+>> 	- orc_entry structure which is generic.
+> ...
+>> diff --git a/include/linux/orc_entry.h b/include/linux/orc_entry.h
+>> new file mode 100644
+>> index 000000000000..3d49e3b9dabe
+>> --- /dev/null
+>> +++ b/include/linux/orc_entry.h
+>> @@ -0,0 +1,39 @@
+>> +/* SPDX-License-Identifier: GPL-2.0-or-later */
+>> +/*
+>> + * Copyright (C) 2017 Josh Poimboeuf <jpoimboe@redhat.com>
+>> + */
+>> +
+>> +#ifndef _ORC_ENTRY_H
+>> +#define _ORC_ENTRY_H
+>> +
+>> +#ifndef __ASSEMBLY__
+>> +#include <asm/byteorder.h>
+>> +
+>> +/*
+>> + * This struct is more or less a vastly simplified version of the DWARF Call
+>> + * Frame Information standard.  It contains only the necessary parts of DWARF
+>> + * CFI, simplified for ease of access by the in-kernel unwinder.  It tells the
+>> + * unwinder how to find the previous SP and BP (and sometimes entry regs) on
+>> + * the stack for a given code address.  Each instance of the struct corresponds
+>> + * to one or more code locations.
+>> + */
+>> +struct orc_entry {
+>> +	s16		sp_offset;
+>> +	s16		fp_offset;
+>> +#if defined(__LITTLE_ENDIAN_BITFIELD)
+>> +	unsigned	sp_reg:4;
+>> +	unsigned	fp_reg:4;
+> Are sp_reg & fp_reg & end needed? I noticed that they are not used in
+> reliability checking.
+
+Yeah. The ORC entry structure is a superset of what I need for ARM64. But X86 requires all of it.
+(Although I think "end" is not needed anymore).
+
+And, other architectures might require all of it. So, I am keeping it as is.
+
+> 
+>> +	unsigned	type:3;
+>> +	unsigned	end:1;
+>> +#elif defined(__BIG_ENDIAN_BITFIELD)
+>> +	unsigned	fp_reg:4;
+>> +	unsigned	sp_reg:4;
+>> +	unsigned	unused:4;
+>> +	unsigned	end:1;
+>> +	unsigned	type:3;
+>> +#endif
+>> +} __packed;
+>> +
+>> +#endif /* __ASSEMBLY__ */
+>> +
+>> +#endif /* _ORC_ENTRY_H */
+
+Thanks!
+
+Madhavan
