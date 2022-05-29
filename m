@@ -2,155 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 368F9C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 29 May 2022 09:20:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62B03C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 29 May 2022 09:42:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229792AbiE2JTS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 29 May 2022 05:19:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34980 "EHLO
+        id S229703AbiE2JlN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 29 May 2022 05:41:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229630AbiE2JTR (ORCPT
+        with ESMTP id S229529AbiE2JlM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 29 May 2022 05:19:17 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E41A157B0F;
-        Sun, 29 May 2022 02:19:15 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id c2so584931edf.5;
-        Sun, 29 May 2022 02:19:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=+HEGRO1E10+wWKc//c336BxlasIWsJvKYVSCospJ4F4=;
-        b=NFeH/wB/eb/HtoJC39Dm3B4prjToxAjJdwTsNJOe9dWWJ+fo6g8h9TELQSfd66nLHl
-         PK6uoBPvMmgT03AEyKlRoCK+E9JAlvOlH9XXAF8+OYy1kXhwunmatNPnhK2iWoinreHQ
-         C/2ZsUkeWV2x9df7bi89T5d/XPoVuHTH+iCgIhyLBKg8IcDdn/sPf7PhT7kpA68vCYXb
-         XR/zPVFl7OKfTKnrPDbhdBb/icTC5fwU8yRkI8/SfnvEcXPe3GlPaQv86ZxDJOeLoMe9
-         BH1fRW7FQbSQqTj+I/bPW+Oev5Ja8j6M6L1FAz66AEYWtsiIc/0BbzkNL5zTk8QZ/rbz
-         taOg==
+        Sun, 29 May 2022 05:41:12 -0400
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 794D5532E5
+        for <linux-kernel@vger.kernel.org>; Sun, 29 May 2022 02:41:11 -0700 (PDT)
+Received: by mail-il1-f200.google.com with SMTP id m9-20020a056e021c2900b002d13627892eso6180417ilh.20
+        for <linux-kernel@vger.kernel.org>; Sun, 29 May 2022 02:41:11 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=+HEGRO1E10+wWKc//c336BxlasIWsJvKYVSCospJ4F4=;
-        b=IIZkrXf14pzt3uGjX1t9PDkEaWq0pC5MegdLUNbz0fz6Ku1aY8gVcz3G/KR5sugw8b
-         H11Oxrh2OGcEwdwk0R5tQZjqObRNSvrRlR0rWURmu+mDUj332DQxdbUZbzqQmZ2TtR9H
-         zNOB4kxAmKudoVp2769bXYQEKG6gUtN8PX6kVo3PWhvmRxPT4ZDaVXe3yK63ooltuU5C
-         fOSOkZ6Kr9Q2hM6EHqh+N0XW6vvOasRtiyM+ex2P9Qb0WFSjC/dmXkx+Sy+jImS7bPkY
-         ZFVvBeZtgzbg0k3iQSjXZk4HArZhSh5KD9HDur/35yyYa53mlo+hMKbDrpVx0Qr+g3gq
-         eHlQ==
-X-Gm-Message-State: AOAM533ubWU8wNoZ0TMDldBaULn8YQPqhz4+kSSDvQIQlktCscRDaGnI
-        0Dh+0GH6AkMO3g8fcdFpdxk=
-X-Google-Smtp-Source: ABdhPJwr0AWqiMQ6Aco3OPjNeh8dOemUUp8N4NNr09EViJuMk78MqqxeUlqxu45lAQX8V3ZnKtB1Ow==
-X-Received: by 2002:a50:fc06:0:b0:42b:c6d3:6ff0 with SMTP id i6-20020a50fc06000000b0042bc6d36ff0mr22105455edr.213.1653815954354;
-        Sun, 29 May 2022 02:19:14 -0700 (PDT)
-Received: from kista.localnet (213-161-3-76.dynamic.telemach.net. [213.161.3.76])
-        by smtp.gmail.com with ESMTPSA id z20-20020a05640240d400b0042aad9edc9bsm4829999edb.71.2022.05.29.02.19.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 29 May 2022 02:19:13 -0700 (PDT)
-From:   Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
-To:     mchehab@kernel.org, hverkuil@xs4all.nl,
-        ezequiel@vanguardiasur.com.ar, p.zabel@pengutronix.de,
-        gregkh@linuxfoundation.org, mripard@kernel.org,
-        paul.kocialkowski@bootlin.com, wens@csie.org, samuel@sholland.org,
-        nicolas.dufresne@collabora.com, andrzej.p@collabora.com,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>
-Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rockchip@lists.infradead.org, linux-staging@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        kernel@collabora.com,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>
-Subject: Re: [PATCH v6 09/17] media: uapi: HEVC: Define V4L2_CID_STATELESS_HEVC_SLICE_PARAMS as a dynamic array
-Date:   Sun, 29 May 2022 11:19:12 +0200
-Message-ID: <2630478.mvXUDI8C0e@kista>
-In-Reply-To: <20220527143134.3360174-10-benjamin.gaignard@collabora.com>
-References: <20220527143134.3360174-1-benjamin.gaignard@collabora.com> <20220527143134.3360174-10-benjamin.gaignard@collabora.com>
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=tYRIh4qNHeFY0bfRgHxO1Z+lb7J6POVfjlxkkF/QeLs=;
+        b=yALSdERwA50bZJC8k0bFijXikmiLN6lGIpGDvun4Tagikt+7ZjxgEKEKTVf4aGHqH8
+         eVejyR2Zpm/feMRlmhDl8eejyZsP93txz1KwdXuYpam2QdZAdI/jrrgra7CnWLh6fz2r
+         X61a73KSpDpgasAsoSBVALjBKCafDfUbV7W/RaUuW/jMDWvlpAZ+/PbqNyJThJYAZF7j
+         /SJs5HjrlKfGUyvqD8EP7fGcerQVKwbBZ6vMWoeInSiLN9UXN2J8vikVRPZsijnPU6kw
+         auPLlM05WbQ7peuARjfTU8gFCMfIwA3jA62o0kVUGMUDjHg9WtAaPvjuPPdbBiFB0h+4
+         kV5Q==
+X-Gm-Message-State: AOAM530HOKX6bUbrIsYTWn6bHA+BKtIr5wyTT8CyZJK5+rsn4RATLhyF
+        Ja/uT9rqUuiM5u2ZQ3Tg/dbmgyaE9yAzZuvboEMeGJUqvgxz
+X-Google-Smtp-Source: ABdhPJx4jUZWSvbhZygWKaWH0Y+nlt6B20DSLR+iIXJyRQe9QvEXAozKs/QyABmFBTAw//GPl7QjfRtOAU6OItRM2ODRrJqokr6T
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+X-Received: by 2002:a92:ca45:0:b0:2d1:b7cf:26a9 with SMTP id
+ q5-20020a92ca45000000b002d1b7cf26a9mr15075806ilo.52.1653817270807; Sun, 29
+ May 2022 02:41:10 -0700 (PDT)
+Date:   Sun, 29 May 2022 02:41:10 -0700
+In-Reply-To: <20220529090856.4089-1-hdanton@sina.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000f3314905e0235636@google.com>
+Subject: Re: [syzbot] KASAN: use-after-free Read in driver_register
+From:   syzbot <syzbot+dc7c3ca638e773db07f6@syzkaller.appspotmail.com>
+To:     hdanton@sina.com, linux-kernel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dne petek, 27. maj 2022 ob 16:31:26 CEST je Benjamin Gaignard napisal(a):
-> Make explicit that V4L2_CID_STATELESS_HEVC_SLICE_PARAMS control is
-> a dynamic array control type.
-> Some drivers may be able to receive multiple slices in one control
-> to improve decoding performance.
-> 
-> Define the max size of the dynamic that can driver can set in .dims = {}.
-> 
-> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-> ---
-> version 6:
-> - Set V4L2_CTRL_FLAG_DYNAMIC_ARRAY flag automatically when using
->   V4L2_CID_STATELESS_HEVC_SLICE_PARAMS control.
-> - Add a define for max slices count
-> 
->  Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst | 2 ++
->  drivers/media/v4l2-core/v4l2-ctrls-defs.c                 | 1 +
->  include/media/hevc-ctrls.h                                | 5 +++++
->  3 files changed, 8 insertions(+)
-> 
-> diff --git a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst b/
-Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
-> index 06b967de140c..0796b1563daa 100644
-> --- a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
-> +++ b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
-> @@ -2986,6 +2986,8 @@ enum v4l2_mpeg_video_hevc_size_of_length_field -
->      These bitstream parameters are defined according to :ref:`hevc`.
->      They are described in section 7.4.7 "General slice segment header
->      semantics" of the specification.
-> +    This control is a dynamically sized 1-dimensional array,
-> +    V4L2_CTRL_FLAG_DYNAMIC_ARRAY flag must be set when using it.
->  
->  .. c:type:: v4l2_ctrl_hevc_slice_params
->  
-> diff --git a/drivers/media/v4l2-core/v4l2-ctrls-defs.c b/drivers/media/v4l2-
-core/v4l2-ctrls-defs.c
-> index 9f55503cd3d6..d594efbcbb93 100644
-> --- a/drivers/media/v4l2-core/v4l2-ctrls-defs.c
-> +++ b/drivers/media/v4l2-core/v4l2-ctrls-defs.c
-> @@ -1510,6 +1510,7 @@ void v4l2_ctrl_fill(u32 id, const char **name, enum 
-v4l2_ctrl_type *type,
->  		break;
->  	case V4L2_CID_STATELESS_HEVC_SLICE_PARAMS:
->  		*type = V4L2_CTRL_TYPE_HEVC_SLICE_PARAMS;
-> +		*flags |= V4L2_CTRL_FLAG_DYNAMIC_ARRAY;
+Hello,
 
-This change breaks Cedrus. I'll check what needs to be changed.
+syzbot has tested the proposed patch and the reproducer did not trigger any issue:
 
-Best regards,
-Jernej
+Reported-and-tested-by: syzbot+dc7c3ca638e773db07f6@syzkaller.appspotmail.com
 
->  		break;
->  	case V4L2_CID_STATELESS_HEVC_SCALING_MATRIX:
->  		*type = V4L2_CTRL_TYPE_HEVC_SCALING_MATRIX;
-> diff --git a/include/media/hevc-ctrls.h b/include/media/hevc-ctrls.h
-> index 0dbd5d681c28..140151609c96 100644
-> --- a/include/media/hevc-ctrls.h
-> +++ b/include/media/hevc-ctrls.h
-> @@ -311,9 +311,14 @@ struct v4l2_hevc_pred_weight_table {
->  #define V4L2_HEVC_SLICE_PARAMS_FLAG_SLICE_LOOP_FILTER_ACROSS_SLICES_ENABLED 
-(1ULL << 8)
->  #define V4L2_HEVC_SLICE_PARAMS_FLAG_DEPENDENT_SLICE_SEGMENT	(1ULL << 
-9)
->  
-> +#define V4L2_HEVC_SLICE_MAX_COUNT	600
-> +
->  /**
->   * v4l2_ctrl_hevc_slice_params - HEVC slice parameters
->   *
-> + * This control is a dynamically sized 1-dimensional array,
-> + * V4L2_CTRL_FLAG_DYNAMIC_ARRAY flag must be set when using it.
-> + *
->   * @bit_size: size (in bits) of the current slice data
->   * @data_bit_offset: offset (in bits) to the video data in the current slice 
-data
->   * @nal_unit_type: specifies the coding type of the slice (B, P or I)
-> -- 
-> 2.32.0
-> 
-> 
+Tested on:
 
+commit:         d3fde8ff Add linux-next specific files for 20220527
+git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
+kernel config:  https://syzkaller.appspot.com/x/.config?x=ccb8d66fc9489ef
+dashboard link: https://syzkaller.appspot.com/bug?extid=dc7c3ca638e773db07f6
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=14fdf0ebf00000
 
+Note: testing is done by a robot and is best-effort only.
