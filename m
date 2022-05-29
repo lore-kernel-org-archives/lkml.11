@@ -2,69 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3EE0C43217
-	for <linux-kernel@archiver.kernel.org>; Sun, 29 May 2022 11:10:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BB84C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 29 May 2022 11:14:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229957AbiE2LK3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 29 May 2022 07:10:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34634 "EHLO
+        id S229982AbiE2LOt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 29 May 2022 07:14:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229909AbiE2LK1 (ORCPT
+        with ESMTP id S229930AbiE2LOs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 29 May 2022 07:10:27 -0400
+        Sun, 29 May 2022 07:14:48 -0400
 Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5A617A460
-        for <linux-kernel@vger.kernel.org>; Sun, 29 May 2022 04:10:25 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id y13so16138172eje.2
-        for <linux-kernel@vger.kernel.org>; Sun, 29 May 2022 04:10:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D062980A2
+        for <linux-kernel@vger.kernel.org>; Sun, 29 May 2022 04:14:47 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id gi33so16137126ejc.3
+        for <linux-kernel@vger.kernel.org>; Sun, 29 May 2022 04:14:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=Iy/F7uqP/QJ+JhJfiMPaLwgsjVlSR1sJFsXemWM3y5M=;
-        b=UD/IIWn1gRH+c3m2RcFFnI/6dzrWKsaPfaKlE/5FHsXq+P6MmJf9bjE6eR0BGNdQGV
-         isYY9q4ss901WSypLH0hEZQLxNVVK//qZ2VPw/JkwgPm2DnCTjlniBj8FrS37QJJ8xVz
-         lkCY9mz9loP0fSJxFYoHVBIXTobXxk7el8bfQ0gWnFstc+g+FBXcOn9qT259CYURBMLQ
-         9eSkks2nCNBbAll+7pyuWPgy5tgZh9745/mrKz4swOGQ0JBdRUY0VdF/iQnnBvr/b+J3
-         UzP5zVo8783Ktqsx0MGXb79w1ulcJekQuSxG5afNW7fP6AU0wThoBIOnf8nabOJUebR5
-         tS3A==
+        bh=rGhstKLsyi2KJ+CtRUGYDx9gAOcoBt1ORpXxBhyJ8eY=;
+        b=rhxV0Z1V3zfgBPgVVe7tv/AAiK+DBDDaEkHv94ZUbrB648F2ZB3DSr5iKqOPw2ro1H
+         MQx7LFkJXU6LnLfrt9CyoIo74GtkJgmQuYUheoxin73O52csTjjQEjal86Qe5UCVPnN6
+         qh/eA6sZZ7gIGVFKb/WWM4zFkdpZIXtCXIlM9D0VeQRmwaC1bVm2MiPXzVajeuFn6g0I
+         jjKCWfaElOuqCfu3RxCbdXPToPZrfEg3LfGHgbRhmaWhoWwTJhjsrHWWcQ/15jNbPmIj
+         rsOWAupXYfk2YQErqdnu90NRds7ejSw55TZKFkpDPggXqxxWuShcoqa1Cxculjw89YYc
+         u54A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=Iy/F7uqP/QJ+JhJfiMPaLwgsjVlSR1sJFsXemWM3y5M=;
-        b=51+o5VgoGVpwtGQazh15F/QlbwBtIQhxmCSAHpmvyZlqobu6dJqAYpY8vB1QlUydZV
-         UfvVPrBSaluT1l8M2avBg+18l2ufgx8zSmwOmMMa5gOToTi64PLWPG5XLLAAeTRPH/u6
-         GqvI9Qr90Hn/3b01cuDHZDMy1t44MR5UjZU1Sv1qG4X/84byExBkUsXozqEBFviQX/fW
-         JZuAklkCvooU0r2l4BggMZbbCHrzo54dk2hcTcvoeMHbGVv1BW+C/zisqy40PM4HyFrW
-         qg83c7YmDcNE+ssMwWFN6WjKnVGWfzNmHX0T6Owb7mLehRJhErWW/280p2vaE6rSfbH2
-         8kcQ==
-X-Gm-Message-State: AOAM533cn9TAEJSMSuBKXdXPb7Rie4eV/Jg/+aDyHkLdhBMDlHkrmT+O
-        7c+Ty7nV8xY8m0W9QU1Z03GDOA==
-X-Google-Smtp-Source: ABdhPJyJ1wAI1x+8OgmzP9eOjOPL/AP7OqXQtjePyQU8l4VkCQrTwGs/pAVpjCfcxOmFsJgEdcL+Lw==
-X-Received: by 2002:a17:907:6294:b0:6e1:ea4:74a3 with SMTP id nd20-20020a170907629400b006e10ea474a3mr44381372ejc.168.1653822624272;
-        Sun, 29 May 2022 04:10:24 -0700 (PDT)
+        bh=rGhstKLsyi2KJ+CtRUGYDx9gAOcoBt1ORpXxBhyJ8eY=;
+        b=sdQBwftMmhxqLzBw5YvGL3ucKIHUEIBe2vHcHzVe9oXlVka0L7YEFAEz6f3srsJcys
+         cAZ27hvXz555YTksCLoE5ayEYieLt7VbBEhHU9gcajBFpxaRq+9fg4P+ZN4VZmleaXuE
+         ihfQfBCX3w3WlKXeKWHgz/S5eag+IDJctGMiGGruiUqjI94UJLRXim0b8cHN5XVxLBAF
+         6XfYS6jBgxkXCbfaqPBbPTeaKv57wBNHd8dVT87iHGzkadnHnP98I4fcZRRfP3EbHG83
+         lROJ9l2Jwv0LOG+siu/DN3Ecd/kma38Y9zoba4Qm22f0wH9GENq8au5LwTzv0i2wLqcz
+         JUQw==
+X-Gm-Message-State: AOAM533vd6pNzfLokAS6wMId0ZRZB+I3U7grPD0vG+yCNBu8TaVro5JO
+        nIhG0iqPi8S+utPKPbHo1v+OHg==
+X-Google-Smtp-Source: ABdhPJwqfJO8L/+sv/ODyACstbNznQsCsqUfk45ZMaUmJejvzc8E1H5Mro8SHweV6EA3FC1iq9ujKg==
+X-Received: by 2002:a17:907:9805:b0:6fe:c719:f45d with SMTP id ji5-20020a170907980500b006fec719f45dmr31475165ejc.43.1653822885846;
+        Sun, 29 May 2022 04:14:45 -0700 (PDT)
 Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id d3-20020a1709063ec300b006fee2bdf6c6sm3073996ejj.169.2022.05.29.04.10.22
+        by smtp.gmail.com with ESMTPSA id hp17-20020a1709073e1100b006fecb577060sm3086313ejc.119.2022.05.29.04.14.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 29 May 2022 04:10:23 -0700 (PDT)
+        Sun, 29 May 2022 04:14:45 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Samuel Mendoza-Jonas <sam@mendozajonas.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, devicetree@vger.kernel.org,
+        Andrew Jeffery <andrew@aj.id.au>, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
+        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
 Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 1/2] net/ncsi: use proper "mellanox" DT vendor prefix
-Date:   Sun, 29 May 2022 13:10:16 +0200
-Message-Id: <20220529111017.181766-1-krzysztof.kozlowski@linaro.org>
+Subject: [PATCH] ARM: dts: aspeed: vegman: drop unused fttmr010,pwm-outputs property
+Date:   Sun, 29 May 2022 13:14:42 +0200
+Message-Id: <20220529111442.182722-1-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -72,28 +66,28 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-"mlx" Devicetree vendor prefix is not documented and instead "mellanox"
-should be used.
+The "fttmr010,pwm-outputs" property is neither documented, nor used in
+Linux kernel driver, so remove it.  This also fixes warning like:
+
+  aspeed-bmc-vegman-n110.dtb: timer@1e782000: 'fttmr010,pwm-outputs' does not match any of the regexes:
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- net/ncsi/ncsi-manage.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/arm/boot/dts/aspeed-bmc-vegman.dtsi | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/net/ncsi/ncsi-manage.c b/net/ncsi/ncsi-manage.c
-index 78814417d753..80713febfac6 100644
---- a/net/ncsi/ncsi-manage.c
-+++ b/net/ncsi/ncsi-manage.c
-@@ -1803,7 +1803,8 @@ struct ncsi_dev *ncsi_register_dev(struct net_device *dev,
- 	pdev = to_platform_device(dev->dev.parent);
- 	if (pdev) {
- 		np = pdev->dev.of_node;
--		if (np && of_get_property(np, "mlx,multi-host", NULL))
-+		if (np && (of_get_property(np, "mellanox,multi-host", NULL) ||
-+			   of_get_property(np, "mlx,multi-host", NULL)))
- 			ndp->mlx_multi_host = true;
- 	}
+diff --git a/arch/arm/boot/dts/aspeed-bmc-vegman.dtsi b/arch/arm/boot/dts/aspeed-bmc-vegman.dtsi
+index 1a5b25b2ea29..43af63910571 100644
+--- a/arch/arm/boot/dts/aspeed-bmc-vegman.dtsi
++++ b/arch/arm/boot/dts/aspeed-bmc-vegman.dtsi
+@@ -166,7 +166,6 @@ &sdhci1 {
+ };
  
+ &timer {
+-	fttmr010,pwm-outputs = <5>;
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pinctrl_timer5_default>;
+ 	#pwm-cells = <3>;
 -- 
 2.34.1
 
