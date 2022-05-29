@@ -2,108 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55F57C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 29 May 2022 17:36:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCE35C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 29 May 2022 17:36:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231393AbiE2RgQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 29 May 2022 13:36:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53850 "EHLO
+        id S231405AbiE2Rga (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 29 May 2022 13:36:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231364AbiE2RgP (ORCPT
+        with ESMTP id S231364AbiE2RgT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 29 May 2022 13:36:15 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EF4B13D18
-        for <linux-kernel@vger.kernel.org>; Sun, 29 May 2022 10:36:14 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id rs12so16917559ejb.13
-        for <linux-kernel@vger.kernel.org>; Sun, 29 May 2022 10:36:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RVcAJe5XVONjb8dc+ZXXSeKNhHu55YRYBkoQBm1t6ho=;
-        b=fKu1bXFx8iKiBoFGT/CRrwehq4ecxQRl35kagL7wTgZp4/TNJJt30w7ChV4K5RzaKN
-         fwEniKrOL1xkwMWf18Qkbjo7wi4P1DYO6QH0UTpXDrSBzpL2/jyMq5ltVo+zS70YoFfk
-         8isqt1hzaQ9ByI7itzLo6Jb4W0NvYlf9D8+E0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RVcAJe5XVONjb8dc+ZXXSeKNhHu55YRYBkoQBm1t6ho=;
-        b=zeKpp9RuFkSBI2lg1NXnK94y+FEtBb93dPyMUNENFOnnf0MsK/mPtCiXtgRoHIzPIx
-         Z5wQX/S2U0fasCghfvbnxxIrAyaGzR8THCXCnIpX09SexnUDLtlL+lTrSmi6KZ5RdyCT
-         0R/ryWGtCb62B1kpObHF7dpA2kngkIKLBRS8mknD0apSt8ALHDkSSMIQqNbiOtkiB7AQ
-         KXK7GssA4+jmCIl3hlcogAZ9v2BYjnEC0oreACMWQGVacdSs7Ktob4RKS95ZQG9nhsvU
-         U9j5TEPQi0vK7KiLhj8tg6skrDQzWsHKDdIpwg1PeXaD3MKt4PFQNt/6JHewz+Q05RoS
-         WfvA==
-X-Gm-Message-State: AOAM532U9aFFderU1c/yNwrQwLaLzjduaQFmXBlkaokWLs/5/vbv6YOs
-        VxSvCW6Xt0h9rsTREunaLrOJyp1EKlGwe+i2hdI=
-X-Google-Smtp-Source: ABdhPJwuCUB08FKqIqeV2OFD49RGivhS9xB6kxX8kcnvBCHcGx94d97vdv6gwzyEM7FH7AeIW/tInQ==
-X-Received: by 2002:a17:906:5d16:b0:6fe:b420:5e9d with SMTP id g22-20020a1709065d1600b006feb4205e9dmr38478119ejt.254.1653845772688;
-        Sun, 29 May 2022 10:36:12 -0700 (PDT)
-Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com. [209.85.221.47])
-        by smtp.gmail.com with ESMTPSA id rh28-20020a17090720fc00b006f3ef214ddesm3274151ejb.68.2022.05.29.10.36.12
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 29 May 2022 10:36:12 -0700 (PDT)
-Received: by mail-wr1-f47.google.com with SMTP id e25so1300189wra.11
-        for <linux-kernel@vger.kernel.org>; Sun, 29 May 2022 10:36:12 -0700 (PDT)
-X-Received: by 2002:a05:6000:1b0f:b0:210:313a:ef2a with SMTP id
- f15-20020a0560001b0f00b00210313aef2amr2361937wrz.281.1653845322509; Sun, 29
- May 2022 10:28:42 -0700 (PDT)
+        Sun, 29 May 2022 13:36:19 -0400
+Received: from conssluserg-01.nifty.com (conssluserg-01.nifty.com [210.131.2.80])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9546D120A9;
+        Sun, 29 May 2022 10:36:17 -0700 (PDT)
+Received: from mail-pj1-f47.google.com (mail-pj1-f47.google.com [209.85.216.47]) (authenticated)
+        by conssluserg-01.nifty.com with ESMTP id 24THZkSf020994;
+        Mon, 30 May 2022 02:35:47 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-01.nifty.com 24THZkSf020994
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1653845747;
+        bh=6jtSUhM9gFvzm+M4ODWXtbbHHwBS+n0OxXQnbf3F4DU=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=pdflkjSchFx34tlC3pHNAlrT2DBoEfq22Uq5I0Z3pKXEyiFqd2R8IAOEtvFXur9U9
+         pve1cdO+Ulk1QEgIlhXXN4Pt2vD3gjznQPowq2cWlNllWf9Av33S0CFVWsZfd4HEhW
+         qV6fAwiQuTpaneOKp2teNh+M3KSgym/U41XIOHeJLo8m4jZp/+aNldE81KqqqjcoME
+         oQWV36wMYp0WAVg768tSAHKd9lO9QSVFC6suMLY+aGYTwJndWLjCKG2xAtOkI+6KTS
+         13CdaYuxyu1ePwZ/b2RoKaJ27i6gIAzLIS+DsUI4ACUcnblWyRDtFWt629VbBUs646
+         a6V8ocBJV+3Pw==
+X-Nifty-SrcIP: [209.85.216.47]
+Received: by mail-pj1-f47.google.com with SMTP id l7-20020a17090aaa8700b001dd1a5b9965so8634374pjq.2;
+        Sun, 29 May 2022 10:35:46 -0700 (PDT)
+X-Gm-Message-State: AOAM530MaUz9ALf61Rcy+hLFNVYr4S0uUKdCxqWJP8ZGN11UqixfJma2
+        Gu6ql5SLQ/hWc/h+IVk3zTYmk8tKBPxiN2U9kKY=
+X-Google-Smtp-Source: ABdhPJzE7BUsmkMsPwC7OB7jGXNPDK1TSjoFiiL4b153MIvt4tvaWlhMlTuaGEWZ8hsyyKmV0CQGDZhPmFYOGeQSqNQ=
+X-Received: by 2002:a17:90b:1d83:b0:1e2:f63e:bc37 with SMTP id
+ pf3-20020a17090b1d8300b001e2f63ebc37mr2094884pjb.119.1653845746174; Sun, 29
+ May 2022 10:35:46 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220529154535.371758-1-acme@kernel.org>
-In-Reply-To: <20220529154535.371758-1-acme@kernel.org>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Sun, 29 May 2022 10:28:26 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wj1+W6VXeRG7XXO7zSsTe3mACdrPY4PccMNPhC3seLELg@mail.gmail.com>
-Message-ID: <CAHk-=wj1+W6VXeRG7XXO7zSsTe3mACdrPY4PccMNPhC3seLELg@mail.gmail.com>
-Subject: Re: [GIT PULL] perf tools changes for v5.19: 2nd batch
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc:     Ingo Molnar <mingo@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Clark Williams <williams@redhat.com>,
-        Kate Carcia <kcarcia@redhat.com>,
+References: <20220528154704.2576290-1-masahiroy@kernel.org>
+ <20220528154704.2576290-4-masahiroy@kernel.org> <CA+icZUWkOrWYSY3ixxfF=vsuq1xw3mU+p3NMqBpY0OpM02916g@mail.gmail.com>
+In-Reply-To: <CA+icZUWkOrWYSY3ixxfF=vsuq1xw3mU+p3NMqBpY0OpM02916g@mail.gmail.com>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Mon, 30 May 2022 02:34:20 +0900
+X-Gmail-Original-Message-ID: <CAK7LNATwgT-FQ99Ex6MOc+rYEe7tc8ffoF-5e12jfbeaEM1vhw@mail.gmail.com>
+Message-ID: <CAK7LNATwgT-FQ99Ex6MOc+rYEe7tc8ffoF-5e12jfbeaEM1vhw@mail.gmail.com>
+Subject: Re: [PATCH 4/4] kbuild: factor out the common objtool arguments
+To:     Sedat Dilek <sedat.dilek@gmail.com>
+Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-perf-users@vger.kernel.org,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Carsten Haitzler <carsten.haitzler@arm.com>,
-        Claire Jensen <cjense@google.com>,
-        Dmitriy Vyukov <dvyukov@google.com>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        Eric Lin <eric.lin@sifive.com>,
-        Florian Fischer <florian.fischer@muhq.space>,
-        German Gomez <german.gomez@arm.com>,
-        Ian Rogers <irogers@google.com>,
-        James Clark <james.clark@arm.com>,
-        Joe Mario <jmario@redhat.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Leo Yan <leo.yan@linaro.org>,
-        =?UTF-8?Q?Martin_Li=C5=A1ka?= <mliska@suse.cz>,
-        Thomas Richter <tmricht@linux.ibm.com>,
-        Xing Zhengjun <zhengjun.xing@linux.intel.com>,
-        Yang Jihong <yangjihong1@huawei.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Michal Marek <michal.lkml@markovi.net>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, May 29, 2022 at 8:45 AM Arnaldo Carvalho de Melo
-<acme@kernel.org> wrote:
+On Sun, May 29, 2022 at 11:47 PM Sedat Dilek <sedat.dilek@gmail.com> wrote:
 >
-> - Add BPF based off-CPU profiling.
+> On Sat, May 28, 2022 at 9:45 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
+> >
+> > scripts/Makefile.build and scripts/link-vmlinux.sh have similar setups
+> > for the objtool arguments.
+> >
+> > It is difficult to factor out them because the vmlinux build rule is
+> > written in a shell script. It is somewhat tedious to touch the two
+> > files every time a new objtool option is supported.
+> >
+> > To reduce the code duplication, implement everything about objtool in
+> > Makefile.
+> >
+> > Move the objtool for vmlinux.o into scripts/Makefile.vmlinux_o.
+> >
+> > Move the common macros to Makefile.lib so they are shared by
+> > Makefile.build and Makefile.vmlinux_o.
+> >
+> > Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+>
+> With some comments (see below).
+>
+> Tested-by: Sedat Dilek <sedat.dilek@gmail.com> # LLVM-14 (x86-64)
+>
+> -Sedat-
+>
+> > ---
+> >
+> >  scripts/Makefile.build     | 26 --------------
+> >  scripts/Makefile.lib       | 26 ++++++++++++++
+> >  scripts/Makefile.vmlinux_o | 26 ++++++++++++++
+> >  scripts/link-vmlinux.sh    | 71 --------------------------------------
+> >  4 files changed, 52 insertions(+), 97 deletions(-)
+> >
+> > diff --git a/scripts/Makefile.build b/scripts/Makefile.build
+> > index 4cb7145071b9..1f01ac65c0cd 100644
+> > --- a/scripts/Makefile.build
+> > +++ b/scripts/Makefile.build
+> > @@ -210,38 +210,12 @@ cmd_record_mcount = $(if $(findstring $(strip $(CC_FLAGS_FTRACE)),$(_c_flags)),
+> >         $(sub_cmd_record_mcount))
+> >  endif # CONFIG_FTRACE_MCOUNT_USE_RECORDMCOUNT
+> >
+> > -ifdef CONFIG_OBJTOOL
+> > -
+> > -objtool := $(objtree)/tools/objtool/objtool
+> > -
+> > -objtool_args =                                                         \
+> > -       $(if $(CONFIG_HAVE_JUMP_LABEL_HACK), --hacks=jump_label)        \
+> > -       $(if $(CONFIG_HAVE_NOINSTR_HACK), --hacks=noinstr)              \
+> > -       $(if $(CONFIG_X86_KERNEL_IBT), --ibt)                           \
+> > -       $(if $(CONFIG_FTRACE_MCOUNT_USE_OBJTOOL), --mcount)             \
+> > -       $(if $(CONFIG_UNWINDER_ORC), --orc)                             \
+> > -       $(if $(CONFIG_RETPOLINE), --retpoline)                          \
+> > -       $(if $(CONFIG_SLS), --sls)                                      \
+> > -       $(if $(CONFIG_STACK_VALIDATION), --stackval)                    \
+> > -       $(if $(CONFIG_HAVE_STATIC_CALL_INLINE), --static-call)          \
+> > -       --uaccess                                                       \
+> > -       $(if $(delay-objtool), --link)                                  \
+> > -       $(if $(part-of-module), --module)                               \
+> > -       $(if $(CONFIG_GCOV_KERNEL), --no-unreachable)
+> > -
+> > -cmd_objtool = $(if $(objtool-enabled), ; $(objtool) $(objtool_args) $@)
+> > -cmd_gen_objtooldep = $(if $(objtool-enabled), { echo ; echo '$@: $$(wildcard $(objtool))' ; } >> $(dot-target).cmd)
+> > -
+> > -endif # CONFIG_OBJTOOL
+> > -
+> >  # 'OBJECT_FILES_NON_STANDARD := y': skip objtool checking for a directory
+> >  # 'OBJECT_FILES_NON_STANDARD_foo.o := 'y': skip objtool checking for a file
+> >  # 'OBJECT_FILES_NON_STANDARD_foo.o := 'n': override directory skip for a file
+> >
+>
+> ^^ What is with this block?
+> If this belongs together with objtool - shall this be moved, too?
 
-I suspect this could have come with a bit more explanation of what
-"off-CPU profiling" means.
+No.
+These are unneeded for vmlinux.o
 
-It seems to be "account time when process was scheduled away to
-caller", but I had to go look at the commits to figure that out.
 
-Partly unrelated side note: I've occasionally looked for "useful perf
-recipes". Not from kernel developers, but from people who solved real
-performance problems using perf, giving useful examples.
 
-                  Linus
+> > -       fi
+> > -}
+> > -
+> >  # Link of vmlinux
+> >  # ${1} - output file
+> >  # ${2}, ${3}, ... - optional extra .o files
+> > @@ -298,7 +228,6 @@ ${MAKE} -f "${srctree}/scripts/Makefile.build" obj=init need-builtin=1
+> >
+> >  #link vmlinux.o
+>
+> ^^ While you are at it, change the comment to "# Link of vmlinux.o".
+
+
+In my plan, this code will be gone sooner or later.
+
+It would be a noise.
+
+
+
+-- 
+Best Regards
+Masahiro Yamada
