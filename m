@@ -2,68 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7B5FC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 29 May 2022 08:52:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91560C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 29 May 2022 08:53:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229761AbiE2Iui (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 29 May 2022 04:50:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39040 "EHLO
+        id S229783AbiE2Ixr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 29 May 2022 04:53:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229499AbiE2Iuf (ORCPT
+        with ESMTP id S229745AbiE2Ixq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 29 May 2022 04:50:35 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7E0F814A0
-        for <linux-kernel@vger.kernel.org>; Sun, 29 May 2022 01:50:34 -0700 (PDT)
+        Sun, 29 May 2022 04:53:46 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6B828214E
+        for <linux-kernel@vger.kernel.org>; Sun, 29 May 2022 01:53:44 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id t5so10095996edc.2
+        for <linux-kernel@vger.kernel.org>; Sun, 29 May 2022 01:53:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1653814234; x=1685350234;
-  h=from:to:cc:subject:date:message-id;
-  bh=TVvfrb426JQRLdfpmF2aegH10RqSqA1HLV5cXGROE2A=;
-  b=IXtUxGuk3EMg2Libs0EgQg96qj+o1eCUIJ+huMVq1w1lxSUtzeqTXzLu
-   e4UL7by6XTTrpwZ1HQbEUIXo7uBlA4MK0YrBE+yT7CT/Zf6zX2S6DvlcI
-   dBH3/GBDCR6utLbCnJm+ktqEpgpT2VkrkQJbYNBKvVbNUD/kfq7Dro+C+
-   Q=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 29 May 2022 01:50:34 -0700
-X-QCInternal: smtphost
-Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 29 May 2022 01:50:33 -0700
-X-QCInternal: smtphost
-Received: from hu-rbankapu-blr.qualcomm.com (HELO hu-ub18template-blr.qualcomm.com) ([10.131.39.233])
-  by ironmsg02-blr.qualcomm.com with ESMTP; 29 May 2022 14:20:22 +0530
-Received: by hu-ub18template-blr.qualcomm.com (Postfix, from userid 4079802)
-        id 40055800995; Sun, 29 May 2022 14:20:21 +0530 (+0530)
-From:   Raghu Bankapur <quic_rbankapu@quicinc.com>
-To:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Raghu Bankapur <quic_rbankapu@quicinc.com>,
-        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
-Cc:     Krishna Jha <quic_kkishorj@quicinc.com>
-Subject: [PATCH V0 0/1] asoc: msm: use hashtable to check kcontrol
-Date:   Sun, 29 May 2022 14:20:08 +0530
-Message-Id: <cover.1653813866.git.quic_rbankapu@quicinc.com>
-X-Mailer: git-send-email 2.17.1
+        d=9elements.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=a2NVO3ZVIRvilA1/pRJ16fJOodre9PqqgYbhhOtvAN0=;
+        b=OCYQI50mHD8gfV2u3ESFy7gtVoDL/yro9bhNOW63bSHK58pTC6r9uquEyl4ZKYIWmB
+         MVD3e2FZ+3sA3REYpONG8wWp/7JFWfQoTOIzK6S0kspYU1Im5rHNqL2UFmNFCRrlhGjm
+         KJ0/txNrQ6dV9O+HPj55RAMiuCzW21AiqSoiFy02xwlOD6njgVKafDDp7uuKMjaP0+au
+         XP92x7tRmNz4xHeO9F/YbmdvpIkmeXzCqlrCsPhDHBZUpkD1pQ8E4xICGx2zrfl1j6ED
+         434POoNrQNGRlqU2EWfhUufLI+XKQzWHtqmfOn6Sxgs7z6NH82L/gkzJe2Z7a5jmM1y7
+         CUIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=a2NVO3ZVIRvilA1/pRJ16fJOodre9PqqgYbhhOtvAN0=;
+        b=cpbUwi9q/SFWtjNcOiSZX4iwInPzNVPdi06XcnOxR2TGK6GHQ5JA1fYv5C1UgcnF54
+         yTubX7ZhostVDvNtubo5hPsE0aHzGqD4FIIhHIqVMmBL0MgRod75cP3W0OpNIL7WTUhB
+         K6RnmS5UkNEyToh4rQhVSNJvqef5x6L81DRE3Nk6FZPl2m1ZmyPahSM7RjFK//Hft2FZ
+         4FdcptkP9ffcv/6d0FouLCUEUeslDJl94ZmhMh6DF0OSpt4gbNxJiwuTsew8h+CgIwaB
+         MwYmge7srssWWb0b3EyMiVq1o0g7eMFcm4MXGShxVInUTd6mlwi88+m46B2p1VbNKCdj
+         m4oA==
+X-Gm-Message-State: AOAM5334rZXB6CWa07jMfif7edBuMWOa9iEsctquUN4G1qzmNAwP3+Mk
+        y7LTJdPzfgcrAZzeZ8SWQB7FIIKjwlE00jnl
+X-Google-Smtp-Source: ABdhPJzqXwXFEvb1roAvgF6allYHtXZLauAHhoyYXxFX4KDHJmQuobgBOO728lziRdRIBDv8PYZvWQ==
+X-Received: by 2002:a05:6402:1c91:b0:42d:c9b6:506b with SMTP id cy17-20020a0564021c9100b0042dc9b6506bmr3113925edb.166.1653814423276;
+        Sun, 29 May 2022 01:53:43 -0700 (PDT)
+Received: from stroh80.sec.9e.network (ip-078-094-000-051.um19.pools.vodafone-ip.de. [78.94.0.51])
+        by smtp.gmail.com with ESMTPSA id z16-20020a50cd10000000b0042bac9df764sm4690507edi.27.2022.05.29.01.53.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 29 May 2022 01:53:42 -0700 (PDT)
+From:   Naresh Solanki <naresh.solanki@9elements.com>
+X-Google-Original-From: Naresh Solanki <Naresh.Solanki@9elements.com>
+To:     Patrick Rudolph <patrick.rudolph@9elements.com>,
+        linux-kernel@vger.kernel.org
+Cc:     Naresh Solanki <Naresh.Solanki@9elements.com>
+Subject: [PATCH 0/3] regulator: Add max597x support
+Date:   Sun, 29 May 2022 10:53:36 +0200
+Message-Id: <20220529085340.411018-1-Naresh.Solanki@9elements.com>
+X-Mailer: git-send-email 2.35.3
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-use hashtabe instead of linear list to check kcontrol before
-adding them for improving early audio KPI.
+The MAX597x is a smart switch with fault protection and sensor readings.
 
-With this changes we see 600ms improvement in start of audio
+The MAX597X provides two programmable levels of overcurrent circuit-breaker
+protection: a fast-trip threshold for a fast turn-off, and a lower slow-trip
+threshold for a delayed turn-off. 
 
-Raghu Bankapur (1):
-  asoc: msm: use hashtable to check kcontrol
+The MAX597x monitors voltages and current for fault protection. Allow to read
+the measured values using the IIO framework.
 
- include/sound/control.h |  4 ++
- include/sound/core.h    | 12 +++++-
- sound/core/control.c    | 92 +++++++++++++++++++++++++++++++++--------
- sound/core/init.c       |  3 ++
- sound/soc/Kconfig       |  9 ++++
- 5 files changed, 101 insertions(+), 19 deletions(-)
+MAX5978 has single channel & MAX5970 has dual channel.
+Every channel has it's own regulator supply nammed 'vss1-supply' and
+'vss2-supply'. The regulator supply is used to determine the output
+voltage, as the smart switch provides no output regulation.
+The driver requires the 'shunt-resistor-micro-ohms' to be present in
+the devicetree to properly calculate current related values.
 
+Marcello Sylvester Bauer (1):
+  dt-bindings: regulator: Add bindings for MAX5970 and MAX5978
+
+Patrick Rudolph (2):
+  regulator: max597x: Add support for MAX5970 and MAX5978
+  regulator: max597x: Add IIO support
+
+ .../bindings/regulator/max5970.yaml           | 144 +++++
+ MAINTAINERS                                   |   7 +
+ drivers/regulator/Kconfig                     |  18 +
+ drivers/regulator/Makefile                    |   2 +
+ drivers/regulator/max597x.c                   | 575 ++++++++++++++++++
+ drivers/regulator/max597x.h                   | 116 ++++
+ drivers/regulator/max597x_iio.c               | 139 +++++
+ 7 files changed, 1001 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/regulator/max5970.yaml
+ create mode 100644 drivers/regulator/max597x.c
+ create mode 100644 drivers/regulator/max597x.h
+ create mode 100644 drivers/regulator/max597x_iio.c
+
+
+base-commit: 664a393a2663a0f62fc1b18157ccae33dcdbb8c8
 -- 
-2.17.1
+2.35.3
 
