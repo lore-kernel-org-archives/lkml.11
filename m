@@ -2,131 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88EA3C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 29 May 2022 18:06:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBC03C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 29 May 2022 18:13:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231601AbiE2SG3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 29 May 2022 14:06:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51018 "EHLO
+        id S231579AbiE2SNs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 29 May 2022 14:13:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231579AbiE2SGP (ORCPT
+        with ESMTP id S230424AbiE2SNq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 29 May 2022 14:06:15 -0400
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEFCD64BDE;
-        Sun, 29 May 2022 11:06:13 -0700 (PDT)
-Received: by mail-wm1-x329.google.com with SMTP id o9so5273468wmd.0;
-        Sun, 29 May 2022 11:06:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=sLHIukUkBNLikfr8LE6F72H0XZdEF3+8TPuvOmboOcI=;
-        b=q6YRGtUng7jTkgFIREYfFdNMXaXc3P/uwUc9qSBoZKxuyCw7l9jTzi5W2AAcOvD6nn
-         /T6j5Bq7P/HYp6ji4bNfI5vzhNnbfHvau154Xm+d2uxrYH9FTex5S/wAoLIcJUz18mW8
-         nWjIxJpWln62W+4JDsScVJKb4oR/jvGGZnLQA5Yk6Cam0YNn/EwPcA/A04rjuvwTcwaB
-         tpoSyjwvbi3hFwYbRI1HAL/AjrFFBcLfI85nltNYcPWYEHUggzfswV2ZxJF9JIO2yzx4
-         UH0x5VayizSceebBExn13LXAXZWEqrzzXdfO55E5kmD+ncZeNz8LXJOJ4gqtm6yIWaBb
-         1icw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=sLHIukUkBNLikfr8LE6F72H0XZdEF3+8TPuvOmboOcI=;
-        b=hwQzXpbuYqRnN9GVKf0y5urgi6aGFV1HfQ6FkKzYHzDqQYM0y93VBv3pJW4aI8n+KT
-         bLanUX2GMI8IujdruOcCHuE10Lgx7Y672XIaK7BGjpbTTMkoEqCO17b2gF+G9QLmz1kW
-         UPljTdmYg0kMjtzl/DCZiKUGlv7+4oc7b8f0OnMfkLD9tG66Krt/KYDlKrKYugl52Bc7
-         5uc+iT4rUYYrio9ZoyRpBTIgluuY5u9+xwKHUljHiHh2NNP0F2iNusjMPU0kH8jx7j+z
-         n/IYyFUnRpM32c1+wAY/rVk0QcCwqDMZnlyWaUxhqAkPvgz6jv3N00au7zyMTp8MF2XD
-         Z0+A==
-X-Gm-Message-State: AOAM531WCWTKYmeK3xP8HiVTJg2ccGwzYASIg/C7V3aXJGuiCKVRpyZc
-        mMA+jMBwpQj9NybmYjwo5Dc=
-X-Google-Smtp-Source: ABdhPJyb8iSO3fSTkbzE+IIpm38NksmGKQfy6w3HWePmJnmCZHhAX1WitMykwPHY4y48ln0tkpZdKw==
-X-Received: by 2002:a05:600c:4f09:b0:397:788b:33af with SMTP id l9-20020a05600c4f0900b00397788b33afmr15812702wmq.94.1653847572455;
-        Sun, 29 May 2022 11:06:12 -0700 (PDT)
-Received: from localhost.localdomain ([188.163.112.60])
-        by smtp.gmail.com with ESMTPSA id q7-20020a056000136700b002100f2e6a7dsm7008516wrz.93.2022.05.29.11.06.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 29 May 2022 11:06:12 -0700 (PDT)
-From:   Svyatoslav Ryhel <clamor95@gmail.com>
-To:     Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Svyatoslav Ruhel <clamor95@gmail.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Anton Bambura <jenneron@protonmail.com>
-Cc:     dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v5 3/3] drm/panel: simple: Add support for HannStar HSD101PWW2 panel
-Date:   Sun, 29 May 2022 21:05:48 +0300
-Message-Id: <20220529180548.9942-4-clamor95@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220529180548.9942-1-clamor95@gmail.com>
-References: <20220529180548.9942-1-clamor95@gmail.com>
+        Sun, 29 May 2022 14:13:46 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFDA4703EF;
+        Sun, 29 May 2022 11:13:43 -0700 (PDT)
+Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 5CDAF22248;
+        Sun, 29 May 2022 20:13:41 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1653848021;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=f9XNTGn+HU9ifTLspVWfrUfTbd+mZ0O2Sv288leiWk4=;
+        b=sP6C0XFykNmOAD2lXUG8aZHDbHlXLfsqCIcpAyV7TPf4CO+CuMgRCQxD2yNKP19f7MlDfv
+        VBn/rxsqlkKqS61UuSqs5iHxH+BpQnPPH9/H5ftQi7uFBe4feoxjZ2NHr+dMyg2zNTxLIE
+        PMiG7LAc5OCbPoRQR7Ra3qoL5HBlm2Q=
+From:   Michael Walle <michael@walle.cc>
+To:     Catalin Marinas <catalin.marinas@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Will Deacon <will@kernel.org>
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org, Michael Walle <michael@walle.cc>
+Subject: [PATCH 1/2] cpuidle: cpuidle-arm: remove arm64 support
+Date:   Sun, 29 May 2022 20:13:28 +0200
+Message-Id: <20220529181329.2345722-2-michael@walle.cc>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220529181329.2345722-1-michael@walle.cc>
+References: <20220529181329.2345722-1-michael@walle.cc>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add definition of the HannStar HSD101PWW2 Rev0-A00/A01 LCD
-SuperIPS+ HD panel.
+Since commit 788961462f34 ("ARM: psci: cpuidle: Enable PSCI CPUidle
+driver") the generic ARM cpuidle driver doesn't probe anymore because
+arm_cpuidle_init() will always return -EOPNOTSUPP. That is, because the
+mentioned commit removes the only .cpu_suspend and .cpu_init_idle
+provider.
 
-Signed-off-by: Svyatoslav Ryhel <clamor95@gmail.com>
-Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
+Signed-off-by: Michael Walle <michael@walle.cc>
 ---
- drivers/gpu/drm/panel/panel-simple.c | 28 ++++++++++++++++++++++++++++
- 1 file changed, 28 insertions(+)
+ drivers/cpuidle/Kconfig.arm | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/panel/panel-simple.c b/drivers/gpu/drm/panel/panel-simple.c
-index a34f4198a534..915b7cecf451 100644
---- a/drivers/gpu/drm/panel/panel-simple.c
-+++ b/drivers/gpu/drm/panel/panel-simple.c
-@@ -1928,6 +1928,31 @@ static const struct panel_desc hannstar_hsd100pxn1 = {
- 	.connector_type = DRM_MODE_CONNECTOR_LVDS,
- };
- 
-+static const struct display_timing hannstar_hsd101pww2_timing = {
-+	.pixelclock = { 64300000, 71100000, 82000000 },
-+	.hactive = { 1280, 1280, 1280 },
-+	.hfront_porch = { 1, 1, 10 },
-+	.hback_porch = { 1, 1, 10 },
-+	.hsync_len = { 58, 158, 661 },
-+	.vactive = { 800, 800, 800 },
-+	.vfront_porch = { 1, 1, 10 },
-+	.vback_porch = { 1, 1, 10 },
-+	.vsync_len = { 1, 21, 203 },
-+	.flags = DISPLAY_FLAGS_DE_HIGH,
-+};
-+
-+static const struct panel_desc hannstar_hsd101pww2 = {
-+	.timings = &hannstar_hsd101pww2_timing,
-+	.num_timings = 1,
-+	.bpc = 8,
-+	.size = {
-+		.width = 217,
-+		.height = 136,
-+	},
-+	.bus_format = MEDIA_BUS_FMT_RGB888_1X7X4_SPWG,
-+	.connector_type = DRM_MODE_CONNECTOR_LVDS,
-+};
-+
- static const struct drm_display_mode hitachi_tx23d38vm0caa_mode = {
- 	.clock = 33333,
- 	.hdisplay = 800,
-@@ -3834,6 +3859,9 @@ static const struct of_device_id platform_of_match[] = {
- 	}, {
- 		.compatible = "hannstar,hsd100pxn1",
- 		.data = &hannstar_hsd100pxn1,
-+	}, {
-+		.compatible = "hannstar,hsd101pww2",
-+		.data = &hannstar_hsd101pww2,
- 	}, {
- 		.compatible = "hit,tx23d38vm0caa",
- 		.data = &hitachi_tx23d38vm0caa
+diff --git a/drivers/cpuidle/Kconfig.arm b/drivers/cpuidle/Kconfig.arm
+index be7f512109f7..747aa537389b 100644
+--- a/drivers/cpuidle/Kconfig.arm
++++ b/drivers/cpuidle/Kconfig.arm
+@@ -3,7 +3,8 @@
+ # ARM CPU Idle drivers
+ #
+ config ARM_CPUIDLE
+-	bool "Generic ARM/ARM64 CPU idle Driver"
++	bool "Generic ARM CPU idle Driver"
++	depends on ARM
+ 	select DT_IDLE_STATES
+ 	select CPU_IDLE_MULTIPLE_DRIVERS
+ 	help
 -- 
-2.25.1
+2.30.2
 
