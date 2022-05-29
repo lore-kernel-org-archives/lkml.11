@@ -2,171 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D77EC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 29 May 2022 12:47:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C172DC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 29 May 2022 12:52:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230161AbiE2Mrq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 29 May 2022 08:47:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44262 "EHLO
+        id S230166AbiE2Mwn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 29 May 2022 08:52:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229959AbiE2Mrn (ORCPT
+        with ESMTP id S229959AbiE2Mwl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 29 May 2022 08:47:43 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD1423DDED;
-        Sun, 29 May 2022 05:47:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653828462; x=1685364462;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=s+7BqNjV3zSN78ssKItspdberXNl6VeD4MpmjAbN6dM=;
-  b=lz0FG9ZUCX8R+tAATbzGFRraYQZ729Lh1kBHNioFmSnZiYmLlj+jDyct
-   SCtQ6+doedg/0tJoMpZZZICukmsec/SkkJBF0trOaWBG1zThY4W97YtBT
-   sOJrkwmI7J1iB7o9hU7GS6Bg0Lwzqd/BH9HSeBVQJuAoedDZjzTFOhXw5
-   AyqYs7DcH8iRfAA1UUo4UUeo3ksUMolJjtR1UxSjYvPS5sGB+4jLfgkOK
-   ojuVJ4Dy2Oy12muNGKVXxG/0i1S1KsADgr5sE8mTn/DmqVTI2clSd8VF6
-   zcZ9itVpO88CHTFUC5Ysl62TotQa7+1xj+X7/TTCYBdYd3kwrLvJ+ojwM
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10361"; a="272363024"
-X-IronPort-AV: E=Sophos;i="5.91,260,1647327600"; 
-   d="scan'208";a="272363024"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 May 2022 05:47:41 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,260,1647327600"; 
-   d="scan'208";a="719524952"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.135])
-  by fmsmga001.fm.intel.com with ESMTP; 29 May 2022 05:47:39 -0700
-Date:   Sun, 29 May 2022 20:39:54 +0800
-From:   Xu Yilun <yilun.xu@intel.com>
-To:     Ivan Bornyakov <i.bornyakov@metrotek.ru>
-Cc:     mdf@kernel.org, hao.wu@intel.com, trix@redhat.com,
-        Conor.Dooley@microchip.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-fpga@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        system@metrotek.ru
-Subject: Re: [PATCH v13 2/3] fpga: microchip-spi: add Microchip MPF FPGA
- manager
-Message-ID: <20220529123954.GB185904@yilunxu-OptiPlex-7050>
-References: <20220526181344.2088-1-i.bornyakov@metrotek.ru>
- <20220526181344.2088-3-i.bornyakov@metrotek.ru>
+        Sun, 29 May 2022 08:52:41 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5C5B334B9D
+        for <linux-kernel@vger.kernel.org>; Sun, 29 May 2022 05:52:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653828759;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=1IDqdGLArfr4gn5KVVbwW1OeNRwMY+hK8QbzyH+wdCw=;
+        b=h9i5gHJsYkCgAyN11cy0M+mntLK8gFL9DWHgIFxG9+zwrOqJ2Qu6IXnPl9fBU5QGcznNKs
+        wJ9mE8Z+bQzfv6gDMo9JB3HF1ZYoAdCBdNkVVpDehbCPqPDwlW+qt2KGQMzeH+KfOeONbx
+        nPXUENQDAVFydbc6DbcPUK6jog31Lu4=
+Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com
+ [209.85.161.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-649-Pz-JTfIkND6odW2glk0L9g-1; Sun, 29 May 2022 08:52:38 -0400
+X-MC-Unique: Pz-JTfIkND6odW2glk0L9g-1
+Received: by mail-oo1-f70.google.com with SMTP id l2-20020a4ab0c2000000b00334cb56f0a5so5064083oon.17
+        for <linux-kernel@vger.kernel.org>; Sun, 29 May 2022 05:52:37 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=1IDqdGLArfr4gn5KVVbwW1OeNRwMY+hK8QbzyH+wdCw=;
+        b=HaSClpYgAZvrfe2bwaV+Bazz+2h1O1hDXafPujda28g9Vol2cQzmFZEQm6DBWUs807
+         SvCYTgDXhWXHSFdpqslRztm1hMKUmPP/jcZeYf06YkxIDcrWisnAeVxmmTvzz5P/0gNQ
+         OaBUNBHMMG2XirN1khjjpG9b6EbntJfwAAwTPqFB1JWc8HNz4WM27CkYEh3qUuTnW/vE
+         zIysH2JU8BH8acnVAVUIUTIHY0r9w3q/FrQkWCVkCs3kua6n012D4rUmlLYZ9dFDHVIE
+         DARx4RauIQWU14A9Om+v4DyGoVybfF3lZ1QoTb1vN1Tb00LaYueCkEHU1yTJu7OGCIGW
+         VnhA==
+X-Gm-Message-State: AOAM5324rVYdLpRrtDC1isojDZvKlRw6GpBAQkCEBa0AeGowdH0ITGTj
+        Bk8oDDpUnqwHl/w6ZHh6mpSrSKN6r75S0oM2hKFBV72rdwvTIoXI3jHqa72n+eKZW2oSQCDFU0p
+        m09lPxRVT30uTztrXfos6/PyW
+X-Received: by 2002:a05:6830:3492:b0:60b:1dda:c407 with SMTP id c18-20020a056830349200b0060b1ddac407mr11626805otu.17.1653828756734;
+        Sun, 29 May 2022 05:52:36 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwCrjXqLqBiMZ7iKG+Mpk3oYrazd+9A6Gf21KYZyX+2mnWUSmy3fnZV9nCvr1+yHWi5tQMvmg==
+X-Received: by 2002:a05:6830:3492:b0:60b:1dda:c407 with SMTP id c18-20020a056830349200b0060b1ddac407mr11626799otu.17.1653828756529;
+        Sun, 29 May 2022 05:52:36 -0700 (PDT)
+Received: from localhost.localdomain (024-205-208-113.res.spectrum.com. [24.205.208.113])
+        by smtp.gmail.com with ESMTPSA id ny8-20020a056870be0800b000f303e9538csm1834556oab.30.2022.05.29.05.52.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 29 May 2022 05:52:35 -0700 (PDT)
+Subject: Re: [PATCH] cifs: set length when cifs_copy_pages_to_iter is
+ successful
+To:     Steve French <smfrench@gmail.com>,
+        Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Steve French <stfrench@microsoft.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        David Howells <dhowells@redhat.com>,
+        CIFS <linux-cifs@vger.kernel.org>,
+        samba-technical <samba-technical@lists.samba.org>,
+        LKML <linux-kernel@vger.kernel.org>, llvm@lists.linux.dev,
+        Steve French <sfrench@samba.org>
+References: <20220526140226.2648689-1-trix@redhat.com>
+ <CAKwvOdmPZXiMZRKyMfZVMmw-95XVocSZn3VVi3yJh0Bx1ONbJQ@mail.gmail.com>
+ <CAH2r5mumSyxP8XUJjKwv9exh__NkCtG2HSiO-USqGo_7ZTb0yQ@mail.gmail.com>
+From:   Tom Rix <trix@redhat.com>
+Message-ID: <3144155d-47c7-ccfd-ff52-e3fa4e0468ee@redhat.com>
+Date:   Sun, 29 May 2022 05:52:33 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220526181344.2088-3-i.bornyakov@metrotek.ru>
+In-Reply-To: <CAH2r5mumSyxP8XUJjKwv9exh__NkCtG2HSiO-USqGo_7ZTb0yQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 26, 2022 at 09:13:43PM +0300, Ivan Bornyakov wrote:
-> Add support to the FPGA manager for programming Microchip Polarfire
-> FPGAs over slave SPI interface with .dat formatted bitsream image.
 
-From previous mail thread, there are still some hardware operations yet
-to be clarified, so I may need a Reviewed-by from Conor.Dooley@microchip.com.
+On 5/28/22 4:31 PM, Steve French wrote:
+> Presumably this was in Dave Howell's patch set which we took out of
+> for-next to restructure in some of Al's feedback and some things found
+> during testing. So nothing to fix in current mainline or for-next ...
+> right?
 
-[...]
+Yup. Nothing to fix.
 
+So drop this patch.
 
-> +static int mpf_ops_parse_header(struct fpga_manager *mgr,
-> +				struct fpga_image_info *info,
-> +				const char *buf, size_t count)
-> +{
-> +	size_t component_size_byte_num, component_size_byte_off,
-> +	       components_size_start, bitstream_start, i,
-> +	       block_id_offset, block_start_offset;
-> +	u8 header_size, blocks_num, block_id;
+Tom
 
-I think component_size_byte_num, component_size_byte_off, i should be size_t
-are all simple numbers irrelated to data size, so maybe u32 is just good.
+>
+> On Sat, May 28, 2022 at 3:40 PM Nick Desaulniers
+> <ndesaulniers@google.com> wrote:
+>> + Steve's @microsoft.com email addr.
+>>
+>> On Thu, May 26, 2022 at 7:02 AM Tom Rix <trix@redhat.com> wrote:
+>>> clang build fails with
+>>> fs/cifs/smb2ops.c:4984:7: error: variable 'length' is used uninitialized whenever 'if' condition is false [-Werror,-Wsometimes-uninitialized]
+>>>    if (rdata->result != 0) {
+>>>        ^~~~~~~~~~~~~~~~~~
+>>>
+>>> handle_read_data() returns the number of bytes handled by setting the length variable.
+>>> This only happens in the copy_to_iter() branch, it needs to also happen in the
+>>> cifs_copy_pages_to_iter() branch.  When cifs_copy_pages_to_iter() is successful,
+>>> its parameter data_len is how many bytes were handled, so set length to data_len.
+>>>
+>>> Fixes: 67fd8cff2b0f ("cifs: Change the I/O paths to use an iterator rather than a page list")
+>>> Signed-off-by: Tom Rix <trix@redhat.com>
+>>> ---
+>>>   fs/cifs/smb2ops.c | 2 +-
+>>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>>
+>>> diff --git a/fs/cifs/smb2ops.c b/fs/cifs/smb2ops.c
+>>> index 3630e132781f..bfad482ec186 100644
+>>> --- a/fs/cifs/smb2ops.c
+>>> +++ b/fs/cifs/smb2ops.c
+>>> @@ -4988,7 +4988,7 @@ handle_read_data(struct TCP_Server_Info *server, struct mid_q_entry *mid,
+>>>                                  dequeue_mid(mid, rdata->result);
+>>>                          return 0;
+>>>                  }
+>>> -               rdata->got_bytes = pages_len;
+>>> +               length = rdata->got_bytes = pages_len;
+>>>
+>>>          } else if (buf_len >= data_offset + data_len) {
+>>>                  /* read response payload is in buf */
+>>> --
+>>> 2.27.0
+>>>
+>>
+>> --
+>> Thanks,
+>> ~Nick Desaulniers
+>
+>
 
-Thanks,
-Yilun
-
-> +	u32 block_start, component_size;
-> +	u16 components_num;
-> +
-> +	if (!buf) {
-> +		dev_err(&mgr->dev, "Image buffer is not provided\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	header_size = *(buf + MPF_HEADER_SIZE_OFFSET);
-> +	if (header_size > count) {
-> +		info->header_size = header_size;
-> +		return -EAGAIN;
-> +	}
-> +
-> +	/*
-> +	 * Go through look-up table to find out where actual bitstream starts
-> +	 * and where sizes of components of the bitstream lies.
-> +	 */
-> +	blocks_num = *(buf + header_size - 1);
-> +	block_id_offset = header_size + MPF_LOOKUP_TABLE_BLOCK_ID_OFFSET;
-> +	block_start_offset = header_size + MPF_LOOKUP_TABLE_BLOCK_START_OFFSET;
-> +
-> +	header_size += blocks_num * MPF_LOOKUP_TABLE_RECORD_SIZE;
-> +	if (header_size > count) {
-> +		info->header_size = header_size;
-> +		return -EAGAIN;
-> +	}
-> +
-> +	components_size_start = 0;
-> +	bitstream_start = 0;
-> +
-> +	while (blocks_num--) {
-> +		block_id = *(buf + block_id_offset);
-> +		block_start = get_unaligned_le32(buf + block_start_offset);
-> +
-> +		switch (block_id) {
-> +		case MPF_BITSTREAM_ID:
-> +			info->header_size = bitstream_start = block_start;
-> +			if (block_start > count)
-> +				return -EAGAIN;
-> +
-> +			break;
-> +		case MPF_COMPONENTS_SIZE_ID:
-> +			components_size_start = block_start;
-> +			break;
-> +		default:
-> +			break;
-> +		}
-> +
-> +		if (bitstream_start && components_size_start)
-> +			break;
-> +
-> +		block_id_offset += MPF_LOOKUP_TABLE_RECORD_SIZE;
-> +		block_start_offset += MPF_LOOKUP_TABLE_RECORD_SIZE;
-> +	}
-> +
-> +	if (!bitstream_start || !components_size_start) {
-> +		dev_err(&mgr->dev, "Failed to parse header look-up table\n");
-> +		return -EFAULT;
-> +	}
-> +
-> +	/*
-> +	 * Parse bitstream size.
-> +	 * Sizes of components of the bitstream are 22-bits long placed next
-> +	 * to each other. Image header should be extended by now up to where
-> +	 * actual bitstream starts, so no need for overflow check anymore.
-> +	 */
-> +	components_num = get_unaligned_le16(buf + MPF_DATA_SIZE_OFFSET);
-> +
-> +	for (i = 0; i < components_num; i++) {
-> +		component_size_byte_num =
-> +			(i * MPF_BITS_PER_COMPONENT_SIZE) / BITS_PER_BYTE;
-> +		component_size_byte_off =
-> +			(i * MPF_BITS_PER_COMPONENT_SIZE) % BITS_PER_BYTE;
-> +
-> +		component_size = get_unaligned_le32(buf +
-> +						    components_size_start +
-> +						    component_size_byte_num);
-> +		component_size >>= component_size_byte_off;
-> +		component_size &= GENMASK(MPF_BITS_PER_COMPONENT_SIZE - 1, 0);
-> +
-> +		info->data_size += component_size * MPF_SPI_FRAME_SIZE;
-> +	}
-> +
-> +	return 0;
-> +}
