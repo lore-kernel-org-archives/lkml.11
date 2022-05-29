@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D88EFC433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 29 May 2022 10:51:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D54BEC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 29 May 2022 10:51:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229917AbiE2Kva (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 29 May 2022 06:51:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36310 "EHLO
+        id S229914AbiE2Kvg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 29 May 2022 06:51:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229529AbiE2KvT (ORCPT
+        with ESMTP id S229886AbiE2KvV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 29 May 2022 06:51:19 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B95D54CD55
-        for <linux-kernel@vger.kernel.org>; Sun, 29 May 2022 03:51:17 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id z43so5760949ede.1
-        for <linux-kernel@vger.kernel.org>; Sun, 29 May 2022 03:51:17 -0700 (PDT)
+        Sun, 29 May 2022 06:51:21 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBFEA4B429
+        for <linux-kernel@vger.kernel.org>; Sun, 29 May 2022 03:51:20 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id jx22so15957700ejb.12
+        for <linux-kernel@vger.kernel.org>; Sun, 29 May 2022 03:51:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=JwnhYZYUjycAnfsQ1qpf5ovZ63Tyhe8AegM4ymwHn6U=;
-        b=x6Q6EWztSl4cve6WezmNtTarzhXCIS3oCGSvW2fvoPRGJaeFboJQK0TAEp+UhJyNOP
-         bLdl9Td81r8XN+aK2m0yf09YNzFQnb1QEYyVyNhN1tXuuLCYeVStqjOVKTZPHxh48Aup
-         z3TyRqlXIDyHe63UXW33nfr/RXDLYr1m7Jpo8my9g13cO7LOf8PL3EzE/bnCS+Y5hz8v
-         rfqJT4YZHl61yeDIMvZJbGZpQQhpSYzSDrP+wDL7FItHlIPHw0g5mxt294Ucu7lGWIBi
-         xGzvW+ZnQGWwFHEWyMdbXlDJffuG/BfxmcJAmNmv2uinVk5ZohFbBUp4pA7DdZEwYNzs
-         7IWw==
+        bh=NgMauWvxEUuOeuS3Y92cUsJTownNgikY7PKvyEqLIJ0=;
+        b=SNlPaMUB+7zeMZ40NRYDTHGbFJ7bDg8bNcjtSrbo2g/09zCuKS0mzczq2VajsJFjtM
+         5B6l/FIwo+u9FUTS2Dw2RgVb9ud/cTfiUKG7WPQQtbsSxi/74pfHC+BCkiRtAMhokGU3
+         wAA0uVLbDozClvVb8yw/H2MSJFnjZIOwIBJeGLlcoo5mFUlkx0VPSLF/pdRZjCtNLcdG
+         +V2MmFhUirx6phG6SaHWfuLUMwnxDF/dWDpnVizRe14bsbVwLjTTqcYIiWFXhkW2RKts
+         /lnHt8qnGIP1kxLSokpN8qLmJbMw4ri+p8DaJWTZ8SyDtGSbEaN+9a51q+SehkuyqmYD
+         O5zw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=JwnhYZYUjycAnfsQ1qpf5ovZ63Tyhe8AegM4ymwHn6U=;
-        b=k5wjU9c/YzEFMDx022ynlE2NOPAupnR3z7Tg6EOa4FITRrZO4TmmEHn4fnBuzo0dLS
-         jEYs+FTrrG4Jt7bQbQslCOVJjRZ5BpECYVM6KCKfFn6QbzWxj2SP77+8lrBHizj7FoCI
-         g3H5Bln3dopn8c1b96eL432Ou7mHeWfxaZBqL2I9pYS8lRxIHae5oYpdsaGYw7f8a7MK
-         A6aqKi3OoCT+SLjoc+gFkQb5y04kP/2Gcim/KNUXNgJ7ZLygIJFdkaDuHP4WZs64pYJy
-         Fgxdfjn1bSXLnTjwPYe8PCoEWCxx32GfFCC5U3NZ3f1GqHmnMxryhj30WyAyj28GW/45
-         uwWA==
-X-Gm-Message-State: AOAM533epjS3c13GJVpQ20PojN4Vz2TmkFOALlHFcOOBtDH38RyCgsra
-        6kAoV93Gmt9/KeNj+swHa6FfSw==
-X-Google-Smtp-Source: ABdhPJwPNpC82y/irmX2R/zBK0sGSfYFVR5YbR5U9zvGw8WXhtG7gmRJUqPKZGUqRCTuXeQfx4owyQ==
-X-Received: by 2002:a05:6402:c1:b0:42a:b8a5:8d5e with SMTP id i1-20020a05640200c100b0042ab8a58d5emr54048588edu.266.1653821476070;
-        Sun, 29 May 2022 03:51:16 -0700 (PDT)
+        bh=NgMauWvxEUuOeuS3Y92cUsJTownNgikY7PKvyEqLIJ0=;
+        b=O2yNP7WKWOlf9E8g1CsJiVsRMJU2Sz4rKl0FG39AWaDQpLHgIA0Je9BupljvsLNcx4
+         jqrR7L6LL6EMcBba4rxVXb5b/lhqSX4VMcgf1eci7TksXncHiG3La47S6NdA8bqIdSLY
+         pUpHtisxI0oOPhiSQHnKRCfZp3Xnd9tsjULd6ADF4BLTOeu7gilLqvklpxQn0xEXXFcf
+         1BfEeWLcblOgoPE57b4GhSS79nnvYE1GoxKKLzaffq/oLMq6MYQcLNFfI5ksRpZ9gQ/n
+         OnnfiUMJ309zeoF4VHp0PqPPIOgwMYlSxX+QFHBfwf+1E3BgvWpY0rVipFz0kxb7M1gj
+         nRdQ==
+X-Gm-Message-State: AOAM530H6sJaLsscXUFEpEbJbxkuhF2eJKgF/b4Y9+B2jQBr3MwHFqkf
+        cke6180siKh+a70oz0umo9wGCw==
+X-Google-Smtp-Source: ABdhPJxhghDhXPcQraQ2UX4g1HUR3BAj9m0/Qjzp5NPytdTY43MUPg3GjwR3iLHl3b1OD9CFysiuSg==
+X-Received: by 2002:a17:906:9743:b0:6d8:632a:a42d with SMTP id o3-20020a170906974300b006d8632aa42dmr3476540ejy.157.1653821480511;
+        Sun, 29 May 2022 03:51:20 -0700 (PDT)
 Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id w25-20020a50f119000000b0042b0fcfe966sm4746991edl.37.2022.05.29.03.51.14
+        by smtp.gmail.com with ESMTPSA id w25-20020a50f119000000b0042b0fcfe966sm4746991edl.37.2022.05.29.03.51.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 29 May 2022 03:51:15 -0700 (PDT)
+        Sun, 29 May 2022 03:51:20 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
@@ -60,9 +60,9 @@ To:     Rob Herring <robh+dt@kernel.org>,
         linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
 Cc:     David Wang <David_Wang6097@jabil.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 2/7] dt-bindings: arm: aspeed: document board compatibles
-Date:   Sun, 29 May 2022 12:49:23 +0200
-Message-Id: <20220529104928.79636-2-krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 6/7] ARM: dts: ast2600-evb-a1: fix board compatible
+Date:   Sun, 29 May 2022 12:49:27 +0200
+Message-Id: <20220529104928.79636-6-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220529104928.79636-1-krzysztof.kozlowski@linaro.org>
 References: <20220529104928.79636-1-krzysztof.kozlowski@linaro.org>
@@ -72,117 +72,26 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Document all compatibles used in existing upstreamed Aspeed AST2400,
-AST2500 and AST2600 based boards.
+The AST2600 EVB A1 board should have dedicated compatible.
 
+Fixes: a72955180372 ("ARM: dts: aspeed: ast2600evb: Add dts file for A1 and A0")
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- .../bindings/arm/aspeed/aspeed.yaml           | 83 +++++++++++++++++++
- MAINTAINERS                                   |  1 +
- 2 files changed, 84 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/arm/aspeed/aspeed.yaml
+ arch/arm/boot/dts/aspeed-ast2600-evb-a1.dts | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/arm/aspeed/aspeed.yaml b/Documentation/devicetree/bindings/arm/aspeed/aspeed.yaml
-new file mode 100644
-index 000000000000..f214b57d5ae1
---- /dev/null
-+++ b/Documentation/devicetree/bindings/arm/aspeed/aspeed.yaml
-@@ -0,0 +1,83 @@
-+# SPDX-License-Identifier: GPL-2.0-only or BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/arm/aspeed/aspeed.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Aspeed SoC based boards
-+
-+maintainers:
-+  - Joel Stanley <joel@jms.id.au>
-+
-+properties:
-+  $nodename:
-+    const: '/'
-+  compatible:
-+    oneOf:
-+      - description: AST2400 based boards
-+        items:
-+          - enum:
-+              - facebook,galaxy100-bmc
-+              - facebook,wedge100-bmc
-+              - facebook,wedge40-bmc
-+              - microsoft,olympus-bmc
-+              - quanta,q71l-bmc
-+              - tyan,palmetto-bmc
-+              - yadro,vesnin-bmc
-+          - const: aspeed,ast2400
-+
-+      - description: AST2500 based boards
-+        items:
-+          - enum:
-+              - amd,ethanolx-bmc
-+              - ampere,mtjade-bmc
-+              - asrock,e3c246d4i-bmc
-+              - asrock,romed8hm3-bmc
-+              - bytedance,g220a-bmc
-+              - facebook,cmm-bmc
-+              - facebook,minipack-bmc
-+              - facebook,tiogapass-bmc
-+              - facebook,yamp-bmc
-+              - facebook,yosemitev2-bmc
-+              - facebook,wedge400-bmc
-+              - hxt,stardragon4800-rep2-bmc
-+              - ibm,mihawk-bmc
-+              - ibm,mowgli-bmc
-+              - ibm,romulus-bmc
-+              - ibm,swift-bmc
-+              - ibm,witherspoon-bmc
-+              - ingrasys,zaius-bmc
-+              - inspur,fp5280g2-bmc
-+              - inspur,nf5280m6-bmc
-+              - inspur,on5263m5-bmc
-+              - intel,s2600wf-bmc
-+              - inventec,lanyang-bmc
-+              - lenovo,hr630-bmc
-+              - lenovo,hr855xg2-bmc
-+              - portwell,neptune-bmc
-+              - qcom,centriq2400-rep-bmc
-+              - supermicro,x11spi-bmc
-+              - tyan,s7106-bmc
-+              - tyan,s8036-bmc
-+              - yadro,nicole-bmc
-+              - yadro,vegman-n110-bmc
-+              - yadro,vegman-rx20-bmc
-+              - yadro,vegman-sx20-bmc
-+          - const: aspeed,ast2500
-+
-+      - description: AST2600 based boards
-+        items:
-+          - enum:
-+              - facebook,bletchley-bmc
-+              - facebook,cloudripper-bmc
-+              - facebook,elbert-bmc
-+              - facebook,fuji-bmc
-+              - ibm,everest-bmc
-+              - ibm,rainier-bmc
-+              - ibm,tacoma-bmc
-+              - inventec,transformer-bmc
-+              - nuvia,dc-scm-bmc
-+              - quanta,s6q-bmc
-+          - const: aspeed,ast2600
-+
-+additionalProperties: true
-diff --git a/MAINTAINERS b/MAINTAINERS
-index c71276d7752e..860017ff41a8 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -1896,6 +1896,7 @@ L:	linux-aspeed@lists.ozlabs.org (moderated for non-subscribers)
- S:	Supported
- Q:	https://patchwork.ozlabs.org/project/linux-aspeed/list/
- T:	git git://git.kernel.org/pub/scm/linux/kernel/git/joel/aspeed.git
-+F:	Documentation/devicetree/bindings/arm/aspeed/
- F:	arch/arm/boot/dts/aspeed-*
- F:	arch/arm/mach-aspeed/
- N:	aspeed
+diff --git a/arch/arm/boot/dts/aspeed-ast2600-evb-a1.dts b/arch/arm/boot/dts/aspeed-ast2600-evb-a1.dts
+index dd7148060c4a..d0a5c2ff0fec 100644
+--- a/arch/arm/boot/dts/aspeed-ast2600-evb-a1.dts
++++ b/arch/arm/boot/dts/aspeed-ast2600-evb-a1.dts
+@@ -5,6 +5,7 @@
+ 
+ / {
+ 	model = "AST2600 A1 EVB";
++	compatible = "aspeed,ast2600-evb-a1", "aspeed,ast2600";
+ 
+ 	/delete-node/regulator-vcc-sdhci0;
+ 	/delete-node/regulator-vcc-sdhci1;
 -- 
 2.34.1
 
