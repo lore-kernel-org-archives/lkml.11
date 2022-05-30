@@ -2,54 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94612C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:32:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2E8BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:33:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237156AbiE3Ncz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:32:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58284 "EHLO
+        id S237174AbiE3Nc7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:32:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237094AbiE3NaE (ORCPT
+        with ESMTP id S237217AbiE3NaO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:30:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 122358B093;
-        Mon, 30 May 2022 06:26:29 -0700 (PDT)
+        Mon, 30 May 2022 09:30:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABEA01F616;
+        Mon, 30 May 2022 06:26:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7AAFB60EC3;
-        Mon, 30 May 2022 13:26:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7438FC3411C;
-        Mon, 30 May 2022 13:26:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 11FBB60EE1;
+        Mon, 30 May 2022 13:26:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9430BC3411A;
+        Mon, 30 May 2022 13:26:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917187;
-        bh=6GPI7gYf07+zFN1Ol/tp6iH7PZSLrK3qLnRFMdReihY=;
+        s=k20201202; t=1653917204;
+        bh=Dif+QLRgomHeNwIGglbOydkrFgua16Gw8/jn/i5m3BU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XOIMSwUJ+25++lY7+iV7k5UUwowV7uiFOpuYQgmsCYYInyVjTuJNzJay7vi8Nilmt
-         +bmEz4RQsZ8o9qg97jh0Rhp46g7siXQlmxBQsEBQGDRD1vUCeCTMcW3uhi5iVl7Bdn
-         vvMuxxwB7LcILX8N4B9ZtbMDrPA7yfVcuACHOWY4GrLPFNqGUQICK8Yas0QrjGyyqw
-         sQX2lKpkcXDUKSgTmvt2s8lumWJIpFS8DJKw9yzrKJPXgCmTT2RJfv2/RwGhRg8y/z
-         oxXSV2mwMVu+56GmainLGYOJJZ0bpZnXNoCY2snX1SnD4oYBVvw/H9f3wTAm0kqytO
-         514JlWe+vCKfQ==
+        b=H/gkwYSBXd9qDp7OoxB4O4zxQks7nhIukXgOowhTq7Y6Uj6MgZUGhjt0fq0MNkjQF
+         BHN3v88HW3nm9l/vg1zBj/HgsGv5MJDAgG4hFFVP1SUv4u2gx55dQAxLZ2JmI7yfsq
+         gYMjSEVRxUkJvWUZyWyRr66T4M3DzaRBg2Wtw3z+OjsQeepJh+CYSGRPAcouRLem+F
+         lZh0BTmTgftHAEb9wIztgBFBKFqMjMwQ8KN5jYaN3tYhVGqs5y5c1pqFFvkvkqb5JF
+         Iykb89HB0+1m9988jfKDO3qihKBkQLp7Y5zQ8qKv77O9TXcCuIUh/0c26DdmZsp+1N
+         4IxBWy/LIPOYg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?Thibaut=20VAR=C3=88NE?= <hacks+kernel@slashdirt.org>,
-        Felix Fietkau <nbd@nbd.name>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
-        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 047/159] ath9k: fix QCA9561 PA bias level
-Date:   Mon, 30 May 2022 09:22:32 -0400
-Message-Id: <20220530132425.1929512-47-sashal@kernel.org>
+Cc:     Vignesh Raghavendra <vigneshr@ti.com>,
+        Aswath Govindraju <a-govindraju@ti.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>, adrian.hunter@intel.com,
+        linux-mmc@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 056/159] drivers: mmc: sdhci_am654: Add the quirk to set TESTCD bit
+Date:   Mon, 30 May 2022 09:22:41 -0400
+Message-Id: <20220530132425.1929512-56-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530132425.1929512-1-sashal@kernel.org>
 References: <20220530132425.1929512-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -57,49 +53,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thibaut VARÈNE <hacks+kernel@slashdirt.org>
+From: Vignesh Raghavendra <vigneshr@ti.com>
 
-[ Upstream commit e999a5da28a0e0f7de242d841ef7d5e48f4646ae ]
+[ Upstream commit c7666240ec76422cb7546bd07cc8ae80dc0ccdd2 ]
 
-This patch fixes an invalid TX PA DC bias level on QCA9561, which
-results in a very low output power and very low throughput as devices
-are further away from the AP (compared to other 2.4GHz APs).
+The ARASAN MMC controller on Keystone 3 class of devices need the SDCD
+line to be connected for proper functioning. Similar to the issue pointed
+out in sdhci-of-arasan.c driver, commit 3794c542641f ("mmc:
+sdhci-of-arasan: Set controller to test mode when no CD bit").
 
-This patch was suggested by Felix Fietkau, who noted[1]:
-"The value written to that register is wrong, because while the mask
-definition AR_CH0_TOP2_XPABIASLVL uses a different value for 9561, the
-shift definition AR_CH0_TOP2_XPABIASLVL_S is hardcoded to 12, which is
-wrong for 9561."
+In cases where this can't be connected, add a quirk to force the
+controller into test mode and set the TESTCD bit. Use the flag
+"ti,fails-without-test-cd", to implement this above quirk when required.
 
-In real life testing, without this patch the 2.4GHz throughput on
-Yuncore XD3200 is around 10Mbps sitting next to the AP, and closer to
-practical maximum with the patch applied.
-
-[1] https://lore.kernel.org/all/91c58969-c60e-2f41-00ac-737786d435ae@nbd.name
-
-Signed-off-by: Thibaut VARÈNE <hacks+kernel@slashdirt.org>
-Acked-by: Felix Fietkau <nbd@nbd.name>
-Acked-by: Toke Høiland-Jørgensen <toke@toke.dk>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220417145145.1847-1-hacks+kernel@slashdirt.org
+Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
+Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
+Link: https://lore.kernel.org/r/20220425063120.10135-3-a-govindraju@ti.com
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath9k/ar9003_phy.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/mmc/host/sdhci_am654.c | 23 ++++++++++++++++++++++-
+ 1 file changed, 22 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath9k/ar9003_phy.h b/drivers/net/wireless/ath/ath9k/ar9003_phy.h
-index a171dbb29fbb..ad949eb02f3d 100644
---- a/drivers/net/wireless/ath/ath9k/ar9003_phy.h
-+++ b/drivers/net/wireless/ath/ath9k/ar9003_phy.h
-@@ -720,7 +720,7 @@
- #define AR_CH0_TOP2		(AR_SREV_9300(ah) ? 0x1628c : \
- 					(AR_SREV_9462(ah) ? 0x16290 : 0x16284))
- #define AR_CH0_TOP2_XPABIASLVL		(AR_SREV_9561(ah) ? 0x1e00 : 0xf000)
--#define AR_CH0_TOP2_XPABIASLVL_S	12
-+#define AR_CH0_TOP2_XPABIASLVL_S	(AR_SREV_9561(ah) ? 9 : 12)
+diff --git a/drivers/mmc/host/sdhci_am654.c b/drivers/mmc/host/sdhci_am654.c
+index e54fe24d47e7..e7ced1496a07 100644
+--- a/drivers/mmc/host/sdhci_am654.c
++++ b/drivers/mmc/host/sdhci_am654.c
+@@ -147,6 +147,9 @@ struct sdhci_am654_data {
+ 	int drv_strength;
+ 	int strb_sel;
+ 	u32 flags;
++	u32 quirks;
++
++#define SDHCI_AM654_QUIRK_FORCE_CDTEST BIT(0)
+ };
  
- #define AR_CH0_XTAL		(AR_SREV_9300(ah) ? 0x16294 : \
- 				 ((AR_SREV_9462(ah) || AR_SREV_9565(ah)) ? 0x16298 : \
+ struct sdhci_am654_driver_data {
+@@ -369,6 +372,21 @@ static void sdhci_am654_write_b(struct sdhci_host *host, u8 val, int reg)
+ 	}
+ }
+ 
++static void sdhci_am654_reset(struct sdhci_host *host, u8 mask)
++{
++	u8 ctrl;
++	struct sdhci_pltfm_host *pltfm_host = sdhci_priv(host);
++	struct sdhci_am654_data *sdhci_am654 = sdhci_pltfm_priv(pltfm_host);
++
++	sdhci_reset(host, mask);
++
++	if (sdhci_am654->quirks & SDHCI_AM654_QUIRK_FORCE_CDTEST) {
++		ctrl = sdhci_readb(host, SDHCI_HOST_CONTROL);
++		ctrl |= SDHCI_CTRL_CDTEST_INS | SDHCI_CTRL_CDTEST_EN;
++		sdhci_writeb(host, ctrl, SDHCI_HOST_CONTROL);
++	}
++}
++
+ static int sdhci_am654_execute_tuning(struct mmc_host *mmc, u32 opcode)
+ {
+ 	struct sdhci_host *host = mmc_priv(mmc);
+@@ -500,7 +518,7 @@ static struct sdhci_ops sdhci_j721e_4bit_ops = {
+ 	.set_clock = sdhci_j721e_4bit_set_clock,
+ 	.write_b = sdhci_am654_write_b,
+ 	.irq = sdhci_am654_cqhci_irq,
+-	.reset = sdhci_reset,
++	.reset = sdhci_am654_reset,
+ };
+ 
+ static const struct sdhci_pltfm_data sdhci_j721e_4bit_pdata = {
+@@ -719,6 +737,9 @@ static int sdhci_am654_get_of_property(struct platform_device *pdev,
+ 	device_property_read_u32(dev, "ti,clkbuf-sel",
+ 				 &sdhci_am654->clkbuf_sel);
+ 
++	if (device_property_read_bool(dev, "ti,fails-without-test-cd"))
++		sdhci_am654->quirks |= SDHCI_AM654_QUIRK_FORCE_CDTEST;
++
+ 	sdhci_get_of_property(pdev);
+ 
+ 	return 0;
 -- 
 2.35.1
 
