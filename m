@@ -2,196 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2069C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 18:04:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA3A6C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 18:04:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240565AbiE3SEE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 14:04:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35008 "EHLO
+        id S240862AbiE3SEJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 14:04:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237939AbiE3SEA (ORCPT
+        with ESMTP id S232840AbiE3SEA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 30 May 2022 14:04:00 -0400
-Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACE6EA206A
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D312A205F
         for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 11:03:58 -0700 (PDT)
-Received: by mail-il1-x134.google.com with SMTP id f7so1565701ilr.5
+Received: by mail-wr1-x435.google.com with SMTP id e2so15711029wrc.1
         for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 11:03:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1ZeR0nN/1eFyuWwXvp0L7EiUsdKyoUpqzB7kyH/D/WM=;
-        b=GTWyyPNRACEttMtFjSJ8gUXIGRBmUXZBKEwGpHWqYbIHSfqlUiXqSzBt+r5ZE3DmjF
-         AUV2Em9x+IZRGz4QfdnIc1mS7RwLGT8ZMTYS5JBM1oDAZx1BKBCSekGFONRhU+w/qUOo
-         DWyUbkGNTcx8E/ASF0dmHm9B1CbjYIW99zv/TFXbZzv5LkCdfaaCIiTmT/Zo0fb5QDXw
-         /FU7HR0av4bMFFJ5xR1yA2v91frTUAxaS2pWVoWv7SE1BKdxx5jQ32HzihvT6ZI4I1qi
-         v2m0PzCHg12pUVrR5/Qh92oO7Ck/kW+eUVU0ZbgbVA0XIzsNXQzCl1Tg5SVAPuLaMG09
-         nUpw==
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=eEF/THqP4/KMnhR3Jx46Pp2/fGel1OrMSQe1WykeaFE=;
+        b=YjA/47czGUZcB3jHTGA93lpns9MvpQGWDsDLKqd8CFUEsg1VNHhCm2d7nwCGBfQvja
+         E7bGvlwNaBeG/I0zVOqu77Y2ZNhxxc3/1DkrFu6rxz08JUgpYX1cMjrVpm+M9HET6FRa
+         yS5VYOlJEUvUzgwXXhnfX7VhNKQvOninG0lZEJqPss8cwi0GrsZtu0pdyN6SIsiy55+m
+         oW4sbMy84PoQgMFQ1rI0dknEbE8i08PEYhC+NU3e4mv5JCYQYqyOedDXKp5i4CsYMfDB
+         wtXofgV58zwq8U8hgNi42vXMkUF6nmV31OKlRYNzQpZ+7K70ot1UtCVuanhwp9pxzAlz
+         NGqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1ZeR0nN/1eFyuWwXvp0L7EiUsdKyoUpqzB7kyH/D/WM=;
-        b=pab4aliOXWFW6kWLnYLaxllXLPtiUm/nxDPyaEImrNCazJGZFwi5O7BqmXNiF2nxbL
-         7jtK2XY+Prlz47vTKDroEiznlg2VmLOifDoUXO8HC//KQOqlU/lQgDv8oqcdJxUN05jg
-         mFcsQWNspuFfEUduJKOqbWVbWB+KSmtwPIGBbDyZ1C0Tm70za5u3KuL7j0QDEUjcA0Wp
-         QPx9+DrMBCJu6Cs1WLiQ5Bvohn95EVfpi5DyN+4tlpkR6rfG5cJPIOlb4NgTXdxg8fPu
-         6ndJzp5JbKc+l9EHzSSa/tLDsRYxDUiqqdnJg0ngO2C/vX5N+Ni9hoBggLE44FS1+aVN
-         6MRw==
-X-Gm-Message-State: AOAM530Tdo9sM3AgxxKvn8FApoBpfHPxyn+RjiHQ4YeiBXdrQfEeljQy
-        KeDrGyoWmoTXeCJWgQ2QQK09b1r3GIGeia6Fwf4=
-X-Google-Smtp-Source: ABdhPJxiqxPqwJuqTiFuZDkGTIRpFwwWIWMOfo3koX/mS67/Z2NFSGsiwTDAU3oePhaHTSWXzOV+eDNnRpinoTkJYk8=
-X-Received: by 2002:a92:3609:0:b0:2c6:3595:2a25 with SMTP id
- d9-20020a923609000000b002c635952a25mr29189046ila.233.1653933838071; Mon, 30
- May 2022 11:03:58 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=eEF/THqP4/KMnhR3Jx46Pp2/fGel1OrMSQe1WykeaFE=;
+        b=OtXqgdg0U9PWgTSk72WPrXwTkgUhBD2rT9DY3kEr8FGoBNjmWG/9Pz4Eyo5lmniKuh
+         eHyoyscOdxYkgJEhK+NuYh9YTBfP0SI1H2UtgOHQDbuB5ZGJ1jDzFK+B0gan8PMie3Bj
+         p3qGN/ZLH7ikk0NKdLbZBSP7YTZ7E9v1LVowBwnIkmi21hbPCj8ZjVm59qQgFpnF2KoX
+         Q8Dc+Bs1j2yDNcKPUom66dZU0H9CW+GtXH2fOpYMSxtrMQZrgk1dMoM/Vwn1n8sSEy19
+         Va8wKPhAbuROD4WpDdSWvFMRfqPLYNZWw4CxZFJx4pywSqYlrFmPKWjBz70yzCdB1Xt+
+         GI8Q==
+X-Gm-Message-State: AOAM530rTaO/0wZieAYeUhYp2oefPj9lMlIarahuCcYBEswi5q6RIVT5
+        QfDoSQxUXkiprBtkpjSVaDoAqA==
+X-Google-Smtp-Source: ABdhPJwy5EGuO92uUYbYm+RoosB6dUYzPz/zHdWaBA9pWwIWvfY+x51eD4gAdsAxVp9Fy19bMTkIcg==
+X-Received: by 2002:a5d:6a92:0:b0:210:3387:23ec with SMTP id s18-20020a5d6a92000000b00210338723ecmr5422504wru.102.1653933836689;
+        Mon, 30 May 2022 11:03:56 -0700 (PDT)
+Received: from helium.lan ([88.160.162.107])
+        by smtp.gmail.com with ESMTPSA id 9-20020a1c0209000000b00397550b387bsm1647wmc.23.2022.05.30.11.03.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 May 2022 11:03:55 -0700 (PDT)
+From:   Fabien Parent <fparent@baylibre.com>
+To:     Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
+        Will Deacon <will@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     Fabien Parent <fparent@baylibre.com>,
+        iommu@lists.linux-foundation.org,
+        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH 1/3] dt-bindings: iommu: mediatek: add binding documentation for MT8365 SoC
+Date:   Mon, 30 May 2022 20:03:26 +0200
+Message-Id: <20220530180328.845692-1-fparent@baylibre.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-References: <20220527185600.1236769-1-davidgow@google.com> <20220527185600.1236769-2-davidgow@google.com>
-In-Reply-To: <20220527185600.1236769-2-davidgow@google.com>
-From:   Andrey Konovalov <andreyknvl@gmail.com>
-Date:   Mon, 30 May 2022 20:03:47 +0200
-Message-ID: <CA+fCnZe63vugPRbD3fVNGnTWbSvjd08g8coG3D71-=NtqpjOvQ@mail.gmail.com>
-Subject: Re: [PATCH v2 2/2] UML: add support for KASAN under x86_64
-To:     David Gow <davidgow@google.com>
-Cc:     Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Patricia Alfonso <trishalfonso@google.com>,
-        Jeff Dike <jdike@addtoit.com>,
-        Richard Weinberger <richard@nod.at>,
-        anton.ivanov@cambridgegreys.com,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        kasan-dev <kasan-dev@googlegroups.com>,
-        linux-um@lists.infradead.org, LKML <linux-kernel@vger.kernel.org>,
-        Daniel Latypov <dlatypov@google.com>,
-        Linux Memory Management List <linux-mm@kvack.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 27, 2022 at 8:56 PM David Gow <davidgow@google.com> wrote:
->
-> From: Patricia Alfonso <trishalfonso@google.com>
->
-> Make KASAN run on User Mode Linux on x86_64.
->
-> The UML-specific KASAN initializer uses mmap to map the roughly 2.25TB
-> of shadow memory to the location defined by KASAN_SHADOW_OFFSET.
-> kasan_init() utilizes constructors to initialize KASAN before main().
->
-> The location of the KASAN shadow memory, starting at
-> KASAN_SHADOW_OFFSET, can be configured using the KASAN_SHADOW_OFFSET
-> option. UML uses roughly 18TB of address space, and KASAN requires 1/8th
-> of this. The default location of this offset is 0x100000000000, which
-> keeps it out-of-the-way even on UML setups with more "physical" memory.
->
-> For low-memory setups, 0x7fff8000 can be used instead, which fits in an
-> immediate and is therefore faster, as suggested by Dmitry Vyukov. There
-> is usually enough free space at this location; however, it is a config
-> option so that it can be easily changed if needed.
->
-> Note that, unlike KASAN on other architectures, vmalloc allocations
-> still use the shadow memory allocated upfront, rather than allocating
-> and free-ing it per-vmalloc allocation.
->
-> Also note that, while UML supports both KASAN in inline mode
-> (CONFIG_KASAN_INLINE) and static linking (CONFIG_STATIC_LINK), it does
-> not support both at the same time.
->
-> Signed-off-by: Patricia Alfonso <trishalfonso@google.com>
-> Co-developed-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
-> Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
-> Signed-off-by: David Gow <davidgow@google.com>
+Add IOMMU binding documentation for the MT8365 SoC.
 
-Hi David,
+Signed-off-by: Fabien Parent <fparent@baylibre.com>
+---
+ .../bindings/iommu/mediatek,iommu.yaml        |  2 +
+ include/dt-bindings/memory/mt8365-larb-port.h | 96 +++++++++++++++++++
+ 2 files changed, 98 insertions(+)
+ create mode 100644 include/dt-bindings/memory/mt8365-larb-port.h
 
-Thanks for working on this!
+diff --git a/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml b/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
+index 97e8c471a5e8..5ba688365da5 100644
+--- a/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
++++ b/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
+@@ -77,6 +77,7 @@ properties:
+           - mediatek,mt8173-m4u  # generation two
+           - mediatek,mt8183-m4u  # generation two
+           - mediatek,mt8192-m4u  # generation two
++          - mediatek,mt8365-m4u  # generation two
+ 
+       - description: mt7623 generation one
+         items:
+@@ -120,6 +121,7 @@ properties:
+       dt-binding/memory/mt8173-larb-port.h for mt8173,
+       dt-binding/memory/mt8183-larb-port.h for mt8183,
+       dt-binding/memory/mt8192-larb-port.h for mt8192.
++      dt-binding/memory/mt8365-larb-port.h for mt8365.
+ 
+   power-domains:
+     maxItems: 1
+diff --git a/include/dt-bindings/memory/mt8365-larb-port.h b/include/dt-bindings/memory/mt8365-larb-port.h
+new file mode 100644
+index 000000000000..e7d5637aa38e
+--- /dev/null
++++ b/include/dt-bindings/memory/mt8365-larb-port.h
+@@ -0,0 +1,96 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * Copyright (c) 2022 MediaTek Inc.
++ * Author: Yong Wu <yong.wu@mediatek.com>
++ */
++#ifndef _DT_BINDINGS_MEMORY_MT8365_LARB_PORT_H_
++#define _DT_BINDINGS_MEMORY_MT8365_LARB_PORT_H_
++
++#include <dt-bindings/memory/mtk-memory-port.h>
++
++#define M4U_LARB0_ID			0
++#define M4U_LARB1_ID			1
++#define M4U_LARB2_ID			2
++#define M4U_LARB3_ID			3
++#define M4U_LARB4_ID			4
++#define M4U_LARB5_ID			5
++#define M4U_LARB6_ID			6
++#define M4U_LARB7_ID			7
++
++/* larb0 */
++#define M4U_PORT_DISP_OVL0		MTK_M4U_ID(0, 0)
++#define M4U_PORT_DISP_OVL0_2L		MTK_M4U_ID(0, 1)
++#define M4U_PORT_DISP_RDMA0		MTK_M4U_ID(0, 2)
++#define M4U_PORT_DISP_WDMA0		MTK_M4U_ID(0, 3)
++#define M4U_PORT_DISP_RDMA1		MTK_M4U_ID(0, 4)
++#define M4U_PORT_MDP_RDMA0		MTK_M4U_ID(0, 5)
++#define M4U_PORT_MDP_WROT1		MTK_M4U_ID(0, 6)
++#define M4U_PORT_MDP_WROT0		MTK_M4U_ID(0, 7)
++#define M4U_PORT_MDP_RDMA1		MTK_M4U_ID(0, 8)
++#define M4U_PORT_DISP_FAKE0		MTK_M4U_ID(0, 9)
++
++/* larb1 */
++#define M4U_PORT_VENC_RCPU		MTK_M4U_ID(1, 0)
++#define M4U_PORT_VENC_REC		MTK_M4U_ID(1, 1)
++#define M4U_PORT_VENC_BSDMA		MTK_M4U_ID(1, 2)
++#define M4U_PORT_VENC_SV_COMV		MTK_M4U_ID(1, 3)
++#define M4U_PORT_VENC_RD_COMV		MTK_M4U_ID(1, 4)
++#define M4U_PORT_VENC_NBM_RDMA		MTK_M4U_ID(1, 5)
++#define M4U_PORT_VENC_NBM_RDMA_LITE	MTK_M4U_ID(1, 6)
++#define M4U_PORT_JPGENC_Y_RDMA		MTK_M4U_ID(1, 7)
++#define M4U_PORT_JPGENC_C_RDMA		MTK_M4U_ID(1, 8)
++#define M4U_PORT_JPGENC_Q_TABLE		MTK_M4U_ID(1, 9)
++#define M4U_PORT_JPGENC_BSDMA		MTK_M4U_ID(1, 10)
++#define M4U_PORT_JPGDEC_WDMA		MTK_M4U_ID(1, 11)
++#define M4U_PORT_JPGDEC_BSDMA		MTK_M4U_ID(1, 12)
++#define M4U_PORT_VENC_NBM_WDMA		MTK_M4U_ID(1, 13)
++#define M4U_PORT_VENC_NBM_WDMA_LITE	MTK_M4U_ID(1, 14)
++#define M4U_PORT_VENC_CUR_LUMA		MTK_M4U_ID(1, 15)
++#define M4U_PORT_VENC_CUR_CHROMA	MTK_M4U_ID(1, 16)
++#define M4U_PORT_VENC_REF_LUMA		MTK_M4U_ID(1, 17)
++#define M4U_PORT_VENC_REF_CHROMA	MTK_M4U_ID(1, 18)
++
++/* larb2 */
++#define M4U_PORT_CAM_IMGO		MTK_M4U_ID(2, 0)
++#define M4U_PORT_CAM_RRZO		MTK_M4U_ID(2, 1)
++#define M4U_PORT_CAM_AAO		MTK_M4U_ID(2, 2)
++#define M4U_PORT_CAM_LCS		MTK_M4U_ID(2, 3)
++#define M4U_PORT_CAM_ESFKO		MTK_M4U_ID(2, 4)
++#define M4U_PORT_CAM_CAM_SV0		MTK_M4U_ID(2, 5)
++#define M4U_PORT_CAM_CAM_SV1		MTK_M4U_ID(2, 6)
++#define M4U_PORT_CAM_LSCI		MTK_M4U_ID(2, 7)
++#define M4U_PORT_CAM_LSCI_D		MTK_M4U_ID(2, 8)
++#define M4U_PORT_CAM_AFO		MTK_M4U_ID(2, 9)
++#define M4U_PORT_CAM_SPARE		MTK_M4U_ID(2, 10)
++#define M4U_PORT_CAM_BPCI		MTK_M4U_ID(2, 11)
++#define M4U_PORT_CAM_BPCI_D		MTK_M4U_ID(2, 12)
++#define M4U_PORT_CAM_UFDI		MTK_M4U_ID(2, 13)
++#define M4U_PORT_CAM_IMGI		MTK_M4U_ID(2, 14)
++#define M4U_PORT_CAM_IMG2O		MTK_M4U_ID(2, 15)
++#define M4U_PORT_CAM_IMG3O		MTK_M4U_ID(2, 16)
++#define M4U_PORT_CAM_WPE0_I		MTK_M4U_ID(2, 17)
++#define M4U_PORT_CAM_WPE1_I		MTK_M4U_ID(2, 18)
++#define M4U_PORT_CAM_WPE_O		MTK_M4U_ID(2, 19)
++#define M4U_PORT_CAM_FD0_I		MTK_M4U_ID(2, 20)
++#define M4U_PORT_CAM_FD1_I		MTK_M4U_ID(2, 21)
++#define M4U_PORT_CAM_FD0_O		MTK_M4U_ID(2, 22)
++#define M4U_PORT_CAM_FD1_O		MTK_M4U_ID(2, 23)
++
++/* larb3 */
++#define M4U_PORT_HW_VDEC_MC_EXT		MTK_M4U_ID(3, 0)
++#define M4U_PORT_HW_VDEC_UFO_EXT	MTK_M4U_ID(3, 1)
++#define M4U_PORT_HW_VDEC_PP_EXT		MTK_M4U_ID(3, 2)
++#define M4U_PORT_HW_VDEC_PRED_RD_EXT	MTK_M4U_ID(3, 3)
++#define M4U_PORT_HW_VDEC_PRED_WR_EXT	MTK_M4U_ID(3, 4)
++#define M4U_PORT_HW_VDEC_PPWRAP_EXT	MTK_M4U_ID(3, 5)
++#define M4U_PORT_HW_VDEC_TILE_EXT	MTK_M4U_ID(3, 6)
++#define M4U_PORT_HW_VDEC_VLD_EXT	MTK_M4U_ID(3, 7)
++#define M4U_PORT_HW_VDEC_VLD2_EXT	MTK_M4U_ID(3, 8)
++#define M4U_PORT_HW_VDEC_AVC_MV_EXT	MTK_M4U_ID(3, 9)
++#define M4U_PORT_HW_VDEC_RG_CTRL_DMA_EXT MTK_M4U_ID(3, 10)
++
++/* larb4 */
++#define M4U_PORT_APU_READ		MTK_M4U_ID(0, 0)
++#define M4U_PORT_APU_WRITE		MTK_M4U_ID(0, 1)
++
++#endif
+-- 
+2.36.1
 
-> diff --git a/mm/kasan/shadow.c b/mm/kasan/shadow.c
-> index a4f07de21771..c993d99116f2 100644
-> --- a/mm/kasan/shadow.c
-> +++ b/mm/kasan/shadow.c
-> @@ -295,9 +295,29 @@ int kasan_populate_vmalloc(unsigned long addr, unsigned long size)
->                 return 0;
->
->         shadow_start = (unsigned long)kasan_mem_to_shadow((void *)addr);
-> -       shadow_start = ALIGN_DOWN(shadow_start, PAGE_SIZE);
->         shadow_end = (unsigned long)kasan_mem_to_shadow((void *)addr + size);
-> -       shadow_end = ALIGN(shadow_end, PAGE_SIZE);
-> +
-> +       /*
-> +        * User Mode Linux maps enough shadow memory for all of physical memory
-> +        * at boot, so doesn't need to allocate more on vmalloc, just clear it.
-
-Should this say "for all of _virtual_ memory"?
-
-Otherwise, this is confusing. All KASAN-enabled architectures map
-shadow for physical memory. And they still need map shadow for
-vmalloc() separately. This is what kasan_populate_vmalloc() is for.
-
-> +        *
-> +        * If another architecture chooses to go down the same path, we should
-> +        * replace this check for CONFIG_UML with something more generic, such
-> +        * as:
-> +        * - A CONFIG_KASAN_NO_SHADOW_ALLOC option, which architectures could set
-> +        * - or, a way of having architecture-specific versions of these vmalloc
-> +        *   and module shadow memory allocation options.
-
-I think this part above and the first sentence below belong to the
-commit changelog, not to a comment.
-
-> +        *
-> +        * For the time being, though, this check works. The remaining CONFIG_UML
-> +        * checks in this file exist for the same reason.
-> +        */
-> +       if (IS_ENABLED(CONFIG_UML)) {
-> +               __memset((void *)shadow_start, KASAN_VMALLOC_INVALID, shadow_end - shadow_start);
-> +               return 0;
-> +       }
-> +
-> +       shadow_start = PAGE_ALIGN_DOWN(shadow_start);
-> +       shadow_end = PAGE_ALIGN(shadow_end);
->
->         ret = apply_to_page_range(&init_mm, shadow_start,
->                                   shadow_end - shadow_start,
-> @@ -466,6 +486,10 @@ void kasan_release_vmalloc(unsigned long start, unsigned long end,
->
->         if (shadow_end > shadow_start) {
->                 size = shadow_end - shadow_start;
-> +               if (IS_ENABLED(CONFIG_UML)) {
-> +                       __memset(shadow_start, KASAN_SHADOW_INIT, shadow_end - shadow_start);
-> +                       return;
-> +               }
->                 apply_to_existing_page_range(&init_mm,
->                                              (unsigned long)shadow_start,
->                                              size, kasan_depopulate_vmalloc_pte,
-> @@ -531,6 +555,11 @@ int kasan_alloc_module_shadow(void *addr, size_t size, gfp_t gfp_mask)
->         if (WARN_ON(!PAGE_ALIGNED(shadow_start)))
->                 return -EINVAL;
->
-> +       if (IS_ENABLED(CONFIG_UML)) {
-> +               __memset((void *)shadow_start, KASAN_SHADOW_INIT, shadow_size);
-> +               return 0;
-> +       }
-> +
->         ret = __vmalloc_node_range(shadow_size, 1, shadow_start,
->                         shadow_start + shadow_size,
->                         GFP_KERNEL,
-> @@ -554,6 +583,9 @@ int kasan_alloc_module_shadow(void *addr, size_t size, gfp_t gfp_mask)
->
->  void kasan_free_module_shadow(const struct vm_struct *vm)
->  {
-> +       if (IS_ENABLED(CONFIG_UML))
-> +               return;
-> +
->         if (vm->flags & VM_KASAN)
->                 vfree(kasan_mem_to_shadow(vm->addr));
->  }
-> --
-> 2.36.1.124.g0e6072fb45-goog
->
-
-Thanks!
