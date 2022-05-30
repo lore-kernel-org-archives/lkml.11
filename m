@@ -2,52 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A71D6C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9139DC4167B
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:41:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237893AbiE3NkW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:40:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46846 "EHLO
+        id S237875AbiE3NkQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:40:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237767AbiE3Nfo (ORCPT
+        with ESMTP id S237612AbiE3Nfc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:35:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 908768A049;
-        Mon, 30 May 2022 06:28:51 -0700 (PDT)
+        Mon, 30 May 2022 09:35:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6FA9939D6;
+        Mon, 30 May 2022 06:28:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D23360DD5;
-        Mon, 30 May 2022 13:28:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2BB0C385B8;
-        Mon, 30 May 2022 13:28:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 84E4860F17;
+        Mon, 30 May 2022 13:28:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03159C3411E;
+        Mon, 30 May 2022 13:28:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917330;
-        bh=g7XB8B2hXhx0t6vm3lGhWMstRlw7oJH8/lHkhtWU6kk=;
+        s=k20201202; t=1653917319;
+        bh=OkvOHVTj+0RUFez+W4m7EDCBB4EaSlENkTb8ZwkIaAo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nq7f64Yko1jn6fVD4WVSA9K8/lnuNwTRd0SCrIYx0z5aZyUolaEvgUkm+dst3xc0Q
-         g2l0oNwo3fmGzuZ8klXT7VY8u99IsTpotQ4twllDHijeJBVMLapd9XSQWNTsaT4sIc
-         6DYo9+u5NKH9u6tDmRanBVsZHlMLejHAl2uaTmqJoONgEkvB4pO28oKydFfF1JsCEL
-         5BrB1sHzMFjRaqQYRCBYtbFVEkbDxUyXxi4UN3gLM81Nm3N4LVwrAU2tNSkc+l+FZT
-         wNZEO3Uuw4W2dPEhBTLrj7HP0eKPzUK+ye1DleARlnDMk/EKkRHUe/PzJdCkKkddxy
-         qJ5qp5owMkJqg==
+        b=n+TUJ7YYk43zLBEddZRRSD5k/8gJ4eRd2zSqpwXx7DzNXckKjhHF/WsENlTOdaAK0
+         nM+U48cRAn8wuKRdgRL/fzfZwu6W69H+ItUZrWgUWeCYH1QHzV6mboxb5wVlNabVGK
+         cDNtxG4QTqsIwt4/m3r2anzUbCgwVwVG3nokCyU/8ttyqX7Jm+vrDmVURgDg8VGCNQ
+         LIfG743zrVtzIcmjqIao/EXCrdnPjT11hIodwX+qi/ElhjHs/14dIZ31B7l/LrJMrr
+         NHhSKQteLDuYB7nAgDoIEWsJ2E6E0F48IFNXirP5IJ7Z0z6VC5VxkAhmOTvmPwJQmQ
+         kXgAjo0jezInw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Heiko Carstens <hca@linux.ibm.com>,
-        Thomas Richter <tmricht@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Sasha Levin <sashal@kernel.org>, gor@linux.ibm.com,
-        agordeev@linux.ibm.com, vschneid@redhat.com,
-        linux-s390@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 096/159] s390/preempt: disable __preempt_count_add() optimization for PROFILE_ALL_BRANCHES
-Date:   Mon, 30 May 2022 09:23:21 -0400
-Message-Id: <20220530132425.1929512-96-sashal@kernel.org>
+Cc:     Xiang Chen <chenxiang66@hisilicon.com>,
+        Yihang Li <liyihang6@hisilicon.com>,
+        John Garry <john.garry@huawei.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, jejb@linux.ibm.com,
+        linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 092/159] scsi: hisi_sas: Undo RPM resume for failed notify phy event for v3 HW
+Date:   Mon, 30 May 2022 09:23:17 -0400
+Message-Id: <20220530132425.1929512-92-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530132425.1929512-1-sashal@kernel.org>
 References: <20220530132425.1929512-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -55,59 +54,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Heiko Carstens <hca@linux.ibm.com>
+From: Xiang Chen <chenxiang66@hisilicon.com>
 
-[ Upstream commit 63678eecec57fc51b778be3da35a397931287170 ]
+[ Upstream commit 9b5387fe5af38116b452259d87cd66594b6277c1 ]
 
-gcc 12 does not (always) optimize away code that should only be generated
-if parameters are constant and within in a certain range. This depends on
-various obscure kernel config options, however in particular
-PROFILE_ALL_BRANCHES can trigger this compile error:
+If we fail to notify the phy up event then undo the RPM resume, as the phy
+up notify event handling pairs with that RPM resume.
 
-In function ‘__atomic_add_const’,
-    inlined from ‘__preempt_count_add.part.0’ at ./arch/s390/include/asm/preempt.h:50:3:
-./arch/s390/include/asm/atomic_ops.h:80:9: error: impossible constraint in ‘asm’
-   80 |         asm volatile(                                                   \
-      |         ^~~
-
-Workaround this by simply disabling the optimization for
-PROFILE_ALL_BRANCHES, since the kernel will be so slow, that this
-optimization won't matter at all.
-
-Reported-by: Thomas Richter <tmricht@linux.ibm.com>
-Reviewed-by: Sven Schnelle <svens@linux.ibm.com>
-Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
+Link: https://lore.kernel.org/r/1651839939-101188-1-git-send-email-john.garry@huawei.com
+Reported-by: Yihang Li <liyihang6@hisilicon.com>
+Tested-by: Yihang Li <liyihang6@hisilicon.com>
+Signed-off-by: Xiang Chen <chenxiang66@hisilicon.com>
+Signed-off-by: John Garry <john.garry@huawei.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/s390/include/asm/preempt.h | 15 +++++++++++----
- 1 file changed, 11 insertions(+), 4 deletions(-)
+ drivers/scsi/hisi_sas/hisi_sas_v3_hw.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/arch/s390/include/asm/preempt.h b/arch/s390/include/asm/preempt.h
-index d9d5350cc3ec..bf15da0fedbc 100644
---- a/arch/s390/include/asm/preempt.h
-+++ b/arch/s390/include/asm/preempt.h
-@@ -46,10 +46,17 @@ static inline bool test_preempt_need_resched(void)
+diff --git a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
+index 79f87d7c3e68..7d819fc0395e 100644
+--- a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
++++ b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
+@@ -1563,9 +1563,15 @@ static irqreturn_t phy_up_v3_hw(int phy_no, struct hisi_hba *hisi_hba)
  
- static inline void __preempt_count_add(int val)
- {
--	if (__builtin_constant_p(val) && (val >= -128) && (val <= 127))
--		__atomic_add_const(val, &S390_lowcore.preempt_count);
--	else
--		__atomic_add(val, &S390_lowcore.preempt_count);
+ 	phy->port_id = port_id;
+ 
+-	/* Call pm_runtime_put_sync() with pairs in hisi_sas_phyup_pm_work() */
 +	/*
-+	 * With some obscure config options and CONFIG_PROFILE_ALL_BRANCHES
-+	 * enabled, gcc 12 fails to handle __builtin_constant_p().
++	 * Call pm_runtime_get_noresume() which pairs with
++	 * hisi_sas_phyup_pm_work() -> pm_runtime_put_sync().
++	 * For failure call pm_runtime_put() as we are in a hardirq context.
 +	 */
-+	if (!IS_ENABLED(CONFIG_PROFILE_ALL_BRANCHES)) {
-+		if (__builtin_constant_p(val) && (val >= -128) && (val <= 127)) {
-+			__atomic_add_const(val, &S390_lowcore.preempt_count);
-+			return;
-+		}
-+	}
-+	__atomic_add(val, &S390_lowcore.preempt_count);
- }
+ 	pm_runtime_get_noresume(dev);
+-	hisi_sas_notify_phy_event(phy, HISI_PHYE_PHY_UP_PM);
++	res = hisi_sas_notify_phy_event(phy, HISI_PHYE_PHY_UP_PM);
++	if (!res)
++		pm_runtime_put(dev);
  
- static inline void __preempt_count_sub(int val)
+ 	res = IRQ_HANDLED;
+ 
 -- 
 2.35.1
 
