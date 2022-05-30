@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC2F4C47090
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:21:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88ED1C47096
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:21:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240980AbiE3OUt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:20:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34854 "EHLO
+        id S241073AbiE3OUy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:20:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240628AbiE3OQQ (ORCPT
+        with ESMTP id S240898AbiE3OQf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:16:16 -0400
+        Mon, 30 May 2022 10:16:35 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8819BED795;
-        Mon, 30 May 2022 06:43:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FA0A1053FE;
+        Mon, 30 May 2022 06:44:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 65ADAB80DB7;
-        Mon, 30 May 2022 13:43:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEAADC3411C;
-        Mon, 30 May 2022 13:43:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 60BC2B80DA7;
+        Mon, 30 May 2022 13:44:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F054C385B8;
+        Mon, 30 May 2022 13:44:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918213;
-        bh=/iCZ2BVshjySAe77EuvghJEaNfvlxU8WQgSj30O2C0A=;
+        s=k20201202; t=1653918244;
+        bh=Y3ci4aj1bWHDsYuaG5QQrbA8DGau5DUCSDNwP7ULckA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QnUUxOStHzm7vO74IkHIgYEkDaNG3Sis0N5p5qqgd3U2qej0ztcjLdp+MdJLZgxpf
-         81BmXBOS1ShUv1ZPvzu1MYDwbUsZ74s+25YuK1at3NSRingkzKklK0OXPijJhp2bF6
-         NeCB3JaNM3m1mSvehteCnzowyOevApbKYiJhNV4qkObCK11plA+7+oLQiuGKUk4pXI
-         kuMs6upZLxNuMb9A5FH+2MXSkFRq9gdAa62bNNPSUi5bthvkb0TcG/VyNJqvagOfTk
-         EuWoCYBZcYB76oPt5mMVV1ln4vQ/hwBipBaOxzGugTiQxc9hIiKZeLIXSulUKTgn2F
-         k2xGkyP9q6UHQ==
+        b=lE2klOa+CQTZqzonW+57iFJqYhdVQVJvR91kW+SeOWXsTEOyXTu5n9B0YoMJlkXCA
+         56vDus6PNbg7wywlbuVV7f/XjAB7RKPhrMOCN47e+pkuVbQutb3BbiGzTyNSBKE6Ep
+         Ot5kBjKIGpajfAeHTg+H5V7fo1FBfVlP/jxxg7/sgFWtA5QnkUrvJCcHCG+VFRiVAB
+         QBR4WkHVV3pAHFY/0MJ6hbwDK3EgxNXNLPdGbyi5J2nqi5on3hlXd7cF7+dB6LK/h2
+         7SY0n/WLYUU9WeCt2Kqxnmug5nIuZLPs59Qov0BaaPQHhGYa9tiflqzJLKk0v16t+r
+         z5BEcB09nlL1A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Chaitanya Kulkarni <kch@nvidia.com>,
-        Keith Busch <kbusch@kernel.org>,
-        Christoph Hellwig <hch@lst.de>,
-        Sasha Levin <sashal@kernel.org>, axboe@fb.com,
-        sagi@grimberg.me, linux-nvme@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.15 096/109] nvme: set non-mdts limits in nvme_scan_work
-Date:   Mon, 30 May 2022 09:38:12 -0400
-Message-Id: <20220530133825.1933431-96-sashal@kernel.org>
+Cc:     Yonghong Song <yhs@fb.com>, Mykola Lysenko <mykolal@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, shuah@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, nathan@kernel.org,
+        ndesaulniers@google.com, sunyucong@gmail.com,
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, llvm@lists.linux.dev
+Subject: [PATCH AUTOSEL 5.15 108/109] selftests/bpf: fix btf_dump/btf_dump due to recent clang change
+Date:   Mon, 30 May 2022 09:38:24 -0400
+Message-Id: <20220530133825.1933431-108-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133825.1933431-1-sashal@kernel.org>
 References: <20220530133825.1933431-1-sashal@kernel.org>
@@ -53,132 +55,87 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chaitanya Kulkarni <kch@nvidia.com>
+From: Yonghong Song <yhs@fb.com>
 
-[ Upstream commit 78288665b5d0154978fed431985310cb4f166836 ]
+[ Upstream commit 4050764cbaa25760aab40857f723393c07898474 ]
 
-In current implementation we set the non-mdts limits by calling
-nvme_init_non_mdts_limits() from nvme_init_ctrl_finish().
-This also tries to set the limits for the discovery controller which
-has no I/O queues resulting in the warning message reported by the
-nvme_log_error() when running blktest nvme/002: -
+Latest llvm-project upstream had a change of behavior
+related to qualifiers on function return type ([1]).
+This caused selftests btf_dump/btf_dump failure.
+The following example shows what changed.
 
-[ 2005.155946] run blktests nvme/002 at 2022-04-09 16:57:47
-[ 2005.192223] loop: module loaded
-[ 2005.196429] nvmet: adding nsid 1 to subsystem blktests-subsystem-0
-[ 2005.200334] nvmet: adding nsid 1 to subsystem blktests-subsystem-1
+  $ cat t.c
+  typedef const char * const (* const (* const fn_ptr_arr2_t[5])())(char * (*)(int));
+  struct t {
+    int a;
+    fn_ptr_arr2_t l;
+  };
+  int foo(struct t *arg) {
+    return arg->a;
+  }
 
-<------------------------------SNIP---------------------------------->
+Compiled with latest upstream llvm15,
+  $ clang -O2 -g -target bpf -S -emit-llvm t.c
+The related generated debuginfo IR looks like:
+  !16 = !DIDerivedType(tag: DW_TAG_typedef, name: "fn_ptr_arr2_t", file: !1, line: 1, baseType: !17)
+  !17 = !DICompositeType(tag: DW_TAG_array_type, baseType: !18, size: 320, elements: !32)
+  !18 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !19)
+  !19 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !20, size: 64)
+  !20 = !DISubroutineType(types: !21)
+  !21 = !{!22, null}
+  !22 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !23, size: 64)
+  !23 = !DISubroutineType(types: !24)
+  !24 = !{!25, !28}
+  !25 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !26, size: 64)
+  !26 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !27)
+  !27 = !DIBasicType(name: "char", size: 8, encoding: DW_ATE_signed_char)
+You can see two intermediate const qualifier to pointer are dropped in debuginfo IR.
 
-[ 2008.958108] nvmet: adding nsid 1 to subsystem blktests-subsystem-997
-[ 2008.962082] nvmet: adding nsid 1 to subsystem blktests-subsystem-998
-[ 2008.966102] nvmet: adding nsid 1 to subsystem blktests-subsystem-999
-[ 2008.973132] nvmet: creating discovery controller 1 for subsystem nqn.2014-08.org.nvmexpress.discovery for NQN testhostnqn.
-*[ 2008.973196] nvme1: Identify(0x6), Invalid Field in Command (sct 0x0 / sc 0x2) MORE DNR*
-[ 2008.974595] nvme nvme1: new ctrl: "nqn.2014-08.org.nvmexpress.discovery"
-[ 2009.103248] nvme nvme1: Removing ctrl: NQN "nqn.2014-08.org.nvmexpress.discovery"
+With llvm14, we have following debuginfo IR:
+  !16 = !DIDerivedType(tag: DW_TAG_typedef, name: "fn_ptr_arr2_t", file: !1, line: 1, baseType: !17)
+  !17 = !DICompositeType(tag: DW_TAG_array_type, baseType: !18, size: 320, elements: !34)
+  !18 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !19)
+  !19 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !20, size: 64)
+  !20 = !DISubroutineType(types: !21)
+  !21 = !{!22, null}
+  !22 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !23)
+  !23 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !24, size: 64)
+  !24 = !DISubroutineType(types: !25)
+  !25 = !{!26, !30}
+  !26 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !27)
+  !27 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !28, size: 64)
+  !28 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !29)
+  !29 = !DIBasicType(name: "char", size: 8, encoding: DW_ATE_signed_char)
+All const qualifiers are preserved.
 
-Move the call of nvme_init_non_mdts_limits() to nvme_scan_work() after
-we verify that I/O queues are created since that is a converging point
-for each transport where these limits are actually used.
+To adapt the selftest to both old and new llvm, this patch removed
+the intermediate const qualifier in const-to-ptr types, to make the
+test succeed again.
 
-1. FC :
-nvme_fc_create_association()
- ...
- nvme_fc_create_io_queues(ctrl);
- ...
- nvme_start_ctrl()
-  nvme_scan_queue()
-   nvme_scan_work()
+  [1] https://reviews.llvm.org/D125919
 
-2. PCIe:-
-nvme_reset_work()
- ...
- nvme_setup_io_queues()
-  nvme_create_io_queues()
-   nvme_alloc_queue()
- ...
- nvme_start_ctrl()
-  nvme_scan_queue()
-   nvme_scan_work()
-
-3. RDMA :-
-nvme_rdma_setup_ctrl
- ...
-  nvme_rdma_configure_io_queues
-  ...
-  nvme_start_ctrl()
-   nvme_scan_queue()
-    nvme_scan_work()
-
-4. TCP :-
-nvme_tcp_setup_ctrl
- ...
-  nvme_tcp_configure_io_queues
-  ...
-  nvme_start_ctrl()
-   nvme_scan_queue()
-    nvme_scan_work()
-
-* nvme_scan_work()
-...
-nvme_validate_or_alloc_ns()
-  nvme_alloc_ns()
-   nvme_update_ns_info()
-    nvme_update_disk_info()
-     nvme_config_discard() <---
-     blk_queue_max_write_zeroes_sectors() <---
-
-Signed-off-by: Chaitanya Kulkarni <kch@nvidia.com>
-Reviewed-by: Keith Busch <kbusch@kernel.org>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
+Reported-by: Mykola Lysenko <mykolal@fb.com>
+Signed-off-by: Yonghong Song <yhs@fb.com>
+Link: https://lore.kernel.org/r/20220523152044.3905809-1-yhs@fb.com
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvme/host/core.c | 19 +++++++++++++++----
- 1 file changed, 15 insertions(+), 4 deletions(-)
+ tools/testing/selftests/bpf/progs/btf_dump_test_case_syntax.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 87877397d1ad..711b89424bd0 100644
---- a/drivers/nvme/host/core.c
-+++ b/drivers/nvme/host/core.c
-@@ -3032,10 +3032,6 @@ int nvme_init_ctrl_finish(struct nvme_ctrl *ctrl)
- 	if (ret)
- 		return ret;
+diff --git a/tools/testing/selftests/bpf/progs/btf_dump_test_case_syntax.c b/tools/testing/selftests/bpf/progs/btf_dump_test_case_syntax.c
+index 8aaa24a00322..970598dda732 100644
+--- a/tools/testing/selftests/bpf/progs/btf_dump_test_case_syntax.c
++++ b/tools/testing/selftests/bpf/progs/btf_dump_test_case_syntax.c
+@@ -94,7 +94,7 @@ typedef void (* (*signal_t)(int, void (*)(int)))(int);
  
--	ret = nvme_init_non_mdts_limits(ctrl);
--	if (ret < 0)
--		return ret;
--
- 	ret = nvme_configure_apst(ctrl);
- 	if (ret < 0)
- 		return ret;
-@@ -4096,11 +4092,26 @@ static void nvme_scan_work(struct work_struct *work)
- {
- 	struct nvme_ctrl *ctrl =
- 		container_of(work, struct nvme_ctrl, scan_work);
-+	int ret;
+ typedef char * (*fn_ptr_arr1_t[10])(int **);
  
- 	/* No tagset on a live ctrl means IO queues could not created */
- 	if (ctrl->state != NVME_CTRL_LIVE || !ctrl->tagset)
- 		return;
+-typedef char * (* const (* const fn_ptr_arr2_t[5])())(char * (*)(int));
++typedef char * (* (* const fn_ptr_arr2_t[5])())(char * (*)(int));
  
-+	/*
-+	 * Identify controller limits can change at controller reset due to
-+	 * new firmware download, even though it is not common we cannot ignore
-+	 * such scenario. Controller's non-mdts limits are reported in the unit
-+	 * of logical blocks that is dependent on the format of attached
-+	 * namespace. Hence re-read the limits at the time of ns allocation.
-+	 */
-+	ret = nvme_init_non_mdts_limits(ctrl);
-+	if (ret < 0) {
-+		dev_warn(ctrl->device,
-+			"reading non-mdts-limits failed: %d\n", ret);
-+		return;
-+	}
-+
- 	if (test_and_clear_bit(NVME_AER_NOTICE_NS_CHANGED, &ctrl->events)) {
- 		dev_info(ctrl->device, "rescanning namespaces.\n");
- 		nvme_clear_changed_ns_log(ctrl);
+ struct struct_w_typedefs {
+ 	int_t a;
 -- 
 2.35.1
 
