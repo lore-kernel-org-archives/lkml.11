@@ -2,290 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 610B2C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 07:51:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E16FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 07:51:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234013AbiE3HvO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 03:51:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60010 "EHLO
+        id S234128AbiE3HvR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 03:51:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234085AbiE3Hul (ORCPT
+        with ESMTP id S234051AbiE3Hua (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 03:50:41 -0400
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C186371D8B
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 00:50:40 -0700 (PDT)
-Received: by mail-pg1-x535.google.com with SMTP id s68so9439009pgs.10
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 00:50:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=+KuhHyD4PJmicRh1rvovvsjVwRIDUdFowoJNCrBTN7Y=;
-        b=ZLgUMfaZ+tA2Ajunkij0CRf9vFf1S0Q7PwqPVEhETJxVNROl04VLPpk0byiKakWPCp
-         zSXMSILlxQjjexSRsmvwcKH2AeyrBT+VOKLyeWRzGc3lf/bUJtHyuMX+A4A0WoWkP95V
-         INrPgOVrmW7S//LKWv/KgnN/1UDC261OwdlqpdWnh6tntEcn7qWrjD2a56zpuDiErFiC
-         1bO96DreZfqvWZZpRT3L+u77shEQMswa3q4Q53U4IF/TqbaWnY7lFO3DgAIofyDerGod
-         aou4OYxYjrcMyaBBnHgBRa65b7trXpppLtdzw7Hm5ZzswNvScITVQ/sLLu2vPq/Fmgp6
-         nzTQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=+KuhHyD4PJmicRh1rvovvsjVwRIDUdFowoJNCrBTN7Y=;
-        b=iPytDuQxf+kadz5mk/Zd4nKjb0V8+2IpgbfjR+Jo+UB7EmoRh4SkLNMiEL4CAJuIkl
-         3B6ZzKZnYb7HhKuOnIJS2c+IxoMM5CVJ+rKv1iQWzqePjN9eBfMsvf5hg4PoX3yvdxcy
-         ouj3QPSfObGHWOnvPSu2juKOGO5XgtU38AU/o8CELAuOYVf2YfGjjcEE+GxMHUyaYlQ/
-         7GWo/uYAa+jkGbNDvhlpaz2WmWoh/5cUF2ciI8G5rzA3ifuDZ4fWeLjN1LZzPiMlHe7x
-         9C7jW2iXwsmu/lvNJfkjgNijprxPhMMw92dT+q1V2bQHKvHT2IoUJYy0hh3gVhrYPTqK
-         0mZA==
-X-Gm-Message-State: AOAM530VGUEXEvoYVQyazbpaBSEhsiXuMxptUuhpYYZ4QesWLqdrqayx
-        ubezzG5yINHG3jg9FUvKilKO6g==
-X-Google-Smtp-Source: ABdhPJxIW2mIJMC71rXyAx3/OFd2GVPjad4pqowx3iRyXvsDwDpp1vJywSxLS2ZA2oGfnuxO8OXp3A==
-X-Received: by 2002:a62:8689:0:b0:51b:4143:d1ae with SMTP id x131-20020a628689000000b0051b4143d1aemr6716887pfd.22.1653897040304;
-        Mon, 30 May 2022 00:50:40 -0700 (PDT)
-Received: from FVFYT0MHHV2J.bytedance.net ([2408:8207:18da:2310:2071:e13a:8aa:cacf])
-        by smtp.gmail.com with ESMTPSA id a23-20020a170902b59700b001616c3bd5c2sm8421381pls.162.2022.05.30.00.50.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 May 2022 00:50:40 -0700 (PDT)
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     hannes@cmpxchg.org, mhocko@kernel.org, roman.gushchin@linux.dev,
-        shakeelb@google.com, akpm@linux-foundation.org
-Cc:     cgroups@vger.kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, duanxiongchun@bytedance.com,
-        longman@redhat.com, Muchun Song <songmuchun@bytedance.com>
-Subject: [PATCH v5 03/11] mm: memcontrol: prepare objcg API for non-kmem usage
-Date:   Mon, 30 May 2022 15:49:11 +0800
-Message-Id: <20220530074919.46352-4-songmuchun@bytedance.com>
-X-Mailer: git-send-email 2.32.1 (Apple Git-133)
-In-Reply-To: <20220530074919.46352-1-songmuchun@bytedance.com>
-References: <20220530074919.46352-1-songmuchun@bytedance.com>
+        Mon, 30 May 2022 03:50:30 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43B096300;
+        Mon, 30 May 2022 00:50:28 -0700 (PDT)
+X-UUID: c0e55e53b2994df78afd0a8347674eaf-20220530
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5,REQID:fcd94474-4a89-4cd6-8c90-41c62bcbb644,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:0
+X-CID-META: VersionHash:2a19b09,CLOUDID:b113c0b8-3c45-407b-8f66-25095432a27a,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
+        ,QS:0,BEC:nil
+X-UUID: c0e55e53b2994df78afd0a8347674eaf-20220530
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
+        (envelope-from <ck.hu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1881320135; Mon, 30 May 2022 15:50:24 +0800
+Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
+ mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Mon, 30 May 2022 15:50:23 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Mon, 30 May 2022 15:50:23 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 30 May 2022 15:50:22 +0800
+Message-ID: <2c88fd4c308e86536d5996b3f32f68d05d452e23.camel@mediatek.com>
+Subject: Re: [PATCH v10 08/21] drm/mediatek: dpi: implement a swap_input
+ toggle in SoC config
+From:   CK Hu <ck.hu@mediatek.com>
+To:     Guillaume Ranquet <granquet@baylibre.com>,
+        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        "David Airlie" <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Chunfeng Yun <chunfeng.yun@mediatek.com>,
+        "Kishon Vijay Abraham I" <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>, "Helge Deller" <deller@gmx.de>,
+        Jitao shi <jitao.shi@mediatek.com>
+CC:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Rex-BC Chen <rex-bc.chen@mediatek.com>,
+        <dri-devel@lists.freedesktop.org>,
+        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-phy@lists.infradead.org>, <linux-fbdev@vger.kernel.org>
+Date:   Mon, 30 May 2022 15:50:23 +0800
+In-Reply-To: <20220523104758.29531-9-granquet@baylibre.com>
+References: <20220523104758.29531-1-granquet@baylibre.com>
+         <20220523104758.29531-9-granquet@baylibre.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Pagecache pages are charged at the allocation time and holding a
-reference to the original memory cgroup until being reclaimed.
-Depending on the memory pressure, specific patterns of the page
-sharing between different cgroups and the cgroup creation and
-destruction rates, a large number of dying memory cgroups can be
-pinned by pagecache pages. It makes the page reclaim less efficient
-and wastes memory.
+Hi, Guillaume:
 
-We can convert LRU pages and most other raw memcg pins to the objcg
-direction to fix this problem, and then the page->memcg will always
-point to an object cgroup pointer.
 
-Therefore, the infrastructure of objcg no longer only serves
-CONFIG_MEMCG_KMEM. In this patch, we move the infrastructure of the
-objcg out of the scope of the CONFIG_MEMCG_KMEM so that the LRU pages
-can reuse it to charge pages.
+On Mon, 2022-05-23 at 12:47 +0200, Guillaume Ranquet wrote:
+> Adds a bit of flexibility to support SoCs without swap_input support
+> 
+> Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
+> Reviewed-by: AngeloGioacchino Del Regno <
+> angelogioacchino.delregno@collabora.com>
+> Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+> ---
+>  drivers/gpu/drm/mediatek/mtk_dpi.c | 14 +++++++++++---
+>  1 file changed, 11 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c
+> b/drivers/gpu/drm/mediatek/mtk_dpi.c
+> index 545a1337cc89..454f8563efae 100644
+> --- a/drivers/gpu/drm/mediatek/mtk_dpi.c
+> +++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
+> @@ -126,6 +126,7 @@ struct mtk_dpi_conf {
+>  	const u32 *output_fmts;
+>  	u32 num_output_fmts;
+>  	bool is_ck_de_pol;
+> +	bool swap_input_support;
+>  	const struct mtk_dpi_yc_limit *limit;
+>  };
+>  
+> @@ -378,18 +379,21 @@ static void mtk_dpi_config_color_format(struct
+> mtk_dpi *dpi,
+>  	    (format == MTK_DPI_COLOR_FORMAT_YCBCR_444_FULL)) {
+>  		mtk_dpi_config_yuv422_enable(dpi, false);
+>  		mtk_dpi_config_csc_enable(dpi, true);
+> -		mtk_dpi_config_swap_input(dpi, false);
+> +		if (dpi->conf->swap_input_support)
+> +			mtk_dpi_config_swap_input(dpi, false);
+>  		mtk_dpi_config_channel_swap(dpi,
+> MTK_DPI_OUT_CHANNEL_SWAP_BGR);
+>  	} else if ((format == MTK_DPI_COLOR_FORMAT_YCBCR_422) ||
+>  		   (format == MTK_DPI_COLOR_FORMAT_YCBCR_422_FULL)) {
+>  		mtk_dpi_config_yuv422_enable(dpi, true);
+>  		mtk_dpi_config_csc_enable(dpi, true);
+> -		mtk_dpi_config_swap_input(dpi, true);
+> +		if (dpi->conf->swap_input_support)
+> +			mtk_dpi_config_swap_input(dpi, true);
 
-We know that the LRU pages are not accounted at the root level. But
-the page->memcg_data points to the root_mem_cgroup. So the
-page->memcg_data of the LRU pages always points to a valid pointer.
-But the root_mem_cgroup dose not have an object cgroup. If we use
-obj_cgroup APIs to charge the LRU pages, we should set the
-page->memcg_data to a root object cgroup. So we also allocate an
-object cgroup for the root_mem_cgroup.
+As [1], please keep in touch with Mediatek engineer.
 
-Signed-off-by: Muchun Song <songmuchun@bytedance.com>
-Acked-by: Johannes Weiner <hannes@cmpxchg.org>
----
- include/linux/memcontrol.h |  2 +-
- mm/memcontrol.c            | 56 +++++++++++++++++++++++++++-------------------
- 2 files changed, 34 insertions(+), 24 deletions(-)
+Regards,
+CK
 
-diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
-index 6d7f97cc3fd4..27f3171f42a1 100644
---- a/include/linux/memcontrol.h
-+++ b/include/linux/memcontrol.h
-@@ -315,10 +315,10 @@ struct mem_cgroup {
- 
- #ifdef CONFIG_MEMCG_KMEM
- 	int kmemcg_id;
-+#endif
- 	struct obj_cgroup __rcu *objcg;
- 	/* list of inherited objcgs, protected by objcg_lock */
- 	struct list_head objcg_list;
--#endif
- 
- 	MEMCG_PADDING(_pad2_);
- 
-diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-index 13da256ff2e4..739a1d58ce97 100644
---- a/mm/memcontrol.c
-+++ b/mm/memcontrol.c
-@@ -254,9 +254,9 @@ struct mem_cgroup *vmpressure_to_memcg(struct vmpressure *vmpr)
- 	return container_of(vmpr, struct mem_cgroup, vmpressure);
- }
- 
--#ifdef CONFIG_MEMCG_KMEM
- static DEFINE_SPINLOCK(objcg_lock);
- 
-+#ifdef CONFIG_MEMCG_KMEM
- bool mem_cgroup_kmem_disabled(void)
- {
- 	return cgroup_memory_nokmem;
-@@ -265,12 +265,10 @@ bool mem_cgroup_kmem_disabled(void)
- static void obj_cgroup_uncharge_pages(struct obj_cgroup *objcg,
- 				      unsigned int nr_pages);
- 
--static void obj_cgroup_release(struct percpu_ref *ref)
-+static void obj_cgroup_release_bytes(struct obj_cgroup *objcg)
- {
--	struct obj_cgroup *objcg = container_of(ref, struct obj_cgroup, refcnt);
- 	unsigned int nr_bytes;
- 	unsigned int nr_pages;
--	unsigned long flags;
- 
- 	/*
- 	 * At this point all allocated objects are freed, and
-@@ -284,9 +282,9 @@ static void obj_cgroup_release(struct percpu_ref *ref)
- 	 * 3) CPU1: a process from another memcg is allocating something,
- 	 *          the stock if flushed,
- 	 *          objcg->nr_charged_bytes = PAGE_SIZE - 92
--	 * 5) CPU0: we do release this object,
-+	 * 4) CPU0: we do release this object,
- 	 *          92 bytes are added to stock->nr_bytes
--	 * 6) CPU0: stock is flushed,
-+	 * 5) CPU0: stock is flushed,
- 	 *          92 bytes are added to objcg->nr_charged_bytes
- 	 *
- 	 * In the result, nr_charged_bytes == PAGE_SIZE.
-@@ -298,6 +296,19 @@ static void obj_cgroup_release(struct percpu_ref *ref)
- 
- 	if (nr_pages)
- 		obj_cgroup_uncharge_pages(objcg, nr_pages);
-+}
-+#else
-+static inline void obj_cgroup_release_bytes(struct obj_cgroup *objcg)
-+{
-+}
-+#endif
-+
-+static void obj_cgroup_release(struct percpu_ref *ref)
-+{
-+	struct obj_cgroup *objcg = container_of(ref, struct obj_cgroup, refcnt);
-+	unsigned long flags;
-+
-+	obj_cgroup_release_bytes(objcg);
- 
- 	spin_lock_irqsave(&objcg_lock, flags);
- 	list_del(&objcg->list);
-@@ -326,10 +337,10 @@ static struct obj_cgroup *obj_cgroup_alloc(void)
- 	return objcg;
- }
- 
--static void memcg_reparent_objcgs(struct mem_cgroup *memcg,
--				  struct mem_cgroup *parent)
-+static void memcg_reparent_objcgs(struct mem_cgroup *memcg)
- {
- 	struct obj_cgroup *objcg, *iter;
-+	struct mem_cgroup *parent = parent_mem_cgroup(memcg);
- 
- 	objcg = rcu_replace_pointer(memcg->objcg, NULL, true);
- 
-@@ -348,6 +359,7 @@ static void memcg_reparent_objcgs(struct mem_cgroup *memcg,
- 	percpu_ref_kill(&objcg->refcnt);
- }
- 
-+#ifdef CONFIG_MEMCG_KMEM
- /*
-  * A lot of the calls to the cache allocation functions are expected to be
-  * inlined by the compiler. Since the calls to memcg_slab_pre_alloc_hook() are
-@@ -3589,21 +3601,12 @@ static u64 mem_cgroup_read_u64(struct cgroup_subsys_state *css,
- #ifdef CONFIG_MEMCG_KMEM
- static int memcg_online_kmem(struct mem_cgroup *memcg)
- {
--	struct obj_cgroup *objcg;
--
- 	if (cgroup_memory_nokmem)
- 		return 0;
- 
- 	if (unlikely(mem_cgroup_is_root(memcg)))
- 		return 0;
- 
--	objcg = obj_cgroup_alloc();
--	if (!objcg)
--		return -ENOMEM;
--
--	objcg->memcg = memcg;
--	rcu_assign_pointer(memcg->objcg, objcg);
--
- 	static_branch_enable(&memcg_kmem_enabled_key);
- 
- 	memcg->kmemcg_id = memcg->id.id;
-@@ -3613,17 +3616,13 @@ static int memcg_online_kmem(struct mem_cgroup *memcg)
- 
- static void memcg_offline_kmem(struct mem_cgroup *memcg)
- {
--	struct mem_cgroup *parent;
--
- 	if (cgroup_memory_nokmem)
- 		return;
- 
- 	if (unlikely(mem_cgroup_is_root(memcg)))
- 		return;
- 
--	parent = parent_mem_cgroup(memcg);
--	memcg_reparent_objcgs(memcg, parent);
--	memcg_reparent_list_lrus(memcg, parent);
-+	memcg_reparent_list_lrus(memcg, parent_mem_cgroup(memcg));
- }
- #else
- static int memcg_online_kmem(struct mem_cgroup *memcg)
-@@ -5106,8 +5105,8 @@ static struct mem_cgroup *mem_cgroup_alloc(void)
- 	memcg->socket_pressure = jiffies;
- #ifdef CONFIG_MEMCG_KMEM
- 	memcg->kmemcg_id = -1;
--	INIT_LIST_HEAD(&memcg->objcg_list);
- #endif
-+	INIT_LIST_HEAD(&memcg->objcg_list);
- #ifdef CONFIG_CGROUP_WRITEBACK
- 	INIT_LIST_HEAD(&memcg->cgwb_list);
- 	for (i = 0; i < MEMCG_CGWB_FRN_CNT; i++)
-@@ -5169,6 +5168,7 @@ mem_cgroup_css_alloc(struct cgroup_subsys_state *parent_css)
- static int mem_cgroup_css_online(struct cgroup_subsys_state *css)
- {
- 	struct mem_cgroup *memcg = mem_cgroup_from_css(css);
-+	struct obj_cgroup *objcg;
- 
- 	if (memcg_online_kmem(memcg))
- 		goto remove_id;
-@@ -5181,6 +5181,13 @@ static int mem_cgroup_css_online(struct cgroup_subsys_state *css)
- 	if (alloc_shrinker_info(memcg))
- 		goto offline_kmem;
- 
-+	objcg = obj_cgroup_alloc();
-+	if (!objcg)
-+		goto free_shrinker;
-+
-+	objcg->memcg = memcg;
-+	rcu_assign_pointer(memcg->objcg, objcg);
-+
- 	/* Online state pins memcg ID, memcg ID pins CSS */
- 	refcount_set(&memcg->id.ref, 1);
- 	css_get(css);
-@@ -5189,6 +5196,8 @@ static int mem_cgroup_css_online(struct cgroup_subsys_state *css)
- 		queue_delayed_work(system_unbound_wq, &stats_flush_dwork,
- 				   2UL*HZ);
- 	return 0;
-+free_shrinker:
-+	free_shrinker_info(memcg);
- offline_kmem:
- 	memcg_offline_kmem(memcg);
- remove_id:
-@@ -5216,6 +5225,7 @@ static void mem_cgroup_css_offline(struct cgroup_subsys_state *css)
- 	page_counter_set_min(&memcg->memory, 0);
- 	page_counter_set_low(&memcg->memory, 0);
- 
-+	memcg_reparent_objcgs(memcg);
- 	memcg_offline_kmem(memcg);
- 	reparent_shrinker_deferred(memcg);
- 	wb_memcg_offline(memcg);
--- 
-2.11.0
+[1] 
+https://patchwork.kernel.org/project/linux-mediatek/patch/20220218145437.18563-8-granquet@baylibre.com/
+
+>  		mtk_dpi_config_channel_swap(dpi,
+> MTK_DPI_OUT_CHANNEL_SWAP_RGB);
+>  	} else {
+>  		mtk_dpi_config_yuv422_enable(dpi, false);
+>  		mtk_dpi_config_csc_enable(dpi, false);
+> -		mtk_dpi_config_swap_input(dpi, false);
+> +		if (dpi->conf->swap_input_support)
+> +			mtk_dpi_config_swap_input(dpi, false);
+>  		mtk_dpi_config_channel_swap(dpi,
+> MTK_DPI_OUT_CHANNEL_SWAP_RGB);
+>  	}
+>  }
+> @@ -808,6 +812,7 @@ static const struct mtk_dpi_conf mt8173_conf = {
+>  	.output_fmts = mt8173_output_fmts,
+>  	.num_output_fmts = ARRAY_SIZE(mt8173_output_fmts),
+>  	.is_ck_de_pol = true,
+> +	.swap_input_support = true,
+>  	.limit = &mtk_dpi_limit,
+>  };
+>  
+> @@ -819,6 +824,7 @@ static const struct mtk_dpi_conf mt2701_conf = {
+>  	.output_fmts = mt8173_output_fmts,
+>  	.num_output_fmts = ARRAY_SIZE(mt8173_output_fmts),
+>  	.is_ck_de_pol = true,
+> +	.swap_input_support = true,
+>  	.limit = &mtk_dpi_limit,
+>  };
+>  
+> @@ -829,6 +835,7 @@ static const struct mtk_dpi_conf mt8183_conf = {
+>  	.output_fmts = mt8183_output_fmts,
+>  	.num_output_fmts = ARRAY_SIZE(mt8183_output_fmts),
+>  	.is_ck_de_pol = true,
+> +	.swap_input_support = true,
+>  	.limit = &mtk_dpi_limit,
+>  };
+>  
+> @@ -839,6 +846,7 @@ static const struct mtk_dpi_conf mt8192_conf = {
+>  	.output_fmts = mt8173_output_fmts,
+>  	.num_output_fmts = ARRAY_SIZE(mt8173_output_fmts),
+>  	.is_ck_de_pol = true,
+> +	.swap_input_support = true,
+>  	.limit = &mtk_dpi_limit,
+>  };
+>  
 
