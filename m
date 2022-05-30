@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 635EEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:49:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40841C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:49:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241199AbiE3Otm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:49:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54466 "EHLO
+        id S241416AbiE3Otr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:49:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241318AbiE3OaU (ORCPT
+        with ESMTP id S241492AbiE3Oa0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:30:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D734DBCA5;
-        Mon, 30 May 2022 06:52:00 -0700 (PDT)
+        Mon, 30 May 2022 10:30:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D46DABC98;
+        Mon, 30 May 2022 06:52:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3104160FE3;
-        Mon, 30 May 2022 13:52:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E74EC3411C;
-        Mon, 30 May 2022 13:51:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 82354B80D6B;
+        Mon, 30 May 2022 13:52:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1BBA5C385B8;
+        Mon, 30 May 2022 13:52:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918719;
-        bh=93gbBQ1CW6fW04ZVr6GhHTgR39LR4XV+Y+o+LtQyr4s=;
+        s=k20201202; t=1653918726;
+        bh=SoOILIDZ89ku5o6t03SwZYcjVEeTdvrSTsaHRN3bN1w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iQ5ibY6jBBF2egHpQkq/sQMbKK2cErTOTscQ6diKbBzOLw8PHzBZqhlsRzHqKdCEI
-         nrRoWgFUyzH9kjBidbnp8NvrywDouyUvduSy2CdwC75ijuaPzBUbdNtur69WG4Hsih
-         2DpYSB5fR97SFGCd37Nw9BwRkWYyr//U+oMHM6/OE9uq2qwaRcmzjWQvSxTb/2U3jz
-         Om/zLlnchY+Z/M6Q/kcwHkCpruyQEooJJ4gO8ZE/lgsa5taf/WQEdG0AAgiOlS86dH
-         Bes+HN1UyO1R6/B/6kaGKlKY7mtl0Z+wZR1Z8CEs7m2PGm7yGurO3ulT68aRn6C8TY
-         qKaGN/nfeJYag==
+        b=uoIieTtsKQTsZ1IMAcE0lF5z8yk6ZOktj+JR86RCbqWkzFy7p0cfjRtTo4Gk9ez5E
+         8jtN/S/Dzo1SmuhbzZxEH+tfce+S/INw8F/dXy4HfKftzqovx/9sEo+59Mg2M384pk
+         K0DL8L8bgnyaSgu5p8wyT49O+PeQEYhuUr47r5tjUHnMcfFzYilXJxxJl/qimaPaBV
+         rO2xPn26xLH3iQUvOFrP4eOYBiVaZr0u+BrEPbwgZt/k7BNt92h0jr+xaNGZVOIoUT
+         TSNIFamJStCmvKItXl617e/LDJUSDzvW352S9bTzWmBqzRc9fhkRJXNNShItVJGdVG
+         xoAZDBY00tuqg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Fabio Estevam <festevam@denx.de>, Andrew Lunn <andrew@lunn.ch>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, hkallweit1@gmail.com,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 25/29] net: phy: micrel: Allow probing without .driver_data
-Date:   Mon, 30 May 2022 09:50:52 -0400
-Message-Id: <20220530135057.1937286-25-sashal@kernel.org>
+Cc:     Ard Biesheuvel <ardb@kernel.org>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Sasha Levin <sashal@kernel.org>, linux@armlinux.org.uk,
+        linus.walleij@linaro.org, nico@fluxnic.net, arnd@arndb.de,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 4.14 27/29] ARM: 9201/1: spectre-bhb: rely on linker to emit cross-section literal loads
+Date:   Mon, 30 May 2022 09:50:54 -0400
+Message-Id: <20220530135057.1937286-27-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530135057.1937286-1-sashal@kernel.org>
 References: <20220530135057.1937286-1-sashal@kernel.org>
@@ -53,70 +53,106 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fabio Estevam <festevam@denx.de>
+From: Ard Biesheuvel <ardb@kernel.org>
 
-[ Upstream commit f2ef6f7539c68c6bd6c32323d8845ee102b7c450 ]
+[ Upstream commit ad12c2f1587c6ec9b52ff226f438955bfae6ad89 ]
 
-Currently, if the .probe element is present in the phy_driver structure
-and the .driver_data is not, a NULL pointer dereference happens.
+The assembler does not permit 'LDR PC, <sym>' when the symbol lives in a
+different section, which is why we have been relying on rather fragile
+open-coded arithmetic to load the address of the vector_swi routine into
+the program counter using a single LDR instruction in the SWI slot in
+the vector table. The literal was moved to a different section to in
+commit 19accfd373847 ("ARM: move vector stubs") to ensure that the
+vector stubs page does not need to be mapped readable for user space,
+which is the case for the vector page itself, as it carries the kuser
+helpers as well.
 
-Allow passing .probe without .driver_data by inserting NULL checks
-for priv->type.
+So the cross-section literal load is open-coded, and this relies on the
+address of vector_swi to be at the very start of the vector stubs page,
+and we won't notice if we got it wrong until booting the kernel and see
+it break. Fortunately, it was guaranteed to break, so this was fragile
+but not problematic.
 
-Signed-off-by: Fabio Estevam <festevam@denx.de>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Link: https://lore.kernel.org/r/20220513114613.762810-1-festevam@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Now that we have added two other variants of the vector table, we have 3
+occurrences of the same trick, and so the size of our ISA/compiler/CPU
+validation space has tripled, in a way that may cause regressions to only
+be observed once booting the image in question on a CPU that exercises a
+particular vector table.
+
+So let's switch to true cross section references, and let the linker fix
+them up like it fixes up all the other cross section references in the
+vector page.
+
+Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/micrel.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ arch/arm/kernel/entry-armv.S | 22 +++++++++++++++-------
+ 1 file changed, 15 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-index 755aa6741292..6f15cd5d4e7a 100644
---- a/drivers/net/phy/micrel.c
-+++ b/drivers/net/phy/micrel.c
-@@ -285,7 +285,7 @@ static int kszphy_config_reset(struct phy_device *phydev)
- 		}
- 	}
+diff --git a/arch/arm/kernel/entry-armv.S b/arch/arm/kernel/entry-armv.S
+index e1b3c5c96560..0a9891df1ca4 100644
+--- a/arch/arm/kernel/entry-armv.S
++++ b/arch/arm/kernel/entry-armv.S
+@@ -1102,10 +1102,15 @@ ENDPROC(vector_bhb_bpiall_\name)
+ 	.endm
  
--	if (priv->led_mode >= 0)
-+	if (priv->type && priv->led_mode >= 0)
- 		kszphy_setup_led(phydev, priv->type->led_mode_reg, priv->led_mode);
+ 	.section .stubs, "ax", %progbits
+-	@ This must be the first word
++	@ These need to remain at the start of the section so that
++	@ they are in range of the 'SWI' entries in the vector tables
++	@ located 4k down.
++.L__vector_swi:
+ 	.word	vector_swi
+ #ifdef CONFIG_HARDEN_BRANCH_HISTORY
++.L__vector_bhb_loop8_swi:
+ 	.word	vector_bhb_loop8_swi
++.L__vector_bhb_bpiall_swi:
+ 	.word	vector_bhb_bpiall_swi
+ #endif
  
- 	return 0;
-@@ -301,10 +301,10 @@ static int kszphy_config_init(struct phy_device *phydev)
+@@ -1248,10 +1253,11 @@ vector_addrexcptn:
+ 	.globl	vector_fiq
  
- 	type = priv->type;
+ 	.section .vectors, "ax", %progbits
+-.L__vectors_start:
+ 	W(b)	vector_rst
+ 	W(b)	vector_und
+-	W(ldr)	pc, .L__vectors_start + 0x1000
++ARM(	.reloc	., R_ARM_LDR_PC_G0, .L__vector_swi		)
++THUMB(	.reloc	., R_ARM_THM_PC12, .L__vector_swi		)
++	W(ldr)	pc, .
+ 	W(b)	vector_pabt
+ 	W(b)	vector_dabt
+ 	W(b)	vector_addrexcptn
+@@ -1260,10 +1266,11 @@ vector_addrexcptn:
  
--	if (type->has_broadcast_disable)
-+	if (type && type->has_broadcast_disable)
- 		kszphy_broadcast_disable(phydev);
+ #ifdef CONFIG_HARDEN_BRANCH_HISTORY
+ 	.section .vectors.bhb.loop8, "ax", %progbits
+-.L__vectors_bhb_loop8_start:
+ 	W(b)	vector_rst
+ 	W(b)	vector_bhb_loop8_und
+-	W(ldr)	pc, .L__vectors_bhb_loop8_start + 0x1004
++ARM(	.reloc	., R_ARM_LDR_PC_G0, .L__vector_bhb_loop8_swi	)
++THUMB(	.reloc	., R_ARM_THM_PC12, .L__vector_bhb_loop8_swi	)
++	W(ldr)	pc, .
+ 	W(b)	vector_bhb_loop8_pabt
+ 	W(b)	vector_bhb_loop8_dabt
+ 	W(b)	vector_addrexcptn
+@@ -1271,10 +1278,11 @@ vector_addrexcptn:
+ 	W(b)	vector_bhb_loop8_fiq
  
--	if (type->has_nand_tree_disable)
-+	if (type && type->has_nand_tree_disable)
- 		kszphy_nand_tree_disable(phydev);
- 
- 	return kszphy_config_reset(phydev);
-@@ -764,7 +764,7 @@ static int kszphy_probe(struct phy_device *phydev)
- 
- 	priv->type = type;
- 
--	if (type->led_mode_reg) {
-+	if (type && type->led_mode_reg) {
- 		ret = of_property_read_u32(np, "micrel,led-mode",
- 				&priv->led_mode);
- 		if (ret)
-@@ -785,7 +785,8 @@ static int kszphy_probe(struct phy_device *phydev)
- 		unsigned long rate = clk_get_rate(clk);
- 		bool rmii_ref_clk_sel_25_mhz;
- 
--		priv->rmii_ref_clk_sel = type->has_rmii_ref_clk_sel;
-+		if (type)
-+			priv->rmii_ref_clk_sel = type->has_rmii_ref_clk_sel;
- 		rmii_ref_clk_sel_25_mhz = of_property_read_bool(np,
- 				"micrel,rmii-reference-clock-select-25-mhz");
- 
+ 	.section .vectors.bhb.bpiall, "ax", %progbits
+-.L__vectors_bhb_bpiall_start:
+ 	W(b)	vector_rst
+ 	W(b)	vector_bhb_bpiall_und
+-	W(ldr)	pc, .L__vectors_bhb_bpiall_start + 0x1008
++ARM(	.reloc	., R_ARM_LDR_PC_G0, .L__vector_bhb_bpiall_swi	)
++THUMB(	.reloc	., R_ARM_THM_PC12, .L__vector_bhb_bpiall_swi	)
++	W(ldr)	pc, .
+ 	W(b)	vector_bhb_bpiall_pabt
+ 	W(b)	vector_bhb_bpiall_dabt
+ 	W(b)	vector_addrexcptn
 -- 
 2.35.1
 
