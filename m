@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ED12C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:48:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A065BC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:48:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238570AbiE3Oss (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:48:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44688 "EHLO
+        id S233619AbiE3Osz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:48:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242252AbiE3O2C (ORCPT
+        with ESMTP id S240054AbiE3O2U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:28:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9147482150;
-        Mon, 30 May 2022 06:51:30 -0700 (PDT)
+        Mon, 30 May 2022 10:28:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D8C12A26C;
+        Mon, 30 May 2022 06:51:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1D359B80DE8;
-        Mon, 30 May 2022 13:51:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09C09C385B8;
-        Mon, 30 May 2022 13:51:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9FC9660FE3;
+        Mon, 30 May 2022 13:51:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0F05C385B8;
+        Mon, 30 May 2022 13:51:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918688;
-        bh=Bt/WrTe7+aWZR4Wot7rroLcEUoIRwN1SXt9PKv0HDJI=;
+        s=k20201202; t=1653918696;
+        bh=MxBRfXlXQLUT75soDSKGi1x1t5WHTACug5T0lRzTfbk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kMe6hbs98eIWiKi6H96yBXhExVphhQ9XakFaYWhENV1ZrUD3T4YJZ7rlk+QC9kK4T
-         JXur58ysEkdLVaqERgXwlpZnNE3+5aKs1swM8yqJ4MkkhDnIUe4G47ALGJ71u119jc
-         h/ds2DM0AFnPP0rvMogf/zYPegUxy0myuVgWSpGKpbyLKYZhxhy1ns4p/Yw/7L2cf8
-         rdF3BiDFZe0MJOaSc69f8Bgwn9XTBvmM49cSD3JShdkui4IanejGzJ1D622MHQKXys
-         b3Cyotgx38Nx9pPA+IBg38OG2pgoZsEj5hRAR7Ghl/59n1lfe8frdd3BYF3gW3aWO4
-         Ah05XhvU8LJYw==
+        b=A/zQZvJ18qcsXbrUQ+h+/zMDdpd9envwEV44wPvLjgtMzg7X0VxAmrRPLWAvQlobm
+         y1vkoqaRb7TfMvpSxw0/0LU2MdUwP/KxUhtY7Nk4RWFgA1XiOTmoKDmtjHe/CjTV5I
+         8zTD9G5jxNdYQ40TVma+FlfBAubnXLMA18ZEhbOQqaDqhdR2s6zrz+UB2WAMT9u3ho
+         uo+DI+gqdGP9wXEOjIKux57bQHPN+eh2wL5L0QhRqi+dIINJnfkXLN3H1f7WUOuFMV
+         pu+cjuOGVji4ZIotWbVuZ3ACLCr4TyoQTu5e5f/8mrJkTq9GT2D6A5Aa+Pe9sBqu6E
+         xyC7OAE0HAdaA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zheyu Ma <zheyuma97@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, linux-media@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 12/29] media: cx25821: Fix the warning when removing the module
-Date:   Mon, 30 May 2022 09:50:39 -0400
-Message-Id: <20220530135057.1937286-12-sashal@kernel.org>
+Cc:     jianghaoran <jianghaoran@kylinos.cn>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, edumazet@google.com,
+        pabeni@redhat.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 15/29] ipv6: Don't send rs packets to the interface of ARPHRD_TUNNEL
+Date:   Mon, 30 May 2022 09:50:42 -0400
+Message-Id: <20220530135057.1937286-15-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530135057.1937286-1-sashal@kernel.org>
 References: <20220530135057.1937286-1-sashal@kernel.org>
@@ -52,55 +53,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: jianghaoran <jianghaoran@kylinos.cn>
 
-[ Upstream commit 2203436a4d24302871617373a7eb21bc17e38762 ]
+[ Upstream commit b52e1cce31ca721e937d517411179f9196ee6135 ]
 
-When removing the module, we will get the following warning:
+ARPHRD_TUNNEL interface can't process rs packets
+and will generate TX errors
 
-[   14.746697] remove_proc_entry: removing non-empty directory 'irq/21', leaking at least 'cx25821[1]'
-[   14.747449] WARNING: CPU: 4 PID: 368 at fs/proc/generic.c:717 remove_proc_entry+0x389/0x3f0
-[   14.751611] RIP: 0010:remove_proc_entry+0x389/0x3f0
-[   14.759589] Call Trace:
-[   14.759792]  <TASK>
-[   14.759975]  unregister_irq_proc+0x14c/0x170
-[   14.760340]  irq_free_descs+0x94/0xe0
-[   14.760640]  mp_unmap_irq+0xb6/0x100
-[   14.760937]  acpi_unregister_gsi_ioapic+0x27/0x40
-[   14.761334]  acpi_pci_irq_disable+0x1d3/0x320
-[   14.761688]  pci_disable_device+0x1ad/0x380
-[   14.762027]  ? _raw_spin_unlock_irqrestore+0x2d/0x60
-[   14.762442]  ? cx25821_shutdown+0x20/0x9f0 [cx25821]
-[   14.762848]  cx25821_finidev+0x48/0xc0 [cx25821]
-[   14.763242]  pci_device_remove+0x92/0x240
+ex:
+ip tunnel add ethn mode ipip local 192.168.1.1 remote 192.168.1.2
+ifconfig ethn x.x.x.x
 
-Fix this by freeing the irq before call pci_disable_device().
+ethn: flags=209<UP,POINTOPOINT,RUNNING,NOARP>  mtu 1480
+	inet x.x.x.x  netmask 255.255.255.255  destination x.x.x.x
+	inet6 fe80::5efe:ac1e:3cdb  prefixlen 64  scopeid 0x20<link>
+	tunnel   txqueuelen 1000  (IPIP Tunnel)
+	RX packets 0  bytes 0 (0.0 B)
+	RX errors 0  dropped 0  overruns 0  frame 0
+	TX packets 0  bytes 0 (0.0 B)
+	TX errors 3  dropped 0 overruns 0  carrier 0  collisions 0
 
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: jianghaoran <jianghaoran@kylinos.cn>
+Link: https://lore.kernel.org/r/20220429053802.246681-1-jianghaoran@kylinos.cn
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/pci/cx25821/cx25821-core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/ipv6/addrconf.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/media/pci/cx25821/cx25821-core.c b/drivers/media/pci/cx25821/cx25821-core.c
-index 79582071f139..c5e0fa447e4d 100644
---- a/drivers/media/pci/cx25821/cx25821-core.c
-+++ b/drivers/media/pci/cx25821/cx25821-core.c
-@@ -1350,11 +1350,11 @@ static void cx25821_finidev(struct pci_dev *pci_dev)
- 	struct cx25821_dev *dev = get_cx25821(v4l2_dev);
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index 09807202bd1c..0d3e76b160a5 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -4058,7 +4058,8 @@ static void addrconf_dad_completed(struct inet6_ifaddr *ifp, bool bump_id,
+ 	send_rs = send_mld &&
+ 		  ipv6_accept_ra(ifp->idev) &&
+ 		  ifp->idev->cnf.rtr_solicits != 0 &&
+-		  (dev->flags&IFF_LOOPBACK) == 0;
++		  (dev->flags & IFF_LOOPBACK) == 0 &&
++		  (dev->type != ARPHRD_TUNNEL);
+ 	read_unlock_bh(&ifp->idev->lock);
  
- 	cx25821_shutdown(dev);
--	pci_disable_device(pci_dev);
- 
- 	/* unregister stuff */
- 	if (pci_dev->irq)
- 		free_irq(pci_dev->irq, dev);
-+	pci_disable_device(pci_dev);
- 
- 	cx25821_dev_unregister(dev);
- 	v4l2_device_unregister(v4l2_dev);
+ 	/* While dad is in progress mld report's source address is in6_addrany.
 -- 
 2.35.1
 
