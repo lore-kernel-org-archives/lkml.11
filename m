@@ -2,121 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A387C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 18:04:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ACFAC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 18:09:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242400AbiE3SEP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 14:04:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35016 "EHLO
+        id S240751AbiE3SJT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 14:09:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240239AbiE3SEC (ORCPT
+        with ESMTP id S232840AbiE3SJQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 14:04:02 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58959A205F
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 11:04:01 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id s24so8350213wrb.10
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 11:04:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=vmIAgX4stP7tbN1utudJdCwbmHGl9Wqirrw9D2YXhxA=;
-        b=sj37xc3nASZ+YCXla39Pf94LuVNA1E3wbnpESKap4+mtZJkHFXPsMp7U6qzSqZUvSP
-         Zkbt24QW2ES5ClbIchtBy19300ZLdqUNMSmmUTpB6UYympcjd01q1M0KrPM9xHbQ1Qxw
-         GHrOPXCT+kGQ4dB/KttIVWVEUjPvL6qWZSfqcDa2MSh2XvY34u/O4j3wXJ/4xhzDGdS4
-         KDD0P2RkI/tv81gLON3wHXZdLn5dCEoFpv7k5Jf/+ktP9RymmXCa2CHYVACXJiwm6ZVm
-         HPCp8Ul/ru2dIS28/dji4srbNBakB6xMGNuUeH94i8RGl8OD1U0q+N7faTgqNzcaWwdG
-         6aHw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=vmIAgX4stP7tbN1utudJdCwbmHGl9Wqirrw9D2YXhxA=;
-        b=qHJUZ7mCH+jQxwlEhGxmV7cO0bOL5kePJObnfRv2c+Onfo0g1Ac5Te2m0tfzsxNiYD
-         P5Ky6dKMEHK6lnDmUofrwkxmWu7HLrxN4pUYeF77V+kKWxJm7o2tHmu9qV7bYLMArScz
-         NZwQC7UTFlP4jsk9sVkAdcDSuTdLaEYpkaQrnGsV44Wv4h2TUGEGfUZwIQ5DsDR/gQjm
-         CfYGiUU+8700rAaP8Qe1974SmCwgjOk4U4QyiCs8Oegnwn1Purzbv5+cGtGNo0g4pCU0
-         TA1E6JiV4NOS89LYWuysmuwhZX6+mf7VkAQCmTxVFzCW9k6Gvpsx0AvvQX41VmIM1e5s
-         SyvA==
-X-Gm-Message-State: AOAM531FX9u83GR69scZLohg/QbxnWXgscq8LBvt+aEDOU2CAWmXrtjA
-        g/r1WMeoyXZxv/0MoZfUlbi7bw==
-X-Google-Smtp-Source: ABdhPJzbbLY65ueNfiMy634xwWX8GhshgQaMx9qx3BJ/rdkq+iVkOzEljqVwWPwdzKhOxGv1GHmSOg==
-X-Received: by 2002:a05:6000:1247:b0:210:1f6c:b1cb with SMTP id j7-20020a056000124700b002101f6cb1cbmr12912728wrx.709.1653933839926;
-        Mon, 30 May 2022 11:03:59 -0700 (PDT)
-Received: from helium.lan ([88.160.162.107])
-        by smtp.gmail.com with ESMTPSA id 9-20020a1c0209000000b00397550b387bsm1647wmc.23.2022.05.30.11.03.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 May 2022 11:03:59 -0700 (PDT)
-From:   Fabien Parent <fparent@baylibre.com>
-To:     Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
-        Will Deacon <will@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     Fabien Parent <fparent@baylibre.com>,
-        iommu@lists.linux-foundation.org,
-        linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 3/3] iommu: mtk_iommu: add support for MT8365 SoC
-Date:   Mon, 30 May 2022 20:03:28 +0200
-Message-Id: <20220530180328.845692-3-fparent@baylibre.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220530180328.845692-1-fparent@baylibre.com>
-References: <20220530180328.845692-1-fparent@baylibre.com>
+        Mon, 30 May 2022 14:09:16 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64980880E4;
+        Mon, 30 May 2022 11:09:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653934153; x=1685470153;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=APf9H3bQaLX5xdgeDhr5uhdcMm7qld03/mguKjCk4tE=;
+  b=Q7qDT/rxBB0Oq2t9pJo/9NNQwyKz66hQzxc+Uu4/WXJaBvlU6+EAtR0w
+   HawyDIkBzVMldpax1GUwZEVu8nzgcJDOdMl1zs6ukX9V4Kn0jIym/6Eea
+   r8M1L6v/33C9735vCTVMiakmpe7/VoKv9R4hjtPj67MWiQaXpFfPzMs8R
+   /z0lTjjW1u99WrhJfauINS7ylEVe0wcfP71BvjsfZJzZ/ZaEKqtY+DDxL
+   dJv5KSyE1vXT7X+dvAzxHGhZGRJ1rLOff7DsOG7VfJuy8JTPHColaM4Ds
+   61qHKDeqZNKk9KoWtgLOcyOGVvhOwIGBEcQPJ4YVXwZgOXKYu+AqerSx4
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10363"; a="274776794"
+X-IronPort-AV: E=Sophos;i="5.91,263,1647327600"; 
+   d="scan'208";a="274776794"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 May 2022 11:09:13 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,263,1647327600"; 
+   d="scan'208";a="551439362"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga006.jf.intel.com with ESMTP; 30 May 2022 11:09:10 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 4EB8F147; Mon, 30 May 2022 21:09:12 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Cixi Geng <cixi.geng1@unisoc.com>, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Baolin Wang <baolin.wang7@gmail.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 1/1] iio: adc: sc27xx_adc: Re-use generic struct u32_fract
+Date:   Mon, 30 May 2022 21:09:10 +0300
+Message-Id: <20220530180910.2533-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add IOMMU support for MT8365 SoC.
+Instead of custom data type re-use generic struct u32_fract.
+No changes intended.
 
-Signed-off-by: Fabien Parent <fparent@baylibre.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/iommu/mtk_iommu.c | 11 +++++++++++
- drivers/iommu/mtk_iommu.h |  1 +
- 2 files changed, 12 insertions(+)
+ drivers/iio/adc/sc27xx_adc.c | 15 +++++++--------
+ 1 file changed, 7 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index b692347d8d56..039b8f9d5022 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -1093,6 +1093,16 @@ static const struct mtk_iommu_plat_data mt8192_data = {
- 	.port_width     = 5,
- };
+diff --git a/drivers/iio/adc/sc27xx_adc.c b/drivers/iio/adc/sc27xx_adc.c
+index e9ff2d6a8a57..f8421cbba8fa 100644
+--- a/drivers/iio/adc/sc27xx_adc.c
++++ b/drivers/iio/adc/sc27xx_adc.c
+@@ -579,15 +579,14 @@ static int sc27xx_adc_read(struct sc27xx_adc_data *data, int channel,
+ 	return ret;
+ }
  
-+static const struct mtk_iommu_plat_data mt8365_data = {
-+	.m4u_plat     = M4U_MT8365,
-+	.flags	      = RESET_AXI,
-+	.inv_sel_reg  = REG_MMU_INV_SEL_GEN1,
-+	.iova_region  = single_domain,
-+	.iova_region_nr = ARRAY_SIZE(single_domain),
-+	.larbid_remap = {{0}, {1}, {2}, {3}, {4}, {5}}, /* Linear mapping. */
-+	.port_width   = 6,
-+};
-+
- static const struct of_device_id mtk_iommu_of_ids[] = {
- 	{ .compatible = "mediatek,mt2712-m4u", .data = &mt2712_data},
- 	{ .compatible = "mediatek,mt6779-m4u", .data = &mt6779_data},
-@@ -1100,6 +1110,7 @@ static const struct of_device_id mtk_iommu_of_ids[] = {
- 	{ .compatible = "mediatek,mt8173-m4u", .data = &mt8173_data},
- 	{ .compatible = "mediatek,mt8183-m4u", .data = &mt8183_data},
- 	{ .compatible = "mediatek,mt8192-m4u", .data = &mt8192_data},
-+	{ .compatible = "mediatek,mt8365-m4u", .data = &mt8365_data},
- 	{}
- };
+-static void sc27xx_adc_volt_ratio(struct sc27xx_adc_data *data,
+-				  int channel, int scale,
+-				  u32 *div_numerator, u32 *div_denominator)
++static void sc27xx_adc_volt_ratio(struct sc27xx_adc_data *data, int channel, int scale,
++				  struct u32_fract *fract)
+ {
+ 	u32 ratio;
  
-diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
-index 84cecaf6d61c..cb174fa6f2ab 100644
---- a/drivers/iommu/mtk_iommu.h
-+++ b/drivers/iommu/mtk_iommu.h
-@@ -46,6 +46,7 @@ enum mtk_iommu_plat {
- 	M4U_MT8173,
- 	M4U_MT8183,
- 	M4U_MT8192,
-+	M4U_MT8365,
- };
+ 	ratio = data->var_data->get_ratio(channel, scale);
+-	*div_numerator = ratio >> SC27XX_RATIO_NUMERATOR_OFFSET;
+-	*div_denominator = ratio & SC27XX_RATIO_DENOMINATOR_MASK;
++	fract->numerator = ratio >> SC27XX_RATIO_NUMERATOR_OFFSET;
++	fract->denominator = ratio & SC27XX_RATIO_DENOMINATOR_MASK;
+ }
  
- struct mtk_iommu_iova_region;
+ static int adc_to_volt(struct sc27xx_adc_linear_graph *graph,
+@@ -615,7 +614,7 @@ static int sc27xx_adc_to_volt(struct sc27xx_adc_linear_graph *graph,
+ static int sc27xx_adc_convert_volt(struct sc27xx_adc_data *data, int channel,
+ 				   int scale, int raw_adc)
+ {
+-	u32 numerator, denominator;
++	struct u32_fract fract;
+ 	u32 volt;
+ 
+ 	/*
+@@ -637,9 +636,9 @@ static int sc27xx_adc_convert_volt(struct sc27xx_adc_data *data, int channel,
+ 		break;
+ 	}
+ 
+-	sc27xx_adc_volt_ratio(data, channel, scale, &numerator, &denominator);
++	sc27xx_adc_volt_ratio(data, channel, scale, &fract);
+ 
+-	return DIV_ROUND_CLOSEST(volt * denominator, numerator);
++	return DIV_ROUND_CLOSEST(volt * fract.denominator, fract.numerator);
+ }
+ 
+ static int sc27xx_adc_read_processed(struct sc27xx_adc_data *data,
 -- 
-2.36.1
+2.35.1
 
