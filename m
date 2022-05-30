@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B3FDC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:29:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C472C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:31:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236993AbiE3N3g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:29:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57690 "EHLO
+        id S236840AbiE3NbC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:31:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236851AbiE3N2J (ORCPT
+        with ESMTP id S237173AbiE3NaK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:28:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F1CA8A070;
-        Mon, 30 May 2022 06:26:09 -0700 (PDT)
+        Mon, 30 May 2022 09:30:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61D9C11444;
+        Mon, 30 May 2022 06:26:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D9D0BB80B3A;
-        Mon, 30 May 2022 13:26:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51D8CC3411A;
-        Mon, 30 May 2022 13:26:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F3A960EC3;
+        Mon, 30 May 2022 13:26:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36138C3411E;
+        Mon, 30 May 2022 13:26:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917163;
-        bh=PBnEfVX85LaiNjq5AuHLvIpM2RMwLs/8cNoj0GuK3cU=;
+        s=k20201202; t=1653917197;
+        bh=dnVq8A+QaRcFBuWkdXsDnNqK0ZQ2F6cv/bJXs+evh2Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LaiY5QduiySj6q98LVJtiMVkMZZk1YUnWUzO3FavxtWZo+Cop0JyBZiPMSpfoiRqu
-         xP9hXmV+F8hCIsa5/ELp4W+nqglU5Tg0DsmFwAVe6mi3ADL1bmw5GWNrCPMrzdtFDf
-         6WctF2JZVAIItkVpGbVGybnYSYiQr6tXPy1TRWxnYmpWU5NYobAcDoCChZisZQ3uK6
-         65Z4zOC0YFNKSP44OjdU/76TA16Z9hnB2UnpdZCa123wuqzz9ST1S1vEtLIv14eDfr
-         6fqCOgm5nCGcQkU/MNvddMTv5CBYNai06WEeU15cVcvf2wKif8JNY/LlYynWrOwimf
-         U0xe2NO1dio7g==
+        b=A2cUPX00q2ZDIb9Gzaf+jaZbTeH1mpYjQepShAC4j7IuuSsGzLI4zs7zpVR+pZYNu
+         AMiPizaTePDxPi8zObzmCtweMVk2rolFqToPjl7Z4SBF+gobitcJ0fbvHYg/c0Oi31
+         iUvSYdVbzx+td1j4ldRpAFVnMBi0j3q9qQySBrWypWRKtJWXQ7dtxuqnhlGcnQcEFI
+         wxwnhGoEX3mQWT2PVZ5PF66cEYEEa5907p/OFnDzTUpoHssaYj85vsDzQEDJ9n7fXi
+         w8R1DDPTjTXXqh7gVovXGlw9sdedABmvraDTpusScDKM/mbgN1Wqrfejw0nnwov26Z
+         N/FuztkMBMN1A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Huang Rui <ray.huang@amd.com>, Aaron Liu <aaron.liu@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, evan.quan@amd.com,
-        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
-        daniel@ffwll.ch, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.18 042/159] drm/amdgpu/pm: fix the null pointer while the smu is disabled
-Date:   Mon, 30 May 2022 09:22:27 -0400
-Message-Id: <20220530132425.1929512-42-sashal@kernel.org>
+Cc:     Zheyu Ma <zheyuma97@gmail.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, linux-media@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 052/159] media: pci: cx23885: Fix the error handling in cx23885_initdev()
+Date:   Mon, 30 May 2022 09:22:37 -0400
+Message-Id: <20220530132425.1929512-52-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530132425.1929512-1-sashal@kernel.org>
 References: <20220530132425.1929512-1-sashal@kernel.org>
@@ -54,65 +52,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Huang Rui <ray.huang@amd.com>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-[ Upstream commit eea5c7b3390c6e006ba4cbd906447dd8cea8cfbf ]
+[ Upstream commit e8123311cf06d7dae71e8c5fe78e0510d20cd30b ]
 
-It needs to check if the pp_funcs is initialized while release the
-context, otherwise it will trigger null pointer panic while the software
-smu is not enabled.
+When the driver fails to call the dma_set_mask(), the driver will get
+the following splat:
 
-[ 1109.404555] BUG: kernel NULL pointer dereference, address: 0000000000000078
-[ 1109.404609] #PF: supervisor read access in kernel mode
-[ 1109.404638] #PF: error_code(0x0000) - not-present page
-[ 1109.404657] PGD 0 P4D 0
-[ 1109.404672] Oops: 0000 [#1] PREEMPT SMP NOPTI
-[ 1109.404701] CPU: 7 PID: 9150 Comm: amdgpu_test Tainted: G           OEL    5.16.0-custom #1
-[ 1109.404732] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
-[ 1109.404765] RIP: 0010:amdgpu_dpm_force_performance_level+0x1d/0x170 [amdgpu]
-[ 1109.405109] Code: 5d c3 44 8b a3 f0 80 00 00 eb e5 66 90 0f 1f 44 00 00 55 48 89 e5 41 57 41 56 41 55 41 54 53 48 83 ec 08 4c 8b b7 f0 7d 00 00 <49> 83 7e 78 00 0f 84 f2 00 00 00 80 bf 87 80 00 00 00 48 89 fb 0f
-[ 1109.405176] RSP: 0018:ffffaf3083ad7c20 EFLAGS: 00010282
-[ 1109.405203] RAX: 0000000000000000 RBX: ffff9796b1c14600 RCX: 0000000002862007
-[ 1109.405229] RDX: ffff97968591c8c0 RSI: 0000000000000001 RDI: ffff9796a3700000
-[ 1109.405260] RBP: ffffaf3083ad7c50 R08: ffffffff9897de00 R09: ffff979688d9db60
-[ 1109.405286] R10: 0000000000000000 R11: ffff979688d9db90 R12: 0000000000000001
-[ 1109.405316] R13: ffff9796a3700000 R14: 0000000000000000 R15: ffff9796a3708fc0
-[ 1109.405345] FS:  00007ff055cff180(0000) GS:ffff9796bfdc0000(0000) knlGS:0000000000000000
-[ 1109.405378] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[ 1109.405400] CR2: 0000000000000078 CR3: 000000000a394000 CR4: 00000000000506e0
-[ 1109.405434] Call Trace:
-[ 1109.405445]  <TASK>
-[ 1109.405456]  ? delete_object_full+0x1d/0x20
-[ 1109.405480]  amdgpu_ctx_set_stable_pstate+0x7c/0xa0 [amdgpu]
-[ 1109.405698]  amdgpu_ctx_fini.part.0+0xcb/0x100 [amdgpu]
-[ 1109.405911]  amdgpu_ctx_do_release+0x71/0x80 [amdgpu]
-[ 1109.406121]  amdgpu_ctx_ioctl+0x52d/0x550 [amdgpu]
-[ 1109.406327]  ? _raw_spin_unlock+0x1a/0x30
-[ 1109.406354]  ? drm_gem_handle_delete+0x81/0xb0 [drm]
-[ 1109.406400]  ? amdgpu_ctx_get_entity+0x2c0/0x2c0 [amdgpu]
-[ 1109.406609]  drm_ioctl_kernel+0xb6/0x140 [drm]
+[   55.853884] BUG: KASAN: use-after-free in __process_removed_driver+0x3c/0x240
+[   55.854486] Read of size 8 at addr ffff88810de60408 by task modprobe/590
+[   55.856822] Call Trace:
+[   55.860327]  __process_removed_driver+0x3c/0x240
+[   55.861347]  bus_for_each_dev+0x102/0x160
+[   55.861681]  i2c_del_driver+0x2f/0x50
 
-Signed-off-by: Huang Rui <ray.huang@amd.com>
-Reviewed-by: Aaron Liu <aaron.liu@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+This is because the driver has initialized the i2c related resources
+in cx23885_dev_setup() but not released them in error handling, fix this
+bug by modifying the error path that jumps after failing to call the
+dma_set_mask().
+
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/pm/amdgpu_dpm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/media/pci/cx23885/cx23885-core.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/pm/amdgpu_dpm.c b/drivers/gpu/drm/amd/pm/amdgpu_dpm.c
-index 72e7b5d40af6..5472f9936feb 100644
---- a/drivers/gpu/drm/amd/pm/amdgpu_dpm.c
-+++ b/drivers/gpu/drm/amd/pm/amdgpu_dpm.c
-@@ -790,7 +790,7 @@ int amdgpu_dpm_force_performance_level(struct amdgpu_device *adev,
- 					AMD_DPM_FORCED_LEVEL_PROFILE_MIN_MCLK |
- 					AMD_DPM_FORCED_LEVEL_PROFILE_PEAK;
+diff --git a/drivers/media/pci/cx23885/cx23885-core.c b/drivers/media/pci/cx23885/cx23885-core.c
+index f8f2ff3b00c3..a07b18f2034e 100644
+--- a/drivers/media/pci/cx23885/cx23885-core.c
++++ b/drivers/media/pci/cx23885/cx23885-core.c
+@@ -2165,7 +2165,7 @@ static int cx23885_initdev(struct pci_dev *pci_dev,
+ 	err = dma_set_mask(&pci_dev->dev, 0xffffffff);
+ 	if (err) {
+ 		pr_err("%s/0: Oops: no 32bit PCI DMA ???\n", dev->name);
+-		goto fail_ctrl;
++		goto fail_dma_set_mask;
+ 	}
  
--	if (!pp_funcs->force_performance_level)
-+	if (!pp_funcs || !pp_funcs->force_performance_level)
- 		return 0;
+ 	err = request_irq(pci_dev->irq, cx23885_irq,
+@@ -2173,7 +2173,7 @@ static int cx23885_initdev(struct pci_dev *pci_dev,
+ 	if (err < 0) {
+ 		pr_err("%s: can't get IRQ %d\n",
+ 		       dev->name, pci_dev->irq);
+-		goto fail_irq;
++		goto fail_dma_set_mask;
+ 	}
  
- 	if (adev->pm.dpm.thermal_active)
+ 	switch (dev->board) {
+@@ -2195,7 +2195,7 @@ static int cx23885_initdev(struct pci_dev *pci_dev,
+ 
+ 	return 0;
+ 
+-fail_irq:
++fail_dma_set_mask:
+ 	cx23885_dev_unregister(dev);
+ fail_ctrl:
+ 	v4l2_ctrl_handler_free(hdl);
 -- 
 2.35.1
 
