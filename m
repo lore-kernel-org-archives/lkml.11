@@ -2,99 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6A94C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 10:53:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ADF1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 10:55:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235488AbiE3Kxy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 06:53:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35144 "EHLO
+        id S235520AbiE3Kzg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 06:55:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235296AbiE3Kxw (ORCPT
+        with ESMTP id S235510AbiE3Kz3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 06:53:52 -0400
-Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0CDA47550
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 03:53:49 -0700 (PDT)
-Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
-        by mx0b-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24U8hF83003487;
-        Mon, 30 May 2022 05:53:31 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=PODMain02222019;
- bh=CA7nSWc/bxcs60/+XFOKN9BKEj4sNIHLXQRef45Ouz4=;
- b=itK/QRvas1VOFmAx1tGQVS8tXAkZrU0HtCz5g0+ns/oy+9uJoYx7Sp14C9UPYgSEaEFa
- s26TqFGUHhFnRGWO7TRynmdViDpFgRVwYJfe5FUO2GRIlrlfO1xRHGiQbmB1qIhn+qTS
- 9FANWfOsdO9yodylCu3pAP6zwXfLqTX4Dl7oaaoTOssh0j87lrxDn5fLEICe0TysvuO+
- 0W0uBGRqfRI4yGSZvVVLyYbVkNAawnHXv6L8oapfMebVzYkiRW2fKeicyZXgeDdfm4t7
- e9vB7499KaUGezMa6qLpyXaMf6KUyL/xYdUG/02WhMc59KoOPKfCssJ1OSRAJKvZj83+ +g== 
-Received: from ediex01.ad.cirrus.com ([84.19.233.68])
-        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3gbg5nhnm0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 30 May 2022 05:53:31 -0500
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Mon, 30 May
- 2022 11:53:29 +0100
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.28 via Frontend
- Transport; Mon, 30 May 2022 11:53:29 +0100
-Received: from ediswmail.ad.cirrus.com (ediswmail.ad.cirrus.com [198.61.86.93])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 876A946C;
-        Mon, 30 May 2022 10:53:29 +0000 (UTC)
-Date:   Mon, 30 May 2022 10:53:29 +0000
-From:   Charles Keepax <ckeepax@opensource.cirrus.com>
-To:     Takashi Iwai <tiwai@suse.de>
-CC:     Vitaly Rodionov <vitalyr@opensource.cirrus.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, Mark Brown <broonie@kernel.org>,
-        <alsa-devel@alsa-project.org>, <patches@opensource.cirrus.com>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v4 00/17] ALSA: hda: cirrus: Add initial DSP support and
- firmware loading
-Message-ID: <20220530105329.GV38351@ediswmail.ad.cirrus.com>
-References: <20220525131638.5512-1-vitalyr@opensource.cirrus.com>
- <871qwf0x8t.wl-tiwai@suse.de>
- <20220530090846.GS38351@ediswmail.ad.cirrus.com>
- <87czfvxtsc.wl-tiwai@suse.de>
- <20220530093639.GT38351@ediswmail.ad.cirrus.com>
- <87a6azxr7h.wl-tiwai@suse.de>
- <20220530103415.GU38351@ediswmail.ad.cirrus.com>
- <871qwbxpsb.wl-tiwai@suse.de>
+        Mon, 30 May 2022 06:55:29 -0400
+Received: from mail.bitwise.fi (mail.bitwise.fi [109.204.228.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61BE953B4B;
+        Mon, 30 May 2022 03:55:27 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.bitwise.fi (Postfix) with ESMTP id 2C86E46003F;
+        Mon, 30 May 2022 13:55:25 +0300 (EEST)
+X-Virus-Scanned: Debian amavisd-new at 
+Received: from mail.bitwise.fi ([127.0.0.1])
+        by localhost (mustetatti.dmz.bitwise.fi [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id vIbON0f2qHwH; Mon, 30 May 2022 13:55:23 +0300 (EEST)
+Received: from [192.168.5.238] (fw1.dmz.bitwise.fi [192.168.69.1])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: anssiha)
+        by mail.bitwise.fi (Postfix) with ESMTPSA id 1E03E460032;
+        Mon, 30 May 2022 13:55:23 +0300 (EEST)
+Message-ID: <9742e7ab-3650-74d8-5a44-136555788c08@bitwise.fi>
+Date:   Mon, 30 May 2022 13:55:22 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <871qwbxpsb.wl-tiwai@suse.de>
-User-Agent: Mutt/1.5.21 (2010-09-15)
-X-Proofpoint-ORIG-GUID: 8UOBs33TfOfRbSmlXAAfeQgRZvOOO0el
-X-Proofpoint-GUID: 8UOBs33TfOfRbSmlXAAfeQgRZvOOO0el
-X-Proofpoint-Spam-Reason: safe
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH 04/12] can: kvaser_usb: Mark Mini PCIe 2xHS as supporting
+ error counters
+Content-Language: en-US
+To:     Jimmy Assarsson <extja@kvaser.com>
+Cc:     linux-can@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
+        linux-kernel@vger.kernel.org
+References: <20220516134748.3724796-1-anssi.hannula@bitwise.fi>
+ <20220516134748.3724796-5-anssi.hannula@bitwise.fi>
+ <dc6402d2-c492-8f4e-82c1-d0693320432a@kvaser.com>
+From:   Anssi Hannula <anssi.hannula@bitwise.fi>
+In-Reply-To: <dc6402d2-c492-8f4e-82c1-d0693320432a@kvaser.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 30, 2022 at 12:45:08PM +0200, Takashi Iwai wrote:
-> On Mon, 30 May 2022 12:34:15 +0200,
-> Charles Keepax wrote:
-> Well, if an ALSA control can trigger the firmware loading, that's
-> already fragile.  A firmware loading is a heavy task, which should
-> happen only at probing and/or resuming in general.  Do we have other
-> drivers doing the f/w loading triggered by a kctl...?
-> 
-> > I guess we could look at adding locked versions of the add
-> > control functions as well if that might be preferred?
-> 
-> If the patterns of additional kctls (specific for firmware?) are
-> fixed, we may create all such kctls beforehand and let them inactive
-> unless the corresponding firmware is really loaded, too.
-> 
+On 28.5.2022 10.37, Jimmy Assarsson wrote:
+> On 5/16/22 15:47, Anssi Hannula wrote:
+>> The 0bfd:0124 Kvaser Mini PCI Express 2xHS (FW 4.18.778) seems to support
+>> TX/RX error counters in exactly the same way (via unsolicited cmd 106 on
+>> bus errors and via cmd 20 when queried with cmd 19) as 0bfd:0017 Kvaser
+>> Memorator Professional HS/HS (FW 2.0.50), but only the latter has
+>> KVASER_USB_HAS_TXRX_ERRORS set to enable do_get_berr_counter().
+>>
+>> Enable error counter retrieval for Kvaser Mini PCI Express 2xHS, too.
+>>
+>> Fixes: 71873a9b38d1 ("can: kvaser_usb: Add support for more Kvaser Leaf v2 devices")
+>> Signed-off-by: Anssi Hannula <anssi.hannula@bitwise.fi>
+>>
+>> ---
+>>
+>> I'm not really sure what KVASER_USB_HAS_TXRX_ERRORS means, exactly,
+>> w.r.t. device behavior, though, i.e. how does a device without it behave.
+> Devices without KVASER_USB_HAS_TXRX_ERRORS, firmware will always report
+> zero for the Rx and Tx error counters.
+>
+> It's possible to query the device for specific capabilities.
+> i.e. Kvaser Mini PCI Express 2xHS does also got support for silent mode.
+> I want to replace this patch with the one below:
 
-I am afraid we do, basically all the Wolfson/Cirrus audio devices
-allow you to select the firmware through a kctl. The patterns of
-controls are specific to the firmwares, so we can't really create
-them ahead of time. One could maybe look at changing when the
-firmwares are loaded, such as attempting to load all possible
-firmwares on boot or something but its a fairly sizable change
-that isn't without some side effects.
+Sounds good!
+A couple of minor style comments below. I didn't test the code yet.
 
-Thanks,
-Charles
+>  From fbf1c02e5f7860be9bdafd1c9b4f01c903dd9258 Mon Sep 17 00:00:00 2001
+> From: Jimmy Assarsson <extja@kvaser.com>
+> Date: Wed, 25 May 2022 20:21:19 +0200
+> Subject: [PATCH 04/13] can: kvaser_usb: kvaser_usb_leaf: Get 
+> capabilities from
+>   device
+>
+> Use the CMD_GET_CAPABILITIES_REQ command to query the device for certain
+> capabilities. We are only interested in LISTENONLY mode and wither the
+> device reports CAN error counters.
+>
+> And remove hard coded capabilities for all Leaf devices.
+>
+> Fixes: 080f40a6fa28 ("can: kvaser_usb: Add support for Kvaser CAN/USB 
+> devices")
+> Reported-by: Anssi Hannula <anssi.hannula@bitwise.fi>
+> Signed-off-by: Jimmy Assarsson <extja@kvaser.com>
+> ---
+>   .../net/can/usb/kvaser_usb/kvaser_usb_core.c  |  61 ++------
+>   .../net/can/usb/kvaser_usb/kvaser_usb_leaf.c  | 146 +++++++++++++++++-
+>   2 files changed, 162 insertions(+), 45 deletions(-)
+[...]
+> diff --git a/drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c 
+> b/drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c
+> index 09ade66256b2..aee2dae67459 100644
+> --- a/drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c
+> +++ b/drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c
+[...]
+> +static int kvaser_usb_leaf_get_single_capability(struct kvaser_usb *dev,
+> +						 u16 cap_cmd_req, u16 *status)
+> +{
+> +	struct kvaser_usb_dev_card_data *card_data = &dev->card_data;
+> +	struct kvaser_cmd *cmd;
+> +	u32 value = 0;
+> +	u32 mask = 0;
+> +	u16 cap_cmd_res;
+> +	int err;
+> +	int i;
+> +
+> +	cmd = kcalloc(1, sizeof(struct kvaser_cmd), GFP_KERNEL);
+
+kzalloc can be used here, and prefer sizeof(*ptr) to avoid the risk of
+type mismatch:
+
+cmd = kzalloc(sizeof(*cmd), GFP_KERNEL);
+
+
+[...]
+> +static int kvaser_usb_leaf_get_capabilities_leaf(struct kvaser_usb *dev)
+> +{
+> +	int err;
+> +	u16 status;
+> +
+> +	if (!(dev->card_data.capabilities & KVASER_USB_CAP_EXT_CAP)) {
+> +		dev_info(&dev->intf->dev,
+> +			 "No extended capability support. Upgrade device firmware.\n");
+> +		return 0;
+> +	}
+> +
+> +	err = kvaser_usb_leaf_get_single_capability
+> +					(dev,
+> +					 KVASER_USB_LEAF_CAP_CMD_LISTEN_MODE,
+> +					 &status);
+
+I believe kernel style is to keep the opening parenthesis on the same
+line with the function name here.
+
+> +	if (err)
+> +		return err;
+> +	if (status)
+> +		dev_info(&dev->intf->dev,
+> +			 "KVASER_USB_LEAF_CAP_CMD_LISTEN_MODE failed %u\n",
+> +			 status);
+> +
+> +	err = kvaser_usb_leaf_get_single_capability
+> +					(dev,
+> +					 KVASER_USB_LEAF_CAP_CMD_ERR_REPORT,
+> +					 &status);
+
+
+Ditto.
+
+[...]
+
+-- 
+Anssi Hannula / Bitwise Oy
++358 503803997
+
