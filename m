@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13AFAC4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 257FEC433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:31:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241054AbiE3OaQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:30:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42814 "EHLO
+        id S241962AbiE3Oas (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:30:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241267AbiE3ORZ (ORCPT
+        with ESMTP id S241721AbiE3OSA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:17:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CA799B1B2;
-        Mon, 30 May 2022 06:45:03 -0700 (PDT)
+        Mon, 30 May 2022 10:18:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0298E7B9E0;
+        Mon, 30 May 2022 06:48:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 57D81B80D83;
-        Mon, 30 May 2022 13:45:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2947EC341C8;
-        Mon, 30 May 2022 13:45:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DBC7460F24;
+        Mon, 30 May 2022 13:47:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0241EC3411A;
+        Mon, 30 May 2022 13:47:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918301;
-        bh=OiI0PmsJtqps+PkFB0TqTuCxhpCe5p17/wJXmiP1MZI=;
+        s=k20201202; t=1653918479;
+        bh=4tvL/uObB8oELHOKTh9in7xifhIumfAmb8eA+LaNlpc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N9Qnd7aAiCmcAb2lIaz9UZQhgIWVYZS/ZotovuFtyBDDI+nrIHnJfNiww4b6Vl8dH
-         Yvoh8nT502/qNm7fxriRNKM/VQvbGIZb/wN49qoRAaQabGinTaKiAS4Pl2Wc8zQ11p
-         fTAdLCgtCFB8MK4M/sAINOSoB0RdPGoTlx84hIjOWD+2aVR/tBuacFtK8fbrfx8H9u
-         lrNyU3IiZozVKfjwuUc1cHGY6qdKC4IuIwwlq1akyBSnH/Ll+/yROQJOcO/e27XKI7
-         oVRm+PG2WzPfBFz8WNGnbwEVoXagAUmG4a7yu58RRhyUM29yQqkjSQCw76Fr18S5AT
-         GrkIJil4NNyGA==
+        b=F50vHFjVCwUXDCoJK2FgPIkyhMJK9dX9mj0DK+VpRO/KOlUhbrNDv8fGq7Sr0qWCy
+         R6q6UCKWec9Cx3uS/g2aQT6ftbhwOXwZW4kc0bGp5aCjqsMR2vlaIkKyybfThn4EKX
+         I94Sv+k1CiquoTCJi5UKUGFQ+k6s1kvB7CtRYiw3PThxkcEARNCGLEbRvJAmLlXH3h
+         mdd/NAFzypk1wGSsf+ocCCgdXcpgO99cqZRjIOJdMsrniSNPkNAgtwYgeKuP4Cf1MQ
+         8U3cfMMHHLrCGJiELFfJkT8Bystvwbf8a+jN1x6EQWe9bE6Av7T2MrPbumFXidy/HS
+         4KLj0x4k+L8og==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Heming Zhao <heming.zhao@suse.com>,
-        kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Guoqing Jiang <guoqing.jiang@linux.dev>,
-        Song Liu <song@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        linux-raid@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 24/76] md/bitmap: don't set sb values if can't pass sanity check
-Date:   Mon, 30 May 2022 09:43:14 -0400
-Message-Id: <20220530134406.1934928-24-sashal@kernel.org>
+Cc:     Steven Price <steven.price@arm.com>,
+        Liviu Dudau <liviu.dudau@arm.com>,
+        Sasha Levin <sashal@kernel.org>,
+        maarten.lankhorst@linux.intel.com, mripard@kernel.org,
+        tzimmermann@suse.de, airlied@linux.ie, daniel@ffwll.ch,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.4 23/55] drm/plane: Move range check for format_count earlier
+Date:   Mon, 30 May 2022 09:46:29 -0400
+Message-Id: <20220530134701.1935933-23-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220530134406.1934928-1-sashal@kernel.org>
-References: <20220530134406.1934928-1-sashal@kernel.org>
+In-Reply-To: <20220530134701.1935933-1-sashal@kernel.org>
+References: <20220530134701.1935933-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,161 +54,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Heming Zhao <heming.zhao@suse.com>
+From: Steven Price <steven.price@arm.com>
 
-[ Upstream commit e68cb83a57a458b01c9739e2ad9cb70b04d1e6d2 ]
+[ Upstream commit 4b674dd69701c2e22e8e7770c1706a69f3b17269 ]
 
-If bitmap area contains invalid data, kernel will crash then mdadm
-triggers "Segmentation fault".
-This is cluster-md speical bug. In non-clustered env, mdadm will
-handle broken metadata case. In clustered array, only kernel space
-handles bitmap slot info. But even this bug only happened in clustered
-env, current sanity check is wrong, the code should be changed.
+While the check for format_count > 64 in __drm_universal_plane_init()
+shouldn't be hit (it's a WARN_ON), in its current position it will then
+leak the plane->format_types array and fail to call
+drm_mode_object_unregister() leaking the modeset identifier. Move it to
+the start of the function to avoid allocating those resources in the
+first place.
 
-How to trigger: (faulty injection)
-
-dd if=/dev/zero bs=1M count=1 oflag=direct of=/dev/sda
-dd if=/dev/zero bs=1M count=1 oflag=direct of=/dev/sdb
-mdadm -C /dev/md0 -b clustered -e 1.2 -n 2 -l mirror /dev/sda /dev/sdb
-mdadm -Ss
-echo aaa > magic.txt
- == below modifying slot 2 bitmap data ==
-dd if=magic.txt of=/dev/sda seek=16384 bs=1 count=3 <== destroy magic
-dd if=/dev/zero of=/dev/sda seek=16436 bs=1 count=4 <== ZERO chunksize
-mdadm -A /dev/md0 /dev/sda /dev/sdb
- == kernel crashes. mdadm outputs "Segmentation fault" ==
-
-Reason of kernel crash:
-
-In md_bitmap_read_sb (called by md_bitmap_create), bad bitmap magic didn't
-block chunksize assignment, and zero value made DIV_ROUND_UP_SECTOR_T()
-trigger "divide error".
-
-Crash log:
-
-kernel: md: md0 stopped.
-kernel: md/raid1:md0: not clean -- starting background reconstruction
-kernel: md/raid1:md0: active with 2 out of 2 mirrors
-kernel: dlm: ... ...
-kernel: md-cluster: Joined cluster 44810aba-38bb-e6b8-daca-bc97a0b254aa slot 1
-kernel: md0: invalid bitmap file superblock: bad magic
-kernel: md_bitmap_copy_from_slot can't get bitmap from slot 2
-kernel: md-cluster: Could not gather bitmaps from slot 2
-kernel: divide error: 0000 [#1] SMP NOPTI
-kernel: CPU: 0 PID: 1603 Comm: mdadm Not tainted 5.14.6-1-default
-kernel: Hardware name: QEMU Standard PC (i440FX + PIIX, 1996)
-kernel: RIP: 0010:md_bitmap_create+0x1d1/0x850 [md_mod]
-kernel: RSP: 0018:ffffc22ac0843ba0 EFLAGS: 00010246
-kernel: ... ...
-kernel: Call Trace:
-kernel:  ? dlm_lock_sync+0xd0/0xd0 [md_cluster 77fe..7a0]
-kernel:  md_bitmap_copy_from_slot+0x2c/0x290 [md_mod 24ea..d3a]
-kernel:  load_bitmaps+0xec/0x210 [md_cluster 77fe..7a0]
-kernel:  md_bitmap_load+0x81/0x1e0 [md_mod 24ea..d3a]
-kernel:  do_md_run+0x30/0x100 [md_mod 24ea..d3a]
-kernel:  md_ioctl+0x1290/0x15a0 [md_mod 24ea....d3a]
-kernel:  ? mddev_unlock+0xaa/0x130 [md_mod 24ea..d3a]
-kernel:  ? blkdev_ioctl+0xb1/0x2b0
-kernel:  block_ioctl+0x3b/0x40
-kernel:  __x64_sys_ioctl+0x7f/0xb0
-kernel:  do_syscall_64+0x59/0x80
-kernel:  ? exit_to_user_mode_prepare+0x1ab/0x230
-kernel:  ? syscall_exit_to_user_mode+0x18/0x40
-kernel:  ? do_syscall_64+0x69/0x80
-kernel:  entry_SYSCALL_64_after_hwframe+0x44/0xae
-kernel: RIP: 0033:0x7f4a15fa722b
-kernel: ... ...
-kernel: ---[ end trace 8afa7612f559c868 ]---
-kernel: RIP: 0010:md_bitmap_create+0x1d1/0x850 [md_mod]
-
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Acked-by: Guoqing Jiang <guoqing.jiang@linux.dev>
-Signed-off-by: Heming Zhao <heming.zhao@suse.com>
-Signed-off-by: Song Liu <song@kernel.org>
+Signed-off-by: Steven Price <steven.price@arm.com>
+Signed-off-by: Liviu Dudau <liviu.dudau@arm.com>
+Link: https://lore.kernel.org/dri-devel/20211203102815.38624-1-steven.price@arm.com/
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/md/md-bitmap.c | 44 ++++++++++++++++++++++--------------------
- 1 file changed, 23 insertions(+), 21 deletions(-)
+ drivers/gpu/drm/drm_plane.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/md/md-bitmap.c b/drivers/md/md-bitmap.c
-index ea3130e11680..d377ea060925 100644
---- a/drivers/md/md-bitmap.c
-+++ b/drivers/md/md-bitmap.c
-@@ -639,14 +639,6 @@ static int md_bitmap_read_sb(struct bitmap *bitmap)
- 	daemon_sleep = le32_to_cpu(sb->daemon_sleep) * HZ;
- 	write_behind = le32_to_cpu(sb->write_behind);
- 	sectors_reserved = le32_to_cpu(sb->sectors_reserved);
--	/* Setup nodes/clustername only if bitmap version is
--	 * cluster-compatible
--	 */
--	if (sb->version == cpu_to_le32(BITMAP_MAJOR_CLUSTERED)) {
--		nodes = le32_to_cpu(sb->nodes);
--		strlcpy(bitmap->mddev->bitmap_info.cluster_name,
--				sb->cluster_name, 64);
--	}
- 
- 	/* verify that the bitmap-specific fields are valid */
- 	if (sb->magic != cpu_to_le32(BITMAP_MAGIC))
-@@ -668,6 +660,16 @@ static int md_bitmap_read_sb(struct bitmap *bitmap)
- 		goto out;
- 	}
+diff --git a/drivers/gpu/drm/drm_plane.c b/drivers/gpu/drm/drm_plane.c
+index d6ad60ab0d38..6bdebcca5690 100644
+--- a/drivers/gpu/drm/drm_plane.c
++++ b/drivers/gpu/drm/drm_plane.c
+@@ -186,6 +186,13 @@ int drm_universal_plane_init(struct drm_device *dev, struct drm_plane *plane,
+ 	if (WARN_ON(config->num_total_plane >= 32))
+ 		return -EINVAL;
  
 +	/*
-+	 * Setup nodes/clustername only if bitmap version is
-+	 * cluster-compatible
++	 * First driver to need more than 64 formats needs to fix this. Each
++	 * format is encoded as a bit and the current code only supports a u64.
 +	 */
-+	if (sb->version == cpu_to_le32(BITMAP_MAJOR_CLUSTERED)) {
-+		nodes = le32_to_cpu(sb->nodes);
-+		strlcpy(bitmap->mddev->bitmap_info.cluster_name,
-+				sb->cluster_name, 64);
-+	}
++	if (WARN_ON(format_count > 64))
++		return -EINVAL;
 +
- 	/* keep the array size field of the bitmap superblock up to date */
- 	sb->sync_size = cpu_to_le64(bitmap->mddev->resync_max_sectors);
- 
-@@ -700,9 +702,9 @@ static int md_bitmap_read_sb(struct bitmap *bitmap)
- 
- out:
- 	kunmap_atomic(sb);
--	/* Assigning chunksize is required for "re_read" */
--	bitmap->mddev->bitmap_info.chunksize = chunksize;
- 	if (err == 0 && nodes && (bitmap->cluster_slot < 0)) {
-+		/* Assigning chunksize is required for "re_read" */
-+		bitmap->mddev->bitmap_info.chunksize = chunksize;
- 		err = md_setup_cluster(bitmap->mddev, nodes);
- 		if (err) {
- 			pr_warn("%s: Could not setup cluster service (%d)\n",
-@@ -713,18 +715,18 @@ static int md_bitmap_read_sb(struct bitmap *bitmap)
- 		goto re_read;
+ 	WARN_ON(drm_drv_uses_atomic_modeset(dev) &&
+ 		(!funcs->atomic_destroy_state ||
+ 		 !funcs->atomic_duplicate_state));
+@@ -207,13 +214,6 @@ int drm_universal_plane_init(struct drm_device *dev, struct drm_plane *plane,
+ 		return -ENOMEM;
  	}
  
+-	/*
+-	 * First driver to need more than 64 formats needs to fix this. Each
+-	 * format is encoded as a bit and the current code only supports a u64.
+-	 */
+-	if (WARN_ON(format_count > 64))
+-		return -EINVAL;
 -
- out_no_sb:
--	if (test_bit(BITMAP_STALE, &bitmap->flags))
--		bitmap->events_cleared = bitmap->mddev->events;
--	bitmap->mddev->bitmap_info.chunksize = chunksize;
--	bitmap->mddev->bitmap_info.daemon_sleep = daemon_sleep;
--	bitmap->mddev->bitmap_info.max_write_behind = write_behind;
--	bitmap->mddev->bitmap_info.nodes = nodes;
--	if (bitmap->mddev->bitmap_info.space == 0 ||
--	    bitmap->mddev->bitmap_info.space > sectors_reserved)
--		bitmap->mddev->bitmap_info.space = sectors_reserved;
--	if (err) {
-+	if (err == 0) {
-+		if (test_bit(BITMAP_STALE, &bitmap->flags))
-+			bitmap->events_cleared = bitmap->mddev->events;
-+		bitmap->mddev->bitmap_info.chunksize = chunksize;
-+		bitmap->mddev->bitmap_info.daemon_sleep = daemon_sleep;
-+		bitmap->mddev->bitmap_info.max_write_behind = write_behind;
-+		bitmap->mddev->bitmap_info.nodes = nodes;
-+		if (bitmap->mddev->bitmap_info.space == 0 ||
-+			bitmap->mddev->bitmap_info.space > sectors_reserved)
-+			bitmap->mddev->bitmap_info.space = sectors_reserved;
-+	} else {
- 		md_bitmap_print_sb(bitmap);
- 		if (bitmap->cluster_slot < 0)
- 			md_cluster_stop(bitmap->mddev);
+ 	if (format_modifiers) {
+ 		const uint64_t *temp_modifiers = format_modifiers;
+ 		while (*temp_modifiers++ != DRM_FORMAT_MOD_INVALID)
 -- 
 2.35.1
 
