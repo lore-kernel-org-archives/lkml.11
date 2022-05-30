@@ -2,52 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 132C8C38A2C
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:37:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41663C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:38:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242487AbiE3OhU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:37:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40290 "EHLO
+        id S242549AbiE3Oh3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:37:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242015AbiE3OSS (ORCPT
+        with ESMTP id S242304AbiE3OSr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:18:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A01B9EB5A;
-        Mon, 30 May 2022 06:48:59 -0700 (PDT)
+        Mon, 30 May 2022 10:18:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62D8911CA3A;
+        Mon, 30 May 2022 06:49:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 21502B80DA8;
-        Mon, 30 May 2022 13:48:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E4D2C3411C;
-        Mon, 30 May 2022 13:48:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 15DA260EC3;
+        Mon, 30 May 2022 13:49:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFD7CC385B8;
+        Mon, 30 May 2022 13:49:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918534;
-        bh=yFwBUzVQVJmRKiHFeOtjB13g9HNsfc3vfzdbuCRtjfI=;
+        s=k20201202; t=1653918583;
+        bh=nCcNByXWT/diSi/kX4pWjohsR1ESAZBLN/o8dTNP/Qo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dG6+2VAtOq3sG/Bn/2CM6l3Sk3wKNHuyL5YV9lDeCy0o5UlmEGDUYm8tbRf0h+IWD
-         87G0U050h0RDyuSOnNFKYM2ikxd9iaUpf+7vo55fWTFGWnWMzY0fxGN6D7I3dwAoz2
-         Bo+SdeO6U2NzV3K6RC6gMlCsvl01ScpYOx5Wv5FOwpJ1Cjn13njs5XajveoqE8/ghc
-         c4WYV7qrxCojaD9swcarvK2ZoBAcr5qLHtYsUSCM7vpIsbrDrw7+PD5gfWEoRZ95ON
-         +NkbdI2NiiAY4Q8gkl8TlVvTPErW0kMZdSeT4Zf6hYLgdsCilAsN6CsiUTz9Ixn1VJ
-         b0uIQOw7wIbxA==
+        b=jef57TBEHeqhpfx7toOpn8puAImfUAJIyWrEoCKkv0bo7PaBBFu44SHjTw3dqUPhT
+         /Tskl12YqYDSiYHDyC1fWd53ZBS4SDeIq8vuvMbCQz25+IbWfp6E5uKoyom9bW6vqO
+         I1POBY+dBEs0t+3LiGPK4csIpIvYFv7klSM20HzLSncd219HTf4nUnk0eLrQSt72le
+         BlLjbBWsmepQpSxlTw3dsQpa8egL02j6STE5aJkBT57fffZsvw6455fdFnCDuTFOZI
+         y7UHvBBqgIXJaYmpbIrAgqjOm0AniWHq8atSGRMHe30UJz0a4ghEi4EEjCtCMX0Jhp
+         osy4ZhfhttVlg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Arnd Bergmann <arnd@arndb.de>, Jonas Bonn <jonas@southpole.se>,
-        Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>,
-        Stafford Horne <shorne@gmail.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Sasha Levin <sashal@kernel.org>, linux@dominikbrodowski.net,
-        rdunlap@infradead.org, openrisc@lists.librecores.org
-Subject: [PATCH AUTOSEL 5.4 44/55] openrisc: start CPU timer early in boot
-Date:   Mon, 30 May 2022 09:46:50 -0400
-Message-Id: <20220530134701.1935933-44-sashal@kernel.org>
+Cc:     Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Daniel Vetter <daniel.vetter@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>, Du Cheng <ducheng2@gmail.com>,
+        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
+        Claudio Suarez <cssk@net-c.es>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Sasha Levin <sashal@kernel.org>, deller@gmx.de,
+        geert@linux-m68k.org, linux-fbdev@vger.kernel.org,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 4.19 07/38] fbcon: Consistently protect deferred_takeover with console_lock()
+Date:   Mon, 30 May 2022 09:48:53 -0400
+Message-Id: <20220530134924.1936816-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220530134701.1935933-1-sashal@kernel.org>
-References: <20220530134701.1935933-1-sashal@kernel.org>
+In-Reply-To: <20220530134924.1936816-1-sashal@kernel.org>
+References: <20220530134924.1936816-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -56,60 +58,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Daniel Vetter <daniel.vetter@ffwll.ch>
 
-[ Upstream commit 516dd4aacd67a0f27da94f3fe63fe0f4dbab6e2b ]
+[ Upstream commit 43553559121ca90965b572cf8a1d6d0fd618b449 ]
 
-In order to measure the boot process, the timer should be switched on as
-early in boot as possible. As well, the commit defines the get_cycles
-macro, like the previous patches in this series, so that generic code is
-aware that it's implemented by the platform, as is done on other archs.
+This shouldn't be a problem in practice since until we've actually
+taken over the console there's nothing we've registered with the
+console/vt subsystem, so the exit/unbind path that check this can't
+do the wrong thing. But it's confusing, so fix it by moving it a tad
+later.
 
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Jonas Bonn <jonas@southpole.se>
-Cc: Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>
-Acked-by: Stafford Horne <shorne@gmail.com>
-Reported-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Acked-by: Sam Ravnborg <sam@ravnborg.org>
+Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Cc: Du Cheng <ducheng2@gmail.com>
+Cc: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Cc: Claudio Suarez <cssk@net-c.es>
+Cc: Thomas Zimmermann <tzimmermann@suse.de>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220405210335.3434130-14-daniel.vetter@ffwll.ch
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/openrisc/include/asm/timex.h | 1 +
- arch/openrisc/kernel/head.S       | 9 +++++++++
- 2 files changed, 10 insertions(+)
+ drivers/video/fbdev/core/fbcon.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/arch/openrisc/include/asm/timex.h b/arch/openrisc/include/asm/timex.h
-index d52b4e536e3f..5487fa93dd9b 100644
---- a/arch/openrisc/include/asm/timex.h
-+++ b/arch/openrisc/include/asm/timex.h
-@@ -23,6 +23,7 @@ static inline cycles_t get_cycles(void)
- {
- 	return mfspr(SPR_TTCR);
- }
-+#define get_cycles get_cycles
+diff --git a/drivers/video/fbdev/core/fbcon.c b/drivers/video/fbdev/core/fbcon.c
+index bf7959fdf9f4..7c2582892eab 100644
+--- a/drivers/video/fbdev/core/fbcon.c
++++ b/drivers/video/fbdev/core/fbcon.c
+@@ -3314,6 +3314,9 @@ static void fbcon_register_existing_fbs(struct work_struct *work)
  
- /* This isn't really used any more */
- #define CLOCK_TICK_RATE 1000
-diff --git a/arch/openrisc/kernel/head.S b/arch/openrisc/kernel/head.S
-index b0dc974f9a74..ffbbf639b7f9 100644
---- a/arch/openrisc/kernel/head.S
-+++ b/arch/openrisc/kernel/head.S
-@@ -521,6 +521,15 @@ _start:
- 	l.ori	r3,r0,0x1
- 	l.mtspr	r0,r3,SPR_SR
+ 	console_lock();
  
-+	/*
-+	 * Start the TTCR as early as possible, so that the RNG can make use of
-+	 * measurements of boot time from the earliest opportunity. Especially
-+	 * important is that the TTCR does not return zero by the time we reach
-+	 * rand_initialize().
-+	 */
-+	l.movhi r3,hi(SPR_TTMR_CR)
-+	l.mtspr r0,r3,SPR_TTMR
++	deferred_takeover = false;
++	logo_shown = FBCON_LOGO_DONTSHOW;
 +
- 	CLEAR_GPR(r1)
- 	CLEAR_GPR(r2)
- 	CLEAR_GPR(r3)
+ 	for_each_registered_fb(i)
+ 		fbcon_fb_registered(registered_fb[i]);
+ 
+@@ -3331,8 +3334,6 @@ static int fbcon_output_notifier(struct notifier_block *nb,
+ 	pr_info("fbcon: Taking over console\n");
+ 
+ 	dummycon_unregister_output_notifier(&fbcon_output_nb);
+-	deferred_takeover = false;
+-	logo_shown = FBCON_LOGO_DONTSHOW;
+ 
+ 	/* We may get called in atomic context */
+ 	schedule_work(&fbcon_deferred_takeover_work);
 -- 
 2.35.1
 
