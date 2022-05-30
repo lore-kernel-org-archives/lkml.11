@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C69EBC38A2D
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:57:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB35FC3A59E
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:57:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239520AbiE3N4r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:56:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34852 "EHLO
+        id S235810AbiE3N5W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:57:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239337AbiE3Nv2 (ORCPT
+        with ESMTP id S239171AbiE3Nva (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:51:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEC00220E3;
-        Mon, 30 May 2022 06:36:38 -0700 (PDT)
+        Mon, 30 May 2022 09:51:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4436ACE1B;
+        Mon, 30 May 2022 06:36:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 89CDC60F95;
-        Mon, 30 May 2022 13:36:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DABDC3411E;
-        Mon, 30 May 2022 13:36:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B0DE760F7B;
+        Mon, 30 May 2022 13:36:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0A0FC3411C;
+        Mon, 30 May 2022 13:36:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917798;
-        bh=hy2mevBC+d+imUghO9WNY0JWs2ZLXPExJBDxBRuXzXs=;
+        s=k20201202; t=1653917814;
+        bh=FxjKdDBBySaV4aLPGsf0NuaXxjSFKK4NzD+yfD/c8BI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i4O7nbNfVGaYc2EY0R67ZMk6RPvN1rCPiyKO74jFJNNbvJBstBgSAxWzCU8SzJVXn
-         xLYr2oY1zYk4OA6tsBn2byXBYEVeGkcdCVbdtKE2Um1dmkCbFywnAQwjB9JaaZz9Rw
-         q45+PB5nNfnsMTVOy9lBlE5oVBG5gXRmTFscz8kL2MXnf7xShQwMHdVDLUMVCKqkGx
-         faE8RfMr9cEXsekestutY5s1oSXlDhC2CstzerznBmbgitdQsUG/zhzd4yUiupQZsP
-         tyrTjQjbp3rJM2jnQPOuNt7RjOZneOt/lbHfp80zb4DeJrtgEj6R/RJ9Boh5qN4IXm
-         SpFEgMjd76vWQ==
+        b=Lei/atOP0dKpw7KXKtsUU5xGjno/Vv7XQn8+mYU5b4qMSBJjGGej3LECwFda+2EKt
+         bs9SMZejBlKPCeIRpljil5/PsoqghdAACKfDGpraGStDwnc/CAGLHP1HAccD6Jf/23
+         D8qHKVfPy1HK0YTxeTF9jXN1YzBdmwL2y/6cNIDCX9c4IKTfRO0NEl1KgJ2cW33up6
+         8f+YIljmx5o93KVWJqFSqy6OB2NbQvImBfJsG7lZ12f1kjipFZmKiEMxEeVY/PO4mn
+         MwE6DAcrRBlmwN30gfxfGpGZRjBWRoKVT3CtA8h1T528Lz915HF/9s9aj5o/BSPBIE
+         puYV4pmIrKatQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>, johan.hedberg@gmail.com,
-        luiz.dentz@gmail.com, linux-bluetooth@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 101/135] Bluetooth: btusb: Set HCI_QUIRK_BROKEN_ENHANCED_SETUP_SYNC_CONN for QCA
-Date:   Mon, 30 May 2022 09:30:59 -0400
-Message-Id: <20220530133133.1931716-101-sashal@kernel.org>
+Cc:     "Smith, Kyle Miller (Nimble Kernel)" <kyles@hpe.com>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Hannes Reinecke <hare@suse.de>, Christoph Hellwig <hch@lst.de>,
+        Sasha Levin <sashal@kernel.org>, kbusch@kernel.org,
+        axboe@fb.com, sagi@grimberg.me, linux-nvme@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.17 105/135] nvme-pci: fix a NULL pointer dereference in nvme_alloc_admin_tags
+Date:   Mon, 30 May 2022 09:31:03 -0400
+Message-Id: <20220530133133.1931716-105-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133133.1931716-1-sashal@kernel.org>
 References: <20220530133133.1931716-1-sashal@kernel.org>
@@ -52,37 +53,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+From: "Smith, Kyle Miller (Nimble Kernel)" <kyles@hpe.com>
 
-[ Upstream commit d44e1dbda36fff5d7c2586683c4adc0963aef908 ]
+[ Upstream commit da42761181627e9bdc37d18368b827948a583929 ]
 
-This sets HCI_QUIRK_BROKEN_ENHANCED_SETUP_SYNC_CONN for QCA controllers
-since SCO appear to not work when using HCI_OP_ENHANCED_SETUP_SYNC_CONN.
+In nvme_alloc_admin_tags, the admin_q can be set to an error (typically
+-ENOMEM) if the blk_mq_init_queue call fails to set up the queue, which
+is checked immediately after the call. However, when we return the error
+message up the stack, to nvme_reset_work the error takes us to
+nvme_remove_dead_ctrl()
+  nvme_dev_disable()
+   nvme_suspend_queue(&dev->queues[0]).
 
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215576
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Here, we only check that the admin_q is non-NULL, rather than not
+an error or NULL, and begin quiescing a queue that never existed, leading
+to bad / NULL pointer dereference.
+
+Signed-off-by: Kyle Smith <kyles@hpe.com>
+Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
+Reviewed-by: Hannes Reinecke <hare@suse.de>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/bluetooth/btusb.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/nvme/host/pci.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
-index 42234d5f602d..34215dc5e684 100644
---- a/drivers/bluetooth/btusb.c
-+++ b/drivers/bluetooth/btusb.c
-@@ -3317,6 +3317,11 @@ static int btusb_setup_qca(struct hci_dev *hdev)
- 			return err;
- 	}
- 
-+	/* Mark HCI_OP_ENHANCED_SETUP_SYNC_CONN as broken as it doesn't seem to
-+	 * work with the likes of HSP/HFP mSBC.
-+	 */
-+	set_bit(HCI_QUIRK_BROKEN_ENHANCED_SETUP_SYNC_CONN, &hdev->quirks);
-+
- 	return 0;
- }
- 
+diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+index 94a0b933b133..823fa48fbfb0 100644
+--- a/drivers/nvme/host/pci.c
++++ b/drivers/nvme/host/pci.c
+@@ -1772,6 +1772,7 @@ static int nvme_alloc_admin_tags(struct nvme_dev *dev)
+ 		dev->ctrl.admin_q = blk_mq_init_queue(&dev->admin_tagset);
+ 		if (IS_ERR(dev->ctrl.admin_q)) {
+ 			blk_mq_free_tag_set(&dev->admin_tagset);
++			dev->ctrl.admin_q = NULL;
+ 			return -ENOMEM;
+ 		}
+ 		if (!blk_get_queue(dev->ctrl.admin_q)) {
 -- 
 2.35.1
 
