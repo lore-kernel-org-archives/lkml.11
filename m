@@ -2,96 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A83FCC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 15:25:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C680C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 15:25:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240235AbiE3PZX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 11:25:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44360 "EHLO
+        id S239461AbiE3PZb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 11:25:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240201AbiE3PYv (ORCPT
+        with ESMTP id S241804AbiE3PZB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 11:24:51 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EAC01CC605;
-        Mon, 30 May 2022 07:25:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653920737; x=1685456737;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=qa66nN8IHyybRSUPiNIjAkNufZbxITgV0L9y8AsjeHI=;
-  b=fL8+57KS9STNQ8MQVO1DWL17X2fwwiNGtuI1sjKw71qp73CVlebZuwEY
-   2GSYdAT/YVliJzcJWmBtTXFcnJT0myLqpxpuWggveSzCZmq2uB1+5yGxK
-   i8RPxvtNnkmGUqzR4ZftloEULEtlPgFVtfVQGaG5woKNyNjF+G0q/0vQp
-   sl96J7ac6ic/BbJ2MWTOGnrX3HAmSrE3mUwU6nl2Wyc/ZPurR9ehlsIyY
-   AmWw7UwCV66cc37R6kmUtE5WLGNOaLIOh3fg9bTGQ6fcYMDfufD3Wkd+d
-   4atSGh1IMfX2u8kh/JPycGQ70MaMwrLFc/lpkxb1SB3TBORhlMSRzMyrG
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10363"; a="254888820"
-X-IronPort-AV: E=Sophos;i="5.91,263,1647327600"; 
-   d="scan'208";a="254888820"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 May 2022 07:25:36 -0700
-X-IronPort-AV: E=Sophos;i="5.91,263,1647327600"; 
-   d="scan'208";a="605212357"
-Received: from rli9-dbox.sh.intel.com (HELO rli9-dbox) ([10.239.159.142])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 May 2022 07:25:30 -0700
-Date:   Mon, 30 May 2022 22:23:53 +0800
-From:   Philip Li <philip.li@intel.com>
-To:     kernel test robot <lkp@intel.com>
-Cc:     menglong8.dong@gmail.com, kuba@kernel.org, kbuild-all@lists.01.org,
-        rostedt@goodmis.org, mingo@redhat.com, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, nhorman@tuxdriver.com,
-        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        imagedong@tencent.com, dsahern@kernel.org, talalahmad@google.com,
-        keescook@chromium.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH net-next v2 2/3] net: skb: use auto-generation to convert
- skb drop reason to string
-Message-ID: <YpTTedzTnj3s1hdo@rli9-dbox>
-References: <20220530081201.10151-3-imagedong@tencent.com>
- <202205301730.inNRSOxX-lkp@intel.com>
+        Mon, 30 May 2022 11:25:01 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF424140C5
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 07:27:03 -0700 (PDT)
+Received: from mail-yb1-f175.google.com ([209.85.219.175]) by
+ mrelayeu.kundenserver.de (mreue011 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1MAwoL-1o705U2mAD-00BNnR for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022
+ 16:27:01 +0200
+Received: by mail-yb1-f175.google.com with SMTP id t31so6376265ybi.2
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 07:27:01 -0700 (PDT)
+X-Gm-Message-State: AOAM530iK3Q2mV8VZSC7415vACqiXJ7deUN+Nxd+NCGh1deNO/Jec/+s
+        uOOWffgn70Zwp4/0T3M9UwRiZ5pM+8T+1oJ0c9E=
+X-Google-Smtp-Source: ABdhPJx5T8sAy2mpNYpXUMEEXXq3paGLe37RJlBPWUL37w/VrSqmqA+dX26yPRFsA+fHHAhbaULTIG1qF0gAbTdb1Dw=
+X-Received: by 2002:a25:4f0a:0:b0:64f:6a76:3d8f with SMTP id
+ d10-20020a254f0a000000b0064f6a763d8fmr43544693ybb.134.1653920820404; Mon, 30
+ May 2022 07:27:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202205301730.inNRSOxX-lkp@intel.com>
+References: <YpCUzStDnSgQLNFN@debian> <CAHk-=wg0uGAX5DYZq+tY2KeUAR8DtR91YE1y9CkPMKkKOyE4jg@mail.gmail.com>
+ <CADVatmNGPbSdRNQuwJEWAaPtqb3vBYRjvsuBpoRUnhEHj=X5GQ@mail.gmail.com>
+ <CAHk-=wisQd8yiPX=SsK3eFiakKo713hq4SyqPWsJ-oyAmLFefQ@mail.gmail.com>
+ <YpIR67FMtTGCwARZ@debian> <CAHk-=wjuyHE=1wLgHncub8FfgeyYqfWYsy4-YrhAvq9991h_Aw@mail.gmail.com>
+ <CAHk-=wi_hJV0V=Ecg2dzbe2P_H1XKTu6VP_AtCH6u=tis31ayg@mail.gmail.com>
+ <CAK8P3a0-QyOQiieEvM0yQb43XbCtPmeao8UvoAsdFnjCxYPz7Q@mail.gmail.com>
+ <CAHk-=whfmwzjF4eBPYS6pHFqHVzJF3m=2h=gRWSRyHks8V=ABA@mail.gmail.com>
+ <87a6aztli2.fsf@intel.com> <877d63tleq.fsf@intel.com> <CAK8P3a0-S77QLR1dK3NT6ot7JTAD5AdojAZJr-Xi112-v5EOdw@mail.gmail.com>
+ <87czfvrwsv.fsf@intel.com> <CAK8P3a0HNOCOSx9UONw6gf1UUU8J4iAOmMFP8-DtJ3O7XAACsQ@mail.gmail.com>
+ <874k17ru44.fsf@intel.com>
+In-Reply-To: <874k17ru44.fsf@intel.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Mon, 30 May 2022 16:26:43 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a2Zg2QDS1_Ysn8-Zqqd+K7bbTFS7JV7gPabp6nvPiKaog@mail.gmail.com>
+Message-ID: <CAK8P3a2Zg2QDS1_Ysn8-Zqqd+K7bbTFS7JV7gPabp6nvPiKaog@mail.gmail.com>
+Subject: Re: mainline build failure due to f1e4c916f97f ("drm/edid: add EDID
+ block count and size helpers")
+To:     Jani Nikula <jani.nikula@intel.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Viresh Kumar <vireshk@kernel.org>,
+        Shiraz Hashim <shiraz.linux.kernel@gmail.com>,
+        =?UTF-8?B?VmlsbGUgU3lyasOkbMOk?= <ville.syrjala@linux.intel.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        SoC Team <soc@kernel.org>, Julia Lawall <Julia.Lawall@inria.fr>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:GsNo+lmxofIjxKfQ8P/W5vYMLw6wvfExggyZZJBLHymM0U2xCqF
+ cxpRJ+VsjR+G/v2AI1vekY7nhm32qhgNDTfnRRMES1bZLtvq3j9ylWbEBxn+eNBwcmwlxoP
+ 3Pg83FL9wGY6nxqr7sZlorgCf9dc6tpvs3EGxhPPbOCaHT/SODxv+qIS27AhGBLcWNFfOKA
+ KQT89jtpp9CxL1rLWkHAQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:VU2d7sJRNV8=:Bb/K79iZoDkd6FMmH6HbZr
+ ShzTmmi4LwZ192mHRmZ3E/bDE6RcJY/kLczT9q/T596wCFBUf8pIfkJlG1mYS/zSkPHmi6ZRq
+ IEjHfkH+c55EXwx5vlQDkdWuwNvA+g4BLC4Z2eXZsFpeXCUM1iPdwQfQ25kmwzR7holEsuWVm
+ kkdcqlDAOQKv0aErxKI1LkS5CBWhb59LJ2+jZ+wzhd1RrcZTeUmdPLUYYGEn08ogIHj32y6PU
+ maDeS++VXnS7Ltjl0b1tvH8IsaAMpkVbp4Dvz/iIpo/xeMv1ftETwJaY9T1a5TFhEf2jm9FJc
+ +R21QJACaW8P0kcDqxyZ6Aegx3oFgomTKYtmmVanAErV4oBDaxeJQMOwdqMp+25Pd3pNKUZK2
+ je+T5kATa3Sb511AmWyANY0JEo8kbJhnXeXl6UqpF95aErZIK1/5V/v91P7nFiqHJIi0FDiSj
+ k2nn52NezY02cJmIdyGm2M9kS7b+6gTBroxnNjoM326pQRVXwxtSvuTo7XPE4DcM3+iiYgrks
+ ozFP++1g3WrlOiGPK/8+dSElauOyEYwDmTIoztHxvBPacaqiDfcyfy3lUCMlckz3YgNVz57+T
+ I0NzhKoqpd7V524JO12hc5iMKQjna/l0Cf9lC4nrcycAkAa1C+MCweVGPP3iPVc378fbdE1Tv
+ BtGzSsJsUZTVGxCSuObU248PDkw/Hzt6XcNVtM/vpoJ5qszqQA8a+jxmaN90lcMTWScUmIhMU
+ OA7W9zcmiRghRH7MaVPBnGyn5F5APCeOeLBTtcsUi+Wtkmf9mtvM8KkI+FqeJHJnc0l2hmZaq
+ I4VxKFtmAlYDOSTnkFG4iEMpl414Oi591niobnfbMtCjpu54KaU3O62z9+AeZ6sp4j/QL0SEI
+ F1gjL/J0BPIEyhbIxwliWD8hFV8SNgNnQtvzU1Vds=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 30, 2022 at 06:01:36PM +0800, kernel test robot wrote:
-> Hi,
-> 
-> Thank you for the patch! Perhaps something to improve:
-> 
-> [auto build test WARNING on net-next/master]
-> 
-> url:    https://github.com/intel-lab-lkp/linux/commits/menglong8-dong-gmail-com/reorganize-the-code-of-the-enum-skb_drop_reason/20220530-161614
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 7e062cda7d90543ac8c7700fc7c5527d0c0f22ad
-> config: nios2-defconfig (https://download.01.org/0day-ci/archive/20220530/202205301730.inNRSOxX-lkp@intel.com/config)
-> compiler: nios2-linux-gcc (GCC) 11.3.0
-> reproduce (this is a W=1 build):
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # https://github.com/intel-lab-lkp/linux/commit/73e3b002fb9086fc734ba4dcc3041f9bb56eb1a2
->         git remote add linux-review https://github.com/intel-lab-lkp/linux
->         git fetch --no-tags linux-review menglong8-dong-gmail-com/reorganize-the-code-of-the-enum-skb_drop_reason/20220530-161614
->         git checkout 73e3b002fb9086fc734ba4dcc3041f9bb56eb1a2
->         # save the config file
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 ARCH=nios2 
-> 
-> If you fix the issue, kindly add following tag where applicable
-> Reported-by: kernel test robot <lkp@intel.com>
-> 
-> All warnings (new ones prefixed by >>):
+On Mon, May 30, 2022 at 4:08 PM Jani Nikula <jani.nikula@intel.com> wrote:
+> On Mon, 30 May 2022, Arnd Bergmann <arnd@arndb.de> wrote:
+> > struct my_driver_priv {
+> >        struct device dev;
+> >        u8 causes_misalignment;
+> >        spinlock_t lock;
+> >        atomic_t counter;
+> > } __packed; /* this annotation is harmful because it breaks the atomics */
+>
+> I wonder if this is something that could be caught with coccinelle. Or
+> sparse. Are there any cases where this combo is necessary? (I can't
+> think of any, but it's a low bar. ;)
+>
+> Cc: Julia.
 
-Kindly ignore this report, the report itself has issue with empty
-warnings here. We will check and resolve this.
+I think one would first have to make a list of data types that are not
+meant to be in a packed structure. It could be a good start to
+search for any packed aggregates with a pointer, atomic_t or spinlock_t
+in them, but there are of course many more types that you won't
+find in hardware structures.
 
-> 
-> -- 
-> 0-DAY CI Kernel Test Service
-> https://01.org/lkp
+> > or if the annotation does not change the layout like
+> >
+> > struct my_dma_descriptor {
+> >      __le64 address;
+> >      __le64 length;
+> > } __packed; /* does not change layout but makes access slow on some
+> > architectures */
+>
+> Why is this the case, though? I'd imagine the compiler could figure this
+> out.
+
+When you annotate the entire structure as __packed without an
+extra __aligned() annotation, the compiler has to assume that the
+structure itself is unaligned as well. On many of the older architectures,
+this will result in accessing the values one byte at a time. Marking
+the structure as "__packed __aligned(8)" instead would be harmless.
+
+When I have a structure with a few misaligned members, I generally
+prefer to only annotate the members that are not naturally aligned,
+but this approach is not very common.
+
+         Arnd
