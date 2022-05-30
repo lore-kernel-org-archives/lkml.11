@@ -2,116 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ECBEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 10:53:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6A94C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 10:53:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235473AbiE3KxO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 06:53:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34628 "EHLO
+        id S235488AbiE3Kxy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 06:53:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235296AbiE3KxK (ORCPT
+        with ESMTP id S235296AbiE3Kxw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 06:53:10 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3883252534
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 03:53:07 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LBXLn0P3Yz4xZD;
-        Mon, 30 May 2022 20:53:05 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
-        s=201909; t=1653907986;
-        bh=Dkvi+HFnbDL2DwAp//5yZB70vhuSooWcV247ZK3BH7k=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=RCZFhtbcPhp6Lug7Q3gshleEqDi7ZuvqwB+nM02fddCWX0aDlm65SzHOVqZw86Aj/
-         4xC3Bt3yfwONnf9sSnPlNSYOUpxKhgjYmfchRALVRMhZP09M51niSbFrWNiiK7dQNd
-         WMN1UzdHm3Iykv6om8HKrnwF/u8r0QuBoaeGeCaJMG+4hFBZ0jsFaABKvbpwyqNAvE
-         L9EjjUFZIAM7ouw6qZeT6WRJPYCy+x8D+0q9rLKUllNhJI8C4Rj3GUAPUSmatzOjSt
-         tfCsdy2vE/Je+vFDDbHqQLdqbZpHo6viU34ODQG6WMYFqhYV+0b3MCakzgqjGljCyu
-         +nHi3eexEZT/Q==
-From:   Michael Ellerman <mpe@ellerman.id.au>
-To:     Petr Mladek <pmladek@suse.com>,
-        Bagas Sanjaya <bagasdotme@gmail.com>
-Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        John Ogness <john.ogness@linutronix.de>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        David Howells <dhowells@redhat.com>,
-        Jordan Niethe <jniethe5@gmail.com>
-Subject: Re: dangling pointer to '__str' error on ppc64_defconfig, GCC 12.1.0
-In-Reply-To: <Yo9+fQ32Br9+NpUW@alley>
-References: <Yo9Fm/hdtac1t9sW@debian.me> <Yo9+fQ32Br9+NpUW@alley>
-Date:   Mon, 30 May 2022 20:53:01 +1000
-Message-ID: <87k0a3l2b6.fsf@mpe.ellerman.id.au>
+        Mon, 30 May 2022 06:53:52 -0400
+Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0CDA47550
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 03:53:49 -0700 (PDT)
+Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
+        by mx0b-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24U8hF83003487;
+        Mon, 30 May 2022 05:53:31 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=PODMain02222019;
+ bh=CA7nSWc/bxcs60/+XFOKN9BKEj4sNIHLXQRef45Ouz4=;
+ b=itK/QRvas1VOFmAx1tGQVS8tXAkZrU0HtCz5g0+ns/oy+9uJoYx7Sp14C9UPYgSEaEFa
+ s26TqFGUHhFnRGWO7TRynmdViDpFgRVwYJfe5FUO2GRIlrlfO1xRHGiQbmB1qIhn+qTS
+ 9FANWfOsdO9yodylCu3pAP6zwXfLqTX4Dl7oaaoTOssh0j87lrxDn5fLEICe0TysvuO+
+ 0W0uBGRqfRI4yGSZvVVLyYbVkNAawnHXv6L8oapfMebVzYkiRW2fKeicyZXgeDdfm4t7
+ e9vB7499KaUGezMa6qLpyXaMf6KUyL/xYdUG/02WhMc59KoOPKfCssJ1OSRAJKvZj83+ +g== 
+Received: from ediex01.ad.cirrus.com ([84.19.233.68])
+        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3gbg5nhnm0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Mon, 30 May 2022 05:53:31 -0500
+Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Mon, 30 May
+ 2022 11:53:29 +0100
+Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.28 via Frontend
+ Transport; Mon, 30 May 2022 11:53:29 +0100
+Received: from ediswmail.ad.cirrus.com (ediswmail.ad.cirrus.com [198.61.86.93])
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 876A946C;
+        Mon, 30 May 2022 10:53:29 +0000 (UTC)
+Date:   Mon, 30 May 2022 10:53:29 +0000
+From:   Charles Keepax <ckeepax@opensource.cirrus.com>
+To:     Takashi Iwai <tiwai@suse.de>
+CC:     Vitaly Rodionov <vitalyr@opensource.cirrus.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, Mark Brown <broonie@kernel.org>,
+        <alsa-devel@alsa-project.org>, <patches@opensource.cirrus.com>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v4 00/17] ALSA: hda: cirrus: Add initial DSP support and
+ firmware loading
+Message-ID: <20220530105329.GV38351@ediswmail.ad.cirrus.com>
+References: <20220525131638.5512-1-vitalyr@opensource.cirrus.com>
+ <871qwf0x8t.wl-tiwai@suse.de>
+ <20220530090846.GS38351@ediswmail.ad.cirrus.com>
+ <87czfvxtsc.wl-tiwai@suse.de>
+ <20220530093639.GT38351@ediswmail.ad.cirrus.com>
+ <87a6azxr7h.wl-tiwai@suse.de>
+ <20220530103415.GU38351@ediswmail.ad.cirrus.com>
+ <871qwbxpsb.wl-tiwai@suse.de>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <871qwbxpsb.wl-tiwai@suse.de>
+User-Agent: Mutt/1.5.21 (2010-09-15)
+X-Proofpoint-ORIG-GUID: 8UOBs33TfOfRbSmlXAAfeQgRZvOOO0el
+X-Proofpoint-GUID: 8UOBs33TfOfRbSmlXAAfeQgRZvOOO0el
+X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Petr Mladek <pmladek@suse.com> writes:
-> On Thu 2022-05-26 16:17:15, Bagas Sanjaya wrote:
->> Hi everyone,
->> 
->> Attempting to build ppc64_defconfig kernel with powerpc64-unknown-linux-gnu
->> (GCC 12.1.0) on v5.18, I got build error on ftrace.o:
->> 
->>   CC      arch/powerpc/kernel/trace/ftrace.o
->>   CC      init/init_task.o
->> In file included from ./include/asm-generic/bug.h:22,
->>                  from ./arch/powerpc/include/asm/bug.h:156,
->>                  from ./include/linux/bug.h:5,
->>                  from ./include/linux/thread_info.h:13,
->>                  from ./include/asm-generic/preempt.h:5,
->>                  from ./arch/powerpc/include/generated/asm/preempt.h:1,
->>                  from ./include/linux/preempt.h:78,
->>                  from ./include/linux/spinlock.h:55,
->>                  from arch/powerpc/kernel/trace/ftrace.c:16:
->> arch/powerpc/kernel/trace/ftrace.c: In function 'ftrace_modify_code':
->> ./include/linux/printk.h:446:44: error: using a dangling pointer to '__str' [-Werror=dangling-pointer=]
->>   446 | #define printk(fmt, ...) printk_index_wrap(_printk, fmt, ##__VA_ARGS__)
->>       |                                            ^
->> ./include/linux/printk.h:418:17: note: in definition of macro 'printk_index_wrap'
->>   418 |                 _p_func(_fmt, ##__VA_ARGS__);                           \
->>       |                 ^~~~~~~
->> ./include/linux/printk.h:489:9: note: in expansion of macro 'printk'
->>   489 |         printk(KERN_ERR pr_fmt(fmt), ##__VA_ARGS__)
->>       |         ^~~~~~
->> arch/powerpc/kernel/trace/ftrace.c:75:17: note: in expansion of macro 'pr_err'
->>    75 |                 pr_err("%p: replaced (%s) != old (%s)",
->>       |                 ^~~~~~
->> In file included from ./arch/powerpc/include/asm/code-patching.h:14,
->>                  from arch/powerpc/kernel/trace/ftrace.c:26:
->> ./arch/powerpc/include/asm/inst.h:156:14: note: '__str' declared here
->>   156 |         char __str[PPC_INST_STR_LEN];   \
->>       |              ^~~~~
->
-> IMHO, the problem is in the macro:
->
-> #define ppc_inst_as_str(x)		\
-> ({					\
-> 	char __str[PPC_INST_STR_LEN];	\
-> 	__ppc_inst_as_str(__str, x);	\
-> 	__str;				\
-> })
->
-> The buffer __str is defined inside the code block {} and
-> the macro passes the pointer to the buffer outside.
-> IMHO, from the compiler POV, the buffer does not exist
-> outside of the code block.
- 
-This warning seems kind of incompatible with statement expressions. But
-I guess the compiler is happy as long as the value returned is not a
-pointer. So I'm not sure I agree with the compiler here, but too bad for
-me I guess.
+On Mon, May 30, 2022 at 12:45:08PM +0200, Takashi Iwai wrote:
+> On Mon, 30 May 2022 12:34:15 +0200,
+> Charles Keepax wrote:
+> Well, if an ALSA control can trigger the firmware loading, that's
+> already fragile.  A firmware loading is a heavy task, which should
+> happen only at probing and/or resuming in general.  Do we have other
+> drivers doing the f/w loading triggered by a kctl...?
+> 
+> > I guess we could look at adding locked versions of the add
+> > control functions as well if that might be preferred?
+> 
+> If the patterns of additional kctls (specific for firmware?) are
+> fixed, we may create all such kctls beforehand and let them inactive
+> unless the corresponding firmware is really loaded, too.
+> 
 
-This macro has always been a bit awkward, I think I'm inclined to just
-get rid of it completely, and print the ulong value. I'll send a patch.
+I am afraid we do, basically all the Wolfson/Cirrus audio devices
+allow you to select the firmware through a kctl. The patterns of
+controls are specific to the firmwares, so we can't really create
+them ahead of time. One could maybe look at changing when the
+firmwares are loaded, such as attempting to load all possible
+firmwares on boot or something but its a fairly sizable change
+that isn't without some side effects.
 
-Anyway it's definitely not your problem, sorry you ended up on Cc.
-
-cheers
+Thanks,
+Charles
