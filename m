@@ -2,51 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E613C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:26:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74819C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:26:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236799AbiE3N0O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:26:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58196 "EHLO
+        id S236361AbiE3N0W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:26:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236708AbiE3NZL (ORCPT
+        with ESMTP id S236662AbiE3NZT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:25:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EE0E84A01;
-        Mon, 30 May 2022 06:25:10 -0700 (PDT)
+        Mon, 30 May 2022 09:25:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E25E82166;
+        Mon, 30 May 2022 06:25:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 96768B80D84;
-        Mon, 30 May 2022 13:25:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4A61C385B8;
-        Mon, 30 May 2022 13:25:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AC15F60DD5;
+        Mon, 30 May 2022 13:25:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15C61C3411F;
+        Mon, 30 May 2022 13:25:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917107;
-        bh=+ehzoZ1+4/6eIf04m+qPZ2eANMxYBdwQHqalydfBe80=;
+        s=k20201202; t=1653917112;
+        bh=x8Opey4gPhl/T9ZY27fZLs+uA+C7ZsiJ2XZJphbacJQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cWBeJeGAcIH5Vom7aZ33vnn7uOSqcEoDHdP1JCizha21+kwdFBmpv/fUe6kAKD7Yt
-         LbbKVMzNg9dbdZmiG69YyHkYXIWsKJpisZYGeVtN04at78fBgXfhLz+ZPzEIZcGzwX
-         oiO/RR01KngI2FFXu/wEZ4mP47VzLAJcgyLmMpzimxQxOGOjxa2TQy8Oh58f02DZ1K
-         nCEDUp2Z8tNdk4u81S5HESvWCFpoBX7SHh7p/AXu4t+/0wzmI6PPNPjYi2ZEOJcJLl
-         HVU2QdPfXRnZUvCsKateqkPTwlpscffvQ8xX1ablK+wdyTtc2bBIheGvcfdoV38H9s
-         GoovVqSR37kHw==
+        b=SKHKTt7+xhVfrrnu6sZgmNaBhSuxlqEVSpx75hod76TKMQUOAKYjkmV4fFm8tu1+S
+         oc2ACxALtOUJ/4Lny7mqAdQi3E0Bj3mUIldZVVhAx0v6uDgTJPH2CtyLDsVpfh5U/b
+         V9RAOiYn7195OjZyaepcz2zW7fsu1R051O845MJ/Ooi0fZn6oKQnZLTvvvgePxFZ31
+         T7Q6NxZS1IewDn86CofaGP+HSCYycAIij3cUwLdmNIN1lIS9u0wxVATw3JXxsjfyM7
+         M1PWXleUSdxIzCyYMC0pJYoUGyTDfbkFAsjAgtyQzouM4GCq05B0vJP5U0UFoR08fC
+         vnoo17Z41lSWg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Daniel Vetter <daniel.vetter@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>, Du Cheng <ducheng2@gmail.com>,
-        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
-        Claudio Suarez <cssk@net-c.es>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Sasha Levin <sashal@kernel.org>, deller@gmx.de,
-        geert@linux-m68k.org, linux-fbdev@vger.kernel.org,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.18 017/159] fbcon: Consistently protect deferred_takeover with console_lock()
-Date:   Mon, 30 May 2022 09:22:02 -0400
-Message-Id: <20220530132425.1929512-17-sashal@kernel.org>
+Cc:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Sasha Levin <sashal@kernel.org>, mingo@redhat.com,
+        bp@alien8.de, x86@kernel.org
+Subject: [PATCH AUTOSEL 5.18 019/159] ACPICA: Avoid cache flush inside virtual machines
+Date:   Mon, 30 May 2022 09:22:04 -0400
+Message-Id: <20220530132425.1929512-19-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530132425.1929512-1-sashal@kernel.org>
 References: <20220530132425.1929512-1-sashal@kernel.org>
@@ -58,52 +54,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Vetter <daniel.vetter@ffwll.ch>
+From: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 
-[ Upstream commit 43553559121ca90965b572cf8a1d6d0fd618b449 ]
+[ Upstream commit e2efb6359e620521d1e13f69b2257de8ceaa9475 ]
 
-This shouldn't be a problem in practice since until we've actually
-taken over the console there's nothing we've registered with the
-console/vt subsystem, so the exit/unbind path that check this can't
-do the wrong thing. But it's confusing, so fix it by moving it a tad
-later.
+While running inside virtual machine, the kernel can bypass cache
+flushing. Changing sleep state in a virtual machine doesn't affect the
+host system sleep state and cannot lead to data loss.
 
-Acked-by: Sam Ravnborg <sam@ravnborg.org>
-Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
-Cc: Daniel Vetter <daniel@ffwll.ch>
-Cc: Du Cheng <ducheng2@gmail.com>
-Cc: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Cc: Claudio Suarez <cssk@net-c.es>
-Cc: Thomas Zimmermann <tzimmermann@suse.de>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220405210335.3434130-14-daniel.vetter@ffwll.ch
+Before entering sleep states, the ACPI code flushes caches to prevent
+data loss using the WBINVD instruction.  This mechanism is required on
+bare metal.
+
+But, any use WBINVD inside of a guest is worthless.  Changing sleep
+state in a virtual machine doesn't affect the host system sleep state
+and cannot lead to data loss, so most hypervisors simply ignore it.
+Despite this, the ACPI code calls WBINVD unconditionally anyway.
+It's useless, but also normally harmless.
+
+In TDX guests, though, WBINVD stops being harmless; it triggers a
+virtualization exception (#VE).  If the ACPI cache-flushing WBINVD
+were left in place, TDX guests would need handling to recover from
+the exception.
+
+Avoid using WBINVD whenever running under a hypervisor.  This both
+removes the useless WBINVDs and saves TDX from implementing WBINVD
+handling.
+
+Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
+Reviewed-by: Dave Hansen <dave.hansen@linux.intel.com>
+Reviewed-by: Dan Williams <dan.j.williams@intel.com>
+Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
+Link: https://lkml.kernel.org/r/20220405232939.73860-30-kirill.shutemov@linux.intel.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/core/fbcon.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ arch/x86/include/asm/acenv.h | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/video/fbdev/core/fbcon.c b/drivers/video/fbdev/core/fbcon.c
-index 2fc1b80a26ad..9a8ae6fa6ecb 100644
---- a/drivers/video/fbdev/core/fbcon.c
-+++ b/drivers/video/fbdev/core/fbcon.c
-@@ -3265,6 +3265,9 @@ static void fbcon_register_existing_fbs(struct work_struct *work)
+diff --git a/arch/x86/include/asm/acenv.h b/arch/x86/include/asm/acenv.h
+index 9aff97f0de7f..d937c55e717e 100644
+--- a/arch/x86/include/asm/acenv.h
++++ b/arch/x86/include/asm/acenv.h
+@@ -13,7 +13,19 @@
  
- 	console_lock();
+ /* Asm macros */
  
-+	deferred_takeover = false;
-+	logo_shown = FBCON_LOGO_DONTSHOW;
-+
- 	for_each_registered_fb(i)
- 		fbcon_fb_registered(registered_fb[i]);
+-#define ACPI_FLUSH_CPU_CACHE()	wbinvd()
++/*
++ * ACPI_FLUSH_CPU_CACHE() flushes caches on entering sleep states.
++ * It is required to prevent data loss.
++ *
++ * While running inside virtual machine, the kernel can bypass cache flushing.
++ * Changing sleep state in a virtual machine doesn't affect the host system
++ * sleep state and cannot lead to data loss.
++ */
++#define ACPI_FLUSH_CPU_CACHE()					\
++do {								\
++	if (!cpu_feature_enabled(X86_FEATURE_HYPERVISOR))	\
++		wbinvd();					\
++} while (0)
  
-@@ -3282,8 +3285,6 @@ static int fbcon_output_notifier(struct notifier_block *nb,
- 	pr_info("fbcon: Taking over console\n");
- 
- 	dummycon_unregister_output_notifier(&fbcon_output_nb);
--	deferred_takeover = false;
--	logo_shown = FBCON_LOGO_DONTSHOW;
- 
- 	/* We may get called in atomic context */
- 	schedule_work(&fbcon_deferred_takeover_work);
+ int __acpi_acquire_global_lock(unsigned int *lock);
+ int __acpi_release_global_lock(unsigned int *lock);
 -- 
 2.35.1
 
