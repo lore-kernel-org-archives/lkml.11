@@ -2,50 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AACF5C38A2C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D3A8C38A06
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:57:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239494AbiE3N4m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:56:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35012 "EHLO
+        id S239386AbiE3N40 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:56:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239070AbiE3NvD (ORCPT
+        with ESMTP id S239253AbiE3NvY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:51:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF5DEB82E4;
-        Mon, 30 May 2022 06:35:20 -0700 (PDT)
+        Mon, 30 May 2022 09:51:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16A0A92D2B;
+        Mon, 30 May 2022 06:35:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9C92CB80DBE;
-        Mon, 30 May 2022 13:35:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DD8FC341C6;
-        Mon, 30 May 2022 13:35:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A684E60F27;
+        Mon, 30 May 2022 13:35:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D603EC3411E;
+        Mon, 30 May 2022 13:35:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917708;
-        bh=7jqS2tTlnNZbrQ98eK9OJ7pRMtBHKuwDuhlgk5Xc4Sk=;
+        s=k20201202; t=1653917736;
+        bh=g7XB8B2hXhx0t6vm3lGhWMstRlw7oJH8/lHkhtWU6kk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Bk5Cv+uBJVmmzJjN4C+OhXLe40dTWCnjXSIT3fh/FpldhBgRp1+3tSfuq2DFKcnyA
-         Y1cs89Ds0YdSklSVih1gwNspd1h2LKa9Hm7AjYOgjNJP5QyGhP6J1HH5kCee2JGLqZ
-         KIFCfluTUQawF5ThI1H9ZfvXKL5cIZp/ScZerll+qVtdFgwvSOeD9pmrVj/wge3geW
-         kx8MyHwJgIqO35SulCA+oax9a/OLPxvyd9dlH+IloS+oFTiU4tu7eYGCdHYjjaxns0
-         jYyEQxWbrCxNldTKl+h0FeOOABlSq9FMyu9sbB8AGVRMUmQ10jl8w7A3raSYGaCRU4
-         CsJPnstjkanfQ==
+        b=UcTUjfbrNK9PGGB6N+1VUv1HdondabMkgzzAkxaqM2PiZv4wfgl1MLuFqbdBBA2BK
+         9S1c8ZM3kYqAXq+5eO0GavyZxDdNiCGoKlOykeZWbyTT5y0muptTO9L9pcQ13mvUOx
+         XTPiuPGrvXiHNgbN8qjoVp5RpGr8MlARvFxs6HpGZPdhOoF6o8kCkJTYXCkTOkERH+
+         i21gTXVb4ZfyTNneuAKgj00XfuFhtObc6XdohWWaj10IoC4C9NIOXzea98bDj2wlNn
+         sypplksmOi1/Yfgn3OTyGCj9Huy/darqIcSwZ070ilPnOpiTZvRGo3og47ZaerfuEi
+         eooUgx94XfkSQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Dongliang Mu <mudongliangabcd@gmail.com>,
-        syzkaller <syzkaller@googlegroups.com>,
-        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>,
-        jikos@kernel.org, benjamin.tissoires@redhat.com,
-        linux-input@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 071/135] HID: bigben: fix slab-out-of-bounds Write in bigben_probe
-Date:   Mon, 30 May 2022 09:30:29 -0400
-Message-Id: <20220530133133.1931716-71-sashal@kernel.org>
+Cc:     Heiko Carstens <hca@linux.ibm.com>,
+        Thomas Richter <tmricht@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Sasha Levin <sashal@kernel.org>, gor@linux.ibm.com,
+        agordeev@linux.ibm.com, vschneid@redhat.com,
+        linux-s390@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 079/135] s390/preempt: disable __preempt_count_add() optimization for PROFILE_ALL_BRANCHES
+Date:   Mon, 30 May 2022 09:30:37 -0400
+Message-Id: <20220530133133.1931716-79-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133133.1931716-1-sashal@kernel.org>
 References: <20220530133133.1931716-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -53,41 +55,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dongliang Mu <mudongliangabcd@gmail.com>
+From: Heiko Carstens <hca@linux.ibm.com>
 
-[ Upstream commit fc4ef9d5724973193bfa5ebed181dba6de3a56db ]
+[ Upstream commit 63678eecec57fc51b778be3da35a397931287170 ]
 
-There is a slab-out-of-bounds Write bug in hid-bigbenff driver.
-The problem is the driver assumes the device must have an input but
-some malicious devices violate this assumption.
+gcc 12 does not (always) optimize away code that should only be generated
+if parameters are constant and within in a certain range. This depends on
+various obscure kernel config options, however in particular
+PROFILE_ALL_BRANCHES can trigger this compile error:
 
-Fix this by checking hid_device's input is non-empty before its usage.
+In function ‘__atomic_add_const’,
+    inlined from ‘__preempt_count_add.part.0’ at ./arch/s390/include/asm/preempt.h:50:3:
+./arch/s390/include/asm/atomic_ops.h:80:9: error: impossible constraint in ‘asm’
+   80 |         asm volatile(                                                   \
+      |         ^~~
 
-Reported-by: syzkaller <syzkaller@googlegroups.com>
-Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+Workaround this by simply disabling the optimization for
+PROFILE_ALL_BRANCHES, since the kernel will be so slow, that this
+optimization won't matter at all.
+
+Reported-by: Thomas Richter <tmricht@linux.ibm.com>
+Reviewed-by: Sven Schnelle <svens@linux.ibm.com>
+Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hid/hid-bigbenff.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/s390/include/asm/preempt.h | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/hid/hid-bigbenff.c b/drivers/hid/hid-bigbenff.c
-index 74ad8bf98bfd..e8c5e3ac9fff 100644
---- a/drivers/hid/hid-bigbenff.c
-+++ b/drivers/hid/hid-bigbenff.c
-@@ -347,6 +347,12 @@ static int bigben_probe(struct hid_device *hid,
- 	bigben->report = list_entry(report_list->next,
- 		struct hid_report, list);
+diff --git a/arch/s390/include/asm/preempt.h b/arch/s390/include/asm/preempt.h
+index d9d5350cc3ec..bf15da0fedbc 100644
+--- a/arch/s390/include/asm/preempt.h
++++ b/arch/s390/include/asm/preempt.h
+@@ -46,10 +46,17 @@ static inline bool test_preempt_need_resched(void)
  
-+	if (list_empty(&hid->inputs)) {
-+		hid_err(hid, "no inputs found\n");
-+		error = -ENODEV;
-+		goto error_hw_stop;
+ static inline void __preempt_count_add(int val)
+ {
+-	if (__builtin_constant_p(val) && (val >= -128) && (val <= 127))
+-		__atomic_add_const(val, &S390_lowcore.preempt_count);
+-	else
+-		__atomic_add(val, &S390_lowcore.preempt_count);
++	/*
++	 * With some obscure config options and CONFIG_PROFILE_ALL_BRANCHES
++	 * enabled, gcc 12 fails to handle __builtin_constant_p().
++	 */
++	if (!IS_ENABLED(CONFIG_PROFILE_ALL_BRANCHES)) {
++		if (__builtin_constant_p(val) && (val >= -128) && (val <= 127)) {
++			__atomic_add_const(val, &S390_lowcore.preempt_count);
++			return;
++		}
 +	}
-+
- 	hidinput = list_first_entry(&hid->inputs, struct hid_input, list);
- 	set_bit(FF_RUMBLE, hidinput->input->ffbit);
++	__atomic_add(val, &S390_lowcore.preempt_count);
+ }
  
+ static inline void __preempt_count_sub(int val)
 -- 
 2.35.1
 
