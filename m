@@ -2,304 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8998AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 07:52:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E5D5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 07:53:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234202AbiE3Hww (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 03:52:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36198 "EHLO
+        id S234304AbiE3HxL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 03:53:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234256AbiE3Hw3 (ORCPT
+        with ESMTP id S234280AbiE3Hws (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 03:52:29 -0400
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A73842C679
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 00:51:55 -0700 (PDT)
-Received: by mail-pg1-x536.google.com with SMTP id j191so2230231pgd.3
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 00:51:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=zTIPIwKXUo1jntkJwVJ1sc6imAMuNPgvSBrYOaWp7QA=;
-        b=nG5qRDAwcXWO+X0Dki+i4YRhICkZTgizDnL8jGVt8i38gBcnMQ+PEzB+4S8f9bRmMM
-         /dr5aZuC15y7PfpyTFr/vkOdIFmHF/lvgEW6BcSF+u0sQfJ0Jr1riyfq7eyAXMqBMriU
-         gpaWesos7gIbjD/4ebYzpph8ntcaNrvYk6ZsIs+O9X8LLNZnEwvhBciiUHcFWbUkepH6
-         f7uQXVabUjxGAqexFEeMZtu0mn+ShivhUM3cH96KyBk8JbMdL6sAPc5rpchNyBeAr4vu
-         mkiOhXkDrR99zKdVBXqW1XnPc4KPjTH5VGTiyNXtRA+pl7QVsUAJzg1OYerfzLi4ttKY
-         WPsA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=zTIPIwKXUo1jntkJwVJ1sc6imAMuNPgvSBrYOaWp7QA=;
-        b=F2OMBh+fXFFeEBMnWLItfgprpPX5R9ZGmEdMWPS/l0cUkT8xo2tagjnnAdS5PltxLS
-         vVuAqmXr1hxpErD/02Zh+fRUzR2D38ZtfNtmXauiSVBc4GwvoAnLV5TU8/lNJJdxbtyN
-         aKiwkdEZcalve32Z98ugseM8FLh0m9tw+2vNv8o1GI/BBzyQcTQ6bukbYibv0A56ehAl
-         Ivoyw5SHlZbuDi+/PpOLBKYQA1SKRLwYLCo2fXuj06Tke5hjPJ/chm+ATN2msoMH1SqQ
-         JK/0xHdZ2Gcwg6cVpgmSYoepllTjnNYRyMlxSesd0lCNI1kGsJx8cTzigjfkd+h7dC+d
-         akdQ==
-X-Gm-Message-State: AOAM531MyYt8pbB/85435nvKByo/5eryzlfyIeOhB7bV3lURtURfu5qk
-        +lil5OsF9v9g9+MEgG2UT+zIpw==
-X-Google-Smtp-Source: ABdhPJwuVWp+MeKG8ZENJf/0D824rv/vfRXylHNl8RsBcRIKzT3qmI+YmeK9lvxmKvP3eliznaQo/w==
-X-Received: by 2002:aa7:8094:0:b0:505:b544:d1ca with SMTP id v20-20020aa78094000000b00505b544d1camr56072290pff.26.1653897114489;
-        Mon, 30 May 2022 00:51:54 -0700 (PDT)
-Received: from FVFYT0MHHV2J.bytedance.net ([2408:8207:18da:2310:2071:e13a:8aa:cacf])
-        by smtp.gmail.com with ESMTPSA id a23-20020a170902b59700b001616c3bd5c2sm8421381pls.162.2022.05.30.00.51.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 May 2022 00:51:54 -0700 (PDT)
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     hannes@cmpxchg.org, mhocko@kernel.org, roman.gushchin@linux.dev,
-        shakeelb@google.com, akpm@linux-foundation.org
-Cc:     cgroups@vger.kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, duanxiongchun@bytedance.com,
-        longman@redhat.com, Muchun Song <songmuchun@bytedance.com>
-Subject: [PATCH v5 11/11] mm: lru: use lruvec lock to serialize memcg changes
-Date:   Mon, 30 May 2022 15:49:19 +0800
-Message-Id: <20220530074919.46352-12-songmuchun@bytedance.com>
-X-Mailer: git-send-email 2.32.1 (Apple Git-133)
-In-Reply-To: <20220530074919.46352-1-songmuchun@bytedance.com>
-References: <20220530074919.46352-1-songmuchun@bytedance.com>
+        Mon, 30 May 2022 03:52:48 -0400
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A22639B9E;
+        Mon, 30 May 2022 00:52:05 -0700 (PDT)
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 24U7q00J053169;
+        Mon, 30 May 2022 02:52:00 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1653897120;
+        bh=GOkPamMIZ3jld+xujzsh/azHiUlDUfOHBpiekpCg6Dw=;
+        h=Date:From:To:CC:Subject:References:In-Reply-To;
+        b=vn8s/5WsQEQcXZulxrJBn4tgSQLi4jjCXGJaTY4lyA49xfx4bqh6Jiw+lKECDBe7F
+         wFshlawKO+bSQ/NGuVBCMaTw6nYEKeM4NyEs2uqw4g8PdrAbC5qo0R+xiVoKFdD0cr
+         zq7CaDWdjRM3CtsoZWDGNGtiSvcoOn4nKnPXYRHE=
+Received: from DFLE111.ent.ti.com (dfle111.ent.ti.com [10.64.6.32])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 24U7q06q074500
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 30 May 2022 02:52:00 -0500
+Received: from DFLE103.ent.ti.com (10.64.6.24) by DFLE111.ent.ti.com
+ (10.64.6.32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Mon, 30
+ May 2022 02:52:00 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE103.ent.ti.com
+ (10.64.6.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Mon, 30 May 2022 02:52:00 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 24U7pxvU054752;
+        Mon, 30 May 2022 02:51:59 -0500
+Date:   Mon, 30 May 2022 13:21:58 +0530
+From:   Rahul T R <r-ravikumar@ti.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+CC:     <robh+dt@kernel.org>, <nm@ti.com>, <vigneshr@ti.com>,
+        <kishon@ti.com>, <krzysztof.kozlowski+dt@linaro.org>,
+        <lee.jones@linaro.org>, <rogerq@kernel.org>,
+        <devicetree@vger.kernel.org>, <kristo@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <s-anna@ti.com>
+Subject: Re: [PATCH v2 1/3] dt-bindings: mfd: ti,j721e-system-controller: Add
+ clock property
+Message-ID: <20220530075157.43rbptnpgqqtbdho@uda0490373>
+References: <20220530073429.17514-1-r-ravikumar@ti.com>
+ <20220530073429.17514-2-r-ravikumar@ti.com>
+ <6c14aa95-00c4-960b-d71a-3967096f19cb@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <6c14aa95-00c4-960b-d71a-3967096f19cb@linaro.org>
+User-Agent: NeoMutt/20171215
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As described by commit fc574c23558c ("mm/swap.c: serialize memcg
-changes in pagevec_lru_move_fn"), TestClearPageLRU() aims to
-serialize mem_cgroup_move_account() during pagevec_lru_move_fn().
-Now folio_lruvec_lock*() has the ability to detect whether page
-memcg has been changed. So we can use lruvec lock to serialize
-mem_cgroup_move_account() during pagevec_lru_move_fn(). This
-change is a partial revert of the commit fc574c23558c ("mm/swap.c:
-serialize memcg changes in pagevec_lru_move_fn").
+On 09:37-20220530, Krzysztof Kozlowski wrote:
+> On 30/05/2022 09:34, Rahul T R wrote:
+> > Add a pattern property for clock, also update the example with
+> > a clock node
+> > 
+> > Signed-off-by: Rahul T R <r-ravikumar@ti.com>
+> > ---
+> >  .../bindings/mfd/ti,j721e-system-controller.yaml       | 10 ++++++++++
+> >  1 file changed, 10 insertions(+)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/mfd/ti,j721e-system-controller.yaml b/Documentation/devicetree/bindings/mfd/ti,j721e-system-controller.yaml
+> > index fa86691ebf16..290b22cab52f 100644
+> > --- a/Documentation/devicetree/bindings/mfd/ti,j721e-system-controller.yaml
+> > +++ b/Documentation/devicetree/bindings/mfd/ti,j721e-system-controller.yaml
+> > @@ -48,6 +48,10 @@ patternProperties:
+> >      description:
+> >        This is the SERDES lane control mux.
+> >  
+> > +  "^clock@[0-9a-f]+$":
+> > +    type: object
+> > +    $ref: /schemas/clock/ti,am654-ehrpwm-tbclk.yaml#
+> > +
+> 
+> Thanks for the changes, but the question what is this remains. Clock
+> consumers use "clocks" property. Is this a clock controller (provider)
+> instead?
+> 
+> Best regards,
+> Krzysztof
 
-And pagevec_lru_move_fn() is more hot compare with
-mem_cgroup_move_account(), removing an atomic operation would be
-an optimization. Also this change would not dirty cacheline for a
-page which isn't on the LRU.
+Hi Krzysztof,
 
-Signed-off-by: Muchun Song <songmuchun@bytedance.com>
----
- mm/memcontrol.c | 34 ++++++++++++++++++++++++++++++++++
- mm/swap.c       | 45 ++++++++++++++-------------------------------
- mm/vmscan.c     |  9 ++++-----
- 3 files changed, 52 insertions(+), 36 deletions(-)
+Yes, this is a clock provider node, I will add the
+correct description and will also update the
+example with a clock consumer node that is using
+a clock from this
 
-diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-index f4db3cb2aedc..3a0f3838f02d 100644
---- a/mm/memcontrol.c
-+++ b/mm/memcontrol.c
-@@ -1333,10 +1333,39 @@ struct lruvec *folio_lruvec_lock(struct folio *folio)
- 	lruvec = folio_lruvec(folio);
- 	spin_lock(&lruvec->lru_lock);
- 
-+	/*
-+	 * The memcg of the page can be changed by any the following routines:
-+	 *
-+	 * 1) mem_cgroup_move_account() or
-+	 * 2) memcg_reparent_objcgs()
-+	 *
-+	 * The possible bad scenario would like:
-+	 *
-+	 * CPU0:                CPU1:                CPU2:
-+	 * lruvec = folio_lruvec()
-+	 *
-+	 *                      if (!isolate_lru_page())
-+	 *                              mem_cgroup_move_account()
-+	 *
-+	 *                                           memcg_reparent_objcgs()
-+	 *
-+	 * spin_lock(&lruvec->lru_lock)
-+	 *                ^^^^^^
-+	 *              wrong lock
-+	 *
-+	 * Either CPU1 or CPU2 can change page memcg, so we need to check
-+	 * whether page memcg is changed, if so, we should reacquire the
-+	 * new lruvec lock.
-+	 */
- 	if (unlikely(lruvec_memcg(lruvec) != folio_memcg(folio))) {
- 		spin_unlock(&lruvec->lru_lock);
- 		goto retry;
- 	}
-+
-+	/*
-+	 * When we reach here, it means that the folio_memcg(folio) is
-+	 * stable.
-+	 */
- 	rcu_read_unlock();
- 
- 	return lruvec;
-@@ -1364,6 +1393,7 @@ struct lruvec *folio_lruvec_lock_irq(struct folio *folio)
- 	lruvec = folio_lruvec(folio);
- 	spin_lock_irq(&lruvec->lru_lock);
- 
-+	/* See the comments in folio_lruvec_lock(). */
- 	if (unlikely(lruvec_memcg(lruvec) != folio_memcg(folio))) {
- 		spin_unlock_irq(&lruvec->lru_lock);
- 		goto retry;
-@@ -1397,6 +1427,7 @@ struct lruvec *folio_lruvec_lock_irqsave(struct folio *folio,
- 	lruvec = folio_lruvec(folio);
- 	spin_lock_irqsave(&lruvec->lru_lock, *flags);
- 
-+	/* See the comments in folio_lruvec_lock(). */
- 	if (unlikely(lruvec_memcg(lruvec) != folio_memcg(folio))) {
- 		spin_unlock_irqrestore(&lruvec->lru_lock, *flags);
- 		goto retry;
-@@ -5738,7 +5769,10 @@ static int mem_cgroup_move_account(struct page *page,
- 	obj_cgroup_put(rcu_dereference(from->objcg));
- 	rcu_read_unlock();
- 
-+	/* See the comments in folio_lruvec_lock(). */
-+	spin_lock(&from_vec->lru_lock);
- 	folio->memcg_data = (unsigned long)rcu_access_pointer(to->objcg);
-+	spin_unlock(&from_vec->lru_lock);
- 
- 	__folio_memcg_unlock(from);
- 
-diff --git a/mm/swap.c b/mm/swap.c
-index 6cea469b6ff2..1b893c157bd1 100644
---- a/mm/swap.c
-+++ b/mm/swap.c
-@@ -199,14 +199,8 @@ static void pagevec_lru_move_fn(struct pagevec *pvec,
- 		struct page *page = pvec->pages[i];
- 		struct folio *folio = page_folio(page);
- 
--		/* block memcg migration during page moving between lru */
--		if (!TestClearPageLRU(page))
--			continue;
--
- 		lruvec = folio_lruvec_relock_irqsave(folio, lruvec, &flags);
- 		(*move_fn)(page, lruvec);
--
--		SetPageLRU(page);
- 	}
- 	if (lruvec)
- 		lruvec_unlock_irqrestore(lruvec, flags);
-@@ -218,7 +212,7 @@ static void pagevec_move_tail_fn(struct page *page, struct lruvec *lruvec)
- {
- 	struct folio *folio = page_folio(page);
- 
--	if (!folio_test_unevictable(folio)) {
-+	if (folio_test_lru(folio) && !folio_test_unevictable(folio)) {
- 		lruvec_del_folio(lruvec, folio);
- 		folio_clear_active(folio);
- 		lruvec_add_folio_tail(lruvec, folio);
-@@ -314,7 +308,8 @@ void lru_note_cost_folio(struct folio *folio)
- 
- static void __folio_activate(struct folio *folio, struct lruvec *lruvec)
- {
--	if (!folio_test_active(folio) && !folio_test_unevictable(folio)) {
-+	if (folio_test_lru(folio) && !folio_test_active(folio) &&
-+	    !folio_test_unevictable(folio)) {
- 		long nr_pages = folio_nr_pages(folio);
- 
- 		lruvec_del_folio(lruvec, folio);
-@@ -371,12 +366,9 @@ static void folio_activate(struct folio *folio)
- {
- 	struct lruvec *lruvec;
- 
--	if (folio_test_clear_lru(folio)) {
--		lruvec = folio_lruvec_lock_irq(folio);
--		__folio_activate(folio, lruvec);
--		lruvec_unlock_irq(lruvec);
--		folio_set_lru(folio);
--	}
-+	lruvec = folio_lruvec_lock_irq(folio);
-+	__folio_activate(folio, lruvec);
-+	lruvec_unlock_irq(lruvec);
- }
- #endif
- 
-@@ -519,6 +511,9 @@ static void lru_deactivate_file_fn(struct page *page, struct lruvec *lruvec)
- 	bool active = PageActive(page);
- 	int nr_pages = thp_nr_pages(page);
- 
-+	if (!PageLRU(page))
-+		return;
-+
- 	if (PageUnevictable(page))
- 		return;
- 
-@@ -556,7 +551,7 @@ static void lru_deactivate_file_fn(struct page *page, struct lruvec *lruvec)
- 
- static void lru_deactivate_fn(struct page *page, struct lruvec *lruvec)
- {
--	if (PageActive(page) && !PageUnevictable(page)) {
-+	if (PageLRU(page) && PageActive(page) && !PageUnevictable(page)) {
- 		int nr_pages = thp_nr_pages(page);
- 
- 		del_page_from_lru_list(page, lruvec);
-@@ -572,7 +567,7 @@ static void lru_deactivate_fn(struct page *page, struct lruvec *lruvec)
- 
- static void lru_lazyfree_fn(struct page *page, struct lruvec *lruvec)
- {
--	if (PageAnon(page) && PageSwapBacked(page) &&
-+	if (PageLRU(page) && PageAnon(page) && PageSwapBacked(page) &&
- 	    !PageSwapCache(page) && !PageUnevictable(page)) {
- 		int nr_pages = thp_nr_pages(page);
- 
-@@ -1007,8 +1002,9 @@ void __pagevec_release(struct pagevec *pvec)
- }
- EXPORT_SYMBOL(__pagevec_release);
- 
--static void __pagevec_lru_add_fn(struct folio *folio, struct lruvec *lruvec)
-+static void __pagevec_lru_add_fn(struct page *page, struct lruvec *lruvec)
- {
-+	struct folio *folio = page_folio(page);
- 	int was_unevictable = folio_test_clear_unevictable(folio);
- 	long nr_pages = folio_nr_pages(folio);
- 
-@@ -1054,20 +1050,7 @@ static void __pagevec_lru_add_fn(struct folio *folio, struct lruvec *lruvec)
-  */
- void __pagevec_lru_add(struct pagevec *pvec)
- {
--	int i;
--	struct lruvec *lruvec = NULL;
--	unsigned long flags = 0;
--
--	for (i = 0; i < pagevec_count(pvec); i++) {
--		struct folio *folio = page_folio(pvec->pages[i]);
--
--		lruvec = folio_lruvec_relock_irqsave(folio, lruvec, &flags);
--		__pagevec_lru_add_fn(folio, lruvec);
--	}
--	if (lruvec)
--		lruvec_unlock_irqrestore(lruvec, flags);
--	release_pages(pvec->pages, pvec->nr);
--	pagevec_reinit(pvec);
-+	pagevec_lru_move_fn(pvec, __pagevec_lru_add_fn);
- }
- 
- /**
-diff --git a/mm/vmscan.c b/mm/vmscan.c
-index 51853d6df7b4..c591d071a598 100644
---- a/mm/vmscan.c
-+++ b/mm/vmscan.c
-@@ -4789,18 +4789,17 @@ void check_move_unevictable_pages(struct pagevec *pvec)
- 		nr_pages = thp_nr_pages(page);
- 		pgscanned += nr_pages;
- 
--		/* block memcg migration during page moving between lru */
--		if (!TestClearPageLRU(page))
-+		lruvec = folio_lruvec_relock_irq(folio, lruvec);
-+
-+		if (!PageLRU(page) || !PageUnevictable(page))
- 			continue;
- 
--		lruvec = folio_lruvec_relock_irq(folio, lruvec);
--		if (page_evictable(page) && PageUnevictable(page)) {
-+		if (page_evictable(page)) {
- 			del_page_from_lru_list(page, lruvec);
- 			ClearPageUnevictable(page);
- 			add_page_to_lru_list(page, lruvec);
- 			pgrescued += nr_pages;
- 		}
--		SetPageLRU(page);
- 	}
- 
- 	if (lruvec) {
--- 
-2.11.0
+That should be enough right?
 
+Regards
+Rahul T R
