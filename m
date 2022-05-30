@@ -2,100 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 775E3C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 07:37:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 594AFC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 07:37:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233581AbiE3HhU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 03:37:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39808 "EHLO
+        id S233589AbiE3Hh1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 03:37:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233524AbiE3HfC (ORCPT
+        with ESMTP id S233520AbiE3HfB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 03:35:02 -0400
-Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10D4B71D8D;
-        Mon, 30 May 2022 00:34:51 -0700 (PDT)
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 24U7Ydd0048602;
-        Mon, 30 May 2022 02:34:39 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1653896079;
-        bh=vW2CL6yGnFeOAPCdDkgMBGMVlQBO8ZyFjEYd7F6yJ5U=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=YQ8DRh97IL2a52mwlQ/9lYax3Aw8qe4qsyJxtNVLTe2jsrTPT91Vhlcs/mo0jLB1z
-         7VCxApiLvHaOyhR/YSgLPP7gsDrpmmEyRMV856BVD/SGpGUtG4OFjFqGpBpCB8y0Oq
-         Hoh9xdpHDnKKnYSpr+9dCeuZ3uKhQDd2Ett0HF3o=
-Received: from DFLE109.ent.ti.com (dfle109.ent.ti.com [10.64.6.30])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 24U7YdY1098419
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 30 May 2022 02:34:39 -0500
-Received: from DFLE109.ent.ti.com (10.64.6.30) by DFLE109.ent.ti.com
- (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Mon, 30
- May 2022 02:34:39 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE109.ent.ti.com
- (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Mon, 30 May 2022 02:34:39 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 24U7Yc4N098518;
-        Mon, 30 May 2022 02:34:38 -0500
-From:   Rahul T R <r-ravikumar@ti.com>
-To:     <robh+dt@kernel.org>, <nm@ti.com>, <vigneshr@ti.com>,
-        <kishon@ti.com>, <krzysztof.kozlowski+dt@linaro.org>
-CC:     <lee.jones@linaro.org>, <rogerq@kernel.org>,
-        <devicetree@vger.kernel.org>, <kristo@kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <s-anna@ti.com>,
-        Rahul T R <r-ravikumar@ti.com>
-Subject: [PATCH v2 1/3] dt-bindings: mfd: ti,j721e-system-controller: Add clock property
-Date:   Mon, 30 May 2022 13:04:27 +0530
-Message-ID: <20220530073429.17514-2-r-ravikumar@ti.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220530073429.17514-1-r-ravikumar@ti.com>
-References: <20220530073429.17514-1-r-ravikumar@ti.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+        Mon, 30 May 2022 03:35:01 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0968C72202
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 00:34:50 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id y13so19141813eje.2
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 00:34:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=i2FIUxMX07dIItmCTvQjDvu7n64mA3I16Cf2RtZUc9E=;
+        b=DLaTskUkWjAQizg06WRK4OQ5IjBDjAR1xNLKk6o5mJOCZgMi3CKiKiSgzNBJVktQOr
+         FJw6QDr48a4i+waCCeI2SgKfgtvDUkMC6OleUzscAXa2/SUKfk7G0jbv8OlPIeef5Lx4
+         G4uxf2YfIfNi7bdZJKJ5u+Dfe7MXdiUW3gDuWiO4zk8eRfYE9/++jJEd0m2x1a6+Vwmw
+         A85OWPBHmk/+4r/z9k70SjrjLLFZxd7gX45N3onexytP1A0RLt/8WTO6S6uWsMkCv/ji
+         jz0pRQE5tS9wJQfIrlFEmvUI36KgT8ggw+guxi8dCOiZwHazQYMb7FbPcEBrmInQzSxQ
+         O2Gg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=i2FIUxMX07dIItmCTvQjDvu7n64mA3I16Cf2RtZUc9E=;
+        b=n4Jhb9I1hq20ELDkEaFT0mU8/A+erPVCvsCCOzwb/0qauAPMk7BxCTtgSDSWs5Mhgw
+         bi4FysvmET2levOmCUXq5krUOIIzm/PIE+tAXpSawZMVhiSpqtNja+9qMxZe5W9rCx/t
+         Z2NoR5+RsLEA1mKd3IV9Skqob791h525AHYZ3yJqE6mA8GAWO+ch+/UT1AbsUSQjRQgs
+         4MU4orgdXG8OsK6w47p4LgaRnAQ71e/KD+j8Z8gEl5z1eaIrWW2+N24v8a5rEha7VD+q
+         Zq+BB1FLPzD/T86xTusMZjBdTyxOP2DgobZ+HdEH63YmQGK6SYu3OTSeI2JldYBAcLqQ
+         4gEQ==
+X-Gm-Message-State: AOAM531KVmmZpWbvZcWSZxdusm+F2MryIiwmgqQNUclmnxbM/zSuzSrh
+        mAUFX6SYE5APQBJSqERkLkjnsxfZdpR5Fg==
+X-Google-Smtp-Source: ABdhPJyOWCr+ry/+jm/PsYI8+iO7oAWa66QadSkDdE5Rnbhx/yj6CcTLuaoTqNzbRqVr9zN9/Cg1+A==
+X-Received: by 2002:a17:907:628c:b0:6ee:70cf:d59 with SMTP id nd12-20020a170907628c00b006ee70cf0d59mr48302537ejc.402.1653896088557;
+        Mon, 30 May 2022 00:34:48 -0700 (PDT)
+Received: from mbp-di-paolo.station (net-93-144-98-177.cust.dsl.teletu.it. [93.144.98.177])
+        by smtp.gmail.com with ESMTPSA id kv25-20020a17090778d900b006fea0532462sm3723498ejc.167.2022.05.30.00.34.47
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 30 May 2022 00:34:48 -0700 (PDT)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.11\))
+Subject: Re: [PATCH -next v3 0/6] multiple cleanup patches for bfq
+From:   Paolo Valente <paolo.valente@linaro.org>
+In-Reply-To: <20220528095958.270455-1-yukuai3@huawei.com>
+Date:   Mon, 30 May 2022 09:34:46 +0200
+Cc:     Jens Axboe <axboe@kernel.dk>, Tejun Heo <tj@kernel.org>,
+        linux-block <linux-block@vger.kernel.org>,
+        cgroups@vger.kernel.org, linux-kernel@vger.kernel.org,
+        yi.zhang@huawei.com
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <5BC943C7-3AA4-4CED-9B11-15DA969DA852@linaro.org>
+References: <20220528095958.270455-1-yukuai3@huawei.com>
+To:     Yu Kuai <yukuai3@huawei.com>
+X-Mailer: Apple Mail (2.3445.104.11)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a pattern property for clock, also update the example with
-a clock node
 
-Signed-off-by: Rahul T R <r-ravikumar@ti.com>
----
- .../bindings/mfd/ti,j721e-system-controller.yaml       | 10 ++++++++++
- 1 file changed, 10 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/mfd/ti,j721e-system-controller.yaml b/Documentation/devicetree/bindings/mfd/ti,j721e-system-controller.yaml
-index fa86691ebf16..290b22cab52f 100644
---- a/Documentation/devicetree/bindings/mfd/ti,j721e-system-controller.yaml
-+++ b/Documentation/devicetree/bindings/mfd/ti,j721e-system-controller.yaml
-@@ -48,6 +48,10 @@ patternProperties:
-     description:
-       This is the SERDES lane control mux.
- 
-+  "^clock@[0-9a-f]+$":
-+    type: object
-+    $ref: /schemas/clock/ti,am654-ehrpwm-tbclk.yaml#
-+
- required:
-   - compatible
-   - reg
-@@ -79,5 +83,11 @@ examples:
-                 <0x40c0 0x3>, <0x40c4 0x3>, <0x40c8 0x3>, <0x40cc 0x3>;
-                 /* SERDES4 lane0/1/2/3 select */
-         };
-+
-+        clock@4140 {
-+            compatible = "ti,am654-ehrpwm-tbclk", "syscon";
-+            reg = <0x4140 0x18>;
-+            #clock-cells = <1>;
-+        };
-     };
- ...
--- 
-2.17.1
+> Il giorno 28 mag 2022, alle ore 11:59, Yu Kuai <yukuai3@huawei.com> ha =
+scritto:
+>=20
+> Resend just in case v2 end up in spam (for Paolo).
+>=20
+> Changes in v2:
+> - add missing blank line in patch 1.
+> - remove patch 7,8, since they are wrong.
+> - add reviewed-by tag
+>=20
+> There are no functional changes in this patchset, just some places
+> that I think can be improved during code review.
+>=20
+
+Thank you for this cleanup!
+
+Acked-by: Paolo Valente <paolo.valente@unimore.it>
+
+> Previous version:
+> v1: =
+https://lore.kernel.org/all/20220514090522.1669270-1-yukuai3@huawei.com/
+>=20
+> Yu Kuai (6):
+>  block, bfq: cleanup bfq_weights_tree add/remove apis
+>  block, bfq: cleanup __bfq_weights_tree_remove()
+>  block, bfq: factor out code to update 'active_entities'
+>  block, bfq: don't declare 'bfqd' as type 'void *' in bfq_group
+>  block, bfq: cleanup bfq_activate_requeue_entity()
+>  block, bfq: remove dead code for updating 'rq_in_driver'
+>=20
+> block/bfq-cgroup.c  |  2 +-
+> block/bfq-iosched.c | 38 +++----------------
+> block/bfq-iosched.h | 11 ++----
+> block/bfq-wf2q.c    | 91 ++++++++++++++++++++-------------------------
+> 4 files changed, 51 insertions(+), 91 deletions(-)
+>=20
+> --=20
+> 2.31.1
+>=20
 
