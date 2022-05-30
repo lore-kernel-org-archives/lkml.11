@@ -2,114 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C7EDC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 08:54:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7229AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 08:55:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234583AbiE3Iyg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 04:54:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38134 "EHLO
+        id S234575AbiE3IyO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 04:54:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234574AbiE3Ixx (ORCPT
+        with ESMTP id S234326AbiE3Ixz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 04:53:53 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F5AF7CB70
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 01:53:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653900783; x=1685436783;
-  h=subject:to:cc:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=F1zZaD9pmXbd3mYt25x7qc88DmH1k0luONBgEixrLZE=;
-  b=YXHtE15hM8nfbhy+kzqeAaGZKTMpmEj15ghxNZNLLPCZUo1RiF7StQkh
-   KQGAsTdi6ffBOws/1cKAsIveUigb8Yr5KZDnvEG1EI/TyeOCbV2q/Juo6
-   fy9Dh/jOrVVgnLec5ZLGfMEf6zsCiy+gDuNkWtREHj9NiH/+da2oAHOwz
-   wKIPv++OOnZlzTvQv+lLmJ58k29G2oqPSrVFefBeVsno3t2B3+SMDuIeb
-   mAKO3igQ0cXIqL5WA63YnFxZV5lXcjuS8oRBAHU19LVP1lR2+xUP46/60
-   taWiaU0FC5aTDjqyfMGzCBbftY+uLXqQwy+I+wNeYl+9lc+DVl7ktM0+b
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10362"; a="273756845"
-X-IronPort-AV: E=Sophos;i="5.91,262,1647327600"; 
-   d="scan'208";a="273756845"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 May 2022 01:52:24 -0700
-X-IronPort-AV: E=Sophos;i="5.91,262,1647327600"; 
-   d="scan'208";a="605086342"
-Received: from rongch2-mobl.ccr.corp.intel.com (HELO [10.255.31.170]) ([10.255.31.170])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 May 2022 01:52:22 -0700
-Subject: Re: [kbuild-all] Re: llvm-objcopy: error: invalid output format:
- 'elf64-s390'
-To:     Nathan Chancellor <nathan@kernel.org>,
-        kernel test robot <lkp@intel.com>
-Cc:     Heiko Carstens <hca@linux.ibm.com>, llvm@lists.linux.dev,
-        kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-References: <202205290045.gOvUOkt3-lkp@intel.com>
- <YpJMIz/QjDW5IQGr@dev-arch.thelio-3990X>
-From:   "Chen, Rong A" <rong.a.chen@intel.com>
-Message-ID: <fd819888-844f-1a76-fee2-02e89faee090@intel.com>
-Date:   Mon, 30 May 2022 16:52:20 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.12.0
+        Mon, 30 May 2022 04:53:55 -0400
+Received: from sonic309-19.consmr.mail.sg3.yahoo.com (sonic309-19.consmr.mail.sg3.yahoo.com [106.10.244.82])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9B1613F65
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 01:53:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com.tw; s=s2048; t=1653900783; bh=pFufFWe4/hvmh/UF2IjAYcVzbttmJoCx8ZLbp3kR0E8=; h=From:To:Cc:Subject:Date:In-Reply-To:References:From:Subject:Reply-To; b=eOB+jbY7mNihFbZ5/On+yfKgSuG1VMcMwFhQ3qpuhtoMaqcmbPmy7iB39gLsehWDriJqNcPoZ7WQdKIrc4EYi+JiXG7qtfLGihPmW6e1srf4I/st+zIX8zjXDW07cAax1Cc9RvmMyrJF9+2+zqYQ7ltGF2TtVL+qBbAvNyeMsnMLdyqXjYycKE/dxio+JZ4QGWRSvQipPMON5bwDeegyAMB1Njtu7AEz1HCf6PRCdmktnCinnF2/fD5N9n02IO6Q5xO+pZEOCFxFE1klj9nAydcBHCVV9I1IrdyJhOBDhoOa04CdhUwvO7PcS5OMWdzvQQthooyVywE2NIaY0ZpGiw==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1653900783; bh=1S0ZbSLQkydb6m6LTIm9wp0V93qCMYioO6sU5Yiky8E=; h=X-Sonic-MF:From:To:Subject:Date:From:Subject; b=RM1ebcBAIxNjlBxlBMjv70evPklI3W1lw05x7OXoz/8dtG5Euwvmlvz1wvgYH9GQFTdK1eNDpk0lDT/LFrA4KEbda/IAGo0DHkIKoF4Shotj9g0m2eBG7TicLriC1zcVTybQOPyKXBGSprbza5tk2Mm7DPoW3nn/tc/6pYikM/35auP2qNx7ajf2/TJXueMd0zjMp9EIzDIXLwTgdq52yC6RyliRu7/UiLCEKuggCYDTHn6bzGM0ttiS4pilVOd3XAoNt50oZuHJ0mBf8X6tvX7Vjky9IyAlg0eQLXGNzUcT2QfrB9tKRm2UzVZNYVAl24TnK5mOGlw1bIOoodQBNg==
+X-YMail-OSG: Ax_qbXwVM1kxaLdMT7dNlrz1TsWxcbn33GLBeRUGGmDgvw4L.9byX.2rpmdJcuG
+ S_TOkG6HGYzRGyE9E7_mJ3PwzYtuE7SRZavKy8T2xMQvku53aBZdEZPR4NEJfblmlREOONdiIuxq
+ r8eg0sent1._fJbctl1iBa_j2_xuEtv59G.QbuUz1AYLGvC2Uvcgb8jysUdjzEFhb4HU0lx1Zn9N
+ 72aZ4EN9KheYjDDTqwYk4XMnmT36n.hy5Dyj.qTGxEoC11SWTUZ_DUabylCKmbaZl1tAx08S0EI0
+ USd93m3RsqKTbuek9DPg4pS4zi9CsIDTGVy_c9w6rx_OwWTiJEBURpaQ5ytw7YOwuOaE19LpR9Gp
+ ILEMk7gllXN1TAAnUyuJJ9.lP6SDUxtKKLkRj8Rqt7ZOajFRFoDdK7i.4PEAZ3qIGcrGrCNsf1oG
+ 6oJ08UO4ewEUr.ROgyVp4Mfc1mzcsnVM8rYl5409GvPZDtwids0vusa1722oJt9gh82QSdYskBxU
+ vzf604ejde2xUgbSVXCPtRU8aLV2Ze8qbH6Xbz9iLvrnaS3A0Fr5NG14ek99z.89D.5lnFL95zFm
+ 5ye4H1stkra6CrabAGkxHysVEZ3WYRREyaaPvn.dTwyH1VRhNQ8dJPikJTB3pzKE2i90f6FihWZg
+ PqzZTG1m3GACVHg1FgnF.ChVf805mrsjArM2cHHFeV9YwHnajcuzPaGlreNcEOW12GBJaFESLCKt
+ PCVWuCkDEksY3JvRS70oaDwyBw.8Ep7R9kMuD8bRlGR5mI7eSvWme.A5qsU8AdKU4b3cb6jorsPD
+ aTQ2e0mBqKbZDhBFEmazbwIw8NLMerMfR1JJ0nrH2WmZ0CjaP3T53LuBtxTmWcPRmzJswY7t7pJk
+ ZxxpPNjJJTGF2VT7NwbH29vH8rU4tDkDAEW7zhPMaudg6pjqPMCIC8HsyffaMdKSypJzOcJ3Sek6
+ YXhHaT3YFyPv_EEb13_gaKD2XJ8VqNJdBbZ8h2yEUIXjKd9V2PMusGdUr4BNwFPrUCeqpBrCDBTO
+ At.82Ki_rezhpxYbTx.WM3q9xzX7wET8rTCNOGTFXecfgQAj9q__JsM_7ZUyyd0LZ1xOEF_CKIXL
+ Mge0FR.KTrFM_ksrfjD1fy2hThz_9JBJXHVr2KYggbBfT9xHWkyWBHjyGP3f1PexFCXqiepWCLU0
+ 7aLt2zELGcQklPRPOqP1exMFSBHRD1f8eirSW1rtwrCohVLWK91DhVBqtOjIpfdngk0dZxASaZhf
+ JvT1KGrlmJgzLmScGmOueJkmyaiI0w.h06zxOMD82ZoBSNsAfnVE6PhLGaMeMPut0Exzqn5ha38v
+ DEXb0_YO6I6NR.XoANmlIBpvYKo6sEoLlryOFVxFqhiozRLMNeS1evcO6.45U_FL88K7wKQTw0wh
+ XUG5ryE9sOMCKWfXw6FB6mijutv1CRg5zQCtALtv5ElWPOWPBrUzk3uwTZ5wRPZIvk.AP0eKL0j3
+ Ma9P7E8awnL92jtrj7kdQZEfSokhf0LxjsyuTQCqvaWb9IdENGDtB4.jNglyzaU0MhAYMFsWzdW1
+ SXib.jf9GC8RpH33vggzudzx.eEEz6_4LQnFdqurOSREw9C4MrbhfKxUaJMBNrstm_Ae5C_lF61y
+ VDb71lkkE3JgISCbhgfpHSSuK5Z6M5lgWtlu7Yue_cQtIscCY38u5ujwTsUTJbPktWxOObmie6d6
+ WU1yqRXf3jhh4epArA3bVb8EPLCR9_7kY0LEhpQTXFxxiamE3JVD1q5qjEMgs.tGbgHX8uXD35Ke
+ AQxrEqTgJtiq5CyhEWRwcfBkK0_CNvv9hc2eyhzsNaJEe2QaYZLcumeaLuuPapUZimmoxLCiLS7f
+ 2W2VgMWurP_PbbiSk4NQ7nkLfyvv.BajPnZseJicE41Frr6SUVIEHh1GE2Oe.GEX0YcK9ait_dMr
+ yNu18BjfECU8b3oIyVnmUkUUERS6WEVzuEA62s__9SWJnTOp86itoK6rsj3N4YI4YHEeMF1moWLD
+ rARGfGSb5Y4OmoFN7omeYnbEVLmjm8ffwCRGXVzkZWGIfhhDoNxK4WzaXKum1A3gkEAGDi7t55CY
+ guj2RWi_8POjkkoMVLi5rbpjSmnxLFOrkHTlY6.MQ2ZgMZ.dVUKxYoZZAEXaJEiQH5pDP76uHM76
+ 5jlH2PLGAx_PDorn6LFyHSO13kEZsul0whvBox0ZhldtXKX.aScYLmREl1GKpr9fcPi.g8ZnomNy
+ MPzfxF9lS6C88pFYrCzyit_IT.hjff9cBOYV4eeCI0qWrZVELt8ujxZtzW0maGQKNeqM8wZN9oey
+ GykZCfg--
+X-Sonic-MF: <ae40515@yahoo.com.tw>
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic309.consmr.mail.sg3.yahoo.com with HTTP; Mon, 30 May 2022 08:53:03 +0000
+Received: by hermes--canary-production-sg3-5f7658c994-snt2x (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID 4bfcb23823043c6a9188dedc10ad49b5;
+          Mon, 30 May 2022 08:53:00 +0000 (UTC)
+From:   Alec Su <ae40515@yahoo.com.tw>
+To:     agross@kernel.org, bjorn.andersson@linaro.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, sboyd@codeaurora.org
+Cc:     linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        phone-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht, y.oudjana@protonmail.com,
+        Alec Su <ae40515@yahoo.com.tw>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [RESEND PATCH v3 1/2] dt-bindings: arm: qcom: Document xiaomi,natrium board
+Date:   Mon, 30 May 2022 08:52:26 +0000
+Message-Id: <20220530085227.29264-2-ae40515@yahoo.com.tw>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220530085227.29264-1-ae40515@yahoo.com.tw>
+References: <20220530085227.29264-1-ae40515@yahoo.com.tw>
 MIME-Version: 1.0
-In-Reply-To: <YpJMIz/QjDW5IQGr@dev-arch.thelio-3990X>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Document Xiaomi Mi 5s Plus (xiaomi-natrium) smartphone which is based on
+Snapdragon 821 SoC.
 
+Signed-off-by: Alec Su <ae40515@yahoo.com.tw>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ Documentation/devicetree/bindings/arm/qcom.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-On 5/29/2022 12:21 AM, Nathan Chancellor wrote:
-> On Sun, May 29, 2022 at 12:04:48AM +0800, kernel test robot wrote:
->> Hi Heiko,
->>
->> FYI, the error/warning still remains.
->>
->> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
->> head:   9d004b2f4fea97cde123e7f1939b80e77bf2e695
->> commit: adda746629b4a3950f313bc645fa0e54daee871c s390/purgatory: workaround llvm's IAS limitations
->> date:   11 days ago
->> config: s390-randconfig-c005-20220527 (https://download.01.org/0day-ci/archive/20220529/202205290045.gOvUOkt3-lkp@intel.com/config)
->> compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 0fbe3f3f486e01448121f7931a4ca29fac1504ab)
->> reproduce (this is a W=1 build):
->>          wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->>          chmod +x ~/bin/make.cross
->>          # install s390 cross compiling tool for clang build
->>          # apt-get install binutils-s390x-linux-gnu
->>          # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=adda746629b4a3950f313bc645fa0e54daee871c
->>          git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
->>          git fetch --no-tags linus master
->>          git checkout adda746629b4a3950f313bc645fa0e54daee871c
->>          # save the config file
->>          mkdir build_dir && cp config build_dir/.config
->>          COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash
->>
->> If you fix the issue, kindly add following tag where applicable
->> Reported-by: kernel test robot <lkp@intel.com>
->>
->> All errors (new ones prefixed by >>):
->>
->>>> llvm-objcopy: error: invalid output format: 'elf64-s390'
-> 
-> This is expected, as llvm-objcopy needs support for s390:
-> https://github.com/ClangBuiltLinux/linux/issues/1530
-> 
-> Please use GNU objcopy for the time being by explicitly providing
-> OBJCOPY=${CROSS_COMPILE}objcopy to make.
+diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
+index 5c06d1bfc046..7ee852079d13 100644
+--- a/Documentation/devicetree/bindings/arm/qcom.yaml
++++ b/Documentation/devicetree/bindings/arm/qcom.yaml
+@@ -190,6 +190,7 @@ properties:
+               - sony,kagura-row
+               - sony,keyaki-row
+               - xiaomi,gemini
++              - xiaomi,natrium
+               - xiaomi,scorpio
+           - const: qcom,msm8996
+ 
+-- 
+2.35.3
 
-Hi Nathan,
-
-Thanks for your reminding, will update it.
-
-Best Regards,
-Rong Chen
-
-> 
-> Cheers,
-> Nathan
-> _______________________________________________
-> kbuild-all mailing list -- kbuild-all@lists.01.org
-> To unsubscribe send an email to kbuild-all-leave@lists.01.org
-> 
