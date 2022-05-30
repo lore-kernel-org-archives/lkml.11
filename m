@@ -2,225 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60BD1C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9A23C4167B
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:47:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241841AbiE3Op1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:45:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55746 "EHLO
+        id S242210AbiE3Opy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:45:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241519AbiE3OXR (ORCPT
+        with ESMTP id S241088AbiE3ORN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:23:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67CCF129EE2;
-        Mon, 30 May 2022 06:50:35 -0700 (PDT)
+        Mon, 30 May 2022 10:17:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 598A81109AB;
+        Mon, 30 May 2022 06:44:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C52A760EC3;
-        Mon, 30 May 2022 13:50:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E60E8C3411C;
-        Mon, 30 May 2022 13:49:59 +0000 (UTC)
-Message-ID: <c47b3218-069b-790e-8781-7b6d195ac8a7@xs4all.nl>
-Date:   Mon, 30 May 2022 15:49:57 +0200
+        by ams.source.kernel.org (Postfix) with ESMTPS id AB014B80D83;
+        Mon, 30 May 2022 13:44:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9336EC36AE3;
+        Mon, 30 May 2022 13:44:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653918245;
+        bh=HwjH44pS8984mw7Nh4lKusX1l8RJWXNJDc+xlPI7FLA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=vNdq4VSj4Keixr6kMEEGQHNG4BxbncWAY2yxA+UNYJVP4ED7GG7bnBkOH9mspcsmc
+         Ouu4LVQAywPuA2CkHNkfE8F95hzILIxTCeUYniaZFkvrEFo4PDcUICuOyV/JyCq0KG
+         5JYbktyd2wIIrLThCvEs6ZC+HY6ADVwTcBJWKx/oSdG+14fMMzn3CNtIpnyi6ETv7w
+         pxPcrS8jSBfabWQXb8YbeBCbRzij2ksnBpCdkYG/p+5NZU1vXFxeQPLR5VF0WXKoGh
+         JBxWIoKIl6UNLZwu2VIjIt7qYDUySc75meT3VmLwK0UTSPZ65y1XALPhLt4LHVe9In
+         bhJh+bSg0r8Cg==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Bob Peterson <rpeterso@redhat.com>,
+        Andreas Gruenbacher <agruenba@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, cluster-devel@redhat.com
+Subject: [PATCH AUTOSEL 5.15 109/109] gfs2: use i_lock spin_lock for inode qadata
+Date:   Mon, 30 May 2022 09:38:25 -0400
+Message-Id: <20220530133825.1933431-109-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220530133825.1933431-1-sashal@kernel.org>
+References: <20220530133825.1933431-1-sashal@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v6 11/17] media: uapi: Add
- V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS control
-Content-Language: en-US
-From:   Hans Verkuil <hverkuil@xs4all.nl>
-To:     =?UTF-8?Q?Jernej_=c5=a0krabec?= <jernej.skrabec@gmail.com>,
-        mchehab@kernel.org, ezequiel@vanguardiasur.com.ar,
-        p.zabel@pengutronix.de, gregkh@linuxfoundation.org,
-        mripard@kernel.org, paul.kocialkowski@bootlin.com, wens@csie.org,
-        samuel@sholland.org, nicolas.dufresne@collabora.com,
-        andrzej.p@collabora.com,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>
-Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rockchip@lists.infradead.org, linux-staging@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        kernel@collabora.com
-References: <20220527143134.3360174-1-benjamin.gaignard@collabora.com>
- <20220527143134.3360174-12-benjamin.gaignard@collabora.com>
- <2102641.irdbgypaU6@kista> <c639efc2-2089-359d-44c6-e9d92e8fd22e@xs4all.nl>
-In-Reply-To: <c639efc2-2089-359d-44c6-e9d92e8fd22e@xs4all.nl>
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 30/05/2022 11:18, Hans Verkuil wrote:
-> On 29/05/2022 08:40, Jernej Škrabec wrote:
->> Hi!
->>
->> This series looks very good and I plan to test it shortly on Cedrus, but I 
->> have one major concern below.
->>
->> Dne petek, 27. maj 2022 ob 16:31:28 CEST je Benjamin Gaignard napisal(a):
->>> The number of 'entry point offset' can be very variable.
->>> Instead of using a large static array define a v4l2 dynamic array
->>> of U32 (V4L2_CTRL_TYPE_U32).
->>> The number of entry point offsets is reported by the elems field
->>> and in struct v4l2_ctrl_hevc_slice_params.num_entry_point_offsets
->>> field.
->>
->> Slice control by itself is variable length array, so you would actually need 
->> 2D variable array for entry points which is not supported. However, easy 
->> workaround for that is to flatten 2D array to 1D and either have another slice 
->> control field which would tell first entry point index for convenience or let 
->> driver calculate it by adding up all num_entry_point_offsets of previous 
->> slices.
->>
->> Hans, what do you think?
-> 
-> If I would support 2D variable array sizes, wouldn't that be more elegant?
-> 
-> The current implementation doesn't support that, but as the commit log for
-> patch 1/17 says:
-> 
-> "Currently dynamically sized arrays are limited to one dimensional arrays,
-> but that might change in the future if there is a need for it."
-> 
-> Let me know if you agree, and I'll try to implement this. It's been a while
-> since I last looked at this, so I'm not sure how much work it is, but it is
-> probably worth a shot.
+From: Bob Peterson <rpeterso@redhat.com>
 
-Digging more into this made me realize that this doesn't actually help for this
-particular case.
+[ Upstream commit 5fcff61eea9efd1f4b60e89d2d686b5feaea100f ]
 
-I would lean towards your second suggestion of adding up all num_entry_point_offsets
-of previous slices.
+Before this patch, functions gfs2_qa_get and _put used the i_rw_mutex to
+prevent simultaneous access to its i_qadata. But i_rw_mutex is now used
+for many other things, including iomap_begin and end, which causes a
+conflict according to lockdep. We cannot just remove the lock since
+simultaneous opens (gfs2_open -> gfs2_open_common -> gfs2_qa_get) can
+then stomp on each others values for i_qadata.
 
-Regards,
+This patch solves the conflict by using the i_lock spin_lock in the inode
+to prevent simultaneous access.
 
-	Hans
+Signed-off-by: Bob Peterson <rpeterso@redhat.com>
+Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ fs/gfs2/quota.c | 32 ++++++++++++++++++++------------
+ 1 file changed, 20 insertions(+), 12 deletions(-)
 
-> 
-> Regards,
-> 
-> 	Hans
-> 
->>
->> Note, it seems that H265 decoding on Cedrus still works without entry points, 
->> so this problem can be solved later. I'm not sure what we lose with that but 
->> it was suggested that this could influence speed or error resilience or both. 
->> However, I think we're close to solve it, so I'd like to do that now.
->>
->> Best regards,
->> Jernej
->>
->>>
->>> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
->>> ---
->>>  .../userspace-api/media/v4l/ext-ctrls-codec.rst       | 11 +++++++++++
->>>  drivers/media/v4l2-core/v4l2-ctrls-defs.c             |  5 +++++
->>>  include/media/hevc-ctrls.h                            |  5 ++++-
->>>  3 files changed, 20 insertions(+), 1 deletion(-)
->>>
->>> diff --git a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst b/
->> Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
->>> index 0796b1563daa..05228e280f66 100644
->>> --- a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
->>> +++ b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
->>> @@ -3010,6 +3010,9 @@ enum v4l2_mpeg_video_hevc_size_of_length_field -
->>>      * - __u32
->>>        - ``data_bit_offset``
->>>        - Offset (in bits) to the video data in the current slice data.
->>> +    * - __u32
->>> +      - ``num_entry_point_offsets``
->>> +      - Specifies the number of entry point offset syntax elements in the 
->> slice header.
->>>      * - __u8
->>>        - ``nal_unit_type``
->>>        - Specifies the coding type of the slice (B, P or I).
->>> @@ -3150,6 +3153,14 @@ enum v4l2_mpeg_video_hevc_size_of_length_field -
->>>  
->>>      \normalsize
->>>  
->>> +``V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS (integer)``
->>> +    Specifies entry point offsets in bytes.
->>> +    This control is a dynamically sized array. The number of entry point
->>> +    offsets is reported by the ``elems`` field.
->>> +    This bitstream parameter is defined according to :ref:`hevc`.
->>> +    They are described in section 7.4.7.1 "General slice segment header
->>> +    semantics" of the specification.
->>> +
->>>  ``V4L2_CID_STATELESS_HEVC_SCALING_MATRIX (struct)``
->>>      Specifies the HEVC scaling matrix parameters used for the scaling 
->> process
->>>      for transform coefficients.
->>> diff --git a/drivers/media/v4l2-core/v4l2-ctrls-defs.c b/drivers/media/v4l2-
->> core/v4l2-ctrls-defs.c
->>> index d594efbcbb93..e22921e7ea61 100644
->>> --- a/drivers/media/v4l2-core/v4l2-ctrls-defs.c
->>> +++ b/drivers/media/v4l2-core/v4l2-ctrls-defs.c
->>> @@ -1188,6 +1188,7 @@ const char *v4l2_ctrl_get_name(u32 id)
->>>  	case V4L2_CID_STATELESS_HEVC_DECODE_PARAMS:		return 
->> "HEVC Decode Parameters";
->>>  	case V4L2_CID_STATELESS_HEVC_DECODE_MODE:		return 
->> "HEVC Decode Mode";
->>>  	case V4L2_CID_STATELESS_HEVC_START_CODE:		return 
->> "HEVC Start Code";
->>> +	case V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS:	return 
->> "HEVC Entry Point Offsets";
->>>  
->>>  	/* Colorimetry controls */
->>>  	/* Keep the order of the 'case's the same as in v4l2-controls.h! 
->> */
->>> @@ -1518,6 +1519,10 @@ void v4l2_ctrl_fill(u32 id, const char **name, enum 
->> v4l2_ctrl_type *type,
->>>  	case V4L2_CID_STATELESS_HEVC_DECODE_PARAMS:
->>>  		*type = V4L2_CTRL_TYPE_HEVC_DECODE_PARAMS;
->>>  		break;
->>> +	case V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS:
->>> +		*type = V4L2_CTRL_TYPE_U32;
->>> +		*flags |= V4L2_CTRL_FLAG_DYNAMIC_ARRAY;
->>> +		break;
->>>  	case V4L2_CID_STATELESS_VP9_COMPRESSED_HDR:
->>>  		*type = V4L2_CTRL_TYPE_VP9_COMPRESSED_HDR;
->>>  		break;
->>> diff --git a/include/media/hevc-ctrls.h b/include/media/hevc-ctrls.h
->>> index a3c829ef531a..1319cb99ae3f 100644
->>> --- a/include/media/hevc-ctrls.h
->>> +++ b/include/media/hevc-ctrls.h
->>> @@ -20,6 +20,7 @@
->>>  #define V4L2_CID_STATELESS_HEVC_DECODE_PARAMS	(V4L2_CID_CODEC_BASE 
->> + 1012)
->>>  #define V4L2_CID_STATELESS_HEVC_DECODE_MODE	(V4L2_CID_CODEC_BASE + 1015)
->>>  #define V4L2_CID_STATELESS_HEVC_START_CODE	(V4L2_CID_CODEC_BASE + 1016)
->>> +#define V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS (V4L2_CID_CODEC_BASE + 
->> 1017)
->>>  
->>>  /* enum v4l2_ctrl_type type values */
->>>  #define V4L2_CTRL_TYPE_HEVC_SPS 0x0120
->>> @@ -318,6 +319,8 @@ struct v4l2_hevc_pred_weight_table {
->>>   *
->>>   * @bit_size: size (in bits) of the current slice data
->>>   * @data_bit_offset: offset (in bits) to the video data in the current slice 
->> data
->>> + * @num_entry_point_offsets: specifies the number of entry point offset syntax
->>> + *			     elements in the slice header.
->>>   * @nal_unit_type: specifies the coding type of the slice (B, P or I)
->>>   * @nuh_temporal_id_plus1: minus 1 specifies a temporal identifier for the 
->> NAL unit
->>>   * @slice_type: see V4L2_HEVC_SLICE_TYPE_{}
->>> @@ -360,7 +363,7 @@ struct v4l2_hevc_pred_weight_table {
->>>  struct v4l2_ctrl_hevc_slice_params {
->>>  	__u32	bit_size;
->>>  	__u32	data_bit_offset;
->>> -
->>> +	__u32	num_entry_point_offsets;
->>>  	/* ISO/IEC 23008-2, ITU-T Rec. H.265: NAL unit header */
->>>  	__u8	nal_unit_type;
->>>  	__u8	nuh_temporal_id_plus1;
->>> -- 
->>> 2.32.0
->>>
->>>
->>
->>
-> 
+diff --git a/fs/gfs2/quota.c b/fs/gfs2/quota.c
+index be0997e24d60..dc77080a82bb 100644
+--- a/fs/gfs2/quota.c
++++ b/fs/gfs2/quota.c
+@@ -531,34 +531,42 @@ static void qdsb_put(struct gfs2_quota_data *qd)
+  */
+ int gfs2_qa_get(struct gfs2_inode *ip)
+ {
+-	int error = 0;
+ 	struct gfs2_sbd *sdp = GFS2_SB(&ip->i_inode);
++	struct inode *inode = &ip->i_inode;
+ 
+ 	if (sdp->sd_args.ar_quota == GFS2_QUOTA_OFF)
+ 		return 0;
+ 
+-	down_write(&ip->i_rw_mutex);
++	spin_lock(&inode->i_lock);
+ 	if (ip->i_qadata == NULL) {
+-		ip->i_qadata = kmem_cache_zalloc(gfs2_qadata_cachep, GFP_NOFS);
+-		if (!ip->i_qadata) {
+-			error = -ENOMEM;
+-			goto out;
+-		}
++		struct gfs2_qadata *tmp;
++
++		spin_unlock(&inode->i_lock);
++		tmp = kmem_cache_zalloc(gfs2_qadata_cachep, GFP_NOFS);
++		if (!tmp)
++			return -ENOMEM;
++
++		spin_lock(&inode->i_lock);
++		if (ip->i_qadata == NULL)
++			ip->i_qadata = tmp;
++		else
++			kmem_cache_free(gfs2_qadata_cachep, tmp);
+ 	}
+ 	ip->i_qadata->qa_ref++;
+-out:
+-	up_write(&ip->i_rw_mutex);
+-	return error;
++	spin_unlock(&inode->i_lock);
++	return 0;
+ }
+ 
+ void gfs2_qa_put(struct gfs2_inode *ip)
+ {
+-	down_write(&ip->i_rw_mutex);
++	struct inode *inode = &ip->i_inode;
++
++	spin_lock(&inode->i_lock);
+ 	if (ip->i_qadata && --ip->i_qadata->qa_ref == 0) {
+ 		kmem_cache_free(gfs2_qadata_cachep, ip->i_qadata);
+ 		ip->i_qadata = NULL;
+ 	}
+-	up_write(&ip->i_rw_mutex);
++	spin_unlock(&inode->i_lock);
+ }
+ 
+ int gfs2_quota_hold(struct gfs2_inode *ip, kuid_t uid, kgid_t gid)
+-- 
+2.35.1
 
