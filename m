@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9A23C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A51DCC4167D
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:47:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242210AbiE3Opy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:45:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40160 "EHLO
+        id S242167AbiE3Opv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:45:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241088AbiE3ORN (ORCPT
+        with ESMTP id S241176AbiE3OXh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:17:13 -0400
+        Mon, 30 May 2022 10:23:37 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 598A81109AB;
-        Mon, 30 May 2022 06:44:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B11F3A88AE;
+        Mon, 30 May 2022 06:50:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AB014B80D83;
-        Mon, 30 May 2022 13:44:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9336EC36AE3;
-        Mon, 30 May 2022 13:44:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E4C27B80DC0;
+        Mon, 30 May 2022 13:50:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7782C385B8;
+        Mon, 30 May 2022 13:50:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918245;
-        bh=HwjH44pS8984mw7Nh4lKusX1l8RJWXNJDc+xlPI7FLA=;
+        s=k20201202; t=1653918603;
+        bh=1ZG1JySuWceOc9T7kfMLbN7XXqvVOPvIff+FirOxY38=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vNdq4VSj4Keixr6kMEEGQHNG4BxbncWAY2yxA+UNYJVP4ED7GG7bnBkOH9mspcsmc
-         Ouu4LVQAywPuA2CkHNkfE8F95hzILIxTCeUYniaZFkvrEFo4PDcUICuOyV/JyCq0KG
-         5JYbktyd2wIIrLThCvEs6ZC+HY6ADVwTcBJWKx/oSdG+14fMMzn3CNtIpnyi6ETv7w
-         pxPcrS8jSBfabWQXb8YbeBCbRzij2ksnBpCdkYG/p+5NZU1vXFxeQPLR5VF0WXKoGh
-         JBxWIoKIl6UNLZwu2VIjIt7qYDUySc75meT3VmLwK0UTSPZ65y1XALPhLt4LHVe9In
-         bhJh+bSg0r8Cg==
+        b=dFRiW8sji7OhlAf6sj8Y+MEpiaZaTg4pPlPo8AJXiHAneJlc+rvxxqb1Biu6Hh9uK
+         ko6G6drq/+z4d3HC74Mng/8Nxim+jW3aQ5DZMgsCFiSa0c88DeYZW/Dw3Xz5YRekeN
+         Xlqf4uzfThYJkiNz2XRK1jcgkWbvTI9wQmasGS0moErCR5nPQ+6zTJYJgyxiSuZJM1
+         mip+ST2TPTaCCEpYMyUtxlOMBDMymbD1USarW3PHS/StxlTz6hTQQrUrteXdwIUNaY
+         kni9hnEcn0FO3pLyNNimC1t40Mqbz45XjFtMQaKRJJko7+fPXTYBfZyydpde7zhnR2
+         IQRUVcOgbxFEg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Bob Peterson <rpeterso@redhat.com>,
-        Andreas Gruenbacher <agruenba@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, cluster-devel@redhat.com
-Subject: [PATCH AUTOSEL 5.15 109/109] gfs2: use i_lock spin_lock for inode qadata
-Date:   Mon, 30 May 2022 09:38:25 -0400
-Message-Id: <20220530133825.1933431-109-sashal@kernel.org>
+Cc:     Zheyu Ma <zheyuma97@gmail.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, linux-media@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 14/38] media: cx25821: Fix the warning when removing the module
+Date:   Mon, 30 May 2022 09:49:00 -0400
+Message-Id: <20220530134924.1936816-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220530133825.1933431-1-sashal@kernel.org>
-References: <20220530133825.1933431-1-sashal@kernel.org>
+In-Reply-To: <20220530134924.1936816-1-sashal@kernel.org>
+References: <20220530134924.1936816-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -51,86 +52,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bob Peterson <rpeterso@redhat.com>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-[ Upstream commit 5fcff61eea9efd1f4b60e89d2d686b5feaea100f ]
+[ Upstream commit 2203436a4d24302871617373a7eb21bc17e38762 ]
 
-Before this patch, functions gfs2_qa_get and _put used the i_rw_mutex to
-prevent simultaneous access to its i_qadata. But i_rw_mutex is now used
-for many other things, including iomap_begin and end, which causes a
-conflict according to lockdep. We cannot just remove the lock since
-simultaneous opens (gfs2_open -> gfs2_open_common -> gfs2_qa_get) can
-then stomp on each others values for i_qadata.
+When removing the module, we will get the following warning:
 
-This patch solves the conflict by using the i_lock spin_lock in the inode
-to prevent simultaneous access.
+[   14.746697] remove_proc_entry: removing non-empty directory 'irq/21', leaking at least 'cx25821[1]'
+[   14.747449] WARNING: CPU: 4 PID: 368 at fs/proc/generic.c:717 remove_proc_entry+0x389/0x3f0
+[   14.751611] RIP: 0010:remove_proc_entry+0x389/0x3f0
+[   14.759589] Call Trace:
+[   14.759792]  <TASK>
+[   14.759975]  unregister_irq_proc+0x14c/0x170
+[   14.760340]  irq_free_descs+0x94/0xe0
+[   14.760640]  mp_unmap_irq+0xb6/0x100
+[   14.760937]  acpi_unregister_gsi_ioapic+0x27/0x40
+[   14.761334]  acpi_pci_irq_disable+0x1d3/0x320
+[   14.761688]  pci_disable_device+0x1ad/0x380
+[   14.762027]  ? _raw_spin_unlock_irqrestore+0x2d/0x60
+[   14.762442]  ? cx25821_shutdown+0x20/0x9f0 [cx25821]
+[   14.762848]  cx25821_finidev+0x48/0xc0 [cx25821]
+[   14.763242]  pci_device_remove+0x92/0x240
 
-Signed-off-by: Bob Peterson <rpeterso@redhat.com>
-Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
+Fix this by freeing the irq before call pci_disable_device().
+
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/gfs2/quota.c | 32 ++++++++++++++++++++------------
- 1 file changed, 20 insertions(+), 12 deletions(-)
+ drivers/media/pci/cx25821/cx25821-core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/gfs2/quota.c b/fs/gfs2/quota.c
-index be0997e24d60..dc77080a82bb 100644
---- a/fs/gfs2/quota.c
-+++ b/fs/gfs2/quota.c
-@@ -531,34 +531,42 @@ static void qdsb_put(struct gfs2_quota_data *qd)
-  */
- int gfs2_qa_get(struct gfs2_inode *ip)
- {
--	int error = 0;
- 	struct gfs2_sbd *sdp = GFS2_SB(&ip->i_inode);
-+	struct inode *inode = &ip->i_inode;
+diff --git a/drivers/media/pci/cx25821/cx25821-core.c b/drivers/media/pci/cx25821/cx25821-core.c
+index e04fe9f17b7a..99359eaf8cdc 100644
+--- a/drivers/media/pci/cx25821/cx25821-core.c
++++ b/drivers/media/pci/cx25821/cx25821-core.c
+@@ -1350,11 +1350,11 @@ static void cx25821_finidev(struct pci_dev *pci_dev)
+ 	struct cx25821_dev *dev = get_cx25821(v4l2_dev);
  
- 	if (sdp->sd_args.ar_quota == GFS2_QUOTA_OFF)
- 		return 0;
+ 	cx25821_shutdown(dev);
+-	pci_disable_device(pci_dev);
  
--	down_write(&ip->i_rw_mutex);
-+	spin_lock(&inode->i_lock);
- 	if (ip->i_qadata == NULL) {
--		ip->i_qadata = kmem_cache_zalloc(gfs2_qadata_cachep, GFP_NOFS);
--		if (!ip->i_qadata) {
--			error = -ENOMEM;
--			goto out;
--		}
-+		struct gfs2_qadata *tmp;
-+
-+		spin_unlock(&inode->i_lock);
-+		tmp = kmem_cache_zalloc(gfs2_qadata_cachep, GFP_NOFS);
-+		if (!tmp)
-+			return -ENOMEM;
-+
-+		spin_lock(&inode->i_lock);
-+		if (ip->i_qadata == NULL)
-+			ip->i_qadata = tmp;
-+		else
-+			kmem_cache_free(gfs2_qadata_cachep, tmp);
- 	}
- 	ip->i_qadata->qa_ref++;
--out:
--	up_write(&ip->i_rw_mutex);
--	return error;
-+	spin_unlock(&inode->i_lock);
-+	return 0;
- }
+ 	/* unregister stuff */
+ 	if (pci_dev->irq)
+ 		free_irq(pci_dev->irq, dev);
++	pci_disable_device(pci_dev);
  
- void gfs2_qa_put(struct gfs2_inode *ip)
- {
--	down_write(&ip->i_rw_mutex);
-+	struct inode *inode = &ip->i_inode;
-+
-+	spin_lock(&inode->i_lock);
- 	if (ip->i_qadata && --ip->i_qadata->qa_ref == 0) {
- 		kmem_cache_free(gfs2_qadata_cachep, ip->i_qadata);
- 		ip->i_qadata = NULL;
- 	}
--	up_write(&ip->i_rw_mutex);
-+	spin_unlock(&inode->i_lock);
- }
- 
- int gfs2_quota_hold(struct gfs2_inode *ip, kuid_t uid, kgid_t gid)
+ 	cx25821_dev_unregister(dev);
+ 	v4l2_device_unregister(v4l2_dev);
 -- 
 2.35.1
 
