@@ -2,63 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85BE7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 21:01:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 812B0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 21:01:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243275AbiE3VBN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 17:01:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40232 "EHLO
+        id S243361AbiE3VBR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 17:01:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243229AbiE3VAg (ORCPT
+        with ESMTP id S243259AbiE3VA7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 17:00:36 -0400
+        Mon, 30 May 2022 17:00:59 -0400
 Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0873991587
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 14:00:34 -0700 (PDT)
-Received: by mail-lf1-x12c.google.com with SMTP id l13so18380314lfp.11
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 14:00:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11854915AF
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 14:00:36 -0700 (PDT)
+Received: by mail-lf1-x12c.google.com with SMTP id u23so18503419lfc.1
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 14:00:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=mQkUP6MgBXfhQ5VQQiDmITT3o08NX2ApOUY4yVu0jYM=;
-        b=WLuL7ZtX5S8Xv18ibuMJgTR4erb8ZpBPwNgQjlFbayW2zb7WwwtgSMG27xiOGDSuJU
-         t3lH3KrC8K70XpuiQssk+JCUs7nV1C8qMvmu8GlbQCB3xSYoXmR1M9Nc9ufsXuvW3mt8
-         DcY1/w/Hb6/YJG9Pju/b6NXDE8mDx7CA1G34ytNlbfUOCgdrkPf5e4eXIlWwv3Xot55x
-         DKst6rZ2pt6JGpbxpAvA0SSPeOxYJ+q8Sa5fJiNmTLPUU6dn+b6+knXi3gy13ShQJKIl
-         L9fiy2/l6/vfejfMGqzPvpcOzOJB79MdCDHNA8coqTK66MvgzAEG1v1LjKcoQX2Km6to
-         8aHw==
+        bh=6yQqHGmllGTqv5b6W6sRDmvHNQ6gC3VDGqt+iST1GP4=;
+        b=S9MQR0ujpwPcnAyQYtPOzs9RCcNptzk0O/ZMxmFkOJnlI6mtmjxlbztcN0YE14G+/O
+         CACKu4Iom63FSxFErPfKqe3D8u1NBDzLCPW0bP4ReCA8eMTw2li9C6ziCtU4wpuuXFOv
+         qt8hKg4Ch3uraBa6Tn2+BZTqz64LBuzU3H+Y3p7d156cESE/deH1HCsjxMQApA/hMabB
+         SVd/urKJWwl1w0Od8Z4zjUY6waUfCEhfljhE6SeNVuuV96Jjyfsdnq6mtPjXwQC9I81N
+         93RwoCNTdcACEhMhE6pcdd8EPkimavXlYSfpVDIUPItTBv+rAA4J2jKLCkS4egHb/581
+         YKqA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=mQkUP6MgBXfhQ5VQQiDmITT3o08NX2ApOUY4yVu0jYM=;
-        b=ox+bosfZTtSt5qWycvfeD0LNe4wWtf0/wiL23OkbDXtAnMQuk4G7Py63I7WclLIQvH
-         ob4/zAMJ5UdObH+VJjHbZrKdmI3/dpU29n3Y64ApiKr1ZMgN1flKIkh2IoILI7XvgGNw
-         +yAumAwfXm/SsZJXr2/tmJN+TXgRrm3biMCKuq/MCL7MbTxNIjDNBsaI87j6rSZv+tiY
-         qGYJb23a52jhQQgYtZHiKWbBS3/a4+kMNwTbaYnGYCu3KSwvkqoEGI/RuUKA1HisS4st
-         qvbFlGWMx/XuDxqOwAE4xO9XMPr+oGrLNXp4jiOSfJXBOJGMS6udhXQlo2FdaI/HvLDO
-         ouNA==
-X-Gm-Message-State: AOAM533Qu/TaE1rgBL4Ksb7umiVPYtFI6XpEFSob2rpDoA/N4XV5L9Vu
-        ce1simM/rYKybKM0ZJXNOX0=
-X-Google-Smtp-Source: ABdhPJyrEsxXy8rP0N5pXydrCG2JHswyhigBj0VPDBjmiPYCC6mscekUcRxdjLumVRMb+YbKh8/HBA==
-X-Received: by 2002:a05:6512:108a:b0:478:68e8:adce with SMTP id j10-20020a056512108a00b0047868e8adcemr31174023lfg.617.1653944432306;
-        Mon, 30 May 2022 14:00:32 -0700 (PDT)
+        bh=6yQqHGmllGTqv5b6W6sRDmvHNQ6gC3VDGqt+iST1GP4=;
+        b=IHHZ8Nqp6UoWDfzWaVqpptrkVf74/blgICsdg6g7JJIR9CYG3wgamxjELzLcMoIVqF
+         b4fKdMwFx//gKG5x/Julh9/hrdoyoNUk9RUOOoXKehGiociEUay16isesbba3reb32Z+
+         p7QYbIZhJIFWnf3yYlAbz6A2UgogR60LvOJuS7AGuw6rvkQZzdpbqdArHj/aNDpcoDk6
+         hL0HQn527SXt/mSUXcEnppP3QfcQ2nwF+plv3sojmzY1O9R3LKCGSAOEWcdON0K7XGTB
+         EWKBdQZ3KURW9BHRhYt8gQauCRXcKWRnsz2HwjdC6j4byH426yFeAo45gCEQgH1t2FiF
+         0BLA==
+X-Gm-Message-State: AOAM533QO/8njLjf9oWF3Yv6TqrgzfC9zOziHC2Ohr+BgXF6E//cXC4I
+        803KGyfRrftHbh+fHiwdBdM=
+X-Google-Smtp-Source: ABdhPJxRI3M09HPtHmhTVLy5lEGHXzz2fTw91+bnwCJ2p93uOzuCHkjvEzV3hyRjrqV1bLRUpJbu/Q==
+X-Received: by 2002:a05:6512:22c2:b0:478:3ed7:f0f7 with SMTP id g2-20020a05651222c200b004783ed7f0f7mr37717893lfu.112.1653944434440;
+        Mon, 30 May 2022 14:00:34 -0700 (PDT)
 Received: from otyshchenko.router ([212.22.223.21])
-        by smtp.gmail.com with ESMTPSA id k21-20020a2ea275000000b0025550e2693asm581541ljm.38.2022.05.30.14.00.31
+        by smtp.gmail.com with ESMTPSA id k21-20020a2ea275000000b0025550e2693asm581541ljm.38.2022.05.30.14.00.33
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 30 May 2022 14:00:31 -0700 (PDT)
+        Mon, 30 May 2022 14:00:34 -0700 (PDT)
 From:   Oleksandr Tyshchenko <olekstysh@gmail.com>
 To:     xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org
 Cc:     Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
         Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Juergen Gross <jgross@suse.com>, Julien Grall <julien@xen.org>,
+        Juergen Gross <jgross@suse.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Julien Grall <julien@xen.org>,
         "Michael S. Tsirkin" <mst@redhat.com>,
         Christoph Hellwig <hch@infradead.org>
-Subject: [PATCH V3 6/8] xen/grant-dma-iommu: Introduce stub IOMMU driver
-Date:   Tue, 31 May 2022 00:00:15 +0300
-Message-Id: <1653944417-17168-7-git-send-email-olekstysh@gmail.com>
+Subject: [PATCH V3 8/8] arm/xen: Assign xen-grant DMA ops for xen-grant DMA devices
+Date:   Tue, 31 May 2022 00:00:17 +0300
+Message-Id: <1653944417-17168-9-git-send-email-olekstysh@gmail.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1653944417-17168-1-git-send-email-olekstysh@gmail.com>
 References: <1653944417-17168-1-git-send-email-olekstysh@gmail.com>
@@ -68,145 +69,56 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
 
-In order to reuse generic IOMMU device tree bindings by Xen grant
-DMA-mapping layer we need to add this stub driver from a fw_devlink
-perspective (grant-dma-ops cannot be converted into the proper
-IOMMU driver).
+By assigning xen-grant DMA ops we will restrict memory access for
+passed device using Xen grant mappings. This is needed for using any
+virtualized device (e.g. virtio) in Xen guests in a safe manner.
 
-Otherwise, just reusing IOMMU bindings (without having a corresponding
-driver) leads to the deferred probe timeout afterwards, because
-the IOMMU device never becomes available.
-
-This stub driver does nothing except registering empty iommu_ops,
-the upper layer "of_iommu" will treat this as NO_IOMMU condition
-and won't return -EPROBE_DEFER.
-
-As this driver is quite different from the most hardware IOMMU
-implementations and only needed in Xen guests, place it in drivers/xen
-directory. The subsequent commit will make use of it.
+Please note, for the virtio devices the XEN_VIRTIO config should
+be enabled (it forces ARCH_HAS_RESTRICTED_VIRTIO_MEMORY_ACCESS).
 
 Signed-off-by: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
+Reviewed-by: Stefano Stabellini <sstabellini@kernel.org>
 ---
-According to the discussion at:
-https://lore.kernel.org/xen-devel/c0f78aab-e723-fe00-a310-9fe52ec75e48@gmail.com/
+Changes RFC -> V1:
+   - update commit subject/description
+   - remove #ifdef CONFIG_XEN_VIRTIO
+   - re-organize the check taking into the account that
+     swiotlb and virtio cases are mutually exclusive
+   - update according to the new naming scheme:
+     s/virtio/grant_dma
 
-Change V2 -> V3:
-   - new patch
+Changes V1 -> V2:
+   - add Stefano's R-b
+   - remove arch_has_restricted_virtio_memory_access() check
+   - update commit description
+   - remove the inclusion of virtio_config.h
+
+Changes V2 -> V3:
+   - no changes
 ---
- drivers/xen/Kconfig           |  4 +++
- drivers/xen/Makefile          |  1 +
- drivers/xen/grant-dma-iommu.c | 78 +++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 83 insertions(+)
- create mode 100644 drivers/xen/grant-dma-iommu.c
+ include/xen/arm/xen-ops.h | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/xen/Kconfig b/drivers/xen/Kconfig
-index a7bd8ce..35d20d9 100644
---- a/drivers/xen/Kconfig
-+++ b/drivers/xen/Kconfig
-@@ -335,6 +335,10 @@ config XEN_UNPOPULATED_ALLOC
- 	  having to balloon out RAM regions in order to obtain physical memory
- 	  space to create such mappings.
+diff --git a/include/xen/arm/xen-ops.h b/include/xen/arm/xen-ops.h
+index 288deb1..b0766a6 100644
+--- a/include/xen/arm/xen-ops.h
++++ b/include/xen/arm/xen-ops.h
+@@ -3,11 +3,14 @@
+ #define _ASM_ARM_XEN_OPS_H
  
-+config XEN_GRANT_DMA_IOMMU
-+	bool
-+	select IOMMU_API
-+
- config XEN_GRANT_DMA_OPS
- 	bool
- 	select DMA_OPS
-diff --git a/drivers/xen/Makefile b/drivers/xen/Makefile
-index 1a23cb0..c0503f1 100644
---- a/drivers/xen/Makefile
-+++ b/drivers/xen/Makefile
-@@ -40,3 +40,4 @@ xen-privcmd-y				:= privcmd.o privcmd-buf.o
- obj-$(CONFIG_XEN_FRONT_PGDIR_SHBUF)	+= xen-front-pgdir-shbuf.o
- obj-$(CONFIG_XEN_UNPOPULATED_ALLOC)	+= unpopulated-alloc.o
- obj-$(CONFIG_XEN_GRANT_DMA_OPS)		+= grant-dma-ops.o
-+obj-$(CONFIG_XEN_GRANT_DMA_IOMMU)	+= grant-dma-iommu.o
-diff --git a/drivers/xen/grant-dma-iommu.c b/drivers/xen/grant-dma-iommu.c
-new file mode 100644
-index 00000000..16b8bc0
---- /dev/null
-+++ b/drivers/xen/grant-dma-iommu.c
-@@ -0,0 +1,78 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Stub IOMMU driver which does nothing.
-+ * The main purpose of it being present is to reuse generic IOMMU device tree
-+ * bindings by Xen grant DMA-mapping layer.
-+ *
-+ * Copyright (C) 2022 EPAM Systems Inc.
-+ */
-+
-+#include <linux/iommu.h>
-+#include <linux/of.h>
-+#include <linux/platform_device.h>
-+
-+struct grant_dma_iommu_device {
-+	struct device *dev;
-+	struct iommu_device iommu;
-+};
-+
-+/* Nothing is really needed here */
-+static const struct iommu_ops grant_dma_iommu_ops;
-+
-+static const struct of_device_id grant_dma_iommu_of_match[] = {
-+	{ .compatible = "xen,grant-dma" },
-+	{ },
-+};
-+
-+static int grant_dma_iommu_probe(struct platform_device *pdev)
-+{
-+	struct grant_dma_iommu_device *mmu;
-+	int ret;
-+
-+	mmu = devm_kzalloc(&pdev->dev, sizeof(*mmu), GFP_KERNEL);
-+	if (!mmu)
-+		return -ENOMEM;
-+
-+	mmu->dev = &pdev->dev;
-+
-+	ret = iommu_device_register(&mmu->iommu, &grant_dma_iommu_ops, &pdev->dev);
-+	if (ret)
-+		return ret;
-+
-+	platform_set_drvdata(pdev, mmu);
-+
-+	return 0;
-+}
-+
-+static int grant_dma_iommu_remove(struct platform_device *pdev)
-+{
-+	struct grant_dma_iommu_device *mmu = platform_get_drvdata(pdev);
-+
-+	platform_set_drvdata(pdev, NULL);
-+	iommu_device_unregister(&mmu->iommu);
-+
-+	return 0;
-+}
-+
-+static struct platform_driver grant_dma_iommu_driver = {
-+	.driver = {
-+		.name = "grant-dma-iommu",
-+		.of_match_table = grant_dma_iommu_of_match,
-+	},
-+	.probe = grant_dma_iommu_probe,
-+	.remove = grant_dma_iommu_remove,
-+};
-+
-+static int __init grant_dma_iommu_init(void)
-+{
-+	struct device_node *iommu_np;
-+
-+	iommu_np = of_find_matching_node(NULL, grant_dma_iommu_of_match);
-+	if (!iommu_np)
-+		return 0;
-+
-+	of_node_put(iommu_np);
-+
-+	return platform_driver_register(&grant_dma_iommu_driver);
-+}
-+subsys_initcall(grant_dma_iommu_init);
+ #include <xen/swiotlb-xen.h>
++#include <xen/xen-ops.h>
+ 
+ static inline void xen_setup_dma_ops(struct device *dev)
+ {
+ #ifdef CONFIG_XEN
+-	if (xen_swiotlb_detect())
++	if (xen_is_grant_dma_device(dev))
++		xen_grant_setup_dma_ops(dev);
++	else if (xen_swiotlb_detect())
+ 		dev->dma_ops = &xen_swiotlb_dma_ops;
+ #endif
+ }
 -- 
 2.7.4
 
