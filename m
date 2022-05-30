@@ -2,49 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E23DBC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:32:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EA35C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:33:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240006AbiE3Ocf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:32:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50148 "EHLO
+        id S241267AbiE3Ocz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:32:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240932AbiE3OQh (ORCPT
+        with ESMTP id S241019AbiE3ORC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:16:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E0F31078A9;
-        Mon, 30 May 2022 06:44:21 -0700 (PDT)
+        Mon, 30 May 2022 10:17:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A8F310F352;
+        Mon, 30 May 2022 06:44:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7BEFEB80D6B;
-        Mon, 30 May 2022 13:43:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03F34C341C0;
-        Mon, 30 May 2022 13:43:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A97360F32;
+        Mon, 30 May 2022 13:43:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0505C385B8;
+        Mon, 30 May 2022 13:43:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918217;
-        bh=Do59Zxbar/R53/RRVCDrJBRmogE79B0Y/2QF3y0rC8U=;
+        s=k20201202; t=1653918238;
+        bh=sm8MbBlNG5K6X9hLCmzFjLBYl5czMKscsEUm5HoPOMk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BvLqm74VD2BjT0UC/UqZ0PSfzjnmL2d9vE1soRWzHXc+3JcjZhGCVd4tVjiK32A4/
-         OpA8n1Kaaa/XTTC+hOykRv/EICIGGefVo8i37DlCQAaxLcJQd/zV2tJMhgzeXkl2Uu
-         N3DuFaTfQV+/ZKHeXO7g1VuRsdvf7h8bKOV92R8uMZdFzQJsorTiSk4z9DUStPIgmL
-         0U2QfORyn5UQNVKyz5UWb1d1VDDriMlbK4fBQHLZAa6fgvdIr0ZgozUvjBvufeKlO3
-         Lsnv8mDyjnIjDG3CofOIhFnsVVi4uSyTGvossu9ey1dqFz90DiNlc8mXwBiHZruyrp
-         fnFBToOiSamVw==
+        b=NLUxv0cvt9xqEY5NDdtf04KYXCDj4yFehBXCveD5t44geDpsLKlAJiynARW59l41O
+         6Z0o9A8t6GaxcbVyEWcjviKQ6fM+LoqoAGjjW9spdm0fXutM8n4NbOWh12ZaKhVt+k
+         LvHVZ7pvKir/cewfOiyCIP1qs0iHnNbcmKqT/3i0gXrw7TUH/HhQM7DZ8TYt+sQNC+
+         zufARMY8r/nvpza+fS+gIaOMf0BQGm0H2dw2/dqqWO2E3kQDztM/id7/bRtCWr/dq8
+         6H7FnzGa12ts3UA7JqEPCJb/TFv01aQ6mCoCw5Oqad3rV3a9iUUYLhBsPLDYEoWYBa
+         CDmmLhLhqyzZg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Borislav Petkov <bp@suse.de>, Randy Dunlap <rdunlap@infradead.org>,
-        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org
-Subject: [PATCH AUTOSEL 5.15 098/109] x86/microcode: Add explicit CPU vendor dependency
-Date:   Mon, 30 May 2022 09:38:14 -0400
-Message-Id: <20220530133825.1933431-98-sashal@kernel.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
+        pabeni@redhat.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 106/109] eth: tg3: silence the GCC 12 array-bounds warning
+Date:   Mon, 30 May 2022 09:38:22 -0400
+Message-Id: <20220530133825.1933431-106-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133825.1933431-1-sashal@kernel.org>
 References: <20220530133825.1933431-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -52,44 +53,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Borislav Petkov <bp@suse.de>
+From: Jakub Kicinski <kuba@kernel.org>
 
-[ Upstream commit 9c55d99e099bd7aa6b91fce8718505c35d5dfc65 ]
+[ Upstream commit 9dec850fd7c210a04b4707df8e6c95bfafdd6a4b ]
 
-Add an explicit dependency to the respective CPU vendor so that the
-respective microcode support for it gets built only when that support is
-enabled.
+GCC 12 currently generates a rather inconsistent warning:
 
-Reported-by: Randy Dunlap <rdunlap@infradead.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/8ead0da9-9545-b10d-e3db-7df1a1f219e4@infradead.org
+drivers/net/ethernet/broadcom/tg3.c:17795:51: warning: array subscript 5 is above array bounds of ‘struct tg3_napi[5]’ [-Warray-bounds]
+17795 |                 struct tg3_napi *tnapi = &tp->napi[i];
+      |                                           ~~~~~~~~^~~
+
+i is guaranteed < tp->irq_max which in turn is either 1 or 5.
+There are more loops like this one in the driver, but strangely
+GCC 12 dislikes only this single one.
+
+Silence this silliness for now.
+
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/Kconfig | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/broadcom/Makefile | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index d02b04d30096..1d0f16b53393 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -1323,7 +1323,7 @@ config MICROCODE
- 
- config MICROCODE_INTEL
- 	bool "Intel microcode loading support"
--	depends on MICROCODE
-+	depends on CPU_SUP_INTEL && MICROCODE
- 	default MICROCODE
- 	help
- 	  This options enables microcode patch loading support for Intel
-@@ -1335,7 +1335,7 @@ config MICROCODE_INTEL
- 
- config MICROCODE_AMD
- 	bool "AMD microcode loading support"
--	depends on MICROCODE
-+	depends on CPU_SUP_AMD && MICROCODE
- 	help
- 	  If you select this option, microcode patch loading support for AMD
- 	  processors will be enabled.
+diff --git a/drivers/net/ethernet/broadcom/Makefile b/drivers/net/ethernet/broadcom/Makefile
+index 0ddfb5b5d53c..2e6c5f258a1f 100644
+--- a/drivers/net/ethernet/broadcom/Makefile
++++ b/drivers/net/ethernet/broadcom/Makefile
+@@ -17,3 +17,8 @@ obj-$(CONFIG_BGMAC_BCMA) += bgmac-bcma.o bgmac-bcma-mdio.o
+ obj-$(CONFIG_BGMAC_PLATFORM) += bgmac-platform.o
+ obj-$(CONFIG_SYSTEMPORT) += bcmsysport.o
+ obj-$(CONFIG_BNXT) += bnxt/
++
++# FIXME: temporarily silence -Warray-bounds on non W=1+ builds
++ifndef KBUILD_EXTRA_WARN
++CFLAGS_tg3.o += -Wno-array-bounds
++endif
 -- 
 2.35.1
 
