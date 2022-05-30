@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32831C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:57:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DD4DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:57:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233685AbiE3N5d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:57:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48452 "EHLO
+        id S235784AbiE3N5k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:57:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238619AbiE3Nua (ORCPT
+        with ESMTP id S238225AbiE3Nv5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:50:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94A43AEE26;
-        Mon, 30 May 2022 06:35:01 -0700 (PDT)
+        Mon, 30 May 2022 09:51:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49A7F75239;
+        Mon, 30 May 2022 06:36:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0E465B80DAE;
-        Mon, 30 May 2022 13:35:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 154A2C3411A;
-        Mon, 30 May 2022 13:34:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 310EF60F95;
+        Mon, 30 May 2022 13:36:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81499C385B8;
+        Mon, 30 May 2022 13:36:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917699;
-        bh=6Z3XCzEXjQtAZfG+nCO+8RY/1jNooV9Q2m+ygrcTIRs=;
+        s=k20201202; t=1653917817;
+        bh=y3bhC0rUOrF3icDOfUWiGnm7BKnScQLuWa8qmBsViaY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aJhOZ+uPLV4KsZqx9yj7FpbA6Ll/Huv8RvLkU1yb3ua37gnFB+/Oq/i49w0jeXasa
-         swcSgTCjnBBilty90ECKP0TEvOH+UQuBW0OmdUCkpOKxszlgU+mVP6Vlf2SNGHlzNC
-         DWzE3quRlYIYDJnylxHp1Oc0aSxb4bV/eRWrZstn8UCV5/uI1hfgY+ScYuEzskX/kZ
-         YifIPcshREpFebRVc/6ZeP9fkEghBtjqGK67Fmh5YBZosDBFUdS9wsJCap1ELH2+6A
-         P6Kfg5Uk/qckSW0Sh95+7ltsViqYhx50JIPjcreXx/3GhuCZ8QgVh1bn3Tv2nyh2hE
-         5Bed1PCExU4jw==
+        b=BNTkZ6/Dobl4kgV5CORwDdm9WPkSS0+dQe6FaDzIpm1aXiUxE7CTJuJhWOOK+0ga0
+         +NQOkrE9vLV0lH5C98FGbMSEXgkRwhjkVphTxbMZbrF3277AsZWAR1OXTYBWLv6Mug
+         r/rDI6a934fdzIVkIurrTngMBei0MnxUltM8Sgx0oVwmpJukg0JIeH3P43A14BCRrM
+         hPmGatF82v+IDxu5P2lnmSC+vEKjFKZB6B3Q9iBkh1LBhJ/W9+Cc4yPpdPm8eHM3MU
+         hF/le2dD7JMx/52+PJns0pSJazm98yWZzqRGOFC36dF08Qz6B6gQDUPPGOfKkh/CpR
+         9T4BkHdt+d5YQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alex Deucher <alexander.deucher@amd.com>,
-        Hawking Zhang <Hawking.Zhang@amd.com>,
-        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
-        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
-        john.clements@amd.com, candice.li@amd.com, Likun.Gao@amd.com,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.17 068/135] drm/amdgpu/psp: move PSP memory alloc from hw_init to sw_init
-Date:   Mon, 30 May 2022 09:30:26 -0400
-Message-Id: <20220530133133.1931716-68-sashal@kernel.org>
+Cc:     Xie Yongji <xieyongji@bytedance.com>,
+        Xu Jianhai <zero.xu@bytedance.com>,
+        Josef Bacik <josef@toxicpanda.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>,
+        linux-block@vger.kernel.org, nbd@other.debian.org
+Subject: [PATCH AUTOSEL 5.17 107/135] nbd: Fix hung on disconnect request if socket is closed before
+Date:   Mon, 30 May 2022 09:31:05 -0400
+Message-Id: <20220530133133.1931716-107-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133133.1931716-1-sashal@kernel.org>
 References: <20220530133133.1931716-1-sashal@kernel.org>
@@ -54,156 +53,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alex Deucher <alexander.deucher@amd.com>
+From: Xie Yongji <xieyongji@bytedance.com>
 
-[ Upstream commit b95b5391684b39695887afb4a13cccee7820f5d6 ]
+[ Upstream commit 491bf8f236fdeec698fa6744993f1ecf3fafd1a5 ]
 
-Memory allocations should be done in sw_init.  hw_init should
-just be hardware programming needed to initialize the IP block.
-This is how most other IP blocks work.  Move the GPU memory
-allocations from psp hw_init to psp sw_init and move the memory
-free to sw_fini.  This also fixes a potential GPU memory leak
-if psp hw_init fails.
+When userspace closes the socket before sending a disconnect
+request, the following I/O requests will be blocked in
+wait_for_reconnect() until dead timeout. This will cause the
+following disconnect request also hung on blk_mq_quiesce_queue().
+That means we have no way to disconnect a nbd device if there
+are some I/O requests waiting for reconnecting until dead timeout.
+It's not expected. So let's wake up the thread waiting for
+reconnecting directly when a disconnect request is sent.
 
-Reviewed-by: Hawking Zhang <Hawking.Zhang@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Reported-by: Xu Jianhai <zero.xu@bytedance.com>
+Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+Reviewed-by: Josef Bacik <josef@toxicpanda.com>
+Link: https://lore.kernel.org/r/20220322080639.142-1-xieyongji@bytedance.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c | 95 ++++++++++++-------------
- 1 file changed, 47 insertions(+), 48 deletions(-)
+ drivers/block/nbd.c | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c
-index dee17a0e1187..786518f7e37b 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c
-@@ -331,7 +331,39 @@ static int psp_sw_init(void *handle)
- 		}
- 	}
- 
-+	ret = amdgpu_bo_create_kernel(adev, PSP_1_MEG, PSP_1_MEG,
-+				      amdgpu_sriov_vf(adev) ?
-+				      AMDGPU_GEM_DOMAIN_VRAM : AMDGPU_GEM_DOMAIN_GTT,
-+				      &psp->fw_pri_bo,
-+				      &psp->fw_pri_mc_addr,
-+				      &psp->fw_pri_buf);
-+	if (ret)
-+		return ret;
+diff --git a/drivers/block/nbd.c b/drivers/block/nbd.c
+index 5a1f98494ddd..284557041336 100644
+--- a/drivers/block/nbd.c
++++ b/drivers/block/nbd.c
+@@ -947,11 +947,15 @@ static int wait_for_reconnect(struct nbd_device *nbd)
+ 	struct nbd_config *config = nbd->config;
+ 	if (!config->dead_conn_timeout)
+ 		return 0;
+-	if (test_bit(NBD_RT_DISCONNECTED, &config->runtime_flags))
 +
-+	ret = amdgpu_bo_create_kernel(adev, PSP_FENCE_BUFFER_SIZE, PAGE_SIZE,
-+				      AMDGPU_GEM_DOMAIN_VRAM,
-+				      &psp->fence_buf_bo,
-+				      &psp->fence_buf_mc_addr,
-+				      &psp->fence_buf);
-+	if (ret)
-+		goto failed1;
++	if (!wait_event_timeout(config->conn_wait,
++				test_bit(NBD_RT_DISCONNECTED,
++					 &config->runtime_flags) ||
++				atomic_read(&config->live_connections) > 0,
++				config->dead_conn_timeout))
+ 		return 0;
+-	return wait_event_timeout(config->conn_wait,
+-				  atomic_read(&config->live_connections) > 0,
+-				  config->dead_conn_timeout) > 0;
 +
-+	ret = amdgpu_bo_create_kernel(adev, PSP_CMD_BUFFER_SIZE, PAGE_SIZE,
-+				      AMDGPU_GEM_DOMAIN_VRAM,
-+				      &psp->cmd_buf_bo, &psp->cmd_buf_mc_addr,
-+				      (void **)&psp->cmd_buf_mem);
-+	if (ret)
-+		goto failed2;
-+
- 	return 0;
-+
-+failed2:
-+	amdgpu_bo_free_kernel(&psp->fw_pri_bo,
-+			      &psp->fw_pri_mc_addr, &psp->fw_pri_buf);
-+failed1:
-+	amdgpu_bo_free_kernel(&psp->fence_buf_bo,
-+			      &psp->fence_buf_mc_addr, &psp->fence_buf);
-+	return ret;
++	return !test_bit(NBD_RT_DISCONNECTED, &config->runtime_flags);
  }
  
- static int psp_sw_fini(void *handle)
-@@ -361,6 +393,13 @@ static int psp_sw_fini(void *handle)
- 	kfree(cmd);
- 	cmd = NULL;
- 
-+	amdgpu_bo_free_kernel(&psp->fw_pri_bo,
-+			      &psp->fw_pri_mc_addr, &psp->fw_pri_buf);
-+	amdgpu_bo_free_kernel(&psp->fence_buf_bo,
-+			      &psp->fence_buf_mc_addr, &psp->fence_buf);
-+	amdgpu_bo_free_kernel(&psp->cmd_buf_bo, &psp->cmd_buf_mc_addr,
-+			      (void **)&psp->cmd_buf_mem);
-+
- 	return 0;
- }
- 
-@@ -2391,51 +2430,18 @@ static int psp_load_fw(struct amdgpu_device *adev)
- 	struct psp_context *psp = &adev->psp;
- 
- 	if (amdgpu_sriov_vf(adev) && amdgpu_in_reset(adev)) {
--		psp_ring_stop(psp, PSP_RING_TYPE__KM); /* should not destroy ring, only stop */
--		goto skip_memalloc;
--	}
--
--	if (amdgpu_sriov_vf(adev)) {
--		ret = amdgpu_bo_create_kernel(adev, PSP_1_MEG, PSP_1_MEG,
--						AMDGPU_GEM_DOMAIN_VRAM,
--						&psp->fw_pri_bo,
--						&psp->fw_pri_mc_addr,
--						&psp->fw_pri_buf);
-+		/* should not destroy ring, only stop */
-+		psp_ring_stop(psp, PSP_RING_TYPE__KM);
- 	} else {
--		ret = amdgpu_bo_create_kernel(adev, PSP_1_MEG, PSP_1_MEG,
--						AMDGPU_GEM_DOMAIN_GTT,
--						&psp->fw_pri_bo,
--						&psp->fw_pri_mc_addr,
--						&psp->fw_pri_buf);
--	}
--
--	if (ret)
--		goto failed;
--
--	ret = amdgpu_bo_create_kernel(adev, PSP_FENCE_BUFFER_SIZE, PAGE_SIZE,
--					AMDGPU_GEM_DOMAIN_VRAM,
--					&psp->fence_buf_bo,
--					&psp->fence_buf_mc_addr,
--					&psp->fence_buf);
--	if (ret)
--		goto failed;
--
--	ret = amdgpu_bo_create_kernel(adev, PSP_CMD_BUFFER_SIZE, PAGE_SIZE,
--				      AMDGPU_GEM_DOMAIN_VRAM,
--				      &psp->cmd_buf_bo, &psp->cmd_buf_mc_addr,
--				      (void **)&psp->cmd_buf_mem);
--	if (ret)
--		goto failed;
-+		memset(psp->fence_buf, 0, PSP_FENCE_BUFFER_SIZE);
- 
--	memset(psp->fence_buf, 0, PSP_FENCE_BUFFER_SIZE);
--
--	ret = psp_ring_init(psp, PSP_RING_TYPE__KM);
--	if (ret) {
--		DRM_ERROR("PSP ring init failed!\n");
--		goto failed;
-+		ret = psp_ring_init(psp, PSP_RING_TYPE__KM);
-+		if (ret) {
-+			DRM_ERROR("PSP ring init failed!\n");
-+			goto failed;
-+		}
- 	}
- 
--skip_memalloc:
- 	ret = psp_hw_start(psp);
- 	if (ret)
- 		goto failed;
-@@ -2553,13 +2559,6 @@ static int psp_hw_fini(void *handle)
- 	psp_tmr_terminate(psp);
- 	psp_ring_destroy(psp, PSP_RING_TYPE__KM);
- 
--	amdgpu_bo_free_kernel(&psp->fw_pri_bo,
--			      &psp->fw_pri_mc_addr, &psp->fw_pri_buf);
--	amdgpu_bo_free_kernel(&psp->fence_buf_bo,
--			      &psp->fence_buf_mc_addr, &psp->fence_buf);
--	amdgpu_bo_free_kernel(&psp->cmd_buf_bo, &psp->cmd_buf_mc_addr,
--			      (void **)&psp->cmd_buf_mem);
--
- 	return 0;
- }
- 
+ static int nbd_handle_cmd(struct nbd_cmd *cmd, int index)
+@@ -2082,6 +2086,7 @@ static void nbd_disconnect_and_put(struct nbd_device *nbd)
+ 	mutex_lock(&nbd->config_lock);
+ 	nbd_disconnect(nbd);
+ 	sock_shutdown(nbd);
++	wake_up(&nbd->config->conn_wait);
+ 	/*
+ 	 * Make sure recv thread has finished, we can safely call nbd_clear_que()
+ 	 * to cancel the inflight I/Os.
 -- 
 2.35.1
 
