@@ -2,293 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00EC1C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 10:47:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 342F4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 10:47:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235537AbiE3KrW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 06:47:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42718 "EHLO
+        id S231134AbiE3Krx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 06:47:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235340AbiE3Koc (ORCPT
+        with ESMTP id S235615AbiE3Krn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 06:44:32 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CA9E7E1CE;
-        Mon, 30 May 2022 03:44:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1653907463; x=1685443463;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=L/qfF6l2+Qd+DdGpCGovzCwJFmvLnsE3RDiGUt0tx/4=;
-  b=kRWGitNXWrKxJq4tmFO8SXK3/Lrn+/jnNt2EqhRHShbvfsbgCv8/04sF
-   o0XhR2QUMSUZxX4liP/5qr1uj3j6fG//8s4BASbPJhhicvJrr7pCo2sD7
-   +lsy0LFk+ZTBn5mjYPpa1MzVACYf50Tis86JUDx4tEDBx+CMqKFlYYGkm
-   QuR+t8BOsD2GLRL5/RU1c+MKXvpY0Q/USmoKb6z4EVH7KR207ayzHw4N3
-   hx1Q4i0lQ3Qovt4yp43wkpkqBXSkAv0E5UiOjRizmLg7HwDXsDxECQV6b
-   63Z92fBCYPx1TLfcz+yzGlhx+nuFWhZe0LXD/AercjLBf5WS4n3BGPF9G
-   A==;
+        Mon, 30 May 2022 06:47:43 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A74397CB67
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 03:47:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653907653; x=1685443653;
+  h=message-id:subject:from:to:cc:in-reply-to:references:
+   mime-version:date:content-transfer-encoding;
+  bh=o5SGoknLhcf36naf8dL6NWETDY5hMeyO9OFdAjzRBRg=;
+  b=IhWj4q+ATeByo99j7QWu9H1fmdUqAn6CUAgd+B5w9ox5v5B5UE1K5aIQ
+   LbIOnkXfN3vzwNKrDrceOiZS3B9XHRLjlc+Uam8S0pEiJZocV6H2FXeGj
+   ex5UIe7CaldQpdG0XI2LII0VxsUoKLGuNsIfQTm0f3kKg22hhejd4gqaP
+   nRldWCbGN3aYwwUQ/9jQeRNaBAPYd7VkZLTSWhPbK6g71vFd768IcdakE
+   dkzq4eFmRmlL7eIWhvD+Fnm346e1edcLD7oVpo3fMk9GufTTKp71VAWWK
+   /lkydqE3aYNrQCCHSJBQb2kyP/MBfTJKJ7dMuFuxp27TM05Rb/+oIN5IX
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10362"; a="275056254"
 X-IronPort-AV: E=Sophos;i="5.91,262,1647327600"; 
-   d="scan'208";a="165913242"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 May 2022 03:44:23 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 30 May 2022 03:44:21 -0700
-Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Mon, 30 May 2022 03:44:16 -0700
-From:   Arun Ramadoss <arun.ramadoss@microchip.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Woojung Huh <woojung.huh@microchip.com>,
-        <UNGLinuxDriver@microchip.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "Russell King" <linux@armlinux.org.uk>
-Subject: [RFC Patch net-next v2 09/15] net: dsa: microchip: update fdb add/del/dump in ksz_common
-Date:   Mon, 30 May 2022 16:12:51 +0530
-Message-ID: <20220530104257.21485-10-arun.ramadoss@microchip.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220530104257.21485-1-arun.ramadoss@microchip.com>
-References: <20220530104257.21485-1-arun.ramadoss@microchip.com>
+   d="scan'208";a="275056254"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 May 2022 03:47:31 -0700
+X-IronPort-AV: E=Sophos;i="5.91,262,1647327600"; 
+   d="scan'208";a="529128753"
+Received: from machambe-mobl.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.254.36.179])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 May 2022 03:47:27 -0700
+Message-ID: <ba5aa2939e81f730396d41120aa603df7999d937.camel@intel.com>
+Subject: Re: [PATCH v7 3/5] x86/mm: Make tdx_enc_status_changed() vmalloc
+ address compatible
+From:   Kai Huang <kai.huang@intel.com>
+To:     Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org
+Cc:     "H . Peter Anvin" <hpa@zytor.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Wander Lairson Costa <wander@redhat.com>,
+        Isaku Yamahata <isaku.yamahata@gmail.com>,
+        marcelo.cerri@canonical.com, tim.gardner@canonical.com,
+        khalid.elmously@canonical.com, philip.cox@canonical.com,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220524040517.703581-4-sathyanarayanan.kuppuswamy@linux.intel.com>
+References: <20220524040517.703581-1-sathyanarayanan.kuppuswamy@linux.intel.com>
+         <20220524040517.703581-4-sathyanarayanan.kuppuswamy@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Date:   Mon, 30 May 2022 22:47:15 +1200
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch makes the dsa_switch_hook for fdbs to use ksz_common.c file.
-And from ksz_common, individual switches fdb functions are called using
-the dev->dev_ops.
+On Mon, 2022-05-23 at 21:05 -0700, Kuppuswamy Sathyanarayanan wrote:
+> set_memory_*crypted() APIs are used to change encryption or decryption
+> page attributes for the given address. It also by default support the
+> conversion for the vmalloc'ed memory address.
+> 
+> In TDX Guest, tdx_enc_status_changed() function is triggered by
+> set_memory_*crypted() APIs when converting memory from/to shared or
+> private. Internally this function uses __pa() for physical address
+> conversion, which breaks the vmalloc address compatibility of the
+> set_memory_*crypted() APIs.
+> 
+> So add support to fix the vmalloc'ed address compatibility issue.
+> 
+> Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+> ---
+>  arch/x86/coco/tdx/tdx.c | 11 +++++++++--
+>  1 file changed, 9 insertions(+), 2 deletions(-)
+> 
+> diff --git a/arch/x86/coco/tdx/tdx.c b/arch/x86/coco/tdx/tdx.c
+> index b49211994864..37d58675ccf1 100644
+> --- a/arch/x86/coco/tdx/tdx.c
+> +++ b/arch/x86/coco/tdx/tdx.c
+> @@ -15,6 +15,7 @@
+>  #include <asm/idtentry.h>
+>  #include <asm/irq_regs.h>
+>  #include <asm/desc.h>
+> +#include <asm/io.h>
+>  
+>  /* TDX module Call Leaf IDs */
+>  #define TDX_GET_INFO			1
+> @@ -680,8 +681,14 @@ static bool try_accept_one(phys_addr_t *start, unsigned long len,
+>   */
+>  static bool tdx_enc_status_changed(unsigned long vaddr, int numpages, bool enc)
+>  {
+> -	phys_addr_t start = __pa(vaddr);
+> -	phys_addr_t end   = __pa(vaddr + numpages * PAGE_SIZE);
+> +	phys_addr_t start, end;
+> +
+> +	if (is_vmalloc_addr((void *)vaddr))
+> +		start = vmalloc_to_pfn((void *) vaddr) << PAGE_SHIFT;
+> +	else
+> +		start = __pa(vaddr);
+> +
+> +	end = start + numpages * PAGE_SIZE;
+>  
+>  	if (!enc) {
+>  		/* Set the shared (decrypted) bits: */
 
-Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
----
- drivers/net/dsa/microchip/ksz8795.c    | 30 +++++++++++++++
- drivers/net/dsa/microchip/ksz9477.c    | 28 +++++++-------
- drivers/net/dsa/microchip/ksz_common.c | 52 +++++++++++++++-----------
- drivers/net/dsa/microchip/ksz_common.h | 10 +++++
- 4 files changed, 84 insertions(+), 36 deletions(-)
+AMD uses lookup_address() which doesn't require the vaddr being vmap() address.
+Shouldn't TDX use the same way?
 
-diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-index abd28dc44eb5..528de481b319 100644
---- a/drivers/net/dsa/microchip/ksz8795.c
-+++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -958,6 +958,35 @@ static void ksz8_flush_dyn_mac_table(struct ksz_device *dev, int port)
- 	}
- }
- 
-+static int ksz8_fdb_dump(struct ksz_device *dev, int port,
-+			 dsa_fdb_dump_cb_t *cb, void *data)
-+{
-+	int ret = 0;
-+	u16 i = 0;
-+	u16 entries = 0;
-+	u8 timestamp = 0;
-+	u8 fid;
-+	u8 member;
-+	struct alu_struct alu;
-+
-+	do {
-+		alu.is_static = false;
-+		ret = dev->dev_ops->r_dyn_mac_table(dev, i, alu.mac, &fid,
-+						    &member, &timestamp,
-+						    &entries);
-+		if (!ret && (member & BIT(port))) {
-+			ret = cb(alu.mac, alu.fid, alu.is_static, data);
-+			if (ret)
-+				break;
-+		}
-+		i++;
-+	} while (i < entries);
-+	if (i >= entries)
-+		ret = 0;
-+
-+	return ret;
-+}
-+
- static int ksz8_mdb_add(struct ksz_device *dev, int port,
- 			const struct switchdev_obj_port_mdb *mdb,
- 			struct dsa_db db)
-@@ -1528,6 +1557,7 @@ static const struct ksz_dev_ops ksz8_dev_ops = {
- 	.r_mib_pkt = ksz8_r_mib_pkt,
- 	.freeze_mib = ksz8_freeze_mib,
- 	.port_init_cnt = ksz8_port_init_cnt,
-+	.fdb_dump = ksz8_fdb_dump,
- 	.mdb_add = ksz8_mdb_add,
- 	.mdb_del = ksz8_mdb_del,
- 	.vlan_filtering = ksz8_port_vlan_filtering,
-diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index 045856656466..d70e0c32b309 100644
---- a/drivers/net/dsa/microchip/ksz9477.c
-+++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -457,11 +457,10 @@ static int ksz9477_port_vlan_del(struct ksz_device *dev, int port,
- 	return 0;
- }
- 
--static int ksz9477_port_fdb_add(struct dsa_switch *ds, int port,
--				const unsigned char *addr, u16 vid,
--				struct dsa_db db)
-+static int ksz9477_fdb_add(struct ksz_device *dev, int port,
-+			   const unsigned char *addr, u16 vid,
-+			   struct dsa_db db)
- {
--	struct ksz_device *dev = ds->priv;
- 	u32 alu_table[4];
- 	u32 data;
- 	int ret = 0;
-@@ -515,11 +514,10 @@ static int ksz9477_port_fdb_add(struct dsa_switch *ds, int port,
- 	return ret;
- }
- 
--static int ksz9477_port_fdb_del(struct dsa_switch *ds, int port,
--				const unsigned char *addr, u16 vid,
--				struct dsa_db db)
-+static int ksz9477_fdb_del(struct ksz_device *dev, int port,
-+			   const unsigned char *addr, u16 vid,
-+			   struct dsa_db db)
- {
--	struct ksz_device *dev = ds->priv;
- 	u32 alu_table[4];
- 	u32 data;
- 	int ret = 0;
-@@ -606,10 +604,9 @@ static void ksz9477_convert_alu(struct alu_struct *alu, u32 *alu_table)
- 	alu->mac[5] = alu_table[3] & 0xFF;
- }
- 
--static int ksz9477_port_fdb_dump(struct dsa_switch *ds, int port,
--				 dsa_fdb_dump_cb_t *cb, void *data)
-+static int ksz9477_fdb_dump(struct ksz_device *dev, int port,
-+			    dsa_fdb_dump_cb_t *cb, void *data)
- {
--	struct ksz_device *dev = ds->priv;
- 	int ret = 0;
- 	u32 ksz_data;
- 	u32 alu_table[4];
-@@ -1315,9 +1312,9 @@ static const struct dsa_switch_ops ksz9477_switch_ops = {
- 	.port_vlan_filtering	= ksz_port_vlan_filtering,
- 	.port_vlan_add		= ksz_port_vlan_add,
- 	.port_vlan_del		= ksz_port_vlan_del,
--	.port_fdb_dump		= ksz9477_port_fdb_dump,
--	.port_fdb_add		= ksz9477_port_fdb_add,
--	.port_fdb_del		= ksz9477_port_fdb_del,
-+	.port_fdb_dump		= ksz_port_fdb_dump,
-+	.port_fdb_add		= ksz_port_fdb_add,
-+	.port_fdb_del		= ksz_port_fdb_del,
- 	.port_mdb_add           = ksz_port_mdb_add,
- 	.port_mdb_del           = ksz_port_mdb_del,
- 	.port_mirror_add	= ksz_port_mirror_add,
-@@ -1403,6 +1400,9 @@ static const struct ksz_dev_ops ksz9477_dev_ops = {
- 	.mirror_del = ksz9477_port_mirror_del,
- 	.get_stp_reg = ksz9477_get_stp_reg,
- 	.get_caps = ksz9477_get_caps,
-+	.fdb_dump = ksz9477_fdb_dump,
-+	.fdb_add = ksz9477_fdb_add,
-+	.fdb_del = ksz9477_fdb_del,
- 	.mdb_add = ksz9477_mdb_add,
- 	.mdb_del = ksz9477_mdb_del,
- 	.shutdown = ksz9477_reset_switch,
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index b9082952db0f..8f79ff1ac648 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -765,32 +765,40 @@ void ksz_port_fast_age(struct dsa_switch *ds, int port)
- }
- EXPORT_SYMBOL_GPL(ksz_port_fast_age);
- 
-+int ksz_port_fdb_add(struct dsa_switch *ds, int port,
-+		     const unsigned char *addr, u16 vid, struct dsa_db db)
-+{
-+	struct ksz_device *dev = ds->priv;
-+	int ret = -EOPNOTSUPP;
-+
-+	if (dev->dev_ops->fdb_add)
-+		ret = dev->dev_ops->fdb_add(dev, port, addr, vid, db);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(ksz_port_fdb_add);
-+
-+int ksz_port_fdb_del(struct dsa_switch *ds, int port,
-+		     const unsigned char *addr, u16 vid, struct dsa_db db)
-+{
-+	struct ksz_device *dev = ds->priv;
-+	int ret = -EOPNOTSUPP;
-+
-+	if (dev->dev_ops->fdb_del)
-+		ret = dev->dev_ops->fdb_del(dev, port, addr, vid, db);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(ksz_port_fdb_del);
-+
- int ksz_port_fdb_dump(struct dsa_switch *ds, int port, dsa_fdb_dump_cb_t *cb,
- 		      void *data)
- {
- 	struct ksz_device *dev = ds->priv;
--	int ret = 0;
--	u16 i = 0;
--	u16 entries = 0;
--	u8 timestamp = 0;
--	u8 fid;
--	u8 member;
--	struct alu_struct alu;
--
--	do {
--		alu.is_static = false;
--		ret = dev->dev_ops->r_dyn_mac_table(dev, i, alu.mac, &fid,
--						    &member, &timestamp,
--						    &entries);
--		if (!ret && (member & BIT(port))) {
--			ret = cb(alu.mac, alu.fid, alu.is_static, data);
--			if (ret)
--				break;
--		}
--		i++;
--	} while (i < entries);
--	if (i >= entries)
--		ret = 0;
-+	int ret = -EOPNOTSUPP;
-+
-+	if (dev->dev_ops->fdb_dump)
-+		ret = dev->dev_ops->fdb_dump(dev, port, cb, data);
- 
- 	return ret;
- }
-diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index 816581dd7f8e..133b1a257868 100644
---- a/drivers/net/dsa/microchip/ksz_common.h
-+++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -192,6 +192,12 @@ struct ksz_dev_ops {
- 			  bool ingress, struct netlink_ext_ack *extack);
- 	void (*mirror_del)(struct ksz_device *dev, int port,
- 			   struct dsa_mall_mirror_tc_entry *mirror);
-+	int (*fdb_add)(struct ksz_device *dev, int port,
-+		       const unsigned char *addr, u16 vid, struct dsa_db db);
-+	int (*fdb_del)(struct ksz_device *dev, int port,
-+		       const unsigned char *addr, u16 vid, struct dsa_db db);
-+	int (*fdb_dump)(struct ksz_device *dev, int port,
-+			dsa_fdb_dump_cb_t *cb, void *data);
- 	int (*mdb_add)(struct ksz_device *dev, int port,
- 		       const struct switchdev_obj_port_mdb *mdb,
- 		       struct dsa_db db);
-@@ -239,6 +245,10 @@ void ksz_port_bridge_leave(struct dsa_switch *ds, int port,
- 			   struct dsa_bridge bridge);
- void ksz_port_stp_state_set(struct dsa_switch *ds, int port, u8 state);
- void ksz_port_fast_age(struct dsa_switch *ds, int port);
-+int ksz_port_fdb_add(struct dsa_switch *ds, int port,
-+		     const unsigned char *addr, u16 vid, struct dsa_db db);
-+int ksz_port_fdb_del(struct dsa_switch *ds, int port,
-+		     const unsigned char *addr, u16 vid, struct dsa_db db);
- int ksz_port_fdb_dump(struct dsa_switch *ds, int port, dsa_fdb_dump_cb_t *cb,
- 		      void *data);
- int ksz_port_mdb_add(struct dsa_switch *ds, int port,
 -- 
-2.36.1
+Thanks,
+-Kai
+
 
