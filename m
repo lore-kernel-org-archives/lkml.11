@@ -2,53 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD4E6C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:33:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 855F6C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:33:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237207AbiE3NdG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:33:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43578 "EHLO
+        id S237212AbiE3NdK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:33:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237357AbiE3NaX (ORCPT
+        with ESMTP id S237250AbiE3NaQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:30:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CD298BD31;
-        Mon, 30 May 2022 06:27:13 -0700 (PDT)
+        Mon, 30 May 2022 09:30:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31CAD87A3A;
+        Mon, 30 May 2022 06:26:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 58695B80D89;
-        Mon, 30 May 2022 13:27:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C671C36AE3;
-        Mon, 30 May 2022 13:27:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 62467B80AE8;
+        Mon, 30 May 2022 13:26:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3C78C385B8;
+        Mon, 30 May 2022 13:26:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917231;
-        bh=lYHN3M9R/cWlaC8P7t69WHiCUtqTwEPDM2IyLMD+e50=;
+        s=k20201202; t=1653917217;
+        bh=uGxBakii2rIG+iogD6UuanWdzvcp4zMwBqkxmY5yAyg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IaaSqpowAjRUYcKt+LL2VT34HU/uXqNEWJVXL1WP8V3uth690uVx62QCICLkojkZZ
-         WVFMzjmvlQCnEJQ82YKaN5yADT3fbxC19O20D19EmhwFd0sljuG82sATNWBIgjd5DW
-         O+93XWSqtNjPvBqBX0oFBWqvboVyWbGGUugJJXtp24igvDpGPFElmaRGQnnFFcOZGm
-         x+Zch73KFX+fKosa/9W90TZUeQwcHk+UHwAr+m/u5hoZJ5bFk22TUhdbaR8KL4kpHY
-         slwlT6krBWzQPRJzj3vPGiYL6Adaf8NItKGitkPM/AdndY1joqz5le3bzi4Q4qKHUQ
-         VwCksP5kA/G2w==
+        b=m9BZltpesy5bDsFmY/Kc1/2xMZDDDGwNvn7ChI0HJJPV9IeQ0iK2gOZhjMv+Y5VrZ
+         qfvERYTlGn38ibw9Kai16gR7tTNULRo+4nX7xsjSLOL3DuVO//tzADIAz6ryRs/pDD
+         jJ7doSZPaj/R+hGKIegilFgVeXvBMCRVXka5BCxrjHIqrYA5QqTYDMAy+vSlHYNDRM
+         ViC9D8xkSh+aSdIvIUV2TIH5+1tXR6CvymtMh8hq9pbaivgQOSEBq8BixwS+JdmB5D
+         K29cME7Yym+VNxUL3N6DRCBuEHSb2B1BnsTZ4+1WGkaBqsAtJfv2YXrSYuwmlu8ATU
+         HEV3EHNO8xRng==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Hans de Goede <hdegoede@redhat.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, cezary.rojewski@intel.com,
-        liam.r.girdwood@linux.intel.com, yang.jie@linux.intel.com,
-        perex@perex.cz, tiwai@suse.com, andriy.shevchenko@linux.intel.com,
-        peter.ujfalusi@linux.intel.com, akihiko.odaki@gmail.com,
-        alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.18 064/159] ASoC: Intel: bytcr_rt5640: Add quirk for the HP Pro Tablet 408
-Date:   Mon, 30 May 2022 09:22:49 -0400
-Message-Id: <20220530132425.1929512-64-sashal@kernel.org>
+Cc:     Haohui Mai <ricetons@gmail.com>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, Xinhui.Pan@amd.com,
+        airlied@linux.ie, daniel@ffwll.ch, YiPeng.Chai@amd.com,
+        tao.zhou1@amd.com, Hawking.Zhang@amd.com, rajib.mahapatra@amd.com,
+        Jack.Xiao@amd.com, Lang.Yu@amd.com, evan.quan@amd.com,
+        Prike.Liang@amd.com, Bokun.Zhang@amd.com, rohit.khaire@amd.com,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.18 059/159] drm/amdgpu/sdma: Fix incorrect calculations of the wptr of the doorbells
+Date:   Mon, 30 May 2022 09:22:44 -0400
+Message-Id: <20220530132425.1929512-59-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530132425.1929512-1-sashal@kernel.org>
 References: <20220530132425.1929512-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -56,50 +58,97 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Haohui Mai <ricetons@gmail.com>
 
-[ Upstream commit ce216cfa84a4e1c23b105e652c550bdeaac9e922 ]
+[ Upstream commit 7dba6e838e741caadcf27ef717b6dcb561e77f89 ]
 
-Add a quirk for the HP Pro Tablet 408, this BYTCR tablet has no CHAN
-package in its ACPI tables and uses SSP0-AIF1 rather then SSP0-AIF2 which
-is the default for BYTCR devices.
+This patch fixes the issue where the driver miscomputes the 64-bit
+values of the wptr of the SDMA doorbell when initializing the
+hardware. SDMA engines v4 and later on have full 64-bit registers for
+wptr thus they should be set properly.
 
-It also uses DMIC1 for the internal mic rather then the default IN3
-and it uses JD2 rather then the default JD1 for jack-detect.
+Older generation hardwares like CIK / SI have only 16 / 20 / 24bits
+for the WPTR, where the calls of lower_32_bits() will be removed in a
+following patch.
 
-BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=211485
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Acked-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Link: https://lore.kernel.org/r/20220427134918.527381-1-hdegoede@redhat.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Reviewed-by: Christian König <christian.koenig@amd.com>
+Signed-off-by: Haohui Mai <ricetons@gmail.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/intel/boards/bytcr_rt5640.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ drivers/gpu/drm/amd/amdgpu/sdma_v4_0.c | 4 ++--
+ drivers/gpu/drm/amd/amdgpu/sdma_v5_0.c | 8 ++++----
+ drivers/gpu/drm/amd/amdgpu/sdma_v5_2.c | 8 ++++----
+ 3 files changed, 10 insertions(+), 10 deletions(-)
 
-diff --git a/sound/soc/intel/boards/bytcr_rt5640.c b/sound/soc/intel/boards/bytcr_rt5640.c
-index d76a505052fb..f81ae742faa7 100644
---- a/sound/soc/intel/boards/bytcr_rt5640.c
-+++ b/sound/soc/intel/boards/bytcr_rt5640.c
-@@ -773,6 +773,18 @@ static const struct dmi_system_id byt_rt5640_quirk_table[] = {
- 					BYT_RT5640_OVCD_SF_0P75 |
- 					BYT_RT5640_MCLK_EN),
- 	},
-+	{	/* HP Pro Tablet 408 */
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "Hewlett-Packard"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "HP Pro Tablet 408"),
-+		},
-+		.driver_data = (void *)(BYT_RT5640_DMIC1_MAP |
-+					BYT_RT5640_JD_SRC_JD2_IN4N |
-+					BYT_RT5640_OVCD_TH_1500UA |
-+					BYT_RT5640_OVCD_SF_0P75 |
-+					BYT_RT5640_SSP0_AIF1 |
-+					BYT_RT5640_MCLK_EN),
-+	},
- 	{	/* HP Stream 7 */
- 		.matches = {
- 			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Hewlett-Packard"),
+diff --git a/drivers/gpu/drm/amd/amdgpu/sdma_v4_0.c b/drivers/gpu/drm/amd/amdgpu/sdma_v4_0.c
+index d7e8f7232364..ff86c43b63d1 100644
+--- a/drivers/gpu/drm/amd/amdgpu/sdma_v4_0.c
++++ b/drivers/gpu/drm/amd/amdgpu/sdma_v4_0.c
+@@ -772,8 +772,8 @@ static void sdma_v4_0_ring_set_wptr(struct amdgpu_ring *ring)
+ 
+ 		DRM_DEBUG("Using doorbell -- "
+ 				"wptr_offs == 0x%08x "
+-				"lower_32_bits(ring->wptr) << 2 == 0x%08x "
+-				"upper_32_bits(ring->wptr) << 2 == 0x%08x\n",
++				"lower_32_bits(ring->wptr << 2) == 0x%08x "
++				"upper_32_bits(ring->wptr << 2) == 0x%08x\n",
+ 				ring->wptr_offs,
+ 				lower_32_bits(ring->wptr << 2),
+ 				upper_32_bits(ring->wptr << 2));
+diff --git a/drivers/gpu/drm/amd/amdgpu/sdma_v5_0.c b/drivers/gpu/drm/amd/amdgpu/sdma_v5_0.c
+index a8d49c005f73..627eb1f147c2 100644
+--- a/drivers/gpu/drm/amd/amdgpu/sdma_v5_0.c
++++ b/drivers/gpu/drm/amd/amdgpu/sdma_v5_0.c
+@@ -394,8 +394,8 @@ static void sdma_v5_0_ring_set_wptr(struct amdgpu_ring *ring)
+ 	if (ring->use_doorbell) {
+ 		DRM_DEBUG("Using doorbell -- "
+ 				"wptr_offs == 0x%08x "
+-				"lower_32_bits(ring->wptr) << 2 == 0x%08x "
+-				"upper_32_bits(ring->wptr) << 2 == 0x%08x\n",
++				"lower_32_bits(ring->wptr << 2) == 0x%08x "
++				"upper_32_bits(ring->wptr << 2) == 0x%08x\n",
+ 				ring->wptr_offs,
+ 				lower_32_bits(ring->wptr << 2),
+ 				upper_32_bits(ring->wptr << 2));
+@@ -774,9 +774,9 @@ static int sdma_v5_0_gfx_resume(struct amdgpu_device *adev)
+ 
+ 		if (!amdgpu_sriov_vf(adev)) { /* only bare-metal use register write for wptr */
+ 			WREG32(sdma_v5_0_get_reg_offset(adev, i, mmSDMA0_GFX_RB_WPTR),
+-			       lower_32_bits(ring->wptr) << 2);
++			       lower_32_bits(ring->wptr << 2));
+ 			WREG32(sdma_v5_0_get_reg_offset(adev, i, mmSDMA0_GFX_RB_WPTR_HI),
+-			       upper_32_bits(ring->wptr) << 2);
++			       upper_32_bits(ring->wptr << 2));
+ 		}
+ 
+ 		doorbell = RREG32_SOC15_IP(GC, sdma_v5_0_get_reg_offset(adev, i, mmSDMA0_GFX_DOORBELL));
+diff --git a/drivers/gpu/drm/amd/amdgpu/sdma_v5_2.c b/drivers/gpu/drm/amd/amdgpu/sdma_v5_2.c
+index 824eace69884..a5eb82bfeaa8 100644
+--- a/drivers/gpu/drm/amd/amdgpu/sdma_v5_2.c
++++ b/drivers/gpu/drm/amd/amdgpu/sdma_v5_2.c
+@@ -295,8 +295,8 @@ static void sdma_v5_2_ring_set_wptr(struct amdgpu_ring *ring)
+ 	if (ring->use_doorbell) {
+ 		DRM_DEBUG("Using doorbell -- "
+ 				"wptr_offs == 0x%08x "
+-				"lower_32_bits(ring->wptr) << 2 == 0x%08x "
+-				"upper_32_bits(ring->wptr) << 2 == 0x%08x\n",
++				"lower_32_bits(ring->wptr << 2) == 0x%08x "
++				"upper_32_bits(ring->wptr << 2) == 0x%08x\n",
+ 				ring->wptr_offs,
+ 				lower_32_bits(ring->wptr << 2),
+ 				upper_32_bits(ring->wptr << 2));
+@@ -672,8 +672,8 @@ static int sdma_v5_2_gfx_resume(struct amdgpu_device *adev)
+ 		WREG32_SOC15_IP(GC, sdma_v5_2_get_reg_offset(adev, i, mmSDMA0_GFX_MINOR_PTR_UPDATE), 1);
+ 
+ 		if (!amdgpu_sriov_vf(adev)) { /* only bare-metal use register write for wptr */
+-			WREG32(sdma_v5_2_get_reg_offset(adev, i, mmSDMA0_GFX_RB_WPTR), lower_32_bits(ring->wptr) << 2);
+-			WREG32(sdma_v5_2_get_reg_offset(adev, i, mmSDMA0_GFX_RB_WPTR_HI), upper_32_bits(ring->wptr) << 2);
++			WREG32(sdma_v5_2_get_reg_offset(adev, i, mmSDMA0_GFX_RB_WPTR), lower_32_bits(ring->wptr << 2));
++			WREG32(sdma_v5_2_get_reg_offset(adev, i, mmSDMA0_GFX_RB_WPTR_HI), upper_32_bits(ring->wptr << 2));
+ 		}
+ 
+ 		doorbell = RREG32_SOC15_IP(GC, sdma_v5_2_get_reg_offset(adev, i, mmSDMA0_GFX_DOORBELL));
 -- 
 2.35.1
 
