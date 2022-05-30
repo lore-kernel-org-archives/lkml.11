@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4D2FC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D44E4C43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:03:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239039AbiE3OAM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:00:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34766 "EHLO
+        id S239123AbiE3OAZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:00:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239310AbiE3Nv1 (ORCPT
+        with ESMTP id S239308AbiE3Nv1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 30 May 2022 09:51:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73EA484A22;
-        Mon, 30 May 2022 06:36:24 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D10DE84A23;
+        Mon, 30 May 2022 06:36:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2DD7AB80D84;
-        Mon, 30 May 2022 13:36:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85931C3411E;
-        Mon, 30 May 2022 13:36:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 635EC60F78;
+        Mon, 30 May 2022 13:36:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F92CC3411A;
+        Mon, 30 May 2022 13:36:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917781;
-        bh=S8nu9Wrj80nFqvcHMwSeosMnoFWh1xZotRyH4pzSSZw=;
+        s=k20201202; t=1653917775;
+        bh=phB7LXbMznbVSVQXBgVCBso+VRteL7PNg//ZRtMP2a8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LaOnXRWhKfNePUJ0Ci3hGaa5HDF7YbNJfdO4WChUp6oLfl425ItnixNf5IskiXFQ2
-         9YIhAqaQsq33D54l/uMAGIvgc2AqHfHB3vL6xaEfm6DiAkffLjbZQFJ+K1lScZkmqz
-         30JAID1qlyiZnKDupaZ+PEzDJPfwu/VKWS/5cH+gvchFkQyQh2VMFABWZPeSvF6ChP
-         hdZ6lZWbKW9YXAo2wD+bqqDKdYtXVCp213vFO02Bg03igmS66Onu9yKN/onkgm9IvV
-         sDdAoFbEDqnJCF/fEuWxoz5yYP/FTamGQ3M1SYjyDjNzwqFxxFDL8AEWkRtWn7BWfD
-         0Ufae3XCpYEzQ==
+        b=LIS0IJSvBp8KGJdRd3t8HjBM4aTAc4X8QXHwGxHblK2WWpUC1RYM/vT7hkGRCKXdR
+         baUhz9bHkbBU+F8gru/YGoEkNeMnRavEnZvsI4kfkzhDH4MeYfDIimTycEHjg7yeq8
+         7KP6/w4sK670gPDIsjWKgO84YJgvV2LjxeHDVMGONswdM8S11WKiYQ99R6mv5e4L4w
+         I+2R6Hn4hTkhfHjfMh1mU7/hamdn7q4OiYzAZHA7l1moWnZrbtCpeokbkGr0o7ahG+
+         R621luR/CxygBmnjuGk3O7NcEY0AtBwpTDH8PR0nIYGDW/JJfgR3NAcDVgXeKvCm82
+         G2+n5c19sqPiA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+Cc:     Hangyu Hua <hbh25y@gmail.com>,
         Hans Verkuil <hverkuil-cisco@xs4all.nl>,
         Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, p.zabel@pengutronix.de,
-        gregkh@linuxfoundation.org, linux-media@vger.kernel.org,
-        linux-rockchip@lists.infradead.org, linux-staging@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.17 095/135] media: hantro: HEVC: unconditionnaly set pps_{cb/cr}_qp_offset values
-Date:   Mon, 30 May 2022 09:30:53 -0400
-Message-Id: <20220530133133.1931716-95-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, jacob-chen@iotwrt.com,
+        ezequiel@vanguardiasur.com.ar, heiko@sntech.de,
+        linux-media@vger.kernel.org, linux-rockchip@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.17 093/135] media: rga: fix possible memory leak in rga_probe
+Date:   Mon, 30 May 2022 09:30:51 -0400
+Message-Id: <20220530133133.1931716-93-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133133.1931716-1-sashal@kernel.org>
 References: <20220530133133.1931716-1-sashal@kernel.org>
@@ -55,47 +55,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-[ Upstream commit 46c836569196f377f87a3657b330cffaf94bd727 ]
+[ Upstream commit a71eb6025305192e646040cd76ccacb5bd48a1b5 ]
 
-Always set pps_cb_qp_offset and pps_cr_qp_offset values in Hantro/G2
-register whatever is V4L2_HEVC_PPS_FLAG_PPS_SLICE_CHROMA_QP_OFFSETS_PRESENT
-flag value.
-The vendor code does the same to set these values.
-This fixes conformance test CAINIT_G_SHARP_3.
+rga->m2m_dev needs to be freed when rga_probe fails.
 
-Fluster HEVC score is increase by one with this patch.
-
-Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-Reviewed-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
 Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/media/hantro/hantro_g2_hevc_dec.c | 9 ++-------
- 1 file changed, 2 insertions(+), 7 deletions(-)
+ drivers/media/platform/rockchip/rga/rga.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/staging/media/hantro/hantro_g2_hevc_dec.c b/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
-index 99d8ea7543da..fab326389261 100644
---- a/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
-+++ b/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
-@@ -180,13 +180,8 @@ static void set_params(struct hantro_ctx *ctx)
- 		hantro_reg_write(vpu, &g2_max_cu_qpd_depth, 0);
+diff --git a/drivers/media/platform/rockchip/rga/rga.c b/drivers/media/platform/rockchip/rga/rga.c
+index 3d3d1062e212..2f8df74ad0fd 100644
+--- a/drivers/media/platform/rockchip/rga/rga.c
++++ b/drivers/media/platform/rockchip/rga/rga.c
+@@ -865,7 +865,7 @@ static int rga_probe(struct platform_device *pdev)
+ 
+ 	ret = pm_runtime_resume_and_get(rga->dev);
+ 	if (ret < 0)
+-		goto rel_vdev;
++		goto rel_m2m;
+ 
+ 	rga->version.major = (rga_read(rga, RGA_VERSION_INFO) >> 24) & 0xFF;
+ 	rga->version.minor = (rga_read(rga, RGA_VERSION_INFO) >> 20) & 0x0F;
+@@ -881,7 +881,7 @@ static int rga_probe(struct platform_device *pdev)
+ 					   DMA_ATTR_WRITE_COMBINE);
+ 	if (!rga->cmdbuf_virt) {
+ 		ret = -ENOMEM;
+-		goto rel_vdev;
++		goto rel_m2m;
  	}
  
--	if (pps->flags & V4L2_HEVC_PPS_FLAG_PPS_SLICE_CHROMA_QP_OFFSETS_PRESENT) {
--		hantro_reg_write(vpu, &g2_cb_qp_offset, pps->pps_cb_qp_offset);
--		hantro_reg_write(vpu, &g2_cr_qp_offset, pps->pps_cr_qp_offset);
--	} else {
--		hantro_reg_write(vpu, &g2_cb_qp_offset, 0);
--		hantro_reg_write(vpu, &g2_cr_qp_offset, 0);
--	}
-+	hantro_reg_write(vpu, &g2_cb_qp_offset, pps->pps_cb_qp_offset);
-+	hantro_reg_write(vpu, &g2_cr_qp_offset, pps->pps_cr_qp_offset);
- 
- 	hantro_reg_write(vpu, &g2_filt_offset_beta, pps->pps_beta_offset_div2);
- 	hantro_reg_write(vpu, &g2_filt_offset_tc, pps->pps_tc_offset_div2);
+ 	rga->src_mmu_pages =
+@@ -918,6 +918,8 @@ static int rga_probe(struct platform_device *pdev)
+ free_dma:
+ 	dma_free_attrs(rga->dev, RGA_CMDBUF_SIZE, rga->cmdbuf_virt,
+ 		       rga->cmdbuf_phy, DMA_ATTR_WRITE_COMBINE);
++rel_m2m:
++	v4l2_m2m_release(rga->m2m_dev);
+ rel_vdev:
+ 	video_device_release(vfd);
+ unreg_v4l2_dev:
 -- 
 2.35.1
 
