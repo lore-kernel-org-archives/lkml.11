@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0301DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:43:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8BCBC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:43:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238002AbiE3Nnb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:43:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57128 "EHLO
+        id S233984AbiE3Nni (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:43:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237673AbiE3Ngz (ORCPT
+        with ESMTP id S235035AbiE3NhL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:36:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59FFE62CCE;
-        Mon, 30 May 2022 06:30:41 -0700 (PDT)
+        Mon, 30 May 2022 09:37:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99ABB82174;
+        Mon, 30 May 2022 06:31:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ECC7C60DD4;
-        Mon, 30 May 2022 13:30:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35CAEC3411C;
-        Mon, 30 May 2022 13:30:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4D7B5B80DB0;
+        Mon, 30 May 2022 13:30:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C95C5C3411C;
+        Mon, 30 May 2022 13:30:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917440;
-        bh=+o/sFHWDGEWMaxy4QsdwsNn9L7s09ctGvgv72soVAO8=;
+        s=k20201202; t=1653917457;
+        bh=zyZ5vI2l/3gg/uoWaooDfVMf9ohSXQs2r2KPinSGMqM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lmRFvWoQ+iyuY+kb46BAjSsRL5836fzpzMlTgWQzZ5hoPJrBHe/o597kYaqPKOmzQ
-         AfsDT57mZx3dRpCmnz8dyxBiGcHwjb+yTnQKluhHH+eZkV+3PISBulGgozhtvCHNWB
-         XWIbf55hhVszwPCwVVq6e4mFlf6UJhYsMqEoDpUWKL54B5B2MqvMrbw6ii+Y5eMBr1
-         uUy7zNarJD+HFr2c39nITdwRrfY7Hrc+9SfYZKV95+Np++yf11OaPccZ3LbGxq7nC/
-         0gAmRKtlGzeLgvNtMHCfPYCij5WfX/a58t5Us2B1mjPPU3ZnJrhf/V5drkz2oHgpCU
-         RmDuMwlGdwI+Q==
+        b=pXTdU9+ktqSxK0KctUCk88cqIlUYLserGCp5/J7olRk609ZrncyhGVkgo22j6ML2G
+         94fDl6NQnixFVsdQ6j6yweoV5roPQiVzWatwqoafz5iCRUx90hXluA8YsyISPs5A7x
+         EctjWGnviKTSDWbZJlIjKAZg5TAA4m3vVJaEtkh1TkdHZ9bq/3HpMG1o7upZ6O7XYU
+         Z11bBYMa1fQrWeiIdE3cJvSgphL4B0fVIfx6g6ZsceNzkcgvctiUX+l8FZMMky+zUF
+         gd14Xnh54bSixt2fsGmm4kR/oHLVSIK6n3s1XE1LvwKvfhJEmGV/X0ukucjsnalLyU
+         DZXY6EvRsw+iw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ping-Ke Shih <pkshih@realtek.com>, Kalle Valo <kvalo@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 137/159] rtw89: cfo: check mac_id to avoid out-of-bounds
-Date:   Mon, 30 May 2022 09:24:02 -0400
-Message-Id: <20220530132425.1929512-137-sashal@kernel.org>
+Cc:     Borislav Petkov <bp@suse.de>, Randy Dunlap <rdunlap@infradead.org>,
+        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org
+Subject: [PATCH AUTOSEL 5.18 145/159] x86/microcode: Add explicit CPU vendor dependency
+Date:   Mon, 30 May 2022 09:24:10 -0400
+Message-Id: <20220530132425.1929512-145-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530132425.1929512-1-sashal@kernel.org>
 References: <20220530132425.1929512-1-sashal@kernel.org>
@@ -52,71 +52,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ping-Ke Shih <pkshih@realtek.com>
+From: Borislav Petkov <bp@suse.de>
 
-[ Upstream commit 97df85871a5b187609d30fca6d85b912d9e02f29 ]
+[ Upstream commit 9c55d99e099bd7aa6b91fce8718505c35d5dfc65 ]
 
-Somehow, hardware reports incorrect mac_id and pollute memory. Check index
-before we access the array.
+Add an explicit dependency to the respective CPU vendor so that the
+respective microcode support for it gets built only when that support is
+enabled.
 
-  UBSAN: array-index-out-of-bounds in rtw89/phy.c:2517:23
-  index 188 is out of range for type 's32 [64]'
-  CPU: 1 PID: 51550 Comm: irq/35-rtw89_pc Tainted: G           OE
-  Call Trace:
-   <IRQ>
-   show_stack+0x52/0x58
-   dump_stack_lvl+0x4c/0x63
-   dump_stack+0x10/0x12
-   ubsan_epilogue+0x9/0x45
-   __ubsan_handle_out_of_bounds.cold+0x44/0x49
-   ? __alloc_skb+0x92/0x1d0
-   rtw89_phy_cfo_parse+0x44/0x7f [rtw89_core]
-   rtw89_core_rx+0x261/0x871 [rtw89_core]
-   ? __alloc_skb+0xee/0x1d0
-   rtw89_pci_napi_poll+0x3fa/0x4ea [rtw89_pci]
-   __napi_poll+0x33/0x1a0
-   net_rx_action+0x126/0x260
-   ? __queue_work+0x217/0x4c0
-   __do_softirq+0xd9/0x315
-   ? disable_irq_nosync+0x10/0x10
-   do_softirq.part.0+0x6d/0x90
-   </IRQ>
-   <TASK>
-   __local_bh_enable_ip+0x62/0x70
-   rtw89_pci_interrupt_threadfn+0x182/0x1a6 [rtw89_pci]
-   irq_thread_fn+0x28/0x60
-   irq_thread+0xc8/0x190
-   ? irq_thread_fn+0x60/0x60
-   kthread+0x16b/0x190
-   ? irq_thread_check_affinity+0xe0/0xe0
-   ? set_kthread_struct+0x50/0x50
-   ret_from_fork+0x22/0x30
-   </TASK>
-
-Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220516005215.5878-4-pkshih@realtek.com
+Reported-by: Randy Dunlap <rdunlap@infradead.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/8ead0da9-9545-b10d-e3db-7df1a1f219e4@infradead.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/realtek/rtw89/phy.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ arch/x86/Kconfig | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/realtek/rtw89/phy.c b/drivers/net/wireless/realtek/rtw89/phy.c
-index ac211d897311..8414f30184b9 100644
---- a/drivers/net/wireless/realtek/rtw89/phy.c
-+++ b/drivers/net/wireless/realtek/rtw89/phy.c
-@@ -2213,6 +2213,11 @@ void rtw89_phy_cfo_parse(struct rtw89_dev *rtwdev, s16 cfo_val,
- 	struct rtw89_cfo_tracking_info *cfo = &rtwdev->cfo_tracking;
- 	u8 macid = phy_ppdu->mac_id;
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 4bed3abf444d..b2c65f573353 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -1313,7 +1313,7 @@ config MICROCODE
  
-+	if (macid >= CFO_TRACK_MAX_USER) {
-+		rtw89_warn(rtwdev, "mac_id %d is out of range\n", macid);
-+		return;
-+	}
-+
- 	cfo->cfo_tail[macid] += cfo_val;
- 	cfo->cfo_cnt[macid]++;
- 	cfo->packet_count++;
+ config MICROCODE_INTEL
+ 	bool "Intel microcode loading support"
+-	depends on MICROCODE
++	depends on CPU_SUP_INTEL && MICROCODE
+ 	default MICROCODE
+ 	help
+ 	  This options enables microcode patch loading support for Intel
+@@ -1325,7 +1325,7 @@ config MICROCODE_INTEL
+ 
+ config MICROCODE_AMD
+ 	bool "AMD microcode loading support"
+-	depends on MICROCODE
++	depends on CPU_SUP_AMD && MICROCODE
+ 	help
+ 	  If you select this option, microcode patch loading support for AMD
+ 	  processors will be enabled.
 -- 
 2.35.1
 
