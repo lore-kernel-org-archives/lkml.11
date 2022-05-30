@@ -2,49 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C00F0C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:43:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 130F9C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:43:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237992AbiE3NnM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:43:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57054 "EHLO
+        id S237436AbiE3NnS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:43:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237557AbiE3Ngv (ORCPT
+        with ESMTP id S237646AbiE3Ngy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:36:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C816CB49A;
-        Mon, 30 May 2022 06:30:26 -0700 (PDT)
+        Mon, 30 May 2022 09:36:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9AC060DB6;
+        Mon, 30 May 2022 06:30:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6E52EB80DA9;
-        Mon, 30 May 2022 13:30:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 549CDC385B8;
-        Mon, 30 May 2022 13:30:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 29D4660EE0;
+        Mon, 30 May 2022 13:30:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97E1CC385B8;
+        Mon, 30 May 2022 13:30:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917424;
-        bh=AXSUpGzFRrsZs0apkR/T9iXU45rGIqbP27cyfYEiBG8=;
+        s=k20201202; t=1653917433;
+        bh=xRzVVb9dp3AfJuQgs6IuBJGSwSqg0aexqaH6UBZReSc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lGt94bNRvaGKOr0mgcilbO0dUrzYHc/TnnddxReHuOHlrbnKtyLpJQzAbVtcyQnRs
-         AdbVCYJ4XmyAWFBs8dS9aPJ7DCHT/yVz9ZpWPzFLUB9sAIUObdnkV3QDS2mdi5MKgO
-         e18d/Ge3+Gjje9GRpeKb1ot9mY0gzwNQ3qGGIRFQ52cjFFQUgkt08ce+O0PWn4DUdW
-         Bt7BfU8S7iCp78DaYeb/jVu8MWIh9QGJ7gp4YrsOq6HQA9fgsE1AvnnMomx4xcJKzN
-         fmKo03DJwMXLzvnOCneMXN2jpp5zNiNPv2SlREzKywnO6CK49YhdQi7TO6QEMfU0pe
-         C3MutYenHwW5g==
+        b=EChGrhftWYhvDU+MG1c6B62esrZ9vMbXnCY5xCQ8mllztiCTksMoj8ypMVUEaDKHK
+         HCFHCF0vREkIH6LlOLoMC329tJn94EyxOH2hSqNey8RM/uQvAuXpwa8Ksw4EeuxgLf
+         iD1Je94SEP7G6LWSPu3dSP71dwxzLJuf16UeWcRW34IuVHX3CF3cjXD+XthSd3vkae
+         GpX1aHiZ6X+5PODhahq80UWXhE6O9IiiUjXQ1rZLSDoTs0XoiZRTfxI/7GkspJsAtA
+         3yJnq2KDtN3FQCuMBft6J4IQ7+JBYSOD/uJOcJZyGQk18o9cWHTKC1+ne1EiIiudN0
+         Uc4T0JA3aiQxQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sathishkumar S <sathishkumar.sundararaju@amd.com>,
-        Lijo Lazar <lijo.lazar@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, evan.quan@amd.com,
-        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
-        daniel@ffwll.ch, ray.huang@amd.com, Xiaomeng.Hou@amd.com,
-        aaron.liu@amd.com, kevin1.wang@amd.com, mario.limonciello@amd.com,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.18 130/159] drm/amd/pm: update smartshift powerboost calc for smu13
-Date:   Mon, 30 May 2022 09:23:55 -0400
-Message-Id: <20220530132425.1929512-130-sashal@kernel.org>
+Cc:     Daniel Latypov <dlatypov@google.com>,
+        David Gow <davidgow@google.com>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-kselftest@vger.kernel.org, kunit-dev@googlegroups.com
+Subject: [PATCH AUTOSEL 5.18 133/159] kunit: tool: make parser stop overwriting status of suites w/ no_tests
+Date:   Mon, 30 May 2022 09:23:58 -0400
+Message-Id: <20220530132425.1929512-133-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530132425.1929512-1-sashal@kernel.org>
 References: <20220530132425.1929512-1-sashal@kernel.org>
@@ -56,113 +54,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sathishkumar S <sathishkumar.sundararaju@amd.com>
+From: Daniel Latypov <dlatypov@google.com>
 
-[ Upstream commit cdf4c8ec39872a61a58d62f19b4db80f0f7bc586 ]
+[ Upstream commit dbf0b0d53a2b5afa6ef7372dcedf52302669fc2c ]
 
-smartshift apu and dgpu power boost are reported as percentage
-with respect to their power limits. adjust the units of power before
-calculating the percentage of boost.
+Consider this invocation
+$ ./tools/testing/kunit/kunit.py parse <<EOF
+  TAP version 14
+  1..2
+  ok 1 - suite
+    # Subtest: no_tests_suite
+    # catastrophic error!
+  not ok 1 - no_tests_suite
+EOF
 
-Signed-off-by: Sathishkumar S <sathishkumar.sundararaju@amd.com>
-Reviewed-by: Lijo Lazar <lijo.lazar@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+It will have a 0 exit code even though there's a "not ok".
+
+Consider this one:
+$ ./tools/testing/kunit/kunit.py parse <<EOF
+  TAP version 14
+  1..2
+  ok 1 - suite
+  not ok 1 - no_tests_suite
+EOF
+
+It will a non-zero exit code.
+
+Why?
+We have this line in the kunit_parser.py
+> parent_test = parse_test_header(lines, test)
+where we have special handling when we see "# Subtest" and we ignore the
+explicit reported "not ok 1" status!
+
+Also, NO_TESTS at a suite-level only results in a non-zero status code
+where then there's only one suite atm.
+
+This change is the minimal one to make sure we don't overwrite it.
+
+Signed-off-by: Daniel Latypov <dlatypov@google.com>
+Reviewed-by: David Gow <davidgow@google.com>
+Reviewed-by: Brendan Higgins <brendanhiggins@google.com>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../drm/amd/pm/swsmu/smu13/yellow_carp_ppt.c  | 62 ++++++++++++++-----
- 1 file changed, 46 insertions(+), 16 deletions(-)
+ tools/testing/kunit/kunit_parser.py                        | 7 +++++--
+ .../test_data/test_is_test_passed-no_tests_no_plan.log     | 2 +-
+ 2 files changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu13/yellow_carp_ppt.c b/drivers/gpu/drm/amd/pm/swsmu/smu13/yellow_carp_ppt.c
-index e2d099409123..87257b1b028f 100644
---- a/drivers/gpu/drm/amd/pm/swsmu/smu13/yellow_carp_ppt.c
-+++ b/drivers/gpu/drm/amd/pm/swsmu/smu13/yellow_carp_ppt.c
-@@ -276,6 +276,42 @@ static int yellow_carp_mode2_reset(struct smu_context *smu)
- 	return yellow_carp_mode_reset(smu, SMU_RESET_MODE_2);
- }
+diff --git a/tools/testing/kunit/kunit_parser.py b/tools/testing/kunit/kunit_parser.py
+index 05ff334761dd..2f93ed1d7f99 100644
+--- a/tools/testing/kunit/kunit_parser.py
++++ b/tools/testing/kunit/kunit_parser.py
+@@ -789,8 +789,11 @@ def parse_test(lines: LineStream, expected_num: int, log: List[str]) -> Test:
  
-+
-+static void yellow_carp_get_ss_power_percent(SmuMetrics_t *metrics,
-+					uint32_t *apu_percent, uint32_t *dgpu_percent)
-+{
-+	uint32_t apu_boost = 0;
-+	uint32_t dgpu_boost = 0;
-+	uint16_t apu_limit = 0;
-+	uint16_t dgpu_limit = 0;
-+	uint16_t apu_power = 0;
-+	uint16_t dgpu_power = 0;
-+
-+	/* APU and dGPU power values are reported in milli Watts
-+	 * and STAPM power limits are in Watts */
-+	apu_power = metrics->ApuPower/1000;
-+	apu_limit = metrics->StapmOpnLimit;
-+	if (apu_power > apu_limit && apu_limit != 0)
-+		apu_boost =  ((apu_power - apu_limit) * 100) / apu_limit;
-+	apu_boost = (apu_boost > 100) ? 100 : apu_boost;
-+
-+	dgpu_power = metrics->dGpuPower/1000;
-+	if (metrics->StapmCurrentLimit > metrics->StapmOpnLimit)
-+		dgpu_limit = metrics->StapmCurrentLimit - metrics->StapmOpnLimit;
-+	if (dgpu_power > dgpu_limit && dgpu_limit != 0)
-+		dgpu_boost = ((dgpu_power - dgpu_limit) * 100) / dgpu_limit;
-+	dgpu_boost = (dgpu_boost > 100) ? 100 : dgpu_boost;
-+
-+	if (dgpu_boost >= apu_boost)
-+		apu_boost = 0;
-+	else
-+		dgpu_boost = 0;
-+
-+	*apu_percent = apu_boost;
-+	*dgpu_percent = dgpu_boost;
-+
-+}
-+
- static int yellow_carp_get_smu_metrics_data(struct smu_context *smu,
- 							MetricsMember_t member,
- 							uint32_t *value)
-@@ -284,6 +320,8 @@ static int yellow_carp_get_smu_metrics_data(struct smu_context *smu,
+ 	# Check for there being no tests
+ 	if parent_test and len(subtests) == 0:
+-		test.status = TestStatus.NO_TESTS
+-		test.add_error('0 tests run!')
++		# Don't override a bad status if this test had one reported.
++		# Assumption: no subtests means CRASHED is from Test.__init__()
++		if test.status in (TestStatus.TEST_CRASHED, TestStatus.SUCCESS):
++			test.status = TestStatus.NO_TESTS
++			test.add_error('0 tests run!')
  
- 	SmuMetrics_t *metrics = (SmuMetrics_t *)smu_table->metrics_table;
- 	int ret = 0;
-+	uint32_t apu_percent = 0;
-+	uint32_t dgpu_percent = 0;
- 
- 	ret = smu_cmn_get_metrics_table(smu, NULL, false);
- 	if (ret)
-@@ -332,26 +370,18 @@ static int yellow_carp_get_smu_metrics_data(struct smu_context *smu,
- 		*value = metrics->Voltage[1];
- 		break;
- 	case METRICS_SS_APU_SHARE:
--		/* return the percentage of APU power with respect to APU's power limit.
--		 * percentage is reported, this isn't boost value. Smartshift power
--		 * boost/shift is only when the percentage is more than 100.
-+		/* return the percentage of APU power boost
-+		 * with respect to APU's power limit.
- 		 */
--		if (metrics->StapmOpnLimit > 0)
--			*value =  (metrics->ApuPower * 100) / metrics->StapmOpnLimit;
--		else
--			*value = 0;
-+		yellow_carp_get_ss_power_percent(metrics, &apu_percent, &dgpu_percent);
-+		*value = apu_percent;
- 		break;
- 	case METRICS_SS_DGPU_SHARE:
--		/* return the percentage of dGPU power with respect to dGPU's power limit.
--		 * percentage is reported, this isn't boost value. Smartshift power
--		 * boost/shift is only when the percentage is more than 100.
-+		/* return the percentage of dGPU power boost
-+		 * with respect to dGPU's power limit.
- 		 */
--		if ((metrics->dGpuPower > 0) &&
--		    (metrics->StapmCurrentLimit > metrics->StapmOpnLimit))
--			*value = (metrics->dGpuPower * 100) /
--				  (metrics->StapmCurrentLimit - metrics->StapmOpnLimit);
--		else
--			*value = 0;
-+		yellow_carp_get_ss_power_percent(metrics, &apu_percent, &dgpu_percent);
-+		*value = dgpu_percent;
- 		break;
- 	default:
- 		*value = UINT_MAX;
+ 	# Add statuses to TestCounts attribute in Test object
+ 	bubble_up_test_results(test)
+diff --git a/tools/testing/kunit/test_data/test_is_test_passed-no_tests_no_plan.log b/tools/testing/kunit/test_data/test_is_test_passed-no_tests_no_plan.log
+index dd873c981108..4f81876ee6f1 100644
+--- a/tools/testing/kunit/test_data/test_is_test_passed-no_tests_no_plan.log
++++ b/tools/testing/kunit/test_data/test_is_test_passed-no_tests_no_plan.log
+@@ -3,5 +3,5 @@ TAP version 14
+   # Subtest: suite
+   1..1
+     # Subtest: case
+-  ok 1 - case # SKIP
++  ok 1 - case
+ ok 1 - suite
 -- 
 2.35.1
 
