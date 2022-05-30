@@ -2,47 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CE00C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:38:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37E28C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:39:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237816AbiE3Niw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:38:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56380 "EHLO
+        id S229668AbiE3NjB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:39:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237750AbiE3Nfn (ORCPT
+        with ESMTP id S237627AbiE3Nfd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:35:43 -0400
+        Mon, 30 May 2022 09:35:33 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B443984A13;
-        Mon, 30 May 2022 06:28:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDC6F939EF;
+        Mon, 30 May 2022 06:28:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 92038B80DAD;
-        Mon, 30 May 2022 13:28:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4972C385B8;
-        Mon, 30 May 2022 13:28:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D2486B80DA8;
+        Mon, 30 May 2022 13:28:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07F55C385B8;
+        Mon, 30 May 2022 13:28:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917326;
-        bh=K2Ha6JtZ7cu6X4p0HZ0kxO5UVLehWsWMBYNF/7lW3VA=;
+        s=k20201202; t=1653917317;
+        bh=yWcmRdVyi+FWys7GZ9HWj6oxRlxBcBG6kQKuSmRN7nY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Yj9agz5dH9mNlqkeM9rJtGicBmhConHCsK5TeBzzPgXtVC06Pi6yBW2r9TTyPk7Wf
-         C2+zcWBkQP1L2D8DeXKYFfZVLW4tahmq6qnudty6mFtpwd3YWV6YN2/Ou65Ywui5Tm
-         j2L0xQGCjYYLx8E75mEKdCv2Qq4zKGe0dlCjJzcsfYpbU7hMJYnTC8CufkVcrGsqIZ
-         wuKZASOnn9CkVeLxRcWD8UPPd26MG7tYiZVaT+IDo4sCBhLXYYugdX3jHriGHrqPhX
-         7YK8yOAUYO7SEkjgdwUeSCeWQX8De3PNiTDtpT1uhBOKTf2rpIqfGz7NL9CAJu6Ho7
-         cgiJZjWrfbS3A==
+        b=MbNB4qr/P6przBXEvy6yEWNy1KJI51RZMiPTZ7oqOlSN+NISgv1IoHAorhXld4YoB
+         G2mv5rj4BJXQKq/ZItAJU+ML/MTgrs1wqb/5ZOocpLXaQU4jOYJtO+O+IaFrfnYkQ2
+         J54ZNSI8BBM13mmESHP01L4uUgqyV3TnRLqffUIKnM9pBl7s64J8WLPpTSmErm0FZH
+         VdKd2u0JMAGnwR0gT93PMBhL4zaz/5tUYsciN6cCYXjyycTgaEulI9R6Cwhhhy0od8
+         ygRTasqqDhtOBB4unqwYkXNYSTas7SqDivs0N4zumyiY1JGmSLgcRipo3W/zgDXM8L
+         BGn27ldQbd2MA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
-        pabeni@redhat.com, bigeasy@linutronix.de, imagedong@tencent.com,
-        petrm@nvidia.com, memxor@gmail.com, arnd@arndb.de,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 095/159] net: remove two BUG() from skb_checksum_help()
-Date:   Mon, 30 May 2022 09:23:20 -0400
-Message-Id: <20220530132425.1929512-95-sashal@kernel.org>
+Cc:     Brent Lu <brent.lu@intel.com>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, cezary.rojewski@intel.com,
+        liam.r.girdwood@linux.intel.com, yang.jie@linux.intel.com,
+        perex@perex.cz, tiwai@suse.com, ranjani.sridharan@linux.intel.com,
+        akihiko.odaki@gmail.com, alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.18 091/159] ASoC: Intel: sof_ssp_amp: fix no DMIC BE Link on Chromebooks
+Date:   Mon, 30 May 2022 09:23:16 -0400
+Message-Id: <20220530132425.1929512-91-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530132425.1929512-1-sashal@kernel.org>
 References: <20220530132425.1929512-1-sashal@kernel.org>
@@ -54,47 +56,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Brent Lu <brent.lu@intel.com>
 
-[ Upstream commit d7ea0d9df2a6265b2b180d17ebc64b38105968fc ]
+[ Upstream commit d1c808765deb2bcd35d827402ed4d75d068aae18 ]
 
-I have a syzbot report that managed to get a crash in skb_checksum_help()
+The SOF topology supports 2 BE Links(dmic01 and dmic16k) and each
+link supports up to four DMICs. However, Chromebook does not implement
+ACPI NHLT table so the mach->mach_params.dmic_num is always zero. We
+add a quirk so machine driver knows it's running on a Chromebook and
+need to create BE Links for DMIC.
 
-If syzbot can trigger these BUG(), it makes sense to replace
-them with more friendly WARN_ON_ONCE() since skb_checksum_help()
-can instead return an error code.
-
-Note that syzbot will still crash there, until real bug is fixed.
-
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+Signed-off-by: Brent Lu <brent.lu@intel.com>
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Link: https://lore.kernel.org/r/20220509170922.54868-3-pierre-louis.bossart@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/dev.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ sound/soc/intel/boards/sof_ssp_amp.c | 16 ++++++++++++++--
+ 1 file changed, 14 insertions(+), 2 deletions(-)
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 4a8cefb4967d..d7c558125b64 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -3215,11 +3215,15 @@ int skb_checksum_help(struct sk_buff *skb)
- 	}
+diff --git a/sound/soc/intel/boards/sof_ssp_amp.c b/sound/soc/intel/boards/sof_ssp_amp.c
+index 88530e9de543..ef70c6f27fe1 100644
+--- a/sound/soc/intel/boards/sof_ssp_amp.c
++++ b/sound/soc/intel/boards/sof_ssp_amp.c
+@@ -9,6 +9,7 @@
  
- 	offset = skb_checksum_start_offset(skb);
--	BUG_ON(offset >= skb_headlen(skb));
-+	ret = -EINVAL;
-+	if (WARN_ON_ONCE(offset >= skb_headlen(skb)))
-+		goto out;
+ #include <linux/acpi.h>
+ #include <linux/delay.h>
++#include <linux/dmi.h>
+ #include <linux/module.h>
+ #include <linux/platform_device.h>
+ #include <sound/core.h>
+@@ -78,6 +79,16 @@ struct sof_card_private {
+ 	bool idisp_codec;
+ };
+ 
++static const struct dmi_system_id chromebook_platforms[] = {
++	{
++		.ident = "Google Chromebooks",
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "Google"),
++		}
++	},
++	{},
++};
 +
- 	csum = skb_checksum(skb, offset, skb->len - offset, 0);
+ static const struct snd_soc_dapm_widget sof_ssp_amp_dapm_widgets[] = {
+ 	SND_SOC_DAPM_MIC("SoC DMIC", NULL),
+ };
+@@ -371,7 +382,7 @@ static int sof_ssp_amp_probe(struct platform_device *pdev)
+ 	struct snd_soc_dai_link *dai_links;
+ 	struct snd_soc_acpi_mach *mach;
+ 	struct sof_card_private *ctx;
+-	int dmic_be_num, hdmi_num = 0;
++	int dmic_be_num = 0, hdmi_num = 0;
+ 	int ret, ssp_codec;
  
- 	offset += skb->csum_offset;
--	BUG_ON(offset + sizeof(__sum16) > skb_headlen(skb));
-+	if (WARN_ON_ONCE(offset + sizeof(__sum16) > skb_headlen(skb)))
-+		goto out;
+ 	ctx = devm_kzalloc(&pdev->dev, sizeof(*ctx), GFP_KERNEL);
+@@ -383,7 +394,8 @@ static int sof_ssp_amp_probe(struct platform_device *pdev)
  
- 	ret = skb_ensure_writable(skb, offset + sizeof(__sum16));
- 	if (ret)
+ 	mach = pdev->dev.platform_data;
+ 
+-	dmic_be_num = mach->mach_params.dmic_num;
++	if (dmi_check_system(chromebook_platforms) || mach->mach_params.dmic_num > 0)
++		dmic_be_num = 2;
+ 
+ 	ssp_codec = sof_ssp_amp_quirk & SOF_AMPLIFIER_SSP_MASK;
+ 
 -- 
 2.35.1
 
