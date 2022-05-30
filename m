@@ -2,104 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F3DFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 07:36:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AFE6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 07:37:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233551AbiE3HgL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 03:36:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40774 "EHLO
+        id S233522AbiE3HhA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 03:37:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233542AbiE3HgJ (ORCPT
+        with ESMTP id S233510AbiE3HfB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 03:36:09 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47CA039B99;
-        Mon, 30 May 2022 00:36:03 -0700 (PDT)
-X-UUID: 33b064ae7da048188e2a565cc58ae238-20220530
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:57f8ed2e-6554-4fd0-bd82-9213fe71ea40,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:0
-X-CID-META: VersionHash:2a19b09,CLOUDID:0e78bfb8-3c45-407b-8f66-25095432a27a,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
-        ,QS:0,BEC:nil
-X-UUID: 33b064ae7da048188e2a565cc58ae238-20220530
-Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by mailgw02.mediatek.com
-        (envelope-from <miles.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1687734413; Mon, 30 May 2022 15:35:57 +0800
-Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
- mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Mon, 30 May 2022 15:35:56 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Mon, 30 May 2022 15:35:55 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 30 May 2022 15:35:55 +0800
-From:   Miles Chen <miles.chen@mediatek.com>
-To:     <linmq006@gmail.com>
-CC:     <bhelgaas@google.com>, <jianjun.wang@mediatek.com>, <kw@linux.com>,
+        Mon, 30 May 2022 03:35:01 -0400
+Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3097C71DA1;
+        Mon, 30 May 2022 00:34:47 -0700 (PDT)
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 24U7Yhfk084868;
+        Mon, 30 May 2022 02:34:43 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1653896083;
+        bh=D3w8nI02oB8EoNoAqaEWvOutV6JaRMHHmHyziuHi/rQ=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=ww1shQVWRaLgun/B5eWiCAfnkkNp9Bfx8IbuEKoazaIOlMmP6jISaU6yEyn8QLj3F
+         ps/ZHwxhwq1nZOGqO/1igE1OaYqo+FoeEl/z+FIr3kVX0WFEbFr6n+I9ALJ1vPv2eS
+         fyI58NxVgSdrr5bWaSiuK5qiPbafu86rcOyeRZC8=
+Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 24U7YhbD098446
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 30 May 2022 02:34:43 -0500
+Received: from DFLE108.ent.ti.com (10.64.6.29) by DFLE114.ent.ti.com
+ (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Mon, 30
+ May 2022 02:34:43 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE108.ent.ti.com
+ (10.64.6.29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Mon, 30 May 2022 02:34:43 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 24U7Ygi7098610;
+        Mon, 30 May 2022 02:34:42 -0500
+From:   Rahul T R <r-ravikumar@ti.com>
+To:     <robh+dt@kernel.org>, <nm@ti.com>, <vigneshr@ti.com>,
+        <kishon@ti.com>, <krzysztof.kozlowski+dt@linaro.org>
+CC:     <lee.jones@linaro.org>, <rogerq@kernel.org>,
+        <devicetree@vger.kernel.org>, <kristo@kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>, <linux-pci@vger.kernel.org>,
-        <lorenzo.pieralisi@arm.com>, <matthias.bgg@gmail.com>,
-        <maz@kernel.org>, <miles.chen@mediatek.com>, <robh@kernel.org>,
-        <ryder.lee@mediatek.com>
-Subject: Re: [PATCH] PCI: mediatek-gen3: Fix refcount leak in mtk_pcie_init_irq_domains
-Date:   Mon, 30 May 2022 15:35:56 +0800
-Message-ID: <20220530073556.1831-1-miles.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <6cf820cf-a2e7-c93e-3c00-08bc366f2eb2@gmail.com>
-References: <6cf820cf-a2e7-c93e-3c00-08bc366f2eb2@gmail.com>
+        <linux-kernel@vger.kernel.org>, <s-anna@ti.com>,
+        Sinthu Raja <sinthu.raja@ti.com>,
+        Rahul T R <r-ravikumar@ti.com>
+Subject: [PATCH v2 3/3] arm64: dts: ti: k3-j721e-sk: Add pinmux for RPi Header
+Date:   Mon, 30 May 2022 13:04:29 +0530
+Message-ID: <20220530073429.17514-4-r-ravikumar@ti.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220530073429.17514-1-r-ravikumar@ti.com>
+References: <20220530073429.17514-1-r-ravikumar@ti.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-MTK:  N
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Miaoqian,
+From: Sinthu Raja <sinthu.raja@ti.com>
 
->Hi, Miles
->
->On 2022/5/30 10:19, Miles Chen wrote:
->> Hi Miaoqian,
->>
->>>>> 						  &intx_domain_ops, pcie);
->>>>> 	if (!pcie->intx_domain) {
->>>>> 		dev_err(dev, "failed to create INTx IRQ domain\n");
->>>>> +		of_node_put(intc_node);
->>>>> 		return -ENODEV;
->>>>> 	}
->>>> Thanks for doing this.
->>>>
->>>> I checked mtk_pcie_init_irq_domains() and there are multiple exit paths like
->>>> err_msi_domain and err_msi_bottom_domain and the normal path which also
->>>> need of_node_put(intc_node).
->>> Thanks for your reply,
->>>
->>> I didn't add of_node_put() in other paths because I am not sure if the reference passed through irq_domain_add_linear(), since intc_node is passed to irq_domain_add_linear().
->>>
->>> __irq_domain_add() keeps &node->fwnode in the irq_domain structure.
->>>
->>> and use fwnode_handle_get() to get the reference of fwnode, but I still uncertain.
->>>
->>> If the reference don't needed anymore after irq_domain_add_linear(),
->>>
->>> your suggestion looks fine, and I will submit v2.
->>
->> Thanks for your reply, I think we can do similar things like
->> rtl8365mb_irq_setup() in drivers/net/dsa/realtek/rtl8365mb.c
->
->I checked rtl8365mb_irq_setup(), it calls of_node_put() by goto statement for error paths.
->
->and calls of_node_put() before return 0 in normal path. I didn't see the same problem.
+Add pinmux required to bring out
+i2c5, ehrpwm 2 and 3 and gpios on
+40 pin RPi header on sk board
 
-Sorry for the confusing. I meant that we can do the same thing - 
-it calls of_node_put() by goto statement for error paths
-and calls of_node_put() before return 0 in normal path. :-)
+Signed-off-by: Sinthu Raja <sinthu.raja@ti.com>
+Signed-off-by: Rahul T R <r-ravikumar@ti.com>
+---
+ arch/arm64/boot/dts/ti/k3-j721e-sk.dts | 89 ++++++++++++++++++++++----
+ 1 file changed, 78 insertions(+), 11 deletions(-)
 
-Thanks,
-Miles
+diff --git a/arch/arm64/boot/dts/ti/k3-j721e-sk.dts b/arch/arm64/boot/dts/ti/k3-j721e-sk.dts
+index 98a55778f3fe..b913b18ae133 100644
+--- a/arch/arm64/boot/dts/ti/k3-j721e-sk.dts
++++ b/arch/arm64/boot/dts/ti/k3-j721e-sk.dts
+@@ -400,6 +400,57 @@
+ 			J721E_IOPAD(0x124, PIN_INPUT, 7) /* (Y24) PRG0_PRU1_GPO9.GPIO0_72 */
+ 		>;
+ 	};
++
++	main_i2c5_pins_default: main-i2c5-pins-default {
++		pinctrl-single,pins = <
++			J721E_IOPAD(0x150, PIN_INPUT_PULLUP, 2) /* (Y26) PRG0_MDIO0_MDIO.I2C5_SCL */
++			J721E_IOPAD(0x154, PIN_INPUT_PULLUP, 2) /* (AA27) PRG0_MDIO0_MDC.I2C5_SDA */
++		>;
++	};
++
++	rpi_header_gpio0_pins_default: rpi-header-gpio0-pins-default {
++		pinctrl-single,pins = <
++			J721E_IOPAD(0x01c, PIN_INPUT, 7) /* (AD22) PRG1_PRU0_GPO6.GPIO0_7 */
++			J721E_IOPAD(0x120, PIN_INPUT, 7) /* (AA28) PRG0_PRU1_GPO8.GPIO0_71 */
++			J721E_IOPAD(0x14c, PIN_INPUT, 7) /* (AA29) PRG0_PRU1_GPO19.GPIO0_82 */
++			J721E_IOPAD(0x02c, PIN_INPUT, 7) /* (AD21) PRG1_PRU0_GPO10.GPIO0_11 */
++			J721E_IOPAD(0x198, PIN_INPUT, 7) /* (V25) RGMII6_TD1.GPIO0_101 */
++			J721E_IOPAD(0x1b0, PIN_INPUT, 7) /* (W24) RGMII6_RD1.GPIO0_107 */
++			J721E_IOPAD(0x1a0, PIN_INPUT, 7) /* (W29) RGMII6_TXC.GPIO0_103 */
++			J721E_IOPAD(0x008, PIN_INPUT, 7) /* (AG22) PRG1_PRU0_GPO1.GPIO0_2 */
++			J721E_IOPAD(0x1d0, PIN_INPUT, 7) /* (AA3) SPI0_D1.GPIO0_115 */
++			J721E_IOPAD(0x11c, PIN_INPUT, 7) /* (AA24) PRG0_PRU1_GPO7.GPIO0_70 */
++			J721E_IOPAD(0x148, PIN_INPUT, 7) /* (AA26) PRG0_PRU1_GPO18.GPIO0_81 */
++			J721E_IOPAD(0x004, PIN_INPUT, 7) /* (AC23) PRG1_PRU0_GPO0.GPIO0_1 */
++			J721E_IOPAD(0x014, PIN_INPUT, 7) /* (AH23) PRG1_PRU0_GPO4.GPIO0_5 */
++			J721E_IOPAD(0x020, PIN_INPUT, 7) /* (AE20) PRG1_PRU0_GPO7.GPIO0_8 */
++			J721E_IOPAD(0x19c, PIN_INPUT, 7) /* (W27) RGMII6_TD0.GPIO0_102 */
++			J721E_IOPAD(0x1b4, PIN_INPUT, 7) /* (W25) RGMII6_RD0.GPIO0_108 */
++			J721E_IOPAD(0x188, PIN_INPUT, 7) /* (Y28) RGMII6_TX_CTL.GPIO0_97 */
++			J721E_IOPAD(0x00c, PIN_INPUT, 7) /* (AF22) PRG1_PRU0_GPO2.GPIO0_3 */
++			J721E_IOPAD(0x010, PIN_INPUT, 7) /* (AJ23) PRG1_PRU0_GPO3.GPIO0_4 */
++		>;
++	};
++
++	rpi_header_gpio1_pins_default: rpi-header-gpio1-pins-default {
++		pinctrl-single,pins = <
++			J721E_IOPAD(0x234, PIN_INPUT, 7) /* (U3) EXT_REFCLK1.GPIO1_12 */
++		>;
++	};
++
++	rpi_header_ehrpwm2_pins_default: rpi-header-ehrpwm2-pins-default {
++		pinctrl-single,pins = <
++			J721E_IOPAD(0x178, PIN_INPUT, 6) /* (U27) RGMII5_RD3.EHRPWM2_A */
++			J721E_IOPAD(0x17c, PIN_INPUT, 6) /* (U24) RGMII5_RD2.EHRPWM2_B */
++		>;
++	};
++
++	rpi_header_ehrpwm3_pins_default: rpi-header-ehrpwm3-pins-default {
++		pinctrl-single,pins = <
++			J721E_IOPAD(0x18c, PIN_INPUT, 6) /* (V23) RGMII6_RX_CTL.EHRPWM3_A */
++			J721E_IOPAD(0x190, PIN_INPUT, 6) /* (W23) RGMII6_TD3.EHRPWM3_B */
++		>;
++	};
+ };
+ 
+ &wkup_pmx0 {
+@@ -631,11 +682,6 @@
+ 	status = "disabled";
+ };
+ 
+-&main_i2c5 {
+-	/* Brought out on RPi Header */
+-	status = "disabled";
+-};
+-
+ &main_i2c6 {
+ 	/* Unused */
+ 	status = "disabled";
+@@ -1138,18 +1184,39 @@
+ 	status = "disabled";
+ };
+ 
+-&main_ehrpwm2 {
++&main_ehrpwm4 {
+ 	status = "disabled";
+ };
+ 
+-&main_ehrpwm3 {
++&main_ehrpwm5 {
+ 	status = "disabled";
+ };
+ 
+-&main_ehrpwm4 {
+-	status = "disabled";
++&main_gpio0 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&rpi_header_gpio0_pins_default>;
+ };
+ 
+-&main_ehrpwm5 {
+-	status = "disabled";
++&main_gpio1 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&rpi_header_gpio1_pins_default>;
++};
++
++&main_i2c5 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&main_i2c5_pins_default>;
++	clock-frequency = <400000>;
++	status = "okay";
++};
++
++&main_ehrpwm2 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&rpi_header_ehrpwm2_pins_default>;
++	status = "okay";
++};
++
++&main_ehrpwm3 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&rpi_header_ehrpwm3_pins_default>;
++	status = "okay";
+ };
+-- 
+2.17.1
+
