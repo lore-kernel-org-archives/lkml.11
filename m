@@ -2,191 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CCECC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 11:41:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42E31C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 11:41:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235939AbiE3LlU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 07:41:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41826 "EHLO
+        id S235807AbiE3Ll1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 07:41:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235831AbiE3LlH (ORCPT
+        with ESMTP id S235884AbiE3LlO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 07:41:07 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A856B813D1;
-        Mon, 30 May 2022 04:41:06 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 59BD82199D;
-        Mon, 30 May 2022 11:41:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1653910865; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=i4LKt8LZNv7O3Wwu1DiLKI3Zd8LxtAGWiwhpXlwpTRU=;
-        b=uSiaXqJKBGwScZ32qFf6c8Gr0kfZ5zQ7IMWOMLz8yYZlkjP6w7ux8Ebr/jpu5M3k/m7nX9
-        yQkTTaWffg4F9bOlmht+H+K9W4NJ5QNWKiDRpQdAkqYDJoF57sL4Eu1COtrTyxLFAOCwFj
-        DUEwooU54jdHpvSXYHRTmHKg5+d1eRA=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 0795913A84;
-        Mon, 30 May 2022 11:41:05 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id 1vmPAFGtlGITeQAAMHmgww
-        (envelope-from <jgross@suse.com>); Mon, 30 May 2022 11:41:05 +0000
-From:   Juergen Gross <jgross@suse.com>
-To:     xen-devel@lists.xenproject.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Juergen Gross <jgross@suse.com>, Wei Liu <wei.liu@kernel.org>,
-        Paul Durrant <paul@xen.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH] xen/netback: do some code cleanup
-Date:   Mon, 30 May 2022 13:41:03 +0200
-Message-Id: <20220530114103.20657-1-jgross@suse.com>
-X-Mailer: git-send-email 2.35.3
+        Mon, 30 May 2022 07:41:14 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16F46813E9
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 04:41:10 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id g67so2337943pfb.2
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 04:41:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=h8h+dOa5UXWEE0M1AXGeUja2PScbi3m/14Ye0UYGzpI=;
+        b=aOe0sxeZZ3mOj0Cr7eUZd6cMma69nGUO55Otyh2VVIlBOWRgpcdeLZEafs83PKh/VL
+         vtBOZ6xDlWoUF46lwZxNIPPnc+Ekd2iHetayug+sfRdpqIHIzBja5IVBCsPPw0bBNeqJ
+         yc9oh4u5n87wPvgsND0bnmTKbFy6ysJbylSQtmbvJS2jteohoTzKC4NMlZFMMZApv+rX
+         d7iMQTf+6STuriEOFXYUdT303pf6G8e2SZtDd3z1C+9f0cnkr3nRjP2TWtRABc6H8nRC
+         Oz3cv/7NYRKpgIPE8AuRF2gVB0t/+hksPqrotZo33wKMK4m+UKIAiyqmPQvil0eHS8aP
+         5ANA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=h8h+dOa5UXWEE0M1AXGeUja2PScbi3m/14Ye0UYGzpI=;
+        b=Pvf/6FsV3rAOTMRZR8akvAbu3q6aL/E5OZXGJU1tviDIQB7I5y6AAbp2KPMFo1Ld97
+         zNHl5j+ULPIOjT4U5D5r+V3kc0ZPdepsAsrmGbA9CYXnjKoST2C4A82FUFqsv+6X+5LF
+         LMNRI7seeX1yKm5VbCnRUSTpSXMYGMJCz7FSDmrWfWcoet/AoavZOtd9MCqE0DsUASAr
+         KdAfsKuTIEVpJPg5f/JA5IpyYWnj0HZewPsTqsKr9xGayoJXzYPcwT+F8YN/yQcaZZzi
+         ER3npPRxOApxHWy5fzGvtC1l/xAEaJcP2NSiKDvumiPKj+08uil3jWmR6CjkZQtdzbDV
+         LAjA==
+X-Gm-Message-State: AOAM530GeYHLwQfQ7VeQgXt5xtsrj9p0cZ3fRH3Y/H69f8MRnc0B3Rs8
+        Vd7ENBN/K8/425xlEJB46Wzn2g==
+X-Google-Smtp-Source: ABdhPJyyY2z+LEUijMFV1bpmsqO0SFh/jX4VeU6hiEEwV+q9m0sYnCVjVpbejR2vwdIPBTX457L7wQ==
+X-Received: by 2002:a05:6a00:2402:b0:4e1:46ca:68bd with SMTP id z2-20020a056a00240200b004e146ca68bdmr56506321pfh.70.1653910869257;
+        Mon, 30 May 2022 04:41:09 -0700 (PDT)
+Received: from leo-build-box.lan (n058152077182.netvigator.com. [58.152.77.182])
+        by smtp.gmail.com with ESMTPSA id c7-20020a170902724700b00161a9df4de8sm8846194pll.145.2022.05.30.04.41.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 May 2022 04:41:09 -0700 (PDT)
+From:   Leo Yan <leo.yan@linaro.org>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>, Alyssa Ross <hi@alyssa.is>,
+        Ian Rogers <irogers@google.com>, Like Xu <likexu@tencent.com>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        Li Huafei <lihuafei1@huawei.com>,
+        Joe Mario <jmario@redhat.com>,
+        Adam Li <adam.li@amperecomputing.com>,
+        German Gomez <german.gomez@arm.com>,
+        James Clark <james.clark@arm.com>,
+        Ali Saidi <alisaidi@amazon.com>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Leo Yan <leo.yan@linaro.org>
+Subject: [PATCH v4 02/12] perf c2c: Output statistics for peer snooping
+Date:   Mon, 30 May 2022 19:40:26 +0800
+Message-Id: <20220530114036.3225544-3-leo.yan@linaro.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220530114036.3225544-1-leo.yan@linaro.org>
+References: <20220530114036.3225544-1-leo.yan@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove some unused macros and functions, make local functions static.
+This patch outputs statistics for peer snooping for whole trace events
+and global shared cache line.
 
-Signed-off-by: Juergen Gross <jgross@suse.com>
+Signed-off-by: Leo Yan <leo.yan@linaro.org>
 ---
- drivers/net/xen-netback/common.h    | 12 ------------
- drivers/net/xen-netback/interface.c | 16 +---------------
- drivers/net/xen-netback/netback.c   |  4 +++-
- drivers/net/xen-netback/rx.c        |  2 +-
- 4 files changed, 5 insertions(+), 29 deletions(-)
+ tools/perf/builtin-c2c.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/xen-netback/common.h b/drivers/net/xen-netback/common.h
-index d9dea4829c86..8174d7b2966c 100644
---- a/drivers/net/xen-netback/common.h
-+++ b/drivers/net/xen-netback/common.h
-@@ -48,7 +48,6 @@
- #include <linux/debugfs.h>
- 
- typedef unsigned int pending_ring_idx_t;
--#define INVALID_PENDING_RING_IDX (~0U)
- 
- struct pending_tx_info {
- 	struct xen_netif_tx_request req; /* tx request */
-@@ -82,8 +81,6 @@ struct xenvif_rx_meta {
- /* Discriminate from any valid pending_idx value. */
- #define INVALID_PENDING_IDX 0xFFFF
- 
--#define MAX_BUFFER_OFFSET XEN_PAGE_SIZE
--
- #define MAX_PENDING_REQS XEN_NETIF_TX_RING_SIZE
- 
- /* The maximum number of frags is derived from the size of a grant (same
-@@ -367,11 +364,6 @@ void xenvif_free(struct xenvif *vif);
- int xenvif_xenbus_init(void);
- void xenvif_xenbus_fini(void);
- 
--int xenvif_schedulable(struct xenvif *vif);
--
--int xenvif_queue_stopped(struct xenvif_queue *queue);
--void xenvif_wake_queue(struct xenvif_queue *queue);
--
- /* (Un)Map communication rings. */
- void xenvif_unmap_frontend_data_rings(struct xenvif_queue *queue);
- int xenvif_map_frontend_data_rings(struct xenvif_queue *queue,
-@@ -394,7 +386,6 @@ int xenvif_dealloc_kthread(void *data);
- irqreturn_t xenvif_ctrl_irq_fn(int irq, void *data);
- 
- bool xenvif_have_rx_work(struct xenvif_queue *queue, bool test_kthread);
--void xenvif_rx_action(struct xenvif_queue *queue);
- void xenvif_rx_queue_tail(struct xenvif_queue *queue, struct sk_buff *skb);
- 
- void xenvif_carrier_on(struct xenvif *vif);
-@@ -403,9 +394,6 @@ void xenvif_carrier_on(struct xenvif *vif);
- void xenvif_zerocopy_callback(struct sk_buff *skb, struct ubuf_info *ubuf,
- 			      bool zerocopy_success);
- 
--/* Unmap a pending page and release it back to the guest */
--void xenvif_idx_unmap(struct xenvif_queue *queue, u16 pending_idx);
--
- static inline pending_ring_idx_t nr_pending_reqs(struct xenvif_queue *queue)
- {
- 	return MAX_PENDING_REQS -
-diff --git a/drivers/net/xen-netback/interface.c b/drivers/net/xen-netback/interface.c
-index 8e035374a370..fb32ae82d9b0 100644
---- a/drivers/net/xen-netback/interface.c
-+++ b/drivers/net/xen-netback/interface.c
-@@ -69,7 +69,7 @@ void xenvif_skb_zerocopy_complete(struct xenvif_queue *queue)
- 	wake_up(&queue->dealloc_wq);
- }
- 
--int xenvif_schedulable(struct xenvif *vif)
-+static int xenvif_schedulable(struct xenvif *vif)
- {
- 	return netif_running(vif->dev) &&
- 		test_bit(VIF_STATUS_CONNECTED, &vif->status) &&
-@@ -177,20 +177,6 @@ irqreturn_t xenvif_interrupt(int irq, void *dev_id)
- 	return IRQ_HANDLED;
- }
- 
--int xenvif_queue_stopped(struct xenvif_queue *queue)
--{
--	struct net_device *dev = queue->vif->dev;
--	unsigned int id = queue->id;
--	return netif_tx_queue_stopped(netdev_get_tx_queue(dev, id));
--}
--
--void xenvif_wake_queue(struct xenvif_queue *queue)
--{
--	struct net_device *dev = queue->vif->dev;
--	unsigned int id = queue->id;
--	netif_tx_wake_queue(netdev_get_tx_queue(dev, id));
--}
--
- static u16 xenvif_select_queue(struct net_device *dev, struct sk_buff *skb,
- 			       struct net_device *sb_dev)
- {
-diff --git a/drivers/net/xen-netback/netback.c b/drivers/net/xen-netback/netback.c
-index d93814c14a23..fc61a4418737 100644
---- a/drivers/net/xen-netback/netback.c
-+++ b/drivers/net/xen-netback/netback.c
-@@ -112,6 +112,8 @@ static void make_tx_response(struct xenvif_queue *queue,
- 			     s8       st);
- static void push_tx_responses(struct xenvif_queue *queue);
- 
-+static void xenvif_idx_unmap(struct xenvif_queue *queue, u16 pending_idx);
-+
- static inline int tx_work_todo(struct xenvif_queue *queue);
- 
- static inline unsigned long idx_to_pfn(struct xenvif_queue *queue,
-@@ -1418,7 +1420,7 @@ static void push_tx_responses(struct xenvif_queue *queue)
- 		notify_remote_via_irq(queue->tx_irq);
- }
- 
--void xenvif_idx_unmap(struct xenvif_queue *queue, u16 pending_idx)
-+static void xenvif_idx_unmap(struct xenvif_queue *queue, u16 pending_idx)
- {
- 	int ret;
- 	struct gnttab_unmap_grant_ref tx_unmap_op;
-diff --git a/drivers/net/xen-netback/rx.c b/drivers/net/xen-netback/rx.c
-index dbac4c03d21a..8df2c736fd23 100644
---- a/drivers/net/xen-netback/rx.c
-+++ b/drivers/net/xen-netback/rx.c
-@@ -486,7 +486,7 @@ static void xenvif_rx_skb(struct xenvif_queue *queue)
- 
- #define RX_BATCH_SIZE 64
- 
--void xenvif_rx_action(struct xenvif_queue *queue)
-+static void xenvif_rx_action(struct xenvif_queue *queue)
- {
- 	struct sk_buff_head completed_skbs;
- 	unsigned int work_done = 0;
+diff --git a/tools/perf/builtin-c2c.c b/tools/perf/builtin-c2c.c
+index e8280973d7b8..ac389432c15f 100644
+--- a/tools/perf/builtin-c2c.c
++++ b/tools/perf/builtin-c2c.c
+@@ -2202,6 +2202,8 @@ static void print_c2c__display_stats(FILE *out)
+ 	fprintf(out, "  Load LLC Misses                   : %10d\n", llc_misses);
+ 	fprintf(out, "  Load access blocked by data       : %10d\n", stats->blk_data);
+ 	fprintf(out, "  Load access blocked by address    : %10d\n", stats->blk_addr);
++	fprintf(out, "  Load HIT Local Peer               : %10d\n", stats->lcl_peer);
++	fprintf(out, "  Load HIT Remote Peer              : %10d\n", stats->rmt_peer);
+ 	fprintf(out, "  LLC Misses to Local DRAM          : %10.1f%%\n", ((double)stats->lcl_dram/(double)llc_misses) * 100.);
+ 	fprintf(out, "  LLC Misses to Remote DRAM         : %10.1f%%\n", ((double)stats->rmt_dram/(double)llc_misses) * 100.);
+ 	fprintf(out, "  LLC Misses to Remote cache (HIT)  : %10.1f%%\n", ((double)stats->rmt_hit /(double)llc_misses) * 100.);
+@@ -2230,6 +2232,7 @@ static void print_shared_cacheline_info(FILE *out)
+ 	fprintf(out, "  L1D hits on shared lines          : %10d\n", stats->ld_l1hit);
+ 	fprintf(out, "  L2D hits on shared lines          : %10d\n", stats->ld_l2hit);
+ 	fprintf(out, "  LLC hits on shared lines          : %10d\n", stats->ld_llchit + stats->lcl_hitm);
++	fprintf(out, "  Load hits on peer cache or nodes  : %10d\n", stats->lcl_peer + stats->rmt_peer);
+ 	fprintf(out, "  Locked Access on shared lines     : %10d\n", stats->locks);
+ 	fprintf(out, "  Blocked Access on shared lines    : %10d\n", stats->blk_data + stats->blk_addr);
+ 	fprintf(out, "  Store HITs on shared lines        : %10d\n", stats->store);
 -- 
-2.35.3
+2.25.1
 
