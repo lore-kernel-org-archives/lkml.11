@@ -2,49 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 657C3C48BCD
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:21:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 428FEC49EA5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:21:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241131AbiE3OU7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:20:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51736 "EHLO
+        id S241159AbiE3OVH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:21:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240927AbiE3OQh (ORCPT
+        with ESMTP id S240913AbiE3OQg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:16:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E0541078A8;
-        Mon, 30 May 2022 06:44:21 -0700 (PDT)
+        Mon, 30 May 2022 10:16:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ADBD106543;
+        Mon, 30 May 2022 06:44:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7605860F14;
-        Mon, 30 May 2022 13:43:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC410C385B8;
-        Mon, 30 May 2022 13:43:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3FBFB60F47;
+        Mon, 30 May 2022 13:44:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E098C3411A;
+        Mon, 30 May 2022 13:44:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918218;
-        bh=VH0lnEDL+ySeSCJhfAcOBhCdDPlruk92FAA23rKWlWs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CAb6vuUrDP0fIZFfyGLVbiiSuzp0xWf0OM5D/ymRB78s01GvYaX6lMJvPyYZ7zi8I
-         7O4VehmMoba5XGLKn3one14XHduHT9LqQmN4z3JM1r6ZC3XtKIpWC3/hVy1xubXAO/
-         S0MsgQpxZjVfOJt/i/zDMvEWlzEJM713fdn3axXSubApx+7hoj4mKn0t8ueG0O5eTC
-         jsXHqc5WWqvNcSWqyOCUgEi+eSBJBklzNF2F8t74vJ9hyU48d5o5tFvMY1wns1cUx6
-         gztLnE46t0Hqfz1q8pQlP5+9/o1v+dBUWw+Frf6rSK/HD3uEF67qbv8wsnh5sAZTNi
-         Y9S1ZkmdTf9kA==
+        s=k20201202; t=1653918249;
+        bh=fsc6IIIk1awweZ+LPL499ZV/HHQ210t5VuqTymzmdZw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=CoAnx3Z6+FkEB0I2L3tZgc1H0suyzS5p7ZZZOFwvifmWZl8ZbdZX5dZwfkg+dgFKN
+         85bKyyTEVTMCzZN41iMLUJ+MLrLuHF/rWeWZVnFfmbh8OoJSw44Twb1F2AJm5oOiXA
+         MOVGH/6jgclhy3nJS/KahzMyNLosiHCmFpgX9rcm3GbyJvHv5vx3eOhfIXHd+7DjU4
+         89QBhRVSMoGZGeao+lml9+zUfElgwU1i/fOePT3tIkSI+xATlJkl9vo+0FX3Eh07fi
+         T0BAAlsZV7mXmonEUK2XpFej4EZz4RInfwaPjLbtpqQsFmodKRloayULAInE6MvGaM
+         EpAdyL6PbW0nw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alex Elder <elder@linaro.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, elder@kernel.org,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 099/109] net: ipa: ignore endianness if there is no header
-Date:   Mon, 30 May 2022 09:38:15 -0400
-Message-Id: <20220530133825.1933431-99-sashal@kernel.org>
+Cc:     Tejas Upadhyay <tejaskumarx.surendrakumar.upadhyay@intel.com>,
+        Raviteja Goud Talla <ravitejax.goud.talla@intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Sasha Levin <sashal@kernel.org>, dwmw2@infradead.org,
+        joro@8bytes.org, will@kernel.org, iommu@lists.linux-foundation.org
+Subject: [PATCH AUTOSEL 5.10 01/76] iommu/vt-d: Add RPLS to quirk list to skip TE disabling
+Date:   Mon, 30 May 2022 09:42:51 -0400
+Message-Id: <20220530134406.1934928-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220530133825.1933431-1-sashal@kernel.org>
-References: <20220530133825.1933431-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,81 +52,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alex Elder <elder@linaro.org>
+From: Tejas Upadhyay <tejaskumarx.surendrakumar.upadhyay@intel.com>
 
-[ Upstream commit 332ef7c814bdd60f08d0d9013d0e1104798b2d23 ]
+[ Upstream commit 0a967f5bfd9134b89681cae58deb222e20840e76 ]
 
-If we program an RX endpoint to have no header (header length is 0),
-header-related endpoint configuration values are meaningless and are
-ignored.
+The VT-d spec requires (10.4.4 Global Command Register, TE
+field) that:
 
-The only case we support that defines a header is QMAP endpoints.
-In ipa_endpoint_init_hdr_ext() we set the endianness mask value
-unconditionally, but it should not be done if there is no header
-(meaning it is not configured for QMAP).
+Hardware implementations supporting DMA draining must drain
+any in-flight DMA read/write requests queued within the
+Root-Complex before completing the translation enable
+command and reflecting the status of the command through
+the TES field in the Global Status register.
 
-Set the endianness conditionally, and rearrange the logic in that
-function slightly to avoid testing the qmap flag twice.
+Unfortunately, some integrated graphic devices fail to do
+so after some kind of power state transition. As the
+result, the system might stuck in iommu_disable_translati
+on(), waiting for the completion of TE transition.
 
-Delete an incorrect comment in ipa_endpoint_init_aggr().
+This adds RPLS to a quirk list for those devices and skips
+TE disabling if the qurik hits.
 
-Signed-off-by: Alex Elder <elder@linaro.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Link: https://gitlab.freedesktop.org/drm/intel/-/issues/4898
+Tested-by: Raviteja Goud Talla <ravitejax.goud.talla@intel.com>
+Cc: Rodrigo Vivi <rodrigo.vivi@intel.com>
+Acked-by: Lu Baolu <baolu.lu@linux.intel.com>
+Signed-off-by: Tejas Upadhyay <tejaskumarx.surendrakumar.upadhyay@intel.com>
+Reviewed-by: Rodrigo Vivi <rodrigo.vivi@intel.com>
+Signed-off-by: Rodrigo Vivi <rodrigo.vivi@intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220302043256.191529-1-tejaskumarx.surendrakumar.upadhyay@intel.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ipa/ipa_endpoint.c | 32 +++++++++++++++++---------------
- 1 file changed, 17 insertions(+), 15 deletions(-)
+ drivers/iommu/intel/iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint.c
-index 87e42db1b61e..8e31c2ba5057 100644
---- a/drivers/net/ipa/ipa_endpoint.c
-+++ b/drivers/net/ipa/ipa_endpoint.c
-@@ -570,19 +570,23 @@ static void ipa_endpoint_init_hdr_ext(struct ipa_endpoint *endpoint)
- 	struct ipa *ipa = endpoint->ipa;
- 	u32 val = 0;
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 21749859ad45..477dde39823c 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -6296,7 +6296,7 @@ static void quirk_igfx_skip_te_disable(struct pci_dev *dev)
+ 	ver = (dev->device >> 8) & 0xff;
+ 	if (ver != 0x45 && ver != 0x46 && ver != 0x4c &&
+ 	    ver != 0x4e && ver != 0x8a && ver != 0x98 &&
+-	    ver != 0x9a)
++	    ver != 0x9a && ver != 0xa7)
+ 		return;
  
--	val |= HDR_ENDIANNESS_FMASK;		/* big endian */
--
--	/* A QMAP header contains a 6 bit pad field at offset 0.  The RMNet
--	 * driver assumes this field is meaningful in packets it receives,
--	 * and assumes the header's payload length includes that padding.
--	 * The RMNet driver does *not* pad packets it sends, however, so
--	 * the pad field (although 0) should be ignored.
--	 */
--	if (endpoint->data->qmap && !endpoint->toward_ipa) {
--		val |= HDR_TOTAL_LEN_OR_PAD_VALID_FMASK;
--		/* HDR_TOTAL_LEN_OR_PAD is 0 (pad, not total_len) */
--		val |= HDR_PAYLOAD_LEN_INC_PADDING_FMASK;
--		/* HDR_TOTAL_LEN_OR_PAD_OFFSET is 0 */
-+	if (endpoint->data->qmap) {
-+		/* We have a header, so we must specify its endianness */
-+		val |= HDR_ENDIANNESS_FMASK;	/* big endian */
-+
-+		/* A QMAP header contains a 6 bit pad field at offset 0.
-+		 * The RMNet driver assumes this field is meaningful in
-+		 * packets it receives, and assumes the header's payload
-+		 * length includes that padding.  The RMNet driver does
-+		 * *not* pad packets it sends, however, so the pad field
-+		 * (although 0) should be ignored.
-+		 */
-+		if (!endpoint->toward_ipa) {
-+			val |= HDR_TOTAL_LEN_OR_PAD_VALID_FMASK;
-+			/* HDR_TOTAL_LEN_OR_PAD is 0 (pad, not total_len) */
-+			val |= HDR_PAYLOAD_LEN_INC_PADDING_FMASK;
-+			/* HDR_TOTAL_LEN_OR_PAD_OFFSET is 0 */
-+		}
- 	}
- 
- 	/* HDR_PAYLOAD_LEN_INC_PADDING is 0 */
-@@ -738,8 +742,6 @@ static void ipa_endpoint_init_aggr(struct ipa_endpoint *endpoint)
- 
- 			close_eof = endpoint->data->rx.aggr_close_eof;
- 			val |= aggr_sw_eof_active_encoded(version, close_eof);
--
--			/* AGGR_HARD_BYTE_LIMIT_ENABLE is 0 */
- 		} else {
- 			val |= u32_encode_bits(IPA_ENABLE_DEAGGR,
- 					       AGGR_EN_FMASK);
+ 	if (risky_device(dev))
 -- 
 2.35.1
 
