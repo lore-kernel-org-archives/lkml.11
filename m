@@ -2,47 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D404C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:04:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B62B1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:06:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238903AbiE3OEy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:04:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58640 "EHLO
+        id S238939AbiE3OFB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:05:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239505AbiE3N4o (ORCPT
+        with ESMTP id S239542AbiE3N4s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:56:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B0859729B;
-        Mon, 30 May 2022 06:38:37 -0700 (PDT)
+        Mon, 30 May 2022 09:56:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C47008AE46;
+        Mon, 30 May 2022 06:38:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ABB4B60F1F;
-        Mon, 30 May 2022 13:38:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAFB6C341C5;
-        Mon, 30 May 2022 13:38:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 82EC4B80D84;
+        Mon, 30 May 2022 13:38:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84AFAC36AE5;
+        Mon, 30 May 2022 13:38:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917916;
-        bh=EI6kyMEv2r+oMfMB12oZQKomnwfH3xTNuKb7+f/Swr4=;
+        s=k20201202; t=1653917920;
+        bh=zLKqJ7YRx9+AQT3UXBkTEmxLVA2wtgkhaELDhD9VzXs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BOsNKdFY7jfwDdDDIK85pLfJL7Kuz9BJ+vXanGbTYYle/exZh+8590zCoc+H9DUqZ
-         YV0q8sTlLnPM+/Gszd8529/WmsIXMd1ev65xwgyJmfP/0RcQvCVC/s5HXx3uHiGbs9
-         f4SAh0AE0o2B/wSrzs23+xSi0I0hd9Yji169aGR96sy4ERoZV0x6PGntVgEy3ABBCn
-         mNEZ7yYEhL+DOGmmZ0Kk7zEnyWA9DZ1/YXqprdrFNzkph1EPbjgv1HLr9rWo86EIHu
-         X55Mi33JRPXdiNAUFBx7q9Z70N3zKdiB98KaYs7LP4OGTHSEwX9Yvl99VqgnUf2qso
-         RhYc6PJ6hWegA==
+        b=o7McjvI4WfH0sTyuTL5ZFB6mvqGzPA5t/Sc/f17zXA991Kksn4OFbDejlgM4rW84d
+         ArEYeEItDdIzYsFmXqpHPbXVzdTNJ7pfYXOh+gXmNQqdWmT2lumYZuAuCTxVbmpJYL
+         lJ1R379GCKyOW/5As8dE+fIPLz9bRQ/NHZZQckD9ikOe0EKx9JpSfVVZ/Qb4Bs2RaM
+         /q0HWZi68Shw393MTobCfbpuy/gj1rMA79JLU0tjeyyiitSJ4Kie3tpTID8eOFUSVR
+         TPEUZHtUkQJQgle2jc/LhIQW/r5iaEeJiAgWrKRcsqx3zjrEQboSgrKLv7MxJIuq93
+         1DOzepwHRfd3Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Nikolay Borisov <nborisov@suse.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, shuah@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net,
-        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 004/109] selftests/bpf: Fix vfs_link kprobe definition
-Date:   Mon, 30 May 2022 09:36:40 -0400
-Message-Id: <20220530133825.1933431-4-sashal@kernel.org>
+Cc:     Niels Dossche <dossche.niels@gmail.com>,
+        Brian Norris <briannorris@chromium.org>,
+        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        amitkarwar@gmail.com, ganapathi017@gmail.com,
+        sharvari.harisangam@nxp.com, huxinming820@gmail.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 006/109] mwifiex: add mutex lock for call in mwifiex_dfs_chan_sw_work_queue
+Date:   Mon, 30 May 2022 09:36:42 -0400
+Message-Id: <20220530133825.1933431-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133825.1933431-1-sashal@kernel.org>
 References: <20220530133825.1933431-1-sashal@kernel.org>
@@ -54,41 +56,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nikolay Borisov <nborisov@suse.com>
+From: Niels Dossche <dossche.niels@gmail.com>
 
-[ Upstream commit e299bcd4d16ff86f46c48df1062c8aae0eca1ed8 ]
+[ Upstream commit 3e12968f6d12a34b540c39cbd696a760cc4616f0 ]
 
-Since commit 6521f8917082 ("namei: prepare for idmapped mounts")
-vfs_link's prototype was changed, the kprobe definition in
-profiler selftest in turn wasn't updated. The result is that all
-argument after the first are now stored in different registers. This
-means that self-test has been broken ever since. Fix it by updating the
-kprobe definition accordingly.
+cfg80211_ch_switch_notify uses ASSERT_WDEV_LOCK to assert that
+net_device->ieee80211_ptr->mtx (which is the same as priv->wdev.mtx)
+is held during the function's execution.
+mwifiex_dfs_chan_sw_work_queue is one of its callers, which does not
+hold that lock, therefore violating the assertion.
+Add a lock around the call.
 
-Signed-off-by: Nikolay Borisov <nborisov@suse.com>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Link: https://lore.kernel.org/bpf/20220331140949.1410056-1-nborisov@suse.com
+Disclaimer:
+I am currently working on a static analyser to detect missing locks.
+This was a reported case. I manually verified the report by looking
+at the code, so that I do not send wrong information or patches.
+After concluding that this seems to be a true positive, I created
+this patch.
+However, as I do not in fact have this particular hardware,
+I was unable to test it.
+
+Reviewed-by: Brian Norris <briannorris@chromium.org>
+Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220321225515.32113-1-dossche.niels@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/bpf/progs/profiler.inc.h | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/net/wireless/marvell/mwifiex/11h.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/tools/testing/selftests/bpf/progs/profiler.inc.h b/tools/testing/selftests/bpf/progs/profiler.inc.h
-index 4896fdf816f7..92331053dba3 100644
---- a/tools/testing/selftests/bpf/progs/profiler.inc.h
-+++ b/tools/testing/selftests/bpf/progs/profiler.inc.h
-@@ -826,8 +826,9 @@ int kprobe_ret__do_filp_open(struct pt_regs* ctx)
+diff --git a/drivers/net/wireless/marvell/mwifiex/11h.c b/drivers/net/wireless/marvell/mwifiex/11h.c
+index d2ee6469e67b..3fa25cd64cda 100644
+--- a/drivers/net/wireless/marvell/mwifiex/11h.c
++++ b/drivers/net/wireless/marvell/mwifiex/11h.c
+@@ -303,5 +303,7 @@ void mwifiex_dfs_chan_sw_work_queue(struct work_struct *work)
  
- SEC("kprobe/vfs_link")
- int BPF_KPROBE(kprobe__vfs_link,
--	       struct dentry* old_dentry, struct inode* dir,
--	       struct dentry* new_dentry, struct inode** delegated_inode)
-+	       struct dentry* old_dentry, struct user_namespace *mnt_userns,
-+	       struct inode* dir, struct dentry* new_dentry,
-+	       struct inode** delegated_inode)
- {
- 	struct bpf_func_stats_ctx stats_ctx;
- 	bpf_stats_enter(&stats_ctx, profiler_bpf_vfs_link);
+ 	mwifiex_dbg(priv->adapter, MSG,
+ 		    "indicating channel switch completion to kernel\n");
++	mutex_lock(&priv->wdev.mtx);
+ 	cfg80211_ch_switch_notify(priv->netdev, &priv->dfs_chandef);
++	mutex_unlock(&priv->wdev.mtx);
+ }
 -- 
 2.35.1
 
