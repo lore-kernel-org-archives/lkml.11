@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36694C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20735C43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:53:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241755AbiE3Owy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:52:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50304 "EHLO
+        id S241715AbiE3Ows (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:52:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240179AbiE3OcA (ORCPT
+        with ESMTP id S242689AbiE3Ob2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:32:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A842132754;
-        Mon, 30 May 2022 06:53:27 -0700 (PDT)
+        Mon, 30 May 2022 10:31:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BDB312DBFB;
+        Mon, 30 May 2022 06:53:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 001B7B80DC0;
-        Mon, 30 May 2022 13:53:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B169C3411F;
-        Mon, 30 May 2022 13:53:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1898AB80D86;
+        Mon, 30 May 2022 13:53:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7AB7C3411F;
+        Mon, 30 May 2022 13:53:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918789;
-        bh=qdL3By0ZebRGXhLApY9ltw5ex3EZW+bXvOSzc8J4/nk=;
+        s=k20201202; t=1653918782;
+        bh=FUexYxaRsvee6a4Kuwpw9ly8fry/guwfgp+ZPHLQiCg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LZHDAoemOLQFdndxtChq2Nv83idHztjnUS+/YCO9Q/Pdl139feavjQ1hz5XQHGz0r
-         4LCt+eKEGVOFD/bUk7vuyF9tnAKXqyrEnsh+UHNDCMLq5BS/5x6WKvLeTf/PBN1f2w
-         c/te/pdx2+/vFFIE/XUqghPlu4Qe935IF2vctbMLjSujNy+VH+M6W/Qr3SXoKsCPjE
-         XHUrGGyMx5j1HzSbg78Vkh9cIgZfUWQYrr94bXPLPdec3cKMpdIEBo66gDxdgVYT3x
-         h1o0aF+EZ0L+e0jhBJ/wT+EHNRlhr/nwlBRe2JivGoJac9tKwZftQhx6Zn46tq1f7p
-         I9EuMo/QxT36Q==
+        b=OQvM+mazQQMInayt9PCUkuRFPwlLHV8tJAxWd6UgLnA5NVbiZzroijUarxZITNYXu
+         pzUWkTghG0DrXWrUEUESV8KiNLlQQSmveEov7cTW7h4/yMnOMgTbTiBI47xMPkSwpb
+         A3vLvXMgUFpPjfYS/mIDAkMzUCCFUQ34MBM+TIzbajyNvkSXYDH99OyQTMCkDLD5kC
+         sTI40m9ThAnxTeBWdG+SyKaF9QyOJhJHnmTWk24fWSKbqZr0c3FRLJf7MUjcWDmPKG
+         CoEllIhd5zlYYkuJmP0b8K/YcLKK7+/AEnruFIse2pI6ZdsVtEsca+url7G6Z/fFh7
+         jWA+jY9kHwfMg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ard Biesheuvel <ardb@kernel.org>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Sasha Levin <sashal@kernel.org>, linux@armlinux.org.uk,
-        linus.walleij@linaro.org, nico@fluxnic.net, keithpac@amazon.com,
-        arnd@arndb.de, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 4.9 22/24] ARM: 9201/1: spectre-bhb: rely on linker to emit cross-section literal loads
-Date:   Mon, 30 May 2022 09:52:09 -0400
-Message-Id: <20220530135211.1937674-22-sashal@kernel.org>
+Cc:     Lin Ma <linma@zju.edu.cn>, Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, oder_chiou@realtek.com,
+        lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
+        alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 4.9 20/24] ASoC: rt5645: Fix errorenous cleanup order
+Date:   Mon, 30 May 2022 09:52:07 -0400
+Message-Id: <20220530135211.1937674-20-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530135211.1937674-1-sashal@kernel.org>
 References: <20220530135211.1937674-1-sashal@kernel.org>
@@ -53,106 +52,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ard Biesheuvel <ardb@kernel.org>
+From: Lin Ma <linma@zju.edu.cn>
 
-[ Upstream commit ad12c2f1587c6ec9b52ff226f438955bfae6ad89 ]
+[ Upstream commit 2def44d3aec59e38d2701c568d65540783f90f2f ]
 
-The assembler does not permit 'LDR PC, <sym>' when the symbol lives in a
-different section, which is why we have been relying on rather fragile
-open-coded arithmetic to load the address of the vector_swi routine into
-the program counter using a single LDR instruction in the SWI slot in
-the vector table. The literal was moved to a different section to in
-commit 19accfd373847 ("ARM: move vector stubs") to ensure that the
-vector stubs page does not need to be mapped readable for user space,
-which is the case for the vector page itself, as it carries the kuser
-helpers as well.
+There is a logic error when removing rt5645 device as the function
+rt5645_i2c_remove() first cancel the &rt5645->jack_detect_work and
+delete the &rt5645->btn_check_timer latter. However, since the timer
+handler rt5645_btn_check_callback() will re-queue the jack_detect_work,
+this cleanup order is buggy.
 
-So the cross-section literal load is open-coded, and this relies on the
-address of vector_swi to be at the very start of the vector stubs page,
-and we won't notice if we got it wrong until booting the kernel and see
-it break. Fortunately, it was guaranteed to break, so this was fragile
-but not problematic.
+That is, once the del_timer_sync in rt5645_i2c_remove is concurrently
+run with the rt5645_btn_check_callback, the canceled jack_detect_work
+will be rescheduled again, leading to possible use-after-free.
 
-Now that we have added two other variants of the vector table, we have 3
-occurrences of the same trick, and so the size of our ISA/compiler/CPU
-validation space has tripled, in a way that may cause regressions to only
-be observed once booting the image in question on a CPU that exercises a
-particular vector table.
+This patch fix the issue by placing the del_timer_sync function before
+the cancel_delayed_work_sync.
 
-So let's switch to true cross section references, and let the linker fix
-them up like it fixes up all the other cross section references in the
-vector page.
-
-Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Signed-off-by: Lin Ma <linma@zju.edu.cn>
+Link: https://lore.kernel.org/r/20220516092035.28283-1-linma@zju.edu.cn
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/kernel/entry-armv.S | 22 +++++++++++++++-------
- 1 file changed, 15 insertions(+), 7 deletions(-)
+ sound/soc/codecs/rt5645.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/arch/arm/kernel/entry-armv.S b/arch/arm/kernel/entry-armv.S
-index 247229e69322..9f9f79410cc0 100644
---- a/arch/arm/kernel/entry-armv.S
-+++ b/arch/arm/kernel/entry-armv.S
-@@ -1105,10 +1105,15 @@ ENDPROC(vector_bhb_bpiall_\name)
- 	.endm
+diff --git a/sound/soc/codecs/rt5645.c b/sound/soc/codecs/rt5645.c
+index 1ac96ef9ee20..703b26ec4e15 100644
+--- a/sound/soc/codecs/rt5645.c
++++ b/sound/soc/codecs/rt5645.c
+@@ -3878,6 +3878,12 @@ static int rt5645_i2c_remove(struct i2c_client *i2c)
+ 	if (i2c->irq)
+ 		free_irq(i2c->irq, rt5645);
  
- 	.section .stubs, "ax", %progbits
--	@ This must be the first word
-+	@ These need to remain at the start of the section so that
-+	@ they are in range of the 'SWI' entries in the vector tables
-+	@ located 4k down.
-+.L__vector_swi:
- 	.word	vector_swi
- #ifdef CONFIG_HARDEN_BRANCH_HISTORY
-+.L__vector_bhb_loop8_swi:
- 	.word	vector_bhb_loop8_swi
-+.L__vector_bhb_bpiall_swi:
- 	.word	vector_bhb_bpiall_swi
- #endif
++	/*
++	 * Since the rt5645_btn_check_callback() can queue jack_detect_work,
++	 * the timer need to be delted first
++	 */
++	del_timer_sync(&rt5645->btn_check_timer);
++
+ 	cancel_delayed_work_sync(&rt5645->jack_detect_work);
+ 	cancel_delayed_work_sync(&rt5645->rcclock_work);
  
-@@ -1251,10 +1256,11 @@ vector_addrexcptn:
- 	.globl	vector_fiq
- 
- 	.section .vectors, "ax", %progbits
--.L__vectors_start:
- 	W(b)	vector_rst
- 	W(b)	vector_und
--	W(ldr)	pc, .L__vectors_start + 0x1000
-+ARM(	.reloc	., R_ARM_LDR_PC_G0, .L__vector_swi		)
-+THUMB(	.reloc	., R_ARM_THM_PC12, .L__vector_swi		)
-+	W(ldr)	pc, .
- 	W(b)	vector_pabt
- 	W(b)	vector_dabt
- 	W(b)	vector_addrexcptn
-@@ -1263,10 +1269,11 @@ vector_addrexcptn:
- 
- #ifdef CONFIG_HARDEN_BRANCH_HISTORY
- 	.section .vectors.bhb.loop8, "ax", %progbits
--.L__vectors_bhb_loop8_start:
- 	W(b)	vector_rst
- 	W(b)	vector_bhb_loop8_und
--	W(ldr)	pc, .L__vectors_bhb_loop8_start + 0x1004
-+ARM(	.reloc	., R_ARM_LDR_PC_G0, .L__vector_bhb_loop8_swi	)
-+THUMB(	.reloc	., R_ARM_THM_PC12, .L__vector_bhb_loop8_swi	)
-+	W(ldr)	pc, .
- 	W(b)	vector_bhb_loop8_pabt
- 	W(b)	vector_bhb_loop8_dabt
- 	W(b)	vector_addrexcptn
-@@ -1274,10 +1281,11 @@ vector_addrexcptn:
- 	W(b)	vector_bhb_loop8_fiq
- 
- 	.section .vectors.bhb.bpiall, "ax", %progbits
--.L__vectors_bhb_bpiall_start:
- 	W(b)	vector_rst
- 	W(b)	vector_bhb_bpiall_und
--	W(ldr)	pc, .L__vectors_bhb_bpiall_start + 0x1008
-+ARM(	.reloc	., R_ARM_LDR_PC_G0, .L__vector_bhb_bpiall_swi	)
-+THUMB(	.reloc	., R_ARM_THM_PC12, .L__vector_bhb_bpiall_swi	)
-+	W(ldr)	pc, .
- 	W(b)	vector_bhb_bpiall_pabt
- 	W(b)	vector_bhb_bpiall_dabt
- 	W(b)	vector_addrexcptn
 -- 
 2.35.1
 
