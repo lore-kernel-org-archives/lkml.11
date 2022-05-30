@@ -2,144 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00FD7C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 02:39:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0471BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 02:48:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232281AbiE3CjR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 29 May 2022 22:39:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57384 "EHLO
+        id S232312AbiE3CsK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 29 May 2022 22:48:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231174AbiE3CjP (ORCPT
+        with ESMTP id S232304AbiE3CsH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 29 May 2022 22:39:15 -0400
-Received: from conssluserg-03.nifty.com (conssluserg-03.nifty.com [210.131.2.82])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7FCF2FFE8;
-        Sun, 29 May 2022 19:39:13 -0700 (PDT)
-Received: from mail-pj1-f42.google.com (mail-pj1-f42.google.com [209.85.216.42]) (authenticated)
-        by conssluserg-03.nifty.com with ESMTP id 24U2ccAY014384;
-        Mon, 30 May 2022 11:38:39 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-03.nifty.com 24U2ccAY014384
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1653878319;
-        bh=qE7WzXO+Fvb8LCHJhg8ITc3RTlFLdDuh1rXDaHDbiIs=;
+        Sun, 29 May 2022 22:48:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 508A23EF04
+        for <linux-kernel@vger.kernel.org>; Sun, 29 May 2022 19:48:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EDBB6B80B8B
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 02:48:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5616C341D0
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 02:48:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653878883;
+        bh=YoRGxfq1Yea8HRZlBDQS2oqp73Xku6gJh6IZaXEOUT8=;
         h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=sPCU552xllBU8amPTSEmdOp5gcSpR0zm/ArNfQPjwi9XgCuHtFun7XDOjdYLirYM3
-         p+AkSQw0AR+3WvBwarF9TuRlpuBCBLTppdLT7qvlPdRKSFvgHZrlnPUbDwKIgEj5rK
-         SwdW2n57Z1ViQezOnF2lY2gvivUA0gmGIk/EJz0RwNeUyn9AbdfWT0pPqsfWINIeJx
-         Dvh2bTyOvlSeUQ9/TXqmRNJUpk8i3TPwmQGrPjLy0uSGNycLt/VmX9qnwlxiuRqUad
-         1k9k9XefjR8Jh2MNl0Y6bTdhSpTJbuNizNo9b50pVcS+aIywLjWXMl3z1+bLYRInYI
-         9tKzTcarevDog==
-X-Nifty-SrcIP: [209.85.216.42]
-Received: by mail-pj1-f42.google.com with SMTP id m14-20020a17090a414e00b001df77d29587so12264206pjg.2;
-        Sun, 29 May 2022 19:38:39 -0700 (PDT)
-X-Gm-Message-State: AOAM530iAPxxtkmVBFFZdAKJbfQHPeVHXqYUFqZpTzJHaaahLo+WQcKd
-        UAWSWsqvebltB9YNWZpSY6xOy+OkfcJSjvTqXl8=
-X-Google-Smtp-Source: ABdhPJyaQ/wy9B9fshk3yW3KU4TEmW6glMJp4RuyA4kh5/iojS5tBbBKH3o+PslFQejImPVohc4VfuJPFqJ/RefpdpU=
-X-Received: by 2002:a17:90a:9412:b0:1e0:c0cc:8630 with SMTP id
- r18-20020a17090a941200b001e0c0cc8630mr20484625pjo.77.1653878318504; Sun, 29
- May 2022 19:38:38 -0700 (PDT)
+        b=IBYxtq5gyzzz6NoUQdgfTtSYIgZ3KWqAdLPQMAaWnPLuJ/YDqgxsQLwBbN6PzFQ4/
+         ynoZELeNvrjeF0rsNXYNDgK/Kw39SRFuXzc+saHjBG0+T7m+50D+YCtWB9onXw/yxW
+         eM24Jm2i0VjJc2nV5fEWZRAtu1IzaFyKQPmUfaOtCzt9TQC7Q8p7HY4ZoUrrlUtJsv
+         smdsNxszWiJHC3wgku0JpcwM4w8Y8I3Z9AuAZMd9dLLevOrdKaKnrHQlQvEMqBhEKo
+         bCHa4Dn2mSL61TjjKpIOSiw6fws/SGfe2AcstVkd0NnYqleGUnH6XKCmLZIFuyBK5K
+         Q4qqk8qcSKuxA==
+Received: by mail-vs1-f46.google.com with SMTP id 68so9590367vse.11
+        for <linux-kernel@vger.kernel.org>; Sun, 29 May 2022 19:48:03 -0700 (PDT)
+X-Gm-Message-State: AOAM532O8KvOprM6WKrIeRTuyovpXGFjUZrm8tqojVUk4kc5qc5Zg171
+        FEwVjM5sf5pPPhurs0vsE6oi26gVSGDR+ffZKdQ=
+X-Google-Smtp-Source: ABdhPJzvEfegwzjtbzbneiuCB+i9dHMhbVAfv1BIeisWjXZ/dtthImdOsnOoQKcAkgNwBZcem3RsjgMXsyI5j2ahuf0=
+X-Received: by 2002:a05:6102:151c:b0:337:d985:1764 with SMTP id
+ f28-20020a056102151c00b00337d9851764mr10556500vsv.51.1653878882062; Sun, 29
+ May 2022 19:48:02 -0700 (PDT)
 MIME-Version: 1.0
-References: <18500f18-9cd5-a81c-4a55-14e999ed4496@infradead.org>
- <3ae306e0-c6c7-ed12-cacd-62b1c26dba3c@infradead.org> <6671de03-c09c-bfaf-e06c-e45af70d4354@infradead.org>
- <6601a387-de9a-a0d0-11b5-01e0cfa75657@infradead.org> <7a97bac3-6ade-8e1b-cf0c-4a05c83163a3@infradead.org>
- <Yo+lHSmeIsx144cv@shaak> <3b7ec693-f4a5-e1aa-3e07-b22a4008d4c9@infradead.org>
- <YpPjqC+kVLIBpNlq@shaak> <593f31f6-1628-87f2-1b5d-ad8e79119dd6@infradead.org>
-In-Reply-To: <593f31f6-1628-87f2-1b5d-ad8e79119dd6@infradead.org>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Mon, 30 May 2022 11:37:12 +0900
-X-Gmail-Original-Message-ID: <CAK7LNASUvQdEnSzUUYCjRVaZJpun5hdJ_oY=wYEW2RcF3spHuw@mail.gmail.com>
-Message-ID: <CAK7LNASUvQdEnSzUUYCjRVaZJpun5hdJ_oY=wYEW2RcF3spHuw@mail.gmail.com>
-Subject: Re: kbuild problem: ERROR: modpost: missing MODULE_LICENSE() in drivers/iio/afe/iio-rescale.o
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     Liam Beguin <liambeguin@gmail.com>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        linux-iio@vger.kernel.org, Peter Rosin <peda@axentia.se>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        KUnit Development <kunit-dev@googlegroups.com>
+References: <20220518013428.1338983-1-xianting.tian@linux.alibaba.com>
+In-Reply-To: <20220518013428.1338983-1-xianting.tian@linux.alibaba.com>
+From:   Guo Ren <guoren@kernel.org>
+Date:   Mon, 30 May 2022 10:47:51 +0800
+X-Gmail-Original-Message-ID: <CAJF2gTRZCchLk9apNQagNmsNb3Pv+WfPTisrsWDDrQyVncUYeA@mail.gmail.com>
+Message-ID: <CAJF2gTRZCchLk9apNQagNmsNb3Pv+WfPTisrsWDDrQyVncUYeA@mail.gmail.com>
+Subject: Re: [PATCH v3] RISC-V: Mark IORESOURCE_EXCLUSIVE for reserved mem
+ instead of IORESOURCE_BUSY
+To:     Palmer Dabbelt <palmer@dabbelt.com>
+Cc:     Nick Kossifidis <mick@ics.forth.gr>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Anup Patel <anup@brainfault.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        David Hildenbrand <david@redhat.com>, wangborong@cdjrlc.com,
+        twd2 <twd2.me@gmail.com>, seanjc@google.com,
+        Alex Ghiti <alex@ghiti.fr>, petr.pavlu@suse.com,
+        Atish Patra <atishp@rivosinc.com>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        jianghuaming.jhm@alibaba-inc.com,
+        =?UTF-8?Q?Heiko_St=C3=BCbner?= <heiko@sntech.de>,
+        Xianting Tian <xianting.tian@linux.alibaba.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 30, 2022 at 9:17 AM Randy Dunlap <rdunlap@infradead.org> wrote:
+Hi Palmer,
+
+Please have a look at this patch which is a critical fixup. Our
+current riscv implementation has broken the reserved memory.
+
+On Wed, May 18, 2022 at 9:34 AM Xianting Tian
+<xianting.tian@linux.alibaba.com> wrote:
 >
+> Commit 00ab027a3b82 ("RISC-V: Add kernel image sections to the resource tree")
+> marked IORESOURCE_BUSY for reserved memory, which caused resource map
+> failed in subsequent operations of related driver, so remove the
+> IORESOURCE_BUSY flag. In order to prohibit userland mapping reserved
+> memory, mark IORESOURCE_EXCLUSIVE for it.
 >
+> The code to reproduce the issue,
+> dts:
+>         mem0: memory@a0000000 {
+>                 reg = <0x0 0xa0000000 0 0x1000000>;
+>                 no-map;
+>         };
 >
-> On 5/29/22 14:20, Liam Beguin wrote:
-> > Hi Randy,
-> >
-> > On Thu, May 26, 2022 at 01:04:41PM -0700, Randy Dunlap wrote:
-> >>
-> >>
-> >> On 5/26/22 09:04, Liam Beguin wrote:
-> >>> Hi Randy,
-> >>>
-> >>> On Thu, May 26, 2022 at 08:36:34AM -0700, Randy Dunlap wrote:
-> >>>> Liam:
-> >>>>
-> >>>> Any comment on this?
-> >>>> Otherwise I'll just send a formal patch like this (below).
-> >>>
-> >>> Apologies for not answering earlier.
-> >>>
-> >>> I wanted to look more into Masahiro's comment and try to fix the
-> >>> Makefile, but that can be done after.
-> >>>
-> >>> IMO your patch improves the current Kconfig, so I'd recommend sending
-> >>> the patch. If it can wait a bit, I can look at the Makefile over the
-> >>> weekend.
-> >>>
-> >>
-> >> Liam,
-> >>
-> >> I'll wait until next week to see if you come up with anything.
-> >>
-> >
-> > The following patch fixes the issue while addressing Masahiro's comment.
-> > I also considered `select IIO_RESCALE`, but I'm not sure what's usually
-> > preferred.
-> >
-> > diff --git a/drivers/iio/test/Kconfig b/drivers/iio/test/Kconfig
-> > index 56ca0ad7e77a..4c66c3f18c34 100644
-> > --- a/drivers/iio/test/Kconfig
-> > +++ b/drivers/iio/test/Kconfig
-> > @@ -6,7 +6,7 @@
-> >  # Keep in alphabetical order
-> >  config IIO_RESCALE_KUNIT_TEST
-> >       bool "Test IIO rescale conversion functions"
-> > -     depends on KUNIT=y && !IIO_RESCALE
-> > +     depends on KUNIT=y && IIO_RESCALE=y
-> >       default KUNIT_ALL_TESTS
-> >       help
-> >         If you want to run tests on the iio-rescale code say Y here.
-> > diff --git a/drivers/iio/test/Makefile b/drivers/iio/test/Makefile
-> > index f15ae0a6394f..880360f8d02c 100644
-> > --- a/drivers/iio/test/Makefile
-> > +++ b/drivers/iio/test/Makefile
-> > @@ -4,6 +4,6 @@
-> >  #
-> >
-> >  # Keep in alphabetical order
-> > -obj-$(CONFIG_IIO_RESCALE_KUNIT_TEST) += iio-test-rescale.o ../afe/iio-rescale.o
-> > +obj-$(CONFIG_IIO_RESCALE_KUNIT_TEST) += iio-test-rescale.o
-> >  obj-$(CONFIG_IIO_TEST_FORMAT) += iio-test-format.o
-> >  CFLAGS_iio-test-format.o += $(DISABLE_STRUCTLEAK_PLUGIN)
-> >
-> > I'll send a patch as soon as you confirm this works for you too.
+>         &test {
+>                 status = "okay";
+>                 memory-region = <&mem0>;
+>         };
 >
-> Looks good. Thanks.
+> code:
+>         np = of_parse_phandle(pdev->dev.of_node, "memory-region", 0);
+>         ret = of_address_to_resource(np, 0, &r);
+>         base = devm_ioremap_resource(&pdev->dev, &r);
+>         // base = -EBUSY
 >
-> Acked-by: Randy Dunlap <rdunlap@infradead.org>
-> Tested-by: Randy Dunlap <rdunlap@infradead.org>
+> Fixes: 00ab027a3b82 ("RISC-V: Add kernel image sections to the resource tree")
+> Reported-by: Huaming Jiang <jianghuaming.jhm@alibaba-inc.com>
+> Reviewed-by: Guo Ren <guoren@kernel.org>
+> Reviewed-by: Heiko Stuebner <heiko@sntech.de>
+> Tested-by: Heiko Stuebner <heiko@sntech.de>
+> Co-developed-by: Nick Kossifidis <mick@ics.forth.gr>
+> Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
+> ---
+> Changes from v2:
+> - Fix typo in commit message: casued -> caused
+> - Remove Reviewed-by of Nick Kossifidis, who didn't give Reviewed-by actually
+> - Add Co-developed-by of Nick
 >
+> Changes from v1:
+> - Mark reserved memory as IORESOURCE_EXCLUSIVE, suggested by Nick
+> ---
+>  arch/riscv/kernel/setup.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/arch/riscv/kernel/setup.c b/arch/riscv/kernel/setup.c
+> index 834eb652a7b9..e0a00739bd13 100644
+> --- a/arch/riscv/kernel/setup.c
+> +++ b/arch/riscv/kernel/setup.c
+> @@ -189,7 +189,7 @@ static void __init init_resources(void)
+>                 res = &mem_res[res_idx--];
+>
+>                 res->name = "Reserved";
+> -               res->flags = IORESOURCE_MEM | IORESOURCE_BUSY;
+> +               res->flags = IORESOURCE_MEM | IORESOURCE_EXCLUSIVE;
+>                 res->start = __pfn_to_phys(memblock_region_reserved_base_pfn(region));
+>                 res->end = __pfn_to_phys(memblock_region_reserved_end_pfn(region)) - 1;
+>
+> @@ -214,7 +214,7 @@ static void __init init_resources(void)
+>
+>                 if (unlikely(memblock_is_nomap(region))) {
+>                         res->name = "Reserved";
+> -                       res->flags = IORESOURCE_MEM | IORESOURCE_BUSY;
+> +                       res->flags = IORESOURCE_MEM | IORESOURCE_EXCLUSIVE;
+>                 } else {
+>                         res->name = "System RAM";
+>                         res->flags = IORESOURCE_SYSTEM_RAM | IORESOURCE_BUSY;
 > --
-> ~Randy
+> 2.17.1
+>
 
-
- Reviewed-by: Masahiro Yamada <masahiroy@kernel.org>
 
 -- 
 Best Regards
-Masahiro Yamada
+ Guo Ren
+
+ML: https://lore.kernel.org/linux-csky/
