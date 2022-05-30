@@ -2,46 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E4FBC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:49:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B84CDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:49:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238148AbiE3NtN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:49:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39668 "EHLO
+        id S238144AbiE3Nt1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:49:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237432AbiE3NmZ (ORCPT
+        with ESMTP id S238024AbiE3Nnm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:42:25 -0400
+        Mon, 30 May 2022 09:43:42 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E772E9A9A2;
-        Mon, 30 May 2022 06:32:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 662839AE63;
+        Mon, 30 May 2022 06:32:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6BB8C60F47;
-        Mon, 30 May 2022 13:32:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6940CC36AE9;
-        Mon, 30 May 2022 13:32:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D7C8A60EC3;
+        Mon, 30 May 2022 13:32:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81413C36AE3;
+        Mon, 30 May 2022 13:32:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917524;
-        bh=gam7VJRU5tQrQ47mhnmERO7Bdx+TDXwHG5e3vtQwqLQ=;
+        s=k20201202; t=1653917531;
+        bh=+ehzoZ1+4/6eIf04m+qPZ2eANMxYBdwQHqalydfBe80=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z81S6mTkK/cZFYhkdJuRtxeVLN2cJSQz1HmGgsYwyW32t8QNtAkWy1ZiiIsfPPILq
-         ylrVXC/nIfA8GTopZq995ecdiPWAtzdyTZqCynKmdc8qhCNIRBoXXKHVJTCK4df4nr
-         lPBUqfCHOhKSp7SvEkp/k0M3sOLJp/Wxt+d2WcSaDpbmazqYRLllPlyuUqzWq317bK
-         5WjVw7x9jLe1Gq2NEuO75pxreAn0+3u1aY09wViqg3+42N+fEYs1iUq6/G5QgUs3QW
-         ei1wopOLbQtJYB9tA9pdkaRaWJGjM79DBPwxTf5XzPBN8OKFp9Fjw6UkzXQJ7Xx48j
-         sEMDK/K7qYOwQ==
+        b=bhTaRygIMpHU18YNO9vkdcqxyOU9vJnhWnSNXl+xEFK6zAVo3reY58beAsghdyUuy
+         DdSrU7t8tZBkQcNAkRzbXqIu0fEGQmWuRKTJZPwwxKNGPoRDdViQioABkfv7G3BVzs
+         ju11hxzOq9ctMUadM4/b2zS8gMgDLMyw62LFuKvJt6kgiHJMx31Ir4kYrLDRcI6/j9
+         ZMrJ7Gdn9fjdMDUnJalzt+q/gQFw3w3U39MFKQyQdwtSfgq0brZG8ptpwLafwYI2GD
+         HKyXBGhV1IXlToEu4m1iKf1MgAiLEtvuAa41t2gmVrYE8gQxiklMwD6OnnnUxsw+sH
+         EElbyO/+wnzbg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Haowen Bai <baihaowen@meizu.com>, Kalle Valo <kvalo@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, stas.yakovlev@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 011/135] ipw2x00: Fix potential NULL dereference in libipw_xmit()
-Date:   Mon, 30 May 2022 09:29:29 -0400
-Message-Id: <20220530133133.1931716-11-sashal@kernel.org>
+Cc:     Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Daniel Vetter <daniel.vetter@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>, Du Cheng <ducheng2@gmail.com>,
+        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
+        Claudio Suarez <cssk@net-c.es>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Sasha Levin <sashal@kernel.org>, deller@gmx.de,
+        javierm@redhat.com, linux-fbdev@vger.kernel.org,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.17 013/135] fbcon: Consistently protect deferred_takeover with console_lock()
+Date:   Mon, 30 May 2022 09:29:31 -0400
+Message-Id: <20220530133133.1931716-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133133.1931716-1-sashal@kernel.org>
 References: <20220530133133.1931716-1-sashal@kernel.org>
@@ -53,34 +58,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Haowen Bai <baihaowen@meizu.com>
+From: Daniel Vetter <daniel.vetter@ffwll.ch>
 
-[ Upstream commit e8366bbabe1d207cf7c5b11ae50e223ae6fc278b ]
+[ Upstream commit 43553559121ca90965b572cf8a1d6d0fd618b449 ]
 
-crypt and crypt->ops could be null, so we need to checking null
-before dereference
+This shouldn't be a problem in practice since until we've actually
+taken over the console there's nothing we've registered with the
+console/vt subsystem, so the exit/unbind path that check this can't
+do the wrong thing. But it's confusing, so fix it by moving it a tad
+later.
 
-Signed-off-by: Haowen Bai <baihaowen@meizu.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/1648797055-25730-1-git-send-email-baihaowen@meizu.com
+Acked-by: Sam Ravnborg <sam@ravnborg.org>
+Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Cc: Du Cheng <ducheng2@gmail.com>
+Cc: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Cc: Claudio Suarez <cssk@net-c.es>
+Cc: Thomas Zimmermann <tzimmermann@suse.de>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220405210335.3434130-14-daniel.vetter@ffwll.ch
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/ipw2x00/libipw_tx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/video/fbdev/core/fbcon.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/ipw2x00/libipw_tx.c b/drivers/net/wireless/intel/ipw2x00/libipw_tx.c
-index 36d1e6b2568d..4aec1fce1ae2 100644
---- a/drivers/net/wireless/intel/ipw2x00/libipw_tx.c
-+++ b/drivers/net/wireless/intel/ipw2x00/libipw_tx.c
-@@ -383,7 +383,7 @@ netdev_tx_t libipw_xmit(struct sk_buff *skb, struct net_device *dev)
+diff --git a/drivers/video/fbdev/core/fbcon.c b/drivers/video/fbdev/core/fbcon.c
+index 2fc1b80a26ad..9a8ae6fa6ecb 100644
+--- a/drivers/video/fbdev/core/fbcon.c
++++ b/drivers/video/fbdev/core/fbcon.c
+@@ -3265,6 +3265,9 @@ static void fbcon_register_existing_fbs(struct work_struct *work)
  
- 		/* Each fragment may need to have room for encryption
- 		 * pre/postfix */
--		if (host_encrypt)
-+		if (host_encrypt && crypt && crypt->ops)
- 			bytes_per_frag -= crypt->ops->extra_mpdu_prefix_len +
- 			    crypt->ops->extra_mpdu_postfix_len;
+ 	console_lock();
  
++	deferred_takeover = false;
++	logo_shown = FBCON_LOGO_DONTSHOW;
++
+ 	for_each_registered_fb(i)
+ 		fbcon_fb_registered(registered_fb[i]);
+ 
+@@ -3282,8 +3285,6 @@ static int fbcon_output_notifier(struct notifier_block *nb,
+ 	pr_info("fbcon: Taking over console\n");
+ 
+ 	dummycon_unregister_output_notifier(&fbcon_output_nb);
+-	deferred_takeover = false;
+-	logo_shown = FBCON_LOGO_DONTSHOW;
+ 
+ 	/* We may get called in atomic context */
+ 	schedule_work(&fbcon_deferred_takeover_work);
 -- 
 2.35.1
 
