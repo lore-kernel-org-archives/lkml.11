@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52975C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:53:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53B85C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:53:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238658AbiE3OxD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:53:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43206 "EHLO
+        id S241830AbiE3OxL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:53:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242656AbiE3ObZ (ORCPT
+        with ESMTP id S241433AbiE3OaZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:31:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28C1E12DBF6;
-        Mon, 30 May 2022 06:53:15 -0700 (PDT)
+        Mon, 30 May 2022 10:30:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C90B5BE58;
+        Mon, 30 May 2022 06:52:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 423786102F;
-        Mon, 30 May 2022 13:53:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57BB2C3411A;
-        Mon, 30 May 2022 13:52:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6CCF4B80DE2;
+        Mon, 30 May 2022 13:52:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16E3FC3411A;
+        Mon, 30 May 2022 13:52:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918779;
-        bh=Xlh2jYqXF5aWMkpYTrGr9h+FlAuLQOz3xMpWM9qsbjg=;
+        s=k20201202; t=1653918723;
+        bh=RuUJURyxugcuc59iK03LZ8W2uZus1jLgTQH7goDPaHQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ag8cajVcjVFPaqJOTl6Lco1bbKm5m7DVAXRVZDLNnOI42Z+UjHEQn8K3iY1jlBoWD
-         s2If/td9jICItwbQ/WJFdiYfW8y8gOy4J6rpW8HrQNBscs5zempWBiW8j82YR944T9
-         SaeZ3QCLKpQ3UGzxdkXO1LaSX67+k/CWpK07M2iaKIMlcNURCnT9CdiCHSNq7VVn0A
-         BDqritZ44Sd8JVR1zQP3b3yC1bQTr35Xd6GIOWWrnUQcIhnzrozsH5vuONa4dG/e+1
-         GYJ1IRLrmpPELmlyKCWK1/wEPTH1ldyqABRpkOOl143oI/qFrCj2B6d1Fh5XKwYzt+
-         U00NNtu2XBM0Q==
+        b=gXOuoYfPBxQ3xZe8wpQQh+vbAJDY25IsU8SInOee7tbfVQ65EQaKTcVKW+Vo0RtvI
+         5EMEzH+snDViOKheFg03EhoI2ip3TBcsJamtqZYH1F+9ul8i0Nm38ODgmns2tuBfdp
+         W0U1OJWhpdaWuqAqAP+8yzrEV+PWbMzUqQ9pr3/Y8RDaiHAf14ulLgLMHhJ7G/cfEC
+         BiaTg6wY4k+RRRVBZmnIo1z9gljjjDW5T3JfmF00nPEH1Zte1BiQRaG3XJze7VxsfA
+         Ys+/raxLYivj0qkfVGTrsuxquVYr6vVOXyVvzGTWetnwbu2BvHGGySNpwF9XbsD9CB
+         plUjbNz0NIZrA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Arnd Bergmann <arnd@arndb.de>, Jonas Bonn <jonas@southpole.se>,
-        Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>,
-        Stafford Horne <shorne@gmail.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Sasha Levin <sashal@kernel.org>, rdunlap@infradead.org,
-        linux@dominikbrodowski.net, openrisc@lists.librecores.org
-Subject: [PATCH AUTOSEL 4.9 18/24] openrisc: start CPU timer early in boot
-Date:   Mon, 30 May 2022 09:52:05 -0400
-Message-Id: <20220530135211.1937674-18-sashal@kernel.org>
+Cc:     Kwanghoon Son <k.son@samsung.com>,
+        kernel test robot <lkp@intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>,
+        krzysztof.kozlowski@linaro.org, linux-media@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 26/29] media: exynos4-is: Fix compile warning
+Date:   Mon, 30 May 2022 09:50:53 -0400
+Message-Id: <20220530135057.1937286-26-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220530135211.1937674-1-sashal@kernel.org>
-References: <20220530135211.1937674-1-sashal@kernel.org>
+In-Reply-To: <20220530135057.1937286-1-sashal@kernel.org>
+References: <20220530135057.1937286-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -56,60 +56,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Kwanghoon Son <k.son@samsung.com>
 
-[ Upstream commit 516dd4aacd67a0f27da94f3fe63fe0f4dbab6e2b ]
+[ Upstream commit e080f5c1f2b6d02c02ee5d674e0e392ccf63bbaf ]
 
-In order to measure the boot process, the timer should be switched on as
-early in boot as possible. As well, the commit defines the get_cycles
-macro, like the previous patches in this series, so that generic code is
-aware that it's implemented by the platform, as is done on other archs.
+Declare static on function 'fimc_isp_video_device_unregister'.
 
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Jonas Bonn <jonas@southpole.se>
-Cc: Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>
-Acked-by: Stafford Horne <shorne@gmail.com>
-Reported-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+When VIDEO_EXYNOS4_ISP_DMA_CAPTURE=n, compiler warns about
+warning: no previous prototype for function [-Wmissing-prototypes]
+
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Kwanghoon Son <k.son@samsung.com>
+Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/openrisc/include/asm/timex.h | 1 +
- arch/openrisc/kernel/head.S       | 9 +++++++++
- 2 files changed, 10 insertions(+)
+ drivers/media/platform/exynos4-is/fimc-isp-video.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/openrisc/include/asm/timex.h b/arch/openrisc/include/asm/timex.h
-index 9935cad1b9b9..34d015bf0462 100644
---- a/arch/openrisc/include/asm/timex.h
-+++ b/arch/openrisc/include/asm/timex.h
-@@ -27,6 +27,7 @@ static inline cycles_t get_cycles(void)
- {
- 	return mfspr(SPR_TTCR);
+diff --git a/drivers/media/platform/exynos4-is/fimc-isp-video.h b/drivers/media/platform/exynos4-is/fimc-isp-video.h
+index f79a1b348aa6..67ef85249912 100644
+--- a/drivers/media/platform/exynos4-is/fimc-isp-video.h
++++ b/drivers/media/platform/exynos4-is/fimc-isp-video.h
+@@ -35,7 +35,7 @@ static inline int fimc_isp_video_device_register(struct fimc_isp *isp,
+ 	return 0;
  }
-+#define get_cycles get_cycles
  
- /* This isn't really used any more */
- #define CLOCK_TICK_RATE 1000
-diff --git a/arch/openrisc/kernel/head.S b/arch/openrisc/kernel/head.S
-index 98dd6860bc0b..0b6be5b3522b 100644
---- a/arch/openrisc/kernel/head.S
-+++ b/arch/openrisc/kernel/head.S
-@@ -452,6 +452,15 @@ _start:
- 	l.ori	r3,r0,0x1
- 	l.mtspr	r0,r3,SPR_SR
- 
-+	/*
-+	 * Start the TTCR as early as possible, so that the RNG can make use of
-+	 * measurements of boot time from the earliest opportunity. Especially
-+	 * important is that the TTCR does not return zero by the time we reach
-+	 * rand_initialize().
-+	 */
-+	l.movhi r3,hi(SPR_TTMR_CR)
-+	l.mtspr r0,r3,SPR_TTMR
-+
- 	CLEAR_GPR(r1)
- 	CLEAR_GPR(r2)
- 	CLEAR_GPR(r3)
+-void fimc_isp_video_device_unregister(struct fimc_isp *isp,
++static inline void fimc_isp_video_device_unregister(struct fimc_isp *isp,
+ 				enum v4l2_buf_type type)
+ {
+ }
 -- 
 2.35.1
 
