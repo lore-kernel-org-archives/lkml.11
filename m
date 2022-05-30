@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DF75C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F22BC4167E
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:57:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239064AbiE3Nzk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:55:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34674 "EHLO
+        id S239148AbiE3Nzy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:55:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238444AbiE3NuN (ORCPT
+        with ESMTP id S238508AbiE3NuR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:50:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98FE8AB0C4;
-        Mon, 30 May 2022 06:34:52 -0700 (PDT)
+        Mon, 30 May 2022 09:50:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8C2DAB0F3;
+        Mon, 30 May 2022 06:34:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 39BCBB80DB2;
-        Mon, 30 May 2022 13:34:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D71E3C3411A;
-        Mon, 30 May 2022 13:34:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7632C60F2A;
+        Mon, 30 May 2022 13:34:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B4B1C3411E;
+        Mon, 30 May 2022 13:34:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917664;
-        bh=elhLJgnyMsasOtb8cxU+DSEo7qMotW6TsQWH859S98M=;
+        s=k20201202; t=1653917694;
+        bh=6Hz5HqIYdJLRIZwRktEAYB4iRCBgmhBAZDeEbAndy0g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XUqhVqU+MckOglK2JF2H9Ne2WjtPOf3Vdcit1tV1ljcmOzIhcr5TAOo/N1wAGLOBP
-         cCOhMzzOV2bAQHL0aajuj/zReFd+JM5azdsz5Xm3l5Iazc9jTl3UDBYRx7deYzSyW2
-         iiDugl93IEX1GLkJ+595BR8R7Hdgvpmm8PAs8rNzGx9cWudDKHcZlrt5GTW1YhD8Ri
-         7cbTtqBT2DclvVqGpdb/ymg8aGIpRrTl3uUfrFIFpc1BnR5P/VhfGrKdz2SZQoPiWi
-         RhntAzkaSFCCTkhQtMnL3M1qMTbRHHvMieGaMPacsKnaO1egR2JL1QnKntHJV9eHE9
-         eqwUJeDJFbVgQ==
+        b=eWYwVozCqwP4cMii/2Q+UTYPfLHrHEsgy8WwWDVYfER703fombQjkNj1aQoXPFv2Q
+         MCJMqnAD8ROU48tXse4VijYniiy2Ii5BIbVP0i7aMEGnifalgBA6C2EG/FXuVJWRqg
+         /ky/m1rPCmgf7TSGpzqg//Zq7onAnNHYgnRAwKzDhU6Vt4SPlFJ7UDgZaPOxiEe6LJ
+         boqg2syyOfM1btC1I0aVj6CLVxBfQ/0T5qgU8CFzwN/jiF52YBM4y06Ouz/DVhREmw
+         Z81oImUta9BZzMMyCdyhh5f8cE7pzrlsrirp9EHzpA61gSAI3mhqbunMf5hOZsKXQl
+         KeP9bnqc65Cpg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alexandru Elisei <alexandru.elisei@arm.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Sasha Levin <sashal@kernel.org>, will@kernel.org,
-        sagarmp@cs.unc.edu, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.17 057/135] arm64: compat: Do not treat syscall number as ESR_ELx for a bad syscall
-Date:   Mon, 30 May 2022 09:30:15 -0400
-Message-Id: <20220530133133.1931716-57-sashal@kernel.org>
+Cc:     Petr Machata <petrm@nvidia.com>,
+        Maksym Yaremchuk <maksymy@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 067/135] mlxsw: Treat LLDP packets as control
+Date:   Mon, 30 May 2022 09:30:25 -0400
+Message-Id: <20220530133133.1931716-67-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133133.1931716-1-sashal@kernel.org>
 References: <20220530133133.1931716-1-sashal@kernel.org>
@@ -53,74 +54,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexandru Elisei <alexandru.elisei@arm.com>
+From: Petr Machata <petrm@nvidia.com>
 
-[ Upstream commit 3fed9e551417b84038b15117732ea4505eee386b ]
+[ Upstream commit 0106668cd2f91bf913fb78972840dedfba80a3c3 ]
 
-If a compat process tries to execute an unknown system call above the
-__ARM_NR_COMPAT_END number, the kernel sends a SIGILL signal to the
-offending process. Information about the error is printed to dmesg in
-compat_arm_syscall() -> arm64_notify_die() -> arm64_force_sig_fault() ->
-arm64_show_signal().
+When trapping packets for on-CPU processing, Spectrum machines
+differentiate between control and non-control traps. Traffic trapped
+through non-control traps is treated as data and kept in shared buffer in
+pools 0-4. Traffic trapped through control traps is kept in the dedicated
+control buffer 9. The advantage of marking traps as control is that
+pressure in the data plane does not prevent the control traffic to be
+processed.
 
-arm64_show_signal() interprets a non-zero value for
-current->thread.fault_code as an exception syndrome and displays the
-message associated with the ESR_ELx.EC field (bits 31:26).
-current->thread.fault_code is set in compat_arm_syscall() ->
-arm64_notify_die() with the bad syscall number instead of a valid ESR_ELx
-value. This means that the ESR_ELx.EC field has the value that the user set
-for the syscall number and the kernel can end up printing bogus exception
-messages*. For example, for the syscall number 0x68000000, which evaluates
-to ESR_ELx.EC value of 0x1A (ESR_ELx_EC_FPAC) the kernel prints this error:
+When the LLDP trap was introduced, it was marked as a control trap. But
+then in commit aed4b5721143 ("mlxsw: spectrum: PTP: Hook into packet
+receive path"), PTP traps were introduced. Because Ethernet-encapsulated
+PTP packets look to the Spectrum-1 ASIC as LLDP traffic and are trapped
+under the LLDP trap, this trap was reconfigured as non-control, in sync
+with the PTP traps.
 
-[   18.349161] syscall[300]: unhandled exception: ERET/ERETAA/ERETAB, ESR 0x68000000, Oops - bad compat syscall(2) in syscall[10000+50000]
-[   18.350639] CPU: 2 PID: 300 Comm: syscall Not tainted 5.18.0-rc1 #79
-[   18.351249] Hardware name: Pine64 RockPro64 v2.0 (DT)
-[..]
+There is however no requirement that PTP traffic be handled as data.
+Besides, the usual encapsulation for PTP traffic is UDP, not bare Ethernet,
+and that is in deployments that even need PTP, which is far less common
+than LLDP. This is reflected by the default policer, which was not bumped
+up to the 19Kpps / 24Kpps that is the expected load of a PTP-enabled
+Spectrum-1 switch.
 
-which is misleading, as the bad compat syscall has nothing to do with
-pointer authentication.
+Marking of LLDP trap as non-control was therefore probably misguided. In
+this patch, change it back to control.
 
-Stop arm64_show_signal() from printing exception syndrome information by
-having compat_arm_syscall() set the ESR_ELx value to 0, as it has no
-meaning for an invalid system call number. The example above now becomes:
-
-[   19.935275] syscall[301]: unhandled exception: Oops - bad compat syscall(2) in syscall[10000+50000]
-[   19.936124] CPU: 1 PID: 301 Comm: syscall Not tainted 5.18.0-rc1-00005-g7e08006d4102 #80
-[   19.936894] Hardware name: Pine64 RockPro64 v2.0 (DT)
-[..]
-
-which although shows less information because the syscall number,
-wrongfully advertised as the ESR value, is missing, it is better than
-showing plainly wrong information. The syscall number can be easily
-obtained with strace.
-
-*A 32-bit value above or equal to 0x8000_0000 is interpreted as a negative
-integer in compat_arm_syscal() and the condition scno < __ARM_NR_COMPAT_END
-evaluates to true; the syscall will exit to userspace in this case with the
-ENOSYS error code instead of arm64_notify_die() being called.
-
-Signed-off-by: Alexandru Elisei <alexandru.elisei@arm.com>
-Reviewed-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220425114444.368693-3-alexandru.elisei@arm.com
-Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+Reported-by: Maksym Yaremchuk <maksymy@nvidia.com>
+Signed-off-by: Petr Machata <petrm@nvidia.com>
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/kernel/sys_compat.c | 2 +-
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm64/kernel/sys_compat.c b/arch/arm64/kernel/sys_compat.c
-index db5159a3055f..b88a52f7188f 100644
---- a/arch/arm64/kernel/sys_compat.c
-+++ b/arch/arm64/kernel/sys_compat.c
-@@ -114,6 +114,6 @@ long compat_arm_syscall(struct pt_regs *regs, int scno)
- 	addr = instruction_pointer(regs) - (compat_thumb_mode(regs) ? 2 : 4);
- 
- 	arm64_notify_die("Oops - bad compat syscall(2)", regs,
--			 SIGILL, ILL_ILLTRP, addr, scno);
-+			 SIGILL, ILL_ILLTRP, addr, 0);
- 	return 0;
- }
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
+index 47b061b99160..ed4d0d3448f3 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
+@@ -864,7 +864,7 @@ static const struct mlxsw_sp_trap_item mlxsw_sp_trap_items_arr[] = {
+ 		.trap = MLXSW_SP_TRAP_CONTROL(LLDP, LLDP, TRAP),
+ 		.listeners_arr = {
+ 			MLXSW_RXL(mlxsw_sp_rx_ptp_listener, LLDP, TRAP_TO_CPU,
+-				  false, SP_LLDP, DISCARD),
++				  true, SP_LLDP, DISCARD),
+ 		},
+ 	},
+ 	{
 -- 
 2.35.1
 
