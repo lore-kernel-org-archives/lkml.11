@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C20EDC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:28:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D84EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:28:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236689AbiE3N2G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:28:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58544 "EHLO
+        id S236775AbiE3N2L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:28:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236870AbiE3N1D (ORCPT
+        with ESMTP id S236842AbiE3N1F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:27:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4910887A3B;
-        Mon, 30 May 2022 06:25:46 -0700 (PDT)
+        Mon, 30 May 2022 09:27:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8535880DA;
+        Mon, 30 May 2022 06:25:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A82960EB4;
-        Mon, 30 May 2022 13:25:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B35CC36AE5;
-        Mon, 30 May 2022 13:25:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 32B38B80AE8;
+        Mon, 30 May 2022 13:25:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C50CFC341C0;
+        Mon, 30 May 2022 13:25:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917145;
-        bh=kdM3fNE5gu/C38KDzzmn5dQwtfjNDKoBsKPgDt1kxYY=;
+        s=k20201202; t=1653917137;
+        bh=I+5VL4h4/uUKIFvLHkwrzyV1ZwSfo2lBjc7LZAxD4nk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LmCEEL6Hf/eeOK7BVUAaO5UETckHnF3jnCG6/5FfyOn3Aflc/BDV0vDnqASUtXaQ+
-         B/0JusFfZlfnp6dWoFLeZHD2UgCv13OlB/i7Azz0f/WVBEjLlJJecEjuCPvQNMUnYd
-         Ne9H+iX80WM0lvv/DKvltgr4g/2A434kogrqh5bLOlhaoW7iB49h2S+YPtgw7R6PL6
-         rEJU3GyoiX6PgzwzlWP2cRqrqBaTUt5ZDgcAM6jzKNOzvLGJOmtAnxiS6CKNnqgjMx
-         5gn+Om9Tb6nj6OkobQPPBl+6s1CtOveMudIOv4ydtkATvgt9tXRjg7THbckl2DljiU
-         jR1ozwL2E6NYg==
+        b=AWQCDbhQQcpbvK3Q1NBQDtYsatGxH06HVKz0tTDUtX6eOsIcFl/3DHAGfgQ/KHwY+
+         r3/CbykLrl435yY7yyjFlU7Sne5PCw1GvsGEMm+ZF9SK9SvXZ5aqJV2qwoNo0XFa9j
+         hZY5hrnCazAAg11Ec6x29zDYoOWkKIMJWvC6oxjpZCsn1zEb4XSNvmgbi2BD8ry7kB
+         qCVC+qldxtZdepOmHIOJ7u0oGIypeZVKKAFczsj30gijkbHa5TpXeKRM63NYzg8hmm
+         IDg2oIfd1aX0TNT/RIBxGynbu/p7OSgHy3rQ86dL6HE8gQ6bCow0bNMbcVTZUaMCyD
+         iwxKYFdwsQ38g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     James Smart <jsmart2021@gmail.com>,
-        Justin Tee <justin.tee@broadcom.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, james.smart@broadcom.com,
-        dick.kennedy@broadcom.com, jejb@linux.ibm.com,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 035/159] scsi: lpfc: Move cfg_log_verbose check before calling lpfc_dmp_dbg()
-Date:   Mon, 30 May 2022 09:22:20 -0400
-Message-Id: <20220530132425.1929512-35-sashal@kernel.org>
+Cc:     Po-Hao Huang <phhuang@realtek.com>,
+        Ping-Ke Shih <pkshih@realtek.com>,
+        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        tony0620emma@gmail.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 029/159] rtw88: fix incorrect frequency reported
+Date:   Mon, 30 May 2022 09:22:14 -0400
+Message-Id: <20220530132425.1929512-29-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530132425.1929512-1-sashal@kernel.org>
 References: <20220530132425.1929512-1-sashal@kernel.org>
@@ -54,110 +54,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Smart <jsmart2021@gmail.com>
+From: Po-Hao Huang <phhuang@realtek.com>
 
-[ Upstream commit e294647b1aed4247fe52851f3a3b2b19ae906228 ]
+[ Upstream commit 6723c0cde84fde582a261c186ce84100dcfa0019 ]
 
-In an attempt to log message 0126 with LOG_TRACE_EVENT, the following hard
-lockup call trace hangs the system.
+We should only fill in frequency reported by firmware during scan.
+Add this so frames won't be dropped by mac80211 due to frequency
+mismatch.
 
-Call Trace:
- _raw_spin_lock_irqsave+0x32/0x40
- lpfc_dmp_dbg.part.32+0x28/0x220 [lpfc]
- lpfc_cmpl_els_fdisc+0x145/0x460 [lpfc]
- lpfc_sli_cancel_jobs+0x92/0xd0 [lpfc]
- lpfc_els_flush_cmd+0x43c/0x670 [lpfc]
- lpfc_els_flush_all_cmd+0x37/0x60 [lpfc]
- lpfc_sli4_async_event_proc+0x956/0x1720 [lpfc]
- lpfc_do_work+0x1485/0x1d70 [lpfc]
- kthread+0x112/0x130
- ret_from_fork+0x1f/0x40
-Kernel panic - not syncing: Hard LOCKUP
-
-The same CPU tries to claim the phba->port_list_lock twice.
-
-Move the cfg_log_verbose checks as part of the lpfc_printf_vlog() and
-lpfc_printf_log() macros before calling lpfc_dmp_dbg().  There is no need
-to take the phba->port_list_lock within lpfc_dmp_dbg().
-
-Link: https://lore.kernel.org/r/20220412222008.126521-3-jsmart2021@gmail.com
-Co-developed-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: James Smart <jsmart2021@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Po-Hao Huang <phhuang@realtek.com>
+Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220407095858.46807-3-pkshih@realtek.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/lpfc/lpfc_init.c   | 29 +----------------------------
- drivers/scsi/lpfc/lpfc_logmsg.h |  6 +++---
- 2 files changed, 4 insertions(+), 31 deletions(-)
+ drivers/net/wireless/realtek/rtw88/rx.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/lpfc/lpfc_init.c b/drivers/scsi/lpfc/lpfc_init.c
-index 461d333b1b3a..f9cd4b72d949 100644
---- a/drivers/scsi/lpfc/lpfc_init.c
-+++ b/drivers/scsi/lpfc/lpfc_init.c
-@@ -15700,34 +15700,7 @@ void lpfc_dmp_dbg(struct lpfc_hba *phba)
- 	unsigned int temp_idx;
- 	int i;
- 	int j = 0;
--	unsigned long rem_nsec, iflags;
--	bool log_verbose = false;
--	struct lpfc_vport *port_iterator;
--
--	/* Don't dump messages if we explicitly set log_verbose for the
--	 * physical port or any vport.
--	 */
--	if (phba->cfg_log_verbose)
--		return;
--
--	spin_lock_irqsave(&phba->port_list_lock, iflags);
--	list_for_each_entry(port_iterator, &phba->port_list, listentry) {
--		if (port_iterator->load_flag & FC_UNLOADING)
--			continue;
--		if (scsi_host_get(lpfc_shost_from_vport(port_iterator))) {
--			if (port_iterator->cfg_log_verbose)
--				log_verbose = true;
--
--			scsi_host_put(lpfc_shost_from_vport(port_iterator));
--
--			if (log_verbose) {
--				spin_unlock_irqrestore(&phba->port_list_lock,
--						       iflags);
--				return;
--			}
--		}
--	}
--	spin_unlock_irqrestore(&phba->port_list_lock, iflags);
-+	unsigned long rem_nsec;
- 
- 	if (atomic_cmpxchg(&phba->dbg_log_dmping, 0, 1) != 0)
- 		return;
-diff --git a/drivers/scsi/lpfc/lpfc_logmsg.h b/drivers/scsi/lpfc/lpfc_logmsg.h
-index 7d480c798794..a5aafe230c74 100644
---- a/drivers/scsi/lpfc/lpfc_logmsg.h
-+++ b/drivers/scsi/lpfc/lpfc_logmsg.h
-@@ -73,7 +73,7 @@ do { \
- #define lpfc_printf_vlog(vport, level, mask, fmt, arg...) \
- do { \
- 	{ if (((mask) & (vport)->cfg_log_verbose) || (level[1] <= '3')) { \
--		if ((mask) & LOG_TRACE_EVENT) \
-+		if ((mask) & LOG_TRACE_EVENT && !(vport)->cfg_log_verbose) \
- 			lpfc_dmp_dbg((vport)->phba); \
- 		dev_printk(level, &((vport)->phba->pcidev)->dev, "%d:(%d):" \
- 			   fmt, (vport)->phba->brd_no, vport->vpi, ##arg);  \
-@@ -89,11 +89,11 @@ do { \
- 				 (phba)->pport->cfg_log_verbose : \
- 				 (phba)->cfg_log_verbose; \
- 	if (((mask) & log_verbose) || (level[1] <= '3')) { \
--		if ((mask) & LOG_TRACE_EVENT) \
-+		if ((mask) & LOG_TRACE_EVENT && !log_verbose) \
- 			lpfc_dmp_dbg(phba); \
- 		dev_printk(level, &((phba)->pcidev)->dev, "%d:" \
- 			fmt, phba->brd_no, ##arg); \
--	} else  if (!(phba)->cfg_log_verbose)\
-+	} else if (!log_verbose)\
- 		lpfc_dbg_print(phba, "%d:" fmt, phba->brd_no, ##arg); \
- 	} \
- } while (0)
+diff --git a/drivers/net/wireless/realtek/rtw88/rx.c b/drivers/net/wireless/realtek/rtw88/rx.c
+index d2d607e22198..84aedabdf285 100644
+--- a/drivers/net/wireless/realtek/rtw88/rx.c
++++ b/drivers/net/wireless/realtek/rtw88/rx.c
+@@ -158,7 +158,8 @@ void rtw_rx_fill_rx_status(struct rtw_dev *rtwdev,
+ 	memset(rx_status, 0, sizeof(*rx_status));
+ 	rx_status->freq = hw->conf.chandef.chan->center_freq;
+ 	rx_status->band = hw->conf.chandef.chan->band;
+-	if (rtw_fw_feature_check(&rtwdev->fw, FW_FEATURE_SCAN_OFFLOAD))
++	if (rtw_fw_feature_check(&rtwdev->fw, FW_FEATURE_SCAN_OFFLOAD) &&
++	    test_bit(RTW_FLAG_SCANNING, rtwdev->flags))
+ 		rtw_set_rx_freq_by_pktstat(pkt_stat, rx_status);
+ 	if (pkt_stat->crc_err)
+ 		rx_status->flag |= RX_FLAG_FAILED_FCS_CRC;
 -- 
 2.35.1
 
