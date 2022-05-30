@@ -2,87 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CEDD4C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 17:36:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3FDCC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 17:37:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239272AbiE3Rgd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 13:36:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38168 "EHLO
+        id S239720AbiE3Rh2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 13:37:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229790AbiE3Rgb (ORCPT
+        with ESMTP id S229790AbiE3RhV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 13:36:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F07B6898D;
-        Mon, 30 May 2022 10:36:30 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Mon, 30 May 2022 13:37:21 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 944AF50B30
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 10:37:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653932239;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Ki6v5xLxLFY/6GL0UoRKrfzO5KtuWLGLHBkS7AIWb/o=;
+        b=SOkGgUdVvQ4rl/YW3HmvSuinjFKONnibfL/cUvrYcMLgwl/ci/geHgydBDQuXuJxR99dBd
+        +NdyybdLmCvcm/aKUqH40ogGMd49BL+DSL82LsWF8SIkKQPGrzxzsj+nrWJso3UBxnlShT
+        w7RuBNmgprn4xN8qExTJJnlaKxf8H80=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-412-r8zveUoeMXm2RS3aS3jANA-1; Mon, 30 May 2022 13:37:16 -0400
+X-MC-Unique: r8zveUoeMXm2RS3aS3jANA-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 902A3B80DC0;
-        Mon, 30 May 2022 17:36:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DF5DC385B8;
-        Mon, 30 May 2022 17:36:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653932188;
-        bh=FoOGGS5HbF/zub9jWYSV2y47AxBkhodh4GDcvNJTV/E=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=k9XidlBjS90S1D3ozRaqkXwNoMLtXaaUSzgtU8f/9GuNDlh7sC/92xLJXDU4IZN6C
-         Hh6rFuhGvl1O8YDK+6xu7FAL4BXeW7+CqWwh8vyrLY0hVM4nNEdd5/Qv90zTJ4gjhs
-         2hwy8RLr1rKQghxP6wKv1cSRK1mrQKJZ+PtTsIQ9t6IHG/mSKietwUakM8Btp0U1us
-         teAMQzQ3QHhDj+D9C/6xe6ZX/8XxXUtN0zlx7hM3ApDk2WtCuw6VwFQliMwbeEDTVn
-         ICejKzj4wdYHo5lhN2BYhDTqq49SsHp/xDYTSB7+DmswshdDFlT1d8S39UDUuFy7x8
-         I1Gq9SLH0VtLA==
-Date:   Mon, 30 May 2022 10:36:26 -0700
-From:   Eric Biggers <ebiggers@kernel.org>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     herbert@gondor.apana.org.au, linux-crypto@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Zheng Bin <zhengbin13@huawei.com>,
-        stable@vger.kernel.org
-Subject: Re: [PATCH crypto] crypto: memneq - move into lib/
-Message-ID: <YpUAmiBSb6oEr1oc@sol.localdomain>
-References: <CAHmME9rWfUnUmHR5xo_+WdS0Wgv8yXQb+LqAo24XdoQQR4Wn8w@mail.gmail.com>
- <20220528102429.189731-1-Jason@zx2c4.com>
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 1134D185A794;
+        Mon, 30 May 2022 17:37:16 +0000 (UTC)
+Received: from fuller.cnet (ovpn-112-3.gru2.redhat.com [10.97.112.3])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id CD72C140EBD5;
+        Mon, 30 May 2022 17:37:15 +0000 (UTC)
+Received: by fuller.cnet (Postfix, from userid 1000)
+        id C3AAE4169537; Mon, 30 May 2022 12:17:49 -0300 (-03)
+Date:   Mon, 30 May 2022 12:17:49 -0300
+From:   Marcelo Tosatti <mtosatti@redhat.com>
+To:     Eiichi Tsukata <eiichi.tsukata@nutanix.com>
+Cc:     rafael@kernel.org, daniel.lezcano@linaro.org, rostedt@goodmis.org,
+        mingo@redhat.com, linux-pm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, joao.m.martins@oracle.com
+Subject: Re: [PATCH v4] cpuidle: haltpoll: Add trace points for
+ guest_halt_poll_ns grow/shrink
+Message-ID: <YpTgHeSJA4Ha3Gs4@fuller.cnet>
+References: <20220527005345.189906-1-eiichi.tsukata@nutanix.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220528102429.189731-1-Jason@zx2c4.com>
+In-Reply-To: <20220527005345.189906-1-eiichi.tsukata@nutanix.com>
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, May 28, 2022 at 12:24:29PM +0200, Jason A. Donenfeld wrote:
-> This is used by code that doesn't need CONFIG_CRYPTO, so move this into
-> lib/ with a Kconfig option so that it can be selected by whatever needs
-> it.
+On Fri, May 27, 2022 at 12:53:45AM +0000, Eiichi Tsukata wrote:
+> Add trace points as are implemented in KVM host halt polling.
+> This helps tune guest halt polling params.
 > 
-> This fixes a linker error Zheng pointed out when
-> CRYPTO_MANAGER_DISABLE_TESTS!=y and CRYPTO=m:
-> 
->   lib/crypto/curve25519-selftest.o: In function `curve25519_selftest':
->   curve25519-selftest.c:(.init.text+0x60): undefined reference to `__crypto_memneq'
->   curve25519-selftest.c:(.init.text+0xec): undefined reference to `__crypto_memneq'
->   curve25519-selftest.c:(.init.text+0x114): undefined reference to `__crypto_memneq'
->   curve25519-selftest.c:(.init.text+0x154): undefined reference to `__crypto_memneq'
-> 
-> Reported-by: Zheng Bin <zhengbin13@huawei.com>
-> Cc: Eric Biggers <ebiggers@kernel.org>
-> Cc: stable@vger.kernel.org
-> Fixes: aa127963f1ca ("crypto: lib/curve25519 - re-add selftests")
-> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+> Signed-off-by: Eiichi Tsukata <eiichi.tsukata@nutanix.com>
 > ---
-> I'm traveling over the next week, and there are a few ways to skin this
-> cat, so if somebody here sees issue, feel free to pick this v1 up and
-> fashion a v2 out of it.
+>  drivers/cpuidle/governors/haltpoll.c |  3 +++
+>  include/trace/events/power.h         | 29 ++++++++++++++++++++++++++++
+>  2 files changed, 32 insertions(+)
 > 
->  crypto/Kconfig           | 1 +
->  crypto/Makefile          | 2 +-
->  lib/Kconfig              | 3 +++
->  lib/Makefile             | 1 +
->  lib/crypto/Kconfig       | 1 +
->  {crypto => lib}/memneq.c | 0
->  6 files changed, 7 insertions(+), 1 deletion(-)
->  rename {crypto => lib}/memneq.c (100%)
+> diff --git a/drivers/cpuidle/governors/haltpoll.c b/drivers/cpuidle/governors/haltpoll.c
+> index cb2a96eafc02..1dff3a52917d 100644
+> --- a/drivers/cpuidle/governors/haltpoll.c
+> +++ b/drivers/cpuidle/governors/haltpoll.c
+> @@ -19,6 +19,7 @@
+>  #include <linux/sched.h>
+>  #include <linux/module.h>
+>  #include <linux/kvm_para.h>
+> +#include <trace/events/power.h>
+>  
+>  static unsigned int guest_halt_poll_ns __read_mostly = 200000;
+>  module_param(guest_halt_poll_ns, uint, 0644);
+> @@ -90,6 +91,7 @@ static void adjust_poll_limit(struct cpuidle_device *dev, u64 block_ns)
+>  		if (val > guest_halt_poll_ns)
+>  			val = guest_halt_poll_ns;
+>  
+> +		trace_guest_halt_poll_ns_grow(val, dev->poll_limit_ns);
+>  		dev->poll_limit_ns = val;
+>  	} else if (block_ns > guest_halt_poll_ns &&
+>  		   guest_halt_poll_allow_shrink) {
+> @@ -100,6 +102,7 @@ static void adjust_poll_limit(struct cpuidle_device *dev, u64 block_ns)
+>  			val = 0;
+>  		else
+>  			val /= shrink;
+> +		trace_guest_halt_poll_ns_shrink(val, dev->poll_limit_ns);
+>  		dev->poll_limit_ns = val;
+>  	}
+>  }
+> diff --git a/include/trace/events/power.h b/include/trace/events/power.h
+> index af5018aa9517..c708521e4ed5 100644
+> --- a/include/trace/events/power.h
+> +++ b/include/trace/events/power.h
+> @@ -500,6 +500,35 @@ DEFINE_EVENT(dev_pm_qos_request, dev_pm_qos_remove_request,
+>  
+>  	TP_ARGS(name, type, new_value)
+>  );
+> +
+> +TRACE_EVENT(guest_halt_poll_ns,
+> +
+> +	TP_PROTO(bool grow, unsigned int new, unsigned int old),
+> +
+> +	TP_ARGS(grow, new, old),
+> +
+> +	TP_STRUCT__entry(
+> +		__field(bool, grow)
+> +		__field(unsigned int, new)
+> +		__field(unsigned int, old)
+> +	),
+> +
+> +	TP_fast_assign(
+> +		__entry->grow   = grow;
+> +		__entry->new    = new;
+> +		__entry->old    = old;
+> +	),
+> +
+> +	TP_printk("halt_poll_ns %u (%s %u)",
+> +		__entry->new,
+> +		__entry->grow ? "grow" : "shrink",
+> +		__entry->old)
+> +);
+> +
+> +#define trace_guest_halt_poll_ns_grow(new, old) \
+> +	trace_guest_halt_poll_ns(true, new, old)
+> +#define trace_guest_halt_poll_ns_shrink(new, old) \
+> +	trace_guest_halt_poll_ns(false, new, old)
+>  #endif /* _TRACE_POWER_H */
+>  
+>  /* This part must be outside protection */
+> -- 
+> 2.36.1
+> 
+> 
 
-Reviewed-by: Eric Biggers <ebiggers@google.com>
+Signed-off-by: Marcelo Tosatti <mtosatti@redhat.com>
 
-- Eric
