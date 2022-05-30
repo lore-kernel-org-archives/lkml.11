@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DD4DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:57:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11922C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:57:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235784AbiE3N5k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:57:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34854 "EHLO
+        id S236992AbiE3N5q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:57:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238225AbiE3Nv5 (ORCPT
+        with ESMTP id S239288AbiE3NvZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:51:57 -0400
+        Mon, 30 May 2022 09:51:25 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49A7F75239;
-        Mon, 30 May 2022 06:36:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CE1C84A04;
+        Mon, 30 May 2022 06:35:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 310EF60F95;
-        Mon, 30 May 2022 13:36:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81499C385B8;
-        Mon, 30 May 2022 13:36:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3879D60F2A;
+        Mon, 30 May 2022 13:35:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7769C3411A;
+        Mon, 30 May 2022 13:35:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917817;
-        bh=y3bhC0rUOrF3icDOfUWiGnm7BKnScQLuWa8qmBsViaY=;
+        s=k20201202; t=1653917754;
+        bh=ANvR0+X6vi8dluHkHYvQMoS88/nWD+GMOygl+QCxWBo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BNTkZ6/Dobl4kgV5CORwDdm9WPkSS0+dQe6FaDzIpm1aXiUxE7CTJuJhWOOK+0ga0
-         +NQOkrE9vLV0lH5C98FGbMSEXgkRwhjkVphTxbMZbrF3277AsZWAR1OXTYBWLv6Mug
-         r/rDI6a934fdzIVkIurrTngMBei0MnxUltM8Sgx0oVwmpJukg0JIeH3P43A14BCRrM
-         hPmGatF82v+IDxu5P2lnmSC+vEKjFKZB6B3Q9iBkh1LBhJ/W9+Cc4yPpdPm8eHM3MU
-         hF/le2dD7JMx/52+PJns0pSJazm98yWZzqRGOFC36dF08Qz6B6gQDUPPGOfKkh/CpR
-         9T4BkHdt+d5YQ==
+        b=ZwgylZ1lajL2sq8le71q15RZ4NcJ/grNQBQ3D5IRyAYM9l/t4WTQZo4AOYfAn9mFZ
+         CgqEwH6eU8trCs286HR+w/AMdSR67K1jd7PMUjJWg5dgQI7xLxX9PYevGUSlr+3EuA
+         W21zNlZr3Lf+3hAGScVPNJV5WbgeZePgobpjzXjCrGYZyQqnLux5z57A173jZ4yBUT
+         ZM3U5p1cIJeRiLNE3CW/iOPOqlWa2BqRb1xUrZVDl511KkbgkEwEb1iqH2LISJEXBE
+         T9nDwH5501nTFcgiCWh3E85MEV/zflEg9Q7OPuJ0ftyvpUW5+90RArwiQIFU33kACi
+         yB/uN0MR3C+qw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Xie Yongji <xieyongji@bytedance.com>,
-        Xu Jianhai <zero.xu@bytedance.com>,
-        Josef Bacik <josef@toxicpanda.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>,
-        linux-block@vger.kernel.org, nbd@other.debian.org
-Subject: [PATCH AUTOSEL 5.17 107/135] nbd: Fix hung on disconnect request if socket is closed before
-Date:   Mon, 30 May 2022 09:31:05 -0400
-Message-Id: <20220530133133.1931716-107-sashal@kernel.org>
+Cc:     Corey Minyard <cminyard@mvista.com>,
+        Joe Wiese <jwiese@rackspace.com>,
+        Sasha Levin <sashal@kernel.org>,
+        openipmi-developer@lists.sourceforge.net
+Subject: [PATCH AUTOSEL 5.17 087/135] ipmi: Add an intializer for ipmi_smi_msg struct
+Date:   Mon, 30 May 2022 09:30:45 -0400
+Message-Id: <20220530133133.1931716-87-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133133.1931716-1-sashal@kernel.org>
 References: <20220530133133.1931716-1-sashal@kernel.org>
@@ -53,61 +52,95 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xie Yongji <xieyongji@bytedance.com>
+From: Corey Minyard <cminyard@mvista.com>
 
-[ Upstream commit 491bf8f236fdeec698fa6744993f1ecf3fafd1a5 ]
+[ Upstream commit 9824117dd964ecebf5d81990dbf21dfb56445049 ]
 
-When userspace closes the socket before sending a disconnect
-request, the following I/O requests will be blocked in
-wait_for_reconnect() until dead timeout. This will cause the
-following disconnect request also hung on blk_mq_quiesce_queue().
-That means we have no way to disconnect a nbd device if there
-are some I/O requests waiting for reconnecting until dead timeout.
-It's not expected. So let's wake up the thread waiting for
-reconnecting directly when a disconnect request is sent.
+There was a "type" element added to this structure, but some static
+values were missed.  The default value will be zero, which is correct,
+but create an initializer for the type and initialize the type properly
+in the initializer to avoid future issues.
 
-Reported-by: Xu Jianhai <zero.xu@bytedance.com>
-Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
-Reviewed-by: Josef Bacik <josef@toxicpanda.com>
-Link: https://lore.kernel.org/r/20220322080639.142-1-xieyongji@bytedance.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Reported-by: Joe Wiese <jwiese@rackspace.com>
+Signed-off-by: Corey Minyard <cminyard@mvista.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/block/nbd.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+ drivers/char/ipmi/ipmi_poweroff.c |  4 +---
+ drivers/char/ipmi/ipmi_watchdog.c | 14 +++++---------
+ include/linux/ipmi_smi.h          |  6 ++++++
+ 3 files changed, 12 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/block/nbd.c b/drivers/block/nbd.c
-index 5a1f98494ddd..284557041336 100644
---- a/drivers/block/nbd.c
-+++ b/drivers/block/nbd.c
-@@ -947,11 +947,15 @@ static int wait_for_reconnect(struct nbd_device *nbd)
- 	struct nbd_config *config = nbd->config;
- 	if (!config->dead_conn_timeout)
- 		return 0;
--	if (test_bit(NBD_RT_DISCONNECTED, &config->runtime_flags))
-+
-+	if (!wait_event_timeout(config->conn_wait,
-+				test_bit(NBD_RT_DISCONNECTED,
-+					 &config->runtime_flags) ||
-+				atomic_read(&config->live_connections) > 0,
-+				config->dead_conn_timeout))
- 		return 0;
--	return wait_event_timeout(config->conn_wait,
--				  atomic_read(&config->live_connections) > 0,
--				  config->dead_conn_timeout) > 0;
-+
-+	return !test_bit(NBD_RT_DISCONNECTED, &config->runtime_flags);
+diff --git a/drivers/char/ipmi/ipmi_poweroff.c b/drivers/char/ipmi/ipmi_poweroff.c
+index bc3a18daf97a..62e71c46ac5f 100644
+--- a/drivers/char/ipmi/ipmi_poweroff.c
++++ b/drivers/char/ipmi/ipmi_poweroff.c
+@@ -94,9 +94,7 @@ static void dummy_recv_free(struct ipmi_recv_msg *msg)
+ {
+ 	atomic_dec(&dummy_count);
+ }
+-static struct ipmi_smi_msg halt_smi_msg = {
+-	.done = dummy_smi_free
+-};
++static struct ipmi_smi_msg halt_smi_msg = INIT_IPMI_SMI_MSG(dummy_smi_free);
+ static struct ipmi_recv_msg halt_recv_msg = {
+ 	.done = dummy_recv_free
+ };
+diff --git a/drivers/char/ipmi/ipmi_watchdog.c b/drivers/char/ipmi/ipmi_watchdog.c
+index 883b4a341012..8e536ce0a5d2 100644
+--- a/drivers/char/ipmi/ipmi_watchdog.c
++++ b/drivers/char/ipmi/ipmi_watchdog.c
+@@ -354,9 +354,7 @@ static void msg_free_recv(struct ipmi_recv_msg *msg)
+ 			complete(&msg_wait);
+ 	}
+ }
+-static struct ipmi_smi_msg smi_msg = {
+-	.done = msg_free_smi
+-};
++static struct ipmi_smi_msg smi_msg = INIT_IPMI_SMI_MSG(msg_free_smi);
+ static struct ipmi_recv_msg recv_msg = {
+ 	.done = msg_free_recv
+ };
+@@ -475,9 +473,8 @@ static void panic_recv_free(struct ipmi_recv_msg *msg)
+ 	atomic_dec(&panic_done_count);
  }
  
- static int nbd_handle_cmd(struct nbd_cmd *cmd, int index)
-@@ -2082,6 +2086,7 @@ static void nbd_disconnect_and_put(struct nbd_device *nbd)
- 	mutex_lock(&nbd->config_lock);
- 	nbd_disconnect(nbd);
- 	sock_shutdown(nbd);
-+	wake_up(&nbd->config->conn_wait);
- 	/*
- 	 * Make sure recv thread has finished, we can safely call nbd_clear_que()
- 	 * to cancel the inflight I/Os.
+-static struct ipmi_smi_msg panic_halt_heartbeat_smi_msg = {
+-	.done = panic_smi_free
+-};
++static struct ipmi_smi_msg panic_halt_heartbeat_smi_msg =
++	INIT_IPMI_SMI_MSG(panic_smi_free);
+ static struct ipmi_recv_msg panic_halt_heartbeat_recv_msg = {
+ 	.done = panic_recv_free
+ };
+@@ -516,9 +513,8 @@ static void panic_halt_ipmi_heartbeat(void)
+ 		atomic_sub(2, &panic_done_count);
+ }
+ 
+-static struct ipmi_smi_msg panic_halt_smi_msg = {
+-	.done = panic_smi_free
+-};
++static struct ipmi_smi_msg panic_halt_smi_msg =
++	INIT_IPMI_SMI_MSG(panic_smi_free);
+ static struct ipmi_recv_msg panic_halt_recv_msg = {
+ 	.done = panic_recv_free
+ };
+diff --git a/include/linux/ipmi_smi.h b/include/linux/ipmi_smi.h
+index 9277d21c2690..5d69820d8b02 100644
+--- a/include/linux/ipmi_smi.h
++++ b/include/linux/ipmi_smi.h
+@@ -125,6 +125,12 @@ struct ipmi_smi_msg {
+ 	void (*done)(struct ipmi_smi_msg *msg);
+ };
+ 
++#define INIT_IPMI_SMI_MSG(done_handler) \
++{						\
++	.done = done_handler,			\
++	.type = IPMI_SMI_MSG_TYPE_NORMAL	\
++}
++
+ struct ipmi_smi_handlers {
+ 	struct module *owner;
+ 
 -- 
 2.35.1
 
