@@ -2,51 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9B4FC38A2B
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:22:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5888FC4167D
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:22:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237684AbiE3OVx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:21:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42694 "EHLO
+        id S233437AbiE3OWJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:22:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241048AbiE3ORJ (ORCPT
+        with ESMTP id S241087AbiE3ORN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:17:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A48010F350;
-        Mon, 30 May 2022 06:44:28 -0700 (PDT)
+        Mon, 30 May 2022 10:17:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64DD51116CE;
+        Mon, 30 May 2022 06:44:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C312260F24;
-        Mon, 30 May 2022 13:44:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49C3AC3411A;
-        Mon, 30 May 2022 13:43:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 23BC660FB4;
+        Mon, 30 May 2022 13:44:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69DD5C3411C;
+        Mon, 30 May 2022 13:44:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918240;
-        bh=rYEu55Ty2B3c2tcs9cM3GQF/Ak5ZmrxzY55Tk02GvNk=;
+        s=k20201202; t=1653918275;
+        bh=2LFwGuCsKCuYENEjOsRcLSDeb9bv9mIq1XjW2w4MUhI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Id9RTnmrR3wIlNvP9f1e9H6URLFa8h8FOt7vGXbEMCI+iI55Z7MH2162zHRpAPd/p
-         L0q4M4Zw1wFj5wUFs+dZCqEhMM+aHlg/QhBw4ZtFflgUSueS177BT2TYNmcuDeeVUY
-         cO4CozKBrJOV7+v679PNgdgKjUjySjxASGoVXnaJUbN3QDzIiGYeq7RvduY5bgIkJ4
-         UcMcWQTe9eZFeFhZhe7SBH4UqLyAXdpa1vdj9S80q+PL83/vUbdZxqt9dyN+uIL33x
-         uf2GTGD13GLekBQkv0NbM38pJ2uwdDRQv1ICxbYKc7uCFaVdmyEzDpHiWdX6M9cnz+
-         X634QihkbV3Gg==
+        b=igp3cOtb4Jw2neGZdTK8k/HnXt+jvH+U/oJ+eLQvdD4Ug0rkbNNzZ4stFJWV5JMs2
+         pQC8K0gS9Z18my8OEvWwRfH1L2UsrEg0Ghh2DI1dMPsh7on+2c+8SYgVTMNzxM5lnp
+         gKBDOuELFFFZx/NG8YlXEin3BNIv8n3k3CjmdNj5T1jYER/uehelIbvD5i2Kk8gGpw
+         rhvXAkqroZ0p3sm0gxfd4BtmNrhJILotKGxXAzyMFQ9tEuZsGcCPY+FTE1Aw+y/16V
+         M306FxMmpg7Gyu70h/T5yZc+usiH/rO/U7/WsoS3xhuq7v4k+QCZIOpCfr285RBApT
+         hG4EkNbQkaq9A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, peterhuewe@gmx.de,
-        linux-integrity@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 107/109] char: tpm: cr50_i2c: Suppress duplicated error message in .remove()
-Date:   Mon, 30 May 2022 09:38:23 -0400
-Message-Id: <20220530133825.1933431-107-sashal@kernel.org>
+Cc:     Liviu Dudau <liviu.dudau@arm.com>,
+        Steven Price <steven.price@arm.com>,
+        Sasha Levin <sashal@kernel.org>, james.qian.wang@arm.com,
+        mihail.atanassov@arm.com, brian.starkey@arm.com, airlied@linux.ie,
+        daniel@ffwll.ch, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.10 12/76] drm/komeda: return early if drm_universal_plane_init() fails.
+Date:   Mon, 30 May 2022 09:43:02 -0400
+Message-Id: <20220530134406.1934928-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220530133825.1933431-1-sashal@kernel.org>
-References: <20220530133825.1933431-1-sashal@kernel.org>
+In-Reply-To: <20220530134406.1934928-1-sashal@kernel.org>
+References: <20220530134406.1934928-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -54,51 +53,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+From: Liviu Dudau <liviu.dudau@arm.com>
 
-[ Upstream commit e0687fe958f763f1790f22ed5483025b7624e744 ]
+[ Upstream commit c8f76c37cc3668ee45e081e76a15f24a352ebbdd ]
 
-Returning an error value in an i2c remove callback results in an error
-message being emitted by the i2c core, but otherwise it doesn't make a
-difference. The device goes away anyhow and the devm cleanups are
-called.
+If drm_universal_plane_init() fails early we jump to the common cleanup code
+that calls komeda_plane_destroy() which in turn could access the uninitalised
+drm_plane and crash. Return early if an error is detected without going through
+the common code.
 
-As tpm_cr50_i2c_remove() emits an error message already and the
-additional error message by the i2c core doesn't add any useful
-information, change the return value to zero to suppress this error
-message.
-
-Note that if i2c_clientdata is NULL, there is something really fishy.
-Assuming no memory corruption happened (then all bets are lost anyhow),
-tpm_cr50_i2c_remove() is only called after tpm_cr50_i2c_probe() returned
-successfully. So there was a tpm chip registered before and after
-tpm_cr50_i2c_remove() its privdata is freed but the associated character
-device isn't removed. If after that happened userspace accesses the
-character device it's likely that the freed memory is accessed. For that
-reason the warning message is made a bit more frightening.
-
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+Reported-by: Steven Price <steven.price@arm.com>
+Reviewed-by: Steven Price <steven.price@arm.com>
+Signed-off-by: Liviu Dudau <liviu.dudau@arm.com>
+Link: https://lore.kernel.org/dri-devel/20211203100946.2706922-1-liviu.dudau@arm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/tpm/tpm_tis_i2c_cr50.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/arm/display/komeda/komeda_plane.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/char/tpm/tpm_tis_i2c_cr50.c b/drivers/char/tpm/tpm_tis_i2c_cr50.c
-index c89278103703..e2ab6a329732 100644
---- a/drivers/char/tpm/tpm_tis_i2c_cr50.c
-+++ b/drivers/char/tpm/tpm_tis_i2c_cr50.c
-@@ -754,8 +754,8 @@ static int tpm_cr50_i2c_remove(struct i2c_client *client)
- 	struct device *dev = &client->dev;
+diff --git a/drivers/gpu/drm/arm/display/komeda/komeda_plane.c b/drivers/gpu/drm/arm/display/komeda/komeda_plane.c
+index 98e915e325dd..a5f57b38d193 100644
+--- a/drivers/gpu/drm/arm/display/komeda/komeda_plane.c
++++ b/drivers/gpu/drm/arm/display/komeda/komeda_plane.c
+@@ -274,8 +274,10 @@ static int komeda_plane_add(struct komeda_kms_dev *kms,
  
- 	if (!chip) {
--		dev_err(dev, "Could not get client data at remove\n");
--		return -ENODEV;
-+		dev_crit(dev, "Could not get client data at remove, memory corruption ahead\n");
-+		return 0;
- 	}
+ 	komeda_put_fourcc_list(formats);
  
- 	tpm_chip_unregister(chip);
+-	if (err)
+-		goto cleanup;
++	if (err) {
++		kfree(kplane);
++		return err;
++	}
+ 
+ 	drm_plane_helper_add(plane, &komeda_plane_helper_funcs);
+ 
 -- 
 2.35.1
 
