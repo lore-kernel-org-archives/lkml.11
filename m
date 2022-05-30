@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0741C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:53:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7030C4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:53:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238762AbiE3Nxg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:53:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49234 "EHLO
+        id S238241AbiE3Nxp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:53:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238371AbiE3NpU (ORCPT
+        with ESMTP id S238065AbiE3NoD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:45:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 378989CF09;
-        Mon, 30 May 2022 06:32:54 -0700 (PDT)
+        Mon, 30 May 2022 09:44:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F102C9B1AA;
+        Mon, 30 May 2022 06:32:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 158B760F3E;
-        Mon, 30 May 2022 13:32:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43E26C3411A;
-        Mon, 30 May 2022 13:32:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8E243B80DAE;
+        Mon, 30 May 2022 13:32:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22893C385B8;
+        Mon, 30 May 2022 13:32:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917573;
-        bh=6c21A1kbnXmKe8tly4EAnWS1CNBZxBOYlSwgTiYeW1Q=;
+        s=k20201202; t=1653917536;
+        bh=x8Opey4gPhl/T9ZY27fZLs+uA+C7ZsiJ2XZJphbacJQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MNjrRnpJGLcoxPwf0vItyu+4jlVNUx/GrwEhhBil8RYTALJJ7ICNboz3eBlwQ3BYs
-         rDoMyGQhYV/fXKV5u+Y5VOZi7brbdIZVmOEJE61WJxBgrelIkwG3vuPtISrakVILqR
-         75D2YTJmub5+bTxLCdTIWOSbkKOWA6krobrq/E4eQzmT0Gt84Gogq8uHLNsqbWOhh7
-         HRogH9LrDfWPUrH1nL3M61RVUSzPieIAU/unW99cgaYRkxQw72NOwexP3Bp2hzCTna
-         IvY4fqOt/5y5WWak2y9LBQJApM5xrejVjCppb7R84sGs5rxfm1cpopZZ0yGnBSGbSW
-         DyP3h69k0PFNQ==
+        b=Di8oQTmI4h+zmW81k4DoWCw/au7tQoF2QqgTPGrDOc3WQan/P/lXOofY5r+Ki2UfE
+         x9cOynTZc5qHO8MVlHei5Prg/854xpwApU7dxJ1O/swpyYrgkSLu/ycdWphh0gOs1/
+         /qvWstBhh/iO48oR9jB/souwNtS7AYb02KlOuLGxv/teNn/SJDKLp+M2H3oejRzPHa
+         GOdGYg/NdT6mRCsEUCCoG/HtxTXvU1pscQ4t4cXOwOZfvuxcf5UNYD0gkHRK5d4wlj
+         o5RqFXFrnfO0jCOSZKKwWJz6DCAXTg4EbcSerf+wmBQpUYYPr+x3AQEyfSG058xv+i
+         SZdz5ILQ+q4EA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     James Smart <jsmart2021@gmail.com>,
-        Justin Tee <justin.tee@broadcom.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, james.smart@broadcom.com,
-        dick.kennedy@broadcom.com, jejb@linux.ibm.com,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 032/135] scsi: lpfc: Fix call trace observed during I/O with CMF enabled
-Date:   Mon, 30 May 2022 09:29:50 -0400
-Message-Id: <20220530133133.1931716-32-sashal@kernel.org>
+Cc:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Sasha Levin <sashal@kernel.org>, mingo@redhat.com,
+        bp@alien8.de, x86@kernel.org
+Subject: [PATCH AUTOSEL 5.17 015/135] ACPICA: Avoid cache flush inside virtual machines
+Date:   Mon, 30 May 2022 09:29:33 -0400
+Message-Id: <20220530133133.1931716-15-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133133.1931716-1-sashal@kernel.org>
 References: <20220530133133.1931716-1-sashal@kernel.org>
@@ -54,59 +54,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Smart <jsmart2021@gmail.com>
+From: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 
-[ Upstream commit d6d45f67a11136cb88a70a29ab22ea6db8ae6bd5 ]
+[ Upstream commit e2efb6359e620521d1e13f69b2257de8ceaa9475 ]
 
-The following was seen with CMF enabled:
+While running inside virtual machine, the kernel can bypass cache
+flushing. Changing sleep state in a virtual machine doesn't affect the
+host system sleep state and cannot lead to data loss.
 
-BUG: using smp_processor_id() in preemptible
-code: systemd-udevd/31711
-kernel: caller is lpfc_update_cmf_cmd+0x214/0x420  [lpfc]
-kernel: CPU: 12 PID: 31711 Comm: systemd-udevd
-kernel: Call Trace:
-kernel: <TASK>
-kernel: dump_stack_lvl+0x44/0x57
-kernel: check_preemption_disabled+0xbf/0xe0
-kernel: lpfc_update_cmf_cmd+0x214/0x420 [lpfc]
-kernel: lpfc_nvme_fcp_io_submit+0x23b4/0x4df0 [lpfc]
+Before entering sleep states, the ACPI code flushes caches to prevent
+data loss using the WBINVD instruction.  This mechanism is required on
+bare metal.
 
-this_cpu_ptr() calls smp_processor_id() in a preemptible context.
+But, any use WBINVD inside of a guest is worthless.  Changing sleep
+state in a virtual machine doesn't affect the host system sleep state
+and cannot lead to data loss, so most hypervisors simply ignore it.
+Despite this, the ACPI code calls WBINVD unconditionally anyway.
+It's useless, but also normally harmless.
 
-Fix by using per_cpu_ptr() with raw_smp_processor_id() instead.
+In TDX guests, though, WBINVD stops being harmless; it triggers a
+virtualization exception (#VE).  If the ACPI cache-flushing WBINVD
+were left in place, TDX guests would need handling to recover from
+the exception.
 
-Link: https://lore.kernel.org/r/20220412222008.126521-16-jsmart2021@gmail.com
-Co-developed-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: James Smart <jsmart2021@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Avoid using WBINVD whenever running under a hypervisor.  This both
+removes the useless WBINVDs and saves TDX from implementing WBINVD
+handling.
+
+Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
+Reviewed-by: Dave Hansen <dave.hansen@linux.intel.com>
+Reviewed-by: Dan Williams <dan.j.williams@intel.com>
+Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
+Link: https://lkml.kernel.org/r/20220405232939.73860-30-kirill.shutemov@linux.intel.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/lpfc/lpfc_scsi.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/x86/include/asm/acenv.h | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/lpfc/lpfc_scsi.c b/drivers/scsi/lpfc/lpfc_scsi.c
-index 6cc94fae01b8..d9a8e3a59d94 100644
---- a/drivers/scsi/lpfc/lpfc_scsi.c
-+++ b/drivers/scsi/lpfc/lpfc_scsi.c
-@@ -3936,7 +3936,7 @@ lpfc_update_cmf_cmpl(struct lpfc_hba *phba,
- 		else
- 			time = div_u64(time + 500, 1000); /* round it */
+diff --git a/arch/x86/include/asm/acenv.h b/arch/x86/include/asm/acenv.h
+index 9aff97f0de7f..d937c55e717e 100644
+--- a/arch/x86/include/asm/acenv.h
++++ b/arch/x86/include/asm/acenv.h
+@@ -13,7 +13,19 @@
  
--		cgs = this_cpu_ptr(phba->cmf_stat);
-+		cgs = per_cpu_ptr(phba->cmf_stat, raw_smp_processor_id());
- 		atomic64_add(size, &cgs->rcv_bytes);
- 		atomic64_add(time, &cgs->rx_latency);
- 		atomic_inc(&cgs->rx_io_cnt);
-@@ -3980,7 +3980,7 @@ lpfc_update_cmf_cmd(struct lpfc_hba *phba, uint32_t size)
- 			atomic_set(&phba->rx_max_read_cnt, size);
- 	}
+ /* Asm macros */
  
--	cgs = this_cpu_ptr(phba->cmf_stat);
-+	cgs = per_cpu_ptr(phba->cmf_stat, raw_smp_processor_id());
- 	atomic64_add(size, &cgs->total_bytes);
- 	return 0;
- }
+-#define ACPI_FLUSH_CPU_CACHE()	wbinvd()
++/*
++ * ACPI_FLUSH_CPU_CACHE() flushes caches on entering sleep states.
++ * It is required to prevent data loss.
++ *
++ * While running inside virtual machine, the kernel can bypass cache flushing.
++ * Changing sleep state in a virtual machine doesn't affect the host system
++ * sleep state and cannot lead to data loss.
++ */
++#define ACPI_FLUSH_CPU_CACHE()					\
++do {								\
++	if (!cpu_feature_enabled(X86_FEATURE_HYPERVISOR))	\
++		wbinvd();					\
++} while (0)
+ 
+ int __acpi_acquire_global_lock(unsigned int *lock);
+ int __acpi_release_global_lock(unsigned int *lock);
 -- 
 2.35.1
 
