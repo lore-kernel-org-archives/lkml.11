@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CEA31C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:47:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86956C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:47:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241011AbiE3Orr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:47:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34650 "EHLO
+        id S241086AbiE3Ory (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:47:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241637AbiE3O0U (ORCPT
+        with ESMTP id S241595AbiE3O0Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:26:20 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45B04AF1ED;
-        Mon, 30 May 2022 06:51:13 -0700 (PDT)
+        Mon, 30 May 2022 10:26:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CECDFAEE2F;
+        Mon, 30 May 2022 06:51:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id AF4EFCE106D;
-        Mon, 30 May 2022 13:50:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE358C385B8;
-        Mon, 30 May 2022 13:50:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 21DE1B80DEA;
+        Mon, 30 May 2022 13:50:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F7FDC385B8;
+        Mon, 30 May 2022 13:50:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918614;
-        bh=7hOF5LIIgA8H9rcX73Ms/bkqSJE6g5sOxsMKbPqpvmE=;
+        s=k20201202; t=1653918629;
+        bh=CmzaiCE6+SXzp7lDT1daqpaJ9oOcu7NO70qIm9BZRvM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gvIWJHg0i+0RoLzcQYu/uXbkz/Q587It8ttCFeM2/IEF3B1SzXZjtJ78h6/0Dhz+/
-         XFI6DC1IWwAzT2YVRhyB7yjdzSj/cr9svA5Ihfw0Ad2xsdWTF8ElmjWMdCe8cbO4x3
-         HOL7fy0lO+1QED8tq+ep+0IrJK2O2gdg2LnV2UY7NpUr6MEVOiMWTKpgsN1w/fbvGk
-         XowLqcT0+KgLmC7hIBgTuu0cCnqQCB8cQApa1JR+Anv8sIk+V7xveIm9duqDco6wUv
-         P+7DXaHss8tCohOVP6JVGYtsCeKOppBhW3x3KzsRIupgVlY3cNOMhl4s6s/NXhmJ26
-         sjL40KdyGvapg==
+        b=XoCVqZHO9guCLth4+cPqLQhxZiX1ZgzYYwZ0d+pfMectbqDAmRvRo0/IPo01LETuN
+         6NVw3L0Xa3xOPI27+zAIlg81cksKPV2/z3bPothfsyadNPQ2EWJY7oubBkZeyjfn98
+         w4liuBwBsZEBbWzDcc6UujZwD26wc5mgY0SNpaZMV20jW1wmcUz9paFhIHzus/4TJf
+         yQpc3bjgbaZVEujBnnPyNgIDlqxjnWTOLaBrzIshjbCgETFnkDIxp43geHSxDebZlS
+         9G7h/6j+csVCdtnAMzS0eiqjTbSRz73KaaykNBW1Jaa/PZxuiSnE+uANMIfwFOQs0a
+         LWKgFKn7env+g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Evan Quan <evan.quan@amd.com>, kernel test robot <lkp@intel.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
-        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 4.19 19/38] drm/amd/pm: fix the compile warning
-Date:   Mon, 30 May 2022 09:49:05 -0400
-Message-Id: <20220530134924.1936816-19-sashal@kernel.org>
+Cc:     Corey Minyard <cminyard@mvista.com>,
+        Haowen Bai <baihaowen@meizu.com>,
+        Sasha Levin <sashal@kernel.org>,
+        openipmi-developer@lists.sourceforge.net
+Subject: [PATCH AUTOSEL 4.19 27/38] ipmi:ssif: Check for NULL msg when handling events and messages
+Date:   Mon, 30 May 2022 09:49:13 -0400
+Message-Id: <20220530134924.1936816-27-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530134924.1936816-1-sashal@kernel.org>
 References: <20220530134924.1936816-1-sashal@kernel.org>
@@ -53,49 +52,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Evan Quan <evan.quan@amd.com>
+From: Corey Minyard <cminyard@mvista.com>
 
-[ Upstream commit 555238d92ac32dbad2d77ad2bafc48d17391990c ]
+[ Upstream commit 7602b957e2404e5f98d9a40b68f1fd27f0028712 ]
 
-Fix the compile warning below:
-drivers/gpu/drm/amd/amdgpu/../pm/legacy-dpm/kv_dpm.c:1641
-kv_get_acp_boot_level() warn: always true condition '(table->entries[i]->clk >= 0) => (0-u32max >= 0)'
+Even though it's not possible to get into the SSIF_GETTING_MESSAGES and
+SSIF_GETTING_EVENTS states without a valid message in the msg field,
+it's probably best to be defensive here and check and print a log, since
+that means something else went wrong.
 
-Reported-by: kernel test robot <lkp@intel.com>
-CC: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Evan Quan <evan.quan@amd.com>
-Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Also add a default clause to that switch statement to release the lock
+and print a log, in case the state variable gets messed up somehow.
+
+Reported-by: Haowen Bai <baihaowen@meizu.com>
+Signed-off-by: Corey Minyard <cminyard@mvista.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/kv_dpm.c | 14 +-------------
- 1 file changed, 1 insertion(+), 13 deletions(-)
+ drivers/char/ipmi/ipmi_ssif.c | 23 +++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/kv_dpm.c b/drivers/gpu/drm/amd/amdgpu/kv_dpm.c
-index cb79a93c2eb7..91504eccc60c 100644
---- a/drivers/gpu/drm/amd/amdgpu/kv_dpm.c
-+++ b/drivers/gpu/drm/amd/amdgpu/kv_dpm.c
-@@ -1610,19 +1610,7 @@ static int kv_update_samu_dpm(struct amdgpu_device *adev, bool gate)
+diff --git a/drivers/char/ipmi/ipmi_ssif.c b/drivers/char/ipmi/ipmi_ssif.c
+index fec679433f72..fd1a487443f0 100644
+--- a/drivers/char/ipmi/ipmi_ssif.c
++++ b/drivers/char/ipmi/ipmi_ssif.c
+@@ -801,6 +801,14 @@ static void msg_done_handler(struct ssif_info *ssif_info, int result,
+ 		break;
  
- static u8 kv_get_acp_boot_level(struct amdgpu_device *adev)
- {
--	u8 i;
--	struct amdgpu_clock_voltage_dependency_table *table =
--		&adev->pm.dpm.dyn_state.acp_clock_voltage_dependency_table;
--
--	for (i = 0; i < table->count; i++) {
--		if (table->entries[i].clk >= 0) /* XXX */
--			break;
--	}
--
--	if (i >= table->count)
--		i = table->count - 1;
--
--	return i;
-+	return 0;
- }
+ 	case SSIF_GETTING_EVENTS:
++		if (!msg) {
++			/* Should never happen, but just in case. */
++			dev_warn(&ssif_info->client->dev,
++				 "No message set while getting events\n");
++			ipmi_ssif_unlock_cond(ssif_info, flags);
++			break;
++		}
++
+ 		if ((result < 0) || (len < 3) || (msg->rsp[2] != 0)) {
+ 			/* Error getting event, probably done. */
+ 			msg->done(msg);
+@@ -824,6 +832,14 @@ static void msg_done_handler(struct ssif_info *ssif_info, int result,
+ 		break;
  
- static void kv_update_acp_boot_level(struct amdgpu_device *adev)
+ 	case SSIF_GETTING_MESSAGES:
++		if (!msg) {
++			/* Should never happen, but just in case. */
++			dev_warn(&ssif_info->client->dev,
++				 "No message set while getting messages\n");
++			ipmi_ssif_unlock_cond(ssif_info, flags);
++			break;
++		}
++
+ 		if ((result < 0) || (len < 3) || (msg->rsp[2] != 0)) {
+ 			/* Error getting event, probably done. */
+ 			msg->done(msg);
+@@ -846,6 +862,13 @@ static void msg_done_handler(struct ssif_info *ssif_info, int result,
+ 			deliver_recv_msg(ssif_info, msg);
+ 		}
+ 		break;
++
++	default:
++		/* Should never happen, but just in case. */
++		dev_warn(&ssif_info->client->dev,
++			 "Invalid state in message done handling: %d\n",
++			 ssif_info->ssif_state);
++		ipmi_ssif_unlock_cond(ssif_info, flags);
+ 	}
+ 
+ 	flags = ipmi_ssif_lock_cond(ssif_info, &oflags);
 -- 
 2.35.1
 
