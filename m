@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1046AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:08:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 198AEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:08:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238869AbiE3OHe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:07:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54444 "EHLO
+        id S239983AbiE3OIf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:08:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239664AbiE3OCC (ORCPT
+        with ESMTP id S239894AbiE3OCv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:02:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 055FDC3D36;
-        Mon, 30 May 2022 06:39:35 -0700 (PDT)
+        Mon, 30 May 2022 10:02:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F28E68BD23;
+        Mon, 30 May 2022 06:39:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1673760F9B;
-        Mon, 30 May 2022 13:39:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49ADEC3411F;
-        Mon, 30 May 2022 13:39:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6EC1E60F3B;
+        Mon, 30 May 2022 13:39:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A25DC36AE3;
+        Mon, 30 May 2022 13:39:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917974;
-        bh=euLNCdVLOsc0HZrYkx7gH0ZTMSGNePogZjT1EnAo1dE=;
+        s=k20201202; t=1653917988;
+        bh=e4rQjDbcX7pYuLi/MagzF5WQm9G9+qVy7DrNZMANN00=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jOOjorzDe0w63Uo9jGV7oySPaXmReBkIUgsHZBX9Y2TZzaqpSFOhUvMO7usnvEl1J
-         BBqlovaEck+fSdZ0jnkU+fiuJxWta3Gphw1tpkpOWo12G2/ZUXshIM4cS45FbBzHH9
-         gdcBKa6NNu2DXkRZwgXxro6lYALEW+L4/E+5udDQTH0ySu2Jks5TC/E7jBUv2Altur
-         SRpQdK+JZPFJUoGh4e/WL+cBIPw+mTwjuzVCCYaIB5wkhC/7Cv3ltbjyLC2R5u5WQx
-         9iizCTPTqPJ3V5rIQpfgov5TFGXeXJ5xkaEA0LoHJg7Qk+YmHCWxHY5qZQ7kIsdVLx
-         9I1rBiG9VLegg==
+        b=cDOThP3WmMlomyWdbvkFuD0yr3Y4BRpJ+8bUMvVYG5sWmcWRtvg/zlqSvE4WTd6lv
+         O/vkLEBafJe2N0TjQUrZ1/TT0FGGlCMpYISY48Us4R30CGK3mJgMKgyjbZCiczyDxV
+         OU/JPBWySHlBsZA3k30Ptvgre572Xmvyt22Jp8M6u1jvSEv8plLh8cGj5tefWWLZ8w
+         mSl3l1UU6cD3Y8cBBCKOb7GdwsJeF7YvcxJMCd9R35147qHDMilKgbKZOhEICajA74
+         pBKAWrUv6XFC4T9MER5EI3rE7jf7nulsB7ihEcwXfI3pwcWhM7rA3sKbLXYK6NtGv8
+         L2IirKIKeoSSA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     James Smart <jsmart2021@gmail.com>,
-        Justin Tee <justin.tee@broadcom.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, james.smart@broadcom.com,
-        dick.kennedy@broadcom.com, jejb@linux.ibm.com,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 024/109] scsi: lpfc: Move cfg_log_verbose check before calling lpfc_dmp_dbg()
-Date:   Mon, 30 May 2022 09:37:00 -0400
-Message-Id: <20220530133825.1933431-24-sashal@kernel.org>
+Cc:     Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>,
+        kernel test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
+        perex@perex.cz, tiwai@suse.com, colin.king@intel.com,
+        alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.15 029/109] ASoC: rsnd: care default case on rsnd_ssiu_busif_err_status_clear()
+Date:   Mon, 30 May 2022 09:37:05 -0400
+Message-Id: <20220530133825.1933431-29-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133825.1933431-1-sashal@kernel.org>
 References: <20220530133825.1933431-1-sashal@kernel.org>
@@ -54,110 +55,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Smart <jsmart2021@gmail.com>
+From: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
 
-[ Upstream commit e294647b1aed4247fe52851f3a3b2b19ae906228 ]
+[ Upstream commit b1384d4c95088d01f4266237faabf165d3d605fc ]
 
-In an attempt to log message 0126 with LOG_TRACE_EVENT, the following hard
-lockup call trace hangs the system.
+commit cfb7b8bf1e2d66 ("ASoC: rsnd: tidyup
+rsnd_ssiu_busif_err_status_clear()") merged duplicate code, but it didn't
+care about default case, and causes smatch warnings.
 
-Call Trace:
- _raw_spin_lock_irqsave+0x32/0x40
- lpfc_dmp_dbg.part.32+0x28/0x220 [lpfc]
- lpfc_cmpl_els_fdisc+0x145/0x460 [lpfc]
- lpfc_sli_cancel_jobs+0x92/0xd0 [lpfc]
- lpfc_els_flush_cmd+0x43c/0x670 [lpfc]
- lpfc_els_flush_all_cmd+0x37/0x60 [lpfc]
- lpfc_sli4_async_event_proc+0x956/0x1720 [lpfc]
- lpfc_do_work+0x1485/0x1d70 [lpfc]
- kthread+0x112/0x130
- ret_from_fork+0x1f/0x40
-Kernel panic - not syncing: Hard LOCKUP
+smatch warnings:
+sound/soc/sh/rcar/ssiu.c:112 rsnd_ssiu_busif_err_status_clear() \
+	error: uninitialized symbol 'offset'.
+sound/soc/sh/rcar/ssiu.c:114 rsnd_ssiu_busif_err_status_clear() \
+	error: uninitialized symbol 'shift'.
 
-The same CPU tries to claim the phba->port_list_lock twice.
+This patch cares it.
 
-Move the cfg_log_verbose checks as part of the lpfc_printf_vlog() and
-lpfc_printf_log() macros before calling lpfc_dmp_dbg().  There is no need
-to take the phba->port_list_lock within lpfc_dmp_dbg().
-
-Link: https://lore.kernel.org/r/20220412222008.126521-3-jsmart2021@gmail.com
-Co-developed-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: James Smart <jsmart2021@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
+Link: https://lore.kernel.org/r/87r15rgn6p.wl-kuninori.morimoto.gx@renesas.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/lpfc/lpfc_init.c   | 29 +----------------------------
- drivers/scsi/lpfc/lpfc_logmsg.h |  6 +++---
- 2 files changed, 4 insertions(+), 31 deletions(-)
+ sound/soc/sh/rcar/ssiu.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/lpfc/lpfc_init.c b/drivers/scsi/lpfc/lpfc_init.c
-index 16246526e4c1..ce103c1f8062 100644
---- a/drivers/scsi/lpfc/lpfc_init.c
-+++ b/drivers/scsi/lpfc/lpfc_init.c
-@@ -15564,34 +15564,7 @@ void lpfc_dmp_dbg(struct lpfc_hba *phba)
- 	unsigned int temp_idx;
- 	int i;
- 	int j = 0;
--	unsigned long rem_nsec, iflags;
--	bool log_verbose = false;
--	struct lpfc_vport *port_iterator;
--
--	/* Don't dump messages if we explicitly set log_verbose for the
--	 * physical port or any vport.
--	 */
--	if (phba->cfg_log_verbose)
--		return;
--
--	spin_lock_irqsave(&phba->port_list_lock, iflags);
--	list_for_each_entry(port_iterator, &phba->port_list, listentry) {
--		if (port_iterator->load_flag & FC_UNLOADING)
--			continue;
--		if (scsi_host_get(lpfc_shost_from_vport(port_iterator))) {
--			if (port_iterator->cfg_log_verbose)
--				log_verbose = true;
--
--			scsi_host_put(lpfc_shost_from_vport(port_iterator));
--
--			if (log_verbose) {
--				spin_unlock_irqrestore(&phba->port_list_lock,
--						       iflags);
--				return;
--			}
--		}
--	}
--	spin_unlock_irqrestore(&phba->port_list_lock, iflags);
-+	unsigned long rem_nsec;
+diff --git a/sound/soc/sh/rcar/ssiu.c b/sound/soc/sh/rcar/ssiu.c
+index 0d8f97633dd2..138f95dd9f4a 100644
+--- a/sound/soc/sh/rcar/ssiu.c
++++ b/sound/soc/sh/rcar/ssiu.c
+@@ -102,6 +102,8 @@ bool rsnd_ssiu_busif_err_status_clear(struct rsnd_mod *mod)
+ 		shift  = 1;
+ 		offset = 1;
+ 		break;
++	default:
++		goto out;
+ 	}
  
- 	if (atomic_cmpxchg(&phba->dbg_log_dmping, 0, 1) != 0)
- 		return;
-diff --git a/drivers/scsi/lpfc/lpfc_logmsg.h b/drivers/scsi/lpfc/lpfc_logmsg.h
-index 7d480c798794..a5aafe230c74 100644
---- a/drivers/scsi/lpfc/lpfc_logmsg.h
-+++ b/drivers/scsi/lpfc/lpfc_logmsg.h
-@@ -73,7 +73,7 @@ do { \
- #define lpfc_printf_vlog(vport, level, mask, fmt, arg...) \
- do { \
- 	{ if (((mask) & (vport)->cfg_log_verbose) || (level[1] <= '3')) { \
--		if ((mask) & LOG_TRACE_EVENT) \
-+		if ((mask) & LOG_TRACE_EVENT && !(vport)->cfg_log_verbose) \
- 			lpfc_dmp_dbg((vport)->phba); \
- 		dev_printk(level, &((vport)->phba->pcidev)->dev, "%d:(%d):" \
- 			   fmt, (vport)->phba->brd_no, vport->vpi, ##arg);  \
-@@ -89,11 +89,11 @@ do { \
- 				 (phba)->pport->cfg_log_verbose : \
- 				 (phba)->cfg_log_verbose; \
- 	if (((mask) & log_verbose) || (level[1] <= '3')) { \
--		if ((mask) & LOG_TRACE_EVENT) \
-+		if ((mask) & LOG_TRACE_EVENT && !log_verbose) \
- 			lpfc_dmp_dbg(phba); \
- 		dev_printk(level, &((phba)->pcidev)->dev, "%d:" \
- 			fmt, phba->brd_no, ##arg); \
--	} else  if (!(phba)->cfg_log_verbose)\
-+	} else if (!log_verbose)\
- 		lpfc_dbg_print(phba, "%d:" fmt, phba->brd_no, ##arg); \
- 	} \
- } while (0)
+ 	for (i = 0; i < 4; i++) {
+@@ -120,7 +122,7 @@ bool rsnd_ssiu_busif_err_status_clear(struct rsnd_mod *mod)
+ 		}
+ 		rsnd_mod_write(mod, reg, val);
+ 	}
+-
++out:
+ 	return error;
+ }
+ 
 -- 
 2.35.1
 
