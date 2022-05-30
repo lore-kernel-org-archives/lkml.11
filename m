@@ -2,111 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86DF7C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 15:53:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 378C7C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 15:53:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240589AbiE3Pw6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 11:52:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33988 "EHLO
+        id S240415AbiE3PxH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 11:53:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241929AbiE3PvU (ORCPT
+        with ESMTP id S240957AbiE3Pwt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 11:51:20 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 12E3D61629
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 08:18:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653923898;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=TKjMVcygi9lawNhz7dJlRnUYRfj2p0j+s5D17eX1aSE=;
-        b=RWehqmo3+RD2eYYBeExhXeozWXqmpT3xIVmxnCysXyqNmLnzKj0O2DHeZ1D9eHr7cWJnku
-        vaj0dUdeK+ZNKO9tyqgOE1RVvH+dtMzQ9Z0Kyl5UM8w0yk0tBmMIIzUtNo8cfXiRTpCxoe
-        7sywsbrpOyDePUnsBxlFtYKmQbiZ4wY=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-111-YH1uR05dMY-PCeIcztxrpg-1; Mon, 30 May 2022 11:18:11 -0400
-X-MC-Unique: YH1uR05dMY-PCeIcztxrpg-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 89E3E858F00;
-        Mon, 30 May 2022 15:18:10 +0000 (UTC)
-Received: from localhost (unknown [10.39.194.233])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 372D31410F36;
-        Mon, 30 May 2022 15:18:10 +0000 (UTC)
-From:   Cornelia Huck <cohuck@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>, mst@redhat.com,
-        jasowang@redhat.com, virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org
-Cc:     tglx@linutronix.de, peterz@infradead.org, paulmck@kernel.org,
-        maz@kernel.org, pasic@linux.ibm.com, eperezma@redhat.com,
-        lulu@redhat.com, sgarzare@redhat.com, xuanzhuo@linux.alibaba.com,
-        Vineeth Vijayan <vneethv@linux.ibm.com>,
-        Peter Oberparleiter <oberpar@linux.ibm.com>,
-        linux-s390@vger.kernel.org
-Subject: Re: [PATCH V6 8/9] virtio: harden vring IRQ
-In-Reply-To: <20220527060120.20964-9-jasowang@redhat.com>
-Organization: Red Hat GmbH
-References: <20220527060120.20964-1-jasowang@redhat.com>
- <20220527060120.20964-9-jasowang@redhat.com>
-User-Agent: Notmuch/0.34 (https://notmuchmail.org)
-Date:   Mon, 30 May 2022 17:18:08 +0200
-Message-ID: <87sfort5fz.fsf@redhat.com>
+        Mon, 30 May 2022 11:52:49 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75CD284A07;
+        Mon, 30 May 2022 08:26:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653924376; x=1685460376;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=2ungWEJC/wLWMUdxC7TEVeV8vHit2unM/hbFzuyjdpk=;
+  b=cECkD6+aqQn/PUXVPppkj/G10kEMb2PGKa9AFETQmPl+qD4I6UcpAP93
+   dyCLeRnd1hyqYIxW0hbj/5frqwzMq4m23bqX8k8jgmv9+3lS/nUR+SkqD
+   p94ENms0v1RBzpqT8V3vmxi3W3SjZkTH0AshmwA52DdnoZqz3YMRPzfWe
+   XrTm5660Ns3muc451H3Zg8uYF4T8OLETGfRUAVFVjM3kp2k//a72Cm0g6
+   5/jULO55fdHmA5o6AwFZHSiAmvt/IjCz4eQqm4EwumOiUGRLAkFdLisjM
+   EAwIcddTveC1VChpFHl/baze21YTjx+ZsOEuDFNvNpgW8tu1ebny1/IrN
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10363"; a="273838536"
+X-IronPort-AV: E=Sophos;i="5.91,263,1647327600"; 
+   d="scan'208";a="273838536"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 May 2022 08:26:16 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,263,1647327600"; 
+   d="scan'208";a="575977292"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by orsmga007.jf.intel.com with ESMTP; 30 May 2022 08:26:10 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nvhHV-0001ne-TS;
+        Mon, 30 May 2022 15:26:09 +0000
+Date:   Mon, 30 May 2022 23:25:15 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     menglong8.dong@gmail.com, kuba@kernel.org
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org, rostedt@goodmis.org,
+        mingo@redhat.com, davem@davemloft.net, edumazet@google.com,
+        pabeni@redhat.com, nhorman@tuxdriver.com, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, imagedong@tencent.com, dsahern@kernel.org,
+        talalahmad@google.com, keescook@chromium.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH net-next v2 2/3] net: skb: use auto-generation to convert
+ skb drop reason to string
+Message-ID: <202205302341.XYygIEYb-lkp@intel.com>
+References: <20220530081201.10151-3-imagedong@tencent.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220530081201.10151-3-imagedong@tencent.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 27 2022, Jason Wang <jasowang@redhat.com> wrote:
+Hi,
 
-> This is a rework on the previous IRQ hardening that is done for
-> virtio-pci where several drawbacks were found and were reverted:
->
-> 1) try to use IRQF_NO_AUTOEN which is not friendly to affinity managed IRQ
->    that is used by some device such as virtio-blk
-> 2) done only for PCI transport
->
-> The vq->broken is re-used in this patch for implementing the IRQ
-> hardening. The vq->broken is set to true during both initialization
-> and reset. And the vq->broken is set to false in
-> virtio_device_ready(). Then vring_interrupt() can check and return
-> when vq->broken is true. And in this case, switch to return IRQ_NONE
-> to let the interrupt core aware of such invalid interrupt to prevent
-> IRQ storm.
->
-> The reason of using a per queue variable instead of a per device one
-> is that we may need it for per queue reset hardening in the future.
->
-> Note that the hardening is only done for vring interrupt since the
-> config interrupt hardening is already done in commit 22b7050a024d7
-> ("virtio: defer config changed notifications"). But the method that is
-> used by config interrupt can't be reused by the vring interrupt
-> handler because it uses spinlock to do the synchronization which is
-> expensive.
->
-> Cc: Thomas Gleixner <tglx@linutronix.de>
-> Cc: Peter Zijlstra <peterz@infradead.org>
-> Cc: "Paul E. McKenney" <paulmck@kernel.org>
-> Cc: Marc Zyngier <maz@kernel.org>
-> Cc: Halil Pasic <pasic@linux.ibm.com>
-> Cc: Cornelia Huck <cohuck@redhat.com>
-> Cc: Vineeth Vijayan <vneethv@linux.ibm.com>
-> Cc: Peter Oberparleiter <oberpar@linux.ibm.com>
-> Cc: linux-s390@vger.kernel.org
-> Signed-off-by: Jason Wang <jasowang@redhat.com>
-> ---
->  drivers/s390/virtio/virtio_ccw.c       |  4 ++++
->  drivers/virtio/virtio.c                | 15 ++++++++++++---
->  drivers/virtio/virtio_mmio.c           |  5 +++++
->  drivers/virtio/virtio_pci_modern_dev.c |  5 +++++
->  drivers/virtio/virtio_ring.c           | 11 +++++++----
->  include/linux/virtio_config.h          | 20 ++++++++++++++++++++
->  6 files changed, 53 insertions(+), 7 deletions(-)
+Thank you for the patch! Perhaps something to improve:
 
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+[auto build test WARNING on net-next/master]
 
+url:    https://github.com/intel-lab-lkp/linux/commits/menglong8-dong-gmail-com/reorganize-the-code-of-the-enum-skb_drop_reason/20220530-161614
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 7e062cda7d90543ac8c7700fc7c5527d0c0f22ad
+config: hexagon-randconfig-r041-20220530 (https://download.01.org/0day-ci/archive/20220530/202205302341.XYygIEYb-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 0776c48f9b7e69fa447bee57c7c0985caa856be9)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/73e3b002fb9086fc734ba4dcc3041f9bb56eb1a2
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review menglong8-dong-gmail-com/reorganize-the-code-of-the-enum-skb_drop_reason/20220530-161614
+        git checkout 73e3b002fb9086fc734ba4dcc3041f9bb56eb1a2
+        # save the config file
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 ARCH=hexagon 
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
