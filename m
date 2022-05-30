@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8AE9C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:39:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 714E3C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:41:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237298AbiE3Njn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:39:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47658 "EHLO
+        id S237830AbiE3NkH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:40:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237796AbiE3Nfp (ORCPT
+        with ESMTP id S237268AbiE3Neq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:35:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80B609549B;
-        Mon, 30 May 2022 06:28:57 -0700 (PDT)
+        Mon, 30 May 2022 09:34:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A93792D1B;
+        Mon, 30 May 2022 06:28:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 18212B80DA8;
-        Mon, 30 May 2022 13:28:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2489C385B8;
-        Mon, 30 May 2022 13:28:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F3E4860F17;
+        Mon, 30 May 2022 13:28:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6639BC36AE3;
+        Mon, 30 May 2022 13:28:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917334;
-        bh=63KEk9VLTggDHYa7uCWhw1ThCahBRf68liu0x9+Y4Q8=;
+        s=k20201202; t=1653917293;
+        bh=7jqS2tTlnNZbrQ98eK9OJ7pRMtBHKuwDuhlgk5Xc4Sk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pUIgdk6pfmIKpE5HjRAIK67fUEqsy5MUReSZx+eThVg+X0h6pTaH6sFDChYFUsW2J
-         4pLsDZ72QBvgCiANOvgFBC3gAbZ61T7m/A1EUgEPWO1BnweeshU5/wpfavWdi5eoW5
-         jGw2Zk3G0FZ6nUNxMCsYTGkM9i3JXKJww0x2PlRXRC1/jN2Yul1+i3cUXdYOytRZYu
-         nmpVs0sPJff0XljqQig4VXl+xAe8wl6UA7K+4g4TXk/LI3cB+rGoD8NbMvLBd745TC
-         P1pnwif6aUri5nETVMbpdSZh4e7njz9GCKQVLF/bUH1dYp+F1wRcFPRFEUzabfRTdj
-         lxyQN+LcagesA==
+        b=pY5SOlyv1mA4vc/SuYQAWLivWZH5SI3mGcjgBH6lURkmEuH6Q7AoiAjYYoNG4PLJs
+         nkWVufmaS33cSq1y+uoyBV3SgkRQmQC6f1KgZpqbeBS/YEBmtzJiKhvqvc2C6oN1Lm
+         PNoTCbIRq13c35phbViyK7drSUFQjVRgGoZd+EKlgPgfCZdU1fR+GBQ9bnBdxByiBE
+         SwUSPc6RbogcJSVxdVhB5EKuXvAZinkCoFJaA6edT8Pv72oDuhUb6GZlRIQGUDJtdd
+         sytYgM4TwrovYe7fHqw74cp3oW+aZtaqjAHwzq5ko5l3hFVbFTnyBkV7S73a0k+X32
+         qdZtYvvlQodIA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Patrice Chotard <patrice.chotard@foss.st.com>,
-        eberhard.stoll@kontron.de, Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, mcoquelin.stm32@gmail.com,
-        alexandre.torgue@foss.st.com, linux-spi@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.18 099/159] spi: stm32-qspi: Fix wait_cmd timeout in APM mode
-Date:   Mon, 30 May 2022 09:23:24 -0400
-Message-Id: <20220530132425.1929512-99-sashal@kernel.org>
+Cc:     Dongliang Mu <mudongliangabcd@gmail.com>,
+        syzkaller <syzkaller@googlegroups.com>,
+        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>,
+        jikos@kernel.org, benjamin.tissoires@redhat.com,
+        linux-input@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 086/159] HID: bigben: fix slab-out-of-bounds Write in bigben_probe
+Date:   Mon, 30 May 2022 09:23:11 -0400
+Message-Id: <20220530132425.1929512-86-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530132425.1929512-1-sashal@kernel.org>
 References: <20220530132425.1929512-1-sashal@kernel.org>
@@ -54,36 +53,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Patrice Chotard <patrice.chotard@foss.st.com>
+From: Dongliang Mu <mudongliangabcd@gmail.com>
 
-[ Upstream commit d83d89ea68b4726700fa87b22db075e4217e691c ]
+[ Upstream commit fc4ef9d5724973193bfa5ebed181dba6de3a56db ]
 
-In APM mode, TCF and TEF flags are not set. To avoid timeout in
-stm32_qspi_wait_cmd(), don't check if TCF/TEF are set.
+There is a slab-out-of-bounds Write bug in hid-bigbenff driver.
+The problem is the driver assumes the device must have an input but
+some malicious devices violate this assumption.
 
-Signed-off-by: Patrice Chotard <patrice.chotard@foss.st.com>
-Reported-by: eberhard.stoll@kontron.de
-Link: https://lore.kernel.org/r/20220511074644.558874-2-patrice.chotard@foss.st.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fix this by checking hid_device's input is non-empty before its usage.
+
+Reported-by: syzkaller <syzkaller@googlegroups.com>
+Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi-stm32-qspi.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/hid/hid-bigbenff.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/spi/spi-stm32-qspi.c b/drivers/spi/spi-stm32-qspi.c
-index ffdc55f87e82..dd38cb8ffbc2 100644
---- a/drivers/spi/spi-stm32-qspi.c
-+++ b/drivers/spi/spi-stm32-qspi.c
-@@ -308,7 +308,8 @@ static int stm32_qspi_wait_cmd(struct stm32_qspi *qspi,
- 	if (!op->data.nbytes)
- 		goto wait_nobusy;
+diff --git a/drivers/hid/hid-bigbenff.c b/drivers/hid/hid-bigbenff.c
+index 74ad8bf98bfd..e8c5e3ac9fff 100644
+--- a/drivers/hid/hid-bigbenff.c
++++ b/drivers/hid/hid-bigbenff.c
+@@ -347,6 +347,12 @@ static int bigben_probe(struct hid_device *hid,
+ 	bigben->report = list_entry(report_list->next,
+ 		struct hid_report, list);
  
--	if (readl_relaxed(qspi->io_base + QSPI_SR) & SR_TCF)
-+	if ((readl_relaxed(qspi->io_base + QSPI_SR) & SR_TCF) ||
-+	    qspi->fmode == CCR_FMODE_APM)
- 		goto out;
++	if (list_empty(&hid->inputs)) {
++		hid_err(hid, "no inputs found\n");
++		error = -ENODEV;
++		goto error_hw_stop;
++	}
++
+ 	hidinput = list_first_entry(&hid->inputs, struct hid_input, list);
+ 	set_bit(FF_RUMBLE, hidinput->input->ffbit);
  
- 	reinit_completion(&qspi->data_completion);
 -- 
 2.35.1
 
