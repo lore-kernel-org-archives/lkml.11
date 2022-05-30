@@ -2,49 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0059BC4708A
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:12:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53294C4708E
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:12:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240173AbiE3OKz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:10:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44954 "EHLO
+        id S240294AbiE3OLN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:11:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239035AbiE3OFP (ORCPT
+        with ESMTP id S238898AbiE3OEy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:05:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6075599680;
-        Mon, 30 May 2022 06:41:10 -0700 (PDT)
+        Mon, 30 May 2022 10:04:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB60D994E6;
+        Mon, 30 May 2022 06:40:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 05991B80DB0;
-        Mon, 30 May 2022 13:41:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD03BC3411F;
-        Mon, 30 May 2022 13:41:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 47B5F60F14;
+        Mon, 30 May 2022 13:40:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4ABD3C385B8;
+        Mon, 30 May 2022 13:40:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918067;
-        bh=qGGdL1YoiHe0RVOyT8zumSlWU3J2LNiqdlPl8Ov1wKM=;
+        s=k20201202; t=1653918054;
+        bh=BGfVVxAsAf78mYgg00a1N32o3qU1TBRZu6X1C354dqo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=elR4BRI/UZwmb3x05Zi46g+Eyt9UTbBKZq6/d+L8x6pN6pIt7XbcSmUPzX9GtAaqc
-         cdo3I/3BYXiwr57CFr+KTib8MScplgLWBiTvPT2LA4ba4jSZ5eHr/0ZD2urSEN1i2g
-         dvID40Oezxe7cMrFZV5NCXga44GYn0E5b00kVnwJAxH7Dyb/kxk+WfgCcYKVV1YDhS
-         MNOlnhBjVqJ0428aXPQhCM1+M5uycSh59gIHWGloJehHJkJCYTVhxAb0+C9GMZ9LbT
-         S0GLYnOxK2Fr6RsGjfVwE0alUeROXgD3p7dCNqsuarfepX0P4NB6k2UovbNxdFZUKe
-         oOVeR4ifncyqg==
+        b=gF2Y1XsKjxjbFpszVpDZ2554HDP8It0/e+hlOp7bUSeri7gt16W/i8wrusHIZWCsk
+         YsLPOvoKdRjpUV5YyVOutlrmpU0xw0+FLk9wksOSGQxsb1B1DBkAZioYWZYkPhgAP2
+         D7Pl0Mi3VrQovp9RFd4ZDWcpNeonFChoEzdQye/DrEmglZBGNlLYG6lnDrL9zjRcIB
+         kecJIDxS8RvNwoRO9Guv9ZAELqybN7HpKZtobNbjwWOwFHKufzkakTOjdTOtZiN/Jl
+         oHk0LtkeRp8BhEc4vke+S4u/CARXwUNiFnRyvWPVaaIdCmlEHPTsWz2sS1fLJzurYP
+         kHEvS0Xtqn/Gw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Abhishek Kumar <kuabhs@chromium.org>,
-        Wen Gong <quic_wgong@quicinc.com>,
-        Brian Norris <briannorris@chromium.org>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
-        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, ath10k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 048/109] ath10k: skip ath10k_halt during suspend for driver state RESTARTING
-Date:   Mon, 30 May 2022 09:37:24 -0400
-Message-Id: <20220530133825.1933431-48-sashal@kernel.org>
+Cc:     Mark Brown <broonie@kernel.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Sasha Levin <sashal@kernel.org>, will@kernel.org,
+        maz@kernel.org, suzuki.poulose@arm.com, vladimir.murzin@arm.com,
+        james.morse@arm.com, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.15 044/109] arm64/sme: Add ID_AA64SMFR0_EL1 to __read_sysreg_by_encoding()
+Date:   Mon, 30 May 2022 09:37:20 -0400
+Message-Id: <20220530133825.1933431-44-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133825.1933431-1-sashal@kernel.org>
 References: <20220530133825.1933431-1-sashal@kernel.org>
@@ -56,112 +54,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Abhishek Kumar <kuabhs@chromium.org>
+From: Mark Brown <broonie@kernel.org>
 
-[ Upstream commit b72a4aff947ba807177bdabb43debaf2c66bee05 ]
+[ Upstream commit 8a58bcd00e2e8d46afce468adc09fcd7968f514c ]
 
-Double free crash is observed when FW recovery(caused by wmi
-timeout/crash) is followed by immediate suspend event. The FW recovery
-is triggered by ath10k_core_restart() which calls driver clean up via
-ath10k_halt(). When the suspend event occurs between the FW recovery,
-the restart worker thread is put into frozen state until suspend completes.
-The suspend event triggers ath10k_stop() which again triggers ath10k_halt()
-The double invocation of ath10k_halt() causes ath10k_htt_rx_free() to be
-called twice(Note: ath10k_htt_rx_alloc was not called by restart worker
-thread because of its frozen state), causing the crash.
+We need to explicitly enumerate all the ID registers which we rely on
+for CPU capabilities in __read_sysreg_by_encoding(), ID_AA64SMFR0_EL1 was
+missed from this list so we trip a BUG() in paths which rely on that
+function such as CPU hotplug. Add the register.
 
-To fix this, during the suspend flow, skip call to ath10k_halt() in
-ath10k_stop() when the current driver state is ATH10K_STATE_RESTARTING.
-Also, for driver state ATH10K_STATE_RESTARTING, call
-ath10k_wait_for_suspend() in ath10k_stop(). This is because call to
-ath10k_wait_for_suspend() is skipped later in
-[ath10k_halt() > ath10k_core_stop()] for the driver state
-ATH10K_STATE_RESTARTING.
-
-The frozen restart worker thread will be cancelled during resume when the
-device comes out of suspend.
-
-Below is the crash stack for reference:
-
-[  428.469167] ------------[ cut here ]------------
-[  428.469180] kernel BUG at mm/slub.c:4150!
-[  428.469193] invalid opcode: 0000 [#1] PREEMPT SMP NOPTI
-[  428.469219] Workqueue: events_unbound async_run_entry_fn
-[  428.469230] RIP: 0010:kfree+0x319/0x31b
-[  428.469241] RSP: 0018:ffffa1fac015fc30 EFLAGS: 00010246
-[  428.469247] RAX: ffffedb10419d108 RBX: ffff8c05262b0000
-[  428.469252] RDX: ffff8c04a8c07000 RSI: 0000000000000000
-[  428.469256] RBP: ffffa1fac015fc78 R08: 0000000000000000
-[  428.469276] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  428.469285] Call Trace:
-[  428.469295]  ? dma_free_attrs+0x5f/0x7d
-[  428.469320]  ath10k_core_stop+0x5b/0x6f
-[  428.469336]  ath10k_halt+0x126/0x177
-[  428.469352]  ath10k_stop+0x41/0x7e
-[  428.469387]  drv_stop+0x88/0x10e
-[  428.469410]  __ieee80211_suspend+0x297/0x411
-[  428.469441]  rdev_suspend+0x6e/0xd0
-[  428.469462]  wiphy_suspend+0xb1/0x105
-[  428.469483]  ? name_show+0x2d/0x2d
-[  428.469490]  dpm_run_callback+0x8c/0x126
-[  428.469511]  ? name_show+0x2d/0x2d
-[  428.469517]  __device_suspend+0x2e7/0x41b
-[  428.469523]  async_suspend+0x1f/0x93
-[  428.469529]  async_run_entry_fn+0x3d/0xd1
-[  428.469535]  process_one_work+0x1b1/0x329
-[  428.469541]  worker_thread+0x213/0x372
-[  428.469547]  kthread+0x150/0x15f
-[  428.469552]  ? pr_cont_work+0x58/0x58
-[  428.469558]  ? kthread_blkcg+0x31/0x31
-
-Tested-on: QCA6174 hw3.2 PCI WLAN.RM.4.4.1-00288-QCARMSWPZ-1
-Co-developed-by: Wen Gong <quic_wgong@quicinc.com>
-Signed-off-by: Wen Gong <quic_wgong@quicinc.com>
-Signed-off-by: Abhishek Kumar <kuabhs@chromium.org>
-Reviewed-by: Brian Norris <briannorris@chromium.org>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220426221859.v2.1.I650b809482e1af8d0156ed88b5dc2677a0711d46@changeid
+Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Link: https://lore.kernel.org/r/20220427130828.162615-1-broonie@kernel.org
+Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath10k/mac.c | 20 ++++++++++++++++++--
- 1 file changed, 18 insertions(+), 2 deletions(-)
+ arch/arm64/kernel/cpufeature.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/wireless/ath/ath10k/mac.c b/drivers/net/wireless/ath/ath10k/mac.c
-index 1f73fbfee0c0..8a80919b627f 100644
---- a/drivers/net/wireless/ath/ath10k/mac.c
-+++ b/drivers/net/wireless/ath/ath10k/mac.c
-@@ -5339,13 +5339,29 @@ static int ath10k_start(struct ieee80211_hw *hw)
- static void ath10k_stop(struct ieee80211_hw *hw)
- {
- 	struct ath10k *ar = hw->priv;
-+	u32 opt;
- 
- 	ath10k_drain_tx(ar);
- 
- 	mutex_lock(&ar->conf_mutex);
- 	if (ar->state != ATH10K_STATE_OFF) {
--		if (!ar->hw_rfkill_on)
--			ath10k_halt(ar);
-+		if (!ar->hw_rfkill_on) {
-+			/* If the current driver state is RESTARTING but not yet
-+			 * fully RESTARTED because of incoming suspend event,
-+			 * then ath10k_halt() is already called via
-+			 * ath10k_core_restart() and should not be called here.
-+			 */
-+			if (ar->state != ATH10K_STATE_RESTARTING) {
-+				ath10k_halt(ar);
-+			} else {
-+				/* Suspending here, because when in RESTARTING
-+				 * state, ath10k_core_stop() skips
-+				 * ath10k_wait_for_suspend().
-+				 */
-+				opt = WMI_PDEV_SUSPEND_AND_DISABLE_INTR;
-+				ath10k_wait_for_suspend(ar, opt);
-+			}
-+		}
- 		ar->state = ATH10K_STATE_OFF;
- 	}
- 	mutex_unlock(&ar->conf_mutex);
+diff --git a/arch/arm64/kernel/cpufeature.c b/arch/arm64/kernel/cpufeature.c
+index e71c9cfb46e8..ca417167675a 100644
+--- a/arch/arm64/kernel/cpufeature.c
++++ b/arch/arm64/kernel/cpufeature.c
+@@ -1281,6 +1281,7 @@ u64 __read_sysreg_by_encoding(u32 sys_id)
+ 	read_sysreg_case(SYS_ID_AA64PFR0_EL1);
+ 	read_sysreg_case(SYS_ID_AA64PFR1_EL1);
+ 	read_sysreg_case(SYS_ID_AA64ZFR0_EL1);
++	read_sysreg_case(SYS_ID_AA64SMFR0_EL1);
+ 	read_sysreg_case(SYS_ID_AA64DFR0_EL1);
+ 	read_sysreg_case(SYS_ID_AA64DFR1_EL1);
+ 	read_sysreg_case(SYS_ID_AA64MMFR0_EL1);
 -- 
 2.35.1
 
