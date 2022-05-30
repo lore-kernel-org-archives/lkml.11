@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DFFEC38A02
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 074CDC4707E
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:28:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242278AbiE3O2E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:28:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42706 "EHLO
+        id S242228AbiE3O17 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:27:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241347AbiE3ORc (ORCPT
+        with ESMTP id S241362AbiE3ORc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 30 May 2022 10:17:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54BAC8FD53;
-        Mon, 30 May 2022 06:45:36 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AC9D880C7;
+        Mon, 30 May 2022 06:45:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F0259B80DAE;
-        Mon, 30 May 2022 13:45:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A09AC385B8;
-        Mon, 30 May 2022 13:45:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2501560F24;
+        Mon, 30 May 2022 13:45:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 915F7C36AE5;
+        Mon, 30 May 2022 13:45:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918333;
-        bh=Bkhb4rW4Fm9ts+xqlLpF0mtthv9kANdaPO//zit9f0E=;
+        s=k20201202; t=1653918345;
+        bh=7jqS2tTlnNZbrQ98eK9OJ7pRMtBHKuwDuhlgk5Xc4Sk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZuD1qTuxleWrE45YyFMSqpr86oBe6nNhgaoE+5Y+uCNxH5hIWWVR4FyGmbGXSTVVU
-         tPNJpkNEa3zhKsobmG6yX3fxK9A2MDbRypsFsuRVUpLNjkY7clwT2BvbwK0AkNtfh2
-         1B5Oth/J+EZbuG0MFXC+YJAJfUUuDtIzcP4i7Arx53hii+ByXWqCxLNn7a846zUPtA
-         C45b3HlXjPGdtpwEpTGphqZlXmIufnVUvFbnfhkrMtV7+oS+YVEfdAo7rWL0yiVCD+
-         zxxr1E8QjPet2COsE6lFX3UpuNN+5j/yi42w74ABCWggX9zVPkmY7JTbBN6nGeod4A
-         PNhKGr8k2XTvg==
+        b=Qmo8Wkfb19NHetn7/UYW9Jg0iz8GE5/dkCZyhm/Xw5jM9pBScaOuMywmBsMk9COqm
+         d7aTQE1qu8Q7Z5H3koEfPREB7HaWMRX0+AIolBWK0P6hOcpDk8zsNGi5iCG9/14wY1
+         8AY3sMliH7pCHHElAfHTuHLGzErEkHnXhHwSkUoKSAJcHffANHdcyMj8BFeiow++gm
+         cKS5PdXBZwYk+E/flaSXaKLmkpCHu6ubYqi14jX6jteuZSfOHj38mjFg4t2L65NpCV
+         CUOEGabafsOmws+Uslx/jcvV6RaxNiSI0ULSTD5ZyQbyRHDvItzjQNK1DiCN4dQOyl
+         gU+SMz9xkoAsg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     jianghaoran <jianghaoran@kylinos.cn>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, edumazet@google.com,
-        pabeni@redhat.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 38/76] ipv6: Don't send rs packets to the interface of ARPHRD_TUNNEL
-Date:   Mon, 30 May 2022 09:43:28 -0400
-Message-Id: <20220530134406.1934928-38-sashal@kernel.org>
+Cc:     Dongliang Mu <mudongliangabcd@gmail.com>,
+        syzkaller <syzkaller@googlegroups.com>,
+        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>,
+        jikos@kernel.org, benjamin.tissoires@redhat.com,
+        linux-input@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 44/76] HID: bigben: fix slab-out-of-bounds Write in bigben_probe
+Date:   Mon, 30 May 2022 09:43:34 -0400
+Message-Id: <20220530134406.1934928-44-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530134406.1934928-1-sashal@kernel.org>
 References: <20220530134406.1934928-1-sashal@kernel.org>
@@ -53,48 +53,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: jianghaoran <jianghaoran@kylinos.cn>
+From: Dongliang Mu <mudongliangabcd@gmail.com>
 
-[ Upstream commit b52e1cce31ca721e937d517411179f9196ee6135 ]
+[ Upstream commit fc4ef9d5724973193bfa5ebed181dba6de3a56db ]
 
-ARPHRD_TUNNEL interface can't process rs packets
-and will generate TX errors
+There is a slab-out-of-bounds Write bug in hid-bigbenff driver.
+The problem is the driver assumes the device must have an input but
+some malicious devices violate this assumption.
 
-ex:
-ip tunnel add ethn mode ipip local 192.168.1.1 remote 192.168.1.2
-ifconfig ethn x.x.x.x
+Fix this by checking hid_device's input is non-empty before its usage.
 
-ethn: flags=209<UP,POINTOPOINT,RUNNING,NOARP>  mtu 1480
-	inet x.x.x.x  netmask 255.255.255.255  destination x.x.x.x
-	inet6 fe80::5efe:ac1e:3cdb  prefixlen 64  scopeid 0x20<link>
-	tunnel   txqueuelen 1000  (IPIP Tunnel)
-	RX packets 0  bytes 0 (0.0 B)
-	RX errors 0  dropped 0  overruns 0  frame 0
-	TX packets 0  bytes 0 (0.0 B)
-	TX errors 3  dropped 0 overruns 0  carrier 0  collisions 0
-
-Signed-off-by: jianghaoran <jianghaoran@kylinos.cn>
-Link: https://lore.kernel.org/r/20220429053802.246681-1-jianghaoran@kylinos.cn
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reported-by: syzkaller <syzkaller@googlegroups.com>
+Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv6/addrconf.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/hid/hid-bigbenff.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index 4584bb50960b..0562fb321959 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -4200,7 +4200,8 @@ static void addrconf_dad_completed(struct inet6_ifaddr *ifp, bool bump_id,
- 	send_rs = send_mld &&
- 		  ipv6_accept_ra(ifp->idev) &&
- 		  ifp->idev->cnf.rtr_solicits != 0 &&
--		  (dev->flags&IFF_LOOPBACK) == 0;
-+		  (dev->flags & IFF_LOOPBACK) == 0 &&
-+		  (dev->type != ARPHRD_TUNNEL);
- 	read_unlock_bh(&ifp->idev->lock);
+diff --git a/drivers/hid/hid-bigbenff.c b/drivers/hid/hid-bigbenff.c
+index 74ad8bf98bfd..e8c5e3ac9fff 100644
+--- a/drivers/hid/hid-bigbenff.c
++++ b/drivers/hid/hid-bigbenff.c
+@@ -347,6 +347,12 @@ static int bigben_probe(struct hid_device *hid,
+ 	bigben->report = list_entry(report_list->next,
+ 		struct hid_report, list);
  
- 	/* While dad is in progress mld report's source address is in6_addrany.
++	if (list_empty(&hid->inputs)) {
++		hid_err(hid, "no inputs found\n");
++		error = -ENODEV;
++		goto error_hw_stop;
++	}
++
+ 	hidinput = list_first_entry(&hid->inputs, struct hid_input, list);
+ 	set_bit(FF_RUMBLE, hidinput->input->ffbit);
+ 
 -- 
 2.35.1
 
