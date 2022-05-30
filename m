@@ -2,124 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 200DAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 10:43:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DC62C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 10:43:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235234AbiE3KnZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 06:43:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37934 "EHLO
+        id S235305AbiE3Knd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 06:43:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232909AbiE3KnX (ORCPT
+        with ESMTP id S235266AbiE3Kn1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 06:43:23 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A26637092E;
-        Mon, 30 May 2022 03:43:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1653907399; x=1685443399;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=YrCrnhgDpbAXZ+YGdyDdS831L42HGMFSh6WqeHNqCo8=;
-  b=DCuh0WKGm4pnXiSGXaxjL5IzDpY4OQ1Q95+7MWOJ9u4ZTK5HkeXgIU4U
-   EY6OsxKfh1dTuDs4KAqHrat7eQrgUkka14NE4W029XVP1vnlzkpAYQKsJ
-   pBtGoDNKp/1Yt0UJWdZGfyMhv8NxT1spiYhQGuyvMW2g2gr7lM01Av6va
-   QHuNaprDRJMaJn40CTVOqmsTbOrkAyEgCOL6EzYYSuHcjXxYPDz7feEQb
-   5JE6G6XeQZ1/zuHZfq65kzSA9RnD6RQ95ifP2tg55D6DZi2KI0CtZ5hcw
-   ry2djibeZ+pXy+glEjanxjdGVnblnKe8ZjvUxvyYdVqfm00qTkTr6G+KR
-   w==;
-X-IronPort-AV: E=Sophos;i="5.91,262,1647327600"; 
-   d="scan'208";a="97812686"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 May 2022 03:43:18 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 30 May 2022 03:43:18 -0700
-Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Mon, 30 May 2022 03:43:13 -0700
-From:   Arun Ramadoss <arun.ramadoss@microchip.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Woojung Huh <woojung.huh@microchip.com>,
-        <UNGLinuxDriver@microchip.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "Russell King" <linux@armlinux.org.uk>
-Subject: [RFC Patch net-next v2 00/15] net: dsa: microchip: common spi probe for the ksz series switches
-Date:   Mon, 30 May 2022 16:12:42 +0530
-Message-ID: <20220530104257.21485-1-arun.ramadoss@microchip.com>
-X-Mailer: git-send-email 2.36.1
+        Mon, 30 May 2022 06:43:27 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 195967092E;
+        Mon, 30 May 2022 03:43:25 -0700 (PDT)
+Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24U9Xubs013204;
+        Mon, 30 May 2022 10:43:24 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : in-reply-to : references : mime-version :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=djv0+l8cdCMs2AXk4dJ8GHFW/CWC71QuRmanB9cAsqg=;
+ b=CAWbxK5VNQlr4OUhaD5+wMj6uZCjRTNXtw8tF/JJE+c2epFaxKbY4HzLGiz3tWUx9iX3
+ mq639SB+Cvpzbd9uUhjltXVadIENU0r7wIJI1vPcwk4BCLb5MVGWsv7g/uH3r1JyPR6H
+ WS11YT5YS2PyqdZAmfq0TvkYupfVzTsyXjAeR7TwDULZILOCI2MuuhRphQzTtb0/nx74
+ SSzzXUjlXc8auRZr1Zc9sKiL5T39IYBCBrlJkvK3eJ650WGMrVy/b2QroQsoxckMP3jb
+ HuBQnnz+5JpcinBODUrmbG+5wNx8SlwTO9pUT2JP+Jmc0wR3ppKT8hK/JoounInG7Kpp ng== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3gcudgh74y-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 30 May 2022 10:43:24 +0000
+Received: from m0098413.ppops.net (m0098413.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24UAhNJ1008729;
+        Mon, 30 May 2022 10:43:23 GMT
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3gcudgh74k-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 30 May 2022 10:43:23 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24UAWuLN030403;
+        Mon, 30 May 2022 10:43:22 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+        by ppma06ams.nl.ibm.com with ESMTP id 3gbbynjkc8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 30 May 2022 10:43:21 +0000
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24UAhInr44433788
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 30 May 2022 10:43:18 GMT
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 9E552A405B;
+        Mon, 30 May 2022 10:43:18 +0000 (GMT)
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 04788A405C;
+        Mon, 30 May 2022 10:43:18 +0000 (GMT)
+Received: from p-imbrenda (unknown [9.145.12.149])
+        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon, 30 May 2022 10:43:17 +0000 (GMT)
+Date:   Mon, 30 May 2022 12:43:15 +0200
+From:   Claudio Imbrenda <imbrenda@linux.ibm.com>
+To:     Nico Boehr <nrb@linux.ibm.com>
+Cc:     kvm@vger.kernel.org, borntraeger@de.ibm.com, frankja@linux.ibm.com,
+        thuth@redhat.com, pasic@linux.ibm.com, david@redhat.com,
+        linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
+        scgl@linux.ibm.com, mimu@linux.ibm.com
+Subject: Re: [PATCH v10 14/19] KVM: s390: pv: cleanup leftover protected VMs
+ if needed
+Message-ID: <20220530124315.31dc3742@p-imbrenda>
+In-Reply-To: <ff5f394db586169fe6dc16dc0e24d534e4825caa.camel@linux.ibm.com>
+References: <20220414080311.1084834-1-imbrenda@linux.ibm.com>
+        <20220414080311.1084834-15-imbrenda@linux.ibm.com>
+        <ff5f394db586169fe6dc16dc0e24d534e4825caa.camel@linux.ibm.com>
+Organization: IBM
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: oHh5hNQ89EDiVKZ149snJANkX2vEhK2N
+X-Proofpoint-ORIG-GUID: aL4QO2Clu9DBGL2q9Rswrbb_9gR3oo80
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-30_03,2022-05-30_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 adultscore=0
+ spamscore=0 mlxscore=0 priorityscore=1501 clxscore=1015 phishscore=0
+ lowpriorityscore=0 impostorscore=0 mlxlogscore=999 bulkscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2205300055
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch series aims to refactor the ksz_switch_register routine to have the
-common flow for the ksz series switch. At present ksz8795.c & ksz9477.c have
-its own dsa_switch_ops and switch detect functionality.
-In ksz_switch_register, ksz_dev_ops is assigned based on the function parameter
-passed by the individual ksz8/ksz9477 switch register function. And then switch
-detect is performed based on the ksz_dev_ops.detect hook.  This patch modifies
-the ksz_switch_register such a way that switch detect is performed first, based
-on the chip ksz_dev_ops is assigned to ksz_device structure. It ensures the
-common flow for the existing as well as LAN937x switches.
-It also replaces the individual dsa_switch_ops structure to common
-dsa_switch_ops in the ksz_common.  Based on the ksz_dev_ops hook pointer,
-particular functionality for the switches may or may not executed.
-Finally replaces the two spi probes such as ksz8795_spi.c and ksz9477_spi.c to
-common ksz_spi.c. These switches have different regmap config and it is
-differentited using the of_device_id data.
+On Mon, 30 May 2022 10:11:37 +0200
+Nico Boehr <nrb@linux.ibm.com> wrote:
 
-Changes in RFC v2
-- Fixed the compilation issue.
-- Reduced the patch set to 15.
+> On Thu, 2022-04-14 at 10:03 +0200, Claudio Imbrenda wrote:
+> [...]
+> > diff --git a/arch/s390/kvm/pv.c b/arch/s390/kvm/pv.c
+> > index bd850be08c86..b20f2cbd43d9 100644
+> > --- a/arch/s390/kvm/pv.c
+> > +++ b/arch/s390/kvm/pv.c
+> > @@ -17,6 +17,19 @@  
+> [...]
+> > +/**
+> > + * @struct deferred_priv
+> > + * Represents a "leftover" protected VM that is still registered
+> > with the
+> > + * Ultravisor, but which does not correspond any longer to an active
+> > KVM VM.
+> > + */
+> > +struct deferred_priv {  
+> 
+> Why not just name this leftover_vm?
 
-Arun Ramadoss (15):
-  net: dsa: microchip: ksz9477: cleanup the ksz9477_switch_detect
-  net: dsa: microchip: move switch chip_id detection to ksz_common
-  net: dsa: microchip: move tag_protocol & phy read/write to ksz_common
-  net: dsa: microchip: move vlan functionality to ksz_common
-  net: dsa: microchip: move the port mirror to ksz_common
-  net: dsa: microchip: get P_STP_CTRL in ksz_port_stp_state by
-    ksz_dev_ops
-  net: dsa: microchip: update the ksz_phylink_get_caps
-  net: dsa: microchip: update the ksz_port_mdb_add/del
-  net: dsa: microchip: update fdb add/del/dump in ksz_common
-  net: dsa: microchip: move the setup, get_phy_flags & mtu to ksz_common
-  net: dsa: microchip: common dsa_switch_ops for ksz switches
-  net: dsa: microchip: ksz9477: separate phylink mode from switch
-    register
-  net: dsa: microchip: common menuconfig for ksz series switch
-  net: dsa: microchip: move ksz_dev_ops to ksz_common.c
-  net: dsa: microchip: common ksz_spi_probe for ksz switches
+because I did not think of it :)
 
- drivers/net/dsa/microchip/Kconfig             |  42 +-
- drivers/net/dsa/microchip/Makefile            |  10 +-
- drivers/net/dsa/microchip/ksz8.h              |  46 ++
- drivers/net/dsa/microchip/ksz8795.c           | 309 +++++------
- drivers/net/dsa/microchip/ksz8795_reg.h       |  13 -
- drivers/net/dsa/microchip/ksz8863_smi.c       |   2 +-
- drivers/net/dsa/microchip/ksz9477.c           | 225 ++------
- drivers/net/dsa/microchip/ksz9477.h           |  58 ++
- drivers/net/dsa/microchip/ksz9477_i2c.c       |   2 +-
- drivers/net/dsa/microchip/ksz9477_reg.h       |   1 -
- drivers/net/dsa/microchip/ksz9477_spi.c       | 150 -----
- drivers/net/dsa/microchip/ksz_common.c        | 521 +++++++++++++-----
- drivers/net/dsa/microchip/ksz_common.h        |  91 +--
- .../microchip/{ksz8795_spi.c => ksz_spi.c}    |  85 ++-
- 14 files changed, 821 insertions(+), 734 deletions(-)
- create mode 100644 drivers/net/dsa/microchip/ksz9477.h
- delete mode 100644 drivers/net/dsa/microchip/ksz9477_spi.c
- rename drivers/net/dsa/microchip/{ksz8795_spi.c => ksz_spi.c} (61%)
-
--- 
-2.36.1
-
+will fix
