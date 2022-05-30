@@ -2,183 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09D2EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 07:56:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC02AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 07:57:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234151AbiE3H4L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 03:56:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48226 "EHLO
+        id S234206AbiE3H5B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 03:57:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231672AbiE3H4H (ORCPT
+        with ESMTP id S234271AbiE3Hyc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 03:56:07 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F88DE03;
-        Mon, 30 May 2022 00:56:05 -0700 (PDT)
-X-UUID: 4443469c0e72419db8968d689a6ebc64-20220530
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:c14f2dcc-52e3-445c-9c85-1af21d71d8cd,OB:0,LO
-        B:0,IP:0,URL:5,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:0
-X-CID-META: VersionHash:2a19b09,CLOUDID:8499fc47-4fb1-496b-8f1d-39e733fed1ea,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
-        ,QS:0,BEC:nil
-X-UUID: 4443469c0e72419db8968d689a6ebc64-20220530
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
-        (envelope-from <ck.hu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1272861189; Mon, 30 May 2022 15:56:00 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Mon, 30 May 2022 15:55:59 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 30 May 2022 15:55:58 +0800
-Message-ID: <201747a8679474a1088aa12e5175b9e8ac21306e.camel@mediatek.com>
-Subject: Re: [PATCH v10 09/21] drm/mediatek: dpi: move dimension mask to SoC
- config
-From:   CK Hu <ck.hu@mediatek.com>
-To:     Guillaume Ranquet <granquet@baylibre.com>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        "David Airlie" <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Chunfeng Yun <chunfeng.yun@mediatek.com>,
-        "Kishon Vijay Abraham I" <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>, "Helge Deller" <deller@gmx.de>,
-        Jitao shi <jitao.shi@mediatek.com>
-CC:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Rex-BC Chen <rex-bc.chen@mediatek.com>,
-        <dri-devel@lists.freedesktop.org>,
-        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-phy@lists.infradead.org>, <linux-fbdev@vger.kernel.org>
-Date:   Mon, 30 May 2022 15:55:58 +0800
-In-Reply-To: <20220523104758.29531-10-granquet@baylibre.com>
-References: <20220523104758.29531-1-granquet@baylibre.com>
-         <20220523104758.29531-10-granquet@baylibre.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Mon, 30 May 2022 03:54:32 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BC4E74DC4
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 00:54:30 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id u3so13460195wrg.3
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 00:54:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3kcYg8SvftZ4Pv8K6+My0zsHrpG5RiRd2GgL3qZs2gI=;
+        b=oOHy+1wa0Y1QWiyS+VCO8OYEDSfeb4P6rKwugYGCN7bpah1DiWveZ7BFpagsJ7/B5p
+         OFcsrtoRriPmcS4y0Xfdrn28EYWxIU5YJq872nY+HwsO1qmuE/QtQjFI64s2uIjoTiEj
+         0peNA3xx6oibsD+QlQydo71XbCH7+zX6x8zZ72Djnya0nWIeZyRmhSIZtC/AbU2/DAbZ
+         05Ycpn6SQdheX229ZnQMYOcTXVVZNOTHXRjJXt6IJVLIh6Fl+CdQFhb92g0QWIJRnvF8
+         K3t02JPLJ6733jL3PdmtIoU//SZXX8NcRJOXrPll3iUMbHyRhB3j/DEivj0AZzZURgyx
+         feRQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3kcYg8SvftZ4Pv8K6+My0zsHrpG5RiRd2GgL3qZs2gI=;
+        b=MPOKJpvvogQz/5rA9I7uyL5I9DN4Z/lWRe1Rp01TF4yXdboPAOg9qcrD+vDrBP4L+K
+         NxtcqWE7B9bGqBaYqgGfu5ObsnLHXXGoNj3lEfX+1FjFHaEjQU6Qbam4AKnmO/jN82GN
+         WQrGquG8K9ZoojfqA66DB/oq1jNGkPFay6uLf9Drn4zAftEEQMTJ+8vjZ9nXGnawb5av
+         1rTzkWV6R/DDBDBvifN6T2ouzPwcxQXwqtb5moTgJlQfWxUOQHONRtJkn47/R7A2cTQG
+         3CIrilZamUa/5pRlH+oZ64OEy+QPX3cXTvWapjxOPt8+hFv12fkU69/NDrCLJN9Njjnb
+         YUrA==
+X-Gm-Message-State: AOAM533bHAiDWA2KfZ5K3BWkSu/G1vtnL3MK7hfVg7iqDe7Ggn/c1pmW
+        acEVgxE7HLEWmN2jc0YsY5bl0f3GLvhM8QoL
+X-Google-Smtp-Source: ABdhPJw6xnN8Iy6RqczuscjkcuqNxwqXuNH9d2cQ78QPMlE0uD4bsefwpWemYj8HuHLpLpqQB6LkUg==
+X-Received: by 2002:a05:6000:2cf:b0:20d:c9f:63d0 with SMTP id o15-20020a05600002cf00b0020d0c9f63d0mr46629276wry.45.1653897269034;
+        Mon, 30 May 2022 00:54:29 -0700 (PDT)
+Received: from ownia.. ([103.105.48.166])
+        by smtp.gmail.com with ESMTPSA id n21-20020a05600c3b9500b003974860e15esm10578642wms.40.2022.05.30.00.54.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 May 2022 00:54:28 -0700 (PDT)
+From:   Weizhao Ouyang <o451686892@gmail.com>
+To:     Gao Xiang <xiang@kernel.org>, Chao Yu <chao@kernel.org>,
+        Yue Hu <huyue2@coolpad.com>
+Cc:     linux-erofs@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        Weizhao Ouyang <o451686892@gmail.com>
+Subject: [PATCH] erofs: fix 'backmost' member of z_erofs_decompress_frontend
+Date:   Mon, 30 May 2022 15:51:14 +0800
+Message-Id: <20220530075114.918874-1-o451686892@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Guillaume:
+Initialize 'backmost' to true in DECOMPRESS_FRONTEND_INIT.
 
-On Mon, 2022-05-23 at 12:47 +0200, Guillaume Ranquet wrote:
-> Add flexibility by moving the dimension mask to the SoC config
+Fixes: 5c6dcc57e2e5 ("erofs: get rid of `struct z_erofs_collector'")
+Signed-off-by: Weizhao Ouyang <o451686892@gmail.com>
+---
+ fs/erofs/zdata.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Reviewed-by: CK Hu <ck.hu@mediatek.com>
-
-> 
-> Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
-> Reviewed-by: AngeloGioacchino Del Regno <
-> angelogioacchino.delregno@collabora.com>
-> Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-> ---
->  drivers/gpu/drm/mediatek/mtk_dpi.c | 26 ++++++++++++++++----------
->  1 file changed, 16 insertions(+), 10 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c
-> b/drivers/gpu/drm/mediatek/mtk_dpi.c
-> index 454f8563efae..bf098f36a466 100644
-> --- a/drivers/gpu/drm/mediatek/mtk_dpi.c
-> +++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
-> @@ -127,6 +127,8 @@ struct mtk_dpi_conf {
->  	u32 num_output_fmts;
->  	bool is_ck_de_pol;
->  	bool swap_input_support;
-> +	/* Mask used for HWIDTH, HPORCH, VSYNC_WIDTH and VSYNC_PORCH
-> (no shift) */
-> +	u32 dimension_mask;
->  	const struct mtk_dpi_yc_limit *limit;
->  };
->  
-> @@ -156,30 +158,30 @@ static void mtk_dpi_disable(struct mtk_dpi
-> *dpi)
->  static void mtk_dpi_config_hsync(struct mtk_dpi *dpi,
->  				 struct mtk_dpi_sync_param *sync)
->  {
-> -	mtk_dpi_mask(dpi, DPI_TGEN_HWIDTH,
-> -		     sync->sync_width << HPW, HPW_MASK);
-> -	mtk_dpi_mask(dpi, DPI_TGEN_HPORCH,
-> -		     sync->back_porch << HBP, HBP_MASK);
-> +	mtk_dpi_mask(dpi, DPI_TGEN_HWIDTH, sync->sync_width << HPW,
-> +		     dpi->conf->dimension_mask << HPW);
-> +	mtk_dpi_mask(dpi, DPI_TGEN_HPORCH, sync->back_porch << HBP,
-> +		     dpi->conf->dimension_mask << HBP);
->  	mtk_dpi_mask(dpi, DPI_TGEN_HPORCH, sync->front_porch << HFP,
-> -		     HFP_MASK);
-> +		     dpi->conf->dimension_mask << HFP);
->  }
->  
->  static void mtk_dpi_config_vsync(struct mtk_dpi *dpi,
->  				 struct mtk_dpi_sync_param *sync,
->  				 u32 width_addr, u32 porch_addr)
->  {
-> -	mtk_dpi_mask(dpi, width_addr,
-> -		     sync->sync_width << VSYNC_WIDTH_SHIFT,
-> -		     VSYNC_WIDTH_MASK);
->  	mtk_dpi_mask(dpi, width_addr,
->  		     sync->shift_half_line << VSYNC_HALF_LINE_SHIFT,
->  		     VSYNC_HALF_LINE_MASK);
-> +	mtk_dpi_mask(dpi, width_addr,
-> +		     sync->sync_width << VSYNC_WIDTH_SHIFT,
-> +		     dpi->conf->dimension_mask << VSYNC_WIDTH_SHIFT);
->  	mtk_dpi_mask(dpi, porch_addr,
->  		     sync->back_porch << VSYNC_BACK_PORCH_SHIFT,
-> -		     VSYNC_BACK_PORCH_MASK);
-> +		     dpi->conf->dimension_mask <<
-> VSYNC_BACK_PORCH_SHIFT);
->  	mtk_dpi_mask(dpi, porch_addr,
->  		     sync->front_porch << VSYNC_FRONT_PORCH_SHIFT,
-> -		     VSYNC_FRONT_PORCH_MASK);
-> +		     dpi->conf->dimension_mask <<
-> VSYNC_FRONT_PORCH_SHIFT);
->  }
->  
->  static void mtk_dpi_config_vsync_lodd(struct mtk_dpi *dpi,
-> @@ -813,6 +815,7 @@ static const struct mtk_dpi_conf mt8173_conf = {
->  	.num_output_fmts = ARRAY_SIZE(mt8173_output_fmts),
->  	.is_ck_de_pol = true,
->  	.swap_input_support = true,
-> +	.dimension_mask = HPW_MASK,
->  	.limit = &mtk_dpi_limit,
->  };
->  
-> @@ -825,6 +828,7 @@ static const struct mtk_dpi_conf mt2701_conf = {
->  	.num_output_fmts = ARRAY_SIZE(mt8173_output_fmts),
->  	.is_ck_de_pol = true,
->  	.swap_input_support = true,
-> +	.dimension_mask = HPW_MASK,
->  	.limit = &mtk_dpi_limit,
->  };
->  
-> @@ -836,6 +840,7 @@ static const struct mtk_dpi_conf mt8183_conf = {
->  	.num_output_fmts = ARRAY_SIZE(mt8183_output_fmts),
->  	.is_ck_de_pol = true,
->  	.swap_input_support = true,
-> +	.dimension_mask = HPW_MASK,
->  	.limit = &mtk_dpi_limit,
->  };
->  
-> @@ -847,6 +852,7 @@ static const struct mtk_dpi_conf mt8192_conf = {
->  	.num_output_fmts = ARRAY_SIZE(mt8173_output_fmts),
->  	.is_ck_de_pol = true,
->  	.swap_input_support = true,
-> +	.dimension_mask = HPW_MASK,
->  	.limit = &mtk_dpi_limit,
->  };
->  
+diff --git a/fs/erofs/zdata.c b/fs/erofs/zdata.c
+index 95efc127b2ba..94d2cb970644 100644
+--- a/fs/erofs/zdata.c
++++ b/fs/erofs/zdata.c
+@@ -214,7 +214,7 @@ struct z_erofs_decompress_frontend {
+ 
+ #define DECOMPRESS_FRONTEND_INIT(__i) { \
+ 	.inode = __i, .owned_head = Z_EROFS_PCLUSTER_TAIL, \
+-	.mode = COLLECT_PRIMARY_FOLLOWED }
++	.mode = COLLECT_PRIMARY_FOLLOWED, .backmost = true }
+ 
+ static struct page *z_pagemap_global[Z_EROFS_VMAP_GLOBAL_PAGES];
+ static DEFINE_MUTEX(z_pagemap_global_lock);
+-- 
+2.34.1
 
