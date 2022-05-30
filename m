@@ -2,175 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B45D6C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 02:27:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2D17C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 02:34:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232263AbiE3C1T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 29 May 2022 22:27:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59548 "EHLO
+        id S232256AbiE3CeI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 29 May 2022 22:34:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230488AbiE3C1R (ORCPT
+        with ESMTP id S230488AbiE3CeG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 29 May 2022 22:27:17 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 713EBDF8A
-        for <linux-kernel@vger.kernel.org>; Sun, 29 May 2022 19:27:15 -0700 (PDT)
-X-UUID: a82fa2f341ab42669dca4aad750b12ac-20220530
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:952290ef-46a6-4d98-92b1-d73fe5bc5953,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:0
-X-CID-META: VersionHash:2a19b09,CLOUDID:6817b2b8-3c45-407b-8f66-25095432a27a,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
-        ,QS:0,BEC:nil
-X-UUID: a82fa2f341ab42669dca4aad750b12ac-20220530
-Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by mailgw01.mediatek.com
-        (envelope-from <yee.lee@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1959788512; Mon, 30 May 2022 10:27:12 +0800
-Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
- mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Mon, 30 May 2022 10:27:10 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Mon, 30 May 2022 10:27:10 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n2.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
- Transport; Mon, 30 May 2022 10:27:10 +0800
-Message-ID: <05cfaf936a0c5f37f2e7ba779a8a1b0a6252be96.camel@mediatek.com>
-Subject: Re: [PATCH] mm: kmemleak: Skip check in kmemleak_*_phys when pfn
- bound is not ready
-From:   Yee Lee <yee.lee@mediatek.com>
-To:     patrick wang <patrick.wang.shcn@gmail.com>
-CC:     <linux-kernel@vger.kernel.org>, <Kuan-Ying.lee@mediatek.com>,
-        <Andrew.Yang@mediatek.com>, <Sunny.Kao@mediatek.com>,
-        <chinwen.chang@mediatek.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        "open list:MEMORY MANAGEMENT" <linux-mm@kvack.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>
-Date:   Mon, 30 May 2022 10:27:10 +0800
-In-Reply-To: <CAGcnep9B+z8QG4f4kkW8NF+fM1Kgj=NOV=YRhLK4yK74jbqpAw@mail.gmail.com>
-References: <20220527032504.30341-1-yee.lee@mediatek.com>
-         <CAGcnep9B+z8QG4f4kkW8NF+fM1Kgj=NOV=YRhLK4yK74jbqpAw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Sun, 29 May 2022 22:34:06 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1621072E17;
+        Sun, 29 May 2022 19:34:05 -0700 (PDT)
+Received: from canpemm500010.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LBKG31WX9zjX24;
+        Mon, 30 May 2022 10:33:15 +0800 (CST)
+Received: from huawei.com (10.175.127.227) by canpemm500010.china.huawei.com
+ (7.192.105.118) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 30 May
+ 2022 10:34:02 +0800
+From:   Ye Bin <yebin10@huawei.com>
+To:     <axboe@kernel.dk>, <linux-block@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <ming.lei@redhat.com>, Ye Bin <yebin10@huawei.com>
+Subject: [PATCH -next] block: fix use-after-free in __cpuhp_state_remove_instance
+Date:   Mon, 30 May 2022 10:47:29 +0800
+Message-ID: <20220530024729.2621465-1-yebin10@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ canpemm500010.china.huawei.com (7.192.105.118)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-05-27 at 21:39 +0800, patrick wang wrote:
-> On Fri, May 27, 2022 at 11:25 AM <yee.lee@mediatek.com> wrote:
-> > 
-> > From: Yee Lee <yee.lee@mediatek.com>
-> > 
-> > In some archs (arm64), memblock allocates memory in boot time when
-> > the pfn boundary (max_pfn/min_pfn) is not ready. The lowmen checks
-> > in
-> > kmemleak_*_phys() drop those blocks and cause some false leak
-> > alarms
-> > on common kernel objects.
-> > 
-> > Kmemleak output: (Qemu/arm64)
-> > unreferenced object 0xffff0000c0170a00 (size 128):
-> >   comm "swapper/0", pid 1, jiffies 4294892404 (age 126.208s)
-> >   hex dump (first 32 bytes):
-> >     62 61 73 65 00 00 00 00 00 00 00 00 00 00 00
-> > 00  base............
-> >     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-> > 00  ................
-> >   backtrace:
-> >     [<(____ptrval____)>] __kmalloc_track_caller+0x1b0/0x2e4
-> >     [<(____ptrval____)>] kstrdup_const+0x8c/0xc4
-> >     [<(____ptrval____)>] kvasprintf_const+0xbc/0xec
-> >     [<(____ptrval____)>] kobject_set_name_vargs+0x58/0xe4
-> >     [<(____ptrval____)>] kobject_add+0x84/0x100
-> >     [<(____ptrval____)>] __of_attach_node_sysfs+0x78/0xec
-> >     [<(____ptrval____)>] of_core_init+0x68/0x104
-> >     [<(____ptrval____)>] driver_init+0x28/0x48
-> >     [<(____ptrval____)>] do_basic_setup+0x14/0x28
-> >     [<(____ptrval____)>] kernel_init_freeable+0x110/0x178
-> >     [<(____ptrval____)>] kernel_init+0x20/0x1a0
-> >     [<(____ptrval____)>] ret_from_fork+0x10/0x20
-> > 
-> > This patch relaxs the boundary checking in kmemleak_*_phys api
-> > if max_low_pfn is uninitialzed.
-> > 
-> > Fixes: 23c2d4 (mm: kmemleak: take a full lowmem check in
-> > kmemleak_*_phy)
-> > Signed-off-by: Yee Lee <yee.lee@mediatek.com>
-> > ---
-> >  mm/kmemleak.c | 8 ++++----
-> >  1 file changed, 4 insertions(+), 4 deletions(-)
-> > 
-> > diff --git a/mm/kmemleak.c b/mm/kmemleak.c
-> > index a182f5ddaf68..6b2af544aa0f 100644
-> > --- a/mm/kmemleak.c
-> > +++ b/mm/kmemleak.c
-> > @@ -1132,7 +1132,7 @@ EXPORT_SYMBOL(kmemleak_no_scan);
-> >  void __ref kmemleak_alloc_phys(phys_addr_t phys, size_t size, int
-> > min_count,
-> >                                gfp_t gfp)
-> >  {
-> > -       if (PHYS_PFN(phys) >= min_low_pfn && PHYS_PFN(phys) <
-> > max_low_pfn)
-> > +       if (!max_low_pfn || (PHYS_PFN(phys) >= min_low_pfn &&
-> > PHYS_PFN(phys) < max_low_pfn))
-> 
-> Just skip checking will bring the crash possibility back. Seems it's
-> beyond
-> these interfaces' handle scope for this situation, since
-> "min_low_pfn" and
-> "max_low_pfn" are depending on arches.
-> 
-Yes, for the cases beyond the pfn guard, users have to take care the
-boundary by themselves. 
+We got issue when remove device mapper as follows:
+dmsetup create test --table "0 1048576 linear /dev/sda 0"
+dmsetup suspend --nolockfs test
+dmsetup load test --table "0 1048576 error /dev/sda 0"
+dmsetup resume test
+dmsetup suspend --nolockfs test
+dmsetup load test --table "0 1048576 linear /dev/sda 0"
+dmsetup resume test
+dmsetup remove test
+==================================================================
+BUG: KASAN: wild-memory-access in __cpuhp_state_remove_instance+0x1ea/0x310
+Write of size 8 at addr dead000000000122 by task dmsetup/1969
 
-> >                 kmemleak_alloc(__va(phys), size, min_count, gfp);
-> >  }
-> >  EXPORT_SYMBOL(kmemleak_alloc_phys);
-> > @@ -1146,7 +1146,7 @@ EXPORT_SYMBOL(kmemleak_alloc_phys);
-> >   */
-> >  void __ref kmemleak_free_part_phys(phys_addr_t phys, size_t size)
-> >  {
-> > -       if (PHYS_PFN(phys) >= min_low_pfn && PHYS_PFN(phys) <
-> > max_low_pfn)
-> > +       if (!max_low_pfn || (PHYS_PFN(phys) >= min_low_pfn &&
-> > PHYS_PFN(phys) < max_low_pfn))
-> >                 kmemleak_free_part(__va(phys), size);
-> >  }
-> >  EXPORT_SYMBOL(kmemleak_free_part_phys);
-> > @@ -1158,7 +1158,7 @@ EXPORT_SYMBOL(kmemleak_free_part_phys);
-> >   */
-> >  void __ref kmemleak_not_leak_phys(phys_addr_t phys)
-> >  {
-> > -       if (PHYS_PFN(phys) >= min_low_pfn && PHYS_PFN(phys) <
-> > max_low_pfn)
-> > +       if (!max_low_pfn || (PHYS_PFN(phys) >= min_low_pfn &&
-> > PHYS_PFN(phys) < max_low_pfn))
-> >                 kmemleak_not_leak(__va(phys));
-> >  }
-> >  EXPORT_SYMBOL(kmemleak_not_leak_phys);
-> > @@ -1170,7 +1170,7 @@ EXPORT_SYMBOL(kmemleak_not_leak_phys);
-> >   */
-> >  void __ref kmemleak_ignore_phys(phys_addr_t phys)
-> >  {
-> > -       if (PHYS_PFN(phys) >= min_low_pfn && PHYS_PFN(phys) <
-> > max_low_pfn)
-> > +       if (!max_low_pfn || (PHYS_PFN(phys) >= min_low_pfn &&
-> > PHYS_PFN(phys) < max_low_pfn))
-> >                 kmemleak_ignore(__va(phys));
-> >  }
-> >  EXPORT_SYMBOL(kmemleak_ignore_phys);
-> > --
-> > 2.18.0
-> > 
+CPU: 1 PID: 1969 Comm: dmsetup Not tainted 5.18.0-next-20220524 #225
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0x6e/0x91
+ print_report.cold+0x494/0x6b7
+ kasan_report+0xa9/0x120
+ __cpuhp_state_remove_instance+0x1ea/0x310
+ bioset_exit+0x45/0x2e0
+ cleanup_mapped_device+0x4f/0x190
+ __dm_destroy+0x230/0x3c0
+ dev_remove+0x18b/0x1d0
+ ctl_ioctl+0x3d8/0x7c0
+ dm_ctl_ioctl+0x21/0x30
+ __x64_sys_ioctl+0x12c/0x170
+ do_syscall_64+0x3b/0x90
+ entry_SYSCALL_64_after_hwframe+0x46/0xb0
+RIP: 0033:0x7f0d9aa7a8d7
+RSP: 002b:00007fff1ecedce8 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 00007f0d9ad5ff50 RCX: 00007f0d9aa7a8d7
+RDX: 000055c98c17d130 RSI: 00000000c138fd04 RDI: 0000000000000003
+RBP: 00007f0d9ad9a503 R08: 00007f0d9ad9b040 R09: 00007fff1ecedc10
+R10: 0000000000000006 R11: 0000000000000246 R12: 000055c98c17d130
+R13: 00007f0d9ad9a503 R14: 000055c98c17d050 R15: 00007f0d9ad9a503
+==================================================================
+
+As load different table may lead to bioset flag changes. But bio_alloc_cache_destroy
+to free cache depends on if cache is NULL, and also this after free cache didn't
+set 'bs->cache' NULL. So this will lead to UAF.
+To solve above issue just set ''bs->cache' NULL after free cache.
+
+Fixes: be4d234d7aeb("bio: add allocation cache abstraction")
+Signed-off-by: Ye Bin <yebin10@huawei.com>
+---
+ block/bio.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/block/bio.c b/block/bio.c
+index a3893d80dccc..be3937b84e68 100644
+--- a/block/bio.c
++++ b/block/bio.c
+@@ -722,6 +722,7 @@ static void bio_alloc_cache_destroy(struct bio_set *bs)
+ 		bio_alloc_cache_prune(cache, -1U);
+ 	}
+ 	free_percpu(bs->cache);
++	bs->cache = NULL;
+ }
+ 
+ /**
+-- 
+2.31.1
 
