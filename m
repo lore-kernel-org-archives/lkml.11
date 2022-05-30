@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A391BC3A589
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25FEBC4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:03:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239950AbiE3OC4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:02:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43656 "EHLO
+        id S239769AbiE3OCa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:02:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239035AbiE3Nzh (ORCPT
+        with ESMTP id S238811AbiE3Nxq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:55:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12A8E85EEF;
-        Mon, 30 May 2022 06:38:07 -0700 (PDT)
+        Mon, 30 May 2022 09:53:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E70583D491;
+        Mon, 30 May 2022 06:37:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F77E60FB3;
-        Mon, 30 May 2022 13:38:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03318C3411A;
-        Mon, 30 May 2022 13:38:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4C799B80DA9;
+        Mon, 30 May 2022 13:37:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5157C36AE5;
+        Mon, 30 May 2022 13:37:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917886;
-        bh=4Gt0SvDQfwFpBg8BFJVfvbk/5CSre1QFPezjWPc6LBw=;
+        s=k20201202; t=1653917865;
+        bh=TLR9qUvj/0sLCsIOv3xfnFG3iF0rfWWP61ap7+Ebwaw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m39l4yXrr3Oqngd1S9ZXOSSf5A2m5UBmWST4Wj12OTakV0zIOrmml22x6qbkAPWy/
-         xRg1K62bqPlapTzvwXzGQ/1Iz1cpkNGPy0LMIbr+5pyuarYWqK8Co1rY9TbMewe6XU
-         QX9mFXXmtxWEuv4lMryXvhXrfog3wvrw+CdBZDDrp4q3imU9uCwKcB+NG2WSckwxhC
-         GUlRBdKqkBvlSbCDFVys2ydBsGhWIcNPqW8ZJ1ZT2KDpaKzhc646WnzjlIBaBLd/TU
-         J8af/iOX65JTB8bFKG21FCHDODBPMaH8fM4cSIEUuZxdUMbgHipvrjKWtD2/yKYMV8
-         XL0pHFMdnv+kA==
+        b=GrBMNO3dJaWLBo2/Mj+8HoRK1+BCTB6KNHdTT2jJXxSsIWVlpCxbwsQfNUXPAk/t4
+         pL3bIXIJ3ICWQLc2/bpZ4LbByGUjaEhFscFqj98X0OTwRBV7DQLuUkZJL7Pe1XnWVJ
+         Tm75o7jo2Wgibf0daiW13eK2qjiNK7epjd/X0jhdBmGc2T+160wMDpTq7sG3szM/qf
+         VXNcE8/8Lzg8vfTZSoSnCJGBpV0jeaMbD8XOmt1rZhwx6Pu66V81c0eKBRuNtKdZX0
+         ASEH3NmKSgR79IM+jjDUfxHuo9Aeb0TrLox1RgazF4Gt0xbr7EJ9SOvOfPawtnhf+y
+         i8NzsDvPAnSdQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Guenter Roeck <linux@roeck-us.net>,
-        Sasha Levin <sashal@kernel.org>, jdelvare@suse.com,
-        corbet@lwn.net, linux-hwmon@vger.kernel.org,
-        linux-doc@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 128/135] hwmon: Make chip parameter for with_info API mandatory
-Date:   Mon, 30 May 2022 09:31:26 -0400
-Message-Id: <20220530133133.1931716-128-sashal@kernel.org>
+Cc:     Chaitanya Kulkarni <kch@nvidia.com>,
+        Keith Busch <kbusch@kernel.org>,
+        Christoph Hellwig <hch@lst.de>,
+        Sasha Levin <sashal@kernel.org>, axboe@fb.com,
+        sagi@grimberg.me, linux-nvme@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.17 121/135] nvme: set non-mdts limits in nvme_scan_work
+Date:   Mon, 30 May 2022 09:31:19 -0400
+Message-Id: <20220530133133.1931716-121-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133133.1931716-1-sashal@kernel.org>
 References: <20220530133133.1931716-1-sashal@kernel.org>
@@ -52,73 +53,132 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guenter Roeck <linux@roeck-us.net>
+From: Chaitanya Kulkarni <kch@nvidia.com>
 
-[ Upstream commit ddaefa209c4ac791c1262e97c9b2d0440c8ef1d5 ]
+[ Upstream commit 78288665b5d0154978fed431985310cb4f166836 ]
 
-Various attempts were made recently to "convert" the old
-hwmon_device_register() API to devm_hwmon_device_register_with_info()
-by just changing the function name without actually converting the
-driver. Prevent this from happening by making the 'chip' parameter of
-devm_hwmon_device_register_with_info() mandatory.
+In current implementation we set the non-mdts limits by calling
+nvme_init_non_mdts_limits() from nvme_init_ctrl_finish().
+This also tries to set the limits for the discovery controller which
+has no I/O queues resulting in the warning message reported by the
+nvme_log_error() when running blktest nvme/002: -
 
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+[ 2005.155946] run blktests nvme/002 at 2022-04-09 16:57:47
+[ 2005.192223] loop: module loaded
+[ 2005.196429] nvmet: adding nsid 1 to subsystem blktests-subsystem-0
+[ 2005.200334] nvmet: adding nsid 1 to subsystem blktests-subsystem-1
+
+<------------------------------SNIP---------------------------------->
+
+[ 2008.958108] nvmet: adding nsid 1 to subsystem blktests-subsystem-997
+[ 2008.962082] nvmet: adding nsid 1 to subsystem blktests-subsystem-998
+[ 2008.966102] nvmet: adding nsid 1 to subsystem blktests-subsystem-999
+[ 2008.973132] nvmet: creating discovery controller 1 for subsystem nqn.2014-08.org.nvmexpress.discovery for NQN testhostnqn.
+*[ 2008.973196] nvme1: Identify(0x6), Invalid Field in Command (sct 0x0 / sc 0x2) MORE DNR*
+[ 2008.974595] nvme nvme1: new ctrl: "nqn.2014-08.org.nvmexpress.discovery"
+[ 2009.103248] nvme nvme1: Removing ctrl: NQN "nqn.2014-08.org.nvmexpress.discovery"
+
+Move the call of nvme_init_non_mdts_limits() to nvme_scan_work() after
+we verify that I/O queues are created since that is a converging point
+for each transport where these limits are actually used.
+
+1. FC :
+nvme_fc_create_association()
+ ...
+ nvme_fc_create_io_queues(ctrl);
+ ...
+ nvme_start_ctrl()
+  nvme_scan_queue()
+   nvme_scan_work()
+
+2. PCIe:-
+nvme_reset_work()
+ ...
+ nvme_setup_io_queues()
+  nvme_create_io_queues()
+   nvme_alloc_queue()
+ ...
+ nvme_start_ctrl()
+  nvme_scan_queue()
+   nvme_scan_work()
+
+3. RDMA :-
+nvme_rdma_setup_ctrl
+ ...
+  nvme_rdma_configure_io_queues
+  ...
+  nvme_start_ctrl()
+   nvme_scan_queue()
+    nvme_scan_work()
+
+4. TCP :-
+nvme_tcp_setup_ctrl
+ ...
+  nvme_tcp_configure_io_queues
+  ...
+  nvme_start_ctrl()
+   nvme_scan_queue()
+    nvme_scan_work()
+
+* nvme_scan_work()
+...
+nvme_validate_or_alloc_ns()
+  nvme_alloc_ns()
+   nvme_update_ns_info()
+    nvme_update_disk_info()
+     nvme_config_discard() <---
+     blk_queue_max_write_zeroes_sectors() <---
+
+Signed-off-by: Chaitanya Kulkarni <kch@nvidia.com>
+Reviewed-by: Keith Busch <kbusch@kernel.org>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/hwmon/hwmon-kernel-api.rst |  2 +-
- drivers/hwmon/hwmon.c                    | 16 +++++++---------
- 2 files changed, 8 insertions(+), 10 deletions(-)
+ drivers/nvme/host/core.c | 19 +++++++++++++++----
+ 1 file changed, 15 insertions(+), 4 deletions(-)
 
-diff --git a/Documentation/hwmon/hwmon-kernel-api.rst b/Documentation/hwmon/hwmon-kernel-api.rst
-index c41eb6108103..23f27fe78e37 100644
---- a/Documentation/hwmon/hwmon-kernel-api.rst
-+++ b/Documentation/hwmon/hwmon-kernel-api.rst
-@@ -72,7 +72,7 @@ hwmon_device_register_with_info is the most comprehensive and preferred means
- to register a hardware monitoring device. It creates the standard sysfs
- attributes in the hardware monitoring core, letting the driver focus on reading
- from and writing to the chip instead of having to bother with sysfs attributes.
--The parent device parameter cannot be NULL with non-NULL chip info. Its
-+The parent device parameter as well as the chip parameter must not be NULL. Its
- parameters are described in more detail below.
+diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
+index 0abd772c57f0..79ef46356d40 100644
+--- a/drivers/nvme/host/core.c
++++ b/drivers/nvme/host/core.c
+@@ -3096,10 +3096,6 @@ int nvme_init_ctrl_finish(struct nvme_ctrl *ctrl)
+ 	if (ret)
+ 		return ret;
  
- devm_hwmon_device_register_with_info is similar to
-diff --git a/drivers/hwmon/hwmon.c b/drivers/hwmon/hwmon.c
-index 3ae961986fc3..55237a5fc49a 100644
---- a/drivers/hwmon/hwmon.c
-+++ b/drivers/hwmon/hwmon.c
-@@ -854,11 +854,12 @@ EXPORT_SYMBOL_GPL(hwmon_device_register_with_groups);
- 
- /**
-  * hwmon_device_register_with_info - register w/ hwmon
-- * @dev: the parent device
-- * @name: hwmon name attribute
-- * @drvdata: driver data to attach to created device
-- * @chip: pointer to hwmon chip information
-+ * @dev: the parent device (mandatory)
-+ * @name: hwmon name attribute (mandatory)
-+ * @drvdata: driver data to attach to created device (optional)
-+ * @chip: pointer to hwmon chip information (mandatory)
-  * @extra_groups: pointer to list of additional non-standard attribute groups
-+ *	(optional)
-  *
-  * hwmon_device_unregister() must be called when the device is no
-  * longer needed.
-@@ -871,13 +872,10 @@ hwmon_device_register_with_info(struct device *dev, const char *name,
- 				const struct hwmon_chip_info *chip,
- 				const struct attribute_group **extra_groups)
- {
--	if (!name)
--		return ERR_PTR(-EINVAL);
+-	ret = nvme_init_non_mdts_limits(ctrl);
+-	if (ret < 0)
+-		return ret;
 -
--	if (chip && (!chip->ops || !chip->ops->is_visible || !chip->info))
-+	if (!dev || !name || !chip)
- 		return ERR_PTR(-EINVAL);
+ 	ret = nvme_configure_apst(ctrl);
+ 	if (ret < 0)
+ 		return ret;
+@@ -4160,11 +4156,26 @@ static void nvme_scan_work(struct work_struct *work)
+ {
+ 	struct nvme_ctrl *ctrl =
+ 		container_of(work, struct nvme_ctrl, scan_work);
++	int ret;
  
--	if (chip && !dev)
-+	if (!chip->ops || !chip->ops->is_visible || !chip->info)
- 		return ERR_PTR(-EINVAL);
+ 	/* No tagset on a live ctrl means IO queues could not created */
+ 	if (ctrl->state != NVME_CTRL_LIVE || !ctrl->tagset)
+ 		return;
  
- 	return __hwmon_device_register(dev, name, drvdata, chip, extra_groups);
++	/*
++	 * Identify controller limits can change at controller reset due to
++	 * new firmware download, even though it is not common we cannot ignore
++	 * such scenario. Controller's non-mdts limits are reported in the unit
++	 * of logical blocks that is dependent on the format of attached
++	 * namespace. Hence re-read the limits at the time of ns allocation.
++	 */
++	ret = nvme_init_non_mdts_limits(ctrl);
++	if (ret < 0) {
++		dev_warn(ctrl->device,
++			"reading non-mdts-limits failed: %d\n", ret);
++		return;
++	}
++
+ 	if (test_and_clear_bit(NVME_AER_NOTICE_NS_CHANGED, &ctrl->events)) {
+ 		dev_info(ctrl->device, "rescanning namespaces.\n");
+ 		nvme_clear_changed_ns_log(ctrl);
 -- 
 2.35.1
 
