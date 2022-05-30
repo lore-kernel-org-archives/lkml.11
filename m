@@ -2,307 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9E4EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 21:24:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9738EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 21:30:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241838AbiE3VYx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 17:24:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39214 "EHLO
+        id S241186AbiE3VaQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 17:30:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234333AbiE3VYv (ORCPT
+        with ESMTP id S234333AbiE3VaO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 17:24:51 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EB79994F6;
-        Mon, 30 May 2022 14:24:46 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id n10so23074882ejk.5;
-        Mon, 30 May 2022 14:24:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=CE58DyVsFpj1+2/hyAZSSQtjoW8T3CW+eJ7jWuJZvgg=;
-        b=Iw4lsRwvQS7PQ4uSFhO6pnlkBU/2pxGh67h4gxpCa1TN0bGK1RRzg6jfX8QiIW0X2z
-         dZojQHMJeCH19SaB1N4wLlVv4phDp8xqRvav5elYuMjvGIKTrxWom5gHPRTr7ejeaApU
-         OSx1pvMl9z8BUL9TN2TYsJJCoaZjXrFH1B6P+9qqxYmoduJWbzYcxzQ4G11ziYuUEjlk
-         0gXR4XnrtOUJxCO+T1m+fsYc6WcJjelUZQx+oCdY1niS0pXFtYcirl75GCHZL4zEPQ2D
-         jFoPm9TyaqhcAEy+H3F3VkANMTPkWHVMfZmb8brYHV0JY5Cd47/TgenQnev00Dwy/PxS
-         6iXQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=CE58DyVsFpj1+2/hyAZSSQtjoW8T3CW+eJ7jWuJZvgg=;
-        b=kR8qVFiIU4wp0YcZzK+2xugfIy6ocnoKquWZv0Rcbfz7ySWBQYfqmbuy8zoxOum2Xb
-         C3Rf16Njy71COI/nZGXhmvcBC5ZWcDPRjj+5Ga6jf8CH2M+jAAnYHC9Zdtn4KYqqr5SI
-         gc3ywVVvZIW5RV1DOWRGFvEllTweBtNXh24Q8HJQFGudqX5vJLI7N2LbNsJFBR8o+hZm
-         aVc/HVl9bc4gBhAmI6PH5WZEs4USPTAASnjFEM3q5Tx3jOiDOJDKWrNXcaN8QO9Xyf51
-         kD5MK3ZU2EhInmEG5EhlOCyQTtEO6hYxljIrR65cnnbW4imDVKpcEtPsB6vMQWj5vzuV
-         sGFA==
-X-Gm-Message-State: AOAM532gU1GQXdXfsurM0Lc74Yc/ah/HO1iAG4rBT2E/+ECR885Z/xgR
-        I+pHvo31H3+Z+pd7HIGKHoQ=
-X-Google-Smtp-Source: ABdhPJwGS3A1Qmp0+vGUdObvEPcZ7zMJAXqBix8pd9sLBcoG4Rxhn+fBrxg/1jlRdhbKvSTCzipA+A==
-X-Received: by 2002:a17:907:720a:b0:6ff:2e1c:f22f with SMTP id dr10-20020a170907720a00b006ff2e1cf22fmr17953781ejc.16.1653945884756;
-        Mon, 30 May 2022 14:24:44 -0700 (PDT)
-Received: from kista.localnet (213-161-3-76.dynamic.telemach.net. [213.161.3.76])
-        by smtp.gmail.com with ESMTPSA id b16-20020a50b410000000b0042b5cf75d6esm7032775edh.97.2022.05.30.14.24.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 May 2022 14:24:44 -0700 (PDT)
-From:   Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
-To:     mchehab@kernel.org, ezequiel@vanguardiasur.com.ar,
-        p.zabel@pengutronix.de, gregkh@linuxfoundation.org,
-        mripard@kernel.org, paul.kocialkowski@bootlin.com, wens@csie.org,
-        samuel@sholland.org, nicolas.dufresne@collabora.com,
-        andrzej.p@collabora.com,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        Hans Verkuil <hverkuil@xs4all.nl>
-Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rockchip@lists.infradead.org, linux-staging@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        kernel@collabora.com
-Subject: Re: Re: [PATCH v6 11/17] media: uapi: Add V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS control
-Date:   Mon, 30 May 2022 23:24:42 +0200
-Message-ID: <5824953.lOV4Wx5bFT@kista>
-In-Reply-To: <c47b3218-069b-790e-8781-7b6d195ac8a7@xs4all.nl>
-References: <20220527143134.3360174-1-benjamin.gaignard@collabora.com> <c639efc2-2089-359d-44c6-e9d92e8fd22e@xs4all.nl> <c47b3218-069b-790e-8781-7b6d195ac8a7@xs4all.nl>
+        Mon, 30 May 2022 17:30:14 -0400
+X-Greylist: delayed 3001 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 30 May 2022 14:30:13 PDT
+Received: from blue.oak.relay.mailchannels.net (blue.oak.relay.mailchannels.net [23.83.215.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FA2A986D2
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 14:30:13 -0700 (PDT)
+Received: from relay.mailchannels.net (localhost [127.0.0.1])
+        by relay.mailchannels.net (Postfix) with ESMTP id 93010122314;
+        Mon, 30 May 2022 20:40:11 +0000 (UTC)
+Received: from pdx1-sub0-mail-a312.dreamhost.com (unknown [127.0.0.6])
+        (Authenticated sender: dreamhost)
+        by relay.mailchannels.net (Postfix) with ESMTPA id 2AD21121A0F;
+        Mon, 30 May 2022 20:40:01 +0000 (UTC)
+ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1653943201; a=rsa-sha256;
+        cv=none;
+        b=o3eK0jyGSyhfP+gjp7e2bU0+JbjZS7rcl1wPj/CsEIOjgDjGUl2N1tgum7ZF0mPDUsa6/X
+        MR7bmxs45y3bmdXH3w3SKt4SAbgqi6dF/8P/Z6EZQ4EEtpMEooZLq2Tqoo/7EJilrOOX4k
+        TDN91FVXtRWW2vA6O6j6wXxwcCrBfjRkJs8hke/9dwonpJfq4k+vabMHBqSwFDnfnEu4c5
+        YYzJJ0gQoeVyEaSn/vwyMO7mt89QkrspbiyJxokilEpAzBiyC8VeFssmIH3+xiPkjEhVDI
+        CJkIwT18Q92JrWEWqmxD70oVAF9WjqEO1X58dRy1Xl79tfD7zEmpMPB3KbpzUg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=mailchannels.net;
+        s=arc-2022; t=1653943201;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references:dkim-signature;
+        bh=+6cSYBpZDS32mSj8yS3fuze9FxP3KWL3wu/pxgIPKE8=;
+        b=qwM5dLSsQbuz69Y4CcVodndU0j8MdqsW+XEX/HW27FekzWTw4q8wnh/XzafdhSCxzuZwhH
+        gVHYJI6Oj3mgajw+Uv2NuZPxa68WEmWCJz/l4PKEH9c236JNMN1tZVD+L18HLfMdrVM/IX
+        Dx/4qeYv6HxRFYmE9IwdP67upeZgMhUPyeCWsA6OOOLoLDu2z8TtMHt+6n59/bvrmghx3y
+        OeD/iyP6ub0qsYLRf4cj4o7BbvuxWEJ0IewZ+RE1reJv2Q1Xe66eZWQ9m3FDFhMrQDSNKo
+        2TZIFyZF7P/KFKGKPWoWq8Sb/FRApgwEJuOD/qnb2xWVFabUDeXHri5EyyO2Kg==
+ARC-Authentication-Results: i=1;
+        rspamd-77f9f854d9-l2v42;
+        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
+Received: from pdx1-sub0-mail-a312.dreamhost.com (pop.dreamhost.com
+ [64.90.62.162])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
+        by 100.120.38.156 (trex/6.7.1);
+        Mon, 30 May 2022 20:40:01 +0000
+Received: from offworld (unknown [104.36.31.105])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: dave@stgolabs.net)
+        by pdx1-sub0-mail-a312.dreamhost.com (Postfix) with ESMTPSA id 4LBnN02tGHz1n;
+        Mon, 30 May 2022 13:40:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
+        s=dreamhost; t=1653943200;
+        bh=+6cSYBpZDS32mSj8yS3fuze9FxP3KWL3wu/pxgIPKE8=;
+        h=Date:From:To:Cc:Subject:Content-Type;
+        b=KNChsDYpRVcsbfTO0Y35UGaUwSE9QTDxa9HMfv/58Miiqc0uYPivRfNjfTZ3omdOT
+         vbAWKTCLAxOewmgZM3HUa4hiMahh/OgKSHxEMG3x02kMGCwM35RFe6tyiYJ6/1d4jr
+         M7rFsNxqv+eSI62+RfvCLf2VtizMJzcfXkxVflnq+FNxfkegpqBckFAVJEU+80ffCb
+         zi2H/Ja/DDLPJ4dyf1u3gyjN3XkVsHbfGRgT1b3DDpQKH4mOaEZiq3BeTnTEXzxJU6
+         zuDYNiRkgAVoAbtl8wjE0hOrq6NqNL5N26g114Juv3Yyt2qXM5l6B+VC8zzOAAbudr
+         3ukU9OPays4gA==
+Date:   Mon, 30 May 2022 13:26:42 -0700
+From:   Davidlohr Bueso <dave@stgolabs.net>
+To:     Junwen Wu <wudaemon@163.com>
+Cc:     rostedt@goodmis.org, mingo@redhat.com, will@kernel.org,
+        peterz@infradead.org, tglx@linutronix.de,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] softirq: Add tracepoint for tasklet_entry/exit
+Message-ID: <20220530202642.q22urp5yl6pzdyqq@offworld>
+References: <20220528144228.46867-1-wudaemon@163.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20220528144228.46867-1-wudaemon@163.com>
+User-Agent: NeoMutt/20220408
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dne ponedeljek, 30. maj 2022 ob 15:49:57 CEST je Hans Verkuil napisal(a):
-> On 30/05/2022 11:18, Hans Verkuil wrote:
-> > On 29/05/2022 08:40, Jernej =C5=A0krabec wrote:
-> >> Hi!
-> >>
-> >> This series looks very good and I plan to test it shortly on Cedrus, b=
-ut=20
-I=20
-> >> have one major concern below.
-> >>
-> >> Dne petek, 27. maj 2022 ob 16:31:28 CEST je Benjamin Gaignard napisal(=
-a):
-> >>> The number of 'entry point offset' can be very variable.
-> >>> Instead of using a large static array define a v4l2 dynamic array
-> >>> of U32 (V4L2_CTRL_TYPE_U32).
-> >>> The number of entry point offsets is reported by the elems field
-> >>> and in struct v4l2_ctrl_hevc_slice_params.num_entry_point_offsets
-> >>> field.
-> >>
-> >> Slice control by itself is variable length array, so you would actuall=
-y=20
-need=20
-> >> 2D variable array for entry points which is not supported. However, ea=
-sy=20
-> >> workaround for that is to flatten 2D array to 1D and either have anoth=
-er=20
-slice=20
-> >> control field which would tell first entry point index for convenience=
- or=20
-let=20
-> >> driver calculate it by adding up all num_entry_point_offsets of previo=
-us=20
-> >> slices.
-> >>
-> >> Hans, what do you think?
-> >=20
-> > If I would support 2D variable array sizes, wouldn't that be more elega=
-nt?
-> >=20
-> > The current implementation doesn't support that, but as the commit log =
-for
-> > patch 1/17 says:
-> >=20
-> > "Currently dynamically sized arrays are limited to one dimensional arra=
-ys,
-> > but that might change in the future if there is a need for it."
-> >=20
-> > Let me know if you agree, and I'll try to implement this. It's been a=20
-while
-> > since I last looked at this, so I'm not sure how much work it is, but i=
-t=20
-is
-> > probably worth a shot.
->=20
-> Digging more into this made me realize that this doesn't actually help fo=
-r=20
-this
-> particular case.
->=20
-> I would lean towards your second suggestion of adding up all=20
-num_entry_point_offsets
-> of previous slices.
+On Sat, 28 May 2022, Junwen Wu wrote:
 
-Just one question/clarification about dynamic arrays - does driver need to=
-=20
-reserve maximum amount of memory for dynamic array control at initializatio=
-n=20
-time? If so, this would still be problematic, since there cound be a huge=20
-amount of entry points in theory.
+>Usually softirq handler is pre-defined,only tasklet can be register by
+>driver.We expand tracepoint for tasklet_entry/exit to trace
+>tasklet handler.
 
-Best regards,
-Jernej
+Tasklets are artifacts of the past, and deprecated years ago. Lets not
+add to moot interfaces. Everything should be converted to run in task
+context.
 
->=20
-> Regards,
->=20
-> 	Hans
->=20
-> >=20
-> > Regards,
-> >=20
-> > 	Hans
-> >=20
-> >>
-> >> Note, it seems that H265 decoding on Cedrus still works without entry=
-=20
-points,=20
-> >> so this problem can be solved later. I'm not sure what we lose with th=
-at=20
-but=20
-> >> it was suggested that this could influence speed or error resilience o=
-r=20
-both.=20
-> >> However, I think we're close to solve it, so I'd like to do that now.
-> >>
-> >> Best regards,
-> >> Jernej
-> >>
-> >>>
-> >>> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-> >>> ---
-> >>>  .../userspace-api/media/v4l/ext-ctrls-codec.rst       | 11 +++++++++=
-++
-> >>>  drivers/media/v4l2-core/v4l2-ctrls-defs.c             |  5 +++++
-> >>>  include/media/hevc-ctrls.h                            |  5 ++++-
-> >>>  3 files changed, 20 insertions(+), 1 deletion(-)
-> >>>
-> >>> diff --git a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rs=
-t b/
-> >> Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
-> >>> index 0796b1563daa..05228e280f66 100644
-> >>> --- a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
-> >>> +++ b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
-> >>> @@ -3010,6 +3010,9 @@ enum v4l2_mpeg_video_hevc_size_of_length_field -
-> >>>      * - __u32
-> >>>        - ``data_bit_offset``
-> >>>        - Offset (in bits) to the video data in the current slice data.
-> >>> +    * - __u32
-> >>> +      - ``num_entry_point_offsets``
-> >>> +      - Specifies the number of entry point offset syntax elements i=
-n the=20
-> >> slice header.
-> >>>      * - __u8
-> >>>        - ``nal_unit_type``
-> >>>        - Specifies the coding type of the slice (B, P or I).
-> >>> @@ -3150,6 +3153,14 @@ enum v4l2_mpeg_video_hevc_size_of_length_field=
- -
-> >>> =20
-> >>>      \normalsize
-> >>> =20
-> >>> +``V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS (integer)``
-> >>> +    Specifies entry point offsets in bytes.
-> >>> +    This control is a dynamically sized array. The number of entry=20
-point
-> >>> +    offsets is reported by the ``elems`` field.
-> >>> +    This bitstream parameter is defined according to :ref:`hevc`.
-> >>> +    They are described in section 7.4.7.1 "General slice segment hea=
-der
-> >>> +    semantics" of the specification.
-> >>> +
-> >>>  ``V4L2_CID_STATELESS_HEVC_SCALING_MATRIX (struct)``
-> >>>      Specifies the HEVC scaling matrix parameters used for the scalin=
-g=20
-> >> process
-> >>>      for transform coefficients.
-> >>> diff --git a/drivers/media/v4l2-core/v4l2-ctrls-defs.c b/drivers/medi=
-a/
-v4l2-
-> >> core/v4l2-ctrls-defs.c
-> >>> index d594efbcbb93..e22921e7ea61 100644
-> >>> --- a/drivers/media/v4l2-core/v4l2-ctrls-defs.c
-> >>> +++ b/drivers/media/v4l2-core/v4l2-ctrls-defs.c
-> >>> @@ -1188,6 +1188,7 @@ const char *v4l2_ctrl_get_name(u32 id)
-> >>>  	case V4L2_CID_STATELESS_HEVC_DECODE_PARAMS:		return=20
-> >> "HEVC Decode Parameters";
-> >>>  	case V4L2_CID_STATELESS_HEVC_DECODE_MODE:		return=20
-> >> "HEVC Decode Mode";
-> >>>  	case V4L2_CID_STATELESS_HEVC_START_CODE:		return=20
-> >> "HEVC Start Code";
-> >>> +	case V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS:	return=20
-> >> "HEVC Entry Point Offsets";
-> >>> =20
-> >>>  	/* Colorimetry controls */
-> >>>  	/* Keep the order of the 'case's the same as in v4l2-controls.h!=20
-> >> */
-> >>> @@ -1518,6 +1519,10 @@ void v4l2_ctrl_fill(u32 id, const char **name,=
-=20
-enum=20
-> >> v4l2_ctrl_type *type,
-> >>>  	case V4L2_CID_STATELESS_HEVC_DECODE_PARAMS:
-> >>>  		*type =3D V4L2_CTRL_TYPE_HEVC_DECODE_PARAMS;
-> >>>  		break;
-> >>> +	case V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS:
-> >>> +		*type =3D V4L2_CTRL_TYPE_U32;
-> >>> +		*flags |=3D V4L2_CTRL_FLAG_DYNAMIC_ARRAY;
-> >>> +		break;
-> >>>  	case V4L2_CID_STATELESS_VP9_COMPRESSED_HDR:
-> >>>  		*type =3D V4L2_CTRL_TYPE_VP9_COMPRESSED_HDR;
-> >>>  		break;
-> >>> diff --git a/include/media/hevc-ctrls.h b/include/media/hevc-ctrls.h
-> >>> index a3c829ef531a..1319cb99ae3f 100644
-> >>> --- a/include/media/hevc-ctrls.h
-> >>> +++ b/include/media/hevc-ctrls.h
-> >>> @@ -20,6 +20,7 @@
-> >>>  #define V4L2_CID_STATELESS_HEVC_DECODE_PARAMS	(V4L2_CID_CODEC_BASE=20
-> >> + 1012)
-> >>>  #define V4L2_CID_STATELESS_HEVC_DECODE_MODE	(V4L2_CID_CODEC_BASE=20
-+ 1015)
-> >>>  #define V4L2_CID_STATELESS_HEVC_START_CODE	(V4L2_CID_CODEC_BASE + 10=
-16)
-> >>> +#define V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS (V4L2_CID_CODEC_=
-BASE=20
-+=20
-> >> 1017)
-> >>> =20
-> >>>  /* enum v4l2_ctrl_type type values */
-> >>>  #define V4L2_CTRL_TYPE_HEVC_SPS 0x0120
-> >>> @@ -318,6 +319,8 @@ struct v4l2_hevc_pred_weight_table {
-> >>>   *
-> >>>   * @bit_size: size (in bits) of the current slice data
-> >>>   * @data_bit_offset: offset (in bits) to the video data in the curre=
-nt=20
-slice=20
-> >> data
-> >>> + * @num_entry_point_offsets: specifies the number of entry point off=
-set=20
-syntax
-> >>> + *			     elements in the slice header.
-> >>>   * @nal_unit_type: specifies the coding type of the slice (B, P or I)
-> >>>   * @nuh_temporal_id_plus1: minus 1 specifies a temporal identifier f=
-or=20
-the=20
-> >> NAL unit
-> >>>   * @slice_type: see V4L2_HEVC_SLICE_TYPE_{}
-> >>> @@ -360,7 +363,7 @@ struct v4l2_hevc_pred_weight_table {
-> >>>  struct v4l2_ctrl_hevc_slice_params {
-> >>>  	__u32	bit_size;
-> >>>  	__u32	data_bit_offset;
-> >>> -
-> >>> +	__u32	num_entry_point_offsets;
-> >>>  	/* ISO/IEC 23008-2, ITU-T Rec. H.265: NAL unit header */
-> >>>  	__u8	nal_unit_type;
-> >>>  	__u8	nuh_temporal_id_plus1;
-> >>> --=20
-> >>> 2.32.0
-> >>>
-> >>>
-> >>
-> >>
-> >=20
->=20
->=20
-
-
+Thanks,
+Davidlohr
