@@ -2,49 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA063C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C944FC43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:38:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242798AbiE3Ohx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:37:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40158 "EHLO
+        id S240722AbiE3Oe7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:34:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239573AbiE3OSu (ORCPT
+        with ESMTP id S241373AbiE3ORc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:18:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D6C8122B4C;
-        Mon, 30 May 2022 06:49:54 -0700 (PDT)
+        Mon, 30 May 2022 10:17:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E8B38FD7A;
+        Mon, 30 May 2022 06:45:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BC90660FD6;
-        Mon, 30 May 2022 13:49:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4428C3411E;
-        Mon, 30 May 2022 13:49:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3D12AB80D6B;
+        Mon, 30 May 2022 13:45:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAC54C3411A;
+        Mon, 30 May 2022 13:45:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918553;
-        bh=AF0zBlv4K65o/Q7PnxvPyyw9KqF09vTd9402ZLCM7ks=;
+        s=k20201202; t=1653918351;
+        bh=4lNzNS2p7KxnpndFtuhi60Ak7ru+mfW1yQXaFo4Cags=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eciy1RJIoi8Rzhj1pFLNm3sScKuYWf4qm0XfD4rrJBlkMYfbNFgKZbI//OagzcN8q
-         p56sWESviAHhfDJRrBoZNCzNd31sI201Yz4vQBtXaVMN5muK647S04X4uxIskkZ3vn
-         JOxkK/ApvLPDiOCPWmpClm+hX4xHxIY/lWTU85wej436EEhomGFK7FVRBbWhiYfkWE
-         8Fi421BZ2RghG83qvMdUVzF/MZ+Pk64JIJH1rGhsEUHaNdBJACQy68TPhchngZ7E07
-         qPQAncJXt6K4skfCZmxr2cwWdXinBerSFXb1AifKKUmMLbSgiZszmXQcxdDJZEGGca
-         XRO0Vds3PdiIg==
+        b=gPZ2vSC6yeThlldaRvAB4AIQS5c3MYU1TVk7h9CjwzV8PJDEg3IDcJ/L3MSxn7mgh
+         r9CI/rCLWPWViItMLZv7uVktkWtHzjXFElDS2iSlC0Y3p+OTxdGQRNwVtfVnCA4ZSD
+         61f27s9omlNBhiwDKX+skSnp1yyn+6FVDdyDftoPMrhLjAz3TyyVM6Xka4OLhFb42K
+         qi3WhLZVEmWmCusV2lS2w7CvJaJYGmge4ewte+rGDytXGXUfXbUbdcRLPBqn1ukGr1
+         t9nDxfsHZy+DqPvsCV2KzPqRp8mxyQoUkBSOzU3+1Z2XAW/1nE7J6OXZ+AIoMJjxQr
+         WlPKbPxczIJqg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ard Biesheuvel <ardb@kernel.org>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Sasha Levin <sashal@kernel.org>, linux@armlinux.org.uk,
-        linus.walleij@linaro.org, nico@fluxnic.net, keithpac@amazon.com,
-        arnd@arndb.de, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.4 51/55] ARM: 9201/1: spectre-bhb: rely on linker to emit cross-section literal loads
-Date:   Mon, 30 May 2022 09:46:57 -0400
-Message-Id: <20220530134701.1935933-51-sashal@kernel.org>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
+        pabeni@redhat.com, bigeasy@linutronix.de, imagedong@tencent.com,
+        petrm@nvidia.com, memxor@gmail.com, arnd@arndb.de,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 46/76] net: remove two BUG() from skb_checksum_help()
+Date:   Mon, 30 May 2022 09:43:36 -0400
+Message-Id: <20220530134406.1934928-46-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220530134701.1935933-1-sashal@kernel.org>
-References: <20220530134701.1935933-1-sashal@kernel.org>
+In-Reply-To: <20220530134406.1934928-1-sashal@kernel.org>
+References: <20220530134406.1934928-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,106 +54,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ard Biesheuvel <ardb@kernel.org>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit ad12c2f1587c6ec9b52ff226f438955bfae6ad89 ]
+[ Upstream commit d7ea0d9df2a6265b2b180d17ebc64b38105968fc ]
 
-The assembler does not permit 'LDR PC, <sym>' when the symbol lives in a
-different section, which is why we have been relying on rather fragile
-open-coded arithmetic to load the address of the vector_swi routine into
-the program counter using a single LDR instruction in the SWI slot in
-the vector table. The literal was moved to a different section to in
-commit 19accfd373847 ("ARM: move vector stubs") to ensure that the
-vector stubs page does not need to be mapped readable for user space,
-which is the case for the vector page itself, as it carries the kuser
-helpers as well.
+I have a syzbot report that managed to get a crash in skb_checksum_help()
 
-So the cross-section literal load is open-coded, and this relies on the
-address of vector_swi to be at the very start of the vector stubs page,
-and we won't notice if we got it wrong until booting the kernel and see
-it break. Fortunately, it was guaranteed to break, so this was fragile
-but not problematic.
+If syzbot can trigger these BUG(), it makes sense to replace
+them with more friendly WARN_ON_ONCE() since skb_checksum_help()
+can instead return an error code.
 
-Now that we have added two other variants of the vector table, we have 3
-occurrences of the same trick, and so the size of our ISA/compiler/CPU
-validation space has tripled, in a way that may cause regressions to only
-be observed once booting the image in question on a CPU that exercises a
-particular vector table.
+Note that syzbot will still crash there, until real bug is fixed.
 
-So let's switch to true cross section references, and let the linker fix
-them up like it fixes up all the other cross section references in the
-vector page.
-
-Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/kernel/entry-armv.S | 22 +++++++++++++++-------
- 1 file changed, 15 insertions(+), 7 deletions(-)
+ net/core/dev.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/kernel/entry-armv.S b/arch/arm/kernel/entry-armv.S
-index 8e8efe28d799..4d900c61a0f7 100644
---- a/arch/arm/kernel/entry-armv.S
-+++ b/arch/arm/kernel/entry-armv.S
-@@ -1074,10 +1074,15 @@ ENDPROC(vector_bhb_bpiall_\name)
- 	.endm
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 0bab2aca07fd..af52050b0f38 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -3241,11 +3241,15 @@ int skb_checksum_help(struct sk_buff *skb)
+ 	}
  
- 	.section .stubs, "ax", %progbits
--	@ This must be the first word
-+	@ These need to remain at the start of the section so that
-+	@ they are in range of the 'SWI' entries in the vector tables
-+	@ located 4k down.
-+.L__vector_swi:
- 	.word	vector_swi
- #ifdef CONFIG_HARDEN_BRANCH_HISTORY
-+.L__vector_bhb_loop8_swi:
- 	.word	vector_bhb_loop8_swi
-+.L__vector_bhb_bpiall_swi:
- 	.word	vector_bhb_bpiall_swi
- #endif
+ 	offset = skb_checksum_start_offset(skb);
+-	BUG_ON(offset >= skb_headlen(skb));
++	ret = -EINVAL;
++	if (WARN_ON_ONCE(offset >= skb_headlen(skb)))
++		goto out;
++
+ 	csum = skb_checksum(skb, offset, skb->len - offset, 0);
  
-@@ -1220,10 +1225,11 @@ vector_addrexcptn:
- 	.globl	vector_fiq
+ 	offset += skb->csum_offset;
+-	BUG_ON(offset + sizeof(__sum16) > skb_headlen(skb));
++	if (WARN_ON_ONCE(offset + sizeof(__sum16) > skb_headlen(skb)))
++		goto out;
  
- 	.section .vectors, "ax", %progbits
--.L__vectors_start:
- 	W(b)	vector_rst
- 	W(b)	vector_und
--	W(ldr)	pc, .L__vectors_start + 0x1000
-+ARM(	.reloc	., R_ARM_LDR_PC_G0, .L__vector_swi		)
-+THUMB(	.reloc	., R_ARM_THM_PC12, .L__vector_swi		)
-+	W(ldr)	pc, .
- 	W(b)	vector_pabt
- 	W(b)	vector_dabt
- 	W(b)	vector_addrexcptn
-@@ -1232,10 +1238,11 @@ vector_addrexcptn:
- 
- #ifdef CONFIG_HARDEN_BRANCH_HISTORY
- 	.section .vectors.bhb.loop8, "ax", %progbits
--.L__vectors_bhb_loop8_start:
- 	W(b)	vector_rst
- 	W(b)	vector_bhb_loop8_und
--	W(ldr)	pc, .L__vectors_bhb_loop8_start + 0x1004
-+ARM(	.reloc	., R_ARM_LDR_PC_G0, .L__vector_bhb_loop8_swi	)
-+THUMB(	.reloc	., R_ARM_THM_PC12, .L__vector_bhb_loop8_swi	)
-+	W(ldr)	pc, .
- 	W(b)	vector_bhb_loop8_pabt
- 	W(b)	vector_bhb_loop8_dabt
- 	W(b)	vector_addrexcptn
-@@ -1243,10 +1250,11 @@ vector_addrexcptn:
- 	W(b)	vector_bhb_loop8_fiq
- 
- 	.section .vectors.bhb.bpiall, "ax", %progbits
--.L__vectors_bhb_bpiall_start:
- 	W(b)	vector_rst
- 	W(b)	vector_bhb_bpiall_und
--	W(ldr)	pc, .L__vectors_bhb_bpiall_start + 0x1008
-+ARM(	.reloc	., R_ARM_LDR_PC_G0, .L__vector_bhb_bpiall_swi	)
-+THUMB(	.reloc	., R_ARM_THM_PC12, .L__vector_bhb_bpiall_swi	)
-+	W(ldr)	pc, .
- 	W(b)	vector_bhb_bpiall_pabt
- 	W(b)	vector_bhb_bpiall_dabt
- 	W(b)	vector_addrexcptn
+ 	ret = skb_ensure_writable(skb, offset + sizeof(__sum16));
+ 	if (ret)
 -- 
 2.35.1
 
