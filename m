@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37A68C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:26:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7637C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:27:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232799AbiE3N0k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:26:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58170 "EHLO
+        id S236792AbiE3N1J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:27:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236691AbiE3NZf (ORCPT
+        with ESMTP id S236735AbiE3NZ6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:25:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F64982157;
-        Mon, 30 May 2022 06:25:17 -0700 (PDT)
+        Mon, 30 May 2022 09:25:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C99F18721C;
+        Mon, 30 May 2022 06:25:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 79EA9B80D84;
-        Mon, 30 May 2022 13:25:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09FDAC341C0;
-        Mon, 30 May 2022 13:25:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F93F60EB4;
+        Mon, 30 May 2022 13:25:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE108C385B8;
+        Mon, 30 May 2022 13:25:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917115;
-        bh=C9X33pXWCcfrKODJ1R5etG2iGEZfHfyCD+gmXXOfpYc=;
+        s=k20201202; t=1653917127;
+        bh=W8dMmSvyCqN97kCN1sTOpXKzlWd6xvOqThnrKdx+K3s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bu4rxuFX1nR7SOveLWHZO3OyzxMqTgmyJMidCIuZQpgik96MTdMjDaPpUxOr3wowr
-         u91TIXoF/cdcdb2UMBgdpE5eMazTyBzwVFXiFzqMH575SaOtr2KksPPKPO3d1IAD7t
-         i83ebJD/r1Zfe87Z94X0MyhSZAFnPDO1t8EXUYhvmLWrhKAbRP+cbudv/SEM9bQiLE
-         FaodA0wzi6z7Z6eSZsjZShrQ9pTAOKHW+T/7PNESUydb+febfRzli3w0WQNvm81Vce
-         M5j8EmpzTKSNOIieKIYh5v0wDQybchzHXRLkbWX9/FBb8wbWyMTywl1BhNnGQjkNT3
-         dWbk5kWMNLlIw==
+        b=Un4k5b9FKjzfYsqnhmjM0wcaQYCP7I2pVDqYvW1enz+adlEAfCyyq6MLiL4SGOdGC
+         VXrjIiu10n/qTBA3EQzyWDR161kUkMdKRreNJorYp7GJxMtDLyIaAKSwnp7bYwJGco
+         wsTbZgPgxKVAIYDIplpUoxsXaSEVkVa3YjtN8q2aU4WGrKQ5zFTOtSRQgPBQHMq4mQ
+         QS+Uw/Vr3GDmzwn8pmaqc2wVqOxy1noM88c+5dkJwhqkSXyZBliwY9pN4uEviLb/U9
+         +hizTAHE5hC4GimsMV03UUXEPwUxPyAVIrn5xrfbsh0wUbQFQX89gfL+qSTsZbCeCR
+         yhhPuQTweOeDA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Peter Seiderer <ps.report@gmx.net>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>, johannes@sipsolutions.net,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 021/159] mac80211: minstrel_ht: fix where rate stats are stored (fixes debugfs output)
-Date:   Mon, 30 May 2022 09:22:06 -0400
-Message-Id: <20220530132425.1929512-21-sashal@kernel.org>
+Cc:     Padmanabha Srinivasaiah <treasure4paddy@gmail.com>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, frederic@kernel.org,
+        quic_neeraju@quicinc.com, josh@joshtriplett.org,
+        rcu@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 024/159] rcu-tasks: Fix race in schedule and flush work
+Date:   Mon, 30 May 2022 09:22:09 -0400
+Message-Id: <20220530132425.1929512-24-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530132425.1929512-1-sashal@kernel.org>
 References: <20220530132425.1929512-1-sashal@kernel.org>
@@ -54,73 +53,98 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Seiderer <ps.report@gmx.net>
+From: Padmanabha Srinivasaiah <treasure4paddy@gmail.com>
 
-[ Upstream commit 5c6dd7bd569b54c0d2904125d7366aa93f077f67 ]
+[ Upstream commit f75fd4b9221d93177c50dcfde671b2e907f53e86 ]
 
-Using an ath9k card the debugfs output of minstrel_ht looks like the following
-(note the zero values for the first four rates sum-of success/attempts):
+While booting secondary CPUs, cpus_read_[lock/unlock] is not keeping
+online cpumask stable. The transient online mask results in below
+calltrace.
 
-             best    ____________rate__________    ____statistics___    _____last____    ______sum-of________
-mode guard #  rate   [name   idx airtime  max_tp]  [avg(tp) avg(prob)]  [retry|suc|att]  [#success | #attempts]
-OFDM       1    DP     6.0M  272    1640     5.2       3.1      53.8       3     0 0             0   0
-OFDM       1   C       9.0M  273    1104     7.7       4.6      53.8       4     0 0             0   0
-OFDM       1  B       12.0M  274     836    10.0       6.0      53.8       4     0 0             0   0
-OFDM       1 A    S   18.0M  275     568    14.3       8.5      53.8       5     0 0             0   0
-OFDM       1      S   24.0M  276     436    18.1       0.0       0.0       5     0 1            80   1778
-OFDM       1          36.0M  277     300    24.9       0.0       0.0       0     0 1             0   107
-OFDM       1      S   48.0M  278     236    30.4       0.0       0.0       0     0 0             0   75
-OFDM       1          54.0M  279     212    33.0       0.0       0.0       0     0 0             0   72
+[    0.324121] CPU1: Booted secondary processor 0x0000000001 [0x410fd083]
+[    0.346652] Detected PIPT I-cache on CPU2
+[    0.347212] CPU2: Booted secondary processor 0x0000000002 [0x410fd083]
+[    0.377255] Detected PIPT I-cache on CPU3
+[    0.377823] CPU3: Booted secondary processor 0x0000000003 [0x410fd083]
+[    0.379040] ------------[ cut here ]------------
+[    0.383662] WARNING: CPU: 0 PID: 10 at kernel/workqueue.c:3084 __flush_work+0x12c/0x138
+[    0.384850] Modules linked in:
+[    0.385403] CPU: 0 PID: 10 Comm: rcu_tasks_rude_ Not tainted 5.17.0-rc3-v8+ #13
+[    0.386473] Hardware name: Raspberry Pi 4 Model B Rev 1.4 (DT)
+[    0.387289] pstate: 20000005 (nzCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+[    0.388308] pc : __flush_work+0x12c/0x138
+[    0.388970] lr : __flush_work+0x80/0x138
+[    0.389620] sp : ffffffc00aaf3c60
+[    0.390139] x29: ffffffc00aaf3d20 x28: ffffffc009c16af0 x27: ffffff80f761df48
+[    0.391316] x26: 0000000000000004 x25: 0000000000000003 x24: 0000000000000100
+[    0.392493] x23: ffffffffffffffff x22: ffffffc009c16b10 x21: ffffffc009c16b28
+[    0.393668] x20: ffffffc009e53861 x19: ffffff80f77fbf40 x18: 00000000d744fcc9
+[    0.394842] x17: 000000000000000b x16: 00000000000001c2 x15: ffffffc009e57550
+[    0.396016] x14: 0000000000000000 x13: ffffffffffffffff x12: 0000000100000000
+[    0.397190] x11: 0000000000000462 x10: ffffff8040258008 x9 : 0000000100000000
+[    0.398364] x8 : 0000000000000000 x7 : ffffffc0093c8bf4 x6 : 0000000000000000
+[    0.399538] x5 : 0000000000000000 x4 : ffffffc00a976e40 x3 : ffffffc00810444c
+[    0.400711] x2 : 0000000000000004 x1 : 0000000000000000 x0 : 0000000000000000
+[    0.401886] Call trace:
+[    0.402309]  __flush_work+0x12c/0x138
+[    0.402941]  schedule_on_each_cpu+0x228/0x278
+[    0.403693]  rcu_tasks_rude_wait_gp+0x130/0x144
+[    0.404502]  rcu_tasks_kthread+0x220/0x254
+[    0.405264]  kthread+0x174/0x1ac
+[    0.405837]  ret_from_fork+0x10/0x20
+[    0.406456] irq event stamp: 102
+[    0.406966] hardirqs last  enabled at (101): [<ffffffc0093c8468>] _raw_spin_unlock_irq+0x78/0xb4
+[    0.408304] hardirqs last disabled at (102): [<ffffffc0093b8270>] el1_dbg+0x24/0x5c
+[    0.409410] softirqs last  enabled at (54): [<ffffffc0081b80c8>] local_bh_enable+0xc/0x2c
+[    0.410645] softirqs last disabled at (50): [<ffffffc0081b809c>] local_bh_disable+0xc/0x2c
+[    0.411890] ---[ end trace 0000000000000000 ]---
+[    0.413000] smp: Brought up 1 node, 4 CPUs
+[    0.413762] SMP: Total of 4 processors activated.
+[    0.414566] CPU features: detected: 32-bit EL0 Support
+[    0.415414] CPU features: detected: 32-bit EL1 Support
+[    0.416278] CPU features: detected: CRC32 instructions
+[    0.447021] Callback from call_rcu_tasks_rude() invoked.
+[    0.506693] Callback from call_rcu_tasks() invoked.
 
-Total packet count::    ideal 16582      lookaround 885
-Average # of aggregated frames per A-MPDU: 1.0
+This commit therefore fixes this issue by applying a single-CPU
+optimization to the RCU Tasks Rude grace-period process.  The key point
+here is that the purpose of this RCU flavor is to force a schedule on
+each online CPU since some past event.  But the rcu_tasks_rude_wait_gp()
+function runs in the context of the RCU Tasks Rude's grace-period kthread,
+so there must already have been a context switch on the current CPU since
+the call to either synchronize_rcu_tasks_rude() or call_rcu_tasks_rude().
+So if there is only a single CPU online, RCU Tasks Rude's grace-period
+kthread does not need to anything at all.
 
-Debugging showed that the rate statistics for the first four rates where
-stored in the MINSTREL_CCK_GROUP instead of the MINSTREL_OFDM_GROUP because
-in minstrel_ht_get_stats() the supported check was not honoured as done in
-various other places, e.g net/mac80211/rc80211_minstrel_ht_debugfs.c:
+It turns out that the rcu_tasks_rude_wait_gp() function's call to
+schedule_on_each_cpu() causes problems during early boot.  During that
+time, there is only one online CPU, namely the boot CPU.  Therefore,
+applying this single-CPU optimization fixes early-boot instances of
+this problem.
 
- 74                 if (!(mi->supported[i] & BIT(j)))
- 75                         continue;
-
-With the patch applied the output looks good:
-
-              best    ____________rate__________    ____statistics___    _____last____    ______sum-of________
-mode guard #  rate   [name   idx airtime  max_tp]  [avg(tp) avg(prob)]  [retry|suc|att]  [#success | #attempts]
-OFDM       1    D      6.0M  272    1640     5.2       5.2     100.0       3     0 0             1   1
-OFDM       1   C       9.0M  273    1104     7.7       7.7     100.0       4     0 0            38   38
-OFDM       1  B       12.0M  274     836    10.0       9.9      89.5       4     2 2           372   395
-OFDM       1 A   P    18.0M  275     568    14.3      14.3      97.2       5    52 53         6956   7181
-OFDM       1      S   24.0M  276     436    18.1       0.0       0.0       0     0 1             6   163
-OFDM       1          36.0M  277     300    24.9       0.0       0.0       0     0 1             0   35
-OFDM       1      S   48.0M  278     236    30.4       0.0       0.0       0     0 0             0   38
-OFDM       1      S   54.0M  279     212    33.0       0.0       0.0       0     0 0             0   38
-
-Total packet count::    ideal 7097      lookaround 287
-Average # of aggregated frames per A-MPDU: 1.0
-
-Signed-off-by: Peter Seiderer <ps.report@gmx.net>
-Link: https://lore.kernel.org/r/20220404165414.1036-1-ps.report@gmx.net
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Link: https://lore.kernel.org/lkml/20220210184319.25009-1-treasure4paddy@gmail.com/T/
+Suggested-by: Paul E. McKenney <paulmck@kernel.org>
+Signed-off-by: Padmanabha Srinivasaiah <treasure4paddy@gmail.com>
+Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mac80211/rc80211_minstrel_ht.c | 3 +++
+ kernel/rcu/tasks.h | 3 +++
  1 file changed, 3 insertions(+)
 
-diff --git a/net/mac80211/rc80211_minstrel_ht.c b/net/mac80211/rc80211_minstrel_ht.c
-index 9c6ace858107..5a6bf46a4248 100644
---- a/net/mac80211/rc80211_minstrel_ht.c
-+++ b/net/mac80211/rc80211_minstrel_ht.c
-@@ -362,6 +362,9 @@ minstrel_ht_get_stats(struct minstrel_priv *mp, struct minstrel_ht_sta *mi,
- 
- 	group = MINSTREL_CCK_GROUP;
- 	for (idx = 0; idx < ARRAY_SIZE(mp->cck_rates); idx++) {
-+		if (!(mi->supported[group] & BIT(idx)))
-+			continue;
+diff --git a/kernel/rcu/tasks.h b/kernel/rcu/tasks.h
+index 99cf3a13954c..b43320b149d2 100644
+--- a/kernel/rcu/tasks.h
++++ b/kernel/rcu/tasks.h
+@@ -950,6 +950,9 @@ static void rcu_tasks_be_rude(struct work_struct *work)
+ // Wait for one rude RCU-tasks grace period.
+ static void rcu_tasks_rude_wait_gp(struct rcu_tasks *rtp)
+ {
++	if (num_online_cpus() <= 1)
++		return;	// Fastpath for only one CPU.
 +
- 		if (rate->idx != mp->cck_rates[idx])
- 			continue;
- 
+ 	rtp->n_ipis += cpumask_weight(cpu_online_mask);
+ 	schedule_on_each_cpu(rcu_tasks_be_rude);
+ }
 -- 
 2.35.1
 
