@@ -2,122 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB769C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 15:22:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D32C2C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 15:23:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237734AbiE3PW0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 11:22:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55884 "EHLO
+        id S238936AbiE3PXr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 11:23:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241993AbiE3PVk (ORCPT
+        with ESMTP id S239582AbiE3PXd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 11:21:40 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4FC61C0C86;
-        Mon, 30 May 2022 07:23:22 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 83E9721B02;
-        Mon, 30 May 2022 14:22:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1653920560; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=R1q2pfo2QzLbUTyCNmaIYF0n/fj7XyAs77ZlAUjQ6ak=;
-        b=lwzC5Fk0mpiDTx3KNaKbU0hkbTWL5JORAz04k/a1jlcG0T/BzcVAhTgQNNKKXmGTqPTrz4
-        LX+DskAB/Ytzxmb9xe7q/xAVI2oE4tZVPSqopcWzPvH5ro6oNis8YpZ9wLQ5oLCuGAqyQw
-        PRdffCQMfEglqhDe1R6XROoKtU4kWYU=
-Received: from suse.cz (unknown [10.100.201.86])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id B16172C141;
-        Mon, 30 May 2022 14:22:39 +0000 (UTC)
-Date:   Mon, 30 May 2022 16:22:39 +0200
-From:   Michal Hocko <mhocko@suse.com>
-To:     Vasily Averin <vvs@openvz.org>
-Cc:     Andrew Morton <akpm@linux-foundation.org>, kernel@openvz.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        Shakeel Butt <shakeelb@google.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Muchun Song <songmuchun@bytedance.com>, cgroups@vger.kernel.org
-Subject: Re: [PATCH mm v3 0/9] memcg: accounting for objects allocated by
- mkdir cgroup
-Message-ID: <YpTTL3Ys35kgYyAW@dhcp22.suse.cz>
-References: <06505918-3b8a-0ad5-5951-89ecb510138e@openvz.org>
- <3e1d6eab-57c7-ba3d-67e1-c45aa0dfa2ab@openvz.org>
- <YpSwvii5etfnOYC9@dhcp22.suse.cz>
- <ef9f7516-853d-ffe4-9a7a-5e87556bdbbe@openvz.org>
+        Mon, 30 May 2022 11:23:33 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3941913392B
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 07:24:19 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id s24so7546705wrb.10
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 07:24:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rUAWdJ1Rf6hO8ecNBUpnATX0ltMJMJR8PSAH4KO8bJM=;
+        b=LXAGdGTLAayi/VD6RlJh8cDSac2FGSYcJt/uGESSMobfyQL1XbIq81Ywa+yllK/x2E
+         sJAS1Rtf5zCjVFmHW4pfy9Tm5dcA5ZVlkEAgvw2NGpz9WZyyL1fOivsSvW9ytr3I57tI
+         +6fjo5tQhXgr2qaexjNggNiuq6T69aTHW9odw2YHwZzw+W6m95HcY+q9sBmorz9c0xYk
+         bA0W/CuhgZRg2uQS5Mkr9/Y/bZpmCfybLP6mrXZw7koQ3b+VufvplHhXB5NVUCdaMUoW
+         TCkVYinu9AA7khJHktcQJTHSDsPEUzbWColgtl13bs4lm9K4PQIRKfICpI7XOPwBSQPj
+         1kIw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rUAWdJ1Rf6hO8ecNBUpnATX0ltMJMJR8PSAH4KO8bJM=;
+        b=wguXXSstmbFqMlC4UYsrOBnM7Ct/0i1T4ExsHwq4UCzo2CMyYeQifTeXAiN23Zc9j7
+         x3Zb+2YITWhxm+az/ZVVNmCy+0kdnPvaqcGpEO0jKyKoRBHEdnV2xCuBiyFhe1kM5Srb
+         A12KykUZUVucP2qqwYdJMH2KeinTqFtdMlfsyD2GrLEh8mnoXQa4x+Yhi8+4YhEc6d28
+         LKcyAaAmfyEe3dfFVGNP1v1O8e2JBrvPVb3UDPNfA0Y1yVgkeelKpAf6Bd2I+Xn9k29O
+         JC2B1GCICPqV7FPup+lVAOi4IXcvc1d4wVFq5yCswVuZeZ7WjbeOvZhrRxVpmHGxU4/V
+         7JGg==
+X-Gm-Message-State: AOAM53226kiCf7XeZlriR/g1XWlIC8N5M1PQDMYT0WNYHces6cD74CKl
+        q2s45J22AfLlzyd1XcrzugiNPw==
+X-Google-Smtp-Source: ABdhPJwUdn2UEohzLhlkvTp89uivSBFAQcrCfQrdg/myp0CdGWHmaAJLOG8f0NAC612sXpmZ9kB+sw==
+X-Received: by 2002:a05:6000:1288:b0:210:154:ea50 with SMTP id f8-20020a056000128800b002100154ea50mr21132673wrx.213.1653920656629;
+        Mon, 30 May 2022 07:24:16 -0700 (PDT)
+Received: from localhost.localdomain ([88.160.162.107])
+        by smtp.gmail.com with ESMTPSA id y4-20020a056000168400b0020d10a249eesm9134310wrd.13.2022.05.30.07.24.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 May 2022 07:24:15 -0700 (PDT)
+From:   Fabien Parent <fparent@baylibre.com>
+To:     Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     Fabien Parent <fparent@baylibre.com>,
+        dri-devel@lists.freedesktop.org,
+        linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] drm/mediatek: fix crtc index computation
+Date:   Mon, 30 May 2022 16:24:07 +0200
+Message-Id: <20220530142407.781187-1-fparent@baylibre.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ef9f7516-853d-ffe4-9a7a-5e87556bdbbe@openvz.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon 30-05-22 16:09:00, Vasily Averin wrote:
-> On 5/30/22 14:55, Michal Hocko wrote:
-> > On Mon 30-05-22 14:25:45, Vasily Averin wrote:
-> >> Below is tracing results of mkdir /sys/fs/cgroup/vvs.test on 
-> >> 4cpu VM with Fedora and self-complied upstream kernel. The calculations
-> >> are not precise, it depends on kernel config options, number of cpus,
-> >> enabled controllers, ignores possible page allocations etc.
-> >> However this is enough to clarify the general situation.
-> >> All allocations are splited into:
-> >> - common part, always called for each cgroup type
-> >> - per-cgroup allocations
-> >>
-> >> In each group we consider 2 corner cases:
-> >> - usual allocations, important for 1-2 CPU nodes/Vms
-> >> - percpu allocations, important for 'big irons'
-> >>
-> >> common part: 	~11Kb	+  318 bytes percpu
-> >> memcg: 		~17Kb	+ 4692 bytes percpu
-> >> cpu:		~2.5Kb	+ 1036 bytes percpu
-> >> cpuset:		~3Kb	+   12 bytes percpu
-> >> blkcg:		~3Kb	+   12 bytes percpu
-> >> pid:		~1.5Kb	+   12 bytes percpu		
-> >> perf:		 ~320b	+   60 bytes percpu
-> >> -------------------------------------------
-> >> total:		~38Kb	+ 6142 bytes percpu
-> >> currently accounted:	  4668 bytes percpu
-> >>
-> >> - it's important to account usual allocations called
-> >> in common part, because almost all of cgroup-specific allocations
-> >> are small. One exception here is memory cgroup, it allocates a few
-> >> huge objects that should be accounted.
-> >> - Percpu allocation called in common part, in memcg and cpu cgroups
-> >> should be accounted, rest ones are small an can be ignored.
-> >> - KERNFS objects are allocated both in common part and in most of
-> >> cgroups 
-> >>
-> >> Details can be found here:
-> >> https://lore.kernel.org/all/d28233ee-bccb-7bc3-c2ec-461fd7f95e6a@openvz.org/
-> >>
-> >> I checked other cgroups types was found that they all can be ignored.
-> >> Additionally I found allocation of struct rt_rq called in cpu cgroup 
-> >> if CONFIG_RT_GROUP_SCHED was enabled, it allocates huge (~1700 bytes)
-> >> percpu structure and should be accounted too.
-> > 
-> > One thing that the changelog is missing is an explanation why do we need
-> > to account those objects. Users are usually not empowered to create
-> > cgroups arbitrarily. Or at least they shouldn't because we can expect
-> > more problems to happen.
-> > 
-> > Could you clarify this please?
-> 
-> The problem is actual for OS-level containers: LXC or OpenVz.
-> They are widely used for hosting and allow to run containers
-> by untrusted end-users. Root inside such containers is able
-> to create groups inside own container and consume host memory
-> without its proper accounting.
+The code always assume that the main path is enabled, which is not
+always the case. When the main path is not enabled, the CRTC index
+of the ext path is incorrect which makes the secondary path
+not usable. Fix the CRTC index calculation.
 
-Is the unaccounted memory really the biggest problem here?
-IIRC having really huge cgroup trees can hurt quite some controllers.
-E.g. how does the cpu controller deal with too many or too deep
-hierarchies?
+Signed-off-by: Fabien Parent <fparent@baylibre.com>
+---
+ drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.c | 46 +++++++++++++++------
+ 1 file changed, 34 insertions(+), 12 deletions(-)
 
+diff --git a/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.c b/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.c
+index 5d7504a72b11..6f2abfc608fb 100644
+--- a/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.c
++++ b/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.c
+@@ -430,25 +430,47 @@ int mtk_ddp_comp_get_id(struct device_node *node,
+ 	return -EINVAL;
+ }
+ 
++static bool mtk_drm_comp_is_enabled(struct drm_device *drm,
++				    const enum mtk_ddp_comp_id *path,
++				    unsigned int path_len)
++{
++	struct mtk_drm_private *priv = drm->dev_private;
++
++	return path && path_len && !!priv->comp_node[path[path_len - 1]];
++}
++
+ unsigned int mtk_drm_find_possible_crtc_by_comp(struct drm_device *drm,
+ 						struct device *dev)
+ {
+ 	struct mtk_drm_private *private = drm->dev_private;
+-	unsigned int ret = 0;
++	unsigned int index = 0;
+ 
+-	if (mtk_drm_find_comp_in_ddp(dev, private->data->main_path, private->data->main_len,
++	if (mtk_drm_find_comp_in_ddp(dev, private->data->main_path,
++				     private->data->main_len,
+ 				     private->ddp_comp))
+-		ret = BIT(0);
+-	else if (mtk_drm_find_comp_in_ddp(dev, private->data->ext_path,
+-					  private->data->ext_len, private->ddp_comp))
+-		ret = BIT(1);
+-	else if (mtk_drm_find_comp_in_ddp(dev, private->data->third_path,
+-					  private->data->third_len, private->ddp_comp))
+-		ret = BIT(2);
+-	else
+-		DRM_INFO("Failed to find comp in ddp table\n");
++		return BIT(index);
++
++	if (mtk_drm_comp_is_enabled(drm, private->data->main_path,
++				    private->data->main_len))
++		index++;
+ 
+-	return ret;
++	if (mtk_drm_find_comp_in_ddp(dev, private->data->ext_path,
++				     private->data->ext_len,
++				     private->ddp_comp))
++		return BIT(index);
++
++	if (mtk_drm_comp_is_enabled(drm, private->data->ext_path,
++				    private->data->ext_len))
++		index++;
++
++	if (mtk_drm_find_comp_in_ddp(dev, private->data->third_path,
++					  private->data->third_len,
++					  private->ddp_comp))
++		return BIT(index);
++
++	DRM_INFO("Failed to find comp in ddp table\n");
++
++	return 0;
+ }
+ 
+ int mtk_ddp_comp_init(struct device_node *node, struct mtk_ddp_comp *comp,
 -- 
-Michal Hocko
-SUSE Labs
+2.36.1
+
