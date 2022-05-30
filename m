@@ -2,345 +2,257 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9FA2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 08:10:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4712C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 08:11:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232971AbiE3IKL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 04:10:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37594 "EHLO
+        id S232991AbiE3ILj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 04:11:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232901AbiE3IKG (ORCPT
+        with ESMTP id S232901AbiE3ILg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 04:10:06 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEF0175216
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 01:10:03 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id x62so627798ede.10
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 01:10:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=kd0CCk3LCRGaJbR7VB5KtX1TXqRTWxU6Qhf/vwEDl04=;
-        b=j24uc8Ag4iPMN4ajktr6aP+Xgax39Yfqn51EeuP6JqPfb6E4YD4zRnVqqV1ds9Doxk
-         orgi1Z0vPVnXzZJFiJmQ+WBnnFnji/hsZ8UB7eESAJ98oebxIS5ik0IF2HswOjKHyg9c
-         BmpT6qp2p7ypBk0Xy4dMP5uV1IAfdypF29IrTTixHvoVZrM7z5f+WYJNCV7E+cfiEQFB
-         VGy+X1zZ5owWzkm9coIbbXObazgKO3sBj5cpbnNhNLzFar5p87rbBlG7qvuLA6+8i1KP
-         F7l0zT8RO2PiUx7EYcU99QMt+tP9kUuqZnPaXpBP2kNhPjfo4m9gomLVg31aIxpDPhg3
-         viPA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=kd0CCk3LCRGaJbR7VB5KtX1TXqRTWxU6Qhf/vwEDl04=;
-        b=YzDq8rGtDcSG8/Mipw1qGo3cfgsWYemztxK1ILfJStwC7w5pXoxgUlyPddoF00DHqg
-         BKOXpyuATITZd8/3w7rU6vc5ANV3j1LcBBrF/NBLamBndFU7IO0Au8PDlxHDwYKgbVeY
-         A6W+x2G7V2MkNaDNMDRZMP6S+EaTZqQ/3nHFlpNWxeXA7HwCgGjb0omvyOgJGydw5prp
-         2NYbJSFKgRcSiLF0aF27bT+w6/E2+5Q5h/VTRXKoVUuFgYXsbrV9gLlAonny67JacK6E
-         68hn9mdXVRxQHSaz3Ni59ozG3Oy9oYyAManQlx5EnIYU6HoNgZXsgCe8oDnzp5Ktzj76
-         dPVw==
-X-Gm-Message-State: AOAM5300lnqdmw64o09dkqgG1JUJW6XCoquEQP7ZAD4gzkza5wuVYLaq
-        R2ORkqXzH05NBN7pA/GCpZzpqw==
-X-Google-Smtp-Source: ABdhPJyR0Ap0vvV9MQC6yDeV6wFNnk2l2gN0Cfm3bTfmzWeXwuYnGuUl4/kq+OJlfmhn74q1Y76s9w==
-X-Received: by 2002:a05:6402:4316:b0:42b:4d3d:c064 with SMTP id m22-20020a056402431600b0042b4d3dc064mr42706814edc.194.1653898202222;
-        Mon, 30 May 2022 01:10:02 -0700 (PDT)
-Received: from mbp-di-paolo.station (net-93-144-98-177.cust.dsl.teletu.it. [93.144.98.177])
-        by smtp.gmail.com with ESMTPSA id v4-20020a50a444000000b0042ab87ea713sm4973920edb.22.2022.05.30.01.10.01
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 30 May 2022 01:10:01 -0700 (PDT)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.11\))
-Subject: Re: [PATCH -next v7 2/3] block, bfq: refactor the counting of
- 'num_groups_with_pending_reqs'
-From:   Paolo Valente <paolo.valente@linaro.org>
-In-Reply-To: <20220528095020.186970-3-yukuai3@huawei.com>
-Date:   Mon, 30 May 2022 10:10:00 +0200
-Cc:     Tejun Heo <tj@kernel.org>, Jens Axboe <axboe@kernel.dk>,
-        cgroups@vger.kernel.org, linux-block <linux-block@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, yi.zhang@huawei.com
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <0D9355CE-F85B-4B1A-AEC3-F63DFC4B3A54@linaro.org>
-References: <20220528095020.186970-1-yukuai3@huawei.com>
- <20220528095020.186970-3-yukuai3@huawei.com>
-To:     Yu Kuai <yukuai3@huawei.com>
-X-Mailer: Apple Mail (2.3445.104.11)
+        Mon, 30 May 2022 04:11:36 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0AAE227
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 01:11:31 -0700 (PDT)
+X-UUID: fc6a1d2620db49cea3cfe19b4d3ea7bd-20220530
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5,REQID:2269cb81-d7cf-40d6-b473-2efc7b87fac4,OB:0,LO
+        B:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Release_Ham,AC
+        TION:release,TS:105
+X-CID-INFO: VERSION:1.1.5,REQID:2269cb81-d7cf-40d6-b473-2efc7b87fac4,OB:0,LOB:
+        0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Spam_GS981B3D,AC
+        TION:quarantine,TS:105
+X-CID-META: VersionHash:2a19b09,CLOUDID:bbfec0b8-3c45-407b-8f66-25095432a27a,C
+        OID:d548a25b1f57,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:1,File:nil,QS:0,BEC:nil
+X-UUID: fc6a1d2620db49cea3cfe19b4d3ea7bd-20220530
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
+        (envelope-from <yf.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1463958999; Mon, 30 May 2022 16:11:23 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Mon, 30 May 2022 16:11:22 +0800
+Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by
+ mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.792.3 via Frontend Transport; Mon, 30 May 2022 16:11:21 +0800
+From:   <yf.wang@mediatek.com>
+To:     Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        "Joerg Roedel" <joro@8bytes.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        "Isaac J. Manjarres" <isaacm@codeaurora.org>,
+        Georgi Djakov <quic_c_gdjako@quicinc.com>,
+        Yunfei Wang <yf.wang@mediatek.com>,
+        Sven Peter <sven@svenpeter.dev>,
+        "moderated list:ARM SMMU DRIVERS" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>
+CC:     <wsd_upstream@mediatek.com>, Libo Kang <Libo.Kang@mediatek.com>,
+        Yong Wu <Yong.Wu@mediatek.com>, Ning Li <ning.li@mediatek.com>
+Subject: [PATCH v7 1/2] iommu/io-pgtable-arm-v7s: Add a quirk to allow pgtable PA up to 35bit
+Date:   Mon, 30 May 2022 16:04:28 +0800
+Message-ID: <20220530080432.29123-2-yf.wang@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220530080432.29123-1-yf.wang@mediatek.com>
+References: <20220530080432.29123-1-yf.wang@mediatek.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Yunfei Wang <yf.wang@mediatek.com>
 
+Single memory zone feature will remove ZONE_DMA32 and ZONE_DMA and
+cause pgtable PA size larger than 32bit.
 
-> Il giorno 28 mag 2022, alle ore 11:50, Yu Kuai <yukuai3@huawei.com> ha =
-scritto:
->=20
-> Currently, bfq can't handle sync io concurrently as long as they
-> are not issued from root group. This is because
-> 'bfqd->num_groups_with_pending_reqs > 0' is always true in
-> bfq_asymmetric_scenario().
->=20
-> The way that bfqg is counted into 'num_groups_with_pending_reqs':
->=20
-> Before this patch:
-> 1) root group will never be counted.
-> 2) Count if bfqg or it's child bfqgs have pending requests.
-> 3) Don't count if bfqg and it's child bfqgs complete all the requests.
->=20
-> After this patch:
-> 1) root group is counted.
-> 2) Count if bfqg have at least one bfqq that is marked busy.
-> 3) Don't count if bfqg doesn't have any busy bfqqs.
+Since Mediatek IOMMU hardware support at most 35bit PA in pgtable,
+so add a quirk to allow the PA of pgtables support up to bit35.
 
-Unfortunately, I see a last problem here. I see a double change:
-(1) a bfqg is now counted only as a function of the state of its child
-    queues, and not of also its child bfqgs
-(2) the state considered for counting a bfqg moves from having pending
-    requests to having busy queues
+Signed-off-by: Ning Li <ning.li@mediatek.com>
+Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
+---
+ drivers/iommu/io-pgtable-arm-v7s.c | 48 +++++++++++++++++++++---------
+ include/linux/io-pgtable.h         | 17 +++++++----
+ 2 files changed, 45 insertions(+), 20 deletions(-)
 
-I'm ok with with (1), which is a good catch (you are lady explained
-the idea to me some time ago IIRC).
-
-Yet I fear that (2) is not ok.  A bfqq can become non busy even if it
-still has in-flight I/O, i.e.  I/O being served in the drive.  The
-weight of such a bfqq must still be considered in the weights_tree,
-and the group containing such a queue must still be counted when
-checking whether the scenario is asymmetric.  Otherwise service
-guarantees are broken.  The reason is that, if a scenario is deemed as
-symmetric because in-flight I/O is not taken into account, then idling
-will not be performed to protect some bfqq, and in-flight I/O may
-steal bandwidth to that bfqq in an uncontrolled way.
-
-I verified this also experimentally a few years ago, when I added this
-weights_tree stuff.  That's the rationale behind the part of
-bfq_weights_tree_remove that this patch eliminates.  IOW,
-for a bfqq and its parent bfqg to be out of the count for symmetry,
-all bfqq's requests must also be completed.
-
-Thanks,
-Paolo
-
->=20
-> The main reason to use busy state of bfqq instead of 'pending =
-requests'
-> is that bfqq can stay busy after dispatching the last request if =
-idling
-> is needed for service guarantees.
->=20
-> With this change, the occasion that only one group is activated can be
-> detected, and next patch will support concurrent sync io in the
-> occasion.
->=20
-> This patch also rename 'num_groups_with_pending_reqs' to
-> 'num_groups_with_busy_queues'.
->=20
-> Signed-off-by: Yu Kuai <yukuai3@huawei.com>
-> Reviewed-by: Jan Kara <jack@suse.cz>
-> ---
-> block/bfq-iosched.c | 46 ++-----------------------------------
-> block/bfq-iosched.h | 55 ++++++---------------------------------------
-> block/bfq-wf2q.c    | 19 ++++------------
-> 3 files changed, 13 insertions(+), 107 deletions(-)
->=20
-> diff --git a/block/bfq-iosched.c b/block/bfq-iosched.c
-> index 0d46cb728bbf..eb1da1bd5eb4 100644
-> --- a/block/bfq-iosched.c
-> +++ b/block/bfq-iosched.c
-> @@ -852,7 +852,7 @@ static bool bfq_asymmetric_scenario(struct =
-bfq_data *bfqd,
->=20
-> 	return varied_queue_weights || multiple_classes_busy
-> #ifdef CONFIG_BFQ_GROUP_IOSCHED
-> -	       || bfqd->num_groups_with_pending_reqs > 0
-> +	       || bfqd->num_groups_with_busy_queues > 0
-> #endif
-> 		;
-> }
-> @@ -970,48 +970,6 @@ void __bfq_weights_tree_remove(struct bfq_data =
-*bfqd,
-> void bfq_weights_tree_remove(struct bfq_data *bfqd,
-> 			     struct bfq_queue *bfqq)
-> {
-> -	struct bfq_entity *entity =3D bfqq->entity.parent;
-> -
-> -	for_each_entity(entity) {
-> -		struct bfq_sched_data *sd =3D entity->my_sched_data;
-> -
-> -		if (sd->next_in_service || sd->in_service_entity) {
-> -			/*
-> -			 * entity is still active, because either
-> -			 * next_in_service or in_service_entity is not
-> -			 * NULL (see the comments on the definition of
-> -			 * next_in_service for details on why
-> -			 * in_service_entity must be checked too).
-> -			 *
-> -			 * As a consequence, its parent entities are
-> -			 * active as well, and thus this loop must
-> -			 * stop here.
-> -			 */
-> -			break;
-> -		}
-> -
-> -		/*
-> -		 * The decrement of num_groups_with_pending_reqs is
-> -		 * not performed immediately upon the deactivation of
-> -		 * entity, but it is delayed to when it also happens
-> -		 * that the first leaf descendant bfqq of entity gets
-> -		 * all its pending requests completed. The following
-> -		 * instructions perform this delayed decrement, if
-> -		 * needed. See the comments on
-> -		 * num_groups_with_pending_reqs for details.
-> -		 */
-> -		if (entity->in_groups_with_pending_reqs) {
-> -			entity->in_groups_with_pending_reqs =3D false;
-> -			bfqd->num_groups_with_pending_reqs--;
-> -		}
-> -	}
-> -
-> -	/*
-> -	 * Next function is invoked last, because it causes bfqq to be
-> -	 * freed if the following holds: bfqq is not in service and
-> -	 * has no dispatched request. DO NOT use bfqq after the next
-> -	 * function invocation.
-> -	 */
-> 	__bfq_weights_tree_remove(bfqd, bfqq,
-> 				  &bfqd->queue_weights_tree);
-> }
-> @@ -7118,7 +7076,7 @@ static int bfq_init_queue(struct request_queue =
-*q, struct elevator_type *e)
-> 	bfqd->idle_slice_timer.function =3D bfq_idle_slice_timer;
->=20
-> 	bfqd->queue_weights_tree =3D RB_ROOT_CACHED;
-> -	bfqd->num_groups_with_pending_reqs =3D 0;
-> +	bfqd->num_groups_with_busy_queues =3D 0;
->=20
-> 	INIT_LIST_HEAD(&bfqd->active_list);
-> 	INIT_LIST_HEAD(&bfqd->idle_list);
-> diff --git a/block/bfq-iosched.h b/block/bfq-iosched.h
-> index d92adbdd70ee..6c6cd984d769 100644
-> --- a/block/bfq-iosched.h
-> +++ b/block/bfq-iosched.h
-> @@ -197,9 +197,6 @@ struct bfq_entity {
-> 	/* flag, set to request a weight, ioprio or ioprio_class change  =
-*/
-> 	int prio_changed;
->=20
-> -	/* flag, set if the entity is counted in =
-groups_with_pending_reqs */
-> -	bool in_groups_with_pending_reqs;
-> -
-> 	/* last child queue of entity created (for non-leaf entities) */
-> 	struct bfq_queue *last_bfqq_created;
-> };
-> @@ -496,52 +493,14 @@ struct bfq_data {
-> 	struct rb_root_cached queue_weights_tree;
->=20
-> 	/*
-> -	 * Number of groups with at least one descendant process that
-> -	 * has at least one request waiting for completion. Note that
-> -	 * this accounts for also requests already dispatched, but not
-> -	 * yet completed. Therefore this number of groups may differ
-> -	 * (be larger) than the number of active groups, as a group is
-> -	 * considered active only if its corresponding entity has
-> -	 * descendant queues with at least one request queued. This
-> -	 * number is used to decide whether a scenario is symmetric.
-> -	 * For a detailed explanation see comments on the computation
-> -	 * of the variable asymmetric_scenario in the function
-> -	 * bfq_better_to_idle().
-> -	 *
-> -	 * However, it is hard to compute this number exactly, for
-> -	 * groups with multiple descendant processes. Consider a group
-> -	 * that is inactive, i.e., that has no descendant process with
-> -	 * pending I/O inside BFQ queues. Then suppose that
-> -	 * num_groups_with_pending_reqs is still accounting for this
-> -	 * group, because the group has descendant processes with some
-> -	 * I/O request still in flight. num_groups_with_pending_reqs
-> -	 * should be decremented when the in-flight request of the
-> -	 * last descendant process is finally completed (assuming that
-> -	 * nothing else has changed for the group in the meantime, in
-> -	 * terms of composition of the group and active/inactive state =
-of child
-> -	 * groups and processes). To accomplish this, an additional
-> -	 * pending-request counter must be added to entities, and must
-> -	 * be updated correctly. To avoid this additional field and =
-operations,
-> -	 * we resort to the following tradeoff between simplicity and
-> -	 * accuracy: for an inactive group that is still counted in
-> -	 * num_groups_with_pending_reqs, we decrement
-> -	 * num_groups_with_pending_reqs when the first descendant
-> -	 * process of the group remains with no request waiting for
-> -	 * completion.
-> -	 *
-> -	 * Even this simpler decrement strategy requires a little
-> -	 * carefulness: to avoid multiple decrements, we flag a group,
-> -	 * more precisely an entity representing a group, as still
-> -	 * counted in num_groups_with_pending_reqs when it becomes
-> -	 * inactive. Then, when the first descendant queue of the
-> -	 * entity remains with no request waiting for completion,
-> -	 * num_groups_with_pending_reqs is decremented, and this flag
-> -	 * is reset. After this flag is reset for the entity,
-> -	 * num_groups_with_pending_reqs won't be decremented any
-> -	 * longer in case a new descendant queue of the entity remains
-> -	 * with no request waiting for completion.
-> +	 * Number of groups with at least one bfqq that is marked busy,
-> +	 * and this number is used to decide whether a scenario is =
-symmetric.
-> +	 * Note that bfqq is busy doesn't mean that the bfqq contains =
-requests.
-> +	 * If idling is needed for service guarantees, bfqq will stay =
-busy
-> +	 * after dispatching the last request, see details in
-> +	 * __bfq_bfqq_expire().
-> 	 */
-> -	unsigned int num_groups_with_pending_reqs;
-> +	unsigned int num_groups_with_busy_queues;
->=20
-> 	/*
-> 	 * Per-class (RT, BE, IDLE) number of bfq_queues containing
-> diff --git a/block/bfq-wf2q.c b/block/bfq-wf2q.c
-> index b97e33688335..48ca7922035c 100644
-> --- a/block/bfq-wf2q.c
-> +++ b/block/bfq-wf2q.c
-> @@ -221,13 +221,15 @@ static bool bfq_no_longer_next_in_service(struct =
-bfq_entity *entity)
-> static void bfq_inc_busy_queues(struct bfq_queue *bfqq)
-> {
-> 	bfqq->bfqd->busy_queues[bfqq->ioprio_class - 1]++;
-> -	bfqq_group(bfqq)->busy_queues++;
-> +	if (!(bfqq_group(bfqq)->busy_queues++))
-> +		bfqq->bfqd->num_groups_with_busy_queues++;
-> }
->=20
-> static void bfq_dec_busy_queues(struct bfq_queue *bfqq)
-> {
-> 	bfqq->bfqd->busy_queues[bfqq->ioprio_class - 1]--;
-> -	bfqq_group(bfqq)->busy_queues--;
-> +	if (!(--bfqq_group(bfqq)->busy_queues))
-> +		bfqq->bfqd->num_groups_with_busy_queues--;
-> }
->=20
-> #else /* CONFIG_BFQ_GROUP_IOSCHED */
-> @@ -1006,19 +1008,6 @@ static void __bfq_activate_entity(struct =
-bfq_entity *entity,
-> 		entity->on_st_or_in_serv =3D true;
-> 	}
->=20
-> -#ifdef CONFIG_BFQ_GROUP_IOSCHED
-> -	if (!bfq_entity_to_bfqq(entity)) { /* bfq_group */
-> -		struct bfq_group *bfqg =3D
-> -			container_of(entity, struct bfq_group, entity);
-> -		struct bfq_data *bfqd =3D bfqg->bfqd;
-> -
-> -		if (!entity->in_groups_with_pending_reqs) {
-> -			entity->in_groups_with_pending_reqs =3D true;
-> -			bfqd->num_groups_with_pending_reqs++;
-> -		}
-> -	}
-> -#endif
-> -
-> 	bfq_update_fin_time_enqueue(entity, st, backshifted);
-> }
->=20
-> --=20
-> 2.31.1
->=20
+diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
+index be066c1503d3..9a7671a89fd7 100644
+--- a/drivers/iommu/io-pgtable-arm-v7s.c
++++ b/drivers/iommu/io-pgtable-arm-v7s.c
+@@ -182,14 +182,8 @@ static bool arm_v7s_is_mtk_enabled(struct io_pgtable_cfg *cfg)
+ 		(cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_EXT);
+ }
+ 
+-static arm_v7s_iopte paddr_to_iopte(phys_addr_t paddr, int lvl,
+-				    struct io_pgtable_cfg *cfg)
++static arm_v7s_iopte to_iopte_mtk(phys_addr_t paddr, arm_v7s_iopte pte)
+ {
+-	arm_v7s_iopte pte = paddr & ARM_V7S_LVL_MASK(lvl);
+-
+-	if (!arm_v7s_is_mtk_enabled(cfg))
+-		return pte;
+-
+ 	if (paddr & BIT_ULL(32))
+ 		pte |= ARM_V7S_ATTR_MTK_PA_BIT32;
+ 	if (paddr & BIT_ULL(33))
+@@ -199,6 +193,17 @@ static arm_v7s_iopte paddr_to_iopte(phys_addr_t paddr, int lvl,
+ 	return pte;
+ }
+ 
++static arm_v7s_iopte paddr_to_iopte(phys_addr_t paddr, int lvl,
++				    struct io_pgtable_cfg *cfg)
++{
++	arm_v7s_iopte pte = paddr & ARM_V7S_LVL_MASK(lvl);
++
++	if (!arm_v7s_is_mtk_enabled(cfg))
++		return pte;
++
++	return to_iopte_mtk(paddr, pte);
++}
++
+ static phys_addr_t iopte_to_paddr(arm_v7s_iopte pte, int lvl,
+ 				  struct io_pgtable_cfg *cfg)
+ {
+@@ -234,6 +239,7 @@ static arm_v7s_iopte *iopte_deref(arm_v7s_iopte pte, int lvl,
+ static void *__arm_v7s_alloc_table(int lvl, gfp_t gfp,
+ 				   struct arm_v7s_io_pgtable *data)
+ {
++	gfp_t gfp_l1 = __GFP_ZERO | ARM_V7S_TABLE_GFP_DMA;
+ 	struct io_pgtable_cfg *cfg = &data->iop.cfg;
+ 	struct device *dev = cfg->iommu_dev;
+ 	phys_addr_t phys;
+@@ -241,9 +247,11 @@ static void *__arm_v7s_alloc_table(int lvl, gfp_t gfp,
+ 	size_t size = ARM_V7S_TABLE_SIZE(lvl, cfg);
+ 	void *table = NULL;
+ 
++	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT)
++		gfp_l1 = GFP_KERNEL | __GFP_ZERO;
++
+ 	if (lvl == 1)
+-		table = (void *)__get_free_pages(
+-			__GFP_ZERO | ARM_V7S_TABLE_GFP_DMA, get_order(size));
++		table = (void *)__get_free_pages(gfp_l1, get_order(size));
+ 	else if (lvl == 2)
+ 		table = kmem_cache_zalloc(data->l2_tables, gfp);
+ 
+@@ -251,7 +259,8 @@ static void *__arm_v7s_alloc_table(int lvl, gfp_t gfp,
+ 		return NULL;
+ 
+ 	phys = virt_to_phys(table);
+-	if (phys != (arm_v7s_iopte)phys) {
++	if (phys != (arm_v7s_iopte)phys &&
++	    !(cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT)) {
+ 		/* Doesn't fit in PTE */
+ 		dev_err(dev, "Page table does not fit in PTE: %pa", &phys);
+ 		goto out_free;
+@@ -457,9 +466,14 @@ static arm_v7s_iopte arm_v7s_install_table(arm_v7s_iopte *table,
+ 					   arm_v7s_iopte curr,
+ 					   struct io_pgtable_cfg *cfg)
+ {
++	phys_addr_t phys = virt_to_phys(table);
+ 	arm_v7s_iopte old, new;
+ 
+-	new = virt_to_phys(table) | ARM_V7S_PTE_TYPE_TABLE;
++	new = phys | ARM_V7S_PTE_TYPE_TABLE;
++
++	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT)
++		new = to_iopte_mtk(phys, new);
++
+ 	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_NS)
+ 		new |= ARM_V7S_ATTR_NS_TABLE;
+ 
+@@ -778,7 +792,9 @@ static phys_addr_t arm_v7s_iova_to_phys(struct io_pgtable_ops *ops,
+ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
+ 						void *cookie)
+ {
++	slab_flags_t slab_flag = ARM_V7S_TABLE_SLAB_FLAGS;
+ 	struct arm_v7s_io_pgtable *data;
++	phys_addr_t paddr;
+ 
+ 	if (cfg->ias > (arm_v7s_is_mtk_enabled(cfg) ? 34 : ARM_V7S_ADDR_BITS))
+ 		return NULL;
+@@ -788,7 +804,8 @@ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
+ 
+ 	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS |
+ 			    IO_PGTABLE_QUIRK_NO_PERMS |
+-			    IO_PGTABLE_QUIRK_ARM_MTK_EXT))
++			    IO_PGTABLE_QUIRK_ARM_MTK_EXT |
++			    IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT))
+ 		return NULL;
+ 
+ 	/* If ARM_MTK_4GB is enabled, the NO_PERMS is also expected. */
+@@ -801,10 +818,12 @@ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
+ 		return NULL;
+ 
+ 	spin_lock_init(&data->split_lock);
++	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT)
++		slab_flag = 0;
+ 	data->l2_tables = kmem_cache_create("io-pgtable_armv7s_l2",
+ 					    ARM_V7S_TABLE_SIZE(2, cfg),
+ 					    ARM_V7S_TABLE_SIZE(2, cfg),
+-					    ARM_V7S_TABLE_SLAB_FLAGS, NULL);
++					    slab_flag, NULL);
+ 	if (!data->l2_tables)
+ 		goto out_free_data;
+ 
+@@ -850,7 +869,8 @@ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
+ 	wmb();
+ 
+ 	/* TTBR */
+-	cfg->arm_v7s_cfg.ttbr = virt_to_phys(data->pgd) | ARM_V7S_TTBR_S |
++	paddr = virt_to_phys(data->pgd);
++	cfg->arm_v7s_cfg.ttbr = paddr | ARM_V7S_TTBR_S |
+ 				(cfg->coherent_walk ? (ARM_V7S_TTBR_NOS |
+ 				 ARM_V7S_TTBR_IRGN_ATTR(ARM_V7S_RGN_WBWA) |
+ 				 ARM_V7S_TTBR_ORGN_ATTR(ARM_V7S_RGN_WBWA)) :
+diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
+index 86af6f0a00a2..13f564456c9e 100644
+--- a/include/linux/io-pgtable.h
++++ b/include/linux/io-pgtable.h
+@@ -74,17 +74,22 @@ struct io_pgtable_cfg {
+ 	 *	to support up to 35 bits PA where the bit32, bit33 and bit34 are
+ 	 *	encoded in the bit9, bit4 and bit5 of the PTE respectively.
+ 	 *
++	 * IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT: (ARM v7s format) MediaTek IOMMUs
++	 *	extend the translation table support up to 35 bits PA, the
++	 *	encoding format is same with IO_PGTABLE_QUIRK_ARM_MTK_EXT.
++	 *
+ 	 * IO_PGTABLE_QUIRK_ARM_TTBR1: (ARM LPAE format) Configure the table
+ 	 *	for use in the upper half of a split address space.
+ 	 *
+ 	 * IO_PGTABLE_QUIRK_ARM_OUTER_WBWA: Override the outer-cacheability
+ 	 *	attributes set in the TCR for a non-coherent page-table walker.
+ 	 */
+-	#define IO_PGTABLE_QUIRK_ARM_NS		BIT(0)
+-	#define IO_PGTABLE_QUIRK_NO_PERMS	BIT(1)
+-	#define IO_PGTABLE_QUIRK_ARM_MTK_EXT	BIT(3)
+-	#define IO_PGTABLE_QUIRK_ARM_TTBR1	BIT(5)
+-	#define IO_PGTABLE_QUIRK_ARM_OUTER_WBWA	BIT(6)
++	#define IO_PGTABLE_QUIRK_ARM_NS			BIT(0)
++	#define IO_PGTABLE_QUIRK_NO_PERMS		BIT(1)
++	#define IO_PGTABLE_QUIRK_ARM_MTK_EXT		BIT(3)
++	#define IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT	BIT(4)
++	#define IO_PGTABLE_QUIRK_ARM_TTBR1		BIT(5)
++	#define IO_PGTABLE_QUIRK_ARM_OUTER_WBWA		BIT(6)
+ 	unsigned long			quirks;
+ 	unsigned long			pgsize_bitmap;
+ 	unsigned int			ias;
+@@ -122,7 +127,7 @@ struct io_pgtable_cfg {
+ 		} arm_lpae_s2_cfg;
+ 
+ 		struct {
+-			u32	ttbr;
++			u64	ttbr;
+ 			u32	tcr;
+ 			u32	nmrr;
+ 			u32	prrr;
+-- 
+2.18.0
 
