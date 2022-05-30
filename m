@@ -2,61 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63652C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 07:52:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8998AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 07:52:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234223AbiE3Hwq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 03:52:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33568 "EHLO
+        id S234202AbiE3Hww (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 03:52:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234188AbiE3Hvw (ORCPT
+        with ESMTP id S234256AbiE3Hw3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 03:51:52 -0400
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF1EC73552
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 00:51:26 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id d22so9618062plr.9
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 00:51:26 -0700 (PDT)
+        Mon, 30 May 2022 03:52:29 -0400
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A73842C679
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 00:51:55 -0700 (PDT)
+Received: by mail-pg1-x536.google.com with SMTP id j191so2230231pgd.3
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 00:51:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=bytedance-com.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=KV6RbMM8w6wD8F4JQPmwSzYM0iR92dgQE9lDfN51JOg=;
-        b=OD2hATG9TOBEVqaSLbbb7DYN7E8AxGheax8qlgspCPL4scsq8K8ZDBJOLH6UR68odC
-         s2KrbB/vRF3Bw+pYrdYCdp60/yeTrEYzRqbRKi8mCN0RtzUDev0NTCWYwqBZxmc2wc+n
-         xSzVbVM9KwQdSk51ksO9a4BBDdf5ZwsFojHgLgUQaUx/Ls26AttA2JUg7SWXFBumtoYG
-         fj3u7jLmMbfOQXtlNBi+WO+WEoIHGKj6wXpZLWfcDUfZcjqV+/WPOCBFIWgKk9P24235
-         7c9W84Xep8nVv4TwBL/lczB1wY+BTC1hu+9N4zYnuxQEn02sXN2tnwfUZlH3S/BQeLRJ
-         94cg==
+        bh=zTIPIwKXUo1jntkJwVJ1sc6imAMuNPgvSBrYOaWp7QA=;
+        b=nG5qRDAwcXWO+X0Dki+i4YRhICkZTgizDnL8jGVt8i38gBcnMQ+PEzB+4S8f9bRmMM
+         /dr5aZuC15y7PfpyTFr/vkOdIFmHF/lvgEW6BcSF+u0sQfJ0Jr1riyfq7eyAXMqBMriU
+         gpaWesos7gIbjD/4ebYzpph8ntcaNrvYk6ZsIs+O9X8LLNZnEwvhBciiUHcFWbUkepH6
+         f7uQXVabUjxGAqexFEeMZtu0mn+ShivhUM3cH96KyBk8JbMdL6sAPc5rpchNyBeAr4vu
+         mkiOhXkDrR99zKdVBXqW1XnPc4KPjTH5VGTiyNXtRA+pl7QVsUAJzg1OYerfzLi4ttKY
+         WPsA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=KV6RbMM8w6wD8F4JQPmwSzYM0iR92dgQE9lDfN51JOg=;
-        b=CS3sASX6mdt3cTeih8jtimoqgnlam1QpWOYqrIXvT3hO54a89d5OW4MHm3q2WYbkS3
-         1DWsNSqtMPep4NnpBpRVK9FcE7UZwywPGXSUuY5uBfEuKypUkepilT5TLyWyijOiXRAh
-         fPYL9BXVXa3jlVza9jYBBaT6YlSAmHIaiTjiwhNKHQjXqXZm8xE9UsyiejhMryi9nOG1
-         drjD4MYMGD6DndmhEIP8XUbGSODqppBJ7L8cJLwRl0cAeb57047r6FHtl2P42Z2/CgBZ
-         nJWQ2HN0uI5OULdAPw5/JotbHNHhfIWm3beJ0ldd5frCGXxqIQkHCnCbsYLzvkgH7Eo3
-         XeTg==
-X-Gm-Message-State: AOAM533quH/wYRpir4amQ+AfPV8r0OszjcZqrTS2Gdm/cD1FgVyVkM4Q
-        mZ4k41nUosVby9ssrLLDd+ck+Q==
-X-Google-Smtp-Source: ABdhPJx6AClcURIyJsLO64YIW87asSM1Y5uhNBox8YFpOq5D89BEw3QtMBy0j3V9+Otgo4I2gLmM6A==
-X-Received: by 2002:a17:902:bb82:b0:163:dc33:6b88 with SMTP id m2-20020a170902bb8200b00163dc336b88mr4349088pls.135.1653897086375;
-        Mon, 30 May 2022 00:51:26 -0700 (PDT)
+        bh=zTIPIwKXUo1jntkJwVJ1sc6imAMuNPgvSBrYOaWp7QA=;
+        b=F2OMBh+fXFFeEBMnWLItfgprpPX5R9ZGmEdMWPS/l0cUkT8xo2tagjnnAdS5PltxLS
+         vVuAqmXr1hxpErD/02Zh+fRUzR2D38ZtfNtmXauiSVBc4GwvoAnLV5TU8/lNJJdxbtyN
+         aKiwkdEZcalve32Z98ugseM8FLh0m9tw+2vNv8o1GI/BBzyQcTQ6bukbYibv0A56ehAl
+         Ivoyw5SHlZbuDi+/PpOLBKYQA1SKRLwYLCo2fXuj06Tke5hjPJ/chm+ATN2msoMH1SqQ
+         JK/0xHdZ2Gcwg6cVpgmSYoepllTjnNYRyMlxSesd0lCNI1kGsJx8cTzigjfkd+h7dC+d
+         akdQ==
+X-Gm-Message-State: AOAM531MyYt8pbB/85435nvKByo/5eryzlfyIeOhB7bV3lURtURfu5qk
+        +lil5OsF9v9g9+MEgG2UT+zIpw==
+X-Google-Smtp-Source: ABdhPJwuVWp+MeKG8ZENJf/0D824rv/vfRXylHNl8RsBcRIKzT3qmI+YmeK9lvxmKvP3eliznaQo/w==
+X-Received: by 2002:aa7:8094:0:b0:505:b544:d1ca with SMTP id v20-20020aa78094000000b00505b544d1camr56072290pff.26.1653897114489;
+        Mon, 30 May 2022 00:51:54 -0700 (PDT)
 Received: from FVFYT0MHHV2J.bytedance.net ([2408:8207:18da:2310:2071:e13a:8aa:cacf])
-        by smtp.gmail.com with ESMTPSA id a23-20020a170902b59700b001616c3bd5c2sm8421381pls.162.2022.05.30.00.51.17
+        by smtp.gmail.com with ESMTPSA id a23-20020a170902b59700b001616c3bd5c2sm8421381pls.162.2022.05.30.00.51.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 May 2022 00:51:25 -0700 (PDT)
+        Mon, 30 May 2022 00:51:54 -0700 (PDT)
 From:   Muchun Song <songmuchun@bytedance.com>
 To:     hannes@cmpxchg.org, mhocko@kernel.org, roman.gushchin@linux.dev,
         shakeelb@google.com, akpm@linux-foundation.org
 Cc:     cgroups@vger.kernel.org, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org, duanxiongchun@bytedance.com,
         longman@redhat.com, Muchun Song <songmuchun@bytedance.com>
-Subject: [PATCH v5 08/11] mm: memcontrol: introduce memcg_reparent_ops
-Date:   Mon, 30 May 2022 15:49:16 +0800
-Message-Id: <20220530074919.46352-9-songmuchun@bytedance.com>
+Subject: [PATCH v5 11/11] mm: lru: use lruvec lock to serialize memcg changes
+Date:   Mon, 30 May 2022 15:49:19 +0800
+Message-Id: <20220530074919.46352-12-songmuchun@bytedance.com>
 X-Mailer: git-send-email 2.32.1 (Apple Git-133)
 In-Reply-To: <20220530074919.46352-1-songmuchun@bytedance.com>
 References: <20220530074919.46352-1-songmuchun@bytedance.com>
@@ -66,155 +66,240 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In the previous patch, we know how to make the lruvec lock safe when LRU
-pages are reparented. We should do something like following.
+As described by commit fc574c23558c ("mm/swap.c: serialize memcg
+changes in pagevec_lru_move_fn"), TestClearPageLRU() aims to
+serialize mem_cgroup_move_account() during pagevec_lru_move_fn().
+Now folio_lruvec_lock*() has the ability to detect whether page
+memcg has been changed. So we can use lruvec lock to serialize
+mem_cgroup_move_account() during pagevec_lru_move_fn(). This
+change is a partial revert of the commit fc574c23558c ("mm/swap.c:
+serialize memcg changes in pagevec_lru_move_fn").
 
-    memcg_reparent_objcgs(memcg)
-        1) lock
-        // lruvec belongs to memcg and lruvec_parent belongs to parent memcg.
-        spin_lock(&lruvec->lru_lock);
-        spin_lock(&lruvec_parent->lru_lock);
-
-        2) relocate from current memcg to its parent
-        // Move all the pages from the lruvec list to the parent lruvec list.
-
-        3) unlock
-        spin_unlock(&lruvec_parent->lru_lock);
-        spin_unlock(&lruvec->lru_lock);
-
-Apart from the page lruvec lock, the deferred split queue lock (THP only)
-also needs to do something similar. So we extract the necessary three steps
-in the memcg_reparent_objcgs().
-
-    memcg_reparent_objcgs(memcg)
-        1) lock
-        memcg_reparent_ops->lock(memcg, parent);
-
-        2) relocate
-        memcg_reparent_ops->relocate(memcg, reparent);
-
-        3) unlock
-        memcg_reparent_ops->unlock(memcg, reparent);
-
-Now there are two different locks (e.g. lruvec lock and deferred split
-queue lock) need to use this infrastructure. In the next patch, we will
-use those APIs to make those locks safe when the LRU pages reparented.
+And pagevec_lru_move_fn() is more hot compare with
+mem_cgroup_move_account(), removing an atomic operation would be
+an optimization. Also this change would not dirty cacheline for a
+page which isn't on the LRU.
 
 Signed-off-by: Muchun Song <songmuchun@bytedance.com>
 ---
- include/linux/memcontrol.h | 20 +++++++++++++++
- mm/memcontrol.c            | 62 ++++++++++++++++++++++++++++++++++++----------
- 2 files changed, 69 insertions(+), 13 deletions(-)
+ mm/memcontrol.c | 34 ++++++++++++++++++++++++++++++++++
+ mm/swap.c       | 45 ++++++++++++++-------------------------------
+ mm/vmscan.c     |  9 ++++-----
+ 3 files changed, 52 insertions(+), 36 deletions(-)
 
-diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
-index 16464116f94a..c2ac98a0ece4 100644
---- a/include/linux/memcontrol.h
-+++ b/include/linux/memcontrol.h
-@@ -347,6 +347,26 @@ struct mem_cgroup {
- 	struct mem_cgroup_per_node *nodeinfo[];
- };
- 
-+struct memcg_reparent_ops {
-+	/*
-+	 * Note that interrupt is disabled before calling those callbacks,
-+	 * so the interrupt should remain disabled when leaving those callbacks.
-+	 */
-+	void (*lock)(struct mem_cgroup *src, struct mem_cgroup *dst);
-+	void (*relocate)(struct mem_cgroup *src, struct mem_cgroup *dst);
-+	void (*unlock)(struct mem_cgroup *src, struct mem_cgroup *dst);
-+};
-+
-+#define DEFINE_MEMCG_REPARENT_OPS(name)					\
-+	const struct memcg_reparent_ops memcg_##name##_reparent_ops = {	\
-+		.lock		= name##_reparent_lock,			\
-+		.relocate	= name##_reparent_relocate,		\
-+		.unlock		= name##_reparent_unlock,		\
-+	}
-+
-+#define DECLARE_MEMCG_REPARENT_OPS(name)				\
-+	extern const struct memcg_reparent_ops memcg_##name##_reparent_ops
-+
- /*
-  * size of first charge trial. "32" comes from vmscan.c's magic value.
-  * TODO: maybe necessary to use big numbers in big irons.
 diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-index 4cc392741753..059188eeb80c 100644
+index f4db3cb2aedc..3a0f3838f02d 100644
 --- a/mm/memcontrol.c
 +++ b/mm/memcontrol.c
-@@ -337,24 +337,60 @@ static struct obj_cgroup *obj_cgroup_alloc(void)
- 	return objcg;
- }
+@@ -1333,10 +1333,39 @@ struct lruvec *folio_lruvec_lock(struct folio *folio)
+ 	lruvec = folio_lruvec(folio);
+ 	spin_lock(&lruvec->lru_lock);
  
--static void memcg_reparent_objcgs(struct mem_cgroup *memcg)
-+static void objcg_reparent_lock(struct mem_cgroup *src, struct mem_cgroup *dst)
-+{
-+	spin_lock(&objcg_lock);
-+}
++	/*
++	 * The memcg of the page can be changed by any the following routines:
++	 *
++	 * 1) mem_cgroup_move_account() or
++	 * 2) memcg_reparent_objcgs()
++	 *
++	 * The possible bad scenario would like:
++	 *
++	 * CPU0:                CPU1:                CPU2:
++	 * lruvec = folio_lruvec()
++	 *
++	 *                      if (!isolate_lru_page())
++	 *                              mem_cgroup_move_account()
++	 *
++	 *                                           memcg_reparent_objcgs()
++	 *
++	 * spin_lock(&lruvec->lru_lock)
++	 *                ^^^^^^
++	 *              wrong lock
++	 *
++	 * Either CPU1 or CPU2 can change page memcg, so we need to check
++	 * whether page memcg is changed, if so, we should reacquire the
++	 * new lruvec lock.
++	 */
+ 	if (unlikely(lruvec_memcg(lruvec) != folio_memcg(folio))) {
+ 		spin_unlock(&lruvec->lru_lock);
+ 		goto retry;
+ 	}
 +
-+static void objcg_reparent_relocate(struct mem_cgroup *src, struct mem_cgroup *dst)
- {
- 	struct obj_cgroup *objcg, *iter;
--	struct mem_cgroup *parent = parent_mem_cgroup(memcg);
++	/*
++	 * When we reach here, it means that the folio_memcg(folio) is
++	 * stable.
++	 */
+ 	rcu_read_unlock();
  
--	objcg = rcu_replace_pointer(memcg->objcg, NULL, true);
-+	objcg = rcu_replace_pointer(src->objcg, NULL, true);
-+	/* 1) Ready to reparent active objcg. */
-+	list_add(&objcg->list, &src->objcg_list);
-+	/* 2) Reparent active objcg and already reparented objcgs to dst. */
-+	list_for_each_entry(iter, &src->objcg_list, list)
-+		WRITE_ONCE(iter->memcg, dst);
-+	/* 3) Move already reparented objcgs to the dst's list */
-+	list_splice(&src->objcg_list, &dst->objcg_list);
-+}
-+
-+static void objcg_reparent_unlock(struct mem_cgroup *src, struct mem_cgroup *dst)
-+{
-+	spin_unlock(&objcg_lock);
-+}
+ 	return lruvec;
+@@ -1364,6 +1393,7 @@ struct lruvec *folio_lruvec_lock_irq(struct folio *folio)
+ 	lruvec = folio_lruvec(folio);
+ 	spin_lock_irq(&lruvec->lru_lock);
  
--	spin_lock_irq(&objcg_lock);
-+static DEFINE_MEMCG_REPARENT_OPS(objcg);
++	/* See the comments in folio_lruvec_lock(). */
+ 	if (unlikely(lruvec_memcg(lruvec) != folio_memcg(folio))) {
+ 		spin_unlock_irq(&lruvec->lru_lock);
+ 		goto retry;
+@@ -1397,6 +1427,7 @@ struct lruvec *folio_lruvec_lock_irqsave(struct folio *folio,
+ 	lruvec = folio_lruvec(folio);
+ 	spin_lock_irqsave(&lruvec->lru_lock, *flags);
  
--	/* 1) Ready to reparent active objcg. */
--	list_add(&objcg->list, &memcg->objcg_list);
--	/* 2) Reparent active objcg and already reparented objcgs to parent. */
--	list_for_each_entry(iter, &memcg->objcg_list, list)
--		WRITE_ONCE(iter->memcg, parent);
--	/* 3) Move already reparented objcgs to the parent's list */
--	list_splice(&memcg->objcg_list, &parent->objcg_list);
++	/* See the comments in folio_lruvec_lock(). */
+ 	if (unlikely(lruvec_memcg(lruvec) != folio_memcg(folio))) {
+ 		spin_unlock_irqrestore(&lruvec->lru_lock, *flags);
+ 		goto retry;
+@@ -5738,7 +5769,10 @@ static int mem_cgroup_move_account(struct page *page,
+ 	obj_cgroup_put(rcu_dereference(from->objcg));
+ 	rcu_read_unlock();
+ 
++	/* See the comments in folio_lruvec_lock(). */
++	spin_lock(&from_vec->lru_lock);
+ 	folio->memcg_data = (unsigned long)rcu_access_pointer(to->objcg);
++	spin_unlock(&from_vec->lru_lock);
+ 
+ 	__folio_memcg_unlock(from);
+ 
+diff --git a/mm/swap.c b/mm/swap.c
+index 6cea469b6ff2..1b893c157bd1 100644
+--- a/mm/swap.c
++++ b/mm/swap.c
+@@ -199,14 +199,8 @@ static void pagevec_lru_move_fn(struct pagevec *pvec,
+ 		struct page *page = pvec->pages[i];
+ 		struct folio *folio = page_folio(page);
+ 
+-		/* block memcg migration during page moving between lru */
+-		if (!TestClearPageLRU(page))
+-			continue;
 -
--	spin_unlock_irq(&objcg_lock);
-+static const struct memcg_reparent_ops *memcg_reparent_ops[] = {
-+	&memcg_objcg_reparent_ops,
-+};
-+
-+#define DEFINE_MEMCG_REPARENT_FUNC(phase)				\
-+	static void memcg_reparent_##phase(struct mem_cgroup *src,	\
-+					   struct mem_cgroup *dst)	\
-+	{								\
-+		int i;							\
-+									\
-+		for (i = 0; i < ARRAY_SIZE(memcg_reparent_ops); i++)	\
-+			memcg_reparent_ops[i]->phase(src, dst);		\
-+	}
-+
-+DEFINE_MEMCG_REPARENT_FUNC(lock)
-+DEFINE_MEMCG_REPARENT_FUNC(relocate)
-+DEFINE_MEMCG_REPARENT_FUNC(unlock)
-+
-+static void memcg_reparent_objcgs(struct mem_cgroup *src)
-+{
-+	struct mem_cgroup *dst = parent_mem_cgroup(src);
-+	struct obj_cgroup *objcg = rcu_dereference_protected(src->objcg, true);
-+
-+	local_irq_disable();
-+	memcg_reparent_lock(src, dst);
-+	memcg_reparent_relocate(src, dst);
-+	memcg_reparent_unlock(src, dst);
-+	local_irq_enable();
+ 		lruvec = folio_lruvec_relock_irqsave(folio, lruvec, &flags);
+ 		(*move_fn)(page, lruvec);
+-
+-		SetPageLRU(page);
+ 	}
+ 	if (lruvec)
+ 		lruvec_unlock_irqrestore(lruvec, flags);
+@@ -218,7 +212,7 @@ static void pagevec_move_tail_fn(struct page *page, struct lruvec *lruvec)
+ {
+ 	struct folio *folio = page_folio(page);
  
- 	percpu_ref_kill(&objcg->refcnt);
+-	if (!folio_test_unevictable(folio)) {
++	if (folio_test_lru(folio) && !folio_test_unevictable(folio)) {
+ 		lruvec_del_folio(lruvec, folio);
+ 		folio_clear_active(folio);
+ 		lruvec_add_folio_tail(lruvec, folio);
+@@ -314,7 +308,8 @@ void lru_note_cost_folio(struct folio *folio)
+ 
+ static void __folio_activate(struct folio *folio, struct lruvec *lruvec)
+ {
+-	if (!folio_test_active(folio) && !folio_test_unevictable(folio)) {
++	if (folio_test_lru(folio) && !folio_test_active(folio) &&
++	    !folio_test_unevictable(folio)) {
+ 		long nr_pages = folio_nr_pages(folio);
+ 
+ 		lruvec_del_folio(lruvec, folio);
+@@ -371,12 +366,9 @@ static void folio_activate(struct folio *folio)
+ {
+ 	struct lruvec *lruvec;
+ 
+-	if (folio_test_clear_lru(folio)) {
+-		lruvec = folio_lruvec_lock_irq(folio);
+-		__folio_activate(folio, lruvec);
+-		lruvec_unlock_irq(lruvec);
+-		folio_set_lru(folio);
+-	}
++	lruvec = folio_lruvec_lock_irq(folio);
++	__folio_activate(folio, lruvec);
++	lruvec_unlock_irq(lruvec);
  }
+ #endif
+ 
+@@ -519,6 +511,9 @@ static void lru_deactivate_file_fn(struct page *page, struct lruvec *lruvec)
+ 	bool active = PageActive(page);
+ 	int nr_pages = thp_nr_pages(page);
+ 
++	if (!PageLRU(page))
++		return;
++
+ 	if (PageUnevictable(page))
+ 		return;
+ 
+@@ -556,7 +551,7 @@ static void lru_deactivate_file_fn(struct page *page, struct lruvec *lruvec)
+ 
+ static void lru_deactivate_fn(struct page *page, struct lruvec *lruvec)
+ {
+-	if (PageActive(page) && !PageUnevictable(page)) {
++	if (PageLRU(page) && PageActive(page) && !PageUnevictable(page)) {
+ 		int nr_pages = thp_nr_pages(page);
+ 
+ 		del_page_from_lru_list(page, lruvec);
+@@ -572,7 +567,7 @@ static void lru_deactivate_fn(struct page *page, struct lruvec *lruvec)
+ 
+ static void lru_lazyfree_fn(struct page *page, struct lruvec *lruvec)
+ {
+-	if (PageAnon(page) && PageSwapBacked(page) &&
++	if (PageLRU(page) && PageAnon(page) && PageSwapBacked(page) &&
+ 	    !PageSwapCache(page) && !PageUnevictable(page)) {
+ 		int nr_pages = thp_nr_pages(page);
+ 
+@@ -1007,8 +1002,9 @@ void __pagevec_release(struct pagevec *pvec)
+ }
+ EXPORT_SYMBOL(__pagevec_release);
+ 
+-static void __pagevec_lru_add_fn(struct folio *folio, struct lruvec *lruvec)
++static void __pagevec_lru_add_fn(struct page *page, struct lruvec *lruvec)
+ {
++	struct folio *folio = page_folio(page);
+ 	int was_unevictable = folio_test_clear_unevictable(folio);
+ 	long nr_pages = folio_nr_pages(folio);
+ 
+@@ -1054,20 +1050,7 @@ static void __pagevec_lru_add_fn(struct folio *folio, struct lruvec *lruvec)
+  */
+ void __pagevec_lru_add(struct pagevec *pvec)
+ {
+-	int i;
+-	struct lruvec *lruvec = NULL;
+-	unsigned long flags = 0;
+-
+-	for (i = 0; i < pagevec_count(pvec); i++) {
+-		struct folio *folio = page_folio(pvec->pages[i]);
+-
+-		lruvec = folio_lruvec_relock_irqsave(folio, lruvec, &flags);
+-		__pagevec_lru_add_fn(folio, lruvec);
+-	}
+-	if (lruvec)
+-		lruvec_unlock_irqrestore(lruvec, flags);
+-	release_pages(pvec->pages, pvec->nr);
+-	pagevec_reinit(pvec);
++	pagevec_lru_move_fn(pvec, __pagevec_lru_add_fn);
+ }
+ 
+ /**
+diff --git a/mm/vmscan.c b/mm/vmscan.c
+index 51853d6df7b4..c591d071a598 100644
+--- a/mm/vmscan.c
++++ b/mm/vmscan.c
+@@ -4789,18 +4789,17 @@ void check_move_unevictable_pages(struct pagevec *pvec)
+ 		nr_pages = thp_nr_pages(page);
+ 		pgscanned += nr_pages;
+ 
+-		/* block memcg migration during page moving between lru */
+-		if (!TestClearPageLRU(page))
++		lruvec = folio_lruvec_relock_irq(folio, lruvec);
++
++		if (!PageLRU(page) || !PageUnevictable(page))
+ 			continue;
+ 
+-		lruvec = folio_lruvec_relock_irq(folio, lruvec);
+-		if (page_evictable(page) && PageUnevictable(page)) {
++		if (page_evictable(page)) {
+ 			del_page_from_lru_list(page, lruvec);
+ 			ClearPageUnevictable(page);
+ 			add_page_to_lru_list(page, lruvec);
+ 			pgrescued += nr_pages;
+ 		}
+-		SetPageLRU(page);
+ 	}
+ 
+ 	if (lruvec) {
 -- 
 2.11.0
 
