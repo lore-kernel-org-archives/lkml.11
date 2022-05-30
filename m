@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5888FC4167D
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:22:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ECE0C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:22:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233437AbiE3OWJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:22:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40150 "EHLO
+        id S237820AbiE3OWW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:22:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241087AbiE3ORN (ORCPT
+        with ESMTP id S241079AbiE3ORM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:17:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64DD51116CE;
-        Mon, 30 May 2022 06:44:37 -0700 (PDT)
+        Mon, 30 May 2022 10:17:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91478110470;
+        Mon, 30 May 2022 06:44:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 23BC660FB4;
-        Mon, 30 May 2022 13:44:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69DD5C3411C;
-        Mon, 30 May 2022 13:44:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 69167B80DC4;
+        Mon, 30 May 2022 13:44:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AE19C385B8;
+        Mon, 30 May 2022 13:44:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918275;
-        bh=2LFwGuCsKCuYENEjOsRcLSDeb9bv9mIq1XjW2w4MUhI=;
+        s=k20201202; t=1653918254;
+        bh=EI6kyMEv2r+oMfMB12oZQKomnwfH3xTNuKb7+f/Swr4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=igp3cOtb4Jw2neGZdTK8k/HnXt+jvH+U/oJ+eLQvdD4Ug0rkbNNzZ4stFJWV5JMs2
-         pQC8K0gS9Z18my8OEvWwRfH1L2UsrEg0Ghh2DI1dMPsh7on+2c+8SYgVTMNzxM5lnp
-         gKBDOuELFFFZx/NG8YlXEin3BNIv8n3k3CjmdNj5T1jYER/uehelIbvD5i2Kk8gGpw
-         rhvXAkqroZ0p3sm0gxfd4BtmNrhJILotKGxXAzyMFQ9tEuZsGcCPY+FTE1Aw+y/16V
-         M306FxMmpg7Gyu70h/T5yZc+usiH/rO/U7/WsoS3xhuq7v4k+QCZIOpCfr285RBApT
-         hG4EkNbQkaq9A==
+        b=AeutlHaByfHlZEzwH5aurbO+18DCiz5avlVv568IS/fu1T06ZhwPd19HM8AZDTD71
+         We29Kitj6z+J9r3NImbQsSUT+80aoaBIQBPCcdQMcPS8TdWxCxYx8iYZoF0WOl4a2s
+         LFzJMSwNX9N1b6o+ndTIeuEYuaoQ09H5fo9Izv3IcysLvyVhtcTKbxzQDOFycAYpnZ
+         trj8yIYoZnfvWWHVV4t0V6K7PtKiUTaJ0KU62cOykC9vHkWyVotcJ8IdNaIzyeiwWV
+         iPmzSkn9uk/dl2w87ml1yTsd4sxQyeGzn5UHqZxa8rleg3iwel5AiY15oGYbUDbpvT
+         49PIysjHI9W2Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Liviu Dudau <liviu.dudau@arm.com>,
-        Steven Price <steven.price@arm.com>,
-        Sasha Levin <sashal@kernel.org>, james.qian.wang@arm.com,
-        mihail.atanassov@arm.com, brian.starkey@arm.com, airlied@linux.ie,
-        daniel@ffwll.ch, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.10 12/76] drm/komeda: return early if drm_universal_plane_init() fails.
-Date:   Mon, 30 May 2022 09:43:02 -0400
-Message-Id: <20220530134406.1934928-12-sashal@kernel.org>
+Cc:     Nikolay Borisov <nborisov@suse.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, shuah@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net,
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 03/76] selftests/bpf: Fix vfs_link kprobe definition
+Date:   Mon, 30 May 2022 09:42:53 -0400
+Message-Id: <20220530134406.1934928-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530134406.1934928-1-sashal@kernel.org>
 References: <20220530134406.1934928-1-sashal@kernel.org>
@@ -53,41 +54,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liviu Dudau <liviu.dudau@arm.com>
+From: Nikolay Borisov <nborisov@suse.com>
 
-[ Upstream commit c8f76c37cc3668ee45e081e76a15f24a352ebbdd ]
+[ Upstream commit e299bcd4d16ff86f46c48df1062c8aae0eca1ed8 ]
 
-If drm_universal_plane_init() fails early we jump to the common cleanup code
-that calls komeda_plane_destroy() which in turn could access the uninitalised
-drm_plane and crash. Return early if an error is detected without going through
-the common code.
+Since commit 6521f8917082 ("namei: prepare for idmapped mounts")
+vfs_link's prototype was changed, the kprobe definition in
+profiler selftest in turn wasn't updated. The result is that all
+argument after the first are now stored in different registers. This
+means that self-test has been broken ever since. Fix it by updating the
+kprobe definition accordingly.
 
-Reported-by: Steven Price <steven.price@arm.com>
-Reviewed-by: Steven Price <steven.price@arm.com>
-Signed-off-by: Liviu Dudau <liviu.dudau@arm.com>
-Link: https://lore.kernel.org/dri-devel/20211203100946.2706922-1-liviu.dudau@arm.com
+Signed-off-by: Nikolay Borisov <nborisov@suse.com>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Link: https://lore.kernel.org/bpf/20220331140949.1410056-1-nborisov@suse.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/arm/display/komeda/komeda_plane.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ tools/testing/selftests/bpf/progs/profiler.inc.h | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/arm/display/komeda/komeda_plane.c b/drivers/gpu/drm/arm/display/komeda/komeda_plane.c
-index 98e915e325dd..a5f57b38d193 100644
---- a/drivers/gpu/drm/arm/display/komeda/komeda_plane.c
-+++ b/drivers/gpu/drm/arm/display/komeda/komeda_plane.c
-@@ -274,8 +274,10 @@ static int komeda_plane_add(struct komeda_kms_dev *kms,
+diff --git a/tools/testing/selftests/bpf/progs/profiler.inc.h b/tools/testing/selftests/bpf/progs/profiler.inc.h
+index 4896fdf816f7..92331053dba3 100644
+--- a/tools/testing/selftests/bpf/progs/profiler.inc.h
++++ b/tools/testing/selftests/bpf/progs/profiler.inc.h
+@@ -826,8 +826,9 @@ int kprobe_ret__do_filp_open(struct pt_regs* ctx)
  
- 	komeda_put_fourcc_list(formats);
- 
--	if (err)
--		goto cleanup;
-+	if (err) {
-+		kfree(kplane);
-+		return err;
-+	}
- 
- 	drm_plane_helper_add(plane, &komeda_plane_helper_funcs);
- 
+ SEC("kprobe/vfs_link")
+ int BPF_KPROBE(kprobe__vfs_link,
+-	       struct dentry* old_dentry, struct inode* dir,
+-	       struct dentry* new_dentry, struct inode** delegated_inode)
++	       struct dentry* old_dentry, struct user_namespace *mnt_userns,
++	       struct inode* dir, struct dentry* new_dentry,
++	       struct inode** delegated_inode)
+ {
+ 	struct bpf_func_stats_ctx stats_ctx;
+ 	bpf_stats_enter(&stats_ctx, profiler_bpf_vfs_link);
 -- 
 2.35.1
 
