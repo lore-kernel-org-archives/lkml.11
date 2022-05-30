@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E4A2C4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A67A8C4707F
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:47:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242750AbiE3Oqj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:46:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56924 "EHLO
+        id S242885AbiE3Oq7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:46:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240562AbiE3OZS (ORCPT
+        with ESMTP id S241447AbiE3O0M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:25:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7178AABF51;
-        Mon, 30 May 2022 06:50:57 -0700 (PDT)
+        Mon, 30 May 2022 10:26:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34F0AAE275;
+        Mon, 30 May 2022 06:51:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B9FD761001;
-        Mon, 30 May 2022 13:50:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B78BC385B8;
-        Mon, 30 May 2022 13:50:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D12DBB80DE6;
+        Mon, 30 May 2022 13:50:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DF08C3411A;
+        Mon, 30 May 2022 13:50:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918656;
-        bh=t7o3dVSPbYAXzDXsGXvIxTwGgdjNZH7ytre5uqNhv44=;
+        s=k20201202; t=1653918639;
+        bh=Lb86gbWhs67kFs4GNtIrQ2Ttz7LliZiZmer+S4h4N0E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CEWRHm7+BKnOUDOJ0aTvimILFj3w9gThaSO6K2OQn6PFKM0AU8lY8Sg9QFVFD3qEK
-         H36k6IllAodUp/qzNQH3Vy/iYFv4vnKTOX64c0xP3USEnfVULmNQmyOUjhGVu97xge
-         rYhLasE5FnoV52Rd+PqH1jVA0nC4CswL55v9SJwZSY7QuWWSU32VrLcwtMv2Kc5IOG
-         w1FpTangRuzp3Yt6eVGVqE9kcGScEiXEMSmlSstoH1wAsKPsGbOUT9Lj2OavyEaT31
-         JneE1vDk/2YKTm7DiT7EbxPF+j/txLDtQu9g5+vkR5J6GNu9mN+HMU7IxC0UrugOQy
-         ovnvMySe2shvA==
+        b=RvBn1voBxSUk3AGnhCN0ihqv2vTEeckSs5ahmNXivwcqdjDVFEBExaWzs5OzlMAgD
+         0tFDTeWno68ODto2PPS796PRrDdeTy8+eHox/mQH4Rs2PeN66ZVj8dQ661Efc4isGQ
+         iNAsc1eYh4aHxI0hBKhhqeQIEhSARFqfjLiBcJC6GM4crtfxkfYY9qNCTalHyJscu2
+         Z5EXgvGc0qeV2MBHdS0MVWOGDX6M2dQyLugBd02KFJW+uiXPfx2qhTwZap0HFrPmz4
+         fq6Km+DZUZY0lwB16P/P/g4e8Hb5jiI9hEicHmBe+MAkyU+wwpO//uMIVkrVr1cP78
+         s6ue27Wg8AmWg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
-        pabeni@redhat.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 38/38] eth: tg3: silence the GCC 12 array-bounds warning
-Date:   Mon, 30 May 2022 09:49:24 -0400
-Message-Id: <20220530134924.1936816-38-sashal@kernel.org>
+Cc:     "Smith, Kyle Miller (Nimble Kernel)" <kyles@hpe.com>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Hannes Reinecke <hare@suse.de>, Christoph Hellwig <hch@lst.de>,
+        Sasha Levin <sashal@kernel.org>, kbusch@kernel.org,
+        axboe@fb.com, sagi@grimberg.me, linux-nvme@lists.infradead.org
+Subject: [PATCH AUTOSEL 4.19 31/38] nvme-pci: fix a NULL pointer dereference in nvme_alloc_admin_tags
+Date:   Mon, 30 May 2022 09:49:17 -0400
+Message-Id: <20220530134924.1936816-31-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530134924.1936816-1-sashal@kernel.org>
 References: <20220530134924.1936816-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -53,42 +53,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakub Kicinski <kuba@kernel.org>
+From: "Smith, Kyle Miller (Nimble Kernel)" <kyles@hpe.com>
 
-[ Upstream commit 9dec850fd7c210a04b4707df8e6c95bfafdd6a4b ]
+[ Upstream commit da42761181627e9bdc37d18368b827948a583929 ]
 
-GCC 12 currently generates a rather inconsistent warning:
+In nvme_alloc_admin_tags, the admin_q can be set to an error (typically
+-ENOMEM) if the blk_mq_init_queue call fails to set up the queue, which
+is checked immediately after the call. However, when we return the error
+message up the stack, to nvme_reset_work the error takes us to
+nvme_remove_dead_ctrl()
+  nvme_dev_disable()
+   nvme_suspend_queue(&dev->queues[0]).
 
-drivers/net/ethernet/broadcom/tg3.c:17795:51: warning: array subscript 5 is above array bounds of ‘struct tg3_napi[5]’ [-Warray-bounds]
-17795 |                 struct tg3_napi *tnapi = &tp->napi[i];
-      |                                           ~~~~~~~~^~~
+Here, we only check that the admin_q is non-NULL, rather than not
+an error or NULL, and begin quiescing a queue that never existed, leading
+to bad / NULL pointer dereference.
 
-i is guaranteed < tp->irq_max which in turn is either 1 or 5.
-There are more loops like this one in the driver, but strangely
-GCC 12 dislikes only this single one.
-
-Silence this silliness for now.
-
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Kyle Smith <kyles@hpe.com>
+Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
+Reviewed-by: Hannes Reinecke <hare@suse.de>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/broadcom/Makefile | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/nvme/host/pci.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/broadcom/Makefile b/drivers/net/ethernet/broadcom/Makefile
-index 7046ad6d3d0e..ac50da49ca77 100644
---- a/drivers/net/ethernet/broadcom/Makefile
-+++ b/drivers/net/ethernet/broadcom/Makefile
-@@ -16,3 +16,8 @@ obj-$(CONFIG_BGMAC_BCMA) += bgmac-bcma.o bgmac-bcma-mdio.o
- obj-$(CONFIG_BGMAC_PLATFORM) += bgmac-platform.o
- obj-$(CONFIG_SYSTEMPORT) += bcmsysport.o
- obj-$(CONFIG_BNXT) += bnxt/
-+
-+# FIXME: temporarily silence -Warray-bounds on non W=1+ builds
-+ifndef KBUILD_EXTRA_WARN
-+CFLAGS_tg3.o += -Wno-array-bounds
-+endif
+diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+index d7cf3202cdd3..b06d2b6bd3fe 100644
+--- a/drivers/nvme/host/pci.c
++++ b/drivers/nvme/host/pci.c
+@@ -1522,6 +1522,7 @@ static int nvme_alloc_admin_tags(struct nvme_dev *dev)
+ 		dev->ctrl.admin_q = blk_mq_init_queue(&dev->admin_tagset);
+ 		if (IS_ERR(dev->ctrl.admin_q)) {
+ 			blk_mq_free_tag_set(&dev->admin_tagset);
++			dev->ctrl.admin_q = NULL;
+ 			return -ENOMEM;
+ 		}
+ 		if (!blk_get_queue(dev->ctrl.admin_q)) {
 -- 
 2.35.1
 
