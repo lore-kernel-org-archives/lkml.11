@@ -2,69 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 175CAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 10:04:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 754B3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 10:04:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235038AbiE3KEA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 06:04:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54062 "EHLO
+        id S235056AbiE3KEl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 06:04:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234361AbiE3KD5 (ORCPT
+        with ESMTP id S235031AbiE3KEj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 06:03:57 -0400
-X-Greylist: delayed 182 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 30 May 2022 03:03:53 PDT
-Received: from cmccmta1.chinamobile.com (cmccmta1.chinamobile.com [221.176.66.79])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 58500CE18;
-        Mon, 30 May 2022 03:03:51 -0700 (PDT)
-X-RM-TagInfo: emlType=0                                       
-X-RM-SPAM-FLAG: 00000000
-Received: from spf.mail.chinamobile.com (unknown[172.16.121.93])
-        by rmmx-syy-dmz-app04-12004 (RichMail) with SMTP id 2ee4629495cf2d1-67f92;
-        Mon, 30 May 2022 18:00:48 +0800 (CST)
-X-RM-TRANSID: 2ee4629495cf2d1-67f92
-X-RM-TagInfo: emlType=0                                       
-X-RM-SPAM-FLAG: 00000000
-Received: from localhost.localdomain (unknown[223.108.79.97])
-        by rmsmtp-syy-appsvrnew07-12032 (RichMail) with SMTP id 2f00629495cec5c-7fecb;
-        Mon, 30 May 2022 18:00:48 +0800 (CST)
-X-RM-TRANSID: 2f00629495cec5c-7fecb
-From:   Ding Xiang <dingxiang@cmss.chinamobile.com>
-To:     tytso@mit.edu, adilger.kernel@dilger.ca
-Cc:     linux-ext4@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] ext4: change variable "count" to signed integer
-Date:   Mon, 30 May 2022 18:00:47 +0800
-Message-Id: <20220530100047.537598-1-dingxiang@cmss.chinamobile.com>
-X-Mailer: git-send-email 2.31.1
+        Mon, 30 May 2022 06:04:39 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5E1C6108A;
+        Mon, 30 May 2022 03:04:38 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2385E113E;
+        Mon, 30 May 2022 03:04:38 -0700 (PDT)
+Received: from pierre123.arm.com (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id D9E4A3F73D;
+        Mon, 30 May 2022 03:04:35 -0700 (PDT)
+From:   Pierre Gondois <pierre.gondois@arm.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     zhangshaokun@hisilicon.com, Ionela.Voinescu@arm.com,
+        Dietmar.Eggemann@arm.com, Pierre Gondois <pierre.gondois@arm.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Pierre Gondois <Pierre.Gondois@arm.com>,
+        linux-pm@vger.kernel.org
+Subject: [PATCH v2 0/1] cpufreq: CPPC: Fix unused-function warning
+Date:   Mon, 30 May 2022 12:04:23 +0200
+Message-Id: <20220530100424.103301-1-pierre.gondois@arm.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since dx_make_map() may return -EFSCORRUPTED now,
-so change "count" to signed integer.
+v2:
+- Put the Energy Model related functions inside specific guards
+  instead of using the '__maybe_unused' flag.
 
-Signed-off-by: Ding Xiang <dingxiang@cmss.chinamobile.com>
----
- fs/ext4/namei.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+A warning was reported when the cppc_cpufreq driver is built
+with CONFIG_ENERGY_MODEL=n at:
+https://lore.kernel.org/all/626c99d3-edaf-4544-7e64-5b3653591086@hisilicon.com/
 
-diff --git a/fs/ext4/namei.c b/fs/ext4/namei.c
-index 47d0ca4c795b..db4ba99d1ceb 100644
---- a/fs/ext4/namei.c
-+++ b/fs/ext4/namei.c
-@@ -1929,7 +1929,8 @@ static struct ext4_dir_entry_2 *do_split(handle_t *handle, struct inode *dir,
- 			struct dx_hash_info *hinfo)
- {
- 	unsigned blocksize = dir->i_sb->s_blocksize;
--	unsigned count, continued;
-+	unsigned continued;
-+	int count;
- 	struct buffer_head *bh2;
- 	ext4_lblk_t newblock;
- 	u32 hash2;
+The patch should be applied on top of:
+https://lore.kernel.org/all/20220521032438.2504155-1-zhengbin13@huawei.com/
+
+Pierre Gondois (1):
+  cpufreq: CPPC: Fix unused-function warning
+
+ drivers/cpufreq/cppc_cpufreq.c | 17 ++++++++---------
+ 1 file changed, 8 insertions(+), 9 deletions(-)
+
 -- 
-2.31.1
-
-
+2.25.1
 
