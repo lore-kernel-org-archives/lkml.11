@@ -2,103 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98FF6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 08:21:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 006F7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 08:22:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233784AbiE3IVj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 04:21:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39076 "EHLO
+        id S233704AbiE3IWV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 04:22:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233572AbiE3IVT (ORCPT
+        with ESMTP id S233732AbiE3IWR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 04:21:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87FA06D19E;
-        Mon, 30 May 2022 01:21:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 236D660E8E;
-        Mon, 30 May 2022 08:21:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83626C3411E;
-        Mon, 30 May 2022 08:21:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653898877;
-        bh=6mZJiJbmBP5nIWsu49+CXVUX8jQfK+UvVFjRNgWXebw=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=XaoiQTO07UWKTKa7DvAu3E1TqyqCrZvDMjSawN2jqjs76oebLWXuHNyMMHpEHCuW2
-         RWVc8AQkaQdSALmWN1qEnP0U8+tmhvdUUIDC3u1bZpg/H6AlLeWXqRxTX/vimIu5bw
-         OXy7mEv0vYi2vsR/WO2VshcjWhH9onv5cq3HaCOzUDMYDdSqutECZxfI+ZI4FnTXlx
-         PNqKIZPahp6AyssPmubpmLdigj+1u+H946fyAVrYADTUucMm/fFuIBWV9X6L1Zmr14
-         QpLIbLZkXFgalB1GAGy3ay5uv7IuaVB4BOqOQrDUDblPJ+kvhE44AXYO5EfX0654Vb
-         Oc99QbaK00vFw==
-Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-30c1b401711so38155747b3.2;
-        Mon, 30 May 2022 01:21:17 -0700 (PDT)
-X-Gm-Message-State: AOAM530PAd9NbmwcjyGNwsNsNXlbx4pNk0C7Y1eP7B/M3yqeHOIbnB71
-        KAYKCayUz6DR6nrKuQd/NV4ac5wnAgu2nGBnXLk=
-X-Google-Smtp-Source: ABdhPJwtYtcRJBvW0OhdeYiTGlxOaw+f4fu0VS7H8dnFKjbyUOJjLxz2DuwfUfrH0XZz0QtT75LFMu05vESNYppoiso=
-X-Received: by 2002:a81:488c:0:b0:302:549f:ffbc with SMTP id
- v134-20020a81488c000000b00302549fffbcmr21167071ywa.495.1653898876538; Mon, 30
- May 2022 01:21:16 -0700 (PDT)
+        Mon, 30 May 2022 04:22:17 -0400
+X-Greylist: delayed 910 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 30 May 2022 01:22:14 PDT
+Received: from mail-m972.mail.163.com (mail-m972.mail.163.com [123.126.97.2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9B9A7B0E
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 01:22:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=Tj+2x
+        aAcY6dalUpOJzC6dld8hSXl1LyIhtvLrJnzwZg=; b=G2nvkRL8UJQWrrTBpV3WZ
+        5YFO1arfhl1hIgRxGmzdR1lx5RDQUfUGDMEf4dKLIuCs/e2zVNU9yt4Zo1DC5NC8
+        kaZFOUHIEWfvn+ctFmTsdztfZM7YvbvauTEks6ER/dkBuNVm2Ot6rB4b5iNWSOrv
+        z5xEGHBmplGj7cUBFLr9a4=
+Received: from localhost.localdomain (unknown [123.112.69.106])
+        by smtp2 (Coremail) with SMTP id GtxpCgBXFQj0epRilgL9FQ--.40673S4;
+        Mon, 30 May 2022 16:06:33 +0800 (CST)
+From:   Jianglei Nie <niejianglei2021@163.com>
+To:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com
+Cc:     ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jianglei Nie <niejianglei2021@163.com>
+Subject: [PATCH v2] ath11k: mhi: fix potential memory leak in ath11k_mhi_register()
+Date:   Mon, 30 May 2022 16:06:10 +0800
+Message-Id: <20220530080610.143925-1-niejianglei2021@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <CAK8P3a2_52JPnBWNvTTkFVwLxPAa7=NaQ4whwC1UeH_NYHeUKQ@mail.gmail.com>
- <CAK8P3a0SpU1n+29KQxzKnPRvzmDE=L0V9RUpKxhemv=74kevcQ@mail.gmail.com> <df5c406c-eec6-c340-2847-49670b7fe8bf@xen0n.name>
-In-Reply-To: <df5c406c-eec6-c340-2847-49670b7fe8bf@xen0n.name>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Mon, 30 May 2022 10:20:59 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a3awFdB1-G65DC38NBuSTvo6SvFTaS0m9YBxunHjHjQvQ@mail.gmail.com>
-Message-ID: <CAK8P3a3awFdB1-G65DC38NBuSTvo6SvFTaS0m9YBxunHjHjQvQ@mail.gmail.com>
-Subject: Re: [GIT PULL] asm-generic changes for 5.19
-To:     WANG Xuerui <kernel@xen0n.name>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        libc-alpha@sourceware.org,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Marc Zyngier <maz@kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        musl@lists.openwall.com,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        linux-acpi@vger.kernel.org, Jianmin Lv <lvjianmin@loongson.cn>,
-        linux-pci@vger.kernel.org, ardb@kernel.org,
-        Huacai Chen <chenhuacai@loongson.cn>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: GtxpCgBXFQj0epRilgL9FQ--.40673S4
+X-Coremail-Antispam: 1Uf129KBjvJXoW7CF1Dtw1fGF4UZryxuFy8Xwb_yoW8KrW5pF
+        4fWw47AFyrAF4fWFWrtF1kJFy3Wa93Ar1DK39rG34rCrnavF90q345JFyrXFyakw4xGFyU
+        ZF4Ut3W3Gas8AF7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0pibo7AUUUUU=
+X-Originating-IP: [123.112.69.106]
+X-CM-SenderInfo: xqlhyxxdqjzvrlsqjii6rwjhhfrp/1tbiFQkRjF5mK76qWwAAsd
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, May 29, 2022 at 3:10 PM WANG Xuerui <kernel@xen0n.name> wrote:
-> But what for the users and downstream projects? Do the users owning
-> LoongArch hardware (me included) and projects/companies porting their
-> offerings have to pay for Loongson's mistakes and wait another [2mo,
-> 1yr], "ideally" also missing the glibc 2.36 release too?
-...
-> Lastly, I'd like to clarify, that this is by no means a
-> passive-aggressive statement to make the community look like "the bad
-> guy", or to make Loongson "look bad"; I just intend to provide a
-> hopefully fresh perspective from a/an {end user, hobbyist kernel
-> developer, distro developer, native Chinese speaker with a hopefully
-> decent grasp of English}'s view.
+mhi_alloc_controller() allocates a memory space for mhi_ctrl. When some
+errors occur, mhi_ctrl should be freed by mhi_free_controller() and set
+ab_pci->mhi_ctrl = NULL because ab_pci->mhi_ctrl has a dangling pointer
+to the freed memory. But when ath11k_mhi_read_addr_from_dt() fails, the
+function returns without calling mhi_free_controller(), which will lead
+to a memory leak.
 
-Your feedback has been extremely valuable, as always. I definitely
-don't want to hold up merging the port for the glibc-2.36 release. If
-that is a risk, and if merging the architecture port without the drivers
-helps with that, I agree we should just do that. This will also help
-with build testing and any treewide changes that are going to be
-done on top of v5.19-rc1.
+We can fix it by calling mhi_free_controller() when
+ath11k_mhi_read_addr_from_dt() fails and set ab_pci->mhi_ctrl = NULL in
+all of the places where we call mhi_free_controller().
 
-For the continuous maintenance, would you be available as an
-additional Reviewer or co-maintainer to be listed in the maintainers
-file? I think in general it is a good idea to have at least one maintainer
-that is not directly part of the organization that owns the product,
-and you are clearly the best person outside of loongson technology
-for this.
+Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
+---
+ drivers/net/wireless/ath/ath11k/mhi.c | 17 ++++++++++-------
+ 1 file changed, 10 insertions(+), 7 deletions(-)
 
-Regarding the irqchip driver, merging those is entirely up to Marc and
-Thomas. Marc already brought up the precedent of merging arch/arm64
-without the required irqchip driver support, and if it turns out that he
-find the latest driver submission acceptable, that might still make it in
-through the irqchip tree.
+diff --git a/drivers/net/wireless/ath/ath11k/mhi.c b/drivers/net/wireless/ath/ath11k/mhi.c
+index fc3524e83e52..fc1bbf91c58e 100644
+--- a/drivers/net/wireless/ath/ath11k/mhi.c
++++ b/drivers/net/wireless/ath/ath11k/mhi.c
+@@ -367,8 +367,7 @@ int ath11k_mhi_register(struct ath11k_pci *ab_pci)
+ 	ret = ath11k_mhi_get_msi(ab_pci);
+ 	if (ret) {
+ 		ath11k_err(ab, "failed to get msi for mhi\n");
+-		mhi_free_controller(mhi_ctrl);
+-		return ret;
++		goto free_controller;
+ 	}
+ 
+ 	if (!test_bit(ATH11K_PCI_FLAG_MULTI_MSI_VECTORS, &ab_pci->flags))
+@@ -377,7 +376,7 @@ int ath11k_mhi_register(struct ath11k_pci *ab_pci)
+ 	if (test_bit(ATH11K_FLAG_FIXED_MEM_RGN, &ab->dev_flags)) {
+ 		ret = ath11k_mhi_read_addr_from_dt(mhi_ctrl);
+ 		if (ret < 0)
+-			return ret;
++			goto free_controller;
+ 	} else {
+ 		mhi_ctrl->iova_start = 0;
+ 		mhi_ctrl->iova_stop = 0xFFFFFFFF;
+@@ -405,18 +404,22 @@ int ath11k_mhi_register(struct ath11k_pci *ab_pci)
+ 	default:
+ 		ath11k_err(ab, "failed assign mhi_config for unknown hw rev %d\n",
+ 			   ab->hw_rev);
+-		mhi_free_controller(mhi_ctrl);
+-		return -EINVAL;
++		ret = -EINVAL;
++		goto free_controller;
+ 	}
+ 
+ 	ret = mhi_register_controller(mhi_ctrl, ath11k_mhi_config);
+ 	if (ret) {
+ 		ath11k_err(ab, "failed to register to mhi bus, err = %d\n", ret);
+-		mhi_free_controller(mhi_ctrl);
+-		return ret;
++		goto free_controller;
+ 	}
+ 
+ 	return 0;
++
++free_controller:
++	mhi_free_controller(mhi_ctrl);
++	ab_pci->mhi_ctrl = NULL;
++	return ret;
+ }
+ 
+ void ath11k_mhi_unregister(struct ath11k_pci *ab_pci)
+-- 
+2.25.1
 
-        Arnd
