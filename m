@@ -2,49 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C9EBC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:26:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE592C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:26:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236637AbiE3N0G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:26:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57704 "EHLO
+        id S236729AbiE3N0L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:26:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236653AbiE3NY5 (ORCPT
+        with ESMTP id S236590AbiE3NZL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:24:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B341E6393;
-        Mon, 30 May 2022 06:24:55 -0700 (PDT)
+        Mon, 30 May 2022 09:25:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 185E784A00;
+        Mon, 30 May 2022 06:25:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7018DB80D84;
-        Mon, 30 May 2022 13:24:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9EA24C3411A;
-        Mon, 30 May 2022 13:24:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7752060DD5;
+        Mon, 30 May 2022 13:25:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7108C3411A;
+        Mon, 30 May 2022 13:25:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917093;
-        bh=zLKqJ7YRx9+AQT3UXBkTEmxLVA2wtgkhaELDhD9VzXs=;
+        s=k20201202; t=1653917108;
+        bh=FQ0KiZojiiCMdSntTJQX+VlNmgl4iS0gWsxYxk6CTm8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GV4/LPFhV1myO3AEdZmDj1MUXXDTuv4uwK9IdCVuEvINa0JCAbZU+59j74Z9ej0MI
-         9N2gbJC2s1+nbIaKWMG+XAcuItrbqg96REsS1sQ6qguevKTyAnYppx/lEjiGOho25v
-         P6uC/Euf/ctZ7WvgIhMmRVJ2Qv17owgsL1Dmf2Q8UNPStv1l84RepbC+P9bPGYVDSi
-         1o5yEK2V5NTjYQ8bcNb3nPwizd5FszXqRTES/0q3qMjf/NH1GROpsbpQJlMVrdVagP
-         c9FFo5pR+i9f+wyFvVoxGqcb4W3v+DNREeu4aoxmUYAIx0EL4+ni5iYlxhsXuMqDZ5
-         DzKgLx53u1KgQ==
+        b=FDdAZoQ6CayteEuZ9GyJvPTE8kxvhGIDxf6MxAZ4mzs1LL16EfSxc5S5gYowrQfi1
+         jPJJ9a6gUjUkQ+L5agUgRgiaIDljiMV/zCb6rmfIHt0NrqPCW49Pr6JG246ThubF9z
+         9KGeWmeiRixqRnKoMxF021qLPM3ka9iSLB2WBMvguWSVn2zvXCzsiUs1HAzOYFCVN+
+         lhs69j4KKJ2zhxC/wybvSIR9RhEI+FpHAzM1Z3/E83WVfsMeGPN1pVspta0FDyuFXB
+         1v6J9pnQusrARpO9gAY9crFTNhDAjviN+Y66ZgGZXYL0pfNBajyWGUAzMBgNn81G6v
+         MCu+C2CY1jMWw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Niels Dossche <dossche.niels@gmail.com>,
-        Brian Norris <briannorris@chromium.org>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        amitkarwar@gmail.com, ganapathi017@gmail.com,
-        sharvari.harisangam@nxp.com, huxinming820@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 012/159] mwifiex: add mutex lock for call in mwifiex_dfs_chan_sw_work_queue
-Date:   Mon, 30 May 2022 09:21:57 -0400
-Message-Id: <20220530132425.1929512-12-sashal@kernel.org>
+Cc:     Mike Travis <mike.travis@hpe.com>, Steve Wahl <steve.wahl@hpe.com>,
+        Borislav Petkov <bp@suse.de>,
+        Dimitri Sivanich <dimitri.sivanich@hpe.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Sasha Levin <sashal@kernel.org>, mingo@redhat.com,
+        bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org
+Subject: [PATCH AUTOSEL 5.18 018/159] x86/platform/uv: Update TSC sync state for UV5
+Date:   Mon, 30 May 2022 09:22:03 -0400
+Message-Id: <20220530132425.1929512-18-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530132425.1929512-1-sashal@kernel.org>
 References: <20220530132425.1929512-1-sashal@kernel.org>
@@ -56,47 +54,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Niels Dossche <dossche.niels@gmail.com>
+From: Mike Travis <mike.travis@hpe.com>
 
-[ Upstream commit 3e12968f6d12a34b540c39cbd696a760cc4616f0 ]
+[ Upstream commit bb3ab81bdbd53f88f26ffabc9fb15bd8466486ec ]
 
-cfg80211_ch_switch_notify uses ASSERT_WDEV_LOCK to assert that
-net_device->ieee80211_ptr->mtx (which is the same as priv->wdev.mtx)
-is held during the function's execution.
-mwifiex_dfs_chan_sw_work_queue is one of its callers, which does not
-hold that lock, therefore violating the assertion.
-Add a lock around the call.
+The UV5 platform synchronizes the TSCs among all chassis, and will not
+proceed to OS boot without achieving synchronization.  Previous UV
+platforms provided a register indicating successful synchronization.
+This is no longer available on UV5.  On this platform TSC_ADJUST
+should not be reset by the kernel.
 
-Disclaimer:
-I am currently working on a static analyser to detect missing locks.
-This was a reported case. I manually verified the report by looking
-at the code, so that I do not send wrong information or patches.
-After concluding that this seems to be a true positive, I created
-this patch.
-However, as I do not in fact have this particular hardware,
-I was unable to test it.
-
-Reviewed-by: Brian Norris <briannorris@chromium.org>
-Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220321225515.32113-1-dossche.niels@gmail.com
+Signed-off-by: Mike Travis <mike.travis@hpe.com>
+Signed-off-by: Steve Wahl <steve.wahl@hpe.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Dimitri Sivanich <dimitri.sivanich@hpe.com>
+Acked-by: Thomas Gleixner <tglx@linutronix.de>
+Link: https://lore.kernel.org/r/20220406195149.228164-3-steve.wahl@hpe.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/marvell/mwifiex/11h.c | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/x86/kernel/apic/x2apic_uv_x.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/marvell/mwifiex/11h.c b/drivers/net/wireless/marvell/mwifiex/11h.c
-index d2ee6469e67b..3fa25cd64cda 100644
---- a/drivers/net/wireless/marvell/mwifiex/11h.c
-+++ b/drivers/net/wireless/marvell/mwifiex/11h.c
-@@ -303,5 +303,7 @@ void mwifiex_dfs_chan_sw_work_queue(struct work_struct *work)
+diff --git a/arch/x86/kernel/apic/x2apic_uv_x.c b/arch/x86/kernel/apic/x2apic_uv_x.c
+index f5a48e66e4f5..a6e9c2794ef5 100644
+--- a/arch/x86/kernel/apic/x2apic_uv_x.c
++++ b/arch/x86/kernel/apic/x2apic_uv_x.c
+@@ -199,7 +199,13 @@ static void __init uv_tsc_check_sync(void)
+ 	int mmr_shift;
+ 	char *state;
  
- 	mwifiex_dbg(priv->adapter, MSG,
- 		    "indicating channel switch completion to kernel\n");
-+	mutex_lock(&priv->wdev.mtx);
- 	cfg80211_ch_switch_notify(priv->netdev, &priv->dfs_chandef);
-+	mutex_unlock(&priv->wdev.mtx);
- }
+-	/* Different returns from different UV BIOS versions */
++	/* UV5 guarantees synced TSCs; do not zero TSC_ADJUST */
++	if (!is_uv(UV2|UV3|UV4)) {
++		mark_tsc_async_resets("UV5+");
++		return;
++	}
++
++	/* UV2,3,4, UV BIOS TSC sync state available */
+ 	mmr = uv_early_read_mmr(UVH_TSC_SYNC_MMR);
+ 	mmr_shift =
+ 		is_uv2_hub() ? UVH_TSC_SYNC_SHIFT_UV2K : UVH_TSC_SYNC_SHIFT;
 -- 
 2.35.1
 
