@@ -2,49 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E51FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:21:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B95F0C4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:21:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240561AbiE3OTt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:19:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48346 "EHLO
+        id S240623AbiE3OT7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:19:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240174AbiE3OPu (ORCPT
+        with ESMTP id S240471AbiE3OPy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:15:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B85DEBA95;
-        Mon, 30 May 2022 06:43:23 -0700 (PDT)
+        Mon, 30 May 2022 10:15:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 566CAEC3FC;
+        Mon, 30 May 2022 06:43:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ADA96B80DB7;
-        Mon, 30 May 2022 13:43:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F08FEC385B8;
-        Mon, 30 May 2022 13:43:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E952B60F38;
+        Mon, 30 May 2022 13:43:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40142C3411F;
+        Mon, 30 May 2022 13:43:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918200;
-        bh=lyG/J14veE4PPv7P93S7wmHZ8PtfDwL4ePf9On8nxYM=;
+        s=k20201202; t=1653918211;
+        bh=k0V0CGh24QZpI6yNSYhiwQtHgkrRzv0OACgWzWYIktE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qpxDLNSZad9C5mn4P1PtLw/PYrQHhq8s3bhU93V8DK8A4nnUCa8BNRjcMbSZq1P2T
-         hnkdDjwlsMRcZwXHxBkgTTc/YRt/63Iri9MaJhI5PgvWhtXeOLKNVv7u/pZ9MFT45d
-         a5/qFahL4Cx2hL0G9U03L49lkrWToOqTJ5IbOGiK6ff2z78D858Giqo5JTUMtlowS/
-         8N8z9plMbHIzL9uxdl2K26FMIQexxo5whrueklP4Gg0Th+GEuY/R72ZIakMrifqcL9
-         vymjhd6jPqqes0sLJnCjy1/EFDMVRRAHTsvn7d6U3oHXi6WsEyi+0MsAQoZPa2uQch
-         7DR/9ad1y2FsQ==
+        b=Q157JKIWkKUZ3guDLN8oex1goi7YbW9bR5O6xphACwgCgkjH6ZAg8SwyOpyRsWJ3p
+         YK0crmvHGwsWTZfuKkDpFIrzXbtTonvRzM8KPB7XYdpmIq0zxlx0slTfWhydbaPmPY
+         NkSGEAQRJFn7VzeugLUNRKc3Pp5J2QejbvY93gZ7L7EciipQ9vLOKb1VtYJjENEnr8
+         rS1FTgRCnrQ1vQiaqQyIhzQcJdoWOmyWoRKi6cGaU+QGXiB/C4u0kjbhPoy2jXt9KW
+         qcP2NTE3O4M5ewxg6WBnVVDOZU82uB4OhWlWcVtkt9XBJzzj/B9+Ueoz6sdb4oYe+U
+         +5T67uyJsANiw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Nicolas Dufresne <nicolas.dufresne@collabora.com>,
-        Sebastian Fricke <sebastian.fricke@collabora.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, ezequiel@vanguardiasur.com.ar,
-        p.zabel@pengutronix.de, gregkh@linuxfoundation.org,
-        linux-media@vger.kernel.org, linux-rockchip@lists.infradead.org,
-        linux-staging@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.15 092/109] media: hantro: Stop using H.264 parameter pic_num
-Date:   Mon, 30 May 2022 09:38:08 -0400
-Message-Id: <20220530133825.1933431-92-sashal@kernel.org>
+Cc:     Pierre Gondois <Pierre.Gondois@arm.com>,
+        Pierre Gondois <pierre.gondois@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+        Sasha Levin <sashal@kernel.org>, rafael@kernel.org,
+        linux-acpi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 095/109] ACPI: CPPC: Assume no transition latency if no PCCT
+Date:   Mon, 30 May 2022 09:38:11 -0400
+Message-Id: <20220530133825.1933431-95-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133825.1933431-1-sashal@kernel.org>
 References: <20220530133825.1933431-1-sashal@kernel.org>
@@ -56,40 +54,94 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicolas Dufresne <nicolas.dufresne@collabora.com>
+From: Pierre Gondois <Pierre.Gondois@arm.com>
 
-[ Upstream commit 831410700909f4e29d5af1ef26b8c59fc2d1988e ]
+[ Upstream commit 6380b7b2b29da9d9c5ab2d4a265901cd93ba3696 ]
 
-The hardware expects FrameNumWrap or long_term_frame_idx. Picture
-numbers are per field, and are mostly used during the memory
-management process, which is done in userland. This fixes two
-ITU conformance tests:
+The transition_delay_us (struct cpufreq_policy) is currently defined
+as:
+  Preferred average time interval between consecutive invocations of
+  the driver to set the frequency for this policy.  To be set by the
+  scaling driver (0, which is the default, means no preference).
+The transition_latency represents the amount of time necessary for a
+CPU to change its frequency.
 
-  - MR6_BT_B
-  - MR8_BT_B
+A PCCT table advertises mutliple values:
+- pcc_nominal: Expected latency to process a command, in microseconds
+- pcc_mpar: The maximum number of periodic requests that the subspace
+  channel can support, reported in commands per minute. 0 indicates no
+  limitation.
+- pcc_mrtt: The minimum amount of time that OSPM must wait after the
+  completion of a command before issuing the next command,
+  in microseconds.
+cppc_get_transition_latency() allows to get the max of them.
 
-Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
-Reviewed-by: Sebastian Fricke <sebastian.fricke@collabora.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+commit d4f3388afd48 ("cpufreq / CPPC: Set platform specific
+transition_delay_us") allows to select transition_delay_us based on
+the platform, and fallbacks to cppc_get_transition_latency()
+otherwise.
+
+If _CPC objects are not using PCC channels (no PPCT table), the
+transition_delay_us is set to CPUFREQ_ETERNAL, leading to really long
+periods between frequency updates (~4s).
+
+If the desired_reg, where performance requests are written, is in
+SystemMemory or SystemIo ACPI address space, there is no delay
+in requests. So return 0 instead of CPUFREQ_ETERNAL, leading to
+transition_delay_us being set to LATENCY_MULTIPLIER us (1000 us).
+
+This patch also adds two macros to check the address spaces.
+
+Signed-off-by: Pierre Gondois <pierre.gondois@arm.com>
+Reviewed-by: Sudeep Holla <sudeep.holla@arm.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/media/hantro/hantro_h264.c | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/acpi/cppc_acpi.c | 17 ++++++++++++++++-
+ 1 file changed, 16 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/staging/media/hantro/hantro_h264.c b/drivers/staging/media/hantro/hantro_h264.c
-index 0b4d2491be3b..228629fb3cdf 100644
---- a/drivers/staging/media/hantro/hantro_h264.c
-+++ b/drivers/staging/media/hantro/hantro_h264.c
-@@ -354,8 +354,6 @@ u16 hantro_h264_get_ref_nbr(struct hantro_ctx *ctx, unsigned int dpb_idx)
+diff --git a/drivers/acpi/cppc_acpi.c b/drivers/acpi/cppc_acpi.c
+index 71b87c16f92d..ed1341030684 100644
+--- a/drivers/acpi/cppc_acpi.c
++++ b/drivers/acpi/cppc_acpi.c
+@@ -100,6 +100,16 @@ static DEFINE_PER_CPU(struct cpc_desc *, cpc_desc_ptr);
+ 				(cpc)->cpc_entry.reg.space_id ==	\
+ 				ACPI_ADR_SPACE_PLATFORM_COMM)
  
- 	if (!(dpb->flags & V4L2_H264_DPB_ENTRY_FLAG_ACTIVE))
- 		return 0;
--	if (dpb->flags & V4L2_H264_DPB_ENTRY_FLAG_LONG_TERM)
--		return dpb->pic_num;
- 	return dpb->frame_num;
- }
++/* Check if a CPC register is in SystemMemory */
++#define CPC_IN_SYSTEM_MEMORY(cpc) ((cpc)->type == ACPI_TYPE_BUFFER &&	\
++				(cpc)->cpc_entry.reg.space_id ==	\
++				ACPI_ADR_SPACE_SYSTEM_MEMORY)
++
++/* Check if a CPC register is in SystemIo */
++#define CPC_IN_SYSTEM_IO(cpc) ((cpc)->type == ACPI_TYPE_BUFFER &&	\
++				(cpc)->cpc_entry.reg.space_id ==	\
++				ACPI_ADR_SPACE_SYSTEM_IO)
++
+ /* Evaluates to True if reg is a NULL register descriptor */
+ #define IS_NULL_REG(reg) ((reg)->space_id ==  ACPI_ADR_SPACE_SYSTEM_MEMORY && \
+ 				(reg)->address == 0 &&			\
+@@ -1378,6 +1388,9 @@ EXPORT_SYMBOL_GPL(cppc_set_perf);
+  * transition latency for performance change requests. The closest we have
+  * is the timing information from the PCCT tables which provides the info
+  * on the number and frequency of PCC commands the platform can handle.
++ *
++ * If desired_reg is in the SystemMemory or SystemIo ACPI address space,
++ * then assume there is no latency.
+  */
+ unsigned int cppc_get_transition_latency(int cpu_num)
+ {
+@@ -1403,7 +1416,9 @@ unsigned int cppc_get_transition_latency(int cpu_num)
+ 		return CPUFREQ_ETERNAL;
  
+ 	desired_reg = &cpc_desc->cpc_regs[DESIRED_PERF];
+-	if (!CPC_IN_PCC(desired_reg))
++	if (CPC_IN_SYSTEM_MEMORY(desired_reg) || CPC_IN_SYSTEM_IO(desired_reg))
++		return 0;
++	else if (!CPC_IN_PCC(desired_reg))
+ 		return CPUFREQ_ETERNAL;
+ 
+ 	if (pcc_ss_id < 0)
 -- 
 2.35.1
 
