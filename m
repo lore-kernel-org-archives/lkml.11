@@ -2,98 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E364CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 15:47:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E4CCC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 15:48:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241235AbiE3Prp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 11:47:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55286 "EHLO
+        id S242330AbiE3Pr7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 11:47:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242853AbiE3Pqr (ORCPT
+        with ESMTP id S242725AbiE3PrW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 11:46:47 -0400
-X-Greylist: delayed 862 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 30 May 2022 07:58:38 PDT
-Received: from mail.mleia.com (mleia.com [178.79.152.223])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 826A21649B8;
-        Mon, 30 May 2022 07:58:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mleia.com; s=mail;
-        t=1653921250; bh=idjzIs6nM/GzEGxcBT5U9Zvmwvs1WbeN6ytiAFKcA/M=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=qkrj84hcUoYR17888l+IifmTZFDvK4R7zKao/29k7PHMWnpCu9vaUfiQrmwkWOl1y
-         J/YgyDDK27WXn2lBC7DGmXHnFaMK6k/T2vlDIQIdk+y7QTc4m8e5LMnvTiN8BA83WE
-         T2IpUls4AbmmUkP+8siXcj26vS9kmnJdzB5kTmy6n46485N72bZ0AAXEJPLpgxRECF
-         ZtFgGu3xy3rXpEicA2tYLwr8rkH6OWRrHgmNUrVkbci5d9BzDicFN/3j2tu9Gs2hbz
-         mrU81t2SiQccsxcpFgS9TS5HIjJ1iH2YFwNGUhlDbfrJa4C6Xh/lSaCX0fEtCV4uNd
-         KcJ/TvunmhEPg==
-Received: from mail.mleia.com (localhost [127.0.0.1])
-        by mail.mleia.com (Postfix) with ESMTP id 03A5B3B7DED;
-        Mon, 30 May 2022 14:34:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mleia.com; s=mail;
-        t=1653921249; bh=idjzIs6nM/GzEGxcBT5U9Zvmwvs1WbeN6ytiAFKcA/M=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=GmWNllcbKIoAUVIxhCH5rQiQpya4rETl28xsA8jdTEkntFAr6kBFjUmW4UrO9Ij/P
-         wYCAPYMrPp4MDsff+RVjSUkONQKYMi2vVsSvNO1FSTCrPxafM3gtSp7t+kTDxv9p1y
-         O8QnSt5vc5SlVxlbA9vypjujLo86N7qCq8GLUPeC9lwL0qy16xJ2xa3drhaEI0W9JT
-         fpJtwULyFvxYyXzNucUVV3I4isREqQ/iY7EZ+OkctOZtRop1bjpcQUzIFawYgpymeL
-         se+Dv00LH7Z93Nj87qQESli+MXq6CGxdMKvixsJ/t1qGba5h8hQuw0DMxMBalGZHFp
-         P4wn1+pH+kJiw==
-Received: from [192.168.1.102] (88-112-131-206.elisa-laajakaista.fi [88.112.131.206])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        Mon, 30 May 2022 11:47:22 -0400
+Received: from smtp11.infineon.com (smtp11.infineon.com [IPv6:2a00:18f0:1e00:4::5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B70C5985B7;
+        Mon, 30 May 2022 08:02:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=infineon.com; i=@infineon.com; q=dns/txt; s=IFXMAIL;
+  t=1653922978; x=1685458978;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=VzB5TwT9laR/+mLY14M2Ys1oLWi5u4DgIFh1SEuLlZM=;
+  b=e4eUN8oWlYtviprCi3xOM7POunpEfoTJHBulurq3IZJowq3MOxcgtezq
+   MZGp/bhGV95KeIsP4S5w1Z/OBJqgra/4O/w8DUlAHfSZ6wtV2cjipcms/
+   Aq/MUNR0du8dZhr/3RX+dJewQy7Q9Cq5ZuHN5SISJtjm1mmzBrJaMsi4d
+   k=;
+X-SBRS: None
+X-IronPort-AV: E=McAfee;i="6400,9594,10363"; a="298846059"
+X-IronPort-AV: E=Sophos;i="5.91,263,1647298800"; 
+   d="scan'208";a="298846059"
+Received: from unknown (HELO mucxv003.muc.infineon.com) ([172.23.11.20])
+  by smtp11.infineon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 May 2022 17:02:54 +0200
+Received: from MUCSE822.infineon.com (MUCSE822.infineon.com [172.23.29.53])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.mleia.com (Postfix) with ESMTPSA id 8B8F93B7DE9;
-        Mon, 30 May 2022 14:34:09 +0000 (UTC)
-Message-ID: <148d6f7b-3973-0b58-c777-7a3f889d5032@mleia.com>
-Date:   Mon, 30 May 2022 17:34:08 +0300
+        by mucxv003.muc.infineon.com (Postfix) with ESMTPS;
+        Mon, 30 May 2022 17:02:54 +0200 (CEST)
+Received: from MUCSE807.infineon.com (172.23.29.33) by MUCSE822.infineon.com
+ (172.23.29.53) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Mon, 30 May
+ 2022 17:02:54 +0200
+Received: from ISCNPF0RJXQS.infineon.com (172.23.8.247) by
+ MUCSE807.infineon.com (172.23.29.33) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.26; Mon, 30 May 2022 17:02:53 +0200
+From:   Hakan Jansson <hakan.jansson@infineon.com>
+CC:     Hakan Jansson <hakan.jansson@infineon.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        "Luiz Augusto von Dentz" <luiz.dentz@gmail.com>,
+        <linux-bluetooth@vger.kernel.org>
+Subject: [PATCH v3 1/2] dt-bindings: net: broadcom-bluetooth: Add property for autobaud mode
+Date:   Mon, 30 May 2022 17:02:17 +0200
+Message-ID: <f395ffd03a6594ee11975b708721a33ccf8a4871.1653916330.git.hakan.jansson@infineon.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1653916330.git.hakan.jansson@infineon.com>
+References: <cover.1653916330.git.hakan.jansson@infineon.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] clk: nxp: fix typo in comment
-Content-Language: en-US
-To:     Julia Lawall <Julia.Lawall@inria.fr>,
-        Michael Turquette <mturquette@baylibre.com>
-Cc:     kernel-janitors@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>,
-        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-References: <20220521111145.81697-42-Julia.Lawall@inria.fr>
-From:   Vladimir Zapolskiy <vz@mleia.com>
-In-Reply-To: <20220521111145.81697-42-Julia.Lawall@inria.fr>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-49551924 
-X-CRM114-CacheID: sfid-20220530_143410_035189_0CCDEF31 
-X-CRM114-Status: GOOD (  12.89  )
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [172.23.8.247]
+X-ClientProxiedBy: MUCSE808.infineon.com (172.23.29.34) To
+ MUCSE807.infineon.com (172.23.29.33)
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/21/22 14:10, Julia Lawall wrote:
-> Spelling mistake (triple letters) in comment.
-> Detected with the help of Coccinelle.
-> 
-> Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
-> 
-> ---
->   drivers/clk/nxp/clk-lpc18xx-cgu.c |    2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/clk/nxp/clk-lpc18xx-cgu.c b/drivers/clk/nxp/clk-lpc18xx-cgu.c
-> index c23ac463ab0f..1bb18dc0a80a 100644
-> --- a/drivers/clk/nxp/clk-lpc18xx-cgu.c
-> +++ b/drivers/clk/nxp/clk-lpc18xx-cgu.c
-> @@ -609,7 +609,7 @@ static void __init lpc18xx_cgu_register_source_clks(struct device_node *np,
->   	if (IS_ERR(clk))
->   		pr_warn("%s: failed to register irc clk\n", __func__);
->   
-> -	/* Register crystal oscillator controlller */
-> +	/* Register crystal oscillator controller */
->   	parents[0] = of_clk_get_parent_name(np, 0);
->   	clk = clk_register_gate(NULL, clk_src_names[CLK_SRC_OSC], parents[0],
->   				0, base + LPC18XX_CGU_XTAL_OSC_CTRL,
-> 
+Add property, "brcm,requires-autobaud-mode", to enable autobaud mode
+selection.
 
-Acked-by: Vladimir Zapolskiy <vz@mleia.com>
+Some devices (e.g. CYW5557x) require autobaud mode to enable FW loading.
+Autobaud mode can also be required on some boards where the controller
+device is using a non-standard baud rate when first powered on.
 
---
-Best wishes,
-Vladimir
+Signed-off-by: Hakan Jansson <hakan.jansson@infineon.com>
+---
+V2 -> V3:
+  - Rename DT property and modify description
+    https://lore.kernel.org/linux-devicetree/e6e83743-1441-dc53-fd1f-cdfb9a24932a@linaro.org/
+
+V1 -> V2:
+  - Modify property description
+
+ .../devicetree/bindings/net/broadcom-bluetooth.yaml        | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml b/Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml
+index 5aac094fd217..0a58d0fbcbc4 100644
+--- a/Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml
++++ b/Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml
+@@ -92,6 +92,13 @@ properties:
+        pcm-sync-mode: slave, master
+        pcm-clock-mode: slave, master
+ 
++  brcm,requires-autobaud-mode:
++    type: boolean
++    description:
++      Set this property if autobaud mode is required. Autobaud mode is required
++      if the device's initial baud rate in normal mode is not supported by the
++      host or if the device requires autobaud mode startup before loading FW.
++
+   interrupts:
+     items:
+       - description: Handle to the line HOST_WAKE used to wake
+-- 
+2.25.1
+
