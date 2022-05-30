@@ -2,172 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C71D5C4321E
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:51:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E8ACC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:51:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242289AbiE3Ovf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:51:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56164 "EHLO
+        id S241613AbiE3OuC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:50:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242607AbiE3ObW (ORCPT
+        with ESMTP id S241543AbiE3Oa2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:31:22 -0400
+        Mon, 30 May 2022 10:30:28 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90B3312D1F6;
-        Mon, 30 May 2022 06:53:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 617785D19F;
+        Mon, 30 May 2022 06:52:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 71619B80DE4;
-        Mon, 30 May 2022 13:52:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12E94C385B8;
-        Mon, 30 May 2022 13:52:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8D321B80DC0;
+        Mon, 30 May 2022 13:52:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A280C385B8;
+        Mon, 30 May 2022 13:52:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918771;
-        bh=IsjXNX3etQ7+7cakfgwWRPXIpl4UWGXScyzTt/MVUqg=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=gmaH3mIFU4FmgDP71ExoVahOisKwwldzyl5kh7bZJkrR1slATPxlY4oJLoN6/99cZ
-         M5ClStirarAphpMUepI+OaddWCjYuWrFQU4gKHOeynCF/5HMANAsMwdQolRAyNo/E9
-         SM8bD+p1iVuEtD6CC9BEG2BRE1NKtQDJ3HR8IJvvGPXE3Eky/WEgPpZc5lWwpwPJIG
-         wlQakuIG444+XK6c2lNstFEP+1ozWRcBMoGqH6pcErDKIaDXNmTHRdW3Tgp5NiwVDr
-         /WJXnaKdTn+TyVkXB7U1XpfUaD6FcWS3N9HS+4kOhArWsQfgSuZGdKwgV4VqPisdV8
-         tz52au4ARPD/w==
-Received: by mail-oa1-f51.google.com with SMTP id 586e51a60fabf-f16a3e0529so14400895fac.2;
-        Mon, 30 May 2022 06:52:51 -0700 (PDT)
-X-Gm-Message-State: AOAM530Sp+na4aQwyrlOPlBp4tY7hNV5YyZ9nILJRyAg7vlFYfiKPO7/
-        jAnNyU418SnKwPicdOAm7MGvE8HdIFw7uDeT6j0=
-X-Google-Smtp-Source: ABdhPJz3x+Hsqte9LsMJBQg0E3I1qqFfyBzf8Am2vKuManlkOa/PMkRBZC1++fSyo8hK4fhocI0Dke3azXqxYW8LhVk=
-X-Received: by 2002:a05:6870:eaa5:b0:da:b3f:2b45 with SMTP id
- s37-20020a056870eaa500b000da0b3f2b45mr10799165oap.228.1653918770217; Mon, 30
- May 2022 06:52:50 -0700 (PDT)
+        s=k20201202; t=1653918731;
+        bh=t7o3dVSPbYAXzDXsGXvIxTwGgdjNZH7ytre5uqNhv44=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=hOFLE1aRVXHJsjGta1pNWf4m1HaPG1lhQlQ5LJauAhI2hyl788cET5TZP6Yn+3h48
+         4OKIRYdQD2z6rDEJ6WZygEbozdfNtQ0p/vG04nHvyXXxUo8sBEdMz/K6ls+c2p41/P
+         ITV6Vihm2XXoK0fs8oEsCvW9JipmOHMuNag9zeFeIW8RHtfyAms8Gx+szWoRCNahzi
+         UelFVxuYmATPEfEQZfjoNots7DCXJuNQxo9jBnzEu7fZMdpckGU6WI0KRlpXRn5+oN
+         mkYuYe/6J8NTI8m2QSG/Z45G6pa/6zzJTY4HCpOfqBi7Z45052HQ8eNWZCOiTOZy7q
+         ClZ+PgeIBgyCQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
+        pabeni@redhat.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 29/29] eth: tg3: silence the GCC 12 array-bounds warning
+Date:   Mon, 30 May 2022 09:50:56 -0400
+Message-Id: <20220530135057.1937286-29-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220530135057.1937286-1-sashal@kernel.org>
+References: <20220530135057.1937286-1-sashal@kernel.org>
 MIME-Version: 1.0
-References: <20220530134701.1935933-1-sashal@kernel.org> <20220530134701.1935933-51-sashal@kernel.org>
-In-Reply-To: <20220530134701.1935933-51-sashal@kernel.org>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Mon, 30 May 2022 15:52:39 +0200
-X-Gmail-Original-Message-ID: <CAMj1kXG30L5+pXco69k2M2=rw6L4wTvYARL8WUs5nfdC-3nK+g@mail.gmail.com>
-Message-ID: <CAMj1kXG30L5+pXco69k2M2=rw6L4wTvYARL8WUs5nfdC-3nK+g@mail.gmail.com>
-Subject: Re: [PATCH AUTOSEL 5.4 51/55] ARM: 9201/1: spectre-bhb: rely on
- linker to emit cross-section literal loads
-To:     Sasha Levin <sashal@kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "# 3.4.x" <stable@vger.kernel.org>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Russell King <linux@armlinux.org.uk>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Nicolas Pitre <nico@fluxnic.net>,
-        Keith Packard <keithpac@amazon.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-AUTONAK
+From: Jakub Kicinski <kuba@kernel.org>
 
-On Mon, 30 May 2022 at 15:49, Sasha Levin <sashal@kernel.org> wrote:
->
-> From: Ard Biesheuvel <ardb@kernel.org>
->
-> [ Upstream commit ad12c2f1587c6ec9b52ff226f438955bfae6ad89 ]
->
-> The assembler does not permit 'LDR PC, <sym>' when the symbol lives in a
-> different section, which is why we have been relying on rather fragile
-> open-coded arithmetic to load the address of the vector_swi routine into
-> the program counter using a single LDR instruction in the SWI slot in
-> the vector table. The literal was moved to a different section to in
-> commit 19accfd373847 ("ARM: move vector stubs") to ensure that the
-> vector stubs page does not need to be mapped readable for user space,
-> which is the case for the vector page itself, as it carries the kuser
-> helpers as well.
->
-> So the cross-section literal load is open-coded, and this relies on the
-> address of vector_swi to be at the very start of the vector stubs page,
-> and we won't notice if we got it wrong until booting the kernel and see
-> it break. Fortunately, it was guaranteed to break, so this was fragile
-> but not problematic.
->
-> Now that we have added two other variants of the vector table, we have 3
-> occurrences of the same trick, and so the size of our ISA/compiler/CPU
-> validation space has tripled, in a way that may cause regressions to only
-> be observed once booting the image in question on a CPU that exercises a
-> particular vector table.
->
-> So let's switch to true cross section references, and let the linker fix
-> them up like it fixes up all the other cross section references in the
-> vector page.
->
-> Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
-> Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-> Signed-off-by: Sasha Levin <sashal@kernel.org>
-> ---
->  arch/arm/kernel/entry-armv.S | 22 +++++++++++++++-------
->  1 file changed, 15 insertions(+), 7 deletions(-)
->
-> diff --git a/arch/arm/kernel/entry-armv.S b/arch/arm/kernel/entry-armv.S
-> index 8e8efe28d799..4d900c61a0f7 100644
-> --- a/arch/arm/kernel/entry-armv.S
-> +++ b/arch/arm/kernel/entry-armv.S
-> @@ -1074,10 +1074,15 @@ ENDPROC(vector_bhb_bpiall_\name)
->         .endm
->
->         .section .stubs, "ax", %progbits
-> -       @ This must be the first word
-> +       @ These need to remain at the start of the section so that
-> +       @ they are in range of the 'SWI' entries in the vector tables
-> +       @ located 4k down.
-> +.L__vector_swi:
->         .word   vector_swi
->  #ifdef CONFIG_HARDEN_BRANCH_HISTORY
-> +.L__vector_bhb_loop8_swi:
->         .word   vector_bhb_loop8_swi
-> +.L__vector_bhb_bpiall_swi:
->         .word   vector_bhb_bpiall_swi
->  #endif
->
-> @@ -1220,10 +1225,11 @@ vector_addrexcptn:
->         .globl  vector_fiq
->
->         .section .vectors, "ax", %progbits
-> -.L__vectors_start:
->         W(b)    vector_rst
->         W(b)    vector_und
-> -       W(ldr)  pc, .L__vectors_start + 0x1000
-> +ARM(   .reloc  ., R_ARM_LDR_PC_G0, .L__vector_swi              )
-> +THUMB( .reloc  ., R_ARM_THM_PC12, .L__vector_swi               )
-> +       W(ldr)  pc, .
->         W(b)    vector_pabt
->         W(b)    vector_dabt
->         W(b)    vector_addrexcptn
-> @@ -1232,10 +1238,11 @@ vector_addrexcptn:
->
->  #ifdef CONFIG_HARDEN_BRANCH_HISTORY
->         .section .vectors.bhb.loop8, "ax", %progbits
-> -.L__vectors_bhb_loop8_start:
->         W(b)    vector_rst
->         W(b)    vector_bhb_loop8_und
-> -       W(ldr)  pc, .L__vectors_bhb_loop8_start + 0x1004
-> +ARM(   .reloc  ., R_ARM_LDR_PC_G0, .L__vector_bhb_loop8_swi    )
-> +THUMB( .reloc  ., R_ARM_THM_PC12, .L__vector_bhb_loop8_swi     )
-> +       W(ldr)  pc, .
->         W(b)    vector_bhb_loop8_pabt
->         W(b)    vector_bhb_loop8_dabt
->         W(b)    vector_addrexcptn
-> @@ -1243,10 +1250,11 @@ vector_addrexcptn:
->         W(b)    vector_bhb_loop8_fiq
->
->         .section .vectors.bhb.bpiall, "ax", %progbits
-> -.L__vectors_bhb_bpiall_start:
->         W(b)    vector_rst
->         W(b)    vector_bhb_bpiall_und
-> -       W(ldr)  pc, .L__vectors_bhb_bpiall_start + 0x1008
-> +ARM(   .reloc  ., R_ARM_LDR_PC_G0, .L__vector_bhb_bpiall_swi   )
-> +THUMB( .reloc  ., R_ARM_THM_PC12, .L__vector_bhb_bpiall_swi    )
-> +       W(ldr)  pc, .
->         W(b)    vector_bhb_bpiall_pabt
->         W(b)    vector_bhb_bpiall_dabt
->         W(b)    vector_addrexcptn
-> --
-> 2.35.1
->
+[ Upstream commit 9dec850fd7c210a04b4707df8e6c95bfafdd6a4b ]
+
+GCC 12 currently generates a rather inconsistent warning:
+
+drivers/net/ethernet/broadcom/tg3.c:17795:51: warning: array subscript 5 is above array bounds of ‘struct tg3_napi[5]’ [-Warray-bounds]
+17795 |                 struct tg3_napi *tnapi = &tp->napi[i];
+      |                                           ~~~~~~~~^~~
+
+i is guaranteed < tp->irq_max which in turn is either 1 or 5.
+There are more loops like this one in the driver, but strangely
+GCC 12 dislikes only this single one.
+
+Silence this silliness for now.
+
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/ethernet/broadcom/Makefile | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/drivers/net/ethernet/broadcom/Makefile b/drivers/net/ethernet/broadcom/Makefile
+index 7046ad6d3d0e..ac50da49ca77 100644
+--- a/drivers/net/ethernet/broadcom/Makefile
++++ b/drivers/net/ethernet/broadcom/Makefile
+@@ -16,3 +16,8 @@ obj-$(CONFIG_BGMAC_BCMA) += bgmac-bcma.o bgmac-bcma-mdio.o
+ obj-$(CONFIG_BGMAC_PLATFORM) += bgmac-platform.o
+ obj-$(CONFIG_SYSTEMPORT) += bcmsysport.o
+ obj-$(CONFIG_BNXT) += bnxt/
++
++# FIXME: temporarily silence -Warray-bounds on non W=1+ builds
++ifndef KBUILD_EXTRA_WARN
++CFLAGS_tg3.o += -Wno-array-bounds
++endif
+-- 
+2.35.1
+
