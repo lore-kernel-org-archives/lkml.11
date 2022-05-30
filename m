@@ -2,47 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69895C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:54:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9560DC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:54:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238476AbiE3Ny1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:54:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34674 "EHLO
+        id S238509AbiE3Nye (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:54:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239255AbiE3NrT (ORCPT
+        with ESMTP id S239272AbiE3NrU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:47:19 -0400
+        Mon, 30 May 2022 09:47:20 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C96AA5A9E;
-        Mon, 30 May 2022 06:34:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E661A33A7;
+        Mon, 30 May 2022 06:34:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 039BB60F4E;
-        Mon, 30 May 2022 13:34:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 325FBC3411C;
-        Mon, 30 May 2022 13:34:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4860260E9B;
+        Mon, 30 May 2022 13:34:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2C8FC36AE3;
+        Mon, 30 May 2022 13:34:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917645;
-        bh=7ItEnuZgI7sAM+jHg3w+0ZhqPnHL9n74ST6Y6vLO1Nk=;
+        s=k20201202; t=1653917651;
+        bh=AblWjtA8CPTC3IoqQWt8yq7oRCv0iVKowhnhrwAHlr8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QcmBTMWwAuXTFgQR75/eKDGuPw8nSfaUa9E7cDEDqi7Lz935CaMje5JfM9EEya9Te
-         wpLbKuYF0ZgSnbJmJrpFfzeWftCtRaB9sXlCW0Fcv41mR38+Hc7KaaOhbUKM2m6bUC
-         xeyqGRHgMwWjpSP0bbWFC/BL8BibxhufnOvxKK6b/ew0qPKWxUbS3ZC1TQWCXK7bZ9
-         mSC/Lq5jnSJRQh6tAoV1wUBQR9GYI636sI0TCprZxpYFRNNuCaa0O7KStirl6YlFLZ
-         HVsVbyDplIm3SN+GjtzWDgW/LOhqOLxlQ07bhFhiaV08Y/HIiqPOsxk7gQqSFNtNMW
-         5ACNnxJiWvCsA==
+        b=rJi5TE/FHgA9M3bXX4iLdI33+Mhz7UF9ViRe7YH5QCYTmENmKP7qcl9TnmlKu4Cjn
+         c2sElWYpV5Yxg8Cd+A2kRYCCwsoGHk7NWkPEJa7tTLze5X40inmN/LktpOFGhKibcX
+         0c8ATyAOuSFktzECyUeyKbKwozItSrMlhFkNVW4p9cP+sT1tk+hVDBYrj0naQb6wtI
+         CNJS7Bg86a4JMEXqCpSIgq4u8fPiqnFHh69991BKv05m8JPKJmEEs1iPL7fBMQCT/J
+         uYsJwt90gFzSRTiZnYqvFrYhnvbvuib55xlxWiLqR7Z7tfZuwwfjKzgGpVakrOknHE
+         t8Fg64eiyVHRQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     James Smart <jsmart2021@gmail.com>,
-        Justin Tee <justin.tee@broadcom.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, james.smart@broadcom.com,
-        dick.kennedy@broadcom.com, jejb@linux.ibm.com,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 051/135] scsi: lpfc: Fix resource leak in lpfc_sli4_send_seq_to_ulp()
-Date:   Mon, 30 May 2022 09:30:09 -0400
-Message-Id: <20220530133133.1931716-51-sashal@kernel.org>
+Cc:     Hans de Goede <hdegoede@redhat.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, cezary.rojewski@intel.com,
+        liam.r.girdwood@linux.intel.com, yang.jie@linux.intel.com,
+        perex@perex.cz, tiwai@suse.com, andriy.shevchenko@linux.intel.com,
+        peter.ujfalusi@linux.intel.com, akihiko.odaki@gmail.com,
+        alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.17 053/135] ASoC: Intel: bytcr_rt5640: Add quirk for the HP Pro Tablet 408
+Date:   Mon, 30 May 2022 09:30:11 -0400
+Message-Id: <20220530133133.1931716-53-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133133.1931716-1-sashal@kernel.org>
 References: <20220530133133.1931716-1-sashal@kernel.org>
@@ -54,62 +56,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Smart <jsmart2021@gmail.com>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit 646db1a560f44236b7278b822ca99a1d3b6ea72c ]
+[ Upstream commit ce216cfa84a4e1c23b105e652c550bdeaac9e922 ]
 
-If no handler is found in lpfc_complete_unsol_iocb() to match the rctl of a
-received frame, the frame is dropped and resources are leaked.
+Add a quirk for the HP Pro Tablet 408, this BYTCR tablet has no CHAN
+package in its ACPI tables and uses SSP0-AIF1 rather then SSP0-AIF2 which
+is the default for BYTCR devices.
 
-Fix by returning resources when discarding an unhandled frame type.  Update
-lpfc_fc_frame_check() handling of NOP basic link service.
+It also uses DMIC1 for the internal mic rather then the default IN3
+and it uses JD2 rather then the default JD1 for jack-detect.
 
-Link: https://lore.kernel.org/r/20220426181419.9154-1-jsmart2021@gmail.com
-Co-developed-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: James Smart <jsmart2021@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=211485
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Acked-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Link: https://lore.kernel.org/r/20220427134918.527381-1-hdegoede@redhat.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/lpfc/lpfc_sli.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ sound/soc/intel/boards/bytcr_rt5640.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/drivers/scsi/lpfc/lpfc_sli.c b/drivers/scsi/lpfc/lpfc_sli.c
-index b64c5f157ce9..f5f472991816 100644
---- a/drivers/scsi/lpfc/lpfc_sli.c
-+++ b/drivers/scsi/lpfc/lpfc_sli.c
-@@ -18466,7 +18466,6 @@ lpfc_fc_frame_check(struct lpfc_hba *phba, struct fc_frame_header *fc_hdr)
- 	case FC_RCTL_ELS_REP:	/* extended link services reply */
- 	case FC_RCTL_ELS4_REQ:	/* FC-4 ELS request */
- 	case FC_RCTL_ELS4_REP:	/* FC-4 ELS reply */
--	case FC_RCTL_BA_NOP:  	/* basic link service NOP */
- 	case FC_RCTL_BA_ABTS: 	/* basic link service abort */
- 	case FC_RCTL_BA_RMC: 	/* remove connection */
- 	case FC_RCTL_BA_ACC:	/* basic accept */
-@@ -18487,6 +18486,7 @@ lpfc_fc_frame_check(struct lpfc_hba *phba, struct fc_frame_header *fc_hdr)
- 		fc_vft_hdr = (struct fc_vft_header *)fc_hdr;
- 		fc_hdr = &((struct fc_frame_header *)fc_vft_hdr)[1];
- 		return lpfc_fc_frame_check(phba, fc_hdr);
-+	case FC_RCTL_BA_NOP:	/* basic link service NOP */
- 	default:
- 		goto drop;
- 	}
-@@ -19299,12 +19299,14 @@ lpfc_sli4_send_seq_to_ulp(struct lpfc_vport *vport,
- 	if (!lpfc_complete_unsol_iocb(phba,
- 				      phba->sli4_hba.els_wq->pring,
- 				      iocbq, fc_hdr->fh_r_ctl,
--				      fc_hdr->fh_type))
-+				      fc_hdr->fh_type)) {
- 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
- 				"2540 Ring %d handler: unexpected Rctl "
- 				"x%x Type x%x received\n",
- 				LPFC_ELS_RING,
- 				fc_hdr->fh_r_ctl, fc_hdr->fh_type);
-+		lpfc_in_buf_free(phba, &seq_dmabuf->dbuf);
-+	}
- 
- 	/* Free iocb created in lpfc_prep_seq */
- 	list_for_each_entry_safe(curr_iocb, next_iocb,
+diff --git a/sound/soc/intel/boards/bytcr_rt5640.c b/sound/soc/intel/boards/bytcr_rt5640.c
+index 2ace32c03ec9..b5ac226c59e1 100644
+--- a/sound/soc/intel/boards/bytcr_rt5640.c
++++ b/sound/soc/intel/boards/bytcr_rt5640.c
+@@ -773,6 +773,18 @@ static const struct dmi_system_id byt_rt5640_quirk_table[] = {
+ 					BYT_RT5640_OVCD_SF_0P75 |
+ 					BYT_RT5640_MCLK_EN),
+ 	},
++	{	/* HP Pro Tablet 408 */
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "Hewlett-Packard"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "HP Pro Tablet 408"),
++		},
++		.driver_data = (void *)(BYT_RT5640_DMIC1_MAP |
++					BYT_RT5640_JD_SRC_JD2_IN4N |
++					BYT_RT5640_OVCD_TH_1500UA |
++					BYT_RT5640_OVCD_SF_0P75 |
++					BYT_RT5640_SSP0_AIF1 |
++					BYT_RT5640_MCLK_EN),
++	},
+ 	{	/* HP Stream 7 */
+ 		.matches = {
+ 			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Hewlett-Packard"),
 -- 
 2.35.1
 
