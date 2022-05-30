@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63C5BC4707F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45C81C4707E
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:53:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238513AbiE3Nw6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:52:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42650 "EHLO
+        id S238490AbiE3NwM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:52:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238937AbiE3NqI (ORCPT
+        with ESMTP id S238824AbiE3Np6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:46:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BE608FD6A;
-        Mon, 30 May 2022 06:33:51 -0700 (PDT)
+        Mon, 30 May 2022 09:45:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99A6DA0D1F;
+        Mon, 30 May 2022 06:33:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 488A460F27;
-        Mon, 30 May 2022 13:33:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 291F1C36AE7;
-        Mon, 30 May 2022 13:33:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9B9FCB80DB8;
+        Mon, 30 May 2022 13:33:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03ADFC341C4;
+        Mon, 30 May 2022 13:33:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917627;
-        bh=Zcm9ySkbT/G7Q4BJQf5Zw5SrfV4XpqujHIMn+NmqG/M=;
+        s=k20201202; t=1653917613;
+        bh=MoPv6OhQx7EiRN060osT8VM3jcVMoppKxNbkWMOY8cI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sttezF5sPcUgi0TczNTyQov56LLcdkmdPWKmd9acBoMLMKBQgTZFNhD4Riq2mmf9g
-         RX+4ZNAUn6ARa+3L2xBDqbH0LYx2qmeJyyLGgFtpS6fYVNEeuQ3EU8W5q6FrnwpIX4
-         m8AAV8Dg6ImJT0cSD/NSfRjYpckgN4Xhf4wqzxlKo6q4OEOV0Fm0Wt8vv/AQkMZI2d
-         yG1fXSYAY/W5I/hTSbMFCI1E8hPF++KQhA1FE50rb1bwomNiQUXqDrjCBeOvCIW4SC
-         +1RobAWcHVuU3xVo6GWGFSNF6FpH4WlNgIp4NIVqqmZuv7sKJeBKvSbTV8jMJtiIoH
-         U8xbcovGoOOxA==
+        b=K0p0HOdqXcdzadHtyQSd3uCfR3zWBCVckt25h8dTCFIqeocblhCorsnzP2yCOcW28
+         esxoYGsuJ9MzYKGt7Nt6p8J8QoyfDMiVO8vS7IoobvAipVtYMlc4pLxUTwwuQXA4P8
+         36Z8iTDMJU6Tfl0YbqhrbDkucwGAJIBcE4yVQd1pBzv7p1n7DzfuKgVv7yg3yc3zCm
+         j6fxxGDMqodBldQYqOw/tUSN99aSwXi61fn9+jeOmWtIzLv5Or60hWjHP7n1B6we2p
+         boYfOM+HxFSpu3UTTnsh/DPVlxnuDfg9gX7z5ThouYQJBX1fw6FACoXzC8dcC5Lt2V
+         JNUu0t/FKp30A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Samuel Holland <samuel@sholland.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Sasha Levin <sashal@kernel.org>, mripard@kernel.org,
-        wens@csie.org, airlied@linux.ie, daniel@ffwll.ch,
-        dri-devel@lists.freedesktop.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.17 047/135] drm/sun4i: Add support for D1 TCONs
-Date:   Mon, 30 May 2022 09:30:05 -0400
-Message-Id: <20220530133133.1931716-47-sashal@kernel.org>
+Cc:     Vikash Garodia <quic_vgarodia@quicinc.com>,
+        Fritz Koenig <frkoenig@chromium.org>,
+        Stanimir Varbanov <stanimir.varbanov@linaro.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, agross@kernel.org,
+        bjorn.andersson@linaro.org, linux-media@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 041/135] media: venus: do not queue internal buffers from previous sequence
+Date:   Mon, 30 May 2022 09:29:59 -0400
+Message-Id: <20220530133133.1931716-41-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133133.1931716-1-sashal@kernel.org>
 References: <20220530133133.1931716-1-sashal@kernel.org>
@@ -55,55 +55,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Samuel Holland <samuel@sholland.org>
+From: Vikash Garodia <quic_vgarodia@quicinc.com>
 
-[ Upstream commit b9b52d2f4aafa2bd637ace0f24615bdad8e49f01 ]
+[ Upstream commit 73664f107c0fafb59cd91e576b81c986adb74610 ]
 
-D1 has a TCON TOP, so its quirks are similar to those for the R40 TCONs.
-While there are some register changes, the part of the TCON TV supported
-by the driver matches the R40 quirks, so that quirks structure can be
-reused. D1 has the first supported TCON LCD with a TCON TOP, so the TCON
-LCD needs a new quirks structure.
+During reconfig (DRC) event from firmware, it is not guaranteed that
+all the DPB(internal) buffers would be released by the firmware. Some
+buffers might be released gradually while processing frames from the
+new sequence. These buffers now stay idle in the dpblist.
+In subsequent call to queue the DPBs to firmware, these idle buffers
+should not be queued. The fix identifies those buffers and free them.
 
-D1's TCON LCD hardware supports LVDS; in fact it provides dual-link LVDS
-from a single TCON. However, it comes with a brand new LVDS PHY. Since
-this PHY has not been tested, leave out LVDS driver support for now.
-
-Signed-off-by: Samuel Holland <samuel@sholland.org>
-Reviewed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220424162633.12369-14-samuel@sholland.org
+Signed-off-by: Vikash Garodia <quic_vgarodia@quicinc.com>
+Tested-by: Fritz Koenig <frkoenig@chromium.org>
+Signed-off-by: Stanimir Varbanov <stanimir.varbanov@linaro.org>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/sun4i/sun4i_tcon.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/media/platform/qcom/venus/helpers.c | 34 +++++++++++++++------
+ 1 file changed, 25 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/gpu/drm/sun4i/sun4i_tcon.c b/drivers/gpu/drm/sun4i/sun4i_tcon.c
-index 88db2d2a9336..2ee158aaeb9e 100644
---- a/drivers/gpu/drm/sun4i/sun4i_tcon.c
-+++ b/drivers/gpu/drm/sun4i/sun4i_tcon.c
-@@ -1542,6 +1542,12 @@ static const struct sun4i_tcon_quirks sun9i_a80_tcon_tv_quirks = {
- 	.needs_edp_reset = true,
- };
+diff --git a/drivers/media/platform/qcom/venus/helpers.c b/drivers/media/platform/qcom/venus/helpers.c
+index 0bca95d01650..fa01edd54c03 100644
+--- a/drivers/media/platform/qcom/venus/helpers.c
++++ b/drivers/media/platform/qcom/venus/helpers.c
+@@ -90,12 +90,28 @@ bool venus_helper_check_codec(struct venus_inst *inst, u32 v4l2_pixfmt)
+ }
+ EXPORT_SYMBOL_GPL(venus_helper_check_codec);
  
-+static const struct sun4i_tcon_quirks sun20i_d1_lcd_quirks = {
-+	.has_channel_0		= true,
-+	.dclk_min_div		= 1,
-+	.set_mux		= sun8i_r40_tcon_tv_set_mux,
-+};
++static void free_dpb_buf(struct venus_inst *inst, struct intbuf *buf)
++{
++	ida_free(&inst->dpb_ids, buf->dpb_out_tag);
 +
- /* sun4i_drv uses this list to check if a device node is a TCON */
- const struct of_device_id sun4i_tcon_of_table[] = {
- 	{ .compatible = "allwinner,sun4i-a10-tcon", .data = &sun4i_a10_quirks },
-@@ -1559,6 +1565,8 @@ const struct of_device_id sun4i_tcon_of_table[] = {
- 	{ .compatible = "allwinner,sun8i-v3s-tcon", .data = &sun8i_v3s_quirks },
- 	{ .compatible = "allwinner,sun9i-a80-tcon-lcd", .data = &sun9i_a80_tcon_lcd_quirks },
- 	{ .compatible = "allwinner,sun9i-a80-tcon-tv", .data = &sun9i_a80_tcon_tv_quirks },
-+	{ .compatible = "allwinner,sun20i-d1-tcon-lcd", .data = &sun20i_d1_lcd_quirks },
-+	{ .compatible = "allwinner,sun20i-d1-tcon-tv", .data = &sun8i_r40_tv_quirks },
- 	{ }
- };
- MODULE_DEVICE_TABLE(of, sun4i_tcon_of_table);
++	list_del_init(&buf->list);
++	dma_free_attrs(inst->core->dev, buf->size, buf->va, buf->da,
++		       buf->attrs);
++	kfree(buf);
++}
++
+ int venus_helper_queue_dpb_bufs(struct venus_inst *inst)
+ {
+-	struct intbuf *buf;
++	struct intbuf *buf, *next;
++	unsigned int dpb_size = 0;
+ 	int ret = 0;
+ 
+-	list_for_each_entry(buf, &inst->dpbbufs, list) {
++	if (inst->dpb_buftype == HFI_BUFFER_OUTPUT)
++		dpb_size = inst->output_buf_size;
++	else if (inst->dpb_buftype == HFI_BUFFER_OUTPUT2)
++		dpb_size = inst->output2_buf_size;
++
++	list_for_each_entry_safe(buf, next, &inst->dpbbufs, list) {
+ 		struct hfi_frame_data fdata;
+ 
+ 		memset(&fdata, 0, sizeof(fdata));
+@@ -106,6 +122,12 @@ int venus_helper_queue_dpb_bufs(struct venus_inst *inst)
+ 		if (buf->owned_by == FIRMWARE)
+ 			continue;
+ 
++		/* free buffer from previous sequence which was released later */
++		if (dpb_size > buf->size) {
++			free_dpb_buf(inst, buf);
++			continue;
++		}
++
+ 		fdata.clnt_data = buf->dpb_out_tag;
+ 
+ 		ret = hfi_session_process_buf(inst, &fdata);
+@@ -127,13 +149,7 @@ int venus_helper_free_dpb_bufs(struct venus_inst *inst)
+ 	list_for_each_entry_safe(buf, n, &inst->dpbbufs, list) {
+ 		if (buf->owned_by == FIRMWARE)
+ 			continue;
+-
+-		ida_free(&inst->dpb_ids, buf->dpb_out_tag);
+-
+-		list_del_init(&buf->list);
+-		dma_free_attrs(inst->core->dev, buf->size, buf->va, buf->da,
+-			       buf->attrs);
+-		kfree(buf);
++		free_dpb_buf(inst, buf);
+ 	}
+ 
+ 	if (list_empty(&inst->dpbbufs))
 -- 
 2.35.1
 
