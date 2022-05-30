@@ -2,118 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A54FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 08:20:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FB1EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 08:21:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233574AbiE3IUs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 04:20:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38462 "EHLO
+        id S233714AbiE3IVZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 04:21:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234088AbiE3IU3 (ORCPT
+        with ESMTP id S232803AbiE3IVL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 04:20:29 -0400
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3F646CF6B
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 01:20:27 -0700 (PDT)
-Received: by mail-pg1-x52f.google.com with SMTP id a63so3341489pge.12
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 01:20:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=O1Fk/5LwWLArBFySVbbGKsK7AfCyTYV5w7H98MZIQnY=;
-        b=PKLyl1u1I9N5Mq/8JOGFvo2jDRBexRJRS9CekTWdAsLfGcnxPeN/xCAgkNt1L/4MNP
-         Vk8cFvTolTTGWF6IjLCpKw119W9WArREDTxeNq9YCWuFOm1s9nTFAPJwBXNMKY754E31
-         cVGiqyXjQmknzw229prdDPdEP2m8WjMhJPiHxnHD1maqX/Dwr0J2UOppQ3RPYdqsmun5
-         UDK4MDr52IveBq4snaCyd6PIrVK98MtIrou6QOwnLsikODjrKYdyfrrhpj/p70yFiP62
-         dP2YTpMCn4Wn/D82c3wCNGPTUT8qh9cuV+nHaOd0xcBJFAUPv0KPqIJpCYu2cTeSQA8C
-         eH6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=O1Fk/5LwWLArBFySVbbGKsK7AfCyTYV5w7H98MZIQnY=;
-        b=cfaze5WynhJllzeVcjUP5IWzOmsuxhKwMxUtny2dl857/dw2MMc9gcIDpmxiqD/wj+
-         k/cuASO24SBslMk52TWycx6gnNtRitc6VmShoWLypqWAnx9Xt9ypCmp0pBYVYk2+dm/z
-         Bhu6eKX8oNQt5XU9GBFUGmzwpJQhLZg50CY8MkYaEBnjgbqyaaQlclsCCOBkSSmVa9Iu
-         fEYEisTIaa2kB6YUbTVRb6ZBhJVdZ4agTjEGYifS3Y8ZfUz9rZSnpov6mHKieYYLQilm
-         zct7XNM+bRj+jSQorLB44MSeq7KIyKQlktLcQiFGXukSksmNZMb89P+MnoghfvmKjYUc
-         cDRw==
-X-Gm-Message-State: AOAM533oxTGDZKtwwVw7Ph6oVLWiBuRxrCqSZVGDEVumwIo9vgPNpF/G
-        qXBBxizH7/ZhT72EYqqoknZB6bwG785dOw==
-X-Google-Smtp-Source: ABdhPJyqc+13Al1EOCcQY9OP1hpOAoXRydQnSFtr4tRxqd1whs1RTQaCFncvQSAIIkGGmG4y1zhgzA==
-X-Received: by 2002:a05:6a00:228d:b0:510:7594:a73c with SMTP id f13-20020a056a00228d00b005107594a73cmr56131332pfe.17.1653898827395;
-        Mon, 30 May 2022 01:20:27 -0700 (PDT)
-Received: from localhost ([122.162.234.2])
-        by smtp.gmail.com with ESMTPSA id i4-20020a655b84000000b003faf4acac63sm7912962pgr.13.2022.05.30.01.20.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 May 2022 01:20:27 -0700 (PDT)
-Date:   Mon, 30 May 2022 13:50:25 +0530
-From:   Viresh Kumar <viresh.kumar@linaro.org>
-To:     Pierre Gondois <pierre.gondois@arm.com>
-Cc:     linux-kernel@vger.kernel.org, Ionela.Voinescu@arm.com,
-        Dietmar.Eggemann@arm.com,
-        Shaokun Zhang <zhangshaokun@hisilicon.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>, linux-pm@vger.kernel.org
-Subject: Re: [PATCH v1] cpufreq: CPPC: Fix unused-function warning
-Message-ID: <20220530082025.vqzk37dvyzxiq7dv@vireshk-i7>
-References: <20220530081236.40728-1-pierre.gondois@arm.com>
+        Mon, 30 May 2022 04:21:11 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 304446CF72;
+        Mon, 30 May 2022 01:21:10 -0700 (PDT)
+X-UUID: 982407c30d5946e9ab684d23f77821d1-20220530
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5,REQID:168ee1fe-803a-40b0-b12e-f89bb2b057ae,OB:0,LO
+        B:0,IP:0,URL:5,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:0
+X-CID-META: VersionHash:2a19b09,CLOUDID:c66ac1b8-3c45-407b-8f66-25095432a27a,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
+        ,QS:0,BEC:nil
+X-UUID: 982407c30d5946e9ab684d23f77821d1-20220530
+Received: from mtkmbs11n2.mediatek.inc [(172.21.101.187)] by mailgw01.mediatek.com
+        (envelope-from <ck.hu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 610165319; Mon, 30 May 2022 16:21:04 +0800
+Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Mon, 30 May 2022 16:21:02 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Mon, 30 May 2022 16:21:02 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 30 May 2022 16:21:02 +0800
+Message-ID: <5253064d45064cc89d7c3c75d217b8fcb059766e.camel@mediatek.com>
+Subject: Re: [PATCH v10 10/21] drm/mediatek: dpi: move hvsize_mask to SoC
+ config
+From:   CK Hu <ck.hu@mediatek.com>
+To:     Guillaume Ranquet <granquet@baylibre.com>,
+        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        "David Airlie" <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Chunfeng Yun <chunfeng.yun@mediatek.com>,
+        "Kishon Vijay Abraham I" <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>, "Helge Deller" <deller@gmx.de>,
+        Jitao shi <jitao.shi@mediatek.com>
+CC:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Rex-BC Chen <rex-bc.chen@mediatek.com>,
+        <dri-devel@lists.freedesktop.org>,
+        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-phy@lists.infradead.org>, <linux-fbdev@vger.kernel.org>
+Date:   Mon, 30 May 2022 16:21:02 +0800
+In-Reply-To: <20220523104758.29531-11-granquet@baylibre.com>
+References: <20220523104758.29531-1-granquet@baylibre.com>
+         <20220523104758.29531-11-granquet@baylibre.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220530081236.40728-1-pierre.gondois@arm.com>
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 30-05-22, 10:12, Pierre Gondois wrote:
-> Building the cppc_cpufreq driver with for arm64 with
-> CONFIG_ENERGY_MODEL=n triggers the following warnings:
->  drivers/cpufreq/cppc_cpufreq.c:550:12: error: ‘cppc_get_cpu_cost’ defined but not used
-> [-Werror=unused-function]
->    550 | static int cppc_get_cpu_cost(struct device *cpu_dev, unsigned long KHz,
->        |            ^~~~~~~~~~~~~~~~~
->  drivers/cpufreq/cppc_cpufreq.c:481:12: error: ‘cppc_get_cpu_power’ defined but not used
-> [-Werror=unused-function]
->    481 | static int cppc_get_cpu_power(struct device *cpu_dev,
->        |            ^~~~~~~~~~~~~~~~~~
+Hi, Guillaume:
+
+On Mon, 2022-05-23 at 12:47 +0200, Guillaume Ranquet wrote:
+> Add flexibility by moving the hvsize mask to SoC specific config
+
+Reviewed-by: CK Hu <ck.hu@mediatek.com>
+
 > 
-> Fixes: 740fcdc2c20e ("cpufreq: CPPC: Register EM based on efficiency class information")
-> Reported-by: Shaokun Zhang <zhangshaokun@hisilicon.com>
-> Signed-off-by: Pierre Gondois <pierre.gondois@arm.com>
+> Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
+> Reviewed-by: AngeloGioacchino Del Regno <
+> angelogioacchino.delregno@collabora.com>
+> Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
 > ---
->  drivers/cpufreq/cppc_cpufreq.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
+>  drivers/gpu/drm/mediatek/mtk_dpi.c | 12 ++++++++++--
+>  1 file changed, 10 insertions(+), 2 deletions(-)
 > 
-> diff --git a/drivers/cpufreq/cppc_cpufreq.c b/drivers/cpufreq/cppc_cpufreq.c
-> index d092c9bb4ba3..ecd0d3ee48c5 100644
-> --- a/drivers/cpufreq/cppc_cpufreq.c
-> +++ b/drivers/cpufreq/cppc_cpufreq.c
-> @@ -478,7 +478,7 @@ static inline unsigned long compute_cost(int cpu, int step)
->  			step * CPPC_EM_COST_STEP;
+> diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c
+> b/drivers/gpu/drm/mediatek/mtk_dpi.c
+> index bf098f36a466..6eeda222a973 100644
+> --- a/drivers/gpu/drm/mediatek/mtk_dpi.c
+> +++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
+> @@ -129,6 +129,8 @@ struct mtk_dpi_conf {
+>  	bool swap_input_support;
+>  	/* Mask used for HWIDTH, HPORCH, VSYNC_WIDTH and VSYNC_PORCH
+> (no shift) */
+>  	u32 dimension_mask;
+> +	/* HSIZE and VSIZE mask (no shift) */
+> +	u32 hvsize_mask;
+>  	const struct mtk_dpi_yc_limit *limit;
+>  };
+>  
+> @@ -243,8 +245,10 @@ static void mtk_dpi_config_interface(struct
+> mtk_dpi *dpi, bool inter)
+>  
+>  static void mtk_dpi_config_fb_size(struct mtk_dpi *dpi, u32 width,
+> u32 height)
+>  {
+> -	mtk_dpi_mask(dpi, DPI_SIZE, width << HSIZE, HSIZE_MASK);
+> -	mtk_dpi_mask(dpi, DPI_SIZE, height << VSIZE, VSIZE_MASK);
+> +	mtk_dpi_mask(dpi, DPI_SIZE, width << HSIZE,
+> +		     dpi->conf->hvsize_mask << HSIZE);
+> +	mtk_dpi_mask(dpi, DPI_SIZE, height << VSIZE,
+> +		     dpi->conf->hvsize_mask << VSIZE);
 >  }
 >  
-> -static int cppc_get_cpu_power(struct device *cpu_dev,
-> +static __maybe_unused int cppc_get_cpu_power(struct device *cpu_dev,
->  		unsigned long *power, unsigned long *KHz)
->  {
->  	unsigned long perf_step, perf_prev, perf, perf_check;
-> @@ -547,8 +547,8 @@ static int cppc_get_cpu_power(struct device *cpu_dev,
->  	return 0;
->  }
+>  static void mtk_dpi_config_channel_limit(struct mtk_dpi *dpi)
+> @@ -816,6 +820,7 @@ static const struct mtk_dpi_conf mt8173_conf = {
+>  	.is_ck_de_pol = true,
+>  	.swap_input_support = true,
+>  	.dimension_mask = HPW_MASK,
+> +	.hvsize_mask = HSIZE_MASK,
+>  	.limit = &mtk_dpi_limit,
+>  };
 >  
-> -static int cppc_get_cpu_cost(struct device *cpu_dev, unsigned long KHz,
-> -		unsigned long *cost)
-> +static __maybe_unused int cppc_get_cpu_cost(struct device *cpu_dev,
-> +		unsigned long KHz, unsigned long *cost)
->  {
->  	unsigned long perf_step, perf_prev;
->  	struct cppc_perf_caps *perf_caps;
+> @@ -829,6 +834,7 @@ static const struct mtk_dpi_conf mt2701_conf = {
+>  	.is_ck_de_pol = true,
+>  	.swap_input_support = true,
+>  	.dimension_mask = HPW_MASK,
+> +	.hvsize_mask = HSIZE_MASK,
+>  	.limit = &mtk_dpi_limit,
+>  };
+>  
+> @@ -841,6 +847,7 @@ static const struct mtk_dpi_conf mt8183_conf = {
+>  	.is_ck_de_pol = true,
+>  	.swap_input_support = true,
+>  	.dimension_mask = HPW_MASK,
+> +	.hvsize_mask = HSIZE_MASK,
+>  	.limit = &mtk_dpi_limit,
+>  };
+>  
+> @@ -853,6 +860,7 @@ static const struct mtk_dpi_conf mt8192_conf = {
+>  	.is_ck_de_pol = true,
+>  	.swap_input_support = true,
+>  	.dimension_mask = HPW_MASK,
+> +	.hvsize_mask = HSIZE_MASK,
+>  	.limit = &mtk_dpi_limit,
+>  };
+>  
 
-Should we actually run cppc_cpufreq_register_em() for
-!CONFIG_ENERGY_MODEL ? Why?
-
--- 
-viresh
