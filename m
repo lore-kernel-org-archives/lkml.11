@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CCDCC46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A0B2C352AA
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:47:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242353AbiE3OqR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:46:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56892 "EHLO
+        id S242660AbiE3Oqf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:46:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240228AbiE3OZK (ORCPT
+        with ESMTP id S240269AbiE3OZL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:25:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93469A888B;
-        Mon, 30 May 2022 06:50:52 -0700 (PDT)
+        Mon, 30 May 2022 10:25:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2460A88A0;
+        Mon, 30 May 2022 06:50:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C74860FE7;
-        Mon, 30 May 2022 13:50:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0955EC3411E;
-        Mon, 30 May 2022 13:50:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DF38960F22;
+        Mon, 30 May 2022 13:50:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20B50C341C5;
+        Mon, 30 May 2022 13:50:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918651;
-        bh=+UxC2I6cB/bAVSQFDihDHHxSOIrE2QoFweh2yYezpEY=;
+        s=k20201202; t=1653918610;
+        bh=NhQIeyPX25gsV3OUwC5lhjgviB0f5JW/jJAS23Jt5uw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pPmnQfT1b16DdIkdRK2r2KH7GapxCZyh/sePuFAFK47lOj0TaKsNcuwwE4zxPm0De
-         NG9RaGxIQakdoQtAUvLHdlUIW6qR0RQCMSFO/1P/prLsfjA/wZMcsGX5IPyqOCoPcp
-         0cQ/NKGF4g3ErsW8xGi+uYCsC4N68oF7lxJUs+tt4HvAa2d4cVBU0qWVbPkOvmrTIN
-         J6vKwlipxpBF6szeFR52vBtR6PhCui+n64r/gXBQD8BlM3Z9g7uX8viUruSmhOHa19
-         Waahlk+BATtHXUwioujzmmVRIuL528bRVLhI0xXDA77j+G3HuCXP2LcD7j9wgXdl4E
-         wtg+PI9dEC+HQ==
+        b=Ng0Sr++9zWzu9kmLIKsFCL3EQQ/QXRE4HdWCpIO6PztAs6hSgTdaHx4wD40hj514d
+         VtTBy2FkmKYinKliE0YQr0cz0zcKJzLRblU6Wq9IhqB1XPehP7irP3t7/ebgAhmpzT
+         BtEt9Ux72pyc08LGF5ASFEk0MY3ks1AQDvI0Fzn1luRB+atbS+qo433kCIzzdSM70z
+         lva+B1qraVL+vH7fY4p6EkOV0IoggevRMYX6q4NQZSEEo6BbGidQvCwtYbVJSc/xUF
+         dD51tEOzX7oAa0F8klW7ZkJ4QJo/SVuxbjsc2h9Pe2m7IW3nWq4L5zBzJDgvO0yMgH
+         40ZegXMaI2vIw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Guenter Roeck <linux@roeck-us.net>,
-        Sasha Levin <sashal@kernel.org>, jdelvare@suse.com,
-        corbet@lwn.net, linux-hwmon@vger.kernel.org,
-        linux-doc@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 36/38] hwmon: Make chip parameter for with_info API mandatory
-Date:   Mon, 30 May 2022 09:49:22 -0400
-Message-Id: <20220530134924.1936816-36-sashal@kernel.org>
+Cc:     Steven Price <steven.price@arm.com>,
+        Liviu Dudau <liviu.dudau@arm.com>,
+        Sasha Levin <sashal@kernel.org>,
+        maarten.lankhorst@linux.intel.com, mripard@kernel.org,
+        tzimmermann@suse.de, airlied@linux.ie, daniel@ffwll.ch,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 4.19 18/38] drm/plane: Move range check for format_count earlier
+Date:   Mon, 30 May 2022 09:49:04 -0400
+Message-Id: <20220530134924.1936816-18-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530134924.1936816-1-sashal@kernel.org>
 References: <20220530134924.1936816-1-sashal@kernel.org>
@@ -52,73 +54,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guenter Roeck <linux@roeck-us.net>
+From: Steven Price <steven.price@arm.com>
 
-[ Upstream commit ddaefa209c4ac791c1262e97c9b2d0440c8ef1d5 ]
+[ Upstream commit 4b674dd69701c2e22e8e7770c1706a69f3b17269 ]
 
-Various attempts were made recently to "convert" the old
-hwmon_device_register() API to devm_hwmon_device_register_with_info()
-by just changing the function name without actually converting the
-driver. Prevent this from happening by making the 'chip' parameter of
-devm_hwmon_device_register_with_info() mandatory.
+While the check for format_count > 64 in __drm_universal_plane_init()
+shouldn't be hit (it's a WARN_ON), in its current position it will then
+leak the plane->format_types array and fail to call
+drm_mode_object_unregister() leaking the modeset identifier. Move it to
+the start of the function to avoid allocating those resources in the
+first place.
 
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Steven Price <steven.price@arm.com>
+Signed-off-by: Liviu Dudau <liviu.dudau@arm.com>
+Link: https://lore.kernel.org/dri-devel/20211203102815.38624-1-steven.price@arm.com/
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/hwmon/hwmon-kernel-api.txt |  2 +-
- drivers/hwmon/hwmon.c                    | 16 +++++++---------
- 2 files changed, 8 insertions(+), 10 deletions(-)
+ drivers/gpu/drm/drm_plane.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/Documentation/hwmon/hwmon-kernel-api.txt b/Documentation/hwmon/hwmon-kernel-api.txt
-index eb7a78aebb38..4981df157b04 100644
---- a/Documentation/hwmon/hwmon-kernel-api.txt
-+++ b/Documentation/hwmon/hwmon-kernel-api.txt
-@@ -71,7 +71,7 @@ hwmon_device_register_with_info is the most comprehensive and preferred means
- to register a hardware monitoring device. It creates the standard sysfs
- attributes in the hardware monitoring core, letting the driver focus on reading
- from and writing to the chip instead of having to bother with sysfs attributes.
--The parent device parameter cannot be NULL with non-NULL chip info. Its
-+The parent device parameter as well as the chip parameter must not be NULL. Its
- parameters are described in more detail below.
+diff --git a/drivers/gpu/drm/drm_plane.c b/drivers/gpu/drm/drm_plane.c
+index 2411b6de055e..425e76e39b3b 100644
+--- a/drivers/gpu/drm/drm_plane.c
++++ b/drivers/gpu/drm/drm_plane.c
+@@ -177,6 +177,13 @@ int drm_universal_plane_init(struct drm_device *dev, struct drm_plane *plane,
+ 	if (WARN_ON(config->num_total_plane >= 32))
+ 		return -EINVAL;
  
- devm_hwmon_device_register_with_info is similar to
-diff --git a/drivers/hwmon/hwmon.c b/drivers/hwmon/hwmon.c
-index c4051a3e63c2..fb82d8ee0dd6 100644
---- a/drivers/hwmon/hwmon.c
-+++ b/drivers/hwmon/hwmon.c
-@@ -695,11 +695,12 @@ EXPORT_SYMBOL_GPL(hwmon_device_register_with_groups);
++	/*
++	 * First driver to need more than 64 formats needs to fix this. Each
++	 * format is encoded as a bit and the current code only supports a u64.
++	 */
++	if (WARN_ON(format_count > 64))
++		return -EINVAL;
++
+ 	WARN_ON(drm_drv_uses_atomic_modeset(dev) &&
+ 		(!funcs->atomic_destroy_state ||
+ 		 !funcs->atomic_duplicate_state));
+@@ -198,13 +205,6 @@ int drm_universal_plane_init(struct drm_device *dev, struct drm_plane *plane,
+ 		return -ENOMEM;
+ 	}
  
- /**
-  * hwmon_device_register_with_info - register w/ hwmon
-- * @dev: the parent device
-- * @name: hwmon name attribute
-- * @drvdata: driver data to attach to created device
-- * @chip: pointer to hwmon chip information
-+ * @dev: the parent device (mandatory)
-+ * @name: hwmon name attribute (mandatory)
-+ * @drvdata: driver data to attach to created device (optional)
-+ * @chip: pointer to hwmon chip information (mandatory)
-  * @extra_groups: pointer to list of additional non-standard attribute groups
-+ *	(optional)
-  *
-  * hwmon_device_unregister() must be called when the device is no
-  * longer needed.
-@@ -712,13 +713,10 @@ hwmon_device_register_with_info(struct device *dev, const char *name,
- 				const struct hwmon_chip_info *chip,
- 				const struct attribute_group **extra_groups)
- {
--	if (!name)
--		return ERR_PTR(-EINVAL);
+-	/*
+-	 * First driver to need more than 64 formats needs to fix this. Each
+-	 * format is encoded as a bit and the current code only supports a u64.
+-	 */
+-	if (WARN_ON(format_count > 64))
+-		return -EINVAL;
 -
--	if (chip && (!chip->ops || !chip->ops->is_visible || !chip->info))
-+	if (!dev || !name || !chip)
- 		return ERR_PTR(-EINVAL);
- 
--	if (chip && !dev)
-+	if (!chip->ops || !chip->ops->is_visible || !chip->info)
- 		return ERR_PTR(-EINVAL);
- 
- 	return __hwmon_device_register(dev, name, drvdata, chip, extra_groups);
+ 	if (format_modifiers) {
+ 		const uint64_t *temp_modifiers = format_modifiers;
+ 		while (*temp_modifiers++ != DRM_FORMAT_MOD_INVALID)
 -- 
 2.35.1
 
