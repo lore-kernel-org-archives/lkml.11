@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4830C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95420C433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:51:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242189AbiE3OvV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:51:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42892 "EHLO
+        id S242135AbiE3OvQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:51:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242602AbiE3ObV (ORCPT
+        with ESMTP id S242542AbiE3ObR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:31:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1A1881997;
-        Mon, 30 May 2022 06:53:12 -0700 (PDT)
+        Mon, 30 May 2022 10:31:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F82212C95A;
+        Mon, 30 May 2022 06:53:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 74F80B80DE5;
-        Mon, 30 May 2022 13:52:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF4CEC36AE3;
-        Mon, 30 May 2022 13:52:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F15A160FA9;
+        Mon, 30 May 2022 13:52:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25A2BC3411A;
+        Mon, 30 May 2022 13:52:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918771;
-        bh=xFZ/qA6yDXkSrcTFBTSW99brMlcXXlUY75Bdj3PbFFI=;
+        s=k20201202; t=1653918764;
+        bh=7FQ9dFAbfLF1xAX2WYU0zqhOLcJvn+BST6o5QtsQMfE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZDVGgHdv51TR/F2n6byZD8U4Glz/SnMFzUW05i8eHBv8OMLAX9D5nsmRRdWj4dck+
-         YgUACvIcsCcVj79vH0A+38AsrC2Jd1ddo/b+z6TVHGzRUDqi52rwNoDRbl/Lu8/jQd
-         2UcDVM1CDq+Uw46ZFSUF3ufBZTZpr+dUjsieI05Cbzc9GyXukGnxvFMQnZkSc3/ye0
-         N67WIjeNwHWsMk26oeuZj2HOr7TOA23cnmDY2WZ9XTOTydomVfR2niiBSfAlNQIHBa
-         X9YzsvuMFwMWJaF1IucXqtC6+MBbwsJ926fuNV9aKImHxnVShntSArxukKNt+eGkC0
-         mbsCJMtq1VfQg==
+        b=T9F7a+XhdWDzboEabe+tLstnrzPeyXJG/SugNYUzI9K363vBBjdzCLP088cFyRJt/
+         sbNevqPiOO4saxrZ9KDSC9xjJ+t8eq6K/KaX+VElEv9bipDO84qr3L66sKTu82t8D5
+         rWxCiQ0wRrqqPzB9NNhG9fNyJkX4OumyBcw6HY/3ackiwanCe5u69wQ1oVgZmFg307
+         Efo7hgmXaZ9dyPjKYAd4HhJS1AY17ytX5SF2OnB9J81bSd4Xm3Ap6Y0ubG0qsH7OiH
+         JLXFlCuUsBzIETX/PIbAt/JyMPP4MDhGZGou0mrxGjuRiDifdH7PLmWInw4JnXRC9B
+         qBdkNT6GQWEUw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
-        pabeni@redhat.com, bigeasy@linutronix.de, imagedong@tencent.com,
-        petrm@nvidia.com, memxor@gmail.com, arnd@arndb.de,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 15/24] net: remove two BUG() from skb_checksum_help()
-Date:   Mon, 30 May 2022 09:52:02 -0400
-Message-Id: <20220530135211.1937674-15-sashal@kernel.org>
+Cc:     Evan Quan <evan.quan@amd.com>, kernel test robot <lkp@intel.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
+        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 4.9 12/24] drm/amd/pm: fix the compile warning
+Date:   Mon, 30 May 2022 09:51:59 -0400
+Message-Id: <20220530135211.1937674-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530135211.1937674-1-sashal@kernel.org>
 References: <20220530135211.1937674-1-sashal@kernel.org>
@@ -54,47 +53,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Evan Quan <evan.quan@amd.com>
 
-[ Upstream commit d7ea0d9df2a6265b2b180d17ebc64b38105968fc ]
+[ Upstream commit 555238d92ac32dbad2d77ad2bafc48d17391990c ]
 
-I have a syzbot report that managed to get a crash in skb_checksum_help()
+Fix the compile warning below:
+drivers/gpu/drm/amd/amdgpu/../pm/legacy-dpm/kv_dpm.c:1641
+kv_get_acp_boot_level() warn: always true condition '(table->entries[i]->clk >= 0) => (0-u32max >= 0)'
 
-If syzbot can trigger these BUG(), it makes sense to replace
-them with more friendly WARN_ON_ONCE() since skb_checksum_help()
-can instead return an error code.
-
-Note that syzbot will still crash there, until real bug is fixed.
-
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Reported-by: kernel test robot <lkp@intel.com>
+CC: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Evan Quan <evan.quan@amd.com>
+Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/dev.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/amd/amdgpu/kv_dpm.c | 14 +-------------
+ 1 file changed, 1 insertion(+), 13 deletions(-)
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 47468fc5d0c9..d725ca4d4455 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -2518,11 +2518,15 @@ int skb_checksum_help(struct sk_buff *skb)
- 	}
+diff --git a/drivers/gpu/drm/amd/amdgpu/kv_dpm.c b/drivers/gpu/drm/amd/amdgpu/kv_dpm.c
+index f61c489e5f6d..81f1591a9be9 100644
+--- a/drivers/gpu/drm/amd/amdgpu/kv_dpm.c
++++ b/drivers/gpu/drm/amd/amdgpu/kv_dpm.c
+@@ -1617,19 +1617,7 @@ static int kv_update_samu_dpm(struct amdgpu_device *adev, bool gate)
  
- 	offset = skb_checksum_start_offset(skb);
--	BUG_ON(offset >= skb_headlen(skb));
-+	ret = -EINVAL;
-+	if (WARN_ON_ONCE(offset >= skb_headlen(skb)))
-+		goto out;
-+
- 	csum = skb_checksum(skb, offset, skb->len - offset, 0);
+ static u8 kv_get_acp_boot_level(struct amdgpu_device *adev)
+ {
+-	u8 i;
+-	struct amdgpu_clock_voltage_dependency_table *table =
+-		&adev->pm.dpm.dyn_state.acp_clock_voltage_dependency_table;
+-
+-	for (i = 0; i < table->count; i++) {
+-		if (table->entries[i].clk >= 0) /* XXX */
+-			break;
+-	}
+-
+-	if (i >= table->count)
+-		i = table->count - 1;
+-
+-	return i;
++	return 0;
+ }
  
- 	offset += skb->csum_offset;
--	BUG_ON(offset + sizeof(__sum16) > skb_headlen(skb));
-+	if (WARN_ON_ONCE(offset + sizeof(__sum16) > skb_headlen(skb)))
-+		goto out;
- 
- 	if (skb_cloned(skb) &&
- 	    !skb_clone_writable(skb, offset + sizeof(__sum16))) {
+ static void kv_update_acp_boot_level(struct amdgpu_device *adev)
 -- 
 2.35.1
 
