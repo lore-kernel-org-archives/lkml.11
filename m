@@ -2,50 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A27BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:47:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 614AAC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:47:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239080AbiE3Nqm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:46:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56384 "EHLO
+        id S237756AbiE3Nrb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:47:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237813AbiE3Niv (ORCPT
+        with ESMTP id S237626AbiE3NkF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:38:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 430ED994EC;
-        Mon, 30 May 2022 06:31:25 -0700 (PDT)
+        Mon, 30 May 2022 09:40:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B063D113;
+        Mon, 30 May 2022 06:31:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D1C25B80B3A;
-        Mon, 30 May 2022 13:31:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE099C385B8;
-        Mon, 30 May 2022 13:31:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E862EB80DA8;
+        Mon, 30 May 2022 13:31:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E78DBC341C4;
+        Mon, 30 May 2022 13:31:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917482;
-        bh=sm8MbBlNG5K6X9hLCmzFjLBYl5czMKscsEUm5HoPOMk=;
+        s=k20201202; t=1653917488;
+        bh=HwjH44pS8984mw7Nh4lKusX1l8RJWXNJDc+xlPI7FLA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Fl7MFHeQYCfPN3iyOLE+7UN+Wm9qiOBH2xYL9mlYTjwFIOgX3/9pknQ8jIWK9K1xz
-         YCRrr4in1cZmQWYlhaedVg2aS+UXrpb3k1ht0x25IPtRFLJYMA77CKzLw1advOKENa
-         EBXPWTYo19C5s1DcWQthjlkEC43+6oVaZlJbqTr6i1sYbavvFMEhNUiPvMXJaCYW3Y
-         bbTSJeobRT/1/aQ9PSBwjqj4gVWNxL3RHcJtUrWQSoUDe1vQkUwVhx96UUyXEX4VZi
-         09ihgxhf5hXPTOVIpzmzKuJOl/zgsL82XdedBPyCX0Z5rsmJONM/zEgNxIW0dSleOk
-         iiwtGOG6N5VbQ==
+        b=r9XlPGmoJbfkB6MtM6B/1FUIjICDgyS9AbhfLnlh0TAbozKpCeFr2DSe5eIHTE0K2
+         f0RdQfq2kJX8vcBiXZdtYc9rZdyKHH7HNmQvzXa15JHqQwF1CmFYsijdbR8m0Zeuin
+         px7UiIW5BLSwTMfp1DAU/xzGJfAmYrXcEufX3OHpFAvVXRoHNBEoZKJtC3GTX8bFUh
+         peit+jdTNLP6W8B1lXgGVXGLUy7msq2/kKmpr6cpZk8r35VQbq+WWnLiMR3DSmBfXh
+         kS5vDiO8Q4KyEqLZH9AyrckNBTIEB73K4FYCLMWON45LFpLBVcpuYOLyHg6moBKZwb
+         7FohltX+rkqhA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
-        pabeni@redhat.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 155/159] eth: tg3: silence the GCC 12 array-bounds warning
-Date:   Mon, 30 May 2022 09:24:20 -0400
-Message-Id: <20220530132425.1929512-155-sashal@kernel.org>
+Cc:     Bob Peterson <rpeterso@redhat.com>,
+        Andreas Gruenbacher <agruenba@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, cluster-devel@redhat.com
+Subject: [PATCH AUTOSEL 5.18 158/159] gfs2: use i_lock spin_lock for inode qadata
+Date:   Mon, 30 May 2022 09:24:23 -0400
+Message-Id: <20220530132425.1929512-158-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530132425.1929512-1-sashal@kernel.org>
 References: <20220530132425.1929512-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -53,42 +51,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakub Kicinski <kuba@kernel.org>
+From: Bob Peterson <rpeterso@redhat.com>
 
-[ Upstream commit 9dec850fd7c210a04b4707df8e6c95bfafdd6a4b ]
+[ Upstream commit 5fcff61eea9efd1f4b60e89d2d686b5feaea100f ]
 
-GCC 12 currently generates a rather inconsistent warning:
+Before this patch, functions gfs2_qa_get and _put used the i_rw_mutex to
+prevent simultaneous access to its i_qadata. But i_rw_mutex is now used
+for many other things, including iomap_begin and end, which causes a
+conflict according to lockdep. We cannot just remove the lock since
+simultaneous opens (gfs2_open -> gfs2_open_common -> gfs2_qa_get) can
+then stomp on each others values for i_qadata.
 
-drivers/net/ethernet/broadcom/tg3.c:17795:51: warning: array subscript 5 is above array bounds of ‘struct tg3_napi[5]’ [-Warray-bounds]
-17795 |                 struct tg3_napi *tnapi = &tp->napi[i];
-      |                                           ~~~~~~~~^~~
+This patch solves the conflict by using the i_lock spin_lock in the inode
+to prevent simultaneous access.
 
-i is guaranteed < tp->irq_max which in turn is either 1 or 5.
-There are more loops like this one in the driver, but strangely
-GCC 12 dislikes only this single one.
-
-Silence this silliness for now.
-
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Bob Peterson <rpeterso@redhat.com>
+Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/broadcom/Makefile | 5 +++++
- 1 file changed, 5 insertions(+)
+ fs/gfs2/quota.c | 32 ++++++++++++++++++++------------
+ 1 file changed, 20 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/Makefile b/drivers/net/ethernet/broadcom/Makefile
-index 0ddfb5b5d53c..2e6c5f258a1f 100644
---- a/drivers/net/ethernet/broadcom/Makefile
-+++ b/drivers/net/ethernet/broadcom/Makefile
-@@ -17,3 +17,8 @@ obj-$(CONFIG_BGMAC_BCMA) += bgmac-bcma.o bgmac-bcma-mdio.o
- obj-$(CONFIG_BGMAC_PLATFORM) += bgmac-platform.o
- obj-$(CONFIG_SYSTEMPORT) += bcmsysport.o
- obj-$(CONFIG_BNXT) += bnxt/
+diff --git a/fs/gfs2/quota.c b/fs/gfs2/quota.c
+index be0997e24d60..dc77080a82bb 100644
+--- a/fs/gfs2/quota.c
++++ b/fs/gfs2/quota.c
+@@ -531,34 +531,42 @@ static void qdsb_put(struct gfs2_quota_data *qd)
+  */
+ int gfs2_qa_get(struct gfs2_inode *ip)
+ {
+-	int error = 0;
+ 	struct gfs2_sbd *sdp = GFS2_SB(&ip->i_inode);
++	struct inode *inode = &ip->i_inode;
+ 
+ 	if (sdp->sd_args.ar_quota == GFS2_QUOTA_OFF)
+ 		return 0;
+ 
+-	down_write(&ip->i_rw_mutex);
++	spin_lock(&inode->i_lock);
+ 	if (ip->i_qadata == NULL) {
+-		ip->i_qadata = kmem_cache_zalloc(gfs2_qadata_cachep, GFP_NOFS);
+-		if (!ip->i_qadata) {
+-			error = -ENOMEM;
+-			goto out;
+-		}
++		struct gfs2_qadata *tmp;
 +
-+# FIXME: temporarily silence -Warray-bounds on non W=1+ builds
-+ifndef KBUILD_EXTRA_WARN
-+CFLAGS_tg3.o += -Wno-array-bounds
-+endif
++		spin_unlock(&inode->i_lock);
++		tmp = kmem_cache_zalloc(gfs2_qadata_cachep, GFP_NOFS);
++		if (!tmp)
++			return -ENOMEM;
++
++		spin_lock(&inode->i_lock);
++		if (ip->i_qadata == NULL)
++			ip->i_qadata = tmp;
++		else
++			kmem_cache_free(gfs2_qadata_cachep, tmp);
+ 	}
+ 	ip->i_qadata->qa_ref++;
+-out:
+-	up_write(&ip->i_rw_mutex);
+-	return error;
++	spin_unlock(&inode->i_lock);
++	return 0;
+ }
+ 
+ void gfs2_qa_put(struct gfs2_inode *ip)
+ {
+-	down_write(&ip->i_rw_mutex);
++	struct inode *inode = &ip->i_inode;
++
++	spin_lock(&inode->i_lock);
+ 	if (ip->i_qadata && --ip->i_qadata->qa_ref == 0) {
+ 		kmem_cache_free(gfs2_qadata_cachep, ip->i_qadata);
+ 		ip->i_qadata = NULL;
+ 	}
+-	up_write(&ip->i_rw_mutex);
++	spin_unlock(&inode->i_lock);
+ }
+ 
+ int gfs2_quota_hold(struct gfs2_inode *ip, kuid_t uid, kgid_t gid)
 -- 
 2.35.1
 
