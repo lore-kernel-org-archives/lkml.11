@@ -2,173 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C986C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 11:42:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C906DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 11:43:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231566AbiE3Lmz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 07:42:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42782 "EHLO
+        id S233748AbiE3Lnz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 07:43:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235766AbiE3LmF (ORCPT
+        with ESMTP id S235989AbiE3Lnm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 07:42:05 -0400
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 602B512752
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 04:41:58 -0700 (PDT)
-Received: by mail-pf1-x429.google.com with SMTP id y1so10363029pfr.6
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 04:41:58 -0700 (PDT)
+        Mon, 30 May 2022 07:43:42 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBE293EF0E;
+        Mon, 30 May 2022 04:43:40 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id n13-20020a17090a394d00b001e30a60f82dso1882875pjf.5;
+        Mon, 30 May 2022 04:43:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=LdxnTcXDrJ5Hs4bCX9T3OZHsm8XEJDCruVBdQ6pwKoc=;
-        b=ooUrNtahWsQ/dC/e3fO6YAyaQSMxODE6/OQ6nYHoSjmHvFGqgpLkHe3/hRwNWXuB0v
-         Yg5WP+nhNqzLXUuu7QQBrejrPUMWVylWInURkgIzUzfe7OS+oYXBYVz5VMFl3bQRa09Z
-         Cso5qREOTM0fDZ9Pav5SAyLlbaTBtrFV0u4NwACN0bPaKfWvm3ajw5mq1UXYHTMO7Tte
-         dXTwvMtSQNVScWSwlWuJ1uG0vQNbGO2IGKIRZKV9ZgDJ1dT5hnrJhna6WkPXH2Ks3J76
-         jINH1Qpxuq3fCz4LXptKKbtFHt7weHfti8p0cuuZm5yCTS+Oz96QrvwemkQ5IINOPJjQ
-         Vl3Q==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=1BvAlV75hXlmEW6H7NZj8m2+emc7pNPWivCpEN7QdQQ=;
+        b=AKkizI5vxdL5uQcfmsXWVkWdXI8Pq9JhYnyFP0MGpMimsx6reIaVisnHQEXGR52xZY
+         wxcGjJUMBWEq9eU3gQCY9ZNIey6s8Xd+jt09aZwkWby8RrmpXEC3olVVASmhX7omnVVq
+         f9OXP5KNAL5TxNuAhyUwDs12Cr+pMSULGKNyEe/pvJoAeLqw2rbAVFV5b8IIBNaoaX8q
+         yHlK9CB/JoHkSgMvc0+BF9zg2QRbGlDIqm2qGYVo4DmMDHAE8XLGNzvQFBeab+ux4gxo
+         X7OcuLR3x+woErt+qDtGgD+/CG2m3vkFsd8jc9O9WMvm/qzqtlGr2UYZr9a84t5CAyPl
+         xn/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=LdxnTcXDrJ5Hs4bCX9T3OZHsm8XEJDCruVBdQ6pwKoc=;
-        b=1k8XTOh0KpfneP+n/LWVByX/RxTKUjKnMv6z0XeA18pIaipW5moepLlVQiJIwAspFf
-         nzxA95REhSB0YRuOl3fGdt2/YpI0aUaO8NJy1gZJnTaHskF3X/hsdoileelAx0xxZRUR
-         nesELM5DfPU8cviy1kmQkxJnpow0NO9JnYu632qwnHqq2s/hbiJyZ+ZFJaNyfVvdTcpP
-         fZHYl0XzWbynB4pOQhsb+5zHZtMvx2CVTLY2l1EsYL5aXPxWKHDxzMEmEcIq2pj2lz5+
-         V2PLv7jf2yZ2uInsDs0AHG2VO1BloucqhfMS8fvtlO16m/EpdQsWWrnp407zSHml3ptm
-         k0aA==
-X-Gm-Message-State: AOAM532cUJMuWvrozz1S8i4mVXtlJhcf71aSnDlwBPvBnvqEE+qE2gES
-        kVZjLNWpZWrMgFpqepsF09m9/g==
-X-Google-Smtp-Source: ABdhPJzXUeKZvxuLnb/e7hEqtwEeM9YU+K0OtIUC58d4PVWRRcbiWsnWXYTefnUXwlC4viMdlGugFA==
-X-Received: by 2002:a62:1b06:0:b0:518:1649:bb6d with SMTP id b6-20020a621b06000000b005181649bb6dmr57040995pfb.25.1653910917454;
-        Mon, 30 May 2022 04:41:57 -0700 (PDT)
-Received: from leo-build-box.lan (n058152077182.netvigator.com. [58.152.77.182])
-        by smtp.gmail.com with ESMTPSA id c7-20020a170902724700b00161a9df4de8sm8846194pll.145.2022.05.30.04.41.52
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=1BvAlV75hXlmEW6H7NZj8m2+emc7pNPWivCpEN7QdQQ=;
+        b=soDzh7/pn3xw8afz6RIUfap9ztd41VfEcGT1VaO7EmIy4jpUXxifjS7lqPdyja/B5E
+         oqVqGc/ukzEwBahu0cC4EBTt3iQvy2KI4ZnweLC8jONghgriPs0acAwS9TBldBuEBh/k
+         c9j+DY58MSPYF8VjrwyW+38dasIhBneuyfKhx55bfLZU5dXrff4gfmSwLpJbISNjS6IH
+         6ZmO74Z0EJbJHLnUWXAsLrYcWu1e9p/pdJn7HnyVopXXGQnlq5lq5A3J177CZlRfwEAq
+         JwfQIovaL0IpECGlVGOgfPA+H/K1lckbbfN1IbDdabFCXQjLKA3QW2Z6USNdhJ94lB1c
+         zQTw==
+X-Gm-Message-State: AOAM533LhSnfQEusrkon5Shv5Q9Q/+sUiBzskJjI6oRyRqk457LQbQH/
+        TDv+0tUtbuRg1eDBnabx8dI=
+X-Google-Smtp-Source: ABdhPJyBjD7ZjB9mqxCcZxSrR5aW0PfM7hAyksDSD984OOLHfR+h/OvSF/fOXgX4vDfty6M+7PqF0A==
+X-Received: by 2002:a17:902:8ecc:b0:15e:f63f:233f with SMTP id x12-20020a1709028ecc00b0015ef63f233fmr55548885plo.86.1653911020277;
+        Mon, 30 May 2022 04:43:40 -0700 (PDT)
+Received: from potin-quanta.dhcpserver.local (125-228-123-29.hinet-ip.hinet.net. [125.228.123.29])
+        by smtp.gmail.com with ESMTPSA id c10-20020a170902c2ca00b0015e8d4eb207sm8865069pla.81.2022.05.30.04.43.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 May 2022 04:41:57 -0700 (PDT)
-From:   Leo Yan <leo.yan@linaro.org>
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>, Alyssa Ross <hi@alyssa.is>,
-        Ian Rogers <irogers@google.com>, Like Xu <likexu@tencent.com>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        Li Huafei <lihuafei1@huawei.com>,
-        Joe Mario <jmario@redhat.com>,
-        Adam Li <adam.li@amperecomputing.com>,
-        German Gomez <german.gomez@arm.com>,
-        James Clark <james.clark@arm.com>,
-        Ali Saidi <alisaidi@amazon.com>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Leo Yan <leo.yan@linaro.org>
-Subject: [PATCH v4 12/12] perf c2c: Update documentation for new display option 'peer'
-Date:   Mon, 30 May 2022 19:40:36 +0800
-Message-Id: <20220530114036.3225544-13-leo.yan@linaro.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220530114036.3225544-1-leo.yan@linaro.org>
-References: <20220530114036.3225544-1-leo.yan@linaro.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Mon, 30 May 2022 04:43:39 -0700 (PDT)
+From:   Potin Lai <potin.lai.pt@gmail.com>
+To:     Brendan Higgins <brendanhiggins@google.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Joel Stanley <joel@jms.id.au>, Andrew Jeffery <andrew@aj.id.au>
+Cc:     Patrick Williams <patrick@stwcx.xyz>,
+        Porin Lai <potin.lai@quantatw.com>,
+        Porin Lai <potin.lai.pt@gmail.com>, linux-i2c@vger.kernel.org,
+        openbmc@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 1/1] aspeed: i2c: add manual clock setup feature
+Date:   Mon, 30 May 2022 19:40:56 +0800
+Message-Id: <20220530114056.8722-1-potin.lai.pt@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since the new display option 'peer' is introduced, this patch is to
-update the documentation to reflect it.
+From: Porin Lai <potin.lai.pt@gmail.com>
 
-Signed-off-by: Leo Yan <leo.yan@linaro.org>
+Add properties for manual tuning i2c clock timing register.
+
+* aspeed,i2c-manual-clk: Enable aspeed i2c clock manual setup
+* aspeed,i2c-base-clk-div: Base Clock divisor (tBaseClk)
+* aspeed,i2c-clk-high-cycle: Cycles of clock-high pulse (tClkHigh)
+* aspeed,i2c-clk-low-cycle: Cycles of clock-low pulse (tClkLow)
+
+Signed-off-by: Potin Lai <potin.lai.pt@gmail.com>
 ---
- tools/perf/Documentation/perf-c2c.txt | 30 ++++++++++++++++++++-------
- 1 file changed, 23 insertions(+), 7 deletions(-)
+ drivers/i2c/busses/i2c-aspeed.c | 55 ++++++++++++++++++++++++++++++++-
+ 1 file changed, 54 insertions(+), 1 deletion(-)
 
-diff --git a/tools/perf/Documentation/perf-c2c.txt b/tools/perf/Documentation/perf-c2c.txt
-index 6f69173731aa..e1549798c6f3 100644
---- a/tools/perf/Documentation/perf-c2c.txt
-+++ b/tools/perf/Documentation/perf-c2c.txt
-@@ -109,7 +109,8 @@ REPORT OPTIONS
+diff --git a/drivers/i2c/busses/i2c-aspeed.c b/drivers/i2c/busses/i2c-aspeed.c
+index 67e8b97c0c95..1f4b5c4b5bf4 100644
+--- a/drivers/i2c/busses/i2c-aspeed.c
++++ b/drivers/i2c/busses/i2c-aspeed.c
+@@ -898,6 +898,56 @@ static int aspeed_i2c_init_clk(struct aspeed_i2c_bus *bus)
+ 	return 0;
+ }
  
- -d::
- --display::
--	Switch to HITM type (rmt, lcl) to display and sort on. Total HITMs as default.
-+	Switch to HITM type (rmt, lcl) or peer snooping type (peer) to display
-+	and sort on. Total HITMs (tot) as default.
- 
- --stitch-lbr::
- 	Show callgraph with stitched LBRs, which may have more complete
-@@ -174,12 +175,18 @@ For each cacheline in the 1) list we display following data:
-   Cacheline
-   - cacheline address (hex number)
- 
--  Rmt/Lcl Hitm
-+  Rmt/Lcl Hitm (Display with HITM types)
-   - cacheline percentage of all Remote/Local HITM accesses
- 
--  LLC Load Hitm - Total, LclHitm, RmtHitm
-+  Peer Snoop (Display with peer type)
-+  - cacheline percentage of all peer accesses
++/* precondition: bus.lock has been acquired. */
++static int aspeed_i2c_manual_clk_setup(struct aspeed_i2c_bus *bus)
++{
++	u32 divisor, clk_high, clk_low, clk_reg_val;
 +
-+  LLC Load Hitm - Total, LclHitm, RmtHitm (For display with HITM types)
-   - count of Total/Local/Remote load HITMs
- 
-+  Load Peer - Total, Local, Remote (For display with peer type)
-+  - count of Total/Local/Remote load from peer cache or DRAM
++	if (device_property_read_u32(bus->dev, "aspeed,i2c-base-clk-div",
++				     &divisor) != 0) {
++		dev_err(bus->dev, "Could not read aspeed,i2c-base-clk-div\n");
++		return -EINVAL;
++	} else if (divisor > ASPEED_I2CD_TIME_BASE_DIVISOR_MASK) {
++		dev_err(bus->dev, "Invalid aspeed,i2c-base-clk-div: %u\n",
++			divisor);
++		return -EINVAL;
++	}
 +
-   Total records
-   - sum of all cachelines accesses
- 
-@@ -201,16 +208,21 @@ For each cacheline in the 1) list we display following data:
-   - count of LLC load accesses, includes LLC hits and LLC HITMs
- 
-   RMT Load Hit - RmtHit, RmtHitm
--  - count of remote load accesses, includes remote hits and remote HITMs
-+  - count of remote load accesses, includes remote hits and remote HITMs;
-+    on Arm neoverse cores, RmtHit is used to account remote accesses,
-+    includes remote DRAM or any upward cache level in remote node
- 
-   Load Dram - Lcl, Rmt
-   - count of local and remote DRAM accesses
- 
- For each offset in the 2) list we display following data:
- 
--  HITM - Rmt, Lcl
-+  HITM - Rmt, Lcl (Display with HITM types)
-   - % of Remote/Local HITM accesses for given offset within cacheline
- 
-+  Peer Snoop - Rmt, Lcl (Display with peer type)
-+  - % of Remote/Local peer accesses for given offset within cacheline
++	if (device_property_read_u32(bus->dev, "aspeed,i2c-clk-high-cycle",
++				     &clk_high) != 0) {
++		dev_err(bus->dev, "Could not read aspeed,i2c-clk-high-cycle\n");
++		return -EINVAL;
++	} else if (clk_high > ASPEED_I2CD_TIME_SCL_REG_MAX) {
++		dev_err(bus->dev, "Invalid aspeed,i2c-clk-high-cycle: %u\n",
++			clk_high);
++		return -EINVAL;
++	}
 +
-   Store Refs - L1 Hit, L1 Miss, N/A
-   - % of store accesses that hit L1, missed L1 and N/A (no available) memory
-     level for given offset within cacheline
-@@ -227,9 +239,12 @@ For each offset in the 2) list we display following data:
-   Code address
-   - code address responsible for the accesses
- 
--  cycles - rmt hitm, lcl hitm, load
-+  cycles - rmt hitm, lcl hitm, load (Display with HITM types)
-     - sum of cycles for given accesses - Remote/Local HITM and generic load
- 
-+  cycles - rmt peer, lcl peer, load (Display with peer type)
-+    - sum of cycles for given accesses - Remote/Local peer load and generic load
++	if (device_property_read_u32(bus->dev, "aspeed,i2c-clk-low-cycle",
++				     &clk_low) != 0) {
++		dev_err(bus->dev, "Could not read aspeed,i2c-clk-low-cycle\n");
++		return -EINVAL;
++	} else if (clk_low > ASPEED_I2CD_TIME_SCL_REG_MAX) {
++		dev_err(bus->dev, "Invalid aspeed,i2c-clk-low-cycle: %u\n",
++			clk_low);
++		return -EINVAL;
++	}
 +
-   cpu cnt
-     - number of cpus that participated on the access
++	clk_reg_val = readl(bus->base + ASPEED_I2C_AC_TIMING_REG1);
++	clk_reg_val &= (ASPEED_I2CD_TIME_TBUF_MASK |
++			ASPEED_I2CD_TIME_THDSTA_MASK |
++			ASPEED_I2CD_TIME_TACST_MASK);
++	clk_reg_val |= (divisor & ASPEED_I2CD_TIME_BASE_DIVISOR_MASK)
++			| ((clk_high << ASPEED_I2CD_TIME_SCL_HIGH_SHIFT)
++			   & ASPEED_I2CD_TIME_SCL_HIGH_MASK)
++			| ((clk_low << ASPEED_I2CD_TIME_SCL_LOW_SHIFT)
++			   & ASPEED_I2CD_TIME_SCL_LOW_MASK);
++	writel(clk_reg_val, bus->base + ASPEED_I2C_AC_TIMING_REG1);
++	writel(ASPEED_NO_TIMEOUT_CTRL, bus->base + ASPEED_I2C_AC_TIMING_REG2);
++
++	return 0;
++}
++
+ /* precondition: bus.lock has been acquired. */
+ static int aspeed_i2c_init(struct aspeed_i2c_bus *bus,
+ 			     struct platform_device *pdev)
+@@ -908,7 +958,10 @@ static int aspeed_i2c_init(struct aspeed_i2c_bus *bus,
+ 	/* Disable everything. */
+ 	writel(0, bus->base + ASPEED_I2C_FUN_CTRL_REG);
  
-@@ -251,7 +266,8 @@ The 'Node' field displays nodes that accesses given cacheline
- offset. Its output comes in 3 flavors:
-   - node IDs separated by ','
-   - node IDs with stats for each ID, in following format:
--      Node{cpus %hitms %stores}
-+      Node{cpus %hitms %stores} (Display with HITM types)
-+      Node{cpus %peers %stores} (Display with peer type)
-   - node IDs with list of affected CPUs in following format:
-       Node{cpu list}
+-	ret = aspeed_i2c_init_clk(bus);
++	if (of_property_read_bool(pdev->dev.of_node, "aspeed,i2c-manual-clk"))
++		ret = aspeed_i2c_manual_clk_setup(bus);
++	else
++		ret = aspeed_i2c_init_clk(bus);
+ 	if (ret < 0)
+ 		return ret;
  
 -- 
-2.25.1
+2.17.1
 
