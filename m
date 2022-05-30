@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F8D8C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EB94C43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:31:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242456AbiE3ObM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:31:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42948 "EHLO
+        id S242187AbiE3Oav (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:30:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241891AbiE3OSK (ORCPT
+        with ESMTP id S241730AbiE3OSA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:18:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7551B9CCA4;
-        Mon, 30 May 2022 06:48:30 -0700 (PDT)
+        Mon, 30 May 2022 10:18:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02BAF7C146;
+        Mon, 30 May 2022 06:48:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6AED860FD7;
-        Mon, 30 May 2022 13:48:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86E33C36AEB;
-        Mon, 30 May 2022 13:48:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BCA7CB80DA7;
+        Mon, 30 May 2022 13:47:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A5B4C3411C;
+        Mon, 30 May 2022 13:47:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918494;
-        bh=srE8cZV7uZ5jo1lc4JV2ZCVGuEAjbdgMCcMiaUhLJPE=;
+        s=k20201202; t=1653918477;
+        bh=ecnKdu3dNIXXUsykxvWsk2ozbn7wJ/lFBbmn3Vbe17A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G1En3f7tL3gB6XNxEaVoVwO2Q6VWwZLA5R7UIiTcKnOp8YwYqwTmnD6POfCSVmg8d
-         K43yZIbfAcjDI5z5pI/DjCwrBkW2UIN1xIB6wEn7jvxmrtMdb5Vubkl7HPxxrhuzIA
-         Ma2J6/1RX2nNJoa7qY29VFIIgN8uCa7qQP/U7lfRnvtl29XKehVd4QuAA0QTK0bZIT
-         k0TmJJVEHIE5fZh4E5Dn0m9Q4UWu2S1BrS4Lmm7Is73IZVGfrrPi3NDnNYATIstOmL
-         OA2OWo5iUHYjDe7Ej+7PODNC00FD/QSz+fKv7+oo9mjDdSmBVP9Dij5weIV+z47GFe
-         Dhcyp5mpzjGLA==
+        b=jAIY5E6ssVVJDokVt64BPe10yTQfcw8IW18UX99UdHN+As1O17T1fY+AzqdO+oeVx
+         aNnMJr9VDLqMrDcltK9iTFIklH3BxR143l8SBkOcPJkPJF1Qu5kHSjH/51+QaA5oXB
+         PQzDDHYt9Gi36dpS/XNVQoLQCXdVmyDhwtI2bJDYrOnFuG3IgrpG6duK/zQpyU8tne
+         eLnc4YpKd+clLLgXhXYm4r1KT7M9z4q7WGWwbEYaJjwsXtFL3NsbngeJlFubCjQEaH
+         jxl2NgNuD2yqO88GPSlyQdjsie7NZXQnb0NojpOa/il1dOh9247+0FWlTRQHDFELQw
+         CEEbUODOE9o1w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     jianghaoran <jianghaoran@kylinos.cn>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, edumazet@google.com,
-        pabeni@redhat.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 27/55] ipv6: Don't send rs packets to the interface of ARPHRD_TUNNEL
-Date:   Mon, 30 May 2022 09:46:33 -0400
-Message-Id: <20220530134701.1935933-27-sashal@kernel.org>
+Cc:     Mark Brown <broonie@kernel.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Sasha Levin <sashal@kernel.org>, will@kernel.org,
+        maz@kernel.org, suzuki.poulose@arm.com, vladimir.murzin@arm.com,
+        james.morse@arm.com, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.4 22/55] arm64/sme: Add ID_AA64SMFR0_EL1 to __read_sysreg_by_encoding()
+Date:   Mon, 30 May 2022 09:46:28 -0400
+Message-Id: <20220530134701.1935933-22-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530134701.1935933-1-sashal@kernel.org>
 References: <20220530134701.1935933-1-sashal@kernel.org>
@@ -53,48 +54,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: jianghaoran <jianghaoran@kylinos.cn>
+From: Mark Brown <broonie@kernel.org>
 
-[ Upstream commit b52e1cce31ca721e937d517411179f9196ee6135 ]
+[ Upstream commit 8a58bcd00e2e8d46afce468adc09fcd7968f514c ]
 
-ARPHRD_TUNNEL interface can't process rs packets
-and will generate TX errors
+We need to explicitly enumerate all the ID registers which we rely on
+for CPU capabilities in __read_sysreg_by_encoding(), ID_AA64SMFR0_EL1 was
+missed from this list so we trip a BUG() in paths which rely on that
+function such as CPU hotplug. Add the register.
 
-ex:
-ip tunnel add ethn mode ipip local 192.168.1.1 remote 192.168.1.2
-ifconfig ethn x.x.x.x
-
-ethn: flags=209<UP,POINTOPOINT,RUNNING,NOARP>  mtu 1480
-	inet x.x.x.x  netmask 255.255.255.255  destination x.x.x.x
-	inet6 fe80::5efe:ac1e:3cdb  prefixlen 64  scopeid 0x20<link>
-	tunnel   txqueuelen 1000  (IPIP Tunnel)
-	RX packets 0  bytes 0 (0.0 B)
-	RX errors 0  dropped 0  overruns 0  frame 0
-	TX packets 0  bytes 0 (0.0 B)
-	TX errors 3  dropped 0 overruns 0  carrier 0  collisions 0
-
-Signed-off-by: jianghaoran <jianghaoran@kylinos.cn>
-Link: https://lore.kernel.org/r/20220429053802.246681-1-jianghaoran@kylinos.cn
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Link: https://lore.kernel.org/r/20220427130828.162615-1-broonie@kernel.org
+Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv6/addrconf.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/arm64/kernel/cpufeature.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index efea88fb3cd5..e29553e4f4ee 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -4202,7 +4202,8 @@ static void addrconf_dad_completed(struct inet6_ifaddr *ifp, bool bump_id,
- 	send_rs = send_mld &&
- 		  ipv6_accept_ra(ifp->idev) &&
- 		  ifp->idev->cnf.rtr_solicits != 0 &&
--		  (dev->flags&IFF_LOOPBACK) == 0;
-+		  (dev->flags & IFF_LOOPBACK) == 0 &&
-+		  (dev->type != ARPHRD_TUNNEL);
- 	read_unlock_bh(&ifp->idev->lock);
- 
- 	/* While dad is in progress mld report's source address is in6_addrany.
+diff --git a/arch/arm64/kernel/cpufeature.c b/arch/arm64/kernel/cpufeature.c
+index d07dadd6b8ff..7759cd8293d8 100644
+--- a/arch/arm64/kernel/cpufeature.c
++++ b/arch/arm64/kernel/cpufeature.c
+@@ -845,6 +845,7 @@ static u64 __read_sysreg_by_encoding(u32 sys_id)
+ 	read_sysreg_case(SYS_ID_AA64PFR0_EL1);
+ 	read_sysreg_case(SYS_ID_AA64PFR1_EL1);
+ 	read_sysreg_case(SYS_ID_AA64ZFR0_EL1);
++	read_sysreg_case(SYS_ID_AA64SMFR0_EL1);
+ 	read_sysreg_case(SYS_ID_AA64DFR0_EL1);
+ 	read_sysreg_case(SYS_ID_AA64DFR1_EL1);
+ 	read_sysreg_case(SYS_ID_AA64MMFR0_EL1);
 -- 
 2.35.1
 
