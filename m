@@ -2,49 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F370C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:54:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6860BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:54:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238768AbiE3Nyl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:54:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34770 "EHLO
+        id S238779AbiE3Nyq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:54:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239286AbiE3NrV (ORCPT
+        with ESMTP id S239302AbiE3NrW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:47:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49015A76C7;
+        Mon, 30 May 2022 09:47:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 984A291554;
         Mon, 30 May 2022 06:34:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 96F7560F22;
-        Mon, 30 May 2022 13:34:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2908C385B8;
-        Mon, 30 May 2022 13:34:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DA09AB80DB7;
+        Mon, 30 May 2022 13:34:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BEF0C3411A;
+        Mon, 30 May 2022 13:34:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917669;
-        bh=5yPs2whcOLpcSH59uXLHZc5mzjfARQiDVTwJo3AY9ws=;
+        s=k20201202; t=1653917653;
+        bh=Nk3kL6bonCgW2p1suaJIp+npmeYoouMji55NiDP4wXM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XhclTurImMD7KVB2HoD0zxyXRhFtzEJ0RWZFHPxuEKgorYnc2BPqGi8JgimvvNZ7b
-         6uuBNs7bwLuoGVZR0MpFokd9jHe8neuuGDUyR3oAKEaah9VEw+t5XEI/SggNH2hLIw
-         h8DE3l5r4kl91U4v+gF2vLaV2uqN7+TmGRtVhkaDXUjMxbgk8fohkLe0sUTTSN5Anf
-         duc7EcvUuZCmLgBOMTDCPDNi1RvVwWU6i6Wod02tNR0oB278cTWKxiDwqG7O5KsZay
-         pW5cSVgNMU/d5dw5lBJ7siXwdpR5D9ttW7xjSvdkZCDaGjEdhW7j+mcj3QLdGm4ddZ
-         yPscTnv00iy4Q==
+        b=SazBpbz1mbQHuZYEeiYR7ywQEPMFKqcOxMjs5KKZ8pySmRkF9J4bZLEDosV24XaU5
+         IROTsfJ+2Lr4S/BstpAf+rUgW162vD7vbKcK6QSOsPAtL+Lwu/cf0Bfl5jWgcs2nDI
+         LKEsAbFbBFmLnUnlHZslNCSzRLrW3v1TWlcEUVDKOgdHn9wbl75qGvAdeHopKmaQ1w
+         Pytz/8vxDB+xuChrE88VgqKftUVuhEYbJgCLRYmvl48DeGfN0FgFabrkRH6BdGXveD
+         U/ufIsSKxhOq+R7UuKjukG5jqOI/bHjhVyssqbBpHExRr6WpHZQeCPiUhDR+qu6mt0
+         kjabt/w8U5FUA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lv Ruyi <lv.ruyi@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Sasha Levin <sashal@kernel.org>, robdclark@gmail.com,
-        quic_abhinavk@quicinc.com, airlied@linux.ie, daniel@ffwll.ch,
-        swboyd@chromium.org, angelogioacchino.delregno@collabora.com,
-        vulab@iscas.ac.cn, dianders@chromium.org, quic_mkrishn@quicinc.com,
-        linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        freedreno@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.17 058/135] drm: msm: fix error check return value of irq_of_parse_and_map()
-Date:   Mon, 30 May 2022 09:30:16 -0400
-Message-Id: <20220530133133.1931716-58-sashal@kernel.org>
+Cc:     Steven Price <steven.price@arm.com>,
+        Liviu Dudau <liviu.dudau@arm.com>,
+        Sasha Levin <sashal@kernel.org>,
+        maarten.lankhorst@linux.intel.com, mripard@kernel.org,
+        tzimmermann@suse.de, airlied@linux.ie, daniel@ffwll.ch,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.17 054/135] drm/plane: Move range check for format_count earlier
+Date:   Mon, 30 May 2022 09:30:12 -0400
+Message-Id: <20220530133133.1931716-54-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133133.1931716-1-sashal@kernel.org>
 References: <20220530133133.1931716-1-sashal@kernel.org>
@@ -56,40 +54,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lv Ruyi <lv.ruyi@zte.com.cn>
+From: Steven Price <steven.price@arm.com>
 
-[ Upstream commit b9e4f1d2b505df8e2439b63e67afaa287c1c43e2 ]
+[ Upstream commit 4b674dd69701c2e22e8e7770c1706a69f3b17269 ]
 
-The irq_of_parse_and_map() function returns 0 on failure, and does not
-return an negative value.
+While the check for format_count > 64 in __drm_universal_plane_init()
+shouldn't be hit (it's a WARN_ON), in its current position it will then
+leak the plane->format_types array and fail to call
+drm_mode_object_unregister() leaking the modeset identifier. Move it to
+the start of the function to avoid allocating those resources in the
+first place.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Patchwork: https://patchwork.freedesktop.org/patch/483175/
-Link: https://lore.kernel.org/r/20220424031959.3172406-1-lv.ruyi@zte.com.cn
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Signed-off-by: Steven Price <steven.price@arm.com>
+Signed-off-by: Liviu Dudau <liviu.dudau@arm.com>
+Link: https://lore.kernel.org/dri-devel/20211203102815.38624-1-steven.price@arm.com/
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/disp/mdp5/mdp5_kms.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/drm_plane.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_kms.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_kms.c
-index 12a5f81e402b..1c0dde825e57 100644
---- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_kms.c
-+++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_kms.c
-@@ -577,9 +577,9 @@ struct msm_kms *mdp5_kms_init(struct drm_device *dev)
+diff --git a/drivers/gpu/drm/drm_plane.c b/drivers/gpu/drm/drm_plane.c
+index 82afb854141b..fd0bf90fb4c2 100644
+--- a/drivers/gpu/drm/drm_plane.c
++++ b/drivers/gpu/drm/drm_plane.c
+@@ -249,6 +249,13 @@ static int __drm_universal_plane_init(struct drm_device *dev,
+ 	if (WARN_ON(config->num_total_plane >= 32))
+ 		return -EINVAL;
+ 
++	/*
++	 * First driver to need more than 64 formats needs to fix this. Each
++	 * format is encoded as a bit and the current code only supports a u64.
++	 */
++	if (WARN_ON(format_count > 64))
++		return -EINVAL;
++
+ 	WARN_ON(drm_drv_uses_atomic_modeset(dev) &&
+ 		(!funcs->atomic_destroy_state ||
+ 		 !funcs->atomic_duplicate_state));
+@@ -270,13 +277,6 @@ static int __drm_universal_plane_init(struct drm_device *dev,
+ 		return -ENOMEM;
  	}
  
- 	irq = irq_of_parse_and_map(pdev->dev.of_node, 0);
--	if (irq < 0) {
--		ret = irq;
--		DRM_DEV_ERROR(&pdev->dev, "failed to get irq: %d\n", ret);
-+	if (!irq) {
-+		ret = -EINVAL;
-+		DRM_DEV_ERROR(&pdev->dev, "failed to get irq\n");
- 		goto fail;
- 	}
+-	/*
+-	 * First driver to need more than 64 formats needs to fix this. Each
+-	 * format is encoded as a bit and the current code only supports a u64.
+-	 */
+-	if (WARN_ON(format_count > 64))
+-		return -EINVAL;
+-
+ 	if (format_modifiers) {
+ 		const uint64_t *temp_modifiers = format_modifiers;
  
 -- 
 2.35.1
