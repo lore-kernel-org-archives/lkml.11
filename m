@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B836DC3526F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC9B8C41535
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:57:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239202AbiE3N4C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:56:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49670 "EHLO
+        id S239221AbiE3N4G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:56:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238964AbiE3Nu7 (ORCPT
+        with ESMTP id S238955AbiE3Nu6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:50:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12C268723F;
-        Mon, 30 May 2022 06:35:14 -0700 (PDT)
+        Mon, 30 May 2022 09:50:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F8E1819B6;
+        Mon, 30 May 2022 06:35:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ADECA60F24;
-        Mon, 30 May 2022 13:35:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF979C3411C;
-        Mon, 30 May 2022 13:35:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C0D6CB80DAD;
+        Mon, 30 May 2022 13:35:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0389C3411A;
+        Mon, 30 May 2022 13:35:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917712;
-        bh=31HpYQaWeWqtZN+AGWXO2osKlfGZ7/fW6vbdG5g5fus=;
+        s=k20201202; t=1653917704;
+        bh=mkOZcs9H0Fc6oEmSvunN1C04xzrsehRv9BhzW7OHhdE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M1i8jIaXVDvDd5HxkphIjq6d3sQ4eOEJLDlRrRx+BlJpXMAXTlxCsTDBErrTiyVgQ
-         2OCp3xpRJegFeYyRxxWaTeGjrlnhfZ+OCdAu08mNFAoIHWyyvFm/pdHPBpdIZKNbOc
-         8E4EwlEKujUS6Fktlv7tW1DQ+HMfIZPruMA4TR9VWhms1bKXoWrnmsWh/GlFcQlK3x
-         Czol/M3xKvdK2RCxPoQNlxPaXfM8iXotERi7kJXUulZCVA3epe+8dON7XPclCwVdC/
-         0UApR6JE2mrnLwjfU2h6+8/GTzaZ6ukFFcaLHXSEPxx75SSUXBRTMHSWz830OAeR6z
-         toGI1nDu7Y5tQ==
+        b=aicrnYpyzh/vuNeVNYx+3XXPmSOwgtgBxEy+haV12D1fCjQIQh/Yz/mykGnvLjUri
+         iXbti/zYbYYq5oyo4Cl0oqXH1m45/tlIK/LweQFmucxGaH8oOJnOULfCjFQYyk59di
+         KBj9WsUeSOFzaVVIID0TRFAh67ubZOti4kWVCvIj4Q2ZI1ER9KYkIPPZ1kNyhS0nAh
+         9NKJsOStmqm/Nk8eOtP26z21oCJ+vX7b5lMOfdDmv61aI3qExd69A1VbBgYDnLh/ba
+         3R+TZ0LVVE73iZ3O+9+9TkGdMp0+zU0T/5LEUXEi1HS9KeFEsPl8xdg3swV4CFrYOA
+         YJK9uULrPuLww==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zhen Lei <thunder.leizhen@huawei.com>,
-        Rob Herring <robh@kernel.org>, Baoquan He <bhe@redhat.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
-        frowand.list@gmail.com, devicetree@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 073/135] of: Support more than one crash kernel regions for kexec -s
-Date:   Mon, 30 May 2022 09:30:31 -0400
-Message-Id: <20220530133133.1931716-73-sashal@kernel.org>
+Cc:     Alice Wong <shiwei.wong@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
+        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
+        Hawking.Zhang@amd.com, Likun.Gao@amd.com, john.clements@amd.com,
+        candice.li@amd.com, lang.yu@amd.com, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.17 069/135] drm/amdgpu/ucode: Remove firmware load type check in amdgpu_ucode_free_bo
+Date:   Mon, 30 May 2022 09:30:27 -0400
+Message-Id: <20220530133133.1931716-69-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133133.1931716-1-sashal@kernel.org>
 References: <20220530133133.1931716-1-sashal@kernel.org>
@@ -53,48 +55,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhen Lei <thunder.leizhen@huawei.com>
+From: Alice Wong <shiwei.wong@amd.com>
 
-[ Upstream commit 8af6b91f58341325bf74ecb0389ddc0039091d84 ]
+[ Upstream commit ab0cd4a9ae5b4679b714d8dbfedc0901fecdce9f ]
 
-When "crashkernel=X,high" is used, there may be two crash regions:
-high=crashk_res and low=crashk_low_res. But now the syscall
-kexec_file_load() only add crashk_res into "linux,usable-memory-range",
-this may cause the second kernel to have no available dma memory.
+When psp_hw_init failed, it will set the load_type to AMDGPU_FW_LOAD_DIRECT.
+During amdgpu_device_ip_fini, amdgpu_ucode_free_bo checks that load_type is
+AMDGPU_FW_LOAD_DIRECT and skips deallocating fw_buf causing memory leak.
+Remove load_type check in amdgpu_ucode_free_bo.
 
-Fix it like kexec-tools does for option -c, add both 'high' and 'low'
-regions into the dtb.
-
-Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
-Acked-by: Rob Herring <robh@kernel.org>
-Acked-by: Baoquan He <bhe@redhat.com>
-Link: https://lore.kernel.org/r/20220506114402.365-6-thunder.leizhen@huawei.com
-Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: Alice Wong <shiwei.wong@amd.com>
+Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/of/kexec.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_ucode.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/of/kexec.c b/drivers/of/kexec.c
-index b9bd1cff1793..8d374cc552be 100644
---- a/drivers/of/kexec.c
-+++ b/drivers/of/kexec.c
-@@ -386,6 +386,15 @@ void *of_kexec_alloc_and_setup_fdt(const struct kimage *image,
- 				crashk_res.end - crashk_res.start + 1);
- 		if (ret)
- 			goto out;
-+
-+		if (crashk_low_res.end) {
-+			ret = fdt_appendprop_addrrange(fdt, 0, chosen_node,
-+					"linux,usable-memory-range",
-+					crashk_low_res.start,
-+					crashk_low_res.end - crashk_low_res.start + 1);
-+			if (ret)
-+				goto out;
-+		}
- 	}
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_ucode.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_ucode.c
+index ca3350502618..aebafbc327fb 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_ucode.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_ucode.c
+@@ -714,8 +714,7 @@ int amdgpu_ucode_create_bo(struct amdgpu_device *adev)
  
- 	/* add bootargs */
+ void amdgpu_ucode_free_bo(struct amdgpu_device *adev)
+ {
+-	if (adev->firmware.load_type != AMDGPU_FW_LOAD_DIRECT)
+-		amdgpu_bo_free_kernel(&adev->firmware.fw_buf,
++	amdgpu_bo_free_kernel(&adev->firmware.fw_buf,
+ 		&adev->firmware.fw_buf_mc,
+ 		&adev->firmware.fw_buf_ptr);
+ }
 -- 
 2.35.1
 
