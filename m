@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E83E7C3526F
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:53:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63C5BC4707F
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:53:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238412AbiE3NwA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:52:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43010 "EHLO
+        id S238513AbiE3Nw6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:52:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238825AbiE3Np6 (ORCPT
+        with ESMTP id S238937AbiE3NqI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:45:58 -0400
+        Mon, 30 May 2022 09:46:08 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03EA7A0D26;
-        Mon, 30 May 2022 06:33:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BE608FD6A;
+        Mon, 30 May 2022 06:33:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A5D6E60F37;
-        Mon, 30 May 2022 13:33:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28D92C3411A;
-        Mon, 30 May 2022 13:33:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 488A460F27;
+        Mon, 30 May 2022 13:33:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 291F1C36AE7;
+        Mon, 30 May 2022 13:33:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917617;
-        bh=dnVq8A+QaRcFBuWkdXsDnNqK0ZQ2F6cv/bJXs+evh2Y=;
+        s=k20201202; t=1653917627;
+        bh=Zcm9ySkbT/G7Q4BJQf5Zw5SrfV4XpqujHIMn+NmqG/M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q9aSRzWzfyfMX2k018OrisoMfJtXEyFDeWGkOd24xMy3DBztPk1A68LNzpNC17cmO
-         3R2EA6K/sTs8nc1T1fRMUSyOeTmMwWjTC8f/jJFbW/7Nxq6MawPDE5sqKH1l8KCjS3
-         /8edRW3TZjFvd+xBvZGD42uzItLSXfWvnJ4QDBo/g8wtiMth9J4jXDod3aGyBfIuFx
-         jKQF6Kg+HuX6Qg4EMCEDE9vGEoDT50A5XpKF6DQh0+YPS0SUODJktfSVF+V0AF1p/v
-         WnsKrINXbXXdSDwKgN57NNMWk0aFtEq0HMGrdCLDgVFE2NYMovwSYP08gWSjWkpOMo
-         nvhgmpydtJJ3Q==
+        b=sttezF5sPcUgi0TczNTyQov56LLcdkmdPWKmd9acBoMLMKBQgTZFNhD4Riq2mmf9g
+         RX+4ZNAUn6ARa+3L2xBDqbH0LYx2qmeJyyLGgFtpS6fYVNEeuQ3EU8W5q6FrnwpIX4
+         m8AAV8Dg6ImJT0cSD/NSfRjYpckgN4Xhf4wqzxlKo6q4OEOV0Fm0Wt8vv/AQkMZI2d
+         yG1fXSYAY/W5I/hTSbMFCI1E8hPF++KQhA1FE50rb1bwomNiQUXqDrjCBeOvCIW4SC
+         +1RobAWcHVuU3xVo6GWGFSNF6FpH4WlNgIp4NIVqqmZuv7sKJeBKvSbTV8jMJtiIoH
+         U8xbcovGoOOxA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zheyu Ma <zheyuma97@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, linux-media@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 042/135] media: pci: cx23885: Fix the error handling in cx23885_initdev()
-Date:   Mon, 30 May 2022 09:30:00 -0400
-Message-Id: <20220530133133.1931716-42-sashal@kernel.org>
+Cc:     Samuel Holland <samuel@sholland.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Sasha Levin <sashal@kernel.org>, mripard@kernel.org,
+        wens@csie.org, airlied@linux.ie, daniel@ffwll.ch,
+        dri-devel@lists.freedesktop.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev
+Subject: [PATCH AUTOSEL 5.17 047/135] drm/sun4i: Add support for D1 TCONs
+Date:   Mon, 30 May 2022 09:30:05 -0400
+Message-Id: <20220530133133.1931716-47-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133133.1931716-1-sashal@kernel.org>
 References: <20220530133133.1931716-1-sashal@kernel.org>
@@ -52,64 +55,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Samuel Holland <samuel@sholland.org>
 
-[ Upstream commit e8123311cf06d7dae71e8c5fe78e0510d20cd30b ]
+[ Upstream commit b9b52d2f4aafa2bd637ace0f24615bdad8e49f01 ]
 
-When the driver fails to call the dma_set_mask(), the driver will get
-the following splat:
+D1 has a TCON TOP, so its quirks are similar to those for the R40 TCONs.
+While there are some register changes, the part of the TCON TV supported
+by the driver matches the R40 quirks, so that quirks structure can be
+reused. D1 has the first supported TCON LCD with a TCON TOP, so the TCON
+LCD needs a new quirks structure.
 
-[   55.853884] BUG: KASAN: use-after-free in __process_removed_driver+0x3c/0x240
-[   55.854486] Read of size 8 at addr ffff88810de60408 by task modprobe/590
-[   55.856822] Call Trace:
-[   55.860327]  __process_removed_driver+0x3c/0x240
-[   55.861347]  bus_for_each_dev+0x102/0x160
-[   55.861681]  i2c_del_driver+0x2f/0x50
+D1's TCON LCD hardware supports LVDS; in fact it provides dual-link LVDS
+from a single TCON. However, it comes with a brand new LVDS PHY. Since
+this PHY has not been tested, leave out LVDS driver support for now.
 
-This is because the driver has initialized the i2c related resources
-in cx23885_dev_setup() but not released them in error handling, fix this
-bug by modifying the error path that jumps after failing to call the
-dma_set_mask().
-
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Samuel Holland <samuel@sholland.org>
+Reviewed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220424162633.12369-14-samuel@sholland.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/pci/cx23885/cx23885-core.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/sun4i/sun4i_tcon.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/media/pci/cx23885/cx23885-core.c b/drivers/media/pci/cx23885/cx23885-core.c
-index f8f2ff3b00c3..a07b18f2034e 100644
---- a/drivers/media/pci/cx23885/cx23885-core.c
-+++ b/drivers/media/pci/cx23885/cx23885-core.c
-@@ -2165,7 +2165,7 @@ static int cx23885_initdev(struct pci_dev *pci_dev,
- 	err = dma_set_mask(&pci_dev->dev, 0xffffffff);
- 	if (err) {
- 		pr_err("%s/0: Oops: no 32bit PCI DMA ???\n", dev->name);
--		goto fail_ctrl;
-+		goto fail_dma_set_mask;
- 	}
+diff --git a/drivers/gpu/drm/sun4i/sun4i_tcon.c b/drivers/gpu/drm/sun4i/sun4i_tcon.c
+index 88db2d2a9336..2ee158aaeb9e 100644
+--- a/drivers/gpu/drm/sun4i/sun4i_tcon.c
++++ b/drivers/gpu/drm/sun4i/sun4i_tcon.c
+@@ -1542,6 +1542,12 @@ static const struct sun4i_tcon_quirks sun9i_a80_tcon_tv_quirks = {
+ 	.needs_edp_reset = true,
+ };
  
- 	err = request_irq(pci_dev->irq, cx23885_irq,
-@@ -2173,7 +2173,7 @@ static int cx23885_initdev(struct pci_dev *pci_dev,
- 	if (err < 0) {
- 		pr_err("%s: can't get IRQ %d\n",
- 		       dev->name, pci_dev->irq);
--		goto fail_irq;
-+		goto fail_dma_set_mask;
- 	}
- 
- 	switch (dev->board) {
-@@ -2195,7 +2195,7 @@ static int cx23885_initdev(struct pci_dev *pci_dev,
- 
- 	return 0;
- 
--fail_irq:
-+fail_dma_set_mask:
- 	cx23885_dev_unregister(dev);
- fail_ctrl:
- 	v4l2_ctrl_handler_free(hdl);
++static const struct sun4i_tcon_quirks sun20i_d1_lcd_quirks = {
++	.has_channel_0		= true,
++	.dclk_min_div		= 1,
++	.set_mux		= sun8i_r40_tcon_tv_set_mux,
++};
++
+ /* sun4i_drv uses this list to check if a device node is a TCON */
+ const struct of_device_id sun4i_tcon_of_table[] = {
+ 	{ .compatible = "allwinner,sun4i-a10-tcon", .data = &sun4i_a10_quirks },
+@@ -1559,6 +1565,8 @@ const struct of_device_id sun4i_tcon_of_table[] = {
+ 	{ .compatible = "allwinner,sun8i-v3s-tcon", .data = &sun8i_v3s_quirks },
+ 	{ .compatible = "allwinner,sun9i-a80-tcon-lcd", .data = &sun9i_a80_tcon_lcd_quirks },
+ 	{ .compatible = "allwinner,sun9i-a80-tcon-tv", .data = &sun9i_a80_tcon_tv_quirks },
++	{ .compatible = "allwinner,sun20i-d1-tcon-lcd", .data = &sun20i_d1_lcd_quirks },
++	{ .compatible = "allwinner,sun20i-d1-tcon-tv", .data = &sun8i_r40_tv_quirks },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(of, sun4i_tcon_of_table);
 -- 
 2.35.1
 
