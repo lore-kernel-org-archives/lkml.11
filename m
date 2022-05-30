@@ -2,56 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2E82C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEAE8C4707F
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:37:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242470AbiE3OhL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:37:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40282 "EHLO
+        id S242329AbiE3Og4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:36:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242120AbiE3OSY (ORCPT
+        with ESMTP id S241920AbiE3OSL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:18:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 873A5A3098;
-        Mon, 30 May 2022 06:49:11 -0700 (PDT)
+        Mon, 30 May 2022 10:18:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2D449CCBB;
+        Mon, 30 May 2022 06:48:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3AD6160EDF;
-        Mon, 30 May 2022 13:49:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A520FC385B8;
-        Mon, 30 May 2022 13:49:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4852861024;
+        Mon, 30 May 2022 13:48:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54AB6C36AEA;
+        Mon, 30 May 2022 13:48:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918549;
-        bh=KBx7M6GVVtSJjrkKmfF0jiF6x0MeYg2p7U09nMlZ5Cw=;
+        s=k20201202; t=1653918496;
+        bh=Gr+Vw9+XXHKPKIAm54nUK/J4qufutb1HXkatbHy3PKE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XhElT0+c9/O+OGxuHklu+c5vbPvD1PbJyjCma7zQKvDPuYqjBtPutjWb1N/zIiaBu
-         Buvh0YzLzSqzQNfDbSqxikLBcQrLurX7Pk5FMTXW7eIgsgzv5N1/RFs6eWL9l9ae0U
-         eNB09BxemH34kQbwMBX7hTSp7h6sBlvaWdttY8uPNt53s6WTfHZkbwXcDke1VUa7Kf
-         r5lBUOZdxq7WFUNJYYipntFl8GbHDp3A5UHUV6nVRdvmDdVB5u24xxqKeYunkS/5kh
-         EjsA+ubiCN/QUfoJFJennUXOhHYi6xVAjJPww0HgpnlavZUB6IhrimenMNYfSKB4Jo
-         6yNpHIQBARTIg==
+        b=Y7tOju2OJq2c5lCWGO+m1B0YN/S6gujOxlAUrKualLw3FDGPTL7OeYa5gIbzLv0W1
+         aHh44d4pUTRcQvpzKjrQYVOzilUI5fbu74z5YjmYXex57g5CICVhpbyL/QBdzygabg
+         8ULcpknW64QCyul7tpIeHrL8vzJ7ndroemqNRr6eBSGmdWF9vE4dGJ26gxsV39RwKz
+         T8Uqpkvb2wpJdF7uR+DzEx6/TuNw1XIUrIYwvujGVIv3YFGYx/r91fzjbbUQW+4OcR
+         JzbxskWyM66Kpb/L4pnLi2C9IcQBkUBqgkLleNuJYuuHZR0tA1NFE5ocvfQgZwEuxh
+         duAeVuCBsU5ag==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        kernel test robot <yujie.liu@intel.com>,
-        =?UTF-8?q?P=C3=A9ter=20Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
-        perex@perex.cz, tiwai@suse.com, ckeepax@opensource.cirrus.com,
-        srinivas.kandagatla@linaro.org, tanureal@opensource.cirrus.com,
-        james.schulman@cirrus.com, cy_huang@richtek.com,
-        pbrobinson@gmail.com, hdegoede@redhat.com,
-        alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.4 50/55] ASoC: max98357a: remove dependency on GPIOLIB
-Date:   Mon, 30 May 2022 09:46:56 -0400
-Message-Id: <20220530134701.1935933-50-sashal@kernel.org>
+Cc:     Mark Bloch <mbloch@nvidia.com>, Maor Gottlieb <maorg@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 28/55] net/mlx5: fs, delete the FTE when there are no rules attached to it
+Date:   Mon, 30 May 2022 09:46:34 -0400
+Message-Id: <20220530134701.1935933-28-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530134701.1935933-1-sashal@kernel.org>
 References: <20220530134701.1935933-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -59,49 +53,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+From: Mark Bloch <mbloch@nvidia.com>
 
-[ Upstream commit 21ca3274333f5c1cbbf9d91e5b33f4f2463859b2 ]
+[ Upstream commit 7b0c6338597613f465d131bd939a51844a00455a ]
 
-commit dcc2c012c7691 ("ASoC: Fix gpiolib dependencies") removed a
-series of unnecessary dependencies on GPIOLIB when the gpio was
-optional.
+When an FTE has no children is means all the rules where removed
+and the FTE can be deleted regardless of the dests_size value.
+While dests_size should be 0 when there are no children
+be extra careful not to leak memory or get firmware syndrome
+if the proper bookkeeping of dests_size wasn't done.
 
-A similar simplification seems valid for max98357a, so remove the
-dependency as well. This will avoid the following warning
-
-   WARNING: unmet direct dependencies detected for SND_SOC_MAX98357A
-     Depends on [n]: SOUND [=y] && !UML && SND [=y] && SND_SOC [=y] && GPIOLIB [=n]
-     Selected by [y]:
-     - SND_SOC_INTEL_SOF_CS42L42_MACH [=y] && SOUND [=y] && !UML &&
-       SND [=y] && SND_SOC [=y] && SND_SOC_INTEL_MACH [=y] &&
-       (SND_SOC_SOF_HDA_LINK [=y] || SND_SOC_SOF_BAYTRAIL [=n]) && I2C
-       [=y] && ACPI [=y] && SND_HDA_CODEC_HDMI [=y] &&
-       SND_SOC_SOF_HDA_AUDIO_CODEC [=y] && (MFD_INTEL_LPSS [=y] ||
-       COMPILE_TEST [=n])
-
-Reported-by: kernel test robot <yujie.liu@intel.com>
-Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
-Link: https://lore.kernel.org/r/20220517172647.468244-2-pierre-louis.bossart@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Mark Bloch <mbloch@nvidia.com>
+Reviewed-by: Maor Gottlieb <maorg@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/Kconfig | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/fs_core.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/sound/soc/codecs/Kconfig b/sound/soc/codecs/Kconfig
-index 466dc67799f4..dfc536cd9d2f 100644
---- a/sound/soc/codecs/Kconfig
-+++ b/sound/soc/codecs/Kconfig
-@@ -759,7 +759,6 @@ config SND_SOC_MAX98095
- 
- config SND_SOC_MAX98357A
- 	tristate "Maxim MAX98357A CODEC"
--	depends on GPIOLIB
- 
- config SND_SOC_MAX98371
-        tristate
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
+index 5baf2c666d29..8c8b68e7abb4 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
+@@ -1937,16 +1937,16 @@ void mlx5_del_flow_rules(struct mlx5_flow_handle *handle)
+ 	down_write_ref_node(&fte->node, false);
+ 	for (i = handle->num_rules - 1; i >= 0; i--)
+ 		tree_remove_node(&handle->rule[i]->node, true);
+-	if (fte->dests_size) {
+-		if (fte->modify_mask)
+-			modify_fte(fte);
+-		up_write_ref_node(&fte->node, false);
+-	} else if (list_empty(&fte->node.children)) {
++	if (list_empty(&fte->node.children)) {
+ 		del_hw_fte(&fte->node);
+ 		/* Avoid double call to del_hw_fte */
+ 		fte->node.del_hw_func = NULL;
+ 		up_write_ref_node(&fte->node, false);
+ 		tree_put_node(&fte->node, false);
++	} else if (fte->dests_size) {
++		if (fte->modify_mask)
++			modify_fte(fte);
++		up_write_ref_node(&fte->node, false);
+ 	} else {
+ 		up_write_ref_node(&fte->node, false);
+ 	}
 -- 
 2.35.1
 
