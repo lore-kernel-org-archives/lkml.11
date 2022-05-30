@@ -2,88 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE882C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:36:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 024CBC3526F
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:36:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234246AbiE3NeS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:34:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43554 "EHLO
+        id S237467AbiE3Ngr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:36:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237134AbiE3Ncu (ORCPT
+        with ESMTP id S237848AbiE3Nfv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:32:50 -0400
-Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60C6490CED;
-        Mon, 30 May 2022 06:27:52 -0700 (PDT)
-Received: by mail-qt1-f173.google.com with SMTP id x7so11460417qta.6;
-        Mon, 30 May 2022 06:27:52 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=IyIq4MJDoOSuGHbW7bd8iNZEOuT5QrF+0/APsVCRE6c=;
-        b=2F52u8+Kf1NRs6Sr8h05EYFWDM1RqUm1hgAKREjCwpvjQCKnEVsOwnRKYv4jw6K5+d
-         HaTVfPuAhPYAyvU2lBzAcLX2IBy+0AbuOkt6HZREt9XRnVJMKaN2InlwPae8gtTr92z6
-         DKORr6jOpTAuJmLe/dA0Dojl4Sc8dn4IR4UXQq1n572sagXlwPigDQ+/xHeAVTZFPDUg
-         P8SDiCOq79XkfxINSgwGJq29qmsWBw+Dipz4w0sb77IYHWpXaQxbcpc6IRCsVcaM47Qo
-         p3NIMikz/pSq/onNP48P0uQWIPNPgBrtHK38kXHDmWSh2EI8YYQ6smmBY2qNmsfMD5S5
-         iXfA==
-X-Gm-Message-State: AOAM533inCRG7i2oEUh5liqZIqDL3FU/P2NHqhmJvgP16JpRzhZiC5vw
-        zDC9p1bPrIchasbtnDM5bYNBck5vA6q7mg==
-X-Google-Smtp-Source: ABdhPJwH2bVl7ABP8YVODmsbdbDLzaEwmzIN8+GpwYMPPsUteSRBR5Jgr7vFovBCS/v+LIRZHjKOYw==
-X-Received: by 2002:ac8:5cd5:0:b0:302:9b2:dab0 with SMTP id s21-20020ac85cd5000000b0030209b2dab0mr6693103qta.432.1653917271066;
-        Mon, 30 May 2022 06:27:51 -0700 (PDT)
-Received: from mail-yb1-f182.google.com (mail-yb1-f182.google.com. [209.85.219.182])
-        by smtp.gmail.com with ESMTPSA id d13-20020a05622a15cd00b002fb673aa50asm7520770qty.89.2022.05.30.06.27.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 30 May 2022 06:27:49 -0700 (PDT)
-Received: by mail-yb1-f182.google.com with SMTP id z7so19019055ybf.7;
-        Mon, 30 May 2022 06:27:48 -0700 (PDT)
-X-Received: by 2002:a05:6902:905:b0:64a:2089:f487 with SMTP id
- bu5-20020a056902090500b0064a2089f487mr54381340ybb.202.1653917268188; Mon, 30
- May 2022 06:27:48 -0700 (PDT)
+        Mon, 30 May 2022 09:35:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D04095A2A;
+        Mon, 30 May 2022 06:29:08 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 08D6760F19;
+        Mon, 30 May 2022 13:29:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B758EC36AE5;
+        Mon, 30 May 2022 13:29:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653917347;
+        bh=4YDsHdimR8u7sWuDUcn+7M1z80A9tCO2U93t+ProAg8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=atsPl3job3auhVZJcjRZrkiC6ixw/kqE4aNEqUNx5cJwm2gI0Wzgu+B6rinRmGdtq
+         L+NFKhpcxRgk2fqgvzZbhBUWbN7rmi06k0J/0bLl5b3qHHZh5Cylus5YHlx0vmqEl2
+         OXEOLy+RGLBNTnKFQnfaX9Cje8R9NBCLtc50d58KdmAG/6U0hn1P0fXaB68Zo++fjM
+         pkigvqsquk7h5MsqjDGYt1he6Rc9Z/QSlkKFb4yFOfx3wh1sFoKoR+sZYM9uBqB6/Q
+         lEcEyX1SeJM8lTpqBxZjvlktYAUW8AkOtJyLUPTmMJVWvx6PGuGJu1Anc1szAkhgB/
+         ftQkTSQdfGkBg==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Corey Minyard <cminyard@mvista.com>,
+        Joe Wiese <jwiese@rackspace.com>,
+        Sasha Levin <sashal@kernel.org>,
+        openipmi-developer@lists.sourceforge.net
+Subject: [PATCH AUTOSEL 5.18 105/159] ipmi: Add an intializer for ipmi_smi_msg struct
+Date:   Mon, 30 May 2022 09:23:30 -0400
+Message-Id: <20220530132425.1929512-105-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220530132425.1929512-1-sashal@kernel.org>
+References: <20220530132425.1929512-1-sashal@kernel.org>
 MIME-Version: 1.0
-References: <20220516082838.3717982-1-conor.dooley@microchip.com>
- <20220516082838.3717982-2-conor.dooley@microchip.com> <20220530070728.GH1363@bug>
-In-Reply-To: <20220530070728.GH1363@bug>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 30 May 2022 15:27:35 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdVHbOYe4PAGUfTTRfUW9X0xbbM9wc=V-AKq3FxW3uB7JQ@mail.gmail.com>
-Message-ID: <CAMuHMdVHbOYe4PAGUfTTRfUW9X0xbbM9wc=V-AKq3FxW3uB7JQ@mail.gmail.com>
-Subject: Re: [PATCH v3 1/2] rtc: Add driver for Microchip PolarFire SoC
-To:     Pavel Machek <pavel@ucw.cz>
-Cc:     Conor Dooley <conor.dooley@microchip.com>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        daire.mcnamara@microchip.com,
-        Lewis Hanly <lewis.hanly@microchip.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-rtc@vger.kernel.org,
-        linux-riscv <linux-riscv@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 30, 2022 at 9:13 AM Pavel Machek <pavel@ucw.cz> wrote:
- > Add support for the built-in RTC on Microchip PolarFire SoC
+From: Corey Minyard <cminyard@mvista.com>
 
-> > +     do {
-> > +             prog = readl(rtcdev->base + CONTROL_REG);
-> > +             prog &= CONTROL_UPLOAD_BIT;
-> > +     } while (prog);
->
-> Limit to XY iterations?
+[ Upstream commit 9824117dd964ecebf5d81990dbf21dfb56445049 ]
 
-Perhaps read_poll_timeout()?
+There was a "type" element added to this structure, but some static
+values were missed.  The default value will be zero, which is correct,
+but create an initializer for the type and initialize the type properly
+in the initializer to avoid future issues.
 
-Gr{oetje,eeting}s,
+Reported-by: Joe Wiese <jwiese@rackspace.com>
+Signed-off-by: Corey Minyard <cminyard@mvista.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/char/ipmi/ipmi_poweroff.c |  4 +---
+ drivers/char/ipmi/ipmi_watchdog.c | 14 +++++---------
+ include/linux/ipmi_smi.h          |  6 ++++++
+ 3 files changed, 12 insertions(+), 12 deletions(-)
 
-                        Geert
+diff --git a/drivers/char/ipmi/ipmi_poweroff.c b/drivers/char/ipmi/ipmi_poweroff.c
+index bc3a18daf97a..62e71c46ac5f 100644
+--- a/drivers/char/ipmi/ipmi_poweroff.c
++++ b/drivers/char/ipmi/ipmi_poweroff.c
+@@ -94,9 +94,7 @@ static void dummy_recv_free(struct ipmi_recv_msg *msg)
+ {
+ 	atomic_dec(&dummy_count);
+ }
+-static struct ipmi_smi_msg halt_smi_msg = {
+-	.done = dummy_smi_free
+-};
++static struct ipmi_smi_msg halt_smi_msg = INIT_IPMI_SMI_MSG(dummy_smi_free);
+ static struct ipmi_recv_msg halt_recv_msg = {
+ 	.done = dummy_recv_free
+ };
+diff --git a/drivers/char/ipmi/ipmi_watchdog.c b/drivers/char/ipmi/ipmi_watchdog.c
+index 0604abdd249a..4c1e9663ea47 100644
+--- a/drivers/char/ipmi/ipmi_watchdog.c
++++ b/drivers/char/ipmi/ipmi_watchdog.c
+@@ -354,9 +354,7 @@ static void msg_free_recv(struct ipmi_recv_msg *msg)
+ 			complete(&msg_wait);
+ 	}
+ }
+-static struct ipmi_smi_msg smi_msg = {
+-	.done = msg_free_smi
+-};
++static struct ipmi_smi_msg smi_msg = INIT_IPMI_SMI_MSG(msg_free_smi);
+ static struct ipmi_recv_msg recv_msg = {
+ 	.done = msg_free_recv
+ };
+@@ -475,9 +473,8 @@ static void panic_recv_free(struct ipmi_recv_msg *msg)
+ 	atomic_dec(&panic_done_count);
+ }
+ 
+-static struct ipmi_smi_msg panic_halt_heartbeat_smi_msg = {
+-	.done = panic_smi_free
+-};
++static struct ipmi_smi_msg panic_halt_heartbeat_smi_msg =
++	INIT_IPMI_SMI_MSG(panic_smi_free);
+ static struct ipmi_recv_msg panic_halt_heartbeat_recv_msg = {
+ 	.done = panic_recv_free
+ };
+@@ -516,9 +513,8 @@ static void panic_halt_ipmi_heartbeat(void)
+ 		atomic_sub(2, &panic_done_count);
+ }
+ 
+-static struct ipmi_smi_msg panic_halt_smi_msg = {
+-	.done = panic_smi_free
+-};
++static struct ipmi_smi_msg panic_halt_smi_msg =
++	INIT_IPMI_SMI_MSG(panic_smi_free);
+ static struct ipmi_recv_msg panic_halt_recv_msg = {
+ 	.done = panic_recv_free
+ };
+diff --git a/include/linux/ipmi_smi.h b/include/linux/ipmi_smi.h
+index 9277d21c2690..5d69820d8b02 100644
+--- a/include/linux/ipmi_smi.h
++++ b/include/linux/ipmi_smi.h
+@@ -125,6 +125,12 @@ struct ipmi_smi_msg {
+ 	void (*done)(struct ipmi_smi_msg *msg);
+ };
+ 
++#define INIT_IPMI_SMI_MSG(done_handler) \
++{						\
++	.done = done_handler,			\
++	.type = IPMI_SMI_MSG_TYPE_NORMAL	\
++}
++
+ struct ipmi_smi_handlers {
+ 	struct module *owner;
+ 
+-- 
+2.35.1
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
