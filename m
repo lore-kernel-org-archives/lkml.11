@@ -2,54 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29E02C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:47:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AA49C3526F
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:47:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238394AbiE3NpV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:45:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47302 "EHLO
+        id S235157AbiE3Nrk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:47:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237368AbiE3Ngl (ORCPT
+        with ESMTP id S237743AbiE3NkF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:36:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33D438A310;
-        Mon, 30 May 2022 06:30:08 -0700 (PDT)
+        Mon, 30 May 2022 09:40:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A97C2312;
+        Mon, 30 May 2022 06:31:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0F51FB80DAC;
-        Mon, 30 May 2022 13:30:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 708C4C385B8;
-        Mon, 30 May 2022 13:29:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3225760F38;
+        Mon, 30 May 2022 13:31:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5347C385B8;
+        Mon, 30 May 2022 13:31:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917399;
-        bh=gxsFb/v4AB0XAGjYM+rRf9p/fUvFDHFjqtE2n2EA7VY=;
+        s=k20201202; t=1653917491;
+        bh=jAuNF6M+3PV9HonytzGTV1kYObV5ikBT2owp1pOQg1U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dtp2cyHxzOTW7RRYqRW5zKm6djNVQwZ2f+HXsPI1paSCONXgteMdjF9e7RBHs5eAp
-         1/zeVHB4wxpxsASNDO2CxZkPujwzctgwQ3wrc27sFYTQ+/Q529sW7KJ0nZbWmjcAHA
-         vFPMhLLZ2rpnHeu5oHooqabKK5CBecai3mHZHYgTm1nxZLQ6azdxZrKOM+3birvxhE
-         rUHq9aRlz1Ex2zVU7mBqqXkDHLW+5IIi2ZHWWpfhEsPM5wUAU9LKBO5yuhTCDsWz3w
-         Ck9RyHmdHdY8rxxD1XIuciucX9yzOxzTFPRtplRL7kkg4koiP4HKjk+FhqzgcZuMFQ
-         bkAhiPk4hmXZQ==
+        b=WP++i7pt4OSU5WVvZmSIcwmke03bwa+ElZfq5iBkvXTrTILWoYZ4LB03q5EWGG8I+
+         mt7d9fslyZ1rI9k2/g4Zv6RJTaVLe78hNgf1FpfINEbYjedjBaRuSTaDuSrbiRqi+H
+         72IZVAX78D31a07XlfcnsZ4sxph26+178hiv791+gEwsUWdeAJTE5wI1qKeJoupnNb
+         dQr1ZIRqc42fVgvdD10PzrQFSogrmsvwwoLHK86++pxn+f9ArRvsYQnBMv3p6wXR5N
+         gGOImlaiQw48Im1yhZIPo7t0OGWvXTEpov7IOHpIRXQ54KGBrJclVbxhLetmopMY9K
+         Uo5bPzcbuJKGg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yunfei Dong <yunfei.dong@mediatek.com>,
-        =?UTF-8?q?N=C3=ADcolas=20F=20=2E=20R=20=2E=20A=20=2E=20Prado?= 
-        <nfraprado@collabora.com>, Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, tiffany.lin@mediatek.com,
-        andrew-ct.chen@mediatek.com, matthias.bgg@gmail.com,
-        linux-media@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.18 123/159] media: mediatek: vcodec: prevent kernel crash when rmmod mtk-vcodec-dec.ko
-Date:   Mon, 30 May 2022 09:23:48 -0400
-Message-Id: <20220530132425.1929512-123-sashal@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Bjorn Helgaas <helgaas@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, bhelgaas@google.com,
+        akpm@linux-foundation.org
+Subject: [PATCH AUTOSEL 5.18 159/159] linux/types.h: reinstate "__bitwise__" macro for user space use
+Date:   Mon, 30 May 2022 09:24:24 -0400
+Message-Id: <20220530132425.1929512-159-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530132425.1929512-1-sashal@kernel.org>
 References: <20220530132425.1929512-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -57,70 +53,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yunfei Dong <yunfei.dong@mediatek.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 
-[ Upstream commit c10c0086db688c95bb4e0e378e523818dff1551d ]
+[ Upstream commit caa28984163cb63ea0be4cb8dbf05defdc7303f9 ]
 
-If the driver support subdev mode, the parameter "dev->pm.dev" will be
-NULL in mtk_vcodec_dec_remove. Kernel will crash when try to rmmod
-mtk-vcodec-dec.ko.
+Commit c724c866bb70 ("linux/types.h: remove unnecessary __bitwise__")
+was right that there are no users of __bitwise__ in the kernel, but it
+turns out there are user space users of it that do expect it.
 
-[ 4380.702726] pc : do_raw_spin_trylock+0x4/0x80
-[ 4380.707075] lr : _raw_spin_lock_irq+0x90/0x14c
-[ 4380.711509] sp : ffff80000819bc10
-[ 4380.714811] x29: ffff80000819bc10 x28: ffff3600c03e4000 x27: 0000000000000000
-[ 4380.721934] x26: 0000000000000000 x25: 0000000000000000 x24: 0000000000000000
-[ 4380.729057] x23: ffff3600c0f34930 x22: ffffd5e923549000 x21: 0000000000000220
-[ 4380.736179] x20: 0000000000000208 x19: ffffd5e9213e8ebc x18: 0000000000000020
-[ 4380.743298] x17: 0000002000000000 x16: ffffd5e9213e8e90 x15: 696c346f65646976
-[ 4380.750420] x14: 0000000000000000 x13: 0000000000000001 x12: 0000000000000040
-[ 4380.757542] x11: 0000000000000000 x10: 0000000000000000 x9 : 0000000000000000
-[ 4380.764664] x8 : 0000000000000000 x7 : ffff3600c7273ae8 x6 : ffffd5e9213e8ebc
-[ 4380.771786] x5 : 0000000000000000 x4 : 0000000000000001 x3 : 0000000000000000
-[ 4380.778908] x2 : 0000000000000000 x1 : ffff3600c03e4000 x0 : 0000000000000208
-[ 4380.786031] Call trace:
-[ 4380.788465]  do_raw_spin_trylock+0x4/0x80
-[ 4380.792462]  __pm_runtime_disable+0x2c/0x1b0
-[ 4380.796723]  mtk_vcodec_dec_remove+0x5c/0xa0 [mtk_vcodec_dec]
-[ 4380.802466]  platform_remove+0x2c/0x60
-[ 4380.806204]  __device_release_driver+0x194/0x250
-[ 4380.810810]  driver_detach+0xc8/0x15c
-[ 4380.814462]  bus_remove_driver+0x5c/0xb0
-[ 4380.818375]  driver_unregister+0x34/0x64
-[ 4380.822288]  platform_driver_unregister+0x18/0x24
-[ 4380.826979]  mtk_vcodec_dec_driver_exit+0x1c/0x888 [mtk_vcodec_dec]
-[ 4380.833240]  __arm64_sys_delete_module+0x190/0x224
-[ 4380.838020]  invoke_syscall+0x48/0x114
-[ 4380.841760]  el0_svc_common.constprop.0+0x60/0x11c
-[ 4380.846540]  do_el0_svc+0x28/0x90
-[ 4380.849844]  el0_svc+0x4c/0x100
-[ 4380.852975]  el0t_64_sync_handler+0xec/0xf0
-[ 4380.857148]  el0t_64_sync+0x190/0x194
-[ 4380.860801] Code: 94431515 17ffffca d503201f d503245f (b9400004)
+It is, after all, in the uapi directory, so user space usage is to be
+expected.
 
-Signed-off-by: Yunfei Dong <yunfei.dong@mediatek.com>
-Tested-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Instead of reverting the commit completely, let's just clarify the
+situation so that it doesn't happen again, and have some in-code
+explanations for why that "__bitwise__" still exists.
+
+Reported-by: Jiri Slaby <jirislaby@kernel.org>
+Cc: Bjorn Helgaas <helgaas@kernel.org>
+Link: https://lore.kernel.org/all/b5c0a68d-8387-4909-beea-f70ab9e6e3d5@kernel.org/
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_drv.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ include/uapi/linux/types.h | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_drv.c b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_drv.c
-index df7b25e9cbc8..128edcf541e1 100644
---- a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_drv.c
-+++ b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_drv.c
-@@ -487,7 +487,8 @@ static int mtk_vcodec_dec_remove(struct platform_device *pdev)
- 		video_unregister_device(dev->vfd_dec);
+diff --git a/include/uapi/linux/types.h b/include/uapi/linux/types.h
+index c4dc597f3dcf..308433be33c2 100644
+--- a/include/uapi/linux/types.h
++++ b/include/uapi/linux/types.h
+@@ -26,6 +26,9 @@
+ #define __bitwise
+ #endif
  
- 	v4l2_device_unregister(&dev->v4l2_dev);
--	pm_runtime_disable(dev->pm.dev);
-+	if (!dev->vdec_pdata->is_subdev_supported)
-+		pm_runtime_disable(dev->pm.dev);
- 	mtk_vcodec_fw_release(dev->fw_handler);
- 	return 0;
- }
++/* The kernel doesn't use this legacy form, but user space does */
++#define __bitwise__ __bitwise
++
+ typedef __u16 __bitwise __le16;
+ typedef __u16 __bitwise __be16;
+ typedef __u32 __bitwise __le32;
 -- 
 2.35.1
 
