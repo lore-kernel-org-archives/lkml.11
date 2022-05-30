@@ -2,241 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC5A6C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB904C4167D
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:56:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242595AbiE3Oza (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:55:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35036 "EHLO
+        id S242631AbiE3Ozg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:55:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240889AbiE3OnL (ORCPT
+        with ESMTP id S241847AbiE3Op1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:43:11 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B67B14AF55
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 06:55:26 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <sha@pengutronix.de>)
-        id 1nvfrO-0007UQ-PW; Mon, 30 May 2022 15:55:07 +0200
-Received: from [2a0a:edc0:0:1101:1d::28] (helo=dude02.red.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <sha@pengutronix.de>)
-        id 1nvfrO-005Sm6-9s; Mon, 30 May 2022 15:55:04 +0200
-Received: from sha by dude02.red.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <sha@pengutronix.de>)
-        id 1nvfrL-004dIl-M5; Mon, 30 May 2022 15:55:03 +0200
-From:   Sascha Hauer <s.hauer@pengutronix.de>
-To:     linux-wireless@vger.kernel.org
-Cc:     Neo Jou <neojou@gmail.com>, Hans Ulli Kroll <linux@ulli-kroll.de>,
-        Ping-Ke Shih <pkshih@realtek.com>,
-        Yan-Hsuan Chuang <tony0620emma@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        kernel@pengutronix.de, Johannes Berg <johannes@sipsolutions.net>,
-        Sascha Hauer <s.hauer@pengutronix.de>
-Subject: [PATCH v2 09/10] rtw88: Add rtw8822cu chipset support
-Date:   Mon, 30 May 2022 15:54:56 +0200
-Message-Id: <20220530135457.1104091-10-s.hauer@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220530135457.1104091-1-s.hauer@pengutronix.de>
-References: <20220530135457.1104091-1-s.hauer@pengutronix.de>
+        Mon, 30 May 2022 10:45:27 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AA4B5DE4E;
+        Mon, 30 May 2022 06:57:30 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: dmitry.osipenko)
+        with ESMTPSA id B98F41F417FE
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1653919049;
+        bh=2XRBuky6ctLBMkVpHH42tRbnrHaVzoRJDfOS/8wLl/E=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=mPwSP+W1lUR0EdMvCliWfZoiylZ8CVpOpjwgflCUTZaI9WHJh5tJXhk8DyguPhNeN
+         HogdCkNBgtGD2G8U9Ep2K49/vmqE56g1BgD7MA21xGk1ZVBj+VJcIxxm08FCLdNgVK
+         RmZOwzc+caJBzV5axbiwKDrCGcHjZmvJd24egZXw9xLh3XfQFPhTT3EpgfN70g8mqC
+         9sjT+smifz0WHNiGEqr7+RZqCI9QQehNyQ19Mpiv9LWCOB9wzR78FM0tska4e7lqKe
+         50oVtOr/eGMjVeh2uPvpXIVZhL/NQ2LFQ3MNEmBcidBDh44gsd28fmmYzNC+2ue0aj
+         H9xWHCkQ7dKmg==
+Message-ID: <7372dd1b-06f7-5336-4738-15f9b4d4d4b3@collabora.com>
+Date:   Mon, 30 May 2022 16:57:22 +0300
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v6 14/22] dma-buf: Introduce new locking convention
+Content-Language: en-US
+To:     =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Gerd Hoffmann <kraxel@redhat.com>,
+        Gurchetan Singh <gurchetansingh@chromium.org>,
+        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+        Daniel Almeida <daniel.almeida@collabora.com>,
+        Gert Wollny <gert.wollny@collabora.com>,
+        Gustavo Padovan <gustavo.padovan@collabora.com>,
+        Daniel Stone <daniel@fooishbar.org>,
+        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Rob Herring <robh@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
+        Rob Clark <robdclark@gmail.com>,
+        Emil Velikov <emil.l.velikov@gmail.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Qiang Yu <yuq825@gmail.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Tomasz Figa <tfiga@chromium.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
+Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        Dmitry Osipenko <digetx@gmail.com>,
+        linux-tegra@vger.kernel.org, linux-media@vger.kernel.org,
+        linaro-mm-sig@lists.linaro.org, amd-gfx@lists.freedesktop.org,
+        intel-gfx@lists.freedesktop.org, kernel@collabora.com
+References: <20220526235040.678984-1-dmitry.osipenko@collabora.com>
+ <20220526235040.678984-15-dmitry.osipenko@collabora.com>
+ <0a02a31d-a256-4ca4-0e35-e2ea1868a8ae@amd.com>
+ <e6e17c52-43c2-064b-500e-325bb3ba3b2c@collabora.com>
+ <02e7946b-34ca-b48e-1ba6-e7b63740a2d9@amd.com>
+From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
+In-Reply-To: <02e7946b-34ca-b48e-1ba6-e7b63740a2d9@amd.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: sha@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for the rtw8822cu chipset based on
-https://github.com/ulli-kroll/rtw88-usb.git
+On 5/30/22 16:41, Christian König wrote:
+> Hi Dmitry,
+> 
+> Am 30.05.22 um 15:26 schrieb Dmitry Osipenko:
+>> Hello Christian,
+>>
+>> On 5/30/22 09:50, Christian König wrote:
+>>> Hi Dmitry,
+>>>
+>>> First of all please separate out this patch from the rest of the series,
+>>> since this is a complex separate structural change.
+>> I assume all the patches will go via the DRM tree in the end since the
+>> rest of the DRM patches in this series depend on this dma-buf change.
+>> But I see that separation may ease reviewing of the dma-buf changes, so
+>> let's try it.
+> 
+> That sounds like you are underestimating a bit how much trouble this
+> will be.
+> 
+>>> I have tried this before and failed because catching all the locks in
+>>> the right code paths are very tricky. So expect some fallout from this
+>>> and make sure the kernel test robot and CI systems are clean.
+>> Sure, I'll fix up all the reported things in the next iteration.
+>>
+>> BTW, have you ever posted yours version of the patch? Will be great if
+>> we could compare the changed code paths.
+> 
+> No, I never even finished creating it after realizing how much work it
+> would be.
+> 
+>>>> This patch introduces new locking convention for dma-buf users. From
+>>>> now
+>>>> on all dma-buf importers are responsible for holding dma-buf
+>>>> reservation
+>>>> lock around operations performed over dma-bufs.
+>>>>
+>>>> This patch implements the new dma-buf locking convention by:
+>>>>
+>>>>     1. Making dma-buf API functions to take the reservation lock.
+>>>>
+>>>>     2. Adding new locked variants of the dma-buf API functions for
+>>>> drivers
+>>>>        that need to manage imported dma-bufs under the held lock.
+>>> Instead of adding new locked variants please mark all variants which
+>>> expect to be called without a lock with an _unlocked postfix.
+>>>
+>>> This should make it easier to remove those in a follow up patch set and
+>>> then fully move the locking into the importer.
+>> Do we really want to move all the locks to the importers? Seems the
+>> majority of drivers should be happy with the dma-buf helpers handling
+>> the locking for them.
+> 
+> Yes, I clearly think so.
+> 
+>>
+>>>>     3. Converting all drivers to the new locking scheme.
+>>> I have strong doubts that you got all of them. At least radeon and
+>>> nouveau should grab the reservation lock in their ->attach callbacks
+>>> somehow.
+>> Radeon and Nouveau use gem_prime_import_sg_table() and they take resv
+>> lock already, seems they should be okay (?)
+> 
+> You are looking at the wrong side. You need to fix the export code path,
+> not the import ones.
+> 
+> See for example attach on radeon works like this
+> drm_gem_map_attach->drm_gem_pin->radeon_gem_prime_pin->radeon_bo_reserve->ttm_bo_reserve->dma_resv_lock.
 
-Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
----
+Yeah, I was looking at the both sides, but missed this one.
 
-Notes:
-    Changes since v1:
-    - Add more Device IDs from https://github.com/morrownr/8821cu-20210118.git
+> Same for nouveau and probably a few other exporters as well. That will
+> certainly cause a deadlock if you don't fix it.
+> 
+> I strongly suggest to do this step by step, first attach/detach and then
+> the rest.
 
- drivers/net/wireless/realtek/rtw88/Kconfig    | 11 +++++
- drivers/net/wireless/realtek/rtw88/Makefile   |  3 ++
- drivers/net/wireless/realtek/rtw88/rtw8822c.c | 24 ++++++++++
- .../net/wireless/realtek/rtw88/rtw8822cu.c    | 44 +++++++++++++++++++
- .../net/wireless/realtek/rtw88/rtw8822cu.h    | 10 +++++
- 5 files changed, 92 insertions(+)
- create mode 100644 drivers/net/wireless/realtek/rtw88/rtw8822cu.c
- create mode 100644 drivers/net/wireless/realtek/rtw88/rtw8822cu.h
+Thank you very much for the suggestions. I'll implement them in the next
+version.
 
-diff --git a/drivers/net/wireless/realtek/rtw88/Kconfig b/drivers/net/wireless/realtek/rtw88/Kconfig
-index 10f4e7f88b858..138289bc5ad0c 100644
---- a/drivers/net/wireless/realtek/rtw88/Kconfig
-+++ b/drivers/net/wireless/realtek/rtw88/Kconfig
-@@ -64,6 +64,17 @@ config RTW88_8822CE
- 
- 	  802.11ac PCIe wireless network adapter
- 
-+config RTW88_8822CU
-+	tristate "Realtek 8822CU USB wireless network adapter"
-+	depends on USB
-+	select RTW88_CORE
-+	select RTW88_USB
-+	select RTW88_8822C
-+	help
-+	  Select this option will enable support for 8822CU chipset
-+
-+	  802.11ac USB wireless network adapter
-+
- config RTW88_8723DE
- 	tristate "Realtek 8723DE PCI wireless network adapter"
- 	depends on PCI
-diff --git a/drivers/net/wireless/realtek/rtw88/Makefile b/drivers/net/wireless/realtek/rtw88/Makefile
-index 1d28cc4fff7b2..06883d7323b05 100644
---- a/drivers/net/wireless/realtek/rtw88/Makefile
-+++ b/drivers/net/wireless/realtek/rtw88/Makefile
-@@ -35,6 +35,9 @@ rtw88_8822c-objs		:= rtw8822c.o rtw8822c_table.o
- obj-$(CONFIG_RTW88_8822CE)	+= rtw88_8822ce.o
- rtw88_8822ce-objs		:= rtw8822ce.o
- 
-+obj-$(CONFIG_RTW88_8822CU)	+= rtw88_8822cu.o
-+rtw88_8822cu-objs		:= rtw8822cu.o
-+
- obj-$(CONFIG_RTW88_8723D)	+= rtw88_8723d.o
- rtw88_8723d-objs		:= rtw8723d.o rtw8723d_table.o
- 
-diff --git a/drivers/net/wireless/realtek/rtw88/rtw8822c.c b/drivers/net/wireless/realtek/rtw88/rtw8822c.c
-index cd74607a61a28..51c90ef20c456 100644
---- a/drivers/net/wireless/realtek/rtw88/rtw8822c.c
-+++ b/drivers/net/wireless/realtek/rtw88/rtw8822c.c
-@@ -29,6 +29,12 @@ static void rtw8822ce_efuse_parsing(struct rtw_efuse *efuse,
- 	ether_addr_copy(efuse->addr, map->e.mac_addr);
- }
- 
-+static void rtw8822cu_efuse_parsing(struct rtw_efuse *efuse,
-+				    struct rtw8822c_efuse *map)
-+{
-+	ether_addr_copy(efuse->addr, map->u.mac_addr);
-+}
-+
- static int rtw8822c_read_efuse(struct rtw_dev *rtwdev, u8 *log_map)
- {
- 	struct rtw_efuse *efuse = &rtwdev->efuse;
-@@ -58,6 +64,9 @@ static int rtw8822c_read_efuse(struct rtw_dev *rtwdev, u8 *log_map)
- 	case RTW_HCI_TYPE_PCIE:
- 		rtw8822ce_efuse_parsing(efuse, map);
- 		break;
-+	case RTW_HCI_TYPE_USB:
-+		rtw8822cu_efuse_parsing(efuse, map);
-+		break;
- 	default:
- 		/* unsupported now */
- 		return -ENOTSUPP;
-@@ -4557,6 +4566,18 @@ static void rtw8822c_adaptivity(struct rtw_dev *rtwdev)
- 	rtw_phy_set_edcca_th(rtwdev, l2h, h2l);
- }
- 
-+static void rtw8822c_fill_txdesc_checksum(struct rtw_dev *rtwdev,
-+					  struct rtw_tx_pkt_info *pkt_info,
-+					  u8 *txdesc)
-+{
-+	struct rtw_chip_info *chip = rtwdev->chip;
-+	size_t words;
-+
-+	words = (pkt_info->pkt_offset * 8 + chip->tx_pkt_desc_sz) / 2;
-+
-+	fill_txdesc_checksum_common(txdesc, words);
-+}
-+
- static const struct rtw_pwr_seq_cmd trans_carddis_to_cardemu_8822c[] = {
- 	{0x0086,
- 	 RTW_PWR_CUT_ALL_MSK,
-@@ -4895,6 +4916,8 @@ static const struct rtw_rfe_def rtw8822c_rfe_defs[] = {
- 	[0] = RTW_DEF_RFE(8822c, 0, 0),
- 	[1] = RTW_DEF_RFE(8822c, 0, 0),
- 	[2] = RTW_DEF_RFE(8822c, 0, 0),
-+	[3] = RTW_DEF_RFE(8822c, 0, 0),
-+	[4] = RTW_DEF_RFE(8822c, 0, 0),
- 	[5] = RTW_DEF_RFE(8822c, 0, 5),
- 	[6] = RTW_DEF_RFE(8822c, 0, 0),
- };
-@@ -4978,6 +5001,7 @@ static struct rtw_chip_ops rtw8822c_ops = {
- 	.cfo_track		= rtw8822c_cfo_track,
- 	.config_tx_path		= rtw8822c_config_tx_path,
- 	.config_txrx_mode	= rtw8822c_config_trx_mode,
-+	.fill_txdesc_checksum	= rtw8822c_fill_txdesc_checksum,
- 
- 	.coex_set_init		= rtw8822c_coex_cfg_init,
- 	.coex_set_ant_switch	= NULL,
-diff --git a/drivers/net/wireless/realtek/rtw88/rtw8822cu.c b/drivers/net/wireless/realtek/rtw88/rtw8822cu.c
-new file mode 100644
-index 0000000000000..f839790e9fd08
---- /dev/null
-+++ b/drivers/net/wireless/realtek/rtw88/rtw8822cu.c
-@@ -0,0 +1,44 @@
-+// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-+/* Copyright(c) 2018-2019  Realtek Corporation
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/usb.h>
-+#include "main.h"
-+#include "rtw8822cu.h"
-+#include "usb.h"
-+
-+static const struct usb_device_id rtw_8822cu_id_table[] = {
-+	{ USB_DEVICE_AND_INTERFACE_INFO(RTW_USB_VENDOR_ID_REALTEK, 0xc82c, 0xff, 0xff, 0xff),
-+	  .driver_info = (kernel_ulong_t)&(rtw8822c_hw_spec) },
-+	{ USB_DEVICE_AND_INTERFACE_INFO(RTW_USB_VENDOR_ID_REALTEK, 0xc812, 0xff, 0xff, 0xff),
-+	  .driver_info = (kernel_ulong_t)&(rtw8822c_hw_spec) },
-+	{ USB_DEVICE_AND_INTERFACE_INFO(RTW_USB_VENDOR_ID_REALTEK, 0xc82e, 0xff, 0xff, 0xff),
-+	  .driver_info = (kernel_ulong_t)&(rtw8822c_hw_spec) },
-+	{ USB_DEVICE_AND_INTERFACE_INFO(RTW_USB_VENDOR_ID_REALTEK, 0xd820, 0xff, 0xff, 0xff),
-+	  .driver_info = (kernel_ulong_t)&(rtw8822c_hw_spec) },
-+	{ USB_DEVICE_AND_INTERFACE_INFO(RTW_USB_VENDOR_ID_REALTEK, 0xd82b, 0xff, 0xff, 0xff),
-+	  .driver_info = (kernel_ulong_t)&(rtw8822c_hw_spec) },
-+	{ USB_DEVICE_AND_INTERFACE_INFO(0x13b1, 0x0043, 0xff, 0xff, 0xff),
-+	  .driver_info = (kernel_ulong_t)&(rtw8822c_hw_spec) }, /* Alpha - Alpha */
-+	{},
-+};
-+MODULE_DEVICE_TABLE(usb, rtw_8822cu_id_table);
-+
-+static int rtw8822bu_probe(struct usb_interface *intf,
-+			   const struct usb_device_id *id)
-+{
-+	return rtw_usb_probe(intf, id);
-+}
-+
-+static struct usb_driver rtw_8822cu_driver = {
-+	.name = "rtw_8822cu",
-+	.id_table = rtw_8822cu_id_table,
-+	.probe = rtw8822bu_probe,
-+	.disconnect = rtw_usb_disconnect,
-+};
-+module_usb_driver(rtw_8822cu_driver);
-+
-+MODULE_AUTHOR("Realtek Corporation");
-+MODULE_DESCRIPTION("Realtek 802.11ac wireless 8822cu driver");
-+MODULE_LICENSE("Dual BSD/GPL");
-diff --git a/drivers/net/wireless/realtek/rtw88/rtw8822cu.h b/drivers/net/wireless/realtek/rtw88/rtw8822cu.h
-new file mode 100644
-index 0000000000000..4b35343aacb1c
---- /dev/null
-+++ b/drivers/net/wireless/realtek/rtw88/rtw8822cu.h
-@@ -0,0 +1,10 @@
-+/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-+/* Copyright(c) 2018-2019  Realtek Corporation
-+ */
-+
-+#ifndef __RTW_8822CU_H_
-+#define __RTW_8822CU_H_
-+
-+extern struct rtw_chip_info rtw8822c_hw_spec;
-+
-+#endif
 -- 
-2.30.2
-
+Best regards,
+Dmitry
