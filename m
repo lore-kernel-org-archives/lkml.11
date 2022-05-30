@@ -2,130 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 799C0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 12:05:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FEAFC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 12:10:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235725AbiE3MFb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 08:05:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42860 "EHLO
+        id S236030AbiE3MJ6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 08:09:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229715AbiE3MFZ (ORCPT
+        with ESMTP id S229715AbiE3MJz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 08:05:25 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F99251E71;
-        Mon, 30 May 2022 05:05:24 -0700 (PDT)
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24UBBn5W023475;
-        Mon, 30 May 2022 12:05:24 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=pp1;
- bh=D6pExEEiOP01k4g5hzXLFiw9QdYkFueNgR/mF/w6Gp4=;
- b=jW5bfeff7IZQlczrzCE87EtjreggWePFyDkC0mPX8MM33ATDAfywXPYpW12K6Ul5XZiE
- nFrtlRsnzqCNkxtVY+zKjfl51RYqf4wqKfDFje4Nc27EPDwOj8ITtvw65/78o1NtGia4
- X4YvIkdbyP/9DpQYFQF6bG863OCOpZXNo9f6SiKCpeZxsnFk8fDRRJBGvcnlKrFyd1jo
- XdnZlt1Tol4TVXcY83kvsBFJezzBfyMXpvmZCBsfS9jSYh0u5kLWJ5hHxuQZuYjShEPi
- +AwCtr2XiDxHiMe7ae1fBFTAbLE4jUGX27+OWQWO5DgHJ8EGPd4WUw31Ood3tcEJkrDd Rw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gcvua8wb0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 30 May 2022 12:05:23 +0000
-Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24UBXCeW008700;
-        Mon, 30 May 2022 12:05:23 GMT
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gcvua8wa1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 30 May 2022 12:05:23 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24UC50qa016286;
-        Mon, 30 May 2022 12:05:20 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma03ams.nl.ibm.com with ESMTP id 3gbc7h2p34-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 30 May 2022 12:05:20 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24UC5H7V28377588
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 30 May 2022 12:05:17 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A8686A4053;
-        Mon, 30 May 2022 12:05:17 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 0E9C2A4040;
-        Mon, 30 May 2022 12:05:17 +0000 (GMT)
-Received: from p-imbrenda (unknown [9.145.12.149])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon, 30 May 2022 12:05:16 +0000 (GMT)
-Date:   Mon, 30 May 2022 14:05:14 +0200
-From:   Claudio Imbrenda <imbrenda@linux.ibm.com>
-To:     Nico Boehr <nrb@linux.ibm.com>
-Cc:     kvm@vger.kernel.org, borntraeger@de.ibm.com, frankja@linux.ibm.com,
-        thuth@redhat.com, pasic@linux.ibm.com, david@redhat.com,
-        linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
-        scgl@linux.ibm.com, mimu@linux.ibm.com
-Subject: Re: [PATCH v10 13/19] KVM: s390: pv: destroy the configuration
- before its memory
-Message-ID: <20220530140514.74f6ea46@p-imbrenda>
-In-Reply-To: <96ee2d8c2c64b4968529b78bd7ad8a042542d353.camel@linux.ibm.com>
-References: <20220414080311.1084834-1-imbrenda@linux.ibm.com>
-        <20220414080311.1084834-14-imbrenda@linux.ibm.com>
-        <96ee2d8c2c64b4968529b78bd7ad8a042542d353.camel@linux.ibm.com>
-Organization: IBM
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-redhat-linux-gnu)
+        Mon, 30 May 2022 08:09:55 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B1DA05DD15
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 05:09:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653912593;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=l+xhfzs8lWvum/5z4y3LJduPiIcYZl/dK4jHG88Ohl0=;
+        b=OdNWoAzhJse6CSm7TEOD9UjHVAjNgm1wlKuDh6M3/+cTHWrZzC6qp2y+iioRYv8AsTOir8
+        mPLMKKRa/oFsNrA2Wc+wIPlUyQSNYayY8Mnxr5DGxKg4z1o8Z0PoIvWe3Q0jkR3W6oUELZ
+        7awkCAz2nkb8QalZlxbQqS9b9fMcPdE=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-606-bmzpHDSXPdOUkfjJ9dqVjw-1; Mon, 30 May 2022 08:09:52 -0400
+X-MC-Unique: bmzpHDSXPdOUkfjJ9dqVjw-1
+Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 41D7C3804501;
+        Mon, 30 May 2022 12:09:52 +0000 (UTC)
+Received: from localhost (ovpn-13-142.pek2.redhat.com [10.72.13.142])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 74C94492C3B;
+        Mon, 30 May 2022 12:09:50 +0000 (UTC)
+Date:   Mon, 30 May 2022 20:09:47 +0800
+From:   Baoquan He <bhe@redhat.com>
+To:     ysato@users.sourceforge.jp, dalias@libc.org
+Cc:     linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH] sh: cast away __iomem to remove sparse warning
+Message-ID: <YpS0C8tVG2E5jGSV@MiWiFi-R3L-srv>
+References: <20220507013411.74277-1-bhe@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: 0Ejm7-gaFFx-nbxjBNCBc8d3jX_4zNzs
-X-Proofpoint-GUID: X8Zaa9OTDvG1rN-58Fref4ZqLVp-mSKD
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-30_03,2022-05-30_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 malwarescore=0
- adultscore=0 suspectscore=0 impostorscore=0 lowpriorityscore=0
- phishscore=0 spamscore=0 priorityscore=1501 mlxlogscore=999 clxscore=1015
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2205300063
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220507013411.74277-1-bhe@redhat.com>
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 30 May 2022 09:37:37 +0200
-Nico Boehr <nrb@linux.ibm.com> wrote:
+Hi,
 
-> On Thu, 2022-04-14 at 10:03 +0200, Claudio Imbrenda wrote:
-> > Move the Destroy Secure Configuration UVC before the loop to destroy
-> > the memory. If the protected VM has memory, it will be cleaned up and
-> > made accessible by the Destroy Secure Configuraion UVC. The struct
-> > page for the relevant pages will still have the protected bit set, so
-> > the loop is still needed to clean that up.
-> >=20
-> > Switching the order of those two operations does not change the
-> > outcome, but it is significantly faster.
-> >=20
-> > Signed-off-by: Claudio Imbrenda <imbrenda@linux.ibm.com> =20
->=20
-> Reviewed-by: Nico Boehr <nrb@linux.ibm.com>
->=20
-> See one tiny thing below.
->=20
-> > diff --git a/arch/s390/kvm/pv.c b/arch/s390/kvm/pv.c
-> > index be3b467f8feb..bd850be08c86 100644
-> > --- a/arch/s390/kvm/pv.c
-> > +++ b/arch/s390/kvm/pv.c =20
-> [...]
-> > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0cc =3D uv_cmd_nodata(kvm_s39=
-0_pv_get_handle(kvm),
-> > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0 UVC_CMD_DESTROY_SEC_CONF, rc, rrc);
-> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0WRITE_ONCE(kvm->arch.gm=
-ap->guest_handle, 0); =20
->=20
-> Maybe it makes sense to also move the WRITE_ONCE up.
+On 05/07/22 at 09:34am, Baoquan He wrote:
+> LKP reported a sparse warning in arch/sh/kernel/crash_dump.c during
+> a kdump patchset reviewing:
+> https://lore.kernel.org/all/202204082128.JKXXDGpa-lkp@intel.com/T/#u
+> 
+> ../arch/sh/kernel/crash_dump.c:23:36: sparse: warning: incorrect type in argument 1 (different address spaces)
+> ../arch/sh/kernel/crash_dump.c:23:36: sparse:    expected void const *addr
+> ../arch/sh/kernel/crash_dump.c:23:36: sparse:    got void [noderef] __iomem *
+> 
+> This warning happened when __iomem pointer is passed into fucntion
+> which doesn't expect it. Casting away the __iomem can fix it.
 
-yes, I'll move it up, so that it is right after the UVC again
+This warning was reported by lkp during one patchset posted and
+reviewing. Since it's not related to the patchset, I just sent it
+separately so that later code change on arch/sh/kernel/crash_dump.c
+won't trigger the lkp warning again.
 
+[PATCH v5 RESEND 0/3] Convert vmcore to use an iov_iter
+https://lore.kernel.org/all/20220408090636.560886-2-bhe@redhat.com/T/#u
+
+Now the above patchset has been merged into linus's tree, please
+consider taking this patch.
+
+Thanks
+Baoquan
+
+> 
+> Reported-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: Baoquan He <bhe@redhat.com>
+> ---
+>  arch/sh/kernel/crash_dump.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/arch/sh/kernel/crash_dump.c b/arch/sh/kernel/crash_dump.c
+> index 19ce6a950aac..52d1d54eb6b1 100644
+> --- a/arch/sh/kernel/crash_dump.c
+> +++ b/arch/sh/kernel/crash_dump.c
+> @@ -20,7 +20,7 @@ ssize_t copy_oldmem_page(struct iov_iter *iter, unsigned long pfn,
+>  		return 0;
+>  
+>  	vaddr = ioremap(pfn << PAGE_SHIFT, PAGE_SIZE);
+> -	csize = copy_to_iter(vaddr + offset, csize, iter);
+> +	csize = copy_to_iter((const void __force *)vaddr + offset, csize, iter);
+>  	iounmap(vaddr);
+>  
+>  	return csize;
+> -- 
+> 2.34.1
+> 
 
