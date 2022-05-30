@@ -2,52 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 287FEC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:24:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42A43C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:24:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236557AbiE3NYp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:24:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57234 "EHLO
+        id S236577AbiE3NYt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:24:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236538AbiE3NYk (ORCPT
+        with ESMTP id S236539AbiE3NYk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 30 May 2022 09:24:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72D1671A1A;
-        Mon, 30 May 2022 06:24:37 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02F7F62F6;
+        Mon, 30 May 2022 06:24:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EABB9B80DA7;
-        Mon, 30 May 2022 13:24:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66562C385B8;
-        Mon, 30 May 2022 13:24:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F45A60EE6;
+        Mon, 30 May 2022 13:24:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9ED55C3411F;
+        Mon, 30 May 2022 13:24:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917074;
-        bh=m8OgePpjLaw3vqTYFrtd4bJ7YgU/xYB3M8CWzOMVcdc=;
+        s=k20201202; t=1653917078;
+        bh=bGvWXSsVYE8QDR2oEurh5TCb6bubWjqxrbK4wgMkhpQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bX11V3oMN+/wnYPlL0/UAMWBEEmOveKuwZ82Wee9Mvbuw/IGBTjuL4Z+eUJbvkWOM
-         hyhl4xzFyrhnPVAuk0Nx5gKXgE9lk2j3UI78EajiXZtVKCOYSHp9j7DHSlE8Vdr681
-         m1rfjeEMBfCVq22gA6uABRrEYpO+9oHVx2gYzt4YSrCir1cPQZE4sI1NorY7mo9yCA
-         vYJ9h875kxRYoTrZqUq2LWL4tiqT8apHzrGXb1VurPxT15XTfzbGn4cg3KiKJmUL61
-         pIfgYeV5ijGa3S4C6Bp/FpMbiC+EHteTC3ATR46cdNMfm/i/CnMDZNycHif/4zj1s7
-         kKuaSfc3Ssziw==
+        b=Axnl1UMfJiFoY/5gMlKFTab/rk12IDCxAb96M56MpOBhvbnqyrMwZNG4qLqfcCFL2
+         qqnq9z52HMFEOyFEnSzvK/LoVFtrjxiblxtowkoEobpr9RXfgVei4JVtageApITrVf
+         2mWNTLjzod5J3JJ2aF2a429aEUqxCXAFKLfHskdoLC5Ios6EsH2ZQxS3PPVOXL8TWu
+         kvZ65Yt0Ad926QXhMM0se0eklRdX4jBwi6CCg1lFuD/t7mUBvGBKaZmVMUix03U1FB
+         KHtH2kJqlAkIfKotIIl6+WL/BuJ/0AVqliVXfPTxXGGMrQaopmvGgbR4iUOaFzawu+
+         x8VXxyS9pI0fg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Arunpravin <Arunpravin.PaneerSelvam@amd.com>,
-        kernel test robot <oliver.sang@intel.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Sasha Levin <sashal@kernel.org>, airlied@linux.ie,
-        daniel@ffwll.ch, matthew.auld@intel.com, dan.carpenter@oracle.com,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.18 002/159] drm/selftests: fix a shift-out-of-bounds bug
-Date:   Mon, 30 May 2022 09:21:47 -0400
-Message-Id: <20220530132425.1929512-2-sashal@kernel.org>
+Cc:     Wen Gong <quic_wgong@quicinc.com>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
+        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, ath11k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 004/159] ath11k: fix the warning of dev_wake in mhi_pm_disable_transition()
+Date:   Mon, 30 May 2022 09:21:49 -0400
+Message-Id: <20220530132425.1929512-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530132425.1929512-1-sashal@kernel.org>
 References: <20220530132425.1929512-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -55,98 +54,131 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arunpravin <Arunpravin.PaneerSelvam@amd.com>
+From: Wen Gong <quic_wgong@quicinc.com>
 
-[ Upstream commit fc3785fb56a27304c769af730d079f4337d4dc76 ]
+[ Upstream commit 0d7a8a6204ea9271f1d0a8c66a9fd2f54d2e3cbc ]
 
-pass the correct size value computed using the max_order.
+When test device recovery with below command, it has warning in message
+as below.
+echo assert > /sys/kernel/debug/ath11k/wcn6855\ hw2.0/simulate_fw_crash
+echo assert > /sys/kernel/debug/ath11k/qca6390\ hw2.0/simulate_fw_crash
 
-<log snip>
+warning message:
+[ 1965.642121] ath11k_pci 0000:06:00.0: simulating firmware assert crash
+[ 1968.471364] ieee80211 phy0: Hardware restart was requested
+[ 1968.511305] ------------[ cut here ]------------
+[ 1968.511368] WARNING: CPU: 3 PID: 1546 at drivers/bus/mhi/core/pm.c:505 mhi_pm_disable_transition+0xb37/0xda0 [mhi]
+[ 1968.511443] Modules linked in: ath11k_pci ath11k mac80211 libarc4 cfg80211 qmi_helpers qrtr_mhi mhi qrtr nvme nvme_core
+[ 1968.511563] CPU: 3 PID: 1546 Comm: kworker/u17:0 Kdump: loaded Tainted: G        W         5.17.0-rc3-wt-ath+ #579
+[ 1968.511629] Hardware name: Intel(R) Client Systems NUC8i7HVK/NUC8i7HVB, BIOS HNKBLi70.86A.0067.2021.0528.1339 05/28/2021
+[ 1968.511704] Workqueue: mhi_hiprio_wq mhi_pm_st_worker [mhi]
+[ 1968.511787] RIP: 0010:mhi_pm_disable_transition+0xb37/0xda0 [mhi]
+[ 1968.511870] Code: a9 fe ff ff 4c 89 ff 44 89 04 24 e8 03 46 f6 e5 44 8b 04 24 41 83 f8 01 0f 84 21 fe ff ff e9 4c fd ff ff 0f 0b e9 af f8 ff ff <0f> 0b e9 5c f8 ff ff 48 89 df e8 da 9e ee e3 e9 12 fd ff ff 4c 89
+[ 1968.511923] RSP: 0018:ffffc900024efbf0 EFLAGS: 00010286
+[ 1968.511969] RAX: 00000000ffffffff RBX: ffff88811d241250 RCX: ffffffffc0176922
+[ 1968.512014] RDX: 0000000000000000 RSI: 0000000000000004 RDI: ffff888118a90a24
+[ 1968.512059] RBP: ffff888118a90800 R08: 0000000000000000 R09: ffff888118a90a27
+[ 1968.512102] R10: ffffed1023152144 R11: 0000000000000001 R12: ffff888118a908ac
+[ 1968.512229] R13: ffff888118a90928 R14: dffffc0000000000 R15: ffff888118a90a24
+[ 1968.512310] FS:  0000000000000000(0000) GS:ffff888234200000(0000) knlGS:0000000000000000
+[ 1968.512405] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[ 1968.512493] CR2: 00007f5538f443a8 CR3: 000000016dc28001 CR4: 00000000003706e0
+[ 1968.512587] Call Trace:
+[ 1968.512672]  <TASK>
+[ 1968.512751]  ? _raw_spin_unlock_irq+0x1f/0x40
+[ 1968.512859]  mhi_pm_st_worker+0x3ac/0x790 [mhi]
+[ 1968.512959]  ? mhi_pm_mission_mode_transition.isra.0+0x7d0/0x7d0 [mhi]
+[ 1968.513063]  process_one_work+0x86a/0x1400
+[ 1968.513184]  ? pwq_dec_nr_in_flight+0x230/0x230
+[ 1968.513312]  ? move_linked_works+0x125/0x290
+[ 1968.513416]  worker_thread+0x6db/0xf60
+[ 1968.513536]  ? process_one_work+0x1400/0x1400
+[ 1968.513627]  kthread+0x241/0x2d0
+[ 1968.513733]  ? kthread_complete_and_exit+0x20/0x20
+[ 1968.513821]  ret_from_fork+0x22/0x30
+[ 1968.513924]  </TASK>
 
-[ 68.124177][ T1] UBSAN: shift-out-of-bounds in include/linux/log2.h:67:13
-[ 68.125333][ T1] shift exponent 4294967295 is too large for 32-bit type 'long
-unsigned int'
-[ 68.126563][ T1] CPU: 0 PID: 1 Comm: swapper Not tainted
-5.17.0-rc2-00311-g39ec47bbfd5d #2
-[ 68.127758][ T1] Call Trace:
-[ 68.128187][ T1] dump_stack_lvl (lib/dump_stack.c:108)
-[ 68.128793][ T1] dump_stack (lib/dump_stack.c:114)
-[ 68.129331][ T1] ubsan_epilogue (lib/ubsan.c:152)
-[ 68.129958][ T1] __ubsan_handle_shift_out_of_bounds.cold (arch/x86/include/asm/smap.h:85)
+Reason is mhi_deassert_dev_wake() from mhi_device_put() is called
+but mhi_assert_dev_wake() from __mhi_device_get_sync() is not called
+in progress of recovery. Commit 8e0559921f9a ("bus: mhi: core:
+Skip device wake in error or shutdown state") add check for the
+pm_state of mhi in __mhi_device_get_sync(), and the pm_state is not
+the normal state untill recovery is completed, so it leads the
+dev_wake is not 0 and above warning print in mhi_pm_disable_transition()
+while checking mhi_cntrl->dev_wake.
 
-[ 68.130791][ T1] ? drm_block_alloc+0x28/0x80
-[ 68.131582][ T1] ? rcu_read_lock_sched_held (kernel/rcu/update.c:125)
-[ 68.132215][ T1] ? kmem_cache_alloc (include/trace/events/kmem.h:54 mm/slab.c:3501)
-[ 68.132878][ T1] ? mark_free+0x2e/0x80
-[ 68.133524][ T1] drm_buddy_init.cold (include/linux/log2.h:67
-drivers/gpu/drm/drm_buddy.c:131)
-[ 68.134145][ T1] ? test_drm_cmdline_init (drivers/gpu/drm/selftests/test-drm_buddy.c:87)
+Add check in ath11k_pci_write32()/ath11k_pci_read32() to skip call
+mhi_device_put() if mhi_device_get_sync() does not really do wake,
+then the warning gone.
 
-[ 68.134770][ T1] igt_buddy_alloc_limit (drivers/gpu/drm/selftests/test-drm_buddy.c:30)
-[ 68.135472][ T1] ? vprintk_default (kernel/printk/printk.c:2257)
-[ 68.136057][ T1] ? test_drm_cmdline_init (drivers/gpu/drm/selftests/test-drm_buddy.c:87)
+Tested-on: WCN6855 hw2.0 PCI WLAN.HSP.1.1-03003-QCAHSPSWPL_V1_V2_SILICONZ_LITE-2
 
-[ 68.136812][ T1] test_drm_buddy_init (drivers/gpu/drm/selftests/drm_selftest.c:77
-drivers/gpu/drm/selftests/test-drm_buddy.c:95)
-[ 68.137475][ T1] do_one_initcall (init/main.c:1300)
-[ 68.138111][ T1] ? parse_args (kernel/params.c:609 kernel/params.c:146
-kernel/params.c:188)
-[ 68.138717][ T1] do_basic_setup (init/main.c:1372 init/main.c:1389 init/main.c:1408)
-[ 68.139366][ T1] kernel_init_freeable (init/main.c:1617)
-[ 68.140040][ T1] ? rest_init (init/main.c:1494)
-[ 68.140634][ T1] kernel_init (init/main.c:1504)
-[ 68.141155][ T1] ret_from_fork (arch/x86/entry/entry_32.S:772)
-[ 68.141607][ T1]
-================================================================================
-[ 68.146730][ T1] ------------[ cut here ]------------
-[ 68.147460][ T1] kernel BUG at drivers/gpu/drm/drm_buddy.c:140!
-[ 68.148280][ T1] invalid opcode: 0000 [#1]
-[ 68.148895][ T1] CPU: 0 PID: 1 Comm: swapper Not tainted
-5.17.0-rc2-00311-g39ec47bbfd5d #2
-[ 68.149896][ T1] EIP: drm_buddy_init (drivers/gpu/drm/drm_buddy.c:140 (discriminator 1))
-
-For more details: https://lists.01.org/hyperkitty/list/lkp@lists.01.org/thread/FDIF3HCILZNN5UQAZMOR7E3MQSMHHKWU/
-
-Signed-off-by: Arunpravin <Arunpravin.PaneerSelvam@amd.com>
-Reported-by: kernel test robot <oliver.sang@intel.com>
-Acked-by: Christian König <christian.koenig@amd.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220303201602.2365-1-Arunpravin.PaneerSelvam@amd.com
-Signed-off-by: Christian König <christian.koenig@amd.com>
+Signed-off-by: Wen Gong <quic_wgong@quicinc.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20220228064606.8981-5-quic_wgong@quicinc.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/selftests/test-drm_buddy.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/wireless/ath/ath11k/pci.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/selftests/test-drm_buddy.c b/drivers/gpu/drm/selftests/test-drm_buddy.c
-index fa997f89522b..913cbd7eae04 100644
---- a/drivers/gpu/drm/selftests/test-drm_buddy.c
-+++ b/drivers/gpu/drm/selftests/test-drm_buddy.c
-@@ -902,14 +902,13 @@ static int igt_buddy_alloc_range(void *arg)
- 
- static int igt_buddy_alloc_limit(void *arg)
+diff --git a/drivers/net/wireless/ath/ath11k/pci.c b/drivers/net/wireless/ath/ath11k/pci.c
+index 903758751c99..8a3ff12057e8 100644
+--- a/drivers/net/wireless/ath/ath11k/pci.c
++++ b/drivers/net/wireless/ath/ath11k/pci.c
+@@ -191,6 +191,7 @@ void ath11k_pci_write32(struct ath11k_base *ab, u32 offset, u32 value)
  {
--	u64 end, size = U64_MAX, start = 0;
-+	u64 size = U64_MAX, start = 0;
- 	struct drm_buddy_block *block;
- 	unsigned long flags = 0;
- 	LIST_HEAD(allocated);
- 	struct drm_buddy mm;
- 	int err;
+ 	struct ath11k_pci *ab_pci = ath11k_pci_priv(ab);
+ 	u32 window_start;
++	int ret = 0;
  
--	size = end = round_down(size, 4096);
- 	err = drm_buddy_init(&mm, size, PAGE_SIZE);
- 	if (err)
- 		return err;
-@@ -921,7 +920,8 @@ static int igt_buddy_alloc_limit(void *arg)
- 		goto out_fini;
- 	}
+ 	/* for offset beyond BAR + 4K - 32, may
+ 	 * need to wakeup MHI to access.
+@@ -198,7 +199,7 @@ void ath11k_pci_write32(struct ath11k_base *ab, u32 offset, u32 value)
+ 	if (ab->hw_params.wakeup_mhi &&
+ 	    test_bit(ATH11K_PCI_FLAG_INIT_DONE, &ab_pci->flags) &&
+ 	    offset >= ACCESS_ALWAYS_OFF)
+-		mhi_device_get_sync(ab_pci->mhi_ctrl->mhi_dev);
++		ret = mhi_device_get_sync(ab_pci->mhi_ctrl->mhi_dev);
  
--	err = drm_buddy_alloc_blocks(&mm, start, end, size,
-+	size = mm.chunk_size << mm.max_order;
-+	err = drm_buddy_alloc_blocks(&mm, start, size, size,
- 				     PAGE_SIZE, &allocated, flags);
+ 	if (offset < WINDOW_START) {
+ 		iowrite32(value, ab->mem  + offset);
+@@ -222,7 +223,8 @@ void ath11k_pci_write32(struct ath11k_base *ab, u32 offset, u32 value)
  
- 	if (unlikely(err))
+ 	if (ab->hw_params.wakeup_mhi &&
+ 	    test_bit(ATH11K_PCI_FLAG_INIT_DONE, &ab_pci->flags) &&
+-	    offset >= ACCESS_ALWAYS_OFF)
++	    offset >= ACCESS_ALWAYS_OFF &&
++	    !ret)
+ 		mhi_device_put(ab_pci->mhi_ctrl->mhi_dev);
+ }
+ 
+@@ -230,6 +232,7 @@ u32 ath11k_pci_read32(struct ath11k_base *ab, u32 offset)
+ {
+ 	struct ath11k_pci *ab_pci = ath11k_pci_priv(ab);
+ 	u32 val, window_start;
++	int ret = 0;
+ 
+ 	/* for offset beyond BAR + 4K - 32, may
+ 	 * need to wakeup MHI to access.
+@@ -237,7 +240,7 @@ u32 ath11k_pci_read32(struct ath11k_base *ab, u32 offset)
+ 	if (ab->hw_params.wakeup_mhi &&
+ 	    test_bit(ATH11K_PCI_FLAG_INIT_DONE, &ab_pci->flags) &&
+ 	    offset >= ACCESS_ALWAYS_OFF)
+-		mhi_device_get_sync(ab_pci->mhi_ctrl->mhi_dev);
++		ret = mhi_device_get_sync(ab_pci->mhi_ctrl->mhi_dev);
+ 
+ 	if (offset < WINDOW_START) {
+ 		val = ioread32(ab->mem + offset);
+@@ -261,7 +264,8 @@ u32 ath11k_pci_read32(struct ath11k_base *ab, u32 offset)
+ 
+ 	if (ab->hw_params.wakeup_mhi &&
+ 	    test_bit(ATH11K_PCI_FLAG_INIT_DONE, &ab_pci->flags) &&
+-	    offset >= ACCESS_ALWAYS_OFF)
++	    offset >= ACCESS_ALWAYS_OFF &&
++	    !ret)
+ 		mhi_device_put(ab_pci->mhi_ctrl->mhi_dev);
+ 
+ 	return val;
 -- 
 2.35.1
 
