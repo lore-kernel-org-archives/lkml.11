@@ -2,170 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B8C0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 08:11:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0D04C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 08:12:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233101AbiE3ILp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 04:11:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38688 "EHLO
+        id S233158AbiE3IL7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 04:11:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232080AbiE3ILg (ORCPT
+        with ESMTP id S233125AbiE3ILs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 04:11:36 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6069B194
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 01:11:31 -0700 (PDT)
-X-UUID: c2528e462a0647e0b696f0810f248f3e-20220530
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:cfd809c3-0467-45ac-b2af-f9b380eef835,OB:0,LO
-        B:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Release_Ham,AC
-        TION:release,TS:105
-X-CID-INFO: VERSION:1.1.5,REQID:cfd809c3-0467-45ac-b2af-f9b380eef835,OB:0,LOB:
-        0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Spam_GS981B3D,AC
-        TION:quarantine,TS:105
-X-CID-META: VersionHash:2a19b09,CLOUDID:fb4afd47-4fb1-496b-8f1d-39e733fed1ea,C
-        OID:ff467ea9063e,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:1,File:nil,QS:0,BEC:nil
-X-UUID: c2528e462a0647e0b696f0810f248f3e-20220530
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
-        (envelope-from <yf.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1716825379; Mon, 30 May 2022 16:11:28 +0800
-Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
- Mon, 30 May 2022 16:11:26 +0800
-Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by
- mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.3 via Frontend Transport; Mon, 30 May 2022 16:11:25 +0800
-From:   <yf.wang@mediatek.com>
-To:     Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
-        "Will Deacon" <will@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        "open list:MEDIATEK IOMMU DRIVER" <iommu@lists.linux-foundation.org>,
-        "moderated list:MEDIATEK IOMMU DRIVER" 
-        <linux-mediatek@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "open list" <linux-kernel@vger.kernel.org>
-CC:     <wsd_upstream@mediatek.com>, Libo Kang <Libo.Kang@mediatek.com>,
-        Yong Wu <Yong.Wu@mediatek.com>,
-        Yunfei Wang <yf.wang@mediatek.com>,
-        Ning Li <ning.li@mediatek.com>
-Subject: [PATCH v7 2/2] iommu/mediatek: Allow page table PA up to 35bit
-Date:   Mon, 30 May 2022 16:04:29 +0800
-Message-ID: <20220530080432.29123-3-yf.wang@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220530080432.29123-1-yf.wang@mediatek.com>
-References: <20220530080432.29123-1-yf.wang@mediatek.com>
+        Mon, 30 May 2022 04:11:48 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0DB0F47;
+        Mon, 30 May 2022 01:11:43 -0700 (PDT)
+Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24U6nVp1015905;
+        Mon, 30 May 2022 08:11:43 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=VIAjJqEzkS48zVmiLhW0Cuseh14NQVVk7EMZNm/V3kM=;
+ b=CkXBUudzS/2KSjwKS9KW7kvdFWeZp+QPo9MhiRW4CdAEvPG1igc6/R51ukVSEnkgGi20
+ Gubyj9BGU6xp7dQYDOUrLAufrAzhv3RfOhVsxHE+vdNXCoAnGRWaRzwxKbhHUp3xfUv6
+ KCkuMsGR3NUqng6/hvUwRBUJtCK6gvPK3PDT/LDweWewMv3PiJOuoBWL2YfTc8DYiOmn
+ /WAMwXE/QN3JPPKkANHfZT1tpcOzo2LRSI1EBMSHDADsAVwsILDgk6YrgWwFPr11Bb4X
+ PKfLWQAcAmaPrRZx0wwNLxiWlJRUI/xcBgWYu72WxzvYYbGLIfHbmjV+CQx1CIedKHKv 9w== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gcs0e9j3q-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 30 May 2022 08:11:43 +0000
+Received: from m0098396.ppops.net (m0098396.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24U7FssP018503;
+        Mon, 30 May 2022 08:11:42 GMT
+Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gcs0e9j2t-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 30 May 2022 08:11:42 +0000
+Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
+        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24U85ssi011816;
+        Mon, 30 May 2022 08:11:40 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma03fra.de.ibm.com with ESMTP id 3gbc97srrj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 30 May 2022 08:11:40 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24U8BcIn20775392
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 30 May 2022 08:11:38 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E80174203F;
+        Mon, 30 May 2022 08:11:37 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 5F6D642045;
+        Mon, 30 May 2022 08:11:37 +0000 (GMT)
+Received: from li-ca45c2cc-336f-11b2-a85c-c6e71de567f1.ibm.com (unknown [9.171.70.209])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon, 30 May 2022 08:11:37 +0000 (GMT)
+Message-ID: <ff5f394db586169fe6dc16dc0e24d534e4825caa.camel@linux.ibm.com>
+Subject: Re: [PATCH v10 14/19] KVM: s390: pv: cleanup leftover protected VMs
+ if needed
+From:   Nico Boehr <nrb@linux.ibm.com>
+To:     Claudio Imbrenda <imbrenda@linux.ibm.com>, kvm@vger.kernel.org
+Cc:     borntraeger@de.ibm.com, frankja@linux.ibm.com, thuth@redhat.com,
+        pasic@linux.ibm.com, david@redhat.com, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org, scgl@linux.ibm.com,
+        mimu@linux.ibm.com
+Date:   Mon, 30 May 2022 10:11:37 +0200
+In-Reply-To: <20220414080311.1084834-15-imbrenda@linux.ibm.com>
+References: <20220414080311.1084834-1-imbrenda@linux.ibm.com>
+         <20220414080311.1084834-15-imbrenda@linux.ibm.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.1 (3.44.1-1.fc36) 
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: 3wkk6YIzroH11PyGEpAGH_HujTMraCg2
+X-Proofpoint-GUID: 2suuD96DNGc5t-uCPwgeAy7rbtuPnfb6
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-30_02,2022-05-27_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 mlxscore=0
+ suspectscore=0 malwarescore=0 lowpriorityscore=0 priorityscore=1501
+ spamscore=0 adultscore=0 bulkscore=0 phishscore=0 mlxlogscore=999
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2205300042
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yunfei Wang <yf.wang@mediatek.com>
+On Thu, 2022-04-14 at 10:03 +0200, Claudio Imbrenda wrote:
+[...]
+> diff --git a/arch/s390/kvm/pv.c b/arch/s390/kvm/pv.c
+> index bd850be08c86..b20f2cbd43d9 100644
+> --- a/arch/s390/kvm/pv.c
+> +++ b/arch/s390/kvm/pv.c
+> @@ -17,6 +17,19 @@
+[...]
+> +/**
+> + * @struct deferred_priv
+> + * Represents a "leftover" protected VM that is still registered
+> with the
+> + * Ultravisor, but which does not correspond any longer to an active
+> KVM VM.
+> + */
+> +struct deferred_priv {
 
-Single memory zone feature will remove ZONE_DMA32 and ZONE_DMA. So add
-the quirk IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT to let level 1 and level 2
-pgtable support at most 35bit PA.
-
-Signed-off-by: Ning Li <ning.li@mediatek.com>
-Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
----
- drivers/iommu/mtk_iommu.c | 29 +++++++++++++++++++++++++----
- 1 file changed, 25 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 6fd75a60abd6..dd9661690ca6 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -33,6 +33,9 @@
- 
- #define REG_MMU_PT_BASE_ADDR			0x000
- #define MMU_PT_ADDR_MASK			GENMASK(31, 7)
-+/* Mediatek extend ttbr bits[2:0] for PA bits[34:32] */
-+#define MMU_PT_35BIT_PA(pa)			\
-+	((pa & GENMASK_ULL(31, 7)) | ((pa & GENMASK_ULL(34, 32)) >> 32))
- 
- #define REG_MMU_INVALIDATE			0x020
- #define F_ALL_INVLD				0x2
-@@ -118,6 +121,7 @@
- #define WR_THROT_EN			BIT(6)
- #define HAS_LEGACY_IVRP_PADDR		BIT(7)
- #define IOVA_34_EN			BIT(8)
-+#define PGTABLE_PA_35_EN		BIT(9)
- 
- #define MTK_IOMMU_HAS_FLAG(pdata, _x) \
- 		((((pdata)->flags) & (_x)) == (_x))
-@@ -401,6 +405,9 @@ static int mtk_iommu_domain_finalise(struct mtk_iommu_domain *dom,
- 		.iommu_dev = data->dev,
- 	};
- 
-+	if (MTK_IOMMU_HAS_FLAG(data->plat_data, PGTABLE_PA_35_EN))
-+		dom->cfg.quirks |= IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT;
-+
- 	if (MTK_IOMMU_HAS_FLAG(data->plat_data, HAS_4GB_MODE))
- 		dom->cfg.oas = data->enable_4GB ? 33 : 32;
- 	else
-@@ -450,6 +457,7 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
- 	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
- 	struct device *m4udev = data->dev;
- 	int ret, domid;
-+	u32 regval;
- 
- 	domid = mtk_iommu_get_domain_id(dev, data->plat_data);
- 	if (domid < 0)
-@@ -472,8 +480,13 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
- 			return ret;
- 		}
- 		data->m4u_dom = dom;
--		writel(dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK,
--		       data->base + REG_MMU_PT_BASE_ADDR);
-+
-+		/* Bits[6:3] are invalid for mediatek platform */
-+		if (MTK_IOMMU_HAS_FLAG(data->plat_data, PGTABLE_PA_35_EN))
-+			regval = MMU_PT_35BIT_PA(dom->cfg.arm_v7s_cfg.ttbr);
-+		else
-+			regval = dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK;
-+		writel(regval, data->base + REG_MMU_PT_BASE_ADDR);
- 
- 		pm_runtime_put(m4udev);
- 	}
-@@ -987,6 +1000,7 @@ static int __maybe_unused mtk_iommu_runtime_resume(struct device *dev)
- 	struct mtk_iommu_suspend_reg *reg = &data->reg;
- 	struct mtk_iommu_domain *m4u_dom = data->m4u_dom;
- 	void __iomem *base = data->base;
-+	u32 regval;
- 	int ret;
- 
- 	ret = clk_prepare_enable(data->bclk);
-@@ -1010,7 +1024,13 @@ static int __maybe_unused mtk_iommu_runtime_resume(struct device *dev)
- 	writel_relaxed(reg->int_main_control, base + REG_MMU_INT_MAIN_CONTROL);
- 	writel_relaxed(reg->ivrp_paddr, base + REG_MMU_IVRP_PADDR);
- 	writel_relaxed(reg->vld_pa_rng, base + REG_MMU_VLD_PA_RNG);
--	writel(m4u_dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK, base + REG_MMU_PT_BASE_ADDR);
-+
-+	/* Bits[6:3] are invalid for mediatek platform */
-+	if (MTK_IOMMU_HAS_FLAG(data->plat_data, PGTABLE_PA_35_EN))
-+		regval = MMU_PT_35BIT_PA(m4u_dom->cfg.arm_v7s_cfg.ttbr);
-+	else
-+		regval = m4u_dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK;
-+	writel(regval, base + REG_MMU_PT_BASE_ADDR);
- 
- 	/*
- 	 * Users may allocate dma buffer before they call pm_runtime_get,
-@@ -1038,7 +1058,8 @@ static const struct mtk_iommu_plat_data mt2712_data = {
- 
- static const struct mtk_iommu_plat_data mt6779_data = {
- 	.m4u_plat      = M4U_MT6779,
--	.flags         = HAS_SUB_COMM | OUT_ORDER_WR_EN | WR_THROT_EN,
-+	.flags         = HAS_SUB_COMM | OUT_ORDER_WR_EN | WR_THROT_EN |
-+			 PGTABLE_PA_35_EN,
- 	.inv_sel_reg   = REG_MMU_INV_SEL_GEN2,
- 	.iova_region   = single_domain,
- 	.iova_region_nr = ARRAY_SIZE(single_domain),
--- 
-2.18.0
+Why not just name this leftover_vm?
 
