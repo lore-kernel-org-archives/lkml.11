@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAE4CC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D52AC4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:38:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242714AbiE3Ohp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:37:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40300 "EHLO
+        id S242599AbiE3Ohg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:37:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239666AbiE3OSy (ORCPT
+        with ESMTP id S237117AbiE3OSs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:18:54 -0400
+        Mon, 30 May 2022 10:18:48 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78951123880;
-        Mon, 30 May 2022 06:49:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA6DC1216D4;
+        Mon, 30 May 2022 06:49:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2B4BC60FE3;
-        Mon, 30 May 2022 13:49:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 805B4C385B8;
-        Mon, 30 May 2022 13:49:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5870860F78;
+        Mon, 30 May 2022 13:49:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88BC2C3411A;
+        Mon, 30 May 2022 13:49:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918586;
-        bh=L4wMv7eVCEcb+Dh8ypbivhOGsg3GXEYdwwoPqDs6iew=;
+        s=k20201202; t=1653918575;
+        bh=b/eYfqDfghSAlPhMkLttJb74GphkTYqZRKExQsySGw4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YREmrXFtI44icoPO5FGfn7Q8FNRlNM88WzR+KkE7HDCwyKkfbzd6CGMpr9pcTme/k
-         aojb0/elgumkP0e/h8LNJtcPxOpYXGft0JLQ5ZKwIh3AG7lpPoKM97btFiyVPEWEfe
-         U0KGMeMSPZH3nadwdaBOW16nL7nd00mjtQAxVf9YL644cCV6eDFGHo2qE41SCewAif
-         LD+7NLbzhFtS6JcHf0RyuwYDruuCloeH8lCCa5n5g3yeDg+ykqnrwSAajlXs30/B+C
-         NBjNvlA70NEWC0oh1Oa/tVNENDyWPLEFrjmav/SaWXALaxVSK/5CoRbbs52TRvZ2WF
-         45ahy8fjClfWQ==
+        b=Ggm3aMiryBoVI3OiLeZvp1u0WxNJCq0EqMEG8HWpn50wcjMMSbTZlbOE7kgdkFCpx
+         hl8V65XAtKio6RwL4iMchCWfsaPU9IaPPcIcFPFUXm8k3MO272xg3nx17n3GdkuF2X
+         rgxJQQiifOvg+bZSTpA646YPBHiUaydpVILQSeqMIc53WBjJXRfU/Ad2hlGhjybDgi
+         ag4yIa6qv3j4LdteHJ4aAMnez/i3yD/FhhU3jzVM4IFiaue7ZxYs/4jILM7A68bJK+
+         VvNbx0ryJQI2X6hGPj1AYqe5BEs4VA/BwWg5G+2fjRxbl8GHgHgN98oYG0NJnjhRLa
+         TwrezGOtNUA/Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Sasha Levin <sashal@kernel.org>, mingo@redhat.com,
-        bp@alien8.de, x86@kernel.org
-Subject: [PATCH AUTOSEL 4.19 08/38] ACPICA: Avoid cache flush inside virtual machines
-Date:   Mon, 30 May 2022 09:48:54 -0400
-Message-Id: <20220530134924.1936816-8-sashal@kernel.org>
+Cc:     Haowen Bai <baihaowen@meizu.com>, Kalle Valo <kvalo@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        thunder.leizhen@huawei.com, linux-wireless@vger.kernel.org,
+        b43-dev@lists.infradead.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 04/38] b43: Fix assigning negative value to unsigned variable
+Date:   Mon, 30 May 2022 09:48:50 -0400
+Message-Id: <20220530134924.1936816-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530134924.1936816-1-sashal@kernel.org>
 References: <20220530134924.1936816-1-sashal@kernel.org>
@@ -54,69 +53,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+From: Haowen Bai <baihaowen@meizu.com>
 
-[ Upstream commit e2efb6359e620521d1e13f69b2257de8ceaa9475 ]
+[ Upstream commit 11800d893b38e0e12d636c170c1abc19c43c730c ]
 
-While running inside virtual machine, the kernel can bypass cache
-flushing. Changing sleep state in a virtual machine doesn't affect the
-host system sleep state and cannot lead to data loss.
+fix warning reported by smatch:
+drivers/net/wireless/broadcom/b43/phy_n.c:585 b43_nphy_adjust_lna_gain_table()
+warn: assigning (-2) to unsigned variable '*(lna_gain[0])'
 
-Before entering sleep states, the ACPI code flushes caches to prevent
-data loss using the WBINVD instruction.  This mechanism is required on
-bare metal.
-
-But, any use WBINVD inside of a guest is worthless.  Changing sleep
-state in a virtual machine doesn't affect the host system sleep state
-and cannot lead to data loss, so most hypervisors simply ignore it.
-Despite this, the ACPI code calls WBINVD unconditionally anyway.
-It's useless, but also normally harmless.
-
-In TDX guests, though, WBINVD stops being harmless; it triggers a
-virtualization exception (#VE).  If the ACPI cache-flushing WBINVD
-were left in place, TDX guests would need handling to recover from
-the exception.
-
-Avoid using WBINVD whenever running under a hypervisor.  This both
-removes the useless WBINVDs and saves TDX from implementing WBINVD
-handling.
-
-Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
-Reviewed-by: Dave Hansen <dave.hansen@linux.intel.com>
-Reviewed-by: Dan Williams <dan.j.williams@intel.com>
-Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
-Link: https://lkml.kernel.org/r/20220405232939.73860-30-kirill.shutemov@linux.intel.com
+Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/1648203315-28093-1-git-send-email-baihaowen@meizu.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/include/asm/acenv.h | 14 +++++++++++++-
- 1 file changed, 13 insertions(+), 1 deletion(-)
+ drivers/net/wireless/broadcom/b43/phy_n.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/x86/include/asm/acenv.h b/arch/x86/include/asm/acenv.h
-index 1b010a859b8b..6de59a4f723c 100644
---- a/arch/x86/include/asm/acenv.h
-+++ b/arch/x86/include/asm/acenv.h
-@@ -16,7 +16,19 @@
+diff --git a/drivers/net/wireless/broadcom/b43/phy_n.c b/drivers/net/wireless/broadcom/b43/phy_n.c
+index 88446258e775..3508a7822619 100644
+--- a/drivers/net/wireless/broadcom/b43/phy_n.c
++++ b/drivers/net/wireless/broadcom/b43/phy_n.c
+@@ -594,7 +594,7 @@ static void b43_nphy_adjust_lna_gain_table(struct b43_wldev *dev)
+ 	u16 data[4];
+ 	s16 gain[2];
+ 	u16 minmax[2];
+-	static const u16 lna_gain[4] = { -2, 10, 19, 25 };
++	static const s16 lna_gain[4] = { -2, 10, 19, 25 };
  
- /* Asm macros */
- 
--#define ACPI_FLUSH_CPU_CACHE()	wbinvd()
-+/*
-+ * ACPI_FLUSH_CPU_CACHE() flushes caches on entering sleep states.
-+ * It is required to prevent data loss.
-+ *
-+ * While running inside virtual machine, the kernel can bypass cache flushing.
-+ * Changing sleep state in a virtual machine doesn't affect the host system
-+ * sleep state and cannot lead to data loss.
-+ */
-+#define ACPI_FLUSH_CPU_CACHE()					\
-+do {								\
-+	if (!cpu_feature_enabled(X86_FEATURE_HYPERVISOR))	\
-+		wbinvd();					\
-+} while (0)
- 
- int __acpi_acquire_global_lock(unsigned int *lock);
- int __acpi_release_global_lock(unsigned int *lock);
+ 	if (nphy->hang_avoid)
+ 		b43_nphy_stay_in_carrier_search(dev, 1);
 -- 
 2.35.1
 
