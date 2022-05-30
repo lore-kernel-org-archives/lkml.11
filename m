@@ -2,49 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AC0EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:49:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 635EEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:49:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241406AbiE3Otf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:49:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51730 "EHLO
+        id S241199AbiE3Otm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:49:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241199AbiE3OaS (ORCPT
+        with ESMTP id S241318AbiE3OaU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:30:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 786E35A086;
-        Mon, 30 May 2022 06:51:57 -0700 (PDT)
+        Mon, 30 May 2022 10:30:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D734DBCA5;
+        Mon, 30 May 2022 06:52:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2D919B80DBB;
-        Mon, 30 May 2022 13:51:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EB49C3411A;
-        Mon, 30 May 2022 13:51:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3104160FE3;
+        Mon, 30 May 2022 13:52:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E74EC3411C;
+        Mon, 30 May 2022 13:51:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918714;
-        bh=CEITeVdnUAOiOrrBMPlDtB3IbeTnyP2R9hTakvFIAbc=;
+        s=k20201202; t=1653918719;
+        bh=93gbBQ1CW6fW04ZVr6GhHTgR39LR4XV+Y+o+LtQyr4s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EpZKNlPFEb/ePJEbvI7d3ZcO6u0oBjZ/eTuU/6/WHnBgwNUuuqQVFuSvmrmU/fDnd
-         nZtGJyO5vIe9KqA9pWUzFql/GydOnSeX9o0KSlFAKGq4TYui/3P3C57hwb7uOF02xt
-         w1Smx3sFnuY3xYWjdTHedg8roj2mJTpDxTp5Q5eQSgPZAWBZeBiPNuOPEIc49BYrqu
-         C2bWHkVnXm91Onq9nTrbAdTXsIW1FTTLR9gDAtb76AVglkLgezCVwb0GYeiXykqQqZ
-         c1GY7bHgkSsQVMBsqq/pinkc6C998Qr/jdQmmmG64qxomUljK5dgkZUscudZnBXAop
-         50iTa6fFgNGSA==
+        b=iQ5ibY6jBBF2egHpQkq/sQMbKK2cErTOTscQ6diKbBzOLw8PHzBZqhlsRzHqKdCEI
+         nrRoWgFUyzH9kjBidbnp8NvrywDouyUvduSy2CdwC75ijuaPzBUbdNtur69WG4Hsih
+         2DpYSB5fR97SFGCd37Nw9BwRkWYyr//U+oMHM6/OE9uq2qwaRcmzjWQvSxTb/2U3jz
+         Om/zLlnchY+Z/M6Q/kcwHkCpruyQEooJJ4gO8ZE/lgsa5taf/WQEdG0AAgiOlS86dH
+         Bes+HN1UyO1R6/B/6kaGKlKY7mtl0Z+wZR1Z8CEs7m2PGm7yGurO3ulT68aRn6C8TY
+         qKaGN/nfeJYag==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Arnd Bergmann <arnd@arndb.de>, Jonas Bonn <jonas@southpole.se>,
-        Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>,
-        Stafford Horne <shorne@gmail.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Sasha Levin <sashal@kernel.org>, rdunlap@infradead.org,
-        linux@dominikbrodowski.net, openrisc@lists.librecores.org
-Subject: [PATCH AUTOSEL 4.14 22/29] openrisc: start CPU timer early in boot
-Date:   Mon, 30 May 2022 09:50:49 -0400
-Message-Id: <20220530135057.1937286-22-sashal@kernel.org>
+Cc:     Fabio Estevam <festevam@denx.de>, Andrew Lunn <andrew@lunn.ch>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, hkallweit1@gmail.com,
+        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 25/29] net: phy: micrel: Allow probing without .driver_data
+Date:   Mon, 30 May 2022 09:50:52 -0400
+Message-Id: <20220530135057.1937286-25-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530135057.1937286-1-sashal@kernel.org>
 References: <20220530135057.1937286-1-sashal@kernel.org>
@@ -56,60 +53,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Fabio Estevam <festevam@denx.de>
 
-[ Upstream commit 516dd4aacd67a0f27da94f3fe63fe0f4dbab6e2b ]
+[ Upstream commit f2ef6f7539c68c6bd6c32323d8845ee102b7c450 ]
 
-In order to measure the boot process, the timer should be switched on as
-early in boot as possible. As well, the commit defines the get_cycles
-macro, like the previous patches in this series, so that generic code is
-aware that it's implemented by the platform, as is done on other archs.
+Currently, if the .probe element is present in the phy_driver structure
+and the .driver_data is not, a NULL pointer dereference happens.
 
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Jonas Bonn <jonas@southpole.se>
-Cc: Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>
-Acked-by: Stafford Horne <shorne@gmail.com>
-Reported-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Allow passing .probe without .driver_data by inserting NULL checks
+for priv->type.
+
+Signed-off-by: Fabio Estevam <festevam@denx.de>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Link: https://lore.kernel.org/r/20220513114613.762810-1-festevam@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/openrisc/include/asm/timex.h | 1 +
- arch/openrisc/kernel/head.S       | 9 +++++++++
- 2 files changed, 10 insertions(+)
+ drivers/net/phy/micrel.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/arch/openrisc/include/asm/timex.h b/arch/openrisc/include/asm/timex.h
-index 9935cad1b9b9..34d015bf0462 100644
---- a/arch/openrisc/include/asm/timex.h
-+++ b/arch/openrisc/include/asm/timex.h
-@@ -27,6 +27,7 @@ static inline cycles_t get_cycles(void)
- {
- 	return mfspr(SPR_TTCR);
- }
-+#define get_cycles get_cycles
+diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
+index 755aa6741292..6f15cd5d4e7a 100644
+--- a/drivers/net/phy/micrel.c
++++ b/drivers/net/phy/micrel.c
+@@ -285,7 +285,7 @@ static int kszphy_config_reset(struct phy_device *phydev)
+ 		}
+ 	}
  
- /* This isn't really used any more */
- #define CLOCK_TICK_RATE 1000
-diff --git a/arch/openrisc/kernel/head.S b/arch/openrisc/kernel/head.S
-index 4d878d13b860..3f1e9d168710 100644
---- a/arch/openrisc/kernel/head.S
-+++ b/arch/openrisc/kernel/head.S
-@@ -459,6 +459,15 @@ _start:
- 	l.ori	r3,r0,0x1
- 	l.mtspr	r0,r3,SPR_SR
+-	if (priv->led_mode >= 0)
++	if (priv->type && priv->led_mode >= 0)
+ 		kszphy_setup_led(phydev, priv->type->led_mode_reg, priv->led_mode);
  
-+	/*
-+	 * Start the TTCR as early as possible, so that the RNG can make use of
-+	 * measurements of boot time from the earliest opportunity. Especially
-+	 * important is that the TTCR does not return zero by the time we reach
-+	 * rand_initialize().
-+	 */
-+	l.movhi r3,hi(SPR_TTMR_CR)
-+	l.mtspr r0,r3,SPR_TTMR
-+
- 	CLEAR_GPR(r1)
- 	CLEAR_GPR(r2)
- 	CLEAR_GPR(r3)
+ 	return 0;
+@@ -301,10 +301,10 @@ static int kszphy_config_init(struct phy_device *phydev)
+ 
+ 	type = priv->type;
+ 
+-	if (type->has_broadcast_disable)
++	if (type && type->has_broadcast_disable)
+ 		kszphy_broadcast_disable(phydev);
+ 
+-	if (type->has_nand_tree_disable)
++	if (type && type->has_nand_tree_disable)
+ 		kszphy_nand_tree_disable(phydev);
+ 
+ 	return kszphy_config_reset(phydev);
+@@ -764,7 +764,7 @@ static int kszphy_probe(struct phy_device *phydev)
+ 
+ 	priv->type = type;
+ 
+-	if (type->led_mode_reg) {
++	if (type && type->led_mode_reg) {
+ 		ret = of_property_read_u32(np, "micrel,led-mode",
+ 				&priv->led_mode);
+ 		if (ret)
+@@ -785,7 +785,8 @@ static int kszphy_probe(struct phy_device *phydev)
+ 		unsigned long rate = clk_get_rate(clk);
+ 		bool rmii_ref_clk_sel_25_mhz;
+ 
+-		priv->rmii_ref_clk_sel = type->has_rmii_ref_clk_sel;
++		if (type)
++			priv->rmii_ref_clk_sel = type->has_rmii_ref_clk_sel;
+ 		rmii_ref_clk_sel_25_mhz = of_property_read_bool(np,
+ 				"micrel,rmii-reference-clock-select-25-mhz");
+ 
 -- 
 2.35.1
 
