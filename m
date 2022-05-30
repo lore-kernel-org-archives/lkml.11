@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C472C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:31:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CB98C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:31:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236840AbiE3NbC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:31:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43408 "EHLO
+        id S236990AbiE3NbI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:31:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237173AbiE3NaK (ORCPT
+        with ESMTP id S237268AbiE3NaR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:30:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61D9C11444;
-        Mon, 30 May 2022 06:26:38 -0700 (PDT)
+        Mon, 30 May 2022 09:30:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EE7F85EF6;
+        Mon, 30 May 2022 06:27:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F3A960EC3;
-        Mon, 30 May 2022 13:26:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36138C3411E;
-        Mon, 30 May 2022 13:26:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E6549B80B3A;
+        Mon, 30 May 2022 13:27:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4D4DC3411C;
+        Mon, 30 May 2022 13:26:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917197;
-        bh=dnVq8A+QaRcFBuWkdXsDnNqK0ZQ2F6cv/bJXs+evh2Y=;
+        s=k20201202; t=1653917220;
+        bh=8fyaHLfs66JSD8DWARG4Vmw9VaXoP4pQwZnrSrmzxME=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A2cUPX00q2ZDIb9Gzaf+jaZbTeH1mpYjQepShAC4j7IuuSsGzLI4zs7zpVR+pZYNu
-         AMiPizaTePDxPi8zObzmCtweMVk2rolFqToPjl7Z4SBF+gobitcJ0fbvHYg/c0Oi31
-         iUvSYdVbzx+td1j4ldRpAFVnMBi0j3q9qQySBrWypWRKtJWXQ7dtxuqnhlGcnQcEFI
-         wxwnhGoEX3mQWT2PVZ5PF66cEYEEa5907p/OFnDzTUpoHssaYj85vsDzQEDJ9n7fXi
-         w8R1DDPTjTXXqh7gVovXGlw9sdedABmvraDTpusScDKM/mbgN1Wqrfejw0nnwov26Z
-         N/FuztkMBMN1A==
+        b=ezBnmvEPfFbP4CdMD6WkG5RVb8IXGa5dtA+A/EL3LJzrDLgp7F4vRTP21CJ5UQmTG
+         mHJpAifBxV9CK9SsNxKxnrpJoN+rW3qIf1q0Y1t+1H40FbI244/wOE53lI4k4v29lw
+         vuNW5M6EIoAn3NdbNwtz1vMWsIBZMr5J2cX7fXciQUB0uKkACvOru4GDcZ2ejuCUXM
+         ZHdRW7bmvkSfC3f8NZxtlhjLYqhyRONGGENs4aqOMm95UT0CWbDsCsKOEUZmkq3Pmr
+         YlUr8Ko8n8Zndk9heVSQiTAcQY6Uw3C1VQYCbE9+89UsMEvkYMVPiUl8CzmhftQKmg
+         XKNPSMCh7/1Gg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zheyu Ma <zheyuma97@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, linux-media@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 052/159] media: pci: cx23885: Fix the error handling in cx23885_initdev()
-Date:   Mon, 30 May 2022 09:22:37 -0400
-Message-Id: <20220530132425.1929512-52-sashal@kernel.org>
+Cc:     Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, jejb@linux.ibm.com,
+        linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 060/159] scsi: ufs: Use pm_runtime_resume_and_get() instead of pm_runtime_get_sync()
+Date:   Mon, 30 May 2022 09:22:45 -0400
+Message-Id: <20220530132425.1929512-60-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530132425.1929512-1-sashal@kernel.org>
 References: <20220530132425.1929512-1-sashal@kernel.org>
@@ -52,64 +53,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Minghao Chi <chi.minghao@zte.com.cn>
 
-[ Upstream commit e8123311cf06d7dae71e8c5fe78e0510d20cd30b ]
+[ Upstream commit 75b8715e20a20bc7b4844835e4035543a2674200 ]
 
-When the driver fails to call the dma_set_mask(), the driver will get
-the following splat:
+Using pm_runtime_resume_and_get() to replace pm_runtime_get_sync() and
+pm_runtime_put_noidle(). This change is just to simplify the code, no
+actual functional changes.
 
-[   55.853884] BUG: KASAN: use-after-free in __process_removed_driver+0x3c/0x240
-[   55.854486] Read of size 8 at addr ffff88810de60408 by task modprobe/590
-[   55.856822] Call Trace:
-[   55.860327]  __process_removed_driver+0x3c/0x240
-[   55.861347]  bus_for_each_dev+0x102/0x160
-[   55.861681]  i2c_del_driver+0x2f/0x50
-
-This is because the driver has initialized the i2c related resources
-in cx23885_dev_setup() but not released them in error handling, fix this
-bug by modifying the error path that jumps after failing to call the
-dma_set_mask().
-
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Link: https://lore.kernel.org/r/20220420090353.2588804-1-chi.minghao@zte.com.cn
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/pci/cx23885/cx23885-core.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/scsi/ufs/ti-j721e-ufs.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/media/pci/cx23885/cx23885-core.c b/drivers/media/pci/cx23885/cx23885-core.c
-index f8f2ff3b00c3..a07b18f2034e 100644
---- a/drivers/media/pci/cx23885/cx23885-core.c
-+++ b/drivers/media/pci/cx23885/cx23885-core.c
-@@ -2165,7 +2165,7 @@ static int cx23885_initdev(struct pci_dev *pci_dev,
- 	err = dma_set_mask(&pci_dev->dev, 0xffffffff);
- 	if (err) {
- 		pr_err("%s/0: Oops: no 32bit PCI DMA ???\n", dev->name);
--		goto fail_ctrl;
-+		goto fail_dma_set_mask;
- 	}
+diff --git a/drivers/scsi/ufs/ti-j721e-ufs.c b/drivers/scsi/ufs/ti-j721e-ufs.c
+index eafe0db98d54..122d650d0810 100644
+--- a/drivers/scsi/ufs/ti-j721e-ufs.c
++++ b/drivers/scsi/ufs/ti-j721e-ufs.c
+@@ -29,11 +29,9 @@ static int ti_j721e_ufs_probe(struct platform_device *pdev)
+ 		return PTR_ERR(regbase);
  
- 	err = request_irq(pci_dev->irq, cx23885_irq,
-@@ -2173,7 +2173,7 @@ static int cx23885_initdev(struct pci_dev *pci_dev,
- 	if (err < 0) {
- 		pr_err("%s: can't get IRQ %d\n",
- 		       dev->name, pci_dev->irq);
--		goto fail_irq;
-+		goto fail_dma_set_mask;
- 	}
+ 	pm_runtime_enable(dev);
+-	ret = pm_runtime_get_sync(dev);
+-	if (ret < 0) {
+-		pm_runtime_put_noidle(dev);
++	ret = pm_runtime_resume_and_get(dev);
++	if (ret < 0)
+ 		goto disable_pm;
+-	}
  
- 	switch (dev->board) {
-@@ -2195,7 +2195,7 @@ static int cx23885_initdev(struct pci_dev *pci_dev,
- 
- 	return 0;
- 
--fail_irq:
-+fail_dma_set_mask:
- 	cx23885_dev_unregister(dev);
- fail_ctrl:
- 	v4l2_ctrl_handler_free(hdl);
+ 	/* Select MPHY refclk frequency */
+ 	clk = devm_clk_get(dev, NULL);
 -- 
 2.35.1
 
