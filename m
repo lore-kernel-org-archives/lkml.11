@@ -2,48 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 428FEC49EA5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A74C6C49EA4
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:21:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241159AbiE3OVH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:21:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40318 "EHLO
+        id S241165AbiE3OVM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:21:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240913AbiE3OQg (ORCPT
+        with ESMTP id S240948AbiE3OQj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:16:36 -0400
+        Mon, 30 May 2022 10:16:39 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ADBD106543;
-        Mon, 30 May 2022 06:44:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C2A910EA49;
+        Mon, 30 May 2022 06:44:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3FBFB60F47;
-        Mon, 30 May 2022 13:44:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E098C3411A;
-        Mon, 30 May 2022 13:44:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4E22660FD6;
+        Mon, 30 May 2022 13:44:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7AD43C385B8;
+        Mon, 30 May 2022 13:44:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918249;
-        bh=fsc6IIIk1awweZ+LPL499ZV/HHQ210t5VuqTymzmdZw=;
-        h=From:To:Cc:Subject:Date:From;
-        b=CoAnx3Z6+FkEB0I2L3tZgc1H0suyzS5p7ZZZOFwvifmWZl8ZbdZX5dZwfkg+dgFKN
-         85bKyyTEVTMCzZN41iMLUJ+MLrLuHF/rWeWZVnFfmbh8OoJSw44Twb1F2AJm5oOiXA
-         MOVGH/6jgclhy3nJS/KahzMyNLosiHCmFpgX9rcm3GbyJvHv5vx3eOhfIXHd+7DjU4
-         89QBhRVSMoGZGeao+lml9+zUfElgwU1i/fOePT3tIkSI+xATlJkl9vo+0FX3Eh07fi
-         T0BAAlsZV7mXmonEUK2XpFej4EZz4RInfwaPjLbtpqQsFmodKRloayULAInE6MvGaM
-         EpAdyL6PbW0nw==
+        s=k20201202; t=1653918261;
+        bh=Bkd23sX7Gv/V+UyqdUT5JU9g3D19EXhrLTVzmu+pFg8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ny9dOUZhzWWbWqsiwY4buRX/4viG4SEskbutNgaGfrltRbr/hombcTr3ygGYwN2Tl
+         LYkkSfcJBk0zic1saUDRW6AoKNqOeelnQsR7IsZ7sZXP7Z7eVUFZiQ6aGFD/Nc5yU8
+         VLT3Twmr0wp9hbFfiqqvVUIuNBtpJZ1Cr7ebe4a1nkt1jf/vgMpg8nH0zfVY2pWvWs
+         QYwRnUJ3IyzidJiqg7djrrEpFTEZQ/IpxCUrDGVW8TLLsKL5MYG/5r9aoxnFCpj0O9
+         Jtn1mT5mR4M/SwGD/JR8jqp7KnyBn4o2t91ihS0Fiu0aqKsSuWCqIMYee4oBROl1k6
+         rVs7BAj9JWutg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Tejas Upadhyay <tejaskumarx.surendrakumar.upadhyay@intel.com>,
-        Raviteja Goud Talla <ravitejax.goud.talla@intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Sasha Levin <sashal@kernel.org>, dwmw2@infradead.org,
-        joro@8bytes.org, will@kernel.org, iommu@lists.linux-foundation.org
-Subject: [PATCH AUTOSEL 5.10 01/76] iommu/vt-d: Add RPLS to quirk list to skip TE disabling
-Date:   Mon, 30 May 2022 09:42:51 -0400
-Message-Id: <20220530134406.1934928-1-sashal@kernel.org>
+Cc:     Haowen Bai <baihaowen@meizu.com>, Kalle Valo <kvalo@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        thunder.leizhen@huawei.com, linux-wireless@vger.kernel.org,
+        b43-dev@lists.infradead.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 06/76] b43: Fix assigning negative value to unsigned variable
+Date:   Mon, 30 May 2022 09:42:56 -0400
+Message-Id: <20220530134406.1934928-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220530134406.1934928-1-sashal@kernel.org>
+References: <20220530134406.1934928-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,53 +53,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tejas Upadhyay <tejaskumarx.surendrakumar.upadhyay@intel.com>
+From: Haowen Bai <baihaowen@meizu.com>
 
-[ Upstream commit 0a967f5bfd9134b89681cae58deb222e20840e76 ]
+[ Upstream commit 11800d893b38e0e12d636c170c1abc19c43c730c ]
 
-The VT-d spec requires (10.4.4 Global Command Register, TE
-field) that:
+fix warning reported by smatch:
+drivers/net/wireless/broadcom/b43/phy_n.c:585 b43_nphy_adjust_lna_gain_table()
+warn: assigning (-2) to unsigned variable '*(lna_gain[0])'
 
-Hardware implementations supporting DMA draining must drain
-any in-flight DMA read/write requests queued within the
-Root-Complex before completing the translation enable
-command and reflecting the status of the command through
-the TES field in the Global Status register.
-
-Unfortunately, some integrated graphic devices fail to do
-so after some kind of power state transition. As the
-result, the system might stuck in iommu_disable_translati
-on(), waiting for the completion of TE transition.
-
-This adds RPLS to a quirk list for those devices and skips
-TE disabling if the qurik hits.
-
-Link: https://gitlab.freedesktop.org/drm/intel/-/issues/4898
-Tested-by: Raviteja Goud Talla <ravitejax.goud.talla@intel.com>
-Cc: Rodrigo Vivi <rodrigo.vivi@intel.com>
-Acked-by: Lu Baolu <baolu.lu@linux.intel.com>
-Signed-off-by: Tejas Upadhyay <tejaskumarx.surendrakumar.upadhyay@intel.com>
-Reviewed-by: Rodrigo Vivi <rodrigo.vivi@intel.com>
-Signed-off-by: Rodrigo Vivi <rodrigo.vivi@intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220302043256.191529-1-tejaskumarx.surendrakumar.upadhyay@intel.com
+Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/1648203315-28093-1-git-send-email-baihaowen@meizu.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/intel/iommu.c | 2 +-
+ drivers/net/wireless/broadcom/b43/phy_n.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 21749859ad45..477dde39823c 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -6296,7 +6296,7 @@ static void quirk_igfx_skip_te_disable(struct pci_dev *dev)
- 	ver = (dev->device >> 8) & 0xff;
- 	if (ver != 0x45 && ver != 0x46 && ver != 0x4c &&
- 	    ver != 0x4e && ver != 0x8a && ver != 0x98 &&
--	    ver != 0x9a)
-+	    ver != 0x9a && ver != 0xa7)
- 		return;
+diff --git a/drivers/net/wireless/broadcom/b43/phy_n.c b/drivers/net/wireless/broadcom/b43/phy_n.c
+index 665b737fbb0d..39975b7d1a16 100644
+--- a/drivers/net/wireless/broadcom/b43/phy_n.c
++++ b/drivers/net/wireless/broadcom/b43/phy_n.c
+@@ -582,7 +582,7 @@ static void b43_nphy_adjust_lna_gain_table(struct b43_wldev *dev)
+ 	u16 data[4];
+ 	s16 gain[2];
+ 	u16 minmax[2];
+-	static const u16 lna_gain[4] = { -2, 10, 19, 25 };
++	static const s16 lna_gain[4] = { -2, 10, 19, 25 };
  
- 	if (risky_device(dev))
+ 	if (nphy->hang_avoid)
+ 		b43_nphy_stay_in_carrier_search(dev, 1);
 -- 
 2.35.1
 
