@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72EE4C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6790C4167E
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:31:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242517AbiE3ObP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:31:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40284 "EHLO
+        id S242640AbiE3ObY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:31:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241906AbiE3OSK (ORCPT
+        with ESMTP id S241922AbiE3OSL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:18:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 038179CCB4;
-        Mon, 30 May 2022 06:48:33 -0700 (PDT)
+        Mon, 30 May 2022 10:18:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA14A9CF02;
+        Mon, 30 May 2022 06:48:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1E173B80DAA;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 842C86103D;
+        Mon, 30 May 2022 13:48:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1AC3C341C0;
         Mon, 30 May 2022 13:48:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA643C3411C;
-        Mon, 30 May 2022 13:48:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918504;
-        bh=D52O2FRzILz9zMg8zYdxD18w6tiNZOOjolfGlqsqKWE=;
+        s=k20201202; t=1653918507;
+        bh=iDmtIbiCibEJV3q/3pm/u+kHThmsdq8O7eZM/tAXpic=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=apPL99rlBMcvTIYP9yrHyjGDYRgwpGyRbp+O92sdRWKP5JKRr69DuBfzPwkhtEutQ
-         ruOWeE2HDvmcsxOJUiVAaPpTpK0UPLcJXlMRaFcxIWuxOEwuk4Em+TmHn+MXqe2hmu
-         8OLnjXnSIzZp3yJm9W6Lt0BwUj5yMwEO3P+RdHwoI3ZqZQt9ZOJWgrXJtFY6nklkdT
-         IrszjMpuquS8/pRhhvjwaiD7xvrTQNYHAY7Rh5nmSH/7XP4rAeBv93vNYIKrvahiXg
-         LYQx138qVxBm2iT9uCvGuerw852G6SyLpCjMatpNjq4Weh1YXHbpNfKUqfieIGAich
-         22zFcS5Eyj2PQ==
+        b=GRzKRmigijbq4qN6ajskuUmvkh7qtFcbYJGEy+8qvvFpjzVtmGzBaTIOxH3wzraHX
+         nBy8oZPpTbGjgnbfLxJ9aJKP/T1hOzJKretMzOWco/yVRlup0ltHQS4flvzlqWHK4z
+         rcvnFX5rBd2vW/Yi5DG33gz4mR09yJ63sNuYBY7W0ivvM0isBeaBVDWrp1ic2b1+TO
+         b1NU5LVNP4LidTikIag66QvY89ccJ+y1/liYfMblbNemKAjW/N5Ay8a22ntNc9k6Ih
+         ZzS0ZGNkMAUPITEObGZxc5M4X2TaMCwN4ee0FMHRtHLCVO/LGVeLTWLI0n1/DkWW0E
+         Qf6jWeV92cWrg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alice Wong <shiwei.wong@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
-        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
-        Hawking.Zhang@amd.com, Likun.Gao@amd.com, john.clements@amd.com,
-        candice.li@amd.com, lang.yu@amd.com, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.4 31/55] drm/amdgpu/ucode: Remove firmware load type check in amdgpu_ucode_free_bo
-Date:   Mon, 30 May 2022 09:46:37 -0400
-Message-Id: <20220530134701.1935933-31-sashal@kernel.org>
+Cc:     Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>,
+        steven.eckhoff.opensource@gmail.com, lgirdwood@gmail.com,
+        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.4 33/55] ASoC: tscs454: Add endianness flag in snd_soc_component_driver
+Date:   Mon, 30 May 2022 09:46:39 -0400
+Message-Id: <20220530134701.1935933-33-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530134701.1935933-1-sashal@kernel.org>
 References: <20220530134701.1935933-1-sashal@kernel.org>
@@ -55,37 +53,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alice Wong <shiwei.wong@amd.com>
+From: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-[ Upstream commit ab0cd4a9ae5b4679b714d8dbfedc0901fecdce9f ]
+[ Upstream commit ff69ec96b87dccb3a29edef8cec5d4fefbbc2055 ]
 
-When psp_hw_init failed, it will set the load_type to AMDGPU_FW_LOAD_DIRECT.
-During amdgpu_device_ip_fini, amdgpu_ucode_free_bo checks that load_type is
-AMDGPU_FW_LOAD_DIRECT and skips deallocating fw_buf causing memory leak.
-Remove load_type check in amdgpu_ucode_free_bo.
+The endianness flag is used on the CODEC side to specify an
+ambivalence to endian, typically because it is lost over the hardware
+link. This device receives audio over an I2S DAI and as such should
+have endianness applied.
 
-Signed-off-by: Alice Wong <shiwei.wong@amd.com>
-Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+A fixup is also required to use the width directly rather than relying
+on the format in hw_params, now both little and big endian would be
+supported. It is worth noting this changes the behaviour of S24_LE to
+use a word length of 24 rather than 32. This would appear to be a
+correction since the fact S24_LE is stored as 32 bits should not be
+presented over the bus.
+
+Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220504170905.332415-26-ckeepax@opensource.cirrus.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_ucode.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ sound/soc/codecs/tscs454.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_ucode.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_ucode.c
-index 3a6115ad0196..f3250db7f9c2 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_ucode.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_ucode.c
-@@ -568,8 +568,7 @@ int amdgpu_ucode_create_bo(struct amdgpu_device *adev)
+diff --git a/sound/soc/codecs/tscs454.c b/sound/soc/codecs/tscs454.c
+index c3587af9985c..3d981441b8d1 100644
+--- a/sound/soc/codecs/tscs454.c
++++ b/sound/soc/codecs/tscs454.c
+@@ -3128,18 +3128,17 @@ static int set_aif_sample_format(struct snd_soc_component *component,
+ 	unsigned int width;
+ 	int ret;
  
- void amdgpu_ucode_free_bo(struct amdgpu_device *adev)
- {
--	if (adev->firmware.load_type != AMDGPU_FW_LOAD_DIRECT)
--		amdgpu_bo_free_kernel(&adev->firmware.fw_buf,
-+	amdgpu_bo_free_kernel(&adev->firmware.fw_buf,
- 		&adev->firmware.fw_buf_mc,
- 		&adev->firmware.fw_buf_ptr);
- }
+-	switch (format) {
+-	case SNDRV_PCM_FORMAT_S16_LE:
++	switch (snd_pcm_format_width(format)) {
++	case 16:
+ 		width = FV_WL_16;
+ 		break;
+-	case SNDRV_PCM_FORMAT_S20_3LE:
++	case 20:
+ 		width = FV_WL_20;
+ 		break;
+-	case SNDRV_PCM_FORMAT_S24_3LE:
++	case 24:
+ 		width = FV_WL_24;
+ 		break;
+-	case SNDRV_PCM_FORMAT_S24_LE:
+-	case SNDRV_PCM_FORMAT_S32_LE:
++	case 32:
+ 		width = FV_WL_32;
+ 		break;
+ 	default:
+@@ -3337,6 +3336,7 @@ static const struct snd_soc_component_driver soc_component_dev_tscs454 = {
+ 	.num_dapm_routes = ARRAY_SIZE(tscs454_intercon),
+ 	.controls =	tscs454_snd_controls,
+ 	.num_controls = ARRAY_SIZE(tscs454_snd_controls),
++	.endianness = 1,
+ };
+ 
+ #define TSCS454_RATES SNDRV_PCM_RATE_8000_96000
 -- 
 2.35.1
 
