@@ -2,113 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A3CAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 15:47:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E364CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 15:47:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240494AbiE3Prf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 11:47:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33994 "EHLO
+        id S241235AbiE3Prp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 11:47:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242366AbiE3PrL (ORCPT
+        with ESMTP id S242853AbiE3Pqr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 11:47:11 -0400
-Received: from mailbox.box.xen0n.name (mail.xen0n.name [115.28.160.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86C72222A18;
-        Mon, 30 May 2022 08:00:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=xen0n.name; s=mail;
-        t=1653922822; bh=s1QiOz9wspSFr3MKcctc4iYPmhaFi0B1Ir77QXPhGkQ=;
+        Mon, 30 May 2022 11:46:47 -0400
+X-Greylist: delayed 862 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 30 May 2022 07:58:38 PDT
+Received: from mail.mleia.com (mleia.com [178.79.152.223])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 826A21649B8;
+        Mon, 30 May 2022 07:58:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mleia.com; s=mail;
+        t=1653921250; bh=idjzIs6nM/GzEGxcBT5U9Zvmwvs1WbeN6ytiAFKcA/M=;
         h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=XfTYcoObJmrg/JDjGJc1MTn8iRm6p9KRmLhJGb19BxuVDXKKtNE0cQ2gWHsF9L+p0
-         dIpeX7wWK2a9S4ui6qfeVUc2FQZiqJyJIw5ZbLpSGeapzW6+8zzFTniivYOrQZqCSp
-         2f7dkspWYhoyPbx9PLNCS+9mqHuvG4xR3MX9aq/M=
-Received: from [192.168.9.172] (unknown [101.88.28.48])
+        b=qkrj84hcUoYR17888l+IifmTZFDvK4R7zKao/29k7PHMWnpCu9vaUfiQrmwkWOl1y
+         J/YgyDDK27WXn2lBC7DGmXHnFaMK6k/T2vlDIQIdk+y7QTc4m8e5LMnvTiN8BA83WE
+         T2IpUls4AbmmUkP+8siXcj26vS9kmnJdzB5kTmy6n46485N72bZ0AAXEJPLpgxRECF
+         ZtFgGu3xy3rXpEicA2tYLwr8rkH6OWRrHgmNUrVkbci5d9BzDicFN/3j2tu9Gs2hbz
+         mrU81t2SiQccsxcpFgS9TS5HIjJ1iH2YFwNGUhlDbfrJa4C6Xh/lSaCX0fEtCV4uNd
+         KcJ/TvunmhEPg==
+Received: from mail.mleia.com (localhost [127.0.0.1])
+        by mail.mleia.com (Postfix) with ESMTP id 03A5B3B7DED;
+        Mon, 30 May 2022 14:34:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mleia.com; s=mail;
+        t=1653921249; bh=idjzIs6nM/GzEGxcBT5U9Zvmwvs1WbeN6ytiAFKcA/M=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=GmWNllcbKIoAUVIxhCH5rQiQpya4rETl28xsA8jdTEkntFAr6kBFjUmW4UrO9Ij/P
+         wYCAPYMrPp4MDsff+RVjSUkONQKYMi2vVsSvNO1FSTCrPxafM3gtSp7t+kTDxv9p1y
+         O8QnSt5vc5SlVxlbA9vypjujLo86N7qCq8GLUPeC9lwL0qy16xJ2xa3drhaEI0W9JT
+         fpJtwULyFvxYyXzNucUVV3I4isREqQ/iY7EZ+OkctOZtRop1bjpcQUzIFawYgpymeL
+         se+Dv00LH7Z93Nj87qQESli+MXq6CGxdMKvixsJ/t1qGba5h8hQuw0DMxMBalGZHFp
+         P4wn1+pH+kJiw==
+Received: from [192.168.1.102] (88-112-131-206.elisa-laajakaista.fi [88.112.131.206])
         (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
         (No client certificate requested)
-        by mailbox.box.xen0n.name (Postfix) with ESMTPSA id EB8A86011F;
-        Mon, 30 May 2022 23:00:21 +0800 (CST)
-Message-ID: <358025d1-28e6-708b-d23d-3f22ae12a800@xen0n.name>
-Date:   Mon, 30 May 2022 23:00:21 +0800
+        by mail.mleia.com (Postfix) with ESMTPSA id 8B8F93B7DE9;
+        Mon, 30 May 2022 14:34:09 +0000 (UTC)
+Message-ID: <148d6f7b-3973-0b58-c777-7a3f889d5032@mleia.com>
+Date:   Mon, 30 May 2022 17:34:08 +0300
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.0a1
-Subject: Re: [GIT PULL] asm-generic changes for 5.19
-To:     Huacai Chen <chenhuacai@kernel.org>,
-        Arnd Bergmann <arnd@kernel.org>
-Cc:     WANG Xuerui <kernel@xen0n.name>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        libc-alpha@sourceware.org,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Marc Zyngier <maz@kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        musl@lists.openwall.com,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Jianmin Lv <lvjianmin@loongson.cn>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Huacai Chen <chenhuacai@loongson.cn>
-References: <CAK8P3a2_52JPnBWNvTTkFVwLxPAa7=NaQ4whwC1UeH_NYHeUKQ@mail.gmail.com>
- <CAK8P3a0SpU1n+29KQxzKnPRvzmDE=L0V9RUpKxhemv=74kevcQ@mail.gmail.com>
- <df5c406c-eec6-c340-2847-49670b7fe8bf@xen0n.name>
- <CAK8P3a3awFdB1-G65DC38NBuSTvo6SvFTaS0m9YBxunHjHjQvQ@mail.gmail.com>
- <CAAhV-H6sNr-yo8brBFtzziH6k9Tby0dFp7yehK55SfH5HjZ8hQ@mail.gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] clk: nxp: fix typo in comment
 Content-Language: en-US
-From:   WANG Xuerui <kernel@xen0n.name>
-In-Reply-To: <CAAhV-H6sNr-yo8brBFtzziH6k9Tby0dFp7yehK55SfH5HjZ8hQ@mail.gmail.com>
+To:     Julia Lawall <Julia.Lawall@inria.fr>,
+        Michael Turquette <mturquette@baylibre.com>
+Cc:     kernel-janitors@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>,
+        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+References: <20220521111145.81697-42-Julia.Lawall@inria.fr>
+From:   Vladimir Zapolskiy <vz@mleia.com>
+In-Reply-To: <20220521111145.81697-42-Julia.Lawall@inria.fr>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
+X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-49551924 
+X-CRM114-CacheID: sfid-20220530_143410_035189_0CCDEF31 
+X-CRM114-Status: GOOD (  12.89  )
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/30/22 21:01, Huacai Chen wrote:
-> Hi, Arnd,
->
-> On Mon, May 30, 2022 at 4:21 PM Arnd Bergmann <arnd@kernel.org> wrote:
->> On Sun, May 29, 2022 at 3:10 PM WANG Xuerui <kernel@xen0n.name> wrote:
->>> But what for the users and downstream projects? Do the users owning
->>> LoongArch hardware (me included) and projects/companies porting their
->>> offerings have to pay for Loongson's mistakes and wait another [2mo,
->>> 1yr], "ideally" also missing the glibc 2.36 release too?
->> ...
->>> Lastly, I'd like to clarify, that this is by no means a
->>> passive-aggressive statement to make the community look like "the bad
->>> guy", or to make Loongson "look bad"; I just intend to provide a
->>> hopefully fresh perspective from a/an {end user, hobbyist kernel
->>> developer, distro developer, native Chinese speaker with a hopefully
->>> decent grasp of English}'s view.
->> Your feedback has been extremely valuable, as always. I definitely
->> don't want to hold up merging the port for the glibc-2.36 release. If
->> that is a risk, and if merging the architecture port without the drivers
->> helps with that, I agree we should just do that. This will also help
->> with build testing and any treewide changes that are going to be
->> done on top of v5.19-rc1.
->>
->> For the continuous maintenance, would you be available as an
->> additional Reviewer or co-maintainer to be listed in the maintainers
->> file? I think in general it is a good idea to have at least one maintainer
->> that is not directly part of the organization that owns the product,
->> and you are clearly the best person outside of loongson technology
->> for this.
-> Yes, Xuerui is very suitable as a Reviewer.
+On 5/21/22 14:10, Julia Lawall wrote:
+> Spelling mistake (triple letters) in comment.
+> Detected with the help of Coccinelle.
+> 
+> Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
+> 
+> ---
+>   drivers/clk/nxp/clk-lpc18xx-cgu.c |    2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/clk/nxp/clk-lpc18xx-cgu.c b/drivers/clk/nxp/clk-lpc18xx-cgu.c
+> index c23ac463ab0f..1bb18dc0a80a 100644
+> --- a/drivers/clk/nxp/clk-lpc18xx-cgu.c
+> +++ b/drivers/clk/nxp/clk-lpc18xx-cgu.c
+> @@ -609,7 +609,7 @@ static void __init lpc18xx_cgu_register_source_clks(struct device_node *np,
+>   	if (IS_ERR(clk))
+>   		pr_warn("%s: failed to register irc clk\n", __func__);
+>   
+> -	/* Register crystal oscillator controlller */
+> +	/* Register crystal oscillator controller */
+>   	parents[0] = of_clk_get_parent_name(np, 0);
+>   	clk = clk_register_gate(NULL, clk_src_names[CLK_SRC_OSC], parents[0],
+>   				0, base + LPC18XX_CGU_XTAL_OSC_CTRL,
+> 
 
-Thanks for the recognition from both of you; it is my honor and pleasure 
-to contribute to the LoongArch port and to Linux in general.
+Acked-by: Vladimir Zapolskiy <vz@mleia.com>
 
-As I'm still not entirely satisfied with my kernel development skills, 
-plus my day job is not kernel-related nor Loongson/LoongArch-related at 
-all, listing me as reviewer should be enough for now. I will take care 
-of the arch as long as I have the hardware.
-
-BTW, there were already several breakages when rebasing the previous 
-revision (I believe it's commit 215da6d2dac0 ("MAINTAINERS: Add 
-maintainer information for LoongArch")) on top of linus' tree. Now I see 
-the loongarch-next HEAD is already rebased on top of what I believe to 
-be the current main branch, however I vaguely remember that it's not 
-good to base one's patches on top of "some random commit", so I wonder 
-whether the current branch state is appropriate for a PR?
-
+--
+Best wishes,
+Vladimir
