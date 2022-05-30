@@ -2,45 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6820C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:38:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA4BDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:39:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240360AbiE3OiH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:38:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54176 "EHLO
+        id S240754AbiE3Oi6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:38:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240596AbiE3OT4 (ORCPT
+        with ESMTP id S240733AbiE3OVL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:19:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 527491248F1;
-        Mon, 30 May 2022 06:50:03 -0700 (PDT)
+        Mon, 30 May 2022 10:21:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0E3CA7757;
+        Mon, 30 May 2022 06:50:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1C60660FFA;
-        Mon, 30 May 2022 13:48:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7E7BC341C0;
-        Mon, 30 May 2022 13:48:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E0EFAB80DAB;
+        Mon, 30 May 2022 13:49:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B9E0C3411C;
+        Mon, 30 May 2022 13:49:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918522;
-        bh=3wuBoO78M/jyBi9wiMoupv9Wxz2G3NRlkB+0uX6BVHo=;
+        s=k20201202; t=1653918545;
+        bh=CTn9HCUjXYHSwA99rQmy+i5tCftAg7PvxJaOxRnYJjo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FbIyUb2ktqXgQe5uU0i9KXW3Wrf0CuXwRNcGVKsftzfTunI/OrcwACjH9rz5+T9pr
-         zWta4/tzh/gfCmV+D1WqjUArTTftRja9I6dDyaivPThexVvKaNK670V+ZSE9JTQsYe
-         Dv68EglaZxgLHxXP/pWvCyfIAkNY0T5RMdA7BgY+FGvgMU1iTk9+U6D2mo/40CBAb6
-         cj+Y0IuwSX/awv3mZOMbyADSkU5OBdSocABsNU1B9iUqV4WCTcREkRGARsMIScLhQn
-         X2n/IzTYocAV3hSrX+tshyj6O2499B+xR2MiSSHG5qq0m8jiwb0srZGrKDVDEeJ7ri
-         2PFRTZE1wdtyA==
+        b=cY5E+OAOPG7UskD4aGGpktgGlTqyvDpkYdM7Wf851TE15/P7/dfeRVzvAGjf+AgtA
+         xzaFlqbvAQgIHJcRlFYpGS7L3YydSsAMTtk/HqvOaDJCNEPqKhpO4GDjK0CsY8zfKd
+         ZNhM5455LZS6yZjjYOL9rkJdzjFnfHh8ZEKy7X+0lk4aYrmLD3SZH9qyJmaqfrQLB6
+         4x6QQi1vnZjPKikz7u2x9xojfVp1gDpd6LH3pHRYApkceTmGKdIabgvkd50Ifpp6tk
+         Sv5NcCR26XmI2k+Og4/K0uodikbydaSzAtFCbodK8IjJ1IRAiewVC+Y7qpK879/Ecq
+         UbiHz6/RZtWmQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Corey Minyard <cminyard@mvista.com>,
+Cc:     Kwanghoon Son <k.son@samsung.com>,
         kernel test robot <lkp@intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>,
-        openipmi-developer@lists.sourceforge.net
-Subject: [PATCH AUTOSEL 5.4 40/55] ipmi: Fix pr_fmt to avoid compilation issues
-Date:   Mon, 30 May 2022 09:46:46 -0400
-Message-Id: <20220530134701.1935933-40-sashal@kernel.org>
+        krzysztof.kozlowski@linaro.org, linux-media@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 49/55] media: exynos4-is: Fix compile warning
+Date:   Mon, 30 May 2022 09:46:55 -0400
+Message-Id: <20220530134701.1935933-49-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530134701.1935933-1-sashal@kernel.org>
 References: <20220530134701.1935933-1-sashal@kernel.org>
@@ -52,35 +56,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Corey Minyard <cminyard@mvista.com>
+From: Kwanghoon Son <k.son@samsung.com>
 
-[ Upstream commit 2ebaf18a0b7fb764bba6c806af99fe868cee93de ]
+[ Upstream commit e080f5c1f2b6d02c02ee5d674e0e392ccf63bbaf ]
 
-The was it was wouldn't work in some situations, simplify it.  What was
-there was unnecessary complexity.
+Declare static on function 'fimc_isp_video_device_unregister'.
+
+When VIDEO_EXYNOS4_ISP_DMA_CAPTURE=n, compiler warns about
+warning: no previous prototype for function [-Wmissing-prototypes]
 
 Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Corey Minyard <cminyard@mvista.com>
+Signed-off-by: Kwanghoon Son <k.son@samsung.com>
+Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/ipmi/ipmi_msghandler.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/media/platform/exynos4-is/fimc-isp-video.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/char/ipmi/ipmi_msghandler.c b/drivers/char/ipmi/ipmi_msghandler.c
-index ad2e6d55d4a5..736970312bbc 100644
---- a/drivers/char/ipmi/ipmi_msghandler.c
-+++ b/drivers/char/ipmi/ipmi_msghandler.c
-@@ -11,8 +11,8 @@
-  * Copyright 2002 MontaVista Software Inc.
-  */
+diff --git a/drivers/media/platform/exynos4-is/fimc-isp-video.h b/drivers/media/platform/exynos4-is/fimc-isp-video.h
+index edcb3a5e3cb9..2dd4ddbc748a 100644
+--- a/drivers/media/platform/exynos4-is/fimc-isp-video.h
++++ b/drivers/media/platform/exynos4-is/fimc-isp-video.h
+@@ -32,7 +32,7 @@ static inline int fimc_isp_video_device_register(struct fimc_isp *isp,
+ 	return 0;
+ }
  
--#define pr_fmt(fmt) "%s" fmt, "IPMI message handler: "
--#define dev_fmt pr_fmt
-+#define pr_fmt(fmt) "IPMI message handler: " fmt
-+#define dev_fmt(fmt) pr_fmt(fmt)
- 
- #include <linux/module.h>
- #include <linux/errno.h>
+-void fimc_isp_video_device_unregister(struct fimc_isp *isp,
++static inline void fimc_isp_video_device_unregister(struct fimc_isp *isp,
+ 				enum v4l2_buf_type type)
+ {
+ }
 -- 
 2.35.1
 
