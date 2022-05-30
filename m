@@ -2,52 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6015C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:53:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27BA0C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:53:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241920AbiE3OxY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:53:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42380 "EHLO
+        id S237929AbiE3Oxa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:53:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240507AbiE3O3V (ORCPT
+        with ESMTP id S238504AbiE3O2d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:29:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03674625F;
-        Mon, 30 May 2022 06:51:45 -0700 (PDT)
+        Mon, 30 May 2022 10:28:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1096337BEE;
+        Mon, 30 May 2022 06:51:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0B89F60FA9;
-        Mon, 30 May 2022 13:51:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 627E7C341CB;
-        Mon, 30 May 2022 13:51:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9BD87B80ABD;
+        Mon, 30 May 2022 13:51:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83BFCC36AE5;
+        Mon, 30 May 2022 13:51:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918704;
-        bh=o5pO4LCMS5/b+2fU+WThBdm9r/1xafoD8Nszr9ODGqE=;
+        s=k20201202; t=1653918697;
+        bh=4aS/8hYxzSt4H7hZdqXY+bmP+Vk22zeCBsIQIb3iUIU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OeYZ1MBW+gDSREbk03XKHKgLTj3P6ycM8Y7WY4nil7L7xfapxsnIPxyK3U5gUDz0q
-         hNbSi+CN4+qXzjaDlHN5m8ghcaB2qwldX8esNs/cJh92z9AtTtPWVVtxU9+asda1tj
-         D5gXZvDk40diYlPWXKQY0C8tPgn7OeHywSAzOdOz8lrk81dVClBp5LyAbzDb3z6tOc
-         8kRqq9WPwTByZi4MwFhC4VNCGmeIDupj8xIX5tu5r/W9/pFxI8IH4FWqf3HJ57UkL5
-         tBGw4II61fKthtiMmcA6vFotrdnmh5VLEFUpHf7FJ3jMWD6J9oBPJfxau3tOcnk93m
-         HKaHAyjVUfA9A==
+        b=dCnTyf2m6jk76Nlam3JE8NmdbdnVN7yEphiV+YhoMiB5ie9WgYIAaYA5J98ZoaZVv
+         WAp8uEcMUO1aOkdeHkOzvItWUhr8w3Wm6amnoNnsRYpsG3rIuR7Sw3qmCviyEMw9TS
+         M4krruhiuQpiwoK3Gz5vwqxltjhmwEnWjUqK0AUNCclFZnqA5xxlWSt3hRSLrz4E4i
+         S1gDM/2hhVtGXuJNpjSW/CLQyiB75ALiqTJJNJDjr1dTKxaabSxuDj0YsdfgYM85ZT
+         vORXYbxEoiw777LW9x6HA26CbKO1Ns2czFlR5hqXEB3CVPBaRLl2ChPVcw+92iDkPT
+         1TI+Bl24BssEg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Heiko Carstens <hca@linux.ibm.com>,
-        Thomas Richter <tmricht@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Sasha Levin <sashal@kernel.org>, gor@linux.ibm.com,
-        agordeev@linux.ibm.com, vschneid@redhat.com,
-        linux-s390@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 18/29] s390/preempt: disable __preempt_count_add() optimization for PROFILE_ALL_BRANCHES
-Date:   Mon, 30 May 2022 09:50:45 -0400
-Message-Id: <20220530135057.1937286-18-sashal@kernel.org>
+Cc:     Mark Brown <broonie@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
+        alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 4.14 16/29] ASoC: dapm: Don't fold register value changes into notifications
+Date:   Mon, 30 May 2022 09:50:43 -0400
+Message-Id: <20220530135057.1937286-16-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530135057.1937286-1-sashal@kernel.org>
 References: <20220530135057.1937286-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -55,59 +51,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Heiko Carstens <hca@linux.ibm.com>
+From: Mark Brown <broonie@kernel.org>
 
-[ Upstream commit 63678eecec57fc51b778be3da35a397931287170 ]
+[ Upstream commit ad685980469b9f9b99d4d6ea05f4cb8f57cb2234 ]
 
-gcc 12 does not (always) optimize away code that should only be generated
-if parameters are constant and within in a certain range. This depends on
-various obscure kernel config options, however in particular
-PROFILE_ALL_BRANCHES can trigger this compile error:
+DAPM tracks and reports the value presented to the user from DAPM controls
+separately to the register value, these may diverge during initialisation
+or when an autodisable control is in use.
 
-In function ‘__atomic_add_const’,
-    inlined from ‘__preempt_count_add.part.0’ at ./arch/s390/include/asm/preempt.h:50:3:
-./arch/s390/include/asm/atomic_ops.h:80:9: error: impossible constraint in ‘asm’
-   80 |         asm volatile(                                                   \
-      |         ^~~
+When writing DAPM controls we currently report that a change has occurred
+if either the DAPM value or the value stored in the register has changed,
+meaning that if the two are out of sync we may appear to report a spurious
+event to userspace. Since we use this folded in value for nothing other
+than the value reported to userspace simply drop the folding in of the
+register change.
 
-Workaround this by simply disabling the optimization for
-PROFILE_ALL_BRANCHES, since the kernel will be so slow, that this
-optimization won't matter at all.
-
-Reported-by: Thomas Richter <tmricht@linux.ibm.com>
-Reviewed-by: Sven Schnelle <svens@linux.ibm.com>
-Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Link: https://lore.kernel.org/r/20220428161833.3690050-1-broonie@kernel.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/s390/include/asm/preempt.h | 15 +++++++++++----
- 1 file changed, 11 insertions(+), 4 deletions(-)
+ sound/soc/soc-dapm.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/arch/s390/include/asm/preempt.h b/arch/s390/include/asm/preempt.h
-index 23a14d187fb1..1aebf09fbcd8 100644
---- a/arch/s390/include/asm/preempt.h
-+++ b/arch/s390/include/asm/preempt.h
-@@ -50,10 +50,17 @@ static inline bool test_preempt_need_resched(void)
+diff --git a/sound/soc/soc-dapm.c b/sound/soc/soc-dapm.c
+index dd3053c243c1..320d262c16c9 100644
+--- a/sound/soc/soc-dapm.c
++++ b/sound/soc/soc-dapm.c
+@@ -3282,7 +3282,6 @@ int snd_soc_dapm_put_volsw(struct snd_kcontrol *kcontrol,
+ 			update.val = val;
+ 			card->update = &update;
+ 		}
+-		change |= reg_change;
  
- static inline void __preempt_count_add(int val)
- {
--	if (__builtin_constant_p(val) && (val >= -128) && (val <= 127))
--		__atomic_add_const(val, &S390_lowcore.preempt_count);
--	else
--		__atomic_add(val, &S390_lowcore.preempt_count);
-+	/*
-+	 * With some obscure config options and CONFIG_PROFILE_ALL_BRANCHES
-+	 * enabled, gcc 12 fails to handle __builtin_constant_p().
-+	 */
-+	if (!IS_ENABLED(CONFIG_PROFILE_ALL_BRANCHES)) {
-+		if (__builtin_constant_p(val) && (val >= -128) && (val <= 127)) {
-+			__atomic_add_const(val, &S390_lowcore.preempt_count);
-+			return;
-+		}
-+	}
-+	__atomic_add(val, &S390_lowcore.preempt_count);
- }
+ 		ret = soc_dapm_mixer_update_power(card, kcontrol, connect,
+ 						  rconnect);
+@@ -3388,7 +3387,6 @@ int snd_soc_dapm_put_enum_double(struct snd_kcontrol *kcontrol,
+ 			update.val = val;
+ 			card->update = &update;
+ 		}
+-		change |= reg_change;
  
- static inline void __preempt_count_sub(int val)
+ 		ret = soc_dapm_mux_update_power(card, kcontrol, item[0], e);
+ 
 -- 
 2.35.1
 
