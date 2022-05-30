@@ -2,47 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F22BC4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78E9FC4167D
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:57:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239148AbiE3Nzy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:55:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33020 "EHLO
+        id S239119AbiE3Nzt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:55:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238508AbiE3NuR (ORCPT
+        with ESMTP id S238499AbiE3NuR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 30 May 2022 09:50:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8C2DAB0F3;
-        Mon, 30 May 2022 06:34:55 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D018791577;
+        Mon, 30 May 2022 06:34:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7632C60F2A;
-        Mon, 30 May 2022 13:34:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B4B1C3411E;
-        Mon, 30 May 2022 13:34:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ABD60B80DB6;
+        Mon, 30 May 2022 13:34:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8B63C3411E;
+        Mon, 30 May 2022 13:34:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917694;
-        bh=6Hz5HqIYdJLRIZwRktEAYB4iRCBgmhBAZDeEbAndy0g=;
+        s=k20201202; t=1653917660;
+        bh=0SOjUx1vP3pC5to7NMBxAemGEoK1IKRZDN4I6BH/TuI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eWYwVozCqwP4cMii/2Q+UTYPfLHrHEsgy8WwWDVYfER703fombQjkNj1aQoXPFv2Q
-         MCJMqnAD8ROU48tXse4VijYniiy2Ii5BIbVP0i7aMEGnifalgBA6C2EG/FXuVJWRqg
-         /ky/m1rPCmgf7TSGpzqg//Zq7onAnNHYgnRAwKzDhU6Vt4SPlFJ7UDgZaPOxiEe6LJ
-         boqg2syyOfM1btC1I0aVj6CLVxBfQ/0T5qgU8CFzwN/jiF52YBM4y06Ouz/DVhREmw
-         Z81oImUta9BZzMMyCdyhh5f8cE7pzrlsrirp9EHzpA61gSAI3mhqbunMf5hOZsKXQl
-         KeP9bnqc65Cpg==
+        b=L+DW5yBQmZVjxeaeVTPIwYP7wDC6D2VrXb1kWwCFkLgphYgNGeJXKvsrqnGaTC1M+
+         EFkyi5clLZaUZkkLFX6ll1gmMWgy0oXEC3i3mqEyG7iSmLYb8fgl3dDHVm65ZrK51J
+         C3QGCrWo41DGU1UPHk5xUTPQyAnFBnMx8XDrwcfx98etFv004jGXTYWvwbR7vDBqcS
+         wamkdZ+i9ZqGr9FR7G1dPyuHDsgJA0vuYiipui0QCiBMtZS1iXDgMYCD5+moZnq+Kt
+         kOppmu/6tiWw1m21ofRdisLPcAYpYJCdjcQHuGUdHA7k3lK9AenL7xliGK4OrtUz66
+         oC6UVIATMDl5w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Petr Machata <petrm@nvidia.com>,
-        Maksym Yaremchuk <maksymy@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 067/135] mlxsw: Treat LLDP packets as control
-Date:   Mon, 30 May 2022 09:30:25 -0400
-Message-Id: <20220530133133.1931716-67-sashal@kernel.org>
+Cc:     Abhishek Kumar <kuabhs@chromium.org>,
+        Wen Gong <quic_wgong@quicinc.com>,
+        Brian Norris <briannorris@chromium.org>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
+        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 056/135] ath10k: skip ath10k_halt during suspend for driver state RESTARTING
+Date:   Mon, 30 May 2022 09:30:14 -0400
+Message-Id: <20220530133133.1931716-56-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133133.1931716-1-sashal@kernel.org>
 References: <20220530133133.1931716-1-sashal@kernel.org>
@@ -54,57 +56,112 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Petr Machata <petrm@nvidia.com>
+From: Abhishek Kumar <kuabhs@chromium.org>
 
-[ Upstream commit 0106668cd2f91bf913fb78972840dedfba80a3c3 ]
+[ Upstream commit b72a4aff947ba807177bdabb43debaf2c66bee05 ]
 
-When trapping packets for on-CPU processing, Spectrum machines
-differentiate between control and non-control traps. Traffic trapped
-through non-control traps is treated as data and kept in shared buffer in
-pools 0-4. Traffic trapped through control traps is kept in the dedicated
-control buffer 9. The advantage of marking traps as control is that
-pressure in the data plane does not prevent the control traffic to be
-processed.
+Double free crash is observed when FW recovery(caused by wmi
+timeout/crash) is followed by immediate suspend event. The FW recovery
+is triggered by ath10k_core_restart() which calls driver clean up via
+ath10k_halt(). When the suspend event occurs between the FW recovery,
+the restart worker thread is put into frozen state until suspend completes.
+The suspend event triggers ath10k_stop() which again triggers ath10k_halt()
+The double invocation of ath10k_halt() causes ath10k_htt_rx_free() to be
+called twice(Note: ath10k_htt_rx_alloc was not called by restart worker
+thread because of its frozen state), causing the crash.
 
-When the LLDP trap was introduced, it was marked as a control trap. But
-then in commit aed4b5721143 ("mlxsw: spectrum: PTP: Hook into packet
-receive path"), PTP traps were introduced. Because Ethernet-encapsulated
-PTP packets look to the Spectrum-1 ASIC as LLDP traffic and are trapped
-under the LLDP trap, this trap was reconfigured as non-control, in sync
-with the PTP traps.
+To fix this, during the suspend flow, skip call to ath10k_halt() in
+ath10k_stop() when the current driver state is ATH10K_STATE_RESTARTING.
+Also, for driver state ATH10K_STATE_RESTARTING, call
+ath10k_wait_for_suspend() in ath10k_stop(). This is because call to
+ath10k_wait_for_suspend() is skipped later in
+[ath10k_halt() > ath10k_core_stop()] for the driver state
+ATH10K_STATE_RESTARTING.
 
-There is however no requirement that PTP traffic be handled as data.
-Besides, the usual encapsulation for PTP traffic is UDP, not bare Ethernet,
-and that is in deployments that even need PTP, which is far less common
-than LLDP. This is reflected by the default policer, which was not bumped
-up to the 19Kpps / 24Kpps that is the expected load of a PTP-enabled
-Spectrum-1 switch.
+The frozen restart worker thread will be cancelled during resume when the
+device comes out of suspend.
 
-Marking of LLDP trap as non-control was therefore probably misguided. In
-this patch, change it back to control.
+Below is the crash stack for reference:
 
-Reported-by: Maksym Yaremchuk <maksymy@nvidia.com>
-Signed-off-by: Petr Machata <petrm@nvidia.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+[  428.469167] ------------[ cut here ]------------
+[  428.469180] kernel BUG at mm/slub.c:4150!
+[  428.469193] invalid opcode: 0000 [#1] PREEMPT SMP NOPTI
+[  428.469219] Workqueue: events_unbound async_run_entry_fn
+[  428.469230] RIP: 0010:kfree+0x319/0x31b
+[  428.469241] RSP: 0018:ffffa1fac015fc30 EFLAGS: 00010246
+[  428.469247] RAX: ffffedb10419d108 RBX: ffff8c05262b0000
+[  428.469252] RDX: ffff8c04a8c07000 RSI: 0000000000000000
+[  428.469256] RBP: ffffa1fac015fc78 R08: 0000000000000000
+[  428.469276] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  428.469285] Call Trace:
+[  428.469295]  ? dma_free_attrs+0x5f/0x7d
+[  428.469320]  ath10k_core_stop+0x5b/0x6f
+[  428.469336]  ath10k_halt+0x126/0x177
+[  428.469352]  ath10k_stop+0x41/0x7e
+[  428.469387]  drv_stop+0x88/0x10e
+[  428.469410]  __ieee80211_suspend+0x297/0x411
+[  428.469441]  rdev_suspend+0x6e/0xd0
+[  428.469462]  wiphy_suspend+0xb1/0x105
+[  428.469483]  ? name_show+0x2d/0x2d
+[  428.469490]  dpm_run_callback+0x8c/0x126
+[  428.469511]  ? name_show+0x2d/0x2d
+[  428.469517]  __device_suspend+0x2e7/0x41b
+[  428.469523]  async_suspend+0x1f/0x93
+[  428.469529]  async_run_entry_fn+0x3d/0xd1
+[  428.469535]  process_one_work+0x1b1/0x329
+[  428.469541]  worker_thread+0x213/0x372
+[  428.469547]  kthread+0x150/0x15f
+[  428.469552]  ? pr_cont_work+0x58/0x58
+[  428.469558]  ? kthread_blkcg+0x31/0x31
+
+Tested-on: QCA6174 hw3.2 PCI WLAN.RM.4.4.1-00288-QCARMSWPZ-1
+Co-developed-by: Wen Gong <quic_wgong@quicinc.com>
+Signed-off-by: Wen Gong <quic_wgong@quicinc.com>
+Signed-off-by: Abhishek Kumar <kuabhs@chromium.org>
+Reviewed-by: Brian Norris <briannorris@chromium.org>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20220426221859.v2.1.I650b809482e1af8d0156ed88b5dc2677a0711d46@changeid
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/ath/ath10k/mac.c | 20 ++++++++++++++++++--
+ 1 file changed, 18 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-index 47b061b99160..ed4d0d3448f3 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-@@ -864,7 +864,7 @@ static const struct mlxsw_sp_trap_item mlxsw_sp_trap_items_arr[] = {
- 		.trap = MLXSW_SP_TRAP_CONTROL(LLDP, LLDP, TRAP),
- 		.listeners_arr = {
- 			MLXSW_RXL(mlxsw_sp_rx_ptp_listener, LLDP, TRAP_TO_CPU,
--				  false, SP_LLDP, DISCARD),
-+				  true, SP_LLDP, DISCARD),
- 		},
- 	},
- 	{
+diff --git a/drivers/net/wireless/ath/ath10k/mac.c b/drivers/net/wireless/ath/ath10k/mac.c
+index b11aaee8b8c0..a11b31191d5a 100644
+--- a/drivers/net/wireless/ath/ath10k/mac.c
++++ b/drivers/net/wireless/ath/ath10k/mac.c
+@@ -5339,13 +5339,29 @@ static int ath10k_start(struct ieee80211_hw *hw)
+ static void ath10k_stop(struct ieee80211_hw *hw)
+ {
+ 	struct ath10k *ar = hw->priv;
++	u32 opt;
+ 
+ 	ath10k_drain_tx(ar);
+ 
+ 	mutex_lock(&ar->conf_mutex);
+ 	if (ar->state != ATH10K_STATE_OFF) {
+-		if (!ar->hw_rfkill_on)
+-			ath10k_halt(ar);
++		if (!ar->hw_rfkill_on) {
++			/* If the current driver state is RESTARTING but not yet
++			 * fully RESTARTED because of incoming suspend event,
++			 * then ath10k_halt() is already called via
++			 * ath10k_core_restart() and should not be called here.
++			 */
++			if (ar->state != ATH10K_STATE_RESTARTING) {
++				ath10k_halt(ar);
++			} else {
++				/* Suspending here, because when in RESTARTING
++				 * state, ath10k_core_stop() skips
++				 * ath10k_wait_for_suspend().
++				 */
++				opt = WMI_PDEV_SUSPEND_AND_DISABLE_INTR;
++				ath10k_wait_for_suspend(ar, opt);
++			}
++		}
+ 		ar->state = ATH10K_STATE_OFF;
+ 	}
+ 	mutex_unlock(&ar->conf_mutex);
 -- 
 2.35.1
 
