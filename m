@@ -2,47 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B806AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:42:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC8D5C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:42:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233622AbiE3Nmv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:42:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56992 "EHLO
+        id S237955AbiE3Nm6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:42:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238205AbiE3NgL (ORCPT
+        with ESMTP id S237481AbiE3Ngr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:36:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34846986E3;
-        Mon, 30 May 2022 06:29:56 -0700 (PDT)
+        Mon, 30 May 2022 09:36:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB76D10569;
+        Mon, 30 May 2022 06:30:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AC92FB80B3A;
-        Mon, 30 May 2022 13:29:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F784C3411E;
-        Mon, 30 May 2022 13:29:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 530F4B80D89;
+        Mon, 30 May 2022 13:30:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A386C385B8;
+        Mon, 30 May 2022 13:30:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917393;
-        bh=uBf4ntkHBfzEN3956XOhHHxqoIIf5aiUP6GYJPkD3to=;
+        s=k20201202; t=1653917417;
+        bh=iJOWEQeEya++FDpv90BhXob+T4+XbmP5vzMKKkYsioE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K7PddymlSaPApJdx+LnoTmw264e8dbXftO7ORmtAvQzel+KCL5mSj1+aMHBqkOQ+A
-         jTmXKILctlKfGeoxfE0gX0QwN5sokUQ/x9ewBurPVmGrCXlex3V5GGHyJhCryVcxyM
-         FAwlIiBeqtUOF5xW7Jl/HJG/xoVvvSRSkOk7ALNmCOeM+bXlUH6+/aRTSIxas2KYVx
-         0SA+asUr17yojjhq+6MQq38oP8uslZzcaPJcpTxtJCHrP3okenhpQkGC/DgKnszZ3N
-         sgCRR43Qiy2/ArjraUfqfg46ns2siP18cxiodsCjA8CgiVLVNXaw6bKWekCxGTCalC
-         u1lxfkkG8LSqg==
+        b=bKtreNDRboOS8xz2cfuWluXQVFtg03Uo7hJFq80cTwAXWVxaimtiCqInuPYL4yf7c
+         5XBdpl4mUNSOGytq7ExQbaFSqwUgGnRDPGNcGFBJqloHe6ZNIGjnZbAeOwCP6FamsB
+         PdxJyvEPh/Sph9TBqqepfQiF/DdTLns67wrLNvV2zFSYxZgAEDCkgZ0RR9LdJc5s14
+         XHa8olabFtAvIJhQhavSi/nyuaUWIQMm3RBt+uJZgHIUI6Mzhhio7/h/haSw3wODKM
+         AI0Lvm3HZWmKpjf5KFUponR7ZZgIeL1YNv5j6tBQZI49nO0cVU3Z77LzvZTFFTPVF5
+         3TtRzqgQDlDgA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>, johan.hedberg@gmail.com,
-        luiz.dentz@gmail.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 119/159] Bluetooth: HCI: Add HCI_QUIRK_BROKEN_ENHANCED_SETUP_SYNC_CONN quirk
-Date:   Mon, 30 May 2022 09:23:44 -0400
-Message-Id: <20220530132425.1929512-119-sashal@kernel.org>
+Cc:     Sathishkumar S <sathishkumar.sundararaju@amd.com>,
+        Lijo Lazar <lijo.lazar@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, evan.quan@amd.com,
+        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
+        daniel@ffwll.ch, darren.powell@amd.com, guchun.chen@amd.com,
+        lang.yu@amd.com, Prike.Liang@amd.com, Graham.Sider@amd.com,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.18 129/159] drm/amd/pm: update smartshift powerboost calc for smu12
+Date:   Mon, 30 May 2022 09:23:54 -0400
+Message-Id: <20220530132425.1929512-129-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530132425.1929512-1-sashal@kernel.org>
 References: <20220530132425.1929512-1-sashal@kernel.org>
@@ -54,91 +56,111 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+From: Sathishkumar S <sathishkumar.sundararaju@amd.com>
 
-[ Upstream commit 05abad857277dda198063017b00ba5b9fed2c0cb ]
+[ Upstream commit 138292f1dc00e7e0724f44769f9da39cf2f3bf0b ]
 
-This adds HCI_QUIRK_BROKEN_ENHANCED_SETUP_SYNC_CONN quirk which can be
-used to mark HCI_Enhanced_Setup_Synchronous_Connection as broken even
-if its support command bit are set since some controller report it as
-supported but the command don't work properly with some configurations
-(e.g. BT_VOICE_TRANSPARENT/mSBC).
+smartshift apu and dgpu power boost are reported as percentage with
+respect to their power limits. This value[0-100] reflects the boost
+for the respective device.
 
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Signed-off-by: Sathishkumar S <sathishkumar.sundararaju@amd.com>
+Reviewed-by: Lijo Lazar <lijo.lazar@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/bluetooth/hci.h      | 9 +++++++++
- include/net/bluetooth/hci_core.h | 8 ++++++--
- net/bluetooth/hci_conn.c         | 2 +-
- net/bluetooth/sco.c              | 2 +-
- 4 files changed, 17 insertions(+), 4 deletions(-)
+ .../gpu/drm/amd/pm/swsmu/smu12/renoir_ppt.c   | 60 ++++++++++++++-----
+ 1 file changed, 44 insertions(+), 16 deletions(-)
 
-diff --git a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
-index 69ef31cea582..62a9bb022aed 100644
---- a/include/net/bluetooth/hci.h
-+++ b/include/net/bluetooth/hci.h
-@@ -265,6 +265,15 @@ enum {
- 	 * runtime suspend, because event filtering takes place there.
- 	 */
- 	HCI_QUIRK_BROKEN_FILTER_CLEAR_ALL,
+diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu12/renoir_ppt.c b/drivers/gpu/drm/amd/pm/swsmu/smu12/renoir_ppt.c
+index fd6c44ece168..012e3bd99cc2 100644
+--- a/drivers/gpu/drm/amd/pm/swsmu/smu12/renoir_ppt.c
++++ b/drivers/gpu/drm/amd/pm/swsmu/smu12/renoir_ppt.c
+@@ -1119,6 +1119,39 @@ static int renoir_get_power_profile_mode(struct smu_context *smu,
+ 	return size;
+ }
+ 
++static void renoir_get_ss_power_percent(SmuMetrics_t *metrics,
++					uint32_t *apu_percent, uint32_t *dgpu_percent)
++{
++	uint32_t apu_boost = 0;
++	uint32_t dgpu_boost = 0;
++	uint16_t apu_limit = 0;
++	uint16_t dgpu_limit = 0;
++	uint16_t apu_power = 0;
++	uint16_t dgpu_power = 0;
 +
-+	/*
-+	 * When this quirk is set, disables the use of
-+	 * HCI_OP_ENHANCED_SETUP_SYNC_CONN command to setup SCO connections.
-+	 *
-+	 * This quirk can be set before hci_register_dev is called or
-+	 * during the hdev->setup vendor callback.
-+	 */
-+	HCI_QUIRK_BROKEN_ENHANCED_SETUP_SYNC_CONN,
- };
++	apu_power = metrics->ApuPower;
++	apu_limit = metrics->StapmOriginalLimit;
++	if (apu_power > apu_limit && apu_limit != 0)
++		apu_boost =  ((apu_power - apu_limit) * 100) / apu_limit;
++	apu_boost = (apu_boost > 100) ? 100 : apu_boost;
++
++	dgpu_power = metrics->dGpuPower;
++	if (metrics->StapmCurrentLimit > metrics->StapmOriginalLimit)
++		dgpu_limit = metrics->StapmCurrentLimit - metrics->StapmOriginalLimit;
++	if (dgpu_power > dgpu_limit && dgpu_limit != 0)
++		dgpu_boost = ((dgpu_power - dgpu_limit) * 100) / dgpu_limit;
++	dgpu_boost = (dgpu_boost > 100) ? 100 : dgpu_boost;
++
++	if (dgpu_boost >= apu_boost)
++		apu_boost = 0;
++	else
++		dgpu_boost = 0;
++
++	*apu_percent = apu_boost;
++	*dgpu_percent = dgpu_boost;
++}
++
++
+ static int renoir_get_smu_metrics_data(struct smu_context *smu,
+ 				       MetricsMember_t member,
+ 				       uint32_t *value)
+@@ -1127,6 +1160,9 @@ static int renoir_get_smu_metrics_data(struct smu_context *smu,
  
- /* HCI device flags */
-diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
-index 62d7b81b1cb7..5a52a2018b56 100644
---- a/include/net/bluetooth/hci_core.h
-+++ b/include/net/bluetooth/hci_core.h
-@@ -1495,8 +1495,12 @@ void hci_conn_del_sysfs(struct hci_conn *conn);
- #define privacy_mode_capable(dev) (use_ll_privacy(dev) && \
- 				   (hdev->commands[39] & 0x04))
+ 	SmuMetrics_t *metrics = (SmuMetrics_t *)smu_table->metrics_table;
+ 	int ret = 0;
++	uint32_t apu_percent = 0;
++	uint32_t dgpu_percent = 0;
++
  
--/* Use enhanced synchronous connection if command is supported */
--#define enhanced_sco_capable(dev) ((dev)->commands[29] & 0x08)
-+/* Use enhanced synchronous connection if command is supported and its quirk
-+ * has not been set.
-+ */
-+#define enhanced_sync_conn_capable(dev) \
-+	(((dev)->commands[29] & 0x08) && \
-+	 !test_bit(HCI_QUIRK_BROKEN_ENHANCED_SETUP_SYNC_CONN, &(dev)->quirks))
- 
- /* Use ext scanning if set ext scan param and ext scan enable is supported */
- #define use_ext_scan(dev) (((dev)->commands[37] & 0x20) && \
-diff --git a/net/bluetooth/hci_conn.c b/net/bluetooth/hci_conn.c
-index fe803bee419a..882a7df13005 100644
---- a/net/bluetooth/hci_conn.c
-+++ b/net/bluetooth/hci_conn.c
-@@ -481,7 +481,7 @@ static bool hci_setup_sync_conn(struct hci_conn *conn, __u16 handle)
- 
- bool hci_setup_sync(struct hci_conn *conn, __u16 handle)
- {
--	if (enhanced_sco_capable(conn->hdev))
-+	if (enhanced_sync_conn_capable(conn->hdev))
- 		return hci_enhanced_setup_sync_conn(conn, handle);
- 
- 	return hci_setup_sync_conn(conn, handle);
-diff --git a/net/bluetooth/sco.c b/net/bluetooth/sco.c
-index 8eabf41b2993..2a58c7d88433 100644
---- a/net/bluetooth/sco.c
-+++ b/net/bluetooth/sco.c
-@@ -885,7 +885,7 @@ static int sco_sock_setsockopt(struct socket *sock, int level, int optname,
- 			err = -EBADFD;
- 			break;
- 		}
--		if (enhanced_sco_capable(hdev) &&
-+		if (enhanced_sync_conn_capable(hdev) &&
- 		    voice.setting == BT_VOICE_TRANSPARENT)
- 			sco_pi(sk)->codec.id = BT_CODEC_TRANSPARENT;
- 		hci_dev_put(hdev);
+ 	ret = smu_cmn_get_metrics_table(smu,
+ 					NULL,
+@@ -1171,26 +1207,18 @@ static int renoir_get_smu_metrics_data(struct smu_context *smu,
+ 		*value = metrics->Voltage[1];
+ 		break;
+ 	case METRICS_SS_APU_SHARE:
+-		/* return the percentage of APU power with respect to APU's power limit.
+-		 * percentage is reported, this isn't boost value. Smartshift power
+-		 * boost/shift is only when the percentage is more than 100.
++		/* return the percentage of APU power boost
++		 * with respect to APU's power limit.
+ 		 */
+-		if (metrics->StapmOriginalLimit > 0)
+-			*value =  (metrics->ApuPower * 100) / metrics->StapmOriginalLimit;
+-		else
+-			*value = 0;
++		renoir_get_ss_power_percent(metrics, &apu_percent, &dgpu_percent);
++		*value = apu_percent;
+ 		break;
+ 	case METRICS_SS_DGPU_SHARE:
+-		/* return the percentage of dGPU power with respect to dGPU's power limit.
+-		 * percentage is reported, this isn't boost value. Smartshift power
+-		 * boost/shift is only when the percentage is more than 100.
++		/* return the percentage of dGPU power boost
++		 * with respect to dGPU's power limit.
+ 		 */
+-		if ((metrics->dGpuPower > 0) &&
+-		    (metrics->StapmCurrentLimit > metrics->StapmOriginalLimit))
+-			*value = (metrics->dGpuPower * 100) /
+-				  (metrics->StapmCurrentLimit - metrics->StapmOriginalLimit);
+-		else
+-			*value = 0;
++		renoir_get_ss_power_percent(metrics, &apu_percent, &dgpu_percent);
++		*value = dgpu_percent;
+ 		break;
+ 	default:
+ 		*value = UINT_MAX;
 -- 
 2.35.1
 
