@@ -2,166 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE120C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 09:04:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86282C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 09:04:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234290AbiE3JEE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 05:04:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39896 "EHLO
+        id S234664AbiE3JER (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 05:04:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231466AbiE3JEC (ORCPT
+        with ESMTP id S234651AbiE3JEM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 05:04:02 -0400
-Received: from conuserg-11.nifty.com (conuserg-11.nifty.com [210.131.2.78])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1884578913;
-        Mon, 30 May 2022 02:04:00 -0700 (PDT)
-Received: from grover.sesame (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
-        by conuserg-11.nifty.com with ESMTP id 24U92WD1001546;
-        Mon, 30 May 2022 18:02:37 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-11.nifty.com 24U92WD1001546
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1653901357;
-        bh=Hu8xQu6PYYBz+qbdMmHfhHa0GrOI0bBWx++tHbmunFE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=stGCYcnjDU1LGJRuTJFeO2l8xB+B3KNxK7CtG/tGKu4fvz21aq9phPCn2ZZL4hkR7
-         ckKvh934QgqAmAbHMOMAnBApG1DtFoImNXdeSUCfpaj+abvtqCHVAZCC+k8KdRJDcp
-         hWqK4fdo7Iry1JN3s9IjPs5Tf6wFUSArMeI25oVeDc434yZ241rUrGSHuYLg6beK2m
-         5hCrEjiS+G7srDE8IctgieoV+WRrkWorNvRKUOEiHdwNPWc89+zQEu2KHJ31VnDJbm
-         CAnJ5htjM7DV89qbqyXIdRDDt7DfopSJlJpV5835R4ZBix4Vi78yNoyHMBOFDNN/Z7
-         ezRGGZfRMTFVQ==
-X-Nifty-SrcIP: [133.32.177.133]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     linux-kbuild@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Subject: [PATCH 2/2] modpost: use fnmatch() to simplify match()
-Date:   Mon, 30 May 2022 18:01:39 +0900
-Message-Id: <20220530090139.3030866-2-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220530090139.3030866-1-masahiroy@kernel.org>
-References: <20220530090139.3030866-1-masahiroy@kernel.org>
+        Mon, 30 May 2022 05:04:12 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 632FC793BF;
+        Mon, 30 May 2022 02:04:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1653901449; x=1685437449;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=BqttjK6LoysDCfGp3a/aAnQzKKWODvXywQSQ/I73aMM=;
+  b=fxqRbhYHInSEWyC71kgYZOunW4IQLbnnXv6PYeAuyQnllq2H3IDxiGV7
+   POfgyy/ed7sPVv+XLfVS3Lk3vmFB2qnAEdywfO3AjBGMzh8Tmwq8GRrP4
+   krxeYrQAxuNjvLh2mFKNJHm+CIvJTFbIEhmTAmkRSpNG5NpTx3RoNG9/4
+   242Nczt3dInWM6Id1+/VlfwSLwawKgiK5DehZ7cEGrzOkf4nRMwRpN/Zq
+   xyjr7Wh4vNaAXLgWEjg9UloE5r8dPv1nfnLAoUhh49nUHFFCQfJuGDzDl
+   f7pSlvKGoeLHChDf9Po0H08i/kbEOSsx4m+jcg6enEQ1c0Z5yyyQvpDee
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.91,262,1647327600"; 
+   d="scan'208";a="175650657"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 May 2022 02:04:06 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Mon, 30 May 2022 02:04:06 -0700
+Received: from [10.159.205.135] (10.10.115.15) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Mon, 30 May 2022 02:04:01 -0700
+Message-ID: <3704e284-3fd0-b073-9a3b-68ae2e966181@microchip.com>
+Date:   Mon, 30 May 2022 11:03:59 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] dt-bindings: net: Fix unevaluatedProperties warnings in
+ examples
+Content-Language: en-US
+To:     Rob Herring <robh@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Paolo Abeni" <pabeni@redhat.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Felix Fietkau <nbd@nbd.name>,
+        "Lorenzo Bianconi" <lorenzo@kernel.org>,
+        Ryder Lee <ryder.lee@mediatek.com>,
+        "Shayne Chen" <shayne.chen@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        "Kalle Valo" <kvalo@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        "Claudiu Beznea" <claudiu.beznea@microchip.com>,
+        Biao Huang <biao.huang@mediatek.com>
+CC:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-wireless@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>
+References: <20220526014149.2872762-1-robh@kernel.org>
+From:   Nicolas Ferre <nicolas.ferre@microchip.com>
+Organization: microchip
+In-Reply-To: <20220526014149.2872762-1-robh@kernel.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Replace the own implementation for wildcard (glob) matching with
-a function call to the library function, fnmatch().
+On 26/05/2022 at 03:41, Rob Herring wrote:
+> The 'unevaluatedProperties' schema checks is not fully working and doesn't
+> catch some cases where there's a $ref to another schema. A fix is pending,
+> but results in new warnings in examples. Fix the warnings by removing
+> spurious properties or adding missing properties to the schema.
+> 
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> ---
+>   Documentation/devicetree/bindings/net/cdns,macb.yaml           | 1 -
+>   Documentation/devicetree/bindings/net/mediatek,net.yaml        | 3 +++
+>   Documentation/devicetree/bindings/net/mediatek-dwmac.yaml      | 3 +++
+>   .../devicetree/bindings/net/wireless/mediatek,mt76.yaml        | 2 +-
+>   4 files changed, 7 insertions(+), 2 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/cdns,macb.yaml b/Documentation/devicetree/bindings/net/cdns,macb.yaml
+> index 337cec4d85ca..86fc31c2d91b 100644
+> --- a/Documentation/devicetree/bindings/net/cdns,macb.yaml
+> +++ b/Documentation/devicetree/bindings/net/cdns,macb.yaml
+> @@ -191,7 +191,6 @@ examples:
+>                       clock-names = "pclk", "hclk", "tx_clk", "rx_clk", "tsu_clk";
+>                       #address-cells = <1>;
+>                       #size-cells = <0>;
+> -                    #stream-id-cells = <1>;
+>                       iommus = <&smmu 0x875>;
+>                       power-domains = <&zynqmp_firmware PD_ETH_1>;
+>                       resets = <&zynqmp_reset ZYNQMP_RESET_GEM1>;
 
-Also, change the return type to 'bool'.
+For cdns,macb.yaml:
+Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
 
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
----
+Thanks Rob. Best regards,
+   Nicolas
 
- scripts/mod/modpost.c | 74 ++++++++-----------------------------------
- 1 file changed, 13 insertions(+), 61 deletions(-)
+> diff --git a/Documentation/devicetree/bindings/net/mediatek,net.yaml b/Documentation/devicetree/bindings/net/mediatek,net.yaml
+> index 699164dd1295..f5564ecddb62 100644
+> --- a/Documentation/devicetree/bindings/net/mediatek,net.yaml
+> +++ b/Documentation/devicetree/bindings/net/mediatek,net.yaml
+> @@ -27,6 +27,9 @@ properties:
+>     reg:
+>       maxItems: 1
+> 
+> +  clocks: true
+> +  clock-names: true
+> +
+>     interrupts:
+>       minItems: 3
+>       maxItems: 4
+> diff --git a/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml b/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
+> index 901944683322..61b2fb9e141b 100644
+> --- a/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
+> +++ b/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
+> @@ -58,6 +58,9 @@ properties:
+>         - const: rmii_internal
+>         - const: mac_cg
+> 
+> +  power-domains:
+> +    maxItems: 1
+> +
+>     mediatek,pericfg:
+>       $ref: /schemas/types.yaml#/definitions/phandle
+>       description:
+> diff --git a/Documentation/devicetree/bindings/net/wireless/mediatek,mt76.yaml b/Documentation/devicetree/bindings/net/wireless/mediatek,mt76.yaml
+> index 249967d8d750..5a12dc32288a 100644
+> --- a/Documentation/devicetree/bindings/net/wireless/mediatek,mt76.yaml
+> +++ b/Documentation/devicetree/bindings/net/wireless/mediatek,mt76.yaml
+> @@ -51,7 +51,7 @@ properties:
+>       description:
+>         Specify the consys reset for mt7986.
+> 
+> -  reset-name:
+> +  reset-names:
+>       const: consys
+> 
+>     mediatek,infracfg:
+> --
+> 2.34.1
+> 
 
-diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index c1558bacf717..29d5a841e215 100644
---- a/scripts/mod/modpost.c
-+++ b/scripts/mod/modpost.c
-@@ -13,6 +13,7 @@
- 
- #define _GNU_SOURCE
- #include <elf.h>
-+#include <fnmatch.h>
- #include <stdio.h>
- #include <ctype.h>
- #include <string.h>
-@@ -710,29 +711,6 @@ static char *get_modinfo(struct elf_info *info, const char *tag)
- 	return get_next_modinfo(info, tag, NULL);
- }
- 
--/**
-- * Test if string s ends in string sub
-- * return 0 if match
-- **/
--static int strrcmp(const char *s, const char *sub)
--{
--	int slen, sublen;
--
--	if (!s || !sub)
--		return 1;
--
--	slen = strlen(s);
--	sublen = strlen(sub);
--
--	if ((slen == 0) || (sublen == 0))
--		return 1;
--
--	if (sublen > slen)
--		return 1;
--
--	return memcmp(s + slen - sublen, sub, sublen);
--}
--
- static const char *sym_name(struct elf_info *elf, Elf_Sym *sym)
- {
- 	if (sym)
-@@ -741,48 +719,22 @@ static const char *sym_name(struct elf_info *elf, Elf_Sym *sym)
- 		return "(unknown)";
- }
- 
--/* The pattern is an array of simple patterns.
-- * "foo" will match an exact string equal to "foo"
-- * "*foo" will match a string that ends with "foo"
-- * "foo*" will match a string that begins with "foo"
-- * "*foo*" will match a string that contains "foo"
-+/*
-+ * Check whether the 'string' argument matches one of the 'patterns',
-+ * an array of shell wildcard patterns (glob).
-+ *
-+ * Return true is there is a match.
-  */
--static int match(const char *sym, const char * const pat[])
-+static bool match(const char *string, const char *const patterns[])
- {
--	const char *p;
--	while (*pat) {
--		const char *endp;
--
--		p = *pat++;
--		endp = p + strlen(p) - 1;
-+	const char *pattern;
- 
--		/* "*foo*" */
--		if (*p == '*' && *endp == '*') {
--			char *bare = NOFAIL(strndup(p + 1, strlen(p) - 2));
--			char *here = strstr(sym, bare);
--
--			free(bare);
--			if (here != NULL)
--				return 1;
--		}
--		/* "*foo" */
--		else if (*p == '*') {
--			if (strrcmp(sym, p + 1) == 0)
--				return 1;
--		}
--		/* "foo*" */
--		else if (*endp == '*') {
--			if (strncmp(sym, p, strlen(p) - 1) == 0)
--				return 1;
--		}
--		/* no wildcards */
--		else {
--			if (strcmp(p, sym) == 0)
--				return 1;
--		}
-+	while ((pattern = *patterns++)) {
-+		if (!fnmatch(pattern, string, 0))
-+			return true;
- 	}
--	/* no match */
--	return 0;
-+
-+	return false;
- }
- 
- /* sections that we do not want to do full section mismatch check on */
+
 -- 
-2.32.0
-
+Nicolas Ferre
