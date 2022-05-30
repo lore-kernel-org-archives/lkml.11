@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9139DC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDDDAC4167D
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:41:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237875AbiE3NkQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:40:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56272 "EHLO
+        id S237911AbiE3Nk0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:40:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237612AbiE3Nfc (ORCPT
+        with ESMTP id S237191AbiE3Nee (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:35:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6FA9939D6;
-        Mon, 30 May 2022 06:28:39 -0700 (PDT)
+        Mon, 30 May 2022 09:34:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20212915B1;
+        Mon, 30 May 2022 06:28:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 84E4860F17;
-        Mon, 30 May 2022 13:28:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03159C3411E;
-        Mon, 30 May 2022 13:28:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 47707B80DAE;
+        Mon, 30 May 2022 13:28:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88FBEC36AEB;
+        Mon, 30 May 2022 13:28:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917319;
-        bh=OkvOHVTj+0RUFez+W4m7EDCBB4EaSlENkTb8ZwkIaAo=;
+        s=k20201202; t=1653917288;
+        bh=mkOZcs9H0Fc6oEmSvunN1C04xzrsehRv9BhzW7OHhdE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n+TUJ7YYk43zLBEddZRRSD5k/8gJ4eRd2zSqpwXx7DzNXckKjhHF/WsENlTOdaAK0
-         nM+U48cRAn8wuKRdgRL/fzfZwu6W69H+ItUZrWgUWeCYH1QHzV6mboxb5wVlNabVGK
-         cDNtxG4QTqsIwt4/m3r2anzUbCgwVwVG3nokCyU/8ttyqX7Jm+vrDmVURgDg8VGCNQ
-         LIfG743zrVtzIcmjqIao/EXCrdnPjT11hIodwX+qi/ElhjHs/14dIZ31B7l/LrJMrr
-         NHhSKQteLDuYB7nAgDoIEWsJ2E6E0F48IFNXirP5IJ7Z0z6VC5VxkAhmOTvmPwJQmQ
-         kXgAjo0jezInw==
+        b=VojYc2GhQRlvfNqN3l7lLVB59QxQBsS9tDUWYG9Dg/mxJcS8bYNkMmfhZd1+TbzXP
+         5wnlGbVh9bfkYPwQOOo1GhzLyG9jAeH1bRPFSW3mf77Ey0fPe1N4rYBX+meiCh8LLC
+         cZqEjYo8yI5oDkhkpyJBQYM/fvdxlgrjZwaBEAoET197YJn9Hs6XQugQh//+tFIjN0
+         WXeMNRlSFppS0e5RqH78xpJk+9zOHpAbH6sRspFDHiVjsYvXn3NqfxtvJXVjoRTo+y
+         Zl84bUqz3U+bufCQmOfSh4/SO/nIwWTfSEAJGucc2h6aYQht8K/QvRZHb+xB/3Er0A
+         ndcJHvwvIUZ9Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Xiang Chen <chenxiang66@hisilicon.com>,
-        Yihang Li <liyihang6@hisilicon.com>,
-        John Garry <john.garry@huawei.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, jejb@linux.ibm.com,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 092/159] scsi: hisi_sas: Undo RPM resume for failed notify phy event for v3 HW
-Date:   Mon, 30 May 2022 09:23:17 -0400
-Message-Id: <20220530132425.1929512-92-sashal@kernel.org>
+Cc:     Alice Wong <shiwei.wong@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
+        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
+        Hawking.Zhang@amd.com, Likun.Gao@amd.com, john.clements@amd.com,
+        candice.li@amd.com, lang.yu@amd.com, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.18 083/159] drm/amdgpu/ucode: Remove firmware load type check in amdgpu_ucode_free_bo
+Date:   Mon, 30 May 2022 09:23:08 -0400
+Message-Id: <20220530132425.1929512-83-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530132425.1929512-1-sashal@kernel.org>
 References: <20220530132425.1929512-1-sashal@kernel.org>
@@ -54,46 +55,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiang Chen <chenxiang66@hisilicon.com>
+From: Alice Wong <shiwei.wong@amd.com>
 
-[ Upstream commit 9b5387fe5af38116b452259d87cd66594b6277c1 ]
+[ Upstream commit ab0cd4a9ae5b4679b714d8dbfedc0901fecdce9f ]
 
-If we fail to notify the phy up event then undo the RPM resume, as the phy
-up notify event handling pairs with that RPM resume.
+When psp_hw_init failed, it will set the load_type to AMDGPU_FW_LOAD_DIRECT.
+During amdgpu_device_ip_fini, amdgpu_ucode_free_bo checks that load_type is
+AMDGPU_FW_LOAD_DIRECT and skips deallocating fw_buf causing memory leak.
+Remove load_type check in amdgpu_ucode_free_bo.
 
-Link: https://lore.kernel.org/r/1651839939-101188-1-git-send-email-john.garry@huawei.com
-Reported-by: Yihang Li <liyihang6@hisilicon.com>
-Tested-by: Yihang Li <liyihang6@hisilicon.com>
-Signed-off-by: Xiang Chen <chenxiang66@hisilicon.com>
-Signed-off-by: John Garry <john.garry@huawei.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Alice Wong <shiwei.wong@amd.com>
+Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/hisi_sas/hisi_sas_v3_hw.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_ucode.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
-index 79f87d7c3e68..7d819fc0395e 100644
---- a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
-+++ b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
-@@ -1563,9 +1563,15 @@ static irqreturn_t phy_up_v3_hw(int phy_no, struct hisi_hba *hisi_hba)
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_ucode.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_ucode.c
+index ca3350502618..aebafbc327fb 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_ucode.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_ucode.c
+@@ -714,8 +714,7 @@ int amdgpu_ucode_create_bo(struct amdgpu_device *adev)
  
- 	phy->port_id = port_id;
- 
--	/* Call pm_runtime_put_sync() with pairs in hisi_sas_phyup_pm_work() */
-+	/*
-+	 * Call pm_runtime_get_noresume() which pairs with
-+	 * hisi_sas_phyup_pm_work() -> pm_runtime_put_sync().
-+	 * For failure call pm_runtime_put() as we are in a hardirq context.
-+	 */
- 	pm_runtime_get_noresume(dev);
--	hisi_sas_notify_phy_event(phy, HISI_PHYE_PHY_UP_PM);
-+	res = hisi_sas_notify_phy_event(phy, HISI_PHYE_PHY_UP_PM);
-+	if (!res)
-+		pm_runtime_put(dev);
- 
- 	res = IRQ_HANDLED;
- 
+ void amdgpu_ucode_free_bo(struct amdgpu_device *adev)
+ {
+-	if (adev->firmware.load_type != AMDGPU_FW_LOAD_DIRECT)
+-		amdgpu_bo_free_kernel(&adev->firmware.fw_buf,
++	amdgpu_bo_free_kernel(&adev->firmware.fw_buf,
+ 		&adev->firmware.fw_buf_mc,
+ 		&adev->firmware.fw_buf_ptr);
+ }
 -- 
 2.35.1
 
