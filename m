@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B20AFC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92E19C43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:47:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238259AbiE3NpK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:45:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57126 "EHLO
+        id S238166AbiE3NpB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:45:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237654AbiE3Ngy (ORCPT
+        with ESMTP id S237676AbiE3Ngz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:36:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0198B6CF42;
-        Mon, 30 May 2022 06:30:37 -0700 (PDT)
+        Mon, 30 May 2022 09:36:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D81B912AC9;
+        Mon, 30 May 2022 06:30:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9231CB80DAF;
-        Mon, 30 May 2022 13:30:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FE8CC3411E;
-        Mon, 30 May 2022 13:30:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7335560EE0;
+        Mon, 30 May 2022 13:30:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5522C3411E;
+        Mon, 30 May 2022 13:30:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917435;
-        bh=Z9yF7wXK7FyIDA4sdjwhkOzBIa9BHIXOUCAnORgpRiU=;
+        s=k20201202; t=1653917441;
+        bh=goT196KiQfwpElqIN5celghRGMAp8wKph89erWgkuJs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fM9Z23YSlFfAHqoGTwa12GDaQjRibhcrbyc3iZanICNuzCj8cokrUmPbRj0GvCK8p
-         LIDZDfyQNJhPpYNdmp/iHbRHJE2DQOgr3B6e9icLBz+hJbPOyAoPgKBKeYVdT+Cp28
-         FT1cglNbXuZJFnPQxcMKVzcV5P//KBbfL6IlB6X5kvkXJjh3Gc1F7oeLHnCuwp9mvI
-         fPCHWAR96xTLtvR5M0t8XGQvoUnU6SZps04zGeBKp6OrV7orSx4DDT58kiSfp/IDtQ
-         Omb2XlcwQIS1O/DxeYhAcMM8i9hNHpQpJFroWAbXOV4LlNDKvy35J2U5a7pxxlR3EL
-         7pNdM7l3kmcUQ==
+        b=Hj/4SE4A010FbUEQAls4F84IV/Xz8wrElP8AZy+mpbgWU9vus8n256RNyZBMZfYmT
+         cA0qpOuPGW7aIYMGHa384k57m4HK4Jd4HXToHcF2YbF0i1cwkTH9Veh4m0XwEO5c2W
+         EIAQGNBZnqN59qp3ORBrno70tkeXi3rF7wanvA9VQMS9LSd/4gOD4+hUwktfDMgq8O
+         8HD35PPJeajxVqx/2CdIFPmTN7hkEM6JLm0xW37vcMv3oVWPXxMPKNeO3r1WdUEwlZ
+         YItqALvk4gWoqDFLlXvA2qbjBZ7pwJYAsrDeh39BbLEmzLpOBd9t8TzzCrRVsm1uKu
+         6xgzWmMaI9qnQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Fabio Estevam <festevam@denx.de>, Andrew Lunn <andrew@lunn.ch>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, hkallweit1@gmail.com,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 134/159] net: phy: micrel: Allow probing without .driver_data
-Date:   Mon, 30 May 2022 09:23:59 -0400
-Message-Id: <20220530132425.1929512-134-sashal@kernel.org>
+Cc:     Andre Przywara <andre.przywara@arm.com>,
+        Ross Burton <ross.burton@arm.com>,
+        Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        robh+dt@kernel.org, frowand.list@gmail.com,
+        devicetree@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 138/159] of/fdt: Ignore disabled memory nodes
+Date:   Mon, 30 May 2022 09:24:03 -0400
+Message-Id: <20220530132425.1929512-138-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530132425.1929512-1-sashal@kernel.org>
 References: <20220530132425.1929512-1-sashal@kernel.org>
@@ -53,70 +53,87 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fabio Estevam <festevam@denx.de>
+From: Andre Przywara <andre.przywara@arm.com>
 
-[ Upstream commit f2ef6f7539c68c6bd6c32323d8845ee102b7c450 ]
+[ Upstream commit df5cd369876114f91f9ae60658fea80acfb15890 ]
 
-Currently, if the .probe element is present in the phy_driver structure
-and the .driver_data is not, a NULL pointer dereference happens.
+When we boot a machine using a devicetree, the generic DT code goes
+through all nodes with a 'device_type = "memory"' property, and collects
+all memory banks mentioned there. However it does not check for the
+status property, so any nodes which are explicitly "disabled" will still
+be added as a memblock.
+This ends up badly for QEMU, when booting with secure firmware on
+arm/arm64 machines, because QEMU adds a node describing secure-only
+memory:
+===================
+	secram@e000000 {
+		secure-status = "okay";
+		status = "disabled";
+		reg = <0x00 0xe000000 0x00 0x1000000>;
+		device_type = "memory";
+	};
+===================
 
-Allow passing .probe without .driver_data by inserting NULL checks
-for priv->type.
+The kernel will eventually use that memory block (which is located below
+the main DRAM bank), but accesses to that will be answered with an
+SError:
+===================
+[    0.000000] Internal error: synchronous external abort: 96000050 [#1] PREEMPT SMP
+[    0.000000] Modules linked in:
+[    0.000000] CPU: 0 PID: 0 Comm: swapper Not tainted 5.18.0-rc6-00014-g10c8acb8b679 #524
+[    0.000000] Hardware name: linux,dummy-virt (DT)
+[    0.000000] pstate: 200000c5 (nzCv daIF -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+[    0.000000] pc : new_slab+0x190/0x340
+[    0.000000] lr : new_slab+0x184/0x340
+[    0.000000] sp : ffff80000a4b3d10
+....
+==================
+The actual crash location and call stack will be somewhat random, and
+depend on the specific allocation of that physical memory range.
 
-Signed-off-by: Fabio Estevam <festevam@denx.de>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Link: https://lore.kernel.org/r/20220513114613.762810-1-festevam@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+As the DT spec[1] explicitly mentions standard properties, add a simple
+check to skip over disabled memory nodes, so that we only use memory
+that is meant for non-secure code to use.
+
+That fixes booting a QEMU arm64 VM with EL3 enabled ("secure=on"), when
+not using UEFI. In this case the QEMU generated DT will be handed on
+to the kernel, which will see the secram node.
+This issue is reproducible when using TF-A together with U-Boot as
+firmware, then booting with the "booti" command.
+
+When using U-Boot as an UEFI provider, the code there [2] explicitly
+filters for disabled nodes when generating the UEFI memory map, so we
+are safe.
+EDK/2 only reads the first bank of the first DT memory node [3] to learn
+about memory, so we got lucky there.
+
+[1] https://github.com/devicetree-org/devicetree-specification/blob/main/source/chapter3-devicenodes.rst#memory-node (after the table)
+[2] https://source.denx.de/u-boot/u-boot/-/blob/master/lib/fdtdec.c#L1061-1063
+[3] https://github.com/tianocore/edk2/blob/master/ArmVirtPkg/PrePi/FdtParser.c
+
+Reported-by: Ross Burton <ross.burton@arm.com>
+Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+Signed-off-by: Rob Herring <robh@kernel.org>
+Link: https://lore.kernel.org/r/20220517101410.3493781-1-andre.przywara@arm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/micrel.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ drivers/of/fdt.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-index cd9aa353b653..48c7d715a9e3 100644
---- a/drivers/net/phy/micrel.c
-+++ b/drivers/net/phy/micrel.c
-@@ -497,7 +497,7 @@ static int kszphy_config_reset(struct phy_device *phydev)
- 		}
- 	}
+diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
+index ec315b060cd5..0f30496ce80b 100644
+--- a/drivers/of/fdt.c
++++ b/drivers/of/fdt.c
+@@ -1105,6 +1105,9 @@ int __init early_init_dt_scan_memory(void)
+ 		if (type == NULL || strcmp(type, "memory") != 0)
+ 			continue;
  
--	if (priv->led_mode >= 0)
-+	if (priv->type && priv->led_mode >= 0)
- 		kszphy_setup_led(phydev, priv->type->led_mode_reg, priv->led_mode);
- 
- 	return 0;
-@@ -513,10 +513,10 @@ static int kszphy_config_init(struct phy_device *phydev)
- 
- 	type = priv->type;
- 
--	if (type->has_broadcast_disable)
-+	if (type && type->has_broadcast_disable)
- 		kszphy_broadcast_disable(phydev);
- 
--	if (type->has_nand_tree_disable)
-+	if (type && type->has_nand_tree_disable)
- 		kszphy_nand_tree_disable(phydev);
- 
- 	return kszphy_config_reset(phydev);
-@@ -1514,7 +1514,7 @@ static int kszphy_probe(struct phy_device *phydev)
- 
- 	priv->type = type;
- 
--	if (type->led_mode_reg) {
-+	if (type && type->led_mode_reg) {
- 		ret = of_property_read_u32(np, "micrel,led-mode",
- 				&priv->led_mode);
- 		if (ret)
-@@ -1535,7 +1535,8 @@ static int kszphy_probe(struct phy_device *phydev)
- 		unsigned long rate = clk_get_rate(clk);
- 		bool rmii_ref_clk_sel_25_mhz;
- 
--		priv->rmii_ref_clk_sel = type->has_rmii_ref_clk_sel;
-+		if (type)
-+			priv->rmii_ref_clk_sel = type->has_rmii_ref_clk_sel;
- 		rmii_ref_clk_sel_25_mhz = of_property_read_bool(np,
- 				"micrel,rmii-reference-clock-select-25-mhz");
- 
++		if (!of_fdt_device_is_available(fdt, node))
++			continue;
++
+ 		reg = of_get_flat_dt_prop(node, "linux,usable-memory", &l);
+ 		if (reg == NULL)
+ 			reg = of_get_flat_dt_prop(node, "reg", &l);
 -- 
 2.35.1
 
