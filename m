@@ -2,122 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 321C6C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 09:46:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D47C2C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 09:46:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234877AbiE3Jqk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 05:46:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56154 "EHLO
+        id S234883AbiE3Jqz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 05:46:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233979AbiE3Jqh (ORCPT
+        with ESMTP id S234879AbiE3Jqx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 05:46:37 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D245D1F8;
-        Mon, 30 May 2022 02:46:33 -0700 (PDT)
-Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24U93Xbs031806;
-        Mon, 30 May 2022 09:46:33 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=apVMKSEu3+c8cSIa+J7x/qxcIBqSkTjcAftQlSQ/mnM=;
- b=r5dkp2oB5dlSnqe7TVDtV3ExCCEDXoxQXRO4YeaQnvdIqvG7Npia4rIcmvtPDAOLKNGc
- Pt0I50RmkQgSuzP/av7JQpdz40zzSX5vuMGFD0/8+tmLSdFeCuPfcNFf3gm7gAEPFuFz
- +ljpioVlQafKRxv5EQpVBNoDq7fPpcQPOrUuhJpoBrg7fcRxbbaX/Z6TaIqjFHRG6fNv
- 6Z4nP7Mtigy8iXHSGEeXmFXFLWqSbQm3Ny3HWISEV58NbcSTq3IHPUF0bsOyF5DtgNEc
- TNn9RuuyRrswTqCaILHqCyj+rc5dAwv77qm1/wsXblBcIYNXo58VdlBsx0I8a7sy+u13 xA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3gcty78t09-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 30 May 2022 09:46:32 +0000
-Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24U9VF55017637;
-        Mon, 30 May 2022 09:46:32 GMT
-Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3gcty78syu-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 30 May 2022 09:46:32 +0000
-Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
-        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24U9axJD018194;
-        Mon, 30 May 2022 09:46:30 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-        by ppma02fra.de.ibm.com with ESMTP id 3gbcc69umy-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 30 May 2022 09:46:30 +0000
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24U9W79855837142
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 30 May 2022 09:32:07 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E626EAE051;
-        Mon, 30 May 2022 09:46:26 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 779DAAE045;
-        Mon, 30 May 2022 09:46:26 +0000 (GMT)
-Received: from li-ca45c2cc-336f-11b2-a85c-c6e71de567f1.ibm.com (unknown [9.171.70.209])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon, 30 May 2022 09:46:26 +0000 (GMT)
-Message-ID: <49c2667ecfc2c628c13cae79796ffac4ddc2c0c3.camel@linux.ibm.com>
-Subject: Re: [PATCH v10 15/19] KVM: s390: pv: asynchronous destroy for reboot
-From:   Nico Boehr <nrb@linux.ibm.com>
-To:     Claudio Imbrenda <imbrenda@linux.ibm.com>, kvm@vger.kernel.org
-Cc:     borntraeger@de.ibm.com, frankja@linux.ibm.com, thuth@redhat.com,
-        pasic@linux.ibm.com, david@redhat.com, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, scgl@linux.ibm.com,
-        mimu@linux.ibm.com
-Date:   Mon, 30 May 2022 11:46:26 +0200
-In-Reply-To: <20220414080311.1084834-16-imbrenda@linux.ibm.com>
-References: <20220414080311.1084834-1-imbrenda@linux.ibm.com>
-         <20220414080311.1084834-16-imbrenda@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.1 (3.44.1-1.fc36) 
+        Mon, 30 May 2022 05:46:53 -0400
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51F719588
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 02:46:48 -0700 (PDT)
+Received: by mail-pf1-x436.google.com with SMTP id bo5so10149207pfb.4
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 02:46:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=UALvhWndaZ+8NVhyXVMTGWogK9BCZuA7nUC2dpZdhFc=;
+        b=nfZTMfLpScX+7i5oxd+QZy4f+mKCKtr/6YCGg5q0/lgh99OiWWiF9Lhh/QN4IyB06x
+         2moQEr4XBMjGQbiaC0VpfDMoopZq24/GbvNSsjxuZ6Wg5tXQqYnssMAXVLkV6IBTc1Uc
+         I0W43D5oupX+ULjNU0O/Zy079+v15+Hpwi1Lwjcpw8s3TZPuPh46PHH6DRzVVX3YYFei
+         voXdEcR5xXF1NbbXIQkCEHvN9PVS5Ua+/Xc5iO8BFurRxfgaDKxQLXF3xBUTYzFjATFp
+         nRFunal+5Xm4EQwL9DrkIb+ItUSCfQcxQg4eVXGpxciSU5/WlY+xV84yfqm58TLrPcMt
+         dOlA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=UALvhWndaZ+8NVhyXVMTGWogK9BCZuA7nUC2dpZdhFc=;
+        b=k2bYyGeNYwwOeZVv7Ums0l3kqLVh4SW3ynloWJYRwsxaRdLVJ5NdYtMppZ+2XRVzea
+         GaOqMMhBd92MD6AQAU//iniTWKEluu285u6EJOvHlBHqFXNYVtgR28EykMh+NNsoKCeH
+         Vj6HhtJqq/qzM3wHsWzOLU9TTn6gyltIrGIH3ZibT7UKQwWfMoaFEH2qw4+lmzOKXw1U
+         cRzggRwUXUUK5jN/0d2yc/QLltpLAGirlxTqvQCSxplfFzLh6dnWr9TuZhcwmDKegRD+
+         CxZNxWL/k+4q8yA2RRTT/uCRzRSfttfkCdVABfwkr5iLrhZINXjyZfYosQ2l6aMIAHfa
+         Ax9A==
+X-Gm-Message-State: AOAM532vqU+HaBWURvsu3gBmII4m3VURLhOAuG2XhYYIiPMU4vhoD3B2
+        adeSNchRvDfrKw0TwIDyxJJl2Q==
+X-Google-Smtp-Source: ABdhPJxqfWEVJFwZmG5yodoFspNLPE7pWMsnb8wZBPkQOCSd4+v8Lx2w85ya08P/2p5qJrj2pACptA==
+X-Received: by 2002:a63:8243:0:b0:3f9:6c94:5112 with SMTP id w64-20020a638243000000b003f96c945112mr41340598pgd.173.1653904007740;
+        Mon, 30 May 2022 02:46:47 -0700 (PDT)
+Received: from localhost ([122.162.234.2])
+        by smtp.gmail.com with ESMTPSA id j13-20020a17090a588d00b001d9927ef1desm6377266pji.34.2022.05.30.02.46.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 May 2022 02:46:47 -0700 (PDT)
+Date:   Mon, 30 May 2022 15:16:45 +0530
+From:   Viresh Kumar <viresh.kumar@linaro.org>
+To:     Pierre Gondois <pierre.gondois@arm.com>
+Cc:     linux-kernel@vger.kernel.org, Ionela.Voinescu@arm.com,
+        Dietmar.Eggemann@arm.com,
+        Shaokun Zhang <zhangshaokun@hisilicon.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>, linux-pm@vger.kernel.org
+Subject: Re: [PATCH v1] cpufreq: CPPC: Fix unused-function warning
+Message-ID: <20220530094645.wky42wwkbszfjjzs@vireshk-i7>
+References: <20220530081236.40728-1-pierre.gondois@arm.com>
+ <20220530082025.vqzk37dvyzxiq7dv@vireshk-i7>
+ <3a26ce90-5d2d-0164-3799-85a9dc1abee6@arm.com>
+ <20220530090738.7ycfr7g52b54jzj3@vireshk-i7>
+ <2b2df076-f8fe-10f7-9bc4-3e1f3c1639d0@arm.com>
 MIME-Version: 1.0
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: jPXnunXG_P-bggrCcCuqZUbKi4yvWZqQ
-X-Proofpoint-GUID: -EpW3T9QejJq_UMEupMBV9vPTKv5zgYv
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-30_03,2022-05-27_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 suspectscore=0
- adultscore=0 lowpriorityscore=0 clxscore=1015 phishscore=0 mlxscore=0
- bulkscore=0 impostorscore=0 spamscore=0 priorityscore=1501 mlxlogscore=944
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2204290000
- definitions=main-2205300050
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2b2df076-f8fe-10f7-9bc4-3e1f3c1639d0@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-04-14 at 10:03 +0200, Claudio Imbrenda wrote:
-[...]
-> diff --git a/arch/s390/kvm/pv.c b/arch/s390/kvm/pv.c
-> index b20f2cbd43d9..36bc107bbd7d 100644
-> --- a/arch/s390/kvm/pv.c
-> +++ b/arch/s390/kvm/pv.c
-[...]
-> +/**
-> + * kvm_s390_pv_deinit_vm_async - Perform an asynchronous teardown of
-> a
-> + * protected VM.
-> + * @kvm the VM previously associated with the protected VM
-> + * @rc return value for the RC field of the UVCB
-> + * @rrc return value for the RRC field of the UVCB
-> + *
-> + * Tear down the protected VM that had previously been set aside
-> using
-> + * kvm_s390_pv_deinit_vm_async_prepare.
-> + *
-> + * Context: kvm->lock needs to be held
+On 30-05-22, 11:42, Pierre Gondois wrote:
+> Ok yes. Just to be sure and except if disagreed, I will use the
+> following structure:
+> #if CONFIG_ARM64
+> #else
+> #endif
+> 
+> #if defined(CONFIG_ARM64) && defined(CONFIG_ENERGY_MODEL)
+> int populate_efficiency_class();
+> #else
+> int populate_efficiency_class();
+> #endif
+> 
+> to avoid having multiple empty definitions of
+> populate_efficiency_class() (for eg.) that we would have with:
+> #if CONFIG_ARM64
+> #if CONFIG_ENERGY_MODEL
+> int populate_efficiency_class();
+> #else // CONFIG_ENERGY_MODEL
+> int populate_efficiency_class();
+> #endif // CONFIG_ENERGY_MODEL
+> #else // CONFIG_ARM64
+> int populate_efficiency_class();
+> #endif // CONFIG_ARM64
 
-...and will be released...
+Look good.
 
-> + *
-> + * Return: 0 in case of success, -EINVAL if no protected VM had been
-> + * prepared for asynchronous teardowm, -EIO in case of other errors.
-> + */
-> +int kvm_s390_pv_deinit_vm_async(struct kvm *kvm, u16 *rc, u16 *rrc)
-
-Do you also want to set rc and rrc as in kvm_s390_pv_deinit_vm_async_prepar=
-e()?
-
+-- 
+viresh
