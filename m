@@ -2,49 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5A4FC4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC034C352AA
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:28:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242182AbiE3O1y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:27:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34852 "EHLO
+        id S242206AbiE3O1z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:27:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241433AbiE3ORf (ORCPT
+        with ESMTP id S241431AbiE3ORf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 30 May 2022 10:17:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1E2950B34;
-        Mon, 30 May 2022 06:47:09 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 963884DF66;
+        Mon, 30 May 2022 06:47:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D8FD60FCF;
-        Mon, 30 May 2022 13:47:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 619F8C3411E;
-        Mon, 30 May 2022 13:47:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 24B0460FB4;
+        Mon, 30 May 2022 13:47:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69210C385B8;
+        Mon, 30 May 2022 13:47:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918428;
-        bh=hnA5EyoeITBvXjoxz8y+FqzUH8+90/suivYDlXICjYM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n3vZ7/Q0xGcEB+fbqMg+Z3m4l+6T0h2zelNsKiz8hnkQYkzaZtV0rzlERm1lbtla3
-         Wuo3x/mEaDYu2xsY6M4DaMiEb3Z1dFK7bQgd4vWanQNsavw2+XaZLMJDStLw+65q+q
-         mXxxe/bHN/z+uDvCPJaxH5vk3JAm5jYRrWe71eGyXV0ERDiupql869MrGyp5shykr0
-         s4w1m3JzJJVZkugDPu+m5MYadqkUBwtORzBt3S7fM7HfsWtr8eWgJUcvplVBku1UX/
-         BDy6gOwWzLIytYJvHJx2qeRbxHGHt/mfBmAOlDMJNFDlGQ4/idjYoDEo+0chyMQ8AF
-         XNEblyRGOr5Rg==
+        s=k20201202; t=1653918424;
+        bh=TwVHwNN/o9XLM+Y5O2G/KwViT1tktgTbWNFKIcVo8PU=;
+        h=From:To:Cc:Subject:Date:From;
+        b=kU2SVSpdxP+nYkb0vOukbkMlwDeoXgv4tteomo5JlXPbvbKZNBUZfhFDivrPmAmP0
+         xBh4PzP/xn2BwvrUq+YQQm4Dy7e5o/d2P4Yea3VCgILsqCSlMmnkz2eeMMFaBdqj2V
+         /Sjy7oxUY/dLjutOV1tyfPf201JJabcFOnJaOW4KUZHYld4g/36q6QRdpxdQFz9bx0
+         sktv+C+gpiP7Zm4GCOrJWEXpbEeRRiMrNvnRNMHhd66TSw+GwxABbw+8lU5w0P+VPp
+         70PRfqDZV90A3IjS+JFObi73ZmAQVuv07THxWep5RCWW7a0hGtbZ9yoaAvVEbat0op
+         b/z/pfhiOVhQw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Haowen Bai <baihaowen@meizu.com>, Kalle Valo <kvalo@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, Larry.Finger@lwfinger.net,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        b43-dev@lists.infradead.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 03/55] b43legacy: Fix assigning negative value to unsigned variable
-Date:   Mon, 30 May 2022 09:46:09 -0400
-Message-Id: <20220530134701.1935933-3-sashal@kernel.org>
+Cc:     Liu Zixian <liuzixian4@huawei.com>,
+        Gerd Hoffmann <kraxel@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, airlied@linux.ie,
+        daniel@ffwll.ch, dri-devel@lists.freedesktop.org,
+        virtualization@lists.linux-foundation.org
+Subject: [PATCH AUTOSEL 5.4 01/55] drm/virtio: fix NULL pointer dereference in virtio_gpu_conn_get_modes
+Date:   Mon, 30 May 2022 09:46:07 -0400
+Message-Id: <20220530134701.1935933-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220530134701.1935933-1-sashal@kernel.org>
-References: <20220530134701.1935933-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,35 +51,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Haowen Bai <baihaowen@meizu.com>
+From: Liu Zixian <liuzixian4@huawei.com>
 
-[ Upstream commit 3f6b867559b3d43a7ce1b4799b755e812fc0d503 ]
+[ Upstream commit 194d250cdc4a40ccbd179afd522a9e9846957402 ]
 
-fix warning reported by smatch:
-drivers/net/wireless/broadcom/b43legacy/phy.c:1181 b43legacy_phy_lo_b_measure()
-warn: assigning (-772) to unsigned variable 'fval'
+drm_cvt_mode may return NULL and we should check it.
 
-Signed-off-by: Haowen Bai <baihaowen@meizu.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/1648203433-8736-1-git-send-email-baihaowen@meizu.com
+This bug is found by syzkaller:
+
+FAULT_INJECTION stacktrace:
+[  168.567394] FAULT_INJECTION: forcing a failure.
+name failslab, interval 1, probability 0, space 0, times 1
+[  168.567403] CPU: 1 PID: 6425 Comm: syz Kdump: loaded Not tainted 4.19.90-vhulk2201.1.0.h1035.kasan.eulerosv2r10.aarch64 #1
+[  168.567406] Hardware name: QEMU KVM Virtual Machine, BIOS 0.0.0 02/06/2015
+[  168.567408] Call trace:
+[  168.567414]  dump_backtrace+0x0/0x310
+[  168.567418]  show_stack+0x28/0x38
+[  168.567423]  dump_stack+0xec/0x15c
+[  168.567427]  should_fail+0x3ac/0x3d0
+[  168.567437]  __should_failslab+0xb8/0x120
+[  168.567441]  should_failslab+0x28/0xc0
+[  168.567445]  kmem_cache_alloc_trace+0x50/0x640
+[  168.567454]  drm_mode_create+0x40/0x90
+[  168.567458]  drm_cvt_mode+0x48/0xc78
+[  168.567477]  virtio_gpu_conn_get_modes+0xa8/0x140 [virtio_gpu]
+[  168.567485]  drm_helper_probe_single_connector_modes+0x3a4/0xd80
+[  168.567492]  drm_mode_getconnector+0x2e0/0xa70
+[  168.567496]  drm_ioctl_kernel+0x11c/0x1d8
+[  168.567514]  drm_ioctl+0x558/0x6d0
+[  168.567522]  do_vfs_ioctl+0x160/0xf30
+[  168.567525]  ksys_ioctl+0x98/0xd8
+[  168.567530]  __arm64_sys_ioctl+0x50/0xc8
+[  168.567536]  el0_svc_common+0xc8/0x320
+[  168.567540]  el0_svc_handler+0xf8/0x160
+[  168.567544]  el0_svc+0x10/0x218
+
+KASAN stacktrace:
+[  168.567561] BUG: KASAN: null-ptr-deref in virtio_gpu_conn_get_modes+0xb4/0x140 [virtio_gpu]
+[  168.567565] Read of size 4 at addr 0000000000000054 by task syz/6425
+[  168.567566]
+[  168.567571] CPU: 1 PID: 6425 Comm: syz Kdump: loaded Not tainted 4.19.90-vhulk2201.1.0.h1035.kasan.eulerosv2r10.aarch64 #1
+[  168.567573] Hardware name: QEMU KVM Virtual Machine, BIOS 0.0.0 02/06/2015
+[  168.567575] Call trace:
+[  168.567578]  dump_backtrace+0x0/0x310
+[  168.567582]  show_stack+0x28/0x38
+[  168.567586]  dump_stack+0xec/0x15c
+[  168.567591]  kasan_report+0x244/0x2f0
+[  168.567594]  __asan_load4+0x58/0xb0
+[  168.567607]  virtio_gpu_conn_get_modes+0xb4/0x140 [virtio_gpu]
+[  168.567612]  drm_helper_probe_single_connector_modes+0x3a4/0xd80
+[  168.567617]  drm_mode_getconnector+0x2e0/0xa70
+[  168.567621]  drm_ioctl_kernel+0x11c/0x1d8
+[  168.567624]  drm_ioctl+0x558/0x6d0
+[  168.567628]  do_vfs_ioctl+0x160/0xf30
+[  168.567632]  ksys_ioctl+0x98/0xd8
+[  168.567636]  __arm64_sys_ioctl+0x50/0xc8
+[  168.567641]  el0_svc_common+0xc8/0x320
+[  168.567645]  el0_svc_handler+0xf8/0x160
+[  168.567649]  el0_svc+0x10/0x218
+
+Signed-off-by: Liu Zixian <liuzixian4@huawei.com>
+Link: http://patchwork.freedesktop.org/patch/msgid/20220322091730.1653-1-liuzixian4@huawei.com
+Signed-off-by: Gerd Hoffmann <kraxel@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/broadcom/b43legacy/phy.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/virtio/virtgpu_display.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/wireless/broadcom/b43legacy/phy.c b/drivers/net/wireless/broadcom/b43legacy/phy.c
-index a659259bc51a..6e76055e136d 100644
---- a/drivers/net/wireless/broadcom/b43legacy/phy.c
-+++ b/drivers/net/wireless/broadcom/b43legacy/phy.c
-@@ -1123,7 +1123,7 @@ void b43legacy_phy_lo_b_measure(struct b43legacy_wldev *dev)
- 	struct b43legacy_phy *phy = &dev->phy;
- 	u16 regstack[12] = { 0 };
- 	u16 mls;
--	u16 fval;
-+	s16 fval;
- 	int i;
- 	int j;
- 
+diff --git a/drivers/gpu/drm/virtio/virtgpu_display.c b/drivers/gpu/drm/virtio/virtgpu_display.c
+index e622485ae826..7e34307eb075 100644
+--- a/drivers/gpu/drm/virtio/virtgpu_display.c
++++ b/drivers/gpu/drm/virtio/virtgpu_display.c
+@@ -174,6 +174,8 @@ static int virtio_gpu_conn_get_modes(struct drm_connector *connector)
+ 		DRM_DEBUG("add mode: %dx%d\n", width, height);
+ 		mode = drm_cvt_mode(connector->dev, width, height, 60,
+ 				    false, false, false);
++		if (!mode)
++			return count;
+ 		mode->type |= DRM_MODE_TYPE_PREFERRED;
+ 		drm_mode_probed_add(connector, mode);
+ 		count++;
 -- 
 2.35.1
 
