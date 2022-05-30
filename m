@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 291A3C47082
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:03:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40E56C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:03:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239985AbiE3ODC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:03:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58044 "EHLO
+        id S234992AbiE3ODc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:03:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239118AbiE3Nzt (ORCPT
+        with ESMTP id S239428AbiE3N4h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:55:49 -0400
+        Mon, 30 May 2022 09:56:37 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2348D954B5;
-        Mon, 30 May 2022 06:38:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17BB495DC4;
+        Mon, 30 May 2022 06:38:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A35E560FA2;
-        Mon, 30 May 2022 13:38:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6430C3411A;
-        Mon, 30 May 2022 13:38:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9712460F7B;
+        Mon, 30 May 2022 13:38:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3739DC385B8;
+        Mon, 30 May 2022 13:38:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917892;
-        bh=jZEgMm0KNJeI+GnzujA/0rjwS4NentbhatM0X+GZL3I=;
+        s=k20201202; t=1653917902;
+        bh=cYbqQ0dMuwCZflYozzYeRbTkmB9Hzvvc14PryXL08Gw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Rkdlx8htNtAoR2l5TauDVQGTsHBg74X3u6CYpCceFrbl57WeFLHHzqvyuhVX7ZhXe
-         iylrWjI46tuvMitUtoCEUdy9x+JGPPoh+ZrOfUETyX4zptzoNWrev+DHVxNvYJ6zOE
-         GNoLMoXLgG80s4psKlz7yp4BDjpZoGQ9td93z5C9D1nhHKgI8a1qI5b+QGnWdw2GEY
-         W/RN7ZyIdFx47KzNB02YwW3o9d2tFWJoO8PcIjRlyQ3hCVMxdQYNoJojGmmzw4Mz15
-         sgF0xxt5lE8/cK/jV2pSD85LHSJsUpnWa/y0j1Tu/3cqs5jbH5pJvwa+q91rg9U7Io
-         LAMTDQZIVXoJA==
+        b=GUHhJ6KAF70VyGGHb4xkxBm/kIufPH+BnaT57GbFGMMJ7GN9wI7UJQ4jAmS36eSlT
+         7Hrp8faOumS4WVHEQXIKobm7KRXVKZ0IO50FDMRrrVO3X6ecEg0T3I5b/xuUpOrMVp
+         nxp6WYb5/JIfJlLcCnsOZtIH9+GG4zhx/W2LBPFgrn1YG196bx/uxiwAs97UffUeRg
+         kZGWPi5gJULZKcJjA9yWu/WWBnRr/LDBHa8KxWy0iLHZgZ4AK8tcp54pugJM5s8yjZ
+         uNGqeaVwjr4hImZAInFU78EhBmF2TL46T+vZ3bTFYwtYLYYnJt6bG3LTpWzMYcNyDV
+         A9j/LUo0oj+/w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     David Howells <dhowells@redhat.com>,
-        Marc Dionne <marc.dionne@auristor.com>,
-        linux-afs@lists.infradead.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 131/135] afs: Adjust ACK interpretation to try and cope with NAT
-Date:   Mon, 30 May 2022 09:31:29 -0400
-Message-Id: <20220530133133.1931716-131-sashal@kernel.org>
+Cc:     Yonghong Song <yhs@fb.com>, Mykola Lysenko <mykolal@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, shuah@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, nathan@kernel.org,
+        ndesaulniers@google.com, sunyucong@gmail.com,
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, llvm@lists.linux.dev
+Subject: [PATCH AUTOSEL 5.17 134/135] selftests/bpf: fix btf_dump/btf_dump due to recent clang change
+Date:   Mon, 30 May 2022 09:31:32 -0400
+Message-Id: <20220530133133.1931716-134-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133133.1931716-1-sashal@kernel.org>
 References: <20220530133133.1931716-1-sashal@kernel.org>
@@ -54,153 +55,87 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+From: Yonghong Song <yhs@fb.com>
 
-[ Upstream commit adc9613ff66c26ebaff9814973181ac178beb90b ]
+[ Upstream commit 4050764cbaa25760aab40857f723393c07898474 ]
 
-If a client's address changes, say if it is NAT'd, this can disrupt an in
-progress operation.  For most operations, this is not much of a problem,
-but StoreData can be different as some servers modify the target file as
-the data comes in, so if a store request is disrupted, the file can get
-corrupted on the server.
+Latest llvm-project upstream had a change of behavior
+related to qualifiers on function return type ([1]).
+This caused selftests btf_dump/btf_dump failure.
+The following example shows what changed.
 
-The problem is that the server doesn't recognise packets that come after
-the change of address as belonging to the original client and will bounce
-them, either by sending an OUT_OF_SEQUENCE ACK to the apparent new call if
-the packet number falls within the initial sequence number window of a call
-or by sending an EXCEEDS_WINDOW ACK if it falls outside and then aborting
-it.  In both cases, firstPacket will be 1 and previousPacket will be 0 in
-the ACK information.
+  $ cat t.c
+  typedef const char * const (* const (* const fn_ptr_arr2_t[5])())(char * (*)(int));
+  struct t {
+    int a;
+    fn_ptr_arr2_t l;
+  };
+  int foo(struct t *arg) {
+    return arg->a;
+  }
 
-Fix this by the following means:
+Compiled with latest upstream llvm15,
+  $ clang -O2 -g -target bpf -S -emit-llvm t.c
+The related generated debuginfo IR looks like:
+  !16 = !DIDerivedType(tag: DW_TAG_typedef, name: "fn_ptr_arr2_t", file: !1, line: 1, baseType: !17)
+  !17 = !DICompositeType(tag: DW_TAG_array_type, baseType: !18, size: 320, elements: !32)
+  !18 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !19)
+  !19 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !20, size: 64)
+  !20 = !DISubroutineType(types: !21)
+  !21 = !{!22, null}
+  !22 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !23, size: 64)
+  !23 = !DISubroutineType(types: !24)
+  !24 = !{!25, !28}
+  !25 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !26, size: 64)
+  !26 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !27)
+  !27 = !DIBasicType(name: "char", size: 8, encoding: DW_ATE_signed_char)
+You can see two intermediate const qualifier to pointer are dropped in debuginfo IR.
 
- (1) If a client call receives an EXCEEDS_WINDOW ACK with firstPacket as 1
-     and previousPacket as 0, assume this indicates that the server saw the
-     incoming packets from a different peer and thus as a different call.
-     Fail the call with error -ENETRESET.
+With llvm14, we have following debuginfo IR:
+  !16 = !DIDerivedType(tag: DW_TAG_typedef, name: "fn_ptr_arr2_t", file: !1, line: 1, baseType: !17)
+  !17 = !DICompositeType(tag: DW_TAG_array_type, baseType: !18, size: 320, elements: !34)
+  !18 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !19)
+  !19 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !20, size: 64)
+  !20 = !DISubroutineType(types: !21)
+  !21 = !{!22, null}
+  !22 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !23)
+  !23 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !24, size: 64)
+  !24 = !DISubroutineType(types: !25)
+  !25 = !{!26, !30}
+  !26 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !27)
+  !27 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !28, size: 64)
+  !28 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !29)
+  !29 = !DIBasicType(name: "char", size: 8, encoding: DW_ATE_signed_char)
+All const qualifiers are preserved.
 
- (2) Also fail the call if a similar OUT_OF_SEQUENCE ACK occurs if the
-     first packet has been hard-ACK'd.  If it hasn't been hard-ACK'd, the
-     ACK packet will cause it to get retransmitted, so the call will just
-     be repeated.
+To adapt the selftest to both old and new llvm, this patch removed
+the intermediate const qualifier in const-to-ptr types, to make the
+test succeed again.
 
- (3) Make afs_select_fileserver() treat -ENETRESET as a straight fail of
-     the operation.
+  [1] https://reviews.llvm.org/D125919
 
- (4) Prioritise the error code over things like -ECONNRESET as the server
-     did actually respond.
-
- (5) Make writeback treat -ENETRESET as a retryable error and make it
-     redirty all the pages involved in a write so that the VM will retry.
-
-Note that there is still a circumstance that I can't easily deal with: if
-the operation is fully received and processed by the server, but the reply
-is lost due to address change.  There's no way to know if the op happened.
-We can examine the server, but a conflicting change could have been made by
-a third party - and we can't tell the difference.  In such a case, a
-message like:
-
-    kAFS: vnode modified {100058:146266} b7->b8 YFS.StoreData64 (op=2646a)
-
-will be logged to dmesg on the next op to touch the file and the client
-will reset the inode state, including invalidating clean parts of the
-pagecache.
-
-Reported-by: Marc Dionne <marc.dionne@auristor.com>
-Signed-off-by: David Howells <dhowells@redhat.com>
-cc: linux-afs@lists.infradead.org
-Link: http://lists.infradead.org/pipermail/linux-afs/2021-December/004811.html # v1
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Reported-by: Mykola Lysenko <mykolal@fb.com>
+Signed-off-by: Yonghong Song <yhs@fb.com>
+Link: https://lore.kernel.org/r/20220523152044.3905809-1-yhs@fb.com
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/afs/misc.c     |  5 ++++-
- fs/afs/rotate.c   |  4 ++++
- fs/afs/write.c    |  1 +
- net/rxrpc/input.c | 27 +++++++++++++++++++++++++++
- 4 files changed, 36 insertions(+), 1 deletion(-)
+ tools/testing/selftests/bpf/progs/btf_dump_test_case_syntax.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/afs/misc.c b/fs/afs/misc.c
-index 1d1a8debe472..933e67fcdab1 100644
---- a/fs/afs/misc.c
-+++ b/fs/afs/misc.c
-@@ -163,8 +163,11 @@ void afs_prioritise_error(struct afs_error *e, int error, u32 abort_code)
- 		return;
+diff --git a/tools/testing/selftests/bpf/progs/btf_dump_test_case_syntax.c b/tools/testing/selftests/bpf/progs/btf_dump_test_case_syntax.c
+index 1c7105fcae3c..4ee4748133fe 100644
+--- a/tools/testing/selftests/bpf/progs/btf_dump_test_case_syntax.c
++++ b/tools/testing/selftests/bpf/progs/btf_dump_test_case_syntax.c
+@@ -94,7 +94,7 @@ typedef void (* (*signal_t)(int, void (*)(int)))(int);
  
- 	case -ECONNABORTED:
-+		error = afs_abort_to_error(abort_code);
-+		fallthrough;
-+	case -ENETRESET: /* Responded, but we seem to have changed address */
- 		e->responded = true;
--		e->error = afs_abort_to_error(abort_code);
-+		e->error = error;
- 		return;
- 	}
- }
-diff --git a/fs/afs/rotate.c b/fs/afs/rotate.c
-index 79e1a5f6701b..a840c3588ebb 100644
---- a/fs/afs/rotate.c
-+++ b/fs/afs/rotate.c
-@@ -292,6 +292,10 @@ bool afs_select_fileserver(struct afs_operation *op)
- 		op->error = error;
- 		goto iterate_address;
+ typedef char * (*fn_ptr_arr1_t[10])(int **);
  
-+	case -ENETRESET:
-+		pr_warn("kAFS: Peer reset %s (op=%x)\n",
-+			op->type ? op->type->name : "???", op->debug_id);
-+		fallthrough;
- 	case -ECONNRESET:
- 		_debug("call reset");
- 		op->error = error;
-diff --git a/fs/afs/write.c b/fs/afs/write.c
-index f447c902318d..07454b1ed240 100644
---- a/fs/afs/write.c
-+++ b/fs/afs/write.c
-@@ -638,6 +638,7 @@ static ssize_t afs_write_back_from_locked_folio(struct address_space *mapping,
- 	case -EKEYEXPIRED:
- 	case -EKEYREJECTED:
- 	case -EKEYREVOKED:
-+	case -ENETRESET:
- 		afs_redirty_pages(wbc, mapping, start, len);
- 		mapping_set_error(mapping, ret);
- 		break;
-diff --git a/net/rxrpc/input.c b/net/rxrpc/input.c
-index dc201363f2c4..67d3eba60dc7 100644
---- a/net/rxrpc/input.c
-+++ b/net/rxrpc/input.c
-@@ -903,6 +903,33 @@ static void rxrpc_input_ack(struct rxrpc_call *call, struct sk_buff *skb)
- 				  rxrpc_propose_ack_respond_to_ack);
- 	}
+-typedef char * (* const (* const fn_ptr_arr2_t[5])())(char * (*)(int));
++typedef char * (* (* const fn_ptr_arr2_t[5])())(char * (*)(int));
  
-+	/* If we get an EXCEEDS_WINDOW ACK from the server, it probably
-+	 * indicates that the client address changed due to NAT.  The server
-+	 * lost the call because it switched to a different peer.
-+	 */
-+	if (unlikely(buf.ack.reason == RXRPC_ACK_EXCEEDS_WINDOW) &&
-+	    first_soft_ack == 1 &&
-+	    prev_pkt == 0 &&
-+	    rxrpc_is_client_call(call)) {
-+		rxrpc_set_call_completion(call, RXRPC_CALL_REMOTELY_ABORTED,
-+					  0, -ENETRESET);
-+		return;
-+	}
-+
-+	/* If we get an OUT_OF_SEQUENCE ACK from the server, that can also
-+	 * indicate a change of address.  However, we can retransmit the call
-+	 * if we still have it buffered to the beginning.
-+	 */
-+	if (unlikely(buf.ack.reason == RXRPC_ACK_OUT_OF_SEQUENCE) &&
-+	    first_soft_ack == 1 &&
-+	    prev_pkt == 0 &&
-+	    call->tx_hard_ack == 0 &&
-+	    rxrpc_is_client_call(call)) {
-+		rxrpc_set_call_completion(call, RXRPC_CALL_REMOTELY_ABORTED,
-+					  0, -ENETRESET);
-+		return;
-+	}
-+
- 	/* Discard any out-of-order or duplicate ACKs (outside lock). */
- 	if (!rxrpc_is_ack_valid(call, first_soft_ack, prev_pkt)) {
- 		trace_rxrpc_rx_discard_ack(call->debug_id, ack_serial,
+ struct struct_w_typedefs {
+ 	int_t a;
 -- 
 2.35.1
 
