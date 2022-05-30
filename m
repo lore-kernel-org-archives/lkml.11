@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AFE6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 07:37:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A715EC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 07:37:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233522AbiE3HhA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 03:37:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40042 "EHLO
+        id S233539AbiE3HhM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 03:37:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233510AbiE3HfB (ORCPT
+        with ESMTP id S233527AbiE3HfC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 03:35:01 -0400
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3097C71DA1;
-        Mon, 30 May 2022 00:34:47 -0700 (PDT)
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 24U7Yhfk084868;
-        Mon, 30 May 2022 02:34:43 -0500
+        Mon, 30 May 2022 03:35:02 -0400
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10DA071DB4;
+        Mon, 30 May 2022 00:34:51 -0700 (PDT)
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 24U7YcSr048593;
+        Mon, 30 May 2022 02:34:38 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1653896083;
-        bh=D3w8nI02oB8EoNoAqaEWvOutV6JaRMHHmHyziuHi/rQ=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=ww1shQVWRaLgun/B5eWiCAfnkkNp9Bfx8IbuEKoazaIOlMmP6jISaU6yEyn8QLj3F
-         ps/ZHwxhwq1nZOGqO/1igE1OaYqo+FoeEl/z+FIr3kVX0WFEbFr6n+I9ALJ1vPv2eS
-         fyI58NxVgSdrr5bWaSiuK5qiPbafu86rcOyeRZC8=
-Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 24U7YhbD098446
+        s=ti-com-17Q1; t=1653896078;
+        bh=BprBHjVUcdUW3lmNzNyACgB5XEmut9FldM0VsyPmi9g=;
+        h=From:To:CC:Subject:Date;
+        b=Dhpnlp8konpTFMpgVjqmHksp6P4lU+LeboXcmx/PlUKOGZb6/33B/XHlCOLMQfkXM
+         fP4TcljIqgOXVbyUKv5PYUWqBcK+obW2do7KOoNVWLh8IlHTlIfXieD+puzsHnfimi
+         0TDi9hxrlerEfEHb1Kb3E0qpqePbD50Vp/0LUk/k=
+Received: from DLEE104.ent.ti.com (dlee104.ent.ti.com [157.170.170.34])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 24U7YcrQ065163
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 30 May 2022 02:34:43 -0500
-Received: from DFLE108.ent.ti.com (10.64.6.29) by DFLE114.ent.ti.com
- (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
+        Mon, 30 May 2022 02:34:38 -0500
+Received: from DLEE104.ent.ti.com (157.170.170.34) by DLEE104.ent.ti.com
+ (157.170.170.34) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Mon, 30
- May 2022 02:34:43 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE108.ent.ti.com
- (10.64.6.29) with Microsoft SMTP Server (version=TLS1_2,
+ May 2022 02:34:37 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE104.ent.ti.com
+ (157.170.170.34) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Mon, 30 May 2022 02:34:43 -0500
+ Frontend Transport; Mon, 30 May 2022 02:34:37 -0500
 Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 24U7Ygi7098610;
-        Mon, 30 May 2022 02:34:42 -0500
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 24U7Ya3C037245;
+        Mon, 30 May 2022 02:34:37 -0500
 From:   Rahul T R <r-ravikumar@ti.com>
 To:     <robh+dt@kernel.org>, <nm@ti.com>, <vigneshr@ti.com>,
         <kishon@ti.com>, <krzysztof.kozlowski+dt@linaro.org>
@@ -47,14 +47,11 @@ CC:     <lee.jones@linaro.org>, <rogerq@kernel.org>,
         <devicetree@vger.kernel.org>, <kristo@kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>, <s-anna@ti.com>,
-        Sinthu Raja <sinthu.raja@ti.com>,
         Rahul T R <r-ravikumar@ti.com>
-Subject: [PATCH v2 3/3] arm64: dts: ti: k3-j721e-sk: Add pinmux for RPi Header
-Date:   Mon, 30 May 2022 13:04:29 +0530
-Message-ID: <20220530073429.17514-4-r-ravikumar@ti.com>
+Subject: [PATCH v2 0/3] Enable RPi header on j721e sk
+Date:   Mon, 30 May 2022 13:04:26 +0530
+Message-ID: <20220530073429.17514-1-r-ravikumar@ti.com>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220530073429.17514-1-r-ravikumar@ti.com>
-References: <20220530073429.17514-1-r-ravikumar@ti.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
@@ -62,138 +59,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sinthu Raja <sinthu.raja@ti.com>
+The following series of patches enables RPi header
+on j721e sk. It is a 40 pin io expasion header which
+brings out i2c5, ehrpwm 2,3 and some pins of gpio 0,1
 
-Add pinmux required to bring out
-i2c5, ehrpwm 2 and 3 and gpios on
-40 pin RPi header on sk board
+v2:
+   - Add full path for clock property $ref
+   - Remove the discription for clock pattern property,
+     since $ref is added
+   - Remove the label in the example
+   - Fix the indentation in the example
 
-Signed-off-by: Sinthu Raja <sinthu.raja@ti.com>
-Signed-off-by: Rahul T R <r-ravikumar@ti.com>
----
- arch/arm64/boot/dts/ti/k3-j721e-sk.dts | 89 ++++++++++++++++++++++----
- 1 file changed, 78 insertions(+), 11 deletions(-)
+Rahul T R (1):
+  dt-bindings: mfd: ti,j721e-system-controller: Add clock property
 
-diff --git a/arch/arm64/boot/dts/ti/k3-j721e-sk.dts b/arch/arm64/boot/dts/ti/k3-j721e-sk.dts
-index 98a55778f3fe..b913b18ae133 100644
---- a/arch/arm64/boot/dts/ti/k3-j721e-sk.dts
-+++ b/arch/arm64/boot/dts/ti/k3-j721e-sk.dts
-@@ -400,6 +400,57 @@
- 			J721E_IOPAD(0x124, PIN_INPUT, 7) /* (Y24) PRG0_PRU1_GPO9.GPIO0_72 */
- 		>;
- 	};
-+
-+	main_i2c5_pins_default: main-i2c5-pins-default {
-+		pinctrl-single,pins = <
-+			J721E_IOPAD(0x150, PIN_INPUT_PULLUP, 2) /* (Y26) PRG0_MDIO0_MDIO.I2C5_SCL */
-+			J721E_IOPAD(0x154, PIN_INPUT_PULLUP, 2) /* (AA27) PRG0_MDIO0_MDC.I2C5_SDA */
-+		>;
-+	};
-+
-+	rpi_header_gpio0_pins_default: rpi-header-gpio0-pins-default {
-+		pinctrl-single,pins = <
-+			J721E_IOPAD(0x01c, PIN_INPUT, 7) /* (AD22) PRG1_PRU0_GPO6.GPIO0_7 */
-+			J721E_IOPAD(0x120, PIN_INPUT, 7) /* (AA28) PRG0_PRU1_GPO8.GPIO0_71 */
-+			J721E_IOPAD(0x14c, PIN_INPUT, 7) /* (AA29) PRG0_PRU1_GPO19.GPIO0_82 */
-+			J721E_IOPAD(0x02c, PIN_INPUT, 7) /* (AD21) PRG1_PRU0_GPO10.GPIO0_11 */
-+			J721E_IOPAD(0x198, PIN_INPUT, 7) /* (V25) RGMII6_TD1.GPIO0_101 */
-+			J721E_IOPAD(0x1b0, PIN_INPUT, 7) /* (W24) RGMII6_RD1.GPIO0_107 */
-+			J721E_IOPAD(0x1a0, PIN_INPUT, 7) /* (W29) RGMII6_TXC.GPIO0_103 */
-+			J721E_IOPAD(0x008, PIN_INPUT, 7) /* (AG22) PRG1_PRU0_GPO1.GPIO0_2 */
-+			J721E_IOPAD(0x1d0, PIN_INPUT, 7) /* (AA3) SPI0_D1.GPIO0_115 */
-+			J721E_IOPAD(0x11c, PIN_INPUT, 7) /* (AA24) PRG0_PRU1_GPO7.GPIO0_70 */
-+			J721E_IOPAD(0x148, PIN_INPUT, 7) /* (AA26) PRG0_PRU1_GPO18.GPIO0_81 */
-+			J721E_IOPAD(0x004, PIN_INPUT, 7) /* (AC23) PRG1_PRU0_GPO0.GPIO0_1 */
-+			J721E_IOPAD(0x014, PIN_INPUT, 7) /* (AH23) PRG1_PRU0_GPO4.GPIO0_5 */
-+			J721E_IOPAD(0x020, PIN_INPUT, 7) /* (AE20) PRG1_PRU0_GPO7.GPIO0_8 */
-+			J721E_IOPAD(0x19c, PIN_INPUT, 7) /* (W27) RGMII6_TD0.GPIO0_102 */
-+			J721E_IOPAD(0x1b4, PIN_INPUT, 7) /* (W25) RGMII6_RD0.GPIO0_108 */
-+			J721E_IOPAD(0x188, PIN_INPUT, 7) /* (Y28) RGMII6_TX_CTL.GPIO0_97 */
-+			J721E_IOPAD(0x00c, PIN_INPUT, 7) /* (AF22) PRG1_PRU0_GPO2.GPIO0_3 */
-+			J721E_IOPAD(0x010, PIN_INPUT, 7) /* (AJ23) PRG1_PRU0_GPO3.GPIO0_4 */
-+		>;
-+	};
-+
-+	rpi_header_gpio1_pins_default: rpi-header-gpio1-pins-default {
-+		pinctrl-single,pins = <
-+			J721E_IOPAD(0x234, PIN_INPUT, 7) /* (U3) EXT_REFCLK1.GPIO1_12 */
-+		>;
-+	};
-+
-+	rpi_header_ehrpwm2_pins_default: rpi-header-ehrpwm2-pins-default {
-+		pinctrl-single,pins = <
-+			J721E_IOPAD(0x178, PIN_INPUT, 6) /* (U27) RGMII5_RD3.EHRPWM2_A */
-+			J721E_IOPAD(0x17c, PIN_INPUT, 6) /* (U24) RGMII5_RD2.EHRPWM2_B */
-+		>;
-+	};
-+
-+	rpi_header_ehrpwm3_pins_default: rpi-header-ehrpwm3-pins-default {
-+		pinctrl-single,pins = <
-+			J721E_IOPAD(0x18c, PIN_INPUT, 6) /* (V23) RGMII6_RX_CTL.EHRPWM3_A */
-+			J721E_IOPAD(0x190, PIN_INPUT, 6) /* (W23) RGMII6_TD3.EHRPWM3_B */
-+		>;
-+	};
- };
- 
- &wkup_pmx0 {
-@@ -631,11 +682,6 @@
- 	status = "disabled";
- };
- 
--&main_i2c5 {
--	/* Brought out on RPi Header */
--	status = "disabled";
--};
--
- &main_i2c6 {
- 	/* Unused */
- 	status = "disabled";
-@@ -1138,18 +1184,39 @@
- 	status = "disabled";
- };
- 
--&main_ehrpwm2 {
-+&main_ehrpwm4 {
- 	status = "disabled";
- };
- 
--&main_ehrpwm3 {
-+&main_ehrpwm5 {
- 	status = "disabled";
- };
- 
--&main_ehrpwm4 {
--	status = "disabled";
-+&main_gpio0 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&rpi_header_gpio0_pins_default>;
- };
- 
--&main_ehrpwm5 {
--	status = "disabled";
-+&main_gpio1 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&rpi_header_gpio1_pins_default>;
-+};
-+
-+&main_i2c5 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&main_i2c5_pins_default>;
-+	clock-frequency = <400000>;
-+	status = "okay";
-+};
-+
-+&main_ehrpwm2 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&rpi_header_ehrpwm2_pins_default>;
-+	status = "okay";
-+};
-+
-+&main_ehrpwm3 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&rpi_header_ehrpwm3_pins_default>;
-+	status = "okay";
- };
+Sinthu Raja (1):
+  arm64: dts: ti: k3-j721e-sk: Add pinmux for RPi Header
+
+Vijay Pothukuchi (1):
+  arm64: dts: ti: k3-j721e-*: Add dts nodes for EHRPWMs
+
+ .../mfd/ti,j721e-system-controller.yaml       |  10 ++
+ .../dts/ti/k3-j721e-common-proc-board.dts     |  24 +++++
+ arch/arm64/boot/dts/ti/k3-j721e-main.dtsi     |  62 ++++++++++-
+ arch/arm64/boot/dts/ti/k3-j721e-sk.dts        | 101 +++++++++++++++++-
+ 4 files changed, 191 insertions(+), 6 deletions(-)
+
 -- 
 2.17.1
 
