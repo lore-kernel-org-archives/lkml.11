@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B22C0C47087
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:21:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC2F4C47090
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:21:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240893AbiE3OUq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:20:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40314 "EHLO
+        id S240980AbiE3OUt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:20:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240821AbiE3OQ3 (ORCPT
+        with ESMTP id S240628AbiE3OQQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:16:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62086EA8B5;
-        Mon, 30 May 2022 06:44:01 -0700 (PDT)
+        Mon, 30 May 2022 10:16:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8819BED795;
+        Mon, 30 May 2022 06:43:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1D2AD60F38;
-        Mon, 30 May 2022 13:43:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24F06C385B8;
-        Mon, 30 May 2022 13:43:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 65ADAB80DB7;
+        Mon, 30 May 2022 13:43:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEAADC3411C;
+        Mon, 30 May 2022 13:43:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918231;
-        bh=UEtTKC+segok9K/ynO7AyNzCmnn7J3j6y8rLTN8HqF0=;
+        s=k20201202; t=1653918213;
+        bh=/iCZ2BVshjySAe77EuvghJEaNfvlxU8WQgSj30O2C0A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A492PClH5RJT0hE0ifzjAkA7L5ekp3Aany7oQmuuDbCxSpDk/OItjqg0keDxd2mXy
-         Dn42b0FliJ+GUmI4RIe+r/kmvLdH9hBV/aLglwJp826N3C8SaWR2B8tJ2Llpj90dYa
-         FedkZjGRXth6mcujn4KkS5jJjS0F+MEtdsKwTNjYR2XwkbPZIv9b5xmNrui4nuKn8V
-         zuoQ7GV0IHGdf9e82trd+NOVyN5Dq6B0nD61wbbrhQ1lpbSxslDLEhoF2NYWRevRE+
-         euRMdTIRQsbvVEH+6wwfJWT5kUoHrdoVccR0ozKzcpSxyR0HGg/7WqISHzvbgMn51z
-         lMWvH7kCMsERg==
+        b=QnUUxOStHzm7vO74IkHIgYEkDaNG3Sis0N5p5qqgd3U2qej0ztcjLdp+MdJLZgxpf
+         81BmXBOS1ShUv1ZPvzu1MYDwbUsZ74s+25YuK1at3NSRingkzKklK0OXPijJhp2bF6
+         NeCB3JaNM3m1mSvehteCnzowyOevApbKYiJhNV4qkObCK11plA+7+oLQiuGKUk4pXI
+         kuMs6upZLxNuMb9A5FH+2MXSkFRq9gdAa62bNNPSUi5bthvkb0TcG/VyNJqvagOfTk
+         EuWoCYBZcYB76oPt5mMVV1ln4vQ/hwBipBaOxzGugTiQxc9hIiKZeLIXSulUKTgn2F
+         k2xGkyP9q6UHQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     David Howells <dhowells@redhat.com>,
-        Jeffrey Altman <jaltman@auristor.com>,
-        Marc Dionne <marc.dionne@auristor.com>,
-        linux-afs@lists.infradead.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 104/109] rxrpc, afs: Fix selection of abort codes
-Date:   Mon, 30 May 2022 09:38:20 -0400
-Message-Id: <20220530133825.1933431-104-sashal@kernel.org>
+Cc:     Chaitanya Kulkarni <kch@nvidia.com>,
+        Keith Busch <kbusch@kernel.org>,
+        Christoph Hellwig <hch@lst.de>,
+        Sasha Levin <sashal@kernel.org>, axboe@fb.com,
+        sagi@grimberg.me, linux-nvme@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.15 096/109] nvme: set non-mdts limits in nvme_scan_work
+Date:   Mon, 30 May 2022 09:38:12 -0400
+Message-Id: <20220530133825.1933431-96-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133825.1933431-1-sashal@kernel.org>
 References: <20220530133825.1933431-1-sashal@kernel.org>
@@ -55,112 +53,132 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+From: Chaitanya Kulkarni <kch@nvidia.com>
 
-[ Upstream commit de696c4784f0706884458893c5a6c39b3a3ff65c ]
+[ Upstream commit 78288665b5d0154978fed431985310cb4f166836 ]
 
-The RX_USER_ABORT code should really only be used to indicate that the user
-of the rxrpc service (ie. userspace) implicitly caused a call to be aborted
-- for instance if the AF_RXRPC socket is closed whilst the call was in
-progress.  (The user may also explicitly abort a call and specify the abort
-code to use).
+In current implementation we set the non-mdts limits by calling
+nvme_init_non_mdts_limits() from nvme_init_ctrl_finish().
+This also tries to set the limits for the discovery controller which
+has no I/O queues resulting in the warning message reported by the
+nvme_log_error() when running blktest nvme/002: -
 
-Change some of the points of generation to use other abort codes instead:
+[ 2005.155946] run blktests nvme/002 at 2022-04-09 16:57:47
+[ 2005.192223] loop: module loaded
+[ 2005.196429] nvmet: adding nsid 1 to subsystem blktests-subsystem-0
+[ 2005.200334] nvmet: adding nsid 1 to subsystem blktests-subsystem-1
 
- (1) Abort the call with RXGEN_SS_UNMARSHAL or RXGEN_CC_UNMARSHAL if we see
-     ENOMEM and EFAULT during received data delivery and abort with
-     RX_CALL_DEAD in the default case.
+<------------------------------SNIP---------------------------------->
 
- (2) Abort with RXGEN_SS_MARSHAL if we get ENOMEM whilst trying to send a
-     reply.
+[ 2008.958108] nvmet: adding nsid 1 to subsystem blktests-subsystem-997
+[ 2008.962082] nvmet: adding nsid 1 to subsystem blktests-subsystem-998
+[ 2008.966102] nvmet: adding nsid 1 to subsystem blktests-subsystem-999
+[ 2008.973132] nvmet: creating discovery controller 1 for subsystem nqn.2014-08.org.nvmexpress.discovery for NQN testhostnqn.
+*[ 2008.973196] nvme1: Identify(0x6), Invalid Field in Command (sct 0x0 / sc 0x2) MORE DNR*
+[ 2008.974595] nvme nvme1: new ctrl: "nqn.2014-08.org.nvmexpress.discovery"
+[ 2009.103248] nvme nvme1: Removing ctrl: NQN "nqn.2014-08.org.nvmexpress.discovery"
 
- (3) Abort with RX_CALL_DEAD if we stop hearing from the peer if we had
-     heard from the peer and abort with RX_CALL_TIMEOUT if we hadn't.
+Move the call of nvme_init_non_mdts_limits() to nvme_scan_work() after
+we verify that I/O queues are created since that is a converging point
+for each transport where these limits are actually used.
 
- (4) Abort with RX_CALL_DEAD if we try to disconnect a call that's not
-     completed successfully or been aborted.
+1. FC :
+nvme_fc_create_association()
+ ...
+ nvme_fc_create_io_queues(ctrl);
+ ...
+ nvme_start_ctrl()
+  nvme_scan_queue()
+   nvme_scan_work()
 
-Reported-by: Jeffrey Altman <jaltman@auristor.com>
-Signed-off-by: David Howells <dhowells@redhat.com>
-cc: Marc Dionne <marc.dionne@auristor.com>
-cc: linux-afs@lists.infradead.org
-Signed-off-by: David S. Miller <davem@davemloft.net>
+2. PCIe:-
+nvme_reset_work()
+ ...
+ nvme_setup_io_queues()
+  nvme_create_io_queues()
+   nvme_alloc_queue()
+ ...
+ nvme_start_ctrl()
+  nvme_scan_queue()
+   nvme_scan_work()
+
+3. RDMA :-
+nvme_rdma_setup_ctrl
+ ...
+  nvme_rdma_configure_io_queues
+  ...
+  nvme_start_ctrl()
+   nvme_scan_queue()
+    nvme_scan_work()
+
+4. TCP :-
+nvme_tcp_setup_ctrl
+ ...
+  nvme_tcp_configure_io_queues
+  ...
+  nvme_start_ctrl()
+   nvme_scan_queue()
+    nvme_scan_work()
+
+* nvme_scan_work()
+...
+nvme_validate_or_alloc_ns()
+  nvme_alloc_ns()
+   nvme_update_ns_info()
+    nvme_update_disk_info()
+     nvme_config_discard() <---
+     blk_queue_max_write_zeroes_sectors() <---
+
+Signed-off-by: Chaitanya Kulkarni <kch@nvidia.com>
+Reviewed-by: Keith Busch <kbusch@kernel.org>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/afs/rxrpc.c          | 8 +++++---
- net/rxrpc/call_event.c  | 4 ++--
- net/rxrpc/conn_object.c | 2 +-
- 3 files changed, 8 insertions(+), 6 deletions(-)
+ drivers/nvme/host/core.c | 19 +++++++++++++++----
+ 1 file changed, 15 insertions(+), 4 deletions(-)
 
-diff --git a/fs/afs/rxrpc.c b/fs/afs/rxrpc.c
-index 23a1a92d64bb..a5434f3e57c6 100644
---- a/fs/afs/rxrpc.c
-+++ b/fs/afs/rxrpc.c
-@@ -537,6 +537,8 @@ static void afs_deliver_to_call(struct afs_call *call)
- 		case -ENODATA:
- 		case -EBADMSG:
- 		case -EMSGSIZE:
-+		case -ENOMEM:
-+		case -EFAULT:
- 			abort_code = RXGEN_CC_UNMARSHAL;
- 			if (state != AFS_CALL_CL_AWAIT_REPLY)
- 				abort_code = RXGEN_SS_UNMARSHAL;
-@@ -544,7 +546,7 @@ static void afs_deliver_to_call(struct afs_call *call)
- 						abort_code, ret, "KUM");
- 			goto local_abort;
- 		default:
--			abort_code = RX_USER_ABORT;
-+			abort_code = RX_CALL_DEAD;
- 			rxrpc_kernel_abort_call(call->net->socket, call->rxcall,
- 						abort_code, ret, "KER");
- 			goto local_abort;
-@@ -836,7 +838,7 @@ void afs_send_empty_reply(struct afs_call *call)
- 	case -ENOMEM:
- 		_debug("oom");
- 		rxrpc_kernel_abort_call(net->socket, call->rxcall,
--					RX_USER_ABORT, -ENOMEM, "KOO");
-+					RXGEN_SS_MARSHAL, -ENOMEM, "KOO");
- 		fallthrough;
- 	default:
- 		_leave(" [error]");
-@@ -878,7 +880,7 @@ void afs_send_simple_reply(struct afs_call *call, const void *buf, size_t len)
- 	if (n == -ENOMEM) {
- 		_debug("oom");
- 		rxrpc_kernel_abort_call(net->socket, call->rxcall,
--					RX_USER_ABORT, -ENOMEM, "KOO");
-+					RXGEN_SS_MARSHAL, -ENOMEM, "KOO");
- 	}
- 	_leave(" [error]");
- }
-diff --git a/net/rxrpc/call_event.c b/net/rxrpc/call_event.c
-index 22e05de5d1ca..e426f6831aab 100644
---- a/net/rxrpc/call_event.c
-+++ b/net/rxrpc/call_event.c
-@@ -377,9 +377,9 @@ void rxrpc_process_call(struct work_struct *work)
- 		if (test_bit(RXRPC_CALL_RX_HEARD, &call->flags) &&
- 		    (int)call->conn->hi_serial - (int)call->rx_serial > 0) {
- 			trace_rxrpc_call_reset(call);
--			rxrpc_abort_call("EXP", call, 0, RX_USER_ABORT, -ECONNRESET);
-+			rxrpc_abort_call("EXP", call, 0, RX_CALL_DEAD, -ECONNRESET);
- 		} else {
--			rxrpc_abort_call("EXP", call, 0, RX_USER_ABORT, -ETIME);
-+			rxrpc_abort_call("EXP", call, 0, RX_CALL_TIMEOUT, -ETIME);
- 		}
- 		set_bit(RXRPC_CALL_EV_ABORT, &call->events);
- 		goto recheck_state;
-diff --git a/net/rxrpc/conn_object.c b/net/rxrpc/conn_object.c
-index b2159dbf5412..660cd9b1a465 100644
---- a/net/rxrpc/conn_object.c
-+++ b/net/rxrpc/conn_object.c
-@@ -183,7 +183,7 @@ void __rxrpc_disconnect_call(struct rxrpc_connection *conn,
- 			chan->last_type = RXRPC_PACKET_TYPE_ABORT;
- 			break;
- 		default:
--			chan->last_abort = RX_USER_ABORT;
-+			chan->last_abort = RX_CALL_DEAD;
- 			chan->last_type = RXRPC_PACKET_TYPE_ABORT;
- 			break;
- 		}
+diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
+index 87877397d1ad..711b89424bd0 100644
+--- a/drivers/nvme/host/core.c
++++ b/drivers/nvme/host/core.c
+@@ -3032,10 +3032,6 @@ int nvme_init_ctrl_finish(struct nvme_ctrl *ctrl)
+ 	if (ret)
+ 		return ret;
+ 
+-	ret = nvme_init_non_mdts_limits(ctrl);
+-	if (ret < 0)
+-		return ret;
+-
+ 	ret = nvme_configure_apst(ctrl);
+ 	if (ret < 0)
+ 		return ret;
+@@ -4096,11 +4092,26 @@ static void nvme_scan_work(struct work_struct *work)
+ {
+ 	struct nvme_ctrl *ctrl =
+ 		container_of(work, struct nvme_ctrl, scan_work);
++	int ret;
+ 
+ 	/* No tagset on a live ctrl means IO queues could not created */
+ 	if (ctrl->state != NVME_CTRL_LIVE || !ctrl->tagset)
+ 		return;
+ 
++	/*
++	 * Identify controller limits can change at controller reset due to
++	 * new firmware download, even though it is not common we cannot ignore
++	 * such scenario. Controller's non-mdts limits are reported in the unit
++	 * of logical blocks that is dependent on the format of attached
++	 * namespace. Hence re-read the limits at the time of ns allocation.
++	 */
++	ret = nvme_init_non_mdts_limits(ctrl);
++	if (ret < 0) {
++		dev_warn(ctrl->device,
++			"reading non-mdts-limits failed: %d\n", ret);
++		return;
++	}
++
+ 	if (test_and_clear_bit(NVME_AER_NOTICE_NS_CHANGED, &ctrl->events)) {
+ 		dev_info(ctrl->device, "rescanning namespaces.\n");
+ 		nvme_clear_changed_ns_log(ctrl);
 -- 
 2.35.1
 
