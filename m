@@ -2,35 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AB8FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 07:58:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 278A1C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 08:06:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234239AbiE3H6J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 03:58:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55062 "EHLO
+        id S230098AbiE3IFm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 04:05:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232621AbiE3H6H (ORCPT
+        with ESMTP id S232012AbiE3IFj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 03:58:07 -0400
-Received: from mail.meizu.com (edge01.meizu.com [14.29.68.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E02564F458;
-        Mon, 30 May 2022 00:58:04 -0700 (PDT)
-Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail04.meizu.com
- (172.16.1.16) with Microsoft SMTP Server (TLS) id 14.3.487.0; Mon, 30 May
- 2022 15:58:06 +0800
+        Mon, 30 May 2022 04:05:39 -0400
+Received: from mail.meizu.com (edge05.meizu.com [157.122.146.251])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAD2074DFF
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 01:05:36 -0700 (PDT)
+Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail12.meizu.com
+ (172.16.1.108) with Microsoft SMTP Server (TLS) id 14.3.487.0; Mon, 30 May
+ 2022 16:05:36 +0800
 Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
  (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Mon, 30 May
- 2022 15:58:02 +0800
+ 2022 16:05:34 +0800
 From:   Haowen Bai <baihaowen@meizu.com>
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
+To:     Larry Finger <Larry.Finger@lwfinger.net>,
+        Florian Schilhabel <florian.c.schilhabel@googlemail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC:     Haowen Bai <baihaowen@meizu.com>, <linux-media@vger.kernel.org>,
-        <linux-staging@lists.linux.dev>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH] media: atomisp-mt9m114: Fix pointer dereferenced before checking
-Date:   Mon, 30 May 2022 15:58:01 +0800
-Message-ID: <1653897481-25681-1-git-send-email-baihaowen@meizu.com>
+CC:     Haowen Bai <baihaowen@meizu.com>, <linux-staging@lists.linux.dev>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH] staging: rtl8712: Fix pointer dereferenced before checking
+Date:   Mon, 30 May 2022 16:05:32 +0800
+Message-ID: <1653897933-25931-1-git-send-email-baihaowen@meizu.com>
 X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
 Content-Type: text/plain
@@ -41,35 +41,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The info->data is dereferencing before null checking, so move
-it after checking.
+The padapter->recvpriv.signal_qual_data is dereferencing before null
+checking, so move it after checking.
 
 Signed-off-by: Haowen Bai <baihaowen@meizu.com>
 ---
- drivers/staging/media/atomisp/i2c/atomisp-mt9m114.c | 4 +++-
+ drivers/staging/rtl8712/rtl8712_recv.c | 4 +++-
  1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/staging/media/atomisp/i2c/atomisp-mt9m114.c b/drivers/staging/media/atomisp/i2c/atomisp-mt9m114.c
-index 00d6842c07d6..3c81ab73cdae 100644
---- a/drivers/staging/media/atomisp/i2c/atomisp-mt9m114.c
-+++ b/drivers/staging/media/atomisp/i2c/atomisp-mt9m114.c
-@@ -616,13 +616,15 @@ static int mt9m114_get_intg_factor(struct i2c_client *client,
- 				   struct camera_mipi_info *info,
- 				   const struct mt9m114_res_struct *res)
+diff --git a/drivers/staging/rtl8712/rtl8712_recv.c b/drivers/staging/rtl8712/rtl8712_recv.c
+index 7f1fdd058551..8ed94b259dbe 100644
+--- a/drivers/staging/rtl8712/rtl8712_recv.c
++++ b/drivers/staging/rtl8712/rtl8712_recv.c
+@@ -863,10 +863,12 @@ static void process_link_qual(struct _adapter *padapter,
  {
--	struct atomisp_sensor_mode_data *buf = &info->data;
-+	struct atomisp_sensor_mode_data *buf;
- 	u32 reg_val;
- 	int ret;
+ 	u32	last_evm = 0, tmpVal;
+ 	struct rx_pkt_attrib *pattrib;
+-	struct smooth_rssi_data *sqd = &padapter->recvpriv.signal_qual_data;
++	struct smooth_rssi_data *sqd;
  
- 	if (!info)
- 		return -EINVAL;
- 
-+	buf = &info->data;
+ 	if (!prframe || !padapter)
+ 		return;
 +
- 	ret =  mt9m114_read_reg(client, MISENSOR_32BIT,
- 				REG_PIXEL_CLK, &reg_val);
- 	if (ret)
++	sqd = &padapter->recvpriv.signal_qual_data;
+ 	pattrib = &prframe->u.hdr.attrib;
+ 	if (pattrib->signal_qual != 0) {
+ 		/*
 -- 
 2.7.4
 
