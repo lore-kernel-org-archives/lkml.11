@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F8F8C4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45A60C4707E
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:03:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239501AbiE3OBa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:01:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38188 "EHLO
+        id S239564AbiE3OBl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:01:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238421AbiE3NwT (ORCPT
+        with ESMTP id S238665AbiE3NxM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:52:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DEC711447;
-        Mon, 30 May 2022 06:37:17 -0700 (PDT)
+        Mon, 30 May 2022 09:53:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C07D28A063;
+        Mon, 30 May 2022 06:37:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C0BF2B80D84;
-        Mon, 30 May 2022 13:37:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56321C3411C;
-        Mon, 30 May 2022 13:37:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2521BB80D84;
+        Mon, 30 May 2022 13:37:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97809C3411C;
+        Mon, 30 May 2022 13:37:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917834;
-        bh=jAZ7dqfEeDobrOdTI8ufggj5s7R4RsJZydxUTGMo1yg=;
+        s=k20201202; t=1653917848;
+        bh=q4P0TgG5luIpHJz6sITHcKcCqK92PH1Nr8Ym2LquE5M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bZevX4HLI+RXjfnQxXXyW4B2nkLrhZRnafmMJKyIdRzWTkhQjQUKLf5ggAwLzAAol
-         ARW2lpCNbjHWHWitruNF4NltZh8AlilDX4qVIOfdw7xTRNGHBjbjIKHAKw3xO0dya3
-         Ky03X3cNh76g+9DktLF+Do3EBQLUP7unKi+n7Nel23TQfCU9rLKizZGyr2IGkS0AEq
-         ifk1YL0ii86u9RaISdXeH89T31hq6gbyaQ43JcfKkfUKC3fwo4VXmnhulWExtXHbsm
-         4jGwwPVgB7dm25KbDmoJPkerkPGaw7L+i6L6KVCqsLC2gjxXKC7qkJvn0CkrplF/gk
-         nnj1PYhZ3TcjQ==
+        b=eRHvNohK5o/9i6WEWDApz7pdd8OXDreAPbtyqXrjQBi3AUMlcCkiXZ010ins09rOC
+         BmlMep37EOcvoogJd5E/HOHkYjmY9Tje0LQG1RDDfOePLcD3g3DDH4761b0Zo+5+Wr
+         FH9ArgvKctQakiKHaQaoh1gfkem1ilb916jGVqlXDJFnBNODVG81/0Uw7XF+GuscYf
+         qURmdDKZe8rq1LHCC5DAYG6YApRujHDtq/QF96axnXi9/lR7MILsl95CntwNAEvm0F
+         O/6T1xvXmNbcSS3UFXVM6kryDlhyFCfurD6kGjKKJBillMTWPIRzndZSx2PtUb00sf
+         8jpDdByTm9oZA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Omar Sandoval <osandov@fb.com>,
-        Sweet Tea Dorminy <sweettea-kernel@dorminy.me>,
-        David Sterba <dsterba@suse.com>,
-        Sasha Levin <sashal@kernel.org>, clm@fb.com,
-        josef@toxicpanda.com, linux-btrfs@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 110/135] btrfs: fix anon_dev leak in create_subvol()
-Date:   Mon, 30 May 2022 09:31:08 -0400
-Message-Id: <20220530133133.1931716-110-sashal@kernel.org>
+Cc:     Ping-Ke Shih <pkshih@realtek.com>, Kalle Valo <kvalo@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 115/135] rtw89: cfo: check mac_id to avoid out-of-bounds
+Date:   Mon, 30 May 2022 09:31:13 -0400
+Message-Id: <20220530133133.1931716-115-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133133.1931716-1-sashal@kernel.org>
 References: <20220530133133.1931716-1-sashal@kernel.org>
@@ -53,193 +52,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Omar Sandoval <osandov@fb.com>
+From: Ping-Ke Shih <pkshih@realtek.com>
 
-[ Upstream commit 2256e901f5bddc56e24089c96f27b77da932dfcc ]
+[ Upstream commit 97df85871a5b187609d30fca6d85b912d9e02f29 ]
 
-When btrfs_qgroup_inherit(), btrfs_alloc_tree_block, or
-btrfs_insert_root() fail in create_subvol(), we return without freeing
-anon_dev. Reorganize the error handling in create_subvol() to fix this.
+Somehow, hardware reports incorrect mac_id and pollute memory. Check index
+before we access the array.
 
-Reviewed-by: Sweet Tea Dorminy <sweettea-kernel@dorminy.me>
-Signed-off-by: Omar Sandoval <osandov@fb.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+  UBSAN: array-index-out-of-bounds in rtw89/phy.c:2517:23
+  index 188 is out of range for type 's32 [64]'
+  CPU: 1 PID: 51550 Comm: irq/35-rtw89_pc Tainted: G           OE
+  Call Trace:
+   <IRQ>
+   show_stack+0x52/0x58
+   dump_stack_lvl+0x4c/0x63
+   dump_stack+0x10/0x12
+   ubsan_epilogue+0x9/0x45
+   __ubsan_handle_out_of_bounds.cold+0x44/0x49
+   ? __alloc_skb+0x92/0x1d0
+   rtw89_phy_cfo_parse+0x44/0x7f [rtw89_core]
+   rtw89_core_rx+0x261/0x871 [rtw89_core]
+   ? __alloc_skb+0xee/0x1d0
+   rtw89_pci_napi_poll+0x3fa/0x4ea [rtw89_pci]
+   __napi_poll+0x33/0x1a0
+   net_rx_action+0x126/0x260
+   ? __queue_work+0x217/0x4c0
+   __do_softirq+0xd9/0x315
+   ? disable_irq_nosync+0x10/0x10
+   do_softirq.part.0+0x6d/0x90
+   </IRQ>
+   <TASK>
+   __local_bh_enable_ip+0x62/0x70
+   rtw89_pci_interrupt_threadfn+0x182/0x1a6 [rtw89_pci]
+   irq_thread_fn+0x28/0x60
+   irq_thread+0xc8/0x190
+   ? irq_thread_fn+0x60/0x60
+   kthread+0x16b/0x190
+   ? irq_thread_check_affinity+0xe0/0xe0
+   ? set_kthread_struct+0x50/0x50
+   ret_from_fork+0x22/0x30
+   </TASK>
+
+Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220516005215.5878-4-pkshih@realtek.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/ioctl.c | 49 +++++++++++++++++++++++-------------------------
- 1 file changed, 23 insertions(+), 26 deletions(-)
+ drivers/net/wireless/realtek/rtw89/phy.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/fs/btrfs/ioctl.c b/fs/btrfs/ioctl.c
-index 8fe9d55d6862..072cdcab3061 100644
---- a/fs/btrfs/ioctl.c
-+++ b/fs/btrfs/ioctl.c
-@@ -544,7 +544,7 @@ static noinline int create_subvol(struct user_namespace *mnt_userns,
- 	struct timespec64 cur_time = current_time(dir);
- 	struct inode *inode;
- 	int ret;
--	dev_t anon_dev = 0;
-+	dev_t anon_dev;
- 	u64 objectid;
- 	u64 index = 0;
+diff --git a/drivers/net/wireless/realtek/rtw89/phy.c b/drivers/net/wireless/realtek/rtw89/phy.c
+index 147009888de0..777ad4e8f45f 100644
+--- a/drivers/net/wireless/realtek/rtw89/phy.c
++++ b/drivers/net/wireless/realtek/rtw89/phy.c
+@@ -1872,6 +1872,11 @@ void rtw89_phy_cfo_parse(struct rtw89_dev *rtwdev, s16 cfo_val,
+ 	struct rtw89_cfo_tracking_info *cfo = &rtwdev->cfo_tracking;
+ 	u8 macid = phy_ppdu->mac_id;
  
-@@ -554,11 +554,7 @@ static noinline int create_subvol(struct user_namespace *mnt_userns,
- 
- 	ret = btrfs_get_free_objectid(fs_info->tree_root, &objectid);
- 	if (ret)
--		goto fail_free;
--
--	ret = get_anon_bdev(&anon_dev);
--	if (ret < 0)
--		goto fail_free;
-+		goto out_root_item;
- 
- 	/*
- 	 * Don't create subvolume whose level is not zero. Or qgroup will be
-@@ -566,9 +562,13 @@ static noinline int create_subvol(struct user_namespace *mnt_userns,
- 	 */
- 	if (btrfs_qgroup_level(objectid)) {
- 		ret = -ENOSPC;
--		goto fail_free;
-+		goto out_root_item;
- 	}
- 
-+	ret = get_anon_bdev(&anon_dev);
-+	if (ret < 0)
-+		goto out_root_item;
++	if (macid >= CFO_TRACK_MAX_USER) {
++		rtw89_warn(rtwdev, "mac_id %d is out of range\n", macid);
++		return;
++	}
 +
- 	btrfs_init_block_rsv(&block_rsv, BTRFS_BLOCK_RSV_TEMP);
- 	/*
- 	 * The same as the snapshot creation, please see the comment
-@@ -576,26 +576,26 @@ static noinline int create_subvol(struct user_namespace *mnt_userns,
- 	 */
- 	ret = btrfs_subvolume_reserve_metadata(root, &block_rsv, 8, false);
- 	if (ret)
--		goto fail_free;
-+		goto out_anon_dev;
- 
- 	trans = btrfs_start_transaction(root, 0);
- 	if (IS_ERR(trans)) {
- 		ret = PTR_ERR(trans);
- 		btrfs_subvolume_release_metadata(root, &block_rsv);
--		goto fail_free;
-+		goto out_anon_dev;
- 	}
- 	trans->block_rsv = &block_rsv;
- 	trans->bytes_reserved = block_rsv.size;
- 
- 	ret = btrfs_qgroup_inherit(trans, 0, objectid, inherit);
- 	if (ret)
--		goto fail;
-+		goto out;
- 
- 	leaf = btrfs_alloc_tree_block(trans, root, 0, objectid, NULL, 0, 0, 0,
- 				      BTRFS_NESTING_NORMAL);
- 	if (IS_ERR(leaf)) {
- 		ret = PTR_ERR(leaf);
--		goto fail;
-+		goto out;
- 	}
- 
- 	btrfs_mark_buffer_dirty(leaf);
-@@ -650,7 +650,7 @@ static noinline int create_subvol(struct user_namespace *mnt_userns,
- 		btrfs_tree_unlock(leaf);
- 		btrfs_free_tree_block(trans, objectid, leaf, 0, 1);
- 		free_extent_buffer(leaf);
--		goto fail;
-+		goto out;
- 	}
- 
- 	free_extent_buffer(leaf);
-@@ -659,19 +659,18 @@ static noinline int create_subvol(struct user_namespace *mnt_userns,
- 	key.offset = (u64)-1;
- 	new_root = btrfs_get_new_fs_root(fs_info, objectid, anon_dev);
- 	if (IS_ERR(new_root)) {
--		free_anon_bdev(anon_dev);
- 		ret = PTR_ERR(new_root);
- 		btrfs_abort_transaction(trans, ret);
--		goto fail;
-+		goto out;
- 	}
--	/* Freeing will be done in btrfs_put_root() of new_root */
-+	/* anon_dev is owned by new_root now. */
- 	anon_dev = 0;
- 
- 	ret = btrfs_record_root_in_trans(trans, new_root);
- 	if (ret) {
- 		btrfs_put_root(new_root);
- 		btrfs_abort_transaction(trans, ret);
--		goto fail;
-+		goto out;
- 	}
- 
- 	ret = btrfs_create_subvol_root(trans, new_root, root, mnt_userns);
-@@ -679,7 +678,7 @@ static noinline int create_subvol(struct user_namespace *mnt_userns,
- 	if (ret) {
- 		/* We potentially lose an unused inode item here */
- 		btrfs_abort_transaction(trans, ret);
--		goto fail;
-+		goto out;
- 	}
- 
- 	/*
-@@ -688,28 +687,28 @@ static noinline int create_subvol(struct user_namespace *mnt_userns,
- 	ret = btrfs_set_inode_index(BTRFS_I(dir), &index);
- 	if (ret) {
- 		btrfs_abort_transaction(trans, ret);
--		goto fail;
-+		goto out;
- 	}
- 
- 	ret = btrfs_insert_dir_item(trans, name, namelen, BTRFS_I(dir), &key,
- 				    BTRFS_FT_DIR, index);
- 	if (ret) {
- 		btrfs_abort_transaction(trans, ret);
--		goto fail;
-+		goto out;
- 	}
- 
- 	btrfs_i_size_write(BTRFS_I(dir), dir->i_size + namelen * 2);
- 	ret = btrfs_update_inode(trans, root, BTRFS_I(dir));
- 	if (ret) {
- 		btrfs_abort_transaction(trans, ret);
--		goto fail;
-+		goto out;
- 	}
- 
- 	ret = btrfs_add_root_ref(trans, objectid, root->root_key.objectid,
- 				 btrfs_ino(BTRFS_I(dir)), index, name, namelen);
- 	if (ret) {
- 		btrfs_abort_transaction(trans, ret);
--		goto fail;
-+		goto out;
- 	}
- 
- 	ret = btrfs_uuid_tree_add(trans, root_item->uuid,
-@@ -717,8 +716,7 @@ static noinline int create_subvol(struct user_namespace *mnt_userns,
- 	if (ret)
- 		btrfs_abort_transaction(trans, ret);
- 
--fail:
--	kfree(root_item);
-+out:
- 	trans->block_rsv = NULL;
- 	trans->bytes_reserved = 0;
- 	btrfs_subvolume_release_metadata(root, &block_rsv);
-@@ -734,11 +732,10 @@ static noinline int create_subvol(struct user_namespace *mnt_userns,
- 			return PTR_ERR(inode);
- 		d_instantiate(dentry, inode);
- 	}
--	return ret;
--
--fail_free:
-+out_anon_dev:
- 	if (anon_dev)
- 		free_anon_bdev(anon_dev);
-+out_root_item:
- 	kfree(root_item);
- 	return ret;
- }
+ 	cfo->cfo_tail[macid] += cfo_val;
+ 	cfo->cfo_cnt[macid]++;
+ 	cfo->packet_count++;
 -- 
 2.35.1
 
