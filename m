@@ -2,123 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4F94C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D51ACC4167E
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:28:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240998AbiE3OZr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:25:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40138 "EHLO
+        id S241212AbiE3O0G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:26:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241382AbiE3ORc (ORCPT
+        with ESMTP id S241388AbiE3ORd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:17:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 063B18FF96;
-        Mon, 30 May 2022 06:46:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8CB5C60F24;
-        Mon, 30 May 2022 13:46:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49935C3411E;
-        Mon, 30 May 2022 13:46:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918361;
-        bh=9FbQtXO0L8JxJMcpmuh7ZMfZkX+/jwdeHsLIxezS240=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d+b3Dp0LsaJS8+di1RTHbVcbUnWijwaKdl19s4llXgH4U9K/MNKNDR/wA/gDUwO/d
-         JFdaSI5n+3U+fT4BMTEUCfRhFtp3tClginErBo9f8BsXKC7Tns2jfTBNjF27bW2vGF
-         1rMJ5Q9G98LUIivjXra+hBGOtLIVvHJhQnjaBoDXjAX4Xk8Nw0AWfJ56J2qh+tU4xq
-         gwXhG8x2elbNX9u7VfEaQ16CzjpXF7j37BP7HrfiduD3MQWo4zPnYKU58h2ypi66gL
-         LSdDTwjEr6MvF3Wh/6ty0XkyEcjbibUMzlojVixNYRefEhT47dTstd2KoEyUjDHhp0
-         wD44Eb6wSEBcQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Corey Minyard <cminyard@mvista.com>,
-        Haowen Bai <baihaowen@meizu.com>,
-        Sasha Levin <sashal@kernel.org>,
-        openipmi-developer@lists.sourceforge.net
-Subject: [PATCH AUTOSEL 5.10 52/76] ipmi:ssif: Check for NULL msg when handling events and messages
-Date:   Mon, 30 May 2022 09:43:42 -0400
-Message-Id: <20220530134406.1934928-52-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220530134406.1934928-1-sashal@kernel.org>
-References: <20220530134406.1934928-1-sashal@kernel.org>
+        Mon, 30 May 2022 10:17:33 -0400
+Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16FE58FF8A
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 06:46:00 -0700 (PDT)
+Received: by mail-qk1-x72b.google.com with SMTP id b200so11256261qkc.7
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 06:46:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=8tubySlO9EL1sX7JJbgIYlj3V7gJSLQUkL2tqjiHPYE=;
+        b=qGFcst+H2sU9jethczFKj5MxMnXaCOn7OK090+/w4SslVfP0RhOPM+PrM/s6zmntEl
+         F0i0jWuXjup30AM1FCFtkmrQsYf603Ww0X7DlWH4G1X8DXidwxDvsLuIyOSA46WT96pb
+         gk/ByJ8wJJ6VG89vBxpWS4sT4viGby0Q7/aGVZjueV2Ol45MU6QR/kGUMziF9kEKL5jr
+         Vq5IvoXl5vRQyKgPRCK8sxmINhmRSQBk+B7MLNnt8CZ+4eyNendacm1T2oVMcG8QIJLi
+         JWs9iipRsPWjnyyw+uAEIr8g/Vhe0bmPXgyg2Sg9dqgZeemBHQFV9hvvB+/wubuuBXQ7
+         z3Sg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=8tubySlO9EL1sX7JJbgIYlj3V7gJSLQUkL2tqjiHPYE=;
+        b=wWOLChQuxbRgPwtfmJ5M+Pbm4qOkykKhMDXrAtz8olav73IW4SXMhODRz5AvJNLBiU
+         NOBUrhnEPARp6FzUzQ1HT6eh1b5kka4IX1ZjyNIkRBGUq5kXcFT/ipf+psUwl+XqFyW2
+         5dRYwiRJg9h0/ORrRSeN4LSP3vjXLsf0bGsdxifG5d/YTPn0aCt9DQdEvyeWZK+egLHV
+         5zT0FIEoE6COD8bLwz7ytBJl+Y76BV/88a/cpcy2OV6XB29hgankmr1rHvCgqfk9J/z4
+         llG+5YjthP+7vYZ+GguHdtkYppdZpzxGZTEN7NETGNZD3unKv6OvxkqOUAj3Ia074vtU
+         1+pA==
+X-Gm-Message-State: AOAM5337u7akCBwRzpfMiXqM3+gbrmN1Ny/diTj0YN7k0u/hVR3U9R4P
+        1ZzwNO5D5XHkL225JNFNFP+1KpsCV/yOChj8iVs=
+X-Google-Smtp-Source: ABdhPJw9o/+WDde4Jga387TqM8IY0EJdHUkX7NWLrzCofs5w6vulQVu5Xs2CiFpqzcOEIKw7lNGA0rRWaL1NB5GNp1o=
+X-Received: by 2002:a05:620a:40d1:b0:6a5:b4a3:dfbe with SMTP id
+ g17-20020a05620a40d100b006a5b4a3dfbemr14550181qko.340.1653918359158; Mon, 30
+ May 2022 06:45:59 -0700 (PDT)
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+References: <20220525115445.93500-1-roman.o.stratiienko@globallogic.com> <20220530132232.himfp7ubiacbmkpx@penduick>
+In-Reply-To: <20220530132232.himfp7ubiacbmkpx@penduick>
+From:   Roman Stratiienko <r.stratiienko@gmail.com>
+Date:   Mon, 30 May 2022 16:45:48 +0300
+Message-ID: <CAGphcdnPnFeafky=8-vyd_wKgbuTJc+MOb9UsM_0P-hVL_oiMQ@mail.gmail.com>
+Subject: Re: [PATCH] drm/sun4i: Fix blend route/enable register corruption for DE2.0/DE3.0
+To:     Maxime Ripard <maxime@cerno.tech>
+Cc:     wens@csie.org,
+        =?UTF-8?Q?Jernej_=C5=A0krabec?= <jernej.skrabec@gmail.com>,
+        airlied@linux.ie, Daniel Vetter <daniel@ffwll.ch>,
+        Samuel Holland <samuel@sholland.org>,
+        dri-devel@lists.freedesktop.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org, megi@xff.cz,
+        Roman Stratiienko <roman.o.stratiienko@globallogic.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Corey Minyard <cminyard@mvista.com>
+Hi Maxime,
 
-[ Upstream commit 7602b957e2404e5f98d9a40b68f1fd27f0028712 ]
+=D0=BF=D0=BD, 30 =D0=BC=D0=B0=D1=8F 2022 =D0=B3. =D0=B2 16:22, Maxime Ripar=
+d <maxime@cerno.tech>:
+>
+> Hi Roman,
+>
+> On Wed, May 25, 2022 at 11:54:45AM +0000, Roman Stratiienko wrote:
+> > By this commit 2 related issues are solved:
+> >
+> >   Issue #1. Corruption in blend route/enable register:
+> >
+> > Register corruption happens after using old_state->zpos to disable laye=
+r
+> > state. Blend route/enable registers are shared with other layers
+> > and other layers may have already assigned this PIPE to valid value.
+> >
+> > Solution: Do not use old_state->zpos to disable the plane pipe in
+> > blend registers.
+> >
+> >   Issue #2. Remove disabled layer from blend route/enable registers:
+> >
+> > Since sun4i/drm are using normalized_zpos, .atomic_update() will setup
+> > blend route/enable pipes starting from PIPE0 to PIPEX, where X+1 is a
+> > number of layers used by the CRTC in this frame.
+> >
+> > Remaining pipes (PIPE[X+1] - PIPE[MAX]) can have old data that MUST be
+> > updated.
+> >
+> > new_state->normalized_zpos can't be used, since drm helpers won't updat=
+e
+> > it for disabled planes.
+> >
+> > Solution:
+> >
+> > 1. Track the number of total used planes for crtc.
+> > 2. Use this number instead of zpos to disable unused blend pipes.
+> >
+> > Signed-off-by: Roman Stratiienko <roman.o.stratiienko@globallogic.com>
+>
+> If there's two issues, and two solutions, it should be two patches.
 
-Even though it's not possible to get into the SSIF_GETTING_MESSAGES and
-SSIF_GETTING_EVENTS states without a valid message in the msg field,
-it's probably best to be defensive here and check and print a log, since
-that means something else went wrong.
+I would say.. It's a single complex issue.
+Solving one part without solving another will make things only worse.
 
-Also add a default clause to that switch statement to release the lock
-and print a log, in case the state variable gets messed up somehow.
-
-Reported-by: Haowen Bai <baihaowen@meizu.com>
-Signed-off-by: Corey Minyard <cminyard@mvista.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/char/ipmi/ipmi_ssif.c | 23 +++++++++++++++++++++++
- 1 file changed, 23 insertions(+)
-
-diff --git a/drivers/char/ipmi/ipmi_ssif.c b/drivers/char/ipmi/ipmi_ssif.c
-index 3de679723648..477139749513 100644
---- a/drivers/char/ipmi/ipmi_ssif.c
-+++ b/drivers/char/ipmi/ipmi_ssif.c
-@@ -840,6 +840,14 @@ static void msg_done_handler(struct ssif_info *ssif_info, int result,
- 		break;
- 
- 	case SSIF_GETTING_EVENTS:
-+		if (!msg) {
-+			/* Should never happen, but just in case. */
-+			dev_warn(&ssif_info->client->dev,
-+				 "No message set while getting events\n");
-+			ipmi_ssif_unlock_cond(ssif_info, flags);
-+			break;
-+		}
-+
- 		if ((result < 0) || (len < 3) || (msg->rsp[2] != 0)) {
- 			/* Error getting event, probably done. */
- 			msg->done(msg);
-@@ -864,6 +872,14 @@ static void msg_done_handler(struct ssif_info *ssif_info, int result,
- 		break;
- 
- 	case SSIF_GETTING_MESSAGES:
-+		if (!msg) {
-+			/* Should never happen, but just in case. */
-+			dev_warn(&ssif_info->client->dev,
-+				 "No message set while getting messages\n");
-+			ipmi_ssif_unlock_cond(ssif_info, flags);
-+			break;
-+		}
-+
- 		if ((result < 0) || (len < 3) || (msg->rsp[2] != 0)) {
- 			/* Error getting event, probably done. */
- 			msg->done(msg);
-@@ -887,6 +903,13 @@ static void msg_done_handler(struct ssif_info *ssif_info, int result,
- 			deliver_recv_msg(ssif_info, msg);
- 		}
- 		break;
-+
-+	default:
-+		/* Should never happen, but just in case. */
-+		dev_warn(&ssif_info->client->dev,
-+			 "Invalid state in message done handling: %d\n",
-+			 ssif_info->ssif_state);
-+		ipmi_ssif_unlock_cond(ssif_info, flags);
- 	}
- 
- 	flags = ipmi_ssif_lock_cond(ssif_info, &oflags);
--- 
-2.35.1
-
+>
+> Maxime
