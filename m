@@ -2,129 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C680C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 15:25:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 115D9C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 15:25:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239461AbiE3PZb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 11:25:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44584 "EHLO
+        id S237347AbiE3PZg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 11:25:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241804AbiE3PZB (ORCPT
+        with ESMTP id S241878AbiE3PZC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 11:25:01 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF424140C5
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 07:27:03 -0700 (PDT)
-Received: from mail-yb1-f175.google.com ([209.85.219.175]) by
- mrelayeu.kundenserver.de (mreue011 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1MAwoL-1o705U2mAD-00BNnR for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022
- 16:27:01 +0200
-Received: by mail-yb1-f175.google.com with SMTP id t31so6376265ybi.2
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 07:27:01 -0700 (PDT)
-X-Gm-Message-State: AOAM530iK3Q2mV8VZSC7415vACqiXJ7deUN+Nxd+NCGh1deNO/Jec/+s
-        uOOWffgn70Zwp4/0T3M9UwRiZ5pM+8T+1oJ0c9E=
-X-Google-Smtp-Source: ABdhPJx5T8sAy2mpNYpXUMEEXXq3paGLe37RJlBPWUL37w/VrSqmqA+dX26yPRFsA+fHHAhbaULTIG1qF0gAbTdb1Dw=
-X-Received: by 2002:a25:4f0a:0:b0:64f:6a76:3d8f with SMTP id
- d10-20020a254f0a000000b0064f6a763d8fmr43544693ybb.134.1653920820404; Mon, 30
- May 2022 07:27:00 -0700 (PDT)
+        Mon, 30 May 2022 11:25:02 -0400
+Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3E7C55225;
+        Mon, 30 May 2022 07:27:52 -0700 (PDT)
+Received: by mail-oi1-x234.google.com with SMTP id h188so7683953oia.2;
+        Mon, 30 May 2022 07:27:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=9wvQDhybWLUOMxPFqDNFSEGeFfgr3pZojJ9yak42Waw=;
+        b=JEv/WBkuHQHN8pa452dG/n3IRLZ7lWUGeodl1TW/UZRVETlgjd8rBqttAmvlu9d+XL
+         A9Mng09/s9drgJd5LeZKos1WLcbOU6q0R25fXZgd7kWDHW0bNk0wixj2Ub6vFixxG22C
+         mpI9sGO842zwlX9bVFvrzjyJE9j9JONw6Ay7VecyZFZitXh7u2MAj/eNKVXhoXMSEwcy
+         yFvbltkXGhw8DfzxvDoPg+L8hy3Q/3lrOAVWKzr0CrPcJ1qFIeSOLN+e0xEe0pKvKWuG
+         8zjHaVSjBBNkMu0cHq2EVi56nauUA1B3BCdH4YcebZcSOfT+o3LHYiQOpETszpf9Es7X
+         3Ybw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=9wvQDhybWLUOMxPFqDNFSEGeFfgr3pZojJ9yak42Waw=;
+        b=olPP1Oh76clxsbFSXM+lJ/mCy0MJuZpUy+Yjh4SpgEV+fpAfCnqss6IOOrZZgvMOSW
+         wjC2k0V+SOOVxZRFEXVoWUT216xvxw1VjUfbjPQUGAZCgKqeBCKS0exTO9VQPoj4v2Zv
+         yKlm/feVZF3J0cLviawRinfd7iin85FRZHhzXE0s/8FlafI2kt0O3wK1GaTy9vo4Cc6d
+         e1zTZ+U/er2w1FTAK3cGJxUU2osJmZKM1+kT9DRD7AHUxUJprvaR2+ZmInY3PnJTi3fP
+         n/CS/I5tkjMamdKVU4CZWi1pdQ+JsyECe2ljn4NRFztrUjmLRCHldMJD9WruA3KwVJUt
+         8COw==
+X-Gm-Message-State: AOAM533P93n/3yB+wL6FAYe5DPLbJ4pm1hO3difVQZRMYzSR4Ub3NIoG
+        yS/PiKScZLTRz3P9+Tj8YM17XmD22PE=
+X-Google-Smtp-Source: ABdhPJxwIaS5FV+0qb01fejjuAKFjdN+l1GnG20Xy47Q95h4Jz9FE5cv1glYL6dnurGYWw2Tf5ma3Q==
+X-Received: by 2002:a05:6808:d47:b0:32b:8579:8568 with SMTP id w7-20020a0568080d4700b0032b85798568mr9875413oik.7.1653920872166;
+        Mon, 30 May 2022 07:27:52 -0700 (PDT)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id a11-20020a9d724b000000b0060603221260sm5110728otk.48.2022.05.30.07.27.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 30 May 2022 07:27:51 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <dddc2b53-62eb-fda7-4425-afdd179a7037@roeck-us.net>
+Date:   Mon, 30 May 2022 07:27:49 -0700
 MIME-Version: 1.0
-References: <YpCUzStDnSgQLNFN@debian> <CAHk-=wg0uGAX5DYZq+tY2KeUAR8DtR91YE1y9CkPMKkKOyE4jg@mail.gmail.com>
- <CADVatmNGPbSdRNQuwJEWAaPtqb3vBYRjvsuBpoRUnhEHj=X5GQ@mail.gmail.com>
- <CAHk-=wisQd8yiPX=SsK3eFiakKo713hq4SyqPWsJ-oyAmLFefQ@mail.gmail.com>
- <YpIR67FMtTGCwARZ@debian> <CAHk-=wjuyHE=1wLgHncub8FfgeyYqfWYsy4-YrhAvq9991h_Aw@mail.gmail.com>
- <CAHk-=wi_hJV0V=Ecg2dzbe2P_H1XKTu6VP_AtCH6u=tis31ayg@mail.gmail.com>
- <CAK8P3a0-QyOQiieEvM0yQb43XbCtPmeao8UvoAsdFnjCxYPz7Q@mail.gmail.com>
- <CAHk-=whfmwzjF4eBPYS6pHFqHVzJF3m=2h=gRWSRyHks8V=ABA@mail.gmail.com>
- <87a6aztli2.fsf@intel.com> <877d63tleq.fsf@intel.com> <CAK8P3a0-S77QLR1dK3NT6ot7JTAD5AdojAZJr-Xi112-v5EOdw@mail.gmail.com>
- <87czfvrwsv.fsf@intel.com> <CAK8P3a0HNOCOSx9UONw6gf1UUU8J4iAOmMFP8-DtJ3O7XAACsQ@mail.gmail.com>
- <874k17ru44.fsf@intel.com>
-In-Reply-To: <874k17ru44.fsf@intel.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Mon, 30 May 2022 16:26:43 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a2Zg2QDS1_Ysn8-Zqqd+K7bbTFS7JV7gPabp6nvPiKaog@mail.gmail.com>
-Message-ID: <CAK8P3a2Zg2QDS1_Ysn8-Zqqd+K7bbTFS7JV7gPabp6nvPiKaog@mail.gmail.com>
-Subject: Re: mainline build failure due to f1e4c916f97f ("drm/edid: add EDID
- block count and size helpers")
-To:     Jani Nikula <jani.nikula@intel.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Viresh Kumar <vireshk@kernel.org>,
-        Shiraz Hashim <shiraz.linux.kernel@gmail.com>,
-        =?UTF-8?B?VmlsbGUgU3lyasOkbMOk?= <ville.syrjala@linux.intel.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        SoC Team <soc@kernel.org>, Julia Lawall <Julia.Lawall@inria.fr>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:GsNo+lmxofIjxKfQ8P/W5vYMLw6wvfExggyZZJBLHymM0U2xCqF
- cxpRJ+VsjR+G/v2AI1vekY7nhm32qhgNDTfnRRMES1bZLtvq3j9ylWbEBxn+eNBwcmwlxoP
- 3Pg83FL9wGY6nxqr7sZlorgCf9dc6tpvs3EGxhPPbOCaHT/SODxv+qIS27AhGBLcWNFfOKA
- KQT89jtpp9CxL1rLWkHAQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:VU2d7sJRNV8=:Bb/K79iZoDkd6FMmH6HbZr
- ShzTmmi4LwZ192mHRmZ3E/bDE6RcJY/kLczT9q/T596wCFBUf8pIfkJlG1mYS/zSkPHmi6ZRq
- IEjHfkH+c55EXwx5vlQDkdWuwNvA+g4BLC4Z2eXZsFpeXCUM1iPdwQfQ25kmwzR7holEsuWVm
- kkdcqlDAOQKv0aErxKI1LkS5CBWhb59LJ2+jZ+wzhd1RrcZTeUmdPLUYYGEn08ogIHj32y6PU
- maDeS++VXnS7Ltjl0b1tvH8IsaAMpkVbp4Dvz/iIpo/xeMv1ftETwJaY9T1a5TFhEf2jm9FJc
- +R21QJACaW8P0kcDqxyZ6Aegx3oFgomTKYtmmVanAErV4oBDaxeJQMOwdqMp+25Pd3pNKUZK2
- je+T5kATa3Sb511AmWyANY0JEo8kbJhnXeXl6UqpF95aErZIK1/5V/v91P7nFiqHJIi0FDiSj
- k2nn52NezY02cJmIdyGm2M9kS7b+6gTBroxnNjoM326pQRVXwxtSvuTo7XPE4DcM3+iiYgrks
- ozFP++1g3WrlOiGPK/8+dSElauOyEYwDmTIoztHxvBPacaqiDfcyfy3lUCMlckz3YgNVz57+T
- I0NzhKoqpd7V524JO12hc5iMKQjna/l0Cf9lC4nrcycAkAa1C+MCweVGPP3iPVc378fbdE1Tv
- BtGzSsJsUZTVGxCSuObU248PDkw/Hzt6XcNVtM/vpoJ5qszqQA8a+jxmaN90lcMTWScUmIhMU
- OA7W9zcmiRghRH7MaVPBnGyn5F5APCeOeLBTtcsUi+Wtkmf9mtvM8KkI+FqeJHJnc0l2hmZaq
- I4VxKFtmAlYDOSTnkFG4iEMpl414Oi591niobnfbMtCjpu54KaU3O62z9+AeZ6sp4j/QL0SEI
- F1gjL/J0BPIEyhbIxwliWD8hFV8SNgNnQtvzU1Vds=
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH AUTOSEL 5.17 128/135] hwmon: Make chip parameter for
+ with_info API mandatory
+Content-Language: en-US
+To:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Cc:     jdelvare@suse.com, corbet@lwn.net, linux-hwmon@vger.kernel.org,
+        linux-doc@vger.kernel.org
+References: <20220530133133.1931716-1-sashal@kernel.org>
+ <20220530133133.1931716-128-sashal@kernel.org>
+From:   Guenter Roeck <linux@roeck-us.net>
+In-Reply-To: <20220530133133.1931716-128-sashal@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 30, 2022 at 4:08 PM Jani Nikula <jani.nikula@intel.com> wrote:
-> On Mon, 30 May 2022, Arnd Bergmann <arnd@arndb.de> wrote:
-> > struct my_driver_priv {
-> >        struct device dev;
-> >        u8 causes_misalignment;
-> >        spinlock_t lock;
-> >        atomic_t counter;
-> > } __packed; /* this annotation is harmful because it breaks the atomics */
->
-> I wonder if this is something that could be caught with coccinelle. Or
-> sparse. Are there any cases where this combo is necessary? (I can't
-> think of any, but it's a low bar. ;)
->
-> Cc: Julia.
+On 5/30/22 06:31, Sasha Levin wrote:
+> From: Guenter Roeck <linux@roeck-us.net>
+> 
+> [ Upstream commit ddaefa209c4ac791c1262e97c9b2d0440c8ef1d5 ]
+> 
+> Various attempts were made recently to "convert" the old
+> hwmon_device_register() API to devm_hwmon_device_register_with_info()
+> by just changing the function name without actually converting the
+> driver. Prevent this from happening by making the 'chip' parameter of
+> devm_hwmon_device_register_with_info() mandatory.
+> 
+> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+> Signed-off-by: Sasha Levin <sashal@kernel.org>
 
-I think one would first have to make a list of data types that are not
-meant to be in a packed structure. It could be a good start to
-search for any packed aggregates with a pointer, atomic_t or spinlock_t
-in them, but there are of course many more types that you won't
-find in hardware structures.
+This patch should not be backported. It is only relevant for new
+kernel releases, and may have adverse affect if applied to older
+kernels.
 
-> > or if the annotation does not change the layout like
-> >
-> > struct my_dma_descriptor {
-> >      __le64 address;
-> >      __le64 length;
-> > } __packed; /* does not change layout but makes access slow on some
-> > architectures */
->
-> Why is this the case, though? I'd imagine the compiler could figure this
-> out.
+Guenter
 
-When you annotate the entire structure as __packed without an
-extra __aligned() annotation, the compiler has to assume that the
-structure itself is unaligned as well. On many of the older architectures,
-this will result in accessing the values one byte at a time. Marking
-the structure as "__packed __aligned(8)" instead would be harmless.
+> ---
+>   Documentation/hwmon/hwmon-kernel-api.rst |  2 +-
+>   drivers/hwmon/hwmon.c                    | 16 +++++++---------
+>   2 files changed, 8 insertions(+), 10 deletions(-)
+> 
+> diff --git a/Documentation/hwmon/hwmon-kernel-api.rst b/Documentation/hwmon/hwmon-kernel-api.rst
+> index c41eb6108103..23f27fe78e37 100644
+> --- a/Documentation/hwmon/hwmon-kernel-api.rst
+> +++ b/Documentation/hwmon/hwmon-kernel-api.rst
+> @@ -72,7 +72,7 @@ hwmon_device_register_with_info is the most comprehensive and preferred means
+>   to register a hardware monitoring device. It creates the standard sysfs
+>   attributes in the hardware monitoring core, letting the driver focus on reading
+>   from and writing to the chip instead of having to bother with sysfs attributes.
+> -The parent device parameter cannot be NULL with non-NULL chip info. Its
+> +The parent device parameter as well as the chip parameter must not be NULL. Its
+>   parameters are described in more detail below.
+>   
+>   devm_hwmon_device_register_with_info is similar to
+> diff --git a/drivers/hwmon/hwmon.c b/drivers/hwmon/hwmon.c
+> index 3ae961986fc3..55237a5fc49a 100644
+> --- a/drivers/hwmon/hwmon.c
+> +++ b/drivers/hwmon/hwmon.c
+> @@ -854,11 +854,12 @@ EXPORT_SYMBOL_GPL(hwmon_device_register_with_groups);
+>   
+>   /**
+>    * hwmon_device_register_with_info - register w/ hwmon
+> - * @dev: the parent device
+> - * @name: hwmon name attribute
+> - * @drvdata: driver data to attach to created device
+> - * @chip: pointer to hwmon chip information
+> + * @dev: the parent device (mandatory)
+> + * @name: hwmon name attribute (mandatory)
+> + * @drvdata: driver data to attach to created device (optional)
+> + * @chip: pointer to hwmon chip information (mandatory)
+>    * @extra_groups: pointer to list of additional non-standard attribute groups
+> + *	(optional)
+>    *
+>    * hwmon_device_unregister() must be called when the device is no
+>    * longer needed.
+> @@ -871,13 +872,10 @@ hwmon_device_register_with_info(struct device *dev, const char *name,
+>   				const struct hwmon_chip_info *chip,
+>   				const struct attribute_group **extra_groups)
+>   {
+> -	if (!name)
+> -		return ERR_PTR(-EINVAL);
+> -
+> -	if (chip && (!chip->ops || !chip->ops->is_visible || !chip->info))
+> +	if (!dev || !name || !chip)
+>   		return ERR_PTR(-EINVAL);
+>   
+> -	if (chip && !dev)
+> +	if (!chip->ops || !chip->ops->is_visible || !chip->info)
+>   		return ERR_PTR(-EINVAL);
+>   
+>   	return __hwmon_device_register(dev, name, drvdata, chip, extra_groups);
 
-When I have a structure with a few misaligned members, I generally
-prefer to only annotate the members that are not naturally aligned,
-but this approach is not very common.
-
-         Arnd
