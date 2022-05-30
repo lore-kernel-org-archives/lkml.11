@@ -2,155 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14FE5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 12:14:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54847C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 12:16:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236074AbiE3MOq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 08:14:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57410 "EHLO
+        id S236082AbiE3MQk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 08:16:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236068AbiE3MOo (ORCPT
+        with ESMTP id S236055AbiE3MQi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 08:14:44 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10C8613E04
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 05:14:36 -0700 (PDT)
-X-UUID: 22fd0f51a2e848de9f119297234c6976-20220530
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:f08fdcd2-853f-44dd-ba56-f596366d4959,OB:0,LO
-        B:0,IP:0,URL:5,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:0
-X-CID-META: VersionHash:2a19b09,CLOUDID:acf30548-4fb1-496b-8f1d-39e733fed1ea,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
-        ,QS:0,BEC:nil
-X-UUID: 22fd0f51a2e848de9f119297234c6976-20220530
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
-        (envelope-from <yf.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 527559544; Mon, 30 May 2022 20:14:31 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Mon, 30 May 2022 20:14:30 +0800
-Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 30 May 2022 20:14:29 +0800
-From:   <yf.wang@mediatek.com>
-To:     Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        "Matthias Brugger" <matthias.bgg@gmail.com>,
-        "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>
-CC:     <wsd_upstream@mediatek.com>, Libo Kang <Libo.Kang@mediatek.com>,
-        "Miles Chen" <miles.chen@mediatek.com>,
-        Yong Wu <Yong.Wu@mediatek.com>,
-        Yunfei Wang <yf.wang@mediatek.com>,
-        Ning Li <ning.li@mediatek.com>
-Subject: [PATCH] iommu/dma: Fix race condition during iova_domain initialization
-Date:   Mon, 30 May 2022 20:07:45 +0800
-Message-ID: <20220530120748.31733-1-yf.wang@mediatek.com>
-X-Mailer: git-send-email 2.18.0
+        Mon, 30 May 2022 08:16:38 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93F68BCB9;
+        Mon, 30 May 2022 05:16:36 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 526431F42E1B
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1653912995;
+        bh=eRoHy4JEVSeabbymYlFcaEqOqtSW2VLN1aXTCvMWwBs=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=Xm+TnJL3TRgvgDEAVtSudKUlXAV+6HZg3bqntAapoFfNoHcmGca24fletZYUxiKH4
+         rG8zUtCw+/gkpydx0YJDe9pVV7GMmTQFSQCAMpQOyhvbZByCvEumcqMT9dwSSwEeQ6
+         VmmmJqXlUTpGBXKSi7BtAWzEPfHecuSnynRDelHPWPyay2s0Vi8X7r9LeELPhmTRmR
+         5aXyF5h1zi/7JO0hTRpz8DO+bR6dF1BfVLMZrKHYgjNZFc1YAEJZ8t/daCjUj9WUfL
+         sf7eIOEKE3dAkaeh8dJC0ywVtJnRBfPPo8piO5DCoPD+NHzpEhCb3cPxGcT+FoCrmu
+         Cqyr14b/Yk56w==
+Message-ID: <e4d3ab91-9c53-79a0-76f8-098e6b846441@collabora.com>
+Date:   Mon, 30 May 2022 14:16:31 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v6 2/2] PM / devfreq: mediatek: Introduce MediaTek CCI
+ devfreq driver
+Content-Language: en-US
+To:     Johnson Wang <johnson.wang@mediatek.com>, cw00.choi@samsung.com,
+        krzk+dt@kernel.org, robh+dt@kernel.org, kyungmin.park@samsung.com
+Cc:     khilman@kernel.org, linux-pm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, jia-wei.chang@mediatek.com,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220527110036.8810-1-johnson.wang@mediatek.com>
+ <20220527110036.8810-3-johnson.wang@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220527110036.8810-3-johnson.wang@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yunfei Wang <yf.wang@mediatek.com>
+Il 27/05/22 13:00, Johnson Wang ha scritto:
+> We introduce a devfreq driver for the MediaTek Cache Coherent Interconnect
+> (CCI) used by some MediaTek SoCs.
+> 
+> In this driver, we use the passive devfreq driver to get target frequencies
+> and adjust voltages accordingly. In MT8183 and MT8186, the MediaTek CCI
+> is supplied by the same regulators with the little core CPUs.
+> 
+> Signed-off-by: Jia-Wei Chang <jia-wei.chang@mediatek.com>
+> Signed-off-by: Johnson Wang <johnson.wang@mediatek.com>
+> Acked-by: Chanwoo Choi <cw00.choi@samsung.com>
+> ---
+> This patch depends on "devfreq-testing"[1].
+> [1]https://git.kernel.org/pub/scm/linux/kernel/git/chanwoo/linux.git/log/?h=devfreq-testing
+> ---
+>   drivers/devfreq/Kconfig           |  10 +
+>   drivers/devfreq/Makefile          |   1 +
+>   drivers/devfreq/mtk-cci-devfreq.c | 441 ++++++++++++++++++++++++++++++
+>   3 files changed, 452 insertions(+)
+>   create mode 100644 drivers/devfreq/mtk-cci-devfreq.c
+> 
+> diff --git a/drivers/devfreq/Kconfig b/drivers/devfreq/Kconfig
+> index 87eb2b837e68..9754d8b31621 100644
+> --- a/drivers/devfreq/Kconfig
+> +++ b/drivers/devfreq/Kconfig
+> @@ -120,6 +120,16 @@ config ARM_TEGRA_DEVFREQ
+>   	  It reads ACTMON counters of memory controllers and adjusts the
+>   	  operating frequencies and voltages with OPP support.
+>   
+> +config ARM_MEDIATEK_CCI_DEVFREQ
+> +	tristate "MEDIATEK CCI DEVFREQ Driver"
+> +	depends on ARM_MEDIATEK_CPUFREQ || COMPILE_TEST
+> +	select DEVFREQ_GOV_PASSIVE
+> +	help
+> +	  This adds a devfreq driver for MediaTek Cache Coherent Interconnect
+> +	  which is shared the same regulators with the cpu cluster. It can track
+> +	  buck voltages and update a proper CCI frequency. Use the notification
+> +	  to get the regulator status.
+> +
+>   config ARM_RK3399_DMC_DEVFREQ
+>   	tristate "ARM RK3399 DMC DEVFREQ Driver"
+>   	depends on (ARCH_ROCKCHIP && HAVE_ARM_SMCCC) || \
+> diff --git a/drivers/devfreq/Makefile b/drivers/devfreq/Makefile
+> index 0b6be92a25d9..bf40d04928d0 100644
+> --- a/drivers/devfreq/Makefile
+> +++ b/drivers/devfreq/Makefile
+> @@ -11,6 +11,7 @@ obj-$(CONFIG_DEVFREQ_GOV_PASSIVE)	+= governor_passive.o
+>   obj-$(CONFIG_ARM_EXYNOS_BUS_DEVFREQ)	+= exynos-bus.o
+>   obj-$(CONFIG_ARM_IMX_BUS_DEVFREQ)	+= imx-bus.o
+>   obj-$(CONFIG_ARM_IMX8M_DDRC_DEVFREQ)	+= imx8m-ddrc.o
+> +obj-$(CONFIG_ARM_MEDIATEK_CCI_DEVFREQ)	+= mtk-cci-devfreq.o
+>   obj-$(CONFIG_ARM_RK3399_DMC_DEVFREQ)	+= rk3399_dmc.o
+>   obj-$(CONFIG_ARM_SUN8I_A33_MBUS_DEVFREQ)	+= sun8i-a33-mbus.o
+>   obj-$(CONFIG_ARM_TEGRA_DEVFREQ)		+= tegra30-devfreq.o
+> diff --git a/drivers/devfreq/mtk-cci-devfreq.c b/drivers/devfreq/mtk-cci-devfreq.c
+> new file mode 100644
+> index 000000000000..df42da35b312
+> --- /dev/null
+> +++ b/drivers/devfreq/mtk-cci-devfreq.c
+> @@ -0,0 +1,441 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * Copyright (C) 2022 MediaTek Inc.
+> + */
+> +
 
-When many devices share the same iova domain, iommu_dma_init_domain()
-may be called at the same time. The checking of iovad->start_pfn will
-all get false in iommu_dma_init_domain() and both enter init_iova_domain()
-to do iovad initialization.
+..snip..
 
-Fix this by protecting init_iova_domain() with iommu_dma_cookie->mutex.
+> +};
+> +
+> +static int mtk_ccifreq_probe(struct platform_device *pdev)
+> +{
+> +	struct device *dev = &pdev->dev;
+> +	struct mtk_ccifreq_drv *drv;
+> +	struct devfreq_passive_data *passive_data;
+> +	struct dev_pm_opp *opp;
+> +	unsigned long rate, opp_volt;
+> +	int ret;
+> +
+> +	drv = devm_kzalloc(dev, sizeof(*drv), GFP_KERNEL);
+> +	if (!drv)
+> +		return -ENOMEM;
+> +
+> +	drv->dev = dev;
+> +	drv->soc_data = (const struct mtk_ccifreq_platform_data *)
+> +				of_device_get_match_data(&pdev->dev);
+> +	mutex_init(&drv->reg_lock);
+> +	platform_set_drvdata(pdev, drv);
+> +
+> +	drv->cci_clk = devm_clk_get(dev, "cci");
+> +	if (IS_ERR(drv->cci_clk)) {
+> +		ret = PTR_ERR(drv->cci_clk);
+> +		return dev_err_probe(dev, ret,
+> +				     "failed to get cci clk: %d\n", ret);
+> +	}
+> +
+> +	drv->inter_clk = devm_clk_get(dev, "intermediate");
+> +	if (IS_ERR(drv->inter_clk)) {
+> +		ret = PTR_ERR(drv->inter_clk);
+> +		return dev_err_probe(dev, ret,
+> +				     "failed to get intermediate clk: %d\n", ret);
+> +	}
+> +
+> +	drv->proc_reg = devm_regulator_get_optional(dev, "proc");
 
-Exception backtrace:
-rb_insert_color(param1=0xFFFFFF80CD2BDB40, param3=1) + 64
-init_iova_domain() + 180
-iommu_setup_dma_ops() + 260
-arch_setup_dma_ops() + 132
-of_dma_configure_id() + 468
-platform_dma_configure() + 32
-really_probe() + 1168
-driver_probe_device() + 268
-__device_attach_driver() + 524
-__device_attach() + 524
-bus_probe_device() + 64
-deferred_probe_work_func() + 260
-process_one_work() + 580
-worker_thread() + 1076
-kthread() + 332
-ret_from_fork() + 16
+In the devicetree binding for this driver, the "proc" regulator is *not* optional,
+but here you're using devm_regulator_get_optional.
 
-Signed-off-by: Ning Li <ning.li@mediatek.com>
-Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
----
- drivers/iommu/dma-iommu.c | 17 +++++++++++++----
- 1 file changed, 13 insertions(+), 4 deletions(-)
+If this is not optional, you should use devm_regulator_get() instead.
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 09f6e1c0f9c0..b38c5041eeab 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -63,6 +63,7 @@ struct iommu_dma_cookie {
- 
- 	/* Domain for flush queue callback; NULL if flush queue not in use */
- 	struct iommu_domain		*fq_domain;
-+	struct mutex			mutex;
- };
- 
- static DEFINE_STATIC_KEY_FALSE(iommu_deferred_attach_enabled);
-@@ -309,6 +310,7 @@ int iommu_get_dma_cookie(struct iommu_domain *domain)
- 	if (!domain->iova_cookie)
- 		return -ENOMEM;
- 
-+	mutex_init(&domain->iova_cookie->mutex);
- 	return 0;
- }
- 
-@@ -549,26 +551,33 @@ static int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
- 	}
- 
- 	/* start_pfn is always nonzero for an already-initialised domain */
-+	mutex_lock(&cookie->mutex);
- 	if (iovad->start_pfn) {
- 		if (1UL << order != iovad->granule ||
- 		    base_pfn != iovad->start_pfn) {
- 			pr_warn("Incompatible range for DMA domain\n");
--			return -EFAULT;
-+			ret = -EFAULT;
-+			goto done_unlock;
- 		}
- 
--		return 0;
-+		ret = 0;
-+		goto done_unlock;
- 	}
- 
- 	init_iova_domain(iovad, 1UL << order, base_pfn);
- 	ret = iova_domain_init_rcaches(iovad);
- 	if (ret)
--		return ret;
-+		goto done_unlock;
- 
- 	/* If the FQ fails we can simply fall back to strict mode */
- 	if (domain->type == IOMMU_DOMAIN_DMA_FQ && iommu_dma_init_fq(domain))
- 		domain->type = IOMMU_DOMAIN_DMA;
- 
--	return iova_reserve_iommu_regions(dev, domain);
-+	ret = iova_reserve_iommu_regions(dev, domain);
-+
-+done_unlock:
-+	mutex_unlock(&cookie->mutex);
-+	return ret;
- }
- 
- /**
--- 
-2.18.0
+> +	if (IS_ERR(drv->proc_reg)) {
+> +		ret = PTR_ERR(drv->proc_reg);
+> +		return dev_err_probe(dev, ret,
+> +				     "failed to get proc regulator: %d\n", ret);
+
+There's no need to print ret... dev_err_probe() takes care of that for you already:
+in this case, you're printing the value of ret twice.
+
+> +	}
+> +
+> +	ret = regulator_enable(drv->proc_reg);
+
+If you move this call after the devm_regulator_get_optional() call for the sram
+vreg, you will be able to use dev_err_probe for the latter as well.
+
+> +	if (ret) {
+> +		dev_err(dev, "failed to enable proc regulator\n");
+
+Why aren't you using dev_err_probe here, like you've done for the other instances?
+
+> +		return ret;
+> +	}
+> +
+> +	drv->sram_reg = devm_regulator_get_optional(dev, "sram");
+> +	if (IS_ERR(drv->sram_reg))
+> +		drv->sram_reg = NULL;
+
+When you use regulator_get_optional() (including the devm_ variant of it), you
+shall return an error, if there's any... that's what the _optional() is for.
+
+if (IS_ERR(drv->sram_reg))
+	return dev_err_probe(dev, PTR_ERR(drv->proc_reg),
+			     "failed to get sram regulator");
+
+> +	else {
+> +		ret = regulator_enable(drv->sram_reg);
+> +		if (ret) {
+> +			dev_err(dev, "failed to enable sram regulator\n");
+> +			goto out_free_resources;
+> +		}
+> +	}
+> +
+
+Regards,
+Angelo
+
 
