@@ -2,90 +2,233 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84B49C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 21:03:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76C5FC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 21:07:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243229AbiE3VDR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 17:03:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49210 "EHLO
+        id S241114AbiE3VHB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 17:07:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237509AbiE3VDK (ORCPT
+        with ESMTP id S233673AbiE3VG6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 17:03:10 -0400
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34B77292;
-        Mon, 30 May 2022 14:03:08 -0700 (PDT)
-Received: from sslproxy02.your-server.de ([78.47.166.47])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nvmXW-000Be0-Qm; Mon, 30 May 2022 23:03:02 +0200
-Received: from [85.1.206.226] (helo=linux-2.home)
-        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nvmXW-0009iv-CB; Mon, 30 May 2022 23:03:02 +0200
-Subject: Re: [PATCH bpf-next v3 4/6] libbpf: Unify memory address casting
- operation style
-To:     Pu Lehui <pulehui@huawei.com>, bpf@vger.kernel.org,
-        linux-riscv@lists.infradead.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Luke Nelson <luke.r.nels@gmail.com>,
-        Xi Wang <xi.wang@gmail.com>, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>
-References: <20220530092815.1112406-1-pulehui@huawei.com>
- <20220530092815.1112406-5-pulehui@huawei.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <a31efed5-a436-49c9-4126-902303df9766@iogearbox.net>
-Date:   Mon, 30 May 2022 23:03:01 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        Mon, 30 May 2022 17:06:58 -0400
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AE39101EA
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 14:06:56 -0700 (PDT)
+Received: by mail-wm1-x32e.google.com with SMTP id c5-20020a1c3505000000b0038e37907b5bso207962wma.0
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 14:06:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=hDUErSF+n1k4cG7IQv0rQoHbdfQHDvgwLI/ub82oI98=;
+        b=Z+INMB7KL0W830LFilyrsOF47m5fBPC24BsIx5pOXHkuenlM43QGXwtrPRW1zUE+ly
+         VTNOcRCRqFhsdKGfXsRD+g+dvTczYTHlIZiJUmH5zqCwXCTkd7ryV46wFVj2txHieIQ9
+         Ytt5usk4Djvi/TGBK14yHatzMqavoxJ0Mq/+E8l3/XQsLHKhEeHoYi8/0KZ5tdc9HsIz
+         K13j054GXV3EN4RxvR1NPin+SiYjZQRLkJixUUg5GPnicknqsry18NZw+Zz/wpeByNfV
+         MuTZ5qad/P4rAlAqBBH7gsWWT0vX7QqJ9WZBZfQwvf0gpFI9xMcMjneUb4SK50O/N8xV
+         bL9w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=hDUErSF+n1k4cG7IQv0rQoHbdfQHDvgwLI/ub82oI98=;
+        b=K1rm+8mgEY5GyLrF/JULpSWgLbQtEf5Tz5NI/mNeRY5gD+0/LVs6S7XdEXZ7726ERz
+         xay/ToaJ7rOX44A0SKZ3qTIS3I+n0WxWk9YZi5ypie1MPc+uyt0aQIV0IIlNKKL96dUN
+         Z5e3Anf3W1BhNjGOLFCuyYYboYlVpZuDCSfIL2iS9zh5oWD/Z0bIoJkKTC4cEWhvnBWF
+         YlsYb4EgUPpyUeQa4SU1gBhTMd4NHPLPxyKV52Z+neMWdcxQyvKXj3vSlltMdP33mlmj
+         BRE0g8Q3dz66l8zLPC83u0JSrA+Nc7CngYhQyvWEY8DhdxHX9tLmRIEFas3LtZcBd3zU
+         M4lQ==
+X-Gm-Message-State: AOAM531qmyXi21Eopljm1Pc/lQOSNRH2B8oZ+A8D5VbTDpJyXRsrhKWG
+        Ezb8zT10Ftzq///X3e5yQEc+tw==
+X-Google-Smtp-Source: ABdhPJyOZOHShGwmaDvr1ydNfXBcoRLLSzyL9oqhfqyoKaFJdOtQap1lAoVeSU6ZldwbTAyAfnfCGg==
+X-Received: by 2002:a05:600c:190b:b0:394:880f:ae2c with SMTP id j11-20020a05600c190b00b00394880fae2cmr20118086wmq.79.1653944815073;
+        Mon, 30 May 2022 14:06:55 -0700 (PDT)
+Received: from localhost.localdomain ([88.160.162.107])
+        by smtp.gmail.com with ESMTPSA id v7-20020a05600c15c700b003958af7d0c8sm270910wmf.45.2022.05.30.14.06.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 May 2022 14:06:54 -0700 (PDT)
+From:   Fabien Parent <fparent@baylibre.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     Fabien Parent <fparent@baylibre.com>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH RESEND v2 2/2] arm64: dts: mediatek: mt8183-pumpkin: add HDMI support
+Date:   Mon, 30 May 2022 23:06:40 +0200
+Message-Id: <20220530210640.927733-2-fparent@baylibre.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220530210640.927733-1-fparent@baylibre.com>
+References: <20220530210640.927733-1-fparent@baylibre.com>
 MIME-Version: 1.0
-In-Reply-To: <20220530092815.1112406-5-pulehui@huawei.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.6/26557/Mon May 30 10:05:44 2022)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/30/22 11:28 AM, Pu Lehui wrote:
-> The members of bpf_prog_info, which are line_info, jited_line_info,
-> jited_ksyms and jited_func_lens, store u64 address pointed to the
-> corresponding memory regions. Memory addresses are conceptually
-> unsigned, (unsigned long) casting makes more sense, so let's make
-> a change for conceptual uniformity.
-> 
-> Signed-off-by: Pu Lehui <pulehui@huawei.com>
-> ---
->   tools/lib/bpf/bpf_prog_linfo.c | 9 +++++----
->   1 file changed, 5 insertions(+), 4 deletions(-)
-> 
-> diff --git a/tools/lib/bpf/bpf_prog_linfo.c b/tools/lib/bpf/bpf_prog_linfo.c
-> index 5c503096ef43..7beb060d0671 100644
-> --- a/tools/lib/bpf/bpf_prog_linfo.c
-> +++ b/tools/lib/bpf/bpf_prog_linfo.c
-> @@ -127,7 +127,8 @@ struct bpf_prog_linfo *bpf_prog_linfo__new(const struct bpf_prog_info *info)
->   	prog_linfo->raw_linfo = malloc(data_sz);
->   	if (!prog_linfo->raw_linfo)
->   		goto err_free;
-> -	memcpy(prog_linfo->raw_linfo, (void *)(long)info->line_info, data_sz);
-> +	memcpy(prog_linfo->raw_linfo, (void *)(unsigned long)info->line_info,
-> +	       data_sz);
+The MT8183 Pumpkin board has a micro-HDMI connector. HDMI support is
+provided by an IT66121 DPI <-> HDMI bridge.
 
-Took in patch 1-3, lgtm, thanks! My question around the cleanups in patch 4-6 ...
-there are various other such cases e.g. in libbpf, perhaps makes sense to clean all
-of them up at once and not just the 4 locations in here.
+This commit enables DPI and add the node for the IT66121 bridge.
 
-Thanks,
-Daniel
+Signed-off-by: Fabien Parent <fparent@baylibre.com>
+---
+v2: rename pinctrl node names to not include any underscore
+
+ .../boot/dts/mediatek/mt8183-pumpkin.dts      | 121 ++++++++++++++++++
+ 1 file changed, 121 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/mediatek/mt8183-pumpkin.dts b/arch/arm64/boot/dts/mediatek/mt8183-pumpkin.dts
+index ee912825cfc6..10b2c0500219 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8183-pumpkin.dts
++++ b/arch/arm64/boot/dts/mediatek/mt8183-pumpkin.dts
+@@ -62,6 +62,18 @@ ntc {
+ 		pulldown-ohm = <0>;
+ 		io-channels = <&auxadc 0>;
+ 	};
++
++	connector {
++		compatible = "hdmi-connector";
++		label = "hdmi";
++		type = "d";
++
++		port {
++			hdmi_connector_in: endpoint {
++				remote-endpoint = <&hdmi_connector_out>;
++			};
++		};
++	};
+ };
+ 
+ &auxadc {
+@@ -120,6 +132,41 @@ &i2c6 {
+ 	pinctrl-0 = <&i2c6_pins>;
+ 	status = "okay";
+ 	clock-frequency = <100000>;
++	#address-cells = <1>;
++	#size-cells = <0>;
++
++	it66121hdmitx: hdmitx@4c {
++		compatible = "ite,it66121";
++		pinctrl-names = "default";
++		pinctrl-0 = <&ite_pins>;
++		vcn33-supply = <&mt6358_vcn33_wifi_reg>;
++		vcn18-supply = <&mt6358_vcn18_reg>;
++		vrf12-supply = <&mt6358_vrf12_reg>;
++		reset-gpios = <&pio 160 GPIO_ACTIVE_LOW>;
++		interrupt-parent = <&pio>;
++		interrupts = <4 IRQ_TYPE_LEVEL_LOW>;
++		reg = <0x4c>;
++
++		ports {
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			port@0 {
++				reg = <0>;
++				it66121_in: endpoint {
++					bus-width = <12>;
++					remote-endpoint = <&dpi_out>;
++				};
++			};
++
++			port@1 {
++				reg = <1>;
++				hdmi_connector_out: endpoint {
++					remote-endpoint = <&hdmi_connector_in>;
++				};
++			};
++		};
++	};
+ };
+ 
+ &mmc0 {
+@@ -332,6 +379,67 @@ pins_clk {
+ 			input-enable;
+ 		};
+ 	};
++
++	ite_pins: ite-pins {
++		pins-irq {
++			pinmux = <PINMUX_GPIO4__FUNC_GPIO4>;
++			input-enable;
++			bias-pull-up;
++		};
++
++		pins-rst {
++			pinmux = <PINMUX_GPIO160__FUNC_GPIO160>;
++			output-high;
++		};
++	};
++
++	dpi_func_pins: dpi-func-pins {
++		pins-dpi {
++			pinmux = <PINMUX_GPIO12__FUNC_I2S5_BCK>,
++				 <PINMUX_GPIO46__FUNC_I2S5_LRCK>,
++				 <PINMUX_GPIO47__FUNC_I2S5_DO>,
++				 <PINMUX_GPIO13__FUNC_DBPI_D0>,
++				 <PINMUX_GPIO14__FUNC_DBPI_D1>,
++				 <PINMUX_GPIO15__FUNC_DBPI_D2>,
++				 <PINMUX_GPIO16__FUNC_DBPI_D3>,
++				 <PINMUX_GPIO17__FUNC_DBPI_D4>,
++				 <PINMUX_GPIO18__FUNC_DBPI_D5>,
++				 <PINMUX_GPIO19__FUNC_DBPI_D6>,
++				 <PINMUX_GPIO20__FUNC_DBPI_D7>,
++				 <PINMUX_GPIO21__FUNC_DBPI_D8>,
++				 <PINMUX_GPIO22__FUNC_DBPI_D9>,
++				 <PINMUX_GPIO23__FUNC_DBPI_D10>,
++				 <PINMUX_GPIO24__FUNC_DBPI_D11>,
++				 <PINMUX_GPIO25__FUNC_DBPI_HSYNC>,
++				 <PINMUX_GPIO26__FUNC_DBPI_VSYNC>,
++				 <PINMUX_GPIO27__FUNC_DBPI_DE>,
++				 <PINMUX_GPIO28__FUNC_DBPI_CK>;
++		};
++	};
++
++	dpi_idle_pins: dpi-idle-pins {
++		pins-idle {
++			pinmux = <PINMUX_GPIO12__FUNC_GPIO12>,
++				 <PINMUX_GPIO46__FUNC_GPIO46>,
++				 <PINMUX_GPIO47__FUNC_GPIO47>,
++				 <PINMUX_GPIO13__FUNC_GPIO13>,
++				 <PINMUX_GPIO14__FUNC_GPIO14>,
++				 <PINMUX_GPIO15__FUNC_GPIO15>,
++				 <PINMUX_GPIO16__FUNC_GPIO16>,
++				 <PINMUX_GPIO17__FUNC_GPIO17>,
++				 <PINMUX_GPIO18__FUNC_GPIO18>,
++				 <PINMUX_GPIO19__FUNC_GPIO19>,
++				 <PINMUX_GPIO20__FUNC_GPIO20>,
++				 <PINMUX_GPIO21__FUNC_GPIO21>,
++				 <PINMUX_GPIO22__FUNC_GPIO22>,
++				 <PINMUX_GPIO23__FUNC_GPIO23>,
++				 <PINMUX_GPIO24__FUNC_GPIO24>,
++				 <PINMUX_GPIO25__FUNC_GPIO25>,
++				 <PINMUX_GPIO26__FUNC_GPIO26>,
++				 <PINMUX_GPIO27__FUNC_GPIO27>,
++				 <PINMUX_GPIO28__FUNC_GPIO28>;
++		};
++	};
+ };
+ 
+ &mfg {
+@@ -381,3 +489,16 @@ &scp {
+ &dsi0 {
+ 	status = "disabled";
+ };
++
++&dpi0 {
++	pinctrl-names = "default", "sleep";
++	pinctrl-0 = <&dpi_func_pins>;
++	pinctrl-1 = <&dpi_idle_pins>;
++	status = "okay";
++
++	port {
++		dpi_out: endpoint {
++			remote-endpoint = <&it66121_in>;
++		};
++	};
++};
+-- 
+2.36.0
+
