@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11922C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:57:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47FC2C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:57:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236992AbiE3N5q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:57:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39916 "EHLO
+        id S236866AbiE3N5u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:57:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239288AbiE3NvZ (ORCPT
+        with ESMTP id S239277AbiE3NvZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 30 May 2022 09:51:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CE1C84A04;
-        Mon, 30 May 2022 06:35:55 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABF3D82150;
+        Mon, 30 May 2022 06:35:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3879D60F2A;
-        Mon, 30 May 2022 13:35:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7769C3411A;
-        Mon, 30 May 2022 13:35:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4863B60F2A;
+        Mon, 30 May 2022 13:35:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE07FC3411C;
+        Mon, 30 May 2022 13:35:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917754;
-        bh=ANvR0+X6vi8dluHkHYvQMoS88/nWD+GMOygl+QCxWBo=;
+        s=k20201202; t=1653917751;
+        bh=7sCeoZZwV5ejs/MqSjcIaa9b6s3lSn4F1fmw+Hfrqx0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZwgylZ1lajL2sq8le71q15RZ4NcJ/grNQBQ3D5IRyAYM9l/t4WTQZo4AOYfAn9mFZ
-         CgqEwH6eU8trCs286HR+w/AMdSR67K1jd7PMUjJWg5dgQI7xLxX9PYevGUSlr+3EuA
-         W21zNlZr3Lf+3hAGScVPNJV5WbgeZePgobpjzXjCrGYZyQqnLux5z57A173jZ4yBUT
-         ZM3U5p1cIJeRiLNE3CW/iOPOqlWa2BqRb1xUrZVDl511KkbgkEwEb1iqH2LISJEXBE
-         T9nDwH5501nTFcgiCWh3E85MEV/zflEg9Q7OPuJ0ftyvpUW5+90RArwiQIFU33kACi
-         yB/uN0MR3C+qw==
+        b=rAY/m+zyap1qztQ6EbE6tbz3tFNkcjLP3Xx8C3TjuGZKD5jycfm+Bc2DHMxRJLUah
+         pa7PZTEd/2VtptfP5AAjAyONb9PzbCSDmEnSFICXDlclORjKmoCMZdi1uniRtah2zF
+         PEGsuHATDs+ph1pjmmrQ0ZZ6hjnmrMioVcGQfXchADfaooJoxEJ7lBr9Clv51wTqBK
+         Taxhltu82I0OVmelcMmIAeYzfFNsG3l/dx215MtDBPHcb1Pf+R0PI0j9eqC/YV1sYS
+         C5hjShT1zo4QaQjRrcRtx6OWRqTYUW92/abPEVRoIDpU1Pk1TJUMyOX33INgiyWei7
+         RRyKcybttKQZQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Corey Minyard <cminyard@mvista.com>,
-        Joe Wiese <jwiese@rackspace.com>,
-        Sasha Levin <sashal@kernel.org>,
-        openipmi-developer@lists.sourceforge.net
-Subject: [PATCH AUTOSEL 5.17 087/135] ipmi: Add an intializer for ipmi_smi_msg struct
-Date:   Mon, 30 May 2022 09:30:45 -0400
-Message-Id: <20220530133133.1931716-87-sashal@kernel.org>
+Cc:     Mario Limonciello <mario.limonciello@amd.com>,
+        Jian-Hong Pan <jhp@endlessos.org>,
+        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+        Sasha Levin <sashal@kernel.org>, rafael@kernel.org,
+        linux-acpi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 085/135] ACPI: PM: Block ASUS B1400CEAE from suspend to idle by default
+Date:   Mon, 30 May 2022 09:30:43 -0400
+Message-Id: <20220530133133.1931716-85-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133133.1931716-1-sashal@kernel.org>
 References: <20220530133133.1931716-1-sashal@kernel.org>
@@ -52,94 +53,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Corey Minyard <cminyard@mvista.com>
+From: Mario Limonciello <mario.limonciello@amd.com>
 
-[ Upstream commit 9824117dd964ecebf5d81990dbf21dfb56445049 ]
+[ Upstream commit d52848620de00cde4a3a5df908e231b8c8868250 ]
 
-There was a "type" element added to this structure, but some static
-values were missed.  The default value will be zero, which is correct,
-but create an initializer for the type and initialize the type properly
-in the initializer to avoid future issues.
+ASUS B1400CEAE fails to resume from suspend to idle by default.  This was
+bisected back to commit df4f9bc4fb9c ("nvme-pci: add support for ACPI
+StorageD3Enable property") but this is a red herring to the problem.
 
-Reported-by: Joe Wiese <jwiese@rackspace.com>
-Signed-off-by: Corey Minyard <cminyard@mvista.com>
+Before this commit the system wasn't getting into deepest sleep state.
+Presumably this commit is allowing entry into deepest sleep state as
+advertised by firmware, but there are some other problems related to
+the wakeup.
+
+As it is confirmed the system works properly with S3, set the default for
+this system to S3.
+
+Reported-by: Jian-Hong Pan <jhp@endlessos.org>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215742
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+Tested-by: Jian-Hong Pan <jhp@endlessos.org>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/ipmi/ipmi_poweroff.c |  4 +---
- drivers/char/ipmi/ipmi_watchdog.c | 14 +++++---------
- include/linux/ipmi_smi.h          |  6 ++++++
- 3 files changed, 12 insertions(+), 12 deletions(-)
+ drivers/acpi/sleep.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/drivers/char/ipmi/ipmi_poweroff.c b/drivers/char/ipmi/ipmi_poweroff.c
-index bc3a18daf97a..62e71c46ac5f 100644
---- a/drivers/char/ipmi/ipmi_poweroff.c
-+++ b/drivers/char/ipmi/ipmi_poweroff.c
-@@ -94,9 +94,7 @@ static void dummy_recv_free(struct ipmi_recv_msg *msg)
- {
- 	atomic_dec(&dummy_count);
- }
--static struct ipmi_smi_msg halt_smi_msg = {
--	.done = dummy_smi_free
--};
-+static struct ipmi_smi_msg halt_smi_msg = INIT_IPMI_SMI_MSG(dummy_smi_free);
- static struct ipmi_recv_msg halt_recv_msg = {
- 	.done = dummy_recv_free
+diff --git a/drivers/acpi/sleep.c b/drivers/acpi/sleep.c
+index d4fbea91ab6b..8a5cb115fea8 100644
+--- a/drivers/acpi/sleep.c
++++ b/drivers/acpi/sleep.c
+@@ -373,6 +373,18 @@ static const struct dmi_system_id acpisleep_dmi_table[] __initconst = {
+ 		DMI_MATCH(DMI_PRODUCT_NAME, "20GGA00L00"),
+ 		},
+ 	},
++	/*
++	 * ASUS B1400CEAE hangs on resume from suspend (see
++	 * https://bugzilla.kernel.org/show_bug.cgi?id=215742).
++	 */
++	{
++	.callback = init_default_s3,
++	.ident = "ASUS B1400CEAE",
++	.matches = {
++		DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
++		DMI_MATCH(DMI_PRODUCT_NAME, "ASUS EXPERTBOOK B1400CEAE"),
++		},
++	},
+ 	{},
  };
-diff --git a/drivers/char/ipmi/ipmi_watchdog.c b/drivers/char/ipmi/ipmi_watchdog.c
-index 883b4a341012..8e536ce0a5d2 100644
---- a/drivers/char/ipmi/ipmi_watchdog.c
-+++ b/drivers/char/ipmi/ipmi_watchdog.c
-@@ -354,9 +354,7 @@ static void msg_free_recv(struct ipmi_recv_msg *msg)
- 			complete(&msg_wait);
- 	}
- }
--static struct ipmi_smi_msg smi_msg = {
--	.done = msg_free_smi
--};
-+static struct ipmi_smi_msg smi_msg = INIT_IPMI_SMI_MSG(msg_free_smi);
- static struct ipmi_recv_msg recv_msg = {
- 	.done = msg_free_recv
- };
-@@ -475,9 +473,8 @@ static void panic_recv_free(struct ipmi_recv_msg *msg)
- 	atomic_dec(&panic_done_count);
- }
- 
--static struct ipmi_smi_msg panic_halt_heartbeat_smi_msg = {
--	.done = panic_smi_free
--};
-+static struct ipmi_smi_msg panic_halt_heartbeat_smi_msg =
-+	INIT_IPMI_SMI_MSG(panic_smi_free);
- static struct ipmi_recv_msg panic_halt_heartbeat_recv_msg = {
- 	.done = panic_recv_free
- };
-@@ -516,9 +513,8 @@ static void panic_halt_ipmi_heartbeat(void)
- 		atomic_sub(2, &panic_done_count);
- }
- 
--static struct ipmi_smi_msg panic_halt_smi_msg = {
--	.done = panic_smi_free
--};
-+static struct ipmi_smi_msg panic_halt_smi_msg =
-+	INIT_IPMI_SMI_MSG(panic_smi_free);
- static struct ipmi_recv_msg panic_halt_recv_msg = {
- 	.done = panic_recv_free
- };
-diff --git a/include/linux/ipmi_smi.h b/include/linux/ipmi_smi.h
-index 9277d21c2690..5d69820d8b02 100644
---- a/include/linux/ipmi_smi.h
-+++ b/include/linux/ipmi_smi.h
-@@ -125,6 +125,12 @@ struct ipmi_smi_msg {
- 	void (*done)(struct ipmi_smi_msg *msg);
- };
- 
-+#define INIT_IPMI_SMI_MSG(done_handler) \
-+{						\
-+	.done = done_handler,			\
-+	.type = IPMI_SMI_MSG_TYPE_NORMAL	\
-+}
-+
- struct ipmi_smi_handlers {
- 	struct module *owner;
  
 -- 
 2.35.1
