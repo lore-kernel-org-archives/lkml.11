@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53067C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:13:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 853FEC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:13:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239002AbiE3OMy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:12:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40330 "EHLO
+        id S239081AbiE3ONL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:13:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240135AbiE3OGg (ORCPT
+        with ESMTP id S240077AbiE3OG2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:06:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D9383B2BF;
-        Mon, 30 May 2022 06:42:01 -0700 (PDT)
+        Mon, 30 May 2022 10:06:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E7AF35AAF;
+        Mon, 30 May 2022 06:41:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9407460F9E;
-        Mon, 30 May 2022 13:42:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6A9BC3411E;
-        Mon, 30 May 2022 13:41:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EF9BEB80D86;
+        Mon, 30 May 2022 13:41:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40590C3411C;
+        Mon, 30 May 2022 13:41:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918120;
-        bh=63KEk9VLTggDHYa7uCWhw1ThCahBRf68liu0x9+Y4Q8=;
+        s=k20201202; t=1653918110;
+        bh=ENYoUzxPB664IG1sN5huDvIcLEy/V+cCgsIQBznRbKg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TTcW2MYvIkbIbrzn/OE2PDUCuW3r3PB2V0fSjrYachInBVGD695908LeEbx1X/c1v
-         RIjTN/XRGQLJDs8zr+jm0OGr7C3rL4UO5lEMNKd8Oudd7OIzlckkPXKIB6xogxAwxU
-         QlqIVImJ3wxbHn5MGu9bmuiyivq6K9YvdscAxV1a63JyLychr8SvBZz3piV4DTVOcH
-         Cvrn4vYOR+xoyy4D9cNQHmyvGUONbuYJ6LC1iP/tIIWxLOWH51O7bbE43ob98t124K
-         aRuwNrBQXF4ir9BBVbmPTnn82tsejVOTmZ28yjkkC60E3rI9Kq+e1DhVdDsjrTM6CS
-         lHZscwjPDH9JA==
+        b=MOOUJnKoHXi1OODJji/4uozjCxJlDNPnvUqUvahcy13bJ2LFFEZerLGsLKhWpBXF6
+         nXe6YatXAfJniVqkzS8q4DP4lcx2Nfs6+iT3mBbXL43gukVWtZOFgseAAGGvMK1QrQ
+         HvyCJaLHX1MM/GhhN12VF/8+2MF7OCLTf2JCt92eCxKAGHBdZJ9mHJcJe9CNPRgSOw
+         bEGlBp5GZAQJUL//WQZq1dNZeEIAeycbdZGe9iH1Rg8pccRExyT58rH0uGequ2pyiO
+         t74eTKaRu456FRvVwDhpjh98SEX/o9Iyf8CUW0sp/ssbPkiNkZzPOmcaz64HVMaqPA
+         1BYNH7hMM7Vvw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Patrice Chotard <patrice.chotard@foss.st.com>,
-        eberhard.stoll@kontron.de, Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, mcoquelin.stm32@gmail.com,
-        alexandre.torgue@foss.st.com, linux-spi@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.15 068/109] spi: stm32-qspi: Fix wait_cmd timeout in APM mode
-Date:   Mon, 30 May 2022 09:37:44 -0400
-Message-Id: <20220530133825.1933431-68-sashal@kernel.org>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
+        pabeni@redhat.com, bigeasy@linutronix.de, imagedong@tencent.com,
+        petrm@nvidia.com, memxor@gmail.com, arnd@arndb.de,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 064/109] net: remove two BUG() from skb_checksum_help()
+Date:   Mon, 30 May 2022 09:37:40 -0400
+Message-Id: <20220530133825.1933431-64-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133825.1933431-1-sashal@kernel.org>
 References: <20220530133825.1933431-1-sashal@kernel.org>
@@ -54,36 +54,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Patrice Chotard <patrice.chotard@foss.st.com>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit d83d89ea68b4726700fa87b22db075e4217e691c ]
+[ Upstream commit d7ea0d9df2a6265b2b180d17ebc64b38105968fc ]
 
-In APM mode, TCF and TEF flags are not set. To avoid timeout in
-stm32_qspi_wait_cmd(), don't check if TCF/TEF are set.
+I have a syzbot report that managed to get a crash in skb_checksum_help()
 
-Signed-off-by: Patrice Chotard <patrice.chotard@foss.st.com>
-Reported-by: eberhard.stoll@kontron.de
-Link: https://lore.kernel.org/r/20220511074644.558874-2-patrice.chotard@foss.st.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+If syzbot can trigger these BUG(), it makes sense to replace
+them with more friendly WARN_ON_ONCE() since skb_checksum_help()
+can instead return an error code.
+
+Note that syzbot will still crash there, until real bug is fixed.
+
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi-stm32-qspi.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ net/core/dev.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/spi/spi-stm32-qspi.c b/drivers/spi/spi-stm32-qspi.c
-index ffdc55f87e82..dd38cb8ffbc2 100644
---- a/drivers/spi/spi-stm32-qspi.c
-+++ b/drivers/spi/spi-stm32-qspi.c
-@@ -308,7 +308,8 @@ static int stm32_qspi_wait_cmd(struct stm32_qspi *qspi,
- 	if (!op->data.nbytes)
- 		goto wait_nobusy;
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 5907212c00f3..b9731b267d07 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -3233,11 +3233,15 @@ int skb_checksum_help(struct sk_buff *skb)
+ 	}
  
--	if (readl_relaxed(qspi->io_base + QSPI_SR) & SR_TCF)
-+	if ((readl_relaxed(qspi->io_base + QSPI_SR) & SR_TCF) ||
-+	    qspi->fmode == CCR_FMODE_APM)
- 		goto out;
+ 	offset = skb_checksum_start_offset(skb);
+-	BUG_ON(offset >= skb_headlen(skb));
++	ret = -EINVAL;
++	if (WARN_ON_ONCE(offset >= skb_headlen(skb)))
++		goto out;
++
+ 	csum = skb_checksum(skb, offset, skb->len - offset, 0);
  
- 	reinit_completion(&qspi->data_completion);
+ 	offset += skb->csum_offset;
+-	BUG_ON(offset + sizeof(__sum16) > skb_headlen(skb));
++	if (WARN_ON_ONCE(offset + sizeof(__sum16) > skb_headlen(skb)))
++		goto out;
+ 
+ 	ret = skb_ensure_writable(skb, offset + sizeof(__sum16));
+ 	if (ret)
 -- 
 2.35.1
 
