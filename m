@@ -2,51 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43C33C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:53:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6015C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:53:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241905AbiE3OxT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:53:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50934 "EHLO
+        id S241920AbiE3OxY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:53:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241126AbiE3OaR (ORCPT
+        with ESMTP id S240507AbiE3O3V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:30:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3E0258E64;
-        Mon, 30 May 2022 06:51:52 -0700 (PDT)
+        Mon, 30 May 2022 10:29:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03674625F;
+        Mon, 30 May 2022 06:51:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 20D89B80DC0;
-        Mon, 30 May 2022 13:51:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95BAAC36AE7;
-        Mon, 30 May 2022 13:51:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0B89F60FA9;
+        Mon, 30 May 2022 13:51:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 627E7C341CB;
+        Mon, 30 May 2022 13:51:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918709;
-        bh=TsnccSUjaIJsssqB3PsBicURUVYF0tCQj+AKgET2PTs=;
+        s=k20201202; t=1653918704;
+        bh=o5pO4LCMS5/b+2fU+WThBdm9r/1xafoD8Nszr9ODGqE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JzArhrqYOY3exU8ZQEerITInhEmVJ5ZcmaQyF/vAiLKsYEDSdN13U0eEm3Q5yBm2H
-         HZmMDoj2BEoLxVhh1W/kSS7Nj0nMnZTl8KPC/QmEq9wSsZycJTXxbE/bDevr34r5FP
-         YcZle2jt5ejsmpAxFWg93ev4UUyeIo11Ca19+81Xa63fWjSrGfRnAVb1GOSMOdlNBK
-         Fl2ExO4itKdgAAJoDlZA9WgHfa5Ni3yVSuNq3OHMlZ5W5WPo670Ooi5R9dmJ60FVin
-         WHSxMbdDeJYRfP020FbLtMqdXgqkX4niSa8Rhfop05W//mp/sTkyyGlaWDEgQgI2/h
-         sv8cRpg2+Hv0g==
+        b=OeYZ1MBW+gDSREbk03XKHKgLTj3P6ycM8Y7WY4nil7L7xfapxsnIPxyK3U5gUDz0q
+         hNbSi+CN4+qXzjaDlHN5m8ghcaB2qwldX8esNs/cJh92z9AtTtPWVVtxU9+asda1tj
+         D5gXZvDk40diYlPWXKQY0C8tPgn7OeHywSAzOdOz8lrk81dVClBp5LyAbzDb3z6tOc
+         8kRqq9WPwTByZi4MwFhC4VNCGmeIDupj8xIX5tu5r/W9/pFxI8IH4FWqf3HJ57UkL5
+         tBGw4II61fKthtiMmcA6vFotrdnmh5VLEFUpHf7FJ3jMWD6J9oBPJfxau3tOcnk93m
+         HKaHAyjVUfA9A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Dongliang Mu <mudongliangabcd@gmail.com>,
-        syzkaller <syzkaller@googlegroups.com>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        pkshih@realtek.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 21/29] rtlwifi: Use pr_warn instead of WARN_ONCE
-Date:   Mon, 30 May 2022 09:50:48 -0400
-Message-Id: <20220530135057.1937286-21-sashal@kernel.org>
+Cc:     Heiko Carstens <hca@linux.ibm.com>,
+        Thomas Richter <tmricht@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Sasha Levin <sashal@kernel.org>, gor@linux.ibm.com,
+        agordeev@linux.ibm.com, vschneid@redhat.com,
+        linux-s390@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 18/29] s390/preempt: disable __preempt_count_add() optimization for PROFILE_ALL_BRANCHES
+Date:   Mon, 30 May 2022 09:50:45 -0400
+Message-Id: <20220530135057.1937286-18-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530135057.1937286-1-sashal@kernel.org>
 References: <20220530135057.1937286-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -54,37 +55,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dongliang Mu <mudongliangabcd@gmail.com>
+From: Heiko Carstens <hca@linux.ibm.com>
 
-[ Upstream commit ad732da434a2936128769216eddaece3b1af4588 ]
+[ Upstream commit 63678eecec57fc51b778be3da35a397931287170 ]
 
-This memory allocation failure can be triggered by fault injection or
-high pressure testing, resulting a WARN.
+gcc 12 does not (always) optimize away code that should only be generated
+if parameters are constant and within in a certain range. This depends on
+various obscure kernel config options, however in particular
+PROFILE_ALL_BRANCHES can trigger this compile error:
 
-Fix this by replacing WARN with pr_warn.
+In function ‘__atomic_add_const’,
+    inlined from ‘__preempt_count_add.part.0’ at ./arch/s390/include/asm/preempt.h:50:3:
+./arch/s390/include/asm/atomic_ops.h:80:9: error: impossible constraint in ‘asm’
+   80 |         asm volatile(                                                   \
+      |         ^~~
 
-Reported-by: syzkaller <syzkaller@googlegroups.com>
-Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220511014453.1621366-1-dzm91@hust.edu.cn
+Workaround this by simply disabling the optimization for
+PROFILE_ALL_BRANCHES, since the kernel will be so slow, that this
+optimization won't matter at all.
+
+Reported-by: Thomas Richter <tmricht@linux.ibm.com>
+Reviewed-by: Sven Schnelle <svens@linux.ibm.com>
+Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/realtek/rtlwifi/usb.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/s390/include/asm/preempt.h | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/wireless/realtek/rtlwifi/usb.c b/drivers/net/wireless/realtek/rtlwifi/usb.c
-index 4fa4d877f913..c29beb00203c 100644
---- a/drivers/net/wireless/realtek/rtlwifi/usb.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/usb.c
-@@ -1060,7 +1060,7 @@ int rtl_usb_probe(struct usb_interface *intf,
- 	hw = ieee80211_alloc_hw(sizeof(struct rtl_priv) +
- 				sizeof(struct rtl_usb_priv), &rtl_ops);
- 	if (!hw) {
--		WARN_ONCE(true, "rtl_usb: ieee80211 alloc failed\n");
-+		pr_warn("rtl_usb: ieee80211 alloc failed\n");
- 		return -ENOMEM;
- 	}
- 	rtlpriv = hw->priv;
+diff --git a/arch/s390/include/asm/preempt.h b/arch/s390/include/asm/preempt.h
+index 23a14d187fb1..1aebf09fbcd8 100644
+--- a/arch/s390/include/asm/preempt.h
++++ b/arch/s390/include/asm/preempt.h
+@@ -50,10 +50,17 @@ static inline bool test_preempt_need_resched(void)
+ 
+ static inline void __preempt_count_add(int val)
+ {
+-	if (__builtin_constant_p(val) && (val >= -128) && (val <= 127))
+-		__atomic_add_const(val, &S390_lowcore.preempt_count);
+-	else
+-		__atomic_add(val, &S390_lowcore.preempt_count);
++	/*
++	 * With some obscure config options and CONFIG_PROFILE_ALL_BRANCHES
++	 * enabled, gcc 12 fails to handle __builtin_constant_p().
++	 */
++	if (!IS_ENABLED(CONFIG_PROFILE_ALL_BRANCHES)) {
++		if (__builtin_constant_p(val) && (val >= -128) && (val <= 127)) {
++			__atomic_add_const(val, &S390_lowcore.preempt_count);
++			return;
++		}
++	}
++	__atomic_add(val, &S390_lowcore.preempt_count);
+ }
+ 
+ static inline void __preempt_count_sub(int val)
 -- 
 2.35.1
 
