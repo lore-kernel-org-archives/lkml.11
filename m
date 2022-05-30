@@ -2,418 +2,473 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3922CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 07:46:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 289AFC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 07:47:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233868AbiE3Hq3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 03:46:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53418 "EHLO
+        id S233873AbiE3Hrf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 03:47:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233801AbiE3HqW (ORCPT
+        with ESMTP id S233867AbiE3Hrc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 03:46:22 -0400
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 291F853B6F;
-        Mon, 30 May 2022 00:46:19 -0700 (PDT)
-Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24U68qSe025440;
-        Mon, 30 May 2022 09:45:57 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
- mime-version : subject : to : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=LCsiFdIc+jH3ImxMKw5u5eLAOlLL0WcDG6030rG+HO4=;
- b=3ZOFCJaCLCzkASnnsB0jiE/aBUN3TzmjDLmI/K7OKsas9A/BJHG5UqYcNF5fjCJYZtPj
- u0AeU4YO9Sm1kfHTj6ue9K9MtKBIx8dczQsn6fH5ksmqO6pd3lDT5LHDjgjQQBbG9WRm
- l9GcNfaMmuI1Q6UOwvfZtKafbfB5j5Y7Juy1saPCgWum489srJOEBQ3Y49TGMgl8E57A
- /9VPp5iaIUKYsEw593QRJ41iYeNHVZjNLECznGupICf8Bw7wY0060j6VRa0mr3U4qB/Z
- O5OG4RALJY7s/85nbY3ZOKZucJsWYla6y4ozJ7yNf7zZlBMjLWBEZS70PPyny5FCG7J2 QQ== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3gbc3d09r8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 30 May 2022 09:45:57 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id CC7B2100038;
-        Mon, 30 May 2022 09:45:56 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id AB7642171F2;
-        Mon, 30 May 2022 09:45:56 +0200 (CEST)
-Received: from [10.251.21.188] (10.75.127.46) by SHFDAG1NODE1.st.com
- (10.75.129.69) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Mon, 30 May
- 2022 09:45:56 +0200
-Message-ID: <2f126f4a-43e4-06ac-9df1-7e311f91c5d0@foss.st.com>
-Date:   Mon, 30 May 2022 09:45:55 +0200
+        Mon, 30 May 2022 03:47:32 -0400
+Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F2D71A801
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 00:47:30 -0700 (PDT)
+Received: by mail-lj1-x231.google.com with SMTP id g18so3672369ljd.0
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 00:47:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=openvz-org.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:from:subject:to:cc
+         :references:content-language:in-reply-to:content-transfer-encoding;
+        bh=vQGJKgRzfPh+zLw3K4r44KW8AB/wTdbG5qQFXAAeL1Y=;
+        b=C3PCXh6en7FGTOCmwOGZe9+b5R1e1tZSovKnVSyfMM51cU80O+Apqqj+wAu9CjeYQu
+         RB4ZoCIHT+wPuG+gAXHpjx8pl5vOoZiVaJ1UUojxsuuVibYBvTDPHFdj838ob5mnl28F
+         KX12P4w7vliJtnjdR/vDgGYi7Y4qY5bmvabeo0+t4z3Dwj+/pyvtgcG+gf9r3KpvBVgK
+         nK1aDCS1miqV8vIbpx+RXBKnwudvXGCjar8YaDQuDvfmnhGJjZTyRgIGOEjIOk89BNdZ
+         EgeLaK7X+kTnSmkmuEwCHBUeIVHz+pJwys4zR5twxIDjn1Vf+eq5bQ8XQiWnye4quy1c
+         0ioQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
+         :subject:to:cc:references:content-language:in-reply-to
+         :content-transfer-encoding;
+        bh=vQGJKgRzfPh+zLw3K4r44KW8AB/wTdbG5qQFXAAeL1Y=;
+        b=nScQkLEdnnjDsT7uyhZ8ZARngu3G6sHIhm5++05mOYejEH+OgEFpVWONBJHWc8/+Sh
+         3NuKiDZ+xmfSYypjCHVZiD0LQYVZDSfKQynV1Ljav5nvvVQsKnS0ZfI3vF9da7VP9rzU
+         h/9KujdQAyU7Xd4Rpo4hDduKodM7WX1LKH3iiX+QGiuMn+U1CqDUawMB2zOh+1ZUBnT4
+         X1YgXhT+PpCFvRofGmjIuzvp5K8avNRlbyDN4fI1aFImt6/nZUE/ygaX9dQL5h2+lVo2
+         KXAmEh+7nd4k4/CaYT6EewLXQCpiX1YSg06bkOGyWKMwt9KYacDzx2FCoD0DJXdXsQ8X
+         rLMQ==
+X-Gm-Message-State: AOAM532UoZ1oVycCl6FNET3TgTZO1fYHUiNSbttbzazHAOyBAZl4goTY
+        bDMBC9FUSN9ruw/DE/ZHmOVJzQ==
+X-Google-Smtp-Source: ABdhPJwutMt/7y+ox2Egav6GHlJ+Iwg76V5bx0TF7uSGjH7CtaInGdkN1WAo99qreLrEdqX5VNdurw==
+X-Received: by 2002:a05:651c:118:b0:253:ccc6:d174 with SMTP id a24-20020a05651c011800b00253ccc6d174mr30969316ljb.440.1653896848340;
+        Mon, 30 May 2022 00:47:28 -0700 (PDT)
+Received: from [192.168.1.65] ([46.188.121.129])
+        by smtp.gmail.com with ESMTPSA id 14-20020a2e154e000000b002554d343f48sm764354ljv.133.2022.05.30.00.47.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 30 May 2022 00:47:27 -0700 (PDT)
+Message-ID: <80bcb043-3782-1d81-d8a2-4bdcb213cf30@openvz.org>
+Date:   Mon, 30 May 2022 10:47:26 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.8.1
-Subject: Re: [PATCH 1/2] ARM: dts: sti: adjust whitespace around '='
+From:   Vasily Averin <vvs@openvz.org>
+Subject: [PATCH v5] tracing: add 'accounted' entry into output of allocation
+ tracepoints
+To:     Vlastimil Babka <vbabka@suse.cz>
+Cc:     kernel@openvz.org, linux-kernel@vger.kernel.org,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        Shakeel Butt <shakeelb@google.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Matthew Wilcox <willy@infradead.org>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        David Rientjes <rientjes@google.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        Christoph Lameter <cl@linux.com>,
+        Michal Hocko <mhocko@suse.com>,
+        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+        Muchun Song <songmuchun@bytedance.com>
+References: <c7f687a8-637c-b119-6e3a-7dacc885b851@suse.cz>
 Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <20220526203632.831039-1-krzysztof.kozlowski@linaro.org>
-From:   Patrice CHOTARD <patrice.chotard@foss.st.com>
-In-Reply-To: <20220526203632.831039-1-krzysztof.kozlowski@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <c7f687a8-637c-b119-6e3a-7dacc885b851@suse.cz>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.75.127.46]
-X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SHFDAG1NODE1.st.com
- (10.75.129.69)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-30_02,2022-05-27_01,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Krzysztof
+Slab caches marked with SLAB_ACCOUNT force accounting for every
+allocation from this cache even if __GFP_ACCOUNT flag is not passed.
+Unfortunately, at the moment this flag is not visible in ftrace output,
+and this makes it difficult to analyze the accounted allocations.
 
-On 5/26/22 22:36, Krzysztof Kozlowski wrote:
-> Fix whitespace coding style: use single space instead of tabs or
-> multiple spaces around '=' sign in property assignment.  No functional
-> changes (same DTB).
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> 
-> ---
+This patch adds boolean "accounted" entry into trace output,
+and set it to 'true' for calls used __GFP_ACCOUNT flag and
+for allocations from caches marked with SLAB_ACCOUNT.
 
-Reviewed-by: Patrice Chotard <patrice.chotard@foss.st.com>
+Signed-off-by: Vasily Averin <vvs@openvz.org>
+Acked-by: Shakeel Butt <shakeelb@google.com>
+Acked-by: Roman Gushchin <roman.gushchin@linux.dev>
 
-Thanks
+---
+v5:
+ 1) re-based to current upstream (v5.18-11267-gb00ed48bb0a7)
+ 2) added "Acked-by" from Roman
+ 3) re-addressed to slab maintaiers
 
+v4:
+ 1) replaced in patch descripion: "accounted" instead of "allocated"
+ 2) added "Acked-by" from Shakeel,
+ 3) re-addressed to akpm@
 
-> 
-> Output compared with dtx_diff and fdtdump.
-> ---
->  arch/arm/boot/dts/stih407-family.dtsi | 174 +++++++++++++-------------
->  arch/arm/boot/dts/stih407.dtsi        |   4 +-
->  arch/arm/boot/dts/stih410.dtsi        |   4 +-
->  arch/arm/boot/dts/stihxxx-b2120.dtsi  |   8 +-
->  4 files changed, 95 insertions(+), 95 deletions(-)
-> 
-> diff --git a/arch/arm/boot/dts/stih407-family.dtsi b/arch/arm/boot/dts/stih407-family.dtsi
-> index 1713f7878117..33cf54cb46cc 100644
-> --- a/arch/arm/boot/dts/stih407-family.dtsi
-> +++ b/arch/arm/boot/dts/stih407-family.dtsi
-> @@ -137,8 +137,8 @@ picophyreset: picophyreset-controller {
->  	};
->  
->  	irq-syscfg {
-> -		compatible    = "st,stih407-irq-syscfg";
-> -		st,syscfg     = <&syscfg_core>;
-> +		compatible = "st,stih407-irq-syscfg";
-> +		st,syscfg = <&syscfg_core>;
->  		st,irq-device = <ST_IRQ_SYSCFG_PMU_0>,
->  				<ST_IRQ_SYSCFG_PMU_1>;
->  		st,fiq-device = <ST_IRQ_SYSCFG_DISABLED>,
-> @@ -157,8 +157,8 @@ usb2_picophy0: phy1 {
->  	miphy28lp_phy: miphy28lp {
->  		compatible = "st,miphy28lp-phy";
->  		st,syscfg = <&syscfg_core>;
-> -		#address-cells	= <1>;
-> -		#size-cells	= <1>;
-> +		#address-cells = <1>;
-> +		#size-cells = <1>;
->  		ranges;
->  
->  		phy_port0: port@9b22000 {
-> @@ -208,26 +208,26 @@ phy_port2: port@8f95000 {
->  	};
->  
->  	st231_gp0: st231-gp0 {
-> -		compatible	= "st,st231-rproc";
-> -		memory-region	= <&gp0_reserved>;
-> -		resets		= <&softreset STIH407_ST231_GP0_SOFTRESET>;
-> -		reset-names	= "sw_reset";
-> -		clocks		= <&clk_s_c0_flexgen CLK_ST231_GP_0>;
-> -		clock-frequency	= <600000000>;
-> -		st,syscfg	= <&syscfg_core 0x22c>;
-> +		compatible = "st,st231-rproc";
-> +		memory-region = <&gp0_reserved>;
-> +		resets = <&softreset STIH407_ST231_GP0_SOFTRESET>;
-> +		reset-names = "sw_reset";
-> +		clocks = <&clk_s_c0_flexgen CLK_ST231_GP_0>;
-> +		clock-frequency = <600000000>;
-> +		st,syscfg = <&syscfg_core 0x22c>;
->  		#mbox-cells = <1>;
->  		mbox-names = "vq0_rx", "vq0_tx", "vq1_rx", "vq1_tx";
->  		mboxes = <&mailbox0 0 2>, <&mailbox2 0 1>, <&mailbox0 0 3>, <&mailbox2 0 0>;
->  	};
->  
->  	st231_delta: st231-delta {
-> -		compatible	= "st,st231-rproc";
-> -		memory-region	= <&delta_reserved>;
-> -		resets		= <&softreset STIH407_ST231_DMU_SOFTRESET>;
-> -		reset-names	= "sw_reset";
-> -		clocks		= <&clk_s_c0_flexgen CLK_ST231_DMU>;
-> -		clock-frequency	= <600000000>;
-> -		st,syscfg	= <&syscfg_core 0x224>;
-> +		compatible = "st,st231-rproc";
-> +		memory-region = <&delta_reserved>;
-> +		resets = <&softreset STIH407_ST231_DMU_SOFTRESET>;
-> +		reset-names = "sw_reset";
-> +		clocks = <&clk_s_c0_flexgen CLK_ST231_DMU>;
-> +		clock-frequency = <600000000>;
-> +		st,syscfg = <&syscfg_core 0x224>;
->  		#mbox-cells = <1>;
->  		mbox-names = "vq0_rx", "vq0_tx", "vq1_rx", "vq1_tx";
->  		mboxes = <&mailbox0 0 0>, <&mailbox3 0 1>, <&mailbox0 0 1>, <&mailbox3 0 0>;
-> @@ -710,78 +710,78 @@ sata1: sata@9b28000 {
->  
->  
->  		st_dwc3: dwc3@8f94000 {
-> -			compatible	= "st,stih407-dwc3";
-> -			reg		= <0x08f94000 0x1000>, <0x110 0x4>;
-> -			reg-names	= "reg-glue", "syscfg-reg";
-> -			st,syscfg	= <&syscfg_core>;
-> -			resets		= <&powerdown STIH407_USB3_POWERDOWN>,
-> -					  <&softreset STIH407_MIPHY2_SOFTRESET>;
-> -			reset-names	= "powerdown", "softreset";
-> -			#address-cells	= <1>;
-> -			#size-cells	= <1>;
-> -			pinctrl-names	= "default";
-> -			pinctrl-0	= <&pinctrl_usb3>;
-> +			compatible = "st,stih407-dwc3";
-> +			reg = <0x08f94000 0x1000>, <0x110 0x4>;
-> +			reg-names = "reg-glue", "syscfg-reg";
-> +			st,syscfg = <&syscfg_core>;
-> +			resets = <&powerdown STIH407_USB3_POWERDOWN>,
-> +				 <&softreset STIH407_MIPHY2_SOFTRESET>;
-> +			reset-names = "powerdown", "softreset";
-> +			#address-cells = <1>;
-> +			#size-cells = <1>;
-> +			pinctrl-names = "default";
-> +			pinctrl-0 = <&pinctrl_usb3>;
->  			ranges;
->  
->  			status = "disabled";
->  
->  			dwc3: dwc3@9900000 {
-> -				compatible	= "snps,dwc3";
-> -				reg		= <0x09900000 0x100000>;
-> -				interrupts	= <GIC_SPI 155 IRQ_TYPE_LEVEL_HIGH>;
-> -				dr_mode		= "host";
-> -				phy-names	= "usb2-phy", "usb3-phy";
-> -				phys		= <&usb2_picophy0>,
-> -						  <&phy_port2 PHY_TYPE_USB3>;
-> +				compatible = "snps,dwc3";
-> +				reg = <0x09900000 0x100000>;
-> +				interrupts = <GIC_SPI 155 IRQ_TYPE_LEVEL_HIGH>;
-> +				dr_mode = "host";
-> +				phy-names = "usb2-phy", "usb3-phy";
-> +				phys = <&usb2_picophy0>,
-> +				       <&phy_port2 PHY_TYPE_USB3>;
->  				snps,dis_u3_susphy_quirk;
->  			};
->  		};
->  
->  		/* COMMS PWM Module */
->  		pwm0: pwm@9810000 {
-> -			compatible	= "st,sti-pwm";
-> -			#pwm-cells	= <2>;
-> -			reg		= <0x9810000 0x68>;
-> -			interrupts      = <GIC_SPI 128 IRQ_TYPE_LEVEL_HIGH>;
-> -			pinctrl-names	= "default";
-> -			pinctrl-0	= <&pinctrl_pwm0_chan0_default>;
-> -			clock-names	= "pwm";
-> -			clocks		= <&clk_sysin>;
-> +			compatible = "st,sti-pwm";
-> +			#pwm-cells = <2>;
-> +			reg = <0x9810000 0x68>;
-> +			interrupts = <GIC_SPI 128 IRQ_TYPE_LEVEL_HIGH>;
-> +			pinctrl-names = "default";
-> +			pinctrl-0 = <&pinctrl_pwm0_chan0_default>;
-> +			clock-names = "pwm";
-> +			clocks = <&clk_sysin>;
->  			st,pwm-num-chan = <1>;
->  
-> -			status		= "disabled";
-> +			status = "disabled";
->  		};
->  
->  		/* SBC PWM Module */
->  		pwm1: pwm@9510000 {
-> -			compatible	= "st,sti-pwm";
-> -			#pwm-cells	= <2>;
-> -			reg		= <0x9510000 0x68>;
-> -			interrupts      = <GIC_SPI 131 IRQ_TYPE_LEVEL_HIGH>;
-> -			pinctrl-names	= "default";
-> -			pinctrl-0	= <&pinctrl_pwm1_chan0_default
-> -					&pinctrl_pwm1_chan1_default
-> -					&pinctrl_pwm1_chan2_default
-> -					&pinctrl_pwm1_chan3_default>;
-> -			clock-names	= "pwm";
-> -			clocks		= <&clk_sysin>;
-> +			compatible = "st,sti-pwm";
-> +			#pwm-cells = <2>;
-> +			reg = <0x9510000 0x68>;
-> +			interrupts = <GIC_SPI 131 IRQ_TYPE_LEVEL_HIGH>;
-> +			pinctrl-names = "default";
-> +			pinctrl-0 = <&pinctrl_pwm1_chan0_default
-> +				     &pinctrl_pwm1_chan1_default
-> +				     &pinctrl_pwm1_chan2_default
-> +				     &pinctrl_pwm1_chan3_default>;
-> +			clock-names = "pwm";
-> +			clocks = <&clk_sysin>;
->  			st,pwm-num-chan = <4>;
->  
-> -			status		= "disabled";
-> +			status = "disabled";
->  		};
->  
->  		rng10: rng@8a89000 {
-> -			compatible      = "st,rng";
-> -			reg		= <0x08a89000 0x1000>;
-> -			clocks          = <&clk_sysin>;
-> -			status		= "okay";
-> +			compatible = "st,rng";
-> +			reg = <0x08a89000 0x1000>;
-> +			clocks = <&clk_sysin>;
-> +			status = "okay";
->  		};
->  
->  		rng11: rng@8a8a000 {
-> -			compatible      = "st,rng";
-> -			reg		= <0x08a8a000 0x1000>;
-> -			clocks          = <&clk_sysin>;
-> -			status		= "okay";
-> +			compatible = "st,rng";
-> +			reg = <0x08a8a000 0x1000>;
-> +			clocks = <&clk_sysin>;
-> +			status = "okay";
->  		};
->  
->  		ethernet0: dwmac@9630000 {
-> @@ -812,36 +812,36 @@ ethernet0: dwmac@9630000 {
->  		};
->  
->  		mailbox0: mailbox@8f00000  {
-> -			compatible	= "st,stih407-mailbox";
-> -			reg		= <0x8f00000 0x1000>;
-> -			interrupts	= <GIC_SPI 1 IRQ_TYPE_LEVEL_HIGH>;
-> -			#mbox-cells	= <2>;
-> -			mbox-name	= "a9";
-> -			status		= "okay";
-> +			compatible = "st,stih407-mailbox";
-> +			reg = <0x8f00000 0x1000>;
-> +			interrupts = <GIC_SPI 1 IRQ_TYPE_LEVEL_HIGH>;
-> +			#mbox-cells = <2>;
-> +			mbox-name = "a9";
-> +			status = "okay";
->  		};
->  
->  		mailbox1: mailbox@8f01000 {
-> -			compatible	= "st,stih407-mailbox";
-> -			reg		= <0x8f01000 0x1000>;
-> -			#mbox-cells	= <2>;
-> -			mbox-name	= "st231_gp_1";
-> -			status		= "okay";
-> +			compatible = "st,stih407-mailbox";
-> +			reg = <0x8f01000 0x1000>;
-> +			#mbox-cells = <2>;
-> +			mbox-name = "st231_gp_1";
-> +			status = "okay";
->  		};
->  
->  		mailbox2: mailbox@8f02000 {
-> -			compatible	= "st,stih407-mailbox";
-> -			reg		= <0x8f02000 0x1000>;
-> -			#mbox-cells	= <2>;
-> -			mbox-name	= "st231_gp_0";
-> -			status		= "okay";
-> +			compatible = "st,stih407-mailbox";
-> +			reg = <0x8f02000 0x1000>;
-> +			#mbox-cells = <2>;
-> +			mbox-name = "st231_gp_0";
-> +			status = "okay";
->  		};
->  
->  		mailbox3: mailbox@8f03000 {
-> -			compatible	= "st,stih407-mailbox";
-> -			reg		= <0x8f03000 0x1000>;
-> -			#mbox-cells	= <2>;
-> -			mbox-name	= "st231_audio_video";
-> -			status		= "okay";
-> +			compatible = "st,stih407-mailbox";
-> +			reg = <0x8f03000 0x1000>;
-> +			#mbox-cells = <2>;
-> +			mbox-name = "st231_audio_video";
-> +			status = "okay";
->  		};
->  
->  		/* fdma audio */
-> @@ -913,7 +913,7 @@ sti_uni_player0: sti-uni-player@8d80000 {
->  			dmas = <&fdma0 2 0 1>;
->  			dma-names = "tx";
->  
-> -			status		= "disabled";
-> +			status = "disabled";
->  		};
->  
->  		sti_uni_player1: sti-uni-player@8d81000 {
-> diff --git a/arch/arm/boot/dts/stih407.dtsi b/arch/arm/boot/dts/stih407.dtsi
-> index 9e212b0af89d..aca43d2bdaad 100644
-> --- a/arch/arm/boot/dts/stih407.dtsi
-> +++ b/arch/arm/boot/dts/stih407.dtsi
-> @@ -13,7 +13,7 @@ sti-display-subsystem@0 {
->  			#address-cells = <1>;
->  			#size-cells = <1>;
->  			reg = <0 0>;
-> -			assigned-clocks	= <&clk_s_d2_quadfs 0>,
-> +			assigned-clocks = <&clk_s_d2_quadfs 0>,
->  					  <&clk_s_d2_quadfs 1>,
->  					  <&clk_s_c0_pll1 0>,
->  					  <&clk_s_c0_flexgen CLK_COMPO_DVP>,
-> @@ -106,7 +106,7 @@ sti_hdmi: sti-hdmi@8d04000 {
->  				reg-names = "hdmi-reg";
->  				#sound-dai-cells = <0>;
->  				interrupts = <GIC_SPI 106 IRQ_TYPE_LEVEL_HIGH>;
-> -				interrupt-names	= "irq";
-> +				interrupt-names = "irq";
->  				clock-names = "pix",
->  					      "tmds",
->  					      "phy",
-> diff --git a/arch/arm/boot/dts/stih410.dtsi b/arch/arm/boot/dts/stih410.dtsi
-> index ce2f62cf129b..a39dd5f7bcae 100644
-> --- a/arch/arm/boot/dts/stih410.dtsi
-> +++ b/arch/arm/boot/dts/stih410.dtsi
-> @@ -105,7 +105,7 @@ sti-display-subsystem@0 {
->  			#size-cells = <1>;
->  
->  			reg = <0 0>;
-> -			assigned-clocks	= <&clk_s_d2_quadfs 0>,
-> +			assigned-clocks = <&clk_s_d2_quadfs 0>,
->  					  <&clk_s_d2_quadfs 1>,
->  					  <&clk_s_c0_pll1 0>,
->  					  <&clk_s_c0_flexgen CLK_COMPO_DVP>,
-> @@ -198,7 +198,7 @@ sti_hdmi: sti-hdmi@8d04000 {
->  				reg-names = "hdmi-reg";
->  				#sound-dai-cells = <0>;
->  				interrupts = <GIC_SPI 106 IRQ_TYPE_LEVEL_HIGH>;
-> -				interrupt-names	= "irq";
-> +				interrupt-names = "irq";
->  				clock-names = "pix",
->  					      "tmds",
->  					      "phy",
-> diff --git a/arch/arm/boot/dts/stihxxx-b2120.dtsi b/arch/arm/boot/dts/stihxxx-b2120.dtsi
-> index 4c72dedcd1be..2aa94605d3d4 100644
-> --- a/arch/arm/boot/dts/stihxxx-b2120.dtsi
-> +++ b/arch/arm/boot/dts/stihxxx-b2120.dtsi
-> @@ -175,11 +175,11 @@ demux@8a20000 {
->  
->  			/* tsin0 is TSA on NIMA */
->  			tsin0: port {
-> -				tsin-num	= <0>;
-> +				tsin-num = <0>;
->  				serial-not-parallel;
-> -				i2c-bus		= <&ssc2>;
-> -				reset-gpios	= <&pio15 4 GPIO_ACTIVE_HIGH>;
-> -				dvb-card	= <STV0367_TDA18212_NIMA_1>;
-> +				i2c-bus = <&ssc2>;
-> +				reset-gpios = <&pio15 4 GPIO_ACTIVE_HIGH>;
-> +				dvb-card = <STV0367_TDA18212_NIMA_1>;
->  			};
->  		};
->  
+v3:
+ 1) rework kmem_cache_alloc* tracepoints once again,
+    added struct kmem_cache argument into existing templates,
+	thanks to Matthew Wilcox
+ 2) updated according trace_* calls
+ 3) added boolean "allocated" entry into trace output,
+	thanks to Roman
+ 4) updated patch subject and description
+
+v2:
+ 1) handle kmem_cache_alloc_node(), thanks to Shakeel
+ 2) rework kmem_cache_alloc* tracepoints to use cachep instead
+    of current cachep->*size parameters.
+    NB: kmem_cache_alloc_node tracepoint in SLOB cannot use cachep,
+        and therefore it was replaced by kmalloc_node.
+---
+ include/trace/events/kmem.h | 38 +++++++++++++++++++++++--------------
+ mm/slab.c                   | 10 +++++-----
+ mm/slab_common.c            |  9 ++++-----
+ mm/slob.c                   |  8 ++++----
+ mm/slub.c                   | 20 +++++++++----------
+ 5 files changed, 47 insertions(+), 38 deletions(-)
+
+diff --git a/include/trace/events/kmem.h b/include/trace/events/kmem.h
+index f76668305ac5..8d8736a5b654 100644
+--- a/include/trace/events/kmem.h
++++ b/include/trace/events/kmem.h
+@@ -13,11 +13,12 @@ DECLARE_EVENT_CLASS(kmem_alloc,
+ 
+ 	TP_PROTO(unsigned long call_site,
+ 		 const void *ptr,
++		 struct kmem_cache *s,
+ 		 size_t bytes_req,
+ 		 size_t bytes_alloc,
+ 		 gfp_t gfp_flags),
+ 
+-	TP_ARGS(call_site, ptr, bytes_req, bytes_alloc, gfp_flags),
++	TP_ARGS(call_site, ptr, s, bytes_req, bytes_alloc, gfp_flags),
+ 
+ 	TP_STRUCT__entry(
+ 		__field(	unsigned long,	call_site	)
+@@ -25,6 +26,7 @@ DECLARE_EVENT_CLASS(kmem_alloc,
+ 		__field(	size_t,		bytes_req	)
+ 		__field(	size_t,		bytes_alloc	)
+ 		__field(	unsigned long,	gfp_flags	)
++		__field(	bool,		accounted	)
+ 	),
+ 
+ 	TP_fast_assign(
+@@ -33,42 +35,46 @@ DECLARE_EVENT_CLASS(kmem_alloc,
+ 		__entry->bytes_req	= bytes_req;
+ 		__entry->bytes_alloc	= bytes_alloc;
+ 		__entry->gfp_flags	= (__force unsigned long)gfp_flags;
++		__entry->accounted	= (gfp_flags & __GFP_ACCOUNT) ||
++					  (s && s->flags & SLAB_ACCOUNT);
+ 	),
+ 
+-	TP_printk("call_site=%pS ptr=%p bytes_req=%zu bytes_alloc=%zu gfp_flags=%s",
++	TP_printk("call_site=%pS ptr=%p bytes_req=%zu bytes_alloc=%zu gfp_flags=%s accounted=%s",
+ 		(void *)__entry->call_site,
+ 		__entry->ptr,
+ 		__entry->bytes_req,
+ 		__entry->bytes_alloc,
+-		show_gfp_flags(__entry->gfp_flags))
++		show_gfp_flags(__entry->gfp_flags),
++		__entry->accounted ? "true" : "false")
+ );
+ 
+ DEFINE_EVENT(kmem_alloc, kmalloc,
+ 
+-	TP_PROTO(unsigned long call_site, const void *ptr,
++	TP_PROTO(unsigned long call_site, const void *ptr, struct kmem_cache *s,
+ 		 size_t bytes_req, size_t bytes_alloc, gfp_t gfp_flags),
+ 
+-	TP_ARGS(call_site, ptr, bytes_req, bytes_alloc, gfp_flags)
++	TP_ARGS(call_site, ptr, s, bytes_req, bytes_alloc, gfp_flags)
+ );
+ 
+ DEFINE_EVENT(kmem_alloc, kmem_cache_alloc,
+ 
+-	TP_PROTO(unsigned long call_site, const void *ptr,
++	TP_PROTO(unsigned long call_site, const void *ptr, struct kmem_cache *s,
+ 		 size_t bytes_req, size_t bytes_alloc, gfp_t gfp_flags),
+ 
+-	TP_ARGS(call_site, ptr, bytes_req, bytes_alloc, gfp_flags)
++	TP_ARGS(call_site, ptr, s, bytes_req, bytes_alloc, gfp_flags)
+ );
+ 
+ DECLARE_EVENT_CLASS(kmem_alloc_node,
+ 
+ 	TP_PROTO(unsigned long call_site,
+ 		 const void *ptr,
++		 struct kmem_cache *s,
+ 		 size_t bytes_req,
+ 		 size_t bytes_alloc,
+ 		 gfp_t gfp_flags,
+ 		 int node),
+ 
+-	TP_ARGS(call_site, ptr, bytes_req, bytes_alloc, gfp_flags, node),
++	TP_ARGS(call_site, ptr, s, bytes_req, bytes_alloc, gfp_flags, node),
+ 
+ 	TP_STRUCT__entry(
+ 		__field(	unsigned long,	call_site	)
+@@ -77,6 +83,7 @@ DECLARE_EVENT_CLASS(kmem_alloc_node,
+ 		__field(	size_t,		bytes_alloc	)
+ 		__field(	unsigned long,	gfp_flags	)
+ 		__field(	int,		node		)
++		__field(	bool,		accounted	)
+ 	),
+ 
+ 	TP_fast_assign(
+@@ -86,33 +93,36 @@ DECLARE_EVENT_CLASS(kmem_alloc_node,
+ 		__entry->bytes_alloc	= bytes_alloc;
+ 		__entry->gfp_flags	= (__force unsigned long)gfp_flags;
+ 		__entry->node		= node;
++		__entry->accounted	= (gfp_flags & __GFP_ACCOUNT) ||
++					  (s && s->flags & SLAB_ACCOUNT);
+ 	),
+ 
+-	TP_printk("call_site=%pS ptr=%p bytes_req=%zu bytes_alloc=%zu gfp_flags=%s node=%d",
++	TP_printk("call_site=%pS ptr=%p bytes_req=%zu bytes_alloc=%zu gfp_flags=%s node=%d accounted=%s",
+ 		(void *)__entry->call_site,
+ 		__entry->ptr,
+ 		__entry->bytes_req,
+ 		__entry->bytes_alloc,
+ 		show_gfp_flags(__entry->gfp_flags),
+-		__entry->node)
++		__entry->node,
++		__entry->accounted ? "true" : "false")
+ );
+ 
+ DEFINE_EVENT(kmem_alloc_node, kmalloc_node,
+ 
+ 	TP_PROTO(unsigned long call_site, const void *ptr,
+-		 size_t bytes_req, size_t bytes_alloc,
++		 struct kmem_cache *s, size_t bytes_req, size_t bytes_alloc,
+ 		 gfp_t gfp_flags, int node),
+ 
+-	TP_ARGS(call_site, ptr, bytes_req, bytes_alloc, gfp_flags, node)
++	TP_ARGS(call_site, ptr, s, bytes_req, bytes_alloc, gfp_flags, node)
+ );
+ 
+ DEFINE_EVENT(kmem_alloc_node, kmem_cache_alloc_node,
+ 
+ 	TP_PROTO(unsigned long call_site, const void *ptr,
+-		 size_t bytes_req, size_t bytes_alloc,
++		 struct kmem_cache *s, size_t bytes_req, size_t bytes_alloc,
+ 		 gfp_t gfp_flags, int node),
+ 
+-	TP_ARGS(call_site, ptr, bytes_req, bytes_alloc, gfp_flags, node)
++	TP_ARGS(call_site, ptr, s, bytes_req, bytes_alloc, gfp_flags, node)
+ );
+ 
+ TRACE_EVENT(kfree,
+diff --git a/mm/slab.c b/mm/slab.c
+index f8cd00f4ba13..1f7864ff41e3 100644
+--- a/mm/slab.c
++++ b/mm/slab.c
+@@ -3478,7 +3478,7 @@ void *__kmem_cache_alloc_lru(struct kmem_cache *cachep, struct list_lru *lru,
+ {
+ 	void *ret = slab_alloc(cachep, lru, flags, cachep->object_size, _RET_IP_);
+ 
+-	trace_kmem_cache_alloc(_RET_IP_, ret,
++	trace_kmem_cache_alloc(_RET_IP_, ret, cachep,
+ 			       cachep->object_size, cachep->size, flags);
+ 
+ 	return ret;
+@@ -3567,7 +3567,7 @@ kmem_cache_alloc_trace(struct kmem_cache *cachep, gfp_t flags, size_t size)
+ 	ret = slab_alloc(cachep, NULL, flags, size, _RET_IP_);
+ 
+ 	ret = kasan_kmalloc(cachep, ret, size, flags);
+-	trace_kmalloc(_RET_IP_, ret,
++	trace_kmalloc(_RET_IP_, ret, cachep,
+ 		      size, cachep->size, flags);
+ 	return ret;
+ }
+@@ -3592,7 +3592,7 @@ void *kmem_cache_alloc_node(struct kmem_cache *cachep, gfp_t flags, int nodeid)
+ {
+ 	void *ret = slab_alloc_node(cachep, flags, nodeid, cachep->object_size, _RET_IP_);
+ 
+-	trace_kmem_cache_alloc_node(_RET_IP_, ret,
++	trace_kmem_cache_alloc_node(_RET_IP_, ret, cachep,
+ 				    cachep->object_size, cachep->size,
+ 				    flags, nodeid);
+ 
+@@ -3611,7 +3611,7 @@ void *kmem_cache_alloc_node_trace(struct kmem_cache *cachep,
+ 	ret = slab_alloc_node(cachep, flags, nodeid, size, _RET_IP_);
+ 
+ 	ret = kasan_kmalloc(cachep, ret, size, flags);
+-	trace_kmalloc_node(_RET_IP_, ret,
++	trace_kmalloc_node(_RET_IP_, ret, cachep,
+ 			   size, cachep->size,
+ 			   flags, nodeid);
+ 	return ret;
+@@ -3694,7 +3694,7 @@ static __always_inline void *__do_kmalloc(size_t size, gfp_t flags,
+ 	ret = slab_alloc(cachep, NULL, flags, size, caller);
+ 
+ 	ret = kasan_kmalloc(cachep, ret, size, flags);
+-	trace_kmalloc(caller, ret,
++	trace_kmalloc(caller, ret, cachep,
+ 		      size, cachep->size, flags);
+ 
+ 	return ret;
+diff --git a/mm/slab_common.c b/mm/slab_common.c
+index 77c3adf40e50..6c9aac5d8f4a 100644
+--- a/mm/slab_common.c
++++ b/mm/slab_common.c
+@@ -26,13 +26,12 @@
+ #include <linux/memcontrol.h>
+ #include <linux/stackdepot.h>
+ 
+-#define CREATE_TRACE_POINTS
+-#include <trace/events/kmem.h>
+-
+ #include "internal.h"
+-
+ #include "slab.h"
+ 
++#define CREATE_TRACE_POINTS
++#include <trace/events/kmem.h>
++
+ enum slab_state slab_state;
+ LIST_HEAD(slab_caches);
+ DEFINE_MUTEX(slab_mutex);
+@@ -959,7 +958,7 @@ EXPORT_SYMBOL(kmalloc_order);
+ void *kmalloc_order_trace(size_t size, gfp_t flags, unsigned int order)
+ {
+ 	void *ret = kmalloc_order(size, flags, order);
+-	trace_kmalloc(_RET_IP_, ret, size, PAGE_SIZE << order, flags);
++	trace_kmalloc(_RET_IP_, ret, NULL, size, PAGE_SIZE << order, flags);
+ 	return ret;
+ }
+ EXPORT_SYMBOL(kmalloc_order_trace);
+diff --git a/mm/slob.c b/mm/slob.c
+index f47811f09aca..56421fe461c4 100644
+--- a/mm/slob.c
++++ b/mm/slob.c
+@@ -507,7 +507,7 @@ __do_kmalloc_node(size_t size, gfp_t gfp, int node, unsigned long caller)
+ 		*m = size;
+ 		ret = (void *)m + minalign;
+ 
+-		trace_kmalloc_node(caller, ret,
++		trace_kmalloc_node(caller, ret, NULL,
+ 				   size, size + minalign, gfp, node);
+ 	} else {
+ 		unsigned int order = get_order(size);
+@@ -516,7 +516,7 @@ __do_kmalloc_node(size_t size, gfp_t gfp, int node, unsigned long caller)
+ 			gfp |= __GFP_COMP;
+ 		ret = slob_new_pages(gfp, order, node);
+ 
+-		trace_kmalloc_node(caller, ret,
++		trace_kmalloc_node(caller, ret, NULL,
+ 				   size, PAGE_SIZE << order, gfp, node);
+ 	}
+ 
+@@ -616,12 +616,12 @@ static void *slob_alloc_node(struct kmem_cache *c, gfp_t flags, int node)
+ 
+ 	if (c->size < PAGE_SIZE) {
+ 		b = slob_alloc(c->size, flags, c->align, node, 0);
+-		trace_kmem_cache_alloc_node(_RET_IP_, b, c->object_size,
++		trace_kmem_cache_alloc_node(_RET_IP_, b, NULL, c->object_size,
+ 					    SLOB_UNITS(c->size) * SLOB_UNIT,
+ 					    flags, node);
+ 	} else {
+ 		b = slob_new_pages(flags, get_order(c->size), node);
+-		trace_kmem_cache_alloc_node(_RET_IP_, b, c->object_size,
++		trace_kmem_cache_alloc_node(_RET_IP_, b, NULL, c->object_size,
+ 					    PAGE_SIZE << get_order(c->size),
+ 					    flags, node);
+ 	}
+diff --git a/mm/slub.c b/mm/slub.c
+index e5535020e0fd..c323dd916b08 100644
+--- a/mm/slub.c
++++ b/mm/slub.c
+@@ -3228,7 +3228,7 @@ void *__kmem_cache_alloc_lru(struct kmem_cache *s, struct list_lru *lru,
+ {
+ 	void *ret = slab_alloc(s, lru, gfpflags, _RET_IP_, s->object_size);
+ 
+-	trace_kmem_cache_alloc(_RET_IP_, ret, s->object_size,
++	trace_kmem_cache_alloc(_RET_IP_, ret, s, s->object_size,
+ 				s->size, gfpflags);
+ 
+ 	return ret;
+@@ -3251,7 +3251,7 @@ EXPORT_SYMBOL(kmem_cache_alloc_lru);
+ void *kmem_cache_alloc_trace(struct kmem_cache *s, gfp_t gfpflags, size_t size)
+ {
+ 	void *ret = slab_alloc(s, NULL, gfpflags, _RET_IP_, size);
+-	trace_kmalloc(_RET_IP_, ret, size, s->size, gfpflags);
++	trace_kmalloc(_RET_IP_, ret, s, size, s->size, gfpflags);
+ 	ret = kasan_kmalloc(s, ret, size, gfpflags);
+ 	return ret;
+ }
+@@ -3263,7 +3263,7 @@ void *kmem_cache_alloc_node(struct kmem_cache *s, gfp_t gfpflags, int node)
+ {
+ 	void *ret = slab_alloc_node(s, NULL, gfpflags, node, _RET_IP_, s->object_size);
+ 
+-	trace_kmem_cache_alloc_node(_RET_IP_, ret,
++	trace_kmem_cache_alloc_node(_RET_IP_, ret, s,
+ 				    s->object_size, s->size, gfpflags, node);
+ 
+ 	return ret;
+@@ -3277,7 +3277,7 @@ void *kmem_cache_alloc_node_trace(struct kmem_cache *s,
+ {
+ 	void *ret = slab_alloc_node(s, NULL, gfpflags, node, _RET_IP_, size);
+ 
+-	trace_kmalloc_node(_RET_IP_, ret,
++	trace_kmalloc_node(_RET_IP_, ret, s,
+ 			   size, s->size, gfpflags, node);
+ 
+ 	ret = kasan_kmalloc(s, ret, size, gfpflags);
+@@ -4412,7 +4412,7 @@ void *__kmalloc(size_t size, gfp_t flags)
+ 
+ 	ret = slab_alloc(s, NULL, flags, _RET_IP_, size);
+ 
+-	trace_kmalloc(_RET_IP_, ret, size, s->size, flags);
++	trace_kmalloc(_RET_IP_, ret, s, size, s->size, flags);
+ 
+ 	ret = kasan_kmalloc(s, ret, size, flags);
+ 
+@@ -4446,7 +4446,7 @@ void *__kmalloc_node(size_t size, gfp_t flags, int node)
+ 	if (unlikely(size > KMALLOC_MAX_CACHE_SIZE)) {
+ 		ret = kmalloc_large_node(size, flags, node);
+ 
+-		trace_kmalloc_node(_RET_IP_, ret,
++		trace_kmalloc_node(_RET_IP_, ret, NULL,
+ 				   size, PAGE_SIZE << get_order(size),
+ 				   flags, node);
+ 
+@@ -4460,7 +4460,7 @@ void *__kmalloc_node(size_t size, gfp_t flags, int node)
+ 
+ 	ret = slab_alloc_node(s, NULL, flags, node, _RET_IP_, size);
+ 
+-	trace_kmalloc_node(_RET_IP_, ret, size, s->size, flags, node);
++	trace_kmalloc_node(_RET_IP_, ret, s, size, s->size, flags, node);
+ 
+ 	ret = kasan_kmalloc(s, ret, size, flags);
+ 
+@@ -4919,7 +4919,7 @@ void *__kmalloc_track_caller(size_t size, gfp_t gfpflags, unsigned long caller)
+ 	ret = slab_alloc(s, NULL, gfpflags, caller, size);
+ 
+ 	/* Honor the call site pointer we received. */
+-	trace_kmalloc(caller, ret, size, s->size, gfpflags);
++	trace_kmalloc(caller, ret, s, size, s->size, gfpflags);
+ 
+ 	return ret;
+ }
+@@ -4935,7 +4935,7 @@ void *__kmalloc_node_track_caller(size_t size, gfp_t gfpflags,
+ 	if (unlikely(size > KMALLOC_MAX_CACHE_SIZE)) {
+ 		ret = kmalloc_large_node(size, gfpflags, node);
+ 
+-		trace_kmalloc_node(caller, ret,
++		trace_kmalloc_node(caller, ret, NULL,
+ 				   size, PAGE_SIZE << get_order(size),
+ 				   gfpflags, node);
+ 
+@@ -4950,7 +4950,7 @@ void *__kmalloc_node_track_caller(size_t size, gfp_t gfpflags,
+ 	ret = slab_alloc_node(s, NULL, gfpflags, node, caller, size);
+ 
+ 	/* Honor the call site pointer we received. */
+-	trace_kmalloc_node(caller, ret, size, s->size, gfpflags, node);
++	trace_kmalloc_node(caller, ret, s, size, s->size, gfpflags, node);
+ 
+ 	return ret;
+ }
+-- 
+2.31.1
+
