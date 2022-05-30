@@ -2,51 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87575C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:28:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C50CFC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:29:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239619AbiE3O2Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:28:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40318 "EHLO
+        id S240084AbiE3O2z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:28:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241426AbiE3ORf (ORCPT
+        with ESMTP id S241451AbiE3ORh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:17:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3606646B39;
-        Mon, 30 May 2022 06:46:52 -0700 (PDT)
+        Mon, 30 May 2022 10:17:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2DD852B3D;
+        Mon, 30 May 2022 06:47:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C6D3B60FD6;
-        Mon, 30 May 2022 13:46:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF0A7C385B8;
-        Mon, 30 May 2022 13:46:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 56A2CB80DAB;
+        Mon, 30 May 2022 13:47:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D5DCC36AE5;
+        Mon, 30 May 2022 13:47:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918411;
-        bh=q3FO7MlqX4yOW38jHvst9iqmjOErdiMvJMatUfrN1P0=;
+        s=k20201202; t=1653918441;
+        bh=3bAxwqz+PrEB3N97Cb5NFJS0jvNMxicYpIO/3MlF7Zo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lg929v5lehlpZ8/oigQANnXTpcuhZLLAORdpcSRDLRl/T8WAi3C0Ql8kuLUblqFHY
-         3KDS6xX/Znwza6UaJqcG5KVjXijpmPRdmIPd3uTrqWdF7v4uwNMWunsGjat4HX1ffR
-         Q4OW227rH4LkOQ8Gy+1mFzrh/uiGMkb824VAr/PZrkVeIRwai2m0CrQXHVDyKDtCUP
-         zNyoJtWJYtsBDwwVZOJMTDgHHB0HfEW4fs88FJWtmkryPtjImvzwLQD2UWMKOqNHlZ
-         uiHaibkLLBqe0RKppuGlfGBybSKeTdKxiyV+FWOk3Fsy6TxDgUwXZwYBBw09d7igrC
-         KfjUz6f+a686A==
+        b=YkAZCaC1/epChvXTlixr09k3rK5VthSiO1L+80lZZK3B3nYhp21Sgy4oZObR7fC8J
+         B1Bw70T2/qeyTRtV8Bj6g2BAISWzW9ZeYgOJ7+Qh+cFRqgZklrQvAUQWMcyYszfeAj
+         vBIrDkjtjYqQcpo6YUOde4DpawZzeSCDyu9lYRxv3rYaeuz6rozheMDXdLRp1yhwrF
+         MnGFUjmyVhaOoQOCqk5jIzDq/lR9HaaXmzRIEjQsQnERMkva734cJO+3gM2s+KOUL+
+         l7NsSRhhcGl+CTMkuQumQ7rS8tzjG9nP+YUFGjDvbI5da4cwohUbEwCFtX+AbzFpC7
+         DEpVOs/S+CGoA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     David Howells <dhowells@redhat.com>,
-        Jeffrey Altman <jaltman@auristor.com>,
-        Marc Dionne <marc.dionne@auristor.com>,
-        linux-afs@lists.infradead.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 73/76] rxrpc, afs: Fix selection of abort codes
-Date:   Mon, 30 May 2022 09:44:03 -0400
-Message-Id: <20220530134406.1934928-73-sashal@kernel.org>
+Cc:     Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Daniel Vetter <daniel.vetter@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>, Du Cheng <ducheng2@gmail.com>,
+        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
+        Claudio Suarez <cssk@net-c.es>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Sasha Levin <sashal@kernel.org>, deller@gmx.de,
+        geert@linux-m68k.org, linux-fbdev@vger.kernel.org,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.4 07/55] fbcon: Consistently protect deferred_takeover with console_lock()
+Date:   Mon, 30 May 2022 09:46:13 -0400
+Message-Id: <20220530134701.1935933-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220530134406.1934928-1-sashal@kernel.org>
-References: <20220530134406.1934928-1-sashal@kernel.org>
+In-Reply-To: <20220530134701.1935933-1-sashal@kernel.org>
+References: <20220530134701.1935933-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -55,112 +58,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+From: Daniel Vetter <daniel.vetter@ffwll.ch>
 
-[ Upstream commit de696c4784f0706884458893c5a6c39b3a3ff65c ]
+[ Upstream commit 43553559121ca90965b572cf8a1d6d0fd618b449 ]
 
-The RX_USER_ABORT code should really only be used to indicate that the user
-of the rxrpc service (ie. userspace) implicitly caused a call to be aborted
-- for instance if the AF_RXRPC socket is closed whilst the call was in
-progress.  (The user may also explicitly abort a call and specify the abort
-code to use).
+This shouldn't be a problem in practice since until we've actually
+taken over the console there's nothing we've registered with the
+console/vt subsystem, so the exit/unbind path that check this can't
+do the wrong thing. But it's confusing, so fix it by moving it a tad
+later.
 
-Change some of the points of generation to use other abort codes instead:
-
- (1) Abort the call with RXGEN_SS_UNMARSHAL or RXGEN_CC_UNMARSHAL if we see
-     ENOMEM and EFAULT during received data delivery and abort with
-     RX_CALL_DEAD in the default case.
-
- (2) Abort with RXGEN_SS_MARSHAL if we get ENOMEM whilst trying to send a
-     reply.
-
- (3) Abort with RX_CALL_DEAD if we stop hearing from the peer if we had
-     heard from the peer and abort with RX_CALL_TIMEOUT if we hadn't.
-
- (4) Abort with RX_CALL_DEAD if we try to disconnect a call that's not
-     completed successfully or been aborted.
-
-Reported-by: Jeffrey Altman <jaltman@auristor.com>
-Signed-off-by: David Howells <dhowells@redhat.com>
-cc: Marc Dionne <marc.dionne@auristor.com>
-cc: linux-afs@lists.infradead.org
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Acked-by: Sam Ravnborg <sam@ravnborg.org>
+Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Cc: Du Cheng <ducheng2@gmail.com>
+Cc: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Cc: Claudio Suarez <cssk@net-c.es>
+Cc: Thomas Zimmermann <tzimmermann@suse.de>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220405210335.3434130-14-daniel.vetter@ffwll.ch
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/afs/rxrpc.c          | 8 +++++---
- net/rxrpc/call_event.c  | 4 ++--
- net/rxrpc/conn_object.c | 2 +-
- 3 files changed, 8 insertions(+), 6 deletions(-)
+ drivers/video/fbdev/core/fbcon.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/fs/afs/rxrpc.c b/fs/afs/rxrpc.c
-index 8be709cb8542..efe0fb3ad8bd 100644
---- a/fs/afs/rxrpc.c
-+++ b/fs/afs/rxrpc.c
-@@ -572,6 +572,8 @@ static void afs_deliver_to_call(struct afs_call *call)
- 		case -ENODATA:
- 		case -EBADMSG:
- 		case -EMSGSIZE:
-+		case -ENOMEM:
-+		case -EFAULT:
- 			abort_code = RXGEN_CC_UNMARSHAL;
- 			if (state != AFS_CALL_CL_AWAIT_REPLY)
- 				abort_code = RXGEN_SS_UNMARSHAL;
-@@ -579,7 +581,7 @@ static void afs_deliver_to_call(struct afs_call *call)
- 						abort_code, ret, "KUM");
- 			goto local_abort;
- 		default:
--			abort_code = RX_USER_ABORT;
-+			abort_code = RX_CALL_DEAD;
- 			rxrpc_kernel_abort_call(call->net->socket, call->rxcall,
- 						abort_code, ret, "KER");
- 			goto local_abort;
-@@ -871,7 +873,7 @@ void afs_send_empty_reply(struct afs_call *call)
- 	case -ENOMEM:
- 		_debug("oom");
- 		rxrpc_kernel_abort_call(net->socket, call->rxcall,
--					RX_USER_ABORT, -ENOMEM, "KOO");
-+					RXGEN_SS_MARSHAL, -ENOMEM, "KOO");
- 		fallthrough;
- 	default:
- 		_leave(" [error]");
-@@ -913,7 +915,7 @@ void afs_send_simple_reply(struct afs_call *call, const void *buf, size_t len)
- 	if (n == -ENOMEM) {
- 		_debug("oom");
- 		rxrpc_kernel_abort_call(net->socket, call->rxcall,
--					RX_USER_ABORT, -ENOMEM, "KOO");
-+					RXGEN_SS_MARSHAL, -ENOMEM, "KOO");
- 	}
- 	_leave(" [error]");
- }
-diff --git a/net/rxrpc/call_event.c b/net/rxrpc/call_event.c
-index 22e05de5d1ca..e426f6831aab 100644
---- a/net/rxrpc/call_event.c
-+++ b/net/rxrpc/call_event.c
-@@ -377,9 +377,9 @@ void rxrpc_process_call(struct work_struct *work)
- 		if (test_bit(RXRPC_CALL_RX_HEARD, &call->flags) &&
- 		    (int)call->conn->hi_serial - (int)call->rx_serial > 0) {
- 			trace_rxrpc_call_reset(call);
--			rxrpc_abort_call("EXP", call, 0, RX_USER_ABORT, -ECONNRESET);
-+			rxrpc_abort_call("EXP", call, 0, RX_CALL_DEAD, -ECONNRESET);
- 		} else {
--			rxrpc_abort_call("EXP", call, 0, RX_USER_ABORT, -ETIME);
-+			rxrpc_abort_call("EXP", call, 0, RX_CALL_TIMEOUT, -ETIME);
- 		}
- 		set_bit(RXRPC_CALL_EV_ABORT, &call->events);
- 		goto recheck_state;
-diff --git a/net/rxrpc/conn_object.c b/net/rxrpc/conn_object.c
-index 3bcbe0665f91..3ef05a0e90ad 100644
---- a/net/rxrpc/conn_object.c
-+++ b/net/rxrpc/conn_object.c
-@@ -184,7 +184,7 @@ void __rxrpc_disconnect_call(struct rxrpc_connection *conn,
- 			chan->last_type = RXRPC_PACKET_TYPE_ABORT;
- 			break;
- 		default:
--			chan->last_abort = RX_USER_ABORT;
-+			chan->last_abort = RX_CALL_DEAD;
- 			chan->last_type = RXRPC_PACKET_TYPE_ABORT;
- 			break;
- 		}
+diff --git a/drivers/video/fbdev/core/fbcon.c b/drivers/video/fbdev/core/fbcon.c
+index 75b770514067..1decded4845f 100644
+--- a/drivers/video/fbdev/core/fbcon.c
++++ b/drivers/video/fbdev/core/fbcon.c
+@@ -3286,6 +3286,9 @@ static void fbcon_register_existing_fbs(struct work_struct *work)
+ 
+ 	console_lock();
+ 
++	deferred_takeover = false;
++	logo_shown = FBCON_LOGO_DONTSHOW;
++
+ 	for_each_registered_fb(i)
+ 		fbcon_fb_registered(registered_fb[i]);
+ 
+@@ -3303,8 +3306,6 @@ static int fbcon_output_notifier(struct notifier_block *nb,
+ 	pr_info("fbcon: Taking over console\n");
+ 
+ 	dummycon_unregister_output_notifier(&fbcon_output_nb);
+-	deferred_takeover = false;
+-	logo_shown = FBCON_LOGO_DONTSHOW;
+ 
+ 	/* We may get called in atomic context */
+ 	schedule_work(&fbcon_deferred_takeover_work);
 -- 
 2.35.1
 
