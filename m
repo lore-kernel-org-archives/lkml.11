@@ -2,50 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05D8FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:51:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CAEFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:51:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241013AbiE3Ovv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:51:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56164 "EHLO
+        id S241046AbiE3Ov4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:51:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242490AbiE3ObO (ORCPT
+        with ESMTP id S241193AbiE3OaS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:31:14 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5C29EBA9F;
-        Mon, 30 May 2022 06:53:03 -0700 (PDT)
+        Mon, 30 May 2022 10:30:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 786745A082;
+        Mon, 30 May 2022 06:51:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 4549BCE1024;
-        Mon, 30 May 2022 13:52:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7067CC3411C;
-        Mon, 30 May 2022 13:52:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0ACC561001;
+        Mon, 30 May 2022 13:51:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 453B6C3411F;
+        Mon, 30 May 2022 13:51:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918760;
-        bh=493NnMb0m3jXFaC9Qo/ThcPB1+4sJ7bhd1oanoqWjbQ=;
+        s=k20201202; t=1653918716;
+        bh=xxgAl27rmpcyIt+ia+jYT3R5XT8FLi98W9DLwPfVKfw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oEmL5Ka13BFL8PxJxMyMRJvDnZozmtYpkVjnM6zAPl3YN2Qfb5mYgLvCTLklpqGN+
-         py+vxmM6eTq9bsugxtqbV+WGahp03Wvx3WLxnPveT/qgBN+mP24GVwDvj0uwfnKUFN
-         X9aTTx6HnbFpz67mfqD7nn+m21jrU/0fqv/iqy5yO8fbPuyhhQmfCM1hlgkAkNY44f
-         UjzlQPWc0d5pLHGPtBgbJtghMi8tcCxERrjMMmPc3ZV4GUxGaVmIAWzIfE+sbobwvN
-         3OTaWuOmCbFr87miNEDuNmVOIgOkPbxURjtK/CEAL+US1pPXdD14KOJg0XYiTgfBj1
-         ZpZkhw+4FcA4w==
+        b=HypTCAJid3p1epQs2sNh9DLSGYsIU4v46/HcgxYp2viDccedqGmq3dqjjsiaBM3J4
+         aCr0MMsrMXo5im1Ha1K3bAmgmetXqUW0k+a6IECakZiqUCJX6sHRGkcHAHTFP1gjxq
+         GAd3gp0Pyj0F8tpe8ssK32h9EXEZu1X+fUvuKCMtQZJhi9VRRiw0ifbhYuhJBVQ0Sx
+         kQfXy/pX2gnzNcO1WpokWoXJlohndnxfsxCddsScvu++4ZKuFPELrpTcutyqzuMVL1
+         SfVzgYvW4ct91vF04Y2FZzKxKpHb6+Qz8HeqLlFc4Z0FkyERi9BJ5REFQJuWFQePj3
+         3v/NY8MQBqjew==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lv Ruyi <lv.ruyi@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, kashyap.desai@broadcom.com,
-        sumit.saxena@broadcom.com, shivasharan.srikanteshwara@broadcom.com,
-        jejb@linux.ibm.com, megaraidlinux.pdl@broadcom.com,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 11/24] scsi: megaraid: Fix error check return value of register_chrdev()
-Date:   Mon, 30 May 2022 09:51:58 -0400
-Message-Id: <20220530135211.1937674-11-sashal@kernel.org>
+Cc:     "Smith, Kyle Miller (Nimble Kernel)" <kyles@hpe.com>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Hannes Reinecke <hare@suse.de>, Christoph Hellwig <hch@lst.de>,
+        Sasha Levin <sashal@kernel.org>, kbusch@kernel.org,
+        axboe@fb.com, sagi@grimberg.me, linux-nvme@lists.infradead.org
+Subject: [PATCH AUTOSEL 4.14 23/29] nvme-pci: fix a NULL pointer dereference in nvme_alloc_admin_tags
+Date:   Mon, 30 May 2022 09:50:50 -0400
+Message-Id: <20220530135057.1937286-23-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220530135211.1937674-1-sashal@kernel.org>
-References: <20220530135211.1937674-1-sashal@kernel.org>
+In-Reply-To: <20220530135057.1937286-1-sashal@kernel.org>
+References: <20220530135057.1937286-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,36 +53,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lv Ruyi <lv.ruyi@zte.com.cn>
+From: "Smith, Kyle Miller (Nimble Kernel)" <kyles@hpe.com>
 
-[ Upstream commit c5acd61dbb32b6bda0f3a354108f2b8dcb788985 ]
+[ Upstream commit da42761181627e9bdc37d18368b827948a583929 ]
 
-If major equals 0, register_chrdev() returns an error code when it fails.
-This function dynamically allocates a major and returns its number on
-success, so we should use "< 0" to check it instead of "!".
+In nvme_alloc_admin_tags, the admin_q can be set to an error (typically
+-ENOMEM) if the blk_mq_init_queue call fails to set up the queue, which
+is checked immediately after the call. However, when we return the error
+message up the stack, to nvme_reset_work the error takes us to
+nvme_remove_dead_ctrl()
+  nvme_dev_disable()
+   nvme_suspend_queue(&dev->queues[0]).
 
-Link: https://lore.kernel.org/r/20220418105755.2558828-1-lv.ruyi@zte.com.cn
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Here, we only check that the admin_q is non-NULL, rather than not
+an error or NULL, and begin quiescing a queue that never existed, leading
+to bad / NULL pointer dereference.
+
+Signed-off-by: Kyle Smith <kyles@hpe.com>
+Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
+Reviewed-by: Hannes Reinecke <hare@suse.de>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/megaraid.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/nvme/host/pci.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/scsi/megaraid.c b/drivers/scsi/megaraid.c
-index 2cbfec6a7466..2f7132edcd3f 100644
---- a/drivers/scsi/megaraid.c
-+++ b/drivers/scsi/megaraid.c
-@@ -4705,7 +4705,7 @@ static int __init megaraid_init(void)
- 	 * major number allocation.
- 	 */
- 	major = register_chrdev(0, "megadev_legacy", &megadev_fops);
--	if (!major) {
-+	if (major < 0) {
- 		printk(KERN_WARNING
- 				"megaraid: failed to register char device\n");
- 	}
+diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+index 92f269a0846c..de23f2814877 100644
+--- a/drivers/nvme/host/pci.c
++++ b/drivers/nvme/host/pci.c
+@@ -1424,6 +1424,7 @@ static int nvme_alloc_admin_tags(struct nvme_dev *dev)
+ 		dev->ctrl.admin_q = blk_mq_init_queue(&dev->admin_tagset);
+ 		if (IS_ERR(dev->ctrl.admin_q)) {
+ 			blk_mq_free_tag_set(&dev->admin_tagset);
++			dev->ctrl.admin_q = NULL;
+ 			return -ENOMEM;
+ 		}
+ 		if (!blk_get_queue(dev->ctrl.admin_q)) {
 -- 
 2.35.1
 
