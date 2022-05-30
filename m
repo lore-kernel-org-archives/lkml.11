@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E58EC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6EDAC41535
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:31:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242561AbiE3ObT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:31:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40298 "EHLO
+        id S242687AbiE3Ob2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:31:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241633AbiE3ORv (ORCPT
+        with ESMTP id S241984AbiE3OSQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:17:51 -0400
+        Mon, 30 May 2022 10:18:16 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB4C35714F;
-        Mon, 30 May 2022 06:47:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 219029CF6B;
+        Mon, 30 May 2022 06:48:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DCF19B80DE8;
-        Mon, 30 May 2022 13:47:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89C93C36AE5;
-        Mon, 30 May 2022 13:47:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5220FB80DA7;
+        Mon, 30 May 2022 13:48:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC3BBC36AE3;
+        Mon, 30 May 2022 13:48:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918468;
-        bh=k3iFHM/oT9Nh5ayki4EpnafQ7zMF7rqJIXHD2vySli0=;
+        s=k20201202; t=1653918500;
+        bh=+/FYCLGsRVRHNZXvwv77uB0pWt/M78vjProgDG0PYuM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E/Ccr4y5u56n+lmthZZ5ecwQqwdL+r15XyPbL8DP4R6oIo/LL9QTvBRqIYE64qhvY
-         QWjmKg837RQ8GPTvicqPwqxz7ZwAYZCy7OYiq1nK3XbN6+lpFO7CQT5PFEyRSgmdfV
-         GR0kVVARNBNL8/x2LyCdHgJ/YgninXoUnbQej6xufNkrjEnZGZNmY4zkRVW4bsR3SK
-         khCpJBY6YJPkEZ1BiqrdWs37qOQVBUkFtTY/IdY15R2l237h/Jhmevydlh/dehNojY
-         l2nNT7UCHc1Ho40RJVUH+LRsjVxQoyRWchsL7iYH2F4+YzjmDGgTaSsJGUAgMnBcjo
-         W0oSmf54j1J6g==
+        b=vQWzh9wwM3Guse3V1zszKi3ZShmsYzIKKuDTv7NvsRayXuZiwHe4X5rGOx5RV+RGo
+         N3Hc73IyCVSYne5hpdFuFPvpFP7Y+Ss1UdIl5Hd6uvzhlX/7Z/ECrTf8ho/yTJw8SJ
+         DIhbRcIzb8leBW0ciQvTQm12b8qetrtjPtfdO6CjE4lZ62zG5ZuUtM5gQ7lruO+d6Z
+         yMtWv2pMz2Kkh+JxofuSK1D9QVbnlys25mzIdkyVaBRHXKd5Bym+DEmKKcdyVSguOe
+         gCNU/SB18zAvagMk47qs6G7Ivo4LFUql7l5fTqvwBvy8a/t0P8w2gwjf+33XBMEm7q
+         JVYepH2OHPDSw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Heming Zhao <heming.zhao@suse.com>,
-        kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Guoqing Jiang <guoqing.jiang@linux.dev>,
-        Song Liu <song@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        linux-raid@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 18/55] md/bitmap: don't set sb values if can't pass sanity check
-Date:   Mon, 30 May 2022 09:46:24 -0400
-Message-Id: <20220530134701.1935933-18-sashal@kernel.org>
+Cc:     Petr Machata <petrm@nvidia.com>,
+        Maksym Yaremchuk <maksymy@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 30/55] mlxsw: spectrum_dcb: Do not warn about priority changes
+Date:   Mon, 30 May 2022 09:46:36 -0400
+Message-Id: <20220530134701.1935933-30-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530134701.1935933-1-sashal@kernel.org>
 References: <20220530134701.1935933-1-sashal@kernel.org>
@@ -54,161 +54,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Heming Zhao <heming.zhao@suse.com>
+From: Petr Machata <petrm@nvidia.com>
 
-[ Upstream commit e68cb83a57a458b01c9739e2ad9cb70b04d1e6d2 ]
+[ Upstream commit b6b584562cbe7dc357083459d6dd5b171e12cadb ]
 
-If bitmap area contains invalid data, kernel will crash then mdadm
-triggers "Segmentation fault".
-This is cluster-md speical bug. In non-clustered env, mdadm will
-handle broken metadata case. In clustered array, only kernel space
-handles bitmap slot info. But even this bug only happened in clustered
-env, current sanity check is wrong, the code should be changed.
+The idea behind the warnings is that the user would get warned in case when
+more than one priority is configured for a given DSCP value on a netdevice.
 
-How to trigger: (faulty injection)
+The warning is currently wrong, because dcb_ieee_getapp_mask() returns
+the first matching entry, not all of them, and the warning will then claim
+that some priority is "current", when in fact it is not.
 
-dd if=/dev/zero bs=1M count=1 oflag=direct of=/dev/sda
-dd if=/dev/zero bs=1M count=1 oflag=direct of=/dev/sdb
-mdadm -C /dev/md0 -b clustered -e 1.2 -n 2 -l mirror /dev/sda /dev/sdb
-mdadm -Ss
-echo aaa > magic.txt
- == below modifying slot 2 bitmap data ==
-dd if=magic.txt of=/dev/sda seek=16384 bs=1 count=3 <== destroy magic
-dd if=/dev/zero of=/dev/sda seek=16436 bs=1 count=4 <== ZERO chunksize
-mdadm -A /dev/md0 /dev/sda /dev/sdb
- == kernel crashes. mdadm outputs "Segmentation fault" ==
+But more importantly, the warning is misleading in general. Consider the
+following commands:
 
-Reason of kernel crash:
+ # dcb app flush dev swp19 dscp-prio
+ # dcb app add dev swp19 dscp-prio 24:3
+ # dcb app replace dev swp19 dscp-prio 24:2
 
-In md_bitmap_read_sb (called by md_bitmap_create), bad bitmap magic didn't
-block chunksize assignment, and zero value made DIV_ROUND_UP_SECTOR_T()
-trigger "divide error".
+The last command will issue the following warning:
 
-Crash log:
+ mlxsw_spectrum3 0000:07:00.0 swp19: Ignoring new priority 2 for DSCP 24 in favor of current value of 3
 
-kernel: md: md0 stopped.
-kernel: md/raid1:md0: not clean -- starting background reconstruction
-kernel: md/raid1:md0: active with 2 out of 2 mirrors
-kernel: dlm: ... ...
-kernel: md-cluster: Joined cluster 44810aba-38bb-e6b8-daca-bc97a0b254aa slot 1
-kernel: md0: invalid bitmap file superblock: bad magic
-kernel: md_bitmap_copy_from_slot can't get bitmap from slot 2
-kernel: md-cluster: Could not gather bitmaps from slot 2
-kernel: divide error: 0000 [#1] SMP NOPTI
-kernel: CPU: 0 PID: 1603 Comm: mdadm Not tainted 5.14.6-1-default
-kernel: Hardware name: QEMU Standard PC (i440FX + PIIX, 1996)
-kernel: RIP: 0010:md_bitmap_create+0x1d1/0x850 [md_mod]
-kernel: RSP: 0018:ffffc22ac0843ba0 EFLAGS: 00010246
-kernel: ... ...
-kernel: Call Trace:
-kernel:  ? dlm_lock_sync+0xd0/0xd0 [md_cluster 77fe..7a0]
-kernel:  md_bitmap_copy_from_slot+0x2c/0x290 [md_mod 24ea..d3a]
-kernel:  load_bitmaps+0xec/0x210 [md_cluster 77fe..7a0]
-kernel:  md_bitmap_load+0x81/0x1e0 [md_mod 24ea..d3a]
-kernel:  do_md_run+0x30/0x100 [md_mod 24ea..d3a]
-kernel:  md_ioctl+0x1290/0x15a0 [md_mod 24ea....d3a]
-kernel:  ? mddev_unlock+0xaa/0x130 [md_mod 24ea..d3a]
-kernel:  ? blkdev_ioctl+0xb1/0x2b0
-kernel:  block_ioctl+0x3b/0x40
-kernel:  __x64_sys_ioctl+0x7f/0xb0
-kernel:  do_syscall_64+0x59/0x80
-kernel:  ? exit_to_user_mode_prepare+0x1ab/0x230
-kernel:  ? syscall_exit_to_user_mode+0x18/0x40
-kernel:  ? do_syscall_64+0x69/0x80
-kernel:  entry_SYSCALL_64_after_hwframe+0x44/0xae
-kernel: RIP: 0033:0x7f4a15fa722b
-kernel: ... ...
-kernel: ---[ end trace 8afa7612f559c868 ]---
-kernel: RIP: 0010:md_bitmap_create+0x1d1/0x850 [md_mod]
+The reason is that the "replace" command works by first adding the new
+value, and then removing all old values. This is the only way to make the
+replacement without causing the traffic to be prioritized to whatever the
+chip defaults to. The warning is issued in response to adding the new
+priority, and then no warning is shown when the old priority is removed.
+The upshot is that the canonical way to change traffic prioritization
+always produces a warning about ignoring the new priority, but what gets
+configured is in fact what the user intended.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Acked-by: Guoqing Jiang <guoqing.jiang@linux.dev>
-Signed-off-by: Heming Zhao <heming.zhao@suse.com>
-Signed-off-by: Song Liu <song@kernel.org>
+An option to just emit warning every time that the prioritization changes
+just to make it clear that it happened is obviously unsatisfactory.
+
+Therefore, in this patch, remove the warnings.
+
+Reported-by: Maksym Yaremchuk <maksymy@nvidia.com>
+Signed-off-by: Petr Machata <petrm@nvidia.com>
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/md/md-bitmap.c | 44 ++++++++++++++++++++++--------------------
- 1 file changed, 23 insertions(+), 21 deletions(-)
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_dcb.c | 13 -------------
+ 1 file changed, 13 deletions(-)
 
-diff --git a/drivers/md/md-bitmap.c b/drivers/md/md-bitmap.c
-index d7eef5292ae2..a95e20c3d0d4 100644
---- a/drivers/md/md-bitmap.c
-+++ b/drivers/md/md-bitmap.c
-@@ -642,14 +642,6 @@ static int md_bitmap_read_sb(struct bitmap *bitmap)
- 	daemon_sleep = le32_to_cpu(sb->daemon_sleep) * HZ;
- 	write_behind = le32_to_cpu(sb->write_behind);
- 	sectors_reserved = le32_to_cpu(sb->sectors_reserved);
--	/* Setup nodes/clustername only if bitmap version is
--	 * cluster-compatible
--	 */
--	if (sb->version == cpu_to_le32(BITMAP_MAJOR_CLUSTERED)) {
--		nodes = le32_to_cpu(sb->nodes);
--		strlcpy(bitmap->mddev->bitmap_info.cluster_name,
--				sb->cluster_name, 64);
--	}
- 
- 	/* verify that the bitmap-specific fields are valid */
- 	if (sb->magic != cpu_to_le32(BITMAP_MAGIC))
-@@ -671,6 +663,16 @@ static int md_bitmap_read_sb(struct bitmap *bitmap)
- 		goto out;
- 	}
- 
-+	/*
-+	 * Setup nodes/clustername only if bitmap version is
-+	 * cluster-compatible
-+	 */
-+	if (sb->version == cpu_to_le32(BITMAP_MAJOR_CLUSTERED)) {
-+		nodes = le32_to_cpu(sb->nodes);
-+		strlcpy(bitmap->mddev->bitmap_info.cluster_name,
-+				sb->cluster_name, 64);
-+	}
-+
- 	/* keep the array size field of the bitmap superblock up to date */
- 	sb->sync_size = cpu_to_le64(bitmap->mddev->resync_max_sectors);
- 
-@@ -703,9 +705,9 @@ static int md_bitmap_read_sb(struct bitmap *bitmap)
- 
- out:
- 	kunmap_atomic(sb);
--	/* Assigning chunksize is required for "re_read" */
--	bitmap->mddev->bitmap_info.chunksize = chunksize;
- 	if (err == 0 && nodes && (bitmap->cluster_slot < 0)) {
-+		/* Assigning chunksize is required for "re_read" */
-+		bitmap->mddev->bitmap_info.chunksize = chunksize;
- 		err = md_setup_cluster(bitmap->mddev, nodes);
- 		if (err) {
- 			pr_warn("%s: Could not setup cluster service (%d)\n",
-@@ -716,18 +718,18 @@ static int md_bitmap_read_sb(struct bitmap *bitmap)
- 		goto re_read;
- 	}
- 
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_dcb.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_dcb.c
+index 21296fa7f7fb..bf51ed94952c 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_dcb.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_dcb.c
+@@ -227,8 +227,6 @@ static int mlxsw_sp_dcbnl_ieee_setets(struct net_device *dev,
+ static int mlxsw_sp_dcbnl_app_validate(struct net_device *dev,
+ 				       struct dcb_app *app)
+ {
+-	int prio;
 -
- out_no_sb:
--	if (test_bit(BITMAP_STALE, &bitmap->flags))
--		bitmap->events_cleared = bitmap->mddev->events;
--	bitmap->mddev->bitmap_info.chunksize = chunksize;
--	bitmap->mddev->bitmap_info.daemon_sleep = daemon_sleep;
--	bitmap->mddev->bitmap_info.max_write_behind = write_behind;
--	bitmap->mddev->bitmap_info.nodes = nodes;
--	if (bitmap->mddev->bitmap_info.space == 0 ||
--	    bitmap->mddev->bitmap_info.space > sectors_reserved)
--		bitmap->mddev->bitmap_info.space = sectors_reserved;
--	if (err) {
-+	if (err == 0) {
-+		if (test_bit(BITMAP_STALE, &bitmap->flags))
-+			bitmap->events_cleared = bitmap->mddev->events;
-+		bitmap->mddev->bitmap_info.chunksize = chunksize;
-+		bitmap->mddev->bitmap_info.daemon_sleep = daemon_sleep;
-+		bitmap->mddev->bitmap_info.max_write_behind = write_behind;
-+		bitmap->mddev->bitmap_info.nodes = nodes;
-+		if (bitmap->mddev->bitmap_info.space == 0 ||
-+			bitmap->mddev->bitmap_info.space > sectors_reserved)
-+			bitmap->mddev->bitmap_info.space = sectors_reserved;
-+	} else {
- 		md_bitmap_print_sb(bitmap);
- 		if (bitmap->cluster_slot < 0)
- 			md_cluster_stop(bitmap->mddev);
+ 	if (app->priority >= IEEE_8021QAZ_MAX_TCS) {
+ 		netdev_err(dev, "APP entry with priority value %u is invalid\n",
+ 			   app->priority);
+@@ -242,17 +240,6 @@ static int mlxsw_sp_dcbnl_app_validate(struct net_device *dev,
+ 				   app->protocol);
+ 			return -EINVAL;
+ 		}
+-
+-		/* Warn about any DSCP APP entries with the same PID. */
+-		prio = fls(dcb_ieee_getapp_mask(dev, app));
+-		if (prio--) {
+-			if (prio < app->priority)
+-				netdev_warn(dev, "Choosing priority %d for DSCP %d in favor of previously-active value of %d\n",
+-					    app->priority, app->protocol, prio);
+-			else if (prio > app->priority)
+-				netdev_warn(dev, "Ignoring new priority %d for DSCP %d in favor of current value of %d\n",
+-					    app->priority, app->protocol, prio);
+-		}
+ 		break;
+ 
+ 	case IEEE_8021QAZ_APP_SEL_ETHERTYPE:
 -- 
 2.35.1
 
